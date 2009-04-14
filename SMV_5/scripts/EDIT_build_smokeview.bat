@@ -23,4 +23,4 @@ call %envfile%
 
 %svn_drive%
 cd %svn_root%\SMV_5\
-start wordpad readme_smv.html
+start wordpad build_smokeview.html
