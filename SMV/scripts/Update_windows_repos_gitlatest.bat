@@ -1,9 +1,6 @@
 @echo off
-Title Packaging test Smokeview for 64 bit Linux
 
-Rem  Windows batch file to create an achive for a 64 bit Linux test smokeview
-
-Rem setup environment variables (defining where repository resides etc) 
+Rem Batch file used to update FDS source revision number
 
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
@@ -17,16 +14,18 @@ goto:eof
 
 :endif_envexist
 
+Rem location of batch files used to set up Intel compilation environment
+
 call %envfile%
 
+echo.
+echo Updating the Windows repository, %svn_root%, to the latest revision
 %svn_drive%
-
-cd %svn_root%\smv\scripts
-
-set exe=smv_test_%smv_revision%_linux64.sh
-
-echo updating 64 bit test smokeview
-plink %svn_logon% %linux_svn_root%/SMV/uploads/%exe% y
-
+cd %svn_root%
+echo Updating the repo:%svn_root%
+git remote update
+git checkout development
+git merge origin/development
+git merge firemodels/development
 
 pause
