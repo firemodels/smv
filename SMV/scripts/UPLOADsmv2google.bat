@@ -1,7 +1,4 @@
 @echo off
-Title Building 64 bit Windows background
-
-Rem setup environment variables (defining where repository resides etc) 
 
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
@@ -15,11 +12,12 @@ goto:eof
 
 :endif_envexist
 
+echo open upload directory and web page for uploading
+
 call %envfile%
 
 %svn_drive%
+cd %svn_root%\SMV\Uploads
+explorer .
+start chrome https://drive.google.com/drive/my-drive
 
-cd %svn_root%\Utilities\background\intel_win_64
-erase *.obj
-call make_background.bat
-pause

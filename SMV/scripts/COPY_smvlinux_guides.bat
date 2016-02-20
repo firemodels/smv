@@ -1,8 +1,4 @@
 @echo off
-Title Building test Smokeview for 64 bit OSX
-
-
-Rem  Windows batch file to build a test Smokeview for OSX.
 
 Rem setup environment variables (defining where repository resides etc) 
 
@@ -21,13 +17,15 @@ goto:eof
 call %envfile%
 
 %svn_drive%
-cd %svn_root%\smv\scripts
-set version=%smv_version%_%smv_revision%
-
-set scriptdir=%linux_svn_root%/SMV/scripts
-
-plink %osx_logon% %scriptdir%/ssh_command.sh %osx_hostname% %scriptdir% MAKEtestsmvosx64.sh %linux_svn_root%
 
 echo.
-echo compilation complete
+echo ---downloading guides
+echo.
+set manualdir=%smokebotrepo%/Manuals
+set firelocaldir="%userprofile%"\FIRE-LOCAL\reports\fds_manuals
+
+pscp %linux_logon%:%manualdir%/SMV_User_Guide/SMV_User_Guide.pdf  %firelocaldir%\.
+pscp %linux_logon%:%manualdir%/SMV_Verification_Guide/SMV_Verification_Guide.pdf  %firelocaldir%\.
+pscp %linux_logon%:%manualdir%/SMV_Technical_Reference_Guide/SMV_Technical_Reference_Guide.pdf  %firelocaldir%\.
+
 pause
