@@ -3,7 +3,7 @@
 
 #To use this Makefile cd to a sub-directory and type make_smv.sh or make_smv.bat
 
-SOURCE_DIR = ../../../source/
+SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
@@ -13,8 +13,8 @@ SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  GIT_HASH := $(shell ..\..\..\..\Utilities\Scripts\githash)
-  GIT_DATE := $(shell ..\..\..\..\Utilities\Scripts\gitlog)
+  GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
@@ -26,7 +26,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # The variable VPATH defines the source code directory relative to the current directory
 
-VPATH = $(SOURCE_DIR)/smokeview:../../../../FDS_Source:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
+VPATH = $(SOURCE_DIR)/smokeview:../../../../FDS/Source:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
 bin = .
 
 # Definition of the object variables
