@@ -1566,12 +1566,12 @@ compile_cfast
 compile_fds_mpi_db
 check_compile_fds_mpi_db
 
-if [ "$SMOKEBOT_LITE" == "" ]; then
-if [[ $stage1b_fdsdb_success ]] ; then
-   compile_fds_mpi
-   check_compile_fds_mpi
-fi
-fi
+#if [ "$SMOKEBOT_LITE" == "" ]; then
+#if [[ $stage1b_fdsdb_success ]] ; then
+#   compile_fds_mpi
+#   check_compile_fds_mpi
+#fi
+#fi
 
 ### Stage 2 build smokeview ###
 compile_smv_utilities
