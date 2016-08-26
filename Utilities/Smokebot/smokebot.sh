@@ -1319,9 +1319,9 @@ generate_timing_stats()
    scripts/SMV_Cases.sh
    scripts/GEOM_Cases.sh
 
-   cd $fdsrepo/FDS/Utilities/Scripts
+   cd $fdsrepo/SMV/Utilities/Scripts
    ./fds_timing_stats.sh smokebot > smv_timing_stats.csv
-   cd $fdsrepo/FDS/Utilities/Scripts
+   cd $fdsrepo/SMV/Utilities/Scripts
    ./fds_timing_stats.sh smokebot 1 > smv_benchmarktiming_stats.csv
    TOTAL_SMV_TIMES=`tail -1 smv_benchmarktiming_stats.csv`
 }
