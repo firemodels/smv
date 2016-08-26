@@ -264,12 +264,28 @@ run_auto()
 
   MKDIR $GIT_STATUSDIR
 # remove untracked files, revert repo files, update to latest revision
-  cd $fdsrepo
 
+  cd $fdsrepo/FDS
   CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
   if [[ "$BRANCH" != "" ]] ; then
     if [[ `git branch | grep $BRANCH` == "" ]] ; then 
-       echo "Error: the branch $BRANCH does not exist. Terminating script."
+       echo "Error: the branch $BRANCH does not exist in repo $fdsrepo/FDS. "
+       echo "       Terminating script."
+    fi
+    if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
+       echo Checking out branch $BRANCH.
+       git checkout $BRANCH
+    fi
+  else
+     BRANCH=$CURRENT_BRANCH
+  fi
+  
+  cd $fdsrepo/SMV
+  CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+  if [[ "$BRANCH" != "" ]] ; then
+    if [[ `git branch | grep $BRANCH` == "" ]] ; then 
+       echo "Error: the branch $BRANCH does not exist in repo $fdsrepo/SMV. "
+       echo "       Terminating script."
        exit
     fi
     if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
@@ -279,8 +295,15 @@ run_auto()
   else
      BRANCH=$CURRENT_BRANCH
   fi
+
   if [[ "$UPDATE" == "1" ]] ; then
-    echo Update the branch $BRANCH.
+    echo Update the branch $BRANCH in repo SMV.
+    cd $fdsrepo/SMV
+    git remote update
+    git merge origin/$BRANCH
+    
+    echo Update the branch $BRANCH in repo FDS
+    cd $fdsrepo/FDS
     git remote update
     git merge origin/$BRANCH
   fi
@@ -566,8 +589,7 @@ clean_FDS_repo()
 
 do_FDS_checkout()
 {
-   cd $fdsrepo
- 
+   cd $fdsrepo/FDS
    CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
    if [[ "$BRANCH" != "" ]] ; then
      if [[ `git branch | grep $BRANCH` == "" ]] ; then 
@@ -582,6 +604,24 @@ do_FDS_checkout()
    else
       BRANCH=$CURRENT_BRANCH
    fi
+   
+   cd $fdsrepo/SMV
+   CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+   if [[ "$BRANCH" != "" ]] ; then
+     if [[ `git branch | grep $BRANCH` == "" ]] ; then 
+        echo "Error: the branch $BRANCH does not exist."
+        echo "Aborting smokebot"
+        exit
+     fi
+     if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
+        echo "Checking out branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+        git checkout $BRANCH
+     fi
+   else
+      BRANCH=$CURRENT_BRANCH
+   fi
+
+   cd $fdsrepo/SMV
    if [ "$UPDATEREPO" == "1" ]; then
      echo "   updating"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
@@ -606,6 +646,28 @@ do_FDS_checkout()
    GIT_SHORTHASH=`git rev-parse --short HEAD`
    GIT_LONGHASH=`git rev-parse HEAD`
    GIT_DATE=`git log -1 --format=%cd --date=local $GIT_SHORTHASH`
+
+   cd $fdsrepo/FDS
+   if [ "$UPDATEREPO" == "1" ]; then
+     echo "   updating"
+     IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
+     if [ "$IS_DIRTY" == "1" ]; then
+       echo "The repo $fdsrepo has uncommitted changes."
+       echo "Commit or revert these changes or re-run"
+       echo "smokebot without the -u (update) option"
+       exit
+     fi
+     echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
+     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
+     updateclean="1"
+   fi
+   if [ "$updateclean" == "" ]; then
+      echo "   not cleaned or updated"
+   fi 
 }
 
 check_FDS_checkout()
