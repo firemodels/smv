@@ -10,13 +10,13 @@ if [ "$FDSSMV" != "" ] ; then
   FDSREPO=$FDSSMV
 fi
 if [ -e .fds_git ]; then
-  cd ../..
+  cd ../../..
   FDSREPO=`pwd`
   cd $CURDIR
 fi
 CFASTREPO=~/cfastgitclean
 
-BRANCH=development
+BRANCH=master
 botscript=smokebot.sh
 RUNAUTO=
 CLEANREPO=
