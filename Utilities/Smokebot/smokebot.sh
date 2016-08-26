@@ -264,7 +264,7 @@ run_auto()
 
   MKDIR $GIT_STATUSDIR
 # remove untracked files, revert repo files, update to latest revision
-  cd $fdsrepo/FDS
+  cd $fdsrepo
 
   CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
   if [[ "$BRANCH" != "" ]] ; then
@@ -284,28 +284,6 @@ run_auto()
     git remote update
     git merge origin/$BRANCH
   fi
-
-  cd $fdsrepo/SMV
-
-  CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-  if [[ "$BRANCH" != "" ]] ; then
-    if [[ `git branch | grep $BRANCH` == "" ]] ; then
-       echo "Error: the branch $BRANCH does not exist. Terminating script."
-       exit
-    fi
-    if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
-       echo Checking out branch $BRANCH.
-       git checkout $BRANCH
-    fi
-  else
-     BRANCH=$CURRENT_BRANCH
-  fi
-  if [[ "$UPDATE" == "1" ]] ; then
-    echo Update the branch $BRANCH.
-    git remote update
-    git merge origin/$BRANCH
-  fi
-
 
 # get info for smokeview
   cd $SMV_SOURCE
@@ -633,9 +611,9 @@ do_FDS_checkout()
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
      git remote update >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-#     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-#     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-#     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
+     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
@@ -659,9 +637,9 @@ do_FDS_checkout()
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
      git remote update >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-#     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-#     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-#     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
+     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
