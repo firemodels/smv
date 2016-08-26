@@ -245,8 +245,8 @@ run_auto()
 {
   option=$1
   GIT_STATUSDIR=~/.smokebot
-  SMV_SOURCE=$fdsrepo/SMV/Source
-  TRIGGER_DIR=$fdsrepo/SMV/Source/scripts
+  SMV_SOURCE=$fdsrepo/SMV/source
+  TRIGGER_DIR=$fdsrepo/SMV/source/scripts
   GIT_SMV_FILE=$GIT_STATUSDIR/smv_revision
   GIT_SMV_LOG=$GIT_STATUSDIR/smv_log
   
@@ -256,7 +256,7 @@ run_auto()
   TRIGGER=$TRIGGER_DIR/smokeview/smokebot_trigger.txt
   GIT_T_FILE=$GIT_STATUSDIR/trigger_revision
 
-  FDS_SOURCE=$fdsrepo/FDS/Source
+  FDS_SOURCE=$fdsrepo/FDS_Source
   GIT_FDS_FILE=$GIT_STATUSDIR/fds_revision
   GIT_FDS_LOG=$GIT_STATUSDIR/FDS_log
 
@@ -264,7 +264,7 @@ run_auto()
 
   MKDIR $GIT_STATUSDIR
 # remove untracked files, revert repo files, update to latest revision
-  cd $fdsrepo
+  cd $fdsrepo/FDS
 
   CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
   if [[ "$BRANCH" != "" ]] ; then
@@ -284,6 +284,28 @@ run_auto()
     git remote update
     git merge origin/$BRANCH
   fi
+
+  cd $fdsrepo/SMV
+
+  CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+  if [[ "$BRANCH" != "" ]] ; then
+    if [[ `git branch | grep $BRANCH` == "" ]] ; then
+       echo "Error: the branch $BRANCH does not exist. Terminating script."
+       exit
+    fi
+    if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
+       echo Checking out branch $BRANCH.
+       git checkout $BRANCH
+    fi
+  else
+     BRANCH=$CURRENT_BRANCH
+  fi
+  if [[ "$UPDATE" == "1" ]] ; then
+    echo Update the branch $BRANCH.
+    git remote update
+    git merge origin/$BRANCH
+  fi
+
 
 # get info for smokeview
   cd $SMV_SOURCE
@@ -550,11 +572,11 @@ clean_FDS_repo()
           echo "smokebot without the -c (clean) option"
           exit
         fi
-        clean_repo $fdsrepo/SMV/Verification
-        clean_repo $fdsrepo/SMV/Source
-        clean_repo $fdsrepo/FDS/Source
-        clean_repo $fdsrepo/FDS/Build
-        clean_repo $fdsrepo/SMV/Manuals
+        clean_repo $fdsrepo/Verification
+        clean_repo $fdsrepo/SMV
+        clean_repo $fdsrepo/FDS_Source
+        clean_repo $fdsrepo/FDS_Compilation
+        clean_repo $fdsrepo/Manuals
         updateclean="1"
       fi
    else
@@ -566,8 +588,7 @@ clean_FDS_repo()
 
 do_FDS_checkout()
 {
-   cd $fdsrepo
- 
+   cd $fdsrepo/FDS
    CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
    if [[ "$BRANCH" != "" ]] ; then
      if [[ `git branch | grep $BRANCH` == "" ]] ; then 
@@ -582,11 +603,29 @@ do_FDS_checkout()
    else
       BRANCH=$CURRENT_BRANCH
    fi
+
+   cd $fdsrepo/SMV
+   CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+   if [[ "$BRANCH" != "" ]] ; then
+     if [[ `git branch | grep $BRANCH` == "" ]] ; then 
+        echo "Error: the branch $BRANCH does not exist."
+        echo "Aborting smokebot"
+        exit
+     fi
+     if [[ "$BRANCH" != "$CURRENT_BRANCH" ]] ; then
+        echo "Checking out branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+        git checkout $BRANCH
+     fi
+   else
+      BRANCH=$CURRENT_BRANCH
+   fi
+
+   cd $fdsrepo/SMV
    if [ "$UPDATEREPO" == "1" ]; then
      echo "   updating"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
-       echo "The repo $fdsrepo has uncommitted changes."
+       echo "The repo $fdsrepo/SMV has uncommitted changes."
        echo "Commit or revert these changes or re-run"
        echo "smokebot without the -u (update) option"
        exit
@@ -594,9 +633,9 @@ do_FDS_checkout()
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
      git remote update >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
+#     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
+#     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
+#     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
@@ -606,6 +645,28 @@ do_FDS_checkout()
    GIT_SHORTHASH=`git rev-parse --short HEAD`
    GIT_LONGHASH=`git rev-parse HEAD`
    GIT_DATE=`git log -1 --format=%cd --date=local $GIT_SHORTHASH`
+
+   cd $fdsrepo/FDS
+   if [ "$UPDATEREPO" == "1" ]; then
+     echo "   updating"
+     IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
+     if [ "$IS_DIRTY" == "1" ]; then
+       echo "The repo $fdsrepo/FDS has uncommitted changes."
+       echo "Commit or revert these changes or re-run"
+       echo "smokebot without the -u (update) option"
+       exit
+     fi
+     echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
+#     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
+#     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
+#     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
+     updateclean="1"
+   fi
+   if [ "$updateclean" == "" ]; then
+      echo "   not cleaned or updated"
+   fi 
 }
 
 check_FDS_checkout()
@@ -624,7 +685,7 @@ compile_fds_mpi_db()
    # Clean and compile mpi FDS debug
    echo "   FDS"
    echo "      debug"
-   cd $fdsrepo/FDS/Build/mpi_${COMPILER}_${platform}${size}$IB$DB
+   cd $fdsrepo/FDS_Compilation/mpi_${COMPILER}_${platform}${size}$IB$DB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB$DB
    make --makefile ../makefile clean &> /dev/null
    ./make_fds.sh &> $OUTPUT_DIR/stage1b
@@ -633,7 +694,7 @@ compile_fds_mpi_db()
 check_compile_fds_mpi_db()
 {
    # Check for errors in FDS debug compilation
-   cd $fdsrepo/FDS/Build/mpi_${COMPILER}_${platform}${size}$IB$DB
+   cd $fdsrepo/FDS_Compilation/mpi_${COMPILER}_${platform}${size}$IB$DB
    if [ -e "fds_mpi_${COMPILER}_${platform}${size}$IB$DB" ]
    then
       stage1b_fdsdb_success=true
@@ -759,7 +820,7 @@ compile_fds_mpi()
 {
    # Clean and compile FDS
    echo "      release"
-   cd $fdsrepo/FDS/Build/mpi_${COMPILER}_${platform}${size}$IB
+   cd $fdsrepo/FDS_Compilation/mpi_${COMPILER}_${platform}${size}$IB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB
    make --makefile ../makefile clean &> /dev/null
    ./make_fds.sh &> $OUTPUT_DIR/stage1c
@@ -768,7 +829,7 @@ compile_fds_mpi()
 check_compile_fds_mpi()
 {
    # Check for errors in FDS compilation
-   cd $fdsrepo/FDS/Build/mpi_${COMPILER}_${platform}${size}$IB
+   cd $fdsrepo/FDS_Compilation/mpi_${COMPILER}_${platform}${size}$IB
    if [ -e "fds_mpi_${COMPILER}_${platform}${size}$IB" ]
    then
       stage1c_fdsrel_success=true
