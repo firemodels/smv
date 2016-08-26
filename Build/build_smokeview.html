@@ -13,31 +13,31 @@ function get_fullpath(command,platform){
   return fullpath;
 }
 function build_libs(platform){
-  MyObject.Run(get_fullpath("scripts/BUILDlibs.bat ",platform));
+  MyObject.Run(get_fullpath("../scripts/BUILDlibs.bat ",platform));
 }
 function build_smv(args){
-  MyObject.Run(get_fullpath("scripts/BUILDsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/BUILDsmv.bat ",args));
 }
 function build_smv2(args){
-  MyObject.Run(get_fullpath("scripts/BUILDsmv2.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/BUILDsmv2.bat ",args));
 }
 function build_prog(args){
-  MyObject.Run(get_fullpath("scripts/BUILDprog.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/BUILDprog.bat ",args));
 }
 function build_utilprog(args){
-  MyObject.Run(get_fullpath("../Utilities/Scripts/BUILDutilprog.bat ",args));
+  MyObject.Run(get_fullpath("../../Utilities/Scripts/BUILDutilprog.bat ",args));
 }
 function package_smv(args){
-  MyObject.Run(get_fullpath("scripts/PACKAGEsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/PACKAGEsmv.bat ",args));
 }
 function install_smv(args){
-  MyObject.Run(get_fullpath("scripts/INSTALLsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/INSTALLsmv.bat ",args));
 }
 </script>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" >
-<a href="../FDS/Utilities/build_bundle.html"><font size=5>Bundle</font></a> -
-<a href="../FDS/Build/build_fds.html"><font size=5>FDS</font></a> - 
+<a href="../../FDS/Utilities/build_bundle.html"><font size=5>Bundle</font></a> -
+<a href="../../FDS/Build/build_fds.html"><font size=5>FDS</font></a> - 
 <font size=5>Smokeview</font> - 
 <a href="build_guides.html"><font size=5>Guides</font></a>
 
@@ -45,15 +45,15 @@ function install_smv(args){
 
 <h3>Bundle Steps - Smokeview</h3>
 <ol>
-<li><a href="scripts/clean_repos_sourcebuild.bat">Clean</a> source and build directories</a> on all three platforms
-<li><a href="scripts/Update_repos_gitlatest.bat">Update repos</a> on all three platforms
+<li><a href="../scripts/clean_repos_sourcebuild.bat">Clean</a> source and build directories</a> on all three platforms
+<li><a href="../scripts/Update_repos_gitlatest.bat">Update repos</a> on all three platforms
 <li>Edit <a href="scripts/EDIT_setup.bat">configuration file</a> labeling the bundle name 
 using <a href="scripts/GET_revision.bat">repo revision</a>
 
 <li>Update smokeview release notes:
 <ol>
-<li><a href="scripts/GET_smvlog.bat">Add smokeview log entries</a> to release notes (for commits made after <a href="scripts/EDIT_setup.bat">smvlogdate</a> defined in config file) 
-<li>cleanup log entries and commit ( <a href="scripts/EDIT_release_notes.bat">edit</a>, <a href="scripts/VIEW_release_notes.bat">view</a> release notes )
+<li><a href="../scripts/GET_smvlog.bat">Add smokeview log entries</a> to release notes (for commits made after <a href="../scripts/EDIT_setup.bat">smvlogdate</a> defined in config file) 
+<li>cleanup log entries and commit ( <a href="../scripts/EDIT_release_notes.bat">edit</a>, <a href="../scripts/VIEW_release_notes.bat">view</a> release notes )
 </ol>
 <li>build libraries on all three platforms
 <li>build smokeview (after library builds complete)
@@ -98,10 +98,10 @@ using <a href="scripts/GET_revision.bat">repo revision</a>
 <td align=center><button onclick="install_smv('osx release')">Install</button></td>
 </tr>
 <tr>
-<td align=center COLSPAN=3><a href="scripts/GET_smv_version.bat">Get Smokeview Revision</a></td>
+<td align=center COLSPAN=3><a href="../scripts/GET_smv_version.bat">Get Smokeview Revision</a></td>
 </tr>
 <tr>
-<td align=center COLSPAN=3><a href="scripts/UPLOADsmv2git.bat">Upload</a> (git - for smokeview bundles)</td>
+<td align=center COLSPAN=3><a href="../scripts/UPLOADsmv2git.bat">Upload</a> (git - for smokeview bundles)</td>
 </tr>
 </table>
 
@@ -205,21 +205,21 @@ using <a href="scripts/GET_revision.bat">repo revision</a>
 <td align=center><button onclick="install_smv('osx test')">Install</button></td>
 </tr>
 <tr>
-<td align=center COLSPAN=3><a href="scripts/GET_smvtest_version.bat">Get Smokeview Revision</a></td>
+<td align=center COLSPAN=3><a href="../scripts/GET_smvtest_version.bat">Get Smokeview Revision</a></td>
 </tr>
 <tr>
-<td align=center COLSPAN=3><a href="scripts/UPLOADsmv2google.bat">Upload</a> (google drive)</td>
+<td align=center COLSPAN=3><a href="../scripts/UPLOADsmv2google.bat">Upload</a> (google drive)</td>
 </tr>
 </table>
 
 
 <h3>Other</h3>
 <ul>
-<li><a href="scripts/EDIT_build_smokeview.bat">Edit</a> this page
-<li><a href="scripts/COPYhome2config.bat">configuration file ===>> repo.</a>
-<li><a href="scripts/COPYconfig2home.bat">configuration file <<=== repo.</a>
-<li><a href="scripts/TEST_setup.bat">Test</a> settings and build/bundle environment. 
-<li><a href="../FDS_Compilation/getting_started.html">FDS/Smokeview build page checklist</a>
+<li><a href="../scripts/EDIT_build_smokeview.bat">Edit</a> this page
+<li><a href="../scripts/COPYhome2config.bat">configuration file ===>> repo.</a>
+<li><a href="../scripts/COPYconfig2home.bat">configuration file <<=== repo.</a>
+<li><a href="../scripts/TEST_setup.bat">Test</a> settings and build/bundle environment. 
+<li><a href="../../FDS_Compilation/getting_started.html">FDS/Smokeview build page checklist</a>
 </ul>
 
 <p><hr>
