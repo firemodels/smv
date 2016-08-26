@@ -6,8 +6,8 @@ running=~/.fdssmvgit/bot_running
 
 CURDIR=`pwd`
 FDSREPO=~/FDS-SMVgitclean
-if [ "$FDSSMV" != "" ] ; then
-  FDSREPO=$FDSSMV
+if [ "$FDSSMVNEW" != "" ] ; then
+  FDSREPO=$FDSSMVNEW
 fi
 if [ -e .fds_git ]; then
   cd ../../..
