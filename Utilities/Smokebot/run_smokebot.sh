@@ -13,6 +13,9 @@ if [ -e .fds_git ]; then
   cd ../../..
   FDSREPO=`pwd`
   cd $CURDIR
+else
+  echo "***error: smokebot not running in the SMV repo"
+  exit
 fi
 CFASTREPO=~/cfastgitclean
 
