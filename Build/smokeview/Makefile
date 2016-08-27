@@ -26,7 +26,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # The variable VPATH defines the source code directory relative to the current directory
 
-VPATH = $(SOURCE_DIR)/smokeview:../../../../FDS/Source:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
+VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
 bin = .
 
 # Definition of the object variables
