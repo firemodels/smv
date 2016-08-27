@@ -16,9 +16,9 @@ if x%CFASTGIT% == x goto skip_cfastgit
   )
 :skip_cfastgit
 
-set fdsrepo=%userprofile%\FDS-SMVgitclean
+set fdsrepo=%userprofile%\FDS-SMVnew
 if exist .fds_git (
-  set fdsrepo=..\..
+  set fdsrepo=..\..\..
 )
 if x%FDSGIT% == x goto skip_fdsgit
   if EXIST %FDSGIT% (
@@ -53,7 +53,7 @@ if %stopscript% == 1 (
 call :normalise %CD% curdir
 set curdir=%temparg%
 
-call :normalise %fdsrepo%\Utilities\Firebot
+call :normalise %fdsrepo%\SMV\Utilities\Smokebot
 set fdsbotdir=%temparg%
 
 call :normalise %cfastrepo% 
