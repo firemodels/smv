@@ -191,7 +191,8 @@ if [[ "$RUNSMOKEBOT" == "1" ]]; then
      cd Utilities/Smokebot
      FIREBOTDIR=`pwd`
      if [ "$FIREBOTDIR" != "$CURDIR" ]; then
-       cp $botscript $CURDIR/.
+        echo "***error: smokebot not running in the $FIREBOTDIR"
+        exit
      fi
      cd $CURDIR
   fi
