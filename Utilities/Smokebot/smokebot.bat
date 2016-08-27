@@ -180,7 +180,7 @@ if %update% == 0 goto skip_update1
   echo             updating %cfastbasename% repository
   cd %cfastroot%
   git fetch origin
-  git pull  1>> %OUTDIR%\stage0.txt 2>&1
+  git merge origin/master  1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
 
 :: clean FDS/Smokeview repository
@@ -199,13 +199,18 @@ if %clean% == 0 goto skip_clean2
 :: update FDS/Smokeview repository
 
 if %update% == 0 goto skip_update2
-  cd %fdsroot%
-  echo             updating %fdsbasename% repository
+  cd %fdsroot%\FDS
+  echo             updating %fdsbasename%\FDS repository
   git fetch origin
-  git pull 1>> %OUTDIR%\stage0.txt 2>&1
+  git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
+
+  cd %fdsroot%\SMV
+  echo             updating %fdsbasename%\SMV repository
+  git fetch origin
+  git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update2
 
-cd %fdsroot%
+cd %fdsroot%\SMV
 git describe --long --dirty > %revisionfilestring%
 set /p revisionstring=<%revisionfilestring%
 
