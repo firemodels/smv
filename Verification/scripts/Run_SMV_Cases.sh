@@ -1,4 +1,4 @@
- #/bin/bash
+#/bin/bash
 
 # This script runs the Smokeview Verification Cases on a 
 # Linux machine with a batch queuing system
