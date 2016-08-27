@@ -438,7 +438,10 @@ check_time_limit()
 
 set_files_world_readable()
 {
-   cd $fdsrepo
+   cd $fdsrepo/SMV
+   chmod -R go+r *
+
+   cd $fdsrepo/FDS
    chmod -R go+r *
 }
 
@@ -564,7 +567,7 @@ clean_FDS_repo()
    then
       echo FDS-SMV repo
       if [ "$CLEANREPO" == "1" ]; then
-        cd $fdsrepo
+        cd $fdsrepo/SMV
         echo "   cleaning"
         IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
         if [ "$IS_DIRTY" == "1" ]; then
@@ -672,7 +675,7 @@ do_FDS_checkout()
 
 check_FDS_checkout()
 {
-   cd $fdsrepo
+   cd $fdsrepo/SMV
    # Check for GIT errors
    stage0b_success=true
 }
@@ -942,7 +945,7 @@ check_smv_utilities()
 {
    if [ "$haveCC" == "1" ] ; then
      # Check for errors in SMV utilities compilation
-     cd $fdsrepo
+     cd $fdsrepo/SMV
      if [ -e "$fdsrepo/SMV/Build/smokezip/${COMPILER}_${platform}${size}/smokezip_${platform}${size}" ]  && \
         [ -e "$fdsrepo/SMV/Build/smokediff/${COMPILER}_${platform}${size}/smokediff_${platform}${size}" ]  && \
         [ -e "$fdsrepo/SMV/Build/wind2fds/${COMPILER}_${platform}${size}/wind2fds_${platform}${size}" ]  && \
