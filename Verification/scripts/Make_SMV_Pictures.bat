@@ -24,10 +24,10 @@ echo Creating figures for the Smokeview User's and Verification guides
 SETLOCAL
 set SCRIPT_DIR=%CD%
 
-cd %CD%\..\..
+cd %CD%\..
 set BASEDIR=%CD%
 
-cd %BASEDIR%\..\
+cd %BASEDIR%\..\..
 set SVNROOT=%CD%
 
 if %useinstalled% == 1 (
