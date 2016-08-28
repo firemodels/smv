@@ -20,9 +20,9 @@ if %stopscript% == 1 (
 )
 
 
-set QFDS=call %SVNROOT%\Utilities\Scripts\checkfds.bat
-set RUNCFAST=call %SVNROOT%\Utilities\Scripts\checkcfast.bat
-set RUNTFDS=call %SVNROOT%\Utilities\Scripts\checkfds.bat
+set QFDS=call %SVNROOT%\FDS\Utilities\Scripts\checkfds.bat
+set RUNCFAST=call %SVNROOT%\FDS\Utilities\Scripts\checkcfast.bat
+set RUNTFDS=call %SVNROOT%\FDS\Utilities\Scripts\checkfds.bat
 
 if "%runsmvcases%" == "1" (
   call %SCRIPT_DIR%\SMV_Cases.bat
