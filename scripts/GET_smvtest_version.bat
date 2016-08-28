@@ -19,7 +19,7 @@ goto:eof
 call %envfile%
 
 %svn_drive%
-cd %svn_root%\smv\Build\intel_win_64
+cd %svn_root%\SMV\Build\intel_win_64
 
 smokeview_win_test_64 -v
 

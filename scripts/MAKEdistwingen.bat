@@ -26,7 +26,7 @@ set platform=%1
 set BUILDDIR=intel_win_%platform%
 
 set version=%smv_version%
-set bundledir=%svn_root%\smv\for_bundle
+set bundledir=%svn_root%\SMV\for_bundle
 set smvbuild=%svn_root%\SMV\Build\smokeview\%BUILDDIR%
 set smvscripts=%svn_root%\SMV\scripts
 set svzipbuild=%svn_root%\SMV\Build\smokezip\%BUILDDIR%
