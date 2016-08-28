@@ -9,20 +9,19 @@ set BASEDIR=%CD%
 
 cd %BASEDIR%\..\
 set SVNROOT=%CD%
-set VDIR=%SVNROOT%\Verification
-set INDIR=%SVNROOT%\Verification\Visualization\frames
-set OUTDIR=%SVNROOT%\Manuals\SMV_Summary\movies
-set WUIINDIR=%SVNROOT%\Verification\WUI\frames
-set RUNSMV=call "%SCRIPT_DIR%\runsmv.bat"
-set RUNTSMV=call "%SCRIPT_DIR%\runtsmv.bat"
-set RUNMSMV=%SCRIPT_DIR%\runmsmv.bat
+set VDIR=%SVNROOT%\SMV\Verification
+set INDIR=%SVNROOT%\SMV\Verification\Visualization\frames
+set OUTDIR=%SVNROOT%\SMV\Manuals\SMV_Summary\movies
+set WUIINDIR=%SVNROOT%\SMV\Verification\WUI\frames
+set RUNSMV=call "%SVNROOT%\FDS\Verification\scripts\runsmv.bat"
+set RUNSMV=call "%SVNROOT%\FDS\Verification\scripts\runmsmv.bat"
 
 if "%size%" == "" (
   set SMOKEVIEW=smokeview
   set FDS=fds
 ) else (
   set SMOKEVIEW=%SVNROOT%\SMV\Build\intel_win_%size%\smokeview_win_%size%.exe -bindir %SVNROOT%\SMV\for_bundle
-  set FDS=%SVNROOT%\FDS_Compilation\intel_win_%size%\fds_win_%size%.exe
+  set FDS=%SVNROOT%\FDS\Build\intel_win_%size%\fds_win_%size%.exe
 )
 
 call :is_file_installed %SMOKEVIEW%|| exit /b 1

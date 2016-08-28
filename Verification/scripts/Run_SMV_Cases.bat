@@ -13,7 +13,7 @@ set curdir=%CD%
 cd %CD%\..
 set BASEDIR=%CD%
 
-cd %BASEDIR%\..\
+cd %BASEDIR%\..\..
 set SVNROOT=%CD%
 
 cd %SVNROOT%\..\cfastgitclean\
@@ -29,22 +29,22 @@ if %stopscript% == 1 (
 set TIME_FILE=%SCRIPT_DIR%\smv_case_times.txt
 set WAIT_FILE=%SCRIPT_DIR%\wait.txt
 
-set RUNFDS_R=call %SVNROOT%\Utilities\Scripts\runfds.bat
-set RUNTFDS_R=call %SVNROOT%\Utilities\Scripts\runfds.bat
-set RUNCFAST_R=call %SVNROOT%\Utilities\Scripts\runcfast.bat
+set RUNFDS_R=call %SVNROOT%\FDS\Utilities\Scripts\runfds.bat
+set RUNTFDS_R=call %SVNROOT%\FDS\Utilities\Scripts\runfds.bat
+set RUNCFAST_R=call %SVNROOT%\FDS\Utilities\Scripts\runcfast.bat
 
-set RUNFDS_M=call %SVNROOT%\Verification\scripts\make_stop.bat
-set RUNTFDS_M=call %SVNROOT%\Verification\scripts\make_stop.bat
-set RUNCFAST_M=call %SVNROOT%\Verification\scripts\make_stop.bat
+set RUNFDS_M=call %SVNROOT%\FDS\Verification\scripts\make_stop.bat
+set RUNTFDS_M=call %SVNROOT%\FDS\Verification\scripts\make_stop.bat
+set RUNCFAST_M=call %SVNROOT%\FDS\Verification\scripts\make_stop.bat
 
-set RUNFDS_E=call %SVNROOT%\Verification\scripts\erase_stop.bat
-set RUNTFDS_E=call %SVNROOT%\Verification\scripts\erase_stop.bat
-set RUNCFAST_E=call %SVNROOT%\Verification\scripts\erase_stop.bat
+set RUNFDS_E=call %SVNROOT%\FDS\Verification\scripts\erase_stop.bat
+set RUNTFDS_E=call %SVNROOT%\FDS\Verification\scripts\erase_stop.bat
+set RUNCFAST_E=call %SVNROOT%\FDS\Verification\scripts\erase_stop.bat
 
 :: VVVVVVVVVVVV set parameters VVVVVVVVVVVVVVVVVVVVVV
 
 set FDSBASE=fds_mpi_win%size%%DEBUG%.exe
-set FDSEXE=%SVNROOT%\FDS_Compilation\mpi_intel_win%size%%DEBUG%\%FDSBASE%
+set FDSEXE=%SVNROOT%\FDS\Build\mpi_intel_win%size%%DEBUG%\%FDSBASE%
 set CFASTEXE=%CFAST%\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
 set WIND2FDSEXE=%SVNROOT%\SMV\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
 
@@ -75,8 +75,8 @@ echo CFAST=%CFAST%
 echo.
 
 echo Converting wind data
-echo .
-cd %SVNROOT%\Verification\WUI
+echo.
+cd %SVNROOT%\SMV\Verification\WUI
 %WIND2FDSEXE% -prefix sd11 -offset " 50.0  50.0 0.0" wind_data1a.csv
 %WIND2FDSEXE% -prefix sd12 -offset " 50.0 150.0 0.0" wind_data1b.csv
 %WIND2FDSEXE% -prefix sd21 -offset "150.0  50.0 0.0" wind_data1c.csv
@@ -105,7 +105,7 @@ time /t >> %TIME_FILE%
 :: create a text file containing the FDS version used to run these tests.
 :: This file is included in the smokeview user's guide
 
-set smvug="%SVNROOT%\Manuals\SMV_User_Guide\"
+set smvug="%SVNROOT%\SMV\Manuals\SMV_User_Guide\"
 echo | %FDSEXE% 2> "%smvug%\SCRIPT_FIGURES\fds.version"
 
 if "%rundebug%" == "1" (

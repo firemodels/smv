@@ -80,8 +80,8 @@ set /p startdate=<%OUTDIR%\starttime.txt
 time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
-call "%fdsroot%\Utilities\Scripts\setup_intel_compilers.bat" 1> Nul 2>&1
-call %fdsroot%\Utilities\Firebot\firebot_email_list.bat
+call "%fdsroot%\SMV\Utilities\Scripts\setup_intel_compilers.bat" 1> Nul 2>&1
+call %fdsroot%\SMV\Utilities\Smokebot\firebot_email_list.bat
 if NOT "%emailto%" == "" (
   echo  email: %emailto%
   set mailToSMV=%emailto%
@@ -180,32 +180,37 @@ if %update% == 0 goto skip_update1
   echo             updating %cfastbasename% repository
   cd %cfastroot%
   git fetch origin
-  git pull  1>> %OUTDIR%\stage0.txt 2>&1
+  git merge origin/master  1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
 
 :: clean FDS/Smokeview repository
 
 if %clean% == 0 goto skip_clean2
    echo             cleaning %fdsbasename% repository
-   call :git_clean %fdsroot%\Verification
-   call :git_clean %fdsroot%\SMV\source
+   call :git_clean %fdsroot%\SMV\Verification
+   call :git_clean %fdsroot%\SMV\Source
    call :git_clean %fdsroot%\SMV\Build
-   call :git_clean %fdsroot%\FDS_Source
-   call :git_clean %fdsroot%\FDS_Compilation
-   call :git_clean %fdsroot%\Manuals
+   call :git_clean %fdsroot%\FDS\Source
+   call :git_clean %fdsroot%\FDS\Build
+   call :git_clean %fdsroot%\SMV\Manuals
 
 :skip_clean2
 
 :: update FDS/Smokeview repository
 
 if %update% == 0 goto skip_update2
-  cd %fdsroot%
-  echo             updating %fdsbasename% repository
+  cd %fdsroot%\FDS
+  echo             updating %fdsbasename%\FDS repository
   git fetch origin
-  git pull 1>> %OUTDIR%\stage0.txt 2>&1
+  git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
+
+  cd %fdsroot%\SMV
+  echo             updating %fdsbasename%\SMV repository
+  git fetch origin
+  git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update2
 
-cd %fdsroot%
+cd %fdsroot%\SMV
 git describe --long --dirty > %revisionfilestring%
 set /p revisionstring=<%revisionfilestring%
 
@@ -237,7 +242,7 @@ echo Stage 1 - Building FDS
 
 echo             parallel debug
 
-cd %fdsroot%\FDS_Compilation\mpi_intel_win%size%_db
+cd %fdsroot%\FDS\Build\mpi_intel_win%size%_db
 erase *.obj *.mod *.exe 1> %OUTDIR%\stage1b.txt 2>&1
 call make_fds bot ..\makefile mpi_intel_win%size%_db 1>> %OUTDIR%\stage1b.txt 2>&1
 
@@ -246,7 +251,7 @@ call :find_fds_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 echo             parallel release
 
-cd %fdsroot%\FDS_Compilation\mpi_intel_win%size%
+cd %fdsroot%\FDS\Build\mpi_intel_win%size%
 erase *.obj *.mod *.exe 1> %OUTDIR%\stage1d.txt 2>&1
 call make_fds bot  1>> %OUTDIR%\stage1d.txt 2>&1
 
@@ -293,7 +298,7 @@ call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 echo Stage 3 - Building FDS/Smokeview utilities
 
 echo             fds2ascii
-cd %fdsroot%\Utilities\fds2ascii\intel_win%size%
+cd %fdsroot%\FDS\Utilities\fds2ascii\intel_win%size%
 erase *.obj *.mod *.exe 1> %OUTDIR%\stage3c.txt 2>&1
 call make_fds2ascii bot 1>> %OUTDIR%\stage3.txt 2>&1
 call :does_file_exist fds2ascii_win%size%.exe %OUTDIR%\stage3.txt|| exit /b 1
@@ -346,12 +351,12 @@ echo             debug mode
 
 :: run the cases
 
-cd %fdsroot%\Verification\scripts
+cd %fdsroot%\SMV\Verification\scripts
 call Run_SMV_Cases -debug -smvwui 1> %OUTDIR%\stage4a.txt 2>&1
 
 :: check the cases
 
-cd %fdsroot%\Verification\scripts
+cd %fdsroot%\SMV\Verification\scripts
 echo. > %OUTDIR%\stage_error.txt
 call Check_SMV_cases -smvwui
 
@@ -363,12 +368,12 @@ echo             release mode
 
 :: run the cases
 
-cd %fdsroot%\Verification\scripts
+cd %fdsroot%\SMV\Verification\scripts
 call Run_SMV_Cases -smvwui 1> %OUTDIR%\stage4b.txt 2>&1
 
 :: check the cases
 
-cd %fdsroot%\Verification\scripts
+cd %fdsroot%\SMV\Verification\scripts
 echo. > %OUTDIR%\stage_error.txt
 call Check_SMV_cases -smvwui
 
@@ -386,7 +391,7 @@ call :GET_TIME MAKEPICS_beg
 
 echo Stage 5 - Making Smokeview pictures
 
-cd %fdsroot%\Verification\scripts
+cd %fdsroot%\SMV\Verification\scripts
 call Make_SMV_Pictures -smvwui 1> %OUTDIR%\stage5.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage5.txt "Stage 5"
@@ -402,16 +407,16 @@ call :GET_TIME MAKEGUIDES_beg
 echo Stage 6 - Building Smokeview guides
 
 echo             Technical Reference
-call :build_guide SMV_Technical_Reference_Guide %fdsroot%\Manuals\SMV_Technical_Reference_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_Technical_Reference_Guide %fdsroot%\SMV\Manuals\SMV_Technical_Reference_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             Verification
-call :build_guide SMV_Verification_Guide %fdsroot%\Manuals\SMV_Verification_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_Verification_Guide %fdsroot%\SMV\Manuals\SMV_Verification_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             User
-call :build_guide SMV_User_Guide %fdsroot%\Manuals\SMV_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_User_Guide %fdsroot%\SMV\Manuals\SMV_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 :: echo             Geom Notes
-:: call :build_guide geom_notes %fdsroot%\Manuals\FDS_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+:: call :build_guide geom_notes %fdsroot%\SMV\Manuals\FDS_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg%
 call :GET_DURATION TOTALTIME %TIME_beg%

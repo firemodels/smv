@@ -27,7 +27,7 @@ set SCRIPT_DIR=%CD%
 cd %CD%\..
 set BASEDIR=%CD%
 
-cd %BASEDIR%\..\
+cd %BASEDIR%\..\..
 set SVNROOT=%CD%
 
 if %useinstalled% == 1 (
@@ -49,12 +49,11 @@ call :is_file_installed %SMOKEDIFF%|| exit /b 1
 call :is_file_installed %SMOKEZIP%|| exit /b 1
 call :is_file_installed %BACKGROUND%|| exit /b 1
 
-set vis="%SVNROOT%\Verification\Visualization"
-set wui="%SVNROOT%\Verification\Wui"
-set fdsug="%SVNROOT%\Manuals\FDS_User_Guide"
-set smvug="%SVNROOT%\Manuals\SMV_User_Guide"
-set smvvg="%SVNROOT%\Manuals\SMV_Verification_Guide"
-set summary="%SVNROOT%\Manuals\SMV_Summary"
+set vis="%SVNROOT%\SMV\Verification\Visualization"
+set wui="%SVNROOT%\SMV\Verification\Wui"
+set smvug="%SVNROOT%\SMV\Manuals\SMV_User_Guide"
+set smvvg="%SVNROOT%\SMV\Manuals\SMV_Verification_Guide"
+set summary="%SVNROOT%\SMV\Manuals\SMV_Summary"
 
 set QFDS=call "%SCRIPT_DIR%\runsmv.bat"
 set RUNCFAST=call "%SCRIPT_DIR%\runsmv.bat"
@@ -130,7 +129,7 @@ echo.
 echo converting plume5c particles to an isosurface
 
 if %runsmvcases% == 1 (
-  cd %SVNROOT%\Verification\Visualization
+  cd %SVNROOT%\SMV\Verification\Visualization
   %SMOKEZIP% -f -part2iso plumeiso
 
   echo.
@@ -145,7 +144,7 @@ if %runsmvcases% == 1 (
   echo.
   echo converting tree_one particles to an isosurface
 
-  cd %SVNROOT%\Verification\Wui
+  cd %SVNROOT%\SMV\Verification\Wui
   %SMOKEZIP% -f -part2iso pine_tree
 )
 
@@ -170,9 +169,6 @@ if "%runwuicases%" == "1" (
 )
 
 :: copy images to summary directory
-
-echo copying user guide script figures from %fdsug%\SCRIPT_FIGURES to %summary%\images
-copy %fdsug%\SCRIPT_FIGURES\*.png %summary%\images
 
 echo copying user guide script figures from %smvug%\SCRIPT_FIGURES to %summary%\images
 copy %smvug%\SCRIPT_FIGURES\*.png %summary%\images
