@@ -37,11 +37,11 @@ Title Bundling %type% Smokeview for %platform%
 :: windows
 
 if "%platform%" == "windows" (
-  call %svn_root%\smv\scripts\MAKE%type%distwingen 64
+  call %svn_root%\SMV\scripts\MAKE%type%distwingen 64
   goto eof
 )
 
-cd %svn_root%\smv\scripts
+cd %svn_root%\SMV\scripts
 set version=%smv_version%
 
 set scriptdir=%linux_svn_root%/SMV/scripts
