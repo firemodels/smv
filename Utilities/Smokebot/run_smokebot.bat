@@ -75,8 +75,8 @@ if exist %running% goto skip_running
     if %update% == 0 goto no_update
     echo getting latest smokebot
     cd %fdsrepo%
-    git fetch origin
-    git pull 1> Nul 2>&1
+    git remote update
+    git merge origin/master 1> Nul 2>&1
     if not %fdsbotdir% == %curdir% (
       copy %fdsbotdir%\smokebot.bat %curdir%
     )
