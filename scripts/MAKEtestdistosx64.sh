@@ -55,17 +55,17 @@ CPDIR ()
 }
 
 
-BACKGROUNDDIR=$REMOTESVNROOT/SMV/Build/background/intel_osx_64
-SMVDIR=$REMOTESVNROOT/SMV/Build/smokeview/intel_osx_64
-SMZDIR=$REMOTESVNROOT/SMV/Build/smokezip/intel_osx_64
-DEM2FDSDIR=$REMOTESVNROOT/SMV/Build/dem2fds/intel_osx_64
-SMDDIR=$REMOTESVNROOT/SMV/Build/smokediff/intel_osx_64
-WINDDIR=$REMOTESVNROOT/SMV/Build/wind2fds/intel_osx_64
-FORBUNDLE=$SVNROOT/SMV/for_bundle
+BACKGROUNDDIR=$REMOTESVNROOT/smv/Build/background/intel_osx_64
+SMVDIR=$REMOTESVNROOT/smv/Build/smokeview/intel_osx_64
+SMZDIR=$REMOTESVNROOT/smv/Build/smokezip/intel_osx_64
+DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_osx_64
+SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_osx_64
+WINDDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_osx_64
+FORBUNDLE=$SVNROOT/smv/for_bundle
 OSXDIR=smv_test\_$revision\_osx64
-UPDATER=$SVNROOT/FDS/Utilities/Scripts/make_updater.sh
+UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 
-cd $SVNROOT/SMV/uploads
+cd $SVNROOT/smv/uploads
 
 rm -rf $OSXDIR
 mkdir -p $OSXDIR

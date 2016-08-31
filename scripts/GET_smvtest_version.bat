@@ -7,7 +7,7 @@
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
-echo Create a file named %envfile% and use SMV/scripts/fds_smv_env_template.bat
+echo Create a file named %envfile% and use smv/scripts/fds_smv_env_template.bat
 echo as an example.
 echo.
 echo Aborting now...
@@ -19,7 +19,7 @@ goto:eof
 call %envfile%
 
 %svn_drive%
-cd %svn_root%\SMV\Build\intel_win_64
+cd %svn_root%\smv\Build\intel_win_64
 
 smokeview_win_test_64 -v
 

@@ -5,7 +5,7 @@
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
-echo Create a file named %envfile% and use SMV/scripts/fds_smv_env_template.bat
+echo Create a file named %envfile% and use smv/scripts/fds_smv_env_template.bat
 echo as an example.
 echo.
 echo Aborting now...
@@ -22,9 +22,9 @@ echo.
 echo ------------------------------------------------------------------------
 echo Cleaning source and build directories in the Windows repository %svn_root%
 %svn_drive%
-cd %svn_root%\SMV\Build
+cd %svn_root%\smv\Build
 git clean -dxf
-cd %svn_root%\SMV\source
+cd %svn_root%\smv\source
 git clean -dxf
 
 set scriptdir=%linux_svn_root%/Utilities/Scripts/

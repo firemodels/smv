@@ -37,11 +37,11 @@ if %useinstalled% == 1 (
   set SMOKEVIEW=smokeview
   set WIND2FDS=wind2fds
 ) else (
-  set BACKGROUND=%SVNROOT%\SMV\Build\background\intel_win%size%\background.exe
-  set SMOKEDIFF=%SVNROOT%\SMV\Build\smokediff\intel_win%size%\smokediff_win%size%.exe
-  set SMOKEVIEW=%SVNROOT%\SMV\Build\smokeview\intel_win%size%\smokeview_win%TEST%%size%%DEBUG%.exe -bindir %SVNROOT%\SMV\for_bundle
-  set  SMOKEZIP=%SVNROOT%\SMV\Build\smokezip\intel_win%size%\smokezip_win%size%.exe
-  set  WIND2FDS=%SVNROOT%\SMV\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
+  set BACKGROUND=%SVNROOT%\smv\Build\background\intel_win%size%\background.exe
+  set SMOKEDIFF=%SVNROOT%\smv\Build\smokediff\intel_win%size%\smokediff_win%size%.exe
+  set SMOKEVIEW=%SVNROOT%\smv\Build\smokeview\intel_win%size%\smokeview_win%TEST%%size%%DEBUG%.exe -bindir %SVNROOT%\smv\for_bundle
+  set  SMOKEZIP=%SVNROOT%\smv\Build\smokezip\intel_win%size%\smokezip_win%size%.exe
+  set  WIND2FDS=%SVNROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
 )
 
 call :is_file_installed %SMOKEVIEW%|| exit /b 1
@@ -49,15 +49,15 @@ call :is_file_installed %SMOKEDIFF%|| exit /b 1
 call :is_file_installed %SMOKEZIP%|| exit /b 1
 call :is_file_installed %BACKGROUND%|| exit /b 1
 
-set vis="%SVNROOT%\SMV\Verification\Visualization"
-set wui="%SVNROOT%\SMV\Verification\Wui"
-set smvug="%SVNROOT%\SMV\Manuals\SMV_User_Guide"
-set smvvg="%SVNROOT%\SMV\Manuals\SMV_Verification_Guide"
-set summary="%SVNROOT%\SMV\Manuals\SMV_Summary"
+set vis="%SVNROOT%\smv\Verification\Visualization"
+set wui="%SVNROOT%\smv\Verification\Wui"
+set smvug="%SVNROOT%\smv\Manuals\SMV_User_Guide"
+set smvvg="%SVNROOT%\smv\Manuals\SMV_Verification_Guide"
+set summary="%SVNROOT%\smv\Manuals\SMV_Summary"
 
 set QFDS=call "%SCRIPT_DIR%\runsmv.bat"
 set RUNCFAST=call "%SCRIPT_DIR%\runsmv.bat"
-set SH2BAT=%SVNROOT%\SMV\Build\sh2bat\intel_win_64\sh2bat
+set SH2BAT=%SVNROOT%\smv\Build\sh2bat\intel_win_64\sh2bat
 
 :: erase summary images
 
@@ -129,7 +129,7 @@ echo.
 echo converting plume5c particles to an isosurface
 
 if %runsmvcases% == 1 (
-  cd %SVNROOT%\SMV\Verification\Visualization
+  cd %SVNROOT%\smv\Verification\Visualization
   %SMOKEZIP% -f -part2iso plumeiso
 
   echo.
@@ -144,7 +144,7 @@ if %runsmvcases% == 1 (
   echo.
   echo converting tree_one particles to an isosurface
 
-  cd %SVNROOT%\SMV\Verification\Wui
+  cd %SVNROOT%\smv\Verification\Wui
   %SMOKEZIP% -f -part2iso pine_tree
 )
 

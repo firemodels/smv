@@ -7,7 +7,7 @@
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
-echo Create a file named %envfile% and use SMV/scripts/fds_smv_env_template.bat
+echo Create a file named %envfile% and use smv/scripts/fds_smv_env_template.bat
 echo as an example.
 echo.
 echo Aborting now...
@@ -25,11 +25,11 @@ set platform=%1
 
 set version=test_%smv_revision%
 set zipbase=smv_%version%_win%platform%
-set smvdir=%svn_root%\SMV\uploads\%zipbase%
-set smvscripts=%svn_root%\SMV\scripts
-set sh2bat=%svn_root%\SMV\Build\sh2bat\intel_win_64
+set smvdir=%svn_root%\smv\uploads\%zipbase%
+set smvscripts=%svn_root%\smv\scripts
+set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
 
-cd %svn_root%\SMV\for_bundle
+cd %svn_root%\smv\for_bundle
 
 echo.
 echo --- filling distribution directory ---
@@ -46,17 +46,17 @@ copy *.po %smvdir%\.>Nul
 
 CALL :COPY volrender.ssf %smvdir%\volrender.ssf
 
-CALL :COPY ..\..\SMV\Build\smokediff\intel_win_%platform%\smokediff_win_%platform%.exe %smvdir%\smokediff.exe
+CALL :COPY ..\..\smv\Build\smokediff\intel_win_%platform%\smokediff_win_%platform%.exe %smvdir%\smokediff.exe
 
-CALL :COPY  ..\..\SMV\Build\smokezip\intel_win_%platform%\smokezip_win_%platform%.exe %smvdir%\smokezip.exe
+CALL :COPY  ..\..\smv\Build\smokezip\intel_win_%platform%\smokezip_win_%platform%.exe %smvdir%\smokezip.exe
 
-CALL :COPY  ..\..\SMV\Build\dem2fds\intel_win_%platform%\dem2fds_win_%platform%.exe %smvdir%\dem2fds.exe
+CALL :COPY  ..\..\smv\Build\dem2fds\intel_win_%platform%\dem2fds_win_%platform%.exe %smvdir%\dem2fds.exe
 
-CALL :COPY  ..\..\SMV\Build\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe %smvdir%\wind2fds.exe
+CALL :COPY  ..\..\smv\Build\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe %smvdir%\wind2fds.exe
 
-CALL :COPY  ..\..\SMV\Build\background\intel_win_64\background.exe %smvdir%\background.exe
+CALL :COPY  ..\..\smv\Build\background\intel_win_64\background.exe %smvdir%\background.exe
 
-CALL :COPY  ..\..\SMV\Build\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
+CALL :COPY  ..\..\smv\Build\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
 
 CALL :COPY objects.svo %smvdir%\.
 

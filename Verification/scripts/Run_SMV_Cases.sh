@@ -168,15 +168,15 @@ if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
   export BACKGROUND=background
 else
-  export WIND2FDS=$SVNROOT/SMV/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  export BACKGROUND=$SVNROOT/SMV/Build/background/${COMPILER}_$PLATFORM/background
+  export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
+  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
 fi
-export GEOM=$SVNROOT/SMV/source/geomtest/${COMPILER}_$PLATFORM/geomtest
-export FDSEXE=$SVNROOT/FDS/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
+export GEOM=$SVNROOT/smv/source/geomtest/${COMPILER}_$PLATFORM/geomtest
+export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$SVNROOT/FDS/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
+export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/FDS/Utilities/Scripts/qfds.sh $RUNOPTION"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
 
 # Set queue to submit cases to
 
@@ -192,9 +192,9 @@ export BASEDIR=`pwd`
 # Remove output files (unless stop option is used)
 if [[ ! $stop_cases ]] ; then
   echo "Removing FDS/CFAST output files"
-  export RUNCFAST="$SVNROOT/SMV/Verification/scripts/Remove_CFAST_Files.sh"
-  export QFDS="$SVNROOT/FDS/Verification/scripts/Remove_FDS_Files.sh"
-  export RUNTFDS="$SVNROOT/FDS/Verification/scripts/Remove_FDS_Files.sh"
+  export RUNCFAST="$SVNROOT/smv/Verification/scripts/Remove_CFAST_Files.sh"
+  export QFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
+  export RUNTFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
   scripts/SMV_Cases.sh
   scripts/GEOM_Cases.sh
   scripts/WUI_Cases.sh
@@ -207,13 +207,13 @@ export  RUNCFAST="$QFDSSH -c -e $CFAST $QUEUE $STOPFDS $JOBPREFIX"
 export      QFDS="$QFDSSH -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
 export   RUNTFDS="$QFDSSH -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
 
-echo "" | $FDSEXE 2> $SVNROOT/SMV/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
 if [[ ! $stop_cases ]] ; then
   if [ "$FDS_DEBUG" == "0" ] ; then
     if [ "$RUN_WUI" == "1" ] ; then
       is_file_installed $WIND2FDS
-      cd $SVNROOT/SMV/Verification/WUI
+      cd $SVNROOT/smv/Verification/WUI
       echo Converting wind data
       $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv
     fi
@@ -221,15 +221,15 @@ if [[ ! $stop_cases ]] ; then
 fi
 
 if [ "$RUN_SMV" == "1" ] ; then
-  cd $SVNROOT/SMV/Verification
+  cd $SVNROOT/smv/Verification
   scripts/SMV_Cases.sh
 fi
 if [ "$RUN_GEOM" == "1" ] ; then
-  cd $SVNROOT/SMV/Verification
+  cd $SVNROOT/smv/Verification
   scripts/GEOM_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
-  cd $SVNROOT/SMV/Verification
+  cd $SVNROOT/smv/Verification
   scripts/WUI_Cases.sh
 fi
 if [ "$WAIT" == "1" ] ; then
