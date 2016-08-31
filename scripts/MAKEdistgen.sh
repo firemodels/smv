@@ -58,17 +58,17 @@ CPDIR ()
 }
 
 platformsize=${platform}_$size
-BACKGROUNDDIR=$SVNROOT/SMV/Build/background/intel_${platform}_64
-SMOKEVIEWDIR=$SVNROOT/SMV/Build/smokeview/intel_$platformsize
-SMOKEZIPDIR=$SVNROOT/SMV/Build/smokezip/intel_$platformsize
-DEM2FDSDIR=$SVNROOT/SMV/Build/dem2fds/intel_$platformsize
-SMOKEDIFFDIR=$SVNROOT/SMV/Build/smokediff/intel_$platformsize
-WINDDIR=$SVNROOT/SMV/Build/wind2fds/intel_$platformsize
-FORBUNDLE=~/$SVNROOT/SMV/for_bundle
+BACKGROUNDDIR=$SVNROOT/smv/Build/background/intel_${platform}_64
+SMOKEVIEWDIR=$SVNROOT/smv/Build/smokeview/intel_$platformsize
+SMOKEZIPDIR=$SVNROOT/smv/Build/smokezip/intel_$platformsize
+DEM2FDSDIR=$SVNROOT/smv/Build/dem2fds/intel_$platformsize
+SMOKEDIFFDIR=$SVNROOT/smv/Build/smokediff/intel_$platformsize
+WINDDIR=$SVNROOT/smv/Build/wind2fds/intel_$platformsize
+FORBUNDLE=~/$SVNROOT/smv/for_bundle
 DIR=smv_${version}_$platform$size
-UPDATER=~/$SVNROOT/FDS/Utilities/Scripts/make_updater.sh
+UPDATER=~/$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 
-cd ~/$SVNROOT/SMV/uploads
+cd ~/$SVNROOT/smv/uploads
 
 rm -rf $DIR
 mkdir -p $DIR

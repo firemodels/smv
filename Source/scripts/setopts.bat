@@ -29,5 +29,5 @@ GOTO Ienvexist
 :MSenvexist
 
 IF "%COMPILER%" NEQ "icl" GOTO Ienvexist
-call ..\..\..\FDS\Utilities\Scripts\setup_intel_compilers.bat
+call ..\..\..\fds\Utilities\Scripts\setup_intel_compilers.bat
 :Ienvexist

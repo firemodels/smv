@@ -9,7 +9,7 @@ set buildtype=%2
 set envfile="%userprofile%"\fds_smv_env.bat
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
-echo Create a file named %envfile% and use SMV/scripts/fds_smv_env_template.bat
+echo Create a file named %envfile% and use smv/scripts/fds_smv_env_template.bat
 echo as an example.
 echo.
 echo Aborting now...
@@ -37,15 +37,15 @@ Title Bundling %type% Smokeview for %platform%
 :: windows
 
 if "%platform%" == "windows" (
-  call %svn_root%\SMV\scripts\MAKE%type%distwingen 64
+  call %svn_root%\smv\scripts\MAKE%type%distwingen 64
   goto eof
 )
 
-cd %svn_root%\SMV\scripts
+cd %svn_root%\smv\scripts
 set version=%smv_version%
 
-set scriptdir=%linux_svn_root%/SMV/scripts
-set bundledir=%linux_svn_root%/SMV/uploads
+set scriptdir=%linux_svn_root%/smv/scripts
+set bundledir=%linux_svn_root%/smv/uploads
 
 :: linux
 

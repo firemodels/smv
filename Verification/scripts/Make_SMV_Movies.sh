@@ -15,18 +15,18 @@ else
 fi
 
 CURDIR=`pwd`
-cd ..
+cd ../..
 GITROOT=`pwd`
 cd $CURDIR
 
-export SMV=$GITROOT/SMV/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$TEST$size
-FDSEXE=$GITROOT/FDS_Compilation/mpi_intel$PLATFORM$size$IB/fds_mpi_intel$PLATFORM$size$IB
-RUNSMV="$GITROOT/Utilities/Scripts/runsmv.sh"
-export SMVBINDIR="-bindir $GITROOT/SMV/for_bundle"
-MAKEMOVIE=$GITROOT/Utilities/Scripts/make_movie.sh
-STARTX=$GITROOT/Utilities/Scripts/startXserver.sh
-STOPX=$GITROOT/Utilities/Scripts/stopXserver.sh
-QFDS=$GITROOT/Utilities/Scripts/qfds.sh
+export SMV=$GITROOT/smv/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$TEST$size
+FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size$IB/fds_mpi_intel$PLATFORM$size$IB
+RUNSMV="$GITROOT/fds/Utilities/Scripts/runsmv.sh"
+export SMVBINDIR="-bindir $GITROOT/smv/for_bundle"
+MAKEMOVIE=$GITROOT/fds/Utilities/Scripts/make_movie.sh
+STARTX=$GITROOT/fds/Utilities/Scripts/startXserver.sh
+STOPX=$GITROOT/fds/Utilities/Scripts/stopXserver.sh
+QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
 
 export BASEDIR=`pwd`
 
@@ -37,10 +37,10 @@ fi
 
 underscore=_
 mov=.m1v
-VDIR=$GITROOT/Verification
-INDIR=$GITROOT/Verification/Visualization/frames
-WUIINDIR=$GITROOT/Verification/WUI/frames
-OUTDIR=$GITROOT/Manuals/SMV_Summary/movies
+VDIR=$GITROOT/smv/Verification
+INDIR=$GITROOT/smv/Verification/Visualization/frames
+WUIINDIR=$GITROOT/smv/Verification/WUI/frames
+OUTDIR=$GITROOT/smv/Manuals/SMV_Summary/movies
 
 rm -f $INDIR/*.png
 rm -f $WUIINDIR/*.png

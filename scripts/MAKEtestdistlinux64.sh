@@ -53,17 +53,17 @@ CPDIR ()
 }
 
 
-BACKGROUNDDIR=$SVNROOT/SMV/Build/background/intel_linux_64
-SMVDIR=$SVNROOT/SMV/Build/smokeview/intel_linux_64
-SMZDIR=$SVNROOT/SMV/Build/smokezip/intel_linux_64
-DEM2FDSDIR=$SVNROOT/SMV/Build/dem2fds/intel_linux_64
-SMDDIR=$SVNROOT/SMV/Build/smokediff/intel_linux_64
-WINDDIR=$SVNROOT/SMV/Build/wind2fds/intel_linux_64
-FORBUNDLE=$SVNROOT/SMV/for_bundle
+BACKGROUNDDIR=$SVNROOT/smv/Build/background/intel_linux_64
+SMVDIR=$SVNROOT/smv/Build/smokeview/intel_linux_64
+SMZDIR=$SVNROOT/smv/Build/smokezip/intel_linux_64
+DEM2FDSDIR=$SVNROOT/smv/Build/dem2fds/intel_linux_64
+SMDDIR=$SVNROOT/smv/Build/smokediff/intel_linux_64
+WINDDIR=$SVNROOT/smv/Build/wind2fds/intel_linux_64
+FORBUNDLE=$SVNROOT/smv/for_bundle
 LINUXDIR=smv_test\_$revision\_linux64
-UPDATER=$SVNROOT/FDS/Utilities/Scripts/make_updater.sh
+UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 
-cd $SVNROOT/SMV/uploads
+cd $SVNROOT/smv/uploads
 
 echo ""
 echo "--- copying files ---"

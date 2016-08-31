@@ -5,7 +5,7 @@ cd ../..
 reporoot=`pwd`
 dir1=$reporoot/Utilities/Scripts
 dir2=$reporoot/FDS_Compilation/Scripts
-dir3=$reporoot/SMV/scripts
+dir3=$reporoot/smv/scripts
 dir4=$reporoot/Verification/scripts
 dir5=$reporoot/Utilities/Firebot
 h1=$dir1/../build_bundle.html
