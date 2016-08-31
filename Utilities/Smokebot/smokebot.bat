@@ -179,7 +179,7 @@ if %clean% == 0 goto skip_clean1
 if %update% == 0 goto skip_update1
   echo             updating %cfastbasename% repository
   cd %cfastroot%
-  git fetch origin
+  git remote update
   git merge origin/master  1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
 
@@ -201,12 +201,12 @@ if %clean% == 0 goto skip_clean2
 if %update% == 0 goto skip_update2
   cd %fdsroot%\fds
   echo             updating %fdsbasename%\fds repository
-  git fetch origin
+  git remote update
   git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
 
   cd %fdsroot%\smv
   echo             updating %fdsbasename%\smv repository
-  git fetch origin
+  git remote update
   git merge origin/master 1>> %OUTDIR%\stage0.txt 2>&1
 :skip_update2
 

@@ -184,7 +184,7 @@ fi
 
 if [[ "$RUNSMOKEBOT" == "1" ]]; then
   if [[ "$UPDATEREPO" == "-u" ]]; then
-     cd $FDSREPO/SMV
+     cd $FDSREPO/smv
      git remote update &> /dev/null
      git checkout $BRANCH &> /dev/null
      git merge origin/$BRANCH &> /dev/null
