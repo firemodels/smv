@@ -8,7 +8,7 @@ set runsmvcases=1
 set SCRIPT_DIR=%CD%
 cd ..
 set BASEDIR="%CD%"
-cd ..
+cd ..\..
 set SVNROOT="%CD%"
 cd %BASEDIR%
 
