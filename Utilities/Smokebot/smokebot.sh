@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Smokebot
 # This script is derived from Kris Overholt's firebot script. 
@@ -299,12 +299,12 @@ run_auto()
   if [[ "$UPDATE" == "1" ]] ; then
     echo Update the branch $BRANCH in repo SMV.
     cd $fdsrepo/smv
-    git remote update
+    git fetch origin
     git merge origin/$BRANCH
     
     echo Update the branch $BRANCH in repo FDS
     cd $fdsrepo/fds
-    git remote update
+    git fetch origin
     git merge origin/$BRANCH
   fi
 
@@ -514,7 +514,7 @@ update_cfast()
           exit
         fi
         echo "Updating cfast repo:" >> $OUTPUT_DIR/stage0a
-        git remote update >> $OUTPUT_DIR/stage0a 2>&1
+        git fetch origin >> $OUTPUT_DIR/stage0a 2>&1
         git merge origin/master >> $OUTPUT_DIR/stage0a 2>&1
         updateclean="1"
       fi
@@ -635,11 +635,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
@@ -661,11 +658,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
