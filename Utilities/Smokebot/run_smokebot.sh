@@ -2,7 +2,7 @@
 if [ ! -d ~/.fdssmvgit ] ; then
   mkdir ~/.fdssmvgit
 fi
-running=~/.fdssmvgit/bot_running
+smokebot_pid=~/.fdssmvgit/smokebot_pid
 
 CURDIR=`pwd`
 FDSREPO=~/FDS-SMVgitclean
@@ -14,11 +14,12 @@ if [ -e .fds_git ]; then
   FDSREPO=`pwd`
   cd $CURDIR
 else
-  echo "***error: smokebot not running in the SMV repo"
+  echo "***error: smokebot not unning in the SMV repo"
   exit
 fi
 CFASTREPO=~/cfastgitclean
 
+KILL_SMOKEBOT=
 BRANCH=master
 botscript=smokebot.sh
 RUNAUTO=
@@ -62,6 +63,7 @@ echo "-f - force smokebot run"
 echo "-h - display this message"
 echo "-I compiler - intel or gnu [default: $COMPILER]"
 if [ "$EMAIL" != "" ]; then
+echo "-k - kill smokebot if it is running"
 echo "-m email_address - [default: $EMAIL]"
 else
 echo "-m email_address"
@@ -89,7 +91,20 @@ fi
 exit
 }
 
-while getopts 'aAb:C:cd:fhI:Lm:Mq:r:S:tuUvw:W:' OPTION
+LIST_DESCENDANTS ()
+{
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children
+  do
+    LIST_DESCENDANTS "$pid"
+  done
+
+  echo "$children"
+}
+
+
+while getopts 'aAb:C:cd:fhI:kLm:Mq:r:S:tuUvw:W:' OPTION
 do
 case $OPTION  in
   a)
@@ -116,6 +131,9 @@ case $OPTION  in
   h)
    usage
    exit
+   ;;
+  k)
+   KILL_SMOKEBOT=1
    ;;
   L)
    SMOKEBOT_LITE="-L"
@@ -166,9 +184,24 @@ fi
 
 COMPILER="-I $COMPILER"
 
+if [ "$KILL_SMOKEBOT" == "1" ]; then
+  if [ -e $smokebot_pid ]; then
+    PID=`head -1 $smokebot_pid`
+    kill -9 $(LIST_DESCENDANTS $PID)
+    kill -9 $PID
+    ../../Verification/scripts/Run_SMV_Cases.sh -s  >& /dev/null
+    echo smokebot process $PID killed
+    if [ -e $smokebot_pid ]; then
+      rm $smokebot_pid
+    fi
+  else
+    echo smokebotbot is not running, cannot be killed.
+  fi
+  exit
+fi
 if [[ "$RUNSMOKEBOT" == "1" ]]; then
   if [ "$FORCE" == "" ]; then
-    if [ -e $running ] ; then
+    if [ -e $smokebot_pid ] ; then
       echo Smokebot or firebot are already running.
       echo "Re-run using the -f option if this is not the case."
       exit
@@ -185,7 +218,7 @@ fi
 if [[ "$RUNSMOKEBOT" == "1" ]]; then
   if [[ "$UPDATEREPO" == "-u" ]]; then
      cd $FDSREPO/smv
-     git remote update &> /dev/null
+     git fetch origin &> /dev/null
      git checkout $BRANCH &> /dev/null
      git merge origin/$BRANCH &> /dev/null
      cd Utilities/Smokebot
@@ -203,9 +236,9 @@ FDSREPO="-r $FDSREPO"
 BRANCH="-b $BRANCH"
 
 if [[ "$RUNSMOKEBOT" == "1" ]]; then
-  touch $running
+  touch $smokebot_pid
   ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SSH $SMOKEBOT_LITE $BRANCH $CFASTREPO $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
-  rm $running
+  rm $smokebot_pid
 else
   echo ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SMOKEBOT_LITE $SSH $BRANCH $CFASTREPO $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
 fi

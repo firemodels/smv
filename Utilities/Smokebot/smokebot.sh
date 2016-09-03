@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Smokebot
 # This script is derived from Kris Overholt's firebot script. 
@@ -42,8 +42,9 @@ SSH=
 MAILTO=
 UPLOADRESULTS=
 COMPILER=intel
+PID_FILE=~/.fdssmvgit/smokebot_pid
 
-while getopts 'aAb:C:cI:Lm:Mo:q:r:sS:tuUw:W:' OPTION
+while getopts 'aAb:C:cI:Lm:Mo:p:q:r:sS:tuUw:W:' OPTION
 do
 case $OPTION in
   a)
@@ -78,6 +79,9 @@ case $OPTION in
    OPENMP=openmp_
    RUN_OPENMP="-o $nthreads"
    ;;
+  p)
+   PID_FILE="$OPTARG"
+   ;;
   q)
    SMOKEBOT_QUEUE="$OPTARG"
    ;;
@@ -109,6 +113,8 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+
+echo $$ > $PID_FILE
 
 # if one of WEB_URL or web_DIR exist then both should exist
 # if web_DIR exists then it must be writable
@@ -299,12 +305,12 @@ run_auto()
   if [[ "$UPDATE" == "1" ]] ; then
     echo Update the branch $BRANCH in repo SMV.
     cd $fdsrepo/smv
-    git remote update
+    git fetch origin
     git merge origin/$BRANCH
     
     echo Update the branch $BRANCH in repo FDS
     cd $fdsrepo/fds
-    git remote update
+    git fetch origin
     git merge origin/$BRANCH
   fi
 
@@ -514,7 +520,7 @@ update_cfast()
           exit
         fi
         echo "Updating cfast repo:" >> $OUTPUT_DIR/stage0a
-        git remote update >> $OUTPUT_DIR/stage0a 2>&1
+        git fetch origin >> $OUTPUT_DIR/stage0a 2>&1
         git merge origin/master >> $OUTPUT_DIR/stage0a 2>&1
         updateclean="1"
       fi
@@ -635,11 +641,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
@@ -661,11 +664,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     git remote update >> $OUTPUT_DIR/stage0b 2>&1
+     git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
-     echo "Updating submodules." >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git remote update >> $OUTPUT_DIR/stage0b 2>&1
-     git submodule foreach git merge origin/master  >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
