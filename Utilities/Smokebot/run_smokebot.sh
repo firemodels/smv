@@ -191,7 +191,9 @@ if [ "$KILL_SMOKEBOT" == "1" ]; then
     kill -9 $PID
     ../../Verification/scripts/Run_SMV_Cases.sh -s  >& /dev/null
     echo smokebot process $PID killed
+    echo before remove
     rm $smokebot_pid
+    echo after remove
   else
     echo smokebotbot is not running, cannot be killed.
   fi
