@@ -42,8 +42,9 @@ SSH=
 MAILTO=
 UPLOADRESULTS=
 COMPILER=intel
+PID_FILE=~/.fdssmvgit/smokebot_pid
 
-while getopts 'aAb:C:cI:Lm:Mo:q:r:sS:tuUw:W:' OPTION
+while getopts 'aAb:C:cI:Lm:Mo:p:q:r:sS:tuUw:W:' OPTION
 do
 case $OPTION in
   a)
@@ -78,6 +79,9 @@ case $OPTION in
    OPENMP=openmp_
    RUN_OPENMP="-o $nthreads"
    ;;
+  p)
+   PID_FILE="$OPTARG"
+   ;;
   q)
    SMOKEBOT_QUEUE="$OPTARG"
    ;;
@@ -109,6 +113,8 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+
+echo $$ > $PID_FILE
 
 # if one of WEB_URL or web_DIR exist then both should exist
 # if web_DIR exists then it must be writable
