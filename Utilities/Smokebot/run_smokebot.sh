@@ -91,6 +91,19 @@ fi
 exit
 }
 
+LIST_DESCENDANTS ()
+{
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children
+  do
+    LIST_DESCENDANTS "$pid"
+  done
+
+  echo "$children"
+}
+
+
 while getopts 'aAb:C:cd:fhI:kLm:Mq:r:S:tuUvw:W:' OPTION
 do
 case $OPTION  in
@@ -174,7 +187,9 @@ COMPILER="-I $COMPILER"
 if [ "$KILL_SMOKEBOT" == "1" ]; then
   if [ -e $smokebot_pid ]]; then
     PID=`head -1 $smokebot_pid`
+    kill -9 $(LIST_DESCENDANTS $PID)
     kill -9 $PID
+    ../../Verification/scripts/Run_SMV_Cases.sh -s
     echo smokebot process $PID killed
     rm $smokebot_pid
   else
