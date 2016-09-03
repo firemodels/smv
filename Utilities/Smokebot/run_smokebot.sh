@@ -189,7 +189,7 @@ if [ "$KILL_SMOKEBOT" == "1" ]; then
     PID=`head -1 $smokebot_pid`
     kill -9 $(LIST_DESCENDANTS $PID)
     kill -9 $PID
-    ../../Verification/scripts/Run_SMV_Cases.sh -s
+    ../../Verification/scripts/Run_SMV_Cases.sh -s  >& /dev/null
     echo smokebot process $PID killed
     rm $smokebot_pid
   else
