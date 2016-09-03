@@ -185,7 +185,7 @@ fi
 COMPILER="-I $COMPILER"
 
 if [ "$KILL_SMOKEBOT" == "1" ]; then
-  if [ -e $smokebot_pid ]]; then
+  if [ -e $smokebot_pid ]; then
     PID=`head -1 $smokebot_pid`
     kill -9 $(LIST_DESCENDANTS $PID)
     kill -9 $PID
