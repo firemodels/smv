@@ -210,7 +210,7 @@ UploadGuides=$fdsrepo/smv/Utilities/Smokebot/smv_guides2GD.sh
 THIS_FDS_AUTHOR=
 THIS_FDS_FAILED=0
 THIS_CFAST_FAILED=0
-FDS_STATUS_FILE=$fdsrepo/FDS_status
+FDS_STATUS_FILE=$fdsrepo/smv/FDS_status
 LAST_FDS_FAILED=0
 if [ -e $FDS_STATUS_FILE ] ; then
   LAST_FDS_FAILED=`cat $FDS_STATUS_FILE`
@@ -1521,7 +1521,7 @@ fi
 # upload guides to a google drive directory
       if [ "$UPLOADRESULTS" == "1" ];then
         cd $SMOKEBOT_RUNDIR
-        $UploadGuides $NEWGUIDE_DIR $fdsrepo/Manuals &> /dev/null
+        $UploadGuides $NEWGUIDE_DIR $fdsrepo/smv/Manuals &> /dev/null
       fi
 
       # Send success message with links to nightly manuals
@@ -1652,11 +1652,11 @@ if [ "$SMOKEBOT_LITE" == "" ]; then
 #   echo "   geometry notes"
 #  make_guide geom_notes $fdsrepo/Manuals/FDS_User_Guide 'geometry notes'
      echo "   user"
-    make_guide SMV_User_Guide $fdsrepo/Manuals/SMV_User_Guide 'SMV User Guide'
+    make_guide SMV_User_Guide $fdsrepo/smv/Manuals/SMV_User_Guide 'SMV User Guide'
      echo "   technical"
-    make_guide SMV_Technical_Reference_Guide $fdsrepo/Manuals/SMV_Technical_Reference_Guide 'SMV Technical Reference Guide'
+    make_guide SMV_Technical_Reference_Guide $fdsrepo/smv/Manuals/SMV_Technical_Reference_Guide 'SMV Technical Reference Guide'
      echo "   verification"
-    make_guide SMV_Verification_Guide $fdsrepo/Manuals/SMV_Verification_Guide 'SMV Verification Guide'
+    make_guide SMV_Verification_Guide $fdsrepo/smv/Manuals/SMV_Verification_Guide 'SMV Verification Guide'
   else
     echo Errors found, not building guides
   fi
