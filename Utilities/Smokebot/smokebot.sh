@@ -868,6 +868,7 @@ check_compile_fds_mpi()
 
 compile_smv_utilities()
 {
+   echo "Building"
    echo "   smokeview utilities"
    echo "" > $OUTPUT_DIR/stage2a
    if [ "$haveCC" == "1" ] ; then
@@ -1014,12 +1015,13 @@ run_verification_cases_release()
    #  ======================
 
    # Remove all .stop and .err files from Verification directories (recursively)
+   echo "Verification cases"
    if [ "$CLEANREPO" == "1" ]; then
-     echo "Cleaning verification cases"
+     echo "   cleaning"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
    fi
-   echo "Running verification cases (release mode)"
+   echo "   running (release mode)"
    # Start running all SMV verification cases
    cd $fdsrepo/smv/Verification/scripts
    echo 'Running SMV verification cases:' >> $OUTPUT_DIR/stage3b 2>&1
