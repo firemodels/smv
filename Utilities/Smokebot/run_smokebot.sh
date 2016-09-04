@@ -14,10 +14,9 @@ if [ -e .fds_git ]; then
   FDSREPO=`pwd`
   cd $CURDIR
 else
-  echo "***error: smokebot not unning in the SMV repo"
+  echo "***error: smokebot not running in the SMV repo"
   exit
 fi
-CFASTREPO=~/cfastgitclean
 
 KILL_SMOKEBOT=
 BRANCH=master
@@ -58,7 +57,6 @@ echo "Options:"
 echo "-a - run automatically if FDS or smokeview source has changed"
 echo "-b - branch_name - run smokebot using the branch branch_name [default: $BRANCH]"
 echo "-c - clean repo"
-echo "-C - cfast repository location [default: $CFASTREPO]"
 echo "-f - force smokebot run"
 echo "-h - display this message"
 echo "-I compiler - intel or gnu [default: $COMPILER]"
@@ -104,7 +102,7 @@ LIST_DESCENDANTS ()
 }
 
 
-while getopts 'aAb:C:cd:fhI:kLm:Mq:r:S:tuUvw:W:' OPTION
+while getopts 'aAb:cd:fhI:kLm:Mq:r:S:tuUvw:W:' OPTION
 do
 case $OPTION  in
   a)
@@ -118,9 +116,6 @@ case $OPTION  in
    ;;
   c)
    CLEANREPO=-c
-   ;;
-  C)
-   CFASTREPO="$OPTARG"
    ;;
   I)
    COMPILER="$OPTARG"
@@ -233,14 +228,13 @@ if [[ "$RUNSMOKEBOT" == "1" ]]; then
   fi
 fi
 
-CFASTREPO="-C $CFASTREPO"
 FDSREPO="-r $FDSREPO"
 BRANCH="-b $BRANCH"
 
 if [[ "$RUNSMOKEBOT" == "1" ]]; then
   touch $smokebot_pid
-  ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SSH $SMOKEBOT_LITE $BRANCH $CFASTREPO $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
+  ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SSH $SMOKEBOT_LITE $BRANCH $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
   rm $smokebot_pid
 else
-  echo ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SMOKEBOT_LITE $SSH $BRANCH $CFASTREPO $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
+  echo ./$botscript $TESTFLAG $RUNAUTO $COMPILER $SMOKEBOT_LITE $SSH $BRANCH $FDSREPO $CLEANREPO $web_DIR $WEB_URL $UPDATEREPO $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
 fi
