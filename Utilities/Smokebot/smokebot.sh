@@ -1,4 +1,4 @@
-!/bin/bash
+!#/bin/bash
 
 # Smokebot
 # This script is derived from Kris Overholt's firebot script. 
@@ -183,7 +183,7 @@ echo ""
 echo "Preliminaries:"
 echo "  running in: $SMOKEBOT_RUNDIR"
 echo "FDS-SMV repo: $fdsrepo"
-echo "  cfast repo: $fdsrepo/cfast
+echo "  cfast repo: $fdsrepo/cfast"
 if [ ! "$web_DIR" == "" ]; then
 echo "     web dir: $web_DIR"
 fi
@@ -774,14 +774,13 @@ run_verification_cases_debug()
    # Submit SMV verification cases and wait for them to start
    echo 'Running SMV verification cases:' >> $OUTPUT_DIR/stage3a 2>&1
    ./Run_SMV_Cases.sh -c $cfastrepo -I $COMPILER $USEINSTALL2 -m 2 -d -q $SMOKEBOT_QUEUE -j $JOBPREFIX >> $OUTPUT_DIR/stage3a 2>&1
-
-   # Wait for SMV verification cases to end
-   wait_verification_cases_debug_end
-
 }
 
 check_verification_cases_debug()
 {
+   # Wait for SMV verification cases to end
+   wait_verification_cases_debug_end
+
    # Scan and report any errors in FDS verification cases
    cd $fdsrepo/smv/Verification
 
@@ -1016,13 +1015,13 @@ run_verification_cases_release()
    cd $fdsrepo/smv/Verification/scripts
    echo 'Running SMV verification cases:' >> $OUTPUT_DIR/stage3b 2>&1
    ./Run_SMV_Cases.sh -c $cfastrepo -I $COMPILER $USEINSTALL2 $RUN_OPENMP -q $SMOKEBOT_QUEUE -j $JOBPREFIX >> $OUTPUT_DIR/stage3b 2>&1
-
-   # Wait for all verification cases to end
-   wait_verification_cases_release_end
 }
 
 check_verification_cases_release()
 {
+   # Wait for all verification cases to end
+   wait_verification_cases_release_end
+
    # Scan and report any errors in FDS verification cases
    cd $fdsrepo/smv/Verification
 
@@ -1567,11 +1566,24 @@ compile_cfast
 compile_fds_mpi_db
 check_compile_fds_mpi_db
 
+if [[ $stage1b_fdsdb_success && "$RUNDEBUG" == "1" ]] ; then
+   run_verification_cases_debug
+fi
+
 if [ "$SMOKEBOT_LITE" == "" ]; then
 if [[ $stage1b_fdsdb_success ]] ; then
    compile_fds_mpi
    check_compile_fds_mpi
 fi
+fi
+if [[ $stage1b_fdsdb_success && "$RUNDEBUG" == "1" ]] ; then
+   check_verification_cases_debug
+fi
+RUNCASES_beg=`GET_TIME`
+if [ "$SMOKEBOT_LITE" == "" ]; then
+  if [[ $stage1c_fdsrel_success ]] ; then
+     run_verification_cases_release
+  fi
 fi
 
 ### Stage 2 build smokeview ###
@@ -1591,15 +1603,9 @@ DIFF_BUILDSOFTWARE=`GET_DURATION $BUILDSOFTWARE_beg $BUILDSOFTWARE_end`
 echo "Build Software: $DIFF_BUILDSOFTWARE" >> $STAGE_STATUS
 
 ### Stage 3 run verification cases ###
-RUNCASES_beg=`GET_TIME`
-if [[ $stage1b_fdsdb_success && "$RUNDEBUG" == "1" ]] ; then
-   run_verification_cases_debug
-   check_verification_cases_debug
-fi
 
 if [ "$SMOKEBOT_LITE" == "" ]; then
   if [[ $stage1c_fdsrel_success ]] ; then
-     run_verification_cases_release
      check_verification_cases_release
   fi
 fi
