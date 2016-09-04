@@ -577,19 +577,20 @@ clean_FDS_repo()
           echo "smokebot without the -c (clean) option"
           exit
         fi
-        echo cleaning smv/Verification
+        echo
+        echo Cleaning smv/Verification
         clean_repo $fdsrepo/smv/Verification
 
-        echo cleaning smv/Source
+        echo Cleaning smv/Source
         clean_repo $fdsrepo/smv/Source
 
-        echo cleaning fds/Source
+        echo Cleaning fds/Source
         clean_repo $fdsrepo/fds/Source
 
-        echo cleaning fds/Build
+        echo Cleaning fds/Build
         clean_repo $fdsrepo/fds/Build
 
-        echo cleaning smv/Manuals
+        echo Cleaning smv/Manuals
         clean_repo $fdsrepo/smv/Manuals
         updateclean="1"
       fi
@@ -644,7 +645,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     echo updating smv repo
+     echo
+     echo Updating smv repo
      git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
