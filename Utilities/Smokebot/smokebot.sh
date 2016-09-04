@@ -648,7 +648,7 @@ do_FDS_checkout()
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
      echo Updating
-     echo    smv repo
+     echo "    smv repo"
      git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
