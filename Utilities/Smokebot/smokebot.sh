@@ -183,7 +183,7 @@ echo ""
 echo "Preliminaries:"
 echo "  running in: $SMOKEBOT_RUNDIR"
 echo "FDS-SMV repo: $fdsrepo"
-echo "  cfast repo: $fdsrepo/cfast
+echo "  cfast repo: $fdsrepo/cfast"
 if [ ! "$web_DIR" == "" ]; then
 echo "     web dir: $web_DIR"
 fi
