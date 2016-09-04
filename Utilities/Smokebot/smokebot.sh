@@ -539,7 +539,8 @@ compile_cfast()
 
     # Build CFAST
     echo
-    echo "Building release cfast"
+    echo "Building"
+    echo "   release cfast"
     cd $cfastrepo/Build/CFAST/${COMPILER}_${platform}${size}
     rm -f cfast7_${platform}${size}
     make --makefile ../makefile clean &> /dev/null
@@ -578,20 +579,20 @@ clean_FDS_repo()
           echo "smokebot without the -c (clean) option"
           exit
         fi
-        echo
-        echo Cleaning smv/Verification
+        echo Cleaning
+        echo    smv/Verification
         clean_repo $fdsrepo/smv/Verification
 
-        echo Cleaning smv/Source
+        echo    smv/Source
         clean_repo $fdsrepo/smv/Source
 
-        echo Cleaning fds/Source
+        echo    fds/Source
         clean_repo $fdsrepo/fds/Source
 
-        echo Cleaning fds/Build
+        echo    fds/Build
         clean_repo $fdsrepo/fds/Build
 
-        echo Cleaning smv/Manuals
+        echo    smv/Manuals
         clean_repo $fdsrepo/smv/Manuals
         updateclean="1"
       fi
@@ -646,8 +647,8 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
-     echo
-     echo Updating smv repo
+     echo Updating
+     echo    smv repo
      git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
@@ -662,7 +663,7 @@ do_FDS_checkout()
 
    cd $fdsrepo/fds
    if [ "$UPDATEREPO" == "1" ]; then
-     echo "Updating fds repo"
+     echo "   fds repo"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
        echo "The repo $fdsrepo has uncommitted changes."
@@ -694,7 +695,7 @@ check_FDS_checkout()
 compile_fds_mpi_db()
 {
    # Clean and compile mpi FDS debug
-   echo "Building debug FDS"
+   echo "   debug FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB$DB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB$DB
    make --makefile ../makefile clean &> /dev/null
@@ -766,8 +767,8 @@ run_verification_cases_debug()
 
    # Remove all .stop and .err files from Verification directories (recursively)
    if [ "$CLEANREPO" == "1" ]; then
-     echo
-     echo "Cleaning verification cases"
+     echo "Verification cases"
+     echo "   cleaning"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
    fi
@@ -776,7 +777,7 @@ run_verification_cases_debug()
    #  = Run all SMV cases =
    #  =====================
 
-   echo "Running verification cases (debug mode)"
+   echo "   running (debug mode)"
    cd $fdsrepo/smv/Verification/scripts
 
    # Submit SMV verification cases and wait for them to start
