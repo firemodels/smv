@@ -25,7 +25,6 @@ SMOKEBOT_LITE=
 
 # define repo names (default)
 fdsrepo=~/FDS-SMVgitclean
-cfastrepo=~/cfastgitclean
 
 SMOKEBOT_QUEUE=smokebot
 MAKEMOVIES=
@@ -44,7 +43,7 @@ UPLOADRESULTS=
 COMPILER=intel
 PID_FILE=~/.fdssmvgit/smokebot_pid
 
-while getopts 'aAb:C:cI:Lm:Mo:p:q:r:sS:tuUw:W:' OPTION
+while getopts 'aAb:cI:Lm:Mo:p:q:r:sS:tuUw:W:' OPTION
 do
 case $OPTION in
   a)
@@ -55,9 +54,6 @@ case $OPTION in
    ;;
   b)
    BRANCH="$OPTARG"
-   ;;
-  C)
-   cfastrepo="$OPTARG"
    ;;
   c)
    CLEANREPO=1
@@ -187,7 +183,7 @@ echo ""
 echo "Preliminaries:"
 echo "  running in: $SMOKEBOT_RUNDIR"
 echo "FDS-SMV repo: $fdsrepo"
-echo "  cfast repo: $cfastrepo"
+echo "  cfast repo: $fdsrepo/cfast
 if [ ! "$web_DIR" == "" ]; then
 echo "     web dir: $web_DIR"
 fi
@@ -199,6 +195,8 @@ echo ""
 cd
 
 export fdsrepo
+
+cfastrepo=$fdsrepo/cfast
 export cfastrepo
 
 export SMV_SUMMARY="$fdsrepo/smv/Manuals/SMV_Summary"
