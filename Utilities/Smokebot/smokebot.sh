@@ -538,6 +538,7 @@ compile_cfast()
    cd $SMOKEBOT_HOME_DIR
 
     # Build CFAST
+    echo
     echo "Building release cfast"
     cd $cfastrepo/Build/CFAST/${COMPILER}_${platform}${size}
     rm -f cfast7_${platform}${size}
@@ -765,6 +766,7 @@ run_verification_cases_debug()
 
    # Remove all .stop and .err files from Verification directories (recursively)
    if [ "$CLEANREPO" == "1" ]; then
+     echo
      echo "Cleaning verification cases"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
@@ -826,6 +828,7 @@ check_verification_cases_debug()
 compile_fds_mpi()
 {
    # Clean and compile FDS
+   echo
    echo "Building release FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB
