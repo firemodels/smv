@@ -538,7 +538,6 @@ compile_cfast()
    cd $SMOKEBOT_HOME_DIR
 
     # Build CFAST
-    echo
     echo "Building"
     echo "   release cfast"
     cd $cfastrepo/Build/CFAST/${COMPILER}_${platform}${size}
@@ -580,20 +579,21 @@ clean_FDS_repo()
           exit
         fi
         echo Cleaning
-        echo    smv/Verification
-        clean_repo $fdsrepo/smv/Verification
+        echo "   smv/Manuals"
+        clean_repo $fdsrepo/smv/Manuals
 
-        echo    smv/Source
+        echo "   smv/Source"
         clean_repo $fdsrepo/smv/Source
 
-        echo    fds/Source
-        clean_repo $fdsrepo/fds/Source
-
-        echo    fds/Build
+        echo "   smv/Verification"
+        clean_repo $fdsrepo/smv/Verification
+        
+        echo "   fds/Build"
         clean_repo $fdsrepo/fds/Build
 
-        echo    smv/Manuals
-        clean_repo $fdsrepo/smv/Manuals
+        echo "   fds/Source"
+        clean_repo $fdsrepo/fds/Source
+
         updateclean="1"
       fi
    else
@@ -829,7 +829,6 @@ check_verification_cases_debug()
 compile_fds_mpi()
 {
    # Clean and compile FDS
-   echo
    echo "Building release FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB
