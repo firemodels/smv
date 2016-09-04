@@ -568,10 +568,8 @@ clean_FDS_repo()
    updateclean=
    if [ -e "$fdsrepo" ]
    then
-      echo FDS-SMV repo
       if [ "$CLEANREPO" == "1" ]; then
         cd $fdsrepo/smv
-        echo "   cleaning"
         IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
         if [ "$IS_DIRTY" == "1" ]; then
           echo "The repo $fdsrepo has uncommitted changes."
@@ -579,10 +577,19 @@ clean_FDS_repo()
           echo "smokebot without the -c (clean) option"
           exit
         fi
+        echo cleaning smv/Verification
         clean_repo $fdsrepo/smv/Verification
+
+        echo cleaning smv/Source
         clean_repo $fdsrepo/smv/Source
+
+        echo cleaning fds/Source
         clean_repo $fdsrepo/fds/Source
+
+        echo cleaning fds/Build
         clean_repo $fdsrepo/fds/Build
+
+        echo cleaning smv/Manuals
         clean_repo $fdsrepo/smv/Manuals
         updateclean="1"
       fi
@@ -629,7 +636,6 @@ do_FDS_checkout()
 
    cd $fdsrepo/smv
    if [ "$UPDATEREPO" == "1" ]; then
-     echo "   updating"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
        echo "The repo $fdsrepo has uncommitted changes."
@@ -638,12 +644,13 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+     echo updating smv repo
      git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
-      echo "   not cleaned or updated"
+      echo "smv repo is not cleaned or updated"
    fi 
    GIT_REVISION=`git describe --long --dirty`
    GIT_SHORTHASH=`git rev-parse --short HEAD`
@@ -652,7 +659,7 @@ do_FDS_checkout()
 
    cd $fdsrepo/fds
    if [ "$UPDATEREPO" == "1" ]; then
-     echo "   updating"
+     echo "Updating fds repo"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
        echo "The repo $fdsrepo has uncommitted changes."
@@ -666,7 +673,7 @@ do_FDS_checkout()
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
-      echo "   not cleaned or updated"
+      echo "fds repo is not cleaned or updated"
    fi 
 }
 
