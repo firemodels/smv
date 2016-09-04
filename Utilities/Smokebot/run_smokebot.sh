@@ -192,7 +192,7 @@ if [ "$KILL_SMOKEBOT" == "1" ]; then
       echo Job IDs=$JOBIDS
       qdel $JOBIDS
     fi
-    echo smokebot process $smokebot_pid killed
+    echo smokebot process $PID killed
     if [ -e $smokebot_pid ]; then
       rm $smokebot_pid
     fi
