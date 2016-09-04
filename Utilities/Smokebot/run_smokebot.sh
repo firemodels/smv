@@ -182,12 +182,17 @@ COMPILER="-I $COMPILER"
 if [ "$KILL_SMOKEBOT" == "1" ]; then
   if [ -e $smokebot_pid ]; then
     PID=`head -1 $smokebot_pid`
+    echo killing processes invoked by smokebot
     kill -9 $(LIST_DESCENDANTS $PID)
+    echo killing smokebot (PID=$PID)
     kill -9 $PID
-    cd ../../Verification/scripts
-    ./Run_SMV_Cases.sh -s  >& /dev/null
-    cd $CURDIR
-    echo smokebot process $PID killed
+    JOBIDS=`qstat -a | grep SB_ | awk -v user="$USER" '{if($2==user){print $1}}'`
+    if [ "$JOBIDS" != ""]; then
+      echo killing fds jobs started by smokebot
+      echo Job IDs=$JOBIDS
+      qdel $JOBIDS
+    fi
+    echo smokebot process $smokebot_pid killed
     if [ -e $smokebot_pid ]; then
       rm $smokebot_pid
     fi
