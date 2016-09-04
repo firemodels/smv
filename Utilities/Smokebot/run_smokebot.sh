@@ -187,7 +187,7 @@ if [ "$KILL_SMOKEBOT" == "1" ]; then
     echo "killing smokebot (PID=$PID)"
     kill -9 $PID
     JOBIDS=`qstat -a | grep SB_ | awk -v user="$USER" '{if($2==user){print $1}}'`
-    if [ "$JOBIDS" != ""]; then
+    if [ "$JOBIDS" != "" ]; then
       echo killing fds jobs started by smokebot
       echo Job IDs=$JOBIDS
       qdel $JOBIDS
