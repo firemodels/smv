@@ -538,8 +538,7 @@ compile_cfast()
    cd $SMOKEBOT_HOME_DIR
 
     # Build CFAST
-    echo "Building"
-    echo "   cfast release"
+    echo "Building release cfast"
     cd $cfastrepo/Build/CFAST/${COMPILER}_${platform}${size}
     rm -f cfast7_${platform}${size}
     make --makefile ../makefile clean &> /dev/null
@@ -685,8 +684,7 @@ check_FDS_checkout()
 compile_fds_mpi_db()
 {
    # Clean and compile mpi FDS debug
-   echo "   FDS"
-   echo "      debug"
+   echo "Building debug FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB$DB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB$DB
    make --makefile ../makefile clean &> /dev/null
@@ -757,9 +755,8 @@ run_verification_cases_debug()
    #  ======================
 
    # Remove all .stop and .err files from Verification directories (recursively)
-   echo "Running verification cases"
    if [ "$CLEANREPO" == "1" ]; then
-     echo "   cleaning"
+     echo "Cleaning verification cases"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
    fi
@@ -768,7 +765,7 @@ run_verification_cases_debug()
    #  = Run all SMV cases =
    #  =====================
 
-   echo "   debug"
+   echo "Running verification cases (debug mode)"
    cd $fdsrepo/smv/Verification/scripts
 
    # Submit SMV verification cases and wait for them to start
@@ -820,7 +817,7 @@ check_verification_cases_debug()
 compile_fds_mpi()
 {
    # Clean and compile FDS
-   echo "      release"
+   echo "Building release FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB
    make --makefile ../makefile clean &> /dev/null
@@ -1006,11 +1003,11 @@ run_verification_cases_release()
 
    # Remove all .stop and .err files from Verification directories (recursively)
    if [ "$CLEANREPO" == "1" ]; then
-     echo "   clean"
+     echo "Cleaning verification cases"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
    fi
-   echo "   release"
+   echo "Running verification cases (release mode)"
    # Start running all SMV verification cases
    cd $fdsrepo/smv/Verification/scripts
    echo 'Running SMV verification cases:' >> $OUTPUT_DIR/stage3b 2>&1
