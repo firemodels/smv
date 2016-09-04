@@ -1333,7 +1333,7 @@ archive_timing_stats()
   cp smv_timing_stats.csv "$HISTORY_DIR/${GIT_REVISION}_timing.csv"
   cp smv_benchmarktiming_stats.csv "$HISTORY_DIR/${GIT_REVISION}_benchmarktiming.csv"
   TOTAL_SMV_TIMES=`tail -1 smv_benchmarktiming_stats.csv`
-  if [ "$UPLOADRESULTS" == "1" ]; then
+  if [ "$UPLOADRESULTS" == "1" && "$USER" == "smokebot" ]; then
     cd $fdsrepo/smv/Utilities/Smokebot
     ./smvstatus_updatepub.sh -F
   fi

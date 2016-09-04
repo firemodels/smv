@@ -1,7 +1,7 @@
 #!/bin/bash
 curdir=`pwd`
-cpufrom=~firebot/.firebot/fds_times.csv
-historydir=~firebot/.firebot/history
+cpufrom=$HOME/.firebot/fds_times.csv
+historydir=$HOME/.firebot/history
 tempfile=/tmp/filelist.$$
 # The offset below is computed by substituting
 # Jan 1, 2016 5 UTC (12 AM EST) into a web form
@@ -13,8 +13,8 @@ while getopts 's' OPTION
 do
 case $OPTION  in
   s)
-   cpufrom=~smokebot/.smokebot/smv_times.csv
-   historydir=~smokebot/.smokebot/history
+   cpufrom=$HOME/.smokebot/smv_times.csv
+   historydir=$HOME/.smokebot/history
    ;;
 esac
 done
