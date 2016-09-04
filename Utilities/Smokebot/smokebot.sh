@@ -1565,6 +1565,7 @@ BUILDSOFTWARE_beg=`GET_TIME`
 compile_cfast
 compile_fds_mpi_db
 check_compile_fds_mpi_db
+
 if [[ $stage1b_fdsdb_success && "$RUNDEBUG" == "1" ]] ; then
    run_verification_cases_debug
 fi
@@ -1578,6 +1579,7 @@ fi
 if [[ $stage1b_fdsdb_success && "$RUNDEBUG" == "1" ]] ; then
    check_verification_cases_debug
 fi
+RUNCASES_beg=`GET_TIME`
 if [ "$SMOKEBOT_LITE" == "" ]; then
   if [[ $stage1c_fdsrel_success ]] ; then
      run_verification_cases_release
@@ -1601,7 +1603,6 @@ DIFF_BUILDSOFTWARE=`GET_DURATION $BUILDSOFTWARE_beg $BUILDSOFTWARE_end`
 echo "Build Software: $DIFF_BUILDSOFTWARE" >> $STAGE_STATUS
 
 ### Stage 3 run verification cases ###
-RUNCASES_beg=`GET_TIME`
 
 if [ "$SMOKEBOT_LITE" == "" ]; then
   if [[ $stage1c_fdsrel_success ]] ; then
