@@ -254,10 +254,10 @@ run_auto()
   GIT_SMV_FILE=$GIT_STATUSDIR/smv_revision
   GIT_SMV_LOG=$GIT_STATUSDIR/smv_log
   
-  QUICKTRIGGER=$TRIGGER_DIR/smokeview/smokebot_quicktrigger.txt
+  QUICKTRIGGER=$TRIGGER_DIR/smokebot_quicktrigger.txt
   GIT_QT_FILE=$GIT_STATUSDIR/quicktrigger_revision
 
-  TRIGGER=$TRIGGER_DIR/smokeview/smokebot_trigger.txt
+  TRIGGER=$SMV_SOURCE/smokebot_trigger.txt
   GIT_T_FILE=$GIT_STATUSDIR/trigger_revision
 
   FDS_SOURCE=$fdsrepo/fds/Source
