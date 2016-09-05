@@ -317,6 +317,9 @@ run_auto()
   if [ ! -e $GIT_QT_FILE ]; then
     touch $GIT_QT_FILE
   fi
+  if [ ! -e $GIT_T_FILE ]; then
+    touch $GIT_T_FILE
+  fi
   THIS_QT_REVISION=`git log --abbrev-commit $QUICKTRIGGER | head -1 | awk '{print $2}'`
   LAST_QT_REVISION=`cat $GIT_QT_FILE`
 
