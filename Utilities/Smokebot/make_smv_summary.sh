@@ -377,12 +377,11 @@ cat << EOF
 <tr><th></th><th colspan=2>Stereo</th></tr>
 <tr>
 <th>left/right</th>
-<td><img width=375 src="images/thouse5_iso_lr_stereo_L.png"></td>
-<td><img width=375 src="images/thouse5_iso_lr_stereo_R.png"></td>
+<td><img width=750 src="images/thouse5_lr_stereo.png"></td>
 </tr>
 <tr>
 <th>red/blue</th>
-<td colspan=2><img width=450 src="images/thouse5_iso_rb_stereo.png"></td>
+<td><img width=450 src="images/thouse5_iso_rb_stereo.png"></td>
 </tr>
 
 </table>

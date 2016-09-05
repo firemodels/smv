@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 # Smokebot
 # This script is derived from Kris Overholt's firebot script. 
@@ -210,7 +210,7 @@ UploadGuides=$fdsrepo/smv/Utilities/Smokebot/smv_guides2GD.sh
 THIS_FDS_AUTHOR=
 THIS_FDS_FAILED=0
 THIS_CFAST_FAILED=0
-FDS_STATUS_FILE=$fdsrepo/FDS_status
+FDS_STATUS_FILE=$fdsrepo/smv/FDS_status
 LAST_FDS_FAILED=0
 if [ -e $FDS_STATUS_FILE ] ; then
   LAST_FDS_FAILED=`cat $FDS_STATUS_FILE`
@@ -539,7 +539,7 @@ compile_cfast()
 
     # Build CFAST
     echo "Building"
-    echo "   cfast release"
+    echo "   release cfast"
     cd $cfastrepo/Build/CFAST/${COMPILER}_${platform}${size}
     rm -f cfast7_${platform}${size}
     make --makefile ../makefile clean &> /dev/null
@@ -569,22 +569,31 @@ clean_FDS_repo()
    updateclean=
    if [ -e "$fdsrepo" ]
    then
-      echo FDS-SMV repo
       if [ "$CLEANREPO" == "1" ]; then
         cd $fdsrepo/smv
-        echo "   cleaning"
         IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
         if [ "$IS_DIRTY" == "1" ]; then
-          echo "The repo $fdsrepo has uncommitted changes."
+          echo "The repo $fdsrepo/smv has uncommitted changes."
           echo "Commit or revert these changes or re-run"
           echo "smokebot without the -c (clean) option"
           exit
         fi
-        clean_repo $fdsrepo/smv/Verification
-        clean_repo $fdsrepo/smv/Source
-        clean_repo $fdsrepo/fds/Source
-        clean_repo $fdsrepo/fds/Build
+        echo Cleaning
+        echo "   smv/Manuals"
         clean_repo $fdsrepo/smv/Manuals
+
+        echo "   smv/Source"
+        clean_repo $fdsrepo/smv/Source
+
+        echo "   smv/Verification"
+        clean_repo $fdsrepo/smv/Verification
+        
+        echo "   fds/Build"
+        clean_repo $fdsrepo/fds/Build
+
+        echo "   fds/Source"
+        clean_repo $fdsrepo/fds/Source
+
         updateclean="1"
       fi
    else
@@ -630,7 +639,6 @@ do_FDS_checkout()
 
    cd $fdsrepo/smv
    if [ "$UPDATEREPO" == "1" ]; then
-     echo "   updating"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
        echo "The repo $fdsrepo has uncommitted changes."
@@ -639,12 +647,14 @@ do_FDS_checkout()
        exit
      fi
      echo "Updating branch $BRANCH." >> $OUTPUT_DIR/stage0b 2>&1
+     echo Updating
+     echo "   smv repo"
      git fetch origin >> $OUTPUT_DIR/stage0b 2>&1
      git merge origin/$BRANCH >> $OUTPUT_DIR/stage0b 2>&1
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
-      echo "   not cleaned or updated"
+      echo "smv repo is not cleaned or updated"
    fi 
    GIT_REVISION=`git describe --long --dirty`
    GIT_SHORTHASH=`git rev-parse --short HEAD`
@@ -653,10 +663,10 @@ do_FDS_checkout()
 
    cd $fdsrepo/fds
    if [ "$UPDATEREPO" == "1" ]; then
-     echo "   updating"
+     echo "   fds repo"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
-       echo "The repo $fdsrepo has uncommitted changes."
+       echo "The repo $fdsrepo/fds has uncommitted changes."
        echo "Commit or revert these changes or re-run"
        echo "smokebot without the -u (update) option"
        exit
@@ -667,7 +677,7 @@ do_FDS_checkout()
      updateclean="1"
    fi
    if [ "$updateclean" == "" ]; then
-      echo "   not cleaned or updated"
+      echo "fds repo is not cleaned or updated"
    fi 
 }
 
@@ -685,8 +695,7 @@ check_FDS_checkout()
 compile_fds_mpi_db()
 {
    # Clean and compile mpi FDS debug
-   echo "   FDS"
-   echo "      debug"
+   echo "   debug FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB$DB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB$DB
    make --makefile ../makefile clean &> /dev/null
@@ -757,8 +766,8 @@ run_verification_cases_debug()
    #  ======================
 
    # Remove all .stop and .err files from Verification directories (recursively)
-   echo "Running verification cases"
    if [ "$CLEANREPO" == "1" ]; then
+     echo "Verification cases"
      echo "   cleaning"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
@@ -768,7 +777,7 @@ run_verification_cases_debug()
    #  = Run all SMV cases =
    #  =====================
 
-   echo "   debug"
+   echo "   running (debug mode)"
    cd $fdsrepo/smv/Verification/scripts
 
    # Submit SMV verification cases and wait for them to start
@@ -820,7 +829,7 @@ check_verification_cases_debug()
 compile_fds_mpi()
 {
    # Clean and compile FDS
-   echo "      release"
+   echo "Building release FDS"
    cd $fdsrepo/fds/Build/mpi_${COMPILER}_${platform}${size}$IB
    rm -f fds_mpi_${COMPILER}_${platform}${size}$IB
    make --makefile ../makefile clean &> /dev/null
@@ -859,6 +868,7 @@ check_compile_fds_mpi()
 
 compile_smv_utilities()
 {
+   echo "Building"
    echo "   smokeview utilities"
    echo "" > $OUTPUT_DIR/stage2a
    if [ "$haveCC" == "1" ] ; then
@@ -1005,12 +1015,13 @@ run_verification_cases_release()
    #  ======================
 
    # Remove all .stop and .err files from Verification directories (recursively)
+   echo "Verification cases"
    if [ "$CLEANREPO" == "1" ]; then
-     echo "   clean"
+     echo "   cleaning"
      cd $fdsrepo/smv/Verification
      clean_repo $fdsrepo/smv/Verification
    fi
-   echo "   release"
+   echo "   running (release mode)"
    # Start running all SMV verification cases
    cd $fdsrepo/smv/Verification/scripts
    echo 'Running SMV verification cases:' >> $OUTPUT_DIR/stage3b 2>&1
@@ -1334,8 +1345,10 @@ archive_timing_stats()
   cp smv_benchmarktiming_stats.csv "$HISTORY_DIR/${GIT_REVISION}_benchmarktiming.csv"
   TOTAL_SMV_TIMES=`tail -1 smv_benchmarktiming_stats.csv`
   if [ "$UPLOADRESULTS" == "1" ]; then
-    cd $fdsrepo/smv/Utilities/Smokebot
-    ./smvstatus_updatepub.sh -F
+     if [ "$USER" == "smokebot" ]; then
+      cd $fdsrepo/smv/Utilities/Smokebot
+      ./smvstatus_updatepub.sh -F
+    fi
   fi
   if [ ! "$web_DIR" == "" ]; then
     cd $fdsrepo/smv/Utilities/Smokebot
@@ -1521,7 +1534,7 @@ fi
 # upload guides to a google drive directory
       if [ "$UPLOADRESULTS" == "1" ];then
         cd $SMOKEBOT_RUNDIR
-        $UploadGuides $NEWGUIDE_DIR $fdsrepo/Manuals &> /dev/null
+        $UploadGuides $NEWGUIDE_DIR $fdsrepo/smv/Manuals &> /dev/null
       fi
 
       # Send success message with links to nightly manuals
@@ -1652,11 +1665,11 @@ if [ "$SMOKEBOT_LITE" == "" ]; then
 #   echo "   geometry notes"
 #  make_guide geom_notes $fdsrepo/Manuals/FDS_User_Guide 'geometry notes'
      echo "   user"
-    make_guide SMV_User_Guide $fdsrepo/Manuals/SMV_User_Guide 'SMV User Guide'
+    make_guide SMV_User_Guide $fdsrepo/smv/Manuals/SMV_User_Guide 'SMV User Guide'
      echo "   technical"
-    make_guide SMV_Technical_Reference_Guide $fdsrepo/Manuals/SMV_Technical_Reference_Guide 'SMV Technical Reference Guide'
+    make_guide SMV_Technical_Reference_Guide $fdsrepo/smv/Manuals/SMV_Technical_Reference_Guide 'SMV Technical Reference Guide'
      echo "   verification"
-    make_guide SMV_Verification_Guide $fdsrepo/Manuals/SMV_Verification_Guide 'SMV Verification Guide'
+    make_guide SMV_Verification_Guide $fdsrepo/smv/Manuals/SMV_Verification_Guide 'SMV Verification Guide'
   else
     echo Errors found, not building guides
   fi
