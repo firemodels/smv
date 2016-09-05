@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 # Smokebot
 # This script is derived from Kris Overholt's firebot script. 
