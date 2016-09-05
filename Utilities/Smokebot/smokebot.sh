@@ -573,7 +573,7 @@ clean_FDS_repo()
         cd $fdsrepo/smv
         IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
         if [ "$IS_DIRTY" == "1" ]; then
-          echo "The repo $fdsrepo has uncommitted changes."
+          echo "The repo $fdsrepo/smv has uncommitted changes."
           echo "Commit or revert these changes or re-run"
           echo "smokebot without the -c (clean) option"
           exit
@@ -666,7 +666,7 @@ do_FDS_checkout()
      echo "   fds repo"
      IS_DIRTY=`git describe --long --dirty | grep dirty | wc -l`
      if [ "$IS_DIRTY" == "1" ]; then
-       echo "The repo $fdsrepo has uncommitted changes."
+       echo "The repo $fdsrepo/fds has uncommitted changes."
        echo "Commit or revert these changes or re-run"
        echo "smokebot without the -u (update) option"
        exit
