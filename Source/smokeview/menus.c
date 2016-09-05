@@ -5844,10 +5844,12 @@ updatemenu=0;
   CREATEMENU(terrain_showmenu,GeometryMenu);
   if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
   if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
+#ifdef pp_SHOWTERRAIN
   if(visTerrainType==TERRAIN_2D_STEPPED)glutAddMenuEntry(_("*2D stepped"),17+TERRAIN_2D_STEPPED);
   if(visTerrainType!=TERRAIN_2D_STEPPED)glutAddMenuEntry(_("2D stepped"),17+TERRAIN_2D_STEPPED);
   if(visTerrainType==TERRAIN_2D_LINE)glutAddMenuEntry(_("*2D lines"),17+TERRAIN_2D_LINE);
   if(visTerrainType!=TERRAIN_2D_LINE)glutAddMenuEntry(_("2D lines"),17+TERRAIN_2D_LINE);
+#endif
   if(terrain_texture!=NULL&&terrain_texture->loaded==1){
     if(visTerrainType==TERRAIN_3D_MAP)glutAddMenuEntry(_("*Image"),17+TERRAIN_3D_MAP);
     if(visTerrainType!=TERRAIN_3D_MAP)glutAddMenuEntry(_("Image"),17+TERRAIN_3D_MAP);
@@ -8396,7 +8398,7 @@ updatemenu=0;
                 flowlabels *label;
 
                 label = &sd->label;
-                if(strcmp(label->shortlabel,"U-VEL")==0||strcmp(label->shortlabel,"V-VEL")==0||strcmp(label->shortlabel,"W-VEL")==0){
+                if(STRCMP(label->shortlabel,"U-VEL")==0||STRCMP(label->shortlabel,"V-VEL")==0||STRCMP(label->shortlabel,"W-VEL")==0){
                   continue;
                 }
               }
@@ -8406,7 +8408,7 @@ updatemenu=0;
               flowlabels *label;
 
               label = &sd->label;
-              if(strcmp(label->shortlabel,"U-VEL")==0||strcmp(label->shortlabel,"V-VEL")==0||strcmp(label->shortlabel,"W-VEL")==0){
+              if(STRCMP(label->shortlabel,"U-VEL")==0||STRCMP(label->shortlabel,"V-VEL")==0||STRCMP(label->shortlabel,"W-VEL")==0){
                 continue;
               }
             }
