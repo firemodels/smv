@@ -66,7 +66,7 @@ if "%whichguides%" == "fdsverg" (
 
   Title Download FDS verification guide scatterplot images
 
-  cd %svn_root%\Manuals\fds/FDS_Verification_Guide\SCRIPT_FIGURES\Scatterplots
+  cd %svn_root%\fds\Manuals\fds/FDS_Verification_Guide\SCRIPT_FIGURES\Scatterplots
   pscp %linux_logon%:%firebotrepo%/fds/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/Scatterplots/* .
   goto eof
 )

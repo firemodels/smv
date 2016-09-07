@@ -39,7 +39,7 @@ git merge firemodels/master
 git describe --dirty
 
 
-set scriptdir=%linux_svn_root%/Utilities/Scripts/
+set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
