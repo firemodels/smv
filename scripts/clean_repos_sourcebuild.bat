@@ -20,10 +20,11 @@ call %envfile%
 
 echo.
 echo ------------------------------------------------------------------------
-echo Cleaning source and build directories in the Windows repository %svn_root%
 %svn_drive%
+echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
+echo Cleaning %svn_root%\smv\source
 cd %svn_root%\smv\source
 git clean -dxf
 
