@@ -19,7 +19,7 @@ call %envfile%
 
 set CURDIR=%CD%
 
-cd %svn_root%\Manuals\%guide%
+cd %svn_root%\smv\Manuals\%guide%
 call make_guide
 
 cd %CURDIR%
