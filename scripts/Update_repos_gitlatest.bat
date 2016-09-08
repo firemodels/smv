@@ -22,25 +22,39 @@ echo.
 echo ------------------------------------------------------------------------
 echo Updating the Windows repository, %svn_root%, to the latest revision
 %svn_drive%
-cd %svn_root%
-echo Updating the repo:%svn_root%
+cd %svn_root%\fds
+echo Updating the repo:%svn_root%\fds
 git remote update
 git checkout master
 git merge origin/master
 git merge firemodels/master
 git describe --dirty
 
-set scriptdir=%linux_svn_root%/Utilities/Scripts/
+cd %svn_root%\smv
+echo Updating the repo:%svn_root%\smv
+git remote update
+git checkout master
+git merge origin/master
+git merge firemodels/master
+git describe --dirty
+
+
+set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
 echo ------------------------------------------------------------------------
-echo Updating the Linux GIT repository, %linux_svn_root%, on %linux_hostname% to the latest revision
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root% %linux_hostname%
+echo Updating the Linux GIT repository, %linux_svn_root%/fds, on %linux_hostname% to the latest revision
+plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds %linux_hostname%
+
+echo Updating the Linux GIT repository, %linux_svn_root%/smv, on %linux_hostname% to the latest revision
+plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv %linux_hostname%
 
 echo.
 echo ------------------------------------------------------------------------
-echo Updating the OSX GIT repository, %linux_svn_root%, on %osx_hostname% to the latest revision
-plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root% %osx_hostname%
+echo Updating the OSX GIT repository, %linux_svn_root%/fds, on %osx_hostname% to the latest revision
+plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 
+echo Updating the OSX GIT repository, %linux_svn_root%/smv, on %osx_hostname% to the latest revision
+plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 pause

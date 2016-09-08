@@ -20,23 +20,24 @@ call %envfile%
 
 echo.
 echo ------------------------------------------------------------------------
-echo Cleaning source and build directories in the Windows repository %svn_root%
 %svn_drive%
+echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
+echo Cleaning %svn_root%\smv\source
 cd %svn_root%\smv\source
 git clean -dxf
 
-set scriptdir=%linux_svn_root%/Utilities/Scripts/
+set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
 
 echo.
 echo ------------------------------------------------------------------------
 echo Cleaning source and build directories in the Linux repository %linux_svn_root%, on %linux_hostname%
-plink %linux_logon% %scriptdir%/clean_repo_sourcebuild.sh  %linux_svn_root% %linux_hostname%
+plink %linux_logon% %scriptdir%/clean_repo_sourcebuild.sh  %linux_svn_root%/fds %linux_hostname%
 
 echo.
 echo ------------------------------------------------------------------------
-echo Cleaning source and build directories in the OSX repository %linux_svn_root%, on %osx_hostname%
+echo Cleaning source and build directories in the OSX repository %linux_svn_root%/fds, on %osx_hostname%
 plink %osx_logon% %scriptdir%/clean_repo_sourcebuild.sh
 
 pause
