@@ -86,7 +86,7 @@ if "%platform%"=="64" CALL :COPY  pthreadVC2_x64.dll %smvdir%\.
 
 CALL :COPY  %sh2bat%\sh2bat.exe %smvdir%\.
 
-CALL :COPY  %userprofile%\FDS-SMVwebpages\smv_readme.html %smvdir%\release_notes.html
+CALL :COPY  %svn_root%\webpages\smv_readme.html %smvdir%\release_notes.html
 
 CALL :COPY  wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat
 
