@@ -14,14 +14,14 @@ set smvlogdate="01-Mar-2016"
 
 :: PC repo
 
-set svn_root=%userprofile%\FDS-SMV
+set svn_root=%userprofile%\FireModels_fork
 set svn_drive=c:
 
 :: Linux/OSX repo
 
-set linux_svn_root=FDS-SMV
-set firebotrepo=/home2/smokevis2/firebot/FDS-SMVgitclean
-set smokebotrepo=/home2/smokevis2/smokebot/FDS-SMVgitclean
+set linux_svn_root=FireModels_fork
+set firebotrepo=/home2/smokevis2/firebot/FireModels_central
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
 set fdswikirepo=%userprofile%\FDS-SMVwikis
 
 :: FDS/Smokeview version

@@ -21,8 +21,8 @@ FILTERF =
 VPATH = $(SOURCE_DIR)/dem2fds $(SOURCE_DIR)/shared  
 bin = .
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  GIT_HASH := $(shell ..\..\Utilities\Scripts\githash)
-  GIT_DATE := $(shell ..\..\Utilities\Scripts\gitlog)
+  GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
