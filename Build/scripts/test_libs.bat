@@ -1,27 +1,27 @@
 @echo off
 set LIBDIR=%1
-set LUA=%2
 
+set CURDIR=%CD%
+cd %LIBDIR%
+set LIBDIR=%CD%
+cd %CURDIR%
 
-call :makelibs libgd.a 
-call :makelibs libglui.a 
-call :makelibs libglut.a 
-call :makelibs libjpeg.a 
-call :makelibs libpng.a 
-call :makelibs libz.a 
-if "%LUA%" == "lua" (
-  makelibs liblua.a
-  makelibs lpeg.so
-)
+call :makelibs libgd.lib
+call :makelibs libglui.lib 
+call :makelibs libglut.lib 
+call :makelibs libjpeg.lib 
+call :makelibs libpng.lib
+call :makelibs libz.lib
 goto eof
 
 :makelibs
   set lib=%1
-  if exist %LIBDIR%\%lib% exit /b
-  CURDIR=%CD%`
-  cd %LIBDIR%
-  makelibs.sh %LUA%
-  cd %CURDIR%
+  if NOT exist %LIBDIR%\intel_win_64\%lib% (
+    set CURDIR=%CD%`
+    cd %LIBDIR%\intel_win_64
+    call makelibs 
+    cd %CURDIR%
+  )
   exit /b
 
 :eof
