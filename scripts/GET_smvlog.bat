@@ -23,6 +23,6 @@ set curdir=%CD%
 cd %svn_root%\smv\source
 echo git log --pretty=oneline --abbrev-commit --since=%smvlogdate% 
 pause
-git log --pretty=oneline --abbrev-commit --since=%smvlogdate% .>> %userprofile%\FDS-SMVwebpages\smv_readme.html
+git log --pretty=oneline --abbrev-commit --since=%smvlogdate% .>> %svn_root%\webpages\smv_readme.html
 cd %curdir%
 pause

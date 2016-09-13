@@ -22,7 +22,7 @@ set svn_drive=c:
 set linux_svn_root=FireModels_fork
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
 set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
-set fdswikirepo=%userprofile%\FDS-SMVwikis
+set fdswikirepo=%svn_root%\wikis
 
 :: FDS/Smokeview version
 

@@ -58,6 +58,7 @@ CPDIR ()
 }
 
 platformsize=${platform}_$size
+WEBPAGESDIR=$SVNROOT/webpages
 BACKGROUNDDIR=$SVNROOT/smv/Build/background/intel_${platform}_64
 SMOKEVIEWDIR=$SVNROOT/smv/Build/smokeview/intel_$platformsize
 SMOKEZIPDIR=$SVNROOT/smv/Build/smokezip/intel_$platformsize
@@ -74,7 +75,7 @@ rm -rf $DIR
 mkdir -p $DIR
 mkdir -p $DIR/bin
 mkdir -p $DIR/Documentation
-cp ~/FDS-SMVwebpages/smv_readme.html $DIR/Documentation/release_notes.html
+cp $WEBPAGESDIR/smv_readme.html $DIR/Documentation/release_notes.html
 
 echo ""
 echo "--- copying files ---"
