@@ -6,6 +6,9 @@ if x%arg1% == xbot goto skip1
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 :skip1
 
+call ..\..\scripts\test_libs ..\..\LIBS
+
+
 set OPT=
 if  "x%VS140COMNTOOLS%" == "x" goto endif2
   set OPT=-DHAVE_SNPRINTF -DHAVE_STRUCT_TIMESPEC

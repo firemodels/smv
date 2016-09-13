@@ -28,7 +28,7 @@ Title Building %prog% for 64 bit %platform%
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\%prog%\intel_win_64
-  call make_%prog% %type%
+  call make_%prog%
   goto eof
 )
 if "%platform%" == "linux" (
