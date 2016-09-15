@@ -1,4 +1,5 @@
 @echo off
+setlocal
 
 set size=_64
 set svn_drive=c:
@@ -10,14 +11,11 @@ set runsmvcases=1
 set rundebug=0
 
 set curdir=%CD%
-cd %CD%\..
+cd ..
 set BASEDIR=%CD%
 
-cd %BASEDIR%\..\..
+cd ..\..
 set SVNROOT=%CD%
-
-cd %SVNROOT%\..\cfastgitclean\
-set CFAST=%CD%
 
 set stopscript=0
 call :getopts %*
@@ -45,7 +43,7 @@ set RUNCFAST_E=call %SVNROOT%\fds\Verification\scripts\erase_stop.bat
 
 set FDSBASE=fds_mpi_win%size%%DEBUG%.exe
 set FDSEXE=%SVNROOT%\fds\Build\mpi_intel_win%size%%DEBUG%\%FDSBASE%
-set CFASTEXE=%CFAST%\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
+set CFASTEXE=%SVNROOT%\cfast\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
 set WIND2FDSEXE=%SVNROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
 
 set BACKGROUNDEXE=%SVNROOT%\smv\Build\background\intel_win%size%\background.exe
@@ -205,11 +203,6 @@ exit /b
    set DEBUG=_db
    set rundebug=1
  )
- if /I "%1" EQU "-cfastrepo" (
-   set valid=1
-   set CFAST=%2
-   shift
- )
  if /I "%1" EQU "-geom" (
    set valid=1
    set runwuicases=0
@@ -245,7 +238,6 @@ exit /b
 echo Run_SMV_Cases [options]
 echo. 
 echo -help  - display this message
-echo -cfastrepo - specify cfast repo location [default: %CFAST%]
 echo -debug - run with debug FDS
 echo -geom  - run only geom cases
 echo -wui   - run only WUI cases
