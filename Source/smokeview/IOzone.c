@@ -1033,73 +1033,75 @@ void drawroomgeom(void){
 
 /* draw the frame */
 
-  Antialias(ON);
-  glBegin(GL_LINES);
+  if (visCompartments == 1) {
+    Antialias(ON);
+    glBegin(GL_LINES);
 
-  for(i=0;i<nrooms;i++){
-    roomdata *roomi;
-    float xroom0, yroom0, zroom0, xroom, yroom, zroom;
+    for (i = 0; i < nrooms; i++) {
+      roomdata *roomi;
+      float xroom0, yroom0, zroom0, xroom, yroom, zroom;
 
-    if(zone_highlight==1&&zone_highlight_room==i){
-      glEnd();
-      glLineWidth(5.0*linewidth);
-      glBegin(GL_LINES);
-      glColor3f(1.0,0.0,0.0);
+      if (zone_highlight == 1 && zone_highlight_room == i) {
+        glEnd();
+        glLineWidth(5.0*linewidth);
+        glBegin(GL_LINES);
+        glColor3f(1.0, 0.0, 0.0);
+      }
+      else {
+        glEnd();
+        glLineWidth(linewidth);
+        glBegin(GL_LINES);
+        glColor4fv(foregroundcolor);
+      }
+
+      roomi = roominfo + i;
+      xroom0 = roomi->x0;
+      yroom0 = roomi->y0;
+      zroom0 = roomi->z0;
+      xroom = roomi->x1;
+      yroom = roomi->y1;
+      zroom = roomi->z1;
+
+
+      glVertex3f(xroom0, yroom0, zroom);
+      glVertex3f(xroom, yroom0, zroom);
+
+      glVertex3f(xroom, yroom0, zroom);
+      glVertex3f(xroom, yroom, zroom);
+
+      glVertex3f(xroom, yroom, zroom);
+      glVertex3f(xroom0, yroom, zroom);
+
+      glVertex3f(xroom0, yroom, zroom);
+      glVertex3f(xroom0, yroom0, zroom);
+
+      glVertex3f(xroom0, yroom0, zroom0);
+      glVertex3f(xroom, yroom0, zroom0);
+
+      glVertex3f(xroom, yroom0, zroom0);
+      glVertex3f(xroom, yroom, zroom0);
+
+      glVertex3f(xroom, yroom, zroom0);
+      glVertex3f(xroom0, yroom, zroom0);
+
+      glVertex3f(xroom0, yroom, zroom0);
+      glVertex3f(xroom0, yroom0, zroom0);
+
+      glVertex3f(xroom0, yroom0, zroom0);
+      glVertex3f(xroom0, yroom0, zroom);
+
+      glVertex3f(xroom, yroom0, zroom0);
+      glVertex3f(xroom, yroom0, zroom);
+
+      glVertex3f(xroom, yroom, zroom0);
+      glVertex3f(xroom, yroom, zroom);
+
+      glVertex3f(xroom0, yroom, zroom0);
+      glVertex3f(xroom0, yroom, zroom);
     }
-    else{
-      glEnd();
-      glLineWidth(linewidth);
-      glBegin(GL_LINES);
-      glColor4fv(foregroundcolor);
-    }
-
-    roomi = roominfo + i;
-    xroom0 = roomi->x0;
-    yroom0 = roomi->y0;
-    zroom0 = roomi->z0;
-    xroom = roomi->x1;
-    yroom = roomi->y1;
-    zroom = roomi->z1;
-
-
-    glVertex3f(xroom0,yroom0,zroom);
-    glVertex3f(xroom,yroom0,zroom);
-
-    glVertex3f(xroom,yroom0,zroom);
-    glVertex3f(xroom,yroom,zroom);
-
-    glVertex3f(xroom,yroom,zroom);
-    glVertex3f(xroom0,yroom,zroom);
-
-    glVertex3f(xroom0,yroom,zroom);
-    glVertex3f(xroom0,yroom0,zroom);
-
-    glVertex3f(xroom0,yroom0,zroom0);
-    glVertex3f(xroom,yroom0,zroom0);
-
-    glVertex3f(xroom,yroom0,zroom0);
-    glVertex3f(xroom,yroom,zroom0);
-
-    glVertex3f(xroom,yroom,zroom0);
-    glVertex3f(xroom0,yroom,zroom0);
-
-    glVertex3f(xroom0,yroom,zroom0);
-    glVertex3f(xroom0,yroom0,zroom0);
-
-    glVertex3f(xroom0,yroom0,zroom0);
-    glVertex3f(xroom0,yroom0,zroom);
-
-    glVertex3f(xroom,yroom0,zroom0);
-    glVertex3f(xroom,yroom0,zroom);
-
-    glVertex3f(xroom,yroom,zroom0);
-    glVertex3f(xroom,yroom,zroom);
-
-    glVertex3f(xroom0,yroom,zroom0);
-    glVertex3f(xroom0,yroom,zroom);
+    glEnd();
+    Antialias(OFF);
   }
-  glEnd();
-  Antialias(OFF);
 
   if(visVents==1){
     glLineWidth(ventlinewidth);

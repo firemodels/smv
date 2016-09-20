@@ -3792,6 +3792,10 @@ int ReadSMV(char *file, char *file2){
       nzventsnew++;
       continue;
     }
+    if (Match(buffer, "HVENTPOS") == 1 || Match(buffer, "VVENTPOS") == 1 || Match(buffer, "MVENTPOS") == 1) {
+      nzventsnew++;
+      continue;
+    }
 
   }
 
@@ -6049,6 +6053,10 @@ int ReadSMV(char *file, char *file2){
        Match(buffer, "HVENTGEOM")==1||
        Match(buffer, "VVENTGEOM")==1||
        Match(buffer, "MVENTGEOM")==1))have_zonevents=1;
+    if (nzventsnew > 0 && (
+      Match(buffer, "HVENTPOS") == 1 ||
+      Match(buffer, "VVENTPOS") == 1 ||
+      Match(buffer, "MVENTPOS") == 1))have_zonevents = 2;
     if(have_zonevents==1){
       int vent_type=HFLOW_VENT;
       int vertical_vent_type=0;
@@ -6218,6 +6226,10 @@ int ReadSMV(char *file, char *file2){
         }
       }
       zvi->color = getcolorptr(color);
+      CheckMemory;
+      continue;
+    }
+    if(have_zonevents==2){
       CheckMemory;
       continue;
     }
@@ -9940,6 +9952,11 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &visVents);
       continue;
     }
+    if (Match(buffer, "SHOWROOMS") == 1) {
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &visCompartments);
+      continue;
+    }
     if(Match(buffer, "SHOWTIMELABEL") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visTimelabel);
@@ -12280,6 +12297,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", show_triangle_count);
   fprintf(fileout, "SHOWVENTFLOW\n");
   fprintf(fileout, " %i %i %i %i %i\n", visVentHFlow, visventslab, visventprofile, visVentVFlow, visVentMFlow);
+  fprintf(fileout, "SHOWROOMS\n");
+  fprintf(fileout, " %i\n", visCompartments);
   fprintf(fileout, "SHOWVENTS\n");
   fprintf(fileout, " %i\n", visVents);
   fprintf(fileout, "SHOWWALLS\n");

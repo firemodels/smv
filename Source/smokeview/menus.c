@@ -4773,6 +4773,7 @@ void ZoneShowMenu(int value){
 }
 
 #define GEOM_Vents 15
+#define GEOM_Compartments 16
 #define GEOM_Outline 3
 #define GEOM_TriangleCount 14
 #define GEOM_ShowAll 11
@@ -4846,6 +4847,9 @@ void GeometryMenu(int value){
     break;
   case GEOM_Vents:
     visVents=1-visVents;
+    break;
+  case GEOM_Compartments:
+    visCompartments = 1 - visCompartments;
     break;
   default:
     ASSERT(FFALSE);
@@ -5983,6 +5987,14 @@ updatemenu=0;
     glutAddSubMenu(_("Terrain"),terrain_showmenu);
   }
   if(GetNTotalVents()>0)glutAddSubMenu(_("Surfaces"), ventmenu);
+  if (nrooms > 0) {
+    if (visCompartments == 1) {
+      glutAddMenuEntry(_("*Compartments"), GEOM_Compartments);
+    }
+    else {
+      glutAddMenuEntry(_("Compartments"), GEOM_Compartments);
+    }
+  }
   if(nzvents > 0){
     if(visVents == 1){
       glutAddMenuEntry(_("*Vents"), GEOM_Vents);
