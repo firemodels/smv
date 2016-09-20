@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
 SVEXTERN int SVDECL(render_from_menu, 0);
 SVEXTERN int SVDECL(render_360, 0);
