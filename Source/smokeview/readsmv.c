@@ -30,6 +30,9 @@
 #define DEVICE_SPRK 3
 #define DEVICE_SMOKE 4
 
+#define ZVENT_1ROOM 1
+#define ZVENT_2ROOM 2
+
 /* ------------------ ReadHRR ------------------------ */
 #define LENBUFFER 1024
 void ReadHRR(int flag, int *errorcode){
@@ -3006,27 +3009,36 @@ void ParseDatabase(char *file){
   UpdateSortedSurfIdList();
 }
 
-/* ------------------ GetZVentData ------------------------ */
+/* ------------------ ReadZVentData ------------------------ */
 
-void GetZVentData(zventdata *zvi, char *buffer){
+void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   float dxyz[3];
   float xyz[6];
   float color[4];
   roomdata *roomi;
-  int roomfrom, roomto;
+  int roomfrom=-1, roomto=-1;
 
   color[0]=1.0;
   color[1]=0.0;
   color[2]=1.0;
   color[3]=1.0;
-  sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f",
-    &roomfrom, &roomto, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
-    color, color + 1, color + 2
+  if(flag==ZVENT_2ROOM){
+    sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f",
+      &roomfrom, &roomto, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
+      color, color + 1, color + 2
   );
+  }
+  else{
+    sscanf(buffer, "%i %f %f %f %f %f %f %f %f %f",
+      &roomfrom, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
+      color, color + 1, color + 2);
+    roomto = roomfrom;
+  }
 
   if(roomfrom<1 || roomfrom>nrooms)roomfrom = nrooms + 1;
   roomi = roominfo + roomfrom - 1;
   zvi->room1 = roomi;
+  if (roomto<1 || roomto>nrooms)roomto = nrooms + 1;
   zvi->room2 = roominfo + roomto - 1;
   zvi->x0 = roomi->x0 + xyz[0];
   zvi->x1 = roomi->x0 + xyz[1];
@@ -6240,7 +6252,7 @@ int ReadSMV(char *file, char *file2){
       }
       else if(vent_type==MFLOW_VENT){
         nzmvents++;
-        GetZVentData(zvi, buffer);
+         ReadZVentData(zvi, buffer, ZVENT_1ROOM);
       }
       CheckMemory;
       continue;
@@ -6264,15 +6276,17 @@ int ReadSMV(char *file, char *file2){
       switch(vent_type){
       case HFLOW_VENT:
         nzhvents++;
+        ReadZVentData(zvi, buffer,ZVENT_2ROOM);
         break;
       case VFLOW_VENT:
         nzvvents++;
+        ReadZVentData(zvi, buffer, ZVENT_2ROOM);
         break;
       case MFLOW_VENT:
         nzmvents++;
+        ReadZVentData(zvi, buffer, ZVENT_1ROOM);
         break;
       }
-      GetZVentData(zvi, buffer);
       CheckMemory;
       continue;
     }
