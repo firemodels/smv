@@ -23,7 +23,8 @@ echo ------------------------------------------------------------------------
 echo Updating the Windows repository, %svn_root%, to the latest revision
 %svn_drive%
 cd %svn_root%\fds
-echo Updating the repo:%svn_root%\fds
+echo.
+echo *** fds ***
 git remote update
 git checkout master
 git merge origin/master
@@ -31,7 +32,8 @@ git merge firemodels/master
 git describe --dirty
 
 cd %svn_root%\smv
-echo Updating the repo:%svn_root%\smv
+echo.
+echo *** smv ***
 git remote update
 git checkout master
 git merge origin/master
@@ -39,7 +41,8 @@ git merge firemodels/master
 git describe --dirty
 
 cd %svn_root%\webpages
-echo Updating the repo:%svn_root%\webpages
+echo.
+echo *** webpages ***
 git checkout nist-pages
 git remote update
 git merge origin/nist-pages
@@ -52,16 +55,30 @@ set linux_fdsdir=%linux_svn_root%
 echo.
 echo ------------------------------------------------------------------------
 echo Updating the Linux GIT repository, %linux_svn_root%/fds, on %linux_hostname% to the latest revision
+echo.
+echo *** fds ***
 plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds %linux_hostname%
 
-echo Updating the Linux GIT repository, %linux_svn_root%/smv, on %linux_hostname% to the latest revision
+echo.
+echo *** smv ***
 plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv %linux_hostname%
+
+echo.
+echo *** webpages ***
+plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/smv %linux_hostname%
 
 echo.
 echo ------------------------------------------------------------------------
 echo Updating the OSX GIT repository, %linux_svn_root%/fds, on %osx_hostname% to the latest revision
+echo.
+echo *** fds ***
 plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 
-echo Updating the OSX GIT repository, %linux_svn_root%/smv, on %osx_hostname% to the latest revision
+echo.
+echo *** smv ***
 plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+
+echo.
+echo *** webpages ***
+plink %osx_logon% %scriptdir%/UPDATE_webpages_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 pause
