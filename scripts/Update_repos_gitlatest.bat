@@ -25,7 +25,6 @@ echo Updating the Windows repository, %svn_root%, to the latest revision
 cd %svn_root%\fds
 echo Updating the repo:%svn_root%\fds
 git remote update
-git checkout master
 git merge origin/master
 git merge firemodels/master
 git describe --dirty
@@ -33,9 +32,14 @@ git describe --dirty
 cd %svn_root%\smv
 echo Updating the repo:%svn_root%\smv
 git remote update
-git checkout master
 git merge origin/master
 git merge firemodels/master
+git describe --dirty
+
+cd %svn_root%\webpages
+echo Updating the repo:%svn_root%\webpages
+git remote update
+git merge origin/nist-pages
 git describe --dirty
 
 
