@@ -3006,7 +3006,67 @@ void ParseDatabase(char *file){
   UpdateSortedSurfIdList();
 }
 
-/* ------------------ ReadSMV ------------------------ */
+/* ------------------ GetZVentData ------------------------ */
+
+void GetZVentData(zventdata *zvi, char *buffer){
+  float dxyz[3];
+  float xyz[6];
+  float color[4];
+  roomdata *roomi;
+  int roomfrom, roomto;
+
+  color[0]=1.0;
+  color[1]=0.0;
+  color[2]=1.0;
+  color[3]=1.0;
+  sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f",
+    &roomfrom, &roomto, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
+    color, color + 1, color + 2
+  );
+
+  if(roomfrom<1 || roomfrom>nrooms)roomfrom = nrooms + 1;
+  roomi = roominfo + roomfrom - 1;
+  zvi->room1 = roomi;
+  zvi->room2 = roominfo + roomto - 1;
+  zvi->x0 = roomi->x0 + xyz[0];
+  zvi->x1 = roomi->x0 + xyz[1];
+  zvi->y0 = roomi->y0 + xyz[2];
+  zvi->y1 = roomi->y0 + xyz[3];
+  zvi->z0 = roomi->z0 + xyz[4];
+  zvi->z1 = roomi->z0 + xyz[5];
+  dxyz[0] = ABS(xyz[0] - xyz[1]);
+  dxyz[1] = ABS(xyz[2] - xyz[3]);
+  dxyz[2] = ABS(xyz[4] - xyz[5]);
+  // see which side of room vent is closest too
+  if(dxyz[0] < MIN(dxyz[1], dxyz[2])){
+    if(ABS(zvi->x0 - roomi->x0) < ABS(zvi->x0 - roomi->x1)){
+      zvi->wall = LEFT_WALL;
+    }
+    else{
+      zvi->wall = RIGHT_WALL;
+    }
+  }
+  else if(dxyz[1] < MIN(dxyz[0], dxyz[2])){
+    if(ABS(zvi->y0 - roomi->y0) < ABS(zvi->y0 - roomi->y1)){
+      zvi->wall = FRONT_WALL;
+    }
+    else{
+      zvi->wall = BACK_WALL;
+    }
+  }
+  else{
+    zvi->wall = BOTTOM_WALL;
+    if(ABS(zvi->z0 - roomi->z0) < ABS(zvi->z0 - roomi->z1)){
+      zvi->wall = BOTTOM_WALL;
+    }
+    else{
+      zvi->wall = TOP_WALL;
+    }
+  }
+  zvi->color = getcolorptr(color);
+}
+
+  /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(char *file, char *file2){
 
@@ -6070,7 +6130,7 @@ int ReadSMV(char *file, char *file2){
       nzvents++;
       zvi = zventinfo + nzvents - 1;
       if(Match(buffer,"VFLOWGEOM")==1||Match(buffer,"VVENTGEOM")==1)vent_type=VFLOW_VENT;
-      if(Match(buffer,"MFLOWGEOM")==1||Match(buffer,"MVENTGEOM")==1)vent_type=MFLOW_VENT;
+      if(Match(buffer, "MFLOWGEOM") == 1 || Match(buffer, "MVENTGEOM") == 1)vent_type = MFLOW_VENT;
       zvi->vent_type=vent_type;
       if(fgets(buffer,255,stream)==NULL){
         BREAK;
@@ -6126,6 +6186,7 @@ int ReadSMV(char *file, char *file2){
         default:
           ASSERT(FFALSE);
         }
+        zvi->color = getcolorptr(color);
       }
       else if(vent_type==VFLOW_VENT){
         float ventside;
@@ -6175,61 +6236,43 @@ int ReadSMV(char *file, char *file2){
 
         zvi->vertical_vent_type = vertical_vent_type;
         zvi->area = vent_area;
+        zvi->color = getcolorptr(color);
       }
       else if(vent_type==MFLOW_VENT){
-        float xyz[6];
-        float dxyz[3];
-
         nzmvents++;
-        sscanf(buffer, "%i %f %f %f %f %f %f %f %f %f",
-          &roomfrom, xyz,xyz+1,xyz+2,xyz+3,xyz+4,xyz+5,
-          color, color+1, color+2
-          );
-
-        if(roomfrom<1||roomfrom>nrooms)roomfrom = nrooms+1;
-        roomi = roominfo+roomfrom-1;
-        zvi->room1 = roomi;
-        zvi->x0 = roomi->x0 + xyz[0];
-        zvi->x1 = roomi->x0 + xyz[1];
-        zvi->y0 = roomi->y0 + xyz[2];
-        zvi->y1 = roomi->y0 + xyz[3];
-        zvi->z0 = roomi->z0 + xyz[4];
-        zvi->z1 = roomi->z0 + xyz[5];
-        dxyz[0] = ABS(xyz[0] - xyz[1]);
-        dxyz[1] = ABS(xyz[2] - xyz[3]);
-        dxyz[2] = ABS(xyz[4] - xyz[5]);
-        // see which side of room vent is closest too
-        if(dxyz[0] < MIN(dxyz[1], dxyz[2])){
-          if(ABS(zvi->x0-roomi->x0)<ABS(zvi->x0-roomi->x1)){
-            zvi->wall = LEFT_WALL;
-          }
-          else{
-            zvi->wall = RIGHT_WALL;
-          }
-        }
-        else if(dxyz[1] < MIN(dxyz[0], dxyz[2])){
-          if(ABS(zvi->y0-roomi->y0)<ABS(zvi->y0-roomi->y1)){
-            zvi->wall = FRONT_WALL;
-          }
-          else{
-            zvi->wall = BACK_WALL;
-          }
-        }
-        else{
-          zvi->wall = BOTTOM_WALL;
-          if(ABS(zvi->z0-roomi->z0)<ABS(zvi->z0-roomi->z1)){
-            zvi->wall = BOTTOM_WALL;
-          }
-          else{
-            zvi->wall = TOP_WALL;
-          }
-        }
+        GetZVentData(zvi, buffer);
       }
-      zvi->color = getcolorptr(color);
       CheckMemory;
       continue;
     }
     if(have_zonevents==2){
+      int vent_type = HFLOW_VENT;
+      zventdata *zvi;
+
+      if(Match(buffer, "VFLOWPOS") == 1 || Match(buffer, "VVENTPOS") == 1)vent_type = VFLOW_VENT;
+      if(Match(buffer, "MFLOWPOS") == 1 || Match(buffer, "MVENTPOS") == 1)vent_type = MFLOW_VENT;
+
+      nzvents++;
+      zvi = zventinfo + nzvents - 1;
+
+      zvi->vent_type = vent_type;
+      if(fgets(buffer, 255, stream) == NULL){
+        BREAK;
+      }
+
+      CheckMemory;
+      switch(vent_type){
+      case HFLOW_VENT:
+        nzhvents++;
+        break;
+      case VFLOW_VENT:
+        nzvvents++;
+        break;
+      case MFLOW_VENT:
+        nzmvents++;
+        break;
+      }
+      GetZVentData(zvi, buffer);
       CheckMemory;
       continue;
     }
