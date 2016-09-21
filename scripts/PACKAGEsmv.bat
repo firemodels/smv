@@ -85,7 +85,7 @@ if "%platform%" == "osx" (
     plink %osx_logon% %scriptdir%/MAKEdistgen.sh %version% osx %osx_hostname% %fds_edition% %linux_svn_root%
   )
   if "%buildtype%" == "test" (
-    plink %osx_logon% %scriptdir%/MAKEtestdistosx64.sh %smv_revision% %osx_hostname% %linux_svn_root%
+    plink %osx_logon% %scriptdir%/MAKEtestdistosx64.sh %smv_revision% %linux_svn_root% %osx_hostname% %linux_svn_root%
   )
 
   echo.

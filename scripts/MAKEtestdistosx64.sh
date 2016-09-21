@@ -1,8 +1,8 @@
 #!/bin/bash
 revision=$1
-REMOTESVNROOT=FDS-SMV
-OSXHOST=$2
-SVNROOT=~/$3
+REMOTESVNROOT=$2
+OSXHOST=$3
+SVNROOT=~/$4
 
 SCP ()
 {
