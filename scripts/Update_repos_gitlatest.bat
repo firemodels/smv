@@ -65,7 +65,7 @@ plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv %linux_
 
 echo.
 echo *** webpages ***
-plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/smv %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages %linux_hostname%
 
 echo.
 echo ------------------------------------------------------------------------
@@ -80,5 +80,5 @@ plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/smv 
 
 echo.
 echo *** webpages ***
-plink %osx_logon% %scriptdir%/UPDATE_webpages_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+plink %osx_logon% %scriptdir%/UPDATE_webpages_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
 pause
