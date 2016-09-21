@@ -75,7 +75,7 @@ rm -rf $DIR
 mkdir -p $DIR
 mkdir -p $DIR/bin
 mkdir -p $DIR/Documentation
-cp $WEBPAGESDIR/smv_readme.html $DIR/Documentation/release_notes.html
+SCP $HOST $WEBPAGESDIR smv_readme.html $DIR/Documentation release_notes.html
 
 echo ""
 echo "--- copying files ---"
