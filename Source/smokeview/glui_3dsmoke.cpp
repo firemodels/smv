@@ -731,6 +731,7 @@ extern "C" void Smoke3d_CB(int var){
     Update_Smoke_Type();
     break;
   case FIRECOLORMAP_TYPE:
+    if (PANEL_colormap2a == NULL)break;
     if(firecolormap_type==FIRECOLORMAP_CONSTRAINT&&smoke_render_option==RENDER_VOLUME){
       PANEL_colormap2a->open();
       PANEL_colormap2a->enable();
