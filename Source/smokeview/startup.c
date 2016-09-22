@@ -516,7 +516,11 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s\n",_("   creating window"));
 #endif
-  mainwindow_id=glutCreateWindow("");
+#ifdef pp_OSX
+  mainwindow_id = glutCreateWindow("");
+#else
+  mainwindow_id = glutCreateNoCloseWindow("");
+#endif
 #ifdef _DEBUG
   PRINTF("%s\n",_("   window created"));
 #endif
