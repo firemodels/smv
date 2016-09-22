@@ -106,7 +106,7 @@ void Init(void){
   thistime=0;
   lasttime=0;
 
-  /* define color bar */
+  /* define colorbar */
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
 

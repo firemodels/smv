@@ -687,7 +687,31 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
 
     glBegin(GL_QUADS);
-    glColor3f(fire_red/255.0,fire_green/255.0,fire_blue/255.0);
+    if (firecolormap_type == 0) {
+      glColor3f(fire_red / 255.0, fire_green / 255.0, fire_blue / 255.0);
+    }
+    else {
+      float f_red, f_green, f_blue, *colors;
+      int icolor;
+
+      if (strcmp(fire_colorbar->label, "fire") == 0) {
+        icolor = 192;
+      }
+      else if (strcmp(fire_colorbar->label, "fire 2") == 0) {
+        icolor = 128 + 127*(global_hrrpuv_cutoff - global_hrrpuv_min) / (global_hrrpuv_max - global_hrrpuv_min);
+        icolor = CLAMP((icolor + 1), 0, 255);
+      }
+      else{
+        icolor = 255*(global_hrrpuv_cutoff-global_hrrpuv_min)/(global_hrrpuv_max-global_hrrpuv_min);
+        icolor = CLAMP((icolor + 1), 0, 255);
+      }
+      colors = fire_colorbar->colorbar;
+      f_red = colors[3*icolor + 0];
+      f_green = colors[3*icolor + 1];
+      f_blue = colors[3*icolor + 2];
+      glColor3f(f_red, f_green, f_blue);
+    }
+    
     glVertex3f(right_label_pos+h_space-20,5+2*VP_timebar.text_height   ,0.0);
     glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height   ,0.0);
     glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height+20,0.0);
