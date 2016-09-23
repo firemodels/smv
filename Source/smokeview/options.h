@@ -87,7 +87,7 @@
 #define pp_memstatus
 #define pp_COMPRESS
 #define pp_noappend
-#define GLUT_DISABLE_ATEXIT_HACK
+//#define GLUT_DISABLE_ATEXIT_HACK
 #include "pragmas.h"
 #endif
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

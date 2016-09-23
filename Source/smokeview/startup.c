@@ -516,7 +516,7 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s\n",_("   creating window"));
 #endif
-  mainwindow_id=glutCreateWindow("");
+  mainwindow_id = glutCreateWindow("");
 #ifdef _DEBUG
   PRINTF("%s\n",_("   window created"));
 #endif
