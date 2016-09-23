@@ -552,7 +552,7 @@ int lua_initsmvproginfo(lua_State *L) {
   char version[256];
   char githash[256];
 
-  getPROGversion(version);
+  GetProgVersion(version);
   // getGitHash(githash);
 
   lua_createtable(L, 0, 6);

@@ -117,7 +117,7 @@ int parse_smv_filepath(const char *smv_filepath, char *fdsprefix,
     c_ext=strrchr(smv_filepath,'.');
     if(c_ext!=NULL){
       STRCPY(input_filename_ext,c_ext);
-      to_lower(input_filename_ext);
+      ToLower(input_filename_ext);
 
       if(c_ext!=NULL&&
         (strcmp(input_filename_ext,".smv")==0||
@@ -1293,7 +1293,7 @@ void load3dsmoke(const char *smoke_type){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
-    if(match_upper(smoke3di->label.longlabel,smoke_type)==1){
+    if(MatchUpper(smoke3di->label.longlabel,smoke_type)==1){
       readsmoke3d(i,LOAD,&errorcode);
       if(smoke_type!=NULL&&strlen(smoke_type)>0){
         FREEMEMORY(loaded_file);
@@ -1651,7 +1651,7 @@ void loadslice(const char *type, int axis, float distance){
     slicei = sliceinfo + mslicei->islices[0];
     printf("slice name: %s, axis: %d, position: %f\n", slicei->label.longlabel,
            slicei->idir, slicei->position_orig);
-    if(match_upper(slicei->label.longlabel,type)==0)continue;
+    if(MatchUpper(slicei->label.longlabel,type)==0)continue;
     if(slicei->idir!=axis)continue;
     delta_orig = slicei->position_orig - distance;
     if(delta_orig<0.0)delta_orig = -delta_orig;
@@ -1684,7 +1684,7 @@ void loadvslice(const char *type, int axis, float distance){
     mvslicei = multivsliceinfo + i;
     if(mvslicei->nvslices<=0)continue;
     slicei = sliceinfo + mvslicei->ivslices[0];
-    if(match_upper(slicei->label.longlabel,type)==0)continue;
+    if(MatchUpper(slicei->label.longlabel,type)==0)continue;
     if(slicei->idir!=axis)continue;
     delta_orig = slicei->position_orig - distance;
     if(delta_orig<0.0)delta_orig = -delta_orig;
@@ -3409,7 +3409,7 @@ int set_smokealbedo(float v) {
 int set_smokerthick(float v) {
   smoke3d_rthick = v;
   smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-  smoke3d_thick = log_base2(smoke3d_rthick);
+  smoke3d_thick = LogBase2(smoke3d_rthick);
   return 0;
 } // SMOKERTHICK
 #endif
