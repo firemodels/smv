@@ -9222,14 +9222,14 @@ int ReadINI2(char *inifile, int localfile){
       if(devicenorm_length<0.0 || devicenorm_length>1.0)devicenorm_length = 0.1;
       continue;
     }
-	if(Match(buffer, "SHOWHRRLABEL") == 1) {
-		fgets(buffer, 255, stream);
-		sscanf(buffer, "%i", &visHRRlabel);
-		ONEORZERO(visHRRlabel);
-		UpdateHrrinfo(visHRRlabel);
-		continue;
-	}
-	if(Match(buffer, "SHOWHRRCUTOFF") == 1){
+    if(Match(buffer, "SHOWHRRLABEL") == 1) {
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &visHRRlabel);
+      ONEORZERO(visHRRlabel);
+      UpdateHrrinfo(visHRRlabel);
+      continue;
+    }
+    if(Match(buffer, "SHOWHRRCUTOFF") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &show_hrrcutoff);
       ONEORZERO(show_hrrcutoff);
@@ -9275,44 +9275,44 @@ int ReadINI2(char *inifile, int localfile){
       int n3dsmokes = 0;
       int seq_id;
 
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &n3dsmokes);
-      for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &seq_id);
-        get_startup_plot3d(seq_id);
+        sscanf(buffer, "%i", &n3dsmokes);
+        for(i = 0; i<n3dsmokes; i++){
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i", &seq_id);
+          get_startup_plot3d(seq_id);
+        }
+        update_load_Files = 1;
+        continue;
       }
-      update_load_Files = 1;
-      continue;
-    }
-    if(Match(buffer, "VSLICEAUTO") == 1){
-      int n3dsmokes = 0;
-      int seq_id;
+      if(Match(buffer, "VSLICEAUTO") == 1){
+        int n3dsmokes = 0;
+        int seq_id;
 
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &n3dsmokes);
-      for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &seq_id);
-        get_startup_vslice(seq_id);
+        sscanf(buffer, "%i", &n3dsmokes);
+        for(i = 0; i<n3dsmokes; i++){
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i", &seq_id);
+          get_startup_vslice(seq_id);
+        }
+        update_load_Files = 1;
+        continue;
       }
-      update_load_Files = 1;
-      continue;
-    }
-    if(Match(buffer, "SLICEAUTO") == 1){
-      int n3dsmokes = 0;
-      int seq_id;
+      if(Match(buffer, "SLICEAUTO") == 1){
+        int n3dsmokes = 0;
+        int seq_id;
 
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &n3dsmokes);
-      for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &seq_id);
-        get_startup_slice(seq_id);
+        sscanf(buffer, "%i", &n3dsmokes);
+        for(i = 0; i<n3dsmokes; i++){
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i", &seq_id);
+          get_startup_slice(seq_id);
+        }
+        update_load_Files = 1;
+        continue;
       }
-      update_load_Files = 1;
-      continue;
-    }
     if(Match(buffer, "MSLICEAUTO") == 1){
       int n3dsmokes = 0;
       int seq_id;
