@@ -1291,6 +1291,7 @@ typedef struct _smoke3ddata {
 
   int ncomp_smoke_total;
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
+  float maxval;
   unsigned char *smokeframe_in, *lightframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;

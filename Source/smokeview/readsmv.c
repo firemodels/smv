@@ -5064,6 +5064,7 @@ int ReadSMV(char *file, char *file2){
         smoke3di->use_smokeframe=NULL;
         smoke3di->nchars_compressed_smoke=NULL;
         smoke3di->nchars_compressed_smoke_full=NULL;
+        smoke3di->maxval = -1.0;
         smoke3di->frame_all_zeros=NULL;
 
         smoke3di->display=0;
@@ -9720,6 +9721,11 @@ int ReadINI2(char *inifile, int localfile){
       slicezipskip = slicezipstep - 1;
       continue;
     }
+    if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);
+      continue;
+    }
     if(Match(buffer, "ISOZIPSTEP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &isozipstep);
@@ -12178,6 +12184,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
+  fprintf(fileout, "SMOKE3DCUTOFFS\n");
+  fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   fprintf(fileout, "SLICEZIPSTEP\n");
   fprintf(fileout, " %i\n", slicezipstep);
   fprintf(fileout, "SMOKE3DZIPSTEP\n");
