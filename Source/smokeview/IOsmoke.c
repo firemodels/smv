@@ -644,12 +644,12 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
     return;
   }
   if(smoke3di->maxval>=0.0){
-    if(load_hrrpuv_cutoff<=smoke3di->maxval&&smoke3di->type==FIRE){
+    if(smoke3di->type == FIRE&&smoke3di->maxval<=load_hrrpuv_cutoff){
       readsmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
       return;
     }
-    if(load_3dsmoke_cutoff<=smoke3di->maxval&&smoke3di->type==SOOT){
+    if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
       readsmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
       return;
