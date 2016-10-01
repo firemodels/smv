@@ -647,11 +647,15 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
     if(smoke3di->type == FIRE&&smoke3di->maxval<=load_hrrpuv_cutoff){
       readsmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
+      PRINTF("*** HRRPUV file: %s skipped\n",smoke3di->file);
+      PRINTF("    maximum HRRPUV %f<=%f in mesh %s\n", smoke3di->maxval,load_hrrpuv_cutoff,meshi->label);
       return;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
       readsmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
+      PRINTF("*** Soot file: %s skipped\n",smoke3di->file);
+      PRINTF("    maximum soot opacity %f<=%f in  mesh %s\n", smoke3di->maxval,load_3dsmoke_cutoff, meshi->label);
       return;
     }
   }

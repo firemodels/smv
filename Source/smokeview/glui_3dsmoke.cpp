@@ -120,6 +120,8 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_blue = NULL;
 GLUI_Spinner *SPINNER_extinct = NULL;
 GLUI_Spinner *SPINNER_smokedens=NULL;
 GLUI_Spinner *SPINNER_pathlength=NULL;
+GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
+GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 
 GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
 #ifdef pp_CULL
@@ -144,6 +146,7 @@ GLUI_Panel *PANEL_absorption=NULL,*PANEL_smokesensor=NULL;
 GLUI_Panel *PANEL_testsmoke=NULL;
 GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
+GLUI_Panel *PANEL_loadcutoff = NULL;
 
 GLUI_Rollout *ROLLOUT_colormap3 = NULL;
 GLUI_Rollout *ROLLOUT_colormap4 = NULL;
@@ -439,6 +442,13 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   Smoke3d_CB(TEMP_MIN);
   Smoke3d_CB(TEMP_CUTOFF);
   Smoke3d_CB(TEMP_MAX);
+
+  PANEL_loadcutoff = glui_3dsmoke->add_panel_to_panel(PANEL_overall, _d("Load 3D smoke/HRRPUV when..."));
+  SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("soot alpha>"),GLUI_SPINNER_FLOAT,&load_3dsmoke_cutoff);
+  SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
+  SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("HRRPUV>"),GLUI_SPINNER_FLOAT,&load_hrrpuv_cutoff);
+  SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
+
 
   if(nsmoke3dinfo>0){
     PANEL_meshvis = glui_3dsmoke->add_rollout_to_panel(PANEL_overall,"Mesh Visibility",false);
