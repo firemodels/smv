@@ -7,7 +7,7 @@ if x%from% == xbot goto skip1
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 :skip1
 
-call ..\..\scripts\test_libs ..\..\LIBS
+:: call ..\..\scripts\test_libs ..\..\LIBS
 
 
 set SMV_TESTFLAG=
