@@ -6091,6 +6091,7 @@ int ReadSMV(char *file, char *file2){
       if(nhrrpuvcut>=1){
         fgets(buffer,255,stream);
         sscanf(buffer,"%f",&global_hrrpuv_cutoff);
+        load_hrrpuv_cutoff = global_hrrpuv_cutoff;
         for(i=1;i<nhrrpuvcut;i++){
           fgets(buffer,255,stream);
         }
@@ -8639,60 +8640,6 @@ int ReadINI2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
-    if(localfile == 1){
-      if(Match(buffer, "GSLICEPARMS") == 1){
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i %i %i", &vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
-        ONEORZERO(vis_gslice_data);
-        ONEORZERO(show_gslice_triangles);
-        ONEORZERO(show_gslice_triangulation);
-        ONEORZERO(show_gslice_normal);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%f %f %f", gslice_xyz, gslice_xyz + 1, gslice_xyz + 2);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%f %f", gslice_normal_azelev, gslice_normal_azelev + 1);
-        update_gslice = 1;
-        continue;
-      }
-      if(Match(buffer, "GEOMETRYTEST") == 1){
-        int *v, ii;
-        float *b1, *b2, *b3;
-
-        v = tetrabox_vis;
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %f %f", &geomtest_option, &show_tetratest_labels, &tetra_line_thickness, &tetra_point_size);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i ", v, v + 1, v + 2, v + 3, v + 4);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i ", v + 5, v + 6, v + 7, v + 8, v + 9);
-        ONEORZERO(show_tetratest_labels);
-        for(ii = 0; ii<10; ii++){
-          ONEORZERO(v[ii]);
-        }
-        b1 = box_bounds2;
-        b2 = tetra_vertices;
-        b3 = box_translate;
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b1, b1 + 1, b1 + 2, b1 + 3, b1 + 4, b1 + 5);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b2, b2 + 1, b2 + 2, b2 + 3, b2 + 4, b2 + 5);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b2 + 6, b2 + 7, b2 + 8, b2 + 9, b2 + 10, b2 + 11);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f", b3, b3 + 1, b3 + 2);
-        continue;
-      }
-      if(Match(buffer, "GRIDPARMS") == 1){
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i %i", &visx_all, &visy_all, &visz_all);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i %i", &iplotx_all, &iploty_all, &iplotz_all);
-        if(iplotx_all>nplotx_all - 1)iplotx_all = 0;
-        if(iploty_all>nploty_all - 1)iploty_all = 0;
-        if(iplotz_all>nplotz_all - 1)iplotz_all = 0;
-        continue;
-      }
-    }
 #ifdef pp_DUP
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
@@ -9721,11 +9668,6 @@ int ReadINI2(char *inifile, int localfile){
       slicezipskip = slicezipstep - 1;
       continue;
     }
-    if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);
-      continue;
-    }
     if(Match(buffer, "ISOZIPSTEP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &isozipstep);
@@ -9760,50 +9702,6 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &show_tracers_always);
       ONEORZERO(show_tracers_always);
-      continue;
-    }
-    if(localfile == 1 && Match(buffer, "PROPINDEX") == 1){
-      int nvals;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &nvals);
-      for(i = 0; i<nvals; i++){
-        propdata *propi;
-        int ind, val;
-
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i", &ind, &val);
-        if(ind<0 || ind>npropinfo - 1)continue;
-        propi = propinfo + ind;
-        if(val<0 || val>propi->nsmokeview_ids - 1)continue;
-        propi->smokeview_id = propi->smokeview_ids[val];
-        propi->smv_object = propi->smv_objects[val];
-      }
-      for(i = 0; i<npartclassinfo; i++){
-        partclassdata *partclassi;
-
-        partclassi = partclassinfo + i;
-        update_partclass_depend(partclassi);
-
-      }
-      continue;
-    }
-    if(localfile == 1 && Match(buffer, "partclassdataVIS") == 1){
-      int ntemp;
-      int j;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &ntemp);
-
-      for(j = 0; j<ntemp; j++){
-        partclassdata *partclassj;
-
-        if(j>npartclassinfo)break;
-
-        partclassj = partclassinfo + j;
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &partclassj->vis_type);
-      }
       continue;
     }
     if(Match(buffer, "PART5COLOR") == 1){
@@ -10505,48 +10403,6 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &rotation_type);
       continue;
     }
-    if(localfile == 1 && Match(buffer, "SCRIPTFILE") == 1){
-      if(fgets(buffer2, 255, stream) == NULL)break;
-      insert_scriptfile(RemoveComment(buffer2));
-      updatemenu = 1;
-      continue;
-    }
-    if(localfile == 1 && Match(buffer, "SHOWDEVICES") == 1){
-      sv_object *obj_typei;
-      char *dev_label;
-      int ndevices_ini;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &ndevices_ini);
-
-      for(i = 0; i<nobject_defs; i++){
-        obj_typei = object_defs[i];
-        obj_typei->visible = 0;
-      }
-      for(i = 0; i<ndevices_ini; i++){
-        fgets(buffer, 255, stream);
-        TrimBack(buffer);
-        dev_label = TrimFront(buffer);
-        obj_typei = get_object(dev_label);
-        if(obj_typei != NULL){
-          obj_typei->visible = 1;
-        }
-      }
-      continue;
-    }
-    if(localfile == 1 && Match(buffer, "XYZCLIP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &clip_mode);
-      clip_mode = CLAMP(clip_mode, 0, 2);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &clipinfo.clip_xmin, &clipinfo.xmin, &clipinfo.clip_xmax, &clipinfo.xmax);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &clipinfo.clip_ymin, &clipinfo.ymin, &clipinfo.clip_ymax, &clipinfo.ymax);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &clipinfo.clip_zmin, &clipinfo.zmin, &clipinfo.clip_zmax, &clipinfo.zmax);
-      updateclipvals = 1;
-      continue;
-    }
     if(Match(buffer, "NOPART") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &nopart);
@@ -10850,33 +10706,6 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &antialiasflag);
       continue;
     }
-    if(localfile == 1 && Match(buffer, "VIEWTIMES") == 1){
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f %i", &view_tstart, &view_tstop, &view_ntimes);
-      if(view_ntimes<2)view_ntimes = 2;
-      ReallocTourMemory();
-      continue;
-    }
-    if(localfile == 1 && Match(buffer, "SHOOTER") == 1){
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f %f", shooter_xyz, shooter_xyz + 1, shooter_xyz + 2);
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f %f", shooter_dxyz, shooter_dxyz + 1, shooter_dxyz + 2);
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f %f", shooter_uvw, shooter_uvw + 1, shooter_uvw + 2);
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f %f", &shooter_velmag, &shooter_veldir, &shooterpointsize);
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%i %i %i %i %i", &shooter_fps, &shooter_vel_type, &shooter_nparts, &visShooter, &shooter_cont_update);
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f", &shooter_duration, &shooter_v_inf);
-      continue;
-    }
     {
       int nkeyframes;
       float key_time, key_xyz[3], key_az_path, key_view[3], params[3], zzoom, key_elev_path;
@@ -11079,13 +10908,26 @@ int ReadINI2(char *inifile, int localfile){
         continue;
       }
 
+
+      if(localfile!=1)continue;
+
+// ---------------------------------------------------------------------------------------------------------      
+//   keywords below are 'local', only in the casename.ini file
+// ---------------------------------------------------------------------------------------------------------
+
+      if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);
+        continue;
+      }
+      
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       ++++++++++++++++++++++ LABEL ++++++++++++++++++++++++++++++++
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       */
 
-      if(localfile == 1 && (Match(buffer, "LABEL") == 1 || Match(buffer, "TICKLABEL") == 1)){
+      if(Match(buffer, "LABEL") == 1 || Match(buffer, "TICKLABEL") == 1){
 
         /*
         LABEL
@@ -11166,6 +11008,76 @@ int ReadINI2(char *inifile, int localfile){
         LabelInsert(labeli);
         continue;
       }
+      if(Match(buffer, "VIEWTIMES") == 1){
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f %i", &view_tstart, &view_tstop, &view_ntimes);
+        if(view_ntimes<2)view_ntimes = 2;
+        ReallocTourMemory();
+        continue;
+      }
+      if(Match(buffer, "SHOOTER") == 1){
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f %f", shooter_xyz, shooter_xyz + 1, shooter_xyz + 2);
+
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f %f", shooter_dxyz, shooter_dxyz + 1, shooter_dxyz + 2);
+
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f %f", shooter_uvw, shooter_uvw + 1, shooter_uvw + 2);
+
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f %f", &shooter_velmag, &shooter_veldir, &shooterpointsize);
+
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%i %i %i %i %i", &shooter_fps, &shooter_vel_type, &shooter_nparts, &visShooter, &shooter_cont_update);
+
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%f %f", &shooter_duration, &shooter_v_inf);
+        continue;
+      }
+      if(Match(buffer, "SCRIPTFILE") == 1){
+        if(fgets(buffer2, 255, stream) == NULL)break;
+        insert_scriptfile(RemoveComment(buffer2));
+        updatemenu = 1;
+        continue;
+      }
+      if(Match(buffer, "SHOWDEVICES") == 1){
+        sv_object *obj_typei;
+        char *dev_label;
+        int ndevices_ini;
+
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i", &ndevices_ini);
+
+        for(i = 0; i<nobject_defs; i++){
+          obj_typei = object_defs[i];
+          obj_typei->visible = 0;
+        }
+        for(i = 0; i<ndevices_ini; i++){
+          fgets(buffer, 255, stream);
+          TrimBack(buffer);
+          dev_label = TrimFront(buffer);
+          obj_typei = get_object(dev_label);
+          if(obj_typei != NULL){
+            obj_typei->visible = 1;
+          }
+        }
+        continue;
+      }
+      if(Match(buffer, "XYZCLIP") == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i", &clip_mode);
+        clip_mode = CLAMP(clip_mode, 0, 2);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %f %i %f", &clipinfo.clip_xmin, &clipinfo.xmin, &clipinfo.clip_xmax, &clipinfo.xmax);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %f %i %f", &clipinfo.clip_ymin, &clipinfo.ymin, &clipinfo.clip_ymax, &clipinfo.ymax);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %f %i %f", &clipinfo.clip_zmin, &clipinfo.zmin, &clipinfo.clip_zmax, &clipinfo.zmax);
+        updateclipvals = 1;
+        continue;
+      }
+
 
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -11181,7 +11093,7 @@ int ReadINI2(char *inifile, int localfile){
       } tickdata;
       */
 
-      if(localfile == 1 && Match(buffer, "TICKS") == 1){
+      if(Match(buffer, "TICKS") == 1){
         ntickinfo++;
         ResizeMemory((void **)&tickinfo, (ntickinfo)*sizeof(tickdata));
 
@@ -11271,8 +11183,104 @@ int ReadINI2(char *inifile, int localfile){
         }
         continue;
       }
+      if(Match(buffer, "PROPINDEX") == 1){
+        int nvals;
 
-      if(localfile == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i", &nvals);
+        for(i = 0; i<nvals; i++){
+          propdata *propi;
+          int ind, val;
+
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i %i", &ind, &val);
+          if(ind<0 || ind>npropinfo - 1)continue;
+          propi = propinfo + ind;
+          if(val<0 || val>propi->nsmokeview_ids - 1)continue;
+          propi->smokeview_id = propi->smokeview_ids[val];
+          propi->smv_object = propi->smv_objects[val];
+        }
+        for(i = 0; i<npartclassinfo; i++){
+          partclassdata *partclassi;
+
+          partclassi = partclassinfo + i;
+          update_partclass_depend(partclassi);
+
+        }
+        continue;
+      }
+      if(Match(buffer, "partclassdataVIS") == 1){
+        int ntemp;
+        int j;
+
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i", &ntemp);
+
+        for(j = 0; j<ntemp; j++){
+          partclassdata *partclassj;
+
+          if(j>npartclassinfo)break;
+
+          partclassj = partclassinfo + j;
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i", &partclassj->vis_type);
+        }
+        continue;
+      }
+
+      if(Match(buffer, "GSLICEPARMS") == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %i %i %i", &vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
+        ONEORZERO(vis_gslice_data);
+        ONEORZERO(show_gslice_triangles);
+        ONEORZERO(show_gslice_triangulation);
+        ONEORZERO(show_gslice_normal);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%f %f %f", gslice_xyz, gslice_xyz + 1, gslice_xyz + 2);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%f %f", gslice_normal_azelev, gslice_normal_azelev + 1);
+        update_gslice = 1;
+        continue;
+      }
+      if(Match(buffer, "GEOMETRYTEST") == 1){
+        int *v, ii;
+        float *b1, *b2, *b3;
+
+        v = tetrabox_vis;
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %f %f", &geomtest_option, &show_tetratest_labels, &tetra_line_thickness, &tetra_point_size);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i ", v, v + 1, v + 2, v + 3, v + 4);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i ", v + 5, v + 6, v + 7, v + 8, v + 9);
+        ONEORZERO(show_tetratest_labels);
+        for(ii = 0; ii<10; ii++){
+          ONEORZERO(v[ii]);
+        }
+        b1 = box_bounds2;
+        b2 = tetra_vertices;
+        b3 = box_translate;
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f %f %f %f", b1, b1 + 1, b1 + 2, b1 + 3, b1 + 4, b1 + 5);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f %f %f %f", b2, b2 + 1, b2 + 2, b2 + 3, b2 + 4, b2 + 5);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f %f %f %f", b2 + 6, b2 + 7, b2 + 8, b2 + 9, b2 + 10, b2 + 11);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f", b3, b3 + 1, b3 + 2);
+        continue;
+      }
+      if(Match(buffer, "GRIDPARMS") == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %i %i", &visx_all, &visy_all, &visz_all);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %i %i", &iplotx_all, &iploty_all, &iplotz_all);
+        if(iplotx_all>nplotx_all - 1)iplotx_all = 0;
+        if(iploty_all>nploty_all - 1)iploty_all = 0;
+        if(iplotz_all>nplotz_all - 1)iplotz_all = 0;
+        continue;
+      }
+      {
         int tours_flag;
 
         tours_flag = 0;
@@ -11412,7 +11420,6 @@ int ReadINI2(char *inifile, int localfile){
           update_selectedtour_index = 1;
         }
       }
-
     }
 
   }
@@ -11721,6 +11728,8 @@ void WriteINILocal(FILE *fileout){
   fprintf(fileout, " %i %i %i %i %i %i %i %i\n", showdeviceval, showvdeviceval, devicetypes_index, colordeviceval, vectortype, vispilot, showdevicetype,showdeviceunit);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
+  fprintf(fileout, "SMOKE3DCUTOFFS\n");
+  fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   for(i = ntickinfo_smv; i < ntickinfo; i++){
     float *begt;
     float *endt;
@@ -12184,8 +12193,6 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
-  fprintf(fileout, "SMOKE3DCUTOFFS\n");
-  fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   fprintf(fileout, "SLICEZIPSTEP\n");
   fprintf(fileout, " %i\n", slicezipstep);
   fprintf(fileout, "SMOKE3DZIPSTEP\n");

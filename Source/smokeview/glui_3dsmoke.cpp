@@ -446,6 +446,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   PANEL_loadcutoff = glui_3dsmoke->add_panel_to_panel(PANEL_overall, _d("Load 3D smoke/HRRPUV when..."));
   SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("soot alpha>"),GLUI_SPINNER_FLOAT,&load_3dsmoke_cutoff);
   SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
+
   SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("HRRPUV>"),GLUI_SPINNER_FLOAT,&load_hrrpuv_cutoff);
   SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
