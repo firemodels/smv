@@ -315,7 +315,6 @@ SVEXTERN int SVDECL(*trainer_temp_indexes,NULL),SVDECL(*trainer_oxy_indexes,NULL
 SVEXTERN int SVDECL(trainer_showall_mslice,0),SVDECL(trainer_cycle_mslice,1);
 SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
-SVEXTERN int SVDECL(show_smoke_lighting,0),SVDECL(have_lighting,0);
 SVEXTERN int SVDECL(showdeviceval,0),SVDECL(showvdeviceval,0),SVDECL(colordeviceval,0);
 SVEXTERN int SVDECL(showdevicetype,1), SVDECL(showdeviceunit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
@@ -380,7 +379,7 @@ SVEXTERN int SVDECL(usevolrender,1);
 SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
 #ifdef pp_GPU
 SVEXTERN int GPU_aspectratio;
-SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff, GPU_smoke_albedo;
+SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
 SVEXTERN int GPU_adjustalphaflag;
@@ -1335,7 +1334,7 @@ SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
 SVEXTERN int SVDECL(fire_red,255), SVDECL(fire_green,128), SVDECL(fire_blue,0);
 
 SVEXTERN int SVDECL(smoke_red, 0), SVDECL(smoke_green, 0), SVDECL(smoke_blue, 0);
-SVEXTERN float SVDECL(smoke_albedo, 0.0), SVDECL(fire_halfdepth,2.0);
+SVEXTERN float SVDECL(fire_halfdepth,2.0);
 
 SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(firecolormap_type,FIRECOLORMAP_DIRECT),SVDECL(firecolormap_type_save,FIRECOLORMAP_DIRECT);

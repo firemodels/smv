@@ -3551,6 +3551,8 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"ALBEDO") == 1){
+      float smoke_albedo; // not implemented
+
       fgets(buffer,255,stream);
       sscanf(buffer,"%f",&smoke_albedo);
       smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
@@ -5102,7 +5104,6 @@ int ReadSMV(char *file, char *file2){
           if(ReadLabels(&smoke3di->label,stream)==2)return 2;
           nsmoke3dinfo--;
         }
-        if(smoke3di->have_light==1)have_lighting=1;
         if(strncmp(smoke3di->label.shortlabel,"soot",4)==0){
           smoke3di->type=SOOT;
         }
@@ -10740,6 +10741,7 @@ int ReadINI2(char *inifile, int localfile){
         continue;
       }
       if(Match(buffer, "SMOKEALBEDO") == 1){
+        float smoke_albedo; // not implemented
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f", &smoke_albedo);
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
@@ -12543,8 +12545,6 @@ void WriteINI(int flag,char *filename){
 #endif
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i\n",smokeskipm1);
-  fprintf(fileout,"SMOKEALBEDO\n");
-  fprintf(fileout," %f\n",smoke_albedo);
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);
