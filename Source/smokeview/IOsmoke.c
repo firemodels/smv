@@ -1138,7 +1138,7 @@ void drawsmoke3d(smoke3ddata *smoke3di){
   int ssmokedir;
   unsigned char *iblank_smoke3d;
 
-  unsigned char value[4],light_value[4];
+  unsigned char value[4];
   int ivalue[4];
 
   meshdata *meshi;
