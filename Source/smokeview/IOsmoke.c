@@ -481,7 +481,7 @@ int getsmoke3d_sizes(int fortran_skip, char *smokefile, int version, float **tim
   ntimes_full2 = 0;
   time_max = -1000000.0;
   iii = 0;
-  *maxval = 0.0;
+  *maxval = -1.0;
   while(!feof(SMOKE_SIZE)){
     float maxvali;
 
