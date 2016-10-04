@@ -1279,7 +1279,7 @@ typedef struct _smoke3ddata {
   int blocknumber;
   int type;
   int is1, is2, js1, js2, ks1, ks2;
-  int compression_type, have_light;
+  int compression_type;
   flowlabels label;
   char menulabel[128];
   float *times;
@@ -1292,7 +1292,7 @@ typedef struct _smoke3ddata {
   int ncomp_smoke_total;
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
   float maxval;
-  unsigned char *smokeframe_in, *lightframe_in, *smokeframe_out, **smokeframe_comp_list;
+  unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;

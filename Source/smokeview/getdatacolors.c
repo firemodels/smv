@@ -1353,7 +1353,6 @@ void UpdateSmokeColormap(int option){
           rgb_colormap[4*n+3]=transparent_level_local;
         }
       }
-      UpdateTexturebar();
       break;
     case FIRECOLORMAP_NOCONSTRAINT:
     case FIRECOLORMAP_CONSTRAINT:

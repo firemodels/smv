@@ -779,9 +779,6 @@ void Smoke3DShowMenu(int value){
         if(smoke3di->loaded==1)smoke3di->display=0;
       }
       break;
-    case HAVE_LIGHT:
-      show_smoke_lighting = 1 - show_smoke_lighting;
-      break;
     default:
       ASSERT(FFALSE);
     }
@@ -6633,10 +6630,6 @@ updatemenu=0;
           glutAddMenuEntry(menulabel,i);
         }
         glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
-        if(have_lighting==1){
-          if(show_smoke_lighting==1)glutAddMenuEntry(_("*Light smoke"),HAVE_LIGHT);
-          if(show_smoke_lighting==0)glutAddMenuEntry(_("Light smoke"),HAVE_LIGHT);
-        }
         if(nsmoke3dinfo>1){
           glutAddMenuEntry("-",MENU_DUMMY);
           glutAddMenuEntry(_("Show all"),SHOW_ALL);

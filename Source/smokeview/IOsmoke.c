@@ -41,12 +41,6 @@ void Smoke3d_CB(int var);
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
 if(show_smoketest==0){\
-  if(show_smoke_lighting==1&&have_light==1){\
-    light_value[0]=light_in[n11]*smoke_albedo; \
-    light_value[1]=light_in[n12]*smoke_albedo; \
-    light_value[2]=light_in[n22]*smoke_albedo; \
-    light_value[3]=light_in[n21]*smoke_albedo; \
-  }\
   value[0]=alphaf_ptr[n11]; \
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
@@ -78,14 +72,9 @@ if(show_smoketest==0){\
       alphaval = alphaval*(3.0-alphaval*(3.0-alphaval));\
       alphabyte = 255*alphaval; \
     }\
-    if(show_smoke_lighting==1&&have_light==1){\
-      glColor4ub(light_value[mm],light_value[mm],light_value[mm],alphabyte);                                \
-    }\
-    else{\
-      colorptr=mergecolorptr+ivalue[mm];\
-      colorptr[3]=alphabyte;                                   \
-      glColor4ubv(colorptr);                                \
-    }\
+    colorptr=mergecolorptr+ivalue[mm];\
+    colorptr[3]=alphabyte;                                   \
+    glColor4ubv(colorptr);                                \
     glVertex3f(XX,YY,ZZ);                                \
   }\
 }\
@@ -352,7 +341,7 @@ int getsmoke3d_sizes(int fortran_skip, char *smokefile, int version, float **tim
   int **nchars_smoke_compressed_found,
   int **nchars_smoke_compressed_full,
   float *maxval,
-  int *ntimes_found, int *ntimes_full, int *have_light){
+  int *ntimes_found, int *ntimes_full){
   char smoke_sizefilename[1024], smoke_sizefilename2[1024], buffer[255];
   char *textptr;
   FILE *SMOKE_SIZE = NULL;
@@ -372,7 +361,6 @@ int getsmoke3d_sizes(int fortran_skip, char *smokefile, int version, float **tim
   size_t lentext;
   int iii;
 
-  *have_light = 0;
   // try .sz
   strcpy(smoke_sizefilename, smokefile);
   lentext = strlen(smoke_sizefilename);
@@ -495,7 +483,6 @@ int getsmoke3d_sizes(int fortran_skip, char *smokefile, int version, float **tim
   iii = 0;
   *maxval = 0.0;
   while(!feof(SMOKE_SIZE)){
-    int nch_light;
     float maxvali;
 
     if(fgets(buffer, 255, SMOKE_SIZE) == NULL)break;
@@ -506,9 +493,10 @@ int getsmoke3d_sizes(int fortran_skip, char *smokefile, int version, float **tim
       sscanf(buffer, "%f %i %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali);
     }
     else{
+      int nch_light;
+
       nch_light = 0;
       sscanf(buffer, "%f %i %i %i %i %f", &time_local, &nch_uncompressed, &dummy, &nch_smoke_compressed, &nch_light, &maxvali);
-      if(nch_light < 0)*have_light = 1;
     }
     *maxval = MAX(maxvali, *maxval);
     *nch_smoke_compressed_full++ = nch_smoke_compressed;
@@ -549,7 +537,6 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
   int nxyz[8];
   int nchars[2];
   int nframes_found=0;
-  int have_light;
 
   float time_local;
   char compstring[128];
@@ -637,7 +624,7 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
                  &smoke3di->nchars_compressed_smoke_full,
                  &smoke3di->maxval,
                  &smoke3di->ntimes,
-                 &smoke3di->ntimes_full,&have_light)==1){
+                 &smoke3di->ntimes_full)==1){
     readsmoke3d(ifile,UNLOAD,&error);
     *errorcode=1;
     fprintf(stderr,"*** Error: problems sizing 3d smoke data for %s\n",smoke3di->file);
@@ -659,7 +646,6 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
       return;
     }
   }
-  smoke3di->have_light=have_light;
   CheckMemory;
   if(
      NewMemory((void **)&smoke3di->smokeframe_comp_list,smoke3di->ntimes_full*sizeof(unsigned char *))==0||
@@ -673,12 +659,6 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
      *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
      return;
-  }
-  if(have_light==1){
-    smoke3di->lightframe_in=smoke3di->smokeframe_in+smoke3di->nchars_uncompressed/2;
-  }
-  else{
-    smoke3di->lightframe_in=NULL;
   }
   for(i=0;i<smoke3di->ntimes_full;i++){
     smoke3di->frame_all_zeros[i]=2;
@@ -1094,9 +1074,9 @@ void mergesmoke3dcolors(smoke3ddata *smoke3dset){
         }
         else{
           firesmoke=rgb_slicesmokecolormap+4*sootcolor[j];
-          *mergecolor++ = 255*smoke_albedo;
-          *mergecolor++ = 255*smoke_albedo;
-          *mergecolor++ = 255*smoke_albedo;
+          *mergecolor++ = 255*firesmoke[0];
+          *mergecolor++ = 255*firesmoke[1];
+          *mergecolor++ = 255*firesmoke[2];
           *mergealpha++=(sootcolor[j]>>smoke3d_thick);
         }
         mergecolor++;
@@ -1139,12 +1119,11 @@ void drawsmoke3d(smoke3ddata *smoke3di){
   int ii, jj, kk;
   int ibeg, iend, jbeg, jend, kbeg, kend;
   float *znode_offset, z_offset[4];
-  int have_light;
 
   float *xplt, *yplt, *zplt;
   unsigned char mergealpha,*mergealphaptr,*mergecolorptr;
   int nx,ny,nz;
-  unsigned char *alphaf_in,*alphaf_out,*alphaf_ptr,*light_in;
+  unsigned char *alphaf_in,*alphaf_out,*alphaf_ptr;
   unsigned char *colorptr;
   int xyzindex1[6],xyzindex2[6],*xyzindex,node;
   float xnode[4],znode[4],ynode[4];
@@ -1164,7 +1143,6 @@ void drawsmoke3d(smoke3ddata *smoke3di){
 
   meshdata *meshi;
 
-  have_light = smoke3di->have_light;
   meshi = meshinfo + smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
@@ -1188,7 +1166,6 @@ void drawsmoke3d(smoke3ddata *smoke3di){
   zplt=meshi->zplt;
   iblank_smoke3d = meshi->iblank_smoke3d;
   alphaf_in=smoke3di->smokeframe_in;
-  light_in=smoke3di->lightframe_in;
   alphaf_out=smoke3di->smokeframe_out;
 
   switch(demo_mode){
@@ -3037,7 +3014,6 @@ void drawsmoke3dGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_hrrpuv_max_smv,hrrpuv_max_smv);
   glUniform1f(GPU_hrrpuv_cutoff,global_hrrpuv_cutoff);
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
-  glUniform1f(GPU_smoke_albedo, smoke_albedo);
 
   TransparentOn();
   switch(ssmokedir){
@@ -4240,7 +4216,6 @@ void drawsmoke3dCULL(void){
       glUniform1f(GPU_hrrpuv_cutoff,global_hrrpuv_cutoff);
       glUniform1f(GPU_aspectratio, aspectratio);
       glUniform1f(GPU_fire_alpha,smoke3di->fire_alpha);
-      glUniform1f(GPU_smoke_albedo, smoke_albedo);
 
       glBegin(GL_TRIANGLES);
     }
@@ -5091,7 +5066,6 @@ void makeiblank_smoke3d(void){
 
    if(smoke3di->filetype==FORTRAN_GENERATED)fortran_skip=4;
 
-   smoke3di->have_light=0;
    file=smoke3di->comp_file;
    SMOKE3D_COMPFILE=fopen(file,"rb");
    if(SMOKE3D_COMPFILE==NULL){
@@ -5111,11 +5085,6 @@ void makeiblank_smoke3d(void){
      SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
      if(feof(SMOKE3DFILE)==0){
        SKIP;fread(nchars,4,2,SMOKE3DFILE);SKIP;
-       if(feof(SMOKE3DFILE)==0){
-         if(nchars[1]<0){
-           smoke3di->have_light=1;
-         }
-       }
      }
    }
 
