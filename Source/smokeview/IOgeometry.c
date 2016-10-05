@@ -329,8 +329,7 @@ void draw_geom(int flag, int timestate){
         color = trianglei->surf->color;
         transparent_level_local=trianglei->surf->transparent_level;
       }
-      //if(geom_force_transparent == 1)transparent_level_local = transparent_level;
-      if(geom_force_transparent == 1)transparent_level_local = 0.5;
+      if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
         glColor4f(color[0],color[1],color[2],transparent_level_local);
         last_color=color;
