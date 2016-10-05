@@ -8693,7 +8693,9 @@ int ReadINI2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMSHOW") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i", &show_faces_interior, &show_faces_exterior, &show_faces_solid, &show_faces_outline, &smooth_geom_normal);
+      sscanf(buffer, " %i %i %i %i %i %i %f",
+        &show_faces_interior, &show_faces_exterior, &show_faces_solid, &show_faces_outline, &smooth_geom_normal,
+        &geom_force_transparent, &geom_transparency);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
@@ -9839,6 +9841,11 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "PLOT3DLINEWIDTH") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f ", &plot3dlinewidth);
+      continue;
+    }
+    if (Match(buffer, "VECTORCOLOR") == 1) {
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &color_vector_black);
       continue;
     }
     if(Match(buffer, "VECTORPOINTSIZE") == 1){
@@ -12152,6 +12159,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", show_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
   fprintf(fileout, " %i %f 1.0\n", 4, vecfactor);
+  fprintf(fileout, "VECTORCOLOR\n");
+  fprintf(fileout, " %i\n", color_vector_black);
   fprintf(fileout, "VECTORLINEWIDTH\n");
   fprintf(fileout, " %f %f\n", vectorlinewidth, slice_line_contour_width);
   fprintf(fileout, "VECTORPOINTSIZE\n");
@@ -12237,7 +12246,9 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
   fprintf(fileout, "GEOMSHOW\n");
-  fprintf(fileout, " %i %i %i %i %i\n", show_faces_interior, show_faces_exterior, show_faces_solid, show_faces_outline, smooth_geom_normal);
+  fprintf(fileout, " %i %i %i %i %i %i %f\n",
+     show_faces_interior, show_faces_exterior, show_faces_solid, show_faces_outline, smooth_geom_normal,
+     geom_force_transparent, geom_transparency);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
 
