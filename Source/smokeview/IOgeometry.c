@@ -329,6 +329,8 @@ void draw_geom(int flag, int timestate){
         color = trianglei->surf->color;
         transparent_level_local=trianglei->surf->transparent_level;
       }
+      //if(geom_force_transparent == 1)transparent_level_local = transparent_level;
+      if(geom_force_transparent == 1)transparent_level_local = 0.5;
       if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
         glColor4f(color[0],color[1],color[2],transparent_level_local);
         last_color=color;
@@ -3336,6 +3338,7 @@ void ShowHideSortGeometry(float *mm){
           tri = geomlisti->triangles + j;
           if(hilight_skinny == 1 && tri->skinny == 1)is_opaque = 1;
           if(tri->surf->transparent_level >= 1.0)is_opaque = 1;
+          if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->surf - surfinfo - nsurfinfo - 1;
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->surf->transparent_level <= 0.0){
             continue;
