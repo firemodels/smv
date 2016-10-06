@@ -2813,7 +2813,7 @@ extern "C" void Slice_CB(int var){
           Part_CB(SETVALMAX);
           Part_CB(FILERELOAD);
         }
-        
+
         // plot3d files
 
         if(nplot3dloaded>0){
