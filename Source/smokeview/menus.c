@@ -657,12 +657,6 @@ void SmokeColorbarMenu(int value){
     keyboard(' ',FROM_SMOKEVIEW);
     keyboard('-',FROM_SMOKEVIEW);
   }
-  if (firecolormap_type == 0) {
-    firecolormap_type = 1;
-#define FIRECOLORMAP_TYPE 17
-    void Smoke3d_CB(int var);
-    Smoke3d_CB(FIRECOLORMAP_TYPE);
-  }
   glutPostRedisplay();
 }
 
