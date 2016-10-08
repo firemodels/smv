@@ -2549,7 +2549,7 @@ void LoadUnloadMenu(int value){
       readpatch(i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      if(smoke3dinfo[i].loaded==1){
+      if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
         readsmoke3d(i,LOAD,&errorcode);
       }
     }

@@ -570,6 +570,7 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
     UpdateTimes();
     Read3DSmoke3DFile=0;
     setsmokecolorflags();
+    smoke3di->request_load = 0;
 
     hrrpuv_loaded=0;
     for(j=0;j<nsmoke3dinfo;j++){
@@ -618,6 +619,7 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
   }
 
   CheckMemory;
+  smoke3di->request_load = 1;
   if(getsmoke3d_sizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
                  &smoke3di->nchars_uncompressed,
                  &smoke3di->nchars_compressed_smoke,
