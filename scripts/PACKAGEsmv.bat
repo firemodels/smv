@@ -70,7 +70,7 @@ if "%platform%" == "linux" (
 
   )
   if "%buildtype%" == "test" (
-    pscp %linux_logon%:%bundledir%/smv_test_%smv_revision%_linux64.sh ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sh ..\uploads\.
   )
   goto eof
 )
@@ -96,7 +96,7 @@ if "%platform%" == "osx" (
     pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sh ..\uploads\.
   )
   if "%buildtype%" == "test" (
-    pscp %osx_logon%:%bundledir%/smv_test_%smv_revision%_osx64.sh ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sh ..\uploads\.
   )
   goto eof
 )
