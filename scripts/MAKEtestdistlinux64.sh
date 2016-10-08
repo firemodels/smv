@@ -60,7 +60,7 @@ DEM2FDSDIR=$SVNROOT/smv/Build/dem2fds/intel_linux_64
 SMDDIR=$SVNROOT/smv/Build/smokediff/intel_linux_64
 WINDDIR=$SVNROOT/smv/Build/wind2fds/intel_linux_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
-LINUXDIR=smv_test\_$revision\_linux64
+LINUXDIR=$revision\_linux64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 
 cd $SVNROOT/smv/uploads
