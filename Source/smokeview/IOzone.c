@@ -1108,6 +1108,7 @@ void drawroomgeom(void){
     for(i=0;i<nzvents;i++){
       zventdata *zvi;
       float x1, x2, y1, y2, z1, z2;
+      float xx, yy, zz;
 
       zvi = zventinfo + i;
 
@@ -1121,46 +1122,49 @@ void drawroomgeom(void){
       glBegin(GL_LINE_LOOP);
       switch(zvi->wall){
       case LEFT_WALL:
-        glVertex3f(x1, y1, z1);
-        glVertex3f(x1, y2, z1);
-        glVertex3f(x1, y2, z2);
-        glVertex3f(x1, y1, z2);
-        glVertex3f(x1, y1, z1);
-        break;
       case RIGHT_WALL:
-        glVertex3f(x2, y1, z1);
-        glVertex3f(x2, y2, z1);
-        glVertex3f(x2, y2, z2);
-        glVertex3f(x2, y1, z2);
-        glVertex3f(x2, y1, z1);
+        xx = x1;
+        if(zvi->wall==RIGHT_WALL)xx = x2;
+        glVertex3f(xx, y1, z1);
+        glVertex3f(xx, y2, z1);
+        glVertex3f(xx, y2, z2);
+        glVertex3f(xx, y1, z2);
+        glVertex3f(xx, y1, z1);
+        if(zvi->area_fraction < 0.0001){
+          glVertex3f(xx, y2, z2);
+          glVertex3f(xx, y1, z2);
+          glVertex3f(xx, y2, z1);
+        }
         break;
       case FRONT_WALL:
-        glVertex3f(x1, y1, z1);
-        glVertex3f(x2, y1, z1);
-        glVertex3f(x2, y1, z2);
-        glVertex3f(x1, y1, z2);
-        glVertex3f(x1, y1, z1);
-        break;
       case BACK_WALL:
-        glVertex3f(x1,y2,z1);
-        glVertex3f(x2,y2,z1);
-        glVertex3f(x2,y2,z2);
-        glVertex3f(x1,y2,z2);
-        glVertex3f(x1,y2,z1);
+        yy = y1;
+        if(zvi->wall==BACK_WALL)yy = y2;
+        glVertex3f(x1, yy, z1);
+        glVertex3f(x2, yy, z1);
+        glVertex3f(x2, yy, z2);
+        glVertex3f(x1, yy, z2);
+        glVertex3f(x1, yy, z1);
+        if(zvi->area_fraction < 0.0001){
+          glVertex3f(x2, yy, z2);
+          glVertex3f(x1, yy, z2);
+          glVertex3f(x2, yy, z1);
+        }
         break;
       case BOTTOM_WALL:
-        glVertex3f(x1,y1,z1);
-        glVertex3f(x2,y1,z1);
-        glVertex3f(x2,y2,z1);
-        glVertex3f(x1,y2,z1);
-        glVertex3f(x1,y1,z1);
-        break;
       case TOP_WALL:
-        glVertex3f(x1,y1,z2);
-        glVertex3f(x2,y1,z2);
-        glVertex3f(x2,y2,z2);
-        glVertex3f(x1,y2,z2);
-        glVertex3f(x1,y1,z2);
+        zz = z1;
+        if(zvi->wall==TOP_WALL)zz = z2;
+        glVertex3f(x1,y1,zz);
+        glVertex3f(x2,y1,zz);
+        glVertex3f(x2,y2,zz);
+        glVertex3f(x1,y2,zz);
+        glVertex3f(x1,y1,zz);
+        if(zvi->area_fraction < 0.0001){
+          glVertex3f(x2,y2,zz);
+          glVertex3f(x1,y2,zz);
+          glVertex3f(x2,y1,zz);
+        }
         break;
       default:
         ASSERT(FFALSE);

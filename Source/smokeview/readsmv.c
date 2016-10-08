@@ -3049,6 +3049,10 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   dxyz[0] = ABS(xyz[0] - xyz[1]);
   dxyz[1] = ABS(xyz[2] - xyz[3]);
   dxyz[2] = ABS(xyz[4] - xyz[5]);
+  zvi->area = 1.0;
+  if(dxyz[0] > 0.0)zvi->area *= dxyz[0];
+  if(dxyz[1] > 0.0)zvi->area *= dxyz[1];
+  if(dxyz[2] > 0.0)zvi->area *= dxyz[2];
   // see which side of room vent is closest too
   if(dxyz[0] < MIN(dxyz[1], dxyz[2])){
     if(ABS(zvi->x0 - roomi->x0) < ABS(zvi->x0 - roomi->x1)){
@@ -6225,7 +6229,7 @@ int ReadSMV(char *file, char *file2){
           }
         }
         roomi = roominfo + roomfrom - 1;
-        if(vent_area<0.0)vent_area=-vent_area;
+        vent_area=ABS(vent_area);
         ventside=sqrt(vent_area);
         xcen = (roomi->x0+roomi->x1)/2.0;
         ycen = (roomi->y0+roomi->y1)/2.0;
