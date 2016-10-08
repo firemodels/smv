@@ -90,4 +90,4 @@ echo ""
 tar cvf ../$LINUXDIR.tar .
 cd ..
 gzip $LINUXDIR.tar
-$UPDATER Linux $revision $LINUXDIR.tar.gz $LINUXDIR.sh FDS/FDS6 test
+$UPDATER Linux $revision $LINUXDIR.tar.gz $LINUXDIR.sh FDS/FDS6
