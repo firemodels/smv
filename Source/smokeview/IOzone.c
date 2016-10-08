@@ -1112,13 +1112,20 @@ void drawroomgeom(void){
 
       zvi = zventinfo + i;
 
-      glColor4fv(zvi->color);
-      x1=zvi->x0;
-      x2=zvi->x1;
+      x1 = zvi->x0;
+      x2 = zvi->x1;
       y1 = zvi->y0;
       y2 = zvi->y1;
       z1 = zvi->z0;
-      z2=zvi->z1;
+      z2 = zvi->z1;
+      if(zvi->vent_type == MFLOW_VENT){
+        glPushMatrix();
+        glTranslatef(x2, y2, z2);
+        void drawsphere(float diameter, float *color);
+        drawsphere(0.02, foregroundcolor);
+        glPopMatrix();
+      }
+      glColor4fv(zvi->color);
       glBegin(GL_LINE_LOOP);
       switch(zvi->wall){
       case LEFT_WALL:
