@@ -1273,7 +1273,7 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   int filetype;
-  int loaded, display, d_display;
+  int loaded, display, request_load, d_display;
   int is_zlib;
   int soot_loaded,water_loaded,hrrpuv_loaded;
   int blocknumber;
