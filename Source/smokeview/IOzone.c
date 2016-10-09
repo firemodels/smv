@@ -1104,7 +1104,6 @@ void drawroomgeom(void){
   }
 
   if(visVents==1){
-    glLineWidth(ventlinewidth);
     for(i=0;i<nzvents;i++){
       zventdata *zvi;
       float x1, x2, y1, y2, z1, z2;
@@ -1118,14 +1117,95 @@ void drawroomgeom(void){
       y2 = zvi->y1;
       z1 = zvi->z0;
       z2 = zvi->z1;
+      glColor4fv(zvi->color);
       if(zvi->vent_type == MFLOW_VENT){
         glPushMatrix();
         glTranslatef(x2, y2, z2);
         void drawsphere(float diameter, float *color);
-        drawsphere(0.02, foregroundcolor);
+        drawsphere(0.02, NULL);
         glPopMatrix();
       }
-      glColor4fv(zvi->color);
+      if(zvi->vent_type == MFLOW_VENT){
+        float x0, y0, z0, ddx, ddy, ddz, dxyz;
+
+        glBegin(GL_TRIANGLES);
+        switch(zvi->wall){
+        case LEFT_WALL:
+        case RIGHT_WALL:
+          xx = x1;
+          if(zvi->wall == RIGHT_WALL)xx = x2;
+          ddy = y2 - y1;
+          ddz = z2 - z1;
+          dxyz = MIN(ddy, ddz)/4.0;
+
+          y0 = y2 - dxyz;
+          z0 = z2 - dxyz;
+          glVertex3f(xx, y0, z0);
+          glVertex3f(xx, y2, z0);
+          glVertex3f(xx, y2, z2);
+          glVertex3f(xx, y0, z0);
+          glVertex3f(xx, y2, z2);
+          glVertex3f(xx, y0, z2);
+          glVertex3f(xx, y0, z0);
+          glVertex3f(xx, y2, z2);
+          glVertex3f(xx, y2, z0);
+          glVertex3f(xx, y0, z0);
+          glVertex3f(xx, y0, z2);
+          glVertex3f(xx, y2, z2);
+          break;
+        case FRONT_WALL:
+        case BACK_WALL:
+          yy = y1;
+          if(zvi->wall == BACK_WALL)yy = y2;
+          ddx = x2 - x1;
+          ddz = z2 - z1;
+          dxyz = MIN(ddx, ddz) / 4.0;
+
+          x0 = x2 - dxyz;
+          z0 = z2 - dxyz;
+          glVertex3f(x0, yy, z0);
+          glVertex3f(x2, yy, z0);
+          glVertex3f(x2, yy, z2);
+          glVertex3f(x0, yy, z0);
+          glVertex3f(x2, yy, z2);
+          glVertex3f(x0, yy, z2);
+          glVertex3f(x0, yy, z0);
+          glVertex3f(x2, yy, z2);
+          glVertex3f(x2, yy, z0);
+          glVertex3f(x0, yy, z0);
+          glVertex3f(x0, yy, z2);
+          glVertex3f(x2, yy, z2);
+          break;
+        case BOTTOM_WALL:
+        case TOP_WALL:
+          zz = z1;
+          if(zvi->wall == TOP_WALL)zz = z2;
+          ddy = y2 - y1;
+          ddz = z2 - z1;
+          dxyz = MIN(ddy, ddz) / 4.0;
+
+          y0 = y2 - dxyz;
+          z0 = z2 - dxyz;
+          glVertex3f(x0, y0, zz);
+          glVertex3f(x2, y0, zz);
+          glVertex3f(x2, y2, zz);
+          glVertex3f(x0, y0, zz);
+          glVertex3f(x2, y2, zz);
+          glVertex3f(x0, y2, zz);
+          glVertex3f(x0, y0, zz);
+          glVertex3f(x2, y2, zz);
+          glVertex3f(x2, y0, zz);
+          glVertex3f(x0, y0, zz);
+          glVertex3f(x0, y2, zz);
+          glVertex3f(x2, y2, zz);
+          break;
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glEnd();
+      }
+      glLineWidth(ventlinewidth);
       glBegin(GL_LINE_LOOP);
       switch(zvi->wall){
       case LEFT_WALL:
