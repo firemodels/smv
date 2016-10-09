@@ -1247,7 +1247,7 @@ void drawroomgeom(void){
         glVertex3f(x2,y2,zz);
         glVertex3f(x1,y2,zz);
         glVertex3f(x1,y1,zz);
-        if(ReadZoneFile == 1 && zvi->area_fraction < 0.0001){
+        if(zvi->area_fraction < 0.0001){
           glVertex3f(x2,y2,zz);
           glVertex3f(x1,y2,zz);
           glVertex3f(x2,y1,zz);

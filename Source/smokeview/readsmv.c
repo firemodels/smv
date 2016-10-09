@@ -3017,21 +3017,22 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   float color[4];
   roomdata *roomi;
   int roomfrom=-1, roomto=-1;
+  float area_fraction = 1.0;
 
   color[0]=1.0;
   color[1]=0.0;
   color[2]=1.0;
   color[3]=1.0;
   if(flag==ZVENT_2ROOM){
-    sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f",
+    sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f %f",
       &roomfrom, &roomto, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
-      color, color + 1, color + 2
+      color, color + 1, color + 2, &area_fraction
   );
   }
   else{
-    sscanf(buffer, "%i %f %f %f %f %f %f %f %f %f",
+    sscanf(buffer, "%i %f %f %f %f %f %f %f %f %f %f",
       &roomfrom, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
-      color, color + 1, color + 2);
+      color, color + 1, color + 2, &area_fraction);
     roomto = roomfrom;
   }
 
@@ -3080,6 +3081,7 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
     }
   }
   zvi->color = getcolorptr(color);
+  zvi->area_fraction = area_fraction;
 }
 
   /* ------------------ ReadSMV ------------------------ */
@@ -6212,11 +6214,12 @@ int ReadSMV(char *file, char *file2){
         float ventside;
         float xcen, ycen;
         int r_from, r_to;
+        float area_fraction=1.0;
 
         nzvvents++;
-        sscanf(buffer,"%i %i %i %f %i %f %f %f",
+        sscanf(buffer,"%i %i %i %f %i %f %f %f %f",
           &r_from,&r_to,&wall,&vent_area,&vertical_vent_type,
-          color,color+1,color+2
+          color,color+1,color+2, &area_fraction
           );
         zvi->wall=wall;
         roomfrom=r_from;
@@ -6256,11 +6259,12 @@ int ReadSMV(char *file, char *file2){
 
         zvi->vertical_vent_type = vertical_vent_type;
         zvi->area = vent_area;
+        zvi->area_fraction = area_fraction;
         zvi->color = getcolorptr(color);
       }
       else if(vent_type==MFLOW_VENT){
         nzmvents++;
-         ReadZVentData(zvi, buffer, ZVENT_1ROOM);
+        ReadZVentData(zvi, buffer, ZVENT_1ROOM);
       }
       CheckMemory;
       continue;
