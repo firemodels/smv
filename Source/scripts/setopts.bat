@@ -10,6 +10,11 @@ IF "%1" NEQ "g" SET COMPILER2=icl
 IF "%1" EQU "m" SET COMPILER=cl
 IF "%1" EQU "m" SET COMPILER2=cl
 
+SET COPYLIB=0
+IF "%2" EQU "-copy" SET COPYLIB=1
+IF "%2" EQU "-copy" SET FROMLIB=%3
+IF "%2" EQU "-copy" SET TOLIB=%4
+
 SET MSCOMPILER=x86_amd64
 
 IF "%COMPILER%" NEQ "cl" GOTO MSenvexist
