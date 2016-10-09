@@ -1217,7 +1217,7 @@ void drawroomgeom(void){
         glVertex3f(xx, y2, z2);
         glVertex3f(xx, y1, z2);
         glVertex3f(xx, y1, z1);
-        if(zvi->area_fraction < 0.0001){
+        if(ReadZoneFile==1 && zvi->area_fraction < 0.0001){
           glVertex3f(xx, y2, z2);
           glVertex3f(xx, y1, z2);
           glVertex3f(xx, y2, z1);
@@ -1232,7 +1232,7 @@ void drawroomgeom(void){
         glVertex3f(x2, yy, z2);
         glVertex3f(x1, yy, z2);
         glVertex3f(x1, yy, z1);
-        if(zvi->area_fraction < 0.0001){
+        if(ReadZoneFile == 1 && zvi->area_fraction < 0.0001){
           glVertex3f(x2, yy, z2);
           glVertex3f(x1, yy, z2);
           glVertex3f(x2, yy, z1);
@@ -1247,7 +1247,7 @@ void drawroomgeom(void){
         glVertex3f(x2,y2,zz);
         glVertex3f(x1,y2,zz);
         glVertex3f(x1,y1,zz);
-        if(zvi->area_fraction < 0.0001){
+        if(ReadZoneFile == 1 && zvi->area_fraction < 0.0001){
           glVertex3f(x2,y2,zz);
           glVertex3f(x1,y2,zz);
           glVertex3f(x2,y1,zz);
