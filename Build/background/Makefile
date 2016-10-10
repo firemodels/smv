@@ -57,6 +57,13 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu Linux 64 ----------------
 
+gnu_linux_32 : CFLAGS    = -O2 -D pp_LINUX $(GITINFO)
+gnu_linux_32 : CC        = gcc
+gnu_linux_32 : exe       = background
+
+gnu_linux_32: $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm
+
 gnu_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = background
