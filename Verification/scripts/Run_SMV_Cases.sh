@@ -151,7 +151,7 @@ done
 
 export FDS_DEBUG
 
-size=_64
+size=_$size
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
