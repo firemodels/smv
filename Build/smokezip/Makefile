@@ -60,8 +60,20 @@ intel_win_64 : exe       = smokezip_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)/intel_win_64/pthreads.lib $(LIB_DIR)/intel_win_64/zlib.lib
 
-# ------------- gnu Linux ----------------
-#  gnu linux
+# ------------- 32 bit gnu Linux ----------------
+
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX $(GITINFO)
+gnu_linux_32 : LFLAGS    = 
+gnu_linux_32 : CC        = gcc
+gnu_linux_32 : CPP       = g++
+gnu_linux_32 : FC        = gfortran
+gnu_linux_32 : exe       = smokezip_linux_64
+
+gnu_linux_32 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_64 -lz -lpthread
+
+# ------------- 64 bit gnu Linux ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX $(GITINFO)
