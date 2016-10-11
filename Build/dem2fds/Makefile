@@ -51,12 +51,33 @@ no_target:
 
 # ********  rules for each platform supported *************
 
+# ------------- Windows 64 ----------------
+
 intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = dem2fds_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+
+# ------------- gnu Linux 32 ----------------
+
+gnu_linux_32 : CFLAGS    = -O2 -D pp_LINUX $(GITINFO)
+gnu_linux_32 : CC        = gcc
+gnu_linux_32 : exe       = dem2fds_linux_32
+
+gnu_linux_32: $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm
+
+# ------------- gnu Linux 64 ----------------
+
+gnu_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO)
+gnu_linux_64 : CC        = gcc
+gnu_linux_64 : exe       = dem2fds_linux_64
+
+gnu_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
+
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
