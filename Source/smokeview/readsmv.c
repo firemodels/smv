@@ -6162,10 +6162,12 @@ int ReadSMV(char *file, char *file2){
       color[2]=1.0;
       color[3]=1.0;
       if(vent_type==HFLOW_VENT){
+        float area_fraction=1.0;
+
         nzhvents++;
-        sscanf(buffer,"%i %i %i %f %f %f %f %f %f %f",
+        sscanf(buffer,"%i %i %i %f %f %f %f %f %f %f %f",
           &roomfrom,&roomto, &wall,&vent_width,&ventoffset,&bottom,&top,
-          color,color+1,color+2
+          color,color+1,color+2,&area_fraction
           );
 
         zvi->area=vent_width*(top-bottom);
@@ -6209,6 +6211,7 @@ int ReadSMV(char *file, char *file2){
           ASSERT(FFALSE);
         }
         zvi->color = getcolorptr(color);
+        zvi->area_fraction = area_fraction;
       }
       else if(vent_type==VFLOW_VENT){
         float ventside;
