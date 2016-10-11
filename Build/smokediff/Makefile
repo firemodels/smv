@@ -69,8 +69,7 @@ intel_win_64 : $(objwin)
 LINUXFORTLIBS_32=$(FORTLIBDIR)/ia32/libifcore.a
 LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 
-# ------------- Linux gnu ----------------
-#  gnu linux
+# ------------- 32 bit Linux gnu ----------------
 
 gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
 gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX $(GITINFO)
@@ -82,6 +81,8 @@ gnu_linux_32 : exe       = smokediff_linux_32
 
 gnu_linux_32 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
+
+# ------------- 64 bit Linux gnu ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX $(GITINFO)
