@@ -1,6 +1,6 @@
 SOURCE_DIR = ../../../Source/
 LIB_DIR = ../../LIBS
-INC_DIR =  -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
+INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 FILTERC =
 FILTERF =
 OPT =
@@ -50,6 +50,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
+intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64 -D pp_INTEL $(OPT) $(GITINFO)
 intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 /iface:stdref /fpscomp:general
 intel_win_64 : CC        = icl
@@ -106,7 +107,6 @@ gnu_osx_64 : $(obj)
 LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 
 
-intel_linux_64 : INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_noappend -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX -D pp_INTEL $(GITINFO)
 intel_linux_64 : CC        = icc
