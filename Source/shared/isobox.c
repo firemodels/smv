@@ -119,8 +119,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     val2 = vals[i2];
     vert1 = verts[i1];
     vert2 = verts[i2];
-    if(((val1<=level&&level<=val2)||(val2<=level&&level<=val1))&&
-       ABS(val1-val2)>0.0){
+    if((val1<=level&&level<=val2||val2<=level&&level<=val1)&&ABS(val1-val2)>0.0){
       volfactors[i] = (level-val1)/(val2-val1);
     }
     else{
