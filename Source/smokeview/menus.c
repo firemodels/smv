@@ -361,8 +361,8 @@ void ShowAllSlices(char *type1, char *type2){
       sliceinfo[i].display = 0;
       if(sliceinfo[i].loaded == 0)continue;
       if(
-        type1 != NULL&&STRCMP(sliceinfo[i].label.longlabel, type1) == 0 ||
-        type2 != NULL&&STRCMP(sliceinfo[i].label.longlabel, type2) == 0
+        (type1 != NULL&&STRCMP(sliceinfo[i].label.longlabel, type1) == 0) ||
+        (type2 != NULL&&STRCMP(sliceinfo[i].label.longlabel, type2) == 0)
         ){
         sliceinfo[i].display = 1;
         islicetype = sliceinfo[i].type;
@@ -580,14 +580,12 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_timelabel:
      visTimelabel=1-visTimelabel;
-     if(visTimelabel==1)visTimebar=1;
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
-     if(visFramelabel==1)visTimebar=1;
      if(visFramelabel==1){
        visHRRlabel=0;
-	   UpdateHrrinfo(visHRRlabel);
+       UpdateHrrinfo(visHRRlabel);
      }
      break;
    case MENU_LABEL_meshlabel:
@@ -620,8 +618,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_hrr:
      visHRRlabel=1-visHRRlabel;
-     if(visHRRlabel==1)visTimebar=1;
-	 UpdateHrrinfo(visHRRlabel);
+     UpdateHrrinfo(visHRRlabel);
      break;
    case MENU_LABEL_hrrcutoff:
      show_hrrcutoff=1-show_hrrcutoff;
@@ -6323,7 +6320,8 @@ updatemenu=0;
                 }
               }
             }
-            if(partclassj->smv_device!=NULL&&partclassj->device_name!=NULL||
+            if(
+              (partclassj->smv_device!=NULL&&partclassj->device_name!=NULL)||
               (partclassj->prop!=NULL&&partclassj->prop->smokeview_id!=NULL)
               ){
               if(partclassj->device_name!=NULL){
@@ -6584,7 +6582,7 @@ updatemenu=0;
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
-  if(nsmoke3dinfo>0&&Read3DSmoke3DFile==1||nvolrenderinfo>0){
+  if((nsmoke3dinfo>0&&Read3DSmoke3DFile==1)||nvolrenderinfo>0){
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
@@ -8112,7 +8110,7 @@ updatemenu=0;
             char mlabel[1024], mlabel2[1024];
 
             STRCPY(mlabel,si->label.longlabel);
-            if(i==0&&si->mesh_type>0||(i>0&&si->mesh_type!=sim1->mesh_type)){
+            if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
               sprintf(mlabel2,"*** Evac type %i meshes ***",si->mesh_type);
               glutAddMenuEntry(mlabel2,MENU_DUMMY);
             }
@@ -8260,7 +8258,7 @@ updatemenu=0;
               char mlabel[1024], mlabel2[1024];
 
               STRCPY(mlabel,sd->label.longlabel);
-              if(ii==0&&sd->mesh_type>0||(ii>0&&sd->mesh_type!=sdm1->mesh_type)){
+              if((ii==0&&sd->mesh_type>0)||(ii>0&&sd->mesh_type!=sdm1->mesh_type)){
                 sprintf(mlabel2,"*** Evac type %i meshdata ***",sd->mesh_type);
                 glutAddMenuEntry(mlabel2,MENU_DUMMY);
               }
@@ -8397,7 +8395,7 @@ updatemenu=0;
             char mlabel[1024], mlabel2[1024];
 
             STRCPY(mlabel,sd->label.longlabel);
-            if(i==0&&sd->mesh_type>0||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
+            if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
               sprintf(mlabel2,"*** Evac type %i meshes ***",sd->mesh_type);
               if(sd->slicetype==SLICE_CELL_CENTER){
                 flowlabels *label;
@@ -8548,7 +8546,7 @@ updatemenu=0;
           char mlabel[1024],mlabel2[1024];;
 
           STRCPY(mlabel,sd->label.longlabel);
-          if(i==0&&sd->mesh_type>0||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
+          if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
             if(sd->menu_show==1){
               sprintf(mlabel2,"*** Evac type %i meshdata ***",sd->mesh_type);
               glutAddMenuEntry(mlabel2,MENU_DUMMY);
