@@ -2870,8 +2870,8 @@ void updatevslices(void){
       if(slicej->idir<1)continue;
       if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||
-        slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
@@ -6438,7 +6438,7 @@ int getslicezlibdata(char *file,
 
     fread(&ttime,4,1,stream);
     fread(&nncomp,4,1,stream);
-    if(count++%sliceskip!=0||set_tmin==1&&ttime<tmin_local||set_tmax==1&&ttime>tmax_local){
+    if((count++%sliceskip!=0)||(set_tmin==1&&ttime<tmin_local)||(set_tmax==1&&ttime>tmax_local)){
       FSEEK(stream,nncomp,SEEK_CUR);
       continue;
     }
@@ -6669,8 +6669,8 @@ void update_slicedir_count(void){
       if(slicej->idir<1)continue;
       if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||
-        slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       mslicei->ndirxyz[slicej->idir]++;
     }
   }
@@ -6695,7 +6695,8 @@ void update_slicedir_count(void){
 	    if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
 	    //if(slicej->cellcenter!=slicei->cellcenter)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       slicei->ndirxyz[slicej->idir]++;
   	}
   }

@@ -656,7 +656,7 @@ write(lu11,iostat=error)time
 if(error.ne.0)return
 write(lu11,iostat=error)(((qframe(1+i+j*nxsp+k*nxsp*nysp),i=0,nxsp-1),j=0,nysp-1),k=0,nzsp-1)
 
-999 continue
+!999 continue
 
 return
 end subroutine outsliceframe
