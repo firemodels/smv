@@ -5256,7 +5256,7 @@ char *parse_device_frame(char *buffer, FILE *stream, int *eof, sv_object_frame *
     if(c==':'){
       frame->symbols[nsymbols++]=i;
     }
-    if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))ncommands++;
+    if(c>='a'&&c<='z'||c>='A'&&c<='Z')ncommands++;
   }
   frame->nsymbols=nsymbols;
   frame->ncommands=ncommands;
@@ -5277,7 +5277,7 @@ char *parse_device_frame(char *buffer, FILE *stream, int *eof, sv_object_frame *
     toki->is_texturefile=0;
     toki->next=NULL;
     if(first_token==NULL&&c!=':')first_token=toki;
-    if((c>='a'&&c<='z')||(c>='A'&&c<='Z')){
+    if(c>='a'&&c<='z'||c>='A'&&c<='Z'){
       int use_displaylist;
       int nargs_actual, noutargs_actual;
       tokendata *this_token, *last_token;

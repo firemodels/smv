@@ -475,7 +475,7 @@ void mouse_select_avatar(int button, int state, int x, int y){
 void checktimebound(void){
   int i;
 
-  if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
+  if(timebar_drag==0&&itimes>nglobal_times-1||timebar_drag==1&&itimes<0){
     izone=0;
     itimes=first_frame_index;
     if(rendering_status==RENDER_ON){
@@ -505,7 +505,7 @@ void checktimebound(void){
       meshi->iso_itime=0;
     }
   }
-  if((timebar_drag==0&&itimes<0)||(timebar_drag==1&&itimes>nglobal_times-1)){
+  if(timebar_drag==0&&itimes<0||timebar_drag==1&&itimes>nglobal_times-1){
     izone=nzone_times-1;
     itimes=nglobal_times-1;
     for(i=0;i<npartinfo;i++){
@@ -731,7 +731,7 @@ void update_mouseinfo(int flag, int xm, int ym){
         y = quat_general[2];
         z = quat_general[3];
         if(z*z<x*x+y*y)inside=1;
-        if((inside==1&&dy<0.0)||(inside==0&&dx<0.0))delta_angle=-delta_angle;
+        if(inside==1&&dy<0.0||inside==0&&dx<0.0)delta_angle=-delta_angle;
         axis[0]=2.0*x*z + 2.0*w*y;
         axis[1]=2.0*y*z-2.0*w*x;
         axis[2]=1.0-2*x*x-2*y*y;
@@ -1734,8 +1734,8 @@ void keyboard(unsigned char key, int flag){
     case 'q':
     case 'Q':
       blocklocation++;
-      if((blocklocation>BLOCKlocation_cad||
-         blocklocation>BLOCKlocation_exact)&&ncadgeom==0){
+      if(blocklocation>BLOCKlocation_cad||
+         blocklocation>BLOCKlocation_exact&&ncadgeom==0){
          blocklocation=BLOCKlocation_grid;
       }
       if(showedit_dialog==1&&geomtest_option==NO_TEST){

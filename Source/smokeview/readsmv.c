@@ -3970,8 +3970,7 @@ int ReadSMV(char *file, char *file2){
   }
   else{
     if(nmeshes>1){
-      if((nmeshes!=ntrnx||nmeshes!=ntrny||nmeshes!=ntrnz||nmeshes!=npdim||nmeshes!=nOBST||nmeshes!=nVENT||nmeshes!=noffset)&&
-         (nCVENT!=0&&nCVENT!=nmeshes)){
+      if(nmeshes!=ntrnx||nmeshes!=ntrny||nmeshes!=ntrnz||nmeshes!=npdim||nmeshes!=nOBST||nmeshes!=nVENT||nmeshes!=noffset&&(nCVENT!=0&&nCVENT!=nmeshes)){
         fprintf(stderr,"*** Error:\n");
         if(nmeshes!=ntrnx)fprintf(stderr,"*** Error:  found %i TRNX keywords, was expecting %i\n",ntrnx,nmeshes);
         if(nmeshes!=ntrny)fprintf(stderr,"*** Error:  found %i TRNY keywords, was expecting %i\n",ntrny,nmeshes);
@@ -6689,7 +6688,7 @@ typedef struct {
         sscanf(buffer,"%i %i %i %i %i %i %i %i",
           ijk,ijk+1,ijk+2,ijk+3,ijk+4,ijk+5,
           &colorindex,&blocktype);
-        if((blocktype&3)==3)blocktype -= 3; // convert any smooth blocks to 'normal' blocks
+        if(blocktype&3==3)blocktype -= 3; // convert any smooth blocks to 'normal' blocks
         if(blocktype>0&&(blocktype&8)==8){
           bc->is_wuiblock=1;
           blocktype -= 8;
