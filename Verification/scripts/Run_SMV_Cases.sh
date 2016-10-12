@@ -63,6 +63,7 @@ echo "-s - stop FDS runs"
 echo "-u - use installed versions of utilities background and wind2fds"
 echo "-w - wait for cases to complete before returning"
 echo "-W - run only WUI cases"
+echo "-Y - run SMV and WUI cases"
 exit
 }
 
@@ -88,7 +89,7 @@ cd $CURDIR/..
 
 
 use_installed="0"
-while getopts 'c:dghI:j:m:o:p:q:rsuWw' OPTION
+while getopts 'c:dghI:j:m:o:p:q:rsuWwY' OPTION
 do
 case $OPTION in
   c)
@@ -145,6 +146,10 @@ case $OPTION in
    RUN_GEOM=0
    RUN_WUI=1
    ;;
+  Y)
+   RUN_SMV=1
+   RUN_GEOM=0
+   RUN_WUI=1
 esac
 #shift
 done
