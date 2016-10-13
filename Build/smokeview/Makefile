@@ -238,27 +238,10 @@ gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
 gnu_linux_64_db : FC        = gfortran
-gnu_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64
+gnu_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db
 
 gnu_linux_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux_64 $(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
-
-# ------------- gnu_linux_32 ----------------
-
-gnu_linux_32 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_32
-gnu_linux_32 : LIBS_PLAT =
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
-gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -Wno-write-strings
-gnu_linux_32 : LFLAGS    = 
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : CPP       = g++
-gnu_linux_32 : FC        = gfortran
-gnu_linux_32 : exe       = smokeview_linux_$(SMV_TESTSTRING)32
-
-gnu_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
-
 
 # ------------- gnu_linux_64 ----------------
 
@@ -281,6 +264,35 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
 		$(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX) \
 		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
+
+# ------------- gnu_linux_32 ----------------
+
+gnu_linux_32 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_32
+gnu_linux_32 : LIBS_PLAT =
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -Wno-write-strings
+gnu_linux_32 : LFLAGS    = 
+gnu_linux_32 : CC        = gcc
+gnu_linux_32 : CPP       = g++
+gnu_linux_32 : FC        = gfortran
+gnu_linux_32 : exe       = smokeview_linux_$(SMV_TESTSTRING)32
+
+gnu_linux_32 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
+		$(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
+
+# ------------- gnu_linux_32_db ----------------
+
+gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
+gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -D pp_LINUX
+gnu_linux_32_db : LFLAGS    = 
+gnu_linux_32_db : CC        = gcc
+gnu_linux_32_db : CPP       = g++
+gnu_linux_32_db : FC        = gfortran
+gnu_linux_32_db : exe       = smokeview_linux_$(SMV_TESTSTRING)32_db
+
+gnu_linux_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux_64 $(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
 
 # ------------- mingw_win_64 ----------------
 
