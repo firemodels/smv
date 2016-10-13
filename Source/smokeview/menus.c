@@ -580,12 +580,14 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_timelabel:
      visTimelabel=1-visTimelabel;
+     if(visTimelabel==1)visTimebar=1;
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
+     if(visFramelabel==1)visTimebar=1;
      if(visFramelabel==1){
        visHRRlabel=0;
-       UpdateHrrinfo(visHRRlabel);
+	   UpdateHrrinfo(visHRRlabel);
      }
      break;
    case MENU_LABEL_meshlabel:
@@ -618,7 +620,8 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_hrr:
      visHRRlabel=1-visHRRlabel;
-     UpdateHrrinfo(visHRRlabel);
+     if(visHRRlabel==1)visTimebar=1;
+	 UpdateHrrinfo(visHRRlabel);
      break;
    case MENU_LABEL_hrrcutoff:
      show_hrrcutoff=1-show_hrrcutoff;

@@ -120,7 +120,7 @@ void GetViewportInfo(void){
 
   doit=0;
   if(
-    ((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1)||
+    (visTimebar==1&&showtime==1)||
     (showtime==1&&(visFramerate==1||(vis_slice_average==1&&show_slice_average&&slice_average_flag==1))||
     (hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)
     )
@@ -656,7 +656,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1){
+  if( visTimebar==1&&showtime==1){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }
@@ -666,7 +666,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     if(visHRRlabel==1&&hrrinfo!=NULL){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
     }
-    if(visTimebar==1)DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
+    DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
   }
 
   if(visFramerate==1&&showtime==1){
