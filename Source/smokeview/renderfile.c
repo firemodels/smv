@@ -426,18 +426,19 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
     break;
   }
 
-  if(scriptoutstream!=NULL&&current_script_command!=NULL&&current_script_command->cval2!=NULL){
+  if(current_script_command!=NULL&&current_script_command->cval2!=NULL){
     strcpy(renderfile2,current_script_command->cval2);
+    strcpy(renderfile_base, renderfile2);
   }
   else{
     strcpy(renderfile2,fdsprefix);
-  }
-  if(RenderTime==1){
-      sprintf(renderfile_base,"%s_%04i",renderfile2,itimes/RenderSkip);
-  }
-  if(RenderTime==0){
-      sprintf(renderfile_base,"%s_s%04i",renderfile2,seqnum);
+    if (RenderTime == 1) {
+      sprintf(renderfile_base, "%s_%04i", renderfile2, itimes / RenderSkip);
+    }
+    if (RenderTime == 0) {
+      sprintf(renderfile_base, "%s_s%04i", renderfile2, seqnum);
       seqnum++;
+    }
   }
   strcat(renderfile_base,ext);
   renderfile=get_filename(smokeviewtempdir,renderfile_base,tempdir_flag);
