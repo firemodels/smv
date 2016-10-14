@@ -292,7 +292,7 @@ gnu_linux_32_db : FC        = gfortran
 gnu_linux_32_db : exe       = smokeview_linux_$(SMV_TESTSTRING)32_db
 
 gnu_linux_32_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux_64 $(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux_32 $(SMV_LIBS_LINUX) -lgfortran $(SYSTEM_LIBS_LINUX)
 
 # ------------- mingw_win_64 ----------------
 
