@@ -840,10 +840,10 @@ void draw_geom(int flag, int timestate){
         xyz0 = v0->xyz;
         v1 = geomlisti->verts + edgei->vert_index[1];
         xyz1 = v1->xyz;
-        if(highlight_edge0==1&&edgei->ntriangles==0||
-           highlight_edge1==1&&edgei->ntriangles==1||
-           highlight_edge2==1&&edgei->ntriangles==2||
-           highlight_edgeother==1&&edgei->ntriangles>2){
+        if((highlight_edge0==1&&edgei->ntriangles==0)||
+           (highlight_edge1==1&&edgei->ntriangles==1)||
+           (highlight_edge2==1&&edgei->ntriangles==2)||
+           (highlight_edgeother==1&&edgei->ntriangles>2)){
           if(edgei->ntriangles > 2) {
             glColor3fv(cyan);
           }

@@ -960,7 +960,7 @@ void drawsmoke3dVOL(void){
             colormid[2] = (smokecolor[n00+2]+smokecolor[n11+2]+smokecolor[n10+2]+smokecolor[n01+2])/4.0;
             colormid[3] = (smokecolor[n00+3]+smokecolor[n11+3]+smokecolor[n10+3]+smokecolor[n01+3])/4.0;
 
-            if(meshi->inside==0&&iwall>0||meshi->inside!=0&&iwall<0){
+            if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
               glColor4fv(smokecolor+n00);
               glVertex3f(xx,y[0],z[0]);
               glColor4fv(colormid);
@@ -1054,7 +1054,7 @@ void drawsmoke3dVOL(void){
             colormid[1] = (smokecolor[n00+1]+smokecolor[n11+1]+smokecolor[n10+1]+smokecolor[n01+1])/4.0;
             colormid[2] = (smokecolor[n00+2]+smokecolor[n11+2]+smokecolor[n10+2]+smokecolor[n01+2])/4.0;
             colormid[3] = (smokecolor[n00+3]+smokecolor[n11+3]+smokecolor[n10+3]+smokecolor[n01+3])/4.0;
-            if(meshi->inside==0&&iwall>0||meshi->inside!=0&&iwall<0){
+            if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
               glColor4fv(smokecolor+n00);
               glVertex3f(x[0],yy,z[0]);
               glColor4fv(colormid);
@@ -1148,7 +1148,7 @@ void drawsmoke3dVOL(void){
             colormid[1] = (smokecolor[n00+1]+smokecolor[n11+1]+smokecolor[n10+1]+smokecolor[n01+1])/4.0;
             colormid[2] = (smokecolor[n00+2]+smokecolor[n11+2]+smokecolor[n10+2]+smokecolor[n01+2])/4.0;
             colormid[3] = (smokecolor[n00+3]+smokecolor[n11+3]+smokecolor[n10+3]+smokecolor[n01+3])/4.0;
-            if(meshi->inside==0&&iwall>0||meshi->inside!=0&&iwall<0){
+            if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
               glColor4fv(smokecolor+n00);
               glVertex3f(x[0],y[0],zz);
               glColor4fv(smokecolor+n10);
@@ -1550,7 +1550,7 @@ void drawsmoke3dGPUVOL(void){
     switch(iwall){
       case XWALLMIN:
       case XWALLMAX:
-        if(inside==0&&iwall>0||inside!=0&&iwall<0){
+        if((inside==0&&iwall>0)||(inside!=0&&iwall<0)){
           glVertex3f(xx,yy1,z1);
           glVertex3f(xx,yy2,z1);
           glVertex3f(xx,yy2,z2);
@@ -1571,7 +1571,7 @@ void drawsmoke3dGPUVOL(void){
         break;
       case YWALLMIN:
       case YWALLMAX:
-        if(inside==0&&iwall>0||inside!=0&&iwall<0){
+        if((inside==0&&iwall>0)||(inside!=0&&iwall<0)){
           glVertex3f(x1,yy,z1);
           glVertex3f(x2,yy,z2);
           glVertex3f(x2,yy,z1);
@@ -1592,7 +1592,7 @@ void drawsmoke3dGPUVOL(void){
         break;
       case ZWALLMIN:
       case ZWALLMAX:
-        if(inside==0&&iwall>0||inside!=0&&iwall<0){
+        if((inside==0&&iwall>0)||(inside!=0&&iwall<0)){
           glVertex3f(x1,yy1,zz);
           glVertex3f(x2,yy1,zz);
           glVertex3f(x2,yy2,zz);
