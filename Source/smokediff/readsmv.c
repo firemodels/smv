@@ -462,10 +462,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         int is1=-1, is2=-1, js1=-1, js2=-1, ks1=-1, ks2=-1;
         int ni, nj, nk;
         int error, lenfile;
-        int endian;
         float *xplt, *yplt, *zplt;
 
-        endian=getendian();
         NewMemory((void **)&slicei->file,(unsigned int)(strlen(full_file)+1));
         NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
         InitHistogram(slicei->histogram,NHIST_BUCKETS);
@@ -547,7 +545,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(strlen(buffer)==0)break;
       fullfile(full_file,smvcase->dir,buffer);
       if(getfileinfo(full_file,NULL,&filesize)==0){
-        int lenfile, endian, npatches, error, boundaryunitnumber;
+        int lenfile, npatches, error, boundaryunitnumber;
 
         NewMemory((void **)&boundaryi->file,(unsigned int)(strlen(full_file)+1));
         NewMemory((void **)&boundaryi->histogram,sizeof(histogramdata));
@@ -559,7 +557,6 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         }
         boundaryi->filesize=filesize;
         lenfile=strlen(full_file);
-        endian=getendian();
         boundaryunitnumber=15;
         FORTgetboundaryheader1(full_file,&boundaryunitnumber, &npatches, &error, lenfile);
         if(npatches>0){

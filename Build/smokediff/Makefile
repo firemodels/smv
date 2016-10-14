@@ -72,7 +72,7 @@ LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 # ------------- 32 bit Linux gnu ----------------
 
 gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
-gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX $(GITINFO)
+gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : CPP       = g++
