@@ -520,7 +520,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all)||visGrid==GridProbe||visGrid==noGridProbe){
+  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all||visGrid==GridProbe||visGrid==noGridProbe)){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
