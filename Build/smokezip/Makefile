@@ -69,10 +69,10 @@ gnu_linux_32 : LFLAGS    =
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : CPP       = g++
 gnu_linux_32 : FC        = gfortran
-gnu_linux_32 : exe       = smokezip_linux_64
+gnu_linux_32 : exe       = smokezip_linux_32
 
 gnu_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_32 -lz -lpthread
 
 # ------------- 64 bit gnu Linux ----------------
 
