@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include "options.h"
 #endif
+#if pp_GCC
+#include <unistd.h>
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink

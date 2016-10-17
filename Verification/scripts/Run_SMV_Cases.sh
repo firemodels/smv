@@ -19,6 +19,7 @@ RUNOPTION=
 CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
+NOPT=
 
 wait_cases_end()
 {
@@ -89,7 +90,7 @@ cd $CURDIR/..
 
 
 use_installed="0"
-while getopts 'c:dghI:j:m:o:p:q:rsuWwY' OPTION
+while getopts 'c:dghI:j:m:No:p:q:rsuWwY' OPTION
 do
 case $OPTION in
   c)
@@ -116,6 +117,9 @@ case $OPTION in
   j)
    JOBPREFIX="-j $OPTARG"
    JOBPREF="$OPTARG"
+   ;;
+  N)
+   NOPT=-N
    ;;
   o)
    nthreads="$OPTARG"
@@ -181,7 +185,7 @@ export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${CO
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 
 # Set queue to submit cases to
 

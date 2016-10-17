@@ -469,13 +469,13 @@ int main(int argc, char **argv){
             }
           }
           if(c_mindatetime_ptr!=NULL){
-            if(have_mindatetime==0&&Date2Day(token)<i_mindatetime||have_mindatetime==1&&Date2Sec(token)<i_mindatetime){
+            if((have_mindatetime==0&&Date2Day(token)<i_mindatetime)||(have_mindatetime==1&&Date2Sec(token)<i_mindatetime)){
               skip_time=1;
               break;
             }
           }
           if(c_maxdatetime_ptr!=NULL){
-            if(have_maxdatetime==0&&Date2Day(token)>i_maxdatetime||have_maxdatetime==1&&Date2Sec(token)>i_maxdatetime){
+            if((have_maxdatetime==0&&Date2Day(token)>i_maxdatetime)||(have_maxdatetime==1&&Date2Sec(token)>i_maxdatetime)){
               skip_time=1;
               break;
             }
