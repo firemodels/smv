@@ -681,7 +681,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     char hrrcut_label[256];
     int ihrrcut;
 
-    ihrrcut = (int)global_hrrpuv_cutoff;
+    ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
 
     sprintf(hrrcut_label,">%i (kW/m3)",ihrrcut);
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
