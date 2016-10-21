@@ -1011,6 +1011,7 @@ void mergesmoke3dcolors(smoke3ddata *smoke3dset){
     float fire_alpha;
     unsigned char *firecolor,*sootcolor;
     unsigned char *mergecolor,*mergealpha;
+    float firesmokeval[3];
 
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
@@ -1063,50 +1064,36 @@ void mergesmoke3dcolors(smoke3ddata *smoke3dset){
 
     mergecolor=meshi->merge_color;
     mergealpha=meshi->merge_alpha;
-    if(sootcolor!=NULL){
-      for(j=0;j<smoke3di->nchars_uncompressed;j++){
-        float *firesmoke;
+    firesmokeval[0] = 0.0;
+    firesmokeval[1] = 0.0;
+    firesmokeval[2] = 0.0;
+    ASSERT(firecolor!=NULL||sootcolor!=NULL);
+    for(j=0;j<smoke3di->nchars_uncompressed;j++){
+      float *firesmoke;
 
-        if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
-          firesmoke=rgb_slicesmokecolormap+4*firecolor[j];
-          *mergecolor++ = 255*firesmoke[0];
-          *mergecolor++ = 255*firesmoke[1];
-          *mergecolor++ = 255*firesmoke[2];
-          *mergealpha++=fire_alpha;
-        }
-        else{
-          firesmoke=rgb_slicesmokecolormap+4*sootcolor[j];
-          *mergecolor++ = 255*firesmoke[0];
-          *mergecolor++ = 255*firesmoke[1];
-          *mergecolor++ = 255*firesmoke[2];
-          *mergealpha++=(sootcolor[j]>>smoke3d_thick);
-        }
-        mergecolor++;
-      }
-      continue;
-    }
-    else{
+// set color
+
       if(firecolor!=NULL){
-        for(j=0;j<smoke3di->nchars_uncompressed;j++){
-          float *fire;
-
-          fire=rgb_slicesmokecolormap+4*firecolor[j];
-          *mergecolor++=255*fire[0];
-          *mergecolor++=255*fire[1];
-          *mergecolor++=255*fire[2];
-          mergecolor++;
-          if(firecolor[j]>i_hrrpuv_cutoff){
-            *mergealpha++=fire_alpha;
-          }
-          else{
-            *mergealpha++=0;
-          }
-        }
-        continue;
+        firesmoke=rgb_slicesmokecolormap+4*firecolor[j];
       }
       else{
-        ASSERT(FFALSE);
-        // (fire==NULL&&soot==NULL) this should never happen!!!
+        firesmoke=firesmokeval;
+      }
+      *mergecolor++ = 255*firesmoke[0];
+      *mergecolor++ = 255*firesmoke[1];
+      *mergecolor++ = 255*firesmoke[2];
+      mergecolor++;
+
+// set opacity
+
+      if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
+        *mergealpha++=fire_alpha;
+      }
+      else if(sootcolor!=NULL){
+       *mergealpha++=(sootcolor[j]>>smoke3d_thick);
+      }
+      else{
+       *mergealpha++=0;
       }
     }
   }
