@@ -1311,11 +1311,6 @@ void UpdateSmokeColormap(int option){
   int icut;
   float *rgb_colormap;
   int have_fire;
-  float albedo_color[3];
-
-  albedo_color[0] = smoke_albedo;
-  albedo_color[1] = smoke_albedo;
-  albedo_color[2] = smoke_albedo;
 
   have_fire = HaveFire();
   if(option==RENDER_SLICE){
@@ -1365,6 +1360,7 @@ void UpdateSmokeColormap(int option){
         float n2,factor;
         int nn2;
         float *fire1, *fire2;
+        float smoke_color1[3], smoke_color2[3];
 
         val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
         if(firecolormap_type==FIRECOLORMAP_CONSTRAINT){
@@ -1382,13 +1378,18 @@ void UpdateSmokeColormap(int option){
         nn2 = CLAMP(nn2,1,253);
         factor = n2 - nn2;
         factor = CLAMP(factor,0.0,1.0);
+        fire1 = fire_cb + 3 * nn2;
+        fire2 = fire1 + 3;
         if(firecolormap_type == FIRECOLORMAP_CONSTRAINT&&val <= valcut){
-          fire1 = albedo_color;
-          fire2 = albedo_color;
-        }
-        else{
-          fire1 = fire_cb + 3 * nn2;
-          fire2 = fire1 + 3;
+          smoke_color1[0] = fire1[0]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color1[1] = fire1[1]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color1[2] = fire1[2]*(1 - smoke_albedo) + smoke_albedo;
+          fire1 = smoke_color1;
+          
+          smoke_color2[0] = fire2[0]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color2[1] = fire2[1]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color2[2] = fire2[2]*(1 - smoke_albedo) + smoke_albedo;
+          fire2 = smoke_color2;
         }
         rgb_colormap[4*n]  =(1.0-factor)*fire1[0]+factor*fire2[0];
         rgb_colormap[4*n+1]=(1.0-factor)*fire1[1]+factor*fire2[1];
