@@ -314,7 +314,7 @@ void InitMesh(meshdata *meshi){
   meshi->nabors[3] = NULL;
   meshi->nabors[4] = NULL;
   meshi->nabors[5] = NULL;
-  meshi->update_firehalfdepth = 0;
+  meshi->update_smoke3dcolors = 0;
   meshi->iplotx_all = NULL;
   meshi->iploty_all = NULL;
   meshi->iplotz_all = NULL;
@@ -3557,11 +3557,10 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"ALBEDO") == 1){
-      float smoke_albedo; // not implemented
-
       fgets(buffer,255,stream);
       sscanf(buffer,"%f",&smoke_albedo);
       smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
+      smoke_albedo_base = smoke_albedo;
       continue;
     }
     if(Match(buffer, "NORTHANGLE")==1){
@@ -10761,7 +10760,6 @@ int ReadINI2(char *inifile, int localfile){
         continue;
       }
       if(Match(buffer, "SMOKEALBEDO") == 1){
-        float smoke_albedo; // not implemented
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f", &smoke_albedo);
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
@@ -12567,6 +12565,10 @@ void WriteINI(int flag,char *filename){
 #else
   fprintf(fileout," %i\n",smokecullflag);
 #endif
+  if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){
+    fprintf(fileout, "SMOKEALBEDO\n");
+    fprintf(fileout, " %f\n", smoke_albedo);
+  }
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i\n",smokeskipm1);
 #ifdef pp_GPU
