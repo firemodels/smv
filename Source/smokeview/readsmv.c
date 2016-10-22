@@ -3560,6 +3560,7 @@ int ReadSMV(char *file, char *file2){
       fgets(buffer,255,stream);
       sscanf(buffer,"%f",&smoke_albedo);
       smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
+      smoke_albedo_base = smoke_albedo;
       continue;
     }
     if(Match(buffer, "NORTHANGLE")==1){
@@ -12564,8 +12565,10 @@ void WriteINI(int flag,char *filename){
 #else
   fprintf(fileout," %i\n",smokecullflag);
 #endif
-  fprintf(fileout, "SMOKEALBEDO\n");
-  fprintf(fileout," %f\n",smoke_albedo);
+  if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){
+    fprintf(fileout, "SMOKEALBEDO\n");
+    fprintf(fileout, " %f\n", smoke_albedo);
+  }
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i\n",smokeskipm1);
 #ifdef pp_GPU

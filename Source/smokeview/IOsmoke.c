@@ -179,13 +179,14 @@ else{\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
+    int mm;\
     mm = xyzindex[node];                                 \
-    glVertexAttrib1f(GPU_hrr,fvalue[mm]);\
-    glVertexAttrib1f(GPU_smokealpha,value[mm]); \
-    glVertex3f(XX,YY,ZZ);                                \
+    glVertexAttrib1f(GPU_hrr, fvalue[mm]); \
+    glVertexAttrib1f(GPU_smokealpha, value[mm]); \
+    glVertex3f(XX, YY, ZZ);                                \
   }
 
-// -------------------------- DRAWVERTEXGPUTERRAIN ----------------------------------
+  // -------------------------- DRAWVERTEXGPUTERRAIN ----------------------------------
 
 #define DRAWVERTEXGPUTERRAIN(XX,YY,ZZ) \
   z_offset[XXX]=znode_offset[m11];\
@@ -222,6 +223,7 @@ else{\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
+    int mm;\
     mm = xyzindex[node];                                 \
     glVertexAttrib1f(GPU_smokealpha,(float)value[mm]);\
     glVertexAttrib1f(GPU_hrr,(float)fvalue[mm]);\
@@ -2905,7 +2907,7 @@ void drawsmoke3dGPU(smoke3ddata *smoke3di){
   float *znode_offset, z_offset[4];
 
   int nx,ny,nz;
-  int xyzindex1[6],xyzindex2[6],*xyzindex,node,mm;
+  int xyzindex1[6],xyzindex2[6],*xyzindex,node;
   float xnode[4],znode[4],ynode[4];
   int skip_local;
   int iterm, jterm, kterm,nxy;
