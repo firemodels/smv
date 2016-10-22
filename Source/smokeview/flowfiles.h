@@ -592,7 +592,7 @@ typedef struct _meshdata {
   int is_bottom;
 
   int *cutcells, ncutcells;
-  int update_firehalfdepth;
+  int update_smoke3dcolors;
   terraindata *terrain;
   int mesh_type;
 #ifdef pp_GPU
