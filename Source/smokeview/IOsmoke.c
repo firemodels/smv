@@ -4068,7 +4068,7 @@ void drawsmoke3dCULL(void){
   float *xplt, *yplt, *zplt;
   int nx,ny;
   unsigned char *alphaf_in;
-  int xyzindex1[6],xyzindex2[6],*xyzindex,node,mm;
+  int xyzindex1[6],xyzindex2[6],*xyzindex,node;
   float xnode[4],znode[4],ynode[4];
   int iterm, jterm, kterm,nxy;
   int n11, n12, n22, n21;
