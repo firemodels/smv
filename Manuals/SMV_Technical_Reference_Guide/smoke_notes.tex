@@ -504,18 +504,19 @@ displayed.
 
 \subsection{Computing Color}
 
-Smokeview visualizes smoke and fire by drawing a series of triangles in equally spaced parallel planes.  
-Color for these triangles are assigned using temperature or hrrpuv (heat release per unit volume) values.
-Transparency is assigned using soot density, the greater the soot density, the more opaque the triangle.
+Smokeview visualizes smoke and fire by drawing a series of triangles in equally spaced parallel planes.
+Color for these triangles are assigned by mapping temperature or hrrpuv (heat release per unit volume) values
+to color such as with a color map illustrated in Figure \ref{fig:colormaps}.
+Transparency for these triangles is assigned using soot density, the greater the soot density, the more opaque the triangle.
 
-An example color map is illustrated in Fig.
-\ref{fig:colormaps}.  This maps is split into two parts.  The left half is used
-to color non-burning regions, the right half is used to color burning regions.
+The example color map in Fig.
+\ref{fig:colormaps} is split into two parts.  The left half is used
+for coloring non-burning regions, the right half is used for coloring burning regions.
 An hrrpuv cutoff value denoted ${\rm hrrpuv}_{\rm cutoff}$ is used to
-determine which half of the color map is used to color a given region.
-If an hrrpuv value is below the cutoff
-then smoke is drawn using the left have of the color map, otherwise if an hrrpuv value is above the cutoff
-then fire colors are drawn using the right half of the color map.  The color map is defined as a table
+distinguish these two regions.  
+If an hrrpuv value is below the cutoff,
+smoke is drawn using colors from the left half of the color map, while if an hrrpuv value is greater than the cutoff,
+fire is drawn using colors from the right half of the color map.  The color map is defined as a table
 of 256 red, green, blue color triplets.  A formula giving a color index for a given hrrpuv value is given by
 
 \newcommand{\hrr}{{\rm hrr}}
