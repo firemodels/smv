@@ -173,7 +173,7 @@ units of \si{1/m} and specify the time and location dependent
 change per unit length to the radiance term to which they are
 applied.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=6.0in]{FIGURES/rte_setup}
 \end{center}
@@ -270,7 +270,7 @@ set up so that the initial radiance, $C_0$, is located at $x_0$,
 most distant from the observer and the final radiance, $C_N$, is
 located at $x_N$ closest to the observer.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/smoke_discrete_setup}
 \end{center}
@@ -410,7 +410,7 @@ sub-intervals $[x_0,D]$ and $[D,x_N]$.  The goal then is to
 compute a radiance and opacity for $[x_0,x_N]$ using radiances and
 opacities computed on  the two sub-intervals.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.0in]{FIGURES/smoke_setup3}
 \end{center}
@@ -532,7 +532,7 @@ of 256 red, green, blue color triplets.  A formula giving a color index for a gi
 \right.
 \end{eqnarray}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/colorbar_fire2}
 \end{center}
@@ -568,7 +568,7 @@ coefficient.  The Beer-Lambert law is an empirical relationship
 relating light absorption to the material properties of the medium
 the light is travelling through, in this case soot or smoke.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.0in]{FIGURES/smoke_setup}
 \end{center}
@@ -594,7 +594,7 @@ planes (see Fig. \ref{figray}).  The absorption coefficient also
 needs to be adjusted when the distance between adjacent smoke
 planes changes, or viewing planes are skipped.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \centerline{\includegraphics[width=3.5in]{FIGURES/forney_figure4}}
 \caption [Diagram illustrating the adjustment required to the
 opaqueness parameter, $\alpha$, for non-axis aligned views.] {
@@ -686,7 +686,7 @@ step of this process is given by
 \mbox{new buffer image} = (1-\alpha)\times \mbox{old buffer image}
 \end{eqnarray}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[height=4.0in]{FIGURES/splume_20_27}&
@@ -716,7 +716,7 @@ third plane) and orienting them along the $x$~axis. Figure
 with all slice planes shown and oriented along a plane most
 perpendicular to the view direction.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{l}
 \includegraphics[height=3.75in]{FIGURES/thouse5c_skip}\\
@@ -894,7 +894,7 @@ solution given in (\ref{eq:rtesoln})  is used to collapse 3D data
 into 2D images projected onto the sides of the mesh visible to the
 observer.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/smoke_setup2}
 \end{center}
@@ -922,7 +922,7 @@ recomputed and redrawn presenting the illusion that the image is
 3D and drawn within (rather than on the surface) of the data mesh.
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[width=3.5in]{FIGURES/vis_test2_nonfreeze}\\
