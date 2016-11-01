@@ -225,14 +225,20 @@ function camera.set(camera)
     if camera == nil then
         error("camera.set: camera does not exist")
     end
+    camera_set_rotation_type(camera.rotationType)
     camera_set_eyex(camera.eyePos.x)
     camera_set_eyey(camera.eyePos.y)
     camera_set_eyez(camera.eyePos.z)
     camera_set_zoom(camera.zoom)
+    -- TODO: viewAngle
+    -- TODO: directionAngle
+    -- TODO: elevationAngle
     camera_set_viewdir(camera.viewDir.x, camera.viewDir.y, camera.viewDir.z)
     camera_set_projection_type(camera.projectionType)
     camera_set_elev(camera.zAngle.elev)
     camera_set_az(camera.zAngle.az)
+}
+
 end
 time = {}
 function time.set(time)

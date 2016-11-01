@@ -1989,8 +1989,12 @@ int getcolorbarflip(int flip) {
 
 // Camera API
 // These function live-modify the current view by modifying "camera_current".
-void camera_set_rotation_type(int rotation_type) {
-  camera_current->rotation_type = rotation_type;
+void camera_set_rotation_type(int rotation_typev) {
+  rotation_type = rotation_typev;
+  camera_current->rotation_type = rotation_typev;
+  rotation_type_CB(rotation_type);
+  update_rotation_type(rotation_type);
+  handle_rotation_type(ROTATION_2AXIS);
 }
 
 int camera_get_rotation_type() {

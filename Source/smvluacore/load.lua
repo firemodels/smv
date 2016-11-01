@@ -38,7 +38,17 @@ function load.namedvslice(name)
 end
 
 function load.slice_std(slice_type, axis, distance)
-    return loadslice_std(slice_type, axis, distance)
+    -- validate inputs
+    assert(type(slice_type) == "string", "slice_type must be a string")
+    assert(type(axis) == "number", "axis must be a number")
+    assert(axis == 1 or axis == 2 or axis == 3, "axis must be 1, 2, or 3")
+    assert(type(distance) == "number", "distance must be a number")
+    -- load applicable slices
+    return load.slice(function(slice)
+            return (slice.longlabel == slice_type
+                and slice.idir == axis
+                and slice.position_orig == distance)
+        end)
 end
 
 -- TODO: load using path relative to simulation directory
