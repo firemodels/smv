@@ -783,13 +783,13 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     fds_elevs->zmin = zmin;
   }
   else{
-    fds_elevs->zmin = valmin;
+    fds_elevs->zmin = valmin-(valmax-valmin)/10.0;
   }
   if(zmax>-1000.0){
     fds_elevs->zmax = zmax;
   }
   else{
-    fds_elevs->zmax = valmax;
+    fds_elevs->zmax = valmax+(valmax-valmin)/10.0;
   }
   FREEMEMORY(have_vals);
   FREEMEMORY(longlatsorig);

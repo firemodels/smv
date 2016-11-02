@@ -6,7 +6,7 @@ if x%arg1% == xbot goto skip1
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 :skip1
 
-call ..\..\scripts\test_libs ..\..\LIBS
+:: call ..\..\scripts\test_libs ..\..\LIBS
 
 
 set OPT=

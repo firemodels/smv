@@ -9,9 +9,11 @@ echo "-d - use debug version of smokeview"
 echo "-g - only generate geometry case images"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
+echo "-I - compiler (intel or gnu)"
 echo "-t - use test version of smokeview"
 echo "-s size - use 32 or 64 bit (default) version of smokeview"
 echo "-W - only generate WUI case images"
+echo "-Y - generate SMV and WUI case images"
 exit
 }
 
@@ -33,6 +35,7 @@ else
   PLATFORM=linux
 fi
 
+COMPILER=intel
 SIZE=_64
 DEBUG=
 TEST=
@@ -41,7 +44,7 @@ RUN_SMV=1
 RUN_GEOM=0
 RUN_WUI=1
 
-while getopts 'dghis:tW' OPTION
+while getopts 'dghiI:s:tWY' OPTION
 do
 case $OPTION  in
   d)
@@ -57,6 +60,9 @@ case $OPTION  in
    ;;
   i)
    use_installed="1"
+   ;;
+  I)
+   COMPILER="$OPTARG" 
    ;;
   t)
    TEST=_test
@@ -74,10 +80,14 @@ case $OPTION  in
    RUN_GEOM=0
    RUN_WUI=1
    ;;
+  Y)
+   RUN_SMV=1
+   RUN_GEOM=0
+   RUN_WUI=1
+   ;;
 esac
 done
 shift $(($OPTIND-1))
-
 
 VERSION=$PLATFORM$TEST$SIZE$DEBUG
 VERSION2=$PLATFORM$SIZE
@@ -93,11 +103,11 @@ if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
   export BACKGROUND=background
 else
-  export SMV=$SVNROOT/smv/Build/smokeview/intel_$VERSION2/smokeview_$VERSION
-  export SMOKEZIP=$SVNROOT/smv/Build/smokezip/intel_$VERSION2/smokezip_$VERSION2
-  export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/intel_$VERSION2/smokediff_$VERSION2
-  export WIND2FDS=$SVNROOT/smv/Build/wind2fds/intel_$VERSION2/wind2fds_$VERSION2
-  export BACKGROUND=$SVNROOT/smv/Build/background/intel_$VERSION2/background
+  export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
+  export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
+  export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
+  export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
+  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background
 fi
 
 export SMVBINDIR="-bindir $SVNROOT/smv/for_bundle"

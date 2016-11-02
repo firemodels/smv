@@ -1803,7 +1803,7 @@ void script_settimeval(scriptdata *scripti){
     if(timeval>global_times[nglobal_times-1]-0.0001){
       float dt;
 
-      dt = timeval-global_times[nglobal_times-1]-0.0001;
+      dt = timeval-(global_times[nglobal_times-1]-0.0001);
       if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
         fprintf(stderr,"*** Error: data not available at time requested\n");
         fprintf(stderr,"           time: %f s, min time: %f, max time: %f s\n",
@@ -1815,7 +1815,7 @@ void script_settimeval(scriptdata *scripti){
     }
     valmin=ABS(global_times[0]-timeval);
     imin=0;
-    for(i=1;i<nglobal_times-1;i++){
+    for(i=1;i<nglobal_times;i++){
       float val;
 
       val = ABS(global_times[i]-timeval);

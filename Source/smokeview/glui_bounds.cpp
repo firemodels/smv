@@ -288,6 +288,7 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_in_obst=NULL;
 GLUI_Checkbox *CHECKBOX_show_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
@@ -1268,6 +1269,8 @@ extern "C" void glui_bounds_setup(int main_window){
     SPINNER_vectorlinelength->set_float_limits(0.0,20.0);
     SPINNER_slicevectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_vector,_d("Vector skip"),GLUI_SPINNER_INT,&vectorskip,SLICE_VECTORSKIP,Slice_CB);
     SPINNER_slicevectorskip->set_int_limits(1,4);
+    CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector, _d("Color black"), &color_vector_black);
+
     CHECKBOX_show_slices_and_vectors=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector,_d("Show contours"),&show_slices_and_vectors);
     ROLLOUT_line_contour = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Line Contours"), false, LINE_CONTOUR_ROLLOUT, Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_line_contour, LINE_CONTOUR_ROLLOUT);
@@ -2810,7 +2813,7 @@ extern "C" void Slice_CB(int var){
           Part_CB(SETVALMAX);
           Part_CB(FILERELOAD);
         }
-        
+
         // plot3d files
 
         if(nplot3dloaded>0){

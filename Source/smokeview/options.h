@@ -4,11 +4,11 @@
 
 #define pp_release
 
-//*** uncomment the following two lines to force all versions to be beta
+//*** uncomment the following two lines to force all versions to be beta 
 //#undef pp_BETA
 //#define pp_BETA
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  define smokeview title VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+ 
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  define smokeview title VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 #ifdef pp_BETA
 #define PROGVERSION "Test"
 #undef pp_release
@@ -19,7 +19,7 @@
 
 #ifdef pp_release
 #ifdef pp_OFFICIAL_RELEASE
-#define PROGVERSION "6.3.12"
+#define PROGVERSION "6.4.2"
 #else
 #define PROGVERSION "Unofficial release"
 #endif

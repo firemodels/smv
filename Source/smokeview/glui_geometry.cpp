@@ -38,6 +38,7 @@ GLUI_RadioGroup *RADIO_geomtest_option = NULL;
 GLUI_Panel *PANEL_geom_testoptions = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL;
+GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
 GLUI_Checkbox *CHECKBOX_interior_solid=NULL, *CHECKBOX_interior_outline=NULL;
 GLUI_Checkbox *CHECKBOX_geomtest=NULL, *CHECKBOX_triangletest=NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_normal = NULL;
@@ -58,6 +59,7 @@ GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
 
+GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_geom1 = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 GLUI_Panel *PANEL_geom1a=NULL;
@@ -73,6 +75,8 @@ GLUI_Panel *PANEL_geom3b=NULL;
 GLUI_Panel *PANEL_geom3c=NULL;
 GLUI_Panel *PANEL_geom3ab=NULL;
 GLUI_Panel *PANEL_geom3abc=NULL;
+
+GLUI_Spinner *SPINNER_geom_transparency=NULL;
 GLUI_Spinner *SPINNER_box_bounds[6];
 GLUI_Spinner *SPINNER_box_translate[3];
 GLUI_Spinner *SPINNER_tetra_vertices[12];
@@ -368,6 +372,10 @@ extern "C" void glui_geometry_setup(int main_window){
   CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
   CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
   CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_solid, VOL_SHOWHIDE, Volume_CB);
+  PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
+  CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
+  SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
+  SPINNER_geom_transparency->set_float_limits(0.0,1.0);
   CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, Volume_CB);
   CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "smooth", &smooth_geom_normal);
 

@@ -19,6 +19,7 @@ RUNOPTION=
 CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
+NOPT=
 
 wait_cases_end()
 {
@@ -63,6 +64,7 @@ echo "-s - stop FDS runs"
 echo "-u - use installed versions of utilities background and wind2fds"
 echo "-w - wait for cases to complete before returning"
 echo "-W - run only WUI cases"
+echo "-Y - run SMV and WUI cases"
 exit
 }
 
@@ -88,7 +90,7 @@ cd $CURDIR/..
 
 
 use_installed="0"
-while getopts 'c:dghI:j:m:o:p:q:rsuWw' OPTION
+while getopts 'c:dghI:j:m:No:p:q:rsuWwY' OPTION
 do
 case $OPTION in
   c)
@@ -115,6 +117,9 @@ case $OPTION in
   j)
    JOBPREFIX="-j $OPTARG"
    JOBPREF="$OPTARG"
+   ;;
+  N)
+   NOPT=-N
    ;;
   o)
    nthreads="$OPTARG"
@@ -145,13 +150,17 @@ case $OPTION in
    RUN_GEOM=0
    RUN_WUI=1
    ;;
+  Y)
+   RUN_SMV=1
+   RUN_GEOM=0
+   RUN_WUI=1
 esac
 #shift
 done
 
 export FDS_DEBUG
 
-size=_64
+size=_$size
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -176,7 +185,7 @@ export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${CO
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 
 # Set queue to submit cases to
 

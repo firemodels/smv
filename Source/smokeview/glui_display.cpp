@@ -334,7 +334,7 @@ extern "C" void glui_labels_setup(int main_window){
   if(nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Average"), &vis_slice_average, LABELS_label, Labels_CB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Axis"), &visaxislabels, LABELS_label, Labels_CB);
   CHECKBOX_labels_colorbar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Colorbar"), &visColorbar, LABELS_label, Labels_CB);
-  CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Frame label"), &visFramelabel, FRAME_label, Labels_CB);
+  CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Frame label"), &visFramelabel, LABELS_label, Labels_CB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Frame rate"), &visFramerate, LABELS_label, Labels_CB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("Grid location"), &visgridloc, LABELS_label, Labels_CB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _d("HRR"), &visHRRlabel, HRR_label, Labels_CB);

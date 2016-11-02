@@ -329,6 +329,7 @@ void draw_geom(int flag, int timestate){
         color = trianglei->surf->color;
         transparent_level_local=trianglei->surf->transparent_level;
       }
+      if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
         glColor4f(color[0],color[1],color[2],transparent_level_local);
         last_color=color;
@@ -839,10 +840,10 @@ void draw_geom(int flag, int timestate){
         xyz0 = v0->xyz;
         v1 = geomlisti->verts + edgei->vert_index[1];
         xyz1 = v1->xyz;
-        if(highlight_edge0==1&&edgei->ntriangles==0||
-           highlight_edge1==1&&edgei->ntriangles==1||
-           highlight_edge2==1&&edgei->ntriangles==2||
-           highlight_edgeother==1&&edgei->ntriangles>2){
+        if((highlight_edge0==1&&edgei->ntriangles==0)||
+           (highlight_edge1==1&&edgei->ntriangles==1)||
+           (highlight_edge2==1&&edgei->ntriangles==2)||
+           (highlight_edgeother==1&&edgei->ntriangles>2)){
           if(edgei->ntriangles > 2) {
             glColor3fv(cyan);
           }
@@ -3336,6 +3337,7 @@ void ShowHideSortGeometry(float *mm){
           tri = geomlisti->triangles + j;
           if(hilight_skinny == 1 && tri->skinny == 1)is_opaque = 1;
           if(tri->surf->transparent_level >= 1.0)is_opaque = 1;
+          if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->surf - surfinfo - nsurfinfo - 1;
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->surf->transparent_level <= 0.0){
             continue;

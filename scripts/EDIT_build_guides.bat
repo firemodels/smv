@@ -18,5 +18,5 @@ goto:eof
 call %envfile%
 
 %svn_drive%
-cd %svn_root%\smv\
+cd %svn_root%\smv\Build
 start notepad build_guides.html
