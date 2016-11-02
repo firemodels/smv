@@ -1,15 +1,8 @@
 script:
-  # - gfortran --version
-  # - gfortran-5 --version
   - sudo ln -fs /usr/bin/gfortran-5 /usr/bin/gfortran && gfortran --version
   - sudo ln -fs /usr/bin/gcc-5 /usr/bin/gcc && gcc --version
   - sudo ln -fs /usr/bin/g++-5 /usr/bin/g++ && g++ --version
-  # - gcc -lgfortran
-  # - g++ -lgfortran
-  - cd FDS_Compilation/gnu_linux_64
-  - ./make_fds.sh
-  - cd ../../
-  - cd SMV/Build/smokeview/gnu_linux_64
+  - cd Build/smokeview/gnu_linux_64
   - ./make_smv_lua.sh
 addons:
   apt:
