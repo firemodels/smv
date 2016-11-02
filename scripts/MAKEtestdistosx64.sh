@@ -62,7 +62,7 @@ DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_osx_64
 SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_osx_64
 WINDDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_osx_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
-OSXDIR=smv_test\_$revision\_osx64
+OSXDIR=$revision\_osx64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 
 cd $SVNROOT/smv/uploads
@@ -93,4 +93,4 @@ echo ""
 tar cvf ../$OSXDIR.tar .
 cd ..
 gzip $OSXDIR.tar
-$UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6 test
+$UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6

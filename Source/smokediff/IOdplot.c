@@ -93,12 +93,10 @@ void diff_plot3ds(FILE *stream_out){
     int isotest=0;
     FILE *stream;
     int error1, error2, error3;
-    int endian;
     int i;
     int n;
     int nn;
 
-    endian = getendian();
     plot3di = caseinfo->plot3dinfo+j;
     plot3d1 = plot3di;
     if(plot3di->plot3d2==NULL)continue;

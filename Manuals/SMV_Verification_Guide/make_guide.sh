@@ -16,13 +16,13 @@ pdflatex -interaction nonstopmode SMV_Verification_Guide &> SMV_Verification_Gui
 pdflatex -interaction nonstopmode SMV_Verification_Guide &> SMV_Verification_Guide.err
 
 # Scan and report any errors in the LaTeX build process
-if [[ `grep -E "Error:|Fatal error|! LaTeX Error:|Paragraph ended before|Missing \\\$ inserted|Misplaced" -I SMV_Verification_Guide.err | grep -v "xpdf supports version 1.5"` == "" ]]
+if [[ `grep -E "Undefined control sequence|Error:|Fatal error|! LaTeX Error:|Paragraph ended before|Missing \\\$ inserted|Misplaced" -I SMV_Verification_Guide.err | grep -v "xpdf supports version 1.5"` == "" ]]
    then
       # Continue along
       :
    else
       echo "LaTeX errors detected:"
-      grep -E "Error:|Fatal error|! LaTeX Error:|Paragraph ended before|Missing \\\$ inserted|Misplaced" -I SMV_Verification_Guide.err | grep -v "xpdf supports version 1.5"
+      grep -A 1 -E "Undefined control sequence|Error:|Fatal error|! LaTeX Error:|Paragraph ended before|Missing \\\$ inserted|Misplaced" -I SMV_Verification_Guide.err | grep -v "xpdf supports version 1.5"
       clean_build=0
 fi
 

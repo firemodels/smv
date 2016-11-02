@@ -452,7 +452,7 @@ pointing to the back and the $z$~axis pointing up (see Fig. \ref{figrighthand}).
 Coordinate values as defined in an FDS input file for objects such as blockages,
 vents, etc. are transformed internally within Smokeview to lie between 0.0 and 1.0.
 All Smokeview objects are drawn by grouping appropriately {\em OpenGL} vertices.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/righthandrule}
 \end{center}
@@ -495,7 +495,7 @@ Similarly, to draw points or to connect the vertices with lines
 (also shown in Fig. \ref{figshapes}) one would replace {\tt
 GL\_TRIANGLE}\ above with {\tt GL\_POINTS}\ or {\tt GL\_LINES}\
 respectively.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=6.0in]{FIGURES/shapes}
 \end{center}
@@ -562,7 +562,7 @@ An additional six clipping planes parallel to the x, y and z axes may be activat
 in Smokeview (using the clipping dialog box) to hide geometry making it easier to
 see interior objects or visualizations (hence the term clipping plane).  OpenGL
 allows one to define clipping planes along arbitrarily oriented planes.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.0in]{FIGURES/figviewport}
 \end{center}
@@ -581,7 +581,7 @@ Alternatively, left and right versions of the scene may be drawn at the same
 time using stereo viewers to reveal the stereo effect.  Figure \ref{figstereo}
 illustrates the two view frustums used for a stereo projection.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/fig_stereo}
 \end{center}
@@ -596,7 +596,7 @@ the title, time bar, color bar and the 3D scene.  Figure
 \ref{figviewports} illustrates the relationship between the 3D
 scene and the 2D screen giving several viewport examples used by
 Smokeview.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.0in]{FIGURES/figviewport2}
 \end{center}
@@ -666,7 +666,7 @@ subtle changes in color to occur across an object's surface.
 Figure \ref{figlighting} shows examples of FDS blockages (the
 standard townhouse scenario) drawn using flat and smooth shading.
 Flat shading diminishes the three dimensionality of the scene.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=5.0in]{FIGURES/th_unlit}\\
@@ -702,7 +702,7 @@ discontinuity in slope going from one face or triangle to another
 will result in a faceted or gem-like appearance.  Figure
 \ref{fignormals} shows examples of drawing using non-averaged and
 averaged normals.
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3.0in]{FIGURES/triangle_normal}&
@@ -756,7 +756,7 @@ transparency. Smokeview also implements data chopping or hiding
 using blending or transparency.  Data to be hidden is assigned an
 alpha value of 0.0 causing it to be completely transparent.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[width=5.0in]{FIGURES/th_transparent}\\
@@ -907,7 +907,7 @@ u\times v&=&(-v_y,v_x,0)
 so that the OpenGL call to perform the desired rotation would be
 {\tt glRotatef}$(180\cos^{-1}(v_z)/\pi,-v_y,v_x,0)$.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[width=2.5in]{FIGURES/rotate_uv}
@@ -1100,7 +1100,7 @@ Other colorbars may be used, for example a color bar containing
 shades of gray from white to black.
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[height=4.0in]
@@ -1216,7 +1216,7 @@ interpolating color.  Colors are interpolated in Fig.
 the cube have value (r,g,b).  Colors are interpolated in Fig.
 \ref{colorinterp}b with the colorbar.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3.0in]
@@ -1232,7 +1232,7 @@ method for coloring data.}
 
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[height=4.0in]{FIGURES/interpcolorrgb}\\
@@ -1263,7 +1263,7 @@ to obtain the general solution.  The square locations correspond
 to the grid set up in the FDS input file.
 
 \subsection{Line contours}
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=7.0in]{FIGURES/2d_linecontours}
 \end{center}
@@ -1306,7 +1306,7 @@ scheme, the cases are numbered from left to right 0 1, 5 and 3.
 \end{enumerate}
 
 \subsection{Banded contours}
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=7.0in]{FIGURES/2d_bandcontours}
 \end{center}
@@ -1435,7 +1435,7 @@ $A_n=||u_n\times v_n||$ is the triangle area and $U_n=u_n\times v_n/A_n$
 is a unit vector normal to the triangle.
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[height=8.5in]{FIGURES/plume5a_iso_full}\\
 \end{center}
@@ -1444,7 +1444,7 @@ is a unit vector normal to the triangle.
 \label{figisoa}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[height=4.0in]{FIGURES/plume5a_iso_lines}\\
@@ -1458,7 +1458,7 @@ solid view
 \label{figisob}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=7.0in]{FIGURES/3d_contours}
 \end{center}
@@ -1473,7 +1473,7 @@ zero dots on the ends.
 \end{figure}
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
 \includegraphics[height=4.0in]{FIGURES/decimate_before}\\
@@ -1492,7 +1492,7 @@ any edges connected to a red dot with the blue dot (average position of removed 
 % -------------------  Section on isosurface slope derivation ------------------------
 %
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/3point_line_smooth}
 \end{center}
@@ -1567,7 +1567,7 @@ specified in terms of time, a certain number of seconds before the
 current display time.  Streak length is also specified in the {\tt
 File/Bounds}\ dialog box.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3.0in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_part}&
@@ -1658,7 +1658,7 @@ $\mathrm{CO_2}=5 \%$ and $\mathrm{O_2}=10 \%$ and the second for a
 room with ambient conditions with CO=\SI{9}{ppm},
 $\mathrm{CO_2}=0 \%$ and $\mathrm{O_2}=21 \%$
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3.0in]{FIGURES/fed_clear}&

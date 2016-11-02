@@ -18,7 +18,6 @@
 \newcommand{\pxalpha}{ \frac{\partial x_m}{\partial \alpha} }
 \newcommand{\palphatone}{ \frac{\partial \alpha}{\partial T_1} }
 \newcommand{\palphattwo}{ \frac{\partial \alpha}{\partial T_2} }
-\newcommand{\figoptions}{hbp}
 
 %
 % ----------------------  first cover/title page --------------------------
@@ -307,7 +306,7 @@ document is regenerated.
 
 \chapter{Data File Tests}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[height=3.0in]{SCRIPT_FIGURES/plume5c_bounddef_init}
 \end{center}
@@ -348,7 +347,7 @@ hence the red colors for the $t=\SI{0}{s}$ images. The first column of images
 colors data at cell nodes using temperatures averaged at surrounding cell centers.
 The second column of images colors data using data values at cell centers.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccl}
 \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_bound_00} &
@@ -388,7 +387,7 @@ presents the iso-surface using triangulated outlines. The third column presents
 the iso-surface using a solid surface. Figure \ref{figisotest2} demonstrates
 color customization using the {\tt ISOCOLORS}\ .ini keyword.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_iso_points_00}&
@@ -410,7 +409,7 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
 \label{figisotest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_iso_solid_30}&
@@ -428,7 +427,7 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
 \clearpage
 
 \subsection{Sensitivity Analysis}
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[height=3.0in]{FIGURES/linear_interpolationiso}
 \end{center}
@@ -448,7 +447,7 @@ That is, determining the location, $(x_m,y,z)$, between two grid nodes,
 $(x_1,y,z)$ and $(x_2,y,z)$, where interpolated data takes on a particular value
 (the isosurface level, $T_m$, being constructed).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[height=3.0in]{FIGURES/linear_interpolation}
 \end{center}
@@ -528,8 +527,7 @@ while the second and third columns shows streaks with duration \SI{0.5}{s} and \
 Streaks are a good way of visualizing motion in a still image (i.e., on paper) since the
 streak shows a history of where the particle has been.
 
-\begin{figure}[\figopt
-ions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_part_01}&
@@ -589,7 +587,7 @@ Smokediff computed the difference between two similar FDS cases and generated sl
 files. Difference contours from these slice files are displayed at \SI{0}{s},
 \SI{10}{s} and \SI{15}{s}.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_slice_00}&
@@ -615,7 +613,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \label{fignodeslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_slice_cell_00}&
@@ -640,7 +638,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \label{figcellaslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
 
@@ -665,7 +663,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \label{figcellbslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[width=2.25in]{SCRIPT_FIGURES/slicemask_node1}&
@@ -681,7 +679,7 @@ above on boundary&above
 \label{figslicenodemasktest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[width=2.250in]{SCRIPT_FIGURES/slicemask_cell1}&
@@ -695,7 +693,7 @@ above on boundary&above
 \label{figslicecellmasktest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccl}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_vslice_00}&
@@ -717,7 +715,7 @@ above on boundary&above
 \label{figvslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_030}&
@@ -735,7 +733,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
 \label{figfedslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice_00}&
@@ -759,7 +757,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
 \end{figure}
 
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_vgslice_00}&
@@ -782,7 +780,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
 \label{figvgslicetest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_diff_slice_00}\\
@@ -807,7 +805,7 @@ Figure \ref{figsmoketest} presents images verifying the display of 3D smoke and 
 at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}.  The images contain semi-transparent slices
 derived from both soot density and HRRPUV data.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_smoke_01}&
@@ -833,7 +831,7 @@ Figure \ref{figPLOT3Dtestvalue}.
 Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsius},
 \SI{230}{\degreeCelsius}, \SI{410}{\degreeCelsius} and \SI{590}{\degreeCelsius}.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_plot3d_step}&
@@ -846,7 +844,7 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \label{figPLOT3Dtest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_y1}&
@@ -859,7 +857,7 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \label{figPLOT3Dtestvalue}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_l1}&
@@ -872,7 +870,7 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \label{figPLOT3Dtestline}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_v1}&
@@ -886,7 +884,7 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \label{figPLOT3Dtestvector}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccl}
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_i1}&
@@ -919,7 +917,7 @@ middle of the scene.
 %The images for this test were created automatically by running the Smokeview script,
 {\tt fire\_line.ssf}.
 
-%\begin{figure}[\figoptions]
+%\begin{figure}[bph]
 %\begin{center}
 %\begin{tabular}{cc}
 %\includegraphics[height=\figheightD]{SCRIPT_FIGURES/fire_line_fireline_10}&
@@ -1002,7 +1000,7 @@ If Smokeview made an error determining the sensor screen coordinates the grey le
 displayed would be 128 (grey level of the adjacent grey background) not 255
 (grey level of the sensor).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
  \centering
 \begin{tabular}{cc}
@@ -1029,7 +1027,7 @@ the same {\em amounts}\ of smoke.  When comparing a computed smoke shade with th
 (as in Figure \ref{figsmoketest2}) one must keep in mind the eye's inability to
 distinguish nearly equal shades of grey.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
  \centering
 \begin{tabular}{c}
@@ -1069,7 +1067,7 @@ of the wall that is visible. Again, the spacing between the walls, the distance 
 the walls and the observer and the initial soot densities is chosen so that the computed
 smoke obscurations work out to {\em nice}\ values.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
  \centering
 \begin{tabular}{c}
@@ -1111,7 +1109,7 @@ theoretical values one finds as expected that better results are achieved
 when using a more refined grid (0.1~m rather than 0.2~m) and using all planes
 (no skipping).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
  \centering
 \begin{tabular}{rcc}
@@ -1156,7 +1154,7 @@ unobscured.  The right view shows the transparent blockage drawn in front with t
 opaque blockage visible behind. The images for this test were created automatically
 by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5c}).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_solid}&
@@ -1172,7 +1170,7 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 \label{figobsttest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[width=2.0in]{SCRIPT_FIGURES/transparency_left}&
@@ -1199,7 +1197,7 @@ this scene on computers with good video cards. The images for this test
 were created automatically by running the Smokeview script, {\tt sprinkler\_many.ssf}\
 (see Appendix \ref{SSFspinklermany}).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[width=2.0in]{SCRIPT_FIGURES/sprink_many_view1}&
@@ -1225,7 +1223,7 @@ The circular vents are drawn as requested by the user (a circle) and as implemen
 Figure \ref{figcircventtestwall} shows circular vents drawn on exterior boundary.
 The circular vents are drawn as requested by the user (a circle) and as implemented within FDS.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_allvents}&
@@ -1242,7 +1240,7 @@ The circular vents are drawn as requested by the user (a circle) and as implemen
 \label{figventtest}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=2.0in]{SCRIPT_FIGURES/vcirctest_circ}&
@@ -1260,7 +1258,7 @@ The circular vents are drawn as requested by the user (a circle) and as implemen
 \label{figcircventtestobst}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=2.0in]{SCRIPT_FIGURES/vcirctest2_circ}&
@@ -1307,7 +1305,7 @@ should match the selected region in the vertical slice. The images for this
 test were created automatically by running the Smokeview script, {\tt colorbar.ssf}\
 (see Appendix \ref{SSFcolorbar}).
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccl}
  \includegraphics[width=\figheightG]{SCRIPT_FIGURES/colorconv_slice_00000}&
@@ -1335,7 +1333,7 @@ test were created automatically by running the Smokeview script, {\tt colorbar.s
 \label{figcolorconv}%
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
  \includegraphics[height=2.75in]{SCRIPT_FIGURES/colorbar_low}\\
@@ -1361,7 +1359,7 @@ CPU generated images at \SI{5}{s}, \SI{10}{s} and \SI{30}{s} while the
 second column shows GPU generated images at the same times.  The
 corresponding images in each column should be similar.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_smoke_nongpu_05}&
@@ -1383,7 +1381,7 @@ corresponding images in each column should be similar.
 
 Figures \ref{figlrstereo}, \ref{figrbstereo} and  \ref{figrcstereo} test whether Smokeview outputs stereo images properly.  Figure \ref{figlrstereo} shows a left/right stereo pair.  Figure \ref{figrbstereo} shows a red/blue stereo pair.  Figure \ref{figrcstereo} shows a red/cyan stereo pair.
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[height=5.0in]{SCRIPT_FIGURES/plume5c_iso_lr_stereo}
 \caption[Stereo pair view.]{ Stereo
@@ -1394,7 +1392,7 @@ into one. } \label{figlrstereo}
 \end{center}
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.5in]{SCRIPT_FIGURES/plume5c_iso_rb_stereo}
 \caption[Red/blue stereo pair view.]{
@@ -1404,7 +1402,7 @@ glasses are required to see the 3D stereo effect. }
 \end{center}
 \end{figure}
 
-\begin{figure}[\figoptions]
+\begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.5in]{SCRIPT_FIGURES/plume5c_iso_rc_stereo}
 \caption[Red/cyan stereo pair view.]{

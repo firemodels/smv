@@ -17,8 +17,11 @@ goto:eof
 :endif_envexist
 
 call %envfile%
+set rev_file=%temp%\revision.txt
 
 %svn_drive%
 cd %svn_root%\smv
-git describe --long --dirty
+git describe --long --dirty > %rev_file%
+notepad %rev_file%
 pause
+erase %rev_file%

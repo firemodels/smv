@@ -823,12 +823,6 @@ EXTERNCPP void readvslice(int ivslice, int flag, int *errorcode);
 EXTERNCPP void freesmoke3d(smoke3ddata *smoke3di);
 EXTERNCPP void readsmoke(int ifile,int flag, int *errorcode);
 EXTERNCPP void readsmoke3d(int ifile,int flag, int *errorcode);
-EXTERNCPP int getsmoke3d_sizes(int skip, char *smokefile, int version,
-                      float **timelist, int **use_smokeframe,
-                      int *nchars_uncompressed,
-                      int **nchars_compressed,
-                      int **nchars_compressed_full,
-                      int *nframes, int *nframes_full,int *have_light);
 EXTERNCPP void readfed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);

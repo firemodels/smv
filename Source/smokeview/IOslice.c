@@ -2870,8 +2870,8 @@ void updatevslices(void){
       if(slicej->idir<1)continue;
       if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||
-        slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
@@ -5030,7 +5030,7 @@ void drawvvolslice(const vslicedata *vd){
       yy1 = yplttemp[j];
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5066,7 +5066,7 @@ void drawvvolslice(const vslicedata *vd){
       yy1 = yplttemp[j];
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5107,7 +5107,7 @@ void drawvvolslice(const vslicedata *vd){
 
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5142,7 +5142,7 @@ void drawvvolslice(const vslicedata *vd){
 
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
   	      if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5182,7 +5182,7 @@ void drawvvolslice(const vslicedata *vd){
       x1 = xplttemp[i];
       for(j=sd->js1; j<sd->js2+1; j+=vectorskip){
         n+=vectorskip*sd->nslicek;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
   	      if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5217,7 +5217,7 @@ void drawvvolslice(const vslicedata *vd){
       x1 = xplttemp[i];
       for(j=sd->js1; j<sd->js2+1; j+=vectorskip){
         n+=vectorskip*sd->nslicek;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
   	      if(sd->constant_color==NULL){
             i11 = sd->iqsliceframe[n];
             rgb_ptr = rgb_slice + 4*i11;
@@ -5315,7 +5315,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dy;
 
           index_v = (plotx-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_v,index_v);
           }
           else{
@@ -5332,7 +5332,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dz;
 
           index_w = (plotx-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1+1)*sd->nslicek + k - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_w,index_w);
           }
           else{
@@ -5368,7 +5368,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dy;
 
           index_v = (plotx-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek + k - sd->ks1 + 1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_v,index_v);
           }
           else{
@@ -5384,7 +5384,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dz;
 
           index_w = (plotx-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1+1)*sd->nslicek + k-sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_w,index_w);
           }
           else{
@@ -5471,7 +5471,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dx;
 
           index_u = (i-sd->is1)*sd->nslicej*sd->nslicek + (ploty-sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_u,index_u)
           }
           else{
@@ -5488,7 +5488,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dz;
 
           index_w = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (ploty-sd->js1)*sd->nslicek + k - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_w,index_w)
           }
           else{
@@ -5527,7 +5527,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dx;
 
           index_u = (i-sd->is1)*sd->nslicej*sd->nslicek + (ploty-sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_u,index_u)
           }
           else{
@@ -5543,7 +5543,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dz;
 
           index_w = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (ploty-sd->js1)*sd->nslicek + k - sd->ks1;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_w,index_w)
           }
           else{
@@ -5634,7 +5634,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dx;
 
           index_u = (i-sd->is1)*sd->nslicej*sd->nslicek + (plotz-sd->ks1)+(j+1-sd->js1)*sd->nslicek;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_u,index_u)
           }
           else{
@@ -5651,7 +5651,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dy;
 
           index_v = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (plotz-sd->ks1)+(j-sd->js1)*sd->nslicek;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_v,index_v)
           }
           else{
@@ -5692,7 +5692,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dx;
 
           index_u = (i-sd->is1)*sd->nslicej*sd->nslicek + (plotz-sd->ks1)+(j+1-sd->js1)*sd->nslicek;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_u,index_u)
           }
           else{
@@ -5708,7 +5708,7 @@ void drawvvolslice_cellcenter(const vslicedata *vd){
           float dy;
 
           index_v = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (plotz-sd->ks1)+(j-sd->js1)*sd->nslicek;
-          if(show_slices_and_vectors==0){
+          if(color_vector_black==0&&show_slices_and_vectors==0){
             GET_SLICE_COLOR(color_v,index_v)
           }
           else{
@@ -5827,7 +5827,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
         i11 = sd->iqsliceframe[n];
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*i11;
         }
         else{
@@ -5856,7 +5856,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
         i11 = sd->iqsliceframe[n];
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*i11;
         }
         else{
@@ -5892,7 +5892,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
         i11 = sd->iqsliceframe[n];
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*i11;
         }
         else{
@@ -5922,7 +5922,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
       for(k=sd->ks1; k<sd->ks2+1; k+=vectorskip){
         n+=vectorskip;
         i11 = sd->iqsliceframe[n];
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*i11;
         }
         else{
@@ -5964,7 +5964,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
         ij2 = IJ2(i,j);
         z11 = MIN(zmax,constval + znode[ij2]);
         n11=i*sd->nslicej*sd->nslicek+j*sd->nslicek;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*interp3dsliceindex(sd->iqsliceframe,meshi->zplt,meshi->kbar,n11,constval);
         }
         else{
@@ -6009,7 +6009,7 @@ void drawvvolslice_terrain(const vslicedata *vd){
         ij2 = IJ2(i,j);
         z11 = MIN(constval + znode[ij2],zmax);
         n11=i*sd->nslicej*sd->nslicek+j*sd->nslicek;
-        if(show_slices_and_vectors==0){
+        if(color_vector_black==0&&show_slices_and_vectors==0){
           rgb_ptr = rgb_slice + 4*interp3dsliceindex(sd->iqsliceframe,meshi->zplt,meshi->kbar,n11,constval);
         }
         else{
@@ -6438,7 +6438,7 @@ int getslicezlibdata(char *file,
 
     fread(&ttime,4,1,stream);
     fread(&nncomp,4,1,stream);
-    if(count++%sliceskip!=0||set_tmin==1&&ttime<tmin_local||set_tmax==1&&ttime>tmax_local){
+    if((count++%sliceskip!=0)||(set_tmin==1&&ttime<tmin_local)||(set_tmax==1&&ttime>tmax_local)){
       FSEEK(stream,nncomp,SEEK_CUR);
       continue;
     }
@@ -6669,8 +6669,8 @@ void update_slicedir_count(void){
       if(slicej->idir<1)continue;
       if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||
-        slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       mslicei->ndirxyz[slicej->idir]++;
     }
   }
@@ -6695,7 +6695,8 @@ void update_slicedir_count(void){
 	    if(slicej->volslice==1)continue;
       if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
 	    //if(slicej->cellcenter!=slicei->cellcenter)continue;
-      if(slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER||slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER)continue;
+      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
+         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
       slicei->ndirxyz[slicej->idir]++;
   	}
   }

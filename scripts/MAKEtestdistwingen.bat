@@ -23,8 +23,8 @@ call %envfile%
 
 set platform=%1
 
-set version=test_%smv_revision%
-set zipbase=smv_%version%_win%platform%
+set version=%smv_revision%
+set zipbase=%version%_win%platform%
 set smvdir=%svn_root%\smv\uploads\%zipbase%
 set smvscripts=%svn_root%\smv\scripts
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64

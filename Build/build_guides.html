@@ -13,16 +13,16 @@ function get_fullpath(command,platform){
   return fullpath;
 }
 function build_guide(guide){
-  MyObject.Run(get_fullpath("scripts/BUILDguide.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/BUILDguide.bat ",guide));
 }
 function view_guide(guide){
-  MyObject.Run(get_fullpath("scripts/VIEWguide.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/VIEWguide.bat ",guide));
 }
 function copy_guides(guide){
-  MyObject.Run(get_fullpath("scripts/COPYguides.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/COPYguides.bat ",guide));
 }
 function get_figs(guide){
-  MyObject.Run(get_fullpath("scripts/GETfigs.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/GETfigs.bat ",guide));
 }
 </script>
 </HEAD>

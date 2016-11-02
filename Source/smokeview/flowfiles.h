@@ -592,7 +592,7 @@ typedef struct _meshdata {
   int is_bottom;
 
   int *cutcells, ncutcells;
-  int update_firehalfdepth;
+  int update_smoke3dcolors;
   terraindata *terrain;
   int mesh_type;
 #ifdef pp_GPU
@@ -1273,13 +1273,13 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   int filetype;
-  int loaded, display, d_display;
+  int loaded, display, request_load, d_display;
   int is_zlib;
   int soot_loaded,water_loaded,hrrpuv_loaded;
   int blocknumber;
   int type;
   int is1, is2, js1, js2, ks1, ks2;
-  int compression_type, have_light;
+  int compression_type;
   flowlabels label;
   char menulabel[128];
   float *times;
@@ -1291,7 +1291,8 @@ typedef struct _smoke3ddata {
 
   int ncomp_smoke_total;
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
-  unsigned char *smokeframe_in, *lightframe_in, *smokeframe_out, **smokeframe_comp_list;
+  float maxval;
+  unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;

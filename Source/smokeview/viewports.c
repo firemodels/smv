@@ -120,7 +120,7 @@ void GetViewportInfo(void){
 
   doit=0;
   if(
-    (visTimebar==1&&showtime==1)||
+    ((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1)||
     (showtime==1&&(visFramerate==1||(vis_slice_average==1&&show_slice_average&&slice_average_flag==1))||
     (hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)
     )
@@ -520,7 +520,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all)||visGrid==GridProbe||visGrid==noGridProbe){
+  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all||visGrid==GridProbe||visGrid==noGridProbe)){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
@@ -656,7 +656,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if( visTimebar==1&&showtime==1){
+  if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }
@@ -666,7 +666,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     if(visHRRlabel==1&&hrrinfo!=NULL){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
     }
-    DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
+    if(visTimebar==1)DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
   }
 
   if(visFramerate==1&&showtime==1){
@@ -681,7 +681,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     char hrrcut_label[256];
     int ihrrcut;
 
-    ihrrcut = (int)global_hrrpuv_cutoff;
+    ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
 
     sprintf(hrrcut_label,">%i (kW/m3)",ihrrcut);
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);

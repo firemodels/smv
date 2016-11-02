@@ -75,7 +75,9 @@ int main(int argc, char **argv){
 
   int itime;
   char *arg;
+#ifdef WIN32
   char *command;
+#endif
 
   set_stdout(stdout);
 #ifdef pp_LINUX

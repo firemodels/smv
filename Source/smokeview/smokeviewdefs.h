@@ -553,7 +553,6 @@ void _Sniff_Errors(char *whereat);
 #define SHOW_ALL -2
 #define UNLOAD_ALL -1
 #define LOAD_ALL -2
-#define HAVE_LIGHT -3
 #define SHOWALL_SLICE SHOW_ALL
 #define SHOWALL_SMOKE3D SHOW_ALL
 #define HIDEALL_SLICE HIDE_ALL
