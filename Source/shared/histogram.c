@@ -205,7 +205,15 @@ void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogra
   histogram->valmax=valmax;
 }
 
-/* ------------------ UpdateHistogram ------------------------ */
+/* ------------------ Histogram2Sum ------------------------ */
+
+void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n) {
+  histogram->valmin_sum = valmin;
+  histogram->valmax_sum = valmax;
+  histogram->nbuckets_sum = n;
+}
+
+  /* ------------------ UpdateHistogram ------------------------ */
 
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram_to){
 
@@ -260,8 +268,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from){
         valmin_new=MIN(valmin_new,val);
         valmax_new=MAX(valmax_new,val);
         ival = (val-valmin_new)/dbucket_new;
-        if(ival<0)ival=0;
-        if(ival>histogram_to->nbuckets - 1)ival = histogram_to->nbuckets - 1;
+        ival = CLAMP(ival,0,histogram_to->nbuckets - 1);
         histogram_to->buckets[ival]+=bucket_to_copy[i];
       }
       if(histogram_from->buckets[i]!=0){

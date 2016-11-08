@@ -2795,16 +2795,15 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   
   for(istep=0;istep<ntimes;istep++){
     int n0;
-    histogramdata *histi;
-    histogramdata *histall;
+    histogramdata *histi, *histall;
 
     n0 = -1;
     pdata0 = pdata + n + 1;
 
     // compute histogram for each timestep, histi and all time steps, histall
-    
-    histi = sd->histograms+istep;
-    histall = sd->histograms+sd->nhistograms - 1;
+
+    histi = sd->histograms+istep+1;
+    histall = sd->histograms;
     CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
     MergeHistogram(histall,histi);
 
@@ -3002,7 +3001,12 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     FREEMEMORY(sd->compindex);
     FREEMEMORY(sd->qslicedata_compressed);
     FREEMEMORY(sd->slicecomplevel);
-    FREEMEMORY(sd->histograms);
+    if (sd->histograms != NULL) {
+      for (i = 0; i < sd->nhistograms; i++) {
+        FreeHistogram(sd->histograms + i);
+      }
+      FREEMEMORY(sd->histograms);
+    }
     slicefilenum = ifile;
 
     if (flag == UNLOAD) {
