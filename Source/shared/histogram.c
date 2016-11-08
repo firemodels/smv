@@ -147,37 +147,52 @@ void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valma
 
   /* ------------------ CopyU2Histogram ------------------------ */
 
-void CopyU2Histogram(float *vals, int nvals, histogramdata *histogram){
+void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogram){
 
 // copy vals into histogram
 
   int i;
   float valmin, valmax;
   float dbucket;
+  int first=1;
+  int nnvals=0;
 
+// initialize
+
+  valmin=(float)pow(10.0,20.0);
+  valmax=-valmin;
   histogram->defined=1;
   for(i=0;i<histogram->nbuckets;i++){
     histogram->buckets[i]=0;
   }
-  if(nvals==0){
-    valmin=(float)pow(10.0,20.0);
-    valmax=-valmin;
-  }
-  else{
-    valmin=vals[0];
-    valmax=vals[0];
-    for(i=1;i<nvals;i++){
-      valmin=MIN(vals[i],valmin);
-      valmax=MAX(vals[i],valmax);
+
+// compute min/max, skip over mask'd data
+
+  for(i=0;i<nvals;i++){
+    if(mask!=NULL&&mask[i]==0)continue;
+    nnvals++;
+    if(first==1){
+      valmin=vals[i];
+      valmax=vals[i];
+      first=0;
+      continue;
     }
+    valmin=MIN(vals[i],valmin);
+    valmax=MAX(vals[i],valmax);
+  }
+
+// record unmasked data in histogram
+
+  if(nnvals>0){
     dbucket=(valmax-valmin)/histogram->nbuckets;
     if(dbucket==0.0){
-      histogram->buckets[0]=nvals;
+      histogram->buckets[0]=nnvals;
     }
     else{
       for(i=0;i<nvals;i++){
         int ival;
 
+        if(mask!=NULL&&mask[i]==0)continue;
         ival = (vals[i]-valmin)/dbucket;
         ival=MAX(0,ival);
         ival=MIN(histogram->nbuckets-1,ival);
@@ -185,14 +200,14 @@ void CopyU2Histogram(float *vals, int nvals, histogramdata *histogram){
       }
     }
   }
-  histogram->ntotal=nvals;
-  histogram->valmax=valmax;
+  histogram->ntotal=nnvals;
   histogram->valmin=valmin;
+  histogram->valmax=valmax;
 }
 
 /* ------------------ UpdateHistogram ------------------------ */
 
-void UpdateHistogram(float *vals, int nvals, histogramdata *histogram_to){
+void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram_to){
 
 // merge nvals of the floating point array, vals, into the histogram histogram
 
@@ -201,7 +216,7 @@ void UpdateHistogram(float *vals, int nvals, histogramdata *histogram_to){
   if(nvals<=0)return;
   InitHistogram(&histogram_from,NHIST_BUCKETS);
 
-  CopyU2Histogram(vals,nvals,&histogram_from);
+  CopyU2Histogram(vals,mask,nvals,&histogram_from);
   MergeHistogram(histogram_to,&histogram_from);
   FreeHistogram(&histogram_from);
 }
