@@ -791,7 +791,6 @@ EXTERNCPP void AdjustPart5Chops(partdata *parti);
 EXTERNCPP void AdjustPart5Bounds(partdata *parti);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void adjustslicebounds(const slicedata *sd, float *pmin, float *pmax);
-EXTERNCPP void getslicedatabounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);

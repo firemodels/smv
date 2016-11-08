@@ -2388,7 +2388,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
 
   ResetHistogram(patchi->histogram);
 
-  UpdateHistogram(patchi->geom_vals,nvals,patchi->histogram);
+  UpdateHistogram(patchi->geom_vals,NULL,nvals,patchi->histogram);
 
   CompleteHistogram(patchi->histogram);
 

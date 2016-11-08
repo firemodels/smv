@@ -624,7 +624,7 @@ void Get_Part_Bounds(void){
           partpropdata *propi;
 
           propi=getpartprop(classj->labels[k].shortlabel);
-          UpdateHistogram(vals,npoints[j],propi->histogram);
+          UpdateHistogram(vals,NULL,npoints[j],propi->histogram);
 
           vals += npoints[j];
         }

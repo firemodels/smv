@@ -30,7 +30,7 @@ typedef struct {
 
 void CompleteHistogram(histogramdata *histogram);
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
-void CopyU2Histogram(float *vals, int nvals, histogramdata *histogram);
+void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram);
 
@@ -45,6 +45,6 @@ void InitHistogram2D(histogramdata *histogram, int nx, int ny);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom);
 void ResetHistogram(histogramdata *histogram);
 void ResetHistogram2d(histogramdata *histogram);
-void UpdateHistogram(float *vals, int nvals, histogramdata *histogram);
+void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram);
 
 #endif

@@ -587,7 +587,7 @@ void update_patch_hist(void){
 
       FORTgetpatchdata(&unit1, &patchi->npatches,
         pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&error1);
-      UpdateHistogram(patchframe,patchframesize,patchi->histogram);
+      UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
     }
     LOCK_COMPRESS;
     FORTclosefortranfile(&unit1);
