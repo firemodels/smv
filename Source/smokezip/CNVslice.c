@@ -909,7 +909,7 @@ void update_slice_hist(void){
     testslice=0;
     while(error1==0){
       FORTgetsliceframe(&unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &slicetime1, sliceframe, &testslice,&error1);
-      UpdateHistogram(sliceframe,sliceframesize,slicei->histogram);
+      UpdateHistogram(sliceframe,NULL,sliceframesize,slicei->histogram);
     }
     FREEMEMORY(sliceframe);
 
