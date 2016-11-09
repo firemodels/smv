@@ -11,6 +11,8 @@
 #define HIST_OLD 1
 #define HIST_ERR -1
 
+#define MERGE_BOUNDS 1
+#define KEEP_BOUNDS 0
 
 /* --------------------------  flowlabels ------------------------------------ */
 
@@ -42,10 +44,10 @@ void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag)
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetHistogramStats(histogramdata *histogram);
 void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n);
-void InitHistogram(histogramdata *histogram, int nbuckets);
+void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogram2D(histogramdata *histogram, int nx, int ny);
-void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom);
-void ResetHistogram(histogramdata *histogram);
+void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);
+void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax);
 void ResetHistogram2d(histogramdata *histogram);
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram);
 

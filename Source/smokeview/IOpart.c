@@ -307,11 +307,11 @@ void get_part_histogram(partdata *parti){
     NewMemory((void **)&parti->histograms, npart5prop*sizeof(histogramdata *));
     for(i = 0; i < npart5prop; i++){
       NewMemory((void **)&parti->histograms[i], sizeof(histogramdata));
-      InitHistogram(parti->histograms[i], NHIST_BUCKETS);
+      InitHistogram(parti->histograms[i], NHIST_BUCKETS, NULL, NULL);
     }
   }
   for(i = 0; i < npart5prop; i++){
-    ResetHistogram(parti->histograms[i]);
+    ResetHistogram(parti->histograms[i],NULL,NULL);
   }
   if(file_exists(parti->hist_file)==1&&get_histfile_status(parti)==HIST_OK){
     read_part_histogram(parti);
@@ -388,7 +388,7 @@ void get_allpart_histogram(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    ResetHistogram(&propi->histogram);
+    ResetHistogram(&propi->histogram,NULL,NULL);
   }
   for(i = 0; i < npartinfo; i++){
     partdata *parti;
@@ -399,7 +399,7 @@ void get_allpart_histogram(void){
       partpropdata *propj;
 
       propj = part5propinfo + j;
-      MergeHistogram(&propj->histogram, parti->histograms[j]);
+      MergeHistogram(&propj->histogram, parti->histograms[j],MERGE_BOUNDS);
     }
   }
 }
@@ -1000,7 +1000,7 @@ void init_partprop(void){
             propi->partlabels[ii]=labeli;
           }
           NewMemory((void **)&propi->scale,256);
-          InitHistogram(&propi->histogram, NHIST_BUCKETS);
+          InitHistogram(&propi->histogram, NHIST_BUCKETS, NULL, NULL);
 
           npart5prop++;
         }

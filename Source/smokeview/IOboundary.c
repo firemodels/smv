@@ -4207,7 +4207,7 @@ int update_patch_hist(patchdata *patchj){
     FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
 
     NewMemory((void **)&patchframe,patchframesize*sizeof(float));
-    ResetHistogram(patchi->histogram);
+    ResetHistogram(patchi->histogram,NULL,NULL);
     error1=0;
     while(error1==0){
       int ndummy;

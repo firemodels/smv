@@ -7909,7 +7909,7 @@ typedef struct {
           if(ReadLabels(&patchi->label,stream)==2)return 2;
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
-        InitHistogram(patchi->histogram,NHIST_BUCKETS);
+        InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
         ipatch++;
       }
       else{

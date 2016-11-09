@@ -2789,7 +2789,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   sd->nhistograms = ntimes + 1;
   NewMemory((void **)&sd->histograms,sd->nhistograms*sizeof(histogramdata));
   for(i=0;i<sd->nhistograms;i++){
-    InitHistogram(sd->histograms+i, NHIST_BUCKETS);
+    InitHistogram(sd->histograms+i, NHIST_BUCKETS, NULL, NULL);
   }
 
   
@@ -2805,7 +2805,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     histi = sd->histograms+istep+1;
     histall = sd->histograms;
     CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
-    MergeHistogram(histall,histi);
+    MergeHistogram(histall,histi,MERGE_BOUNDS);
 
     for(i=0;i<sd->nslicei;i++){
       int ii,j;
@@ -7260,7 +7260,7 @@ void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
       }
     }
   }
-  InitHistogram(histogram, NHIST_BUCKETS);
+  InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
   CopyU2Histogram(vals, NULL, nvals, histogram);
   FREEMEMORY(vals);
 }

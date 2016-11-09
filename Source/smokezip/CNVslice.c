@@ -905,7 +905,7 @@ void update_slice_hist(void){
 
     sliceframesize=(is2+1-is1)*(js2+1-js1)*(ks2+1-ks1);
     NewMemory((void **)&sliceframe,sliceframesize*sizeof(float));
-    ResetHistogram(slicei->histogram);
+    ResetHistogram(slicei->histogram,NULL,NULL);
     testslice=0;
     while(error1==0){
       FORTgetsliceframe(&unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &slicetime1, sliceframe, &testslice,&error1);
@@ -978,7 +978,7 @@ void Get_Slice_Bounds(void){
 
       slicej = sliceinfo + j;
       if(strcmp(slicei->label.shortlabel,slicej->label.shortlabel)!=0)continue;
-      MergeHistogram(slicei->histogram,slicej->histogram);
+      MergeHistogram(slicei->histogram,slicej->histogram,MERGE_BOUNDS);
     }
     slicei->valmax=GetHistogramVal(slicei->histogram,0.99);
     slicei->valmin=GetHistogramVal(slicei->histogram,0.01);
