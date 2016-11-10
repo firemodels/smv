@@ -1598,7 +1598,7 @@ void initvars(void){
   ntc_total=0, nspr_total=0, nheat_total=0;
   n_devices=0;
 
-  npartinfo=0, nsliceinfo=0, nvsliceinfo=0, nslice2=0, npatch2=0, nplot3dinfo=0, npatchinfo=0;
+  npartinfo=0, nsliceinfo=0, nvsliceinfo=0, npatch2=0, nplot3dinfo=0, npatchinfo=0;
   nevac=0;
   nsmoke3dinfo=0;
   nisoinfo=0, niso_bounds=0;

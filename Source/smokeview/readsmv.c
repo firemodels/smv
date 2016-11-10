@@ -1805,7 +1805,7 @@ void UpdateBoundInfo(void){
   if(nsliceinfo>0){
     FREEMEMORY(slicebounds);
     NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
-    nslice2=0;
+    nslice_type=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
 
@@ -1815,26 +1815,26 @@ void UpdateBoundInfo(void){
       slicei->valmax=0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
-      slicebounds[nslice2].datalabel=slicei->label.shortlabel;
-      slicebounds[nslice2].setvalmin=0;
-      slicebounds[nslice2].setvalmax=0;
-      slicebounds[nslice2].valmin=1.0;
-      slicebounds[nslice2].valmax=0.0;
-      slicebounds[nslice2].chopmax=0.0;
-      slicebounds[nslice2].chopmin=1.0;
-      slicebounds[nslice2].setchopmax=0;
-      slicebounds[nslice2].setchopmin=0;
-      slicebounds[nslice2].line_contour_min=0.0;
-      slicebounds[nslice2].line_contour_max=1.0;
-      slicebounds[nslice2].line_contour_num=1;
-      nslice2++;
+      slicebounds[nslice_type].datalabel=slicei->label.shortlabel;
+      slicebounds[nslice_type].setvalmin=0;
+      slicebounds[nslice_type].setvalmax=0;
+      slicebounds[nslice_type].valmin=1.0;
+      slicebounds[nslice_type].valmax=0.0;
+      slicebounds[nslice_type].chopmax=0.0;
+      slicebounds[nslice_type].chopmin=1.0;
+      slicebounds[nslice_type].setchopmax=0;
+      slicebounds[nslice_type].setchopmin=0;
+      slicebounds[nslice_type].line_contour_min=0.0;
+      slicebounds[nslice_type].line_contour_max=1.0;
+      slicebounds[nslice_type].line_contour_num=1;
+      nslice_type++;
       for(n=0;n<i;n++){
         slicedata *slicen;
 
         slicen = sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
           slicei->firstshort=0;
-          nslice2--;
+          nslice_type--;
           break;
         }
       }
@@ -8391,7 +8391,7 @@ typedef struct {
 
   update_plotxyz_all();
 
-  updatevslices();
+  UpdateVSlices();
   getgsliceparams();
 
   active_smokesensors=0;
@@ -8440,8 +8440,8 @@ typedef struct {
   stream=NULL;
 
   UpdateSelectFaces();
-  updateslicetypes();
-  updatesliceboundlabels();
+  UpdateSliceTypes();
+  UpdateSliceBoundLabels();
   updateisotypes();
   UpdatePatchTypes();
   if(autoterrain==1){
@@ -8467,7 +8467,7 @@ typedef struct {
   update_terrain(1,vertical_factor);
   update_terrain_colors();
   update_smoke3d_menulabels();
-  updatevslicetypes();
+  UpdateVSliceTypes();
   update_patch_menulabels();
   update_iso_menulabels();
   update_part_menulabels();
@@ -8878,7 +8878,7 @@ int ReadINI2(char *inifile, int localfile){
       if(constant_evac_coloring != 1)constant_evac_coloring = 0;
       data_evac_coloring = 1 - constant_evac_coloring;
       ONEORZERO(show_evac_colorbar);
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       update_evac_parms();
       continue;
     }
@@ -8890,7 +8890,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%f %f %f", dc, dc + 1, dc + 2);
       dc[3] = 1.0;
       direction_color_ptr = getcolorptr(direction_color);
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       update_evac_parms();
       continue;
     }
@@ -9490,7 +9490,7 @@ int ReadINI2(char *inifile, int localfile){
       }
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
-        for(i = 0; i<nslice2; i++){
+        for(i = 0; i<nslice_type; i++){
           if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
@@ -9505,7 +9505,7 @@ int ReadINI2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice2; i++){
+        for(i = 0; i<nslice_type; i++){
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -9525,7 +9525,7 @@ int ReadINI2(char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
-        for(i = 0; i<nslice2; i++){
+        for(i = 0; i<nslice_type; i++){
           if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
@@ -9535,7 +9535,7 @@ int ReadINI2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice2; i++){
+        for(i = 0; i<nslice_type; i++){
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -11520,7 +11520,7 @@ int ReadINI(char *inifile){
 
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
-  updateglui();
+  UpdateGlui();
   if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   if(ncolorbars<=ndefaultcolorbars){
     InitDefaultColorbars();
@@ -11888,8 +11888,8 @@ void WriteINILocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3chopmin[i], p3chopmin[i], setp3chopmax[i], p3chopmax[i]);
     }
   }
-  if(nslice2 > 0){
-    for(i = 0; i < nslice2; i++){
+  if(nslice_type > 0){
+    for(i = 0; i < nslice_type; i++){
       fprintf(fileout, "C_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         slicebounds[i].setchopmin, slicebounds[i].chopmin,
@@ -11962,8 +11962,8 @@ void WriteINILocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min[i], p3min[i], setp3max[i], p3max[i]);
     }
   }
-  if(nslice2 > 0){
-    for(i = 0; i < nslice2; i++){
+  if(nslice_type > 0){
+    for(i = 0; i < nslice_type; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
         slicebounds[i].setvalmin, slicebounds[i].valmin,

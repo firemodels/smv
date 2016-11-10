@@ -1694,7 +1694,7 @@ extern "C" void Plot3D_CB(int var){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
-   updateglui();
+   UpdateGlui();
    break;
   case VALMIN:
   case VALMAX:
@@ -1781,7 +1781,7 @@ extern "C" void updateplot3dlistindex(void){
     Plot3D_CB(SETCHOPMAXVAL);
   }
   UpdateChopColors();
-  updateglui();
+  UpdateGlui();
 }
 
 /* ------------------ get_colortable_index ------------------------ */
@@ -2611,7 +2611,7 @@ void Part_CB(int var){
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)Part_CB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)Part_CB(SETVALMAX);
      LoadParticleMenu(PARTFILE_RELOADALL);
-     updateglui();
+     UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }
     break;
@@ -2761,7 +2761,7 @@ extern "C" void Slice_CB(int var){
 
         slicei = sliceinfo + i;
         if(slicei->loaded==0||slicei->display==0)continue;
-        updateslicelist(getslicetype(slicei));
+        UpdateSliceList(getslicetype(slicei));
         break;
       }
       if(research_mode==1){
@@ -2933,12 +2933,12 @@ extern "C" void Slice_CB(int var){
 #endif
     case SHOW_EVAC_SLICES:
       data_evac_coloring = 1-constant_evac_coloring;
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       if(CHECKBOX_data_coloring!=NULL)CHECKBOX_data_coloring->set_int_val(data_evac_coloring);
       break;
     case DATA_EVAC_COLORING:
       constant_evac_coloring = 1-data_evac_coloring;
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       if(CHECKBOX_constant_coloring!=NULL)CHECKBOX_constant_coloring->set_int_val(constant_evac_coloring);
       break;
     case COLORBAND:
@@ -2968,7 +2968,7 @@ extern "C" void Slice_CB(int var){
       slicebounds[list_slice_index].line_contour_num=slice_line_contour_num;
       break;
     case UPDATE_LINE_CONTOUR_VALUE:
-      update_slice_contours(list_slice_index,slice_line_contour_min, slice_line_contour_max,slice_line_contour_num);
+      UpdateSliceContours(list_slice_index,slice_line_contour_min, slice_line_contour_max,slice_line_contour_num);
       break;
   case UPDATE_VECTOR_FROM_SMV:
     if(SPINNER_plot3d_vectorpointsize!=NULL&&SPINNER_plot3d_vectorlinewidth!=NULL&&SPINNER_plot3d_vectorlinelength!=NULL){
@@ -3089,7 +3089,7 @@ extern "C" void Slice_CB(int var){
         ROLLOUT_slice_chop->enable();
       }
     }
-    setslicebounds(list_slice_index);
+    SetSliceBounds(list_slice_index);
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
     switch(setslicemin){
     case PERCENTILE_MIN:
@@ -3168,7 +3168,7 @@ extern "C" void Slice_CB(int var){
     else{
       LoadSliceMenu(0);
     }
-    updateglui();
+    UpdateGlui();
     break;
   default:
     ASSERT(FFALSE);
@@ -3196,28 +3196,28 @@ void SETslicemax(int setslicemax_local, float slicemax_local,int setslicechopmax
   slicebounds[list_slice_index].chopmax=slicechopmax_local;
 }
 
-/* ------------------ updateslicelist ------------------------ */
+/* ------------------ UpdateSliceList ------------------------ */
 
-extern "C" void updateslicelist(int index){
+extern "C" void UpdateSliceList(int index){
   RADIO_slice->set_int_val(index);
 }
 
-/* ------------------ updateslicelistindex ------------------------ */
+/* ------------------ UpdateSliceListIndex ------------------------ */
 
-extern "C" void updateslicelistindex(int sfn){
+extern "C" void UpdateSliceListIndex(int sfn){
   int i;
   int slicefiletype;
   slicedata *sd;
   if(sfn<0){
-    updateslicefilenum();
+    UpdateSliceFilenum();
     sfn=slicefilenum;
   }
   sd = sliceinfo+sfn;
   slicefiletype=getsliceindex(sd);
-  if(slicefiletype>=0&&slicefiletype<nslice2){
+  if(slicefiletype>=0&&slicefiletype<nslice_type){
     i = slicefiletype;
     RADIO_slice->set_int_val(i);
-    setslicebounds(i);
+    SetSliceBounds(i);
     list_slice_index=i;
     Slice_CB(SETVALMIN);
     Slice_CB(SETVALMAX);
@@ -3230,9 +3230,9 @@ extern "C" void updateslicelistindex(int sfn){
   }
 }
 
-/* ------------------ updateglui ------------------------ */
+/* ------------------ UpdateGlui ------------------------ */
 
-extern "C" void updateglui(void){
+extern "C" void UpdateGlui(void){
   GLUI_Master.sync_live_all();
 }
 
@@ -3264,7 +3264,7 @@ extern "C" void show_glui_bounds(int menu_id){
   if(menu_id==DIALOG_BOUNDS){
     if(nsliceinfo>0){
       islice=RADIO_slice->get_int_val();
-      setslicebounds(islice);
+      SetSliceBounds(islice);
       Slice_CB(SETVALMIN);
       Slice_CB(SETVALMAX);
       Slice_CB(VALMIN);
@@ -3285,7 +3285,7 @@ extern "C" void show_glui_bounds(int menu_id){
       Plot3D_CB(SETVALMAX);
     }
 
-    if(nsliceinfo>0||npatchinfo>0)updateglui();
+    if(nsliceinfo>0||npatchinfo>0)UpdateGlui();
 
     updatechar();
     File_Rollout_CB(FILEBOUNDS_ROLLOUT);

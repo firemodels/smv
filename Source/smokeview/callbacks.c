@@ -1940,7 +1940,7 @@ void keyboard(unsigned char key, int flag){
         default:
           visVector=1-visVector;
           if(vectorspresent==0)visVector=0;
-          updateglui();
+          UpdateGlui();
           break;
       }
       break;
@@ -2226,7 +2226,7 @@ void handleiso(void){
         plotstate=STATIC_PLOTS;
       }
     }
-    updateglui();
+    UpdateGlui();
     return;
 }
 

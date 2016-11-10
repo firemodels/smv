@@ -29,17 +29,9 @@ slicedata *gslice_u, *gslice_v, *gslice_w;
 slicedata *gslice;
 
 float get_texture_index(float *xyz);
-void draw_triangle(float *v1, float *v2, float *v3,
-                   float t1, float t2, float t3,
-                   float del, int level);
-void draw_triangle_vector(float *v1, float *v2, float *v3,
-                   float del, int level);
-void draw_triangle_outline(float *v1, float *v2, float *v3,
-                   float del, int level);
 int getslicezlibdata(char *file,
                             int set_tmin, int set_tmax, float tmin, float tmax, int ncompressed, int sliceskip, int nsliceframes,
                             float *times, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax);
-int average_slice_data(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times, int ntimes, float average_time);
 int getsliceheader(char *comp_file, char *size_file, int compression_type,
                    int framestep, int set_tmin, int set_tmax, float tmin, float tmax,
                    int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax);
@@ -47,6 +39,11 @@ int getsliceheader0(char *comp_file, char *size_file, int compression_type, int 
 int getslicecompresseddata(char *file,
                             int set_tmin, int set_tmax, float tmin, float tmax, int ncompressed, int sliceskip, int nsliceframes,
                             float *times, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax);
+void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level);
+void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
+void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level);
+void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level);
+void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level);
 
 int makeslicesizefile(char *file, char *sizefile, int compression_type);
 
@@ -111,6 +108,365 @@ int makeslicesizefile(char *file, char *sizefile, int compression_type);
            }                                  \
          }                                   \
          DU *= 0.05*vecfactor/vrange
+
+#define VERT_AVG(v1,v2,vavg) \
+  vavg[0]=(v1[0]+v2[0])/2.0;\
+  vavg[1]=(v1[1]+v2[1])/2.0;\
+  vavg[2]=(v1[2]+v2[2])/2.0
+
+#define VERT_AVG3(v1,v2,v3,vavg) \
+  vavg[0]=(v1[0]+v2[0]+v3[0])/3.0;\
+  vavg[1]=(v1[1]+v2[1]+v3[1])/3.0;\
+  vavg[2]=(v1[2]+v2[2]+v3[2])/3.0
+
+#define DIST3(v1,v2,dist2) \
+  dx=v1[0]-v2[0];\
+  dy=v1[1]-v2[1];\
+  dz=v1[2]-v2[2];\
+  dist2=dx*dx+dy*dy+dz*dz
+
+/* ------------------ get_3dslice_val ------------------------ */
+
+float get_3dslice_val(slicedata *sd, float *xyz) {
+  int i, j, k;
+  float *xplt, *yplt, *zplt;
+  float dxbar, dybar, dzbar;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  int slice_ny, slice_nz;
+  float dx, dy, dz;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float val00, val10, val01, val11;
+  float val0, val1;
+  float val;
+  int ijk, ip1 = 0, jp1 = 0, kp1 = 0, *ijk_min, *ijk_max;
+
+  meshdata *valmesh;
+
+  valmesh = meshinfo + sd->blocknumber;
+
+  xplt = valmesh->xplt_orig;
+  yplt = valmesh->yplt_orig;
+  zplt = valmesh->zplt_orig;
+  ibar = valmesh->ibar;
+  jbar = valmesh->jbar;
+  kbar = valmesh->kbar;
+  dxbar = xplt[1] - xplt[0];
+  dybar = yplt[1] - yplt[0];
+  dzbar = zplt[1] - zplt[0];
+
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nz = kbar + 1;
+  slice_ny = sd->ijk_max[1] - sd->ijk_min[1] + 1;
+  slice_nz = sd->ijk_max[2] - sd->ijk_min[2] + 1;
+
+  GETINDEX(i, xyz[0], xplt[0], dxbar, nx);
+  GETINDEX(j, xyz[1], yplt[0], dybar, ny);
+  GETINDEX(k, xyz[2], zplt[0], dzbar, nz);
+
+  // val(i,j,k) = di*nj*nk + dj*nk + dk
+  ijk_min = sd->ijk_min;
+  ijk_max = sd->ijk_max;
+
+  ijk = (i - ijk_min[0])*slice_nz*slice_ny + (j - ijk_min[1])*slice_nz + (k - ijk_min[2]);
+
+  dx = (xyz[0] - xplt[i]) / dxbar;
+  dx = CLAMP(dx, 0.0, 1.0);
+  dy = (xyz[1] - yplt[j]) / dybar;
+  dy = CLAMP(dy, 0.0, 1.0);
+  dz = (xyz[2] - zplt[k]) / dzbar;
+  dz = CLAMP(dz, 0.0, 1.0);
+
+
+  // ijk
+  if (i <= ijk_max[0])ip1 = slice_nz*slice_ny;
+  if (j <= ijk_max[1])jp1 = slice_nz;
+  if (k <= ijk_max[2])kp1 = 1;
+
+  val000 = (float)GET_VAL_N(sd, ijk);     // i,j,k
+  val001 = (float)GET_VAL_N(sd, ijk + kp1); // i,j,k+1
+
+                                            // ijk + slice_nz
+  val010 = (float)GET_VAL_N(sd, ijk + jp1);     // i,j+1,k
+  val011 = (float)GET_VAL_N(sd, ijk + jp1 + kp1); // i,j+1,k+1
+
+                                                  // ijk + slice_nz*slice_ny
+  val100 = (float)GET_VAL_N(sd, ijk + ip1);     // i+1,j,k
+  val101 = (float)GET_VAL_N(sd, ijk + ip1 + kp1); // i+1,j,k+1
+
+                                                  // ijk + slice_nz + slice_nz*slice_ny
+  val110 = (float)GET_VAL_N(sd, ijk + ip1 + jp1);   // i+1,j+1,k
+  val111 = (float)GET_VAL_N(sd, ijk + ip1 + jp1 + kp1); // i+1,j+1,k+1
+
+  val00 = MIX(dx, val100, val000);
+  val10 = MIX(dx, val110, val010);
+  val01 = MIX(dx, val101, val001);
+  val11 = MIX(dx, val111, val011);
+  val0 = MIX(dy, val10, val00);
+  val1 = MIX(dy, val11, val01);
+
+  val = MIX(dz, val1, val0);
+  return val;
+}
+
+/* ------------------ DrawTriangle ------------------------ */
+
+void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level) {
+
+  float d12, d13, d23;
+  float v12[3], v13[3], v23[3];
+  float dx, dy, dz;
+  float t12, t13, t23;
+
+  if (level == 0) {
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glBegin(GL_TRIANGLES);
+  }
+  DIST3(v1, v2, d12);
+  DIST3(v1, v3, d13);
+  DIST3(v2, v3, d23);
+  if (d12 <= del&&d13 <= del&&d23 < del) {
+    glTexCoord1f(t1);
+    glVertex3fv(v1);
+
+    glTexCoord1f(t2);
+    glVertex3fv(v2);
+
+    glTexCoord1f(t3);
+    glVertex3fv(v3);
+  }
+  else {
+    if (d12 <= MIN(d13, d23)) {
+      VERT_AVG(v1, v3, v13);
+      t13 = get_texture_index(v13);
+      VERT_AVG(v2, v3, v23);
+      t23 = get_texture_index(v23);
+
+      DrawTriangle(v3, v13, v23, t3, t13, t23, del, level + 1);
+      DrawQuad(v13, v1, v2, v23, t13, t1, t2, t23, del, level + 1);
+    }
+    else if (d13 <= MIN(d12, d23)) {
+      VERT_AVG(v1, v2, v12);
+      t12 = get_texture_index(v12);
+      VERT_AVG(v2, v3, v23);
+      t23 = get_texture_index(v23);
+
+      DrawTriangle(v12, v2, v23, t12, t2, t23, del, level + 1);
+      DrawQuad(v1, v12, v23, v3, t1, t12, t23, t3, del, level + 1);
+    }
+    else { // d23<=MIN(d12,d13)
+      VERT_AVG(v1, v2, v12);
+      t12 = get_texture_index(v12);
+      VERT_AVG(v1, v3, v13);
+      t13 = get_texture_index(v13);
+
+      DrawTriangle(v1, v12, v13, t1, t12, t13, del, level + 1);
+      DrawQuad(v12, v2, v3, v13, t12, t2, t3, t13, del, level + 1);
+    }
+  }
+  if (level == 0) {
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
+}
+
+/* ------------------ DrawQuadOutline ------------------------ */
+
+void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level) {
+  float d13, d24;
+  float dx, dy, dz;
+
+  if (level == 0) {
+    glBegin(GL_LINES);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if (d13 < d24) {
+    DrawTriangleOutline(v1, v2, v3, del, level + 1);
+    DrawTriangleOutline(v1, v3, v4, del, level + 1);
+  }
+  else {
+    DrawTriangleOutline(v1, v2, v4, del, level + 1);
+    DrawTriangleOutline(v2, v3, v4, del, level + 1);
+  }
+  if (level == 0) {
+    glEnd();
+  }
+}
+
+/* ------------------ DrawTriangleOutline ------------------------ */
+
+void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level) {
+  float d12, d13, d23;
+  float v12[3], v13[3], v23[3];
+  float dx, dy, dz;
+
+  if (level == 0) {
+    glBegin(GL_LINES);
+  }
+  DIST3(v1, v2, d12);
+  DIST3(v1, v3, d13);
+  DIST3(v2, v3, d23);
+  if (d12 <= del&&d13 <= del&&d23 < del) {
+    glVertex3fv(v1);
+    glVertex3fv(v2);
+
+    glVertex3fv(v2);
+    glVertex3fv(v3);
+
+    glVertex3fv(v3);
+    glVertex3fv(v1);
+  }
+  else {
+    if (d12 <= MIN(d13, d23)) {
+      VERT_AVG(v1, v3, v13);
+      VERT_AVG(v2, v3, v23);
+
+      DrawTriangleOutline(v3, v13, v23, del, level + 1);
+      DrawQuadOutline(v13, v1, v2, v23, del, level + 1);
+    }
+    else if (d13 <= MIN(d12, d23)) {
+      VERT_AVG(v1, v2, v12);
+      VERT_AVG(v2, v3, v23);
+
+      DrawTriangleOutline(v12, v2, v23, del, level + 1);
+      DrawQuadOutline(v1, v12, v23, v3, del, level + 1);
+    }
+    else { // d23<=MIN(d12,d13)
+      VERT_AVG(v1, v2, v12);
+      VERT_AVG(v1, v3, v13);
+
+      DrawTriangleOutline(v1, v12, v13, del, level + 1);
+      DrawQuadOutline(v12, v2, v3, v13, del, level + 1);
+    }
+  }
+  if (level == 0) {
+    glEnd();
+  }
+}
+
+/* ------------------ DrawTriangleVector ------------------------ */
+
+void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level) {
+
+  float d12, d13, d23;
+  float v12[3], v13[3], v23[3], vavg[3];
+  float dx, dy, dz;
+  float tavg;
+  int tavg_index;
+  float *rgb_ptr;
+
+  if (level == 0) {
+    glLineWidth(vectorlinewidth);
+    glBegin(GL_LINES);
+  }
+  DIST3(v1, v2, d12);
+  DIST3(v1, v3, d13);
+  DIST3(v2, v3, d23);
+  if (d12 <= del&&d13 <= del&&d23 < del) {
+    float vecfactor2, vrange;
+
+    vrange = velocity_range;
+    if (vrange <= 0.0)vrange = 1.0;
+    vecfactor2 = 0.05*vecfactor / vrange*xyzmaxdiff;
+
+    VERT_AVG3(v1, v2, v3, vavg);
+    dx = get_3dslice_val(gslice_u, vavg)*vecfactor2;
+    dy = get_3dslice_val(gslice_v, vavg)*vecfactor2;
+    dz = get_3dslice_val(gslice_w, vavg)*vecfactor2;
+    if (gslice->constant_color != NULL) {
+      rgb_ptr = gslice->constant_color;
+    }
+    else {
+      tavg = get_texture_index(vavg);
+      tavg_index = CLAMP(tavg * 255, 0, 255);
+      rgb_ptr = rgb_slice + 4 * tavg_index;
+    }
+    glColor4fv(rgb_ptr);
+    glVertex3f(vavg[0] - dx, vavg[1] - dy, vavg[2] - dz);
+    glVertex3f(vavg[0] + dx, vavg[1] + dy, vavg[2] + dz);
+  }
+  else {
+    if (d12 <= MIN(d13, d23)) {
+      VERT_AVG(v1, v3, v13);
+      VERT_AVG(v2, v3, v23);
+
+      DrawTriangleVector(v3, v13, v23, del, level + 1);
+      DrawQuadVector(v13, v1, v2, v23, del, level + 1);
+    }
+    else if (d13 <= MIN(d12, d23)) {
+      VERT_AVG(v1, v2, v12);
+      VERT_AVG(v2, v3, v23);
+
+      DrawTriangleVector(v12, v2, v23, del, level + 1);
+      DrawQuadVector(v1, v12, v23, v3, del, level + 1);
+    }
+    else { // d23<=MIN(d12,d13)
+      VERT_AVG(v1, v2, v12);
+      VERT_AVG(v1, v3, v13);
+
+      DrawTriangleVector(v1, v12, v13, del, level + 1);
+      DrawQuadVector(v12, v2, v3, v13, del, level + 1);
+    }
+  }
+  if (level == 0)glEnd();
+}
+
+/* ------------------ DrawQuad ------------------------ */
+
+void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level) {
+  float d13, d24;
+  float dx, dy, dz;
+
+  if (level == 0) {
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glBegin(GL_TRIANGLES);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if (d13 < d24) {
+    DrawTriangle(v1, v2, v3, t1, t2, t3, del, level + 1);
+    DrawTriangle(v1, v3, v4, t1, t3, t4, del, level + 1);
+  }
+  else {
+    DrawTriangle(v1, v2, v4, t1, t2, t4, del, level + 1);
+    DrawTriangle(v2, v3, v4, t2, t3, t4, del, level + 1);
+  }
+  if (level == 0) {
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
+}
+
+/* ------------------ DrawQuadVector ------------------------ */
+
+void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level) {
+  float d13, d24;
+  float dx, dy, dz;
+
+  if (level == 0) {
+    glBegin(GL_LINE);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if (d13 < d24) {
+    DrawTriangleVector(v1, v2, v3, del, level + 1);
+    DrawTriangleVector(v1, v3, v4, del, level + 1);
+  }
+  else {
+    DrawTriangleVector(v1, v2, v4, del, level + 1);
+    DrawTriangleVector(v2, v3, v4, del, level + 1);
+  }
+  if (level == 0) {
+    glEnd();
+  }
+}
 
 /* ------------------ out_slice ------------------------ */
 
@@ -928,9 +1284,9 @@ void readvslice(int ivslice, int flag, int *errorcode){
   Idle_CB();
 }
 
-/* ------------------ updateslicefilenum ------------------------ */
+/* ------------------ UpdateSliceFilenum ------------------------ */
 
-void updateslicefilenum(void){
+void UpdateSliceFilenum(void){
   slicedata *sd;
   int i;
   int ii;
@@ -944,9 +1300,22 @@ void updateslicefilenum(void){
   }
 }
 
-/* ------------------ updateslicebounds ------------------------ */
+/* ------------------ UpdateSliceHist ------------------------ */
 
-void updateslicebounds(void){
+void UpdateSliceHist(void) {
+  int ii;
+
+  for (ii = 0; ii < nslice_loaded; ii++) {
+    slicedata *slicei;
+
+    slicei = sliceinfo + slice_loaded_list[ii];
+    if (slicei->type != islicetype)continue;
+  }
+}
+  
+/* ------------------ UpdateSliceBounds ------------------------ */
+
+void UpdateSliceBounds(void){
   int i, j;
   float valmin, valmax;
   float valmin_data, valmax_data;
@@ -954,7 +1323,7 @@ void updateslicebounds(void){
   int minflag2, maxflag2;
   int jj;
 
-  for(i=0;i<nslice2;i++){
+  for(i=0;i<nslice_type;i++){
     minflag=0; maxflag=0;
     minflag2=0; maxflag2=0;
     for(jj=0;jj<nslice_loaded;jj++){
@@ -1012,9 +1381,9 @@ void updateslicebounds(void){
   }
 }
 
-/* ------------------ updateallslicelabels ------------------------ */
+/* ------------------ UpdateAllSliceLabels ------------------------ */
 
-void updateallslicelabels(int slicetype, int *errorcode){
+void UpdateAllSliceLabels(int slicetype, int *errorcode){
   int i;
   float valmin, valmax;
   int setvalmin, setvalmax;
@@ -1046,13 +1415,13 @@ void updateallslicelabels(int slicetype, int *errorcode){
     setslicelabels(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
-  setslicebounds(slicetype);
-  updateglui();
+  SetSliceBounds(slicetype);
+  UpdateGlui();
 }
 
-/* ------------------ updateallslicecolors ------------------------ */
+/* ------------------ UpdateAllSliceColors ------------------------ */
 
-void updateallslicecolors(int slicetype, int *errorcode){
+void UpdateAllSliceColors(int slicetype, int *errorcode){
   int i;
   float valmin, valmax;
   int setvalmin, setvalmax;
@@ -1084,8 +1453,8 @@ void updateallslicecolors(int slicetype, int *errorcode){
     setslicecolors(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
-  setslicebounds(slicetype);
-    updateglui();
+  SetSliceBounds(slicetype);
+    UpdateGlui();
 }
 
 /* ------------------ slicecompare ------------------------ */
@@ -1183,9 +1552,9 @@ int vslicecompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ update_slice_menu_show ------------------------ */
+/* ------------------ UpdateSliceMenuShow ------------------------ */
 
-void update_slice_menu_show(void){
+void UpdateSliceMenuShow(void){
   int i;
 
   for(i=0;i<nsliceinfo;i++){
@@ -1215,15 +1584,15 @@ void update_slice_menu_show(void){
   }
 }
 
-/* ------------------ update_slice_menulabels ------------------------ */
+/* ------------------ UpdateSliceMenuLabels ------------------------ */
 
-void update_slice_menulabels(void){
+void UpdateSliceMenuLabels(void){
   int i;
   char label[128];
   multislicedata *mslicei;
   slicedata *sd,*sdold;
 
-  update_slice_menu_show();
+  UpdateSliceMenuShow();
   if(nsliceinfo>0){
     mslicei = multisliceinfo;
     sd = sliceinfo + sliceorderindex[0];
@@ -1308,9 +1677,9 @@ void update_slice_menulabels(void){
   }
 }
 
-/* ------------------ update_vslice_menulabels ------------------------ */
+/* ------------------ UpdateVsliceMenulabels ------------------------ */
 
-void update_vslice_menulabels(void){
+void UpdateVsliceMenulabels(void){
   int i;
   slicedata *sd, *sdold;
   vslicedata *vsd, *vsdold;
@@ -1527,9 +1896,9 @@ int is_vectorslice_duplicate(multivslicedata *mvslicei, int i){
   return 0;
 }
 
-/* ------------------ count_slicedups ------------------------ */
+/* ------------------ CountSliceDups ------------------------ */
 
-int count_slicedups(void){
+int CountSliceDups(void){
   int i, count;
 
   count = 0;
@@ -1602,6 +1971,317 @@ void UpdateVSliceDups(void){
   }
  }
 #endif
+
+/* ------------------ UpdateFedinfo ------------------------ */
+
+void UpdateFedinfo(void) {
+  int i;
+  int nfediso = 0, ifediso = 0;
+  FILE *stream_fedsmv = NULL;
+
+  nfedinfo = 0;
+  if (smokediff == 1)return;
+  for (i = 0; i < nsliceinfo; i++) {
+    slicedata *slicei;
+    feddata *fedi;
+    int j;
+
+    fedi = fedinfo + nfedinfo;
+    slicei = sliceinfo + i;
+
+    fedi->co = NULL;
+    fedi->co2 = NULL;
+    fedi->o2 = NULL;
+    fedi->fed_slice = NULL;
+    fedi->fed_iso = NULL;
+    fedi->co_index = -1;
+    fedi->co2_index = -1;
+    fedi->o2_index = -1;
+    fedi->fed_index = -1;
+    fedi->loaded = 0;
+    fedi->display = 0;
+    if (slicei->slicetype != SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION") != 0)continue;
+    if (slicei->slicetype == SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION(cell centered)") != 0)continue;
+    fedi->co2_index = i;
+    for (j = 0; j < nsliceinfo; j++) {
+      slicedata *slicej;
+
+      slicej = sliceinfo + j;
+      if (slicei->slicetype != SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel, "CARBON MONOXIDE VOLUME FRACTION") != 0)continue;
+      if (slicei->slicetype == SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel, "CARBON MONOXIDE VOLUME FRACTION(cell centered)") != 0)continue;
+      if (slicei->blocknumber != slicej->blocknumber)continue;
+      if (slicei->is1 != slicej->is1 || slicei->is2 != slicej->is2)continue;
+      if (slicei->js1 != slicej->js1 || slicei->js2 != slicej->js2)continue;
+      if (slicei->ks1 != slicej->ks1 || slicei->ks2 != slicej->ks2)continue; // skip if not the same size and in the same mesh
+      fedi->co_index = j;
+      break;
+    }
+    if (fedi->co_index == -1)continue;
+    for (j = 0; j < nsliceinfo; j++) {
+      slicedata *slicej;
+
+      slicej = sliceinfo + j;
+      if (slicei->slicetype != SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel, "OXYGEN VOLUME FRACTION") != 0)continue;
+      if (slicei->slicetype == SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel, "OXYGEN VOLUME FRACTION(cell centered)") != 0)continue;
+      if (slicei->blocknumber != slicej->blocknumber)continue;
+      if (slicei->is1 != slicej->is1 || slicei->is2 != slicej->is2)continue;
+      if (slicei->js1 != slicej->js1 || slicei->js2 != slicej->js2)continue;
+      if (slicei->ks1 != slicej->ks1 || slicei->ks2 != slicej->ks2)continue; // skip if not the same size and in the same mesh
+      fedi->o2_index = j;
+      break;
+    }
+    if (fedi->o2_index == -1)continue;
+    fedi->fed_index = nsliceinfo + nfedinfo;
+    if (sliceinfo[fedi->co_index].volslice == 1)nfediso++;
+    nfedinfo++;
+  }
+  if (nfedinfo == 0) {
+    FREEMEMORY(fedinfo);
+    return;
+  }
+  else {
+    nsliceinfo += nfedinfo;
+    ResizeMemory((void **)&fedinfo, nfedinfo * sizeof(feddata));
+    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&vsliceinfo, 3 * nsliceinfo * sizeof(vslicedata));
+    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
+    ResizeMemory((void **)&slicetypes, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&subvslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&vslicetypes, 3 * nsliceinfo * sizeof(int));
+    if (nfediso > 0) {
+      nisoinfo += nfediso;
+      if (nisoinfo == nfediso) {
+        NewMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
+        NewMemory((void **)&isotypes, nisoinfo * sizeof(int));
+      }
+      else {
+        ResizeMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
+        ResizeMemory((void **)&isotypes, nisoinfo * sizeof(int));
+      }
+    }
+  }
+  if (nfedinfo > 0 && fed_filename != NULL) {
+    stream_fedsmv = fopen(fed_filename, "w");
+  }
+  for (i = 0; i < nfedinfo; i++) { // define sliceinfo for fed slices
+    slicedata *sd;
+    slicedata *co2;
+    int nn_slice;
+    feddata *fedi;
+    char *filename, filename_base[1024], *ext;
+
+    sd = sliceinfo + nsliceinfo + (i - nfedinfo);
+    fedi = fedinfo + i;
+    fedi->co = sliceinfo + fedi->co_index;
+    fedi->o2 = sliceinfo + fedi->o2_index;
+    fedi->co2 = sliceinfo + fedi->co2_index;
+    fedi->fed_slice = sliceinfo + fedi->fed_index;
+    fedi->fed_iso = NULL;
+
+    co2 = fedi->co2;
+    sd->file = NULL;
+    sd->is1 = co2->is1;
+    sd->is2 = co2->is2;
+    sd->js1 = co2->js1;
+    sd->js2 = co2->js2;
+    sd->ks1 = co2->ks1;
+    sd->ks2 = co2->ks2;
+
+    nn_slice = nsliceinfo + i;
+
+    sd->is_fed = 1;
+    sd->fedptr = fedi;
+    sd->slicetype = co2->slicetype;
+    if (sd->slicetype == SLICE_CELL_CENTER) {
+      SetLabels(&(sd->label), "Fractional effective dose(cell centered)", "FED", " ");
+    }
+    else {
+      SetLabels(&(sd->label), "Fractional effective dose", "FED", " ");
+    }
+    sd->reg_file = NULL;
+    sd->comp_file = NULL;
+    sd->compression_type = co2->compression_type;
+    sd->vol_file = co2->vol_file;
+    sd->size_file = NULL;
+    sd->slicelabel = NULL;
+    sd->above_ground_level = co2->above_ground_level;
+    sd->seq_id = nn_slice;
+    sd->autoload = 0;
+    sd->display = 0;
+    sd->loaded = 0;
+    sd->qslicedata = NULL;
+    sd->compindex = NULL;
+    sd->slicecomplevel = NULL;
+    sd->qslicedata_compressed = NULL;
+    sd->volslice = fedi->co->volslice;
+    sd->times = NULL;
+    sd->slicelevel = NULL;
+    sd->iqsliceframe = NULL;
+    sd->qsliceframe = NULL;
+    sd->timeslist = NULL;
+    sd->blocknumber = co2->blocknumber;
+    sd->vloaded = 0;
+    sd->reload = 0;
+    sd->nline_contours = 0;
+    sd->line_contours = NULL;
+    sd->contour_areas = NULL;
+    sd->ncontour_areas = 0;
+    sd->menu_show = 1;
+    sd->constant_color = NULL;
+    sd->mesh_type = co2->mesh_type;
+
+    strcpy(filename_base, fedi->co->file);
+    ext = strrchr(filename_base, '.');
+    *ext = 0;
+    strcat(filename_base, "_fed.sf");
+    filename = get_filename(smokeviewtempdir, filename_base, tempdir_flag);
+    NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
+    strcpy(sd->reg_file, filename);
+    FREEMEMORY(filename);
+    sd->file = sd->reg_file;
+    if (stream_fedsmv != NULL) {
+      fprintf(stream_fedsmv, "SLCF %i %s %i %i %i %i %i %i\n", sd->blocknumber + 1, "%", sd->is1, sd->is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+      fprintf(stream_fedsmv, " %s\n", sd->reg_file);
+      fprintf(stream_fedsmv, " %s\n", sd->label.longlabel);
+      fprintf(stream_fedsmv, " %s\n", sd->label.shortlabel);
+      fprintf(stream_fedsmv, " %s\n", sd->label.unit);
+    }
+    if (sd->volslice == 1) {
+      isodata *isoi;
+      int nn_iso, ii;
+      float **colorlevels;
+
+      isoi = isoinfo + nisoinfo - nfediso + ifediso;
+      fedi->fed_iso = isoi;
+      isoi->tfile = NULL;
+      isoi->is_fed = 1;
+      isoi->fedptr = fedi;
+      nn_iso = nisoinfo - nfediso + ifediso + 1;
+      isoi->seq_id = nn_iso;
+      isoi->autoload = 0;
+      isoi->blocknumber = sd->blocknumber;
+      isoi->loaded = 0;
+      isoi->display = 0;
+      isoi->dataflag = 0;
+      isoi->geomflag = 0;
+      isoi->levels = NULL;
+      SetLabels(&(isoi->surface_label), "Fractional effective dose", "FED", " ");
+
+      isoi->nlevels = 3;
+      NewMemory((void **)&(isoi->levels), 3 * sizeof(float));
+      NewMemory((void **)&colorlevels, 3 * sizeof(float *));
+      isoi->colorlevels = colorlevels;
+      for (ii = 0; ii < 3; ii++) {
+        colorlevels[ii] = NULL;
+      }
+      isoi->levels[0] = 0.3;
+      isoi->levels[1] = 1.0;
+      isoi->levels[2] = 3.0;
+      SetLabelsIso(&(isoi->surface_label), "Fractional effective dose", "FED", " ", isoi->levels, isoi->nlevels);
+      isoi->normaltable = NULL;
+      isoi->color_label.longlabel = NULL;
+      isoi->color_label.shortlabel = NULL;
+      isoi->color_label.unit = NULL;
+      isoi->geominfo = NULL;
+
+      strcpy(filename_base, fedi->co->file);
+      ext = strrchr(filename_base, '.');
+      *ext = 0;
+      strcat(filename_base, "_fed.iso");
+      filename = get_filename(smokeviewtempdir, filename_base, tempdir_flag);
+      NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
+      strcpy(isoi->reg_file, filename);
+      FREEMEMORY(filename);
+      isoi->file = isoi->reg_file;
+      if (stream_fedsmv != NULL) {
+        fprintf(stream_fedsmv, "ISOF\n");
+        fprintf(stream_fedsmv, " %s\n", isoi->surface_label.longlabel);
+        fprintf(stream_fedsmv, " %s\n", isoi->surface_label.shortlabel);
+        fprintf(stream_fedsmv, " %s\n", isoi->surface_label.unit);
+        fprintf(stream_fedsmv, " %s\n", isoi->reg_file);
+      }
+
+      NewMemory((void **)&isoi->size_file, strlen(isoi->file) + 3 + 1);
+      STRCPY(isoi->size_file, isoi->file);
+      STRCAT(isoi->size_file, ".sz");
+
+      ifediso++;
+    }
+  }
+  if (stream_fedsmv != NULL)fclose(stream_fedsmv);
+  if (nfediso > 0)update_iso_menulabels();
+}
+
+/* ------------------ UpdateSliceDirCount ------------------------ */
+
+void UpdateSliceDirCount(void) {
+  int i, j;
+
+  for (i = 0; i < nmultisliceinfo; i++) {
+    multislicedata *mslicei;
+
+    mslicei = multisliceinfo + i;
+    mslicei->ndirxyz[0] = 0;
+    mslicei->ndirxyz[1] = 0;
+    mslicei->ndirxyz[2] = 0;
+    mslicei->ndirxyz[3] = 0;
+  }
+  for (i = 0; i < nmultisliceinfo; i++) {
+    multislicedata *mslicei;
+    slicedata *slicei;
+
+    mslicei = multisliceinfo + i;
+    slicei = sliceinfo + mslicei->islices[0];
+    if (slicei->idir < 1)continue;
+    if (slicei->volslice == 1)continue;
+    for (j = 0; j < nmultisliceinfo; j++) {
+      multislicedata *mslicej;
+      slicedata *slicej;
+
+      mslicej = multisliceinfo + j;
+      slicej = sliceinfo + mslicej->islices[0];
+      if (slicej->idir < 1)continue;
+      if (slicej->volslice == 1)continue;
+      if (strcmp(slicej->label.longlabel, slicei->label.longlabel) != 0)continue;
+      if ((slicej->slicetype == SLICE_CELL_CENTER&&slicei->slicetype != SLICE_CELL_CENTER) ||
+        (slicej->slicetype != SLICE_CELL_CENTER&&slicei->slicetype == SLICE_CELL_CENTER))continue;
+      mslicei->ndirxyz[slicej->idir]++;
+    }
+  }
+  for (i = 0; i < nsliceinfo; i++) {
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    slicei->ndirxyz[0] = 0;
+    slicei->ndirxyz[1] = 0;
+    slicei->ndirxyz[2] = 0;
+    slicei->ndirxyz[3] = 0;
+  }
+  for (i = 0; i < nsliceinfo; i++) {
+    slicedata *slicei, *slicej;
+
+    slicei = sliceinfo + i;
+    if (slicei->idir < 1)continue;
+    if (slicei->volslice == 1)continue;
+    for (j = 0; j < nsliceinfo; j++) {
+      slicej = sliceinfo + j;
+      if (slicej->idir < 1)continue;
+      if (slicej->volslice == 1)continue;
+      if (strcmp(slicej->label.longlabel, slicei->label.longlabel) != 0)continue;
+      //if(slicej->cellcenter!=slicei->cellcenter)continue;
+      if ((slicej->slicetype == SLICE_CELL_CENTER&&slicei->slicetype != SLICE_CELL_CENTER) ||
+        (slicej->slicetype != SLICE_CELL_CENTER&&slicei->slicetype == SLICE_CELL_CENTER))continue;
+      slicei->ndirxyz[slicej->idir]++;
+    }
+  }
+}
+
 /* ------------------ getsliceparams ------------------------ */
 
 void getsliceparams(void){
@@ -1688,7 +2368,7 @@ void getsliceparams(void){
       sd->nslicek=nk;
     }
   }
-  update_fedinfo();
+  UpdateFedinfo();
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -1904,7 +2584,7 @@ void getsliceparams(void){
   }
 #ifdef pp_SLICEDUP
   UpdateSliceDups();
-  nslicedups = count_slicedups();
+  nslicedups = CountSliceDups();
 #endif
   for(i = 0; i < nmultisliceinfo; i++){
     int ii;
@@ -1920,8 +2600,8 @@ void getsliceparams(void){
       slicei->mslice = mslicei;
     }
   }
-  update_slice_menulabels();
-  update_slicedir_count();
+  UpdateSliceMenuLabels();
+  UpdateSliceDirCount();
 }
 
 /* ------------------ getsliceparams2 ------------------------ */
@@ -1958,256 +2638,9 @@ void getsliceparams2(void){
   }
 }
 
-/* ------------------ update_fedinfo ------------------------ */
+/* ------------------ UpdateVSlices ------------------------ */
 
-void update_fedinfo(void){
-  int i;
-  int nfediso=0,ifediso=0;
-  FILE *stream_fedsmv=NULL;
-
-  nfedinfo=0;
-  if(smokediff==1)return;
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei;
-    feddata *fedi;
-    int j;
-
-    fedi = fedinfo + nfedinfo;
-    slicei = sliceinfo + i;
-
-    fedi->co=NULL;
-    fedi->co2=NULL;
-    fedi->o2=NULL;
-    fedi->fed_slice=NULL;
-    fedi->fed_iso=NULL;
-    fedi->co_index=-1;
-    fedi->co2_index=-1;
-    fedi->o2_index=-1;
-    fedi->fed_index=-1;
-    fedi->loaded=0;
-    fedi->display=0;
-    if(slicei->slicetype!=SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel,"CARBON DIOXIDE VOLUME FRACTION")!=0)continue;
-    if(slicei->slicetype==SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel,"CARBON DIOXIDE VOLUME FRACTION(cell centered)")!=0)continue;
-    fedi->co2_index=i;
-    for(j=0;j<nsliceinfo;j++){
-      slicedata *slicej;
-
-      slicej = sliceinfo + j;
-      if(slicei->slicetype!=SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel,"CARBON MONOXIDE VOLUME FRACTION")!=0)continue;
-      if(slicei->slicetype==SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel,"CARBON MONOXIDE VOLUME FRACTION(cell centered)")!=0)continue;
-      if(slicei->blocknumber!=slicej->blocknumber)continue;
-      if(slicei->is1!=slicej->is1||slicei->is2!=slicej->is2)continue;
-      if(slicei->js1!=slicej->js1||slicei->js2!=slicej->js2)continue;
-      if(slicei->ks1!=slicej->ks1||slicei->ks2!=slicej->ks2)continue; // skip if not the same size and in the same mesh
-      fedi->co_index=j;
-      break;
-    }
-    if(fedi->co_index==-1)continue;
-    for(j=0;j<nsliceinfo;j++){
-      slicedata *slicej;
-
-      slicej = sliceinfo + j;
-      if(slicei->slicetype!=SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel,"OXYGEN VOLUME FRACTION")!=0)continue;
-      if(slicei->slicetype==SLICE_CELL_CENTER&&strcmp(slicej->label.longlabel,"OXYGEN VOLUME FRACTION(cell centered)")!=0)continue;
-      if(slicei->blocknumber!=slicej->blocknumber)continue;
-      if(slicei->is1!=slicej->is1||slicei->is2!=slicej->is2)continue;
-      if(slicei->js1!=slicej->js1||slicei->js2!=slicej->js2)continue;
-      if(slicei->ks1!=slicej->ks1||slicei->ks2!=slicej->ks2)continue; // skip if not the same size and in the same mesh
-      fedi->o2_index=j;
-      break;
-    }
-    if(fedi->o2_index==-1)continue;
-    fedi->fed_index=nsliceinfo+nfedinfo;
-    if(sliceinfo[fedi->co_index].volslice==1)nfediso++;
-    nfedinfo++;
-  }
-  if(nfedinfo==0){
-    FREEMEMORY(fedinfo);
-    return;
-  }
-  else{
-    nsliceinfo+=nfedinfo;
-    ResizeMemory((void **)&fedinfo,nfedinfo*sizeof(feddata));
-    ResizeMemory((void **)&sliceinfo,nsliceinfo*sizeof(slicedata));
-    ResizeMemory( (void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata));
-    ResizeMemory( (void **)&sliceinfo,  nsliceinfo*sizeof(slicedata));
-    ResizeMemory( (void **)&fedinfo,  nsliceinfo*sizeof(feddata));
-    ResizeMemory( (void **)&slicetypes, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&slice_loadstack, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&vslice_loadstack, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&subslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&subvslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&mslice_loadstack, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&mvslice_loadstack, nsliceinfo*sizeof(int));
-    ResizeMemory( (void **)&vslicetypes,3*nsliceinfo*sizeof(int));
-    if(nfediso>0){
-      nisoinfo+=nfediso;
-      if(nisoinfo==nfediso){
-        NewMemory((void **)&isoinfo,nisoinfo*sizeof(isodata));
-        NewMemory((void **)&isotypes,nisoinfo*sizeof(int));
-      }
-      else{
-        ResizeMemory((void **)&isoinfo,nisoinfo*sizeof(isodata));
-        ResizeMemory((void **)&isotypes,nisoinfo*sizeof(int));
-      }
-    }
-  }
-  if(nfedinfo>0&&fed_filename!=NULL){
-    stream_fedsmv=fopen(fed_filename,"w");
-  }
-  for(i=0;i<nfedinfo;i++){ // define sliceinfo for fed slices
-    slicedata *sd;
-    slicedata *co2;
-    int nn_slice;
-    feddata *fedi;
-    char *filename,filename_base[1024],*ext;
-
-    sd = sliceinfo + nsliceinfo + (i- nfedinfo);
-    fedi = fedinfo + i;
-    fedi->co=sliceinfo+fedi->co_index;
-    fedi->o2=sliceinfo+fedi->o2_index;
-    fedi->co2=sliceinfo+fedi->co2_index;
-    fedi->fed_slice=sliceinfo+fedi->fed_index;
-    fedi->fed_iso=NULL;
-
-    co2 = fedi->co2;
-    sd->file=NULL;
-    sd->is1=co2->is1;
-    sd->is2=co2->is2;
-    sd->js1=co2->js1;
-    sd->js2=co2->js2;
-    sd->ks1=co2->ks1;
-    sd->ks2=co2->ks2;
-
-    nn_slice=nsliceinfo+i;
-
-    sd->is_fed=1;
-    sd->fedptr=fedi;
-    sd->slicetype=co2->slicetype;
-    if(sd->slicetype==SLICE_CELL_CENTER){
-      SetLabels(&(sd->label),"Fractional effective dose(cell centered)","FED"," ");
-    }
-    else{
-      SetLabels(&(sd->label),"Fractional effective dose","FED"," ");
-    }
-    sd->reg_file=NULL;
-    sd->comp_file=NULL;
-    sd->compression_type=co2->compression_type;
-    sd->vol_file=co2->vol_file;
-    sd->size_file=NULL;
-    sd->slicelabel=NULL;
-    sd->above_ground_level=co2->above_ground_level;
-    sd->seq_id=nn_slice;
-    sd->autoload=0;
-    sd->display=0;
-    sd->loaded=0;
-    sd->qslicedata=NULL;
-    sd->compindex=NULL;
-    sd->slicecomplevel=NULL;
-    sd->qslicedata_compressed=NULL;
-    sd->volslice=fedi->co->volslice;
-    sd->times=NULL;
-    sd->slicelevel=NULL;
-    sd->iqsliceframe=NULL;
-    sd->qsliceframe=NULL;
-    sd->timeslist=NULL;
-    sd->blocknumber=co2->blocknumber;
-    sd->vloaded=0;
-    sd->reload=0;
-    sd->nline_contours=0;
-    sd->line_contours=NULL;
-    sd->contour_areas=NULL;
-    sd->ncontour_areas=0;
-    sd->menu_show=1;
-    sd->constant_color=NULL;
-    sd->mesh_type=co2->mesh_type;
-
-    strcpy(filename_base,fedi->co->file);
-    ext=strrchr(filename_base,'.');
-    *ext=0;
-    strcat(filename_base,"_fed.sf");
-    filename=get_filename(smokeviewtempdir,filename_base,tempdir_flag);
-    NewMemory((void **)&fedi->fed_slice->reg_file,strlen(filename)+1);
-    strcpy(sd->reg_file,filename);
-    FREEMEMORY(filename);
-    sd->file=sd->reg_file;
-    if(stream_fedsmv!=NULL){
-      fprintf(stream_fedsmv,"SLCF %i %s %i %i %i %i %i %i\n",sd->blocknumber+1,"%",sd->is1,sd->is2,sd->js1,sd->js2,sd->ks1,sd->ks2);
-      fprintf(stream_fedsmv," %s\n",sd->reg_file);
-      fprintf(stream_fedsmv," %s\n",sd->label.longlabel);
-      fprintf(stream_fedsmv," %s\n",sd->label.shortlabel);
-      fprintf(stream_fedsmv," %s\n",sd->label.unit);
-    }
-    if(sd->volslice==1){
-      isodata *isoi;
-      int nn_iso,ii;
-      float **colorlevels;
-
-      isoi = isoinfo + nisoinfo - nfediso + ifediso;
-      fedi->fed_iso=isoi;
-      isoi->tfile=NULL;
-      isoi->is_fed=1;
-      isoi->fedptr=fedi;
-      nn_iso = nisoinfo - nfediso + ifediso + 1;
-      isoi->seq_id=nn_iso;
-      isoi->autoload=0;
-      isoi->blocknumber=sd->blocknumber;
-      isoi->loaded=0;
-      isoi->display=0;
-      isoi->dataflag=0;
-      isoi->geomflag=0;
-      isoi->levels=NULL;
-      SetLabels(&(isoi->surface_label),"Fractional effective dose","FED"," ");
-
-      isoi->nlevels=3;
-      NewMemory((void **)&(isoi->levels),3*sizeof(float));
-      NewMemory((void **)&colorlevels,3*sizeof(float *));
-      isoi->colorlevels=colorlevels;
-      for(ii=0;ii<3;ii++){
-        colorlevels[ii]=NULL;
-      }
-      isoi->levels[0]=0.3;
-      isoi->levels[1]=1.0;
-      isoi->levels[2]=3.0;
-      SetLabelsIso(&(isoi->surface_label),"Fractional effective dose","FED"," ",isoi->levels,isoi->nlevels);
-      isoi->normaltable=NULL;
-      isoi->color_label.longlabel=NULL;
-      isoi->color_label.shortlabel=NULL;
-      isoi->color_label.unit=NULL;
-      isoi->geominfo=NULL;
-
-      strcpy(filename_base,fedi->co->file);
-      ext=strrchr(filename_base,'.');
-      *ext=0;
-      strcat(filename_base,"_fed.iso");
-      filename=get_filename(smokeviewtempdir,filename_base,tempdir_flag);
-      NewMemory((void **)&isoi->reg_file,strlen(filename)+1);
-      strcpy(isoi->reg_file,filename);
-      FREEMEMORY(filename);
-      isoi->file=isoi->reg_file;
-      if(stream_fedsmv!=NULL){
-        fprintf(stream_fedsmv,"ISOF\n");
-        fprintf(stream_fedsmv," %s\n",isoi->surface_label.longlabel);
-        fprintf(stream_fedsmv," %s\n",isoi->surface_label.shortlabel);
-        fprintf(stream_fedsmv," %s\n",isoi->surface_label.unit);
-        fprintf(stream_fedsmv," %s\n",isoi->reg_file);
-      }
-
-      NewMemory((void **)&isoi->size_file,strlen(isoi->file)+3+1);
-      STRCPY(isoi->size_file,isoi->file);
-      STRCAT(isoi->size_file,".sz");
-
-      ifediso++;
-    }
-  }
-  if(stream_fedsmv!=NULL)fclose(stream_fedsmv);
-  if(nfediso>0)update_iso_menulabels();
-
-}
-
-/* ------------------ updatevslices ------------------------ */
-
-void updatevslices(void){
+void UpdateVSlices(void){
   int i;
 
   PRINTF("  updating vector slices\n");
@@ -2395,13 +2828,14 @@ void updatevslices(void){
   }
 
   if(nvsliceinfo>0)PRINTF("    updating vector slice menus\n");
-  update_vslice_menulabels();
+  UpdateVsliceMenulabels();
   PRINTF("  vector slices update completed\n\n");
 
 }
 
-/* ------------------ updatevslicetypes ------------------------ */
-void updatevslicetypes(void){
+/* ------------------ UpdateVSliceTypes ------------------------ */
+
+void UpdateVSliceTypes(void){
   int i;
   vslicedata *vd;
 
@@ -2416,9 +2850,9 @@ void updatevslicetypes(void){
   }
 }
 
-/* ------------------ update_slice_contours ------------------------ */
+/* ------------------ UpdateSliceContours ------------------------ */
 
-void update_slice_contours(int slice_type_index, float line_min, float line_max, int nline_values){
+void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values){
   int j;
   boundsdata *sb;
   int contours_gen=0;
@@ -2557,9 +2991,9 @@ void update_slice_contours(int slice_type_index, float line_min, float line_max,
   }
 }
 
-/* ------------------ updateslicetypes ------------------------ */
+/* ------------------ UpdateSliceTypes ------------------------ */
 
-void updateslicetypes(void){
+void UpdateSliceTypes(void){
   int i;
 
   nslicetypes = 0;
@@ -2649,9 +3083,9 @@ int getslicetype_fromlabel(char *label){
 }
 
 
-/* ------------------ updatesliceboundlabels ------------------------ */
+/* ------------------ UpdateSliceBoundLabels ------------------------ */
 
-void updatesliceboundlabels(){
+void UpdateSliceBoundLabels(){
   int i;
 
   for(i=0;i<nsliceinfo;i++){
@@ -2710,10 +3144,10 @@ void setslicelabels(float smin, float smax,
                 sb->colorlabels,&scale,&sb->fscale,sb->levels256);
 }
 
-/* ------------------ setslicebounds ------------------------ */
+/* ------------------ SetSliceBounds ------------------------ */
 
-void setslicebounds(int slicetype){
-  if(slicetype>=0&&slicetype<nslice2){
+void SetSliceBounds(int slicetype){
+  if(slicetype>=0&&slicetype<nslice_type){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
@@ -2746,6 +3180,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
+  int define_histograms = 0;
 
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
@@ -2774,9 +3209,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
         slice_mask0[n]=0;
         if(sd->slicetype==SLICE_CELL_CENTER&&
           ((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
-        if (show_slice_in_obst == 0) {
-          if (sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
-          if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+        if(show_slice_in_obst == 0){
+          if(sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
+          if(sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
         }
         slice_mask0[n]=1;
       }
@@ -2786,14 +3221,21 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   n=-1;
   ntimes = ndata/sd->nsliceii;
 
+  // initialize histograms
+
   sd->nhistograms = ntimes + 1;
-  NewMemory((void **)&sd->histograms,sd->nhistograms*sizeof(histogramdata));
-  for(i=0;i<sd->nhistograms;i++){
-    InitHistogram(sd->histograms+i, NHIST_BUCKETS, NULL, NULL);
+  if (sd->histograms == NULL) {
+    define_histograms = 1;
+    NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
+    for (i = 0; i < sd->nhistograms; i++) {
+      InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
+    }
   }
 
-  NewMemory((void **)&sd->histogram256, sizeof(histogramdata));
-  InitHistogram(sd->histogram256, 256, NULL, NULL);
+  if (sd->histogram256 == NULL) {
+    NewMemory((void **)&sd->histogram256, sizeof(histogramdata));
+    InitHistogram(sd->histogram256, 256, NULL, NULL);
+  }
 
   for(istep=0;istep<ntimes;istep++){
     int n0;
@@ -2804,10 +3246,12 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
     // compute histogram for each timestep, histi and all time steps, histall
 
-    histi = sd->histograms+istep+1;
-    histall = sd->histograms;
-    CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
-    MergeHistogram(histall,histi,MERGE_BOUNDS);
+    if (define_histograms == 1) {
+      histi = sd->histograms + istep + 1;
+      histall = sd->histograms;
+      CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
+      MergeHistogram(histall, histi, MERGE_BOUNDS);
+    }
 
     for(i=0;i<sd->nslicei;i++){
       int ii,j;
@@ -2871,15 +3315,15 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     char slicelabel[10];
 
     strcpy(slicelabel, "node");
-    if (sd->slicetype == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
+    if(sd->slicetype == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
     PRINTF(" global min (slice file): %f %s=(%i,%i,%i)\n", *pmin, slicelabel, iimin, jjmin, kkmin);
     PRINTF(" global max (slice file): %f %s=(%i,%i,%i)\n", *pmax, slicelabel, iimax, jjmax, kkmax);
   }
 }
 
-/* ------------------ adjustslicebounds ------------------------ */
+/* ------------------ AdjustSliceBounds ------------------------ */
 
-void adjustslicebounds(const slicedata *sd, float *pmin, float *pmax){
+void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
 
     int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
     float dp;
@@ -2944,9 +3388,62 @@ void adjustslicebounds(const slicedata *sd, float *pmin, float *pmax){
 
 }
 
+/* ------------------ AverageSliceData ------------------------ */
+
+int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time) {
+
+#define IND(itime,ival) ((itime)*data_per_timestep + (ival))
+  float *datatemp = NULL;
+  int below, above, naverage;
+  float average_timed2;
+  int i, j, k;
+
+  if (data_in == NULL || data_out == NULL)return 1;
+  if (ndata < data_per_timestep || data_per_timestep < 1 || ntimes_local < 1 || average_time < 0.0)return 1;
+  if (ndata != data_per_timestep*ntimes_local)return 1;
+
+  average_timed2 = average_time / 2.0;
+
+  NewMemory((void **)&datatemp, ndata * sizeof(float));
+  for (i = 0; i < ndata; i++) {
+    datatemp[i] = 0.0;
+  }
+  for (i = 0; i < ntimes_local; i++) {
+    PRINTF("averaging time=%.2f\n", times_local[i]);
+    below = 0;
+    for (j = i - 1; j >= 0; j--) {
+      if (times_local[i] - times_local[j] > average_timed2) {
+        below = j + 1;
+        break;
+      }
+    }
+    above = ntimes_local - 1;
+    for (j = i + 1; j < ntimes_local; j++) {
+      if (times_local[j] - times_local[i] > average_timed2) {
+        above = j - 1;
+        break;
+      }
+    }
+    naverage = above + 1 - below;
+    for (k = 0; k < data_per_timestep; k++) {
+      for (j = below; j <= above; j++) {
+        datatemp[IND(i, k)] += data_in[IND(j, k)];
+      }
+    }
+    for (k = 0; k < data_per_timestep; k++) {
+      datatemp[IND(i, k)] /= (float)naverage;
+    }
+  }
+  for (i = 0; i < ndata; i++) {
+    data_out[i] = datatemp[i];
+  }
+  FREEMEMORY(datatemp);
+  return 0;
+}
+
 /* ------------------ readslice ------------------------ */
 
-void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode) {
+void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
   FILE_SIZE slicefilelen;
   float *xplt_local, *yplt_local, *zplt_local;
   int blocknumber;
@@ -2986,15 +3483,15 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
   sd = sliceinfo + slicefilenumber;
   CountMemoryBlocks(num_memblocks_load, 0);
-  if (flag != RESETBOUNDS) {
-    if (sd->loaded == 0 && flag == UNLOAD)return;
+  if(flag != RESETBOUNDS){
+    if(sd->loaded == 0 && flag == UNLOAD)return;
     sd->display = 0;
 #ifdef pp_MEMDEBUG
-    if (sd->qslicedata != NULL) {
+    if(sd->qslicedata != NULL){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
 #endif
-    if (sd->qslicedata != NULL) {
+    if(sd->qslicedata != NULL){
       FreeMemory(sd->qslicedata);
       sd->qslicedata = NULL;
     }
@@ -3003,15 +3500,20 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     FREEMEMORY(sd->compindex);
     FREEMEMORY(sd->qslicedata_compressed);
     FREEMEMORY(sd->slicecomplevel);
-    if (sd->histograms != NULL) {
-      for (i = 0; i < sd->nhistograms; i++) {
+
+    if(sd->histograms != NULL){
+      for (i = 0; i < sd->nhistograms; i++){
         FreeHistogram(sd->histograms + i);
       }
       FREEMEMORY(sd->histograms);
     }
+    if(sd->histogram256 == NULL){
+      FreeHistogram(sd->histogram256);
+      FREEMEMORY(sd->histogram256);
+    }
     slicefilenum = ifile;
 
-    if (flag == UNLOAD) {
+    if(flag == UNLOAD){
       fed_areas = NULL;
       sd->ntimes = 0;
       updatemenu = 1;
@@ -3020,70 +3522,71 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       sd->display = 0;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       ReadVolSlice = 0;
-      for (ii = 0; ii<nslice_loaded; ii++) {
+      for (ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
-        if (sdi->volslice == 1)ReadVolSlice = 1;
+        if(sdi->volslice == 1)ReadVolSlice = 1;
       }
-      for (ii = 0; ii<nslice_loaded; ii++) {
+      for (ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
-        if (sdi->type == islicetype) {
+        if(sdi->type == islicetype){
           slicefilenum = i;
           flag2 = 1;
           break;
         }
       }
-      if (flag2 == 0) {
-        for (ii = 0; ii<nslice_loaded; ii++) {
+      if(flag2 == 0){
+        for (ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
-          if (sdi->type != islicetype) {
+          if(sdi->type != islicetype){
             slicefilenum = i;
             flag2 = 1;
             break;
           }
         }
       }
-      if (flag2 == 0) {
+      if(flag2 == 0){
         slicefilenum = 0;
         islicetype = 0;
       }
 
-      for (i = 0; i<nvsliceinfo; i++) {
+      for (i = 0; i<nvsliceinfo; i++){
         vd = vsliceinfo + i;
-        if (vd->iu == ifile)vd->u = NULL;
-        if (vd->iv == ifile)vd->v = NULL;
-        if (vd->iw == ifile)vd->w = NULL;
-        if (vd->u == NULL&&vd->v == NULL&&vd->w == NULL) {
+        if(vd->iu == ifile)vd->u = NULL;
+        if(vd->iv == ifile)vd->v = NULL;
+        if(vd->iw == ifile)vd->w = NULL;
+        if(vd->u == NULL&&vd->v == NULL&&vd->w == NULL){
           vd->loaded = 0;
           vd->display = 0;
         }
-        if (vd->ival == ifile) {
+        if(vd->ival == ifile){
           vd->val = NULL;
           vd->loaded = 0;
           vd->display = 0;
         }
       }
-      if (use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR) {
-        if (sd->compression_type == UNCOMPRESSED) {
-          updateslicebounds();
+      if(use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR){
+        if(sd->compression_type == UNCOMPRESSED){
+          UpdateSliceBounds();
           list_slice_index = islicetype;
-          setslicebounds(islicetype);
-          updateallslicecolors(islicetype, errorcode);
+          SetSliceBounds(islicetype);
+          UpdateAllSliceColors(islicetype, errorcode);
+          UpdateSliceHist();
         }
         else {
-          updateallslicelabels(islicetype, errorcode);
+          UpdateAllSliceLabels(islicetype, errorcode);
         }
       }
 
-      updateglui();
+      UpdateGlui();
       UpdateUnitDefs();
       UpdateTimes();
 #ifdef pp_MEMPRINT
@@ -3101,41 +3604,41 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     file_size = get_filesize(file);
 
     slicefilelen = strlen(file);
-    if (sd->compression_type == UNCOMPRESSED) {
+    if(sd->compression_type == UNCOMPRESSED){
       FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
         slicefilelen);
     }
-    else if (sd->compression_type == COMPRESSED_ZLIB) {
-      if (
+    else if(sd->compression_type == COMPRESSED_ZLIB){
+      if(
         getsliceheader(sd->comp_file, sd->size_file, sd->compression_type,
           sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
-          &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0) {
+          &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
     }
-    if (sd->nslicei != 1 && sd->nslicej != 1 && sd->nslicek != 1) {
+    if(sd->nslicei != 1 && sd->nslicej != 1 && sd->nslicek != 1){
       sd->volslice = 1;
       ReadVolSlice = 1;
     }
-    if (error != 0) {
+    if(error != 0){
       readslice("", ifile, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return;
     }
-    if (settmax_s == 0 && settmin_s == 0 && sd->compression_type == UNCOMPRESSED) {
-      if (framesize <= 0) {
+    if(settmax_s == 0 && settmin_s == 0 && sd->compression_type == UNCOMPRESSED){
+      if(framesize <= 0){
         fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);
         error = 1;
       }
       else {
         sd->ntimes = (int)(get_filesize(file) - headersize) / framesize;
-        if (sliceframestep>1)sd->ntimes /= sliceframestep;
+        if(sliceframestep>1)sd->ntimes /= sliceframestep;
       }
     }
-    if (error != 0 || sd->ntimes<1) {
+    if(error != 0 || sd->ntimes<1){
       readslice("", ifile, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return;
@@ -3143,21 +3646,21 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     PRINTF("Loading slice data: %s\n", file);
     MEMSTATUS(1, &availmemory, NULL, NULL);
     local_starttime = glutGet(GLUT_ELAPSED_TIME);
-    if (sd->compression_type == COMPRESSED_ZLIB) {
+    if(sd->compression_type == COMPRESSED_ZLIB){
       char *datafile;
 
-      if (NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed) == 0 ||
+      if(NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed) == 0 ||
         NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0 ||
         NewMemory((void **)&sd->compindex, sizeof(compdata)*(1 + sd->ntimes)) == 0
-        ) {
+        ){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
       datafile = sd->comp_file;
-      if (getslicecompresseddata(datafile,
+      if(getslicecompresseddata(datafile,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
-        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0) {
+        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
@@ -3167,8 +3670,8 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       FILE_SIZE labellen = LABELLEN;
       int file_unit = 15;
 
-      if (NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
-        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0) {
+      if(NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
+        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0){
         *errorcode = 1;
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         return;
@@ -3189,7 +3692,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     local_stoptime = glutGet(GLUT_ELAPSED_TIME);
     delta_time = (local_stoptime - local_starttime) / 1000.0;
 
-    if (slice_average_flag == 1) {
+    if(slice_average_flag == 1){
       int data_per_timestep;
       int ndata;
       int ntimes_local;
@@ -3199,10 +3702,10 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ndata = data_per_timestep*ntimes_local;
       show_slice_average = 1;
 
-      if (
+      if(
         sd->compression_type == COMPRESSED_ZLIB ||
-        average_slice_data(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
-        ) {
+        AverageSliceData(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
+        ){
         show_slice_average = 0; // averaging failed
       }
     }
@@ -3211,7 +3714,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     sd->nslicetotal = 0;
     sd->nsliceii = 0;
-    if (sd->ntimes == 0)return;
+    if(sd->ntimes == 0)return;
 
     /* estimate the slice offset, the distance to move a slice so
     that it does not "interfere" with an adjacent block */
@@ -3227,13 +3730,13 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     sd->sliceoffset = 0.0;
 
-    switch (sd->idir) {
+    switch (sd->idir){
     case XDIR:
       offset = sliceoffset_factor*(xplt_local[1] - xplt_local[0]);
-      if (InBlockage(meshi, xslicemid - offset, yslicemid, zslicemid) == 1) {
+      if(InBlockage(meshi, xslicemid - offset, yslicemid, zslicemid) == 1){
         sd->sliceoffset = offset;
       }
-      if (InBlockage(meshi, xslicemid + offset, yslicemid, zslicemid) == 1) {
+      if(InBlockage(meshi, xslicemid + offset, yslicemid, zslicemid) == 1){
         sd->sliceoffset = -offset;
       }
       sd->nslicex = sd->js2 + 1 - sd->js1;
@@ -3241,10 +3744,10 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       break;
     case YDIR:
       offset = sliceoffset_factor*(yplt_local[1] - yplt_local[0]);
-      if (InBlockage(meshi, xslicemid, yslicemid - offset, zslicemid) == 1) {
+      if(InBlockage(meshi, xslicemid, yslicemid - offset, zslicemid) == 1){
         sd->sliceoffset = offset;
       }
-      if (InBlockage(meshi, xslicemid, yslicemid + offset, zslicemid) == 1) {
+      if(InBlockage(meshi, xslicemid, yslicemid + offset, zslicemid) == 1){
         sd->sliceoffset = -offset;
       }
       sd->nslicex = sd->is2 + 1 - sd->is1;
@@ -3252,10 +3755,10 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       break;
     case ZDIR:
       offset = sliceoffset_factor*(zplt_local[1] - zplt_local[0]);
-      if (InBlockage(meshi, xslicemid, yslicemid, zslicemid - offset) == 1) {
+      if(InBlockage(meshi, xslicemid, yslicemid, zslicemid - offset) == 1){
         sd->sliceoffset = offset;
       }
-      if (InBlockage(meshi, xslicemid, yslicemid, zslicemid + offset) == 1) {
+      if(InBlockage(meshi, xslicemid, yslicemid, zslicemid + offset) == 1){
         sd->sliceoffset = -offset;
       }
       sd->nslicex = sd->is2 + 1 - sd->is1;
@@ -3268,15 +3771,15 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     sd->nsliceii = sd->nslicei*sd->nslicej*sd->nslicek;
     sd->nslicetotal = sd->ntimes*sd->nsliceii;
-    if (sd->compression_type == COMPRESSED_ZLIB) {
-      if (NewMemory((void **)&sd->slicecomplevel, sd->nsliceii * sizeof(unsigned char)) == 0) {
+    if(sd->compression_type == COMPRESSED_ZLIB){
+      if(NewMemory((void **)&sd->slicecomplevel, sd->nsliceii * sizeof(unsigned char)) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
     }
     else {
-      if (NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0) {
+      if(NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
@@ -3284,7 +3787,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     }
 
 #ifdef pp_MEMDEBUG
-    if (sd->compression_type == UNCOMPRESSED) {
+    if(sd->compression_type == UNCOMPRESSED){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
 #endif
@@ -3292,7 +3795,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
      // convert slice data into color indices
 
-  if (sd->compression_type == UNCOMPRESSED) {
+  if(sd->compression_type == UNCOMPRESSED){
     GetSliceDataBounds(sd, &qmin, &qmax);
   }
   else {
@@ -3301,52 +3804,52 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   }
   sd->globalmin = qmin;
   sd->globalmax = qmax;
-  if (sd->compression_type == UNCOMPRESSED) {
-    adjustslicebounds(sd, &qmin, &qmax);
+  if(sd->compression_type == UNCOMPRESSED){
+    AdjustSliceBounds(sd, &qmin, &qmax);
   }
   sd->valmin = qmin;
   sd->valmax = qmax;
   sd->valmin_data = qmin;
   sd->valmax_data = qmax;
-  for (i = 0; i<256; i++) {
+  for (i = 0; i<256; i++){
     sd->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
   }
   CheckMemory;
 
-  if (sd->slicetype == SLICE_CELL_CENTER) {
+  if(sd->slicetype == SLICE_CELL_CENTER){
     usetexturebar = 0;
   }
   sd->loaded = 1;
-  if (sd->vloaded == 0)sd->display = 1;
+  if(sd->vloaded == 0)sd->display = 1;
   islicetype = getslicetype(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateUnitDefs();
   UpdateTimes();
   CheckMemory;
 
-  if (use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR) {
-    if (sd->compression_type == UNCOMPRESSED) {
-      updateslicebounds();
-      updateallslicecolors(islicetype, errorcode);
+  if(use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR){
+    if(sd->compression_type == UNCOMPRESSED){
+      UpdateSliceBounds();
+      UpdateAllSliceColors(islicetype, errorcode);
       list_slice_index = islicetype;
-      setslicebounds(islicetype);
+      SetSliceBounds(islicetype);
     }
     else {
       slicebounds[islicetype].valmin_data = qmin;
       slicebounds[islicetype].valmax_data = qmax;
-      updateallslicelabels(islicetype, errorcode);
+      UpdateAllSliceLabels(islicetype, errorcode);
     }
   }
   CheckMemory;
 
-  updateslicelist(list_slice_index);
+  UpdateSliceList(list_slice_index);
   CheckMemory;
-  updateslicelistindex(slicefilenum);
+  UpdateSliceListIndex(slicefilenum);
   CheckMemory;
-  updateglui();
+  UpdateGlui();
   CheckMemory;
 #ifdef pp_MEMDEBUG
-  if (sd->compression_type == UNCOMPRESSED) {
+  if(sd->compression_type == UNCOMPRESSED){
     ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
   }
   CheckMemory;
@@ -3362,15 +3865,15 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   Idle_CB();
 
   exportdata = 1;
-  if (exportdata == 0) {
+  if(exportdata == 0){
     FREEMEMORY(sd->qslicedata);
   }
 
   local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
   delta_time0 = (local_stoptime0 - local_starttime0) / 1000.0;
 
-  if (flag != RESETBOUNDS) {
-    if (file_size != 0 && delta_time>0.0) {
+  if(flag != RESETBOUNDS){
+    if(file_size != 0 && delta_time>0.0){
       float loadrate;
 
       loadrate = ((float)file_size*8.0 / 1000000.0) / delta_time;
@@ -3383,21 +3886,21 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     }
   }
 
-  if (update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0) {
+  if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
     update_fire_line = 1;
   }
 
-  if (colorbartype_ini == -1) {
-    if (strcmp(sd->label.shortlabel, "thick") == 0) {
+  if(colorbartype_ini == -1){
+    if(strcmp(sd->label.shortlabel, "thick") == 0){
       ColorbarMenu(wallthickness_colorbar);
     }
-    if (strcmp(sd->label.shortlabel, "phifield") == 0) {
+    if(strcmp(sd->label.shortlabel, "phifield") == 0){
       ColorbarMenu(levelset_colorbar);
     }
   }
   push_slice_loadstack(slicefilenumber);
 
-  if (sd->volslice == 1) {
+  if(sd->volslice == 1){
     meshdata *meshj;
 
     meshj = meshinfo + sd->blocknumber;
@@ -3412,7 +3915,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     vis_gslice_data = 1;
 #ifdef pp_GPU
-    if (gpuactive == 1) {
+    if(gpuactive == 1){
       init_slice3d_texture(meshj);
     }
 #endif
@@ -3429,6 +3932,8 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     meshj->slice_max[2] = 0.0;
   }
   glutPostRedisplay();
+  printf("qmin=%f qmax=%f\n",qmin,qmax);
+
 }
 
 /* ------------------ draw_sliceframe ------------------------ */
@@ -3622,9 +4127,9 @@ float plane_dist(float *norm, float *xyz0, float *xyz){
   return dist;
 }
 
-/* ------------------ update_gslice_planes ------------------------ */
+/* ------------------ UpdateGslicePlanes ------------------------ */
 
-void update_gslice_planes(void){
+void UpdateGslicePlanes(void){
   int i;
   float *norm;
   float *xyz0;
@@ -3740,7 +4245,7 @@ void drawgslice_outline(void){
         xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
         xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
         xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
-        draw_triangle_outline(xyz1,xyz2,xyz3,del,0);
+        DrawTriangleOutline(xyz1,xyz2,xyz3,del,0);
       }
     }
   }
@@ -3818,9 +4323,9 @@ void init_slice3d_texture(meshdata *meshi){
 }
 #endif
 
-/* ------------------ update_slice3d_texture ------------------------ */
+/* ------------------ UpdateSlice3DTexture ------------------------ */
 
-void update_slice3d_texture(meshdata *meshi, slicedata *slicei, float *valdata){
+void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
   GLint xoffset=0,yoffset=0,zoffset=0;
   GLsizei nx, ny, nz, nxy;
   int slice_ny, slice_nz;
@@ -3869,7 +4374,7 @@ void drawgslice_dataGPU(slicedata *slicei){
   meshi = meshinfo + slicei->blocknumber;
   if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)return;
 
-  update_slice3d_texture(meshi, slicei, slicei->qsliceframe);
+  UpdateSlice3DTexture(meshi, slicei, slicei->qsliceframe);
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
@@ -3954,7 +4459,7 @@ void drawgslice_data(slicedata *slicei){
     t2 = get_texture_index(xyz2);
     t3 = get_texture_index(xyz3);
 
-    draw_triangle(xyz1,xyz2,xyz3,t1,t2,t3,del,0);
+    DrawTriangle(xyz1,xyz2,xyz3,t1,t2,t3,del,0);
   }
   if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -4009,7 +4514,7 @@ void drawvgslice_data(vslicedata *vslicei){
     xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
     xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
 
-    draw_triangle_vector(xyz1,xyz2,xyz3,del,0);
+    DrawTriangleVector(xyz1,xyz2,xyz3,del,0);
   }
   if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -6265,60 +6770,6 @@ void init_Slicedata(void){
   }
 }
 
-/* ------------------ average_slice_data ------------------------ */
-
-int average_slice_data(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
-
-#define IND(itime,ival) ((itime)*data_per_timestep + (ival))
-  float *datatemp=NULL;
-  int below, above, naverage;
-  float average_timed2;
-  int i, j, k;
-
-  if(data_in==NULL||data_out==NULL)return 1;
-  if(ndata<data_per_timestep||data_per_timestep<1||ntimes_local<1||average_time<0.0)return 1;
-  if(ndata!=data_per_timestep*ntimes_local)return 1;
-
-  average_timed2 = average_time/2.0;
-
-  NewMemory((void **)&datatemp,ndata*sizeof(float));
-  for(i=0;i<ndata;i++){
-    datatemp[i]=0.0;
-  }
-  for(i=0;i<ntimes_local;i++){
-    PRINTF("averaging time=%.2f\n",times_local[i]);
-    below=0;
-    for(j=i-1;j>=0;j--){
-      if(times_local[i]-times_local[j]>average_timed2){
-        below=j+1;
-        break;
-      }
-    }
-    above=ntimes_local-1;
-    for(j=i+1;j<ntimes_local;j++){
-      if(times_local[j]-times_local[i]>average_timed2){
-        above=j-1;
-        break;
-      }
-    }
-    naverage = above + 1 - below;
-    for(k=0;k<data_per_timestep;k++){
-      for(j=below;j<=above;j++){
-        datatemp[IND(i,k)]+=data_in[IND(j,k)];
-      }
-    }
-    for(k=0;k<data_per_timestep;k++){
-      datatemp[IND(i,k)]/=(float)naverage;
-    }
-  }
-  for(i=0;i<ndata;i++){
-    data_out[i]=datatemp[i];
-  }
-  FREEMEMORY(datatemp);
-  return 0;
-}
-
-
 /* ------------------ getsliceheader0 ------------------------ */
 
 int getsliceheader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *jj1, int *j2, int *k1, int *k2, int *slice3d){
@@ -6688,85 +7139,6 @@ int last_vslice_loadstack(void){
   return return_val;
 }
 
-/* ------------------ update_slicedir_count ------------------------ */
-
-void update_slicedir_count(void){
-  int i,j;
-
-  for(i=0;i<nmultisliceinfo;i++){
-    multislicedata *mslicei;
-
-    mslicei = multisliceinfo + i;
-    mslicei->ndirxyz[0]=0;
-    mslicei->ndirxyz[1]=0;
-    mslicei->ndirxyz[2]=0;
-    mslicei->ndirxyz[3]=0;
-  }
-  for(i=0;i<nmultisliceinfo;i++){
-    multislicedata *mslicei;
-    slicedata *slicei;
-
-    mslicei = multisliceinfo + i;
-    slicei = sliceinfo + mslicei->islices[0];
-    if(slicei->idir<1)continue;
-    if(slicei->volslice==1)continue;
-    for(j=0;j<nmultisliceinfo;j++){
-      multislicedata *mslicej;
-      slicedata *slicej;
-
-      mslicej = multisliceinfo + j;
-      slicej = sliceinfo + mslicej->islices[0];
-      if(slicej->idir<1)continue;
-      if(slicej->volslice==1)continue;
-      if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
-         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
-      mslicei->ndirxyz[slicej->idir]++;
-    }
-  }
-  for(i=0;i<nsliceinfo;i++){
-	  slicedata *slicei;
-
-    slicei = sliceinfo + i;
-	  slicei->ndirxyz[0]=0;
-	  slicei->ndirxyz[1]=0;
-	  slicei->ndirxyz[2]=0;
-	  slicei->ndirxyz[3]=0;
-  }
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei, *slicej;
-
-    slicei = sliceinfo + i;
-    if(slicei->idir<1)continue;
-	  if(slicei->volslice==1)continue;
-	  for(j=0;j<nsliceinfo;j++){
-	    slicej = sliceinfo + j;
-	    if(slicej->idir<1)continue;
-	    if(slicej->volslice==1)continue;
-      if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-	    //if(slicej->cellcenter!=slicei->cellcenter)continue;
-      if((slicej->slicetype==SLICE_CELL_CENTER&&slicei->slicetype!=SLICE_CELL_CENTER)||
-         (slicej->slicetype!=SLICE_CELL_CENTER&&slicei->slicetype==SLICE_CELL_CENTER))continue;
-      slicei->ndirxyz[slicej->idir]++;
-  	}
-  }
-}
-#define VERT_AVG(v1,v2,vavg) \
-  vavg[0]=(v1[0]+v2[0])/2.0;\
-  vavg[1]=(v1[1]+v2[1])/2.0;\
-  vavg[2]=(v1[2]+v2[2])/2.0
-
-#define VERT_AVG3(v1,v2,v3,vavg) \
-  vavg[0]=(v1[0]+v2[0]+v3[0])/3.0;\
-  vavg[1]=(v1[1]+v2[1]+v3[1])/3.0;\
-  vavg[2]=(v1[2]+v2[2]+v3[2])/3.0
-
-#define DIST3(v1,v2,dist2) \
-  dx=v1[0]-v2[0];\
-  dy=v1[1]-v2[1];\
-  dz=v1[2]-v2[2];\
-  dist2=dx*dx+dy*dy+dz*dz
-
 /* ------------------ get_texture_index ------------------------ */
 
 float get_texture_index(float *xyz){
@@ -6855,351 +7227,6 @@ float get_texture_index(float *xyz){
   val_fraction = (val-valmin)/(valmax-valmin);
   val_fraction = CLAMP(val_fraction,0.0,1.0);
   return val_fraction;
-}
-
-/* ------------------ get_3dslice_val ------------------------ */
-
-float get_3dslice_val(slicedata *sd, float *xyz){
-  int i, j, k;
-  float *xplt, *yplt, *zplt;
-  float dxbar, dybar, dzbar;
-  int ibar, jbar, kbar;
-  int nx, ny, nz;
-  int slice_ny, slice_nz;
-  float dx, dy, dz;
-  float val000,val100,val010,val110;
-  float val001,val101,val011,val111;
-  float val00,val10,val01,val11;
-  float val0, val1;
-  float val;
-  int ijk,ip1=0, jp1=0, kp1=0, *ijk_min, *ijk_max;
-
-  meshdata *valmesh;
-
-  valmesh = meshinfo + sd->blocknumber;
-
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
-  ibar = valmesh->ibar;
-  jbar = valmesh->jbar;
-  kbar = valmesh->kbar;
-  dxbar = xplt[1]-xplt[0];
-  dybar = yplt[1]-yplt[0];
-  dzbar = zplt[1]-zplt[0];
-
-  nx = ibar + 1;
-  ny = jbar + 1;
-  nz = kbar + 1;
-  slice_ny = sd->ijk_max[1] - sd->ijk_min[1] + 1;
-  slice_nz = sd->ijk_max[2] - sd->ijk_min[2] + 1;
-
-  GETINDEX(i,xyz[0],xplt[0],dxbar,nx);
-  GETINDEX(j,xyz[1],yplt[0],dybar,ny);
-  GETINDEX(k,xyz[2],zplt[0],dzbar,nz);
-
-  // val(i,j,k) = di*nj*nk + dj*nk + dk
-  ijk_min = sd->ijk_min;
-  ijk_max = sd->ijk_max;
-
-  ijk = (i-ijk_min[0])*slice_nz*slice_ny + (j-ijk_min[1])*slice_nz + (k-ijk_min[2]);
-
-  dx = (xyz[0] - xplt[i])/dxbar;
-  dx = CLAMP(dx,0.0,1.0);
-  dy = (xyz[1] - yplt[j])/dybar;
-  dy = CLAMP(dy,0.0,1.0);
-  dz = (xyz[2] - zplt[k])/dzbar;
-  dz = CLAMP(dz,0.0,1.0);
-
-
-  // ijk
-  if(i<=ijk_max[0])ip1=slice_nz*slice_ny;
-  if(j<=ijk_max[1])jp1=slice_nz;
-  if(k<=ijk_max[2])kp1=1;
-
-  val000 = (float)GET_VAL_N(sd,ijk);     // i,j,k
-  val001 = (float)GET_VAL_N(sd,ijk + kp1); // i,j,k+1
-
-  // ijk + slice_nz
-  val010 = (float)GET_VAL_N(sd,ijk+jp1);     // i,j+1,k
-  val011 = (float)GET_VAL_N(sd,ijk+jp1+kp1); // i,j+1,k+1
-
-  // ijk + slice_nz*slice_ny
-  val100 = (float)GET_VAL_N(sd,ijk + ip1);     // i+1,j,k
-  val101 = (float)GET_VAL_N(sd,ijk + ip1+kp1); // i+1,j,k+1
-
-  // ijk + slice_nz + slice_nz*slice_ny
-  val110 = (float)GET_VAL_N(sd,ijk + ip1+jp1);   // i+1,j+1,k
-  val111 = (float)GET_VAL_N(sd,ijk + ip1+jp1+kp1); // i+1,j+1,k+1
-
-  val00 = MIX(dx,val100,val000);
-  val10 = MIX(dx,val110,val010);
-  val01 = MIX(dx,val101,val001);
-  val11 = MIX(dx,val111,val011);
-  val0 = MIX(dy, val10, val00);
-  val1 = MIX(dy, val11, val01);
-
-  val = MIX(dz,val1,val0);
-  return val;
-}
-
-/* ------------------ draw_quad ------------------------ */
-
-void draw_quad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
-  float d13,d24;
-  float dx, dy, dz;
-
-  if(level==0){
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-    glEnable(GL_TEXTURE_1D);
-    glBindTexture(GL_TEXTURE_1D,texture_slice_colorbar_id);
-    glBegin(GL_TRIANGLES);
-  }
-  DIST3(v1,v3,d13);
-  DIST3(v2,v4,d24);
-  if(d13<d24){
-    draw_triangle(v1,v2,v3,t1,t2,t3,del,level+1);
-    draw_triangle(v1,v3,v4,t1,t3,t4,del,level+1);
-  }
-  else{
-    draw_triangle(v1,v2,v4,t1,t2,t4,del,level+1);
-    draw_triangle(v2,v3,v4,t2,t3,t4,del,level+1);
-  }
-  if(level==0){
-    glEnd();
-    glDisable(GL_TEXTURE_1D);
-  }
-}
-
-/* ------------------ draw_triangle ------------------------ */
-
-void draw_triangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level){
-
-  float d12, d13 ,d23;
-  float v12[3],v13[3],v23[3];
-  float dx, dy, dz;
-  float t12,t13,t23;
-
-  if(level==0){
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-    glEnable(GL_TEXTURE_1D);
-    glBindTexture(GL_TEXTURE_1D,texture_slice_colorbar_id);
-    glBegin(GL_TRIANGLES);
-  }
-  DIST3(v1,v2,d12);
-  DIST3(v1,v3,d13);
-  DIST3(v2,v3,d23);
-  if(d12<=del&&d13<=del&&d23<del){
-    glTexCoord1f(t1);
-    glVertex3fv(v1);
-
-    glTexCoord1f(t2);
-    glVertex3fv(v2);
-
-    glTexCoord1f(t3);
-    glVertex3fv(v3);
-  }
-  else{
-    if(d12<=MIN(d13,d23)){
-      VERT_AVG(v1,v3,v13);
-      t13=get_texture_index(v13);
-      VERT_AVG(v2,v3,v23);
-      t23=get_texture_index(v23);
-
-      draw_triangle(v3,v13,v23,t3,t13,t23,del,level+1);
-      draw_quad(v13,v1,v2,v23,t13,t1,t2,t23,del,level+1);
-    }
-    else if(d13<=MIN(d12,d23)){
-      VERT_AVG(v1,v2,v12);
-      t12=get_texture_index(v12);
-      VERT_AVG(v2,v3,v23);
-      t23=get_texture_index(v23);
-
-      draw_triangle(v12,v2,v23,t12,t2,t23,del,level+1);
-      draw_quad(v1,v12,v23,v3,t1,t12,t23,t3,del,level+1);
-    }
-    else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1,v2,v12);
-      t12=get_texture_index(v12);
-      VERT_AVG(v1,v3,v13);
-      t13=get_texture_index(v13);
-
-      draw_triangle(v1,v12,v13,t1,t12,t13,del,level+1);
-      draw_quad(v12,v2,v3,v13,t12,t2,t3,t13,del,level+1);
-    }
-  }
-  if(level==0){
-    glEnd();
-    glDisable(GL_TEXTURE_1D);
-  }
-}
-
-/* ------------------ draw_quad_vector ------------------------ */
-
-void draw_quad_vector(float *v1, float *v2, float *v3, float *v4, float del, int level){
-  float d13,d24;
-  float dx, dy, dz;
-
-  if(level==0){
-    glBegin(GL_LINE);
-  }
-  DIST3(v1,v3,d13);
-  DIST3(v2,v4,d24);
-  if(d13<d24){
-    draw_triangle_vector(v1,v2,v3,del,level+1);
-    draw_triangle_vector(v1,v3,v4,del,level+1);
-  }
-  else{
-    draw_triangle_vector(v1,v2,v4,del,level+1);
-    draw_triangle_vector(v2,v3,v4,del,level+1);
-  }
-  if(level==0){
-    glEnd();
-  }
-}
-
-/* ------------------ draw_triangle_vector ------------------------ */
-
-void draw_triangle_vector(float *v1, float *v2, float *v3, float del, int level){
-
-  float d12, d13 ,d23;
-  float v12[3],v13[3],v23[3],vavg[3];
-  float dx, dy, dz;
-  float tavg;
-  int tavg_index;
-  float *rgb_ptr;
-
-  if(level==0){
-    glLineWidth(vectorlinewidth);
-    glBegin(GL_LINES);
-  }
-  DIST3(v1,v2,d12);
-  DIST3(v1,v3,d13);
-  DIST3(v2,v3,d23);
-  if(d12<=del&&d13<=del&&d23<del){
-    float vecfactor2, vrange;
-
-    vrange = velocity_range;
-    if(vrange<=0.0)vrange=1.0;
-    vecfactor2 = 0.05*vecfactor/vrange*xyzmaxdiff;
-
-    VERT_AVG3(v1,v2,v3,vavg);
-    dx = get_3dslice_val(gslice_u, vavg)*vecfactor2;
-    dy = get_3dslice_val(gslice_v, vavg)*vecfactor2;
-    dz = get_3dslice_val(gslice_w, vavg)*vecfactor2;
-    if(gslice->constant_color!=NULL){
-      rgb_ptr = gslice->constant_color;
-    }
-    else{
-      tavg=get_texture_index(vavg);
-      tavg_index=CLAMP(tavg*255,0,255);
-      rgb_ptr = rgb_slice + 4*tavg_index;
-    }
-    glColor4fv(rgb_ptr);
-    glVertex3f(vavg[0]-dx,vavg[1]-dy,vavg[2]-dz);
-    glVertex3f(vavg[0]+dx,vavg[1]+dy,vavg[2]+dz);
-  }
-  else{
-    if(d12<=MIN(d13,d23)){
-      VERT_AVG(v1,v3,v13);
-      VERT_AVG(v2,v3,v23);
-
-      draw_triangle_vector(v3,v13,v23,del,level+1);
-      draw_quad_vector(v13,v1,v2,v23,del,level+1);
-    }
-    else if(d13<=MIN(d12,d23)){
-      VERT_AVG(v1,v2,v12);
-      VERT_AVG(v2,v3,v23);
-
-      draw_triangle_vector(v12,v2,v23,del,level+1);
-      draw_quad_vector(v1,v12,v23,v3,del,level+1);
-    }
-    else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1,v2,v12);
-      VERT_AVG(v1,v3,v13);
-
-      draw_triangle_vector(v1,v12,v13,del,level+1);
-      draw_quad_vector(v12,v2,v3,v13,del,level+1);
-    }
-  }
-  if(level==0)glEnd();
-}
-
-/* ------------------ draw_quad_outline ------------------------ */
-
-void draw_quad_outline(float *v1, float *v2, float *v3, float *v4,
-               float del, int level){
-  float d13,d24;
-  float dx, dy, dz;
-
-  if(level==0){
-    glBegin(GL_LINES);
-  }
-  DIST3(v1,v3,d13);
-  DIST3(v2,v4,d24);
-  if(d13<d24){
-    draw_triangle_outline(v1,v2,v3,del,level+1);
-    draw_triangle_outline(v1,v3,v4,del,level+1);
-  }
-  else{
-    draw_triangle_outline(v1,v2,v4,del,level+1);
-    draw_triangle_outline(v2,v3,v4,del,level+1);
-  }
-  if(level==0){
-    glEnd();
-  }
-}
-
-/* ------------------ draw_triangle_outline ------------------------ */
-
-void draw_triangle_outline(float *v1, float *v2, float *v3,
-                   float del, int level){
-  float d12, d13 ,d23;
-  float v12[3],v13[3],v23[3];
-  float dx, dy, dz;
-
-  if(level==0){
-    glBegin(GL_LINES);
-  }
-  DIST3(v1,v2,d12);
-  DIST3(v1,v3,d13);
-  DIST3(v2,v3,d23);
-  if(d12<=del&&d13<=del&&d23<del){
-    glVertex3fv(v1);
-    glVertex3fv(v2);
-
-    glVertex3fv(v2);
-    glVertex3fv(v3);
-
-    glVertex3fv(v3);
-    glVertex3fv(v1);
-  }
-  else{
-    if(d12<=MIN(d13,d23)){
-      VERT_AVG(v1,v3,v13);
-      VERT_AVG(v2,v3,v23);
-
-      draw_triangle_outline(v3,v13,v23,del,level+1);
-      draw_quad_outline(v13,v1, v2,v23,del,level+1);
-    }
-    else if(d13<=MIN(d12,d23)){
-      VERT_AVG(v1,v2,v12);
-      VERT_AVG(v2,v3,v23);
-
-      draw_triangle_outline(v12,v2,v23,del,level+1);
-      draw_quad_outline(v1,v12,v23,v3,del,level+1);
-    }
-    else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1,v2,v12);
-      VERT_AVG(v1,v3,v13);
-
-      draw_triangle_outline(v1,v12,v13,del,level+1);
-      draw_quad_outline(v12,v2,v3,v13,del,level+1);
-    }
-  }
-  if(level==0){
-    glEnd();
-  }
 }
 
 /* ------------------ slicedata2hist ------------------------ */
