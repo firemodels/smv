@@ -2761,7 +2761,7 @@ extern "C" void Slice_CB(int var){
 
         slicei = sliceinfo + i;
         if(slicei->loaded==0||slicei->display==0)continue;
-        UpdateSliceList(getslicetype(slicei));
+        UpdateSliceList(GetSliceType(slicei));
         break;
       }
       if(research_mode==1){
@@ -3213,7 +3213,7 @@ extern "C" void UpdateSliceListIndex(int sfn){
     sfn=slicefilenum;
   }
   sd = sliceinfo+sfn;
-  slicefiletype=getsliceindex(sd);
+  slicefiletype = GetSliceIndex(sd);
   if(slicefiletype>=0&&slicefiletype<nslice_type){
     i = slicefiletype;
     RADIO_slice->set_int_val(i);

@@ -28,17 +28,13 @@ meshdata *gslice_valmesh;
 slicedata *gslice_u, *gslice_v, *gslice_w;
 slicedata *gslice;
 
-float get_texture_index(float *xyz);
-int getslicezlibdata(char *file,
+int GetSlicecZlibData(char *file,
                             int set_tmin, int set_tmax, float tmin, float tmax, int ncompressed, int sliceskip, int nsliceframes,
                             float *times, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax);
-int getsliceheader(char *comp_file, char *size_file, int compression_type,
+int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
                    int framestep, int set_tmin, int set_tmax, float tmin, float tmax,
                    int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax);
-int getsliceheader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *j1, int *j2, int *k1, int *k2, int *slice3d);
-int getslicecompresseddata(char *file,
-                            int set_tmin, int set_tmax, float tmin, float tmax, int ncompressed, int sliceskip, int nsliceframes,
-                            float *times, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax);
+int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *j1, int *j2, int *k1, int *k2, int *slice3d);
 void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level);
 void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
 void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level);
@@ -125,9 +121,9 @@ int makeslicesizefile(char *file, char *sizefile, int compression_type);
   dz=v1[2]-v2[2];\
   dist2=dx*dx+dy*dy+dz*dz
 
-/* ------------------ get_3dslice_val ------------------------ */
+/* ------------------ Get3DSliceVal ------------------------ */
 
-float get_3dslice_val(slicedata *sd, float *xyz) {
+float Get3DSliceVal(slicedata *sd, float *xyz) {
   int i, j, k;
   float *xplt, *yplt, *zplt;
   float dxbar, dybar, dzbar;
@@ -211,6 +207,96 @@ float get_3dslice_val(slicedata *sd, float *xyz) {
   return val;
 }
 
+/* ------------------ GetTextureIndex ------------------------ */
+
+float GetTextureIndex(float *xyz){
+  int i, j, k;
+  float *vv;
+  float *xplt, *yplt, *zplt;
+  float dxbar, dybar, dzbar;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  int slice_ny, slice_nz;
+  float dx, dy, dz;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float val00, val10, val01, val11;
+  float val0, val1;
+  float val, val_fraction;
+  int ijk;
+  int iplus = 0, jplus = 0, kplus = 0, *ijk_min, *ijk_max;
+
+  float *slicedata0;
+  float valmin, valmax;
+  meshdata *valmesh;
+
+  slicedata0 = gslicedata;
+  valmin = gslice_valmin;
+  valmax = gslice_valmax;
+  valmesh = gslice_valmesh;
+
+  xplt = valmesh->xplt_orig;
+  yplt = valmesh->yplt_orig;
+  zplt = valmesh->zplt_orig;
+  ibar = valmesh->ibar;
+  jbar = valmesh->jbar;
+  kbar = valmesh->kbar;
+  dxbar = xplt[1] - xplt[0];
+  dybar = yplt[1] - yplt[0];
+  dzbar = zplt[1] - zplt[0];
+
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nz = kbar + 1;
+  slice_ny = gslice->ijk_max[1] - gslice->ijk_min[1] + 1;
+  slice_nz = gslice->ijk_max[2] - gslice->ijk_min[2] + 1;
+
+  GETINDEX(i, xyz[0], xplt[0], dxbar, nx);
+  GETINDEX(j, xyz[1], yplt[0], dybar, ny);
+  GETINDEX(k, xyz[2], zplt[0], dzbar, nz);
+
+  // val(i,j,k) = di*nj*nk + dj*nk + dk
+  ijk_min = gslice->ijk_min;
+  ijk_max = gslice->ijk_max;
+  ijk = (i - ijk_min[0])*slice_nz*slice_ny + (j - ijk_min[1])*slice_nz + (k - ijk_min[2]);
+
+  dx = (xyz[0] - xplt[i]) / dxbar;
+  dx = CLAMP(dx, 0.0, 1.0);
+  dy = (xyz[1] - yplt[j]) / dybar;
+  dy = CLAMP(dy, 0.0, 1.0);
+  dz = (xyz[2] - zplt[k]) / dzbar;
+  dz = CLAMP(dz, 0.0, 1.0);
+
+  vv = slicedata0 + ijk;
+  if(i + 1 <= ijk_max[0])iplus = slice_nz*slice_ny;
+  if(j + 1 <= ijk_max[1])jplus = slice_nz;
+  if(k + 1 <= ijk_max[2])kplus = 1;
+
+  val000 = (float)vv[0]; // i,j,k
+  val001 = (float)vv[kplus]; // i,j,k+1
+
+  val010 = (float)vv[jplus]; // i,j+1,k
+  val011 = (float)vv[jplus + kplus]; // i,j+1,k+1
+
+  val100 = (float)vv[iplus]; // i+1,j,k
+  val101 = (float)vv[iplus + kplus]; // i+1,j,k+1
+
+  val110 = (float)vv[iplus + jplus]; // i+1,j+1,k
+  val111 = (float)vv[iplus + jplus + kplus]; // i+1,j+1,k+1
+
+  val00 = MIX(dx, val100, val000);
+  val10 = MIX(dx, val110, val010);
+  val01 = MIX(dx, val101, val001);
+  val11 = MIX(dx, val111, val011);
+  val0 = MIX(dy, val10, val00);
+  val1 = MIX(dy, val11, val01);
+
+  val = MIX(dz, val1, val0);
+  val_fraction = (val - valmin) / (valmax - valmin);
+  val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+  return val_fraction;
+}
+
 /* ------------------ DrawTriangle ------------------------ */
 
 void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level) {
@@ -242,27 +328,27 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
   else {
     if (d12 <= MIN(d13, d23)) {
       VERT_AVG(v1, v3, v13);
-      t13 = get_texture_index(v13);
+      t13 = GetTextureIndex(v13);
       VERT_AVG(v2, v3, v23);
-      t23 = get_texture_index(v23);
+      t23 = GetTextureIndex(v23);
 
       DrawTriangle(v3, v13, v23, t3, t13, t23, del, level + 1);
       DrawQuad(v13, v1, v2, v23, t13, t1, t2, t23, del, level + 1);
     }
     else if (d13 <= MIN(d12, d23)) {
       VERT_AVG(v1, v2, v12);
-      t12 = get_texture_index(v12);
+      t12 = GetTextureIndex(v12);
       VERT_AVG(v2, v3, v23);
-      t23 = get_texture_index(v23);
+      t23 = GetTextureIndex(v23);
 
       DrawTriangle(v12, v2, v23, t12, t2, t23, del, level + 1);
       DrawQuad(v1, v12, v23, v3, t1, t12, t23, t3, del, level + 1);
     }
     else { // d23<=MIN(d12,d13)
       VERT_AVG(v1, v2, v12);
-      t12 = get_texture_index(v12);
+      t12 = GetTextureIndex(v12);
       VERT_AVG(v1, v3, v13);
-      t13 = get_texture_index(v13);
+      t13 = GetTextureIndex(v13);
 
       DrawTriangle(v1, v12, v13, t1, t12, t13, del, level + 1);
       DrawQuad(v12, v2, v3, v13, t12, t2, t3, t13, del, level + 1);
@@ -375,14 +461,14 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level) {
     vecfactor2 = 0.05*vecfactor / vrange*xyzmaxdiff;
 
     VERT_AVG3(v1, v2, v3, vavg);
-    dx = get_3dslice_val(gslice_u, vavg)*vecfactor2;
-    dy = get_3dslice_val(gslice_v, vavg)*vecfactor2;
-    dz = get_3dslice_val(gslice_w, vavg)*vecfactor2;
+    dx = Get3DSliceVal(gslice_u, vavg)*vecfactor2;
+    dy = Get3DSliceVal(gslice_v, vavg)*vecfactor2;
+    dz = Get3DSliceVal(gslice_w, vavg)*vecfactor2;
     if (gslice->constant_color != NULL) {
       rgb_ptr = gslice->constant_color;
     }
     else {
-      tavg = get_texture_index(vavg);
+      tavg = GetTextureIndex(vavg);
       tavg_index = CLAMP(tavg * 255, 0, 255);
       rgb_ptr = rgb_slice + 4 * tavg_index;
     }
@@ -508,7 +594,7 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
     }
     else if(sd->compression_type==COMPRESSED_ZLIB){
       if(
-        getsliceheader(sd->comp_file,sd->size_file,sd->compression_type,
+        GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
                        sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
                        &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
         readslice("",sd_index,UNLOAD,SET_SLICECOLOR,&error);
@@ -1231,7 +1317,7 @@ void readvslice(int ivslice, int flag, int *errorcode){
       *errorcode=1;
       return;
     }
-    islicetype=getslicetype(val);
+    islicetype= GetSliceType(val);
     vd->type=val->type;
     vd->valmin=valmin;
     vd->valmax=valmax;
@@ -1786,9 +1872,9 @@ int new_multi_slice(slicedata *sdold,slicedata *sd){
   return 0;
 }
 
-/* ------------------ getgsliceparams ------------------------ */
+/* ------------------ GetGSliceParams ------------------------ */
 
-void getgsliceparams(void){
+void GetGSliceParams(void){
   int i;
 
   for(i = 0; i < npatchinfo;i++){
@@ -2282,9 +2368,9 @@ void UpdateSliceDirCount(void) {
   }
 }
 
-/* ------------------ getsliceparams ------------------------ */
+/* ------------------ GetSliceParams ------------------------ */
 
-void getsliceparams(void){
+void GetSliceParams(void){
   int i;
   char *file;
   int error;
@@ -2351,7 +2437,7 @@ void getsliceparams(void){
     }
     else if(sd->compression_type==COMPRESSED_ZLIB){
       error=0;
-      if(getsliceheader0(sd->comp_file,sd->size_file,sd->compression_type,&is1,&is2,&js1,&js2,&ks1,&ks2, &sd->volslice)==0)error=1;
+      if(GetSliceHeader0(sd->comp_file,sd->size_file,sd->compression_type,&is1,&is2,&js1,&js2,&ks1,&ks2, &sd->volslice)==0)error=1;
       ni = is2 + 1 - is1;
       nj = js2 + 1 - js1;
       nk = ks2 + 1 - ks1;
@@ -2604,9 +2690,9 @@ void getsliceparams(void){
   UpdateSliceDirCount();
 }
 
-/* ------------------ getsliceparams2 ------------------------ */
+/* ------------------ GetSliceParams2 ------------------------ */
 
-void getsliceparams2(void){
+void GetSliceParams2(void){
   int i;
 
   trainer_temp_n=0;
@@ -2644,7 +2730,7 @@ void UpdateVSlices(void){
   int i;
 
   PRINTF("  updating vector slices\n");
-  getsliceparams();
+  GetSliceParams();
 
   /* update vector slices */
 
@@ -2877,7 +2963,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     sd = sliceinfo + j;
     if(sd->loaded==0)continue;
 
-    slice_type_j = getslicetype(sd);
+    slice_type_j = GetSliceType(sd);
     if(slice_type_j!=slice_type_index)continue;
     if(sd->qslicedata==NULL){
       fprintf(stderr,"*** Error: data not available from %s to generate contours\n",sd->reg_file);
@@ -3001,13 +3087,13 @@ void UpdateSliceTypes(void){
     slicedata *sd;
 
     sd = sliceinfo+i;
-    if(getsliceindex(sd)==-1)slicetypes[nslicetypes++]=i;
+    if(GetSliceIndex(sd)==-1)slicetypes[nslicetypes++]=i;
   }
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
     sd = sliceinfo+i;
-    sd->type=getslicetype(sd);
+    sd->type= GetSliceType(sd);
   }
 }
 
@@ -3040,9 +3126,9 @@ int getvslicetype(const vslicedata *vd){
 }
 
 
-/* ------------------ getsliceindex ------------------------ */
+/* ------------------ GetSliceIndex ------------------------ */
 
-int getsliceindex(const slicedata *sd){
+int GetSliceIndex(const slicedata *sd){
   int j;
 
   for(j=0;j<nslicetypes;j++){
@@ -3054,9 +3140,9 @@ int getsliceindex(const slicedata *sd){
   return -1;
 }
 
-/* ------------------ getslicetype ------------------------ */
+/* ------------------ GetSliceType ------------------------ */
 
-int getslicetype(const slicedata *sd){
+int GetSliceType(const slicedata *sd){
   int j;
 
   for(j=0;j<nslicetypes;j++){
@@ -3068,9 +3154,9 @@ int getslicetype(const slicedata *sd){
   return -1;
 }
 
-/* ------------------ getslicetype_fromlabel ------------------------ */
+/* ------------------ GetSliceTypeFromLabel ------------------------ */
 
-int getslicetype_fromlabel(char *label){
+int GetSliceTypeFromLabel(char *label){
   int j;
 
   for(j=0;j<nslicetypes;j++){
@@ -3094,7 +3180,7 @@ void UpdateSliceBoundLabels(){
     slicedata *sd;
 
     sd = sliceinfo + i;
-    j = getslicetype(sd);
+    j = GetSliceType(sd);
     sb = slicebounds + j;
     sb->label=&(sd->label);
   }
@@ -3108,7 +3194,7 @@ void setslicecolors(float smin, float smax,
   int slicetype;
   boundsdata *sb;
 
-  slicetype=getslicetype(sd);
+  slicetype= GetSliceType(sd);
   sb = slicebounds + slicetype;
   sb->label=&(sd->label);
 
@@ -3133,7 +3219,7 @@ void setslicelabels(float smin, float smax,
   int slicetype;
   boundsdata *sb;
 
-  slicetype=getslicetype(sd);
+  slicetype= GetSliceType(sd);
   sb = slicebounds + slicetype;
   sb->label=&(sd->label);
 
@@ -3441,6 +3527,18 @@ int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_ti
   return 0;
 }
 
+/* ------------------ GetSliceCompressedData ------------------------ */
+
+int GetSliceCompressedData(char *file,
+  int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
+  float *times_local, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax){
+  int returnval;
+
+  returnval = GetSlicecZlibData(file, set_tmin, set_tmax, tmin_local, tmax_local, ncompressed, sliceskip, nsliceframes,
+    times_local, compressed_data, compindex, valmin, valmax);
+  return returnval;
+}
+
 /* ------------------ readslice ------------------------ */
 
 void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
@@ -3611,7 +3709,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     }
     else if(sd->compression_type == COMPRESSED_ZLIB){
       if(
-        getsliceheader(sd->comp_file, sd->size_file, sd->compression_type,
+        GetSliceHeader(sd->comp_file, sd->size_file, sd->compression_type,
           sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
           &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
@@ -3658,7 +3756,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         return;
       }
       datafile = sd->comp_file;
-      if(getslicecompresseddata(datafile,
+      if(GetSliceCompressedData(datafile,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
         readslice("", ifile, UNLOAD, set_slicecolor, &error);
@@ -3821,7 +3919,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   }
   sd->loaded = 1;
   if(sd->vloaded == 0)sd->display = 1;
-  islicetype = getslicetype(sd);
+  islicetype = GetSliceType(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateUnitDefs();
   UpdateTimes();
@@ -4455,9 +4553,9 @@ void drawgslice_data(slicedata *slicei){
     xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
     xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
     xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
-    t1 = get_texture_index(xyz1);
-    t2 = get_texture_index(xyz2);
-    t3 = get_texture_index(xyz3);
+    t1 = GetTextureIndex(xyz1);
+    t2 = GetTextureIndex(xyz2);
+    t3 = GetTextureIndex(xyz3);
 
     DrawTriangle(xyz1,xyz2,xyz3,t1,t2,t3,del,0);
   }
@@ -6770,9 +6868,9 @@ void init_Slicedata(void){
   }
 }
 
-/* ------------------ getsliceheader0 ------------------------ */
+/* ------------------ GetSliceHeader0 ------------------------ */
 
-int getsliceheader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *jj1, int *j2, int *k1, int *k2, int *slice3d){
+int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *jj1, int *j2, int *k1, int *k2, int *slice3d){
   FILE *stream;
   char buffer[255];
 
@@ -6797,9 +6895,9 @@ int getsliceheader0(char *comp_file, char *size_file, int compression_type, int 
   fclose(stream);
   return 1;
 }
-/* ------------------ getsliceheader ------------------------ */
+/* ------------------ GetSliceHeader ------------------------ */
 
-int getsliceheader(char *comp_file, char *size_file, int compression_type,
+int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
                    int framestep, int set_tmin, int set_tmax, float tmin_local, float tmax_local,
                    int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax){
   FILE *stream;
@@ -6868,21 +6966,9 @@ int getsliceheader(char *comp_file, char *size_file, int compression_type,
   // compressed buffer
 
 
-/* ------------------ getslicecompresseddata ------------------------ */
+/* ------------------ GetSlicecZlibData ------------------------ */
 
-int getslicecompresseddata(char *file,
-                            int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
-                            float *times_local, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax){
-  int returnval;
-
-  returnval=getslicezlibdata(file,set_tmin,set_tmax,tmin_local,tmax_local,ncompressed,sliceskip,nsliceframes,
-                            times_local,compressed_data,compindex,valmin,valmax);
-  return returnval;
-}
-
-/* ------------------ getsliceczlibdata ------------------------ */
-
-int getslicezlibdata(char *file,
+int GetSlicecZlibData(char *file,
                             int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
                             float *times_local, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax){
   FILE *stream;
@@ -7040,9 +7126,9 @@ void uncompress_slicedataframe(slicedata *sd,int iframe_local){
   }
 }
 
-/* ------------------ getsliceval ------------------------ */
+/* ------------------ GetSliceVal ------------------------ */
 
-float getsliceval(slicedata *sd, unsigned char ival){
+float GetSliceVal(slicedata *sd, unsigned char ival){
   float returnval;
 
   returnval = (sd->valmax*ival + sd->valmin*(255-ival))/255.0;
@@ -7137,96 +7223,6 @@ int last_vslice_loadstack(void){
     return_val=-1;
   }
   return return_val;
-}
-
-/* ------------------ get_texture_index ------------------------ */
-
-float get_texture_index(float *xyz){
-  int i, j, k;
-  float *vv;
-  float *xplt, *yplt, *zplt;
-  float dxbar, dybar, dzbar;
-  int ibar, jbar, kbar;
-  int nx, ny, nz;
-  int slice_ny, slice_nz;
-  float dx, dy, dz;
-  float val000,val100,val010,val110;
-  float val001,val101,val011,val111;
-  float val00,val10,val01,val11;
-  float val0, val1;
-  float val, val_fraction;
-  int ijk;
-  int iplus=0, jplus=0, kplus=0, *ijk_min, *ijk_max;
-
-  float *slicedata0;
-  float valmin, valmax;
-  meshdata *valmesh;
-
-  slicedata0 = gslicedata;
-  valmin = gslice_valmin;
-  valmax = gslice_valmax;
-  valmesh = gslice_valmesh;
-
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
-  ibar = valmesh->ibar;
-  jbar = valmesh->jbar;
-  kbar = valmesh->kbar;
-  dxbar = xplt[1]-xplt[0];
-  dybar = yplt[1]-yplt[0];
-  dzbar = zplt[1]-zplt[0];
-
-  nx = ibar + 1;
-  ny = jbar + 1;
-  nz = kbar + 1;
-  slice_ny = gslice->ijk_max[1] - gslice->ijk_min[1] + 1;
-  slice_nz = gslice->ijk_max[2] - gslice->ijk_min[2] + 1;
-
-  GETINDEX(i,xyz[0],xplt[0],dxbar,nx);
-  GETINDEX(j,xyz[1],yplt[0],dybar,ny);
-  GETINDEX(k,xyz[2],zplt[0],dzbar,nz);
-
-     // val(i,j,k) = di*nj*nk + dj*nk + dk
-  ijk_min = gslice->ijk_min;
-  ijk_max = gslice->ijk_max;
-  ijk = (i-ijk_min[0])*slice_nz*slice_ny + (j-ijk_min[1])*slice_nz + (k-ijk_min[2]);
-
-  dx = (xyz[0] - xplt[i])/dxbar;
-  dx = CLAMP(dx,0.0,1.0);
-  dy = (xyz[1] - yplt[j])/dybar;
-  dy = CLAMP(dy,0.0,1.0);
-  dz = (xyz[2] - zplt[k])/dzbar;
-  dz = CLAMP(dz,0.0,1.0);
-
-  vv = slicedata0 + ijk;
-  if(i+1<=ijk_max[0])iplus=slice_nz*slice_ny;
-  if(j+1<=ijk_max[1])jplus=slice_nz;
-  if(k+1<=ijk_max[2])kplus=1;
-
-  val000 = (float)vv[0]; // i,j,k
-  val001 = (float)vv[kplus]; // i,j,k+1
-
-  val010 = (float)vv[jplus]; // i,j+1,k
-  val011 = (float)vv[jplus+kplus]; // i,j+1,k+1
-
-  val100 = (float)vv[iplus]; // i+1,j,k
-  val101 = (float)vv[iplus+kplus]; // i+1,j,k+1
-
-  val110 = (float)vv[iplus+jplus]; // i+1,j+1,k
-  val111 = (float)vv[iplus+jplus+kplus]; // i+1,j+1,k+1
-
-  val00 = MIX(dx,val100,val000);
-  val10 = MIX(dx,val110,val010);
-  val01 = MIX(dx,val101,val001);
-  val11 = MIX(dx,val111,val011);
-   val0 = MIX(dy, val10, val00);
-   val1 = MIX(dy, val11, val01);
-
-  val = MIX(dz,val1,val0);
-  val_fraction = (val-valmin)/(valmax-valmin);
-  val_fraction = CLAMP(val_fraction,0.0,1.0);
-  return val_fraction;
 }
 
 /* ------------------ slicedata2hist ------------------------ */

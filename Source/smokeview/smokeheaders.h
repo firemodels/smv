@@ -136,7 +136,7 @@ EXTERNCPP void updatepatchlistindex(int patchfilenum);
 EXTERNCPP void updatepatchlistindex2(char *label);
 EXTERNCPP void updateplot3dlistindex(void);
 
-EXTERNCPP void getsliceparams2(void);
+EXTERNCPP void GetSliceParams2(void);
 
 #ifdef pp_PILOT
 EXTERNCPP void draw_pilot(void);
@@ -598,7 +598,7 @@ EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
 EXTERNCPP void UpdateVSlices(void);
-EXTERNCPP void getgsliceparams(void);
+EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void update_part_menulabels(void);
 EXTERNCPP void update_iso_menulabels(void);
 EXTERNCPP void update_patch_menulabels(void);
@@ -688,10 +688,10 @@ EXTERNCPP void updateallisocolors(int iisotype,int *errorcode);
 EXTERNCPP void UpdateVSliceTypes(void);
 EXTERNCPP int getvsliceindex(const vslicedata *vd);
 EXTERNCPP int getvslicetype(const vslicedata *vd);
-EXTERNCPP int getslicetype(const slicedata *sd);
-EXTERNCPP int getslicetype_fromlabel(char *label);
+EXTERNCPP int GetSliceType(const slicedata *sd);
+EXTERNCPP int GetSliceTypeFromLabel(char *label);
 EXTERNCPP void UpdateSliceTypes(void);
-EXTERNCPP int getsliceindex(const slicedata *sd);
+EXTERNCPP int GetSliceIndex(const slicedata *sd);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP int getisotype(const isodata *isoi);
 EXTERNCPP int getisottype(const isodata *isoi);
@@ -870,7 +870,6 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
               char **labels,char **labelsiso, char **scale, float *fscale, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP float getsliceval(slicedata *sd, unsigned char ival);
 EXTERNCPP void updateallisolabels(int slicetype, int *errorcode);
 EXTERNCPP void setslicelabels(float smin, float smax,
                     slicedata *sd, int *errorcode);

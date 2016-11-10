@@ -8392,7 +8392,7 @@ typedef struct {
   update_plotxyz_all();
 
   UpdateVSlices();
-  getgsliceparams();
+  GetGSliceParams();
 
   active_smokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
@@ -11526,7 +11526,7 @@ int ReadINI(char *inifile){
     InitDefaultColorbars();
   }
   updatezoommenu=1;
-  getsliceparams2();
+  GetSliceParams2();
   return 0;
 }
 
