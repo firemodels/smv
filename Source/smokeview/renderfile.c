@@ -345,7 +345,89 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
   strcat(renderfile_full, renderfile_ext);
 }
 
-  /* ------------------ RenderFrame ------------------------ */
+/* ------------------ OutputSliceData ------------------------ */
+
+void OutputSliceData(void){
+  FILE *fileout;
+  char datafile[1024];
+  int i, ii, n;
+  float *data;
+  slicedata *sd;
+  int row, col;
+  char *ext;
+  char flabel[256];
+
+  InitSliceData();
+
+  for(ii = 0; ii < nslice_loaded; ii++){
+    i = slice_loaded_list[ii];
+    sd = sliceinfo + i;
+    if(sd->display == 0 || sd->type != islicetype)continue;
+    if(sd->times[0] > global_times[itimes])continue;
+
+    if(sd->qslicedata == NULL){
+      PRINTF("  Slice data unavailable for output\n");
+      continue;
+    }
+    data = sd->qslicedata + sd->itime*sd->nsliceii;
+    strcpy(datafile, sd->file);
+    ext = strstr(datafile, ".");
+    if(ext != NULL){
+      ext[0] = 0;
+    }
+    sprintf(flabel, "%i", itimes);
+    TrimBack(flabel);
+    strcat(datafile, "_sf_");
+    strcat(datafile, flabel);
+    strcat(datafile, ".csv");
+    fileout = fopen(datafile, "a");
+    if(fileout == NULL)continue;
+    if(global_times != NULL)fprintf(fileout, "%f\n", global_times[itimes]);
+    switch (sd->idir){
+    case XDIR:
+      fprintf(fileout, "%i,%i\n", sd->ks2 + 1 - sd->ks1, sd->js2 + 1 - sd->js1);
+      for(row = sd->ks1; row <= sd->ks2; row++){
+        for(col = sd->js1; col <= sd->js2; col++){
+          n = (col - sd->js1)*sd->nslicek + row - sd->ks1;
+          if(col != sd->js2)fprintf(fileout, "%f, ", data[n]);
+          if(col == sd->js2)fprintf(fileout, "%f ", data[n]);
+        }
+        fprintf(fileout, "\n");
+      }
+      break;
+    case YDIR:
+      fprintf(fileout, "%i, %i \n", sd->ks2 + 1 - sd->ks1, sd->is2 + 1 - sd->is1);
+      for(row = sd->ks1; row <= sd->ks2; row++){
+        for(col = sd->is1; col <= sd->is2; col++){
+          n = (col - sd->is1)*sd->nslicek + row - sd->ks1;
+          if(col != sd->is2)fprintf(fileout, "%f, ", data[n]);
+          if(col == sd->is2)fprintf(fileout, "%f ", data[n]);
+        }
+        fprintf(fileout, "\n");
+      }
+      break;
+    case ZDIR:
+      fprintf(fileout, "%i, %i \n", sd->js2 + 1 - sd->js1, sd->is2 + 1 - sd->is1);
+      for(row = sd->js1; row <= sd->js2; row++){
+        for(col = sd->is1; col <= sd->is2; col++){
+          n = (col - sd->is1)*sd->nslicej + row - sd->js1;
+          if(col != sd->is2)fprintf(fileout, "%f, ", data[n]);
+          if(col == sd->is2)fprintf(fileout, "%f ", data[n]);
+        }
+        fprintf(fileout, "\n");
+      }
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+    fclose(fileout);
+    fileout = NULL;
+
+  }
+}
+
+/* ------------------ RenderFrame ------------------------ */
 
 void RenderFrame(int view_mode){
   char renderfile_full[1024], renderfile_dir[1024];
@@ -372,7 +454,7 @@ void RenderFrame(int view_mode){
 
   SmokeviewImage2File(renderfile_dir_ptr,renderfile_full,render_filetype,woffset,screenWidth,hoffset,screenH);
   if(RenderTime==1&&output_slicedata==1){
-    output_Slicedata();
+    OutputSliceData();
   }
 }
 
@@ -432,10 +514,10 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   }
   else{
     strcpy(renderfile2,fdsprefix);
-    if (RenderTime == 1) {
+    if(RenderTime == 1){
       sprintf(renderfile_base, "%s_%04i", renderfile2, itimes / RenderSkip);
     }
-    if (RenderTime == 0) {
+    if(RenderTime == 0){
       sprintf(renderfile_base, "%s_s%04i", renderfile2, seqnum);
       seqnum++;
     }
@@ -460,7 +542,7 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
     int icol;
 
     for(icol=0;icol<nscreen_cols;icol++){
-      for (i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
+      for(i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
         for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
           r=*p++; g=*p++; b=*p++;
           rgb_local = (r<<16)|(g<<8)|b;
@@ -500,13 +582,13 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
 /* ------------------ GetScreenMap360 ------------------------ */
 
-unsigned int GetScreenMap360(float *xyz) {
+unsigned int GetScreenMap360(float *xyz){
   int ibuff;
   float xyznorm;
 
   xyznorm = sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]);
 
-  for (ibuff = 0; ibuff < nscreeninfo; ibuff++){
+  for(ibuff = 0; ibuff < nscreeninfo; ibuff++){
     screendata *screeni;
     float *view, *up, *right, t;
     float A, B;
@@ -546,7 +628,7 @@ unsigned int GetScreenMap360(float *xyz) {
 #define RIGHT 1
 /* ------------------ GetScreenMap360LR ------------------------ */
 
-unsigned int GetScreenMap360LR(int side, float *xyz) {
+unsigned int GetScreenMap360LR(int side, float *xyz){
   int ibuff, imax, ix, iy, index;
   float xyznorm, maxcosangle;
   float *view, *up, *right, t;
@@ -749,14 +831,14 @@ void SetupScreeninfo(void){
       sin_az[i] = sin(DEG2RAD*alpha);
       cos_az[i] = cos(DEG2RAD*alpha);
     }
-    for (i = 0; i < nheight360; i++){
+    for(i = 0; i < nheight360; i++){
       float eps;
 
       eps = -90.0 + (float)i*180.0 / (float)nheight360;
       sin_elev[i] = sin(DEG2RAD*eps);
       cos_elev[i] = cos(DEG2RAD*eps);
     }
-    for (j = 0; j < nheight360; j++){
+    for(j = 0; j < nheight360; j++){
       for(i = 0; i < nazimuth; i++){
         float xyz[3];
 
@@ -986,7 +1068,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
 
   RENDERimage = gdImageCreateTrueColor(width2,height2);
 
-  for (i = height2-1 ; i>=0; i--){
+  for(i = height2-1 ; i>=0; i--){
     for(j=0;j<width2;j++){
       unsigned int r, g, b;
       int rgb_local;
@@ -1025,7 +1107,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
 /* ------------------ SVimage2var ------------------------ */
 #ifdef pp_LUA
 int SVimage2var(int rendertype,
-    int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage) {
+    int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage){
 
   GLubyte *OpenGLimage, *p;
   unsigned int r, g, b;
@@ -1063,7 +1145,7 @@ int SVimage2var(int rendertype,
 
   *RENDERimage = gdImageCreateTrueColor(width2,height2);
 
-  for (i = height2-1 ; i>=0; i--){
+  for(i = height2-1 ; i>=0; i--){
     for(j=0;j<width2;j++){
       r=*p++; g=*p++; b=*p++;
       rgb_local = (r<<16)|(g<<8)|b;
@@ -1212,7 +1294,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
     return NULL;
   }
   dptr=dataptr;
-  for (i = 0; i<HEIGHT; i++){
+  for(i = 0; i<HEIGHT; i++){
     for(j=0;j<WIDTH;j++){
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(HEIGHT-(1+i)));
       *dptr++ = (intrgb>>16)&255;
@@ -1247,7 +1329,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
     return NULL;
   }
   dptr=dataptr;
-  for (i = 0; i<*height; i++){
+  for(i = 0; i<*height; i++){
     for(j=0;j<*width;j++){
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(*height-(1+i)));
       *dptr++ = (intrgb>>16)&255;

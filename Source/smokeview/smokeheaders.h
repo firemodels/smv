@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void draw_screeninfo(void);
@@ -526,7 +527,6 @@ EXTERNCPP void drawgslice_data(slicedata *slicei);
 EXTERNCPP void drawgslice_outline(void);
 EXTERNCPP void draw_patchframe(int flag);
 EXTERNCPP void Motion_CB(int var);
-EXTERNCPP void init_slice3d_texture(meshdata *meshi);
 
 #ifdef pp_GPU
 EXTERNCPP void drawsmoke3dGPU(smoke3ddata *smoke3di);
@@ -539,7 +539,7 @@ EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_t
 EXTERNCPP void update_smoke3d_menulabels(void);
 EXTERNCPP void Labels_CB(int value);
 EXTERNCPP void output_Slicedata(void);
-EXTERNCPP void init_Slicedata(void);
+EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
 EXTERNCPP void update_extreme(void);
 EXTERNCPP void update_colorbar_type(void);
@@ -686,8 +686,6 @@ EXTERNCPP void Render(int view_mode);
 EXTERNCPP void updateisobounds(void);
 EXTERNCPP void updateallisocolors(int iisotype,int *errorcode);
 EXTERNCPP void UpdateVSliceTypes(void);
-EXTERNCPP int getvsliceindex(const vslicedata *vd);
-EXTERNCPP int getvslicetype(const vslicedata *vd);
 EXTERNCPP int GetSliceType(const slicedata *sd);
 EXTERNCPP int GetSliceTypeFromLabel(char *label);
 EXTERNCPP void UpdateSliceTypes(void);

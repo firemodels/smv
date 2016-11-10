@@ -262,7 +262,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
   }
   dbucket_to   = (histogram_to->valmax  -histogram_to->valmin  )/  histogram_to->nbuckets;
   dbucket_from = (histogram_from->valmax-histogram_from->valmin)/histogram_from->nbuckets;
-  dbucket_new=(valmax_new-valmin_new)/histogram_from->nbuckets;
+  dbucket_new  = (valmax_new-valmin_new)/histogram_to->nbuckets;
 
   if(dbucket_new==0.0){
     histogram_to->buckets[0]=histogram_to->ntotal+histogram_from->ntotal;
@@ -287,7 +287,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
 
         val = (float)(histogram_from->valmin + (i+0.5)*dbucket_from);
         ival = (val - valmin_new) / dbucket_new;
-        ival = CLAMP(ival,0,histogram_from->nbuckets-1);
+        ival = CLAMP(ival,0,histogram_to->nbuckets-1);
         histogram_to->buckets[ival]+=histogram_from->buckets[i];
       }
     }

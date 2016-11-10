@@ -20,7 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_slice_hist, 0);
+SVEXTERN int SVDECL(nhistograms256_slice, 0);
 SVEXTERN histogramdata SVDECL(*histograms256_slice, NULL);
+SVEXTERN float histograms256_slice_max;
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);

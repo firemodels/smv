@@ -1098,8 +1098,21 @@ void DrawColorbars(void){
       for (i = 0; i < nrgb_full-1; i++){
         float *rgb_cb,*rgb_cb2;
         float yy, yy2;
+        int draw_hist = 1;
+        int cbl;
 
         rgb_cb=rgb_full[i];
+
+        if (draw_hist == 1) {
+          float dcolor, val;
+
+          dcolor = 3*(colorbar_right_pos - colorbar_left_pos);
+          val = (float)histograms256_slice->buckets[i] / (float)histograms256_slice->ntotal;
+          cbl = colorbar_right_pos - dcolor*val/histograms256_slice_max;
+        }
+        else {
+          cbl = colorbar_left_pos;
+        }
 
         yy = MIX2(i,255,colorbar_top_pos,colorbar_down_pos);
         yy2 = MIX2(i+1,255,colorbar_top_pos,colorbar_down_pos);
@@ -1109,12 +1122,12 @@ void DrawColorbars(void){
 
         if(rgb_cb[3]!=0.0&&rgb_cb2[3]!=0.0){
           glColor4fv(rgb_cb);
-          glVertex2f(colorbar_left_pos, yy);
+          glVertex2f(cbl, yy);
           glVertex2f(colorbar_right_pos,yy);
 
           glColor4fv(rgb_cb2);
           glVertex2f(colorbar_right_pos,yy2);
-          glVertex2f(colorbar_left_pos,yy2);
+          glVertex2f(cbl,yy2);
         }
       }
       glEnd();
