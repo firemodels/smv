@@ -82,7 +82,7 @@ int makeslicesizefile(char *file, char *sizefile, int compression_type);
            }                                  \
          }
 
-#define GET_VAL_N(U,n)  ( (U)->compression_type==COMPRESSED_ZLIB ? (U)->qval256[(U)->iqsliceframe[(n)]] : (U)->qslice[(n)] ) 
+#define GET_VAL_N(U,n)  ( (U)->compression_type==COMPRESSED_ZLIB ? (U)->qval256[(U)->iqsliceframe[(n)]] : (U)->qslice[(n)] )
 
 #define GET_VEC_DXYZ(U,DU,n) \
          if(U==NULL){       \
@@ -2792,7 +2792,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     InitHistogram(sd->histograms+i, NHIST_BUCKETS, NULL, NULL);
   }
 
-  
+  NewMemory((void **)&sd->histogram256, sizeof(histogramdata));
+  InitHistogram(sd->histogram256, 256, NULL, NULL);
+
   for(istep=0;istep<ntimes;istep++){
     int n0;
     histogramdata *histi, *histall;
@@ -6829,7 +6831,7 @@ float get_texture_index(float *xyz){
   if(i+1<=ijk_max[0])iplus=slice_nz*slice_ny;
   if(j+1<=ijk_max[1])jplus=slice_nz;
   if(k+1<=ijk_max[2])kplus=1;
-  
+
   val000 = (float)vv[0]; // i,j,k
   val001 = (float)vv[kplus]; // i,j,k+1
 
@@ -6899,7 +6901,7 @@ float get_3dslice_val(slicedata *sd, float *xyz){
   // val(i,j,k) = di*nj*nk + dj*nk + dk
   ijk_min = sd->ijk_min;
   ijk_max = sd->ijk_max;
-  
+
   ijk = (i-ijk_min[0])*slice_nz*slice_ny + (j-ijk_min[1])*slice_nz + (k-ijk_min[2]);
 
   dx = (xyz[0] - xplt[i])/dxbar;
@@ -6909,12 +6911,12 @@ float get_3dslice_val(slicedata *sd, float *xyz){
   dz = (xyz[2] - zplt[k])/dzbar;
   dz = CLAMP(dz,0.0,1.0);
 
-  
+
   // ijk
   if(i<=ijk_max[0])ip1=slice_nz*slice_ny;
   if(j<=ijk_max[1])jp1=slice_nz;
   if(k<=ijk_max[2])kp1=1;
-  
+
   val000 = (float)GET_VAL_N(sd,ijk);     // i,j,k
   val001 = (float)GET_VAL_N(sd,ijk + kp1); // i,j,k+1
 

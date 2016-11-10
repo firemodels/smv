@@ -1190,7 +1190,7 @@ typedef struct _slicedata {
   int reload;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
-  histogramdata *histograms;
+  histogramdata *histograms, *histogram256;
   int nhistograms;
 } slicedata;
 

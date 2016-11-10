@@ -25,8 +25,6 @@ typedef struct {
   float valxmin, valxmax;
   float valymin, valymax;
   float valmean, valstdev;
-  float valmin_sum, valmax_sum, nbuckets_sum;
-  int buckets_sum[256];
   int complete;
 } histogramdata;
 

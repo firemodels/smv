@@ -7733,6 +7733,7 @@ typedef struct {
       sd->menu_show=1;
       sd->constant_color=NULL;
       sd->histograms = NULL;
+      sd->histogram256 = NULL;
       sd->nhistograms=0;
       {
         meshdata *meshi;

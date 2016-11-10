@@ -217,9 +217,6 @@ void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogra
 /* ------------------ Histogram2Sum ------------------------ */
 
 void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n) {
-  histogram->valmin_sum = valmin;
-  histogram->valmax_sum = valmax;
-  histogram->nbuckets_sum = n;
 }
 
   /* ------------------ UpdateHistogram ------------------------ */
