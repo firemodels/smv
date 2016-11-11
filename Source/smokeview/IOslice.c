@@ -1452,7 +1452,7 @@ void UpdateSliceHist(void){
     }
     if(histogram_bin_factor > 0){
       int powers[]={1,2,4,8,16,32};
-      
+
       histogram_bin_factor2 = powers[histogram_bin_factor];
       for(i = 0; i < nhistograms256_slice; i++){
         histogramdata *hist256i, *histi;
