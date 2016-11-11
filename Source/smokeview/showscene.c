@@ -391,11 +391,11 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(show_gslice_triangles==1||show_gslice_normal==1||show_gslice_normal_keyboard==1||show_gslice_triangulation==1){
     CLIP_VALS;
-    drawgslice_outline();
+    DrawGSliceOutline();
   }
   if((show_slices_and_vectors==1&&showvslice==1)||(showslice==1&&use_transparency_data==0)){
     CLIP_VALS;
-    draw_sliceframe();
+    DrawSliceFrame();
   }
 
   /* ++++++++++++++++++++++++ draw boundary files +++++++++++++++++++++++++ */
@@ -499,8 +499,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if((show_slices_and_vectors==1&&showvslice==1)||(showslice==1&&use_transparency_data==1)){
     CLIP_VALS;
-    draw_sliceframe();
-    SNIFF_ERRORS("after draw_sliceframe");
+    DrawSliceFrame();
+    SNIFF_ERRORS("after DrawSliceFrame");
   }
 
 /* ++++++++++++++++++++++++ draw transparent blockages +++++++++++++++++++++++++ */
@@ -515,7 +515,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showvslice==1){
     CLIP_VALS;
-    draw_vsliceframe();
+    DrawVSliceFrame();
   }
   SNIFF_ERRORS("after drawvslice");
 
