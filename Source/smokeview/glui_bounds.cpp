@@ -99,6 +99,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #ifdef pp_SLICEDUP
 #define UPDATE_SLICEDUPS 212
 #endif
+#define UPDATE_HISTOGRAM 213
 
 #define SCRIPT_START 31
 #define SCRIPT_STOP 32
@@ -203,6 +204,7 @@ GLUI_Rollout *ROLLOUT_outputpatchdata=NULL;
 GLUI_Rollout *ROLLOUT_filebounds = NULL;
 GLUI_Rollout *ROLLOUT_showhide = NULL;
 GLUI_Rollout *ROLLOUT_slice_average = NULL;
+GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_slice_vector = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
 #ifdef pp_SLICEDUP
@@ -241,6 +243,8 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
+GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
+GLUI_Spinner *SPINNER_histogram_bin_factor=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
@@ -331,6 +335,7 @@ GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
 #endif
+GLUI_RadioGroup *RADIO_histogram_type=NULL;
 GLUI_RadioGroup *RADIO_showhide = NULL;
 GLUI_RadioGroup *RADIO_contour_type = NULL;
 GLUI_RadioGroup *RADIO_zone_setmin=NULL, *RADIO_zone_setmax=NULL;
@@ -382,8 +387,9 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define SLICE_AVERAGE_ROLLOUT 0
 #define SLICE_VECTOR_ROLLOUT 1
 #define LINE_CONTOUR_ROLLOUT 2
+#define SLICE_HISTOGRAM_ROLLOUT 3
 #ifdef pp_SLICEDUP
-#define SLICE_DUP_ROLLOUT 3
+#define SLICE_DUP_ROLLOUT 4
 #endif
 
 #define VECTOR_ROLLOUT 0
@@ -430,7 +436,13 @@ void update_iso_controls(void){
   }
 }
 
-/* ------------------ update_sliceinobst ------------------------ */
+/* ------------------ UpdateHistogramType ------------------------ */
+
+extern "C" void UpdateHistogramType(void){
+  RADIO_histogram_type->set_int_val(histogram_type);
+}
+
+/* ------------------ update_show_slice_in_obst ------------------------ */
 
 extern "C" void update_show_slice_in_obst(void){
   CHECKBOX_show_slice_in_obst->set_int_val(show_slice_in_obst);
@@ -1243,6 +1255,20 @@ extern "C" void glui_bounds_setup(int main_window){
       &slicechopmin, &slicechopmax,
       UPDATE_BOUNDS,DONT_TRUNCATE_BOUNDS,
       Slice_CB);
+
+    ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, Slice_Rollout_CB);
+    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_histogram, SLICE_HISTOGRAM_ROLLOUT);
+
+    RADIO_histogram_type = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice_histogram,&histogram_type);
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"hide");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"transient");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"static");
+    SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
+      &histogram_width_factor);
+    SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
+    SPINNER_histogram_bin_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("bin factor"), GLUI_SPINNER_INT,
+      &histogram_bin_factor,UPDATE_HISTOGRAM,Slice_CB);
+    SPINNER_histogram_bin_factor->set_int_limits(0,5);
 
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_d("Average data"),false,SLICE_AVERAGE_ROLLOUT,Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT);
@@ -2700,6 +2726,9 @@ extern "C" void Slice_CB(int var){
     return;
   }
   switch(var){
+    case UPDATE_HISTOGRAM:
+      update_slice_hist = 1;
+      break;
 #ifdef pp_SLICEDUP
     case UPDATE_SLICEDUPS:
     updatemenu = 1;

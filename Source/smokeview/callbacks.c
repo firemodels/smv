@@ -1547,11 +1547,21 @@ void keyboard(unsigned char key, int flag){
       return;
 #endif
     case 'h':
-      if(titlesafe_offset==0){
-        titlesafe_offset=titlesafe_offsetBASE;
-      }
-      else{
-        titlesafe_offset=0;
+      switch(keystate){
+      case GLUT_ACTIVE_ALT:
+        if(titlesafe_offset==0){
+          titlesafe_offset=titlesafe_offsetBASE;
+        }
+        else{
+          titlesafe_offset=0;
+        }
+        break;
+      case GLUT_ACTIVE_CTRL:
+      default:
+        histogram_type++;
+        if(histogram_type > 2)histogram_type = 0;
+        UpdateHistogramType();
+        break;
       }
       break;
     case 'H':

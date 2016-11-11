@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG

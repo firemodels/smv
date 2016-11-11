@@ -1386,6 +1386,21 @@ void UpdateSliceFilenum(void){
   }
 }
 
+/* ------------------ ipow ------------------------ */
+
+int ipow(int base, int exp){
+  int result = 1;
+  while(exp)
+  {
+    if(exp & 1)
+      result *= base;
+    exp >>= 1;
+    base *= base;
+  }
+
+  return result;
+}
+
 /* ------------------ UpdateSliceHist ------------------------ */
 
 void UpdateSliceHist(void){
@@ -1411,6 +1426,7 @@ void UpdateSliceHist(void){
   nhistograms256_slice = nmax;
   if(nhistograms256_slice > 0){
     boundsdata *sb;
+    float maxval;
 
     sb = slicebounds + islicetype;
     NewMemory((void **)&histograms256_slice, nhistograms256_slice * sizeof(histogramdata));
@@ -1434,12 +1450,41 @@ void UpdateSliceHist(void){
         MergeHistogram(hist256j, histj, KEEP_BOUNDS);
       }
     }
-    histograms256_slice_max = (float)histograms256_slice->buckets[0] / (float)histograms256_slice->ntotal;
-    for(i = 1; i < 256; i++){
-      float val;
+    if(histogram_bin_factor > 0){
+      int powers[]={1,2,4,8,16,32};
+      
+      histogram_bin_factor2 = powers[histogram_bin_factor];
+      for(i = 0; i < nhistograms256_slice; i++){
+        histogramdata *hist256i, *histi;
+        int j;
 
-      val = (float)histograms256_slice->buckets[i]/(float)histograms256_slice->ntotal;
-      histograms256_slice_max = MAX(val, histograms256_slice_max);
+        hist256i = histograms256_slice + i;
+        for(j = 0; j < 256; j+= histogram_bin_factor2){
+          int k,sum;
+
+          sum = 0;
+          for(k = 0; k < histogram_bin_factor2; k++){
+            sum += hist256i->buckets[j + k];
+          }
+          for(k = 0; k < histogram_bin_factor2; k++){
+            hist256i->buckets[j + k]=sum;
+          }
+        }
+      }
+    }
+    for(i = 0; i < nhistograms256_slice; i++){
+      histogramdata *hist256i, *histi;
+      int j;
+
+      hist256i = histograms256_slice + i;
+      maxval = (float)hist256i->buckets[0] / (float)hist256i->ntotal;
+      for(j = 1; j < 256; j++){
+        float val;
+
+        val = (float)hist256i->buckets[j] / (float)hist256i->ntotal;
+        maxval = MAX(val, maxval);
+      }
+      hist256i->bucket_maxval = maxval;
     }
   }
 

@@ -1098,17 +1098,24 @@ void DrawColorbars(void){
       for (i = 0; i < nrgb_full-1; i++){
         float *rgb_cb,*rgb_cb2;
         float yy, yy2;
-        int draw_hist = 1;
         int cbl;
 
         rgb_cb=rgb_full[i];
 
-        if (draw_hist == 1) {
-          float dcolor, val;
+        if (histogram_type != 0) {
+          float dcolor, val, val2;
+          histogramdata *histi;
 
-          dcolor = 3*(colorbar_right_pos - colorbar_left_pos);
-          val = (float)histograms256_slice->buckets[i] / (float)histograms256_slice->ntotal;
-          cbl = colorbar_right_pos - dcolor*val/histograms256_slice_max;
+          if(histogram_type == 1){
+            histi = histograms256_slice + CLAMP(slice_time+1,1, nhistograms256_slice);
+          }
+          else{
+            histi = histograms256_slice;
+          }
+
+          dcolor = histogram_width_factor*3*(colorbar_right_pos - colorbar_left_pos);
+          val = (float)histi->buckets[i] / (float)histi->ntotal;
+          cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
         }
         else {
           cbl = colorbar_left_pos;

@@ -134,6 +134,7 @@ void UpdateFrameNumber(int changetime){
         sd = sliceinfo+i;
         if(sd->timeslist==NULL)continue;
         sd->itime=sd->timeslist[itimes];
+        slice_time = sd->itime;
         if(sd->is_fed==1)showfed=1;
       }
       if(showfed==1){
