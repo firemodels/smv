@@ -83,7 +83,7 @@ void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float 
 
   histogram->buckets=NULL;
   histogram->buckets_2d = NULL;
-  NewMemory((void **)&histogram->buckets, nbuckets*sizeof(int));
+  NewMemory((void **)&histogram->buckets, nbuckets*sizeof(unsigned int));
   histogram->ndim = 1;
   histogram->nbuckets = nbuckets;
   ResetHistogram(histogram,valmin,valmax);
@@ -243,7 +243,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
 
   int i;
   float dbucket_to, dbucket_from, dbucket_new;
-  int *bucket_to_copy;
+  unsigned int *bucket_to_copy;
   float valmin_new, valmax_new;
 
   histogram_to->defined=1;
@@ -254,7 +254,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
     valmax_new = MAX(valmax_new, histogram_from->valmax);
   }
 
-  NewMemory((void **)&bucket_to_copy,histogram_to->nbuckets*sizeof(int));
+  NewMemory((void **)&bucket_to_copy,histogram_to->nbuckets*sizeof(unsigned int));
 
   for(i = 0; i<histogram_to->nbuckets; i++){
     bucket_to_copy[i]=histogram_to->buckets[i];
@@ -334,7 +334,7 @@ void InitHistogram2D(histogramdata *histogram, int nx, int ny){
   histogram->ndim = 2;
   histogram->nbuckets = nbuckets;
 
-  NewMemory((void **)&histogram->buckets_2d, histogram->nbuckets*sizeof(int));
+  NewMemory((void **)&histogram->buckets_2d, histogram->nbuckets*sizeof(unsigned int));
   ResetHistogram2d(histogram);
 }
 

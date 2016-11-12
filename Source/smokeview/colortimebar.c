@@ -981,17 +981,16 @@ void DrawColorBarRectHist(void){
     //      |  /           |
     //   (cbl,yy2)------(cbr,yy2)
     if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
-        glColor4fv(rgb_cb);
-        glVertex2f(cbl, yy);
-        glVertex2f(cbr, yy);
-        glColor4fv(rgb_cb2);
-        glVertex2f(cbl, yy2);
+      glColor4fv(rgb_cb);
+      glVertex2f(cbl, yy);
+      glVertex2f(cbr, yy);
+      glColor4fv(rgb_cb2);
+      glVertex2f(cbl, yy2);
 
-        glVertex2f(cbr, yy2);
-        glVertex2f(cbl, yy2);
-        glColor4fv(rgb_cb);
-        glVertex2f(cbr, yy);
-      }
+      glVertex2f(cbr, yy2);
+      glVertex2f(cbl, yy2);
+      glColor4fv(rgb_cb);
+      glVertex2f(cbr, yy);
     }
   }
   glEnd();

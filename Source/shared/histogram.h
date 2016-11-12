@@ -18,10 +18,11 @@
 
 #define NHIST_BUCKETS 100000
 typedef struct {
-  int *buckets, *buckets_2d;
+  unsigned int *buckets, *buckets_2d;
   float bucket_maxval;
   int nbuckets, ndim, defined;
-  int nx, ny, ntotal;
+  int nx, ny;
+  unsigned int ntotal;
   float valmin, valmax;
   float valxmin, valxmax;
   float valymin, valymax;

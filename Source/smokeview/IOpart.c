@@ -645,7 +645,7 @@ void write_part_histogram(partdata *parti){
     }
 
     ncompressed_buckets = 1.02*ncompressed_bucketsMAX+600;
-    compress_zlib(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets*sizeof(int));
+    compress_zlib(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets*sizeof(unsigned int));
 
     fwrite(&ncompressed_buckets, sizeof(uLongf), 1, STREAM_HIST);
     fwrite(compressed_buckets, sizeof(unsigned char), ncompressed_buckets, STREAM_HIST);
