@@ -300,8 +300,3 @@ _blockages = {
     }
 }
 setmetatable(view.blockages, blockages_mt)
-
-window = {}
-window.size = function(width, height)
-    setwindowsize(width, height)
-end

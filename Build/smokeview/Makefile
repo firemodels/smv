@@ -63,7 +63,9 @@ SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
 	$(SMVLUACORE_DIR)/clipping.lua $(SMVLUACORE_DIR)/bounds.lua \
 	$(SMVLUACORE_DIR)/render.lua $(SMVLUACORE_DIR)/load.lua \
 	$(SMVLUACORE_DIR)/view.lua $(SMVLUACORE_DIR)/tour.lua \
-	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua
+	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua \
+	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
+	$(SMVLUACORE_DIR)/camera.lua $(SMVLUACORE_DIR)/window.lua
 
 smvluacore: $(SMVLUACORE_FILES)
 	cp $(SMVLUACORE_FILES) .
@@ -248,7 +250,7 @@ gnu_linux_64_db : $(obj)
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : LIBS_PLAT =
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings 
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings
 ifeq ($(LUA_SCRIPTING),true)
 gnu_linux_64 : CFLAGS    += -D pp_LUA
 gnu_linux_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
@@ -271,7 +273,7 @@ gnu_linux_32 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_32
 gnu_linux_32 : LIBS_PLAT =
 gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
 gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -D pp_GCC -Wno-write-strings
-gnu_linux_32 : LFLAGS    = 
+gnu_linux_32 : LFLAGS    =
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : CPP       = g++
 gnu_linux_32 : FC        = gfortran
@@ -285,7 +287,7 @@ gnu_linux_32 : $(obj)
 
 gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
 gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D pp_LINUX -D pp_GCC
-gnu_linux_32_db : LFLAGS    = 
+gnu_linux_32_db : LFLAGS    =
 gnu_linux_32_db : CC        = gcc
 gnu_linux_32_db : CPP       = g++
 gnu_linux_32_db : FC        = gfortran

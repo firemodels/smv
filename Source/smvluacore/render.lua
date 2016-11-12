@@ -1,5 +1,6 @@
+--- @module render
 render = {movie = {}}
-function _renderF(...)
+local function _renderF(...)
     local errorcode
     local fstArg = select(1,...)
     if (...) == nil then errorcode = renderC(...)
@@ -31,7 +32,7 @@ function _renderF(...)
     -- TODO: return information about the file produced or something
 end
 
-_render = {
+local _render = {
     type = {
         get = function ()
             return get_rendertype()
@@ -128,3 +129,6 @@ end
 function renderall(...)
     rendermany(0,smv.getfinalframe(),1,...)
 end
+
+--  TODO: privatise all functions
+-- return render

@@ -2,12 +2,12 @@
 local iniparser = {}
 
 local inioptions = require "inioptions"
-lpeg = require "lpeg"
+local lpeg = require "lpeg"
 lpeg.locale(lpeg)
 
 if smokeviewEmbedded then execute = true else execute = false end
 
-function buildOpt(opt)
+local function buildOpt(opt)
     local option = {name = opt[1], argLines = opt[2]}
     -- printOption(option)
     -- local execute = false
@@ -15,7 +15,7 @@ function buildOpt(opt)
     return option
 end
 
-function printOption(opt)
+local function printOption(opt)
     print("Option")
     io.write("  Name:\t" .. opt.name .. "\n")
     io.write("  Arguments:\n")
@@ -31,31 +31,31 @@ function printOption(opt)
     -- io.write("]\n")
 end
 
-whitespace = lpeg.space^0
-integer = lpeg.S("-+")^-1 * lpeg.R("09")^1 / tonumber
-float = lpeg.S("-+")^-1 * lpeg.R("09")^1 * lpeg.P(".")^0 * lpeg.R("09")^0
-    / tonumber
-stringChar = lpeg.alnum + lpeg.punct -- the chars that are valid in a string
-string = lpeg.C(stringChar^1)
-filepath = string
-eol = lpeg.P("\n") + lpeg.P("\r\n")
-optionNameChar = lpeg.alnum + lpeg.S("_")
-optionName = lpeg.C(optionNameChar^1) * eol
+local whitespace = lpeg.space^0
+local integer = lpeg.S("-+")^-1 * lpeg.R("09")^1 / tonumber
+local float = lpeg.S("-+")^-1 * lpeg.R("09")^1 * lpeg.P(".")^0 * lpeg.R("09")^0
+            / tonumber
+local stringChar = lpeg.alnum + lpeg.punct -- the chars that are valid in a string
+local string = lpeg.C(stringChar^1)
+local filepath = string
+local eol = lpeg.P("\n") + lpeg.P("\r\n")
+local optionNameChar = lpeg.alnum + lpeg.S("_")
+local optionName = lpeg.C(optionNameChar^1) * eol
 -- rgb = lpeg.R(float) * lpeg.space^1 * lpeg.R(float) * lpeg.space^1 * lpeg.R(float)
 -- command = lpeg.C(lpeg.alnum^1)
-comment = lpeg.space^0 * lpeg.P(":")
+local comment = lpeg.space^0 * lpeg.P(":")
     * lpeg.P(lpeg.alnum + lpeg.punct + lpeg.S(" \t"))^0
     * #eol
-rootComment = lpeg.space^0 * lpeg.S("#-*(")
+local rootComment = lpeg.space^0 * lpeg.S("#-*(")
     * lpeg.P(lpeg.alnum + lpeg.punct + lpeg.S(" \t"))^0
     * eol
-argument = float + integer + string + lpeg.S(" \t")^1 -- + comment +
+local argument = float + integer + string + lpeg.S(" \t")^1 -- + comment +
     -- lpeg.P(eol * (#(lpeg.space) + eol * #comment))
-argumentLine = lpeg.S(" \t")^1 * lpeg.Ct(argument^0) * comment^0 * eol^-1
-emptyLine = lpeg.S(" \t")^0 * eol
-junkLine = emptyLine + rootComment
-option = junkLine^0 * lpeg.Ct(optionName * lpeg.Ct(argumentLine^0)) / buildOpt
-iniFile = lpeg.Ct(option^0) * junkLine^0 * -lpeg.P(1)
+local argumentLine = lpeg.S(" \t")^1 * lpeg.Ct(argument^0) * comment^0 * eol^-1
+local emptyLine = lpeg.S(" \t")^0 * eol
+local junkLine = emptyLine + rootComment
+local option = junkLine^0 * lpeg.Ct(optionName * lpeg.Ct(argumentLine^0)) / buildOpt
+local iniFile = lpeg.Ct(option^0) * junkLine^0 * -lpeg.P(1)
 -- arguments = lpeg.Ct(argument^0) * eol^-1
 -- instruction = lpeg.Ct(command * arguments) / buildInst
 -- script = lpeg.Ct(instruction^0)
@@ -76,7 +76,7 @@ iniFile = lpeg.Ct(option^0) * junkLine^0 * -lpeg.P(1)
 --     print(testArgumentLine[k])
 -- end
 
-function parseINI(filepath)
+local function parseINI(filepath)
     print("parsing:", filepath)
     local f = io.open(filepath, "r")
     local input = f:read("*all")
@@ -85,9 +85,10 @@ function parseINI(filepath)
     print(parsedIniFile)
 end
 
-function test()
+local function test()
     parseINI("test.ini")
 end
 
+return iniparser
 -- print(emptyLine:match(" \n    \n\n    \r\n"))
 -- test()

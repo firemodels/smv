@@ -1,7 +1,7 @@
-
 --- @module load
-load  = {}
-unload = {}
+local load  = {}
+
+require("constants")
 
 function load.slice(matchFunc)
     local nslices = 0
@@ -110,10 +110,4 @@ function load.tour(name)
     return errorcode
 end
 
-function unload.all()
-    unloadall()
-end
-
-function unload.tour()
-    unloadtour()
-end
+return load
