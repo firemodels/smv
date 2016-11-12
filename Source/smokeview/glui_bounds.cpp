@@ -244,7 +244,7 @@ GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
-GLUI_Spinner *SPINNER_histogram_bin_factor=NULL;
+GLUI_Spinner *SPINNER_histogram_bucket_factor=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
@@ -1263,12 +1263,13 @@ extern "C" void glui_bounds_setup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"hide");
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"transient");
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"static");
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, "blocks", &histogram_show_blocks);
     SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
       &histogram_width_factor);
     SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
-    SPINNER_histogram_bin_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("bin factor"), GLUI_SPINNER_INT,
-      &histogram_bin_factor,UPDATE_HISTOGRAM,Slice_CB);
-    SPINNER_histogram_bin_factor->set_int_limits(0,5);
+    SPINNER_histogram_bucket_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("bucket factor"), GLUI_SPINNER_INT,
+      &histogram_bucket_factor,UPDATE_HISTOGRAM,Slice_CB);
+    SPINNER_histogram_bucket_factor->set_int_limits(0,5);
 
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_d("Average data"),false,SLICE_AVERAGE_ROLLOUT,Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT);

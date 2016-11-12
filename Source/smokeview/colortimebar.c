@@ -936,6 +936,115 @@ void UpdateColorbarSplits(colorbardata *cbi){
   }
 }
 
+/* ------------------ DrawColorBarRectHist ------------------------ */
+
+void DrawColorBarRectHist(void){
+  int i;
+
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i < nrgb_full - 1; i+=histogram_bucket_factor2){
+    float *rgb_cb, *rgb_cb2;
+    float yy, yy2;
+    int cbl, cbl2, cbr;
+    int i2;
+    float dcolor, val, val2;
+    histogramdata *histi;
+
+    rgb_cb = rgb_full[i];
+
+    if(histogram_type == 1){
+      histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
+    }
+    else{
+      histi = hists256_slice;
+    }
+
+    i2 = i + histogram_bucket_factor2;
+    if(i2 > nrgb_full - 1)i2 = nrgb_full - 1;
+
+    dcolor = histogram_width_factor * 3 * (colorbar_right_pos - colorbar_left_pos);
+    val = (float)histi->buckets[i] / (float)histi->ntotal;
+    cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
+
+    val2 = (float)histi->buckets[i2] / (float)histi->ntotal;
+    cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
+
+    cbr = colorbar_right_pos;
+
+    yy = MIX2(i, 255, colorbar_top_pos, colorbar_down_pos);
+    yy2 = MIX2(i2, 255, colorbar_top_pos, colorbar_down_pos);
+    rgb_cb2 = rgb_full[i2];
+
+    //   (cbl,yy)-------(cbr,yy)
+    //      |         /    |
+    //      |     /        |
+    //      |  /           |
+    //   (cbl,yy2)------(cbr,yy2)
+    if(histogram_show_blocks == 1){
+      if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
+        glColor4fv(rgb_cb);
+        glVertex2f(cbl, yy);
+        glVertex2f(cbr, yy);
+        glColor4fv(rgb_cb2);
+        glVertex2f(cbl, yy2);
+
+        glVertex2f(cbr, yy2);
+        glVertex2f(cbl, yy2);
+        glColor4fv(rgb_cb);
+        glVertex2f(cbr, yy);
+      }
+    }
+    else{
+      glColor4fv(rgb_cb);
+      glVertex2f(cbl, yy);
+      glVertex2f(cbr, yy);
+      glColor4fv(rgb_cb2);
+      glVertex2f(cbl2, yy2);
+
+      glVertex2f(cbr, yy2);
+      glVertex2f(cbl2, yy2);
+      glColor4fv(rgb_cb);
+      glVertex2f(cbr, yy);
+    }
+  }
+  glEnd();
+}
+
+/* ------------------ DrawColorBarRect ------------------------ */
+
+void DrawColorBarRect(void){
+  int i;
+
+  glBegin(GL_QUADS);
+  for(i = 0; i < nrgb_full - 1; i++){
+    float *rgb_cb, *rgb_cb2;
+    float yy, yy2;
+    int cbl;
+    int i3;
+
+    rgb_cb = rgb_full[i];
+
+    cbl = colorbar_left_pos;
+
+    yy = MIX2(i, 255, colorbar_top_pos, colorbar_down_pos);
+    yy2 = MIX2(i + 1, 255, colorbar_top_pos, colorbar_down_pos);
+    i3 = i + 1;
+    if(i == nrgb_full - 2)i3 = i;
+    rgb_cb2 = rgb_full[i3];
+
+    if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
+      glColor4fv(rgb_cb);
+      glVertex2f(cbl, yy);
+      glVertex2f(colorbar_right_pos, yy);
+
+      glColor4fv(rgb_cb2);
+      glVertex2f(colorbar_right_pos, yy2);
+      glVertex2f(cbl, yy2);
+    }
+  }
+  glEnd();
+}
+
 /* ------------------ DrawColorbars ------------------------ */
 
 void DrawColorbars(void){
@@ -1094,50 +1203,12 @@ void DrawColorbars(void){
         glPopMatrix();
       }
 
-      glBegin(GL_QUADS);
-      for (i = 0; i < nrgb_full-1; i++){
-        float *rgb_cb,*rgb_cb2;
-        float yy, yy2;
-        int cbl;
-
-        rgb_cb=rgb_full[i];
-
-        if (histogram_type != 0) {
-          float dcolor, val, val2;
-          histogramdata *histi;
-
-          if(histogram_type == 1){
-            histi = histograms256_slice + CLAMP(slice_time+1,1, nhistograms256_slice);
-          }
-          else{
-            histi = histograms256_slice;
-          }
-
-          dcolor = histogram_width_factor*3*(colorbar_right_pos - colorbar_left_pos);
-          val = (float)histi->buckets[i] / (float)histi->ntotal;
-          cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
-        }
-        else {
-          cbl = colorbar_left_pos;
-        }
-
-        yy = MIX2(i,255,colorbar_top_pos,colorbar_down_pos);
-        yy2 = MIX2(i+1,255,colorbar_top_pos,colorbar_down_pos);
-        i3=i+1;
-        if(i==nrgb_full-2)i3=i;
-        rgb_cb2=rgb_full[i3];
-
-        if(rgb_cb[3]!=0.0&&rgb_cb2[3]!=0.0){
-          glColor4fv(rgb_cb);
-          glVertex2f(cbl, yy);
-          glVertex2f(colorbar_right_pos,yy);
-
-          glColor4fv(rgb_cb2);
-          glVertex2f(colorbar_right_pos,yy2);
-          glVertex2f(cbl,yy2);
-        }
+      if(histogram_type == 0){
+        DrawColorBarRect();
       }
-      glEnd();
+      else{
+        DrawColorBarRectHist();
+      }
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
       float barmid;
