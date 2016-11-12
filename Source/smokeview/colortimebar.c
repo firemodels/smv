@@ -980,8 +980,7 @@ void DrawColorBarRectHist(void){
     //      |     /        |
     //      |  /           |
     //   (cbl,yy2)------(cbr,yy2)
-    if(histogram_show_blocks == 1){
-      if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
+    if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
         glColor4fv(rgb_cb);
         glVertex2f(cbl, yy);
         glVertex2f(cbr, yy);
@@ -994,20 +993,44 @@ void DrawColorBarRectHist(void){
         glVertex2f(cbr, yy);
       }
     }
-    else{
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
-      glVertex2f(cbr, yy);
-      glColor4fv(rgb_cb2);
-      glVertex2f(cbl2, yy2);
-
-      glVertex2f(cbr, yy2);
-      glVertex2f(cbl2, yy2);
-      glColor4fv(rgb_cb);
-      glVertex2f(cbr, yy);
-    }
   }
   glEnd();
+
+  if(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)){
+    boundsdata *sb;
+    float slicerange;
+
+    sb = slicebounds + islicetype;
+    glPushMatrix();
+    glTranslatef(colorbar_left_pos , -VP_colorbar.text_height / 2.0, 0.0);
+
+    for(i = 0; i < nrgb; i++){
+      float vert_position;
+      char string[100], *stringptr;
+      GLfloat *foreground_color;
+      histogramdata *histi;
+      float val;
+
+      foreground_color = &(foregroundcolor[0]);
+
+      if(histogram_type == 1){
+        histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
+      }
+      else{
+        histi = hists256_slice;
+      }
+
+      val = 100.0*(float)histi->buckets[i] / (float)histi->ntotal;
+
+      sprintf(string, "%i", (int)(val + 0.5));
+
+      stringptr = string;
+      vert_position = MIX2(MAX(i-0.5,0.0), nrgb - 2, colorbar_top_pos, colorbar_down_pos);
+      OutputBarText(0.0, vert_position, foreground_color, stringptr);
+    }
+    glPopMatrix();
+  }
+
 }
 
 /* ------------------ DrawColorBarRect ------------------------ */

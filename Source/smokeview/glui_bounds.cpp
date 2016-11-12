@@ -1263,7 +1263,6 @@ extern "C" void glui_bounds_setup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"hide");
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"transient");
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_type,"static");
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, "blocks", &histogram_show_blocks);
     SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
       &histogram_width_factor);
     SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);

@@ -1399,6 +1399,13 @@ void UpdateSliceHist(void){
     FREEMEMORY(hists256_slice);
   }
 
+  if(hists12_slice != NULL){
+    for(i = 0; i < nhists256_slice; i++){
+      FreeHistogram(hists12_slice + i);
+    }
+    FREEMEMORY(hists12_slice);
+  }
+
   nmax = 0;
   for(i = 0; i < nslice_loaded; i++){
     slicedata *slicei;
@@ -1415,11 +1422,20 @@ void UpdateSliceHist(void){
 
     sb = slicebounds + islicetype;
     NewMemory((void **)&hists256_slice, nhists256_slice * sizeof(histogramdata));
+    NewMemory((void **)&hists12_slice, nhists256_slice * sizeof(histogramdata));
     for(i = 0; i < nhists256_slice; i++){
       histogramdata *hist256i;
+      histogramdata *hist12i;
+      float val12_min, val12_max, dval;
 
       hist256i = hists256_slice + i;
-      InitHistogram(hists256_slice + i, 256, &sb->valmin, &sb->valmax);
+      hist12i = hists12_slice + i;
+      InitHistogram(hist256i, 256, &sb->valmin, &sb->valmax);
+
+      dval = sb->valmax - sb->valmin;
+      val12_min = sb->valmin - dval / 10.0;
+      val12_max = sb->valmax + dval / 10.0;
+      InitHistogram(hist12i, 12, &val12_min, &val12_max);
     }
     for(i = 0; i < nslice_loaded; i++){
       slicedata *slicei;
@@ -1428,11 +1444,13 @@ void UpdateSliceHist(void){
       slicei = sliceinfo + slice_loaded_list[i];
       if(slicei->type != islicetype)continue;
       for(j = 0; j < MIN(slicei->nhistograms,nhists256_slice); j++){
-        histogramdata *hist256j, *histj;
+        histogramdata *hist256j, *hist12j, *histj;
 
         histj = slicei->histograms + j;
         hist256j = hists256_slice + j;
+        hist12j = hists12_slice + j;
         MergeHistogram(hist256j, histj, KEEP_BOUNDS);
+        MergeHistogram(hist12j, histj, KEEP_BOUNDS);
       }
     }
     if(histogram_bucket_factor > 0){
