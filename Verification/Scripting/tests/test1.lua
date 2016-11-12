@@ -32,6 +32,10 @@ function writeLevelIndent()
     end
 end
 
+function errorResponse()
+    -- exit()
+end
+
 function display_test_results(tests)
     io.stderr:write("\tRun\tPassed\tFailed\n")
     io.stderr:write(string.format("Tests\t%d\t\27[32m%d\27[0m\t\27[31m%d\27[0m\n",
@@ -61,6 +65,8 @@ function test (testName, test)
         io.stderr:write("Failed with an exception.\n")
         writeLevelIndent()
         io.stderr:write(result)
+        io.stderr:write("\n")
+        errorResponse()
         -- error(result) -- TODO: remove this
     end
     level = level - 1
@@ -86,6 +92,7 @@ function testException (testName, test)
         io.stderr:write("]\n")
         writeLevelIndent()
         io.stderr:write("This test should have throw an exception.\n")
+        errorResponse()
     end
     level = level - 1
 end
@@ -156,13 +163,13 @@ test("load unlisted data file", function()
         load.datafile("room_fire_01.sf")
         end)
     unload.all()
-    test("load the unlisted file", function()
+    testException("attempt to load the unlisted file", function()
         load.datafile(file)
         end)
 end)
 test("load boundary file", function() load.datafile("room_fire_01.bf") end)
 test("load smoke3d file", function() load.datafile("room_fire_01.s3d") end)
-test("load compressed smoke3d file", function() load.datafile("room_fire_01.s3d.sz") end)
+-- test("load compressed smoke3d file", function() load.datafile("room_fire_01.s3d.sz") end)
 test("load particle file", function() load.datafile("room_fire.prt5") end)
 testException("load non-existant file", function() load.datafile("abcdefg.hi") end)
 test("load slice vector file", function() load.vdatafile("room_fire_01.sf") end)
