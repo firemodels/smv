@@ -1,4 +1,5 @@
-bounds = {}
+--- @module bounds
+local bounds = {}
 bounds.slices = {}
 -- bounds.slices["VIS_C0.9H0.1"] = {}
 -- bounds.slices["VIS_C0.9H0.1"].x = {}
@@ -23,3 +24,5 @@ function bounds.slices.get(name)
     local max = get_slice_bound_max(name)
     return {min = min, max = max}
 end
+
+return bounds

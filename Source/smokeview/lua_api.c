@@ -456,16 +456,86 @@ int lua_get_meshes(lua_State *L) {
   int i;
   for (i = 0; i < entries; i++) {
     lua_pushnumber(L, i);
-    lua_createtable(L, 0, 2);
+    lua_createtable(L, 0, 5);
 
     lua_pushnumber(L, infotable[i].ibar);
     lua_setfield(L, -2, "ibar");
 
     lua_pushnumber(L, infotable[i].jbar);
-    lua_setfield(L, -2, "ibar");
+    lua_setfield(L, -2, "jbar");
 
     lua_pushnumber(L, infotable[i].kbar);
-    lua_setfield(L, -2, "ibar");
+    lua_setfield(L, -2, "kbar");
+
+    lua_pushstring(L, infotable[i].label);
+    lua_setfield(L, -2, "label");
+
+    lua_pushnumber(L, infotable[i].kbar);
+    lua_setfield(L, -2, "cellsize");
+
+    lua_pushnumber(L, xbar0);
+    lua_setfield(L, -2, "xbar0");
+
+    lua_pushnumber(L, ybar0);
+    lua_setfield(L, -2, "ybar0");
+
+    lua_pushnumber(L, zbar0);
+    lua_setfield(L, -2, "zbar0");
+
+    lua_pushnumber(L, xyzmaxdiff);
+    lua_setfield(L, -2, "xyzmaxdiff");
+
+
+
+    // loop for less than ibar
+    int j;
+    lua_createtable(L, 0, infotable[i].ibar);
+    for (j = 0; j < infotable[i].ibar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].xplt[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "xplt");
+
+    lua_createtable(L, 0, infotable[i].jbar);
+    for (j = 0; j < infotable[i].jbar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].yplt[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "yplt");
+
+    lua_createtable(L, 0, infotable[i].kbar);
+    for (j = 0; j < infotable[i].kbar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].zplt[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "zplt");
+
+    lua_createtable(L, 0, infotable[i].ibar);
+    for (j = 0; j < infotable[i].ibar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].xplt_orig[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "xplt_orig");
+
+    lua_createtable(L, 0, infotable[i].jbar);
+    for (j = 0; j < infotable[i].jbar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].yplt_orig[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "yplt_orig");
+
+    lua_createtable(L, 0, infotable[i].kbar);
+    for (j = 0; j < infotable[i].kbar; j++) {
+      lua_pushnumber(L, j);
+      lua_pushnumber(L, infotable[i].zplt_orig[j]);
+      lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "zplt_orig");
 
     lua_settable(L, -3);
   }
@@ -552,7 +622,7 @@ int lua_initsmvproginfo(lua_State *L) {
   char version[256];
   char githash[256];
 
-  getPROGversion(version);
+  GetProgVersion(version);
   // getGitHash(githash);
 
   lua_createtable(L, 0, 6);

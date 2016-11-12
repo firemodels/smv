@@ -1,7 +1,5 @@
-
-
-
-clipping = {}
+--- @module clipping
+local clipping = {}
 
 _clipping = {
     mode = {
@@ -160,3 +158,5 @@ local clipping_mt = {
     end
 }
 setmetatable(clipping, clipping_mt)
+
+return clipping
