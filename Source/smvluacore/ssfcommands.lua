@@ -1,4 +1,4 @@
-
+--- @module ssfcommands
 local ssfcommands = {}
 
 function length(table)
