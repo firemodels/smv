@@ -237,9 +237,8 @@ function camera.set(camera)
     camera_set_projection_type(camera.projectionType)
     camera_set_elev(camera.zAngle.elev)
     camera_set_az(camera.zAngle.az)
-}
-
 end
+
 time = {}
 function time.set(time)
     -- TODO: determine if the time is available
