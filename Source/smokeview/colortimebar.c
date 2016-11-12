@@ -998,6 +998,7 @@ void DrawColorBarRectHist(void){
   if(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)){
     boundsdata *sb;
     float slicerange;
+    char *percen="%";
 
     sb = slicebounds + islicetype;
     glPushMatrix();
@@ -1010,6 +1011,7 @@ void DrawColorBarRectHist(void){
       histogramdata *histi;
       float val;
 
+
       foreground_color = &(foregroundcolor[0]);
 
       if(histogram_type == 1){
@@ -1021,7 +1023,7 @@ void DrawColorBarRectHist(void){
 
       val = 100.0*(float)histi->buckets[i] / (float)histi->ntotal;
 
-      sprintf(string, "%i", (int)(val + 0.5));
+      sprintf(string, "%i%s", (int)(val + 0.5),percen);
 
       stringptr = string;
       vert_position = MIX2(MAX(i-0.5,0.0), nrgb - 2, colorbar_top_pos, colorbar_down_pos);
