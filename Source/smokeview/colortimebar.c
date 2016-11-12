@@ -1013,10 +1013,10 @@ void DrawColorBarRectHist(void){
       foreground_color = &(foregroundcolor[0]);
 
       if(histogram_type == 1){
-        histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
+        histi = hists12_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
       }
       else{
-        histi = hists256_slice;
+        histi = hists12_slice;
       }
 
       val = 100.0*(float)histi->buckets[i] / (float)histi->ntotal;
