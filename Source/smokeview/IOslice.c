@@ -928,488 +928,6 @@ void readvslice(int ivslice, int flag, int *errorcode){
   Idle_CB();
 }
 
-/* ------------------ readslice ------------------------ */
-
-void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
-  FILE_SIZE slicefilelen;
-  float *xplt_local, *yplt_local, *zplt_local;
-  int blocknumber;
-  int error;
-  float offset;
-  int i;
-  int ii;
-  float qmin, qmax;
-  int headersize, framesize;
-  char sliceshortlabels[31];
-  slicedata *sd;
-  vslicedata *vd;
-  int flag2=0;
-  meshdata *meshi;
-  int local_starttime=0, local_stoptime=0;
-  FILE_SIZE file_size=0;
-  int local_starttime0=0, local_stoptime0=0;
-  float delta_time, delta_time0;
-#ifdef pp_MEMDEBUG
-  int num_memblocks_load,num_memblocks_unload;
-#endif
-#ifdef pp_memstatus
-  unsigned int availmemory;
-#endif
-
-  CheckMemory;
-  local_starttime0 = glutGet(GLUT_ELAPSED_TIME);
-  *errorcode=0;
-  error=0;
-  show_slice_average=0;
-  blocknumber = sliceinfo[ifile].blocknumber;
-  meshi=meshinfo+blocknumber;
-
-  slicefilenumber = ifile;
-  slicefilenum=ifile;
-
-  ASSERT(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
-  sd = sliceinfo + slicefilenumber;
-  CountMemoryBlocks(num_memblocks_load,0);
-  if(flag!=RESETBOUNDS){
-    if(sd->loaded==0&&flag==UNLOAD)return;
-    sd->display=0;
-#ifdef pp_MEMDEBUG
-    if(sd->qslicedata!=NULL){
-      ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
-    }
-#endif
-    if(sd->qslicedata!=NULL){
-      FreeMemory(sd->qslicedata);
-      sd->qslicedata=NULL;
-    }
-    FREEMEMORY(sd->times  );
-    FREEMEMORY(sd->slicelevel  );
-    FREEMEMORY(sd->compindex);
-    FREEMEMORY(sd->qslicedata_compressed);
-    FREEMEMORY(sd->slicecomplevel);
-    slicefilenum=ifile;
-
-    if(flag==UNLOAD){
-
-      fed_areas=NULL;
-      sd->ntimes=0;
-      updatemenu=1;
-      sd->loaded=0;
-      sd->vloaded=0;
-      sd->display=0;
-      plotstate = GetPlotState(DYNAMIC_PLOTS);
-      ReadVolSlice=0;
-      for(ii=0;ii<nslice_loaded;ii++){
-        slicedata *sdi;
-
-        i = slice_loaded_list[ii];
-        sdi = sliceinfo+i;
-        if(sdi->volslice==1)ReadVolSlice=1;
-      }
-      for(ii=0;ii<nslice_loaded;ii++){
-        slicedata *sdi;
-
-        i = slice_loaded_list[ii];
-        sdi = sliceinfo+i;
-        if(sdi->type==islicetype){
-          slicefilenum=i;
-          flag2=1;
-          break;
-        }
-      }
-      if(flag2==0){
-        for(ii=0;ii<nslice_loaded;ii++){
-          slicedata *sdi;
-
-          i = slice_loaded_list[ii];
-          sdi = sliceinfo+i;
-          if(sdi->type!=islicetype){
-            slicefilenum=i;
-            flag2=1;
-            break;
-          }
-        }
-      }
-      if(flag2==0){
-        slicefilenum=0;
-        islicetype=0;
-      }
-
-      for(i=0;i<nvsliceinfo;i++){
-        vd = vsliceinfo + i;
-        if(vd->iu==ifile)vd->u=NULL;
-        if(vd->iv==ifile)vd->v=NULL;
-        if(vd->iw==ifile)vd->w=NULL;
-        if(vd->u==NULL&&vd->v==NULL&&vd->w==NULL){
-          vd->loaded=0;
-          vd->display=0;
-        }
-        if(vd->ival==ifile){
-          vd->val=NULL;
-          vd->loaded=0;
-          vd->display=0;
-        }
-      }
-      if(use_set_slicecolor==0||set_slicecolor == SET_SLICECOLOR){
-        if(sd->compression_type == UNCOMPRESSED){
-          updateslicebounds();
-          list_slice_index = islicetype;
-          setslicebounds(islicetype);
-          updateallslicecolors(islicetype, errorcode);
-        }
-        else{
-          updateallslicelabels(islicetype, errorcode);
-        }
-      }
-
-      updateglui();
-      UpdateUnitDefs();
-      UpdateTimes();
-#ifdef pp_MEMPRINT
-      PRINTF("After slice unload: \n");
-      PrintMemoryInfo;
-#endif
-#ifdef pp_MEMDEBUG
-      CountMemoryBlocks(num_memblocks_unload,num_memblocks_load);
-      PRINTF("blocks unloaded=%i\n", num_memblocks_unload);
-#endif
-      remove_slice_loadstack(slicefilenumber);
-      return;
-    }
-    CountMemoryBlocks(num_memblocks_load,0);
-    file_size=get_filesize(file);
-
-    slicefilelen = strlen(file);
-    if(sd->compression_type==UNCOMPRESSED){
-      FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep,&error,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-        slicefilelen);
-    }
-    else if(sd->compression_type==COMPRESSED_ZLIB){
-      if(
-        getsliceheader(sd->comp_file,sd->size_file,sd->compression_type,
-                       sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
-                       &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        *errorcode=1;
-        return;
-      }
-    }
-    if(sd->nslicei!=1&&sd->nslicej!=1&&sd->nslicek!=1){
-      sd->volslice=1;
-      ReadVolSlice=1;
-    }
-    if(error!=0){
-      readslice("",ifile,UNLOAD,set_slicecolor,&error);
-      *errorcode=1;
-      return;
-    }
-    if(settmax_s==0&&settmin_s==0&&sd->compression_type==UNCOMPRESSED){
-      if(framesize <= 0){
-        fprintf(stderr,"*** Error: frame size is 0 in slice file %s . \n",file);
-        error = 1;
-      }
-      else{
-        sd->ntimes = (int)(get_filesize(file)-headersize)/framesize;
-        if(sliceframestep>1)sd->ntimes/=sliceframestep;
-      }
-    }
-    if(error!=0||sd->ntimes<1){
-      readslice("",ifile,UNLOAD,set_slicecolor,&error);
-      *errorcode=1;
-      return;
-    }
-    PRINTF("Loading slice data: %s\n",file);
-    MEMSTATUS(1,&availmemory,NULL,NULL);
-    local_starttime = glutGet(GLUT_ELAPSED_TIME);
-    if(sd->compression_type==COMPRESSED_ZLIB){
-      char *datafile;
-
-      if(NewMemory((void **)&sd->qslicedata_compressed,sd->ncompressed)==0||
-         NewMemory((void **)&sd->times,sizeof(float)*sd->ntimes)==0||
-         NewMemory((void **)&sd->compindex,sizeof(compdata)*(1+sd->ntimes))==0
-         ){
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        *errorcode=1;
-        return;
-      }
-      datafile = sd->comp_file;
-      if(getslicecompresseddata(datafile,
-        settmin_s,settmax_s,tmin_s,tmax_s,sd->ncompressed,sliceframestep,sd->ntimes,
-        sd->times,sd->qslicedata_compressed,sd->compindex,&sd->globalmin,&sd->globalmax)==0){
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        *errorcode=1;
-        return;
-      }
-    }
-    else{
-      FILE_SIZE labellen=LABELLEN;
-      int file_unit=15;
-
-      if(NewMemory((void **)&sd->qslicedata,sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes)==0||
-         NewMemory((void **)&sd->times,sizeof(float)*sd->ntimes)==0){
-        *errorcode=1;
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        return;
-      }
-#ifdef pp_MEMDEBUG
-      ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
-#endif
-      FORTget_file_unit(&file_unit,&file_unit);
-      FORTgetslicedata(&file_unit,file,sliceshortlabels,
-                   &sd->is1,&sd->is2,&sd->js1,&sd->js2,&sd->ks1,&sd->ks2,&sd->idir,
-                   &qmin,&qmax,sd->qslicedata,sd->times,&sd->ntimes,&sliceframestep,
-                   &settmin_s,&settmax_s,&tmin_s,&tmax_s, &redirect,
-                   slicefilelen,labellen);
-#ifdef pp_MEMDEBUG
-      ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
-#endif
-    }
-    local_stoptime = glutGet(GLUT_ELAPSED_TIME);
-    delta_time = (local_stoptime-local_starttime)/1000.0;
-
-    if(slice_average_flag==1){
-      int data_per_timestep;
-      int ndata;
-      int ntimes_local;
-
-      data_per_timestep=sd->nslicei*sd->nslicej*sd->nslicek;
-      ntimes_local=sd->ntimes;
-      ndata = data_per_timestep*ntimes_local;
-      show_slice_average=1;
-
-      if(
-        sd->compression_type==COMPRESSED_ZLIB||
-        average_slice_data(sd->qslicedata,sd->qslicedata,ndata,data_per_timestep,sd->times,ntimes_local,slice_average_interval)==1
-        ){
-        show_slice_average=0; // averaging failed
-      }
-    }
-
-  /*  initialize slice data */
-
-    sd->nslicetotal=0;
-    sd->nsliceii = 0;
-    if(sd->ntimes==0)return;
-
-  /* estimate the slice offset, the distance to move a slice so
-     that it does not "interfere" with an adjacent block */
-
-    blocknumber = sliceinfo[ifile].blocknumber;
-    xplt_local=meshinfo[blocknumber].xplt;
-    yplt_local=meshinfo[blocknumber].yplt;
-    zplt_local=meshinfo[blocknumber].zplt;
-
-    xslicemid = (xplt_local[sd->is1]+xplt_local[sd->is2])/2.0;
-    yslicemid = (yplt_local[sd->js1]+yplt_local[sd->js2])/2.0;
-    zslicemid = (zplt_local[sd->ks1]+zplt_local[sd->ks2])/2.0;
-
-    sd->sliceoffset=0.0;
-
-    switch(sd->idir){
-     case XDIR:
-      offset=sliceoffset_factor*(xplt_local[1]-xplt_local[0]);
-      if(InBlockage(meshi,xslicemid-offset,yslicemid,zslicemid)==1){
-        sd->sliceoffset=offset;
-      }
-      if(InBlockage(meshi,xslicemid+offset,yslicemid,zslicemid)==1){
-        sd->sliceoffset=-offset;
-      }
-      sd->nslicex=sd->js2+1-sd->js1;
-      sd->nslicey=sd->ks2+1-sd->ks1;
-      break;
-     case YDIR:
-      offset = sliceoffset_factor*(yplt_local[1]-yplt_local[0]);
-      if(InBlockage(meshi,xslicemid,yslicemid-offset,zslicemid)==1){
-        sd->sliceoffset=offset;
-      }
-      if(InBlockage(meshi,xslicemid,yslicemid+offset,zslicemid)==1){
-        sd->sliceoffset=-offset;
-      }
-      sd->nslicex=sd->is2+1-sd->is1;
-      sd->nslicey=sd->ks2+1-sd->ks1;
-      break;
-     case ZDIR:
-      offset=sliceoffset_factor*(zplt_local[1]-zplt_local[0]);
-      if(InBlockage(meshi,xslicemid,yslicemid,zslicemid-offset)==1){
-        sd->sliceoffset=offset;
-      }
-      if(InBlockage(meshi,xslicemid,yslicemid,zslicemid+offset)==1){
-        sd->sliceoffset=-offset;
-      }
-      sd->nslicex=sd->is2+1-sd->is1;
-      sd->nslicey=sd->js2+1-sd->js1;
-      break;
-     default:
-       ASSERT(FFALSE);
-       break;
-    }
-
-    sd->nsliceii = sd->nslicei*sd->nslicej*sd->nslicek;
-    sd->nslicetotal=sd->ntimes*sd->nsliceii;
-    if(sd->compression_type==COMPRESSED_ZLIB){
-      if(NewMemory((void **)&sd->slicecomplevel,sd->nsliceii*sizeof(unsigned char))==0){
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        *errorcode=1;
-        return;
-      }
-    }
-    else{
-      if(NewMemory((void **)&sd->slicelevel,sd->nslicetotal*sizeof(int))==0){
-        readslice("",ifile,UNLOAD,set_slicecolor,&error);
-        *errorcode=1;
-        return;
-      }
-    }
-
-#ifdef pp_MEMDEBUG
-    if(sd->compression_type==UNCOMPRESSED){
-      ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
-    }
-#endif
-  }  /* RESETBOUNDS */
-
- // convert slice data into color indices
-
-  if(sd->compression_type==UNCOMPRESSED){
-    getslicedatabounds(sd,&qmin,&qmax);
-  }
-  else{
-    qmin=sd->valmin;
-    qmax=sd->valmax;
-  }
-  sd->globalmin=qmin;
-  sd->globalmax=qmax;
-  if(sd->compression_type==UNCOMPRESSED){
-    adjustslicebounds(sd,&qmin,&qmax);
-  }
-  sd->valmin=qmin;
-  sd->valmax=qmax;
-  sd->valmin_data=qmin;
-  sd->valmax_data=qmax;
-  for(i=0;i<256;i++){
-    sd->qval256[i] = (qmin*(255-i) + qmax*i)/255;
-  }
-  CheckMemory;
-
-  if(sd->slicetype==SLICE_CELL_CENTER){
-    usetexturebar=0;
-  }
-  sd->loaded=1;
-  if(sd->vloaded==0)sd->display=1;
-  islicetype=getslicetype(sd);
-  plotstate=GetPlotState(DYNAMIC_PLOTS);
-  UpdateUnitDefs();
-  UpdateTimes();
-  CheckMemory;
-
-  if(use_set_slicecolor==0||set_slicecolor == SET_SLICECOLOR){
-    if(sd->compression_type == UNCOMPRESSED){
-      updateslicebounds();
-      updateallslicecolors(islicetype, errorcode);
-      list_slice_index = islicetype;
-      setslicebounds(islicetype);
-    }
-    else{
-      slicebounds[islicetype].valmin_data = qmin;
-      slicebounds[islicetype].valmax_data = qmax;
-      updateallslicelabels(islicetype, errorcode);
-    }
-  }
-  CheckMemory;
-
-  updateslicelist(list_slice_index);
-  CheckMemory;
-  updateslicelistindex(slicefilenum);
-  CheckMemory;
-  updateglui();
-  CheckMemory;
-#ifdef pp_MEMDEBUG
-  if(sd->compression_type==UNCOMPRESSED){
-    ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
-  }
-  CheckMemory;
-  PRINTF("After slice file load: \n");
-  CountMemoryBlocks(sd->num_memblocks,num_memblocks_load);
-#endif
-#ifdef pp_MEMPRINT
-#ifndef pp_MEMDEBUG
-  PRINTF("After slice file load: \n");
-#endif
-  PrintMemoryInfo;
-#endif
-  Idle_CB();
-
-  exportdata=1;
-  if(exportdata==0){
-    FREEMEMORY(sd->qslicedata);
-  }
-
-  local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
-  delta_time0=(local_stoptime0-local_starttime0)/1000.0;
-
-  if(flag!=RESETBOUNDS){
-    if(file_size!=0&&delta_time>0.0){
-      float loadrate;
-
-      loadrate = ((float)file_size*8.0/1000000.0)/delta_time;
-      PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-      (float)file_size/1000000.,delta_time,loadrate,delta_time0-delta_time);
-    }
-    else{
-      PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-      (float)file_size/1000000.,delta_time,delta_time0-delta_time);
-    }
-  }
-
-  if(update_fire_line==0&&strcmp(sd->label.shortlabel,"Fire line")==0){
-    update_fire_line=1;
-  }
-
-  if(colorbartype_ini==-1){
-    if(strcmp(sd->label.shortlabel,"thick")==0){
-      ColorbarMenu(wallthickness_colorbar);
-    }
-    if(strcmp(sd->label.shortlabel,"phifield")==0){
-      ColorbarMenu(levelset_colorbar);
-    }
-  }
-  push_slice_loadstack(slicefilenumber);
-
-  if(sd->volslice==1){
-    meshdata *meshj;
-
-    meshj = meshinfo + sd->blocknumber;
-
-    meshj->slice_min[0]=DENORMALIZE_X(sd->xyz_min[0]);
-    meshj->slice_min[1]=DENORMALIZE_Y(sd->xyz_min[1]);
-    meshj->slice_min[2]=DENORMALIZE_Z(sd->xyz_min[2]);
-
-    meshj->slice_max[0]=DENORMALIZE_X(sd->xyz_max[0]);
-    meshj->slice_max[1]=DENORMALIZE_Y(sd->xyz_max[1]);
-    meshj->slice_max[2]=DENORMALIZE_Z(sd->xyz_max[2]);
-
-    vis_gslice_data=1;
-#ifdef pp_GPU
-    if(gpuactive==1){
-      init_slice3d_texture(meshj);
-    }
-#endif
-  }
-  else{
-    meshdata *meshj;
-
-    meshj = meshinfo + sd->blocknumber;
-    meshj->slice_min[0]=1.0;
-    meshj->slice_min[1]=0.0;
-    meshj->slice_min[2]=1.0;
-    meshj->slice_max[0]=0.0;
-    meshj->slice_max[1]=1.0;
-    meshj->slice_max[2]=0.0;
-  }
-  glutPostRedisplay();
-}
-
 /* ------------------ updateslicefilenum ------------------------ */
 
 void updateslicefilenum(void){
@@ -3213,19 +2731,20 @@ void setslicebounds(int slicetype){
   }
 }
 
-/* ------------------ getslicedatabounds ------------------------ */
+/* ------------------ GetSliceDataBounds ------------------------ */
 
-void getslicedatabounds(const slicedata *sd, float *pmin, float *pmax){
-  float *pdata;
+void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
+  float *pdata, *pdata0;
   int ndata;
-  int n;
+  int n, i;
   int first=1;
+  int nframe;
 
-  int nn;
+  int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
   int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
-  char *iblank_node, *iblank_cell;
+  char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
@@ -3241,10 +2760,53 @@ void getslicedatabounds(const slicedata *sd, float *pmin, float *pmax){
   pdata = sd->qslicedata;
   ndata = sd->nslicetotal;
 
+  nframe = sd->nslicei*sd->nslicej*sd->nslicek;
+  NewMemory((void **)&slice_mask0,sd->nslicei*sd->nslicej*sd->nslicek);
+  n=-1;
+  for(i=0;i<sd->nslicei;i++){
+    int j;
+
+    for(j=0;j<sd->nslicej;j++){
+      int k;
+
+      for(k=0;k<sd->nslicek;k++){
+        n++;
+        slice_mask0[n]=0;
+        if(sd->slicetype==SLICE_CELL_CENTER&&
+          ((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
+        if (show_slice_in_obst == 0) {
+          if (sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
+          if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+        }
+        slice_mask0[n]=1;
+      }
+    }
+  }
+
   n=-1;
   ntimes = ndata/sd->nsliceii;
-  for(nn=0;nn<ntimes;nn++){
-    int i;
+
+  sd->nhistograms = ntimes + 1;
+  NewMemory((void **)&sd->histograms,sd->nhistograms*sizeof(histogramdata));
+  for(i=0;i<sd->nhistograms;i++){
+    InitHistogram(sd->histograms+i, NHIST_BUCKETS);
+  }
+
+  
+  for(istep=0;istep<ntimes;istep++){
+    int n0;
+    histogramdata *histi;
+    histogramdata *histall;
+
+    n0 = -1;
+    pdata0 = pdata + n + 1;
+
+    // compute histogram for each timestep, histi and all time steps, histall
+    
+    histi = sd->histograms+istep;
+    histall = sd->histograms+sd->nhistograms - 1;
+    CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
+    MergeHistogram(histall,histi);
 
     for(i=0;i<sd->nslicei;i++){
       int ii,j;
@@ -3259,12 +2821,11 @@ void getslicedatabounds(const slicedata *sd, float *pmin, float *pmax){
 
           kk = sd->ks1+k;
           n++;
+          n0++;
           // 0 blocked
           // 1 partially blocked
           // 2 unblocked
-          if(sd->slicetype==SLICE_CELL_CENTER&&((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
-          if(sd->slicetype!=SLICE_CELL_CENTER&&show_slice_in_obst==0&&iblank_node!=NULL&&iblank_node[IJKNODE(sd->is1+i,sd->js1+j,sd->ks1+k)]==SOLID)continue;
-          if(sd->slicetype==SLICE_CELL_CENTER&&show_slice_in_obst==0&&iblank_cell!=NULL&&iblank_cell[IJKCELL(sd->is1+i-1,sd->js1+j-1,sd->ks1+k-1)]==EMBED_YES)continue;
+          if(slice_mask0[n0]==0)continue;
           if(first==1){
             *pmin=pdata[n];
             *pmax=pdata[n];
@@ -3304,13 +2865,14 @@ void getslicedatabounds(const slicedata *sd, float *pmin, float *pmax){
       kkmax=0;
     }
   }
-  if(sd->slicetype==SLICE_CELL_CENTER){
-    PRINTF(" global min (slice file): %f cell=(%i,%i,%i)\n",*pmin,iimin,jjmin,kkmin);
-    PRINTF(" global max (slice file): %f cell=(%i,%i,%i)\n",*pmax,iimax,jjmax,kkmax);
-  }
-  else{
-    PRINTF(" global min (slice file): %f node=(%i,%i,%i)\n",*pmin,iimin,jjmin,kkmin);
-    PRINTF(" global max (slice file): %f node=(%i,%i,%i)\n",*pmax,iimax,jjmax,kkmax);
+
+  {
+    char slicelabel[10];
+
+    strcpy(slicelabel, "node");
+    if (sd->slicetype == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
+    PRINTF(" global min (slice file): %f %s=(%i,%i,%i)\n", *pmin, slicelabel, iimin, jjmin, kkmin);
+    PRINTF(" global max (slice file): %f %s=(%i,%i,%i)\n", *pmax, slicelabel, iimax, jjmax, kkmax);
   }
 }
 
@@ -3379,6 +2941,488 @@ void adjustslicebounds(const slicedata *sd, float *pmin, float *pmax){
       SmoothLabel(pmin,pmax,nrgb);
     }
 
+}
+
+/* ------------------ readslice ------------------------ */
+
+void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode) {
+  FILE_SIZE slicefilelen;
+  float *xplt_local, *yplt_local, *zplt_local;
+  int blocknumber;
+  int error;
+  float offset;
+  int i;
+  int ii;
+  float qmin, qmax;
+  int headersize, framesize;
+  char sliceshortlabels[31];
+  slicedata *sd;
+  vslicedata *vd;
+  int flag2 = 0;
+  meshdata *meshi;
+  int local_starttime = 0, local_stoptime = 0;
+  FILE_SIZE file_size = 0;
+  int local_starttime0 = 0, local_stoptime0 = 0;
+  float delta_time, delta_time0;
+#ifdef pp_MEMDEBUG
+  int num_memblocks_load, num_memblocks_unload;
+#endif
+#ifdef pp_memstatus
+  unsigned int availmemory;
+#endif
+
+  CheckMemory;
+  local_starttime0 = glutGet(GLUT_ELAPSED_TIME);
+  *errorcode = 0;
+  error = 0;
+  show_slice_average = 0;
+  blocknumber = sliceinfo[ifile].blocknumber;
+  meshi = meshinfo + blocknumber;
+
+  slicefilenumber = ifile;
+  slicefilenum = ifile;
+
+  ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
+  sd = sliceinfo + slicefilenumber;
+  CountMemoryBlocks(num_memblocks_load, 0);
+  if (flag != RESETBOUNDS) {
+    if (sd->loaded == 0 && flag == UNLOAD)return;
+    sd->display = 0;
+#ifdef pp_MEMDEBUG
+    if (sd->qslicedata != NULL) {
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
+    }
+#endif
+    if (sd->qslicedata != NULL) {
+      FreeMemory(sd->qslicedata);
+      sd->qslicedata = NULL;
+    }
+    FREEMEMORY(sd->times);
+    FREEMEMORY(sd->slicelevel);
+    FREEMEMORY(sd->compindex);
+    FREEMEMORY(sd->qslicedata_compressed);
+    FREEMEMORY(sd->slicecomplevel);
+    FREEMEMORY(sd->histograms);
+    slicefilenum = ifile;
+
+    if (flag == UNLOAD) {
+      fed_areas = NULL;
+      sd->ntimes = 0;
+      updatemenu = 1;
+      sd->loaded = 0;
+      sd->vloaded = 0;
+      sd->display = 0;
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      ReadVolSlice = 0;
+      for (ii = 0; ii<nslice_loaded; ii++) {
+        slicedata *sdi;
+
+        i = slice_loaded_list[ii];
+        sdi = sliceinfo + i;
+        if (sdi->volslice == 1)ReadVolSlice = 1;
+      }
+      for (ii = 0; ii<nslice_loaded; ii++) {
+        slicedata *sdi;
+
+        i = slice_loaded_list[ii];
+        sdi = sliceinfo + i;
+        if (sdi->type == islicetype) {
+          slicefilenum = i;
+          flag2 = 1;
+          break;
+        }
+      }
+      if (flag2 == 0) {
+        for (ii = 0; ii<nslice_loaded; ii++) {
+          slicedata *sdi;
+
+          i = slice_loaded_list[ii];
+          sdi = sliceinfo + i;
+          if (sdi->type != islicetype) {
+            slicefilenum = i;
+            flag2 = 1;
+            break;
+          }
+        }
+      }
+      if (flag2 == 0) {
+        slicefilenum = 0;
+        islicetype = 0;
+      }
+
+      for (i = 0; i<nvsliceinfo; i++) {
+        vd = vsliceinfo + i;
+        if (vd->iu == ifile)vd->u = NULL;
+        if (vd->iv == ifile)vd->v = NULL;
+        if (vd->iw == ifile)vd->w = NULL;
+        if (vd->u == NULL&&vd->v == NULL&&vd->w == NULL) {
+          vd->loaded = 0;
+          vd->display = 0;
+        }
+        if (vd->ival == ifile) {
+          vd->val = NULL;
+          vd->loaded = 0;
+          vd->display = 0;
+        }
+      }
+      if (use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR) {
+        if (sd->compression_type == UNCOMPRESSED) {
+          updateslicebounds();
+          list_slice_index = islicetype;
+          setslicebounds(islicetype);
+          updateallslicecolors(islicetype, errorcode);
+        }
+        else {
+          updateallslicelabels(islicetype, errorcode);
+        }
+      }
+
+      updateglui();
+      UpdateUnitDefs();
+      UpdateTimes();
+#ifdef pp_MEMPRINT
+      PRINTF("After slice unload: \n");
+      PrintMemoryInfo;
+#endif
+#ifdef pp_MEMDEBUG
+      CountMemoryBlocks(num_memblocks_unload, num_memblocks_load);
+      PRINTF("blocks unloaded=%i\n", num_memblocks_unload);
+#endif
+      remove_slice_loadstack(slicefilenumber);
+      return;
+    }
+    CountMemoryBlocks(num_memblocks_load, 0);
+    file_size = get_filesize(file);
+
+    slicefilelen = strlen(file);
+    if (sd->compression_type == UNCOMPRESSED) {
+      FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
+        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
+        slicefilelen);
+    }
+    else if (sd->compression_type == COMPRESSED_ZLIB) {
+      if (
+        getsliceheader(sd->comp_file, sd->size_file, sd->compression_type,
+          sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
+          &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0) {
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        *errorcode = 1;
+        return;
+      }
+    }
+    if (sd->nslicei != 1 && sd->nslicej != 1 && sd->nslicek != 1) {
+      sd->volslice = 1;
+      ReadVolSlice = 1;
+    }
+    if (error != 0) {
+      readslice("", ifile, UNLOAD, set_slicecolor, &error);
+      *errorcode = 1;
+      return;
+    }
+    if (settmax_s == 0 && settmin_s == 0 && sd->compression_type == UNCOMPRESSED) {
+      if (framesize <= 0) {
+        fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);
+        error = 1;
+      }
+      else {
+        sd->ntimes = (int)(get_filesize(file) - headersize) / framesize;
+        if (sliceframestep>1)sd->ntimes /= sliceframestep;
+      }
+    }
+    if (error != 0 || sd->ntimes<1) {
+      readslice("", ifile, UNLOAD, set_slicecolor, &error);
+      *errorcode = 1;
+      return;
+    }
+    PRINTF("Loading slice data: %s\n", file);
+    MEMSTATUS(1, &availmemory, NULL, NULL);
+    local_starttime = glutGet(GLUT_ELAPSED_TIME);
+    if (sd->compression_type == COMPRESSED_ZLIB) {
+      char *datafile;
+
+      if (NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed) == 0 ||
+        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0 ||
+        NewMemory((void **)&sd->compindex, sizeof(compdata)*(1 + sd->ntimes)) == 0
+        ) {
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        *errorcode = 1;
+        return;
+      }
+      datafile = sd->comp_file;
+      if (getslicecompresseddata(datafile,
+        settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
+        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0) {
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        *errorcode = 1;
+        return;
+      }
+    }
+    else {
+      FILE_SIZE labellen = LABELLEN;
+      int file_unit = 15;
+
+      if (NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
+        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0) {
+        *errorcode = 1;
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        return;
+      }
+#ifdef pp_MEMDEBUG
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
+#endif
+      FORTget_file_unit(&file_unit, &file_unit);
+      FORTgetslicedata(&file_unit, file, sliceshortlabels,
+        &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+        &qmin, &qmax, sd->qslicedata, sd->times, &sd->ntimes, &sliceframestep,
+        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &redirect,
+        slicefilelen, labellen);
+#ifdef pp_MEMDEBUG
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
+#endif
+    }
+    local_stoptime = glutGet(GLUT_ELAPSED_TIME);
+    delta_time = (local_stoptime - local_starttime) / 1000.0;
+
+    if (slice_average_flag == 1) {
+      int data_per_timestep;
+      int ndata;
+      int ntimes_local;
+
+      data_per_timestep = sd->nslicei*sd->nslicej*sd->nslicek;
+      ntimes_local = sd->ntimes;
+      ndata = data_per_timestep*ntimes_local;
+      show_slice_average = 1;
+
+      if (
+        sd->compression_type == COMPRESSED_ZLIB ||
+        average_slice_data(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
+        ) {
+        show_slice_average = 0; // averaging failed
+      }
+    }
+
+    /*  initialize slice data */
+
+    sd->nslicetotal = 0;
+    sd->nsliceii = 0;
+    if (sd->ntimes == 0)return;
+
+    /* estimate the slice offset, the distance to move a slice so
+    that it does not "interfere" with an adjacent block */
+
+    blocknumber = sliceinfo[ifile].blocknumber;
+    xplt_local = meshinfo[blocknumber].xplt;
+    yplt_local = meshinfo[blocknumber].yplt;
+    zplt_local = meshinfo[blocknumber].zplt;
+
+    xslicemid = (xplt_local[sd->is1] + xplt_local[sd->is2]) / 2.0;
+    yslicemid = (yplt_local[sd->js1] + yplt_local[sd->js2]) / 2.0;
+    zslicemid = (zplt_local[sd->ks1] + zplt_local[sd->ks2]) / 2.0;
+
+    sd->sliceoffset = 0.0;
+
+    switch (sd->idir) {
+    case XDIR:
+      offset = sliceoffset_factor*(xplt_local[1] - xplt_local[0]);
+      if (InBlockage(meshi, xslicemid - offset, yslicemid, zslicemid) == 1) {
+        sd->sliceoffset = offset;
+      }
+      if (InBlockage(meshi, xslicemid + offset, yslicemid, zslicemid) == 1) {
+        sd->sliceoffset = -offset;
+      }
+      sd->nslicex = sd->js2 + 1 - sd->js1;
+      sd->nslicey = sd->ks2 + 1 - sd->ks1;
+      break;
+    case YDIR:
+      offset = sliceoffset_factor*(yplt_local[1] - yplt_local[0]);
+      if (InBlockage(meshi, xslicemid, yslicemid - offset, zslicemid) == 1) {
+        sd->sliceoffset = offset;
+      }
+      if (InBlockage(meshi, xslicemid, yslicemid + offset, zslicemid) == 1) {
+        sd->sliceoffset = -offset;
+      }
+      sd->nslicex = sd->is2 + 1 - sd->is1;
+      sd->nslicey = sd->ks2 + 1 - sd->ks1;
+      break;
+    case ZDIR:
+      offset = sliceoffset_factor*(zplt_local[1] - zplt_local[0]);
+      if (InBlockage(meshi, xslicemid, yslicemid, zslicemid - offset) == 1) {
+        sd->sliceoffset = offset;
+      }
+      if (InBlockage(meshi, xslicemid, yslicemid, zslicemid + offset) == 1) {
+        sd->sliceoffset = -offset;
+      }
+      sd->nslicex = sd->is2 + 1 - sd->is1;
+      sd->nslicey = sd->js2 + 1 - sd->js1;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+
+    sd->nsliceii = sd->nslicei*sd->nslicej*sd->nslicek;
+    sd->nslicetotal = sd->ntimes*sd->nsliceii;
+    if (sd->compression_type == COMPRESSED_ZLIB) {
+      if (NewMemory((void **)&sd->slicecomplevel, sd->nsliceii * sizeof(unsigned char)) == 0) {
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        *errorcode = 1;
+        return;
+      }
+    }
+    else {
+      if (NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0) {
+        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        *errorcode = 1;
+        return;
+      }
+    }
+
+#ifdef pp_MEMDEBUG
+    if (sd->compression_type == UNCOMPRESSED) {
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
+    }
+#endif
+  }  /* RESETBOUNDS */
+
+     // convert slice data into color indices
+
+  if (sd->compression_type == UNCOMPRESSED) {
+    GetSliceDataBounds(sd, &qmin, &qmax);
+  }
+  else {
+    qmin = sd->valmin;
+    qmax = sd->valmax;
+  }
+  sd->globalmin = qmin;
+  sd->globalmax = qmax;
+  if (sd->compression_type == UNCOMPRESSED) {
+    adjustslicebounds(sd, &qmin, &qmax);
+  }
+  sd->valmin = qmin;
+  sd->valmax = qmax;
+  sd->valmin_data = qmin;
+  sd->valmax_data = qmax;
+  for (i = 0; i<256; i++) {
+    sd->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
+  }
+  CheckMemory;
+
+  if (sd->slicetype == SLICE_CELL_CENTER) {
+    usetexturebar = 0;
+  }
+  sd->loaded = 1;
+  if (sd->vloaded == 0)sd->display = 1;
+  islicetype = getslicetype(sd);
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdateUnitDefs();
+  UpdateTimes();
+  CheckMemory;
+
+  if (use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR) {
+    if (sd->compression_type == UNCOMPRESSED) {
+      updateslicebounds();
+      updateallslicecolors(islicetype, errorcode);
+      list_slice_index = islicetype;
+      setslicebounds(islicetype);
+    }
+    else {
+      slicebounds[islicetype].valmin_data = qmin;
+      slicebounds[islicetype].valmax_data = qmax;
+      updateallslicelabels(islicetype, errorcode);
+    }
+  }
+  CheckMemory;
+
+  updateslicelist(list_slice_index);
+  CheckMemory;
+  updateslicelistindex(slicefilenum);
+  CheckMemory;
+  updateglui();
+  CheckMemory;
+#ifdef pp_MEMDEBUG
+  if (sd->compression_type == UNCOMPRESSED) {
+    ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
+  }
+  CheckMemory;
+  PRINTF("After slice file load: \n");
+  CountMemoryBlocks(sd->num_memblocks, num_memblocks_load);
+#endif
+#ifdef pp_MEMPRINT
+#ifndef pp_MEMDEBUG
+  PRINTF("After slice file load: \n");
+#endif
+  PrintMemoryInfo;
+#endif
+  Idle_CB();
+
+  exportdata = 1;
+  if (exportdata == 0) {
+    FREEMEMORY(sd->qslicedata);
+  }
+
+  local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
+  delta_time0 = (local_stoptime0 - local_starttime0) / 1000.0;
+
+  if (flag != RESETBOUNDS) {
+    if (file_size != 0 && delta_time>0.0) {
+      float loadrate;
+
+      loadrate = ((float)file_size*8.0 / 1000000.0) / delta_time;
+      PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
+        (float)file_size / 1000000., delta_time, loadrate, delta_time0 - delta_time);
+    }
+    else {
+      PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
+        (float)file_size / 1000000., delta_time, delta_time0 - delta_time);
+    }
+  }
+
+  if (update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0) {
+    update_fire_line = 1;
+  }
+
+  if (colorbartype_ini == -1) {
+    if (strcmp(sd->label.shortlabel, "thick") == 0) {
+      ColorbarMenu(wallthickness_colorbar);
+    }
+    if (strcmp(sd->label.shortlabel, "phifield") == 0) {
+      ColorbarMenu(levelset_colorbar);
+    }
+  }
+  push_slice_loadstack(slicefilenumber);
+
+  if (sd->volslice == 1) {
+    meshdata *meshj;
+
+    meshj = meshinfo + sd->blocknumber;
+
+    meshj->slice_min[0] = DENORMALIZE_X(sd->xyz_min[0]);
+    meshj->slice_min[1] = DENORMALIZE_Y(sd->xyz_min[1]);
+    meshj->slice_min[2] = DENORMALIZE_Z(sd->xyz_min[2]);
+
+    meshj->slice_max[0] = DENORMALIZE_X(sd->xyz_max[0]);
+    meshj->slice_max[1] = DENORMALIZE_Y(sd->xyz_max[1]);
+    meshj->slice_max[2] = DENORMALIZE_Z(sd->xyz_max[2]);
+
+    vis_gslice_data = 1;
+#ifdef pp_GPU
+    if (gpuactive == 1) {
+      init_slice3d_texture(meshj);
+    }
+#endif
+  }
+  else {
+    meshdata *meshj;
+
+    meshj = meshinfo + sd->blocknumber;
+    meshj->slice_min[0] = 1.0;
+    meshj->slice_min[1] = 0.0;
+    meshj->slice_min[2] = 1.0;
+    meshj->slice_max[0] = 0.0;
+    meshj->slice_max[1] = 1.0;
+    meshj->slice_max[2] = 0.0;
+  }
+  glutPostRedisplay();
 }
 
 /* ------------------ draw_sliceframe ------------------------ */
@@ -7213,7 +7257,7 @@ void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS);
-  CopyU2Histogram(vals, nvals, histogram);
+  CopyU2Histogram(vals, NULL, nvals, histogram);
   FREEMEMORY(vals);
 }
 

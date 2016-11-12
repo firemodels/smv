@@ -1804,7 +1804,7 @@ contours.
 \begin{figure}[bph]
 \centerline{\includegraphics[width=3.5in]{FIGURES/fig3DSmoke}
 }\ \caption[Dialog Box for setting slice rendered 3D smoke options]
-{Dialog box for setting slice rendered 3D smoke options.  Fire color may be specified for hrrpuv values above a specified cutoff. 
+{Dialog box for setting slice rendered 3D smoke options.  Fire color may be specified for hrrpuv values above a specified cutoff.
 Smoke color may be specified for hrrpuv values below the same cutoff. }
 \label{fig3DSmoke}
 \end{figure}
@@ -6294,7 +6294,7 @@ specifies that the tenth blockage in mesh 2 should be opened at
 .smv}\ file by FDS.
 
 \hitem{OBST}This keyword specifies internal blockages. A
-FORTAN~2003 code segment describing the format of {\tt OBST}\ data
+FORTRAN~2003 code segment describing the format of {\tt OBST}\ data
 is given by:
 \begin{lstlisting}
    read(5,*)nb
@@ -6636,7 +6636,8 @@ coordinates of the thermocouples.
 \subsection{Zone Modeling Keywords}
 This section contains documentation for keywords used to
 describe features found in a zone fire model, features such as
-rooms, vents, fires, etc.
+rooms, vents, fires, etc. Smokeview also supports a number of the keywords described above
+to support visualization of slice files, isosurface files, and devices for zone fire models.
 
 \blist
 
@@ -6646,7 +6647,7 @@ The format for the {\tt FIRE}\ keyword is
 \begin{lstlisting}
 FIRE
  i x y z
-\end{lstlisting}\hitem{ROOM}
+\end{lstlisting}
 where {\tt i}\ is the room number containing the fire and $(x,y,z)$
 is the location within the room of the base of the fire.
 One {\tt FIRE}\ entry is specified  for each fire.
@@ -6673,7 +6674,41 @@ is the elevation (relative to the floor) of the vent soffit and {\tt r, g, b}\ a
 (ranging from 0.0 to 1.0) of the vent color.
 The order of the {\tt VENTGEOM}\ entries found in the .smv file should correspond
 to the ordering of the vents  (i.e., The n'th vent is
-specified with the n'th .smv {\tt VENTGEOM}\ entry.)
+specified with the n'th .smv {\tt VENTGEOM}\ entry.) Note that the VENTGEOM keyword is not used in CFAST 7 files and has
+been replaced by {\tt HVENTPOS}\, {\tt VVENTPOS}\, and {\tt MVENTPOS}\ keywords described below.
+
+\hitem{HVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
+The format for the {\tt HVENTPOS}\ keyword is
+\begin{lstlisting}
+HVENTPOS
+ from to x1 x2 y2 y2 z1 z2 red green blue opening
+\end{lstlisting}
+where {\tt from}\ and {\tt to}\  are the room indices
+(ranging from 1 to the number of rooms) of the ``from'' and ``to'' rooms, {\tt x1 x2 y1 y2 z1 z2}\ define lower left and upper right
+coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
+color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
+
+\hitem{VVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling ceiling/floor vent.
+The format for the {\tt VVENTPOS}\ keyword is
+\begin{lstlisting}
+VVENTPOS
+ from to x1 x2 y2 y2 z1 z2 red green blue opening
+\end{lstlisting}
+where {\tt from}\ and {\tt to}\  are the room indices
+(ranging from 1 to the number of rooms) of the ``from'' and ``to'' rooms, {\tt x1 x2 y1 y2 z1 z2}\ define lower left and upper right
+coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
+color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
+
+\hitem{MVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
+The format for the {\tt MVENTPOS}\ keyword is
+\begin{lstlisting}
+MVENTPOS
+ from to x1 x2 y2 y2 z1 z2 red green blue opening
+\end{lstlisting}
+where {\tt from}\ and {\tt to}\  are the room indices
+(ranging from 1 to the number of rooms) of the ``from'' and ``to'' rooms, {\tt x1 x2 y1 y2 z1 z2}\ define lower left and upper right
+coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
+color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
 
 \hitem{ROOM}The {\tt ROOM}\ keyword defines the size and
 location of a zone fire modeling compartment or room.
@@ -6709,10 +6744,9 @@ ZONE
  short label
  unit
 \end{lstlisting}
-where {\tt file}\ is the name of the file containing the zone fire modeling data.
-Note, Smokeview does not use the label or unit data with CFAST 6 or later.
-This data is found within the spread sheet data now used
-to store zone fire modeling data.
+where {\tt file}\ is the name of the file containing the zone fire modeling data. {\tt long label}\, {\tt short label}\, and {\tt unit}\ describe
+the columns of data in the {\tt ZONE file}\. Note, Smokeview does not use the label or unit data with CFAST 6 or later. 
+This data is found within the spread sheet data now used to store zone fire modeling data.
 \elist
 
 

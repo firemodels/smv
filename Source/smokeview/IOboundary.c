@@ -4214,7 +4214,7 @@ int update_patch_hist(patchdata *patchj){
 
       FORTgetpatchdata(&unit1, &npatches,
         pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&error1);
-      UpdateHistogram(patchframe,patchframesize,patchi->histogram);
+      UpdateHistogram(patchframe,NULL,patchframesize,patchi->histogram);
     }
     FORTclosefortranfile(&unit1);
     FREEMEMORY(patchframe);

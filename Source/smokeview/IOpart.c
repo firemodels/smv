@@ -340,7 +340,7 @@ void get_part_histogram(partdata *parti){
             if(prop_id==NULL)continue;
 
             partprop_index = prop_id-part5propinfo;
-            UpdateHistogram(rvals, datacopy->npoints, parti->histograms[partprop_index]);
+            UpdateHistogram(rvals, NULL,datacopy->npoints, parti->histograms[partprop_index]);
             rvals += datacopy->npoints;
           }
         }

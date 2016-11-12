@@ -176,7 +176,7 @@ void diff_plot3ds(FILE *stream_out){
       nvals=0;
       ResetHistogram(plot3d1->histogram[n]);
       nvals=nq/5;
-      UpdateHistogram(qframe1+n*nvals, nvals, plot3d1->histogram[n]);
+      UpdateHistogram(qframe1+n*nvals, NULL,nvals, plot3d1->histogram[n]);
       valmin_percentile = GetHistogramVal(plot3d1->histogram[n], 0.01);
       valmax_percentile = GetHistogramVal(plot3d1->histogram[n], 0.99);
       fprintf(stream_out,"  %f %f %f %f\n",valmin,valmax,valmin_percentile,valmax_percentile);
