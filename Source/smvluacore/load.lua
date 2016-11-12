@@ -1,4 +1,5 @@
 
+--- @module load
 load  = {}
 unload = {}
 
@@ -37,6 +38,31 @@ function load.namedvslice(name)
     end)
 end
 
+local function findCellDimension(mesh,axis,distance)
+    local orig_plt
+    local bar
+    if (axis == X) then
+        orig_plt = mesh.xplt_orig
+        bar = mesh.ibar
+    elseif (axis == Y) then
+        orig_plt = mesh.yplt_orig
+        bar = mesh.jbar
+    elseif (axis == Z) then
+        orig_plt = mesh.zplt_orig
+        bar = mesh.kbar
+    else
+        error("invalid axis")
+    end
+    -- TODO: account for being slightly out
+    for i=0,bar-2,1 do
+        if (orig_plt[i] < distance and distance < orig_plt[i+1]) then
+            return (orig_plt[i+1]-orig_plt[i])
+        end
+    end
+    -- error("cell dimensions not found "  .. distance .. " (" .. orig_plt[0] .. "," .. orig_plt[bar-1] .. ")")
+    return nil
+end
+
 function load.slice_std(slice_type, axis, distance)
     -- validate inputs
     assert(type(slice_type) == "string", "slice_type must be a string")
@@ -45,9 +71,14 @@ function load.slice_std(slice_type, axis, distance)
     assert(type(distance) == "number", "distance must be a number")
     -- load applicable slices
     return load.slice(function(slice)
-            return (slice.longlabel == slice_type
+            local meshnumber = slice.blocknumber
+            local mesh = meshinfo[meshnumber]
+            -- find the cell size at the specified location
+            local cellWidth = findCellDimension(mesh, axis, distance)
+            -- go a quarter cell in either direction
+            return (cellWidth and slice.longlabel == slice_type
                 and slice.idir == axis
-                and slice.position_orig == distance)
+                and (slice.position_orig > (distance-cellWidth*0.25)) and (slice.position_orig < (distance+cellWidth*0.25)))
         end)
 end
 
