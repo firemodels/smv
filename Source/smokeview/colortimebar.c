@@ -938,13 +938,16 @@ void UpdateColorbarSplits(colorbardata *cbi){
 
 /* ------------------ DrawColorBarRectHist ------------------------ */
 
-void DrawColorBarRectHist(void){
+void DrawColorBarRectHist(int lefthist){
   int ibucket;
   int cbt, cbb, cbdiff;
+  int cbt12, cbb12;
 
   cbdiff = colorbar_top_pos - colorbar_down_pos;
   cbt =  colorbar_top_pos + cbdiff / (float)(histogram_nbuckets - 2);
   cbb = colorbar_down_pos - cbdiff / (float)(histogram_nbuckets - 2);
+  cbt12 =  colorbar_top_pos + cbdiff / 10.0;
+  cbb12 = colorbar_down_pos - cbdiff / 10.0;
 
   glBegin(GL_TRIANGLES);
   for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
@@ -1010,7 +1013,9 @@ void DrawColorBarRectHist(void){
 
     sb = slicebounds + islicetype;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos , -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos-colorbar_label_width,-VP_colorbar.text_height/2.0,0.0);
+    glTranslatef(-lefthist*(colorbar_label_width+h_space),0.0,0.0);
+    glTranslatef(colorbar_label_width/2.0,0.0,0.0);
 
     for(i = 0; i < nrgb; i++){
       float vert_position;
@@ -1035,7 +1040,7 @@ void DrawColorBarRectHist(void){
       sprintf(string, "%i%s", (int)(val + 0.5),percen);
 
       stringptr = string;
-      vert_position = MIX2(i-0.5, nrgb , cbt, cbb);
+      vert_position = MIX2(i-0.5, nrgb , cbt12, cbb12);
       OutputBarText(0.0, vert_position, foreground_color, stringptr);
     }
     glPopMatrix();
@@ -1083,7 +1088,7 @@ void DrawColorbars(void){
 
   int i,i3;
   int ileft=0;
-  int leftzone, leftsmoke, leftslice, leftpatch, leftiso;
+  int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
   int iposition;
 
   int sliceflag=0;
@@ -1107,10 +1112,43 @@ void DrawColorbars(void){
   int partflag=0;
   float *partfactor=NULL;
   float partrange=0.0;
+  int dohist=0;
 
   int fed_slice=0;
 
   GLfloat *foreground_color, *red_color;
+
+  // -------------- compute columns where left labels will occur ------------
+
+  leftsmoke=0;
+  leftslice=0;
+  lefthist=0;
+  leftpatch=0;
+  leftiso=0;
+  ileft=0;
+  if(showiso_colorbar==1){
+    leftiso=ileft;
+    ileft++;
+  }
+  if(showevac_colorbar==1||showsmoke==1){
+    if(parttype!=0){
+      leftsmoke=ileft;
+      ileft++;
+    }
+  }
+  if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
+    leftslice=ileft;
+    ileft++;
+    if(histogram_type!=0){
+      lefthist=ileft;
+      ileft++;
+      dohist=1;
+    }
+  }
+  if(showpatch==1&&wc_flag==0){
+    leftpatch=ileft;
+  }
+  leftzone = ileft;
 
   foreground_color=&(foregroundcolor[0]);
   red_color=&(redcolor[0]);
@@ -1238,7 +1276,7 @@ void DrawColorbars(void){
         DrawColorBarRect();
       }
       else{
-        DrawColorBarRectHist();
+        DrawColorBarRectHist(lefthist);
       }
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
@@ -1270,32 +1308,6 @@ void DrawColorbars(void){
     }
   }
 
-  // -------------- compute columns where left labels will occur ------------
-
-  leftsmoke=0;
-  leftslice=0;
-  leftpatch=0;
-  leftiso=0;
-  ileft=0;
-  if(showiso_colorbar==1){
-    leftiso=ileft;
-    ileft++;
-  }
-  if(showevac_colorbar==1||showsmoke==1){
-    if(parttype!=0){
-      leftsmoke=ileft;
-      ileft++;
-    }
-  }
-  if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
-    leftslice=ileft;
-    ileft++;
-  }
-  if(showpatch==1&&wc_flag==0){
-    leftpatch=ileft;
-  }
-  leftzone = ileft;
-
   // -------------- particle file top labels ------------
 
   if(showevac_colorbar==1||showsmoke==1){
@@ -1309,6 +1321,8 @@ void DrawColorbars(void){
       colorbar_left_pos-colorbar_label_width,
       colorbar_top_pos+v_space+colorbar_delta,
       0.0);
+    if(dohist==1)glTranslatef(colorbar_label_width/2.0,0.0,0.0);
+
     if(parttype!=0){
       if(showsmoke==1&&showevac==0)OutputBarText(0.0,3*(VP_colorbar.text_height+v_space),foreground_color,"Part");
       if(showevac==1)OutputBarText(0.0,3*(VP_colorbar.text_height+v_space),foreground_color,"Human");
@@ -1425,6 +1439,8 @@ void DrawColorbars(void){
       colorbar_top_pos+v_space+colorbar_delta,
       0.0);
     glTranslatef(-leftpatch*(colorbar_label_width+h_space),0.0,0.0);
+    if(dohist==1)glTranslatef(colorbar_label_width/2.0,0.0,0.0);
+    
     OutputBarText(0.0,3*(VP_colorbar.text_height+v_space),foreground_color,"Bndry");
     OutputBarText(0.0,2*(VP_colorbar.text_height+v_space),foreground_color,patchi->label.shortlabel);
     OutputBarText(0.0,  (VP_colorbar.text_height+v_space),foreground_color,unitlabel);
@@ -1690,6 +1706,7 @@ void DrawColorbars(void){
     glPushMatrix();
     glTranslatef(colorbar_left_pos-colorbar_label_width,-VP_colorbar.text_height/2.0,0.0);
     glTranslatef(-leftpatch*(colorbar_label_width+h_space),0.0,0.0);
+    if(dohist==1)glTranslatef(colorbar_label_width/2.0,0.0,0.0);
     if(global_colorbar_index!=-1){
       char patchcolorlabel[256],boundarylabel[256],*patchcolorlabel_ptr=NULL;
       float vert_position;
