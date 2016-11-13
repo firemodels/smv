@@ -1427,12 +1427,17 @@ void UpdateSliceHist(void){
       histogramdata *hist256i;
       histogramdata *hist12i;
       float val12_min, val12_max, dval;
+      float val256_min, val256_max;
+
+      dval = sb->valmax - sb->valmin;
 
       hist256i = hists256_slice + i;
       hist12i = hists12_slice + i;
-      InitHistogram(hist256i, 256, &sb->valmin, &sb->valmax);
 
-      dval = sb->valmax - sb->valmin;
+      val256_min = sb->valmin - dval / (float)(histogram_nbuckets - 2);
+      val256_max = sb->valmax + dval / (float)(histogram_nbuckets - 2);
+      InitHistogram(hist256i, histogram_nbuckets, &val256_min, &val256_max);
+
       val12_min = sb->valmin - dval / 10.0;
       val12_max = sb->valmax + dval / 10.0;
       InitHistogram(hist12i, 12, &val12_min, &val12_max);
@@ -1453,35 +1458,13 @@ void UpdateSliceHist(void){
         MergeHistogram(hist12j, histj, KEEP_BOUNDS);
       }
     }
-    if(histogram_bucket_factor > 0){
-      int powers[]={1,2,4,8,16,32};
-
-      histogram_bucket_factor2 = powers[histogram_bucket_factor];
-      for(i = 0; i < nhists256_slice; i++){
-        histogramdata *hist256i, *histi;
-        int j;
-
-        hist256i = hists256_slice + i;
-        for(j = 0; j < 256; j+= histogram_bucket_factor2){
-          int k,sum;
-
-          sum = 0;
-          for(k = 0; k < histogram_bucket_factor2; k++){
-            sum += hist256i->buckets[j + k];
-          }
-          for(k = 0; k < histogram_bucket_factor2; k++){
-            hist256i->buckets[j + k]=sum;
-          }
-        }
-      }
-    }
     for(i = 0; i < nhists256_slice; i++){
       histogramdata *hist256i, *histi;
       int j;
 
       hist256i = hists256_slice + i;
       maxval = (float)hist256i->buckets[0] / (float)hist256i->ntotal;
-      for(j = 1; j < 256; j++){
+      for(j = 1; j < histogram_nbuckets; j++){
         float val;
 
         val = (float)hist256i->buckets[j] / (float)hist256i->ntotal;

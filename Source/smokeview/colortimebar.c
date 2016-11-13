@@ -939,18 +939,30 @@ void UpdateColorbarSplits(colorbardata *cbi){
 /* ------------------ DrawColorBarRectHist ------------------------ */
 
 void DrawColorBarRectHist(void){
-  int i;
+  int ibucket;
+  int cbt, cbb, cbdiff;
+
+  cbdiff = colorbar_top_pos - colorbar_down_pos;
+  cbt =  colorbar_top_pos + cbdiff / (float)(histogram_nbuckets - 2);
+  cbb = colorbar_down_pos - cbdiff / (float)(histogram_nbuckets - 2);
 
   glBegin(GL_TRIANGLES);
-  for(i = 0; i < nrgb_full - 1; i+=histogram_bucket_factor2){
+  for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
     float *rgb_cb, *rgb_cb2;
     float yy, yy2;
     int cbl, cbl2, cbr;
-    int i2;
+    int ibucket2;
+    int icolor, icolor2;
     float dcolor, val, val2;
     histogramdata *histi;
 
-    rgb_cb = rgb_full[i];
+    icolor = ibucket*(float)(nrgb_full-1) / (float)histogram_nbuckets;
+    rgb_cb = rgb_full[icolor];
+
+    ibucket2 = MIN(ibucket + 1,histogram_nbuckets-1);
+
+    icolor2 = (ibucket+1)*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
+    rgb_cb2 = rgb_full[icolor2];
 
     if(histogram_type == 1){
       histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
@@ -959,39 +971,34 @@ void DrawColorBarRectHist(void){
       histi = hists256_slice;
     }
 
-    i2 = i + histogram_bucket_factor2;
-    if(i2 > nrgb_full - 1)i2 = nrgb_full - 1;
-
     dcolor = histogram_width_factor * 3 * (colorbar_right_pos - colorbar_left_pos);
-    val = (float)histi->buckets[i] / (float)histi->ntotal;
+    val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
     cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
 
-    val2 = (float)histi->buckets[i2] / (float)histi->ntotal;
+    val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
     cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
 
     cbr = colorbar_right_pos;
 
-    yy = MIX2(i, 255, colorbar_top_pos, colorbar_down_pos);
-    yy2 = MIX2(i2, 255, colorbar_top_pos, colorbar_down_pos);
-    rgb_cb2 = rgb_full[i2];
+     yy = MIX2( icolor, 255, cbt, cbb);
+    yy2 = MIX2(icolor2, 255, cbt, cbb);
 
     //   (cbl,yy)-------(cbr,yy)
     //      |         /    |
     //      |     /        |
     //      |  /           |
     //   (cbl,yy2)------(cbr,yy2)
-    if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
-      glVertex2f(cbr, yy);
-      glColor4fv(rgb_cb2);
-      glVertex2f(cbl, yy2);
 
-      glVertex2f(cbr, yy2);
-      glVertex2f(cbl, yy2);
-      glColor4fv(rgb_cb);
-      glVertex2f(cbr, yy);
-    }
+    glColor4fv(rgb_cb);
+    glVertex2f(cbl, yy);
+    glVertex2f(cbr, yy);
+    glColor4fv(rgb_cb);
+    glVertex2f(cbl, yy2);
+
+    glVertex2f(cbr, yy2);
+    glVertex2f(cbl, yy2);
+    glColor4fv(rgb_cb);
+    glVertex2f(cbr, yy);
   }
   glEnd();
 
@@ -999,6 +1006,7 @@ void DrawColorBarRectHist(void){
     boundsdata *sb;
     float slicerange;
     char *percen="%";
+    int i;
 
     sb = slicebounds + islicetype;
     glPushMatrix();
@@ -1010,8 +1018,9 @@ void DrawColorBarRectHist(void){
       GLfloat *foreground_color;
       histogramdata *histi;
       float val;
+      int ibucket;
 
-
+      ibucket = i*(float)histogram_nbuckets / (float)nrgb;
       foreground_color = &(foregroundcolor[0]);
 
       if(histogram_type == 1){
@@ -1026,7 +1035,7 @@ void DrawColorBarRectHist(void){
       sprintf(string, "%i%s", (int)(val + 0.5),percen);
 
       stringptr = string;
-      vert_position = MIX2(MAX(i-0.5,0.0), nrgb - 2, colorbar_top_pos, colorbar_down_pos);
+      vert_position = MIX2(i-0.5, nrgb , cbt, cbb);
       OutputBarText(0.0, vert_position, foreground_color, stringptr);
     }
     glPopMatrix();
@@ -1056,15 +1065,13 @@ void DrawColorBarRect(void){
     if(i == nrgb_full - 2)i3 = i;
     rgb_cb2 = rgb_full[i3];
 
-    if(rgb_cb[3] != 0.0&&rgb_cb2[3] != 0.0){
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
-      glVertex2f(colorbar_right_pos, yy);
+    glColor4fv(rgb_cb);
+    glVertex2f(cbl, yy);
+    glVertex2f(colorbar_right_pos, yy);
 
-      glColor4fv(rgb_cb2);
-      glVertex2f(colorbar_right_pos, yy2);
-      glVertex2f(cbl, yy2);
-    }
+    glColor4fv(rgb_cb2);
+    glVertex2f(colorbar_right_pos, yy2);
+    glVertex2f(cbl, yy2);
   }
   glEnd();
 }

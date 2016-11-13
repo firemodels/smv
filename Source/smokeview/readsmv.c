@@ -8699,7 +8699,7 @@ int ReadINI2(char *inifile, int localfile){
     }
     if(Match(buffer, "HISTOGRAM") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f",&histogram_type, &histogram_bucket_factor, &histogram_width_factor);
+      sscanf(buffer, " %i %i %f",&histogram_type, &histogram_nbuckets, &histogram_width_factor);
       continue;
     }
     if(Match(buffer, "GEOMDIAGS") == 1){
@@ -12271,7 +12271,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", gversion);
   fprintf(fileout, "HISTOGRAM\n");
-  fprintf(fileout, " %i %i %f\n", histogram_type, histogram_bucket_factor, histogram_width_factor);
+  fprintf(fileout, " %i %i %f\n", histogram_type, histogram_nbuckets, histogram_width_factor);
   fprintf(fileout, "ISOTRAN2\n");
   fprintf(fileout, " %i\n", transparent_state);
   for(i = 0; i < nmeshes; i++){
