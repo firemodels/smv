@@ -3333,13 +3333,11 @@ void GetSliceHists(slicedata *sd) {
   float *pdata, *pdata0;
   int ndata;
   int n, i;
-  int first = 1;
   int nframe;
 
   int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
-  int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
   int define_histograms = 0;
@@ -3429,7 +3427,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
-  int define_histograms = 0;
 
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
