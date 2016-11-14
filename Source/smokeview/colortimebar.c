@@ -1029,7 +1029,6 @@ void DrawColorBarRectHist(int lefthist){
 
   if(histogram_show_numbers==1&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))){
     boundsdata *sb;
-    float slicerange;
     char *percen="%";
     int i;
 
@@ -1108,7 +1107,7 @@ void DrawColorBarRect(void){
 void DrawColorbars(void){
   int ilabel=0;
 
-  int i,i3;
+  int i;
   int ileft=0;
   int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
   int iposition;
