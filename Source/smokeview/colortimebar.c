@@ -1294,9 +1294,9 @@ void DrawColorbars(void){
       }
 
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        DrawColorBarRectHist(lefthist);
+        if(hists12_slice!=NULL)DrawColorBarRectHist(lefthist);
       }
-      if(histogram_show_graph==0){
+      if(hists12_slice==NULL||histogram_show_graph==0){
         DrawColorBarRect();
       }
     }

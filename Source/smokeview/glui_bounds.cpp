@@ -1267,8 +1267,8 @@ extern "C" void glui_bounds_setup(int main_window){
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_histogram, SLICE_HISTOGRAM_ROLLOUT);
 
     RADIO_histogram_static = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice_histogram,&histogram_static);
-    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"transient");
-    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"static");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"each time");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"all times");
     SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
       &histogram_width_factor);
     SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
@@ -1423,11 +1423,13 @@ extern "C" void compress_onoff(int flag){
       if(CHECKBOX_overwrite_all!=NULL)CHECKBOX_overwrite_all->disable();
       if(CHECKBOX_erase_all!=NULL)CHECKBOX_erase_all->disable();
       if(CHECKBOX_multi_task!=NULL)CHECKBOX_multi_task->disable();
+      break;
     case ON:
       if(BUTTON_compress!=NULL)BUTTON_compress->enable();
       if(CHECKBOX_overwrite_all!=NULL)CHECKBOX_overwrite_all->enable();
       if(CHECKBOX_erase_all!=NULL)CHECKBOX_erase_all->enable();
       if(CHECKBOX_multi_task!=NULL)CHECKBOX_multi_task->enable();
+      break;
     default:
       ASSERT(FFALSE);
       break;
