@@ -1459,7 +1459,7 @@ void UpdateSliceHist(void){
       }
     }
     for(i = 0; i < nhists256_slice; i++){
-      histogramdata *hist256i, *histi;
+      histogramdata *hist256i;
       int j;
 
       hist256i = hists256_slice + i;
