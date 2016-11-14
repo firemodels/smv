@@ -2025,9 +2025,8 @@ void UpdateDisplay(void){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);
   }
-  if (update_slice_hist == 1) {
-    update_slice_hist = 0;
+  if (histograms_defined==0&&update_slice_hists == 1) {
+    update_slice_hists = 0;
     UpdateSliceHist();
   }
-
 }
