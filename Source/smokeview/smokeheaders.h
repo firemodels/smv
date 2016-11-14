@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateHistogramType(void);
+EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void draw_screeninfo(void);
@@ -131,12 +133,12 @@ EXTERNCPP void show_glui_geometry(void);
 EXTERNCPP void hide_glui_geometry(void);
 
 EXTERNCPP void UpdateAllPatchColors(void);
-EXTERNCPP void updateslicelistindex(int sfn);
+EXTERNCPP void UpdateSliceListIndex(int sfn);
 EXTERNCPP void updatepatchlistindex(int patchfilenum);
 EXTERNCPP void updatepatchlistindex2(char *label);
 EXTERNCPP void updateplot3dlistindex(void);
 
-EXTERNCPP void getsliceparams2(void);
+EXTERNCPP void GetSliceParams2(void);
 
 #ifdef pp_PILOT
 EXTERNCPP void draw_pilot(void);
@@ -240,8 +242,7 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void Sort_Iso_Triangles(float *mm);
 EXTERNCPP void Update_Isotris(int flag);
 EXTERNCPP void update_evac_parms(void);
-EXTERNCPP void update_slice_menu_show(void);
-EXTERNCPP void update_slicedir_count(void);
+EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdatePatchBounds(patchdata *patchi);
 EXTERNCPP void Update_All_Patch_Bounds(void);
 EXTERNCPP void Update_All_Patch_Bounds_st(void);
@@ -295,7 +296,7 @@ EXTERNCPP void initterrain_znode(meshdata *meshi, terraindata *terri, float xmin
 EXTERNCPP void output_mfed_csv(multislicedata *mslicei);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP int get_index(float x, int dir, float *plotxyz, int nplotxyz);
-EXTERNCPP void update_slice_contours(int slice_type_index, float line_min, float line_max, int nline_values);
+EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
 EXTERNCPP void  OBJECT_CB(int flag);
@@ -519,15 +520,13 @@ EXTERNCPP void draw_smokeframe(void);
 EXTERNCPP void draw_partframe(void);
 EXTERNCPP void draw_evacframe(void);
 EXTERNCPP void draw_plot3dframe(void);
-EXTERNCPP void draw_vsliceframe(void);
-EXTERNCPP void draw_sliceframe(void);
-EXTERNCPP void drawgslice_dataGPU(slicedata *slicei);
-EXTERNCPP void drawvgslice_data(vslicedata *vslicei);
-EXTERNCPP void drawgslice_data(slicedata *slicei);
-EXTERNCPP void drawgslice_outline(void);
+EXTERNCPP void DrawVSliceFrame(void);
+EXTERNCPP void DrawSliceFrame(void);
+EXTERNCPP void DrawVGSliceData(vslicedata *vslicei);
+EXTERNCPP void DrawGSliceData(slicedata *slicei);
+EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void draw_patchframe(int flag);
 EXTERNCPP void Motion_CB(int var);
-EXTERNCPP void init_slice3d_texture(meshdata *meshi);
 
 #ifdef pp_GPU
 EXTERNCPP void drawsmoke3dGPU(smoke3ddata *smoke3di);
@@ -540,7 +539,7 @@ EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_t
 EXTERNCPP void update_smoke3d_menulabels(void);
 EXTERNCPP void Labels_CB(int value);
 EXTERNCPP void output_Slicedata(void);
-EXTERNCPP void init_Slicedata(void);
+EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
 EXTERNCPP void update_extreme(void);
 EXTERNCPP void update_colorbar_type(void);
@@ -584,7 +583,7 @@ EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval);
 EXTERNCPP void UpdateUnitDefs(void);
 
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
-EXTERNCPP void updateslicefilenum(void);
+EXTERNCPP void UpdateSliceFilenum(void);
 EXTERNCPP void drawstaticiso(const isosurface *asurface,int surfacetype,
                              int smoothnorms, int trans_flag, int data_type,
                              float line_width);
@@ -598,13 +597,13 @@ EXTERNCPP void getisosizes(const char *isofile, int dataflag, FILE **isostreampt
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
-EXTERNCPP void updatevslices(void);
-EXTERNCPP void getgsliceparams(void);
+EXTERNCPP void UpdateVSlices(void);
+EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void update_part_menulabels(void);
 EXTERNCPP void update_iso_menulabels(void);
 EXTERNCPP void update_patch_menulabels(void);
-EXTERNCPP void update_slice_menulabels(void);
-EXTERNCPP void update_vslice_menulabels(void);
+EXTERNCPP void UpdateSliceMenuLabels(void);
+EXTERNCPP void UpdateVsliceMenulabels(void);
 EXTERNCPP void update_plot3d_menulabels(void);
 EXTERNCPP void handle_rotation_type(int flag);
 
@@ -655,7 +654,7 @@ EXTERNCPP int updatergbhist(int width, int height,int maketable, int *colortable
 EXTERNCPP void Antialias(int flag);
 EXTERNCPP void saveview(void);
 EXTERNCPP void savelastview(void);
-EXTERNCPP void setslicebounds(int islicetype);
+EXTERNCPP void SetSliceBounds(int islicetype);
 EXTERNCPP void setisobounds(int islicetype);
 EXTERNCPP void local2globalpatchbounds(const char *key);
 EXTERNCPP void global2localpatchbounds(const char *key);
@@ -668,8 +667,8 @@ EXTERNCPP GLubyte *GetScreenBuffer(void);
 EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
 EXTERNCPP int inmesh_smoke(float x, float y, float z, int n, int flag);
-EXTERNCPP void updateglui(void);
-EXTERNCPP void updateslicelist(int index);
+EXTERNCPP void UpdateGlui(void);
+EXTERNCPP void UpdateSliceList(int index);
 EXTERNCPP void drawiso(int tranflag);
 EXTERNCPP void drawplot3d(meshdata *gb);
 EXTERNCPP void drawplot3d_texture(meshdata *gb);
@@ -684,18 +683,14 @@ EXTERNCPP void drawpatch_texture_threshold(const meshdata *gb);
 EXTERNCPP void drawpatch_threshold_cellcenter(const meshdata *meshi);
 
 EXTERNCPP void Render(int view_mode);
-EXTERNCPP void updateslicebounds(void);
 EXTERNCPP void updateisobounds(void);
-EXTERNCPP void updateallslicecolors(int islicetype,int *errorcode);
 EXTERNCPP void updateallisocolors(int iisotype,int *errorcode);
-EXTERNCPP void updatevslicetypes(void);
-EXTERNCPP int getvsliceindex(const vslicedata *vd);
-EXTERNCPP int getvslicetype(const vslicedata *vd);
-EXTERNCPP int getslicetype(const slicedata *sd);
-EXTERNCPP int getslicetype_fromlabel(char *label);
-EXTERNCPP void updateslicetypes(void);
-EXTERNCPP int getsliceindex(const slicedata *sd);
-EXTERNCPP void updatesliceboundlabels(void);
+EXTERNCPP void UpdateVSliceTypes(void);
+EXTERNCPP int GetSliceType(const slicedata *sd);
+EXTERNCPP int GetSliceTypeFromLabel(char *label);
+EXTERNCPP void UpdateSliceTypes(void);
+EXTERNCPP int GetSliceIndex(const slicedata *sd);
+EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP int getisotype(const isodata *isoi);
 EXTERNCPP int getisottype(const isodata *isoi);
 EXTERNCPP int getisoindex(const isodata *isoi);
@@ -717,14 +712,7 @@ EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP void setslicecolors(float slicemin, float slicemax, slicedata *sd, int *errorcode);
 EXTERNCPP void setisocolors(float isomin, float isomax, isodata *sd, int *errorcode);
-EXTERNCPP void drawvolslice_terrain(const slicedata *sd);
-EXTERNCPP void drawvolslice_texture(const slicedata *sd);
-EXTERNCPP void drawvolslice_cellfacecenter(const slicedata *sd, int flag);
 EXTERNCPP int new_multi_slice(slicedata *sdold,slicedata *sd);
-EXTERNCPP void drawvolslice(const slicedata *sd);
-EXTERNCPP void drawvvolslice_cellcenter(const vslicedata *vd);
-EXTERNCPP void drawvvolslice(const vslicedata *vd);
-EXTERNCPP void drawvvolslice_terrain(const vslicedata *vd);
 EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
 EXTERNCPP void DrawColorbars(void);
 EXTERNCPP void draw_part(const partdata *parti);
@@ -790,7 +778,6 @@ EXTERNCPP void AdjustPartBounds(const float *pdata, int particle_type, int dropl
 EXTERNCPP void AdjustPart5Chops(partdata *parti);
 EXTERNCPP void AdjustPart5Bounds(partdata *parti);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
-EXTERNCPP void adjustslicebounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
@@ -840,8 +827,7 @@ EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *strin
 EXTERNCPP void GetZoneGlobalBounds(const float *pdata, int ndata, float *pglobalmin, float *pglobalmax);
 EXTERNCPP void updatechar(void);
 EXTERNCPP void updatetracers(void);
-EXTERNCPP void update_fedinfo(void);
-void update_gslice_planes(void);
+void UpdateGslicePlanes(void);
 
 EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag);
 EXTERNCPP void getBoundaryColors(float *t, int nt, unsigned char *it,
@@ -875,8 +861,6 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
               char **labels,char **labelsiso, char **scale, float *fscale, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP float getsliceval(slicedata *sd, unsigned char ival);
-EXTERNCPP void updateallslicelabels(int slicetype, int *errorcode);
 EXTERNCPP void updateallisolabels(int slicetype, int *errorcode);
 EXTERNCPP void setslicelabels(float smin, float smax,
                     slicedata *sd, int *errorcode);

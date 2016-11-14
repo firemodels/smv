@@ -99,6 +99,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #ifdef pp_SLICEDUP
 #define UPDATE_SLICEDUPS 212
 #endif
+#define UPDATE_HISTOGRAM 213
 
 #define SCRIPT_START 31
 #define SCRIPT_STOP 32
@@ -203,6 +204,7 @@ GLUI_Rollout *ROLLOUT_outputpatchdata=NULL;
 GLUI_Rollout *ROLLOUT_filebounds = NULL;
 GLUI_Rollout *ROLLOUT_showhide = NULL;
 GLUI_Rollout *ROLLOUT_slice_average = NULL;
+GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_slice_vector = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
 #ifdef pp_SLICEDUP
@@ -241,6 +243,8 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
+GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
+GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
@@ -288,6 +292,9 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
+GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
+GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_in_obst=NULL;
 GLUI_Checkbox *CHECKBOX_show_slices_and_vectors=NULL;
@@ -331,6 +338,7 @@ GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
 #endif
+GLUI_RadioGroup *RADIO_histogram_static=NULL;
 GLUI_RadioGroup *RADIO_showhide = NULL;
 GLUI_RadioGroup *RADIO_contour_type = NULL;
 GLUI_RadioGroup *RADIO_zone_setmin=NULL, *RADIO_zone_setmax=NULL;
@@ -382,8 +390,9 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define SLICE_AVERAGE_ROLLOUT 0
 #define SLICE_VECTOR_ROLLOUT 1
 #define LINE_CONTOUR_ROLLOUT 2
+#define SLICE_HISTOGRAM_ROLLOUT 3
 #ifdef pp_SLICEDUP
-#define SLICE_DUP_ROLLOUT 3
+#define SLICE_DUP_ROLLOUT 4
 #endif
 
 #define VECTOR_ROLLOUT 0
@@ -430,7 +439,17 @@ void update_iso_controls(void){
   }
 }
 
-/* ------------------ update_sliceinobst ------------------------ */
+/* ------------------ UpdateHistogramType ------------------------ */
+
+extern "C" void UpdateHistogramType(void){
+  RADIO_histogram_static->set_int_val(histogram_static);
+  CHECKBOX_histogram_show_graph->set_int_val(histogram_show_graph);
+  CHECKBOX_histogram_show_numbers->set_int_val(histogram_show_numbers);
+  CHECKBOX_histogram_show_outline->set_int_val(histogram_show_outline);
+  
+}
+
+/* ------------------ update_show_slice_in_obst ------------------------ */
 
 extern "C" void update_show_slice_in_obst(void){
   CHECKBOX_show_slice_in_obst->set_int_val(show_slice_in_obst);
@@ -1244,6 +1263,22 @@ extern "C" void glui_bounds_setup(int main_window){
       UPDATE_BOUNDS,DONT_TRUNCATE_BOUNDS,
       Slice_CB);
 
+    ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, Slice_Rollout_CB);
+    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_histogram, SLICE_HISTOGRAM_ROLLOUT);
+
+    RADIO_histogram_static = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice_histogram,&histogram_static);
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"transient");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"static");
+    SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
+      &histogram_width_factor);
+    SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
+    SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("partitions"), GLUI_SPINNER_INT,
+      &histogram_nbuckets,UPDATE_HISTOGRAM,Slice_CB);
+    SPINNER_histogram_nbuckets->set_int_limits(3,255);
+    CHECKBOX_histogram_show_numbers=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("percentages"), &histogram_show_numbers);
+    CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("graph"), &histogram_show_graph);
+    CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("outline"), &histogram_show_outline);
+
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_d("Average data"),false,SLICE_AVERAGE_ROLLOUT,Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT);
 
@@ -1694,7 +1729,7 @@ extern "C" void Plot3D_CB(int var){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
-   updateglui();
+   UpdateGlui();
    break;
   case VALMIN:
   case VALMAX:
@@ -1781,7 +1816,7 @@ extern "C" void updateplot3dlistindex(void){
     Plot3D_CB(SETCHOPMAXVAL);
   }
   UpdateChopColors();
-  updateglui();
+  UpdateGlui();
 }
 
 /* ------------------ get_colortable_index ------------------------ */
@@ -2611,7 +2646,7 @@ void Part_CB(int var){
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)Part_CB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)Part_CB(SETVALMAX);
      LoadParticleMenu(PARTFILE_RELOADALL);
-     updateglui();
+     UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }
     break;
@@ -2674,6 +2709,10 @@ extern "C" void Slice_CB(int var){
   int last_slice;
 
   updatemenu=1;
+  if(var==UPDATE_HISTOGRAM){
+    update_slice_hist = 1;
+    return;
+  }
   if(var==SLICE_IN_OBST){
     return;
   }
@@ -2761,7 +2800,7 @@ extern "C" void Slice_CB(int var){
 
         slicei = sliceinfo + i;
         if(slicei->loaded==0||slicei->display==0)continue;
-        updateslicelist(getslicetype(slicei));
+        UpdateSliceList(GetSliceType(slicei));
         break;
       }
       if(research_mode==1){
@@ -2933,12 +2972,12 @@ extern "C" void Slice_CB(int var){
 #endif
     case SHOW_EVAC_SLICES:
       data_evac_coloring = 1-constant_evac_coloring;
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       if(CHECKBOX_data_coloring!=NULL)CHECKBOX_data_coloring->set_int_val(data_evac_coloring);
       break;
     case DATA_EVAC_COLORING:
       constant_evac_coloring = 1-data_evac_coloring;
-      update_slice_menu_show();
+      UpdateSliceMenuShow();
       if(CHECKBOX_constant_coloring!=NULL)CHECKBOX_constant_coloring->set_int_val(constant_evac_coloring);
       break;
     case COLORBAND:
@@ -2968,7 +3007,7 @@ extern "C" void Slice_CB(int var){
       slicebounds[list_slice_index].line_contour_num=slice_line_contour_num;
       break;
     case UPDATE_LINE_CONTOUR_VALUE:
-      update_slice_contours(list_slice_index,slice_line_contour_min, slice_line_contour_max,slice_line_contour_num);
+      UpdateSliceContours(list_slice_index,slice_line_contour_min, slice_line_contour_max,slice_line_contour_num);
       break;
   case UPDATE_VECTOR_FROM_SMV:
     if(SPINNER_plot3d_vectorpointsize!=NULL&&SPINNER_plot3d_vectorlinewidth!=NULL&&SPINNER_plot3d_vectorlinelength!=NULL){
@@ -3089,7 +3128,7 @@ extern "C" void Slice_CB(int var){
         ROLLOUT_slice_chop->enable();
       }
     }
-    setslicebounds(list_slice_index);
+    SetSliceBounds(list_slice_index);
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
     switch(setslicemin){
     case PERCENTILE_MIN:
@@ -3168,7 +3207,7 @@ extern "C" void Slice_CB(int var){
     else{
       LoadSliceMenu(0);
     }
-    updateglui();
+    UpdateGlui();
     break;
   default:
     ASSERT(FFALSE);
@@ -3196,28 +3235,28 @@ void SETslicemax(int setslicemax_local, float slicemax_local,int setslicechopmax
   slicebounds[list_slice_index].chopmax=slicechopmax_local;
 }
 
-/* ------------------ updateslicelist ------------------------ */
+/* ------------------ UpdateSliceList ------------------------ */
 
-extern "C" void updateslicelist(int index){
+extern "C" void UpdateSliceList(int index){
   RADIO_slice->set_int_val(index);
 }
 
-/* ------------------ updateslicelistindex ------------------------ */
+/* ------------------ UpdateSliceListIndex ------------------------ */
 
-extern "C" void updateslicelistindex(int sfn){
+extern "C" void UpdateSliceListIndex(int sfn){
   int i;
   int slicefiletype;
   slicedata *sd;
   if(sfn<0){
-    updateslicefilenum();
+    UpdateSliceFilenum();
     sfn=slicefilenum;
   }
   sd = sliceinfo+sfn;
-  slicefiletype=getsliceindex(sd);
-  if(slicefiletype>=0&&slicefiletype<nslice2){
+  slicefiletype = GetSliceIndex(sd);
+  if(slicefiletype>=0&&slicefiletype<nslice_type){
     i = slicefiletype;
     RADIO_slice->set_int_val(i);
-    setslicebounds(i);
+    SetSliceBounds(i);
     list_slice_index=i;
     Slice_CB(SETVALMIN);
     Slice_CB(SETVALMAX);
@@ -3230,9 +3269,9 @@ extern "C" void updateslicelistindex(int sfn){
   }
 }
 
-/* ------------------ updateglui ------------------------ */
+/* ------------------ UpdateGlui ------------------------ */
 
-extern "C" void updateglui(void){
+extern "C" void UpdateGlui(void){
   GLUI_Master.sync_live_all();
 }
 
@@ -3264,7 +3303,7 @@ extern "C" void show_glui_bounds(int menu_id){
   if(menu_id==DIALOG_BOUNDS){
     if(nsliceinfo>0){
       islice=RADIO_slice->get_int_val();
-      setslicebounds(islice);
+      SetSliceBounds(islice);
       Slice_CB(SETVALMIN);
       Slice_CB(SETVALMAX);
       Slice_CB(VALMIN);
@@ -3285,7 +3324,7 @@ extern "C" void show_glui_bounds(int menu_id){
       Plot3D_CB(SETVALMAX);
     }
 
-    if(nsliceinfo>0||npatchinfo>0)updateglui();
+    if(nsliceinfo>0||npatchinfo>0)UpdateGlui();
 
     updatechar();
     File_Rollout_CB(FILEBOUNDS_ROLLOUT);

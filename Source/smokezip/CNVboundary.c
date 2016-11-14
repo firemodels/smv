@@ -581,7 +581,7 @@ void update_patch_hist(void){
       patchframesize+=patchi->patchsize[j];
     }
     NewMemory((void **)&patchframe,patchframesize*sizeof(float));
-    ResetHistogram(patchi->histogram);
+    ResetHistogram(patchi->histogram,NULL,NULL);
     while(error1==0){
       int ndummy;
 
@@ -659,7 +659,7 @@ void Get_Boundary_Bounds(void){
 
       patchj = patchinfo + j;
       if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
-      MergeHistogram(patchi->histogram,patchj->histogram);
+      MergeHistogram(patchi->histogram,patchj->histogram,MERGE_BOUNDS);
     }
     patchi->valmax=GetHistogramVal(patchi->histogram,0.99);
     patchi->valmin=GetHistogramVal(patchi->histogram,0.01);

@@ -291,7 +291,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
         setp3max[nn]=SET_MAX;
       }
     }
-    updateglui();
+    UpdateGlui();
   }
   for (nn=0;nn<numplot3dvars;nn++){
     if(nplot3dinfo>0){

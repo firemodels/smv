@@ -174,7 +174,7 @@ void diff_plot3ds(FILE *stream_out){
       }
 
       nvals=0;
-      ResetHistogram(plot3d1->histogram[n]);
+      ResetHistogram(plot3d1->histogram[n],NULL,NULL);
       nvals=nq/5;
       UpdateHistogram(qframe1+n*nvals, NULL,nvals, plot3d1->histogram[n]);
       valmin_percentile = GetHistogramVal(plot3d1->histogram[n], 0.01);

@@ -134,6 +134,7 @@ void UpdateFrameNumber(int changetime){
         sd = sliceinfo+i;
         if(sd->timeslist==NULL)continue;
         sd->itime=sd->timeslist[itimes];
+        slice_time = sd->itime;
         if(sd->is_fed==1)showfed=1;
       }
       if(showfed==1){
@@ -2024,4 +2025,9 @@ void UpdateDisplay(void){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);
   }
+  if (update_slice_hist == 1) {
+    update_slice_hist = 0;
+    UpdateSliceHist();
+  }
+
 }

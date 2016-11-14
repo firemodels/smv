@@ -20,6 +20,13 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(slice_time, 0);
+SVEXTERN float SVDECL(histogram_width_factor,1.0);
+SVEXTERN int SVDECL(histogram_show_graph, 1), SVDECL(histogram_show_numbers, 1);
+SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
+SVEXTERN int SVDECL(update_slice_hist, 0), SVDECL(nhists256_slice, 0);
+SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
+
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);
@@ -778,7 +785,8 @@ SVEXTERN float pref,pamb,tamb;
 SVEXTERN int ntc_total, nspr_total, nheat_total;
 SVEXTERN int n_devices;
 
-SVEXTERN int npartinfo, nsliceinfo, nvsliceinfo, nslice2, npatch2, nplot3dinfo, npatchinfo;
+SVEXTERN int npartinfo, nsliceinfo, nvsliceinfo, nplot3dinfo, npatchinfo;
+SVEXTERN int SVDECL(nslice_type, 0), npatch2;
 SVEXTERN int nfedinfo;
 SVEXTERN int nevac;
 SVEXTERN int SVDECL(nsmoke3dinfo,0);

@@ -49,6 +49,7 @@ void GetViewportInfo(void){
   float text_width;
   int ninfo_lines=0;
   int info_width;
+  int dohist=0;
 
   info_width = GetStringWidth("y: 115, 11.5 m");
   colorbar_label_width = GetStringWidth("*10^-02");
@@ -149,14 +150,26 @@ void GetViewportInfo(void){
   // colorbar viewport dimensions
 
   doit=1;
+  if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
+    if(histogram_show_graph == 1 || histogram_show_numbers == 1){
+      dohist=1;
+    }
+  }
+
   if(visColorbar==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
   VP_colorbar.left = screenWidth-colorbar_delta - numColorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
+  if(dohist==1){
+    VP_colorbar.left -= colorbar_label_width;
+  }
   VP_colorbar.down = MAX(VP_timebar.height,VP_info.height)+titlesafe_offset;
   VP_colorbar.doit = doit;
   VP_colorbar.text_height=text_height;
   VP_colorbar.text_width = text_width;
   if(doit==1){
     VP_colorbar.width = colorbar_delta + h_space+numColorbars*(colorbar_label_width+h_space);
+    if(dohist==1){
+      VP_colorbar.width += colorbar_label_width;
+    }
     VP_colorbar.height = screenHeight-MAX(VP_timebar.height,VP_info.height)-2*titlesafe_offset;
 
   }
@@ -198,6 +211,7 @@ void GetViewportInfo(void){
   VP_scene.left=titlesafe_offset;
   VP_scene.down=titlesafe_offset+MAX(VP_timebar.height,VP_info.height);
   VP_scene.width=screenWidth-2*titlesafe_offset-VP_colorbar.width;
+  if(dohist==1)VP_scene.width+=colorbar_label_width/2;
   VP_scene.height=screenHeight-MAX(VP_timebar.height,VP_info.height)-VP_title.height - 2*titlesafe_offset;
   VP_scene.right = VP_scene.left + VP_scene.width;
   VP_scene.top = VP_scene.down + VP_scene.height;
@@ -1146,7 +1160,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     get_world_eyepos(modelview_scratch, world_eyepos,scaled_eyepos);
 
     if(show_gslice_triangles==1||SHOW_gslice_data==1){
-      update_gslice_planes();
+      UpdateGslicePlanes();
     }
     if(nrooms>0){
       getzonesmokedir(modelview_scratch);

@@ -365,14 +365,14 @@ void TRAINER_CB(int var){
 // kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
     if(slicebounds!=NULL&&islicetype!=-1){
       if(setslicechopmin==1||setslicechopmax==1){
-       setslicebounds(islicetype);
+       SetSliceBounds(islicetype);
       }
     }
     TrainerViewMenu(MENU_TRAINER_temp);
     UpdateChopColors();
     if(slicebounds!=NULL&&islicetype!=-1){
       if(setslicechopmin==1||setslicechopmax==1){
-       setslicebounds(islicetype);
+       SetSliceBounds(islicetype);
       }
     }
     UpdateChopColors();
@@ -383,14 +383,14 @@ void TRAINER_CB(int var){
 // kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
     if(slicebounds!=NULL&&islicetype!=-1){
       if(setslicechopmin==1||setslicechopmax==1){
-       setslicebounds(islicetype);
+       SetSliceBounds(islicetype);
       }
     }
     TrainerViewMenu(MENU_TRAINER_oxy);
     UpdateChopColors();
     if(slicebounds!=NULL&&islicetype!=-1){
       if(setslicechopmin==1||setslicechopmax==1){
-       setslicebounds(islicetype);
+       SetSliceBounds(islicetype);
       }
     }
     UpdateChopColors();

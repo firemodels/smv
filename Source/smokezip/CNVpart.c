@@ -557,7 +557,7 @@ void Get_Part_Bounds(void){
     propi = part5propinfo + i;
 
     NewMemory((void **)&propi->histogram,sizeof(histogramdata));
-    InitHistogram(propi->histogram,NHIST_BUCKETS);
+    InitHistogram(propi->histogram,NHIST_BUCKETS, NULL, NULL);
   }
 
   NewMemory((void **)&pdata,1000000*sizeof(float));

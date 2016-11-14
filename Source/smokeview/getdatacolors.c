@@ -221,14 +221,14 @@ void UpdatePatchBounds(patchdata *patchi){
 
   boundi = &patchi->bounds;
   if(boundi->defined==1)return;
-  InitHistogram(&full_histogram,NHIST_BUCKETS);
+  InitHistogram(&full_histogram,NHIST_BUCKETS, NULL, NULL);
 
   for(j=0;j<npatchinfo;j++){
     patchdata *patchj;
 
     patchj=patchinfo+j;
     if(patchj->type!=patchi->type||patchj->filetype!=patchi->filetype)continue;
-    MergeHistogram(&full_histogram,patchj->histogram);
+    MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
 
   boundi->global_min = GetHistogramVal(&full_histogram, 0.0);

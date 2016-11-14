@@ -1547,11 +1547,28 @@ void keyboard(unsigned char key, int flag){
       return;
 #endif
     case 'h':
-      if(titlesafe_offset==0){
-        titlesafe_offset=titlesafe_offsetBASE;
-      }
-      else{
-        titlesafe_offset=0;
+      switch(keystate){
+      case GLUT_ACTIVE_ALT:
+        if(titlesafe_offset==0){
+          titlesafe_offset=titlesafe_offsetBASE;
+        }
+        else{
+          titlesafe_offset=0;
+        }
+        break;
+      case GLUT_ACTIVE_CTRL:
+      default:
+        if(histogram_show_graph == 1 || histogram_show_numbers == 1){
+          histogram_show_graph = 0;
+          histogram_show_numbers = 0;
+        }
+        else{
+          histogram_show_graph = 1;
+          histogram_show_numbers = 1;
+          visColorbar = 1;
+        }
+        UpdateHistogramType();
+        break;
       }
       break;
     case 'H':
@@ -1940,7 +1957,7 @@ void keyboard(unsigned char key, int flag){
         default:
           visVector=1-visVector;
           if(vectorspresent==0)visVector=0;
-          updateglui();
+          UpdateGlui();
           break;
       }
       break;
@@ -2226,7 +2243,7 @@ void handleiso(void){
         plotstate=STATIC_PLOTS;
       }
     }
-    updateglui();
+    UpdateGlui();
     return;
 }
 

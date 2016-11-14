@@ -307,11 +307,11 @@ void get_part_histogram(partdata *parti){
     NewMemory((void **)&parti->histograms, npart5prop*sizeof(histogramdata *));
     for(i = 0; i < npart5prop; i++){
       NewMemory((void **)&parti->histograms[i], sizeof(histogramdata));
-      InitHistogram(parti->histograms[i], NHIST_BUCKETS);
+      InitHistogram(parti->histograms[i], NHIST_BUCKETS, NULL, NULL);
     }
   }
   for(i = 0; i < npart5prop; i++){
-    ResetHistogram(parti->histograms[i]);
+    ResetHistogram(parti->histograms[i],NULL,NULL);
   }
   if(file_exists(parti->hist_file)==1&&get_histfile_status(parti)==HIST_OK){
     read_part_histogram(parti);
@@ -388,7 +388,7 @@ void get_allpart_histogram(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    ResetHistogram(&propi->histogram);
+    ResetHistogram(&propi->histogram,NULL,NULL);
   }
   for(i = 0; i < npartinfo; i++){
     partdata *parti;
@@ -399,7 +399,7 @@ void get_allpart_histogram(void){
       partpropdata *propj;
 
       propj = part5propinfo + j;
-      MergeHistogram(&propj->histogram, parti->histograms[j]);
+      MergeHistogram(&propj->histogram, parti->histograms[j],MERGE_BOUNDS);
     }
   }
 }
@@ -645,7 +645,7 @@ void write_part_histogram(partdata *parti){
     }
 
     ncompressed_buckets = 1.02*ncompressed_bucketsMAX+600;
-    compress_zlib(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets*sizeof(int));
+    compress_zlib(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets*sizeof(unsigned int));
 
     fwrite(&ncompressed_buckets, sizeof(uLongf), 1, STREAM_HIST);
     fwrite(compressed_buckets, sizeof(unsigned char), ncompressed_buckets, STREAM_HIST);
@@ -1000,7 +1000,7 @@ void init_partprop(void){
             propi->partlabels[ii]=labeli;
           }
           NewMemory((void **)&propi->scale,256);
-          InitHistogram(&propi->histogram, NHIST_BUCKETS);
+          InitHistogram(&propi->histogram, NHIST_BUCKETS, NULL, NULL);
 
           npart5prop++;
         }
@@ -1431,7 +1431,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   if(data_type == PARTDATA)PRINTF("Loading particle data: %s\n", file);
   get_partdata(parti,partframestep, nf_all, &delta_time, &file_size,data_type);
-  updateglui();
+  UpdateGlui();
 
 #ifdef pp_MEMPRINT
   if(data_type==PARTDATA)PRINTF("After particle file load: \n");
@@ -1456,7 +1456,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   parti->loaded = 1;
   parti->display = 1;
   update_partcolorbounds(parti);
-  updateglui();
+  UpdateGlui();
 #ifdef pp_MEMPRINT
   if(data_type==PARTDATA)PRINTF("After particle file load: \n");
   PrintMemoryInfo;

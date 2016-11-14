@@ -166,10 +166,10 @@ extern "C" void WUI_CB(int var){
     case TERRAIN_MAX:
       break;
     case TERRAIN_FIRE_LINE_UPDATE:
-      fire_line_type=getslicetype_fromlabel("Fire line");
+      fire_line_type=GetSliceTypeFromLabel("Fire line");
       if(fire_line_type<0)break;
       list_slice_index=fire_line_type;
-      updateslicelist(list_slice_index);
+      UpdateSliceList(list_slice_index);
 
 
       Slice_CB(FILETYPEINDEX);
