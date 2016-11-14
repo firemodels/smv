@@ -1558,8 +1558,15 @@ void keyboard(unsigned char key, int flag){
         break;
       case GLUT_ACTIVE_CTRL:
       default:
-        histogram_type++;
-        if(histogram_type > 2)histogram_type = 0;
+        if(histogram_show_graph == 1 || histogram_show_numbers == 1){
+          histogram_show_graph = 0;
+          histogram_show_numbers = 0;
+        }
+        else{
+          histogram_show_graph = 1;
+          histogram_show_numbers = 1;
+          visColorbar = 1;
+        }
         UpdateHistogramType();
         break;
       }

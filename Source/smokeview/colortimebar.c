@@ -946,86 +946,88 @@ void DrawColorBarRectHist(int lefthist){
   cbt =  colorbar_top_pos + cbdiff / (float)(histogram_nbuckets - 2);
   cbb = colorbar_down_pos - cbdiff / (float)(histogram_nbuckets - 2);
 
-  if(histogram_outline == 1){
-    glBegin(GL_LINES);
-  }
-  else{
-    glBegin(GL_TRIANGLES);
-  }
-  for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
-    float *rgb_cb, *rgb_cb2;
-    float yy, yy2;
-    int cbl, cbl2, cbr;
-    int ibucket2;
-    int icolor, icolor2;
-    float dcolor, val, val2;
-    histogramdata *histi;
-
-    icolor = ibucket*(float)(nrgb_full-1) / (float)histogram_nbuckets;
-    rgb_cb = rgb_full[icolor];
-
-    ibucket2 = MIN(ibucket + 1,histogram_nbuckets-1);
-
-    icolor2 = (ibucket+1)*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
-    rgb_cb2 = rgb_full[icolor2];
-
-    if(histogram_type == 1){
-      histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
+  if(histogram_show_graph == 1){
+    if(histogram_show_outline == 1){
+      glBegin(GL_LINES);
     }
     else{
-      histi = hists256_slice;
+      glBegin(GL_TRIANGLES);
     }
+    for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
+      float *rgb_cb, *rgb_cb2;
+      float yy, yy2;
+      int cbl, cbl2, cbr;
+      int ibucket2;
+      int icolor, icolor2;
+      float dcolor, val, val2;
+      histogramdata *histi;
 
-    dcolor = histogram_width_factor * 3 * (colorbar_right_pos - colorbar_left_pos);
-    val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
-    cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
+      icolor = ibucket*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
+      rgb_cb = rgb_full[icolor];
 
-    val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
-    cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
+      ibucket2 = MIN(ibucket + 1, histogram_nbuckets - 1);
 
-    cbr = colorbar_right_pos;
+      icolor2 = (ibucket + 1)*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
+      rgb_cb2 = rgb_full[icolor2];
 
-     yy = MIX2( icolor, 255, cbt, cbb);
-    yy2 = MIX2(icolor2, 255, cbt, cbb);
+      if(histogram_static == 0){
+        histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
+      }
+      else{
+        histi = hists256_slice;
+      }
 
-    //   (cbl,yy)-------(cbr,yy)
-    //      |         /    |
-    //      |     /        |
-    //      |  /           |
-    //   (cbl,yy2)------(cbr,yy2)
+      dcolor = histogram_width_factor * 3 * (colorbar_right_pos - colorbar_left_pos);
+      val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
+      cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
 
-    if(histogram_outline == 1){
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
-      glVertex2f(cbr, yy);
+      val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
+      cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
 
-      glVertex2f(cbr, yy);
-      glColor4fv(rgb_cb2);
-      glVertex2f(cbr, yy2);
+      cbr = colorbar_right_pos;
 
-      glVertex2f(cbr, yy2);
-      glVertex2f(cbl, yy2);
+      yy = MIX2(icolor, 255, cbt, cbb);
+      yy2 = MIX2(icolor2, 255, cbt, cbb);
 
-      glVertex2f(cbl, yy2);
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
+      //   (cbl,yy)-------(cbr,yy)
+      //      |         /    |
+      //      |     /        |
+      //      |  /           |
+      //   (cbl,yy2)------(cbr,yy2)
+
+      if(histogram_show_outline == 1){
+        glColor4fv(rgb_cb);
+        glVertex2f(cbl, yy);
+        glVertex2f(cbr, yy);
+
+        glVertex2f(cbr, yy);
+        glColor4fv(rgb_cb2);
+        glVertex2f(cbr, yy2);
+
+        glVertex2f(cbr, yy2);
+        glVertex2f(cbl, yy2);
+
+        glVertex2f(cbl, yy2);
+        glColor4fv(rgb_cb);
+        glVertex2f(cbl, yy);
+      }
+      else{
+        glColor4fv(rgb_cb);
+        glVertex2f(cbl, yy);
+        glVertex2f(cbr, yy);
+        glColor4fv(rgb_cb2);
+        glVertex2f(cbl, yy2);
+
+        glVertex2f(cbr, yy2);
+        glVertex2f(cbl, yy2);
+        glColor4fv(rgb_cb);
+        glVertex2f(cbr, yy);
+      }
     }
-    else{
-      glColor4fv(rgb_cb);
-      glVertex2f(cbl, yy);
-      glVertex2f(cbr, yy);
-      glColor4fv(rgb_cb2);
-      glVertex2f(cbl, yy2);
-
-      glVertex2f(cbr, yy2);
-      glVertex2f(cbl, yy2);
-      glColor4fv(rgb_cb);
-      glVertex2f(cbr, yy);
-    }
+    glEnd();
   }
-  glEnd();
 
-  if(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)){
+  if(histogram_show_numbers==1&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))){
     boundsdata *sb;
     float slicerange;
     char *percen="%";
@@ -1048,7 +1050,7 @@ void DrawColorBarRectHist(int lefthist){
       ibucket = i*(float)histogram_nbuckets / (float)nrgb;
       foreground_color = &(foregroundcolor[0]);
 
-      if(histogram_type == 1){
+      if(histogram_static == 0){
         histi = hists12_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
       }
       else{
@@ -1159,7 +1161,7 @@ void DrawColorbars(void){
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
     leftslice=ileft;
     ileft++;
-    if(histogram_type!=0){
+    if(histogram_show_numbers==1){
       lefthist=ileft;
       ileft++;
       dohist=1;
@@ -1292,11 +1294,11 @@ void DrawColorbars(void){
         glPopMatrix();
       }
 
-      if(histogram_type == 0){
-        DrawColorBarRect();
-      }
-      else{
+      if(histogram_show_graph == 1 || histogram_show_numbers == 1){
         DrawColorBarRectHist(lefthist);
+      }
+      if(histogram_show_graph==0){
+        DrawColorBarRect();
       }
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){

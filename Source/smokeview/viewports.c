@@ -151,7 +151,7 @@ void GetViewportInfo(void){
 
   doit=1;
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
-    if(histogram_type!=0){
+    if(histogram_show_graph == 1 || histogram_show_numbers == 1){
       dohist=1;
     }
   }
