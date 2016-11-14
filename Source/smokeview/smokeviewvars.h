@@ -22,9 +22,9 @@
 
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN float SVDECL(histogram_width_factor,1.0);
-SVEXTERN int SVDECL(histogram_show_graph, 1), SVDECL(histogram_show_numbers, 1);
+SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
 SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
-SVEXTERN int SVDECL(update_slice_hist, 0), SVDECL(nhists256_slice, 0);
+SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL(nhists256_slice, 0);
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
 
 SVEXTERN int SVDECL(color_vector_black, 0);

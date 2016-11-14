@@ -1386,12 +1386,121 @@ void UpdateSliceFilenum(void){
   }
 }
 
+/* ------------------ GetSliceHists ------------------------ */
+
+void GetSliceHists(slicedata *sd) {
+  float *pdata;
+  int ndata;
+  int n, i;
+  int nframe;
+  float *pdata0;
+
+  int istep;
+  int nx, ny, nxy, ibar, jbar;
+  int ntimes;
+  char *iblank_node, *iblank_cell, *slice_mask0;
+  meshdata *meshi;
+
+  if (sd->histograms != NULL)return;
+  meshi = meshinfo + sd->blocknumber;
+  iblank_node = meshi->c_iblank_node;
+  iblank_cell = meshi->c_iblank_cell;
+
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nxy = nx*ny;
+
+  pdata = sd->qslicedata;
+  ndata = sd->nslicetotal;
+
+  nframe = sd->nslicei*sd->nslicej*sd->nslicek;
+  NewMemory((void **)&slice_mask0, sd->nslicei*sd->nslicej*sd->nslicek);
+  n = -1;
+  for (i = 0; i < sd->nslicei; i++) {
+    int j;
+
+    for (j = 0; j < sd->nslicej; j++) {
+      int k;
+
+      for (k = 0; k < sd->nslicek; k++) {
+        n++;
+        slice_mask0[n] = 0;
+        if (sd->slicetype == SLICE_CELL_CENTER &&
+          ((k == 0 && sd->nslicek != 1) || (j == 0 && sd->nslicej != 1) || (i == 0 && sd->nslicei != 1)))continue;
+        if (show_slice_in_obst == 0) {
+          if (sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
+          if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+        }
+        slice_mask0[n] = 1;
+      }
+    }
+  }
+
+  ntimes = ndata / sd->nsliceii;
+
+  // initialize histograms
+
+  sd->nhistograms = ntimes + 1;
+  NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
+  NewMemory((void **)&pdata0, sd->nslicei*sd->nslicej*sd->nslicek * sizeof(float));
+  for (i = 0; i < sd->nhistograms; i++) {
+    InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
+  }
+
+  n = 0;
+  for (istep = 0; istep < ntimes; istep++) {
+    histogramdata *histi, *histall;
+    int nn;
+
+    if (sd->compression_type == COMPRESSED_ZLIB) {
+      uncompress_slicedataframe(sd, istep);
+    }
+    for (nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++) {
+      if (sd->compression_type == COMPRESSED_ZLIB) {
+        pdata0[nn] = sd->qval256[sd->slicecomplevel[nn]];
+      }
+      else {
+        pdata0[nn] = sd->qslicedata[n + nn];
+      }
+    }
+    n += sd->nslicei*sd->nslicej*sd->nslicek;
+
+    // compute histogram for each timestep, histi and all time steps, histall
+
+    histi = sd->histograms + istep + 1;
+    histall = sd->histograms;
+    CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
+    MergeHistogram(histall, histi, MERGE_BOUNDS);
+  }
+  FREEMEMORY(slice_mask0);
+  FREEMEMORY(pdata0);
+}
+
+/* ------------------ GetAllSliceHists ------------------------ */
+
+void GetAllSliceHists(void) {
+  int ii;
+
+  for (ii = 0; ii < nslice_loaded; ii++) {
+    slicedata *sdi;
+    int i;
+
+    i = slice_loaded_list[ii];
+    sdi = sliceinfo + i;
+    if (sdi->histograms == NULL)GetSliceHists(sdi);
+  }
+}
+
 /* ------------------ UpdateSliceHist ------------------------ */
 
 void UpdateSliceHist(void){
   int i;
   int nmax;
 
+  histograms_defined = 1;
+  GetAllSliceHists();
   if(hists256_slice != NULL){
     for(i = 0; i < nhists256_slice; i++){
       FreeHistogram(hists256_slice + i);
@@ -3342,7 +3451,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
-  int define_histograms = 0;
 
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
@@ -3383,32 +3491,11 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   n=-1;
   ntimes = ndata/sd->nsliceii;
 
-  // initialize histograms
-
-  sd->nhistograms = ntimes + 1;
-  if(sd->histograms == NULL){
-    define_histograms = 1;
-    NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
-    for(i = 0; i < sd->nhistograms; i++){
-      InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
-    }
-  }
-
   for(istep=0;istep<ntimes;istep++){
     int n0;
-    histogramdata *histi, *histall;
 
     n0 = -1;
     pdata0 = pdata + n + 1;
-
-    // compute histogram for each timestep, histi and all time steps, histall
-
-    if(define_histograms == 1){
-      histi = sd->histograms + istep + 1;
-      histall = sd->histograms;
-      CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
-      MergeHistogram(histall, histi, MERGE_BOUNDS);
-    }
 
     for(i=0;i<sd->nslicei;i++){
       int ii,j;
@@ -3476,6 +3563,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     PRINTF(" global min (slice file): %f %s=(%i,%i,%i)\n", *pmin, slicelabel, iimin, jjmin, kkmin);
     PRINTF(" global max (slice file): %f %s=(%i,%i,%i)\n", *pmax, slicelabel, iimax, jjmax, kkmax);
   }
+  FREEMEMORY(slice_mask0);
 }
 
 /* ------------------ AdjustSliceBounds ------------------------ */
@@ -3701,6 +3789,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
   slicefilenumber = ifile;
   slicefilenum = ifile;
+  histograms_defined = 0;
 
   ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
   sd = sliceinfo + slicefilenumber;
@@ -3797,7 +3886,6 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
           list_slice_index = islicetype;
           SetSliceBounds(islicetype);
           UpdateAllSliceColors(islicetype, errorcode);
-          update_slice_hist = 1;
         }
         else {
           UpdateAllSliceLabels(islicetype, errorcode);
@@ -4051,7 +4139,6 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       UpdateAllSliceColors(islicetype, errorcode);
       list_slice_index = islicetype;
       SetSliceBounds(islicetype);
-      update_slice_hist = 1;
     }
     else {
       slicebounds[islicetype].valmin_data = qmin;
@@ -4149,6 +4236,12 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     meshj->slice_max[0] = 0.0;
     meshj->slice_max[1] = 1.0;
     meshj->slice_max[2] = 0.0;
+  }
+  
+  // define histogram data structures if visible
+  
+  if(histogram_show_graph==1||histogram_show_numbers==1){
+    update_slice_hists=1;
   }
   glutPostRedisplay();
   printf("qmin=%f qmax=%f\n",qmin,qmax);

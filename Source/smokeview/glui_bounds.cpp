@@ -100,6 +100,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define UPDATE_SLICEDUPS 212
 #endif
 #define UPDATE_HISTOGRAM 213
+#define INIT_HISTOGRAM 214
 
 #define SCRIPT_START 31
 #define SCRIPT_STOP 32
@@ -1267,16 +1268,16 @@ extern "C" void glui_bounds_setup(int main_window){
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_histogram, SLICE_HISTOGRAM_ROLLOUT);
 
     RADIO_histogram_static = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice_histogram,&histogram_static);
-    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"transient");
-    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"static");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"each time");
+    glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"all times");
     SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
       &histogram_width_factor);
     SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
     SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("partitions"), GLUI_SPINNER_INT,
       &histogram_nbuckets,UPDATE_HISTOGRAM,Slice_CB);
     SPINNER_histogram_nbuckets->set_int_limits(3,255);
-    CHECKBOX_histogram_show_numbers=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("percentages"), &histogram_show_numbers);
-    CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("graph"), &histogram_show_graph);
+    CHECKBOX_histogram_show_numbers = glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("percentages"), &histogram_show_numbers, INIT_HISTOGRAM, Slice_CB);
+    CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("graph"), &histogram_show_graph, INIT_HISTOGRAM, Slice_CB);
     CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("outline"), &histogram_show_outline);
 
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_d("Average data"),false,SLICE_AVERAGE_ROLLOUT,Slice_Rollout_CB);
@@ -1423,11 +1424,13 @@ extern "C" void compress_onoff(int flag){
       if(CHECKBOX_overwrite_all!=NULL)CHECKBOX_overwrite_all->disable();
       if(CHECKBOX_erase_all!=NULL)CHECKBOX_erase_all->disable();
       if(CHECKBOX_multi_task!=NULL)CHECKBOX_multi_task->disable();
+      break;
     case ON:
       if(BUTTON_compress!=NULL)BUTTON_compress->enable();
       if(CHECKBOX_overwrite_all!=NULL)CHECKBOX_overwrite_all->enable();
       if(CHECKBOX_erase_all!=NULL)CHECKBOX_erase_all->enable();
       if(CHECKBOX_multi_task!=NULL)CHECKBOX_multi_task->enable();
+      break;
     default:
       ASSERT(FFALSE);
       break;
@@ -2710,7 +2713,15 @@ extern "C" void Slice_CB(int var){
 
   updatemenu=1;
   if(var==UPDATE_HISTOGRAM){
-    update_slice_hist = 1;
+    update_slice_hists = 1;
+    histograms_defined = 0;
+    return;
+  }
+  if (var == INIT_HISTOGRAM){
+    if (histogram_show_graph == 1 || histogram_show_numbers == 1) {
+      update_slice_hists = 1;
+      visColorbar = 1;
+    }
     return;
   }
   if(var==SLICE_IN_OBST){

@@ -1566,6 +1566,7 @@ void keyboard(unsigned char key, int flag){
           histogram_show_graph = 1;
           histogram_show_numbers = 1;
           visColorbar = 1;
+          update_slice_hists = 1;
         }
         UpdateHistogramType();
         break;
