@@ -3330,7 +3330,7 @@ void SetSliceBounds(int slicetype){
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd) {
-  float *pdata, *pdata0;
+  float *pdata;
   int ndata;
   int n, i;
   int nframe;
@@ -3340,8 +3340,8 @@ void GetSliceHists(slicedata *sd) {
   int ntimes;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
-  int define_histograms = 0;
 
+  if (sd->histograms != NULL)return;
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -3384,30 +3384,24 @@ void GetSliceHists(slicedata *sd) {
   // initialize histograms
 
   sd->nhistograms = ntimes + 1;
-  if (sd->histograms == NULL) {
-    define_histograms = 1;
-    NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
-    for (i = 0; i < sd->nhistograms; i++) {
-      InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
-    }
+  NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
+  for (i = 0; i < sd->nhistograms; i++) {
+    InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
   }
 
   for (istep = 0; istep < ntimes; istep++) {
-    int n0;
     histogramdata *histi, *histall;
+    float *pdata0;
 
-    n0 = -1;
     pdata0 = pdata + n + 1;
     n += sd->nslicei*sd->nslicej*sd->nslicek;
 
     // compute histogram for each timestep, histi and all time steps, histall
 
-    if (define_histograms == 1) {
-      histi = sd->histograms + istep + 1;
-      histall = sd->histograms;
-      CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
-      MergeHistogram(histall, histi, MERGE_BOUNDS);
-    }
+    histi = sd->histograms + istep + 1;
+    histall = sd->histograms;
+    CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
+    MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
   FREEMEMORY(slice_mask0);
 }
