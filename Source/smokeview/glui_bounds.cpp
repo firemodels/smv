@@ -1269,6 +1269,7 @@ extern "C" void glui_bounds_setup(int main_window){
     SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("partitions"), GLUI_SPINNER_INT,
       &histogram_nbuckets,UPDATE_HISTOGRAM,Slice_CB);
     SPINNER_histogram_nbuckets->set_int_limits(3,255);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _d("outline"), &histogram_outline);
 
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_d("Average data"),false,SLICE_AVERAGE_ROLLOUT,Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT);
