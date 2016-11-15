@@ -430,8 +430,15 @@ RENDERONCE
 LABEL
   render 3D smoke while clipping blockages (but not smoke)
 
+UNLOADALL
+LOAD3DSMOKE
+ soot mass fraction
+LOAD3DSMOKE
+ HRRPUV
 LOADINIFILE
  thouse5_clip_blockages.ini
+SETVIEWPOINT
+ external
 SETTIMEVAL
  30.000000
 RENDERONCE
