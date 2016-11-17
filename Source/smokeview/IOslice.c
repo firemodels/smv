@@ -4239,15 +4239,13 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     meshj->slice_max[1] = 1.0;
     meshj->slice_max[2] = 0.0;
   }
-  
+
   // define histogram data structures if visible
-  
+
   if(histogram_show_graph==1||histogram_show_numbers==1){
     update_slice_hists=1;
   }
   glutPostRedisplay();
-  printf("qmin=%f qmax=%f\n",qmin,qmax);
-
 }
 
 /* ------------------ UpdateSlice3DTexture ------------------------ */
