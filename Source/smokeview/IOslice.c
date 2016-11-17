@@ -2407,6 +2407,8 @@ void UpdateFedinfo(void){
     sd->menu_show = 1;
     sd->constant_color = NULL;
     sd->mesh_type = co2->mesh_type;
+    sd->histograms = NULL;
+    sd->nhistograms = 0;
 
     strcpy(filename_base, fedi->co->file);
     ext = strrchr(filename_base, '.');
