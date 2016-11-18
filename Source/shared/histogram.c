@@ -10,7 +10,43 @@
 #include "MALLOC.h"
 #include "datadefs.h"
 
-/* ------------------ GetHistogramVal ------------------------ */
+/* ------------------ GetHistogramCDF ------------------------ */
+
+float GetHistogramCDF(histogramdata *histogram, float val) {
+  int i;
+  int cdf_cutoff, sum;
+  float return_val;
+
+  if (histogram->valmax > histogram->valmin) {
+    cdf_cutoff = (val - histogram->valmin)*(float)histogram->nbuckets / (histogram->valmax - histogram->valmin);
+  }
+  else {
+    cdf_cutoff = 0;
+  }
+  sum = 0;
+  for (i = 0; i < histogram->nbuckets; i++) {
+    sum += histogram->buckets[i];
+    if (sum > cdf_cutoff) {
+      return_val = (float)i / (float)histogram->nbuckets;
+      return return_val;
+    }
+  }
+  return 1.0;
+}
+
+/* ------------------ GetHistogramCDFS ------------------------ */
+
+void GetHistogramCDFS(histogramdata *histogram, float *vals, float *cdfs, int nvals) {
+  int i;
+  int nint;
+
+  nint = nvals + 1;
+  for (i = 0; i < nvals; i++) {
+    cdfs[i] = GetHistogramCDF(histogram, vals[i]);
+  }
+}
+
+  /* ------------------ GetHistogramVal ------------------------ */
 
 float GetHistogramVal(histogramdata *histogram, float cdf){
 

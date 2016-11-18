@@ -40,9 +40,11 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
 void FreeHistogram(histogramdata *histogram);
 void FreeHistogram2d(histogramdata *histogram);
 void Get2DMinMax(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag);
-void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag);
+float GetHistogramCDF(histogramdata *histogram, float val);
+void GetHistogramCDFS(histogramdata *histogram, float *vals, float *cdfs, int nvals);
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetHistogramStats(histogramdata *histogram);
+void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag);
 void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogram2D(histogramdata *histogram, int nx, int ny);
