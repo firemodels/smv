@@ -14,36 +14,15 @@
 
 float GetHistogramCDF(histogramdata *histogram, float val) {
   int i;
-  int cdf_cutoff, sum;
-  float return_val;
+  int cutoff, sum=0;
 
-  if (histogram->valmax > histogram->valmin) {
-    cdf_cutoff = (val - histogram->valmin)*(float)histogram->nbuckets / (histogram->valmax - histogram->valmin);
-  }
-  else {
-    cdf_cutoff = 0;
-  }
-  sum = 0;
-  for (i = 0; i < histogram->nbuckets; i++) {
+  if(histogram->valmax <= histogram->valmin)return 0.0;
+
+  cutoff = (val - histogram->valmin)*(float)histogram->nbuckets / (histogram->valmax - histogram->valmin);
+  for (i = 0; i < cutoff; i++) {
     sum += histogram->buckets[i];
-    if (sum > cdf_cutoff) {
-      return_val = (float)i / (float)histogram->nbuckets;
-      return return_val;
-    }
   }
-  return 1.0;
-}
-
-/* ------------------ GetHistogramCDFS ------------------------ */
-
-void GetHistogramCDFS(histogramdata *histogram, float *vals, float *cdfs, int nvals) {
-  int i;
-  int nint;
-
-  nint = nvals + 1;
-  for (i = 0; i < nvals; i++) {
-    cdfs[i] = GetHistogramCDF(histogram, vals[i]);
-  }
+  return (float)sum / (float)histogram->ntotal;
 }
 
   /* ------------------ GetHistogramVal ------------------------ */
@@ -192,7 +171,7 @@ void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valma
 
   /* ------------------ CopyU2Histogram ------------------------ */
 
-void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogram){
+void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram){
 
 // copy vals into histogram
 
@@ -239,8 +218,8 @@ void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogra
 
         if(mask!=NULL&&mask[i]==0)continue;
         ival = (vals[i]-valmin)/dbucket;
-        ival=MAX(0,ival);
-        ival=MIN(histogram->nbuckets-1,ival);
+        ival = MAX(0,ival);
+        ival = MIN(histogram->nbuckets-1,ival);
         histogram->buckets[ival]++;
       }
     }
@@ -266,7 +245,7 @@ void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogra
   if(nvals<=0)return;
   InitHistogram(&histogram_from,NHIST_BUCKETS, NULL, NULL);
 
-  CopyU2Histogram(vals,mask,nvals,&histogram_from);
+  CopyU2Histogram(vals,mask,NULL,nvals,&histogram_from);
   MergeHistogram(histogram_to,&histogram_from,MERGE_BOUNDS);
   FreeHistogram(&histogram_from);
 }

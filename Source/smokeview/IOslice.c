@@ -1400,11 +1400,16 @@ void GetSliceHists(slicedata *sd) {
   int ntimes;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
+  float *slice_weight0;
+  float *xplt, *yplt, *zplt;
 
   if (sd->histograms != NULL)return;
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
 
   ibar = meshi->ibar;
   jbar = meshi->jbar;
@@ -1417,14 +1422,34 @@ void GetSliceHists(slicedata *sd) {
 
   nframe = sd->nslicei*sd->nslicej*sd->nslicek;
   NewMemory((void **)&slice_mask0, sd->nslicei*sd->nslicej*sd->nslicek);
+  NewMemory((void **)&slice_weight0, sd->nslicei*sd->nslicej*sd->nslicek*sizeof(float));
   n = -1;
   for (i = 0; i < sd->nslicei; i++) {
     int j;
+    float dx;
+    int i1;
+
+    i1 = sd->is1 + i;
+    dx = xplt[i1+1] - xplt[i1];
+    if(dx <= 0.0)dx = 1.0;
 
     for (j = 0; j < sd->nslicej; j++) {
       int k;
+      float dy;
+      int j1;
+
+      j1 = sd->js1 + j;
+      dy = yplt[j1+1] - yplt[j1];
+      if(dy <= 0.0)dy = 1.0;
 
       for (k = 0; k < sd->nslicek; k++) {
+        float dz;
+        int k1;
+
+        k1 = sd->ks1 + k;
+        dz = zplt[k1+1] - zplt[k1];
+        if(dz <= 0.0)dz = 1.0;
+
         n++;
         slice_mask0[n] = 0;
         if (sd->slicetype == SLICE_CELL_CENTER &&
@@ -1434,6 +1459,7 @@ void GetSliceHists(slicedata *sd) {
           if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
         }
         slice_mask0[n] = 1;
+        slice_weight0[n] = dx*dy*dz;
       }
     }
   }
@@ -1471,10 +1497,11 @@ void GetSliceHists(slicedata *sd) {
 
     histi = sd->histograms + istep + 1;
     histall = sd->histograms;
-    CopyU2Histogram(pdata0, slice_mask0, nframe, histi);
+    CopyU2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
   FREEMEMORY(slice_mask0);
+  FREEMEMORY(slice_weight0);
   FREEMEMORY(pdata0);
 }
 
@@ -1498,6 +1525,7 @@ void GetAllSliceHists(void) {
 void UpdateSliceHist(void){
   int i;
   int nmax;
+  int is_fed = 0;
 
   histograms_defined = 1;
   GetAllSliceHists();
@@ -1557,6 +1585,7 @@ void UpdateSliceHist(void){
 
       slicei = sliceinfo + slice_loaded_list[i];
       if(slicei->type != islicetype)continue;
+      if(slicei->is_fed == 1)is_fed = 1;
       for(j = 0; j < MIN(slicei->nhistograms,nhists256_slice); j++){
         histogramdata *hist256j, *hist12j, *histj;
 
@@ -1580,6 +1609,26 @@ void UpdateSliceHist(void){
         maxval = MAX(val, maxval);
       }
       hist256i->bucket_maxval = maxval;
+    }
+    FREEMEMORY(fed_areas);
+    if(is_fed == 1){
+      NewMemory((void **)&fed_areas, 4*nhists256_slice * sizeof(int));
+      for(i = 0; i < nhists256_slice; i++){
+        int *fed_areasi;
+        int j;
+        float hist0p0, hist0p3, hist1p0, hist3p0;
+
+        hist0p0 = GetHistogramCDF(hists256_slice + i, 0.0);
+        hist0p3 = GetHistogramCDF(hists256_slice + i, 0.3);
+        hist1p0 = GetHistogramCDF(hists256_slice + i, 1.0);
+        hist3p0 = GetHistogramCDF(hists256_slice + i, 3.0);
+
+        fed_areasi = fed_areas + 4 * i;
+        fed_areasi[0] = 100 * (hist0p3 - hist0p0);
+        fed_areasi[1] = 100 * (hist1p0 - hist0p3);
+        fed_areasi[2] = 100 * (hist3p0 - hist1p0);
+        fed_areasi[3] = 100 * (1.0     - hist3p0);
+      }
     }
   }
 
@@ -3823,7 +3872,6 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     slicefilenum = ifile;
 
     if(flag == UNLOAD){
-      fed_areas = NULL;
       sd->ntimes = 0;
       updatemenu = 1;
       sd->loaded = 0;
@@ -7365,7 +7413,7 @@ void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  CopyU2Histogram(vals, NULL, nvals, histogram);
+  CopyU2Histogram(vals, NULL, NULL, nvals, histogram);
   FREEMEMORY(vals);
 }
 

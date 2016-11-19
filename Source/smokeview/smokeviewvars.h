@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(*fed_areas, NULL);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN float SVDECL(histogram_width_factor,1.0);
 SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
@@ -254,7 +255,6 @@ SVEXTERN float modelview_identity[16];
 SVEXTERN mousedata mouseinfo;
 SVEXTERN int SVDECL(use_glui_rotate,0);
 SVEXTERN int SVDECL(show_fed_area,1);
-SVEXTERN int SVDECL(*fed_areas,NULL);
 SVEXTERN char default_fed_colorbar[255];
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);

@@ -137,35 +137,6 @@ void UpdateFrameNumber(int changetime){
         slice_time = sd->itime;
         if(sd->is_fed==1)showfed=1;
       }
-      if(showfed==1){
-        fed_areas=NULL;
-        for(i=0;i<nmultisliceinfo;i++){
-          multislicedata *mslicei;
-          int itime;
-          int j;
-
-          mslicei = multisliceinfo + i;
-          if(mslicei->contour_areas_percen==NULL)continue;
-          if(fed_areas!=NULL){
-            fed_areas=NULL;
-            break;
-          }
-          for(j=0;j<mslicei->nslices;j++){
-            slicedata *slicej;
-
-            slicej = sliceinfo + mslicei->islices[j];
-            if(slicej->loaded==0||slicej->display==0)continue;
-            itime = slicej->itime;
-            if(mslicei->nslices==1){
-              fed_areas=slicej->contour_areas_percen+4*itime;
-            }
-            else{
-              fed_areas=mslicei->contour_areas_percen+4*itime;
-            }
-            break;
-          }
-        }
-      }
     }
     if(show3dsmoke==1){
       for(i=0;i<nsmoke3dinfo;i++){

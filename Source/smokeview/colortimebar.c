@@ -1269,25 +1269,28 @@ void DrawColorbars(void){
         char area_label[256];
         char percen[]="%";
         float yy;
+        int *fed_areasi;
+
+        fed_areasi = fed_areas + 4*CLAMP(slice_time + 1, 1, nhists256_slice);
 
         glPushMatrix();
         glTranslatef(
           colorbar_left_pos,
           0.0,
           0.0);
-        sprintf(area_label,"%i%s",fed_areas[0],percen);
+        sprintf(area_label,"%i%s",fed_areasi[0],percen);
         yy = MIX2(0.15,3.0,colorbar_top_pos,colorbar_down_pos)-VP_colorbar.text_height/2;
         OutputBarText(0.0,yy,foreground_color,area_label);
 
-        sprintf(area_label,"%i%s",fed_areas[1],percen);
+        sprintf(area_label,"%i%s",fed_areasi[1],percen);
         yy = MIX2(0.65,3.0,colorbar_top_pos,colorbar_down_pos)-VP_colorbar.text_height/2;
         OutputBarText(0.0,yy,foreground_color,area_label);
 
-        sprintf(area_label,"%i%s",fed_areas[2],percen);
+        sprintf(area_label,"%i%s",fed_areasi[2],percen);
         yy = MIX2(2.0,3.0,colorbar_top_pos,colorbar_down_pos)-VP_colorbar.text_height/2;
         OutputBarText(0.0,yy,foreground_color,area_label);
 
-        sprintf(area_label,"%i%s",fed_areas[3],percen);
+        sprintf(area_label,"%i%s",fed_areasi[3],percen);
         yy = MIX2(3.0,3.0,colorbar_top_pos,colorbar_down_pos)-VP_colorbar.text_height/2;
         OutputBarText(0.0,yy+10,foreground_color,area_label);
         glPopMatrix();

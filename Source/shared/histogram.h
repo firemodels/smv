@@ -34,14 +34,13 @@ typedef struct {
 
 void CompleteHistogram(histogramdata *histogram);
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
-void CopyU2Histogram(float *vals, char *mask, int nvals, histogramdata *histogram);
+void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
 void FreeHistogram2d(histogramdata *histogram);
 void Get2DMinMax(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag);
 float GetHistogramCDF(histogramdata *histogram, float val);
-void GetHistogramCDFS(histogramdata *histogram, float *vals, float *cdfs, int nvals);
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetHistogramStats(histogramdata *histogram);
 void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag);
