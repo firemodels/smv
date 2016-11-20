@@ -641,7 +641,6 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
 void output_fed_csv(void){
   FILE *AREA_STREAM=NULL;
   char *fed_area_file=NULL,fed_area_file_base[1024];
-  float *areas;
   int i;
 
   if(fed_areas == NULL)return;
@@ -673,8 +672,6 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
   int nx, ny;
   int nxy;
   int nxdata, nydata;
-  float levels[6]={-0.00001,0.295276,0.992126,3.0};
-  int nlevels=5; // 2 extra levels for below 0.0 and above 3.0
   int ibar, jbar, kbar;
 
 #define FEDCO(CO) ( (2.764/100000.0)*pow(1000000.0*CLAMP(CO,0.0,0.1),1.036)/60.0 )
@@ -767,7 +764,6 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     multislicedata *mslicei;
 
     char *iblank;
-    float total,fareas[4];
 
     NewMemory((void **)&iblank,nxdata*nydata*sizeof(char));
     for(j = 0; j<nxdata-1; j++){
@@ -1387,7 +1383,7 @@ void UpdateSliceHist(void){
       if(slicei->type != islicetype)continue;
       if(slicei->is_fed == 0)continue;
       for(j = 0; j < MIN(slicei->nhistograms, nhists256_slice); j++){
-        histogramdata *hist256j, *hist12j, *histj;
+        histogramdata *hist256j;
 
         hist256j = hists256_slice + j;
         hist256j->time_defined = 1;
@@ -1414,7 +1410,6 @@ void UpdateSliceHist(void){
       NewMemory((void **)&fed_areas, 4*nhists256_slice * sizeof(int));
       for(i = 0; i < nhists256_slice; i++){
         int *fed_areasi;
-        int j;
         float hist0p0, hist0p3, hist1p0, hist3p0;
 
         hist0p0 = GetHistogramCDF(hists256_slice + i, 0.0);

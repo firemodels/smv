@@ -1037,7 +1037,6 @@ void DrawHistColorBar(void){
 /* ------------------ DrawHistColorBarLabels ------------------------ */
 
 void DrawHistColorBarLabels(int lefthist){
-  int ibucket;
   int cbt, cbb, cbdiff;
 
   cbdiff = colorbar_top_pos - colorbar_down_pos;
@@ -1122,30 +1121,6 @@ void DrawColorBarRect(void){
 
 void DrawColorBars(void){
   int i;
-  int iposition;
-
-  int sliceflag=0;
-  int isoflag=0;
-  float *slicefactor=NULL;
-  float slicefactor2[2];
-  float *isofactor=NULL;
-
-  int plot3dflag=0;
-  float *plot3dfactor=NULL;
-  float plot3dfactor2[2];
-  float plot3drange;
-
-  int patchflag=0;
-  int zoneflag=0;
-  float *patchfactor=NULL;
-  float *zonefactor=NULL;
-  float patchrange=0.0;
-  float zonerange;
-
-  int partflag=0;
-  float *partfactor=NULL;
-  float partrange=0.0;
-  int dohist=0;
 
   int fed_slice=0;
 
