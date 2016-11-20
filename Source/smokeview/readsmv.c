@@ -7728,8 +7728,6 @@ typedef struct {
       sd->reload=0;
       sd->nline_contours=0;
       sd->line_contours=NULL;
-      sd->contour_areas=NULL;
-      sd->ncontour_areas=0;
       sd->menu_show=1;
       sd->constant_color=NULL;
       sd->histograms = NULL;

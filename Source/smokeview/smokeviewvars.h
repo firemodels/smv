@@ -797,6 +797,7 @@ SVEXTERN int visLabels;
 SVEXTERN int showallslicevectors;
 SVEXTERN float framerate;
 SVEXTERN int nglobal_times, SVDECL(ntimes_old,0), itimes, itime_save, itimeold, seqnum,RenderTime,RenderTimeOld;
+SVEXTERN int SVDECL(fed_seqnum, 0);
 SVEXTERN int nopart;
 SVEXTERN int uindex, vindex, windex;
 

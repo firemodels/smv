@@ -294,7 +294,7 @@ EXTERNCPP void draw_select_avatars(void);
 EXTERNCPP void readterrain(char *file, int ifile, int flag, int *errorcode);
 EXTERNCPP void initterrain_znode(meshdata *meshi, terraindata *terri, float xmin, float xmax, int nx, float ymin, float ymax, int ny,
                                  int allocate_memory);
-EXTERNCPP void output_mfed_csv(multislicedata *mslicei);
+EXTERNCPP void output_fed_csv(void);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP int get_index(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);

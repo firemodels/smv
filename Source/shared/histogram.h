@@ -18,15 +18,17 @@
 
 #define NHIST_BUCKETS 100000
 typedef struct {
-  unsigned int *buckets, *buckets_2d;
-  float bucket_maxval;
+  unsigned int *buckets_2d;
+  float *buckets, bucket_maxval;
   int nbuckets, ndim, defined;
   int nx, ny;
-  unsigned int ntotal;
+  float ntotal;
   float valmin, valmax;
   float valxmin, valxmax;
   float valymin, valymax;
   float valmean, valstdev;
+  float time;
+  int time_defined;
   int complete;
 } histogramdata;
 
@@ -34,7 +36,7 @@ typedef struct {
 
 void CompleteHistogram(histogramdata *histogram);
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
-void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
+void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
@@ -44,7 +46,6 @@ float GetHistogramCDF(histogramdata *histogram, float val);
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetHistogramStats(histogramdata *histogram);
 void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag);
-void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogram2D(histogramdata *histogram, int nx, int ny);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);

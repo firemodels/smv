@@ -636,103 +636,29 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
   return 0;
 }
 
-/* ------------------ output_mfed_csv ------------------------ */
+/* ------------------ output_fed_csv ------------------------ */
 
-void output_mfed_csv(multislicedata *mslicei){
+void output_fed_csv(void){
   FILE *AREA_STREAM=NULL;
-  char *fed_area_file=NULL,fed_area_file_base[1024],*ext;
-  slicedata *slice0;
-  int nslices;
+  char *fed_area_file=NULL,fed_area_file_base[1024];
   float *areas;
-  int *areas_percen;
   int i;
 
-  nslices = mslicei->nslices;
-  if(nslices<=0)return;
-  areas=mslicei->contour_areas;
-  areas_percen=mslicei->contour_areas_percen;
-  if(areas==NULL)return;
+  if(fed_areas == NULL)return;
+  sprintf(fed_area_file_base, "%s_s%04i_fedarea.csv", fdsprefix, fed_seqnum++);
+  fed_area_file = fed_area_file_base;
+  AREA_STREAM = fopen(fed_area_file, "w");
+  if(AREA_STREAM == NULL)return;
 
-  slice0 = sliceinfo + mslicei->islices[0];
+  fprintf(AREA_STREAM, "\"step\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
+  for(i = 1; i < hists256_slice->ntotal; i++){
+    int *areas;
 
-  strcpy(fed_area_file_base,slice0->file);
-  ext=strrchr(fed_area_file_base,'.');
-  if(ext!=NULL){
-    *ext=0;
-    strcat(fed_area_file_base,"_marea.csv");
-    fed_area_file=fed_area_file_base;
-    AREA_STREAM=fopen(fed_area_file,"w");
-  }
-  if(AREA_STREAM==NULL)return;
+    areas = fed_areas + 4 * CLAMP(i, 1, nhists256_slice);
 
-  fprintf(AREA_STREAM,"\"time\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
-  for(i=0;i<slice0->ntimes;i++){
-    float total,fareas[4];
-
-    total = areas[0]+areas[1]+areas[2]+areas[3];
-    fareas[0]=(100.0*areas[0]/total);
-    fareas[1]=(100.0*areas[1]/total);
-    fareas[2]=(100.0*areas[2]/total);
-    fareas[3]=(100.0*areas[3]/total);
-    fprintf(AREA_STREAM,"%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
-    slice0->times[i],areas[0],areas[1],areas[2],areas[3],fareas[0],fareas[1],fareas[2],fareas[3]);
-
-    areas_percen[0]=(int)fareas[0];
-    areas_percen[1]=(int)fareas[1];
-    areas_percen[2]=(int)fareas[2];
-    areas_percen[3]=(int)fareas[3];
-
-    areas+=4;
-    areas_percen+=4;
+    fprintf(AREA_STREAM,"%f,%i,%i,%i,%i\n",hists256_slice->time,areas[0],areas[1],areas[2],areas[3]);
   }
   fclose(AREA_STREAM);
-}
-
-#define ijnodeC(i,j) ((j)*nx+(i))
-#define ijcellC(i,j) ((j)*(nx-1)+(i))
-
-/* ------------------ GetCellAreas ------------------------ */
-
-void GetCellAreas(float *xgrid, float *ygrid, int nx, int ny, float *fed_frame, char *iblank, float *levels, int nlevels, float *areas){
-  int i;
-
-  areas[0]=0.0;
-  areas[1]=0.0;
-  areas[2]=0.0;
-  areas[3]=0.0;
-  areas[4]=0.0;
-  for(i=0;i<nx-1;i++){
-    int j;
-    float dx;
-
-    dx = xgrid[i+1]-xgrid[i];
-    for(j=0;j<ny-1;j++){
-      float dy, val, area;
-      int k;
-
-      if(iblank[ijcellC(i,j)]!=GASGAS)continue;
-      dy = ygrid[j+1]-ygrid[j];
-      area = dx*dy;
-      val = fed_frame[ijnodeC(i+1,j+1)];
-      for(k=0;k<nlevels;k++){
-        if(k==0){
-          if(val<levels[0]){
-            areas[0]+=area;
-            break;
-          }
-        }
-        else if(k==nlevels-1){
-          areas[nlevels-1]+=area;
-        }
-        else{
-          if(levels[k-1]<=val&&val<levels[k]){
-            areas[k]+=area;
-            break;
-          }
-        }
-      }
-    }
-  }
 }
 
 /* ------------------ readfed ------------------------ */
@@ -838,11 +764,6 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     float *co2_frame1,*co2_frame2;
     float *co_frame1,*co_frame2;
     float *times;
-    char *fed_area_file=NULL,fed_area_file_base[1024],*ext;
-    FILE *AREA_STREAM=NULL;
-    float area_factor;
-    float *contour_areas,*mslice_contour_areas;
-    int *contour_areas_percen;
     multislicedata *mslicei;
 
     char *iblank;
@@ -888,21 +809,11 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     }
     PRINTF("\n");
     PRINTF("generating FED slice data\n");
-    strcpy(fed_area_file_base,fed_slice->file);
-    ext=strrchr(fed_area_file_base,'.');
-    if(ext!=NULL){
-      *ext=0;
-      strcat(fed_area_file_base,"_area.csv");
-      fed_area_file=fed_area_file_base;
-      AREA_STREAM=fopen(fed_area_file,"w");
-      area_factor=SCALE2FDS(xyzmaxdiff);
-    }
     if(Creadslice_frame(0,fedi->o2_index,LOAD)<0||
        Creadslice_frame(0,fedi->co2_index,LOAD)<0||
        Creadslice_frame(0,fedi->co_index,LOAD)<0){
 
        readfed(file_index,UNLOAD, file_type, errorcode);
-       if(AREA_STREAM!=NULL)fclose(AREA_STREAM);
        return;
     }
 
@@ -927,26 +838,13 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     fed_slice->nslicetotal=frame_size*fed_slice->ntimes;
 
     mslicei = fed_slice->mslice;
-    if(mslicei->contour_areas==NULL){
-      NewMemory((void **)&mslicei->contour_areas,4*sizeof(float)*fed_slice->ntimes);
-      NewMemory((void **)&mslicei->contour_areas_percen,4*sizeof(int)*fed_slice->ntimes);
-      for(i=0;i<4*fed_slice->ntimes;i++){
-        mslicei->contour_areas[i]=0.0;
-      }
-    }
-    mslice_contour_areas=mslicei->contour_areas;
 
     if(NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0||
-       NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0||
-       NewMemory((void **)&fed_slice->contour_areas,4*sizeof(float)*fed_slice->ntimes)==0||
-       NewMemory((void **)&fed_slice->contour_areas_percen,4*sizeof(int)*fed_slice->ntimes)==0
+       NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0
        ){
        readfed(file_index,UNLOAD, file_type, errorcode);
       *errorcode=-1;
     }
-    contour_areas = fed_slice->contour_areas;
-    contour_areas_percen = fed_slice->contour_areas_percen;
-
     times=fed_slice->times;
     fed_frame=fed_slice->qslicedata;
 
@@ -962,60 +860,6 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     times[0]=co2->times[0];
     for(i=0;i<frame_size;i++){
       fed_frame[i]=0.0;
-    }
-    if(AREA_STREAM!=NULL){
-      if(fed_slice->slicetype==SLICE_CELL_CENTER){
-        float areas[5];
-
-        GetCellAreas(xgrid, ygrid, nxdata, nydata, fed_frame, iblank, levels, nlevels, areas);
-        contour_areas[0]=(areas[0]+areas[1])*area_factor;
-        contour_areas[1]=areas[2]*area_factor;
-        contour_areas[2]=areas[3]*area_factor;
-        contour_areas[3]=areas[4]*area_factor;
-        total = contour_areas[0]+contour_areas[1]+contour_areas[2]+contour_areas[3];
-        fareas[0]=(100.0*contour_areas[0]/total);
-        fareas[1]=(100.0*contour_areas[1]/total);
-        fareas[2]=(100.0*contour_areas[2]/total);
-        fareas[3]=(100.0*contour_areas[3]/total);
-        contour_areas_percen[0]=(int)fareas[0];
-        contour_areas_percen[1]=(int)fareas[1];
-        contour_areas_percen[2]=(int)fareas[2];
-        contour_areas_percen[3]=(int)fareas[3];
-      }
-      else{
-        float *areas;
-        contour *fed_contours=NULL;
-
-        NewMemory((void **)&fed_contours,sizeof(contour));
-        InitContour(fed_contours,NULL,nlevels);
-        GetContours(xgrid, ygrid, nxdata, nydata, fed_frame, iblank, levels, GET_NODE_AREAS, DATA_C, fed_contours);
-        areas = fed_contours->areas;
-        contour_areas[0]=(areas[0]+areas[3])*area_factor;
-        contour_areas[1]=areas[1]*area_factor;
-        contour_areas[2]=areas[2]*area_factor;
-        contour_areas[3]=areas[4]*area_factor;
-        total = contour_areas[0]+contour_areas[1]+contour_areas[2]+contour_areas[3];
-        fareas[0]=(100.0*contour_areas[0]/total);
-        fareas[1]=(100.0*contour_areas[1]/total);
-        fareas[2]=(100.0*contour_areas[2]/total);
-        fareas[3]=(100.0*contour_areas[3]/total);
-        contour_areas_percen[0]=(int)fareas[0];
-        contour_areas_percen[1]=(int)fareas[1];
-        contour_areas_percen[2]=(int)fareas[2];
-        contour_areas_percen[3]=(int)fareas[3];
-        FreeContour(fed_contours);
-        FREEMEMORY(fed_contours);
-      }
-      fprintf(AREA_STREAM,"\"time\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
-      fprintf(AREA_STREAM,"%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
-        times[0],contour_areas[0],contour_areas[1],contour_areas[2],contour_areas[3],fareas[0],fareas[1],fareas[2],fareas[3]);
-      mslice_contour_areas[0]+=contour_areas[0];
-      mslice_contour_areas[1]+=contour_areas[1];
-      mslice_contour_areas[2]+=contour_areas[2];
-      mslice_contour_areas[3]+=contour_areas[3];
-      mslice_contour_areas+=4;
-      contour_areas+=4;
-      contour_areas_percen+=4;
     }
     for(i=1;i<fed_slice->ntimes;i++){
       int jj;
@@ -1048,69 +892,8 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
 
         fed_frame[jj] = fed_framem1[jj] + fed_co_val + fed_o2_val;
       }
-      if(fed_slice->volslice==0){
-
-      // compute fed areas
-
-        if(fed_slice->slicetype==SLICE_CELL_CENTER){
-          float areas[5];
-
-          GetCellAreas(xgrid, ygrid, nxdata, nydata, fed_frame, iblank, levels, nlevels, areas);
-          contour_areas[0]=(areas[0]+areas[1])*area_factor;
-          contour_areas[1]=areas[2]*area_factor;
-          contour_areas[2]=areas[3]*area_factor;
-          contour_areas[3]=areas[4]*area_factor;
-          total = contour_areas[0]+contour_areas[1]+contour_areas[2]+contour_areas[3];
-          fareas[0]=(100.0*contour_areas[0]/total);
-          fareas[1]=(100.0*contour_areas[1]/total);
-          fareas[2]=(100.0*contour_areas[2]/total);
-          fareas[3]=(100.0*contour_areas[3]/total);
-          contour_areas_percen[0]=(int)fareas[0];
-          contour_areas_percen[1]=(int)fareas[1];
-          contour_areas_percen[2]=(int)fareas[2];
-          contour_areas_percen[3]=(int)fareas[3];
-        }
-        else{
-          float *areas;
-          contour *fed_contours=NULL;
-
-          NewMemory((void **)&fed_contours,sizeof(contour));
-          InitContour(fed_contours,NULL,nlevels);
-          GetContours(xgrid, ygrid, nxdata, nydata, fed_frame, iblank, levels, GET_NODE_AREAS, DATA_C, fed_contours);
-          areas = fed_contours->areas;
-          contour_areas[0]=(areas[0]+areas[3])*area_factor;
-          contour_areas[1]=areas[1]*area_factor;
-          contour_areas[2]=areas[2]*area_factor;
-          contour_areas[3]=areas[4]*area_factor;
-          total = contour_areas[0]+contour_areas[1]+contour_areas[2]+contour_areas[3];
-          fareas[0]=(100.0*contour_areas[0]/total);
-          fareas[1]=(100.0*contour_areas[1]/total);
-          fareas[2]=(100.0*contour_areas[2]/total);
-          fareas[3]=(100.0*contour_areas[3]/total);
-          contour_areas_percen[0]=(int)fareas[0];
-          contour_areas_percen[1]=(int)fareas[1];
-          contour_areas_percen[2]=(int)fareas[2];
-          contour_areas_percen[3]=(int)fareas[3];
-
-          FreeContour(fed_contours);
-          FREEMEMORY(fed_contours);
-        }
-        if(AREA_STREAM!=NULL){
-          fprintf(AREA_STREAM,"%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
-            times[i],contour_areas[0],contour_areas[1],contour_areas[2],contour_areas[3],
-            fareas[0],fareas[1],fareas[2],fareas[3]);
-          mslice_contour_areas[0]+=contour_areas[0];
-          mslice_contour_areas[1]+=contour_areas[1];
-          mslice_contour_areas[2]+=contour_areas[2];
-          mslice_contour_areas[3]+=contour_areas[3];
-          mslice_contour_areas+=4;
-        }
-        contour_areas+=4;
-        contour_areas_percen+=4;
-      }
     }
     FREEMEMORY(iblank);
-    if(AREA_STREAM!=NULL)fclose(AREA_STREAM);
     out_slicefile(fed_slice);
     if(fed_slice->volslice==1){
       float *xplt, *yplt, *zplt;
@@ -1497,7 +1280,7 @@ void GetSliceHists(slicedata *sd) {
 
     histi = sd->histograms + istep + 1;
     histall = sd->histograms;
-    CopyU2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
+    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
   FREEMEMORY(slice_mask0);
@@ -1595,6 +1378,22 @@ void UpdateSliceHist(void){
         MergeHistogram(hist256j, histj, KEEP_BOUNDS);
         MergeHistogram(hist12j, histj, KEEP_BOUNDS);
       }
+    }
+    for(i = 0; i < nslice_loaded; i++){
+      slicedata *slicei;
+      int j;
+
+      slicei = sliceinfo + slice_loaded_list[i];
+      if(slicei->type != islicetype)continue;
+      if(slicei->is_fed == 0)continue;
+      for(j = 0; j < MIN(slicei->nhistograms, nhists256_slice); j++){
+        histogramdata *hist256j, *hist12j, *histj;
+
+        hist256j = hists256_slice + j;
+        hist256j->time_defined = 1;
+        hist256j->time = slicei->times[j];
+      }
+      break;
     }
     for(i = 0; i < nhists256_slice; i++){
       histogramdata *hist256i;
@@ -2451,8 +2250,6 @@ void UpdateFedinfo(void){
     sd->reload = 0;
     sd->nline_contours = 0;
     sd->line_contours = NULL;
-    sd->contour_areas = NULL;
-    sd->ncontour_areas = 0;
     sd->menu_show = 1;
     sd->constant_color = NULL;
     sd->mesh_type = co2->mesh_type;
@@ -2874,8 +2671,6 @@ void GetSliceParams(void){
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
       mslicei->type=sd->type;
-      mslicei->contour_areas=NULL;
-      mslicei->contour_areas_percen=NULL;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -2889,8 +2684,6 @@ void GetSliceParams(void){
           mslicei->type=sd->type;
           mslicei->mesh_type=sd->mesh_type;
           mslicei->islices=NULL;
-          mslicei->contour_areas=NULL;
-          mslicei->contour_areas_percen=NULL;
           NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
         }
         mslicei->nslices++;
@@ -2914,7 +2707,6 @@ void GetSliceParams(void){
     multislicedata *mslicei;
 
     mslicei = multisliceinfo + i;
-    mslicei->contour_areas = NULL;
     for(ii = 0; ii < mslicei->nslices; ii++){
       slicedata *slicei;
 
@@ -4292,6 +4084,11 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
   if(histogram_show_graph==1||histogram_show_numbers==1){
     update_slice_hists=1;
+  }
+  if(sd->is_fed == 1){
+    update_slice_hists = 1;
+    histogram_nbuckets = 255;
+    histogram_show_numbers=0;
   }
   glutPostRedisplay();
 }
@@ -7413,7 +7210,7 @@ void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  CopyU2Histogram(vals, NULL, NULL, nvals, histogram);
+  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram);
   FREEMEMORY(vals);
 }
 

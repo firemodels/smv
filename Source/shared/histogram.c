@@ -14,7 +14,8 @@
 
 float GetHistogramCDF(histogramdata *histogram, float val) {
   int i;
-  int cutoff, sum=0;
+  int cutoff;
+  float sum = 0;
 
   if(histogram->valmax <= histogram->valmin)return 0.0;
 
@@ -31,7 +32,8 @@ float GetHistogramVal(histogramdata *histogram, float cdf){
 
 // get value of histogram for value cdf
 
-  int cutoff, count;
+  int cutoff;
+  float count;
   int i;
   float returnval;
 
@@ -73,7 +75,7 @@ void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax){
   for(i = 0; i<histogram->nbuckets; i++){
     histogram->buckets[i] = 0;
   }
-  histogram->defined = 0;
+  histogram->defined = 0.0;
   histogram->ntotal = 0;
   if (valmin != NULL) {
     histogram->valmin = *valmin;
@@ -96,9 +98,11 @@ void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float 
 
 // initialize histogram data structures
 
+  histogram->time_defined = 0;
+  histogram->time = -1.0;
   histogram->buckets=NULL;
   histogram->buckets_2d = NULL;
-  NewMemory((void **)&histogram->buckets, nbuckets*sizeof(unsigned int));
+  NewMemory((void **)&histogram->buckets, nbuckets*sizeof(float));
   histogram->ndim = 1;
   histogram->nbuckets = nbuckets;
   ResetHistogram(histogram,valmin,valmax);
@@ -133,15 +137,13 @@ void GetHistogramStats(histogramdata *histogram){
   }
   valmean /= (float)ntotal;
   histogram->valmean = valmean;
-  ASSERT(histogram->ntotal == ntotal);
 
   stdev = 0.0;
   for(i = 0; i < histogram->nbuckets; i++){
     float valdiff;
-    int nbucketi;
+    float nbucketi;
 
     nbucketi = histogram->buckets[i];
-    if(nbucketi == 0)continue;
     valdiff = histogram->valmin + ((float)(i)+0.5)*dval - valmean;
     stdev += nbucketi*valdiff*valdiff;
   }
@@ -152,13 +154,14 @@ void GetHistogramStats(histogramdata *histogram){
   /* ------------------ CopyBuckets2Histogram ------------------------ */
 
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram){
-  int i, ntotal;
+  int i;
+  float ntotal;
 
 
   FreeHistogram(histogram);
   InitHistogram(histogram, nbuckets, NULL, NULL);
 
-  ntotal = 0;
+  ntotal = 0.0;
   for(i = 0; i < nbuckets; i++){
     histogram->buckets[i] = buckets[i];
     ntotal += buckets[i];
@@ -171,7 +174,7 @@ void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valma
 
   /* ------------------ CopyU2Histogram ------------------------ */
 
-void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram){
+void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram){
 
 // copy vals into histogram
 
@@ -179,7 +182,7 @@ void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogra
   float valmin, valmax;
   float dbucket;
   int first=1;
-  int nnvals=0;
+  float nnvals=0.0;
 
 // initialize
 
@@ -187,14 +190,19 @@ void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogra
   valmax=-valmin;
   histogram->defined=1;
   for(i=0;i<histogram->nbuckets;i++){
-    histogram->buckets[i]=0;
+    histogram->buckets[i]=0.0;
   }
 
 // compute min/max, skip over mask'd data
 
   for(i=0;i<nvals;i++){
     if(mask!=NULL&&mask[i]==0)continue;
-    nnvals++;
+    if(weight != NULL){
+      nnvals += weight[i];
+    }
+    else{
+      nnvals++;
+    }
     if(first==1){
       valmin=vals[i];
       valmax=vals[i];
@@ -210,7 +218,12 @@ void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogra
   if(nnvals>0){
     dbucket=(valmax-valmin)/histogram->nbuckets;
     if(dbucket==0.0){
-      histogram->buckets[0]=nnvals;
+      if(weight != NULL){
+        histogram->buckets[0] = nnvals*weight[0];
+      }
+      else{
+        histogram->buckets[0] = nnvals;
+      }
     }
     else{
       for(i=0;i<nvals;i++){
@@ -220,18 +233,18 @@ void CopyU2Histogram(float *vals, char *mask, float *weight, int nvals, histogra
         ival = (vals[i]-valmin)/dbucket;
         ival = MAX(0,ival);
         ival = MIN(histogram->nbuckets-1,ival);
-        histogram->buckets[ival]++;
+        if(weight != NULL){
+          histogram->buckets[ival]+=weight[i];
+        }
+        else{
+          histogram->buckets[ival]++;
+        }
       }
     }
   }
   histogram->ntotal=nnvals;
   histogram->valmin=valmin;
   histogram->valmax=valmax;
-}
-
-/* ------------------ Histogram2Sum ------------------------ */
-
-void Histogram2Sum(histogramdata *histogram, float valmin, float valmax, int n) {
 }
 
   /* ------------------ UpdateHistogram ------------------------ */
@@ -245,7 +258,7 @@ void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogra
   if(nvals<=0)return;
   InitHistogram(&histogram_from,NHIST_BUCKETS, NULL, NULL);
 
-  CopyU2Histogram(vals,mask,NULL,nvals,&histogram_from);
+  CopyVals2Histogram(vals,mask,NULL,nvals,&histogram_from);
   MergeHistogram(histogram_to,&histogram_from,MERGE_BOUNDS);
   FreeHistogram(&histogram_from);
 }
@@ -258,7 +271,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
 
   int i;
   float dbucket_to, dbucket_from, dbucket_new;
-  unsigned int *bucket_to_copy;
+  float *bucket_to_copy;
   float valmin_new, valmax_new;
 
   histogram_to->defined=1;
@@ -269,7 +282,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
     valmax_new = MAX(valmax_new, histogram_from->valmax);
   }
 
-  NewMemory((void **)&bucket_to_copy,histogram_to->nbuckets*sizeof(unsigned int));
+  NewMemory((void **)&bucket_to_copy,histogram_to->nbuckets*sizeof(float));
 
   for(i = 0; i<histogram_to->nbuckets; i++){
     bucket_to_copy[i]=histogram_to->buckets[i];
