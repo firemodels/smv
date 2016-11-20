@@ -1067,7 +1067,7 @@ void DrawColorBarRectHist(int lefthist){
       sprintf(string, "%i%s", (int)(val + 0.5),percen);
 
       stringptr = string;
-      vert_position = MIX2(MAX(i-0.5,-0.40), nrgb-2 , colorbar_top_pos, colorbar_down_pos);
+      vert_position = MIX2(MAX(i-0.5,-0.15), nrgb-2 , colorbar_top_pos, colorbar_down_pos);
       OutputBarText(0.0, vert_position, foreground_color, stringptr);
     }
     glPopMatrix();
