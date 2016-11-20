@@ -1272,7 +1272,7 @@ extern "C" void glui_bounds_setup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_histogram_static,"all times");
     SPINNER_histogram_width_factor=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("width factor"), GLUI_SPINNER_FLOAT,
       &histogram_width_factor);
-    SPINNER_histogram_width_factor->set_float_limits(1.0,10.0);
+    SPINNER_histogram_width_factor->set_float_limits(1.0,100.0);
     SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _d("partitions"), GLUI_SPINNER_INT,
       &histogram_nbuckets,UPDATE_HISTOGRAM,Slice_CB);
     SPINNER_histogram_nbuckets->set_int_limits(3,255);

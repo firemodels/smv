@@ -977,12 +977,18 @@ void DrawColorBarRectHist(int lefthist){
         histi = hists256_slice;
       }
 
-      dcolor = histogram_width_factor * 3 * (colorbar_right_pos - colorbar_left_pos);
-      val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
-      cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
+      dcolor = 3.0*(colorbar_right_pos - colorbar_left_pos)/(histogram_width_factor/100.0);
+      if(histi->bucket_maxval!=0.0){
+        val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
+        cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
 
-      val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
-      cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
+        val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
+        cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
+      }
+      else{
+        cbl = colorbar_right_pos;
+        cbl2 = colorbar_right_pos;
+      }
 
       cbr = colorbar_right_pos;
 

@@ -17,7 +17,7 @@ float GetHistogramCDF(histogramdata *histogram, float val) {
   int cutoff;
   float sum = 0;
 
-  if(histogram->valmax <= histogram->valmin)return 0.0;
+  if(histogram->valmax <= histogram->valmin)return 1.0;
 
   cutoff = (val - histogram->valmin)*(float)histogram->nbuckets / (histogram->valmax - histogram->valmin);
   for (i = 0; i < cutoff; i++) {
@@ -219,10 +219,13 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     dbucket=(valmax-valmin)/histogram->nbuckets;
     if(dbucket==0.0){
       if(weight != NULL){
-        histogram->buckets[0] = nnvals*weight[0];
+        histogram->buckets[0] = nnvals;
       }
       else{
         histogram->buckets[0] = nnvals;
+      }
+      for(i = 1; i < histogram->nbuckets; i++){
+        histogram->buckets[i] = 0.0;
       }
     }
     else{

@@ -1235,6 +1235,7 @@ void GetSliceHists(slicedata *sd) {
 
         n++;
         slice_mask0[n] = 0;
+        slice_weight0[n] = dx*dy*dz;
         if (sd->slicetype == SLICE_CELL_CENTER &&
           ((k == 0 && sd->nslicek != 1) || (j == 0 && sd->nslicej != 1) || (i == 0 && sd->nslicei != 1)))continue;
         if (show_slice_in_obst == 0) {
@@ -1242,7 +1243,6 @@ void GetSliceHists(slicedata *sd) {
           if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
         }
         slice_mask0[n] = 1;
-        slice_weight0[n] = dx*dy*dz;
       }
     }
   }
