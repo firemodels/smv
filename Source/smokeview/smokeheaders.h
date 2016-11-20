@@ -715,7 +715,8 @@ EXTERNCPP void setslicecolors(float slicemin, float slicemax, slicedata *sd, int
 EXTERNCPP void setisocolors(float isomin, float isomax, isodata *sd, int *errorcode);
 EXTERNCPP int new_multi_slice(slicedata *sdold,slicedata *sd);
 EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
-EXTERNCPP void DrawColorbars(void);
+EXTERNCPP void DrawColorBars(void);
+EXTERNCPP void DrawColorBarLabels(void);
 EXTERNCPP void draw_part(const partdata *parti);
 EXTERNCPP void draw_evac(const partdata *parti);
 EXTERNCPP void drawgrid(const meshdata *gb);
