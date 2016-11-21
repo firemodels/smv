@@ -10055,6 +10055,11 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &visTitle);
       continue;
     }
+    if(Match(buffer, "SHOWCHID") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &visCHID);
+      continue;
+    }
     if(Match(buffer, "SHOWTRANSPARENT") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visTransparentBlockage);
@@ -12388,6 +12393,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", visTimelabel);
   fprintf(fileout, "SHOWTITLE\n");
   fprintf(fileout, " %i\n", visTitle);
+  fprintf(fileout, "SHOWCHID\n");
+  fprintf(fileout, " %i\n", visCHID);
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");

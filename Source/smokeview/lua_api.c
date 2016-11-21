@@ -4021,6 +4021,11 @@ void initLua() {
   lua_register(L, "get_title_visibility", lua_get_title_visibility);
   lua_register(L, "toggle_title_visibility", lua_toggle_title_visibility);
 
+  // chid
+  lua_register(L, "set_chid_visibility", lua_set_chid_visibility);
+  lua_register(L, "get_chid_visibility", lua_get_chid_visibility);
+  lua_register(L, "toggle_chid_visibility", lua_toggle_chid_visibility);
+
   // axis
   lua_register(L, "set_axis_visibility", lua_set_axis_visibility);
   lua_register(L, "get_axis_visibility", lua_get_axis_visibility);

@@ -520,6 +520,9 @@ void LabelMenu(int value){
   case MENU_LABEL_title:
     visTitle=1-visTitle;
     break;
+  case MENU_LABEL_chid:
+    visCHID=1-visCHID;
+    break;
   case MENU_LABEL_framerate:
     visFramerate = 1 - visFramerate;
     break;
@@ -6068,6 +6071,8 @@ updatemenu=0;
   if(visUSERticks == 0)glutAddMenuEntry(_("User settable ticks"), MENU_LABEL_userticks);
   if(gversion == 1)glutAddMenuEntry(_("*Version info"), MENU_LABEL_gversion);
   if(gversion == 0)glutAddMenuEntry(_("Version info"), MENU_LABEL_gversion);
+  if(visCHID == 1)glutAddMenuEntry(_("*CHID"), MENU_LABEL_chid);
+  if(visCHID == 0)glutAddMenuEntry(_("CHID"), MENU_LABEL_chid);
 
   glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Show all"), MENU_LABEL_ShowAll);

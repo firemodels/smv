@@ -821,6 +821,23 @@ void toggle_title_visibility() {
   if(visTitle==1)PRINTF("Title visible\n");
 }
 
+// CHID visibility
+void set_chid_visibility(int setting) {
+  visCHID = setting;
+  if(visCHID==0)PRINTF("CHID hidden\n");
+  if(visCHID==1)PRINTF("CHID visible\n");
+}
+
+int get_chid_visibility() {
+  return visCHID;
+}
+
+void toggle_chid_visibility() {
+  visCHID = 1 - visCHID;
+  if(visCHID==0)PRINTF("CHID hidden\n");
+  if(visCHID==1)PRINTF("CHIDe visible\n");
+}
+
 // axis visibility
 void set_axis_visibility(int setting) {
   visaxislabels = setting;
