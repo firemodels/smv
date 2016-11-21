@@ -936,9 +936,9 @@ void UpdateColorbarSplits(colorbardata *cbi){
   }
 }
 
-/* ------------------ DrawHistColorbar ------------------------ */
+/* ------------------ DrawColorbarHist ------------------------ */
 
-void DrawHistColorbar(void){
+void DrawColorbarHist(void){
   int ibucket;
   int cbt, cbb, cbdiff;
 
@@ -1034,9 +1034,9 @@ void DrawHistColorbar(void){
   }
 }
 
-/* ------------------ DrawHistColorbarLabels ------------------------ */
+/* ------------------ DrawColorbarHistLabels ------------------------ */
 
-void DrawHistColorbarLabels(int lefthist){
+void DrawColorbarHistLabels(int lefthist){
   int cbt, cbb, cbdiff;
 
   cbdiff = colorbar_top_pos - colorbar_down_pos;
@@ -1084,9 +1084,9 @@ void DrawHistColorbarLabels(int lefthist){
   }
 }
 
-/* ------------------ DrawColorbarRect ------------------------ */
+/* ------------------ DrawColorbarReg ------------------------ */
 
-void DrawColorbarRect(void){
+void DrawColorbarReg(void){
   int i;
 
   glBegin(GL_QUADS);
@@ -1223,10 +1223,10 @@ void DrawColorbars(void){
       // -------------- draw all other colorbars ------------
 
       if(hists12_slice == NULL || histogram_show_graph == 0){
-        DrawColorbarRect();
+        DrawColorbarReg();
       }
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawHistColorbar();
+        if(hists12_slice != NULL)DrawColorbarHist();
       }
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
@@ -1260,9 +1260,9 @@ void DrawColorbars(void){
 
 }
 
-/* ------------------ DrawColorbarLabels ------------------------ */
+/* ------------------ DrawColorbarRegLabels ------------------------ */
 
-void DrawColorbarLabels(void){
+void DrawColorbarRegLabels(void){
   int ilabel = 0;
 
   int i;
@@ -1396,7 +1396,7 @@ void DrawColorbarLabels(void){
         glPopMatrix();
       }
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawHistColorbarLabels(lefthist);
+        if(hists12_slice != NULL)DrawColorbarHistLabels(lefthist);
       }
     }
   }
