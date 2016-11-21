@@ -459,7 +459,6 @@ EXTERNCPP void getnewpos(float *oldpos, float dx, float dy, float dz, float spee
 EXTERNCPP void free_skybox(void);
 EXTERNCPP void draw_skybox(void);
 EXTERNCPP void loadskytexture(char *filebase, texturedata *texti);
-EXTERNCPP void uncompress_slicedataframe(slicedata *sd,int frame_index);
 EXTERNCPP void uncompress_patchdataframe(meshdata *meshi,int frame_index);
 EXTERNCPP void getpatchdata_zlib(patchdata *patchi,unsigned char *data,int ndata,
                        float *times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes);
@@ -682,7 +681,6 @@ EXTERNCPP void update_current_mesh(meshdata *meshi);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
-EXTERNCPP void setslicecolors(float slicemin, float slicemax, slicedata *sd, int *errorcode);
 EXTERNCPP int NewMultiSlice(slicedata *sdold,slicedata *sd);
 EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
 EXTERNCPP void DrawColorbars(void);
@@ -830,8 +828,6 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
               char **labels,char **labelsiso, char **scale, float *fscale, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP void setslicelabels(float smin, float smax,
-                    slicedata *sd, int *errorcode);
 EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],char **scale, float *fscale, float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);

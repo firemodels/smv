@@ -1350,7 +1350,7 @@ void GetSliceHists(slicedata *sd) {
     int nn;
 
     if (sd->compression_type == COMPRESSED_ZLIB) {
-      uncompress_slicedataframe(sd, istep);
+      UncompressSliceDataFrame(sd, istep);
     }
     for (nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++) {
       if (sd->compression_type == COMPRESSED_ZLIB) {
@@ -1586,6 +1586,25 @@ void UpdateSliceBounds(void){
   }
 }
 
+/* ------------------ SetSliceLabels ------------------------ */
+
+void SetSliceLabels(float smin, float smax,
+  slicedata *sd, int *errorcode){
+  char *scale;
+  int slicetype;
+  boundsdata *sb;
+
+  slicetype = GetSliceType(sd);
+  sb = slicebounds + slicetype;
+  sb->label = &(sd->label);
+
+  *errorcode = 0;
+  PRINTF("setting up slice labels \n");
+  scale = sb->scale;
+  GetSliceLabels(smin, smax, nrgb,
+    sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+}
+
 /* ------------------ UpdateAllSliceLabels ------------------------ */
 
 void UpdateAllSliceLabels(int slicetype, int *errorcode){
@@ -1617,11 +1636,36 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->type!=slicetype)continue;
-    setslicelabels(valmin,valmax,sd,errorcode);
+    SetSliceLabels(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
   UpdateGlui();
+}
+
+/* ------------------ SetSliceColors ------------------------ */
+
+void SetSliceColors(float smin, float smax,
+  slicedata *sd, int *errorcode){
+  char *scale;
+  int slicetype;
+  boundsdata *sb;
+
+  slicetype = GetSliceType(sd);
+  sb = slicebounds + slicetype;
+  sb->label = &(sd->label);
+
+
+  *errorcode = 0;
+  PRINTF("computing slice color levels \n");
+  scale = sb->scale;
+  if(sd->qslicedata == NULL)return;
+  GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
+    smin, smax,
+    nrgb_full, nrgb,
+    sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+    &sd->extreme_min, &sd->extreme_max
+  );
 }
 
 /* ------------------ UpdateAllSliceColors ------------------------ */
@@ -1655,16 +1699,16 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->type!=slicetype)continue;
-    setslicecolors(valmin,valmax,sd,errorcode);
+    SetSliceColors(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
     UpdateGlui();
 }
 
-/* ------------------ slicecompare ------------------------ */
+/* ------------------ SliceCompare ------------------------ */
 
-int slicecompare( const void *arg1, const void *arg2 ){
+int SliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
   float slice_eps, delta_slice;
 
@@ -1712,9 +1756,9 @@ int slicecompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ vslicecompare ------------------------ */
+/* ------------------ VSliceCompare ------------------------ */
 
-int vslicecompare( const void *arg1, const void *arg2 ){
+int VSliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
   vslicedata *vslicei, *vslicej;
   float delta_orig;
@@ -2731,7 +2775,7 @@ void GetSliceParams(void){
     for(i=0;i<nsliceinfo;i++){
       sliceorderindex[i]=i;
     }
-    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), slicecompare );
+    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), SliceCompare );
 
     for(i=0;i<nmultisliceinfo;i++){
       multislicedata *mslicei;
@@ -2934,7 +2978,7 @@ void UpdateVSlices(void){
     for(i=0;i<nvsliceinfo;i++){
       vsliceorderindex[i]=i;
     }
-    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), vslicecompare );
+    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), VSliceCompare );
 
     for(i=0;i<nmultivsliceinfo;i++){
       mvslicei = multivsliceinfo + i;
@@ -3297,50 +3341,6 @@ void UpdateSliceBoundLabels(){
     sb = slicebounds + j;
     sb->label=&(sd->label);
   }
-}
-
-/* ------------------ setslicecolors ------------------------ */
-
-void setslicecolors(float smin, float smax,
-                    slicedata *sd, int *errorcode){
-  char *scale;
-  int slicetype;
-  boundsdata *sb;
-
-  slicetype= GetSliceType(sd);
-  sb = slicebounds + slicetype;
-  sb->label=&(sd->label);
-
-
-  *errorcode=0;
-  PRINTF("computing slice color levels \n");
-  scale=sb->scale;
-  if(sd->qslicedata==NULL)return;
-  GetSliceColors(sd->qslicedata,sd->nslicetotal,sd->slicelevel,
-                smin,smax,
-                nrgb_full,nrgb,
-                sb->colorlabels,&scale,&sb->fscale,sb->levels256,
-                &sd->extreme_min,&sd->extreme_max
-                );
-}
-
-/* ------------------ setslicelabels ------------------------ */
-
-void setslicelabels(float smin, float smax,
-                    slicedata *sd, int *errorcode){
-  char *scale;
-  int slicetype;
-  boundsdata *sb;
-
-  slicetype= GetSliceType(sd);
-  sb = slicebounds + slicetype;
-  sb->label=&(sd->label);
-
-  *errorcode=0;
-  PRINTF("setting up slice labels \n");
-  scale=sb->scale;
-  GetSliceLabels(smin,smax,nrgb,
-                sb->colorlabels,&scale,&sb->fscale,sb->levels256);
 }
 
 /* ------------------ SetSliceBounds ------------------------ */
@@ -5292,7 +5292,7 @@ void DrawSliceFrame(){
       if((showvslice==0||show_slices_and_vectors==0)&&sd->display==0)continue;
       if(sd->times[0]>global_times[itimes])continue;
       if(sd->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(sd,sd->itime);
+        UncompressSliceDataFrame(sd,sd->itime);
         sd->iqsliceframe=sd->slicecomplevel;
       }
       else{
@@ -6451,7 +6451,7 @@ void DrawVSliceFrame(void){
     if(sliceinfo[vd->ival].times[0]>global_times[itimes])continue;
 #define VAL val
     if(VAL->compression_type==COMPRESSED_ZLIB){
-      uncompress_slicedataframe(VAL,VAL->itime);
+      UncompressSliceDataFrame(VAL,VAL->itime);
       VAL->iqsliceframe=VAL->slicecomplevel;
     }
     else{
@@ -6462,7 +6462,7 @@ void DrawVSliceFrame(void){
 #define VAL u
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -6473,7 +6473,7 @@ void DrawVSliceFrame(void){
 #define VAL v
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -6484,7 +6484,7 @@ void DrawVSliceFrame(void){
 #define VAL w
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -7119,9 +7119,9 @@ int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
 
 }
 
-/* ------------------ uncompress_slicedataframe ------------------------ */
+/* ------------------ UncompressSliceDataFrame ------------------------ */
 
-void uncompress_slicedataframe(slicedata *sd,int iframe_local){
+void UncompressSliceDataFrame(slicedata *sd,int iframe_local){
   unsigned int countin;
   uLongf countout;
   unsigned char *compressed_data;
@@ -7144,9 +7144,9 @@ float GetSliceVal(slicedata *sd, unsigned char ival){
   return returnval;
 }
 
-/* ------------------ slicedata2hist ------------------------ */
+/* ------------------ SliceData2Hist ------------------------ */
 
-void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dtime, histogramdata *histogram){
+void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dtime, histogramdata *histogram){
   int i,j,k,t;
   int imin, imax, jmin, jmax, kmin, kmax, tmin, tmax;
   int ntimes;
