@@ -771,8 +771,8 @@ void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  DrawColorBarLabels();
-  DrawColorBars();
+  DrawColorbarLabels();
+  DrawColorbars();
 }
 
     /* -------------------------- ViewportTitle -------------------------- */
