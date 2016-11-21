@@ -936,9 +936,9 @@ void UpdateColorbarSplits(colorbardata *cbi){
   }
 }
 
-/* ------------------ DrawHistColorBar ------------------------ */
+/* ------------------ DrawHistColorbar ------------------------ */
 
-void DrawHistColorBar(void){
+void DrawHistColorbar(void){
   int ibucket;
   int cbt, cbb, cbdiff;
 
@@ -1034,9 +1034,9 @@ void DrawHistColorBar(void){
   }
 }
 
-/* ------------------ DrawHistColorBarLabels ------------------------ */
+/* ------------------ DrawHistColorbarLabels ------------------------ */
 
-void DrawHistColorBarLabels(int lefthist){
+void DrawHistColorbarLabels(int lefthist){
   int cbt, cbb, cbdiff;
 
   cbdiff = colorbar_top_pos - colorbar_down_pos;
@@ -1084,9 +1084,9 @@ void DrawHistColorBarLabels(int lefthist){
   }
 }
 
-/* ------------------ DrawColorBarRect ------------------------ */
+/* ------------------ DrawColorbarRect ------------------------ */
 
-void DrawColorBarRect(void){
+void DrawColorbarRect(void){
   int i;
 
   glBegin(GL_QUADS);
@@ -1117,9 +1117,9 @@ void DrawColorBarRect(void){
   glEnd();
 }
 
-/* ------------------ DrawColorBars ------------------------ */
+/* ------------------ DrawColorbars ------------------------ */
 
-void DrawColorBars(void){
+void DrawColorbars(void){
   int i;
 
   int fed_slice=0;
@@ -1223,10 +1223,10 @@ void DrawColorBars(void){
       // -------------- draw all other colorbars ------------
 
       if(hists12_slice == NULL || histogram_show_graph == 0){
-        DrawColorBarRect();
+        DrawColorbarRect();
       }
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawHistColorBar();
+        if(hists12_slice != NULL)DrawHistColorbar();
       }
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
@@ -1260,9 +1260,9 @@ void DrawColorBars(void){
 
 }
 
-/* ------------------ DrawColorBarLabels ------------------------ */
+/* ------------------ DrawColorbarLabels ------------------------ */
 
-void DrawColorBarLabels(void){
+void DrawColorbarLabels(void){
   int ilabel = 0;
 
   int i;
@@ -1396,7 +1396,7 @@ void DrawColorBarLabels(void){
         glPopMatrix();
       }
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawHistColorBarLabels(lefthist);
+        if(hists12_slice != NULL)DrawHistColorbarLabels(lefthist);
       }
     }
   }
