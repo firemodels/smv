@@ -2461,7 +2461,7 @@ void LoadUnloadMenu(int value){
       slicedata *slicei;
 
       slicei = sliceinfo + i;
-      readslice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+      ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
     }
     for(i = 0; i<nplot3dinfo; i++){
       readplot3d("",i,UNLOAD,&errorcode);
@@ -2506,7 +2506,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
-        readvslice(i,LOAD,&errorcode);
+        ReadVSlice(i,LOAD,&errorcode);
       }
     }
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
@@ -2532,7 +2532,7 @@ void LoadUnloadMenu(int value){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
-        readslice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
       }
     }
     islicetype=islicetype_save;
@@ -3085,19 +3085,19 @@ void UnloadVSliceMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readvslice(value,UNLOAD,&errorcode);
+    ReadVSlice(value,UNLOAD,&errorcode);
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      readvslice(i,UNLOAD,&errorcode);
+      ReadVSlice(i,UNLOAD,&errorcode);
     }
   }
   else if(value==-2){
     int unload_index;
 
-    unload_index=last_vslice_loadstack();
+    unload_index=LastVSliceLoadstack();
     if(unload_index>=0&&unload_index<nvsliceinfo){
-      readvslice(unload_index,UNLOAD,&errorcode);
+      ReadVSlice(unload_index,UNLOAD,&errorcode);
     }
   }
 }
@@ -3199,7 +3199,7 @@ void LoadVSliceMenu(int value){
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      readvslice(i,UNLOAD,&errorcode);
+      ReadVSlice(i,UNLOAD,&errorcode);
     }
     return;
   }
@@ -3212,7 +3212,7 @@ void LoadVSliceMenu(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    readvslice(value, LOAD, &errorcode);
+    ReadVSlice(value, LOAD, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -3244,7 +3244,7 @@ void LoadVSliceMenu(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
-      readvslice(i,LOAD,&errorcode);
+      ReadVSlice(i,LOAD,&errorcode);
     }
   }
   glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
@@ -3258,20 +3258,20 @@ void UnloadSliceMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readslice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
+    ReadSlice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
   }
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
-        readslice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
       }
     }
     else if(value==UNLOAD_LAST){
       int unload_index;
 
-      unload_index=last_slice_loadstack();
+      unload_index=LastSliceLoadstack();
       if(unload_index>=0&&unload_index<nsliceinfo){
-        readslice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
       }
     }
   }
@@ -3648,10 +3648,10 @@ void LoadSlicei(int set_slicecolor, int value){
   }
   if(scriptoutstream == NULL || defer_file_loading == 0){
     if(value < nsliceinfo - nfedinfo){
-      readslice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+      ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
     }
     else{
-      readfed(value, LOAD, FED_SLICE, &errorcode);
+      ReadFed(value, LOAD, FED_SLICE, &errorcode);
     }
   }
   slicei->loading=0;
@@ -3670,7 +3670,7 @@ void LoadSliceMenu(int value){
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
-        readslice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
       }
     }
     else if(value==MENU_SHOWSLICE_INBLOCKAGE){
@@ -3711,7 +3711,7 @@ void LoadSliceMenu(int value){
         if(dir!=0&&dir!=slicei->idir)continue;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        readslice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
       }
     }
   }

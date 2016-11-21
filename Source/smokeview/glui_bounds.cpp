@@ -3205,7 +3205,7 @@ extern "C" void Slice_CB(int var){
         if(sd->type != islicetype)continue;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        readslice("", i, RESETBOUNDS, set_slicecolor, &error);
+        ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
       }
     break;
   case FILERELOAD:

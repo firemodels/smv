@@ -706,7 +706,7 @@ void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *
     }
 
     if(isoi->is_fed==1){
-      readfed(ifile, flag, FED_ISO, errorcode);
+      ReadFed(ifile, flag, FED_ISO, errorcode);
     }
     else{
       if(isoi->geomflag==1){
