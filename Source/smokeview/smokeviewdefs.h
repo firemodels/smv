@@ -740,8 +740,5 @@ void _Sniff_Errors(char *whereat);
 
 #define MENU_SHOWHIDE_FLIP 15
 
-#define MAX_TITLE_LINE_LENGTH 256
-#define MAX_TITLE_LINES 256
-
 #endif
 

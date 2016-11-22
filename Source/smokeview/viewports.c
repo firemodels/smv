@@ -9,6 +9,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "infoheader.h"
 
 #define CONV(p,pl,pr,pxl,pxr) ( (pxl) + ((pxr)-(pxl))*((p)-(pl))/((pr)-(pl)) )
 
@@ -180,40 +181,12 @@ void GetViewportInfo(void){
   VP_colorbar.right = VP_colorbar.left+VP_colorbar.width;
   VP_colorbar.top = VP_colorbar.down+VP_colorbar.height;
 
-
   // title viewport dimensions
   titledata.left_margin = 0;
   titledata.top_margin = 0;
   titledata.bottom_margin = 5;
   titledata.line_space = 0;
   titledata.text_height = text_height;
-  // reset title data
-  // TODO: don't reallocate these lines every draw call
-  // TODO: expose these in a constant struct so they can be updated
-  //       (including by the Lua interpreter)
-  clearTitleLines(&titledata);
-  if(visTitle==1){
-    int errorcode = addTitleLine(&titledata, release_title);
-    if(errorcode)fprintf(stderr, "addTitleLineFailed\n");
-  }
-  if(gversion==1){
-    char line[MAX_TITLE_LINE_LENGTH];
-    snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview (64 bit) build: %s",smv_githash);
-    int errorcode = addTitleLine(&titledata, line);
-    if(errorcode)fprintf(stderr, "addTitleLineFailed\n");
-  }
-  if(gversion==1&&fds_githash!=NULL){
-    char line[MAX_TITLE_LINE_LENGTH];
-    snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS build: %s",fds_githash);
-    int errorcode = addTitleLine(&titledata, line);
-    if(errorcode)fprintf(stderr, "addTitleLineFailed\n");
-  }
-  if(visCHID==1){
-    char line[MAX_TITLE_LINE_LENGTH];
-    snprintf(line,MAX_TITLE_LINE_LENGTH,"CHID: %s",chidfilebase);
-    int errorcode = addTitleLine(&titledata, line);
-    if(errorcode)fprintf(stderr, "addTitleLineFailed\n");
-  }
 
   // set the correct dimensions for the view point based on the list of strings
   // we want to print and the spacing information
@@ -221,20 +194,32 @@ void GetViewportInfo(void){
   if(visTitle==1) {
     // add the margins
     VP_title.height=titledata.top_margin+titledata.bottom_margin;
-    if(titledata.nlines==0) {
+    // count the lines first, then add space after
+    int nlinestotal = 0;
+    // first add the space for the hard coded lines if necessary
+    if(visTitle==1){
+      nlinestotal++;
+    }
+    if(gversion==1){
+      nlinestotal++;
+    }
+    if(gversion==1&&(strlen(titledata.fdsbuildline)>0)){
+      nlinestotal++;
+    }
+    if(visCHID==1){
+      nlinestotal++;
+    }
+    nlinestotal += titledata.nlines;
+    if(nlinestotal==0) {
       // if there is no information to be displayed, set everything to zero
       VP_title.width = 0;
       VP_title.height = 0;
       VP_title.doit = 0;
     } else {
-      // otherwise add a text height and line spacing for each line
-      // first add a for the first (which does not need spacing)
-      VP_title.height += titledata.text_height;
-      // then add the rest, which do need spacing (only if there are multiple)
-      int i;
-      for (i = 1; i < titledata.nlines; i++) {
-        VP_title.height += titledata.text_height + titledata.line_space;
-      }
+      // add the space for each line
+      // one fewer spacings are needed as they only go between each line
+      VP_title.height += nlinestotal*titledata.text_height +
+                         (nlinestotal-1)*titledata.line_space;
       VP_title.doit = 1;
       VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
     }
@@ -272,42 +257,6 @@ void GetViewportInfo(void){
   colorbar_down_pos = VP_colorbar.down + colorbar_delta;
 
 }
-
- /* ------------------------ addTitleLine ------------------------- */
-// handles heap allocation and bookkeeping for adding a line to the title box
-int addTitleLine(infoboxdata *titledata, char *string) {
-  if (titledata->nlines >= MAX_TITLE_LINES) {
-    fprintf(stderr, "MAX_TITLE_LINES exceeded\n");
-    return 2;
-  }
-  int string_length = strlen(string);
-  if (string_length >= MAX_TITLE_LINE_LENGTH) {
-    fprintf(stderr, "MAX_TITLE_LINE_LENGTH exceeded\n");
-  }
-  char *line = (char *) malloc ((string_length+1)*(sizeof (char)));
-  if (line==NULL) {
-    fprintf(stderr, "addTitleLine: memory allocation failed\n");
-    return 1;
-  }
-  strncpy(line,string,string_length);
-  line[string_length] = '\0';
-  titledata->lines[titledata->nlines] = line;
-  titledata->nlines++;
-  return 0;
-}
-
- /* ------------------------ clearTitleLines ------------------------- */
-// walk through all the title lines and clear them
-int clearTitleLines(infoboxdata *titledata) {
-  int i;
-  for (i = 0; i < titledata->nlines; i++) {
-    free(titledata->lines[i]);
-    titledata->lines[i]=NULL;
-  }
-  titledata->nlines=0;
-  return 0;
-}
-
 
  /* ------------------------ SUB_portortho ------------------------- */
 
@@ -862,42 +811,16 @@ void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
     /* -------------------------- ViewportTitle -------------------------- */
 
 void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
-  float left, textdown;
+
   if(SUB_portortho2(quad,&VP_title,screen_left,screen_down)==0)return;
 
-  left=0;
-  textdown=VP_title.down;
+
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  int textbox_bottom = textdown+titledata.bottom_margin;
-  int pen_pos = textbox_bottom;
+  renderInfoHeader(&VP_title,&titledata);
 
-  // drawing layout rectangles for degbugging purposes
-  // bottom margin
-  // glColor3f(0.8f, 0.0f, 0.0f);
-  // glRectf(left,textdown, left+VP_title.width, textdown+titledata.bottom_margin);
-  // // top margin
-  // glColor3f(0.8f, 0.0f, 0.0f);
-  // glRectf(left,textdown, left+VP_title.width, textdown+VP_title.height-titledata.top_margin);
-  // // left margin
-  // glColor3f(0.0f, 0.8f, 0.0f);
-  // glRectf(0, textdown, left, textdown+VP_title.height);
-
-  int i;
-  for (i = titledata.nlines - 1; i >= 0; i--) {
-    OutputText(left, pen_pos, titledata.lines[i]);
-
-    // drawing layout rectangles for degbugging purposes
-    // single line text box
-    // glColor3f(0.0f, 0.0f, 0.8f);
-    // glRectf(left,pen_pos, left+VP_title.width, pen_pos+titledata.text_height);
-    // glColor3f(0.0f, 0.0f, 0.0f);
-
-    pen_pos += titledata.text_height;
-    pen_pos += titledata.line_space;
-  }
 }
 
 /* ----------------------- CompareMeshes ----------------------------- */

@@ -979,14 +979,6 @@ int text_height, text_width;
 int doit;
 } portdata;
 
-/* --------------------------  infoboxdata ------------------------------------ */
-
-typedef struct {
-GLint left_margin, top_margin, bottom_margin, line_space, text_height;
-int nlines;
-char *lines[MAX_TITLE_LINES];
-} infoboxdata;
-
 /* --------------------------  mousedata ------------------------------------ */
 
 typedef struct {

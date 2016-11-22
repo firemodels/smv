@@ -183,8 +183,6 @@ EXTERNCPP void set_colorbar_list_index(int val);
 EXTERNCPP int get_colorbar_list_index(void);
 EXTERNCPP int get_colorbar_index(int flag, int x, int y);
 EXTERNCPP void GetViewportInfo(void);
-EXTERNCPP int addTitleLine(infoboxdata *titledata, char *string);
-EXTERNCPP int clearTitleLines(infoboxdata *titledata);
 
 EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);

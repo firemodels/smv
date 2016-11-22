@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "infoheader.h"
 #include "update.h"
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -339,6 +340,10 @@ int setup_case(int argc, char **argv){
     show_glui_trainer();
     show_glui_alert();
   }
+  // intialise info header
+  initialiseInfoHeader(&titledata, release_title, smv_githash, fds_githash,
+                       chidfilebase);
+  fprintf(stderr, "initialised titlea: %s\n", titledata.titleline);
   return 0;
 }
 

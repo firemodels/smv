@@ -239,7 +239,6 @@ SVEXTERN int colorbar_label_width;
 SVEXTERN int timebar_left_width, timebar_right_width;
 SVEXTERN int SVDECL(h_space,2), SVDECL(v_space,2);
 SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_colorbar, VP_scene, VP_info;
-SVEXTERN infoboxdata titledata;
 SVEXTERN int SVDECL(in_external,0);
 SVEXTERN int SVDECL(label_list_index,0);
 SVEXTERN labeldata LABEL_local, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
