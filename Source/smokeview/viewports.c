@@ -276,7 +276,14 @@ void GetViewportInfo(void){
  /* ------------------------ addTitleLine ------------------------- */
 // handles heap allocation and bookkeeping for adding a line to the title box
 int addTitleLine(infoboxdata *titledata, char *string) {
+  if (titledata->nlines >= MAX_TITLE_LINES) {
+    fprintf(stderr, "MAX_TITLE_LINES exceeded\n");
+    return 2;
+  }
   int string_length = strlen(string);
+  if (string_length >= MAX_TITLE_LINE_LENGTH) {
+    fprintf(stderr, "MAX_TITLE_LINE_LENGTH exceeded\n");
+  }
   char *line = (char *) malloc ((string_length+1)*(sizeof (char)));
   if (line==NULL) {
     fprintf(stderr, "addTitleLine: memory allocation failed\n");
