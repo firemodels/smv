@@ -39,7 +39,7 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
           slicebounds[i].valmin=value;
       }
   }
-  updateslicebounds();
+  UpdateSliceBounds();
   Slice_CB(6); // TODO: remove constant
 }
 
@@ -78,7 +78,7 @@ int set_slice_bound_max(const char *slice_type, int set, float value) {
           slicebounds[i].valmax=value;
       }
   }
-  updateslicebounds();
+  UpdateSliceBounds();
   Slice_CB(6); // TODO: remove constant
 }
 
