@@ -27,10 +27,12 @@ void Init(void);
 void UpdateMenu(void);
 void LoadVolSmoke3DMenu(int value);
 void UnLoadVolSmoke3DMenu(int value);
+void UpdateSliceBounds(void);
+void OutputSliceData(void);
 
 int set_slice_bound_min(const char *slice_type, int set, float value) {
 	int i;
-  for(i = 0; i < nslice2; i++) {
+  for(i = 0; i < nslice_type; i++) {
       printf("setting %s min bound ", slice_type);
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
@@ -46,7 +48,7 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
 float get_slice_bound_min(const char *slice_type) {
   int i;
   float min, max;
-  for(i = 0; i < nslice2; i++) {
+  for(i = 0; i < nslice_type; i++) {
       if(!strcmp(slice_type, slicebounds[i].datalabel)) {
           min=slicebounds[i].valmin;
           // max=slicebounds[i].valmax;
@@ -58,7 +60,7 @@ float get_slice_bound_min(const char *slice_type) {
 float get_slice_bound_max(const char *slice_type) {
   int i;
   float min, max;
-  for(i = 0; i < nslice2; i++) {
+  for(i = 0; i < nslice_type; i++) {
       if(!strcmp(slice_type, slicebounds[i].datalabel)) {
           // min=slicebounds[i].valmin;
           max=slicebounds[i].valmax;
@@ -69,7 +71,7 @@ float get_slice_bound_max(const char *slice_type) {
 
 int set_slice_bound_max(const char *slice_type, int set, float value) {
 	int i;
-  for(i = 0; i < nslice2; i++) {
+  for(i = 0; i < nslice_type; i++) {
       printf("setting %s max bound ", slice_type);
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
@@ -575,7 +577,7 @@ int RenderFrameLua(int view_mode, const char *basename) {
   return_code = SmokeviewImage2File(renderfile_dir,renderfile_name,render_filetype,
                              woffset,screenWidth,hoffset,screenH);
   if(RenderTime==1&&output_slicedata==1){
-    output_Slicedata();
+    OutputSliceData();
   }
   return return_code;
 }
@@ -601,7 +603,7 @@ int RenderFrameLuaVar(int view_mode, gdImagePtr *RENDERimage) {
   return_code = SVimage2var(render_filetype,
                              woffset,screenWidth,hoffset,screenH, RENDERimage);
   if(RenderTime==1&&output_slicedata==1){
-    output_Slicedata();
+    OutputSliceData();
   }
   return return_code;
 }
@@ -758,11 +760,11 @@ void set_slice_in_obst(int setting) {
 	show_slice_in_obst = setting;
 	if(show_slice_in_obst==0)PRINTF("Not showing slices witin blockages.\n");
   if(show_slice_in_obst==1)PRINTF("Showing slices within blockages.\n");
-  // updateslicefilenum();
+  // UpdateSliceFilenum();
   // plotstate=GetPlotState(DYNAMIC_PLOTS);
 	//
-  // updateglui();
-  // updateslicelistindex(slicefilenum);
+  // UpdateGlui();
+  // UpdateSliceListIndex(slicefilenum);
   // UpdateShow();
 }
 
@@ -3885,7 +3887,7 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   int i;
   // if there is a label, use it
   if(strcmp(label, "") != 0){
-    for(i = 0; i<nslice2; i++){
+    for(i = 0; i<nslice_type; i++){
       if(strcmp(slicebounds[i].datalabel, label) != 0)continue;
       slicebounds[i].setchopmin = minFlag;
       slicebounds[i].setchopmax = maxFlag;
@@ -3895,7 +3897,7 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
     }
   // if there is no label apply values to all slice types
   } else{
-    for(i = 0; i<nslice2; i++){
+    for(i = 0; i<nslice_type; i++){
       slicebounds[i].setchopmin = minFlag;
       slicebounds[i].setchopmax = maxFlag;
       slicebounds[i].chopmin = minValue;
@@ -4056,7 +4058,7 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   int i;
   // if there is a label to apply, use it
   if(strcmp(label, "") != 0){
-    for(i = 0; i<nslice2; i++){
+    for(i = 0; i<nslice_type; i++){
       if(strcmp(slicebounds[i].datalabel, label) != 0)continue;
       slicebounds[i].setvalmin = minFlag;
       slicebounds[i].setvalmax = maxFlag;
@@ -4070,7 +4072,7 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
     }
   // if there is no label apply values to all slice types
   } else{
-    for(i = 0; i<nslice2; i++){
+    for(i = 0; i<nslice_type; i++){
       slicebounds[i].setvalmin = minFlag;
       slicebounds[i].setvalmax = maxFlag;
       slicebounds[i].valmin = minValue;
@@ -4123,11 +4125,11 @@ int show_slices_showall(){
     sliceinfo[i].display=1;
   }
   show_all_slices=1;
-  updateslicefilenum();
+  UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  updateglui();
-  updateslicelistindex(slicefilenum);
+  UpdateGlui();
+  UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   glutPostRedisplay();
   return 0;
@@ -4142,11 +4144,11 @@ int show_slices_hideall(){
     sliceinfo[i].display=0;
   }
   show_all_slices=0;
-  updateslicefilenum();
+  UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  updateglui();
-  updateslicelistindex(slicefilenum);
+  UpdateGlui();
+  UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   return 0;
 }
