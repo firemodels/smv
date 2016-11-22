@@ -60,7 +60,7 @@
 #ifdef pp_BETA
 #define pp_PILOT
 #define pp_SHOWTERRAIN
-//#define pp_WINDROSE  2d histogram, variation of pilot data
+#define pp_WINDROSE  2d histogram, variation of pilot data
 #define pp_GEOMTEST
 #define pp_HAZARD
 //#define pp_GPUDEPTH

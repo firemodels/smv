@@ -18,15 +18,15 @@
 
 #define NHIST_BUCKETS 100000
 typedef struct {
-  unsigned int *buckets_2d;
+  unsigned int *buckets_polar;
   float *buckets, bucket_maxval;
   int nbuckets, ndim, defined;
-  int nx, ny;
+  int nr, ntheta;
   float ntotal;
-  float valmin, valmax;
-  float valxmin, valxmax;
-  float valymin, valymax;
-  float valmean, valstdev;
+  float val_min, val_max;
+  float val_rmin, val_rmax;
+  float val_thetamin, val_thetamax;
+  float val_mean, val_stdev;
   float time;
   int time_defined;
   int complete;
@@ -36,21 +36,21 @@ typedef struct {
 
 void CompleteHistogram(histogramdata *histogram);
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
-void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
+void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
-void FreeHistogram2d(histogramdata *histogram);
-void Get2DMinMax(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag);
+void FreeHistogramPolar(histogramdata *histogram);
+void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag);
+void GetHistogramStats(histogramdata *histogram);
 float GetHistogramCDF(histogramdata *histogram, float val);
 float GetHistogramVal(histogramdata *histogram, float cdf);
-void GetHistogramStats(histogramdata *histogram);
-void GetPolarMinMax(float *speed, int nvals, float *rmin, float *rmax, int flag);
+void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax, int flag);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
-void InitHistogram2D(histogramdata *histogram, int nx, int ny);
+void InitHistogramPolar(histogramdata *histogram, int nx, int ny, float *rmin, float *rmax);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);
 void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax);
-void ResetHistogram2d(histogramdata *histogram);
+void ResetHistogramPolar(histogramdata *histogram, float *rmin, float *rmax);
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram);
 
 #endif
