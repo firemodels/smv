@@ -1,9 +1,4 @@
-#include "options.h"
-#include "isodefs.h"
-#include "histogram.h"
-#include "contourdefs.h"
-#include "flowfiles.h"
-#include "smokeviewdefs.h"
+#include "smokeviewvars.h"
 
 #define MAX_TITLE_LINE_LENGTH 256
 #define MAX_TITLE_LINES 256
