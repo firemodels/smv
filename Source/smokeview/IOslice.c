@@ -1255,6 +1255,22 @@ void UpdateSliceFilenum(void){
   }
 }
 
+/* ------------------ UncompressSliceDataFrame ------------------------ */
+
+void UncompressSliceDataFrame(slicedata *sd, int iframe_local) {
+  unsigned int countin;
+  uLongf countout;
+  unsigned char *compressed_data;
+
+  compressed_data = sd->qslicedata_compressed + sd->compindex[iframe_local].offset;
+  countin = sd->compindex[iframe_local].size;
+  countout = sd->nsliceii;
+
+  if (sd->compression_type == COMPRESSED_ZLIB) {
+    uncompress_zlib(sd->slicecomplevel, &countout, compressed_data, countin);
+  }
+}
+
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd) {
@@ -7117,22 +7133,6 @@ int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
   fclose(sizestream);
   return count;
 
-}
-
-/* ------------------ UncompressSliceDataFrame ------------------------ */
-
-void UncompressSliceDataFrame(slicedata *sd,int iframe_local){
-  unsigned int countin;
-  uLongf countout;
-  unsigned char *compressed_data;
-
-  compressed_data = sd->qslicedata_compressed + sd->compindex[iframe_local].offset;
-  countin = sd->compindex[iframe_local].size;
-  countout=sd->nsliceii;
-
-  if(sd->compression_type==COMPRESSED_ZLIB){
-    uncompress_zlib(sd->slicecomplevel,&countout,compressed_data,countin);
-  }
 }
 
 /* ------------------ GetSliceVal ------------------------ */
