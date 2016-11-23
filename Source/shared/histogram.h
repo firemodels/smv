@@ -11,6 +11,8 @@
 #define HIST_OLD 1
 #define HIST_ERR -1
 
+#define FMOD360(a)  ((a)>=0.0 ? fmod((a),360.0) : 360.0+fmod((a),360.0) )
+
 #define MERGE_BOUNDS 1
 #define KEEP_BOUNDS 0
 

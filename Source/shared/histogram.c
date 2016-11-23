@@ -451,13 +451,11 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
     u = uvals[i];
     v = vvals[i];
     r = sqrt(u*u + v*v);
+    theta = FMOD360(RAD2DEG*atan2(v, u));
 
     ir = 0;
     if(rmax>rmin)ir = CLAMP(histogram->nr*(r - rmin) / (rmax - rmin),0,histogram->nr-1);
 
-    theta = RAD2DEG*atan2(v, u);
-    if(theta < 0.0)theta += 360.0;
-    theta = fmod(theta,360.0);
     itheta = CLAMP(histogram->ntheta*(theta / 360.0),0,histogram->ntheta-1);
 
     ixy = itheta + ir*histogram->ntheta;
@@ -467,29 +465,26 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
 
 
 /* ------------------ CopyUV2Histogram ------------------------ */
-#define FMOD360(a)  ((a)>=0.0 ? fmod((a),360.0) : 360.0+fmod((a),360.0) )
 
-void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram){
+void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram){
   int i;
 
   if(nvals <= 0)return;
 
   for(i = 0; i < nvals; i++){
-    float vel,theta;
+    float r,theta;
     int ir, itheta, ixy;
 
-    vel = speed[i];
-    theta = angle[i];
-    if(vel>=0.0){
-      vel = -vel;
-    }
-    else {
+    r = rad[i];
+    theta = FMOD360(angle[i]);
+
+    if(r<0.0){
       theta == FMOD360(theta + 180.0);
-      vel = -vel;
+      r = -r;
     }
 
     ir = 0;
-    if(rmax>rmin)ir = CLAMP(histogram->nr*(vel - rmin) / (rmax - rmin), 0, histogram->nr - 1);
+    if(rmax>rmin)ir = CLAMP(histogram->nr*(r - rmin) / (rmax - rmin), 0, histogram->nr - 1);
 
     itheta = CLAMP(histogram->ntheta*(theta / 360.0), 0, histogram->ntheta - 1);
 
