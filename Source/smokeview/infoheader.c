@@ -79,7 +79,7 @@ int renderInfoHeader(titledata *titleinfo_ptr) {
   float left, textdown;
   left=0;
   textdown=VP_title.down;
-  int textbox_bottom = textdown+titleinfo_ptr->bottom_margin;
+//  int textbox_bottom = textdown+titleinfo_ptr->bottom_margin;
   int textbox_top = textdown+VP_title.height-titleinfo_ptr->top_margin;
   int pen_pos = textbox_top - titleinfo_ptr->text_height;
 
