@@ -106,8 +106,8 @@ void AdjustPart5Bounds(partdata *parti){
     propi = part5propinfo + i;
     histi = &propi->histogram;
 
-    propi->global_min = histi->valmin;
-    propi->global_max = histi->valmax;
+    propi->global_min = histi->val_min;
+    propi->global_max = histi->val_max;
 
     propi->percentile_min = GetHistogramVal(histi, percentile_level);
     propi->percentile_max = GetHistogramVal(histi, 1.0 - percentile_level);

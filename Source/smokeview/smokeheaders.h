@@ -142,9 +142,9 @@ EXTERNCPP void GetSliceParams2(void);
 #ifdef pp_PILOT
 EXTERNCPP void draw_pilot(void);
 #ifdef pp_WINDROSE
-EXTERNCPP void SummarizeWindData(int nbuckets, int nr, int ntheta, int flag);
+EXTERNCPP void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag);
 #else
-EXTERNCPP void SummarizeWindData(int nbuckets);
+EXTERNCPP void SummarizeDeviceWindData(int nbuckets);
 #endif
 #endif
 EXTERNCPP void DefineAllFEDs(void);
