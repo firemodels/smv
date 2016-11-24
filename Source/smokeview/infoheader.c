@@ -4,6 +4,7 @@
 #include <string.h>
 #include GLUT_H
 
+#include "MALLOC.h"
 #include "infoheader.h"
 #include "smokeviewvars.h"
 
@@ -13,6 +14,7 @@ titledata titleinfo;
  /* ------------------------ addTitleLine ------------------------- */
 // handles heap allocation and bookkeeping for adding a line to the title box
 int addTitleLine(titledata *titleinfo, const char *string) {
+  char *line;
   if (titleinfo->nlines >= MAX_TITLE_LINES) {
     fprintf(stderr, "MAX_TITLE_LINES exceeded\n");
     return 2;
@@ -21,7 +23,7 @@ int addTitleLine(titledata *titleinfo, const char *string) {
   if (string_length >= MAX_TITLE_LINE_LENGTH) {
     fprintf(stderr, "MAX_TITLE_LINE_LENGTH exceeded\n");
   }
-  char *line = (char *) malloc ((string_length+1)*(sizeof (char)));
+  NewMemory((void **)&line, (string_length+1)*sizeof(char));
   if (line==NULL) {
     fprintf(stderr, "addTitleLine: memory allocation failed\n");
     return 1;
@@ -38,7 +40,7 @@ int addTitleLine(titledata *titleinfo, const char *string) {
 int clearTitleLines(titledata *titleinfo) {
   int i;
   for (i = 0; i < titleinfo->nlines; i++) {
-    free(titleinfo->lines[i]);
+    FREEMEMORY(titleinfo->lines[i]);
     titleinfo->lines[i]=NULL;
   }
   titleinfo->nlines=0;
