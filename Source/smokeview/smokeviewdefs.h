@@ -683,6 +683,7 @@ void _Sniff_Errors(char *whereat);
 #define MENU_LABEL_framelabel 9
 #define MENU_LABEL_hrr 16
 #define MENU_LABEL_northangle 21
+#define MENU_LABEL_chid 22
 
 #define MENU_TRAINER_smoke 1
 #define MENU_TRAINER_temp 2

@@ -138,6 +138,11 @@ void set_title_visibility(int setting);
 int get_title_visibility();
 void toggle_title_visibility();
 
+// chid
+void set_chid_visibility(int setting);
+int get_chid_visibility();
+void toggle_chid_visibility();
+
 // axis
 void set_axis_visibility(int setting);
 int get_axis_visibility();
