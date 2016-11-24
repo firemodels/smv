@@ -9,6 +9,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "infoheader.h"
 
 #define CONV(p,pl,pr,pxl,pxr) ( (pxl) + ((pxr)-(pxl))*((p)-(pl))/((pr)-(pl)) )
 
@@ -180,23 +181,55 @@ void GetViewportInfo(void){
   VP_colorbar.right = VP_colorbar.left+VP_colorbar.width;
   VP_colorbar.top = VP_colorbar.down+VP_colorbar.height;
 
-    // title viewport dimensions
+  // title viewport dimensions
+  titleinfo.left_margin = 0;
+  titleinfo.top_margin = 0;
+  titleinfo.bottom_margin = 5;
+  titleinfo.line_space = 0;
+  titleinfo.text_height = text_height;
 
-  if(visTitle==1){
-    VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
+  // set the correct dimensions for the view point based on the list of strings
+  // we want to print and the spacing information
+  // only do this if title is set
+  if(visTitle==1) {
+    // add the margins
+    VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
+    // count the lines first, then add space after
+    int nlinestotal = 0;
+    // first add the space for the hard coded lines if necessary
+    if(visTitle==1){
+      nlinestotal++;
+    }
     if(gversion==1){
-      VP_title.height=3*text_height+2*v_space;
+      nlinestotal++;
     }
-    else{
-      VP_title.height=text_height+v_space;
+    if(gversion==1&&(strlen(titleinfo.fdsbuildline)>0)){
+      nlinestotal++;
     }
-    VP_title.doit = 1;
-  }
-  else{
+    if(visCHID==1){
+      nlinestotal++;
+    }
+    nlinestotal += titleinfo.nlines;
+    if(nlinestotal==0) {
+      // if there is no information to be displayed, set everything to zero
+      VP_title.width = 0;
+      VP_title.height = 0;
+      VP_title.doit = 0;
+    } else {
+      // add the space for each line
+      // one fewer spacings are needed as they only go between each line
+      VP_title.height += nlinestotal*titleinfo.text_height +
+                         (nlinestotal-1)*titleinfo.line_space;
+      VP_title.doit = 1;
+      VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
+    }
+
+  } else {
     VP_title.width = 0;
     VP_title.height = 0;
     VP_title.doit = 0;
   }
+
   VP_title.text_height=text_height;
   VP_title.text_width = text_width;
   VP_title.left = titlesafe_offset;
@@ -725,7 +758,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       f_blue = colors[3*icolor + 2];
       glColor3f(f_red, f_green, f_blue);
     }
-    
+
     glVertex3f(right_label_pos+h_space-20,5+2*VP_timebar.text_height   ,0.0);
     glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height   ,0.0);
     glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height+20,0.0);
@@ -778,45 +811,16 @@ void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
     /* -------------------------- ViewportTitle -------------------------- */
 
 void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
-  float left, textdown;
 
   if(SUB_portortho2(quad,&VP_title,screen_left,screen_down)==0)return;
 
-  left=0;
-  textdown=VP_title.down;
+
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if(gversion==0){
-    if(visFullTitle==1&&showplot3d==1){
-      OutputText(left,textdown, plot3d_title);
-    }
-    else{
-      OutputText(left,textdown, release_title);
-    }
-  }
-  else{
-    char label[256];
-    int smv_top, smv_top2, fds_top;
+  renderInfoHeader(&titleinfo);
 
-    if(fds_githash!=NULL){
-      fds_top=textdown;
-      smv_top=fds_top+VP_title.text_height+v_space;
-      smv_top2=smv_top+VP_title.text_height+v_space;
-    }
-    else{
-      smv_top=textdown;
-      smv_top2=smv_top+VP_title.text_height+v_space;
-    }
-    OutputText(left,smv_top2,release_title);
-    sprintf(label,"Smokeview (64 bit) build: %s",smv_githash);
-    OutputText(left,smv_top,label);
-    if(fds_githash!=NULL){
-      sprintf(label,"FDS build:%s",fds_githash);
-      OutputText(left,fds_top,label);
-    }
-  }
 }
 
 /* ----------------------- CompareMeshes ----------------------------- */

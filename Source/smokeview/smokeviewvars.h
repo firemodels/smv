@@ -834,6 +834,7 @@ SVEXTERN int SVDECL(visTimeIso,1), SVDECL(visTimeEvac,1);
 SVEXTERN int SVDECL(vishmsTimelabel,0), SVDECL(visTimebar,1);
 SVEXTERN int SVDECL(visColorbar,1), SVDECL(visColorbar_save,1);
 SVEXTERN int SVDECL(visTitle,1), SVDECL(visFullTitle,1), SVDECL(visFramerate,0);
+SVEXTERN int SVDECL(visCHID,0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(visHRRlabel,0);
 #ifdef pp_memstatus
