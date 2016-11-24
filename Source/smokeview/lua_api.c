@@ -9,6 +9,7 @@
 
 #include "options.h"
 #include "smokeviewvars.h"
+#include "infoheader.h"
 #include "c_api.h"
 #include "lua_api.h"
 
@@ -610,6 +611,10 @@ int lua_initsmvdata(lua_State *L) {
 
   lua_get_csvinfo(L);
   lua_setglobal(L, "csvinfo");
+
+  lua_pushstring(L, chidfilebase);
+  lua_setglobal(L, "chid");
+
   // lua_get_geomdata(L);
   // lua_setglobal(L, "geomdata");
   return 0;
@@ -1057,6 +1062,24 @@ int lua_get_title_visibility(lua_State *L) {
 
 int lua_toggle_title_visibility(lua_State *L) {
   toggle_title_visibility();
+  return 0;
+}
+
+// chid
+int lua_set_chid_visibility(lua_State *L) {
+  int setting = lua_toboolean(L, 1);
+  set_chid_visibility(setting);
+  return 0;
+}
+
+int lua_get_chid_visibility(lua_State *L) {
+  int setting = get_chid_visibility();
+  lua_pushboolean(L, setting);
+  return 1;
+}
+
+int lua_toggle_chid_visibility(lua_State *L) {
+  toggle_chid_visibility();
   return 0;
 }
 
@@ -3898,6 +3921,18 @@ int lua_show_slices_hideall(lua_State *L) {
   return 1;
 }
 
+int lua_add_title_line(lua_State *L) {
+  const char *string = lua_tostring(L, 1);
+  int return_code = addTitleLine(&titleinfo, string);
+  lua_pushnumber(L, return_code);
+  return 1;
+}
+
+int lua_clear_title_lines(lua_State *L) {
+  int return_code = clearTitleLines(&titleinfo);
+  lua_pushnumber(L, return_code);
+  return 1;
+}
 
 // add the smokeview bin directory to the Lua path variables
 void addLuaPaths(lua_State *L) {
@@ -4020,6 +4055,11 @@ void initLua() {
   lua_register(L, "set_title_visibility", lua_set_title_visibility);
   lua_register(L, "get_title_visibility", lua_get_title_visibility);
   lua_register(L, "toggle_title_visibility", lua_toggle_title_visibility);
+
+  // chid
+  lua_register(L, "set_chid_visibility", lua_set_chid_visibility);
+  lua_register(L, "get_chid_visibility", lua_get_chid_visibility);
+  lua_register(L, "toggle_chid_visibility", lua_toggle_chid_visibility);
 
   // axis
   lua_register(L, "set_axis_visibility", lua_set_axis_visibility);
@@ -4405,15 +4445,14 @@ void initLua() {
   lua_register(L, "show_smoke3d_hideall", lua_show_smoke3d_hideall);
   lua_register(L, "show_slices_showall", lua_show_slices_showall);
   lua_register(L, "show_slices_hideall", lua_show_slices_hideall);
+  lua_register(L, "add_title_line", lua_add_title_line);
+  lua_register(L, "clear_title_lines", lua_clear_title_lines);
 
   lua_register(L, "get_nglobal_times", lua_get_nglobal_times);
 
   //add fdsprefix (the path plus  CHID) as a variable in the lua environment
   lua_pushstring(L, fdsprefix);
   lua_setglobal(L, "fdsprefix");
-
-  lua_pushstring(L, chidfilebase);
-  lua_setglobal(L, "chid");
 
   //nglobal_times is the number of frames
   // this cannot be set as a global at init as it will change
