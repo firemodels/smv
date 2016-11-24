@@ -341,9 +341,9 @@ int setup_case(int argc, char **argv){
     show_glui_alert();
   }
   // intialise info header
-  initialiseInfoHeader(&titledata, release_title, smv_githash, fds_githash,
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
                        chidfilebase);
-  fprintf(stderr, "initialised titlea: %s\n", titledata.titleline);
+  fprintf(stderr, "initialised titlea: %s\n", titleinfo.titleline);
   return 0;
 }
 

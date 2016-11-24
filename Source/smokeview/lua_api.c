@@ -3923,13 +3923,13 @@ int lua_show_slices_hideall(lua_State *L) {
 
 int lua_add_title_line(lua_State *L) {
   const char *string = lua_tostring(L, 1);
-  int return_code = addTitleLine(&titledata, string);
+  int return_code = addTitleLine(&titleinfo, string);
   lua_pushnumber(L, return_code);
   return 1;
 }
 
 int lua_clear_title_lines(lua_State *L) {
-  int return_code = clearTitleLines(&titledata);
+  int return_code = clearTitleLines(&titleinfo);
   lua_pushnumber(L, return_code);
   return 1;
 }

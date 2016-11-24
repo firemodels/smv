@@ -182,18 +182,18 @@ void GetViewportInfo(void){
   VP_colorbar.top = VP_colorbar.down+VP_colorbar.height;
 
   // title viewport dimensions
-  titledata.left_margin = 0;
-  titledata.top_margin = 0;
-  titledata.bottom_margin = 5;
-  titledata.line_space = 0;
-  titledata.text_height = text_height;
+  titleinfo.left_margin = 0;
+  titleinfo.top_margin = 0;
+  titleinfo.bottom_margin = 5;
+  titleinfo.line_space = 0;
+  titleinfo.text_height = text_height;
 
   // set the correct dimensions for the view point based on the list of strings
   // we want to print and the spacing information
   // only do this if title is set
   if(visTitle==1) {
     // add the margins
-    VP_title.height=titledata.top_margin+titledata.bottom_margin;
+    VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
     // count the lines first, then add space after
     int nlinestotal = 0;
     // first add the space for the hard coded lines if necessary
@@ -203,13 +203,13 @@ void GetViewportInfo(void){
     if(gversion==1){
       nlinestotal++;
     }
-    if(gversion==1&&(strlen(titledata.fdsbuildline)>0)){
+    if(gversion==1&&(strlen(titleinfo.fdsbuildline)>0)){
       nlinestotal++;
     }
     if(visCHID==1){
       nlinestotal++;
     }
-    nlinestotal += titledata.nlines;
+    nlinestotal += titleinfo.nlines;
     if(nlinestotal==0) {
       // if there is no information to be displayed, set everything to zero
       VP_title.width = 0;
@@ -218,8 +218,8 @@ void GetViewportInfo(void){
     } else {
       // add the space for each line
       // one fewer spacings are needed as they only go between each line
-      VP_title.height += nlinestotal*titledata.text_height +
-                         (nlinestotal-1)*titledata.line_space;
+      VP_title.height += nlinestotal*titleinfo.text_height +
+                         (nlinestotal-1)*titleinfo.line_space;
       VP_title.doit = 1;
       VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
     }
@@ -819,7 +819,7 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  renderInfoHeader(&VP_title,&titledata);
+  renderInfoHeader(&VP_title,&titleinfo);
 
 }
 

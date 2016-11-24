@@ -4,7 +4,7 @@
 #define MAX_TITLE_LINES 256
 
 
-/* --------------------------  infoboxdata ---------------------------------- */
+/* --------------------------  titledata ---------------------------------- */
 
 typedef struct {
   GLint left_margin, top_margin, bottom_margin, line_space, text_height;
@@ -16,13 +16,13 @@ typedef struct {
   char smvbuildline[MAX_TITLE_LINE_LENGTH];
   char fdsbuildline[MAX_TITLE_LINE_LENGTH];
   char chidline[MAX_TITLE_LINE_LENGTH];
-} infoboxdata;
+} titledata;
 
-EXTERNCPP int addTitleLine(infoboxdata *titledata, const char *string);
-EXTERNCPP int clearTitleLines(infoboxdata *titledata);
-EXTERNCPP int initialiseInfoHeader(infoboxdata *titledata,
+EXTERNCPP int addTitleLine(titledata *titleinfo, const char *string);
+EXTERNCPP int clearTitleLines(titledata *titleinfo);
+EXTERNCPP int initialiseInfoHeader(titledata *titleinfo,
                          char *release_title, char *smv_githash,
                          char *fds_githash, char *chidfilebase);
-EXTERNCPP int renderInfoHeader(portdata *VP_title, infoboxdata *titledata);
+EXTERNCPP int renderInfoHeader(portdata *VP_title, titledata *titleinfo);
 
-SVEXTERN infoboxdata titledata;
+SVEXTERN titledata titleinfo;
