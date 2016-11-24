@@ -819,7 +819,7 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  renderInfoHeader(&VP_title,&titleinfo);
+  renderInfoHeader(&titleinfo);
 
 }
 

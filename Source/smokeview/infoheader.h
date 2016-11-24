@@ -18,11 +18,11 @@ typedef struct {
   char chidline[MAX_TITLE_LINE_LENGTH];
 } titledata;
 
-EXTERNCPP int addTitleLine(titledata *titleinfo, const char *string);
-EXTERNCPP int clearTitleLines(titledata *titleinfo);
-EXTERNCPP int initialiseInfoHeader(titledata *titleinfo,
-                         char *release_title, char *smv_githash,
-                         char *fds_githash, char *chidfilebase);
-EXTERNCPP int renderInfoHeader(portdata *VP_title, titledata *titleinfo);
+EXTERNCPP int addTitleLine(titledata *titleinfo_ptr, const char *string);
+EXTERNCPP int clearTitleLines(titledata *titleinfo_ptr);
+EXTERNCPP int initialiseInfoHeader(titledata *titleinfo_ptr,
+                         char *release_title_string, char *smv_githash_string,
+                         char *fds_githash_string, char *chidfilebase_string);
+EXTERNCPP int renderInfoHeader(titledata *titleinfo);
 
 SVEXTERN titledata titleinfo;
