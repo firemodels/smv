@@ -681,7 +681,7 @@ void Get_Boundary_Bounds(void){
 
     patchi = patchinfo + i;
     FREEMEMORY(patchi->histogram->buckets);
-    FREEMEMORY(patchi->histogram->buckets_2d);
+    FREEMEMORY(patchi->histogram->buckets_polar);
     FREEMEMORY(patchi->histogram);
   }
 

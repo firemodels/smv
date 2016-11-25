@@ -616,7 +616,7 @@ int ReadSMV(char *smvfile){
 
           NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
           patchi->histogram->buckets = NULL;
-          patchi->histogram->buckets_2d = NULL;
+          patchi->histogram->buckets_polar = NULL;
           lenfile = strlen(patchi->file);
           boundaryunitnumber=15;
           FORTgetboundaryheader1(patchi->file,&boundaryunitnumber, &npatches, &error, lenfile);
@@ -709,7 +709,7 @@ int ReadSMV(char *smvfile){
       if(GLOBget_slice_bounds==1){
         NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
         slicei->histogram->buckets = NULL;
-        slicei->histogram->buckets_2d = NULL;
+        slicei->histogram->buckets_polar = NULL;
       }
 
       if(fgets(buffer,BUFFERSIZE,streamsmv)==NULL)break;
