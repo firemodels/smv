@@ -1834,6 +1834,8 @@ int get_clipping_mode() {
 void set_clipping_mode(int mode) {
     clip_mode=mode;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x(int clipMin, float min, int clipMax, float max) {
@@ -1843,18 +1845,24 @@ void set_sceneclip_x(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_xmax=clipMax;
     clipinfo.xmax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x_min(int flag, float value) {
     clipinfo.clip_xmin = flag;
     clipinfo.xmin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x_max(int flag, float value) {
     clipinfo.clip_xmax = flag;
     clipinfo.xmax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y(int clipMin, float min, int clipMax, float max) {
@@ -1864,18 +1872,24 @@ void set_sceneclip_y(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_ymax=clipMax;
     clipinfo.ymax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y_min(int flag, float value) {
     clipinfo.clip_ymin = flag;
     clipinfo.ymin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y_max(int flag, float value) {
     clipinfo.clip_ymax = flag;
     clipinfo.ymax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_z(int clipMin, float min, int clipMax, float max) {
@@ -1885,6 +1899,7 @@ void set_sceneclip_z(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_zmax=clipMax;
     clipinfo.zmax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
     update_clip_all();
 }
 
@@ -1892,12 +1907,16 @@ void set_sceneclip_z_min(int flag, float value) {
     clipinfo.clip_zmin = flag;
     clipinfo.zmin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_z_max(int flag, float value) {
     clipinfo.clip_zmax = flag;
     clipinfo.zmax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 /* ------------------ setrenderdir ------------------------ */
