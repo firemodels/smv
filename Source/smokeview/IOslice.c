@@ -41,7 +41,7 @@ void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int 
 void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level);
 void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level);
 
-int makeslicesizefile(char *file, char *sizefile, int compression_type);
+int MakeSliceSizefile(char *file, char *sizefile, int compression_type);
 
 #ifdef WIN32
 #define FOPEN(file,mode) _fsopen(file,mode,_SH_DENYNO)
@@ -554,9 +554,99 @@ void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int l
   }
 }
 
+/* ------------------ PushSliceLoadstack ------------------------ */
+
+void PushSliceLoadstack(int sliceindex) {
+  int i;
+
+  if (islice_loadstack < nslice_loadstack) {
+    for (i = 0; i < islice_loadstack; i++) {
+      if (slice_loadstack[i] == sliceindex)return;
+    }
+    slice_loadstack[islice_loadstack++] = sliceindex;
+  }
+}
+
+/* ------------------ RemoveSliceLoadstack ------------------------ */
+
+void RemoveSliceLoadstack(int sliceindex) {
+  int i;
+
+  for (i = islice_loadstack - 1; i >= 0; i--) {
+    if (slice_loadstack[i] == sliceindex) {
+      int j;
+
+      for (j = i; j < islice_loadstack - 1; j++) {
+        slice_loadstack[j] = slice_loadstack[j + 1];
+      }
+      islice_loadstack--;
+      break;
+    }
+  }
+}
+
+/* ------------------ LastSliceLoadstack ------------------------ */
+
+int LastSliceLoadstack(void) {
+  int return_val;
+
+  if (islice_loadstack - 1 >= 0 && islice_loadstack - 1 < nslice_loadstack) {
+    return_val = slice_loadstack[islice_loadstack - 1];
+  }
+  else {
+    return_val = -1;
+  }
+  return return_val;
+}
+
+/* ------------------ PushVSliceLoadstack ------------------------ */
+
+void PushVSliceLoadstack(int vsliceindex) {
+  int i;
+
+  if (ivslice_loadstack < nvslice_loadstack) {
+    for (i = 0; i < ivslice_loadstack; i++) {
+      if (vslice_loadstack[i] == vsliceindex)return;
+    }
+    vslice_loadstack[ivslice_loadstack++] = vsliceindex;
+  }
+}
+
+/* ------------------ RemoveVSliceLoadstack ------------------------ */
+
+void RemoveVSliceLoadstack(int vsliceindex) {
+  int i;
+
+  for (i = ivslice_loadstack - 1; i >= 0; i--) {
+    if (vslice_loadstack[i] == vsliceindex) {
+      int j;
+
+      for (j = i; j < ivslice_loadstack - 1; j++) {
+        vslice_loadstack[j] = vslice_loadstack[j + 1];
+      }
+      ivslice_loadstack--;
+      break;
+    }
+  }
+}
+
+/* ------------------ LastVSliceLoadstack ------------------------ */
+
+int LastVSliceLoadstack(void) {
+  int return_val;
+
+  if (ivslice_loadstack - 1 >= 0 && ivslice_loadstack - 1 < nvslice_loadstack) {
+    return_val = vslice_loadstack[ivslice_loadstack - 1];
+  }
+  else {
+    return_val = -1;
+  }
+  return return_val;
+}
+
 /* ------------------ out_slice ------------------------ */
 
-void out_slicefile(slicedata *sd){
+void OutSlicefile(slicedata *sd){
   int file_unit=20,slicefilelen;
 
   slicefilelen=strlen(sd->file);
@@ -565,9 +655,9 @@ void out_slicefile(slicedata *sd){
     sd->qslicedata,sd->times,&sd->ntimes, &redirect,slicefilelen);
 }
 
-/* ------------------ Creadslice_frame ------------------------ */
+/* ------------------ CReadSlice_frame ------------------------ */
 
-int Creadslice_frame(int frame_index_local,int sd_index,int flag){
+int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   slicedata *sd;
   int slicefilelen;
   int headersize,framesize;
@@ -578,7 +668,7 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
   int error;
 
   sd = sliceinfo + sd_index;
-  if(sd->loaded==1)readslice(sd->file,sd_index,UNLOAD,SET_SLICECOLOR,&error);
+  if(sd->loaded==1)ReadSlice(sd->file,sd_index,UNLOAD,SET_SLICECOLOR,&error);
   if(flag==UNLOAD){
     FREEMEMORY(sd->qslicedata);
     FREEMEMORY(sd->times);
@@ -597,7 +687,7 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
         GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
                        sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
                        &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
-        readslice("",sd_index,UNLOAD,SET_SLICECOLOR,&error);
+        ReadSlice("",sd_index,UNLOAD,SET_SLICECOLOR,&error);
         return -1;
       }
     }
@@ -636,9 +726,9 @@ int Creadslice_frame(int frame_index_local,int sd_index,int flag){
   return 0;
 }
 
-/* ------------------ output_fed_csv ------------------------ */
+/* ------------------ OutputFedCSV ------------------------ */
 
-void output_fed_csv(void){
+void OutputFedCSV(void){
   FILE *AREA_STREAM=NULL;
   char *fed_area_file=NULL,fed_area_file_base[1024];
   int i;
@@ -660,9 +750,9 @@ void output_fed_csv(void){
   fclose(AREA_STREAM);
 }
 
-/* ------------------ readfed ------------------------ */
+/* ------------------ ReadFed ------------------------ */
 
-void readfed(int file_index, int flag, int file_type, int *errorcode){
+void ReadFed(int file_index, int flag, int file_type, int *errorcode){
   feddata *fedi;
   slicedata *fed_slice,*o2,*co2,*co;
   isodata *fed_iso;
@@ -736,7 +826,7 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
   }
 
   if(file_type==FED_SLICE){
-    readslice(fed_slice->file,fedi->fed_index,UNLOAD,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index,UNLOAD,SET_SLICECOLOR,&error_local);
   }
   else if(file_type==FED_ISO){
     readiso_orig(fed_iso->file,file_index,UNLOAD,&error_local);
@@ -805,11 +895,11 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     }
     PRINTF("\n");
     PRINTF("generating FED slice data\n");
-    if(Creadslice_frame(0,fedi->o2_index,LOAD)<0||
-       Creadslice_frame(0,fedi->co2_index,LOAD)<0||
-       Creadslice_frame(0,fedi->co_index,LOAD)<0){
+    if(CReadSlice_frame(0,fedi->o2_index,LOAD)<0||
+       CReadSlice_frame(0,fedi->co2_index,LOAD)<0||
+       CReadSlice_frame(0,fedi->co_index,LOAD)<0){
 
-       readfed(file_index,UNLOAD, file_type, errorcode);
+       ReadFed(file_index,UNLOAD, file_type, errorcode);
        return;
     }
 
@@ -838,7 +928,7 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     if(NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0||
        NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0
        ){
-       readfed(file_index,UNLOAD, file_type, errorcode);
+       ReadFed(file_index,UNLOAD, file_type, errorcode);
       *errorcode=-1;
     }
     times=fed_slice->times;
@@ -861,10 +951,10 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
       int jj;
       float dt;
 
-      if(Creadslice_frame(i,fedi->o2_index,LOAD)<0||
-         Creadslice_frame(i,fedi->co2_index,LOAD)<0||
-         Creadslice_frame(i,fedi->co_index,LOAD)){
-         readfed(file_index, UNLOAD, file_type,errorcode);
+      if(CReadSlice_frame(i,fedi->o2_index,LOAD)<0||
+         CReadSlice_frame(i,fedi->co2_index,LOAD)<0||
+         CReadSlice_frame(i,fedi->co_index,LOAD)){
+         ReadFed(file_index, UNLOAD, file_type,errorcode);
          return;
       }
 
@@ -890,7 +980,7 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
       }
     }
     FREEMEMORY(iblank);
-    out_slicefile(fed_slice);
+    OutSlicefile(fed_slice);
     if(fed_slice->volslice==1){
       float *xplt, *yplt, *zplt;
       char *iblank_cell;
@@ -936,12 +1026,12 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
     }
     FREEMEMORY(fed_slice->qslicedata);
     FREEMEMORY(fed_slice->times);
-    Creadslice_frame(0,fedi->o2_index,UNLOAD);
-    Creadslice_frame(0,fedi->co2_index,UNLOAD);
-    Creadslice_frame(0,fedi->co_index,UNLOAD);
+    CReadSlice_frame(0,fedi->o2_index,UNLOAD);
+    CReadSlice_frame(0,fedi->co2_index,UNLOAD);
+    CReadSlice_frame(0,fedi->co_index,UNLOAD);
   }
   if(file_type==FED_SLICE){
-    readslice(fed_slice->file,fedi->fed_index,flag,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index,flag,SET_SLICECOLOR,&error_local);
   }
   else{
     readiso_orig(fed_iso->file,file_index,flag,&error_local);
@@ -962,9 +1052,9 @@ void readfed(int file_index, int flag, int file_type, int *errorcode){
   PRINTF("completed\n");
 }
 
-/* ------------------ readvslice ------------------------ */
+/* ------------------ ReadVSlice ------------------------ */
 
-void readvslice(int ivslice, int flag, int *errorcode){
+void ReadVSlice(int ivslice, int flag, int *errorcode){
   vslicedata *vd;
   float valmin, valmax;
   int display;
@@ -984,7 +1074,7 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
       u = sliceinfo + vd->iu;
       display=u->display;
-      if(u->loaded==1)readslice(u->file,vd->iu,UNLOAD,SET_SLICECOLOR,errorcode);
+      if(u->loaded==1)ReadSlice(u->file,vd->iu,UNLOAD,SET_SLICECOLOR,errorcode);
       u->display=display;
       u->vloaded=0;
     }
@@ -993,7 +1083,7 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
       v = sliceinfo + vd->iv;
       display=v->display;
-      if(v->loaded==1)readslice(v->file,vd->iv,UNLOAD,SET_SLICECOLOR,errorcode);
+      if(v->loaded==1)ReadSlice(v->file,vd->iv,UNLOAD,SET_SLICECOLOR,errorcode);
       v->display=display;
       v->vloaded=0;
     }
@@ -1002,7 +1092,7 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
       w = sliceinfo + vd->iw;
       display=w->display;
-      if(w->loaded==1)readslice(w->file,vd->iw,UNLOAD,SET_SLICECOLOR,errorcode);
+      if(w->loaded==1)ReadSlice(w->file,vd->iw,UNLOAD,SET_SLICECOLOR,errorcode);
       w->display=display;
       w->vloaded=0;
     }
@@ -1011,11 +1101,11 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
       val = sliceinfo + vd->ival;
       display=val->display;
-      if(val->loaded==1)readslice(val->file,vd->ival,UNLOAD,SET_SLICECOLOR,errorcode);
+      if(val->loaded==1)ReadSlice(val->file,vd->ival,UNLOAD,SET_SLICECOLOR,errorcode);
       val->display=display;
       val->vloaded=0;
     }
-    remove_vslice_loadstack(ivslice);
+    RemoveVSliceLoadstack(ivslice);
     vd->loaded=0;
     vd->display=0;
     showvslice=0;
@@ -1028,11 +1118,11 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
     u = sliceinfo + vd->iu;
     vd->u=u;
-    readslice(u->file,vd->iu,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(u->file,vd->iu,LOAD,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       vd->loaded=1;
       fprintf(stderr,"*** Error: unable to load U velocity vector components in %s . Vector load aborted\n",u->file);
-      readvslice(ivslice,UNLOAD,errorcode);
+      ReadVSlice(ivslice,UNLOAD,errorcode);
       *errorcode=1;
       return;
     }
@@ -1047,11 +1137,11 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
     v = sliceinfo + vd->iv;
     vd->v=v;
-    readslice(v->file,vd->iv,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(v->file,vd->iv,LOAD,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load V velocity vector components in %s . Vector load aborted\n",v->file);
       vd->loaded=1;
-      readvslice(ivslice,UNLOAD,errorcode);
+      ReadVSlice(ivslice,UNLOAD,errorcode);
       *errorcode=1;
       return;
     }
@@ -1067,11 +1157,11 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
     w = sliceinfo + vd->iw;
     vd->w=w;
-    readslice(w->file,vd->iw,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(w->file,vd->iw,LOAD,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load W velocity vector components in %s . Vector load aborted\n",w->file);
       vd->loaded=1;
-      readvslice(ivslice,UNLOAD,errorcode);
+      ReadVSlice(ivslice,UNLOAD,errorcode);
       *errorcode=1;
       return;
     }
@@ -1088,11 +1178,11 @@ void readvslice(int ivslice, int flag, int *errorcode){
 
     val = sliceinfo + vd->ival;
     vd->val=val;
-    readslice(val->file,vd->ival,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(val->file,vd->ival,LOAD,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load vector values in %s . Vector load aborted\n",val->file);
       vd->loaded=1;
-      readvslice(ivslice,UNLOAD,errorcode);
+      ReadVSlice(ivslice,UNLOAD,errorcode);
       *errorcode=1;
       return;
     }
@@ -1140,7 +1230,7 @@ void readvslice(int ivslice, int flag, int *errorcode){
     }
   }
   velocity_range = valmax - valmin;
-  push_vslice_loadstack(ivslice);
+  PushVSliceLoadstack(ivslice);
 
 #ifdef pp_MEMPRINT
   PRINTF("After vslice load: \n");
@@ -1162,6 +1252,22 @@ void UpdateSliceFilenum(void){
     if(sd->display==0||islicetype!=sd->type)continue;
     slicefilenum=i;
     break;
+  }
+}
+
+/* ------------------ UncompressSliceDataFrame ------------------------ */
+
+void UncompressSliceDataFrame(slicedata *sd, int iframe_local) {
+  unsigned int countin;
+  uLongf countout;
+  unsigned char *compressed_data;
+
+  compressed_data = sd->qslicedata_compressed + sd->compindex[iframe_local].offset;
+  countin = sd->compindex[iframe_local].size;
+  countout = sd->nsliceii;
+
+  if (sd->compression_type == COMPRESSED_ZLIB) {
+    uncompress_zlib(sd->slicecomplevel, &countout, compressed_data, countin);
   }
 }
 
@@ -1260,7 +1366,7 @@ void GetSliceHists(slicedata *sd) {
     int nn;
 
     if (sd->compression_type == COMPRESSED_ZLIB) {
-      uncompress_slicedataframe(sd, istep);
+      UncompressSliceDataFrame(sd, istep);
     }
     for (nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++) {
       if (sd->compression_type == COMPRESSED_ZLIB) {
@@ -1496,6 +1602,25 @@ void UpdateSliceBounds(void){
   }
 }
 
+/* ------------------ SetSliceLabels ------------------------ */
+
+void SetSliceLabels(float smin, float smax,
+  slicedata *sd, int *errorcode){
+  char *scale;
+  int slicetype;
+  boundsdata *sb;
+
+  slicetype = GetSliceType(sd);
+  sb = slicebounds + slicetype;
+  sb->label = &(sd->label);
+
+  *errorcode = 0;
+  PRINTF("setting up slice labels \n");
+  scale = sb->scale;
+  GetSliceLabels(smin, smax, nrgb,
+    sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+}
+
 /* ------------------ UpdateAllSliceLabels ------------------------ */
 
 void UpdateAllSliceLabels(int slicetype, int *errorcode){
@@ -1527,11 +1652,36 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->type!=slicetype)continue;
-    setslicelabels(valmin,valmax,sd,errorcode);
+    SetSliceLabels(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
   UpdateGlui();
+}
+
+/* ------------------ SetSliceColors ------------------------ */
+
+void SetSliceColors(float smin, float smax,
+  slicedata *sd, int *errorcode){
+  char *scale;
+  int slicetype;
+  boundsdata *sb;
+
+  slicetype = GetSliceType(sd);
+  sb = slicebounds + slicetype;
+  sb->label = &(sd->label);
+
+
+  *errorcode = 0;
+  PRINTF("computing slice color levels \n");
+  scale = sb->scale;
+  if(sd->qslicedata == NULL)return;
+  GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
+    smin, smax,
+    nrgb_full, nrgb,
+    sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+    &sd->extreme_min, &sd->extreme_max
+  );
 }
 
 /* ------------------ UpdateAllSliceColors ------------------------ */
@@ -1565,16 +1715,16 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->type!=slicetype)continue;
-    setslicecolors(valmin,valmax,sd,errorcode);
+    SetSliceColors(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
     UpdateGlui();
 }
 
-/* ------------------ slicecompare ------------------------ */
+/* ------------------ SliceCompare ------------------------ */
 
-int slicecompare( const void *arg1, const void *arg2 ){
+int SliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
   float slice_eps, delta_slice;
 
@@ -1622,9 +1772,9 @@ int slicecompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ vslicecompare ------------------------ */
+/* ------------------ VSliceCompare ------------------------ */
 
-int vslicecompare( const void *arg1, const void *arg2 ){
+int VSliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
   vslicedata *vslicei, *vslicej;
   float delta_orig;
@@ -1750,7 +1900,7 @@ void UpdateSliceMenuLabels(void){
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
       STRCPY(sd->menulabel,sd->slicedir);
-      if(new_multi_slice(sdold,sd)==1){
+      if(NewMultiSlice(sdold,sd)==1){
         mslicei++;
         STRCPY(mslicei->menulabel,sd->menulabel);
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
@@ -1831,7 +1981,7 @@ void UpdateVsliceMenulabels(void){
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
       STRCPY(vsd->menulabel,sd->slicedir);
-      if(new_multi_slice(sdold,sd)==1){
+      if(NewMultiSlice(sdold,sd)==1){
         mvslicei++;
         STRCPY(mvslicei->menulabel,vsd->menulabel);
         STRCPY(mvslicei->menulabel2,sd->label.longlabel);
@@ -1860,9 +2010,9 @@ void UpdateVsliceMenulabels(void){
   }
 }
 
-/* ------------------ new_multi_slice ------------------------ */
+/* ------------------ NewMultiSlice ------------------------ */
 
-int new_multi_slice(slicedata *sdold,slicedata *sd){
+int NewMultiSlice(slicedata *sdold,slicedata *sd){
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0){
@@ -2641,7 +2791,7 @@ void GetSliceParams(void){
     for(i=0;i<nsliceinfo;i++){
       sliceorderindex[i]=i;
     }
-    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), slicecompare );
+    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), SliceCompare );
 
     for(i=0;i<nmultisliceinfo;i++){
       multislicedata *mslicei;
@@ -2672,7 +2822,7 @@ void GetSliceParams(void){
         sdold = sliceinfo + sliceorderindex[i - 1];
         sd = sliceinfo + sliceorderindex[i];
         mslicei->autoload=0;
-        if(new_multi_slice(sdold,sd)==1){
+        if(NewMultiSlice(sdold,sd)==1){
           nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
@@ -2844,7 +2994,7 @@ void UpdateVSlices(void){
     for(i=0;i<nvsliceinfo;i++){
       vsliceorderindex[i]=i;
     }
-    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), vslicecompare );
+    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), VSliceCompare );
 
     for(i=0;i<nmultivsliceinfo;i++){
       mvslicei = multivsliceinfo + i;
@@ -2871,7 +3021,7 @@ void UpdateVSlices(void){
       sdold = sliceinfo + vsdold->ival;
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
-      if(new_multi_slice(sdold,sd)==1){
+      if(NewMultiSlice(sdold,sd)==1){
         nmultivsliceinfo++;
         mvslicei++;
         mvslicei->nvslices=0;
@@ -3207,50 +3357,6 @@ void UpdateSliceBoundLabels(){
     sb = slicebounds + j;
     sb->label=&(sd->label);
   }
-}
-
-/* ------------------ setslicecolors ------------------------ */
-
-void setslicecolors(float smin, float smax,
-                    slicedata *sd, int *errorcode){
-  char *scale;
-  int slicetype;
-  boundsdata *sb;
-
-  slicetype= GetSliceType(sd);
-  sb = slicebounds + slicetype;
-  sb->label=&(sd->label);
-
-
-  *errorcode=0;
-  PRINTF("computing slice color levels \n");
-  scale=sb->scale;
-  if(sd->qslicedata==NULL)return;
-  GetSliceColors(sd->qslicedata,sd->nslicetotal,sd->slicelevel,
-                smin,smax,
-                nrgb_full,nrgb,
-                sb->colorlabels,&scale,&sb->fscale,sb->levels256,
-                &sd->extreme_min,&sd->extreme_max
-                );
-}
-
-/* ------------------ setslicelabels ------------------------ */
-
-void setslicelabels(float smin, float smax,
-                    slicedata *sd, int *errorcode){
-  char *scale;
-  int slicetype;
-  boundsdata *sb;
-
-  slicetype= GetSliceType(sd);
-  sb = slicebounds + slicetype;
-  sb->label=&(sd->label);
-
-  *errorcode=0;
-  PRINTF("setting up slice labels \n");
-  scale=sb->scale;
-  GetSliceLabels(smin,smax,nrgb,
-                sb->colorlabels,&scale,&sb->fscale,sb->levels256);
 }
 
 /* ------------------ SetSliceBounds ------------------------ */
@@ -3589,9 +3695,9 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
-/* ------------------ readslice ------------------------ */
+/* ------------------ ReadSlice ------------------------ */
 
-void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
+void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
   FILE_SIZE slicefilelen;
   float *xplt_local, *yplt_local, *zplt_local;
   int blocknumber;
@@ -3740,7 +3846,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       CountMemoryBlocks(num_memblocks_unload, num_memblocks_load);
       PRINTF("blocks unloaded=%i\n", num_memblocks_unload);
 #endif
-      remove_slice_loadstack(slicefilenumber);
+      RemoveSliceLoadstack(slicefilenumber);
       return;
     }
     CountMemoryBlocks(num_memblocks_load, 0);
@@ -3757,7 +3863,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         GetSliceHeader(sd->comp_file, sd->size_file, sd->compression_type,
           sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
           &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
@@ -3767,7 +3873,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ReadVolSlice = 1;
     }
     if(error != 0){
-      readslice("", ifile, UNLOAD, set_slicecolor, &error);
+      ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return;
     }
@@ -3782,7 +3888,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     if(error != 0 || sd->ntimes<1){
-      readslice("", ifile, UNLOAD, set_slicecolor, &error);
+      ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return;
     }
@@ -3796,7 +3902,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0 ||
         NewMemory((void **)&sd->compindex, sizeof(compdata)*(1 + sd->ntimes)) == 0
         ){
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
@@ -3804,7 +3910,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       if(GetSliceCompressedData(datafile,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
@@ -3816,7 +3922,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       if(NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
         NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0){
         *errorcode = 1;
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         return;
       }
 #ifdef pp_MEMDEBUG
@@ -3916,14 +4022,14 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     sd->nslicetotal = sd->ntimes*sd->nsliceii;
     if(sd->compression_type == COMPRESSED_ZLIB){
       if(NewMemory((void **)&sd->slicecomplevel, sd->nsliceii * sizeof(unsigned char)) == 0){
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
     }
     else {
       if(NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0){
-        readslice("", ifile, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
@@ -4041,7 +4147,7 @@ void readslice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ColorbarMenu(levelset_colorbar);
     }
   }
-  push_slice_loadstack(slicefilenumber);
+  PushSliceLoadstack(slicefilenumber);
 
   if(sd->volslice == 1){
     meshdata *meshj;
@@ -5202,7 +5308,7 @@ void DrawSliceFrame(){
       if((showvslice==0||show_slices_and_vectors==0)&&sd->display==0)continue;
       if(sd->times[0]>global_times[itimes])continue;
       if(sd->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(sd,sd->itime);
+        UncompressSliceDataFrame(sd,sd->itime);
         sd->iqsliceframe=sd->slicecomplevel;
       }
       else{
@@ -6361,7 +6467,7 @@ void DrawVSliceFrame(void){
     if(sliceinfo[vd->ival].times[0]>global_times[itimes])continue;
 #define VAL val
     if(VAL->compression_type==COMPRESSED_ZLIB){
-      uncompress_slicedataframe(VAL,VAL->itime);
+      UncompressSliceDataFrame(VAL,VAL->itime);
       VAL->iqsliceframe=VAL->slicecomplevel;
     }
     else{
@@ -6372,7 +6478,7 @@ void DrawVSliceFrame(void){
 #define VAL u
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -6383,7 +6489,7 @@ void DrawVSliceFrame(void){
 #define VAL v
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -6394,7 +6500,7 @@ void DrawVSliceFrame(void){
 #define VAL w
     if(VAL!=NULL){
       if(VAL->compression_type==COMPRESSED_ZLIB){
-        uncompress_slicedataframe(VAL,VAL->itime);
+        UncompressSliceDataFrame(VAL,VAL->itime);
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
@@ -6427,9 +6533,9 @@ void DrawVSliceFrame(void){
   }
 }
 
-/* ------------------ plane_dist ------------------------ */
+/* ------------------ PlaneDist ------------------------ */
 
-float plane_dist(float *norm, float *xyz0, float *xyz){
+float PlaneDist(float *norm, float *xyz0, float *xyz){
   float dist=0.0;
   float dx;
   int i;
@@ -6495,7 +6601,7 @@ void UpdateGslicePlanes(void){
       xyz[0] = xx[ix[j]];
       xyz[1] = yy[iy[j]];
       xyz[2] = zz[iz[j]];
-      vals[j] = plane_dist(norm,xyz0,xyz);
+      vals[j] = PlaneDist(norm,xyz0,xyz);
     }
     level=0.0;
     getisobox(xx,yy,zz,vals,level,
@@ -6795,7 +6901,7 @@ int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int 
 
   stream=FOPEN(size_file,"r");
   if(stream==NULL){
-    if(makeslicesizefile(comp_file,size_file, compression_type)==0)return 0;
+    if(MakeSliceSizefile(comp_file,size_file, compression_type)==0)return 0;
     stream=FOPEN(size_file,"r");
     if(stream==NULL)return 0;
   }
@@ -6829,7 +6935,7 @@ int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
 
   stream=FOPEN(size_file,"r");
   if(stream==NULL){
-    if(makeslicesizefile(comp_file,size_file,compression_type)==0)return 0;
+    if(MakeSliceSizefile(comp_file,size_file,compression_type)==0)return 0;
     stream=fopen(size_file,"r");
     if(stream==NULL)return 0;
   }
@@ -6974,9 +7080,9 @@ int GetSlicecZlibData(char *file,
   // time, compressed frame size                        for each frame
   // compressed buffer
 
-/* ------------------ makeslicesizefile ------------------------ */
+/* ------------------ MakeSliceSizefile ------------------------ */
 
-int makeslicesizefile(char *file, char *sizefile, int compression_type){
+int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
   int endian_fromfile;
   float minmax[2];
   int ijkbar[6];
@@ -7029,22 +7135,6 @@ int makeslicesizefile(char *file, char *sizefile, int compression_type){
 
 }
 
-/* ------------------ uncompress_slicedataframe ------------------------ */
-
-void uncompress_slicedataframe(slicedata *sd,int iframe_local){
-  unsigned int countin;
-  uLongf countout;
-  unsigned char *compressed_data;
-
-  compressed_data = sd->qslicedata_compressed + sd->compindex[iframe_local].offset;
-  countin = sd->compindex[iframe_local].size;
-  countout=sd->nsliceii;
-
-  if(sd->compression_type==COMPRESSED_ZLIB){
-    uncompress_zlib(sd->slicecomplevel,&countout,compressed_data,countin);
-  }
-}
-
 /* ------------------ GetSliceVal ------------------------ */
 
 float GetSliceVal(slicedata *sd, unsigned char ival){
@@ -7054,99 +7144,9 @@ float GetSliceVal(slicedata *sd, unsigned char ival){
   return returnval;
 }
 
-/* ------------------ push_slice_loadstack ------------------------ */
+/* ------------------ SliceData2Hist ------------------------ */
 
-void push_slice_loadstack(int sliceindex){
-  int i;
-
-  if(islice_loadstack<nslice_loadstack){
-    for(i=0;i<islice_loadstack;i++){
-      if(slice_loadstack[i]==sliceindex)return;
-    }
-    slice_loadstack[islice_loadstack++]=sliceindex;
-  }
-}
-
-/* ------------------ remove_slice_loadstack ------------------------ */
-
-void remove_slice_loadstack(int sliceindex){
-  int i;
-
-  for(i=islice_loadstack-1;i>=0;i--){
-    if(slice_loadstack[i]==sliceindex){
-      int j;
-
-      for(j=i;j<islice_loadstack-1;j++){
-        slice_loadstack[j]=slice_loadstack[j+1];
-      }
-      islice_loadstack--;
-      break;
-    }
-  }
-}
-
-/* ------------------ last_slice_loadstack ------------------------ */
-
-int last_slice_loadstack(void){
-  int return_val;
-
-  if(islice_loadstack-1>=0&&islice_loadstack-1<nslice_loadstack){
-    return_val=slice_loadstack[islice_loadstack-1];
-  }
-  else{
-    return_val=-1;
-  }
-  return return_val;
-}
-
-/* ------------------ push_vslice_loadstack ------------------------ */
-
-void push_vslice_loadstack(int vsliceindex){
-  int i;
-
-  if(ivslice_loadstack<nvslice_loadstack){
-    for(i=0;i<ivslice_loadstack;i++){
-      if(vslice_loadstack[i]==vsliceindex)return;
-    }
-    vslice_loadstack[ivslice_loadstack++]=vsliceindex;
-  }
-}
-
-/* ------------------ remove_vslice_loadstack ------------------------ */
-
-void remove_vslice_loadstack(int vsliceindex){
-  int i;
-
-  for(i=ivslice_loadstack-1;i>=0;i--){
-    if(vslice_loadstack[i]==vsliceindex){
-      int j;
-
-      for(j=i;j<ivslice_loadstack-1;j++){
-        vslice_loadstack[j]=vslice_loadstack[j+1];
-      }
-      ivslice_loadstack--;
-      break;
-    }
-  }
-}
-
-/* ------------------ last_vslice_loadstack ------------------------ */
-
-int last_vslice_loadstack(void){
-  int return_val;
-
-  if(ivslice_loadstack-1>=0&&ivslice_loadstack-1<nvslice_loadstack){
-    return_val=vslice_loadstack[ivslice_loadstack-1];
-  }
-  else{
-    return_val=-1;
-  }
-  return return_val;
-}
-
-/* ------------------ slicedata2hist ------------------------ */
-
-void slicedata2hist(slicedata *sd, float *xyz, float *dxyz, float time, float dtime, histogramdata *histogram){
+void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dtime, histogramdata *histogram){
   int i,j,k,t;
   int imin, imax, jmin, jmax, kmin, kmax, tmin, tmax;
   int ntimes;

@@ -633,8 +633,8 @@ void write_part_histogram(partdata *parti){
     float valminmax[2];
 
     histi = parti->histograms[i];
-    valminmax[0] = histi->valmin;
-    valminmax[1] = histi->valmax;
+    valminmax[0] = histi->val_min;
+    valminmax[1] = histi->val_max;
 
     fwrite(valminmax, sizeof(float), 2, STREAM_HIST);
     fwrite(&histi->nbuckets, sizeof(int), 1, STREAM_HIST);

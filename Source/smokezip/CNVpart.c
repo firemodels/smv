@@ -653,7 +653,7 @@ void Get_Part_Bounds(void){
     propi->setvalmin=1;
     PRINTF(" %s min: %f max: %f\n",propi->label.shortlabel,propi->valmin,propi->valmax);
     FREEMEMORY(propi->histogram->buckets);
-    FREEMEMORY(propi->histogram->buckets_2d);
+    FREEMEMORY(propi->histogram->buckets_polar);
     FREEMEMORY(propi->histogram);
   }
 }

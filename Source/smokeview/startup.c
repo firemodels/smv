@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "infoheader.h"
 #include "update.h"
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -339,6 +340,10 @@ int setup_case(int argc, char **argv){
     show_glui_trainer();
     show_glui_alert();
   }
+  // intialise info header
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
+                       chidfilebase);
+  fprintf(stderr, "initialised titlea: %s\n", titleinfo.titleline);
   return 0;
 }
 
@@ -1108,9 +1113,9 @@ void InitOpenGL(void){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)readvslice(i,UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,UNLOAD,&errorcode);
       if(vslicei->autoload==1){
-        readvslice(i,LOAD,&errorcode);
+        ReadVSlice(i,LOAD,&errorcode);
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here
@@ -1134,8 +1139,8 @@ void InitOpenGL(void){
         slicei = sliceinfo + i;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)readslice(slicei->file, i, UNLOAD, set_slicecolor,&errorcode);
-        if(slicei->autoload == 1 && slicei->loaded == 0)readslice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, UNLOAD, set_slicecolor,&errorcode);
+        if(slicei->autoload == 1 && slicei->loaded == 0)ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
       }
     }
     for(i=0;i<nterraininfo;i++){

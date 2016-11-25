@@ -6022,13 +6022,13 @@ int is_dup_device_label(int index, int direction){
   return 0;
 }
 
-/* ----------------------- SummarizeWindData ----------------------------- */
+/* ----------------------- SummarizeDeviceWindData ----------------------------- */
 
 #ifdef pp_PILOT
 #ifdef pp_WINDROSE
-void SummarizeWindData(int nbuckets, int nr, int ntheta, int flag){
+void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag){
 #else
-void SummarizeWindData(int nbuckets){
+void SummarizeDeviceWindData(int nbuckets){
 #endif
   int i;
   float dangle;
@@ -6094,10 +6094,10 @@ void SummarizeWindData(int nbuckets){
 
         histogram = &(piloti->histogram);
         if(flag != FIRST_TIME){
-          FreeHistogram2d(histogram);
+          FreeHistogramPolar(histogram);
         }
-        InitHistogram2D(histogram, nr, ntheta);
-        Get2DMinMax(udev->vals, vdev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
+        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+        Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
         CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
       }
 #endif
@@ -6123,10 +6123,10 @@ void SummarizeWindData(int nbuckets){
 
         histogram = &(piloti->histogram);
         if(flag != FIRST_TIME){
-          FreeHistogram2d(histogram);
+          FreeHistogramPolar(histogram);
         }
-        InitHistogram2D(histogram, nr, ntheta);
-        GetPolarMinMax(veldev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
+        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+        GetPolarBounds(veldev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
         CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
       }
 #endif
@@ -6400,9 +6400,9 @@ void setup_device_data(void){
   // convert velocities to pilot chart format
 #ifdef pp_PILOT
 #ifdef pp_WINDROSE
-  SummarizeWindData(npilot_buckets,npilot_nr,npilot_ntheta,FIRST_TIME);
+  SummarizeDeviceWindData(npilot_buckets,npilot_nr,npilot_ntheta,FIRST_TIME);
 #else
-  SummarizeWindData(npilot_buckets);
+  SummarizeDeviceWindData(npilot_buckets);
 #endif
 #endif
 
