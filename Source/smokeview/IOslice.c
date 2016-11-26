@@ -4162,7 +4162,6 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     meshj->slice_max[1] = DENORMALIZE_Y(sd->xyz_max[1]);
     meshj->slice_max[2] = DENORMALIZE_Z(sd->xyz_max[2]);
 
-    vis_gslice_data = 1;
 #ifdef pp_GPU
     if(gpuactive == 1){
       InitSlice3DTexture(meshj);
