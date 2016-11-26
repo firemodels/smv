@@ -10498,7 +10498,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       front = TrimFront(buffer);
       TrimBack(front);
-      strcpy(label_startup_view, front);
+      strcpy(startup_view_label, front);
       update_startup_view = 1;
       continue;
     }
@@ -12466,15 +12466,8 @@ void WriteINI(int flag,char *filename){
     fprintf(fileout, "INPUT_FILE\n");
     fprintf(fileout, " %s\n", fds_filein);
   }
-  {
-    char *label;
-
-    label = GetCameraLabel(startup_view_ini);
-    if(label != NULL){
-      fprintf(fileout, "LABELSTARTUPVIEW\n");
-      fprintf(fileout, " %s\n", label);
-    }
-  }
+  fprintf(fileout, "LABELSTARTUPVIEW\n");
+  fprintf(fileout, " %s\n", startup_view_label);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);
