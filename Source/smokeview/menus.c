@@ -153,6 +153,7 @@
 
 #define MENU_TIMEVIEW -103
 #define SAVE_VIEWPOINT -101
+#define SAVE_VIEWPOINT_AS_STARTUP -106
 #define MENU_STARTUPVIEW -102
 #define MENU_OUTLINEVIEW -104
 #define MENU_SIZEPRESERVING -105
@@ -1439,13 +1440,18 @@ void ResetMenu(int value){
   case MENU_TIMEVIEW:
     UpdateTimes();
     break;
+  case SAVE_VIEWPOINT_AS_STARTUP:
+    ResetMenu(SAVE_VIEWPOINT);
+    ResetMenu(MENU_STARTUPVIEW);
+    update_startup_view = 1;
+    break;
   case SAVE_VIEWPOINT:
     GetNextViewLabel(view_label);
     add_list_view(view_label);
     break;
   case MENU_STARTUPVIEW:
     if(selected_view==MENU_DUMMY)ResetMenu(SAVE_VIEWPOINT);
-    set_startup_view();
+    SetStartupView();
     break;
   default:
     ASSERT(value>=0);
@@ -7142,6 +7148,7 @@ updatemenu=0;
   {
     char line[256];
     cameradata *ca;
+    char *current_view=NULL;
 
     if(trainer_mode==1){
       if(visBlocks==visBLOCKOutline){
@@ -7152,9 +7159,25 @@ updatemenu=0;
       }
       glutAddMenuEntry("-",MENU_DUMMY);
     }
+    for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
+      if(ca->view_id == selected_view){
+        current_view = ca->name;
+        break;
+      }
+    }
     if(trainer_mode==0){
-      glutAddMenuEntry(_("Save"),SAVE_VIEWPOINT);
-      glutAddMenuEntry(_("Set as Startup"),MENU_STARTUPVIEW);
+      glutAddMenuEntry(_("Save current view"),SAVE_VIEWPOINT);
+      if(current_view != NULL){
+        char viewlabel[255];
+
+        if(strcmp(current_view,startup_view_label)!=0){
+          sprintf(viewlabel, "Apply %s at startup", current_view);
+          glutAddMenuEntry(viewlabel, MENU_STARTUPVIEW);
+        }
+      }
+      else{
+        glutAddMenuEntry(_("Save current view and apply at startup"), SAVE_VIEWPOINT_AS_STARTUP);
+      }
       glutAddSubMenu(_("Zoom"),zoommenu);
       if(projection_type==1)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
       if(projection_type==0)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
@@ -7171,6 +7194,9 @@ updatemenu=0;
       }
       else{
         strcat(line,ca->name);
+        if(strcmp(ca->name,startup_view_label)==0){
+          strcat(line," (startup view)");
+        }
       }
       glutAddMenuEntry(line,ca->view_id);
     }
