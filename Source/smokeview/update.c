@@ -1866,9 +1866,10 @@ void UpdateShowScene(void){
   if(update_startup_view == 1){
     cameradata *ca;
 
-    ca = GetCamera(label_startup_view);
+    ca = GetCamera(startup_view_label);
     if(ca != NULL){
       ResetMenu(ca->view_id);
+      startup_view_ini = ca->view_id;
     }
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
