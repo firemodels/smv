@@ -592,7 +592,7 @@ SVEXTERN cameradata camera_list_first, camera_list_last, SVDECL(**camera_list,NU
 SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
 SVEXTERN int camera_max_id;
 SVEXTERN int startup,startup_view_ini,selected_view;
-SVEXTERN char label_startup_view[256];
+SVEXTERN char startup_view_label[256];
 SVEXTERN char SVDECL(*camera_label,NULL), SVDECL(*colorbar_label,NULL);
 
 SVEXTERN int visPatchType[7];

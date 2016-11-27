@@ -728,7 +728,7 @@ EXTERNCPP void AllocateFaces(void);
 EXTERNCPP void UpdateFaceLists(void);
 EXTERNCPP void UpdateFaces(void);
 EXTERNCPP void DrawTicks(void);
-EXTERNCPP void set_startup_view(void);
+EXTERNCPP void SetStartupView(void);
 EXTERNCPP void add_list_view(char *label_in);
 EXTERNCPP float color2bw(const float *color);
 EXTERNCPP float *getcolorptr(const float *color);

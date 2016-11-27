@@ -1742,6 +1742,14 @@ void Viewpoint_CB(int var){
     break;
   case STARTUP:
     startup_view_ini=LIST_viewpoints->get_int_val();
+    {
+      char *label;
+
+      label = GetCameraLabel(startup_view_ini);
+      if(label != NULL){
+        strcpy(startup_view_label, label);
+      }
+    }
     selected_view=startup_view_ini;
     WriteINI(LOCAL_INI,NULL);
     break;
@@ -1787,9 +1795,9 @@ void Viewpoint_CB(int var){
   }
 }
 
-/* ------------------ set_startup_view ------------------------ */
+/* ------------------ SetStartupView ------------------------ */
 
-extern "C" void set_startup_view(void){
+extern "C" void SetStartupView(void){
   Viewpoint_CB(STARTUP);
 }
 
@@ -1822,7 +1830,6 @@ extern "C" void add_list_view(char *label_in){
   }
   cam2 = InsertCamera(cam1,camera_current,label);
   if(cam2!=NULL){
-    LIST_viewpoints->add_item(cam2->view_id,cam2->name);
     LIST_viewpoints->set_int_val(cam2->view_id);
     selected_view=cam2->view_id;
   }
