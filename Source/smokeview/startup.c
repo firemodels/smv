@@ -343,7 +343,7 @@ int setup_case(int argc, char **argv){
   // intialise info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
                        chidfilebase);
-  fprintf(stderr, "initialised titlea: %s\n", titleinfo.titleline);
+  PRINTF("initialised titlea: %s\n", titleinfo.titleline);
   return 0;
 }
 
