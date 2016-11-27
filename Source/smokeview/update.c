@@ -996,7 +996,6 @@ void UpdateTimes(void){
     for(i=0;i<nisoinfo;i++){
       meshdata *meshi;
       isodata *ib;
-      int n;
 
       ib = isoinfo+i;
       if(ib->geomflag==1||ib->loaded==0)continue;
