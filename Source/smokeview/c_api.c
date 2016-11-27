@@ -269,10 +269,10 @@ int loadfile(const char *filename) {
     sd = sliceinfo + i;
     if(strcmp(sd->file,filename)==0){
       if(i<nsliceinfo-nfedinfo){
-        readslice(sd->file,i,LOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i,LOAD,SET_SLICECOLOR,&errorcode);
       }
       else{
-        readfed(i,LOAD,FED_SLICE,&errorcode);
+        ReadFed(i,LOAD,FED_SLICE,&errorcode);
       }
       return errorcode;
     }
@@ -1727,20 +1727,20 @@ void unloadslice(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readslice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
+    ReadSlice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
   }
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
-        readslice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
       }
     }
     else if(value==UNLOAD_LAST){
       int unload_index;
 
-      unload_index=last_slice_loadstack();
+      unload_index=LastSliceLoadstack();
       if(unload_index>=0&&unload_index<nsliceinfo){
-        readslice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
       }
     }
   }
@@ -1769,7 +1769,7 @@ void unloadall() {
       LoadVolSmoke3DMenu(UNLOAD_ALL);
     }
     for(i=0;i<nsliceinfo;i++){
-      readslice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
+      ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
     }
     for(i=0;i<nplot3dinfo;i++){
       readplot3d("",i,UNLOAD,&errorcode);
@@ -1834,6 +1834,8 @@ int get_clipping_mode() {
 void set_clipping_mode(int mode) {
     clip_mode=mode;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x(int clipMin, float min, int clipMax, float max) {
@@ -1843,18 +1845,24 @@ void set_sceneclip_x(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_xmax=clipMax;
     clipinfo.xmax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x_min(int flag, float value) {
     clipinfo.clip_xmin = flag;
     clipinfo.xmin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_x_max(int flag, float value) {
     clipinfo.clip_xmax = flag;
     clipinfo.xmax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y(int clipMin, float min, int clipMax, float max) {
@@ -1864,18 +1872,24 @@ void set_sceneclip_y(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_ymax=clipMax;
     clipinfo.ymax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y_min(int flag, float value) {
     clipinfo.clip_ymin = flag;
     clipinfo.ymin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_y_max(int flag, float value) {
     clipinfo.clip_ymax = flag;
     clipinfo.ymax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_z(int clipMin, float min, int clipMax, float max) {
@@ -1885,6 +1899,7 @@ void set_sceneclip_z(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_zmax=clipMax;
     clipinfo.zmax = max;
     updatefacelists=1;
+    Update_Glui_Clip();
     update_clip_all();
 }
 
@@ -1892,12 +1907,16 @@ void set_sceneclip_z_min(int flag, float value) {
     clipinfo.clip_zmin = flag;
     clipinfo.zmin = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 void set_sceneclip_z_max(int flag, float value) {
     clipinfo.clip_zmax = flag;
     clipinfo.zmax = value;
     updatefacelists = 1;
+    Update_Glui_Clip();
+    update_clip_all();
 }
 
 /* ------------------ setrenderdir ------------------------ */
@@ -3213,7 +3232,7 @@ int set_inputfile(const char *filename) {
 } // INPUT_FILE
 
 int set_labelstartupview(const char *startupview) {
-  strcpy(label_startup_view, startupview);
+  strcpy(startup_view_label, startupview);
   update_startup_view = 1;
   return 0;
 } // LABELSTARTUPVIEW

@@ -1529,7 +1529,8 @@ int lua_set_ambientlight(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_ambientlight(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_backgroundcolor(lua_State *L) {
@@ -1537,7 +1538,8 @@ int lua_set_backgroundcolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_backgroundcolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_blockcolor(lua_State *L) {
@@ -1545,7 +1547,8 @@ int lua_set_blockcolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_blockcolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_blockshininess(lua_State *L) {
@@ -1628,7 +1631,8 @@ int lua_set_colorbar_colors(lua_State *L) {
   }
 
   int return_code = set_colorbar_colors(ncolors, colors);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_get_colorbar_colors(lua_State *L) {
@@ -1672,7 +1676,8 @@ int lua_set_color2bar_colors(lua_State *L) {
   }
 
   int return_code = set_color2bar_colors(ncolors, colors);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_get_color2bar_colors(lua_State *L) {
@@ -1739,7 +1744,8 @@ int lua_set_heatoffcolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_heatoffcolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_heatoncolor(lua_State *L) {
@@ -1747,7 +1753,8 @@ int lua_set_heatoncolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_heatoncolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_isocolors(lua_State *L) {
