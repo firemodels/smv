@@ -848,9 +848,14 @@ void print_partprop(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    PRINTF("label=%s min=%f max=%f\n",propi->label->longlabel,propi->valmin,propi->valmax);
-    PRINTF("   glbmin=%f glbmax=%f\n",propi->global_min,propi->global_max);
-    PRINTF("   permin=%f permax=%f\n",propi->percentile_min,propi->percentile_max);
+    if(propi->label->longlabel, "uniform"){
+      PRINTF("label=%s\n", propi->label->longlabel);
+    }
+    else{
+      PRINTF("label=%s min=%f max=%f\n", propi->label->longlabel, propi->valmin, propi->valmax);
+      PRINTF("   glbmin=%f glbmax=%f\n", propi->global_min, propi->global_max);
+      PRINTF("   permin=%f permax=%f\n", propi->percentile_min, propi->percentile_max);
+    }
     PRINTF("\n");
   }
 }
