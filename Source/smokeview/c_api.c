@@ -3232,7 +3232,7 @@ int set_inputfile(const char *filename) {
 } // INPUT_FILE
 
 int set_labelstartupview(const char *startupview) {
-  strcpy(label_startup_view, startupview);
+  strcpy(startup_view_label, startupview);
   update_startup_view = 1;
   return 0;
 } // LABELSTARTUPVIEW
