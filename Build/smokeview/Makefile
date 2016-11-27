@@ -185,8 +185,8 @@ intel_win_64 : $(objwin)
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : LIBS_PLAT =
-intel_linux_64 : FFLAGS    = -O2 -traceback -m64 -static-intel -fpp -D pp_noappend
-intel_linux_64 : CFLAGS    = -O2 -traceback -m64 -static-intel -D pp_LINUX -D pp_INTEL $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -fpp -D pp_noappend
+intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -static-intel -D pp_LINUX -D pp_INTEL $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_linux_64 : CFLAGS    += -D pp_LUA
