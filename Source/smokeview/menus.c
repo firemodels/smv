@@ -1397,21 +1397,13 @@ void OptionMenu(int value){
 /* ------------------ GetNextViewLabel ------------------------ */
 
 void GetNextViewLabel(char *label){
-  cameradata *ca;
   int i;
 
   for(i=1;;i++){
-    char view[256],*newview;
+    char view[256];
 
     sprintf(view,"view %i",i);
-    newview=NULL;
-    for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
-      if(strcmp(view,ca->name)==0){
-        newview=ca->name;
-        break;
-      }
-    }
-    if(newview==NULL){
+    if(GetCamera(view)==NULL){
       strcpy(label,view);
       return;
     }
@@ -1446,8 +1438,16 @@ void ResetMenu(int value){
     update_startup_view = 1;
     break;
   case SAVE_VIEWPOINT:
-    GetNextViewLabel(view_label);
-    add_list_view(view_label);
+    {
+      cameradata *ca;
+
+      GetNextViewLabel(view_label);
+      add_list_view(view_label);
+      ca = GetCamera(view_label);
+      if(ca != NULL){
+        ResetMenu(ca->view_id);
+      }
+    }
     break;
   case MENU_STARTUPVIEW:
     if(selected_view==MENU_DUMMY)ResetMenu(SAVE_VIEWPOINT);
@@ -7166,17 +7166,21 @@ updatemenu=0;
       }
     }
     if(trainer_mode==0){
-      glutAddMenuEntry(_("Save current view"),SAVE_VIEWPOINT);
-      if(current_view != NULL){
-        char viewlabel[255];
+      char view_label[255], menu_label[255];
 
+      GetNextViewLabel(view_label);
+      sprintf(menu_label, "Save viewpoint as %s", view_label);
+
+      glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
+      if(current_view != NULL){
         if(strcmp(current_view,startup_view_label)!=0){
-          sprintf(viewlabel, "Apply %s at startup", current_view);
-          glutAddMenuEntry(viewlabel, MENU_STARTUPVIEW);
+          sprintf(menu_label, "Apply %s at startup", current_view);
+          glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
         }
       }
       else{
-        glutAddMenuEntry(_("Save current view and apply at startup"), SAVE_VIEWPOINT_AS_STARTUP);
+        sprintf(menu_label, "Save viewpoint as %s and apply at startup", view_label);
+        glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
       }
       glutAddSubMenu(_("Zoom"),zoommenu);
       if(projection_type==1)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);

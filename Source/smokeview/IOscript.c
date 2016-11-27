@@ -1241,7 +1241,16 @@ void script_loadslice(scriptdata *scripti){
       if(ABS(slicei->position_orig - scripti->fval) > slicei->delta_orig)continue;
     }
     for(j=0;j<mslicei->nslices;j++){
+      slicedata *slicej;
+
       LoadSliceMenu(mslicei->islices[j]);
+      FREEMEMORY(loaded_file);
+      slicej = sliceinfo + mslicei->islices[j];
+      if(slicej->file != NULL&&strlen(slicej->file) > 0){
+        NewMemory((void **)&loaded_file, strlen(slicej->file) + 1);
+        strcpy(loaded_file, slicej->file);
+      }
+
       count++;
     }
     break;
@@ -1806,8 +1815,13 @@ void script_settimeval(scriptdata *scripti){
       dt = timeval-(global_times[nglobal_times-1]-0.0001);
       if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
         fprintf(stderr,"*** Error: data not available at time requested\n");
-        fprintf(stderr,"           time: %f s, min time: %f, max time: %f s\n",
-          timeval,global_times[0],global_times[nglobal_times-1]);
+        fprintf(stderr,"           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
+          timeval,global_times[0],global_times[nglobal_times-1],nglobal_times);
+        fprintf(stderr,"all times: ");
+        for(i=0;i<nglobal_times;i++){
+          fprintf(stderr,"%f ",global_times[i]);
+        }
+        fprintf(stderr," ***\n");
         if(loaded_file!=NULL)fprintf(stderr,"           loaded file: %s\n",loaded_file);
         if(script_labelstring!=NULL)fprintf(stderr,"                 label: %s\n",script_labelstring);
       }

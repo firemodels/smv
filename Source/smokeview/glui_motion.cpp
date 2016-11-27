@@ -1830,7 +1830,6 @@ extern "C" void add_list_view(char *label_in){
   }
   cam2 = InsertCamera(cam1,camera_current,label);
   if(cam2!=NULL){
-    LIST_viewpoints->add_item(cam2->view_id,cam2->name);
     LIST_viewpoints->set_int_val(cam2->view_id);
     selected_view=cam2->view_id;
   }

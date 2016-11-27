@@ -16,16 +16,16 @@ titledata titleinfo;
 int addTitleLine(titledata *titleinfo_ptr, const char *string) {
   char *line;
   if (titleinfo_ptr->nlines >= MAX_TITLE_LINES) {
-    fprintf(stderr, "MAX_TITLE_LINES exceeded\n");
+    PRINTF("MAX_TITLE_LINES exceeded\n");
     return 2;
   }
   int string_length = strlen(string);
   if (string_length >= MAX_TITLE_LINE_LENGTH) {
-    fprintf(stderr, "MAX_TITLE_LINE_LENGTH exceeded\n");
+    PRINTF("MAX_TITLE_LINE_LENGTH exceeded\n");
   }
   NewMemory((void **)&line, (string_length+1)*sizeof(char));
   if (line==NULL) {
-    fprintf(stderr, "addTitleLine: memory allocation failed\n");
+    PRINTF("addTitleLine: memory allocation failed\n");
     return 1;
   }
   strncpy(line,string,string_length);
@@ -51,11 +51,11 @@ int clearTitleLines(titledata *titleinfo_ptr) {
 int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
                          char *fds_githash_string, char *chidfilebase_string) {
-  fprintf(stderr, "initialising info header\n");
+  PRINTF("initialising info header\n");
   char line[MAX_TITLE_LINE_LENGTH];
 
   strncpy(titleinfo_ptr->titleline, release_title_string, MAX_TITLE_LINE_LENGTH);
-  fprintf(stderr, "initialised title: %s\n", titleinfo_ptr->titleline);
+  PRINTF("initialised title: %s\n", titleinfo_ptr->titleline);
 
   snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview (64 bit) build: %s",smv_githash_string);
   strncpy(titleinfo_ptr->smvbuildline, line, MAX_TITLE_LINE_LENGTH);
