@@ -31,7 +31,7 @@ int CompareFloat( const void *arg1, const void *arg2 ){
 void UpdateHrrinfo(int vis) {
   if(hrrinfo != NULL) {
     hrrinfo->display = vis;
-	UpdateTimes();
+    UpdateTimes();
   }
 }
 

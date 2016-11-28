@@ -1806,6 +1806,7 @@ void script_settimeval(scriptdata *scripti){
   float valmin;
 
   timeval = scripti->fval;
+  UpdateTimes();
   PRINTF("script: setting time to %f\n\n",timeval);
   if(global_times!=NULL&&nglobal_times>0){
     if(timeval<global_times[0])timeval=global_times[0];
