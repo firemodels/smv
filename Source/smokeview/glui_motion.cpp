@@ -417,12 +417,15 @@ extern "C" void update_cursor_checkbox(void){
 
 extern "C" void UpdateGluiViewList(void){
   cameradata *ca;
+  int i;
 
   if(LIST_viewpoints == NULL)return;
   for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
     LIST_viewpoints->delete_item(ca->name);
   }
-  for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
+  SortCameras();
+  for(i = 0; i < ncameras_sorted;i++){
+    ca = cameras_sorted[i];
     LIST_viewpoints->add_item(ca->view_id, ca->name);
   }
   LIST_viewpoints->set_int_val(startup_view_ini);
@@ -1678,6 +1681,7 @@ void Viewpoint_CB(int var){
 
     get_unique_view_name();
     add_list_view(NULL);
+    Viewpoint_CB(LIST_VIEW);
     break;
   case DELETE_VIEW:
     ival=LIST_viewpoints->get_int_val();
