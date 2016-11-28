@@ -171,7 +171,6 @@ extern "C" void WUI_CB(int var){
       list_slice_index=fire_line_type;
       UpdateSliceList(list_slice_index);
 
-
       Slice_CB(FILETYPEINDEX);
 
       setslicemin=1;
