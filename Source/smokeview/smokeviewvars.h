@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN float SVDECL(histogram_width_factor,25.0);

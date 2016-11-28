@@ -913,9 +913,9 @@ void ConvertSsf(void){
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
-  float *timescopy;
   int i;
   float dt_MIN=100000.0;
+  int nglobal_times_copy = 0;
 
   FREEMEMORY(geominfoptrs);
   ngeominfoptrs=0;
@@ -1032,7 +1032,6 @@ void UpdateTimes(void){
   CheckMemory;
   FREEMEMORY(global_times);
   if(nglobal_times>0)NewMemory((void **)&global_times,nglobal_times*sizeof(float));
-  timescopy=global_times;
 
   // pass 2 - merge times arrays
 
@@ -1043,13 +1042,12 @@ void UpdateTimes(void){
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
     for(n=0;n<geomi->ntimes;n++){
-      float t_diff;
+      float t_diff,*gt;
 
-      *timescopy++=geomi->times[n];
-      t_diff = timescopy[-1]-timescopy[-2];
-      if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-        dt_MIN=t_diff;
-      }
+      global_times[nglobal_times_copy++]=geomi->times[n];
+      gt = global_times + nglobal_times_copy - 2;
+      t_diff = gt[1] - gt[0];
+      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
   if(visTerrainType!=TERRAIN_HIDDEN){
@@ -1060,26 +1058,23 @@ void UpdateTimes(void){
       terri = terraininfo + i;
       if(terri->loaded==0)continue;
       for(n=0;n<terri->ntimes;n++){
-        float t_diff;
+        float t_diff,*gt;
 
-        *timescopy++=terri->times[n];
-        t_diff = timescopy[-1]-timescopy[-2];
-        if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-          dt_MIN=t_diff;
-        }
+        global_times[nglobal_times_copy++] =terri->times[n];
+        gt = global_times + nglobal_times_copy - 2;
+        t_diff = gt[1] - gt[0];
+        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
   if(visShooter!=0&&shooter_active==1){
     for(i=0;i<nshooter_frames;i++){
-      float t_diff;
+      float t_diff,*gt;
 
-      *timescopy++=shoottimeinfo[i].time;
-
-      t_diff = timescopy[-1]-timescopy[-2];
-      if(i>0&&t_diff<dt_MIN&&t_diff>0.0){
-        dt_MIN=t_diff;
-      }
+      global_times[nglobal_times_copy++]=shoottimeinfo[i].time;
+      gt = global_times + nglobal_times_copy - 2;
+      t_diff = gt[1] - gt[0];
+      if(i>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
     CheckMemory;
   }
@@ -1091,13 +1086,12 @@ void UpdateTimes(void){
     touri = tourinfo + i;
     if(touri->display==0)continue;
     for(n=0;n<touri->ntimes;n++){
-      float t_diff;
+      float t_diff,*gt;
 
-      *timescopy++=touri->path_times[n];
-      t_diff = timescopy[-1]-timescopy[-2];
-      if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-        dt_MIN=t_diff;
-      }
+      global_times[nglobal_times_copy++]=touri->path_times[n];
+      gt = global_times + nglobal_times_copy - 2;
+      t_diff = gt[1] - gt[0];
+      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
 
@@ -1109,13 +1103,12 @@ void UpdateTimes(void){
     parti = partinfo + i;
     if(parti->loaded==0)continue;
     for(n=0;n<parti->ntimes;n++){
-      float t_diff;
+      float t_diff,*gt;
 
-      *timescopy++=parti->times[n];
-      t_diff = timescopy[-1]-timescopy[-2];
-      if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-        dt_MIN=t_diff;
-      }
+      global_times[nglobal_times_copy++]=parti->times[n];
+      gt = global_times + nglobal_times_copy - 2;
+      t_diff = gt[1] - gt[0];
+      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
     tmax_part=MAX(parti->times[parti->ntimes-1],tmax_part);
   }
@@ -1127,13 +1120,12 @@ void UpdateTimes(void){
     sd = sliceinfo + i;
     if(sd->loaded==1||sd->vloaded==1){
       for(n=0;n<sd->ntimes;n++){
-        float t_diff;
+        float t_diff,*gt;
 
-        *timescopy++=sd->times[n];
-        t_diff = timescopy[-1]-timescopy[-2];
-        if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-          dt_MIN=t_diff;
-        }
+        global_times[nglobal_times_copy++]=sd->times[n];
+        gt = global_times + nglobal_times_copy - 2;
+        t_diff = gt[1] - gt[0];
+        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1145,13 +1137,12 @@ void UpdateTimes(void){
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
       for(n=0;n<patchi->ngeom_times;n++){
-        float t_diff;
+        float t_diff,*gt;
 
-        *timescopy++=patchi->geom_times[n];
-        t_diff = timescopy[-1]-timescopy[-2];
-        if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-          dt_MIN=t_diff;
-        }
+        global_times[nglobal_times_copy++]=patchi->geom_times[n];
+        gt = global_times + nglobal_times_copy - 2;
+        t_diff = gt[1] - gt[0];
+        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1168,13 +1159,12 @@ void UpdateTimes(void){
         int n;
 
         for(n=0;n<meshi->npatch_times;n++){
-          float t_diff;
+          float t_diff,*gt;
 
-          *timescopy++=meshi->patch_times[n];
-          t_diff = timescopy[-1]-timescopy[-2];
-          if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-            dt_MIN=t_diff;
-          }
+          global_times[nglobal_times_copy++]=meshi->patch_times[n];
+          gt = global_times + nglobal_times_copy - 2;
+          t_diff = gt[1] - gt[0];
+          if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
         }
       }
     }
@@ -1190,15 +1180,12 @@ void UpdateTimes(void){
       if(vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       for(n=0;n<vr->ntimes;n++){
-        float t_diff;
+        float t_diff,*gt;
 
-        *timescopy++=vr->times[n];
-        if(n>0){
-          t_diff = timescopy[-1]-timescopy[-2];
-          if(t_diff<dt_MIN&&t_diff>0.0){
-            dt_MIN=t_diff;
-          }
-        }
+        global_times[nglobal_times_copy++]=vr->times[n];
+        gt = global_times + nglobal_times_copy - 2;
+        t_diff = gt[1] - gt[0];
+        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1206,13 +1193,12 @@ void UpdateTimes(void){
     int n;
 
     for(n=0;n<nzone_times;n++){
-      float t_diff;
+      float t_diff,*gt;
 
-      *timescopy++=zone_times[n];
-      t_diff = timescopy[-1]-timescopy[-2];
-      if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-        dt_MIN=t_diff;
-      }
+      global_times[nglobal_times_copy++]=zone_times[n];
+      gt = global_times + nglobal_times_copy - 2;
+      t_diff = gt[1] - gt[0];
+      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
   if(ReadIsoFile==1&&visAIso!=0){
@@ -1225,13 +1211,12 @@ void UpdateTimes(void){
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
       for(n=0;n<meshi->niso_times;n++){
-        float t_diff;
+        float t_diff,*gt;
 
-        *timescopy++=meshi->iso_times[n];
-        t_diff = timescopy[-1]-timescopy[-2];
-        if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-          dt_MIN=t_diff;
-        }
+        global_times[nglobal_times_copy++]=meshi->iso_times[n];
+        gt = global_times + nglobal_times_copy - 2;
+        t_diff = gt[1] - gt[0];
+        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1245,17 +1230,18 @@ void UpdateTimes(void){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
         for(n=0;n<smoke3di->ntimes;n++){
-          float t_diff;
+          float t_diff,*gt;
 
-          *timescopy++=smoke3di->times[n];
-          t_diff = timescopy[-1]-timescopy[-2];
-          if(n>0&&t_diff<dt_MIN&&t_diff>0.0){
-            dt_MIN=t_diff;
-          }
+          global_times[nglobal_times_copy++]=smoke3di->times[n];
+          gt = global_times + nglobal_times_copy - 2;
+          t_diff = gt[1] - gt[0];
+          if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
         }
       }
     }
   }
+
+  ASSERT(nglobal_times==nglobal_times_copy);
 
   // end pass 2
 
@@ -1279,7 +1265,16 @@ void UpdateTimes(void){
     for(n = 1; n < nglobal_times; n++){
       ASSERT(global_times[n] > global_times[n - 1]);
     }
+    if (updatetimes_debug != NULL) {
+      printf("times: %i", nglobal_times);
+      for (n = 0; n < nglobal_times; n++) {
+        printf(" %f", global_times[n]);
+      }
+      printf("\n");
+    }
+
   }
+
 
   // pass 3 - allocate memory for individual times array
 
