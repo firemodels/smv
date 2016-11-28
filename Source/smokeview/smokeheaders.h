@@ -334,6 +334,7 @@ EXTERNCPP int have_terrain_slice(void);
 EXTERNCPP float get_zcell_val_offset(meshdata *meshi,float xval, float yval, int *loc);
 EXTERNCPP void UpdateCameraYpos(cameradata *camera_data);
 EXTERNCPP cameradata *GetCamera(char *name);
+EXTERNCPP void SortCameras(void);
 EXTERNCPP char *GetCameraLabel(int index);
 EXTERNCPP void Clip2Cam(cameradata *cam);
 EXTERNCPP void Cam2Clip(cameradata *cam);

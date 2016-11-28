@@ -233,6 +233,67 @@ void UpdateCamera(cameradata *ca){
   ca->dirty=0;
 }
 
+/* ------------------ CompareCameras ------------------------ */
+
+#define IS_EXT 0
+#define IS_INT 1
+#define IS_OTHER 2
+int CompareCameras(const void *arg1, const void *arg2){
+  cameradata *x, *y;
+  int return_val;
+  int x_state=IS_OTHER, y_state=IS_OTHER;
+
+  x = *(cameradata **)arg1;
+  y = *(cameradata **)arg2;
+
+  /*
+      ext  int   other
+ext    0   -1     -1
+int    1    0     -1
+other  1    1    strcmp
+  */
+
+  if(strcmp(x->name, "external") == 0)x_state = IS_EXT;
+  if(strcmp(x->name, "internal") == 0)x_state = IS_INT;
+
+  if(strcmp(y->name,"external") == 0)y_state = IS_EXT;
+  if(strcmp(y->name, "internal") == 0)y_state = IS_INT;
+  
+  if(x_state == IS_EXT){
+    if(y_state == IS_EXT)return 0;
+    return -1;
+  }
+  else if(x_state == IS_INT){
+    if(y_state == IS_EXT)return 1;
+    if(y_state == IS_INT)return 0;
+    return -1;
+  }
+  else{
+    if(y_state == IS_OTHER)return strcmp(x->name, y->name);
+    return 1;
+  }
+}
+
+/* ------------------ SortCameras ------------------------ */
+
+void SortCameras(void){
+  cameradata *ca;
+  int i;
+
+  FREEMEMORY(cameras_sorted);
+  ncameras_sorted=0;
+  for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
+    ncameras_sorted++;
+  }
+  if(ncameras_sorted == 0)return;
+  NewMemory((void **)&cameras_sorted, ncameras_sorted*sizeof(cameradata *));
+  for(i=0,ca = camera_list_first.next; ca->next != NULL; ca = ca->next,i++){
+    cameras_sorted[i] = ca;
+    printf("i=%i name=%s\n", i, ca->name);
+  }
+  qsort((cameradata **)cameras_sorted, (size_t)ncameras_sorted, sizeof(cameradata *), CompareCameras);
+}
+
 /* ------------------ InsertCamera ------------------------ */
 
 cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){

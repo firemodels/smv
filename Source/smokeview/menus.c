@@ -7187,7 +7187,9 @@ updatemenu=0;
       if(projection_type==0)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
       glutAddMenuEntry("-",MENU_DUMMY);
     }
-    for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+    SortCameras();
+    for(i = 0; i < ncameras_sorted;i++){
+      ca = cameras_sorted[i];
       if(trainer_mode==1&&strcmp(ca->name,_("internal"))==0)continue;
       strcpy(line,"");
       if(ca->view_id==selected_view){

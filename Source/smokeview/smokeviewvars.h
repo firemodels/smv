@@ -585,6 +585,8 @@ SVEXTERN float modelview_rotate_last[16],modelview_rotate_save[16];
 SVEXTERN float modelview_current[16];
 SVEXTERN float modelview_scratch[16];
 
+SVEXTERN int SVDECL(ncameras_sorted, 0);
+SVEXTERN cameradata SVDECL(**cameras_sorted, NULL);
 SVEXTERN cameradata SVDECL(*camera_current,NULL), SVDECL(*camera_save,NULL), SVDECL(*camera_last,NULL);
 SVEXTERN cameradata SVDECL(*camera_external,NULL), SVDECL(*camera_internal,NULL);
 SVEXTERN cameradata SVDECL(*camera_ini,NULL), SVDECL(*camera_external_save,NULL);
