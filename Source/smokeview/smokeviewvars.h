@@ -1267,7 +1267,7 @@ SVEXTERN int tour_constant_vel;
 SVEXTERN float tour_bias,tour_continuity;
 SVEXTERN int view_ntimes;
 
-SVEXTERN int SVDECL(ntours, 0);
+SVEXTERN int SVDECL(ntourinfo, 0);
 SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_index_old, TOURINDEX_MANUAL), SVDECL(selectedtour_index_ini, TOURINDEX_MANUAL);
 SVEXTERN int SVDECL(update_selectedtour_index,0);
 SVEXTERN int viewtourfrompath,viewalltours,viewanytours,edittour;

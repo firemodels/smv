@@ -2655,7 +2655,7 @@ void TourMenu(int value){
     DialogMenu(DIALOG_TOUR);
     break;
   case MENU_TOUR_CLEARALL:
-    for(i=0;i<ntours;i++){  // clear all tours
+    for(i=0;i<ntourinfo;i++){  // clear all tours
       touri = tourinfo + i;
       touri->display=touri->display2;
     }
@@ -2663,7 +2663,7 @@ void TourMenu(int value){
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
     }
     from_glui_trainer=0;
-    for(i=0;i<ntours;i++){
+    for(i=0;i<ntourinfo;i++){
       touri = tourinfo + i;
       if(touri->display==1){
         selected_tour=touri;
@@ -2673,7 +2673,7 @@ void TourMenu(int value){
     selected_tour=NULL;
     break;
   case MENU_TOUR_MANUAL:
-    for(i=0;i<ntours;i++){  // clear all tours
+    for(i=0;i<ntourinfo;i++){  // clear all tours
       touri = tourinfo + i;
       touri->display=0;
     }
@@ -2694,7 +2694,7 @@ void TourMenu(int value){
     }
     break;
   case MENU_TOUR_SHOWALL:               // show all tours
-    for(i=0;i<ntours;i++){
+    for(i=0;i<ntourinfo;i++){
       touri = tourinfo + i;
       touri->display=1;
     }
@@ -2705,7 +2705,7 @@ void TourMenu(int value){
     if(viewtourfrompath==0)SetViewPoint(RESTORE_EXTERIOR_VIEW);
     break;
   case MENU_TOUR_DEFAULT:
-    for(i=0;i<ntours;i++){
+    for(i=0;i<ntourinfo;i++){
       touri = tourinfo + i;
       touri->display=0;
     }
@@ -2716,14 +2716,14 @@ void TourMenu(int value){
     if(value<-22){
       tourlocus_type=2;
       iavatar_types=(-value-23);
-      if(selectedtour_index>=0&&selectedtour_index<ntours){
+      if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
         tourinfo[selectedtour_index].glui_avatar_index=iavatar_types;
       }
     }
 
     //  show one tour
 
-    if(value>=0&&value<ntours){
+    if(value>=0&&value<ntourinfo){
       int j;
 
       touri = tourinfo + value;
@@ -2734,7 +2734,7 @@ void TourMenu(int value){
         selected_tour=touri;
       }
       else{
-        for(j=0;j<ntours;j++){
+        for(j=0;j<ntourinfo;j++){
           tourdata *tourj;
 
           tourj = tourinfo + j;
@@ -7006,7 +7006,7 @@ updatemenu=0;
   }
   CREATEMENU(avatartourmenu,TourMenu);
   if(navatar_types>0){
-    if(selectedtour_index>=0&&selectedtour_index<ntours){
+    if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
       tourdata *touri;
       char menulabel[1024];
 
@@ -7034,15 +7034,15 @@ updatemenu=0;
   CREATEMENU(tourmenu,TourMenu);
 
   glutAddMenuEntry(_("New..."),MENU_TOUR_NEW);
-  if(ntours>0){
+  if(ntourinfo>0){
     if(showtour_dialog==1){
       glutAddMenuEntry(_("*Edit..."),MENU_TOUR_EDIT);
     }
     else{
       glutAddMenuEntry(_("Edit..."),MENU_TOUR_EDIT);
     }
-    if(ntours>0)glutAddMenuEntry("-",MENU_DUMMY);
-    for(i=0;i<ntours;i++){
+    if(ntourinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
+    for(i=0;i<ntourinfo;i++){
       tourdata *touri;
       int glui_avatar_index_local;
       char menulabel[1024];

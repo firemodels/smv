@@ -175,7 +175,7 @@ extern "C" void glui_trainer_setup(int main_window){
     int i;
     LIST_trainerpath->add_item(-1,_d("Manual"));
     LIST_trainerpath->add_item(-2,"-");
-    for(i=0;i<ntours;i++){
+    for(i=0;i<ntourinfo;i++){
       tourdata *touri;
 
       touri = tourinfo + i;
@@ -342,7 +342,7 @@ void TRAINER_CB(int var){
         rotation_type=EYE_CENTERED;
         handle_rotation_type(ROTATION_2AXIS);
       }
-      for(i=0;i<ntours;i++){
+      for(i=0;i<ntourinfo;i++){
         tourdata *touri;
 
         touri = tourinfo + i;
