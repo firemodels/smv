@@ -1245,14 +1245,13 @@ void UpdateTimes(void){
 
   // end pass 2
 
-  // sort times array
-
-  if(nglobal_times>0)qsort( (float *)global_times, (size_t)nglobal_times, sizeof( float ), CompareFloat );
-
-  // remove duplicates
+  // sort and remove duplicates
 
   if(nglobal_times>0){
     int n,n2;
+    int fail = 0;
+
+    qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
     n2 = 1;
     for(n=1;n<nglobal_times;n++){
@@ -1262,15 +1261,18 @@ void UpdateTimes(void){
       }
     }
     nglobal_times = n2;
+
     for(n = 1; n < nglobal_times; n++){
-      ASSERT(global_times[n] > global_times[n - 1]);
+      if(global_times[n - 1] < global_times[n])continue;
+      fail = 1;
+      break;
     }
-    if (updatetimes_debug != NULL) {
-      printf("times: %i", nglobal_times);
+    if(fail==1){
+      fprintf(stderr,"***error: time array out of order, nglobal_times=%i dt_MIN=%f", nglobal_times,dt_MIN);
       for (n = 0; n < nglobal_times; n++) {
-        printf(" %f", global_times[n]);
+        fprintf(stderr," %f", global_times[n]);
       }
-      printf("\n");
+      fprintf(stderr,"\n");
     }
 
   }
