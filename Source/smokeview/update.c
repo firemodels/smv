@@ -915,6 +915,7 @@ void ConvertSsf(void){
 void UpdateTimes(void){
   int i;
   int nglobal_times_copy = 0;
+  float *global_times_copy = NULL;
 
   FREEMEMORY(geominfoptrs);
   ngeominfoptrs=0;
@@ -1030,7 +1031,10 @@ void UpdateTimes(void){
 
   CheckMemory;
   FREEMEMORY(global_times);
-  if(nglobal_times>0)NewMemory((void **)&global_times,nglobal_times*sizeof(float));
+  if (nglobal_times > 0) {
+    NewMemory((void **)&global_times, nglobal_times * sizeof(float));
+    NewMemory((void **)&global_times_copy, nglobal_times * sizeof(float));
+  }
 
   // pass 2 - merge times arrays
 
@@ -1189,20 +1193,25 @@ void UpdateTimes(void){
   if(nglobal_times>0){
     int n,to,from;
 
-    qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
+    for (n = 0; n<nglobal_times; n++) {
+      global_times_copy[n] = global_times[n];
+    }
+    qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
 #define DT_EPS 0.0001
-    to = 1;
-    for(from=1;from<nglobal_times;from++){
-      if(ABS(global_times[from]-global_times[from-1])>DT_EPS){
-        global_times[to]=global_times[from];
+
+    to = 0;
+    for(from=0;from<nglobal_times;from++){
+      if(from==0||ABS(global_times_copy[from]-global_times_copy[from-1])>DT_EPS){
+        global_times[to]=global_times_copy[from];
         to++;
       }
     }
     nglobal_times = to;
+    FREEMEMORY(global_times_copy);
 
-    for(n = 1; n < nglobal_times; n++){
-      if(global_times[n - 1] < global_times[n])continue;
+    for(n = 0; n < nglobal_times-1; n++){
+      if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
       break;
     }
@@ -1218,7 +1227,7 @@ void UpdateTimes(void){
       for (n = 0; n < MIN(nglobal_times,10); n++) {
         fprintf(stderr, " %f", global_times[n]);
       }
-      fprintf(stderr, "\n");
+      fprintf(stderr, "......\n");
     }
 
   }
