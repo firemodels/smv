@@ -1187,19 +1187,19 @@ void UpdateTimes(void){
   // sort and remove duplicates
 
   if(nglobal_times>0){
-    int n,n2;
+    int n,to,from;
 
     qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
 #define DT_EPS 0.0001
-    n2 = 1;
-    for(n=1;n<nglobal_times;n++){
-      if(ABS(global_times[n]-global_times[n-1])>DT_EPS){
-        if(n!=n2)global_times[n2]=global_times[n];
-        n2++;
+    to = 1;
+    for(from=1;from<nglobal_times;from++){
+      if(ABS(global_times[from]-global_times[from-1])>DT_EPS){
+        global_times[to]=global_times[from];
+        to++;
       }
     }
-    nglobal_times = n2;
+    nglobal_times = to;
 
     for(n = 1; n < nglobal_times; n++){
       if(global_times[n - 1] < global_times[n])continue;
