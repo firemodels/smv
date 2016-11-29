@@ -1188,7 +1188,6 @@ void UpdateTimes(void){
 
   if(nglobal_times>0){
     int n,n2;
-    int fail = 0;
 
     qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
@@ -1204,15 +1203,22 @@ void UpdateTimes(void){
 
     for(n = 1; n < nglobal_times; n++){
       if(global_times[n - 1] < global_times[n])continue;
-      fail = 1;
+      timearray_test++;
       break;
     }
-    if(fail==1){
+    if(timearray_test==1){
       fprintf(stderr,"***error: time array out of order, nglobal_times=%i times=", nglobal_times);
       for (n = 0; n < nglobal_times; n++) {
         fprintf(stderr," %f", global_times[n]);
       }
       fprintf(stderr,"\n");
+    }
+    else if (timearray_test > 1) {
+      fprintf(stderr, "***error: time array out of order, nglobal_times=%i times=", nglobal_times);
+      for (n = 0; n < MIN(nglobal_times,10); n++) {
+        fprintf(stderr, " %f", global_times[n]);
+      }
+      fprintf(stderr, "\n");
     }
 
   }
