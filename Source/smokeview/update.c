@@ -914,9 +914,10 @@ void ConvertSsf(void){
 
 void UpdateTimes(void){
   int i;
-  float dt_MIN=100000.0;
+  float dt_MIN;
   int nglobal_times_copy = 0;
 
+  dt_MIN = 100000.0;
   FREEMEMORY(geominfoptrs);
   ngeominfoptrs=0;
   GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
@@ -1253,6 +1254,8 @@ void UpdateTimes(void){
 
     qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
+#define DT_EPS 0.0001
+    dt_MIN = DT_EPS;
     n2 = 1;
     for(n=1;n<nglobal_times;n++){
       if(ABS(global_times[n]-global_times[n-1])>dt_MIN/10.0){
