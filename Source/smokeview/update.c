@@ -248,8 +248,8 @@ void UpdateShow(void){
   {
     tourdata *touri;
 
-    if(ntours>0){
-      for(i=0;i<ntours;i++){
+    if(ntourinfo>0){
+      for(i=0;i<ntourinfo;i++){
         touri = tourinfo + i;
         if(touri->display==1){
           showtours=1;
@@ -621,7 +621,7 @@ void SynchTimes(void){
 
   /* synchronize tour times */
 
-    for(j=0;j<ntours;j++){
+    for(j=0;j<ntourinfo;j++){
       tourdata *tourj;
 
       tourj = tourinfo + j;
@@ -945,7 +945,7 @@ void UpdateTimes(void){
   if(visShooter!=0&&shooter_active==1){
     nglobal_times+=nshooter_frames;
   }
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
     touri = tourinfo + i;
@@ -1067,7 +1067,7 @@ void UpdateTimes(void){
     CheckMemory;
   }
 
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
     int n;
 
@@ -1256,7 +1256,7 @@ void UpdateTimes(void){
     FREEMEMORY(parti->timeslist);
     if(nglobal_times>0)NewMemory((void **)&parti->timeslist,nglobal_times*sizeof(int));
   }
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
     touri=tourinfo + i;
@@ -1657,7 +1657,7 @@ int GetPlotState(int choice){
         if(zonei->loaded==0||zonei->display==0)continue;
         return DYNAMIC_PLOTS;
       }
-      for(i=0;i<ntours;i++){
+      for(i=0;i<ntourinfo;i++){
         tourdata *touri;
 
         touri = tourinfo + i;

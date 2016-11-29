@@ -11315,8 +11315,8 @@ int ReadINI2(char *inifile, int localfile){
         tours_flag = 0;
         if(Match(buffer, "TOURS") == 1)tours_flag = 1;
         if(tours_flag == 1){
-          if(ntours > 0){
-            for(i = 0; i < ntours; i++){
+          if(ntourinfo > 0){
+            for(i = 0; i < ntourinfo; i++){
               tourdata *touri;
 
               touri = tourinfo + i;
@@ -11324,14 +11324,14 @@ int ReadINI2(char *inifile, int localfile){
             }
             FREEMEMORY(tourinfo);
           }
-          ntours = 0;
+          ntourinfo = 0;
 
           fgets(buffer, 255, stream);
-          sscanf(buffer, "%i", &ntours);
-          ntours++;
-          if(ntours > 0){
-            if(NewMemory((void **)&tourinfo, ntours*sizeof(tourdata)) == 0)return 2;
-            for(i = 0; i < ntours; i++){
+          sscanf(buffer, "%i", &ntourinfo);
+          ntourinfo++;
+          if(ntourinfo > 0){
+            if(NewMemory((void **)&tourinfo, ntourinfo*sizeof(tourdata)) == 0)return 2;
+            for(i = 0; i < ntourinfo; i++){
               tourdata *touri;
 
               touri = tourinfo + i;
@@ -11346,7 +11346,7 @@ int ReadINI2(char *inifile, int localfile){
             tourdata *touri;
             int glui_avatar_index_local;
 
-            for(i = 1; i < ntours; i++){
+            for(i = 1; i < ntourinfo; i++){
               int j;
 
               touri = tourinfo + i;
@@ -11419,7 +11419,7 @@ int ReadINI2(char *inifile, int localfile){
             }
           }
           if(tours_flag == 1){
-            for(i = 0; i < ntours; i++){
+            for(i = 0; i < ntourinfo; i++){
               tourdata *touri;
 
               touri = tourinfo + i;
@@ -11436,7 +11436,7 @@ int ReadINI2(char *inifile, int localfile){
             if(viewalltours == 1)TourMenu(MENU_TOUR_SHOWALL);
           }
           else{
-            ntours = 0;
+            ntourinfo = 0;
           }
           strcpy(buffer, "1.00000 1.00000 2.0000 0");
           TrimMZeros(buffer);
@@ -11778,16 +11778,16 @@ void WriteINILocal(FILE *fileout){
   fprintf(fileout, "TOURINDEX\n");
   fprintf(fileout, " %i\n", selectedtour_index);
   startup_count = 0;
-  for(i = 0; i < ntours; i++){
+  for(i = 0; i < ntourinfo; i++){
     tourdata *touri;
 
     touri = tourinfo + i;
     if(touri->startup == 1)startup_count++;
   }
-  if(startup_count < ntours){
+  if(startup_count < ntourinfo){
     fprintf(fileout, "TOURS\n");
-    fprintf(fileout, " %i\n", ntours - startup_count);
-    for(i = 0; i < ntours; i++){
+    fprintf(fileout, " %i\n", ntourinfo - startup_count);
+    for(i = 0; i < ntourinfo; i++){
       tourdata *touri;
       keyframe *framei;
       int j;

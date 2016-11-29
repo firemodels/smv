@@ -178,14 +178,14 @@ extern "C" void glui_tour_setup(int main_window){
 
   PANEL_tour4 = glui_tour->add_panel_to_panel(ROLLOUT_tour,"",GLUI_PANEL_NONE);
 
-  if(ntours>0){
+  if(ntourinfo>0){
     selectedtour_index = TOURINDEX_MANUAL;
     selectedtour_index_old = TOURINDEX_MANUAL;
     LISTBOX_tour=glui_tour->add_listbox_to_panel(PANEL_tour4,"",&selectedtour_index,TOUR_LIST,TOUR_CB);
 
     LISTBOX_tour->add_item(TOURINDEX_MANUAL, "Manual");
     LISTBOX_tour->add_item(-999,"-");
-    for(i=0;i<ntours;i++){
+    for(i=0;i<ntourinfo;i++){
       tourdata *touri;
 
       touri = tourinfo + i;
@@ -480,7 +480,7 @@ void TOUR_CB(int var){
   float key_time_in, key_az_path, key_view[3], key_zoom;
   float key_elev_path, key_bank;
 
-  if(ntours==0&&var!=TOUR_INSERT&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS){
+  if(ntourinfo==0&&var!=TOUR_INSERT&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS){
     return;
   }
   //if(selected_frame==NULL&&tourinfo!=NULL){
@@ -874,7 +874,7 @@ extern "C" void delete_tourlist(void){
   int i;
 
   if(LISTBOX_tour==NULL)return;
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     LISTBOX_tour->delete_item(i);
   }
   delete_vol_tourlist(); //xx comment this line if smokebot fails with seg fault
@@ -886,7 +886,7 @@ extern "C" void create_tourlist(void){
   int i;
 
   if(LISTBOX_tour==NULL)return;
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
     char label[1000];
 
@@ -901,7 +901,7 @@ extern "C" void create_tourlist(void){
       LISTBOX_tour->add_item(i,"error");
     }
   }
-  if(selectedtour_index>=-1&&selectedtour_index<ntours)LISTBOX_tour->set_int_val(selectedtour_index);
+  if(selectedtour_index>=-1&&selectedtour_index<ntourinfo)LISTBOX_tour->set_int_val(selectedtour_index);
 
  create_vol_tourlist(); //xx comment this line if smokebot fails with seg fault
 }
@@ -912,8 +912,8 @@ int nexttour(void){
   int i;
 
   i = selectedtour_index + 1;
-  if(i>ntours-1)i=0;
-  if(i>=0&&i<ntours){
+  if(i>ntourinfo-1)i=0;
+  if(i>=0&&i<ntourinfo){
     selectedtour_index=i;
     selected_tour = tourinfo + i;
     selected_frame = selected_tour->first_frame.next;
@@ -928,8 +928,8 @@ int prevtour(void){
   int i;
 
   i=selectedtour_index-1;
-  if(i<0)i=ntours-1;
-  if(i>=0&&i<ntours){
+  if(i<0)i=ntourinfo-1;
+  if(i>=0&&i<ntourinfo){
     selectedtour_index=i;
     selected_tour = tourinfo + i;
     selected_frame = selected_tour->first_frame.next;
@@ -948,7 +948,7 @@ extern "C" void update_tourcontrols(void){
   if(SPINNER_t==NULL)return;
   if(CHECKBOX_showtourroute!=NULL)CHECKBOX_showtourroute->set_int_val(edittour);
   if(CHECKBOX_view!=NULL)CHECKBOX_view->set_int_val(viewtourfrompath);
-  if(ntours>1){
+  if(ntourinfo>1){
     BUTTON_next_tour->enable();
     BUTTON_prev_tour->enable();
   }
@@ -956,7 +956,7 @@ extern "C" void update_tourcontrols(void){
     BUTTON_next_tour->disable();
     BUTTON_prev_tour->disable();
   }
-  if(ntours>0&&edittour==1){
+  if(ntourinfo>0&&edittour==1){
     if(SPINNER_t!=NULL)SPINNER_t->enable();
     if(ROLLOUT_keyframe!=NULL&&ROLLOUT_keyframe->enabled==0)ROLLOUT_keyframe->enable();
     if(SPINNER_az_path!=NULL)SPINNER_az_path->enable();

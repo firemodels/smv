@@ -199,7 +199,7 @@ extern "C" void delete_vol_tourlist(void){
   int i;
 
   if(LISTBOX_VOL_tour==NULL)return;
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     LISTBOX_VOL_tour->delete_item(i);
   }
 }
@@ -210,7 +210,7 @@ extern "C" void create_vol_tourlist(void){
   int i;
 
   if(LISTBOX_VOL_tour==NULL)return;
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
     char label[1000];
 
@@ -225,7 +225,7 @@ extern "C" void create_vol_tourlist(void){
       LISTBOX_VOL_tour->add_item(i,"error");
     }
   }
-  if(selectedtour_index>=TOURINDEX_MANUAL&&selectedtour_index<ntours){
+  if(selectedtour_index>=TOURINDEX_MANUAL&&selectedtour_index<ntourinfo){
     LISTBOX_VOL_tour->set_int_val(selectedtour_index);
   }
 }
@@ -584,14 +584,14 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_skipframe = glui_3dsmoke->add_spinner_to_panel(PANEL_generate_images, _d("skip frame"), GLUI_SPINNER_INT, &vol_skipframe0, SKIP_FRAME, Smoke3d_CB);
     Smoke3d_CB(START_FRAME);
     Smoke3d_CB(SKIP_FRAME);
-    if(ntours > 0){
+    if(ntourinfo > 0){
       selectedtour_index = TOURINDEX_MANUAL;
       selectedtour_index_old = TOURINDEX_MANUAL;
       LISTBOX_VOL_tour = glui_3dsmoke->add_listbox_to_panel(PANEL_generate_images, "Tour:", &selectedtour_index, VOL_TOUR_LIST, Smoke3d_CB);
 
       LISTBOX_VOL_tour->add_item(TOURINDEX_MANUAL, "Manual");
       LISTBOX_VOL_tour->add_item(-999, "-");
-      for(i = 0; i < ntours; i++){
+      for(i = 0; i < ntourinfo; i++){
         tourdata *touri;
 
         touri = tourinfo + i;

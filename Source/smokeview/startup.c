@@ -309,7 +309,7 @@ int setup_case(int argc, char **argv){
   init_lang();
 #endif
 
-  if(ntours==0)setup_tour();
+  if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
   glui_motion_setup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
