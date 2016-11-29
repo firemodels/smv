@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
 SVEXTERN int SVDECL(slice_time, 0);

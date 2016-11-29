@@ -914,10 +914,8 @@ void ConvertSsf(void){
 
 void UpdateTimes(void){
   int i;
-  float dt_MIN;
   int nglobal_times_copy = 0;
 
-  dt_MIN = 100000.0;
   FREEMEMORY(geominfoptrs);
   ngeominfoptrs=0;
   GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
@@ -1043,12 +1041,7 @@ void UpdateTimes(void){
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
     for(n=0;n<geomi->ntimes;n++){
-      float t_diff,*gt;
-
       global_times[nglobal_times_copy++]=geomi->times[n];
-      gt = global_times + nglobal_times_copy - 2;
-      t_diff = gt[1] - gt[0];
-      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
   if(visTerrainType!=TERRAIN_HIDDEN){
@@ -1059,23 +1052,13 @@ void UpdateTimes(void){
       terri = terraininfo + i;
       if(terri->loaded==0)continue;
       for(n=0;n<terri->ntimes;n++){
-        float t_diff,*gt;
-
         global_times[nglobal_times_copy++] =terri->times[n];
-        gt = global_times + nglobal_times_copy - 2;
-        t_diff = gt[1] - gt[0];
-        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
   if(visShooter!=0&&shooter_active==1){
     for(i=0;i<nshooter_frames;i++){
-      float t_diff,*gt;
-
       global_times[nglobal_times_copy++]=shoottimeinfo[i].time;
-      gt = global_times + nglobal_times_copy - 2;
-      t_diff = gt[1] - gt[0];
-      if(i>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
     CheckMemory;
   }
@@ -1087,12 +1070,7 @@ void UpdateTimes(void){
     touri = tourinfo + i;
     if(touri->display==0)continue;
     for(n=0;n<touri->ntimes;n++){
-      float t_diff,*gt;
-
       global_times[nglobal_times_copy++]=touri->path_times[n];
-      gt = global_times + nglobal_times_copy - 2;
-      t_diff = gt[1] - gt[0];
-      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
 
@@ -1104,12 +1082,7 @@ void UpdateTimes(void){
     parti = partinfo + i;
     if(parti->loaded==0)continue;
     for(n=0;n<parti->ntimes;n++){
-      float t_diff,*gt;
-
       global_times[nglobal_times_copy++]=parti->times[n];
-      gt = global_times + nglobal_times_copy - 2;
-      t_diff = gt[1] - gt[0];
-      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
     tmax_part=MAX(parti->times[parti->ntimes-1],tmax_part);
   }
@@ -1121,12 +1094,7 @@ void UpdateTimes(void){
     sd = sliceinfo + i;
     if(sd->loaded==1||sd->vloaded==1){
       for(n=0;n<sd->ntimes;n++){
-        float t_diff,*gt;
-
         global_times[nglobal_times_copy++]=sd->times[n];
-        gt = global_times + nglobal_times_copy - 2;
-        t_diff = gt[1] - gt[0];
-        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1138,12 +1106,7 @@ void UpdateTimes(void){
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
       for(n=0;n<patchi->ngeom_times;n++){
-        float t_diff,*gt;
-
         global_times[nglobal_times_copy++]=patchi->geom_times[n];
-        gt = global_times + nglobal_times_copy - 2;
-        t_diff = gt[1] - gt[0];
-        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1160,12 +1123,7 @@ void UpdateTimes(void){
         int n;
 
         for(n=0;n<meshi->npatch_times;n++){
-          float t_diff,*gt;
-
           global_times[nglobal_times_copy++]=meshi->patch_times[n];
-          gt = global_times + nglobal_times_copy - 2;
-          t_diff = gt[1] - gt[0];
-          if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
         }
       }
     }
@@ -1181,12 +1139,7 @@ void UpdateTimes(void){
       if(vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       for(n=0;n<vr->ntimes;n++){
-        float t_diff,*gt;
-
         global_times[nglobal_times_copy++]=vr->times[n];
-        gt = global_times + nglobal_times_copy - 2;
-        t_diff = gt[1] - gt[0];
-        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1194,12 +1147,7 @@ void UpdateTimes(void){
     int n;
 
     for(n=0;n<nzone_times;n++){
-      float t_diff,*gt;
-
       global_times[nglobal_times_copy++]=zone_times[n];
-      gt = global_times + nglobal_times_copy - 2;
-      t_diff = gt[1] - gt[0];
-      if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
     }
   }
   if(ReadIsoFile==1&&visAIso!=0){
@@ -1212,12 +1160,7 @@ void UpdateTimes(void){
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
       for(n=0;n<meshi->niso_times;n++){
-        float t_diff,*gt;
-
         global_times[nglobal_times_copy++]=meshi->iso_times[n];
-        gt = global_times + nglobal_times_copy - 2;
-        t_diff = gt[1] - gt[0];
-        if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
       }
     }
   }
@@ -1231,12 +1174,7 @@ void UpdateTimes(void){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
         for(n=0;n<smoke3di->ntimes;n++){
-          float t_diff,*gt;
-
           global_times[nglobal_times_copy++]=smoke3di->times[n];
-          gt = global_times + nglobal_times_copy - 2;
-          t_diff = gt[1] - gt[0];
-          if(n>0&&t_diff>0.0)dt_MIN=MIN(t_diff,dt_MIN);
         }
       }
     }
@@ -1250,15 +1188,13 @@ void UpdateTimes(void){
 
   if(nglobal_times>0){
     int n,n2;
-    int fail = 0;
 
     qsort((float *)global_times, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
 #define DT_EPS 0.0001
-    dt_MIN = DT_EPS;
     n2 = 1;
     for(n=1;n<nglobal_times;n++){
-      if(ABS(global_times[n]-global_times[n-1])>dt_MIN/10.0){
+      if(ABS(global_times[n]-global_times[n-1])>DT_EPS){
         if(n!=n2)global_times[n2]=global_times[n];
         n2++;
       }
@@ -1267,15 +1203,22 @@ void UpdateTimes(void){
 
     for(n = 1; n < nglobal_times; n++){
       if(global_times[n - 1] < global_times[n])continue;
-      fail = 1;
+      timearray_test++;
       break;
     }
-    if(fail==1){
-      fprintf(stderr,"***error: time array out of order, nglobal_times=%i dt_MIN=%f", nglobal_times,dt_MIN);
+    if(timearray_test==1){
+      fprintf(stderr,"***error: time array out of order, nglobal_times=%i times=", nglobal_times);
       for (n = 0; n < nglobal_times; n++) {
         fprintf(stderr," %f", global_times[n]);
       }
       fprintf(stderr,"\n");
+    }
+    else if (timearray_test > 1) {
+      fprintf(stderr, "***error: time array out of order, nglobal_times=%i times=", nglobal_times);
+      for (n = 0; n < MIN(nglobal_times,10); n++) {
+        fprintf(stderr, " %f", global_times[n]);
+      }
+      fprintf(stderr, "\n");
     }
 
   }
