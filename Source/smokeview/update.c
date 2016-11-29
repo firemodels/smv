@@ -1213,23 +1213,20 @@ void UpdateTimes(void){
     for(n = 0; n < nglobal_times-1; n++){
       if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
-      break;
-    }
-    if(timearray_test==1){
-      fprintf(stderr,"***error: time array out of order, nglobal_times=%i times=", nglobal_times);
-      for (n = 0; n < nglobal_times; n++) {
-        fprintf(stderr," %f", global_times[n]);
+      fprintf(stderr, "***error: time array out of order at position %i, nglobal_times=%i times=", i+1,nglobal_times);
+      if (timearray_test == 1) {
+        for (n = 0; n < nglobal_times; n++) {
+          fprintf(stderr," %f", global_times[n]);
+        }
       }
-      fprintf(stderr,"\n");
-    }
-    else if (timearray_test > 1) {
-      fprintf(stderr, "***error: time array out of order, nglobal_times=%i times=", nglobal_times);
-      for (n = 0; n < MIN(nglobal_times,10); n++) {
-        fprintf(stderr, " %f", global_times[n]);
+      else if (timearray_test > 1) {
+        for (n = 0; n < MIN(nglobal_times, 10); n++) {
+          fprintf(stderr, " %f", global_times[n]);
+        }
       }
       fprintf(stderr, "......\n");
+      break;
     }
-
   }
 
 
