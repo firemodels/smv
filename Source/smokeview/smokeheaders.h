@@ -14,7 +14,7 @@ EXTERNCPP void draw_screeninfo(void);
 #endif
 EXTERNCPP void update_show_slice_in_obst(void);
 EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
-EXTERNCPP void get_allpart_histogram(void);
+EXTERNCPP void get_allpart_histogram(partdata *part);
 EXTERNCPP void write_part_histogram(partdata *parti);
 EXTERNCPP void read_part_histogram(partdata *parti);
 EXTERNCPP void makeiblank_all(void);

@@ -3013,15 +3013,16 @@ void ParticlePropShowMenu(int value){
 
 void LoadParticleMenu(int value){
   int errorcode,i;
-  partdata *parti;
 
-  get_allpart_histogram();
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
     char  *partfile;
+    partdata *parti;
 
     ReadPartFile=1;
-    partfile = partinfo[value].file;
+    parti = partinfo + value;
+    get_allpart_histogram(parti);
+    partfile = parti->file;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3030,9 +3031,13 @@ void LoadParticleMenu(int value){
     readpart(partfile, value, LOAD, PARTDATA,&errorcode);
   }
   else{
+    get_allpart_histogram(NULL);
     if(value==-1){
       for(i=0;i<npartinfo;i++){
-        if(partinfo[i].evac==1)continue;
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->evac==1)continue;
         readpart("", i, UNLOAD, PARTDATA,&errorcode);
       }
     }
@@ -3043,12 +3048,16 @@ void LoadParticleMenu(int value){
       npartframes_max=get_min_partframes();
       if(value==PARTFILE_LOADALL){
         for(i = 0; i<npartinfo; i++){
+          partdata *parti;
+
           parti = partinfo+i;
           if(parti->evac==1)continue;
           readpart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
         }
       }
       for(i=0;i<npartinfo;i++){
+        partdata *parti;
+
         parti = partinfo + i;
         if(parti->evac==1)continue;
         if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
