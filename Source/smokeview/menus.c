@@ -3015,13 +3015,15 @@ void LoadParticleMenu(int value){
   int errorcode,i;
 
   glutSetCursor(GLUT_CURSOR_WAIT);
+  if(value>=0||value == PARTFILE_LOADALL||value == PARTFILE_LOADALL){
+    GetPartHistogram(value);
+  }
   if(value>=0){
     char  *partfile;
     partdata *parti;
 
     ReadPartFile=1;
     parti = partinfo + value;
-    get_allpart_histogram(parti);
     partfile = parti->file;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
@@ -3031,7 +3033,6 @@ void LoadParticleMenu(int value){
     readpart(partfile, value, LOAD, PARTDATA,&errorcode);
   }
   else{
-    get_allpart_histogram(NULL);
     if(value==-1){
       for(i=0;i<npartinfo;i++){
         partdata *parti;

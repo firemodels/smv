@@ -352,9 +352,9 @@ void get_part_histogram(partdata *parti){
   write_part_histogram(parti);
 }
 
-/* ------------------ get_allpart_histogram ------------------------ */
+/* ------------------ GetPartHistogram ------------------------ */
 
-void get_allpart_histogram(partdata *part){
+void GetPartHistogram(int flag){
   int i, update;
 
   // will update histograms the first time called
@@ -367,7 +367,9 @@ void get_allpart_histogram(partdata *part){
       partdata *parti;
 
       parti = partinfo + i;
-      if(part == NULL || part == parti){
+      if (flag == PARTFILE_LOADALL ||
+        (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
+        (flag >= 0 && i == flag)) {
         if(get_histfile_status(parti) == HIST_OLD){
           update = 1;
           break;
@@ -384,7 +386,11 @@ void get_allpart_histogram(partdata *part){
     partdata *parti;
 
     parti = partinfo + i;
-    if(part==NULL||part==parti)get_part_histogram(parti);
+    if (flag == PARTFILE_LOADALL ||
+      (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
+      (flag >= 0 && i == flag)) {
+      get_part_histogram(parti);
+    }
   }
   for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
@@ -397,7 +403,11 @@ void get_allpart_histogram(partdata *part){
     int j;
 
     parti = partinfo + i;
-    if(part == NULL || part == parti){
+
+    parti = partinfo + i;
+    if (flag == PARTFILE_LOADALL || 
+      (flag == PARTFILE_RELOADALL&&parti->loaded == 1)||
+      (flag >= 0 && i == flag)){
       for(j = 0; j < npart5prop; j++){
         partpropdata *propj;
 
