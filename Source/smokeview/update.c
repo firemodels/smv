@@ -914,7 +914,7 @@ void ConvertSsf(void){
 
 void UpdateTimes(void){
   int i;
-  int nglobal_times_copy = 0;
+  int nglobal_times_copy;
   float *global_times_copy = NULL;
 
   FREEMEMORY(geominfoptrs);
@@ -1038,26 +1038,23 @@ void UpdateTimes(void){
 
   // pass 2 - merge times arrays
 
+  nglobal_times_copy = 0;
   for(i=0;i<ngeominfoptrs;i++){
     geomdata *geomi;
-    int n;
 
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
-    for(n=0;n<geomi->ntimes;n++){
-      global_times[nglobal_times_copy++]=geomi->times[n];
-    }
+    memcpy(global_times + nglobal_times_copy, geomi->times, geomi->ntimes * sizeof(float));
+    nglobal_times_copy += geomi->ntimes;
   }
   if(visTerrainType!=TERRAIN_HIDDEN){
     for(i=0;i<nterraininfo;i++){
       terraindata *terri;
-      int n;
 
       terri = terraininfo + i;
       if(terri->loaded==0)continue;
-      for(n=0;n<terri->ntimes;n++){
-        global_times[nglobal_times_copy++] =terri->times[n];
-      }
+      memcpy(global_times + nglobal_times_copy, terri->times, terri->ntimes * sizeof(float));
+      nglobal_times_copy += terri->ntimes;
     }
   }
   if(visShooter!=0&&shooter_active==1){
@@ -1069,49 +1066,41 @@ void UpdateTimes(void){
 
   for(i=0;i<ntourinfo;i++){
     tourdata *touri;
-    int n;
 
     touri = tourinfo + i;
     if(touri->display==0)continue;
-    for(n=0;n<touri->ntimes;n++){
-      global_times[nglobal_times_copy++]=touri->path_times[n];
-    }
+    memcpy(global_times + nglobal_times_copy, touri->path_times, touri->ntimes * sizeof(float));
+    nglobal_times_copy += touri->ntimes;
   }
 
   tmax_part=0.0;
   for(i=0;i<npartinfo;i++){
     partdata *parti;
-    int n;
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    for(n=0;n<parti->ntimes;n++){
-      global_times[nglobal_times_copy++]=parti->times[n];
-    }
+    memcpy(global_times + nglobal_times_copy, parti->times, parti->ntimes * sizeof(float));
+    nglobal_times_copy += parti->ntimes;
     tmax_part=MAX(parti->times[parti->ntimes-1],tmax_part);
   }
 
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
-    int n;
 
     sd = sliceinfo + i;
     if(sd->loaded==1||sd->vloaded==1){
-      for(n=0;n<sd->ntimes;n++){
-        global_times[nglobal_times_copy++]=sd->times[n];
-      }
+      memcpy(global_times + nglobal_times_copy, sd->times, sd->ntimes * sizeof(float));
+      nglobal_times_copy += sd->ntimes;
     }
   }
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
-    int n;
 
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
-      for(n=0;n<patchi->ngeom_times;n++){
-        global_times[nglobal_times_copy++]=patchi->geom_times[n];
-      }
+      memcpy(global_times + nglobal_times_copy, patchi->geom_times, patchi->ngeom_times * sizeof(float));
+      nglobal_times_copy += patchi->ngeom_times;
     }
   }
   for(i=0;i<nmeshes;i++){
@@ -1124,11 +1113,8 @@ void UpdateTimes(void){
     if(filenum!=-1){
       patchi = patchinfo + filenum;
       if(patchi->loaded==1&&patchi->filetype!=PATCH_GEOMETRY){
-        int n;
-
-        for(n=0;n<meshi->npatch_times;n++){
-          global_times[nglobal_times_copy++]=meshi->patch_times[n];
-        }
+        memcpy(global_times + nglobal_times_copy, meshi->patch_times, meshi->npatch_times * sizeof(float));
+        nglobal_times_copy += meshi->npatch_times;
       }
     }
   }
@@ -1136,51 +1122,39 @@ void UpdateTimes(void){
     for(i=0;i<nmeshes;i++){
       volrenderdata *vr;
       meshdata *meshi;
-      int n;
 
       meshi=meshinfo + i;
       vr = &meshi->volrenderinfo;
       if(vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
-      for(n=0;n<vr->ntimes;n++){
-        global_times[nglobal_times_copy++]=vr->times[n];
-      }
+      memcpy(global_times + nglobal_times_copy, vr->times, vr->ntimes * sizeof(float));
+      nglobal_times_copy += vr->ntimes;
     }
   }
   if(ReadZoneFile==1&&visZone==1){
-    int n;
-
-    for(n=0;n<nzone_times;n++){
-      global_times[nglobal_times_copy++]=zone_times[n];
-    }
+    memcpy(global_times + nglobal_times_copy, zone_times, nzone_times * sizeof(float));
+    nglobal_times_copy += nzone_times;
   }
   if(ReadIsoFile==1&&visAIso!=0){
     for(i=0;i<nisoinfo;i++){
       meshdata *meshi;
       isodata *ib;
-      int n;
 
       ib = isoinfo+i;
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
-      for(n=0;n<meshi->niso_times;n++){
-        global_times[nglobal_times_copy++]=meshi->iso_times[n];
-      }
+      memcpy(global_times + nglobal_times_copy, meshi->iso_times, meshi->niso_times * sizeof(float));
+      nglobal_times_copy += meshi->niso_times;
     }
   }
-  {
-    smoke3ddata *smoke3di;
+  if(Read3DSmoke3DFile==1&&vis3DSmoke3D==1){
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
 
-    if(Read3DSmoke3DFile==1&&vis3DSmoke3D==1){
-      for(i=0;i<nsmoke3dinfo;i++){
-        int n;
-
-        smoke3di = smoke3dinfo + i;
-        if(smoke3di->loaded==0)continue;
-        for(n=0;n<smoke3di->ntimes;n++){
-          global_times[nglobal_times_copy++]=smoke3di->times[n];
-        }
-      }
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->loaded==0)continue;
+      memcpy(global_times + nglobal_times_copy, smoke3di->times, smoke3di->ntimes * sizeof(float));
+      nglobal_times_copy += smoke3di->ntimes;
     }
   }
 
@@ -1193,16 +1167,15 @@ void UpdateTimes(void){
   if(nglobal_times>0){
     int n,to,from;
 
-    for (n = 0; n<nglobal_times; n++) {
-      global_times_copy[n] = global_times[n];
-    }
+    memcpy(global_times_copy, global_times, nglobal_times * sizeof(float));
     qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
 
 #define DT_EPS 0.0001
 
-    to = 0;
-    for(from=0;from<nglobal_times;from++){
-      if(from==0||ABS(global_times_copy[from]-global_times_copy[from-1])>DT_EPS){
+    to = 1;
+    global_times[0]=global_times_copy[0];
+    for(from=1;from<nglobal_times;from++){
+      if(ABS(global_times_copy[from]-global_times_copy[from-1])>DT_EPS){
         global_times[to]=global_times_copy[from];
         to++;
       }
@@ -1218,13 +1191,14 @@ void UpdateTimes(void){
         for (n = 0; n < nglobal_times; n++) {
           fprintf(stderr," %f", global_times[n]);
         }
+        fprintf(stderr, "\n");
       }
       else if (timearray_test > 1) {
         for (n = 0; n < MIN(nglobal_times, 10); n++) {
           fprintf(stderr, " %f", global_times[n]);
         }
+        fprintf(stderr, "......\n");
       }
-      fprintf(stderr, "......\n");
       break;
     }
   }
