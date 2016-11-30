@@ -1184,18 +1184,20 @@ void UpdateTimes(void){
     FREEMEMORY(global_times_copy);
 
     for(n = 0; n < nglobal_times-1; n++){
+      int i;
+
       if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
-      fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", i+1,nglobal_times);
+      fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", n+1,nglobal_times);
       if (timearray_test == 1) {
-        for (n = 0; n < nglobal_times; n++) {
-          fprintf(stderr," %f", global_times[n]);
+        for (i = 0; i < nglobal_times; i++) {
+          fprintf(stderr," %f", global_times[i]);
         }
         fprintf(stderr, "\n");
       }
       else if (timearray_test > 1) {
-        for (n = 0; n < MIN(nglobal_times, 10); n++) {
-          fprintf(stderr, " %f", global_times[n]);
+        for (i = 0; i < MIN(nglobal_times, 10); i++) {
+          fprintf(stderr, " %f", global_times[i]);
         }
         fprintf(stderr, "......\n");
       }
