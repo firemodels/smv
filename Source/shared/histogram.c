@@ -32,8 +32,7 @@ float GetHistogramVal(histogramdata *histogram, float cdf){
 
 // get value of histogram for value cdf
 
-  int cutoff;
-  float count;
+  float cutoff, count;
   int i;
   float returnval;
 

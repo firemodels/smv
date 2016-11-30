@@ -354,7 +354,7 @@ void get_part_histogram(partdata *parti){
 
 /* ------------------ get_allpart_histogram ------------------------ */
 
-void get_allpart_histogram(void){
+void get_allpart_histogram(partdata *part){
   int i, update;
 
   // will update histograms the first time called
@@ -367,9 +367,11 @@ void get_allpart_histogram(void){
       partdata *parti;
 
       parti = partinfo + i;
-      if(get_histfile_status(parti)==HIST_OLD){
-        update = 1;
-        break;
+      if(part == NULL || part == parti){
+        if(get_histfile_status(parti) == HIST_OLD){
+          update = 1;
+          break;
+        }
       }
     }
     if(update == 0)return;
@@ -382,7 +384,7 @@ void get_allpart_histogram(void){
     partdata *parti;
 
     parti = partinfo + i;
-    get_part_histogram(parti);
+    if(part==NULL||part==parti)get_part_histogram(parti);
   }
   for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
@@ -395,11 +397,13 @@ void get_allpart_histogram(void){
     int j;
 
     parti = partinfo + i;
-    for(j = 0; j < npart5prop; j++){
-      partpropdata *propj;
+    if(part == NULL || part == parti){
+      for(j = 0; j < npart5prop; j++){
+        partpropdata *propj;
 
-      propj = part5propinfo + j;
-      MergeHistogram(&propj->histogram, parti->histograms[j],MERGE_BOUNDS);
+        propj = part5propinfo + j;
+        MergeHistogram(&propj->histogram, parti->histograms[j], MERGE_BOUNDS);
+      }
     }
   }
 }
