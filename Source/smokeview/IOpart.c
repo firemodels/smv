@@ -352,9 +352,9 @@ void get_part_histogram(partdata *parti){
   write_part_histogram(parti);
 }
 
-/* ------------------ get_allpart_histogram ------------------------ */
+/* ------------------ GetPartHistogram ------------------------ */
 
-void get_allpart_histogram(partdata *part){
+void GetPartHistogram(int flag){
   int i, update;
 
   // will update histograms the first time called
@@ -367,7 +367,9 @@ void get_allpart_histogram(partdata *part){
       partdata *parti;
 
       parti = partinfo + i;
-      if(part == NULL || part == parti){
+      if (flag == PARTFILE_LOADALL ||
+        (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
+        (flag >= 0 && i == flag)) {
         if(get_histfile_status(parti) == HIST_OLD){
           update = 1;
           break;
@@ -378,13 +380,17 @@ void get_allpart_histogram(partdata *part){
   }
 
   force_UpdateHistograms = 0;
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(flag);
 
   for(i = 0; i < npartinfo; i++){
     partdata *parti;
 
     parti = partinfo + i;
-    if(part==NULL||part==parti)get_part_histogram(parti);
+    if (flag == PARTFILE_LOADALL ||
+      (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
+      (flag >= 0 && i == flag)) {
+      get_part_histogram(parti);
+    }
   }
   for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
@@ -397,7 +403,11 @@ void get_allpart_histogram(partdata *part){
     int j;
 
     parti = partinfo + i;
-    if(part == NULL || part == parti){
+
+    parti = partinfo + i;
+    if (flag == PARTFILE_LOADALL ||
+      (flag == PARTFILE_RELOADALL&&parti->loaded == 1)||
+      (flag >= 0 && i == flag)){
       for(j = 0; j < npart5prop; j++){
         partpropdata *propj;
 
@@ -1065,7 +1075,6 @@ int get_npartframes(partdata *parti){
   FILE *stream;
   char buffer[256];
   float time_local;
-  //int count;
   char *reg_file, *size_file;
   int i;
   int stat_sizefile, stat_regfile;
@@ -1095,10 +1104,12 @@ int get_npartframes(partdata *parti){
     lensize=strlen(size_file);
     if(parti->evac==1){
       angle_flag=1;
+      PRINTF("Sizing evac data: %s\n", reg_file);
       FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
     }
     else{
       angle_flag=0;
+      PRINTF("Sizing particle data: %s\n", reg_file);
       FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
     }
   }
@@ -1126,9 +1137,9 @@ int get_npartframes(partdata *parti){
   return nframes_all;
 }
 
-/* ------------------ get_min_partframes ------------------------ */
+/* ------------------ GetMinPartFrames ------------------------ */
 
-int get_min_partframes(void){
+int GetMinPartFrames(int flag){
   int i;
   int min_frames=-1;
 
@@ -1137,13 +1148,18 @@ int get_min_partframes(void){
     int nframes;
 
     parti = partinfo + i;
-    nframes = get_npartframes(parti);
-    if(nframes>0){
-      if(min_frames==-1){
-        min_frames=nframes;
-      }
-      else{
-        if(nframes!=-1&&nframes<min_frames)min_frames=nframes;
+    if(flag == PARTFILE_LOADALL ||
+      (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
+      (flag >= 0 && i == flag)) {
+
+      nframes = get_npartframes(parti);
+      if(nframes > 0){
+        if(min_frames == -1){
+          min_frames = nframes;
+        }
+        else{
+          if(nframes != -1 && nframes < min_frames)min_frames = nframes;
+        }
       }
     }
   }
@@ -1179,10 +1195,12 @@ void get_partheader(partdata *parti, int partframestep_local, int *nf_all){
     lensize = strlen(size_file);
     if(parti->evac == 1){
       angle_flag = 1;
+      PRINTF("Sizing evac data: %s\n", reg_file);
       FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
     }
     else{
       angle_flag = 0;
+      PRINTF("Sizing particle data: %s\n", reg_file);
       FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
     }
   }
@@ -1430,12 +1448,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     return;
   }
 
-  if(data_type == HISTDATA){
-    PRINTF("Updating histogram for: %s\n", file);
-  }
-  else{
-    PRINTF("Sizing particle data: %s\n", file);
-  }
+  if(data_type == HISTDATA)PRINTF("Updating histogram for: %s\n", file);
   get_partheader(parti, partframestep, &nf_all);
 
   if(data_type == PARTDATA)PRINTF("Loading particle data: %s\n", file);

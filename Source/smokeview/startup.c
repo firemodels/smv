@@ -1082,7 +1082,7 @@ void InitOpenGL(void){
         readplot3d(plot3di->file,i,LOAD,&errorcode);
       }
     }
-    npartframes_max=get_min_partframes();
+    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 

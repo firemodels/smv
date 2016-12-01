@@ -14,7 +14,7 @@ EXTERNCPP void draw_screeninfo(void);
 #endif
 EXTERNCPP void update_show_slice_in_obst(void);
 EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
-EXTERNCPP void get_allpart_histogram(partdata *part);
+EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void write_part_histogram(partdata *parti);
 EXTERNCPP void read_part_histogram(partdata *parti);
 EXTERNCPP void makeiblank_all(void);
@@ -751,7 +751,7 @@ EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *s
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int setup_case(int argc, char **argv);
-EXTERNCPP int get_min_partframes(void);
+EXTERNCPP int GetMinPartFrames(int flag);
 EXTERNCPP int Update_Bounds(void);
 
 EXTERNCPP void FreeCADInfo(void);
