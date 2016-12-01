@@ -1587,7 +1587,6 @@ void script_loadinifile(scriptdata *scripti){
 void script_loadfile(scriptdata *scripti){
   int i;
   int errorcode;
-  int ipart;
 
   FREEMEMORY(loaded_file);
   PRINTF("script: loading file %s\n\n",scripti->cval);
