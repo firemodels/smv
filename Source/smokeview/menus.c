@@ -2568,7 +2568,7 @@ void LoadUnloadMenu(int value){
         partinfo[i].reload=0;
       }
     }
-    npartframes_max=get_min_partframes();
+    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].reload==1){
         readpart(partinfo[i].file, i, UNLOAD, PARTDATA,&errorcode);
@@ -2785,7 +2785,7 @@ void EvacMenu(int value){
       if(parti->evac==0)continue;
       readpart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
     }
-    npartframes_max=get_min_partframes();
+    npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 
@@ -2803,7 +2803,7 @@ void EvacMenu(int value){
   }
   if(value>=0){
     ReadEvacFile=1;
-    npartframes_max=get_min_partframes();
+    npartframes_max=GetMinPartFrames(value);
     readpart(partinfo[value].file, value, LOAD, PARTDATA,&errorcode);
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
@@ -3029,7 +3029,8 @@ void LoadParticleMenu(int value){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
     }
-    npartframes_max=get_min_partframes();
+    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
+    npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     readpart(partfile, value, LOAD, PARTDATA,&errorcode);
   }
   else{
@@ -3046,7 +3047,12 @@ void LoadParticleMenu(int value){
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
-      npartframes_max=get_min_partframes();
+      if(value==PARTFILE_LOADALL){
+        npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
+      }
+      else{
+        npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
+      }
       if(value==PARTFILE_LOADALL){
         for(i = 0; i<npartinfo; i++){
           partdata *parti;

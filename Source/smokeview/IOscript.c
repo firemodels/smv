@@ -613,8 +613,8 @@ int compile_script(char *scriptfile){
 
         SETcval2;
         break;
-        
-        // VOLSMOKERENDERALL
+
+// VOLSMOKERENDERALL
 //  skip (int) start_frame (int)
 // file name base (char) (or blank to use smokeview default)
       case SCRIPT_VOLSMOKERENDERALL:
@@ -1097,7 +1097,7 @@ void script_loadparticles(scriptdata *scripti){
 
   PRINTF("script: loading particles files\n\n");
 
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -1587,6 +1587,7 @@ void script_loadinifile(scriptdata *scripti){
 void script_loadfile(scriptdata *scripti){
   int i;
   int errorcode;
+  int ipart;
 
   FREEMEMORY(loaded_file);
   PRINTF("script: loading file %s\n\n",scripti->cval);
@@ -1617,7 +1618,7 @@ void script_loadfile(scriptdata *scripti){
       return;
     }
   }
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
