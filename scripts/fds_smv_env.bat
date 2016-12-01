@@ -2,14 +2,21 @@
 
 :: ---- official FDS and smokeview version strings
 set fds_version=6.5.3
-set smv_version=6.4.1
+set smv_version=6.4.2
 
 :: ---- test FDS and smokeview version strings
-set smv_revision=SMV6.4.1-16-g975c1cf
-set fds_revision=02a6097
+
+set smv_revision=unknown
+set fds_revision=unknown
+if exist %userprofile%\smv_revision.txt (
+  set /p smv_revision=<%userprofile%\smv_revision.txt
+)
+if exist %userprofile%\fds_revision.txt (
+  set /p fds_revision=<%userprofile%\fds_revision.txt
+)
 
 :: ---- for obtaining log entries
-set smvlogdate="7-Oct-2016"
+set smvlogdate="14-Oct-2016"
 
 :: PC repo
 
@@ -24,7 +31,7 @@ set linux_svn_root=FireModels_fork
 :: firebot/smokebot repos
 
 set firebotrepo=/home4/firebot/FireModels_central
-set smokebotrepo=/home4/smokebot/FireModels_central
+set smokebotrepo=/home4/gforney/FireModels_fork
 
 :: Linux user and host name
 
@@ -34,7 +41,7 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 :: OSX user and host name
 
-set osx_hostname=bluesky.el.nist.gov
+set osx_hostname=ignis.el.nist.gov
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
 

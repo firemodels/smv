@@ -21,7 +21,13 @@ set rev_file=%temp%\revision.txt
 
 %svn_drive%
 cd %svn_root%\smv
-git describe --long --dirty > %rev_file%
-notepad %rev_file%
+git describe --long --dirty > %rev_file% > %userprofile%\smv_revision.txt
+echo.
+echo smv revision:
+type %userprofile%\smv_revision.txt
+cd %svn_root%\fds
+git describe --long --dirty > %rev_file% > %userprofile%\fds_revision.txt
+echo.
+echo fds revision:
+type %userprofile%\fds_revision.txt
 pause
-erase %rev_file%
