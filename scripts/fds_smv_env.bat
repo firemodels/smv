@@ -31,7 +31,7 @@ set linux_svn_root=FireModels_fork
 
 :: firebot/smokebot repos
 
-set firebotrepo=/home/firebot/FireModels_central
+set firebotrepo=/home2/smokebot2/FireModels_central
 set smokebotrepo=/home/smokebot/FireModels_fork
 
 :: Linux user and host name
