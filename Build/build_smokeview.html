@@ -42,23 +42,23 @@ function install_smv(args){
 
 <h3>Bundle Steps - Smokeview</h3>
 <ol>
-<li><a href="../scripts/clean_repos_sourcebuild.bat">Clean</a> source and build directories</a> on all three platforms
-<li><a href="../scripts/UPDATErepos.bat">Update repos</a>, 
-<a href="../scripts/SHOW_revisions.bat">show revisions</a> on all three platforms
-<li><a href="../scripts/SHOW_revision.bat">show revisions</a> on PC
 <li><a href="../scripts/EDIT_setup.bat">Edit configuration file</a>
+<li><a href="../scripts/clean_repos_sourcebuild.bat">Clean</a> source and build directories</a> on all three platforms
+<li><a href="../scripts/UPDATErepos.bat">Update repos</a> on all three platforms
+<li>Show revisions <a href="../scripts/SHOW_revisions.bat">on all three platforms</a>, 
+<a href="../scripts/SHOW_revision.bat">on PC</a>
 <li>
 <a href="../scripts/SET_bundle_revision.bat">Set</a>,  
-<a href="../scripts/SHOW_bundle_revision.bat">show</a>  bundle revision.
+<a href="../scripts/SHOW_bundle_revision.bat">Show</a>  bundle revision strings.
 
-<li>Update smokeview release notes:
+<li>Update Smokeview release notes:
 <ol>
-<li><a href="../scripts/GET_smvlog.bat">Add smokeview log entries</a> to release notes (for commits made after <a href="../scripts/EDIT_setup.bat">smvlogdate</a> defined in config file) 
-<li>cleanup log entries and commit ( <a href="../scripts/EDIT_release_notes.bat">edit</a>, <a href="../scripts/VIEW_release_notes.bat">view</a> release notes )
+<li><a href="../scripts/GET_smvlog.bat">Add Smokeview log entries</a> to release notes (for commits made after <a href="../scripts/EDIT_setup.bat">smvlogdate</a> defined in config file) 
+<li>Cleanup log entries and commit ( <a href="../scripts/EDIT_release_notes.bat">edit</a>, <a href="../scripts/VIEW_release_notes.bat">view</a> release notes )
 </ol>
-<li>build libraries on all three platforms
-<li>build smokeview (after library builds complete)
-<li>build Utilities (after library builds complete)
+<li>Build libraries on all three platforms
+<li>Build Smokeview (after library builds complete)
+<li>Build Utilities (after library builds complete)
 </ol>
 
 <p><hr>
@@ -102,7 +102,7 @@ function install_smv(args){
 <td align=center COLSPAN=3><a href="../scripts/GET_smv_version.bat">Get Smokeview Revision</a></td>
 </tr>
 <tr>
-<td align=center COLSPAN=3><a href="../scripts/UPLOADsmv2git.bat">Upload</a> (git - for smokeview bundles)</td>
+<td align=center COLSPAN=3><a href="../scripts/UPLOADsmv2git.bat">Upload</a> (git - for Smokeview bundles)</td>
 </tr>
 </table>
 
