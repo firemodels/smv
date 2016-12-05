@@ -5,4 +5,5 @@ for host in blaze001 blaze002 blaze003 blaze004 blaze005 blaze006 blaze007 blaze
 do
 echo $host
 mkdir $rundir/$host
+cp $rundir/Visualization/thouse5* $rundir/$host/.
 done
