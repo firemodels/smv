@@ -27,7 +27,6 @@ is_file_installed()
   fi
 }
 
-
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx
@@ -151,7 +150,7 @@ do
 echo "-------------------------------------------------"
 echo $host
 echo "-------------------------------------------------"
-$QFDS -d $host thouse5.fds
+$QFDS q smokebot -d $host thouse5.fds
 done
 source $STOPX
 
