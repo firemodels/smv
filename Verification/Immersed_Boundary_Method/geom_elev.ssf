@@ -1,5 +1,5 @@
 RENDERDIR
- ..\..\Manuals\FDS_User_Guide\SCRIPT_FIGURES
+ ..\..\..\fds\Manuals\FDS_User_Guide\SCRIPT_FIGURES
 SETVIEWPOINT
  view 1
 SETTIMEVAL
