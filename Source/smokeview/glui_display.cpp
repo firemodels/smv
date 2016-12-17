@@ -1078,12 +1078,12 @@ extern "C" void Split_CB(int var) {
     split_colorbar->index_node[1]=isplit;
     split_colorbar->index_node[2]=isplit+1;
 
-	for(i = 0; i < 12; i++) {
-	  split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
+    for(i = 0; i < 12; i++) {
+      split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
   	}
     RemapColorbar(split_colorbar);
     UpdateColorbarSplits(split_colorbar);
-	UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   }
 }

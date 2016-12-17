@@ -10852,7 +10852,7 @@ int ReadINI2(char *inifile, int localfile){
 
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      ++++++++++++++++++++++ GENCOLORBAR ++++++++++++++++++++++++++
+      ++++++++++++++++++++++ GCOLORBAR ++++++++++++++++++++++++++++
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       */
 
@@ -10902,7 +10902,9 @@ int ReadINI2(char *inifile, int localfile){
             cbi->rgb_node[nn + 2] = b1;
           }
           RemapColorbar(cbi);
+          UpdateColorbarSplits(cbi);
         }
+        continue;
       }
 
       if(Match(buffer, "TOURCOLORS") == 1){
