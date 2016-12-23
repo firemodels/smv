@@ -6,6 +6,7 @@ FDS_EDITION=$4
 SVNROOT=$5
 
 size=64
+COPYERROR=
 
 SCP ()
 {
@@ -19,7 +20,10 @@ SCP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied from $HOST"
   else
-    echo "***error: the file $TOFILE failed to copy from $HOST"
+    echo "***error: the file $TOFILE failed to copy from: "
+    echo "$HOST:$FROMDIR/$FROMFILE"
+    echo ""
+    COPYERROR=1
   fi
 }
 
@@ -38,6 +42,7 @@ CP ()
     echo "$TOFILE copied"
   else
     echo "***error: the file $TOFILE failed to copy"
+    COPYERROR=1
   fi
 }
 
@@ -109,3 +114,6 @@ platform2=OSX
 fi
 
 $UPDATER $platform2 $version $DIR.tar.gz $DIR.sh FDS/$FDS_EDITION
+if [ "$COPYERROR" == "1" ]; then
+   echo "***error: one or more files needed by the installer were not found"
+fi
