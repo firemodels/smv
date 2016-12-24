@@ -2,6 +2,8 @@
 revision=$1
 SVNROOT=~/$2
 
+errlog=/tmp/smv_errlog.$$
+
 SCP ()
 {
   HOST=$1
@@ -14,7 +16,9 @@ SCP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied from $HOST"
   else
-    echo "***error: the file $TOFILE failed to copy from $HOST"
+    echo "***error: the file $TOFILE failed to copy from: ">>$errlog
+    echo "$HOST:$FROMDIR/$FROMFILE">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -32,7 +36,8 @@ CP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied"
   else
-    echo "***error: the file $TOFILE failed to copy"
+    echo "***error: the file $TOFILE failed to copy from $FROMDIR/$FROMFILE">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -48,7 +53,8 @@ CPDIR ()
   if [ -e $TODIR ]; then
     echo "$TODIR copied"
   else
-    echo "***error: the directory $TODIR failed to copy"
+    echo "***error: the directory $TODIR failed to copy from $FROMDIR">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -91,3 +97,18 @@ tar cvf ../$LINUXDIR.tar .
 cd ..
 gzip $LINUXDIR.tar
 $UPDATER Linux $revision $LINUXDIR.tar.gz $LINUXDIR.sh FDS/FDS6
+
+if [ -e $errlog ]; then
+  numerrs=`cat $errlog | wc -l `
+  if [ $numerrs -gt 0 ]; then
+    echo ""
+    echo "----------------------------------------------------------------"
+    echo "---------------- bundle generation errors ----------------------"
+    cat $errlog
+    echo "----------------------------------------------------------------"
+    echo "----------------------------------------------------------------"
+    echo ""
+  fi
+  rm $errlog
+fi
+

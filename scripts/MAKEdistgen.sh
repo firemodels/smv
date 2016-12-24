@@ -5,8 +5,9 @@ HOST=$3
 FDS_EDITION=$4
 SVNROOT=$5
 
+errlog=/tmp/smv_errlog.$$
+
 size=64
-COPYERROR=
 
 SCP ()
 {
@@ -20,10 +21,9 @@ SCP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied from $HOST"
   else
-    echo "***error: the file $TOFILE failed to copy from: "
-    echo "$HOST:$FROMDIR/$FROMFILE"
-    echo ""
-    COPYERROR=1
+    echo "***error: the file $TOFILE failed to copy from: ">>$errlog
+    echo "$HOST:$FROMDIR/$FROMFILE">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -41,8 +41,8 @@ CP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied"
   else
-    echo "***error: the file $TOFILE failed to copy"
-    COPYERROR=1
+    echo "***error: the file $TOFILE failed to copy">>$errlog
+    error "">>$errlog
   fi
 }
 
@@ -58,7 +58,8 @@ CPDIR ()
   if [ -e $TODIR ]; then
     echo "$TODIR copied"
   else
-    echo "***error: the directory $TODIR failed to copy"
+    echo "***error: the directory $TODIR failed to copy">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -114,6 +115,18 @@ platform2=OSX
 fi
 
 $UPDATER $platform2 $version $DIR.tar.gz $DIR.sh FDS/$FDS_EDITION
-if [ "$COPYERROR" == "1" ]; then
-   echo "***error: one or more files needed by the installer were not found"
+
+if [ -e $errlog ]; then
+  numerrs=`cat $errlog | wc -l `
+  if [ $numerrs -gt 0 ]; then
+    echo ""
+    echo "----------------------------------------------------------------"
+    echo "---------------- bundle generation errors ----------------------"
+    cat $errlog
+    echo "----------------------------------------------------------------"
+    echo "----------------------------------------------------------------"
+    echo ""
+  fi
+  rm $errlog
 fi
+
