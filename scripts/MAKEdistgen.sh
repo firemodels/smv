@@ -59,6 +59,7 @@ CPDIR ()
     echo "$TODIR copied"
   else
     echo "***error: the directory $TODIR failed to copy"
+    COPYERROR=1
   fi
 }
 
@@ -115,5 +116,5 @@ fi
 
 $UPDATER $platform2 $version $DIR.tar.gz $DIR.sh FDS/$FDS_EDITION
 if [ "$COPYERROR" == "1" ]; then
-   echo "***error: one or more files needed by the installer were not found"
+   echo "***error: one or more files or directories needed by the installer were not copied
 fi
