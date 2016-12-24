@@ -1,9 +1,9 @@
-#!/bin/bash
+ #!/bin/bash
 revision=$1
 REMOTESVNROOT=$2
 OSXHOST=$3
 SVNROOT=~/$4
-COPYERROR=
+errlog=/tmp/smv_errlog.$$
 
 SCP ()
 {
@@ -17,10 +17,9 @@ SCP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied from $HOST"
   else
-    echo "***error: the file $TOFILE failed to copy from: "
-    echo "$HOST:$FROMDIR/$FROMFILE"
-    echo ""
-    COPYERROR=1
+    echo "***error: the file $TOFILE failed to copy from: ">>$errlog
+    echo "$HOST:$FROMDIR/$FROMFILE">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -38,8 +37,8 @@ CP ()
   if [ -e $TODIR/$TOFILE ]; then
     echo "$TOFILE copied"
   else
-    echo "***error: the file $TOFILE failed to copy from $FROMDIR/$FROMFILE"
-    COPYERROR=1
+    echo "***error: the file $TOFILE failed to copy from $FROMDIR/$FROMFILE">>$errlog
+    echo "">>$errlog
   fi
 }
 
@@ -55,8 +54,8 @@ CPDIR ()
   if [ -e $TODIR ]; then
     echo "$TODIR copied"
   else
-    echo "***error: the directory $TODIR failed to copy from $FROMDIR"
-    COPYERROR=1
+    echo "***error: the directory $TODIR failed to copy from $FROMDIR">>$errlog
+    echo "">$errlog
   fi
 }
 
@@ -100,7 +99,18 @@ tar cvf ../$OSXDIR.tar .
 cd ..
 gzip $OSXDIR.tar
 $UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6
-if [ "$COPYERROR" == "1" ]; then
-   echo "***error: one or more files or directories needed by the installer were not copied
+
+if [ -e $errlog ]; then
+  numerrs=`cat $errlog | wc -l `
+  if [ $numerrs -gt 0 ]; then
+    echo ""
+    echo "----------------------------------------------------------------"
+    echo "---------------- bundle generation errors ----------------------"
+    cat $errlog
+    echo "----------------------------------------------------------------"
+    echo "----------------------------------------------------------------"
+    echo ""
+  fi
+  rm $errlog
 fi
 
