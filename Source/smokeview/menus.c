@@ -69,7 +69,6 @@
 
 #define MENU_LOADVSLICE_SHOWALL -20
 
-#define MENU_EVAC_ALLMESHES -11
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
 
@@ -2768,14 +2767,17 @@ void SetTour(tourdata *thetour){
   TourMenu(tournumber);
 }
 
-/* ------------------ EvacMenu ------------------------ */
+/* ------------------ LoadEvacMenu ------------------------ */
 
-void EvacMenu(int value){
+void LoadEvacMenu(int value){
   int errorcode;
 
   if(value==MENU_EVAC_DUMMY)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
-  if(value==MENU_EVAC_ALLMESHES){
+  if(value >= 0 || value == PARTFILE_LOADALL){
+    GetPartHistogram(value);
+  }
+  if(value==EVACFILE_LOADALL){
     int i;
 
     for(i=0;i<npartinfo;i++){
@@ -3015,7 +3017,7 @@ void LoadParticleMenu(int value){
   int errorcode,i;
 
   glutSetCursor(GLUT_CURSOR_WAIT);
-  if(value>=0||value == PARTFILE_LOADALL||value == PARTFILE_LOADALL){
+  if(value>=0||value == PARTFILE_LOADALL){
     GetPartHistogram(value);
   }
   if(value>=0){
@@ -8028,7 +8030,7 @@ updatemenu=0;
     }
     glutAddMenuEntry(_("Unload all"),MENU_UNLOADEVAC_UNLOADALL);
 
-    CREATEMENU(evacmenu,EvacMenu);
+    CREATEMENU(evacmenu,LoadEvacMenu);
     {
       int nevacs=0,nevacloaded2=0;
       char menulabel[1024];
@@ -8045,7 +8047,7 @@ updatemenu=0;
 
       if(nevacs>1){
         strcpy(menulabel,_("Humans - all meshes"));
-        glutAddMenuEntry(menulabel,MENU_EVAC_ALLMESHES);
+        glutAddMenuEntry(menulabel,EVACFILE_LOADALL);
         glutAddMenuEntry("-",MENU_EVAC_DUMMY);
       }
       for(ii=0;ii<npartinfo;ii++){

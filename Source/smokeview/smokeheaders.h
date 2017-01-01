@@ -411,6 +411,7 @@ EXTERNCPP partpropdata *get_partprop(char *label);
 EXTERNCPP void init_partprop(void);
 EXTERNCPP void UpdateStreakValue(float value);
 EXTERNCPP void LoadParticleMenu(int value);
+EXTERNCPP void LoadEvacMenu(int value);
 EXTERNCPP void LoadPatchMenu(int value);
 EXTERNCPP void LoadSliceMenu(int value);
 EXTERNCPP void LoadVSliceMenu(int value);
