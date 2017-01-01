@@ -12,6 +12,7 @@ void _Sniff_Errors(char *whereat);
 
 #define PARTFILE_LOADALL -11
 #define PARTFILE_RELOADALL -12
+#define EVACFILE_LOADALL -11
 
 #define FIRST_TIME 1
 #define NOT_FIRST_TIME 2
