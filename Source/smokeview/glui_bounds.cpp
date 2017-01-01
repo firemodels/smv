@@ -1154,13 +1154,13 @@ extern "C" void glui_bounds_setup(int main_window){
   if(have_evac==1){
     glui_active=1;
 
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_Part,_d("Select avatar"),&select_avatar);
-    CHECKBOX_show_evac_slices=glui_bounds->add_checkbox_to_panel(ROLLOUT_Part,"Show slice menus",&show_evac_slices,SHOW_EVAC_SLICES,Slice_CB);
-    PANEL_evac_direction=glui_bounds->add_panel_to_panel(ROLLOUT_Part,_d("Direction vectors"));
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("Select avatar"),&select_avatar);
+    CHECKBOX_show_evac_slices=glui_bounds->add_checkbox_to_panel(ROLLOUT_part,"Show slice menus",&show_evac_slices,SHOW_EVAC_SLICES,Slice_CB);
+    PANEL_evac_direction=glui_bounds->add_panel_to_panel(ROLLOUT_part,_d("Direction vectors"));
     CHECKBOX_constant_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Constant coloring"),&constant_evac_coloring,SHOW_EVAC_SLICES,Slice_CB);
     CHECKBOX_data_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Data coloring"),&data_evac_coloring,DATA_EVAC_COLORING,Slice_CB);
     CHECKBOX_show_evac_color=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Show colorbar (when data coloring)"),&show_evac_colorbar,SHOW_EVAC_SLICES,Slice_CB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_Part,_d("View from selected Avatar"),&view_from_selected_avatar);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("View from selected Avatar"),&view_from_selected_avatar);
   }
 
   /* Plot3D file bounds */
