@@ -15,7 +15,7 @@ if exist %userprofile%\fds_revision.txt (
   set /p fds_revision=<%userprofile%\fds_revision.txt
 )
 
-:: ---- log entries added after smvlogdate
+:: ---- for obtaining log entries
 set smvlogdate="1-Oct-2016"
 
 :: PC repo
@@ -37,13 +37,13 @@ set smokebotrepo=/home/smokebot/FireModels_central
 
 :: Linux user and host name
 
-set linux_hostname=blaze.el.nist.gov
+set linux_hostname=burn.el.nist.gov
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 :: OSX user and host name
 
-set osx_hostname=dante.el.nist.gov
+set osx_hostname=floga.el.nist.gov
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
 
