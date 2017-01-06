@@ -910,6 +910,28 @@ void ConvertSsf(void){
   }
 }
 
+  /* ------------------ test_nan ------------------------ */
+
+void test_for_nan(float *array, int narray, char *label){
+  int have_nan=0, i;
+
+  for(i = 0; i < narray; i++){
+    if(array[i]!=array[i]){
+      have_nan = 1;
+      break;
+    }
+  }
+  if(have_nan == 1){
+    fprintf(stderr, "%s",label);
+    for(i = 0; i < narray; i++){
+      if(array[i] != array[i]){
+        fprintf(stderr, " %i ", i+1);
+      }
+    }
+    fprintf(stderr,"\n");
+  }
+}
+
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
@@ -1166,9 +1188,18 @@ void UpdateTimes(void){
 
   if(nglobal_times>0){
     int n,to,from;
+    char label[1024];
 
     memcpy(global_times_copy, global_times, nglobal_times * sizeof(float));
+
+    strcpy(label,"*** Error: NaN(s) present in global_times_copy array(before qsort) at position(s):");
+    test_for_nan(global_times_copy,nglobal_times,label);
+    
     qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
+
+    strcpy(label,"*** Error: NaN(s) present in global_times_copy array(after qsort) at position(s):");
+    test_for_nan(global_times_copy,nglobal_times,label);
+    
 
 #define DT_EPS 0.0001
 
@@ -1182,6 +1213,9 @@ void UpdateTimes(void){
     }
     nglobal_times = to;
     FREEMEMORY(global_times_copy);
+
+    strcpy(label,"*** Error: NaN(s) present in global_times array(after remove dup) at position(s):");
+    test_for_nan(global_times,nglobal_times,label);
 
     for(n = 0; n < nglobal_times-1; n++){
       int i;
