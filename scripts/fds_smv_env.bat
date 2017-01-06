@@ -2,7 +2,7 @@
 
 :: ---- official FDS and smokeview version strings
 set fds_version=6.5.3
-set smv_version=6.4.2
+set smv_version=6.4.4
 
 :: ---- test FDS and smokeview version strings
 
@@ -16,7 +16,7 @@ if exist %userprofile%\fds_revision.txt (
 )
 
 :: ---- for obtaining log entries
-set smvlogdate="1-Oct-2016"
+set smvlogdate="23-Dec-2016"
 
 :: PC repo
 
