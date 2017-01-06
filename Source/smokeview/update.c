@@ -910,7 +910,7 @@ void ConvertSsf(void){
   }
 }
 
-  /* ------------------ test_nan ------------------------ */
+  /* ------------------ test_for_nan ------------------------ */
 
 void test_for_nan(float *array, int narray, char *label){
   int have_nan=0, i;
@@ -1048,10 +1048,10 @@ void UpdateTimes(void){
       }
     }
   }
+  CheckMemory;
 
   // end pass 1
 
-  CheckMemory;
   FREEMEMORY(global_times);
   if (nglobal_times > 0) {
     NewMemory((void **)&global_times, nglobal_times * sizeof(float));
@@ -1083,7 +1083,6 @@ void UpdateTimes(void){
     for(i=0;i<nshooter_frames;i++){
       global_times[nglobal_times_copy++]=shoottimeinfo[i].time;
     }
-    CheckMemory;
   }
 
   for(i=0;i<ntourinfo;i++){
@@ -1179,6 +1178,7 @@ void UpdateTimes(void){
       nglobal_times_copy += smoke3di->ntimes;
     }
   }
+  CheckMemory;
 
   ASSERT(nglobal_times==nglobal_times_copy);
 
@@ -1194,12 +1194,13 @@ void UpdateTimes(void){
 
     strcpy(label,"*** Error: NaN(s) present in global_times_copy array(before qsort) at position(s):");
     test_for_nan(global_times_copy,nglobal_times,label);
-    
+
     qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
+    CheckMemory;
 
     strcpy(label,"*** Error: NaN(s) present in global_times_copy array(after qsort) at position(s):");
     test_for_nan(global_times_copy,nglobal_times,label);
-    
+
 
 #define DT_EPS 0.0001
 
@@ -1238,6 +1239,7 @@ void UpdateTimes(void){
       break;
     }
   }
+  CheckMemory;
 
 
   // pass 3 - allocate memory for individual times array
@@ -1385,6 +1387,7 @@ void UpdateTimes(void){
 
   FREEMEMORY(targtimeslist);
   if(nglobal_times>0)NewMemory((void **)&targtimeslist,  nglobal_times*sizeof(int));
+  CheckMemory;
 
   // end pass 3
 
@@ -1580,6 +1583,7 @@ void UpdateTimes(void){
       break;
     }
   }
+  CheckMemory;
 }
 
 /* ------------------ GetPlotState ------------------------ */
