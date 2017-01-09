@@ -216,7 +216,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   init_lang();
 #endif
 
-  if(ntours==0)setup_tour();
+  if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
   glui_motion_setup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
@@ -286,7 +286,7 @@ int loadfile(const char *filename) {
       return errorcode;
     }
   }
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -1373,7 +1373,7 @@ int loadtour(const char *tourname) {
   int errorcode = 0;
   PRINTF("loading tour %s\n\n", tourname);
 
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
     touri = tourinfo + i;
@@ -1407,7 +1407,7 @@ void loadparticles(const char *name){
 
   PRINTF("script: loading particles files\n\n");
 
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
