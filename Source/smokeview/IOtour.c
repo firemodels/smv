@@ -116,7 +116,7 @@ void update_tour_menulabels(void){
   updatemenu=1;
 }
 
-/* ------------------ drawtourpaths ------------------------ */
+/* ------------------ drawtours ------------------------ */
 
 void drawtours(void){
   int i;
@@ -652,7 +652,12 @@ void createtourpaths(void){
       float vtime;
 
       pj = touri->pathnodes + j;
-      f1 = (view_ntimes-1-j)/(float)(view_ntimes-1);
+      if (view_ntimes == 1){
+        f1 = 1.0;
+      }
+      else{
+        f1 = (view_ntimes - 1 - j)/(float)(view_ntimes - 1);
+      }
       f2 = 1-f1;
       vtime = view_tstart*f1 + view_tstop*f2;
 
@@ -661,7 +666,12 @@ void createtourpaths(void){
       kf2 = touri->keyframe_list[iframe_local+1];
       pj->keysnap=&kf1->nodeval;
       dt = kf2->nodeval.time - kf1->nodeval.time;
-      f1 = CLAMP((vtime - kf1->nodeval.time)/dt,0.0,1.0);
+      if (dt == 0.0) {
+        f1 = 1.0;
+      }
+      else {
+        f1 = CLAMP((vtime - kf1->nodeval.time) / dt, 0.0, 1.0);
+      }
       f2 = 1 - f1;
       pj->time=vtime;
       touri->path_times[j]=vtime;
@@ -754,7 +764,12 @@ void createtourpaths(void){
 
         for(keyj=(touri->first_frame).next;keyj->next->next!=NULL;keyj=keyj->next){
           ntotal2+=keyj->npoints;
-          vtime_temp = view_tstart + (float)ntotal2/(float)view_ntimes*(view_tstop-view_tstart);
+          if (view_ntimes == 0) {
+            vtime_temp = view_tstart;
+          }
+          else {
+            vtime_temp = view_tstart + (float)ntotal2 / (float)view_ntimes*(view_tstop - view_tstart);
+          }
           keyj->next->disp_time=vtime_temp;
         }
       }
@@ -792,7 +807,12 @@ void createtourpaths(void){
     tour_dist2[0]=0.0;
     tour_tstart = touri->keyframe_list[0]->nodeval.time;
     tour_tstop = touri->keyframe_list[touri->nkeyframes-1]->nodeval.time;
-    vdt = (tour_tstop - tour_tstart)/(float)(view_ntimes-1);
+    if(view_ntimes==1){
+      vdt = 0.0;
+    }
+    else{
+      vdt = (tour_tstop - tour_tstart)/(float)(view_ntimes-1);
+    }
     for(j=1;j<view_ntimes;j++){
       float f1, f2;
 
@@ -817,9 +837,12 @@ void createtourpaths(void){
       kf1 = touri->keyframe_list[iframe_new];
       kf2 = touri->keyframe_list[iframe_new+1];
       dt = kf2->nodeval.time - kf1->nodeval.time;
-      f1 = (vtime - kf1->nodeval.time)/dt;
-      if(f1<0.0)f1=0.0;
-      if(f1>1.0)f1=1.0;
+      if(dt==0.0){
+        f1 = 1.0;
+      }
+      else{
+        f1 = CLAMP((vtime - kf1->nodeval.time)/dt,0.0,1.0);
+      }
       pj->time=vtime2;
       touri->path_times[j]=vtime2;
 
@@ -1085,14 +1108,24 @@ void init_circulartour(void){
     params[0] = 0.0;
     params[1] = 0.0;
     params[2] = 0.0;
-    angle_local = 2.0*PI*(float)j/(float)(nkeyframes-1);
+    if (nkeyframes == 1) {
+      angle_local = 0.0;
+    }
+    else {
+      angle_local = 2.0*PI*(float)j / (float)(nkeyframes - 1);
+    }
     cosangle = cos(angle_local);
     sinangle = sin(angle_local);
 
     key_xyz[0] = key_view[0] + rad*cosangle;
     key_xyz[1] = key_view[1] + rad*sinangle;
     key_xyz[2] = key_view[2];
-    f1 = (float)j/(float)(nkeyframes-1);
+    if (nkeyframes == 1) {
+      f1 = 0.0;
+    }
+    else {
+      f1 = (float)j / (float)(nkeyframes - 1);
+    }
     key_time = view_tstart*(1.0-f1) + view_tstop*f1;
 
     viewtype=1;
@@ -1340,7 +1373,12 @@ void adjusttourtimes(tourdata *touri){
   if(touri->nkeyframes>1){
     tstart = touri->first_frame.next->noncon_time;
     tstop = touri->last_frame.prev->noncon_time;
-    dtmin = (float)4*(tstop-tstart)/(float)view_ntimes;
+    if(view_ntimes==0){
+      dtmin=0.0;
+    }
+    else{
+      dtmin = (float)4*(tstop-tstart)/(float)view_ntimes;
+    }
     small_flag=0;
     for(keyj=(touri->first_frame).next->next;keyj->next!=NULL;keyj=keyj->next){
       dt = keyj->noncon_time - keyj->prev->noncon_time;
@@ -1351,7 +1389,12 @@ void adjusttourtimes(tourdata *touri){
     }
     if(small_flag==1&&tstop>view_tstop&&tstop>0.0){
       for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
-        keyj->noncon_time = keyj->noncon_time*view_tstop/tstop;
+        if (tstop == 0.0) {
+          keyj->noncon_time = keyj->noncon_time;
+        }
+        else {
+          keyj->noncon_time = keyj->noncon_time*view_tstop / tstop;
+        }
       }
     }
   }
