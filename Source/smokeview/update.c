@@ -912,24 +912,21 @@ void ConvertSsf(void){
 
   /* ------------------ test_for_nan ------------------------ */
 
-void test_for_nan(float *vals, int narray, char *array, char *label){
+void test_for_nan(float *vals, int nvals, char *array, char *label){
   int have_nan=0, i;
 
-  for(i = 0; i < narray; i++){
-    if(vals[i]!=vals[i]){
-      have_nan = 1;
-      break;
-    }
+  for(i = 0; i < nvals; i++){
+    if(vals[i]!=vals[i])have_nan++;
   }
-  if(have_nan == 1){
+  if(have_nan != 0){
     if(label==NULL){
-      fprintf(stderr, "***Error: NaNs present in array %s at position(s):",array);
+      fprintf(stderr, "***Error: %i NaNs out of %i present in array %s at position(s):",have_nan,nvals,array);
     }
     else{
-      fprintf(stderr, "***Error: NaNs present in array %s %s at position(s):",array,label);
+      fprintf(stderr, "***Error: %i NaNs out of %i present in array %s %s at position(s):",have_nan,nvals,array,label);
     }
-    for(i = 0; i < narray; i++){
-      if(array[i] != array[i]){
+    for(i = 0; i < nvals; i++){
+      if(vals[i] != vals[i]){
         fprintf(stderr, " %i ", i+1);
       }
     }
