@@ -815,7 +815,7 @@ void createtourpaths(void){
       vdt = (tour_tstop - tour_tstart)/(float)(view_ntimes-1);
     }
     for(j=1;j<view_ntimes;j++){
-      float f1, f2, tval;
+      float f1, f2;
 
       vdist = tour_dist2[j];
       iframe_local = ISearch(tour_dist,view_ntimes,vdist,iframe_local);
