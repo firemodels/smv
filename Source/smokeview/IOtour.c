@@ -652,7 +652,7 @@ void createtourpaths(void){
       float vtime;
 
       pj = touri->pathnodes + j;
-      if (view_ntimes == 1){
+      if(view_ntimes == 1){
         f1 = 1.0;
       }
       else{
@@ -660,16 +660,17 @@ void createtourpaths(void){
       }
       f2 = 1-f1;
       vtime = view_tstart*f1 + view_tstop*f2;
+      if(vtime != vtime)vtime = view_tstart; // remove NaN
 
       iframe_local = ISearch(touri->keyframe_times,touri->nkeyframes,vtime,iframe_local);
       kf1 = touri->keyframe_list[iframe_local];
       kf2 = touri->keyframe_list[iframe_local+1];
       pj->keysnap=&kf1->nodeval;
       dt = kf2->nodeval.time - kf1->nodeval.time;
-      if (dt == 0.0) {
+      if(dt == 0.0){
         f1 = 1.0;
       }
-      else {
+      else{
         f1 = CLAMP((vtime - kf1->nodeval.time) / dt, 0.0, 1.0);
       }
       f2 = 1 - f1;
@@ -764,10 +765,10 @@ void createtourpaths(void){
 
         for(keyj=(touri->first_frame).next;keyj->next->next!=NULL;keyj=keyj->next){
           ntotal2+=keyj->npoints;
-          if (view_ntimes == 0) {
+          if(view_ntimes == 0){
             vtime_temp = view_tstart;
           }
-          else {
+          else{
             vtime_temp = view_tstart + (float)ntotal2 / (float)view_ntimes*(view_tstop - view_tstart);
           }
           keyj->next->disp_time=vtime_temp;
@@ -814,13 +815,14 @@ void createtourpaths(void){
       vdt = (tour_tstop - tour_tstart)/(float)(view_ntimes-1);
     }
     for(j=1;j<view_ntimes;j++){
-      float f1, f2;
+      float f1, f2, tval;
 
       vdist = tour_dist2[j];
       iframe_local = ISearch(tour_dist,view_ntimes,vdist,iframe_local);
       f1 = (vdist-tour_dist[iframe_local])/(tour_dist[iframe_local+1]-tour_dist[iframe_local]);
       f2 = 1 - f1;
       tour_t2[j] = f2*tour_t[iframe_local] + f1*tour_t[iframe_local+1] ;
+      if(tour_t2[j] != tour_t2[j])tour_t2[j] = tour_t2[j - 1]; // remove NaNs
     }
     iframe_old=-1;
     for(j=0;j<view_ntimes;j++){
@@ -833,6 +835,7 @@ void createtourpaths(void){
       pj = touri->pathnodes + j;
       vtime = tour_t2[j];
       vtime2 = touri->keyframe_list[0]->nodeval.time + j*vdt;
+      if(vtime2 != vtime2)vtime2 = vtime; // remove NaN
       iframe_new = ISearch(touri->keyframe_times,touri->nkeyframes,vtime,iframe_old);
       kf1 = touri->keyframe_list[iframe_new];
       kf2 = touri->keyframe_list[iframe_new+1];
@@ -1108,10 +1111,10 @@ void init_circulartour(void){
     params[0] = 0.0;
     params[1] = 0.0;
     params[2] = 0.0;
-    if (nkeyframes == 1) {
+    if(nkeyframes == 1){
       angle_local = 0.0;
     }
-    else {
+    else{
       angle_local = 2.0*PI*(float)j / (float)(nkeyframes - 1);
     }
     cosangle = cos(angle_local);
@@ -1120,10 +1123,10 @@ void init_circulartour(void){
     key_xyz[0] = key_view[0] + rad*cosangle;
     key_xyz[1] = key_view[1] + rad*sinangle;
     key_xyz[2] = key_view[2];
-    if (nkeyframes == 1) {
+    if(nkeyframes == 1){
       f1 = 0.0;
     }
-    else {
+    else{
       f1 = (float)j / (float)(nkeyframes - 1);
     }
     key_time = view_tstart*(1.0-f1) + view_tstop*f1;
@@ -1389,10 +1392,10 @@ void adjusttourtimes(tourdata *touri){
     }
     if(small_flag==1&&tstop>view_tstop&&tstop>0.0){
       for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
-        if (tstop == 0.0) {
+        if(tstop == 0.0){
           keyj->noncon_time = keyj->noncon_time;
         }
-        else {
+        else{
           keyj->noncon_time = keyj->noncon_time*view_tstop / tstop;
         }
       }
