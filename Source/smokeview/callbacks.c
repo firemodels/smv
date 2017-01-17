@@ -26,20 +26,20 @@
 
 /* ------------------ get_index ------------------------ */
 
-int get_index(float x, int dir, float *plotxyz, int nplotxyz){
+int get_index(float val, int dir, float *plotxyz, int nplotxyz){
   int i;
   int return_index=0;
   float min_val,vali;
 
   switch(dir){
     case XDIR:
-      x=NORMALIZE_X(x);
+      val=NORMALIZE_X(val);
       break;
     case YDIR:
-      x=NORMALIZE_Y(x);
+      val=NORMALIZE_Y(val);
       break;
     case ZDIR:
-      x=NORMALIZE_X(x);
+      val=NORMALIZE_Z(val);
       break;
     default:
       ASSERT(FFALSE);
@@ -47,10 +47,10 @@ int get_index(float x, int dir, float *plotxyz, int nplotxyz){
   }
 
   if(plotxyz!=NULL){
-    min_val=ABS(x-plotxyz[0]);
+    min_val=ABS(val-plotxyz[0]);
     return_index=0;
     for(i=1;i<nplotxyz;i++){
-      vali = ABS(x-plotxyz[i]);
+      vali = ABS(val-plotxyz[i]);
       if(vali<min_val){
         return_index=i;
         min_val = vali;
