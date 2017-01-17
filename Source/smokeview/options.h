@@ -27,6 +27,7 @@
 
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options available on all platforms VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+#define pp_NAN
 #define pp_GPU
 #define pp_ffmpeg
 

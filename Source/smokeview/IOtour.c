@@ -738,9 +738,14 @@ void createtourpaths(void){
         if(keyj->next->next!=NULL)touri->local_dist+=keyj->next->noncon_time-keyj->noncon_time;
       }
     }
-    if(total_time!=0.0){
-      factor = touri->local_dist/total_time;
+    if (total_time == 0.0)total_time = 1.0;
+    if (tour_constant_vel == 1) {
+      if (touri->global_dist == 0.0)touri->global_dist = 1.0;
     }
+    else {
+      if (touri->local_dist == 0.0)touri->local_dist = 1.0;
+    }
+    factor = touri->local_dist/total_time;
 
     // find number of points for each interval
 
@@ -765,7 +770,7 @@ void createtourpaths(void){
 
         for(keyj=(touri->first_frame).next;keyj->next->next!=NULL;keyj=keyj->next){
           ntotal2+=keyj->npoints;
-          if(view_ntimes == 0){
+          if(view_ntimes == 0 || view_tstop==view_tstart){
             vtime_temp = view_tstart;
           }
           else{
@@ -815,11 +820,17 @@ void createtourpaths(void){
       vdt = (tour_tstop - tour_tstart)/(float)(view_ntimes-1);
     }
     for(j=1;j<view_ntimes;j++){
-      float f1, f2;
+      float f1, f2, denom;
 
       vdist = tour_dist2[j];
       iframe_local = ISearch(tour_dist,view_ntimes,vdist,iframe_local);
-      f1 = (vdist-tour_dist[iframe_local])/(tour_dist[iframe_local+1]-tour_dist[iframe_local]);
+      denom = tour_dist[iframe_local + 1] - tour_dist[iframe_local];
+        if (denom==0.0) {
+        f1 = 0.0;
+      }
+      else {
+        f1 = (vdist - tour_dist[iframe_local]) / denom;
+      }
       f2 = 1 - f1;
       tour_t2[j] = f2*tour_t[iframe_local] + f1*tour_t[iframe_local+1] ;
       if(tour_t2[j] != tour_t2[j])tour_t2[j] = tour_t2[j - 1]; // remove NaNs
@@ -877,6 +888,7 @@ void createtourpaths(void){
 
         VECDIFF3(dxyz,xyz_view,eye);
         denom = 10.0*NORM3(dxyz);
+        if (denom == 0.0)denom = 1.0;
         dxyz[0] /= denom;
         dxyz[1] /= denom;
         dxyz[2] /= denom;
