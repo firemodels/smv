@@ -1558,9 +1558,6 @@ void initvars(void){
   settmax_p=0, settmax_b=0, settmax_s=0, settmax_z=0, settmax_i=0;
   tmin_p=1., tmin_b=1., tmin_s=1., tmin_z=1., tmin_i=1.;
   tmax_p=0., tmax_b=0., tmax_s=0., tmax_z=0., tmax_i=0.;
-  patchmin=1., patchmax=0.;
-  targetmin=1.0, targetmax=0.0;
-  partmin=1., partmax=0., slicemin=1., slicemax=0.;
   speedmax=0.0;
   hrrpuv_max_smv=1200.0;
   FlowDir=1,ClipDir=1;

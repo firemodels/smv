@@ -104,6 +104,8 @@ void AdjustPart5Bounds(partdata *parti){
     histogramdata *histi;
 
     propi = part5propinfo + i;
+    if (strcmp(propi->label->shortlabel, "Uniform") == 0)continue;
+
     histi = &propi->histogram;
 
     propi->global_min = histi->val_min;

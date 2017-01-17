@@ -9405,6 +9405,12 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &ivmin, &vmin, &ivmax, &vmax, short_label);
 
+#define MAXVAL 100000000.0
+#define MINVAL -100000000.0
+
+      if (vmax > MAXVAL)vmax = 1.0;
+      if (vmin < MINVAL)vmin = 0.0;
+
       if(npart5prop>0){
         int label_index = 0;
 
