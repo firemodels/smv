@@ -21,7 +21,7 @@ void slerp(float *p0, float *p1, float t, float *pout){
     pout[2]=p0[2];
     return;
   }
-  cosangle = DOT3(p0,p1)/denom;
+  cosangle = CLAMP(DOT3(p0,p1)/denom,-1.0,1.0);
   angle = acos(cosangle);
   sinangle = sin(angle);
   if(sinangle == 0.0){
