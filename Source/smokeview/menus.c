@@ -1901,17 +1901,23 @@ void openurl(char *url){
   system(command);
 }
 #endif
+#ifdef pp_LINUX
+void openurl(char *url){
+  char command[1000];
+
+  strcpy(command,"xdg-open ");
+  strcat(command,url);
+  strcat(command," >& /dev/null");
+  system(command);
+}
+#endif
 
 /* ------------------ HelpMenu ------------------------ */
 
-#ifdef pp_OSX
-#define OPENURL(url) openurl(url)
-#else
 #ifdef WIN32
 #define OPENURL(url) ShellExecute(NULL,"open", url,NULL,NULL,SW_SHOWNORMAL)
 #else
-#define OPENURL(url)
-#endif
+#define OPENURL(url) openurl(url)
 #endif
 
 void HelpMenu(int value){
@@ -7828,16 +7834,13 @@ updatemenu=0;
   glutAddMenuEntry(_("Release notes"), MENU_HELP_RELEASENOTES);
   glutAddMenuEntry(_("Home page"), MENU_HELP_FDSWEB);
 #endif
-#ifndef WIN32
-#ifndef pp_OSX
-  glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),MENU_DUMMY);
-  glutAddMenuEntry(_("Issue tracker: https://pages.nist.gov/fds-smv/"),MENU_DUMMY);
-  glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),MENU_DUMMY);
-  glutAddMenuEntry(_("Home page: https://pages.nist.gov/fds-smv/"),MENU_DUMMY);
-  glutAddMenuEntry(_("Discussion forum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"), MENU_DUMMY);
-  glutAddMenuEntry(_("Smokeview release notes: https://pages.nist.gov/fds-smv/smv_readme.html"), MENU_DUMMY);
-  glutAddMenuEntry(_("FDS release notes: https://github.com/firemodels/fds/wiki/FDS-Release-Notes"), MENU_DUMMY);
-#endif
+#ifdef pp_LINUX
+  glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),MENU_HELP_DOWNLOADS);
+  glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),MENU_HELP_DOCUMENTATION);
+  glutAddMenuEntry(_("Discussion forum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"), MENU_HELP_FORUM);
+  glutAddMenuEntry(_("Issue tracker: https://pages.nist.gov/fds-smv/"),MENU_HELP_ISSUES);
+  glutAddMenuEntry(_("Release notes: https://pages.nist.gov/fds-smv/smv_readme.html"), MENU_HELP_RELEASENOTES);
+  glutAddMenuEntry(_("Home page: https://pages.nist.gov/fds-smv/"),MENU_HELP_FDSWEB);
 #endif
 
   /* --------------------------------keyboard help menu -------------------------- */
