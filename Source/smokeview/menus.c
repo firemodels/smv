@@ -1892,10 +1892,20 @@ void LevelMenu(int value){
   }
 }
 
+#ifdef pp_OSX
+void openurl(char *url){
+  char command[1000];
+
+  strcpy(command,"open ");
+  strcat(command,url);
+  system(command);
+}
+#endif
+
 /* ------------------ HelpMenu ------------------------ */
 
 #ifdef pp_OSX
-#define OPENURL(url) system("open "  ## url)
+#define OPENURL(url) openurl(url)
 #else
 #ifdef WIN32
 #define OPENURL(url) ShellExecute(NULL,"open", url,NULL,NULL,SW_SHOWNORMAL)
@@ -7819,7 +7829,7 @@ updatemenu=0;
   glutAddMenuEntry(_("Home page"), MENU_HELP_FDSWEB);
 #endif
 #ifndef WIN32
-#ifndef PP_OSX
+#ifndef pp_OSX
   glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),MENU_DUMMY);
   glutAddMenuEntry(_("Issue tracker: https://pages.nist.gov/fds-smv/"),MENU_DUMMY);
   glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),MENU_DUMMY);
