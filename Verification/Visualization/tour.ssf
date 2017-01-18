@@ -24,7 +24,7 @@ SETVIEWPOINT
 SETTIMEVAL
  0.000000
 RENDERONCE
- thouse5_Circular_tour
+ tour_Circular_tour
 
 // render start tour
 
@@ -41,7 +41,7 @@ SETVIEWPOINT
 SETTIMEVAL
  0.000000
 RENDERONCE
- thouse5_start_tour
+ tour_start_tour
 
 // render example tour 1
 
@@ -58,7 +58,7 @@ SETVIEWPOINT
 SETTIMEVAL
  0.000000
 RENDERONCE
- thouse5_example_tour1
+ tour_example_tour1
 
 
 // render example tour 2
@@ -71,7 +71,7 @@ SETVIEWPOINT
 SETTIMEVAL
  0.000000
 RENDERONCE
- thouse5_example_tour2
+ tour_example_tour2
 
 // render example tour 1
 
@@ -85,7 +85,7 @@ SETVIEWPOINT
 SETTIMEVAL
  0.000000
 RENDERONCE
- thouse5_example_tour3
+ tour_example_tour3
 
 UNLOADTOUR
 
