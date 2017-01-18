@@ -1926,7 +1926,7 @@ void HelpMenu(int value){
       OPENURL("https://groups.google.com/forum/?fromgroups#!forum/fds-smv");
       break;
     case MENU_HELP_ISSUES:
-      OPENURL("https://github.com/firemodels/fds/issues");
+      OPENURL("https://github.com/firemodels/smv/issues");
        break;
     case MENU_HELP_DOWNLOADS:
       OPENURL("https://pages.nist.gov/fds-smv/downloads.html");
