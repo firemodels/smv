@@ -1453,6 +1453,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   if(data_type == PARTDATA)PRINTF("Loading particle data: %s\n", file);
   get_partdata(parti,partframestep, nf_all, &delta_time, &file_size,data_type);
+  if(data_type==HISTDATA)return;
   UpdateGlui();
 
 #ifdef pp_MEMPRINT
@@ -1477,7 +1478,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   parti->loaded = 1;
   parti->display = 1;
-  update_partcolorbounds(parti);
+  if(data_type==PARTDATA)update_partcolorbounds(parti);
   UpdateGlui();
 #ifdef pp_MEMPRINT
   if(data_type==PARTDATA)PRINTF("After particle file load: \n");
