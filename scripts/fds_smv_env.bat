@@ -26,8 +26,8 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/LIBS/LINUX/LIB64_i16
-set misc_dir=fire-notes/LIBS/LINUX/LIB64
+set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i16
+set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 ::*** firebot/smokebot
 set firebotrepo=/home4/firebot/FireModels_central
