@@ -13,7 +13,7 @@ local FILE=$3
 
 local curdir=`pwd`
 
-md5hash=~/$SVNROOT/smv/Utilities/Scripts/md5hash.sh
+md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
 
 cd $DIR
 hashfile=${FILE}.md5
