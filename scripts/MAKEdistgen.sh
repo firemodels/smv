@@ -9,6 +9,27 @@ errlog=/tmp/smv_errlog.$$
 
 size=64
 
+MD5HASH ()
+{
+local PLATSIZE=$1
+local DIR=$2
+local FILE=$3
+
+local curdir=`pwd`
+
+md5hash=~/$SVNROOT/smv/Utilities/Scripts/md5hash.sh
+
+cd $DIR
+hashfile=${FILE}.md5
+hash2file=MD5/${FILE}_${PLATSIZE}.md5
+
+$md5hash $FILE
+if [ -e $hashfile ]; then
+  mv $hashfile $hash2file
+fi
+cd $curdir
+}
+
 SCP ()
 {
   HOST=$1
@@ -80,6 +101,7 @@ cd ~/$SVNROOT/smv/uploads
 rm -rf $DIR
 mkdir -p $DIR
 mkdir -p $DIR/bin
+mkdir -p $DIR/bin/MD5
 mkdir -p $DIR/Documentation
 SCP $HOST $WEBPAGESDIR smv_readme.html $DIR/Documentation release_notes.html
 
@@ -96,6 +118,13 @@ SCP $HOST $SMOKEVIEWDIR smokeview_$platformsize $DIR/bin smokeview
 SCP $HOST $SMOKEZIPDIR smokezip_$platformsize $DIR/bin smokezip
 SCP $HOST $DEM2FDSDIR dem2fds_$platformsize $DIR/bin dem2fds
 SCP $HOST $WINDDIR wind2fds_$platformsize $DIR/bin wind2fds
+
+MD5HASH $platformsize $DIR/bin background
+MD5HASH $platformsize $DIR/bin smokediff
+MD5HASH $platformsize $DIR/bin smokeview
+MD5HASH $platformsize $DIR/bin smokezip
+MD5HASH $platformsize $DIR/bin dem2fds
+MD5HASH $platformsize $DIR/bin wind2fds
 
 echo ""
 echo "--- building installer ---"
