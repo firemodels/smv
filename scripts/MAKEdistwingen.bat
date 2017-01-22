@@ -26,69 +26,74 @@ set platform=%1
 set BUILDDIR=intel_win_%platform%
 
 set version=%smv_version%
-set bundledir=%svn_root%\smv\for_bundle
 set smvbuild=%svn_root%\smv\Build\smokeview\%BUILDDIR%
+set forbundle=%svn_root%\smv\for_bundle
 set smvscripts=%svn_root%\smv\scripts
 set svzipbuild=%svn_root%\smv\Build\smokezip\%BUILDDIR%
 set dem2fdsbuild=%svn_root%\smv\Build\dem2fds\%BUILDDIR%
 set svdiffbuild=%svn_root%\smv\Build\smokediff\%BUILDDIR%
 set bgbuild=%svn_root%\smv\Build\background\intel_win_64
+set windbuild=%svn_root%\smv\Build\wind2fds\%BUILDDIR%
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
 
 set zipbase=smv_%version%_win%platform%
-set smvdir=uploads\%zipbase%
+set smvdir=%zipbase%
 
-cd "%svn_root%\smv\uploads
+cd %svn_root%\smv\uploads
 set upload=%CD%
 
-cd %bundledir%
 echo.
 echo --- filling distribution directory ---
 echo.
 IF EXIST %smvdir% rmdir /S /Q %smvdir%
 mkdir %smvdir%
+mkdir %smvdir%\MD5
 
-CALL :COPY  ..\..\smv\Build\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
+CALL :COPY  %svn_root%\smv\Build\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
 
 CALL :COPY  %smvbuild%\smokeview_win_%platform%.exe %smvdir%\smokeview.exe
 
 CALL :COPY  %smvscripts%\jp2conv.bat %smvdir%\jp2conv.bat
 
 echo copying .po files
-copy *.po %smvdir%\.>Nul
+copy %forbundle%\*.po %smvdir%\.>Nul
 
-CALL :COPY  volrender.ssf %smvdir%\volrender.ssf
+CALL :COPY  %forbundle%\volrender.ssf %smvdir%\volrender.ssf
 
-CALL :COPY  %svzipbuild%\smokezip_win_%platform%.exe %smvdir%\smokezip.exe
+CALL :COPY  %svzipbuild%\smokezip_win_%platform%.exe    %smvdir%\smokezip.exe
+CALL :COPY  %svdiffbuild%\smokediff_win_%platform%.exe  %smvdir%\smokediff.exe
+CALL :COPY  %dem2fdsbuild%\dem2fds_win_%platform%.exe   %smvdir%\dem2fds.exe
+CALL :COPY  %bgbuild%\background.exe                    %smvdir%\background.exe
+CALL :COPY  %windbuild%\wind2fds_win_%platform%.exe     %smvdir%\wind2fds.exe
 
-CALL :COPY  %svdiffbuild%\smokediff_win_%platform%.exe %smvdir%\smokediff.exe
+set curdir=%CD%
+cd %smvdir%
 
-CALL :COPY  %dem2fdsbuild%\dem2fds_win_%platform%.exe %smvdir%\dem2fds.exe
+certutil -hashfile smokezip.exe   md5 >  MD5\smokezip_%revision%.md5
+certutil -hashfile smokediff.exe  md5 >  MD5\smokediff_%revision%.md5
+certutil -hashfile dem2fds.exe    md5 >  MD5\dem2fds_%revision%.md5
+certutil -hashfile background.exe md5 >  MD5\background_%revision%.md5
+certutil -hashfile wind2fds.exe   md5 >  MD5\wind2fds_%revision%.md5
+cd %curdir%
 
-CALL :COPY  ..\..\smv\Build\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe %smvdir%\wind2fds.exe
-
-CALL :COPY  %bgbuild%\background.exe %smvdir%\.
-
-CALL :COPY  ..\..\smv\Build\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe %smvdir%\wind2fds.exe
-
-CALL :COPY  smokeview.ini %smvdir%\smokeview.ini
+CALL :COPY  %forbundle%\smokeview.ini %smvdir%\smokeview.ini
 
 echo copying textures
 mkdir %smvdir%\textures
-copy textures\*.jpg %smvdir%\textures>Nul
-copy textures\*.png %smvdir%\textures>Nul
+copy %forbundle%\textures\*.jpg %smvdir%\textures>Nul
+copy %forbundle%\textures\*.png %smvdir%\textures>Nul
 
-CALL :COPY  objects.svo %smvdir%\.
+CALL :COPY  %forbundle%\objects.svo %smvdir%\.
 
-if "%platform%"=="64" CALL :COPY  glew32_x64.dll %smvdir%\.
+if "%platform%"=="64" CALL :COPY  %forbundle%\glew32_x64.dll %smvdir%\.
 
-if "%platform%"=="64" CALL :COPY  pthreadVC2_x64.dll %smvdir%\.
+if "%platform%"=="64" CALL :COPY  %forbundle%\pthreadVC2_x64.dll %smvdir%\.
 
 CALL :COPY  %sh2bat%\sh2bat.exe %smvdir%\.
 
 CALL :COPY  %svn_root%\webpages\smv_readme.html %smvdir%\release_notes.html
 
-CALL :COPY  wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat
+CALL :COPY  %forbundle%\wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat
 
 echo.
 echo --- compressing distribution directory ---
@@ -100,6 +105,9 @@ echo.
 echo --- creating installer ---
 echo.
 wzipse32 %zipbase%.zip -runasadmin -d "C:\Program Files\firemodels\%smv_edition%" -c wrapup_smv_install.bat
+
+certutil -hashfile %zipbase%.exe md5 >   MD5\%zipbase%.exe.md5
+
 copy  %zipbase%.exe ..\.>Nul
 
 CALL :COPY  %zipbase%.exe "%upload%"

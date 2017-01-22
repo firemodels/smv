@@ -1,9 +1,31 @@
- #!/bin/bash
+#!/bin/bash
 revision=$1
 REMOTESVNROOT=$2
 OSXHOST=$3
 SVNROOT=~/$4
 errlog=/tmp/smv_errlog.$$
+
+MD5HASH ()
+{
+local PLATSIZE=$1
+local DIR=$2
+local FILE=$3
+
+local curdir=`pwd`
+
+md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
+
+cd $DIR
+hashfile=${FILE}.md5
+hash2file=MD5/${FILE}_${PLATSIZE}.md5
+
+$md5hash $FILE
+if [ -e $hashfile ]; then
+  mv $hashfile $hash2file
+fi
+cd $curdir
+}
+
 
 SCP ()
 {
@@ -75,6 +97,7 @@ cd $SVNROOT/smv/uploads
 rm -rf $OSXDIR
 mkdir -p $OSXDIR
 mkdir -p $OSXDIR/bin
+mkdir -p $OSXDIR/bin/MD5
 mkdir -p $OSXDIR/Documentation
 
 echo ""
@@ -90,6 +113,14 @@ SCP $OSXHOST $SMVDIR smokeview_osx_test_64 $OSXDIR/bin smokeview
 SCP $OSXHOST $DEM2FDSDIR dem2fds_osx_64 $OSXDIR/bin dem2fds
 SCP $OSXHOST $SMDDIR smokediff_osx_64 $OSXDIR/bin smokediff
 SCP $OSXHOST $WINDDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
+
+MD5HASH $revision $OSXDIR/bin background
+MD5HASH $revision $OSXDIR/bin smokediff
+MD5HASH $revision $OSXDIR/bin smokeview
+MD5HASH $revision $OSXDIR/bin smokezip
+MD5HASH $revision $OSXDIR/bin dem2fds
+MD5HASH $revision $OSXDIR/bin wind2fds
+
 rm -f $OSXDIR.tar $OSXDIR.tar.gz
 cd $OSXDIR
 echo ""
