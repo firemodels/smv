@@ -119,5 +119,5 @@ if "%platform%" == "osx" (
 
 :eof
 echo.
-echo compilation complete
+echo Bundle build complete
 pause
