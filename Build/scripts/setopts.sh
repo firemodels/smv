@@ -1,5 +1,6 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
+TEST=
 while getopts 'hprt' OPTION
 do
 case $OPTION in
@@ -18,6 +19,7 @@ case $OPTION in
   t)
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTFLAG=\"-D pp_BETA\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTSTRING=\"test_\" "
+   TEST=test_
   ;;
 esac
 done
