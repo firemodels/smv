@@ -55,7 +55,7 @@ local function findCellDimension(mesh,axis,distance)
     end
     -- TODO: account for being slightly out
     for i=0,bar-2,1 do
-        if (orig_plt[i] < distance and distance < orig_plt[i+1]) then
+        if (orig_plt[i] <= distance and distance <= orig_plt[i+1]) then
             return (orig_plt[i+1]-orig_plt[i])
         end
     end
@@ -70,16 +70,16 @@ function load.slice_std(slice_type, axis, distance)
     assert(axis == 1 or axis == 2 or axis == 3, "axis must be 1, 2, or 3")
     assert(type(distance) == "number", "distance must be a number")
     -- load applicable slices
-    return load.slice(function(slice)
-            local meshnumber = slice.blocknumber
-            local mesh = meshinfo[meshnumber]
-            -- find the cell size at the specified location
-            local cellWidth = findCellDimension(mesh, axis, distance)
-            -- go a quarter cell in either direction
-            return (cellWidth and slice.longlabel == slice_type
-                and slice.idir == axis
-                and (slice.position_orig > (distance-cellWidth*0.25)) and (slice.position_orig < (distance+cellWidth*0.25)))
-        end)
+    load.slice(function(slice)
+        local meshnumber = slice.blocknumber
+        local mesh = meshinfo[meshnumber]
+        -- find the cell size at the specified location
+        local cellWidth = findCellDimension(mesh, axis, distance)
+        -- go a quarter cell in either direction
+        return (cellWidth and slice.longlabel == slice_type
+            and slice.idir == axis
+            and (slice.position_orig > (distance-cellWidth*0.25)) and (slice.position_orig < (distance+cellWidth*0.25)))
+    end)
 end
 
 -- TODO: load using path relative to simulation directory
