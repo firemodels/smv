@@ -731,7 +731,7 @@ int settime(float timeval) {
     }
     valmin=ABS(global_times[0]-timeval);
     imin=0;
-    for(i=1;i<nglobal_times-1;i++){
+    for(i=1;i<nglobal_times;i++){
       float val;
 
       val = ABS(global_times[i]-timeval);
