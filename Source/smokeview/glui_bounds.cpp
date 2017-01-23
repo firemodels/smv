@@ -197,7 +197,7 @@ GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_boundary = NULL;
 GLUI_Rollout *ROLLOUT_autoload=NULL;
 GLUI_Rollout *ROLLOUT_compress=NULL;
-GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_evac=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
+GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
 GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
@@ -447,7 +447,6 @@ extern "C" void UpdateHistogramType(void){
   CHECKBOX_histogram_show_graph->set_int_val(histogram_show_graph);
   CHECKBOX_histogram_show_numbers->set_int_val(histogram_show_numbers);
   CHECKBOX_histogram_show_outline->set_int_val(histogram_show_outline);
-  
 }
 
 /* ------------------ update_show_slice_in_obst ------------------------ */
@@ -713,6 +712,7 @@ extern "C" void UpdateColorTableList(int ncolortableinfo_old){
 extern "C" void glui_bounds_setup(int main_window){
   int i;
   int nradio;
+  int have_part, have_evac;
 
   update_glui_bounds=0;
   if(glui_bounds!=NULL){
@@ -1075,9 +1075,20 @@ extern "C" void glui_bounds_setup(int main_window){
 
   /* Particle File Bounds  */
 
-  if(npartinfo>0&&nevac!=npartinfo){
+  have_part = 0;
+  have_evac = 0;
+  if(npartinfo > 0 && nevac != npartinfo)have_part = 1;
+  if(nevac > 0)have_evac = 1;
+  if(have_part==1||have_evac==1){
+  char label[100];
+
+  strcpy(label, "");
+  if(have_part == 1)strcat(label, "Particle");
+  if(have_part == 1 && have_evac == 1)strcat(label, "/");
+  if(have_evac == 1)strcat(label, "Evac");
+
     glui_active=1;
-    ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Particle",false,PART_ROLLOUT,Bound_Rollout_CB);
+    ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,label,false,PART_ROLLOUT,Bound_Rollout_CB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_part, PART_ROLLOUT);
 
     if(npart5prop>0){
@@ -1112,7 +1123,10 @@ extern "C" void glui_bounds_setup(int main_window){
     {
       char boundmenulabel[100];
 
-      strcpy(boundmenulabel,"Reload Particle File(s)");
+      strcpy(boundmenulabel, "Reload ");
+      strcat(boundmenulabel, label);
+      strcat(boundmenulabel, " File");
+      if(npartinfo > 1)strcat(boundmenulabel, "s");
       boundmenu(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
         &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
@@ -1124,35 +1138,29 @@ extern "C" void glui_bounds_setup(int main_window){
         &setpartchopmin,&setpartchopmax,&partchopmin,&partchopmax,
         RELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
         Part_CB);
-        Part_CB(FILETYPEINDEX);
-        SPINNER_partpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Particle size"),GLUI_SPINNER_FLOAT,
-          &partpointsize);
-        SPINNER_partpointsize->set_float_limits(1.0,100.0);
-        SPINNER_streaklinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Streak line width"),GLUI_SPINNER_FLOAT,
-          &streaklinewidth);
-        SPINNER_streaklinewidth->set_float_limits(1.0,100.0);
+      Part_CB(FILETYPEINDEX);
+      SPINNER_partpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Particle size"),GLUI_SPINNER_FLOAT,&partpointsize);
+      SPINNER_partpointsize->set_float_limits(1.0,100.0);
+      SPINNER_streaklinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Streak line width"),GLUI_SPINNER_FLOAT,&streaklinewidth);
+      SPINNER_streaklinewidth->set_float_limits(1.0,100.0);
 
-        SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Streak length (s)"),GLUI_SPINNER_FLOAT,
-          &float_streak5value,STREAKLENGTH,Part_CB);
-        SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
+      SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_part,_d("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,Part_CB);
+      SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
-        CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("Always show tracers"),&show_tracers_always,
-          TRACERS,Part_CB);
+      CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("Always show tracers"),&show_tracers_always,TRACERS,Part_CB);
     }
   }
 
-  if(nevac>0){
+  if(have_evac==1){
     glui_active=1;
-    ROLLOUT_evac = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Evacuation",false,EVAC_ROLLOUT,Bound_Rollout_CB);
-    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_evac, EVAC_ROLLOUT);
 
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_evac,_d("Select avatar"),&select_avatar);
-    CHECKBOX_show_evac_slices=glui_bounds->add_checkbox_to_panel(ROLLOUT_evac,"Show slice menus",&show_evac_slices,SHOW_EVAC_SLICES,Slice_CB);
-    PANEL_evac_direction=glui_bounds->add_panel_to_panel(ROLLOUT_evac,_d("Direction vectors"));
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("Select avatar"),&select_avatar);
+    CHECKBOX_show_evac_slices=glui_bounds->add_checkbox_to_panel(ROLLOUT_part,"Show slice menus",&show_evac_slices,SHOW_EVAC_SLICES,Slice_CB);
+    PANEL_evac_direction=glui_bounds->add_panel_to_panel(ROLLOUT_part,_d("Direction vectors"));
     CHECKBOX_constant_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Constant coloring"),&constant_evac_coloring,SHOW_EVAC_SLICES,Slice_CB);
     CHECKBOX_data_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Data coloring"),&data_evac_coloring,DATA_EVAC_COLORING,Slice_CB);
     CHECKBOX_show_evac_color=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_d("Show colorbar (when data coloring)"),&show_evac_colorbar,SHOW_EVAC_SLICES,Slice_CB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_evac,_d("View from selected Avatar"),&view_from_selected_avatar);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("View from selected Avatar"),&view_from_selected_avatar);
   }
 
   /* Plot3D file bounds */
@@ -2647,6 +2655,7 @@ void Part_CB(int var){
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)Part_CB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)Part_CB(SETVALMAX);
      LoadParticleMenu(PARTFILE_RELOADALL);
+     LoadEvacMenu(EVACFILE_LOADALL);
      UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }

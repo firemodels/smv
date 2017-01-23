@@ -1,11 +1,10 @@
 @echo off
 
-:: ---- official FDS and smokeview version strings
+:: ---- version: official FDS and smokeview ----
 set fds_version=6.5.3
-set smv_version=6.4.2
+set smv_version=6.4.4
 
-:: ---- test FDS and smokeview revision strings
-
+:: ---- revision: test FDS and smokeview ----
 set smv_revision=unknown
 set fds_revision=unknown
 if exist %userprofile%\smv_revision.txt (
@@ -15,38 +14,38 @@ if exist %userprofile%\fds_revision.txt (
   set /p fds_revision=<%userprofile%\fds_revision.txt
 )
 
-:: ---- log entries added after smvlogdate
-set smvlogdate="14-Oct-2016"
+:: ---- log entry date ----
+set smvlogdate="23-Dec-2016"
 
-:: PC repo
+:: ---- repo locations ----
 
+::*** PC
 set svn_root=%userprofile%\FireModels_fork
 set fdswikirepo=%svn_root%\wikis
 set svn_drive=c:
 
-:: Linux/OSX repo
-
+::*** Linux/OSX
 set linux_svn_root=FireModels_fork
+set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i16
+set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
-:: firebot/smokebot repo locations
-
+::*** firebot/smokebot
 set firebotrepo=/home4/firebot/FireModels_central
-set smokebotrepo=/home4/gforney/FireModels_fork
+set smokebotrepo=/home4/smokebot/FireModels_central
 
-:: Linux user and host name
+:: ---- hostnames ----
 
+::*** linux
 set linux_hostname=burn.el.nist.gov
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
-:: OSX user and host name
-
-set osx_hostname=ignis.el.nist.gov
+::*** OSX
+set osx_hostname=floga.el.nist.gov
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
 
-:: FDS/Smokeview version
-
+:: ---- FDS/Smokeview version ----
 set fdssmv_major_version=6
 set fds_edition=FDS6
 set smv_edition=SMV6

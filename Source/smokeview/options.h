@@ -19,7 +19,7 @@
 
 #ifdef pp_release
 #ifdef pp_OFFICIAL_RELEASE
-#define PROGVERSION "6.4.3"
+#define PROGVERSION "6.4.4"
 #else
 #define PROGVERSION "Unofficial release"
 #endif
@@ -27,6 +27,7 @@
 
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options available on all platforms VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+#define pp_NAN
 #define pp_GPU
 #define pp_ffmpeg
 

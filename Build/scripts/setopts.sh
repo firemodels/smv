@@ -1,6 +1,7 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
-while getopts 'hpt' OPTION
+TEST=
+while getopts 'hprt' OPTION
 do
 case $OPTION in
   h)
@@ -13,9 +14,12 @@ case $OPTION in
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-p\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"p\" "
   ;;
+  r)
+  ;;
   t)
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTFLAG=\"-D pp_BETA\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTSTRING=\"test_\" "
+   TEST=test_
   ;;
 esac
 done

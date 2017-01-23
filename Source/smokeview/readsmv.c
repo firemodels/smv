@@ -7,6 +7,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <sys/types.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include GLUT_H
 #include <pthread.h>
@@ -615,6 +616,7 @@ void ReadSMVDynamic(char *file){
 
     if(Match(buffer,"PL3D") == 1){
       do_pass2=1;
+      if(setup_only==1)continue;
       nplot3dinfo++;
       continue;
 
@@ -910,6 +912,7 @@ void ReadSMVDynamic(char *file){
       int len,blocknumber,blocktemp;
       char *bufferptr;
 
+      if(setup_only==1)continue;
       if(minmaxpl3d==1)do_pass3=1;
       nn_plot3d++;
       TrimBack(buffer);
@@ -3800,6 +3803,7 @@ int ReadSMV(char *file, char *file2){
     }
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
+      if (setup_only == 1)continue;
       npartinfo++;
       continue;
     }
@@ -3809,6 +3813,7 @@ int ReadSMV(char *file, char *file2){
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
       ){
+      if (setup_only == 1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
       if(fgets(buffer,255,stream)==NULL){
@@ -3831,6 +3836,7 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
       ){
+      if(setup_only==1)continue;
       nsmoke3dinfo++;
       continue;
     }
@@ -3843,10 +3849,12 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
+      if (setup_only == 1)continue;
       npatchinfo++;
       continue;
     }
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1){
+      if (setup_only == 1)continue;
       nisoinfo++;
       continue;
     }
@@ -5006,6 +5014,7 @@ int ReadSMV(char *file, char *file2){
       int filetype=C_GENERATED;
       int blocknumber;
 
+      if(setup_only==1)continue;
       if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1){
         filetype=FORTRAN_GENERATED;
       }
@@ -7263,7 +7272,7 @@ typedef struct {
       STRUCTSTAT statbuffer;
       char *buffer3;
 
-
+      if (setup_only == 1)continue;
       nn_part++;
 
       parti = partinfo + ipart;
@@ -7533,6 +7542,7 @@ typedef struct {
       int blocknumber;
       size_t len;
 
+      if (setup_only == 1)continue;
       sliceparms=strchr(buffer,'&');
       if(sliceparms!=NULL){
         sliceparms++;
@@ -7763,6 +7773,7 @@ typedef struct {
       size_t len;
       STRUCTSTAT statbuffer;
 
+      if (setup_only == 1)continue;
       nn_patch++;
 
       TrimBack(buffer);
@@ -7936,6 +7947,7 @@ typedef struct {
       STRUCTSTAT statbuffer;
       char *buffer3;
 
+      if (setup_only == 1)continue;
       isoi = isoinfo + iiso;
       isoi->isof_index = nn_iso%nisos_per_mesh;
       nn_iso++;
@@ -9392,6 +9404,12 @@ int ReadINI2(char *inifile, int localfile){
       strcpy(short_label, "");
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &ivmin, &vmin, &ivmax, &vmax, short_label);
+
+#define MAXVAL 100000000.0
+#define MINVAL -100000000.0
+
+      if (vmax > MAXVAL)vmax = 1.0;
+      if (vmin < MINVAL)vmin = 0.0;
 
       if(npart5prop>0){
         int label_index = 0;

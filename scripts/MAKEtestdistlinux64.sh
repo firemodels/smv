@@ -4,6 +4,27 @@ SVNROOT=~/$2
 
 errlog=/tmp/smv_errlog.$$
 
+MD5HASH ()
+{
+local PLATSIZE=$1
+local DIR=$2
+local FILE=$3
+
+local curdir=`pwd`
+
+md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
+
+cd $DIR
+hashfile=${FILE}.md5
+hash2file=MD5/${FILE}_${PLATSIZE}.md5
+
+$md5hash $FILE
+if [ -e $hashfile ]; then
+  mv $hashfile $hash2file
+fi
+cd $curdir
+}
+
 SCP ()
 {
   HOST=$1
@@ -77,6 +98,7 @@ echo ""
 rm -rf $LINUXDIR
 mkdir -p $LINUXDIR
 mkdir -p $LINUXDIR/bin
+mkdir -p $LINUXDIR/bin/MD5
 mkdir -p $LINUXDIR/Documentation
 CPDIR $FORBUNDLE/textures $LINUXDIR/bin/textures
 CP $FORBUNDLE objects.svo $LINUXDIR/bin objects.svo
@@ -88,6 +110,14 @@ CP $SMVDIR smokeview_linux_test_64 $LINUXDIR/bin smokeview
 CP $DEM2FDSDIR dem2fds_linux_64 $LINUXDIR/bin dem2fds
 CP $SMDDIR smokediff_linux_64 $LINUXDIR/bin smokediff
 CP $WINDDIR wind2fds_linux_64 $LINUXDIR/bin wind2fds
+
+MD5HASH $revision $LINUXDIR/bin background
+MD5HASH $revision $LINUXDIR/bin smokediff
+MD5HASH $revision $LINUXDIR/bin smokeview
+MD5HASH $revision $LINUXDIR/bin smokezip
+MD5HASH $revision $LINUXDIR/bin dem2fds
+MD5HASH $revision $LINUXDIR/bin wind2fds
+
 rm -f $LINUXDIR.tar $LINUXDIR.tar.gz
 cd $LINUXDIR
 echo ""

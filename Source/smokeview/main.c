@@ -39,6 +39,7 @@ void Usage(char **argv){
   PRINTF("%s\n", _(" -ini           - output default smokeview parameters to smokeview.ini"));
   PRINTF("%s\n", _(" -ng_ini        - No graphics version of -ini."));
   PRINTF("%s\n", _(" -runscript     - run the script file casename.ssf"));
+  PRINTF("%s\n", _(" -setup         - only show geometry"));
   PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
   PRINTF("%s\n", _(" -runluascript  - run the lua script file casename.lua"));
@@ -536,6 +537,9 @@ void ParseCommandline(int argc, char **argv){
 #endif
     else if(strncmp(argv[i], "-noexit", 7) == 0){
       noexit = 1;
+    }
+    else if (strncmp(argv[i], "-setup", 6) == 0) {
+      setup_only = 1;
     }
     else if(strncmp(argv[i], "-bindir", 7) == 0){
       ++i;
