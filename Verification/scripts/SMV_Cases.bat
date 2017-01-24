@@ -30,6 +30,7 @@
 %QFDS% -d Visualization sprinkler_many.fds
 %QFDS% -d Visualization thouse5.fds
 %QFDS% -d Visualization thouse5delta.fds
+%QFDS% -d Visualization tour.fds
 %QFDS% -d Visualization transparency.fds
 %QFDS% -d Visualization vcirctest.fds
 %QFDS% -d Visualization vcirctest2.fds
