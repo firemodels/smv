@@ -5,30 +5,30 @@ HOST=$3
 FDS_EDITION=$4
 SVNROOT=$5
 
+MD5=md5sum
+if [ "`uname`" == "Darwin" ] ; then
+  MD5=md5
+fi
+
 errlog=/tmp/smv_errlog.$$
 
 size=64
 
+# ---------------- MDHASH -----------------
+
 MD5HASH ()
 {
-local PLATSIZE=$1
-local DIR=$2
-local FILE=$3
+local DIR=$1
+local FILE=$2
 
 local curdir=`pwd`
-
-md5hash=~/$SVNROOT/smv/Utilities/Scripts/md5hash.sh
-
 cd $DIR
-hashfile=${FILE}.md5
-hash2file=MD5/${FILE}_${PLATSIZE}.md5
 
-$md5hash $FILE
-if [ -e $hashfile ]; then
-  mv $hashfile $hash2file
-fi
+$MD5 $FILE
 cd $curdir
 }
+
+# ---------------- SCP -----------------
 
 SCP ()
 {
@@ -47,6 +47,8 @@ SCP ()
     echo "">>$errlog
   fi
 }
+
+# ---------------- CP -----------------
 
 CP ()
 {
@@ -67,6 +69,8 @@ CP ()
   fi
 }
 
+# ---------------- CPDIR -----------------
+
 CPDIR ()
 {
   FROMDIR=$1
@@ -83,6 +87,8 @@ CPDIR ()
     echo "">>$errlog
   fi
 }
+
+# ------------------ beginning of script ----------------
 
 platformsize=${platform}_$size
 WEBPAGESDIR=$SVNROOT/webpages
@@ -119,12 +125,15 @@ SCP $HOST $SMOKEZIPDIR smokezip_$platformsize $DIR/bin smokezip
 SCP $HOST $DEM2FDSDIR dem2fds_$platformsize $DIR/bin dem2fds
 SCP $HOST $WINDDIR wind2fds_$platformsize $DIR/bin wind2fds
 
-MD5HASH $platformsize $DIR/bin background
-MD5HASH $platformsize $DIR/bin smokediff
-MD5HASH $platformsize $DIR/bin smokeview
-MD5HASH $platformsize $DIR/bin smokezip
-MD5HASH $platformsize $DIR/bin dem2fds
-MD5HASH $platformsize $DIR/bin wind2fds
+mdversion=_$version.md5
+MD5DIR=$DIR/bin/MD5
+MD5HASH $DIR/bin background > $MD5DIR/background$mdversion
+MD5HASH $DIR/bin smokediff  > $MD5DIR/smokediff$mdversion
+MD5HASH $DIR/bin smokeview  > $MD5DIR/smokeview$mdversion
+MD5HASH $DIR/bin smokezip   > $MD5DIR/smokezip$mdversion
+MD5HASH $DIR/bin dem2fds    > $MD5DIR/dem2fds$mdversion
+MD5HASH $DIR/bin wind2fds   > $MD5DIR/wind2fds$mdversion
+cat     $DIR/bin/MD5/*.md5  > $MD5DIR/smv_${version}_${platform}_bundle.md5s
 
 echo ""
 echo "--- building installer ---"
@@ -137,13 +146,16 @@ gzip $DIR.tar
 
 platform2=$platform
 if [ "$platform" == "linux" ]; then
-platform2=Linux
+  platform2=Linux
 fi
 if [ "$platform" == "osx" ]; then
-platform2=OSX
+  platform2=OSX
 fi
 
 $UPDATER $platform2 $version $DIR.tar.gz $DIR.sh FDS/$FDS_EDITION
+
+MD5HASH . $DIR.sh > $DIR/bin/MD5/$DIR.sh.md5
+cat $DIR/bin/MD5/$DIR.sh.md5 >> $MD5DIR/smv_${version}_${platform}_bundle.md5s
 
 if [ -e $errlog ]; then
   numerrs=`cat $errlog | wc -l `
