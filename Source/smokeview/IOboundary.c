@@ -736,6 +736,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
   for(n=0;n<meshi->npatches;n++){
     float dxx, dyy, dzz, ig_factor;
+    float dxx2, dyy2, dzz2;
     float dx_factor, dy_factor, dz_factor;
     int i1, i2, j1, j2, k1, k2;
 
@@ -765,31 +766,38 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
     ig_factor=0.03;
+#define BLOCK_FACTOR 0.001
 
     switch(meshi->patchdir[n]){
     case XDIRNEG:
       meshi->patch_surfindex[n]=0;
       dxx = -meshi->xplt[1]*ig_factor;
+      dxx2 = -meshi->xplt[1]*BLOCK_FACTOR;
       break;
     case XDIR:
       meshi->patch_surfindex[n]=1;
       dxx = meshi->xplt[1]*ig_factor;
+      dxx2 = meshi->xplt[1]*BLOCK_FACTOR;
       break;
     case YDIRNEG:
       meshi->patch_surfindex[n]=2;
       dyy = meshi->yplt[1]*ig_factor;
+      dyy2 = meshi->yplt[1]*BLOCK_FACTOR;
       break;
     case YDIR:
       meshi->patch_surfindex[n]=3;
       dyy = -meshi->yplt[1]*ig_factor;
+      dyy2 = -meshi->yplt[1]*BLOCK_FACTOR;
       break;
     case ZDIRNEG:
       meshi->patch_surfindex[n]=4;
       dzz = -meshi->zplt[1]*ig_factor;
+      dzz2 = -meshi->zplt[1]*BLOCK_FACTOR;
       break;
     case ZDIR:
       meshi->patch_surfindex[n]=5;
       dzz = meshi->zplt[1]*ig_factor;
+      dzz2 = meshi->zplt[1]*BLOCK_FACTOR;
       break;
     default:
       ASSERT(FFALSE);
@@ -837,7 +845,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             else{
               dy_factor=0.0;
             }
-            *xyzpatchcopy++ = xplttemp[i1];
+            *xyzpatchcopy++ = xplttemp[i1]+dxx2;
             *xyzpatchcopy++ = yplttemp[j];
             *xyzpatchcopy++ = zplttemp[k];
             *xyzpatch_ignitecopy++ = xplttemp[i1]+dxx;
@@ -875,7 +883,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             else{
               dy_factor=0.0;
             }
-            *xyzpatchcopy++ = xplttemp[i1];
+            *xyzpatchcopy++ = xplttemp[i1]+dxx2;
             *xyzpatchcopy++ = yplttemp[j];
             *xyzpatchcopy++ = zplttemp[k];
             *xyzpatch_ignitecopy++ = xplttemp[i1]+dxx;
@@ -928,7 +936,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
               dx_factor=0.0;
             }
             *xyzpatchcopy++ = xplttemp[i];
-            *xyzpatchcopy++ = yplttemp[j1];
+            *xyzpatchcopy++ = yplttemp[j1]+dyy2;
             *xyzpatchcopy++ = zplttemp[k];
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j1]+dyy;
@@ -966,7 +974,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
               dx_factor=0.0;
             }
             *xyzpatchcopy++ = xplttemp[i];
-            *xyzpatchcopy++ = yplttemp[j1];
+            *xyzpatchcopy++ = yplttemp[j1]+dyy2;
             *xyzpatchcopy++ = zplttemp[k];
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j1]+dyy;
@@ -1019,7 +1027,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             }
             *xyzpatchcopy++ = xplttemp[i];
             *xyzpatchcopy++ = yplttemp[j];
-            *xyzpatchcopy++ = zplttemp[k1];
+            *xyzpatchcopy++ = zplttemp[k1]+dzz2;
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k1]+dzz;
@@ -1058,7 +1066,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             }
             *xyzpatchcopy++ = xplttemp[i];
             *xyzpatchcopy++ = yplttemp[j];
-            *xyzpatchcopy++ = zplttemp[k1];
+            *xyzpatchcopy++ = zplttemp[k1]+dzz2;
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k1]+dzz;
