@@ -9666,6 +9666,12 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &settargetmin, &targetmin, &settargetmax, &targetmax, buffer2);
       continue;
     }
+    if (Match(buffer, "ZONEVIEW") == 1) {
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f", &zone_hvac_diam);
+      if (zone_hvac_diam < 0.0)zone_hvac_diam = 0.0;
+      continue;
+    }
     if(Match(buffer, "OUTLINEMODE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i", &highlight_flag, &outline_color_flag);
@@ -12006,6 +12012,8 @@ void WriteINILocal(FILE *fileout){
   if(nzoneinfo > 0){
     fprintf(fileout, "V_ZONE\n");
     fprintf(fileout, " %i %f %i %f\n", setzonemin, zoneusermin, setzonemax, zoneusermax);
+    fprintf(fileout, "ZONEVIEW\n");
+    fprintf(fileout, " %f\n", zone_hvac_diam);
   }
 
 }

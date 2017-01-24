@@ -54,6 +54,7 @@ GLUI_Spinner *SPINNER_tick_zmax=NULL;
 GLUI_Spinner *SPINNER_gridlinewidth = NULL;
 GLUI_Spinner *SPINNER_ticklinewidth = NULL;
 GLUI_Spinner *SPINNER_linewidth=NULL;
+GLUI_Spinner *SPINNER_zone_hvac_diam = NULL;
 GLUI_Spinner *SPINNER_tick_x0=NULL;
 GLUI_Spinner *SPINNER_tick_y0=NULL;
 GLUI_Spinner *SPINNER_tick_z0=NULL;
@@ -384,6 +385,10 @@ extern "C" void glui_labels_setup(int main_window){
   SPINNER_gridlinewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
   SPINNER_ticklinewidth = glui_labels->add_spinner_to_panel(PANEL_gen3, "tick line width", GLUI_SPINNER_FLOAT, &ticklinewidth);
   SPINNER_ticklinewidth->set_float_limits(1.0, 10.0, GLUI_LIMIT_CLAMP);
+  if(nzoneinfo > 0){
+    SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);
+    SPINNER_zone_hvac_diam->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
+  }
 
   if(have_northangle==1){
     ROLLOUT_north = glui_labels->add_rollout_to_panel(PANEL_gen3,"North direction",false);
@@ -392,7 +397,6 @@ extern "C" void glui_labels_setup(int main_window){
     SPINNER_northangle_position_y = glui_labels->add_spinner_to_panel(ROLLOUT_north, "y:", GLUI_SPINNER_FLOAT, northangle_position+1);
     SPINNER_northangle_position_z = glui_labels->add_spinner_to_panel(ROLLOUT_north, "z:", GLUI_SPINNER_FLOAT, northangle_position+2);
   }
-
 
   glui_labels->add_column_to_panel(PANEL_gen3,false);
 
@@ -533,7 +537,7 @@ extern "C" void glui_labels_setup(int main_window){
   {
     int i;
 
-    for (i = 0; i < 12; i++) {
+    for(i = 0; i < 12; i++){
       SPINNER_colorsplit[i]->set_int_limits(0, 255);
     }
   }
@@ -1066,11 +1070,11 @@ extern "C" void update_transparency(void){
 
 /* ------------------ Split_CB ------------------------ */
 
-extern "C" void Split_CB(int var) {
+extern "C" void Split_CB(int var){
   int isplit, i;
   float denom;
 
-  switch (var) {
+  switch (var){
   case SPLIT_COLORBAR:
     denom = splitvals[2]-splitvals[0];
     if(denom==0.0)denom=1.0;
@@ -1078,7 +1082,7 @@ extern "C" void Split_CB(int var) {
     split_colorbar->index_node[1]=isplit;
     split_colorbar->index_node[2]=isplit+1;
 
-    for(i = 0; i < 12; i++) {
+    for(i = 0; i < 12; i++){
       split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
   	}
     RemapColorbar(split_colorbar);

@@ -1136,15 +1136,25 @@ void drawroomgeom(void){
       y2 = zvi->y1;
       z1 = zvi->z0;
       z2 = zvi->z1;
-      glColor4fv(zvi->color);
       if(zvi->vent_type == MFLOW_VENT){
         glPushMatrix();
         glTranslatef(x2, y2, z2);
-        void drawsphere(float diameter, float *color);
-        drawsphere(0.02, NULL);
+        void drawsphere(float diameter, unsigned char *color);
+        {
+          unsigned char hvac_sphere_color[3];
+
+          hvac_sphere_color[0] = 255 * foregroundcolor[0];
+          hvac_sphere_color[1] = 255 * foregroundcolor[1];
+          hvac_sphere_color[2] = 255 * foregroundcolor[2];
+          drawsphere(SCALE2SMV(zone_hvac_diam), hvac_sphere_color);
+        }
         glPopMatrix();
+        glLineWidth(2.0*ventlinewidth);
       }
-      glLineWidth(ventlinewidth);
+      else {
+        glLineWidth(ventlinewidth);
+      }
+      glColor4fv(zvi->color);
       glBegin(GL_LINE_LOOP);
       switch(zvi->wall){
       case LEFT_WALL:
