@@ -5,11 +5,6 @@ HOST=$3
 FDS_EDITION=$4
 SVNROOT=$5
 
-MD5=md5sum
-if [ "`uname`" == "Darwin" ] ; then
-  MD5=md5
-fi
-
 errlog=/tmp/smv_errlog.$$
 
 size=64
@@ -24,7 +19,12 @@ local FILE=$2
 local curdir=`pwd`
 cd $DIR
 
-$MD5 $FILE
+if [ "`uname`" == "Darwin" ] ; then
+  hash=`cat $FILE | md5`
+  echo "$hash   $FILE"
+else
+  md5sum $FILE
+fi
 cd $curdir
 }
 
