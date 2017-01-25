@@ -297,6 +297,12 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  meshi->is_extface[0] = 1;
+  meshi->is_extface[1] = 1;
+  meshi->is_extface[2] = 1;
+  meshi->is_extface[3] = 1;
+  meshi->is_extface[4] = 1;
+  meshi->is_extface[5] = 1;
   meshi->ncutcells = 0;
   meshi->cutcells = NULL;
   meshi->slice_min[0] = 1.0;
@@ -3085,6 +3091,78 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   }
   zvi->color = getcolorptr(color);
   zvi->area_fraction = area_fraction;
+}
+
+/* ------------------ SetupMeshWalls ------------------------ */
+
+void SetupMeshWalls(void){
+  int i;
+  int ncount = 0;
+
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+    float xyz[3], *bmin, *bmax, bmid[3];
+    int *is_extface;
+
+    meshi = meshinfo + i;
+    bmin = meshi->boxmin;
+    bmax = meshi->boxmax;
+    is_extface = meshi->is_extface;
+
+    bmid[0] = (bmin[0] + bmax[0]) / 2.0;
+    bmid[1] = (bmin[1] + bmax[1]) / 2.0;
+    bmid[2] = (bmin[2] + bmax[2]) / 2.0;
+
+#define EPSMESH 0.001
+    xyz[0] = bmin[0] - EPSMESH;
+    xyz[1] = bmid[1];
+    xyz[2] = bmid[2];
+    if(getmesh(xyz) != NULL){
+      is_extface[0] = 0;
+      ncount++;
+    }
+
+    xyz[0] = bmax[0] + EPSMESH;
+    xyz[1] = bmid[1];
+    xyz[2] = bmid[2];
+    if(getmesh(xyz) != NULL){
+      is_extface[1] = 0;
+      ncount++;
+    }
+
+    xyz[0] = bmid[0];
+    xyz[1] = bmin[1] - EPSMESH;
+    xyz[2] = bmid[2];
+    if(getmesh(xyz) != NULL){
+      is_extface[2] = 0;
+      ncount++;
+    }
+
+    xyz[0] = bmid[0];
+    xyz[1] = bmax[1] + EPSMESH;
+    xyz[2] = bmid[2];
+    if(getmesh(xyz) != NULL){
+      is_extface[3] = 0;
+      ncount++;
+    }
+
+    xyz[0] = bmid[0];
+    xyz[1] = bmid[1];
+    xyz[2] = bmin[2] - EPSMESH;
+    if(getmesh(xyz) != NULL){
+      is_extface[4] = 0;
+      ncount++;
+    }
+
+    xyz[0] = bmid[0];
+    xyz[1] = bmid[1];
+    xyz[2] = bmax[2] + EPSMESH;
+    if(getmesh(xyz) != NULL){
+      is_extface[5] = 0;
+      ncount++;
+    }
+  }
+  printf("ncount=%i\n", ncount);
 }
 
   /* ------------------ ReadSMV ------------------------ */
@@ -8521,6 +8599,8 @@ typedef struct {
   GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
   update_triangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   get_faceinfo();
+
+  SetupMeshWalls();
 
   PRINTF("%s",_("wrap up completed"));
   PRINTF("\n\n");
