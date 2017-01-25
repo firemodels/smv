@@ -897,7 +897,7 @@ typedef struct _device{
   texturedata *textureinfo;
   char *texturefile;
   int ntextures;
-  float xyz[3], eyedist;
+  float xyz[3], xyz1[3], xyz2[3], eyedist;
   float val;
   float xyzplot[3];
   float xyznorm[3];
@@ -916,7 +916,7 @@ typedef struct _device{
   propdata *prop;
   sv_object *object;
   struct _vdevicedata *vdevice;
-  int type;
+  int type, is_beam;
 } devicedata;
 
 #ifdef pp_PILOT
