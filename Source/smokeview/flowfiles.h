@@ -612,6 +612,7 @@ typedef struct _meshdata {
   float x0, x1, y0, y1, z0, z1;
   int drawsides[7];
   int extsides[7]; // 1 if on exterior side of a supermesh, 0 otherwise
+  int is_extface[6]; // 1 if face i adjacent to extior, 0 if adjacent to another mesh
   int inside;
   float boxmin[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3];
   float slice_min[3], slice_max[3];

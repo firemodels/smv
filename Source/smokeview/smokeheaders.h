@@ -713,12 +713,8 @@ EXTERNCPP void DrawCBox(float x, float y, float z, float size);
 EXTERNCPP void handleiso(void);
 EXTERNCPP void updatesurface(void);
 EXTERNCPP void WindowStatus(int state);
-EXTERNCPP void nodein_extvent(
-                    int ipatch,
-                    int *patchblankcopy,const meshdata *meshi,int i1,int i2, int j1, int j2, int k1, int k2, int option);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
-EXTERNCPP int nodeinvent(const meshdata *gb, int i,int j,int k, int dir,int option);
 EXTERNCPP void ObstOrVent2Faces(const meshdata *gb,blockagedata *bc, ventdata *vi, facedata *faceptr,int facetype);
 EXTERNCPP void UpdateHiddenFaces(void);
 EXTERNCPP void UpdateSelectFaces(void);
