@@ -56,6 +56,7 @@ GLUI_Checkbox *CHECKBOX_vis_xtree = NULL;
 GLUI_Checkbox *CHECKBOX_vis_ytree = NULL;
 GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
+GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -71,6 +72,7 @@ GLUI_Panel *PANEL_smvobjects=NULL;
 GLUI_Panel *PANEL_devicevis=NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
+GLUI_Panel *PANEL_beam=NULL;
 
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
@@ -89,6 +91,7 @@ GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
 GLUI_Spinner *SPINNER_beam_line_width = NULL;
 GLUI_Spinner *SPINNER_mintreesize = NULL;
+GLUI_Spinner *SPINNER_beam_color[3];
 #ifdef pp_PILOT
 GLUI_Spinner *SPINNER_npilot_buckets = NULL;
 #endif
@@ -146,9 +149,17 @@ extern "C" void glui_device_setup(int main_window){
     SPINNER_orientation_scale=glui_device->add_spinner_to_panel(PANEL_smvobjects,_d("Orientation scale"),GLUI_SPINNER_FLOAT,&orientation_scale);
     SPINNER_orientation_scale->set_float_limits(0.1,10.0);
     if(have_beam){
-      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_smvobjects,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,Device_CB);
-      SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_smvobjects, _d("beam line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
+      PANEL_beam = glui_device->add_panel_to_panel(PANEL_smvobjects, "Beam sensor", true);
+      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_beam,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,Device_CB);
+      SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_beam, _d("line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
       SPINNER_beam_line_width->set_float_limits(1.0, 20.0);
+      CHECKBOX_use_beamcolor = glui_device->add_checkbox_to_panel(PANEL_beam, _d("Use color"), &use_beamcolor);
+      SPINNER_beam_color[0] = glui_device->add_spinner_to_panel(PANEL_beam, _d("red"), GLUI_SPINNER_INT, beam_color);
+      SPINNER_beam_color[1] = glui_device->add_spinner_to_panel(PANEL_beam, _d("green"), GLUI_SPINNER_INT, beam_color+1);
+      SPINNER_beam_color[2] = glui_device->add_spinner_to_panel(PANEL_beam, _d("blue"), GLUI_SPINNER_INT, beam_color+2);
+      SPINNER_beam_color[0]->set_int_limits(0,255);
+      SPINNER_beam_color[1]->set_int_limits(0, 255);
+      SPINNER_beam_color[2]->set_int_limits(0, 255);
     }
 
     if(GetNumActiveDevices()>0||isZoneFireModel==1){
