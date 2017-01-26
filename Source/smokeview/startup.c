@@ -1205,6 +1205,10 @@ void initvars(void){
   }
 #endif
 
+  beam_color[0] = 255 * foregroundcolor[0];
+  beam_color[1] = 255 * foregroundcolor[1];
+  beam_color[2] = 255 * foregroundcolor[2];
+
   cos_geom_max_angle = cos(DEG2RAD*geom_max_angle);
   if(movie_filetype==WMV){
     strcpy(movie_ext, ".wmv");

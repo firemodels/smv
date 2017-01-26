@@ -10390,8 +10390,13 @@ int ReadINI2(char *inifile, int localfile){
     }
     if(Match(buffer, "BEAM") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f", &showbeam_as_line,&beam_line_width);
-      if(showbeam_as_line != 0)showbeam_as_line = 1;
+      sscanf(buffer, "%i %f %i %i %i %i",
+          &showbeam_as_line,&beam_line_width,&use_beamcolor,beam_color,beam_color+1,beam_color+2);
+      showbeam_as_line = CLAMP(showbeam_as_line,0,1);
+      use_beamcolor = CLAMP(use_beamcolor,0,1);
+      beam_color[0] = CLAMP(beam_color[0], 0, 255);
+      beam_color[1] = CLAMP(beam_color[1], 0, 255);
+      beam_color[2] = CLAMP(beam_color[2], 0, 255);
       continue;
     }
 
@@ -12451,7 +12456,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "BLOCKLOCATION\n");
   fprintf(fileout, " %i\n", blocklocation);
   fprintf(fileout, "BEAM\n");
-  fprintf(fileout, " %i %f\n", showbeam_as_line,beam_line_width);
+  fprintf(fileout, " %i %f %i %i %i %i\n", showbeam_as_line,beam_line_width,use_beamcolor,beam_color[0], beam_color[1], beam_color[2]);
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");
