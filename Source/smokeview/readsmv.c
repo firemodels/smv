@@ -1355,6 +1355,7 @@ void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, floa
     devicei->xyz2[1] = xyz2[1];
     devicei->xyz2[2] = xyz2[2];
   }
+  if(is_beam == 1)have_beam = 1;
   devicei->is_beam = is_beam;
   norm = sqrt(xyzn[0] * xyzn[0] + xyzn[1] * xyzn[1] + xyzn[2] * xyzn[2]);
   if (norm != 0.0) {
@@ -10387,6 +10388,13 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &blocklocation);
       continue;
     }
+    if(Match(buffer, "BEAM") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %f", &showbeam_as_line,&beam_line_width);
+      if(showbeam_as_line != 0)showbeam_as_line = 1;
+      continue;
+    }
+
     if(Match(buffer, "BLOCKSHININESS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &block_shininess);
@@ -12442,6 +12450,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", axislabels_smooth);
   fprintf(fileout, "BLOCKLOCATION\n");
   fprintf(fileout, " %i\n", blocklocation);
+  fprintf(fileout, "BEAM\n");
+  fprintf(fileout, " %i %f\n", showbeam_as_line,beam_line_width);
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");

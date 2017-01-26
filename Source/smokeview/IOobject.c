@@ -1267,6 +1267,17 @@ void draw_devices(void){
       glEnd();
       glPopMatrix();
     }
+    if(devicei->is_beam == 1&&showbeam_as_line==1){
+      unsigned char uc_foregroundcolor[3];
+
+      uc_foregroundcolor[0] = 255 * foregroundcolor[0];
+      uc_foregroundcolor[1] = 255 * foregroundcolor[1];
+      uc_foregroundcolor[2] = 255 * foregroundcolor[2];
+      glPopMatrix();
+      glLineWidth(beam_line_width);
+      drawline(devicei->xyz1, devicei->xyz2, uc_foregroundcolor);
+      continue;
+    }
     dpsi=0.0;
     if((active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN&&STRCMP(devicei->object->label,"smokesensor")==0)||
        STRCMP(devicei->object->label,"thermocouple")==0
