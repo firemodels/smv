@@ -190,6 +190,7 @@
 #define OBJECT_OUTLINE -4
 #define OBJECT_ORIENTATION -5
 #define OBJECT_MISSING -6
+#define OBJECT_SHOWBEAM -7
 
 void AddScriptList(char *file, int id);
 void UpdateGluiRender(void);
@@ -4690,6 +4691,11 @@ void ShowObjectsMenu(int value){
     show_device_orientation=1-show_device_orientation;
     update_device_orientation();
   }
+  else if(value == OBJECT_SHOWBEAM){
+    showbeam_as_line = 1 - showbeam_as_line;
+    void UpdateShowbeamAsLine(void);
+    UpdateShowbeamAsLine();
+  }
   else if(value==MENU_DUMMY){
   }
   else{
@@ -6001,6 +6007,14 @@ updatemenu=0;
     }
     else{
       glutAddMenuEntry(_("Show orientation"),OBJECT_ORIENTATION);
+    }
+    if(have_beam == 1){
+      if(showbeam_as_line == 1){
+        glutAddMenuEntry(_("*Show beam as line"), OBJECT_SHOWBEAM);
+      }
+      else{
+        glutAddMenuEntry(_("Show beam as line"), OBJECT_SHOWBEAM);
+      }
     }
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddSubMenu(_("Segments"),spheresegmentmenu);

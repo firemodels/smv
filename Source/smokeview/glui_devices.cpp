@@ -16,6 +16,7 @@
 #define DEVICE_close 3
 #define DEVICE_show_orientation 4
 #define DEVICE_NBUCKETS 5
+#define DEVICE_SHOWBEAM 6
 
 #define OPEN_UP 0
 #define OPEN_DOWN 1
@@ -54,6 +55,7 @@ GLUI_Checkbox *CHECKBOX_device_orientation = NULL;
 GLUI_Checkbox *CHECKBOX_vis_xtree = NULL;
 GLUI_Checkbox *CHECKBOX_vis_ytree = NULL;
 GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
+GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -85,12 +87,19 @@ GLUI_Rollout *ROLLOUT_trees = NULL;
 
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
+GLUI_Spinner *SPINNER_beam_line_width = NULL;
 GLUI_Spinner *SPINNER_mintreesize = NULL;
 #ifdef pp_PILOT
 GLUI_Spinner *SPINNER_npilot_buckets = NULL;
 #endif
 
 void Device_CB(int var);
+
+/* ------------------ UpdateShowbeamAsLine ------------------------ */
+
+extern "C" void UpdateShowbeamAsLine(void){
+  if(CHECKBOX_showbeam_as_line!=NULL)CHECKBOX_showbeam_as_line->set_int_val(showbeam_as_line);
+}
 
 /* ------------------ update_device_size ------------------------ */
 
@@ -136,6 +145,11 @@ extern "C" void glui_device_setup(int main_window){
     CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(PANEL_smvobjects,_d("Orientation"),&show_device_orientation,DEVICE_show_orientation,Device_CB);
     SPINNER_orientation_scale=glui_device->add_spinner_to_panel(PANEL_smvobjects,_d("Orientation scale"),GLUI_SPINNER_FLOAT,&orientation_scale);
     SPINNER_orientation_scale->set_float_limits(0.1,10.0);
+    if(have_beam){
+      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_smvobjects,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,Device_CB);
+      SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_smvobjects, _d("beam line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
+      SPINNER_beam_line_width->set_float_limits(1.0, 20.0);
+    }
 
     if(GetNumActiveDevices()>0||isZoneFireModel==1){
       PANEL_velocityvectors = glui_device->add_panel_to_panel(PANEL_objects, "Flow vectors", true);
@@ -321,6 +335,9 @@ void Device_CB(int var){
 
   updatemenu=1;
   switch(var){
+  case DEVICE_SHOWBEAM:
+    updatemenu=1;
+  break;
 #ifdef pp_PILOT
   case DEVICE_NBUCKETS:
 #ifdef pp_WINDROSE

@@ -266,7 +266,6 @@ EXTERNCPP void update_colorbarflip(void);
 
 EXTERNCPP void script_loadvolsmokeframe2(void);
 EXTERNCPP void script_loadisoframe2(scriptdata *scripti);
-EXTERNCPP void init_device(devicedata *devicei, float *xyz, float *xyzn, int state0, int nparams, float *params, char *labelptr);
 EXTERNCPP void init_device_plane(devicedata *devicei);
 EXTERNCPP void draw_devices_val(void);
 EXTERNCPP void getsmokesensors(void);

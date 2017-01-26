@@ -1303,10 +1303,96 @@ propdata *GetPropID(char *prop_id){
   return NULL;
 }
 
+/* ----------------------- init_device ----------------------------- */
+
+void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float *xyz2, float *xyzn, int state0, int nparams, float *params, char *labelptr) {
+  float norm;
+  int i;
+
+  devicei->nvals = 0;
+  devicei->filetype = -1;
+  devicei->in_zone_csv = 0;
+  devicei->in_devc_csv = 0;
+  devicei->labelptr = devicei->label;
+  devicei->color = NULL;
+  devicei->line_width = 1.0;
+  if (labelptr != NULL) {
+    strcpy(devicei->label, labelptr);
+  }
+  if (STRCMP(devicei->object->label, "plane") == 0) {
+    float color[4];
+
+    NewMemory((void **)&devicei->plane_surface, nmeshes * sizeof(isosurface *));
+    for (i = 0; i < nmeshes; i++) {
+      NewMemory((void **)&devicei->plane_surface[i], sizeof(isosurface));
+    }
+    if (nparams >= 3) {
+      color[0] = params[0];
+      color[1] = params[1];
+      color[2] = params[2];
+      color[3] = 1.0;
+      devicei->color = getcolorptr(color);
+    }
+    if (nparams >= 4) {
+      devicei->line_width = params[3];
+    }
+  }
+  else {
+    devicei->plane_surface = NULL;
+  }
+  if (xyz != NULL) {
+    devicei->xyz[0] = xyz[0];
+    devicei->xyz[1] = xyz[1];
+    devicei->xyz[2] = xyz[2];
+  }
+  if (xyz1 != NULL) {
+    devicei->xyz1[0] = xyz1[0];
+    devicei->xyz1[1] = xyz1[1];
+    devicei->xyz1[2] = xyz1[2];
+  }
+  if (xyz2 != NULL) {
+    devicei->xyz2[0] = xyz2[0];
+    devicei->xyz2[1] = xyz2[1];
+    devicei->xyz2[2] = xyz2[2];
+  }
+  if(is_beam == 1)have_beam = 1;
+  devicei->is_beam = is_beam;
+  norm = sqrt(xyzn[0] * xyzn[0] + xyzn[1] * xyzn[1] + xyzn[2] * xyzn[2]);
+  if (norm != 0.0) {
+    devicei->xyznorm[0] = xyzn[0] / norm;
+    devicei->xyznorm[1] = xyzn[1] / norm;
+    devicei->xyznorm[2] = xyzn[2] / norm;
+  }
+  else {
+    devicei->xyznorm[0] = 0.0;
+    devicei->xyznorm[1] = 0.0;
+    devicei->xyznorm[2] = 1.0;
+  }
+  devicei->times = NULL;
+  devicei->vals = NULL;
+  devicei->nstate_changes = 0;
+  devicei->istate_changes = 0;
+  devicei->act_times = NULL;
+  devicei->state_values = NULL;
+  devicei->showstatelist = NULL;
+  devicei->act_time = -1.0;
+  devicei->device_mesh = NULL;
+  devicei->state0 = state0;
+  devicei->nparams = nparams;
+  devicei->params = params;
+  devicei->ival = 0;
+  if (nparams > 0 && params != NULL) {
+    for (i = 0; i < nparams; i++) {
+      devicei->params[i] = params[i];
+    }
+  }
+}
+
 /* ------------------ parse_device_keyword ------------------------ */
 
 void parse_device_keyword(FILE *stream, devicedata *devicei){
   float xyz[3]={0.0,0.0,0.0}, xyzn[3]={0.0,0.0,0.0};
+  float xyz1[3] = { 0.0,0.0,0.0 }, xyz2[3] = { 0.0,0.0,0.0 };
   int state0=0;
   int nparams=0, nparams_textures=0;
   char *labelptr, *prop_id;
@@ -1314,6 +1400,7 @@ void parse_device_keyword(FILE *stream, devicedata *devicei){
   char buffer[255],*buffer3;
   int i;
   char *tok1, *tok2, *tok3;
+  int is_beam=0;
 
   devicei->type=DEVICE_DEVICE;
   fgets(buffer,255,stream);
@@ -1352,6 +1439,14 @@ void parse_device_keyword(FILE *stream, devicedata *devicei){
 
   sscanf(buffer,"%f %f %f %f %f %f %i %i %i",
     xyz,xyz+1,xyz+2,xyzn,xyzn+1,xyzn+2,&state0,&nparams,&nparams_textures);
+
+  labelptr = strchr(buffer, '#'); // read in coordinates of beam detector
+  if (labelptr != NULL) {
+    sscanf(labelptr + 1, "%f %f %f %f %f %f", xyz1, xyz1 + 1, xyz1 + 2, xyz2, xyz2 + 1, xyz2 + 2);
+    is_beam = 1;
+  }
+  devicei->is_beam = is_beam;
+
   GetLabels(buffer,-1,&prop_id,NULL,prop_buffer);
   devicei->prop=GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
@@ -1388,7 +1483,7 @@ void parse_device_keyword(FILE *stream, devicedata *devicei){
   }
 
   if(nparams<=0){
-    init_device(devicei,xyz,xyzn,state0,0,NULL,labelptr);
+    init_device(devicei,xyz,is_beam,xyz1,xyz2,xyzn,state0,0,NULL,labelptr);
   }
   else{
     float *params,*pc;
@@ -1404,7 +1499,7 @@ void parse_device_keyword(FILE *stream, devicedata *devicei){
       sscanf(buffer,"%f %f %f %f %f %f",pc,pc+1,pc+2,pc+3,pc+4,pc+5);
       pc+=6;
     }
-    init_device(devicei,xyz,xyzn,state0,nparams,params,labelptr);
+    init_device(devicei,xyz,is_beam,xyz1,xyz2,xyzn,state0,nparams,params,labelptr);
   }
   GetElevAz(devicei->xyznorm,&devicei->dtheta,devicei->rotate_axis,NULL);
   if(nparams_textures>0){
@@ -5795,7 +5890,7 @@ int ReadSMV(char *file, char *file2){
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
-          init_device(devicecopy,xyz,xyznorm,0,0,NULL,"target");
+          init_device(devicecopy,xyz,0,NULL,NULL,xyznorm,0,0,NULL,"target");
           devicecopy->prop=NULL;
 
           devicecopy++;
@@ -5872,7 +5967,7 @@ int ReadSMV(char *file, char *file2){
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
-          init_device(devicecopy,NULL,xyznorm,0,0,NULL,NULL);
+          init_device(devicecopy,NULL,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
 
           devicecopy++;
           ndeviceinfo++;
@@ -5950,7 +6045,7 @@ int ReadSMV(char *file, char *file2){
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
-          init_device(devicecopy,NULL,xyznorm,0,0,NULL,NULL);
+          init_device(devicecopy,NULL,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
           devicecopy->prop=NULL;
 
           devicecopy++;
@@ -6009,7 +6104,7 @@ int ReadSMV(char *file, char *file2){
         }
         GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
-        init_device(devicecopy,xyz,xyznorm,0,0,NULL,NULL);
+        init_device(devicecopy,xyz,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
 
         devicecopy++;
         ndeviceinfo++;
@@ -10293,6 +10388,13 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &blocklocation);
       continue;
     }
+    if(Match(buffer, "BEAM") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %f", &showbeam_as_line,&beam_line_width);
+      if(showbeam_as_line != 0)showbeam_as_line = 1;
+      continue;
+    }
+
     if(Match(buffer, "BLOCKSHININESS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &block_shininess);
@@ -12348,6 +12450,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", axislabels_smooth);
   fprintf(fileout, "BLOCKLOCATION\n");
   fprintf(fileout, " %i\n", blocklocation);
+  fprintf(fileout, "BEAM\n");
+  fprintf(fileout, " %i %f\n", showbeam_as_line,beam_line_width);
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");

@@ -1267,6 +1267,17 @@ void draw_devices(void){
       glEnd();
       glPopMatrix();
     }
+    if(devicei->is_beam == 1&&showbeam_as_line==1){
+      unsigned char uc_foregroundcolor[3];
+
+      uc_foregroundcolor[0] = 255 * foregroundcolor[0];
+      uc_foregroundcolor[1] = 255 * foregroundcolor[1];
+      uc_foregroundcolor[2] = 255 * foregroundcolor[2];
+      glPopMatrix();
+      glLineWidth(beam_line_width);
+      drawline(devicei->xyz1, devicei->xyz2, uc_foregroundcolor);
+      continue;
+    }
     dpsi=0.0;
     if((active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN&&STRCMP(devicei->object->label,"smokesensor")==0)||
        STRCMP(devicei->object->label,"thermocouple")==0
@@ -7230,79 +7241,6 @@ void init_device_plane(devicedata *devicei){
     SmoothIsoSurface(devicei->plane_surface[i]);
   }
 
-}
-
-/* ----------------------- init_device ----------------------------- */
-
-void init_device(devicedata *devicei, float *xyz, float *xyzn, int state0, int nparams, float *params, char *labelptr){
-  float norm;
-  int i;
-
-  devicei->nvals=0;
-  devicei->filetype=-1;
-  devicei->in_zone_csv=0;
-  devicei->in_devc_csv=0;
-  devicei->labelptr=devicei->label;
-  devicei->color=NULL;
-  devicei->line_width=1.0;
-  if(labelptr!=NULL){
-    strcpy(devicei->label,labelptr);
-  }
-  if(STRCMP(devicei->object->label,"plane")==0){
-    float color[4];
-
-    NewMemory( (void **)&devicei->plane_surface,nmeshes*sizeof(isosurface *));
-    for(i=0;i<nmeshes;i++){
-      NewMemory( (void **)&devicei->plane_surface[i],sizeof(isosurface));
-    }
-    if(nparams>=3){
-      color[0]=params[0];
-      color[1]=params[1];
-      color[2]=params[2];
-      color[3]=1.0;
-      devicei->color=getcolorptr(color);
-    }
-    if(nparams>=4){
-      devicei->line_width=params[3];
-    }
-  }
-  else{
-    devicei->plane_surface=NULL;
-  }
-  if(xyz!=NULL){
-    devicei->xyz[0]=xyz[0];
-    devicei->xyz[1]=xyz[1];
-    devicei->xyz[2]=xyz[2];
-  }
-  norm = sqrt(xyzn[0]*xyzn[0]+xyzn[1]*xyzn[1]+xyzn[2]*xyzn[2]);
-  if(norm!=0.0){
-    devicei->xyznorm[0]=xyzn[0]/norm;
-    devicei->xyznorm[1]=xyzn[1]/norm;
-    devicei->xyznorm[2]=xyzn[2]/norm;
-  }
-  else{
-    devicei->xyznorm[0]=0.0;
-    devicei->xyznorm[1]=0.0;
-    devicei->xyznorm[2]=1.0;
-  }
-  devicei->times=NULL;
-  devicei->vals=NULL;
-  devicei->nstate_changes=0;
-  devicei->istate_changes=0;
-  devicei->act_times=NULL;
-  devicei->state_values=NULL;
-  devicei->showstatelist=NULL;
-  devicei->act_time=-1.0;
-  devicei->device_mesh=NULL;
-  devicei->state0=state0;
-  devicei->nparams=nparams;
-  devicei->params=params;
-  devicei->ival=0;
-  if(nparams>0&&params!=NULL){
-    for(i=0;i<nparams;i++){
-      devicei->params[i]=params[i];
-    }
-  }
 }
 
 /* ----------------------- get_indep_var_indices ----------------------------- */
