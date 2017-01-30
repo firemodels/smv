@@ -9,7 +9,7 @@
 
 &DUMP NFRAMES=400 DT_PL3D=8.0, DT_SL3D=0.1 /
 
-&TIME T_END=10. /  Total simulation time
+&TIME T_END=40. /  Total simulation time
 
 &MATL ID                    = 'FABRIC'
       FYI                   = 'Properties completely fabricated'
