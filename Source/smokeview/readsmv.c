@@ -297,6 +297,7 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  meshi->light_depth = NULL;
   meshi->is_extface[0] = 1;
   meshi->is_extface[1] = 1;
   meshi->is_extface[2] = 1;

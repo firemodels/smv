@@ -230,6 +230,81 @@ else{\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
+  /* ------------------ InitLightDepth ------------------------ */
+
+int InitLightDepth(meshdata *meshi, float *xyz_light, int type) {
+  // type 0  xyz contains position of light
+  // type 1  xyz contains direction of light (infinitely far away)
+
+  int i;
+  float xyz[3];
+  float *xplt, *yplt, *zplt, dxyz[3], norm;
+
+  if (type == 1) {
+    dxyz[0] = xyz_light[0];
+    dxyz[1] = xyz_light[1];
+    dxyz[2] = xyz_light[2];
+    norm = NORM3(dxyz);
+    if (norm == 0.0)return 1;
+    VEC3DA(dxyz, norm);
+  }
+  if (update_boxbounds == 1) {
+    update_boxbounds = 0;
+    for (i = 0; i < nmeshes; i++) {
+      meshdata *meshii;
+      float *boxmin, *boxmax;
+
+      meshii = meshinfo + i;
+      boxmin = meshii->boxmin;
+      boxmax = meshii->boxmax;
+      if (i == 0) {
+        boxmin_global[0] = boxmin[0];
+        boxmin_global[1] = boxmin[1];
+        boxmin_global[2] = boxmin[2];
+        boxmax_global[0] = boxmax[0];
+        boxmax_global[1] = boxmax[1];
+        boxmax_global[2] = boxmax[2];
+      }
+      else {
+        boxmin_global[0] = MIN(boxmin_global[0], boxmin[0]);
+        boxmin_global[0] = MIN(boxmin_global[1], boxmin[1]);
+        boxmin_global[0] = MIN(boxmin_global[2], boxmin[2]);
+        boxmax_global[0] = MAX(boxmax_global[0], boxmax[0]);
+        boxmax_global[1] = MAX(boxmax_global[1], boxmax[1]);
+        boxmax_global[2] = MAX(boxmax_global[2], boxmax[2]);
+      }
+    }
+  }
+
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
+
+  for (i = 0; i <= meshi->ibar; i++) {
+    int j;
+
+    xyz[0] = xplt[i];
+    for (j = 0; j <= meshi->jbar; j++) {
+      int k;
+
+      xyz[1] = yplt[j];
+      for (k = 0; k <= meshi->kbar; k++) {
+        xyz[2] = zplt[k];
+        if (type == 0) {
+          dxyz[0] = xyz[0] - xyz_light[0];
+          dxyz[1] = xyz[1] - xyz_light[1];
+          dxyz[2] = xyz[2] - xyz_light[2];
+          norm = NORM3(dxyz);
+          if (norm != 0.0) {
+            VEC3DA(dxyz, norm);
+          }
+        }
+      }
+    }
+  }
+}
+
+
 /* ------------------ is_fire_or_soot ------------------------ */
 
 int is_fire_or_soot(smoke3ddata *smoke3di){
@@ -958,7 +1033,7 @@ void updatesmoke3d(smoke3ddata *smoke3di){
   ASSERT(countout==smoke3di->nchars_uncompressed);
 }
 
-/* ------------------ mergesmokecolors ------------------------ */
+/* ------------------ mergesmoke3dcolors ------------------------ */
 
 void mergesmoke3dcolors(smoke3ddata *smoke3dset){
   int i,j;
