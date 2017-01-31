@@ -1285,6 +1285,10 @@ void draw_devices(void){
       glPopMatrix();
       glLineWidth(beam_line_width);
       drawline(devicei->xyz1, devicei->xyz2, bc);
+      glPointSize(10.0);
+      glBegin(GL_POINTS);
+      glVertex3fv(devicei->xyz2);
+      glEnd();
       continue;
     }
     dpsi=0.0;
