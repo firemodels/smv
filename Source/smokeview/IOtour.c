@@ -558,46 +558,38 @@ void createtourpaths(void){
       xyz_view2 = nextkey->nodeval.xyz_view_abs;
 
       if(touri->periodic==0&&j==0){
-        keyj->s_eye[0]=0.0;
-        keyj->s_eye[1]=0.0;
-        keyj->s_eye[2]=0.0;
+        VEC3EQCONS(keyj->s_eye,0.0);
 
         keyj->s_az=0.0;
         keyj->s_elev=0.0;
         keyj->s_zoom=0.0;
 
-        VECDIFF3(keyj->d_eye,nexteye,thiseye);
+        VEC3DIFF(keyj->d_eye,nexteye,thiseye);
 
         keyj->d_az=nextkey->az_path - thiskey->az_path;
         keyj->d_zoom=nextkey->nodeval.zoom - thiskey->nodeval.zoom;
         keyj->d_elev=nextkey->nodeval.elev_path - thiskey->nodeval.elev_path;
 
-        keyj->s_xyz_view[0]=0.0;
-        keyj->s_xyz_view[1]=0.0;
-        keyj->s_xyz_view[2]=0.0;
+        VEC3EQCONS(keyj->s_xyz_view,0.0);
 
-        VECDIFF3(keyj->d_xyz_view,xyz_view2,xyz_view1);
+        VEC3DIFF(keyj->d_xyz_view,xyz_view2,xyz_view1);
       }
       else if(touri->periodic==0&&j==touri->nkeyframes-1){
-        VECDIFF3(keyj->s_eye,thiseye,lasteye);
+        VEC3DIFF(keyj->s_eye,thiseye,lasteye);
 
         keyj->s_az  =thiskey->az_path           - lastkey->az_path;
         keyj->s_zoom=thiskey->nodeval.zoom      - lastkey->nodeval.zoom;
         keyj->s_elev=thiskey->nodeval.elev_path - lastkey->nodeval.elev_path;
 
-        keyj->d_eye[0]=0.0;
-        keyj->d_eye[1]=0.0;
-        keyj->d_eye[2]=0.0;
+        VEC3EQCONS(keyj->d_eye,0.0);
 
         keyj->d_az=0.0;
         keyj->d_zoom=0.0;
         keyj->d_elev=0.0;
 
-        VECDIFF3(keyj->s_xyz_view,xyz_view1,xyz_view0);
+        VEC3DIFF(keyj->s_xyz_view,xyz_view1,xyz_view0);
 
-        keyj->d_xyz_view[0]=0.0;
-        keyj->d_xyz_view[1]=0.0;
-        keyj->d_xyz_view[2]=0.0;
+        VEC3EQCONS(keyj->d_xyz_view,0.0);
       }
       else{
         float sfactor, dfactor;
@@ -881,24 +873,22 @@ void createtourpaths(void){
         az = pj->az_path*DEG2RAD;
         ROTATE(dxyz2,dxyz,az);
         dxyz2[2] = tan(pj->elev_path*DEG2RAD)/10.0;
-        VECADD3(tour_view,eye,dxyz2);
+        VEC3ADD(tour_view,eye,dxyz2);
       }
       else{
         float dxyz[3], denom;
 
-        VECDIFF3(dxyz,xyz_view,eye);
+        VEC3DIFF(dxyz,xyz_view,eye);
         denom = 10.0*NORM3(dxyz);
         if (denom == 0.0)denom = 1.0;
         dxyz[0] /= denom;
         dxyz[1] /= denom;
         dxyz[2] /= denom;
-        VECADD3(tour_view,eye,dxyz);
+        VEC3ADD(tour_view,eye,dxyz);
       }
       if(iframe_old!=iframe_new){
         iframe_old=iframe_new;
-        pj->keysnap->tour_view[0]=tour_view[0];
-        pj->keysnap->tour_view[1]=tour_view[1];
-        pj->keysnap->tour_view[2]=tour_view[2];
+        VEC3EQ(pj->keysnap->tour_view,tour_view);
       }
     }
     for(keyj=kf1->next;keyj->next!=NULL;keyj=keyj->next){
@@ -1120,9 +1110,7 @@ void init_circulartour(void){
   for(j=0;j<nkeyframes;j++){
     key_az_path = 0.0;
     key_bank=0.0;
-    params[0] = 0.0;
-    params[1] = 0.0;
-    params[2] = 0.0;
+    VEC3EQCONS(params,0.0);
     if(nkeyframes == 1){
       angle_local = 0.0;
     }
@@ -1184,16 +1172,12 @@ tourdata *add_tour(char *label){
   NewMemory((void **)&touri->pathnodes,view_ntimes*sizeof(pathdata));
   NewMemory((void **)&touri->path_times,view_ntimes*sizeof(float));
 
-  key_view[0]=0.0;
-  key_view[1]=0.0;
-  key_view[2]=0.0;
+  VEC3EQCONS(key_view,0.0);
 
   key_az_path = 0.0;
   key_bank = 0.0;
   elev_path=0.0;
-  params[0] = 0.0;
-  params[1] = 0.0;
-  params[2] = 0.0;
+  VEC3EQCONS(params,0.0);
   viewtype=0;
   zoom_local=1.0;
 
@@ -1355,7 +1339,7 @@ void xyzview2azelev(keyframe *kf, float *az_path, float *elev_path){
   eye = kf->nodeval.eye;
   xyz_view = kf->nodeval.xyz_view_abs;
 
-  VECDIFF3(dxyz,xyz_view,eye);
+  VEC3DIFF(dxyz,xyz_view,eye);
 
   distxy = NORM2(dxyz);
   if(distxy<=0.0)return;

@@ -11370,7 +11370,7 @@ int ReadINI2(char *inifile, int localfile){
             float *rgbtemp;
 
             rgbtemp = ticki->rgb;
-            VECEQCONS(rgbtemp, -1.0);
+            VEC3EQCONS(rgbtemp, -1.0);
             ticki->width = -1.0;
             sscanf(buffer, "%f %i %f %f %f %f", &ticki->dlength, &ticki->dir, rgbtemp, rgbtemp + 1, rgbtemp + 2, &ticki->width);
             if(rgbtemp[0]<0.0 || rgbtemp[0]>1.0 ||
@@ -11392,7 +11392,7 @@ int ReadINI2(char *inifile, int localfile){
             length = 1.0;
           }
           ticki->length = sqrt(length);
-          VECEQCONS(dxyz, 0.0);
+          VEC3EQCONS(dxyz, 0.0);
           switch(ticki->dir){
           case XLEFT:
           case XRIGHT:

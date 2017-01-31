@@ -515,9 +515,9 @@ void draw_geom(int flag, int timestate){
           v0 = xyzptr[facelist[3 * k]];
           v1 = xyzptr[facelist[3 * k + 1]];
           v2 = xyzptr[facelist[3 * k + 2]];
-          VECDIFF3(v1m0, v1, v0);
-          VECDIFF3(v2m0, v2, v0);
-          VECDIFF3(v2m1, v2, v1);
+          VEC3DIFF(v1m0, v1, v0);
+          VEC3DIFF(v2m0, v2, v0);
+          VEC3DIFF(v2m1, v2, v1);
           CROSS(vcross, v1m0, v2m0);
 
           for(kk = 0; kk < 3; kk++){
@@ -645,9 +645,9 @@ void draw_geom(int flag, int timestate){
             pknorm = pk->vert_norm;
             xyzval = xyzptr[ind[k]];
 
-            VECEQ3(xyzval2, pknorm);
+            VEC3EQ(xyzval2, pknorm);
             VEC3MA(xyzval2, geom_outline_offset);
-            VECADD3(xyzval2, xyzval2, xyzval);
+            VEC3ADD(xyzval2, xyzval2, xyzval);
             glVertex3fv(xyzval2);
           }
         }
@@ -913,18 +913,14 @@ void smooth_geom_normals(geomlistdata *geomlisti, int geomtype){
 
     verti = geomlisti->verts + i;
     norm = verti->vert_norm;
-    norm[0] = 0.0;
-    norm[1] = 0.0;
-    norm[2] = 0.0;
+    VEC3EQCONS(norm,0.0);
     for(k = 0; k < verti->ntriangles; k++){
       float *normk;
       tridata *trianglei;
 
       trianglei = verti->triangles[k];
       normk = trianglei->tri_norm;
-      norm[0] += normk[0];
-      norm[1] += normk[1];
-      norm[2] += normk[2];
+      VEC3ADD(norm,norm,normk);
     }
     ReduceToUnit(norm);
 
@@ -949,9 +945,7 @@ void smooth_geom_normals(geomlistdata *geomlisti, int geomtype){
       vertj = trianglei->verts[j];
       norm = trianglei->vert_norm + 3 * j;
       if(vertj->ntriangles>0){
-        norm[0] = 0.0;
-        norm[1] = 0.0;
-        norm[2] = 0.0;
+        VEC3EQCONS(norm,0.0);
       }
       else{
         norm[0] = 0.0;
@@ -967,9 +961,7 @@ void smooth_geom_normals(geomlistdata *geomlisti, int geomtype){
         tri_normk = trianglek->tri_norm;
         cosang = DOT3(tri_normk, tri_normi)/(NORM3(tri_normk)*NORM3(tri_normi));
         if(use_max_angle==0||geomtype==GEOM_ISO||cosang>cos_geom_max_angle){ // smooth using all triangles if an isosurface
-          norm[0] += tri_normk[0];
-          norm[1] += tri_normk[1];
-          norm[2] += tri_normk[2];
+          VEC3ADD(norm,norm,tri_normk);
         }
       }
       ReduceToUnit(norm);
@@ -1193,9 +1185,7 @@ void update_triangles(int flag,int update){
           verti = surface_verts[iii];
           xyzi = verti->xyz;
           normi = verti->vert_norm;
-          avgnorm[0] = normi[0];
-          avgnorm[1] = normi[1];
-          avgnorm[2] = normi[2];
+          VEC3EQ(avgnorm,normi);
           match_verts[iii] = iii;
           for(jjj = iii+1; jjj<nsurface_verts; jjj++){
             vertdata *vertj;
@@ -1208,9 +1198,7 @@ void update_triangles(int flag,int update){
 #define POINTEPS 0.001
             if(ABS(xyzi[0]-xyzj[0])<POINTEPS&&ABS(xyzi[1]-xyzj[1])<POINTEPS&&ABS(xyzi[2]-xyzj[2])<POINTEPS){
               match_verts[jjj] = iii;
-              avgnorm[0] += normj[0];
-              avgnorm[1] += normj[1];
-              avgnorm[2] += normj[2];
+              VEC3ADD(avgnorm,avgnorm,normj);
             }
           }
           ReduceToUnit(avgnorm);
@@ -1221,9 +1209,7 @@ void update_triangles(int flag,int update){
 
               vertj = surface_verts[jjj];
               normj = vertj->vert_norm;
-              normj[0] = avgnorm[0];
-              normj[1] = avgnorm[1];
-              normj[2] = avgnorm[2];
+              VEC3EQ(normj,avgnorm);
             }
           }
         }
@@ -1837,14 +1823,10 @@ void reorder_face(int *faces){
   face_temp[4]=faces[1];
   if(faces[0]<=MIN(faces[1],faces[2]))return;
   if(faces[1]<=MIN(faces[0],faces[2])){
-    faces[0]=face_temp[1];
-    faces[1]=face_temp[2];
-    faces[2]=face_temp[3];
+    VEC3EQ(faces,face_temp);
     return;
   }
-  faces[0]=face_temp[2];
-  faces[1]=face_temp[3];
-  faces[2]=face_temp[4];
+  VEC3EQ(faces,face_temp);
 }
 
 /* ------------------ Compare_Verts2 ------------------------ */
