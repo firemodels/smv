@@ -302,6 +302,7 @@ int InitLightDepth(meshdata *meshi, float *xyz_light, int type) {
       }
     }
   }
+  return 0;
 }
 
 
