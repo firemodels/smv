@@ -240,6 +240,9 @@ void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, f
   float tval = TMAX, length3[3];
   int i;
 
+  // shoot a ray from xyz1 in direction dxyz and intersect with bounding box of all meshes.  return intersection in xyz2
+  // if light position is within bounding box then return its position in xyz2
+
   for (i = 0; i < 3; i++) {
     if (dxyz[i] != 0.0) {
       float tval1;
@@ -268,11 +271,11 @@ void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, f
   *length = NORM3(length3);
 }
 
-/* ------------------ InitLightDepth ------------------------ */
+/* ------------------ InitLightFraction ------------------------ */
 
-int InitLightDepth(meshdata *meshi, float *xyz_light, int light_type){
-  // type 0  xyz contains position of light
-  // type 1  xyz contains direction of light (infinitely far away)
+int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
+  // type LOCAL_LIGHT     xyz contains position of light
+  // type INFINITE_LIGHT  xyz contains direction of light (infinitely far away)
 
   int i;
   float xyz1[3],xyz2[3];
