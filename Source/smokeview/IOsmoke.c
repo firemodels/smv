@@ -230,6 +230,132 @@ else{\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
+#define LOCAL_LIGHT 0
+#define INFINITE_LIGHT 1
+#define TMAX 1000000000.0
+
+  /* ------------------ boxline ------------------------ */
+
+void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length) {
+  float tval = TMAX, length3[3];
+  int i;
+
+  // shoot a ray from xyz1 in direction dxyz and intersect with bounding box of all meshes.  return intersection in xyz2
+  // if light position is within bounding box then return its position in xyz2
+
+  for (i = 0; i < 3; i++) {
+    if (dxyz[i] != 0.0) {
+      float tval1;
+
+      tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
+      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
+      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+    }
+  }
+  if (tval >= TMAX) tval = 0.0;
+  xyz2[0] = xyz1[0] + tval*dxyz[0];
+  xyz2[1] = xyz1[1] + tval*dxyz[1];
+  xyz2[2] = xyz1[2] + tval*dxyz[2];
+
+  if (light_type == LOCAL_LIGHT) {
+    float dxyz2[3], dxyzlight[3];
+
+    VEC3DIFF(dxyz2, xyz2, xyz1);
+    VEC3DIFF(dxyzlight, xyz_light, xyz1);
+    if (DOT3(dxyzlight,dxyzlight) < DOT3(dxyz2,dxyz2)) {
+      VEC3EQ(xyz2, xyz_light);
+    }
+  }
+  VEC3DIFF(length3, xyz2, xyz1);
+  *length = NORM3(length3);
+}
+
+/* ------------------ InitLightFraction ------------------------ */
+
+int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
+  // type LOCAL_LIGHT     xyz contains position of light
+  // type INFINITE_LIGHT  xyz contains direction of light (infinitely far away)
+
+  int i;
+  float xyz1[3],xyz2[3];
+  float *xplt, *yplt, *zplt, dxyz[3];
+  int ibar, jbar, kbar;
+
+  if(update_boxbounds == 1){
+    update_boxbounds = 0;
+    for(i = 0; i < nmeshes; i++){
+      meshdata *meshii;
+      float *boxmin, *boxmax, *xp, *yp, *zp;
+
+      meshii = meshinfo + i;
+      boxmin = meshii->boxmin;
+      boxmax = meshii->boxmax;
+      xp = meshii->xplt_orig;
+      yp = meshii->yplt_orig;
+      zp = meshii->zplt_orig;
+      if(i == 0){
+        VEC3EQ(boxmin_global, boxmin);
+        VEC3EQ(boxmax_global, boxmax);
+        dlength = xp[1] - xp[0];
+      }
+      else{
+        boxmin_global[0] = MIN(boxmin_global[0], boxmin[0]);
+        boxmin_global[1] = MIN(boxmin_global[1], boxmin[1]);
+        boxmin_global[2] = MIN(boxmin_global[2], boxmin[2]);
+        boxmax_global[0] = MAX(boxmax_global[0], boxmax[0]);
+        boxmax_global[1] = MAX(boxmax_global[1], boxmax[1]);
+        boxmax_global[2] = MAX(boxmax_global[2], boxmax[2]);
+      }
+      dlength = MIN(dlength, xp[1] - xp[0]);
+      dlength = MIN(dlength, yp[1] - yp[0]);
+      dlength = MIN(dlength, zp[1] - zp[0]);
+    }
+  }
+  if (light_type == INFINITE_LIGHT) {
+    float norm;
+
+    VEC3EQ(dxyz, xyz_light);
+    norm = NORM3(dxyz);
+    if (norm == 0.0)return 1;
+    VEC3DA(dxyz, norm);
+  }
+
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  kbar = meshi->kbar;
+
+  for(i = 0; i <= ibar; i++){
+    int j;
+
+    xyz1[0] = xplt[i];
+    for(j = 0; j <= jbar; j++){
+      int k;
+
+      xyz1[1] = yplt[j];
+      for(k = 0; k <= kbar; k++){
+        float dxyz2[3], dxyzlight[3], length;
+        int nlength;
+        float ddlength;
+
+        xyz1[2] = zplt[k];
+        if(light_type == LOCAL_LIGHT){
+          VEC3DIFF(dxyz, xyz1, xyz_light);
+          NORMALIZE3(dxyz);
+        }
+        GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
+        nlength = length / dlength + 1;
+        ddlength = length / (float)(nlength - 1);
+      }
+    }
+  }
+  return 0;
+}
+
+
 /* ------------------ is_fire_or_soot ------------------------ */
 
 int is_fire_or_soot(smoke3ddata *smoke3di){
@@ -589,7 +715,7 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
       int free_iblank_smoke3d;
 
       free_iblank_smoke3d = 1;
-      for (j = 0; j < nsmoke3dinfo; j++){
+      for(j = 0; j < nsmoke3dinfo; j++){
         smoke3ddata *smoke3dj;
         meshdata *meshj;
 
@@ -958,7 +1084,7 @@ void updatesmoke3d(smoke3ddata *smoke3di){
   ASSERT(countout==smoke3di->nchars_uncompressed);
 }
 
-/* ------------------ mergesmokecolors ------------------------ */
+/* ------------------ mergesmoke3dcolors ------------------------ */
 
 void mergesmoke3dcolors(smoke3ddata *smoke3dset){
   int i,j;
