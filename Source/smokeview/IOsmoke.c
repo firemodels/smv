@@ -230,75 +230,122 @@ else{\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
-  /* ------------------ InitLightDepth ------------------------ */
+#define LOCAL_LIGHT 0
+#define INFINITE_LIGHT 1
+#define TMAX 1000000000.0
 
-int InitLightDepth(meshdata *meshi, float *xyz_light, int type) {
+  /* ------------------ boxline ------------------------ */
+
+void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length) {
+  float tval = TMAX, length3[3];
+  int i;
+
+  for (i = 0; i < 3; i++) {
+    if (dxyz[i] != 0.0) {
+      float tval1;
+
+      tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
+      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
+      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+    }
+  }
+  if (tval >= TMAX) tval = 0.0;
+  xyz2[0] = xyz1[0] + tval*dxyz[0];
+  xyz2[1] = xyz1[1] + tval*dxyz[1];
+  xyz2[2] = xyz1[2] + tval*dxyz[2];
+
+  if (light_type == LOCAL_LIGHT) {
+    float dxyz2[3], dxyzlight[3];
+
+    VEC3DIFF(dxyz2, xyz2, xyz1);
+    VEC3DIFF(dxyzlight, xyz_light, xyz1);
+    if (DOT3(dxyzlight,dxyzlight) < DOT3(dxyz2,dxyz2)) {
+      VEC3EQ(xyz2, xyz_light);
+    }
+  }
+  VEC3DIFF(length3, xyz2, xyz1);
+  *length = NORM3(length3);
+}
+
+/* ------------------ InitLightDepth ------------------------ */
+
+int InitLightDepth(meshdata *meshi, float *xyz_light, int light_type){
   // type 0  xyz contains position of light
   // type 1  xyz contains direction of light (infinitely far away)
 
   int i;
-  float xyz[3];
-  float *xplt, *yplt, *zplt, dxyz[3], norm;
+  float xyz1[3],xyz2[3];
+  float *xplt, *yplt, *zplt, dxyz[3];
+  int ibar, jbar, kbar;
 
-  if (type == 1) {
-    dxyz[0] = xyz_light[0];
-    dxyz[1] = xyz_light[1];
-    dxyz[2] = xyz_light[2];
-    norm = NORM3(dxyz);
-    if (norm == 0.0)return 1;
-    VEC3DA(dxyz, norm);
-  }
-  if (update_boxbounds == 1) {
+  if(update_boxbounds == 1){
     update_boxbounds = 0;
-    for (i = 0; i < nmeshes; i++) {
+    for(i = 0; i < nmeshes; i++){
       meshdata *meshii;
-      float *boxmin, *boxmax;
+      float *boxmin, *boxmax, *xp, *yp, *zp;
 
       meshii = meshinfo + i;
       boxmin = meshii->boxmin;
       boxmax = meshii->boxmax;
-      if (i == 0) {
-        boxmin_global[0] = boxmin[0];
-        boxmin_global[1] = boxmin[1];
-        boxmin_global[2] = boxmin[2];
-        boxmax_global[0] = boxmax[0];
-        boxmax_global[1] = boxmax[1];
-        boxmax_global[2] = boxmax[2];
+      xp = meshii->xplt_orig;
+      yp = meshii->yplt_orig;
+      zp = meshii->zplt_orig;
+      if(i == 0){
+        VEC3EQ(boxmin_global, boxmin);
+        VEC3EQ(boxmax_global, boxmax);
+        dlength = xp[1] - xp[0];
       }
-      else {
+      else{
         boxmin_global[0] = MIN(boxmin_global[0], boxmin[0]);
-        boxmin_global[0] = MIN(boxmin_global[1], boxmin[1]);
-        boxmin_global[0] = MIN(boxmin_global[2], boxmin[2]);
+        boxmin_global[1] = MIN(boxmin_global[1], boxmin[1]);
+        boxmin_global[2] = MIN(boxmin_global[2], boxmin[2]);
         boxmax_global[0] = MAX(boxmax_global[0], boxmax[0]);
         boxmax_global[1] = MAX(boxmax_global[1], boxmax[1]);
         boxmax_global[2] = MAX(boxmax_global[2], boxmax[2]);
       }
+      dlength = MIN(dlength, xp[1] - xp[0]);
+      dlength = MIN(dlength, yp[1] - yp[0]);
+      dlength = MIN(dlength, zp[1] - zp[0]);
     }
+  }
+  if (light_type == INFINITE_LIGHT) {
+    float norm;
+
+    VEC3EQ(dxyz, xyz_light);
+    norm = NORM3(dxyz);
+    if (norm == 0.0)return 1;
+    VEC3DA(dxyz, norm);
   }
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  kbar = meshi->kbar;
 
-  for (i = 0; i <= meshi->ibar; i++) {
+  for(i = 0; i <= ibar; i++){
     int j;
 
-    xyz[0] = xplt[i];
-    for (j = 0; j <= meshi->jbar; j++) {
+    xyz1[0] = xplt[i];
+    for(j = 0; j <= jbar; j++){
       int k;
 
-      xyz[1] = yplt[j];
-      for (k = 0; k <= meshi->kbar; k++) {
-        xyz[2] = zplt[k];
-        if (type == 0) {
-          dxyz[0] = xyz[0] - xyz_light[0];
-          dxyz[1] = xyz[1] - xyz_light[1];
-          dxyz[2] = xyz[2] - xyz_light[2];
-          norm = NORM3(dxyz);
-          if (norm != 0.0) {
-            VEC3DA(dxyz, norm);
-          }
+      xyz1[1] = yplt[j];
+      for(k = 0; k <= kbar; k++){
+        float dxyz2[3], dxyzlight[3], length;
+        int nlength;
+        float ddlength;
+
+        xyz1[2] = zplt[k];
+        if(light_type == LOCAL_LIGHT){
+          VEC3DIFF(dxyz, xyz1, xyz_light);
+          NORMALIZE3(dxyz);
         }
+        GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
+        nlength = length / dlength + 1;
+        ddlength = length / (float)(nlength - 1);
       }
     }
   }
@@ -665,7 +712,7 @@ void readsmoke3d(int ifile,int flag, int *errorcode){
       int free_iblank_smoke3d;
 
       free_iblank_smoke3d = 1;
-      for (j = 0; j < nsmoke3dinfo; j++){
+      for(j = 0; j < nsmoke3dinfo; j++){
         smoke3ddata *smoke3dj;
         meshdata *meshj;
 
