@@ -12,7 +12,7 @@
 
 /* ------------------ GetHistogramCDF ------------------------ */
 
-float GetHistogramCDF(histogramdata *histogram, float val) {
+float GetHistogramCDF(histogramdata *histogram, float val){
   int i;
   int cutoff;
   float sum = 0;
@@ -20,7 +20,7 @@ float GetHistogramCDF(histogramdata *histogram, float val) {
   if(histogram->val_max <= histogram->val_min)return 1.0;
 
   cutoff = (val - histogram->val_min)*(float)histogram->nbuckets / (histogram->val_max - histogram->val_min);
-  for (i = 0; i < cutoff; i++) {
+  for(i = 0; i < cutoff; i++){
     sum += histogram->buckets[i];
   }
   return (float)sum / (float)histogram->ntotal;
@@ -76,16 +76,16 @@ void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax){
   }
   histogram->defined = 0.0;
   histogram->ntotal = 0;
-  if (valmin != NULL) {
+  if(valmin != NULL){
     histogram->val_min = *valmin;
   }
-  else {
+  else{
     histogram->val_min = (float)pow(10.0, 20.0);
   }
-  if (valmax != NULL) {
+  if(valmax != NULL){
     histogram->val_max = *valmax;
   }
-  else {
+  else{
     histogram->val_max = -(float)pow(10.0, 20.0);
   }
   histogram->complete = 0;
@@ -279,7 +279,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
   histogram_to->defined=1;
   valmin_new = histogram_to->val_min;
   valmax_new = histogram_to->val_max;
-  if (reset_bounds == MERGE_BOUNDS) {
+  if(reset_bounds == MERGE_BOUNDS){
     valmin_new = MIN(valmin_new, histogram_from->val_min);
     valmax_new = MAX(valmax_new, histogram_from->val_max);
   }
@@ -300,7 +300,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
   }
   else{
     for(i=0;i<histogram_to->nbuckets;i++){
-      if(bucket_to_copy[i]!=0) {
+      if(bucket_to_copy[i]!=0){
         float val;
         int ival;
 
@@ -341,16 +341,16 @@ void ResetHistogramPolar(histogramdata *histogram, float *rmin, float *rmax){
   }
   histogram->defined = 0;
   histogram->ntotal = 0;
-  if (rmin != NULL) {
+  if(rmin != NULL){
     histogram->val_rmin = *rmin;
   }
-  else {
+  else{
     histogram->val_rmin = (float)pow(10.0, 20.0);
   }
-  if (rmax != NULL) {
+  if(rmax != NULL){
     histogram->val_rmax = *rmax;
   }
-  else {
+  else{
     histogram->val_rmax = -(float)pow(10.0, 20.0);
   }
   histogram->val_thetamin = 0.0;
@@ -418,7 +418,7 @@ void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax, int flag)
   int i;
   float rrmin, rrmax;
 
-  if (nvals <= 0 || rmin == NULL || rmax == NULL)return;
+  if(nvals <= 0 || rmin == NULL || rmax == NULL)return;
   if(flag == HIST_USE_BOUNDS){
     rrmin = *rmin;
     rrmax = *rmax;

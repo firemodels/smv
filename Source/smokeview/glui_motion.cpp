@@ -1924,10 +1924,10 @@ void Render_CB(int var){
       break;
     case RENDER_START:
       if(render_360 == 1)render_mode = RENDER_360;
-      if (render_frame != NULL) {
+      if(render_frame != NULL){
         int i;
 
-        for (i = 0; i < nglobal_times; i++) {
+        for(i = 0; i < nglobal_times; i++){
           render_frame[i] = 0;
         }
       }
@@ -1938,7 +1938,7 @@ void Render_CB(int var){
         if(nrender_rows==1&& render_mode != RENDER_360){
           RenderMenu(RENDER_CURRENT_SINGLE);
         }
-        else if (render_mode == RENDER_360) {
+        else if(render_mode == RENDER_360){
           if(glui_screenWidth!=glui_screenHeight){
             glui_screenWidth = MAX(glui_screenWidth,glui_screenHeight);
             glui_screenHeight = MAX(glui_screenWidth,glui_screenHeight);

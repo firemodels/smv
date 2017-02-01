@@ -822,7 +822,7 @@ void draw_geom(int flag, int timestate){
 
     // geometry diagnostics
 
-    if(geomlisti->nedges>0 && (highlight_edge0 == 1||highlight_edge1 == 1 || highlight_edge2 == 1 || highlight_edgeother == 1)) {
+    if(geomlisti->nedges>0 && (highlight_edge0 == 1||highlight_edge1 == 1 || highlight_edge2 == 1 || highlight_edgeother == 1)){
       int ii;
 
       glPushMatrix();
@@ -830,7 +830,7 @@ void draw_geom(int flag, int timestate){
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glBegin(GL_LINES);
 
-      for (ii = 0; ii < geomlisti->nedges; ii++) {
+      for(ii = 0; ii < geomlisti->nedges; ii++){
         edgedata *edgei;
         float *xyz0, *xyz1;
         vertdata *v0, *v1;
@@ -844,13 +844,13 @@ void draw_geom(int flag, int timestate){
            (highlight_edge1==1&&edgei->ntriangles==1)||
            (highlight_edge2==1&&edgei->ntriangles==2)||
            (highlight_edgeother==1&&edgei->ntriangles>2)){
-          if(edgei->ntriangles > 2) {
+          if(edgei->ntriangles > 2){
             glColor3fv(cyan);
           }
-          else if(edgei->ntriangles == 1) {
+          else if(edgei->ntriangles == 1){
             glColor3fv(green);
           }
-          else {
+          else{
             glColor3fv(blue);
           }
           glVertex3fv(xyz0);
@@ -862,7 +862,7 @@ void draw_geom(int flag, int timestate){
       glPopMatrix();
 
     }
-    if(geomlisti->nverts>0 && highlight_vertexdup == 1) {
+    if(geomlisti->nverts>0 && highlight_vertexdup == 1){
       int ii;
 
       glPushMatrix();
@@ -873,11 +873,11 @@ void draw_geom(int flag, int timestate){
 
       glColor3fv(magenta);
 
-      for (ii = 0; ii < geomlisti->nverts; ii++) {
+      for(ii = 0; ii < geomlisti->nverts; ii++){
         vertdata *verti;
 
         verti = geomlisti->verts + ii;
-        if(verti->isdup == 1) {
+        if(verti->isdup == 1){
           float *xyz;
 
           xyz = verti->xyz;
@@ -1833,7 +1833,7 @@ void reorder_face(int *faces){
 
 #define VERT_EPS 0.001
 
-int Compare_Verts2(const void *arg1, const void *arg2) {
+int Compare_Verts2(const void *arg1, const void *arg2){
   vertdata *vert1, *vert2;
   float *xyz1, *xyz2;
 
@@ -1856,7 +1856,7 @@ int Compare_Verts2(const void *arg1, const void *arg2) {
 
 /* ------------------ Compare_Edges ------------------------ */
 
-int Compare_Edges(const void *arg1, const void *arg2) {
+int Compare_Edges(const void *arg1, const void *arg2){
   edgedata *edge1, *edge2;
   int *v1, *v2;
 
@@ -1875,7 +1875,7 @@ int Compare_Edges(const void *arg1, const void *arg2) {
 
 /* ------------------ Compare_Edges2 ------------------------ */
 
-int Compare_Edges2(edgedata *edge1, edgedata *edge2) {
+int Compare_Edges2(edgedata *edge1, edgedata *edge2){
   int *v1, *v2;
 
   v1 = edge1->vert_index;
@@ -1956,7 +1956,7 @@ int Compare_Volume_Faces(const void *arg1, const void *arg2){
 
 /* ------------------ get_edge ------------------------ */
 
-edgedata *get_edge(edgedata *edges, int nedges, int iv1, int iv2) {
+edgedata *get_edge(edgedata *edges, int nedges, int iv1, int iv2){
   int iresult;
   edgedata ei, *elow, *emid, *ehigh;
   int low, mid, high;
@@ -1978,12 +1978,12 @@ edgedata *get_edge(edgedata *edges, int nedges, int iv1, int iv2) {
 
   low = 0;
   high = nedges - 1;
-  while(high - low > 1) {
+  while(high - low > 1){
     mid = (low + high) / 2;
     emid = edges + mid;
     iresult = Compare_Edges2(&ei, emid);
     if(iresult == 0)return emid;
-    if(iresult > 0) {
+    if(iresult > 0){
       low = mid;
     }
     else{
@@ -2119,7 +2119,7 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
 
       FREEMEMORY(facelist_index);
     }
-    if(ntriangles > 0) {
+    if(ntriangles > 0){
       edgedata *edges, *edges2;
       tridata *triangles;
       int ii;
@@ -2135,11 +2135,11 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
 
       nedgelist_index = 3 * ntris;
       NewMemory((void **)&edgelist_index, nedgelist_index * sizeof(int));
-      for (ii = 0; ii < nedgelist_index; ii++) {
+      for(ii = 0; ii < nedgelist_index; ii++){
         edgelist_index[ii] = ii;
       }
 
-      for (ii = 0; ii<ntris; ii++) {
+      for(ii = 0; ii<ntris; ii++){
         int i0, i1, i2;
 
         i0 = triangles[ii].vert_index[0];
@@ -2164,7 +2164,7 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
       edges2[nedges].vert_index[0] = edges[edgelist_index[nedges]].vert_index[0];
       edges2[nedges].vert_index[1] = edges[edgelist_index[nedges]].vert_index[1];
       nedges++;
-      for (ii = 1; ii < nedgelist_index; ii++) {
+      for(ii = 1; ii < nedgelist_index; ii++){
         int jj;
 
         if(Compare_Edges(edgelist_index + ii - 1, edgelist_index + ii)==0)continue;
@@ -2180,13 +2180,13 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
       FREEMEMORY(edges);
       edges = edges2;
 
-      for (ii = 0; ii < nedges; ii++) {
+      for(ii = 0; ii < nedges; ii++){
         edges[ii].ntriangles = 0;
       }
 
       // count triangles associated with each edge
 
-      for (ii = 0; ii<ntris; ii++) {
+      for(ii = 0; ii<ntris; ii++){
         edgedata *edgei;
         int *vi;
 
@@ -2203,11 +2203,11 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
       ntri1 = 0;
       ntri2 = 0;
       ntri_other = 0;
-      for (ii = 0; ii < nedges; ii++) {
+      for(ii = 0; ii < nedges; ii++){
         edgedata *edgei;
 
         edgei = edges + ii;
-        switch (edgei->ntriangles) {
+        switch (edgei->ntriangles){
         case 0:
           ntri0++;
           break;
@@ -2232,7 +2232,7 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
 #endif
       FREEMEMORY(edgelist_index);
     }
-    if(nverts > 0) {
+    if(nverts > 0){
       int *vertlist_index, nvertlist_index = 0;
       vertdata *verts;
       int ii, ndups;
@@ -2240,19 +2240,19 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
       verts = geomlisti->verts;
       nvertlist_index = nverts;
       NewMemory((void **)&vertlist_index, nvertlist_index * sizeof(int));
-      for (ii = 0; ii < nvertlist_index; ii++) {
+      for(ii = 0; ii < nvertlist_index; ii++){
         vertlist_index[ii] = ii;
       }
       vert_list = verts;
       qsort(vertlist_index, nvertlist_index, sizeof(int), Compare_Verts2);
-      for (ii = 0; ii < nvertlist_index; ii++) {
+      for(ii = 0; ii < nvertlist_index; ii++){
         vertdata *vi;
 
         vi = verts + ii;
         vi->isdup = 0;
       }
-      for (ii = 1; ii < nvertlist_index; ii++) {
-        if(Compare_Verts2(vertlist_index + ii - 1, vertlist_index + ii) == 0) {
+      for(ii = 1; ii < nvertlist_index; ii++){
+        if(Compare_Verts2(vertlist_index + ii - 1, vertlist_index + ii) == 0){
           vertdata *v1, *v2;
           int jj1, jj2;
 
@@ -2266,7 +2266,7 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
         }
       }
       ndups = 0;
-      for (ii = 0; ii < nvertlist_index; ii++) {
+      for(ii = 0; ii < nvertlist_index; ii++){
         vertdata *vi;
 
         vi = verts + ii;
@@ -3398,7 +3398,7 @@ void init_geom(geomdata *geomi,int geomtype, int fdsblock){
 }
 /* ------------------ rotateu2v ------------------------ */
 
-void rotateu2v(float *u, float *v, float *axis, float *angle) {
+void rotateu2v(float *u, float *v, float *axis, float *angle){
   float sum, cosangle, normu, normv;
 
   /*
@@ -3411,14 +3411,14 @@ void rotateu2v(float *u, float *v, float *axis, float *angle) {
   sum = NORM3(axis);
   normu = NORM3(u);
   normv = NORM3(v);
-  if(sum>0.0&&normu>0.0&&normv>0.0) {
+  if(sum>0.0&&normu>0.0&&normv>0.0){
     axis[0] /= sum;
     axis[1] /= sum;
     axis[2] /= sum;
     cosangle = CLAMP(DOT3(u, v) / (normu*normv), -1.0, 1.0);
     *angle = acos(cosangle);
   }
-  else {
+  else{
     axis[0] = 0.0;
     axis[1] = 0.0;
     axis[2] = 1.0;
@@ -3428,7 +3428,7 @@ void rotateu2v(float *u, float *v, float *axis, float *angle) {
 
 /* ------------------ angleaxis2quat ------------------------ */
 
-void angleaxis2quat(float angle, float *axis, float *quat) {
+void angleaxis2quat(float angle, float *axis, float *quat){
   float sum;
   float cosang, sinang;
 
@@ -3437,7 +3437,7 @@ void angleaxis2quat(float angle, float *axis, float *quat) {
 
   sum = sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
 
-  if(sum>0.0) {
+  if(sum>0.0){
     cosang = cos(angle / 2.0);
     sinang = sin(angle / 2.0);
 
@@ -3446,7 +3446,7 @@ void angleaxis2quat(float angle, float *axis, float *quat) {
     quat[2] = axis[1] * sinang / sum;
     quat[3] = axis[2] * sinang / sum;
   }
-  else {
+  else{
     quat[0] = 1.0;
     quat[1] = 0.0;
     quat[2] = 0.0;
@@ -3456,7 +3456,7 @@ void angleaxis2quat(float angle, float *axis, float *quat) {
 
 /* ------------------ quat2rot------------------ */
 
-void quat2rot(float quat[4], float rot[16]) {
+void quat2rot(float quat[4], float rot[16]){
   float w, x, y, z, sum;
 
   sum = sqrt(quat[0] * quat[0] + quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]);
@@ -3488,7 +3488,7 @@ void quat2rot(float quat[4], float rot[16]) {
 
 /* ------------------ mult_quat ------------------------ */
 
-void mult_quat(float x[4], float y[4], float z[4]) {
+void mult_quat(float x[4], float y[4], float z[4]){
   float z2[4];
 
   z2[0] = x[0] * y[0] - x[1] * y[1] - x[2] * y[2] - x[3] * y[3];
@@ -3503,11 +3503,11 @@ void mult_quat(float x[4], float y[4], float z[4]) {
 
 /* ------------------ normalize_quat ------------------------ */
 
-void normalize_quat(float x[4]) {
+void normalize_quat(float x[4]){
   float sum;
 
   sum = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3]);
-  if(sum>0.0) {
+  if(sum>0.0){
     x[0] /= sum;
     x[1] /= sum;
     x[2] /= sum;
@@ -3517,7 +3517,7 @@ void normalize_quat(float x[4]) {
 
 /* ------------------ xyz2azelev ------------------------ */
 
-void xyz2azelev(float *xyz, float *azimuth, float *elevation) {
+void xyz2azelev(float *xyz, float *azimuth, float *elevation){
   float norm3;
 
   // x = ||xyz||cos(az)*cos(elev)
@@ -3526,10 +3526,10 @@ void xyz2azelev(float *xyz, float *azimuth, float *elevation) {
   // elev=asin(z/||xyz||)
   // az=atan(y/x)
   norm3 = NORM3(xyz);
-  if(norm3>0.00001&&ABS(xyz[2] / norm3) <= 1.0) {
+  if(norm3>0.00001&&ABS(xyz[2] / norm3) <= 1.0){
     *elevation = RAD2DEG*asin(xyz[2] / norm3);
   }
-  else {
+  else{
     *elevation = 0.0;
   }
   *azimuth = RAD2DEG*atan2(xyz[1], xyz[0]);

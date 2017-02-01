@@ -1270,13 +1270,13 @@ void draw_devices(void){
     if(devicei->is_beam == 1&&showbeam_as_line==1){
       unsigned char uc_foregroundcolor[3], uc_beamcolor[3], *bc;
 
-      if (use_beamcolor == 1) {
+      if(use_beamcolor == 1){
         uc_beamcolor[0] = beam_color[0];
         uc_beamcolor[1] = beam_color[1];
         uc_beamcolor[2] = beam_color[2];
         bc = uc_beamcolor;
       }
-      else {
+      else{
         uc_foregroundcolor[0] = 255 * foregroundcolor[0];
         uc_foregroundcolor[1] = 255 * foregroundcolor[1];
         uc_foregroundcolor[2] = 255 * foregroundcolor[2];

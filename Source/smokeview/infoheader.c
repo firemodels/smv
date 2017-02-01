@@ -63,7 +63,7 @@ int initialiseInfoHeader(titledata *titleinfo_ptr,
   if(fds_githash!=NULL){
     snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS build: %s",fds_githash_string);
     strncpy(titleinfo_ptr->fdsbuildline, line, MAX_TITLE_LINE_LENGTH);
-  } else {
+  } else{
     titleinfo_ptr->fdsbuildline[0] = '\0';
   }
 

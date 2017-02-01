@@ -786,7 +786,7 @@ void SetupScreeninfo(void){
       up[1] = 0.0;
       up[2] = 1.0;
     }
-    else {
+    else{
       float denom;
 
       denom = sqrt(1.0 + cose*cose/(sine*sine));
@@ -801,7 +801,7 @@ void SetupScreeninfo(void){
       right[1] = sina;
       right[2] = 0.0;
     }
-    else {
+    else{
       right[0] = cosa;
       right[1] = -sina;
       right[2] = 0.0;
@@ -888,7 +888,7 @@ int MergeRenderScreenBuffers360(void){
   if(scriptoutstream != NULL&&current_script_command != NULL&&current_script_command->cval2 != NULL){
     strcpy(renderfile2, current_script_command->cval2);
   }
-  else {
+  else{
     strcpy(renderfile2, fdsprefix);
   }
   if(RenderTime == 1){

@@ -565,7 +565,7 @@ void LabelMenu(int value){
     visMeshlabel=0;
     visHRRlabel=0;
     show_hrrcutoff=0;
-	if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
+	if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -6033,11 +6033,11 @@ updatemenu=0;
     glutAddSubMenu(_("Terrain"),terrain_showmenu);
   }
   if(GetNTotalVents()>0)glutAddSubMenu(_("Surfaces"), ventmenu);
-  if (nrooms > 0) {
-    if (visCompartments == 1) {
+  if(nrooms > 0){
+    if(visCompartments == 1){
       glutAddMenuEntry(_("*Compartments"), GEOM_Compartments);
     }
-    else {
+    else{
       glutAddMenuEntry(_("Compartments"), GEOM_Compartments);
     }
   }

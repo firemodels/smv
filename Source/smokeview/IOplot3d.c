@@ -293,7 +293,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
     }
     UpdateGlui();
   }
-  for (nn=0;nn<numplot3dvars;nn++){
+  for(nn=0;nn<numplot3dvars;nn++){
     if(nplot3dinfo>0){
       shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
       unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;

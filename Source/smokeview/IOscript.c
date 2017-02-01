@@ -276,7 +276,7 @@ int get_script_keyword_index(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
-  if (MatchUpper(keyword, "RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
+  if(MatchUpper(keyword, "RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
   if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;
   if(MatchUpper(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
@@ -894,17 +894,17 @@ void script_renderall(scriptdata *scripti){
 
 /* ------------------ script_render360all ------------------------ */
 
-void script_render360all(scriptdata *scripti) {
+void script_render360all(scriptdata *scripti){
   int skip_local;
 
 
-  if (script_startframe>0)scripti->ival3 = script_startframe;
-  if (startframe0 >= 0)scripti->ival3 = startframe0;
+  if(script_startframe>0)scripti->ival3 = script_startframe;
+  if(startframe0 >= 0)scripti->ival3 = startframe0;
   first_frame_index = scripti->ival3;
   itimes = first_frame_index;
 
-  if (script_skipframe>0)scripti->ival = script_skipframe;
-  if (skipframe0>0)scripti->ival = skipframe0;
+  if(script_skipframe>0)scripti->ival = script_skipframe;
+  if(skipframe0>0)scripti->ival = skipframe0;
   skip_local = MAX(1, scripti->ival);
 
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
@@ -1402,11 +1402,11 @@ void script_loadboundary(scriptdata *scripti, int meshnum){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if (meshnum == -1 || patchi->blocknumber + 1 == meshnum) {
-      if (strcmp(patchi->label.longlabel, scripti->cval) == 0) {
+    if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
+      if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
         LOCK_COMPRESS
           readpatch(i, LOAD, &errorcode);
-        if (scripti->cval != NULL&&strlen(scripti->cval) > 0) {
+        if(scripti->cval != NULL&&strlen(scripti->cval) > 0){
           FREEMEMORY(loaded_file);
           NewMemory((void **)&loaded_file, strlen(scripti->cval) + 1);
           strcpy(loaded_file, scripti->cval);

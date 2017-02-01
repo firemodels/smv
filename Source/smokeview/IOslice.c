@@ -325,7 +325,7 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
     glTexCoord1f(t3);
     glVertex3fv(v3);
   }
-  else {
+  else{
     if(d12 <= MIN(d13, d23)){
       VERT_AVG(v1, v3, v13);
       t13 = GetTextureIndex(v13);
@@ -344,7 +344,7 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
       DrawTriangle(v12, v2, v23, t12, t2, t23, del, level + 1);
       DrawQuad(v1, v12, v23, v3, t1, t12, t23, t3, del, level + 1);
     }
-    else { // d23<=MIN(d12,d13)
+    else{ // d23<=MIN(d12,d13)
       VERT_AVG(v1, v2, v12);
       t12 = GetTextureIndex(v12);
       VERT_AVG(v1, v3, v13);
@@ -375,7 +375,7 @@ void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int 
     DrawTriangleOutline(v1, v2, v3, del, level + 1);
     DrawTriangleOutline(v1, v3, v4, del, level + 1);
   }
-  else {
+  else{
     DrawTriangleOutline(v1, v2, v4, del, level + 1);
     DrawTriangleOutline(v2, v3, v4, del, level + 1);
   }
@@ -407,7 +407,7 @@ void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level){
     glVertex3fv(v3);
     glVertex3fv(v1);
   }
-  else {
+  else{
     if(d12 <= MIN(d13, d23)){
       VERT_AVG(v1, v3, v13);
       VERT_AVG(v2, v3, v23);
@@ -422,7 +422,7 @@ void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level){
       DrawTriangleOutline(v12, v2, v23, del, level + 1);
       DrawQuadOutline(v1, v12, v23, v3, del, level + 1);
     }
-    else { // d23<=MIN(d12,d13)
+    else{ // d23<=MIN(d12,d13)
       VERT_AVG(v1, v2, v12);
       VERT_AVG(v1, v3, v13);
 
@@ -467,7 +467,7 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
     if(gslice->constant_color != NULL){
       rgb_ptr = gslice->constant_color;
     }
-    else {
+    else{
       tavg = GetTextureIndex(vavg);
       tavg_index = CLAMP(tavg * 255, 0, 255);
       rgb_ptr = rgb_slice + 4 * tavg_index;
@@ -476,7 +476,7 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
     glVertex3f(vavg[0] - dx, vavg[1] - dy, vavg[2] - dz);
     glVertex3f(vavg[0] + dx, vavg[1] + dy, vavg[2] + dz);
   }
-  else {
+  else{
     if(d12 <= MIN(d13, d23)){
       VERT_AVG(v1, v3, v13);
       VERT_AVG(v2, v3, v23);
@@ -491,7 +491,7 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
       DrawTriangleVector(v12, v2, v23, del, level + 1);
       DrawQuadVector(v1, v12, v23, v3, del, level + 1);
     }
-    else { // d23<=MIN(d12,d13)
+    else{ // d23<=MIN(d12,d13)
       VERT_AVG(v1, v2, v12);
       VERT_AVG(v1, v3, v13);
 
@@ -520,7 +520,7 @@ void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, fl
     DrawTriangle(v1, v2, v3, t1, t2, t3, del, level + 1);
     DrawTriangle(v1, v3, v4, t1, t3, t4, del, level + 1);
   }
-  else {
+  else{
     DrawTriangle(v1, v2, v4, t1, t2, t4, del, level + 1);
     DrawTriangle(v2, v3, v4, t2, t3, t4, del, level + 1);
   }
@@ -545,7 +545,7 @@ void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int l
     DrawTriangleVector(v1, v2, v3, del, level + 1);
     DrawTriangleVector(v1, v3, v4, del, level + 1);
   }
-  else {
+  else{
     DrawTriangleVector(v1, v2, v4, del, level + 1);
     DrawTriangleVector(v2, v3, v4, del, level + 1);
   }
@@ -593,7 +593,7 @@ int LastSliceLoadstack(void){
   if(islice_loadstack - 1 >= 0 && islice_loadstack - 1 < nslice_loadstack){
     return_val = slice_loadstack[islice_loadstack - 1];
   }
-  else {
+  else{
     return_val = -1;
   }
   return return_val;
@@ -638,7 +638,7 @@ int LastVSliceLoadstack(void){
   if(ivslice_loadstack - 1 >= 0 && ivslice_loadstack - 1 < nvslice_loadstack){
     return_val = vslice_loadstack[ivslice_loadstack - 1];
   }
-  else {
+  else{
     return_val = -1;
   }
   return return_val;
@@ -1372,7 +1372,7 @@ void GetSliceHists(slicedata *sd){
       if(sd->compression_type == COMPRESSED_ZLIB){
         pdata0[nn] = sd->qval256[sd->slicecomplevel[nn]];
       }
-      else {
+      else{
         pdata0[nn] = sd->qslicedata[n + nn];
       }
     }
@@ -2304,7 +2304,7 @@ void UpdateFedinfo(void){
     FREEMEMORY(fedinfo);
     return;
   }
-  else {
+  else{
     nsliceinfo += nfedinfo;
     ResizeMemory((void **)&fedinfo, nfedinfo * sizeof(feddata));
     ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
@@ -2325,7 +2325,7 @@ void UpdateFedinfo(void){
         NewMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
         NewMemory((void **)&isotypes, nisoinfo * sizeof(int));
       }
-      else {
+      else{
         ResizeMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
         ResizeMemory((void **)&isotypes, nisoinfo * sizeof(int));
       }
@@ -2366,7 +2366,7 @@ void UpdateFedinfo(void){
     if(sd->slicetype == SLICE_CELL_CENTER){
       SetLabels(&(sd->label), "Fractional effective dose(cell centered)", "FED", " ");
     }
-    else {
+    else{
       SetLabels(&(sd->label), "Fractional effective dose", "FED", " ");
     }
     sd->reg_file = NULL;
@@ -3837,7 +3837,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
           SetSliceBounds(islicetype);
           UpdateAllSliceColors(islicetype, errorcode);
         }
-        else {
+        else{
           UpdateAllSliceLabels(islicetype, errorcode);
         }
       }
@@ -3889,7 +3889,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);
         error = 1;
       }
-      else {
+      else{
         sd->ntimes = (int)(get_filesize(file) - headersize) / framesize;
         if(sliceframestep>1)sd->ntimes /= sliceframestep;
       }
@@ -3922,7 +3922,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         return;
       }
     }
-    else {
+    else{
       FILE_SIZE labellen = LABELLEN;
       int file_unit = 15;
 
@@ -4034,7 +4034,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         return;
       }
     }
-    else {
+    else{
       if(NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
@@ -4054,7 +4054,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   if(sd->compression_type == UNCOMPRESSED){
     GetSliceDataBounds(sd, &qmin, &qmax);
   }
-  else {
+  else{
     qmin = sd->valmin;
     qmax = sd->valmax;
   }
@@ -4090,7 +4090,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       list_slice_index = islicetype;
       SetSliceBounds(islicetype);
     }
-    else {
+    else{
       slicebounds[islicetype].valmin_data = qmin;
       slicebounds[islicetype].valmax_data = qmax;
       UpdateAllSliceLabels(islicetype, errorcode);
@@ -4137,7 +4137,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
         (float)file_size / 1000000., delta_time, loadrate, delta_time0 - delta_time);
     }
-    else {
+    else{
       PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
         (float)file_size / 1000000., delta_time, delta_time0 - delta_time);
     }
@@ -4176,7 +4176,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     }
 #endif
   }
-  else {
+  else{
     meshdata *meshj;
 
     meshj = meshinfo + sd->blocknumber;

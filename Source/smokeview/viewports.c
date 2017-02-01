@@ -191,7 +191,7 @@ void GetViewportInfo(void){
   // set the correct dimensions for the view point based on the list of strings
   // we want to print and the spacing information
   // only do this if title is set
-  if(visTitle==1) {
+  if(visTitle==1){
     // add the margins
     VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
     // count the lines first, then add space after
@@ -210,12 +210,12 @@ void GetViewportInfo(void){
       nlinestotal++;
     }
     nlinestotal += titleinfo.nlines;
-    if(nlinestotal==0) {
+    if(nlinestotal==0){
       // if there is no information to be displayed, set everything to zero
       VP_title.width = 0;
       VP_title.height = 0;
       VP_title.doit = 0;
-    } else {
+    } else{
       // add the space for each line
       // one fewer spacings are needed as they only go between each line
       VP_title.height += nlinestotal*titleinfo.text_height +
@@ -224,7 +224,7 @@ void GetViewportInfo(void){
       VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
     }
 
-  } else {
+  } else{
     VP_title.width = 0;
     VP_title.height = 0;
     VP_title.doit = 0;
@@ -734,17 +734,17 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
 
     glBegin(GL_QUADS);
-    if (firecolormap_type == 0) {
+    if(firecolormap_type == 0){
       glColor3f(fire_red / 255.0, fire_green / 255.0, fire_blue / 255.0);
     }
-    else {
+    else{
       float f_red, f_green, f_blue, *colors;
       int icolor;
 
-      if (strcmp(fire_colorbar->label, "fire") == 0) {
+      if(strcmp(fire_colorbar->label, "fire") == 0){
         icolor = 192;
       }
-      else if (strcmp(fire_colorbar->label, "fire 2") == 0) {
+      else if(strcmp(fire_colorbar->label, "fire 2") == 0){
         icolor = 128 + 127*(global_hrrpuv_cutoff - global_hrrpuv_min) / (global_hrrpuv_max - global_hrrpuv_min);
         icolor = CLAMP((icolor + 1), 0, 255);
       }
@@ -1004,7 +1004,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   FrustumAsymmetry=0.0;
   if(stereotype!=STEREO_NONE&&(view_mode==VIEW_LEFT||view_mode==VIEW_RIGHT)){
     EyeSeparation = SCALE2SMV(fzero) / 30.0;
-    if (view_mode == VIEW_LEFT)EyeSeparation = -EyeSeparation;
+    if(view_mode == VIEW_LEFT)EyeSeparation = -EyeSeparation;
     FrustumAsymmetry = -0.5*EyeSeparation*fnear / SCALE2SMV(fzero);
   }
 
@@ -1090,7 +1090,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       }
     }
 
-    if (screen == NULL){
+    if(screen == NULL){
       float *uup;
 
       uup = camera_current->up;
@@ -1100,7 +1100,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         (double)uup[0], (double)uup[1], (double)uup[2]
       );
     }
-    else {
+    else{
       float *view, *uup, *right;
       float ppos[3], vview[3];
 

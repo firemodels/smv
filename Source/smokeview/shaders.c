@@ -730,7 +730,7 @@ int init_shaders(void){
       }
     }
   }
-  else {
+  else{
     PRINTF("   *** GPU smoke shader not supported.\n");
     usegpu=0;
     err=1;

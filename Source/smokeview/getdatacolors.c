@@ -91,7 +91,7 @@ void getBoundaryColors(float *t, int nt, unsigned char *it,
   }
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
-  for (n=1;n<nlevel-2;n++){
+  for(n=1;n<nlevel-2;n++){
     tval = local_tmin + (n-1)*factor;
     Num2String(&labels[n][0],tval);
   }
@@ -341,7 +341,7 @@ void getBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
   }
   range = new_tmax - new_tmin;
   factor = range/(nlevel-2);
-  for (n=1;n<nlevel-2;n++){
+  for(n=1;n<nlevel-2;n++){
     tval = new_tmin + (n-1)*factor;
     Num2String(&labels[n][0],tval);
   }
@@ -410,7 +410,7 @@ void getBoundaryLabels(
   }
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
-  for (n=1;n<nlevel-2;n++){
+  for(n=1;n<nlevel-2;n++){
     tval = local_tmin + (n-1)*factor;
     Num2String(&labels[n][0],tval);
   }
@@ -715,7 +715,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
     range = local_tmax - local_tmin;
 
     factor = range/(nlevel-2);
-    for (n=1;n<nlevel-2;n++){
+    for(n=1;n<nlevel-2;n++){
       tval = local_tmin + (n-1)*factor;
       Num2String(&labels[n][0],tval);
     }
@@ -804,7 +804,7 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
   }
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
-  for (n=1;n<nlevel-2;n++){
+  for(n=1;n<nlevel-2;n++){
     tval = local_tmin + (n-1)*factor;
     Num2String(&labels[n][0],tval);
   }
@@ -958,7 +958,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-1);
   dtorig = (tmaxorig-tminorig)/(float)(nlevel-1);
-  for (n=0;n<nlevel-1;n++){
+  for(n=0;n<nlevel-1;n++){
     tval = local_tmin + n*dt;
     Num2String(&labels[n][0],tval);
     Num2String(&labelsiso[n][0],tval+dt/2.0);
@@ -1064,7 +1064,7 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);
-  for (n=1;n<nlevel-1;n++){
+  for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
     Num2String(&labels[n][0],tval);
   }
@@ -1111,7 +1111,7 @@ void GetSliceLabels(float local_tmin, float local_tmax, int nlevel,
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);
-  for (n=1;n<nlevel-1;n++){
+  for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
     Num2String(&labels[n][0],tval);
   }
@@ -1155,7 +1155,7 @@ void GetIsoLabels(float local_tmin, float local_tmax, int nlevel,
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);
-  for (n=1;n<nlevel-1;n++){
+  for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
     Num2String(&labels[n][0],tval);
   }

@@ -881,7 +881,7 @@ void InitDefaultColorbars(void){
   cbi->index_node[1] = 127;
   cbi->index_node[2] = 127;
   cbi->index_node[3] = 255;
-  for (i = 0; i < 12; i++) {
+  for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
   cbi++;
@@ -1160,7 +1160,7 @@ void DrawColorbars(void){
 
     if(showplot3d==1&&contour_type==STEPPED_CONTOURS){
       glBegin(GL_QUADS);
-      for (i = 0; i < nrgb-2; i++){
+      for(i = 0; i < nrgb-2; i++){
         float *rgb_plot3d_local;
         float ybot, ytop;
 

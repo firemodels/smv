@@ -1200,7 +1200,7 @@ void initvars(void){
 
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
-  for (i = 0; i < nscreeninfo; i++) {
+  for(i = 0; i < nscreeninfo; i++){
     screenvis[i] = 1;
   }
 #endif

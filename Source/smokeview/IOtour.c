@@ -730,12 +730,12 @@ void createtourpaths(void){
         if(keyj->next->next!=NULL)touri->local_dist+=keyj->next->noncon_time-keyj->noncon_time;
       }
     }
-    if (total_time == 0.0)total_time = 1.0;
-    if (tour_constant_vel == 1) {
-      if (touri->global_dist == 0.0)touri->global_dist = 1.0;
+    if(total_time == 0.0)total_time = 1.0;
+    if(tour_constant_vel == 1){
+      if(touri->global_dist == 0.0)touri->global_dist = 1.0;
     }
-    else {
-      if (touri->local_dist == 0.0)touri->local_dist = 1.0;
+    else{
+      if(touri->local_dist == 0.0)touri->local_dist = 1.0;
     }
     factor = touri->local_dist/total_time;
 
@@ -817,10 +817,10 @@ void createtourpaths(void){
       vdist = tour_dist2[j];
       iframe_local = ISearch(tour_dist,view_ntimes,vdist,iframe_local);
       denom = tour_dist[iframe_local + 1] - tour_dist[iframe_local];
-        if (denom==0.0) {
+        if(denom==0.0){
         f1 = 0.0;
       }
-      else {
+      else{
         f1 = (vdist - tour_dist[iframe_local]) / denom;
       }
       f2 = 1 - f1;
@@ -880,7 +880,7 @@ void createtourpaths(void){
 
         VEC3DIFF(dxyz,xyz_view,eye);
         denom = 10.0*NORM3(dxyz);
-        if (denom == 0.0)denom = 1.0;
+        if(denom == 0.0)denom = 1.0;
         dxyz[0] /= denom;
         dxyz[1] /= denom;
         dxyz[2] /= denom;

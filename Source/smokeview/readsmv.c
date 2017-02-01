@@ -579,7 +579,7 @@ void ReadSMVDynamic(char *file){
       FREEMEMORY(vi->showhide);
       FREEMEMORY(vi->showtime);
     }
-    for (j = 0; j<meshi->ncvents; j++) {
+    for(j = 0; j<meshi->ncvents; j++){
       cventdata *cvi;
 
       cvi = meshi->cventinfo + j;
@@ -634,7 +634,7 @@ void ReadSMVDynamic(char *file){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"OPEN_VENT") == 1||Match(buffer,"CLOSE_VENT")==1||
-       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1) {
+       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1){
       meshdata *meshi;
       int len;
       int showvent, blocknumber, tempval, isvent;
@@ -673,19 +673,19 @@ void ReadSMVDynamic(char *file){
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
       if(tempval<0)continue;
-      if(isvent == 1) {
+      if(isvent == 1){
         if(meshi->ventinfo == NULL || tempval >= meshi->nvents)continue;
       }
-      else {
+      else{
         if(meshi->cventinfo == NULL || tempval >= meshi->ncvents)continue;
       }
-      if(isvent == 1) {
+      if(isvent == 1){
         ventdata *vi;
 
         vi = meshi->ventinfo + tempval;
         vi->nshowtime++;
       }
-      else {
+      else{
         cventdata *cvi;
 
         cvi = meshi->cventinfo + tempval;
@@ -1030,7 +1030,7 @@ void ReadSMVDynamic(char *file){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"OPEN_VENT") == 1||Match(buffer,"CLOSE_VENT")==1||
-       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1) {
+       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1){
       meshdata *meshi;
       int len,showvent,blocknumber,tempval,isvent;
 
@@ -1066,42 +1066,42 @@ void ReadSMVDynamic(char *file){
       fgets(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
-      if(isvent == 1) {
+      if(isvent == 1){
         ventdata *vi;
 
         if(meshi->ventinfo == NULL || tempval < 0 || tempval >= meshi->nvents)continue;
         vi = meshi->ventinfo + tempval;
-        if(vi->showtime == NULL) {
+        if(vi->showtime == NULL){
           NewMemory((void **)&vi->showtime, (vi->nshowtime + 1) * sizeof(float));
           NewMemory((void **)&vi->showhide, (vi->nshowtime + 1) * sizeof(unsigned char));
           vi->nshowtime = 1;
           vi->showtime[0] = 0.0;
           vi->showhide[0] = 1;
         }
-        if(showvent == 1) {
+        if(showvent == 1){
           vi->showhide[vi->nshowtime] = 1;
         }
-        else {
+        else{
           vi->showhide[vi->nshowtime] = 0;
         }
         vi->showtime[vi->nshowtime++] = time_local;
       }
-      else {
+      else{
         cventdata *cvi;
 
         if(meshi->cventinfo == NULL || tempval < 0 || tempval >= meshi->ncvents)continue;
         cvi = meshi->cventinfo + tempval;
-        if(cvi->showtime == NULL) {
+        if(cvi->showtime == NULL){
           NewMemory((void **)&cvi->showtime, (cvi->nshowtime + 1) * sizeof(float));
           NewMemory((void **)&cvi->showhide, (cvi->nshowtime + 1) * sizeof(unsigned char));
           cvi->nshowtime = 1;
           cvi->showtime[0] = 0.0;
           cvi->showhide[0] = 1;
         }
-        if(showvent == 1) {
+        if(showvent == 1){
           cvi->showhide[cvi->nshowtime] = 1;
         }
-        else {
+        else{
           cvi->showhide[cvi->nshowtime] = 0;
         }
         cvi->showtime[cvi->nshowtime++] = time_local;
@@ -1306,7 +1306,7 @@ propdata *GetPropID(char *prop_id){
 
 /* ----------------------- init_device ----------------------------- */
 
-void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float *xyz2, float *xyzn, int state0, int nparams, float *params, char *labelptr) {
+void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float *xyz2, float *xyzn, int state0, int nparams, float *params, char *labelptr){
   float norm;
   int i;
 
@@ -1317,41 +1317,41 @@ void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, floa
   devicei->labelptr = devicei->label;
   devicei->color = NULL;
   devicei->line_width = 1.0;
-  if (labelptr != NULL) {
+  if(labelptr != NULL){
     strcpy(devicei->label, labelptr);
   }
-  if (STRCMP(devicei->object->label, "plane") == 0) {
+  if(STRCMP(devicei->object->label, "plane") == 0){
     float color[4];
 
     NewMemory((void **)&devicei->plane_surface, nmeshes * sizeof(isosurface *));
-    for (i = 0; i < nmeshes; i++) {
+    for(i = 0; i < nmeshes; i++){
       NewMemory((void **)&devicei->plane_surface[i], sizeof(isosurface));
     }
-    if (nparams >= 3) {
+    if(nparams >= 3){
       color[0] = params[0];
       color[1] = params[1];
       color[2] = params[2];
       color[3] = 1.0;
       devicei->color = getcolorptr(color);
     }
-    if (nparams >= 4) {
+    if(nparams >= 4){
       devicei->line_width = params[3];
     }
   }
-  else {
+  else{
     devicei->plane_surface = NULL;
   }
-  if (xyz != NULL) {
+  if(xyz != NULL){
     devicei->xyz[0] = xyz[0];
     devicei->xyz[1] = xyz[1];
     devicei->xyz[2] = xyz[2];
   }
-  if (xyz1 != NULL) {
+  if(xyz1 != NULL){
     devicei->xyz1[0] = xyz1[0];
     devicei->xyz1[1] = xyz1[1];
     devicei->xyz1[2] = xyz1[2];
   }
-  if (xyz2 != NULL) {
+  if(xyz2 != NULL){
     devicei->xyz2[0] = xyz2[0];
     devicei->xyz2[1] = xyz2[1];
     devicei->xyz2[2] = xyz2[2];
@@ -1359,12 +1359,12 @@ void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, floa
   if(is_beam == 1)have_beam = 1;
   devicei->is_beam = is_beam;
   norm = sqrt(xyzn[0] * xyzn[0] + xyzn[1] * xyzn[1] + xyzn[2] * xyzn[2]);
-  if (norm != 0.0) {
+  if(norm != 0.0){
     devicei->xyznorm[0] = xyzn[0] / norm;
     devicei->xyznorm[1] = xyzn[1] / norm;
     devicei->xyznorm[2] = xyzn[2] / norm;
   }
-  else {
+  else{
     devicei->xyznorm[0] = 0.0;
     devicei->xyznorm[1] = 0.0;
     devicei->xyznorm[2] = 1.0;
@@ -1382,8 +1382,8 @@ void init_device(devicedata *devicei, float *xyz, int is_beam, float *xyz1, floa
   devicei->nparams = nparams;
   devicei->params = params;
   devicei->ival = 0;
-  if (nparams > 0 && params != NULL) {
-    for (i = 0; i < nparams; i++) {
+  if(nparams > 0 && params != NULL){
+    for(i = 0; i < nparams; i++){
       devicei->params[i] = params[i];
     }
   }
@@ -1442,7 +1442,7 @@ void parse_device_keyword(FILE *stream, devicedata *devicei){
     xyz,xyz+1,xyz+2,xyzn,xyzn+1,xyzn+2,&state0,&nparams,&nparams_textures);
 
   labelptr = strchr(buffer, '#'); // read in coordinates of beam detector
-  if (labelptr != NULL) {
+  if(labelptr != NULL){
     sscanf(labelptr + 1, "%f %f %f %f %f %f", xyz1, xyz1 + 1, xyz1 + 2, xyz2, xyz2 + 1, xyz2 + 2);
     is_beam = 1;
   }
@@ -3144,7 +3144,7 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   if(roomfrom<1 || roomfrom>nrooms)roomfrom = nrooms + 1;
   roomi = roominfo + roomfrom - 1;
   zvi->room1 = roomi;
-  if (roomto<1 || roomto>nrooms)roomto = nrooms + 1;
+  if(roomto<1 || roomto>nrooms)roomto = nrooms + 1;
   zvi->room2 = roominfo + roomto - 1;
   zvi->x0 = roomi->x0 + xyz[0];
   zvi->x1 = roomi->x0 + xyz[1];
@@ -3977,7 +3977,7 @@ int ReadSMV(char *file, char *file2){
     }
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       npartinfo++;
       continue;
     }
@@ -3987,7 +3987,7 @@ int ReadSMV(char *file, char *file2){
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
       ){
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
       if(fgets(buffer,255,stream)==NULL){
@@ -4023,12 +4023,12 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       npatchinfo++;
       continue;
     }
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1){
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       nisoinfo++;
       continue;
     }
@@ -4053,7 +4053,7 @@ int ReadSMV(char *file, char *file2){
       nzventsnew++;
       continue;
     }
-    if (Match(buffer, "HVENTPOS") == 1 || Match(buffer, "VVENTPOS") == 1 || Match(buffer, "MVENTPOS") == 1) {
+    if(Match(buffer, "HVENTPOS") == 1 || Match(buffer, "VVENTPOS") == 1 || Match(buffer, "MVENTPOS") == 1){
       nzventsnew++;
       continue;
     }
@@ -6318,7 +6318,7 @@ int ReadSMV(char *file, char *file2){
        Match(buffer, "HVENTGEOM")==1||
        Match(buffer, "VVENTGEOM")==1||
        Match(buffer, "MVENTGEOM")==1))have_zonevents=1;
-    if (nzventsnew > 0 && (
+    if(nzventsnew > 0 && (
       Match(buffer, "HVENTPOS") == 1 ||
       Match(buffer, "VVENTPOS") == 1 ||
       Match(buffer, "MVENTPOS") == 1))have_zonevents = 2;
@@ -7446,7 +7446,7 @@ typedef struct {
       STRUCTSTAT statbuffer;
       char *buffer3;
 
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       nn_part++;
 
       parti = partinfo + ipart;
@@ -7716,7 +7716,7 @@ typedef struct {
       int blocknumber;
       size_t len;
 
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       sliceparms=strchr(buffer,'&');
       if(sliceparms!=NULL){
         sliceparms++;
@@ -7947,7 +7947,7 @@ typedef struct {
       size_t len;
       STRUCTSTAT statbuffer;
 
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       nn_patch++;
 
       TrimBack(buffer);
@@ -8121,7 +8121,7 @@ typedef struct {
       STRUCTSTAT statbuffer;
       char *buffer3;
 
-      if (setup_only == 1)continue;
+      if(setup_only == 1)continue;
       isoi = isoinfo + iiso;
       isoi->isof_index = nn_iso%nisos_per_mesh;
       nn_iso++;
@@ -8862,7 +8862,7 @@ int ReadINI2(char *inifile, int localfile){
       vis_ztree = CLAMP(vis_ztree, 0, 1);
       continue;
     }
-    if(Match(buffer, "COLORBAR_SPLIT") == 1) {
+    if(Match(buffer, "COLORBAR_SPLIT") == 1){
       int ii;
 
       fgets(buffer, 255, stream);
@@ -9377,7 +9377,7 @@ int ReadINI2(char *inifile, int localfile){
       if(devicenorm_length<0.0 || devicenorm_length>1.0)devicenorm_length = 0.1;
       continue;
     }
-    if(Match(buffer, "SHOWHRRLABEL") == 1) {
+    if(Match(buffer, "SHOWHRRLABEL") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visHRRlabel);
       ONEORZERO(visHRRlabel);
@@ -9584,8 +9584,8 @@ int ReadINI2(char *inifile, int localfile){
 #define MAXVAL 100000000.0
 #define MINVAL -100000000.0
 
-      if (vmax > MAXVAL)vmax = 1.0;
-      if (vmin < MINVAL)vmin = 0.0;
+      if(vmax > MAXVAL)vmax = 1.0;
+      if(vmin < MINVAL)vmin = 0.0;
 
       if(npart5prop>0){
         int label_index = 0;
@@ -9842,10 +9842,10 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &settargetmin, &targetmin, &settargetmax, &targetmax, buffer2);
       continue;
     }
-    if (Match(buffer, "ZONEVIEW") == 1) {
+    if(Match(buffer, "ZONEVIEW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &zone_hvac_diam);
-      if (zone_hvac_diam < 0.0)zone_hvac_diam = 0.0;
+      if(zone_hvac_diam < 0.0)zone_hvac_diam = 0.0;
       continue;
     }
     if(Match(buffer, "OUTLINEMODE") == 1){
@@ -10059,7 +10059,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%f ", &plot3dlinewidth);
       continue;
     }
-    if (Match(buffer, "VECTORCOLOR") == 1) {
+    if(Match(buffer, "VECTORCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &color_vector_black);
       continue;
@@ -10137,7 +10137,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &visVents);
       continue;
     }
-    if (Match(buffer, "SHOWROOMS") == 1) {
+    if(Match(buffer, "SHOWROOMS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visCompartments);
       continue;
@@ -10575,7 +10575,7 @@ int ReadINI2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &render_window_size, &nrender_rows, &nheight360_temp);
-      if (nheight360_temp > 0) {
+      if(nheight360_temp > 0){
         nheight360 = nheight360_temp;
         nwidth360 = 2 * nheight360;
       }

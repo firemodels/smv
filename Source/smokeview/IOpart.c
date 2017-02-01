@@ -367,9 +367,9 @@ void GetPartHistogram(int flag){
       partdata *parti;
 
       parti = partinfo + i;
-      if (flag == PARTFILE_LOADALL ||
+      if(flag == PARTFILE_LOADALL ||
         (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-        (flag >= 0 && i == flag)) {
+        (flag >= 0 && i == flag)){
         if(get_histfile_status(parti) == HIST_OLD){
           update = 1;
           break;
@@ -386,9 +386,9 @@ void GetPartHistogram(int flag){
     partdata *parti;
 
     parti = partinfo + i;
-    if (flag == PARTFILE_LOADALL ||
+    if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-      (flag >= 0 && i == flag)) {
+      (flag >= 0 && i == flag)){
       get_part_histogram(parti);
     }
   }
@@ -405,7 +405,7 @@ void GetPartHistogram(int flag){
     parti = partinfo + i;
 
     parti = partinfo + i;
-    if (flag == PARTFILE_LOADALL ||
+    if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1)||
       (flag >= 0 && i == flag)){
       for(j = 0; j < npart5prop; j++){
@@ -1150,7 +1150,7 @@ int GetMinPartFrames(int flag){
     parti = partinfo + i;
     if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-      (flag >= 0 && i == flag)) {
+      (flag >= 0 && i == flag)){
 
       nframes = get_npartframes(parti);
       if(nframes > 0){

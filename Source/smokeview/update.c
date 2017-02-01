@@ -28,8 +28,8 @@ int CompareFloat( const void *arg1, const void *arg2 ){
 
 /* ------------------ UpdateHrrinfo ------------------------ */
 
-void UpdateHrrinfo(int vis) {
-  if(hrrinfo != NULL) {
+void UpdateHrrinfo(int vis){
+  if(hrrinfo != NULL){
     hrrinfo->display = vis;
     UpdateTimes();
   }
@@ -1060,7 +1060,7 @@ void UpdateTimes(void){
   // end pass 1
 
   FREEMEMORY(global_times);
-  if (nglobal_times > 0) {
+  if(nglobal_times > 0){
     NewMemory((void **)&global_times, nglobal_times * sizeof(float));
     NewMemory((void **)&global_times_copy, nglobal_times * sizeof(float));
   }
@@ -1238,14 +1238,14 @@ void UpdateTimes(void){
       if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
       fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", n+1,nglobal_times);
-      if (timearray_test == 1) {
-        for (i = 0; i < nglobal_times; i++) {
+      if(timearray_test == 1){
+        for(i = 0; i < nglobal_times; i++){
           fprintf(stderr," %f", global_times[i]);
         }
         fprintf(stderr, "\n");
       }
-      else if (timearray_test > 1) {
-        for (i = 0; i < MIN(nglobal_times, 10); i++) {
+      else if(timearray_test > 1){
+        for(i = 0; i < MIN(nglobal_times, 10); i++){
           fprintf(stderr, " %f", global_times[i]);
         }
         fprintf(stderr, "......\n");
@@ -1553,23 +1553,23 @@ void UpdateTimes(void){
 
   /* determine visibility of each circular vent at each time step */
 
-  for (i = 0; i<nmeshes; i++) {
+  for(i = 0; i<nmeshes; i++){
     int j;
     meshdata *meshi;
 
     meshi = meshinfo + i;
     if(meshi->cventinfo == NULL)continue;
-    for (j = 0; j<meshi->ncvents; j++) {
+    for(j = 0; j<meshi->ncvents; j++){
       cventdata *cvi;
 
       cvi = meshi->cventinfo + j;
       if(cvi->showtime == NULL)continue;
       FREEMEMORY(cvi->showtimelist);
-      if(nglobal_times>0) {
+      if(nglobal_times>0){
         int k;
 
         NewMemory((void **)&cvi->showtimelist, nglobal_times * sizeof(int));
-        for (k = 0; k<nglobal_times; k++) {
+        for(k = 0; k<nglobal_times; k++){
           int listindex;
 
           cvi->showtimelist[k] = 1;
@@ -1975,7 +1975,7 @@ void UpdateDisplay(void){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);
   }
-  if (histograms_defined==0&&update_slice_hists == 1) {
+  if(histograms_defined==0&&update_slice_hists == 1){
     update_slice_hists = 0;
     UpdateSliceHist();
   }
