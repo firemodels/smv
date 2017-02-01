@@ -1176,7 +1176,7 @@ typedef struct _slicedata {
   int ijk_min[3], ijk_max[3];
   float xmin,xmax,ymin,ymax,zmin,zmax;
   float xyz_min[3], xyz_max[3];
-  int nsliceii;
+  int nsliceijk;
   int *timeslist;
   int idir;
   float sliceoffset;

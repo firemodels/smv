@@ -369,7 +369,7 @@ void OutputSliceData(void){
       PRINTF("  Slice data unavailable for output\n");
       continue;
     }
-    data = sd->qslicedata + sd->itime*sd->nsliceii;
+    data = sd->qslicedata + sd->itime*sd->nsliceijk;
     strcpy(datafile, sd->file);
     ext = strstr(datafile, ".");
     if(ext != NULL){

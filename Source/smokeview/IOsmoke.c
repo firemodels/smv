@@ -234,36 +234,36 @@ else{\
 #define INFINITE_LIGHT 1
 #define TMAX 1000000000.0
 
-  /* ------------------ boxline ------------------------ */
+  /* ------------------ GetLightLimit ------------------------ */
 
-void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length) {
+void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length){
   float tval = TMAX, length3[3];
   int i;
 
   // shoot a ray from xyz1 in direction dxyz and intersect with bounding box of all meshes.  return intersection in xyz2
   // if light position is within bounding box then return its position in xyz2
 
-  for (i = 0; i < 3; i++) {
-    if (dxyz[i] != 0.0) {
+  for(i = 0; i < 3; i++){
+    if(dxyz[i] != 0.0){
       float tval1;
 
       tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
-      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
       tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
-      if (tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
     }
   }
-  if (tval >= TMAX) tval = 0.0;
+  if(tval >= TMAX) tval = 0.0;
   xyz2[0] = xyz1[0] + tval*dxyz[0];
   xyz2[1] = xyz1[1] + tval*dxyz[1];
   xyz2[2] = xyz1[2] + tval*dxyz[2];
 
-  if (light_type == LOCAL_LIGHT) {
+  if(light_type == LOCAL_LIGHT){
     float dxyz2[3], dxyzlight[3];
 
     VEC3DIFF(dxyz2, xyz2, xyz1);
     VEC3DIFF(dxyzlight, xyz_light, xyz1);
-    if (DOT3(dxyzlight,dxyzlight) < DOT3(dxyz2,dxyz2)) {
+    if(DOT3(dxyzlight,dxyzlight) < DOT3(dxyz2,dxyz2)){
       VEC3EQ(xyz2, xyz_light);
     }
   }
@@ -324,6 +324,27 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
 
 }
 
+/* ------------------ GetSootDensity ------------------------ */
+
+float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
+  int ijk;
+  meshdata *mesh_soot;
+  float soot_val=0.0, *slice_vals;
+  slicedata *slice_soot;
+  volrenderdata *vr;
+
+  ijk = GetCellindex(xyz, mesh_try);
+  if(mesh_try == NULL || *mesh_try == NULL|| ijk<0)return 0.0;
+  mesh_soot = *mesh_try;
+  vr = &(mesh_soot->volrenderinfo);
+  slice_soot = vr->smokeslice;
+  if(slice_soot==NULL||slice_soot->qslicedata==NULL)return 0.0;
+  itime = CLAMP(itime,0,slice_soot->ntimes-1);
+  slice_vals = slice_soot->qslicedata + itime*slice_soot->nsliceijk;
+  soot_val = slice_vals[ijk];
+  return soot_val;
+}
+
 /* ------------------ InitLightFraction ------------------------ */
 
 int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
@@ -365,12 +386,12 @@ int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
       dlength = MIN(dlength, zp[1] - zp[0]);
     }
   }
-  if (light_type == INFINITE_LIGHT) {
+  if(light_type == INFINITE_LIGHT){
     float norm;
 
     VEC3EQ(dxyz, xyz_light);
     norm = NORM3(dxyz);
-    if (norm == 0.0)return 1;
+    if(norm == 0.0)return 1;
     VEC3DA(dxyz, norm);
   }
 

@@ -556,12 +556,12 @@ void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int l
 
 /* ------------------ PushSliceLoadstack ------------------------ */
 
-void PushSliceLoadstack(int sliceindex) {
+void PushSliceLoadstack(int sliceindex){
   int i;
 
-  if (islice_loadstack < nslice_loadstack) {
-    for (i = 0; i < islice_loadstack; i++) {
-      if (slice_loadstack[i] == sliceindex)return;
+  if(islice_loadstack < nslice_loadstack){
+    for(i = 0; i < islice_loadstack; i++){
+      if(slice_loadstack[i] == sliceindex)return;
     }
     slice_loadstack[islice_loadstack++] = sliceindex;
   }
@@ -569,14 +569,14 @@ void PushSliceLoadstack(int sliceindex) {
 
 /* ------------------ RemoveSliceLoadstack ------------------------ */
 
-void RemoveSliceLoadstack(int sliceindex) {
+void RemoveSliceLoadstack(int sliceindex){
   int i;
 
-  for (i = islice_loadstack - 1; i >= 0; i--) {
-    if (slice_loadstack[i] == sliceindex) {
+  for(i = islice_loadstack - 1; i >= 0; i--){
+    if(slice_loadstack[i] == sliceindex){
       int j;
 
-      for (j = i; j < islice_loadstack - 1; j++) {
+      for(j = i; j < islice_loadstack - 1; j++){
         slice_loadstack[j] = slice_loadstack[j + 1];
       }
       islice_loadstack--;
@@ -587,10 +587,10 @@ void RemoveSliceLoadstack(int sliceindex) {
 
 /* ------------------ LastSliceLoadstack ------------------------ */
 
-int LastSliceLoadstack(void) {
+int LastSliceLoadstack(void){
   int return_val;
 
-  if (islice_loadstack - 1 >= 0 && islice_loadstack - 1 < nslice_loadstack) {
+  if(islice_loadstack - 1 >= 0 && islice_loadstack - 1 < nslice_loadstack){
     return_val = slice_loadstack[islice_loadstack - 1];
   }
   else {
@@ -601,12 +601,12 @@ int LastSliceLoadstack(void) {
 
 /* ------------------ PushVSliceLoadstack ------------------------ */
 
-void PushVSliceLoadstack(int vsliceindex) {
+void PushVSliceLoadstack(int vsliceindex){
   int i;
 
-  if (ivslice_loadstack < nvslice_loadstack) {
-    for (i = 0; i < ivslice_loadstack; i++) {
-      if (vslice_loadstack[i] == vsliceindex)return;
+  if(ivslice_loadstack < nvslice_loadstack){
+    for(i = 0; i < ivslice_loadstack; i++){
+      if(vslice_loadstack[i] == vsliceindex)return;
     }
     vslice_loadstack[ivslice_loadstack++] = vsliceindex;
   }
@@ -614,14 +614,14 @@ void PushVSliceLoadstack(int vsliceindex) {
 
 /* ------------------ RemoveVSliceLoadstack ------------------------ */
 
-void RemoveVSliceLoadstack(int vsliceindex) {
+void RemoveVSliceLoadstack(int vsliceindex){
   int i;
 
-  for (i = ivslice_loadstack - 1; i >= 0; i--) {
-    if (vslice_loadstack[i] == vsliceindex) {
+  for(i = ivslice_loadstack - 1; i >= 0; i--){
+    if(vslice_loadstack[i] == vsliceindex){
       int j;
 
-      for (j = i; j < ivslice_loadstack - 1; j++) {
+      for(j = i; j < ivslice_loadstack - 1; j++){
         vslice_loadstack[j] = vslice_loadstack[j + 1];
       }
       ivslice_loadstack--;
@@ -632,10 +632,10 @@ void RemoveVSliceLoadstack(int vsliceindex) {
 
 /* ------------------ LastVSliceLoadstack ------------------------ */
 
-int LastVSliceLoadstack(void) {
+int LastVSliceLoadstack(void){
   int return_val;
 
-  if (ivslice_loadstack - 1 >= 0 && ivslice_loadstack - 1 < nvslice_loadstack) {
+  if(ivslice_loadstack - 1 >= 0 && ivslice_loadstack - 1 < nvslice_loadstack){
     return_val = vslice_loadstack[ivslice_loadstack - 1];
   }
   else {
@@ -1257,23 +1257,23 @@ void UpdateSliceFilenum(void){
 
 /* ------------------ UncompressSliceDataFrame ------------------------ */
 
-void UncompressSliceDataFrame(slicedata *sd, int iframe_local) {
+void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   unsigned int countin;
   uLongf countout;
   unsigned char *compressed_data;
 
   compressed_data = sd->qslicedata_compressed + sd->compindex[iframe_local].offset;
   countin = sd->compindex[iframe_local].size;
-  countout = sd->nsliceii;
+  countout = sd->nsliceijk;
 
-  if (sd->compression_type == COMPRESSED_ZLIB) {
+  if(sd->compression_type == COMPRESSED_ZLIB){
     uncompress_zlib(sd->slicecomplevel, &countout, compressed_data, countin);
   }
 }
 
 /* ------------------ GetSliceHists ------------------------ */
 
-void GetSliceHists(slicedata *sd) {
+void GetSliceHists(slicedata *sd){
   float *pdata;
   int ndata;
   int n, i;
@@ -1288,7 +1288,7 @@ void GetSliceHists(slicedata *sd) {
   float *slice_weight0;
   float *xplt, *yplt, *zplt;
 
-  if (sd->histograms != NULL)return;
+  if(sd->histograms != NULL)return;
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -1309,7 +1309,7 @@ void GetSliceHists(slicedata *sd) {
   NewMemory((void **)&slice_mask0, sd->nslicei*sd->nslicej*sd->nslicek);
   NewMemory((void **)&slice_weight0, sd->nslicei*sd->nslicej*sd->nslicek*sizeof(float));
   n = -1;
-  for (i = 0; i < sd->nslicei; i++) {
+  for(i = 0; i < sd->nslicei; i++){
     int j;
     float dx;
     int i1;
@@ -1318,7 +1318,7 @@ void GetSliceHists(slicedata *sd) {
     dx = xplt[i1+1] - xplt[i1];
     if(dx <= 0.0)dx = 1.0;
 
-    for (j = 0; j < sd->nslicej; j++) {
+    for(j = 0; j < sd->nslicej; j++){
       int k;
       float dy;
       int j1;
@@ -1327,7 +1327,7 @@ void GetSliceHists(slicedata *sd) {
       dy = yplt[j1+1] - yplt[j1];
       if(dy <= 0.0)dy = 1.0;
 
-      for (k = 0; k < sd->nslicek; k++) {
+      for(k = 0; k < sd->nslicek; k++){
         float dz;
         int k1;
 
@@ -1338,38 +1338,38 @@ void GetSliceHists(slicedata *sd) {
         n++;
         slice_mask0[n] = 0;
         slice_weight0[n] = dx*dy*dz;
-        if (sd->slicetype == SLICE_CELL_CENTER &&
+        if(sd->slicetype == SLICE_CELL_CENTER &&
           ((k == 0 && sd->nslicek != 1) || (j == 0 && sd->nslicej != 1) || (i == 0 && sd->nslicei != 1)))continue;
-        if (show_slice_in_obst == 0) {
-          if (sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
-          if (sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+        if(show_slice_in_obst == 0){
+          if(sd->slicetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
+          if(sd->slicetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
         }
         slice_mask0[n] = 1;
       }
     }
   }
 
-  ntimes = ndata / sd->nsliceii;
+  ntimes = ndata / sd->nsliceijk;
 
   // initialize histograms
 
   sd->nhistograms = ntimes + 1;
   NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
   NewMemory((void **)&pdata0, sd->nslicei*sd->nslicej*sd->nslicek * sizeof(float));
-  for (i = 0; i < sd->nhistograms; i++) {
+  for(i = 0; i < sd->nhistograms; i++){
     InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
   }
 
   n = 0;
-  for (istep = 0; istep < ntimes; istep++) {
+  for(istep = 0; istep < ntimes; istep++){
     histogramdata *histi, *histall;
     int nn;
 
-    if (sd->compression_type == COMPRESSED_ZLIB) {
+    if(sd->compression_type == COMPRESSED_ZLIB){
       UncompressSliceDataFrame(sd, istep);
     }
-    for (nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++) {
-      if (sd->compression_type == COMPRESSED_ZLIB) {
+    for(nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++){
+      if(sd->compression_type == COMPRESSED_ZLIB){
         pdata0[nn] = sd->qval256[sd->slicecomplevel[nn]];
       }
       else {
@@ -1392,16 +1392,16 @@ void GetSliceHists(slicedata *sd) {
 
 /* ------------------ GetAllSliceHists ------------------------ */
 
-void GetAllSliceHists(void) {
+void GetAllSliceHists(void){
   int ii;
 
-  for (ii = 0; ii < nslice_loaded; ii++) {
+  for(ii = 0; ii < nslice_loaded; ii++){
     slicedata *sdi;
     int i;
 
     i = slice_loaded_list[ii];
     sdi = sliceinfo + i;
-    if (sdi->histograms == NULL)GetSliceHists(sdi);
+    if(sdi->histograms == NULL)GetSliceHists(sdi);
   }
 }
 
@@ -3236,7 +3236,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
       float *vals;
       contour *ci;
 
-      vals = sd->qslicedata + i*sd->nsliceii;
+      vals = sd->qslicedata + i*sd->nsliceijk;
       ci = sd->line_contours+i;
       if(slice_contour_type==SLICE_LINE_CONTOUR){
         PRINTF("updating line contour: %i of %i\n",i+1,sd->nline_contours);
@@ -3434,7 +3434,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   }
 
   n=-1;
-  ntimes = ndata/sd->nsliceii;
+  ntimes = ndata/sd->nsliceijk;
 
   for(istep=0;istep<ntimes;istep++){
     int n0;
@@ -3969,7 +3969,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     /*  initialize slice data */
 
     sd->nslicetotal = 0;
-    sd->nsliceii = 0;
+    sd->nsliceijk = 0;
     if(sd->ntimes == 0)return;
 
     /* estimate the slice offset, the distance to move a slice so
@@ -4025,10 +4025,10 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       break;
     }
 
-    sd->nsliceii = sd->nslicei*sd->nslicej*sd->nslicek;
-    sd->nslicetotal = sd->ntimes*sd->nsliceii;
+    sd->nsliceijk = sd->nslicei*sd->nslicej*sd->nslicek;
+    sd->nslicetotal = sd->ntimes*sd->nsliceijk;
     if(sd->compression_type == COMPRESSED_ZLIB){
-      if(NewMemory((void **)&sd->slicecomplevel, sd->nsliceii * sizeof(unsigned char)) == 0){
+      if(NewMemory((void **)&sd->slicecomplevel, sd->nsliceijk * sizeof(unsigned char)) == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
@@ -4110,6 +4110,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   }
   CheckMemory;
   PRINTF("After slice file load: \n");
+
   CountMemoryBlocks(sd->num_memblocks, num_memblocks_load);
 #endif
 #ifdef pp_MEMPRINT
@@ -5318,8 +5319,8 @@ void DrawSliceFrame(){
         sd->iqsliceframe=sd->slicecomplevel;
       }
       else{
-        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nsliceii;
-        sd->qslice       = sd->qslicedata + sd->itime*sd->nsliceii;
+        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nsliceijk;
+        sd->qslice       = sd->qslicedata + sd->itime*sd->nsliceijk;
       }
       sd->qsliceframe=NULL;
 #ifdef pp_MEMDEBUG
@@ -5328,7 +5329,7 @@ void DrawSliceFrame(){
       }
 #endif
 
-      if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceii;
+      if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
       if(vis_slice_contours==1&&sd->line_contours!=NULL){
         if(slice_contour_type==SLICE_LINE_CONTOUR){
           DrawLineContours(sd->line_contours+sd->itime, slice_line_contour_width);
@@ -6477,9 +6478,9 @@ void DrawVSliceFrame(void){
       VAL->iqsliceframe=VAL->slicecomplevel;
     }
     else{
-      if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceii;
+      if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
     }
-    if(VAL->qslicedata!=NULL)VAL->qsliceframe = VAL->qslicedata + VAL->itime*VAL->nsliceii;
+    if(VAL->qslicedata!=NULL)VAL->qsliceframe = VAL->qslicedata + VAL->itime*VAL->nsliceijk;
 #undef VAL
 #define VAL u
     if(VAL!=NULL){
@@ -6488,7 +6489,7 @@ void DrawVSliceFrame(void){
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceii;
+        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
       }
     }
 #undef VAL
@@ -6499,7 +6500,7 @@ void DrawVSliceFrame(void){
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceii;
+        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
       }
     }
 #undef VAL
@@ -6510,17 +6511,17 @@ void DrawVSliceFrame(void){
         VAL->iqsliceframe=VAL->slicecomplevel;
       }
       else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceii;
+        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
       }
     }
     if(u!=NULL&&u->compression_type==UNCOMPRESSED){
-      u->qslice = u->qslicedata + u->itime*u->nsliceii;
+      u->qslice = u->qslicedata + u->itime*u->nsliceijk;
     }
     if(v!=NULL&&v->compression_type==UNCOMPRESSED){
-      v->qslice = v->qslicedata + v->itime*v->nsliceii;
+      v->qslice = v->qslicedata + v->itime*v->nsliceijk;
     }
     if(w!=NULL&&w->compression_type==UNCOMPRESSED){
-      w->qslice = w->qslicedata + w->itime*w->nsliceii;
+      w->qslice = w->qslicedata + w->itime*w->nsliceijk;
     }
 
     if(vd->slicetype==SLICE_TERRAIN){
@@ -7192,7 +7193,7 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
   for(t = tmin; t<=tmax; t++){
     float *qslice;
 
-    qslice = sd->qslicedata+t*sd->nsliceii;
+    qslice = sd->qslicedata+t*sd->nsliceijk;
     for(i = imin; i<=imax; i++){
       float *qslicei;
 
