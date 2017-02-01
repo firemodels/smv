@@ -271,6 +271,59 @@ void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, f
   *length = NORM3(length3);
 }
 
+/* ------------------ GetCellindex ------------------------ */
+
+int GetCellindex(float *xyz, meshdata **mesh_tryptr){
+  int i;
+  meshdata *mesh_try=NULL;
+
+  if(mesh_tryptr != NULL)mesh_try = *mesh_tryptr;
+  for(i = -1; i < nmeshes; i++){
+    meshdata *meshi;
+    float *boxmin, *boxmax, *dbox;
+
+    if(i == -1){
+      if(mesh_try == NULL)continue;
+      meshi = mesh_try;
+    }
+    else{
+      meshi = meshinfo + i;
+      if(meshi == mesh_try)continue;
+    }
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+    dbox = meshi->dbox;
+    if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] && boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
+      int nx, nxy, ijk;
+      int ix, iy, iz;
+      int ibar, jbar, kbar;
+
+      ibar = meshi->ibar;
+      jbar = meshi->jbar;
+      kbar = meshi->kbar;
+      nx = ibar;
+      nxy = ibar*jbar;
+
+      ix = ibar*(xyz[0] - boxmin[0]) / dbox[0];
+      ix = CLAMP(ix, 0, ibar);
+
+      iy = jbar*(xyz[1] - boxmin[1]) / dbox[1];
+      iy = CLAMP(iy, 0, jbar);
+
+      iz = kbar*(xyz[2] - boxmin[2]) / dbox[2];
+      iz = CLAMP(iz, 0, kbar);
+
+      ijk = IJKNODE(ix, iy, iz);
+      mesh_try = meshi;
+      if(mesh_tryptr!=NULL)*mesh_tryptr = meshi;
+      return ijk;
+    }
+  }
+  if(mesh_tryptr!=NULL)*mesh_tryptr = NULL;
+  return -1;
+
+}
+
 /* ------------------ InitLightFraction ------------------------ */
 
 int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
