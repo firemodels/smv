@@ -314,7 +314,6 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
       iz = CLAMP(iz, 0, kbar);
 
       ijk = IJKNODE(ix, iy, iz);
-      mesh_try = meshi;
       if(mesh_tryptr!=NULL)*mesh_tryptr = meshi;
       return ijk;
     }
@@ -336,6 +335,7 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   ijk = GetCellindex(xyz, mesh_try);
   if(mesh_try == NULL || *mesh_try == NULL|| ijk<0)return 0.0;
   mesh_soot = *mesh_try;
+  if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID)return 1000000.0;
   vr = &(mesh_soot->volrenderinfo);
   slice_soot = vr->smokeslice;
   if(slice_soot==NULL||slice_soot->qslicedata==NULL)return 0.0;
@@ -345,9 +345,9 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   return soot_val;
 }
 
-/* ------------------ InitLightFraction ------------------------ */
+/* ------------------ InitLightFractions ------------------------ */
 
-int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
+int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   // type LOCAL_LIGHT     xyz contains position of light
   // type INFINITE_LIGHT  xyz contains direction of light (infinitely far away)
 
@@ -412,8 +412,12 @@ int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
       xyz1[1] = yplt[j];
       for(k = 0; k <= kbar; k++){
         float dxyz2[3], dxyzlight[3], length;
-        int nlength;
+        int ii,nlength;
         float ddlength;
+        int itime, ntimes;
+        meshdata *mesh_try;
+        volrenderdata *vr;
+        slicedata *slice_soot;
 
         xyz1[2] = zplt[k];
         if(light_type == LOCAL_LIGHT){
@@ -423,6 +427,29 @@ int InitLightFraction(meshdata *meshi, float *xyz_light, int light_type){
         GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
         nlength = length / dlength + 1;
         ddlength = length / (float)(nlength - 1);
+
+        mesh_try = meshi;
+        vr = &(meshi->volrenderinfo);
+        slice_soot = vr->smokeslice;
+        ntimes = slice_soot->ntimes;
+
+        for(itime = 0;itime < ntimes;itime++){
+          float soot_sum;
+
+          soot_sum = 0.0;
+          for(ii = 0;ii < nlength;ii++){
+            float xyz[3], factor;
+            float soot_density;
+
+            factor = (float)ii / (float)(nlength - 1);
+
+            xyz[0] = xyz1[0] * (1.0 - factor) + xyz2[0] * factor;
+            xyz[1] = xyz1[1] * (1.0 - factor) + xyz2[1] * factor;
+            xyz[2] = xyz1[2] * (1.0 - factor) + xyz2[2] * factor;
+            soot_density = GetSootDensity(xyz, itime, &mesh_try);
+            soot_sum += soot_density;
+          }
+        }
       }
     }
   }
