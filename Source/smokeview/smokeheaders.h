@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);

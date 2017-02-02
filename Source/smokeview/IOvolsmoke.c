@@ -1532,10 +1532,11 @@ void drawsmoke3dGPUVOL(void){
       }
       glUniform1i(GPUvol_slicetype,vr->smokeslice->slicetype);
       glUniform3f(GPUvol_dcell3,meshi->dcell3[0],meshi->dcell3[1],meshi->dcell3[2]);
-      glUniform1i(GPUvol_soot_density,0);
-      glUniform1i(GPUvol_fire,1);
-      glUniform1i(GPUvol_smokecolormap,2);
-      glUniform1i(GPUvol_blockage,3);
+      glUniform1i(GPUvol_soot_density, 0);  // smokedata_local
+      glUniform1i(GPUvol_fire,         1);  // firedata_local
+      glUniform1i(GPUvol_smokecolormap,2);  // rgb_volsmokecolormap
+      glUniform1i(GPUvol_blockage,     3);  // meshi->f_iblank_cell
+    //glUniform1i(GPUvol_light,        4);  // meshi->light
       if(mouse_down==1){
         glUniform1f(GPUvol_dcell,8.0*dcell);
       }

@@ -20,6 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef INMAIN
+SVEXTERN float xyz_light_global[3]={1.0,1.0,1.0};
+#else
+SVEXTERN float xyz_light_global[3];
+#endif
+SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights, 0);
 SVEXTERN float boxmin_global[3], boxmax_global[3], dlength;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];

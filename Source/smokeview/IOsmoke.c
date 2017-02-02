@@ -230,10 +230,6 @@ else{\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
-#define LOCAL_LIGHT 0
-#define INFINITE_LIGHT 1
-#define TMAX 1000000000.0
-
   /* ------------------ GetLightLimit ------------------------ */
 
 void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length){
@@ -351,12 +347,20 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   // type LOCAL_LIGHT     xyz contains position of light
   // type INFINITE_LIGHT  xyz contains direction of light (infinitely far away)
 
-  int i;
   float xyz1[3],xyz2[3];
   float *xplt, *yplt, *zplt, dxyz[3];
   int ibar, jbar, kbar;
+  int itime, ntimes;
+  volrenderdata *vr;
+  slicedata *slice_soot;
+
+  vr = &(meshi->volrenderinfo);
+  slice_soot = vr->smokeslice;
+  ntimes = slice_soot->ntimes;
 
   if(update_boxbounds == 1){
+    int i;
+
     update_boxbounds = 0;
     for(i = 0; i < nmeshes; i++){
       meshdata *meshii;
@@ -402,39 +406,34 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   jbar = meshi->jbar;
   kbar = meshi->kbar;
 
-  for(i = 0; i <= ibar; i++){
+  for(itime = 0;itime<ntimes;itime++){
+    int i;
+
+    for(i = 0; i<=ibar; i++){
     int j;
 
-    xyz1[0] = xplt[i];
-    for(j = 0; j <= jbar; j++){
-      int k;
+      xyz1[0] = xplt[i];
+      for(j = 0; j <= jbar; j++){
+        int k;
 
-      xyz1[1] = yplt[j];
-      for(k = 0; k <= kbar; k++){
-        float dxyz2[3], dxyzlight[3], length;
-        int ii,nlength;
-        float ddlength;
-        int itime, ntimes;
-        meshdata *mesh_try;
-        volrenderdata *vr;
-        slicedata *slice_soot;
+        xyz1[1] = yplt[j];
+        for(k = 0; k <= kbar; k++){
+          float dxyz2[3], dxyzlight[3], length;
+          float soot_sum, opacity, arg;
+          float ddlength;
+          int ii,nlength;
+          meshdata *mesh_try;
 
-        xyz1[2] = zplt[k];
-        if(light_type == LOCAL_LIGHT){
-          VEC3DIFF(dxyz, xyz1, xyz_light);
-          NORMALIZE3(dxyz);
-        }
-        GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
-        nlength = length / dlength + 1;
-        ddlength = length / (float)(nlength - 1);
+          xyz1[2] = zplt[k];
+          if(light_type == LOCAL_LIGHT){
+            VEC3DIFF(dxyz, xyz1, xyz_light);
+            NORMALIZE3(dxyz);
+          }
+          GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
+          nlength = length / dlength + 1;
+          ddlength = length / (float)(nlength - 1);
 
-        mesh_try = meshi;
-        vr = &(meshi->volrenderinfo);
-        slice_soot = vr->smokeslice;
-        ntimes = slice_soot->ntimes;
-
-        for(itime = 0;itime < ntimes;itime++){
-          float soot_sum;
+          mesh_try = meshi;
 
           soot_sum = 0.0;
           for(ii = 0;ii < nlength;ii++){
@@ -447,13 +446,41 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
             xyz[1] = xyz1[1] * (1.0 - factor) + xyz2[1] * factor;
             xyz[2] = xyz1[2] * (1.0 - factor) + xyz2[2] * factor;
             soot_density = GetSootDensity(xyz, itime, &mesh_try);
-            soot_sum += soot_density;
+            if(ii = 0||i==nlength-1){  // trapezoidal rule
+              soot_sum += soot_density;
+            }
+            else{
+              soot_sum += 2.0*soot_density;
+            }
+            if(soot_density>100.0||mesh_try==NULL)break;  // in a blockage or outside of domain
+          }
+          arg = mass_extinct*soot_sum*ddlength/2.0;
+          if(arg>9.0){ // exp(-9) ~ 0.0001
+            opacity = 0.0;
+          }
+          else{
+            opacity = exp(-arg);  // fraction of light reaching xyz
           }
         }
       }
     }
   }
   return 0;
+}
+
+
+/* ------------------ InitAllLightFractions ------------------------ */
+
+void InitAllLightFractions(float *xyz_light, int light_type){
+  int i;
+
+  update_boxbounds = 1;
+  for(i=0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    InitLightFractions(meshi, xyz_light, light_type);
+  }
 }
 
 
