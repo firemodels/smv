@@ -413,7 +413,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
 
   FREEMEMORY(meshi->light_fraction);
   FREEMEMORY(meshi->uc_light_fraction);
-  ntotal = ntimes*(ibar + 1)*(jbar + 1)*(ibar + 1);
+  ntotal = ntimes*(ibar + 1)*(jbar + 1)*(kbar + 1);
   NewMemory((void **)&meshi->light_fraction,  ntotal*sizeof(float));
   light_fraction = meshi->light_fraction;
 //  NewMemory((void **)&meshi->uc_light_fraction,  ntotal*sizeof(unsigned char));
@@ -462,7 +462,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
             xyz[1] = xyz1[1] * (1.0 - factor) + xyz2[1] * factor;
             xyz[2] = xyz1[2] * (1.0 - factor) + xyz2[2] * factor;
             soot_density = GetSootDensity(xyz, itime, &mesh_try);
-            if(ii = 0||i==nlength-1){  // trapezoidal rule
+            if(ii == 0||ii==nlength-1){  // trapezoidal rule
               soot_sum += soot_density;
             }
             else{
@@ -483,7 +483,6 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
       }
     }
   }
-  printf("ntotal=%i ncount=%i\n", ntotal, ncount);
   return 0;
 }
 
