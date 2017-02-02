@@ -243,10 +243,14 @@ void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, f
     if(dxyz[i] != 0.0){
       float tval1;
 
-      tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
-      if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
-      tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
-      if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      if(dxyz[i]>0.0){
+        tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
+        if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      }
+      else{
+        tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
+        if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
+      }
     }
   }
   if(tval >= TMAX) tval = 0.0;
@@ -350,13 +354,14 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   float xyz1[3],xyz2[3];
   float *xplt, *yplt, *zplt, dxyz[3];
   int ibar, jbar, kbar;
-  int itime, ntimes;
+  int itime, ntimes, ntotal, ncount;
   volrenderdata *vr;
   slicedata *slice_soot;
+  float *light_fraction;
 
   vr = &(meshi->volrenderinfo);
   slice_soot = vr->smokeslice;
-  ntimes = slice_soot->ntimes;
+  ntimes = vr->ntimes;
 
   if(update_boxbounds == 1){
     int i;
@@ -406,32 +411,40 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   jbar = meshi->jbar;
   kbar = meshi->kbar;
 
-  for(itime = 0;itime<ntimes;itime++){
-    int i;
+  FREEMEMORY(meshi->light_fraction);
+  FREEMEMORY(meshi->uc_light_fraction);
+  ntotal = ntimes*(ibar + 1)*(jbar + 1)*(ibar + 1);
+  NewMemory((void **)&meshi->light_fraction,  ntotal*sizeof(float));
+  light_fraction = meshi->light_fraction;
+//  NewMemory((void **)&meshi->uc_light_fraction,  ntotal*sizeof(unsigned char));
 
-    for(i = 0; i<=ibar; i++){
+  ncount = 0;
+  for(itime = 0;itime<ntimes;itime++){
+    int k;
+
+    for(k = 0; k<=kbar; k++){
     int j;
 
-      xyz1[0] = xplt[i];
+      xyz1[2] = zplt[k];
       for(j = 0; j <= jbar; j++){
-        int k;
+        int i;
 
         xyz1[1] = yplt[j];
-        for(k = 0; k <= kbar; k++){
+        for(i = 0; i <= ibar; i++){
           float dxyz2[3], dxyzlight[3], length;
           float soot_sum, opacity, arg;
           float ddlength;
           int ii,nlength;
           meshdata *mesh_try;
 
-          xyz1[2] = zplt[k];
+          xyz1[0] = xplt[i];
           if(light_type == LOCAL_LIGHT){
             VEC3DIFF(dxyz, xyz1, xyz_light);
             NORMALIZE3(dxyz);
           }
           GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
           nlength = length / dlength + 1;
-          ddlength = length / (float)(nlength - 1);
+          if(nlength>1)ddlength = length / (float)(nlength - 1);
 
           mesh_try = meshi;
 
@@ -440,6 +453,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
             float xyz[3], factor;
             float soot_density;
 
+            if(nlength == 1)break;
             factor = (float)ii / (float)(nlength - 1);
 
             xyz[0] = xyz1[0] * (1.0 - factor) + xyz2[0] * factor;
@@ -461,10 +475,13 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
           else{
             opacity = exp(-arg);  // fraction of light reaching xyz
           }
+          *light_fraction++ = opacity;
+          ncount++;
         }
       }
     }
   }
+  printf("ntotal=%i ncount=%i\n", ntotal, ncount);
   return 0;
 }
 
