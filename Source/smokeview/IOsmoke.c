@@ -422,6 +422,8 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   for(itime = 0;itime<ntimes;itime++){
     int k;
 
+    printf("time step: %i\n", itime);
+
     for(k = 0; k<=kbar; k++){
     int j;
 
