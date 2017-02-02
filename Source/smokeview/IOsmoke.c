@@ -329,7 +329,6 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   int ijk;
   meshdata *mesh_soot;
   float soot_val=0.0, *slice_vals;
-  slicedata *slice_soot;
   volrenderdata *vr;
 
   ijk = GetCellindex(xyz, mesh_try);
@@ -337,10 +336,10 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   mesh_soot = *mesh_try;
   if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID)return 1000000.0;
   vr = &(mesh_soot->volrenderinfo);
-  slice_soot = vr->smokeslice;
-  if(slice_soot==NULL||slice_soot->qslicedata==NULL)return 0.0;
-  itime = CLAMP(itime,0,slice_soot->ntimes-1);
-  slice_vals = slice_soot->qslicedata + itime*slice_soot->nsliceijk;
+  if(vr->smokedataptrs ==NULL)return 0.0;
+  itime = CLAMP(itime,0, vr->ntimes -1);
+  if(vr->smokedataptrs[itime] == NULL)return 0.0;
+  slice_vals = vr->smokedataptrs[itime];
   soot_val = slice_vals[ijk];
   return soot_val;
 }
