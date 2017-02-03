@@ -357,6 +357,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   volrenderdata *vr;
   slicedata *slice_soot;
   float *light_fraction;
+  int ni, nj, nk;
 
   vr = &(meshi->volrenderinfo);
   slice_soot = vr->smokeslice;
@@ -409,6 +410,9 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   kbar = meshi->kbar;
+  ni = ibar+1;
+  nj = jbar+1;
+  nk = kbar+1;
 
   FREEMEMORY(meshi->light_fraction);
   FREEMEMORY(meshi->uc_light_fraction);
@@ -424,7 +428,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
     printf("time step: %i\n", itime);
 
     for(k = 0; k<=kbar; k++){
-    int j;
+      int j;
 
       xyz1[2] = zplt[k];
       for(j = 0; j <= jbar; j++){
@@ -476,15 +480,75 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
           else{
             opacity = exp(-arg);  // fraction of light reaching xyz
           }
-          *light_fraction++ = opacity;
+          //    C_val(i,j,k) = i*nj*nk + j*nk + k
+          // Fort_val(i,j,k) = i + j*ni + k*ni*nj
+          light_fraction[i+j*ni+k*ni*nj] = opacity;
           ncount++;
         }
       }
     }
+    light_fraction += ni*nj*nk;
   }
   return 0;
 }
 
+/* ------------------ LightFractions2File ------------------------ */
+
+void LightFractions2File(meshdata *meshi){
+  char longlabel[30], shortlabel[30], unitlabel[30], slicefile[256];
+  int len_longlabel, len_shortlabel, len_unitlabel, len_slicefile;
+  int meshnum;
+  char smvlight_file[256];
+  FILE *slicesmv = NULL;
+  int fileunit = 20;
+  int is1, is2, js1, js2, ks1, ks2;
+  int ntimes;
+  volrenderdata *vr;
+  int ibar, jbar, kbar;
+
+  vr = &(meshi->volrenderinfo);
+
+  strcpy(smvlight_file,fdsprefix);
+  strcat(smvlight_file,"_fraction_smv.txt");
+  if(meshi==meshinfo){
+    slicesmv = fopen(smvlight_file, "w");
+  }
+  else{
+    slicesmv = fopen(smvlight_file, "w");
+  }
+  meshnum = (int)(meshi-meshinfo)+1;
+  sprintf(slicefile, "%s_frac_%i.sf", fdsprefix, meshnum);
+  len_slicefile = strlen(slicefile);
+
+  strcpy(longlabel, "light fraction");
+  len_longlabel = strlen(longlabel);
+
+  strcpy(shortlabel, "frac");
+  len_shortlabel = strlen(shortlabel);
+
+  strcpy(unitlabel, " ");
+  len_unitlabel = strlen(unitlabel);
+
+  is1 = 0;
+  is2 = meshi->ibar;
+
+  js1 = 0;
+  js2 = meshi->jbar;
+
+  ks1 = 0;
+  ks2 = meshi->kbar;
+
+  fprintf(slicesmv, "SLCF %i & %i %i %i %i %i %i\n", meshnum, is1, is2, js1, js2, ks1, ks2);
+  fprintf(slicesmv, " %s\n", slicefile);
+  fprintf(slicesmv, " %s\n", longlabel);
+  fprintf(slicesmv, " %s\n", shortlabel);
+  fprintf(slicesmv, " %s\n", unitlabel);
+  fclose(slicesmv);
+
+  FORTwriteslicedata2(&fileunit, slicefile, longlabel, shortlabel, unitlabel,
+    &is1, &is2, &js1, &js2, &ks1, &ks2,
+    meshi->light_fraction, vr->times, &vr->ntimes, len_slicefile, len_longlabel, len_shortlabel, len_unitlabel);
+}
 
 /* ------------------ InitAllLightFractions ------------------------ */
 
@@ -497,6 +561,7 @@ void InitAllLightFractions(float *xyz_light, int light_type){
 
     meshi = meshinfo+i;
     InitLightFractions(meshi, xyz_light, light_type);
+    LightFractions2File(meshi);
   }
 }
 
