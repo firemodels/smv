@@ -293,7 +293,9 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
     boxmin = meshi->boxmin;
     boxmax = meshi->boxmax;
     dbox = meshi->dbox;
-    if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] && boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
+    if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
+		boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && 
+		boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
       int nx, ny, nxy, ijk;
       int ix, iy, iz;
       int ibar, jbar, kbar;
@@ -335,7 +337,9 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   ijk = GetCellindex(xyz, mesh_try);
   if(mesh_try == NULL || *mesh_try == NULL|| ijk<0)return 0.0;
   mesh_soot = *mesh_try;
-  if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID)return 1000000.0;
+  if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID){
+	  return 1000000.0;
+  }
   vr = &(mesh_soot->volrenderinfo);
   if(vr->smokedataptrs ==NULL)return 0.0;
   itime = CLAMP(itime,0, vr->ntimes -1);
@@ -400,7 +404,10 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
     float norm;
 
     VEC3EQ(dxyz, xyz_light);
-    norm = NORM3(dxyz);
+	dxyz[0] = -dxyz[0];
+	dxyz[1] = -dxyz[1];
+	dxyz[2] = -dxyz[2];
+	norm = NORM3(dxyz);
     if(norm == 0.0)return 1;
     VEC3DA(dxyz, norm);
   }
@@ -450,30 +457,33 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
           }
           GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
           nlength = length / dlength + 1;
+		  ddlength = 0.0;
           if(nlength>1)ddlength = length / (float)(nlength - 1);
 
           mesh_try = meshi;
 
           soot_sum = 0.0;
-          for(ii = 0;ii < nlength;ii++){
-            float xyz[3], factor;
-            float soot_density;
+		  if(nlength>1){
+            for(ii = 0;ii < nlength;ii++){
+              float xyz[3], factor;
+              float soot_density;
 
-            if(nlength == 1)break;
-            factor = (float)ii / (float)(nlength - 1);
+              if(nlength == 1)break;
+              factor = (float)ii / (float)(nlength - 1);
 
-            xyz[0] = xyz1[0] * (1.0 - factor) + xyz2[0] * factor;
-            xyz[1] = xyz1[1] * (1.0 - factor) + xyz2[1] * factor;
-            xyz[2] = xyz1[2] * (1.0 - factor) + xyz2[2] * factor;
-            soot_density = GetSootDensity(xyz, itime, &mesh_try);
-            if(ii == 0||ii==nlength-1){  // trapezoidal rule
-              soot_sum += soot_density;
+              xyz[0] = xyz1[0] * (1.0 - factor) + xyz2[0] * factor;
+              xyz[1] = xyz1[1] * (1.0 - factor) + xyz2[1] * factor;
+              xyz[2] = xyz1[2] * (1.0 - factor) + xyz2[2] * factor;
+              soot_density = GetSootDensity(xyz, itime, &mesh_try);
+              if(ii == 0||ii==nlength-1){  // trapezoidal rule
+                soot_sum += soot_density;
+              }
+              else{
+                soot_sum += 2.0*soot_density;
+              }
+              if(mesh_try==NULL)break;  // outside of domain
             }
-            else{
-              soot_sum += 2.0*soot_density;
-            }
-            if(soot_density>100.0||mesh_try==NULL)break;  // in a blockage or outside of domain
-          }
+		  }
           arg = mass_extinct*soot_sum*ddlength/2.0;
           if(arg>9.0){ // exp(-9) ~ 0.0001
             opacity = 0.0;
