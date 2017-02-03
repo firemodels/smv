@@ -29,6 +29,7 @@
 #define FORTgetsizesa _F(getsizesa)
 #define FORTgetslicesizes _F(getslicesizes)
 #define FORTwriteslicedata _F(writeslicedata)
+#define FORTwriteslicedata2 _F(writeslicedata2)
 #define FORTgetslicedata _F(getslicedata)
 #define FORTgetplot3dq _F(getplot3dq)
 #define FORTgetsliceparms _F(getsliceparms)
@@ -89,6 +90,9 @@ STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int 
 STDCALLF FORTwriteslicedata(int *file_unit,char *slicefilename,
                             int *is1,int *is2,int *js1,int *js2,int *ks1,int *ks2,
                             float *qdata,float *times,int *ntimes, int *redirect,FILE_SIZE slicefilelen);
+STDCALLF FORTwriteslicedata2(int *file_unit, char *slicefilename, char *longlabel, char *shortlabel, char *unitlabel,
+                          int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2,
+                          float *qdata, float *times, int *ntimes, FILE_SIZE slicefilelen, FILE_SIZE longfilelen, FILE_SIZE shortfilelen, FILE_SIZE unitfilelen);
 STDCALLF FORTgetslicedata(int *file_unit,char *slicefilename, char *shortlabels,
                           int *is1,int *is2,int *js1,int *js2, int *ks1,int *ks2,
                           int *idir, float *qslicemin,float *qslicemax,

@@ -1,7 +1,3 @@
-! $Date$
-! $Revision$
-! $Author$
-
 !  WRITE(LU_GEOM) ONE
 !  WRITE(LU_GEOM) VERSION
 !  WRITE(LU_GEOM) STIME  ! first time step
@@ -334,7 +330,6 @@ end subroutine getdirval
 subroutine writeslicedata(file_unit,slicefilename,is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes,redirect_flag)
 implicit none
 
-
 integer, intent(in) :: file_unit
 character(len=*),intent(in) :: slicefilename
 integer, intent(in) :: is1, is2, js1, js2, ks1, ks2, redirect_flag
@@ -379,6 +374,56 @@ close(file_unit)
 
 return
 end subroutine writeslicedata
+
+!  ------------------ writeslicedata2 ------------------------
+
+subroutine writeslicedata2(file_unit,slicefilename,&
+   longlabel,shortlabel,unitlabel,&
+   is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes)
+implicit none
+
+integer, intent(in) :: file_unit
+character(len=*),intent(in) :: slicefilename, longlabel, shortlabel, unitlabel
+integer, intent(in) :: is1, is2, js1, js2, ks1, ks2
+real, intent(in), dimension(*) :: qdata
+real, intent(in), dimension(*) :: times
+integer, intent(in) :: ntimes
+
+logical :: connected
+integer :: error
+character(len=30) :: longlabel30, shortlabel30, unitlabel30
+integer :: ibeg, iend, nframe
+integer :: nxsp, nysp, nzsp
+integer :: i,ii
+inquire(unit=file_unit,opened=connected)
+if(connected)close(file_unit)
+
+open(unit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
+
+longlabel30 = trim(longlabel)
+shortlabel30 = trim(shortlabel)
+unitlabel30 = trim(unitlabel)
+
+write(file_unit,iostat=error)longlabel30
+write(file_unit,iostat=error)shortlabel30
+write(file_unit,iostat=error)unitlabel30
+
+write(file_unit,iostat=error)is1, is2, js1, js2, ks1, ks2
+nxsp = is2 + 1 - is1
+nysp = js2 + 1 - js1
+nzsp = ks2 + 1 - ks1
+nframe=nxsp*nysp*nzsp
+do i = 1, ntimes
+  write(file_unit)times(i)
+  ibeg=1+(i-1)*nframe
+  iend=i*nframe
+  write(file_unit)(qdata(ii),ii=ibeg,iend)
+end do
+
+close(file_unit)
+
+return
+end subroutine writeslicedata2
 
 !  ------------------ getslicedata ------------------------
 

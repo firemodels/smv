@@ -644,7 +644,7 @@ int LastVSliceLoadstack(void){
   return return_val;
 }
 
-/* ------------------ out_slice ------------------------ */
+/* ------------------ OutSlicefile ------------------------ */
 
 void OutSlicefile(slicedata *sd){
   int file_unit=20,slicefilelen;
