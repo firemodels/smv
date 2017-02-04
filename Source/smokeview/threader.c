@@ -182,10 +182,10 @@ void Update_All_Patch_Bounds(void){
 }
 #endif
 
-/* ------------------ mt_read_volsmoke_allframes_allmeshes2 ------------------------ */
+/* ------------------ mt_ReadVolsmokeAllFramesAllMeshes2 ------------------------ */
 
 #ifdef pp_THREAD
-void mt_read_volsmoke_allframes_allmeshes2(void){
-  pthread_create(&read_volsmoke_id,NULL,read_volsmoke_allframes_allmeshes2,NULL);
+void mt_ReadVolsmokeAllFramesAllMeshes2(void){
+  pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif

@@ -179,7 +179,7 @@ EXTERNCPP void drawfilledrectangle(float width, float height, unsigned char *rgb
 EXTERNCPP void drawrectangle(float width, float height, unsigned char *rgbcolor);
 EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
-EXTERNCPP void define_volsmoke_textures(void);
+EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void set_colorbar_list_index(int val);
 EXTERNCPP int get_colorbar_list_index(void);
 EXTERNCPP int get_colorbar_index(int flag, int x, int y);
@@ -322,7 +322,7 @@ EXTERNCPP int init_shaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
-EXTERNCPP void LoadVolSmokeShaders(void);
+EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
 EXTERNCPP void next_xindex(int inc,int flag);
@@ -515,7 +515,7 @@ EXTERNCPP void Motion_CB(int var);
 #ifdef pp_GPU
 EXTERNCPP void drawsmoke3dGPU(smoke3ddata *smoke3di);
 #endif
-EXTERNCPP void drawsmoke3dVOL(void);
+EXTERNCPP void DrawSmoke3DVOL(void);
 #ifdef pp_CULL
 EXTERNCPP void drawsmoke3dCULL(void);
 #endif

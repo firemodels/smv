@@ -604,12 +604,12 @@ int is_fire_or_soot(smoke3ddata *smoke3di){
 void draw_smokeframe(void){
   CheckMemory;
   if(showvolrender==1&&smoke3dVoldebug==1){
-    drawsmoke3dVOLdebug();
+    DrawSmoke3DVOLdebug();
   }
 #ifdef pp_GPU
   if(usegpu==1){
     if(showvolrender==1){
-      LoadVolSmokeShaders();
+      LoadVolsmokeShaders();
     }
     else{
       LoadSmokeShaders();
@@ -651,17 +651,17 @@ void draw_smokeframe(void){
 #ifdef pp_GPU
       if(usegpu==1){
       //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-        SNIFF_ERRORS("before drawsmoke3dGPUVOL");
-        drawsmoke3dGPUVOL();
-        SNIFF_ERRORS("after drawsmoke3dGPUVOL");
+        SNIFF_ERRORS("before DrawSmoke3DGPUVOL");
+        DrawSmoke3DGPUVOL();
+        SNIFF_ERRORS("after DrawSmoke3DGPUVOL");
       //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       }
       else{
-        drawsmoke3dVOL();
-        SNIFF_ERRORS("after drawsmoke3dVOL");
+        DrawSmoke3DVOL();
+        SNIFF_ERRORS("after DrawSmoke3DVOL");
       }
 #else
-      drawsmoke3dVOL();
+      DrawSmoke3DVOL();
 #endif
     }
   }

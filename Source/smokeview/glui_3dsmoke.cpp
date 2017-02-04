@@ -12,7 +12,7 @@ extern GLUI_Rollout *ROLLOUT_smoke3d;
 extern GLUI *glui_bounds;
 
 extern "C" void Smoke3d_CB(int var);
-extern "C" void init_volrender_surface(int firstcall);
+extern "C" void InitVolRenderSurface(int firstcall);
 
 #define FIRE_RED 1
 #define FIRE_GREEN 2
@@ -170,7 +170,7 @@ GLUI_StaticText *TEXT_smokealpha=NULL;
 GLUI_StaticText *TEXT_smokedepth=NULL;
 
 
-extern "C" void UnLoadVolSmoke3DMenu(int var);
+extern "C" void UnLoadVolsmoke3DMenu(int var);
 
 #define VOLRENDER_ROLLOUT 0
 #define SLICERENDER_ROLLOUT 1
@@ -654,7 +654,7 @@ extern "C" void Smoke3d_CB(int var){
     light_type_global = light_type_glui;
     break;
   case VOL_UNLOAD_ALL:
-    UnLoadVolSmoke3DMenu(-1);
+    UnLoadVolsmoke3DMenu(-1);
     break;
   case VOL_PREFIX:
     break;
@@ -689,12 +689,12 @@ extern "C" void Smoke3d_CB(int var){
     InitVolrenderScript(vol_prefixptr, tour_label, vol_startframe0, vol_skipframe0);
     break;
   case NONGPU_VOL_FACTOR:
-    init_volrender_surface(NOT_FIRSTCALL);
+    InitVolRenderSurface(NOT_FIRSTCALL);
     break;
   case GPU_VOL_FACTOR:
     break;
   case COMBINE_MESHES:
-    define_volsmoke_textures();
+    DefineVolsmokeTextures();
     break;
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap(smoke_render_option);

@@ -2983,7 +2983,7 @@ void DoScript(void){
         script_loadvolsmokeframe2();
         remove_frame=current_script_command->remove_frame;
         if(remove_frame>=0){
-          unload_volsmoke_frame_allmeshes(remove_frame);
+          UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
       if(current_script_command->command==SCRIPT_ISORENDERALL){
@@ -2992,7 +2992,7 @@ void DoScript(void){
         script_loadisoframe2(current_script_command);
         remove_frame = current_script_command->remove_frame;
         if(remove_frame>=0){
-          //unload_volsmoke_frame_allmeshes(remove_frame);
+          //UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
     }

@@ -195,8 +195,8 @@
 void AddScriptList(char *file, int id);
 void UpdateGluiRender(void);
 void PropMenu(int value);
-void UnLoadVolSmoke3DMenu(int value);
-void LoadVolSmoke3DMenu(int value);
+void UnLoadVolsmoke3DMenu(int value);
+void LoadVolsmoke3DMenu(int value);
 void UpdateScriptStep(void);
 #define ISO_COLORS 4
 void IsoCB(int var);
@@ -2478,7 +2478,7 @@ void LoadUnloadMenu(int value){
       ReadHRR(UNLOAD, &errorcode);
     }
     if(nvolrenderinfo>0){
-      LoadVolSmoke3DMenu(UNLOAD_ALL);
+      LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
     for(i = 0; i < nsliceinfo; i++){
       slicedata *slicei;
@@ -2505,7 +2505,7 @@ void LoadUnloadMenu(int value){
       readsmoke3d(i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
-      UnLoadVolSmoke3DMenu(UNLOAD_ALL);
+      UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
     updatemenu=1;
     glutPostRedisplay();
@@ -3353,9 +3353,9 @@ void UnloadMultiSliceMenu(int value){
   }
 }
 
-/* ------------------ ShowVolSmoke3DMenu ------------------------ */
+/* ------------------ ShowVolsmoke3DMenu ------------------------ */
 
-void ShowVolSmoke3DMenu(int value){
+void ShowVolsmoke3DMenu(int value){
   int i;
 
   if(value==MENU_DUMMY)return;
@@ -3406,9 +3406,9 @@ void ShowVolSmoke3DMenu(int value){
   glutPostRedisplay();
 }
 
-/* ------------------ UnLoadVolSmoke3DMenu ------------------------ */
+/* ------------------ UnLoadVolsmoke3DMenu ------------------------ */
 
-void UnLoadVolSmoke3DMenu(int value){
+void UnLoadVolsmoke3DMenu(int value){
   int i;
 
   if(value==MENU_DUMMY)return;
@@ -3424,7 +3424,7 @@ void UnLoadVolSmoke3DMenu(int value){
         vr = &(meshi->volrenderinfo);
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         if(vr->loaded==1){
-          unload_volsmoke_allframes(vr);
+          UnloadVolsmokeAllFrames(vr);
         }
       }
     }
@@ -3436,7 +3436,7 @@ void UnLoadVolSmoke3DMenu(int value){
     meshi = meshinfo + value;
     vr = &(meshi->volrenderinfo);
     if(vr->fireslice!=NULL||vr->smokeslice!=NULL||vr->lightslice!=NULL){
-      unload_volsmoke_allframes(vr);
+      UnloadVolsmokeAllFrames(vr);
     }
   }
   updatemenu=1;
@@ -3444,9 +3444,9 @@ void UnLoadVolSmoke3DMenu(int value){
   glutPostRedisplay();
 }
 
-/* ------------------ LoadVolSmoke3DMenu ------------------------ */
+/* ------------------ LoadVolsmoke3DMenu ------------------------ */
 
-void LoadVolSmoke3DMenu(int value){
+void LoadVolsmoke3DMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
   glutSetCursor(GLUT_CURSOR_WAIT);
@@ -3464,7 +3464,7 @@ void LoadVolSmoke3DMenu(int value){
       }
       if(read_vol_mesh==VOL_READNONE){
         read_vol_mesh=value;
-        read_volsmoke_allframes_allmeshes();
+        ReadVolsmokeAllFramesAllMeshes();
       }
       else{
         fprintf(stderr,"*** Warning: 3D smoke is currently being loaded\n");
@@ -3474,7 +3474,7 @@ void LoadVolSmoke3DMenu(int value){
   }
   else if(value==UNLOAD_ALL){  // unload all
     if(read_vol_mesh==VOL_READNONE){
-      UnLoadVolSmoke3DMenu(value);
+      UnLoadVolsmoke3DMenu(value);
     }
       else{
         if(read_vol_mesh==VOL_UNLOAD){
@@ -3494,7 +3494,7 @@ void LoadVolSmoke3DMenu(int value){
     }
     if(read_vol_mesh==VOL_READNONE){
       read_vol_mesh=VOL_READALL;
-      read_volsmoke_allframes_allmeshes();
+      ReadVolsmokeAllFramesAllMeshes();
     }
     else{
       if(read_vol_mesh==VOL_UNLOAD){
@@ -7127,7 +7127,7 @@ updatemenu=0;
  /* --------------------------------Show Volume smoke menu -------------------------- */
 
   if(nvolsmoke3dloaded>0){
-    CREATEMENU(showvolsmoke3dmenu,ShowVolSmoke3DMenu);
+    CREATEMENU(showvolsmoke3dmenu,ShowVolsmoke3DMenu);
     if(nvolsmoke3dloaded>1){
       char vlabel[256];
 
@@ -8649,7 +8649,7 @@ updatemenu=0;
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
     if(nvolsmoke3dloaded>0){
-      CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolSmoke3DMenu);
+      CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
       if(nvolsmoke3dloaded>1){
         char vlabel[256];
 
@@ -8669,7 +8669,7 @@ updatemenu=0;
       }
     }
     if(nvolrenderinfo>0){
-      CREATEMENU(loadvolsmoke3dmenu,LoadVolSmoke3DMenu);
+      CREATEMENU(loadvolsmoke3dmenu,LoadVolsmoke3DMenu);
       if(nvolrenderinfo>1){
         char vlabel[256];
 

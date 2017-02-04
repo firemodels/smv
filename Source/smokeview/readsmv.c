@@ -8685,8 +8685,8 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
-  init_volrender();
-  init_volrender_surface(FIRSTCALL);
+  InitVolRender();
+  InitVolRenderSurface(FIRSTCALL);
 
 #ifdef pp_CULL
 
@@ -9002,7 +9002,7 @@ int ReadINI2(char *inifile, int localfile){
       ONEORZERO(load_at_rendertimes);
       fire_opacity_factor = CLAMP(fire_opacity_factor, 1.0, 10.0);
       mass_extinct = CLAMP(mass_extinct, 100.0, 100000.0);
-      init_volrender_surface(NOT_FIRSTCALL);
+      InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){

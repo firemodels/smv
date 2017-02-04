@@ -254,9 +254,9 @@ int set3DSliceShaders(void){
   return error_code;
 }
 
-/* ------------------ setVolSmokeShaders ------------------------ */
+/* ------------------ setVolsmokeShaders ------------------------ */
 
-int setVolSmokeShaders(){
+int setVolsmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -652,9 +652,9 @@ void LoadSmokeShaders(void){
   glUseProgramObjectARB(p_smoke);
 }
 
-/* ------------------ LoadVolSmokeShaders ------------------------ */
+/* ------------------ LoadVolsmokeShaders ------------------------ */
 
-void LoadVolSmokeShaders(void){
+void LoadVolsmokeShaders(void){
   glUseProgramObjectARB(p_volsmoke);
 }
 
@@ -691,7 +691,7 @@ int init_shaders(void){
       usegpu=0;
       err=1;
     }
-    if(setVolSmokeShaders()==1){
+    if(setVolsmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
 #endif

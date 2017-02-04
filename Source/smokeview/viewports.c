@@ -1174,9 +1174,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       getvolsmokedir(modelview_scratch);
       SNIFF_ERRORS("after getvolsmokedir");
 #ifdef pp_GPU
-      if(usegpu==0)compute_all_smokecolors();
+      if(usegpu==0)ComputeAllSmokecolors();
 #else
-      compute_all_smokecolors();
+      ComputeAllSmokecolors();
 #endif
     }
     if(nsmoke3dinfo>0&&show3dsmoke==1){

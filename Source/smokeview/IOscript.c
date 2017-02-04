@@ -931,11 +931,11 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
 
       meshi = meshinfo + i;
       vr = &meshi->volrenderinfo;
-      free_volsmoke_frame(vr, framenum);
-      read_volsmoke_frame(vr, framenum, &first);
+      FreeVolsmokeFrame(vr, framenum);
+      ReadVolsmokeFrame(vr, framenum, &first);
       if(vr->times_defined == 0){
         vr->times_defined = 1;
-        get_volsmoke_all_times(vr);
+        GetVolsmokeAllTimes(vr);
       }
       vr->loaded = 1;
       vr->display = 1;
@@ -1174,7 +1174,7 @@ void script_loadvolsmoke(scriptdata *scripti){
   imesh = scripti->ival;
   if(imesh==-1){
     read_vol_mesh=VOL_READALL;
-    read_volsmoke_allframes_allmeshes2(NULL);
+    ReadVolsmokeAllFramesAllMeshes2(NULL);
   }
   else if(imesh>=0&&imesh<nmeshes){
     meshdata *meshi;
@@ -1182,7 +1182,7 @@ void script_loadvolsmoke(scriptdata *scripti){
 
     meshi = meshinfo + imesh;
     vr = &meshi->volrenderinfo;
-    read_volsmoke_allframes(vr);
+    ReadVolsmokeAllFrames(vr);
   }
 }
 
