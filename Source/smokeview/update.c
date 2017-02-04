@@ -61,13 +61,14 @@ void UpdateFrameNumber(int changetime){
       for(imesh=0;imesh<nmeshes;imesh++){
         meshdata *meshi;
         volrenderdata *vr;
-        slicedata *fireslice, *smokeslice;
+        slicedata *fireslice, *smokeslice, *lightslice;
         int j;
 
         meshi = meshinfo + imesh;
         vr = &(meshi->volrenderinfo);
         fireslice=vr->fireslice;
         smokeslice=vr->smokeslice;
+        lightslice=vr->lightslice;
         if(fireslice==NULL||smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         vr->itime = vr->timeslist[itimes];
@@ -75,6 +76,7 @@ void UpdateFrameNumber(int changetime){
           if(vr->dataready[j]==1)break;
         }
         vr->itime=j;
+
         if(smokeslice!=NULL&&vr->itime>=0){
           if(vr->is_compressed==1||load_volcompressed==1){
             unsigned char *c_smokedata_compressed;
@@ -94,6 +96,7 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
+
         if(fireslice!=NULL&&vr->itime>=0){
           if(vr->is_compressed==1||load_volcompressed==1){
             unsigned char *c_firedata_compressed;
@@ -114,6 +117,28 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
+
+        if(lightslice!=NULL&&vr->itime>=0){
+          if(vr->is_compressed==1||load_volcompressed==1){
+            unsigned char *c_lightdata_compressed;
+            uLongf framesize;
+            float timeval;
+
+            c_lightdata_compressed = vr->lightdataptrs[vr->itime];
+            framesize = lightslice->nslicei*lightslice->nslicej*lightslice->nslicek;
+            uncompress_volsliceframe(c_lightdata_compressed,
+                           vr->lightdata_view, framesize, &timeval,
+                           vr->c_lightdata_view);
+
+            vr->lightdataptr = vr->lightdata_view;
+            CheckMemory;
+          }
+          else{
+            if(runscript==0)vr->lightdataptr = vr->lightdataptrs[vr->itime];
+          }
+          CheckMemory;
+        }
+
       }
     }
     for(i=0;i<ngeominfoptrs;i++){
@@ -1983,5 +2008,4 @@ void UpdateDisplay(void){
     update_vol_lights = 0;
     InitAllLightFractions(xyz_light_global, light_type_global);
   }
-
 }

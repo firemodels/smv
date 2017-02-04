@@ -3432,13 +3432,10 @@ void UnLoadVolSmoke3DMenu(int value){
   else{
     meshdata *meshi;
     volrenderdata *vr;
-    slicedata *fireslice, *smokeslice;
 
     meshi = meshinfo + value;
     vr = &(meshi->volrenderinfo);
-    fireslice = vr->fireslice;
-    smokeslice = vr->smokeslice;
-    if(fireslice!=NULL||smokeslice!=NULL){
+    if(vr->fireslice!=NULL||vr->smokeslice!=NULL||vr->lightslice!=NULL){
       unload_volsmoke_allframes(vr);
     }
   }
@@ -3456,14 +3453,11 @@ void LoadVolSmoke3DMenu(int value){
   if(value>=0){
     meshdata *meshi;
     volrenderdata *vr;
-    slicedata *fireslice, *smokeslice;
 
     update_smokecolorbar=1;
     meshi = meshinfo + value;
     vr = &(meshi->volrenderinfo);
-    fireslice = vr->fireslice;
-    smokeslice = vr->smokeslice;
-    if(smokeslice!=NULL&&fireslice!=NULL){
+    if(vr->smokeslice!=NULL&&vr->fireslice!=NULL){
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADVOLSMOKE\n");
         fprintf(scriptoutstream," %i\n",value);

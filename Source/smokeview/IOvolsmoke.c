@@ -18,9 +18,9 @@
 void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
-  float val000,val100,val010,val110;
-  float val001,val101,val011,val111;
-  float val00,val01,val10,val11;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float  val00,  val01,  val10,  val11;
   float val0, val1;
   int nx, ny, nxy;
   float dx, dy, dz;
@@ -29,15 +29,16 @@ void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, floa
   int ijkcell;
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
-  float *smokedata_local, *firedata_local;
-  float kfactor=8700.0;
-  float soot_density, temperature;
+  float *smokedata_local, *firedata_local, *lightdata_local;
+  float kfactor = 8700.0;
+  float soot_density, temperature, light_fraction;
   int index;
-  float black[]={0.0,0.0,0.0,1.0};
+  float black[] = {0.0,0.0,0.0,1.0};
   int slicetype;
 
   smokedata_local = meshi->volrenderinfo.smokedataptr;
-  firedata_local = meshi->volrenderinfo.firedataptr;
+  firedata_local  = meshi->volrenderinfo.firedataptr;
+  lightdata_local = meshi->volrenderinfo.lightdataptr;
   slicetype = meshi->volrenderinfo.smokeslice->slicetype;
 
   if(slicetype==SLICE_NODE_CENTER){
@@ -57,26 +58,26 @@ void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, floa
   dxbar = xplt[1]-xplt[0];
   dybar = yplt[1]-yplt[0];
   dzbar = zplt[1]-zplt[0];
-  xyz[0]+=dxbar/2.0;
-  xyz[1]+=dybar/2.0;
-  xyz[2]+=dzbar/2.0;
+  xyz[0] += dxbar/2.0;
+  xyz[1] += dybar/2.0;
+  xyz[2] += dzbar/2.0;
 
-  nx = ibar + 1;
-  ny = jbar + 1;
+  nx = ibar+1;
+  ny = jbar+1;
   nxy = nx*ny;
 
-  GETINDEX(i,xyz[0],xplt[0],dxbar,ibar);
-  GETINDEX(j,xyz[1],yplt[0],dybar,jbar);
-  GETINDEX(k,xyz[2],zplt[0],dzbar,kbar);
+  GETINDEX(i, xyz[0], xplt[0], dxbar, ibar);
+  GETINDEX(j, xyz[1], yplt[0], dybar, jbar);
+  GETINDEX(k, xyz[2], zplt[0], dzbar, kbar);
 
   if(blank_local!=NULL){
-    ijkcell=IJKCELL(i,j,k);
+    ijkcell = IJKCELL(i, j, k);
     if(blank_local[ijkcell]==SOLID){
-      *inobst=1;
+      *inobst = 1;
       return;
     }
     else{
-      *inobst=0;
+      *inobst = 0;
     }
   }
 
@@ -84,16 +85,16 @@ void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, floa
     float dtemp;
 
     if(slicetype==SLICE_NODE_CENTER){
-      ijk = IJKNODE(i,j,k);
+      ijk = IJKNODE(i, j, k);
 
-      dx = (xyz[0] - xplt[i])/dxbar;
-      dx = CLAMP(dx,0.0,1.0);
-      dy = (xyz[1] - yplt[j])/dybar;
-      dy = CLAMP(dy,0.0,1.0);
-      dz = (xyz[2] - zplt[k])/dzbar;
-      dz = CLAMP(dz,0.0,1.0);
+      dx = (xyz[0]-xplt[i])/dxbar;
+      dx = CLAMP(dx, 0.0, 1.0);
+      dy = (xyz[1]-yplt[j])/dybar;
+      dy = CLAMP(dy, 0.0, 1.0);
+      dz = (xyz[2]-zplt[k])/dzbar;
+      dz = CLAMP(dz, 0.0, 1.0);
 
-      vv = firedata_local + ijk;
+      vv = firedata_local+ijk;
       val000 = vv[0]; // i,j,k
       val100 = vv[1]; // i+1,j,k
 
@@ -109,35 +110,35 @@ void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, floa
       val011 = vv[0]; // i,j+1,k+1
       val111 = vv[1]; // i+1,j+1,k+1
 
-      val00 = MIX(dx,val100,val000);
-      val10 = MIX(dx,val110,val010);
-      val01 = MIX(dx,val101,val001);
-      val11 = MIX(dx,val111,val011);
-       val0 = MIX(dy, val10, val00);
-       val1 = MIX(dy, val11, val01);
-      temperature = MIX(dz,val1,val0);
+      val00 = MIX(dx, val100, val000);
+      val10 = MIX(dx, val110, val010);
+      val01 = MIX(dx, val101, val001);
+      val11 = MIX(dx, val111, val011);
+      val0 = MIX(dy, val10, val00);
+      val1 = MIX(dy, val11, val01);
+      temperature = MIX(dz, val1, val0);
     }
     else{
-      vv = firedata_local + IJKNODE(i+1,j+1,k+1);
+      vv = firedata_local+IJKNODE(i+1, j+1, k+1);
       temperature = *vv;
     }
     if(temperature<temperature_cutoff){
-      dtemp=(temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
-      GETINDEX(index,temperature,temperature_min,dtemp,(MAXSMOKERGB/2));
+      dtemp = (temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
+      GETINDEX(index, temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
     }
     else{
-      dtemp=(temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
-      GETINDEX(index,temperature,temperature_cutoff,dtemp,(MAXSMOKERGB/2));
-      index+=(MAXSMOKERGB/2);
+      dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
+      GETINDEX(index, temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
+      index += (MAXSMOKERGB/2);
     }
-    *smoke_color=rgb_volsmokecolormap+4*index;
+    *smoke_color = rgb_volsmokecolormap+4*index;
   }
   else{
-    *smoke_color=getcolorptr(black);
+    *smoke_color = getcolorptr(black);
   }
   if(smokedata_local!=NULL){
     if(slicetype==SLICE_NODE_CENTER){
-      vv = smokedata_local + ijk;
+      vv = smokedata_local+ijk;
       val000 = vv[0]; // i,j,k
       val100 = vv[1]; // i+1,j,k
 
@@ -153,20 +154,51 @@ void get_pt_smokecolor(float *smoke_tran, float **smoke_color, float dstep, floa
       val011 = vv[0]; // i,j+1,k+1
       val111 = vv[1]; // i+1,j+1,k+1
 
-      val00 = MIX(dx,val100,val000);
-      val10 = MIX(dx,val110,val010);
-      val01 = MIX(dx,val101,val001);
-      val11 = MIX(dx,val111,val011);
-       val0 = MIX(dy,val10,val00);
-       val1 = MIX(dy,val11,val01);
-      soot_density = MIX(dz,val1,val0);
+      val00 = MIX(dx, val100, val000);
+      val10 = MIX(dx, val110, val010);
+      val01 = MIX(dx, val101, val001);
+      val11 = MIX(dx, val111, val011);
+      val0 = MIX(dy, val10, val00);
+      val1 = MIX(dy, val11, val01);
+      soot_density = MIX(dz, val1, val0);
     }
     else{
-      vv = smokedata_local + IJKNODE(i+1,j+1,k+1);
+      vv = smokedata_local+IJKNODE(i+1, j+1, k+1);
       soot_density = *vv;
     }
-    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density*=fire_opacity_factor;
+    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
     *smoke_tran = exp(-kfactor*soot_density*dstep);
+  }
+  if(lightdata_local!=NULL){
+    if(slicetype==SLICE_NODE_CENTER){
+      vv = lightdata_local+ijk;
+      val000 = vv[0]; // i,j,k
+      val100 = vv[1]; // i+1,j,k
+
+      vv += nx;
+      val010 = vv[0]; // i,j+1,k
+      val110 = vv[1]; // i+1,j+1,k
+
+      vv += (nxy-nx);
+      val001 = vv[0]; // i,j,k+1
+      val101 = vv[1]; // i+1,j,k+1
+
+      vv += nx;
+      val011 = vv[0]; // i,j+1,k+1
+      val111 = vv[1]; // i+1,j+1,k+1
+
+      val00 = MIX(dx, val100, val000);
+      val10 = MIX(dx, val110, val010);
+      val01 = MIX(dx, val101, val001);
+      val11 = MIX(dx, val111, val011);
+      val0 = MIX(dy, val10, val00);
+      val1 = MIX(dy, val11, val01);
+      light_fraction = MIX(dz, val1, val0);
+    }
+    else{
+      vv = lightdata_local+IJKNODE(i+1, j+1, k+1);
+      light_fraction = *vv;
+    }
   }
 }
 
@@ -263,11 +295,17 @@ void init_volrender(void){
     meshi = meshinfo + i;
     vr = &(meshi->volrenderinfo);
     vr->rendermeshlabel=meshi->label;
+
     vr->fireslice=NULL;
     vr->smokeslice=NULL;
+    vr->lightslice = NULL;
+
+    vr->firepos = NULL;
+    vr->smokepos = NULL;
+    vr->lightpos = NULL;
+
     vr->timeslist=NULL;
-    vr->smokepos=NULL;
-    vr->firepos=NULL;
+
     vr->loaded=0;
     vr->display=0;
     vr->is_compressed=0;
@@ -299,6 +337,10 @@ void init_volrender(void){
       vr->smokeslice=slicei;
       continue;
     }
+    if(STRCMP(shortlabel, "frac")==0){
+      vr->lightslice = slicei;
+      continue;
+    }
   }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -307,10 +349,15 @@ void init_volrender(void){
     meshi = meshinfo + i;
     vr = &(meshi->volrenderinfo);
     vr->ntimes=0;
+
     vr->firedata_full=NULL;
     vr->smokedata_full=NULL;
+    vr->lightdata_full = NULL;
+
     vr->c_firedata_view=NULL;
     vr->c_smokedata_view=NULL;
+    vr->c_lightdata_view = NULL;
+
     if(vr->smokeslice!=NULL){
       int j;
 
@@ -318,18 +365,29 @@ void init_volrender(void){
       vr->ntimes=get_volsmoke_nframes(vr);
       if(vr->ntimes>0){
         NewMemory((void **)&vr->times,vr->ntimes*sizeof(float));
+        NewMemory((void **)&vr->dataready, vr->ntimes*sizeof(int));
+
         NewMemory((void **)&vr->firepos,vr->ntimes*sizeof(LINT));
         NewMemory((void **)&vr->smokepos,vr->ntimes*sizeof(LINT));
+        NewMemory((void **)&vr->lightpos, vr->ntimes*sizeof(LINT));
+
         NewMemory((void **)&vr->firedataptrs,vr->ntimes*sizeof(float *));
         NewMemory((void **)&vr->smokedataptrs,vr->ntimes*sizeof(float *));
-        NewMemory((void **)&vr->dataready,vr->ntimes*sizeof(int));
+        NewMemory((void **)&vr->lightdataptrs, vr->ntimes*sizeof(float *));
+
         NewMemory((void **)&vr->nfiredata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nsmokedata_compressed,vr->ntimes*sizeof(int));
+        NewMemory((void **)&vr->nlightdata_compressed, vr->ntimes*sizeof(int));
+
         for(j=0;j<vr->ntimes;j++){
-          vr->firedataptrs[j]=NULL;
-          vr->smokedataptrs[j]=NULL;
-          vr->nfiredata_compressed[j]=0;
-          vr->nsmokedata_compressed[j]=0;
+          vr->firedataptrs[j]  = NULL;
+          vr->smokedataptrs[j] = NULL;
+          vr->lightdataptrs[j] = NULL;
+
+          vr->nfiredata_compressed[j]  = 0;
+          vr->nsmokedata_compressed[j] = 0;
+          vr->nlightdata_compressed[j] = 0;
+
           vr->dataready[j]=0;
         }
       }
@@ -1243,11 +1301,13 @@ void set_super_index(meshdata *meshi, int dir){
   meshi->s_offset[dir]=index;
 }
 
-/* ------------------ update_volsmoke_supertexture ------------------------ */
+/* ------------------ UpdateVolsmokeSupertexture ------------------------ */
 
-void update_volsmoke_supertexture(supermeshdata *smesh){
+void UpdateVolsmokeSupertexture(supermeshdata *smesh){
   GLsizei ni, nj, nk;
   int i;
+
+  // smoke texture
 
   glActiveTexture(GL_TEXTURE0);
   for(i=0;i<smesh->nmeshes;i++){
@@ -1268,6 +1328,9 @@ void update_volsmoke_supertexture(supermeshdata *smesh){
 #endif
     glTexSubImage3D(GL_TEXTURE_3D,0,s_offset[0],s_offset[1],s_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, smokedataptr);
   }
+
+  // fire texture
+
   glActiveTexture(GL_TEXTURE1);
   for(i=0;i<smesh->nmeshes;i++){
     meshdata *meshi;
@@ -1289,6 +1352,33 @@ void update_volsmoke_supertexture(supermeshdata *smesh){
 
     glTexSubImage3D(GL_TEXTURE_3D,0,s_offset[0],s_offset[1],s_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, firedataptr);
   }
+
+  // light texture
+
+  glActiveTexture(GL_TEXTURE5);
+  for(i = 0;i<smesh->nmeshes;i++){
+    meshdata *meshi;
+    int *s_offset;
+    float *lightdataptr;
+
+    meshi = smesh->meshes[i];
+    lightdataptr = meshi->volrenderinfo.lightdataptr;
+    if(lightdataptr==NULL)continue;
+
+    s_offset = meshi->s_offset;
+
+    ni = meshi->ibar+1;
+    nj = meshi->jbar+1;
+    nk = meshi->kbar+1;
+#ifdef pp_GPUTHROTTLE
+    GPUnframes += 3*ni*nj*nk;
+#endif
+
+    glTexSubImage3D(GL_TEXTURE_3D, 0, s_offset[0], s_offset[1], s_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdataptr);
+  }
+
+  // blockage texture
+
   glActiveTexture(GL_TEXTURE3);
   for(i=0;i<smesh->nmeshes;i++){
     meshdata *meshi;
@@ -1309,11 +1399,18 @@ void update_volsmoke_supertexture(supermeshdata *smesh){
   glActiveTexture(GL_TEXTURE0);
 }
 
-/* ------------------ update_volsmoke_texture ------------------------ */
+/* ------------------ UpdateVolSmokeTexture ------------------------ */
 
-void update_volsmoke_texture(meshdata *meshi, float *smokedata_local, float *firedata_local){
+void UpdateVolSmokeTexture(meshdata *meshi){
   GLsizei ni, nj, nk;
   int ijk_offset[3]={0,0,0};
+  volrenderdata *vr;
+  float *smokedata_local, *firedata_local, *lightdata_local;
+
+  vr = &meshi->volrenderinfo;
+  smokedata_local = vr->smokedataptr;
+  firedata_local  = vr->firedataptr;
+  lightdata_local = vr->lightdataptr;
 
   //  glGetIntegerv(GL_MAX_TEXTURE_COORDS,&ntextures);
   ni = meshi->ibar+1;
@@ -1330,11 +1427,16 @@ void update_volsmoke_texture(meshdata *meshi, float *smokedata_local, float *fir
     glTexSubImage3D(GL_TEXTURE_3D,0,ijk_offset[0],ijk_offset[1],ijk_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, firedata_local);
   }
 
-  glActiveTexture(GL_TEXTURE3);
-  ni = meshi->ibar;
-  nj = meshi->jbar;
-  nk = meshi->kbar;
+  if(lightdata_local!=NULL){
+    glActiveTexture(GL_TEXTURE5);
+    glTexSubImage3D(GL_TEXTURE_3D, 0, ijk_offset[0], ijk_offset[1], ijk_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdata_local);
+  }
+
   if(meshi->f_iblank_cell!=NULL){
+    ni = meshi->ibar;
+    nj = meshi->jbar;
+    nk = meshi->kbar;
+    glActiveTexture(GL_TEXTURE3);
     glTexSubImage3D(GL_TEXTURE_3D, 0, ijk_offset[0], ijk_offset[1], ijk_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
   }
 
@@ -1445,7 +1547,7 @@ void drawsmoke3dGPUVOL(void){
   glUniform1f(GPUvol_temperature_max,temperature_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
 
-  SNIFF_ERRORS("after drawsmoke3dGPUVOL before loop");
+  SNIFF_ERRORS("after drawsmoke3dGPUVOL before update textures");
   if(use_transparency_data==1)TransparentOn();
   for(ii=0;ii<nvolfacelistinfo;ii++){
     volrenderdata *vr;
@@ -1496,16 +1598,17 @@ void drawsmoke3dGPUVOL(void){
     }
     if(newmesh==1){
       if(combine_meshes==1){
-        update_volsmoke_supertexture(meshi->super);
+        UpdateVolsmokeSupertexture(meshi->super);
       }
       else{
-        update_volsmoke_texture(meshi,vr->smokedataptr,vr->firedataptr);
+        UpdateVolSmokeTexture(meshi);
       }
     }
 
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+    SNIFF_ERRORS("before drawsmoke3dGPUVOL gpu defines");
     if(newmesh==1){
       glUniform1i(GPUvol_inside,inside);
       if(combine_meshes==1){
@@ -1546,6 +1649,7 @@ void drawsmoke3dGPUVOL(void){
 
       meshold=meshi;
     }
+    SNIFF_ERRORS("after drawsmoke3dGPUVOL before loop");
     glBegin(GL_TRIANGLES);
 
     switch(iwall){
@@ -1729,6 +1833,9 @@ void get_volsmoke_all_times(volrenderdata *vr){
     int ii;
 // 1,completion,version
 // 1,version,n_data_compressedm32,nbytes,n_data_in,time,valmin,valmax,data ....
+
+// smoke positions
+
     FSEEK(volstream,12,SEEK_SET);
     for(ii=0;ii<vr->ntimes;ii++){
       int ncompressed;
@@ -1742,6 +1849,9 @@ void get_volsmoke_all_times(volrenderdata *vr){
       vr->times[ii]=*time_local;
     }
     fclose(volstream);
+
+// fire positions
+
     volstream=NULL;
     if(vr->fireslice->vol_file!=NULL)volstream=fopen(vr->fireslice->vol_file,"rb");
     if(volstream!=NULL){
@@ -1756,6 +1866,23 @@ void get_volsmoke_all_times(volrenderdata *vr){
       }
       fclose(volstream);
     }
+
+// light positions
+
+    volstream = NULL;
+    if(vr->lightslice->vol_file!=NULL)volstream = fopen(vr->lightslice->vol_file, "rb");
+    if(volstream!=NULL){
+      FSEEK(volstream, 12, SEEK_SET);
+      for(ii = 0;ii<vr->ntimes;ii++){
+        int ncompressed;
+
+        vr->lightpos[ii] = FTELL(volstream);
+        if(fread(buffer, 1, 32, volstream)!=32)break;
+        ncompressed = *(int *)(buffer+8)-32;
+        if(FSEEK(volstream, ncompressed, SEEK_CUR)!=0)break;
+      }
+      fclose(volstream);
+    }
   }
 }
 
@@ -1763,7 +1890,7 @@ void get_volsmoke_all_times(volrenderdata *vr){
 
 void free_volsmoke_frame(volrenderdata *vr, int framenum){
   int i;
-  void *smokedataptr, *firedataptr;
+  void *smokedataptr, *firedataptr, *lightdataptr;
 
 //  for(i=0;i<vr->ntimes;i++){
   for(i=0;i<framenum;i++){
@@ -1776,29 +1903,36 @@ void free_volsmoke_frame(volrenderdata *vr, int framenum){
     firedataptr=vr->firedataptrs[i];
     FREEMEMORY(firedataptr);
     vr->firedataptrs[i]=NULL;
+
+    lightdataptr = vr->lightdataptrs[i];
+    FREEMEMORY(lightdataptr);
+    vr->lightdataptrs[i] = NULL;
   }
 }
 
 /* ------------------ read_volsmoke_frame ------------------------ */
 #define VOL_OFFSET 32
 void read_volsmoke_frame(volrenderdata *vr, int framenum, int *first){
-	slicedata *fireslice, *smokeslice;
+  slicedata *fireslice, *smokeslice, *lightslice;
   FILE *SLICEFILE;
   int framesize,framesize2;
   LINT skip_local;
-  float time_local, *smokeframe_data, *fireframe_data;
+  float time_local, *smokeframe_data, *fireframe_data, *lightframe_data;
   int endianswitch=0;
   char *meshlabel;
-  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL;
-  unsigned char *c_firedata_compressed2=NULL;
-  uLongf n_smokedata_compressed, n_firedata_compressed;
+  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL;
+  unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL;
+  uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed;
   unsigned int size_before=0, size_after=0;
   FILE *volstream=NULL;
 
   if(framenum<0||framenum>=vr->ntimes)return;
-  meshlabel=vr->rendermeshlabel;
-  smokeslice=vr->smokeslice;
-  fireslice=vr->fireslice;
+  meshlabel  = vr->rendermeshlabel;
+
+  smokeslice = vr->smokeslice;
+  fireslice  = vr->fireslice;
+  lightslice = vr->lightslice;
+
   framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
   framesize2 = framesize+VOL_OFFSET;
   if(compress_volsmoke==1){
@@ -1815,6 +1949,7 @@ void read_volsmoke_frame(volrenderdata *vr, int framenum, int *first){
       NewMemory((void **)&vr->c_smokedata_view,framesize2);
     }
     smokeframe_data=vr->smokedata_full;
+
     if(fireslice!=NULL){
       n_firedata_compressed=1.01*framesize2+600;
       if(vr->firedata_full==NULL){
@@ -1826,10 +1961,23 @@ void read_volsmoke_frame(volrenderdata *vr, int framenum, int *first){
       NewMemory((void **)&c_firedata_compressed2,n_firedata_compressed);
       fireframe_data=vr->firedata_full;
     }
+
+    if(lightslice!=NULL){
+      n_lightdata_compressed = 1.01*framesize2+600;
+      if(vr->lightdata_full==NULL){
+        NewMemory((void **)&vr->lightdata_full, framesize*sizeof(float));
+        NewMemory((void **)&vr->lightdata_view, framesize*sizeof(float));
+        NewMemory((void **)&vr->c_lightdata_view, framesize2);
+      }
+      NewMemory((void **)&c_lightdata_compressed, n_lightdata_compressed);
+      NewMemory((void **)&c_lightdata_compressed2, n_lightdata_compressed);
+      lightframe_data = vr->lightdata_full;
+    }
   }
   else{
-    NewMemory((void **)&smokeframe_data,framesize*sizeof(float));
-    NewMemory((void **)&fireframe_data,framesize*sizeof(float));
+    NewMemory((void **)&smokeframe_data, framesize*sizeof(float));
+    NewMemory((void **)&fireframe_data,  framesize*sizeof(float));
+    NewMemory((void **)&lightframe_data, framesize*sizeof(float));
   }
 
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
@@ -1966,6 +2114,59 @@ void read_volsmoke_frame(volrenderdata *vr, int framenum, int *first){
       volstream=NULL;
     }
   }
+  if(lightslice!=NULL){
+    if(load_volcompressed==1&&vr->lightslice->vol_file!=NULL){
+      volstream = fopen(vr->lightslice->vol_file, "rb");
+    }
+    if(volstream==NULL){
+      SLICEFILE = fopen(lightslice->reg_file, "rb");
+      if(SLICEFILE!=NULL){
+        FSEEK(SLICEFILE, skip_local, SEEK_SET); // skip from beginning of file
+
+        FORTVOLSLICEREAD(&time_local, 1);
+        vr->times[framenum] = time_local;
+        FORTVOLSLICEREAD(lightframe_data, framesize);
+        CheckMemory;
+        size_before += sizeof(float)*framesize;
+        if(vr->is_compressed==1){
+          float valmin = 20.0, valmax = 1400.0;
+
+          compress_volsliceframe(lightframe_data, framesize, time_local, &valmin, &valmax,
+            &c_lightdata_compressed, &n_lightdata_compressed);
+          size_after += n_lightdata_compressed;
+          vr->lightdataptrs[framenum] = c_lightdata_compressed;
+          vr->nlightdata_compressed[framenum] = n_lightdata_compressed;
+        }
+        else{
+          vr->lightdataptrs[framenum] = lightframe_data;
+        }
+        vr->lightdataptr = vr->lightdataptrs[framenum];
+        PRINTF(", light");
+        fclose(SLICEFILE);
+      }
+    }
+    else{
+      unsigned char buffer[32];
+      int ncompressed;
+
+      // 1,completion,version
+      // 1,version,n_data_compressedm32,nbytes,n_data_in,time_local,valmin,valmax,data ....
+      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
+      fread(buffer, 8, 4, volstream);
+      ncompressed = *(int *)(buffer+8);
+      time_local = *(float *)(buffer+20);
+      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
+      NewMemory((void **)&c_lightdata_compressed, ncompressed);
+      fread(c_lightdata_compressed, 1, ncompressed, volstream);
+      vr->lightdataptrs[framenum] = c_lightdata_compressed;
+      vr->lightdataptr = vr->lightdataptrs[framenum];
+
+      vr->times[framenum] = time_local;
+      PRINTF(", light");
+      fclose(volstream);
+      volstream = NULL;
+    }
+  }
   CheckMemory;
   vr->dataready[framenum]=1;
   if(vr->is_compressed==1&&load_volcompressed==0){
@@ -2026,10 +2227,12 @@ void read_volsmoke_allframes(volrenderdata *vr){
   if(vr->is_compressed==1||load_volcompressed==1){//xyz BEGIN
     vr->smokedataptr = vr->smokedata_view;
     vr->firedataptr = vr->firedata_view;
+    vr->lightdataptr = vr->lightdata_view;
   }
   else{
     vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
     vr->firedataptr = vr->firedataptrs[0];
+    vr->lightdataptr = vr->lightdataptrs[0];
   }
   vr->loaded=1;
   vr->display=1;
@@ -2083,11 +2286,13 @@ void read_volsmoke_frame_allmeshes(int framenum, supermeshdata *smesh){
     if(framenum==0){
       if(vr->is_compressed==1||load_volcompressed==1){
         vr->smokedataptr = vr->smokedata_view;  //*** hack
-        vr->firedataptr = vr->firedata_view;  //*** hack
+        vr->firedataptr  = vr->firedata_view;    //*** hack
+        vr->lightdataptr = vr->lightdata_view;  //*** hack
       }
       else{
         vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
-        vr->firedataptr = vr->firedataptrs[0];
+        vr->firedataptr  = vr->firedataptrs[0];
+        vr->lightdataptr = vr->lightdataptrs[0];
       }
     }
     vr->loaded=1;
@@ -2121,6 +2326,209 @@ void *read_volsmoke_allframes_allmeshes2(void *arg){
   return NULL;
 }
 
+/* ------------------ InitVolSmokeTexture ------------------------ */
+
+void InitVolSmokeTexture(meshdata *meshi){
+  GLint border_size = 0;
+  GLsizei nx, ny, nz;
+  int i;
+
+  //unload_volsmoke_supertextures();
+  PRINTF("Defining smoke and fire textures for %s ...", meshi->label);
+  FFLUSH();
+
+  nx = meshi->ibar+1;
+  ny = meshi->jbar+1;
+  nz = meshi->kbar+1;
+
+  glActiveTexture(GL_TEXTURE0);
+  glGenTextures(1, &meshi->smoke_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->smoke_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(meshi->smoke_texture_buffer==NULL){
+    NewMemory((void **)&meshi->smoke_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    meshi->smoke_texture_buffer[i] = 0.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, meshi->smoke_texture_buffer);
+
+  glActiveTexture(GL_TEXTURE1);
+  glGenTextures(1, &meshi->fire_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->fire_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(meshi->fire_texture_buffer==NULL){
+    NewMemory((void **)&meshi->fire_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    meshi->fire_texture_buffer[i] = 0.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
+
+  glActiveTexture(GL_TEXTURE5);
+  glGenTextures(1, &meshi->light_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->light_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(meshi->light_texture_buffer==NULL){
+    NewMemory((void **)&meshi->light_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    meshi->light_texture_buffer[i] = 1.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, meshi->light_texture_buffer);
+
+  if(volsmoke_colormap_id_defined==-1){
+    volsmoke_colormap_id_defined = 1;
+    glActiveTexture(GL_TEXTURE2);
+    glGenTextures(1, &volsmoke_colormap_id);
+    glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
+  }
+
+#ifndef pp_GPUDEPTH
+  nx = meshi->ibar;
+  ny = meshi->jbar;
+  nz = meshi->kbar;
+
+  glActiveTexture(GL_TEXTURE3);
+  glGenTextures(1, &meshi->blockage_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->blockage_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
+#endif
+
+  glActiveTexture(GL_TEXTURE0);
+  PRINTF("completed\n");
+  FFLUSH();
+}
+
+/* ------------------ InitVolSmokeSuperTexture ------------------------ */
+#ifdef pp_GPU
+void InitVolSmokeSuperTexture(supermeshdata *smesh){
+  GLint border_size = 0;
+  int supermesh_index;
+  GLsizei nx, ny, nz;
+  int i;
+
+  nx = smesh->ibar+1;
+  ny = smesh->jbar+1;
+  nz = smesh->kbar+1;
+
+  supermesh_index = smesh-supermeshinfo;
+  supermesh_index++;
+
+  PRINTF("  Defining smoke and fire textures for supermesh %i ", supermesh_index);
+  FFLUSH();
+
+  glActiveTexture(GL_TEXTURE0);
+  if(smesh->smoke_texture_id==0)glGenTextures(1, &smesh->smoke_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->smoke_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(smesh->smoke_texture_buffer==NULL){
+    NewMemory((void **)&smesh->smoke_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    smesh->smoke_texture_buffer[i] = 0.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, smesh->smoke_texture_buffer);
+
+  glActiveTexture(GL_TEXTURE1);
+  if(smesh->fire_texture_id==0)glGenTextures(1, &smesh->fire_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->fire_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(smesh->fire_texture_buffer==NULL){
+    NewMemory((void **)&smesh->fire_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    smesh->fire_texture_buffer[i] = 0.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, smesh->fire_texture_buffer);
+
+  glActiveTexture(GL_TEXTURE5);
+  if(smesh->light_texture_id==0)glGenTextures(1, &smesh->light_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->light_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  if(smesh->light_texture_buffer==NULL){
+    NewMemory((void **)&smesh->light_texture_buffer, nx*ny*nz*sizeof(float));
+  }
+  for(i = 0;i<nx*ny*nz;i++){
+    smesh->light_texture_buffer[i] = 1.0;
+  }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
+    nx, ny, nz, border_size,
+    GL_RED, GL_FLOAT, smesh->light_texture_buffer);
+
+  if(volsmoke_colormap_id_defined==-1){
+    volsmoke_colormap_id_defined = 1;
+    glActiveTexture(GL_TEXTURE2);
+    glGenTextures(1, &volsmoke_colormap_id);
+    glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
+  }
+
+#ifndef pp_GPUDEPTH
+  nx = smesh->ibar;
+  ny = smesh->jbar;
+  nz = smesh->kbar;
+  glActiveTexture(GL_TEXTURE3);
+  if(smesh->blockage_texture_id==0)glGenTextures(1, &smesh->blockage_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->blockage_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
+#endif
+  glActiveTexture(GL_TEXTURE0);
+  PRINTF("completed\n");
+  FFLUSH();
+}
+
 /* ------------------ define_volsmoke_textures ------------------------ */
 
 void define_volsmoke_textures(void){
@@ -2132,7 +2540,7 @@ void define_volsmoke_textures(void){
       supermeshdata *smesh;
 
       smesh = supermeshinfo + i;
-      init_volsmoke_supertexture(smesh);
+      InitVolSmokeSuperTexture(smesh);
     }
 #endif
   }
@@ -2141,7 +2549,7 @@ void define_volsmoke_textures(void){
       meshdata *meshi;
 
       meshi = meshinfo  + i;
-      init_volsmoke_texture(meshi);
+      InitVolSmokeTexture(meshi);
     }
   }
 }
@@ -2167,11 +2575,11 @@ void read_volsmoke_allframes_allmeshes(void){
     if(gpuactive==1){
       if(combine_meshes==1&&gpuactive==1){
 #ifdef pp_GPU
-        init_volsmoke_supertexture(meshi->super);
+        InitVolSmokeSuperTexture(meshi->super);
 #endif
       }
       else{
-        init_volsmoke_texture(meshi);
+        InitVolSmokeTexture(meshi);
       }
     }
   }
@@ -2206,89 +2614,6 @@ void unload_volsmoke_textures(void){
   }
 }
 
-/* ------------------ init_volsmoke_texture ------------------------ */
-
-void init_volsmoke_texture(meshdata *meshi){
-  GLint border_size=0;
-  GLsizei nx, ny, nz;
-  int i;
-
-  //unload_volsmoke_supertextures();
-  PRINTF("Defining smoke and fire textures for %s ...",meshi->label);
-  FFLUSH();
-
-  nx = meshi->ibar+1;
-  ny = meshi->jbar+1;
-  nz = meshi->kbar+1;
-
-  glActiveTexture(GL_TEXTURE0);
-  glGenTextures(1,&meshi->smoke_texture_id);
-  glBindTexture(GL_TEXTURE_3D,meshi->smoke_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->smoke_texture_buffer==NULL){
-    NewMemory((void **)&meshi->smoke_texture_buffer,nx*ny*nz*sizeof(float));
-  }
-  for(i=0;i<nx*ny*nz;i++){
-    meshi->smoke_texture_buffer[i]=0.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->smoke_texture_buffer);
-
-  glActiveTexture(GL_TEXTURE1);
-  glGenTextures(1,&meshi->fire_texture_id);
-  glBindTexture(GL_TEXTURE_3D,meshi->fire_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->fire_texture_buffer==NULL){
-    NewMemory((void **)&meshi->fire_texture_buffer,nx*ny*nz*sizeof(float));
-  }
-  for(i=0;i<nx*ny*nz;i++){
-    meshi->fire_texture_buffer[i]=0.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
-
-  if(volsmoke_colormap_id_defined==-1){
-    volsmoke_colormap_id_defined=1;
-    glActiveTexture(GL_TEXTURE2);
-    glGenTextures(1,&volsmoke_colormap_id);
-    glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
-  }
-
-#ifndef pp_GPUDEPTH
-  nx = meshi->ibar;
-  ny = meshi->jbar;
-  nz = meshi->kbar;
-
-  glActiveTexture(GL_TEXTURE3);
-  glGenTextures(1,&meshi->blockage_texture_id);
-  glBindTexture(GL_TEXTURE_3D,meshi->blockage_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
-#endif
-
-  glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed\n");
-  FFLUSH();
-}
-
 /* ------------------ unload_volsmoke_supertextures ------------------------ */
 
 void unload_volsmoke_supertextures(void){
@@ -2314,90 +2639,6 @@ void unload_volsmoke_supertextures(void){
     FREEMEMORY(smesh->smoke_texture_buffer);
   }
   PRINTF("complete\n");
-}
-
-/* ------------------ init_volsmoke_supertexture ------------------------ */
-#ifdef pp_GPU
-void init_volsmoke_supertexture(supermeshdata *smesh){
-  GLint border_size=0;
-  int supermesh_index;
-  GLsizei nx, ny, nz;
-  int i;
-
-  nx = smesh->ibar+1;
-  ny = smesh->jbar+1;
-  nz = smesh->kbar+1;
-
-  supermesh_index = smesh - supermeshinfo;
-  supermesh_index++;
-
-  PRINTF("  Defining smoke and fire textures for supermesh %i ",supermesh_index);
-  FFLUSH();
-
-  glActiveTexture(GL_TEXTURE0);
-  if(smesh->smoke_texture_id==0)glGenTextures(1,&smesh->smoke_texture_id);
-  glBindTexture(GL_TEXTURE_3D,smesh->smoke_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->smoke_texture_buffer==NULL){
-    NewMemory((void **)&smesh->smoke_texture_buffer,nx*ny*nz*sizeof(float));
-  }
-  for(i=0;i<nx*ny*nz;i++){
-    smesh->smoke_texture_buffer[i]=0.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->smoke_texture_buffer);
-
-  glActiveTexture(GL_TEXTURE1);
-  if(smesh->fire_texture_id==0)glGenTextures(1,&smesh->fire_texture_id);
-  glBindTexture(GL_TEXTURE_3D,smesh->fire_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->fire_texture_buffer==NULL){
-    NewMemory((void **)&smesh->fire_texture_buffer,nx*ny*nz*sizeof(float));
-  }
-  for(i=0;i<nx*ny*nz;i++){
-    smesh->fire_texture_buffer[i]=0.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->fire_texture_buffer);
-
-  if(volsmoke_colormap_id_defined==-1){
-    volsmoke_colormap_id_defined=1;
-    glActiveTexture(GL_TEXTURE2);
-    glGenTextures(1,&volsmoke_colormap_id);
-    glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
-  }
-
-#ifndef pp_GPUDEPTH
-  nx = smesh->ibar;
-  ny = smesh->jbar;
-  nz = smesh->kbar;
-  glActiveTexture(GL_TEXTURE3);
-  if(smesh->blockage_texture_id==0)glGenTextures(1,&smesh->blockage_texture_id);
-  glBindTexture(GL_TEXTURE_3D,smesh->blockage_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
-#endif
-  glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed\n");
-  FFLUSH();
 }
 
 /* ------------------ get_minmesh ------------------------ */
@@ -2588,8 +2829,12 @@ void init_supermesh(void){
 
     smesh->fire_texture_buffer=NULL;
     smesh->smoke_texture_buffer=NULL;
+    smesh->light_texture_buffer = NULL;
+
+    smesh->fire_texture_id = 0;
     smesh->smoke_texture_id=0;
-    smesh->fire_texture_id=0;
+    smesh->light_texture_id = 0;
+
     smesh->blockage_texture_id=0;
 
     // sort meshes in supermesh from lower front left to upper back right
@@ -2647,7 +2892,7 @@ void init_supermesh(void){
   if(gpuactive==1){
     for(i=0;i<nsupermeshinfo;i++){
       smesh = supermeshinfo + i;
-      init_volsmoke_supertexture(smesh);
+      InitVolSmokeSuperTexture(smesh);
     }
   }
 #endif

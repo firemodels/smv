@@ -330,8 +330,13 @@ void InitMesh(meshdata *meshi){
 #ifdef pp_GPU
   meshi->smoke_texture_buffer = NULL;
   meshi->smoke_texture_id = -1;
+
   meshi->fire_texture_buffer = NULL;
   meshi->fire_texture_id = -1;
+
+  meshi->light_texture_buffer = NULL;
+  meshi->light_texture_id = -1;
+
   meshi->slice3d_texture_buffer = NULL;
   meshi->slice3d_texture_id = -1;
   meshi->slice3d_c_buffer = NULL;

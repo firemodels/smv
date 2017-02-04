@@ -1385,7 +1385,7 @@ void UpdateSmokeColormap(int option){
           smoke_color1[1] = fire1[1]*(1 - smoke_albedo) + smoke_albedo;
           smoke_color1[2] = fire1[2]*(1 - smoke_albedo) + smoke_albedo;
           fire1 = smoke_color1;
-          
+
           smoke_color2[0] = fire2[0]*(1 - smoke_albedo) + smoke_albedo;
           smoke_color2[1] = fire2[1]*(1 - smoke_albedo) + smoke_albedo;
           smoke_color2[2] = fire2[2]*(1 - smoke_albedo) + smoke_albedo;

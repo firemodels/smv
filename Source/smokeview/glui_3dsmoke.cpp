@@ -192,11 +192,11 @@ void Color_Rollout_CB(int var){
 
 /* ------------------ Smoke_Rollout_CB ------------------------ */
 
-void Smoke_Rollout_CB(int var){
-  if(var == VOLRENDER_ROLLOUT)smoke_render_option = 1;
-    if(var==SLICERENDER_ROLLOUT)smoke_render_option=0;
-    Smoke3d_CB(SMOKE_OPTIONS);
-    toggle_rollout(smokeprocinfo, nsmokeprocinfo, var);
+extern "C" void Smoke_Rollout_CB(int var){
+  if(  var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
+  if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
+  Smoke3d_CB(SMOKE_OPTIONS);
+  toggle_rollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
 /* ------------------ delete_vol_tourlsit ------------------------ */
@@ -622,6 +622,8 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     BUTTON_startrender = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _d("Generate images"), GENERATE_IMAGES, Smoke3d_CB);
     BUTTON_cancelrender = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _d("Cancel"), CANCEL_GENERATE_IMAGES, Smoke3d_CB);
     BUTTON_volunload = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _d("Unload"), VOL_UNLOAD_ALL, Smoke3d_CB);
+    UpdateSmokeColormap(RENDER_VOLUME);
+    Smoke3d_CB(SMOKE_OPTIONS);
   }
 
   Update_Smoke_Type();

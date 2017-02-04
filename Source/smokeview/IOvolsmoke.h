@@ -9,11 +9,6 @@
 #define MUP 5
 #define MEPS 0.1
 
-#ifdef pp_GPU
-void init_volsmoke_supertexture(supermeshdata *smesh);
-void init_volsmoke_texture(meshdata *meshi);
-void update_volsmoke_texture(meshdata *meshi, float *smokedata, float *firedata);
-#endif
 void init_supermesh(void);
 void unload_volsmoke_frame_allmeshes(int framenum);
 void compute_all_smokecolors(void);
