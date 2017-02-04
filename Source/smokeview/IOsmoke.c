@@ -294,8 +294,8 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
     boxmax = meshi->boxmax;
     dbox = meshi->dbox;
     if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
-		boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && 
-		boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
+      boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && 
+      boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
       int nx, ny, nxy, ijk;
       int ix, iy, iz;
       int ibar, jbar, kbar;
@@ -304,7 +304,7 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
       jbar = meshi->jbar;
       kbar = meshi->kbar;
       nx = ibar + 1;
-	  ny = jbar + 1;
+      ny = jbar + 1;
       nxy = nx*ny;
 
       ix = ibar*(xyz[0] - boxmin[0]) / dbox[0];
@@ -338,7 +338,7 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   if(mesh_try == NULL || *mesh_try == NULL|| ijk<0)return 0.0;
   mesh_soot = *mesh_try;
   if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID){
-	  return 1000000.0;
+    return 1000000.0;
   }
   vr = &(mesh_soot->volrenderinfo);
   if(vr->smokedataptrs ==NULL)return 0.0;
@@ -404,10 +404,10 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
     float norm;
 
     VEC3EQ(dxyz, xyz_light);
-	dxyz[0] = -dxyz[0];
-	dxyz[1] = -dxyz[1];
-	dxyz[2] = -dxyz[2];
-	norm = NORM3(dxyz);
+    dxyz[0] = -dxyz[0];
+    dxyz[1] = -dxyz[1];
+    dxyz[2] = -dxyz[2];
+    norm = NORM3(dxyz);
     if(norm == 0.0)return 1;
     VEC3DA(dxyz, norm);
   }
@@ -457,13 +457,13 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
           }
           GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
           nlength = length / dlength + 1;
-		  ddlength = 0.0;
+          ddlength = 0.0;
           if(nlength>1)ddlength = length / (float)(nlength - 1);
 
           mesh_try = meshi;
 
           soot_sum = 0.0;
-		  if(nlength>1){
+          if(nlength>1){
             for(ii = 0;ii < nlength;ii++){
               float xyz[3], factor;
               float soot_density;
@@ -483,7 +483,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
               }
               if(mesh_try==NULL)break;  // outside of domain
             }
-		  }
+          }
           arg = mass_extinct*soot_sum*ddlength/2.0;
           if(arg>9.0){ // exp(-9) ~ 0.0001
             opacity = 0.0;
@@ -491,14 +491,11 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
           else{
             opacity = exp(-arg);  // fraction of light reaching xyz
           }
-          //    C_val(i,j,k) = i*nj*nk + j*nk + k
-          // Fort_val(i,j,k) = i + j*ni + k*ni*nj
-          light_fraction[i+j*ni+k*ni*nj] = opacity;
+          *light_fraction++ = opacity;
           ncount++;
         }
       }
     }
-    light_fraction += ni*nj*nk;
   }
   return 0;
 }
