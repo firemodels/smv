@@ -21,24 +21,66 @@
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
 
 
+#define INTERP3D(data,value) \
+    if(slicetype==SLICE_NODE_CENTER){\
+      ijk = IJKNODE(i, j, k);\
+\
+      dx = (xyz[0]-xplt[i])/dxbar;               \
+      dx = CLAMP(dx, 0.0, 1.0);                  \
+      dy = (xyz[1]-yplt[j])/dybar;               \
+      dy = CLAMP(dy, 0.0, 1.0);                  \
+      dz = (xyz[2]-zplt[k])/dzbar;               \
+      dz = CLAMP(dz, 0.0, 1.0);                  \
+\
+      vv = data+ijk;                             \
+      val000 = vv[0];                 /* i,j,k     */  \
+      val100 = vv[1];                 /* i+1,j,k   */  \
+\
+      vv += nx;\
+      val010 = vv[0];                 /* i,j+1,k   */  \
+      val110 = vv[1];                 /* i+1,j+1,k */  \
+\
+      vv += (nxy-nx);\
+      val001 = vv[0];                 /* i,j,k+1   */  \
+      val101 = vv[1];                 /* i+1,j,k+1 */  \
+\
+      vv += nx;\
+      val011 = vv[0];                /* i,j+1,k+1  */ \
+      val111 = vv[1];                /* i+1,j+1,k+1  */ \
+\
+      val00 = MIX(dx, val100, val000);\
+      val10 = MIX(dx, val110, val010);\
+      val01 = MIX(dx, val101, val001);\
+      val11 = MIX(dx, val111, val011);\
+       val0 = MIX(dy, val10, val00);\
+       val1 = MIX(dy, val11, val01);\
+      value = MIX(dz, val1, val0);\
+    }\
+    else{\
+      vv = data+IJKNODE(i+1, j+1, k+1);\
+      value = *vv;\
+    }
+
 /* ----------------------- GetPtSmokeColor ----------------------------- */
 
-void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float val000, val100, val010, val110;
   float val001, val101, val011, val111;
   float  val00,  val01,  val10,  val11;
   float val0, val1;
+  float *vv;
+
   int nx, ny, nxy;
+
   float dx, dy, dz;
   float dxbar, dybar, dzbar;
-  float *vv;
+
   int ijkcell;
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   float *smokedata_local, *firedata_local, *lightdata_local;
-  float kfactor = 8700.0;
   float soot_density, temperature, light_fraction;
   int index;
   float black[] = {0.0,0.0,0.0,1.0};
@@ -92,44 +134,7 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float dstep, float 
   if(firedata_local!=NULL){
     float dtemp;
 
-    if(slicetype==SLICE_NODE_CENTER){
-      ijk = IJKNODE(i, j, k);
-
-      dx = (xyz[0]-xplt[i])/dxbar;
-      dx = CLAMP(dx, 0.0, 1.0);
-      dy = (xyz[1]-yplt[j])/dybar;
-      dy = CLAMP(dy, 0.0, 1.0);
-      dz = (xyz[2]-zplt[k])/dzbar;
-      dz = CLAMP(dz, 0.0, 1.0);
-
-      vv = firedata_local+ijk;
-      val000 = vv[0]; // i,j,k
-      val100 = vv[1]; // i+1,j,k
-
-      vv += nx;
-      val010 = vv[0]; // i,j+1,k
-      val110 = vv[1]; // i+1,j+1,k
-
-      vv += (nxy-nx);
-      val001 = vv[0]; // i,j,k+1
-      val101 = vv[1]; // i+1,j,k+1
-
-      vv += nx;
-      val011 = vv[0]; // i,j+1,k+1
-      val111 = vv[1]; // i+1,j+1,k+1
-
-      val00 = MIX(dx, val100, val000);
-      val10 = MIX(dx, val110, val010);
-      val01 = MIX(dx, val101, val001);
-      val11 = MIX(dx, val111, val011);
-      val0 = MIX(dy, val10, val00);
-      val1 = MIX(dy, val11, val01);
-      temperature = MIX(dz, val1, val0);
-    }
-    else{
-      vv = firedata_local+IJKNODE(i+1, j+1, k+1);
-      temperature = *vv;
-    }
+    INTERP3D(firedata_local, temperature);
     if(temperature<temperature_cutoff){
       dtemp = (temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
       GETINDEX(index, temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
@@ -145,68 +150,13 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float dstep, float 
     *smoke_color = getcolorptr(black);
   }
   if(smokedata_local!=NULL){
-    if(slicetype==SLICE_NODE_CENTER){
-      vv = smokedata_local+ijk;
-      val000 = vv[0]; // i,j,k
-      val100 = vv[1]; // i+1,j,k
-
-      vv += nx;
-      val010 = vv[0]; // i,j+1,k
-      val110 = vv[1]; // i+1,j+1,k
-
-      vv += (nxy-nx);
-      val001 = vv[0]; // i,j,k+1
-      val101 = vv[1]; // i+1,j,k+1
-
-      vv += nx;
-      val011 = vv[0]; // i,j+1,k+1
-      val111 = vv[1]; // i+1,j+1,k+1
-
-      val00 = MIX(dx, val100, val000);
-      val10 = MIX(dx, val110, val010);
-      val01 = MIX(dx, val101, val001);
-      val11 = MIX(dx, val111, val011);
-      val0 = MIX(dy, val10, val00);
-      val1 = MIX(dy, val11, val01);
-      soot_density = MIX(dz, val1, val0);
-    }
-    else{
-      vv = smokedata_local+IJKNODE(i+1, j+1, k+1);
-      soot_density = *vv;
-    }
+    INTERP3D(smokedata_local, soot_density);
     if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
-    *smoke_tran = exp(-kfactor*soot_density*dstep);
+    *smoke_tran = exp(-mass_extinct*soot_density*dstep);
   }
   if(lightdata_local!=NULL){
-    if(slicetype==SLICE_NODE_CENTER){
-      vv = lightdata_local+ijk;
-      val000 = vv[0]; // i,j,k
-      val100 = vv[1]; // i+1,j,k
-
-      vv += nx;
-      val010 = vv[0]; // i,j+1,k
-      val110 = vv[1]; // i+1,j+1,k
-
-      vv += (nxy-nx);
-      val001 = vv[0]; // i,j,k+1
-      val101 = vv[1]; // i+1,j,k+1
-
-      vv += nx;
-      val011 = vv[0]; // i,j+1,k+1
-      val111 = vv[1]; // i+1,j+1,k+1
-
-      val00 = MIX(dx, val100, val000);
-      val10 = MIX(dx, val110, val010);
-      val01 = MIX(dx, val101, val001);
-      val11 = MIX(dx, val111, val011);
-      val0 = MIX(dy, val10, val00);
-      val1 = MIX(dy, val11, val01);
-      light_fraction = MIX(dz, val1, val0);
-    }
-    else{
-      vv = lightdata_local+IJKNODE(i+1, j+1, k+1);
-      light_fraction = *vv;
-    }
+    INTERP3D(lightdata_local, light_fraction);
+    *light_fractionptr = light_fraction;
   }
 }
 
@@ -953,7 +903,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float pt_smoketran, *pt_smokecolor;
+  float pt_smoketran, *pt_smokecolor, pt_light_fraction;
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
 
@@ -1093,7 +1043,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
       else{
         blank_local=NULL;
       }
-      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, dstep,xyz, xyz_mesh, &inobst, blank_local);
+      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       if(block_volsmoke==1){
@@ -1102,7 +1052,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
       else{
         blank_local=NULL;
       }
-      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, dstep,xyz, meshi, &inobst, blank_local);
+      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, meshi, &inobst, blank_local);
     }
     if(blank_local!=NULL&&inobst==1)break;
 
