@@ -128,6 +128,8 @@ GLUI_Spinner *SPINNER_pathlength=NULL;
 GLUI_Spinner *SPINNER_load_3dsmoke=NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv=NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
+GLUI_Spinner *SPINNER_light_color[3];
+GLUI_Spinner *SPINNER_light_intensity = NULL;
 
 GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
 #ifdef pp_CULL
@@ -144,6 +146,7 @@ GLUI_Checkbox *CHECKBOX_zlib=NULL;
 GLUI_Checkbox **CHECKBOX_meshvisptr=NULL;
 GLUI_Checkbox *CHECKBOX_meshvis=NULL;
 GLUI_Checkbox *CHECKBOX_show_smoketest=NULL;
+GLUI_Checkbox *CHECKBOX_show_light_position_direction=NULL;
 
 GLUI_Panel *PANEL_overall=NULL;
 GLUI_Panel *PANEL_colormap2=NULL;
@@ -153,6 +156,8 @@ GLUI_Panel *PANEL_testsmoke=NULL;
 GLUI_Panel *PANEL_color=NULL;
 GLUI_Panel *PANEL_smoke=NULL;
 GLUI_Panel *PANEL_loadcutoff=NULL;
+GLUI_Panel *PANEL_light_color = NULL;
+GLUI_Panel *PANEL_light_position = NULL;
 
 GLUI_Rollout *ROLLOUT_firesmokecolor=NULL;
 GLUI_Rollout *ROLLOUT_colormap4=NULL;
@@ -585,13 +590,25 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_gpu_vol_factor->set_float_limits(1.0, 10.0);
 
     ROLLOUT_light = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Light"), false);
-    RADIO_light_type = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_light,&light_type_glui);
+    PANEL_light_position = glui_3dsmoke->add_panel_to_panel(ROLLOUT_light, _d(""));
+    RADIO_light_type = glui_3dsmoke->add_radiogroup_to_panel(PANEL_light_position,&light_type_glui);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_d("position"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_d("direction"));
-    SPINNER_light_xyz[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light, _d("x:"), GLUI_SPINNER_FLOAT, xyz_light_glui,   LIGHT_XYZ, Smoke3d_CB);
-    SPINNER_light_xyz[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light, _d("y:"), GLUI_SPINNER_FLOAT, xyz_light_glui+1, LIGHT_XYZ, Smoke3d_CB);
-    SPINNER_light_xyz[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light, _d("z:"), GLUI_SPINNER_FLOAT, xyz_light_glui+2, LIGHT_XYZ, Smoke3d_CB);
-    BUTTON_light_update = glui_3dsmoke->add_button_to_panel(ROLLOUT_light, _d("Update"), LIGHT_UPDATE, Smoke3d_CB);
+    CHECKBOX_show_light_position_direction = glui_3dsmoke->add_checkbox_to_panel(PANEL_light_position, _d("Show position/direction"), &show_light_position_direction);
+    SPINNER_light_xyz[0] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _d("x:"), GLUI_SPINNER_FLOAT, xyz_light_glui,   LIGHT_XYZ, Smoke3d_CB);
+    SPINNER_light_xyz[1] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _d("y:"), GLUI_SPINNER_FLOAT, xyz_light_glui+1, LIGHT_XYZ, Smoke3d_CB);
+    SPINNER_light_xyz[2] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _d("z:"), GLUI_SPINNER_FLOAT, xyz_light_glui+2, LIGHT_XYZ, Smoke3d_CB);
+    BUTTON_light_update = glui_3dsmoke->add_button_to_panel(PANEL_light_position, _d("Update"), LIGHT_UPDATE, Smoke3d_CB);
+
+    PANEL_light_color = glui_3dsmoke->add_panel_to_panel(ROLLOUT_light, _d("color/intensity"));
+    SPINNER_light_color[0] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color,   _d("red:"), GLUI_SPINNER_INT, light_color);
+    SPINNER_light_color[1] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color, _d("green:"), GLUI_SPINNER_INT, light_color+1);
+    SPINNER_light_color[2] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color,  _d("blue:"), GLUI_SPINNER_INT, light_color+2);
+    SPINNER_light_color[0]->set_int_limits(0, 255);
+    SPINNER_light_color[1]->set_int_limits(0, 255);
+    SPINNER_light_color[2]->set_int_limits(0, 255);
+    SPINNER_light_intensity = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color, _d("intensity:"), GLUI_SPINNER_FLOAT, &light_intensity);
+    SPINNER_light_intensity->set_float_limits(0.0,10.0);
 
     ROLLOUT_generate_images = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Generate images"), false);
 

@@ -22,9 +22,13 @@
 
 #ifdef INMAIN
   SVEXTERN float xyz_light_glui[3] = {1.0,0.0,0.0}, xyz_light_global[3] = {1.0,0.0,0.0};
+  SVEXTERN int light_color[3] = {255,255,255};
 #else
   SVEXTERN float xyz_light_glui[3], xyz_light_global[3];
+  SVEXTERN int light_color[3];
 #endif
+SVEXTERN float SVDECL(light_intensity, 1.0);
+SVEXTERN int SVDECL(show_light_position_direction,0);
 SVEXTERN int SVDECL(light_type_glui, INFINITE_LIGHT);
 SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights, 0);
 SVEXTERN float boxmin_global[3], boxmax_global[3], dlength;

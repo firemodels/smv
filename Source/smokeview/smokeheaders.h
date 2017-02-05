@@ -501,6 +501,7 @@ EXTERNCPP unsigned char adjustalpha(unsigned char alpha, float factor);
 EXTERNCPP void updatesmoke3d(smoke3ddata *smoke3di);
 EXTERNCPP void drawsmoke3d(smoke3ddata *smoke3di);
 EXTERNCPP void draw_smokeframe(void);
+EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void draw_partframe(void);
 EXTERNCPP void draw_evacframe(void);
 EXTERNCPP void draw_plot3dframe(void);

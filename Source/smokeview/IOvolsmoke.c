@@ -1258,7 +1258,122 @@ void ComputeAllSmokecolors(void){
   }
 }
 
-/* ------------------ DrawSmoke3DVOLdebug ------------------------ */
+/* ------------------ GetPos ------------------------ */
+
+void GetPos(float x1, float y1, float z1, float x2, float y2, float z2, float *dir_in, float *xyz){
+  float dir[3], dir0[3],length;
+
+  if(dir_in==NULL){
+    dir[0] = x2-x1;
+    dir[1] = y2-y1;
+    dir[2] = z2-z1;
+    dir0[0] = x2-x1;
+    dir0[1] = y2-y1;
+    dir0[2] = z2-z1;
+    if(NORM3(dir)>1.0){
+      NORMALIZE3(dir);
+    }
+  }
+  else{
+    dir[0] = dir_in[0];
+    dir[1] = dir_in[1];
+    dir[2] = dir_in[2];
+    NORMALIZE3(dir);
+  }
+  xyz[0] = x1+dir[0];
+  xyz[1] = y1+dir[1];
+  xyz[2] = z1+dir[2];
+}
+
+/* ------------------ DrawLightDirections ------------------------ */
+
+void DrawLightDirections(void){
+  int i;
+  float pos2[24];
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+
+  glColor3fv(foregroundcolor);
+  for(i = 0;i<nmeshes;i++){
+    meshdata *meshi;
+    float *boxmin, *boxmax;
+    float *direction;
+
+    meshi = meshinfo+i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+
+    glBegin(GL_LINES);
+    if(light_type_glui==LOCAL_LIGHT){
+      direction = NULL;
+    }
+    else{
+      direction = xyz_light_glui;
+    }
+
+    GetPos(boxmin[0], boxmin[1], boxmin[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2);
+    glVertex3f(boxmin[0], boxmin[1], boxmin[2]);
+    glVertex3fv(pos2);
+
+    GetPos(boxmax[0], boxmin[1], boxmin[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+3);
+    glVertex3f(boxmax[0], boxmin[1], boxmin[2]);
+    glVertex3fv(pos2+3);
+
+    GetPos(boxmin[0], boxmax[1], boxmin[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+6);
+    glVertex3f(boxmin[0], boxmax[1], boxmin[2]);
+    glVertex3fv(pos2+6);
+
+    GetPos(boxmax[0], boxmax[1], boxmin[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+9);
+    glVertex3f(boxmax[0], boxmax[1], boxmin[2]);
+    glVertex3fv(pos2+9);
+
+    GetPos(boxmin[0], boxmin[1], boxmax[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+12);
+    glVertex3f(boxmin[0], boxmin[1], boxmax[2]);
+    glVertex3fv(pos2+12);
+
+    GetPos(boxmax[0], boxmin[1], boxmax[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+15);
+    glVertex3f(boxmax[0], boxmin[1], boxmax[2]);
+    glVertex3fv(pos2+15);
+
+    GetPos(boxmin[0], boxmax[1], boxmax[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+18);
+    glVertex3f(boxmin[0], boxmax[1], boxmax[2]);
+    glVertex3fv(pos2+18);
+
+    GetPos(boxmax[0], boxmax[1], boxmax[2], xyz_light_glui[0], xyz_light_glui[1], xyz_light_glui[2], direction, pos2+21);
+    glVertex3f(boxmax[0], boxmax[1], boxmax[2]);
+    glVertex3fv(pos2+21);
+
+    glEnd();
+    glPointSize(5.0);
+    glBegin(GL_POINTS);
+    if(light_type_glui==LOCAL_LIGHT){
+      glVertex3f(boxmin[0], boxmin[1], boxmin[2]);
+      glVertex3f(boxmax[0], boxmin[1], boxmin[2]);
+      glVertex3f(boxmin[0], boxmax[1], boxmin[2]);
+      glVertex3f(boxmax[0], boxmax[1], boxmin[2]);
+      glVertex3f(boxmin[0], boxmin[1], boxmax[2]);
+      glVertex3f(boxmax[0], boxmin[1], boxmax[2]);
+      glVertex3f(boxmin[0], boxmax[1], boxmax[2]);
+      glVertex3f(boxmax[0], boxmax[1], boxmax[2]);
+    }
+    else{
+      glVertex3fv(pos2);
+      glVertex3fv(pos2+3);
+      glVertex3fv(pos2+6);
+      glVertex3fv(pos2+9);
+      glVertex3fv(pos2+12);
+      glVertex3fv(pos2+15);
+      glVertex3fv(pos2+18);
+      glVertex3fv(pos2+21);
+    }
+    glEnd();
+  }
+  glPopMatrix();
+}
+
+  /* ------------------ DrawSmoke3DVOLdebug ------------------------ */
 
 void DrawSmoke3DVOLdebug(void){
   int ii;
