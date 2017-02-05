@@ -61,6 +61,35 @@
       value = *vv;\
     }
 
+#define ISOTROPIC 0
+#define HENYEY_GREENSTEIN 1
+#define SCHLICK 2
+
+/* ----------------------- light_phase ----------------------------- */
+
+float light_phase(float cos_angle,float param,int phase_type){
+  float phase=0.0;
+  float fourpi = 16.0*atan(1.0);
+
+  switch(phase_type){
+  case ISOTROPIC:
+    phase = 1.0/fourpi;
+    break;
+  case HENYEY_GREENSTEIN:
+    cos_angle = CLAMP(cos_angle, -1.0, 1.0);
+    phase = (1.0-param*param)/(fourpi*pow(1.0+param*param-2.0*param*cos_angle,1.5));
+    break;
+  case SCHLICK:
+    cos_angle = CLAMP(cos_angle, -1.0, 1.0);
+    phase = (1.0-param*param)/(fourpi*pow(1.0+param*cos_angle, 2.0));
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  return phase;
+}
+
 /* ----------------------- GetPtSmokeColor ----------------------------- */
 
 void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
