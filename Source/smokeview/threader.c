@@ -36,7 +36,7 @@ void compress_svzip2(void){
 
   PRINTF("Executing shell command: %s\n", shellcommand);
   system(shellcommand);
-  update_smoke3d_menulabels();
+  UpdateSmoke3DMenuLabels();
   update_patch_menulabels();
   compress_onoff(ON);
   updatemenu = 1;

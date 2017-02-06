@@ -172,10 +172,10 @@ void UpdateFrameNumber(int changetime){
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
-          updatesmoke3d(smoke3di);
+          UpdateSmoke3D(smoke3di);
         }
       }
-      if(nsmoke3dinfo>0)mergesmoke3dcolors(NULL);
+      if(nsmoke3dinfo>0)MergeSmoke3DColors(NULL);
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){
@@ -936,9 +936,9 @@ void ConvertSsf(void){
 }
 
 #ifdef pp_NAN
-/* ------------------ test_for_nan ------------------------ */
+/* ------------------ TestForNan ------------------------ */
 
-void test_for_nan(float *vals, int nvals, char *array, char *label){
+void TestForNan(float *vals, int nvals, char *array, char *label){
   int have_nan=0, i;
 
   for(i = 0; i < nvals; i++){
@@ -958,7 +958,7 @@ void test_for_nan(float *vals, int nvals, char *array, char *label){
     }
     fprintf(stderr,"\n");
   }
-#define TEST_FOR_NAN(a,b,c,d) test_for_nan(a,b,c,d)
+#define TEST_FOR_NAN(a,b,c,d) TestForNan(a,b,c,d)
 }
 #else
 #define TEST_FOR_NAN(a,b,c,d)
@@ -1972,10 +1972,10 @@ void UpdateDisplay(void){
     ZoomMenu(zoomindex);
   }
   if(update_makeiblank_smoke3d == 1){
-    makeiblank_smoke3d();
+    MakeIblankSmoke3D();
   }
 #ifdef pp_CULL
-  if(update_initcull == 1)initcull(cullsmoke);
+  if(update_initcull == 1)InitCull(cullsmoke);
 #endif
   if(update_streaks == 1 && ReadPartFile == 1){
     ParticleStreakShowMenu(streak_index);

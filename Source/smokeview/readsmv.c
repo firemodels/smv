@@ -3484,7 +3484,7 @@ int ReadSMV(char *file, char *file2){
 
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        freesmoke3d(smoke3di);
+        FreeSmoke3D(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -8488,7 +8488,7 @@ typedef struct {
   CheckMemory;
 
   //RemoveDupBlockages();
-  initcullgeom(cullgeom);
+  InitCullGeom(cullgeom);
   InitEvacProp();
 
   UpdateINIList();
@@ -8600,7 +8600,7 @@ typedef struct {
   }
 
   makeiblank_carve();
-  makeiblank_smoke3d();
+  MakeIblankSmoke3D();
   makeiblank_all();
 #ifdef pp_THREADIBLANK
   if(runscript == 1){
@@ -8655,7 +8655,7 @@ typedef struct {
   }
   update_terrain(1,vertical_factor);
   update_terrain_colors();
-  update_smoke3d_menulabels();
+  UpdateSmoke3DMenuLabels();
   UpdateVSliceTypes();
   update_patch_menulabels();
   update_iso_menulabels();
@@ -8692,7 +8692,7 @@ typedef struct {
 
   // define data structures used to speed up 3d smoke drawing (by culling non-visible smoke planes)
 
-  if(cullactive==1)initcull(cullsmoke);
+  if(cullactive==1)InitCull(cullsmoke);
 #endif
   update_mesh_terrain();
 

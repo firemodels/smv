@@ -903,10 +903,10 @@ extern "C" void Smoke3d_CB(int var){
 #endif
 #ifdef pp_CULL
   case CULL_PORTSIZE:
-    initcull(cullsmoke);
+    InitCull(cullsmoke);
     break;
   case CULL_SMOKE:
-    initcull(cullsmoke);
+    InitCull(cullsmoke);
     break;
 #endif
   case VOL_NGRID:

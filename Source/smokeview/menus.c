@@ -2502,7 +2502,7 @@ void LoadUnloadMenu(int value){
       readzone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      readsmoke3d(i,UNLOAD,&errorcode);
+      ReadSmoke3D(i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -2570,7 +2570,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        readsmoke3d(i,LOAD,&errorcode);
+        ReadSmoke3D(i,LOAD,&errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
@@ -2615,7 +2615,7 @@ void LoadUnloadMenu(int value){
     updatemenu=1;
     UpdateSliceMenuLabels();
     UpdateVsliceMenulabels();
-    update_smoke3d_menulabels();
+    UpdateSmoke3DMenuLabels();
     update_patch_menulabels();
     update_iso_menulabels();
     update_part_menulabels();
@@ -3526,12 +3526,12 @@ void UnLoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
-        readsmoke3d(i,UNLOAD,&errorcode);
+        ReadSmoke3D(i,UNLOAD,&errorcode);
       }
     }
   }
   else{
-    readsmoke3d(value,UNLOAD,&errorcode);
+    ReadSmoke3D(value,UNLOAD,&errorcode);
   }
 }
 
@@ -3551,12 +3551,12 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      readsmoke3d(value,LOAD,&errorcode);
+      ReadSmoke3D(value,LOAD,&errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nsmoke3dinfo;i++){
-      readsmoke3d(i,UNLOAD,&errorcode);
+      ReadSmoke3D(i,UNLOAD,&errorcode);
     }
   }
   else if(value==MENU_SMOKE3D_IBLANK){
@@ -3567,7 +3567,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
-        readsmoke3d(i,LOAD,&errorcode);
+        ReadSmoke3D(i,LOAD,&errorcode);
       }
     }
     ASSERT(FFALSE); // check to see if this code segment is used
@@ -3583,7 +3583,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
-          readsmoke3d(i,LOAD,&errorcode);
+          ReadSmoke3D(i,LOAD,&errorcode);
         }
       }
     }

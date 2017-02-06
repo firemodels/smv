@@ -1440,7 +1440,7 @@ void keyboard(unsigned char key, int flag){
             if(nsmoke3dinfo>0&&cullactive==1&&gpuactive==1){
               cullsmoke=1-cullsmoke;
               update_smoke3dflags();
-              initcull(cullsmoke);
+              InitCull(cullsmoke);
               print_gpu_cull_state();
             }
             if(cullactive==0||gpuactive==0)cullsmoke=0;

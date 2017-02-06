@@ -1186,13 +1186,13 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 #ifdef pp_CULL
       if(stereotype==STEREO_NONE){
         if(cullsmoke==1){
-          getPixelCount();
-          SNIFF_ERRORS("after getPixelCount");
+          GetPixelCount();
+          SNIFF_ERRORS("after GetPixelCount");
         }
         if(cullactive==1&&update_initcullplane==1){
-          initcullplane(cullsmoke);
+          InitCullPlane(cullsmoke);
         }
-        SNIFF_ERRORS("after initcullplane");
+        SNIFF_ERRORS("after InitCullPlane");
       }
 #endif
     }

@@ -573,7 +573,7 @@ void InitOpenGL(void){
 #endif
 #ifdef pp_CULL
   if(err==0){
-    err=init_cull_exts();
+    err= InitCullExts();
 #ifdef _DEBUG
     if(err==0){
       PRINTF("%s\n",_("   Culling extension initialization succeeded"));
@@ -1153,8 +1153,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)readsmoke3d(i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)readsmoke3d(i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3D(i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
