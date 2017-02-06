@@ -18,8 +18,6 @@
 
 int cull_count=0;
 
-void Smoke3d_CB(int var);
-
 /* ------------------ AdjustAlpha ------------------------ */
 
 unsigned char AdjustAlpha(unsigned char alpha, float factor){
@@ -380,12 +378,9 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   int ibar, jbar, kbar;
   int itime, ntimes, ntotal, ncount;
   volrenderdata *vr;
-  slicedata *slice_soot;
   float *light_fraction;
-  int ni, nj, nk;
 
   vr = &(meshi->volrenderinfo);
-  slice_soot = vr->smokeslice;
   ntimes = vr->ntimes;
 
   if(update_boxbounds == 1){
@@ -438,9 +433,6 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   kbar = meshi->kbar;
-  ni = ibar+1;
-  nj = jbar+1;
-  nk = kbar+1;
 
   FREEMEMORY(meshi->light_fraction);
   FREEMEMORY(meshi->uc_light_fraction);
@@ -464,7 +456,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
 
         xyz1[1] = yplt[j];
         for(i = 0; i <= ibar; i++){
-          float dxyz2[3], dxyzlight[3], length;
+          float dxyzlight[3], length;
           float soot_sum, opacity, arg;
           float ddlength;
           int ii,nlength;

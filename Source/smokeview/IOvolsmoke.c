@@ -23,6 +23,12 @@
 
 #define INTERP3D(data,value) \
     if(slicetype==SLICE_NODE_CENTER){\
+      float dx, dy, dz;\
+      float val000, val100, val010, val110;\
+      float val001, val101, val011, val111;\
+      float  val00, val01, val10, val11;\
+      float val0, val1;\
+\
       ijk = IJKNODE(i, j, k);\
 \
       dx = (xyz[0]-xplt[i])/dxbar;               \
@@ -101,15 +107,10 @@ float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase
 void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
-  float val000, val100, val010, val110;
-  float val001, val101, val011, val111;
-  float  val00,  val01,  val10,  val11;
-  float val0, val1;
   float *vv;
 
   int nx, ny, nxy;
 
-  float dx, dy, dz;
   float dxbar, dybar, dzbar;
 
   int ijkcell;
