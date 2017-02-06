@@ -609,7 +609,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_light_color[1]->set_int_limits(0, 255);
     SPINNER_light_color[2]->set_int_limits(0, 255);
     SPINNER_light_intensity = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color, _d("intensity:"), GLUI_SPINNER_FLOAT, &light_intensity);
-    SPINNER_light_intensity->set_float_limits(0.0,10.0);
+    SPINNER_light_intensity->set_float_limits(0.0,1000.0);
 
     ROLLOUT_generate_images = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Generate images"), false);
 

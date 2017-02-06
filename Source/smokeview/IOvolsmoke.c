@@ -183,9 +183,12 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
     if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
     *smoke_tran = exp(-mass_extinct*soot_density*dstep);
   }
-  if(lightdata_local!=NULL){
+  if(use_light&&lightdata_local!=NULL){
     INTERP3D(lightdata_local, light_fraction);
     *light_fractionptr = light_fraction;
+  }
+  else{
+    *light_fractionptr = 1.0;
   }
 }
 
@@ -934,6 +937,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   char *blank_local;
   float pt_smoketran, *pt_smokecolor, pt_light_fraction;
   float tauhat,alphahat;
+  float fourpi = 16.0*atan(1.0);
   meshdata *xyz_mesh=NULL;
 
   if(combine_meshes==1){
@@ -1088,9 +1092,19 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
     alphai = 1.0 - pt_smoketran;
     alphahat +=  alphai*tauhat;
 
-    cum_smokecolor[0] += alphai*tauhat*pt_smokecolor[0];
-    cum_smokecolor[1] += alphai*tauhat*pt_smokecolor[1];
-    cum_smokecolor[2] += alphai*tauhat*pt_smokecolor[2];
+    {
+      float light_factor;
+
+      if(use_light==1){
+        light_factor = alphai*light_intensity*pt_light_fraction/fourpi/255.0;
+      }
+      else{
+        light_factor = 0.0;
+      }
+      cum_smokecolor[0] += alphai*tauhat*(pt_smokecolor[0]+light_factor*light_color[0]);
+      cum_smokecolor[1] += alphai*tauhat*(pt_smokecolor[1]+light_factor*light_color[1]);
+      cum_smokecolor[2] += alphai*tauhat*(pt_smokecolor[2]+light_factor*light_color[2]);
+    }
     tauhat *= pt_smoketran;
   }
   if(alphahat>0.0){
