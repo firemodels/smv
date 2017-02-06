@@ -2049,7 +2049,12 @@ void DrawSmoke3DGPUVOL(void){
   glUniform2f(GPUvol_nearfar,fnear,ffar);
   SNIFF_ERRORS("after DrawSmoke3DGPUVOL A");
 #endif
+  glUniform3f(GPUvol_light_position, xyz_light_glui[0],xyz_light_glui[1],xyz_light_glui[2]);
+  glUniform1i(GPUvol_light_type, light_type_glui);
+  glUniform1f(GPUvol_scatter_param, scatter_param);
+  glUniform1i(GPUvol_scatter_type_glui, scatter_type_glui);
   glUniform1f(GPUvol_light_intensity, light_intensity);
+  glUniform1f(GPUvol_scatter_param, scatter_param);
   glUniform3f(GPUvol_light_color, (float)light_color[0], (float)light_color[1], (float)light_color[2]);
   glUniform1i(GPUvol_use_light, use_light);
 

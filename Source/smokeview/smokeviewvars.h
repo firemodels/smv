@@ -434,7 +434,9 @@ SVEXTERN int GPUvol_temperature_min,GPUvol_temperature_cutoff,GPUvol_temperature
 SVEXTERN int GPUvol_boxmin, GPUvol_boxmax, GPUvol_drawsides;
 SVEXTERN int GPUvol_smokecolormap, GPUvol_dcell, GPUvol_havefire;
 
-SVEXTERN int GPUvol_light_color, GPUvol_light_intensity, GPUvol_light, GPUvol_use_light;
+SVEXTERN int GPUvol_light_color, GPUvol_light_intensity, GPUvol_light, GPUvol_use_light, GPUvol_scatter_param;
+SVEXTERN int GPUvol_scatter_param, GPUvol_scatter_type_glui;
+SVEXTERN int GPUvol_light_position, GPUvol_light_type;
 
 SVEXTERN int GPU3dslice_valtexture,GPU3dslice_colormap;
 SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;

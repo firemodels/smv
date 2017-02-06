@@ -260,7 +260,7 @@ int setVolsmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
-  const GLchar *FragmentShaderSource[]={
+  const GLchar *FragmentShaderSource[] = {
     "uniform sampler1D smokecolormap;"
 #ifdef pp_GPUDEPTH
     "uniform sampler2D depthtexture;"
@@ -268,38 +268,41 @@ int setVolsmokeShaders(){
     "uniform vec2 nearfar;"
 #endif
     "uniform sampler3D soot_density_texture,fire_texture,light_texture,blockage_texture;"
-    "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
+    "uniform vec3 eyepos,boxmin,boxmax,dcell3,light_color,light_position;"
+    "varying vec3 fragpos;"
     "uniform float xyzmaxdiff,dcell,fire_opacity_factor,gpu_vol_factor;"
     "uniform float temperature_min,temperature_cutoff,temperature_max;"
-    "uniform vec3 eyepos,boxmin,boxmax,dcell3,light_color;"
+    "uniform float mass_extinct, light_intensity, scatter_param;"
+    "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
     "uniform int drawsides[7];"
-    "varying vec3 fragpos;"
-    "uniform float mass_extinct, light_intensity;"
+    "uniform int scatter_type_glui,light_type;"
 
 #ifdef pp_GPUDEPTH
-// http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
-    "float LinearizeDepth(vec2 uv){"
-    "  float near, far, z;"
-    "  near=nearfar.x;"
-    "  far=nearfar.y;"
-    "  z = texture2D(depthtexture, uv).x;"
-    "  return (near*far)/(far+z*(near-far));"
-    "}"
-#endif
+    // http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
+        "float LinearizeDepth(vec2 uv){"
+        "  float near, far, z;"
+        "  near=nearfar.x;"
+        "  far=nearfar.y;"
+        "  z = texture2D(depthtexture, uv).x;"
+        "  return (near*far)/(far+z*(near-far));"
+        "}"
+    #endif
 
-    "void main(){"
-#ifdef pp_GPUDEPTH
-  //  "  vec2 uv = gl_TexCoord[4].xy;"
-    "  vec2 uv = gl_FragCoord.st/screensize.xy;"
-#endif
-    "  float d;"
+        "void main(){"
+    #ifdef pp_GPUDEPTH
+    //  "  vec2 uv = gl_TexCoord[4].xy;"
+      "  vec2 uv = gl_FragCoord.st/screensize.xy;"
+  #endif
     "  vec3 dalphamin,dalphamax,fragmaxpos,position,position2,color_val,color_cum,block_pos,block_pos2;"
+    "  vec3 uvec, vvec;"
+    "  float d;"
     "  float soot_val,block_val,block_val2;"
     "  float opacity,alpha_min,factor,factor2,pathdist;"
     "  float colorindex,tempval,gray;"
     "  float tauhat, alphahat, taui, tauterm;"
-    "  float alphai, light_fraction, light_factor;"
+    "  float alphai, light_fraction, light_factor, scatter_fraction;"
     "  float dstep;"
+    "  float cos_angle,fourpi;"
     "  int i,n_iter;"
     "  int side;"
 
@@ -408,8 +411,29 @@ int setVolsmokeShaders(){
     "    tauterm = (1.0-taui)*tauhat;"
     "    alphahat  += tauterm;"
     "    if(use_light==1){"
+    "      fourpi=16.0*atan(1.0);"
+    "      uvec=eyepos-fragpos;"
+    "      if(light_type==0){"
+    "        vvec=light_position-fragpos;"
+    "      }"
+    "      else{"
+    "        vvec=light_position;"
+    "      }"
+    "      if(scatter_type_glui!=0){"
+    "        cos_angle=dot(uvec,vvec)/(length(uvec)*length(vvec));"
+    "        cos_angle=clamp(cos_angle,-1.0,1.0);"
+    "      }"
+    "      if(scatter_type_glui==0){"
+    "        scatter_fraction=1.0/fourpi;"
+    "      }"
+    "      else if(scatter_type_glui==1){"
+    "        scatter_fraction=(1.0-scatter_param*scatter_param)/(pow(1.0+scatter_param*scatter_param-2.0*scatter_param*cos_angle,1.5)*fourpi);"
+    "      }"
+    "      else{"
+    "        scatter_fraction=(1.0-scatter_param*scatter_param)/(pow(1.0+scatter_param*cos_angle,2.0)*fourpi);"
+    "      }"
     "      light_fraction = texture3D(light_texture,position);"
-    "      light_factor = alphai*light_intensity*light_fraction/12.0/255.0;"
+    "      light_factor = alphai*light_intensity*light_fraction*light_fraction/12.0/255.0;"
     "      color_cum += tauterm*(color_val+light_factor*light_color);"
     "    }"
     "    else{"
@@ -512,7 +536,12 @@ int setVolsmokeShaders(){
   GPUvol_use_light = glGetUniformLocation(p_volsmoke, "use_light");
   GPUvol_light_color = glGetUniformLocation(p_volsmoke, "light_color");
   GPUvol_light_intensity = glGetUniformLocation(p_volsmoke, "light_intensity");
+  GPUvol_scatter_param = glGetUniformLocation(p_volsmoke, "scatter_param");
   GPUvol_light = glGetUniformLocation(p_volsmoke,"light_texture");
+  GPUvol_scatter_param = glGetUniformLocation(p_volsmoke, "scatter_param");
+  GPUvol_light_position = glGetUniformLocation(p_volsmoke, "light_position");
+  GPUvol_light_type = glGetUniformLocation(p_volsmoke, "light_type");
+  GPUvol_scatter_type_glui = glGetUniformLocation(p_volsmoke, "scatter_type_glui");
 
   GPUvol_havefire = glGetUniformLocation(p_volsmoke,"havefire");
   GPUvol_smokecolormap = glGetUniformLocation(p_volsmoke,"smokecolormap");
