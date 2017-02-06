@@ -61,26 +61,32 @@
       value = *vv;\
     }
 
-#define ISOTROPIC 0
-#define HENYEY_GREENSTEIN 1
-#define SCHLICK 2
+/* ----------------------- GetScatterFraction ----------------------------- */
 
-/* ----------------------- light_phase ----------------------------- */
-
-float light_phase(float cos_angle,float param,int phase_type){
+float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase_type){
   float phase=0.0;
   float fourpi = 16.0*atan(1.0);
+  float cos_angle=0.0;
+
+  if(phase_type != ISOTROPIC&&view_vec != NULL&&light_vec != NULL){
+    float length_view, length_light;
+
+    length_view = NORM3(view_vec);
+    length_light = NORM3(light_vec);
+    if(length_view > 0.0&&length_light > 0.0){
+      cos_angle = DOT3(view_vec, light_vec) / (length_view*length_light);
+      cos_angle = CLAMP(cos_angle, -1.0, 1.0);
+    }
+  }
 
   switch(phase_type){
   case ISOTROPIC:
     phase = 1.0/fourpi;
     break;
   case HENYEY_GREENSTEIN:
-    cos_angle = CLAMP(cos_angle, -1.0, 1.0);
     phase = (1.0-param*param)/(fourpi*pow(1.0+param*param-2.0*param*cos_angle,1.5));
     break;
   case SCHLICK:
-    cos_angle = CLAMP(cos_angle, -1.0, 1.0);
     phase = (1.0-param*param)/(fourpi*pow(1.0+param*cos_angle, 2.0));
     break;
   default:
@@ -937,7 +943,6 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   char *blank_local;
   float pt_smoketran, *pt_smokecolor, pt_light_fraction;
   float tauhat,alphahat;
-  float fourpi = 16.0*atan(1.0);
   meshdata *xyz_mesh=NULL;
 
   if(combine_meshes==1){
@@ -1092,18 +1097,30 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
     alphai = 1.0 - pt_smoketran;
     alphahat +=  alphai*tauhat;
 
-    {
-      float light_factor;
+    if(use_light==1){
+      float light_factor, scatter_fraction;
+      float uvec[3], vvec[3];
 
-      if(use_light==1){
-        light_factor = alphai*light_intensity*pt_light_fraction/fourpi/255.0;
+      if(scatter_type_glui!=ISOTROPIC){
+        VEC3DIFF(uvec,xyz,xyzeyeorig);
+        if(light_type_glui==LOCAL_LIGHT){
+          VEC3DIFF(vvec,xyz,xyz_light_glui);
+        }
+        else{
+          VEC3EQ(vvec,xyz_light_glui);
+        }
       }
-      else{
-        light_factor = 0.0;
-      }
-      cum_smokecolor[0] += alphai*tauhat*(pt_smokecolor[0]+light_factor*light_color[0]);
-      cum_smokecolor[1] += alphai*tauhat*(pt_smokecolor[1]+light_factor*light_color[1]);
-      cum_smokecolor[2] += alphai*tauhat*(pt_smokecolor[2]+light_factor*light_color[2]);
+
+      scatter_fraction = GetScatterFraction(uvec, vvec, scatter_param, scatter_type_glui);
+      light_factor = alphai*light_intensity*pt_light_fraction*scatter_fraction/255.0;
+      cum_smokecolor[0] += alphai*tauhat*(pt_smokecolor[0] + light_factor*light_color[0]);
+      cum_smokecolor[1] += alphai*tauhat*(pt_smokecolor[1] + light_factor*light_color[1]);
+      cum_smokecolor[2] += alphai*tauhat*(pt_smokecolor[2] + light_factor*light_color[2]);
+    }
+    else{
+      cum_smokecolor[0] += alphai*tauhat*pt_smokecolor[0];
+      cum_smokecolor[1] += alphai*tauhat*pt_smokecolor[1];
+      cum_smokecolor[2] += alphai*tauhat*pt_smokecolor[2];
     }
     tauhat *= pt_smoketran;
   }

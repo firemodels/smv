@@ -31,6 +31,9 @@ SVEXTERN float SVDECL(light_intensity, 1.0);
 SVEXTERN int SVDECL(show_light_position_direction,0);
 SVEXTERN int SVDECL(light_type_glui, INFINITE_LIGHT);
 SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights, 0);
+SVEXTERN int SVDECL(scatter_type_glui,ISOTROPIC);
+SVEXTERN float SVDECL(scatter_param, 0.5);
+
 SVEXTERN float boxmin_global[3], boxmax_global[3], dlength;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];

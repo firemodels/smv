@@ -88,6 +88,7 @@ GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_loadvol=NULL;
 GLUI_RadioGroup *RADIO_use_colormap=NULL;
 GLUI_RadioGroup *RADIO_light_type = NULL;
+GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
 
 GLUI_RadioButton *RADIOBUTTON_direct=NULL,*RADIOBUTTON_constraint=NULL, *RADIOBUTTON_noconstraint=NULL;
 
@@ -129,6 +130,7 @@ GLUI_Spinner *SPINNER_load_hrrpuv=NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
 GLUI_Spinner *SPINNER_light_color[3];
 GLUI_Spinner *SPINNER_light_intensity = NULL;
+GLUI_Spinner *SPINNER_scatter_param = NULL;
 
 GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
 #ifdef pp_CULL
@@ -157,6 +159,7 @@ GLUI_Panel *PANEL_smoke=NULL;
 GLUI_Panel *PANEL_loadcutoff=NULL;
 GLUI_Panel *PANEL_light_color = NULL;
 GLUI_Panel *PANEL_light_position = NULL;
+GLUI_Panel *PANEL_scatter = NULL;
 
 GLUI_Rollout *ROLLOUT_firesmokecolor=NULL;
 GLUI_Rollout *ROLLOUT_colormap4=NULL;
@@ -611,6 +614,14 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_light_intensity = glui_3dsmoke->add_spinner_to_panel(PANEL_light_color, _d("intensity:"), GLUI_SPINNER_FLOAT, &light_intensity);
     SPINNER_light_intensity->set_float_limits(0.0,1000.0);
 
+    PANEL_scatter = glui_3dsmoke->add_panel_to_panel(ROLLOUT_light, _d("scatter"));
+    RADIO_scatter_type_glui = glui_3dsmoke->add_radiogroup_to_panel(PANEL_scatter,&scatter_type_glui);
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_d("isotropic"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_d("Henjey-Greenstein"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_d("Schlick"));
+    SPINNER_scatter_param  = glui_3dsmoke->add_spinner_to_panel(PANEL_scatter,   _d("param"), GLUI_SPINNER_FLOAT, &scatter_param);
+    SPINNER_scatter_param->set_float_limits(-1.0,1.0);
+    
     ROLLOUT_generate_images = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Generate images"), false);
 
     SPINNER_startframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_generate_images, _d("start frame"), GLUI_SPINNER_INT, &vol_startframe0, START_FRAME, Smoke3d_CB);

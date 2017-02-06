@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ISOTROPIC 0
+#define HENYEY_GREENSTEIN 1
+#define SCHLICK 2
+
 #define LOCAL_LIGHT 0
 #define INFINITE_LIGHT 1
 #define TMAX 1000000000.0
