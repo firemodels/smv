@@ -267,14 +267,14 @@ int setVolsmokeShaders(){
     "uniform vec2 screensize;"
     "uniform vec2 nearfar;"
 #endif
-    "uniform sampler3D soot_density_texture,fire_texture,blockage_texture;"
-    "uniform int inside,havefire,volbw,slicetype,block_volsmoke;"
+    "uniform sampler3D soot_density_texture,fire_texture,light_texture,blockage_texture;"
+    "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
     "uniform float xyzmaxdiff,dcell,fire_opacity_factor,gpu_vol_factor;"
     "uniform float temperature_min,temperature_cutoff,temperature_max;"
-    "uniform vec3 eyepos,boxmin,boxmax,dcell3;"
+    "uniform vec3 eyepos,boxmin,boxmax,dcell3,light_color;"
     "uniform int drawsides[7];"
     "varying vec3 fragpos;"
-    "uniform float mass_extinct;"
+    "uniform float mass_extinct, light_intensity;"
 
 #ifdef pp_GPUDEPTH
 // http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
@@ -298,6 +298,7 @@ int setVolsmokeShaders(){
     "  float opacity,alpha_min,factor,factor2,pathdist;"
     "  float colorindex,tempval,gray;"
     "  float tauhat, alphahat, taui, tauterm;"
+    "  float alphai, light_fraction, light_factor;"
     "  float dstep;"
     "  int i,n_iter;"
     "  int side;"
@@ -403,9 +404,17 @@ int setVolsmokeShaders(){
     "    }"
 #endif
     "    taui = exp(-mass_extinct*soot_val*dstep);"
+    "    alphai = 1.0 - taui;"
     "    tauterm = (1.0-taui)*tauhat;"
     "    alphahat  += tauterm;"
-    "    color_cum += tauterm*color_val;"
+    "    if(use_light==1){"
+    "      light_fraction = texture3D(light_texture,position);"
+    "      light_factor = alphai*light_intensity*light_fraction/12.0/255.0;"
+    "      color_cum += tauterm*(color_val+light_factor*light_color);"
+    "    }"
+    "    else{"
+    "      color_cum += tauterm*color_val;"
+    "    }"
     "    tauhat *= taui;"
 #ifndef pp_GPUDEPTH
     "    if(block_val2<0.5)break;"
@@ -499,6 +508,12 @@ int setVolsmokeShaders(){
   GPUvol_soot_density = glGetUniformLocation(p_volsmoke,"soot_density_texture");
   GPUvol_blockage = glGetUniformLocation(p_volsmoke,"blockage_texture");
   GPUvol_fire = glGetUniformLocation(p_volsmoke,"fire_texture");
+  
+  GPUvol_use_light = glGetUniformLocation(p_volsmoke, "use_light");
+  GPUvol_light_color = glGetUniformLocation(p_volsmoke, "light_color");
+  GPUvol_light_intensity = glGetUniformLocation(p_volsmoke, "light_intensity");
+  GPUvol_light = glGetUniformLocation(p_volsmoke,"light_texture");
+
   GPUvol_havefire = glGetUniformLocation(p_volsmoke,"havefire");
   GPUvol_smokecolormap = glGetUniformLocation(p_volsmoke,"smokecolormap");
   GPUvol_drawsides = glGetUniformLocation(p_volsmoke,"drawsides");

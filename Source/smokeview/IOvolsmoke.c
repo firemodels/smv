@@ -2032,6 +2032,10 @@ void DrawSmoke3DGPUVOL(void){
   glUniform2f(GPUvol_nearfar,fnear,ffar);
   SNIFF_ERRORS("after DrawSmoke3DGPUVOL A");
 #endif
+  glUniform1f(GPUvol_light_intensity, light_intensity);
+  glUniform3f(GPUvol_light_color, (float)light_color[0], (float)light_color[1], (float)light_color[2]);
+  glUniform1i(GPUvol_use_light, use_light);
+
   glUniform3f(GPUvol_eyepos,xyzeyeorig[0],xyzeyeorig[1],xyzeyeorig[2]);
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
@@ -2135,7 +2139,7 @@ void DrawSmoke3DGPUVOL(void){
       glUniform1i(GPUvol_fire,         1);  // firedata_local
       glUniform1i(GPUvol_smokecolormap,2);  // rgb_volsmokecolormap
       glUniform1i(GPUvol_blockage,     3);  // meshi->f_iblank_cell
-    //glUniform1i(GPUvol_light,        4);  // meshi->light
+      glUniform1i(GPUvol_light, 5);         // meshi->light_fraction
       if(mouse_down==1){
         glUniform1f(GPUvol_dcell,8.0*dcell);
       }
