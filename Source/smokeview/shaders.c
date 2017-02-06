@@ -508,7 +508,7 @@ int setVolsmokeShaders(){
   GPUvol_soot_density = glGetUniformLocation(p_volsmoke,"soot_density_texture");
   GPUvol_blockage = glGetUniformLocation(p_volsmoke,"blockage_texture");
   GPUvol_fire = glGetUniformLocation(p_volsmoke,"fire_texture");
-  
+
   GPUvol_use_light = glGetUniformLocation(p_volsmoke, "use_light");
   GPUvol_light_color = glGetUniformLocation(p_volsmoke, "light_color");
   GPUvol_light_intensity = glGetUniformLocation(p_volsmoke, "light_intensity");
