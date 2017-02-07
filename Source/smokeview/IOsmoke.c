@@ -255,7 +255,7 @@ void DrawSmokeTest(void){
   meshdata *meshi;
   int i;
   float dy,y;
-  float *boxmin, *boxmax, opacity, zmid;
+  float *boxmin, *boxmax, zmid;
   float ymin, ymax;
   float opacity_full, opacity_slice;
 
@@ -508,7 +508,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
 
         xyz1[1] = yplt[j];
         for(i = 0; i <= ibar; i++){
-          float dxyzlight[3], length;
+          float length;
           float soot_sum, opacity, arg;
           float ddlength;
           int ii,nlength;
@@ -574,9 +574,7 @@ void LightFractions2File(meshdata *meshi){
   FILE *slicesmv = NULL;
   int fileunit = 20;
   int is1, is2, js1, js2, ks1, ks2;
-  int ntimes;
   volrenderdata *vr;
-  int ibar, jbar, kbar;
 
   vr = &(meshi->volrenderinfo);
 

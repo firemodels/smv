@@ -1293,7 +1293,7 @@ void ComputeAllSmokecolors(void){
 /* ------------------ GetPos ------------------------ */
 
 void GetPos(float *xyz1, float *dir_in, float *xyz2){
-  float dir[3], x2, y2, z2;
+  float dir[3];
 
   if(dir_in==NULL){
     VEC3DIFF(dir, xyz_light_glui, xyz1);
