@@ -474,6 +474,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawSmokeFrame();
   }
   if(show_light_position_direction==1)DrawLightDirections();
+  if(smoke_test == 1)DrawSmokeTest();
 
   if(active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN){
     CLIP_VALS;

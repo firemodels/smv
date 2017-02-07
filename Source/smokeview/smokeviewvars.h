@@ -20,6 +20,17 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke_test, 0);
+#ifdef INMAIN
+  SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
+  SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};
+#else
+SVEXTERN float smoke_test_color[4];
+SVEXTERN float smoke_test_target_color[4];
+#endif
+SVEXTERN float SVDECL(smoke_test_range,1.0), SVDECL(smoke_test_opacity,0.5);
+SVEXTERN int SVDECL(smoke_test_nslices,3);
+
 #ifdef INMAIN
   SVEXTERN float xyz_light_glui[3] = {1.0,0.0,0.0}, xyz_light_global[3] = {1.0,0.0,0.0};
   SVEXTERN int light_color[3] = {255,255,255};

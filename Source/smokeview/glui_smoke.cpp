@@ -129,6 +129,9 @@ GLUI_Spinner *SPINNER_load_3dsmoke=NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv=NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
 GLUI_Spinner *SPINNER_light_color[3];
+GLUI_Spinner *SPINNER_smoke_test_color[4];
+GLUI_Spinner *SPINNER_smoke_test_range=NULL;
+GLUI_Spinner *SPINNER_smoke_test_nslices=NULL;
 GLUI_Spinner *SPINNER_light_intensity = NULL;
 GLUI_Spinner *SPINNER_scatter_param = NULL;
 
@@ -172,6 +175,7 @@ GLUI_Rollout *ROLLOUT_colormap_hrrpuv_smoke=NULL;
 GLUI_Rollout *ROLLOUT_meshvis=NULL;
 GLUI_Rollout *ROLLOUT_slices=NULL;
 GLUI_Rollout *ROLLOUT_volume=NULL;
+GLUI_Rollout *ROLLOUT_smoke_test = NULL;
 
 GLUI_StaticText *TEXT_smokealpha=NULL;
 GLUI_StaticText *TEXT_smokedepth=NULL;
@@ -554,7 +558,23 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("both"));
   }
+  
+  // smoke test dialog
 
+  ROLLOUT_smoke_test = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _d("Test"), false);
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_test, _d("Show"), &smoke_test);
+  SPINNER_smoke_test_color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("red:"), GLUI_SPINNER_FLOAT, smoke_test_color);
+  SPINNER_smoke_test_color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("green:"), GLUI_SPINNER_FLOAT, smoke_test_color + 1);
+  SPINNER_smoke_test_color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("blue:"), GLUI_SPINNER_FLOAT, smoke_test_color + 2);
+  SPINNER_smoke_test_color[3] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("opacity:"), GLUI_SPINNER_FLOAT, &smoke_test_opacity);
+  SPINNER_smoke_test_color[0]->set_float_limits(0.0,1.0);
+  SPINNER_smoke_test_color[1]->set_float_limits(0.0,1.0);
+  SPINNER_smoke_test_color[2]->set_float_limits(0.0,1.0);
+  SPINNER_smoke_test_color[3]->set_float_limits(0.0,1.0);
+  SPINNER_smoke_test_nslices = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("n slices"), GLUI_SPINNER_INT, &smoke_test_nslices);
+  SPINNER_smoke_test_nslices->set_int_limits(3,100);
+  SPINNER_smoke_test_range = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("range"), GLUI_SPINNER_FLOAT, &smoke_test_range);
+  
   // volume render dialog
 
   if(nvolrenderinfo > 0){

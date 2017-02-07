@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void DrawSmokeTest(void);
 EXTERNCPP void Smoke3d_CB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);

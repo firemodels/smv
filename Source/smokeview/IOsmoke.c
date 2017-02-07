@@ -248,6 +248,58 @@ else{\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
+
+  /* ------------------ DrawSmokeTest ------------------------ */
+
+void DrawSmokeTest(void){
+  meshdata *meshi;
+  int i;
+  float dy,y;
+  float *boxmin, *boxmax, opacity, zmid;
+  float ymin, ymax;
+  float opacity_full, opacity_slice;
+
+  meshi = meshinfo;
+  boxmin = meshi->boxmin;
+  boxmax = meshi->boxmax;
+  ymin = boxmin[1] + 0.1;
+  ymax = boxmin[1] + smoke_test_range;
+  dy = (ymax-ymin) / (float)(smoke_test_nslices - 1);
+  zmid = (boxmin[2] + boxmax[2]) / 2.0;
+  
+  opacity_full = smoke_test_opacity;
+  opacity_slice = 1.0 - pow(1.0 - opacity_full, 1.0/(float)smoke_test_nslices);
+
+  TransparentOn();
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+  glBegin(GL_TRIANGLES);
+  for(i=0;i<smoke_test_nslices;i++){
+    y = ymax - (float)i*dy;
+    glColor4f(smoke_test_color[0],smoke_test_color[1],smoke_test_color[2],opacity_slice);
+    glVertex3f(boxmin[0],y,boxmin[2]);
+    glVertex3f(boxmax[0],y,boxmin[2]);
+    glVertex3f(boxmax[0],y,zmid);
+    
+    glVertex3f(boxmin[0],y,boxmin[2]);
+    glVertex3f(boxmax[0],y,zmid);
+    glVertex3f(boxmin[0],y,zmid);
+  }
+  y = ymin;
+  glColor4f(smoke_test_color[0], smoke_test_color[1], smoke_test_color[2], opacity_full);
+  glVertex3f(boxmin[0], y, zmid);
+  glVertex3f(boxmax[0], y, zmid);
+  glVertex3f(boxmax[0], y, boxmax[2]);
+
+  glVertex3f(boxmin[0], y, zmid);
+  glVertex3f(boxmax[0], y, boxmax[2]);
+  glVertex3f(boxmin[0], y, boxmax[2]);
+  glEnd();
+  glPopMatrix();
+  TransparentOff();
+}
+
   /* ------------------ GetLightLimit ------------------------ */
 
 void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length){
