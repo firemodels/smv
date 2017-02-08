@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
+
 #define ISOTROPIC 0
 #define HENYEY_GREENSTEIN 1
 #define SCHLICK 2

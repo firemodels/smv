@@ -1157,7 +1157,7 @@ void drawstaticiso(const isosurface *asurface,int surfacetype,
 
     col = asurface->color;
     if(setbw==1){
-      rgbtemp[0]=0.299*col[0]+0.587*col[1]+0.114*col[2];
+      rgbtemp[0] = TOBW(col);
       rgbtemp[1]=rgbtemp[0];
       rgbtemp[2]=rgbtemp[0];
     }

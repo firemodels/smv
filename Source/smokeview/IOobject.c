@@ -90,8 +90,11 @@ void getsmokesensors(void){
       val=-1;
     }
     else{
+      unsigned char *rgbpixel;
+
       index=row*width+col;
-      val=rgbimage[3*index];
+      rgbpixel = rgbimage + 3 * index;
+      val=TOBW(rgbpixel);
     }
     devicei->visval=val;
   }

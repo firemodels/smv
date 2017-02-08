@@ -1133,7 +1133,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
     if(volbw==1){
       float gray;
 
-      gray=0.299*cum_smokecolor[0] + 0.587*cum_smokecolor[1] + 0.114*cum_smokecolor[2];
+      gray = TOBW(cum_smokecolor);
       cum_smokecolor[0] = gray;
       cum_smokecolor[1] = gray;
       cum_smokecolor[2] = gray;
