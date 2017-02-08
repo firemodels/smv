@@ -1085,6 +1085,7 @@ SVEXTERN treedata SVDECL(*treeinfo,NULL);
 SVEXTERN terraindata SVDECL(*terraininfo,NULL);
 SVEXTERN int SVDECL(ntreeinfo,0), SVDECL(nterraininfo,0), SVDECL(visTerrainType,0);
 SVEXTERN float treecolor[4], treecharcolor[4], trunccolor[4];
+SVEXTERN unsigned char treecolor_uc[4], treecharcolor_uc[4], trunccolor_uc[4];
 SVEXTERN int showterrain;
 SVEXTERN float rgb_terrain[10][4];
 SVEXTERN tourdata SVDECL(*tourinfo,NULL);

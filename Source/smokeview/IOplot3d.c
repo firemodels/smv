@@ -7,8 +7,7 @@
 
 #include "update.h"
 #include "smokeviewvars.h"
-
-void update_glui_plot3d(void);
+#include "IOobject.h"
 
 /* ------------------ plot3dcompare  ------------------------ */
 
@@ -1795,7 +1794,6 @@ void updateshowstep(int val, int slicedir){
 
 /* ------------------ drawgrid ------------------------ */
 
-void drawsphere(float diameter, unsigned char *rgbcolor);
 void drawgrid(const meshdata *meshi){
   int i, j, k;
   float *xplt, *yplt, *zplt;

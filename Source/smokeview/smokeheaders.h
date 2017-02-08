@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateMenu(void);
+EXTERNCPP void Volume_CB(int var);
 EXTERNCPP void DrawSmokeTest(void);
 EXTERNCPP void Smoke3d_CB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
@@ -91,6 +93,7 @@ EXTERNCPP void update_glui_vecfactor(void);
 EXTERNCPP void update_glui_keyframe(void);
 EXTERNCPP void update_glui_patch_units(void);
 EXTERNCPP void update_glui_slice_units(void);
+EXTERNCPP void update_glui_plot3d(void);
 EXTERNCPP void update_glui_plot3d_units(void);
 EXTERNCPP void update_glui_plot3dtype(void);
 EXTERNCPP void update_glui_isotype(void);

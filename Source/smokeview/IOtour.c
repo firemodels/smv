@@ -7,13 +7,7 @@
 
 #include "update.h"
 #include "smokeviewvars.h"
-
-void drawcir(float *center, float rad, float *color);
-void hermiteeye(float f1, keyframe *kf1, keyframe *kf2, float *eye, float *slope);
-void hermiteother(float f1, keyframe *kf1, keyframe *kf2, pathdata *pj);
-void hermiteview(float t, keyframe *kf1, keyframe *kf2, float *view);
-void draw_SVOBJECT(sv_object *object, int frame_index_local,propdata *prop,int recurse_level,float *rgbval,int vis_override);
-
+#include "IOobject.h"
 
 /* ------------------ freetours ------------------------ */
 
@@ -114,6 +108,18 @@ void update_tour_menulabels(void){
     }
   }
   updatemenu=1;
+}
+
+/* ------------------ drawcir ------------------------ */
+
+void drawcir(float *center, float rad, float *color){
+  glColor3fv(color);
+  glBegin(GL_QUADS);
+  glVertex3f(center[0] - rad / 2.0, center[1] - rad / 2.0, center[2]);
+  glVertex3f(center[0] + rad / 2.0, center[1] - rad / 2.0, center[2]);
+  glVertex3f(center[0] + rad / 2.0, center[1] + rad / 2.0, center[2]);
+  glVertex3f(center[0] - rad / 2.0, center[1] + rad / 2.0, center[2]);
+  glEnd();
 }
 
 /* ------------------ drawtours ------------------------ */
@@ -394,18 +400,6 @@ void drawtours(void){
   }
 }
 
-/* ------------------ drawcir ------------------------ */
-
-void drawcir(float *center, float rad, float *color){
-  glColor3fv(color);
-  glBegin(GL_QUADS);
-  glVertex3f(center[0]-rad/2.0,center[1]-rad/2.0,center[2]);
-  glVertex3f(center[0]+rad/2.0,center[1]-rad/2.0,center[2]);
-  glVertex3f(center[0]+rad/2.0,center[1]+rad/2.0,center[2]);
-  glVertex3f(center[0]-rad/2.0,center[1]+rad/2.0,center[2]);
-  glEnd();
-}
-
 /* ------------------ drawselect_tours ------------------------ */
 
 void drawselect_tours(void){
@@ -438,6 +432,78 @@ void drawselect_tours(void){
     }
   }
   glEnd();
+}
+
+#define HERMVAL() ((2.0*t3-3.0*t2+1.0)*p0 + (t3-2.0*t2+t)*m0 + (t3-t2)*m1 + (-2.0*t3+3.0*t2)*p1)
+#define HERMDERIV() ((6.0*t2-6.0*t)*p0 + (3.0*t2-4.0*t+1.0)*m0 + (3.0*t2-2.0*t)*m1 + (-6.0*t2+6.0*t)*p1)
+
+/* ------------------ hermiteye ------------------------ */
+
+void hermiteeye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope){
+  int i;
+  float t3, t2;
+
+  t2 = t*t;
+  t3 = t2*t;
+
+  for(i = 0;i < 3;i++){
+    float p0, p1, m0, m1;
+
+    p0 = kf1->nodeval.eye[i];
+    p1 = kf2->nodeval.eye[i];
+    m0 = kf1->d_eye[i];
+    m1 = kf2->s_eye[i];
+
+    eye[i] = HERMVAL();
+    if(i != 2)slope[i] = HERMDERIV();
+  }
+}
+
+/* ------------------ hermiteother ------------------------ */
+
+void hermiteother(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
+  float p0, p1, m0, m1;
+  float t3, t2;
+
+  t2 = t*t;
+  t3 = t2*t;
+
+  p0 = kf1->az_path;
+  p1 = kf2->az_path;
+  m0 = kf1->d_az;
+  m1 = kf2->s_az;
+  pj->az_path = HERMVAL();
+
+  p0 = kf1->nodeval.zoom;
+  p1 = kf2->nodeval.zoom;
+  m0 = kf1->d_zoom;
+  m1 = kf2->s_zoom;
+  pj->zoom = HERMVAL();
+
+  p0 = kf1->nodeval.elev_path;
+  p1 = kf2->nodeval.elev_path;
+  m0 = kf1->d_elev;
+  m1 = kf2->s_elev;
+  pj->elev_path = HERMVAL();
+}
+
+/* ------------------ hermiteview ------------------------ */
+
+void hermiteview(float t, keyframe *kf1, keyframe *kf2, float *view){
+  int i;
+
+  for(i = 0;i < 3;i++){
+    float p0, p1, m0, m1;
+    float t3, t2;
+
+    p0 = kf1->nodeval.xyz_view_abs[i];
+    p1 = kf2->nodeval.xyz_view_abs[i];
+    m0 = kf1->d_xyz_view[i];
+    m1 = kf2->s_xyz_view[i];
+    t2 = t*t;
+    t3 = t2*t;
+    view[i] = HERMVAL();
+  }
 }
 
 /* ------------------ createtourpaths ------------------------ */
@@ -895,79 +961,6 @@ void createtourpaths(void){
       keyj->nodeval.time = tour_tstart + (tour_tstop-tour_tstart)*keyj->total_distance/total_distance;
     }
     if(selected_frame!=NULL)selected_frame->selected=1;
-  }
-}
-
-#define HERMVAL() ((2.0*t3-3.0*t2+1.0)*p0 + (t3-2.0*t2+t)*m0 + (t3-t2)*m1 + (-2.0*t3+3.0*t2)*p1)
-#define HERMDERIV() ((6.0*t2-6.0*t)*p0 + (3.0*t2-4.0*t+1.0)*m0 + (3.0*t2-2.0*t)*m1 + (-6.0*t2+6.0*t)*p1)
-
-/* ------------------ hermiteye ------------------------ */
-
-void hermiteeye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope){
-  int i;
-  float t3, t2;
-
-  t2 = t*t;
-  t3 = t2*t;
-
-  for(i=0;i<3;i++){
-    float p0, p1, m0, m1;
-
-    p0 = kf1->nodeval.eye[i];
-    p1 = kf2->nodeval.eye[i];
-    m0 = kf1->d_eye[i];
-    m1 = kf2->s_eye[i];
-
-    eye[i] = HERMVAL();
-    if(i!=2)slope[i] = HERMDERIV();
-  }
-}
-
-
-/* ------------------ hermiteother ------------------------ */
-
-void hermiteother(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
-  float p0, p1, m0, m1;
-  float t3, t2;
-
-  t2 = t*t;
-  t3 = t2*t;
-
-  p0 = kf1->az_path;
-  p1 = kf2->az_path;
-  m0 = kf1->d_az;
-  m1 = kf2->s_az;
-  pj->az_path = HERMVAL();
-
-  p0 = kf1->nodeval.zoom;
-  p1 = kf2->nodeval.zoom;
-  m0 = kf1->d_zoom;
-  m1 = kf2->s_zoom;
-  pj->zoom = HERMVAL();
-
-  p0=kf1->nodeval.elev_path;
-  p1=kf2->nodeval.elev_path;
-  m0 = kf1->d_elev;
-  m1 = kf2->s_elev;
-  pj->elev_path = HERMVAL();
-}
-
-/* ------------------ hermiteview ------------------------ */
-
-void hermiteview(float t, keyframe *kf1, keyframe *kf2, float *view){
-  int i;
-
-  for(i=0;i<3;i++){
-    float p0, p1, m0, m1;
-    float t3, t2;
-
-    p0 = kf1->nodeval.xyz_view_abs[i];
-    p1 = kf2->nodeval.xyz_view_abs[i];
-    m0 = kf1->d_xyz_view[i];
-    m1 = kf2->s_xyz_view[i];
-    t2 = t*t;
-    t3 = t2*t;
-    view[i] = HERMVAL();
   }
 }
 

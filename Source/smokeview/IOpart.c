@@ -13,8 +13,7 @@
 #include "smokeviewvars.h"
 #include "histogram.h"
 #include "compress.h"
-
-void draw_SVOBJECT(sv_object *object, int frame_index_local, propdata *prop, int recurse_level,float *valrgb, int vis_override);
+#include "IOobject.h"
 
 #define READPASS 1
 #define READFAIL 0
@@ -862,7 +861,7 @@ void print_partprop(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(propi->label->longlabel, "uniform"){
+    if(strcmp(propi->label->longlabel, "uniform")==0){
       PRINTF("label=%s\n", propi->label->longlabel);
     }
     else{

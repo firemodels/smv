@@ -12,8 +12,6 @@
 
 #define RENDER_START 3
 
-void UpdateMenu(void);
-
 /* ------------------ get_newscriptfilename ------------------------ */
 
 void get_newscriptfilename(char *newscriptfilename){

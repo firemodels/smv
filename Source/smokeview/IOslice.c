@@ -14,6 +14,7 @@
 #include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
+#include "IOslice.h"
 
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
@@ -27,21 +28,6 @@ float gslice_valmin, gslice_valmax, *gslicedata;
 meshdata *gslice_valmesh;
 slicedata *gslice_u, *gslice_v, *gslice_w;
 slicedata *gslice;
-
-int GetSlicecZlibData(char *file,
-                            int set_tmin, int set_tmax, float tmin, float tmax, int ncompressed, int sliceskip, int nsliceframes,
-                            float *times, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax);
-int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
-                   int framestep, int set_tmin, int set_tmax, float tmin, float tmax,
-                   int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax);
-int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *j1, int *j2, int *k1, int *k2, int *slice3d);
-void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level);
-void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
-void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level);
-void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level);
-void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level);
-
-int MakeSliceSizefile(char *file, char *sizefile, int compression_type);
 
 #ifdef WIN32
 #define FOPEN(file,mode) _fsopen(file,mode,_SH_DENYNO)
@@ -360,6 +346,34 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
   }
 }
 
+/* ------------------ DrawQuad ------------------------ */
+
+void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
+  float d13, d24;
+  float dx, dy, dz;
+
+  if(level == 0){
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glBegin(GL_TRIANGLES);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if(d13 < d24){
+    DrawTriangle(v1, v2, v3, t1, t2, t3, del, level + 1);
+    DrawTriangle(v1, v3, v4, t1, t3, t4, del, level + 1);
+  }
+  else{
+    DrawTriangle(v1, v2, v4, t1, t2, t4, del, level + 1);
+    DrawTriangle(v2, v3, v4, t2, t3, t4, del, level + 1);
+  }
+  if(level == 0){
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
+}
+
 /* ------------------ DrawQuadOutline ------------------------ */
 
 void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level){
@@ -502,34 +516,6 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
   if(level == 0)glEnd();
 }
 
-/* ------------------ DrawQuad ------------------------ */
-
-void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
-  float d13, d24;
-  float dx, dy, dz;
-
-  if(level == 0){
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glEnable(GL_TEXTURE_1D);
-    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
-    glBegin(GL_TRIANGLES);
-  }
-  DIST3(v1, v3, d13);
-  DIST3(v2, v4, d24);
-  if(d13 < d24){
-    DrawTriangle(v1, v2, v3, t1, t2, t3, del, level + 1);
-    DrawTriangle(v1, v3, v4, t1, t3, t4, del, level + 1);
-  }
-  else{
-    DrawTriangle(v1, v2, v4, t1, t2, t4, del, level + 1);
-    DrawTriangle(v2, v3, v4, t2, t3, t4, del, level + 1);
-  }
-  if(level == 0){
-    glEnd();
-    glDisable(GL_TEXTURE_1D);
-  }
-}
-
 /* ------------------ DrawQuadVector ------------------------ */
 
 void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level){
@@ -655,6 +641,92 @@ void OutSlicefile(slicedata *sd){
     sd->qslicedata,sd->times,&sd->ntimes, &redirect,slicefilelen);
 }
 
+
+/* ------------------ GetSliceHeader0 ------------------------ */
+
+int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *jj1, int *j2, int *k1, int *k2, int *slice3d){
+  FILE *stream;
+  char buffer[255];
+
+  stream = FOPEN(size_file, "r");
+  if(stream == NULL){
+    if(MakeSliceSizefile(comp_file, size_file, compression_type) == 0)return 0;
+    stream = FOPEN(size_file, "r");
+    if(stream == NULL)return 0;
+  }
+
+  if(fgets(buffer, 255, stream) == NULL){
+    fclose(stream);
+    return 0;
+  }
+  sscanf(buffer, "%i %i %i %i %i %i", i1, i2, jj1, j2, k1, k2);
+  if(*i1 == *i2 || *jj1 == *j2 || *k1 == *k2){
+    *slice3d = 0;
+  }
+  else{
+    *slice3d = 1;
+  }
+  fclose(stream);
+  return 1;
+}
+
+/* ------------------ GetSliceHeader ------------------------ */
+
+int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
+  int framestep, int set_tmin, int set_tmax, float tmin_local, float tmax_local,
+  int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax){
+  FILE *stream;
+  int i1, i2, jj1, j2, k1, k2;
+  float time_local;
+  int ncompressed;
+  int count;
+  char buffer[256];
+  int ncompressed_rle, ncompressed_zlib;
+
+  stream = FOPEN(size_file, "r");
+  if(stream == NULL){
+    if(MakeSliceSizefile(comp_file, size_file, compression_type) == 0)return 0;
+    stream = fopen(size_file, "r");
+    if(stream == NULL)return 0;
+  }
+
+  if(fgets(buffer, 255, stream) == NULL){
+    fclose(stream);
+    return 0;
+  }
+  sscanf(buffer, "%i %i %i %i %i %i", &i1, &i2, &jj1, &j2, &k1, &k2);
+  *nx = i2 + 1 - i1;
+  *ny = j2 + 1 - jj1;
+  *nz = k2 + 1 - k1;
+  if(fgets(buffer, 255, stream) == NULL){
+    fclose(stream);
+    return 0;
+  }
+  sscanf(buffer, "%f %f", valmin, valmax);
+
+  count = 0;
+  *nsteps = 0;
+  *ntotal = 0;
+  while(!feof(stream)){
+
+    if(fgets(buffer, 255, stream) == NULL)break;
+    sscanf(buffer, "%f %i %i", &time_local, &ncompressed_zlib, &ncompressed_rle);
+    if(compression_type == COMPRESSED_ZLIB){
+      ncompressed = ncompressed_zlib;
+    }
+    else{
+      ncompressed = ncompressed_rle;
+    }
+    if(count++%framestep != 0)continue;
+    if(set_tmin == 1 && time_local < tmin_local)continue;
+    if(set_tmax == 1 && time_local > tmax_local)continue;
+    (*nsteps)++;
+    *ntotal += ncompressed;
+  }
+  fclose(stream);
+  return 2 + *nsteps;
+}
+
 /* ------------------ CReadSlice_frame ------------------------ */
 
 int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
@@ -758,7 +830,6 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
   isodata *fed_iso;
   int error_local;
   meshdata *meshi;
-  float *xgrid=NULL, *ygrid=NULL;
   int nx, ny;
   int nxy;
   int nxdata, nydata;
@@ -803,20 +874,14 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 
   switch(fed_slice->idir){
     case XDIR:
-      xgrid = meshi->yplt;
-      ygrid = meshi->zplt;
       nxdata = co->js2 + 1 - co->js1;
       nydata = co->ks2 + 1 - co->ks1;
       break;
     case YDIR:
-      xgrid = meshi->xplt;
-      ygrid = meshi->zplt;
       nxdata = co->is2 + 1 - co->is1;
       nydata = co->ks2 + 1 - co->ks1;
       break;
     case ZDIR:
-      xgrid = meshi->xplt;
-      ygrid = meshi->yplt;
       nxdata = co->is2 + 1 - co->is1;
       nydata = co->js2 + 1 - co->js1;
       break;
@@ -851,7 +916,6 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     float *co2_frame1,*co2_frame2;
     float *co_frame1,*co_frame2;
     float *times;
-    multislicedata *mslicei;
 
     char *iblank;
 
@@ -922,8 +986,6 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     fed_slice->ntimes=MIN(fed_slice->ntimes,o2->ntimes);
     frame_size = fed_slice->nslicei*fed_slice->nslicej*fed_slice->nslicek;
     fed_slice->nslicetotal=frame_size*fed_slice->ntimes;
-
-    mslicei = fed_slice->mslice;
 
     if(NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0||
        NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0
@@ -1274,7 +1336,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd){
-  float *pdata;
   int ndata;
   int n, i;
   int nframe;
@@ -1302,7 +1363,6 @@ void GetSliceHists(slicedata *sd){
   ny = jbar + 1;
   nxy = nx*ny;
 
-  pdata = sd->qslicedata;
   ndata = sd->nslicetotal;
 
   nframe = sd->nslicei*sd->nslicej*sd->nslicek;
@@ -3383,11 +3443,10 @@ void SetSliceBounds(int slicetype){
 /* ------------------ GetSliceDataBounds ------------------------ */
 
 void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
-  float *pdata, *pdata0;
+  float *pdata;
   int ndata;
   int n, i;
   int first=1;
-  int nframe;
   int imintime, imaxtime;
 
   int istep;
@@ -3410,7 +3469,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   pdata = sd->qslicedata;
   ndata = sd->nslicetotal;
 
-  nframe = sd->nslicei*sd->nslicej*sd->nslicek;
   NewMemory((void **)&slice_mask0,sd->nslicei*sd->nslicej*sd->nslicek);
   n=-1;
   for(i=0;i<sd->nslicei;i++){
@@ -3440,7 +3498,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     int n0;
 
     n0 = -1;
-    pdata0 = pdata + n + 1;
 
     for(i=0;i<sd->nslicei;i++){
       int ii,j;
@@ -3635,6 +3692,95 @@ int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_ti
   }
   FREEMEMORY(datatemp);
   return 0;
+}
+
+//*** header
+// endian
+// completion (0/1)
+// fileversion (compressed format)
+// version  (slicef version)
+// global min max (used to perform conversion)
+// i1,i2,j1,j2,k1,k2
+
+
+//*** frame
+// time, compressed frame size                        for each frame
+// compressed buffer
+
+/* ------------------ GetSlicecZlibData ------------------------ */
+
+int GetSlicecZlibData(char *file,
+  int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
+  float *times_local, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax){
+  FILE *stream;
+  int count, ns;
+  unsigned char *cd;
+  int endian;
+  float minmax[2];
+  int fileversion, version;
+  int completion;
+  int ijkbar[6];
+
+  cd = compressed_data;
+  compindex[0].offset = 0;
+
+  stream = FOPEN(file, "rb");
+  if(stream == NULL)return 0;
+
+  // read header
+
+  fread(&endian, 4, 1, stream);
+  fread(&completion, 4, 1, stream);
+  if(completion == 0){
+    fclose(stream);
+    return 0;
+  }
+
+  fread(&fileversion, 4, 1, stream);
+  if(endian != 1)fileversion = int_switch(fileversion);
+
+  fread(&version, 4, 1, stream);
+  if(endian != 1)version = int_switch(version);
+
+  fread(minmax, 4, 2, stream);
+  if(endian != 1){
+    minmax[0] = float_switch(minmax[0]);
+    minmax[1] = float_switch(minmax[1]);
+  }
+
+  fread(ijkbar, 4, 6, stream);
+  if(endian != 1){
+    ijkbar[0] = int_switch(ijkbar[0]);
+    ijkbar[1] = int_switch(ijkbar[1]);
+    ijkbar[2] = int_switch(ijkbar[2]);
+    ijkbar[3] = int_switch(ijkbar[3]);
+    ijkbar[4] = int_switch(ijkbar[4]);
+    ijkbar[5] = int_switch(ijkbar[5]);
+  }
+
+  count = 0;
+  ns = 0;
+  while(!feof(stream)){
+    float ttime;
+    int nncomp;
+
+    fread(&ttime, 4, 1, stream);
+    fread(&nncomp, 4, 1, stream);
+    if((count++%sliceskip != 0) || (set_tmin == 1 && ttime<tmin_local) || (set_tmax == 1 && ttime>tmax_local)){
+      FSEEK(stream, nncomp, SEEK_CUR);
+      continue;
+    }
+    times_local[ns++] = ttime;
+    compindex[ns].offset = compindex[ns - 1].offset + nncomp;
+    compindex[ns - 1].size = nncomp;
+
+    PRINTF("slice time=%.2f\n", ttime);
+    fread(cd, 1, nncomp, stream);
+    cd += nncomp;
+    if(ns >= nsliceframes || cd - compressed_data >= ncompressed)break;
+  }
+  fclose(stream);
+  return cd - compressed_data;
 }
 
 /* ------------------ GetSliceCompressedData ------------------------ */
@@ -6898,180 +7044,6 @@ void InitSliceData(void){
     fileout = NULL;
 
   }
-}
-
-/* ------------------ GetSliceHeader0 ------------------------ */
-
-int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int *i1, int *i2, int *jj1, int *j2, int *k1, int *k2, int *slice3d){
-  FILE *stream;
-  char buffer[255];
-
-  stream=FOPEN(size_file,"r");
-  if(stream==NULL){
-    if(MakeSliceSizefile(comp_file,size_file, compression_type)==0)return 0;
-    stream=FOPEN(size_file,"r");
-    if(stream==NULL)return 0;
-  }
-
-  if(fgets(buffer,255,stream)==NULL){
-    fclose(stream);
-    return 0;
-  }
-  sscanf(buffer,"%i %i %i %i %i %i",i1,i2,jj1,j2,k1,k2);
-  if(*i1==*i2||*jj1==*j2||*k1==*k2){
-    *slice3d=0;
-  }
-  else{
-    *slice3d=1;
-  }
-  fclose(stream);
-  return 1;
-}
-/* ------------------ GetSliceHeader ------------------------ */
-
-int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
-                   int framestep, int set_tmin, int set_tmax, float tmin_local, float tmax_local,
-                   int *nx, int *ny, int *nz, int *nsteps, int *ntotal, float *valmin, float *valmax){
-  FILE *stream;
-  int i1, i2, jj1, j2, k1, k2;
-  float time_local;
-  int ncompressed;
-  int count;
-  char buffer[256];
-  int ncompressed_rle, ncompressed_zlib;
-
-  stream=FOPEN(size_file,"r");
-  if(stream==NULL){
-    if(MakeSliceSizefile(comp_file,size_file,compression_type)==0)return 0;
-    stream=fopen(size_file,"r");
-    if(stream==NULL)return 0;
-  }
-
-  if(fgets(buffer,255,stream)==NULL){
-    fclose(stream);
-    return 0;
-  }
-  sscanf(buffer,"%i %i %i %i %i %i",&i1,&i2,&jj1,&j2,&k1,&k2);
-  *nx = i2 + 1 - i1;
-  *ny = j2 + 1 - jj1;
-  *nz = k2 + 1 - k1;
-  if(fgets(buffer,255,stream)==NULL){
-    fclose(stream);
-    return 0;
-  }
-  sscanf(buffer,"%f %f",valmin,valmax);
-
-  count=0;
-  *nsteps=0;
-  *ntotal=0;
-  while(!feof(stream)){
-
-    if(fgets(buffer,255,stream)==NULL)break;
-    sscanf(buffer,"%f %i %i",&time_local,&ncompressed_zlib, &ncompressed_rle);
-    if(compression_type==COMPRESSED_ZLIB){
-      ncompressed=ncompressed_zlib;
-    }
-    else{
-      ncompressed=ncompressed_rle;
-    }
-    if(count++%framestep!=0)continue;
-    if(set_tmin==1&&time_local<tmin_local)continue;
-    if(set_tmax==1&&time_local>tmax_local)continue;
-    (*nsteps)++;
-    *ntotal+=ncompressed;
-  }
-  fclose(stream);
-  return 2 + *nsteps;
-}
-
-  //*** header
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (slicef version)
-  // global min max (used to perform conversion)
-  // i1,i2,j1,j2,k1,k2
-
-
-  //*** frame
-  // time, compressed frame size                        for each frame
-  // compressed buffer
-
-
-/* ------------------ GetSlicecZlibData ------------------------ */
-
-int GetSlicecZlibData(char *file,
-                            int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
-                            float *times_local, unsigned char *compressed_data, compdata *compindex, float *valmin, float *valmax){
-  FILE *stream;
-  int count, ns;
-  unsigned char *cd;
-  int endian;
-  float minmax[2];
-  int fileversion, version;
-  int completion;
-  int ijkbar[6];
-
-  cd=compressed_data;
-  compindex[0].offset=0;
-
-  stream=FOPEN(file,"rb");
-  if(stream==NULL)return 0;
-
-  // read header
-
-  fread(&endian,4,1,stream);
-  fread(&completion,4,1,stream);
-  if(completion==0){
-    fclose(stream);
-    return 0;
-  }
-
-  fread(&fileversion,4,1,stream);
-  if(endian!=1)fileversion=int_switch(fileversion);
-
-  fread(&version,4,1,stream);
-  if(endian!=1)version=int_switch(version);
-
-  fread(minmax,4,2,stream);
-  if(endian!=1){
-    minmax[0]=float_switch(minmax[0]);
-    minmax[1]=float_switch(minmax[1]);
-  }
-
-  fread(ijkbar,4,6,stream);
-  if(endian!=1){
-    ijkbar[0]=int_switch(ijkbar[0]);
-    ijkbar[1]=int_switch(ijkbar[1]);
-    ijkbar[2]=int_switch(ijkbar[2]);
-    ijkbar[3]=int_switch(ijkbar[3]);
-    ijkbar[4]=int_switch(ijkbar[4]);
-    ijkbar[5]=int_switch(ijkbar[5]);
-  }
-
-  count=0;
-  ns=0;
-  while(!feof(stream)){
-    float ttime;
-    int nncomp;
-
-    fread(&ttime,4,1,stream);
-    fread(&nncomp,4,1,stream);
-    if((count++%sliceskip!=0)||(set_tmin==1&&ttime<tmin_local)||(set_tmax==1&&ttime>tmax_local)){
-      FSEEK(stream,nncomp,SEEK_CUR);
-      continue;
-    }
-    times_local[ns++]=ttime;
-    compindex[ns].offset=compindex[ns-1].offset+nncomp;
-    compindex[ns-1].size=nncomp;
-
-    PRINTF("slice time=%.2f\n",ttime);
-    fread(cd,1,nncomp,stream);
-    cd+=nncomp;
-    if(ns>=nsliceframes||cd-compressed_data>=ncompressed)break;
-  }
-  fclose(stream);
-  return cd-compressed_data;
 }
 
   //*** header

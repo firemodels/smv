@@ -13,8 +13,6 @@ edgedata *edge_list;
 tridata *triangle_list;
 tetdata *volume_list;
 
-void Volume_CB(int var);
-
 /* ------------------ CalcTriNormal ------------------------ */
 
 void CalcTriNormal(float *v1, float *v2, float *v3, float *norm){

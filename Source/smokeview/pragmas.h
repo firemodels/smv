@@ -6,5 +6,6 @@
 #pragma warning (disable:869)  // parameter was never referenced 
 #pragma warning (disable:1418) // external function definition with no prior declaration
 #pragma warning (disable:3457) // conversion from a string literal to "char *" is deprecated 
+#pragma warning (disable:981)  // operands are evaluated in unspecified order
 #endif
 #endif

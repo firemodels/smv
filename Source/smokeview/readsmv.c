@@ -9248,12 +9248,18 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%f %f %f", treecharcolor, treecharcolor + 1, treecharcolor + 2);
       for(i = 0; i<3; i++){
         treecolor[i] = CLAMP(treecolor[i], 0.0, 1.0);
+        treecolor_uc[i] = 255 * treecolor[i];
         treecharcolor[i] = CLAMP(treecharcolor[i], 0.0, 1.0);
+        treecharcolor_uc[i] = 255 * treecharcolor[i];
         trunccolor[i] = CLAMP(trunccolor[i], 0.0, 1.0);
+        trunccolor_uc[i] = 255 * trunccolor[i];
       }
       treecolor[3] = 1.0;
       treecharcolor[3] = 1.0;
       trunccolor[3] = 1.0;
+      treecolor_uc[3] = 255;
+      treecharcolor_uc[3] = 255;
+      trunccolor_uc[3] = 255;
       continue;
     }
     if(Match(buffer, "TRAINERVIEW") == 1){

@@ -8,8 +8,7 @@
 #include "string_util.h"
 #include "update.h"
 #include "smokeviewvars.h"
-
-void drawtrunccone(float d1, float d2, float height, unsigned char *rgbcolor);
+#include "IOobject.h"
 
 /* ------------------ getzonesizecsv ------------------------ */
 
@@ -1139,7 +1138,6 @@ void drawroomgeom(void){
       if(zvi->vent_type == MFLOW_VENT){
         glPushMatrix();
         glTranslatef(x2, y2, z2);
-        void drawsphere(float diameter, unsigned char *color);
         {
           unsigned char hvac_sphere_color[3];
 
