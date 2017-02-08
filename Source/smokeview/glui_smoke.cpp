@@ -181,8 +181,6 @@ GLUI_StaticText *TEXT_smokealpha=NULL;
 GLUI_StaticText *TEXT_smokedepth=NULL;
 
 
-extern "C" void UnLoadVolsmoke3DMenu(int var);
-
 #define VOLRENDER_ROLLOUT 0
 #define SLICERENDER_ROLLOUT 1
 

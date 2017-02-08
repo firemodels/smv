@@ -5,6 +5,15 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateShowbeamAsLine(void);
+EXTERNCPP void UpdateVSliceDups(void);
+EXTERNCPP void UnloadVSliceMenu(int value);
+EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void IsoCB(int var);
+EXTERNCPP void UpdateScriptStep(void);
+EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
+EXTERNCPP void UpdateGluiRender(void);
+EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void Volume_CB(int var);
 EXTERNCPP void DrawSmokeTest(void);

@@ -192,18 +192,7 @@
 #define OBJECT_MISSING -6
 #define OBJECT_SHOWBEAM -7
 
-void AddScriptList(char *file, int id);
-void UpdateGluiRender(void);
-void PropMenu(int value);
-void UnLoadVolsmoke3DMenu(int value);
-void LoadVolsmoke3DMenu(int value);
-void UpdateScriptStep(void);
 #define ISO_COLORS 4
-void IsoCB(int var);
-void UpdateSliceDups(void);
-void UpdateVSliceDups(void);
-void UnloadVSliceMenu(int value);
-
 
 #ifdef WIN32
 
@@ -2451,10 +2440,77 @@ void ReloadMenu(int value){
   }
 }
 
-
 /* ------------------ AboutMenu ------------------------ */
 
 void AboutMenu(int value){
+}
+
+/* ------------------ LoadVolsmoke3DMenu ------------------------ */
+
+void LoadVolsmoke3DMenu(int value){
+  if(value == MENU_DUMMY)return;
+  updatemenu = 1;
+  glutSetCursor(GLUT_CURSOR_WAIT);
+  if(value >= 0){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    update_smokecolorbar = 1;
+    meshi = meshinfo + value;
+    vr = &(meshi->volrenderinfo);
+    if(vr->smokeslice != NULL&&vr->fireslice != NULL){
+      if(scriptoutstream != NULL){
+        fprintf(scriptoutstream, "LOADVOLSMOKE\n");
+        fprintf(scriptoutstream, " %i\n", value);
+      }
+      if(read_vol_mesh == VOL_READNONE){
+        read_vol_mesh = value;
+        ReadVolsmokeAllFramesAllMeshes();
+      }
+      else{
+        fprintf(stderr, "*** Warning: 3D smoke is currently being loaded\n");
+        fprintf(stderr, "   Load data when this is complete.\n");
+      }
+    }
+  }
+  else if(value == UNLOAD_ALL){  // unload all
+    if(read_vol_mesh == VOL_READNONE){
+      UnLoadVolsmoke3DMenu(value);
+    }
+    else{
+      if(read_vol_mesh == VOL_UNLOAD){
+        fprintf(stderr, "*** Warning: data is currently being unloaded\n");
+      }
+      else{
+        fprintf(stderr, "*** Warning: data is currently being loaded\n");
+      }
+      fprintf(stderr, "    Continue when this is complete.\n");
+    }
+  }
+  else if(value == LOAD_ALL){  // load all
+    update_smokecolorbar = 1;
+    if(scriptoutstream != NULL){
+      fprintf(scriptoutstream, "LOADVOLSMOKE\n");
+      fprintf(scriptoutstream, " -1\n");
+    }
+    if(read_vol_mesh == VOL_READNONE){
+      read_vol_mesh = VOL_READALL;
+      ReadVolsmokeAllFramesAllMeshes();
+    }
+    else{
+      if(read_vol_mesh == VOL_UNLOAD){
+        fprintf(stderr, "*** Warning: data is currently being unloaded\n");
+      }
+      else{
+        fprintf(stderr, "*** Warning: data is currently being loaded\n");
+      }
+      fprintf(stderr, "    Continue when this is complete.\n");
+    }
+  }
+  updatemenu = 1;
+  Idle_CB();
+  glutPostRedisplay();
+  glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }
 
 /* ------------------ LoadUnloadMenu ------------------------ */
@@ -2895,6 +2951,42 @@ void ParticleStreakShowMenu(int value){
 /* ------------------ Particle5ShowMenu ------------------------ */
 
 void Particle5ShowMenu(int value){
+}
+
+/* ------------------ PropMenu ------------------------ */
+
+void PropMenu(int value){
+  int iprop, iobject;
+
+  // value = iobject*npropinfo + iprop
+
+  iprop = value%npropinfo;
+  iobject = value / npropinfo;
+  if(iprop >= 0 && iprop < npropinfo){
+    propdata *propi;
+
+    propi = propinfo + iprop;
+    if(iobject >= 0 && iobject < propi->nsmokeview_ids){
+      int i;
+
+      propi->smokeview_id = propi->smokeview_ids[iobject];
+      propi->smv_object = propi->smv_objects[iobject];
+      updatemenu = 1;
+      get_indep_var_indices(propi->smv_object,
+        propi->vars_indep, propi->nvars_indep,
+        propi->vars_indep_index);
+
+      for(i = 0;i < npartclassinfo;i++){
+        partclassdata *partclassi;
+
+        partclassi = partclassinfo + i;
+        update_partclass_depend(partclassi);
+
+      }
+
+      glutPostRedisplay();
+    }
+  }
 }
 
 /* ------------------ ParticlePropShowMenu ------------------------ */
@@ -3442,74 +3534,6 @@ void UnLoadVolsmoke3DMenu(int value){
   updatemenu=1;
   read_vol_mesh=VOL_READNONE;
   glutPostRedisplay();
-}
-
-/* ------------------ LoadVolsmoke3DMenu ------------------------ */
-
-void LoadVolsmoke3DMenu(int value){
-  if(value==MENU_DUMMY)return;
-  updatemenu=1;
-  glutSetCursor(GLUT_CURSOR_WAIT);
-  if(value>=0){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    update_smokecolorbar=1;
-    meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
-    if(vr->smokeslice!=NULL&&vr->fireslice!=NULL){
-      if(scriptoutstream!=NULL){
-        fprintf(scriptoutstream,"LOADVOLSMOKE\n");
-        fprintf(scriptoutstream," %i\n",value);
-      }
-      if(read_vol_mesh==VOL_READNONE){
-        read_vol_mesh=value;
-        ReadVolsmokeAllFramesAllMeshes();
-      }
-      else{
-        fprintf(stderr,"*** Warning: 3D smoke is currently being loaded\n");
-        fprintf(stderr,"   Load data when this is complete.\n");
-      }
-    }
-  }
-  else if(value==UNLOAD_ALL){  // unload all
-    if(read_vol_mesh==VOL_READNONE){
-      UnLoadVolsmoke3DMenu(value);
-    }
-      else{
-        if(read_vol_mesh==VOL_UNLOAD){
-          fprintf(stderr,"*** Warning: data is currently being unloaded\n");
-        }
-        else{
-          fprintf(stderr,"*** Warning: data is currently being loaded\n");
-        }
-        fprintf(stderr,"    Continue when this is complete.\n");
-      }
-  }
-  else if(value==LOAD_ALL){  // load all
-    update_smokecolorbar=1;
-    if(scriptoutstream!=NULL){
-      fprintf(scriptoutstream,"LOADVOLSMOKE\n");
-      fprintf(scriptoutstream," -1\n");
-    }
-    if(read_vol_mesh==VOL_READNONE){
-      read_vol_mesh=VOL_READALL;
-      ReadVolsmokeAllFramesAllMeshes();
-    }
-    else{
-      if(read_vol_mesh==VOL_UNLOAD){
-        fprintf(stderr,"*** Warning: data is currently being unloaded\n");
-      }
-      else{
-        fprintf(stderr,"*** Warning: data is currently being loaded\n");
-      }
-      fprintf(stderr,"    Continue when this is complete.\n");
-    }
-  }
-  updatemenu=1;
-  Idle_CB();
-  glutPostRedisplay();
-  glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }
 
 /* ------------------ UnLoadSmoke3DMenu ------------------------ */
@@ -4613,42 +4637,6 @@ void TitleMenu(int value){
   }
 }
 
-/* ------------------ PropMenu ------------------------ */
-
-void PropMenu(int value){
-  int iprop, iobject;
-
-  // value = iobject*npropinfo + iprop
-
-  iprop = value%npropinfo;
-  iobject = value/npropinfo;
-  if(iprop>=0&&iprop<npropinfo){
-    propdata *propi;
-
-    propi = propinfo + iprop;
-    if(iobject>=0&&iobject<propi->nsmokeview_ids){
-      int i;
-
-      propi->smokeview_id=propi->smokeview_ids[iobject];
-      propi->smv_object=propi->smv_objects[iobject];
-      updatemenu=1;
-      get_indep_var_indices(propi->smv_object,
-        propi->vars_indep,propi->nvars_indep,
-        propi->vars_indep_index);
-
-      for(i=0;i<npartclassinfo;i++){
-        partclassdata *partclassi;
-
-        partclassi = partclassinfo + i;
-        update_partclass_depend(partclassi);
-
-      }
-
-      glutPostRedisplay();
-    }
-  }
-}
-
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -4687,7 +4675,6 @@ void ShowObjectsMenu(int value){
   }
   else if(value == OBJECT_SHOWBEAM){
     showbeam_as_line = 1 - showbeam_as_line;
-    void UpdateShowbeamAsLine(void);
     UpdateShowbeamAsLine();
   }
   else if(value==MENU_DUMMY){
