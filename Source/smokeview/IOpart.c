@@ -13,8 +13,7 @@
 #include "smokeviewvars.h"
 #include "histogram.h"
 #include "compress.h"
-
-void draw_SVOBJECT(sv_object *object, int frame_index_local, propdata *prop, int recurse_level,float *valrgb, int vis_override);
+#include "IOobject.h"
 
 #define READPASS 1
 #define READFAIL 0
@@ -367,9 +366,9 @@ void GetPartHistogram(int flag){
       partdata *parti;
 
       parti = partinfo + i;
-      if (flag == PARTFILE_LOADALL ||
+      if(flag == PARTFILE_LOADALL ||
         (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-        (flag >= 0 && i == flag)) {
+        (flag >= 0 && i == flag)){
         if(get_histfile_status(parti) == HIST_OLD){
           update = 1;
           break;
@@ -386,9 +385,9 @@ void GetPartHistogram(int flag){
     partdata *parti;
 
     parti = partinfo + i;
-    if (flag == PARTFILE_LOADALL ||
+    if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-      (flag >= 0 && i == flag)) {
+      (flag >= 0 && i == flag)){
       get_part_histogram(parti);
     }
   }
@@ -405,7 +404,7 @@ void GetPartHistogram(int flag){
     parti = partinfo + i;
 
     parti = partinfo + i;
-    if (flag == PARTFILE_LOADALL ||
+    if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1)||
       (flag >= 0 && i == flag)){
       for(j = 0; j < npart5prop; j++){
@@ -862,7 +861,7 @@ void print_partprop(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(propi->label->longlabel, "uniform"){
+    if(strcmp(propi->label->longlabel, "uniform")==0){
       PRINTF("label=%s\n", propi->label->longlabel);
     }
     else{
@@ -1150,7 +1149,7 @@ int GetMinPartFrames(int flag){
     parti = partinfo + i;
     if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
-      (flag >= 0 && i == flag)) {
+      (flag >= 0 && i == flag)){
 
       nframes = get_npartframes(parti);
       if(nframes > 0){

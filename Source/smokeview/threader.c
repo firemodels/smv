@@ -36,7 +36,7 @@ void compress_svzip2(void){
 
   PRINTF("Executing shell command: %s\n", shellcommand);
   system(shellcommand);
-  update_smoke3d_menulabels();
+  UpdateSmoke3DMenuLabels();
   update_patch_menulabels();
   compress_onoff(ON);
   updatemenu = 1;
@@ -182,10 +182,10 @@ void Update_All_Patch_Bounds(void){
 }
 #endif
 
-/* ------------------ mt_read_volsmoke_allframes_allmeshes2 ------------------------ */
+/* ------------------ mt_ReadVolsmokeAllFramesAllMeshes2 ------------------------ */
 
 #ifdef pp_THREAD
-void mt_read_volsmoke_allframes_allmeshes2(void){
-  pthread_create(&read_volsmoke_id,NULL,read_volsmoke_allframes_allmeshes2,NULL);
+void mt_ReadVolsmokeAllFramesAllMeshes2(void){
+  pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif

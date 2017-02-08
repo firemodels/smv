@@ -896,7 +896,7 @@ int ReadSMV(char *smvfile){
 
     }
   }
-  init_volrender();
+  InitVolRender();
   return 0;
 }
 
@@ -1162,9 +1162,9 @@ void ReadINI2(char *inifile){
   }
 
 
-/* ------------------ init_volrender ------------------------ */
+/* ------------------ InitVolRender ------------------------ */
 
-void init_volrender(void){
+void InitVolRender(void){
   int i;
 
   nvolrenderinfo=0;

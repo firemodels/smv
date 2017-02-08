@@ -8,8 +8,7 @@
 #include "string_util.h"
 #include "update.h"
 #include "smokeviewvars.h"
-
-void drawtrunccone(float d1, float d2, float height, unsigned char *rgbcolor);
+#include "IOobject.h"
 
 /* ------------------ getzonesizecsv ------------------------ */
 
@@ -1051,21 +1050,21 @@ void drawroomgeom(void){
 
 /* draw the frame */
 
-  if (visCompartments == 1) {
+  if(visCompartments == 1){
     Antialias(ON);
     glBegin(GL_LINES);
 
-    for (i = 0; i < nrooms; i++) {
+    for(i = 0; i < nrooms; i++){
       roomdata *roomi;
       float xroom0, yroom0, zroom0, xroom, yroom, zroom;
 
-      if (zone_highlight == 1 && zone_highlight_room == i) {
+      if(zone_highlight == 1 && zone_highlight_room == i){
         glEnd();
         glLineWidth(5.0*linewidth);
         glBegin(GL_LINES);
         glColor3f(1.0, 0.0, 0.0);
       }
-      else {
+      else{
         glEnd();
         glLineWidth(linewidth);
         glBegin(GL_LINES);
@@ -1139,7 +1138,6 @@ void drawroomgeom(void){
       if(zvi->vent_type == MFLOW_VENT){
         glPushMatrix();
         glTranslatef(x2, y2, z2);
-        void drawsphere(float diameter, unsigned char *color);
         {
           unsigned char hvac_sphere_color[3];
 
@@ -1151,7 +1149,7 @@ void drawroomgeom(void){
         glPopMatrix();
         glLineWidth(2.0*ventlinewidth);
       }
-      else {
+      else{
         glLineWidth(ventlinewidth);
       }
       glColor4fv(zvi->color);

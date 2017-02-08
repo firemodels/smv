@@ -20,8 +20,36 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke_test, 0);
+#ifdef INMAIN
+  SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
+  SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};
+#else
+SVEXTERN float smoke_test_color[4];
+SVEXTERN float smoke_test_target_color[4];
+#endif
+SVEXTERN float SVDECL(smoke_test_range,1.0), SVDECL(smoke_test_opacity,0.5);
+SVEXTERN int SVDECL(smoke_test_nslices,3);
+
+#ifdef INMAIN
+  SVEXTERN float xyz_light_glui[3] = {1.0,0.0,0.0}, xyz_light_global[3] = {1.0,0.0,0.0};
+  SVEXTERN int light_color[3] = {255,255,255};
+#else
+  SVEXTERN float xyz_light_glui[3], xyz_light_global[3];
+  SVEXTERN int light_color[3];
+#endif
+SVEXTERN float SVDECL(light_intensity, 1.0);
+SVEXTERN int SVDECL(show_light_position_direction,0);
+SVEXTERN int SVDECL(light_type_glui, INFINITE_LIGHT);
+SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights, 0);
+SVEXTERN int SVDECL(scatter_type_glui,ISOTROPIC);
+SVEXTERN float SVDECL(scatter_param, 0.5);
+
+SVEXTERN float boxmin_global[3], boxmax_global[3], dlength;
+SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];
 SVEXTERN float SVDECL(beam_line_width, 4.0);
+SVEXTERN int SVDECL(use_light, 0);
 
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
 SVEXTERN int SVDECL(setup_only, 0);
@@ -416,6 +444,10 @@ SVEXTERN int GPUvol_fire_opacity_factor,GPUvol_volbw,GPUvol_mass_extinct;
 SVEXTERN int GPUvol_temperature_min,GPUvol_temperature_cutoff,GPUvol_temperature_max;
 SVEXTERN int GPUvol_boxmin, GPUvol_boxmax, GPUvol_drawsides;
 SVEXTERN int GPUvol_smokecolormap, GPUvol_dcell, GPUvol_havefire;
+
+SVEXTERN int GPUvol_light_color, GPUvol_light_intensity, GPUvol_light, GPUvol_use_light, GPUvol_scatter_param;
+SVEXTERN int GPUvol_scatter_param, GPUvol_scatter_type_glui;
+SVEXTERN int GPUvol_light_position, GPUvol_light_type;
 
 SVEXTERN int GPU3dslice_valtexture,GPU3dslice_colormap;
 SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;
@@ -1053,6 +1085,7 @@ SVEXTERN treedata SVDECL(*treeinfo,NULL);
 SVEXTERN terraindata SVDECL(*terraininfo,NULL);
 SVEXTERN int SVDECL(ntreeinfo,0), SVDECL(nterraininfo,0), SVDECL(visTerrainType,0);
 SVEXTERN float treecolor[4], treecharcolor[4], trunccolor[4];
+SVEXTERN unsigned char treecolor_uc[4], treecharcolor_uc[4], trunccolor_uc[4];
 SVEXTERN int showterrain;
 SVEXTERN float rgb_terrain[10][4];
 SVEXTERN tourdata SVDECL(*tourinfo,NULL);

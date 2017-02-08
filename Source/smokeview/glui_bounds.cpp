@@ -2724,8 +2724,8 @@ extern "C" void Slice_CB(int var){
     histograms_defined = 0;
     return;
   }
-  if (var == INIT_HISTOGRAM){
-    if (histogram_show_graph == 1 || histogram_show_numbers == 1) {
+  if(var == INIT_HISTOGRAM){
+    if(histogram_show_graph == 1 || histogram_show_numbers == 1){
       update_slice_hists = 1;
       visColorbar = 1;
     }
@@ -2829,7 +2829,7 @@ extern "C" void Slice_CB(int var){
 
         // slice files
 
-        if (nsliceloaded > 0) {
+        if(nsliceloaded > 0){
           setslicemin_save = setslicemin;
           slicemin_save = slicemin;
           setslicemin = GLOBAL_MIN;
@@ -2843,7 +2843,7 @@ extern "C" void Slice_CB(int var){
 
         // boundary files
 
-        if (npatchloaded > 0) {
+        if(npatchloaded > 0){
           setpatchmin_save = setpatchmin;
           patchmin_save = patchmin;
           setpatchmin = GLOBAL_MIN;
@@ -2874,7 +2874,7 @@ extern "C" void Slice_CB(int var){
         // plot3d files
 
         if(nplot3dloaded>0){
-          for (i = 0; i < MAXPLOT3DVARS; i++) {
+          for(i = 0; i < MAXPLOT3DVARS; i++){
             setp3min_save[i] = setp3min[i];
             p3min_save[i] = p3min[i];
             setp3min[i] = GLOBAL_MIN;
@@ -2896,7 +2896,7 @@ extern "C" void Slice_CB(int var){
 
         // slice files
 
-        if (nsliceloaded > 0) {
+        if(nsliceloaded > 0){
           setslicemin = setslicemin_save;
           Slice_CB(SETVALMIN);
           slicemin = slicemin_save;
@@ -2910,7 +2910,7 @@ extern "C" void Slice_CB(int var){
 
         // boundary files
 
-        if (npatchloaded > 0) {
+        if(npatchloaded > 0){
           setpatchmin = setpatchmin_save;
           Bound_CB(SETVALMIN);
           patchmin = patchmin_save;
@@ -2925,7 +2925,7 @@ extern "C" void Slice_CB(int var){
 
         // particle files
 
-        if (npartloaded > 0) {
+        if(npartloaded > 0){
           setpartmin = setpartmin_save;
           Part_CB(SETVALMIN);
           partmin = partmin_save;
@@ -2953,8 +2953,8 @@ extern "C" void Slice_CB(int var){
 
         // Plot3D files
 
-        if (nplot3dloaded > 0) {
-          for (i = 0; i < MAXPLOT3DVARS; i++) {
+        if(nplot3dloaded > 0){
+          for(i = 0; i < MAXPLOT3DVARS; i++){
             setp3min[i] = setp3min_save[i];
             p3min[i] = p3min_save[i];
 

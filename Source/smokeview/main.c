@@ -538,7 +538,7 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-noexit", 7) == 0){
       noexit = 1;
     }
-    else if (strncmp(argv[i], "-setup", 6) == 0) {
+    else if(strncmp(argv[i], "-setup", 6) == 0){
       setup_only = 1;
     }
     else if(strncmp(argv[i], "-bindir", 7) == 0){
@@ -557,7 +557,7 @@ void ParseCommandline(int argc, char **argv){
       Usage(argv);
       exit(0);
     }
-    else {
+    else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
       Usage(argv);
       exit(1);

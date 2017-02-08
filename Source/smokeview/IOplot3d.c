@@ -7,8 +7,7 @@
 
 #include "update.h"
 #include "smokeviewvars.h"
-
-void update_glui_plot3d(void);
+#include "IOobject.h"
 
 /* ------------------ plot3dcompare  ------------------------ */
 
@@ -293,7 +292,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
     }
     UpdateGlui();
   }
-  for (nn=0;nn<numplot3dvars;nn++){
+  for(nn=0;nn<numplot3dvars;nn++){
     if(nplot3dinfo>0){
       shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
       unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;
@@ -1795,7 +1794,6 @@ void updateshowstep(int val, int slicedir){
 
 /* ------------------ drawgrid ------------------------ */
 
-void drawsphere(float diameter, unsigned char *rgbcolor);
 void drawgrid(const meshdata *meshi){
   int i, j, k;
   float *xplt, *yplt, *zplt;

@@ -1,6 +1,3 @@
-! $Date$
-! $Revision$
-! $Author$
 
 !  ------------------ getembeddatasize ------------------------
 

@@ -1431,7 +1431,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
   file_size=get_filesize(file);
   local_starttime = glutGet(GLUT_ELAPSED_TIME);
-  for (ii=0;ii<mxpatch_frames;){
+  for(ii=0;ii<mxpatch_frames;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
       meshi->patchval_iframe = meshi->patchval;
       meshi->cpatchval_iframe = meshi->cpatchval + ii*meshi->npatchsize;
@@ -1443,7 +1443,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
     error=0;
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES||loadpatchbysteps==UNCOMPRESSED_BYFRAME){
-      for (n=0;n<boundframestep;n++){
+      for(n=0;n<boundframestep;n++){
         if(error==0){
           int npatchval_iframe;
 

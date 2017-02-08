@@ -1440,7 +1440,7 @@ void keyboard(unsigned char key, int flag){
             if(nsmoke3dinfo>0&&cullactive==1&&gpuactive==1){
               cullsmoke=1-cullsmoke;
               update_smoke3dflags();
-              initcull(cullsmoke);
+              InitCull(cullsmoke);
               print_gpu_cull_state();
             }
             if(cullactive==0||gpuactive==0)cullsmoke=0;
@@ -1778,11 +1778,11 @@ void keyboard(unsigned char key, int flag){
         }
 
         if(render_360 == 1)render_mode = RENDER_360;
-        if (render_mode!=RENDER_360) {
-          if (strncmp((const char *)&key2, "r", 1) == 0) {
+        if(render_mode!=RENDER_360){
+          if(strncmp((const char *)&key2, "r", 1) == 0){
             render_mode = RENDER_XYSINGLE;
           }
-          else {
+          else{
             render_mode = RENDER_XYMULTI;
           }
         }
@@ -2758,7 +2758,7 @@ int DoStereo(void){
     nscreens = 1;
     if(render_mode == RENDER_360&&rendering_status==RENDER_ON){
       nscreens = nscreeninfo;
-      if (screeninfo == NULL || update_screeninfo == 1)SetupScreeninfo();
+      if(screeninfo == NULL || update_screeninfo == 1)SetupScreeninfo();
     }
 
     for(i = 0; i < nscreens; i++){
@@ -2783,7 +2783,7 @@ int DoStereo(void){
         screenWidth=screenWidth_save;
       }
       if(render_mode == RENDER_360 && rendering_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
-      if (buffertype == DOUBLE_BUFFER)glutSwapBuffers();
+      if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
     }
     if(rendering_status == RENDER_ON){
       if(render_mode == RENDER_360){
@@ -2901,16 +2901,16 @@ int DoStereo(void){
 
 #ifdef pp_LUA
 /* ------------------ DoScriptLua ------------------------ */
-void DoScriptLua(void) {
+void DoScriptLua(void){
   int script_return_code;
-  if(runluascript == 1) {
+  if(runluascript == 1){
     if(!luascript_loaded && strlen(luascript_filename)>0)
       load_script(luascript_filename);
     runluascript = 0;
     PRINTF("running lua script section\n");
     fflush(stdout);
     script_return_code = runLuaScript();
-    if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash) {
+    if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash){
         exit(1);
     }
   }
@@ -2921,12 +2921,12 @@ void DoScriptLua(void) {
 #ifdef pp_LUA_SSF
 void DoScript(void){
   int script_return_code;
-  if(runscript == 1) {
+  if(runscript == 1){
       runscript = 0;
       PRINTF("running ssf script instruction\n");
       fflush(stdout);
       script_return_code = runSSFScript();
-      if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash) {
+      if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash){
           exit(1);
       }
     }
@@ -2983,7 +2983,7 @@ void DoScript(void){
         script_loadvolsmokeframe2();
         remove_frame=current_script_command->remove_frame;
         if(remove_frame>=0){
-          unload_volsmoke_frame_allmeshes(remove_frame);
+          UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
       if(current_script_command->command==SCRIPT_ISORENDERALL){
@@ -2992,7 +2992,7 @@ void DoScript(void){
         script_loadisoframe2(current_script_command);
         remove_frame = current_script_command->remove_frame;
         if(remove_frame>=0){
-          //unload_volsmoke_frame_allmeshes(remove_frame);
+          //UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
     }
@@ -3070,12 +3070,12 @@ void Display_CB(void){
         }
         FREEMEMORY(screenbuffers);
       }
-      if (render_mode == RENDER_360){
+      if(render_mode == RENDER_360){
         int i;
 
         glDrawBuffer(GL_BACK);
 
-        if (screeninfo == NULL||update_screeninfo==1)SetupScreeninfo();
+        if(screeninfo == NULL||update_screeninfo==1)SetupScreeninfo();
 
         for(i = 0; i < nscreeninfo; i++){
           screendata *screeni;
@@ -3083,7 +3083,7 @@ void Display_CB(void){
           screeni = screeninfo + i;
           ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, screeni);
           screeni->screenbuffer = GetScreenBuffer();
-          if (buffertype == DOUBLE_BUFFER)glutSwapBuffers();
+          if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
         }
         MergeRenderScreenBuffers360();
 

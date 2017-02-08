@@ -39,7 +39,7 @@
 #endif
 
 #ifdef pp_THREAD
-void mt_read_volsmoke_allframes_allmeshes2(void);
+void mt_ReadVolsmokeAllFramesAllMeshes2(void);
 #endif
 
 // define mutex's and thread_ids
