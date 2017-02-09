@@ -499,7 +499,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 
 /* ------------------ InitDefaultColorbars ------------------------ */
 
-void InitDefaultColorbars(void){
+void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
@@ -507,7 +507,7 @@ void InitDefaultColorbars(void){
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
-  NewMemory((void **)&colorbarinfo,ncolorbars*sizeof(colorbardata));
+  NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
 

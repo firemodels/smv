@@ -11090,11 +11090,10 @@ int ReadINI2(char *inifile, int localfile){
         ncolorbarini = 0;
         sscanf(buffer, "%i", &ncolorbarini);
 
-        InitDefaultColorbars();
+        ncolorbarini = MAX(ncolorbarini, 0);
+        InitDefaultColorbars(ncolorbarini);
 
         ncolorbars = ndefaultcolorbars + ncolorbarini;
-        if(ncolorbarini>0)ResizeMemory((void **)&colorbarinfo, ncolorbars*sizeof(colorbardata));
-
         for(n = ndefaultcolorbars; n<ncolorbars; n++){
           char *cb_buffptr;
 
@@ -11757,7 +11756,7 @@ int ReadINI(char *inifile){
   UpdateGlui();
   if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   if(ncolorbars<=ndefaultcolorbars){
-    InitDefaultColorbars();
+    InitDefaultColorbars(0);
   }
   updatezoommenu=1;
   GetSliceParams2();

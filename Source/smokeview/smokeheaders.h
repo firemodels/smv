@@ -376,7 +376,7 @@ EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP void AddColorbar(int icolorbar);
 EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
-EXTERNCPP void InitDefaultColorbars(void);
+EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPath(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
