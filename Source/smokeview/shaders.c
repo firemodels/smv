@@ -11,9 +11,25 @@
 
 GLhandleARB p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
 
-void printInfoLog(GLhandleARB obj);
 #define LINK_BAD 0
 #define LINK_GOOD 1
+
+/* ------------------ printfInfoLog ------------------------ */
+
+void printInfoLog(GLhandleARB obj){
+  int infologLength = 0;
+  int charsWritten = 0;
+  char *infoLog;
+
+  glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
+  if(infologLength > 0){
+    NewMemory((void **)&infoLog, infologLength);
+    glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
+    PRINTF("%s\n", infoLog);
+    FREEMEMORY(infoLog);
+  }
+}
+
 /* ------------------ setZoneSmokeShaders ------------------------ */
 
 int setZoneSmokeShaders(){
@@ -302,7 +318,7 @@ int setVolsmokeShaders(){
     "  float tauhat, alphahat, taui, tauterm;"
     "  float alphai, light_fraction, light_factor, scatter_fraction;"
     "  float dstep;"
-    "  float cos_angle,fourpi;"
+    "  float cos_angle,fourpi,noisei;"
     "  int i,n_iter;"
     "  int side;"
 
@@ -352,8 +368,9 @@ int setVolsmokeShaders(){
     "  alphahat=0.0;"
     "  color_cum=vec3(0.0,0.0,0.0);"
     "  for(i=0;i<n_iter;i++){"
-    "    factor = ((float)i+0.5)/(float)n_iter;"
-    "    factor2 = ((float)i+1.5)/(float)n_iter;"
+    "    noisei=noise1((float)i)/2.0;"
+    "     factor = ((float)i+noisei+0.5)/(float)n_iter;"
+    "    factor2 = ((float)i+noisei+1.5)/(float)n_iter;"
     "    position = (mix(fragpos,fragmaxpos,factor)-boxmin)/(boxmax-boxmin);"
     "    if(slicetype!=1){"
     //            boxmin+dcell3      position2     boxmax
@@ -433,8 +450,8 @@ int setVolsmokeShaders(){
     "        scatter_fraction=(1.0-scatter_param*scatter_param)/(pow(1.0+scatter_param*cos_angle,2.0)*fourpi);"
     "      }"
     "      light_fraction = texture3D(light_texture,position);"
-    "      light_factor = alphai*light_intensity*light_fraction*light_fraction/12.0/255.0;"
-    "      color_cum += tauterm*(color_val+light_factor*light_color);"
+    "      light_factor = alphai*light_intensity*light_fraction*scatter_fraction;"
+    "      color_cum += tauterm*(color_val+light_factor*light_color/255.0);"
     "    }"
     "    else{"
     "      color_cum += tauterm*color_val;"
@@ -816,19 +833,4 @@ void getDepthTexture( void ){
 }
 #endif
 
-/* ------------------ printfInfoLog ------------------------ */
-
-void printInfoLog(GLhandleARB obj){
-  int infologLength = 0;
-  int charsWritten  = 0;
-  char *infoLog;
-
-	glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB,&infologLength);
-  if(infologLength > 0){
-    NewMemory((void **)&infoLog,infologLength);
-    glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
-    PRINTF("%s\n",infoLog);
-    FREEMEMORY(infoLog);
-  }
-}
 #endif
