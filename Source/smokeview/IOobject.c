@@ -412,13 +412,13 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
-/* ----------------------- draw_pilot ----------------------------- */
+/* ----------------------- DrawWindRose ----------------------------- */
 
-#ifdef pp_PILOT
-void draw_pilot1(void){
+#ifdef pp_WINDROSE
+void DrawWindRose(void){
   int i;
 
-  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&vispilot == 1 && nvdeviceinfo>0){
+  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&nvdeviceinfo>0){
     glEnable(GL_LIGHTING);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -429,107 +429,20 @@ void draw_pilot1(void){
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
     glTranslatef(-xbar0, -ybar0, -zbar0);
     glColor3fv(foregroundcolor);
-    glLineWidth(vectorlinewidth);
     for(i = 0; i < nvdeviceinfo; i++){
       vdevicedata *vdevi;
       float *xyz;
       int k;
-      pilotdata *piloti;
+      windrosedata *windrosei;
       float dangle;
 
       vdevi = vdeviceinfo + i;
       if(vdevi->unique == 0)continue;
       xyz = vdevi->valdev->xyz;
 
-      piloti = &(vdevi->pilotinfo);
-
-      dangle = 360.0 / (float)piloti->nbuckets;
-      glBegin(GL_LINES);
-      for(k = 0; k < piloti->nbuckets; k++){
-        float angle, cosang, sinang;
-
-        angle = (float)k*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0], xyz[1], xyz[2]);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[k])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[k])*sinang, xyz[2]);
-      }
-      glEnd();
     }
     glPopMatrix();
     glDisable(GL_LIGHTING);
-  }
-}
-
-/* ----------------------- draw_pilot2 ----------------------------- */
-
-void draw_pilot2(void){
-  int i;
-
-  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&vispilot == 1 && nvdeviceinfo>0){
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-    glEnable(GL_COLOR_MATERIAL);
-
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glColor3fv(foregroundcolor);
-    glLineWidth(vectorlinewidth);
-    for(i = 0; i < nvdeviceinfo; i++){
-      vdevicedata *vdevi;
-      float *xyz;
-      int k;
-      pilotdata *piloti;
-      float dangle;
-
-      vdevi = vdeviceinfo + i;
-      if(vdevi->unique == 0)continue;
-      xyz = vdevi->valdev->xyz;
-
-      piloti = &(vdevi->pilotinfo);
-
-      dangle = 360.0 / (float)piloti->nbuckets;
-      glBegin(GL_LINES);
-      for(k = 0; k < piloti->nbuckets; k++){
-        float angle, cosang, sinang;
-        int kk;
-
-        kk = k;
-        angle = (float)kk*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[kk])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[kk])*sinang, xyz[2]);
-
-        kk = k+1;
-        if(kk == piloti->nbuckets - 1)kk = 0;
-        angle = (float)kk*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[kk])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[kk])*sinang, xyz[2]);
-      }
-      glEnd();
-    }
-    glPopMatrix();
-    glDisable(GL_LIGHTING);
-  }
-}
-
-/* ----------------------- draw_pilot ----------------------------- */
-
-void draw_pilot(void){
-  switch(pilot_viewtype){
-  case 0:
-    draw_pilot1();
-    break;
-  case 1:
-    draw_pilot2();
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
   }
 }
 #endif
@@ -5745,12 +5658,8 @@ int is_dup_device_label(int index, int direction){
 
 /* ----------------------- SummarizeDeviceWindData ----------------------------- */
 
-#ifdef pp_PILOT
 #ifdef pp_WINDROSE
 void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag){
-#else
-void SummarizeDeviceWindData(int nbuckets){
-#endif
   int i;
   float dangle;
 
@@ -5760,7 +5669,7 @@ void SummarizeDeviceWindData(int nbuckets){
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
     int j, ibucket;
-  	pilotdata *piloti;
+  	windrosedata *windrosei;
     float *vel, *fraction;
 
     vdevicei = vdeviceinfo + i;
@@ -5770,24 +5679,24 @@ void SummarizeDeviceWindData(int nbuckets){
     angledev = vdevicei->angledev;
     veldev = vdevicei->veldev;
 
-    piloti = &(vdevicei->pilotinfo);
+    windrosei = &(vdevicei->windroseinfo);
 
-    vel = piloti->vel;
-    fraction = piloti->fraction;
-    vel = piloti->vel;
+    vel = windrosei->vel;
+    fraction = windrosei->fraction;
+    vel = windrosei->vel;
     FREEMEMORY(fraction);
     FREEMEMORY(vel);
     NewMemory((void **)&fraction, nbuckets*sizeof(float));
     NewMemory((void **)&vel, nbuckets*sizeof(float));
-    piloti->vel = vel;
-    piloti->fraction = fraction;
-    piloti->nbuckets = nbuckets;
+    windrosei->vel = vel;
+    windrosei->fraction = fraction;
+    windrosei->nbuckets = nbuckets;
 
     for(j = 0; j < nbuckets; j++){
-      piloti->fraction[j] = 0.0;
-      piloti->vel[j] = 0.0;
+      windrosei->fraction[j] = 0.0;
+      windrosei->vel[j] = 0.0;
     }
-    piloti->total = 0;
+    windrosei->total = 0;
     if(udev != NULL&&vdev != NULL){
       int nvals;
 
@@ -5804,16 +5713,15 @@ void SummarizeDeviceWindData(int nbuckets){
         if(veluv>0.0){
           angle = fmod(180.0 + atan2(vval, uval)*RAD2DEG + dangle/2.0, 360.0);
           ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-          piloti->fraction[ibucket]++;
-          piloti->vel[ibucket] += vel2;
+          windrosei->fraction[ibucket]++;
+          windrosei->vel[ibucket] += vel2;
         }
       }
-#ifdef pp_WINDROSE
       {
         float rmin, rmax;
         histogramdata *histogram;
 
-        histogram = &(piloti->histogram);
+        histogram = &(windrosei->histogram);
         if(flag != FIRST_TIME){
           FreeHistogramPolar(histogram);
         }
@@ -5821,7 +5729,6 @@ void SummarizeDeviceWindData(int nbuckets){
         Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
         CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
       }
-#endif
     }
     else if(angledev != NULL&&veldev != NULL){
       int nvals;
@@ -5834,15 +5741,14 @@ void SummarizeDeviceWindData(int nbuckets){
         vel2 = veldev->vals[j];
         angle = fmod(angle + dangle/2.0, 360.0);
         ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-        piloti->fraction[ibucket]++;
-        piloti->vel[ibucket] += vel2;
+        windrosei->fraction[ibucket]++;
+        windrosei->vel[ibucket] += vel2;
       }
-#ifdef pp_WINDROSE
       {
         float rmin, rmax;
         histogramdata *histogram;
 
-        histogram = &(piloti->histogram);
+        histogram = &(windrosei->histogram);
         if(flag != FIRST_TIME){
           FreeHistogramPolar(histogram);
         }
@@ -5850,20 +5756,19 @@ void SummarizeDeviceWindData(int nbuckets){
         GetPolarBounds(veldev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
         CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
       }
-#endif
     }
     else{
       continue;
     }
     for(j = 0; j<nbuckets; j++){
-      piloti->total += piloti->fraction[j];
-      if(piloti->fraction[j]>0.0){
-        piloti->vel[j] /= piloti->fraction[j];
+      windrosei->total += windrosei->fraction[j];
+      if(windrosei->fraction[j]>0.0){
+        windrosei->vel[j] /= windrosei->fraction[j];
       }
     }
-    if(piloti->total > 0){
+    if(windrosei->total > 0){
       for(j = 0; j < nbuckets; j++){
-        piloti->fraction[j] /= piloti->total;
+        windrosei->fraction[j] /= windrosei->total;
       }
     }
   }
@@ -5904,11 +5809,6 @@ void setup_device_data(void){
     vdevi->sd_angledev=NULL;
     vdevi->sd_veldev=NULL;
     vdevi->colordev=NULL;
-#ifdef pp_PILOT
-    vdevi->pilotinfo.vel=NULL;
-    vdevi->pilotinfo.fraction=NULL;
-    vdevi->pilotinfo.nbuckets=0;
-#endif
 
     devj = get_device(xyzval,"VELOCITY",CSV_EXP);
     if(devj!=NULL){
@@ -6119,12 +6019,8 @@ void setup_device_data(void){
   update_colordevs();
 
   // convert velocities to pilot chart format
-#ifdef pp_PILOT
 #ifdef pp_WINDROSE
-  SummarizeDeviceWindData(npilot_buckets,npilot_nr,npilot_ntheta,FIRST_TIME);
-#else
-  SummarizeDeviceWindData(npilot_buckets);
-#endif
+  SummarizeDeviceWindData(nbuckets_windrose,nr_windrose,ntheta_windrose,FIRST_TIME);
 #endif
 
   FREEMEMORY(vals);

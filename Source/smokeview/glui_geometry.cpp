@@ -1,8 +1,6 @@
 #define CPP
 #include "options.h"
 
-extern "C" void Volume_CB(int var);
-
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -124,16 +122,8 @@ GLUI_StaticText *STATIC_blockage_index=NULL;
 GLUI_StaticText *STATIC_mesh_index=NULL;
 GLUI_StaticText *STATIC_label=NULL;
 
-void Blockedit_DLG_CB(int var);
-
 char a_updatelabel[1000];
 char *updatelabel=NULL;
-
-extern "C" void TextureShowMenu(int val);
-extern "C" void get_geom_zbounds(float *zmin, float *zmax);
-extern "C" void UpdateChopColors(void);
-extern "C" void update_geom_normals();
-
 
 /* ------------------ update_axislabels ------------------------ */
 
@@ -204,6 +194,23 @@ int get_texture_show(void){
   return 0;
 }
 
+/* ------------------ Blockedit_DLG_CB ------------------------ */
+
+void Blockedit_DLG_CB(int var){
+  switch(var){
+  case SAVE_SETTINGS:
+    updatemenu = 1;
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  case CLOSE_WINDOW:
+    DialogMenu(DIALOG_GEOMETRY);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+
+}
 
 /* ------------------ glui_geometry_setup ------------------------ */
 
@@ -650,24 +657,6 @@ extern "C" void show_glui_geometry(void){
   blockageSelect=1;
   Update_Blockvals(NOT_SELECT_BLOCKS);
   if(glui_geometry!=NULL)glui_geometry->show();
-}
-
-/* ------------------ Blockedit_DLG_CB ------------------------ */
-
-void Blockedit_DLG_CB(int var){
-  switch(var){
-  case SAVE_SETTINGS:
-    updatemenu=1;
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  case CLOSE_WINDOW:
-    DialogMenu(DIALOG_GEOMETRY);
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-
 }
 
 /* ------------------ Update_Blockvals ------------------------ */

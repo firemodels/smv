@@ -5,6 +5,20 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ParticleStreakShowMenu(int var);
+EXTERNCPP void update_geom_normals();
+EXTERNCPP void Plot3DListMenu(int value);
+EXTERNCPP void init_shooter_data(void);
+EXTERNCPP void Script_CB(int var);
+EXTERNCPP void TOUR_CB(int var);
+EXTERNCPP void set_clip_controls(int val);
+EXTERNCPP void Extreme_CB(int var);
+EXTERNCPP void add_colorbar_list2(int index, char *label);
+EXTERNCPP void update_extreme_vals(void);
+EXTERNCPP void Part_CB(int var);
+EXTERNCPP void ShowHideMenu(int val);
+EXTERNCPP void Plot3D_CB(int var);
+EXTERNCPP void colorbar_global2local(void);
 EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
@@ -154,13 +168,9 @@ EXTERNCPP void updateplot3dlistindex(void);
 
 EXTERNCPP void GetSliceParams2(void);
 
-#ifdef pp_PILOT
-EXTERNCPP void draw_pilot(void);
 #ifdef pp_WINDROSE
+EXTERNCPP void DrawWindRose(void);
 EXTERNCPP void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag);
-#else
-EXTERNCPP void SummarizeDeviceWindData(int nbuckets);
-#endif
 #endif
 EXTERNCPP void DefineAllFEDs(void);
 EXTERNCPP void update_tour_state(void);
