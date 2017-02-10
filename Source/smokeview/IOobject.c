@@ -6015,6 +6015,18 @@ void setup_device_data(void){
     vdevsorti->dir = ZDIR;
   }
 
+#ifdef pp_WINDROSE  
+  for(i = 0;i < nvdeviceinfo;i++){
+    vdevicedata *vdevi;
+    windrosedata *windi;
+
+    vdevi = vdeviceinfo + i;
+    windi = &(vdevi->windroseinfo);
+    windi->fraction = NULL;
+    windi->vel = NULL;
+  }
+#endif
+
   setup_tree_devices();
   update_colordevs();
 
