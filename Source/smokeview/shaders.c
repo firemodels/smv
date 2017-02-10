@@ -291,7 +291,7 @@ int setVolsmokeShaders(){
     "uniform float mass_extinct, light_intensity, scatter_param;"
     "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
     "uniform int drawsides[7];"
-    "uniform int scatter_type_glui,light_type;"
+    "uniform int scatter_type,light_type;"
 
 #ifdef pp_GPUDEPTH
     // http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
@@ -309,19 +309,20 @@ int setVolsmokeShaders(){
     //  "  vec2 uv = gl_TexCoord[4].xy;"
       "  vec2 uv = gl_FragCoord.st/screensize.xy;"
   #endif
-    "  vec3 dalphamin,dalphamax,fragmaxpos,position,position2,color_val,color_cum,block_pos,block_pos2;"
+    "  vec3 dalphamin,dalphamax,fragmaxpos,position,position2,color_val,color_total,block_pos,block_pos2;"
     "  vec3 uvec, vvec;"
     "  float d;"
     "  float soot_val,block_val,block_val2;"
-    "  float opacity,alpha_min,factor,factor2,pathdist;"
+    "  float alpha_min,factor,dfactor,pathdist;"
     "  float colorindex,tempval,gray;"
     "  float taui, alphai;"
     "  float taun, alphan;"
     "  float light_fraction, light_factor, scatter_fraction;"
-    "  float dstep;"
-    "  float cos_angle,fourpi,noisei;"
+    "  float dstep, dstep_fire, dstep_smoke;"
+    "  float cos_angle,fourpi;"
     "  int i,n_iter;"
-    "  int side;"
+    "  int side,in_fire;"
+    "  int in_block;"
 
     "  alpha_min=1000000.0;"
     "  dalphamin=-(boxmin-fragpos)/(eyepos-fragpos);"
@@ -364,14 +365,17 @@ int setVolsmokeShaders(){
 #endif
     "  n_iter = int(gpu_vol_factor*pathdist/dcell+0.5);"
     "  if(n_iter<1)n_iter=1;"
-    "  dstep = pathdist*xyzmaxdiff/(float)n_iter;"
+    "  dstep_smoke = pathdist*xyzmaxdiff/(float)n_iter;"
+    "  dstep_fire = dstep_smoke/4.0;"
+    "  dstep = dstep_smoke;"
     "  taun=1.0;"
     "  alphan=0.0;"
-    "  color_cum=vec3(0.0,0.0,0.0);"
-    "  for(i=0;i<n_iter;i++){"
-    "    noisei=noise1((float)i)/2.0;"
-    "     factor = ((float)i+noisei+0.5)/(float)n_iter;"
-    "    factor2 = ((float)i+noisei+1.5)/(float)n_iter;"
+    "  color_total=vec3(0.0,0.0,0.0);"
+    "  dfactor = 1.0/(float)n_iter;"
+    "  factor=0.5*dfactor;"
+    "  in_fire=0;"
+    "  while(factor<1.0){"
+    "    in_block=0;"
     "    position = (mix(fragpos,fragmaxpos,factor)-boxmin)/(boxmax-boxmin);"
     "    if(slicetype!=1){"
     //            boxmin+dcell3      position2     boxmax
@@ -388,7 +392,7 @@ int setVolsmokeShaders(){
     "    }"
     "    else{"
     "      block_pos = position;"
-    "      block_pos2 = (mix(fragpos,fragmaxpos,factor2)-boxmin)/(boxmax-boxmin);"
+    "      block_pos2 = (mix(fragpos,fragmaxpos,factor+dfactor)-boxmin)/(boxmax-boxmin);"
     "      block_val = texture3D(blockage_texture,block_pos);"
     "      block_val2 = texture3D(blockage_texture,block_pos2);"
     "    }"
@@ -411,6 +415,7 @@ int setVolsmokeShaders(){
     "      color_val = texture1D(smokecolormap,colorindex).rgb;"
     "      if(colorindex>0.5){"
     "        soot_val *= fire_opacity_factor;"
+    "        in_fire=1;"
     "      };"
     "    }"
     "    else{"
@@ -421,6 +426,7 @@ int setVolsmokeShaders(){
     //  0.0        x     dstep
     //  x = dstep*(.5-block_val)/(block_val2-block_val)
     "    if(block_val2<0.5){"
+    "      in_block=1;"
     "      dstep *= (0.5-block_val)/(block_val2-block_val);"
     "    }"
 #endif
@@ -428,7 +434,7 @@ int setVolsmokeShaders(){
     "    alphai = 1.0 - taui;"
     "    taun *= taui;"
     "    alphan = 1.0-taun;"
-    "    color_cum += alphai*taun*color_val;"
+    "    color_total += alphai*taun*color_val;"
     "    if(use_light==1){"
     "      fourpi=16.0*atan(1.0);"
     "      uvec=eyepos-fragpos;"
@@ -438,14 +444,14 @@ int setVolsmokeShaders(){
     "      else{"
     "        vvec=light_position;"
     "      }"
-    "      if(scatter_type_glui!=0){"
+    "      if(scatter_type!=0){"
     "        cos_angle=dot(uvec,vvec)/(length(uvec)*length(vvec));"
     "        cos_angle=clamp(cos_angle,-1.0,1.0);"
     "      }"
-    "      if(scatter_type_glui==0){"
+    "      if(scatter_type==0){"
     "        scatter_fraction=1.0/fourpi;"
     "      }"
-    "      else if(scatter_type_glui==1){"
+    "      else if(scatter_type==1){"
     "        scatter_fraction=(1.0-scatter_param*scatter_param)/(pow(1.0+scatter_param*scatter_param-2.0*scatter_param*cos_angle,1.5)*fourpi);"
     "      }"
     "      else{"
@@ -453,22 +459,33 @@ int setVolsmokeShaders(){
     "      }"
     "      light_fraction = texture3D(light_texture,position);"
     "      light_factor = alphai*light_intensity*light_fraction*scatter_fraction;"
-    "      color_cum += alphai*taun*light_factor*light_color/255.0;"
+    "      color_total += alphai*taun*light_factor*light_color/255.0;"
+    "    }"
+    "    if(in_fire==1){"
+    "      factor+=dfactor/4.0;"
+    "      dstep = dstep_fire;"
+    "    }"
+    "    else{"
+    "      factor+=dfactor;"
+    "      dstep = dstep_smoke;"
     "    }"
 #ifndef pp_GPUDEPTH
     "    if(block_val2<0.5)break;"
 #endif
-    "  }"
+    "    if(in_block==1){"
+    "      break;"
+    "    }"
+     "  }"
     "  if(volbw==1){"
-    "    gray=0.299*color_cum.r + 0.587*color_cum.g + 0.114*color_cum.b;"
-    "    color_cum=vec3(gray,gray,gray);"
+    "    gray=0.299*color_total.r + 0.587*color_total.g + 0.114*color_total.b;"
+    "    color_total=vec3(gray,gray,gray);"
     "  }"
-    "  if(alphan<0.01){"
-    "    gl_FragColor = vec4(1.0,0.0,0.0,0.0);"
+    "  if(alphan>0.0){"
+    "    gl_FragColor = vec4(color_total/alphan,alphan);"
     "  }"
     "  else{"
-    "    gl_FragColor = vec4(color_cum/alphan,alphan);"
-    "  } "
+    "    gl_FragColor = vec4(0.0,0.0,0.0,0.0);"
+    "  }"
     "}" // end of main
   };
 
@@ -556,7 +573,7 @@ int setVolsmokeShaders(){
   GPUvol_scatter_param = glGetUniformLocation(p_volsmoke, "scatter_param");
   GPUvol_light_position = glGetUniformLocation(p_volsmoke, "light_position");
   GPUvol_light_type = glGetUniformLocation(p_volsmoke, "light_type");
-  GPUvol_scatter_type_glui = glGetUniformLocation(p_volsmoke, "scatter_type_glui");
+  GPUvol_scatter_type_glui = glGetUniformLocation(p_volsmoke, "scatter_type");
 
   GPUvol_havefire = glGetUniformLocation(p_volsmoke,"havefire");
   GPUvol_smokecolormap = glGetUniformLocation(p_volsmoke,"smokecolormap");

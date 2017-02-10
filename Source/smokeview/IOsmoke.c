@@ -266,7 +266,7 @@ void DrawSmokeTest(void){
   ymax = boxmin[1] + smoke_test_range;
   dy = (ymax-ymin) / (float)(smoke_test_nslices - 1);
   zmid = (boxmin[2] + boxmax[2]) / 2.0;
-  
+
   opacity_full = smoke_test_opacity;
   opacity_slice = 1.0 - pow(1.0 - opacity_full, 1.0/(float)smoke_test_nslices);
 
@@ -281,7 +281,7 @@ void DrawSmokeTest(void){
     glVertex3f(boxmin[0],y,boxmin[2]);
     glVertex3f(boxmax[0],y,boxmin[2]);
     glVertex3f(boxmax[0],y,zmid);
-    
+
     glVertex3f(boxmin[0],y,boxmin[2]);
     glVertex3f(boxmax[0],y,zmid);
     glVertex3f(boxmin[0],y,zmid);
@@ -364,7 +364,7 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
     boxmax = meshi->boxmax;
     dbox = meshi->dbox;
     if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
-      boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] && 
+      boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] &&
       boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
       int nx, ny, nxy, ijk;
       int ix, iy, iz;
