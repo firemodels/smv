@@ -341,17 +341,17 @@ void ResetHistogramPolar(histogramdata *histogram, float *rmin, float *rmax){
   }
   histogram->defined = 0;
   histogram->ntotal = 0;
-  if(rmin != NULL){
-    histogram->val_rmin = *rmin;
-  }
-  else{
+  if(rmin == NULL){
     histogram->val_rmin = (float)pow(10.0, 20.0);
   }
-  if(rmax != NULL){
-    histogram->val_rmax = *rmax;
+  else{
+    histogram->val_rmin = *rmin;
+  }
+  if(rmax == NULL){
+    histogram->val_rmax = -(float)pow(10.0, 20.0);
   }
   else{
-    histogram->val_rmax = -(float)pow(10.0, 20.0);
+    histogram->val_rmax = *rmax;
   }
   histogram->val_thetamin = 0.0;
   histogram->val_thetamax = 360.0;
@@ -386,25 +386,17 @@ void FreeHistogramPolar(histogramdata *histogram){
 
 /* ------------------ Get2DBounds ------------------------ */
 
-void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag){
+void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax){
   int i;
   float rrmin, rrmax;
 
   if(nvals <= 0||rmin==NULL||rmax==NULL)return;
-  if(flag==HIST_USE_BOUNDS){
-    rrmin = *rmin;
-    rrmax = *rmax;
-  }
-  else{
-    rrmin = sqrt(uvals[0]*uvals[0] + vvals[0]*vvals[0]);
-    rrmax = rrmin;
-  }
-  for(i = 0; i < nvals; i++){
-    float u, v, r;
+  rrmin = sqrt(uvals[0]*uvals[0] + vvals[0]*vvals[0]);
+  rrmax = rrmin;
+  for(i = 1; i < nvals; i++){
+    float r;
 
-    u = uvals[i];
-    v = vvals[i];
-    r = sqrt(u*u + v*v);
+    r = sqrt(uvals[i]*uvals[i] + vvals[i]*vvals[i]);
     rrmin = MIN(rrmin,r);
     rrmax = MAX(rrmax,r);
   }
@@ -414,20 +406,14 @@ void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax
 
 /* ------------------ GetPolarBounds ------------------------ */
 
-void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax, int flag){
+void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax){
   int i;
   float rrmin, rrmax;
 
   if(nvals <= 0 || rmin == NULL || rmax == NULL)return;
-  if(flag == HIST_USE_BOUNDS){
-    rrmin = *rmin;
-    rrmax = *rmax;
-  }
-  else{
-    rrmin = ABS(speed[0]);
-    rrmax = rrmin;
-  }
-  for(i = 0; i < nvals; i++){
+  rrmin = ABS(speed[0]);
+  rrmax = rrmin;
+  for(i = 1; i < nvals; i++){
     rrmin = MIN(rrmin, ABS(speed[i]));
     rrmax = MAX(rrmax, ABS(speed[i]));
   }

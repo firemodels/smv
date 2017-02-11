@@ -153,7 +153,8 @@ SVEXTERN float northangle_position[3];
 SVEXTERN float SVDECL(northangle, 0.0);
 SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 #ifdef pp_WINDROSE
-SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12), SVDECL(nbuckets_windrose,8);
+SVEXTERN int SVDECL(viswindrose,0);
+SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
 #endif
 SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
 SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);
@@ -213,7 +214,6 @@ SVEXTERN int SVDECL(show_faces_interior,0), SVDECL(show_faces_exterior,1);
 SVEXTERN int SVDECL(show_volumes_solid,1);
 SVEXTERN int SVDECL(show_volumes_outline,0);
 SVEXTERN int SVDECL(show_slices_and_vectors,0);
-SVEXTERN int SVDECL(viswindrose,0);
 SVEXTERN int SVDECL(compute_fed,0);
 SVEXTERN int SVDECL(is_fed_colorbar, 0);
 SVEXTERN int SVDECL(tour_global_tension_flag,1);

@@ -170,7 +170,7 @@ EXTERNCPP void GetSliceParams2(void);
 
 #ifdef pp_WINDROSE
 EXTERNCPP void DrawWindRose(void);
-EXTERNCPP void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag);
+EXTERNCPP void SummarizeDeviceWindData(int nr, int ntheta, int flag);
 #endif
 EXTERNCPP void DefineAllFEDs(void);
 EXTERNCPP void update_tour_state(void);

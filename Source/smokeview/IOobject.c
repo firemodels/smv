@@ -5659,11 +5659,11 @@ int is_dup_device_label(int index, int direction){
 /* ----------------------- SummarizeDeviceWindData ----------------------------- */
 
 #ifdef pp_WINDROSE
-void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag){
+void SummarizeDeviceWindData(int nr, int ntheta, int flag){
   int i;
-  float dangle;
+  float dtheta;
 
-  dangle = 360.0 / (float)nbuckets;
+  dtheta = 360.0 / (float)ntheta;
   for(i = 0; i < nvdeviceinfo; i++){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
@@ -5681,95 +5681,36 @@ void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag){
 
     windrosei = &(vdevicei->windroseinfo);
 
-    vel = windrosei->vel;
-    fraction = windrosei->fraction;
-    vel = windrosei->vel;
-    FREEMEMORY(fraction);
-    FREEMEMORY(vel);
-    NewMemory((void **)&fraction, nbuckets*sizeof(float));
-    NewMemory((void **)&vel, nbuckets*sizeof(float));
-    windrosei->vel = vel;
-    windrosei->fraction = fraction;
-    windrosei->nbuckets = nbuckets;
-
-    for(j = 0; j < nbuckets; j++){
-      windrosei->fraction[j] = 0.0;
-      windrosei->vel[j] = 0.0;
-    }
-    windrosei->total = 0;
     if(udev != NULL&&vdev != NULL){
       int nvals;
+      float rmin, rmax;
+      histogramdata *histogram;
 
       nvals = MIN(udev->nvals, vdev->nvals);
       if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
-      for(j = 0; j<nvals; j++){
-        float uval, vval, wval = 0.0, vel2, veluv, angle;
 
-        uval = udev->vals[j];
-        vval = vdev->vals[j];
-        if(wdev != NULL)wval = wdev->vals[j];
-        vel2 = sqrt(uval*uval + vval*vval + wval*wval);
-        veluv = sqrt(uval*uval + vval*vval);
-        if(veluv>0.0){
-          angle = fmod(180.0 + atan2(vval, uval)*RAD2DEG + dangle/2.0, 360.0);
-          ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-          windrosei->fraction[ibucket]++;
-          windrosei->vel[ibucket] += vel2;
-        }
+      histogram = &(windrosei->histogram);
+      if(flag != FIRST_TIME){
+        FreeHistogramPolar(histogram);
       }
-      {
-        float rmin, rmax;
-        histogramdata *histogram;
-
-        histogram = &(windrosei->histogram);
-        if(flag != FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
-        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
-        Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
-        CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
-      }
+      InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+      Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax);
+      CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
     }
     else if(angledev != NULL&&veldev != NULL){
       int nvals;
+      float rmin, rmax;
+      histogramdata *histogram;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
-      for(j = 0; j < nvals; j++){
-        float vel2, angle;
 
-        angle = angledev->vals[j];
-        vel2 = veldev->vals[j];
-        angle = fmod(angle + dangle/2.0, 360.0);
-        ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-        windrosei->fraction[ibucket]++;
-        windrosei->vel[ibucket] += vel2;
+      histogram = &(windrosei->histogram);
+      if(flag != FIRST_TIME){
+        FreeHistogramPolar(histogram);
       }
-      {
-        float rmin, rmax;
-        histogramdata *histogram;
-
-        histogram = &(windrosei->histogram);
-        if(flag != FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
-        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
-        GetPolarBounds(veldev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
-        CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
-      }
-    }
-    else{
-      continue;
-    }
-    for(j = 0; j<nbuckets; j++){
-      windrosei->total += windrosei->fraction[j];
-      if(windrosei->fraction[j]>0.0){
-        windrosei->vel[j] /= windrosei->fraction[j];
-      }
-    }
-    if(windrosei->total > 0){
-      for(j = 0; j < nbuckets; j++){
-        windrosei->fraction[j] /= windrosei->total;
-      }
+      InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+      GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
+      CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
     }
   }
 }
@@ -6015,24 +5956,12 @@ void setup_device_data(void){
     vdevsorti->dir = ZDIR;
   }
 
-#ifdef pp_WINDROSE  
-  for(i = 0;i < nvdeviceinfo;i++){
-    vdevicedata *vdevi;
-    windrosedata *windi;
-
-    vdevi = vdeviceinfo + i;
-    windi = &(vdevi->windroseinfo);
-    windi->fraction = NULL;
-    windi->vel = NULL;
-  }
-#endif
-
   setup_tree_devices();
   update_colordevs();
 
   // convert velocities to pilot chart format
 #ifdef pp_WINDROSE
-  SummarizeDeviceWindData(nbuckets_windrose,nr_windrose,ntheta_windrose,FIRST_TIME);
+  SummarizeDeviceWindData(nr_windrose,ntheta_windrose,FIRST_TIME);
 #endif
 
   FREEMEMORY(vals);

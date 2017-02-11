@@ -88,7 +88,6 @@ GLUI_Spinner *SPINNER_beam_line_width = NULL;
 GLUI_Spinner *SPINNER_mintreesize = NULL;
 GLUI_Spinner *SPINNER_beam_color[3];
 #ifdef pp_WINDROSE
-GLUI_Spinner *SPINNER_nbuckets_windrose = NULL;
 GLUI_Spinner *SPINNER_nr_windrose = NULL;
 GLUI_Spinner *SPINNER_ntheta_windrose = NULL;
 #endif
@@ -124,7 +123,7 @@ void Device_CB(int var){
     break;
 #ifdef pp_WINDROSE
   case DEVICE_NBUCKETS:
-    SummarizeDeviceWindData(nbuckets_windrose, nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    SummarizeDeviceWindData(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
     break;
 #endif
   case DEVICE_show_orientation:
@@ -235,11 +234,9 @@ extern "C" void glui_device_setup(int main_window){
 #ifdef pp_WINDROSE
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Windrose", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show"), &viswindrose);
-      SPINNER_nbuckets_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("segments"), GLUI_SPINNER_INT, &nbuckets_windrose, DEVICE_NBUCKETS, Device_CB);
-      SPINNER_nbuckets_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("segments"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("nr"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("segments"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("ntheta"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
 #endif
       if(ntreedeviceinfo>0){
