@@ -5656,21 +5656,17 @@ int is_dup_device_label(int index, int direction){
   return 0;
 }
 
-/* ----------------------- SummarizeDeviceWindData ----------------------------- */
+/* ----------------------- DeviceData2WindRose ----------------------------- */
 
 #ifdef pp_WINDROSE
-void SummarizeDeviceWindData(int nr, int ntheta, int flag){
+void DeviceData2WindRose(int nr, int ntheta, int flag){
   int i;
-  float dtheta;
 
-  dtheta = 360.0 / (float)ntheta;
   for(i = 0; i < nvdeviceinfo; i++){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
-    int j, ibucket;
-  	windrosedata *windrosei;
-    float *vel, *fraction;
+    windrosedata *windrosei;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -5693,7 +5689,7 @@ void SummarizeDeviceWindData(int nr, int ntheta, int flag){
       if(flag != FIRST_TIME){
         FreeHistogramPolar(histogram);
       }
-      InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+      InitHistogramPolar(histogram,nr,ntheta,NULL,NULL);
       Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax);
       CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
     }
@@ -5961,7 +5957,7 @@ void setup_device_data(void){
 
   // convert velocities to pilot chart format
 #ifdef pp_WINDROSE
-  SummarizeDeviceWindData(nr_windrose,ntheta_windrose,FIRST_TIME);
+  DeviceData2WindRose(nr_windrose,ntheta_windrose,FIRST_TIME);
 #endif
 
   FREEMEMORY(vals);

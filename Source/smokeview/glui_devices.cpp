@@ -123,7 +123,7 @@ void Device_CB(int var){
     break;
 #ifdef pp_WINDROSE
   case DEVICE_NBUCKETS:
-    SummarizeDeviceWindData(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    DeviceData2WindRose(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
     break;
 #endif
   case DEVICE_show_orientation:

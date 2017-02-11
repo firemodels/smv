@@ -388,37 +388,31 @@ void FreeHistogramPolar(histogramdata *histogram){
 
 void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax){
   int i;
-  float rrmin, rrmax;
 
   if(nvals <= 0||rmin==NULL||rmax==NULL)return;
-  rrmin = sqrt(uvals[0]*uvals[0] + vvals[0]*vvals[0]);
-  rrmax = rrmin;
+  *rmin = sqrt(uvals[0]*uvals[0] + vvals[0]*vvals[0]);
+  *rmax = *rmin;
   for(i = 1; i < nvals; i++){
     float r;
 
     r = sqrt(uvals[i]*uvals[i] + vvals[i]*vvals[i]);
-    rrmin = MIN(rrmin,r);
-    rrmax = MAX(rrmax,r);
+    *rmin = MIN(*rmin,r);
+    *rmax = MAX(*rmax,r);
   }
-  *rmin = rrmin;
-  *rmax = rrmax;
 }
 
 /* ------------------ GetPolarBounds ------------------------ */
 
 void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax){
   int i;
-  float rrmin, rrmax;
 
   if(nvals <= 0 || rmin == NULL || rmax == NULL)return;
-  rrmin = ABS(speed[0]);
-  rrmax = rrmin;
+  *rmin = ABS(speed[0]);
+  *rmax = *rmin;
   for(i = 1; i < nvals; i++){
-    rrmin = MIN(rrmin, ABS(speed[i]));
-    rrmax = MAX(rrmax, ABS(speed[i]));
+    *rmin = MIN(*rmin, ABS(speed[i]));
+    *rmax = MAX(*rmax, ABS(speed[i]));
   }
-  *rmin = rrmin;
-  *rmax = rrmax;
 }
 
 /* ------------------ CopyUV2Histogram ------------------------ */
@@ -448,8 +442,7 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
   }
 }
 
-
-/* ------------------ CopyUV2Histogram ------------------------ */
+/* ------------------ CopyPolar2Histogram ------------------------ */
 
 void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram){
   int i;
@@ -464,7 +457,7 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
     theta = FMOD360(angle[i]);
 
     if(r<0.0){
-      theta == FMOD360(theta + 180.0);
+      theta = FMOD360(theta + 180.0);
       r = -r;
     }
 
