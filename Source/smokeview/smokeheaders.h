@@ -169,7 +169,7 @@ EXTERNCPP void updateplot3dlistindex(void);
 EXTERNCPP void GetSliceParams2(void);
 
 #ifdef pp_WINDROSE
-EXTERNCPP void DrawWindRose(void);
+EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP void DeviceData2WindRose(int nr, int ntheta, int flag);
 #endif
 EXTERNCPP void DefineAllFEDs(void);

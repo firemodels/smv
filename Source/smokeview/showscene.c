@@ -90,7 +90,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     CLIP_GEOMETRY;
     draw_devices();
 #ifdef pp_WINDROSE
-    if(viswindrose)DrawWindRose();
+    if(viswindrose)DrawWindRosesDevices();
 #endif
     SNIFF_ERRORS("after draw_devices");
 

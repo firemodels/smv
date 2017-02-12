@@ -928,8 +928,7 @@ typedef struct _device{
 
 typedef struct {
   histogramdata histogram;
-  int nr, ntheta;
-  float *fractions, rmin, rmax;
+  float *xyz, rmin, rmax;
 } windrosedata;
 #endif
 

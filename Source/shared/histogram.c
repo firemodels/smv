@@ -419,13 +419,15 @@ void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax){
 
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram){
   int i;
+  float maxr, maxtheta;
+  float sumr, sumtheta;
+  int ir, itheta, ixy;
 
   if(nvals<=0)return;
 
   for(i = 0; i < nvals; i++){
     float r, theta;
     float u, v;
-    int ir, itheta, ixy;
 
     u = uvals[i];
     v = vvals[i];
@@ -437,9 +439,31 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
 
     itheta = CLAMP(histogram->ntheta*(theta / 360.0),0,histogram->ntheta-1);
 
-    ixy = itheta + ir*histogram->ntheta;
+    ixy = ir + itheta*histogram->nr;
     histogram->buckets_polar[ixy]++;
   }
+
+  maxr = 0.0;
+  for(itheta = 0;itheta<histogram->ntheta;itheta++){
+    sumr = 0.0;
+    for(ir = 0;ir<histogram->nr;ir++){
+      ixy = ir+itheta*histogram->nr;
+      sumr += histogram->buckets_polar[ixy];
+    }
+    maxr = MAX(sumr, maxr);
+  }
+  histogram->bucket_maxr = maxr;
+
+  maxtheta = 0.0;
+  for(ir = 0;ir<histogram->nr;ir++){
+    sumtheta = 0.0;
+    for(itheta = 0;itheta<histogram->ntheta;itheta++){
+      ixy = ir+itheta*histogram->nr;
+      sumtheta += histogram->buckets_polar[ixy];
+    }
+    maxtheta = MAX(sumtheta, maxtheta);
+  }
+  histogram->bucket_maxtheta = maxtheta;
 }
 
 /* ------------------ CopyPolar2Histogram ------------------------ */
@@ -466,7 +490,7 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
 
     itheta = CLAMP(histogram->ntheta*(theta / 360.0), 0, histogram->ntheta - 1);
 
-    ixy = itheta + ir*histogram->ntheta;
+    ixy = ir+itheta*histogram->nr;
     histogram->buckets_polar[ixy]++;
   }
 }

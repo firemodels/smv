@@ -412,37 +412,95 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
+#ifdef pp_WINDROSE
+
 /* ----------------------- DrawWindRose ----------------------------- */
 
-#ifdef pp_WINDROSE
-void DrawWindRose(void){
+void DrawWindRose(windrosedata *wr){
+  int itheta;
+  float *xyz;
+  histogramdata *hist;
+  float dtheta;
+
+  if(wr==NULL)return;
+  xyz = wr->xyz;
+  hist = &wr->histogram;
+  glEnable(GL_LIGHTING);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+  glEnable(GL_COLOR_MATERIAL);
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(xyz[0], xyz[1], xyz[2]);
+
+  dtheta = DEG2RAD*360.0/(float)(hist->ntheta+1);
+  glBegin(GL_TRIANGLES);
+  for(itheta = 0;itheta<hist->ntheta+1;itheta++){
+    int ir;
+    float theta, theta2;
+    float rval, rval2;
+
+    theta  = (float)itheta*dtheta;
+    theta2 = (float)(itheta+1)*dtheta;
+    rval = 0.0;
+    for(ir = 0;ir<hist->nr-1;ir++){
+      float x11, x12, x21, x22;
+      float y11, y12, y21, y22;
+      int color_index, color_index2;
+      float drval, drval2;
+
+      //  (rval,theta2)     (rval2,theta2)
+      //  (rval,theta)     (rval2,theta)
+
+      color_index  = CLAMP(255*(float)(ir+0.5)/(float)hist->nr, 0, 255);
+      color_index2 = CLAMP(255*(float)(ir+1.5)/(float)hist->nr, 0, 255);
+      drval  = radius_windrose*hist->buckets_polar[ir+  itheta*hist->nr]/hist->bucket_maxr;
+      drval2 = radius_windrose*hist->buckets_polar[ir+1+itheta*hist->nr]/hist->bucket_maxr;
+      rval += drval;
+      rval2 = rval+drval2;
+      x11 =  rval*cos(theta);
+      x12 = rval2*cos(theta);
+      x21 =  rval*cos(theta2);
+      x22 = rval2*cos(theta2);
+      y11 =  rval*sin(theta);
+      y12 = rval2*sin(theta);
+      y21 =  rval*sin(theta2);
+      y22 = rval2*sin(theta2);
+
+      glColor3fv(rgb_slice+4*color_index);
+      glVertex3f(x11, y11, 0.0);
+      glColor3fv(rgb_slice+4*color_index2);
+      glVertex3f(x12, y12, 0.0);
+      glVertex3f(x22, y22, 0.0);
+
+      glColor3fv(rgb_slice+4*color_index);
+      glVertex3f(x11, y11, 0.0);
+      glColor3fv(rgb_slice+4*color_index2);
+      glVertex3f(x22, y22, 0.0);
+      glColor3fv(rgb_slice+4*color_index);
+      glVertex3f(x21, y21, 0.0);
+    }
+  }
+  glEnd();
+
+  glPopMatrix();
+  glDisable(GL_LIGHTING);
+}
+
+/* ----------------------- DrawDeviceWindRoses ----------------------------- */
+
+void DrawWindRosesDevices(void){
   int i;
 
-  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&nvdeviceinfo>0){
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-    glEnable(GL_COLOR_MATERIAL);
+  for(i = 0;i<nvdeviceinfo;i++){
+    vdevicedata *vdevi;
+    windrosedata *wr;
 
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glColor3fv(foregroundcolor);
-    for(i = 0; i < nvdeviceinfo; i++){
-      vdevicedata *vdevi;
-      float *xyz;
-      int k;
-      windrosedata *windrosei;
-      float dangle;
-
-      vdevi = vdeviceinfo + i;
-      if(vdevi->unique == 0)continue;
-      xyz = vdevi->valdev->xyz;
-
-    }
-    glPopMatrix();
-    glDisable(GL_LIGHTING);
+    vdevi = vdeviceinfo + i;
+    wr = &vdevi->windroseinfo;
+    DrawWindRose(wr);
   }
 }
 #endif
@@ -5676,7 +5734,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     veldev = vdevicei->veldev;
 
     windrosei = &(vdevicei->windroseinfo);
-
     if(udev != NULL&&vdev != NULL){
       int nvals;
       float rmin, rmax;
@@ -5684,6 +5741,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
 
       nvals = MIN(udev->nvals, vdev->nvals);
       if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
+      windrosei->xyz = udev->xyz;
 
       histogram = &(windrosei->histogram);
       if(flag != FIRST_TIME){
@@ -5700,6 +5758,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
 
       nvals = MIN(angledev->nvals, veldev->nvals);
 
+      windrosei->xyz = angledev->xyz;
       histogram = &(windrosei->histogram);
       if(flag != FIRST_TIME){
         FreeHistogramPolar(histogram);
@@ -5955,7 +6014,6 @@ void setup_device_data(void){
   setup_tree_devices();
   update_colordevs();
 
-  // convert velocities to pilot chart format
 #ifdef pp_WINDROSE
   DeviceData2WindRose(nr_windrose,ntheta_windrose,FIRST_TIME);
 #endif
