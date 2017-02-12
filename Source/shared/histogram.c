@@ -420,7 +420,7 @@ void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax){
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram){
   int i;
   float maxr, maxtheta;
-  float sumr, sumtheta;
+  float sumr, sumtheta, sum;
   int ir, itheta, ixy;
 
   if(nvals<=0)return;
@@ -444,15 +444,18 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
   }
 
   maxr = 0.0;
+  sum = 0.0;
   for(itheta = 0;itheta<histogram->ntheta;itheta++){
     sumr = 0.0;
     for(ir = 0;ir<histogram->nr;ir++){
       ixy = ir+itheta*histogram->nr;
       sumr += histogram->buckets_polar[ixy];
     }
+    sum += sumr;
     maxr = MAX(sumr, maxr);
   }
   histogram->bucket_maxr = maxr;
+  histogram->ntotal = sum;
 
   maxtheta = 0.0;
   for(ir = 0;ir<histogram->nr;ir++){

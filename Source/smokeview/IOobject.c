@@ -417,7 +417,7 @@ void Output_Device_Val(devicedata *devicei){
 /* ----------------------- DrawWindRose ----------------------------- */
 
 void DrawWindRose(windrosedata *wr){
-  int itheta;
+  int itheta,icirc;
   float *xyz;
   histogramdata *hist;
   float dtheta;
@@ -437,7 +437,7 @@ void DrawWindRose(windrosedata *wr){
 
   dtheta = DEG2RAD*360.0/(float)(hist->ntheta+1);
   glBegin(GL_TRIANGLES);
-  for(itheta = 0;itheta<hist->ntheta+1;itheta++){
+  for(itheta = 0;itheta<hist->ntheta;itheta++){
     int ir;
     float theta, theta2;
     float rval, rval2;
@@ -445,46 +445,95 @@ void DrawWindRose(windrosedata *wr){
     theta  = (float)itheta*dtheta;
     theta2 = (float)(itheta+1)*dtheta;
     rval = 0.0;
-    for(ir = 0;ir<hist->nr-1;ir++){
-      float x11, x12, x21, x22;
-      float y11, y12, y21, y22;
-      int color_index, color_index2;
-      float drval, drval2;
+    for(ir = 0;ir<hist->nr;ir++){
+      int color_index;
+      float drval;
+      int k, nk;
+      float dk;
 
       //  (rval,theta2)     (rval2,theta2)
       //  (rval,theta)     (rval2,theta)
+      //   d05              0.05
+      //   radius_windrose (maxr/ntotal)
 
       color_index  = CLAMP(255*(float)(ir+0.5)/(float)hist->nr, 0, 255);
-      color_index2 = CLAMP(255*(float)(ir+1.5)/(float)hist->nr, 0, 255);
       drval  = radius_windrose*hist->buckets_polar[ir+  itheta*hist->nr]/hist->bucket_maxr;
-      drval2 = radius_windrose*hist->buckets_polar[ir+1+itheta*hist->nr]/hist->bucket_maxr;
-      rval += drval;
-      rval2 = rval+drval2;
-      x11 =  rval*cos(theta);
-      x12 = rval2*cos(theta);
-      x21 =  rval*cos(theta2);
-      x22 = rval2*cos(theta2);
-      y11 =  rval*sin(theta);
-      y12 = rval2*sin(theta);
-      y21 =  rval*sin(theta2);
-      y22 = rval2*sin(theta2);
+      rval2 = rval + drval;
 
-      glColor3fv(rgb_slice+4*color_index);
-      glVertex3f(x11, y11, 0.0);
-      glColor3fv(rgb_slice+4*color_index2);
-      glVertex3f(x12, y12, 0.0);
-      glVertex3f(x22, y22, 0.0);
+      nk = RAD2DEG*(theta2-theta);
+      dk = (theta2-theta)/(float)nk;
 
-      glColor3fv(rgb_slice+4*color_index);
-      glVertex3f(x11, y11, 0.0);
-      glColor3fv(rgb_slice+4*color_index2);
-      glVertex3f(x22, y22, 0.0);
-      glColor3fv(rgb_slice+4*color_index);
-      glVertex3f(x21, y21, 0.0);
+      for(k = 0;k<nk;k++){
+        float angle1, angle2;
+        float x11, x12, x21, x22;
+        float y11, y12, y21, y22;
+
+        angle1 = theta+(float)k*dk;
+        angle2 = theta+(float)(k+1)*dk;
+
+        x11 = rval*cos(angle1);
+        x12 = rval2*cos(angle1);
+        x21 = rval*cos(angle2);
+        x22 = rval2*cos(angle2);
+        y11 = rval*sin(angle1);
+        y12 = rval2*sin(angle1);
+        y21 = rval*sin(angle2);
+        y22 = rval2*sin(angle2);
+
+        glColor3fv(rgb_slice+4*color_index);
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x12, y12, 0.0);
+        glVertex3f(x22, y22, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x22, y22, 0.0);
+        glVertex3f(x12, y12, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x22, y22, 0.0);
+        glVertex3f(x21, y21, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x21, y21, 0.0);
+        glVertex3f(x22, y22, 0.0);
+      }
+
+      rval = rval2;
     }
   }
   glEnd();
 
+  glTranslatef(0.0,0.0,0.001);
+  glLineWidth(2.0);
+  for(icirc = 0;icirc<20;icirc++){
+    float factor,diameter;
+    unsigned char fg_uc[4];
+
+    //d05 = radius_windrose*0.05/(hist->bucket_maxr/hist->ntotal);
+    factor = 0.05*(float)icirc/(hist->bucket_maxr/hist->ntotal);
+    if(factor>1.0)break;
+    diameter = 2.0*radius_windrose*factor;
+    fg_uc[0] = foregroundcolor[0]*255;
+    fg_uc[1] = foregroundcolor[1]*255;
+    fg_uc[2] = foregroundcolor[2]*255;
+    fg_uc[3] = foregroundcolor[3]*255;
+    drawcircle(diameter, fg_uc, &windrose_circ);
+  }
+  glTranslatef(0.0, 0.0, -0.002);
+  for(icirc = 0;icirc<20;icirc++){
+    float factor, diameter;
+    unsigned char fg_uc[4];
+
+    //d05 = radius_windrose*0.05/(hist->bucket_maxr/hist->ntotal);
+    factor = 0.05*(float)icirc/(hist->bucket_maxr/hist->ntotal);
+    if(factor>1.0)break;
+    diameter = 2.0*radius_windrose*factor;
+    fg_uc[0] = foregroundcolor[0]*255;
+    fg_uc[1] = foregroundcolor[1]*255;
+    fg_uc[2] = foregroundcolor[2]*255;
+    fg_uc[3] = foregroundcolor[3]*255;
+    drawcircle(diameter, fg_uc, &windrose_circ);
+  }
   glPopMatrix();
   glDisable(GL_LIGHTING);
 }

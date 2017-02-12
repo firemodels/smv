@@ -235,7 +235,7 @@ SVEXTERN int SVDECL(tour_drag,0);
 
 SVEXTERN int SVDECL(update_gslice,0);
 SVEXTERN int SVDECL(wc_flag,0);
-SVEXTERN circdata cvent_circ, object_circ;
+SVEXTERN circdata cvent_circ, object_circ, windrose_circ;
 #ifdef pp_BETA
 SVEXTERN int SVDECL(show_all_units,1);
 #else
