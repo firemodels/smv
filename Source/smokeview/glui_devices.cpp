@@ -236,6 +236,9 @@ extern "C" void glui_device_setup(int main_window){
 
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Windrose", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show"), &viswindrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show xy"), &windrose_visxy);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show xz"), &windrose_visxz);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show yz"), &windrose_visyz);
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show reference lines"), &showref_windrose);
       PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
       RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(PANEL_scale_windrose,&scale_windrose);

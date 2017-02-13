@@ -492,6 +492,9 @@ void _Sniff_Errors(char *whereat);
 #define KMIN 4
 #define KMAX 5
 
+#define WINDROSE_XY 0
+#define WINDROSE_XZ 1
+#define WINDROSE_YZ 2
 #define WINDROSE_LOCALSCALE 0
 #define WINDROSE_GLOBALSCALE 1
 #define CLOSE_WINDOW -2

@@ -152,6 +152,8 @@ SVEXTERN float northangle_position[3];
 #endif
 SVEXTERN float SVDECL(northangle, 0.0);
 SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
+
+SVEXTERN int SVDECL(windrose_visxy, 1), SVDECL(windrose_visxz, 0), SVDECL(windrose_visyz, 0);
 SVEXTERN int SVDECL(viswindrose,0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
 SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);

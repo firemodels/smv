@@ -926,8 +926,8 @@ typedef struct _device{
 /* --------------------------  windrosedata ------------------------------------ */
 
 typedef struct {
-  histogramdata histogram;
-  float *xyz, rmin, rmax;
+  histogramdata histogram[3];
+  float *xyz;
 } windrosedata;
 
 /* --------------------------  vdevicedata ------------------------------------ */
