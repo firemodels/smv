@@ -58,10 +58,170 @@ GLUI_Button *BUTTON_clip_2=NULL;
 #define SAVE_SETTINGS 98
 #define CLIP_MESH 80
 
+/* ------------------ CLIP_CB ------------------------ */
 
+void CLIP_CB(int var){
+  int i;
 
-void CLIP_CB(int var);
-void set_clip_controls(int val);
+  glutPostRedisplay();
+  switch(var){
+  case CLIP_MESH:
+    if(clip_mesh == 0){
+      set_clip_controls(DEFAULT_VALS);
+    }
+    else{
+      set_clip_controls(clip_mesh);
+    }
+    break;
+  case SAVE_SETTINGS:
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  case CLIP_CLOSE:
+    hide_glui_clip();
+    break;
+  case CLIP_xlower:
+    if(clipinfo.clip_xmin == 0)SPINNER_clip_xmin->disable();
+    if(clipinfo.clip_xmin == 1)SPINNER_clip_xmin->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_ylower:
+    if(clipinfo.clip_ymin == 0)SPINNER_clip_ymin->disable();
+    if(clipinfo.clip_ymin == 1)SPINNER_clip_ymin->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_zlower:
+    if(clipinfo.clip_zmin == 0)SPINNER_clip_zmin->disable();
+    if(clipinfo.clip_zmin == 1)SPINNER_clip_zmin->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_xupper:
+    if(clipinfo.clip_xmax == 0)SPINNER_clip_xmax->disable();
+    if(clipinfo.clip_xmax == 1)SPINNER_clip_xmax->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_yupper:
+    if(clipinfo.clip_ymax == 0)SPINNER_clip_ymax->disable();
+    if(clipinfo.clip_ymax == 1)SPINNER_clip_ymax->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_zupper:
+    if(clipinfo.clip_zmax == 0)SPINNER_clip_zmax->disable();
+    if(clipinfo.clip_zmax == 1)SPINNER_clip_zmax->enable();
+    updatefacelists = 1;
+    break;
+  case CLIP_all:
+    updatefacelists = 1;
+    update_clipplanes();
+    if(clip_mode != CLIP_OFF){
+      for(i = 0;i < 6;i++){
+        CLIP_CB(i);
+      }
+      CHECKBOX_clip_xmin->enable();
+      CHECKBOX_clip_ymin->enable();
+      CHECKBOX_clip_zmin->enable();
+      CHECKBOX_clip_xmax->enable();
+      CHECKBOX_clip_ymax->enable();
+      CHECKBOX_clip_zmax->enable();
+      show_bothsides_blockages = 1;
+      updatefaces = 1;
+    }
+    else{
+      SPINNER_clip_xmin->disable();
+      SPINNER_clip_ymin->disable();
+      SPINNER_clip_zmin->disable();
+      SPINNER_clip_xmax->disable();
+      SPINNER_clip_ymax->disable();
+      SPINNER_clip_zmax->disable();
+
+      CHECKBOX_clip_xmin->disable();
+      CHECKBOX_clip_ymin->disable();
+      CHECKBOX_clip_zmin->disable();
+      CHECKBOX_clip_xmax->disable();
+      CHECKBOX_clip_ymax->disable();
+      CHECKBOX_clip_zmax->disable();
+      show_bothsides_blockages = 0;
+      updatefaces = 1;
+    }
+    break;
+  case SPINNER_xlower:
+    SPINNER_clip_xmax->set_float_limits(clipinfo.xmin, xclip_max, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  case SPINNER_xupper:
+    SPINNER_clip_xmin->set_float_limits(xclip_min, clipinfo.xmax, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  case SPINNER_ylower:
+    SPINNER_clip_ymax->set_float_limits(clipinfo.ymin, yclip_max, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  case SPINNER_yupper:
+    SPINNER_clip_ymin->set_float_limits(yclip_min, clipinfo.ymax, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  case SPINNER_zlower:
+    SPINNER_clip_zmax->set_float_limits(clipinfo.zmin, zclip_max, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  case SPINNER_zupper:
+    SPINNER_clip_zmin->set_float_limits(zclip_min, clipinfo.zmax, GLUI_LIMIT_CLAMP);
+    updatefacelists = 1;
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  if(var >= CLIP_xlower&&var <= CLIP_zupper){
+    Clip2Cam(camera_current);
+  }
+}
+
+/* ------------------ set_clip_controls ------------------------ */
+
+void set_clip_controls(int val){
+  int i;
+
+  for(i = 0;i < 6;i++){
+    CLIP_CB(i);
+  }
+  if(val == DEFAULT_VALS){
+    clipinfo.xmin = xclip_min;
+    clipinfo.ymin = yclip_min;
+    clipinfo.zmin = zclip_min;
+    clipinfo.xmax = xclip_max;
+    clipinfo.ymax = yclip_max;
+    clipinfo.zmax = zclip_max;
+  }
+  if(val >= 1 && val <= nmeshes){
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+
+    float dxclip, dyclip, dzclip;
+
+    dxclip = (xbarORIG - xbar0ORIG) / 1000.0;
+    dyclip = (ybarORIG - ybar0ORIG) / 1000.0;
+    dzclip = (zbarORIG - zbar0ORIG) / 1000.0;
+
+    meshi = meshinfo + val - 1;
+
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+
+    clipinfo.xmin = xplt[0] - dxclip;
+    clipinfo.ymin = yplt[0] - dyclip;
+    clipinfo.zmin = zplt[0] - dzclip;
+    clipinfo.xmax = xplt[meshi->ibar] + dxclip;
+    clipinfo.ymax = yplt[meshi->jbar] + dyclip;
+    clipinfo.zmax = zplt[meshi->kbar] + dzclip;
+  }
+  SPINNER_clip_xmin->set_float_val(clipinfo.xmin);
+  SPINNER_clip_ymin->set_float_val(clipinfo.ymin);
+  SPINNER_clip_zmin->set_float_val(clipinfo.zmin);
+  SPINNER_clip_xmax->set_float_val(clipinfo.xmax);
+  SPINNER_clip_ymax->set_float_val(clipinfo.ymax);
+  SPINNER_clip_zmax->set_float_val(clipinfo.zmax);
+}
 
 /* ------------------ glui_clip_setup ------------------------ */
 
@@ -187,175 +347,9 @@ extern "C" void Update_Glui_Clip(void){
   }
 }
 
-/* ------------------ CLIP_CB ------------------------ */
-
-void CLIP_CB(int var){
-  int i;
-
-  glutPostRedisplay();
-  switch(var){
-  case CLIP_MESH:
-    if(clip_mesh==0){
-      set_clip_controls(DEFAULT_VALS);
-    }
-    else{
-      set_clip_controls(clip_mesh);
-    }
-    break;
-  case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  case CLIP_CLOSE:
-    hide_glui_clip();
-    break;
-  case CLIP_xlower:
-    if(clipinfo.clip_xmin==0)SPINNER_clip_xmin->disable();
-    if(clipinfo.clip_xmin==1)SPINNER_clip_xmin->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_ylower:
-    if(clipinfo.clip_ymin==0)SPINNER_clip_ymin->disable();
-    if(clipinfo.clip_ymin==1)SPINNER_clip_ymin->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_zlower:
-    if(clipinfo.clip_zmin==0)SPINNER_clip_zmin->disable();
-    if(clipinfo.clip_zmin==1)SPINNER_clip_zmin->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_xupper:
-    if(clipinfo.clip_xmax==0)SPINNER_clip_xmax->disable();
-    if(clipinfo.clip_xmax==1)SPINNER_clip_xmax->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_yupper:
-    if(clipinfo.clip_ymax==0)SPINNER_clip_ymax->disable();
-    if(clipinfo.clip_ymax==1)SPINNER_clip_ymax->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_zupper:
-    if(clipinfo.clip_zmax==0)SPINNER_clip_zmax->disable();
-    if(clipinfo.clip_zmax==1)SPINNER_clip_zmax->enable();
-    updatefacelists=1;
-    break;
-  case CLIP_all:
-    updatefacelists=1;
-    update_clipplanes();
-    if(clip_mode!=CLIP_OFF){
-      for(i=0;i<6;i++){
-        CLIP_CB(i);
-      }
-      CHECKBOX_clip_xmin->enable();
-      CHECKBOX_clip_ymin->enable();
-      CHECKBOX_clip_zmin->enable();
-      CHECKBOX_clip_xmax->enable();
-      CHECKBOX_clip_ymax->enable();
-      CHECKBOX_clip_zmax->enable();
-      show_bothsides_blockages = 1;
-      updatefaces=1;
-    }
-    else{
-      SPINNER_clip_xmin->disable();
-      SPINNER_clip_ymin->disable();
-      SPINNER_clip_zmin->disable();
-      SPINNER_clip_xmax->disable();
-      SPINNER_clip_ymax->disable();
-      SPINNER_clip_zmax->disable();
-
-      CHECKBOX_clip_xmin->disable();
-      CHECKBOX_clip_ymin->disable();
-      CHECKBOX_clip_zmin->disable();
-      CHECKBOX_clip_xmax->disable();
-      CHECKBOX_clip_ymax->disable();
-      CHECKBOX_clip_zmax->disable();
-      show_bothsides_blockages = 0;
-      updatefaces=1;
-    }
-    break;
-  case SPINNER_xlower:
-    SPINNER_clip_xmax->set_float_limits(clipinfo.xmin,xclip_max,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  case SPINNER_xupper:
-    SPINNER_clip_xmin->set_float_limits(xclip_min,clipinfo.xmax,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  case SPINNER_ylower:
-    SPINNER_clip_ymax->set_float_limits(clipinfo.ymin,yclip_max,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  case SPINNER_yupper:
-    SPINNER_clip_ymin->set_float_limits(yclip_min,clipinfo.ymax,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  case SPINNER_zlower:
-    SPINNER_clip_zmax->set_float_limits(clipinfo.zmin,zclip_max,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  case SPINNER_zupper:
-    SPINNER_clip_zmin->set_float_limits(zclip_min,clipinfo.zmax,GLUI_LIMIT_CLAMP);
-    updatefacelists=1;
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-  if(var>=CLIP_xlower&&var<=CLIP_zupper){
-    Clip2Cam(camera_current);
-  }
-}
-
 /* ------------------ update_clip_all ------------------------ */
 
 extern "C" void update_clip_all(void){
   CLIP_CB(CLIP_all);
   radio_clip->set_int_val(clip_mode);
 }
-
-/* ------------------ set_clip_controls ------------------------ */
-
-void set_clip_controls(int val){
-  int i;
-
-  for(i=0;i<6;i++){
-    CLIP_CB(i);
-  }
-  if(val==DEFAULT_VALS){
-    clipinfo.xmin = xclip_min;
-    clipinfo.ymin = yclip_min;
-    clipinfo.zmin = zclip_min;
-    clipinfo.xmax = xclip_max;
-    clipinfo.ymax = yclip_max;
-    clipinfo.zmax = zclip_max;
-  }
-  if(val>=1&&val<=nmeshes){
-    meshdata *meshi;
-    float *xplt, *yplt, *zplt;
-
-    float dxclip, dyclip, dzclip;
-
-    dxclip = (xbarORIG-xbar0ORIG)/1000.0;
-    dyclip = (ybarORIG-ybar0ORIG)/1000.0;
-    dzclip = (zbarORIG-zbar0ORIG)/1000.0;
-
-    meshi = meshinfo + val - 1;
-
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
-
-    clipinfo.xmin = xplt[0] - dxclip;
-    clipinfo.ymin = yplt[0] - dyclip;
-    clipinfo.zmin = zplt[0] - dzclip;
-    clipinfo.xmax = xplt[meshi->ibar] + dxclip;
-    clipinfo.ymax = yplt[meshi->jbar] + dyclip;
-    clipinfo.zmax = zplt[meshi->kbar] + dzclip;
-  }
-  SPINNER_clip_xmin->set_float_val(clipinfo.xmin);
-  SPINNER_clip_ymin->set_float_val(clipinfo.ymin);
-  SPINNER_clip_zmin->set_float_val(clipinfo.zmin);
-  SPINNER_clip_xmax->set_float_val(clipinfo.xmax);
-  SPINNER_clip_ymax->set_float_val(clipinfo.ymax);
-  SPINNER_clip_zmax->set_float_val(clipinfo.zmax);
-}
-

@@ -12,8 +12,6 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 
-void ParticleStreakShowMenu(int var);
-
 /* ------------------ CompareFloat ------------------------ */
 
 int CompareFloat( const void *arg1, const void *arg2 ){
@@ -28,8 +26,8 @@ int CompareFloat( const void *arg1, const void *arg2 ){
 
 /* ------------------ UpdateHrrinfo ------------------------ */
 
-void UpdateHrrinfo(int vis) {
-  if(hrrinfo != NULL) {
+void UpdateHrrinfo(int vis){
+  if(hrrinfo != NULL){
     hrrinfo->display = vis;
     UpdateTimes();
   }
@@ -61,13 +59,14 @@ void UpdateFrameNumber(int changetime){
       for(imesh=0;imesh<nmeshes;imesh++){
         meshdata *meshi;
         volrenderdata *vr;
-        slicedata *fireslice, *smokeslice;
+        slicedata *fireslice, *smokeslice, *lightslice;
         int j;
 
         meshi = meshinfo + imesh;
         vr = &(meshi->volrenderinfo);
         fireslice=vr->fireslice;
         smokeslice=vr->smokeslice;
+        lightslice=vr->lightslice;
         if(fireslice==NULL||smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         vr->itime = vr->timeslist[itimes];
@@ -75,6 +74,7 @@ void UpdateFrameNumber(int changetime){
           if(vr->dataready[j]==1)break;
         }
         vr->itime=j;
+
         if(smokeslice!=NULL&&vr->itime>=0){
           if(vr->is_compressed==1||load_volcompressed==1){
             unsigned char *c_smokedata_compressed;
@@ -94,6 +94,7 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
+
         if(fireslice!=NULL&&vr->itime>=0){
           if(vr->is_compressed==1||load_volcompressed==1){
             unsigned char *c_firedata_compressed;
@@ -114,6 +115,28 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
+
+        if(lightslice!=NULL&&vr->itime>=0){
+          if(vr->is_compressed==1||load_volcompressed==1){
+            unsigned char *c_lightdata_compressed;
+            uLongf framesize;
+            float timeval;
+
+            c_lightdata_compressed = vr->lightdataptrs[vr->itime];
+            framesize = lightslice->nslicei*lightslice->nslicej*lightslice->nslicek;
+            uncompress_volsliceframe(c_lightdata_compressed,
+                           vr->lightdata_view, framesize, &timeval,
+                           vr->c_lightdata_view);
+
+            vr->lightdataptr = vr->lightdata_view;
+            CheckMemory;
+          }
+          else{
+            if(runscript==0)vr->lightdataptr = vr->lightdataptrs[vr->itime];
+          }
+          CheckMemory;
+        }
+
       }
     }
     for(i=0;i<ngeominfoptrs;i++){
@@ -124,7 +147,6 @@ void UpdateFrameNumber(int changetime){
       geomi->itime=geomi->timeslist[itimes];
     }
     if(showslice==1||showvslice==1){
-      int showfed=0;
       int ii;
 
       for(ii=0;ii<nslice_loaded;ii++){
@@ -135,7 +157,6 @@ void UpdateFrameNumber(int changetime){
         if(sd->timeslist==NULL)continue;
         sd->itime=sd->timeslist[itimes];
         slice_time = sd->itime;
-        if(sd->is_fed==1)showfed=1;
       }
     }
     if(show3dsmoke==1){
@@ -147,10 +168,10 @@ void UpdateFrameNumber(int changetime){
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
-          updatesmoke3d(smoke3di);
+          UpdateSmoke3D(smoke3di);
         }
       }
-      if(nsmoke3dinfo>0)mergesmoke3dcolors(NULL);
+      if(nsmoke3dinfo>0)MergeSmoke3DColors(NULL);
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){
@@ -911,9 +932,9 @@ void ConvertSsf(void){
 }
 
 #ifdef pp_NAN
-/* ------------------ test_for_nan ------------------------ */
+/* ------------------ TestForNan ------------------------ */
 
-void test_for_nan(float *vals, int nvals, char *array, char *label){
+void TestForNan(float *vals, int nvals, char *array, char *label){
   int have_nan=0, i;
 
   for(i = 0; i < nvals; i++){
@@ -933,7 +954,7 @@ void test_for_nan(float *vals, int nvals, char *array, char *label){
     }
     fprintf(stderr,"\n");
   }
-#define TEST_FOR_NAN(a,b,c,d) test_for_nan(a,b,c,d)
+#define TEST_FOR_NAN(a,b,c,d) TestForNan(a,b,c,d)
 }
 #else
 #define TEST_FOR_NAN(a,b,c,d)
@@ -1060,7 +1081,7 @@ void UpdateTimes(void){
   // end pass 1
 
   FREEMEMORY(global_times);
-  if (nglobal_times > 0) {
+  if(nglobal_times > 0){
     NewMemory((void **)&global_times, nglobal_times * sizeof(float));
     NewMemory((void **)&global_times_copy, nglobal_times * sizeof(float));
   }
@@ -1233,20 +1254,20 @@ void UpdateTimes(void){
     TEST_FOR_NAN(global_times,nglobal_times,"global_times","(after remove dup)");
 
     for(n = 0; n < nglobal_times-1; n++){
-      int i;
+      int it;
 
       if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
       fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", n+1,nglobal_times);
-      if (timearray_test == 1) {
-        for (i = 0; i < nglobal_times; i++) {
-          fprintf(stderr," %f", global_times[i]);
+      if(timearray_test == 1){
+        for(it = 0; it < nglobal_times; it++){
+          fprintf(stderr," %f", global_times[it]);
         }
         fprintf(stderr, "\n");
       }
-      else if (timearray_test > 1) {
-        for (i = 0; i < MIN(nglobal_times, 10); i++) {
-          fprintf(stderr, " %f", global_times[i]);
+      else if(timearray_test > 1){
+        for(it = 0; it < MIN(nglobal_times, 10); it++){
+          fprintf(stderr, " %f", global_times[it]);
         }
         fprintf(stderr, "......\n");
       }
@@ -1553,23 +1574,23 @@ void UpdateTimes(void){
 
   /* determine visibility of each circular vent at each time step */
 
-  for (i = 0; i<nmeshes; i++) {
+  for(i = 0; i<nmeshes; i++){
     int j;
     meshdata *meshi;
 
     meshi = meshinfo + i;
     if(meshi->cventinfo == NULL)continue;
-    for (j = 0; j<meshi->ncvents; j++) {
+    for(j = 0; j<meshi->ncvents; j++){
       cventdata *cvi;
 
       cvi = meshi->cventinfo + j;
       if(cvi->showtime == NULL)continue;
       FREEMEMORY(cvi->showtimelist);
-      if(nglobal_times>0) {
+      if(nglobal_times>0){
         int k;
 
         NewMemory((void **)&cvi->showtimelist, nglobal_times * sizeof(int));
-        for (k = 0; k<nglobal_times; k++) {
+        for(k = 0; k<nglobal_times; k++){
           int listindex;
 
           cvi->showtimelist[k] = 1;
@@ -1947,10 +1968,10 @@ void UpdateDisplay(void){
     ZoomMenu(zoomindex);
   }
   if(update_makeiblank_smoke3d == 1){
-    makeiblank_smoke3d();
+    MakeIblankSmoke3D();
   }
 #ifdef pp_CULL
-  if(update_initcull == 1)initcull(cullsmoke);
+  if(update_initcull == 1)InitCull(cullsmoke);
 #endif
   if(update_streaks == 1 && ReadPartFile == 1){
     ParticleStreakShowMenu(streak_index);
@@ -1975,8 +1996,12 @@ void UpdateDisplay(void){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);
   }
-  if (histograms_defined==0&&update_slice_hists == 1) {
+  if(histograms_defined==0&&update_slice_hists == 1){
     update_slice_hists = 0;
     UpdateSliceHist();
+  }
+  if(update_vol_lights==1){
+    update_vol_lights = 0;
+    InitAllLightFractions(xyz_light_global, light_type_global);
   }
 }

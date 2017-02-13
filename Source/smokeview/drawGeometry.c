@@ -2530,7 +2530,7 @@ void SetCullVis(void){
   int imesh;
 
   if(update_initcullgeom==1){
-    initcullgeom(cullgeom);
+    InitCullGeom(cullgeom);
     UpdateFaceLists();
   }
   for(imesh=0;imesh<nmeshes;imesh++){
@@ -5119,9 +5119,9 @@ void DrawFacesOLD(){
   if(show_triangle_count==1)printf("obst/vent triangles: %i\n",n_geom_triangles);
 }
 
-/* ------------------ initcullgeom ------------------------ */
+/* ------------------ InitCullGeom ------------------------ */
 
-void initcullgeom(int cullgeomflag){
+void InitCullGeom(int cullgeomflag){
   culldata *culli;
   int imesh;
 

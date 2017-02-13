@@ -573,7 +573,7 @@ void InitOpenGL(void){
 #endif
 #ifdef pp_CULL
   if(err==0){
-    err=init_cull_exts();
+    err= InitCullExts();
 #ifdef _DEBUG
     if(err==0){
       PRINTF("%s\n",_("   Culling extension initialization succeeded"));
@@ -1153,8 +1153,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)readsmoke3d(i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)readsmoke3d(i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3D(i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
@@ -1198,12 +1198,22 @@ void init_texturedir(void){
 void initvars(void){
   int i;
 
+  windrose_circ.ncirc=0;
+  Init_Circle(180, &windrose_circ);
+
+  object_circ.ncirc=0;
+  cvent_circ.ncirc=0;
+
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
-  for (i = 0; i < nscreeninfo; i++) {
+  for(i = 0; i < nscreeninfo; i++){
     screenvis[i] = 1;
   }
 #endif
+
+  beam_color[0] = 255 * foregroundcolor[0];
+  beam_color[1] = 255 * foregroundcolor[1];
+  beam_color[2] = 255 * foregroundcolor[2];
 
   cos_geom_max_angle = cos(DEG2RAD*geom_max_angle);
   if(movie_filetype==WMV){

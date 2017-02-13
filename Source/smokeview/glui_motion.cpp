@@ -73,11 +73,6 @@
 #define MOVIE_ROLLOUT 8
 #define RENDER_360CB 9
 
-void Motion_DLG_CB(int var);
-void Viewpoint_CB(int var);
-void Gslice_CB(int var);
-void Motion_Rollout_CB(int var);
-
 GLUI *glui_motion=NULL;
 
 GLUI_Panel *PANEL_xy = NULL;
@@ -211,9 +206,6 @@ GLUI_Listbox *LIST_mesh2=NULL;
 GLUI_Listbox *LIST_render_size=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
-void enable_disable_views(void);
-void Render_CB(int var);
-
 procdata motionprocinfo[9];
 int nmotionprocinfo = 0;
 
@@ -310,6 +302,46 @@ extern "C" void update_nrender_rows(void){
   }
 }
 
+/* ------------------ Gslice_CB ------------------------ */
+
+void Gslice_CB(int var){
+  float az, elev;
+
+  switch(var){
+  case GSLICE_NORMAL:
+    az = gslice_normal_azelev[0];
+    if(az<-180.0 || az>180.0){
+      az += 180.0;
+      az = fmod((double)az, 360.0);
+      if(az < 0.0)az += 360.0;
+      az -= 180.0;
+      SPINNER_gslice_normal_az->set_float_val(az);
+    }
+    elev = gslice_normal_azelev[1];
+    if(elev<-180.0 || elev>180.0){
+      elev += 180.0;
+      elev = fmod((double)elev, 360.0);
+      if(elev < 0)elev += 360.0;
+      elev -= 180.0;
+      SPINNER_gslice_normal_elev->set_float_val(elev);
+    }
+    az *= DEG2RAD;
+    elev *= DEG2RAD;
+    gslice_norm[0] = cos(az)*cos(elev);
+    gslice_norm[1] = sin(az)*cos(elev);;
+    gslice_norm[2] = sin(elev);
+    break;
+  case GSLICE_TRANSLATE:
+    gslice_xyz[0] = CLAMP(gslice_xyz[0], xbar0, DENORMALIZE_X(xbar));
+    gslice_xyz[1] = CLAMP(gslice_xyz[1], ybar0, DENORMALIZE_Y(ybar));
+    gslice_xyz[2] = CLAMP(gslice_xyz[2], zbar0, DENORMALIZE_Z(zbar));
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+}
+
 /* ------------------ update_gslice_parms ------------------------ */
 
 extern "C" void update_gslice_parms(void){
@@ -354,6 +386,298 @@ extern "C" void gluiIdle(void){
 
 extern "C" void gluiIdleNULL(void){
   GLUI_Master.set_glutIdleFunc(NULL);
+}
+
+/* ------------------ view_exist ------------------------ */
+
+int view_exist(char *view){
+  cameradata *ca;
+
+  if(view == NULL)return 0;
+  for(ca = camera_list_first.next;ca->next != NULL;ca = ca->next){
+    if(strcmp(view, ca->name) == 0)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ get_unique_view_name ------------------------ */
+
+void get_unique_view_name(void){
+  char *label, viewlabel[300];
+
+  label = EDIT_view_label->get_text();
+  if(view_exist(label) == 1){
+    int i;
+
+    for(i = 1;;i++){
+      sprintf(viewlabel, "view %i", i);
+      if(view_exist(viewlabel) == 0)break;
+    }
+    EDIT_view_label->set_text(viewlabel);
+  }
+}
+
+/* ------------------ camera2quat ------------------------ */
+
+void camera2quat(cameradata *ca, float *quat, float *rotation){
+  if(ca->quat_defined == 1){
+    quat[0] = ca->quaternion[0];
+    quat[1] = ca->quaternion[1];
+    quat[2] = ca->quaternion[2];
+    quat[3] = ca->quaternion[3];
+  }
+  else{
+    float quat_temp[4];
+    float azimuth, elevation, axis[3];
+
+    azimuth = ca->az_elev[0] * DEG2RAD;
+    elevation = (ca->az_elev[1])*DEG2RAD;
+
+    axis[0] = 1.0;
+    axis[1] = 0.0;
+    axis[2] = 0.0;
+
+    angleaxis2quat(elevation, axis, quat_temp);
+
+    axis[0] = 0.0;
+    axis[1] = 0.0;
+    axis[2] = 1.0;
+
+    angleaxis2quat(azimuth, axis, quat);
+
+    mult_quat(quat_temp, quat, quat);
+  }
+
+  if(rotation != NULL)quat2rot(quat, rotation);
+}
+
+/* ------------------ enable_disable_views ------------------------ */
+
+void enable_disable_views(void){
+  int ival;
+  cameradata *cex;
+
+  ival = LIST_viewpoints->get_int_val();
+  if(ival >= 0){
+
+    selected_view = ival;
+
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    cex = cex->next;
+    if(cex->next == NULL){
+      BUTTON_cycle_views->disable();
+    }
+    else{
+      BUTTON_cycle_views->enable();
+    }
+  }
+
+  switch(ival){
+  case -1:
+  case 0:
+  case 1:
+    BUTTON_replace_view->disable();
+    BUTTON_delete_view->disable();
+    break;
+  default:
+    BUTTON_replace_view->enable();
+    BUTTON_delete_view->enable();
+    break;
+  }
+}
+
+/* ------------------ Viewpoint_CB ------------------------ */
+
+void Viewpoint_CB(int var){
+  int ival;
+  int rotation_type_save;
+  cameradata *cam1, *cex, *ca;
+  char *label;
+  cameradata *prev, *next;
+  int view_id;
+#ifdef pp_RENDER360_DEBUG
+  int i;
+#endif
+
+  switch(var){
+#ifdef pp_RENDER360_DEBUG
+  case SHOWALL_SCREENS:
+    for(i = 0;i < nscreeninfo;i++){
+      screenvis[i] = 1;
+      CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
+    }
+    break;
+  case HIDEALL_SCREENS:
+    for(i = 0;i < nscreeninfo;i++){
+      screenvis[i] = 0;
+      CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
+    }
+    break;
+#endif
+  case RESTORE_EXTERIOR_VIEW:
+  case RESTORE_INTERIOR_VIEW:
+  case RESTORE_SAVED_VIEW:
+    SetViewPoint(var);
+    break;
+  case SAVE_VIEW:
+    strcpy(camera_current->name, camera_label);
+    BUTTON_reset_saved_view->enable();
+    ViewpointMenu(SAVE_VIEW);
+    break;
+  case LABEL_VIEW:
+    updatemenu = 1;
+    break;
+  case REPLACE_VIEW:
+    ival = LIST_viewpoints->get_int_val();
+    selected_view = ival;
+    label = EDIT_view_label->get_text();
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    for(ca = cex;ca->next != NULL;ca = ca->next){
+      if(ca->view_id == ival)break;
+    }
+    if(ival == ca->view_id){
+      cam1 = ca;
+    }
+    else{
+      return;
+    }
+    prev = ca->prev;
+    next = ca->next;
+    view_id = ca->view_id;
+    CopyCamera(ca, camera_current);
+    ca->prev = prev;
+    ca->next = next;
+    ca->view_id = view_id;
+
+    LIST_viewpoints->delete_item(ival);
+    LIST_viewpoints->add_item(ival, label);
+    strcpy(ca->name, label);
+
+    break;
+  case ADD_VIEW:
+
+    get_unique_view_name();
+    add_list_view(NULL);
+    Viewpoint_CB(LIST_VIEW);
+    break;
+  case DELETE_VIEW:
+    ival = LIST_viewpoints->get_int_val();
+    label = EDIT_view_label->get_text();
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    for(ca = cex;ca->next != NULL;ca = ca->next){
+      if(ca->view_id == ival)break;
+    }
+    if(ival == ca->view_id){
+      cam1 = ca;
+    }
+    else{
+      return;
+    }
+    LIST_viewpoints->delete_item(ival);
+    prev = cam1->prev;
+    DeleteCamera(cam1);
+    if(prev->view_id != -1){
+      LIST_viewpoints->set_int_val(prev->view_id);
+      selected_view = prev->view_id;
+    }
+    else{
+      LIST_viewpoints->set_int_val(0);
+      selected_view = 0;
+    }
+    Viewpoint_CB(RESTORE_VIEW);
+    enable_disable_views();
+    break;
+  case RESTORE_VIEW:
+    ival = LIST_viewpoints->get_int_val();
+    selected_view = ival;
+    for(ca = camera_list_first.next;ca->next != NULL;ca = ca->next){
+      if(ca->view_id == ival)break;
+    }
+
+    rotation_type_save = ca->rotation_type;
+    CopyCamera(camera_current, ca);
+    if(rotation_type == ROTATION_3AXIS)camera2quat(camera_current, quat_general, quat_rotation);
+    if(strcmp(ca->name, "external") == 0 || strcmp(ca->name, "internal") == 0)updatezoommenu = 1;
+    camera_current->rotation_type = rotation_type_save;
+    EDIT_view_label->set_text(ca->name);
+    break;
+  case LIST_VIEW:
+    ival = LIST_viewpoints->get_int_val();
+    old_listview = -2;
+    if(ival == -1 && delete_view_is_disabled == 0){
+      BUTTON_delete_view->disable();
+      delete_view_is_disabled = 1;
+      break;
+    }
+    else{
+      if(delete_view_is_disabled == 1){
+        BUTTON_delete_view->enable();
+        delete_view_is_disabled = 0;
+      }
+    }
+    Viewpoint_CB(RESTORE_VIEW);
+    updatezoommenu = 1;
+    enable_disable_views();
+    break;
+  case STARTUP:
+    startup_view_ini = LIST_viewpoints->get_int_val();
+    {
+      char *cam_label;
+
+      cam_label = GetCameraLabel(startup_view_ini);
+      if(cam_label != NULL){
+        strcpy(startup_view_label, cam_label);
+      }
+    }
+    selected_view = startup_view_ini;
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  case CYCLEVIEWS:
+    ival = LIST_viewpoints->get_int_val();
+    selected_view = ival;
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    switch(ival){
+    case -1:
+    case 0:
+    case 1:
+      cex = cex->next;
+      if(cex->next == NULL)return;
+      ival = cex->view_id;
+      break;
+    default:
+      for(ca = cex;ca->next != NULL;ca = ca->next){
+        if(ca->view_id == ival)break;
+      }
+      cex = ca->next;
+      if(cex->next == NULL){
+        cex = &camera_list_first;
+        cex = cex->next;
+        cex = cex->next;
+        cex = cex->next;
+        if(cex->next == NULL)return;
+        ival = cex->view_id;
+      }
+      else{
+        ival = cex->view_id;
+      }
+      break;
+    }
+    LIST_viewpoints->set_int_val(ival);
+    selected_view = ival;
+    Viewpoint_CB(RESTORE_VIEW);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
 }
 
 /* ------------------ reset_glui_view ------------------------ */
@@ -433,6 +757,24 @@ extern "C" void UpdateGluiViewList(void){
   enable_disable_views();
   Viewpoint_CB(RESTORE_VIEW);
 
+}
+
+/* ------------------ Motion_DLG_CB ------------------------ */
+
+void Motion_DLG_CB(int var){
+  switch(var){
+  case CLOSE_MOTION:
+    if(glui_motion != NULL)glui_motion->hide();
+    updatemenu = 1;
+    break;
+  case SAVE_SETTINGS:
+    updatemenu = 1;
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
 }
 
 /* ------------------ glui_motion_setup ------------------------ */
@@ -832,43 +1174,6 @@ extern "C" void glui_motion_setup(int main_window){
   glui_motion->set_main_gfx_window( main_window );
 }
 
-/* ------------------ enable_disable_views ------------------------ */
-
-void enable_disable_views(void){
-  int ival;
-  cameradata *cex;
-
-  ival=LIST_viewpoints->get_int_val();
-  if(ival>=0){
-
-    selected_view=ival;
-
-    cex=&camera_list_first;
-    cex=cex->next;
-    cex=cex->next;
-    cex=cex->next;
-    if(cex->next==NULL){
-      BUTTON_cycle_views->disable();
-    }
-    else{
-      BUTTON_cycle_views->enable();
-    }
-  }
-
-  switch(ival){
-    case -1:
-    case 0:
-    case 1:
-      BUTTON_replace_view->disable();
-      BUTTON_delete_view->disable();
-      break;
-    default:
-      BUTTON_replace_view->enable();
-      BUTTON_delete_view->enable();
-    break;
-  }
-}
-
 /* ------------------ update_windowsizelist ------------------------ */
 
 extern "C" void update_windowsizelist(void){
@@ -1073,46 +1378,6 @@ extern "C" void showhide_translate(int var){
     ASSERT(FFALSE);
   }
 
-}
-
-/* ------------------ Gslice_CB ------------------------ */
-
-void Gslice_CB(int var){
-  float az, elev;
-
-  switch(var){
-    case GSLICE_NORMAL:
-      az = gslice_normal_azelev[0];
-      if(az<-180.0||az>180.0){
-        az+=180.0;
-        az=fmod((double)az,360.0);
-        if(az<0.0)az+=360.0;
-        az-=180.0;
-        SPINNER_gslice_normal_az->set_float_val(az);
-      }
-      elev = gslice_normal_azelev[1];
-      if(elev<-180.0||elev>180.0){
-        elev+=180.0;
-        elev=fmod((double)elev,360.0);
-        if(elev<0)elev+=360.0;
-        elev-=180.0;
-        SPINNER_gslice_normal_elev->set_float_val(elev);
-      }
-      az*=DEG2RAD;
-      elev*=DEG2RAD;
-      gslice_norm[0]=cos(az)*cos(elev);
-      gslice_norm[1]=sin(az)*cos(elev);;
-      gslice_norm[2]=sin(elev);
-      break;
-    case GSLICE_TRANSLATE:
-      gslice_xyz[0]=CLAMP(gslice_xyz[0],xbar0,DENORMALIZE_X(xbar));
-      gslice_xyz[1]=CLAMP(gslice_xyz[1],ybar0,DENORMALIZE_Y(ybar));
-      gslice_xyz[2]=CLAMP(gslice_xyz[2],zbar0,DENORMALIZE_Z(zbar));
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-  }
 }
 
 /* ------------------ toggle_rollout ------------------------ */
@@ -1526,279 +1791,6 @@ extern "C" void show_glui_motion(int menu_id){
   }
 }
 
-/* ------------------ Motion_DLG_CB ------------------------ */
-
-void Motion_DLG_CB(int var){
-  switch(var){
-  case CLOSE_MOTION:
-    if(glui_motion!=NULL)glui_motion->hide();
-    updatemenu=1;
-    break;
-  case SAVE_SETTINGS:
-    updatemenu=1;
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-}
-
-/* ------------------ view_exist ------------------------ */
-
-int view_exist(char *view){
-  cameradata *ca;
-
-  if(view==NULL)return 0;
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
-    if(strcmp(view,ca->name)==0)return 1;
-  }
-  return 0;
-}
-
-/* ------------------ get_unique_view_name ------------------------ */
-
-void get_unique_view_name(void){
-  char *label, viewlabel[300];
-
-  label=EDIT_view_label->get_text();
-  if(view_exist(label)==1){
-    int i;
-
-    for(i=1;;i++){
-      sprintf(viewlabel,"view %i",i);
-      if(view_exist(viewlabel)==0)break;
-    }
-    EDIT_view_label->set_text(viewlabel);
-  }
-}
-
-/* ------------------ camera2quat ------------------------ */
-
-void camera2quat(cameradata *ca, float *quat, float *rotation){
-  if(ca->quat_defined == 1){
-    quat[0] = ca->quaternion[0];
-    quat[1] = ca->quaternion[1];
-    quat[2] = ca->quaternion[2];
-    quat[3] = ca->quaternion[3];
-  }
-  else{
-    float quat_temp[4];
-    float azimuth, elevation, axis[3];
-
-    azimuth = ca->az_elev[0] * DEG2RAD;
-    elevation = (ca->az_elev[1])*DEG2RAD;
-
-    axis[0] = 1.0;
-    axis[1] = 0.0;
-    axis[2] = 0.0;
-
-    angleaxis2quat(elevation, axis, quat_temp);
-
-    axis[0] = 0.0;
-    axis[1] = 0.0;
-    axis[2] = 1.0;
-
-    angleaxis2quat(azimuth, axis, quat);
-
-    mult_quat(quat_temp, quat, quat);
-  }
-
-  if(rotation != NULL)quat2rot(quat, rotation);
-}
-
-/* ------------------ Viewpoint_CB ------------------------ */
-
-void Viewpoint_CB(int var){
-  int ival;
-  int rotation_type_save;
-  cameradata *cam1,*cex,*ca;
-  char *label;
-  cameradata *prev, *next;
-  int view_id;
-#ifdef pp_RENDER360_DEBUG
-  int i;
-#endif
-
-  switch(var){
-#ifdef pp_RENDER360_DEBUG
-  case SHOWALL_SCREENS:
-    for(i=0;i<nscreeninfo;i++){
-      screenvis[i]=1;
-      CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
-    }
-    break;
-  case HIDEALL_SCREENS:
-    for(i=0;i<nscreeninfo;i++){
-      screenvis[i]=0;
-      CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
-    }
-    break;
-#endif
-  case RESTORE_EXTERIOR_VIEW:
-  case RESTORE_INTERIOR_VIEW:
-  case RESTORE_SAVED_VIEW:
-    SetViewPoint(var);
-    break;
-  case SAVE_VIEW:
-    strcpy(camera_current->name,camera_label);
-    BUTTON_reset_saved_view->enable();
-    ViewpointMenu(SAVE_VIEW);
-    break;
-  case LABEL_VIEW:
-    updatemenu=1;
-    break;
-  case REPLACE_VIEW:
-    ival=LIST_viewpoints->get_int_val();
-    selected_view=ival;
-    label=EDIT_view_label->get_text();
-    cex=&camera_list_first;
-    cex=cex->next;
-    cex=cex->next;
-    for(ca=cex;ca->next!=NULL;ca=ca->next){
-      if(ca->view_id==ival)break;
-    }
-    if(ival==ca->view_id){
-      cam1=ca;
-    }
-    else{
-      return;
-    }
-    prev=ca->prev;
-    next=ca->next;
-    view_id=ca->view_id;
-    CopyCamera(ca,camera_current);
-    ca->prev=prev;
-    ca->next=next;
-    ca->view_id=view_id;
-
-    LIST_viewpoints->delete_item(ival);
-    LIST_viewpoints->add_item(ival,label);
-    strcpy(ca->name,label);
-
-    break;
-  case ADD_VIEW:
-
-    get_unique_view_name();
-    add_list_view(NULL);
-    Viewpoint_CB(LIST_VIEW);
-    break;
-  case DELETE_VIEW:
-    ival=LIST_viewpoints->get_int_val();
-    label=EDIT_view_label->get_text();
-    cex=&camera_list_first;
-    cex=cex->next;
-    cex=cex->next;
-    for(ca=cex;ca->next!=NULL;ca=ca->next){
-      if(ca->view_id==ival)break;
-    }
-    if(ival==ca->view_id){
-      cam1=ca;
-    }
-    else{
-      return;
-    }
-    LIST_viewpoints->delete_item(ival);
-    prev=cam1->prev;
-    DeleteCamera(cam1);
-    if(prev->view_id!=-1){
-      LIST_viewpoints->set_int_val(prev->view_id);
-      selected_view=prev->view_id;
-    }
-    else{
-      LIST_viewpoints->set_int_val(0);
-      selected_view=0;
-    }
-    Viewpoint_CB(RESTORE_VIEW);
-    enable_disable_views();
-    break;
-  case RESTORE_VIEW:
-    ival=LIST_viewpoints->get_int_val();
-    selected_view=ival;
-    for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
-      if(ca->view_id==ival)break;
-    }
-
-    rotation_type_save = ca->rotation_type;
-    CopyCamera(camera_current,ca);
-    if(rotation_type==ROTATION_3AXIS)camera2quat(camera_current,quat_general,quat_rotation);
-    if(strcmp(ca->name,"external")==0||strcmp(ca->name,"internal")==0)updatezoommenu=1;
-    camera_current->rotation_type=rotation_type_save;
-    EDIT_view_label->set_text(ca->name);
-    break;
-  case LIST_VIEW:
-    ival=LIST_viewpoints->get_int_val();
-    old_listview=-2;
-    if(ival==-1&&delete_view_is_disabled==0){
-      BUTTON_delete_view->disable();
-      delete_view_is_disabled=1;
-      break;
-    }
-    else{
-      if(delete_view_is_disabled==1){
-        BUTTON_delete_view->enable();
-        delete_view_is_disabled=0;
-      }
-    }
-    Viewpoint_CB(RESTORE_VIEW);
-    updatezoommenu=1;
-    enable_disable_views();
-    break;
-  case STARTUP:
-    startup_view_ini=LIST_viewpoints->get_int_val();
-    {
-      char *label;
-
-      label = GetCameraLabel(startup_view_ini);
-      if(label != NULL){
-        strcpy(startup_view_label, label);
-      }
-    }
-    selected_view=startup_view_ini;
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  case CYCLEVIEWS:
-    ival=LIST_viewpoints->get_int_val();
-    selected_view=ival;
-    cex=&camera_list_first;
-    cex=cex->next;
-    cex=cex->next;
-    switch(ival){
-    case -1:
-    case 0:
-    case 1:
-      cex=cex->next;
-      if(cex->next==NULL)return;
-      ival=cex->view_id;
-      break;
-    default:
-      for(ca=cex;ca->next!=NULL;ca=ca->next){
-        if(ca->view_id==ival)break;
-      }
-      cex=ca->next;
-      if(cex->next==NULL){
-        cex=&camera_list_first;
-        cex=cex->next;
-        cex=cex->next;
-        cex=cex->next;
-        if(cex->next==NULL)return;
-        ival=cex->view_id;
-      }
-      else{
-        ival=cex->view_id;
-      }
-      break;
-    }
-    LIST_viewpoints->set_int_val(ival);
-    selected_view=ival;
-    Viewpoint_CB(RESTORE_VIEW);
-    break;
-    default:
-      ASSERT(FFALSE);
-      break;
-  }
-}
-
 /* ------------------ SetStartupView ------------------------ */
 
 extern "C" void SetStartupView(void){
@@ -1924,10 +1916,10 @@ void Render_CB(int var){
       break;
     case RENDER_START:
       if(render_360 == 1)render_mode = RENDER_360;
-      if (render_frame != NULL) {
+      if(render_frame != NULL){
         int i;
 
-        for (i = 0; i < nglobal_times; i++) {
+        for(i = 0; i < nglobal_times; i++){
           render_frame[i] = 0;
         }
       }
@@ -1938,7 +1930,7 @@ void Render_CB(int var){
         if(nrender_rows==1&& render_mode != RENDER_360){
           RenderMenu(RENDER_CURRENT_SINGLE);
         }
-        else if (render_mode == RENDER_360) {
+        else if(render_mode == RENDER_360){
           if(glui_screenWidth!=glui_screenHeight){
             glui_screenWidth = MAX(glui_screenWidth,glui_screenHeight);
             glui_screenHeight = MAX(glui_screenWidth,glui_screenHeight);

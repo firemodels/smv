@@ -21,7 +21,7 @@
 #define NHIST_BUCKETS 100000
 typedef struct {
   unsigned int *buckets_polar;
-  float *buckets, bucket_maxval;
+  float *buckets, bucket_maxval, bucket_maxr, bucket_maxtheta;
   int nbuckets, ndim, defined;
   int nr, ntheta;
   float ntotal;
@@ -43,11 +43,11 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
 void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
 void FreeHistogramPolar(histogramdata *histogram);
-void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax, int flag);
+void Get2DBounds(float *uvals, float *vvals, int nvals, float *rmin, float *rmax);
 void GetHistogramStats(histogramdata *histogram);
 float GetHistogramCDF(histogramdata *histogram, float val);
 float GetHistogramVal(histogramdata *histogram, float cdf);
-void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax, int flag);
+void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogramPolar(histogramdata *histogram, int nx, int ny, float *rmin, float *rmax);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);

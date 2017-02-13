@@ -8,8 +8,7 @@
 #include "string_util.h"
 #include "update.h"
 #include "smokeviewvars.h"
-
-void drawtrunccone(float d1, float d2, float height, unsigned char *rgbcolor);
+#include "IOobject.h"
 
 /* ------------------ getzonesizecsv ------------------------ */
 
@@ -1051,21 +1050,21 @@ void drawroomgeom(void){
 
 /* draw the frame */
 
-  if (visCompartments == 1) {
+  if(visCompartments == 1){
     Antialias(ON);
     glBegin(GL_LINES);
 
-    for (i = 0; i < nrooms; i++) {
+    for(i = 0; i < nrooms; i++){
       roomdata *roomi;
       float xroom0, yroom0, zroom0, xroom, yroom, zroom;
 
-      if (zone_highlight == 1 && zone_highlight_room == i) {
+      if(zone_highlight == 1 && zone_highlight_room == i){
         glEnd();
         glLineWidth(5.0*linewidth);
         glBegin(GL_LINES);
         glColor3f(1.0, 0.0, 0.0);
       }
-      else {
+      else{
         glEnd();
         glLineWidth(linewidth);
         glBegin(GL_LINES);
@@ -1136,15 +1135,24 @@ void drawroomgeom(void){
       y2 = zvi->y1;
       z1 = zvi->z0;
       z2 = zvi->z1;
-      glColor4fv(zvi->color);
       if(zvi->vent_type == MFLOW_VENT){
         glPushMatrix();
         glTranslatef(x2, y2, z2);
-        void drawsphere(float diameter, float *color);
-        drawsphere(0.02, NULL);
+        {
+          unsigned char hvac_sphere_color[3];
+
+          hvac_sphere_color[0] = 255 * foregroundcolor[0];
+          hvac_sphere_color[1] = 255 * foregroundcolor[1];
+          hvac_sphere_color[2] = 255 * foregroundcolor[2];
+          drawsphere(SCALE2SMV(zone_hvac_diam), hvac_sphere_color);
+        }
         glPopMatrix();
+        glLineWidth(2.0*ventlinewidth);
       }
-      glLineWidth(ventlinewidth);
+      else{
+        glLineWidth(ventlinewidth);
+      }
+      glColor4fv(zvi->color);
       glBegin(GL_LINE_LOOP);
       switch(zvi->wall){
       case LEFT_WALL:

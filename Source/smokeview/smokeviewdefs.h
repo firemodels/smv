@@ -7,6 +7,16 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
+
+#define ISOTROPIC 0
+#define HENYEY_GREENSTEIN 1
+#define SCHLICK 2
+
+#define LOCAL_LIGHT 0
+#define INFINITE_LIGHT 1
+#define TMAX 1000000000.0
+
 #define PARTFILE_MAP  0
 #define PARTFILE_REMAP 1
 
@@ -482,6 +492,8 @@ void _Sniff_Errors(char *whereat);
 #define KMIN 4
 #define KMAX 5
 
+#define WINDROSE_LOCALSCALE 0
+#define WINDROSE_GLOBALSCALE 1
 #define CLOSE_WINDOW -2
 #define UPDATE_WINDOW -3
 #define CANCEL_WINDOW -4

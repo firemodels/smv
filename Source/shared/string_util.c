@@ -212,7 +212,7 @@ char *RandStr(char* str, int length){
 
     if(str==NULL||length<=0)return NULL;
 
-    for (i=0;i<length;i++){
+    for(i=0;i<length;i++){
       str[i]=(char)RandInt(65,90);
     }
     str[length]=0;

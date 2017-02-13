@@ -245,7 +245,7 @@ typedef struct {
 //************* headers
 //***********************
 
-void init_volrender(void);
+void InitVolRender(void);
 void print_summary(void);
 void *compress_all(void *arg);
 void mt_compress_all(void);

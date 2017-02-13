@@ -7,37 +7,6 @@
 
 #include "smokeviewvars.h"
 
-/* ------------------ allocate_shooter ------------------------ */
-
-int  allocate_shooter(void){
-  int mem_points, mem_frames;
-
-  FREEMEMORY(shootpointinfo);
-  FREEMEMORY(shoottimeinfo);
-
-  mem_points=max_shooter_points*sizeof(shootpointdata);
-  mem_frames=nshooter_frames*sizeof(shoottimedata);
-
-  PRINTF("shooter point memory requirements\n");
-  PRINTF("max_shooter_points=%i mem=%i\n",max_shooter_points,mem_points);
-  PRINTF("nshooter_frames=%i mem=%i\n",nshooter_frames,mem_frames);
-
-  if(  mem_points<=0||mem_frames<=0||
-#ifdef _DEBUG
-       mem_points>=2000000000||mem_frames>2000000000||
-#endif
-    NewMemory((void **)&shootpointinfo,mem_points)==0||
-    NewMemory((void **)&shoottimeinfo,mem_frames)==0){
-    FREEMEMORY(shootpointinfo);
-    FREEMEMORY(shoottimeinfo);
-    shooter_active=0;
-    PRINTF("shooter point memory allocation failed\n");
-    return 1;
-  }
-  return 0;
-
-}
-
 /* ------------------ get_shooter_vel ------------------------ */
 
 void get_shooter_vel(float *uvw, float *xyz){

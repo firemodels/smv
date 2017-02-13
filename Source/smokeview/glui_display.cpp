@@ -1,11 +1,5 @@
 #define CPP
 #include "options.h"
-
-extern "C" void ShowHideMenu(int val);
-extern "C" void colorbar_global2local(void);
-
-void Text_Labels_CB(int var);
-
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -54,6 +48,7 @@ GLUI_Spinner *SPINNER_tick_zmax=NULL;
 GLUI_Spinner *SPINNER_gridlinewidth = NULL;
 GLUI_Spinner *SPINNER_ticklinewidth = NULL;
 GLUI_Spinner *SPINNER_linewidth=NULL;
+GLUI_Spinner *SPINNER_zone_hvac_diam = NULL;
 GLUI_Spinner *SPINNER_tick_x0=NULL;
 GLUI_Spinner *SPINNER_tick_y0=NULL;
 GLUI_Spinner *SPINNER_tick_z0=NULL;
@@ -218,10 +213,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define TRANSPARENTLEVEL 110
 
 #define UPDATEPLOT 10
-extern "C" void Plot3D_CB(int var);
-extern "C" void Extreme_CB(int var);
-extern "C" void Split_CB(int var);
-
 
 int cb_up_rgb[3],cb_down_rgb[3];
 
@@ -312,6 +303,159 @@ extern "C" void glui_update_fontindex(void){
   }
 }
 
+/* ------------------ Text_labels_CB ------------------------ */
+
+void Text_Labels_CB(int var){
+  labeldata *thislabel, *gl, *new_label;
+  int count;
+  char name[300];
+
+  gl = &LABEL_local;
+  switch(var){
+  case LB_VISLABELS:
+    updatemenu = 1;
+    break;
+  case LB_UPDATE:
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->glui_id < 0)continue;
+      LIST_LB_labels->delete_item(thislabel->glui_id);
+    }
+    strcpy(LABEL_global_ptr->name, gl->name);
+    //LabelResort(LABEL_global_ptr);
+
+    count = 0;
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->labeltype == TYPE_SMV)continue;
+      thislabel->glui_id = count;
+      LIST_LB_labels->add_item(count++, thislabel->name);
+    }
+    break;
+  case LB_STARTSTOP:
+    memcpy(LABEL_global_ptr->tstart_stop, gl->tstart_stop, 2 * sizeof(float));
+    break;
+  case LB_SHOWALWAYS:
+    memcpy(&LABEL_global_ptr->show_always, &gl->show_always, sizeof(int));
+    break;
+  case LB_FOREGROUND:
+    memcpy(&LABEL_global_ptr->useforegroundcolor, &gl->useforegroundcolor, sizeof(int));
+    break;
+  case LB_PREVIOUS:
+    new_label = LabelGet(LIST_LB_labels->curr_text);
+    new_label = LabelPrevious(new_label);
+    if(new_label == NULL)break;
+    LABEL_global_ptr = new_label;
+    if(new_label != NULL){
+      LabelCopy(gl, new_label);
+      update_glui_label_text();
+    }
+    break;
+  case LB_NEXT:
+    new_label = LabelGet(LIST_LB_labels->curr_text);
+    new_label = LabelNext(new_label);
+    if(new_label == NULL)break;
+    LABEL_global_ptr = new_label;
+    if(new_label != NULL){
+      LabelCopy(gl, new_label);
+      update_glui_label_text();
+    }
+    break;
+  case LB_LIST:
+    new_label = LabelGet(LIST_LB_labels->curr_text);
+    LABEL_global_ptr = new_label;
+    if(new_label != NULL){
+      LabelCopy(gl, new_label);
+    }
+    update_glui_label_text();
+    break;
+  case LB_ADD:
+    updatemenu = 1;
+    if(LabelGetNUserLabels() > 0){
+      strcpy(name, "copy of ");
+      strcat(name, gl->name);
+      strcpy(gl->name, name);
+    }
+    else{
+      gl = &LABEL_default;
+    }
+    gl->labeltype = TYPE_INI;
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->glui_id < 0)continue;
+      LIST_LB_labels->delete_item(thislabel->glui_id);
+    }
+    LabelInsert(gl);
+    count = 0;
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->labeltype == TYPE_SMV)continue;
+      thislabel->glui_id = count;
+      LIST_LB_labels->add_item(count++, thislabel->name);
+    }
+    Text_Labels_CB(LB_LIST);
+    break;
+  case LB_DELETE:
+    strcpy(name, LIST_LB_labels->curr_text);
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->glui_id < 0)continue;
+      LIST_LB_labels->delete_item(thislabel->glui_id);
+    }
+    thislabel = LabelGet(name);
+    if(thislabel != NULL){
+      LabelDelete(thislabel);
+    }
+    count = 0;
+    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+      if(thislabel->labeltype == TYPE_SMV)continue;
+      thislabel->glui_id = count;
+      LIST_LB_labels->add_item(count++, thislabel->name);
+    }
+    Text_Labels_CB(LB_LIST);
+    break;
+  case LB_RGB:
+    gl->frgb[0] = gl->rgb[0] / 255.0;
+    gl->frgb[1] = gl->rgb[1] / 255.0;
+    gl->frgb[2] = gl->rgb[2] / 255.0;
+    memcpy(LABEL_global_ptr->frgb, gl->frgb, 3 * sizeof(float));
+    memcpy(LABEL_global_ptr->rgb, gl->rgb, 3 * sizeof(int));
+    break;
+  case LB_XYZ:
+    memcpy(LABEL_global_ptr->xyz, gl->xyz, 3 * sizeof(float));
+    break;
+  case LB_TICK_XYZ:
+    memcpy(LABEL_global_ptr->tick_begin, gl->tick_begin, 3 * sizeof(float));
+    memcpy(LABEL_global_ptr->tick_direction, gl->tick_direction, 3 * sizeof(float));
+    break;
+  case LB_SHOW_TICK:
+    memcpy(&LABEL_global_ptr->show_tick, &gl->show_tick, sizeof(int));
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ Split_CB ------------------------ */
+
+extern "C" void Split_CB(int var){
+  int isplit, i;
+  float denom;
+
+  switch(var){
+  case SPLIT_COLORBAR:
+    denom = splitvals[2] - splitvals[0];
+    if(denom == 0.0)denom = 1.0;
+    isplit = CLAMP(255 * (splitvals[1] - splitvals[0]) / denom, 0, 254);
+    split_colorbar->index_node[1] = isplit;
+    split_colorbar->index_node[2] = isplit + 1;
+
+    for(i = 0; i < 12; i++){
+      split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
+    }
+    RemapColorbar(split_colorbar);
+    UpdateColorbarSplits(split_colorbar);
+    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    break;
+  }
+}
+
 /* ------------------ glui_labels_setup ------------------------ */
 
 extern "C" void glui_labels_setup(int main_window){
@@ -384,6 +528,10 @@ extern "C" void glui_labels_setup(int main_window){
   SPINNER_gridlinewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
   SPINNER_ticklinewidth = glui_labels->add_spinner_to_panel(PANEL_gen3, "tick line width", GLUI_SPINNER_FLOAT, &ticklinewidth);
   SPINNER_ticklinewidth->set_float_limits(1.0, 10.0, GLUI_LIMIT_CLAMP);
+  if(nzoneinfo > 0){
+    SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);
+    SPINNER_zone_hvac_diam->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
+  }
 
   if(have_northangle==1){
     ROLLOUT_north = glui_labels->add_rollout_to_panel(PANEL_gen3,"North direction",false);
@@ -392,7 +540,6 @@ extern "C" void glui_labels_setup(int main_window){
     SPINNER_northangle_position_y = glui_labels->add_spinner_to_panel(ROLLOUT_north, "y:", GLUI_SPINNER_FLOAT, northangle_position+1);
     SPINNER_northangle_position_z = glui_labels->add_spinner_to_panel(ROLLOUT_north, "z:", GLUI_SPINNER_FLOAT, northangle_position+2);
   }
-
 
   glui_labels->add_column_to_panel(PANEL_gen3,false);
 
@@ -533,7 +680,7 @@ extern "C" void glui_labels_setup(int main_window){
   {
     int i;
 
-    for (i = 0; i < 12; i++) {
+    for(i = 0; i < 12; i++){
       SPINNER_colorsplit[i]->set_int_limits(0, 255);
     }
   }
@@ -746,136 +893,6 @@ extern "C" void show_glui_display(int menu_id){
   }
 }
 
-/* ------------------ Text_labels_CB ------------------------ */
-
-void Text_Labels_CB(int var){
-  labeldata *thislabel,*gl,*new_label;
-  int count;
-  char name[300];
-
-  gl=&LABEL_local;
-  switch(var){
-    case LB_VISLABELS:
-      updatemenu=1;
-      break;
-    case LB_UPDATE:
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->glui_id<0)continue;
-        LIST_LB_labels->delete_item(thislabel->glui_id);
-      }
-      strcpy(LABEL_global_ptr->name,gl->name);
-      //LabelResort(LABEL_global_ptr);
-
-      count=0;
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->labeltype==TYPE_SMV)continue;
-        thislabel->glui_id=count;
-        LIST_LB_labels->add_item(count++,thislabel->name);
-      }
-      break;
-    case LB_STARTSTOP:
-      memcpy(LABEL_global_ptr->tstart_stop,gl->tstart_stop,2*sizeof(float));
-      break;
-    case LB_SHOWALWAYS:
-      memcpy(&LABEL_global_ptr->show_always,&gl->show_always,sizeof(int));
-      break;
-    case LB_FOREGROUND:
-      memcpy(&LABEL_global_ptr->useforegroundcolor,&gl->useforegroundcolor,sizeof(int));
-      break;
-    case LB_PREVIOUS:
-      new_label=LabelGet(LIST_LB_labels->curr_text);
-      new_label=LabelPrevious(new_label);
-      if(new_label==NULL)break;
-      LABEL_global_ptr=new_label;
-      if(new_label!=NULL){
-        LabelCopy(gl,new_label);
-        update_glui_label_text();
-      }
-      break;
-    case LB_NEXT:
-      new_label=LabelGet(LIST_LB_labels->curr_text);
-      new_label=LabelNext(new_label);
-      if(new_label==NULL)break;
-      LABEL_global_ptr=new_label;
-      if(new_label!=NULL){
-        LabelCopy(gl,new_label);
-        update_glui_label_text();
-      }
-      break;
-    case LB_LIST:
-      new_label=LabelGet(LIST_LB_labels->curr_text);
-      LABEL_global_ptr=new_label;
-      if(new_label!=NULL){
-        LabelCopy(gl,new_label);
-      }
-      update_glui_label_text();
-      break;
-    case LB_ADD:
-      updatemenu=1;
-      if(LabelGetNUserLabels()>0){
-        strcpy(name,"copy of ");
-        strcat(name,gl->name);
-        strcpy(gl->name,name);
-      }
-      else{
-        gl=&LABEL_default;
-      }
-      gl->labeltype=TYPE_INI;
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->glui_id<0)continue;
-        LIST_LB_labels->delete_item(thislabel->glui_id);
-      }
-      LabelInsert(gl);
-      count=0;
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->labeltype==TYPE_SMV)continue;
-        thislabel->glui_id=count;
-        LIST_LB_labels->add_item(count++,thislabel->name);
-      }
-      Text_Labels_CB(LB_LIST);
-      break;
-    case LB_DELETE:
-      strcpy(name,LIST_LB_labels->curr_text);
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->glui_id<0)continue;
-        LIST_LB_labels->delete_item(thislabel->glui_id);
-      }
-      thislabel=LabelGet(name);
-      if(thislabel!=NULL){
-        LabelDelete(thislabel);
-      }
-      count=0;
-      for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-        if(thislabel->labeltype==TYPE_SMV)continue;
-        thislabel->glui_id=count;
-        LIST_LB_labels->add_item(count++,thislabel->name);
-      }
-      Text_Labels_CB(LB_LIST);
-      break;
-    case LB_RGB:
-      gl->frgb[0]=gl->rgb[0]/255.0;
-      gl->frgb[1]=gl->rgb[1]/255.0;
-      gl->frgb[2]=gl->rgb[2]/255.0;
-      memcpy(LABEL_global_ptr->frgb,gl->frgb,3*sizeof(float));
-      memcpy(LABEL_global_ptr->rgb,gl->rgb,3*sizeof(int));
-      break;
-    case LB_XYZ:
-      memcpy(LABEL_global_ptr->xyz, gl->xyz, 3 * sizeof(float));
-      break;
-    case LB_TICK_XYZ:
-      memcpy(LABEL_global_ptr->tick_begin, gl->tick_begin, 3*sizeof(float));
-      memcpy(LABEL_global_ptr->tick_direction, gl->tick_direction, 3*sizeof(float));
-      break;
-    case LB_SHOW_TICK:
-      memcpy(&LABEL_global_ptr->show_tick, &gl->show_tick, sizeof(int));
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-  }
-}
-
-
 /* ------------------ Labels_CB ------------------------ */
 
 extern "C" void Labels_CB(int var){
@@ -1061,31 +1078,6 @@ extern "C" void update_axislabels_smooth(void){
 
 extern "C" void update_transparency(void){
   CHECKBOX_transparentflag->set_int_val(use_transparency_data);
-}
-
-
-/* ------------------ Split_CB ------------------------ */
-
-extern "C" void Split_CB(int var) {
-  int isplit, i;
-  float denom;
-
-  switch (var) {
-  case SPLIT_COLORBAR:
-    denom = splitvals[2]-splitvals[0];
-    if(denom==0.0)denom=1.0;
-    isplit = CLAMP(255*(splitvals[1]-splitvals[0])/denom,0,254);
-    split_colorbar->index_node[1]=isplit;
-    split_colorbar->index_node[2]=isplit+1;
-
-    for(i = 0; i < 12; i++) {
-      split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
-  	}
-    RemapColorbar(split_colorbar);
-    UpdateColorbarSplits(split_colorbar);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    break;
-  }
 }
 
 /* ------------------ Extreme_CB ------------------------ */

@@ -5,6 +5,34 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ParticleStreakShowMenu(int var);
+EXTERNCPP void update_geom_normals();
+EXTERNCPP void Plot3DListMenu(int value);
+EXTERNCPP void init_shooter_data(void);
+EXTERNCPP void Script_CB(int var);
+EXTERNCPP void TOUR_CB(int var);
+EXTERNCPP void set_clip_controls(int val);
+EXTERNCPP void Extreme_CB(int var);
+EXTERNCPP void add_colorbar_list2(int index, char *label);
+EXTERNCPP void update_extreme_vals(void);
+EXTERNCPP void Part_CB(int var);
+EXTERNCPP void ShowHideMenu(int val);
+EXTERNCPP void Plot3D_CB(int var);
+EXTERNCPP void colorbar_global2local(void);
+EXTERNCPP void UpdateShowbeamAsLine(void);
+EXTERNCPP void UpdateVSliceDups(void);
+EXTERNCPP void UnloadVSliceMenu(int value);
+EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void IsoCB(int var);
+EXTERNCPP void UpdateScriptStep(void);
+EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
+EXTERNCPP void UpdateGluiRender(void);
+EXTERNCPP void AddScriptList(char *file, int id);
+EXTERNCPP void UpdateMenu(void);
+EXTERNCPP void Volume_CB(int var);
+EXTERNCPP void DrawSmokeTest(void);
+EXTERNCPP void Smoke3d_CB(int var);
+EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
@@ -88,6 +116,7 @@ EXTERNCPP void update_glui_vecfactor(void);
 EXTERNCPP void update_glui_keyframe(void);
 EXTERNCPP void update_glui_patch_units(void);
 EXTERNCPP void update_glui_slice_units(void);
+EXTERNCPP void update_glui_plot3d(void);
 EXTERNCPP void update_glui_plot3d_units(void);
 EXTERNCPP void update_glui_plot3dtype(void);
 EXTERNCPP void update_glui_isotype(void);
@@ -139,14 +168,8 @@ EXTERNCPP void updateplot3dlistindex(void);
 
 EXTERNCPP void GetSliceParams2(void);
 
-#ifdef pp_PILOT
-EXTERNCPP void draw_pilot(void);
-#ifdef pp_WINDROSE
-EXTERNCPP void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag);
-#else
-EXTERNCPP void SummarizeDeviceWindData(int nbuckets);
-#endif
-#endif
+EXTERNCPP void DrawWindRosesDevices(void);
+EXTERNCPP void DeviceData2WindRose(int nr, int ntheta, int flag);
 EXTERNCPP void DefineAllFEDs(void);
 EXTERNCPP void update_tour_state(void);
 EXTERNCPP void update_edit_tour(void);
@@ -178,7 +201,7 @@ EXTERNCPP void drawfilledrectangle(float width, float height, unsigned char *rgb
 EXTERNCPP void drawrectangle(float width, float height, unsigned char *rgbcolor);
 EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
-EXTERNCPP void define_volsmoke_textures(void);
+EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void set_colorbar_list_index(int val);
 EXTERNCPP int get_colorbar_list_index(void);
 EXTERNCPP int get_colorbar_index(int flag, int x, int y);
@@ -266,7 +289,6 @@ EXTERNCPP void update_colorbarflip(void);
 
 EXTERNCPP void script_loadvolsmokeframe2(void);
 EXTERNCPP void script_loadisoframe2(scriptdata *scripti);
-EXTERNCPP void init_device(devicedata *devicei, float *xyz, float *xyzn, int state0, int nparams, float *params, char *labelptr);
 EXTERNCPP void init_device_plane(devicedata *devicei);
 EXTERNCPP void draw_devices_val(void);
 EXTERNCPP void getsmokesensors(void);
@@ -303,15 +325,13 @@ EXTERNCPP void update_terrain_colors(void);
 EXTERNCPP void drawterrain(terraindata *terri, int only_geom);
 EXTERNCPP void drawterrain_texture(terraindata *terri, int only_geom);
 EXTERNCPP void drawtrees(void);
-EXTERNCPP void initcullgeom(int cullflag);
+EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 #ifdef pp_CULL
-EXTERNCPP void initcull(int cullflag);
-EXTERNCPP void initcullplane(int cullflag);
-EXTERNCPP void setPixelCount(void);
-EXTERNCPP void setPixelCountOrthog(meshdata *meshi);
-EXTERNCPP void getPixelCount(void);
-EXTERNCPP int init_cull_exts(void);
+EXTERNCPP void InitCull(int cullflag);
+EXTERNCPP void InitCullPlane(int cullflag);
+EXTERNCPP void GetPixelCount(void);
+EXTERNCPP int InitCullExts(void);
 #endif
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
@@ -322,7 +342,7 @@ EXTERNCPP int init_shaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
-EXTERNCPP void LoadVolSmokeShaders(void);
+EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
 EXTERNCPP void next_xindex(int inc,int flag);
@@ -364,7 +384,7 @@ EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP void AddColorbar(int icolorbar);
 EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
-EXTERNCPP void InitDefaultColorbars(void);
+EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPath(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
@@ -467,7 +487,6 @@ EXTERNCPP void getpatchdata_zlib(patchdata *patchi,unsigned char *data,int ndata
 EXTERNCPP void getpatchsizeinfo(patchdata *patchi, int *nframes, int *buffersize);
 EXTERNCPP void getpatchheader2(char *file, int *version, int *i1, int *i2, int *j1, int *j2, int *k1, int *k2, int *patchdir);
 EXTERNCPP void getpatchheader(char *file,int *npatches,float *valmin, float *valmax);
-EXTERNCPP int getsmoke3d_version(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void open_smokepanel(void);
 EXTERNCPP void open_volsmokepanel(void);
@@ -481,8 +500,7 @@ EXTERNCPP void update_tourindex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void update_plot3d_display(void);
 EXTERNCPP void update_smoke3dflags(void);
-EXTERNCPP void mergesmoke3dcolors(smoke3ddata *smoke3dset);
-EXTERNCPP void setsmokecolorflags(void);
+EXTERNCPP void MergeSmoke3DColors(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
 EXTERNCPP void getsmokedir(float *mm);
@@ -497,10 +515,9 @@ EXTERNCPP void SetCullVis(void);
 EXTERNCPP void ExtractFrustum(void);
 EXTERNCPP int PointInFrustum( float x, float y, float z);
 EXTERNCPP int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
-EXTERNCPP unsigned char adjustalpha(unsigned char alpha, float factor);
-EXTERNCPP void updatesmoke3d(smoke3ddata *smoke3di);
-EXTERNCPP void drawsmoke3d(smoke3ddata *smoke3di);
-EXTERNCPP void draw_smokeframe(void);
+EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
+EXTERNCPP void DrawSmokeFrame(void);
+EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void draw_partframe(void);
 EXTERNCPP void draw_evacframe(void);
 EXTERNCPP void draw_plot3dframe(void);
@@ -512,15 +529,9 @@ EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void draw_patchframe(int flag);
 EXTERNCPP void Motion_CB(int var);
 
-#ifdef pp_GPU
-EXTERNCPP void drawsmoke3dGPU(smoke3ddata *smoke3di);
-#endif
-EXTERNCPP void drawsmoke3dVOL(void);
-#ifdef pp_CULL
-EXTERNCPP void drawsmoke3dCULL(void);
-#endif
+EXTERNCPP void DrawSmoke3DVOL(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
-EXTERNCPP void update_smoke3d_menulabels(void);
+EXTERNCPP void UpdateSmoke3DMenuLabels(void);
 EXTERNCPP void Labels_CB(int value);
 EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
@@ -556,7 +567,7 @@ EXTERNCPP void showhide_translate(int var);
 EXTERNCPP void updateallplotslices(void);
 EXTERNCPP int makeiblank(void);
 EXTERNCPP int makeiblank_carve(void);
-EXTERNCPP void makeiblank_smoke3d(void);
+EXTERNCPP void MakeIblankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval);
 
@@ -642,7 +653,6 @@ EXTERNCPP int MergeRenderScreenBuffers360(void);
 EXTERNCPP GLubyte *GetScreenBuffer(void);
 EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
-EXTERNCPP int inmesh_smoke(float x, float y, float z, int n, int flag);
 EXTERNCPP void UpdateGlui(void);
 EXTERNCPP void UpdateSliceList(int index);
 EXTERNCPP void drawiso(int tranflag);
@@ -713,12 +723,8 @@ EXTERNCPP void DrawCBox(float x, float y, float z, float size);
 EXTERNCPP void handleiso(void);
 EXTERNCPP void updatesurface(void);
 EXTERNCPP void WindowStatus(int state);
-EXTERNCPP void nodein_extvent(
-                    int ipatch,
-                    int *patchblankcopy,const meshdata *meshi,int i1,int i2, int j1, int j2, int k1, int k2, int option);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
-EXTERNCPP int nodeinvent(const meshdata *gb, int i,int j,int k, int dir,int option);
 EXTERNCPP void ObstOrVent2Faces(const meshdata *gb,blockagedata *bc, ventdata *vi, facedata *faceptr,int facetype);
 EXTERNCPP void UpdateHiddenFaces(void);
 EXTERNCPP void UpdateSelectFaces(void);
@@ -776,8 +782,8 @@ EXTERNCPP void readpart(char *file, int ifile, int loadflag, int set_colorbound,
 EXTERNCPP void readzone(int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadVSlice(int ivslice, int flag, int *errorcode);
 
-EXTERNCPP void freesmoke3d(smoke3ddata *smoke3di);
-EXTERNCPP void readsmoke3d(int ifile,int flag, int *errorcode);
+EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
+EXTERNCPP void ReadSmoke3D(int ifile,int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);

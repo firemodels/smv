@@ -8,12 +8,7 @@
 #include "update.h"
 #include "smv_endian.h"
 #include "smokeviewvars.h"
-
-float get_z_terrain(float x, float y);
-void init_tnode(terraindata *terri);
-void init_tnorm(terraindata *terri);
-void init_terraincell(terraindata *terri);
-void free_terraincell(terraindata *terri);
+#include "IOobject.h"
 
 #define ijnode2(i,j) ((nxcell+1)*(j) + (i))
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
@@ -21,13 +16,6 @@ void free_terraincell(terraindata *terri);
                            returncode=fread(var,4,size,WUIFILE);\
                            if(endianswitch==1)endian_switch(var,size);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
-
-float *get_terraincolor(terraincell *ti);
-int getterrain_data(char *file,terraindata *terri);
-int getterrain_size(char *file,float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *ntimes);
-void drawcone(float d1, float height, float *rgbcolor);
-void drawdisk(float diameter, float height, float *rgbcolor);
-
 
 /* ------------------ drawnorth ------------------------ */
 
@@ -84,27 +72,27 @@ void drawtrees(void){
     switch(state){
       case 0:
         glColor4fv(trunccolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor);
+        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
 
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
         glColor4fv(treecolor);
-        drawcone(treei->base_diam,crown_height,treecolor);
+        drawcone(treei->base_diam,crown_height,treecolor_uc);
         break;
       case 1:
         glColor4fv(treecharcolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor);
+        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
 
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
-        drawcone(treei->base_diam,crown_height,treecolor);
+        drawcone(treei->base_diam,crown_height,treecolor_uc);
         break;
       case 2:
         glColor4fv(treecharcolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor);
+        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
-        drawcone(treei->trunk_diam,crown_height,trunccolor);
+        drawcone(treei->trunk_diam,crown_height,trunccolor_uc);
         break;
       default:
         ASSERT(FFALSE);
@@ -306,6 +294,16 @@ void terrain2geom(float xmin, float xmax, float ymin, float ymax, int nx, int ny
   FORTgeomout(verts,&nverts,faces,&nfaces);
   FREEMEMORY(verts);
   FREEMEMORY(faces);
+}
+
+/* ------------------ get_z_terrain ------------------------ */
+
+float get_z_terrain(float x, float y){
+  int loc;
+  float zterrain;
+
+  zterrain = get_zcell_val(NULL, x, y, NULL, &loc);
+  return zterrain;
 }
 
 /* ------------------ initterrain_all ------------------------ */
@@ -607,6 +605,46 @@ void initterrain_znode(meshdata *meshi, terraindata *terri, float xmin, float xm
   }
 }
 
+/* ------------------ get_terraincolor ------------------------ */
+
+float *get_terraincolor(terraincell *ti){
+  int index;
+  int i, ileft;
+  float sv_time;
+  float *ter_time;
+  float wuicolor[4] = {1.0,0.0,0.0,1.0};
+
+  if(ti == NULL)return getcolorptr(wuicolor);
+
+  if(global_times == NULL || ti->time == NULL){
+    index = ti->state[0] % 10;
+    return rgb_terrain[index];
+  }
+
+  sv_time = global_times[itimes];
+  ter_time = ti->time;
+  ileft = ti->interval;
+
+  if(ter_time[ileft] <= sv_time&&sv_time < ter_time[ileft + 1]){
+    return rgb_terrain[ileft % 10];
+  }
+
+  for(i = ileft + 1;i < ti->nstates - 1;i++){
+    if(ter_time[i] <= sv_time&&sv_time < ter_time[i + 1]){
+      ti->interval = i;
+      return rgb_terrain[i % 10];
+    }
+  }
+  if(sv_time >= ter_time[ti->nstates - 1]){
+    ileft = ti->nstates - 1;
+    ti->interval = ileft;
+    return rgb_terrain[ileft % 10];
+  }
+  ileft = 0;
+  ti->interval = ileft;
+  return rgb_terrain[ileft % 10];
+}
+
 /* ------------------ drawterrain ------------------------ */
 
 void drawterrain(terraindata *terri, int only_geom){
@@ -791,44 +829,275 @@ void drawterrain_texture(terraindata *terri, int only_geom){
   glPopMatrix();
 
 }
-/* ------------------ get_terraincolor ------------------------ */
 
-float *get_terraincolor(terraincell *ti){
-  int index;
-  int i, ileft;
-  float sv_time;
-  float *ter_time;
-  float wuicolor[4]={1.0,0.0,0.0,1.0};
+/* ------------------ init_terraincell ------------------------ */
 
-  if(ti==NULL)return getcolorptr(wuicolor);
+void init_terraincell(terraindata *terri){
+  int i;
+  int nx, ny;
 
-  if(global_times==NULL||ti->time==NULL){
-    index = ti->state[0]%10;
-    return rgb_terrain[index];
+  nx = terri->nx;
+  ny = terri->ny;
+
+  NewMemory((void **)&terri->tcell, nx*ny * sizeof(terraincell));
+  for(i = 0;i < terri->nx*terri->ny;i++){
+    terraincell *ti;
+    int nalloc;
+
+    nalloc = 5;
+    ti = terri->tcell + i;
+    ti->nallocated = nalloc;
+    ti->nstates = 0;
+    ti->state = NULL;
+    ti->interval = 0;
+    ti->time = NULL;
+    NewMemory((void **)&ti->state, nalloc);
+    NewMemory((void **)&ti->time, nalloc * sizeof(float));
   }
 
-  sv_time = global_times[itimes];
-  ter_time = ti->time;
-  ileft = ti->interval;
+}
 
-  if(ter_time[ileft]<=sv_time&&sv_time<ter_time[ileft+1]){
-    return rgb_terrain[ileft%10];
+/* ------------------ free_terraincell ------------------------ */
+
+void free_terraincell(terraindata *terri){
+  int i;
+  if(terri->tcell != NULL){
+    for(i = 0;i < terri->nx*terri->ny;i++){
+      terraincell *ti;
+
+      ti = terri->tcell + i;
+
+      FREEMEMORY(ti->time);
+      FREEMEMORY(ti->state);
+    }
+    FREEMEMORY(terri->tcell);
   }
+}
 
-  for(i=ileft+1;i<ti->nstates-1;i++){
-    if(ter_time[i]<=sv_time&&sv_time<ter_time[i+1]){
-      ti->interval=i;
-      return rgb_terrain[i%10];
+/* ------------------ init_tnode ------------------------ */
+
+void init_tnode(terraindata *terri){
+  float *znode, *zcell;
+  int i, j;
+  int nxcell;
+
+  znode = terri->znode;
+  zcell = terri->zcell;
+  nxcell = terri->nx;
+  for(j = 0;j <= terri->ny;j++){
+    int jm1, im1, ii, jj;
+    float zz;
+
+    jm1 = j - 1;
+    if(jm1 < 0)jm1 = 0;
+    jj = j;
+    if(jj == terri->ny)jj--;
+
+    for(i = 0;i <= terri->nx;i++){
+      im1 = i - 1;
+      if(im1 < 0)im1 = 0;
+      ii = i;
+      if(ii == terri->nx)ii--;
+
+      zz = zcell[IJCELL2(im1, jm1)];
+      zz += zcell[IJCELL2(im1, jj)];
+      zz += zcell[IJCELL2(ii, jm1)];
+      zz += zcell[IJCELL2(ii, jj)];
+      zz *= 0.25;
+      *znode++ = zz;
     }
   }
-  if(sv_time>=ter_time[ti->nstates-1]){
-    ileft = ti->nstates-1;
-    ti->interval=ileft;
-    return rgb_terrain[ileft%10];
+}
+
+/* ------------------ init_tnorm ------------------------ */
+
+void init_tnorm(terraindata *terri){
+  float *znode;
+  unsigned char *uc_znormal;
+  float znormal3[3];
+  int i, j;
+  int nycell;
+  float dx, dy;
+
+  //znormal = terri->znormal;
+  uc_znormal = terri->uc_znormal;
+  znode = terri->znode;
+  nycell = terri->ny;
+  dx = (terri->xmax - terri->xmin) / terri->nx;
+  dy = (terri->ymax - terri->ymin) / terri->ny;
+
+  for(j = 0;j <= terri->ny;j++){
+    int jp1, ip1;
+    float dzdx, dzdy;
+    float sum;
+
+    jp1 = j + 1;
+    if(jp1 > terri->ny)jp1 = terri->ny;
+
+    for(i = 0;i <= terri->nx;i++){
+      ip1 = i + 1;
+      if(ip1 > terri->nx)ip1 = terri->nx;
+      dzdx = (znode[ijnode3(ip1, j)] - znode[ijnode3(i, j)]) / dx;
+      dzdy = (znode[ijnode3(i, jp1)] - znode[ijnode3(i, j)]) / dy;
+
+      //     i  j  k
+      //     1  0 dzdx           uu
+      //     0  1 dzdy           vv
+
+      //     -dzdx -dzdy 1       uu x vv
+
+
+      //      znormal = terri->znormal + 3*ijnode2(i,j);
+      uc_znormal = terri->uc_znormal + ijnode3(i, j);
+      znormal3[0] = -dzdx;
+      znormal3[1] = -dzdy;
+      znormal3[2] = 1.0;
+
+      sum = znormal3[0] * znormal3[0];
+      sum += znormal3[1] * znormal3[1];
+      sum += znormal3[2] * znormal3[2];
+      sum = sqrt(sum);
+      znormal3[0] /= sum;
+      znormal3[1] /= sum;
+      znormal3[2] /= sum;
+      *uc_znormal = getnormalindex(wui_sphereinfo, znormal3);
+    }
   }
-  ileft = 0;
-  ti->interval=ileft;
-  return rgb_terrain[ileft%10];
+}
+
+/* ------------------ getterrain_data ------------------------ */
+
+int getterrain_data(char *file, terraindata *terri){
+  FILE *WUIFILE;
+  int one;
+  int endianswitch = 0;
+  size_t returncode;
+  float time_local;
+  int nchanges;
+  int nt;
+  int nx, ny;
+  int *cellindex_buffer;
+  unsigned char *cellstate_buffer;
+  float *times_local;
+  int ntotal;
+
+  WUIFILE = fopen(file, "rb");
+  if(WUIFILE == NULL)return 1;
+
+  FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
+  if(one != 1)endianswitch = 1;
+
+  FSEEK(WUIFILE, 12, SEEK_CUR);    // skip over version
+  FSEEK(WUIFILE, 8 + 4 * 4, SEEK_CUR); // skip over xmin,xmax,ymin,ymax
+  FSEEK(WUIFILE, 8 + 2 * 4, SEEK_CUR); // skip over nx, ny
+
+  nx = terri->nx;
+  ny = terri->ny;
+  ntotal = nx*ny;
+  times_local = terri->times;
+
+  NewMemory((void **)&cellindex_buffer, nx*ny * sizeof(int));
+  NewMemory((void **)&cellstate_buffer, nx*ny);
+
+
+  FORTWUIREAD(terri->zcell, ntotal);
+  FSEEK(WUIFILE, 4, SEEK_CUR);fread(terri->state, 1, ntotal, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
+  init_tnode(terri);
+  init_tnorm(terri);
+
+  for(nt = 0;nt < terri->ntimes;nt++){
+
+    FORTWUIREAD(&time_local, 1);
+    PRINTF("terrain time=%f\n", time_local);
+    if(returncode == 0)break;
+    *times_local++ = time_local;
+
+    FORTWUIREAD(&nchanges, 1);
+    if(returncode == 0)break;
+
+    if(nchanges > 0){
+      int i;
+
+      FORTWUIREAD(cellindex_buffer, nchanges);
+      if(returncode == 0)break;
+      FSEEK(WUIFILE, 4, SEEK_CUR);returncode = fread(cellstate_buffer, 1, nchanges, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
+      if(returncode == 0)break;
+      for(i = 0;i < nchanges;i++){
+        terraincell *ti;
+        int ii;
+
+        ti = terri->tcell + cellindex_buffer[i];
+        if(ti->nstates + 1 > ti->nallocated){
+          ti->nallocated = ti->nstates + 5;
+          ResizeMemory((void **)&ti->state, ti->nallocated);
+          ResizeMemory((void **)&ti->time, ti->nallocated * sizeof(float));
+        }
+        ii = ti->nstates;
+        ti->state[ii] = cellstate_buffer[i];
+        ti->time[ii] = time_local;
+        ti->nstates++;
+      }
+    }
+
+  }
+
+  fclose(WUIFILE);
+  FREEMEMORY(cellindex_buffer);
+  FREEMEMORY(cellstate_buffer);
+  return 0;
+}
+
+/* ------------------ getterrain_size ------------------------ */
+
+int getterrain_size(char *file, float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
+  FILE *WUIFILE;
+  int one;
+  float xyminmax[4];
+  int nxy[2];
+  int endianswitch = 0;
+  size_t returncode;
+  int version;
+  float time_local;
+  int nchanges;
+  int nt = 0;
+
+  WUIFILE = fopen(file, "rb");
+  if(WUIFILE == NULL)return 1;
+
+  FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
+  if(one != 1)endianswitch = 1;
+
+  FORTWUIREAD(&version, 1);
+  FORTWUIREAD(xyminmax, 4);
+  *xmin = xyminmax[0];
+  *xmax = xyminmax[1];
+  *ymin = xyminmax[2];
+  *ymax = xyminmax[3];
+
+  FORTWUIREAD(nxy, 2);
+  *nx = nxy[0];
+  *ny = nxy[1];
+
+  FSEEK(WUIFILE, 16 + 5 * (*nx)*(*ny), SEEK_CUR); // skip over zelev and state
+
+  for(;;){
+
+    FORTWUIREAD(&time_local, 1);
+    if(returncode == 0)break;
+
+    FORTWUIREAD(&nchanges, 1);
+    if(returncode == 0)break;
+
+    if(nchanges > 0)FSEEK(WUIFILE, 16 + 5 * nchanges, SEEK_CUR);
+
+    nt++;
+
+  }
+  *times_local = nt;
+
+  fclose(WUIFILE);
+
+  return 0;
 }
 
 /* ------------------ readterrain ------------------------ */
@@ -909,276 +1178,6 @@ void readterrain(char *file, int ifile, int flag, int *errorcode){
 #endif
   Idle_CB();
   glutPostRedisplay();
-}
-
-/* ------------------ getterrain_size ------------------------ */
-
-int getterrain_size(char *file,float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
-  FILE *WUIFILE;
-  int one;
-  float xyminmax[4];
-  int nxy[2];
-  int endianswitch=0;
-  size_t returncode;
-  int version;
-  float time_local;
-  int nchanges;
-  int nt=0;
-
-  WUIFILE = fopen(file,"rb");
-  if(WUIFILE==NULL)return 1;
-
-  FSEEK(WUIFILE,4,SEEK_CUR);fread(&one,4,1,WUIFILE);FSEEK(WUIFILE,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
-
-  FORTWUIREAD(&version,1);
-  FORTWUIREAD(xyminmax,4);
-  *xmin=xyminmax[0];
-  *xmax=xyminmax[1];
-  *ymin=xyminmax[2];
-  *ymax=xyminmax[3];
-
-  FORTWUIREAD(nxy,2);
-  *nx=nxy[0];
-  *ny=nxy[1];
-
-  FSEEK(WUIFILE,16+5*(*nx)*(*ny),SEEK_CUR); // skip over zelev and state
-
-  for(;;){
-
-    FORTWUIREAD(&time_local,1);
-    if(returncode==0)break;
-
-    FORTWUIREAD(&nchanges,1);
-    if(returncode==0)break;
-
-    if(nchanges>0)FSEEK(WUIFILE,16+5*nchanges,SEEK_CUR);
-
-    nt++;
-
-  }
-  *times_local=nt;
-
-  fclose(WUIFILE);
-
-  return 0;
-}
-
-/* ------------------ getterrain_data ------------------------ */
-
-int getterrain_data(char *file,terraindata *terri){
-  FILE *WUIFILE;
-  int one;
-  int endianswitch=0;
-  size_t returncode;
-  float time_local;
-  int nchanges;
-  int nt;
-  int nx, ny;
-  int *cellindex_buffer;
-  unsigned char *cellstate_buffer;
-  float *times_local;
-  int ntotal;
-
-  WUIFILE = fopen(file,"rb");
-  if(WUIFILE==NULL)return 1;
-
-  FSEEK(WUIFILE,4,SEEK_CUR);fread(&one,4,1,WUIFILE);FSEEK(WUIFILE,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
-
-  FSEEK(WUIFILE,12,SEEK_CUR);    // skip over version
-  FSEEK(WUIFILE,8+4*4,SEEK_CUR); // skip over xmin,xmax,ymin,ymax
-  FSEEK(WUIFILE,8+2*4,SEEK_CUR); // skip over nx, ny
-
-  nx = terri->nx;
-  ny = terri->ny;
-  ntotal = nx*ny;
-  times_local=terri->times;
-
-  NewMemory((void **)&cellindex_buffer,nx*ny*sizeof(int));
-  NewMemory((void **)&cellstate_buffer,nx*ny);
-
-
-  FORTWUIREAD(terri->zcell,ntotal);
-  FSEEK(WUIFILE,4,SEEK_CUR);fread(terri->state,1,ntotal,WUIFILE);FSEEK(WUIFILE,4,SEEK_CUR);
-  init_tnode(terri);
-  init_tnorm(terri);
-
-  for(nt=0;nt<terri->ntimes;nt++){
-
-    FORTWUIREAD(&time_local,1);
-    PRINTF("terrain time=%f\n",time_local);
-    if(returncode==0)break;
-    *times_local++ = time_local;
-
-    FORTWUIREAD(&nchanges,1);
-    if(returncode==0)break;
-
-    if(nchanges>0){
-      int i;
-
-      FORTWUIREAD(cellindex_buffer,nchanges);
-      if(returncode==0)break;
-      FSEEK(WUIFILE,4,SEEK_CUR);returncode=fread(cellstate_buffer,1,nchanges,WUIFILE);FSEEK(WUIFILE,4,SEEK_CUR);
-      if(returncode==0)break;
-      for(i=0;i<nchanges;i++){
-        terraincell *ti;
-        int ii;
-
-        ti = terri->tcell + cellindex_buffer[i];
-        if(ti->nstates+1>ti->nallocated){
-          ti->nallocated=ti->nstates+5;
-          ResizeMemory((void **)&ti->state,ti->nallocated);
-          ResizeMemory((void **)&ti->time,ti->nallocated*sizeof(float));
-        }
-        ii = ti->nstates;
-        ti->state[ii] = cellstate_buffer[i];
-        ti->time[ii] = time_local;
-        ti->nstates++;
-      }
-    }
-
-  }
-
-  fclose(WUIFILE);
-  FREEMEMORY(cellindex_buffer);
-  FREEMEMORY(cellstate_buffer);
-  return 0;
-}
-
-/* ------------------ init_terraincell ------------------------ */
-
-void init_terraincell(terraindata *terri){
-  int i;
-  int nx, ny;
-
-  nx = terri->nx;
-  ny = terri->ny;
-
-  NewMemory((void **)&terri->tcell,nx*ny*sizeof(terraincell));
-  for(i=0;i<terri->nx*terri->ny;i++){
-    terraincell *ti;
-    int nalloc;
-
-    nalloc=5;
-    ti = terri->tcell + i;
-    ti->nallocated=nalloc;
-    ti->nstates=0;
-    ti->state=NULL;
-    ti->interval=0;
-    ti->time=NULL;
-    NewMemory((void **)&ti->state,nalloc);
-    NewMemory((void **)&ti->time,nalloc*sizeof(float));
-  }
-
-}
-
-/* ------------------ free_terraincell ------------------------ */
-
-void free_terraincell(terraindata *terri){
-  int i;
-  if(terri->tcell!=NULL){
-    for(i=0;i<terri->nx*terri->ny;i++){
-      terraincell *ti;
-
-      ti = terri->tcell+i;
-
-      FREEMEMORY(ti->time);
-      FREEMEMORY(ti->state);
-    }
-    FREEMEMORY(terri->tcell);
-  }
-}
-
-/* ------------------ init_tnode ------------------------ */
-
-void init_tnode(terraindata *terri){
-  float *znode, *zcell;
-  int i, j;
-  int nxcell;
-
-  znode = terri->znode;
-  zcell = terri->zcell;
-  nxcell = terri->nx;
-  for(j=0;j<=terri->ny;j++){
-    int jm1, im1, ii, jj;
-    float zz;
-
-    jm1 = j - 1;
-    if(jm1<0)jm1=0;
-    jj = j;
-    if(jj==terri->ny)jj--;
-
-    for(i=0;i<=terri->nx;i++){
-      im1 = i - 1;
-      if(im1<0)im1 = 0;
-      ii = i;
-      if(ii==terri->nx)ii--;
-
-      zz =  zcell[IJCELL2(im1,jm1)];
-      zz += zcell[IJCELL2(im1,jj)];
-      zz += zcell[IJCELL2(ii,jm1)];
-      zz += zcell[IJCELL2(ii,jj)];
-      zz *= 0.25;
-      *znode++=zz;
-    }
-  }
-}
-
-/* ------------------ init_tnorm ------------------------ */
-
-void init_tnorm(terraindata *terri){
-  float *znode;
-  unsigned char *uc_znormal;
-  float znormal3[3];
-  int i, j;
-  int nycell;
-  float dx, dy;
-
-  //znormal = terri->znormal;
-  uc_znormal = terri->uc_znormal;
-  znode = terri->znode;
-  nycell = terri->ny;
-  dx = (terri->xmax-terri->xmin)/terri->nx;
-  dy = (terri->ymax-terri->ymin)/terri->ny;
-
-  for(j=0;j<=terri->ny;j++){
-    int jp1, ip1;
-    float dzdx, dzdy;
-    float sum;
-
-    jp1 = j + 1;
-    if(jp1>terri->ny)jp1=terri->ny;
-
-    for(i=0;i<=terri->nx;i++){
-      ip1 = i + 1;
-      if(ip1>terri->nx)ip1=terri->nx;
-      dzdx = (znode[ijnode3(ip1,j)] - znode[ijnode3(i,j)])/dx;
-      dzdy = (znode[ijnode3(i,jp1)] - znode[ijnode3(i,j)])/dy;
-
- //     i  j  k
- //     1  0 dzdx           uu
- //     0  1 dzdy           vv
-
- //     -dzdx -dzdy 1       uu x vv
-
-
-//      znormal = terri->znormal + 3*ijnode2(i,j);
-      uc_znormal = terri->uc_znormal + ijnode3(i,j);
-      znormal3[0] = -dzdx;
-      znormal3[1] = -dzdy;
-      znormal3[2] = 1.0;
-
-      sum  = znormal3[0]*znormal3[0];
-      sum += znormal3[1]*znormal3[1];
-      sum += znormal3[2]*znormal3[2];
-      sum = sqrt(sum);
-      znormal3[0]/=sum;
-      znormal3[1]/=sum;
-      znormal3[2]/=sum;
-      *uc_znormal = getnormalindex(wui_sphereinfo, znormal3);
-    }
-  }
 }
 
 /* ------------------ update_terrain ------------------------ */
@@ -1379,14 +1378,3 @@ void update_mesh_terrain(void){
     }
   }
 }
-
-/* ------------------ get_z_terrain ------------------------ */
-
-float get_z_terrain(float x, float y){
-  int loc;
-  float zterrain;
-
-  zterrain = get_zcell_val(NULL,x,y,NULL,&loc);
-  return zterrain;
-}
-

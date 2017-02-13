@@ -499,7 +499,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 
 /* ------------------ InitDefaultColorbars ------------------------ */
 
-void InitDefaultColorbars(void){
+void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
@@ -507,7 +507,7 @@ void InitDefaultColorbars(void){
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
-  NewMemory((void **)&colorbarinfo,ncolorbars*sizeof(colorbardata));
+  NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
 
@@ -881,7 +881,7 @@ void InitDefaultColorbars(void){
   cbi->index_node[1] = 127;
   cbi->index_node[2] = 127;
   cbi->index_node[3] = 255;
-  for (i = 0; i < 12; i++) {
+  for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
   cbi++;
@@ -956,16 +956,13 @@ void DrawColorbarHist(void){
     for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
       float *rgb_cb, *rgb_cb2;
       float yy, yy2;
-      int cbl, cbl2, cbr;
-      int ibucket2;
+      int cbl, cbr;
       int icolor, icolor2;
-      float dcolor, val, val2;
+      float dcolor, val;
       histogramdata *histi;
 
       icolor = ibucket*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
       rgb_cb = rgb_full[icolor];
-
-      ibucket2 = MIN(ibucket + 1, histogram_nbuckets - 1);
 
       icolor2 = (ibucket + 1)*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
       rgb_cb2 = rgb_full[icolor2];
@@ -981,13 +978,9 @@ void DrawColorbarHist(void){
       if(histi->bucket_maxval!=0.0){
         val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
         cbl = colorbar_right_pos - dcolor*val / histi->bucket_maxval;
-
-        val2 = (float)histi->buckets[ibucket2] / (float)histi->ntotal;
-        cbl2 = colorbar_right_pos - dcolor*val2 / histi->bucket_maxval;
       }
       else{
         cbl = colorbar_right_pos;
-        cbl2 = colorbar_right_pos;
       }
 
       cbr = colorbar_right_pos;
@@ -1037,18 +1030,10 @@ void DrawColorbarHist(void){
 /* ------------------ DrawColorbarHistLabels ------------------------ */
 
 void DrawColorbarHistLabels(int lefthist){
-  int cbt, cbb, cbdiff;
-
-  cbdiff = colorbar_top_pos - colorbar_down_pos;
-  cbt = colorbar_top_pos + cbdiff / (float)(histogram_nbuckets - 2);
-  cbb = colorbar_down_pos - cbdiff / (float)(histogram_nbuckets - 2);
-
   if(histogram_show_numbers == 1 && (showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))){
-    boundsdata *sb;
     char *percen = "%";
     int i;
 
-    sb = slicebounds + islicetype;
     glPushMatrix();
     glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
     glTranslatef(-lefthist*(colorbar_label_width + h_space), 0.0, 0.0);
@@ -1060,9 +1045,7 @@ void DrawColorbarHistLabels(int lefthist){
       GLfloat *foreground_color;
       histogramdata *histi;
       float val;
-      int ibucket;
 
-      ibucket = i*(float)histogram_nbuckets / (float)nrgb;
       foreground_color = &(foregroundcolor[0]);
 
       if(histogram_static == 0){
@@ -1122,14 +1105,7 @@ void DrawColorbarReg(void){
 void DrawColorbars(void){
   int i;
 
-  int fed_slice=0;
-
-  GLfloat *foreground_color, *red_color;
-
   // -------------- compute columns where left labels will occur ------------
-
-  foreground_color=&(foregroundcolor[0]);
-  red_color=&(redcolor[0]);
 
   if(showiso_colorbar==1||showevac_colorbar==1||
     (showsmoke==1&&parttype!=0)||showslice==1||
@@ -1140,27 +1116,12 @@ void DrawColorbars(void){
 
     SNIFF_ERRORS("before colorbar");
     CheckMemory;
-    if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
-      boundsdata *sb;
-
-      sb = slicebounds + islicetype;
-
-      if(strcmp(sb->label->shortlabel,"FED")==0){
-          if(current_colorbar!=NULL){
-            strcpy(default_fed_colorbar,current_colorbar->label);
-            if(strcmp(current_colorbar->label,"FED")==0){
-              fed_slice=1;
-              if(strcmp(sb->colorlabels[1],"0.00")!=0||strcmp(sb->colorlabels[nrgb-1],"3.00")!=0)fed_slice=0;
-            }
-        }
-      }
-    }
 
     // -------------- draw plot3d colorbars ------------
 
     if(showplot3d==1&&contour_type==STEPPED_CONTOURS){
       glBegin(GL_QUADS);
-      for (i = 0; i < nrgb-2; i++){
+      for(i = 0; i < nrgb-2; i++){
         float *rgb_plot3d_local;
         float ybot, ytop;
 

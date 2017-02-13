@@ -491,7 +491,7 @@ static blockinfo *pbiHead = NULL;
 
 static blockinfo *GetBlockInfo(bbyte *pb){
   blockinfo *pbi;
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
   {
     bbyte *pbStart = pbi->pb;
     bbyte *pbEnd   = pbi->pb + pbi->size - 1;
@@ -508,7 +508,7 @@ int _CountMemoryBlocks(void){
   blockinfo *pbi;
   int n=0;
 
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
     n++;
   }
   return n;
@@ -530,7 +530,7 @@ void _PrintAllMemoryInfo(void){
   PRINTF("********************************************\n");
   PRINTF("********************************************\n");
   PRINTF("********************************************\n");
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
   {
     n++;
     size += pbi->size;
@@ -543,7 +543,7 @@ void _PrintAllMemoryInfo(void){
 
 static blockinfo *GetBlockInfo_nofail(bbyte *pb){
   blockinfo *pbi;
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
   {
     bbyte *pbStart = pbi->pb;
     bbyte *pbEnd   = pbi->pb + pbi->size - 1;
@@ -580,7 +580,7 @@ void _CheckMemory(void){
 void _CheckMemoryNOTHREAD(void){
   blockinfo *pbi;
   if(checkmemoryflag==0)return;
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
   {
   if(sizeofDebugByte!=0)ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
   }
@@ -610,7 +610,7 @@ void FreeBlockInfo(bbyte *pbToFree){
   blockinfo *pbi, *pbiPrev;
 
   pbiPrev = NULL;
-  for (pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
     if(fPtrEqual(pbi->pb, pbToFree)){
       if(pbiPrev == NULL){
         pbiHead = pbi->pbiNext;

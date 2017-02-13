@@ -81,11 +81,6 @@ GLUI_Listbox *LIST_shooter_times=NULL;
 #define SAVE_SETTINGS 900
 #define SHOOTER_CLOSE 901
 
-void SHOOTER_CB(int var);
-extern "C" int allocate_shooter(void);
-extern "C" void init_shooter_data(void);
-extern "C" void Plot3DListMenu(int val);
-
 #define START_SHOOTER_ROLLOUT 0
 #define BACKGROUND_SHOOTER_ROLLOUT 1
 #define MISC_SHOOTER_ROLLOUT 2
@@ -114,6 +109,168 @@ extern "C" void show_glui_shooter(void){
   if(glui_shooter!=NULL){
     glui_shooter->show();
     updatemenu=1;
+  }
+}
+
+/* ------------------ allocate_shooter ------------------------ */
+
+int  allocate_shooter(void){
+  int mem_points, mem_frames;
+
+  FREEMEMORY(shootpointinfo);
+  FREEMEMORY(shoottimeinfo);
+
+  mem_points = max_shooter_points * sizeof(shootpointdata);
+  mem_frames = nshooter_frames * sizeof(shoottimedata);
+
+  PRINTF("shooter point memory requirements\n");
+  PRINTF("max_shooter_points=%i mem=%i\n", max_shooter_points, mem_points);
+  PRINTF("nshooter_frames=%i mem=%i\n", nshooter_frames, mem_frames);
+
+  if(mem_points <= 0 || mem_frames <= 0 ||
+#ifdef _DEBUG
+    mem_points >= 2000000000 || mem_frames > 2000000000 ||
+#endif
+    NewMemory((void **)&shootpointinfo, mem_points) == 0 ||
+    NewMemory((void **)&shoottimeinfo, mem_frames) == 0){
+    FREEMEMORY(shootpointinfo);
+    FREEMEMORY(shoottimeinfo);
+    shooter_active = 0;
+    PRINTF("shooter point memory allocation failed\n");
+    return 1;
+  }
+  return 0;
+
+}
+
+/* ------------------ SHOOTER_CB ------------------------ */
+
+void SHOOTER_CB(int var){
+  float ang;
+  if(shooter_firstframe == 1){
+    ResetItimes0();
+  }
+  switch(var){
+  case SHOOTER_LOADPLOT3D:
+    PRINTF("Loading PLOT3D data at time: %f\n", plot3dtimelist[shooter_itime]);
+    Plot3DListMenu(shooter_itime);
+    SHOOTER_CB(SHOOTER_APPLY);
+    break;
+  case SHOOTER_TIME:
+    break;
+  case SHOOTER_FIRSTFRAME:
+    break;
+  case SHOOTER_SHOW:
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    UpdateTimes();
+    break;
+  case SHOOTER_TERMINAL_VEL:
+    if(shooter_v_inf < 0.0){
+      shooter_v_inf = 0.0;
+      SPINNER_shooter_v_inf->set_float_val(shooter_v_inf);
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_VEL:
+    ang = DEG2RAD*shooter_veldir;
+    shooter_velz = 0.0;
+    shooter_velx = shooter_u0*cos(ang);
+    shooter_vely = shooter_u0*sin(ang);
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_UVW:
+  case SHOOTER_XYZ:
+    if(shooter_active == 1){
+      init_shooter_data();
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_DXYZ:
+    if(shooter_active == 1){
+      init_shooter_data();
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_NPARTS:
+    if(shooter_nparts < 1 && SPINNER_shooter_nparts != NULL){
+      shooter_nparts = 1;
+      SPINNER_shooter_nparts->set_int_val(shooter_nparts);
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_FPS:
+    if(shooter_fps < 1 && SPINNER_shooter_fps != NULL){
+      shooter_fps = 1;
+      SPINNER_shooter_fps->set_int_val(shooter_fps);
+    }
+    if(shooter_active == 1){
+      init_shooter_data();
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_HISTORY:
+    break;
+  case SHOOTER_DURATION:
+    if(shooter_duration < 1.0&&SPINNER_shooter_duration != NULL){
+      shooter_duration = 1.0;
+      SPINNER_shooter_duration->set_float_val(shooter_duration);
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SHOOTER_APPLY:
+    nshooter_frames = (int)(shooter_duration*shooter_fps);
+    max_shooter_points = nshooter_frames*shooter_nparts;
+
+    if(allocate_shooter() == 0){
+      solve_shooter_data();
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      UpdateTimes();
+    }
+    break;
+  case SHOOTER_VEL_TYPE:
+    if(shooter_vel_type == 1){
+      SPINNER_shooter_u0->enable();
+      SPINNER_shooter_z0->enable();
+      SPINNER_shooter_p->enable();
+      SPINNER_shooter_veldir->enable();
+      if(LIST_shooter_times != NULL)LIST_shooter_times->disable();
+      if(BUTTON_shooter_loadplot3d != NULL)BUTTON_shooter_loadplot3d->disable();
+    }
+    else{
+      SPINNER_shooter_u0->disable();
+      SPINNER_shooter_z0->disable();
+      SPINNER_shooter_p->disable();
+      SPINNER_shooter_veldir->disable();
+      if(LIST_shooter_times != NULL)LIST_shooter_times->enable();
+      if(BUTTON_shooter_loadplot3d != NULL)BUTTON_shooter_loadplot3d->enable();
+    }
+    if(shooter_cont_update == 1){
+      SHOOTER_CB(SHOOTER_APPLY);
+    }
+    break;
+  case SAVE_SETTINGS:
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  case SHOOTER_CLOSE:
+    hide_glui_shooter();
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 }
 
@@ -234,135 +391,4 @@ extern "C" void glui_shooter_setup(int main_window){
   SHOOTER_CB(SHOOTER_VEL);
 
   glui_shooter->set_main_gfx_window( main_window );
-}
-
-/* ------------------ SHOOTER_CB ------------------------ */
-
-void SHOOTER_CB(int var){
-  float ang;
-  if(shooter_firstframe==1){
-    ResetItimes0();
-  }
-  switch(var){
-    case SHOOTER_LOADPLOT3D:
-      PRINTF("Loading PLOT3D data at time: %f\n",plot3dtimelist[shooter_itime]);
-      Plot3DListMenu(shooter_itime);
-      SHOOTER_CB(SHOOTER_APPLY);
-      break;
-    case SHOOTER_TIME:
-      break;
-    case SHOOTER_FIRSTFRAME:
-      break;
-    case SHOOTER_SHOW:
-      plotstate=GetPlotState(DYNAMIC_PLOTS);
-      UpdateTimes();
-      break;
-    case SHOOTER_TERMINAL_VEL:
-      if(shooter_v_inf<0.0){
-        shooter_v_inf=0.0;
-        SPINNER_shooter_v_inf->set_float_val(shooter_v_inf);
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_VEL:
-      ang = DEG2RAD*shooter_veldir;
-      shooter_velz=0.0;
-      shooter_velx = shooter_u0*cos(ang);
-      shooter_vely = shooter_u0*sin(ang);
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_UVW:
-    case SHOOTER_XYZ:
-      if(shooter_active==1){
-        init_shooter_data();
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_DXYZ:
-      if(shooter_active==1){
-        init_shooter_data();
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_NPARTS:
-      if(shooter_nparts<1&&SPINNER_shooter_nparts!=NULL){
-        shooter_nparts=1;
-        SPINNER_shooter_nparts->set_int_val(shooter_nparts);
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_FPS:
-      if(shooter_fps<1&&SPINNER_shooter_fps!=NULL){
-        shooter_fps=1;
-        SPINNER_shooter_fps->set_int_val(shooter_fps);
-      }
-      if(shooter_active==1){
-        init_shooter_data();
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_HISTORY:
-      break;
-    case SHOOTER_DURATION:
-      if(shooter_duration<1.0&&SPINNER_shooter_duration!=NULL){
-        shooter_duration=1.0;
-        SPINNER_shooter_duration->set_float_val(shooter_duration);
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SHOOTER_APPLY:
-      nshooter_frames=(int)(shooter_duration*shooter_fps);
-      max_shooter_points=nshooter_frames*shooter_nparts;
-
-      if(allocate_shooter()==0){
-        solve_shooter_data();
-        plotstate=GetPlotState(DYNAMIC_PLOTS);
-        UpdateTimes();
-      }
-      break;
-    case SHOOTER_VEL_TYPE:
-      if(shooter_vel_type==1){
-        SPINNER_shooter_u0->enable();
-        SPINNER_shooter_z0->enable();
-        SPINNER_shooter_p->enable();
-        SPINNER_shooter_veldir->enable();
-        if(LIST_shooter_times!=NULL)LIST_shooter_times->disable();
-        if(BUTTON_shooter_loadplot3d!=NULL)BUTTON_shooter_loadplot3d->disable();
-      }
-      else{
-        SPINNER_shooter_u0->disable();
-        SPINNER_shooter_z0->disable();
-        SPINNER_shooter_p->disable();
-        SPINNER_shooter_veldir->disable();
-        if(LIST_shooter_times!=NULL)LIST_shooter_times->enable();
-        if(BUTTON_shooter_loadplot3d!=NULL)BUTTON_shooter_loadplot3d->enable();
-      }
-      if(shooter_cont_update==1){
-        SHOOTER_CB(SHOOTER_APPLY);
-      }
-      break;
-    case SAVE_SETTINGS:
-      WriteINI(LOCAL_INI,NULL);
-      break;
-    case SHOOTER_CLOSE:
-      hide_glui_shooter();
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-  }
 }

@@ -106,7 +106,7 @@ int main(int argc, char **argv){
 
       comm_beg=buffer+1;
       comm_end=strchr(buffer,' ');
-      if (comm_end == NULL)continue;
+      if(comm_end == NULL)continue;
       data = comm_end+1;
       *comm_end=0;
 

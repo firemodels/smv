@@ -8,9 +8,6 @@
 
 #include "smokeviewvars.h"
 
-void ROTATE_CB(int var);
-void TRAINER_CB(int var);
-
 #define LOAD_SMOKE 100
 #define LOAD_TEMP 101
 #define LOAD_OXY 102
@@ -143,6 +140,180 @@ extern "C" void update_trainer_moves(void){
   }
 }
 
+/* ------------------ TRAINER_CB ------------------------ */
+
+void TRAINER_CB(int var){
+
+  switch(var){
+    int i;
+
+  case TRAINER_PAUSE:
+    stept = trainer_pause;
+    keyboard('t', FROM_SMOKEVIEW);
+    break;
+  case TOGGLE_VIEW:
+    if(ntrainer_viewpoints <= 0)break;
+    trainer_viewpoints--;
+    if(trainer_viewpoints < 2){
+      trainer_viewpoints = ntrainer_viewpoints;
+    }
+    LIST_viewpoint->set_int_val(trainer_viewpoints);
+    TRAINER_CB(TRAINERVIEWPOINTS);
+    break;
+  case TRAINERVIEWPOINTS:
+    if(trainer_viewpoints != -1){
+      ResetMenu(trainer_viewpoints);
+    }
+    if(trainer_path != -1){
+      int viewpoint_save;
+
+      viewpoint_save = trainer_viewpoints;
+      LIST_trainerpath->set_int_val(-1);
+      TRAINER_CB(TRAINERPATH);
+      if(viewpoint_save != -11){
+        LIST_viewpoint->set_int_val(viewpoint_save);
+        ResetMenu(viewpoint_save);
+      }
+    }
+    break;
+  case TRAINEROUTLINE:
+    if(trainer_outline == 0){
+      visBlocks = visBLOCKAsInput;
+    }
+    else{
+      visBlocks = visBLOCKOutline;
+    }
+    ResetMenu(MENU_OUTLINEVIEW);
+    break;
+  case TRAINERPATH:
+    TRAINER_CB(MOVETYPE);
+    if(trainer_viewpoints != 1){
+      LIST_viewpoint->set_int_val(-1);
+    }
+    switch(trainer_path){
+    case -1:
+      if(trainer_path_old != -1){
+        trainer_pause = 0;
+        CHECKBOX_pause->set_int_val(trainer_pause);
+        TourMenu(MENU_TOUR_MANUAL);
+        rotation_type = ROTATION_2AXIS;
+        handle_rotation_type(ROTATION_2AXIS);
+        from_glui_trainer = 1;
+        trainee_location = 0;
+      }
+      TRAINER_CB(MOVETYPE);
+      break;
+    case -2:
+      break;
+    default:
+      if(rotation_type != EYE_CENTERED){
+        rotation_type = EYE_CENTERED;
+        handle_rotation_type(ROTATION_2AXIS);
+      }
+      for(i = 0;i < ntourinfo;i++){
+        tourdata *touri;
+
+        touri = tourinfo + i;
+        touri->display = 0;
+      }
+      viewtourfrompath = 1;
+      TourMenu(trainer_path);
+    }
+    trainer_path_old = trainer_path;
+    break;
+  case MOVETYPE:
+    rotation_type = ROTATION_2AXIS;
+    handle_rotation_type(ROTATION_2AXIS);
+    SetViewPoint(RESTORE_EXTERIOR_VIEW);
+    break;
+  case LOAD_SMOKE:
+    TrainerViewMenu(MENU_TRAINER_smoke);
+    break;
+  case LOAD_TEMP:
+    // kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
+    if(slicebounds != NULL&&islicetype != -1){
+      if(setslicechopmin == 1 || setslicechopmax == 1){
+        SetSliceBounds(islicetype);
+      }
+    }
+    TrainerViewMenu(MENU_TRAINER_temp);
+    UpdateChopColors();
+    if(slicebounds != NULL&&islicetype != -1){
+      if(setslicechopmin == 1 || setslicechopmax == 1){
+        SetSliceBounds(islicetype);
+      }
+    }
+    UpdateChopColors();
+    colorbarflip = 1;
+    ColorbarMenu(COLORBAR_FLIP);
+    break;
+  case LOAD_OXY:
+    // kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
+    if(slicebounds != NULL&&islicetype != -1){
+      if(setslicechopmin == 1 || setslicechopmax == 1){
+        SetSliceBounds(islicetype);
+      }
+    }
+    TrainerViewMenu(MENU_TRAINER_oxy);
+    UpdateChopColors();
+    if(slicebounds != NULL&&islicetype != -1){
+      if(setslicechopmin == 1 || setslicechopmax == 1){
+        SetSliceBounds(islicetype);
+      }
+    }
+    UpdateChopColors();
+    colorbarflip = 0;
+    ColorbarMenu(COLORBAR_FLIP);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ ROTATE_CB ------------------------ */
+
+void ROTATE_CB(int var){
+
+  float *eye_xyz, *az, *elev;
+
+  eye_xyz = camera_current->eye;
+  az = camera_current->az_elev;
+  elev = camera_current->az_elev + 1;
+
+
+  if(rotation_type != ROTATION_2AXIS){
+    rotation_type = ROTATION_2AXIS;
+    handle_rotation_type(ROTATION_2AXIS);
+    SetViewPoint(RESTORE_EXTERIOR_VIEW);
+  }
+
+  if(trainer_viewpoints != -1){
+    LIST_viewpoint->set_int_val(-1);
+  }
+  if(trainer_path != -1){
+    LIST_trainerpath->set_int_val(-1);
+    TRAINER_CB(TRAINERPATH);
+  }
+  switch(var){
+  case TRAINER_AZ_ELEV:
+    *az = TRANSLATE_az_elev->get_x();
+    *elev = -TRANSLATE_az_elev->get_y();
+    break;
+  case TRAINER_LEFTRIGHT_INOUT:
+    eye_xyz[0] = TRANSLATE_leftright_inout->get_x();
+    eye_xyz[1] = TRANSLATE_leftright_inout->get_y();
+    break;
+  case TRAINER_UPDOWN:
+    eye_xyz[2] = TRANSLATE_updown->get_y();
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  camera_current->dirty = 1;
+}
+
 /* ------------------ glui_trainer_setup ------------------------ */
 
 extern "C" void glui_trainer_setup(int main_window){
@@ -228,178 +399,3 @@ extern "C" void glui_trainer_setup(int main_window){
   TRAINER_CB(TRAINERVIEWPOINTS);
 
 }
-
-/* ------------------ ROTATE_CB ------------------------ */
-
-void ROTATE_CB(int var){
-
-  float *eye_xyz, *az, *elev;
-
-  eye_xyz = camera_current->eye;
-  az = camera_current->az_elev;
-  elev = camera_current->az_elev+1;
-
-
-  if(rotation_type!=ROTATION_2AXIS){
-    rotation_type=ROTATION_2AXIS;
-    handle_rotation_type(ROTATION_2AXIS);
-    SetViewPoint(RESTORE_EXTERIOR_VIEW);
-  }
-
-  if(trainer_viewpoints!=-1){
-    LIST_viewpoint->set_int_val(-1);
-  }
-  if(trainer_path!=-1){
-    LIST_trainerpath->set_int_val(-1);
-    TRAINER_CB(TRAINERPATH);
-  }
-  switch(var){
-  case TRAINER_AZ_ELEV:
-    *az = TRANSLATE_az_elev->get_x();
-    *elev = -TRANSLATE_az_elev->get_y();
-    break;
-  case TRAINER_LEFTRIGHT_INOUT:
-    eye_xyz[0]=TRANSLATE_leftright_inout->get_x();
-    eye_xyz[1]=TRANSLATE_leftright_inout->get_y();
-    break;
-  case TRAINER_UPDOWN:
-    eye_xyz[2]=TRANSLATE_updown->get_y();
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-  camera_current->dirty=1;
-}
-
-/* ------------------ TRAINER_CB ------------------------ */
-
-void TRAINER_CB(int var){
-
-  switch(var){
-    int i;
-
-  case TRAINER_PAUSE:
-    stept=trainer_pause;
-    keyboard('t',FROM_SMOKEVIEW);
-    break;
-  case TOGGLE_VIEW:
-    if(ntrainer_viewpoints<=0)break;
-    trainer_viewpoints--;
-    if(trainer_viewpoints<2){
-      trainer_viewpoints=ntrainer_viewpoints;
-    }
-    LIST_viewpoint->set_int_val(trainer_viewpoints);
-    TRAINER_CB(TRAINERVIEWPOINTS);
-    break;
-  case TRAINERVIEWPOINTS:
-    if(trainer_viewpoints!=-1){
-      ResetMenu(trainer_viewpoints);
-    }
-    if(trainer_path!=-1){
-      int viewpoint_save;
-
-      viewpoint_save=trainer_viewpoints;
-      LIST_trainerpath->set_int_val(-1);
-      TRAINER_CB(TRAINERPATH);
-      if(viewpoint_save!=-11){
-        LIST_viewpoint->set_int_val(viewpoint_save);
-        ResetMenu(viewpoint_save);
-      }
-    }
-    break;
-  case TRAINEROUTLINE:
-    if(trainer_outline==0){
-      visBlocks=visBLOCKAsInput;
-    }
-    else{
-      visBlocks=visBLOCKOutline;
-    }
-    ResetMenu(MENU_OUTLINEVIEW);
-    break;
-  case TRAINERPATH:
-    TRAINER_CB(MOVETYPE);
-    if(trainer_viewpoints!=1){
-      LIST_viewpoint->set_int_val(-1);
-    }
-    switch(trainer_path){
-    case -1:
-      if(trainer_path_old!=-1){
-        trainer_pause=0;
-        CHECKBOX_pause->set_int_val(trainer_pause);
-        TourMenu(MENU_TOUR_MANUAL);
-        rotation_type=ROTATION_2AXIS;
-        handle_rotation_type(ROTATION_2AXIS);
-        from_glui_trainer=1;
-        trainee_location=0;
-      }
-      TRAINER_CB(MOVETYPE);
-      break;
-    case -2:
-      break;
-    default:
-      if(rotation_type!=EYE_CENTERED){
-        rotation_type=EYE_CENTERED;
-        handle_rotation_type(ROTATION_2AXIS);
-      }
-      for(i=0;i<ntourinfo;i++){
-        tourdata *touri;
-
-        touri = tourinfo + i;
-        touri->display=0;
-      }
-      viewtourfrompath=1;
-      TourMenu(trainer_path);
-    }
-    trainer_path_old=trainer_path;
-    break;
-  case MOVETYPE:
-    rotation_type=ROTATION_2AXIS;
-    handle_rotation_type(ROTATION_2AXIS);
-    SetViewPoint(RESTORE_EXTERIOR_VIEW);
-    break;
-  case LOAD_SMOKE:
-    TrainerViewMenu(MENU_TRAINER_smoke);
-    break;
-  case LOAD_TEMP:
-// kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
-    if(slicebounds!=NULL&&islicetype!=-1){
-      if(setslicechopmin==1||setslicechopmax==1){
-       SetSliceBounds(islicetype);
-      }
-    }
-    TrainerViewMenu(MENU_TRAINER_temp);
-    UpdateChopColors();
-    if(slicebounds!=NULL&&islicetype!=-1){
-      if(setslicechopmin==1||setslicechopmax==1){
-       SetSliceBounds(islicetype);
-      }
-    }
-    UpdateChopColors();
-    colorbarflip=1;
-    ColorbarMenu(COLORBAR_FLIP);
-    break;
-  case LOAD_OXY:
-// kind of a hack, having to put in code seg twice, but this is required to get data chopping to work
-    if(slicebounds!=NULL&&islicetype!=-1){
-      if(setslicechopmin==1||setslicechopmax==1){
-       SetSliceBounds(islicetype);
-      }
-    }
-    TrainerViewMenu(MENU_TRAINER_oxy);
-    UpdateChopColors();
-    if(slicebounds!=NULL&&islicetype!=-1){
-      if(setslicechopmin==1||setslicechopmax==1){
-       SetSliceBounds(islicetype);
-      }
-    }
-    UpdateChopColors();
-    colorbarflip=0;
-    ColorbarMenu(COLORBAR_FLIP);
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-}
-
