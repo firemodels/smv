@@ -420,11 +420,17 @@ void DrawWindRose(windrosedata *wr){
   int itheta,icirc;
   float *xyz;
   histogramdata *hist;
-  float dtheta;
+  float dtheta,maxr;
 
   if(wr==NULL)return;
   xyz = wr->xyz;
   hist = &wr->histogram;
+  if(scale_windrose==WINDROSE_LOCALSCALE){
+    maxr = hist->bucket_maxr;
+  }
+  else{
+    maxr = maxr_windrose;
+  }
   glEnable(GL_LIGHTING);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -457,7 +463,7 @@ void DrawWindRose(windrosedata *wr){
       //   radius_windrose (maxr/ntotal)
 
       color_index  = CLAMP(255*(float)(ir+0.5)/(float)hist->nr, 0, 255);
-      drval  = radius_windrose*hist->buckets_polar[ir+  itheta*hist->nr]/hist->bucket_maxr;
+      drval  = radius_windrose*hist->buckets_polar[ir+  itheta*hist->nr]/maxr;
       rval2 = rval + drval;
 
       nk = RAD2DEG*(theta2-theta);
@@ -503,36 +509,36 @@ void DrawWindRose(windrosedata *wr){
   }
   glEnd();
 
-  glTranslatef(0.0,0.0,0.001);
-  glLineWidth(2.0);
-  for(icirc = 0;icirc<20;icirc++){
-    float factor,diameter;
-    unsigned char fg_uc[4];
+  if(showref_windrose==1){
+    glTranslatef(0.0,0.0,0.001);
+    glLineWidth(2.0);
+    for(icirc = 0;icirc<20;icirc++){
+      float factor,diameter;
+      unsigned char fg_uc[4];
 
-    //d05 = radius_windrose*0.05/(hist->bucket_maxr/hist->ntotal);
-    factor = 0.05*(float)icirc/(hist->bucket_maxr/hist->ntotal);
-    if(factor>1.0)break;
-    diameter = 2.0*radius_windrose*factor;
-    fg_uc[0] = foregroundcolor[0]*255;
-    fg_uc[1] = foregroundcolor[1]*255;
-    fg_uc[2] = foregroundcolor[2]*255;
-    fg_uc[3] = foregroundcolor[3]*255;
-    drawcircle(diameter, fg_uc, &windrose_circ);
-  }
-  glTranslatef(0.0, 0.0, -0.002);
-  for(icirc = 0;icirc<20;icirc++){
-    float factor, diameter;
-    unsigned char fg_uc[4];
+      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      if(factor>1.0)break;
+      diameter = 2.0*radius_windrose*factor;
+      fg_uc[0] = foregroundcolor[0]*255;
+      fg_uc[1] = foregroundcolor[1]*255;
+      fg_uc[2] = foregroundcolor[2]*255;
+      fg_uc[3] = foregroundcolor[3]*255;
+      drawcircle(diameter, fg_uc, &windrose_circ);
+    }
+    glTranslatef(0.0, 0.0, -0.002);
+    for(icirc = 0;icirc<20;icirc++){
+      float factor, diameter;
+      unsigned char fg_uc[4];
 
-    //d05 = radius_windrose*0.05/(hist->bucket_maxr/hist->ntotal);
-    factor = 0.05*(float)icirc/(hist->bucket_maxr/hist->ntotal);
-    if(factor>1.0)break;
-    diameter = 2.0*radius_windrose*factor;
-    fg_uc[0] = foregroundcolor[0]*255;
-    fg_uc[1] = foregroundcolor[1]*255;
-    fg_uc[2] = foregroundcolor[2]*255;
-    fg_uc[3] = foregroundcolor[3]*255;
-    drawcircle(diameter, fg_uc, &windrose_circ);
+      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      if(factor>1.0)break;
+      diameter = 2.0*radius_windrose*factor;
+      fg_uc[0] = foregroundcolor[0]*255;
+      fg_uc[1] = foregroundcolor[1]*255;
+      fg_uc[2] = foregroundcolor[2]*255;
+      fg_uc[3] = foregroundcolor[3]*255;
+      drawcircle(diameter, fg_uc, &windrose_circ);
+    }
   }
   glPopMatrix();
   glDisable(GL_LIGHTING);
@@ -5769,6 +5775,7 @@ int is_dup_device_label(int index, int direction){
 void DeviceData2WindRose(int nr, int ntheta, int flag){
   int i;
 
+  maxr_windrose = 0.0;
   for(i = 0; i < nvdeviceinfo; i++){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
@@ -5799,6 +5806,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       InitHistogramPolar(histogram,nr,ntheta,NULL,NULL);
       Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax);
       CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
+      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
     }
     else if(angledev != NULL&&veldev != NULL){
       int nvals;
@@ -5815,6 +5823,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
       GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
       CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
+      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
     }
   }
 }

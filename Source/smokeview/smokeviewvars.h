@@ -155,7 +155,8 @@ SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 #ifdef pp_WINDROSE
 SVEXTERN int SVDECL(viswindrose,0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
-SVEXTERN float SVDECL(radius_windrose, 1.0);
+SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);
+SVEXTERN int   SVDECL(showref_windrose,1),  SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
 #endif
 SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
 SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);

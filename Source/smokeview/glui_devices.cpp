@@ -72,16 +72,21 @@ GLUI_Panel *PANEL_devicevis=NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
+#ifdef pp_WINDROSE
+GLUI_Panel *PANEL_scale_windrose=NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
+#ifdef pp_WINDROSE
+GLUI_RadioGroup *RADIO_scale_windrose=NULL;
+#endif
 
 GLUI_Rollout *ROLLOUT_arrow_dimensions = NULL;
 #ifdef pp_WINDROSE
 GLUI_Rollout *ROLLOUT_windrose = NULL;
 #endif
 GLUI_Rollout *ROLLOUT_trees = NULL;
-
 
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
@@ -238,15 +243,22 @@ extern "C" void glui_device_setup(int main_window){
       PANEL_arrow_height=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,"head",true);
       glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("length"),GLUI_SPINNER_FLOAT,&vector_headlength);
       glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("diameter"),GLUI_SPINNER_FLOAT,&vector_headdiameter);
+
 #ifdef pp_WINDROSE
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Windrose", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show"), &viswindrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show reference lines"), &showref_windrose);
+      PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
+      RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(PANEL_scale_windrose,&scale_windrose);
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"local");
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
       SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("nr"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
       SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("ntheta"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
       SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
 #endif
+
       if(ntreedeviceinfo>0){
         ROLLOUT_trees = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Device trees", false);
         SPINNER_mintreesize = glui_device->add_spinner_to_panel(ROLLOUT_trees, _d("min size"), GLUI_SPINNER_INT, &mintreesize);
