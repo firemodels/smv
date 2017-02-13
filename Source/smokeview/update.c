@@ -12,8 +12,6 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 
-void ParticleStreakShowMenu(int var);
-
 /* ------------------ CompareFloat ------------------------ */
 
 int CompareFloat( const void *arg1, const void *arg2 ){
@@ -149,7 +147,6 @@ void UpdateFrameNumber(int changetime){
       geomi->itime=geomi->timeslist[itimes];
     }
     if(showslice==1||showvslice==1){
-      int showfed=0;
       int ii;
 
       for(ii=0;ii<nslice_loaded;ii++){
@@ -160,7 +157,6 @@ void UpdateFrameNumber(int changetime){
         if(sd->timeslist==NULL)continue;
         sd->itime=sd->timeslist[itimes];
         slice_time = sd->itime;
-        if(sd->is_fed==1)showfed=1;
       }
     }
     if(show3dsmoke==1){
@@ -1258,20 +1254,20 @@ void UpdateTimes(void){
     TEST_FOR_NAN(global_times,nglobal_times,"global_times","(after remove dup)");
 
     for(n = 0; n < nglobal_times-1; n++){
-      int i;
+      int it;
 
       if(global_times[n] < global_times[n+1])continue;
       timearray_test++;
       fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", n+1,nglobal_times);
       if(timearray_test == 1){
-        for(i = 0; i < nglobal_times; i++){
-          fprintf(stderr," %f", global_times[i]);
+        for(it = 0; it < nglobal_times; it++){
+          fprintf(stderr," %f", global_times[it]);
         }
         fprintf(stderr, "\n");
       }
       else if(timearray_test > 1){
-        for(i = 0; i < MIN(nglobal_times, 10); i++){
-          fprintf(stderr, " %f", global_times[i]);
+        for(it = 0; it < MIN(nglobal_times, 10); it++){
+          fprintf(stderr, " %f", global_times[it]);
         }
         fprintf(stderr, "......\n");
       }

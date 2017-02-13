@@ -17,10 +17,6 @@ static int tour_hide=0;
 static float tour_zoom=1.0;
 static char tour_label[sizeof(GLUI_String)];
 
-int nexttour(void);
-int prevtour(void);
-void TOUR_CB(int var);
-
 GLUI *glui_tour=NULL;
 
 GLUI_Rollout *ROLLOUT_avatar=NULL;
@@ -467,6 +463,38 @@ extern "C" void update_tourindex(void){
   TOUR_CB(TOUR_LIST);
 }
 
+/* ------------------ nexttour ------------------------ */
+
+int nexttour(void){
+  int i;
+
+  i = selectedtour_index + 1;
+  if(i > ntourinfo - 1)i = 0;
+  if(i >= 0 && i < ntourinfo){
+    selectedtour_index = i;
+    selected_tour = tourinfo + i;
+    selected_frame = selected_tour->first_frame.next;
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ prevtour ------------------------ */
+
+int prevtour(void){
+  int i;
+
+  i = selectedtour_index - 1;
+  if(i < 0)i = ntourinfo - 1;
+  if(i >= 0 && i < ntourinfo){
+    selectedtour_index = i;
+    selected_tour = tourinfo + i;
+    selected_frame = selected_tour->first_frame.next;
+    return 1;
+  }
+  return 0;
+}
+
 /* ------------------ TOUR_CB ------------------------ */
 
 void TOUR_CB(int var){
@@ -904,38 +932,6 @@ extern "C" void create_tourlist(void){
   if(selectedtour_index>=-1&&selectedtour_index<ntourinfo)LISTBOX_tour->set_int_val(selectedtour_index);
 
  create_vol_tourlist(); //xx comment this line if smokebot fails with seg fault
-}
-
-/* ------------------ nexttour ------------------------ */
-
-int nexttour(void){
-  int i;
-
-  i = selectedtour_index + 1;
-  if(i>ntourinfo-1)i=0;
-  if(i>=0&&i<ntourinfo){
-    selectedtour_index=i;
-    selected_tour = tourinfo + i;
-    selected_frame = selected_tour->first_frame.next;
-    return 1;
-  }
-  return 0;
-}
-
-/* ------------------ prevtour ------------------------ */
-
-int prevtour(void){
-  int i;
-
-  i=selectedtour_index-1;
-  if(i<0)i=ntourinfo-1;
-  if(i>=0&&i<ntourinfo){
-    selectedtour_index=i;
-    selected_tour = tourinfo + i;
-    selected_frame = selected_tour->first_frame.next;
-    return 1;
-  }
-  return 0;
 }
 
 /* ------------------ update_tourcontrols ------------------------ */

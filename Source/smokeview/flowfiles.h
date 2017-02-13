@@ -923,14 +923,13 @@ typedef struct _device{
   int type, is_beam;
 } devicedata;
 
-#ifdef pp_PILOT
+#ifdef pp_WINDROSE
 /* --------------------------  pilot ------------------------------------ */
 
 typedef struct {
   histogramdata histogram;
-  int nbuckets;
-  float total, *fraction,*vel;
-} pilotdata;
+  float *xyz, rmin, rmax;
+} windrosedata;
 #endif
 
 /* --------------------------  vdevicedata ------------------------------------ */
@@ -938,8 +937,8 @@ typedef struct {
 typedef struct _vdevicedata {
   int unique;
   int filetype;
-#ifdef pp_PILOT
-  pilotdata pilotinfo;
+#ifdef pp_WINDROSE
+  windrosedata windroseinfo;
 #endif
   devicedata *udev,*vdev,*wdev,*valdev,*colordev,*veldev,*angledev,*sd_veldev,*sd_angledev;
 } vdevicedata;

@@ -1198,6 +1198,12 @@ void init_texturedir(void){
 void initvars(void){
   int i;
 
+  windrose_circ.ncirc=0;
+  Init_Circle(180, &windrose_circ);
+
+  object_circ.ncirc=0;
+  cvent_circ.ncirc=0;
+
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
   for(i = 0; i < nscreeninfo; i++){

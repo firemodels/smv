@@ -9,18 +9,18 @@
 #define MUP 5
 #define MEPS 0.1
 
-void UnloadVolsmokeFrameAllMeshes(int framenum);
-void ComputeAllSmokecolors(void);
-void DrawSmoke3DGPUVOL(void);
-void DrawSmoke3DVOLdebug(void);
-void GetVolsmokeAllTimes(volrenderdata *vr);
-void InitVolRender(void);
-void InitVolRenderSurface(int firstcall);
-void ReadVolsmokeAllFrames(volrenderdata *vr);
-void ReadVolsmokeAllFramesAllMeshes(void);
-void FreeVolsmokeFrame(volrenderdata *vr, int framenum);
-void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first);
-void UnloadVolsmokeAllFrames(volrenderdata *vr);
-void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
+EXTERNCPP void ComputeAllSmokecolors(void);
+EXTERNCPP void DrawSmoke3DGPUVOL(void);
+EXTERNCPP void DrawSmoke3DVOLdebug(void);
+EXTERNCPP void GetVolsmokeAllTimes(volrenderdata *vr);
+EXTERNCPP void InitVolRender(void);
+EXTERNCPP void InitVolRenderSurface(int firstcall);
+EXTERNCPP void ReadVolsmokeAllFrames(volrenderdata *vr);
+EXTERNCPP void ReadVolsmokeAllFramesAllMeshes(void);
+EXTERNCPP void FreeVolsmokeFrame(volrenderdata *vr, int framenum);
+EXTERNCPP void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first);
+EXTERNCPP void UnloadVolsmokeAllFrames(volrenderdata *vr);
+EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 #endif
 

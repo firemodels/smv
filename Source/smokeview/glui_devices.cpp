@@ -17,6 +17,7 @@
 #define DEVICE_show_orientation 4
 #define DEVICE_NBUCKETS 5
 #define DEVICE_SHOWBEAM 6
+#define DEVICE_RADIUS 7
 
 #define OPEN_UP 0
 #define OPEN_DOWN 1
@@ -29,8 +30,6 @@
 
 class CGluiOpen {
 };
-
-void Open_CB(int var);
 
 int gluiopen_file_index=0;
 int gluiopen_nfilelist=0;
@@ -73,30 +72,32 @@ GLUI_Panel *PANEL_devicevis=NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
+#ifdef pp_WINDROSE
+GLUI_Panel *PANEL_scale_windrose=NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
-#ifdef pp_PILOT
-GLUI_RadioGroup *RADIO_pilottype=NULL;
+#ifdef pp_WINDROSE
+GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 #endif
 
 GLUI_Rollout *ROLLOUT_arrow_dimensions = NULL;
-#ifdef pp_PILOT
-GLUI_Rollout *ROLLOUT_pilot = NULL;
+#ifdef pp_WINDROSE
+GLUI_Rollout *ROLLOUT_windrose = NULL;
 #endif
 GLUI_Rollout *ROLLOUT_trees = NULL;
-
 
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
 GLUI_Spinner *SPINNER_beam_line_width = NULL;
 GLUI_Spinner *SPINNER_mintreesize = NULL;
 GLUI_Spinner *SPINNER_beam_color[3];
-#ifdef pp_PILOT
-GLUI_Spinner *SPINNER_npilot_buckets = NULL;
+#ifdef pp_WINDROSE
+GLUI_Spinner *SPINNER_nr_windrose = NULL;
+GLUI_Spinner *SPINNER_ntheta_windrose = NULL;
+GLUI_Spinner *SPINNER_radius_windrose = NULL;
 #endif
-
-void Device_CB(int var);
 
 /* ------------------ UpdateShowbeamAsLine ------------------------ */
 
@@ -115,6 +116,69 @@ extern "C" void update_device_size(void){
 
 extern "C" void update_device_orientation(void){
   if(CHECKBOX_device_orientation!=NULL)CHECKBOX_device_orientation->set_int_val(show_device_orientation);
+}
+
+/* ------------------ Device_CB ------------------------ */
+
+void Device_CB(int var){
+  int i;
+
+  updatemenu = 1;
+  switch(var){
+  case DEVICE_SHOWBEAM:
+    updatemenu = 1;
+    break;
+#ifdef pp_WINDROSE
+  case DEVICE_RADIUS:
+    if(radius_windrose<0.0){
+      SPINNER_radius_windrose->set_float_val(0.0);
+    }
+    break;
+  case DEVICE_NBUCKETS:
+    DeviceData2WindRose(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    break;
+#endif
+  case DEVICE_show_orientation:
+    updatemenu = 1;
+    break;
+  case DEVICE_devicetypes:
+    for(i = 0;i < ndevicetypes;i++){
+      devicetypes[i]->type2vis = 0;
+    }
+    if(ndevicetypes > 0){
+      devicetypes[devicetypes_index]->type2vis = 1;
+      update_colordevs();
+    }
+    break;
+  case SHOWDEVICEVALS:
+  case COLORDEVICEVALS:
+    if(PANEL_devicevis != NULL){
+      if(colordeviceval == 1 || showdeviceval == 1){
+        PANEL_devicevis->enable();
+      }
+      else{
+        PANEL_devicevis->disable();
+      }
+    }
+
+    break;
+  case DEVICE_sensorsize:
+    if(sensorrelsize < sensorrelsizeMIN){
+      sensorrelsize = sensorrelsizeMIN;
+      if(SPINNER_sensorrelsize != NULL){
+        SPINNER_sensorrelsize->set_float_val(sensorrelsize);
+      }
+    }
+    break;
+  case SAVE_SETTINGS:
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  case DEVICE_close:
+    hide_glui_device();
+    break;
+  default:
+    ASSERT(FFALSE);
+  }
 }
 
 /* ------------------ update_glui_devices ------------------------ */
@@ -179,15 +243,22 @@ extern "C" void glui_device_setup(int main_window){
       PANEL_arrow_height=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,"head",true);
       glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("length"),GLUI_SPINNER_FLOAT,&vector_headlength);
       glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("diameter"),GLUI_SPINNER_FLOAT,&vector_headdiameter);
-#ifdef pp_PILOT
-      ROLLOUT_pilot = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Pilot view", false);
-      glui_device->add_checkbox_to_panel(ROLLOUT_pilot, _d("show"), &vispilot);
-      SPINNER_npilot_buckets = glui_device->add_spinner_to_panel(ROLLOUT_pilot, _d("segments"), GLUI_SPINNER_INT, &npilot_buckets, DEVICE_NBUCKETS, Device_CB);
-      SPINNER_npilot_buckets->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      RADIO_pilottype=glui_device->add_radiogroup_to_panel(ROLLOUT_pilot,&pilot_viewtype);
-      glui_device->add_radiobutton_to_group(RADIO_pilottype,"type 1");
-      glui_device->add_radiobutton_to_group(RADIO_pilottype,"type 2");
+
+#ifdef pp_WINDROSE
+      ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Windrose", false);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show"), &viswindrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _d("show reference lines"), &showref_windrose);
+      PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
+      RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(PANEL_scale_windrose,&scale_windrose);
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"local");
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
+      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("nr"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
+      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("ntheta"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
+      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_windrose, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
 #endif
+
       if(ntreedeviceinfo>0){
         ROLLOUT_trees = glui_device->add_rollout_to_panel(PANEL_velocityvectors, "Device trees", false);
         SPINNER_mintreesize = glui_device->add_spinner_to_panel(ROLLOUT_trees, _d("min size"), GLUI_SPINNER_INT, &mintreesize);
@@ -336,67 +407,5 @@ void Open_CB(int var){
     default:
       ASSERT(FFALSE);
       break;
-  }
-}
-
-/* ------------------ Device_CB ------------------------ */
-
-void Device_CB(int var){
-  int i;
-
-  updatemenu=1;
-  switch(var){
-  case DEVICE_SHOWBEAM:
-    updatemenu=1;
-  break;
-#ifdef pp_PILOT
-  case DEVICE_NBUCKETS:
-#ifdef pp_WINDROSE
-    SummarizeDeviceWindData(npilot_buckets,npilot_nr,npilot_ntheta,NOT_FIRST_TIME);
-#else
-    SummarizeDeviceWindData(npilot_buckets);
-#endif
-    break;
-#endif
-  case DEVICE_show_orientation:
-    updatemenu=1;
-    break;
-  case DEVICE_devicetypes:
-    for(i=0;i<ndevicetypes;i++){
-      devicetypes[i]->type2vis=0;
-    }
-    if(ndevicetypes>0){
-      devicetypes[devicetypes_index]->type2vis=1;
-      update_colordevs();
-    }
-    break;
-  case SHOWDEVICEVALS:
-  case COLORDEVICEVALS:
-    if(PANEL_devicevis!=NULL){
-      if(colordeviceval==1||showdeviceval==1){
-        PANEL_devicevis->enable();
-      }
-      else{
-        PANEL_devicevis->disable();
-      }
-    }
-
-    break;
-  case DEVICE_sensorsize:
-    if(sensorrelsize<sensorrelsizeMIN){
-      sensorrelsize=sensorrelsizeMIN;
-      if(SPINNER_sensorrelsize!=NULL){
-        SPINNER_sensorrelsize->set_float_val(sensorrelsize);
-      }
-    }
-    break;
-  case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  case DEVICE_close:
-    hide_glui_device();
-    break;
-  default:
-    ASSERT(FFALSE);
   }
 }

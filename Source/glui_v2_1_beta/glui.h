@@ -281,6 +281,7 @@ public:
   GLUI_Node *first_child( void )   { return child_head; };
   GLUI_Node *last_child( void )    { return child_tail; };
   GLUI_Node *parent(void)          { return parent_node; };
+  virtual ~GLUI_Node(){}
 
   void      link_this_to_parent_last( GLUI_Node *parent );
   void      link_this_to_parent_first( GLUI_Node *parent );

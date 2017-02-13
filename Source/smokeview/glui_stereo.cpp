@@ -35,8 +35,6 @@ GLUI_Button *BUTTON_stereo_3=NULL;
 #define STEREO_BLUE 6
 #define SAVE_SETTINGS 999
 
-void STEREO_CB(int var);
-
 /* ------------------ Update_Glui_Stereo ------------------------ */
 
 extern "C" void Update_Glui_Stereo(void){
@@ -55,6 +53,48 @@ extern "C" void Update_Glui_Stereo(void){
       setbwSAVE=setbw;
       ColorbarMenu(COLORBAR_TOGGLE_BW);
     }
+  }
+}
+
+/* ------------------ STEREO_CB ------------------------ */
+
+void STEREO_CB(int var){
+
+  switch(var){
+  case STEREO_GREEN:
+    // right_blue=1.0-right_green;
+    // SPINNER_right_blue2->set_float_val(right_blue);
+    break;
+  case STEREO_BLUE:
+    // right_green=1.0-right_blue;
+    // SPINNER_right_green2->set_float_val(right_green);
+    break;
+  case STEREO_SHOW:
+    if(stereotypeOLD != stereotype){
+      Update_Glui_Stereo();
+      stereotypeOLD = stereotype;
+    }
+    if(stereotype == STEREO_CUSTOM){
+      SPINNER_right_blue2->enable();
+      SPINNER_right_green2->enable();
+    }
+    else{
+      SPINNER_right_blue2->disable();
+      SPINNER_right_green2->disable();
+    }
+    break;
+  case STEREO_RESET:
+    SPINNER_zero_parallax->set_float_val(SCALE2FDS(0.25));
+    break;
+  case STEREO_CLOSE:
+    hide_glui_stereo();
+    break;
+  case SAVE_SETTINGS:
+    WriteINI(LOCAL_INI, NULL);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 }
 
@@ -115,46 +155,3 @@ extern "C" void hide_glui_stereo(void){
 extern "C" void show_glui_stereo(void){
   if(glui_stereo!=NULL)glui_stereo->show();
 }
-
-/* ------------------ STEREO_CB ------------------------ */
-
-void STEREO_CB(int var){
-
-  switch(var){
-  case STEREO_GREEN:
-   // right_blue=1.0-right_green;
-   // SPINNER_right_blue2->set_float_val(right_blue);
-    break;
-  case STEREO_BLUE:
-   // right_green=1.0-right_blue;
-   // SPINNER_right_green2->set_float_val(right_green);
-    break;
-  case STEREO_SHOW:
-    if(stereotypeOLD!=stereotype){
-      Update_Glui_Stereo();
-      stereotypeOLD=stereotype;
-    }
-    if(stereotype==STEREO_CUSTOM){
-      SPINNER_right_blue2->enable();
-      SPINNER_right_green2->enable();
-    }
-    else{
-      SPINNER_right_blue2->disable();
-      SPINNER_right_green2->disable();
-    }
-    break;
-  case STEREO_RESET:
-    SPINNER_zero_parallax->set_float_val(SCALE2FDS(0.25));
-    break;
-  case STEREO_CLOSE:
-    hide_glui_stereo();
-    break;
-  case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI,NULL);
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-}
-

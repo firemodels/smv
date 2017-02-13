@@ -7,12 +7,10 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "IOvolsmoke.h"
 
 extern GLUI_Rollout *ROLLOUT_smoke3d;
 extern GLUI *glui_bounds;
-
-extern "C" void Smoke3d_CB(int var);
-extern "C" void InitVolRenderSurface(int firstcall);
 
 #define FIRE_RED 1
 #define FIRE_GREEN 2
@@ -65,9 +63,6 @@ extern "C" void InitVolRenderSurface(int firstcall);
 
 #define SCRIPT_CANCEL_NOW 45
 #define TOUR_LIST 24
-
-void Script_CB(int var);
-void TOUR_CB(int var);
 
 GLUI *glui_3dsmoke=NULL;
 

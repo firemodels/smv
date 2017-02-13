@@ -412,124 +412,150 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
-/* ----------------------- draw_pilot ----------------------------- */
+#ifdef pp_WINDROSE
 
-#ifdef pp_PILOT
-void draw_pilot1(void){
-  int i;
+/* ----------------------- DrawWindRose ----------------------------- */
 
-  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&vispilot == 1 && nvdeviceinfo>0){
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-    glEnable(GL_COLOR_MATERIAL);
+void DrawWindRose(windrosedata *wr){
+  int itheta,icirc;
+  float *xyz;
+  histogramdata *hist;
+  float dtheta,maxr;
 
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glColor3fv(foregroundcolor);
-    glLineWidth(vectorlinewidth);
-    for(i = 0; i < nvdeviceinfo; i++){
-      vdevicedata *vdevi;
-      float *xyz;
-      int k;
-      pilotdata *piloti;
-      float dangle;
-
-      vdevi = vdeviceinfo + i;
-      if(vdevi->unique == 0)continue;
-      xyz = vdevi->valdev->xyz;
-
-      piloti = &(vdevi->pilotinfo);
-
-      dangle = 360.0 / (float)piloti->nbuckets;
-      glBegin(GL_LINES);
-      for(k = 0; k < piloti->nbuckets; k++){
-        float angle, cosang, sinang;
-
-        angle = (float)k*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0], xyz[1], xyz[2]);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[k])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[k])*sinang, xyz[2]);
-      }
-      glEnd();
-    }
-    glPopMatrix();
-    glDisable(GL_LIGHTING);
+  if(wr==NULL)return;
+  xyz = wr->xyz;
+  hist = &wr->histogram;
+  if(scale_windrose==WINDROSE_LOCALSCALE){
+    maxr = hist->bucket_maxr;
   }
+  else{
+    maxr = maxr_windrose;
+  }
+  glEnable(GL_LIGHTING);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+  glEnable(GL_COLOR_MATERIAL);
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(xyz[0], xyz[1], xyz[2]);
+
+  dtheta = DEG2RAD*360.0/(float)(hist->ntheta+1);
+  glBegin(GL_TRIANGLES);
+  for(itheta = 0;itheta<hist->ntheta;itheta++){
+    int ir;
+    float theta, theta2;
+    float rval, rval2;
+
+    theta  = (float)itheta*dtheta;
+    theta2 = (float)(itheta+1)*dtheta;
+    rval = 0.0;
+    for(ir = 0;ir<hist->nr;ir++){
+      int color_index;
+      float drval;
+      int k, nk;
+      float dk;
+
+      //  (rval,theta2)     (rval2,theta2)
+      //  (rval,theta)     (rval2,theta)
+      //   d05              0.05
+      //   radius_windrose (maxr/ntotal)
+
+      color_index  = CLAMP(255*(float)(ir+0.5)/(float)hist->nr, 0, 255);
+      drval  = radius_windrose*hist->buckets_polar[ir+  itheta*hist->nr]/maxr;
+      rval2 = rval + drval;
+
+      nk = RAD2DEG*(theta2-theta);
+      dk = (theta2-theta)/(float)nk;
+
+      for(k = 0;k<nk;k++){
+        float angle1, angle2;
+        float x11, x12, x21, x22;
+        float y11, y12, y21, y22;
+
+        angle1 = theta+(float)k*dk;
+        angle2 = theta+(float)(k+1)*dk;
+
+        x11 = rval*cos(angle1);
+        x12 = rval2*cos(angle1);
+        x21 = rval*cos(angle2);
+        x22 = rval2*cos(angle2);
+        y11 = rval*sin(angle1);
+        y12 = rval2*sin(angle1);
+        y21 = rval*sin(angle2);
+        y22 = rval2*sin(angle2);
+
+        glColor3fv(rgb_slice+4*color_index);
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x12, y12, 0.0);
+        glVertex3f(x22, y22, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x22, y22, 0.0);
+        glVertex3f(x12, y12, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x22, y22, 0.0);
+        glVertex3f(x21, y21, 0.0);
+
+        glVertex3f(x11, y11, 0.0);
+        glVertex3f(x21, y21, 0.0);
+        glVertex3f(x22, y22, 0.0);
+      }
+
+      rval = rval2;
+    }
+  }
+  glEnd();
+
+  if(showref_windrose==1){
+    glTranslatef(0.0,0.0,0.001);
+    glLineWidth(2.0);
+    for(icirc = 0;icirc<20;icirc++){
+      float factor,diameter;
+      unsigned char fg_uc[4];
+
+      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      if(factor>1.0)break;
+      diameter = 2.0*radius_windrose*factor;
+      fg_uc[0] = foregroundcolor[0]*255;
+      fg_uc[1] = foregroundcolor[1]*255;
+      fg_uc[2] = foregroundcolor[2]*255;
+      fg_uc[3] = foregroundcolor[3]*255;
+      drawcircle(diameter, fg_uc, &windrose_circ);
+    }
+    glTranslatef(0.0, 0.0, -0.002);
+    for(icirc = 0;icirc<20;icirc++){
+      float factor, diameter;
+      unsigned char fg_uc[4];
+
+      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      if(factor>1.0)break;
+      diameter = 2.0*radius_windrose*factor;
+      fg_uc[0] = foregroundcolor[0]*255;
+      fg_uc[1] = foregroundcolor[1]*255;
+      fg_uc[2] = foregroundcolor[2]*255;
+      fg_uc[3] = foregroundcolor[3]*255;
+      drawcircle(diameter, fg_uc, &windrose_circ);
+    }
+  }
+  glPopMatrix();
+  glDisable(GL_LIGHTING);
 }
 
-/* ----------------------- draw_pilot2 ----------------------------- */
+/* ----------------------- DrawDeviceWindRoses ----------------------------- */
 
-void draw_pilot2(void){
+void DrawWindRosesDevices(void){
   int i;
 
-  if(showtime == 1 && itimes >= 0 && itimes<nglobal_times&&vispilot == 1 && nvdeviceinfo>0){
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-    glEnable(GL_COLOR_MATERIAL);
+  for(i = 0;i<nvdeviceinfo;i++){
+    vdevicedata *vdevi;
+    windrosedata *wr;
 
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glColor3fv(foregroundcolor);
-    glLineWidth(vectorlinewidth);
-    for(i = 0; i < nvdeviceinfo; i++){
-      vdevicedata *vdevi;
-      float *xyz;
-      int k;
-      pilotdata *piloti;
-      float dangle;
-
-      vdevi = vdeviceinfo + i;
-      if(vdevi->unique == 0)continue;
-      xyz = vdevi->valdev->xyz;
-
-      piloti = &(vdevi->pilotinfo);
-
-      dangle = 360.0 / (float)piloti->nbuckets;
-      glBegin(GL_LINES);
-      for(k = 0; k < piloti->nbuckets; k++){
-        float angle, cosang, sinang;
-        int kk;
-
-        kk = k;
-        angle = (float)kk*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[kk])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[kk])*sinang, xyz[2]);
-
-        kk = k+1;
-        if(kk == piloti->nbuckets - 1)kk = 0;
-        angle = (float)kk*dangle;
-        cosang = cos(DEG2RAD*angle);
-        sinang = sin(DEG2RAD*angle);
-        glVertex3f(xyz[0] - SCALE2FDS(piloti->fraction[kk])*cosang, xyz[1] - SCALE2FDS(piloti->fraction[kk])*sinang, xyz[2]);
-      }
-      glEnd();
-    }
-    glPopMatrix();
-    glDisable(GL_LIGHTING);
-  }
-}
-
-/* ----------------------- draw_pilot ----------------------------- */
-
-void draw_pilot(void){
-  switch(pilot_viewtype){
-  case 0:
-    draw_pilot1();
-    break;
-  case 1:
-    draw_pilot2();
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
+    vdevi = vdeviceinfo + i;
+    wr = &vdevi->windroseinfo;
+    DrawWindRose(wr);
   }
 }
 #endif
@@ -5743,25 +5769,18 @@ int is_dup_device_label(int index, int direction){
   return 0;
 }
 
-/* ----------------------- SummarizeDeviceWindData ----------------------------- */
+/* ----------------------- DeviceData2WindRose ----------------------------- */
 
-#ifdef pp_PILOT
 #ifdef pp_WINDROSE
-void SummarizeDeviceWindData(int nbuckets, int nr, int ntheta, int flag){
-#else
-void SummarizeDeviceWindData(int nbuckets){
-#endif
+void DeviceData2WindRose(int nr, int ntheta, int flag){
   int i;
-  float dangle;
 
-  dangle = 360.0 / (float)nbuckets;
+  maxr_windrose = 0.0;
   for(i = 0; i < nvdeviceinfo; i++){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
-    int j, ibucket;
-  	pilotdata *piloti;
-    float *vel, *fraction;
+    windrosedata *windrosei;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -5770,101 +5789,41 @@ void SummarizeDeviceWindData(int nbuckets){
     angledev = vdevicei->angledev;
     veldev = vdevicei->veldev;
 
-    piloti = &(vdevicei->pilotinfo);
-
-    vel = piloti->vel;
-    fraction = piloti->fraction;
-    vel = piloti->vel;
-    FREEMEMORY(fraction);
-    FREEMEMORY(vel);
-    NewMemory((void **)&fraction, nbuckets*sizeof(float));
-    NewMemory((void **)&vel, nbuckets*sizeof(float));
-    piloti->vel = vel;
-    piloti->fraction = fraction;
-    piloti->nbuckets = nbuckets;
-
-    for(j = 0; j < nbuckets; j++){
-      piloti->fraction[j] = 0.0;
-      piloti->vel[j] = 0.0;
-    }
-    piloti->total = 0;
+    windrosei = &(vdevicei->windroseinfo);
     if(udev != NULL&&vdev != NULL){
       int nvals;
+      float rmin, rmax;
+      histogramdata *histogram;
 
       nvals = MIN(udev->nvals, vdev->nvals);
       if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
-      for(j = 0; j<nvals; j++){
-        float uval, vval, wval = 0.0, vel2, veluv, angle;
+      windrosei->xyz = udev->xyz;
 
-        uval = udev->vals[j];
-        vval = vdev->vals[j];
-        if(wdev != NULL)wval = wdev->vals[j];
-        vel2 = sqrt(uval*uval + vval*vval + wval*wval);
-        veluv = sqrt(uval*uval + vval*vval);
-        if(veluv>0.0){
-          angle = fmod(180.0 + atan2(vval, uval)*RAD2DEG + dangle/2.0, 360.0);
-          ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-          piloti->fraction[ibucket]++;
-          piloti->vel[ibucket] += vel2;
-        }
+      histogram = &(windrosei->histogram);
+      if(flag != FIRST_TIME){
+        FreeHistogramPolar(histogram);
       }
-#ifdef pp_WINDROSE
-      {
-        float rmin, rmax;
-        histogramdata *histogram;
-
-        histogram = &(piloti->histogram);
-        if(flag != FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
-        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
-        Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
-        CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
-      }
-#endif
+      InitHistogramPolar(histogram,nr,ntheta,NULL,NULL);
+      Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax);
+      CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
+      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
     }
     else if(angledev != NULL&&veldev != NULL){
       int nvals;
+      float rmin, rmax;
+      histogramdata *histogram;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
-      for(j = 0; j < nvals; j++){
-        float vel2, angle;
 
-        angle = angledev->vals[j];
-        vel2 = veldev->vals[j];
-        angle = fmod(angle + dangle/2.0, 360.0);
-        ibucket = CLAMP(angle / dangle, 0, nbuckets-1);
-        piloti->fraction[ibucket]++;
-        piloti->vel[ibucket] += vel2;
+      windrosei->xyz = angledev->xyz;
+      histogram = &(windrosei->histogram);
+      if(flag != FIRST_TIME){
+        FreeHistogramPolar(histogram);
       }
-#ifdef pp_WINDROSE
-      {
-        float rmin, rmax;
-        histogramdata *histogram;
-
-        histogram = &(piloti->histogram);
-        if(flag != FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
-        InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
-        GetPolarBounds(veldev->vals, nvals, &rmin, &rmax, HIST_COMPUTE_BOUNDS);
-        CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
-      }
-#endif
-    }
-    else{
-      continue;
-    }
-    for(j = 0; j<nbuckets; j++){
-      piloti->total += piloti->fraction[j];
-      if(piloti->fraction[j]>0.0){
-        piloti->vel[j] /= piloti->fraction[j];
-      }
-    }
-    if(piloti->total > 0){
-      for(j = 0; j < nbuckets; j++){
-        piloti->fraction[j] /= piloti->total;
-      }
+      InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
+      GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
+      CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
+      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
     }
   }
 }
@@ -5904,11 +5863,6 @@ void setup_device_data(void){
     vdevi->sd_angledev=NULL;
     vdevi->sd_veldev=NULL;
     vdevi->colordev=NULL;
-#ifdef pp_PILOT
-    vdevi->pilotinfo.vel=NULL;
-    vdevi->pilotinfo.fraction=NULL;
-    vdevi->pilotinfo.nbuckets=0;
-#endif
 
     devj = get_device(xyzval,"VELOCITY",CSV_EXP);
     if(devj!=NULL){
@@ -6118,13 +6072,8 @@ void setup_device_data(void){
   setup_tree_devices();
   update_colordevs();
 
-  // convert velocities to pilot chart format
-#ifdef pp_PILOT
 #ifdef pp_WINDROSE
-  SummarizeDeviceWindData(npilot_buckets,npilot_nr,npilot_ntheta,FIRST_TIME);
-#else
-  SummarizeDeviceWindData(npilot_buckets);
-#endif
+  DeviceData2WindRose(nr_windrose,ntheta_windrose,FIRST_TIME);
 #endif
 
   FREEMEMORY(vals);
