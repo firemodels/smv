@@ -60,7 +60,6 @@
 
 #ifdef pp_BETA
 #define pp_SHOWTERRAIN
-#define pp_WINDROSE
 #define pp_GEOMTEST
 #define pp_HAZARD
 //#define pp_GPUDEPTH

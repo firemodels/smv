@@ -412,8 +412,6 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
-#ifdef pp_WINDROSE
-
 /* ----------------------- DrawWindRose ----------------------------- */
 
 void DrawWindRose(windrosedata *wr){
@@ -558,7 +556,6 @@ void DrawWindRosesDevices(void){
     DrawWindRose(wr);
   }
 }
-#endif
 
 /* ----------------------- draw_devices ----------------------------- */
 
@@ -5771,7 +5768,6 @@ int is_dup_device_label(int index, int direction){
 
 /* ----------------------- DeviceData2WindRose ----------------------------- */
 
-#ifdef pp_WINDROSE
 void DeviceData2WindRose(int nr, int ntheta, int flag){
   int i;
 
@@ -5827,7 +5823,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     }
   }
 }
-#endif
 
 /* ----------------------- setup_device_data ----------------------------- */
 
@@ -6072,9 +6067,7 @@ void setup_device_data(void){
   setup_tree_devices();
   update_colordevs();
 
-#ifdef pp_WINDROSE
   DeviceData2WindRose(nr_windrose,ntheta_windrose,FIRST_TIME);
-#endif
 
   FREEMEMORY(vals);
   FREEMEMORY(valids);
