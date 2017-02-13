@@ -494,7 +494,7 @@ int set_shooter(float xyz[], float dxyz[], float uvw[],
                 float duration, float v_inf); // SHOOTER
 int set_showdevices(int n, const char **names); // SHOWDEVICES
 int set_showdevicevals(int showdeviceval, int showvdeviceval,
-    int devicetypes_index, int colordeviceval, int vectortype, int vispilot,
+    int devicetypes_index, int colordeviceval, int vectortype, int viswindrose,
     int showdevicetype, int showdeviceunit); // SHOWDEVICEVALS
 int set_showmissingobjects(int v); // SHOWMISSINGOBJECTS
 int set_tourindex(int v); // TOURINDEX
