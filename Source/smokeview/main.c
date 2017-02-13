@@ -126,9 +126,6 @@ void Usage(char **argv){
 #ifdef pp_OSX
     strcat(label, ", pp_OSX");
 #endif
-#ifdef pp_WINDROSE
-    strcat(label, ", pp_WINDROSE");
-#endif
 #ifdef pp_release
     strcat(label, ", pp_release");
 #endif
