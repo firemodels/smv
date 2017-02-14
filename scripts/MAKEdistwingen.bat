@@ -70,12 +70,13 @@ CALL :COPY  %windbuild%\wind2fds_win_%platform%.exe     %smvdir%\wind2fds.exe
 set curdir=%CD%
 cd %smvdir%
 
-%md5hash% smokezip.exe   >  MD5\smokezip_%revision%.md5
-%md5hash% smokediff.exe  >  MD5\smokediff_%revision%.md5
-%md5hash% dem2fds.exe    >  MD5\dem2fds_%revision%.md5
-%md5hash% background.exe >  MD5\background_%revision%.md5
-%md5hash% wind2fds.exe   >  MD5\wind2fds_%revision%.md5
-cat MD5\*.md5            >  MD5\smv_%revision%_win_bundle.md5s
+call %md5hash% smokezip.exe   >  MD5\smokezip_%revision%.md5
+call %md5hash% smokediff.exe  >  MD5\smokediff_%revision%.md5
+call %md5hash% dem2fds.exe    >  MD5\dem2fds_%revision%.md5
+call %md5hash% background.exe >  MD5\background_%revision%.md5
+call %md5hash% wind2fds.exe   >  MD5\wind2fds_%revision%.md5
+cd MD5
+cat *.md5                     >  smv_%revision%win_bundle.md5s
 cd %curdir%
 
 CALL :COPY  %forbundle%\smokeview.ini %smvdir%\smokeview.ini
@@ -108,8 +109,11 @@ echo --- creating installer ---
 echo.
 wzipse32 %zipbase%.zip -runasadmin -d "C:\Program Files\firemodels\%smv_edition%" -c wrapup_smv_install.bat
 
-%md5hash% %zipbase%.exe>   MD5\%zipbase%.exe.md5
-cat MD5\%zipbase%.exe.md5 >> MD5\smv_%revision%_win_bundle.md5s
+call %md5hash% %zipbase%.exe>   MD5\%zipbase%.exe.md5
+copy MD5\%zipbase%.exe.md5 ..\%zipbase%.exe.md5
+cd MD5
+cat %zipbase%.exe.md5 >> smv_%revision%win_bundle.md5s
+cd ..
 
 copy  %zipbase%.exe ..\.>Nul
 
