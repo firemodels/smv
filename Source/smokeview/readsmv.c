@@ -9005,6 +9005,22 @@ int ReadINI2(char *inifile, int localfile){
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
+    if(Match(buffer, "WINDROSEDEVICE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer," %i %i %i %i %i", &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose);
+      viswindrose = CLAMP(viswindrose, 0, 1);
+      showref_windrose = CLAMP(showref_windrose, 0, 1);
+      visxy_windrose = CLAMP(visxy_windrose, 0, 1);
+      visxz_windrose = CLAMP(visxz_windrose, 0, 1);
+      visyz_windrose = CLAMP(visyz_windrose, 0, 1);
+      sscanf(buffer," %i %i %i %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose);
+      nr_windrose = ABS(nr_windrose);
+      ntheta_windrose = ABS(ntheta_windrose);
+      radius_windrose = ABS(radius_windrose);
+      scale_windrose = CLAMP(scale_windrose,0,1);
+      scale_increment_windrose = CLAMP(scale_increment_windrose, 0.01, 0.5);
+      continue;
+    }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &showpatch_both);
@@ -12684,6 +12700,9 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %f %f %f %f %f %f %f\n",
     temperature_min, temperature_cutoff, temperature_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
+  fprintf(fileout, "WINDROSEDEVICE\n");
+  fprintf(fileout, " %i %i %i %i %i\n",viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose);
+  fprintf(fileout, " %i %i %i %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose);
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);
 

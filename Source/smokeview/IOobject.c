@@ -554,11 +554,11 @@ void DrawWindRose(windrosedata *wr,int orientation){
     }
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
-    for(icirc = 0;icirc<20;icirc++){
+    for(icirc = 0;icirc<100;icirc++){
       float factor,diameter;
       unsigned char fg_uc[4];
 
-      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
       fg_uc[0] = foregroundcolor[0]*255;
@@ -572,7 +572,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       float factor, diameter;
       unsigned char fg_uc[4];
 
-      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
       fg_uc[0] = foregroundcolor[0]*255;
@@ -598,9 +598,9 @@ void DrawWindRosesDevices(void){
 
     vdevi = vdeviceinfo + i;
     wr = &vdevi->windroseinfo;
-    if(windrose_visxy == 1)DrawWindRose(wr, WINDROSE_XY);
-    if(windrose_visxz == 1)DrawWindRose(wr, WINDROSE_XZ);
-    if(windrose_visyz == 1)DrawWindRose(wr, WINDROSE_YZ);
+    if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
+    if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
+    if(visyz_windrose == 1)DrawWindRose(wr, WINDROSE_YZ);
   }
 }
 
