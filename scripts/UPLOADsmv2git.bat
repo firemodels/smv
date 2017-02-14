@@ -19,5 +19,5 @@ call %envfile%
 %svn_drive%
 cd %svn_root%\smv\Uploads
 explorer .
-start chrome https://github.com/firemodels/fds-smv/releases
+start chrome https://github.com/firemodels/smv/releases
 
