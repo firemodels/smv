@@ -3264,7 +3264,6 @@ void SetupMeshWalls(void){
       ncount++;
     }
   }
-  printf("ncount=%i\n", ncount);
 }
 
   /* ------------------ ReadSMV ------------------------ */
