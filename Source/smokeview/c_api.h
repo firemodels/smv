@@ -47,6 +47,7 @@ void plot3dprops(int variable_index, int showvector, int vector_length_index,
 void loadplot3d(int meshnumber, float time_local);
 void loadiso(const char *type);
 void loadslice(const char *type, int axis, float distance);
+void loadsliceindex(int index);
 void loadvslice(const char *type, int axis, float distance);
 void unloadall();
 void unloadtour();
@@ -494,7 +495,7 @@ int set_shooter(float xyz[], float dxyz[], float uvw[],
                 float duration, float v_inf); // SHOOTER
 int set_showdevices(int n, const char **names); // SHOWDEVICES
 int set_showdevicevals(int showdeviceval, int showvdeviceval,
-    int devicetypes_index, int colordeviceval, int vectortype, int viswindrose,
+    int devicetypes_index, int colordeviceval, int vectortype, int vispilot,
     int showdevicetype, int showdeviceunit); // SHOWDEVICEVALS
 int set_showmissingobjects(int v); // SHOWMISSINGOBJECTS
 int set_tourindex(int v); // TOURINDEX

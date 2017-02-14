@@ -1686,6 +1686,12 @@ void loadslice(const char *type, int axis, float distance){
                              "load\n",type);
 }
 
+/* ------------------ loadsliceindex -------------------- */
+
+void loadsliceindex(int index) {
+  LoadSlicei(SET_SLICECOLOR,index);
+}
+
 /* ------------------ loadvslice ------------------------ */
 
 void loadvslice(const char *type, int axis, float distance){

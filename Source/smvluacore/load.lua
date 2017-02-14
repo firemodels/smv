@@ -5,17 +5,20 @@ require("constants")
 
 function load.slice(matchFunc)
     local nslices = 0
+    local slice_indices = {}
     for key,value in pairs(sliceinfo) do
         if (matchFunc(value)) then
             load.datafile(value.file)
             nslices = nslices + 1
+            slice_indices[#slice_indices+1] = key
         end
     end
     if (nslices > 0) then
         print(nslices .. " slice loaded")
-        return 0
+        return 0, slice_indices
     end
-    error("No matching slices were found.")
+    print("No matching slices were found.")
+    return 1
 end
 
 function load.vslice(matchFunc)
@@ -27,15 +30,14 @@ function load.vslice(matchFunc)
 end
 
 function load.namedslice(name)
-    return load.slice(function(slice)
+    local result, indices = load.slice(function(slice)
+        print(name, slice.label)
         return (slice.label == name)
     end)
-end
-
-function load.namedvslice(name)
-    return load.vslice(function(slice)
-        return (slice.label == name)
-    end)
+    if (result ~= 0) then
+        error("Slice named " .. name .. " could not be found.")
+    end
+    return result, indices
 end
 
 local function findCellDimension(mesh,axis,distance)

@@ -321,6 +321,15 @@ int lua_loadslice(lua_State *L) {
   return 0;
 }
 
+/*
+  Load a slice based on its index in sliceinfo.
+*/
+int lua_loadsliceindex(lua_State *L) {
+  int index = lua_tonumber(L, 1);
+  loadsliceindex(index);
+  return 0;
+}
+
 
 int lua_get_clipping_mode(lua_State *L) {
   lua_pushnumber(L, get_clipping_mode());
@@ -657,22 +666,234 @@ int lua_initsmvproginfo(lua_State *L) {
   return 0;
 }
 
+int lua_get_slice(lua_State *L) {
+  // This should push a lightuserdata onto the stack which is a pointer to the
+  // slicedata. This takes the index of the slice (in the sliceinfo array) as an
+  // argument.
+  // Get the index of the slice as an argument to the lua function.
+  int slice_index = lua_tonumber(L, 1);
+  // Get the pointer to the slicedata struct.
+  slicedata *slice = &sliceinfo[slice_index];
+  // Push the pointer onto the lua stack as lightuserdata.
+  lua_pushlightuserdata(L, slice);
+  // lua_newuserdata places the data on the stack, so return a single stack
+  // item.
+  return 1;
+}
+
+// This takes a lightuserdata pointer as an argument, and returns the slice
+// label as a string.
+int lua_slice_get_label(lua_State *L) {
+  // get the lightuserdata from the stack, which is a pointer to the 'slicedata'
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  // Push the string onto the stack
+  lua_pushstring(L, slice->slicelabel);
+  return 1;
+}
+
+// This takes a lightuserdata pointer as an argument, and returns the slice
+// filename as a string.
+int lua_slice_get_filename(lua_State *L) {
+  // Get the lightuserdata from the stack, which is a pointer to the
+  // 'slicedata'.
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  // Push the string onto the stack
+  lua_pushstring(L, slice->file);
+  return 1;
+}
+
+int lua_slice_get_data(lua_State *L) {
+  // get the lightuserdata from the stack, which is a pointer to the 'slicedata'
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  // Push a lightuserdata (a pointer) onto the lua stack that points to the
+  // qslicedata.
+  lua_pushlightuserdata(L, slice->qslicedata);
+  return 1;
+}
+
+int lua_slice_get_times(lua_State *L) {
+  // get the lightuserdata from the stack, which is a pointer to the 'slicedata'
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  // Push a lightuserdata (a pointer) onto the lua stack that points to the
+  // qslicedata.
+  lua_createtable(L, slice->ntimes, 0);
+  for (int i = 0; i < slice->ntimes; i++) {
+    lua_pushnumber(L, i+1);
+    lua_pushnumber(L, slice->times[i]);
+    lua_settable(L, -3);
+  }
+  return 1;
+}
+
+int lua_slice_data_map_frames(lua_State *L) {
+  // The first argument to this function is the slice pointer. This function
+  // receives the values of the slice at a particular frame as an array.
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  if (!slice->loaded) {
+    return luaL_error(L, "slice %s not loaded", slice->file);
+  }
+  int framepoints = slice->nslicex*slice->nslicey;
+  // Pointer to the first frame.
+  float *qslicedata = slice->qslicedata;
+  // The second argument is the function to be called on each frame.
+  lua_createtable(L, slice->ntimes, 0);
+  // framenumber is the index of the frame (0-based).
+  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+    // duplicate the function so that we can use it and keep it
+    lua_pushvalue (L, 2);
+    // Push the first frame onto the stack by first putting them into a lua
+    // table. Values are indexed from 1.
+    // Feed the lua function a lightuserdata (pointer) that is can use
+    // with a special function to index the array.
+    lua_pushnumber(L, framepoints);
+    // lua_pushlightuserdata(L, &qslicedata[framenumber*framepoints]);
+
+    // this table method is more flexible but slower
+    lua_createtable(L, framepoints, 0);
+    // pointnumber is the index of the data point in the frame (0-based).
+    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      // adjust the index to start from 1
+      lua_pushnumber(L, pointnumber+1);
+      lua_pushnumber(L, qslicedata[framenumber*framepoints+pointnumber]);
+      lua_settable(L, -3);
+    }
+
+
+    // The function takes 2 arguments and returns 1 result.
+    lua_call(L, 2, 1);
+    // Add the value to the results table.
+    lua_pushnumber(L, framenumber+1);
+    lua_pushvalue(L, -2);
+    lua_settable(L, -4);
+    lua_pop(L, 1);
+  }
+  // Return a table of values.
+  return 1;
+}
+
+int lua_slice_data_map_frames_count_less(lua_State *L) {
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  if (!slice->loaded) {
+    return luaL_error(L, "slice %s not loaded", slice->file);
+  }
+  float threshold = lua_tonumber(L, 2);
+  int framepoints = slice->nslicex*slice->nslicey;
+  // Pointer to the first frame.
+  float *qslicedata = slice->qslicedata;
+  lua_createtable(L, slice->ntimes, 0);
+  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+    int count = 0;
+    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if (*qslicedata < threshold) {
+        count++;
+      }
+      qslicedata++;
+    }
+    lua_pushnumber(L, framenumber+1);
+    lua_pushnumber(L, count);
+    lua_settable(L, -3);
+  }
+  // Return a table of values.
+  return 1;
+}
+
+int lua_slice_data_map_frames_count_less_eq(lua_State *L) {
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  if (!slice->loaded) {
+    return luaL_error(L, "slice %s not loaded", slice->file);
+  }
+  float threshold = lua_tonumber(L, 2);
+  int framepoints = slice->nslicex*slice->nslicey;
+  // Pointer to the first frame.
+  float *qslicedata = slice->qslicedata;
+  lua_createtable(L, slice->ntimes, 0);
+  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+    int count = 0;
+    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if (*qslicedata <= threshold) {
+        count++;
+      }
+      qslicedata++;
+    }
+    lua_pushnumber(L, framenumber+1);
+    lua_pushnumber(L, count);
+    lua_settable(L, -3);
+  }
+  // Return a table of values.
+  return 1;
+}
+
+int lua_slice_data_map_frames_count_greater(lua_State *L) {
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  if (!slice->loaded) {
+    return luaL_error(L, "slice %s not loaded", slice->file);
+  }
+  float threshold = lua_tonumber(L, 2);
+  int framepoints = slice->nslicex*slice->nslicey;
+  // Pointer to the first frame.
+  float *qslicedata = slice->qslicedata;
+  lua_createtable(L, slice->ntimes, 0);
+  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+    int count = 0;
+    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if (*qslicedata > threshold) {
+        count++;
+      }
+      qslicedata++;
+    }
+    lua_pushnumber(L, framenumber+1);
+    lua_pushnumber(L, count);
+    lua_settable(L, -3);
+  }
+  // Return a table of values.
+  return 1;
+}
+
+int lua_slice_data_map_frames_count_greater_eq(lua_State *L) {
+  slicedata *slice = (slicedata *)lua_touserdata(L, 1);
+  if (!slice->loaded) {
+    return luaL_error(L, "slice %s not loaded", slice->file);
+  }
+  float threshold = lua_tonumber(L, 2);
+  int framepoints = slice->nslicex*slice->nslicey;
+  // Pointer to the first frame.
+  float *qslicedata = slice->qslicedata;
+  lua_createtable(L, slice->ntimes, 0);
+  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+    int count = 0;
+    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if (*qslicedata >= threshold) {
+        count++;
+      }
+      qslicedata++;
+    }
+    lua_pushnumber(L, framenumber+1);
+    lua_pushnumber(L, count);
+    lua_settable(L, -3);
+  }
+  // Return a table of values.
+  return 1;
+}
+
 /*
   Build a Lua table with information on the slices of the model.
 */
-// TODO: provide more information via this interface.
+// TODO: change this to use userdata instead
 int lua_get_sliceinfo(lua_State *L) {
   PRINTF("lua: initialising slice table\n");
   lua_createtable(L, 0, nsliceinfo);
   int i;
   for (i = 0; i < nsliceinfo; i++) {
     lua_pushnumber(L, i);
-    lua_createtable(L, 0, 16);
+    lua_createtable(L, 0, 19);
 
     if(sliceinfo[i].slicelabel != NULL) {
       lua_pushstring(L, sliceinfo[i].slicelabel);
       lua_setfield(L, -2, "label");
     }
+
+    lua_pushnumber(L, i);
+    lua_setfield(L, -2, "n");
 
     if(sliceinfo[i].label.longlabel != NULL) {
       lua_pushstring(L, sliceinfo[i].label.longlabel);
@@ -720,6 +941,11 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushnumber(L, sliceinfo[i].position_orig);
     lua_setfield(L, -2, "position_orig");
 
+    lua_pushnumber(L, sliceinfo[i].nslicex);
+    lua_setfield(L, -2, "nslicex");
+
+    lua_pushnumber(L, sliceinfo[i].nslicey);
+    lua_setfield(L, -2, "nslicey");
 
     lua_pushstring(L, sliceinfo[i].slicedir);
     lua_setfield(L, -2, "slicedir");
@@ -4027,6 +4253,7 @@ void initLua() {
   lua_register(L, "plot3dprops", lua_plot3dprops);
   lua_register(L, "loadplot3d", lua_loadplot3d);
   lua_register(L, "loadslice", lua_loadslice);
+  lua_register(L, "loadsliceindex", lua_loadsliceindex);
   // lua_register(L, "loadnamedslice", lua_loadnamedslice);
   lua_register(L, "loadvslice", lua_loadvslice);
   lua_register(L, "loadiso", lua_loadiso);
@@ -4456,6 +4683,17 @@ void initLua() {
   lua_register(L, "clear_title_lines", lua_clear_title_lines);
 
   lua_register(L, "get_nglobal_times", lua_get_nglobal_times);
+
+  lua_register(L, "get_slice", lua_get_slice);
+  lua_register(L, "slice_get_label", lua_slice_get_label);
+  lua_register(L, "slice_get_filename", lua_slice_get_filename);
+  lua_register(L, "slice_get_data", lua_slice_get_data);
+  lua_register(L, "slice_data_map_frames", lua_slice_data_map_frames);
+  lua_register(L, "slice_data_map_frames_count_less", lua_slice_data_map_frames_count_less);
+  lua_register(L, "slice_data_map_frames_count_less_eq", lua_slice_data_map_frames_count_less_eq);
+  lua_register(L, "slice_data_map_frames_count_greater", lua_slice_data_map_frames_count_greater);
+  lua_register(L, "slice_data_map_frames_count_greater_eq", lua_slice_data_map_frames_count_greater_eq);
+  lua_register(L, "slice_get_times", lua_slice_get_times);
 
   //add fdsprefix (the path plus  CHID) as a variable in the lua environment
   lua_pushstring(L, fdsprefix);
