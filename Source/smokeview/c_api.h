@@ -47,6 +47,7 @@ void plot3dprops(int variable_index, int showvector, int vector_length_index,
 void loadplot3d(int meshnumber, float time_local);
 void loadiso(const char *type);
 void loadslice(const char *type, int axis, float distance);
+void loadsliceindex(int index);
 void loadvslice(const char *type, int axis, float distance);
 void unloadall();
 void unloadtour();

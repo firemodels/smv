@@ -25,8 +25,8 @@ void init_lang(void);
 void Init(void);
 // from menus.c
 void UpdateMenu(void);
-void LoadVolSmoke3DMenu(int value);
-void UnLoadVolSmoke3DMenu(int value);
+void LoadVolsmoke3DMenu(int value);
+void UnLoadVolsmoke3DMenu(int value);
 void UpdateSliceBounds(void);
 void OutputSliceData(void);
 
@@ -216,7 +216,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   init_lang();
 #endif
 
-  if(ntours==0)setup_tour();
+  if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
   glui_motion_setup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
@@ -286,7 +286,7 @@ int loadfile(const char *filename) {
       return errorcode;
     }
   }
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -311,7 +311,7 @@ int loadfile(const char *filename) {
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,filename)==0){
       PRINTF("loading smoke3d file:  %s\n", filename);
-      readsmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(i,LOAD,&errorcode);
       PRINTF("loading complete:  %d\n", errorcode);
       return errorcode;
     }
@@ -731,7 +731,7 @@ int settime(float timeval) {
     }
     valmin=ABS(global_times[0]-timeval);
     imin=0;
-    for(i=1;i<nglobal_times-1;i++){
+    for(i=1;i<nglobal_times;i++){
       float val;
 
       val = ABS(global_times[i]-timeval);
@@ -1239,7 +1239,7 @@ void loadvolsmoke(int meshnumber) {
   imesh = meshnumber;
   if(imesh==-1){
     read_vol_mesh=VOL_READALL;
-    read_volsmoke_allframes_allmeshes2(NULL);
+    ReadVolsmokeAllFramesAllMeshes2(NULL);
   }
   else if(imesh>=0&&imesh<nmeshes){
     meshdata *meshi;
@@ -1247,7 +1247,7 @@ void loadvolsmoke(int meshnumber) {
 
     meshi = meshinfo + imesh;
     vr = &meshi->volrenderinfo;
-    read_volsmoke_allframes(vr);
+    ReadVolsmokeAllFrames(vr);
   }
 }
 
@@ -1271,11 +1271,11 @@ void loadvolsmokeframe(int meshnumber, int framenumber, int flag) {
 
       meshi = meshinfo + i;
       vr = &meshi->volrenderinfo;
-      free_volsmoke_frame(vr, framenum);
-      read_volsmoke_frame(vr, framenum, &first);
+      FreeVolsmokeFrame(vr, framenum);
+      ReadVolsmokeFrame(vr, framenum, &first);
       if(vr->times_defined == 0){
         vr->times_defined = 1;
-        get_volsmoke_all_times(vr);
+        GetVolsmokeAllTimes(vr);
       }
       vr->loaded = 1;
       vr->display = 1;
@@ -1313,7 +1313,7 @@ void load3dsmoke(const char *smoke_type){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,smoke_type)==1){
-      readsmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(i,LOAD,&errorcode);
       if(smoke_type!=NULL&&strlen(smoke_type)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(smoke_type)+1);
@@ -1373,7 +1373,7 @@ int loadtour(const char *tourname) {
   int errorcode = 0;
   PRINTF("loading tour %s\n\n", tourname);
 
-  for(i=0;i<ntours;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
     touri = tourinfo + i;
@@ -1407,7 +1407,7 @@ void loadparticles(const char *name){
 
   PRINTF("script: loading particles files\n\n");
 
-  npartframes_max=get_min_partframes();
+  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -1686,6 +1686,12 @@ void loadslice(const char *type, int axis, float distance){
                              "load\n",type);
 }
 
+/* ------------------ loadsliceindex -------------------- */
+
+void loadsliceindex(int index) {
+  LoadSlicei(SET_SLICECOLOR,index);
+}
+
 /* ------------------ loadvslice ------------------------ */
 
 void loadvslice(const char *type, int axis, float distance){
@@ -1766,7 +1772,7 @@ void unloadall() {
     }
 #endif
     if(nvolrenderinfo>0){
-      LoadVolSmoke3DMenu(UNLOAD_ALL);
+      LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
     for(i=0;i<nsliceinfo;i++){
       ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
@@ -1787,10 +1793,10 @@ void unloadall() {
       readzone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      readsmoke3d(i,UNLOAD,&errorcode);
+      ReadSmoke3D(i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
-      UnLoadVolSmoke3DMenu(UNLOAD_ALL);
+      UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
 }
 
@@ -3837,13 +3843,13 @@ int set_showdevices(int ndevices_ini, const char **names) {
 
 int set_showdevicevals(int vshowdeviceval, int vshowvdeviceval,
     int vdevicetypes_index, int vcolordeviceval, int vvectortype,
-    int vvispilot, int vshowdevicetype, int vshowdeviceunit) {
+    int vviswindrose, int vshowdevicetype, int vshowdeviceunit) {
   showdeviceval = vshowdeviceval;
   showvdeviceval = vshowvdeviceval;
   devicetypes_index = vdevicetypes_index;
   colordeviceval = vcolordeviceval;
   vectortype = vvectortype;
-  vispilot = vvispilot;
+  viswindrose = vviswindrose;
   showdevicetype = vshowdevicetype;
   showdeviceunit = vshowdeviceunit;
   devicetypes_index = CLAMP(vdevicetypes_index, 0, ndevicetypes - 1);
