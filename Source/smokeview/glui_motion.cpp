@@ -52,6 +52,8 @@
 #define SHOWALL_SCREENS 31
 #define HIDEALL_SCREENS 32
 #endif
+#define WINDOW_COLORS 33
+#define COLOR_FLIP 34
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -98,6 +100,7 @@ GLUI_Rollout *ROLLOUT_scale=NULL;
 GLUI_Panel *PANEL_reset=NULL;
 GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
+GLUI_Panel *PANEL_colors=NULL;
 
 GLUI_Rollout *ROLLOUT_render360 = NULL;
 GLUI_Rollout *ROLLOUT_rotation_type = NULL;
@@ -115,6 +118,8 @@ GLUI_Rollout *ROLLOUT_lower = NULL;
 GLUI_Rollout *ROLLOUT_middle = NULL;
 GLUI_Rollout *ROLLOUT_upper = NULL;
 #endif
+GLUI_Rollout *ROLLOUT_background = NULL;
+GLUI_Rollout *ROLLOUT_foreground = NULL;
 
 
 GLUI_Spinner *SPINNER_nrender_rows=NULL;
@@ -144,6 +149,12 @@ GLUI_Spinner *SPINNER_zcenCUSTOM=NULL;
 GLUI_Spinner *SPINNER_framerate = NULL;
 GLUI_Spinner *SPINNER_bitrate = NULL;
 GLUI_Spinner *SPINNER_window_height360=NULL;
+GLUI_Spinner *SPINNER_foreground_red=NULL;
+GLUI_Spinner *SPINNER_foreground_green=NULL;
+GLUI_Spinner *SPINNER_foreground_blue=NULL;
+GLUI_Spinner *SPINNER_background_red=NULL;
+GLUI_Spinner *SPINNER_background_green=NULL;
+GLUI_Spinner *SPINNER_background_blue=NULL;
 
 GLUI_StaticText *STATIC_width360=NULL;
 
@@ -195,6 +206,7 @@ GLUI_Button *BUTTON_play_movie = NULL;
 GLUI_Button *BUTTON_screen_hideall = NULL;
 GLUI_Button *BUTTON_screen_showall = NULL;
 #endif
+GLUI_Button *BUTTON_flip = NULL;
 
 GLUI_EditText *EDIT_view_label=NULL;
 GLUI_EditText *EDIT_movie_name = NULL;
@@ -208,6 +220,33 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 procdata motionprocinfo[9];
 int nmotionprocinfo = 0;
+
+/* ------------------ SetColorControls ------------------------ */
+
+extern "C" void SetColorControls(void){
+  if(background_flip == 1){
+    glui_foregroundbasecolor[0] = 255.0*foregroundbasecolor[0];
+    glui_foregroundbasecolor[1] = 255.0*foregroundbasecolor[1];
+    glui_foregroundbasecolor[2] = 255.0*foregroundbasecolor[2];
+    glui_backgroundbasecolor[0] = 255.0*backgroundbasecolor[0];
+    glui_backgroundbasecolor[1] = 255.0*backgroundbasecolor[1];
+    glui_backgroundbasecolor[2] = 255.0*backgroundbasecolor[2];
+  }
+  else{
+    glui_foregroundbasecolor[0] = 255.0*backgroundbasecolor[0];
+    glui_foregroundbasecolor[1] = 255.0*backgroundbasecolor[1];
+    glui_foregroundbasecolor[2] = 255.0*backgroundbasecolor[2];
+    glui_backgroundbasecolor[0] = 255.0*foregroundbasecolor[0];
+    glui_backgroundbasecolor[1] = 255.0*foregroundbasecolor[1];
+    glui_backgroundbasecolor[2] = 255.0*foregroundbasecolor[2];
+  }
+  if(SPINNER_foreground_red  !=NULL)  SPINNER_foreground_red->set_int_val(glui_foregroundbasecolor[0]);
+  if(SPINNER_foreground_green!=NULL)SPINNER_foreground_green->set_int_val(glui_foregroundbasecolor[1]);
+  if(SPINNER_foreground_blue !=NULL) SPINNER_foreground_blue->set_int_val(glui_foregroundbasecolor[2]);
+  if(SPINNER_background_red  !=NULL)  SPINNER_background_red->set_int_val(glui_backgroundbasecolor[0]);
+  if(SPINNER_background_green!=NULL)SPINNER_background_green->set_int_val(glui_backgroundbasecolor[1]);
+  if(SPINNER_background_blue !=NULL) SPINNER_background_blue->set_int_val(glui_backgroundbasecolor[2]);
+}
 
 /* ------------------ Motion_Rollout_CB ------------------------ */
 
@@ -999,6 +1038,28 @@ extern "C" void glui_motion_setup(int main_window){
   SPINNER_window_width->set_int_limits(100, max_screenWidth);
   SPINNER_window_height = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _d("height"), GLUI_SPINNER_INT, &glui_screenHeight);
   SPINNER_window_height->set_int_limits(100, max_screenHeight);
+
+  PANEL_colors = glui_motion->add_panel_to_panel(ROLLOUT_projection, "Colors", true);
+  
+  ROLLOUT_foreground = glui_motion->add_rollout_to_panel(PANEL_colors,_d("Background"), false);
+  SPINNER_foreground_red = glui_motion->add_spinner_to_panel(ROLLOUT_foreground,_d("red"),GLUI_SPINNER_INT,glui_foregroundbasecolor,WINDOW_COLORS,Motion_CB);
+  SPINNER_foreground_green = glui_motion->add_spinner_to_panel(ROLLOUT_foreground, _d("green"), GLUI_SPINNER_INT, glui_foregroundbasecolor+1, WINDOW_COLORS, Motion_CB);
+  SPINNER_foreground_blue = glui_motion->add_spinner_to_panel(ROLLOUT_foreground, _d("blue"), GLUI_SPINNER_INT, glui_foregroundbasecolor+2, WINDOW_COLORS, Motion_CB);
+  SPINNER_foreground_red->set_int_limits(0, 255);
+  SPINNER_foreground_green->set_int_limits(0, 255);
+  SPINNER_foreground_blue->set_int_limits(0, 255);
+
+  ROLLOUT_background = glui_motion->add_rollout_to_panel(PANEL_colors, _d("Foreground"), false);
+  SPINNER_background_red = glui_motion->add_spinner_to_panel(ROLLOUT_background,_d("red"),GLUI_SPINNER_INT,glui_backgroundbasecolor,WINDOW_COLORS,Motion_CB);
+  SPINNER_background_green = glui_motion->add_spinner_to_panel(ROLLOUT_background,_d("green"),GLUI_SPINNER_INT,glui_backgroundbasecolor+1,WINDOW_COLORS,Motion_CB);
+  SPINNER_background_blue = glui_motion->add_spinner_to_panel(ROLLOUT_background,_d("blue"),GLUI_SPINNER_INT,glui_backgroundbasecolor+2,WINDOW_COLORS,Motion_CB);
+  SPINNER_background_red->set_int_limits(0, 255);
+  SPINNER_background_green->set_int_limits(0, 255);
+  SPINNER_background_blue->set_int_limits(0, 255);
+
+  BUTTON_flip = glui_motion->add_button_to_panel(PANEL_colors, _d("Flip"), COLOR_FLIP, Motion_CB);
+
+  
   BUTTON_window_update = glui_motion->add_button_to_panel(ROLLOUT_projection, _d("Apply"), WINDOW_RESIZE, Motion_CB);
 
   ROLLOUT_scale = glui_motion->add_rollout_to_panel(PANEL_viewA,_d("Scaling"),false,SCALING_ROLLOUT,Motion_Rollout_CB);
@@ -1439,7 +1500,19 @@ extern "C" void Motion_CB(int var){
   }
 
   switch(var){
-
+    case WINDOW_COLORS:
+      foregroundbasecolor[0] = (float)glui_foregroundbasecolor[0] / 255.0;
+      foregroundbasecolor[1] = (float)glui_foregroundbasecolor[1] / 255.0;
+      foregroundbasecolor[2] = (float)glui_foregroundbasecolor[2] / 255.0;
+      backgroundbasecolor[0] = (float)glui_backgroundbasecolor[0] / 255.0;
+      backgroundbasecolor[1] = (float)glui_backgroundbasecolor[1] / 255.0;
+      backgroundbasecolor[2] = (float)glui_backgroundbasecolor[2] / 255.0;
+      ShowHideMenu(MENU_SHOWHIDE_FLIP);
+      ShowHideMenu(MENU_SHOWHIDE_FLIP);
+      break;
+    case COLOR_FLIP:
+      ShowHideMenu(MENU_SHOWHIDE_FLIP);
+      break;
     case EYE_ROTATE:
       *azimuth=motion_dir[0];
       if(glui_move_mode!=EYE_ROTATE){
@@ -1734,8 +1807,9 @@ extern "C" void Motion_CB(int var){
     case CUSTOM_ROTATION_X:
     case CUSTOM_ROTATION_Y:
     case CUSTOM_ROTATION_Z:
-      break;
     case ROTATE_2AXIS:
+    case WINDOW_COLORS:
+    case COLOR_FLIP:
       break;
     default:
       ASSERT(FFALSE);

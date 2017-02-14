@@ -1703,7 +1703,7 @@ void script_loadplot3d(scriptdata *scripti){
     }
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  set_labels_controls();
+  SetLabelControls();
   if(count==0)fprintf(stderr,"*** Error: Plot3d file failed to load\n");
 
   //UpdateMenu();

@@ -152,10 +152,12 @@ SVEXTERN float northangle_position[3];
 #endif
 SVEXTERN float SVDECL(northangle, 0.0);
 SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
-SVEXTERN int SVDECL(viswindrose,0);
+
+SVEXTERN int SVDECL(viswindrose, 0), SVDECL(visxy_windrose, 1), SVDECL(visxz_windrose, 0), SVDECL(visyz_windrose, 0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
-SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);
+SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0),SVDECL(scale_increment_windrose,0.05);
 SVEXTERN int   SVDECL(showref_windrose,1),  SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
+
 SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
 SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);
 SVEXTERN int SVDECL(zone_rho, 1);
@@ -1009,6 +1011,8 @@ SVEXTERN float heatoffcolor[4];
 SVEXTERN float backgroundbasecolor[4];
 SVEXTERN float backgroundcolor[4];
 SVEXTERN float foregroundbasecolor[4];
+SVEXTERN int glui_foregroundbasecolor[4];
+SVEXTERN int glui_backgroundbasecolor[4];
 SVEXTERN float foregroundcolor[4];
 SVEXTERN float boundcolor[4];
 SVEXTERN float timebarcolor[4];

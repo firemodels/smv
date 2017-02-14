@@ -412,9 +412,20 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
+#define GLVERTEX2F(x,y) \
+if(orientation==WINDROSE_XY){\
+  glVertex3f((x), (y), 0.0);\
+}\
+else if(orientation==WINDROSE_XZ){\
+  glVertex3f((x), 0.0, (y));\
+}\
+else{\
+  glVertex3f(0.0, (x), (y));\
+}
+
 /* ----------------------- DrawWindRose ----------------------------- */
 
-void DrawWindRose(windrosedata *wr){
+void DrawWindRose(windrosedata *wr,int orientation){
   int itheta,icirc;
   float *xyz;
   histogramdata *hist;
@@ -422,7 +433,7 @@ void DrawWindRose(windrosedata *wr){
 
   if(wr==NULL)return;
   xyz = wr->xyz;
-  hist = &wr->histogram;
+  hist = wr->histogram+orientation;
   if(scale_windrose==WINDROSE_LOCALSCALE){
     maxr = hist->bucket_maxr;
   }
@@ -485,57 +496,55 @@ void DrawWindRose(windrosedata *wr){
         y22 = rval2*sin(angle2);
 
         glColor3fv(rgb_slice+4*color_index);
-        glVertex3f(x11, y11, 0.0);
-        glVertex3f(x12, y12, 0.0);
-        glVertex3f(x22, y22, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x12, y12);
+        GLVERTEX2F(x22, y22);
 
-        glVertex3f(x11, y11, 0.0);
-        glVertex3f(x22, y22, 0.0);
-        glVertex3f(x12, y12, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x22, y22);
+        GLVERTEX2F(x12, y12);
 
-        glVertex3f(x11, y11, 0.0);
-        glVertex3f(x22, y22, 0.0);
-        glVertex3f(x21, y21, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x22, y22);
+        GLVERTEX2F(x21, y21);
 
-        glVertex3f(x11, y11, 0.0);
-        glVertex3f(x21, y21, 0.0);
-        glVertex3f(x22, y22, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x21, y21);
+        GLVERTEX2F(x22, y22);
       }
-
       rval = rval2;
     }
   }
   glEnd();
 
   if(showref_windrose==1){
+    unsigned char uc_foregroundcolor[4];
+
+    uc_foregroundcolor[0] = 255 * foregroundcolor[0];
+    uc_foregroundcolor[1] = 255 * foregroundcolor[1];
+    uc_foregroundcolor[2] = 255 * foregroundcolor[2];
+    uc_foregroundcolor[3] = 255 * foregroundcolor[3];
+
+    if(orientation == WINDROSE_XZ)glRotatef(90.0, 1.0, 0.0, 0.0);
+    if(orientation == WINDROSE_YZ)glRotatef(90.0, 0.0, 1.0, 0.0);
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
-    for(icirc = 0;icirc<20;icirc++){
+    for(icirc = 0;icirc<100;icirc++){
       float factor,diameter;
-      unsigned char fg_uc[4];
 
-      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
-      fg_uc[0] = foregroundcolor[0]*255;
-      fg_uc[1] = foregroundcolor[1]*255;
-      fg_uc[2] = foregroundcolor[2]*255;
-      fg_uc[3] = foregroundcolor[3]*255;
-      drawcircle(diameter, fg_uc, &windrose_circ);
+      drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
     glTranslatef(0.0, 0.0, -0.002);
     for(icirc = 0;icirc<20;icirc++){
       float factor, diameter;
-      unsigned char fg_uc[4];
 
-      factor = 0.05*(float)icirc/(maxr/hist->ntotal);
+      factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
-      fg_uc[0] = foregroundcolor[0]*255;
-      fg_uc[1] = foregroundcolor[1]*255;
-      fg_uc[2] = foregroundcolor[2]*255;
-      fg_uc[3] = foregroundcolor[3]*255;
-      drawcircle(diameter, fg_uc, &windrose_circ);
+      drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
   }
   glPopMatrix();
@@ -553,7 +562,9 @@ void DrawWindRosesDevices(void){
 
     vdevi = vdeviceinfo + i;
     wr = &vdevi->windroseinfo;
-    DrawWindRose(wr);
+    if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
+    if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
+    if(visyz_windrose == 1)DrawWindRose(wr, WINDROSE_YZ);
   }
 }
 
@@ -5777,6 +5788,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
     windrosedata *windrosei;
+    int ndevs = 0, nvals;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -5786,33 +5798,67 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     veldev = vdevicei->veldev;
 
     windrosei = &(vdevicei->windroseinfo);
-    if(udev != NULL&&vdev != NULL){
-      int nvals;
+    if(udev != NULL){
+      ndevs++;
+      nvals = udev->nvals;
+    }
+    if(vdev != NULL){
+      nvals = vdev->nvals;
+      ndevs++;
+    }
+    if(wdev != NULL){
+      nvals = wdev->nvals;
+      ndevs++;
+    }
+    if(ndevs>1){
       float rmin, rmax;
       histogramdata *histogram;
+      int  j;
 
-      nvals = MIN(udev->nvals, vdev->nvals);
-      if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
+      if(udev != NULL)nvals = MIN(nvals, udev->nvals);
+      if(vdev != NULL)nvals = MIN(nvals, vdev->nvals);
+      if(wdev != NULL)nvals = MIN(nvals, wdev->nvals);
       windrosei->xyz = udev->xyz;
 
-      histogram = &(windrosei->histogram);
-      if(flag != FIRST_TIME){
-        FreeHistogramPolar(histogram);
+      for(j = 0;j < 3;j++){
+        float *uvals, *vvals;
+
+        histogram = windrosei->histogram+j;
+        if(flag != FIRST_TIME){
+          FreeHistogramPolar(histogram);
+        }
+        InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
+        uvals = NULL;
+        vvals = NULL;
+        switch (j){
+          case 0:
+            uvals = udev->vals;
+            vvals = vdev->vals;
+            break;
+          case 1:
+            uvals = udev->vals;
+            vvals = wdev->vals;
+            break;
+          case 2:
+            uvals = vdev->vals;
+            vvals = vdev->vals;
+            break;
+        }
+        if(uvals == NULL||vvals == NULL)continue;
+        Get2DBounds(uvals, vvals, nvals, &rmin, &rmax);
+        CopyUV2Histogram(uvals, vvals, nvals, rmin, rmax, histogram);
+        maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
       }
-      InitHistogramPolar(histogram,nr,ntheta,NULL,NULL);
-      Get2DBounds(udev->vals, vdev->vals, nvals, &rmin, &rmax);
-      CopyUV2Histogram(udev->vals,vdev->vals,nvals,rmin,rmax,histogram);
-      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
+
     }
-    else if(angledev != NULL&&veldev != NULL){
-      int nvals;
+    if(angledev != NULL&&veldev != NULL){
       float rmin, rmax;
       histogramdata *histogram;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
 
       windrosei->xyz = angledev->xyz;
-      histogram = &(windrosei->histogram);
+      histogram = windrosei->histogram;
       if(flag != FIRST_TIME){
         FreeHistogramPolar(histogram);
       }
