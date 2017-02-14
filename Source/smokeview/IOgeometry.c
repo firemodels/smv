@@ -953,13 +953,18 @@ void smooth_geom_normals(geomlistdata *geomlisti, int geomtype){
       for(k = 0; k<vertj->ntriangles; k++){
         tridata *trianglek;
         float *tri_normk, cosang;
+        float lengthi, lengthk;
 
         trianglek = vertj->triangles[k];
         if(trianglek->exterior == 0)continue;
         tri_normk = trianglek->tri_norm;
-        cosang = DOT3(tri_normk, tri_normi)/(NORM3(tri_normk)*NORM3(tri_normi));
-        if(use_max_angle==0||geomtype==GEOM_ISO||cosang>cos_geom_max_angle){ // smooth using all triangles if an isosurface
-          VEC3ADD(norm,norm,tri_normk);
+        lengthk = NORM3(tri_normk);
+        lengthi = NORM3(tri_normi);
+        if(lengthk > 0.0&&lengthi > 0.0){
+          cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
+          if(use_max_angle == 0 || geomtype == GEOM_ISO || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
+            VEC3ADD(norm, norm, tri_normk);
+          }
         }
       }
       ReduceToUnit(norm);
