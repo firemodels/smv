@@ -5832,16 +5832,16 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         vvals = NULL;
         switch (j){
           case 0:
-            uvals = udev->vals;
-            vvals = vdev->vals;
+            if(udev!=NULL)uvals = udev->vals;
+            if(vdev!=NULL)vvals = vdev->vals;
             break;
           case 1:
-            uvals = udev->vals;
-            vvals = wdev->vals;
+            if(udev!=NULL)uvals = udev->vals;
+            if(wdev!=NULL)vvals = wdev->vals;
             break;
           case 2:
-            uvals = vdev->vals;
-            vvals = vdev->vals;
+            if(vdev!=NULL)uvals = vdev->vals;
+            if(wdev!=NULL)vvals = wdev->vals;
             break;
         }
         if(uvals == NULL||vvals == NULL)continue;
