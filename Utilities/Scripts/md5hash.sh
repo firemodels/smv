@@ -4,7 +4,8 @@ fileout=$filein.md5
 
 if [ -e $filein ]; then
    if [ "`uname`" == "Darwin" ] ; then
-     cat $filein | md5sum > $fileout
+     hash=`cat $filein | md5`
+     echo "$hash  $filein"  > $fileout
    else
      md5sum $filein > $fileout
    fi
