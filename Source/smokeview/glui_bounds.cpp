@@ -2999,7 +2999,7 @@ extern "C" void Slice_CB(int var){
         setbwdata = 0;
       }
       IsoCB(ISO_COLORS);
-      set_labels_controls();
+      SetLabelControls();
       break;
     case RESEARCH_MODE:
       for(i=0;i<nsliceinfo;i++){

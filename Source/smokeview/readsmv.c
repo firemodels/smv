@@ -10394,11 +10394,13 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "BACKGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", backgroundbasecolor, backgroundbasecolor + 1, backgroundbasecolor + 2);
+      SetColorControls();
       continue;
     }
     if(Match(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
+      SetColorControls();
       continue;
     }
     if(Match(buffer, "BLOCKCOLOR") == 1){

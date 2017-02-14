@@ -412,6 +412,17 @@ void Output_Device_Val(devicedata *devicei){
   }
 }
 
+#define GLVERTEX2F(x,y) \
+if(orientation==WINDROSE_XY){\
+  glVertex3f((x), (y), 0.0);\
+}\
+else if(orientation==WINDROSE_XZ){\
+  glVertex3f((x), 0.0, (y));\
+}\
+else{\
+  glVertex3f(0.0, (x), (y));\
+}
+
 /* ----------------------- DrawWindRose ----------------------------- */
 
 void DrawWindRose(windrosedata *wr,int orientation){
@@ -485,59 +496,21 @@ void DrawWindRose(windrosedata *wr,int orientation){
         y22 = rval2*sin(angle2);
 
         glColor3fv(rgb_slice+4*color_index);
-        switch (orientation){
-        case WINDROSE_XY:
-          glVertex3f(x11, y11, 0.0);
-          glVertex3f(x12, y12, 0.0);
-          glVertex3f(x22, y22, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x12, y12);
+        GLVERTEX2F(x22, y22);
 
-          glVertex3f(x11, y11, 0.0);
-          glVertex3f(x22, y22, 0.0);
-          glVertex3f(x12, y12, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x22, y22);
+        GLVERTEX2F(x12, y12);
 
-          glVertex3f(x11, y11, 0.0);
-          glVertex3f(x22, y22, 0.0);
-          glVertex3f(x21, y21, 0.0);
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x22, y22);
+        GLVERTEX2F(x21, y21);
 
-          glVertex3f(x11, y11, 0.0);
-          glVertex3f(x21, y21, 0.0);
-          glVertex3f(x22, y22, 0.0);
-          break;
-        case WINDROSE_XZ:
-          glVertex3f(x11, 0.0, y11);
-          glVertex3f(x12, 0.0, y12);
-          glVertex3f(x22, 0.0, y22);
-
-          glVertex3f(x11, 0.0, y11);
-          glVertex3f(x22, 0.0, y22);
-          glVertex3f(x12, 0.0, y12);
-
-          glVertex3f(x11, 0.0, y11);
-          glVertex3f(x22, 0.0, y22);
-          glVertex3f(x21, 0.0, y21);
-
-          glVertex3f(x11, 0.0, y11);
-          glVertex3f(x21, 0.0, y21);
-          glVertex3f(x22, 0.0, y22);
-          break;
-        case WINDROSE_YZ:
-          glVertex3f(0.0, x11, y11);
-          glVertex3f(0.0, x12, y12);
-          glVertex3f(0.0, x22, y22);
-
-          glVertex3f(0.0, x11, y11);
-          glVertex3f(0.0, x22, y22);
-          glVertex3f(0.0, x12, y12);
-
-          glVertex3f(0.0, x11, y11);
-          glVertex3f(0.0, x22, y22);
-          glVertex3f(0.0, x21, y21);
-
-          glVertex3f(0.0, x11, y11);
-          glVertex3f(0.0, x21, y21);
-          glVertex3f(0.0, x22, y22);
-          break;
-        }
+        GLVERTEX2F(x11, y11);
+        GLVERTEX2F(x21, y21);
+        GLVERTEX2F(x22, y22);
       }
       rval = rval2;
     }
@@ -545,43 +518,34 @@ void DrawWindRose(windrosedata *wr,int orientation){
   glEnd();
 
   if(showref_windrose==1){
-    glPushMatrix();
-    if(orientation == WINDROSE_XZ){
-      glRotatef(90.0, 1.0, 0.0, 0.0);
-    }
-    if(orientation == WINDROSE_YZ){
-      glRotatef(90.0, 0.0, 1.0, 0.0);
-    }
+    unsigned char uc_foregroundcolor[4];
+
+    uc_foregroundcolor[0] = 255 * foregroundcolor[0];
+    uc_foregroundcolor[1] = 255 * foregroundcolor[1];
+    uc_foregroundcolor[2] = 255 * foregroundcolor[2];
+    uc_foregroundcolor[3] = 255 * foregroundcolor[3];
+
+    if(orientation == WINDROSE_XZ)glRotatef(90.0, 1.0, 0.0, 0.0);
+    if(orientation == WINDROSE_YZ)glRotatef(90.0, 0.0, 1.0, 0.0);
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
     for(icirc = 0;icirc<100;icirc++){
       float factor,diameter;
-      unsigned char fg_uc[4];
 
       factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
-      fg_uc[0] = foregroundcolor[0]*255;
-      fg_uc[1] = foregroundcolor[1]*255;
-      fg_uc[2] = foregroundcolor[2]*255;
-      fg_uc[3] = foregroundcolor[3]*255;
-      drawcircle(diameter, fg_uc, &windrose_circ);
+      drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
     glTranslatef(0.0, 0.0, -0.002);
     for(icirc = 0;icirc<20;icirc++){
       float factor, diameter;
-      unsigned char fg_uc[4];
 
       factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
-      fg_uc[0] = foregroundcolor[0]*255;
-      fg_uc[1] = foregroundcolor[1]*255;
-      fg_uc[2] = foregroundcolor[2]*255;
-      fg_uc[3] = foregroundcolor[3]*255;
-      drawcircle(diameter, fg_uc, &windrose_circ);
+      drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
-    glPopMatrix();
   }
   glPopMatrix();
   glDisable(GL_LIGHTING);

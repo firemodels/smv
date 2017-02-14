@@ -628,7 +628,7 @@ void LabelMenu(int value){
      ASSERT(FFALSE);
      break;
   }
-  set_labels_controls();
+  SetLabelControls();
 }
 
 /* ------------------ SmokeColorbarMenu ------------------------ */
@@ -697,12 +697,12 @@ void ColorbarMenu(int value){
     case COLORBAR_TOGGLE_BW:
       setbw=1-setbw;
       InitRGB();
-      set_labels_controls();
+      SetLabelControls();
       break;
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
-     set_labels_controls();
+     SetLabelControls();
      update_transparency();
      break;
    case COLORBAR_CONTINUOUS:
@@ -735,7 +735,7 @@ void ColorbarMenu(int value){
       setbwdata = 0;
     }
     IsoCB(ISO_COLORS);
-    set_labels_controls();
+    SetLabelControls();
   }
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -1087,7 +1087,8 @@ void ShowHideMenu(int value){
   case MENU_SHOWHIDE_FLIP:
    background_flip = 1-background_flip;
    UpdateRGBColors(COLORBAR_INDEX_NONE);
-   set_labels_controls();
+   SetLabelControls();
+   SetColorControls();
    break;
   case MENU_SHOWHIDE_EVAC:
     if(plotstate==DYNAMIC_PLOTS){
@@ -1341,7 +1342,7 @@ void FontMenu(int value){
     ASSERT(FFALSE);
   }
   glui_update_fontindex();
-  set_labels_controls();
+  SetLabelControls();
 }
 
 /* ------------------ UnitsMenu ------------------------ */
@@ -1360,7 +1361,7 @@ void UnitsMenu(int value){
   }
   else if(value==MENU_UNITS_HMS){
     vishmsTimelabel = 1 - vishmsTimelabel;
-    set_labels_controls();
+    SetLabelControls();
 
   }
   else if(value==MENU_UNITS_SHOWALL){

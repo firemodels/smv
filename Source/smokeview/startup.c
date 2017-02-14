@@ -1765,6 +1765,11 @@ void initvars(void){
   backgroundbasecolor[2]=0.0;
   backgroundbasecolor[3]=1.0;
 
+  glui_backgroundbasecolor[0] = 255 * backgroundbasecolor[0];
+  glui_backgroundbasecolor[1] = 255 * backgroundbasecolor[1];
+  glui_backgroundbasecolor[2] = 255 * backgroundbasecolor[2];
+  glui_backgroundbasecolor[3] = 255 * backgroundbasecolor[3];
+
   backgroundcolor[0]=0.0;
   backgroundcolor[1]=0.0;
   backgroundcolor[2]=0.0;
@@ -1774,6 +1779,11 @@ void initvars(void){
   foregroundbasecolor[1]=1.0;
   foregroundbasecolor[2]=1.0;
   foregroundbasecolor[3]=1.0;
+
+  glui_foregroundbasecolor[0] = 255 * foregroundbasecolor[0];
+  glui_foregroundbasecolor[1] = 255 * foregroundbasecolor[1];
+  glui_foregroundbasecolor[2] = 255 * foregroundbasecolor[2];
+  glui_foregroundbasecolor[3] = 255 * foregroundbasecolor[3];
 
   foregroundcolor[0]=1.0;
   foregroundcolor[1]=1.0;

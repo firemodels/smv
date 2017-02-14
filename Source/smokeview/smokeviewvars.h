@@ -1011,6 +1011,8 @@ SVEXTERN float heatoffcolor[4];
 SVEXTERN float backgroundbasecolor[4];
 SVEXTERN float backgroundcolor[4];
 SVEXTERN float foregroundbasecolor[4];
+SVEXTERN int glui_foregroundbasecolor[4];
+SVEXTERN int glui_backgroundbasecolor[4];
 SVEXTERN float foregroundcolor[4];
 SVEXTERN float boundcolor[4];
 SVEXTERN float timebarcolor[4];

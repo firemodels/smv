@@ -1003,9 +1003,9 @@ extern "C" void Labels_CB(int var){
   }
 }
 
-/* ------------------ set_labels_controls ------------------------ */
+/* ------------------ SetLabelControls ------------------------ */
 
-  extern "C" void set_labels_controls(){
+  extern "C" void SetLabelControls(){
 
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
