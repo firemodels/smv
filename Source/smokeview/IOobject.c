@@ -1020,7 +1020,8 @@ void draw_devices(void){
       glPopMatrix();
       glLineWidth(beam_line_width);
       drawline(devicei->xyz1, devicei->xyz2, bc);
-      continue;
+      glPushMatrix();
+      glTranslatef(xyz[0],xyz[1],xyz[2]);
     }
     dpsi=0.0;
     if((active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN&&STRCMP(devicei->object->label,"smokesensor")==0)||
