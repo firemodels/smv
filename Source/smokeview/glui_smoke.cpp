@@ -593,6 +593,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
     SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("adaptive gridding"), &smoke_adaptive_gridding);
 
 #ifdef _DEBUG
     CHECKBOX_usevolrender = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Show"), &usevolrender, VOL_SMOKE, Smoke3d_CB);

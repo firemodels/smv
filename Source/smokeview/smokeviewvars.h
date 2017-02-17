@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke_adaptive_gridding, 1);
 SVEXTERN int SVDECL(smoke_test, 0);
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};

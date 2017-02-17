@@ -104,7 +104,7 @@ float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase
 
 /* ----------------------- GetPtSmokeColor ----------------------------- */
 
-void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dstep, float xyz[3], meshdata *meshi, int *inobst, char *blank_local, float *soot_density, float *temperature){
   int i, j, k;
   int ijk;
   float *vv;
@@ -117,7 +117,7 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   float *smokedata_local, *firedata_local, *lightdata_local;
-  float soot_density, temperature, light_fraction;
+  float light_fraction;
   int index;
   float black[] = {0.0,0.0,0.0,1.0};
   int slicetype;
@@ -170,14 +170,14 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
   if(firedata_local!=NULL){
     float dtemp;
 
-    INTERP3D(firedata_local, temperature);
-    if(temperature<temperature_cutoff){
+    INTERP3D(firedata_local, *temperature);
+    if(*temperature<temperature_cutoff){
       dtemp = (temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
-      GETINDEX(index, temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
+      GETINDEX(index, *temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
     }
     else{
       dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
-      GETINDEX(index, temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
+      GETINDEX(index, *temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
       index += (MAXSMOKERGB/2);
     }
     *smoke_color = rgb_volsmokecolormap+4*index;
@@ -186,9 +186,9 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
     *smoke_color = getcolorptr(black);
   }
   if(smokedata_local!=NULL){
-    INTERP3D(smokedata_local, soot_density);
-    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
-    *smoke_tran = exp(-mass_extinct*soot_density*dstep);
+    INTERP3D(smokedata_local, *soot_density);
+    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)*soot_density *= fire_opacity_factor;
+    *smoke_tran = exp(-mass_extinct*(*soot_density)*dstep);
   }
   if(use_light&&lightdata_local!=NULL){
     INTERP3D(lightdata_local, light_fraction);
@@ -942,9 +942,10 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float pt_smoketran, *pt_smokecolor, pt_light_fraction;
+  float pt_smoketran, *pt_smokecolor=NULL, pt_light_fraction;
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
+  float xi,last_color[3],i_dstep, last_temperature=-1.0, last_soot_density=-1.0;
 
   if(combine_meshes==1){
     boxmin = meshi->super->boxmin_scaled;
@@ -1050,6 +1051,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
     nsteps=1;
   }
   dstep=SCALE2FDS(distseg/(float)nsteps);
+  i_dstep = 1.0;
   if(block_volsmoke==1){
     blank_local=meshi->c_iblank_cell;
   }
@@ -1060,14 +1062,22 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   cum_smokecolor[1]=0.0;
   cum_smokecolor[2]=0.0;
   cum_smokecolor[3]=0.0;
+  last_color[0] = 0.0;
+  last_color[1] = 0.0;
+  last_color[2] = 0.0;
+  last_temperature = 0.0;
+  last_soot_density = 0.0;
   tauhat=1.0;
   alphahat=0.0;
-  for(i=0;i<nsteps;i++){
+  xi = 0.0;
+  for(i=0;;i++){
     float factor;
     int inobst;
     float alphai;
+    float soot_density, temperature;
 
-    factor = (0.5 + (float)i)/(float)nsteps;
+    if(xi+0.0001>=(float)nsteps)break;
+    factor = (0.5 + xi)/(float)nsteps;
 
     xyz[0] = MIX(factor,vert_end[0],vert_beg[0]);
     xyz[1] = MIX(factor,vert_end[1],vert_beg[1]);
@@ -1082,7 +1092,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
       else{
         blank_local=NULL;
       }
-      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, xyz_mesh, &inobst, blank_local);
+      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, xyz_mesh, &inobst, blank_local,&temperature,&soot_density);
     }
     else{
       if(block_volsmoke==1){
@@ -1091,7 +1101,36 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
       else{
         blank_local=NULL;
       }
-      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, meshi, &inobst, blank_local);
+      GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, meshi, &inobst, blank_local,&temperature,&soot_density);
+    }
+    if(smoke_adaptive_gridding==1&&i>0&&soot_density>=0.0&&last_soot_density>=0.0){
+      float diff, diff_temperature, diff_soot_density;
+
+#define COLOREPS 1.0
+#define SOOTEPS 0.0001
+      diff = MAXDIFF3(pt_smokecolor,last_color);
+      diff_temperature = ABS(temperature-last_temperature);
+      diff_soot_density = ABS(soot_density-last_soot_density);
+      if(diff_soot_density>SOOTEPS){
+        if(i_dstep>0.025){
+          i_dstep/=2.0;
+          dstep/= 2.0;
+        }
+      }
+      else{
+        if(i_dstep<1.0){
+          i_dstep *= 2.0;
+          dstep *= 2.0;
+        }
+      }
+    }
+    xi+=i_dstep;
+    if(pt_smokecolor!=NULL){
+      last_color[0] = pt_smokecolor[0];
+      last_color[1] = pt_smokecolor[1];
+      last_color[2] = pt_smokecolor[2];
+      last_temperature = temperature;
+      last_soot_density = soot_density;
     }
     if(blank_local!=NULL&&inobst==1)break;
 
