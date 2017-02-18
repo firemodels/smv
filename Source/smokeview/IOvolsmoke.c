@@ -945,7 +945,7 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
   float pt_smoketran, *pt_smokecolor=NULL, pt_light_fraction;
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
-  float xi,last_color[3],i_dstep, last_temperature=-1.0, last_soot_density=-1.0;
+  float xi,last_xi,last_color[3],i_dstep, last_temperature=-1.0, last_soot_density=-1.0;
 
   if(combine_meshes==1){
     boxmin = meshi->super->boxmin_scaled;
@@ -1086,24 +1086,16 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
     if(combine_meshes==1){
       xyz_mesh = GetMeshInSmesh(xyz_mesh,meshi->super,xyz);
       if(xyz_mesh==NULL)break;
-      if(block_volsmoke==1){
-        blank_local=xyz_mesh->c_iblank_cell;
-      }
-      else{
-        blank_local=NULL;
-      }
+      blank_local = NULL;
+      if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
       GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, xyz_mesh, &inobst, blank_local,&temperature,&soot_density);
     }
     else{
-      if(block_volsmoke==1){
-        blank_local=meshi->c_iblank_cell;
-      }
-      else{
-        blank_local=NULL;
-      }
+      blank_local = NULL;
+      if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
       GetPtSmokeColor(&pt_smoketran,&pt_smokecolor, &pt_light_fraction, dstep,xyz, meshi, &inobst, blank_local,&temperature,&soot_density);
     }
-    if(smoke_adaptive_gridding==1&&i>0&&soot_density>=0.0&&last_soot_density>=0.0){
+    if(smoke_adaptive_gridding==1&&xi>0.0&&soot_density>=0.0&&last_soot_density>=0.0){
       float diff, diff_temperature, diff_soot_density;
 
 #define COLOREPS 1.0
@@ -1113,17 +1105,18 @@ void GetCumSmokeColor(float *cum_smokecolor, float *xyzvert, float dstep, meshda
       diff_soot_density = ABS(soot_density-last_soot_density);
       if(diff_soot_density>SOOTEPS){
         if(i_dstep>0.025){
-          i_dstep/=2.0;
-          dstep/= 2.0;
+          i_dstep /= 2.0;
+          dstep   /= 2.0;
         }
       }
       else{
         if(i_dstep<1.0){
           i_dstep *= 2.0;
-          dstep *= 2.0;
+          dstep   *= 2.0;
         }
       }
     }
+    last_xi = xi;
     xi+=i_dstep;
     if(pt_smokecolor!=NULL){
       last_color[0] = pt_smokecolor[0];
