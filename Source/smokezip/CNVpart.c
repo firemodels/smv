@@ -913,9 +913,9 @@ void part2iso(part *parti, int *thread_index){
         int ix, iy, iz;
         int ijkval;
 
-        GETINDEX(ix,x[i],xmin,partmesh->dx,nx2);
-        GETINDEX(iy,y[i],ymin,partmesh->dy,ny2);
-        GETINDEX(iz,z[i],zmin,partmesh->dz,nz2);
+        ix = GETINDEX(x[i],xmin,partmesh->dx,nx2);
+        iy = GETINDEX(y[i],ymin,partmesh->dy,ny2);
+        iz = GETINDEX(z[i],zmin,partmesh->dz,nz2);
         ijkval = IJKVAL(ix,iy,iz);
         partindex[i]=ijkval;
         partcount[ijkval]++;
@@ -1274,9 +1274,9 @@ void part2object(part *parti, int *thread_index){
         int ix, iy, iz;
         int ijkval;
 
-        GETINDEX(ix,x[i],xmin,partmesh->dx,nx2);
-        GETINDEX(iy,y[i],ymin,partmesh->dy,ny2);
-        GETINDEX(iz,z[i],zmin,partmesh->dz,nz2);
+        ix = GETINDEX(x[i],xmin,partmesh->dx,nx2);
+        iy = GETINDEX(y[i],ymin,partmesh->dy,ny2);
+        iz = GETINDEX(z[i],zmin,partmesh->dz,nz2);
         ijkval = IJKVAL(ix,iy,iz);
         partindex[i]=ijkval;
         partcount[ijkval]++;
