@@ -152,9 +152,9 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
   ny = jbar+1;
   nxy = nx*ny;
 
-  GETINDEX(i, xyz[0], xplt[0], dxbar, ibar);
-  GETINDEX(j, xyz[1], yplt[0], dybar, jbar);
-  GETINDEX(k, xyz[2], zplt[0], dzbar, kbar);
+  i = GETINDEX(xyz[0], xplt[0], dxbar, ibar);
+  j = GETINDEX(xyz[1], yplt[0], dybar, jbar);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, kbar);
 
   if(blank_local!=NULL){
     ijkcell = IJKCELL(i, j, k);
@@ -173,11 +173,11 @@ void GetPtSmokeColor(float *smoke_tran, float **smoke_color, float *light_fracti
     INTERP3D(firedata_local, *temperature);
     if(*temperature<temperature_cutoff){
       dtemp = (temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
-      GETINDEX(index, *temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
+      index = GETINDEX(*temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
     }
     else{
       dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
-      GETINDEX(index, *temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
+      index = GETINDEX(*temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
       index += (MAXSMOKERGB/2);
     }
     *smoke_color = rgb_volsmokecolormap+4*index;
