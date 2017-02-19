@@ -942,10 +942,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float ds
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float smoke_transparency, *smokecolor=NULL, light_fraction;
+  float xi, smoke_transparency, *smoke_color=NULL, smoke_light_fraction;
+  float last_xi,last_smoke_color[3],i_dstep, last_smoke_temperature=-1.0, last_smoke_soot_density=-1.0;
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
-  float xi,last_xi,last_color[3],i_dstep, last_temperature=-1.0, last_soot_density=-1.0;
 
   if(combine_meshes==1){
     boxmin = meshi->super->boxmin_scaled;
@@ -1050,13 +1050,13 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float ds
   blank_local=NULL;
   if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
   VEC4EQCONS(integrated_smokecolor,0.0);
-  VEC3EQCONS(last_color,0.0);
-  last_temperature = 0.0;
-  last_soot_density = 0.0;
+  VEC3EQCONS(last_smoke_color,0.0);
+  last_smoke_temperature = 0.0;
+  last_smoke_soot_density = 0.0;
   tauhat=1.0;
   alphahat=0.0;
   for(xi = 0.5;xi+0.0001<(float)nsteps;){
-    float factor, alphai, soot_density, temperature;
+    float factor, alphai, smoke_soot_density, smoke_temperature;
     int inobst;
 
     factor = xi/(float)nsteps;
@@ -1070,23 +1070,23 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float ds
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetSmokeProperties(&smoke_transparency,&smokecolor, &light_fraction, &temperature, &soot_density,
+      GetSmokeProperties(&smoke_transparency,&smoke_color, &smoke_light_fraction, &smoke_temperature, &smoke_soot_density,
                          dstep,xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetSmokeProperties(&smoke_transparency,&smokecolor, &light_fraction, &temperature, &soot_density,
+      GetSmokeProperties(&smoke_transparency,&smoke_color, &smoke_light_fraction, &smoke_temperature, &smoke_soot_density,
                          dstep, xyz, meshi, &inobst, blank_local);
     }
-    if(smoke_adaptive_gridding==1&&xi>0.0&&soot_density>=0.0&&last_soot_density>=0.0){
+    if(smoke_adaptive_gridding==1&&xi>0.0&&smoke_soot_density>=0.0&&last_smoke_soot_density>=0.0){
       float diff, diff_temperature, diff_soot_density;
 
 #define COLOREPS 1.0
 #define SOOTEPS 0.0001
-      diff = MAXDIFF3(smokecolor,last_color);
-      diff_temperature = ABS(temperature-last_temperature);
-      diff_soot_density = ABS(soot_density-last_soot_density);
+      diff = MAXDIFF3(smoke_color,last_smoke_color);
+      diff_temperature = ABS(smoke_temperature-last_smoke_temperature);
+      diff_soot_density = ABS(smoke_soot_density-last_smoke_soot_density);
       if(diff_soot_density>SOOTEPS){
         if(i_dstep>0.025){
           i_dstep /= 2.0;
@@ -1102,10 +1102,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float ds
     }
     last_xi = xi;
     xi+=i_dstep;
-    if(smokecolor!=NULL){
-      VEC3EQ(last_color,smokecolor);
-      last_temperature = temperature;
-      last_soot_density = soot_density;
+    if(smoke_color!=NULL){
+      VEC3EQ(last_smoke_color,smoke_color);
+      last_smoke_temperature = smoke_temperature;
+      last_smoke_soot_density = smoke_soot_density;
     }
     if(blank_local!=NULL&&inobst==1)break;
 
@@ -1127,15 +1127,15 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float ds
       }
 
       scatter_fraction = GetScatterFraction(uvec, vvec, scatter_param, scatter_type_glui);
-      light_factor = alphai*light_intensity*light_fraction*scatter_fraction/255.0;
-      integrated_smokecolor[0] += alphai*tauhat*(smokecolor[0] + light_factor*light_color[0]);
-      integrated_smokecolor[1] += alphai*tauhat*(smokecolor[1] + light_factor*light_color[1]);
-      integrated_smokecolor[2] += alphai*tauhat*(smokecolor[2] + light_factor*light_color[2]);
+      light_factor = alphai*light_intensity*smoke_light_fraction*scatter_fraction/255.0;
+      integrated_smokecolor[0] += alphai*tauhat*(smoke_color[0] + light_factor*light_color[0]);
+      integrated_smokecolor[1] += alphai*tauhat*(smoke_color[1] + light_factor*light_color[1]);
+      integrated_smokecolor[2] += alphai*tauhat*(smoke_color[2] + light_factor*light_color[2]);
     }
     else{
-      integrated_smokecolor[0] += alphai*tauhat*smokecolor[0];
-      integrated_smokecolor[1] += alphai*tauhat*smokecolor[1];
-      integrated_smokecolor[2] += alphai*tauhat*smokecolor[2];
+      integrated_smokecolor[0] += alphai*tauhat*smoke_color[0];
+      integrated_smokecolor[1] += alphai*tauhat*smoke_color[1];
+      integrated_smokecolor[2] += alphai*tauhat*smoke_color[2];
     }
     tauhat *= smoke_transparency;
   }
