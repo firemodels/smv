@@ -119,6 +119,22 @@
   (ymx)[2]=(y)[2]-(x)[2]
 #endif
 
+#ifndef VEC4EQ
+#define VEC4EQ(y,x)\
+  (y)[0] = (x)[0];\
+  (y)[1] = (x)[1];\
+  (y)[2] = (x)[2];\
+  (y)[3] = (x)[3]
+#endif
+
+#ifndef VEC4EQCONS
+#define VEC4EQCONS(y,x)\
+  (y)[0]=(x);\
+  (y)[1]=(x);\
+  (y)[2]=(x);\
+  (y)[3]=(x)
+#endif
+
 #ifndef DOT3
 #define DOT3(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
 #endif
