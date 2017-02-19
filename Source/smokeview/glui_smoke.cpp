@@ -134,7 +134,6 @@ GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
 #ifdef pp_CULL
 GLUI_Checkbox *CHECKBOX_show_cullports=NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_usevolrender=NULL;
 GLUI_Checkbox *CHECKBOX_compress_volsmoke=NULL;
 GLUI_Checkbox *CHECKBOX_smokecullflag=NULL;
 GLUI_Checkbox *CHECKBOX_test_smokesensors=NULL;
@@ -579,6 +578,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
       glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _d("Load full data"));
       glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _d("Load compressed data"));
     }
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Show"), &usevolrender, VOL_SMOKE, Smoke3d_CB);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Load data in background"), &use_multi_threading);
     CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Compress data while loading"), &glui_compress_volsmoke);
     if(have_volcompressed == 1){
@@ -593,10 +593,9 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
     SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("adaptive gridding"), &smoke_adaptive_gridding);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("adaptive integration"), &vol_adaptive);
 
 #ifdef _DEBUG
-    CHECKBOX_usevolrender = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Show"), &usevolrender, VOL_SMOKE, Smoke3d_CB);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, "block smoke", &block_volsmoke);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, "debug", &smoke3dVoldebug);
 #endif

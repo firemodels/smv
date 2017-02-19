@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(smoke_adaptive_gridding, 1);
+SVEXTERN int SVDECL(vol_adaptive, 1);
 SVEXTERN int SVDECL(smoke_test, 0);
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
@@ -438,7 +438,7 @@ SVEXTERN int GPUzone_odl, GPUzone_odu;
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;
 SVEXTERN int GPUvol_soot_density, GPUvol_fire, GPUvol_blockage;
-SVEXTERN int GPUvol_fire_opacity_factor,GPUvol_volbw,GPUvol_mass_extinct;
+SVEXTERN int GPUvol_fire_opacity_factor,GPUvol_volbw,GPUvol_mass_extinct,GPUvol_vol_adaptive;
 SVEXTERN int GPUvol_temperature_min,GPUvol_temperature_cutoff,GPUvol_temperature_max;
 SVEXTERN int GPUvol_boxmin, GPUvol_boxmax, GPUvol_drawsides;
 SVEXTERN int GPUvol_smokecolormap, GPUvol_dcell, GPUvol_havefire;
