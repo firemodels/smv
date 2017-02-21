@@ -1084,8 +1084,8 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
 #define COLOREPS_MIN 0.0
       diff_color = MAXDIFF3(smoke_color,last_smoke_color);
       if(
-         diff_color>COLOREPS_MAX&&i_dlength>0.125||
-         diff_color<COLOREPS_MIN&&i_dlength<4.0
+         (diff_color>COLOREPS_MAX&&i_dlength>0.125)||
+         (diff_color<COLOREPS_MIN&&i_dlength<4.0)
         ){
         float grid_factor;
 
