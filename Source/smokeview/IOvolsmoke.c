@@ -1053,8 +1053,9 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   VEC3EQCONS(last_smoke_color,0.0);
   tauhat=1.0;
   alphahat=0.0;
+  last_xi = 0.5;
   for(xi = 0.5;xi+0.0001<(float)nsteps;){
-    float factor, alphai, smoke_soot_density, smoke_temperature;
+    float factor, alphai;
     int inobst;
 
     factor = xi/(float)nsteps;
