@@ -145,9 +145,8 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fraction
   dxbar = xplt[1]-xplt[0];
   dybar = yplt[1]-yplt[0];
   dzbar = zplt[1]-zplt[0];
-  xyz[0] -= dxbar/2.0;
-  xyz[1] -= dybar/2.0;
-  xyz[2] -= dzbar/2.0;
+  xyz[0] -= dxbar/2.0; // offset x and y position by half a grid cell
+  xyz[1] -= dybar/2.0; // z position does not need to be offset
 
   nx = ibar+1;
   ny = jbar+1;
