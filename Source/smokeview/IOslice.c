@@ -144,9 +144,9 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
   slice_ny = sd->ijk_max[1] - sd->ijk_min[1] + 1;
   slice_nz = sd->ijk_max[2] - sd->ijk_min[2] + 1;
 
-  GETINDEX(i, xyz[0], xplt[0], dxbar, nx);
-  GETINDEX(j, xyz[1], yplt[0], dybar, ny);
-  GETINDEX(k, xyz[2], zplt[0], dzbar, nz);
+  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
+  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
 
   // val(i,j,k) = di*nj*nk + dj*nk + dk
   ijk_min = sd->ijk_min;
@@ -237,9 +237,9 @@ float GetTextureIndex(float *xyz){
   slice_ny = gslice->ijk_max[1] - gslice->ijk_min[1] + 1;
   slice_nz = gslice->ijk_max[2] - gslice->ijk_min[2] + 1;
 
-  GETINDEX(i, xyz[0], xplt[0], dxbar, nx);
-  GETINDEX(j, xyz[1], yplt[0], dybar, ny);
-  GETINDEX(k, xyz[2], zplt[0], dzbar, nz);
+  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
+  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
 
   // val(i,j,k) = di*nj*nk + dj*nk + dk
   ijk_min = gslice->ijk_min;

@@ -1,13 +1,6 @@
 #include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef pp_DRAWISO
-#ifdef pp_OSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#endif
 #include "MALLOC.h"
 #include <math.h>
 #include "csphere.h"
@@ -245,76 +238,3 @@ unsigned int getnormalindex(spherepoints *sphereinfo, float *normal){
   }
   return returnval;
 }
-#ifdef pp_DRAWISO
-
-/* ------------------ drawspherepoints ------------------------ */
-
-void drawspherepoints(spherepoints *spherei){
-  float u[3], v[3], *w;
-#define NPOINTS 64
-  float cosang[NPOINTS], sinang[NPOINTS];
-  float pi;
-  int i,j,k;
-  int index=-1;
-  float rad;
-
-  rad=spherei->dphi/2.0;
-
-  pi=4.0*atan(1.0);
-  for(i=0;i<NPOINTS;i++){
-    float angle;
-
-    angle = i*2.0*pi/NPOINTS;
-    cosang[i] = cos(angle);
-    sinang[i] = sin(angle);
-
-  }
-
-  for(i=0;i<=spherei->n;i++){
-    for(j=0;j<spherei->nlong[i];j++){
-      index++;
-      w=spherei->normals+3*index;
-
-      if(w[0]==0.0&&w[1]==0.0&&w[2]>0.0){
-        u[0]=1.0;u[1]=0.0;u[2]=0.0;
-        v[0]=0.0;v[1]=1.0;v[2]=0.0;
-      }
-      else if(w[0]==0.0&&w[1]==0.0&&w[2]<0.0){
-        u[0]=0.0;u[1]=1.0;u[2]=0.0;
-        v[0]=1.0;v[1]=0.0;v[2]=0.0;
-      }
-      else{
-        float norm;
-
-        u[0]=-w[1];
-        u[1]=w[0];
-        u[2]=0.0;
-        norm = u[0]*u[0]+u[1]*u[1];
-        norm=sqrt(norm);
-        u[0]/=norm;
-        u[1]/=norm;
-
-        v[0]=-w[0]*w[2];
-        v[1]=-w[1]*w[2];
-        v[2]=w[0]*w[0]+w[1]*w[1];
-        norm = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];;
-        norm=sqrt(norm);
-        v[0]/=norm;
-        v[1]/=norm;
-        v[2]/=norm;
-      }
-      glBegin(GL_POLYGON);
-      glColor3f(0.0,0.0,1.0);
-      for(k=0;k<NPOINTS;k++){
-        float xp, yp, zp;
-
-        xp = 0.25 + (w[0] + rad*(cosang[k]*u[0] + sinang[k]*v[0]))/2.0;
-        yp = 0.25 + (w[1] + rad*(cosang[k]*u[1] + sinang[k]*v[1]))/2.0;
-        zp = 0.25 + (w[2] + rad*(cosang[k]*u[2] + sinang[k]*v[2]))/2.0;
-        glVertex3f(xp,yp,zp);
-      }
-      glEnd();
-    }
-  }
-}
-#endif

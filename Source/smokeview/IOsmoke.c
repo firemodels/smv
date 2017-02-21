@@ -452,7 +452,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
       if(i == 0){
         VEC3EQ(boxmin_global, boxmin);
         VEC3EQ(boxmax_global, boxmax);
-        dlength = xp[1] - xp[0];
+        max_cell_length = xp[1] - xp[0];
       }
       else{
         boxmin_global[0] = MIN(boxmin_global[0], boxmin[0]);
@@ -462,9 +462,9 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
         boxmax_global[1] = MAX(boxmax_global[1], boxmax[1]);
         boxmax_global[2] = MAX(boxmax_global[2], boxmax[2]);
       }
-      dlength = MIN(dlength, xp[1] - xp[0]);
-      dlength = MIN(dlength, yp[1] - yp[0]);
-      dlength = MIN(dlength, zp[1] - zp[0]);
+      max_cell_length = MIN(max_cell_length, xp[1] - xp[0]);
+      max_cell_length = MIN(max_cell_length, yp[1] - yp[0]);
+      max_cell_length = MIN(max_cell_length, zp[1] - zp[0]);
     }
   }
   if(light_type == INFINITE_LIGHT){
@@ -520,7 +520,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
             NORMALIZE3(dxyz);
           }
           GetLightLimit(xyz1,dxyz,xyz_light,light_type,xyz2,&length);
-          nlength = length / dlength + 1;
+          nlength = length / max_cell_length + 1;
           ddlength = 0.0;
           if(nlength>1)ddlength = length / (float)(nlength - 1);
 
