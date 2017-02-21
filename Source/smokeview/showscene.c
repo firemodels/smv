@@ -340,7 +340,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw animated isosurfaces +++++++++++++++++++++++++ */
 
-  //if(isoinfo!=NULL)drawspherepoints(sphereinfo);
   if(showiso == 1){
     CLIP_VALS;
     drawiso(DRAW_OPAQUE);
