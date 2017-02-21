@@ -1869,7 +1869,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
       if(setbw==1){
         float grey;
 
-        grey = color2bw(arg);
+        grey = TOBW(arg);
         rgbcolor[0]=grey;
         rgbcolor[1]=grey;
         rgbcolor[2]=grey;

@@ -2543,7 +2543,7 @@ extern "C" void IsoCB(int var){
     for(i = 0; i < MAX_ISO_COLORS; i++){
       float graylevel;
 
-      graylevel = color2bw(iso_colors+4*i);
+      graylevel = TOBW(iso_colors+4*i);
       iso_colorsbw[4 * i + 0] = graylevel;
       iso_colorsbw[4 * i + 1] = graylevel;
       iso_colorsbw[4 * i + 2] = graylevel;

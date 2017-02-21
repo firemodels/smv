@@ -739,7 +739,6 @@ EXTERNCPP void UpdateFaces(void);
 EXTERNCPP void DrawTicks(void);
 EXTERNCPP void SetStartupView(void);
 EXTERNCPP void add_list_view(char *label_in);
-EXTERNCPP float color2bw(const float *color);
 EXTERNCPP float *getcolorptr(const float *color);
 EXTERNCPP void colorconvert(int flag);
 EXTERNCPP void InitCadColors(void);

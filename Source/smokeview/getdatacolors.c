@@ -1886,16 +1886,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   return;
 }
 
-/* ------------------ color2bw ------------------------ */
-
-float color2bw(const float *color){
-  float returnval;
-
-  returnval = TOBW(color);
-  return returnval;
-}
-
-
 /* ------------------ getcolorptr ------------------------ */
 
 float *getcolorptr(const float *color){
@@ -1909,7 +1899,7 @@ float *getcolorptr(const float *color){
       firstcolor->color[i]=color[i];
       firstcolor->full_color[i]=color[i];
     }
-    firstcolor->bw_color[0] = color2bw(color);
+    firstcolor->bw_color[0] = TOBW(color);
     firstcolor->bw_color[1] = firstcolor->bw_color[0];
     firstcolor->bw_color[2] = firstcolor->bw_color[0];
     firstcolor->bw_color[3] = color[3];
