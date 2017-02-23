@@ -157,7 +157,8 @@ SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 SVEXTERN int SVDECL(viswindrose, 0), SVDECL(visxy_windrose, 1), SVDECL(visxz_windrose, 0), SVDECL(visyz_windrose, 0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
 SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0),SVDECL(scale_increment_windrose,0.05);
-SVEXTERN int   SVDECL(showref_windrose,1),  SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
+SVEXTERN int    SVDECL(showref_windrose,1), SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
+SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_DIRECTION);
 
 SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
 SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);

@@ -465,6 +465,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       float drval;
       int k, nk;
       float dk;
+      float angle_offset;
 
       //  (rval,theta2)     (rval2,theta2)
       //  (rval,theta)     (rval2,theta)
@@ -477,14 +478,16 @@ void DrawWindRose(windrosedata *wr,int orientation){
 
       nk = RAD2DEG*(theta2-theta);
       dk = (theta2-theta)/(float)nk;
+      angle_offset = 0.0;
+      if(windstate_windrose == WINDROSE_HEADING)angle_offset = PI;
 
       for(k = 0;k<nk;k++){
         float angle1, angle2;
         float x11, x12, x21, x22;
         float y11, y12, y21, y22;
 
-        angle1 = theta+(float)k*dk;
-        angle2 = theta+(float)(k+1)*dk;
+        angle1 = theta +     (float)k*dk + angle_offset;
+        angle2 = theta + (float)(k+1)*dk + angle_offset;
 
         x11 = rval*cos(angle1);
         x12 = rval2*cos(angle1);
@@ -529,16 +532,17 @@ void DrawWindRose(windrosedata *wr,int orientation){
     if(orientation == WINDROSE_YZ)glRotatef(90.0, 0.0, 1.0, 0.0);
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
-    for(icirc = 0;icirc<100;icirc++){
+    for(icirc = 1;icirc<100;icirc++){
       float factor,diameter;
 
       factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
       if(factor>1.0)break;
       diameter = 2.0*radius_windrose*factor;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
+      if(showlabels_windrose==1)Output3Val(diameter / 2.0, 0.0, 0.0, (float)icirc*scale_increment_windrose);
     }
     glTranslatef(0.0, 0.0, -0.002);
-    for(icirc = 0;icirc<20;icirc++){
+    for(icirc = 1;icirc<100;icirc++){
       float factor, diameter;
 
       factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
