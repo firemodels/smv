@@ -1707,7 +1707,7 @@ void InitTextures(void){
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       texti->loaded=1;
-      PRINTF("%s",_(" - completed"));
+      PRINTF("%s",_(" - complete"));
       PRINTF("\n");
     }
   }
@@ -1817,7 +1817,7 @@ void InitTextures(void){
 
   CheckMemory;
 
-  PRINTF("%s"," - completed\n");
+  PRINTF("%s"," - complete\n");
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
   if(use_graphics==1){
@@ -1859,11 +1859,11 @@ void InitTextures(void){
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       tt->loaded=1;
-      PRINTF("%s"," - completed\n");
+      PRINTF("%s"," - complete\n");
     }
 
   }
-  PRINTF("     Surface texture loading completed\n");
+  PRINTF("     complete\n");
 }
 
 /* ------------------ UpdateBoundInfo ------------------------ */
@@ -3651,7 +3651,7 @@ int ReadSMV(char *file, char *file2){
   ntc_total=0;
   nspr_total=0;
   nheat_total=0;
-  PRINTF("%s",_("   pass 1 started"));
+  PRINTF("%s",_("  pass 1"));
   PRINTF("\n");
   for(;;){
     if(feof(stream)!=0){
@@ -4369,10 +4369,9 @@ int ReadSMV(char *file, char *file2){
   rewind(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("   pass 1"));
-  PRINTF("%s",_(" completed"));
+  PRINTF("%s",_("  complete"));
   PRINTF("\n");
-  PRINTF("%s",_("   pass 2 started"));
+  PRINTF("%s",_("  pass 2"));
   PRINTF("\n");
   for(;;){
     if(feof(stream)!=0){
@@ -5145,7 +5144,7 @@ int ReadSMV(char *file, char *file2){
         PRINTF("%s %s",_("     reading cad file: "),bufferptr);
         PRINTF("%s\n",bufferptr);
         ReadCADGeom(cadgeominfo+ncadgeom);
-        PRINTF("     CAD file reading completed\n");
+        PRINTF("     CAD file reading complete\n");
         ncadgeom++;
       }
       else{
@@ -5663,8 +5662,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-  PRINTF("%s",_("   pass 2 "));
-  PRINTF("%s",_("completed"));
+  PRINTF("%s",_("  complete"));
   PRINTF("\n");
 
   CheckMemory;
@@ -5741,7 +5739,7 @@ int ReadSMV(char *file, char *file2){
   rewind(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("   pass 3 started"));
+  PRINTF("%s",_("  pass 3"));
   PRINTF("\n");
 
   /*
@@ -6219,10 +6217,9 @@ int ReadSMV(char *file, char *file2){
   rewind(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("   pass 3 "));
-  PRINTF("%s",_("completed"));
+  PRINTF("%s",_("  complete"));
   PRINTF("\n");
-  PRINTF("%s",_("   pass 4 started"));
+  PRINTF("%s",_("  pass 4"));
   PRINTF("\n");
   startpass=1;
   CheckMemory;
@@ -8328,11 +8325,10 @@ typedef struct {
   rewind(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("   pass 4 "));
-  PRINTF("%s",_("completed"));
+  PRINTF("%s",_("  complete"));
   PRINTF("\n");
   if(do_pass4==1||autoterrain==1){
-    PRINTF("%s",_("   pass 5 started"));
+    PRINTF("%s",_("  pass 5"));
     PRINTF("\n");
   }
 
@@ -8466,14 +8462,10 @@ typedef struct {
   }
 
   if(do_pass4==1||autoterrain==1){
-    PRINTF("%s",_("   pass 5 "));
-    PRINTF("%s",_("completed"));
+    PRINTF("%s",_("  complete"));
     PRINTF("\n");
   }
 
-  PRINTF("%s processing completed\n",file);
-  PRINTF("\n");
-  PRINTF("%s",_("beginning wrap up "));
   PRINTF("\n");
   PrintMemoryInfo;
 
@@ -8598,9 +8590,9 @@ typedef struct {
     }
   }
 
-  makeiblank_carve();
-  MakeIblankSmoke3D();
-  makeiblank_all();
+  MakeIBlankCarve();
+  MakeIBlankSmoke3D();
+  MakeIBlankAll();
 #ifdef pp_THREADIBLANK
   if(runscript == 1){
     JOIN_IBLANK
@@ -8703,7 +8695,7 @@ typedef struct {
 
   SetupMeshWalls();
 
-  PRINTF("%s",_("wrap up completed"));
+  PRINTF("%s",_("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
 
@@ -11725,13 +11717,13 @@ int ReadINI(char *inifile){
   // check if config files read in earlier were modifed later
 
   if(is_file_newer(smvprogini_ptr,INIfile)==1){
-    PRINTF("*** Warning: The configuration file %s is newer than %s \n\n",smvprogini_ptr,INIfile);
+    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,INIfile);
   }
   if(is_file_newer(smvprogini_ptr,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file %s is newer than %s \n\n",smvprogini_ptr,caseini_filename);
+    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,caseini_filename);
   }
   if(is_file_newer(INIfile,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file %s is newer than %s \n\n",INIfile,caseini_filename);
+    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",INIfile,caseini_filename);
   }
 
   // read in config files if they exist

@@ -5447,9 +5447,9 @@ int InMeshSmoke(float x, float y, float z, int nm, int flag){
   return -1;
 }
 
-/* ------------------ makeiblanksmoke3d ------------------------ */
+/* ------------------ MakeIBlankSmoke3D ------------------------ */
 
-void MakeIblankSmoke3D(void){
+void MakeIBlankSmoke3D(void){
   int i, ii;
   int ic;
 

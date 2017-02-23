@@ -45,7 +45,7 @@ EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
 EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void write_part_histogram(partdata *parti);
 EXTERNCPP void read_part_histogram(partdata *parti);
-EXTERNCPP void makeiblank_all(void);
+EXTERNCPP void MakeIBlankAll(void);
 #ifdef pp_SLICEDUP
 EXTERNCPP void update_slicedup_dialog(void);
 #endif
@@ -566,9 +566,9 @@ EXTERNCPP int get_interval(float val, float *array, int n);
 EXTERNCPP void SetUnitVis(void);
 EXTERNCPP void showhide_translate(int var);
 EXTERNCPP void updateallplotslices(void);
-EXTERNCPP int makeiblank(void);
-EXTERNCPP int makeiblank_carve(void);
-EXTERNCPP void MakeIblankSmoke3D(void);
+EXTERNCPP int MakeIBlank(void);
+EXTERNCPP int MakeIBlankCarve(void);
+EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval);
 

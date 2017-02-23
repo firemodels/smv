@@ -1536,9 +1536,9 @@ void init_blockage_distance(void){
     }
 }
 
-/* ------------------ makeiblank_carve ------------------------ */
+/* ------------------ MakeIBlankCarve ------------------------ */
 
-int makeiblank_carve(void){
+int MakeIBlankCarve(void){
   int i, j;
   int ibar, jbar, kbar;
   int ijksize;
@@ -1666,12 +1666,12 @@ int makeiblank_carve(void){
   return 0;
 }
 
-/* ------------------ makeiblank ------------------------ */
+/* ------------------ MakeIBlank ------------------------ */
 
-int makeiblank(void){
+int MakeIBlank(void){
   int ig;
 
-  PRINTF("  initializing blanking array\n");
+  PRINTF("    initializing blanking array\n");
   if(use_iblank==0)return 0;
   for(ig=0;ig<nmeshes;ig++){
     meshdata *meshi;
@@ -1867,128 +1867,7 @@ int makeiblank(void){
   }
   UNLOCK_IBLANK
 
-  PRINTF("  blanking array initialization completed\n");
-  return 0;
-}
-
-/* ------------------ makeiblank_orig ------------------------ */
-
-int makeiblank_orig(void){
-  int ig;
-
-  PRINTF("  initializing blanking array\n");
-  if(use_iblank == 0)return 0;
-  for(ig = 0; ig < nmeshes; ig++){
-    meshdata *meshi;
-    int nx, ny, nxy;
-    int ibar, jbar, kbar;
-    float *fblank_cell = NULL;
-    char *iblank_node = NULL, *iblank_cell = NULL, *c_iblank_x = NULL, *c_iblank_y = NULL, *c_iblank_z = NULL;
-    int ii, ijksize;
-    int i, j, k;
-
-    meshi = meshinfo + ig;
-
-    ibar = meshi->ibar;
-    jbar = meshi->jbar;
-    kbar = meshi->kbar;
-    ijksize = (ibar + 1)*(jbar + 1)*(kbar + 1);
-
-    if(NewMemory((void **)&iblank_node, ijksize*sizeof(char)) == 0)return 1;
-    if(NewMemory((void **)&iblank_cell, ibar*jbar*kbar*sizeof(char)) == 0)return 1;
-    if(NewMemory((void **)&fblank_cell, ibar*jbar*kbar*sizeof(float)) == 0)return 1;
-    if(NewMemory((void **)&c_iblank_x, ijksize*sizeof(char)) == 0)return 1;
-    if(NewMemory((void **)&c_iblank_y, ijksize*sizeof(char)) == 0)return 1;
-    if(NewMemory((void **)&c_iblank_z, ijksize*sizeof(char)) == 0)return 1;
-
-    meshi->c_iblank_node = iblank_node;
-    meshi->c_iblank_cell = iblank_cell;
-    meshi->f_iblank_cell = fblank_cell;
-    meshi->c_iblank_x = c_iblank_x;
-    meshi->c_iblank_y = c_iblank_y;
-    meshi->c_iblank_z = c_iblank_z;
-
-    for(i = 0; i < ibar*jbar*kbar; i++){
-      iblank_cell[i] = GAS;
-    }
-    for(i = 0; i < ijksize; i++){
-      iblank_node[i] = GAS;
-      c_iblank_x[i] = GAS;
-      c_iblank_y[i] = GAS;
-      c_iblank_z[i] = GAS;
-    }
-
-    nx = ibar + 1;
-    ny = jbar + 1;
-    nxy = nx*ny;
-
-    for(ii = 0; ii < meshi->nbptrs; ii++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[ii];
-      for(i = bc->ijk[IMIN]; i < bc->ijk[IMAX]; i++){
-        for(j = bc->ijk[JMIN]; j < bc->ijk[JMAX]; j++){
-          for(k = bc->ijk[KMIN]; k < bc->ijk[KMAX]; k++){
-            iblank_cell[IJKCELL(i, j, k)] = SOLID;
-          }
-        }
-      }
-    }
-    if(fblank_cell != NULL){
-      for(ii = 0; ii < ibar*jbar*kbar; ii++){
-        fblank_cell[ii] = iblank_cell[ii];
-      }
-    }
-    for(i = 0; i < ibar + 1; i++){
-      for(j = 0; j < jbar + 1; j++){
-        for(k = 0; k < kbar + 1; k++){
-          int test;
-
-          test = 0;
-          if(i != 0 && j != 0 && k != 0)         test += iblank_cell[IJKCELL(i - 1, j - 1, k - 1)];
-          if(i != ibar&&j != 0 && k != 0)      test += iblank_cell[IJKCELL(i, j - 1, k - 1)];
-          if(i != 0 && j != jbar&&k != 0)      test += iblank_cell[IJKCELL(i - 1, j, k - 1)];
-          if(i != ibar&&j != jbar&&k != 0)   test += iblank_cell[IJKCELL(i, j, k - 1)];
-          if(i != 0 && j != 0 && k != kbar)      test += iblank_cell[IJKCELL(i - 1, j - 1, k)];
-          if(i != ibar&&j != 0 && k != kbar)   test += iblank_cell[IJKCELL(i, j - 1, k)];
-          if(i != 0 && j != jbar&&k != kbar)   test += iblank_cell[IJKCELL(i - 1, j, k)];
-          if(i != ibar&&j != jbar&&k != kbar)test += iblank_cell[IJKCELL(i, j, k)];
-          if(test == 0)iblank_node[IJKNODE(i, j, k)] = 0;
-        }
-      }
-    }
-
-    for(j = 0; j < jbar; j++){
-      for(k = 0; k < kbar; k++){
-        c_iblank_x[IJKNODE(0, j, k)] = 2 * iblank_cell[IJKCELL(0, j, k)];
-        for(i = 1; i < ibar; i++){
-          c_iblank_x[IJKNODE(i, j, k)] = iblank_cell[IJKCELL(i - 1, j, k)] + iblank_cell[IJKCELL(i, j, k)];
-        }
-        c_iblank_x[IJKNODE(ibar, j, k)] = 2 * iblank_cell[IJKCELL(ibar - 1, j, k)];
-      }
-    }
-    for(i = 0; i < ibar; i++){
-      for(k = 0; k < kbar; k++){
-        c_iblank_y[IJKNODE(i, 0, k)] = 2 * iblank_cell[IJKCELL(i, 0, k)];
-        for(j = 1; j < jbar; j++){
-          c_iblank_y[IJKNODE(i, j, k)] = iblank_cell[IJKCELL(i, j - 1, k)] + iblank_cell[IJKCELL(i, j, k)];
-        }
-        c_iblank_y[IJKNODE(i, jbar, k)] = 2 * iblank_cell[IJKCELL(i, jbar - 1, k)];
-      }
-    }
-
-    for(i = 0; i < ibar; i++){
-      for(j = 0; j < jbar; j++){
-        c_iblank_z[IJKNODE(i, j, 0)] = 2 * iblank_cell[IJKCELL(i, j, 0)];
-        for(k = 1; k < kbar; k++){
-          c_iblank_z[IJKNODE(i, j, k)] = iblank_cell[IJKCELL(i, j, k - 1)] + iblank_cell[IJKCELL(i, j, k)];
-        }
-        c_iblank_z[IJKNODE(i, j, kbar)] = 2 * iblank_cell[IJKCELL(i, j, kbar - 1)];
-      }
-    }
-  }
-  init_blockage_distance();
-  PRINTF("  blanking array initialization completed\n");
+  PRINTF("    blanking array initialization completed\n");
   return 0;
 }
 

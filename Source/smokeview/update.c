@@ -1968,7 +1968,7 @@ void UpdateDisplay(void){
     ZoomMenu(zoomindex);
   }
   if(update_makeiblank_smoke3d == 1){
-    MakeIblankSmoke3D();
+    MakeIBlankSmoke3D();
   }
 #ifdef pp_CULL
   if(update_initcull == 1)InitCull(cullsmoke);

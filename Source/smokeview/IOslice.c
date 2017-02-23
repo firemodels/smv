@@ -3149,7 +3149,7 @@ void UpdateVSlices(void){
 
   if(nvsliceinfo>0)PRINTF("    updating vector slice menus\n");
   UpdateVsliceMenulabels();
-  PRINTF("  vector slices update completed\n\n");
+  PRINTF("  complete\n\n");
 
 }
 

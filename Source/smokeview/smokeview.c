@@ -220,17 +220,18 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 
 void DisplayVersionInfo(char *progname){
   PRINTversion(progname);
+  PRINTF("\n");
   if(fds_version!=NULL){
-    PRINTF("FDS Build: %s\n",fds_githash);
+    PRINTF("FDS Build        : %s\n",fds_githash);
   }
   if(smokeviewpath!=NULL){
-    PRINTF("Smokeview path: %s\n",smokeviewpath);
+    PRINTF("Smokeview        : %s\n",smokeviewpath);
   }
   if(smokezippath!=NULL){
-    PRINTF("Smokezip path: %s\n",smokezippath);
+    PRINTF("Smokezip         : %s\n",smokezippath);
   }
   if(texturedir!=NULL){
-    PRINTF("Texture directory path: %s\n",texturedir);
+    PRINTF("Texture directory: %s\n",texturedir);
   }
 }
 

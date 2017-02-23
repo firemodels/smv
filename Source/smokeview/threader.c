@@ -83,13 +83,13 @@ void compress_svzip(void){
 
 // ************** multi threaded blank creation **********************
 
-/* ------------------ mt_makeiblank ------------------------ */
+/* ------------------ mt_MakeIBlank ------------------------ */
 #ifdef pp_THREAD
 #ifdef pp_THREADIBLANK
-void *mt_makeiblank(void *arg){
+void *mt_MakeIBlank(void *arg){
 
-  PRINTF("Creating blanking arrays in the background\n");
-  makeiblank();
+  PRINTF("  creating blanking arrays in the background\n");
+  MakeIBlank();
   SetCVentDirs();
   LOCK_IBLANK
   update_setvents = 1;
@@ -137,19 +137,19 @@ void psytem(char *commandline){
 
 #ifdef pp_THREAD
 #ifdef pp_THREADIBLANK
-void makeiblank_all(void){
-  pthread_create(&makeiblank_thread_id, NULL, mt_makeiblank, NULL);
+void MakeIBlankAll(void){
+  pthread_create(&makeiblank_thread_id, NULL, mt_MakeIBlank, NULL);
 }
 #else
-void makeiblank_all(void){
-  makeiblank();
+void MakeIBlankAll(void){
+  MakeIBlank();
   SetCVentDirs();
   update_setvents=1;
 }
 #endif
 #else
-void makeiblank_all(void){
-  makeiblank();
+void MakeIBlankAll(void){
+  MakeIBlank();
   SetCVentDirs();
   update_set_vents=1;
 }

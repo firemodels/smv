@@ -6144,7 +6144,7 @@ int read_object_defs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("Processing object file:  %s\n",file);
+  PRINTF("processing object file:  %s\n",file);
 
   firstdef=-1;
   buffer_ptr=NULL;
@@ -6307,7 +6307,7 @@ int read_object_defs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("Object file processing complete\n\n");
+  PRINTF("complete\n\n");
   return ndevices;
 }
 

@@ -393,7 +393,7 @@ void setup_glut(int argc, char **argv){
     }
   }
 #ifdef pp_BETA
-  fprintf(stderr,"%s\n",_("*** This version of Smokeview is intended for review and testing ONLY. ***"));
+  fprintf(stderr,"%s\n",_("\n*** This version of Smokeview is intended for review and testing ONLY. ***"));
 #endif
 
 #ifdef pp_OSX
@@ -401,9 +401,9 @@ void setup_glut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s",_("Initializing Glut\n"));
+    PRINTF("%s",_("initializing Glut\n"));
     glutInit(&argc, argv);
-    PRINTF("%s\n",_("Glut initialization completed\n"));
+    PRINTF("%s\n",_("complete\n"));
   }
 #ifdef pp_OSX
   chdir(workingdir);
@@ -411,7 +411,7 @@ void setup_glut(int argc, char **argv){
 
   if(use_graphics==1){
 #ifdef _DEBUG
-    PRINTF("%s",_("Initializing Smokeview graphics window - "));
+    PRINTF("%s",_("initializing Smokeview graphics window - "));
 #endif
     glutInitWindowSize(screenWidth, screenHeight);
 #ifdef _DEBUG
@@ -486,7 +486,7 @@ void InitOpenGL(void){
   int type;
   int err;
 
-  PRINTF("%s",_("Initializing OpenGL\n"));
+  PRINTF("%s",_("initializing OpenGL\n"));
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
@@ -611,7 +611,7 @@ void InitOpenGL(void){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  PRINTF("%s",_("OpenGL initialization completed\n\n"));
+  PRINTF("%s",_("complete\n\n"));
 }
 
 /* ------------------ set_3dsmoke_startup ------------------------ */
