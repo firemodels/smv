@@ -2003,9 +2003,9 @@ void UpdateEndianInfo(void){
   }
 
 #ifndef WIN32
-  if(endian_smv!=getendian()){
+  if(endian_smv!=GetEndian()){
     fprintf(stderr,"*** Warning: Smokeview is running on a ");
-    if(getendian()==1){
+    if(GetEndian()==1){
       fprintf(stderr," little endian computer\n");
     }
     else{
@@ -3585,8 +3585,8 @@ int ReadSMV(char *file, char *file2){
 
   nvents=0;
   setPDIM=0;
-  endian_smv = getendian();
-  endian_native = getendian();
+  endian_smv = GetEndian();
+  endian_native = GetEndian();
   endian_data=endian_native;
   FREEMEMORY(LESsystem);
   FREEMEMORY(LESendian);
@@ -7657,7 +7657,7 @@ typedef struct {
       strcpy(endian_filename,bufferptr);
       ENDIANfile = fopen(endian_filename,"rb");
       if(ENDIANfile!=NULL){
-        endian_native = getendian();
+        endian_native = GetEndian();
         FSEEK(ENDIANfile,4,SEEK_SET);
         fread(&endian_data,4,1,ENDIANfile);
         fclose(ENDIANfile);

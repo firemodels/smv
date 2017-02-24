@@ -128,7 +128,7 @@ void psystem(char *commandline){
   pthread_create(&system_thread_id, NULL, mt_psystem, NULL);
 }
 #else
-void psytem(char *commandline){
+void psystem(char *commandline){
   system(commandline)
 }
 #endif

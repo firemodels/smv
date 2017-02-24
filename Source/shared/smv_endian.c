@@ -1,9 +1,9 @@
 #include "options.h"
 #include "smv_endian.h"
 
-/* ------------------ getendian ------------------------ */
+/* ------------------ GetEndian ------------------------ */
 
-int getendian(void){
+int GetEndian(void){
   short val;
   char *cval;
 
@@ -12,9 +12,9 @@ int getendian(void){
   return (int)(*cval);
 }
 
-/* ------------------ float_switch ------------------------ */
+/* ------------------ FloatSwitch ------------------------ */
 
-float float_switch(float val){
+float FloatSwitch(float val){
   float *val2ptr;
   unsigned char *buffer;
   unsigned char buffer2[4];
@@ -31,9 +31,9 @@ float float_switch(float val){
 
 }
 
-/* ------------------ int_switch ------------------------ */
+/* ------------------ IntSwitch ------------------------ */
 
-int int_switch(int val){
+int IntSwitch(int val){
   int *val2ptr;
   unsigned char *buffer;
   unsigned char buffer2[4];
@@ -50,9 +50,9 @@ int int_switch(int val){
 
 }
 
-/* ------------------ endian_switch ------------------------ */
+/* ------------------ EndianSwitch ------------------------ */
 
-void endian_switch(void *val, int nval){
+void EndianSwitch(void *val, int nval){
   int i;
 
   for(i=0;i<nval;i++){

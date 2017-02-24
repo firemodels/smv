@@ -20,7 +20,7 @@
 #define TRAILER_SIZE 4
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
                            fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
 
 int endianswitch;
@@ -37,7 +37,7 @@ slicedata *gslice;
 
 #define FORTRLESLICEREAD(var,size) FSEEK(RLESLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,RLESLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
 #define GET_SLICE_COLOR(color,index) \
@@ -3737,25 +3737,25 @@ int GetSlicecZlibData(char *file,
   }
 
   fread(&fileversion, 4, 1, stream);
-  if(endian != 1)fileversion = int_switch(fileversion);
+  if(endian != 1)fileversion = IntSwitch(fileversion);
 
   fread(&version, 4, 1, stream);
-  if(endian != 1)version = int_switch(version);
+  if(endian != 1)version = IntSwitch(version);
 
   fread(minmax, 4, 2, stream);
   if(endian != 1){
-    minmax[0] = float_switch(minmax[0]);
-    minmax[1] = float_switch(minmax[1]);
+    minmax[0] = FloatSwitch(minmax[0]);
+    minmax[1] = FloatSwitch(minmax[1]);
   }
 
   fread(ijkbar, 4, 6, stream);
   if(endian != 1){
-    ijkbar[0] = int_switch(ijkbar[0]);
-    ijkbar[1] = int_switch(ijkbar[1]);
-    ijkbar[2] = int_switch(ijkbar[2]);
-    ijkbar[3] = int_switch(ijkbar[3]);
-    ijkbar[4] = int_switch(ijkbar[4]);
-    ijkbar[5] = int_switch(ijkbar[5]);
+    ijkbar[0] = IntSwitch(ijkbar[0]);
+    ijkbar[1] = IntSwitch(ijkbar[1]);
+    ijkbar[2] = IntSwitch(ijkbar[2]);
+    ijkbar[3] = IntSwitch(ijkbar[3]);
+    ijkbar[4] = IntSwitch(ijkbar[4]);
+    ijkbar[5] = IntSwitch(ijkbar[5]);
   }
 
   count = 0;

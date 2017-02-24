@@ -14,7 +14,7 @@
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 /* ------------------ drawnorth ------------------------ */

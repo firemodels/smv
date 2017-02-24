@@ -1252,7 +1252,7 @@ void update_triangles(int flag,int update){
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
                            returncode=fread(var,4,count,STREAM);\
                            if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)endian_switch(var,count);\
+                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
                            FSEEK(STREAM,4,SEEK_CUR)
 
 #define FORTREADBR(var,count,STREAM) FORTREAD(var,(count),STREAM);if(returncode==0)break;
@@ -2354,7 +2354,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
   }
 
   //get_geomdata_header(file,&ntimes,&nvals);
-  endian_smv = getendian();
+  endian_smv = GetEndian();
   lenfile = strlen(file);
 
   FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
