@@ -1395,9 +1395,9 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   }
 }
 
-/* ------------------ parse_device_keyword ------------------------ */
+/* ------------------ ParseDevicekeyword ------------------------ */
 
-void parse_device_keyword(FILE *stream, devicedata *devicei){
+void ParseDevicekeyword(FILE *stream, devicedata *devicei){
   float xyz[3]={0.0,0.0,0.0}, xyzn[3]={0.0,0.0,0.0};
   float xyz1[3] = { 0.0,0.0,0.0 }, xyz2[3] = { 0.0,0.0,0.0 };
   int state0=0;
@@ -2833,7 +2833,7 @@ void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
       break;
     }
     if(strcmp(buffer, "DEVICE") == 0){
-      parse_device_keyword(stream, devicecopy);
+      ParseDevicekeyword(stream, devicecopy);
       devicecopy++;
     }
   }
@@ -5828,7 +5828,7 @@ int ReadSMV(char *file, char *file2){
       devicedata *devicei;
 
       devicei = deviceinfo + ndeviceinfo;
-      parse_device_keyword(stream,devicei);
+      ParseDevicekeyword(stream,devicei);
       CheckMemory;
       ndeviceinfo++;
       continue;
