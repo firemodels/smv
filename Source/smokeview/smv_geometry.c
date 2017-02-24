@@ -9,9 +9,9 @@
 
 #include "smokeviewvars.h"
 
-/* ------------------ slerp ------------------------ */
+/* ------------------ Slerp ------------------------ */
 
-void slerp(float *p0, float *p1, float t, float *pout){
+void Slerp(float *p0, float *p1, float t, float *pout){
   float cosangle,sinangle,denom,angle,factor1,factor2;
 
   denom = NORM3(p0)*NORM3(p1);
@@ -37,9 +37,9 @@ void slerp(float *p0, float *p1, float t, float *pout){
   pout[2]=factor1*p0[2]+factor2*p1[2];
 }
 
-/* ----------------------- drawtetra_outline ----------------------------- */
+/* ----------------------- DrawTetraOutline ----------------------------- */
 
-void drawtetra_outline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
+void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
   glBegin(GL_LINES);
   if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
   glVertex3fv(v1);
@@ -57,9 +57,9 @@ void drawtetra_outline(float *v1, float *v2, float *v3, float *v4, unsigned char
   glEnd();
 }
 
-/* ----------------------- drawfilledtetra ----------------------------- */
+/* ----------------------- DrawFilledTetra ----------------------------- */
 
-void drawfilledtetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
+void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
   float diff1[3],diff2[3],cross[3];
 
   glBegin(GL_TRIANGLES);
@@ -131,9 +131,9 @@ void drawfilledtetra(float *v1, float *v2, float *v3, float *v4, unsigned char *
   glEnd();
 }
 
-/* ----------------------- drawfilled2tetra ----------------------------- */
+/* ----------------------- DrawFilled2Tetra ----------------------------- */
 
-void drawfilled2tetra(float *v1, float *v2, float *v3, float *v4,
+void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
                      unsigned char *rgb0color,
                      unsigned char *rgb1color,
                      unsigned char *rgb2color,
@@ -232,9 +232,9 @@ int CompareFloats( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ removedupfloats ------------------------ */
+/* ------------------ RemoveDupFloats ------------------------ */
 
-void removedupfloats(float **valsptr, int *nvals,int *ivals, float dval_min){
+void RemoveDupFloats(float **valsptr, int *nvals,int *ivals, float dval_min){
   int nv;
   int i,ii;
   float *vals,valmid;
@@ -264,9 +264,9 @@ void removedupfloats(float **valsptr, int *nvals,int *ivals, float dval_min){
   }
 }
 
-/* ------------------ closest_nodeindex ------------------------ */
+/* ------------------ ClosestNodeIndex ------------------------ */
 
-int closest_nodeindex(float val,float *vals,int nvals, float eps){
+int ClosestNodeIndex(float val,float *vals,int nvals, float eps){
   int j;
 
   if(val<vals[0])return -1;
@@ -277,9 +277,9 @@ int closest_nodeindex(float val,float *vals,int nvals, float eps){
   return nvals-1;
 }
 
-/* ------------------ update_plotxyz_all ------------------------ */
+/* ------------------ UpdatePlotxyzAll ------------------------ */
 
-void update_plotxyz_all(void){
+void UpdatePlotxyzAll(void){
   int i;
   float *xp, *yp, *zp;
   float dxyz_min=100000.0;
@@ -338,9 +338,9 @@ void update_plotxyz_all(void){
     }
   }
   dxyz_min/=10.0;
-  removedupfloats(&plotx_all,&nplotx_all,&iplotx_all,dxyz_min);
-  removedupfloats(&ploty_all,&nploty_all,&iploty_all,dxyz_min);
-  removedupfloats(&plotz_all,&nplotz_all,&iplotz_all,dxyz_min);
+  RemoveDupFloats(&plotx_all,&nplotx_all,&iplotx_all,dxyz_min);
+  RemoveDupFloats(&ploty_all,&nploty_all,&iploty_all,dxyz_min);
+  RemoveDupFloats(&plotz_all,&nplotz_all,&iplotz_all,dxyz_min);
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int j;
@@ -356,7 +356,7 @@ void update_plotxyz_all(void){
 
       meshi->iplotx_all[j]=-1;
       val = plotx_all[j];
-      ival = closest_nodeindex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
+      ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
       if(ival<0)continue;
       meshi->iplotx_all[j]=ival;
     }
@@ -366,7 +366,7 @@ void update_plotxyz_all(void){
 
       meshi->iploty_all[j]=-1;
       val = ploty_all[j];
-      ival = closest_nodeindex(val,meshi->yplt,meshi->jbar+1,dxyz_min);
+      ival = ClosestNodeIndex(val,meshi->yplt,meshi->jbar+1,dxyz_min);
       if(ival<0)continue;
       meshi->iploty_all[j]=ival;
     }
@@ -376,7 +376,7 @@ void update_plotxyz_all(void){
 
       meshi->iplotz_all[j]=-1;
       val = plotz_all[j];
-      ival = closest_nodeindex(val,meshi->zplt,meshi->kbar+1,dxyz_min);
+      ival = ClosestNodeIndex(val,meshi->zplt,meshi->kbar+1,dxyz_min);
       if(ival<0)continue;
       meshi->iplotz_all[j]=ival;
     }
@@ -386,7 +386,7 @@ void update_plotxyz_all(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = closest_nodeindex(xbar/2.0, meshi->xplt, meshi->ibar+1, dxyz_min);
+    ival = ClosestNodeIndex(xbar/2.0, meshi->xplt, meshi->ibar+1, dxyz_min);
     if(ival<0)continue;
     iplotx_all = ival;
   }
@@ -395,7 +395,7 @@ void update_plotxyz_all(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = closest_nodeindex(ybar/2.0, meshi->yplt, meshi->jbar+1, dxyz_min);
+    ival = ClosestNodeIndex(ybar/2.0, meshi->yplt, meshi->jbar+1, dxyz_min);
     if(ival<0)continue;
     iploty_all = ival;
   }
@@ -404,7 +404,7 @@ void update_plotxyz_all(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = closest_nodeindex(zbar/2.0, meshi->zplt, meshi->kbar+1, dxyz_min);
+    ival = ClosestNodeIndex(zbar/2.0, meshi->zplt, meshi->kbar+1, dxyz_min);
     if(ival<0)continue;
     iplotz_all = ival;
   }
@@ -412,9 +412,9 @@ void update_plotxyz_all(void){
 
 #define MESHEPS 0.001
 
-/* ------------------ getmesh ------------------------ */
+/* ------------------ GetMesh ------------------------ */
 
-meshdata *getmesh(float *xyz){
+meshdata *GetMesh(float *xyz){
   int i;
 
   for(i=0;i<nmeshes;i++){
@@ -442,9 +442,9 @@ meshdata *getmesh(float *xyz){
   return NULL;
 }
 
-/* ------------------ on_mesh_boundary ------------------------ */
+/* ------------------ OnMeshBoundary ------------------------ */
 
-int on_mesh_boundary(float *xyz){
+int OnMeshBoundary(float *xyz){
   int i;
 
   for(i = 0; i<nmeshes; i++){
@@ -505,9 +505,9 @@ int on_mesh_boundary(float *xyz){
   return 0;
 }
 
-/* ------------------ getmesh_nofail ------------------------ */
+/* ------------------ GetMeshNoFail ------------------------ */
 
-meshdata *getmesh_nofail(float *xyz){
+meshdata *GetMeshNoFail(float *xyz){
   int i;
 
   for(i=0;i<nmeshes;i++){
@@ -713,9 +713,9 @@ int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21){
 }
 
 
-/* ------------------ matmatmult ------------------------ */
+/* ------------------ MatMultMat ------------------------ */
 
-void matmatmult(float *m1, float *m2, float *m3){
+void MatMultMat(float *m1, float *m2, float *m3){
   int i, j, k;
   int ij;
 
@@ -730,9 +730,9 @@ void matmatmult(float *m1, float *m2, float *m3){
   }
 }
 
-/* ------------------ getinverse ------------------------ */
+/* ------------------ GetInverse ------------------------ */
 
-void getinverse(float *m, float *mi){
+void GetInverse(float *m, float *mi){
   int i,j;
   float *v,*vi;
 
@@ -767,9 +767,9 @@ void getinverse(float *m, float *mi){
   vi[2]=-(mi[2]*v[0]+mi[6]*v[1]+mi[10]*v[2])*vi[3];
 }
 
-/* ------------------ compare_volfacelistdata ------------------------ */
+/* ------------------ CompareVolFaceListData ------------------------ */
 
-int compare_volfacelistdata( const void *arg1, const void *arg2 ){
+int CompareVolFaceListData( const void *arg1, const void *arg2 ){
   volfacelistdata *vi, *vj;
 
   vi = *(volfacelistdata **)arg1;
@@ -780,9 +780,9 @@ int compare_volfacelistdata( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ get_screen_mapping ------------------------ */
+/* ------------------ GetScreenMapping ------------------------ */
 
-void get_screen_mapping(float *xyz0, float *screen_perm){
+void GetScreenMapping(float *xyz0, float *screen_perm){
   GLdouble xyz[3];
   int viewport[4];
   GLdouble screen0[3];
@@ -886,9 +886,9 @@ void get_screen_mapping(float *xyz0, float *screen_perm){
 #endif
 }
 
-  /* ------------------ getvolsmokedir ------------------------ */
+  /* ------------------ GetVolSmokeDir ------------------------ */
 
-void getvolsmokedir(float *mm){
+void GetVolSmokeDir(float *mm){
     /*
       ( m0 m4 m8  m12 ) (x)    (0)
       ( m1 m5 m9  m13 ) (y)    (0)
@@ -1105,13 +1105,13 @@ void getvolsmokedir(float *mm){
     for(i=0;i<nvolfacelistinfo;i++){
       volfacelistinfoptrs[i]=volfacelistinfo + i;
     }
-    qsort((volfacelistdata *)volfacelistinfoptrs,nvolfacelistinfo,sizeof(volfacelistdata *),compare_volfacelistdata);
+    qsort((volfacelistdata *)volfacelistinfoptrs,nvolfacelistinfo,sizeof(volfacelistdata *), CompareVolFaceListData);
   }
 }
 
-/* ------------------ getsmokedir ------------------------ */
+/* ------------------ GetSmokeDir ------------------------ */
 
-void getsmokedir(float *mm){
+void GetSmokeDir(float *mm){
     /*
       ( m0 m4 m8  m12 ) (x)    (0)
       ( m1 m5 m9  m13 ) (y)    (0)
@@ -1343,9 +1343,9 @@ void getsmokedir(float *mm){
   }
 }
 
-/* ------------------ get_interval ------------------------ */
+/* ------------------ GetInterval ------------------------ */
 
-int get_interval(float val, float *array, int n){
+int GetInterval(float val, float *array, int n){
   int low, mid, high;
 
   if(val<array[0])return -1;
@@ -1366,18 +1366,18 @@ int get_interval(float val, float *array, int n){
   return low;
 }
 
-/* ------------------ getnewpos ------------------------ */
+/* ------------------ GetNewPos ------------------------ */
 
-void getnewpos(float *oldpos, float dx, float dy, float dz,float local_speed_factor){
+void GetNewPos(float *oldpos, float dx, float dy, float dz,float local_speed_factor){
   oldpos[0] += dx;
   oldpos[1] += dy;
   oldpos[2] += dz;
   from_glui_trainer=0;
 }
 
-/* ------------------ getblockage_distance ------------------------ */
+/* ------------------ GetBlockageDistance ------------------------ */
 
-float getblockage_distance(float x, float y, float z){
+float GetBlockageDistance(float x, float y, float z){
   int i;
   meshdata *meshi;
   float *xplt, *yplt, *zplt;
@@ -1415,9 +1415,9 @@ float getblockage_distance(float x, float y, float z){
     zmax = zplt[kbar];
     if(z<zmin||z>zmax)continue;
 
-    ii = get_interval(x,xplt,ibar+1);
-    jj = get_interval(y,yplt,jbar+1);
-    kk = get_interval(z,zplt,kbar+1);
+    ii = GetInterval(x,xplt,ibar+1);
+    jj = GetInterval(y,yplt,jbar+1);
+    kk = GetInterval(z,zplt,kbar+1);
     if(ii!=-1&&jj!=-1&&kk!=-1){
       ijkcell=IJKCELL(ii,jj,kk);
       if(iblank_cell[ijkcell]==SOLID)return 0.0;
@@ -1429,111 +1429,6 @@ float getblockage_distance(float x, float y, float z){
     }
   }
   return -1.0;
-}
-
-/* ------------------ init_blockage_distance  ------------------------ */
-
-void init_blockage_distance(void){
-  int ig,jg;
-  float *b_zdist;
-  meshdata *meshi,*meshj;
-  int minindex;
-  int ibar,jbar,kbar, nx, nxy;
-  int nnodes;
-  int i,j,k;
-  float zbottommin;
-  float *xplt, *yplt, *zplt;
-  float xx, yy, zz;
-  int ijkm1cell, ijknode, ijkm1node;
-  char *iblank_cell;
-
-    for(ig=0;ig<nmeshes;ig++){
-      meshi = meshinfo+ig;
-      ibar = meshi->ibar;
-      jbar = meshi->jbar;
-      kbar = meshi->kbar;
-      b_zdist=NULL;
-      nnodes=(ibar+1)*(jbar+1)*(kbar+1);
-
-      if(NewMemory((void **)&b_zdist,nnodes*sizeof(float))==0)return;
-      for(i=0;i<nnodes;i++){
-        b_zdist[i]=-1.0;
-      }
-      meshi->block_zdist=b_zdist;
-      meshi->zdist_flag=0;
-    }
-    for(ig=0;ig<nmeshes;ig++){
-      float dz;
-      zbottommin=1000000000;
-      for(jg=0;jg<nmeshes;jg++){
-        meshj = meshinfo+jg;
-        if(meshj->zdist_flag==1)continue;
-        if(meshj->zplt[0]<zbottommin){
-          zbottommin=meshj->zplt[0];
-          minindex=jg;
-        }
-      }
-      meshi=meshinfo+minindex;
-      meshi->zdist_flag=1;
-
-      xplt = meshi->xplt_orig;
-      yplt = meshi->yplt_orig;
-      zplt = meshi->zplt_orig;
-      iblank_cell = meshi->c_iblank_cell;
-
-      dz = zplt[1]-zplt[0];
-
-      ibar = meshi->ibar;
-      jbar = meshi->jbar;
-      kbar = meshi->kbar;
-      nx = ibar + 1;
-      nxy = (ibar+1)*(jbar+1);
-
-      b_zdist=meshi->block_zdist;
-      nnodes=(ibar+1)*(jbar+1)*(kbar+1);
-
-
-      // define first layer of b_zdist array
-      //  if there is a mesh below first layer then add distance
-      //    to blockage in lower mesh
-
-      k=0;
-      zz = zplt[k];
-      dz = zplt[1]-zplt[0];
-      for(j=0;j<jbar;j++){
-        yy = yplt[j];
-        for(i=0;i<ibar;i++){
-          float zdist;
-
-          ijknode=IJKNODE(i,j,k);
-          xx = xplt[i];
-          zdist=getblockage_distance(xx,yy,zz-dz/2.0);
-          if(zdist>0.0){
-            b_zdist[ijknode]=zdist+dz/2.0;
-          }
-          else{
-            b_zdist[ijknode]=0.0;
-          }
-        }
-      }
-      for(k=1;k<=kbar;k++){
-        zz = zplt[k];
-        dz = zplt[k]-zplt[k-1];
-        for(j=0;j<jbar;j++){
-          for(i=0;i<ibar;i++){
-            ijknode=IJKNODE(i,j,k);
-            ijkm1cell=IJKCELL(i,j,k-1);
-            ijkm1node=IJKNODE(i,j,k-1);
-            if(iblank_cell[ijkm1cell]==SOLID){
-              b_zdist[ijknode]=0.0;
-            }
-            else{
-              b_zdist[ijknode]=b_zdist[ijkm1node] + dz;
-            }
-          }
-        }
-      }
-    }
 }
 
 /* ------------------ MakeIBlankCarve ------------------------ */
@@ -1852,7 +1747,6 @@ int MakeIBlank(void){
       }
     }
   }
-  //init_blockage_distance();
   LOCK_IBLANK
   for(ig = 0; ig < nmeshes; ig++){
     meshdata *meshi;
@@ -1871,9 +1765,9 @@ int MakeIBlank(void){
   return 0;
 }
 
-/* ------------------ init_clip ------------------------ */
+/* ------------------ InitClip ------------------------ */
 
-void init_clip(void){
+void InitClip(void){
   clipdata *ci;
 
   clip_mode_last=-1;
@@ -1918,9 +1812,9 @@ void init_clip(void){
 }
 
 
-/* ------------------ volume_tetrahedron ------------------------ */
+/* ------------------ VolumeTetrahedron ------------------------ */
 
-float volume_tetrahedron(float *v1, float *v2, float *v3, float *v4){
+float VolumeTetrahedron(float *v1, float *v2, float *v3, float *v4){
   float v2d[3], v3d[3], v4d[3], vcross[3];
 
   VEC3DIFF(v2d,v2,v1);
@@ -1930,9 +1824,9 @@ float volume_tetrahedron(float *v1, float *v2, float *v3, float *v4){
   return DOT3(v4d,vcross)/6.0;
 }
 
-/* ----------------------- initTetraClipInfo ----------------------------- */
+/* ----------------------- InitTetraClipInfo ----------------------------- */
 
-void initTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4){
+void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4){
   float v1d[3], v2d[3];
   GLdouble *clipvals;
   float vol;
@@ -1944,7 +1838,7 @@ void initTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4){
   //     ./     \       /  \         /  \        /  \          /   \
   //    v1-------v3    v1---v3      v3---v2     v2---v1       v1---v2
 
-  vol = volume_tetrahedron(v1,v2,v3,v4);
+  vol = VolumeTetrahedron(v1,v2,v3,v4);
 
   clipvals = ci->clipvals;
   ci->option=TETRA_CLIPPLANES;
@@ -1989,9 +1883,9 @@ void initTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4){
   clipvals[3]=-DOT3(clipvals,v1);
 }
 
-/* ----------------------- initBoxClipInfo ----------------------------- */
+/* ----------------------- InitBoxClipInfo ----------------------------- */
 
-void initBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
   ci->option=BOX_CLIPPLANES;
   ci->clip_xmin=1;
   ci->clip_xmax=1;
@@ -2008,18 +1902,18 @@ void initBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax
 }
 
 
-/* ----------------------- merge_max ----------------------------- */
+/* ----------------------- MergeMax ----------------------------- */
 
-float merge_max(int opti, float vali, int optj, float valj){
+float MergeMax(int opti, float vali, int optj, float valj){
   if(opti==0&&optj==0)return vali;
   if(opti==1&&optj==0)return vali;
   if(opti==0&&optj==1)return valj;
   return MAX(vali,valj);
 }
 
-/* ----------------------- merge_min ----------------------------- */
+/* ----------------------- MergeMin ----------------------------- */
 
-float merge_min(int opti, float vali, int optj, float valj){
+float MergeMin(int opti, float vali, int optj, float valj){
   if(opti==0&&optj==0)return vali;
   if(opti==1&&optj==0)return vali;
   if(opti==0&&optj==1)return valj;
@@ -2029,12 +1923,12 @@ float merge_min(int opti, float vali, int optj, float valj){
 /* ----------------------- MergeClipPlanes ----------------------------- */
 
 void MergeClipPlanes(clipdata *ci, clipdata *cj){
-  ci->xmin = merge_max(ci->clip_xmin,ci->xmin,cj->clip_xmin,cj->xmin);
-  ci->ymin = merge_max(ci->clip_ymin,ci->ymin,cj->clip_ymin,cj->ymin);
-  ci->zmin = merge_max(ci->clip_zmin,ci->zmin,cj->clip_zmin,cj->zmin);
-  ci->xmax = merge_min(ci->clip_xmax,ci->xmax,cj->clip_xmax,cj->xmax);
-  ci->ymax = merge_min(ci->clip_ymax,ci->ymax,cj->clip_ymax,cj->ymax);
-  ci->zmax = merge_min(ci->clip_zmax,ci->zmax,cj->clip_zmax,cj->zmax);
+  ci->xmin = MergeMax(ci->clip_xmin,ci->xmin,cj->clip_xmin,cj->xmin);
+  ci->ymin = MergeMax(ci->clip_ymin,ci->ymin,cj->clip_ymin,cj->ymin);
+  ci->zmin = MergeMax(ci->clip_zmin,ci->zmin,cj->clip_zmin,cj->zmin);
+  ci->xmax = MergeMin(ci->clip_xmax,ci->xmax,cj->clip_xmax,cj->xmax);
+  ci->ymax = MergeMin(ci->clip_ymax,ci->ymax,cj->clip_ymax,cj->ymax);
+  ci->zmax = MergeMin(ci->clip_zmax,ci->zmax,cj->clip_zmax,cj->zmax);
 
   ci->clip_xmin |= cj->clip_xmin;
   ci->clip_xmax |= cj->clip_xmax;
@@ -2044,9 +1938,9 @@ void MergeClipPlanes(clipdata *ci, clipdata *cj){
   ci->clip_zmax |= cj->clip_zmax;
 }
 
-/* ----------------------- setClipPlanes ----------------------------- */
+/* ----------------------- SetClipPlanes ----------------------------- */
 
-void setClipPlanes(clipdata *ci, int option){
+void SetClipPlanes(clipdata *ci, int option){
 
   if(ci==NULL||option==CLIP_OFF){
     glDisable(GL_CLIP_PLANE0);

@@ -1089,11 +1089,11 @@ void Bound_CB(int var){
     Bounds_DLG_CB(SAVE_SETTINGS);
     break;
   case SAVE_FILE_LIST:
-    set_3dsmoke_startup();
+    Set3DSmokeStartup();
     Bounds_DLG_CB(SAVE_SETTINGS);
     break;
   case LOAD_FILES:
-    load_Files();
+    LoadFiles();
     break;
   default:
     ASSERT(FFALSE);

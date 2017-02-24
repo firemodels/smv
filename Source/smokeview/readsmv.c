@@ -3219,7 +3219,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmin[0] - EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[0] = 0;
       ncount++;
     }
@@ -3227,7 +3227,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmax[0] + EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[1] = 0;
       ncount++;
     }
@@ -3235,7 +3235,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[2] = 0;
       ncount++;
     }
@@ -3243,7 +3243,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[3] = 0;
       ncount++;
     }
@@ -3251,7 +3251,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[4] = 0;
       ncount++;
     }
@@ -3259,7 +3259,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
-    if(getmesh(xyz) != NULL){
+    if(GetMesh(xyz) != NULL){
       is_extface[5] = 0;
       ncount++;
     }
@@ -3615,7 +3615,7 @@ int ReadSMV(char *file, char *file2){
   if(cadgeominfo!=NULL)FreeCADInfo();
 
   if(file==NULL){
-    initvars();
+    InitVars();
     return -1;  // finished  unloading memory from previous case
   }
 
@@ -6552,7 +6552,7 @@ int ReadSMV(char *file, char *file2){
       meshi->xyz_bar0[ZZZ]=zbar0;
       meshi->xyz_bar[ZZZ] =zbar;
       meshi->zcen =(zbar+zbar0)/2.0;
-      initBoxClipInfo(&(meshi->box_clipinfo),xbar0,xbar,ybar0,ybar,zbar0,zbar);
+      InitBoxClipInfo(&(meshi->box_clipinfo),xbar0,xbar,ybar0,ybar,zbar0,zbar);
       if(ntrnx==0){
         int nn;
 
@@ -8506,7 +8506,7 @@ typedef struct {
 
   init_partprop();
 
-  init_clip();
+  InitClip();
 
   if(noutlineinfo>0){
     highlight_flag=2;
@@ -8569,7 +8569,7 @@ typedef struct {
   shooter_fps=10;
   shooter_vel_type=1;
 
-  update_plotxyz_all();
+  UpdatePlotxyzAll();
 
   UpdateVSlices();
   GetGSliceParams();
@@ -8580,7 +8580,7 @@ typedef struct {
     char *label;
 
     devicei = deviceinfo + i;
-    devicei->device_mesh=getmesh_nofail(devicei->xyz);
+    devicei->device_mesh= GetMeshNoFail(devicei->xyz);
     label = devicei->object->label;
     if(strcmp(label,"smokesensor")==0){
       active_smokesensors=1;
@@ -9458,9 +9458,9 @@ int ReadINI2(char *inifile, int localfile){
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
-          get_startup_plot3d(seq_id);
+          GetStartupPlot3d(seq_id);
         }
-        update_load_Files = 1;
+        update_load_files = 1;
         continue;
       }
       if(Match(buffer, "VSLICEAUTO") == 1){
@@ -9472,9 +9472,9 @@ int ReadINI2(char *inifile, int localfile){
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
-          get_startup_vslice(seq_id);
+          GetStartupVSlice(seq_id);
         }
-        update_load_Files = 1;
+        update_load_files = 1;
         continue;
       }
       if(Match(buffer, "SLICEAUTO") == 1){
@@ -9486,9 +9486,9 @@ int ReadINI2(char *inifile, int localfile){
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
-          get_startup_slice(seq_id);
+          GetStartupSlice(seq_id);
         }
-        update_load_Files = 1;
+        update_load_files = 1;
         continue;
       }
     if(Match(buffer, "MSLICEAUTO") == 1){
@@ -9509,7 +9509,7 @@ int ReadINI2(char *inifile, int localfile){
           mslicei->autoload = 1;
         }
       }
-      update_load_Files = 1;
+      update_load_files = 1;
       continue;
     }
     if(Match(buffer, "PARTAUTO") == 1){
@@ -9521,9 +9521,9 @@ int ReadINI2(char *inifile, int localfile){
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
-        get_startup_part(seq_id);
+        GetStartupPart(seq_id);
       }
-      update_load_Files = 1;
+      update_load_files = 1;
       continue;
     }
     if(Match(buffer, "ISOAUTO") == 1){
@@ -9535,9 +9535,9 @@ int ReadINI2(char *inifile, int localfile){
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
-        get_startup_iso(seq_id);
+        GetStartupISO(seq_id);
       }
-      update_load_Files = 1;
+      update_load_files = 1;
       continue;
     }
     if(Match(buffer, "S3DAUTO") == 1){
@@ -9549,9 +9549,9 @@ int ReadINI2(char *inifile, int localfile){
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
-        get_startup_smoke(seq_id);
+        GetStartupSmoke(seq_id);
       }
-      update_load_Files = 1;
+      update_load_files = 1;
       continue;
     }
     if(Match(buffer, "PATCHAUTO") == 1){
@@ -9563,9 +9563,9 @@ int ReadINI2(char *inifile, int localfile){
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
-        get_startup_patch(seq_id);
+        GetStartupPatch(seq_id);
       }
-      update_load_Files = 1;
+      update_load_files = 1;
       continue;
     }
     if(Match(buffer, "LOADFILESATSTARTUP") == 1){
@@ -11900,7 +11900,7 @@ void WriteINILocal(FILE *fileout){
   fprintf(fileout, " %i\n", loadfiles_at_startup);
   fprintf(fileout, "MSCALE\n");
   fprintf(fileout, " %f %f %f\n", mscale[0], mscale[1], mscale[2]);
-  put_startup_smoke3d(fileout);
+  PutStartupSmoke3d(fileout);
   if(npart5prop > 0){
     fprintf(fileout, "PART5PROPDISP\n");
     for(i = 0; i < npart5prop; i++){

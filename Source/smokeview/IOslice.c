@@ -7146,14 +7146,14 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
 
   times = sd->times;
   ntimes = sd->ntimes;
-  tmin = get_interval(time-dtime, times, ntimes);
-  tmax = get_interval(time+dtime, times, ntimes);
-  imin = get_interval(xyz[0]-dxyz[0], xplt, ibar+1);
-  imax = get_interval(xyz[0]+dxyz[0], xplt, ibar+1);
-  jmin = get_interval(xyz[1]-dxyz[1], yplt, jbar+1);
-  jmax = get_interval(xyz[1]+dxyz[1], yplt, jbar+1);
-  kmin = get_interval(xyz[2]-dxyz[2], zplt, kbar+1);
-  kmax = get_interval(xyz[2]+dxyz[2], zplt, kbar+1);
+  tmin = GetInterval(time-dtime, times, ntimes);
+  tmax = GetInterval(time+dtime, times, ntimes);
+  imin = GetInterval(xyz[0]-dxyz[0], xplt, ibar+1);
+  imax = GetInterval(xyz[0]+dxyz[0], xplt, ibar+1);
+  jmin = GetInterval(xyz[1]-dxyz[1], yplt, jbar+1);
+  jmax = GetInterval(xyz[1]+dxyz[1], yplt, jbar+1);
+  kmin = GetInterval(xyz[2]-dxyz[2], zplt, kbar+1);
+  kmax = GetInterval(xyz[2]+dxyz[2], zplt, kbar+1);
 
   nvals = (tmax+1-tmin)*(imax+1-imin)*(jmax+1-jmin)*(kmax+1-kmin);
   NewMemory((void **)&vals, nvals*sizeof(float));

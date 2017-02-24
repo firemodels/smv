@@ -120,10 +120,10 @@ void Init(void){
   UpdateShow();
 }
 
-/* ------------------ init_lang ------------------------ */
+/* ------------------ InitLang ------------------------ */
 
 #ifdef pp_LANG
-void init_lang(void){
+void InitLang(void){
   int maxlangs, nlangs;
   filelistdata *filelistinfo;
   int i;
@@ -190,9 +190,9 @@ void init_lang(void){
 }
 #endif
 
-/* ------------------ readboundini ------------------------ */
+/* ------------------ ReadBoundINI ------------------------ */
 
-void readboundini(void){
+void ReadBoundINI(void){
   FILE *stream = NULL;
   char *fullfilename = NULL;
 
@@ -252,9 +252,9 @@ void readboundini(void){
   return;
 }
 
-/* ------------------ setup_case ------------------------ */
+/* ------------------ SetupCase ------------------------ */
 
-int setup_case(int argc, char **argv){
+int SetupCase(int argc, char **argv){
   int return_code;
   char *input_file;
 
@@ -303,10 +303,10 @@ int setup_case(int argc, char **argv){
 
   CheckMemory;
   ReadINI(NULL);
-  readboundini();
+  ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
-  init_lang();
+  InitLang();
 #endif
 
   if(ntourinfo==0)setup_tour();
@@ -346,9 +346,9 @@ int setup_case(int argc, char **argv){
   return 0;
 }
 
-/* ------------------ setup_glut ------------------------ */
+/* ------------------ SetupGlut ------------------------ */
 
-void setup_glut(int argc, char **argv){
+void SetupGlut(int argc, char **argv){
   int i;
   char *smoketempdir;
   size_t lensmoketempdir;
@@ -453,9 +453,9 @@ void setup_glut(int argc, char **argv){
   rgb_plot3d_contour[nrgb-1]=&rgb_full[255][0];
 }
 
-/* ------------------ get_opengl_version ------------------------ */
+/* ------------------ GetOpenGLVersion ------------------------ */
 
-int get_opengl_version(char *version_label){
+int GetOpenGLVersion(char *version_label){
   const GLubyte *version_string;
   char version_label2[256];
   int i;
@@ -542,7 +542,7 @@ void InitOpenGL(void){
   PRINTF("%s\n",_("initialized"));
 #endif
 
-  opengl_version = get_opengl_version(opengl_version_label);
+  opengl_version = GetOpenGLVersion(opengl_version_label);
 
   err=0;
  #ifdef pp_GPU
@@ -614,9 +614,9 @@ void InitOpenGL(void){
   PRINTF("%s",_("complete\n\n"));
 }
 
-/* ------------------ set_3dsmoke_startup ------------------------ */
+/* ------------------ Set3DSmokeStartup ------------------------ */
 
- void set_3dsmoke_startup(void){
+ void Set3DSmokeStartup(void){
    int i;
 
     for(i=0;i<nvsliceinfo;i++){
@@ -705,70 +705,9 @@ void InitOpenGL(void){
     }
  }
 
- /* ------------------ clear_3dsmoke_startup ------------------------ */
+ /* ------------------ PutStartupSmoke3d ------------------------ */
 
- void clear_3dsmoke_startup(void){
-   int i;
-
-    for(i=0;i<nvsliceinfo;i++){
-      vslicedata *vslicei;
-
-      vslicei = vsliceinfo + i;
-
-      vslicei->autoload=0;
-    }
-
-    for(i=0;i<npartinfo;i++){
-      partdata *parti;
-
-      parti = partinfo + i;
-
-      parti->autoload=0;
-    }
-
-    for(i=0;i<nplot3dinfo;i++){
-      plot3ddata *plot3di;
-
-      plot3di = plot3dinfo + i;
-
-      plot3di->autoload=0;
-    }
-
-    for(i=0;i<nsmoke3dinfo;i++){
-      smoke3ddata *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-
-      smoke3di->autoload=0;
-    }
-
-    for(i=0;i<npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = patchinfo + i;
-
-      patchi->autoload=0;
-    }
-
-    for(i=0;i<nisoinfo;i++){
-      isodata *isoi;
-
-      isoi = isoinfo + i;
-
-      isoi->autoload=0;
-    }
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-
-      slicei->autoload=0;
-    }
- }
-
- /* ------------------ put_startup_smoke3d ------------------------ */
-
-  void put_startup_smoke3d(FILE *fileout){
+  void PutStartupSmoke3d(FILE *fileout){
    int i;
    int nstartup;
 
@@ -952,9 +891,9 @@ void InitOpenGL(void){
    fprintf(fileout," %i \n",compress_autoloaded);
  }
 
- /* ------------------ get_startup_part ------------------------ */
+ /* ------------------ GetStartupPart ------------------------ */
 
-  void get_startup_part(int seq_id){
+  void GetStartupPart(int seq_id){
     int i;
     for(i=0;i<npartinfo;i++){
       partdata *parti;
@@ -967,9 +906,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ get_startup_plot3d ------------------------ */
+ /* ------------------ GetStartupPlot3d ------------------------ */
 
-  void get_startup_plot3d(int seq_id){
+  void GetStartupPlot3d(int seq_id){
     int i;
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
@@ -982,9 +921,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ get_startup_patch ------------------------ */
+ /* ------------------ GetStartupPatch ------------------------ */
 
-  void get_startup_patch(int seq_id){
+  void GetStartupPatch(int seq_id){
     int i;
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
@@ -997,9 +936,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ get_startup_smoke ------------------------ */
+ /* ------------------ GetStartupSmoke ------------------------ */
 
-  void get_startup_smoke(int seq_id){
+  void GetStartupSmoke(int seq_id){
     int i;
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
@@ -1014,9 +953,9 @@ void InitOpenGL(void){
   }
 
 
- /* ------------------ get_startup_iso ------------------------ */
+ /* ------------------ GetStartupISO ------------------------ */
 
-  void get_startup_iso(int seq_id){
+  void GetStartupISO(int seq_id){
     int i;
     for(i=0;i<nisoinfo;i++){
       isodata *isoi;
@@ -1030,9 +969,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ get_startup_slice ------------------------ */
+ /* ------------------ GetStartupSlice ------------------------ */
 
-  void get_startup_slice(int seq_id){
+  void GetStartupSlice(int seq_id){
     int i;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
@@ -1046,9 +985,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ get_startup_vslice ------------------------ */
+ /* ------------------ GetStartupVSlice ------------------------ */
 
-  void get_startup_vslice(int seq_id){
+  void GetStartupVSlice(int seq_id){
     int i;
     for(i=0;i<nvsliceinfo;i++){
       vslicedata *vslicei;
@@ -1062,9 +1001,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ load_Files ------------------------ */
+ /* ------------------ LoadFiles ------------------------ */
 
-  void load_Files(void){
+  void LoadFiles(void){
     int i;
     int errorcode;
 
@@ -1166,14 +1105,14 @@ void InitOpenGL(void){
     force_redisplay=1;
     UpdateFrameNumber(0);
     updatemenu=1;
-    update_load_Files=0;
+    update_load_files=0;
     hide_glui_alert();
     TrainerViewMenu(trainerview);
   }
 
-/* ------------------ init_texturedir ------------------------ */
+/* ------------------ InitTextureDir ------------------------ */
 
-void init_texturedir(void){
+void InitTextureDir(void){
   char *texture_buffer;
   size_t texture_len;
 
@@ -1193,9 +1132,9 @@ void init_texturedir(void){
   }
 }
 
-/* ------------------ initvars ------------------------ */
+/* ------------------ InitVars ------------------------ */
 
-void initvars(void){
+void InitVars(void){
   int i;
 
   windrose_circ.ncirc=0;
@@ -2215,9 +2154,9 @@ void initvars(void){
   }
 }
 
-/* ------------------ copy_args ------------------------ */
+/* ------------------ CopyArgs ------------------------ */
 
-void copy_args(int *argc, char **aargv, char ***argv_sv){
+void CopyArgs(int *argc, char **aargv, char ***argv_sv){
 #ifdef WIN32
   char *filename=NULL;
   char **argv=NULL;

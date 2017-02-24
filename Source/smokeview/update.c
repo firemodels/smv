@@ -1859,8 +1859,8 @@ void UpdateShowScene(void){
     restart_time = 0;
     ResetItimes0();
   }
-  if(loadfiles_at_startup==1&&update_load_Files == 1){
-    load_Files();
+  if(loadfiles_at_startup==1&&update_load_files == 1){
+    LoadFiles();
   }
   if(update_startup_view == 1){
     cameradata *ca;

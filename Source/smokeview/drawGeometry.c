@@ -390,9 +390,9 @@ void DrawCircVentsExactSolid(int option){
         ventmin=cvi->boxmin;
         ventmax=cvi->boxmax;
 
-        initBoxClipInfo(&circleclip,ventmin[0],ventmax[0],ventmin[1],ventmax[1],ventmin[2],ventmax[2]);
+        InitBoxClipInfo(&circleclip,ventmin[0],ventmax[0],ventmin[1],ventmax[1],ventmin[2],ventmax[2]);
         MergeClipPlanes(&circleclip,&clipinfo);
-        setClipPlanes(&circleclip,CLIP_ON_DENORMAL);
+        SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
       switch(cvi->dir){
@@ -443,7 +443,7 @@ void DrawCircVentsExactSolid(int option){
         if(cvi->type==VENT_OUTLINE)drawrectangle(width,height,vcolor);
       }
       glPopMatrix();
-      if(option==VENT_CIRCLE)setClipPlanes(&clipinfo,CLIP_ON);
+      if(option==VENT_CIRCLE)SetClipPlanes(&clipinfo,CLIP_ON);
     }
   }
 }
@@ -500,9 +500,9 @@ void DrawCircVentsExactOutline(int option){
         ventmin=cvi->boxmin;
         ventmax=cvi->boxmax;
 
-        initBoxClipInfo(&circleclip,ventmin[0],ventmax[0],ventmin[1],ventmax[1],ventmin[2],ventmax[2]);
+        InitBoxClipInfo(&circleclip,ventmin[0],ventmax[0],ventmin[1],ventmax[1],ventmin[2],ventmax[2]);
         MergeClipPlanes(&circleclip,&clipinfo);
-        setClipPlanes(&circleclip,CLIP_ON_DENORMAL);
+        SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
       switch(cvi->dir){
@@ -551,7 +551,7 @@ void DrawCircVentsExactOutline(int option){
         drawrectangle(width,height,vcolor);
       }
       glPopMatrix();
-      if(option==VENT_CIRCLE)setClipPlanes(&clipinfo,CLIP_ON);
+      if(option==VENT_CIRCLE)SetClipPlanes(&clipinfo,CLIP_ON);
     }
   }
 }
@@ -4719,14 +4719,14 @@ void DrawBlockages(int mode, int trans_flag){
       cd=cadgeominfo+i;
       if(cd->version==1){
         if(trans_flag==DRAW_TRANSPARENT)continue;
-        if(clip_mode==CLIP_BLOCKAGES)setClipPlanes(&clipinfo,CLIP_ON);
+        if(clip_mode==CLIP_BLOCKAGES)SetClipPlanes(&clipinfo,CLIP_ON);
         DrawCADGeom(cd);
-        if(clip_mode==CLIP_BLOCKAGES)setClipPlanes(NULL,CLIP_OFF);
+        if(clip_mode==CLIP_BLOCKAGES)SetClipPlanes(NULL,CLIP_OFF);
       }
       else if(cd->version==2){
-        if(clip_mode==CLIP_BLOCKAGES)setClipPlanes(&clipinfo,CLIP_ON);
+        if(clip_mode==CLIP_BLOCKAGES)SetClipPlanes(&clipinfo,CLIP_ON);
         DrawCAD2Geom(cd,trans_flag);
-        if(clip_mode==CLIP_BLOCKAGES)setClipPlanes(NULL,CLIP_OFF);
+        if(clip_mode==CLIP_BLOCKAGES)SetClipPlanes(NULL,CLIP_OFF);
       }
       ntriangles+=2*cd->nquads;
     }

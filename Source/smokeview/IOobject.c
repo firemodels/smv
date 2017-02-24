@@ -1545,7 +1545,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_ymax=-1;
         ci->clip_zmin=-1;
         ci->clip_zmax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPY:
@@ -1561,7 +1561,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_xmax=-1;
         ci->clip_zmin=-1;
         ci->clip_zmax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPZ:
@@ -1577,11 +1577,11 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_xmin=-1;
         ci->clip_ymin=-1;
         ci->clip_ymax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPOFF:
-      setClipPlanes(NULL,CLIP_OFF);
+      SetClipPlanes(NULL,CLIP_OFF);
       break;
     case SV_MIRRORCLIP:
       {
