@@ -1076,7 +1076,7 @@ void ReadINI2(char *inifile){
       for(i=0;i<nslice_auto;i++){
         fgets(buffer,BUFFERSIZE,stream);
         sscanf(buffer,"%i",&seq_id);
-        get_startup_slice(seq_id);
+        GetStartupSlice(seq_id);
       }
       continue;
     }
@@ -1090,7 +1090,7 @@ void ReadINI2(char *inifile){
       for(i=0;i<n3dsmokes;i++){
         fgets(buffer,BUFFERSIZE,stream);
         sscanf(buffer,"%i",&seq_id);
-        get_startup_smoke(seq_id);
+        GetStartupSmoke(seq_id);
       }
       continue;
     }
@@ -1104,7 +1104,7 @@ void ReadINI2(char *inifile){
       for(i=0;i<n3dsmokes;i++){
         fgets(buffer,BUFFERSIZE,stream);
         sscanf(buffer,"%i",&seq_id);
-        get_startup_patch(seq_id);
+        GetStartupPatch(seq_id);
       }
       continue;
     }
@@ -1114,9 +1114,9 @@ void ReadINI2(char *inifile){
 
 }
 
- /* ------------------ get_startup_patch ------------------------ */
+ /* ------------------ GetStartupPatch ------------------------ */
 
-  void get_startup_patch(int seq_id){
+  void GetStartupPatch(int seq_id){
     int i;
     for(i=0;i<npatchinfo;i++){
       patch *patchi;
@@ -1129,9 +1129,9 @@ void ReadINI2(char *inifile){
     }
   }
 
- /* ------------------ get_startup_smoke3d ------------------------ */
+ /* ------------------ GetStartupSmoke ------------------------ */
 
-  void get_startup_smoke(int seq_id){
+  void GetStartupSmoke(int seq_id){
     int i;
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3d *smoke3di;
@@ -1145,9 +1145,9 @@ void ReadINI2(char *inifile){
     }
   }
 
- /* ------------------ get_startup_slice ------------------------ */
+ /* ------------------ GetStartupSlice ------------------------ */
 
-  void get_startup_slice(int seq_id){
+  void GetStartupSlice(int seq_id){
     int i;
     for(i=0;i<nsliceinfo;i++){
       slice *slicei;
