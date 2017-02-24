@@ -6888,7 +6888,7 @@ void init_device_plane(devicedata *devicei){
     rgbcolor[1]=0.0;
     rgbcolor[2]=0.0;
     rgbcolor[3]=1.0;
-    devicei->color=getcolorptr(rgbcolor);
+    devicei->color=GetColorPtr(rgbcolor);
   }
   colorindex=0;
   for(i=0;i<nmeshes;i++){

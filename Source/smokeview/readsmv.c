@@ -1338,7 +1338,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
       color[1] = params[1];
       color[2] = params[2];
       color[3] = 1.0;
-      devicei->color = getcolorptr(color);
+      devicei->color = GetColorPtr(color);
     }
     if(nparams >= 4){
       devicei->line_width = params[3];
@@ -3191,7 +3191,7 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
       zvi->wall = TOP_WALL;
     }
   }
-  zvi->color = getcolorptr(color);
+  zvi->color = GetColorPtr(color);
   zvi->area_fraction = area_fraction;
 }
 
@@ -4119,7 +4119,7 @@ int ReadSMV(char *file, char *file2){
    rgb_class[1]=0.0;
    rgb_class[2]=0.0;
    rgb_class[3]=1.0;
-   partclassi->rgb=getcolorptr(rgb_class);
+   partclassi->rgb=GetColorPtr(rgb_class);
 
    partclassi->ntypes=0;
    partclassi->xyz=NULL;
@@ -4313,7 +4313,7 @@ int ReadSMV(char *file, char *file2){
     s_color[1]=matli->color[1];
     s_color[2]=matli->color[2];
     s_color[3]=matli->color[3];
-    matli->color = getcolorptr(s_color);
+    matli->color = GetColorPtr(s_color);
   }
 
   if(cadgeominfo!=NULL)FreeCADInfo();
@@ -4838,7 +4838,7 @@ int ReadSMV(char *file, char *file2){
       fgets(buffer,255,stream);
       sscanf(buffer,"%f %f %f",rgb_class,rgb_class+1,rgb_class+2);
       rgb_class[3]=1.0;
-      partclassi->rgb=getcolorptr(rgb_class);
+      partclassi->rgb=GetColorPtr(rgb_class);
 
       partclassi->ntypes=0;
       partclassi->xyz=NULL;
@@ -5369,7 +5369,7 @@ int ReadSMV(char *file, char *file2){
           s_color[2]=-s_color[2];
         }
       }
-      surfi->color = getcolorptr(s_color);
+      surfi->color = GetColorPtr(s_color);
       if(s_color[3]<0.99){
         surfi->transparent=1;
       }
@@ -5443,7 +5443,7 @@ int ReadSMV(char *file, char *file2){
       s_color[2]=CLAMP(s_color[2],0.0,1.0);
       s_color[3]=CLAMP(s_color[3],0.0,1.0);
 
-      matli->color = getcolorptr(s_color);
+      matli->color = GetColorPtr(s_color);
 
       nmatlinfo++;
       continue;
@@ -6395,7 +6395,7 @@ int ReadSMV(char *file, char *file2){
         default:
           ASSERT(FFALSE);
         }
-        zvi->color = getcolorptr(color);
+        zvi->color = GetColorPtr(color);
         zvi->area_fraction = area_fraction;
       }
       else if(vent_type==VFLOW_VENT){
@@ -6448,7 +6448,7 @@ int ReadSMV(char *file, char *file2){
         zvi->vertical_vent_type = vertical_vent_type;
         zvi->area = vent_area;
         zvi->area_fraction = area_fraction;
-        zvi->color = getcolorptr(color);
+        zvi->color = GetColorPtr(color);
       }
       else if(vent_type==MFLOW_VENT){
         nzmvents++;
@@ -6922,14 +6922,14 @@ typedef struct {
             colorindex=-3;
           }
           if(s_color[0]>=0.0&&s_color[1]>=0.0&&s_color[2]>=0.0){
-            bc->color=getcolorptr(s_color);
+            bc->color=GetColorPtr(s_color);
           }
           bc->nnodes=(ijk[1]+1-ijk[0])*(ijk[3]+1-ijk[2])*(ijk[5]+1-ijk[4]);
           bc->useblockcolor=1;
         }
         else{
           if(colorindex>=0){
-            bc->color = getcolorptr(rgb[nrgb+colorindex]);
+            bc->color = GetColorPtr(rgb[nrgb+colorindex]);
             bc->useblockcolor=1;
             bc->usecolorindex=1;
             bc->colorindex=colorindex;
@@ -7118,7 +7118,7 @@ typedef struct {
           cvi->useventcolor=1;
         }
         s_color[3]=1.0; // set color to opaque until CVENT transparency is implemented
-        cvi->color = getcolorptr(s_color);
+        cvi->color = GetColorPtr(s_color);
       }
       continue;
     }
@@ -7333,7 +7333,7 @@ typedef struct {
             vi->useventcolor=1;
             updateindexcolors=1;
           }
-          vi->color = getcolorptr(s_color);
+          vi->color = GetColorPtr(s_color);
         }
         else{
           iv1=0;
@@ -9097,7 +9097,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", dc, dc + 1, dc + 2);
       dc[3] = 1.0;
-      direction_color_ptr = getcolorptr(direction_color);
+      direction_color_ptr = GetColorPtr(direction_color);
       UpdateSliceMenuShow();
       update_evac_parms();
       continue;
@@ -10346,7 +10346,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", ventcolor_temp, ventcolor_temp + 1, ventcolor_temp + 2);
       ventcolor_temp[3] = 1.0;
-      ventcolor = getcolorptr(ventcolor_temp);
+      ventcolor = GetColorPtr(ventcolor_temp);
       updatefaces = 1;
       updateindexcolors = 1;
       continue;
@@ -10404,7 +10404,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", blockcolor_temp, blockcolor_temp + 1, blockcolor_temp + 2);
       blockcolor_temp[3] = 1.0;
-      block_ambient2 = getcolorptr(blockcolor_temp);
+      block_ambient2 = GetColorPtr(blockcolor_temp);
       updatefaces = 1;
       updateindexcolors = 1;
       continue;
@@ -10439,7 +10439,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", blockspec_temp, blockspec_temp + 1, blockspec_temp + 2);
       blockspec_temp[3] = 1.0;
-      block_specular2 = getcolorptr(blockspec_temp);
+      block_specular2 = GetColorPtr(blockspec_temp);
       updatefaces = 1;
       updateindexcolors = 1;
       continue;

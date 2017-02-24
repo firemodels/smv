@@ -183,7 +183,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fraction
     *smoke_color = rgb_volsmokecolormap+4*index;
   }
   else{
-    *smoke_color = getcolorptr(black);
+    *smoke_color = GetColorPtr(black);
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);

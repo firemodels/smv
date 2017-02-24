@@ -1512,7 +1512,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       }
     }
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
-      getBoundaryColors2(
+      GetBoundaryColors2(
         meshi->patchval_iframe, meshi->npatchsize, meshi->cpatchval_iframe,
                  setpatchmin,&patchmin, setpatchmax,&patchmax,
                  &patchmin_global, &patchmax_global,
@@ -1601,19 +1601,19 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   ipatchtype=GetPatchType(patchi);
   switch(loadpatchbysteps){
   case UNCOMPRESSED_ALLFRAMES:
-    getBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
+    GetBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
       setpatchmin,&patchmin, setpatchmax,&patchmax,
       &patchmin_global, &patchmax_global,
       nrgb, colorlabelpatch,patchscale,boundarylevels256,
       &patchi->extreme_min,&patchi->extreme_max);
     break;
   case UNCOMPRESSED_BYFRAME:
-    getBoundaryLabels(
+    GetBoundaryLabels(
       patchmin, patchmax,
       colorlabelpatch,patchscale,boundarylevels256,nrgb);
     break;
   case COMPRESSED_ALLFRAMES:
-    getBoundaryLabels(
+    GetBoundaryLabels(
       patchmin, patchmax,
       colorlabelpatch,patchscale,boundarylevels256,nrgb);
     break;

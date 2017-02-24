@@ -1244,31 +1244,31 @@ void InitVars(void){
   mat_specular_orig[1]=0.5f;
   mat_specular_orig[2]=0.2f;
   mat_specular_orig[3]=1.0f;
-  mat_specular2=getcolorptr(mat_specular_orig);
+  mat_specular2=GetColorPtr(mat_specular_orig);
 
   mat_ambient_orig[0] = 0.5f;
   mat_ambient_orig[1] = 0.5f;
   mat_ambient_orig[2] = 0.2f;
   mat_ambient_orig[3] = 1.0f;
-  mat_ambient2=getcolorptr(mat_ambient_orig);
+  mat_ambient2=GetColorPtr(mat_ambient_orig);
 
   ventcolor_orig[0]=1.0;
   ventcolor_orig[1]=0.0;
   ventcolor_orig[2]=1.0;
   ventcolor_orig[3]=1.0;
-  ventcolor=getcolorptr(ventcolor_orig);
+  ventcolor=GetColorPtr(ventcolor_orig);
 
   block_ambient_orig[0] = 1.0;
   block_ambient_orig[1] = 0.8;
   block_ambient_orig[2] = 0.4;
   block_ambient_orig[3] = 1.0;
-  block_ambient2=getcolorptr(block_ambient_orig);
+  block_ambient2=GetColorPtr(block_ambient_orig);
 
   block_specular_orig[0] = 0.0;
   block_specular_orig[1] = 0.0;
   block_specular_orig[2] = 0.0;
   block_specular_orig[3] = 1.0;
-  block_specular2=getcolorptr(block_specular_orig);
+  block_specular2=GetColorPtr(block_specular_orig);
 
   for(i=0;i<256;i++){
     boundarylevels256[i]=(float)i/255.0;
@@ -1316,7 +1316,7 @@ void InitVars(void){
   direction_color[2]=139.0/255.0;
   direction_color[3]=1.0;
 
-  direction_color_ptr=getcolorptr(direction_color);
+  direction_color_ptr=GetColorPtr(direction_color);
   show_slice_terrain=0;
 
   shooter_uvw[0]=0.0;

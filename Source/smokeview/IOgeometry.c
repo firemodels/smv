@@ -2404,7 +2404,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
       return;
     }
   }
-  getBoundaryColors3(patchi,patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+  GetBoundaryColors3(patchi,patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch,patchi->scale,boundarylevels256,

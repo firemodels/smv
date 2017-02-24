@@ -738,8 +738,8 @@ EXTERNCPP void UpdateFaces(void);
 EXTERNCPP void DrawTicks(void);
 EXTERNCPP void SetStartupView(void);
 EXTERNCPP void add_list_view(char *label_in);
-EXTERNCPP float *getcolorptr(const float *color);
-EXTERNCPP void colorconvert(int flag);
+EXTERNCPP float *GetColorPtr(const float *color);
+EXTERNCPP void ConvertColor(int flag);
 EXTERNCPP void InitCadColors(void);
 EXTERNCPP void UpdateRGBColors(int colorindex);
 EXTERNCPP void InitRGB(void);
@@ -804,25 +804,25 @@ EXTERNCPP void updatetracers(void);
 void UpdateGslicePlanes(void);
 
 EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag);
-EXTERNCPP void getBoundaryColors(float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int ndatalevel, int nlevel,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
-EXTERNCPP void getBoundaryColors2(float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors2(float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_global, float *tmax_global,
               int ndatalevel,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP void getBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int nlevel,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
-EXTERNCPP void getBoundaryLabels(
+EXTERNCPP void GetBoundaryLabels(
               float tmin, float tmax,
               char **labels, char *scale, float *tvals256, int nlevel);
 EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,

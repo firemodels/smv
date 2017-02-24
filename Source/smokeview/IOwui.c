@@ -614,7 +614,7 @@ float *get_terraincolor(terraincell *ti){
   float *ter_time;
   float wuicolor[4] = {1.0,0.0,0.0,1.0};
 
-  if(ti == NULL)return getcolorptr(wuicolor);
+  if(ti == NULL)return GetColorPtr(wuicolor);
 
   if(global_times == NULL || ti->time == NULL){
     index = ti->state[0] % 10;

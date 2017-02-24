@@ -9,9 +9,9 @@
 #define EXPMIN -1
 #define EXPMAX 3
 
-/* ------------------ getBoundaryColors ------------------------ */
+/* ------------------ GetBoundaryColors ------------------------ */
 
-void getBoundaryColors(float *t, int nt, unsigned char *it,
+void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int ndatalevel, int nlevel,
@@ -104,9 +104,9 @@ void getBoundaryColors(float *t, int nt, unsigned char *it,
   Num2String(&labels[nlevel-1][0],tval);
 }
 
-/* ------------------ getBoundaryColors2 ------------------------ */
+/* ------------------ GetBoundaryColors2 ------------------------ */
 
-void getBoundaryColors2(float *t, int nt, unsigned char *it,
+void GetBoundaryColors2(float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int ndatalevel,
@@ -251,9 +251,9 @@ void UpdatePatchBounds(patchdata *patchi){
   FreeHistogram(&full_histogram);
 }
 
-/* ------------------ getBoundaryColors3 ------------------------ */
+/* ------------------ GetBoundaryColors3 ------------------------ */
 
-void getBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
+void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int nlevel,
@@ -372,7 +372,7 @@ void UpdateAllPatchColors(void){
 
     npatchvals = meshi->npatch_times*meshi->npatchsize;
 
-    getBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
+    GetBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch,patchi->scale,boundarylevels256,
@@ -380,9 +380,9 @@ void UpdateAllPatchColors(void){
   }
 }
 
-/* ------------------ getBoundaryLabels ------------------------ */
+/* ------------------ GetBoundaryLabels ------------------------ */
 
-void getBoundaryLabels(
+void GetBoundaryLabels(
               float local_tmin, float local_tmax,
               char **labels, char *scale, float *tvals256, int nlevel){
   int n;
@@ -1270,7 +1270,7 @@ void InitRGB(void){
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
   if(setbw==0){
-    colorconvert(TO_COLOR);
+    ConvertColor(TO_COLOR);
     if(nrgb_ini !=0){
       nrgb = nrgb_ini;
       for(n=0;n<nrgb_ini;n++){
@@ -1290,7 +1290,7 @@ void InitRGB(void){
     }
   }
   else{
-    colorconvert(TO_BW);
+    ConvertColor(TO_BW);
     for(n=0;n<nrgb;n++){
       rgb[n][0] = bw_base[n][0];
       rgb[n][1] = bw_base[n][1];
@@ -1886,9 +1886,9 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   return;
 }
 
-/* ------------------ getcolorptr ------------------------ */
+/* ------------------ GetColorPtr ------------------------ */
 
-float *getcolorptr(const float *color){
+float *GetColorPtr(const float *color){
   colordata *colorptr,*oldlastcolor,*lastcolor;
 
   int i;
@@ -1930,9 +1930,9 @@ float *getcolorptr(const float *color){
   return lastcolor->color;
 }
 
-/* ------------------ colorconvert ------------------------ */
+/* ------------------ ConvertColor ------------------------ */
 
-void colorconvert(int flag){
+void ConvertColor(int flag){
   colordata *colorptr;
   extern colordata *firstcolor;
 
