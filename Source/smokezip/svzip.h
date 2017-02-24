@@ -260,7 +260,7 @@ void GetStartupSmoke(int seq_id);
 void GetStartupPatch(int seq_id);
 unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
-int getendian(void);
+int GetEndian(void);
 int convert_slice(slice *slicei, int *thread_index);
 slice *getslice(char *string);
 void *compress_slices(void *arg);

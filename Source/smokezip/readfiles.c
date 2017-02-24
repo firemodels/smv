@@ -346,7 +346,7 @@ int ReadSMV(char *smvfile){
       GLOBsyst=1;
       TrimBack(buffer);
       if(Match(buffer,"SGI") == 1||Match(buffer,"AIX")==1){
-        if(getendian()==0){
+        if(GetEndian()==0){
           endianswitch=1;
         }
         else{
@@ -354,7 +354,7 @@ int ReadSMV(char *smvfile){
         }
       }
       else{
-        if(getendian()==0){
+        if(GetEndian()==0){
           endianswitch=0;
         }
         else{

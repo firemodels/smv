@@ -13,7 +13,7 @@ void mt_update_slice_hist(void);
 
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,4,SEEK_CUR)
 
 /* ------------------ convert_volslice ------------------------ */
@@ -952,7 +952,7 @@ void Get_Slice_Bounds(void){
 
   int endiandata;
 
-  endiandata=getendian();
+  endiandata=GetEndian();
   if(endianswitch==1)endiandata=1-endiandata;
 
   PRINTF("Determining slice file bounds\n");

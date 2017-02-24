@@ -259,7 +259,7 @@ void convert_part(part *parti, int *thread_index){
   }
 #endif
 
-  endiandata=getendian();
+  endiandata=GetEndian();
   if(endianswitch==1)endiandata=1-endiandata;
 
   partfile=parti->file;
@@ -546,7 +546,7 @@ void Get_Part_Bounds(void){
   int fdsversion;
   int endiandata;
 
-  endiandata=getendian();
+  endiandata=GetEndian();
   if(endianswitch==1)endiandata=1-endiandata;
 
   PRINTF("Determining particle file bounds\n");
@@ -709,7 +709,7 @@ void part2iso(part *parti, int *thread_index){
   PRINTF("Converting %s to\n",parti->file);
 #endif
 
-  endiandata=getendian();
+  endiandata=GetEndian();
   if(endianswitch==1)endiandata=1-endiandata;
 
   NewMemory((void **)&pdata,1000000*sizeof(float));
@@ -1070,7 +1070,7 @@ void part2object(part *parti, int *thread_index){
   PRINTF("Converting %s to\n",parti->file);
 #endif
 
-  endiandata=getendian();
+  endiandata=GetEndian();
   if(endianswitch==1)endiandata=1-endiandata;
 
   NewMemory((void **)&pdata,1000000*sizeof(float));
