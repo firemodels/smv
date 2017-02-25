@@ -797,7 +797,7 @@ void part2iso(part *parti, int *thread_index){
     NewMemory((void **)&propi->partvals,npartcount*sizeof(float));
   }
 
-  CCisoheader(isofile,isolonglabel,isoshortlabel,isounits,levels,&nlevels,&error);
+  CCIsoHeader(isofile,isolonglabel,isoshortlabel,isounits,levels,&nlevels,&error);
 
   LOCK_PART2ISO;
   if(GLOBfirst_part2iso_smvopen==1){
@@ -833,7 +833,7 @@ void part2iso(part *parti, int *thread_index){
     strcat(propi->isofilename,"_");
     strcat(propi->isofilename,labels->shortlabel);
     strcat(propi->isofilename,".tiso");
-    CCtisoheader(propi->isofilename, labels->longlabel, labels->shortlabel, labels->unit, levels, &nlevels, &error);
+    CCTIsoHeader(propi->isofilename, labels->longlabel, labels->shortlabel, labels->unit, levels, &nlevels, &error);
 #ifndef pp_THREAD
     PRINTF("  %s\n",propi->isofilename);
 #endif
@@ -939,7 +939,7 @@ void part2iso(part *parti, int *thread_index){
         vals += npoints[j];
       }
     }
-    CCisosurface2file(isofile, &time_local, partcount, NULL, levels, &nlevels,
+    CCIsoSurface2File(isofile, &time_local, partcount, NULL, levels, &nlevels,
         xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
         &reduce_triangles, &error);
 
@@ -949,7 +949,7 @@ void part2iso(part *parti, int *thread_index){
       propi = part5propinfo_copy + i;
       if(propi->used==0)continue;
 
-      CCisosurfacet2file(propi->isofilename, &time_local, partcount, &data2flag, propi->partvals, NULL, levels, &nlevels,
+      CCIsoSurfaceT2File(propi->isofilename, &time_local, partcount, &data2flag, propi->partvals, NULL, levels, &nlevels,
             xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
             &reduce_triangles, &error);
     }
@@ -1158,7 +1158,7 @@ void part2object(part *parti, int *thread_index){
     NewMemory((void **)&propi->partvals,npartcount*sizeof(float));
   }
 
-  CCisoheader(isofile,isolonglabel,isoshortlabel,isounits,levels,&nlevels,&error);
+  CCIsoHeader(isofile,isolonglabel,isoshortlabel,isounits,levels,&nlevels,&error);
 
   LOCK_PART2ISO;
   if(GLOBfirst_part2iso_smvopen==1){
@@ -1194,7 +1194,7 @@ void part2object(part *parti, int *thread_index){
     strcat(propi->isofilename,"_");
     strcat(propi->isofilename,labels->shortlabel);
     strcat(propi->isofilename,".tiso");
-    CCtisoheader(propi->isofilename, labels->longlabel, labels->shortlabel, labels->unit, levels, &nlevels, &error);
+    CCTIsoHeader(propi->isofilename, labels->longlabel, labels->shortlabel, labels->unit, levels, &nlevels, &error);
 #ifndef pp_THREAD
     PRINTF("  %s\n",propi->isofilename);
 #endif
@@ -1300,7 +1300,7 @@ void part2object(part *parti, int *thread_index){
         vals += npoints[j];
       }
     }
-    CCisosurface2file(isofile, &time_local, partcount, NULL, levels, &nlevels,
+    CCIsoSurface2File(isofile, &time_local, partcount, NULL, levels, &nlevels,
       xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
       &reduce_triangles, &error);
 
@@ -1310,7 +1310,7 @@ void part2object(part *parti, int *thread_index){
       propi = part5propinfo_copy + i;
       if(propi->used==0)continue;
 
-      CCisosurfacet2file(propi->isofilename, &time_local, partcount, &data2flag, propi->partvals, NULL, levels, &nlevels,
+      CCIsoSurfaceT2File(propi->isofilename, &time_local, partcount, &data2flag, propi->partvals, NULL, levels, &nlevels,
         xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
         &reduce_triangles, &error);
     }
