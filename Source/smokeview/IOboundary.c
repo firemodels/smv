@@ -4147,9 +4147,9 @@ void update_hidepatchsurface(void){
 }
 
 
-/* ------------------ Update_All_Patch_Bounds ------------------------ */
+/* ------------------ UpdateAllPatchBoundsST ------------------------ */
 
-void Update_All_Patch_Bounds_st(void){
+void UpdateAllPatchBoundsST(void){
   int i;
   int total=0;
 

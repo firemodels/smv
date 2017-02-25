@@ -1821,7 +1821,7 @@ void InitTextures(void){
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
   if(use_graphics==1){
-    createDepthTexture();
+    CreateDepthTexture();
   }
 #endif
 #endif
@@ -8502,7 +8502,7 @@ typedef struct {
   if(nzoneinfo>0)setup_zone_devs();
 
 
-  init_multi_threading();
+  InitMultiThreading();
 
   init_partprop();
 
@@ -9359,14 +9359,14 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "SKYBOX") == 1){
       skyboxdata *skyi;
 
-      free_skybox();
+      FreeSkybox();
       nskyboxinfo = 1;
       NewMemory((void **)&skyboxinfo, nskyboxinfo*sizeof(skyboxdata));
       skyi = skyboxinfo;
 
       for(i = 0; i<6; i++){
         fgets(buffer, 255, stream);
-        loadskytexture(buffer, skyi->face + i);
+        LoadSkyTexture(buffer, skyi->face + i);
       }
     }
     if(Match(buffer, "C_PLOT3D") == 1){

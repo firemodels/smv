@@ -7,9 +7,9 @@
 
 #include "smokeviewvars.h"
 
-/* ------------------ loadskytexture ------------------------ */
+/* ------------------ LoadSkyTexture ------------------------ */
 
-void loadskytexture(char *filebase, texturedata *texti){
+void LoadSkyTexture(char *filebase, texturedata *texti){
   char *filebuffer=NULL;
   int texwid, texht;
   int errorcode;
@@ -55,9 +55,9 @@ void loadskytexture(char *filebase, texturedata *texti){
   texti->loaded=1;
   return;
 }
-/* ------------------ free_skybox ------------------------ */
+/* ------------------ FreeSkybox ------------------------ */
 
-void free_skybox(void){
+void FreeSkybox(void){
   int i;
   skyboxdata *skyi;
 
@@ -73,9 +73,9 @@ void free_skybox(void){
   nskyboxinfo=0;
 }
 
-/* ------------------ draw_floor ------------------------ */
+/* ------------------ DrawFloor ------------------------ */
 
-void draw_floor(void){
+void DrawFloor(void){
   int i;
 
 /* stuff min and max grid data into a more convenient form
@@ -166,9 +166,9 @@ void draw_floor(void){
   glEnable(GL_BLEND);
 }
 
-/* ------------------ draw_skybox ------------------------ */
+/* ------------------ DrawSkybox ------------------------ */
 
-void draw_skybox(void){
+void DrawSkybox(void){
   int i;
 
   /* stuff min and max grid data into a more convenient form
@@ -263,5 +263,5 @@ void draw_skybox(void){
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
-  draw_floor();
+  DrawFloor();
 }

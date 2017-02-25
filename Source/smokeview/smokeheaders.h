@@ -38,7 +38,7 @@ EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
-EXTERNCPP void draw_screeninfo(void);
+EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void update_show_slice_in_obst(void);
 EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
@@ -59,14 +59,13 @@ EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *get_colortable(char *label);
 EXTERNCPP void update_iso_colorlevel(void);
 EXTERNCPP void readiso_geom_wrapup(void);
-EXTERNCPP void psystem(char *commandline);
+EXTERNCPP void PSystem(char *commandline);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
 #ifdef CPP
 EXTERNCPP void toggle_rollout(procdata *procinfo, int nprocinfo, int motion_id);
 #endif
 EXTERNCPP void enable_disable_playmovie(void);
-EXTERNCPP int does_movie_exist(char *movie_name, char *moviefile);
 EXTERNCPP void update_render_start_button(void);
 EXTERNCPP void enable_disable_makemovie(int onoff);
 EXTERNCPP void MakeMovie(void);
@@ -267,8 +266,8 @@ EXTERNCPP void Update_Isotris(int flag);
 EXTERNCPP void update_evac_parms(void);
 EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdatePatchBounds(patchdata *patchi);
-EXTERNCPP void Update_All_Patch_Bounds(void);
-EXTERNCPP void Update_All_Patch_Bounds_st(void);
+EXTERNCPP void UpdateAllPatchBounds(void);
+EXTERNCPP void UpdateAllPatchBoundsST(void);
 EXTERNCPP int update_patch_hist(patchdata *patchi);
 EXTERNCPP void update_hidepatchsurface(void);
 EXTERNCPP int LastSliceLoadstack(void);
@@ -320,7 +319,7 @@ EXTERNCPP void SmokeColorbarMenu(int var);
 EXTERNCPP void  OBJECT_CB(int flag);
 EXTERNCPP void WUI_CB(int var);
 EXTERNCPP void compress_onoff(int flag);
-EXTERNCPP void compress_svzip2(void);
+EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void initterrain_all(void);
 EXTERNCPP void update_terrain_colors(void);
 EXTERNCPP void drawterrain(terraindata *terri, int only_geom);
@@ -336,10 +335,10 @@ EXTERNCPP int InitCullExts(void);
 #endif
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
-EXTERNCPP void getDepthTexture( void );
-EXTERNCPP void createDepthTexture( void );
+EXTERNCPP void GetDepthTexture( void );
+EXTERNCPP void CreateDepthTexture( void );
 #endif
-EXTERNCPP int init_shaders(void);
+EXTERNCPP int InitShaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
@@ -397,7 +396,7 @@ EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
 EXTERNCPP void InitUserTicks(void);
 EXTERNCPP void DrawUserTicks(void);
 EXTERNCPP int get_tick_dir(float *mm);
-EXTERNCPP void init_multi_threading(void);
+EXTERNCPP void InitMultiThreading(void);
 #ifdef WIN32
 EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 #endif
@@ -473,14 +472,14 @@ EXTERNCPP float Aperture2Zoom(float ap);
 EXTERNCPP int GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void fill_zonedata(int izone);
 EXTERNCPP void update_overwrite(void);
-EXTERNCPP void compress_svzip(void);
+EXTERNCPP void CompressSVZip(void);
 EXTERNCPP void DrawBlockages(int mode, int flag);
 EXTERNCPP void DrawLabels(void);
 EXTERNCPP void Update_Tourlist(void);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
-EXTERNCPP void free_skybox(void);
-EXTERNCPP void draw_skybox(void);
-EXTERNCPP void loadskytexture(char *filebase, texturedata *texti);
+EXTERNCPP void FreeSkybox(void);
+EXTERNCPP void DrawSkybox(void);
+EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void uncompress_patchdataframe(meshdata *meshi,int frame_index);
 EXTERNCPP void getpatchdata_zlib(patchdata *patchi,unsigned char *data,int ndata,
                        float *times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes);

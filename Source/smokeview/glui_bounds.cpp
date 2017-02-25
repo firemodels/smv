@@ -1068,7 +1068,7 @@ void Bound_CB(int var){
     EDIT_patch_max->set_float_val(patchmax);
     break;
   case COMPRESS_FILES:
-    compress_svzip();
+    CompressSVZip();
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;

@@ -78,8 +78,8 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
   FREEMEMORY(meshi->dx_xz); FREEMEMORY(meshi->dy_xz); FREEMEMORY(meshi->dz_xz);
   FREEMEMORY(meshi->dx_yz); FREEMEMORY(meshi->dy_yz); FREEMEMORY(meshi->dz_yz);
 
-  freesurface(&meshi->currentsurf);
-  freesurface(&meshi->currentsurf2);
+  FreeSurface(&meshi->currentsurf);
+  FreeSurface(&meshi->currentsurf2);
   FreeContour(&meshi->plot3dcontour1);
   FreeContour(&meshi->plot3dcontour2);
   FreeContour(&meshi->plot3dcontour3);
@@ -1314,12 +1314,12 @@ void updatesurface(void){
     level = p3min[plotn-1] + (colorindex+0.5)*(p3max[plotn-1]-p3min[plotn-1])/((float)nrgb-2.0f);
     isolevelindex=colorindex;
     isolevelindex2=colorindex;
-    freesurface(currentsurfptr);
-    InitIsosurface(currentsurfptr, level, rgb_plot3d_contour[colorindex],-999);
-    GetIsosurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,dlevel,
+    FreeSurface(currentsurfptr);
+    InitIsoSurface(currentsurfptr, level, rgb_plot3d_contour[colorindex],-999);
+    GetIsoSurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,dlevel,
       xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
     GetNormalSurface(currentsurfptr);
-    CompressIsosurface(currentsurfptr,1,
+    CompressIsoSurface(currentsurfptr,1,
         xplt[0],xplt[ibar],
         yplt[0],yplt[jbar],
         zplt[0],zplt[kbar]);
@@ -1330,12 +1330,12 @@ void updatesurface(void){
       if(colorindex2<0)colorindex2=nrgb-2;
       if(colorindex2>nrgb-2)colorindex2=0;
       level2 = p3min[plotn-1] + colorindex2*(p3max[plotn-1]-p3min[plotn-1])/((float)nrgb-2.0f);
-      freesurface(currentsurf2ptr);
-      InitIsosurface(currentsurf2ptr, level2, rgb_plot3d_contour[colorindex2],-999);
-      GetIsosurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,dlevel,
+      FreeSurface(currentsurf2ptr);
+      InitIsoSurface(currentsurf2ptr, level2, rgb_plot3d_contour[colorindex2],-999);
+      GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,dlevel,
         xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
       GetNormalSurface(currentsurf2ptr);
-      CompressIsosurface(currentsurf2ptr,1,
+      CompressIsoSurface(currentsurf2ptr,1,
         xplt[0],xplt[ibar],
         yplt[0],yplt[jbar],
         zplt[0],zplt[kbar]);

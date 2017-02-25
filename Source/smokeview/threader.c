@@ -7,9 +7,9 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
-/* ------------------ compress_svzip2 ------------------------ */
+/* ------------------ CompressSVZip2 ------------------------ */
 
-void compress_svzip2(void){
+void CompressSVZip2(void){
   char shellcommand[1024];
 
   PRINTF("Compressing...\n");
@@ -43,9 +43,9 @@ void compress_svzip2(void){
   PRINTF("Compression completed\n");
 }
 
-/* ------------------ init_all_threads ------------------------ */
+/* ------------------ InitMultiThreading ------------------------ */
 
-void init_multi_threading(void){
+void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
@@ -58,11 +58,11 @@ void init_multi_threading(void){
 // *************** multi-threaded compression ****************
 
 #ifdef pp_THREAD
- /* ------------------ mt_compress_svzip ------------------------ */
+ /* ------------------ mt_CompressSVZip ------------------------ */
 
-void *mt_compress_svzip(void *arg){
+void *mt_CompressSVZip(void *arg){
   LOCK_COMPRESS
-  compress_svzip2();
+  CompressSVZip2();
   updatemenu=1;
   UNLOCK_COMPRESS
   pthread_exit(NULL);
@@ -70,14 +70,14 @@ void *mt_compress_svzip(void *arg){
 }
 #endif
 
-/* ------------------ compress_svzip ------------------------ */
+/* ------------------ CompressSVZip ------------------------ */
 #ifdef pp_THREAD
-void compress_svzip(void){
-  pthread_create(&compress_thread_id,NULL,mt_compress_svzip,NULL);
+void CompressSVZip(void){
+  pthread_create(&compress_thread_id,NULL,mt_CompressSVZip,NULL);
 }
 #else
-void compress_svzip(void){
-  compress_svzip2();
+void CompressSVZip(void){
+  CompressSVZip2();
 }
 #endif
 
@@ -100,11 +100,10 @@ void *mt_MakeIBlank(void *arg){
 #endif
 #endif
 
-
-/* ------------------ mt_psystem ------------------------ */
+/* ------------------ mt_PSystem ------------------------ */
 
 #ifdef pp_THREAD
-void *mt_psystem(void *arg){
+void *mt_PSystem(void *arg){
   char command_line[1024], moviefile_path[1024];
 
   if(file_exists(GetMovieFilePath(moviefile_path))==1){
@@ -124,11 +123,14 @@ void *mt_psystem(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-void psystem(char *commandline){
-  pthread_create(&system_thread_id, NULL, mt_psystem, NULL);
+
+/* ------------------ PSystem ------------------------ */
+
+void PSystem(char *commandline){
+  pthread_create(&system_thread_id, NULL, mt_PSystem, NULL);
 }
 #else
-void psystem(char *commandline){
+void PSystem(char *commandline){
   system(commandline)
 }
 #endif
@@ -158,27 +160,27 @@ void MakeIBlankAll(void){
 /* ------------------ Update_Bounds ------------------------ */
 
 int Update_Bounds(void){
-  Update_All_Patch_Bounds();
+  UpdateAllPatchBounds();
 #ifdef pp_THREAD
   pthread_join(update_all_patch_bounds_id,NULL);
 #endif
   return 1;
 }
 
-/* ------------------ Update_All_Patch_Bounds_mt ------------------------ */
+/* ------------------ UpdateAllPatchBoundsMT ------------------------ */
 
 #ifdef pp_THREAD
-void *Update_All_Patch_Bounds_mt(void *arg){
-  Update_All_Patch_Bounds_st();
+void *UpdateAllPatchBoundsMT(void *arg){
+  UpdateAllPatchBoundsST();
   pthread_exit(NULL);
   return NULL;
 }
-void Update_All_Patch_Bounds(void){
-  pthread_create(&update_all_patch_bounds_id,NULL,Update_All_Patch_Bounds_mt,NULL);
+void UpdateAllPatchBounds(void){
+  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllPatchBoundsMT,NULL);
 }
 #else
-void Update_All_Patch_Bounds(void){
-  Update_All_Patch_Bounds_st();
+void UpdateAllPatchBounds(void){
+  UpdateAllPatchBoundsST();
 }
 #endif
 

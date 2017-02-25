@@ -726,7 +726,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
           v1=isotrii->v1->xyz;
           v2=isotrii->v2->xyz;
           v3=isotrii->v3->xyz;
-          calcNormal2f(v1,v2,v3,out,&area);
+          CalcNormal2f(v1,v2,v3,out,&area);
 
           vertnorm = vertnorms + 3*(isotrii->v1-asurface->iso_vertices);
           vertnorm[0] += out[0]*area;

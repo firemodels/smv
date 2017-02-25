@@ -2185,7 +2185,7 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     update_overwrite();
-    compress_svzip();
+    CompressSVZip();
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2194,7 +2194,7 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    compress_svzip();
+    CompressSVZip();
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -4174,7 +4174,7 @@ void LoadPatchMenu(int value){
     UpdateFrameNumber(0);
   }
   else if(value==MENU_UPDATEBOUNDS){
-    Update_All_Patch_Bounds();
+    UpdateAllPatchBounds();
   }
   else{
     for(i=0;i<npatchinfo;i++){

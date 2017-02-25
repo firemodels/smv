@@ -559,7 +559,7 @@ void InitOpenGL(void){
       err=1;
     }
     else{
-      err=init_shaders();
+      err= InitShaders();
     }
 #ifdef _DEBUG
     if(err==0){

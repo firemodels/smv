@@ -2687,7 +2687,7 @@ void Reshape_CB(int width, int height){
   update_windowsizelist();
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
-  createDepthTexture();
+  CreateDepthTexture();
 #endif
 #endif
 }

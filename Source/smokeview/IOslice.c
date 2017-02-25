@@ -1069,7 +1069,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 
       iblank_cell = meshi->c_iblank_cell;
 
-      CCisoheader(isofile,longlabel,shortlabel,unitlabel,fed_iso->levels,&fed_iso->nlevels,&error_local2);
+      CCIsoHeader(isofile,longlabel,shortlabel,unitlabel,fed_iso->levels,&fed_iso->nlevels,&error_local2);
       PRINTF("generating FED isosurface\n");
       for(i=0;i<fed_slice->ntimes;i++){
         float *vals;
@@ -1080,7 +1080,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 //    C_val(i,j,k) = i*nj*nk + j*nk + k
 // Fort_val(i,j,k) = i + j*ni + k*ni*nj
 
-        CCisosurface2file(isofile, times+i, vals, iblank_cell,
+        CCIsoSurface2File(isofile, times+i, vals, iblank_cell,
 		              fed_iso->levels, &fed_iso->nlevels,
                   xplt, &nx,  yplt, &ny, zplt, &nz,
                   &reduce_triangles, &error_local2);
@@ -4953,16 +4953,16 @@ void DrawVolSliceTerrain(const slicedata *sd){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
 
         n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
-        r11 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
+        r11 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
 
         n31 = n11 + sd->nslicej*sd->nslicek;
-        r31 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n31, constval) / 255.0;
+        r31 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n31, constval) / 255.0;
 
         n13 = n11 + sd->nslicek;
-        r13 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n13, constval) / 255.0;
+        r13 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n13, constval) / 255.0;
 
         n33 = n13 + sd->nslicej*sd->nslicek;
-        r33 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n33, constval) / 255.0;
+        r33 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n33, constval) / 255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
@@ -6258,7 +6258,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(zmax, constval + znode[ij2]);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * interp3dsliceindex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -6268,7 +6268,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           int k1, k2;
           int n1, n2;
 
-          get_z_interp_factors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
+          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
           n1 = n11 + k1;
           n2 = n11 + k2;
           yy1 = yplttemp[j];
@@ -6303,7 +6303,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(constval + znode[ij2], zmax);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * interp3dsliceindex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -6313,7 +6313,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           int k1, k2;
           int n1, n2;
 
-          get_z_interp_factors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
+          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
           n1 = n11 + k1;
           n2 = n11 + k2;
           yy1 = yplttemp[j];
@@ -6757,7 +6757,7 @@ void UpdateGslicePlanes(void){
       vals[j] = PlaneDist(norm,xyz0,xyz);
     }
     level=0.0;
-    getisobox(xx,yy,zz,vals,level,
+    GetIsoBox(xx,yy,zz,vals,level,
       meshi->gslice_verts,&meshi->gslice_nverts,meshi->gslice_triangles,&meshi->gslice_ntriangles);
       meshi->gslice_ntriangles/=3;
   }

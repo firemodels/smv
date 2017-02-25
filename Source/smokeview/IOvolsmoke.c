@@ -2046,7 +2046,7 @@ void DrawSmoke3DGPUVOL(void){
     return;
   }
 #ifdef pp_GPUDEPTH
-  getDepthTexture();
+  GetDepthTexture();
   glUniform1i(GPUvol_depthtexture,4);
   glUniform2f(GPUvol_screensize,(float)screenWidth,(float)screenHeight);
   glUniform2f(GPUvol_nearfar,fnear,ffar);

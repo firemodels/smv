@@ -14,9 +14,9 @@ GLhandleARB p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
 #define LINK_BAD 0
 #define LINK_GOOD 1
 
-/* ------------------ printfInfoLog ------------------------ */
+/* ------------------ PrintInfoLog ------------------------ */
 
-void printInfoLog(GLhandleARB obj){
+void PrintInfoLog(GLhandleARB obj){
   int infologLength = 0;
   int charsWritten = 0;
   char *infoLog;
@@ -30,9 +30,9 @@ void printInfoLog(GLhandleARB obj){
   }
 }
 
-/* ------------------ setZoneSmokeShaders ------------------------ */
+/* ------------------ SetZoneSmokeShaders ------------------------ */
 
-int setZoneSmokeShaders(){
+int SetZoneSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -130,8 +130,8 @@ int setZoneSmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_zonesmoke = glCreateProgramObjectARB();
@@ -162,7 +162,7 @@ int setZoneSmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_zonesmoke);
+  PrintInfoLog(p_zonesmoke);
 #endif
   GPUzone_zoneinside = glGetUniformLocation(p_zonesmoke,"zoneinside");
   GPUzone_zonedir = glGetUniformLocation(p_zonesmoke,"zonedir");
@@ -179,9 +179,9 @@ int setZoneSmokeShaders(){
 
 }
 
-/* ------------------ set3DSliceShaders ------------------------ */
+/* ------------------ Set3DSliceShaders ------------------------ */
 
-int set3DSliceShaders(void){
+int Set3DSliceShaders(void){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -223,8 +223,8 @@ int set3DSliceShaders(void){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_3dslice = glCreateProgramObjectARB();
@@ -255,7 +255,7 @@ int set3DSliceShaders(void){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_3dslice);
+  PrintInfoLog(p_3dslice);
 #endif
 
   GPU3dslice_valtexture = glGetUniformLocation(p_3dslice,"valtexture");
@@ -270,9 +270,9 @@ int set3DSliceShaders(void){
   return error_code;
 }
 
-/* ------------------ setVolsmokeShaders ------------------------ */
+/* ------------------ SetVolSmokeShaders ------------------------ */
 
-int setVolsmokeShaders(){
+int SetVolSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -518,8 +518,8 @@ int setVolsmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_volsmoke = glCreateProgramObjectARB();
@@ -550,7 +550,7 @@ int setVolsmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_volsmoke);
+  PrintInfoLog(p_volsmoke);
 #endif
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
@@ -595,9 +595,9 @@ int setVolsmokeShaders(){
   return error_code;
 }
 
-/* ------------------ setSmokeShaders ------------------------ */
+/* ------------------ SetSmokeShaders ------------------------ */
 
-int setSmokeShaders(){
+int SetSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -671,8 +671,8 @@ int setSmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_smoke = glCreateProgramObjectARB();
@@ -703,7 +703,7 @@ int setSmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_smoke);
+  PrintInfoLog(p_smoke);
 #endif
   if(error_code!=1)return error_code;
   GPU_hrrpuv_max_smv = glGetUniformLocation(p_smoke,"hrrpuv_max_smv");
@@ -752,9 +752,9 @@ void UnLoadShaders(void){
   glUseProgramObjectARB(0);
 }
 
-/* ------------------ init_shaders ------------------------ */
+/* ------------------ InitShaders ------------------------ */
 
-int init_shaders(void){
+int InitShaders(void){
   GLenum err;
 
   gpuactive=0;
@@ -767,7 +767,7 @@ int init_shaders(void){
   }
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
-    if(setSmokeShaders()==1){
+    if(SetSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU smoke shader successfully compiled, linked and loaded.\n");
 #endif
@@ -779,7 +779,7 @@ int init_shaders(void){
       usegpu=0;
       err=1;
     }
-    if(setVolsmokeShaders()==1){
+    if(SetVolSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
 #endif
@@ -791,7 +791,7 @@ int init_shaders(void){
       usegpu=0;
       err=1;
     }
-    if(set3DSliceShaders()==1){
+    if(Set3DSliceShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU 3d slice shader successfully compiled, linked and loaded.\n");
 #endif
@@ -804,7 +804,7 @@ int init_shaders(void){
       err=1;
     }
     if(err==0){
-      if(setZoneSmokeShaders()==1){
+      if(SetZoneSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU zone smoke shader successfully compiled, linked and loaded.\n");
 #endif
@@ -827,9 +827,9 @@ int init_shaders(void){
 }
 
 #ifdef pp_GPUDEPTH
-/* ------------------ createDepthTexture ------------------------ */
+/* ------------------ CreateDepthTexture ------------------------ */
 
-void createDepthTexture( void ){
+void CreateDepthTexture( void ){
   if( depthtexture_id!=0 ){
 		glDeleteTextures( 1, &depthtexture_id );
 		depthtexture_id = 0;
@@ -849,10 +849,10 @@ void createDepthTexture( void ){
 
 }
 
-/* ------------------ getDepthTexture ------------------------ */
+/* ------------------ GetDepthTexture ------------------------ */
 
-void getDepthTexture( void ){
-  if( depthtexture_id==0 ) createDepthTexture();
+void GetDepthTexture( void ){
+  if( depthtexture_id==0 ) CreateDepthTexture();
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, depthtexture_id);
   glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0, 0, screenWidth, screenHeight);

@@ -6900,7 +6900,7 @@ void init_device_plane(devicedata *devicei){
     int nodeindexes[8], closestnodes[18];
     float vals[8];
 
-    InitIsosurface(devicei->plane_surface[i],level,devicei->color,colorindex);
+    InitIsoSurface(devicei->plane_surface[i],level,devicei->color,colorindex);
     devicei->plane_surface[i]->cullfaces=1;
 
     meshi = meshinfo + i;
@@ -6933,13 +6933,13 @@ void init_device_plane(devicedata *devicei){
     yy[1]=meshi->xyz_bar[YYY];
     zz[1]=meshi->xyz_bar[ZZZ];
 
-    GetIsobox(xx, yy, zz, vals, NULL, nodeindexes, level,
+    GetIsoHexaHedron(xx, yy, zz, vals, NULL, nodeindexes, level,
               xvert, yvert, zvert, NULL, closestnodes, &nvert, triangles, &ntriangles);
 
     UpdateIsosurface(devicei->plane_surface[i], xvert, yvert, zvert, NULL,
                      closestnodes, nvert, triangles, ntriangles);
     GetNormalSurface(devicei->plane_surface[i]);
-    CompressIsosurface(devicei->plane_surface[i],1,
+    CompressIsoSurface(devicei->plane_surface[i],1,
           xbar0,2*xbar,ybar0,2*ybar,zbar0,zbar);
     SmoothIsoSurface(devicei->plane_surface[i]);
   }

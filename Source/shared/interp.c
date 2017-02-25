@@ -6,9 +6,9 @@
 #include "interp.h"
 #include "datadefs.h"
 
-/* ------------------ get_z_interp_factors ------------------------ */
+/* ------------------ GetZInterpFactors ------------------------ */
 
-void get_z_interp_factors(float *zplt, int nz, float z, int *k1, int *k2, float *f1, float *f2){
+void GetZInterpFactors(float *zplt, int nz, float z, int *k1, int *k2, float *f1, float *f2){
   float dz;
   int ileft, iright;
 
@@ -26,9 +26,9 @@ void get_z_interp_factors(float *zplt, int nz, float z, int *k1, int *k2, float 
   return;
 }
 
-/* ------------------ interp3dsliceindex ------------------------ */
+/* ------------------ Interp3DSliceIndex ------------------------ */
 
-int interp3dsliceindex(unsigned char *data, float *zplt, int nz, int n0, float z){
+int Interp3DSliceIndex(unsigned char *data, float *zplt, int nz, int n0, float z){
 #ifdef deadcode
   int k1, k2;
   float dz;
