@@ -9008,6 +9008,8 @@ int ReadINI2(char *inifile, int localfile){
       visyz_windrose = CLAMP(visyz_windrose, 0, 1);
       windstate_windrose = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
+
+      fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose);
       nr_windrose = ABS(nr_windrose);
       ntheta_windrose = ABS(ntheta_windrose);
@@ -11181,35 +11183,36 @@ int ReadINI2(char *inifile, int localfile){
 // ---------------------------------------------------------------------------------------------------------
 //   keywords below are 'local', only in the casename.ini file
 // ---------------------------------------------------------------------------------------------------------
-#define WINDROSEPERLINE 40
-    if(Match(buffer, "WINDROSESHOWHIDE")==1){
-      int i1, i2, vals[WINDROSEPERLINE];
+#define WINDROSEPERLINE 10
+      if(Match(buffer, "WINDROSESHOWHIDE")==1){
+        int i1, i2, vals[WINDROSEPERLINE];
 
-      FREEMEMORY(windrose_showhide);
-      nwindrose_showhide = 0;
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &nwindrose_showhide);
-      nwindrose_showhide = MAX(nwindrose_showhide, 0);
-      if(nwindrose_showhide>0){
-        NewMemory((void **)&windrose_showhide, nwindrose_showhide*sizeof(int));
-      }
-      for(i=0;i<(nwindrose_showhide-1)/WINDROSEPERLINE+1;i++){
-        int j;
-
-        i1 = WINDROSEPERLINE*i;
-        i2 = MIN(i1+WINDROSEPERLINE,nwindrose_showhide);
+        FREEMEMORY(windrose_showhide);
+        nwindrose_showhide = 0;
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i %i %i %i %i %i ",
-          vals,vals+1,vals+2,vals+3,vals+4,vals+5,vals+6,vals+7,vals+8,vals+9);
-        for(j=0;j<WINDROSEPERLINE;j++){
-          vals[j] = CLAMP(vals[j],0,1);
-        }
-        for(j=i1;j<i2;j++){
-          windrose_showhide[j] = vals[j-i1];
+        sscanf(buffer, " %i", &nwindrose_showhide);
+        nwindrose_showhide = MAX(nwindrose_showhide, 0);
+        if(nwindrose_showhide>0){
+          NewMemory((void **)&windrose_showhide, nwindrose_showhide*sizeof(int));
+          for(i=0;i<(nwindrose_showhide-1)/WINDROSEPERLINE+1;i++){
+            int j;
+
+            i1 = WINDROSEPERLINE*i;
+            i2 = MIN(i1+WINDROSEPERLINE,nwindrose_showhide);
+            fgets(buffer, 255, stream);
+            sscanf(buffer, " %i %i %i %i %i %i %i %i %i %i ",
+              vals,vals+1,vals+2,vals+3,vals+4,vals+5,vals+6,vals+7,vals+8,vals+9);
+            for(j=0;j<WINDROSEPERLINE;j++){
+              vals[j] = CLAMP(vals[j],0,1);
+            }
+            for(j=i1;j<i2;j++){
+              windrose_showhide[j] = vals[j-i1];
+            }
+          }
+          update_windrose_showhide = 1;
         }
       }
-      update_windrose_showhide = 1;
-    }
+    
       if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);

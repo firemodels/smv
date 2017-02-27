@@ -561,7 +561,6 @@ void UpdateWindroseShowhide(void){
   int i,nvals;
 
   update_windrose_showhide=0;
-  return;
   if(windrose_showhide==NULL)return;
   nvals = 0;
   for(i = 0; i<nztreedeviceinfo; i++){
