@@ -11181,7 +11181,35 @@ int ReadINI2(char *inifile, int localfile){
 // ---------------------------------------------------------------------------------------------------------
 //   keywords below are 'local', only in the casename.ini file
 // ---------------------------------------------------------------------------------------------------------
+#define WINDROSEPERLINE 40
+    if(Match(buffer, "WINDROSESHOWHIDE")==1){
+      int i1, i2, vals[WINDROSEPERLINE];
 
+      FREEMEMORY(windrose_showhide);
+      nwindrose_showhide = 0;
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &nwindrose_showhide);
+      nwindrose_showhide = MAX(nwindrose_showhide, 0);
+      if(nwindrose_showhide>0){
+        NewMemory((void **)&windrose_showhide, nwindrose_showhide*sizeof(int));
+      }
+      for(i=0;i<(nwindrose_showhide-1)/WINDROSEPERLINE+1;i++){
+        int j;
+
+        i1 = WINDROSEPERLINE*i;
+        i2 = MIN(i1+WINDROSEPERLINE,nwindrose_showhide);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i %i %i %i %i %i ",
+          vals,vals+1,vals+2,vals+3,vals+4,vals+5,vals+6,vals+7,vals+8,vals+9);
+        for(j=0;j<WINDROSEPERLINE;j++){
+          vals[j] = CLAMP(vals[j],0,1);
+        }
+        for(j=i1;j<i2;j++){
+          windrose_showhide[j] = vals[j-i1];
+        }
+      }
+      update_windrose_showhide = 1;
+    }
       if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);
@@ -12702,6 +12730,51 @@ void WriteINI(int flag,char *filename){
     viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
     windstate_windrose, showlabels_windrose);
   fprintf(fileout, " %i %i %i %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose);
+  fprintf(fileout, "WINDROSESHOWHIDE\n");
+  {
+    int nvals;
+
+    nvals = 0;
+    for(i = 0; i<nztreedeviceinfo; i++){
+      char roselabel[256], xlabel[256], ylabel[256];
+      treedevicedata *treei;
+      int j;
+
+      treei = ztreedeviceinfo[i];
+      for(j = treei->first; j<=treei->last; j++){
+        vdevicesortdata *vdevsorti;
+
+        vdevsorti = vdevices_sorted+j;
+        if(vdevsorti->dir==ZDIR)nvals++;
+      }
+    }
+    fprintf(fileout, " %i\n",nvals);
+    nvals = 0;
+    for(i = 0; i<nztreedeviceinfo; i++){
+      char roselabel[256], xlabel[256], ylabel[256];
+      treedevicedata *treei;
+      int j;
+
+      treei = ztreedeviceinfo[i];
+      for(j = treei->first; j<=treei->last; j++){
+        vdevicesortdata *vdevsorti;
+
+        vdevsorti = vdevices_sorted+j;
+        if(vdevsorti->dir==ZDIR){
+          vdevicedata *vd;
+
+          vd = vdevsorti->vdeviceinfo;
+          fprintf(fileout, " %i",vd->display);
+          nvals++;
+          if(nvals==WINDROSEPERLINE){
+            fprintf(fileout, "\n");
+            nvals=0;
+          }
+        }
+      }
+    }
+    fprintf(fileout, "\n");
+  }
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);
 

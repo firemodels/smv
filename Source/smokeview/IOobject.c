@@ -555,7 +555,39 @@ void DrawWindRose(windrosedata *wr,int orientation){
   glDisable(GL_LIGHTING);
 }
 
-/* ----------------------- DrawDeviceWindRoses ----------------------------- */
+/* ----------------------- UpdateWindroseShowhide ----------------------------- */
+
+void UpdateWindroseShowhide(void){
+  int i,nvals;
+
+  update_windrose_showhide=0;
+  return;
+  if(windrose_showhide==NULL)return;
+  nvals = 0;
+  for(i = 0; i<nztreedeviceinfo; i++){
+    char roselabel[256], xlabel[256], ylabel[256];
+    float *xyz;
+    treedevicedata *treei;
+    int j;
+
+    treei = ztreedeviceinfo[i];
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted+j;
+      if(vdevsorti->dir==ZDIR){
+        vdevicedata *vd;
+
+        if(nvals>=nwindrose_showhide)return;
+        vd = vdevsorti->vdeviceinfo;
+        vd->display = windrose_showhide[nvals];
+        nvals++;
+      }
+    }
+  }
+}
+
+/* ----------------------- DrawWindRosesDevices ----------------------------- */
 
 void DrawWindRosesDevices(void){
   int i;
@@ -565,6 +597,7 @@ void DrawWindRosesDevices(void){
     windrosedata *wr;
 
     vdevi = vdeviceinfo + i;
+    if(vdevi->display==0||vdevi->unique==0)continue;
     wr = &vdevi->windroseinfo;
     if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
     if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
@@ -5456,6 +5489,11 @@ void setup_tree_devices(void){
     ntreedeviceinfo=0;
   }
 
+  if(nztreedeviceinfo>0){
+    FREEMEMORY(ztreedeviceinfo);
+    nztreedeviceinfo = 0;
+  }
+
   qsort((vdevicedata **)vdevices_sorted,3*(size_t)nvdeviceinfo,sizeof(vdevicesortdata),comparev3devices);
 
   ntreedeviceinfo = 1;
@@ -5494,6 +5532,61 @@ void setup_tree_devices(void){
     }
     treei->n = n;
     max_device_tree=MAX(max_device_tree,n);
+  }
+
+  for(i = 0; i<ntreedeviceinfo; i++){
+    int j, nz;
+    vdevicedata *vd;
+    float *xyz = NULL;
+
+    treei = treedeviceinfo+i;
+    nz = 0;
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted + j;
+      if(vdevsorti->dir==ZDIR){
+        vd = vdevsorti->vdeviceinfo;
+        if(vd->unique==0)continue;
+        xyz = NULL;
+        if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
+        if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
+        if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+        if(xyz!=NULL){
+          treei->xyz = xyz;
+          nz++;
+        }
+      }
+    }
+    if(nz>0)nztreedeviceinfo++;
+    treei->nz = nz;
+  }
+
+  if(nztreedeviceinfo>0)NewMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(treedevicedata *));
+
+  nztreedeviceinfo=0;
+  for(i = 0; i<ntreedeviceinfo; i++){
+    int j, nz;
+    vdevicedata *vd;
+    float *xyz;
+
+    treei = treedeviceinfo+i;
+    nz = 0;
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted + j;
+      if(vdevsorti->dir==ZDIR){
+        vd = vdevsorti->vdeviceinfo;
+        if(vd->unique==0)continue;
+        xyz = NULL;
+        if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
+        if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
+        if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+        if(xyz!=NULL)nz++;
+      }
+    }
+    if(nz>0)ztreedeviceinfo[nztreedeviceinfo++] = treei;
   }
 }
 
@@ -5955,6 +6048,7 @@ void setup_device_data(void){
     if(vdevi->udev!=NULL||vdevi->vdev!=NULL||vdevi->wdev!=NULL||
       vdevi->angledev!=NULL||vdevi->veldev!=NULL){
       vdevi->unique=1;
+      vdevi->display = 1;
       nvdeviceinfo++;
     }
   }

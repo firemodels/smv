@@ -2004,4 +2004,7 @@ void UpdateDisplay(void){
     update_vol_lights = 0;
     InitAllLightFractions(xyz_light_global, light_type_global);
   }
+  if(update_windrose_showhide==1){
+    UpdateWindroseShowhide();
+  }
 }
