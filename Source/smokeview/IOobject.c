@@ -564,8 +564,6 @@ void UpdateWindroseShowhide(void){
   if(windrose_showhide==NULL)return;
   nvals = 0;
   for(i = 0; i<nztreedeviceinfo; i++){
-    char roselabel[256], xlabel[256], ylabel[256];
-    float *xyz;
     treedevicedata *treei;
     int j;
 

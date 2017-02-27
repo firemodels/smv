@@ -107,8 +107,6 @@ extern "C" void UpdateWindRoseDevices(void){
   int i;
   
   for(i = 0; i<nztreedeviceinfo; i++){
-    char roselabel[256], xlabel[256], ylabel[256];
-    float *xyz;
     treedevicedata *treei;
     int j;
 
@@ -155,7 +153,7 @@ void Device_CB(int var){
 
   updatemenu = 1;
   if(var>=WINDROSE_SHOWHIDEALL&&var<WINDROSE_SHOWHIDEALL+nztreedeviceinfo){
-    int itree, iztree, j;
+    int iztree, j;
     treedevicedata *treei;
 
     iztree = var-WINDROSE_SHOWHIDEALL;
@@ -176,7 +174,7 @@ void Device_CB(int var){
     return;
   }
   if(var>=WINDROSE_SHOWHIDEALL+nztreedeviceinfo&&var<WINDROSE_SHOWHIDEALL+2*nztreedeviceinfo){
-    int itree, iztree, j;
+    int iztree, j;
     treedevicedata *treei;
 
     iztree = var-WINDROSE_SHOWHIDEALL - nztreedeviceinfo;
@@ -329,7 +327,7 @@ extern "C" void glui_device_setup(int main_window){
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
       glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show all"), &viswindrose);
       if(nztreedeviceinfo>0){
-        int ncheckboxes,k;
+        int ncheckboxes;
 
         NewMemory((void **)&ROLLOUT_show_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
 

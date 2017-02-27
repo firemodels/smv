@@ -12738,7 +12738,6 @@ void WriteINI(int flag,char *filename){
 
     nvals = 0;
     for(i = 0; i<nztreedeviceinfo; i++){
-      char roselabel[256], xlabel[256], ylabel[256];
       treedevicedata *treei;
       int j;
 
@@ -12755,7 +12754,6 @@ void WriteINI(int flag,char *filename){
       fprintf(fileout, " %i\n", nvals);
       nvals = 0;
       for(i = 0; i < nztreedeviceinfo; i++){
-        char roselabel[256], xlabel[256], ylabel[256];
         treedevicedata *treei;
         int j;
 
