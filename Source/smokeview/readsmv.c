@@ -12733,7 +12733,6 @@ void WriteINI(int flag,char *filename){
     viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
     windstate_windrose, showlabels_windrose);
   fprintf(fileout, " %i %i %i %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose);
-  fprintf(fileout, "WINDROSESHOWHIDE\n");
   {
     int nvals;
 
@@ -12751,32 +12750,35 @@ void WriteINI(int flag,char *filename){
         if(vdevsorti->dir==ZDIR)nvals++;
       }
     }
-    fprintf(fileout, " %i\n",nvals);
-    nvals = 0;
-    for(i = 0; i<nztreedeviceinfo; i++){
-      char roselabel[256], xlabel[256], ylabel[256];
-      treedevicedata *treei;
-      int j;
+    if(nvals > 0){
+      fprintf(fileout, "WINDROSESHOWHIDE\n");
+      fprintf(fileout, " %i\n", nvals);
+      nvals = 0;
+      for(i = 0; i < nztreedeviceinfo; i++){
+        char roselabel[256], xlabel[256], ylabel[256];
+        treedevicedata *treei;
+        int j;
 
-      treei = ztreedeviceinfo[i];
-      for(j = treei->first; j<=treei->last; j++){
-        vdevicesortdata *vdevsorti;
+        treei = ztreedeviceinfo[i];
+        for(j = treei->first; j <= treei->last; j++){
+          vdevicesortdata *vdevsorti;
 
-        vdevsorti = vdevices_sorted+j;
-        if(vdevsorti->dir==ZDIR){
-          vdevicedata *vd;
+          vdevsorti = vdevices_sorted + j;
+          if(vdevsorti->dir == ZDIR){
+            vdevicedata *vd;
 
-          vd = vdevsorti->vdeviceinfo;
-          fprintf(fileout, " %i",vd->display);
-          nvals++;
-          if(nvals==WINDROSEPERLINE){
-            fprintf(fileout, "\n");
-            nvals=0;
+            vd = vdevsorti->vdeviceinfo;
+            fprintf(fileout, " %i", vd->display);
+            nvals++;
+            if(nvals == WINDROSEPERLINE){
+              fprintf(fileout, "\n");
+              nvals = 0;
+            }
           }
         }
       }
+      fprintf(fileout, "\n");
     }
-    fprintf(fileout, "\n");
   }
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);
