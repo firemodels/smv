@@ -59,7 +59,7 @@ void increment_shooter_data(shootpointdata *pold, shootpointdata *pnew, float dt
       float dvelmin;
 
       get_shooter_vel(uvw_air,xyznew);
-      meshpoint = getmesh_nofail(xyznew);
+      meshpoint = GetMeshNoFail(xyznew);
       if(meshpoint==NULL)meshpoint=meshinfo;
       grid_vel =  sqrt(uvwnew[0]*uvwnew[0]+uvwnew[1]*uvwnew[1]+uvwnew[2]*uvwnew[2]);
       if(grid_vel<0.01)grid_vel=0.01;
@@ -89,7 +89,7 @@ void increment_shooter_data(shootpointdata *pold, shootpointdata *pnew, float dt
       xyznew[2] += dt*uvwnew[2];
     }
     pnew[i].visible=1;
-    if(getmesh_nofail(xyznew)==NULL)pnew[i].visible=0;
+    if(GetMeshNoFail(xyznew)==NULL)pnew[i].visible=0;
   }
   shooter_active=1;
 }

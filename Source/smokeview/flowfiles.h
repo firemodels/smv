@@ -933,8 +933,7 @@ typedef struct {
 /* --------------------------  vdevicedata ------------------------------------ */
 
 typedef struct _vdevicedata {
-  int unique;
-  int filetype;
+  int unique, filetype, display;
   windrosedata windroseinfo;
   devicedata *udev,*vdev,*wdev,*valdev,*colordev,*veldev,*angledev,*sd_veldev,*sd_angledev;
 } vdevicedata;
@@ -950,7 +949,8 @@ typedef struct {
 /* --------------------------  treedevicedata ------------------------------------ */
 
 typedef struct {
-  int first, last, n;
+  int first, last, n, nz;
+  float *xyz;
 } treedevicedata;
 
 /* --------------------------  camviewdata ------------------------------------ */

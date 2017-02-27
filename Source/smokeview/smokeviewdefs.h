@@ -186,8 +186,8 @@ void _Sniff_Errors(char *whereat);
 #define CLIP_BLOCKAGES 2
 #define CLIP_DATA 3
 
-#define UNCLIP setClipPlanes(NULL,CLIP_OFF)
-#define CLIP setClipPlanes(&clipinfo,CLIP_ON)
+#define UNCLIP SetClipPlanes(NULL,CLIP_OFF)
+#define CLIP SetClipPlanes(&clipinfo,CLIP_ON)
 
 #define CLIP_GEOMETRY   \
   {int clip_geom=0;\

@@ -431,7 +431,7 @@ int main(int argc, char **argv){
     }
   }
 
-  if(getendian()==1){
+  if(GetEndian()==1){
       PRINTF("Smokezip running on a big endian computer.\n");
   }
   else{
@@ -440,10 +440,10 @@ int main(int argc, char **argv){
   if(GLOBendf==0&&GLOBsyst==0){
     fprintf(stderr,"Warning: casename.end file is missing.  Endianness of\n");
     fprintf(stderr,"         FDS boundary file data is unknown.\n");
-    if(getendian()==1){
+    if(GetEndian()==1){
       fprintf(stderr,"         Assuming FDS boundary data is big endian - \n");
     }
-    if(getendian()==0){
+    if(GetEndian()==0){
       fprintf(stderr,"         Assuming FDS boundary data is little endian - \n");
     }
     fprintf(stderr,"         or equivalently assuming FDS and Smokezip are\n");
@@ -451,7 +451,7 @@ int main(int argc, char **argv){
     endianswitch=0;
   }
   else{
-    endian_fds=getendian()+endianswitch;
+    endian_fds=GetEndian()+endianswitch;
     if(endian_fds==2)endian_fds=0;
     if(endian_fds==1){
       PRINTF("FDS was run on a big endian computer. \n\n");

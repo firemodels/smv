@@ -30,7 +30,7 @@ void SmoothLabel(float *a, float *b, int n){
 
 }
 
-/* ------------------ calcNormal2 ------------------------ */
+/* ------------------ Normal ------------------------ */
 
 void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area){
   float u[3], v[3];

@@ -1282,13 +1282,13 @@ void PRINTversion(char *progname){
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
   PRINTF("\n");
-  PRINTF(" %s\n\n", releasetitle);
-  PRINTF(" Version          : %s\n", version);
-  PRINTF(" Revision         : %s\n", githash);
-  PRINTF(" Revision Date    : %s\n", gitdate);
-  PRINTF(" Compilation Date : %s %s\n", __DATE__, __TIME__);
+  PRINTF("%s\n\n", releasetitle);
+  PRINTF("Version          : %s\n", version);
+  PRINTF("Revision         : %s\n", githash);
+  PRINTF("Revision Date    : %s\n", gitdate);
+  PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef WIN32
-  PRINTF(" Platform         : WIN64 ");
+  PRINTF("Platform         : WIN64 ");
 #ifdef pp_INTEL
   PRINTF(" (Intel C/C++)");
 #else
@@ -1297,10 +1297,10 @@ void PRINTversion(char *progname){
   PRINTF("\n");
 #endif
 #ifdef pp_OSX
-  PRINTF(" Platform         : OSX64\n");
+  PRINTF("Platform         : OSX64\n");
 #endif
 #ifdef pp_LINUX
-  PRINTF(" Platform         : LINUX64\n");
+  PRINTF("Platform         : LINUX64\n");
 #endif
 }
 

@@ -571,7 +571,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
-    mesh_xyz=getmesh_nofail(xyz);
+    mesh_xyz= GetMeshNoFail(xyz);
   }
   if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
     float plotval;
@@ -1124,7 +1124,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     }
 
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_setup);
-    getinverse(modelview_setup,inverse_modelview_setup);
+    GetInverse(modelview_setup,inverse_modelview_setup);
 
     glMultMatrixf(modelview_identity);
 
@@ -1160,7 +1160,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     glTranslatef(-xcen,-ycen,-zcen);
 
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_scratch);
-    matmatmult(inverse_modelview_setup,modelview_scratch,modelview_current);
+    MatMultMat(inverse_modelview_setup,modelview_scratch,modelview_current);
 
     get_world_eyepos(modelview_scratch, world_eyepos,scaled_eyepos);
 
@@ -1171,8 +1171,8 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       getzonesmokedir(modelview_scratch);
     }
     if(nvolrenderinfo>0&&showvolrender==1&&usevolrender==1){
-      getvolsmokedir(modelview_scratch);
-      SNIFF_ERRORS("after getvolsmokedir");
+      GetVolSmokeDir(modelview_scratch);
+      SNIFF_ERRORS("after GetVolSmokeDir");
 #ifdef pp_GPU
       if(usegpu==0)ComputeAllSmokecolors();
 #else
@@ -1181,8 +1181,8 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     }
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
-      getsmokedir(modelview_scratch);
-      SNIFF_ERRORS("after getsmokedir");
+      GetSmokeDir(modelview_scratch);
+      SNIFF_ERRORS("after GetSmokeDir");
 #ifdef pp_CULL
       if(stereotype==STEREO_NONE){
         if(cullsmoke==1){

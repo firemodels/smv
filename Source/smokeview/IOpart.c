@@ -26,7 +26,7 @@ if(returncode==READPASS){\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
 }\
 if(returncode==READPASS){\
-  if(endianswitch==1)endian_switch(var,size);\
+  if(endianswitch==1)EndianSwitch(var,size);\
   FSEEK(PART5FILE,4,SEEK_CUR);\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
 }

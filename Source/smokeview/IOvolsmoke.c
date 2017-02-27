@@ -17,7 +17,7 @@
 #define TRAILER_SIZE 4
 #define FORTVOLSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
                            fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
 
 
@@ -183,7 +183,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fraction
     *smoke_color = rgb_volsmokecolormap+4*index;
   }
   else{
-    *smoke_color = getcolorptr(black);
+    *smoke_color = GetColorPtr(black);
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
@@ -294,7 +294,7 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   supermesh_index = smesh-supermeshinfo;
   supermesh_index++;
 
-  PRINTF("  Defining smoke and fire textures for supermesh %i ", supermesh_index);
+  PRINTF("    defining smoke and fire textures for supermesh %i - ", supermesh_index);
   FFLUSH();
 
   glActiveTexture(GL_TEXTURE0);
@@ -377,7 +377,7 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
 #endif
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed\n");
+  PRINTF("complete\n");
   FFLUSH();
 }
 #endif
@@ -2046,7 +2046,7 @@ void DrawSmoke3DGPUVOL(void){
     return;
   }
 #ifdef pp_GPUDEPTH
-  getDepthTexture();
+  GetDepthTexture();
   glUniform1i(GPUvol_depthtexture,4);
   glUniform2f(GPUvol_screensize,(float)screenWidth,(float)screenHeight);
   glUniform2f(GPUvol_nearfar,fnear,ffar);
@@ -2831,7 +2831,7 @@ void InitVolsmokeTexture(meshdata *meshi){
   int i;
 
   //UnloadVolsmokeSuperTextures();
-  PRINTF("Defining smoke and fire textures for %s ...", meshi->label);
+  PRINTF("defining smoke and fire textures for %s - ", meshi->label);
   FFLUSH();
 
   nx = meshi->ibar+1;
@@ -2920,7 +2920,7 @@ void InitVolsmokeTexture(meshdata *meshi){
 #endif
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed\n");
+  PRINTF("complete\n");
   FFLUSH();
 }
 

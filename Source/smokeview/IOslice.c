@@ -20,7 +20,7 @@
 #define TRAILER_SIZE 4
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
                            fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
 
 int endianswitch;
@@ -37,7 +37,7 @@ slicedata *gslice;
 
 #define FORTRLESLICEREAD(var,size) FSEEK(RLESLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,RLESLICEFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
 #define GET_SLICE_COLOR(color,index) \
@@ -1069,7 +1069,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 
       iblank_cell = meshi->c_iblank_cell;
 
-      CCisoheader(isofile,longlabel,shortlabel,unitlabel,fed_iso->levels,&fed_iso->nlevels,&error_local2);
+      CCIsoHeader(isofile,longlabel,shortlabel,unitlabel,fed_iso->levels,&fed_iso->nlevels,&error_local2);
       PRINTF("generating FED isosurface\n");
       for(i=0;i<fed_slice->ntimes;i++){
         float *vals;
@@ -1080,7 +1080,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 //    C_val(i,j,k) = i*nj*nk + j*nk + k
 // Fort_val(i,j,k) = i + j*ni + k*ni*nj
 
-        CCisosurface2file(isofile, times+i, vals, iblank_cell,
+        CCIsoSurface2File(isofile, times+i, vals, iblank_cell,
 		              fed_iso->levels, &fed_iso->nlevels,
                   xplt, &nx,  yplt, &ny, zplt, &nz,
                   &reduce_triangles, &error_local2);
@@ -3149,7 +3149,7 @@ void UpdateVSlices(void){
 
   if(nvsliceinfo>0)PRINTF("    updating vector slice menus\n");
   UpdateVsliceMenulabels();
-  PRINTF("  vector slices update completed\n\n");
+  PRINTF("  complete\n\n");
 
 }
 
@@ -3737,25 +3737,25 @@ int GetSlicecZlibData(char *file,
   }
 
   fread(&fileversion, 4, 1, stream);
-  if(endian != 1)fileversion = int_switch(fileversion);
+  if(endian != 1)fileversion = IntSwitch(fileversion);
 
   fread(&version, 4, 1, stream);
-  if(endian != 1)version = int_switch(version);
+  if(endian != 1)version = IntSwitch(version);
 
   fread(minmax, 4, 2, stream);
   if(endian != 1){
-    minmax[0] = float_switch(minmax[0]);
-    minmax[1] = float_switch(minmax[1]);
+    minmax[0] = FloatSwitch(minmax[0]);
+    minmax[1] = FloatSwitch(minmax[1]);
   }
 
   fread(ijkbar, 4, 6, stream);
   if(endian != 1){
-    ijkbar[0] = int_switch(ijkbar[0]);
-    ijkbar[1] = int_switch(ijkbar[1]);
-    ijkbar[2] = int_switch(ijkbar[2]);
-    ijkbar[3] = int_switch(ijkbar[3]);
-    ijkbar[4] = int_switch(ijkbar[4]);
-    ijkbar[5] = int_switch(ijkbar[5]);
+    ijkbar[0] = IntSwitch(ijkbar[0]);
+    ijkbar[1] = IntSwitch(ijkbar[1]);
+    ijkbar[2] = IntSwitch(ijkbar[2]);
+    ijkbar[3] = IntSwitch(ijkbar[3]);
+    ijkbar[4] = IntSwitch(ijkbar[4]);
+    ijkbar[5] = IntSwitch(ijkbar[5]);
   }
 
   count = 0;
@@ -4953,16 +4953,16 @@ void DrawVolSliceTerrain(const slicedata *sd){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
 
         n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
-        r11 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
+        r11 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
 
         n31 = n11 + sd->nslicej*sd->nslicek;
-        r31 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n31, constval) / 255.0;
+        r31 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n31, constval) / 255.0;
 
         n13 = n11 + sd->nslicek;
-        r13 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n13, constval) / 255.0;
+        r13 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n13, constval) / 255.0;
 
         n33 = n13 + sd->nslicej*sd->nslicek;
-        r33 = interp3dsliceindex(sd->iqsliceframe, zplt, meshi->kbar, n33, constval) / 255.0;
+        r33 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n33, constval) / 255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
@@ -6258,7 +6258,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(zmax, constval + znode[ij2]);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * interp3dsliceindex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -6268,7 +6268,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           int k1, k2;
           int n1, n2;
 
-          get_z_interp_factors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
+          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
           n1 = n11 + k1;
           n2 = n11 + k2;
           yy1 = yplttemp[j];
@@ -6303,7 +6303,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(constval + znode[ij2], zmax);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * interp3dsliceindex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -6313,7 +6313,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           int k1, k2;
           int n1, n2;
 
-          get_z_interp_factors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
+          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
           n1 = n11 + k1;
           n2 = n11 + k2;
           yy1 = yplttemp[j];
@@ -6757,7 +6757,7 @@ void UpdateGslicePlanes(void){
       vals[j] = PlaneDist(norm,xyz0,xyz);
     }
     level=0.0;
-    getisobox(xx,yy,zz,vals,level,
+    GetIsoBox(xx,yy,zz,vals,level,
       meshi->gslice_verts,&meshi->gslice_nverts,meshi->gslice_triangles,&meshi->gslice_ntriangles);
       meshi->gslice_ntriangles/=3;
   }
@@ -7146,14 +7146,14 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
 
   times = sd->times;
   ntimes = sd->ntimes;
-  tmin = get_interval(time-dtime, times, ntimes);
-  tmax = get_interval(time+dtime, times, ntimes);
-  imin = get_interval(xyz[0]-dxyz[0], xplt, ibar+1);
-  imax = get_interval(xyz[0]+dxyz[0], xplt, ibar+1);
-  jmin = get_interval(xyz[1]-dxyz[1], yplt, jbar+1);
-  jmax = get_interval(xyz[1]+dxyz[1], yplt, jbar+1);
-  kmin = get_interval(xyz[2]-dxyz[2], zplt, kbar+1);
-  kmax = get_interval(xyz[2]+dxyz[2], zplt, kbar+1);
+  tmin = GetInterval(time-dtime, times, ntimes);
+  tmax = GetInterval(time+dtime, times, ntimes);
+  imin = GetInterval(xyz[0]-dxyz[0], xplt, ibar+1);
+  imax = GetInterval(xyz[0]+dxyz[0], xplt, ibar+1);
+  jmin = GetInterval(xyz[1]-dxyz[1], yplt, jbar+1);
+  jmax = GetInterval(xyz[1]+dxyz[1], yplt, jbar+1);
+  kmin = GetInterval(xyz[2]-dxyz[2], zplt, kbar+1);
+  kmax = GetInterval(xyz[2]+dxyz[2], zplt, kbar+1);
 
   nvals = (tmax+1-tmin)*(imax+1-imin)*(jmax+1-jmin)*(kmax+1-kmin);
   NewMemory((void **)&vals, nvals*sizeof(float));

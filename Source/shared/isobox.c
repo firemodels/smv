@@ -19,9 +19,9 @@
 #define SOLID 0
 #define UNCOMPRESSED 0
 
-/* ------------------ vol_tetra ------------------------ */
+/* ------------------ VolTetra ------------------------ */
 
-float vol_tetra(float *a, float *b, float *c, float *d){
+float VolTetra(float *a, float *b, float *c, float *d){
   float axb[3],brel[3],crel[3],drel[3],volume;
   int i;
 
@@ -37,14 +37,14 @@ float vol_tetra(float *a, float *b, float *c, float *d){
   return ABS(volume);
 }
 
-/* ------------------ vol_penta ------------------------ */
+/* ------------------ VolPenta ------------------------ */
 
-float vol_penta(float *a, float *b, float *c, float *d, float *e, float *f){
+float VolPenta(float *a, float *b, float *c, float *d, float *e, float *f){
   float vol1, vol2, vol3;
 
-  vol1 = vol_tetra(b,c,e,d);
-  vol2 = vol_tetra(b,e,f,d);
-  vol3 = vol_tetra(b,d,f,a);
+  vol1 = VolTetra(b,c,e,d);
+  vol2 = VolTetra(b,e,f,d);
+  vol3 = VolTetra(b,d,f,a);
   return ABS(vol1) + ABS(vol2) + ABS(vol3);
 }
 
@@ -104,7 +104,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     p2*=2;
   }
   ncase = cases[index][0];
-  if(ncase<0||ncase==15)full_volume = vol_tetra(verts[0],verts[1],verts[2],verts[3]);
+  if(ncase<0||ncase==15)full_volume = VolTetra(verts[0],verts[1],verts[2],verts[3]);
   if(index==0)return 0.0;
   if(index==15)return full_volume;
 
@@ -136,7 +136,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     volargs[1]=volverts + 3*cases[index][2];
     volargs[2]=volverts + 3*cases[index][3];
     volargs[3]=verts[cases[index][4]];
-    vol_above_level = vol_tetra(volargs[0],volargs[1],volargs[2],volargs[3]);
+    vol_above_level = VolTetra(volargs[0],volargs[1],volargs[2],volargs[3]);
     if(ncase<0)vol_above_level = full_volume-vol_above_level;
   }
   else{
@@ -147,20 +147,20 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     volargs[3]=volverts + 3*cases[index][4];
     volargs[4]=verts[cases[index][5]];
     volargs[5]=verts[cases[index][6]];
-    vol_above_level = vol_penta(volargs[0],volargs[1],volargs[2],volargs[3],volargs[4],volargs[5]);
+    vol_above_level = VolPenta(volargs[0],volargs[1],volargs[2],volargs[3],volargs[4],volargs[5]);
   }
   return vol_above_level;
 }
 
-/* ------------------ getisobox ------------------------ */
+/* ------------------ GetIsoBox ------------------------ */
 
-void getisobox(float x[2], float y[2], float z[3], float *vals, float level,
+void GetIsoBox(float x[2], float y[2], float z[3], float *vals, float level,
                float *xyzverts, int *nvert, int *triangles, int *ntriangles){
                  int nodeindexes[8]={0,1,2,3,4,5,6,7};
                  float xvert[6], yvert[6], zvert[6];
                  int i;
 
-                 GetIsobox(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles);
+                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles);
                  for(i=0;i<*nvert;i++){
                    xyzverts[3*i]=xvert[i];
                    xyzverts[3*i+1]=yvert[i];
@@ -168,9 +168,9 @@ void getisobox(float x[2], float y[2], float z[3], float *vals, float level,
                  }
 }
 
-/* ------------------ GetIsobox ------------------------ */
+/* ------------------ GetIsoHexaHedron ------------------------ */
 
-int GetIsobox(const float *x,
+int GetIsoHexaHedron(const float *x,
                const float *y,
                const float *z,
                const float *vals,
@@ -593,9 +593,9 @@ int edgelist2[15][16]={
   return *ntriangles;
 }
 
-/* ------------------ calcNormal2f ------------------------ */
+/* ------------------ CalcNormal2f ------------------------ */
 
-void calcNormal2f(const float *v1, const float *v2, const float *v3,
+void CalcNormal2f(const float *v1, const float *v2, const float *v3,
                  float *out, float *area){
   float u[3], v[3];
   int i;
@@ -615,9 +615,9 @@ void calcNormal2f(const float *v1, const float *v2, const float *v3,
 
 }
 
-/* ------------------ calcNormal2 ------------------------ */
+/* ------------------ CalcNormal2 ------------------------ */
 
-void calcNormal2(const unsigned short *v1,
+void CalcNormal2(const unsigned short *v1,
                  const unsigned short *v2,
                  const unsigned short *v3,
                  float *out, float *area){
@@ -640,9 +640,9 @@ void calcNormal2(const unsigned short *v1,
 
 }
 
-/* ------------------ calcNormal ------------------------ */
+/* ------------------ CalcNormal ------------------------ */
 
-void calcNormal(const float *xx, const float *yy, const float *zz, float *out){
+void CalcNormal(const float *xx, const float *yy, const float *zz, float *out){
   float u[3],v[3], p1[3], p2[3], p3[3];
   static const int x = 0;
   static const int y = 1;
@@ -684,9 +684,9 @@ void ReduceToUnit(float *v){
   v[2] /= length;
 }
 
-/* ------------------ GetIsosurface ------------------------ */
+/* ------------------ GetIsoSurface ------------------------ */
 
-int GetIsosurface(isosurface *surface,
+int GetIsoSurface(isosurface *surface,
                   const float *data,
                   const float *tdata,
                   const char *iblank_cell,
@@ -773,7 +773,7 @@ int GetIsosurface(isosurface *surface,
             tvals[7]=tdata[ip1jkp1];
           }
 
-          GetIsobox(xx, yy, zz, vals, tvalsptr, nodeindexes, level,
+          GetIsoHexaHedron(xx, yy, zz, vals, tvalsptr, nodeindexes, level,
                     xvert, yvert, zvert, tvertptr, closestnodes, &nvert, triangles, &ntriangles);
 
           if(nvert>0||ntriangles>0){
@@ -788,9 +788,9 @@ int GetIsosurface(isosurface *surface,
   return 0;
 }
 
-/* ------------------ compareisonodes ------------------------ */
+/* ------------------ CompareIsoNodes ------------------------ */
 
-int compareisonodes( const void *arg1, const void *arg2 ){
+int CompareIsoNodes( const void *arg1, const void *arg2 ){
   sortdata *sdi, *sdj;
   unsigned short *vi, *vj;
 
@@ -807,9 +807,9 @@ int compareisonodes( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ computerank ------------------------ */
+/* ------------------ ComputeRank ------------------------ */
 
-int computerank( const void *arg1, const void *arg2 ){
+int ComputeRank( const void *arg1, const void *arg2 ){
   rankdata *rdi, *rdj;
   int sorti, sortj;
 
@@ -822,9 +822,9 @@ int computerank( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ order_closestnodes ------------------------ */
+/* ------------------ OrderClosestNodes ------------------------ */
 
-int order_closestnodes( const void *arg1, const void *arg2 ){
+int OrderClosestNodes( const void *arg1, const void *arg2 ){
   orderdata *oi, *oj;
   int ii, jj;
 
@@ -837,9 +837,9 @@ int order_closestnodes( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ CompressIsosurface ------------------------ */
+/* ------------------ CompressIsoSurface ------------------------ */
 
-int CompressIsosurface(isosurface *surface, int reduce_triangles,
+int CompressIsoSurface(isosurface *surface, int reduce_triangles,
                         float xmin, float xmax,
                         float ymin, float ymax,
                         float zmin, float zmax){
@@ -960,7 +960,7 @@ int CompressIsosurface(isosurface *surface, int reduce_triangles,
     sdi->vertex[1]=vertices[3*i+1];
     sdi->vertex[2]=vertices[3*i+2];
   }
-  qsort((sortdata *)sortinfo,(size_t)nvertices,sizeof(sortdata),compareisonodes);
+  qsort((sortdata *)sortinfo,(size_t)nvertices,sizeof(sortdata), CompareIsoNodes);
 
   for(i=0;i<nvertices;i++){
     sortdata *sdi;
@@ -976,7 +976,7 @@ int CompressIsosurface(isosurface *surface, int reduce_triangles,
     rdi->index=rank[i];
     rdi->sortedlist=sortedlist[i];
   }
-  qsort((rankdata *)rankinfo,(size_t)nvertices,sizeof(rankdata),computerank);
+  qsort((rankdata *)rankinfo,(size_t)nvertices,sizeof(rankdata), ComputeRank);
   for(i=0;i<nvertices;i++){
     rankdata *rdi;
 
@@ -989,7 +989,7 @@ int CompressIsosurface(isosurface *surface, int reduce_triangles,
   map2[0]=0;
   nmap2=1;
   for(i=1;i<nvertices;i++){
-    if(compareisonodes(sortinfo+i-1,sortinfo+i)!=0){
+    if(CompareIsoNodes(sortinfo+i-1,sortinfo+i)!=0){
   	  j++;
   	  map2[j]=i;
   	  nmap2++;
@@ -1087,7 +1087,7 @@ int CompressIsosurface(isosurface *surface, int reduce_triangles,
     oi->closest=closestnodes[i];
     ordered_closestnodes[i]=i;
   }
-  qsort((orderdata *)orderinfo,(size_t)nvertices,sizeof(orderdata),order_closestnodes);
+  qsort((orderdata *)orderinfo,(size_t)nvertices,sizeof(orderdata), OrderClosestNodes);
   for(i=0;i<nvertices;i++){
     orderdata *oi;
 
@@ -1354,9 +1354,9 @@ int ResizeSurface(isosurface *surfacedata, int incvert, int inctriangles, int in
 
 }
 
-/* ------------------ InitIsosurface ------------------------ */
+/* ------------------ InitIsoSurface ------------------------ */
 
-void InitIsosurface(isosurface *surfacedata, float level, float *color,int colorindex){
+void InitIsoSurface(isosurface *surfacedata, float level, float *color,int colorindex){
   surfacedata->compression_type=UNCOMPRESSED;
   surfacedata->level = level;
   surfacedata->color = color;
@@ -1386,9 +1386,9 @@ void InitIsosurface(isosurface *surfacedata, float level, float *color,int color
   surfacedata->cullfaces=0;
 }
 
-/* ------------------ freesurface ------------------------ */
+/* ------------------ FreeSurface ------------------------ */
 
-void freesurface(isosurface *surfacedata){
+void FreeSurface(isosurface *surfacedata){
   if(surfacedata->defined==0)return;
   FREEMEMORY(surfacedata->xvert);
   FREEMEMORY(surfacedata->yvert);
@@ -1438,7 +1438,7 @@ void SmoothIsoSurface(isosurface *surfacedata){
     v1=vertices_i+i1;
     v2=vertices_i+i2;
     v3=vertices_i+i3;
-    calcNormal2(v1,v2,v3,out,&area);
+    CalcNormal2(v1,v2,v3,out,&area);
     norm[3*n  ]=(short)(out[0]*32767);
     norm[3*n+1]=(short)(out[1]*32767);
     norm[3*n+2]=(short)(out[2]*32767);
@@ -1487,7 +1487,7 @@ int GetNormalSurface(isosurface *surfacedata){
   if(NewMemory((void **)&surfacedata->xnorm,ntriangles*sizeof(int))==0||
      NewMemory((void **)&surfacedata->ynorm,ntriangles*sizeof(int))==0||
      NewMemory((void **)&surfacedata->znorm,ntriangles*sizeof(int))==0){
-    freesurface(surfacedata);
+    FreeSurface(surfacedata);
     return 1;
   }
 
@@ -1512,7 +1512,7 @@ int GetNormalSurface(isosurface *surfacedata){
     verty[2] = yvert[index];
     vertz[2] = zvert[index];
 
-    calcNormal(vertx,verty,vertz,out);
+    CalcNormal(vertx,verty,vertz,out);
     xnorm[n]=out[0];
     ynorm[n]=out[1];
     znorm[n]=out[2];
@@ -1521,9 +1521,9 @@ int GetNormalSurface(isosurface *surfacedata){
 
 }
 
-/* ------------------ CCisoheader ------------------------ */
+/* ------------------ CCIsoHeader ------------------------ */
 
-void CCisoheader(char *isofile,
+void CCIsoHeader(char *isofile,
                  char *isolonglabel, char *isoshortlabel, char *isounits,
                  float *levels, int *nlevels, int *error){
   int version=1,option=1;
@@ -1552,9 +1552,9 @@ void CCisoheader(char *isofile,
 }
 
 
-/* ------------------ CCtisoheader ------------------------ */
+/* ------------------ CCTIsoHeader ------------------------ */
 
-void CCtisoheader(char *isofile,
+void CCTIsoHeader(char *isofile,
                  char *isolonglabel, char *isoshortlabel, char *isounits,
                  float *levels, int *nlevels, int *error){
   int version=2,option=1;
@@ -1584,9 +1584,9 @@ void CCtisoheader(char *isofile,
   *error=0;
 }
 
-/* ------------------ isoout ------------------------ */
+/* ------------------ IsoOut ------------------------ */
 
-void isoout(FILE *isostream,float t, int timeindex, isosurface *surface, int *error){
+void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *error){
 	unsigned char czero=0,*trilist1=NULL;
 	unsigned short szero=0,*trilist2=NULL;
 	int i;
@@ -1640,9 +1640,9 @@ void isoout(FILE *isostream,float t, int timeindex, isosurface *surface, int *er
 	}
 }
 
-/* ------------------ CCisosurface2file ------------------------ */
+/* ------------------ CCIsoSurface2File ------------------------ */
 
-void CCisosurface2file(char *isofile, float *t, float *data, char *iblank,
+void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
 						float *level, int *nlevels,
                    float *xplt, int *nx,
                    float *yplt, int *ny,
@@ -1677,9 +1677,9 @@ void CCisosurface2file(char *isofile, float *t, float *data, char *iblank,
       }
     }
 
-    InitIsosurface(&surface,level[i],NULL,i);
+    InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=0;
-    if(GetIsosurface(&surface,data,NULL,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
+    if(GetIsoSurface(&surface,data,NULL,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
       return;
     }
@@ -1687,7 +1687,7 @@ void CCisosurface2file(char *isofile, float *t, float *data, char *iblank,
       *error=1;
       return;
     }
-    if(CompressIsosurface(&surface,*reduce_triangles,
+    if(CompressIsoSurface(&surface,*reduce_triangles,
       xplt[0],xplt[*nx-1],
       yplt[0],yplt[*ny-1],
       zplt[0],zplt[*nz-1]
@@ -1696,9 +1696,9 @@ void CCisosurface2file(char *isofile, float *t, float *data, char *iblank,
       return;
     }
 
-    isoout(isostream,*t,i,&surface,error);
+    IsoOut(isostream,*t,i,&surface,error);
 
-    freesurface(&surface);
+    FreeSurface(&surface);
   }
   fclose(isostream);
 #ifdef pp_MEMPRINT
@@ -1707,9 +1707,9 @@ void CCisosurface2file(char *isofile, float *t, float *data, char *iblank,
 #endif
 }
 
-/* ------------------ CCisosurface2file ------------------------ */
+/* ------------------ CCIsoSurfaceT2File ------------------------ */
 
-void CCisosurfacet2file(char *isofile, float *t, float *data, int *data2flag, float *data2, int *iblank,
+void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, float *data2, int *iblank,
 						float *level, int *nlevels,
                    float *xplt, int *nx,
                    float *yplt, int *ny,
@@ -1754,9 +1754,9 @@ void CCisosurfacet2file(char *isofile, float *t, float *data, int *data2flag, fl
         dlevel=MIN(val1,val2);
       }
     }
-    InitIsosurface(&surface,level[i],NULL,i);
+    InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=dataflag;
-    if(GetIsosurface(&surface,data,tdata,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
+    if(GetIsoSurface(&surface,data,tdata,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
       return;
     }
@@ -1764,7 +1764,7 @@ void CCisosurfacet2file(char *isofile, float *t, float *data, int *data2flag, fl
       *error=1;
       return;
     }
-    if(CompressIsosurface(&surface,*reduce_triangles,
+    if(CompressIsoSurface(&surface,*reduce_triangles,
       xplt[0],xplt[*nx-1],
       yplt[0],yplt[*ny-1],
       zplt[0],zplt[*nz-1]
@@ -1773,9 +1773,9 @@ void CCisosurfacet2file(char *isofile, float *t, float *data, int *data2flag, fl
       return;
     }
 
-    isoout(isostream,*t,i,&surface,error);
+    IsoOut(isostream,*t,i,&surface,error);
 
-    freesurface(&surface);
+    FreeSurface(&surface);
   }
   fclose(isostream);
 #ifdef pp_MEMPRINT
@@ -1783,106 +1783,3 @@ void CCisosurfacet2file(char *isofile, float *t, float *data, int *data2flag, fl
   PrintMemoryInfo;
 #endif
 }
-
-/* ------------------ get_tri_area ------------------------ */
-
-float get_tri_area(int *edgelist, float *xyz){
-  float *v1, *v2, *v3;
-  float v22[3], v33[3], vcross[3];
-  int i;
-
-  v1 = xyz + 3*edgelist[0];
-  v2 = xyz + 3*edgelist[1];
-  v3 = xyz + 3*edgelist[2];
-  for(i=0;i<3;i++){
-    v22[i]=v2[i]-v1[i];
-    v33[i]=v3[i]-v1[i];
-  }
-//  i    j    k
-//  v220 v221 v222
-//  v330 v331 v332
-  CROSS(vcross,v22,v33);
-  return 0.5*NORM3(vcross);
-}
-
-#define FACTOR(ii,v0,v1,x0,x1) \
-  if(v0*v1<0.0){\
-    factor2=-v0/(v1-v0);\
-    xyziso[3*ii]=MIX(factor2,(x1)[0],(x0)[0]);\
-    xyziso[1+3*ii]=MIX(factor2,(x1)[1],(x0)[1]);\
-    xyziso[2+3*ii]=MIX(factor2,(x1)[2],(x0)[2]);\
-  }
-
-/* ------------------ get_iso_level_area_tetra ------------------------ */
-
-float get_iso_level_area_tetra(float level,
-                               float v0, float v1, float v2, float v3,
-                               float *xyz0, float *xyz1, float *xyz2, float *xyz3){
-  float area, vals2[4],factor2,xyziso[18];
-  int i,factor,casenum;
-  int ntris;
-  int area_edges[16][7]={
-    {0},             // 0000 0
-    {1,2,4,5},       // 0001 1
-    {1,1,3,5},       // 0010 2
-    {2,1,3,4,1,4,2}, // 0011 3
-    {1,0,3,4},       // 0100 4
-    {2,0,2,3,2,3,5}, // 0101 5
-    {2,1,4,5,1,4,0}, // 0110 6
-    {1,0,1,2},       // 0111 7
-    {1,0,1,2},       // 1000 8
-    {2,0,1,4,1,4,5}, // 1001 9
-    {2,0,2,3,2,3,5}, // 1010 10
-    {1,0,3,4},       // 1011 11
-    {2,3,1,4,1,4,2}, // 1100 12
-    {1,1,3,5},       // 1101 13
-    {1,2,4,5},       // 1110 14
-    {0}              // 1111 15
-
-  };
-  area=0.0;
-  casenum=0;
-  factor=1;
-  vals2[0]=v0-level;
-  vals2[1]=v1-level;
-  vals2[2]=v2-level;
-  vals2[3]=v3-level;
-  for(i=0;i<4;i++){
-    if(vals2[i]>0.0)casenum+=factor;
-    factor*=2;
-    if(vals2[i]==0.0)return 0.0;
-  }
-  if(casenum==0||casenum==15)return 0.0;
-  FACTOR(0,vals2[0],vals2[1],xyz0,xyz1);
-  FACTOR(1,vals2[0],vals2[2],xyz0,xyz2);
-  FACTOR(2,vals2[0],vals2[3],xyz0,xyz3);
-  FACTOR(3,vals2[1],vals2[2],xyz1,xyz2);
-  FACTOR(4,vals2[1],vals2[3],xyz1,xyz3);
-  FACTOR(5,vals2[2],vals2[3],xyz2,xyz3);
-  ntris = area_edges[casenum][0];
-  for(i=0;i<ntris;i++){
-    int *edgelist;
-
-    edgelist = area_edges[casenum]+1+3*i;
-    area+=get_tri_area(edgelist,xyziso);
-  }
-
-  return area;
-}
-
-/* ------------------ get_iso_level_area_cube ------------------------ */
-
-float get_iso_level_area_cube(float level, float *vals, float *xyz){
-  float area=0.0;
-
-  area += get_iso_level_area_tetra(level,vals[0],vals[1],vals[3],vals[4],xyz+3*0,xyz+3*1,xyz+3*3,xyz+3*4);
-  area += get_iso_level_area_tetra(level,vals[1],vals[2],vals[3],vals[6],xyz+3*1,xyz+3*2,xyz+3*3,xyz+3*6);
-  area += get_iso_level_area_tetra(level,vals[4],vals[5],vals[6],vals[1],xyz+3*4,xyz+3*5,xyz+3*6,xyz+3*1);
-  area += get_iso_level_area_tetra(level,vals[4],vals[6],vals[7],vals[3],xyz+3*4,xyz+3*6,xyz+3*7,xyz+3*3);
-  return area;
-}
-
-
-
-
-
