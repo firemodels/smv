@@ -1215,7 +1215,9 @@ input file. }
 \begin{figure}[bph]
 \centerline{
 \includegraphics[width=2.083333in]{FIGURES/figGSLICE}
-}\ \caption[Dialog box for controlling the orientation of a 3D slice file.]{Dialog box for controlling the orientation of a 3D slice file.}\ \label{figGSLICE}
+}
+\caption[Dialog box for controlling the orientation of a 3D slice file.]{Dialog box for controlling the orientation of a 3D slice file.}
+\label{figGSLICE}
 \end{figure}
 
 \subsection{Wind Roses}
@@ -1227,8 +1229,8 @@ A wind rose displays a 2D summary of how flow velocities are distributed at a po
 &DEVC XYZ=1.2,0.8,1.0 QUANTITY='W-VELOCITY' /
 \end{verbatim}
 
-\noindent in an FDS input file.  Smokeview creates a two dimensional histogram recording the distribution  of wind speeds and direction. 
-The user can then 
+\noindent in an FDS input file.  Smokeview creates a two dimensional histogram recording the distribution of wind speeds and direction. 
+The user can then set various viewing options using the wind rose dialog box illustrated in Figure \ref{figWINDROSE}.
 
 \begin{figure}[bph]
 \centerline{
@@ -1239,6 +1241,18 @@ The user can then
 \label{figWINDROSE}
 \end{figure}
 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/windrose_xz}&
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/windrose_xy}\\
+XZ&XY
+\end{tabular}
+\end{center}
+\caption[Wind roses visualizing velocity flow distributions in XZ and XY planes at several locations]
+{Wind roses visualizing velocity flow distributions in XZ and XY planes at several locations}
+\label{figWINDROSE}
+\end{figure}
 
 \subsection{Fractional effective dose (FED) slices}
 The fractional effective dose (FED), developed by Purser~\cite{SFPE:Purser},
