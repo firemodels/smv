@@ -401,8 +401,8 @@ extern "C" void glui_device_setup(int main_window){
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
       SPINNER_radius_windrose = glui_device->add_spinner_to_panel(PANEL_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
       RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(PANEL_properties, &windstate_windrose);
-      glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "heading");
+      glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
 
       PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
       glui_device->add_checkbox_to_panel(PANEL_scale_windrose, _d("show scale"), &showref_windrose);
