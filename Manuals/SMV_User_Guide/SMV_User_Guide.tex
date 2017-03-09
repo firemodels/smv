@@ -1229,13 +1229,14 @@ A wind rose displays a 2D summary of how flow velocities are distributed at a po
 &DEVC XYZ=1.2,0.8,1.0 QUANTITY='W-VELOCITY' /
 \end{verbatim}
 
-\noindent in an FDS input file.  Smokeview creates a two dimensional histogram recording the distribution of wind speeds and direction. 
-The user can then set various viewing options using the wind rose dialog box illustrated in Figure \ref{figWINDROSE}.
+\noindent in an FDS input file.  Smokeview creates a two dimensional histogram recording the distribution of wind speeds and direction.
+The user can then set various viewing options using the wind rose dialog box illustrated in Figure \ref{figWINDROSE}. Figure \ref{figWINDROSEplots}
+illustrates wind roses at several locations drawn in horizontal (xy) and vertical (xz) planes.
 
 \begin{figure}[bph]
 \centerline{
 \includegraphics[width=2.2986in]{FIGURES/figWINDROSE}
-} 
+}
 \caption[Dialog Box for setting wind rose options]
 {Dialog Box for setting wind rose options}
 \label{figWINDROSE}
@@ -1251,7 +1252,7 @@ XZ&XY
 \end{center}
 \caption[Wind roses visualizing velocity flow distributions in XZ and XY planes at several locations]
 {Wind roses visualizing velocity flow distributions in XZ and XY planes at several locations}
-\label{figWINDROSE}
+\label{figWINDROSEplots}
 \end{figure}
 
 \subsection{Fractional effective dose (FED) slices}
@@ -1312,7 +1313,7 @@ FDS also outputs duplicate slices when two or more identical {\tt \&SLCF}\ entri
 \begin{figure}[bph]
 \centerline{
 \includegraphics[width=2.390305555in]{FIGURES/figsliceduplicate}
-} 
+}
 \caption[Dialog box for specifying duplicate slice visibility.]{Dialog box for specifying duplicate slice visibility.}
 \label{fig:sliceduplicate}
 \end{figure}
