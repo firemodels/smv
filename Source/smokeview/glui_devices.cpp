@@ -100,6 +100,7 @@ GLUI_Spinner *SPINNER_nr_windrose = NULL;
 GLUI_Spinner *SPINNER_ntheta_windrose = NULL;
 GLUI_Spinner *SPINNER_radius_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
+GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
 
@@ -412,6 +413,8 @@ extern "C" void glui_device_setup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
       SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("increment"), GLUI_SPINNER_FLOAT, &scale_increment_windrose);
       SPINNER_scale_increment_windrose->set_float_limits(0.01, 0.5);
+      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("max"), GLUI_SPINNER_FLOAT, &scale_max_windrose);
+      SPINNER_scale_max_windrose->set_float_limits(0.0, 1.0);
 
       ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false);
 

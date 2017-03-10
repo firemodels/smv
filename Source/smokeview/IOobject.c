@@ -533,21 +533,25 @@ void DrawWindRose(windrosedata *wr,int orientation){
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
     for(icirc = 1;icirc<100;icirc++){
-      float factor,diameter;
+      float scalei,scalei_normalized,diameter;
 
-      factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
-      if(factor>1.0)break;
-      diameter = 2.0*radius_windrose*factor;
+      scalei=(float)icirc*scale_increment_windrose;
+      if(scalei > scale_max_windrose)continue;
+      scalei_normalized = scalei/(maxr/hist->ntotal);
+      if(scalei_normalized>1.0)break;
+      diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
-      if(showlabels_windrose==1)Output3Val(diameter / 2.0, 0.0, 0.0, (float)icirc*scale_increment_windrose);
+      if(showlabels_windrose==1)Output3Val(diameter / 2.0, 0.0, 0.0, scalei);
     }
     glTranslatef(0.0, 0.0, -0.002);
     for(icirc = 1;icirc<100;icirc++){
-      float factor, diameter;
+      float scalei, scalei_normalized, diameter;
 
-      factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
-      if(factor>1.0)break;
-      diameter = 2.0*radius_windrose*factor;
+      scalei=(float)icirc*scale_increment_windrose;
+      if(scalei > scale_max_windrose)continue;
+      scalei_normalized = scalei /(maxr/hist->ntotal);
+      if(scalei_normalized>1.0)break;
+      diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
   }
