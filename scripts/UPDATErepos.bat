@@ -19,9 +19,8 @@ goto:eof
 call %envfile%
 
 echo.
-echo ------------------------------------------------------------------------
-echo directory: %svn_root%
-echo host: windows
+echo ---------------------- windows: %COMPUTERNAME% ------------------------------
+echo repo: %svn_root%
 %svn_drive%
 cd %svn_root%\fds
 echo.
@@ -54,9 +53,8 @@ set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
-echo ------------------------------------------------------------------------
-echo directory: %linux_svn_root%
-echo host: %linux_hostname%
+echo ---------------------- linux: %linux_hostname% ------------------------------
+echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
 plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds %linux_hostname%
@@ -70,9 +68,8 @@ echo *** webpages ***
 plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages %linux_hostname%
 
 echo.
-echo ------------------------------------------------------------------------
-echo directory: %linux_svn_root%
-echo host: %osx_hostname%
+echo ---------------------- osx: %osx_hostname% ------------------------------
+echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
 plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/fds %osx_hostname%
