@@ -77,7 +77,6 @@ GLUI_Panel *PANEL_properties=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_show_windrose = NULL;
 
-
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;

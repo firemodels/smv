@@ -541,7 +541,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       if(scalei_normalized>1.0)break;
       diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
-      if(showlabels_windrose==1)Output3Val(diameter / 2.0, 0.0, 0.0, scalei);
+      if(showlabels_windrose==1)Output3Val(0.01+diameter / 2.0, 0.0, 0.0, scalei);
     }
     glTranslatef(0.0, 0.0, -0.002);
     for(icirc = 1;icirc<100;icirc++){
@@ -5948,7 +5948,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         CopyUV2Histogram(uvals, vvals, nvals, rmin, rmax, histogram);
         maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
       }
-
     }
     if(angledev != NULL&&veldev != NULL){
       float rmin, rmax;
