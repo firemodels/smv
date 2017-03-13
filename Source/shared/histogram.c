@@ -425,6 +425,8 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
 
   if(nvals<=0)return;
 
+  histogram->val_min = sqrt(uvals[0]*uvals[0]+vvals[0]*vvals[0]);
+  histogram->val_max = histogram->val_min;
   for(i = 0; i < nvals; i++){
     float r, theta;
     float u, v;
@@ -432,6 +434,8 @@ void CopyUV2Histogram(float *uvals, float *vvals, int nvals, float rmin, float r
     u = uvals[i];
     v = vvals[i];
     r = sqrt(u*u + v*v);
+    histogram->val_min = MIN(histogram->val_min, r);
+    histogram->val_max = MAX(histogram->val_max, r);
     theta = FMOD360(RAD2DEG*atan2(v, u));
 
     ir = 0;

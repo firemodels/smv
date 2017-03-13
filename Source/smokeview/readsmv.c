@@ -9005,12 +9005,13 @@ int ReadINI2(char *inifile, int localfile){
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose);
+      sscanf(buffer," %i %i %i %f %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
       nr_windrose = ABS(nr_windrose);
       ntheta_windrose = ABS(ntheta_windrose);
       radius_windrose = ABS(radius_windrose);
       scale_windrose = CLAMP(scale_windrose,0,1);
       scale_increment_windrose = CLAMP(scale_increment_windrose, 0.01, 0.5);
+      scale_max_windrose = CLAMP(scale_max_windrose, 0.0, 1.0);
       continue;
     }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){
@@ -12727,7 +12728,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
     windstate_windrose, showlabels_windrose);
-  fprintf(fileout, " %i %i %i %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose);
+  fprintf(fileout, " %i %i %i %f %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     int nvals;
 

@@ -26,7 +26,7 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i16
+set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 ::*** firebot/smokebot
@@ -41,7 +41,7 @@ set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-set osx_hostname=floga.el.nist.gov
+set osx_hostname=ignis.el.nist.gov
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
 
