@@ -2592,22 +2592,16 @@ void UpdateMeshCoords(void){
 
 /* ------------------ IsSliceDup ------------------------ */
 
-int IsSliceDup(slicedata *sd){
+int IsSliceDup(slicedata *sd, int nslice){
   int i;
 
-  if(sd->is1<0||sd->is2<0)return 0;
-  if(sd->js1<0||sd->js2<0)return 0;
-  if(sd->ks1<0||sd->ks2<0)return 0;
-  for(i=0;i<nsliceinfo-1;i++){
+  for(i=0;i<nslice-1;i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
-    if(slicei->is1<0||slicei->is2<0)continue;
-    if(slicei->js1<0||slicei->js2<0)continue;
-    if(slicei->ks1<0||slicei->ks2<0)continue;
-    if(slicei->is1!=sd->is1||slicei->is2!=sd->is2)continue;
-    if(slicei->js1!=sd->js1||slicei->js2!=sd->js2)continue;
-    if(slicei->ks1!=sd->ks1||slicei->ks2!=sd->ks2)continue;
+    if(slicei->ijk_min[0]!=sd->ijk_min[0]||slicei->ijk_max[0]!=sd->ijk_max[0])continue;
+    if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
+    if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
     if(slicei->slicetype!=sd->slicetype)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
@@ -7774,7 +7768,7 @@ typedef struct {
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
 
-      sd = sliceinfo_copy;
+      sd = sliceinfo + nn_slice - 1;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
       sd->vol_file=NULL;
@@ -7924,7 +7918,7 @@ typedef struct {
         meshi = meshinfo + blocknumber;
         sd->mesh_type=meshi->mesh_type;
       }
-      if(IsSliceDup(sd)==1){
+      if(IsSliceDup(sd,nn_slice)==1){
         FREEMEMORY(sd->reg_file);
         FREEMEMORY(sd->comp_file);
         FREEMEMORY(sd->vol_file);
@@ -7932,6 +7926,7 @@ typedef struct {
 
         nsliceinfo--;
         nslicefiles--;
+        nn_slice--;
         continue;
       }
       sliceinfo_copy++;
@@ -9010,12 +9005,13 @@ int ReadINI2(char *inifile, int localfile){
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose);
+      sscanf(buffer," %i %i %i %f %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
       nr_windrose = ABS(nr_windrose);
       ntheta_windrose = ABS(ntheta_windrose);
       radius_windrose = ABS(radius_windrose);
       scale_windrose = CLAMP(scale_windrose,0,1);
       scale_increment_windrose = CLAMP(scale_increment_windrose, 0.01, 0.5);
+      scale_max_windrose = CLAMP(scale_max_windrose, 0.0, 1.0);
       continue;
     }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){
@@ -12732,7 +12728,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
     windstate_windrose, showlabels_windrose);
-  fprintf(fileout, " %i %i %i %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose);
+  fprintf(fileout, " %i %i %i %f %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     int nvals;
 

@@ -77,7 +77,6 @@ GLUI_Panel *PANEL_properties=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_show_windrose = NULL;
 
-
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
@@ -100,6 +99,7 @@ GLUI_Spinner *SPINNER_nr_windrose = NULL;
 GLUI_Spinner *SPINNER_ntheta_windrose = NULL;
 GLUI_Spinner *SPINNER_radius_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
+GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
 
@@ -401,8 +401,8 @@ extern "C" void glui_device_setup(int main_window){
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
       SPINNER_radius_windrose = glui_device->add_spinner_to_panel(PANEL_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
       RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(PANEL_properties, &windstate_windrose);
-      glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "heading");
+      glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
 
       PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
       glui_device->add_checkbox_to_panel(PANEL_scale_windrose, _d("show scale"), &showref_windrose);
@@ -412,6 +412,8 @@ extern "C" void glui_device_setup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
       SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("increment"), GLUI_SPINNER_FLOAT, &scale_increment_windrose);
       SPINNER_scale_increment_windrose->set_float_limits(0.01, 0.5);
+      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("max"), GLUI_SPINNER_FLOAT, &scale_max_windrose);
+      SPINNER_scale_max_windrose->set_float_limits(0.0, 1.0);
 
       ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false);
 
