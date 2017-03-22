@@ -3151,9 +3151,20 @@ void UpdateVSlices(void){
   UpdateVsliceMenulabels();
   PRINTF("  complete\n\n");
 
+  LOCK_BUILDSLICE;
+  update_vslice = 0;
+  updatemenu = 1;
+  UNLOCK_BUILDSLICE;
 }
 
-/* ------------------ GetVSliceIndex ------------------------ */
+/* ------------------ UpdateVSlices2 ------------------------ */
+
+void *UpdateVSlices2(void *arg){
+  UpdateVSlices();
+  return NULL;
+}
+  
+  /* ------------------ GetVSliceIndex ------------------------ */
 
 int GetVSliceIndex(const vslicedata *vd){
   int j;

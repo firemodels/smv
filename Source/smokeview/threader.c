@@ -49,6 +49,7 @@ void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
+  pthread_mutex_init(&mutexBUILDSLICE, NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
 #endif
@@ -191,3 +192,13 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
   pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif
+
+/* ------------------ mt_UpdateVSlices ------------------------ */
+
+
+#ifdef pp_THREAD
+void mt_UpdateVSlices(void){
+  pthread_create(&update_vslice_id, NULL, UpdateVSlices2, NULL);
+}
+#endif
+

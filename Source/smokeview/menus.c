@@ -8393,7 +8393,7 @@ updatemenu=0;
       glutAddSubMenu(_("Unload terrain"),unloadterrainmenu);
     }
   }
-    if(nsliceinfo>0){
+    if(update_vslice==0&&nsliceinfo>0){
 
       if(nmultisliceinfo<nsliceinfo){
         CREATEMENU(unloadmultislicemenu,UnloadMultiSliceMenu);
@@ -9463,37 +9463,45 @@ updatemenu=0;
       if(manual_terrain==1&&nterraininfo>0){
         glutAddSubMenu(_("Terrain"),loadterrainmenu);
       }
-      if(nsliceinfo>0&&nmultisliceinfo<nsliceinfo){
-        strcpy(loadmenulabel,_("Multi-Slices"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
+      if(update_vslice==0){
+        if(nsliceinfo>0&&nmultisliceinfo<nsliceinfo){
+          strcpy(loadmenulabel,_("Multi-Slices"));
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadmultislicemenu);
         }
-        glutAddSubMenu(loadmenulabel,loadmultislicemenu);
+        if(nvsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
+          strcpy(loadmenulabel,_("Multi-Vector Slices"));
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadmultivslicemenu);
+        }
+        if(nsliceinfo>0){
+          strcpy(loadmenulabel,"Slice file");
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadslicemenu);
+        }
+        if(nvsliceinfo>0){
+          strcpy(loadmenulabel,_("Vector slices"));
+          if(sliceframestep>1){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,vslicemenu);
+        }
       }
-      if(nvsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
-        strcpy(loadmenulabel,_("Multi-Vector Slices"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadmultivslicemenu);
-      }
-      if(nsliceinfo>0){
-        strcpy(loadmenulabel,"Slice file");
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadslicemenu);
-      }
-      if(nvsliceinfo>0){
-        strcpy(loadmenulabel,_("Vector slices"));
-        if(sliceframestep>1){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,vslicemenu);
+      if(update_vslice==1&&nsliceinfo>0){
+        char menulabel[1024];
+
+        strcpy(menulabel,"Building Slice file menus");
+        glutAddMenuEntry(menulabel,MENU_DUMMY);
       }
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface file");

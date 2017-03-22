@@ -8566,7 +8566,11 @@ typedef struct {
 
   UpdatePlotxyzAll();
 
+#ifdef pp_THREAD
+  mt_UpdateVSlices();
+#else
   UpdateVSlices();
+#endif
   GetGSliceParams();
 
   active_smokesensors=0;
