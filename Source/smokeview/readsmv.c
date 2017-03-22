@@ -7786,7 +7786,7 @@ typedef struct {
       }
 
       if(nslicefiles>100&&(islicecount%100==1||nslicefiles==islicecount)){
-        PRINTF("     examining %i'th slice file\n",islicecount);
+        PRINTF("     examining %i'st slice file\n",islicecount);
       }
       islicecount++;
       strcpy(buffer2,bufferptr);
