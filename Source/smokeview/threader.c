@@ -192,3 +192,13 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
   pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif
+
+/* ------------------ mt_UpdateVSlices ------------------------ */
+
+
+#ifdef pp_THREAD
+void mt_UpdateVSlices(void){
+  pthread_create(&update_vslice_id, NULL, UpdateVSlices2, NULL);
+}
+#endif
+

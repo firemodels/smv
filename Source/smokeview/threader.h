@@ -38,10 +38,13 @@
   #define LOCK_IBLANK
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
+#define LOCK_BUILDSLICE
+#define UNLOCK_BUILDSLICE
 #endif
 
 #ifdef pp_THREAD
 void mt_ReadVolsmokeAllFramesAllMeshes2(void);
+void mt_UpdateVSlices(void);
 #endif
 
 // define mutex's and thread_ids
@@ -57,6 +60,7 @@ MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
+MT_EXTERN pthread_t update_vslice_id;
 #endif
 #endif
 #endif
