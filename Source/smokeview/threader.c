@@ -49,6 +49,7 @@ void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
+  pthread_mutex_init(&mutexBUILDSLICE, NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
 #endif
