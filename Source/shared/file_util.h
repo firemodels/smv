@@ -21,11 +21,13 @@ typedef struct {
   int type;
 } filelistdata;
 
+#ifdef pp_READBUFFER
 typedef struct filedata{
   char *filename, *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
+#endif
 
 #ifdef X64
 #define FSEEK(a,b,c) _fseeki64(a,b,c)
