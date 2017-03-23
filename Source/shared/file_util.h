@@ -21,6 +21,12 @@ typedef struct {
   int type;
 } filelistdata;
 
+typedef struct filedata{
+  char *filename, *buffer, **lines;
+  int iline, nlines;
+  FILE_SIZE filesize;
+} filedata;
+
 #ifdef X64
 #define FSEEK(a,b,c) _fseeki64(a,b,c)
 #define FTELL(a) _ftelli64(a)
@@ -32,6 +38,25 @@ typedef struct {
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
+//#define pp_READBUFFER
+#ifdef pp_READBUFFER
+#define FEOF(stream)              feof_buffer(smv_fileinfo)
+#define FGETS(buffer,size,stream) fgets_buffer(smv_fileinfo,buffer,size)
+#define REWIND(stream)            rewind_buffer(smv_fileinfo)
+#else
+#define FEOF(stream)              feof(stream)
+#define FGETS(buffer,size,stream) fgets(buffer,size,stream)
+#define REWIND(stream)            rewind(stream)
+#endif
+
+#ifdef pp_READBUFFER
+EXTERNCPP int feof_buffer(filedata *fileinfo);
+EXTERNCPP char *fgets_buffer(filedata *fileinfo,char *buffer,int size);
+EXTERNCPP void rewind_buffer(filedata *fileinfo);
+EXTERNCPP void fileinfo2out(filedata *fileinfo);
+EXTERNCPP void freefileinfo(filedata *fileinfo);
+EXTERNCPP filedata *file2mem(char *filename);
+#endif
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
 EXTERNCPP void set_stdout(FILE *stream);
@@ -64,6 +89,9 @@ EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
 
 EXTERNCPP char *lastname(char *argi);
+#ifdef pp_READBUFFER
+EXTERNCPP filedata *smv_fileinfo;
+#endif
 
 #ifndef STREXTERN
 #ifdef WIN32
