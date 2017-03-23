@@ -1410,7 +1410,7 @@ void ParseDevicekeyword(FILE *stream, devicedata *devicei){
   int is_beam=0;
 
   devicei->type=DEVICE_DEVICE;
-  fgets(buffer,255,stream);
+  FGETS(buffer,255,stream);
   TrimCommas(buffer);
 
   tok1=strtok(buffer,"%");
@@ -1441,7 +1441,7 @@ void ParseDevicekeyword(FILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
-  fgets(buffer,255,stream);
+  FGETS(buffer,255,stream);
   TrimCommas(buffer);
 
   sscanf(buffer,"%f %f %f %f %f %f %i %i %i",
@@ -1500,7 +1500,7 @@ void ParseDevicekeyword(FILE *stream, devicedata *devicei){
     NewMemory((void **)&params,(nsize+devicei->ntextures)*sizeof(float));
     pc=params;
     for(i=0;i<nsize/6;i++){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimCommas(buffer);
 
       sscanf(buffer,"%f %f %f %f %f %f",pc,pc+1,pc+2,pc+3,pc+4,pc+5);
@@ -1510,12 +1510,136 @@ void ParseDevicekeyword(FILE *stream, devicedata *devicei){
   }
   GetElevAz(devicei->xyznorm,&devicei->dtheta,devicei->rotate_axis,NULL);
   if(nparams_textures>0){
-    fgets(buffer,255,stream);
+    FGETS(buffer,255,stream);
     TrimCommas(buffer);
     TrimBack(buffer);
     buffer3=TrimFront(buffer);
     NewMemory((void **)&devicei->texturefile,strlen(buffer3)+1);
     strcpy(devicei->texturefile,buffer3);
+  }
+}
+
+/* ------------------ ParseDevicekeyword2 ------------------------ */
+
+void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
+  float xyz[3] = {0.0,0.0,0.0}, xyzn[3] = {0.0,0.0,0.0};
+  float xyz1[3] = {0.0,0.0,0.0}, xyz2[3] = {0.0,0.0,0.0};
+  int state0 = 0;
+  int nparams = 0, nparams_textures = 0;
+  char *labelptr, *prop_id;
+  char prop_buffer[255];
+  char buffer[255], *buffer3;
+  int i;
+  char *tok1, *tok2, *tok3;
+  int is_beam = 0;
+
+  devicei->type = DEVICE_DEVICE;
+  fgets(buffer, 255, stream);
+  TrimCommas(buffer);
+
+  tok1 = strtok(buffer, "%");
+  tok1 = TrimFrontBack(tok1);
+
+  tok2 = strtok(NULL, "%");
+  tok2 = TrimFrontBack(tok2);
+
+  tok3 = strtok(NULL, "%");
+  tok3 = TrimFrontBack(tok3);
+
+  strcpy(devicei->quantity, "");
+  if(tok2!=NULL){
+    strcpy(devicei->quantity, tok2);
+  }
+
+  if(strlen(tok1)>=4&&strncmp(tok1, "null", 4)==0){
+    strcpy(devicei->label, "null");
+  }
+  else{
+    strcpy(devicei->label, tok1);
+  }
+  devicei->object = get_SVOBJECT_type(tok1, missing_device);
+  if(devicei->object==missing_device&&tok3!=NULL){
+    devicei->object = get_SVOBJECT_type(tok3, missing_device);
+  }
+  if(devicei->object==missing_device)have_missing_objects = 1;
+  devicei->params = NULL;
+  devicei->times = NULL;
+  devicei->vals = NULL;
+  fgets(buffer, 255, stream);
+  TrimCommas(buffer);
+
+  sscanf(buffer, "%f %f %f %f %f %f %i %i %i",
+    xyz, xyz+1, xyz+2, xyzn, xyzn+1, xyzn+2, &state0, &nparams, &nparams_textures);
+
+  labelptr = strchr(buffer, '#'); // read in coordinates of beam detector
+  if(labelptr!=NULL){
+    sscanf(labelptr+1, "%f %f %f %f %f %f", xyz1, xyz1+1, xyz1+2, xyz2, xyz2+1, xyz2+2);
+    is_beam = 1;
+  }
+  devicei->is_beam = is_beam;
+
+  GetLabels(buffer, -1, &prop_id, NULL, prop_buffer);
+  devicei->prop = GetPropID(prop_id);
+  if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
+    devicei->object = devicei->prop->smv_object;
+  }
+  else{
+    NewMemory((void **)&devicei->prop, sizeof(propdata));
+    InitProp(devicei->prop, 1, devicei->label);
+    devicei->prop->smv_object = devicei->object;
+    devicei->prop->smv_objects[0] = devicei->prop->smv_object;
+  }
+  if(nparams_textures<0)nparams_textures = 0;
+  if(nparams_textures>1)nparams_textures = 1;
+  devicei->ntextures = nparams_textures;
+  if(nparams_textures>0){
+    NewMemory((void **)&devicei->textureinfo, sizeof(texturedata));
+  }
+  else{
+    devicei->textureinfo = NULL;
+    devicei->texturefile = NULL;
+  }
+
+  labelptr = strchr(buffer, '%');
+  if(labelptr!=NULL){
+    TrimBack(labelptr);
+    if(strlen(labelptr)>1){
+      labelptr++;
+      labelptr = TrimFront(labelptr);
+      if(strlen(labelptr)==0)labelptr = NULL;
+    }
+    else{
+      labelptr = NULL;
+    }
+  }
+
+  if(nparams<=0){
+    InitDevice(devicei, xyz, is_beam, xyz1, xyz2, xyzn, state0, 0, NULL, labelptr);
+  }
+  else{
+    float *params, *pc;
+    int nsize;
+
+    nsize = 6*((nparams-1)/6+1);
+    NewMemory((void **)&params, (nsize+devicei->ntextures)*sizeof(float));
+    pc = params;
+    for(i = 0;i<nsize/6;i++){
+      fgets(buffer, 255, stream);
+      TrimCommas(buffer);
+
+      sscanf(buffer, "%f %f %f %f %f %f", pc, pc+1, pc+2, pc+3, pc+4, pc+5);
+      pc += 6;
+    }
+    InitDevice(devicei, xyz, is_beam, xyz1, xyz2, xyzn, state0, nparams, params, labelptr);
+  }
+  GetElevAz(devicei->xyznorm, &devicei->dtheta, devicei->rotate_axis, NULL);
+  if(nparams_textures>0){
+    fgets(buffer, 255, stream);
+    TrimCommas(buffer);
+    TrimBack(buffer);
+    buffer3 = TrimFront(buffer);
+    NewMemory((void **)&devicei->texturefile, strlen(buffer3)+1);
+    strcpy(devicei->texturefile, buffer3);
   }
 }
 
@@ -2827,7 +2951,7 @@ void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
       break;
     }
     if(strcmp(buffer, "DEVICE") == 0){
-      ParseDevicekeyword(stream, devicecopy);
+      ParseDevicekeyword2(stream, devicecopy);
       devicecopy++;
     }
   }
@@ -3289,6 +3413,9 @@ int ReadSMV(char *file, char *file2){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
   char buffer[255],buffer2[255],*bufferptr;
 
+#ifdef pp_READBUFFER
+  smv_fileinfo = file2mem(file);
+#endif
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -3648,10 +3775,10 @@ int ReadSMV(char *file, char *file2){
   PRINTF("%s",_("  pass 1"));
   PRINTF("\n");
   for(;;){
-    if(feof(stream)!=0){
+    if(FEOF(stream)!=0){
       BREAK;
     }
-    if(fgets(buffer,255,stream)==NULL){
+    if(FGETS(buffer,255,stream)==NULL){
       BREAK;
     }
     TrimBack(buffer);
@@ -3664,7 +3791,7 @@ int ReadSMV(char *file, char *file2){
 
 
     if(Match(buffer, "IBLANK")==1){
-      fgets(buffer, 255, stream);
+      FGETS(buffer, 255, stream);
       if(iblank_set_on_commandline==0){
         sscanf(buffer, "%i", &use_iblank);
         use_iblank = CLAMP(use_iblank, 0, 1);
@@ -3672,7 +3799,7 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"GVEC") == 1){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f",gvecphys,gvecphys+1,gvecphys+2);
       gvecunit[0]=gvecphys[0];
       gvecunit[1]=gvecphys[1];
@@ -3688,11 +3815,11 @@ int ReadSMV(char *file, char *file2){
       int nfiles;
       char *file_ptr,*type_ptr;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimBack(buffer);
       type_ptr=TrimFront(buffer);
 
-      fgets(buffer2,255,stream);
+      FGETS(buffer2,255,stream);
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
       nfiles=1;
@@ -3733,21 +3860,21 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"ALBEDO") == 1){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f",&smoke_albedo);
       smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
       smoke_albedo_base = smoke_albedo;
       continue;
     }
     if(Match(buffer, "NORTHANGLE")==1){
-      fgets(buffer, 255, stream);
+      FGETS(buffer, 255, stream);
       sscanf(buffer, "%f", &northangle);
       northangle = CLAMP(northangle, -180.0, 180.0);
       have_northangle = 1;
       continue;
     }
     if(Match(buffer,"AVATAR_COLOR")==1){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&navatar_colors);
       if(navatar_colors<0)navatar_colors=0;
       if(navatar_colors>0){
@@ -3757,7 +3884,7 @@ int ReadSMV(char *file, char *file2){
         acolor=avatar_colors;
         for(i=0;i<navatar_colors;i++){
           int irgb[3];
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           irgb[0]=0;
           irgb[1]=0;
           irgb[2]=0;
@@ -3787,7 +3914,7 @@ int ReadSMV(char *file, char *file2){
       NewMemory((void **)&terrain_texture,sizeof(texturedata));
       tt = terrain_texture;
       autoterrain=1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&visTerrainType);
       visTerrainType=CLAMP(visTerrainType,0,4);
       if(visTerrainType==TERRAIN_HIDDEN){
@@ -3801,7 +3928,7 @@ int ReadSMV(char *file, char *file2){
       }
 
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       buff2 = TrimFront(buffer);
       TrimBack(buff2);
       len_buffer = strlen(buff2);
@@ -3815,8 +3942,8 @@ int ReadSMV(char *file, char *file2){
       (Match(buffer,"DEVICE") == 1)&&
       (Match(buffer,"DEVICE_ACT") != 1)
       ){
-      fgets(buffer,255,stream);
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
+      FGETS(buffer,255,stream);
       ndeviceinfo++;
       continue;
     }
@@ -3828,12 +3955,12 @@ int ReadSMV(char *file, char *file2){
     ){
       int local_ntc;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&local_ntc);
       if(local_ntc<0)local_ntc=0;
       ndeviceinfo+=local_ntc;
       for(i=0;i<local_ntc;i++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       continue;
     }
@@ -3841,7 +3968,7 @@ int ReadSMV(char *file, char *file2){
       int lenbuffer;
       char *buffptr;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       TrimBack(buffer);
@@ -3856,7 +3983,7 @@ int ReadSMV(char *file, char *file2){
         strcpy(fds_version,"unknown");
       }
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       TrimBack(buffer);
@@ -3873,7 +4000,7 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"TOFFSET")==1){
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%f %f %f",texture_origin,texture_origin+1,texture_origin+2);
@@ -3887,7 +4014,7 @@ int ReadSMV(char *file, char *file2){
 
     if(Match(buffer,"CADTEXTUREPATH") == 1||
        Match(buffer,"TEXTUREDIR") == 1){
-         if(fgets(buffer,255,stream)==NULL){
+         if(FGETS(buffer,255,stream)==NULL){
            BREAK;
          }
       TrimBack(buffer);
@@ -3905,7 +4032,7 @@ int ReadSMV(char *file, char *file2){
     }
 
     if(Match(buffer,"VIEWTIMES") == 1){
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%f %f %i",&view_tstart,&view_tstop,&view_ntimes);
@@ -3954,7 +4081,7 @@ int ReadSMV(char *file, char *file2){
     if(Match(buffer,"PDIM") == 1){
       npdim++;
       setPDIM=1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar);
       continue;
     }
@@ -3989,16 +4116,16 @@ int ReadSMV(char *file, char *file2){
       if(setup_only == 1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       continue;
@@ -4360,7 +4487,7 @@ int ReadSMV(char *file, char *file2){
   nmatlinfo=1;
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
-  rewind(stream1);
+  REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
   PRINTF("%s",_("  complete"));
@@ -4368,7 +4495,7 @@ int ReadSMV(char *file, char *file2){
   PRINTF("%s",_("  pass 2"));
   PRINTF("\n");
   for(;;){
-    if(feof(stream)!=0){
+    if(FEOF(stream)!=0){
       BREAK;
     }
     if(noGRIDpresent==1&&startpass==1){
@@ -4376,7 +4503,7 @@ int ReadSMV(char *file, char *file2){
       startpass=0;
     }
     else{
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       TrimBack(buffer);
@@ -4392,13 +4519,13 @@ int ReadSMV(char *file, char *file2){
       char *type_ptr, *file_ptr;
       int nfiles=1;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       TrimBack(buffer);
       type_ptr=TrimFront(buffer);
 
-      if(fgets(buffer2,255,stream)==NULL){
+      if(FGETS(buffer2,255,stream)==NULL){
         BREAK;
       }
       TrimBack(buffer2);
@@ -4496,7 +4623,7 @@ int ReadSMV(char *file, char *file2){
       geomdiagi = geomdiaginfo + ngeomdiaginfo;
       ngeomdiaginfo++;
 
-      fgets(buffer, 255, stream);
+      FGETS(buffer, 255, stream);
       TrimBack(buffer);
       buffptr = TrimFront(buffer);
       NewMemory((void **)&geomdiagi->geomfile, strlen(buffptr) + 1);
@@ -4508,7 +4635,7 @@ int ReadSMV(char *file, char *file2){
       NewMemory((void **)&geomdiagi->geom->file, strlen(buffptr) + 1);
       strcpy(geomdiagi->geom->file, buffptr);
 
-      fgets(buffer, 255, stream);
+      FGETS(buffer, 255, stream);
       TrimBack(buffer);
       buffptr = TrimFront(buffer);
       NewMemory((void **)&geomdiagi->geomdatafile, strlen(buffptr) + 1);
@@ -4539,7 +4666,7 @@ int ReadSMV(char *file, char *file2){
 
       init_geom(geomi,GEOM_GEOM,FDSBLOCK);
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimBack(buffer);
       buff2 = TrimFront(buffer);
       NewMemory((void **)&geomi->file,strlen(buff2)+1);
@@ -4557,7 +4684,7 @@ int ReadSMV(char *file, char *file2){
           geomobji->texture_name=NULL;
           geomobji->texture_mapping=TEXTURE_RECTANGULAR;
 
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
 
           texture_mapping = TrimFront(buffer);
           if(texture_mapping!=NULL)texture_vals = strchr(texture_mapping,' ');
@@ -4600,7 +4727,7 @@ int ReadSMV(char *file, char *file2){
 
       iobst++;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nobsts);
 
 
@@ -4612,12 +4739,12 @@ int ReadSMV(char *file, char *file2){
       is_block_terrain=meshi->is_block_terrain;
 
       for(nn=0;nn<nobsts;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       for(nn=0;nn<nobsts;nn++){
         int ijk2[6],colorindex_local=0,blocktype_local=-1;
 
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i %i %i",ijk2,ijk2+1,ijk2+2,ijk2+3,ijk2+4,ijk2+5,&colorindex_local,&blocktype_local);
         if(blocktype_local>=0&&(blocktype_local&8)==8){
           is_block_terrain[nn]=1;
@@ -4648,20 +4775,20 @@ int ReadSMV(char *file, char *file2){
 
       propi = propinfo + npropinfo;
 
-      if(fgets(proplabel,255,stream)==NULL){
+      if(FGETS(proplabel,255,stream)==NULL){
         BREAK;  // prop label
       }
       TrimBack(proplabel);
       fbuffer=TrimFront(proplabel);
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;  // number of smokeview_id's
       }
       sscanf(buffer,"%i",&nsmokeview_ids);
 
       InitProp(propi,nsmokeview_ids,fbuffer);
       for(i=0;i<nsmokeview_ids;i++){
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK; // smokeview_id
         }
         TrimBack(buffer);
@@ -4675,7 +4802,7 @@ int ReadSMV(char *file, char *file2){
       propi->smv_object=propi->smv_objects[0];
       propi->smokeview_id=propi->smokeview_ids[0];
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK; // keyword_values
       }
       sscanf(buffer,"%i",&propi->nvars_indep);
@@ -4696,7 +4823,7 @@ int ReadSMV(char *file, char *file2){
           propi->svals[i]=NULL;
           propi->vars_indep[i]=NULL;
           propi->fvals[i]=0.0;
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           equal=strchr(buffer,'=');
           if(equal!=NULL){
             char *buf1, *buf2, *keyword, *val;
@@ -4765,7 +4892,7 @@ int ReadSMV(char *file, char *file2){
 
   //    terri = terraininfo + nterraininfo;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %i %f %f %i",&xmin, &xmax, &nx, &ymin, &ymax, &ny);
       // must implement new form for defining terrain surfaces
       //initterrain(stream, NULL, terri, xmin, xmax, nx, ymin, ymax, ny);
@@ -4790,7 +4917,7 @@ int ReadSMV(char *file, char *file2){
       partclassi = partclassinfo + npartclassinfo;
       partclassi->kind=PARTICLES;
       if(Match(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
 
       GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
       if(prop_id!=NULL){
@@ -4829,7 +4956,7 @@ int ReadSMV(char *file, char *file2){
         STRCPY(partclassi->name,TrimFront(buffer));
       }
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f",rgb_class,rgb_class+1,rgb_class+2);
       rgb_class[3]=1.0;
       partclassi->rgb=GetColorPtr(rgb_class);
@@ -4839,7 +4966,7 @@ int ReadSMV(char *file, char *file2){
       partclassi->maxpoints=0;
       partclassi->labels=NULL;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&partclassi->ntypes);
       partclassi->ntypes+=2;
       partclassi->nvars_dep=partclassi->ntypes-2+3; // subtract off two "dummies" at beginning and add 3 at end for r,g,b
@@ -4915,7 +5042,7 @@ int ReadSMV(char *file, char *file2){
       if(device_ptr!=NULL){
         float diameter, length, azimuth, elevation;
 
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f",&diameter,&length,&azimuth,&elevation);
         partclassi->diameter=diameter;
         partclassi->length=length;
@@ -4953,7 +5080,7 @@ int ReadSMV(char *file, char *file2){
         tstart_stop = labeli->tstart_stop;
 
         labeli->labeltype=TYPE_SMV;
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         frgbtemp[0]=-1.0;
         frgbtemp[1]=-1.0;
         frgbtemp[2]=-1.0;
@@ -4971,7 +5098,7 @@ int ReadSMV(char *file, char *file2){
         else{
           labeli->useforegroundcolor=0;
         }
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         TrimBack(buffer);
         bufferptr = TrimFront(buffer);
 
@@ -5008,13 +5135,13 @@ int ReadSMV(char *file, char *file2){
         nbarst=&ticki->nbars;
         dxyz = ticki->dxyz;
 
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
         *nbarst=0;
         sscanf(buffer,"%f %f %f %f %f %f %i",begt,begt+1,begt+2,endt,endt+1,endt+2,nbarst);
         if(*nbarst<1)*nbarst=1;
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
         {
@@ -5094,7 +5221,7 @@ int ReadSMV(char *file, char *file2){
 
       noutlineinfo++;
       outlinei = outlineinfo + noutlineinfo - 1;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%i",&outlinei->nlines);
@@ -5106,7 +5233,7 @@ int ReadSMV(char *file, char *file2){
         NewMemory((void **)&outlinei->y2,outlinei->nlines*sizeof(float));
         NewMemory((void **)&outlinei->z2,outlinei->nlines*sizeof(float));
         for(i=0;i<outlinei->nlines;i++){
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           sscanf(buffer,"%f %f %f %f %f %f",
             outlinei->x1+i,outlinei->y1+i, outlinei->z1+i,
             outlinei->x2+i,outlinei->y2+i, outlinei->z2+i
@@ -5124,7 +5251,7 @@ int ReadSMV(char *file, char *file2){
       size_t len;
       STRUCTSTAT statbuffer;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
@@ -5162,7 +5289,7 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"SURFDEF") == 1){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       bufferptr=TrimFrontBack(buffer);
       strcpy(surfacedefaultlabel,TrimFront(bufferptr));
       continue;
@@ -5214,7 +5341,7 @@ int ReadSMV(char *file, char *file2){
         sscanf(buffer3,"%i",&blocknumber);
         blocknumber--;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         nsmoke3dinfo--;
         BREAK;
       }
@@ -5323,7 +5450,7 @@ int ReadSMV(char *file, char *file2){
 
       surfi = surfinfo + nsurfinfo;
       InitSurface(surfi);
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimBack(buffer);
       len=strlen(buffer);
       NewMemory((void **)&surfi->surfacelabel,(len+1)*sizeof(char));
@@ -5347,9 +5474,9 @@ int ReadSMV(char *file, char *file2){
       s_color[2]=surfi->color[2];
       //s_color[3]=1.0;
       s_color[3]=surfi->color[3];
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f",&temp_ignition,&emis);
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f %f %f %f %f %f",
         &s_type,&t_width, &t_height,s_color,s_color+1,s_color+2,s_color+3);
 
@@ -5375,7 +5502,7 @@ int ReadSMV(char *file, char *file2){
       surfi->texturefile=NULL;
       surfi->textureinfo=NULL;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimBack(buffer);
       buffer3 = TrimFront(buffer);
       {
@@ -5419,7 +5546,7 @@ int ReadSMV(char *file, char *file2){
       matli = matlinfo + nmatlinfo;
       InitMatl(matli);
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       TrimBack(buffer);
       len=strlen(buffer);
       NewMemory((void **)&matli->matllabel,(len+1)*sizeof(char));
@@ -5429,7 +5556,7 @@ int ReadSMV(char *file, char *file2){
       s_color[1]=matli->color[1];
       s_color[2]=matli->color[2];
       s_color[3]=matli->color[3];
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",s_color,s_color+1,s_color+2,s_color+3);
 
       s_color[0]=CLAMP(s_color[0],0.0,1.0);
@@ -5495,7 +5622,7 @@ int ReadSMV(char *file, char *file2){
         kbartemp=2;
       }
       else{
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i",&ibartemp,&jbartemp,&kbartemp,&mesh_type);
       }
       if(ibartemp<1)ibartemp=1;
@@ -5548,7 +5675,7 @@ int ReadSMV(char *file, char *file2){
       int n;
 
       zonei = zoneinfo + izone_local;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         nzoneinfo--;
         BREAK;
       }
@@ -5622,12 +5749,12 @@ int ReadSMV(char *file, char *file2){
       iroom++;
       roomi = roominfo + iroom - 1;
       roomi->valid=0;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%f %f %f",&roomi->dx,&roomi->dy,&roomi->dz);
       roomi->valid=1;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         roomi->x0=0.0;
         roomi->y0=0.0;
         roomi->z0=0.0;
@@ -5730,7 +5857,7 @@ int ReadSMV(char *file, char *file2){
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
-  rewind(stream1);
+  REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
   PRINTF("%s",_("  pass 3"));
@@ -5743,10 +5870,10 @@ int ReadSMV(char *file, char *file2){
  */
 
   for(;;){
-    if(feof(stream)!=0){
+    if(FEOF(stream)!=0){
       BREAK;
     }
-    if(fgets(buffer,255,stream)==NULL){
+    if(FGETS(buffer,255,stream)==NULL){
       BREAK;
     }
     TrimBack(buffer);
@@ -5757,7 +5884,7 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"AMBIENT")==1){
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%f %f %f",&pref,&pamb,&tamb);
@@ -5776,7 +5903,7 @@ int ReadSMV(char *file, char *file2){
       imesh=CLAMP(imesh-1,0,nmeshes-1);
       meshi = meshinfo + imesh;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&ncutcells);
       meshi->ncutcells=ncutcells;
 
@@ -5785,7 +5912,7 @@ int ReadSMV(char *file, char *file2){
         for(i=0;i<1+(ncutcells-1)/15;i++){
           int cc[15],j;
 
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           for(j=0;j<15;j++){
             cc[j]=0;
           }
@@ -5840,7 +5967,7 @@ int ReadSMV(char *file, char *file2){
 
       if(ioffset==0)ioffset=1;
       meshi=meshinfo + ioffset - 1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&tempval);
       if(tempval<0)tempval=0;
       meshi->ntc=tempval;
@@ -5851,7 +5978,7 @@ int ReadSMV(char *file, char *file2){
 
         for(nn=0;nn<meshi->ntc;nn++){
           float *xyz, *xyznorm;
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
 
           strcpy(devicecopy->label,"");
           xyz = devicecopy->xyz;
@@ -5908,7 +6035,7 @@ int ReadSMV(char *file, char *file2){
       int tempval;
 
       meshi=meshinfo + ioffset - 1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&tempval);
       if(tempval<0)tempval=0;
       meshi->nspr=tempval;
@@ -5935,7 +6062,7 @@ int ReadSMV(char *file, char *file2){
           float *xyznorm;
           float normdenom;
 
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           xyznorm = devicecopy->xyznorm;
           xyznorm[0]=0.0;
           xyznorm[1]=0.0;
@@ -5987,7 +6114,7 @@ int ReadSMV(char *file, char *file2){
       int  nn;
 
       meshi=meshinfo + ioffset - 1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&tempval);
       if(tempval<0)tempval=0;
       meshi->nheat=tempval;
@@ -6013,7 +6140,7 @@ int ReadSMV(char *file, char *file2){
         for(nn=0;nn<meshi->nheat;nn++){
           float *xyznorm;
           float normdenom;
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           xyznorm=devicecopy->xyznorm;
           xyznorm[0]=0.0;
           xyznorm[1]=0.0;
@@ -6065,7 +6192,7 @@ int ReadSMV(char *file, char *file2){
       char *device_label;
       int nn;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&sdnum);
       if(sdnum<0)sdnum=0;
       for(nn=0;nn<sdnum;nn++){
@@ -6077,7 +6204,7 @@ int ReadSMV(char *file, char *file2){
         xyznorm[1]=0.0;
         xyznorm[2]=-1.0;
         device_label=get_device_label(buffer);
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyznorm,xyznorm+1,xyznorm+2);
         devicecopy->type = DEVICE_SMOKE;
         devicecopy->act_time=-1.0;
@@ -6208,7 +6335,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-  rewind(stream1);
+  REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
   PRINTF("%s",_("  complete"));
@@ -6219,7 +6346,7 @@ int ReadSMV(char *file, char *file2){
   CheckMemory;
 
   for(;;){
-    if(feof(stream)!=0){
+    if(FEOF(stream)!=0){
       BREAK;
     }
 
@@ -6233,7 +6360,7 @@ int ReadSMV(char *file, char *file2){
         startpass=0;
       }
       else{
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
         if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
@@ -6255,7 +6382,7 @@ int ReadSMV(char *file, char *file2){
       partclassi = partclassinfo + npartclassinfo;
       partclassi->kind=PARTICLES;
       if(Match(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
 
       GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
       partclassi->prop=GetPropID(prop_id);
@@ -6273,14 +6400,14 @@ int ReadSMV(char *file, char *file2){
     if(Match(buffer,"HRRPUVCUT") == 1){
       int nhrrpuvcut;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nhrrpuvcut);
       if(nhrrpuvcut>=1){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%f",&global_hrrpuv_cutoff);
         load_hrrpuv_cutoff = global_hrrpuv_cutoff;
         for(i=1;i<nhrrpuvcut;i++){
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
         }
       }
       continue;
@@ -6295,7 +6422,7 @@ int ReadSMV(char *file, char *file2){
 
       ioffset++;
       meshi=meshinfo+ioffset-1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f",meshi->offset,meshi->offset+1,meshi->offset+2);
       continue;
     }
@@ -6333,7 +6460,7 @@ int ReadSMV(char *file, char *file2){
       if(Match(buffer,"VFLOWGEOM")==1||Match(buffer,"VVENTGEOM")==1)vent_type=VFLOW_VENT;
       if(Match(buffer, "MFLOWGEOM") == 1 || Match(buffer, "MVENTGEOM") == 1)vent_type = MFLOW_VENT;
       zvi->vent_type=vent_type;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       color[0]=1.0;
@@ -6462,7 +6589,7 @@ int ReadSMV(char *file, char *file2){
       zvi = zventinfo + nzvents - 1;
 
       zvi->vent_type = vent_type;
-      if(fgets(buffer, 255, stream) == NULL){
+      if(FGETS(buffer, 255, stream) == NULL){
         BREAK;
       }
 
@@ -6494,7 +6621,7 @@ int ReadSMV(char *file, char *file2){
       int roomnumber;
 
       ifire++;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       firei = fireinfo + ifire - 1;
@@ -6527,7 +6654,7 @@ int ReadSMV(char *file, char *file2){
       meshi=meshinfo+ipdim-1;
       meshrgb = meshi->meshrgb;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar,meshrgb,meshrgb+1,meshrgb+2);
 
       if(meshrgb[0]!=0.0||meshrgb[1]!=0.0||meshrgb[2]!=0.0){
@@ -6583,13 +6710,13 @@ int ReadSMV(char *file, char *file2){
       itrnx++;
       xpltcopy=meshinfo[itrnx-1].xplt;
       ibartemp=meshinfo[itrnx-1].ibar;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
       for(nn=0;nn<idummy;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       for(nn=0;nn<=ibartemp;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %f",&idummy,xpltcopy);xpltcopy++;
       }
       continue;
@@ -6607,14 +6734,14 @@ int ReadSMV(char *file, char *file2){
       itrny++;
       ypltcopy=meshinfo[itrny-1].yplt;
       jbartemp=meshinfo[itrny-1].jbar;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
       for(nn=0;nn<idummy;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       for(nn=0;nn<=jbartemp;nn++){
 //        if(jbartemp==2&&nn==2)continue;
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %f",&idummy,ypltcopy);
         ypltcopy++;
       }
@@ -6633,13 +6760,13 @@ int ReadSMV(char *file, char *file2){
       itrnz++;
       zpltcopy=meshinfo[itrnz-1].zplt;
       kbartemp=meshinfo[itrnz-1].kbar;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
       for(nn=0;nn<idummy;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       for(nn=0;nn<=kbartemp;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %f",&idummy,zpltcopy);zpltcopy++;
       }
       continue;
@@ -6658,7 +6785,7 @@ typedef struct {
   float base_height;
 */
     if(Match(buffer,"TREE") == 1){
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       if(ntreeinfo!=0)continue;
       sscanf(buffer,"%i",&ntreeinfo);
       if(ntreeinfo>0){
@@ -6671,7 +6798,7 @@ typedef struct {
           treei->time_char=-1.0;
           treei->time_complete=-1.0;
           xyz = treei->xyz;
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           sscanf(buffer,"%f %f %f %f %f %f %f",
             xyz,xyz+1,xyz+2,
             &treei->trunk_diam,&treei->tree_height,
@@ -6691,7 +6818,7 @@ typedef struct {
       treedata *treei;
 
       if(ntreeinfo==0)continue;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %i %f",&tree_index,&tree_state,&tree_time);
       if(tree_index>=1&&tree_index<=ntreeinfo){
         treei = treeinfo + tree_index - 1;
@@ -6722,7 +6849,7 @@ typedef struct {
 
       CheckMemoryOff;
       iobst++;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&n_blocks);
 
       meshi=meshinfo+iobst-1;
@@ -6751,7 +6878,7 @@ typedef struct {
         blockagedata *bc;
 
         if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           continue;
         }
         nn++;
@@ -6759,7 +6886,7 @@ typedef struct {
         NewMemory((void **)&meshi->blockageinfoptrs[nn],sizeof(blockagedata));
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         TrimBack(buffer);
         for(i=0;i<6;i++){
           s_num[i]=-1;
@@ -6836,7 +6963,7 @@ typedef struct {
         int colorindex, blocktype;
 
         if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           continue;
         }
         nn++;
@@ -6862,7 +6989,7 @@ typedef struct {
         r g b           colors used if colorindex==-3
         */
 
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         ijk = bc->ijk;
         sscanf(buffer,"%i %i %i %i %i %i %i %i",
           ijk,ijk+1,ijk+2,ijk+3,ijk+4,ijk+5,
@@ -6986,7 +7113,7 @@ typedef struct {
       int j;
 
       icvent++;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&ncv);
 
       meshi = meshinfo + icvent - 1;
@@ -7025,7 +7152,7 @@ typedef struct {
         t_origin[0]=texture_origin[0];
         t_origin[1]=texture_origin[1];
         t_origin[2]=texture_origin[2];
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f %f %f %i %i %f %f %f",
           &cvi->xmin,&cvi->xmax,&cvi->ymin,&cvi->ymax,&cvi->zmin,&cvi->zmax,
           &cvi->cvent_id,s_num,t_origin,t_origin+1,t_origin+2);
@@ -7084,7 +7211,7 @@ typedef struct {
         s_color[3]=vcolor[3];
         venttype=-99;
 
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f",
           &cvi->imin,&cvi->imax,&cvi->jmin,&cvi->jmax,&cvi->kmin,&cvi->kmax,
           &ventindex,&venttype,s2_color,s2_color+1,s2_color+2);
@@ -7163,7 +7290,7 @@ typedef struct {
         nVENT=1;
       }
       else{
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       ndummyvents=0;
       sscanf(buffer,"%i %i",&nvents,&ndummyvents);
@@ -7211,7 +7338,7 @@ typedef struct {
           t_origin[0]=texture_origin[0];
           t_origin[1]=texture_origin[1];
           t_origin[2]=texture_origin[2];
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           sscanf(buffer,"%f %f %f %f %f %f %i %i %f %f %f",
                  &vi->xmin,&vi->xmax,&vi->ymin,&vi->ymax,&vi->zmin,&vi->zmax,
                  &vi->vent_id,s_num,t_origin,t_origin+1,t_origin+2);
@@ -7296,7 +7423,7 @@ typedef struct {
           s2_color[2]=-1.0;
           s2_color[3]=1.0;
 
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f %f",
                &iv1,&iv2,&jv1,&jv2,&kv1,&kv2,
                &ventindex,&venttype,
@@ -7478,7 +7605,7 @@ typedef struct {
       parti->blocknumber=blocknumber;
       parti->seq_id=nn_part;
       parti->autoload=0;
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         npartinfo--;
         BREAK;
       }
@@ -7557,7 +7684,7 @@ typedef struct {
       parti->data5=NULL;
       parti->partclassptr=NULL;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&parti->nclasses);
       if(parti->nclasses>0){
         if(parti->file!=NULL)NewMemory((void **)&parti->partclassptr,parti->nclasses*sizeof(partclassdata *));
@@ -7565,7 +7692,7 @@ typedef struct {
           int iclass;
           int ic,iii;
 
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           if(parti->file==NULL)continue;
           sscanf(buffer,"%i",&iclass);
           if(iclass<1)iclass=1;
@@ -7608,7 +7735,7 @@ typedef struct {
     if(Match(buffer,"SYST") == 1){
       size_t len;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       len=strlen(buffer);
@@ -7624,7 +7751,7 @@ typedef struct {
     if(Match(buffer,"ENDIAN") == 1){
       size_t len;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       len=strlen(buffer);
@@ -7642,7 +7769,7 @@ typedef struct {
       FILE *ENDIANfile;
       size_t len;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
@@ -7670,7 +7797,7 @@ typedef struct {
       size_t len;
       STRUCTSTAT statbuffer;
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
@@ -7760,7 +7887,7 @@ typedef struct {
         sscanf(buffer3,"%i %f",&blocknumber,&above_ground_level);
         blocknumber--;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         nsliceinfo--;
         BREAK;
       }
@@ -7786,7 +7913,7 @@ typedef struct {
       }
 
       if(nslicefiles>100&&(islicecount%100==1||nslicefiles==islicecount)){
-        PRINTF("     examining %i'th slice file\n",islicecount);
+        PRINTF("     examining %i'st slice file\n",islicecount);
       }
       islicecount++;
       strcpy(buffer2,bufferptr);
@@ -7798,13 +7925,13 @@ typedef struct {
       if(has_reg==0&&has_comp==0){
         nsliceinfo--;
         nslicefiles--;
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
         continue;
@@ -7996,7 +8123,7 @@ typedef struct {
         }
       }
 
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         npatchinfo--;
         BREAK;
       }
@@ -8028,7 +8155,7 @@ typedef struct {
       if(patchi->filetype==PATCH_GEOMETRY){
         int igeom;
 
-        if(fgets(buffer,255,stream)==NULL){
+        if(FGETS(buffer,255,stream)==NULL){
           npatchinfo--;
           BREAK;
         }
@@ -8144,7 +8271,7 @@ typedef struct {
         sscanf(buffer3,"%i",&blocknumber);
         blocknumber--;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         nisoinfo--;
         BREAK;
       }
@@ -8185,7 +8312,7 @@ typedef struct {
       STRCAT(isoi->size_file,".sz");
 
       if(dataflag==1&&geomflag==1){
-        if(fgets(tbuffer,255,stream)==NULL){
+        if(FGETS(tbuffer,255,stream)==NULL){
           nisoinfo--;
           BREAK;
         }
@@ -8317,7 +8444,7 @@ typedef struct {
    ************************************************************************
  */
 
-  rewind(stream1);
+  REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
   PRINTF("%s",_("  complete"));
@@ -8328,11 +8455,11 @@ typedef struct {
   }
 
   while((autoterrain==1||do_pass4==1)){
-    if(feof(stream)!=0){
+    if(FEOF(stream)!=0){
       BREAK;
     }
 
-    if(fgets(buffer,255,stream)==NULL){
+    if(FGETS(buffer,255,stream)==NULL){
       BREAK;
     }
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
@@ -8348,13 +8475,13 @@ typedef struct {
       float valmin, valmax;
       float percentile_min, percentile_max;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       strcpy(file2_local,buffer);
       file_ptr = file2_local;
       TrimBack(file2_local);
       file_ptr = TrimFront(file2_local);
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",&valmin,&valmax,&percentile_min,&percentile_max);
 
       for(i=0;i<npatchinfo;i++){
@@ -8379,13 +8506,13 @@ typedef struct {
       float valmin, valmax;
       float percentile_min, percentile_max;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       strcpy(file2_local,buffer);
       file_ptr = file2_local;
       TrimBack(file2_local);
       file_ptr = TrimFront(file2_local);
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",&valmin,&valmax,&percentile_min,&percentile_max);
 
       for(i=0;i<nsliceinfo;i++){
@@ -8414,7 +8541,7 @@ typedef struct {
 
       nOBST++;
       iobst++;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&n_blocks);
 
 
@@ -8424,7 +8551,7 @@ typedef struct {
       meshi=meshinfo+iobst-1;
 
       for(nn=0;nn<n_blocks;nn++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
       }
       nxcell = meshi->ibar;
       nn=-1;
@@ -8434,12 +8561,12 @@ typedef struct {
         float block_zmax;
 
         if(meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==0){
-          fgets(buffer,255,stream);
+          FGETS(buffer,255,stream);
           continue;
         }
         nn++;
 
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i",ijk2,ijk2+1,ijk2+2,ijk2+3,ijk2+4,&kmax);
         block_zmax = meshi->zplt[kmax];
         for(ii=ijk2[0];ii<ijk2[1];ii++){
@@ -8567,10 +8694,15 @@ typedef struct {
   UpdatePlotxyzAll();
 
 #ifdef pp_THREAD
+#ifdef pp_SLICETHREAD
   mt_UpdateVSlices();
 #else
   UpdateVSlices();
 #endif
+#else
+  UpdateVSlices();
+#endif
+
   GetGSliceParams();
 
   active_smokesensors=0;
@@ -8615,6 +8747,9 @@ typedef struct {
   // close .smv file
 
   fclose(stream1);
+#ifdef pp_READBUFFER
+  freefileinfo(smv_fileinfo);
+#endif
   if(stream2!=NULL)fclose(stream2);
   stream=NULL;
 
@@ -11212,7 +11347,7 @@ int ReadINI2(char *inifile, int localfile){
           update_windrose_showhide = 1;
         }
       }
-    
+
       if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);

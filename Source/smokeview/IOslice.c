@@ -3157,13 +3157,17 @@ void UpdateVSlices(void){
   UNLOCK_BUILDSLICE;
 }
 
+#ifdef pp_THREAD
+#ifdef pp_SLICETHREAD
 /* ------------------ UpdateVSlices2 ------------------------ */
 
 void *UpdateVSlices2(void *arg){
   UpdateVSlices();
   return NULL;
 }
-  
+#endif
+#endif
+
   /* ------------------ GetVSliceIndex ------------------------ */
 
 int GetVSliceIndex(const vslicedata *vd){

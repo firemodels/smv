@@ -44,7 +44,9 @@
 
 #ifdef pp_THREAD
 void mt_ReadVolsmokeAllFramesAllMeshes2(void);
+#ifdef pp_SLICETHREAD
 void mt_UpdateVSlices(void);
+#endif
 #endif
 
 // define mutex's and thread_ids

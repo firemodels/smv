@@ -203,28 +203,28 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
   char strTitle[80]="Select Smokeview Case";
   int buffersize;
   char smv_directory[1024];
-  OPENFILENAME fileinfo;
+  OPENFILENAME openfinfo;
 
   *openfile=0;
   buffersize=sizeof(OPENFILENAME);
 
   STRCPY(filebuffer,"");
-  fileinfo.lStructSize=(unsigned long)buffersize;
-  fileinfo.hwndOwner=NULL;
-  fileinfo.lpstrFilter=stringFilter;
-  fileinfo.lpstrCustomFilter=NULL;
-  fileinfo.lpstrFile=filebuffer;
-  fileinfo.nMaxFile=(unsigned long)filebufferlength;
-  fileinfo.lpstrFileTitle=NULL;
-  fileinfo.nMaxFileTitle=80;
-  fileinfo.lpstrInitialDir=NULL;
-  fileinfo.lpstrTitle=strTitle;
-  fileinfo.Flags=0;
-  fileinfo.lpstrDefExt=NULL;
+  openfinfo.lStructSize=(unsigned long)buffersize;
+  openfinfo.hwndOwner=NULL;
+  openfinfo.lpstrFilter=stringFilter;
+  openfinfo.lpstrCustomFilter=NULL;
+  openfinfo.lpstrFile=filebuffer;
+  openfinfo.nMaxFile=(unsigned long)filebufferlength;
+  openfinfo.lpstrFileTitle=NULL;
+  openfinfo.nMaxFileTitle=80;
+  openfinfo.lpstrInitialDir=NULL;
+  openfinfo.lpstrTitle=strTitle;
+  openfinfo.Flags=0;
+  openfinfo.lpstrDefExt=NULL;
 
-  if(GetOpenFileName(&fileinfo)){
+  if(GetOpenFileName(&openfinfo)){
     STRCPY(smv_directory,"");
-    strncat(smv_directory,filebuffer,fileinfo.nFileOffset);
+    strncat(smv_directory,filebuffer,openfinfo.nFileOffset);
     if( _chdir( smv_directory )   ){
       PRINTF( "Unable to locate the directory: %s\n", smv_directory );
     }

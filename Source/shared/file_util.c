@@ -377,6 +377,128 @@ FILE_SIZE get_filesize(const char *filename){
   return return_val;
 }
 
+#ifdef pp_READBUFFER
+/* ------------------ feof_buffer ------------------------ */
+
+int feof_buffer(filedata *fileinfo){
+  if(fileinfo->iline>=fileinfo->nlines)return 1;
+  return 0;
+}
+
+/* ------------------ fgets_buffer ------------------------ */
+
+char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
+  char *file_buffer;
+  int iline;
+
+  iline = fileinfo->iline;
+  file_buffer = fileinfo->lines[iline];
+  strcpy(buffer,file_buffer);
+  fileinfo->iline++;
+  return buffer;
+}
+
+/* ------------------ rewind_buffer ------------------------ */
+
+void rewind_buffer(filedata *fileinfo){
+  fileinfo->iline=0;
+}
+
+/* ------------------ freefileinfo ------------------------ */
+
+void freefileinfo(filedata *fileinfo){
+  char *buffer;
+
+  if(fileinfo==NULL)return;
+  buffer = fileinfo->buffer;
+  FREEMEMORY(buffer);
+  FREEMEMORY(fileinfo);
+}
+
+/* ------------------ fileinfo2out ------------------------ */
+
+void fileinfo2out(filedata *fileinfo){
+  int i;
+
+  if(fileinfo==NULL)return;
+  for(i = 0;i<fileinfo->nlines;i++){
+    char *buffer;
+
+    buffer = fileinfo->lines[i];
+    if(buffer==NULL||strlen(buffer)==0)continue;
+    printf("%s\n", buffer);
+  }
+}
+
+  /* ------------------ file2mem ------------------------ */
+
+filedata *file2mem(char *filename){
+  FILE_SIZE i,filesize;
+  filedata *fileinfo;
+  char *buffer, **lines;
+  int maxlines,nlines;
+  FILE *stream;
+
+  if(file_exists(filename)==0)return NULL;
+  filesize = get_filesize(filename);
+  if(filesize==0)return NULL;
+  stream = fopen(filename,"rb");
+  if(stream==NULL)return NULL;
+  NewMemory((void **)&fileinfo, sizeof(filedata));
+  NewMemory((void **)&buffer, filesize);
+  fread(buffer, sizeof(char), filesize, stream);
+  fclose(stream);
+  fileinfo->buffer = buffer;
+  fileinfo->filesize = filesize;
+  fileinfo->filename = filename;
+  fileinfo->iline = 0;
+
+  // count number of lines
+
+  nlines = 0;
+  for(i = 0;i<filesize;i++){
+    int ch;
+
+    ch = buffer[i];
+    if(ch!='\n'&&ch!='\r'&&ch!=EOF)continue;
+    nlines++;
+    for(;i<filesize;i++){
+      ch = buffer[i];
+      if(ch=='\n'||ch=='\r'||ch==EOF){
+        ASSERT(i<filesize);
+        buffer[i] = 0;
+        continue;
+      }
+      i--;
+      break;
+    }
+  }
+  maxlines = nlines-1;
+  fileinfo->nlines = maxlines;
+  NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
+  fileinfo->lines = lines;
+
+  nlines = 0;
+  lines[nlines] = buffer;
+  for(i = 0;i<filesize;i++){
+    int ch;
+
+    ch = buffer[i];
+    if(ch!=0)continue;
+    nlines++;
+    for(;i<filesize;i++){
+      ch = buffer[i];
+      if(ch==0)continue;
+      i--;
+      break;
+    }
+    if(nlines>=maxlines)break;
+    lines[nlines] = buffer+i+1;
+  }
+  return fileinfo;
+}
+#endif
+
   /* ------------------ file_exists ------------------------ */
 
 int file_exists(char *filename){
