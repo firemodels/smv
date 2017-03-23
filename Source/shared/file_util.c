@@ -403,7 +403,7 @@ char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
 void rewind_buffer(filedata *fileinfo){
   fileinfo->iline=0;
 }
-#endif
+
 /* ------------------ freefileinfo ------------------------ */
 
 void freefileinfo(filedata *fileinfo){
@@ -497,6 +497,7 @@ filedata *file2mem(char *filename){
   }
   return fileinfo;
 }
+#endif
 
   /* ------------------ file_exists ------------------------ */
 
