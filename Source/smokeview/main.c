@@ -51,6 +51,8 @@ void Usage(char **argv){
   PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
   PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
   PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.bini"));
+  PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
+  PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
   PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
   PRINTF("%s\n", _(" -version       - display version information"));
   PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
@@ -357,6 +359,17 @@ void ParseCommandline(int argc, char **argv){
     if(strncmp(argv[i], "-update_bounds", 14) == 0){
       use_graphics = 0;
       update_bounds = 1;
+    }
+    else if(strncmp(argv[i], "-update_slice", 13)==0){
+      use_graphics = 0;
+      update_slice = 1;
+    }
+    else if(strncmp(argv[i], "-update", 7)==0){
+      if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
+        use_graphics = 0;
+        update_slice = 1;
+        update_bounds = 1;
+      }
     }
     else if(strncmp(argv[i], "-nogpu", 6) == 0){
       disable_gpu = 1;

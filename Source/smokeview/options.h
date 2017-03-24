@@ -31,7 +31,7 @@
 #define pp_GPU
 #define pp_ffmpeg
 //#define pp_READBUFFER
-#define pp_SLICETHREAD
+//#define pp_SLICETHREAD
 
 #ifdef pp_GPU
 #define pp_CULL
