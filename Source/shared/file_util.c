@@ -388,12 +388,19 @@ int feof_buffer(filedata *fileinfo){
 /* ------------------ fgets_buffer ------------------------ */
 
 char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
-  char *file_buffer;
-  int iline;
+  char *file_buffer, *from, *to;
+  int iline, len_file_buffer, i;
 
   iline = fileinfo->iline;
+  if(iline>=fileinfo->nlines)return NULL;
   file_buffer = fileinfo->lines[iline];
-  strcpy(buffer,file_buffer);
+  from = file_buffer;
+  to = buffer;
+  for(i = 0;i<size;i++){
+    *to++ = *from++;
+    if(from[-1]==0)break;
+  }
+  to[-1] = 0;
   fileinfo->iline++;
   return buffer;
 }
@@ -450,7 +457,6 @@ filedata *file2mem(char *filename){
   fclose(stream);
   fileinfo->buffer = buffer;
   fileinfo->filesize = filesize;
-  fileinfo->filename = filename;
   fileinfo->iline = 0;
 
   // count number of lines
@@ -473,7 +479,7 @@ filedata *file2mem(char *filename){
       break;
     }
   }
-  maxlines = nlines-1;
+  maxlines = nlines;
   fileinfo->nlines = maxlines;
   NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
   fileinfo->lines = lines;

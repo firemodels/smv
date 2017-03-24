@@ -23,7 +23,7 @@ typedef struct {
 
 #ifdef pp_READBUFFER
 typedef struct filedata{
-  char *filename, *buffer, **lines;
+  char *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
@@ -40,7 +40,6 @@ typedef struct filedata{
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
-//#define pp_READBUFFER
 #ifdef pp_READBUFFER
 #define FEOF(stream)              feof_buffer(smv_fileinfo)
 #define FGETS(buffer,size,stream) fgets_buffer(smv_fileinfo,buffer,size)

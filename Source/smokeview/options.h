@@ -30,6 +30,7 @@
 #define pp_NAN
 #define pp_GPU
 #define pp_ffmpeg
+//#define pp_READBUFFER
 
 #ifdef pp_GPU
 #define pp_CULL

@@ -591,7 +591,9 @@ int main(int argc, char **argv){
   char **argv_sv;
   int return_code;
   char *progname;
+  float startup_time;
 
+  startup_time=glutGet(GLUT_ELAPSED_TIME)/1000.0;
   set_stdout(stdout);
   initMALLOC();
   InitRandAB(1000000);
@@ -633,6 +635,8 @@ int main(int argc, char **argv){
     ReadINI(ini_from);
   }
 
+  startup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - startup_time;
+  PRINTF(" Startup time: %f s\n", startup_time);
   glutMainLoop();
   return 0;
 }

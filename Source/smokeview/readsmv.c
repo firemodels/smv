@@ -17,10 +17,14 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
+#ifdef pp_READBUFFER
+#define BREAK break
+#else
 #define BREAK \
       if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
       stream=stream2;\
       continue
+#endif
 
 #define COLOR_INVISIBLE -2
 
@@ -533,13 +537,18 @@ void InitMesh(meshdata *meshi){
 /* ------------------ ReadSMVDynamic ------------------------ */
 
 void ReadSMVDynamic(char *file){
-  FILE *stream;
+  FILE *stream=NULL;
   int ioffset;
   float time_local;
   int i;
   int nn_plot3d=0,iplot3d=0;
   int do_pass2=0, do_pass3=0, minmaxpl3d=0;
   int nplot3dinfo_old;
+
+#ifdef pp_READBUFFER
+  smv_fileinfo = file2mem(file);
+  if(smv_fileinfo==NULL)return;
+#endif
 
   nplot3dinfo_old=nplot3dinfo;
 
@@ -562,8 +571,10 @@ void ReadSMVDynamic(char *file){
   }
   nplot3dinfo=0;
 
+#ifndef pp_READBUFFER
   stream=fopen(file,"r");
   if(stream==NULL)return;
+#endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int j;
@@ -610,7 +621,7 @@ void ReadSMVDynamic(char *file){
   for(;;){
     char buffer[255],buffer2[255];
 
-    if(fgets(buffer,255,stream)==NULL)break;
+    if(FGETS(buffer,255,stream)==NULL)break;
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -675,7 +686,7 @@ void ReadSMVDynamic(char *file){
         }
       }
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
       if(tempval<0)continue;
@@ -722,7 +733,7 @@ void ReadSMVDynamic(char *file){
         if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
       }
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
       if(tempval<0||tempval>=meshi->nbptrs)continue;
@@ -743,7 +754,7 @@ void ReadSMVDynamic(char *file){
       int act_state;
 
       do_pass2=1;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f %i",&idevice,&act_time,&act_state);
       idevice--;
       if(idevice>=0&&idevice<ndeviceinfo){
@@ -775,7 +786,7 @@ void ReadSMVDynamic(char *file){
         if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
       }
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&nn,&time_local);
       if(meshi->theat!=NULL && nn>=1 && nn <= meshi->nheat){
         int idev;
@@ -818,7 +829,7 @@ void ReadSMVDynamic(char *file){
         if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
       }
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&nn,&time_local);
       if(meshi->tspr!=NULL && nn <= meshi->nspr && nn > 0){
         int idev;
@@ -851,7 +862,7 @@ void ReadSMVDynamic(char *file){
       int count=0;
       int nn;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&nn,&time_local);
       for(idev=0;idev<ndeviceinfo;idev++){
         devicedata *devicei;
@@ -897,14 +908,14 @@ void ReadSMVDynamic(char *file){
   }
 
   ioffset=0;
-  rewind(stream);
+  REWIND(stream);
 
   // ------------------------------- pass 2 dynamic - start ------------------------------------
 
   while(do_pass2==1){
     char buffer[255],buffer2[255];
 
-    if(fgets(buffer,255,stream)==NULL)break;
+    if(FGETS(buffer,255,stream)==NULL)break;
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -944,7 +955,7 @@ void ReadSMVDynamic(char *file){
       else{
         time_local=-1.0;
       }
-      if(fgets(buffer,255,stream)==NULL){
+      if(FGETS(buffer,255,stream)==NULL){
         nplot3dinfo--;
         break;
       }
@@ -1069,7 +1080,7 @@ void ReadSMVDynamic(char *file){
         }
       }
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
       if(isvent == 1){
@@ -1137,7 +1148,7 @@ void ReadSMVDynamic(char *file){
       showobst=0;
       if(Match(buffer,"SHOW_OBST") == 1)showobst=1;
       meshi=meshinfo + blocknumber;
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
       tempval--;
       if(tempval<0||tempval>=meshi->nbptrs)continue;
@@ -1180,7 +1191,7 @@ void ReadSMVDynamic(char *file){
       float act_time;
       int act_state=1;
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f %i",&idevice,&act_time,&act_state);
       idevice--;
       if(idevice>=0&&idevice<ndeviceinfo){
@@ -1207,14 +1218,14 @@ void ReadSMVDynamic(char *file){
 
   // ------------------------------- pass 2 dynamic - end ------------------------------------
 
-  rewind(stream);
+  REWIND(stream);
 
   // ------------------------------- pass 3 dynamic - start ------------------------------------
 
   while(do_pass3==1){
     char buffer[255];
 
-    if(fgets(buffer,255,stream)==NULL)break;
+    if(FGETS(buffer,255,stream)==NULL)break;
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1226,14 +1237,14 @@ void ReadSMVDynamic(char *file){
       float valmin[5], valmax[5];
       float percentile_min[5], percentile_max[5];
 
-      fgets(buffer,255,stream);
+      FGETS(buffer,255,stream);
       strcpy(file2,buffer);
       file_ptr = file2;
       TrimBack(file2);
       file_ptr = TrimFront(file2);
 
       for(i=0;i<5;i++){
-        fgets(buffer,255,stream);
+        FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f",valmin +i,valmax+i, percentile_min+i,percentile_max+i);
       }
 
@@ -1255,7 +1266,11 @@ void ReadSMVDynamic(char *file){
     }
   }
 
+#ifdef pp_READBUFFER
+  freefileinfo(smv_fileinfo);
+#else
   fclose(stream);
+#endif  
   update_plot3d_menulabels();
   init_plot3dtimelist();
 }
@@ -3411,10 +3426,11 @@ int ReadSMV(char *file, char *file2){
   int  i;
 
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
-  char buffer[255],buffer2[255],*bufferptr;
+  char buffer[1024],buffer2[1024],*bufferptr;
 
 #ifdef pp_READBUFFER
   smv_fileinfo = file2mem(file);
+  if(smv_fileinfo==NULL)return 1;
 #endif
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
@@ -3745,16 +3761,22 @@ int ReadSMV(char *file, char *file2){
   if(NewMemory((void **)&LESendian,4)==0)return 2;
   STRCPY(LESendian,"");
 
+#ifndef pp_READBUFFER
   stream1=fopen(file,"r");
   if(stream1==NULL)return 1;
+#endif
   if(file2!=NULL){
     stream2=fopen(file2,"r");
     if(stream2==NULL){
+#ifndef pp_READBUFFER
       fclose(stream1);
+#endif
       return 1;
     }
   }
+#ifndef pp_READBUFFER
   stream=stream1;
+#endif
 
   smv_modtime=file_modtime(file);
 
@@ -8746,12 +8768,13 @@ typedef struct {
 
   // close .smv file
 
-  fclose(stream1);
 #ifdef pp_READBUFFER
   freefileinfo(smv_fileinfo);
-#endif
+#else
+  fclose(stream1);
   if(stream2!=NULL)fclose(stream2);
-  stream=NULL;
+  stream = NULL;
+#endif
 
   UpdateSelectFaces();
   UpdateSliceTypes();
