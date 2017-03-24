@@ -6238,7 +6238,7 @@ int read_object_defs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("processing object file:  %s\n",file);
+  PRINTF("processing object file: %s\n",file);
 
   firstdef=-1;
   buffer_ptr=NULL;

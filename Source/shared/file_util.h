@@ -44,10 +44,12 @@ typedef struct filedata{
 #define FEOF(stream)              feof_buffer(smv_fileinfo)
 #define FGETS(buffer,size,stream) fgets_buffer(smv_fileinfo,buffer,size)
 #define REWIND(stream)            rewind_buffer(smv_fileinfo)
+#define FCLOSE(stream)            freefileinfo(smv_fileinfo)
 #else
 #define FEOF(stream)              feof(stream)
 #define FGETS(buffer,size,stream) fgets(buffer,size,stream)
 #define REWIND(stream)            rewind(stream)
+#define FCLOSE(stream)            fclose(stream)
 #endif
 
 #ifdef pp_READBUFFER

@@ -5382,7 +5382,6 @@ void UpdateSmoke3DMenuLabels(void){
   smoke3ddata *smoke3di;
   char meshlabel[128];
 
-  PRINTF("  updating smoke3d menu labels");
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3di = smoke3dinfo + i;
     STRCPY(smoke3di->menulabel,smoke3di->label.longlabel);
@@ -5414,7 +5413,6 @@ void UpdateSmoke3DMenuLabels(void){
       STRCAT(smoke3di->menulabel,meshlabel);
     }
   }
-  PRINTF(" - completed\n");
 }
 
 #define ALLMESHES 0
@@ -5453,7 +5451,6 @@ void MakeIBlankSmoke3D(void){
   int i, ii;
   int ic;
 
-  PRINTF("  initializing 3D smoke/hrrpuv blanking array - ");
   update_makeiblank_smoke3d=0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
@@ -5633,7 +5630,6 @@ void MakeIBlankSmoke3D(void){
       }
     }
   }
-  PRINTF("complete\n");
 }
 
 #ifdef pp_CULL

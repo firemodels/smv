@@ -2633,14 +2633,11 @@ void GetSliceParams(void){
 
     sd = sliceinfo + i;
 
+#ifdef _DEBUG
     if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
-      if(i==10){
-        PRINTF("    obtaining parameters from %i'th slice file\n",i+1);
-      }
-      else{
-        PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
-      }
+      PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
     }
+#endif
 
     file = sd->file;
     lenfile = strlen(file);
@@ -2963,7 +2960,9 @@ void GetSliceParams2(void){
 void UpdateVSlices(void){
   int i;
 
+#ifdef _DEBUG
   PRINTF("  updating vector slices\n");
+#endif  
   GetSliceParams();
 
   /* update vector slices */
@@ -2991,15 +2990,11 @@ void UpdateVSlices(void){
     slicedata *sdi;
     vslicedata *vd;
     int j;
-
+#ifdef _DEBUG
     if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
-      if(i==10){
-        PRINTF("    examining %i'th slice file for vectors\n",i+1);
-      }
-      else{
-        PRINTF("    examining %i'st slice file for vectors\n",i+1);
-      }
+      PRINTF("    examining %i'st slice file for vectors\n",i+1);
     }
+#endif    
     vd = vsliceinfo + nvsliceinfo;
     sdi = sliceinfo+i;
     vd->iu=-1;
@@ -3044,7 +3039,9 @@ void UpdateVSlices(void){
       nvsliceinfo++;
     }
   }
+#ifdef _DEBUG  
   PRINTF("    %i vector slices found\n",nvsliceinfo);
+#endif  
   if(nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;
@@ -3147,9 +3144,7 @@ void UpdateVSlices(void){
     }
   }
 
-  if(nvsliceinfo>0)PRINTF("    updating vector slice menus\n");
   UpdateVsliceMenulabels();
-  PRINTF("  complete\n\n");
 
   LOCK_BUILDSLICE;
   update_vslice = 0;

@@ -636,7 +636,7 @@ int main(int argc, char **argv){
   }
 
   startup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - startup_time;
-  PRINTF(" Startup time: %f s\n", startup_time);
+  PRINTF("\nStartup time: %.1f s\n", startup_time);
   glutMainLoop();
   return 0;
 }

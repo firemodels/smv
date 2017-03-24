@@ -1265,12 +1265,7 @@ void ReadSMVDynamic(char *file){
       continue;
     }
   }
-
-#ifdef pp_READBUFFER
-  freefileinfo(smv_fileinfo);
-#else
-  fclose(stream);
-#endif  
+  FCLOSE(stream);
   update_plot3d_menulabels();
   init_plot3dtimelist();
 }
@@ -1745,7 +1740,6 @@ void InitTextures(void){
   // get texture filename from SURF and device info
   int i;
 
-  PRINTF("     Loading surface textures\n");
   ntextures = 0;
   for(i=0;i<nsurfinfo;i++){
     surfdata *surfi;
@@ -1824,20 +1818,17 @@ void InitTextures(void){
       else{
         filename=texti->file;
       }
-      PRINTF("       Loading texture: %s",filename);
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
       floortex=ReadPicture(texti->file,&texwid,&texht,0);
       if(floortex==NULL){
-         PRINTF("%s",_(" - failed"));
-         PRINTF("\n");
-         continue;
+        PRINTF("***Error: Texture %s failed to load\n", filename);
+        continue;
       }
       errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
       if(errorcode!=0){
         FREEMEMORY(floortex);
-         PRINTF("%s",_(" - failed"));
-         PRINTF("\n");
+        PRINTF("***Error: Texture %s failed to load\n", filename);
         continue;
       }
       FREEMEMORY(floortex);
@@ -1846,8 +1837,6 @@ void InitTextures(void){
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       texti->loaded=1;
-      PRINTF("%s",_(" - complete"));
-      PRINTF("\n");
     }
   }
 
@@ -1857,8 +1846,6 @@ void InitTextures(void){
   }
 
   // define colorbar textures
-
-  PRINTF("%s",_("       Loading colorbar texture"));
 
  // glActiveTexture(GL_TEXTURE0);
   glGenTextures(1,&texture_colorbar_id);
@@ -1956,7 +1943,6 @@ void InitTextures(void){
 
   CheckMemory;
 
-  PRINTF("%s"," - complete\n");
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
   if(use_graphics==1){
@@ -1975,7 +1961,6 @@ void InitTextures(void){
     tt->loaded=0;
     tt->used=0;
     tt->display=0;
-    PRINTF("%s","     Loading terrain texture");
 
     glGenTextures(1,&tt->name);
     glBindTexture(GL_TEXTURE_2D,tt->name);
@@ -1984,12 +1969,11 @@ void InitTextures(void){
     if(tt->file!=NULL){
       PRINTF(": %s",tt->file);
       floortex=ReadPicture(tt->file,&texwid,&texht,0);
+      if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
     }
     if(floortex!=NULL){
       errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-    }
-    if(errorcode!=0){
-      PRINTF("%s"," - failed\n");
+      if(errorcode!=0)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
     }
     FREEMEMORY(floortex);
     if(errorcode==0){
@@ -1998,11 +1982,8 @@ void InitTextures(void){
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       tt->loaded=1;
-      PRINTF("%s"," - complete\n");
     }
-
   }
-  PRINTF("     complete\n");
 }
 
 /* ------------------ UpdateBoundInfo ------------------------ */
@@ -4512,8 +4493,6 @@ int ReadSMV(char *file, char *file2){
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("  complete"));
-  PRINTF("\n");
   PRINTF("%s",_("  pass 2"));
   PRINTF("\n");
   for(;;){
@@ -5284,14 +5263,11 @@ int ReadSMV(char *file, char *file2){
       if(STAT(bufferptr,&statbuffer)==0){
         if(NewMemory((void **)&cadgeominfo[ncadgeom].file,(unsigned int)(len+1))==0)return 2;
         STRCPY(cadgeominfo[ncadgeom].file,bufferptr);
-        PRINTF("%s %s",_("     reading cad file: "),bufferptr);
-        PRINTF("%s\n",bufferptr);
         ReadCADGeom(cadgeominfo+ncadgeom);
-        PRINTF("     CAD file reading complete\n");
         ncadgeom++;
       }
       else{
-        PRINTF(_("   CAD geometry file: %s could not be opened"),bufferptr);
+        PRINTF(_("***Error: CAD geometry file: %s could not be opened"),bufferptr);
         PRINTF("\n");
       }
       continue;
@@ -5375,9 +5351,11 @@ int ReadSMV(char *file, char *file2){
 
         smoke3di = smoke3dinfo + ismoke3d;
 
-        if(nsmoke3dinfo>50&&(ismoke3d%100==0||ismoke3d==nsmoke3dinfo-1)){
+#ifdef _DEBUG
+        if(nsmoke3dinfo>500&&(ismoke3d%100==0||ismoke3d==nsmoke3dinfo-1)){
           PRINTF("     examining %i'st 3D smoke file\n",ismoke3dcount);
         }
+#endif
         ismoke3dcount++;
 
         if(NewMemory((void **)&smoke3di->reg_file,(unsigned int)(len+1))==0)return 2;
@@ -5804,9 +5782,6 @@ int ReadSMV(char *file, char *file2){
    ************************ end of pass 2 *********************************
    ************************************************************************
  */
-
-  PRINTF("%s",_("  complete"));
-  PRINTF("\n");
 
   CheckMemory;
   ParseDatabase(database_filename);
@@ -6360,8 +6335,6 @@ int ReadSMV(char *file, char *file2){
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("  complete"));
-  PRINTF("\n");
   PRINTF("%s",_("  pass 4"));
   PRINTF("\n");
   startpass=1;
@@ -7934,9 +7907,6 @@ typedef struct {
         sd->slicetype = SLICE_FACE_CENTER;
       }
 
-      if(nslicefiles>100&&(islicecount%100==1||nslicefiles==islicecount)){
-        PRINTF("     examining %i'st slice file\n",islicecount);
-      }
       islicecount++;
       strcpy(buffer2,bufferptr);
       strcat(buffer2,".svz");
@@ -8469,8 +8439,6 @@ typedef struct {
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
-  PRINTF("%s",_("  complete"));
-  PRINTF("\n");
   if(do_pass4==1||autoterrain==1){
     PRINTF("%s",_("  pass 5"));
     PRINTF("\n");
@@ -8604,13 +8572,6 @@ typedef struct {
       continue;
     }
   }
-
-  if(do_pass4==1||autoterrain==1){
-    PRINTF("%s",_("  complete"));
-    PRINTF("\n");
-  }
-
-  PRINTF("\n");
   PrintMemoryInfo;
 
 /*
@@ -8618,6 +8579,8 @@ typedef struct {
    ************************ wrap up ***************************************
    ************************************************************************
  */
+
+  PRINTF("  wrapping up\n");
   CheckMemory;
   update_isocolors();
   CheckMemory;
@@ -8768,10 +8731,8 @@ typedef struct {
 
   // close .smv file
 
-#ifdef pp_READBUFFER
-  freefileinfo(smv_fileinfo);
-#else
-  fclose(stream1);
+  FCLOSE(stream1);
+#ifndef pp_READBUFFER
   if(stream2!=NULL)fclose(stream2);
   stream = NULL;
 #endif
@@ -8965,6 +8926,8 @@ int ReadINI2(char *inifile, int localfile){
   updatefacelists = 1;
 
   if((stream = fopen(inifile, "r")) == NULL)return 1;
+  PRINTF("%s", _("processing config file: "));
+  PRINTF("%s\n", inifile);
 
   for(i = 0; i<nunitclasses_ini; i++){
     f_units *uc;
@@ -8979,8 +8942,6 @@ int ReadINI2(char *inifile, int localfile){
     UpdateINIList();
   }
 
-  PRINTF("%s", _("processing config file: "));
-  PRINTF("%s\n", inifile);
   if(localfile == 1){
     update_selectedtour_index = 0;
   }
@@ -11920,20 +11881,32 @@ int ReadINI(char *inifile){
   // smokeview.ini ini in install directory
 
   if(smvprogini_ptr!=NULL){
-    if(ReadINI2(smvprogini_ptr,0)==2)return 2;
+    int returnval;
+
+    returnval = ReadINI2(smvprogini_ptr, 0);
+    if(returnval==2)return 2;
+    if(returnval==0)PRINTF("complete\n");
     update_terrain_options();
   }
 
   // smokeview.ini in case directory
 
   if(INIfile!=NULL){
-    if(ReadINI2(INIfile,0)==2)return 2;
+    int returnval;
+
+    returnval = ReadINI2(INIfile, 0);
+    if(returnval==2)return 2;
+    if(returnval==0)PRINTF("complete\n");
   }
 
   // read in casename.ini
 
   if(caseini_filename!=NULL){
-    if(ReadINI2(caseini_filename,1)==2)return 2;
+    int returnval;
+
+    returnval = ReadINI2(caseini_filename, 1);
+    if(returnval==2)return 2;
+    if(returnval==0)PRINTF("complete\n");
   }
 
   // read in ini file specified in script
@@ -11942,6 +11915,7 @@ int ReadINI(char *inifile){
     int return_code;
 
     return_code = ReadINI2(inifile,1);
+    if(return_code==0)PRINTF("complete\n");
 
     if(return_code==1||return_code==2){
       if(inifile==NULL){

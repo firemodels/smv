@@ -89,7 +89,6 @@ void CompressSVZip(void){
 #ifdef pp_THREADIBLANK
 void *mt_MakeIBlank(void *arg){
 
-  PRINTF("  creating blanking arrays in the background\n");
   MakeIBlank();
   SetCVentDirs();
   LOCK_IBLANK

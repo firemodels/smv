@@ -4,10 +4,10 @@
 
 #define pp_release
 
-//*** uncomment the following two lines to force all versions to be beta 
+//*** uncomment the following two lines to force all versions to be beta
 //#undef pp_BETA
 //#define pp_BETA
- 
+
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  define smokeview title VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 #ifdef pp_BETA
 #define PROGVERSION "Test"
@@ -65,12 +65,12 @@
 #define pp_HAZARD
 //#define pp_SLICETHREAD
 //#define pp_GPUDEPTH
-#define pp_MEMPRINT
 #endif
 
 #define pp_RENDER360
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
+#define pp_MEMPRINT
 #endif
 
 // for debugging, set particle values to 100*parti->seq_id + small random number
