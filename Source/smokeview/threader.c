@@ -198,7 +198,7 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
 
 
 void mt_UpdateVSlices(void){
-  pthread_create(&update_vslice_id, NULL, UpdateVSlices2, NULL);
+  pthread_create(&buildslice_id, NULL, UpdateVSlices2, NULL);
 }
 #endif
 #endif

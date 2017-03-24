@@ -2962,7 +2962,7 @@ void UpdateVSlices(void){
 
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
-#endif  
+#endif
   GetSliceParams();
 
   /* update vector slices */
@@ -2994,7 +2994,7 @@ void UpdateVSlices(void){
     if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
       PRINTF("    examining %i'st slice file for vectors\n",i+1);
     }
-#endif    
+#endif
     vd = vsliceinfo + nvsliceinfo;
     sdi = sliceinfo+i;
     vd->iu=-1;
@@ -3039,9 +3039,9 @@ void UpdateVSlices(void){
       nvsliceinfo++;
     }
   }
-#ifdef _DEBUG  
+#ifdef _DEBUG
   PRINTF("    %i vector slices found\n",nvsliceinfo);
-#endif  
+#endif
   if(nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;

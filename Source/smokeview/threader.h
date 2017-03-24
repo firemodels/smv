@@ -15,20 +15,21 @@
 // setup LOCKS
 
 #ifdef pp_THREAD
-  #define LOCK_COMPRESS pthread_mutex_lock(&mutexCOMPRESS);
-  #define UNLOCK_COMPRESS pthread_mutex_unlock(&mutexCOMPRESS);
-  #define LOCK_VOLLOAD pthread_mutex_lock(&mutexVOLLOAD);
-  #define UNLOCK_VOLLOAD pthread_mutex_unlock(&mutexVOLLOAD);
-  #define LOCK_BUILDSLICE pthread_mutex_lock(&mutexBUILDSLICE);
+  #define LOCK_COMPRESS     pthread_mutex_lock(&mutexCOMPRESS);
+  #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
+  #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
+  #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
+  #define LOCK_BUILDSLICE   pthread_mutex_lock(&mutexBUILDSLICE);
   #define UNLOCK_BUILDSLICE pthread_mutex_unlock(&mutexBUILDSLICE);
+  #define JOIN_BUILDSLICE   pthread_join(buildslice_id,NULL);
 #ifdef pp_THREADIBLANK
-  #define LOCK_IBLANK pthread_mutex_lock(&mutexIBLANK);
-  #define UNLOCK_IBLANK pthread_mutex_unlock(&mutexIBLANK);
-  #define JOIN_IBLANK pthread_join(makeiblank_thread_id,NULL);
+  #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
+  #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
+  #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
 #else
-#define LOCK_IBLANK
-#define UNLOCK_IBLANK
-#define JOIN_IBLANK
+  #define LOCK_IBLANK
+  #define UNLOCK_IBLANK
+  #define JOIN_IBLANK
 #endif
 #else
   #define LOCK_COMPRESS
@@ -38,8 +39,9 @@
   #define LOCK_IBLANK
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
-#define LOCK_BUILDSLICE
-#define UNLOCK_BUILDSLICE
+  #define LOCK_BUILDSLICE
+  #define UNLOCK_BUILDSLICE
+  #define JOIN_BUILDSLICE
 #endif
 
 #ifdef pp_THREAD
@@ -62,7 +64,7 @@ MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
-MT_EXTERN pthread_t update_vslice_id;
+MT_EXTERN pthread_t buildslice_id;
 #endif
 #endif
 #endif

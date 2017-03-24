@@ -31,6 +31,7 @@
 #define pp_GPU
 #define pp_ffmpeg
 //#define pp_READBUFFER
+#define pp_SLICETHREAD
 
 #ifdef pp_GPU
 #define pp_CULL
@@ -63,7 +64,6 @@
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST
 #define pp_HAZARD
-//#define pp_SLICETHREAD
 //#define pp_GPUDEPTH
 #endif
 
