@@ -31,7 +31,6 @@ end
 
 function load.namedslice(name)
     local result, indices = load.slice(function(slice)
-        print(name, slice.label)
         return (slice.label == name)
     end)
     if (result ~= 0) then
