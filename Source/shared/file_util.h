@@ -27,6 +27,10 @@ typedef struct filedata{
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
+typedef struct bufferstreamdata{
+  FILE *stream,*stream1,*stream2;
+  filedata *fileinfo;
+} bufferstreamdata;
 #endif
 
 #ifdef X64
@@ -44,15 +48,38 @@ typedef struct filedata{
 #define READFILE 0
 #define READBUFFER 1
 
-#define FEOF(stream)              (readfile_option==READBUFFER ? feof_buffer(smv_fileinfo) : feof(stream))
-#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? fgets_buffer(smv_fileinfo,buffer,size) : fgets(buffer,size,stream) )
-#define REWIND(stream)            (readfile_option==READBUFFER ? RewindFileBuffer(smv_fileinfo) : rewind(stream) )
-#define FCLOSE(stream)            (readfile_option==READBUFFER ? FreeFileBuffer(smv_fileinfo) : fclose(stream) )
+#define FEOF(stream)              (readfile_option==READBUFFER ? feof_buffer(stream->fileinfo)              : feof(stream->stream))
+#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? fgets_buffer(stream->fileinfo,buffer,size) : fgets(buffer,size,stream->stream) )
+#define REWIND(stream)   \
+if(readfile_option==READBUFFER){\
+  RewindFileBuffer(stream->fileinfo);\
+}\
+else{\
+  stream->stream = stream->stream1;\
+  rewind(stream->stream1);\
+  if(stream->stream2!=NULL){\
+    rewind(stream->stream2);\
+  }\
+}
+#define FCLOSE(stream) \
+if(readfile_option==READBUFFER){\
+  FreeFileBuffer(stream->fileinfo);\
+}\
+else{\
+  if(stream->stream1!=NULL)fclose(stream->stream1);\
+  if(stream->stream2!=NULL)fclose(stream->stream2);\
+}
 #else
 #define FEOF(stream)              feof(stream)
 #define FGETS(buffer,size,stream) fgets(buffer,size,stream)
 #define REWIND(stream)            rewind(stream)
 #define FCLOSE(stream)            fclose(stream)
+#endif
+
+#ifdef pp_READBUFFER
+#define BFILE bufferstreamdata
+#else
+#define BFILE FILE
 #endif
 
 #ifdef pp_READBUFFER
@@ -96,15 +123,12 @@ EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
 
 EXTERNCPP char *lastname(char *argi);
-#ifdef pp_READBUFFER
-EXTERNCPP filedata *smv_fileinfo;
-#endif
 
-#ifndef CCC
-#ifdef CPP
-#define CCC "C"
+#ifdef pp_READBUFFER
+#ifdef INMAIN
+int readfile_option = READBUFFER;
 #else
-#define CCC
+EXTERNCPP int readfile_option;
 #endif
 #endif
 
@@ -114,12 +138,6 @@ STREXTERN char STRDECL(dirseparator[],"\\");
 #else
 STREXTERN char STRDECL(dirseparator[],"/");
 #endif
-#endif
-
-#ifdef INMAIN
-int readfile_option=READBUFFER;
-#else
-extern CCC int readfile_option;
 #endif
 
 #define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)

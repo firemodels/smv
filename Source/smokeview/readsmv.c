@@ -18,13 +18,25 @@
 #include "IOvolsmoke.h"
 
 #ifdef pp_READBUFFER
-#define BREAK break
+#define BREAK \
+      if(readfile_option==READBUFFER){\
+        break;\
+      }\
+      else{\
+        if((stream->stream==stream->stream1&&stream->stream2==NULL)||stream->stream==stream->stream2)break;\
+        stream->stream=stream->stream2;\
+        continue;\
+      }
 #else
 #define BREAK \
       if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
       stream=stream2;\
       continue
 #endif
+#define BREAK2 \
+      if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
+      stream=stream2;\
+      continue
 
 #define COLOR_INVISIBLE -2
 
@@ -537,16 +549,20 @@ void InitMesh(meshdata *meshi){
 /* ------------------ ReadSMVDynamic ------------------------ */
 
 void ReadSMVDynamic(char *file){
-  FILE *stream=NULL;
   int ioffset;
   float time_local;
   int i;
   int nn_plot3d=0,iplot3d=0;
   int do_pass2=0, do_pass3=0, minmaxpl3d=0;
   int nplot3dinfo_old;
+#ifdef pp_READBUFFER
+  bufferstreamdata streaminfo, *stream=&streaminfo;
+#else
+  FILE *stream=NULL;
+#endif
 
 #ifdef pp_READBUFFER
-  smv_fileinfo = File2Buffer(file);
+  stream->fileinfo = File2Buffer(file);
 #endif
 
   nplot3dinfo_old=nplot3dinfo;
@@ -572,8 +588,10 @@ void ReadSMVDynamic(char *file){
 
 #ifdef pp_READBUFFER
   if(readfile_option==READFILE){
-    stream = fopen(file, "r");
-    if(stream==NULL)return;
+    stream->stream1 = fopen(file, "r");
+    stream->stream2 = NULL;
+    stream->stream = stream->stream1;
+    if(stream->stream==NULL)return;
   }
 #else
   stream=fopen(file,"r");
@@ -1411,7 +1429,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
 
 /* ------------------ ParseDevicekeyword ------------------------ */
 
-void ParseDevicekeyword(FILE *stream, devicedata *devicei){
+void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   float xyz[3]={0.0,0.0,0.0}, xyzn[3]={0.0,0.0,0.0};
   float xyz1[3] = { 0.0,0.0,0.0 }, xyz2[3] = { 0.0,0.0,0.0 };
   int state0=0;
@@ -1678,15 +1696,15 @@ int GetInpf(char *file, char *file2){
   stream=stream1;
   for(;;){
     if(feof(stream)!=0){
-      BREAK;
+      BREAK2;
     }
     if(fgets(buffer,255,stream)==NULL){
-      BREAK;
+      BREAK2;
     }
     if(strncmp(buffer," ",1)==0)continue;
     if(Match(buffer,"INPF") == 1){
       if(fgets(buffer,255,stream)==NULL){
-        BREAK;
+        BREAK2;
       }
       bufferptr=TrimFrontBack(buffer);
 
@@ -3410,19 +3428,23 @@ int ReadSMV(char *file, char *file2){
   int setGRID=0;
   int  i;
 
+  char buffer[256],buffer2[256],*bufferptr;
+#ifdef pp_READBUFFER
+  bufferstreamdata streaminfo, *stream=&streaminfo;
+#else
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
-  char buffer[1024],buffer2[1024],*bufferptr;
+#endif
 
 #ifdef pp_READBUFFER
-  smv_fileinfo = File2Buffer(file);
-  if(smv_fileinfo!=NULL&&file2!=NULL){
-    filedata *smv_fileinfo2;
+  stream->fileinfo = File2Buffer(file);
+  if(stream->fileinfo!=NULL&&file2!=NULL){
+    bufferstreamdata streaminfo2, *stream2=&streaminfo2;
 
-    smv_fileinfo2 = File2Buffer(file2);
-    if(smv_fileinfo2!=NULL){
-      MergeFileBuffers(smv_fileinfo, smv_fileinfo2);
+    stream2->fileinfo = File2Buffer(file2);
+    if(stream2->fileinfo!=NULL){
+      MergeFileBuffers(stream->fileinfo, stream2->fileinfo);
     }
-    FreeFileBuffer(smv_fileinfo2);
+    FreeFileBuffer(stream2->fileinfo);
   }
 #endif
   npropinfo=1; // the 0'th prop is the default human property
@@ -3756,31 +3778,28 @@ int ReadSMV(char *file, char *file2){
 
 #ifdef pp_READBUFFER
   if(readfile_option==READFILE){
-    stream1 = fopen(file, "r");
-    if(stream1==NULL)return 1;
+    stream->stream1 = fopen(file, "r");
+    stream->stream2 = NULL;
+    if(stream->stream1==NULL)return 1;
+    stream->stream=stream->stream1;
+    if(file2!=NULL){
+      stream->stream2 = fopen(file2, "r");
+      if(stream->stream2==NULL){
+        fclose(stream->stream1);
+        return 1;
+      }
+    }
   }
 #else
   stream1 = fopen(file, "r");
   if(stream1==NULL)return 1;
-#endif
   if(file2!=NULL){
     stream2 = fopen(file2, "r");
     if(stream2==NULL){
-#ifdef pp_READBUFFER
-      if(readfile_option==READFILE){
-        fclose(stream1);
-      }
-#else
       fclose(stream1);
-#endif
       return 1;
     }
   }
-#ifdef pp_READBUFFER
-  if(readfile_option==READFILE){
-    stream = stream1;
-  }
-#else
   stream=stream1;
 #endif
 
@@ -4515,9 +4534,14 @@ int ReadSMV(char *file, char *file2){
   nmatlinfo=1;
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
+
+#ifdef pp_READBUFFER  
+  REWIND(stream);
+#else
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
+#endif
   PRINTF("%s",_("  pass 2"));
   PRINTF("\n");
   for(;;){
@@ -5879,9 +5903,13 @@ int ReadSMV(char *file, char *file2){
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
+#ifdef pp_READBUFFER  
+  REWIND(stream);
+#else
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
+#endif
   PRINTF("%s",_("  pass 3"));
   PRINTF("\n");
 
@@ -6357,9 +6385,13 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
+#ifdef pp_READBUFFER  
+  REWIND(stream);
+#else
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
+#endif
   PRINTF("%s",_("  pass 4"));
   PRINTF("\n");
   startpass=1;
@@ -8455,9 +8487,13 @@ typedef struct {
    ************************************************************************
  */
 
+#ifdef pp_READBUFFER  
+  REWIND(stream);
+#else
   REWIND(stream1);
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
+#endif
   if(do_pass4==1||autoterrain==1){
     PRINTF("%s",_("  pass 5"));
     PRINTF("\n");
@@ -8752,8 +8788,10 @@ typedef struct {
 
   // close .smv file
 
+#ifdef pp_READBUFFER
+  FCLOSE(stream);
+#else
   FCLOSE(stream1);
-#ifndef pp_READBUFFER
   if(stream2!=NULL)fclose(stream2);
   stream = NULL;
 #endif
