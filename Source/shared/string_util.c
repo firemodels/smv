@@ -817,9 +817,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -831,9 +828,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1]='\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -845,9 +839,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
@@ -881,9 +872,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -896,9 +884,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -910,9 +895,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
@@ -946,9 +928,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -961,9 +940,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -975,9 +951,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
@@ -1011,9 +984,6 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -1038,9 +1008,6 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-#ifdef XXX
-  buffer2[len-1] = '\0';
-#endif
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
