@@ -743,11 +743,11 @@ void createtourpaths(void){
          kf1->nodeval.eye[1]==kf2->nodeval.eye[1]&&
          kf1->nodeval.eye[2]==kf2->nodeval.eye[2]){
         hermiteeye(1.0,kf1->prev,kf1,eye,view_local);
-        slerp(kf1->prev->keyview_xyz2,kf1->keyview_xyz2,1.0,view_local);
+        Slerp(kf1->prev->keyview_xyz2,kf1->keyview_xyz2,1.0,view_local);
       }
       else{
         hermiteeye(f1,kf1,kf2,eye,view_local);
-        slerp(kf1->keyview_xyz2,kf2->keyview_xyz2,f1,view_local);
+        Slerp(kf1->keyview_xyz2,kf2->keyview_xyz2,f1,view_local);
       }
 
       hermiteview(f1,kf1,kf2, xyz_view);

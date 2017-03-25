@@ -62,6 +62,7 @@
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST
 #define pp_HAZARD
+//#define pp_SLICETHREAD
 //#define pp_GPUDEPTH
 #define pp_MEMPRINT
 #endif

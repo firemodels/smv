@@ -812,7 +812,7 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
   }
 
@@ -824,8 +824,7 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
 
-
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
   }
 
@@ -837,7 +836,7 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel,buffer);
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"***");
   }
 
@@ -871,7 +870,7 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
-  if(fgets(buffer2, 255, stream) == NULL){
+  if(FGETS(buffer2, 255, stream) == NULL){
     strcpy(buffer2, "*");
   }
 
@@ -884,7 +883,7 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   STRCPY(flowlabel->longlabel, buffer);
   STRCAT(flowlabel->longlabel, "(face centered)");
 
-  if(fgets(buffer2, 255, stream) == NULL){
+  if(FGETS(buffer2, 255, stream) == NULL){
     strcpy(buffer2, "**");
   }
 
@@ -896,7 +895,7 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel, buffer);
 
-  if(fgets(buffer2, 255, stream) == NULL){
+  if(FGETS(buffer2, 255, stream) == NULL){
     strcpy(buffer2, "***");
   }
 
@@ -930,7 +929,7 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
   }
 
@@ -943,7 +942,7 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   STRCPY(flowlabel->longlabel,buffer);
   STRCAT(flowlabel->longlabel,"(cell centered)");
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
   }
 
@@ -955,7 +954,7 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel,buffer);
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"***");
   }
 
@@ -989,7 +988,7 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   char buffer2[255],*buffer;
   size_t len;
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
   }
 
@@ -1002,7 +1001,7 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   STRCPY(flowlabel->longlabel,buffer);
   STRCAT(flowlabel->longlabel,"(terrain)");
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
   }
 
@@ -1014,7 +1013,7 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel,buffer);
 
-  if(fgets(buffer2,255,stream)==NULL){
+  if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"***");
   }
 
@@ -1282,13 +1281,13 @@ void PRINTversion(char *progname){
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
   PRINTF("\n");
-  PRINTF(" %s\n\n", releasetitle);
-  PRINTF(" Version          : %s\n", version);
-  PRINTF(" Revision         : %s\n", githash);
-  PRINTF(" Revision Date    : %s\n", gitdate);
-  PRINTF(" Compilation Date : %s %s\n", __DATE__, __TIME__);
+  PRINTF("%s\n\n", releasetitle);
+  PRINTF("Version          : %s\n", version);
+  PRINTF("Revision         : %s\n", githash);
+  PRINTF("Revision Date    : %s\n", gitdate);
+  PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef WIN32
-  PRINTF(" Platform         : WIN64 ");
+  PRINTF("Platform         : WIN64 ");
 #ifdef pp_INTEL
   PRINTF(" (Intel C/C++)");
 #else
@@ -1297,10 +1296,10 @@ void PRINTversion(char *progname){
   PRINTF("\n");
 #endif
 #ifdef pp_OSX
-  PRINTF(" Platform         : OSX64\n");
+  PRINTF("Platform         : OSX64\n");
 #endif
 #ifdef pp_LINUX
-  PRINTF(" Platform         : LINUX64\n");
+  PRINTF("Platform         : LINUX64\n");
 #endif
 }
 

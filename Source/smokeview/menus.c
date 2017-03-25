@@ -203,28 +203,28 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
   char strTitle[80]="Select Smokeview Case";
   int buffersize;
   char smv_directory[1024];
-  OPENFILENAME fileinfo;
+  OPENFILENAME openfinfo;
 
   *openfile=0;
   buffersize=sizeof(OPENFILENAME);
 
   STRCPY(filebuffer,"");
-  fileinfo.lStructSize=(unsigned long)buffersize;
-  fileinfo.hwndOwner=NULL;
-  fileinfo.lpstrFilter=stringFilter;
-  fileinfo.lpstrCustomFilter=NULL;
-  fileinfo.lpstrFile=filebuffer;
-  fileinfo.nMaxFile=(unsigned long)filebufferlength;
-  fileinfo.lpstrFileTitle=NULL;
-  fileinfo.nMaxFileTitle=80;
-  fileinfo.lpstrInitialDir=NULL;
-  fileinfo.lpstrTitle=strTitle;
-  fileinfo.Flags=0;
-  fileinfo.lpstrDefExt=NULL;
+  openfinfo.lStructSize=(unsigned long)buffersize;
+  openfinfo.hwndOwner=NULL;
+  openfinfo.lpstrFilter=stringFilter;
+  openfinfo.lpstrCustomFilter=NULL;
+  openfinfo.lpstrFile=filebuffer;
+  openfinfo.nMaxFile=(unsigned long)filebufferlength;
+  openfinfo.lpstrFileTitle=NULL;
+  openfinfo.nMaxFileTitle=80;
+  openfinfo.lpstrInitialDir=NULL;
+  openfinfo.lpstrTitle=strTitle;
+  openfinfo.Flags=0;
+  openfinfo.lpstrDefExt=NULL;
 
-  if(GetOpenFileName(&fileinfo)){
+  if(GetOpenFileName(&openfinfo)){
     STRCPY(smv_directory,"");
-    strncat(smv_directory,filebuffer,fileinfo.nFileOffset);
+    strncat(smv_directory,filebuffer,openfinfo.nFileOffset);
     if( _chdir( smv_directory )   ){
       PRINTF( "Unable to locate the directory: %s\n", smv_directory );
     }
@@ -2185,7 +2185,7 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     update_overwrite();
-    compress_svzip();
+    CompressSVZip();
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2194,7 +2194,7 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    compress_svzip();
+    CompressSVZip();
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -4174,7 +4174,7 @@ void LoadPatchMenu(int value){
     UpdateFrameNumber(0);
   }
   else if(value==MENU_UPDATEBOUNDS){
-    Update_All_Patch_Bounds();
+    UpdateAllPatchBounds();
   }
   else{
     for(i=0;i<npatchinfo;i++){
@@ -8393,7 +8393,7 @@ updatemenu=0;
       glutAddSubMenu(_("Unload terrain"),unloadterrainmenu);
     }
   }
-    if(nsliceinfo>0){
+    if(update_vslice==0&&nsliceinfo>0){
 
       if(nmultisliceinfo<nsliceinfo){
         CREATEMENU(unloadmultislicemenu,UnloadMultiSliceMenu);
@@ -9463,37 +9463,45 @@ updatemenu=0;
       if(manual_terrain==1&&nterraininfo>0){
         glutAddSubMenu(_("Terrain"),loadterrainmenu);
       }
-      if(nsliceinfo>0&&nmultisliceinfo<nsliceinfo){
-        strcpy(loadmenulabel,_("Multi-Slices"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
+      if(update_vslice==0){
+        if(nsliceinfo>0&&nmultisliceinfo<nsliceinfo){
+          strcpy(loadmenulabel,_("Multi-Slices"));
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadmultislicemenu);
         }
-        glutAddSubMenu(loadmenulabel,loadmultislicemenu);
+        if(nvsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
+          strcpy(loadmenulabel,_("Multi-Vector Slices"));
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadmultivslicemenu);
+        }
+        if(nsliceinfo>0){
+          strcpy(loadmenulabel,"Slice file");
+          if(sliceframeskip>0){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,loadslicemenu);
+        }
+        if(nvsliceinfo>0){
+          strcpy(loadmenulabel,_("Vector slices"));
+          if(sliceframestep>1){
+            sprintf(steplabel,"/Skip %i",sliceframeskip);
+            strcat(loadmenulabel,steplabel);
+          }
+          glutAddSubMenu(loadmenulabel,vslicemenu);
+        }
       }
-      if(nvsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
-        strcpy(loadmenulabel,_("Multi-Vector Slices"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadmultivslicemenu);
-      }
-      if(nsliceinfo>0){
-        strcpy(loadmenulabel,"Slice file");
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadslicemenu);
-      }
-      if(nvsliceinfo>0){
-        strcpy(loadmenulabel,_("Vector slices"));
-        if(sliceframestep>1){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,vslicemenu);
+      if(update_vslice==1&&nsliceinfo>0){
+        char menulabel[1024];
+
+        strcpy(menulabel,"Building Slice file menus");
+        glutAddMenuEntry(menulabel,MENU_DUMMY);
       }
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface file");

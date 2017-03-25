@@ -13,20 +13,6 @@
 
 #define RENDER_START 3
 
-/* ------------------ does_movie_exist ------------------------ */
-
-int does_movie_exist(char *mov_name, char *moviefile){
-  char *movie;
-
-  if(mov_name == NULL || strlen(mov_name) < 1)return 0;
-  TrimBack(mov_name);
-  movie = TrimFront(mov_name);
-  strcpy(moviefile, movie);
-  strcat(moviefile, ".mp4");
-  if(file_exists(moviefile) == 1)return 1;
-  return 0;
-}
-
 /* ------------------ PlayMovie ------------------------ */
 
 void PlayMovie(void){
@@ -36,7 +22,7 @@ void PlayMovie(void){
   if(file_exists(GetMovieFilePath(moviefile_path)) == 1){
     strcpy(command_line, "ffplay ");
     strcat(command_line,moviefile_path);
-    psystem(command_line);
+    PSystem(command_line);
   }
   else{
     PRINTF("*** Error: the movie file, %s, does not exist\n", moviefile_path);
@@ -668,9 +654,9 @@ unsigned int GetScreenMap360LR(int side, float *xyz){
 }
 
 #ifdef pp_RENDER360_DEBUG
-/* ------------------ draw_screeninfo ------------------------ */
+/* ------------------ DrawScreenInfo ------------------------ */
 
-void draw_screeninfo(void){
+void DrawScreenInfo(void){
   int i;
   int j;
 

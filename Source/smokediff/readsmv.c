@@ -324,7 +324,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       fullfile(endian_filename,smvcase->dir,buffer);
       ENDIANfile = fopen(endian_filename,"rb");
       if(ENDIANfile!=NULL){
-        endian_native = getendian();
+        endian_native = GetEndian();
         FSEEK(ENDIANfile,4,SEEK_SET);
         fread(&endian_data,4,1,ENDIANfile);
         fclose(ENDIANfile);

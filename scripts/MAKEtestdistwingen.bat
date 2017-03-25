@@ -69,10 +69,6 @@ cd %curdir%
 
 CALL :COPY %forbundle%\objects.svo %smvdir%\.
 
-if "%platform%"=="64" CALL :COPY %forbundle%\glew32_x64.dll %smvdir%\glew32_x64.dll
-
-if "%platform%"=="64" CALL :COPY %forbundle%\pthreadVC2_x64.dll %smvdir%\pthreadVC2_x64.dll
-
 CALL :COPY %sh2bat%\sh2bat.exe %smvdir%\sh2bat.exe
 
 CALL :COPY %forbundle%\wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat

@@ -19,6 +19,8 @@
   #define UNLOCK_COMPRESS pthread_mutex_unlock(&mutexCOMPRESS);
   #define LOCK_VOLLOAD pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD pthread_mutex_unlock(&mutexVOLLOAD);
+  #define LOCK_BUILDSLICE pthread_mutex_lock(&mutexBUILDSLICE);
+  #define UNLOCK_BUILDSLICE pthread_mutex_unlock(&mutexBUILDSLICE);
 #ifdef pp_THREADIBLANK
   #define LOCK_IBLANK pthread_mutex_lock(&mutexIBLANK);
   #define UNLOCK_IBLANK pthread_mutex_unlock(&mutexIBLANK);
@@ -36,10 +38,15 @@
   #define LOCK_IBLANK
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
+#define LOCK_BUILDSLICE
+#define UNLOCK_BUILDSLICE
 #endif
 
 #ifdef pp_THREAD
 void mt_ReadVolsmokeAllFramesAllMeshes2(void);
+#ifdef pp_SLICETHREAD
+void mt_UpdateVSlices(void);
+#endif
 #endif
 
 // define mutex's and thread_ids
@@ -48,12 +55,14 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void);
 #ifdef pp_THREAD
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
+MT_EXTERN pthread_mutex_t mutexBUILDSLICE;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
+MT_EXTERN pthread_t update_vslice_id;
 #endif
 #endif
 #endif

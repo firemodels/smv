@@ -595,9 +595,9 @@ int main(int argc, char **argv){
   set_stdout(stdout);
   initMALLOC();
   InitRandAB(1000000);
-  initvars();
+  InitVars();
   if(argc==1)DisplayVersionInfo("Smokeview ");
-  copy_args(&argc, argv, &argv_sv);
+  CopyArgs(&argc, argv, &argv_sv);
   if(argc==0||argc==1)return 0;
 
   progname=argv_sv[0];
@@ -608,7 +608,7 @@ int main(int argc, char **argv){
   if(smokeview_bindir==NULL){
     smokeview_bindir=getprogdir(progname,&smokeviewpath);
   }
-  init_texturedir();
+  InitTextureDir();
   smokezippath=get_smokezippath(smokeview_bindir);
 #ifdef pp_ffmpeg
 #ifdef WIN32
@@ -620,13 +620,13 @@ int main(int argc, char **argv){
 #endif
 #endif
   DisplayVersionInfo("Smokeview ");
-  setup_glut(argc,argv_sv);
+  SetupGlut(argc,argv_sv);
 
 #ifdef pp_LUA
   // Initialise the lua interpreter, it does not take control at this point
   initLua();
 #endif
-  return_code=setup_case(argc,argv_sv);
+  return_code= SetupCase(argc,argv_sv);
   if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
   if(return_code!=0)return 1;
   if(convert_ini==1){

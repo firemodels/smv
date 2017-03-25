@@ -1859,8 +1859,8 @@ void UpdateShowScene(void){
     restart_time = 0;
     ResetItimes0();
   }
-  if(loadfiles_at_startup==1&&update_load_Files == 1){
-    load_Files();
+  if(loadfiles_at_startup==1&&update_load_files == 1){
+    LoadFiles();
   }
   if(update_startup_view == 1){
     cameradata *ca;
@@ -1968,7 +1968,7 @@ void UpdateDisplay(void){
     ZoomMenu(zoomindex);
   }
   if(update_makeiblank_smoke3d == 1){
-    MakeIblankSmoke3D();
+    MakeIBlankSmoke3D();
   }
 #ifdef pp_CULL
   if(update_initcull == 1)InitCull(cullsmoke);
@@ -1982,12 +1982,14 @@ void UpdateDisplay(void){
     update_windowsizelist();
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
+  LOCK_BUILDSLICE;
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
     InitMenus(LOAD);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
   }
+  UNLOCK_BUILDSLICE;
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);
     update_fire_colorbar_index = 0;
@@ -2003,5 +2005,8 @@ void UpdateDisplay(void){
   if(update_vol_lights==1){
     update_vol_lights = 0;
     InitAllLightFractions(xyz_light_global, light_type_global);
+  }
+  if(update_windrose_showhide==1){
+    UpdateWindroseShowhide();
   }
 }

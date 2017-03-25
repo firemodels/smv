@@ -14,7 +14,7 @@
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
-                           if(endianswitch==1)endian_switch(var,size);\
+                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 /* ------------------ drawnorth ------------------------ */
@@ -614,7 +614,7 @@ float *get_terraincolor(terraincell *ti){
   float *ter_time;
   float wuicolor[4] = {1.0,0.0,0.0,1.0};
 
-  if(ti == NULL)return getcolorptr(wuicolor);
+  if(ti == NULL)return GetColorPtr(wuicolor);
 
   if(global_times == NULL || ti->time == NULL){
     index = ti->state[0] % 10;
@@ -1266,9 +1266,9 @@ void update_terrain_options(void){
   }
 }
 
-/* ------------------ getmesh_zcell ------------------------ */
+/* ------------------ GetMeshZCell ------------------------ */
 
-float getmesh_zcell(meshdata *meshi, float xval, float yval, int *valid){
+float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
   float *xplt, *yplt, *zcell;
   float dx, dy;
   int ibar, jbar;
@@ -1324,7 +1324,7 @@ void update_mesh_terrain(void){
       xyz[0]=x[ii];
       for(jj=0;jj<meshi->jbar;jj++){
         xyz[1]=y[jj];
-        meshj = getmesh(xyz);
+        meshj = GetMesh(xyz);
         if(meshj==NULL||meshj==meshi)continue;
         meshi->is_bottom=0;
         break;
@@ -1360,14 +1360,14 @@ void update_mesh_terrain(void){
           meshj = meshinfo + j;
           if(meshi==meshj)continue;
           xyz[2]=meshj->zplt_orig[1];
-          mesh_above=getmesh(xyz);
+          mesh_above= GetMesh(xyz);
           if(mesh_above!=NULL){
             float zz;
             int valid;
             int ij;
 
             ij = IJCELL2(ii,jj);
-            zz=getmesh_zcell(mesh_above, xyz[0],xyz[1], &valid);
+            zz= GetMeshZCell(mesh_above, xyz[0],xyz[1], &valid);
             ij=IJCELL2(ii,jj);
             if(valid==1&&zz>zcell[ij]){
               zcell[ij]=zz;

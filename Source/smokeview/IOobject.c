@@ -465,6 +465,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       float drval;
       int k, nk;
       float dk;
+      float angle_offset;
 
       //  (rval,theta2)     (rval2,theta2)
       //  (rval,theta)     (rval2,theta)
@@ -477,14 +478,16 @@ void DrawWindRose(windrosedata *wr,int orientation){
 
       nk = RAD2DEG*(theta2-theta);
       dk = (theta2-theta)/(float)nk;
+      angle_offset = 0.0;
+      if(windstate_windrose == WINDROSE_HEADING)angle_offset = PI;
 
       for(k = 0;k<nk;k++){
         float angle1, angle2;
         float x11, x12, x21, x22;
         float y11, y12, y21, y22;
 
-        angle1 = theta+(float)k*dk;
-        angle2 = theta+(float)(k+1)*dk;
+        angle1 = theta +     (float)k*dk + angle_offset;
+        angle2 = theta + (float)(k+1)*dk + angle_offset;
 
         x11 = rval*cos(angle1);
         x12 = rval2*cos(angle1);
@@ -529,21 +532,26 @@ void DrawWindRose(windrosedata *wr,int orientation){
     if(orientation == WINDROSE_YZ)glRotatef(90.0, 0.0, 1.0, 0.0);
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
-    for(icirc = 0;icirc<100;icirc++){
-      float factor,diameter;
+    for(icirc = 1;icirc<100;icirc++){
+      float scalei,scalei_normalized,diameter;
 
-      factor = (float)icirc*scale_increment_windrose/(maxr/hist->ntotal);
-      if(factor>1.0)break;
-      diameter = 2.0*radius_windrose*factor;
+      scalei=(float)icirc*scale_increment_windrose;
+      if(scalei > scale_max_windrose)continue;
+      scalei_normalized = scalei/(maxr/hist->ntotal);
+      if(scalei_normalized>1.0)break;
+      diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
+      if(showlabels_windrose==1)Output3Val(0.01+diameter / 2.0, 0.0, 0.0, scalei);
     }
     glTranslatef(0.0, 0.0, -0.002);
-    for(icirc = 0;icirc<20;icirc++){
-      float factor, diameter;
+    for(icirc = 1;icirc<100;icirc++){
+      float scalei, scalei_normalized, diameter;
 
-      factor = scale_increment_windrose*(float)icirc/(maxr/hist->ntotal);
-      if(factor>1.0)break;
-      diameter = 2.0*radius_windrose*factor;
+      scalei=(float)icirc*scale_increment_windrose;
+      if(scalei > scale_max_windrose)continue;
+      scalei_normalized = scalei /(maxr/hist->ntotal);
+      if(scalei_normalized>1.0)break;
+      diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
     }
   }
@@ -551,7 +559,36 @@ void DrawWindRose(windrosedata *wr,int orientation){
   glDisable(GL_LIGHTING);
 }
 
-/* ----------------------- DrawDeviceWindRoses ----------------------------- */
+/* ----------------------- UpdateWindroseShowhide ----------------------------- */
+
+void UpdateWindroseShowhide(void){
+  int i,nvals;
+
+  update_windrose_showhide=0;
+  if(windrose_showhide==NULL)return;
+  nvals = 0;
+  for(i = 0; i<nztreedeviceinfo; i++){
+    treedevicedata *treei;
+    int j;
+
+    treei = ztreedeviceinfo[i];
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted+j;
+      if(vdevsorti->dir==ZDIR){
+        vdevicedata *vd;
+
+        if(nvals>=nwindrose_showhide)return;
+        vd = vdevsorti->vdeviceinfo;
+        vd->display = windrose_showhide[nvals];
+        nvals++;
+      }
+    }
+  }
+}
+
+/* ----------------------- DrawWindRosesDevices ----------------------------- */
 
 void DrawWindRosesDevices(void){
   int i;
@@ -561,6 +598,7 @@ void DrawWindRosesDevices(void){
     windrosedata *wr;
 
     vdevi = vdeviceinfo + i;
+    if(vdevi->display==0||vdevi->unique==0)continue;
     wr = &vdevi->windroseinfo;
     if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
     if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
@@ -1541,7 +1579,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_ymax=-1;
         ci->clip_zmin=-1;
         ci->clip_zmax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPY:
@@ -1557,7 +1595,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_xmax=-1;
         ci->clip_zmin=-1;
         ci->clip_zmax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPZ:
@@ -1573,11 +1611,11 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         ci->clip_xmin=-1;
         ci->clip_ymin=-1;
         ci->clip_ymax=-1;
-        setClipPlanes(ci,CLIP_ON);
+        SetClipPlanes(ci,CLIP_ON);
       }
       break;
     case SV_CLIPOFF:
-      setClipPlanes(NULL,CLIP_OFF);
+      SetClipPlanes(NULL,CLIP_OFF);
       break;
     case SV_MIRRORCLIP:
       {
@@ -1869,7 +1907,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
       if(setbw==1){
         float grey;
 
-        grey = color2bw(arg);
+        grey = TOBW(arg);
         rgbcolor[0]=grey;
         rgbcolor[1]=grey;
         rgbcolor[2]=grey;
@@ -5452,6 +5490,11 @@ void setup_tree_devices(void){
     ntreedeviceinfo=0;
   }
 
+  if(nztreedeviceinfo>0){
+    FREEMEMORY(ztreedeviceinfo);
+    nztreedeviceinfo = 0;
+  }
+
   qsort((vdevicedata **)vdevices_sorted,3*(size_t)nvdeviceinfo,sizeof(vdevicesortdata),comparev3devices);
 
   ntreedeviceinfo = 1;
@@ -5490,6 +5533,61 @@ void setup_tree_devices(void){
     }
     treei->n = n;
     max_device_tree=MAX(max_device_tree,n);
+  }
+
+  for(i = 0; i<ntreedeviceinfo; i++){
+    int j, nz;
+    vdevicedata *vd;
+    float *xyz = NULL;
+
+    treei = treedeviceinfo+i;
+    nz = 0;
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted + j;
+      if(vdevsorti->dir==ZDIR){
+        vd = vdevsorti->vdeviceinfo;
+        if(vd->unique==0)continue;
+        xyz = NULL;
+        if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
+        if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
+        if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+        if(xyz!=NULL){
+          treei->xyz = xyz;
+          nz++;
+        }
+      }
+    }
+    if(nz>0)nztreedeviceinfo++;
+    treei->nz = nz;
+  }
+
+  if(nztreedeviceinfo>0)NewMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(treedevicedata *));
+
+  nztreedeviceinfo=0;
+  for(i = 0; i<ntreedeviceinfo; i++){
+    int j, nz;
+    vdevicedata *vd;
+    float *xyz;
+
+    treei = treedeviceinfo+i;
+    nz = 0;
+    for(j = treei->first; j<=treei->last; j++){
+      vdevicesortdata *vdevsorti;
+
+      vdevsorti = vdevices_sorted + j;
+      if(vdevsorti->dir==ZDIR){
+        vd = vdevsorti->vdeviceinfo;
+        if(vd->unique==0)continue;
+        xyz = NULL;
+        if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
+        if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
+        if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+        if(xyz!=NULL)nz++;
+      }
+    }
+    if(nz>0)ztreedeviceinfo[nztreedeviceinfo++] = treei;
   }
 }
 
@@ -5850,7 +5948,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         CopyUV2Histogram(uvals, vvals, nvals, rmin, rmax, histogram);
         maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
       }
-
     }
     if(angledev != NULL&&veldev != NULL){
       float rmin, rmax;
@@ -5951,6 +6048,7 @@ void setup_device_data(void){
     if(vdevi->udev!=NULL||vdevi->vdev!=NULL||vdevi->wdev!=NULL||
       vdevi->angledev!=NULL||vdevi->veldev!=NULL){
       vdevi->unique=1;
+      vdevi->display = 1;
       nvdeviceinfo++;
     }
   }
@@ -6140,7 +6238,7 @@ int read_object_defs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("Processing object file:  %s\n",file);
+  PRINTF("processing object file:  %s\n",file);
 
   firstdef=-1;
   buffer_ptr=NULL;
@@ -6303,7 +6401,7 @@ int read_object_defs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("Object file processing complete\n\n");
+  PRINTF("complete\n\n");
   return ndevices;
 }
 
@@ -6884,7 +6982,7 @@ void init_device_plane(devicedata *devicei){
     rgbcolor[1]=0.0;
     rgbcolor[2]=0.0;
     rgbcolor[3]=1.0;
-    devicei->color=getcolorptr(rgbcolor);
+    devicei->color=GetColorPtr(rgbcolor);
   }
   colorindex=0;
   for(i=0;i<nmeshes;i++){
@@ -6896,7 +6994,7 @@ void init_device_plane(devicedata *devicei){
     int nodeindexes[8], closestnodes[18];
     float vals[8];
 
-    InitIsosurface(devicei->plane_surface[i],level,devicei->color,colorindex);
+    InitIsoSurface(devicei->plane_surface[i],level,devicei->color,colorindex);
     devicei->plane_surface[i]->cullfaces=1;
 
     meshi = meshinfo + i;
@@ -6929,13 +7027,13 @@ void init_device_plane(devicedata *devicei){
     yy[1]=meshi->xyz_bar[YYY];
     zz[1]=meshi->xyz_bar[ZZZ];
 
-    GetIsobox(xx, yy, zz, vals, NULL, nodeindexes, level,
+    GetIsoHexaHedron(xx, yy, zz, vals, NULL, nodeindexes, level,
               xvert, yvert, zvert, NULL, closestnodes, &nvert, triangles, &ntriangles);
 
     UpdateIsosurface(devicei->plane_surface[i], xvert, yvert, zvert, NULL,
                      closestnodes, nvert, triangles, ntriangles);
     GetNormalSurface(devicei->plane_surface[i]);
-    CompressIsosurface(devicei->plane_surface[i],1,
+    CompressIsoSurface(devicei->plane_surface[i],1,
           xbar0,2*xbar,ybar0,2*ybar,zbar0,zbar);
     SmoothIsoSurface(devicei->plane_surface[i]);
   }

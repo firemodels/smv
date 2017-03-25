@@ -15,7 +15,7 @@
 /* ------------------ ShowScene2 ------------------------ */
 
 void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
-  if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)draw_skybox();
+  if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
 
   if(UpdateLIGHTS == 1)UpdateLights(light_position0, light_position1);
 
@@ -75,7 +75,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
 
 #ifdef pp_RENDER360_DEBUG
-    if(screenview == 1)draw_screeninfo();
+    if(screenview == 1)DrawScreenInfo();
 #endif
 
     /* ++++++++++++++++++++++++ draw circular vents +++++++++++++++++++++++++ */
@@ -340,7 +340,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw animated isosurfaces +++++++++++++++++++++++++ */
 
-  //if(isoinfo!=NULL)drawspherepoints(sphereinfo);
   if(showiso == 1){
     CLIP_VALS;
     drawiso(DRAW_OPAQUE);

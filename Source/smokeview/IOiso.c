@@ -233,7 +233,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   surfi = surfinfo + nsurfinfo+1;
   update_isocolors();
   if(strcmp(isoi->surface_label.shortlabel,"hrrpuv")==0){
-    surfi->color=getcolorptr(hrrpuv_iso_color);
+    surfi->color=GetColorPtr(hrrpuv_iso_color);
   }
 
   meshi->isofilenum=ifile;
@@ -495,9 +495,9 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
     float fed_yellow[]={1.0,1.0,0.0,1.0};
     float fed_red[]={1.0,0.0,0.0,1.0};
 
-    fed_colors[0]=getcolorptr(fed_blue);
-    fed_colors[1]=getcolorptr(fed_yellow);
-    fed_colors[2]=getcolorptr(fed_red);
+    fed_colors[0]=GetColorPtr(fed_blue);
+    fed_colors[1]=GetColorPtr(fed_yellow);
+    fed_colors[2]=GetColorPtr(fed_red);
   }
 
   asurface=meshi->animatedsurfaces;
@@ -726,7 +726,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
           v1=isotrii->v1->xyz;
           v2=isotrii->v2->xyz;
           v3=isotrii->v3->xyz;
-          calcNormal2f(v1,v2,v3,out,&area);
+          CalcNormal2f(v1,v2,v3,out,&area);
 
           vertnorm = vertnorms + 3*(isotrii->v1-asurface->iso_vertices);
           vertnorm[0] += out[0]*area;

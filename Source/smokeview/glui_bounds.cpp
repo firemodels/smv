@@ -1068,7 +1068,7 @@ void Bound_CB(int var){
     EDIT_patch_max->set_float_val(patchmax);
     break;
   case COMPRESS_FILES:
-    compress_svzip();
+    CompressSVZip();
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;
@@ -1089,11 +1089,11 @@ void Bound_CB(int var){
     Bounds_DLG_CB(SAVE_SETTINGS);
     break;
   case SAVE_FILE_LIST:
-    set_3dsmoke_startup();
+    Set3DSmokeStartup();
     Bounds_DLG_CB(SAVE_SETTINGS);
     break;
   case LOAD_FILES:
-    load_Files();
+    LoadFiles();
     break;
   default:
     ASSERT(FFALSE);
@@ -2543,7 +2543,7 @@ extern "C" void IsoCB(int var){
     for(i = 0; i < MAX_ISO_COLORS; i++){
       float graylevel;
 
-      graylevel = color2bw(iso_colors+4*i);
+      graylevel = TOBW(iso_colors+4*i);
       iso_colorsbw[4 * i + 0] = graylevel;
       iso_colorsbw[4 * i + 1] = graylevel;
       iso_colorsbw[4 * i + 2] = graylevel;

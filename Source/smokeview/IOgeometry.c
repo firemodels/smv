@@ -1139,7 +1139,7 @@ void update_triangles(int flag,int update){
           vertdata *verti;
 
           verti = geomlisti->verts+i;
-          verti->on_mesh_boundary = on_mesh_boundary(verti->xyz);
+          verti->on_mesh_boundary = OnMeshBoundary(verti->xyz);
           if(verti->on_mesh_boundary==1)nsurface_verts++;
         }
       }
@@ -1252,7 +1252,7 @@ void update_triangles(int flag,int update){
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
                            returncode=fread(var,4,count,STREAM);\
                            if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)endian_switch(var,count);\
+                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
                            FSEEK(STREAM,4,SEEK_CUR)
 
 #define FORTREADBR(var,count,STREAM) FORTREAD(var,(count),STREAM);if(returncode==0)break;
@@ -2354,7 +2354,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
   }
 
   //get_geomdata_header(file,&ntimes,&nvals);
-  endian_smv = getendian();
+  endian_smv = GetEndian();
   lenfile = strlen(file);
 
   FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
@@ -2404,7 +2404,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
       return;
     }
   }
-  getBoundaryColors3(patchi,patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+  GetBoundaryColors3(patchi,patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch,patchi->scale,boundarylevels256,
@@ -2457,7 +2457,7 @@ void draw_test_clip(void){
     glEnable(GL_COLOR_MATERIAL);
   }
 
-  initTetraClipInfo(&tetra_clipinfo,v1,v2,v3,v4);
+  InitTetraClipInfo(&tetra_clipinfo,v1,v2,v3,v4);
 
   xmin = box_bounds;
   xmax = box_bounds+1;
@@ -2495,7 +2495,7 @@ void draw_test_clip(void){
     if(npolys>10){
       PRINTF("***error: nface=%i should not be bigger than 10\n",npolys);
     }
-    initBoxClipInfo(&box_clipinfo,*xmin,*xmax,*ymin,*ymax,*zmin,*zmax);
+    InitBoxClipInfo(&box_clipinfo,*xmin,*xmax,*ymin,*ymax,*zmin,*zmax);
     if(box_state[0]!=-1)box_clipinfo.clip_xmin=0;
     if(box_state[1]!=-1)box_clipinfo.clip_xmax=0;
     if(box_state[2]!=-1)box_clipinfo.clip_ymin=0;
@@ -2517,7 +2517,7 @@ void draw_test_clip(void){
 
   // draw box
 
-  setClipPlanes(&tetra_clipinfo,CLIP_ON_DENORMAL);
+  SetClipPlanes(&tetra_clipinfo,CLIP_ON_DENORMAL);
   glPushMatrix();
   glTranslatef(*xmin,*ymin,*zmin);
   glScalef(ABS(*xmax-*xmin),ABS(*ymax-*ymin),ABS(*zmax-*zmin));
@@ -2618,13 +2618,13 @@ void draw_test_clip(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
-  setClipPlanes(&box_clipinfo,CLIP_ON_DENORMAL);
-  drawfilled2tetra(v1,v3,v2,v4,tetra0color,tetra1color,tetra2color,tetra3color,tetrabox_vis+6);
+  SetClipPlanes(&box_clipinfo,CLIP_ON_DENORMAL);
+  DrawFilled2Tetra(v1,v3,v2,v4,tetra0color,tetra1color,tetra2color,tetra3color,tetrabox_vis+6);
 
   glPopMatrix();
   // tetrahedron
 
-  setClipPlanes(NULL,CLIP_OFF);
+  SetClipPlanes(NULL,CLIP_OFF);
   glDisable(GL_LIGHTING);
   glDisable(GL_COLOR_MATERIAL);
 }
@@ -2670,7 +2670,7 @@ void draw_test_outline(void){
 
   Antialias(ON);
   glLineWidth(tetra_line_thickness);
-  drawtetra_outline(v1,v2,v3,v4,tetracoloroutline);
+  DrawTetraOutline(v1,v2,v3,v4,tetracoloroutline);
   Antialias(OFF);
 
   glPopMatrix();

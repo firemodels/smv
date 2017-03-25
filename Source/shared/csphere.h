@@ -15,9 +15,6 @@ typedef struct {
   float maxerr_deg;
 } spherepoints;
 
-#ifdef pp_DRAWISO
-void drawspherepoints(spherepoints *spherei);
-#endif
 void initspherepoints(spherepoints *sphereinfo, int n);
 void freespherepoints(spherepoints *sphereinfo);
 unsigned int getnormalindex(spherepoints *sphereinfo, float *normal);

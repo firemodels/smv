@@ -1722,7 +1722,7 @@ extern "C" void Motion_CB(int var){
   }
 
   if(glui_move_mode==EYE_ROTATE){
-    getnewpos(eye_xyz,dx,dy,0.0,1.0);
+    GetNewPos(eye_xyz,dx,dy,0.0,1.0);
     eye_xyz0[0]=eye_xyz[0];
     eye_xyz0[1]=eye_xyz[1];
     eye_xyz0[2]=eye_xyz[2];

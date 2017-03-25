@@ -14,9 +14,9 @@ GLhandleARB p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
 #define LINK_BAD 0
 #define LINK_GOOD 1
 
-/* ------------------ printfInfoLog ------------------------ */
+/* ------------------ PrintInfoLog ------------------------ */
 
-void printInfoLog(GLhandleARB obj){
+void PrintInfoLog(GLhandleARB obj){
   int infologLength = 0;
   int charsWritten = 0;
   char *infoLog;
@@ -30,9 +30,9 @@ void printInfoLog(GLhandleARB obj){
   }
 }
 
-/* ------------------ setZoneSmokeShaders ------------------------ */
+/* ------------------ SetZoneSmokeShaders ------------------------ */
 
-int setZoneSmokeShaders(){
+int SetZoneSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -130,8 +130,8 @@ int setZoneSmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_zonesmoke = glCreateProgramObjectARB();
@@ -162,7 +162,7 @@ int setZoneSmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_zonesmoke);
+  PrintInfoLog(p_zonesmoke);
 #endif
   GPUzone_zoneinside = glGetUniformLocation(p_zonesmoke,"zoneinside");
   GPUzone_zonedir = glGetUniformLocation(p_zonesmoke,"zonedir");
@@ -179,9 +179,9 @@ int setZoneSmokeShaders(){
 
 }
 
-/* ------------------ set3DSliceShaders ------------------------ */
+/* ------------------ Set3DSliceShaders ------------------------ */
 
-int set3DSliceShaders(void){
+int Set3DSliceShaders(void){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -223,8 +223,8 @@ int set3DSliceShaders(void){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_3dslice = glCreateProgramObjectARB();
@@ -255,7 +255,7 @@ int set3DSliceShaders(void){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_3dslice);
+  PrintInfoLog(p_3dslice);
 #endif
 
   GPU3dslice_valtexture = glGetUniformLocation(p_3dslice,"valtexture");
@@ -270,9 +270,9 @@ int set3DSliceShaders(void){
   return error_code;
 }
 
-/* ------------------ setVolsmokeShaders ------------------------ */
+/* ------------------ SetVolSmokeShaders ------------------------ */
 
-int setVolsmokeShaders(){
+int SetVolSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -291,7 +291,7 @@ int setVolsmokeShaders(){
     "uniform float mass_extinct, light_intensity, scatter_param;"
     "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
     "uniform int drawsides[7];"
-    "uniform int scatter_type,light_type;"
+    "uniform int scatter_type,light_type,vol_adaptive;"
 
 #ifdef pp_GPUDEPTH
     // http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
@@ -303,8 +303,11 @@ int setVolsmokeShaders(){
         "  return (near*far)/(far+z*(near-far));"
         "}"
     #endif
-
-        "void main(){"
+    
+    "float color2bw(vec3 color){"
+    " return 0.299*color.r+0.587*color.g+0.114*color.b;"
+    "}"
+    "void main(){"
     #ifdef pp_GPUDEPTH
     //  "  vec2 uv = gl_TexCoord[4].xy;"
       "  vec2 uv = gl_FragCoord.st/screensize.xy;"
@@ -313,12 +316,12 @@ int setVolsmokeShaders(){
     "  vec3 uvec, vvec;"
     "  float d;"
     "  float soot_val,block_val,block_val2;"
-    "  float alpha_min,factor,dfactor,pathdist;"
-    "  float colorindex,tempval,gray;"
+    "  float alpha_min,factor,factor0,dfactor,dfactor0,pathdist;"
+    "  float colorindex,last_tempval,tempval,gray;"
     "  float taui, alphai;"
     "  float taun, alphan;"
     "  float light_fraction, light_factor, scatter_fraction;"
-    "  float dstep, dstep_fire, dstep_smoke;"
+    "  float dstep;"
     "  float cos_angle,fourpi;"
     "  int i,n_iter;"
     "  int side,in_fire;"
@@ -365,15 +368,20 @@ int setVolsmokeShaders(){
 #endif
     "  n_iter = int(gpu_vol_factor*pathdist/dcell+0.5);"
     "  if(n_iter<1)n_iter=1;"
-    "  dstep_smoke = pathdist*xyzmaxdiff/(float)n_iter;"
-    "  dstep_fire = dstep_smoke/4.0;"
-    "  dstep = dstep_smoke;"
     "  taun=1.0;"
     "  alphan=0.0;"
-    "  color_total=vec3(0.0,0.0,0.0);"
-    "  dfactor = 1.0/(float)n_iter;"
-    "  factor=0.5*dfactor;"
     "  in_fire=0;"
+    "  color_total=vec3(0.0,0.0,0.0);"
+    
+    "  dfactor0 = 1.0/(float)n_iter;"
+    "  dfactor = dfactor0;"
+    "  dstep = pathdist*xyzmaxdiff/(float)n_iter;"
+    
+    "  factor0=0.5*dfactor;"
+    "  factor=factor0;"
+    
+    "  last_tempval=0.0;"
+    "  tempval=0.0;"
     "  while(factor<1.0){"
     "    in_block=0;"
     "    position = (mix(fragpos,fragmaxpos,factor)-boxmin)/(boxmax-boxmin);"
@@ -461,14 +469,17 @@ int setVolsmokeShaders(){
     "      light_factor = alphai*light_intensity*light_fraction*scatter_fraction;"
     "      color_total += alphai*taun*light_factor*light_color/255.0;"
     "    }"
-    "    if(in_fire==1){"
-    "      factor+=dfactor/4.0;"
-    "      dstep = dstep_fire;"
+    "    if(vol_adaptive==1&&factor>factor0){"
+    "      if(abs(tempval-last_tempval)>1.0&&dfactor>0.1/(float)n_iter){"
+    "        dfactor/= 2.0;"
+    "        dstep /= 2.0;"
+    "      }"
+    "      if(abs(tempval-last_tempval)<0.5&&dfactor+0.01<dfactor0){"
+    "        dfactor *= 2.0;"
+    "        dstep *= 2.0;"
+    "      }"
     "    }"
-    "    else{"
-    "      factor+=dfactor;"
-    "      dstep = dstep_smoke;"
-    "    }"
+    "    factor+=dfactor;"
 #ifndef pp_GPUDEPTH
     "    if(block_val2<0.5)break;"
 #endif
@@ -477,7 +488,7 @@ int setVolsmokeShaders(){
     "    }"
      "  }"
     "  if(volbw==1){"
-    "    gray=0.299*color_total.r + 0.587*color_total.g + 0.114*color_total.b;"
+    "    gray=color2bw(color_total);"
     "    color_total=vec3(gray,gray,gray);"
     "  }"
     "  if(alphan>0.0){"
@@ -507,8 +518,8 @@ int setVolsmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_volsmoke = glCreateProgramObjectARB();
@@ -539,7 +550,7 @@ int setVolsmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_volsmoke);
+  PrintInfoLog(p_volsmoke);
 #endif
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
@@ -554,6 +565,7 @@ int setVolsmokeShaders(){
   GPUvol_xyzmaxdiff = glGetUniformLocation(p_volsmoke,"xyzmaxdiff");
   GPUvol_gpu_vol_factor = glGetUniformLocation(p_volsmoke,"gpu_vol_factor");
   GPUvol_fire_opacity_factor = glGetUniformLocation(p_volsmoke,"fire_opacity_factor");
+  GPUvol_vol_adaptive = glGetUniformLocation(p_volsmoke, "vol_adaptive");
   GPUvol_mass_extinct = glGetUniformLocation(p_volsmoke,"mass_extinct");
   GPUvol_volbw = glGetUniformLocation(p_volsmoke,"volbw");
   GPUvol_temperature_min = glGetUniformLocation(p_volsmoke,"temperature_min");
@@ -583,9 +595,9 @@ int setVolsmokeShaders(){
   return error_code;
 }
 
-/* ------------------ setSmokeShaders ------------------------ */
+/* ------------------ SetSmokeShaders ------------------------ */
 
-int setSmokeShaders(){
+int SetSmokeShaders(){
   GLhandleARB vert_shader, frag_shader;
   GLint error_code;
 
@@ -659,8 +671,8 @@ int setSmokeShaders(){
   glCompileShaderARB(frag_shader);
 
 #ifdef _DEBUG
-  printInfoLog(vert_shader);
-  printInfoLog(frag_shader);
+  PrintInfoLog(vert_shader);
+  PrintInfoLog(frag_shader);
 #endif
 
   p_smoke = glCreateProgramObjectARB();
@@ -691,7 +703,7 @@ int setSmokeShaders(){
     PRINTF(" unknown error\n");
     break;
   }
-  printInfoLog(p_smoke);
+  PrintInfoLog(p_smoke);
 #endif
   if(error_code!=1)return error_code;
   GPU_hrrpuv_max_smv = glGetUniformLocation(p_smoke,"hrrpuv_max_smv");
@@ -740,9 +752,9 @@ void UnLoadShaders(void){
   glUseProgramObjectARB(0);
 }
 
-/* ------------------ init_shaders ------------------------ */
+/* ------------------ InitShaders ------------------------ */
 
-int init_shaders(void){
+int InitShaders(void){
   GLenum err;
 
   gpuactive=0;
@@ -755,7 +767,7 @@ int init_shaders(void){
   }
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
-    if(setSmokeShaders()==1){
+    if(SetSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU smoke shader successfully compiled, linked and loaded.\n");
 #endif
@@ -767,7 +779,7 @@ int init_shaders(void){
       usegpu=0;
       err=1;
     }
-    if(setVolsmokeShaders()==1){
+    if(SetVolSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
 #endif
@@ -779,7 +791,7 @@ int init_shaders(void){
       usegpu=0;
       err=1;
     }
-    if(set3DSliceShaders()==1){
+    if(Set3DSliceShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU 3d slice shader successfully compiled, linked and loaded.\n");
 #endif
@@ -792,7 +804,7 @@ int init_shaders(void){
       err=1;
     }
     if(err==0){
-      if(setZoneSmokeShaders()==1){
+      if(SetZoneSmokeShaders()==1){
 #ifdef _DEBUG
   		PRINTF("   GPU zone smoke shader successfully compiled, linked and loaded.\n");
 #endif
@@ -815,9 +827,9 @@ int init_shaders(void){
 }
 
 #ifdef pp_GPUDEPTH
-/* ------------------ createDepthTexture ------------------------ */
+/* ------------------ CreateDepthTexture ------------------------ */
 
-void createDepthTexture( void ){
+void CreateDepthTexture( void ){
   if( depthtexture_id!=0 ){
 		glDeleteTextures( 1, &depthtexture_id );
 		depthtexture_id = 0;
@@ -837,10 +849,10 @@ void createDepthTexture( void ){
 
 }
 
-/* ------------------ getDepthTexture ------------------------ */
+/* ------------------ GetDepthTexture ------------------------ */
 
-void getDepthTexture( void ){
-  if( depthtexture_id==0 ) createDepthTexture();
+void GetDepthTexture( void ){
+  if( depthtexture_id==0 ) CreateDepthTexture();
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, depthtexture_id);
   glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0, 0, screenWidth, screenHeight);

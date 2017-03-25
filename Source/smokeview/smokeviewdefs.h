@@ -186,8 +186,8 @@ void _Sniff_Errors(char *whereat);
 #define CLIP_BLOCKAGES 2
 #define CLIP_DATA 3
 
-#define UNCLIP setClipPlanes(NULL,CLIP_OFF)
-#define CLIP setClipPlanes(&clipinfo,CLIP_ON)
+#define UNCLIP SetClipPlanes(NULL,CLIP_OFF)
+#define CLIP SetClipPlanes(&clipinfo,CLIP_ON)
 
 #define CLIP_GEOMETRY   \
   {int clip_geom=0;\
@@ -497,6 +497,9 @@ void _Sniff_Errors(char *whereat);
 #define WINDROSE_YZ 2
 #define WINDROSE_LOCALSCALE 0
 #define WINDROSE_GLOBALSCALE 1
+#define WINDROSE_DIRECTION 0
+#define WINDROSE_HEADING 1
+
 #define CLOSE_WINDOW -2
 #define UPDATE_WINDOW -3
 #define CANCEL_WINDOW -4

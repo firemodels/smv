@@ -969,7 +969,7 @@ void Drag_Tour_Node(int xm, int ym){
   float screen_perm[9];
 
   if(showtour_dialog==1&&edittour==1&&selected_frame!=NULL){
-    get_screen_mapping(selected_frame->nodeval.eye,screen_perm);
+    GetScreenMapping(selected_frame->nodeval.eye,screen_perm);
   }
   else{
     return;
@@ -2230,7 +2230,7 @@ void update_clipplanes(void){
     }
   }
   if(clip_mode==CLIP_OFF){
-    setClipPlanes(NULL,CLIP_OFF);
+    SetClipPlanes(NULL,CLIP_OFF);
   }
 }
 
@@ -2430,7 +2430,7 @@ void handle_move_keys(int  key){
         case KEY_ALT:
           dx = INC_XY*(cos_azimuth);
           dy = INC_XY*(sin_azimuth);
-          getnewpos(eye_xyz,dx,-dy,0.0,1.0);
+          GetNewPos(eye_xyz,dx,-dy,0.0,1.0);
           break;
         case KEY_SHIFT:
         case KEY_CTRL:
@@ -2451,7 +2451,7 @@ void handle_move_keys(int  key){
         float local_speed_factor=1.0;
 
         if(key_state==KEY_SHIFT)local_speed_factor=4.0;
-        getnewpos(eye_xyz,dx,-dy,0.0,local_speed_factor);
+        GetNewPos(eye_xyz,dx,-dy,0.0,local_speed_factor);
       }
       break;
     case GLUT_KEY_LEFT:
@@ -2459,7 +2459,7 @@ void handle_move_keys(int  key){
         case KEY_ALT:
           dx = INC_XY*(cos_azimuth);
           dy = INC_XY*(sin_azimuth);
-          getnewpos(eye_xyz,-dx,dy,0.0,1.0);
+          GetNewPos(eye_xyz,-dx,dy,0.0,1.0);
           break;
         case KEY_SHIFT:
         case KEY_CTRL:
@@ -2477,10 +2477,10 @@ void handle_move_keys(int  key){
       dx = INC_XY*(cos_azimuth);
       dy = INC_XY*(sin_azimuth);
       if(key_state==KEY_SHIFT){
-        getnewpos(eye_xyz,-dx,dy,0.0,4.0);
+        GetNewPos(eye_xyz,-dx,dy,0.0,4.0);
       }
       else{
-        getnewpos(eye_xyz,-dx,dy,0.0,1.0);
+        GetNewPos(eye_xyz,-dx,dy,0.0,1.0);
       }
       break;
     case GLUT_KEY_DOWN:
@@ -2493,7 +2493,7 @@ void handle_move_keys(int  key){
       if(key_state==KEY_SHIFT)local_speed_factor=4.0;
         dx = INC_XY*(sin_azimuth);
         dy = INC_XY*(cos_azimuth);
-        getnewpos(eye_xyz,-dx,-dy,0.0,local_speed_factor);
+        GetNewPos(eye_xyz,-dx,-dy,0.0,local_speed_factor);
       }
       break;
     case GLUT_KEY_UP:
@@ -2506,7 +2506,7 @@ void handle_move_keys(int  key){
         if(key_state==KEY_SHIFT)local_speed_factor=4.0;
         dx = INC_XY*(sin_azimuth);
         dy = INC_XY*(cos_azimuth);
-        getnewpos(eye_xyz,dx,dy,0.0,local_speed_factor);
+        GetNewPos(eye_xyz,dx,dy,0.0,local_speed_factor);
       }
       break;
     case GLUT_KEY_PAGE_UP:
@@ -2687,7 +2687,7 @@ void Reshape_CB(int width, int height){
   update_windowsizelist();
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
-  createDepthTexture();
+  CreateDepthTexture();
 #endif
 #endif
 }

@@ -88,10 +88,6 @@ copy %forbundle%\textures\*.png %smvdir%\textures>Nul
 
 CALL :COPY  %forbundle%\objects.svo %smvdir%\.
 
-if "%platform%"=="64" CALL :COPY  %forbundle%\glew32_x64.dll %smvdir%\.
-
-if "%platform%"=="64" CALL :COPY  %forbundle%\pthreadVC2_x64.dll %smvdir%\.
-
 CALL :COPY  %sh2bat%\sh2bat.exe %smvdir%\.
 
 CALL :COPY  %svn_root%\webpages\smv_readme.html %smvdir%\release_notes.html
