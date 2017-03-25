@@ -41,10 +41,10 @@ typedef struct filedata{
 #define APPEND_FILE 1
 
 #ifdef pp_READBUFFER
-#define FEOF(stream)              feof_buffer(smv_fileinfo)
-#define FGETS(buffer,size,stream) fgets_buffer(smv_fileinfo,buffer,size)
-#define REWIND(stream)            rewind_buffer(smv_fileinfo)
-#define FCLOSE(stream)            freefileinfo(smv_fileinfo)
+#define FEOF(stream)              (memfile_option==1 ? feof_buffer(smv_fileinfo) : feof(stream))
+#define FGETS(buffer,size,stream) (memfile_option==1 ? fgets_buffer(smv_fileinfo,buffer,size) : fgets(buffer,size,stream) )
+#define REWIND(stream)            (memfile_option==1 ? rewind_buffer(smv_fileinfo) : rewind(stream) )
+#define FCLOSE(stream)            (memfile_option==1 ? freefileinfo(smv_fileinfo) : fclose(stream) )
 #else
 #define FEOF(stream)              feof(stream)
 #define FGETS(buffer,size,stream) fgets(buffer,size,stream)
@@ -96,12 +96,26 @@ EXTERNCPP char *lastname(char *argi);
 EXTERNCPP filedata *smv_fileinfo;
 #endif
 
+#ifndef CCC
+#ifdef CPP
+#define CCC "C"
+#else
+#define CCC
+#endif
+#endif
+
 #ifndef STREXTERN
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");
 #else
 STREXTERN char STRDECL(dirseparator[],"/");
 #endif
+#endif
+
+#ifdef INMAIN
+int memfile_option=1;
+#else
+extern CCC int memfile_option;
 #endif
 
 #define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)

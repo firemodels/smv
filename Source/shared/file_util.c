@@ -452,7 +452,11 @@ filedata *file2mem(char *filename){
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;
   NewMemory((void **)&fileinfo, sizeof(filedata));
-  NewMemory((void **)&buffer, filesize);
+  if(NewMemory((void **)&buffer, filesize)==0){
+    FREEMEMORY(fileinfo);
+    memfile_option = 0;
+    return NULL;
+  }
   fread(buffer, sizeof(char), filesize, stream);
   fclose(stream);
   fileinfo->buffer = buffer;
