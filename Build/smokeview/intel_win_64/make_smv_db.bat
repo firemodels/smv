@@ -10,7 +10,7 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=
 if "%release%" == "-r" goto endif
-  set SMV_TESTFLAG=-D pp_BETA -D _DEBUG
+  set SMV_TESTFLAG=-D pp_BETA
   set SMV_TESTSTRING=test_
 :endif
 set OPT=
