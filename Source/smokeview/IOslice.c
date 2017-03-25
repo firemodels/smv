@@ -2666,7 +2666,10 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-        FORTgetsliceparms(file,
+        ni = is2+1-is1;
+        nj = js2+1-js1;
+        nk = ks2+1-ks1;
+        if(is1<=0||is2<0||js1<0||js2<0||ks1<0||ks2<0)FORTgetsliceparms(file,
           &is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&sd->volslice,&error,lenfile);
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
       }
