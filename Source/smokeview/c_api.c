@@ -20,13 +20,14 @@
 
 // function prototypes for functions drawn from other areas of smokeview
 // from startup.c
-void readboundini(void);
-void init_lang(void);
+void ReadBoundINI(void);
+void InitLang(void);
 void Init(void);
 // from menus.c
 void UpdateMenu(void);
 void LoadVolsmoke3DMenu(int value);
 void UnLoadVolsmoke3DMenu(int value);
+void LoadSlicei(int set_slicecolor, int value);
 void UpdateSliceBounds(void);
 void OutputSliceData(void);
 
@@ -210,10 +211,10 @@ int loadsmv(char *input_filename, char *input_filename_ext){
 
   CheckMemory;
   ReadINI(NULL);
-  readboundini();
+  ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
-  init_lang();
+  InitLang();
 #endif
 
   if(ntourinfo==0)setup_tour();
@@ -1094,7 +1095,7 @@ void set_all_label_visibility(int setting) {
 // time
 void set_timehms(int setting) {
   vishmsTimelabel = 1 - vishmsTimelabel;
-  set_labels_controls();
+  SetLabelControls();
   if(vishmsTimelabel==0)PRINTF("Time label in h:m:s\n");
   if(vishmsTimelabel==1)PRINTF("Time label in s\n");
 }
@@ -1105,7 +1106,7 @@ int get_timehms() {
 
 void toggle_timehms() {
   vishmsTimelabel = 1 - vishmsTimelabel;
-  set_labels_controls();
+  SetLabelControls();
   if(vishmsTimelabel==0)PRINTF("Time label in h:m:s\n");
   if(vishmsTimelabel==1)PRINTF("Time label in s\n");
 }
@@ -1612,7 +1613,7 @@ void loadplot3d(int meshnumber, float time_local){
     }
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  set_labels_controls();
+  SetLabelControls();
   if(count==0)fprintf(stderr,"*** Error: Plot3d file failed to load\n");
 
   //UpdateMenu();
@@ -3688,9 +3689,9 @@ int set_sliceauto(int n, int vals[]) {
   // TODO: this discards  the values. Verify.
   for(i = 0; i<n3dsmokes; i++){
     seq_id = vals[i];
-    get_startup_slice(seq_id);
+    GetStartupSlice(seq_id);
   }
-  update_load_Files = 1;
+  update_load_files = 1;
   return 0;
 } // SLICEAUTO
 
@@ -3709,7 +3710,7 @@ int set_msliceauto(int n, int vals[]) {
       mslicei->autoload = 1;
     }
   }
-  update_load_Files = 1;
+  update_load_files = 1;
   return 0;
 } // MSLICEAUTO
 
