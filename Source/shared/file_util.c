@@ -405,15 +405,15 @@ char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
   return buffer;
 }
 
-/* ------------------ rewind_buffer ------------------------ */
+/* ------------------ RewindFileBuffer ------------------------ */
 
-void rewind_buffer(filedata *fileinfo){
+void RewindFileBuffer(filedata *fileinfo){
   fileinfo->iline=0;
 }
 
-/* ------------------ freefileinfo ------------------------ */
+/* ------------------ FreeFileBuffer ------------------------ */
 
-void freefileinfo(filedata *fileinfo){
+void FreeFileBuffer(filedata *fileinfo){
   char *buffer;
 
   if(fileinfo==NULL)return;
@@ -422,9 +422,9 @@ void freefileinfo(filedata *fileinfo){
   FREEMEMORY(fileinfo);
 }
 
-/* ------------------ fileinfo2out ------------------------ */
+/* ------------------ OutputFileBuffer ------------------------ */
 
-void fileinfo2out(filedata *fileinfo){
+void OutputFileBuffer(filedata *fileinfo){
   int i;
 
   if(fileinfo==NULL)return;
@@ -437,9 +437,47 @@ void fileinfo2out(filedata *fileinfo){
   }
 }
 
-  /* ------------------ file2mem ------------------------ */
+/* ------------------ MergeFileBuffers ------------------------ */
 
-filedata *file2mem(char *filename){
+int MergeFileBuffers(filedata *fileto, filedata *filefrom){
+  char *new_buffer, *new_buffer2, **new_lines;
+  int new_filesize, new_nlines, i;
+
+  new_filesize = filefrom->filesize+fileto->filesize;
+  if(NewMemory((void **)&new_buffer, new_filesize)==0){
+    readfile_option = READFILE;
+    return -1;
+  }
+  new_buffer2 = new_buffer+fileto->filesize;
+  memcpy(new_buffer, fileto->buffer, fileto->filesize);
+  memcpy(new_buffer2, filefrom->buffer, filefrom->filesize);
+
+  new_nlines = filefrom->nlines+fileto->nlines;
+  if(NewMemory((void **)&new_lines, new_nlines*sizeof(char *))==0){
+    FREEMEMORY(new_buffer);
+    readfile_option = READFILE;
+    return  -1;
+  }
+
+  for(i = 0;i<fileto->nlines;i++){
+    new_lines[i] = new_buffer+(fileto->lines[i]-fileto->buffer);
+  }
+  for(i = 0;i<filefrom->nlines;i++){
+    new_lines[i+fileto->nlines] = new_buffer2+(filefrom->lines[i]-filefrom->buffer);
+  }
+
+  FREEMEMORY(fileto->buffer);
+  FREEMEMORY(fileto->lines);
+  fileto->buffer = new_buffer;
+  fileto->lines = new_lines;
+  fileto->filesize = new_filesize;
+  fileto->nlines = new_nlines;
+  return 0;
+}
+
+  /* ------------------ File2Buffer ------------------------ */
+
+filedata *File2Buffer(char *filename){
   FILE_SIZE i,filesize;
   filedata *fileinfo;
   char *buffer, **lines;
@@ -454,7 +492,7 @@ filedata *file2mem(char *filename){
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize)==0){
     FREEMEMORY(fileinfo);
-    memfile_option = 0;
+    readfile_option = READFILE;
     return NULL;
   }
   fread(buffer, sizeof(char), filesize, stream);

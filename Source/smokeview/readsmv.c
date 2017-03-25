@@ -546,7 +546,7 @@ void ReadSMVDynamic(char *file){
   int nplot3dinfo_old;
 
 #ifdef pp_READBUFFER
-  smv_fileinfo = file2mem(file);
+  smv_fileinfo = File2Buffer(file);
 #endif
 
   nplot3dinfo_old=nplot3dinfo;
@@ -571,7 +571,7 @@ void ReadSMVDynamic(char *file){
   nplot3dinfo=0;
 
 #ifdef pp_READBUFFER
-  if(memfile_option==0){
+  if(readfile_option==READFILE){
     stream = fopen(file, "r");
     if(stream==NULL)return;
   }
@@ -3414,7 +3414,16 @@ int ReadSMV(char *file, char *file2){
   char buffer[1024],buffer2[1024],*bufferptr;
 
 #ifdef pp_READBUFFER
-  smv_fileinfo = file2mem(file);
+  smv_fileinfo = File2Buffer(file);
+  if(smv_fileinfo!=NULL&&file2!=NULL){
+    filedata *smv_fileinfo2;
+
+    smv_fileinfo2 = File2Buffer(file2);
+    if(smv_fileinfo2!=NULL){
+      MergeFileBuffers(smv_fileinfo, smv_fileinfo2);
+    }
+    FreeFileBuffer(smv_fileinfo2);
+  }
 #endif
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
@@ -3746,7 +3755,7 @@ int ReadSMV(char *file, char *file2){
   STRCPY(LESendian,"");
 
 #ifdef pp_READBUFFER
-  if(memfile_option==0){
+  if(readfile_option==READFILE){
     stream1 = fopen(file, "r");
     if(stream1==NULL)return 1;
   }
@@ -3758,7 +3767,7 @@ int ReadSMV(char *file, char *file2){
     stream2 = fopen(file2, "r");
     if(stream2==NULL){
 #ifdef pp_READBUFFER
-      if(memfile_option==0){
+      if(readfile_option==READFILE){
         fclose(stream1);
       }
 #else
@@ -3768,7 +3777,7 @@ int ReadSMV(char *file, char *file2){
     }
   }
 #ifdef pp_READBUFFER
-  if(memfile_option==0){
+  if(readfile_option==READFILE){
     stream = stream1;
   }
 #else
