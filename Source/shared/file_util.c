@@ -389,7 +389,7 @@ int feof_buffer(filedata *fileinfo){
 
 char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
   char *file_buffer, *from, *to;
-  int iline, len_file_buffer, i;
+  int iline, i;
 
   iline = fileinfo->iline;
   if(iline>=fileinfo->nlines)return NULL;
