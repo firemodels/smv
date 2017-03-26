@@ -37,7 +37,10 @@ void Usage(char **argv){
   PRINTF("%s\n", _(" -fed            - pre-calculate all FED slice files"));
   PRINTF("%s\n", _(" -help          - display this message"));
   PRINTF("%s\n", _(" -ini           - output default smokeview parameters to smokeview.ini"));
-  PRINTF("%s\n", _(" -ng_ini        - No graphics version of -ini."));
+  PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
+#ifdef pp_READBUFFER
+  PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
+#endif
   PRINTF("%s\n", _(" -runscript     - run the script file casename.ssf"));
   PRINTF("%s\n", _(" -setup         - only show geometry"));
   PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
@@ -369,6 +372,11 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_slice = 1;
     }
+#ifdef pp_READBUFFER
+    else if(strncmp(argv[i], "-no_buffer", 10)==0){
+      readfile_option = READFILE;
+    }
+#endif
     else if(strncmp(argv[i], "-update", 7)==0){
       if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
         use_graphics = 0;

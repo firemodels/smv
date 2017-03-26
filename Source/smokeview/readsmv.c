@@ -562,7 +562,9 @@ void ReadSMVDynamic(char *file){
 #endif
 
 #ifdef pp_READBUFFER
-  stream->fileinfo = File2Buffer(file);
+  if(readfile_option==READBUFFER){
+    stream->fileinfo = File2Buffer(file);\
+  }
 #endif
 
   nplot3dinfo_old=nplot3dinfo;
@@ -3436,15 +3438,17 @@ int ReadSMV(char *file, char *file2){
 #endif
 
 #ifdef pp_READBUFFER
-  stream->fileinfo = File2Buffer(file);
-  if(stream->fileinfo!=NULL&&file2!=NULL){
-    bufferstreamdata streaminfo2, *stream2=&streaminfo2;
+  if(readfile_option==READBUFFER){
+    stream->fileinfo = File2Buffer(file);
+    if(stream->fileinfo!=NULL&&file2!=NULL){
+      bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
 
-    stream2->fileinfo = File2Buffer(file2);
-    if(stream2->fileinfo!=NULL){
-      MergeFileBuffers(stream->fileinfo, stream2->fileinfo);
+      stream2->fileinfo = File2Buffer(file2);
+      if(stream2->fileinfo!=NULL){
+        MergeFileBuffers(stream->fileinfo, stream2->fileinfo);
+      }
+      FreeFileBuffer(stream2->fileinfo);
     }
-    FreeFileBuffer(stream2->fileinfo);
   }
 #endif
   npropinfo=1; // the 0'th prop is the default human property
