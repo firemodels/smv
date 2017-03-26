@@ -193,7 +193,7 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
 #endif
 
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
 /* ------------------ mt_UpdateVSlices ------------------------ */
 
 

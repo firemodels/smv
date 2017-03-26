@@ -8745,7 +8745,7 @@ typedef struct {
   UpdatePlotxyzAll();
 
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
   mt_UpdateVSlices();
 #else
   UpdateVSlices();

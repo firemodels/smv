@@ -3156,7 +3156,7 @@ void UpdateVSlices(void){
 }
 
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
 /* ------------------ UpdateVSlices2 ------------------------ */
 
 void *UpdateVSlices2(void *arg){
