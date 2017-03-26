@@ -5976,6 +5976,17 @@ void setup_device_data(void){
   int i;
   char **devcunits=NULL, **devclabels=NULL;
   int is_dup;
+  int build_cache = 0;
+  FILE *stream = NULL;
+
+  if(is_file_newer(deviceinfo_filename, smv_filename)!=1){
+    build_cache = 1;
+    stream = fopen(deviceinfo_filename, "w");
+  }
+  else{
+    build_cache = 0;
+    stream = fopen(deviceinfo_filename, "r");
+  }
 
   if(ndeviceinfo==0)return;
   FREEMEMORY(vdeviceinfo);
@@ -5987,7 +5998,24 @@ void setup_device_data(void){
     vdevicedata *vdevi;
     devicedata *devi,*devj;
     float *xyzval;
+    devicedata *devices[7];
+    int idev[7];
 
+    if(build_cache==0){
+      int k;
+      char buffer[256];
+
+      fgets(buffer, 256, stream);
+      sscanf(buffer, "%i %i %i %i %i %i %i", idev, idev+1, idev+2, idev+3, idev+4, idev+5, idev+6);
+      for(k = 0;k<7;k++){
+        if(idev[k]>=0){
+          devices[k] = deviceinfo+idev[k];
+        }
+        else{
+          devices[k] = NULL;
+        }
+      }
+    }
     if(ndeviceinfo>1000&&i%100==0)printf("processing device %i of %i\n",i,ndeviceinfo);
     devi = deviceinfo + i;
     xyzval=devi->xyz;
@@ -6004,46 +6032,61 @@ void setup_device_data(void){
     vdevi->sd_veldev=NULL;
     vdevi->colordev=NULL;
 
-    devj = get_device(xyzval,"VELOCITY",CSV_EXP);
-    if(devj!=NULL){
-      vdevi->veldev=devj;
+    if(build_cache==1)devices[0] = get_device(xyzval, "VELOCITY", CSV_EXP);
+    if(devices[0]!=NULL){
+      vdevi->veldev= devices[0];
       vdevi->filetype=CSV_EXP;
     }
 
-    devj = get_device(xyzval,"SD_VELOCITY",CSV_EXP);
-    if(devj!=NULL){
-      vdevi->sd_veldev=devj;
+    if(build_cache==1)devices[1] = get_device(xyzval,"SD_VELOCITY",CSV_EXP);
+    if(devices[1]!=NULL){
+      vdevi->sd_veldev= devices[1];
       vdevi->filetype=CSV_EXP;
     }
 
-    devj = get_device(xyzval,"ANGLE",CSV_EXP);
-    if(devj!=NULL){
-      vdevi->angledev=devj;
+    if(build_cache==1)devices[2] = get_device(xyzval,"ANGLE",CSV_EXP);
+    if(devices[2]!=NULL){
+      vdevi->angledev= devices[2];
       vdevi->filetype=CSV_EXP;
     }
 
-    devj = get_device(xyzval,"SD_ANGLE",CSV_EXP);
-    if(devj!=NULL){
-      vdevi->sd_angledev=devj;
+    if(build_cache==1)devices[3] = get_device(xyzval,"SD_ANGLE",CSV_EXP);
+    if(devices[3]!=NULL){
+      vdevi->sd_angledev= devices[3];
       vdevi->filetype=CSV_EXP;
     }
 
-    devj = get_device(xyzval,"U-VELOCITY",CSV_FDS);
-    if(devj!=NULL){
-      vdevi->udev=devj;
+    if(build_cache==1)devices[4] = get_device(xyzval,"U-VELOCITY",CSV_FDS);
+    if(devices[4]!=NULL){
+      vdevi->udev= devices[4];
       vdevi->filetype=CSV_FDS;
     }
 
-    devj = get_device(xyzval,"V-VELOCITY",CSV_FDS);
-    if(devj!=NULL){
-      vdevi->vdev=devj;
+    if(build_cache==1)devices[5] = get_device(xyzval,"V-VELOCITY",CSV_FDS);
+    if(devices[5]!=NULL){
+      vdevi->vdev= devices[5];
       vdevi->filetype=CSV_FDS;
     }
 
-    devj = get_device(xyzval,"W-VELOCITY",CSV_FDS);
-    if(devj!=NULL){
-      vdevi->wdev=devj;
+    if(build_cache==1)devices[6] = get_device(xyzval,"W-VELOCITY",CSV_FDS);
+    if(devices[6]!=NULL){
+      vdevi->wdev= devices[6];
       vdevi->filetype=CSV_FDS;
+    }
+
+    if(build_cache==1){
+      int k;
+      char buffer[256];
+
+      for(k = 0;k<7;k++){
+        if(devices[k]==NULL){
+          idev[k] = -1;
+        }
+        else{
+          idev[k] = devices[k]-deviceinfo;
+        }
+      }
+      fprintf(stream, "%i %i %i %i %i %i %i\n", idev[0], idev[1], idev[2], idev[3], idev[4], idev[5], idev[6]);
     }
 
     if(vdevi->udev!=NULL||vdevi->vdev!=NULL||vdevi->wdev!=NULL||
@@ -6053,6 +6096,7 @@ void setup_device_data(void){
       nvdeviceinfo++;
     }
   }
+  fclose(stream);
 
   // look for duplicate device labels
 

@@ -324,6 +324,11 @@ void ParseCommandline(int argc, char **argv){
     STRCPY(sliceinfo_filename, fdsprefix);
     STRCAT(sliceinfo_filename, "_slice.info");
   }
+  if(deviceinfo_filename==NULL){
+    NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+12+1);
+    STRCPY(deviceinfo_filename, fdsprefix);
+    STRCAT(deviceinfo_filename, "_device.info");
+  }
 
   // if smokezip created part2iso files then concatenate .smv entries found in the .isosmv file
   // to the end of the .smv file creating a new .smv file.  Then read in that .smv file.
