@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN devicedata SVDECL(**vel_devices, NULL);
+SVEXTERN int SVDECL(nvel_devices, 0);
+
 SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(update_vslice, 1);
 SVEXTERN int SVDECL(*windrose_showhide, NULL), SVDECL(nwindrose_showhide,0), SVDECL(update_windrose_showhide,0);
