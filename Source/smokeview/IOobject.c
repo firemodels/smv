@@ -6047,7 +6047,7 @@ void setup_device_data(void){
   nvdeviceinfo=0;
   for(i=0;i<ndeviceinfo;i++){
     vdevicedata *vdevi;
-    devicedata *devi,*devj;
+    devicedata *devi;
     float *xyzval;
     devicedata *devices[7];
     int idev[7];
@@ -6126,7 +6126,6 @@ void setup_device_data(void){
 
     if(build_cache==1){
       int k;
-      char buffer[256];
 
       for(k = 0;k<7;k++){
         if(devices[k]==NULL){
