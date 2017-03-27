@@ -223,14 +223,14 @@ intel_linux_64_db : $(obj)
 
 intel_linux_64_profile : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_noappend -p
 intel_linux_64_profile : CFLAGS    = -O0 -m64 -static-intel -D pp_LINUX -D pp_INTEL -p $(GITINFO)
-intel_linux_64_profile : LFLAGS    = -m64 -static-intel
+intel_linux_64_profile : LFLAGS    = -m64 -static-intel -p
 intel_linux_64_profile : CC        = icc
 intel_linux_64_profile : CPP       = icpc
 intel_linux_64_profile : FC        = ifort
 intel_linux_64_profile : exe       = smokeview_linux_64p
 
 intel_linux_64_profile : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux_64 $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) -p
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux_64 $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux_64_db ----------------
 
