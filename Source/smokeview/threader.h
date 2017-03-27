@@ -19,15 +19,6 @@
   #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
-#ifdef pp_THREADSLICE
-  #define LOCK_BUILDSLICE   pthread_mutex_lock(&mutexBUILDSLICE);
-  #define UNLOCK_BUILDSLICE pthread_mutex_unlock(&mutexBUILDSLICE);
-  #define JOIN_BUILDSLICE   pthread_join(buildslice_id,NULL);
-#else
-#define LOCK_BUILDSLICE
-#define UNLOCK_BUILDSLICE
-#define JOIN_BUILDSLICE
-#endif
 #ifdef pp_THREADIBLANK
   #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
   #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
@@ -45,16 +36,10 @@
   #define LOCK_IBLANK
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
-  #define LOCK_BUILDSLICE
-  #define UNLOCK_BUILDSLICE
-  #define JOIN_BUILDSLICE
 #endif
 
 #ifdef pp_THREAD
 void mt_ReadVolsmokeAllFramesAllMeshes2(void);
-#ifdef pp_THREADSLICE
-void mt_UpdateVSlices(void);
-#endif
 #endif
 
 // define mutex's and thread_ids

@@ -589,11 +589,6 @@ EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
 EXTERNCPP void UpdateVSlices(void);
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-EXTERNCPP void *UpdateVSlices2(void *arg);
-#endif
-#endif
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void update_part_menulabels(void);
 EXTERNCPP void update_iso_menulabels(void);

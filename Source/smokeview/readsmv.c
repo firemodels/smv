@@ -8748,17 +8748,8 @@ typedef struct {
 
   UpdatePlotxyzAll();
 
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-  mt_UpdateVSlices();
-#else
   UpdateVSlices();
   if(update_slice==1)return 3;
-#endif
-#else
-  UpdateVSlices();
-  if(update_slice==1)return 3;
-#endif
 
   GetGSliceParams();
 

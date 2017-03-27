@@ -2922,7 +2922,6 @@ void DoScriptLua(void){
 void DoScript(void){
   int script_return_code;
   if(runscript == 1){
-      JOIN_BUILDSLICE;
       runscript = 0;
       PRINTF("running ssf script instruction\n");
       fflush(stdout);
@@ -2935,7 +2934,6 @@ void DoScript(void){
 #else
 void DoScript(void){
   if(runscript==1&&default_script!=NULL){
-    JOIN_BUILDSLICE;
     ScriptMenu(default_script->id);
     runscript=2;
   }

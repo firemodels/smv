@@ -8393,8 +8393,6 @@ updatemenu=0;
       glutAddSubMenu(_("Unload terrain"),unloadterrainmenu);
     }
   }
-    if(update_vslice==0&&nsliceinfo>0){
-
       if(nmultisliceinfo<nsliceinfo){
         CREATEMENU(unloadmultislicemenu,UnloadMultiSliceMenu);
         nmultisliceloaded=0;
@@ -8632,7 +8630,6 @@ updatemenu=0;
       else{
         glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       }
-    }
 
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
@@ -9463,7 +9460,6 @@ updatemenu=0;
       if(manual_terrain==1&&nterraininfo>0){
         glutAddSubMenu(_("Terrain"),loadterrainmenu);
       }
-      if(update_vslice==0){
         if(nsliceinfo>0&&nmultisliceinfo<nsliceinfo){
           strcpy(loadmenulabel,_("Multi-Slices"));
           if(sliceframeskip>0){
@@ -9496,13 +9492,6 @@ updatemenu=0;
           }
           glutAddSubMenu(loadmenulabel,vslicemenu);
         }
-      }
-      if(update_vslice==1&&nsliceinfo>0){
-        char menulabel[1024];
-
-        strcpy(menulabel,"Building Slice file menus");
-        glutAddMenuEntry(menulabel,MENU_DUMMY);
-      }
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface file");
         if(isoframeskip_global>0){

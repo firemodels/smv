@@ -3146,25 +3146,8 @@ void UpdateVSlices(void){
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
-
   UpdateVsliceMenulabels();
-
-  LOCK_BUILDSLICE;
-  update_vslice = 0;
-  updatemenu = 1;
-  UNLOCK_BUILDSLICE;
 }
-
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-/* ------------------ UpdateVSlices2 ------------------------ */
-
-void *UpdateVSlices2(void *arg){
-  UpdateVSlices();
-  return NULL;
-}
-#endif
-#endif
 
   /* ------------------ GetVSliceIndex ------------------------ */
 

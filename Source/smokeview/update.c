@@ -1982,14 +1982,12 @@ void UpdateDisplay(void){
     update_windowsizelist();
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
-  LOCK_BUILDSLICE;
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
     InitMenus(LOAD);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
   }
-  UNLOCK_BUILDSLICE;
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);
     update_fire_colorbar_index = 0;
