@@ -3148,11 +3148,6 @@ void UpdateVSlices(void){
   }
 
   UpdateVsliceMenulabels();
-
-  LOCK_BUILDSLICE;
-  update_vslice = 0;
-  updatemenu = 1;
-  UNLOCK_BUILDSLICE;
 }
 
 #ifdef pp_THREAD

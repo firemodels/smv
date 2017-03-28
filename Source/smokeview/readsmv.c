@@ -8759,6 +8759,8 @@ typedef struct {
   UpdateVSlices();
   if(update_slice==1)return 3;
 #endif
+JOIN_BUILDSLICE;
+
 
   GetGSliceParams();
 
