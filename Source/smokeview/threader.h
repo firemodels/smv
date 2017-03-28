@@ -20,13 +20,13 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 #ifdef pp_THREADSLICE
-  #define LOCK_BUILDSLICE   pthread_mutex_lock(&mutexBUILDSLICE);
-  #define UNLOCK_BUILDSLICE pthread_mutex_unlock(&mutexBUILDSLICE);
-  #define JOIN_BUILDSLICE   pthread_join(buildslice_id,NULL);
+  #define LOCK_THREADSLICE   pthread_mutex_lock(&mutexTHREADSLICE);
+  #define UNLOCK_THREADSLICE pthread_mutex_unlock(&mutexTHREADSLICE);
+  #define JOIN_THREADSLICE   pthread_join(threadslice_id,NULL);
 #else
-#define LOCK_BUILDSLICE
-#define UNLOCK_BUILDSLICE
-#define JOIN_BUILDSLICE
+#define LOCK_THREADSLICE
+#define UNLOCK_THREADSLICE
+#define JOIN_THREADSLICE
 #endif
 #ifdef pp_THREADIBLANK
   #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
@@ -45,9 +45,9 @@
   #define LOCK_IBLANK
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
-  #define LOCK_BUILDSLICE
-  #define UNLOCK_BUILDSLICE
-  #define JOIN_BUILDSLICE
+  #define LOCK_THREADSLICE
+  #define UNLOCK_THREADSLICE
+  #define JOIN_THREADSLICE
 #endif
 
 #ifdef pp_THREAD
@@ -63,14 +63,14 @@ void mt_UpdateVSlices(void);
 #ifdef pp_THREAD
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
-MT_EXTERN pthread_mutex_t mutexBUILDSLICE;
+MT_EXTERN pthread_mutex_t mutexTHREADSLICE;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
-MT_EXTERN pthread_t buildslice_id;
+MT_EXTERN pthread_t threadslice_id;
 #endif
 #endif
 #endif

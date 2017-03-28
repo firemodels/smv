@@ -3148,6 +3148,11 @@ void UpdateVSlices(void){
   }
 
   UpdateVsliceMenulabels();
+#ifdef pp_THREADSLICE
+  UpdateSliceTypes();
+  UpdateSliceBoundLabels();
+  UpdateVSliceTypes();
+#endif
 }
 
 #ifdef pp_THREAD

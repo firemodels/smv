@@ -3409,7 +3409,10 @@ void SetupMeshWalls(void){
 int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
-
+#ifdef pp_TIMES
+  float read_time, wrapup_time;
+  float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
+#endif
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
   devicedata *devicecopy;
@@ -3435,6 +3438,13 @@ int ReadSMV(char *file, char *file2){
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
+#endif
+
+#ifdef pp_TIMES
+  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif
+#ifdef pp_TIMES
+  pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 #endif
 
 #ifdef pp_READBUFFER
@@ -3811,6 +3821,12 @@ int ReadSMV(char *file, char *file2){
 
   PRINTF(_("processing smokeview file: %s\n"),file);
 
+#ifdef pp_TIMES
+  pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass0_time;
+#endif
+#ifdef pp_TIMES
+  pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif  
 /*
    ************************************************************************
    ************************ start of pass 1 *********************************
@@ -4236,12 +4252,20 @@ int ReadSMV(char *file, char *file2){
     }
 
   }
+#ifdef pp_TIMES
+  pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass1_time;
+#endif  
+  
 
 /*
    ************************************************************************
    ************************ end of pass 1 *********************************
    ************************************************************************
  */
+
+#ifdef pp_TIMES
+  pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif
 
  if(fds_version==NULL){
    NewMemory((void **)&fds_version,7+1);
@@ -5830,12 +5854,18 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
   }
+#ifdef pp_TIMES
+  pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass2_time;
+#endif  
 /*
    ************************************************************************
    ************************ end of pass 2 *********************************
    ************************************************************************
  */
 
+#ifdef pp_TIMES
+  pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif  
   CheckMemory;
   ParseDatabase(database_filename);
 
@@ -6297,7 +6327,13 @@ int ReadSMV(char *file, char *file2){
    ************************ end of pass 3 ******************************
    ************************************************************************
  */
+#ifdef pp_TIMES
+  pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
+#endif  
 
+#ifdef pp_TIMES
+  pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif  
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -8464,6 +8500,13 @@ typedef struct {
    ************************************************************************
  */
 
+#ifdef pp_TIMES
+  pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass4_time;
+#endif
+#ifdef pp_TIMES
+  pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif  
+
   if(autoterrain==1){
     float zbarmin;
 
@@ -8643,12 +8686,20 @@ typedef struct {
     }
   }
   PrintMemoryInfo;
+#ifdef pp_TIMES
+  pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass5_time;
+#endif  
 
 /*
    ************************************************************************
    ************************ wrap up ***************************************
    ************************************************************************
  */
+
+#ifdef pp_TIMES 
+    read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
+  wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+#endif  
 
   PRINTF("  wrapping up\n");
   CheckMemory;
@@ -8759,7 +8810,7 @@ typedef struct {
   UpdateVSlices();
   if(update_slice==1)return 3;
 #endif
-JOIN_BUILDSLICE;
+JOIN_THREADSLICE;
 
 
   GetGSliceParams();
@@ -8814,8 +8865,10 @@ JOIN_BUILDSLICE;
 #endif
 
   UpdateSelectFaces();
+#ifndef pp_THREADSLICE
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
+#endif
   updateisotypes();
   UpdatePatchTypes();
   if(autoterrain==1){
@@ -8841,7 +8894,9 @@ JOIN_BUILDSLICE;
   update_terrain(1,vertical_factor);
   update_terrain_colors();
   UpdateSmoke3DMenuLabels();
+#ifndef pp_THREADSLICE
   UpdateVSliceTypes();
+#endif
   update_patch_menulabels();
   update_iso_menulabels();
   update_part_menulabels();
@@ -8893,6 +8948,18 @@ JOIN_BUILDSLICE;
   PRINTF("\n\n");
   PrintMemoryInfo;
 
+#ifdef pp_TIMES
+  wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
+  PRINTF("\n");
+  PRINTF(" pass 0 time: %.1f s\n", pass0_time);
+  PRINTF(" pass 1 time: %.1f s\n", pass1_time);
+  PRINTF(" pass 2 time: %.1f s\n", pass2_time);
+  PRINTF(" pass 3 time: %.1f s\n", pass3_time);
+  PRINTF(" pass 4 time: %.1f s\n", pass4_time);
+  PRINTF(" pass 5 time: %.1f s\n", pass5_time);
+  PRINTF("   read time: %.1f s\n", read_time);
+  PRINTF("wrap up time: %.1f s\n", wrapup_time);
+#endif
   return 0;
 }
 
