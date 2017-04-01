@@ -1,49 +1,44 @@
-PROGRAM FDS
+program triangle_test
 
-! Fire Dynamics Simulator, Main Program, Multiple CPU version.
+! fire dynamics simulator, main program, multiple cpu version.
 
-USE PRECISION_PARAMETERS
-USE COMPLEX_GEOMETRY, ONLY: TRIANGULATE, VALID_TRIANGLE
+use precision_parameters
+use complex_geometry, only: triangulate, valid_triangle
 
-IMPLICIT NONE
+implicit none
 
-INTEGER :: I
+integer :: i
 
-! Miscellaneous declarations
-!SUBROUTINE TRIANGULATE(VERTS,NVERTS,VERT_OFFSET,FACES)
-!  INTEGER, INTENT(IN) :: NVERTS, VERT_OFFSET
-!  REAL(FB), INTENT(IN) :: VERTS(3*NVERTS)
-!  INTEGER, INTENT(OUT) :: FACES(3*(NVERTS-2))
+! miscellaneous declarations
+!subroutine triangulate(verts,nverts,vert_offset,faces)
+!  integer, intent(in) :: nverts, vert_offset
+!  real(fb), intent(in) :: verts(3*nverts)
+!  integer, intent(out) :: faces(3*(nverts-2))
 
-INTEGER :: NVERTS
-REAL(FB) :: VERTS(300)
-INTEGER :: VERT_OFFSET
-INTEGER :: FACES(300)
-LOGICAL :: TRITEST
-INTEGER :: IV1, IV2, IV3, DIR
+integer :: nverts
+real(fb) :: verts(300)
+integer :: vert_offset
+integer :: faces(300)
+logical :: tritest
+integer :: iv1, iv2, iv3, dir
 
-VERT_OFFSET=0
-NVERTS=6
+vert_offset=0
+nverts=6
 
-!VERTS(1:3*NVERTS) = (/3.0,1.0,0.0, 2.0,1.0,0.0, 2.0,0.0,0.0, 0.0,0.0,0.0, 0.0,2.0,0.0, 3.0,2.0,0.0  /)
-!VERTS(1:3*NVERTS) = (/0.0,0.0,0.0, 0.0,2.0,0.0, 1.0,2.0,0.0, 1.0,1.0,0.0, 2.0,1.0,0.0, 2.0,0.0,0.0  /)
-! VERTS(1:3*NVERTS) = (/0.0,0.0,0.0, 0.0,1.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0  /)
-!VERTS(1:3*NVERTS) = (/0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,1.0, 1.0,0.0,0.0  /)
-!VERTS(1:3*NVERTS) = (/0.0,0.0,0.0, 0.0,0.0,1.0, 0.0,1.0,1.0, 0.0,1.0,0.0  /)
-VERTS(1:3*NVERTS) = (/0.0,0.0,0.0, 0.0,2.0,0.0, 2.0,2.0,0.0, 2.0,1.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0  /)
-DIR=3
+verts(1:3*nverts) = (/0.0,0.0,0.0, 0.0,2.0,0.0, 1.0,2.0,0.0, 1.0,1.0,0.0, 2.0,1.0,0.0, 2.0,0.0,0.0  /)
+dir=3
 
 do i = 1, nverts - 2
-IV1 = i
-IV2 = i+1
-IV3 = i+2
-TRITEST = VALID_TRIANGLE(DIR,VERTS, NVERTS, IV1, IV2, IV3)
+  iv1 = i
+  iv2 = i+1
+  iv3 = i+2
+  tritest = valid_triangle(dir,verts, nverts, iv1, iv2, iv3)
 end do
 
-CALL TRIANGULATE(DIR,VERTS,NVERTS,VERT_OFFSET,FACES)
+call triangulate(dir,verts,nverts,vert_offset,faces)
 do i = 1, nverts - 2
-   write(0,*)"FACE",i,faces(3*i-2),faces(3*i-1),faces(3*I)
+   write(0,*)"face",i,faces(3*i-2),faces(3*i-1),faces(3*i)
 end do
 write(0,*)"complete"
 
-END PROGRAM FDS
+end program triangle_test
