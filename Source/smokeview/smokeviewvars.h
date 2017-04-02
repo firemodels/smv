@@ -20,7 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(update_vslice, 1);
+SVEXTERN devicedata SVDECL(**vel_devices, NULL);
+SVEXTERN int SVDECL(nvel_devices, 0);
+
+SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(*windrose_showhide, NULL), SVDECL(nwindrose_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
 SVEXTERN int SVDECL(smoke_test, 0);
@@ -1153,6 +1156,7 @@ SVEXTERN time_t smv_modtime;
 SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
+SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);

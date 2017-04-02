@@ -49,7 +49,7 @@ void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexBUILDSLICE, NULL);
+  pthread_mutex_init(&mutexTHREADSLICE, NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
 #endif
@@ -89,7 +89,6 @@ void CompressSVZip(void){
 #ifdef pp_THREADIBLANK
 void *mt_MakeIBlank(void *arg){
 
-  PRINTF("  creating blanking arrays in the background\n");
   MakeIBlank();
   SetCVentDirs();
   LOCK_IBLANK
@@ -194,12 +193,11 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
 #endif
 
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
 /* ------------------ mt_UpdateVSlices ------------------------ */
 
-
 void mt_UpdateVSlices(void){
-  pthread_create(&update_vslice_id, NULL, UpdateVSlices2, NULL);
+  pthread_create(&threadslice_id, NULL, UpdateVSlices2, NULL);
 }
 #endif
 #endif

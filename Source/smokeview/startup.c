@@ -291,6 +291,9 @@ int SetupCase(int argc, char **argv){
     case 0:
       ReadSMVDynamic(input_file);
       break;
+    case 3:
+      return 3;
+      break;
     default:
       ASSERT(FFALSE);
   }

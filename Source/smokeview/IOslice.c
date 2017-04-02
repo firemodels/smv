@@ -2633,14 +2633,11 @@ void GetSliceParams(void){
 
     sd = sliceinfo + i;
 
+#ifdef _DEBUG
     if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
-      if(i==10){
-        PRINTF("    obtaining parameters from %i'th slice file\n",i+1);
-      }
-      else{
-        PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
-      }
+      PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
     }
+#endif
 
     file = sd->file;
     lenfile = strlen(file);
@@ -2669,7 +2666,10 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-        FORTgetsliceparms(file,
+        ni = is2+1-is1;
+        nj = js2+1-js1;
+        nk = ks2+1-ks1;
+        if(is1<=0||is2<0||js1<0||js2<0||ks1<0||ks2<0)FORTgetsliceparms(file,
           &is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&sd->volslice,&error,lenfile);
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
       }
@@ -2963,7 +2963,9 @@ void GetSliceParams2(void){
 void UpdateVSlices(void){
   int i;
 
+#ifdef _DEBUG
   PRINTF("  updating vector slices\n");
+#endif
   GetSliceParams();
 
   /* update vector slices */
@@ -2991,15 +2993,11 @@ void UpdateVSlices(void){
     slicedata *sdi;
     vslicedata *vd;
     int j;
-
+#ifdef _DEBUG
     if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
-      if(i==10){
-        PRINTF("    examining %i'th slice file for vectors\n",i+1);
-      }
-      else{
-        PRINTF("    examining %i'st slice file for vectors\n",i+1);
-      }
+      PRINTF("    examining %i'st slice file for vectors\n",i+1);
     }
+#endif
     vd = vsliceinfo + nvsliceinfo;
     sdi = sliceinfo+i;
     vd->iu=-1;
@@ -3044,7 +3042,9 @@ void UpdateVSlices(void){
       nvsliceinfo++;
     }
   }
+#ifdef _DEBUG
   PRINTF("    %i vector slices found\n",nvsliceinfo);
+#endif
   if(nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;
@@ -3147,18 +3147,16 @@ void UpdateVSlices(void){
     }
   }
 
-  if(nvsliceinfo>0)PRINTF("    updating vector slice menus\n");
   UpdateVsliceMenulabels();
-  PRINTF("  complete\n\n");
-
-  LOCK_BUILDSLICE;
-  update_vslice = 0;
-  updatemenu = 1;
-  UNLOCK_BUILDSLICE;
+#ifdef pp_THREADSLICE
+  UpdateSliceTypes();
+  UpdateSliceBoundLabels();
+  UpdateVSliceTypes();
+#endif
 }
 
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
 /* ------------------ UpdateVSlices2 ------------------------ */
 
 void *UpdateVSlices2(void *arg){

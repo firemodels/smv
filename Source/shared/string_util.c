@@ -808,7 +808,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
 
 /* ------------------ ReadLabels ------------------------ */
 
-int ReadLabels(flowlabels *flowlabel, FILE *stream){
+int ReadLabels(flowlabels *flowlabel, BFILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
@@ -817,7 +817,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -829,7 +828,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -841,7 +839,6 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
@@ -866,7 +863,7 @@ int ReadLabels(flowlabels *flowlabel, FILE *stream){
 
 /* ------------------ ReadLabelsFaceCenter ------------------------ */
 
-int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
+int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
@@ -875,7 +872,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-  buffer2[len - 1] = '\0';
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -888,7 +884,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-  buffer2[len - 1] = '\0';
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -900,7 +895,6 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len = strlen(buffer2);
-  buffer2[len - 1] = '\0';
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
@@ -925,7 +919,7 @@ int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream){
 
 /* ------------------ ReadLabelsCellCenter ------------------------ */
 
-int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
+int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream){
   char buffer2[255], *buffer;
   size_t len;
 
@@ -934,7 +928,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -947,7 +940,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -959,7 +951,6 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
@@ -984,7 +975,7 @@ int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream){
 
 /* ------------------ ReadLabelsTerrain ------------------------ */
 
-int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
+int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream){
   char buffer2[255],*buffer;
   size_t len;
 
@@ -993,7 +984,6 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
@@ -1018,7 +1008,6 @@ int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream){
   }
 
   len=strlen(buffer2);
-  buffer2[len-1]='\0';
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present

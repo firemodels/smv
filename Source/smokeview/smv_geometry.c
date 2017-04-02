@@ -1566,7 +1566,6 @@ int MakeIBlankCarve(void){
 int MakeIBlank(void){
   int ig;
 
-  PRINTF("    initializing blanking array\n");
   if(use_iblank==0)return 0;
   for(ig=0;ig<nmeshes;ig++){
     meshdata *meshi;
@@ -1580,9 +1579,6 @@ int MakeIBlank(void){
     meshi = meshinfo+ig;
 
     if(meshi->nbptrs==0)continue;
-#ifdef pp_BETA
-    printf("    mesh %i of %i (%i blockages)\n", ig + 1, nmeshes,meshi->nbptrs);
-#endif
     ibar = meshi->ibar;
     jbar = meshi->jbar;
     kbar = meshi->kbar;
@@ -1761,7 +1757,6 @@ int MakeIBlank(void){
   }
   UNLOCK_IBLANK
 
-  PRINTF("    blanking array initialization completed\n");
   return 0;
 }
 

@@ -2231,9 +2231,8 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
 //      printf("        0 connected triangle: %i\n", ntri0);
 //      printf("        1 connected triangle: %i\n", ntri1);
 //      printf("        2 connected triangle: %i\n", ntri2);
-//      printf("3 or more connected triangle: %i\n", ntri_other);
+//      printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
 #endif
-      FREEMEMORY(edgelist_index);
     }
     if(nverts > 0){
       int *vertlist_index, nvertlist_index = 0;
@@ -2281,7 +2280,7 @@ void classify_geom(geomdata *geomi,int *geom_frame_index){
 //      printf("duplicates: %i\n", ndups);
 //      printf("  (eps=%f m)\n", VERT_EPS);
 #endif
-      FREEMEMORY(vertlist_index);
+        FREEMEMORY(vertlist_index);
     }
   }
 }
