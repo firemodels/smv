@@ -481,7 +481,7 @@ filedata *File2Buffer(char *filename){
   FILE_SIZE i,filesize;
   filedata *fileinfo;
   char *buffer, **lines;
-  int maxlines,nlines;
+  int nlines;
   FILE *stream;
 
   if(file_exists(filename)==0)return NULL;
@@ -490,16 +490,21 @@ filedata *File2Buffer(char *filename){
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;
   NewMemory((void **)&fileinfo, sizeof(filedata));
-  if(NewMemory((void **)&buffer, filesize)==0){
+  if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
     readfile_option = READFILE;
     return NULL;
   }
   fread(buffer, sizeof(char), filesize, stream);
   fclose(stream);
+
+  filesize++;           // add an extra character to file and set it to the end of string character
+  buffer[filesize-1]=0;
+
   fileinfo->buffer = buffer;
   fileinfo->filesize = filesize;
   fileinfo->iline = 0;
+  CheckMemory;
 
   // count number of lines
 
@@ -508,41 +513,33 @@ filedata *File2Buffer(char *filename){
     int ch;
 
     ch = buffer[i];
-    if(ch!='\n'&&ch!='\r'&&ch!=EOF)continue;
-    nlines++;
-    for(;i<filesize;i++){
-      ch = buffer[i];
-      if(ch=='\n'||ch=='\r'||ch==EOF){
-        ASSERT(i<filesize);
-        buffer[i] = 0;
-        continue;
-      }
-      i--;
-      break;
+    if(ch=='\r'){      // end of line is \r\n or \n
+      buffer[i]=' ';   //  if a \r is found set it to a blank character
+      continue;
+    }
+    if(ch=='\n'||ch==EOF){
+      buffer[i]=0;
+      nlines++;
     }
   }
-  maxlines = nlines;
-  fileinfo->nlines = maxlines;
+  CheckMemory;
   NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
   fileinfo->lines = lines;
 
   nlines = 0;
-  lines[nlines] = buffer;
+  lines[0] = buffer;
   for(i = 0;i<filesize;i++){
     int ch;
 
     ch = buffer[i];
     if(ch!=0)continue;
-    nlines++;
-    for(;i<filesize;i++){
-      ch = buffer[i];
-      if(ch==0)continue;
-      i--;
-      break;
+    if(i+1<filesize){
+      nlines++;
+      lines[nlines] = buffer+i+1;
     }
-    if(nlines>=maxlines)break;
-    lines[nlines] = buffer+i+1;
   }
+  fileinfo->nlines = nlines;
+  CheckMemory;
   return fileinfo;
 }
 #endif
