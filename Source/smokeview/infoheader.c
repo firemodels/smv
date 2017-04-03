@@ -51,11 +51,9 @@ int clearTitleLines(titledata *titleinfo_ptr) {
 int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
                          char *fds_githash_string, char *chidfilebase_string) {
-  PRINTF("initialising info header\n");
   char line[MAX_TITLE_LINE_LENGTH];
 
   strncpy(titleinfo_ptr->titleline, release_title_string, MAX_TITLE_LINE_LENGTH);
-  PRINTF("initialised title: %s\n", titleinfo_ptr->titleline);
 
   snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview (64 bit) build: %s",smv_githash_string);
   strncpy(titleinfo_ptr->smvbuildline, line, MAX_TITLE_LINE_LENGTH);

@@ -590,7 +590,7 @@ EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr
 
 EXTERNCPP void UpdateVSlices(void);
 #ifdef pp_THREAD
-#ifdef pp_SLICETHREAD
+#ifdef pp_THREADSLICE
 EXTERNCPP void *UpdateVSlices2(void *arg);
 #endif
 #endif

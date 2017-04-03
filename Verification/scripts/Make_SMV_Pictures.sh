@@ -157,7 +157,7 @@ rm -f wind2fds.help
 rm -f $SUMMARY/images/*.png
 source ~/.bashrc_fds
 
-$SMV -help > smokeview.help
+$SMV -help_all > smokeview.help
 $SMOKEZIP -help > smokezip.help
 $SMOKEDIFF -help > smokediff.help
 $BACKGROUND -help > background.help

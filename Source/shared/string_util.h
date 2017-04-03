@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "options.h"
 #endif
+#include "file_util.h"
 
 #define MATCH 1
 #define NOTMATCH 0
@@ -39,10 +40,10 @@ EXTERNCPP unsigned int Date2Sec2(char *tokenorig);
 EXTERNCPP unsigned int Date2Day(char *tokenorig);
 EXTERNCPP int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
-EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, FILE *stream);
-EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, FILE *stream);
-EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, FILE *stream);
-EXTERNCPP int ReadLabels(flowlabels *label, FILE *stream);
+EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
+EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
+EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
+EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
 EXTERNCPP void GetProgVersion(char *PROGversion);
 EXTERNCPP int MatchWild(char *pTameText, char *pWildText);
 EXTERNCPP int Match(char *buffer, const char *key);

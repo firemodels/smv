@@ -23,10 +23,14 @@ typedef struct {
 
 #ifdef pp_READBUFFER
 typedef struct filedata{
-  char *filename, *buffer, **lines;
+  char *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
+typedef struct bufferstreamdata{
+  FILE *stream,*stream1,*stream2;
+  filedata *fileinfo;
+} bufferstreamdata;
 #endif
 
 #ifdef X64
@@ -40,24 +44,52 @@ typedef struct filedata{
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
-//#define pp_READBUFFER
 #ifdef pp_READBUFFER
-#define FEOF(stream)              feof_buffer(smv_fileinfo)
-#define FGETS(buffer,size,stream) fgets_buffer(smv_fileinfo,buffer,size)
-#define REWIND(stream)            rewind_buffer(smv_fileinfo)
+#define READFILE 0
+#define READBUFFER 1
+
+#define FEOF(stream)              (readfile_option==READBUFFER ? feof_buffer(stream->fileinfo)              : feof(stream->stream))
+#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? fgets_buffer(stream->fileinfo,buffer,size) : fgets(buffer,size,stream->stream) )
+#define REWIND(stream)   \
+if(readfile_option==READBUFFER){\
+  RewindFileBuffer(stream->fileinfo);\
+}\
+else{\
+  stream->stream = stream->stream1;\
+  rewind(stream->stream1);\
+  if(stream->stream2!=NULL){\
+    rewind(stream->stream2);\
+  }\
+}
+#define FCLOSE(stream) \
+if(readfile_option==READBUFFER){\
+  FreeFileBuffer(stream->fileinfo);\
+}\
+else{\
+  if(stream->stream1!=NULL)fclose(stream->stream1);\
+  if(stream->stream2!=NULL)fclose(stream->stream2);\
+}
 #else
 #define FEOF(stream)              feof(stream)
 #define FGETS(buffer,size,stream) fgets(buffer,size,stream)
 #define REWIND(stream)            rewind(stream)
+#define FCLOSE(stream)            fclose(stream)
 #endif
 
 #ifdef pp_READBUFFER
+#define BFILE bufferstreamdata
+#else
+#define BFILE FILE
+#endif
+
+#ifdef pp_READBUFFER
+EXTERNCPP int MergeFileBuffers(filedata *fileto, filedata *filefrom);
 EXTERNCPP int feof_buffer(filedata *fileinfo);
 EXTERNCPP char *fgets_buffer(filedata *fileinfo,char *buffer,int size);
-EXTERNCPP void rewind_buffer(filedata *fileinfo);
-EXTERNCPP void fileinfo2out(filedata *fileinfo);
-EXTERNCPP void freefileinfo(filedata *fileinfo);
-EXTERNCPP filedata *file2mem(char *filename);
+EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
+EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
+EXTERNCPP void FreeFileBuffer(filedata *fileinfo);
+EXTERNCPP filedata *File2Buffer(char *filename);
 #endif
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
@@ -91,8 +123,13 @@ EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
 
 EXTERNCPP char *lastname(char *argi);
+
 #ifdef pp_READBUFFER
-EXTERNCPP filedata *smv_fileinfo;
+#ifdef INMAIN
+int readfile_option = READBUFFER;
+#else
+EXTERNCPP int readfile_option;
+#endif
 #endif
 
 #ifndef STREXTERN

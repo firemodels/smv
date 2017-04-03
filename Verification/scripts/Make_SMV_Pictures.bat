@@ -87,7 +87,7 @@ erase wind2fds.help 1> Nul 2>&1
 echo.
 echo Creating Smokeview User guide info files
 
-%SMOKEVIEW%  -help > smokeview.help
+%SMOKEVIEW%  -help_all > smokeview.help
 %SMOKEZIP%   -help > smokezip.help
 %SMOKEDIFF%  -help > smokediff.help
 %BACKGROUND% -help > background.help

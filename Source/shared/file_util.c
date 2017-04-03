@@ -388,25 +388,32 @@ int feof_buffer(filedata *fileinfo){
 /* ------------------ fgets_buffer ------------------------ */
 
 char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
-  char *file_buffer;
-  int iline;
+  char *file_buffer, *from, *to;
+  int iline, i;
 
   iline = fileinfo->iline;
+  if(iline>=fileinfo->nlines)return NULL;
   file_buffer = fileinfo->lines[iline];
-  strcpy(buffer,file_buffer);
+  from = file_buffer;
+  to = buffer;
+  for(i = 0;i<size;i++){
+    *to++ = *from++;
+    if(from[-1]==0)break;
+  }
+  to[-1] = 0;
   fileinfo->iline++;
   return buffer;
 }
 
-/* ------------------ rewind_buffer ------------------------ */
+/* ------------------ RewindFileBuffer ------------------------ */
 
-void rewind_buffer(filedata *fileinfo){
+void RewindFileBuffer(filedata *fileinfo){
   fileinfo->iline=0;
 }
 
-/* ------------------ freefileinfo ------------------------ */
+/* ------------------ FreeFileBuffer ------------------------ */
 
-void freefileinfo(filedata *fileinfo){
+void FreeFileBuffer(filedata *fileinfo){
   char *buffer;
 
   if(fileinfo==NULL)return;
@@ -415,9 +422,9 @@ void freefileinfo(filedata *fileinfo){
   FREEMEMORY(fileinfo);
 }
 
-/* ------------------ fileinfo2out ------------------------ */
+/* ------------------ OutputFileBuffer ------------------------ */
 
-void fileinfo2out(filedata *fileinfo){
+void OutputFileBuffer(filedata *fileinfo){
   int i;
 
   if(fileinfo==NULL)return;
@@ -430,13 +437,51 @@ void fileinfo2out(filedata *fileinfo){
   }
 }
 
-  /* ------------------ file2mem ------------------------ */
+/* ------------------ MergeFileBuffers ------------------------ */
 
-filedata *file2mem(char *filename){
+int MergeFileBuffers(filedata *fileto, filedata *filefrom){
+  char *new_buffer, *new_buffer2, **new_lines;
+  int new_filesize, new_nlines, i;
+
+  new_filesize = filefrom->filesize+fileto->filesize;
+  if(NewMemory((void **)&new_buffer, new_filesize)==0){
+    readfile_option = READFILE;
+    return -1;
+  }
+  new_buffer2 = new_buffer+fileto->filesize;
+  memcpy(new_buffer, fileto->buffer, fileto->filesize);
+  memcpy(new_buffer2, filefrom->buffer, filefrom->filesize);
+
+  new_nlines = filefrom->nlines+fileto->nlines;
+  if(NewMemory((void **)&new_lines, new_nlines*sizeof(char *))==0){
+    FREEMEMORY(new_buffer);
+    readfile_option = READFILE;
+    return  -1;
+  }
+
+  for(i = 0;i<fileto->nlines;i++){
+    new_lines[i] = new_buffer+(fileto->lines[i]-fileto->buffer);
+  }
+  for(i = 0;i<filefrom->nlines;i++){
+    new_lines[i+fileto->nlines] = new_buffer2+(filefrom->lines[i]-filefrom->buffer);
+  }
+
+  FREEMEMORY(fileto->buffer);
+  FREEMEMORY(fileto->lines);
+  fileto->buffer = new_buffer;
+  fileto->lines = new_lines;
+  fileto->filesize = new_filesize;
+  fileto->nlines = new_nlines;
+  return 0;
+}
+
+  /* ------------------ File2Buffer ------------------------ */
+
+filedata *File2Buffer(char *filename){
   FILE_SIZE i,filesize;
   filedata *fileinfo;
   char *buffer, **lines;
-  int maxlines,nlines;
+  int nlines;
   FILE *stream;
 
   if(file_exists(filename)==0)return NULL;
@@ -445,13 +490,21 @@ filedata *file2mem(char *filename){
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;
   NewMemory((void **)&fileinfo, sizeof(filedata));
-  NewMemory((void **)&buffer, filesize);
+  if(NewMemory((void **)&buffer, filesize+1)==0){
+    FREEMEMORY(fileinfo);
+    readfile_option = READFILE;
+    return NULL;
+  }
   fread(buffer, sizeof(char), filesize, stream);
   fclose(stream);
+
+  filesize++;           // add an extra character to file and set it to the end of string character
+  buffer[filesize-1]=0;
+
   fileinfo->buffer = buffer;
   fileinfo->filesize = filesize;
-  fileinfo->filename = filename;
   fileinfo->iline = 0;
+  CheckMemory;
 
   // count number of lines
 
@@ -460,41 +513,33 @@ filedata *file2mem(char *filename){
     int ch;
 
     ch = buffer[i];
-    if(ch!='\n'&&ch!='\r'&&ch!=EOF)continue;
-    nlines++;
-    for(;i<filesize;i++){
-      ch = buffer[i];
-      if(ch=='\n'||ch=='\r'||ch==EOF){
-        ASSERT(i<filesize);
-        buffer[i] = 0;
-        continue;
-      }
-      i--;
-      break;
+    if(ch=='\r'){      // end of line is \r\n or \n
+      buffer[i]=' ';   //  if a \r is found set it to a blank character
+      continue;
+    }
+    if(ch=='\n'||ch==EOF){
+      buffer[i]=0;
+      nlines++;
     }
   }
-  maxlines = nlines-1;
-  fileinfo->nlines = maxlines;
+  CheckMemory;
   NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
   fileinfo->lines = lines;
 
   nlines = 0;
-  lines[nlines] = buffer;
+  lines[0] = buffer;
   for(i = 0;i<filesize;i++){
     int ch;
 
     ch = buffer[i];
     if(ch!=0)continue;
-    nlines++;
-    for(;i<filesize;i++){
-      ch = buffer[i];
-      if(ch==0)continue;
-      i--;
-      break;
+    if(i+1<filesize){
+      nlines++;
+      lines[nlines] = buffer+i+1;
     }
-    if(nlines>=maxlines)break;
-    lines[nlines] = buffer+i+1;
   }
+  fileinfo->nlines = nlines;
+  CheckMemory;
   return fileinfo;
 }
 #endif

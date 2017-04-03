@@ -294,7 +294,6 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   supermesh_index = smesh-supermeshinfo;
   supermesh_index++;
 
-  PRINTF("    defining smoke and fire textures for supermesh %i - ", supermesh_index);
   FFLUSH();
 
   glActiveTexture(GL_TEXTURE0);
@@ -377,7 +376,6 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
 #endif
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("complete\n");
   FFLUSH();
 }
 #endif

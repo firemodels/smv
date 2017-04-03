@@ -3729,7 +3729,6 @@ void AllocateFaces(){
     }
     fprintf(stderr,"*** Error: memory allocation error\n");
   }
-  PRINTF("\n");
 }
 
 /* ------------------ CompareBlock ------------------------ */
