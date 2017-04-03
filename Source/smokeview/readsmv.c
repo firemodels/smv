@@ -546,6 +546,31 @@ void InitMesh(meshdata *meshi){
   meshi->select_max = 0;
 }
 
+/* ------------------ GetCloseVent ------------------------ */
+
+ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
+  ventdata *close_vent, *vdummy_start;
+  int i;
+
+  close_vent = ventmesh->ventinfo+ivent;
+  if(close_vent->dir2==XDIR&&close_vent->imin>0&&close_vent->imax<ventmesh->ibar)return close_vent;
+  if(close_vent->dir2==YDIR&&close_vent->jmin>0&&close_vent->jmax<ventmesh->jbar)return close_vent;
+  if(close_vent->dir2==ZDIR&&close_vent->kmin>0&&close_vent->kmax<ventmesh->kbar)return close_vent;
+  vdummy_start = ventmesh->ventinfo+ventmesh->nvents-ventmesh->ndummyvents;
+  for(i = 0;i<ventmesh->ndummyvents;i++){
+    ventdata *vi;
+    
+    vi = vdummy_start+i;
+    if(close_vent->imin==vi->imin&&close_vent->imax==vi->imax&&
+       close_vent->jmin==vi->jmin&&close_vent->jmax==vi->jmax&&
+       close_vent->kmin==vi->kmin&&close_vent->kmax==vi->kmax
+      ){
+      return vi;
+    }
+  }
+  return vi;
+}
+
 /* ------------------ ReadSMVDynamic ------------------------ */
 
 void ReadSMVDynamic(char *file){
@@ -723,7 +748,7 @@ void ReadSMVDynamic(char *file){
       if(isvent == 1){
         ventdata *vi;
 
-        vi = meshi->ventinfo + tempval;
+        vi = GetCloseVent(meshi, tempval);
         vi->nshowtime++;
       }
       else{
@@ -1111,7 +1136,7 @@ void ReadSMVDynamic(char *file){
         ventdata *vi;
 
         if(meshi->ventinfo == NULL || tempval < 0 || tempval >= meshi->nvents)continue;
-        vi = meshi->ventinfo + tempval;
+        vi = GetCloseVent(meshi, tempval);
         if(vi->showtime == NULL){
           NewMemory((void **)&vi->showtime, (vi->nshowtime + 1) * sizeof(float));
           NewMemory((void **)&vi->showhide, (vi->nshowtime + 1) * sizeof(unsigned char));
@@ -3826,7 +3851,7 @@ int ReadSMV(char *file, char *file2){
 #endif
 #ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif  
+#endif
 /*
    ************************************************************************
    ************************ start of pass 1 *********************************
@@ -4254,8 +4279,8 @@ int ReadSMV(char *file, char *file2){
   }
 #ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass1_time;
-#endif  
-  
+#endif
+
 
 /*
    ************************************************************************
@@ -5856,7 +5881,7 @@ int ReadSMV(char *file, char *file2){
   }
 #ifdef pp_TIMES
   pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass2_time;
-#endif  
+#endif
 /*
    ************************************************************************
    ************************ end of pass 2 *********************************
@@ -5865,7 +5890,7 @@ int ReadSMV(char *file, char *file2){
 
 #ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif  
+#endif
   CheckMemory;
   ParseDatabase(database_filename);
 
@@ -6329,11 +6354,11 @@ int ReadSMV(char *file, char *file2){
  */
 #ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
-#endif  
+#endif
 
 #ifdef pp_TIMES
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif  
+#endif
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -8505,7 +8530,7 @@ typedef struct {
 #endif
 #ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif  
+#endif
 
   if(autoterrain==1){
     float zbarmin;
@@ -8688,7 +8713,7 @@ typedef struct {
   PrintMemoryInfo;
 #ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass5_time;
-#endif  
+#endif
 
 /*
    ************************************************************************
@@ -8696,10 +8721,10 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_TIMES 
+#ifdef pp_TIMES
     read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif  
+#endif
 
   PRINTF("  wrapping up\n");
   CheckMemory;
