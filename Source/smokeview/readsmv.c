@@ -559,7 +559,7 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
   vdummy_start = ventmesh->ventinfo+ventmesh->nvents-ventmesh->ndummyvents;
   for(i = 0;i<ventmesh->ndummyvents;i++){
     ventdata *vi;
-    
+
     vi = vdummy_start+i;
     if(close_vent->imin==vi->imin&&close_vent->imax==vi->imax&&
        close_vent->jmin==vi->jmin&&close_vent->jmax==vi->jmax&&
@@ -568,7 +568,7 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
       return vi;
     }
   }
-  return vi;
+  return close_vent;
 }
 
 /* ------------------ ReadSMVDynamic ------------------------ */
