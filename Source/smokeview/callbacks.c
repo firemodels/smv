@@ -1332,7 +1332,7 @@ void keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = 6&GLUTGETMODIFIERS();
+    keystate = (GLUT_ACTIVE_ALT||GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
       switch(keystate){
