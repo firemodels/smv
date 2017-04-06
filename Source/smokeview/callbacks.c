@@ -572,6 +572,29 @@ int get_colorbar_index(int flag, int x, int y){
   return CB_SELECT_CONTINUE;
 }
 
+#ifdef pp_GLUTGET
+#define GLUTGETMODIFIERS glutGetModifiersNew
+int glutGetModifiersNew(void){
+
+  switch(alt_ctrl_key_state){
+  case 0:
+    return glutGetModifiers();
+    break;
+  case 1:
+    return GLUT_ACTIVE_ALT;
+    break;
+  case 2:
+    return GLUT_ACTIVE_CTRL;
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  return glutGetModifiers();
+}
+#else
+#define GLUTGETMODIFIERS glutGetModifiers
+#endif
 /* ------------------ colorbar_click ------------------------ */
 
 int colorbar_click(int x, int y){
@@ -582,7 +605,7 @@ int colorbar_click(int x, int y){
     int state;
 
     colorbar_select_index=colorbar_index;
-    state=glutGetModifiers();
+    state=GLUTGETMODIFIERS();
     if(state==GLUT_ACTIVE_CTRL&&current_colorbar!=NULL&&current_colorbar->nsplits==1){
       colorbar_splitdrag=1;
     }
@@ -783,6 +806,12 @@ void update_mouseinfo(int flag, int xm, int ym){
 void mouse_CB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
+#ifdef pp_GLUTGET
+  if(state == GLUT_UP){
+    alt_ctrl_key_state = 2;
+    keyboard('d', FROM_SMOKEVIEW);
+  }
+#endif
   if(rotation_type==ROTATION_3AXIS){
     if(state==GLUT_DOWN){
       update_mouseinfo(MOUSE_DOWN,xm,ym);
@@ -872,7 +901,7 @@ void mouse_CB(int button, int state, int xm, int ym){
         state=GLUT_ACTIVE_ALT;
         break;
       default:
-        state=glutGetModifiers();
+        state=GLUTGETMODIFIERS();
         break;
     }
     switch(state){
@@ -1303,7 +1332,7 @@ void keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = 6&glutGetModifiers();
+    keystate = (GLUT_ACTIVE_ALT||GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
       switch(keystate){
@@ -1449,6 +1478,20 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
+      alt_ctrl_key_state++;
+      if(alt_ctrl_key_state > 2)alt_ctrl_key_state = 0;
+      switch(alt_ctrl_key_state){
+      case 0:
+        printf("ALT and CTRL keys off\n");
+        break;
+      case 1:
+        printf("ALT key activated\n");
+        break;
+      case 2:
+        printf("CTRL key activated\n");
+        break;
+      }
+      break;
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         add_delete_keyframe(DELETE_KEYFRAME);
@@ -2409,7 +2452,7 @@ void handle_move_keys(int  key){
   INC_Z=INC_XY;
   INC_ANGLE = 5*INC_ANGLE0;
 
-  state=glutGetModifiers();
+  state=GLUTGETMODIFIERS();
   switch(state){
   case GLUT_ACTIVE_CTRL:
     key_state = KEY_CTRL;
