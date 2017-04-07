@@ -3006,9 +3006,9 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
           if(patchi->slice == 1){
-            if(trianglei->insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-            if(trianglei->insolid == IN_SOLID && show_patch_insolid == 0)continue;
-            if(trianglei->insolid==IN_GAS&&show_patch_ingas==0)continue;
+            if(trianglei->insolid&3 == IN_CUTCELL && show_patch_incutcell == 0)continue;
+            if(trianglei->insolid&3 == IN_SOLID   && show_patch_insolid == 0)continue;
+            if(trianglei->insolid&3 == IN_GAS     && show_patch_ingas==0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -3042,9 +3042,9 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
           if(patchi->slice == 1){
-            if(trianglei->insolid==IN_CUTCELL&&show_patch_incutcell==0)continue;
-            if(trianglei->insolid == IN_SOLID && show_patch_insolid == 0)continue;
-            if(trianglei->insolid == IN_GAS && show_patch_ingas == 0)continue;
+            if(trianglei->insolid&3 == IN_CUTCELL && show_patch_incutcell==0)continue;
+            if(trianglei->insolid&3 == IN_SOLID   && show_patch_insolid == 0)continue;
+            if(trianglei->insolid&3 == IN_GAS     && show_patch_ingas == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -3115,12 +3115,18 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
           tridata *trianglei;
           int color_index;
+          int show_edge1=1, show_edge2=1, show_edge3 = 1;
 
           trianglei = geomlisti->triangles + j;
           if(patchi->slice==1){
-            if(trianglei->insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-            if(trianglei->insolid == IN_SOLID && show_patch_insolid == 0)continue;
-            if(trianglei->insolid==IN_GAS&&show_patch_ingas==0)continue;
+            if(trianglei->insolid&3 == IN_CUTCELL && show_patch_incutcell == 0)continue;
+            if(trianglei->insolid&3 == IN_SOLID   && show_patch_insolid == 0)continue;
+            if(trianglei->insolid&3 == IN_GAS     && show_patch_ingas==0)continue;
+            if(show_patch_cutcell_polygon == 1){
+              if(trianglei->insolid&4  ==  4)show_edge1 = 0;
+              if(trianglei->insolid&8  ==  8)show_edge2 = 0;
+              if(trianglei->insolid&16 == 16)show_edge3 = 0;
+            }
           }
 
           color_index = ivals[j];
@@ -3136,14 +3142,20 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           xyzptr[1] = trianglei->verts[1]->xyz;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
-          glVertex3fv(xyzptr[0]);
-          glVertex3fv(xyzptr[1]);
+          if(show_edge1==1){
+            glVertex3fv(xyzptr[0]);
+            glVertex3fv(xyzptr[1]);
+          }
 
-          glVertex3fv(xyzptr[1]);
-          glVertex3fv(xyzptr[2]);
+          if(show_edge2==1){
+            glVertex3fv(xyzptr[1]);
+            glVertex3fv(xyzptr[2]);
+          }
 
-          glVertex3fv(xyzptr[2]);
-          glVertex3fv(xyzptr[0]);
+          if(show_edge3==1){
+            glVertex3fv(xyzptr[2]);
+            glVertex3fv(xyzptr[0]);
+          }
         }
       glEnd();
       glPopMatrix();
@@ -3180,9 +3192,9 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
         trianglei = geomlisti->triangles + j;
 
         if(patchi->slice==1){
-          if(trianglei->insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-          if(trianglei->insolid == IN_SOLID && show_patch_insolid == 0)continue;
-          if(trianglei->insolid==IN_GAS&&show_patch_ingas==0)continue;
+          if(trianglei->insolid&3 == IN_CUTCELL && show_patch_incutcell == 0)continue;
+          if(trianglei->insolid&3 == IN_SOLID   && show_patch_insolid == 0)continue;
+          if(trianglei->insolid&3 == IN_GAS     && show_patch_ingas==0)continue;
         }
         if(show_patch_solid == 1||show_patch_outline==1){
           glColor4fv(foregroundcolor);

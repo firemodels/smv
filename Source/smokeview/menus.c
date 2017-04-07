@@ -4279,6 +4279,10 @@ void ShowPatchMenu(int value){
     else if(value == INCUTCELLpatchmenu){
       show_patch_incutcell = 1 - show_patch_incutcell;
     }
+    else if(value==SHOWCUTCELLPOLYGONSpatchmenu){
+      show_patch_cutcell_polygon = 1-show_patch_cutcell_polygon;
+      if(show_patch_outline==0)show_patch_outline = 1;
+    }
     else if(value != DUMMYwallmenu){
       int n;
 
@@ -5246,6 +5250,12 @@ updatemenu=0;
       }
       else{
         glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
+      }
+      if(show_patch_cutcell_polygon==1){
+        glutAddMenuEntry("  *show cutcell polygons", SHOWCUTCELLPOLYGONSpatchmenu);
+      }
+      else{
+        glutAddMenuEntry("  show cutcell polygons", SHOWCUTCELLPOLYGONSpatchmenu);
       }
       if(activate_threshold == 1 && local_do_threshold == 1){
         glutAddMenuEntry("-",DUMMYwallmenu);
