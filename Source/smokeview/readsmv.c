@@ -9129,6 +9129,13 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
+    if(Match(buffer, "SHOWPATCH")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %i %i %i %i",
+        &show_patch_solid, &show_patch_outline, &show_patch_verts, &show_patch_insolid, &show_patch_ingas,
+        &show_patch_incutcell, &show_patch_cutcell_polygon);
+      continue;
+    }
     if(Match(buffer, "NORTHANGLE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &vis_northangle);
@@ -12940,6 +12947,10 @@ void WriteINI(int flag,char *filename){
 #endif
   fprintf(fileout, "SHOWOPENVENTS\n");
   fprintf(fileout, " %i %i\n", visOpenVents, visOpenVentsAsOutline);
+  fprintf(fileout, "SHOWPATCH\n");
+  fprintf(fileout, " %i %i %i %i %i %i %i\n",
+     show_patch_solid, show_patch_outline, show_patch_verts, show_patch_insolid,
+     show_patch_ingas, show_patch_incutcell, show_patch_cutcell_polygon);
   fprintf(fileout, "SHOWOTHERVENTS\n");
   fprintf(fileout, " %i\n", visOtherVents);
   fprintf(fileout, "SHOWSENSORS\n");
