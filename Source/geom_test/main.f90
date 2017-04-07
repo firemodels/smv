@@ -16,7 +16,7 @@ integer :: i
 !  integer, intent(out) :: faces(3*(nverts-2))
 
 integer :: nverts
-real(fb) :: verts(300)
+real(fb) :: verts(300), orientation
 integer :: vert_offset
 integer :: faces(300)
 logical :: tritest
@@ -25,14 +25,17 @@ integer :: iv1, iv2, iv3, dir
 vert_offset=0
 nverts=6
 
-verts(1:3*nverts) = (/0.0,0.0,0.0, 0.0,2.0,0.0, 1.0,2.0,0.0, 1.0,1.0,0.0, 2.0,1.0,0.0, 2.0,0.0,0.0  /)
+verts(1:3*nverts) = (/2.0, 0.0, 0.0, 0.0,0.0,0.0, 0.0,2.0,0.0, 1.0,2.0,0.0,  1.0,1.0,0.0, 2.0, 1.0, 0.0    /)
 dir=3
 
-do i = 1, nverts - 2
-  iv1 = i
-  iv2 = i+1
-  iv3 = i+2
-  tritest = valid_triangle(dir,verts, nverts, iv1, iv2, iv3)
+do i = 1, nverts 
+  iv1 = i-1
+  iv2 = i
+  iv3 = i+1
+  if(iv1<1)iv1 = iv1 + nverts
+  if(iv2>nverts)iv2 = iv2 - nverts
+  if(iv3>nverts)iv3 = iv3 - nverts
+  tritest = valid_triangle(dir,verts, nverts, iv1, iv2, iv3,.false.,orientation)
 end do
 
 call triangulate(dir,verts,nverts,vert_offset,faces)

@@ -4280,8 +4280,18 @@ void ShowPatchMenu(int value){
       show_patch_incutcell = 1 - show_patch_incutcell;
     }
     else if(value==SHOWCUTCELLPOLYGONSpatchmenu){
-      show_patch_cutcell_polygon = 1-show_patch_cutcell_polygon;
-      if(show_patch_outline==0)show_patch_outline = 1;
+      show_patch_incutcell = 1;
+      show_patch_cutcell_polygon = 1;
+      show_patch_outline = 1;
+    }
+    else if(value == SHOWCUTCELLTRIANGLESpatchmenu){
+      show_patch_incutcell = 1;
+      show_patch_cutcell_polygon = 0;
+      show_patch_outline = 1;
+    }
+    else if(value == HIDECUTCELLTRIANGLESpatchmenu){
+      show_patch_cutcell_polygon = 0;
+      show_patch_outline = 0;
     }
     else if(value != DUMMYwallmenu){
       int n;
@@ -5251,11 +5261,29 @@ updatemenu=0;
       else{
         glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
       }
-      if(show_patch_cutcell_polygon==1){
-        glutAddMenuEntry("  *show cutcell polygons", SHOWCUTCELLPOLYGONSpatchmenu);
-      }
-      else{
-        glutAddMenuEntry("  show cutcell polygons", SHOWCUTCELLPOLYGONSpatchmenu);
+      {
+        int hide_edges=1;
+
+        if(show_patch_outline==1&&show_patch_cutcell_polygon==1){
+          glutAddMenuEntry("      *show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
+          hide_edges = 0;
+        }
+        else{
+          glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
+        }
+        if(show_patch_outline==1&&show_patch_cutcell_polygon == 0){
+          glutAddMenuEntry("      *show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
+          hide_edges = 0;
+        }
+        else{
+          glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
+        }
+        if(hide_edges==1){
+          glutAddMenuEntry("      *hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+        }
+        else{
+          glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+        }
       }
       if(activate_threshold == 1 && local_do_threshold == 1){
         glutAddMenuEntry("-",DUMMYwallmenu);
