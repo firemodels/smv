@@ -1756,10 +1756,11 @@ void read_geom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FORTREADBR(ijk,3*ntris,stream);
       FORTREADBR(surf_ind,ntris,stream);
       FORTREADBR(texture_coords,6*ntris,stream);
+      CheckMemory;
       if(type==GEOM_ISO)offset=nsurfinfo;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
-        int k;
+        int k, surf_index;
 
         for(k=0;k<3;k++){
           triangles[ii].verts[k]=verts+ijk[3*ii+k]-1;
@@ -1769,7 +1770,13 @@ void read_geom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].tverts[k]=texture_coords[6*ii+k];
         }
 
-        surfi=surfinfo + surf_ind[ii]+offset;
+        if(type==GEOM_ISO){
+          surf_index = surf_ind[ii] + offset;
+        }
+        else{
+          surf_index = (surf_ind[ii] & 3) + offset;
+        }
+        surfi=surfinfo + surf_index;
         triangles[ii].surf=surfi;
         triangles[ii].insolid = surf_ind[ii];
         triangles[ii].textureinfo=surfi->textureinfo;
