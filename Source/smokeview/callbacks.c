@@ -577,14 +577,14 @@ int get_colorbar_index(int flag, int x, int y){
 int glutGetModifiersNew(void){
 
   switch(alt_ctrl_key_state){
-  case 0:
+  case KEY_NONE:
     return glutGetModifiers();
     break;
-  case 1:
-    return GLUT_ACTIVE_ALT;
-    break;
-  case 2:
+  case KEY_CTRL:
     return GLUT_ACTIVE_CTRL;
+    break;
+  case KEY_ALT:
+    return GLUT_ACTIVE_ALT;
     break;
   default:
     ASSERT(FFALSE);
@@ -808,8 +808,7 @@ void mouse_CB(int button, int state, int xm, int ym){
 
 #ifdef pp_GLUTGET
   if(state == GLUT_UP){
-    alt_ctrl_key_state = 2;
-    keyboard('d', FROM_SMOKEVIEW);
+    alt_ctrl_key_state = KEY_NONE;
   }
 #endif
   if(rotation_type==ROTATION_3AXIS){
@@ -1478,19 +1477,7 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-      alt_ctrl_key_state++;
-      if(alt_ctrl_key_state > 2)alt_ctrl_key_state = 0;
-      switch(alt_ctrl_key_state){
-      case 0:
-        printf("ALT and CTRL keys off\n");
-        break;
-      case 1:
-        printf("ALT key activated\n");
-        break;
-      case 2:
-        printf("CTRL key activated\n");
-        break;
-      }
+      alt_ctrl_key_state = KEY_CTRL;
       break;
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
@@ -1534,7 +1521,9 @@ void keyboard(unsigned char key, int flag){
         DialogMenu(DIALOG_BOUNDS); // file/bounds dialog
         break;
       case GLUT_ACTIVE_CTRL:
+        break;
       default:
+        alt_ctrl_key_state = KEY_ALT;
         break;
       }
       break;
