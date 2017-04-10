@@ -1630,10 +1630,13 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   sscanf(buffer, "%f %f %f %f %f %f %i %i %i",
     xyz, xyz+1, xyz+2, xyzn, xyzn+1, xyzn+2, &state0, &nparams, &nparams_textures);
 
-  labelptr = strchr(buffer, '#'); // read in coordinates of beam detector
+  labelptr = strchr(buffer, '#'); // read in coordinates of a possible beam detector
   if(labelptr!=NULL){
     sscanf(labelptr+1, "%f %f %f %f %f %f", xyz1, xyz1+1, xyz1+2, xyz2, xyz2+1, xyz2+2);
-    is_beam = 1;
+    if(strcmp(devicei->quantity, "PATH OBSCURATION") == 0||
+       strcmp(devicei->quantity, "TRANSMISSION") == 0){
+      is_beam = 1;
+    }
   }
   devicei->is_beam = is_beam;
 
