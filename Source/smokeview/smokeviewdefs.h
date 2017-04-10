@@ -615,7 +615,9 @@ void _Sniff_Errors(char *whereat);
 #define INSOLIDpatchmenu -13
 #define INGASpatchmenu -14
 #define INCUTCELLpatchmenu -15
-
+#define SHOWCUTCELLPOLYGONSpatchmenu -16
+#define SHOWCUTCELLTRIANGLESpatchmenu -17
+#define HIDECUTCELLTRIANGLESpatchmenu -18
 
 #define INTERIORwall 0
 #define FRONTwall 1
