@@ -13339,7 +13339,7 @@ void WriteINI(int flag,char *filename){
           strcat(version_label, glversion);
           fprintf(fileout, "# %s\n", version_label);
         }
-        glshadeversion=glGetString(GL_SHADING_LANGUAGE_VERSION);
+        glshadeversion=(char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
         if(glshadeversion != NULL){
           strcpy(version_label, "  GLSL Version: ");
           strcat(version_label, glshadeversion);
