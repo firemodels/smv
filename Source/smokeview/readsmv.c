@@ -3441,7 +3441,7 @@ int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
 #ifdef pp_TIMES
-  float read_time, wrapup_time;
+  float read_time, processing_time, wrapup_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
 #endif
   int have_zonevents,nzventsnew=0;
@@ -3472,10 +3472,9 @@ int ReadSMV(char *file, char *file2){
 #endif
 
 #ifdef pp_TIMES
-  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
-#ifdef pp_TIMES
+  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 #endif
 
 #ifdef pp_READBUFFER
@@ -3491,6 +3490,9 @@ int ReadSMV(char *file, char *file2){
       FreeFileBuffer(stream2->fileinfo);
     }
   }
+#endif
+#ifdef pp_TIMES
+  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - read_time;
 #endif
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
@@ -8728,7 +8730,7 @@ typedef struct {
  */
 
 #ifdef pp_TIMES
-    read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
+    processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 #endif
 
@@ -8982,14 +8984,17 @@ JOIN_THREADSLICE;
 #ifdef pp_TIMES
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
   PRINTF("\n");
-  PRINTF(" pass 0 time: %.1f s\n", pass0_time);
-  PRINTF(" pass 1 time: %.1f s\n", pass1_time);
-  PRINTF(" pass 2 time: %.1f s\n", pass2_time);
-  PRINTF(" pass 3 time: %.1f s\n", pass3_time);
-  PRINTF(" pass 4 time: %.1f s\n", pass4_time);
-  PRINTF(" pass 5 time: %.1f s\n", pass5_time);
-  PRINTF("   read time: %.1f s\n", read_time);
-  PRINTF("wrap up time: %.1f s\n", wrapup_time);
+  PRINTF("Processing Times\n");
+  PRINTF("----------------\n");
+  if(read_time>1.0) PRINTF("    input: %.1f s\n", read_time);
+  if(pass0_time>1.0)PRINTF("   pass 0: %.1f s\n", pass0_time);
+  if(pass1_time>1.0)PRINTF("   pass 1: %.1f s\n", pass1_time);
+  if(pass2_time>1.0)PRINTF("   pass 2: %.1f s\n", pass2_time);
+  if(pass3_time>1.0)PRINTF("   pass 3: %.1f s\n", pass3_time);
+  if(pass4_time>1.0)PRINTF("   pass 4: %.1f s\n", pass4_time);
+  if(pass5_time>1.0)PRINTF("   pass 5: %.1f s\n", pass5_time);
+                    PRINTF("    total: %.1f s\n", processing_time);
+                    PRINTF("  wrap up: %.1f s\n", wrapup_time);
 #endif
   return 0;
 }
