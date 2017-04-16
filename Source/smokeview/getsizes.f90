@@ -514,7 +514,7 @@ if(ip1.eq.ip2.or.jp1.eq.jp2.or.kp1.eq.kp2)then
   slice3d=1
 endif
 
-call getdirval(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
+call getslicefiledirection(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
 
 return
 end subroutine getsliceparms
@@ -579,7 +579,7 @@ nzsp = kp2 + 1 - kp1
 
 allocate(qq(nxsp,nysp,nzsp))
 
-call getdirval(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
+call getslicefiledirection(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
 nslicei = nxsp
 nslicej = nysp + joff
 nslicek = nzsp + koff

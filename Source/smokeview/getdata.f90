@@ -281,9 +281,9 @@ end do
 return
 end subroutine getdata1
 
-!  ------------------ getdirval ------------------------
+!  ------------------ getslicefiledirection ------------------------
 
-subroutine getdirval(is1,is2,js1,js2,ks1,ks2,idir,joff,koff)
+subroutine getslicefiledirection(is1,is2,js1,js2,ks1,ks2,idir,joff,koff)
 implicit none
 integer :: nxsp, nysp, nzsp
 integer, intent(in) :: is1, js1, ks1
@@ -323,7 +323,7 @@ if(is1.eq.is2.and.js1.eq.js2)then
    koff=1
 endif
 return
-end subroutine getdirval
+end subroutine getslicefiledirection
 
 !  ------------------ writeslicedata ------------------------
 
@@ -514,7 +514,7 @@ endif
 nxsp = is2 + 1 - is1
 nysp = js2 + 1 - js1
 nzsp = ks2 + 1 - ks1
-call getdirval(is1,is2,js1,js2,ks1,ks2,idir,joff,koff)
+call getslicefiledirection(is1,is2,js1,js2,ks1,ks2,idir,joff,koff)
 
 allocate(qq(nxsp,nysp+joff,nzsp+koff))
 
