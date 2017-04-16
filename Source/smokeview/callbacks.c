@@ -575,22 +575,27 @@ int get_colorbar_index(int flag, int x, int y){
 #ifdef pp_GLUTGET
 #define GLUTGETMODIFIERS glutGetModifiersNew
 int glutGetModifiersNew(void){
+  int modifier;
 
   switch(alt_ctrl_key_state){
   case KEY_NONE:
-    return glutGetModifiers();
+    modifier = glutGetModifiers();
     break;
   case KEY_CTRL:
-    return GLUT_ACTIVE_CTRL;
+    modifier = GLUT_ACTIVE_CTRL;
     break;
   case KEY_ALT:
-    return GLUT_ACTIVE_ALT;
+    modifier = GLUT_ACTIVE_ALT;
     break;
   default:
     ASSERT(FFALSE);
     break;
   }
-  return glutGetModifiers();
+  modifier = glutGetModifiers();
+#ifdef _DEBUG
+  printf("modifier=%i\n", modifier);
+#endif
+  return modifier;
 }
 #else
 #define GLUTGETMODIFIERS glutGetModifiers
@@ -1331,7 +1336,7 @@ void keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = (GLUT_ACTIVE_ALT||GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
+    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
       switch(keystate){

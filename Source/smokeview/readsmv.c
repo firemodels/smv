@@ -13331,11 +13331,18 @@ void WriteINI(int flag,char *filename){
       if(use_graphics == 1){
         char version_label[256];
         char *glversion = NULL;
+        char *glshadeversion = NULL;
 
         glversion = (char *)glGetString(GL_VERSION);
         if(glversion != NULL){
           strcpy(version_label, "OpenGL Version: ");
           strcat(version_label, glversion);
+          fprintf(fileout, "# %s\n", version_label);
+        }
+        glshadeversion=(char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+        if(glshadeversion != NULL){
+          strcpy(version_label, "  GLSL Version: ");
+          strcat(version_label, glshadeversion);
           fprintf(fileout, "# %s\n", version_label);
         }
       }
