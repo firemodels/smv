@@ -40,7 +40,7 @@
 #define FORTgetboundaryheader1 _F(getboundaryheader1)
 #define FORTgetboundaryheader2 _F(getboundaryheader2)
 
-STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff);
+STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice);
 STDCALLF FORTfpoly2tri(float *verts, int *nverts, int *poly, int *npoly, int *tris, int *ntris);
 STDCALLF FORTget_in_triangle(float *vert, float *v1, float *v2, float *v3, int *flag);
 STDCALLF FORTget_is_angle_ge_180(float *v1, float *v2, float *v3, int *flag);

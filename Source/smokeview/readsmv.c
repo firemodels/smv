@@ -8113,6 +8113,20 @@ typedef struct {
         NewMemory((void **)&sd->slicelabel,lenslicelabel);
         strcpy(sd->slicelabel,slicelabel);
       }
+#ifdef pp_SLICELOAD
+      sd->is1=ii1;
+      sd->is2=ii2;
+      sd->js1=jj1;
+      sd->js2=jj2;
+      sd->ks1=kk1;
+      sd->ks2=kk2;
+      sd->ijk_min[0] = ii1;
+      sd->ijk_max[0] = ii2;
+      sd->ijk_min[1] = jj1;
+      sd->ijk_max[1] = jj2;
+      sd->ijk_min[2] = kk1;
+      sd->ijk_max[2] = kk2;
+#else
       sd->is1=i1;
       sd->is2=i2;
       sd->js1=j1;
@@ -8135,6 +8149,7 @@ typedef struct {
         sd->ijk_min[2] = k1;
         sd->ijk_max[2] = k2;
       }
+#endif
       sd->is_fed=0;
       sd->above_ground_level=above_ground_level;
       sd->seq_id=nn_slice;
