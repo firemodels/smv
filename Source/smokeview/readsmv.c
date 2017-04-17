@@ -8999,15 +8999,18 @@ JOIN_THREADSLICE;
 #ifdef pp_TIMES
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
   PRINTF("\n");
-  if(read_time>1.0) PRINTF(" .smv read time: %.1f s\n", read_time);
-  if(pass0_time>1.0)PRINTF("    pass 0 time: %.1f s\n", pass0_time);
-  if(pass1_time>1.0)PRINTF("    pass 1 time: %.1f s\n", pass1_time);
-  if(pass2_time>1.0)PRINTF("    pass 2 time: %.1f s\n", pass2_time);
-  if(pass3_time>1.0)PRINTF("    pass 3 time: %.1f s\n", pass3_time);
-  if(pass4_time>1.0)PRINTF("    pass 4 time: %.1f s\n", pass4_time);
-  if(pass5_time>1.0)PRINTF("    pass 5 time: %.1f s\n", pass5_time);
-  if(processing_time>1.0)PRINTF("all passes time: %.1f s\n", processing_time);
-  if(wrapup_time>1.0)PRINTF("   wrap up time: %.1f s\n", wrapup_time);
+  PRINTF(".smv Processing Times\n");
+  PRINTF("---------------------\n");
+  if(read_time>1.0)      PRINTF("     input: %.1f s\n", read_time);
+  if(pass0_time>1.0)     PRINTF("     setup: %.1f s\n", pass0_time);
+  if(pass1_time>1.0)     PRINTF("    pass 1: %.1f s\n", pass1_time);
+  if(pass2_time>1.0)     PRINTF("    pass 2: %.1f s\n", pass2_time);
+  if(pass3_time>1.0)     PRINTF("    pass 3: %.1f s\n", pass3_time);
+  if(pass4_time>1.0)     PRINTF("    pass 4: %.1f s\n", pass4_time);
+  if(pass5_time>1.0)     PRINTF("    pass 5: %.1f s\n", pass5_time);
+                         PRINTF("all passes: %.1f s\n", processing_time);
+  if(wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
+  PRINTF("\n");
 #endif
   return 0;
 }
