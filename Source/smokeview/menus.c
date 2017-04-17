@@ -3823,7 +3823,6 @@ void LoadMultiVSliceMenu(int value){
         LoadVSliceMenu(UNLOAD_ALL);
         break;
 
-#ifdef pp_SLICEDUP
       case MENU_KEEP_ALL:
       if(vectorslicedup_option!=SLICEDUP_KEEPALL){
         vectorslicedup_option = SLICEDUP_KEEPALL;
@@ -3853,7 +3852,6 @@ void LoadMultiVSliceMenu(int value){
         update_slicedup_dialog();
       }
       break;
-#endif
       default:
         ASSERT(FFALSE);
         break;
@@ -3927,7 +3925,6 @@ void LoadMultiSliceMenu(int value){
       case UNLOAD_ALL:
       LoadSliceMenu(UNLOAD_ALL);
       break;
-#ifdef pp_SLICEDUP
       case MENU_KEEP_ALL:
       if(slicedup_option!=SLICEDUP_KEEPALL){
         slicedup_option = SLICEDUP_KEEPALL;
@@ -3957,7 +3954,6 @@ void LoadMultiSliceMenu(int value){
         update_slicedup_dialog();
       }
       break;
-#endif
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
@@ -8224,7 +8220,6 @@ updatemenu=0;
         }
       }
       if(nmultivsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
-#ifdef pp_SLICEDUP
       if(nslicedups > 0){
         glutAddMenuEntry("Duplicate vector slices", MENU_DUMMY);
         if(vectorslicedup_option == SLICEDUP_KEEPALL){
@@ -8247,7 +8242,6 @@ updatemenu=0;
         }
         glutAddMenuEntry("-", MENU_DUMMY);
       }
-#endif
 
       if(showallslicevectors == 0)glutAddMenuEntry(_("Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
       if(showallslicevectors == 1)glutAddMenuEntry(_("*Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
@@ -8524,7 +8518,6 @@ updatemenu=0;
           }
         }
         if(nmultisliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
-#ifdef pp_SLICEDUP
         if(nslicedups > 0){
           glutAddMenuEntry("Duplicate slices", MENU_DUMMY);
           if(slicedup_option == SLICEDUP_KEEPALL){
@@ -8547,7 +8540,6 @@ updatemenu=0;
           }
           glutAddMenuEntry("-", MENU_DUMMY);
         }
-#endif
         if(use_set_slicecolor==1){
           glutAddMenuEntry("  *defer slice coloring", MENU_SLICECOLORDEFER);
         }

@@ -2159,7 +2159,6 @@ void GetGSliceParams(void){
 
 /* ------------------ IsSliceDuplicate ------------------------ */
 
-#ifdef pp_SLICEDUP
 #define SLICEEPS 0.001
 #define COUNT_DUPLICATES 1
 #define FIND_DUPLICATES 0
@@ -2295,7 +2294,6 @@ void UpdateVSliceDups(void){
     }
   }
  }
-#endif
 
 /* ------------------ UpdateFedinfo ------------------------ */
 
@@ -2611,9 +2609,14 @@ void UpdateSliceDirCount(void){
 
 void GetSliceParams(void){
   int i;
+#ifndef pp_SLICELOAD
   char *file;
+#endif
   int error;
+
+#ifndef pp_SLICELOAD
   FILE_SIZE  lenfile;
+#endif
   int build_cache=0;
   FILE *stream;
 
@@ -2639,8 +2642,10 @@ void GetSliceParams(void){
     }
 #endif
 
+#ifndef pp_SLICELOAD
     file = sd->file;
     lenfile = strlen(file);
+#endif
     if(sd->compression_type==UNCOMPRESSED){
       int doit_anyway;
 
@@ -2660,17 +2665,31 @@ void GetSliceParams(void){
         error=0;
       }
       if(build_cache==1||stream==NULL||doit_anyway==1){
+#ifdef pp_SLICELOAD
+        int idir, joff, koff, volslice;
+#endif
+
         is1=sd->is1;
         is2=sd->is2;
         js1=sd->js1;
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
+#ifdef pp_SLICELOAD
+        FORTgetslicefiledirection(&is1, &is2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
         ni = is2+1-is1;
         nj = js2+1-js1;
         nk = ks2+1-ks1;
+        sd->volslice = volslice;
+        error = 0;
+#else
+        ni = is2+1-is1;
+        nj = js2+1-js1;
+        nk = ks2+1-ks1;
+        sd->volslice = 0;
         if(is1<=0||is2<0||js1<0||js2<0||ks1<0||ks2<0)FORTgetsliceparms(file,
           &is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&sd->volslice,&error,lenfile);
+#endif
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
       }
     }
@@ -2903,10 +2922,8 @@ void GetSliceParams(void){
     slicei->mslice = NULL;
     slicei->skip = 0;
   }
-#ifdef pp_SLICEDUP
   UpdateSliceDups();
   nslicedups = CountSliceDups();
-#endif
   for(i = 0; i < nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
@@ -3110,9 +3127,7 @@ void UpdateVSlices(void){
     }
   }
 
-#ifdef pp_SLICEDUP
   UpdateVSliceDups();
-#endif
 
   for(i = 0; i<nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
@@ -3148,23 +3163,7 @@ void UpdateVSlices(void){
   }
 
   UpdateVsliceMenulabels();
-#ifdef pp_THREADSLICE
-  UpdateSliceTypes();
-  UpdateSliceBoundLabels();
-  UpdateVSliceTypes();
-#endif
 }
-
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-/* ------------------ UpdateVSlices2 ------------------------ */
-
-void *UpdateVSlices2(void *arg){
-  UpdateVSlices();
-  return NULL;
-}
-#endif
-#endif
 
   /* ------------------ GetVSliceIndex ------------------------ */
 

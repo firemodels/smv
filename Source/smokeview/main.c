@@ -129,9 +129,6 @@ void Usage(char **argv,int option){
 #ifdef pp_memstatus
     strcat(label, ", pp_memstatus");
 #endif
-#ifdef pp_NAN
-    strcat(label, ", pp_NAN");
-#endif
 #ifdef pp_noappend
     strcat(label, ", pp_noappend");
 #endif
@@ -155,12 +152,6 @@ void Usage(char **argv,int option){
 #endif
 #ifdef pp_SHOWTERRAIN
     strcat(label, ", pp_SHOWTERRAIN");
-#endif
-#ifdef pp_SLICECOLORDEFER
-    strcat(label, ", pp_SLICECOLORDEFER");
-#endif
-#ifdef pp_SLICEDUP
-    strcat(label, ", pp_SLICEDUP");
 #endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");

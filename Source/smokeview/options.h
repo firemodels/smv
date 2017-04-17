@@ -27,13 +27,9 @@
 
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options available on all platforms VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-#define pp_NAN
 #define pp_GPU
 #define pp_ffmpeg
-#define pp_GLUTGET
 #define pp_READBUFFER
-//#define pp_THREADSLICE
-#define pp_TIMES
 
 #ifdef pp_GPU
 #define pp_CULL
@@ -47,8 +43,6 @@
 #define pp_DRAWISO
 #define pp_LANG
 #define pp_DEG
-#define pp_SLICEDUP
-#define pp_SLICECOLORDEFER
 
 #define pp_THREAD
 #define pp_THREADIBLANK // test iblank computation in background.
@@ -63,8 +57,10 @@
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options that are being tested VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 #ifdef pp_BETA
+#define pp_SLICELOAD
 #define pp_SHOWTERRAIN
-#define pp_GEOMTEST
+#define pp_GEOMTEST  // used to test tetrahedron box intersections
+// #define pp_OSXGLUT32 // used to test advanced opengl profile on mac
 #define pp_HAZARD
 //#define pp_GPUDEPTH
 #endif

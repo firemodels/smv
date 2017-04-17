@@ -572,7 +572,6 @@ int get_colorbar_index(int flag, int x, int y){
   return CB_SELECT_CONTINUE;
 }
 
-#ifdef pp_GLUTGET
 #define GLUTGETMODIFIERS glutGetModifiersNew
 int glutGetModifiersNew(void){
   int modifier;
@@ -588,18 +587,15 @@ int glutGetModifiersNew(void){
     modifier = GLUT_ACTIVE_ALT;
     break;
   default:
+    modifier = glutGetModifiers();
     ASSERT(FFALSE);
     break;
   }
-  modifier = glutGetModifiers();
 #ifdef _DEBUG
   printf("modifier=%i\n", modifier);
 #endif
   return modifier;
 }
-#else
-#define GLUTGETMODIFIERS glutGetModifiers
-#endif
 /* ------------------ colorbar_click ------------------------ */
 
 int colorbar_click(int x, int y){
@@ -811,11 +807,9 @@ void update_mouseinfo(int flag, int xm, int ym){
 void mouse_CB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
-#ifdef pp_GLUTGET
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
   }
-#endif
   if(rotation_type==ROTATION_3AXIS){
     if(state==GLUT_DOWN){
       update_mouseinfo(MOUSE_DOWN,xm,ym);
@@ -1280,6 +1274,7 @@ void motion_CB(int xm, int ym){
 
 void keyboard_up_CB(unsigned char key, int x, int y){
   resetclock=1;
+  alt_ctrl_key_state = KEY_NONE;
 }
 
 #ifdef pp_GPU_CULL_STATE
@@ -1523,10 +1518,7 @@ void keyboard(unsigned char key, int flag){
     case 'f':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-        DialogMenu(DIALOG_BOUNDS); // file/bounds dialog
-        break;
       case GLUT_ACTIVE_CTRL:
-        break;
       default:
         alt_ctrl_key_state = KEY_ALT;
         break;

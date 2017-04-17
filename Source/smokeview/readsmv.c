@@ -3440,10 +3440,8 @@ void SetupMeshWalls(void){
 int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
-#ifdef pp_TIMES
-  float read_time, wrapup_time;
+  float read_time, processing_time, wrapup_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
-#endif
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
   devicedata *devicecopy;
@@ -3471,12 +3469,9 @@ int ReadSMV(char *file, char *file2){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
 #endif
 
-#ifdef pp_TIMES
-  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
-#ifdef pp_TIMES
+  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
+  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 
 #ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
@@ -3492,6 +3487,7 @@ int ReadSMV(char *file, char *file2){
     }
   }
 #endif
+  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - read_time;
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -3852,12 +3848,8 @@ int ReadSMV(char *file, char *file2){
 
   PRINTF(_("processing smokeview file: %s\n"),file);
 
-#ifdef pp_TIMES
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass0_time;
-#endif
-#ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 /*
    ************************************************************************
    ************************ start of pass 1 *********************************
@@ -4283,9 +4275,7 @@ int ReadSMV(char *file, char *file2){
     }
 
   }
-#ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass1_time;
-#endif
 
 
 /*
@@ -4294,9 +4284,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
  if(fds_version==NULL){
    NewMemory((void **)&fds_version,7+1);
@@ -5885,18 +5873,14 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
   }
-#ifdef pp_TIMES
   pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass2_time;
-#endif
 /*
    ************************************************************************
    ************************ end of pass 2 *********************************
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
   CheckMemory;
   ParseDatabase(database_filename);
 
@@ -6358,13 +6342,9 @@ int ReadSMV(char *file, char *file2){
    ************************ end of pass 3 ******************************
    ************************************************************************
  */
-#ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
-#endif
 
-#ifdef pp_TIMES
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -8111,6 +8091,20 @@ typedef struct {
         NewMemory((void **)&sd->slicelabel,lenslicelabel);
         strcpy(sd->slicelabel,slicelabel);
       }
+#ifdef pp_SLICELOAD
+      sd->is1=ii1;
+      sd->is2=ii2;
+      sd->js1=jj1;
+      sd->js2=jj2;
+      sd->ks1=kk1;
+      sd->ks2=kk2;
+      sd->ijk_min[0] = ii1;
+      sd->ijk_max[0] = ii2;
+      sd->ijk_min[1] = jj1;
+      sd->ijk_max[1] = jj2;
+      sd->ijk_min[2] = kk1;
+      sd->ijk_max[2] = kk2;
+#else
       sd->is1=i1;
       sd->is2=i2;
       sd->js1=j1;
@@ -8133,6 +8127,7 @@ typedef struct {
         sd->ijk_min[2] = k1;
         sd->ijk_max[2] = k2;
       }
+#endif
       sd->is_fed=0;
       sd->above_ground_level=above_ground_level;
       sd->seq_id=nn_slice;
@@ -8531,12 +8526,8 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass4_time;
-#endif
-#ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
   if(autoterrain==1){
     float zbarmin;
@@ -8717,9 +8708,7 @@ typedef struct {
     }
   }
   PrintMemoryInfo;
-#ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass5_time;
-#endif
 
 /*
    ************************************************************************
@@ -8727,10 +8716,8 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_TIMES
-    read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
+  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
   PRINTF("  wrapping up\n");
   CheckMemory;
@@ -8830,19 +8817,8 @@ typedef struct {
 
   UpdatePlotxyzAll();
 
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-  mt_UpdateVSlices();
-#else
   UpdateVSlices();
   if(update_slice==1)return 3;
-#endif
-#else
-  UpdateVSlices();
-  if(update_slice==1)return 3;
-#endif
-JOIN_THREADSLICE;
-
 
   GetGSliceParams();
 
@@ -8896,10 +8872,8 @@ JOIN_THREADSLICE;
 #endif
 
   UpdateSelectFaces();
-#ifndef pp_THREADSLICE
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
-#endif
   updateisotypes();
   UpdatePatchTypes();
   if(autoterrain==1){
@@ -8925,9 +8899,7 @@ JOIN_THREADSLICE;
   update_terrain(1,vertical_factor);
   update_terrain_colors();
   UpdateSmoke3DMenuLabels();
-#ifndef pp_THREADSLICE
   UpdateVSliceTypes();
-#endif
   update_patch_menulabels();
   update_iso_menulabels();
   update_part_menulabels();
@@ -8979,18 +8951,20 @@ JOIN_THREADSLICE;
   PRINTF("\n\n");
   PrintMemoryInfo;
 
-#ifdef pp_TIMES
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
   PRINTF("\n");
-  PRINTF(" pass 0 time: %.1f s\n", pass0_time);
-  PRINTF(" pass 1 time: %.1f s\n", pass1_time);
-  PRINTF(" pass 2 time: %.1f s\n", pass2_time);
-  PRINTF(" pass 3 time: %.1f s\n", pass3_time);
-  PRINTF(" pass 4 time: %.1f s\n", pass4_time);
-  PRINTF(" pass 5 time: %.1f s\n", pass5_time);
-  PRINTF("   read time: %.1f s\n", read_time);
-  PRINTF("wrap up time: %.1f s\n", wrapup_time);
-#endif
+  PRINTF(".smv Processing Times\n");
+  PRINTF("---------------------\n");
+  if(read_time>1.0)      PRINTF("     input: %.1f s\n", read_time);
+  if(pass0_time>1.0)     PRINTF("     setup: %.1f s\n", pass0_time);
+  if(pass1_time>1.0)     PRINTF("    pass 1: %.1f s\n", pass1_time);
+  if(pass2_time>1.0)     PRINTF("    pass 2: %.1f s\n", pass2_time);
+  if(pass3_time>1.0)     PRINTF("    pass 3: %.1f s\n", pass3_time);
+  if(pass4_time>1.0)     PRINTF("    pass 4: %.1f s\n", pass4_time);
+  if(pass5_time>1.0)     PRINTF("    pass 5: %.1f s\n", pass5_time);
+                         PRINTF("all passes: %.1f s\n", processing_time);
+  if(wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
+  PRINTF("\n");
   return 0;
 }
 
