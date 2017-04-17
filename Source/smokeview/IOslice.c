@@ -2683,6 +2683,7 @@ void GetSliceParams(void){
         nj = js2+1-js1;
         nk = ks2+1-ks1;
         sd->volslice = volslice;
+        error = 0;
 #else
         ni = is2+1-is1;
         nj = js2+1-js1;
