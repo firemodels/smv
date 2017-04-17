@@ -60,6 +60,7 @@
 #define pp_SLICELOAD
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST  // used to test tetrahedron box intersections
+// #define pp_OSXGLUT32 // used to test advanced opengl profile on mac
 #define pp_HAZARD
 //#define pp_GPUDEPTH
 #endif
