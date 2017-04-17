@@ -3440,10 +3440,8 @@ void SetupMeshWalls(void){
 int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
-#ifdef pp_TIMES
   float read_time, processing_time, wrapup_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
-#endif
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
   devicedata *devicecopy;
@@ -3471,11 +3469,9 @@ int ReadSMV(char *file, char *file2){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
 #endif
 
-#ifdef pp_TIMES
   processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
   read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
 #ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
@@ -3491,9 +3487,7 @@ int ReadSMV(char *file, char *file2){
     }
   }
 #endif
-#ifdef pp_TIMES
   read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - read_time;
-#endif
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -3854,12 +3848,8 @@ int ReadSMV(char *file, char *file2){
 
   PRINTF(_("processing smokeview file: %s\n"),file);
 
-#ifdef pp_TIMES
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass0_time;
-#endif
-#ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 /*
    ************************************************************************
    ************************ start of pass 1 *********************************
@@ -4285,9 +4275,7 @@ int ReadSMV(char *file, char *file2){
     }
 
   }
-#ifdef pp_TIMES
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass1_time;
-#endif
 
 
 /*
@@ -4296,9 +4284,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
  if(fds_version==NULL){
    NewMemory((void **)&fds_version,7+1);
@@ -5887,18 +5873,14 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
   }
-#ifdef pp_TIMES
   pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass2_time;
-#endif
 /*
    ************************************************************************
    ************************ end of pass 2 *********************************
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
   CheckMemory;
   ParseDatabase(database_filename);
 
@@ -6360,13 +6342,9 @@ int ReadSMV(char *file, char *file2){
    ************************ end of pass 3 ******************************
    ************************************************************************
  */
-#ifdef pp_TIMES
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
-#endif
 
-#ifdef pp_TIMES
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -8548,12 +8526,8 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_TIMES
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass4_time;
-#endif
-#ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
   if(autoterrain==1){
     float zbarmin;
@@ -8734,9 +8708,7 @@ typedef struct {
     }
   }
   PrintMemoryInfo;
-#ifdef pp_TIMES
   pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass5_time;
-#endif
 
 /*
    ************************************************************************
@@ -8744,10 +8716,8 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_TIMES
-    processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
+  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-#endif
 
   PRINTF("  wrapping up\n");
   CheckMemory;
@@ -8981,7 +8951,6 @@ typedef struct {
   PRINTF("\n\n");
   PrintMemoryInfo;
 
-#ifdef pp_TIMES
   wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
   PRINTF("\n");
   PRINTF(".smv Processing Times\n");
@@ -8996,7 +8965,6 @@ typedef struct {
                          PRINTF("all passes: %.1f s\n", processing_time);
   if(wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
   PRINTF("\n");
-#endif
   return 0;
 }
 
