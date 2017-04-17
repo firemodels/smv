@@ -59,7 +59,7 @@
 #ifdef pp_BETA
 #define pp_SLICELOAD
 #define pp_SHOWTERRAIN
-#define pp_GEOMTEST
+#define pp_GEOMTEST  // used to test tetrahedron box intersections
 #define pp_HAZARD
 //#define pp_GPUDEPTH
 #endif
