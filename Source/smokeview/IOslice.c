@@ -2688,6 +2688,7 @@ void GetSliceParams(void){
         ni = is2+1-is1;
         nj = js2+1-js1;
         nk = ks2+1-ks1;
+        sd->volslice = 0;
         if(is1<=0||is2<0||js1<0||js2<0||ks1<0||ks2<0)FORTgetsliceparms(file,
           &is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&sd->volslice,&error,lenfile);
 #endif
