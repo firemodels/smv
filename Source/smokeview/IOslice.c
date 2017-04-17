@@ -3169,23 +3169,7 @@ void UpdateVSlices(void){
   }
 
   UpdateVsliceMenulabels();
-#ifdef pp_THREADSLICE
-  UpdateSliceTypes();
-  UpdateSliceBoundLabels();
-  UpdateVSliceTypes();
-#endif
 }
-
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-/* ------------------ UpdateVSlices2 ------------------------ */
-
-void *UpdateVSlices2(void *arg){
-  UpdateVSlices();
-  return NULL;
-}
-#endif
-#endif
 
   /* ------------------ GetVSliceIndex ------------------------ */
 

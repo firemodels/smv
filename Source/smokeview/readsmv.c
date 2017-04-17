@@ -8847,19 +8847,8 @@ typedef struct {
 
   UpdatePlotxyzAll();
 
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-  mt_UpdateVSlices();
-#else
   UpdateVSlices();
   if(update_slice==1)return 3;
-#endif
-#else
-  UpdateVSlices();
-  if(update_slice==1)return 3;
-#endif
-JOIN_THREADSLICE;
-
 
   GetGSliceParams();
 
@@ -8913,10 +8902,8 @@ JOIN_THREADSLICE;
 #endif
 
   UpdateSelectFaces();
-#ifndef pp_THREADSLICE
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
-#endif
   updateisotypes();
   UpdatePatchTypes();
   if(autoterrain==1){
@@ -8942,9 +8929,7 @@ JOIN_THREADSLICE;
   update_terrain(1,vertical_factor);
   update_terrain_colors();
   UpdateSmoke3DMenuLabels();
-#ifndef pp_THREADSLICE
   UpdateVSliceTypes();
-#endif
   update_patch_menulabels();
   update_iso_menulabels();
   update_part_menulabels();
