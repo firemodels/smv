@@ -140,11 +140,7 @@ SVEXTERN float SVDECL(geom_outline_offset,0.005);
 SVEXTERN float SVDECL(geom_max_angle, 30.0), cos_geom_max_angle;
 SVEXTERN int SVDECL(use_max_angle, 1);
 SVEXTERN int SVDECL(update_setvents, 0);
-#ifdef pp_SLICECOLORDEFER
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
-#else
-SVEXTERN int SVDECL(use_set_slicecolor, 0);
-#endif
 SVEXTERN int SVDECL(cvents_defined, 0);
 #ifdef pp_SLICEDUP
 SVEXTERN int SVDECL(slicedup_option , SLICEDUP_KEEPFINE);

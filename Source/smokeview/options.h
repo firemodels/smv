@@ -45,7 +45,6 @@
 #define pp_LANG
 #define pp_DEG
 #define pp_SLICEDUP
-#define pp_SLICECOLORDEFER
 
 #define pp_THREAD
 #define pp_THREADIBLANK // test iblank computation in background.
