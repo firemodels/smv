@@ -64,9 +64,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define DATA_EVAC_COLORING 209
 #define SLICE_VECTORSKIP 210
 #define PLOT3D_VECTORSKIP 211
-#ifdef pp_SLICEDUP
 #define UPDATE_SLICEDUPS 212
-#endif
 #define UPDATE_HISTOGRAM 213
 #define INIT_HISTOGRAM 214
 
@@ -176,16 +174,12 @@ GLUI_Rollout *ROLLOUT_slice_average = NULL;
 GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_slice_vector = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
-#ifdef pp_SLICEDUP
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 
-#ifdef pp_SLICEDUP
 GLUI_Panel *PANEL_slicedup;
 GLUI_Panel *PANEL_vectorslicedup;
-#endif
 GLUI_Panel *PANEL_iso_eachlevel;
 GLUI_Panel *PANEL_iso_alllevels;
 GLUI_Panel *PANEL_files = NULL;
@@ -303,10 +297,8 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
 
-#ifdef pp_SLICEDUP
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
-#endif
 GLUI_RadioGroup *RADIO_histogram_static=NULL;
 GLUI_RadioGroup *RADIO_showhide = NULL;
 GLUI_RadioGroup *RADIO_contour_type = NULL;
@@ -360,9 +352,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define SLICE_VECTOR_ROLLOUT 1
 #define LINE_CONTOUR_ROLLOUT 2
 #define SLICE_HISTOGRAM_ROLLOUT 3
-#ifdef pp_SLICEDUP
 #define SLICE_DUP_ROLLOUT 4
-#endif
 
 #define VECTOR_ROLLOUT 0
 #define ISOSURFACE_ROLLOUT 1
@@ -377,21 +367,15 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define MEMCHECK_ROLLOUT 7
 
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
-#ifdef pp_SLICEDUP
 procdata sliceprocinfo[4];
-#else
-procdata sliceprocinfo[3];
-#endif
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
 
-#ifdef pp_SLICEDUP
 /* ------------------ update_iso_controls ------------------------ */
 
 extern "C" void update_slicedup_dialog(void){
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
 }
-#endif
 
 /* ------------------ update_iso_controls ------------------------ */
 
@@ -2076,7 +2060,6 @@ extern "C" void glui_bounds_setup(int main_window){
     if(n_embedded_meshes>0){
       CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
     }
-#ifdef pp_SLICEDUP
     if(nslicedups > 0){
       ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Duplicates"), false, SLICE_DUP_ROLLOUT, Slice_Rollout_CB);
       ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slicedups, SLICE_DUP_ROLLOUT);
@@ -2093,7 +2076,6 @@ extern "C" void glui_bounds_setup(int main_window){
       glui_bounds->add_radiobutton_to_group(RADIO_vectorslicedup, _d("Keep fine"));
       glui_bounds->add_radiobutton_to_group(RADIO_vectorslicedup, _d("Keep coarse"));
     }
-#endif
 
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice, _d("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, Slice_CB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
@@ -2946,11 +2928,9 @@ extern "C" void Slice_CB(int var){
     return;
   }
   switch(var){
-#ifdef pp_SLICEDUP
     case UPDATE_SLICEDUPS:
     updatemenu = 1;
     break;
-#endif
     case SLICE_VECTORSKIP:
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
       break;

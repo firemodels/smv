@@ -156,9 +156,6 @@ void Usage(char **argv,int option){
 #ifdef pp_SHOWTERRAIN
     strcat(label, ", pp_SHOWTERRAIN");
 #endif
-#ifdef pp_SLICEDUP
-    strcat(label, ", pp_SLICEDUP");
-#endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
 #endif

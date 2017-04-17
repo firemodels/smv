@@ -2159,7 +2159,6 @@ void GetGSliceParams(void){
 
 /* ------------------ IsSliceDuplicate ------------------------ */
 
-#ifdef pp_SLICEDUP
 #define SLICEEPS 0.001
 #define COUNT_DUPLICATES 1
 #define FIND_DUPLICATES 0
@@ -2295,7 +2294,6 @@ void UpdateVSliceDups(void){
     }
   }
  }
-#endif
 
 /* ------------------ UpdateFedinfo ------------------------ */
 
@@ -2924,10 +2922,8 @@ void GetSliceParams(void){
     slicei->mslice = NULL;
     slicei->skip = 0;
   }
-#ifdef pp_SLICEDUP
   UpdateSliceDups();
   nslicedups = CountSliceDups();
-#endif
   for(i = 0; i < nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
@@ -3131,9 +3127,7 @@ void UpdateVSlices(void){
     }
   }
 
-#ifdef pp_SLICEDUP
   UpdateVSliceDups();
-#endif
 
   for(i = 0; i<nmultivsliceinfo; i++){
     multivslicedata *mvslicei;

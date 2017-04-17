@@ -47,9 +47,7 @@ EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void write_part_histogram(partdata *parti);
 EXTERNCPP void read_part_histogram(partdata *parti);
 EXTERNCPP void MakeIBlankAll(void);
-#ifdef pp_SLICEDUP
 EXTERNCPP void update_slicedup_dialog(void);
-#endif
 EXTERNCPP void drawnorth(void);
 EXTERNCPP void draw_geomdata(int flag, patchdata *patchi, int geom_type);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
