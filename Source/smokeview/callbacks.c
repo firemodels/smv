@@ -588,10 +588,10 @@ int glutGetModifiersNew(void){
     modifier = GLUT_ACTIVE_ALT;
     break;
   default:
+    modifier = glutGetModifiers();
     ASSERT(FFALSE);
     break;
   }
-  modifier = glutGetModifiers();
 #ifdef _DEBUG
   printf("modifier=%i\n", modifier);
 #endif
@@ -1280,6 +1280,7 @@ void motion_CB(int xm, int ym){
 
 void keyboard_up_CB(unsigned char key, int x, int y){
   resetclock=1;
+  alt_ctrl_key_state = KEY_NONE;
 }
 
 #ifdef pp_GPU_CULL_STATE
@@ -1523,10 +1524,7 @@ void keyboard(unsigned char key, int flag){
     case 'f':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-        DialogMenu(DIALOG_BOUNDS); // file/bounds dialog
-        break;
       case GLUT_ACTIVE_CTRL:
-        break;
       default:
         alt_ctrl_key_state = KEY_ALT;
         break;
