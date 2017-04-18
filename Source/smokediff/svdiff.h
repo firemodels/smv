@@ -120,22 +120,22 @@ int similar_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
 int exact_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
 int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout);
 
-#define FORTgetsliceparms _F(getsliceparms)
-#define FORTclosefortranfile _F(closefortranfile)
-#define FORTopenslice _F(openslice)
-#define FORTgetsliceframe _F(getsliceframe)
-#define FORToutsliceframe _F(outsliceframe)
-#define FORToutsliceheader _F(outsliceheader)
-#define FORTgetplot3dq _F(getplot3dq)
-#define FORTplot3dout _F(plot3dout)
+#define FORTgetsliceparms      _F(getsliceparms)
+#define FORTclosefortranfile   _F(closefortranfile)
+#define FORTopenslice          _F(openslice)
+#define FORTgetsliceframe      _F(getsliceframe)
+#define FORToutsliceframe      _F(outsliceframe)
+#define FORToutsliceheader     _F(outsliceheader)
+#define FORTgetplot3dq         _F(getplot3dq)
+#define FORTplot3dout          _F(plot3dout)
 #define FORTgetboundaryheader1 _F(getboundaryheader1)
 #define FORTgetboundaryheader2 _F(getboundaryheader2)
-#define FORTopenboundary _F(openboundary)
-#define FORTgetpatchdata _F(getpatchdata)
-#define FORToutboundaryheader _F(outboundaryheader)
-#define FORToutpatchframe _F(outpatchframe)
-#define FORTendianout _F(endianout)
-#define FORTget_file_unit _F(get_file_unit)
+#define FORTopenboundary       _F(openboundary)
+#define FORTgetpatchdata       _F(getpatchdata)
+#define FORToutboundaryheader  _F(outboundaryheader)
+#define FORToutpatchframe      _F(outpatchframe)
+#define FORTendianout          _F(endianout)
+#define FORTget_file_unit      _F(get_file_unit)
 
 STDCALLF FORTget_file_unit(int *file_unit, int *file_unit_start);
 STDCALLF FORToutpatchframe(int *lunit, int *npatch,

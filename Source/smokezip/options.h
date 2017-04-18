@@ -65,23 +65,26 @@
 #define pp_PART2
 #endif
 
-#ifdef WIN32
-#define pp_noappend
-#define pp_cvf
-#endif
-
-// used to access fortran routines from C
-
-#ifndef _F
-#ifdef pp_noappend
-#define _F(name) name
-#else
-#define _F(name) name ## _
-#endif
-#endif
-
 #ifdef pp_release
 #define PROGVERSION "1.4.9"
+#endif
+
+#ifdef pp_OSX
+#define pp_append
+#endif
+
+#ifdef pp_LINUX
+#define pp_append
+#endif
+
+// used to access Fortran routines from C
+
+#ifndef _F
+#ifdef pp_append
+#define _F(name) name ## _
+#else
+#define _F(name) name
+#endif
 #endif
 
 

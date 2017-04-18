@@ -39,7 +39,30 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#ifdef pp_LINUX
+#define pp_append
+#endif
+
+#ifdef pp_OSX
+#define pp_append
+#endif
+
+#ifdef WIN32
+#undef pp_append
+#endif
+
 // VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+// used to access Fortran routines from C
+
+#ifndef _F
+#ifdef pp_append
+#define _F(name) name ## _
+#else
+#define _F(name) name
+#endif
+#endif
+
 
 #define FILE_SIZE unsigned long long
 
@@ -61,20 +84,6 @@
 #ifdef pp_BETA
 #undef pp_release
 #define PROGVERSION "test"
-#endif
-
-#ifdef WIN32
-#define pp_noappend
-#endif
-
-// used to access fortran routines from C
-
-#ifndef _F
-#ifdef pp_noappend
-#define _F(name) name
-#else
-#define _F(name) name ## _
-#endif
 #endif
 
 #ifdef pp_release

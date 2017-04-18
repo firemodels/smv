@@ -75,6 +75,9 @@ void Usage(char **argv,int option){
 #ifdef _DEBUG
     strcat(label, ", _DEBUG");
 #endif
+#ifdef pp_append
+    strcat(label, ", pp_append");
+#endif
 #ifdef pp_BETA
     strcat(label, ", pp_BETA");
 #endif
@@ -128,9 +131,6 @@ void Usage(char **argv,int option){
 #endif
 #ifdef pp_memstatus
     strcat(label, ", pp_memstatus");
-#endif
-#ifdef pp_noappend
-    strcat(label, ", pp_noappend");
 #endif
 #ifdef pp_OFFICIAL_RELEASE
     strcat(label, ", pp_OFFICIAL_RELEASE");
