@@ -302,18 +302,18 @@ void initvolrender(void);
 void getsliceparms_c(char *file, int *ni, int *nj, int *nk);
 
 
-#define FORTgetpartheader1 _F(getpartheader1)
-#define FORTgetpartheader2 _F(getpartheader2)
-#define FORTgetpartdataframe _F(getpartdataframe)
-#define FORTclosefortranfile _F(closefortranfile)
-#define FORTgetboundaryheader1 _F(getboundaryheader1)
-#define FORTgetboundaryheader2 _F(getboundaryheader2)
-#define FORTopenboundary _F(openboundary)
-#define FORTgetpatchdata _F(getpatchdata)
-#define FORTopenslice _F(openslice)
-#define FORTopenpart _F(openpart)
-#define FORTgetsliceframe _F(getsliceframe)
-#define FORTget_file_unit _F(get_file_unit)
+#define FORTgetpartheader1     getpartheader1
+#define FORTgetpartheader2     getpartheader2
+#define FORTgetpartdataframe   getpartdataframe
+#define FORTclosefortranfile   closefortranfile
+#define FORTgetboundaryheader1 getboundaryheader1
+#define FORTgetboundaryheader2 getboundaryheader2
+#define FORTopenboundary       openboundary
+#define FORTgetpatchdata       getpatchdata
+#define FORTopenslice          openslice
+#define FORTopenpart           openpart
+#define FORTgetsliceframe      getsliceframe
+#define FORTget_file_unit      get_file_unit
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall

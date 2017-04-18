@@ -76,12 +76,6 @@
 #define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
 
-//*** used to access fortran routines from C
-
-#ifndef _F
-#define _F(name) name
-#endif
-
 //*** defines used by various headers
 
 #define FILE_SIZE unsigned long long

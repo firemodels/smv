@@ -65,12 +65,6 @@
 #define pp_PART2
 #endif
 
-// used to access fortran routines from C
-
-#ifndef _F
-#define _F(name) name
-#endif
-
 #ifdef pp_release
 #define PROGVERSION "1.4.9"
 #endif
