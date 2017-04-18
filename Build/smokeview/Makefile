@@ -191,7 +191,7 @@ intel_win_64 : $(objwin)
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : LIBS_PLAT =
 intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -fpp $(SMV_PROFILEFLAG)
-intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -static-intel -D pp_LINUX -D pp_INTEL $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -static-intel -D pp_LINUX -D pp_INTEL -D pp_append $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_linux_64 : CFLAGS    += -D pp_LUA
@@ -213,7 +213,7 @@ intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
 # ------------- intel_linux_64_db ----------------
 
 intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -WB -fpp -stand:f08 $(SMV_PROFILEFLAG)
-intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
+intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL -D pp_append $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel -traceback $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icpc
@@ -226,7 +226,7 @@ intel_linux_64_db : $(obj)
 # ------------- gnu_linux_64_db ----------------
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_append -D pp_GCC
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -241,7 +241,7 @@ gnu_linux_64_db : $(obj)
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : LIBS_PLAT =
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -D pp_append -Wno-write-strings
 ifeq ($(LUA_SCRIPTING),true)
 gnu_linux_64 : CFLAGS    += -D pp_LUA
 gnu_linux_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
@@ -263,7 +263,7 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 gnu_linux_32 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_32
 gnu_linux_32 : LIBS_PLAT =
 gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -D pp_GCC -Wno-write-strings
+gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -D pp_GCC -D pp_append -Wno-write-strings
 gnu_linux_32 : LFLAGS    =
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : CPP       = g++
@@ -277,7 +277,7 @@ gnu_linux_32 : $(obj)
 # ------------- gnu_linux_32_db ----------------
 
 gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC
+gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC -D pp_append 
 gnu_linux_32_db : LFLAGS    =
 gnu_linux_32_db : CC        = gcc
 gnu_linux_32_db : CPP       = g++
@@ -297,7 +297,7 @@ mingw_win_64 : LIBS_PLAT = $(LIB_DIR_PLAT)/libglui.a \
 mingw_win_64 : INC += -I $(SOURCE_DIR)/GLINC-mingw -I $(SOURCE_DIR)/pthreads
 mingw_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC \
 						       -ffree-form -frecord-marker=4 -fno-underscoring
-mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW -D pp_append
 ifeq ($(LUA_SCRIPTING),true)
 mingw_win_64 : CFLAGS    += -D pp_LUA
 mingw_win_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.dll
@@ -326,7 +326,7 @@ OSX_INTEL_LIBS = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libim
 intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64 : LIBS_PLAT =
 intel_osx_64 : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.4 
-intel_osx_64 : CFLAGS    = -O0 -m64 -static-intel -D pp_OSX  -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) $(GITINFO)
+intel_osx_64 : CFLAGS    = -O0 -m64 -static-intel -D pp_OSX  -D pp_INTEL -D pp_append -mmacosx-version-min=10.4 $(SMV_TESTFLAG) $(GITINFO)
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64 : CFLAGS    += -D pp_LUA
@@ -347,7 +347,7 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 # ------------- intel_osx_64_db ----------------
 
 intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.4 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX  -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX  -D pp_INTEL -D pp_append -mmacosx-version-min=10.4 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
 intel_osx_64_db : LFLAGS    = -m64 -static-intel -framework OpenGL -framework GLUT -mmacosx-version-min=10.4
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
@@ -360,7 +360,7 @@ intel_osx_64_db : $(obj)
 # ------------- gnu_osx_64_db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -Wno-write-strings
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_append -Wno-write-strings
 gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
@@ -373,7 +373,7 @@ gnu_osx_64_db : $(obj)
 # ------------- gnu_osx_64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -Wno-write-strings
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -D pp_append -Wno-write-strings
 gnu_osx_64 : LFLAGS    = -m64 -framework OpenGL -framework GLUT
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
