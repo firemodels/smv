@@ -41,6 +41,16 @@
 
 // VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+// used to access Fortran routines from C
+
+#ifndef _F
+#ifdef pp_append
+#define _F(name) name ## _
+#else
+#define _F(name) name
+#endif
+
+
 #define FILE_SIZE unsigned long long
 
 #ifdef X64

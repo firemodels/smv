@@ -9,7 +9,7 @@
 #include "MALLOC.h"
 #include "compress.h"
 
-#define FORTgetplot3dq getplot3dq
+#define FORTgetplot3dq _F(getplot3dq)
 
 STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
 

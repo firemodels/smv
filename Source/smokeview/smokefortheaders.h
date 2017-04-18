@@ -7,38 +7,38 @@
 #define STDCALLF extern void
 #endif
 
-#define FORTgetslicefiledirection getslicefiledirection
-#define FORTfpoly2tri             fpoly2tri
-#define FORTget_in_triangle       get_in_triangle
-#define FORTget_is_angle_ge_180   get_is_angle_ge_180
-#define FORTtest_in_tetra         test_in_tetra
-#define FORTgetverts              getverts2
-#define FORTgettetravol           get_tetrabox_volume_fb
-#define FORTgeomout               geomout
-#define FORTgetembeddatasize      getembeddatasize
-#define FORTgetembeddata          getembeddata
-#define FORTopenboundary          openboundary
-#define FORTfcreate_part5sizefile fcreate_part5sizefile
-#define FORTgetzonesize           getzonesize
-#define FORTgetzonedata           getzonedata
-#define FORTgetxyzdata            getxyzdata
-#define FORTgetpatchsizes1        getpatchsizes1
-#define FORTgetpatchsizes2        getpatchsizes2
-#define FORTgetpatchdata          getpatchdata
-#define FORTgetdata1              getdata1
-#define FORTgetsizes              getsizes
-#define FORTgetsizesa             getsizesa
-#define FORTgetslicesizes         getslicesizes
-#define FORTwriteslicedata        writeslicedata
-#define FORTwriteslicedata2       writeslicedata2
-#define FORTgetslicedata          getslicedata
-#define FORTgetplot3dq            getplot3dq
-#define FORTgetsliceparms         getsliceparms
-#define FORTcolor2rgb             color2rgb
-#define FORTget_file_unit         get_file_unit
-#define FORTclosefortranfile      closefortranfile
-#define FORTgetboundaryheader1    getboundaryheader1
-#define FORTgetboundaryheader2    getboundaryheader2
+#define FORTgetslicefiledirection _F(getslicefiledirection)
+#define FORTfpoly2tri             _F(fpoly2tri)
+#define FORTget_in_triangle       _F(get_in_triangle)
+#define FORTget_is_angle_ge_180   _F(get_is_angle_ge_180)
+#define FORTtest_in_tetra         _F(test_in_tetra)
+#define FORTgetverts              _F(getverts2)
+#define FORTgettetravol           _F(get_tetrabox_volume_fb)
+#define FORTgeomout               _F(geomout)
+#define FORTgetembeddatasize      _F(getembeddatasize)
+#define FORTgetembeddata          _F(getembeddata)
+#define FORTopenboundary          _F(openboundary)
+#define FORTfcreate_part5sizefile _F(fcreate_part5sizefile)
+#define FORTgetzonesize           _F(getzonesize)
+#define FORTgetzonedata           _F(getzonedata)
+#define FORTgetxyzdata            _F(getxyzdata)
+#define FORTgetpatchsizes1        _F(getpatchsizes1)
+#define FORTgetpatchsizes2        _F(getpatchsizes2)
+#define FORTgetpatchdata          _F(getpatchdata)
+#define FORTgetdata1              _F(getdata1)
+#define FORTgetsizes              _F(getsizes)
+#define FORTgetsizesa             _F(getsizesa)
+#define FORTgetslicesizes         _F(getslicesizes)
+#define FORTwriteslicedata        _F(writeslicedata)
+#define FORTwriteslicedata2       _F(writeslicedata2)
+#define FORTgetslicedata          _F(getslicedata)
+#define FORTgetplot3dq            _F(getplot3dq)
+#define FORTgetsliceparms         _F(getsliceparms)
+#define FORTcolor2rgb             _F(color2rgb)
+#define FORTget_file_unit         _F(get_file_unit)
+#define FORTclosefortranfile      _F(closefortranfile)
+#define FORTgetboundaryheader1    _F(getboundaryheader1)
+#define FORTgetboundaryheader2    _F(getboundaryheader2)
 
 STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice);
 STDCALLF FORTfpoly2tri(float *verts, int *nverts, int *poly, int *npoly, int *tris, int *ntris);
