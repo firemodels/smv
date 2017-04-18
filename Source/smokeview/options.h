@@ -133,6 +133,12 @@
 #undef pp_DEG
 #endif
 
+//*** turn on features only available on the Mac
+
+#ifdef pp_OSX
+#define pp_GLUTGET
+#endif
+
 // VVVVVVVVVVVVVVVVVVVVVVVVV  set defines used by various headers VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 #ifdef CPP
 #define CCC "C"
