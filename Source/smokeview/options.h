@@ -1,86 +1,47 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
-// build Smokeview as a standard release unless the pp_BETA directive is defined
-
-#define pp_release
 
 //*** uncomment the following two lines to force all versions to be beta
 //#undef pp_BETA
 //#define pp_BETA
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  define smokeview title VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** define smokeview title
+
 #ifdef pp_BETA
-#define PROGVERSION "Test"
-#undef pp_release
-#endif
-
-// comment the following line when building an unofficial release
-#define pp_OFFICIAL_RELEASE
-
-#ifdef pp_release
-#ifdef pp_OFFICIAL_RELEASE
-#define PROGVERSION "6.4.4"
+  #define PROGVERSION "Test"
 #else
-#define PROGVERSION "Unofficial release"
-#endif
+  #define PROGVERSION "6.4.4"
 #endif
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options available on all platforms VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** options: all platforms
 
-#define pp_GPU
-#define pp_ffmpeg
-#define pp_READBUFFER
+#define pp_GPU          // support the GPU
+#define pp_ffmpeg       // support compression
+#define pp_READBUFFER   // read .smv file from a memory buffer
+#define pp_DRAWISO      // turn on drawing routines
+#define pp_LANG         // support other languages
+#define pp_DEG          // output degree symbol
+#define pp_RENDER360    // render 360 images
+//#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
+#define pp_THREAD       // turn on multi-threading
+#define pp_THREADIBLANK // construct iblank arrays in background
+#ifdef pp_THREADIBLANK  // turn on multi-threading 
+#define pp_THREAD
+#endif
+
+#define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
 
 #ifdef pp_GPU
 #define pp_CULL
 #define pp_GPUTHROTTLE
 #endif
 
-#ifdef VS2015
+#ifdef VS2015            // needed in visual studio to prevent compiler warning/errors
 #define HAVE_SNPRINTF
 #define HAVE_STRUCT_TIMESPEC
 #endif
-#define pp_DRAWISO
-#define pp_LANG
-#define pp_DEG
 
-#define pp_THREAD
-#define pp_THREADIBLANK // test iblank computation in background.
-#ifdef pp_THREADIBLANK  // if pp_THREADIBLANK is set then pp_THREAD also has to be set
-#define pp_THREAD
-#endif
-
-#define _CRT_SECURE_NO_DEPRECATE
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options that are being tested VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-#ifdef pp_BETA
-#define pp_SLICELOAD
-#define pp_SHOWTERRAIN
-#define pp_GEOMTEST  // used to test tetrahedron box intersections
-// #define pp_OSXGLUT32 // used to test advanced opengl profile on mac
-#define pp_HAZARD
-//#define pp_GPUDEPTH
-#endif
-
-#define pp_RENDER360
-#ifdef _DEBUG
-#define pp_RENDER360_DEBUG
-#define pp_MEMPRINT
-#endif
-
-// for debugging, set particle values to 100*parti->seq_id + small random number
-//#define pp_PARTTEST
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#ifdef _DEBUG  // comment the following line when debugging REALLY large cases (to avoid memory checks)
-#define pp_MEMDEBUG
-#endif
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on windows only options VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** options: windows
 
 #ifdef WIN32
 #define pp_memstatus
@@ -89,9 +50,35 @@
 //#define GLUT_DISABLE_ATEXIT_HACK
 #include "pragmas.h"
 #endif
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  used to access fortran routines from C VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** options: MAC
+
+#ifdef pp_OSX
+#undef pp_LANG   // turn off language support - doesn't work
+#undef pp_DEG    // turn off degree symbol output - doesn't work
+#define pp_GLUTGET // use d and f key in place of CTRL and ALT key
+// #define pp_OSXGLUT32 // used to test advanced opengl profile on mac
+#endif
+
+//*** options: options being tested on all platforms
+
+#ifdef pp_BETA
+#define pp_SLICELOAD
+#define pp_SHOWTERRAIN
+#define pp_GEOMTEST  // used to test tetrahedron box intersections
+#define pp_HAZARD
+//#define pp_GPUDEPTH
+#endif
+
+//*** options: debug options
+
+#ifdef _DEBUG
+#define pp_RENDER360_DEBUG
+#define pp_MEMPRINT // output memory allocation info
+#define pp_MEMDEBUG // comment the following line when debugging REALLY large cases (to avoid memory checks)
+#endif
+
+//*** used to access fortran routines from C
 
 #ifndef _F
 #ifdef pp_noappend
@@ -101,10 +88,7 @@
 #endif
 #endif
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-// VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** defines used by various headers
 
 #define FILE_SIZE unsigned long long
 
@@ -126,24 +110,12 @@
 #endif
 #endif
 
-//*** turn off features on the Mac that don't work there
-
-#ifdef pp_OSX
-#undef pp_LANG
-#undef pp_DEG
-#endif
-
-//*** turn on features only available on the Mac
-
-#ifdef pp_OSX
-#define pp_GLUTGET
-#endif
-
-// VVVVVVVVVVVVVVVVVVVVVVVVV  set defines used by various headers VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 #ifdef CPP
 #define CCC "C"
+#define EXTERNCPP extern "C"
 #else
 #define CCC
+#define EXTERNCPP
 #endif
 
 #ifdef INMAIN
@@ -154,19 +126,12 @@
 #define SVDECL(var,val)  var
 #endif
 
-#ifdef CPP
-#define EXTERNCPP extern "C"
-#else
-#define EXTERNCPP
-#endif
-
 #ifdef pp_OSX
 #define GLUT_H <GLUT/glut.h>
 #else
 #define GLUT_H <GL/glut.h>
 #endif
-
-
 #include "lint.h"
+
 #endif
 
