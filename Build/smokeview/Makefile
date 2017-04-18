@@ -297,7 +297,7 @@ mingw_win_64 : LIBS_PLAT = $(LIB_DIR_PLAT)/libglui.a \
 mingw_win_64 : INC += -I $(SOURCE_DIR)/GLINC-mingw -I $(SOURCE_DIR)/pthreads
 mingw_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC \
 						       -ffree-form -frecord-marker=4 -fno-underscoring
-mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW 
+mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
 ifeq ($(LUA_SCRIPTING),true)
 mingw_win_64 : CFLAGS    += -D pp_LUA
 mingw_win_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.dll
