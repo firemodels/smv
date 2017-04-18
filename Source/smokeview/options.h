@@ -47,7 +47,6 @@
 #define pp_memstatus
 #define pp_COMPRESS
 #define pp_noappend
-//#define GLUT_DISABLE_ATEXIT_HACK
 #include "pragmas.h"
 #endif
 
@@ -57,16 +56,16 @@
 #undef pp_LANG   // turn off language support - doesn't work
 #undef pp_DEG    // turn off degree symbol output - doesn't work
 #define pp_GLUTGET // use d and f key in place of CTRL and ALT key
-// #define pp_OSXGLUT32 // used to test advanced opengl profile on mac
+// #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
 
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
-#define pp_SLICELOAD
+#define pp_SLICELOAD     // use slice file parameters found in .smv file to construct menus
 #define pp_SHOWTERRAIN
-#define pp_GEOMTEST  // used to test tetrahedron box intersections
-#define pp_HAZARD
+#define pp_GEOMTEST      // used to test tetrahedron box intersections
+#define pp_HAZARD        // 
 //#define pp_GPUDEPTH
 #endif
 
@@ -74,8 +73,8 @@
 
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
-#define pp_MEMPRINT // output memory allocation info
-#define pp_MEMDEBUG // comment the following line when debugging REALLY large cases (to avoid memory checks)
+#define pp_MEMPRIN      // output memory allocation info
+#define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
 
 //*** used to access fortran routines from C
