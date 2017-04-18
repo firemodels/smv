@@ -75,6 +75,9 @@ void Usage(char **argv,int option){
 #ifdef _DEBUG
     strcat(label, ", _DEBUG");
 #endif
+#ifdef pp_append
+    strcat(label, ", pp_append");
+#endif
 #ifdef pp_BETA
     strcat(label, ", pp_BETA");
 #endif
