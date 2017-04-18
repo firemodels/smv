@@ -39,6 +39,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#ifdef pp_LINUX
+#define pp_append
+#endif
+
+#ifdef pp_OSX
+#define pp_append
+#endif
+
+#ifdef WIN32
+#undef pp_append
+#endif
+
 // VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 // used to access Fortran routines from C

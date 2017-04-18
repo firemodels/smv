@@ -44,6 +44,7 @@
 //*** options: windows
 
 #ifdef WIN32
+#undef pp_append
 #define pp_memstatus
 #define pp_COMPRESS
 #include "pragmas.h"
@@ -55,7 +56,14 @@
 #undef pp_LANG   // turn off language support - doesn't work
 #undef pp_DEG    // turn off degree symbol output - doesn't work
 #define pp_GLUTGET // use d and f key in place of CTRL and ALT key
+#define pp_append // append underscore to Fortran file names
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
+#endif
+
+//*** options: Linux
+
+#ifdef pp_LINUX
+#define pp_append // append underscore to Fortran file names
 #endif
 
 //*** options: options being tested on all platforms
