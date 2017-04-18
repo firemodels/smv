@@ -21,7 +21,9 @@
 #include "threader.h"
 
 SVEXTERN int SVDECL(show_patch_cutcell_polygon, 0);
-SVEXTERN int SVDECL(alt_ctrl_key_state, 0);
+#ifdef pp_GLUTGET
+SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
+#endif
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
 
