@@ -129,9 +129,6 @@ void Usage(char **argv,int option){
 #ifdef pp_memstatus
     strcat(label, ", pp_memstatus");
 #endif
-#ifdef pp_noappend
-    strcat(label, ", pp_noappend");
-#endif
 #ifdef pp_OFFICIAL_RELEASE
     strcat(label, ", pp_OFFICIAL_RELEASE");
 #endif

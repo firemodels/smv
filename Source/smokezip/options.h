@@ -65,18 +65,10 @@
 #define pp_PART2
 #endif
 
-#ifdef WIN32
-#define pp_noappend
-#endif
-
 // used to access fortran routines from C
 
 #ifndef _F
-#ifdef pp_noappend
 #define _F(name) name
-#else
-#define _F(name) name ## _
-#endif
 #endif
 
 #ifdef pp_release

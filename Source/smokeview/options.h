@@ -46,7 +46,6 @@
 #ifdef WIN32
 #define pp_memstatus
 #define pp_COMPRESS
-#define pp_noappend
 #include "pragmas.h"
 #endif
 
@@ -80,11 +79,7 @@
 //*** used to access fortran routines from C
 
 #ifndef _F
-#ifdef pp_noappend
 #define _F(name) name
-#else
-#define _F(name) name ## _
-#endif
 #endif
 
 //*** defines used by various headers
