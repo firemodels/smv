@@ -25,7 +25,7 @@
 //#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_THREAD       // turn on multi-threading
 #define pp_THREADIBLANK // construct iblank arrays in background
-#ifdef pp_THREADIBLANK  // turn on multi-threading 
+#ifdef pp_THREADIBLANK  // turn on multi-threading
 #define pp_THREAD
 #endif
 
@@ -65,7 +65,7 @@
 #define pp_SLICELOAD     // use slice file parameters found in .smv file to construct menus
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
-#define pp_HAZARD        // 
+#define pp_HAZARD        //
 //#define pp_GPUDEPTH
 #endif
 
