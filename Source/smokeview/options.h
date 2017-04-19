@@ -29,34 +29,33 @@
 #define pp_THREAD
 #endif
 
-#define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
-
 #ifdef pp_GPU
 #define pp_CULL
 #define pp_GPUTHROTTLE
 #endif
 
+//*** options: windows
+
+#ifdef WIN32
 #ifdef VS2015            // needed in visual studio to prevent compiler warning/errors
 #define HAVE_SNPRINTF
 #define HAVE_STRUCT_TIMESPEC
 #endif
 
-//*** options: windows
-
-#ifdef WIN32
+#define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
 #undef pp_append
 #define pp_memstatus
 #define pp_COMPRESS
 #include "pragmas.h"
 #endif
 
-//*** options: MAC
+//*** options: Mac
 
 #ifdef pp_OSX
-#undef pp_LANG   // turn off language support - doesn't work
-#undef pp_DEG    // turn off degree symbol output - doesn't work
-#define pp_GLUTGET // use d and f key in place of CTRL and ALT key
-#define pp_append // append underscore to Fortran file names
+#undef pp_LANG          // turn off language support - doesn't work
+#undef pp_DEG           // turn off degree symbol output - doesn't work
+#define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
+#define pp_append       // append underscore to Fortran file names
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
 
@@ -76,7 +75,7 @@
 //#define pp_GPUDEPTH
 #endif
 
-//*** options: debug options
+//*** options: for debugging
 
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
@@ -84,9 +83,7 @@
 #define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
 
-//*** defines used by various headers
-
-// used to access Fortran routines from C
+//*** referencing Fortran routines from C
 
 #ifndef _F
 #ifdef pp_append
@@ -95,6 +92,18 @@
 #define _F(name) name
 #endif
 #endif
+
+//*** referencing C routines from C++
+
+#ifdef CPP
+#define CCC "C"
+#define EXTERNCPP extern "C"
+#else
+#define CCC
+#define EXTERNCPP
+#endif
+
+//*** for files
 
 #define FILE_SIZE unsigned long long
 
@@ -106,6 +115,8 @@
 #define STAT stat
 #endif
 
+//*** long variables
+
 #define LINT long int
 #ifdef X64
 #undef LINT
@@ -116,13 +127,7 @@
 #endif
 #endif
 
-#ifdef CPP
-#define CCC "C"
-#define EXTERNCPP extern "C"
-#else
-#define CCC
-#define EXTERNCPP
-#endif
+//*** declaring and defining variables
 
 #ifdef INMAIN
 #define SVEXTERN
@@ -131,6 +136,8 @@
 #define SVEXTERN extern CCC
 #define SVDECL(var,val)  var
 #endif
+
+//*** glut header
 
 #ifdef pp_OSX
 #define GLUT_H <GLUT/glut.h>

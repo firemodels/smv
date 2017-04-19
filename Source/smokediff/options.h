@@ -1,59 +1,46 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
-#include "lint.h"
-#define _CRT_SECURE_NO_WARNINGS
+//*** uncomment the following two lines to force all versions to be beta
+//#undef pp_BETA
+//#define pp_BETA
 
- /* ------------------ options ------------------------ */
+//*** define smokediff title
+
+#ifdef pp_BETA
+  #define PROGVERSION "Test"
+#else
+  #define PROGVERSION "1.0.10"
+#endif
+
+//*** options: windows
+
 #ifdef WIN32
-#ifdef _DEBUG
-#pragma float_control( precise, on)
-#pragma float_control( except, on )
-#endif
+#include "pragmas.h"
 
-#ifdef pp_INTEL
-#pragma warning (disable:4996)
-#pragma warning (disable:4701)
-#pragma warning (disable:4310)
-#pragma warning (disable:4127)
-#pragma warning (disable:4244)
-#pragma warning (disable:1478)
-#pragma warning (disable:1786)
-
-#pragma warning (disable:810)		/* conversion from xx to yy may lose sig bits */
-#pragma warning (disable:869)		/* parameer was never referenced */
-#pragma warning (disable:4018)		/* signied/unsigned match */
-#pragma warning (disable:4206)		/* translation unit empty */
-#pragma warning (disable:4267)		/* size_t to int possible loss of data */
-#pragma warning (disable:4389)		/* signed/unsigned mis-match */
-#pragma warning (disable:1418)		/* external function definition with no prior declaration */
-#pragma warning (disable:1599)		/* declaration hides variable */
-#pragma warning (disable:981)		/* operands are evaluated in unspecified order */
-#pragma warning (disable:1419)		/* external declaration in primary source file */
-#pragma warning (disable:1572)		/* floating-point equality and inequality comparisons are unreliable */
-#pragma warning (disable:494)		/* omission of "class"is nonstandard */
-#pragma warning (disable:444)		/* destructor for base class */
-#pragma warning (disable:2259)		/* non-pointer conversion from "double" to "float" ma lose significant bits */
-#endif
-
+#undef pp_append
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+//*** options: Linux
 
 #ifdef pp_LINUX
 #define pp_append
 #endif
 
+//*** options: MAC
+
 #ifdef pp_OSX
 #define pp_append
 #endif
 
-#ifdef WIN32
-#undef pp_append
+//*** options: for debugging
+
+#ifdef _DEBUG
+#define pp_MEMDEBUG
 #endif
 
-// VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-// used to access Fortran routines from C
+//*** referencing Fortran routines from C
 
 #ifndef _F
 #ifdef pp_append
@@ -63,6 +50,17 @@
 #endif
 #endif
 
+//*** referenging C routines from C++
+
+#ifdef CPP
+#define CCC "C"
+#define EXTERNCPP extern "C"
+#else
+#define CCC
+#define EXTERNCPP
+#endif
+
+//*** for files
 
 #define FILE_SIZE unsigned long long
 
@@ -74,27 +72,7 @@
 #define STAT stat
 #endif
 
-#undef pp_release
-#define pp_release
-
-#ifdef _DEBUG
-#define pp_MEMDEBUG
-#endif
-
-#ifdef pp_BETA
-#undef pp_release
-#define PROGVERSION "test"
-#endif
-
-#ifdef pp_release
-#define PROGVERSION "1.0.10"
-#endif
-
-#ifdef CPP
-#define CCC "C"
-#else
-#define CCC
-#endif
+//*** declaring and defining variables
 
 #ifdef INMAIN
 #define SVEXTERN
@@ -104,9 +82,4 @@
 #define SVDECL(var,val)  var
 #endif
 
-#ifdef CPP
-#define EXTERNCPP extern "C"
-#else
-#define EXTERNCPP
-#endif
 #endif

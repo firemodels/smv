@@ -51,10 +51,6 @@ int main(int argc, char **argv){
   GLOBdoit_particle=0;
 #endif
 
-#ifdef pp_KDTEST
-  test_kd();
-  exit(0);
-#endif
   strcpy(GLOBpp,"%");
   strcpy(GLOBx,"X");
   GLOBfirst_initsphere=1;
