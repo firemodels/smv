@@ -1,6 +1,8 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
+#include "options_common.h"
+
 //*** uncomment the following two lines to force all versions to be beta
 //#undef pp_BETA
 //#define pp_BETA
@@ -37,16 +39,8 @@
 //*** options: windows
 
 #ifdef WIN32
-#ifdef VS2015            // needed in visual studio to prevent compiler warning/errors
-#define HAVE_SNPRINTF
-#define HAVE_STRUCT_TIMESPEC
-#endif
-
-#define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
-#undef pp_append
 #define pp_memstatus
 #define pp_COMPRESS
-#include "pragmas.h"
 #endif
 
 //*** options: Mac
@@ -55,14 +49,7 @@
 #undef pp_LANG          // turn off language support - doesn't work
 #undef pp_DEG           // turn off degree symbol output - doesn't work
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
-#define pp_append       // append underscore to Fortran file names
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
-#endif
-
-//*** options: Linux
-
-#ifdef pp_LINUX
-#define pp_append // append underscore to Fortran file names
 #endif
 
 //*** options: options being tested on all platforms
@@ -79,72 +66,7 @@
 
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
-#define pp_MEMPRIN      // output memory allocation info
-#define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
-
-//*** referencing Fortran routines from C
-
-#ifndef _F
-#ifdef pp_append
-#define _F(name) name ## _
-#else
-#define _F(name) name
-#endif
-#endif
-
-//*** referencing C routines from C++
-
-#ifdef CPP
-#define CCC "C"
-#define EXTERNCPP extern "C"
-#else
-#define CCC
-#define EXTERNCPP
-#endif
-
-//*** for files
-
-#define FILE_SIZE unsigned long long
-
-#ifdef X64
-#define STRUCTSTAT struct __stat64
-#define STAT _stat64
-#else
-#define STRUCTSTAT struct stat
-#define STAT stat
-#endif
-
-//*** long variables
-
-#define LINT long int
-#ifdef X64
-#undef LINT
-#ifdef WIN32
-#define LINT __int64
-#else
-#define LINT long long int
-#endif
-#endif
-
-//*** declaring and defining variables
-
-#ifdef INMAIN
-#define SVEXTERN
-#define SVDECL(var,val)  var=val
-#else
-#define SVEXTERN extern CCC
-#define SVDECL(var,val)  var
-#endif
-
-//*** glut header
-
-#ifdef pp_OSX
-#define GLUT_H <GLUT/glut.h>
-#else
-#define GLUT_H <GL/glut.h>
-#endif
-#include "lint.h"
 
 #endif
 
