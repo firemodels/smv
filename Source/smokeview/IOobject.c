@@ -6495,7 +6495,8 @@ int read_object_defs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("complete\n\n");
+  PRINTF("complete");
+  PRINTF("\n\n");
   return ndevices;
 }
 

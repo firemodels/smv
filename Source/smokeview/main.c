@@ -36,7 +36,7 @@ void Usage(char **argv,int option){
   PRINTF("%s\n", _(" -runscript     - run the script file casename.ssf"));
   PRINTF("%s\n", _(" -version       - display version information"));
   if(option==2){
-  PRINTF("%s\n", _("\nOther options:\n"));
+  PRINTF("\n%s\n", _("Other options:"));
 #ifdef pp_READBUFFER
   PRINTF("%s\n", _(" -buffer        - scan .smv file using a memory buffer"));
 #endif

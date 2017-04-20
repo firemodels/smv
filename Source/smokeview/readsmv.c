@@ -3846,7 +3846,8 @@ int ReadSMV(char *file, char *file2){
 
   smv_modtime=file_modtime(file);
 
-  PRINTF(_("processing smokeview file: %s\n"),file);
+  PRINTF(_("processing smokeview file:"));
+  PRINTF(_(" %s\n"), file);
 
   pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass0_time;
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
@@ -12040,7 +12041,10 @@ int ReadINI(char *inifile){
 
     returnval = ReadINI2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
-    if(returnval==0)PRINTF("complete\n");
+	if(returnval == 0){
+	  PRINTF("complete");
+	  PRINTF("\n");
+	}
     update_terrain_options();
   }
 
@@ -12051,7 +12055,10 @@ int ReadINI(char *inifile){
 
     returnval = ReadINI2(INIfile, 0);
     if(returnval==2)return 2;
-    if(returnval==0)PRINTF("complete\n");
+    if(returnval == 0){
+      PRINTF("complete");
+      PRINTF("\n");
+    }
   }
 
   // read in casename.ini
@@ -12061,7 +12068,10 @@ int ReadINI(char *inifile){
 
     returnval = ReadINI2(caseini_filename, 1);
     if(returnval==2)return 2;
-    if(returnval==0)PRINTF("complete\n");
+    if(returnval == 0){
+      PRINTF("complete");
+      PRINTF("\n");
+    }
   }
 
   // read in ini file specified in script
@@ -12070,7 +12080,10 @@ int ReadINI(char *inifile){
     int return_code;
 
     return_code = ReadINI2(inifile,1);
-    if(return_code==0)PRINTF("complete\n");
+    if(return_code == 0){
+      PRINTF("complete");
+      PRINTF("\n");
+    }
 
     if(return_code==1||return_code==2){
       if(inifile==NULL){
