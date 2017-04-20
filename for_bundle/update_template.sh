@@ -1,9 +1,26 @@
 #!/bin/bash
-#
-MAKEPO=../makepo/intel_linux_64/makepo_linux_64
-SMVDIR=../source/smokeview
-SHAREDDIR=../source/shared
+
+CURDIR=`pwd`
+cd ..
+ROOT=`pwd`
+cd $CURDIR
+MAKEPODIR=$ROOT/Build/makepo/intel_linux_64
+MAKEPO=$MAKEPODIR/makepo_linux_64
+SMVDIR=$ROOT/Source/smokeview
+SHAREDDIR=$ROOT/Source/shared
+
+if [ ! -e $MAKEPO ]; then
+  echo "***warning: The application $MAKEPO does not exist."
+  echo "Building makepo"
+  cd $MAKEPODIR
+  ./make_makepo.sh
+  if [ ! -e $MAKEPO ]; then
+    echo "***error: The application $MAKEPO failed to build. Script aborted."
+    cd $CURDIR
+    exit
+  fi
+  cd $CURDIR
+fi
 
 echo updating smokeview_template.po
-cat $SMVDIR/*.c $SMVDIR/*.cpp $SHAREDDIR/*.c | $MAKEPO | sort -u | $MAKEPO -c -a > smokeview_template.po
-
+cat $SMVDIR/*.h $SHAREDDIR/*.h $SMVDIR/*.c $SMVDIR/*.cpp $SHAREDDIR/*.c | $MAKEPO | sort -u | $MAKEPO -c -a > smokeview_template.po

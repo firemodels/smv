@@ -2678,7 +2678,8 @@ void UnloadVolsmokeAllFrames(volrenderdata *vr){
   vr->display=0;
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
-  PRINTF("completed\n");
+  PRINTF("completed");
+  PRINTF("\n");
 }
 
 /* ------------------ ReadVolsmokeAllFrames ------------------------ */
@@ -2818,7 +2819,8 @@ void UnloadVolsmokeSuperTextures(void){
     FREEMEMORY(smesh->fire_texture_buffer);
     FREEMEMORY(smesh->smoke_texture_buffer);
   }
-  PRINTF("complete\n");
+  PRINTF("complete");
+  PRINTF("\n");
 }
 
 /* ------------------ InitVolsmokeTexture ------------------------ */
@@ -2918,7 +2920,8 @@ void InitVolsmokeTexture(meshdata *meshi){
 #endif
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("complete\n");
+  PRINTF("complete");
+  PRINTF("\n");
   FFLUSH();
 }
 

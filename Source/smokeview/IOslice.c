@@ -1111,7 +1111,8 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
       UpdateCurrentColorbar(cb);
     }
   }
-  PRINTF("completed\n");
+  PRINTF("completed");
+  PRINTF("\n");
 }
 
 /* ------------------ ReadVSlice ------------------------ */
@@ -3855,7 +3856,8 @@ void InitSlice3DTexture(meshdata *meshi){
   }
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed\n");
+  PRINTF("completed");
+  PRINTF("\n");
   FFLUSH();
 }
 #endif

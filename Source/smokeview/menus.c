@@ -6277,10 +6277,10 @@ updatemenu=0;
       }
       if(nzmvents>0){
         if(visVentMFlow==1){
-          glutAddMenuEntry(_("   *Mechancial"), MENU_ZONE_MVENTS);
+          glutAddMenuEntry(_("   *Mechanical"), MENU_ZONE_MVENTS);
         }
         else{
-          glutAddMenuEntry(_("   Mechancial"), MENU_ZONE_MVENTS);
+          glutAddMenuEntry(_("   Mechanical"), MENU_ZONE_MVENTS);
         }
       }
     }
@@ -7851,7 +7851,7 @@ updatemenu=0;
 #ifdef WIN32
   glutAddMenuEntry(_("Downloads"), MENU_HELP_DOWNLOADS);
   glutAddMenuEntry(_("Documentation"), MENU_HELP_DOCUMENTATION);
-  glutAddMenuEntry(_("Discussion Forum"), MENU_HELP_FORUM);
+  glutAddMenuEntry(_("Discussion forum"), MENU_HELP_FORUM);
   glutAddMenuEntry(_("Issue tracker"), MENU_HELP_ISSUES);
   glutAddMenuEntry(_("Release notes"), MENU_HELP_RELEASENOTES);
   glutAddMenuEntry(_("Home page"), MENU_HELP_FDSWEB);
