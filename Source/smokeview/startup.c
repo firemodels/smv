@@ -404,9 +404,9 @@ void SetupGlut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s",_("initializing Glut\n"));
+    PRINTF("%s\n",_("initializing Glut"));
     glutInit(&argc, argv);
-    PRINTF("%s\n",_("complete\n"));
+    PRINTF("%s\n",_("complete"));
   }
 #ifdef pp_OSX
   chdir(workingdir);
@@ -617,7 +617,7 @@ void InitOpenGL(void){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  PRINTF("%s",_("complete\n\n"));
+  PRINTF("%s\n\n",_("complete"));
 }
 
 /* ------------------ Set3DSmokeStartup ------------------------ */

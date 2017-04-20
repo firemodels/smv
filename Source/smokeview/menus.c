@@ -6277,10 +6277,10 @@ updatemenu=0;
       }
       if(nzmvents>0){
         if(visVentMFlow==1){
-          glutAddMenuEntry(_("   *Mechancial"), MENU_ZONE_MVENTS);
+          glutAddMenuEntry(_("   *Mechanical"), MENU_ZONE_MVENTS);
         }
         else{
-          glutAddMenuEntry(_("   Mechancial"), MENU_ZONE_MVENTS);
+          glutAddMenuEntry(_("   Mechanical"), MENU_ZONE_MVENTS);
         }
       }
     }
