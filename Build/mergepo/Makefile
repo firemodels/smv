@@ -1,5 +1,5 @@
-SOURCE_DIR = ../../source/
-INC_DIR = -I $(SOURCE_DIR)/mergepo -I $(SOURCE_DIR)/shared 
+SOURCE_DIR = ../../../Source/
+INC_DIR = -I $(SOURCE_DIR)/mergepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared 
 FILTERC =
 FILTERF =
 
@@ -10,7 +10,7 @@ LINUX64FORTLIBDIR = $(IFORT_COMPILER)/lib/intel64
 
 # Definition of the object variables
 
-obj = main.o dmalloc.o assert.o translate.o string_util.o
+obj = main.o dmalloc.o assert.o file_util.o translate.o string_util.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -41,8 +41,8 @@ no_target:
 # ------------- Win 64 ----------------
 #  64 bit windows
 
-intel_win_64 : CFLAGS    = -O2 -I ../../source/pthreads /Qvec_report0 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB
-intel_win_64 : LFLAGS    = ../../Build/LIBS/lib_win_intel_64/pthreads.lib
+intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB
+intel_win_64 : LFLAGS    = 
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : exe       = mergepo_win_64.exe
