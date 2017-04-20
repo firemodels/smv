@@ -489,7 +489,7 @@ void InitOpenGL(void){
   int type;
   int err;
 
-  PRINTF("%s",_("initializing OpenGL\n"));
+  PRINTF("%s\n",_("initializing OpenGL"));
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
