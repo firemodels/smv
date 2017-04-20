@@ -53,7 +53,7 @@ intel_win_64 : $(objwin)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -vec_report0 -D pp_LINUX64
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX64
 intel_linux_64 : LFLAGS    = -lpthread
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
