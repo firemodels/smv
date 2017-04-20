@@ -15,7 +15,7 @@ if [ ! -e $MAKEPO ]; then
   cd $MAKEPODIR
   ./make_makepo.sh
   if [ ! -e $MAKEPO ]; then
-    echo "***error: The application makepo failed to build. Script aborted."
+    echo "***error: The application $MAKEPO failed to build. Script aborted."
     cd $CURDIR
     exit
   fi
