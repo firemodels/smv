@@ -3805,9 +3805,13 @@ void update_patch_menulabels(void){
         STRCAT(patchi->menulabel,label);
       }
       if(patchi->filetype == PATCH_GEOMETRY){
-        if(strlen(patchi->gslicedir) != 0){
+        //if(strlen(patchi->gslicedir) != 0){
+        //  STRCAT(patchi->menulabel, ", ");
+        //  STRCAT(patchi->menulabel, patchi->gslicedir);
+        //}
+        if(strlen(patchi->geomtype)!=0){
           STRCAT(patchi->menulabel, ", ");
-          STRCAT(patchi->menulabel, patchi->gslicedir);
+          STRCAT(patchi->menulabel, patchi->geomtype);
         }
       }
       if(STAT(patchi->comp_file,&statbuffer)==0){
