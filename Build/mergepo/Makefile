@@ -64,8 +64,8 @@ intel_linux_64 : $(obj)
 # ------------- Linux 64 debug ----------------
 #  64 bit linux debug
 
-intel_linux_64_db : CFLAGS    = -O0 -g -traceback -check-uninit -ftrapuv -m64 -D pp_LINUX64
-intel_linux_64_db : LFLAGS    = -traceback
+intel_linux_64_db : CFLAGS    =  -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable
+intel_linux_64_db : LFLAGS    = -m64 -static-intel -traceback
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
 intel_linux_64_db : exe       = mergepo_linux_64_db

@@ -1,12 +1,10 @@
 #!/bin/bash
-
 CURDIR=`pwd`
 cd ..
 ROOT=`pwd`
 cd $CURDIR
 MERGEPODIR=$ROOT/Build/mergepo/intel_linux_64_db
 MERGEPO=$MERGEPODIR/mergepo_linux_64_db
-
 if [ ! -e $MERGEPO ]; then
   echo "***warning: The application $MERGEPO does not exist."
   echo "Building mergepo"
@@ -19,10 +17,7 @@ if [ ! -e $MERGEPO ]; then
   fi
   cd $CURDIR
 fi
-
-
-for pofile in smokeview_??.po
-do
+for pofile in smokeview_??.po; do
   echo updating $pofile
   $MERGEPO -c $pofile smokeview_template.po > $pofile.revised
 done

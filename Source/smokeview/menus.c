@@ -7343,7 +7343,7 @@ updatemenu=0;
   }
   if(ReadPlot3dFile==1){
     showhide_data = 1;
-    glutAddSubMenu(_("Plot3d"), plot3dshowmenu);
+    glutAddSubMenu(_("Plot3D"), plot3dshowmenu);
   }
 
   nvslice0=0, nvslice1=0, nvslice2=0;
