@@ -1302,7 +1302,7 @@ typedef struct {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
-  char *geomfile;
+  char *geomfile, *geomtype;
   geomdata *geominfo;
   //int *patchsize;
   int version;

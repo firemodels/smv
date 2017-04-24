@@ -8191,6 +8191,7 @@ typedef struct {
       int blocknumber;
       size_t len;
       STRUCTSTAT statbuffer;
+      char *geomtype;
 
       if(setup_only == 1)continue;
       nn_patch++;
@@ -8216,6 +8217,7 @@ typedef struct {
 
       patchi->version=version;
       strcpy(patchi->scale, "");
+      patchi->geomtype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
@@ -8230,8 +8232,8 @@ typedef struct {
 
         patchi->filetype = PATCH_GEOMETRY;
         patchi->slice = 1;
-        sliceparms = strchr(buffer, '&');
 
+        sliceparms = strchr(buffer, '&');
         if(sliceparms != NULL){
           int ijk[6],j;
 
@@ -8240,6 +8242,20 @@ typedef struct {
           sscanf(sliceparms, "%i %i %i %i %i %i", ijk,ijk+1,ijk+2,ijk+3,ijk+4,ijk+5);
           for(j=0;j<6;j++){
             patchi->ijk[j]=ijk[j];
+          }
+        }
+
+        geomtype = strchr(buffer, '#');
+        if(geomtype != NULL){
+          int len_geomtype;
+
+          geomtype++;
+          geomtype[-1] = 0;
+          geomtype = TrimFrontBack(geomtype);
+          len_geomtype = strlen(geomtype);
+          if(len_geomtype>0){
+            NewMemory((void **)&patchi->geomtype,(unsigned int)(len_geomtype+1));
+            strcpy(patchi->geomtype,geomtype);
           }
         }
       }

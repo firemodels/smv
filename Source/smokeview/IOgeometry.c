@@ -2365,6 +2365,10 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
 
   FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
 
+  if(nvals==0){
+    PRINTF("***warning: no data in %s\n", file);
+    return;
+  }
   if(nvals>0&&ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics,ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_ndynamics,ntimes_local*sizeof(int));
