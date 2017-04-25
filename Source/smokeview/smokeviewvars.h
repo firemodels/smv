@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
 SVEXTERN int SVDECL(show_patch_cutcell_polygon, 0);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
