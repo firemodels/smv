@@ -44,7 +44,7 @@ void Usage(char **argv,int option){
   PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
   PRINTF("%s\n", _("                  and save results into case2.ini"));
   PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
-  PRINTF("%s\n", _(" -fast          - take short cuts to shorten startup time"));
+  PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
   PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
   PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
 #ifdef pp_READBUFFER
