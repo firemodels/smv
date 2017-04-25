@@ -8021,8 +8021,8 @@ typedef struct {
       strcat(buffer2,".svz");
       has_reg=0;
       has_comp=0;
-      if(file_exists(buffer2)==1)has_comp=1;
-      if(has_comp==0&&file_exists(bufferptr)==1)has_reg=1;
+      if(lookfor_zip==1&&file_exists(buffer2)==1)has_comp=1;
+      if(has_comp==0&&(fast_startup==1||file_exists(bufferptr)==1))has_reg=1;
       if(has_reg==0&&has_comp==0){
         nsliceinfo--;
         nslicefiles--;
