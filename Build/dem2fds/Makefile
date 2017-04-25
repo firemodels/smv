@@ -95,7 +95,7 @@ intel_linux_64 : $(obj)
 #  64 bit OSX
 
 intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL $(GITINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = dem2fds_osx_64
 
