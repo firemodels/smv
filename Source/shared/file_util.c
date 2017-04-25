@@ -551,22 +551,17 @@ int file_exists(char *filename){
 // returns 1 if the file filename exists, 0 otherwise
 
 #ifdef WIN32
-  if(filename==NULL||_access(filename,0)==-1){
-    return 0;
-  }
-  else{
-    return 1;
-  }
+  #define ACCESS _access
+  #define F_OK 0
 #else
-  STRUCTSTAT statbuffer;
-
-  if(filename==NULL||STAT(filename,&statbuffer)!=0){
+  #define ACCESS access
+#endif
+  if(filename==NULL||ACCESS(filename,F_OK)==-1){
     return 0;
   }
   else{
     return 1;
   }
-#endif
 }
 
 /* ------------------ free_filelist ------------------------ */

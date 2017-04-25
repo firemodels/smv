@@ -9,6 +9,9 @@
 #ifdef pp_GCC
 #include <unistd.h>
 #endif
+#ifdef pp_LINUX
+#include <unistd.h>
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
