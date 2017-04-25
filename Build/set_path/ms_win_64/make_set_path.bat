@@ -6,5 +6,4 @@ Title Building set_path for 64 bit Windows
 
 erase *.obj *.mod
 make -f ..\Makefile ms_win_64
-pause
 
