@@ -1,10 +1,6 @@
 @echo off
 :: setup MS compiler environment
-::call "%VS_COMPILER%\vcvarsall.bat" amd64
-
-:: setup intel compiler environment
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
-
+call "%VS_COMPILER%\vcvarsall.bat" amd64
 
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=
