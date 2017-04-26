@@ -3819,7 +3819,7 @@ void update_patch_menulabels(void){
           }
         }
       }
-      if(file_exists(patchi->comp_file)==1){
+      if(file_exists(patchi->comp_file)==YES){
         patchi->file=patchi->comp_file;
         patchi->compression_type=COMPRESSED_ZLIB;
       }

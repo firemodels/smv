@@ -130,7 +130,7 @@ char *get_smokezippath(char *progdir){
 #ifdef WIN32
   strcat(zip_path,".exe");
 #endif
-  if(file_exists(zip_path)==1)return zip_path;
+  if(file_exists(zip_path)==YES)return zip_path;
   FREEMEMORY(zip_path);
   return NULL;
 }
@@ -183,13 +183,13 @@ char *get_filename(char *temp_dir, char *file, int flag){
   file2=TrimFront(file);
   if(flag==0){
     stream=fopen(file2,"r");
-    if(can_write_to_dir(".")==1||stream!=NULL){
+    if(writable(".")==YES||stream!=NULL){
       NewMemory((void **)&file_out,strlen(file2)+1);
       strcpy(file_out,file2);
     }
     if(stream!=NULL)fclose(stream);
   }
-  if(file_out==NULL&&temp_dir!=NULL&&can_write_to_dir(temp_dir)==1){
+  if(file_out==NULL&&temp_dir!=NULL&&writable(temp_dir)==YES){
     NewMemory((void **)&file_out,strlen(temp_dir)+1+strlen(file2)+1);
     strcpy(file_out,"");
     strcat(file_out,temp_dir);
@@ -282,9 +282,9 @@ void make_outfile(char *outfile, char *destdir, char *file1, char *ext){
   strcat(outfile,ext);
 }
 
-/* ------------------ can_write_to_dir ------------------------ */
+/* ------------------ can_write_to_dirOLD ------------------------ */
 
-int can_write_to_dir(char *dir){
+int can_write_to_dirOLD(char *dir){
 
 // returns 1 if the directory can be written to, 0 otherwise
 
@@ -319,6 +319,29 @@ int can_write_to_dir(char *dir){
   UNLINK(full_name);
   FREEMEMORY(full_name);
   return return_val;
+}
+
+#ifdef WIN32
+  #define ACCESS _access
+  #define F_OK 0
+  #define W_OK 2
+#else
+  #define ACCESS access
+#endif
+
+/* ------------------ writable ------------------------ */
+
+int writable(char *dir){
+
+  // returns 1 if the directory can be written to, 0 otherwise
+
+  if(dir==NULL||strlen(dir)==0||ACCESS(dir,F_OK|W_OK)==-1){
+    return NO;
+  }
+  else{
+    return YES;
+  }
+
 }
 
 /* ------------------ is_file_newer ------------------------ */
@@ -483,7 +506,7 @@ filedata *File2Buffer(char *filename){
   int nlines;
   FILE *stream;
 
-  if(file_exists(filename)==0)return NULL;
+  if(file_exists(filename)==NO)return NULL;
   filesize = get_filesize(filename);
   if(filesize==0)return NULL;
   stream = fopen(filename,"rb");
@@ -549,17 +572,11 @@ int file_exists(char *filename){
 
 // returns 1 if the file filename exists, 0 otherwise
 
-#ifdef WIN32
-  #define ACCESS _access
-  #define F_OK 0
-#else
-  #define ACCESS access
-#endif
   if(filename==NULL||ACCESS(filename,F_OK)==-1){
-    return 0;
+    return NO;
   }
   else{
-    return 1;
+    return YES;
   }
 }
 
@@ -804,10 +821,10 @@ char *get_zonefilename(char *bufptr){
   char *full_name, *last_name, *filename;
 
   full_name=bufptr;
-  if(file_exists(full_name)==0)full_name=NULL;
+  if(file_exists(full_name)==NO)full_name=NULL;
 
   last_name=lastname(bufptr);
-  if(file_exists(last_name)==0)last_name=NULL;
+  if(file_exists(last_name)==NO)last_name=NULL;
 
   if(last_name!=NULL&&full_name!=NULL){
     if(strcmp(last_name,full_name)==0){
@@ -891,7 +908,7 @@ char *which(char *progname){
     strcpy(fullprogname,dir);
     strcat(fullprogname,dirsep);
     strcat(fullprogname,prognamecopy);
-    if(file_exists(fullprogname)==1){
+    if(file_exists(fullprogname)==YES){
       NewMemory((void **)&pathentry,(unsigned int)(strlen(dir)+2));
       strcpy(pathentry,dir);
       strcat(pathentry,dirsep);

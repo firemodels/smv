@@ -1028,7 +1028,7 @@ void ReadSMVDynamic(char *file){
       STRCPY(plot3di->comp_file,bufferptr);
       STRCAT(plot3di->comp_file,".svz");
 
-      if(file_exists(plot3di->comp_file)==1){
+      if(file_exists(plot3di->comp_file)==YES){
         plot3di->compression_type=COMPRESSED_ZLIB;
         plot3di->file=plot3di->comp_file;
       }
@@ -1040,7 +1040,7 @@ void ReadSMVDynamic(char *file){
       plot3di->compression_type=UNCOMPRESSED;
       plot3di->file=plot3di->reg_file;
 
-      if(fast_startup==1||file_exists(plot3di->file)==1){
+      if(fast_startup==1||file_exists(plot3di->file)==YES){
         int n;
 
         plot3di->u = -1;
@@ -1744,7 +1744,7 @@ int GetInpf(char *file, char *file2){
       FREEMEMORY(fds_filein);
       if(NewMemory((void **)&fds_filein,(unsigned int)(len+1))==0)return 2;
       STRCPY(fds_filein,bufferptr);
-      if(file_exists(fds_filein)==0){
+      if(file_exists(fds_filein)==NO){
         FreeMemory(fds_filein);
       }
 
@@ -1762,21 +1762,21 @@ int GetInpf(char *file, char *file2){
         NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(hrr_csv_filename,chidfilebase);
         STRCAT(hrr_csv_filename,"_hrr.csv");
-        if(file_exists(hrr_csv_filename)==0){
+        if(file_exists(hrr_csv_filename)==NO){
           FREEMEMORY(hrr_csv_filename);
         }
 
         NewMemory((void **)&devc_csv_filename,(unsigned int)(strlen(chidfilebase)+9+1));
         STRCPY(devc_csv_filename,chidfilebase);
         STRCAT(devc_csv_filename,"_devc.csv");
-        if(file_exists(devc_csv_filename)==0){
+        if(file_exists(devc_csv_filename)==NO){
           FREEMEMORY(devc_csv_filename);
         }
 
         NewMemory((void **)&exp_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(exp_csv_filename,chidfilebase);
         STRCAT(exp_csv_filename,"_exp.csv");
-        if(file_exists(exp_csv_filename)==0){
+        if(file_exists(exp_csv_filename)==NO){
           FREEMEMORY(exp_csv_filename);
         }
       }
@@ -3914,14 +3914,14 @@ int ReadSMV(char *file, char *file2){
       file_ptr=TrimFront(buffer2);
       nfiles=1;
       if(strcmp(type_ptr,"hrr")==0){
-        if(file_exists(file_ptr)==0)nfiles=0;
+        if(file_exists(file_ptr)==NO)nfiles=0;
       }
       else if(strcmp(type_ptr,"devc")==0){
-        if(file_exists(file_ptr)==0)nfiles=0;
+        if(file_exists(file_ptr)==NO)nfiles=0;
       }
       else if(strcmp(type_ptr,"ext")==0){
         if(strchr(file_ptr,'*')==NULL){
-          if(file_exists(file_ptr)==0)nfiles=0;
+          if(file_exists(file_ptr)==NO)nfiles=0;
         }
         else{
           nfiles = get_nfilelist(".",file_ptr);
@@ -4629,14 +4629,14 @@ int ReadSMV(char *file, char *file2){
       file_ptr=TrimFront(buffer2);
       nfiles=1;
       if(strcmp(type_ptr,"hrr")==0){
-        if(file_exists(file_ptr)==0)nfiles=0;
+        if(file_exists(file_ptr)==NO)nfiles=0;
       }
       else if(strcmp(type_ptr,"devc")==0){
-        if(file_exists(file_ptr)==0)nfiles=0;
+        if(file_exists(file_ptr)==NO)nfiles=0;
       }
       else if(strcmp(type_ptr,"ext")==0){
         if(strchr(file_ptr,'*')==NULL){
-          if(file_exists(file_ptr)==0)nfiles=0;
+          if(file_exists(file_ptr)==NO)nfiles=0;
         }
         else{
           nfiles = get_nfilelist(".",file_ptr);
@@ -4653,7 +4653,7 @@ int ReadSMV(char *file, char *file2){
       csvi->display=0;
 
       if(strcmp(type_ptr,"hrr")==0){
-        if(file_exists(file_ptr)==1){
+        if(file_exists(file_ptr)==YES){
           csvi->type=CSVTYPE_HRR;
           NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
           strcpy(csvi->file,file_ptr);
@@ -4663,7 +4663,7 @@ int ReadSMV(char *file, char *file2){
         }
       }
       else if(strcmp(type_ptr,"devc")==0){
-        if(file_exists(file_ptr)==1){
+        if(file_exists(file_ptr)==YES){
           csvi->type=CSVTYPE_DEVC;
           NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
           strcpy(csvi->file,file_ptr);
@@ -4674,7 +4674,7 @@ int ReadSMV(char *file, char *file2){
       }
       else if(strcmp(type_ptr,"ext")==0){
         if(strchr(file_ptr,'*')==NULL){
-          if(file_exists(file_ptr)==1){
+          if(file_exists(file_ptr)==YES){
             csvi->type=CSVTYPE_EXT;
             NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
             strcpy(csvi->file,file_ptr);
@@ -5355,7 +5355,7 @@ int ReadSMV(char *file, char *file2){
       cadgeominfo[ncadgeom].order=NULL;
       cadgeominfo[ncadgeom].quad=NULL;
       cadgeominfo[ncadgeom].file=NULL;
-      if(file_exists(bufferptr)==1){
+      if(file_exists(bufferptr)==YES){
         if(NewMemory((void **)&cadgeominfo[ncadgeom].file,(unsigned int)(len+1))==0)return 2;
         STRCPY(cadgeominfo[ncadgeom].file,bufferptr);
         ReadCADGeom(cadgeominfo+ncadgeom);
@@ -5496,14 +5496,14 @@ int ReadSMV(char *file, char *file2){
         if(NewMemory((void **)&smoke3di->comp_file,(unsigned int)(len+1))==0)return 2;
         STRCPY(smoke3di->comp_file,buffer2);
 
-        if(file_exists(smoke3di->comp_file)==1){
+        if(file_exists(smoke3di->comp_file)==YES){
           smoke3di->file=smoke3di->comp_file;
           smoke3di->is_zlib=1;
         }
         else{
           smoke3di->file=smoke3di->reg_file;
         }
-        if(file_exists(smoke3di->file)==1){
+        if(file_exists(smoke3di->file)==YES){
           if(ReadLabels(&smoke3di->label,stream)==2)return 2;
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
@@ -5604,17 +5604,17 @@ int ReadSMV(char *file, char *file2){
         char texturebuffer[1024];
 
         found_texture=0;
-        if(texturedir!=NULL&&file_exists(buffer3)==0){
+        if(texturedir!=NULL&&file_exists(buffer3)==NO){
           STRCPY(texturebuffer,texturedir);
           STRCAT(texturebuffer,dirseparator);
           STRCAT(texturebuffer,buffer3);
-          if(file_exists(texturebuffer)==1){
+          if(file_exists(texturebuffer)==YES){
             if(NewMemory((void **)&surfi->texturefile,strlen(texturebuffer)+1)==0)return 2;
             STRCPY(surfi->texturefile,texturebuffer);
             found_texture=1;
           }
         }
-        if(file_exists(buffer3)==1){
+        if(file_exists(buffer3)==YES){
           len=strlen(buffer3);
           if(NewMemory((void **)&surfi->texturefile,(unsigned int)(len+1))==0)return 2;
           STRCPY(surfi->texturefile,buffer3);
@@ -7728,7 +7728,7 @@ typedef struct {
 
       // parti->size_file can't be written to, then put it in a world writeable temp directory
 
-      if(file_exists(parti->size_file)==0&&can_write_to_dir(".")==0&&smokeviewtempdir!=NULL){
+      if(file_exists(parti->size_file)==NO&&writeable(".")==NO&&smokeviewtempdir!=NULL){
         len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
         FREEMEMORY(parti->size_file);
         if(NewMemory((void **)&parti->size_file,(unsigned int)len)==0)return 2;
@@ -7740,7 +7740,7 @@ typedef struct {
 
       // parti->hist_file can't be written to, then put it in a world writeable temp directory
 
-      if(file_exists(parti->hist_file) == 0 && can_write_to_dir(".") == 0 && smokeviewtempdir != NULL){
+      if(file_exists(parti->hist_file) == NO && writable(".") == NO && smokeviewtempdir != NULL){
         len = strlen(smokeviewtempdir) + strlen(bufferptr) + 1 + 5 + 1;
         FREEMEMORY(parti->hist_file);
         if(NewMemory((void **)&parti->hist_file, (unsigned int)len) == 0)return 2;
@@ -7755,13 +7755,13 @@ typedef struct {
       STRCPY(parti->comp_file,bufferptr);
       STRCAT(parti->comp_file,".svz");
 
-      if(file_exists(parti->comp_file)==1){
+      if(file_exists(parti->comp_file)==YES){
         parti->compression_type=COMPRESSED_ZLIB;
         parti->file=parti->comp_file;
       }
       else{
         parti->compression_type=UNCOMPRESSED;
-        if(file_exists(parti->reg_file)==1){
+        if(file_exists(parti->reg_file)==YES){
           parti->file=parti->reg_file;
         }
         else{
@@ -7819,7 +7819,7 @@ typedef struct {
         NewMemory((void **)&parti->partclassptr,sizeof(partclassdata *));
           parti->partclassptr[i]=partclassinfo + parti->nclasses;
       }
-      if(fast_startup==1||(parti->file!=NULL&&file_exists(parti->file)==1)){
+      if(fast_startup==1||(parti->file!=NULL&&file_exists(parti->file)==YES)){
         ipart++;
       }
       else{
@@ -7909,7 +7909,7 @@ typedef struct {
         NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(hrr_csv_filename,chidfilebase);
         STRCAT(hrr_csv_filename,"_hrr.csv");
-        if(file_exists(hrr_csv_filename)==0){
+        if(file_exists(hrr_csv_filename)==NO){
           FREEMEMORY(hrr_csv_filename);
         }
       }
@@ -8016,8 +8016,8 @@ typedef struct {
       strcat(buffer2,".svz");
       has_reg=0;
       has_comp=0;
-      if(lookfor_zip==1&&file_exists(buffer2)==1)has_comp=1;
-      if(has_comp==0&&(fast_startup==1||file_exists(bufferptr)==1))has_reg=1;
+      if(lookfor_zip==1&&file_exists(buffer2)==YES)has_comp=1;
+      if(has_comp==0&&(fast_startup==1||file_exists(bufferptr)==YES))has_reg=1;
       if(has_reg==0&&has_comp==0){
         nsliceinfo--;
         nslicefiles--;
@@ -8068,7 +8068,7 @@ typedef struct {
         strcpy(volfile,bufferptr);
         strcat(volfile,".svv");
         sd->vol_file=NULL;
-        if(file_exists(volfile)==1){
+        if(file_exists(volfile)==YES){
           NewMemory((void **)&sd->vol_file,(unsigned int)(len+4+1));
           STRCPY(sd->vol_file,volfile);
           have_volcompressed=1;
@@ -8272,7 +8272,7 @@ typedef struct {
       STRCPY(patchi->size_file,bufferptr);
 //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-      if(file_exists(patchi->comp_file)==1){
+      if(file_exists(patchi->comp_file)==YES){
         patchi->compression_type=COMPRESSED_ZLIB;
         patchi->file=patchi->comp_file;
       }
@@ -8336,7 +8336,7 @@ typedef struct {
       patchi->setchopmax=0;
       patchi->chopmax=0.0;
       meshinfo[blocknumber].patchfilenum=-1;
-      if(fast_startup==1||file_exists(patchi->file)==1){
+      if(fast_startup==1||file_exists(patchi->file)==YES){
         if(patchi->filetype==PATCH_CELL_CENTER){
           if(ReadLabelsCellCenter(&patchi->label,stream)==2)return 2;
         }
@@ -8452,7 +8452,7 @@ typedef struct {
         strcpy(isoi->tfile,tbufferptr);
       }
 
-      if(fast_startup==1||file_exists(isoi->reg_file)==1){
+      if(fast_startup==1||file_exists(isoi->reg_file)==YES){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream)==2)return 2;

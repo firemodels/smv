@@ -807,7 +807,7 @@ void InitVolRender(void){
     slicei = sliceinfo + i;
     blocknumber = slicei->blocknumber;
     if(blocknumber<0||blocknumber>=nmeshes)continue;
-    if(file_exists(slicei->reg_file)!=1)continue;
+    if(file_exists(slicei->reg_file)==NO)continue;
 
     meshi = meshinfo + blocknumber;
     if(slicei->nslicei!=meshi->ibar+1||slicei->nslicej!=meshi->jbar+1||slicei->nslicek!=meshi->kbar+1)continue;

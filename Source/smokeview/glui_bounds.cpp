@@ -1549,7 +1549,7 @@ extern "C" void glui_bounds_setup(int main_window){
 
       file = scriptfile->file;
       if(file == NULL)continue;
-      if(file_exists(file) == 0)continue;
+      if(file_exists(file) == NO)continue;
       len = strlen(file);
       if(len <= 0)continue;
 
@@ -1576,7 +1576,7 @@ extern "C" void glui_bounds_setup(int main_window){
     inifiledata *inifile;
 
     for(inifile = first_inifile.next; inifile->next != NULL; inifile = inifile->next){
-      if(inifile->file != NULL&&file_exists(inifile->file) == 1){
+      if(inifile->file != NULL&&file_exists(inifile->file) == YES){
         if(ini_index == -2)ini_index = inifile->id;
         LIST_ini_list->add_item(inifile->id, inifile->file);
       }

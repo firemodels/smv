@@ -9281,17 +9281,17 @@ updatemenu=0;
 
     n_inifiles=0;
     for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-      if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+      if(inifile->file!=NULL&&file_exists(inifile->file)==YES){
         n_inifiles++;
       }
     }
     if(n_inifiles>0){
       CREATEMENU(inisubmenu,IniSubMenu);
-      if(caseini_filename!=NULL&&file_exists(caseini_filename)==1){
+      if(caseini_filename!=NULL&&file_exists(caseini_filename)==YES){
         glutAddMenuEntry(caseini_filename,MENU_READCASEINI);
       }
       for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-        if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+        if(inifile->file!=NULL&&file_exists(inifile->file)==YES){
           glutAddMenuEntry(inifile->file,inifile->id);
         }
       }
@@ -9307,11 +9307,11 @@ updatemenu=0;
 
     n_inifiles=0;
     for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-      if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+      if(inifile->file!=NULL&&file_exists(inifile->file)==YES){
         n_inifiles++;
       }
     }
-    if( n_inifiles>0||file_exists(INIfile)==1||file_exists(caseini_filename)==1||file_exists(smokeviewini)==1){
+    if( n_inifiles>0||file_exists(INIfile)==YES||file_exists(caseini_filename)==YES||file_exists(smokeviewini)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry(_("Read ini files"),MENU_READINI);
       }
@@ -9364,7 +9364,7 @@ updatemenu=0;
           if(file==NULL)continue;
           len = strlen(file);
           if(len<=0)continue;
-          if(file_exists(file)==0)continue;
+          if(file_exists(file)==NO)continue;
 
           nscripts++;
         }
@@ -9380,7 +9380,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(file_exists(file)==0)continue;
+            if(file_exists(file)==NO)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);
@@ -9396,7 +9396,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(file_exists(file)==0)continue;
+            if(file_exists(file)==NO)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);

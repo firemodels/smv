@@ -110,7 +110,7 @@ EXTERNCPP char *get_basefilename(char *buffer, char *file);
 EXTERNCPP char *setdir(char *argdir);
 EXTERNCPP int getfileinfo(char *filename, char *sourcedir, FILE_SIZE *filesize);
 EXTERNCPP char *get_zonefilename(char *buffer);
-EXTERNCPP int can_write_to_dir(char *dir);
+EXTERNCPP int writable(char *dir);
 EXTERNCPP int file_exists(char *filename);
 
 EXTERNCPP void free_filelist(filelistdata *filelist, int *nfilelist);
@@ -144,5 +144,12 @@ STREXTERN char STRDECL(dirseparator[],"/");
 #endif
 
 #define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)
+
+#ifndef NO
+#define NO 0
+#endif
+#ifndef YES
+#define YES 1
+#endif
 
 #endif

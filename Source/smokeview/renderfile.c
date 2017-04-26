@@ -19,7 +19,7 @@ void PlayMovie(void){
   char command_line[1024], moviefile_path[1024];
 
   if(play_movie_now==0)return;
-  if(file_exists(GetMovieFilePath(moviefile_path)) == 1){
+  if(file_exists(GetMovieFilePath(moviefile_path)) == YES){
     strcpy(command_line, "ffplay ");
     strcat(command_line,moviefile_path);
     PSystem(command_line);
@@ -74,7 +74,7 @@ void MakeMovie(void){
   strcpy(frame0, render_file_base);
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
-  if(runscript==0&&file_exists(frame0)==0){
+  if(runscript==0&&file_exists(frame0)==NO){
     Render_CB(RENDER_START);
     return;
   }
@@ -90,7 +90,7 @@ void MakeMovie(void){
   }
   else{
     strcpy(overwrite_flag, "");
-    if(file_exists(moviefile_path) == 1&&script_dir_path==NULL){
+    if(file_exists(moviefile_path) == YES&&script_dir_path==NULL){
        PRINTF("*** Warning: The movie file %s exists.  Set movie overwrite checkbox in movie dialog box.\n",moviefile_path);
        make_movie_now=0;
     }
@@ -229,8 +229,8 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
 
   // directory
 
-  if(can_write_to_dir(renderfile_dir) == 0){
-    if(can_write_to_dir(smokeviewtempdir) == 1){
+  if(writable(renderfile_dir) == NO){
+    if(writable(smokeviewtempdir) == YES){
       strcpy(renderfile_dir, smokeviewtempdir);
     }
     else{
@@ -1187,7 +1187,7 @@ unsigned char *ReadPicture(char *filename, int *width, int *height, int printfla
   int allocated;
 
   if(filename==NULL)return NULL;
-  if(file_exists(filename)==1){
+  if(file_exists(filename)==YES){
     filebuffer=filename;
     allocated=0;
   }
