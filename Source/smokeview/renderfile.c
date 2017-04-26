@@ -1185,10 +1185,9 @@ unsigned char *ReadPicture(char *filename, int *width, int *height, int printfla
   unsigned char *returncode;
   char *filebuffer=NULL;
   int allocated;
-  STRUCTSTAT statbuffer;
 
   if(filename==NULL)return NULL;
-  if(STAT(filename,&statbuffer)==0){
+  if(file_exists(filename)==1){
     filebuffer=filename;
     allocated=0;
   }

@@ -1714,7 +1714,6 @@ int GetInpf(char *file, char *file2){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
   char buffer[255],*bufferptr;
   int len;
-  STRUCTSTAT statbuffer;
 
   if(file==NULL)return 1;
   stream1=fopen(file,"r");
@@ -1745,7 +1744,7 @@ int GetInpf(char *file, char *file2){
       FREEMEMORY(fds_filein);
       if(NewMemory((void **)&fds_filein,(unsigned int)(len+1))==0)return 2;
       STRCPY(fds_filein,bufferptr);
-      if(STAT(fds_filein,&statbuffer)!=0){
+      if(file_exists(fds_filein)==0){
         FreeMemory(fds_filein);
         fds_filein=NULL;
       }
@@ -1764,21 +1763,21 @@ int GetInpf(char *file, char *file2){
         NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(hrr_csv_filename,chidfilebase);
         STRCAT(hrr_csv_filename,"_hrr.csv");
-        if(STAT(hrr_csv_filename,&statbuffer)!=0){
+        if(file_exists(hrr_csv_filename)==0){
           FREEMEMORY(hrr_csv_filename);
         }
 
         NewMemory((void **)&devc_csv_filename,(unsigned int)(strlen(chidfilebase)+9+1));
         STRCPY(devc_csv_filename,chidfilebase);
         STRCAT(devc_csv_filename,"_devc.csv");
-        if(STAT(devc_csv_filename,&statbuffer)!=0){
+        if(file_exists(devc_csv_filename)==0){
           FREEMEMORY(devc_csv_filename);
         }
 
         NewMemory((void **)&exp_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(exp_csv_filename,chidfilebase);
         STRCAT(exp_csv_filename,"_exp.csv");
-        if(STAT(exp_csv_filename,&statbuffer)!=0){
+        if(file_exists(exp_csv_filename)==0){
           FREEMEMORY(exp_csv_filename);
         }
       }
@@ -3440,7 +3439,7 @@ void SetupMeshWalls(void){
 int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
-  float read_time, processing_time, wrapup_time;
+  float read_time, read_time_elapsed, processing_time, wrapup_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
@@ -3488,6 +3487,7 @@ int ReadSMV(char *file, char *file2){
   }
 #endif
   read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - read_time;
+  read_time_elapsed = glutGet(GLUT_ELAPSED_TIME)/1000.0-startup_time;
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -5347,7 +5347,6 @@ int ReadSMV(char *file, char *file2){
   */
     if(Match(buffer,"CADGEOM") == 1){
       size_t len;
-      STRUCTSTAT statbuffer;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -5357,7 +5356,7 @@ int ReadSMV(char *file, char *file2){
       cadgeominfo[ncadgeom].order=NULL;
       cadgeominfo[ncadgeom].quad=NULL;
       cadgeominfo[ncadgeom].file=NULL;
-      if(STAT(bufferptr,&statbuffer)==0){
+      if(file_exists(bufferptr)==1){
         if(NewMemory((void **)&cadgeominfo[ncadgeom].file,(unsigned int)(len+1))==0)return 2;
         STRCPY(cadgeominfo[ncadgeom].file,bufferptr);
         ReadCADGeom(cadgeominfo+ncadgeom);
@@ -5542,7 +5541,6 @@ int ReadSMV(char *file, char *file2){
       int s_type;
       float temp_ignition,emis,t_width, t_height;
       size_t len;
-      STRUCTSTAT statbuffer;
       char *buffer3;
 
       surfi = surfinfo + nsurfinfo;
@@ -5607,17 +5605,17 @@ int ReadSMV(char *file, char *file2){
         char texturebuffer[1024];
 
         found_texture=0;
-        if(texturedir!=NULL&&STAT(buffer3,&statbuffer)!=0){
+        if(texturedir!=NULL&&file_exists(buffer3)==0){
           STRCPY(texturebuffer,texturedir);
           STRCAT(texturebuffer,dirseparator);
           STRCAT(texturebuffer,buffer3);
-          if(STAT(texturebuffer,&statbuffer)==0){
+          if(file_exists(texturebuffer)==1){
             if(NewMemory((void **)&surfi->texturefile,strlen(texturebuffer)+1)==0)return 2;
             STRCPY(surfi->texturefile,texturebuffer);
             found_texture=1;
           }
         }
-        if(STAT(buffer3,&statbuffer)==0){
+        if(file_exists(buffer3)==1){
           len=strlen(buffer3);
           if(NewMemory((void **)&surfi->texturefile,(unsigned int)(len+1))==0)return 2;
           STRCPY(surfi->texturefile,buffer3);
@@ -7670,7 +7668,6 @@ typedef struct {
       partdata *parti;
       int blocknumber;
       size_t len;
-      STRUCTSTAT statbuffer;
       char *buffer3;
 
       if(setup_only == 1)continue;
@@ -7759,13 +7756,13 @@ typedef struct {
       STRCPY(parti->comp_file,bufferptr);
       STRCAT(parti->comp_file,".svz");
 
-      if(STAT(parti->comp_file,&statbuffer)==0){
+      if(file_exists(parti->comp_file)==1){
         parti->compression_type=COMPRESSED_ZLIB;
         parti->file=parti->comp_file;
       }
       else{
         parti->compression_type=UNCOMPRESSED;
-        if(STAT(parti->reg_file,&statbuffer)==0){
+        if(file_exists(parti->reg_file)==1){
           parti->file=parti->reg_file;
         }
         else{
@@ -7823,7 +7820,7 @@ typedef struct {
         NewMemory((void **)&parti->partclassptr,sizeof(partclassdata *));
           parti->partclassptr[i]=partclassinfo + parti->nclasses;
       }
-      if(parti->file==NULL||STAT(parti->file,&statbuffer)!=0){
+      if(parti->file==NULL||file_exists(parti->file)==0){
         npartinfo--;
       }
       else{
@@ -7868,7 +7865,7 @@ typedef struct {
     ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    /* ENDF superscedes ENDIAN */
+    /* ENDF supercedes ENDIAN */
     if(Match(buffer,"ENDF") == 1){
       FILE *ENDIANfile;
       size_t len;
@@ -7899,7 +7896,6 @@ typedef struct {
   */
     if(Match(buffer,"CHID") == 1){
       size_t len;
-      STRUCTSTAT statbuffer;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -7914,7 +7910,7 @@ typedef struct {
         NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
         STRCPY(hrr_csv_filename,chidfilebase);
         STRCAT(hrr_csv_filename,"_hrr.csv");
-        if(STAT(hrr_csv_filename,&statbuffer)!=0){
+        if(file_exists(hrr_csv_filename)==0){
           FREEMEMORY(hrr_csv_filename);
         }
       }
@@ -8190,7 +8186,6 @@ typedef struct {
       int version;
       int blocknumber;
       size_t len;
-      STRUCTSTAT statbuffer;
       char *geomtype;
 
       if(setup_only == 1)continue;
@@ -8278,7 +8273,7 @@ typedef struct {
       STRCPY(patchi->size_file,bufferptr);
 //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-      if(STAT(patchi->comp_file,&statbuffer)==0){
+      if(file_exists(patchi->comp_file)==1){
         patchi->compression_type=COMPRESSED_ZLIB;
         patchi->file=patchi->comp_file;
       }
@@ -8342,7 +8337,7 @@ typedef struct {
       patchi->setchopmax=0;
       patchi->chopmax=0.0;
       meshinfo[blocknumber].patchfilenum=-1;
-      if(STAT(patchi->file,&statbuffer)==0){
+      if(file_exists(patchi->file)==1){
         if(patchi->filetype==PATCH_CELL_CENTER){
           if(ReadLabelsCellCenter(&patchi->label,stream)==2)return 2;
         }
@@ -8379,7 +8374,6 @@ typedef struct {
       char tbuffer[255], *tbufferptr;
       int blocknumber;
       size_t len;
-      STRUCTSTAT statbuffer;
       char *buffer3;
 
       if(setup_only == 1)continue;
@@ -8459,7 +8453,7 @@ typedef struct {
         strcpy(isoi->tfile,tbufferptr);
       }
 
-      if(STAT(isoi->reg_file,&statbuffer)==0){
+      if(file_exists(isoi->reg_file)==1){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream)==2)return 2;
@@ -8972,15 +8966,23 @@ typedef struct {
   PRINTF("\n");
   PRINTF(".smv Processing Times\n");
   PRINTF("---------------------\n");
-  if(read_time>1.0)      PRINTF("     input: %.1f s\n", read_time);
-  if(pass0_time>1.0)     PRINTF("     setup: %.1f s\n", pass0_time);
-  if(pass1_time>1.0)     PRINTF("    pass 1: %.1f s\n", pass1_time);
-  if(pass2_time>1.0)     PRINTF("    pass 2: %.1f s\n", pass2_time);
-  if(pass3_time>1.0)     PRINTF("    pass 3: %.1f s\n", pass3_time);
-  if(pass4_time>1.0)     PRINTF("    pass 4: %.1f s\n", pass4_time);
-  if(pass5_time>1.0)     PRINTF("    pass 5: %.1f s\n", pass5_time);
+
+#ifdef pp_TIMINGS
+#define ALWAYS 1==1||
+#else
+#define ALWAYS
+#endif
+
+  if(ALWAYS read_time>1.0)         PRINTF(".smv file(net): %.1f s\n", read_time);
+  if(ALWAYS read_time_elapsed>1.0) PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
+  if(ALWAYS pass0_time>1.0)        PRINTF("         setup: %.1f s\n", pass0_time);
+  if(ALWAYS pass1_time>1.0)        PRINTF("        pass 1: %.1f s\n", pass1_time);
+  if(ALWAYS pass2_time>1.0)        PRINTF("        pass 2: %.1f s\n", pass2_time);
+  if(ALWAYS pass3_time>1.0)        PRINTF("        pass 3: %.1f s\n", pass3_time);
+  if(ALWAYS pass4_time>1.0)        PRINTF("        pass 4: %.1f s\n", pass4_time);
+  if(ALWAYS pass5_time>1.0)        PRINTF("        pass 5: %.1f s\n", pass5_time);
                          PRINTF("all passes: %.1f s\n", processing_time);
-  if(wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
+  if(ALWAYS wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
   PRINTF("\n");
   return 0;
 }

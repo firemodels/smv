@@ -3783,7 +3783,6 @@ void update_patch_menulabels(void){
   int i;
   patchdata *patchi;
   char label[128];
-  STRUCTSTAT statbuffer;
 
   if(npatchinfo>0){
     FREEMEMORY(patchorderindex);
@@ -3820,7 +3819,7 @@ void update_patch_menulabels(void){
           }
         }
       }
-      if(STAT(patchi->comp_file,&statbuffer)==0){
+      if(file_exists(patchi->comp_file)==1){
         patchi->file=patchi->comp_file;
         patchi->compression_type=COMPRESSED_ZLIB;
       }

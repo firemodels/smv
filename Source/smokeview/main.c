@@ -298,8 +298,6 @@ void ParseCommandline(int argc, char **argv){
   STRCAT(boundini_filename, ".bini");
 
   if(smv_filename == NULL){
-    STRUCTSTAT statbuffer;
-
     NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
     STRCPY(smv_filename, fdsprefix);
     STRCAT(smv_filename, ".smv");
@@ -308,7 +306,7 @@ void ParseCommandline(int argc, char **argv){
 
       STRCPY(scriptbuffer, fdsprefix);
       STRCAT(scriptbuffer, ".ssf");
-      if(default_script == NULL&&STAT(scriptbuffer, &statbuffer) == 0){
+      if(default_script == NULL&&file_exists(scriptbuffer) == 1){
         default_script = insert_scriptfile(scriptbuffer);
       }
     }
@@ -331,7 +329,7 @@ void ParseCommandline(int argc, char **argv){
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
     STRCPY(fds_filein, fdsprefix);
     STRCAT(fds_filein, ".fds");
-    if(STAT(fds_filein, &statbuffer) != 0){
+    if(file_exists(fds_filein) == 0){
       FREEMEMORY(fds_filein);
     }
   }
@@ -651,7 +649,6 @@ int main(int argc, char **argv){
   char **argv_sv;
   int return_code;
   char *progname;
-  float startup_time;
 
   set_stdout(stdout);
   initMALLOC();

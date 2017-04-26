@@ -9355,7 +9355,6 @@ updatemenu=0;
       nscripts=0;
       if(script_recording==NULL){
         scriptfiledata *scriptfile;
-        STRUCTSTAT statbuffer;
 
         for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
           char *file;
@@ -9365,7 +9364,7 @@ updatemenu=0;
           if(file==NULL)continue;
           len = strlen(file);
           if(len<=0)continue;
-          if(STAT(file,&statbuffer)!=0)continue;
+          if(file_exists(file)==0)continue;
 
           nscripts++;
         }
@@ -9381,7 +9380,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(STAT(file,&statbuffer)!=0)continue;
+            if(file_exists(file)==0)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);
@@ -9397,7 +9396,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(STAT(file,&statbuffer)!=0)continue;
+            if(file_exists(file)==0)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);

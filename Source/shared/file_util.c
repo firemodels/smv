@@ -114,7 +114,6 @@ int have_prog(char *prog){
 /* ------------------ get_smokezippath ------------------------ */
 
 char *get_smokezippath(char *progdir){
-  STRUCTSTAT statbuffer;
   char *zip_path;
 
   if(progdir!=NULL){
@@ -131,7 +130,7 @@ char *get_smokezippath(char *progdir){
 #ifdef WIN32
   strcat(zip_path,".exe");
 #endif
-  if(STAT(zip_path,&statbuffer)==0)return zip_path;
+  if(file_exists(zip_path)==1)return zip_path;
   FREEMEMORY(zip_path);
   return NULL;
 }
@@ -803,13 +802,12 @@ char *lastname(char *argi){
 
 char *get_zonefilename(char *bufptr){
   char *full_name, *last_name, *filename;
-  STRUCTSTAT statbuffer;
 
   full_name=bufptr;
-  if(STAT(full_name,&statbuffer)!=0)full_name=NULL;
+  if(file_exists(full_name)==0)full_name=NULL;
 
   last_name=lastname(bufptr);
-  if(STAT(last_name,&statbuffer)!=0)last_name=NULL;
+  if(file_exists(last_name)==0)last_name=NULL;
 
   if(last_name!=NULL&&full_name!=NULL){
     if(strcmp(last_name,full_name)==0){

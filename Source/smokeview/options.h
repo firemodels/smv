@@ -59,6 +59,7 @@
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_HAZARD        //
+#define pp_TIMINGS
 //#define pp_GPUDEPTH
 #endif
 
