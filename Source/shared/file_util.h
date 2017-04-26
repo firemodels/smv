@@ -111,11 +111,24 @@ EXTERNCPP char *setdir(char *argdir);
 EXTERNCPP int getfileinfo(char *filename, char *sourcedir, FILE_SIZE *filesize);
 EXTERNCPP char *get_zonefilename(char *buffer);
 EXTERNCPP int writable(char *dir);
-EXTERNCPP int file_exists(char *filename);
 
+#ifdef pp_FILELIST
+#define FILE_EXISTS(a)         file_exists(a,NULL,0)
+#define FILE_EXISTS_CASEDIR(a) file_exists(a,filelist_casedir,nfilelist_casedir)
+#else
+#define FILE_EXISTS(a)         file_exists(a)
+#define FILE_EXISTS_CASEDIR(a) file_exists(a)
+#endif
+
+#ifdef pp_FILELIST
+EXTERNCPP int file_exists(char *filename, filelistdata *filelist, int nfilelist);
+EXTERNCPP filelistdata *getfile(char *file, filelistdata *filelist, int nfiles);
+#else
+EXTERNCPP int file_exists(char *filename);
+#endif
 EXTERNCPP void free_filelist(filelistdata *filelist, int *nfilelist);
-EXTERNCPP int get_nfilelist(const char *path, char *key) ;
-EXTERNCPP int get_filelist(const char *path, char *key, int maxfiles, int sort_files, filelistdata **filelist);
+EXTERNCPP int get_nfilelist(const char *path, char *filter) ;
+EXTERNCPP int get_filelist(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist);
 EXTERNCPP char *which(char *progname);
 EXTERNCPP FILE_SIZE get_filesize(const char *filename);
 EXTERNCPP time_t file_modtime(char *filename);

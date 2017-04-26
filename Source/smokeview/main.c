@@ -306,7 +306,7 @@ void ParseCommandline(int argc, char **argv){
 
       STRCPY(scriptbuffer, fdsprefix);
       STRCAT(scriptbuffer, ".ssf");
-      if(default_script == NULL&&file_exists(scriptbuffer) == YES){
+      if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
         default_script = insert_scriptfile(scriptbuffer);
       }
     }
@@ -329,7 +329,7 @@ void ParseCommandline(int argc, char **argv){
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
     STRCPY(fds_filein, fdsprefix);
     STRCAT(fds_filein, ".fds");
-    if(file_exists(fds_filein) == NO){
+    if(FILE_EXISTS(fds_filein) == NO){
       FREEMEMORY(fds_filein);
     }
   }

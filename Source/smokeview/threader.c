@@ -105,7 +105,7 @@ void *mt_MakeIBlank(void *arg){
 void *mt_PSystem(void *arg){
   char command_line[1024], moviefile_path[1024];
 
-  if(file_exists(GetMovieFilePath(moviefile_path))==YES){
+  if(FILE_EXISTS(GetMovieFilePath(moviefile_path))==YES){
     strcpy(command_line, "ffplay ");
     strcat(command_line, moviefile_path);
 #ifdef WIN32

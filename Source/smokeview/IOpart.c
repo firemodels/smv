@@ -312,7 +312,7 @@ void get_part_histogram(partdata *parti){
   for(i = 0; i < npart5prop; i++){
     ResetHistogram(parti->histograms[i],NULL,NULL);
   }
-  if(file_exists(parti->hist_file)==YES&&get_histfile_status(parti)==HIST_OK){
+  if(FILE_EXISTS(parti->hist_file)==YES&&get_histfile_status(parti)==HIST_OK){
     read_part_histogram(parti);
     return;
   }

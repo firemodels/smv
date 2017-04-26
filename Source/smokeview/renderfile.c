@@ -19,7 +19,7 @@ void PlayMovie(void){
   char command_line[1024], moviefile_path[1024];
 
   if(play_movie_now==0)return;
-  if(file_exists(GetMovieFilePath(moviefile_path)) == YES){
+  if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
     strcpy(command_line, "ffplay ");
     strcat(command_line,moviefile_path);
     PSystem(command_line);
@@ -74,7 +74,7 @@ void MakeMovie(void){
   strcpy(frame0, render_file_base);
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
-  if(runscript==0&&file_exists(frame0)==NO){
+  if(runscript==0&& FILE_EXISTS(frame0)==NO){
     Render_CB(RENDER_START);
     return;
   }
@@ -90,7 +90,7 @@ void MakeMovie(void){
   }
   else{
     strcpy(overwrite_flag, "");
-    if(file_exists(moviefile_path) == YES&&script_dir_path==NULL){
+    if(FILE_EXISTS(moviefile_path) == YES&&script_dir_path==NULL){
        PRINTF("*** Warning: The movie file %s exists.  Set movie overwrite checkbox in movie dialog box.\n",moviefile_path);
        make_movie_now=0;
     }
@@ -1187,7 +1187,7 @@ unsigned char *ReadPicture(char *filename, int *width, int *height, int printfla
   int allocated;
 
   if(filename==NULL)return NULL;
-  if(file_exists(filename)==YES){
+  if(FILE_EXISTS(filename)==YES){
     filebuffer=filename;
     allocated=0;
   }

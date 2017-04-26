@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_FILELIST     // use list of file names 
 #define pp_GPU          // support the GPU
 #define pp_ffmpeg       // support compression
 #define pp_READBUFFER   // read .smv file from a memory buffer
