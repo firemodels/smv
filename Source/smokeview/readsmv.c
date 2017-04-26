@@ -1040,53 +1040,53 @@ void ReadSMVDynamic(char *file){
       plot3di->compression_type=UNCOMPRESSED;
       plot3di->file=plot3di->reg_file;
 
-      if(file_exists(plot3di->file)==0){
-        int n;
-
-        for(n=0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n],stream)==2)return;
-        }
-        nplot3dinfo--;
-      }
-      else{
+      if(fast_startup==1||file_exists(plot3di->file)==1){
         int n;
 
         plot3di->u = -1;
         plot3di->v = -1;
         plot3di->w = -1;
-        for(n=0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n],stream)==2)return;
-          if(STRCMP(plot3di->label[n].shortlabel,"U-VEL") == 0){
+        for(n = 0;n<5;n++){
+          if(ReadLabels(&plot3di->label[n], stream)==2)return;
+          if(STRCMP(plot3di->label[n].shortlabel, "U-VEL")==0){
             plot3di->u = n;
           }
-          if(STRCMP(plot3di->label[n].shortlabel,"V-VEL") == 0){
+          if(STRCMP(plot3di->label[n].shortlabel, "V-VEL")==0){
             plot3di->v = n;
           }
-          if(STRCMP(plot3di->label[n].shortlabel,"W-VEL") == 0){
+          if(STRCMP(plot3di->label[n].shortlabel, "W-VEL")==0){
             plot3di->w = n;
           }
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
-          plot3di->nvars=mxplot3dvars;
+          plot3di->nvars = mxplot3dvars;
         }
         else{
-          plot3di->nvars=5;
+          plot3di->nvars = 5;
         }
-        if(NewMemory((void **)&plot3di->label[5].longlabel,6)==0)return;
-        if(NewMemory((void **)&plot3di->label[5].shortlabel,6)==0)return;
-        if(NewMemory((void **)&plot3di->label[5].unit,4)==0)return;
+        if(NewMemory((void **)&plot3di->label[5].longlabel, 6)==0)return;
+        if(NewMemory((void **)&plot3di->label[5].shortlabel, 6)==0)return;
+        if(NewMemory((void **)&plot3di->label[5].unit, 4)==0)return;
 
-        STRCPY(plot3di->label[5].longlabel,"Speed");
-        STRCPY(plot3di->label[5].shortlabel,"Speed");
-        STRCPY(plot3di->label[5].unit,"m/s");
+        STRCPY(plot3di->label[5].longlabel, "Speed");
+        STRCPY(plot3di->label[5].shortlabel, "Speed");
+        STRCPY(plot3di->label[5].unit, "m/s");
 
-        STRCPY(plot3di->longlabel,"");
-        for(n=0;n<5;n++){
-          STRCAT(plot3di->longlabel,plot3di->label[n].shortlabel);
-          if(n!=4)STRCAT(plot3di->longlabel,", ");
+        STRCPY(plot3di->longlabel, "");
+        for(n = 0;n<5;n++){
+          STRCAT(plot3di->longlabel, plot3di->label[n].shortlabel);
+          if(n!=4)STRCAT(plot3di->longlabel, ", ");
         }
 
         iplot3d++;
+      }
+      else{
+        int n;
+
+        for(n = 0;n<5;n++){
+          if(ReadLabels(&plot3di->label[n], stream)==2)return;
+        }
+        nplot3dinfo--;
       }
       continue;
     }
@@ -1746,7 +1746,6 @@ int GetInpf(char *file, char *file2){
       STRCPY(fds_filein,bufferptr);
       if(file_exists(fds_filein)==0){
         FreeMemory(fds_filein);
-        fds_filein=NULL;
       }
 
       if(chidfilebase==NULL){
@@ -7820,11 +7819,11 @@ typedef struct {
         NewMemory((void **)&parti->partclassptr,sizeof(partclassdata *));
           parti->partclassptr[i]=partclassinfo + parti->nclasses;
       }
-      if(parti->file==NULL||file_exists(parti->file)==0){
-        npartinfo--;
+      if(fast_startup==1||(parti->file!=NULL&&file_exists(parti->file)==1)){
+        ipart++;
       }
       else{
-        ipart++;
+        npartinfo--;
       }
       continue;
     }
@@ -8337,7 +8336,7 @@ typedef struct {
       patchi->setchopmax=0;
       patchi->chopmax=0.0;
       meshinfo[blocknumber].patchfilenum=-1;
-      if(file_exists(patchi->file)==1){
+      if(fast_startup==1||file_exists(patchi->file)==1){
         if(patchi->filetype==PATCH_CELL_CENTER){
           if(ReadLabelsCellCenter(&patchi->label,stream)==2)return 2;
         }
@@ -8453,7 +8452,7 @@ typedef struct {
         strcpy(isoi->tfile,tbufferptr);
       }
 
-      if(file_exists(isoi->reg_file)==1){
+      if(fast_startup==1||file_exists(isoi->reg_file)==1){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream)==2)return 2;
