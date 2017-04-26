@@ -72,11 +72,11 @@ int main(int argc, char **argv){
     if(arg[0]=='-'&&lenarg>1){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
-        if(file_exists(argv[i]) != 1)fatal_error = 1;
+        if(file_exists(argv[i]) == NO)fatal_error = 1;
       }
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
-        if(file_exists(argv[i]) != 1)fatal_error = 1;
+        if(file_exists(argv[i]) == NO)fatal_error = 1;
       }
       else if(strncmp(arg, "-help", 5) == 0 || strncmp(arg, "-h", 2) == 0){
         Usage("dem2fds");
@@ -96,7 +96,7 @@ int main(int argc, char **argv){
     fprintf(stderr, "\n***error: input file not specified\n");
     return 1;
   }
-  if(file_exists(casename)!=1){
+  if(file_exists(casename)==NO){
     fprintf(stderr, "\n***error: input file %s does not exist\n",casename);
     return 1;
   }
@@ -115,7 +115,7 @@ int main(int argc, char **argv){
     if(arg[0]=='-'&&lenarg>1){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
-        if(file_exists(argv[i]) == 1){
+        if(file_exists(argv[i]) == YES){
           strcpy(image_dir, argv[i]);
           if(strlen(elev_dir) == 0) {
             strcpy(elev_dir, image_dir);
@@ -128,7 +128,7 @@ int main(int argc, char **argv){
       }
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
-        if(file_exists(argv[i]) == 1) {
+        if(file_exists(argv[i]) == YES) {
           strcpy(elev_dir, argv[i]);
         }
         else {

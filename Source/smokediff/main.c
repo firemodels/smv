@@ -158,7 +158,7 @@ int main(int argc, char **argv){
     strcat(smoke1a,".smv");
     smoke1 = smoke1a;
 
-    if(file_exists(fed_smoke1)==1){
+    if(file_exists(fed_smoke1)==YES){
       copyfile(".",smoke1a, smoke1b, REPLACE_FILE);
       copyfile(".",fed_smoke1, smoke1b, APPEND_FILE);
       smoke1=smoke1b;
@@ -175,7 +175,7 @@ int main(int argc, char **argv){
     strcat(smoke2a,".smv");
     smoke2 = smoke2a;
 
-    if(file_exists(fed_smoke2)==1){
+    if(file_exists(fed_smoke2)==YES){
       copyfile(".",smoke2a, smoke2b, REPLACE_FILE);
       copyfile(".",fed_smoke2, smoke2b, APPEND_FILE);
       smoke2=smoke2b;
