@@ -533,7 +533,7 @@ void Open_CB(int var){
       if(gluiopen_nfilelist==0){
         LIST_open->add_item(0,"");
       }
-      get_filelist(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,&gluiopen_filelist);
+      get_filelist(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,NO,&gluiopen_filelist);
       if(gluiopen_nfilelist>0&&gluiopen_filelist[0].type==1){
         BUTTON_open_down->enable();
       }

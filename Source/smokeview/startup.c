@@ -131,7 +131,7 @@ void InitLang(void){
   nlanglistinfo=0;
   maxlangs = get_nfilelist(smokeview_bindir,"*.po");
   if(maxlangs==0)return;
-  nlangs = get_filelist(smokeview_bindir,"*.po", maxlangs, &filelistinfo);
+  nlangs = get_filelist(smokeview_bindir,"*.po", maxlangs, NO, &filelistinfo);
   if(nlangs==0)return;
   for(i=0;i<nlangs;i++){
     char *file;

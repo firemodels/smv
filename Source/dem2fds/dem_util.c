@@ -373,7 +373,7 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
   if(nimageinfo > 0){
     NewMemory((void **)&imagefiles, nimageinfo * sizeof(filelistdata));
     NewMemory((void **)&imageinfo, nimageinfo * sizeof(elevdata));
-    get_filelist(image_dir, "m_*.jpg", nimageinfo, &imagefiles);
+    get_filelist(image_dir, "m_*.jpg", nimageinfo, NO, &imagefiles);
   }
   for(i = 0; i < nimageinfo; i++){
     elevdata *imagei;
@@ -462,7 +462,7 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     return 0;
   }
 
-  get_filelist(elev_dir, "*.hdr", nelevinfo, &headerfiles);
+  get_filelist(elev_dir, "*.hdr", nelevinfo, NO, &headerfiles);
   NewMemory((void **)&elevinfo, nelevinfo * sizeof(elevdata));
   for(i = 0; i < nelevinfo; i++){
     filelistdata *headerfilei;

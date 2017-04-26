@@ -115,7 +115,7 @@ EXTERNCPP int file_exists(char *filename);
 
 EXTERNCPP void free_filelist(filelistdata *filelist, int *nfilelist);
 EXTERNCPP int get_nfilelist(const char *path, char *key) ;
-EXTERNCPP int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filelist);
+EXTERNCPP int get_filelist(const char *path, char *key, int maxfiles, int sort_files, filelistdata **filelist);
 EXTERNCPP char *which(char *progname);
 EXTERNCPP FILE_SIZE get_filesize(const char *filename);
 EXTERNCPP time_t file_modtime(char *filename);

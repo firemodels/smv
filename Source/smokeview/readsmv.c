@@ -290,7 +290,7 @@ void UpdateINIList(void){
   free_filelist(ini_filelist,&nini_filelist);
   nini_filelist=get_nfilelist(".",filter);
   if(nini_filelist>0){
-    get_filelist(".",filter,nini_filelist,&ini_filelist);
+    get_filelist(".",filter,nini_filelist,NO,&ini_filelist);
 
     for(i=0;i<nini_filelist;i++){
       filelistdata *filei;
@@ -4688,7 +4688,7 @@ int ReadSMV(char *file, char *file2){
           int nfilelist;
 
           nfilelist = get_nfilelist(".",file_ptr);
-          nfiles=get_filelist(".",file_ptr,nfilelist,&filelist);
+          nfiles=get_filelist(".",file_ptr,nfilelist,NO,&filelist);
           for(i=0;i<nfiles;i++){
             csvi = csvinfo + ncsvinfo + i;
             csvi->loaded=0;
@@ -7726,9 +7726,9 @@ typedef struct {
       STRCPY(parti->hist_file, bufferptr);
       STRCAT(parti->hist_file, ".hist");
 
-      // parti->size_file can't be written to, then put it in a world writeable temp directory
+      // parti->size_file can't be written to, then put it in a world writable temp directory
 
-      if(file_exists(parti->size_file)==NO&&writeable(".")==NO&&smokeviewtempdir!=NULL){
+      if(file_exists(parti->size_file)==NO&&writable(".")==NO&&smokeviewtempdir!=NULL){
         len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
         FREEMEMORY(parti->size_file);
         if(NewMemory((void **)&parti->size_file,(unsigned int)len)==0)return 2;
@@ -7738,7 +7738,7 @@ typedef struct {
         STRCAT(parti->size_file,".sz");
       }
 
-      // parti->hist_file can't be written to, then put it in a world writeable temp directory
+      // parti->hist_file can't be written to, then put it in a world writable temp directory
 
       if(file_exists(parti->hist_file) == NO && writable(".") == NO && smokeviewtempdir != NULL){
         len = strlen(smokeviewtempdir) + strlen(bufferptr) + 1 + 5 + 1;

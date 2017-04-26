@@ -615,9 +615,29 @@ int get_nfilelist(const char *path, char *key){
   return maxfiles;
 }
 
+/* ------------------ CompareFileList ------------------------ */
+
+int CompareFileList(const void *arg1, const void *arg2){
+  filelistdata *x, *y;
+
+  x = (filelistdata *)arg1;
+  y = (filelistdata *)arg2;
+
+  return strcmp(x->file, y->file);
+}
+
+/* ------------------ getfile ------------------------ */
+
+filelistdata *getfile(char *file, int nfiles, filelistdata **filelist){
+  filelistdata *entry;
+
+  entry = bsearch(file, filelist, nfiles, sizeof(filelistdata *), CompareFileList);
+  return entry;
+}
+
  /* ------------------ get_filelist ------------------------ */
 
-int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filelist){
+int get_filelist(const char *path, char *key, int maxfiles, int sort_files, filelistdata **filelist){
   struct dirent *entry;
   DIR *dp;
   int nfiles=0;
@@ -638,22 +658,6 @@ int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filel
     return 0;
   }
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
-  /*
-  while( (entry = readdir(dp))&&nfiles<maxfiles ){
-    if((entry->d_type==DT_DIR||entry->d_type==DT_UNKNOWN)&&entry->d_name[0]!='.'){
-      char *file;
-      filelistdata *flisti;
-
-      flisti = flist + nfiles;
-      NewMemory((void **)&file,strlen(entry->d_name)+1);
-      strcpy(file,entry->d_name);
-      flisti->file=file;
-      flisti->type=1;
-      nfiles++;
-    }
-  }
-  rewinddir(dp);
-  */
   while( (entry = readdir(dp))&&nfiles<maxfiles ){
     if((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,key)==1){
       char *file;
@@ -665,7 +669,11 @@ int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filel
       flisti->file=file;
       flisti->type=0;
       nfiles++;
+      if(nfiles == maxfiles)break;
     }
+  }
+  if(sort_files == YES&&nfiles>0){
+    qsort((filelistdata *)flist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
   }
   *filelist=flist;
   closedir(dp);
