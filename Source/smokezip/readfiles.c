@@ -404,7 +404,7 @@ int ReadSMV(char *smvfile){
         filelen+=strlen(GLOBsourcedir)+1;
       }
       if(filelen<=0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         NewMemory((void **)&smoke3di->file,(unsigned int)(filelen+1));
         NewMemory((void **)&smoke3di->filebase,(unsigned int)(filelen+1));
         STRCPY(smoke3di->filebase,buffer2);
@@ -523,7 +523,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -591,7 +591,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -716,7 +716,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -789,7 +789,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);

@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_FILELIST     // use list of file names 
 #define pp_GPU          // support the GPU
 #define pp_ffmpeg       // support compression
 #define pp_READBUFFER   // read .smv file from a memory buffer
@@ -59,6 +60,7 @@
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_HAZARD        //
+#define pp_TIMINGS
 //#define pp_GPUDEPTH
 #endif
 

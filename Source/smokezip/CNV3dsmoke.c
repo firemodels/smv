@@ -54,7 +54,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
 #endif
   }
 
-  if(getfileinfo(smoke3dfile,NULL,NULL)!=0){
+  if(GetFileInfo(smoke3dfile,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning:  %s does not exist\n",smoke3dfile);
     return;
   }
@@ -279,8 +279,8 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
     smoke3di->compressed=1;
     sprintf(smoke3di->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     FFLUSH();
@@ -292,8 +292,8 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
 
     PRINTF("Sizes: original=%s, ",before_label);
 

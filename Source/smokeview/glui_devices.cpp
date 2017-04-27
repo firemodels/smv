@@ -528,12 +528,12 @@ void Open_CB(int var){
         strcat(label,gluiopen_filelist[i].file);
         LIST_open->delete_item(label);
       }
-      free_filelist(gluiopen_filelist,&gluiopen_nfilelist);
-      gluiopen_nfilelist=get_nfilelist(gluiopen_path_dir,gluiopen_filter);
+      FreeFileList(gluiopen_filelist,&gluiopen_nfilelist);
+      gluiopen_nfilelist=GetFileListSize(gluiopen_path_dir,gluiopen_filter);
       if(gluiopen_nfilelist==0){
         LIST_open->add_item(0,"");
       }
-      get_filelist(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,&gluiopen_filelist);
+      MakeFileList(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,NO,&gluiopen_filelist);
       if(gluiopen_nfilelist>0&&gluiopen_filelist[0].type==1){
         BUTTON_open_down->enable();
       }

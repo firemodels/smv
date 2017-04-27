@@ -2692,10 +2692,10 @@ void LoadUnloadMenu(int value){
       if(LOG_FILENAME==NULL)redirect=0;
     }
     if(redirect==1){
-      set_stdout(LOG_FILENAME);
+      SetStdOut(LOG_FILENAME);
     }
     else{
-      set_stdout(stdout);
+      SetStdOut(stdout);
     }
   }
   glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
@@ -9281,17 +9281,17 @@ updatemenu=0;
 
     n_inifiles=0;
     for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-      if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+      if(inifile->file!=NULL&&FILE_EXISTS(inifile->file)==YES){
         n_inifiles++;
       }
     }
     if(n_inifiles>0){
       CREATEMENU(inisubmenu,IniSubMenu);
-      if(caseini_filename!=NULL&&file_exists(caseini_filename)==1){
+      if(caseini_filename!=NULL&&FILE_EXISTS(caseini_filename)==YES){
         glutAddMenuEntry(caseini_filename,MENU_READCASEINI);
       }
       for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-        if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+        if(inifile->file!=NULL&&FILE_EXISTS(inifile->file)==YES){
           glutAddMenuEntry(inifile->file,inifile->id);
         }
       }
@@ -9307,11 +9307,11 @@ updatemenu=0;
 
     n_inifiles=0;
     for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
-      if(inifile->file!=NULL&&file_exists(inifile->file)==1){
+      if(inifile->file!=NULL&&FILE_EXISTS(inifile->file)==YES){
         n_inifiles++;
       }
     }
-    if( n_inifiles>0||file_exists(INIfile)==1||file_exists(caseini_filename)==1||file_exists(smokeviewini)==1){
+    if( n_inifiles>0||FILE_EXISTS(INIfile)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(smokeviewini)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry(_("Read ini files"),MENU_READINI);
       }
@@ -9355,7 +9355,6 @@ updatemenu=0;
       nscripts=0;
       if(script_recording==NULL){
         scriptfiledata *scriptfile;
-        STRUCTSTAT statbuffer;
 
         for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
           char *file;
@@ -9365,7 +9364,7 @@ updatemenu=0;
           if(file==NULL)continue;
           len = strlen(file);
           if(len<=0)continue;
-          if(STAT(file,&statbuffer)!=0)continue;
+          if(FILE_EXISTS(file)==NO)continue;
 
           nscripts++;
         }
@@ -9381,7 +9380,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(STAT(file,&statbuffer)!=0)continue;
+            if(FILE_EXISTS(file)==NO)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);
@@ -9397,7 +9396,7 @@ updatemenu=0;
             if(file==NULL)continue;
             len = strlen(file);
             if(len<=0)continue;
-            if(STAT(file,&statbuffer)!=0)continue;
+            if(FILE_EXISTS(file)==NO)continue;
 
             strcpy(menulabel,"  ");
             strcat(menulabel,file);

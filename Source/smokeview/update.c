@@ -926,7 +926,7 @@ void ConvertSsf(void){
     char *tofile;
 
     tofile = ssf_from;
-    copyfile(".",tempfile,tofile,REPLACE_FILE);
+    CopyFILE(".",tempfile,tofile,REPLACE_FILE);
     UNLINK(tempfile);
   }
 }

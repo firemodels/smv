@@ -691,7 +691,7 @@ void update_mouseinfo(int flag, int xm, int ym){
       mi->direction[1]=0;
       mi->angle = 0.0;
       mi->lastangle=0.0;
-      mi->lasttime = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+      START_TIMER(mi->lasttime);
       mi->xcurrent[0] = (float)(mi->current[0]-screenWidth/2)/(float)maxWH;
       mi->xcurrent[1] = (float)(mi->current[1]-screenHeight/2)/(float)maxWH;
       mi->angle=atan2(mi->xcurrent[1],mi->xcurrent[0]);
@@ -710,7 +710,7 @@ void update_mouseinfo(int flag, int xm, int ym){
       delta_distance=0.0;
       break;
     case MOUSE_MOTION:
-      thistime_local=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+      START_TIMER(thistime_local);
       mi->current[0]=xm;
       mi->current[1]=ym;
       if(thistime_local-mi->lasttime>0.2){
@@ -859,7 +859,7 @@ void mouse_CB(int button, int state, int xm, int ym){
   // check for double click for translating/rotating 3D slice plane
 
   if(vis_gslice_data==1||show_gslice_triangles==1||show_gslice_triangulation==1){
-    this_mouse_time=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    START_TIMER(this_mouse_time);
     if(this_mouse_time-last_mouse_time<0.5){
       gslice_xyz0[0]=gslice_xyz[0];
       gslice_xyz0[1]=gslice_xyz[1];
@@ -1220,7 +1220,7 @@ void Move_Scene(int xm, int ym){
 int throttle_gpu(void){
   float fps;
 
-  thisMOTIONtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(thisMOTIONtime);
   fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
   if(fps>GPU_VOLframemax)return 1;
   MOTIONnframes++;
@@ -2682,7 +2682,7 @@ void Idle_CB(void){
   CheckMemory;
   glutSetWindow(mainwindow_id);
   UpdateShow();
-  thistime = glutGet(GLUT_ELAPSED_TIME);
+  START_TICKS(thistime);
   thisinterval = thistime - lasttime;
   frame_count++;
 
@@ -2737,12 +2737,9 @@ void Reshape_CB(int width, int height){
 /* ------------------ reset_gltime ------------------------ */
 
 void reset_gltime(void){
-  int inttime;
-
   if(showtime!=1)return;
   reset_frame=itimes;
-  inttime  = glutGet(GLUT_ELAPSED_TIME);
-  reset_time = (float)inttime/1000.0;
+  START_TIMER(reset_time);
   if(global_times!=NULL&&nglobal_times>0){
     start_frametime=global_times[0];
     stop_frametime=global_times[nglobal_times-1];
@@ -2983,7 +2980,7 @@ void DoScript(void){
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){
     script_step_now=0;
 #ifndef WIN32
-    if(file_exists(stop_filename)){
+    if(FILE_EXISTS(stop_filename)==YES){
       fprintf(stderr,"*** Warning: stop file found.  Remove before running smokeview script\n");
       exit(0);
     }

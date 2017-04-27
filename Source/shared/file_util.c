@@ -46,17 +46,17 @@ int PRINTF(const char * format, ...){
   return return_val;
 }
 
-/* ------------------ set_stdout ------------------------ */
+/* ------------------ SetStdOut ------------------------ */
 
-void set_stdout(FILE *stream){
+void SetStdOut(FILE *stream){
   alt_stdout=stream;
 }
 
 #define FILE_BUFFER 1000
 
-/* ------------------ copyfile ------------------------ */
+/* ------------------ CopyFile ------------------------ */
 
-void copyfile(char *destdir, char *file_in, char *file_out, int mode){
+void CopyFILE(char *destdir, char *file_in, char *file_out, int mode){
   char buffer[FILE_BUFFER];
   FILE *streamin=NULL, *streamout=NULL;
   char *full_file_out=NULL;
@@ -104,17 +104,16 @@ void copyfile(char *destdir, char *file_in, char *file_out, int mode){
   fclose(streamout);
 }
 
-/* ------------------ have_prog ------------------------ */
+/* ------------------ HaveProg ------------------------ */
 
-int have_prog(char *prog){
+int HaveProg(char *prog){
   if(system(prog) == 0)return 1;
   return 0;
 }
 
-/* ------------------ get_smokezippath ------------------------ */
+/* ------------------ GetSmokeZipPath ------------------------ */
 
-char *get_smokezippath(char *progdir){
-  STRUCTSTAT statbuffer;
+char *GetSmokeZipPath(char *progdir){
   char *zip_path;
 
   if(progdir!=NULL){
@@ -131,14 +130,14 @@ char *get_smokezippath(char *progdir){
 #ifdef WIN32
   strcat(zip_path,".exe");
 #endif
-  if(STAT(zip_path,&statbuffer)==0)return zip_path;
+  if(FILE_EXISTS(zip_path)==YES)return zip_path;
   FREEMEMORY(zip_path);
   return NULL;
 }
 
-/* ------------------ setdir ------------------------ */
+/* ------------------ SetDir ------------------------ */
 
-char *setdir(char *argdir){
+char *SetDir(char *argdir){
   int lendir;
   char *dir;
 
@@ -151,9 +150,9 @@ char *setdir(char *argdir){
   return dir;
 }
 
-/* ------------------ get_basefilename ------------------------ */
+/* ------------------ GetBaseFileName ------------------------ */
 
-char *get_basefilename(char *buffer,char *file){
+char *GetBaseFileName(char *buffer,char *file){
   char *filebase,*ext;
 
   strcpy(buffer,file);
@@ -173,9 +172,9 @@ char *get_basefilename(char *buffer,char *file){
   return filebase;
 }
 
-/* ------------------ get_filename ------------------------ */
+/* ------------------ GetFileName ------------------------ */
 
-char *get_filename(char *temp_dir, char *file, int flag){
+char *GetFileName(char *temp_dir, char *file, int flag){
   char *file2;
   char *file_out=NULL;
   FILE *stream=NULL;
@@ -184,13 +183,13 @@ char *get_filename(char *temp_dir, char *file, int flag){
   file2=TrimFront(file);
   if(flag==0){
     stream=fopen(file2,"r");
-    if(can_write_to_dir(".")==1||stream!=NULL){
+    if(Writable(".")==YES||stream!=NULL){
       NewMemory((void **)&file_out,strlen(file2)+1);
       strcpy(file_out,file2);
     }
     if(stream!=NULL)fclose(stream);
   }
-  if(file_out==NULL&&temp_dir!=NULL&&can_write_to_dir(temp_dir)==1){
+  if(file_out==NULL&&temp_dir!=NULL&&Writable(temp_dir)==YES){
     NewMemory((void **)&file_out,strlen(temp_dir)+1+strlen(file2)+1);
     strcpy(file_out,"");
     strcat(file_out,temp_dir);
@@ -200,9 +199,9 @@ char *get_filename(char *temp_dir, char *file, int flag){
   return file_out;
 }
 
-/* ------------------ fullfile ------------------------ */
+/* ------------------ FullFile ------------------------ */
 
-void fullfile(char *file_out, char *dir, char *file){
+void FullFile(char *file_out, char *dir, char *file){
   char *file2;
 
   TrimBack(file);
@@ -212,9 +211,9 @@ void fullfile(char *file_out, char *dir, char *file){
   strcat(file_out,file2);
 }
 
-/* ------------------ filecat ------------------------ */
+/* ------------------ FileCat ------------------------ */
 
-int filecat(char *file_in1, char *file_in2, char *file_out){
+int FileCat(char *file_in1, char *file_in2, char *file_out){
   char buffer[FILE_BUFFER];
   FILE *stream_in1, *stream_in2, *stream_out;
   int chars_in;
@@ -264,9 +263,9 @@ int filecat(char *file_in1, char *file_in2, char *file_out){
 
 }
 
-/* ------------------ make_outfile ------------------------ */
+/* ------------------ MakeOutFile ------------------------ */
 
-void make_outfile(char *outfile, char *destdir, char *file1, char *ext){
+void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext){
   char filename_buffer[1024], *file1_noext;
 
   TrimBack(file1);
@@ -283,48 +282,25 @@ void make_outfile(char *outfile, char *destdir, char *file1, char *ext){
   strcat(outfile,ext);
 }
 
-/* ------------------ can_write_to_dir ------------------------ */
 
-int can_write_to_dir(char *dir){
+/* ------------------ Writable ------------------------ */
 
-// returns 1 if the directory can be written to, 0 otherwise
+int Writable(char *dir){
 
-  char *full_name;
-  char file_name[256], *file_name_ptr;
-  FILE *stream;
-  int len;
-  int return_val=0;
+  // returns 1 if the directory can be written to, 0 otherwise
 
-  if(dir==NULL||strlen(dir)==0)return 0;
-
-  file_name_ptr=RandStr(file_name,20);
-  if(file_name_ptr==NULL)return 0;
-
-  len = strlen(dir) + 20 + 1 + 1;
-
-  NewMemory((void **)&full_name,len);
-
-  strcpy(full_name,"");
-  if(strcmp(dir,".")!=0&&strlen(dir)>0){
-    strcat(full_name,dir);
-    strcat(full_name,dirseparator);
+  if(dir==NULL||strlen(dir)==0||ACCESS(dir,F_OK|W_OK)==-1){
+    return NO;
+  }
+  else{
+    return YES;
   }
 
-  strcat(full_name,file_name_ptr);
-
-  stream=fopen(full_name,"wb");
-  if(stream!=NULL){
-    fclose(stream);
-    return_val=1;
-  }
-  UNLINK(full_name);
-  FREEMEMORY(full_name);
-  return return_val;
 }
 
-/* ------------------ is_file_newer ------------------------ */
+/* ------------------ IsFileNewer ------------------------ */
 
-int is_file_newer(char *file1, char *file2){
+int IsFileNewer(char *file1, char *file2){
 
 // returns 1 if file1 is newer than file2, 0 otherwise
 
@@ -341,9 +317,9 @@ int is_file_newer(char *file1, char *file2){
   return 0;
 }
 
-  /* ------------------ getfileinfo ------------------------ */
+  /* ------------------ GetFileInfo ------------------------ */
 
-int getfileinfo(char *filename, char *source_dir, FILE_SIZE *filesize){
+int GetFileInfo(char *filename, char *source_dir, FILE_SIZE *filesize){
   STRUCTSTAT statbuffer;
   int statfile;
   char buffer[1024];
@@ -362,9 +338,9 @@ int getfileinfo(char *filename, char *source_dir, FILE_SIZE *filesize){
   return statfile;
 }
 
-/* ------------------ get_filesize ------------------------ */
+/* ------------------ GetFileSize ------------------------ */
 
-FILE_SIZE get_filesize(const char *filename){
+FILE_SIZE GetFILESize(const char *filename){
   STRUCTSTAT statbuffer;
   int statfile;
   FILE_SIZE return_val;
@@ -378,16 +354,16 @@ FILE_SIZE get_filesize(const char *filename){
 }
 
 #ifdef pp_READBUFFER
-/* ------------------ feof_buffer ------------------------ */
+/* ------------------ FeofBuffer ------------------------ */
 
-int feof_buffer(filedata *fileinfo){
+int FeofBuffer(filedata *fileinfo){
   if(fileinfo->iline>=fileinfo->nlines)return 1;
   return 0;
 }
 
-/* ------------------ fgets_buffer ------------------------ */
+/* ------------------ FgetsBuffer ------------------------ */
 
-char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
+char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
   char *file_buffer, *from, *to;
   int iline, i;
 
@@ -484,8 +460,8 @@ filedata *File2Buffer(char *filename){
   int nlines;
   FILE *stream;
 
-  if(file_exists(filename)==0)return NULL;
-  filesize = get_filesize(filename);
+  if(FILE_EXISTS(filename)==NO)return NULL;
+  filesize = GetFILESize(filename);
   if(filesize==0)return NULL;
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;
@@ -544,29 +520,37 @@ filedata *File2Buffer(char *filename){
 }
 #endif
 
-  /* ------------------ file_exists ------------------------ */
-
-int file_exists(char *filename){
-
-// returns 1 if the file filename exists, 0 otherwise
-
-#ifdef WIN32
-  #define ACCESS _access
-  #define F_OK 0
+  /* ------------------ FileExists ------------------------ */
+#ifdef pp_FILELIST
+int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
 #else
-  #define ACCESS access
+int FileExists(char *filename){
 #endif
-  if(filename==NULL||ACCESS(filename,F_OK)==-1){
-    return 0;
+
+// returns YES if the file filename exists, NO otherwise
+
+  if(filename == NULL)return NO;
+#ifdef pp_FILELIST
+  if(filelist != NULL&&nfilelist>0){
+    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) == NULL){
+      return NO;
+    }
+    else{
+      return YES;
+    }
+  }
+#endif
+  if(ACCESS(filename,F_OK)==-1){
+    return NO;
   }
   else{
-    return 1;
+    return YES;
   }
 }
 
-/* ------------------ free_filelist ------------------------ */
+/* ------------------ FreeFileList ------------------------ */
 
-void free_filelist(filelistdata *filelist, int *nfilelist){
+void FreeFileList(filelistdata *filelist, int *nfilelist){
   int i;
 
   for(i=0;i<*nfilelist;i++){
@@ -578,7 +562,7 @@ void free_filelist(filelistdata *filelist, int *nfilelist){
 
   /* ------------------ get_nfilelist ------------------------ */
 
-int get_nfilelist(const char *path, char *key){
+int GetFileListSize(const char *path, char *filter){
   struct dirent *entry;
   DIR *dp;
   int maxfiles=0;
@@ -589,8 +573,7 @@ int get_nfilelist(const char *path, char *key){
     return 0;
   }
   while( (entry = readdir(dp)) ){
-  //  if((entry->d_type==DT_DIR&&entry->d_name[0]!='.')||(entry->d_type==DT_REG&&MatchWild(entry->d_name,key)==1)){
-    if(((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,key)==1)){
+    if(((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1)){
       maxfiles++;
       continue;
     }
@@ -599,9 +582,39 @@ int get_nfilelist(const char *path, char *key){
   return maxfiles;
 }
 
- /* ------------------ get_filelist ------------------------ */
+/* ------------------ CompareFileList ------------------------ */
 
-int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filelist){
+int CompareFileList(const void *arg1, const void *arg2){
+  filelistdata *x, *y;
+
+  x = (filelistdata *)arg1;
+  y = (filelistdata *)arg2;
+
+  return strcmp(x->file, y->file);
+}
+
+/* ------------------ getfile ------------------------ */
+#ifdef pp_FILELIST
+filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
+  filelistdata *entry=NULL, fileitem;
+
+  if(file==NULL)return NULL;
+  fileitem.file = file;
+  fileitem.type = 0;
+  if(filelist!=NULL&&nfiles>0){
+    entry = bsearch(&fileitem, (filelistdata *)filelist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
+    if(entry!=NULL)return entry;
+  }
+  if(filelist2!=NULL&&nfiles2>0){
+    entry = bsearch(&fileitem, (filelistdata *)filelist2, (size_t)nfiles2, sizeof(filelistdata), CompareFileList);
+  }
+  return entry;
+}
+#endif
+
+/* ------------------ MakeFileList ------------------------ */
+
+int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist){
   struct dirent *entry;
   DIR *dp;
   int nfiles=0;
@@ -622,24 +635,8 @@ int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filel
     return 0;
   }
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
-  /*
   while( (entry = readdir(dp))&&nfiles<maxfiles ){
-    if((entry->d_type==DT_DIR||entry->d_type==DT_UNKNOWN)&&entry->d_name[0]!='.'){
-      char *file;
-      filelistdata *flisti;
-
-      flisti = flist + nfiles;
-      NewMemory((void **)&file,strlen(entry->d_name)+1);
-      strcpy(file,entry->d_name);
-      flisti->file=file;
-      flisti->type=1;
-      nfiles++;
-    }
-  }
-  rewinddir(dp);
-  */
-  while( (entry = readdir(dp))&&nfiles<maxfiles ){
-    if((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,key)==1){
+    if((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
       char *file;
       filelistdata *flisti;
 
@@ -651,14 +648,17 @@ int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filel
       nfiles++;
     }
   }
+  if(sort_files == YES&&nfiles>0){
+    qsort((filelistdata *)flist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
+  }
   *filelist=flist;
   closedir(dp);
   return nfiles;
 }
 
-/* ------------------ getfilesizelabel ------------------------ */
+/* ------------------ GetFileSizeLabel ------------------------ */
 
-void getfilesizelabel(int size, char *sizelabel){
+void GetFileSizeLabel(int size, char *sizelabel){
   int leftsize,rightsize;
 
 #define sizeGB   1000000000
@@ -704,9 +704,9 @@ void getfilesizelabel(int size, char *sizelabel){
   }
 }
 
-/* ------------------ getprogdir ------------------------ */
+/* ------------------ GetProgDir ------------------------ */
 
-char *getprogdir(char *progname, char **svpath){
+char *GetProgDir(char *progname, char **svpath){
 
 // returns the directory containing the file progname
 
@@ -716,7 +716,7 @@ char *getprogdir(char *progname, char **svpath){
   if(lastsep==NULL){
     char *dir;
 
-    dir = which(progname);
+    dir = Which(progname);
     if(dir==NULL){
       NewMemory((void **)&progpath,(unsigned int)3);
       strcpy(progpath,".");
@@ -748,7 +748,7 @@ char *getprogdir(char *progname, char **svpath){
   return progpath;
 }
 
-/* ------------------ getprogdir ------------------------ */
+/* ------------------ getprogdirabs ------------------------ */
 
 #ifdef pp_LUA
 char *getprogdirabs(char *progname, char **svpath){
@@ -766,9 +766,9 @@ char *getprogdirabs(char *progname, char **svpath){
 }
 #endif
 
-/* ------------------ lastname ------------------------ */
+/* ------------------ LastName ------------------------ */
 
-char *lastname(char *argi){
+char *LastName(char *argi){
 
 // returns the file name contained in the full path name argi
 
@@ -799,17 +799,16 @@ char *lastname(char *argi){
   return filename;
 }
 
-/* ------------------ get_zonefilename ------------------------ */
+/* ------------------ GetZoneFileName ------------------------ */
 
-char *get_zonefilename(char *bufptr){
+char *GetZoneFileName(char *bufptr){
   char *full_name, *last_name, *filename;
-  STRUCTSTAT statbuffer;
 
   full_name=bufptr;
-  if(STAT(full_name,&statbuffer)!=0)full_name=NULL;
+  if(FILE_EXISTS(full_name)==NO)full_name=NULL;
 
-  last_name=lastname(bufptr);
-  if(STAT(last_name,&statbuffer)!=0)last_name=NULL;
+  last_name= LastName(bufptr);
+  if(FILE_EXISTS(last_name)==NO)last_name=NULL;
 
   if(last_name!=NULL&&full_name!=NULL){
     if(strcmp(last_name,full_name)==0){
@@ -834,7 +833,7 @@ char *get_zonefilename(char *bufptr){
 
 /* ------------------ file_modtime ------------------------ */
 
-time_t file_modtime(char *filename){
+time_t FileModtime(char *filename){
 
 // returns the modification time of the file named filename
 
@@ -850,9 +849,9 @@ time_t file_modtime(char *filename){
   return return_val;
 }
 
-/* ------------------ which ------------------------ */
+/* ------------------ Which ------------------------ */
 
-char *which(char *progname){
+char *Which(char *progname){
 
 // returns the PATH directory containing the file progname
 
@@ -893,7 +892,7 @@ char *which(char *progname){
     strcpy(fullprogname,dir);
     strcat(fullprogname,dirsep);
     strcat(fullprogname,prognamecopy);
-    if(file_exists(fullprogname)==1){
+    if(FILE_EXISTS(fullprogname)==YES){
       NewMemory((void **)&pathentry,(unsigned int)(strlen(dir)+2));
       strcpy(pathentry,dir);
       strcat(pathentry,dirsep);

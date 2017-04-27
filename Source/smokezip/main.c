@@ -35,7 +35,7 @@ int main(int argc, char **argv){
   int endian_info;
   int redirect=0;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
   initMALLOC();
   GLOBdoit_lighting=0;
   GLOBdoit_smoke3d=1;
@@ -249,7 +249,7 @@ int main(int argc, char **argv){
             if(GLOBsourcedir[lenarg2-1]!=dirseparator[0]){
               strcat(GLOBsourcedir,dirseparator);
             }
-            if(getfileinfo(GLOBsourcedir,NULL,NULL)!=0){
+            if(GetFileInfo(GLOBsourcedir,NULL,NULL)!=0){
               fprintf(stderr,"*** Warning: The source directory specified, %s, does not exist or cannot be accessed\n",GLOBsourcedir);
               return 1;
             }
@@ -280,7 +280,7 @@ int main(int argc, char **argv){
           if(GLOBdestdir[lenarg2-1]!=dirseparator[0]){
             strcat(GLOBdestdir,dirseparator);
           }
- //         if(getfileinfo(GLOBdestdir,NULL,NULL)!=0){
+ //         if(GetFileInfo(GLOBdestdir,NULL,NULL)!=0){
  //           fprintf(stderr,"*** Warning: The destination directory %s does not exist or cannot be accessed\n",GLOBdestdir);
  //           return 1;
  //         }
@@ -366,7 +366,7 @@ int main(int argc, char **argv){
     strcat(smzlogfile,".smzlog");
     SMZLOG_STREAM=fopen(smzlogfile,"w");
     if(SMZLOG_STREAM!=NULL){
-      set_stdout(SMZLOG_STREAM);
+      SetStdOut(SMZLOG_STREAM);
     }
   }
 
@@ -382,7 +382,7 @@ int main(int argc, char **argv){
 
   // make sure smv file name exists
 
-  if(getfileinfo(smvfile,NULL,NULL)!=0){
+  if(GetFileInfo(smvfile,NULL,NULL)!=0){
     fprintf(stderr,"*** Error: The file %s does not exist\n",smvfile);
     return 1;
   }
@@ -468,9 +468,9 @@ int main(int argc, char **argv){
 
   if(GLOBcleanfiles==0&&GLOBdestdir!=NULL){
     PRINTF("Copying .smv, .ini and .end files to %s directory\n",GLOBdestdir);
-    copyfile(GLOBdestdir,smvfile,smvfilebase,REPLACE_FILE);
-    copyfile(GLOBdestdir,inifile,inifilebase,REPLACE_FILE);
-    copyfile(GLOBdestdir,GLOBendianfile,GLOBendianfilebase,REPLACE_FILE);
+    CopyFILE(GLOBdestdir,smvfile,smvfilebase,REPLACE_FILE);
+    CopyFILE(GLOBdestdir,inifile,inifilebase,REPLACE_FILE);
+    CopyFILE(GLOBdestdir,GLOBendianfile,GLOBendianfilebase,REPLACE_FILE);
   }
   if(GLOBcleanfiles==1&&GLOBfilesremoved==0){
     PRINTF("No compressed files were removed\n");
@@ -515,10 +515,10 @@ void makesvd(char *in_dir, char *smvfile){
   strcpy(svd,".svd");
 
   if(in_dir==NULL){
-    copyfile(".",smvfile,file_out,REPLACE_FILE);
+    CopyFILE(".",smvfile,file_out,REPLACE_FILE);
   }
   else{
-    copyfile(in_dir,smvfile,file_out,REPLACE_FILE);
+    CopyFILE(in_dir,smvfile,file_out,REPLACE_FILE);
   }
 
 }
@@ -537,7 +537,7 @@ void Usage(char *prog){
   PRINTF("\n");
   PRINTF("  smokezip %s(%s) - %s\n\n",smv_version,githash,__DATE__);
   PRINTF("  Compress FDS data files\n\n");
-  PRINTF("  %s [options] casename\n\n",get_basefilename(buffer,prog));
+  PRINTF("  %s [options] casename\n\n", GetBaseFileName(buffer,prog));
   PRINTF("  casename - Smokeview .smv file for case to be compressed\n\n");
   PRINTF("options:\n");
   PRINTF("  -c  - cleans or removes all compressed files\n");

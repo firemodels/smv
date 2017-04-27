@@ -321,7 +321,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       len=strlen(buffer);
       buffer[len-1]='\0';
       TrimBack(buffer);
-      fullfile(endian_filename,smvcase->dir,buffer);
+      FullFile(endian_filename,smvcase->dir,buffer);
       ENDIANfile = fopen(endian_filename,"rb");
       if(ENDIANfile!=NULL){
         endian_native = GetEndian();
@@ -335,9 +335,9 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(stream_out!=NULL){
         int lenout;
 
-        make_outfile(endian_filename, NULL, buffer, ".end");
+        MakeOutFile(endian_filename, NULL, buffer, ".end");
         fprintf(stream_out,"ENDF\n %s\n",endian_filename);
-        make_outfile(endian_filename, destdir, buffer, ".end");
+        MakeOutFile(endian_filename, destdir, buffer, ".end");
         lenout=strlen(endian_filename);
         FORTendianout(endian_filename,lenout);
       }
@@ -369,8 +369,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       strcpy(plot3di->keyword,buffer);
 
       fgets(buffer,255,streamsmv);
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int i;
 
         NewMemory((void **)&plot3di->file,(unsigned int)(strlen(full_file)+1));
@@ -457,8 +457,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(fgets(buffer,255,streamsmv)==NULL)break;
       TrimBack(buffer);
       if(strlen(buffer)==0)break;
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int is1=-1, is2=-1, js1=-1, js2=-1, ks1=-1, ks2=-1;
         int ni, nj, nk;
         int error, lenfile;
@@ -543,8 +543,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(fgets(buffer,255,streamsmv)==NULL)break;
       TrimBack(buffer);
       if(strlen(buffer)==0)break;
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int lenfile, npatches, error, boundaryunitnumber;
 
         NewMemory((void **)&boundaryi->file,(unsigned int)(strlen(full_file)+1));

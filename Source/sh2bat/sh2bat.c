@@ -33,7 +33,7 @@ int main(int argc, char **argv){
   char *filein=NULL,*fileout=NULL,*prog;
   FILE *streamin=NULL,*streamout=NULL;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
   prog=argv[0];
   for(i=1;i<argc;i++){
     int lenarg;
