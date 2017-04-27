@@ -1476,7 +1476,7 @@ extern "C" void Motion_CB(int var){
     ){
     float fps;
 
-    thisMOTIONtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    START_TIMER(thisMOTIONtime);
     fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
     if(fps>GPU_VOLframemax)return;
     MOTIONnframes++;

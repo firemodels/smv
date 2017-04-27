@@ -2033,7 +2033,7 @@ void DrawSmoke3DGPUVOL(void){
 
 //  SVEXTERN int GPUload[30],GPUtime[30],SVDECL(nGPUframes,0),SVDECL(iGPUframes,0);
 #ifdef pp_GPUTHROTTLE
-  thisGPUtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(thisGPUtime);
   if(thisGPUtime>lastGPUtime+0.25){
     PRINTF("CPU->GPU %4.1f Mbytes/s\n",4.0*GPUnframes/(thisGPUtime-lastGPUtime)/(1024.0*1024.0));
     lastGPUtime=thisGPUtime;

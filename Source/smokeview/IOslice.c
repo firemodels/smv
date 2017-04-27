@@ -3879,10 +3879,8 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   vslicedata *vd;
   int flag2 = 0;
   meshdata *meshi;
-  int local_starttime = 0, local_stoptime = 0;
   FILE_SIZE file_size = 0;
-  int local_starttime0 = 0, local_stoptime0 = 0;
-  float delta_time, delta_time0;
+  float read_time, total_time;
 #ifdef pp_MEMDEBUG
   int num_memblocks_load, num_memblocks_unload;
 #endif
@@ -3891,7 +3889,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #endif
 
   CheckMemory;
-  local_starttime0 = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(total_time);
   *errorcode = 0;
   error = 0;
   show_slice_average = 0;
@@ -4061,7 +4059,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     }
     PRINTF("Loading slice data: %s\n", file);
     MEMSTATUS(1, &availmemory, NULL, NULL);
-    local_starttime = glutGet(GLUT_ELAPSED_TIME);
+    START_TIMER(read_time);
     if(sd->compression_type == COMPRESSED_ZLIB){
       char *datafile;
 
@@ -4105,8 +4103,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
     }
-    local_stoptime = glutGet(GLUT_ELAPSED_TIME);
-    delta_time = (local_stoptime - local_starttime) / 1000.0;
+    STOP_TIMER(read_time);
 
     if(slice_average_flag == 1){
       int data_per_timestep;
@@ -4286,20 +4283,19 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     FREEMEMORY(sd->qslicedata);
   }
 
-  local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
-  delta_time0 = (local_stoptime0 - local_starttime0) / 1000.0;
+  STOP_TIMER(total_time);
 
   if(flag != RESETBOUNDS){
-    if(file_size != 0 && delta_time>0.0){
+    if(file_size != 0 && read_time>0.0){
       float loadrate;
 
-      loadrate = ((float)file_size*8.0 / 1000000.0) / delta_time;
+      loadrate = ((float)file_size*8.0 / 1000000.0) / read_time;
       PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-        (float)file_size / 1000000., delta_time, loadrate, delta_time0 - delta_time);
+        (float)file_size / 1000000., read_time, loadrate, total_time - read_time);
     }
     else{
       PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-        (float)file_size / 1000000., delta_time, delta_time0 - delta_time);
+        (float)file_size / 1000000., read_time, total_time - read_time);
     }
   }
 
