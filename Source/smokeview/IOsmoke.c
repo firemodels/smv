@@ -4877,7 +4877,6 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   int error;
   int ncomp_smoke_total;
   int ncomp_smoke_total_skipped;
-  int local_starttime=0, local_stoptime=0;
   FILE_SIZE file_size=0;
   float read_time, total_time;
   int iii,ii,i,j;
