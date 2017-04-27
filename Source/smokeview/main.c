@@ -677,7 +677,8 @@ int main(int argc, char **argv){
 #endif
   DisplayVersionInfo("Smokeview ");
   SetupGlut(argc,argv_sv);
-  startup_time=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(startup_time);
+  START_TIMER(read_time_elapsed);
 
 #ifdef pp_LUA
   // Initialise the lua interpreter, it does not take control at this point
@@ -690,7 +691,7 @@ int main(int argc, char **argv){
     ReadINI(ini_from);
   }
 
-  startup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - startup_time;
+  STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);
   glutMainLoop();
   return 0;

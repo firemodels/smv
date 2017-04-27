@@ -3433,12 +3433,35 @@ void SetupMeshWalls(void){
   }
 }
 
-  /* ------------------ ReadSMV ------------------------ */
+/* ------------------ MakeFileLists ------------------------ */
+
+void MakeFileLists(void){
+  char filter_casedir[256], filter_casename[256];
+
+  // create list of all files for the case being visualized (casename*.* )
+  
+  strcpy(filter_casename, "");
+  if(fdsprefix != NULL&&strlen(fdsprefix) > 0){
+    strcat(filter_casename, fdsprefix);
+    strcat(filter_casename, "*");
+  }
+
+  // create a list of all files in the current directory
+  
+  nfilelist_casename = get_nfilelist(".", filter_casename);
+  get_filelist(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
+
+  strcpy(filter_casedir, "");
+  nfilelist_casedir = get_nfilelist(".", filter_casedir);
+  get_filelist(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
+}
+
+/* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(char *file, char *file2){
 
 /* read the .smv file */
-  float read_time, read_time_elapsed, processing_time, wrapup_time, getfilelist_time;
+  float read_time, processing_time, wrapup_time, getfilelist_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
@@ -3467,29 +3490,15 @@ int ReadSMV(char *file, char *file2){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
 #endif
 
-  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(processing_time);
 
-  getfilelist_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-  {
-    char filter_casedir[256], filter_casename[256];
+  START_TIMER(getfilelist_time);
+  MakeFileLists();
+  STOP_TIMER(getfilelist_time);
 
-    strcpy(filter_casename, "");
-    if(fdsprefix != NULL&&strlen(fdsprefix) > 0){
-      strcat(filter_casename, fdsprefix);
-      strcat(filter_casename, "*");
-    }
+  START_TIMER(pass0_time);
+  START_TIMER(read_time);
 
-    nfilelist_casename = get_nfilelist(".", filter_casename);
-    get_filelist(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
-
-    strcpy(filter_casedir, "");
-    nfilelist_casedir = get_nfilelist(".", filter_casedir);
-    get_filelist(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
-  }
-  getfilelist_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - getfilelist_time;
-
-  pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
-  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 #ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
     stream->fileinfo = File2Buffer(file);
@@ -3504,8 +3513,10 @@ int ReadSMV(char *file, char *file2){
     }
   }
 #endif
-  read_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - read_time;
-  read_time_elapsed = glutGet(GLUT_ELAPSED_TIME)/1000.0-startup_time;
+
+  STOP_TIMER(read_time);
+  STOP_TIMER(read_time_elapsed);
+  
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -3866,14 +3877,15 @@ int ReadSMV(char *file, char *file2){
 
   PRINTF(_("processing smokeview file:"));
   PRINTF(_(" %s\n"), file);
+  STOP_TIMER(pass0_time );
 
-  pass0_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass0_time;
-  pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 /*
    ************************************************************************
    ************************ start of pass 1 *******************************
    ************************************************************************
  */
+
+  START_TIMER(pass1_time);
 
   nvents=0;
   igrid=0;
@@ -4294,7 +4306,8 @@ int ReadSMV(char *file, char *file2){
     }
 
   }
-  pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass1_time;
+  
+  STOP_TIMER(pass1_time);
 
 
 /*
@@ -4303,7 +4316,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-  pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(pass2_time);
 
  if(fds_version==NULL){
    NewMemory((void **)&fds_version,7+1);
@@ -5890,14 +5903,17 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
   }
-  pass2_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass2_time;
+
+  STOP_TIMER(pass2_time);
+
 /*
    ************************************************************************
    ************************ end of pass 2 *********************************
    ************************************************************************
  */
 
-  pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(pass3_time);
+
   CheckMemory;
   ParseDatabase(database_filename);
 
@@ -6354,14 +6370,17 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
   }
+
+  STOP_TIMER(pass3_time);
+
   /*
    ************************************************************************
    ************************ end of pass 3 *********************************
    ************************************************************************
  */
-  pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
 
-  pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(pass4_time);
+  
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -8549,14 +8568,15 @@ typedef struct {
 
   }
 
+  STOP_TIMER(pass4_time);
+
 /*
    ************************************************************************
    ************************ end of pass 4 *********************************
    ************************************************************************
  */
 
-  pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass4_time;
-  pass5_time = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(pass5_time);
 
   if(autoterrain==1){
     float zbarmin;
@@ -8739,7 +8759,7 @@ typedef struct {
   }
   PrintMemoryInfo;
   if(do_pass5==1){
-    pass5_time = (glutGet(GLUT_ELAPSED_TIME)-pass5_time)/1000.0;
+    STOP_TIMER(pass5_time);
   }
   else{
     pass5_time = 0.0;
@@ -8751,8 +8771,8 @@ typedef struct {
    ************************************************************************
  */
 
-  processing_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-read_time;
-  wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  STOP_TIMER(processing_time);
+  START_TIMER(wrapup_time);
 
   PRINTF("  wrapping up\n");
   CheckMemory;
@@ -8986,7 +9006,7 @@ typedef struct {
   PRINTF("\n\n");
   PrintMemoryInfo;
 
-  wrapup_time = glutGet(GLUT_ELAPSED_TIME)/1000.0-wrapup_time;
+  STOP_TIMER(wrapup_time);
   PRINTF("\n");
   PRINTF(".smv Processing Times\n");
   PRINTF("---------------------\n");

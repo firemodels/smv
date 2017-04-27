@@ -7,6 +7,13 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifndef START_TIME
+#define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
+#endif
+#ifndef STOP_TIMER
+#define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
+#endif
+
 #define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
 
 #define ISOTROPIC 0
