@@ -287,10 +287,10 @@ void UpdateINIList(void){
 
   strcpy(filter,fdsprefix);
   strcat(filter,"*.ini");
-  free_filelist(ini_filelist,&nini_filelist);
-  nini_filelist=get_nfilelist(".",filter);
+  FreeFileList(ini_filelist,&nini_filelist);
+  nini_filelist=GetFileListSize(".",filter);
   if(nini_filelist>0){
-    get_filelist(".",filter,nini_filelist,NO,&ini_filelist);
+    MakeFileList(".",filter,nini_filelist,NO,&ini_filelist);
 
     for(i=0;i<nini_filelist;i++){
       filelistdata *filei;
@@ -3448,12 +3448,12 @@ void MakeFileLists(void){
 
   // create a list of all files in the current directory
   
-  nfilelist_casename = get_nfilelist(".", filter_casename);
-  get_filelist(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
+  nfilelist_casename = GetFileListSize(".", filter_casename);
+  MakeFileList(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
 
   strcpy(filter_casedir, "");
-  nfilelist_casedir = get_nfilelist(".", filter_casedir);
-  get_filelist(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
+  nfilelist_casedir = GetFileListSize(".", filter_casedir);
+  MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
 }
 
 /* ------------------ ReadSMV ------------------------ */
@@ -3873,7 +3873,7 @@ int ReadSMV(char *file, char *file2){
   stream=stream1;
 #endif
 
-  smv_modtime=file_modtime(file);
+  smv_modtime= FileModtime(file);
 
   PRINTF(_("processing smokeview file:"));
   PRINTF(_(" %s\n"), file);
@@ -3955,7 +3955,7 @@ int ReadSMV(char *file, char *file2){
           if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
         }
         else{
-          nfiles = get_nfilelist(".",file_ptr);
+          nfiles = GetFileListSize(".",file_ptr);
         }
       }
       else{
@@ -4671,7 +4671,7 @@ int ReadSMV(char *file, char *file2){
           if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
         }
         else{
-          nfiles = get_nfilelist(".",file_ptr);
+          nfiles = GetFileListSize(".",file_ptr);
         }
       }
       else{
@@ -4719,8 +4719,8 @@ int ReadSMV(char *file, char *file2){
           filelistdata *filelist;
           int nfilelist;
 
-          nfilelist = get_nfilelist(".",file_ptr);
-          nfiles=get_filelist(".",file_ptr,nfilelist,NO,&filelist);
+          nfilelist = GetFileListSize(".",file_ptr);
+          nfiles= MakeFileList(".",file_ptr,nfilelist,NO,&filelist);
           for(i=0;i<nfiles;i++){
             csvi = csvinfo + ncsvinfo + i;
             csvi->loaded=0;
@@ -4729,7 +4729,7 @@ int ReadSMV(char *file, char *file2){
             NewMemory((void **)&csvi->file,strlen(filelist[i].file)+1);
             strcpy(csvi->file,filelist[i].file);
           }
-          free_filelist(filelist,&nfilelist);
+          FreeFileList(filelist,&nfilelist);
         }
       }
       else{
@@ -5812,7 +5812,7 @@ int ReadSMV(char *file, char *file2){
 
       buffer_csvptr=buffer_csv;
       strcpy(buffer_csv,bufferptr);
-      filename=get_zonefilename(buffer_csvptr);
+      filename= GetZoneFileName(buffer_csvptr);
       if(filename!=NULL)period=strrchr(filename,'.');
       if(filename!=NULL&&period!=NULL&&strcmp(period,".csv")==0){
         zonei->csv=1;
@@ -5821,7 +5821,7 @@ int ReadSMV(char *file, char *file2){
       else{
         zonei->csv=0;
         zonecsv=0;
-        filename=get_zonefilename(bufferptr);
+        filename= GetZoneFileName(bufferptr);
       }
 
       if(filename==NULL){
@@ -7766,7 +7766,7 @@ typedef struct {
 
       // parti->size_file can't be written to, then put it in a world writable temp directory
 
-      if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&writable(".")==NO&&smokeviewtempdir!=NULL){
+      if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&Writable(".")==NO&&smokeviewtempdir!=NULL){
         len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
         FREEMEMORY(parti->size_file);
         if(NewMemory((void **)&parti->size_file,(unsigned int)len)==0)return 2;
@@ -7778,7 +7778,7 @@ typedef struct {
 
       // parti->hist_file can't be written to, then put it in a world writable temp directory
 
-      if(FILE_EXISTS_CASEDIR(parti->hist_file) == NO && writable(".") == NO && smokeviewtempdir != NULL){
+      if(FILE_EXISTS_CASEDIR(parti->hist_file) == NO && Writable(".") == NO && smokeviewtempdir != NULL){
         len = strlen(smokeviewtempdir) + strlen(bufferptr) + 1 + 5 + 1;
         FREEMEMORY(parti->hist_file);
         if(NewMemory((void **)&parti->hist_file, (unsigned int)len) == 0)return 2;
@@ -12085,13 +12085,13 @@ int ReadINI(char *inifile){
 
   // check if config files read in earlier were modifed later
 
-  if(is_file_newer(smvprogini_ptr,INIfile)==1){
+  if(IsFileNewer(smvprogini_ptr,INIfile)==1){
     PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,INIfile);
   }
-  if(is_file_newer(smvprogini_ptr,caseini_filename)==1){
+  if(IsFileNewer(smvprogini_ptr,caseini_filename)==1){
     PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,caseini_filename);
   }
-  if(is_file_newer(INIfile,caseini_filename)==1){
+  if(IsFileNewer(INIfile,caseini_filename)==1){
     PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",INIfile,caseini_filename);
   }
 

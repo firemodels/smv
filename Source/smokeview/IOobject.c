@@ -6002,7 +6002,7 @@ void setup_device_data(void){
 
   if(ndeviceinfo==0)return;
 
-  if(is_file_newer(deviceinfo_filename, smv_filename)!=1){
+  if(IsFileNewer(deviceinfo_filename, smv_filename)!=1){
     build_cache = 1;
     stream = fopen(deviceinfo_filename, "w");
   }

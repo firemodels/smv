@@ -2692,10 +2692,10 @@ void LoadUnloadMenu(int value){
       if(LOG_FILENAME==NULL)redirect=0;
     }
     if(redirect==1){
-      set_stdout(LOG_FILENAME);
+      SetStdOut(LOG_FILENAME);
     }
     else{
-      set_stdout(stdout);
+      SetStdOut(stdout);
     }
   }
   glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);

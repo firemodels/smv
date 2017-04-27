@@ -903,12 +903,12 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
   // either the CO, CO2 or O2 slice files
 
   if(regenerate_fed==1||
-     (file_type==FED_SLICE&&(is_file_newer(fed_slice->file,o2->file)!=1||
-                             is_file_newer(fed_slice->file,co2->file)!=1||
-                             is_file_newer(fed_slice->file,co->file)!=1))||
-     (file_type==FED_ISO&&(is_file_newer(fed_iso->file,o2->file)!=1||
-                           is_file_newer(fed_iso->file,co2->file)!=1||
-                           is_file_newer(fed_iso->file,co->file)!=1))){
+     (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
+       IsFileNewer(fed_slice->file,co2->file)!=1||
+       IsFileNewer(fed_slice->file,co->file)!=1))||
+     (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
+       IsFileNewer(fed_iso->file,co2->file)!=1||
+       IsFileNewer(fed_iso->file,co->file)!=1))){
     int i,j,k;
     int frame_size;
     float *fed_frame,*fed_framem1;
@@ -2464,7 +2464,7 @@ void UpdateFedinfo(void){
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
-    filename = get_filename(smokeviewtempdir, filename_base, tempdir_flag);
+    filename = GetFileName(smokeviewtempdir, filename_base, tempdir_flag);
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
     strcpy(sd->reg_file, filename);
     FREEMEMORY(filename);
@@ -2518,7 +2518,7 @@ void UpdateFedinfo(void){
       ext = strrchr(filename_base, '.');
       *ext = 0;
       strcat(filename_base, "_fed.iso");
-      filename = get_filename(smokeviewtempdir, filename_base, tempdir_flag);
+      filename = GetFileName(smokeviewtempdir, filename_base, tempdir_flag);
       NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
       strcpy(isoi->reg_file, filename);
       FREEMEMORY(filename);
@@ -2621,7 +2621,7 @@ void GetSliceParams(void){
   int build_cache=0;
   FILE *stream;
 
-  if(is_file_newer(sliceinfo_filename,smv_filename)!=1){
+  if(IsFileNewer(sliceinfo_filename,smv_filename)!=1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
   }
@@ -4015,7 +4015,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       return;
     }
     CountMemoryBlocks(num_memblocks_load, 0);
-    file_size = get_filesize(file);
+    file_size = GetFILESize(file);
 
     slicefilelen = strlen(file);
     if(sd->compression_type == UNCOMPRESSED){
@@ -4048,7 +4048,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         error = 1;
       }
       else{
-        sd->ntimes = (int)(get_filesize(file) - headersize) / framesize;
+        sd->ntimes = (int)(GetFILESize(file) - headersize) / framesize;
         if(sliceframestep>1)sd->ntimes /= sliceframestep;
       }
     }

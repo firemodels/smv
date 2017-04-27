@@ -1997,7 +1997,7 @@ int run_script(void){
     case SCRIPT_RENDERDIR:
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         script_dir_path=scripti->cval;
-        if(writable(script_dir_path)==NO){
+        if(Writable(script_dir_path)==NO){
           fprintf(stderr,"*** Error: Cannot write to the RENDERDIR directory: %s\n",script_dir_path);
         }
         PRINTF("script: setting render path to %s\n",script_dir_path);

@@ -443,7 +443,7 @@ void get_partdata(partdata *parti, int partframestep_local, int nf_all, float *r
   PART5FILE=fopen(reg_file,"rb");
   if(PART5FILE==NULL)return;
 
-  if(file_size!=NULL)*file_size=get_filesize(reg_file);
+  if(file_size!=NULL)*file_size= GetFILESize(reg_file);
   FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
 

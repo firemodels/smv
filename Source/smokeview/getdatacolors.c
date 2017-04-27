@@ -173,7 +173,7 @@ void WriteBoundINI(void){
   int i;
 
   if(boundini_filename == NULL)return;
-  fullfilename = get_filename(smokeviewtempdir, boundini_filename, tempdir_flag);
+  fullfilename = GetFileName(smokeviewtempdir, boundini_filename, tempdir_flag);
 
   if(fullfilename == NULL)return;
 

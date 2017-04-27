@@ -229,8 +229,8 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
 
   // directory
 
-  if(writable(renderfile_dir) == NO){
-    if(writable(smokeviewtempdir) == YES){
+  if(Writable(renderfile_dir) == NO){
+    if(Writable(smokeviewtempdir) == YES){
       strcpy(renderfile_dir, smokeviewtempdir);
     }
     else{
@@ -509,7 +509,7 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
     }
   }
   strcat(renderfile_base,ext);
-  renderfile=get_filename(smokeviewtempdir,renderfile_base,tempdir_flag);
+  renderfile= GetFileName(smokeviewtempdir,renderfile_base,tempdir_flag);
   if(renderfile==NULL){
     fprintf(stderr,"*** Error: unable to write to %s",renderfile_base);
     return 1;
@@ -885,7 +885,7 @@ int MergeRenderScreenBuffers360(void){
     seqnum++;
   }
   strcat(renderfile_base, ext);
-  renderfile = get_filename(smokeviewtempdir, renderfile_base, tempdir_flag);
+  renderfile = GetFileName(smokeviewtempdir, renderfile_base, tempdir_flag);
   if(renderfile == NULL){
     fprintf(stderr, "*** Error: unable to write to %s", renderfile_base);
     return 1;
@@ -1025,10 +1025,10 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   height2 = height_end-height_beg;
 
   if(directory==NULL){
-    renderfile=get_filename(smokeviewtempdir,RENDERfilename,tempdir_flag);
+    renderfile= GetFileName(smokeviewtempdir,RENDERfilename,tempdir_flag);
   }
   else{
-    renderfile=get_filename(directory,RENDERfilename,1);
+    renderfile= GetFileName(directory,RENDERfilename,1);
   }
   if(renderfile == NULL){
     fprintf(stderr,"*** Error: Unable to write to %s\n",RENDERfilename);

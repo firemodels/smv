@@ -5040,7 +5040,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 
 // read in data
 
-  file_size=get_filesize(smoke3di->file);
+  file_size= GetFILESize(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     ReadSmoke3D(ifile,UNLOAD,&error);

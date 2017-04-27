@@ -437,7 +437,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
     &ib->tmin, &ib->tmax, endian_data);
 
-  file_size=get_filesize(file);
+  file_size= GetFILESize(file);
 
   if(meshi->isolevels==NULL){
     readiso("",ifile,UNLOAD,NULL,&error);

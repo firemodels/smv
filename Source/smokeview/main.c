@@ -26,7 +26,7 @@ void Usage(char **argv,int option){
 
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", get_basefilename(buffer, argv[0]));
+  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, argv[0]));
   PRINTF("%s\n\n", _("where "));
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
@@ -238,7 +238,7 @@ void ParseCommandline(int argc, char **argv){
 
   argi = SMVFILENAME;
 #ifndef pp_OSX
-  argi = lastname(argi);
+  argi = LastName(argi);
 #endif
   len_casename = (int)strlen(argi);
   CheckMemory;
@@ -334,7 +334,7 @@ void ParseCommandline(int argc, char **argv){
   if(fed_filename == NULL){
     STRCPY(fed_filename_base, fdsprefix);
     STRCAT(fed_filename_base, ".fed_smv");
-    fed_filename = get_filename(smokeviewtempdir, fed_filename_base, tempdir_flag);
+    fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, tempdir_flag);
   }
   if(stop_filename == NULL){
     NewMemory((void **)&stop_filename, (unsigned int)(len_casename + 6));
@@ -524,7 +524,7 @@ void ParseCommandline(int argc, char **argv){
       LOG_FILENAME = fopen(log_filename, "w");
       if(LOG_FILENAME != NULL){
         redirect = 1;
-        set_stdout(LOG_FILENAME);
+        SetStdOut(LOG_FILENAME);
       }
     }
     else if(strncmp(argv[i], "-runscript", 10) == 0){
@@ -648,7 +648,7 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
   InitVars();
@@ -662,17 +662,17 @@ int main(int argc, char **argv){
 #endif
   ParseCommandline(argc, argv_sv);
   if(smokeview_bindir==NULL){
-    smokeview_bindir=getprogdir(progname,&smokeviewpath);
+    smokeview_bindir= GetProgDir(progname,&smokeviewpath);
   }
   InitTextureDir();
-  smokezippath=get_smokezippath(smokeview_bindir);
+  smokezippath= GetSmokeZipPath(smokeview_bindir);
 #ifdef pp_ffmpeg
 #ifdef WIN32
-  have_ffmpeg = have_prog("ffmpeg -version> Nul 2>Nul");
-  have_ffplay = have_prog("ffplay -version> Nul 2>Nul");
+  have_ffmpeg = HaveProg("ffmpeg -version> Nul 2>Nul");
+  have_ffplay = HaveProg("ffplay -version> Nul 2>Nul");
 #else
-  have_ffmpeg = have_prog("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay = have_prog("ffplay -version >/dev/null 2>/dev/null");
+  have_ffmpeg = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
+  have_ffplay = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 #endif
   DisplayVersionInfo("Smokeview ");

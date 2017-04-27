@@ -746,7 +746,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
                                                  // nframes = (totalsize - skip_local)/(12 + framesize);
 
     nframes = 0;
-    filesize = get_filesize(smokeslice->reg_file);
+    filesize = GetFILESize(smokeslice->reg_file);
     if(filesize>0){
       nframes = (int)(filesize-skip_local)/(int)(12+framesize);
     }

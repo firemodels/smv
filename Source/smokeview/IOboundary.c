@@ -1427,7 +1427,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     meshi->npatch_times=0;
   }
 
-  file_size=get_filesize(file);
+  file_size= GetFILESize(file);
   START_TIMER(read_time);
   for(ii=0;ii<mxpatch_frames;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
@@ -4197,7 +4197,7 @@ int update_patch_hist(patchdata *patchj){
 
     patchi = patchinfo + i;
     if(patchi->type!=patchj->type||patchi->filetype!=patchj->filetype||patchi->filetype==PATCH_GEOMETRY)continue;
-    modtime=file_modtime(patchi->file);
+    modtime= FileModtime(patchi->file);
     if(modtime>patchi->modtime){
       patchi->modtime=modtime;
       patchi->inuse_getbounds=0;
