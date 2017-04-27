@@ -113,16 +113,16 @@ EXTERNCPP char *get_zonefilename(char *buffer);
 EXTERNCPP int writable(char *dir);
 
 #ifdef pp_FILELIST
-#define FILE_EXISTS(a)         file_exists(a,NULL,0)
-#define FILE_EXISTS_CASEDIR(a) file_exists(a,filelist_casedir,nfilelist_casedir)
+#define FILE_EXISTS(a)         file_exists(a,NULL,0,NULL,0)
+#define FILE_EXISTS_CASEDIR(a) file_exists(a,filelist_casename, nfilelist_casename,filelist_casedir,nfilelist_casedir)
 #else
 #define FILE_EXISTS(a)         file_exists(a)
 #define FILE_EXISTS_CASEDIR(a) file_exists(a)
 #endif
 
 #ifdef pp_FILELIST
-EXTERNCPP int file_exists(char *filename, filelistdata *filelist, int nfilelist);
-EXTERNCPP filelistdata *getfile(char *file, filelistdata *filelist, int nfiles);
+EXTERNCPP   int file_exists(char *filename, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
+EXTERNCPP filelistdata *getfile(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
 #else
 EXTERNCPP int file_exists(char *filename);
 #endif

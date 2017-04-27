@@ -323,8 +323,6 @@ void ParseCommandline(int argc, char **argv){
 #endif
   }
   if(smv_filename != NULL){
-    STRUCTSTAT statbuffer;
-
     FREEMEMORY(fds_filein);
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
     STRCPY(fds_filein, fdsprefix);

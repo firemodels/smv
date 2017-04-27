@@ -568,7 +568,7 @@ filedata *File2Buffer(char *filename){
 
   /* ------------------ file_exists ------------------------ */
 #ifdef pp_FILELIST
-int file_exists(char *filename, filelistdata *filelist, int nfilelist){
+int file_exists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
 #else
 int file_exists(char *filename){
 #endif
@@ -576,16 +576,16 @@ int file_exists(char *filename){
 // returns YES if the file filename exists, NO otherwise
 
   if(filename == NULL)return NO;
-#ifdef pp_FILELIST  
+#ifdef pp_FILELIST
   if(filelist != NULL&&nfilelist>0){
-    if(getfile(filename, filelist, nfilelist) == NULL){
+    if(getfile(filename, filelist, nfilelist, filelist2, nfilelist2) == NULL){
       return NO;
     }
     else{
       return YES;
     }
   }
-#endif  
+#endif
   if(ACCESS(filename,F_OK)==-1){
     return NO;
   }
@@ -641,15 +641,19 @@ int CompareFileList(const void *arg1, const void *arg2){
 
 /* ------------------ getfile ------------------------ */
 #ifdef pp_FILELIST
-filelistdata *getfile(char *file, filelistdata *filelist, int nfiles){
-  filelistdata *entry, fileitem;
-  int i;
+filelistdata *getfile(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
+  filelistdata *entry=NULL, fileitem;
 
-
-  if(file==NULL||filelist == NULL || nfiles <= 0)return NULL;
+  if(file==NULL)return NULL;
   fileitem.file = file;
   fileitem.type = 0;
-  entry = bsearch(&fileitem, (filelistdata *)filelist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
+  if(filelist!=NULL&&nfiles>0){
+    entry = bsearch(&fileitem, (filelistdata *)filelist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
+    if(entry!=NULL)return entry;
+  }
+  if(filelist2!=NULL&&nfiles2>0){
+    entry = bsearch(&fileitem, (filelistdata *)filelist2, (size_t)nfiles2, sizeof(filelistdata), CompareFileList);
+  }
   return entry;
 }
 #endif

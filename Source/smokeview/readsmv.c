@@ -3471,15 +3471,20 @@ int ReadSMV(char *file, char *file2){
 
   getfilelist_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
   {
-    char filter[1024];
+    char filter_casedir[256], filter_casename[256];
 
-    strcpy(filter, "");
+    strcpy(filter_casename, "");
     if(fdsprefix != NULL&&strlen(fdsprefix) > 0){
-      strcat(filter, fdsprefix);
-      strcat(filter, "*");
+      strcat(filter_casename, fdsprefix);
+      strcat(filter_casename, "*");
     }
-    nfilelist_casedir = get_nfilelist(".", filter);
-    get_filelist(".", filter, nfilelist_casedir, YES, &filelist_casedir);
+
+    nfilelist_casename = get_nfilelist(".", filter_casename);
+    get_filelist(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
+
+    strcpy(filter_casedir, "");
+    nfilelist_casedir = get_nfilelist(".", filter_casedir);
+    get_filelist(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
   }
   getfilelist_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - getfilelist_time;
 
@@ -3866,7 +3871,7 @@ int ReadSMV(char *file, char *file2){
   pass1_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
 /*
    ************************************************************************
-   ************************ start of pass 1 *********************************
+   ************************ start of pass 1 *******************************
    ************************************************************************
  */
 
@@ -4583,7 +4588,7 @@ int ReadSMV(char *file, char *file2){
 
 /*
    ************************************************************************
-   ************************ start of pass 2 *********************************
+   ************************ start of pass 2 *******************************
    ************************************************************************
  */
 
@@ -5976,7 +5981,7 @@ int ReadSMV(char *file, char *file2){
 
   /*
    ************************************************************************
-   ************************ start of pass 3 ******************************
+   ************************ start of pass 3 *******************************
    ************************************************************************
  */
 
@@ -6351,7 +6356,7 @@ int ReadSMV(char *file, char *file2){
   }
   /*
    ************************************************************************
-   ************************ end of pass 3 ******************************
+   ************************ end of pass 3 *********************************
    ************************************************************************
  */
   pass3_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass3_time;
@@ -6444,7 +6449,7 @@ int ReadSMV(char *file, char *file2){
 
 /*
    ************************************************************************
-   ************************ start of pass 4 *********************************
+   ************************ start of pass 4 *******************************
    ************************************************************************
  */
 
@@ -8587,7 +8592,7 @@ typedef struct {
 
   /*
    ************************************************************************
-   ************************ start of pass 5 *********************************
+   ************************ start of pass 5 *******************************
    ************************************************************************
  */
 
