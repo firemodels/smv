@@ -88,7 +88,7 @@ int main(int argc, char **argv){
   char tokens[BUFFER_SIZE], newpath[BUFFER_SIZE], *token;
   int newentry_present;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
   strcpy(path_type,"User");
   if(argc==1){
     usage();

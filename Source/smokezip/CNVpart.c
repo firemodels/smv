@@ -175,7 +175,7 @@ int convertable_part(part *parti){
 
   partfile=parti->file;
 
-  if(getfileinfo(partfile,NULL,NULL)!=0)return 0;
+  if(GetFileInfo(partfile,NULL,NULL)!=0)return 0;
 
   stream=fopen(partfile,"rb");
   if(stream==NULL)return 0;
@@ -276,7 +276,7 @@ void convert_part(part *parti, int *thread_index){
 
   // check if part file is accessible
 
-  if(getfileinfo(partfile,NULL,NULL)!=0){
+  if(GetFileInfo(partfile,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning: The particle file %s does not exist\n",partfile);
     return;
   }
@@ -528,8 +528,8 @@ void convert_part(part *parti, int *thread_index){
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
     PRINTF("    records=%i, ",count);
     PRINTF("Sizes: original=%s, ",before_label);
     PRINTF("compressed=%s (%4.1f%s reduction)\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);

@@ -46,7 +46,7 @@ int convert_plot3d(plot3d *plot3di){
   if(strlen(shortlabel)>0)strcat(filetype,shortlabel);
   TrimBack(filetype);
 
-  if(getfileinfo(plot3d_file,NULL,NULL)!=0){
+  if(GetFileInfo(plot3d_file,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning: The file %s does not exist\n",plot3d_file);
     return 0;
   }
@@ -207,8 +207,8 @@ int convert_plot3d(plot3d *plot3di){
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
 #ifdef pp_THREAD
     LOCK_PRINT;
     PRINTF("\n%s\n  compressed from %s to %s (%4.1f%s reduction)\n\n",plot3di->file,before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);

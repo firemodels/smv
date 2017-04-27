@@ -29,7 +29,7 @@ int main(int argc, char **argv){
   int redirect=0;
 
   display_warnings=1;
-  set_stdout(stdout);
+  SetStdOut(stdout);
   initMALLOC();
 #ifdef WIN32
   strcpy(dirseparator,"\\");
@@ -106,19 +106,19 @@ int main(int argc, char **argv){
         }
         if(i+1>=argc)break;
         if(arg[2]=='1'){
-          sourcedir1=setdir(argv[i+1]);
+          sourcedir1= SetDir(argv[i+1]);
           if(sourcedir1==NULL)return 1;
           i++;
         }
         if(arg[2]=='2'){
-          sourcedir2=setdir(argv[i+1]);
+          sourcedir2= SetDir(argv[i+1]);
           if(sourcedir2==NULL)return 1;
           i++;
         }
         break;
       case 'd':
         if(i+1>=argc)break;
-        destdir=setdir(argv[i+1]);
+        destdir= SetDir(argv[i+1]);
         if(destdir==NULL)return 1;
         i++;
         break;
@@ -147,7 +147,7 @@ int main(int argc, char **argv){
   if(smv1!=NULL){
     strcat(smv1_out,smv1);
     strcat(smv1_out,".smv");
-    fullfile(smoke1a,sourcedir1,smv1);
+    FullFile(smoke1a,sourcedir1,smv1);
 
     strcpy(fed_smoke1,smoke1a);
     strcat(fed_smoke1,".fed_smv");
@@ -159,13 +159,13 @@ int main(int argc, char **argv){
     smoke1 = smoke1a;
 
     if(FILE_EXISTS(fed_smoke1)==YES){
-      copyfile(".",smoke1a, smoke1b, REPLACE_FILE);
-      copyfile(".",fed_smoke1, smoke1b, APPEND_FILE);
+      CopyFILE(".",smoke1a, smoke1b, REPLACE_FILE);
+      CopyFILE(".",fed_smoke1, smoke1b, APPEND_FILE);
       smoke1=smoke1b;
     }
   }
   if(smv2!=NULL){
-    fullfile(smoke2a,sourcedir2,smv2);
+    FullFile(smoke2a,sourcedir2,smv2);
 
     strcpy(fed_smoke2,smoke2a);
     strcat(fed_smoke2,".fed_smv");
@@ -176,8 +176,8 @@ int main(int argc, char **argv){
     smoke2 = smoke2a;
 
     if(FILE_EXISTS(fed_smoke2)==YES){
-      copyfile(".",smoke2a, smoke2b, REPLACE_FILE);
-      copyfile(".",fed_smoke2, smoke2b, APPEND_FILE);
+      CopyFILE(".",smoke2a, smoke2b, REPLACE_FILE);
+      CopyFILE(".",fed_smoke2, smoke2b, APPEND_FILE);
       smoke2=smoke2b;
     }
   }
@@ -190,19 +190,19 @@ int main(int argc, char **argv){
     strcat(svdlogfile,"_diff.svdlog");
     LOG_FILENAME=fopen(svdlogfile,"w");
     if(LOG_FILENAME!=NULL){
-      set_stdout(LOG_FILENAME);
+      SetStdOut(LOG_FILENAME);
     }
   }
-  if(getfileinfo(smoke1,NULL,NULL)!=0||getfileinfo(smoke2,NULL,NULL)!=0){
-    if(getfileinfo(smoke1,NULL,NULL)!=0){
+  if(GetFileInfo(smoke1,NULL,NULL)!=0||GetFileInfo(smoke2,NULL,NULL)!=0){
+    if(GetFileInfo(smoke1,NULL,NULL)!=0){
       fprintf(stderr,"*** Error The .smv file, %s, does not exist\n",smoke1);
     }
-    if(getfileinfo(smoke2,NULL,NULL)!=0){
+    if(GetFileInfo(smoke2,NULL,NULL)!=0){
       fprintf(stderr,"*** Error The .smv file, %s, does not exist\n",smoke2);
     }
     return 1;
   }
-  make_outfile(smv_out,destdir,smv1_out,".smv");
+  MakeOutFile(smv_out,destdir,smv1_out,".smv");
 
   stream_out=fopen(smv_out,"w");
   if(stream_out==NULL){

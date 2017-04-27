@@ -79,7 +79,7 @@ int main(int argc, char **argv){
   char *command;
 #endif
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
 #ifdef pp_LINUX
   hostlistfile=NULL;
   host=NULL;

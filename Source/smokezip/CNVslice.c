@@ -55,7 +55,7 @@ int convert_volslice(slice *slicei, int *thread_index){
   if(strlen(shortlabel)>0)strcat(filetype,shortlabel);
   TrimBack(filetype);
 
-  if(getfileinfo(slice_file,NULL,NULL)!=0){
+  if(GetFileInfo(slice_file,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning: The file %s does not exist\n",slice_file);
     return 0;
   }
@@ -237,8 +237,8 @@ int convert_volslice(slice *slicei, int *thread_index){
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
 #ifdef pp_THREAD
     slicei->vol_compressed=1;
     sprintf(slicei->volsummary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
@@ -318,7 +318,7 @@ int convert_slice(slice *slicei, int *thread_index){
   if(strlen(shortlabel)>0)strcat(filetype,shortlabel);
   TrimBack(filetype);
 
-  if(getfileinfo(slice_file,NULL,NULL)!=0){
+  if(GetFileInfo(slice_file,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning: The file %s does not exist\n",slice_file);
     return 0;
   }
@@ -697,8 +697,8 @@ wrapup:
   {
     char before_label[256],after_label[256];
 
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
 #ifdef pp_THREAD
     slicei->compressed=1;
     sprintf(slicei->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);

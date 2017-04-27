@@ -26,7 +26,7 @@ void setup_slice(FILE *stream_out){
       char outfile[1024];
 
       fprintf(stream_out,"%s\n",slicei->keyword);
-      make_outfile(outfile,NULL,slicei->file,".sf");
+      MakeOutFile(outfile,NULL,slicei->file,".sf");
       fprintf(stream_out," %s\n",outfile);
       fprintf(stream_out," %s\n",slicei->label.longlabel);
       fprintf(stream_out," %s\n",slicei->label.shortlabel);
@@ -103,8 +103,8 @@ void diff_slices(FILE *stream_out){
     if(slicei->slice2==NULL)continue;
     file1 = slicei->file;
     file2 = slicei->slice2->file;
-    fullfile(fullfile1,sourcedir1,file1);
-    fullfile(fullfile2,sourcedir2,file2);
+    FullFile(fullfile1,sourcedir1,file1);
+    FullFile(fullfile2,sourcedir2,file2);
 
     stream=fopen(fullfile1,"r");
     if(stream==NULL)continue;
@@ -114,13 +114,13 @@ void diff_slices(FILE *stream_out){
     if(stream==NULL)continue;
     fclose(stream);
 
-    make_outfile(outfile,destdir,file1,".sf");
+    MakeOutFile(outfile,destdir,file1,".sf");
     if(strlen(outfile)==0)continue;
     stream=fopen(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
 
-    make_outfile(outfile2,NULL,slice1->file,".sf");
+    MakeOutFile(outfile2,NULL,slice1->file,".sf");
 
     len1=strlen(fullfile1);
     slicetest1=0;

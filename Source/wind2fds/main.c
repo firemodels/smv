@@ -24,7 +24,7 @@ void usage(char *prog){
   printf("\n");
   printf("wind2fds %s(%s) - %s\n", prog_version, githash, __DATE__);
   printf("  Convert spreadsheets containing wind data to files compatible with Smokeview:\n\n");
-  printf("  %s", get_basefilename(buffer, prog));
+  printf("  %s", GetBaseFileName(buffer, prog));
   printf(" prog [-prefix label] [-offset x y z] datafile\n\n");
 
   printf("where\n\n");
@@ -95,7 +95,7 @@ int main(int argc, char **argv){
   unsigned int i_mindatetime=0, i_maxdatetime=0;
   int lendate=0;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
   strcpy(percen,"%");
   strcpy(prefix,"");
 

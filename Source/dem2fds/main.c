@@ -60,7 +60,7 @@ int main(int argc, char **argv){
   strcpy(matl_id, "matl1");
 
   initMALLOC();
-  set_stdout(stdout);
+  SetStdOut(stdout);
 
   for(i = 1; i<argc; i++){
     int lenarg;
