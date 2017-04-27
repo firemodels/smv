@@ -3443,7 +3443,7 @@ int ReadSMV(char *file, char *file2){
   int have_zonevents,nzventsnew=0;
   int unit_start=20;
   devicedata *devicecopy;
-  int do_pass4=0;
+  int do_pass4=0, do_pass5=0;
   int roomdefined=0;
   int errorcode;
   int noGRIDpresent=1,startpass;
@@ -8556,7 +8556,7 @@ typedef struct {
  */
 
   pass4_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass4_time;
-  pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  pass5_time = glutGet(GLUT_ELAPSED_TIME);
 
   if(autoterrain==1){
     float zbarmin;
@@ -8604,6 +8604,7 @@ typedef struct {
   stream=stream1;
 #endif
   if(do_pass4==1||autoterrain==1){
+    do_pass5 = 1;
     PRINTF("%s",_("  pass 5"));
     PRINTF("\n");
   }
@@ -8737,7 +8738,12 @@ typedef struct {
     }
   }
   PrintMemoryInfo;
-  pass5_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - pass5_time;
+  if(do_pass5==1){
+    pass5_time = (glutGet(GLUT_ELAPSED_TIME)-pass5_time)/1000.0;
+  }
+  else{
+    pass5_time = 0.0;
+  }
 
 /*
    ************************************************************************
