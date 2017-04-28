@@ -1211,6 +1211,9 @@ extern "C" void glui_motion_setup(int main_window){
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
+#ifdef pp_QUICKTIME
+    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility);
+#endif
     SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);

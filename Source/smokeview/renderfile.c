@@ -115,6 +115,9 @@ void MakeMovie(void){
       sprintf(bitrate_label," -b %ik ",movie_bitrate);
       strcat(command_line,bitrate_label);
     }
+    if(quicktime_compatibility == 1){
+      strcat(command_line, " -pix_fmt yuv420p ");
+    }
     strcat(command_line, moviefile_path);
 
 // make movie

@@ -47,6 +47,7 @@
 //*** options: Mac
 
 #ifdef pp_OSX
+#define pp_QUICKTIME    // add option to make .avi files compatible quicktime
 #undef pp_LANG          // turn off language support - doesn't work
 #undef pp_DEG           // turn off degree symbol output - doesn't work
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
