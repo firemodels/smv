@@ -4053,10 +4053,14 @@ int ReadSMV(char *file, char *file2){
       buff2 = TrimFront(buffer);
       TrimBack(buff2);
       len_buffer = strlen(buff2);
+      if(len_buffer>0&&strcmp(buff2, "xxxnull")!=0){
 
-      NewMemory((void **)&tt->file,(len_buffer+1)*sizeof(char));
-      strcpy(tt->file,buff2);
-
+        NewMemory((void **)&tt->file, (len_buffer+1)*sizeof(char));
+        strcpy(tt->file, buff2);
+      }
+      else{
+        tt->file = NULL;
+      }
       continue;
     }
     if(
