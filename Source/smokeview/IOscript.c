@@ -1621,7 +1621,7 @@ void script_loadfile(scriptdata *scripti){
 
     parti = partinfo + i;
     if(strcmp(parti->file,scripti->cval)==0){
-      readpart(parti->file,i,LOAD,PARTDATA,&errorcode);
+      LoadParticleMenu(i);
       return;
     }
   }
