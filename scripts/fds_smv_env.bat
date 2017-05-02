@@ -15,7 +15,7 @@ if exist %userprofile%\fds_revision.txt (
 )
 
 :: ---- log entry date ----
-set smvlogdate="23-Dec-2016"
+set smvlogdate="11-Apr-2017"
 
 :: ---- repo locations ----
 
@@ -30,13 +30,13 @@ set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u2
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 ::*** firebot/smokebot
-set firebotrepo=/home4/firebot/FireModels_central
-set smokebotrepo=/home4/smokebot/FireModels_central
+set firebotrepo=/home2/smokevis2/firebot/FireModels_central
+set smokebotrepo=/home/smokebot/FireModels_central
 
 :: ---- hostnames ----
 
 ::*** linux
-set linux_hostname=burn.el.nist.gov
+set linux_hostname=blaze.nist.gov
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
