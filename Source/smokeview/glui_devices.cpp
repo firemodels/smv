@@ -410,10 +410,10 @@ extern "C" void glui_device_setup(int main_window){
       RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(PANEL_scale_windrose,&scale_windrose);
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"local");
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
-      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("increment"), GLUI_SPINNER_FLOAT, &scale_increment_windrose);
-      SPINNER_scale_increment_windrose->set_float_limits(0.01, 0.5);
-      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("max"), GLUI_SPINNER_FLOAT, &scale_max_windrose);
-      SPINNER_scale_max_windrose->set_float_limits(0.0, 1.0);
+      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("increment"), GLUI_SPINNER_INT, &scale_increment_windrose);
+      SPINNER_scale_increment_windrose->set_int_limits(1, 50);
+      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("max"), GLUI_SPINNER_INT, &scale_max_windrose);
+      SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
       ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false);
 

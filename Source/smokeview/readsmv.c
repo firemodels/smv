@@ -9340,24 +9340,23 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose,
-        &windstate_windrose, &showlabels_windrose);
-      viswindrose = CLAMP(viswindrose, 0, 1);
-      showref_windrose = CLAMP(showref_windrose, 0, 1);
-      visxy_windrose = CLAMP(visxy_windrose, 0, 1);
-      visxz_windrose = CLAMP(visxz_windrose, 0, 1);
-      visyz_windrose = CLAMP(visyz_windrose, 0, 1);
-      windstate_windrose = CLAMP(windstate_windrose, 0, 1);
+        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose, &windstate_windrose, &showlabels_windrose);
+      viswindrose         = CLAMP(viswindrose, 0, 1);
+      showref_windrose    = CLAMP(showref_windrose, 0, 1);
+      visxy_windrose      = CLAMP(visxy_windrose, 0, 1);
+      visxz_windrose      = CLAMP(visxz_windrose, 0, 1);
+      visyz_windrose      = CLAMP(visyz_windrose, 0, 1);
+      windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %f %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
-      nr_windrose = ABS(nr_windrose);
-      ntheta_windrose = ABS(ntheta_windrose);
-      radius_windrose = ABS(radius_windrose);
-      scale_windrose = CLAMP(scale_windrose,0,1);
-      scale_increment_windrose = CLAMP(scale_increment_windrose, 0.01, 0.5);
-      scale_max_windrose = CLAMP(scale_max_windrose, 0.0, 1.0);
+      sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
+      nr_windrose              = ABS(nr_windrose);
+      ntheta_windrose          = ABS(ntheta_windrose);
+      radius_windrose          = ABS(radius_windrose);
+      scale_windrose           = CLAMP(scale_windrose,0,1);
+      scale_increment_windrose = CLAMP(scale_increment_windrose, 1, 50);
+      scale_max_windrose       = CLAMP(scale_max_windrose, 0, 100);
       continue;
     }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){
@@ -13101,9 +13100,8 @@ void WriteINI(int flag,char *filename){
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
-    windstate_windrose, showlabels_windrose);
-  fprintf(fileout, " %i %i %i %f %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
+    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose, windstate_windrose, showlabels_windrose);
+  fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     int nvals;
 
