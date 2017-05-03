@@ -543,7 +543,6 @@ void DrawWindRose(windrosedata *wr,int orientation){
       diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
       if(showlabels_windrose == 1){
-        //Output3Val(0.01 + diameter / 2.0, 0.0, 0.0, scalei);
         sprintf(scale_percen, "%.0f%s", 100.0*scalei, "%");
         Output3Text(foregroundcolor, 0.01 + diameter / 2.0, 0.0, 0.0, scale_percen);
       }
@@ -2569,18 +2568,17 @@ void drawfilledcircle(float diameter,unsigned char *rgbcolor, circdata *circinfo
 
 void drawcircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   int i;
-  int ncirc;
   float *xcirc, *ycirc;
 
   if(circinfo->ncirc==0)Init_Circle(CIRCLE_SEGS,circinfo);
-  ncirc = circinfo->ncirc;
   xcirc = circinfo->xcirc;
   ycirc = circinfo->ycirc;
 
-  glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINES);
   if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-  for(i=0;i<ncirc;i++){
-    glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
+  for(i=0;i<circinfo->ncirc;i++){
+    glVertex3f(diameter*xcirc[  i]/2.0, diameter*ycirc[  i]/2.0,0.0);
+    glVertex3f(diameter*xcirc[i+1]/2.0, diameter*ycirc[i+1]/2.0, 0.0);
   }
   glEnd();
 }
