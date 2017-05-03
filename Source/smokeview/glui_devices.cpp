@@ -71,9 +71,7 @@ GLUI_Panel *PANEL_devicevis=NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
-GLUI_Panel *PANEL_scale_windrose=NULL;
 GLUI_Panel *PANEL_orientation=NULL;
-GLUI_Panel *PANEL_properties=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_show_windrose = NULL;
 
@@ -82,6 +80,8 @@ GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
+GLUI_Panel *ROLLOUT_properties = NULL;
+GLUI_Panel *ROLLOUT_scale_windrose = NULL;
 GLUI_Rollout *ROLLOUT_devicevalues = NULL;
 GLUI_Rollout *ROLLOUT_velocityvectors = NULL;
 GLUI_Rollout *ROLLOUT_smvobjects=NULL;
@@ -349,7 +349,13 @@ extern "C" void glui_device_setup(int main_window){
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false);
 
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
-      glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show all"), &viswindrose);
+      glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show"), &viswindrose);
+
+      PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
+      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &visxy_windrose);
+      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xz"), &visxz_windrose);
+      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("yz"), &visyz_windrose);
+
       if(nztreedeviceinfo>0){
         int icheckboxes;
 
@@ -421,33 +427,25 @@ extern "C" void glui_device_setup(int main_window){
         }
       }
 
-      PANEL_wr1=glui_device->add_panel_to_panel(ROLLOUT_windrose,"",false);
-
-      PANEL_orientation=glui_device->add_panel_to_panel(PANEL_wr1,"orientation",true);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &visxy_windrose);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xz"), &visxz_windrose);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("yz"), &visyz_windrose);
-
-      glui_device->add_column_to_panel(PANEL_wr1, 0);
-      PANEL_properties=glui_device->add_panel_to_panel(PANEL_wr1,"properties",true);
-      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(PANEL_properties, _d("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
+      ROLLOUT_properties=glui_device->add_rollout_to_panel(ROLLOUT_windrose,"properties",false);
+      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(PANEL_properties, _d("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(PANEL_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
-      RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(PANEL_properties, &windstate_windrose);
+      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
+      RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(ROLLOUT_properties, &windstate_windrose);
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "heading");
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
 
-      PANEL_scale_windrose=glui_device->add_panel_to_panel(ROLLOUT_windrose,"scale",true);
-      glui_device->add_checkbox_to_panel(PANEL_scale_windrose, _d("show scale"), &showref_windrose);
-      glui_device->add_checkbox_to_panel(PANEL_scale_windrose, _d("show labels"), &showlabels_windrose);
-      RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(PANEL_scale_windrose,&scale_windrose);
+      ROLLOUT_scale_windrose=glui_device->add_rollout_to_panel(ROLLOUT_windrose,"scale",false);
+      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _d("show scale"), &showref_windrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _d("show labels"), &showlabels_windrose);
+      RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(ROLLOUT_scale_windrose,&scale_windrose);
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"local");
       glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
-      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("increment"), GLUI_SPINNER_INT, &scale_increment_windrose);
+      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _d("increment"), GLUI_SPINNER_INT, &scale_increment_windrose);
       SPINNER_scale_increment_windrose->set_int_limits(1, 50);
-      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(PANEL_scale_windrose, _d("max"), GLUI_SPINNER_INT, &scale_max_windrose);
+      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _d("max"), GLUI_SPINNER_INT, &scale_max_windrose);
       SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
       ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false);
