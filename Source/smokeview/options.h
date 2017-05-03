@@ -50,8 +50,10 @@
 
 //*** options: Linux
 
+#ifdef pp_LINUX
 #define pp_LANG         // support other languages
 #define pp_DEG          // output degree symbol
+#endif
 
 //*** options: Mac
 
