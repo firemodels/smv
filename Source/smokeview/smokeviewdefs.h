@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define UPDATE_WINDROSE_DEVICE   0
+#define UPDATE_WINDROSE_CHECKBOX 1
+#define UPDATE_WINDROSE_SHOWHIDE 2
+
 #ifndef START_TIMER
 #define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
 #endif

@@ -564,35 +564,6 @@ void DrawWindRose(windrosedata *wr,int orientation){
   glDisable(GL_LIGHTING);
 }
 
-/* ----------------------- UpdateWindroseShowhide ----------------------------- */
-
-void UpdateWindroseShowhide(void){
-  int i,nvals;
-
-  update_windrose_showhide=0;
-  if(windrose_showhide==NULL)return;
-  nvals = 0;
-  for(i = 0; i<nztreedeviceinfo; i++){
-    treedevicedata *treei;
-    int j;
-
-    treei = ztreedeviceinfo[i];
-    for(j = treei->first; j<=treei->last; j++){
-      vdevicesortdata *vdevsorti;
-
-      vdevsorti = vdevices_sorted+j;
-      if(vdevsorti->dir==ZDIR){
-        vdevicedata *vd;
-
-        if(nvals>=nwindrose_showhide)return;
-        vd = vdevsorti->vdeviceinfo;
-        vd->display = windrose_showhide[nvals];
-        nvals++;
-      }
-    }
-  }
-}
-
 /* ----------------------- DrawWindRosesDevices ----------------------------- */
 
 void DrawWindRosesDevices(void){

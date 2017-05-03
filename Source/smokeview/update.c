@@ -1958,6 +1958,6 @@ void UpdateDisplay(void){
     InitAllLightFractions(xyz_light_global, light_type_global);
   }
   if(update_windrose_showhide==1){
-    UpdateWindroseShowhide();
+    UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }
 }
