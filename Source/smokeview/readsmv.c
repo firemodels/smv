@@ -9340,24 +9340,23 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose,
-        &windstate_windrose, &showlabels_windrose);
-      viswindrose = CLAMP(viswindrose, 0, 1);
-      showref_windrose = CLAMP(showref_windrose, 0, 1);
-      visxy_windrose = CLAMP(visxy_windrose, 0, 1);
-      visxz_windrose = CLAMP(visxz_windrose, 0, 1);
-      visyz_windrose = CLAMP(visyz_windrose, 0, 1);
-      windstate_windrose = CLAMP(windstate_windrose, 0, 1);
+        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose, &windstate_windrose, &showlabels_windrose);
+      viswindrose         = CLAMP(viswindrose, 0, 1);
+      showref_windrose    = CLAMP(showref_windrose, 0, 1);
+      visxy_windrose      = CLAMP(visxy_windrose, 0, 1);
+      visxz_windrose      = CLAMP(visxz_windrose, 0, 1);
+      visyz_windrose      = CLAMP(visyz_windrose, 0, 1);
+      windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %f %f %f",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
-      nr_windrose = ABS(nr_windrose);
-      ntheta_windrose = ABS(ntheta_windrose);
-      radius_windrose = ABS(radius_windrose);
-      scale_windrose = CLAMP(scale_windrose,0,1);
-      scale_increment_windrose = CLAMP(scale_increment_windrose, 0.01, 0.5);
-      scale_max_windrose = CLAMP(scale_max_windrose, 0.0, 1.0);
+      sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
+      nr_windrose              = ABS(nr_windrose);
+      ntheta_windrose          = ABS(ntheta_windrose);
+      radius_windrose          = ABS(radius_windrose);
+      scale_windrose           = CLAMP(scale_windrose,0,1);
+      scale_increment_windrose = CLAMP(scale_increment_windrose, 1, 50);
+      scale_max_windrose       = CLAMP(scale_max_windrose, 0, 100);
       continue;
     }
     if(Match(buffer, "BOUNDARYTWOSIDE") == 1){
@@ -11525,30 +11524,28 @@ int ReadINI2(char *inifile, int localfile){
 // ---------------------------------------------------------------------------------------------------------
 //   keywords below are 'local', only in the casename.ini file
 // ---------------------------------------------------------------------------------------------------------
-#define WINDROSEPERLINE 10
+
+#define WINDROSE_PER_ROW 10
       if(Match(buffer, "WINDROSESHOWHIDE")==1){
-        int i1, i2, vals[WINDROSEPERLINE];
+        int i1, i2, *vals, nrows;
 
         FREEMEMORY(windrose_showhide);
         nwindrose_showhide = 0;
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i", &nwindrose_showhide);
-        nwindrose_showhide = MAX(nwindrose_showhide, 0);
         if(nwindrose_showhide>0){
-          NewMemory((void **)&windrose_showhide, nwindrose_showhide*sizeof(int));
-          for(i=0;i<(nwindrose_showhide-1)/WINDROSEPERLINE+1;i++){
+          nrows = ((nwindrose_showhide-1)/WINDROSE_PER_ROW+1);
+          NewMemory((void **)&windrose_showhide, nrows*WINDROSE_PER_ROW*sizeof(int));
+          for(vals=windrose_showhide,i=0;i<nrows;i++,vals+=WINDROSE_PER_ROW){
             int j;
 
-            i1 = WINDROSEPERLINE*i;
-            i2 = MIN(i1+WINDROSEPERLINE,nwindrose_showhide);
+            i1 = WINDROSE_PER_ROW*i;
+            i2 = MIN(i1+WINDROSE_PER_ROW,nwindrose_showhide);
             fgets(buffer, 255, stream);
             sscanf(buffer, " %i %i %i %i %i %i %i %i %i %i ",
               vals,vals+1,vals+2,vals+3,vals+4,vals+5,vals+6,vals+7,vals+8,vals+9);
-            for(j=0;j<WINDROSEPERLINE;j++){
-              vals[j] = CLAMP(vals[j],0,1);
-            }
             for(j=i1;j<i2;j++){
-              windrose_showhide[j] = vals[j-i1];
+              windrose_showhide[j] = CLAMP(vals[j-i1],0,1);
             }
           }
           update_windrose_showhide = 1;
@@ -13101,50 +13098,18 @@ void WriteINI(int flag,char *filename){
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose,
-    windstate_windrose, showlabels_windrose);
-  fprintf(fileout, " %i %i %i %f %f %f\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
+    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose, windstate_windrose, showlabels_windrose);
+  fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
-    int nvals;
+    if(nwindrose_showhide > 0){
+      int i;
 
-    nvals = 0;
-    for(i = 0; i<nztreedeviceinfo; i++){
-      treedevicedata *treei;
-      int j;
-
-      treei = ztreedeviceinfo[i];
-      for(j = treei->first; j<=treei->last; j++){
-        vdevicesortdata *vdevsorti;
-
-        vdevsorti = vdevices_sorted+j;
-        if(vdevsorti->dir==ZDIR)nvals++;
-      }
-    }
-    if(nvals > 0){
+      UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
       fprintf(fileout, "WINDROSESHOWHIDE\n");
-      fprintf(fileout, " %i\n", nvals);
-      nvals = 0;
-      for(i = 0; i < nztreedeviceinfo; i++){
-        treedevicedata *treei;
-        int j;
-
-        treei = ztreedeviceinfo[i];
-        for(j = treei->first; j <= treei->last; j++){
-          vdevicesortdata *vdevsorti;
-
-          vdevsorti = vdevices_sorted + j;
-          if(vdevsorti->dir == ZDIR){
-            vdevicedata *vd;
-
-            vd = vdevsorti->vdeviceinfo;
-            fprintf(fileout, " %i", vd->display);
-            nvals++;
-            if(nvals == WINDROSEPERLINE){
-              fprintf(fileout, "\n");
-              nvals = 0;
-            }
-          }
-        }
+      fprintf(fileout, " %i\n", nwindrose_showhide);
+      for(i = 0; i < nwindrose_showhide; i++){
+        fprintf(fileout, " %i", windrose_showhide[i]);
+        if((i+1)%WINDROSE_PER_ROW==0)fprintf(fileout, "\n");
       }
       fprintf(fileout, "\n");
     }

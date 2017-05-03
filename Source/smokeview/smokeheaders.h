@@ -5,7 +5,7 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void UpdateWindroseShowhide(void);
+EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void update_geom_normals();
 EXTERNCPP void Plot3DListMenu(int value);

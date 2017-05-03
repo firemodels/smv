@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
 SVEXTERN int SVDECL(quicktime_compatibility, 0);
 SVEXTERN float startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
@@ -162,7 +163,8 @@ SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 
 SVEXTERN int SVDECL(viswindrose, 0), SVDECL(visxy_windrose, 1), SVDECL(visxz_windrose, 0), SVDECL(visyz_windrose, 0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
-SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0),SVDECL(scale_increment_windrose,0.05), SVDECL(scale_max_windrose, 0.25);
+SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);
+SVEXTERN int SVDECL(scale_increment_windrose, 5), SVDECL(scale_max_windrose, 25);
 SVEXTERN int    SVDECL(showref_windrose,1), SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
 SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_DIRECTION);
 
