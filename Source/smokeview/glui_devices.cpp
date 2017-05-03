@@ -101,6 +101,20 @@ GLUI_Spinner *SPINNER_radius_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 
+#define OBJECTS_ROLLOUT     0
+#define FLOWVECTORS_ROLLOUT 1
+#define WINDROSE_ROLLOUT    2
+#define DEVICE_ROLLOUT      3
+
+procdata deviceprocinfo[4];
+int ndeviceprocinfo = 0;
+
+/* ------------------ Device_Rollout_CB ------------------------ */
+
+void Device_Rollout_CB(int var){
+  toggle_rollout(deviceprocinfo, ndeviceprocinfo, var);
+}
+
 /* ------------------ UpdateWindRoseDevices ------------------------ */
 
 extern "C" void UpdateWindRoseDevices(int option){
@@ -299,7 +313,9 @@ extern "C" void glui_device_setup(int main_window){
 
     PANEL_objects = glui_device->add_panel("Devices/Objects",false);
 
-    ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,"Objects",false);
+    ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,"Objects",false, OBJECTS_ROLLOUT, Device_Rollout_CB);
+    ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT);
+
     SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,Device_CB);
     CHECKBOX_device_3=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Outline"),&object_outlines);
     CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Orientation"),&show_device_orientation,DEVICE_show_orientation,Device_CB);
@@ -320,7 +336,9 @@ extern "C" void glui_device_setup(int main_window){
     }
 
     if(GetNumActiveDevices()>0||isZoneFireModel==1){
-      ROLLOUT_velocityvectors = glui_device->add_rollout_to_panel(PANEL_objects, "Flow vectors", false);
+      ROLLOUT_velocityvectors = glui_device->add_rollout_to_panel(PANEL_objects, "Flow vectors", false, FLOWVECTORS_ROLLOUT, Device_Rollout_CB);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT);
+
       if(nvdeviceinfo==0)ROLLOUT_velocityvectors->disable();
       CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_d("Show"),&showvdeviceval);
       PANEL_vector_type=glui_device->add_panel_to_panel(ROLLOUT_velocityvectors,"type",true);
@@ -346,7 +364,9 @@ extern "C" void glui_device_setup(int main_window){
         CHECKBOX_vis_ztree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _d("Show z"), &vis_ztree);
       }
 
-      ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false);
+      ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT);
+
 
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
       glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show"), &viswindrose);
@@ -448,7 +468,9 @@ extern "C" void glui_device_setup(int main_window){
       SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _d("max"), GLUI_SPINNER_INT, &scale_max_windrose);
       SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
-      ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false);
+      ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false, DEVICE_ROLLOUT, Device_Rollout_CB);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT);
+
 
       CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdeviceval, SHOWDEVICEVALS, Device_CB);
       CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevicetype, SHOWDEVICEVALS, Device_CB);
