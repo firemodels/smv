@@ -351,7 +351,7 @@ extern "C" void glui_device_setup(int main_window){
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
       glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show all"), &viswindrose);
       if(nztreedeviceinfo>0){
-        int ncheckboxes, icheckboxes;
+        int icheckboxes;
 
         NewMemory((void **)&ROLLOUT_show_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
 
