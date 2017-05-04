@@ -2514,6 +2514,29 @@ void LoadVolsmoke3DMenu(int value){
   glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }
 
+/* ------------------ ReloadAllSliceFiles ------------------------ */
+
+void ReloadAllSliceFiles(void){
+  int ii;
+
+  LOCK_COMPRESS
+  islicetype_save = islicetype;
+  for(ii = 0; ii < nslice_loaded; ii++){
+    slicedata *slicei;
+    int set_slicecolor;
+    int i;
+    int errorcode;
+
+    i = slice_loaded_list[ii];
+    slicei = sliceinfo + i;
+    set_slicecolor = DEFER_SLICECOLOR;
+    if(i == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
+    ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+  }
+  islicetype = islicetype_save;
+  UNLOCK_COMPRESS;
+}
+
 /* ------------------ LoadUnloadMenu ------------------------ */
 
 void LoadUnloadMenu(int value){
@@ -2603,7 +2626,6 @@ void LoadUnloadMenu(int value){
     }
     for(ii = 0; ii<nslice_loaded; ii++){
       slicedata *slicei;
-
 
       i = slice_loaded_list[ii];
       slicei = sliceinfo + i;
@@ -8569,7 +8591,8 @@ updatemenu=0;
       glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
       glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
-//*** this is where I would put the "sub-slice" menus ordered by type
+//  count number of subslice menus
+
       nloadsubslicemenu=1;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sd,*sdim1;
@@ -8578,6 +8601,9 @@ updatemenu=0;
         sdim1 = sliceinfo + sliceorderindex[i-1];
         if(strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0)nloadsubslicemenu++;
       }
+
+// allocate and initialize subslicemenus
+
       NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
       for(i=0;i<nloadsubslicemenu;i++){
         loadsubslicemenu[i]=0;
@@ -8611,23 +8637,23 @@ updatemenu=0;
         }
         if(i==nsliceinfo-1||strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
           subslice_menuindex[iloadsubslicemenu]=sliceorderindex[i];
-  		    if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
+          if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
             glutAddMenuEntry("-",MENU_DUMMY);
-		      }
-		      if(sd->ndirxyz[1]>1){
+          }
+          if(sd->ndirxyz[1]>1){
             glutAddMenuEntry(_("Load All x"),-1000-4*iloadsubslicemenu-1);
-		      }
-		      if(sd->ndirxyz[2]>1){
+          }
+          if(sd->ndirxyz[2]>1){
             glutAddMenuEntry(_("Load All y"),-1000-4*iloadsubslicemenu-2);
-		      }
-		      if(sd->ndirxyz[3]>1){
+          }
+          if(sd->ndirxyz[3]>1){
             glutAddMenuEntry(_("Load All z"),-1000-4*iloadsubslicemenu-3);
-		      }
-		      if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
+          }
+          if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
             glutAddMenuEntry(_("Load All"),-1000-4*iloadsubslicemenu);
-		      }
+          }
         }
-        if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
+        if(i!=nsliceinfo-1&&strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
           iloadsubslicemenu++;
         }
       }
@@ -9339,7 +9365,7 @@ updatemenu=0;
     }
 
     CREATEMENU(reloadmenu,ReloadMenu);
-    glutAddMenuEntry(_("Reload Now"),RELOAD_NOW);
+    glutAddMenuEntry(_("Reload now"),RELOAD_NOW);
     if(periodic_value==1)glutAddMenuEntry(_("*Reload every 1 minute"),1);
     if(periodic_value!=1)glutAddMenuEntry(_("Reload every 1 minute"),1);
     if(periodic_value==5)glutAddMenuEntry(_("*Reload every 5 minutes"),5);

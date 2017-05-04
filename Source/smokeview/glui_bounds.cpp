@@ -55,6 +55,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
+#define ALLFILERELOAD 27
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
@@ -2017,7 +2018,7 @@ extern "C" void glui_bounds_setup(int main_window){
       if(view_tstop>tttmax)tttmax=view_tstop;
       SPINNER_sliceaverage->set_float_limits(0.0,tttmax);
     }
-    glui_bounds->add_button_to_panel(ROLLOUT_slice_average,"Reload",FILERELOAD,Slice_CB);
+    glui_bounds->add_button_to_panel(ROLLOUT_slice_average,"Reload",ALLFILERELOAD,Slice_CB);
 
     ROLLOUT_slice_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Vector"), false, SLICE_VECTOR_ROLLOUT, Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_vector, SLICE_VECTOR_ROLLOUT);
@@ -3371,19 +3372,21 @@ extern "C" void Slice_CB(int var){
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type != islicetype)continue;
-        last_slice = i;
-        break;
+        if(sd->type == islicetype){
+          last_slice = i;
+          break;
+        }
       }
       for(ii = 0; ii < nslice_loaded; ii++){
         int set_slicecolor;
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type != islicetype)continue;
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
+        if(sd->type == islicetype){
+          set_slicecolor = DEFER_SLICECOLOR;
+          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+          ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
+        }
       }
     break;
   case FILERELOAD:
@@ -3395,6 +3398,9 @@ extern "C" void Slice_CB(int var){
       LoadSliceMenu(0);
     }
     UpdateGlui();
+    break;
+  case ALLFILERELOAD:
+    ReloadAllSliceFiles();
     break;
   default:
     ASSERT(FFALSE);
