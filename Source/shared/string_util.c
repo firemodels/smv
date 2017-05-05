@@ -1278,8 +1278,21 @@ unsigned char *GetMD5Hash(char *file){
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
   if(stream == NULL){
-    file = Which(file);
-    stream = fopen(file, "rb");
+    char *pathentry, fullpath[1024];
+
+    pathentry = Which(file);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath + strlen(fullpath) - 4;
+      if(strlen(fullpath) <= 4 || STRCMP(ext, ".exe") != 0)strcat(fullpath, ".exe");
+    }
+#endif
+
+    stream = fopen(fullpath, "rb");
     if(stream == NULL)return NULL;
   }
 
