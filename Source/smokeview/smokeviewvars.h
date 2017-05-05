@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
 SVEXTERN int SVDECL(quicktime_compatibility, 0);
 SVEXTERN float startup_time, read_time_elapsed;

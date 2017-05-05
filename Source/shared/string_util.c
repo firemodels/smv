@@ -15,6 +15,10 @@
 #include "datadefs.h"
 #include "file_util.h"
 #include "compress.h"
+#ifdef pp_MD5
+#include "mbedtls/md5.h"
+#endif
+
 
 unsigned int *random_ints, nrandom_ints;
 
@@ -1258,22 +1262,67 @@ void GetTitle(char *progname, char *fulltitle){
 #endif
 }
 
+/* ------------------ GetMD5Hash ------------------------ */
+#ifdef pp_MD5
+#define BUFFER_LEN 1024
+#define HASH_LEN   16
+unsigned char *GetMD5Hash(char *file){
+  mbedtls_md5_context ctx;
+  FILE *stream=NULL;
+  unsigned char data[BUFFER_LEN];
+  int bytes;
+  unsigned char hash[HASH_LEN], *return_hash;
+  int i;
+
+  if(file==NULL)return NULL;
+  stream = fopen(file, "rb");
+  if(stream == NULL)return NULL;
+
+  mbedtls_md5_init(&ctx);
+  while((bytes = fread(data, 1, BUFFER_LEN, stream)) != 0)
+    mbedtls_md5_update(&ctx, data, BUFFER_LEN);
+  mbedtls_md5_finish(&ctx, hash);
+  fclose(stream);
+
+  NewMemory((void **)&return_hash, HASH_LEN + 1);
+
+  for(i = 0; i < HASH_LEN; i++){
+    return_hash[i] = hash[i];
+  }
+  return_hash[HASH_LEN] = 0;
+  return return_hash;
+}
+#endif
+
 /* ------------------ version ------------------------ */
 
-void PRINTversion(char *progname){
+void PRINTversion(char *progname, char *progfullpath){
   char version[256];
   char githash[256];
   char gitdate[256];
   char releasetitle[1024];
+#ifdef pp_MD5
+  unsigned char *md5_hash;
+#endif
 
   GetProgVersion(version);
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
+#ifdef pp_MD5
+  md5_hash = GetMD5Hash(progfullpath);
+#endif
+
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
   PRINTF("Version          : %s\n", version);
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
+#ifdef pp_MD5
+  if(md5_hash != NULL){
+    PRINTF("MD5              : %s\n", md5_hash);
+    FREEMEMORY(md5_hash);
+  }
+#endif
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
