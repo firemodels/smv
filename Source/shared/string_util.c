@@ -1276,11 +1276,16 @@ unsigned char *GetMD5Hash(char *file){
 
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
-  if(stream == NULL)return NULL;
+  if(stream == NULL){
+    file = Which(file);
+    stream = fopen(file, "rb");
+    if(stream == NULL)return NULL;
+  }
 
   mbedtls_md5_init(&ctx);
-  while((bytes = fread(data, 1, BUFFER_LEN, stream)) != 0)
+  while((bytes = fread(data, 1, BUFFER_LEN, stream)) != 0){
     mbedtls_md5_update(&ctx, data, BUFFER_LEN);
+  }
   mbedtls_md5_finish(&ctx, hash);
   fclose(stream);
 
