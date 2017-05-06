@@ -12,7 +12,7 @@
 #ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
-  #define PROGVERSION "6.4.4"
+  #define PROGVERSION "6.5.0"
 #endif
 
 //*** options: all platforms
@@ -66,6 +66,7 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
+#define pp_MD5           // testing md5 hashing
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS

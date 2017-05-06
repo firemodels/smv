@@ -16,6 +16,7 @@
 #include "file_util.h"
 #include "compress.h"
 
+
 unsigned int *random_ints, nrandom_ints;
 
 /* ----------------------- InitRandAB ----------------------------- */
@@ -1258,22 +1259,121 @@ void GetTitle(char *progname, char *fulltitle){
 #endif
 }
 
+/* ------------------ GetMD5Hash ------------------------ */
+
+#ifdef pp_MD5
+
+unsigned char *GetMD5Hash(char *file){
+  FILE *stream=NULL;
+  char *outfile, fullpath[1024];
+  unsigned char *md5_hash;
+
+  if(file==NULL||strlen(file)==0)return NULL;
+  strcpy(fullpath, file);
+  stream = fopen(fullpath, "rb");
+  if(stream==NULL){
+    char *pathentry;
+    
+    pathentry = Which(fullpath);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath+strlen(fullpath)-4;
+      if(strlen(fullpath)<=4||STRCMP(ext, ".exe")!=0)strcat(fullpath, ".exe");
+    }
+#endif
+    stream = fopen(fullpath, "rb");
+    if(stream==NULL)return NULL;
+  }
+  fclose(stream);
+
+  NewMemory((void **)&md5_hash, 32+1);
+
+  {
+    char command[1024], quote[2];
+    int result;
+
+#ifdef WIN32
+    strcpy(command, "md5sum ");
+#endif
+#ifdef pp_LINUX
+    strcpy(command, "md5sum ");
+#endif
+#ifdef pp_OSX
+    strcpy(command, "md5 -q ");
+#endif
+    quote[0] = '"';
+    quote[1] = 0;
+    strcat(command, quote);
+    strcat(command, fullpath);
+    strcat(command, quote);
+
+    outfile = tmpnam(NULL);
+    if(outfile==NULL)return NULL;
+    strcat(command, " > ");
+    strcat(command,outfile);
+    result = system(command);
+    if(result!=0)return NULL;
+  }
+
+  {
+    int i, ii;
+    char buffer[1000];
+    
+    stream = fopen(outfile, "r");
+    if(stream==NULL)return NULL;
+    fgets(buffer, 1000, stream);
+    fclose(stream);
+    UNLINK(outfile);
+
+    for(i = 0,ii=0;i<1000;i++){
+#ifdef WIN32
+      if(buffer[i]=='\\')continue;
+#endif
+      if(buffer[i]==' '||ii==32){
+        md5_hash[ii++] = 0;
+        break;
+      }
+      md5_hash[ii++] = buffer[i];
+    }
+  }
+  
+  return md5_hash;
+}
+#endif
+
 /* ------------------ version ------------------------ */
 
-void PRINTversion(char *progname){
+void PRINTversion(char *progname, char *progfullpath){
   char version[256];
   char githash[256];
   char gitdate[256];
   char releasetitle[1024];
+#ifdef pp_MD5
+  unsigned char *md5_hash;
+#endif
 
   GetProgVersion(version);
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
+#ifdef pp_MD5
+  md5_hash = GetMD5Hash(progfullpath);
+#endif
+
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
   PRINTF("Version          : %s\n", version);
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
+#ifdef pp_MD5
+  if(md5_hash != NULL){
+    PRINTF("MD5              : %s\n", md5_hash);
+    FREEMEMORY(md5_hash);
+  }
+#endif
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");

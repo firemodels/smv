@@ -83,7 +83,7 @@ int main(int argc, char **argv){
         return 1;
       }
       else if(strncmp(arg, "-version", 8) == 0|| strncmp(arg, "-v", 2) == 0){
-        PRINTversion("dem2fds");
+        PRINTversion("dem2fds",NULL);
         return 1;
       }
     }

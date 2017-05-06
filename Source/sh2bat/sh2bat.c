@@ -48,7 +48,7 @@ int main(int argc, char **argv){
         exit(1);
         break;
       case 'v':
-        PRINTversion("sh2bat ");
+        PRINTversion("sh2bat ",NULL);
         exit(1);
         break;
       default:

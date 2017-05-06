@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ReloadAllSliceFiles(void);
 EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void update_geom_normals();

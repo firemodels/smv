@@ -112,7 +112,7 @@ int main(int argc, char **argv){
   prog=argv[0];
   filebase=NULL;
   if(argc==1){
-    PRINTversion("Smokezip ");
+    PRINTversion("Smokezip ",NULL);
     return 1;
   }
 
@@ -303,7 +303,7 @@ int main(int argc, char **argv){
         Usage(prog);
         return 1;
       case 'v':
-        PRINTversion("Smokezip ");
+        PRINTversion("Smokezip ",NULL);
         return 1;
       default:
         Usage(prog);
