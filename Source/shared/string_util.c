@@ -1266,6 +1266,7 @@ void GetTitle(char *progname, char *fulltitle){
 unsigned char *GetMD5Hash(char *file){
   FILE *stream=NULL;
   char *outfile, fullpath[1024];
+  char outfile_template[] = "smvXXXXXX";
   unsigned char *md5_hash;
 
 #ifdef pp_MD5_DEBUG
@@ -1284,7 +1285,7 @@ unsigned char *GetMD5Hash(char *file){
   stream = fopen(fullpath, "rb");
   if(stream==NULL){
     char *pathentry;
-    
+
     pathentry = Which(fullpath);
     strcpy(fullpath, pathentry);
     strcat(fullpath, file);
@@ -1327,7 +1328,13 @@ unsigned char *GetMD5Hash(char *file){
     strcat(command, fullpath);
     strcat(command, quote);
 
-    outfile = tmpnam(NULL);
+#ifdef WIN32
+#define MKTEMP _mktemp
+#else
+#define MKTEMP mktemp
+#endif
+
+    outfile = MKTEMP(outfile_template);
     if(outfile==NULL){
 #ifdef pp_MD5_DEBUG
       printf("*** md5 error: unable to create temporary file\n");
@@ -1349,7 +1356,7 @@ unsigned char *GetMD5Hash(char *file){
   {
     int i, ii;
     char buffer[1000];
-    
+
     stream = fopen(outfile, "r");
     if(stream==NULL){
 #ifdef pp_MD5_DEBUG
@@ -1372,7 +1379,7 @@ unsigned char *GetMD5Hash(char *file){
       md5_hash[ii++] = buffer[i];
     }
   }
-  
+
   return md5_hash;
 }
 #endif
@@ -1400,13 +1407,13 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Version          : %s\n", version);
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
+  PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef pp_MD5
-  if(md5_hash != NULL){
+  if(md5_hash!=NULL){
     PRINTF("MD5              : %s\n", md5_hash);
     FREEMEMORY(md5_hash);
   }
 #endif
-  PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
 #ifdef pp_INTEL
