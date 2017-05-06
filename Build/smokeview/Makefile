@@ -262,13 +262,13 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 gnu_linux_32 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_32
 gnu_linux_32 : LIBS_PLAT =
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -D pp_GCC -Wno-write-strings
-gnu_linux_32 : LFLAGS    =
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILEFLAG)
+gnu_linux_32 : CFLAGS    = -O0 -D pp_LINUX -D pp_GCC -Wno-write-strings $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+gnu_linux_32 : LFLAGS    = $(SMV_PROFILEFLAGS)
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : CPP       = g++
 gnu_linux_32 : FC        = gfortran
-gnu_linux_32 : exe       = smokeview_linux_$(SMV_TESTSTRING)32
+gnu_linux_32 : exe       = smokeview_linux_$(SMV_TESTSTRING)32$(SMV_PROFILESTRING)
 
 gnu_linux_32 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
