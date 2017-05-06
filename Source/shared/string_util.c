@@ -1263,60 +1263,86 @@ void GetTitle(char *progname, char *fulltitle){
 }
 
 /* ------------------ GetMD5Hash ------------------------ */
+
 #ifdef pp_MD5
-#define BUFFER_LEN 1024
-#define HASH_LEN   16
+
 unsigned char *GetMD5Hash(char *file){
-  mbedtls_md5_context ctx;
   FILE *stream=NULL;
-  unsigned char data[BUFFER_LEN];
-  unsigned char hash[HASH_LEN], *return_hash;
-  int i;
-  size_t len_data;
-  char hex_digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  char *outfile, fullpath[1024];
+  unsigned char *md5_hash;
 
-  if(file==NULL)return NULL;
-  stream = fopen(file, "rb");
-  if(stream == NULL){
-    char *pathentry, fullpath[1024];
-
-    pathentry = Which(file);
+  if(file==NULL||strlen(file)==0)return NULL;
+  strcpy(fullpath, file);
+  stream = fopen(fullpath, "rb");
+  if(stream==NULL){
+    char *pathentry;
+    
+    pathentry = Which(fullpath);
     strcpy(fullpath, pathentry);
     strcat(fullpath, file);
 #ifdef WIN32
     {
       const char *ext;
 
-      ext = fullpath + strlen(fullpath) - 4;
-      if(strlen(fullpath) <= 4 || STRCMP(ext, ".exe") != 0)strcat(fullpath, ".exe");
+      ext = fullpath+strlen(fullpath)-4;
+      if(strlen(fullpath)<=4||STRCMP(ext, ".exe")!=0)strcat(fullpath, ".exe");
     }
 #endif
-
     stream = fopen(fullpath, "rb");
-    if(stream == NULL)return NULL;
+    if(stream==NULL)return NULL;
   }
-
-  mbedtls_md5_init(&ctx);
-  while((len_data = fread(data, 1, BUFFER_LEN, stream)) != 0){
-    mbedtls_md5_update(&ctx, data, len_data);
-  }
-  mbedtls_md5_finish(&ctx, hash);
   fclose(stream);
 
-  NewMemory((void **)&return_hash, 2*HASH_LEN + 1);
+  NewMemory((void **)&md5_hash, 32+1);
 
-  for(i = 0; i < HASH_LEN; i++){
-    int val, high, low;
+  {
+    char command[1024], quote[2];
+    int result;
 
-    val = hash[i];
-    high = val >> 4;
-    low = 15 & val;
+#ifdef WIN32
+    strcpy(command, "md5sum ");
+#endif
+#ifdef pp_LINUX
+    strcpy(command, "md5sum ");
+#endif
+#ifdef pp_OSX
+    strcpy(command, "md5 ");
+#endif
+    quote[0] = '"';
+    quote[1] = 0;
+    strcat(command, quote);
+    strcat(command, fullpath);
+    strcat(command, quote);
 
-    return_hash[2 * i]     = hex_digit[high];
-    return_hash[2 * i + 1] = hex_digit[low];
+    outfile = tmpnam(NULL);
+    if(outfile==NULL)return NULL;
+    strcat(command, " > ");
+    strcat(command,outfile);
+    result = system(command);
+    if(result!=0)return NULL;
   }
-  return_hash[2*HASH_LEN] = 0;
-  return return_hash;
+
+  {
+    int i, ii;
+    char buffer[1000];
+    
+    stream = fopen(outfile, "r");
+    if(stream==NULL)return NULL;
+    fgets(buffer, 1000, stream);
+    fclose(stream);
+    UNLINK(outfile);
+
+    for(i = 0,ii=0;i<1000;i++){
+      if(buffer[i]=='\\')continue;
+      if(buffer[i]==' '||ii==32){
+        md5_hash[ii++] = 0;
+        break;
+      }
+      md5_hash[ii++] = buffer[i];
+    }
+  }
+  
+  return md5_hash;
 }
 #endif
 
