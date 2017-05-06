@@ -205,13 +205,24 @@ int RandInt(int min, int max){
 
 /* ------------------ RandStr ------------------------ */
 
+#ifdef WIN32
+#define GETPID GetCurrentProcessId
+#else
+#define GETPID getpid
+#endif
+
 char *RandStr(char* str, int length){
 
 //  returns a random character string of length length
 
     int i;
+    int seed;
 
     if(str==NULL||length<=0)return NULL;
+
+    seed = time(NULL)%1000;
+    seed += GETPID();
+    srand(seed);
 
     for(i=0;i<length;i++){
       str[i]=(char)RandInt(65,90);
@@ -1265,8 +1276,7 @@ void GetTitle(char *progname, char *fulltitle){
 
 unsigned char *GetMD5Hash(char *file){
   FILE *stream=NULL;
-  char *outfile, fullpath[1024];
-  char outfile_template[] = "smvXXXXXX";
+  char outfile[1024], fullpath[1024];
   unsigned char *md5_hash;
 
 #ifdef pp_MD5_DEBUG
@@ -1312,6 +1322,7 @@ unsigned char *GetMD5Hash(char *file){
   {
     char command[1024], quote[2];
     int result;
+    char output_suffix[20];
 
 #ifdef WIN32
     strcpy(command, "md5sum ");
@@ -1328,26 +1339,18 @@ unsigned char *GetMD5Hash(char *file){
     strcat(command, fullpath);
     strcat(command, quote);
 
-#ifdef WIN32
-#define MKTEMP _mktemp
-#else
-#define MKTEMP mktemp
-#endif
+    strcpy(outfile,"smv");
+    RandStr(output_suffix, 20);
+    strcat(outfile,output_suffix);
+    strcat(outfile,".md5");
 
-    outfile = MKTEMP(outfile_template);
-    if(outfile==NULL){
-#ifdef pp_MD5_DEBUG
-      printf("*** md5 error: unable to create temporary file\n");
-#endif
-      return NULL;
-    }
     strcat(command, " > ");
     strcat(command,outfile);
     result = system(command);
     if(result!=0){
 #ifdef pp_MD5_DEBUG
       printf("*** md5 error: system command to compute md5 hash failed\n");
-      printf("*** commnad=%s\n",command);
+      printf("*** command=%s\n",command);
 #endif
       return NULL;
     }
@@ -1363,7 +1366,7 @@ unsigned char *GetMD5Hash(char *file){
       printf("*** md5 error: unable to open output file: %s\n",outfile);
 #endif
       return NULL;
-    } 
+    }
     fgets(buffer, 1000, stream);
     fclose(stream);
     UNLINK(outfile);
