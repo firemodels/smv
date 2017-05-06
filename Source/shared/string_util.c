@@ -1268,7 +1268,18 @@ unsigned char *GetMD5Hash(char *file){
   char *outfile, fullpath[1024];
   unsigned char *md5_hash;
 
-  if(file==NULL||strlen(file)==0)return NULL;
+#ifdef pp_MD5_DEBUG
+    if(file!=NULL){
+      printf("*** computing md5 for %s\n",file);
+    }
+#endif
+
+  if(file==NULL||strlen(file)==0){
+#ifdef pp_MD5_DEBUG
+    printf("*** md5 error: filename is NULL\n");
+#endif
+    return NULL;
+  }
   strcpy(fullpath, file);
   stream = fopen(fullpath, "rb");
   if(stream==NULL){
@@ -1286,7 +1297,12 @@ unsigned char *GetMD5Hash(char *file){
     }
 #endif
     stream = fopen(fullpath, "rb");
-    if(stream==NULL)return NULL;
+    if(stream==NULL){
+#ifdef pp_MD5_DEBUG
+      printf("*** md5 error: unable to open %s\n",fullpath);
+#endif
+      return NULL;
+    }
   }
   fclose(stream);
 
@@ -1312,11 +1328,22 @@ unsigned char *GetMD5Hash(char *file){
     strcat(command, quote);
 
     outfile = tmpnam(NULL);
-    if(outfile==NULL)return NULL;
+    if(outfile==NULL){
+#ifdef pp_MD5_DEBUG
+      printf("*** md5 error: unable to create temporary file\n");
+#endif
+      return NULL;
+    }
     strcat(command, " > ");
     strcat(command,outfile);
     result = system(command);
-    if(result!=0)return NULL;
+    if(result!=0){
+#ifdef pp_MD5_DEBUG
+      printf("*** md5 error: system command to compute md5 hash failed\n");
+      printf("*** commnad=%s\n",command);
+#endif
+      return NULL;
+    }
   }
 
   {
@@ -1324,7 +1351,12 @@ unsigned char *GetMD5Hash(char *file){
     char buffer[1000];
     
     stream = fopen(outfile, "r");
-    if(stream==NULL)return NULL;
+    if(stream==NULL){
+#ifdef pp_MD5_DEBUG
+      printf("*** md5 error: unable to open output file: %s\n",outfile);
+#endif
+      return NULL;
+    } 
     fgets(buffer, 1000, stream);
     fclose(stream);
     UNLINK(outfile);
