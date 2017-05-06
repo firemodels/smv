@@ -15,9 +15,6 @@
 #include "datadefs.h"
 #include "file_util.h"
 #include "compress.h"
-#ifdef pp_MD5
-#include "mbedtls/md5.h"
-#endif
 
 
 unsigned int *random_ints, nrandom_ints;
