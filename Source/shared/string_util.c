@@ -1303,7 +1303,7 @@ unsigned char *GetMD5Hash(char *file){
     strcpy(command, "md5sum ");
 #endif
 #ifdef pp_OSX
-    strcpy(command, "md5 ");
+    strcpy(command, "md5 -q ");
 #endif
     quote[0] = '"';
     quote[1] = 0;
@@ -1330,7 +1330,9 @@ unsigned char *GetMD5Hash(char *file){
     UNLINK(outfile);
 
     for(i = 0,ii=0;i<1000;i++){
+#ifdef WIN32
       if(buffer[i]=='\\')continue;
+#endif
       if(buffer[i]==' '||ii==32){
         md5_hash[ii++] = 0;
         break;
