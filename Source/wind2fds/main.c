@@ -65,7 +65,6 @@ int gettokens(char *tokens, char **tokenptrs){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  char *prog;
   char *arg,*csv,*argin=NULL,*argout=NULL;
   char file_in[256],file_out[256];
   FILE *stream_in=NULL, *stream_out=NULL;
@@ -96,13 +95,12 @@ int main(int argc, char **argv){
   int lendate=0;
 
   SetStdOut(stdout);
+  initMALLOC();
   strcpy(percen,"%");
   strcpy(prefix,"");
 
-  prog=argv[0];
-
   if(argc==1){
-   PRINTversion("wind2fds ",NULL);
+   PRINTversion("wind2fds ", argv[0]);
    return 1;
   }
 
@@ -131,7 +129,7 @@ int main(int argc, char **argv){
       continue;
     }
     else if(strcmp(arg,"-v")==0){
-      PRINTversion("wind2fds ",NULL);
+      PRINTversion("wind2fds ", argv[0]);
       return 1;
     }
     else if(strcmp(arg,"-mintime")==0){
@@ -194,7 +192,7 @@ int main(int argc, char **argv){
       continue;
     }
     else if(strcmp(arg,"-h")==0||strcmp(arg,"-help")==0){
-      usage(prog);
+      usage(argv[0]);
       exit(0);
     }
     if(argin==NULL){

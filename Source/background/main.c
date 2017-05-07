@@ -54,7 +54,6 @@ void Sleep(int ticks){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  char *prog;
   int i;
 #ifdef pp_LINUXOSX
   int debug;
@@ -80,6 +79,7 @@ int main(int argc, char **argv){
 #endif
 
   SetStdOut(stdout);
+  initMALLOC();
 #ifdef pp_LINUX
   hostlistfile=NULL;
   host=NULL;
@@ -93,10 +93,9 @@ int main(int argc, char **argv){
 #ifdef pp_LINUXOSX
   debug=0;
 #endif  
-  prog=argv[0];
 
   if(argc==1){
-    PRINTversion("background ",NULL);
+    PRINTversion("background ", argv[0]);
     return 1;
   }
 
@@ -127,7 +126,7 @@ int main(int argc, char **argv){
 #ifdef pp_LINUX
             if(strlen(arg)<=2||strcmp(arg,"-hosts")!=0){
 #endif
-              usage(prog);
+              usage(argv[0]);
               return 1;
 #ifdef pp_LINUX
             }
@@ -169,11 +168,11 @@ int main(int argc, char **argv){
             }
             break;
           case 'v':
-            PRINTversion("background ",NULL);
+            PRINTversion("background ", argv[0]);
             return 1;
           default:
             printf("Unknown option: %s\n",arg);
-            usage(prog);
+            usage(argv[0]);
             return 1;
 	      }
       }

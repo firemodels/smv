@@ -34,6 +34,7 @@ int main(int argc, char **argv){
   FILE *streamin=NULL,*streamout=NULL;
 
   SetStdOut(stdout);
+  initMALLOC();
   prog=argv[0];
   for(i=1;i<argc;i++){
     int lenarg;
@@ -48,7 +49,7 @@ int main(int argc, char **argv){
         exit(1);
         break;
       case 'v':
-        PRINTversion("sh2bat ",NULL);
+        PRINTversion("sh2bat ", argv[0]);
         exit(1);
         break;
       default:

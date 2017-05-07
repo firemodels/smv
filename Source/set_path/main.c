@@ -89,6 +89,7 @@ int main(int argc, char **argv){
   int newentry_present;
 
   SetStdOut(stdout);
+  initMALLOC();
   strcpy(path_type,"User");
   if(argc==1){
     usage();
@@ -146,7 +147,7 @@ int main(int argc, char **argv){
         test_mode=1;
         break;
       case 'v':
-        PRINTversion("set_path ",NULL);
+        PRINTversion("set_path ", argv[0]);
         return 0;
       default:
         usage();

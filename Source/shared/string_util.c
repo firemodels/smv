@@ -1322,7 +1322,7 @@ unsigned char *GetMD5Hash(char *file){
   {
     char command[1024], quote[2];
     int result;
-    char output_suffix[20];
+    char output_suffix[256];
 
 #ifdef WIN32
     strcpy(command, "md5sum ");
@@ -1339,9 +1339,8 @@ unsigned char *GetMD5Hash(char *file){
     strcat(command, fullpath);
     strcat(command, quote);
 
-    strcpy(outfile,"smv");
-    RandStr(output_suffix, 20);
-    strcat(outfile,output_suffix);
+    RandStr(output_suffix, 30);
+    strcpy(outfile,output_suffix);
     strcat(outfile,".md5");
 
     strcat(command, " > ");
@@ -1413,7 +1412,7 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef pp_MD5
   if(md5_hash!=NULL){
-    PRINTF("MD5              : %s\n", md5_hash);
+    PRINTF("MD5 hash         : %s\n", md5_hash);
     FREEMEMORY(md5_hash);
   }
 #endif

@@ -66,8 +66,6 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
-#define pp_MD5           // testing md5 hashing
-// #define pp_MD5_DEBUG     // md5 debugging
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS

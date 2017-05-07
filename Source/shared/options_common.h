@@ -1,6 +1,11 @@
 #ifndef OPTIONS_COMMON_H_DEFINED
 #define OPTIONS_COMMON_H_DEFINED
 
+//*** options: all platforms
+
+#define pp_MD5           // testing md5 hashing
+// #define pp_MD5_DEBUG     // md5 debugging
+
 //*** options: windows
 
 #ifdef WIN32

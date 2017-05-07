@@ -29,7 +29,6 @@ int main(int argc, char **argv){
   char *ext;
   char inifile[1024];
   char inifilebase[1024];
-  char *prog;
   int i;
   int endian_fds;
   int endian_info;
@@ -109,10 +108,9 @@ int main(int argc, char **argv){
   patchinfo=NULL;
   smoke3dinfo=NULL;
 
-  prog=argv[0];
   filebase=NULL;
   if(argc==1){
-    PRINTversion("Smokezip ",NULL);
+    PRINTversion("Smokezip ",argv[0]);
     return 1;
   }
 
@@ -300,13 +298,13 @@ int main(int argc, char **argv){
         break;
 #endif
       case 'h':
-        Usage(prog);
+        Usage(argv[0]);
         return 1;
       case 'v':
-        PRINTversion("Smokezip ",NULL);
+        PRINTversion("Smokezip ", argv[0]);
         return 1;
       default:
-        Usage(prog);
+        Usage(argv[0]);
         return 1;
       }
     }
@@ -324,7 +322,7 @@ int main(int argc, char **argv){
   // construct smv filename
 
   if(filebase==NULL){
-    Usage(prog);
+    Usage(argv[0]);
     return 1;
   }
 #ifdef pp_THREAD
