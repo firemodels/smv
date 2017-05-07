@@ -17,6 +17,8 @@
 
 //*** options: all platforms
 
+#define pp_MD5           // testing md5 hashing
+// #define pp_MD5_DEBUG     // md5 debugging
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
