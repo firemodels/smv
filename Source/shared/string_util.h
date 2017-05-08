@@ -44,6 +44,9 @@ EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
+#ifdef pp_MD5_SOURCE
+EXTERNCPP unsigned char *GetHash(char *file);
+#endif
 EXTERNCPP void GetProgVersion(char *PROGversion);
 EXTERNCPP int MatchWild(char *pTameText, char *pWildText);
 EXTERNCPP int Match(char *buffer, const char *key);

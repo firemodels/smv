@@ -14,7 +14,9 @@
 #include "MALLOC.h"
 #include "datadefs.h"
 #include "file_util.h"
-#include "compress.h"
+#ifdef pp_MD5_SOURCE
+#include "mbedtls/md5.h"
+#endif
 
 
 unsigned int *random_ints, nrandom_ints;
@@ -1383,6 +1385,64 @@ unsigned char *GetMD5Hash(char *file){
   }
 
   return md5_hash;
+}
+#endif
+
+/* ------------------ GetMD5Hash ------------------------ */
+#ifdef pp_MD5_SOURCE
+#define BUFFER_LEN 1024
+#define HASH_LEN   16
+unsigned char *GetHash(char *file){
+  mbedtls_md5_context ctx;
+  FILE *stream=NULL;
+  unsigned char data[BUFFER_LEN];
+  unsigned char hash[HASH_LEN], *return_hash;
+  int i;
+  size_t len_data;
+  char hex_digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+  if(file==NULL)return NULL;
+  stream = fopen(file, "rb");
+  if(stream == NULL){
+    char *pathentry, fullpath[1024];
+
+    pathentry = Which(file);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath + strlen(fullpath) - 4;
+      if(strlen(fullpath) <= 4 || STRCMP(ext, ".exe") != 0)strcat(fullpath, ".exe");
+    }
+#endif
+
+    stream = fopen(fullpath, "rb");
+    if(stream == NULL)return NULL;
+  }
+
+  mbedtls_md5_init(&ctx);
+  while((len_data = fread(data, 1, BUFFER_LEN, stream)) != 0){
+    mbedtls_md5_update(&ctx, data, len_data);
+  }
+  mbedtls_md5_finish(&ctx, hash);
+  fclose(stream);
+
+  NewMemory((void **)&return_hash, 2*HASH_LEN + 1);
+
+  for(i = 0; i < HASH_LEN; i++){
+    int val, high, low;
+
+    val = hash[i];
+    high = val >> 4;
+    low = 15 & val;
+
+    return_hash[2 * i]     = hex_digit[high];
+    return_hash[2 * i + 1] = hex_digit[low];
+  }
+  return_hash[2*HASH_LEN] = 0;
+  return return_hash;
 }
 #endif
 
