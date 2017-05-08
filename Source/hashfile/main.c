@@ -23,14 +23,14 @@ void Usage(char *prog){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "Compute the md5 or sha256 hash of a specified file\n");
+  fprintf(stdout, "Compute the md5, sha1 or sha256 hash of a specified file\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  hashfile [option] file\n");
   fprintf(stdout, "  -all     - compute all hashes of a file\n");
+  fprintf(stdout, "  -help    - display this message\n");
   fprintf(stdout, "  -md5     - compute the md5 hash of a file[default]\n");
   fprintf(stdout, "  -sha1    - compute the sha1 hash of a file\n");
   fprintf(stdout, "  -sha256  - compute the sha256 hash of a file\n");
-  fprintf(stdout, "  -help    - display this message\n");
   fprintf(stdout, "  -version - show version information\n");
 }
 
@@ -57,25 +57,37 @@ int main(int argc, char **argv){
     arg=argv[i];
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
+      int badarg;
+
+      badarg = 1;
       if(strncmp(arg, "-help", 5) == 0 || strncmp(arg, "-h", 2) == 0){
         Usage("hashfile");
         return 1;
       }
-      else if(strncmp(arg, "-version", 8) == 0|| strncmp(arg, "-v", 2) == 0){
+      else if(strcmp(arg, "-version") == 0|| strcmp(arg, "-v") == 0){
         PRINTversion("hashfile",argv[0]);
         return 1;
       }
-      else if(strncmp(arg, "-sha256", 7)==0||strncmp(arg, "-s", 2)==0){
+      else if(strcmp(arg, "-sha256")==0){
+        badarg = 0;
         hashtype = SHA256;
       }
-      else if(strncmp(arg, "-sha1", 4)==0||strncmp(arg, "-1", 2)==0){
+      else if(strcmp(arg, "-sha1")==0){
+        badarg = 0;
         hashtype = SHA1;
       }
-      else if(strncmp(arg, "-md5", 4)==0||strncmp(arg, "-m", 2)==0){
+      else if(strcmp(arg, "-md5")==0){
+        badarg = 0;
         hashtype = MD5;
       }
       else if(strncmp(arg, "-all", 4)==0||strncmp(arg, "-a", 2)==0){
+        badarg = 0;
         hashtype = ALL;
+      }
+      if(badarg == 1){
+        fprintf(stderr, "\n***error: unknown parameter: %s\n\n", arg);
+        Usage("hashfile");
+        return 1;
       }
     }
     else{
