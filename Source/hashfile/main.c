@@ -31,7 +31,8 @@ void Usage(char *prog){
 
 int main(int argc, char **argv){
   int i;
-  char *casename = NULL, *hash = NULL;;
+  char *casename = NULL;
+  unsigned char *hash = NULL;
 
   if(argc == 1){
     Usage("hashfile");
