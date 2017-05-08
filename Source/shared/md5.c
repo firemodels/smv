@@ -1,5 +1,5 @@
 #include "options.h"
-#ifdef pp_MD5_SOURCE
+#ifdef pp_HASH_SOURCE
 /*
  *  RFC 1321 compliant MD5 implementation
  *

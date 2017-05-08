@@ -9,6 +9,11 @@
 #include "file_util.h"
 #include "MALLOC.h"
 
+#define MD5    0
+#define SHA256 1
+#define SHA1   2
+#define ALL    3
+
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog){
@@ -18,13 +23,15 @@ void Usage(char *prog){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "Create a hash of a specified file\n");
-  fprintf(stdout, "  data obtained from http://viewer.nationalmap.gov \n\n");
+  fprintf(stdout, "Compute the md5 or sha256 hash of a specified file\n");
   fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  hashfile file\n");
-  fprintf(stdout, "  -md5 - create an md5 hash [default]\n");
-  fprintf(stdout, "  -help     - display this message\n");
-  fprintf(stdout, "  -version  - show version information\n");
+  fprintf(stdout, "  hashfile [option] file\n");
+  fprintf(stdout, "  -all     - compute all hashes of a file\n");
+  fprintf(stdout, "  -md5     - compute the md5 hash of a file[default]\n");
+  fprintf(stdout, "  -sha1    - compute the sha1 hash of a file\n");
+  fprintf(stdout, "  -sha256  - compute the sha256 hash of a file\n");
+  fprintf(stdout, "  -help    - display this message\n");
+  fprintf(stdout, "  -version - show version information\n");
 }
 
 /* ------------------ main ------------------------ */
@@ -33,6 +40,7 @@ int main(int argc, char **argv){
   int i;
   char *casename = NULL;
   unsigned char *hash = NULL;
+  int hashtype = MD5;
 
   if(argc == 1){
     Usage("hashfile");
@@ -57,6 +65,18 @@ int main(int argc, char **argv){
         PRINTversion("hashfile",argv[0]);
         return 1;
       }
+      else if(strncmp(arg, "-sha256", 7)==0||strncmp(arg, "-s", 2)==0){
+        hashtype = SHA256;
+      }
+      else if(strncmp(arg, "-sha1", 4)==0||strncmp(arg, "-1", 2)==0){
+        hashtype = SHA1;
+      }
+      else if(strncmp(arg, "-md5", 4)==0||strncmp(arg, "-m", 2)==0){
+        hashtype = MD5;
+      }
+      else if(strncmp(arg, "-all", 4)==0||strncmp(arg, "-a", 2)==0){
+        hashtype = ALL;
+      }
     }
     else{
       if(casename == NULL)casename = argv[i];
@@ -72,12 +92,40 @@ int main(int argc, char **argv){
     return 1;
   }
 
-  hash=GetHash(casename);
-  if(hash==NULL){
-    printf(" : %s\n", casename);
+  // output MD5 hash
+
+  if(hashtype==MD5||hashtype==ALL){
+    hash = GetHashMD5(casename);
+    if(hash==NULL){
+      printf("***error: MD5 computation of %s failed\n", casename);
+    }
+    else{
+      printf("%s (MD5): %s\n", hash, casename);
+    }
   }
-  else{
-    printf("%s : %s\n", hash,casename);
+
+  // output SHA1 hash
+
+  if(hashtype==SHA1||hashtype==ALL){
+    hash = GetHashSHA1(casename);
+    if(hash==NULL){
+      printf("***error: SHA1 computation of %s failed\n", casename);
+    }
+    else{
+      printf("%s (SHA1): %s\n", hash, casename);
+    }
+  }
+
+  // output SHA256 hash
+
+  if(hashtype==SHA256||hashtype==ALL){
+    hash = GetHashSHA256(casename);
+    if(hash==NULL){
+      printf("***error: SHA256 computation of %s failed\n", casename);
+    }
+    else{
+      printf("%s (SHA256): %s\n", hash, casename);
+    }
   }
   return 0;
 }

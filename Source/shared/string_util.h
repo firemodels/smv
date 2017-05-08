@@ -44,8 +44,10 @@ EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
-#ifdef pp_MD5_SOURCE
-EXTERNCPP unsigned char *GetHash(char *file);
+#ifdef pp_HASH_SOURCE
+EXTERNCPP unsigned char *GetHashMD5(char *file);
+EXTERNCPP unsigned char *GetHashSHA256(char *file);
+EXTERNCPP unsigned char *GetHashSHA1(char *file);
 #endif
 EXTERNCPP void GetProgVersion(char *PROGversion);
 EXTERNCPP int MatchWild(char *pTameText, char *pWildText);
