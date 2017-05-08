@@ -1391,7 +1391,7 @@ unsigned char *GetMD5Hash(char *file){
 #endif
 
 #ifdef pp_HASH_SOURCE
-#define HASH_BUFFER_LEN 1024
+#define HASH_BUFFER_LEN 1
 #define HASH_MD5_LEN   16
 #define HASH_SHA1_LEN   20
 #define HASH_SHA256_LEN   32
@@ -1405,7 +1405,6 @@ unsigned char *GetHashSHA1(char *file){
   unsigned char hash[HASH_SHA1_LEN], *return_hash;
   int i;
   size_t len_data;
-  char hex_digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
@@ -1430,7 +1429,7 @@ unsigned char *GetHashSHA1(char *file){
 
   mbedtls_sha1_init(&ctx);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
-    mbedtls_sha1_update(&ctx, data, HASH_BUFFER_LEN);
+    mbedtls_sha1_update(&ctx, data, len_data);
   }
   mbedtls_sha1_finish(&ctx, hash);
   fclose(stream);
@@ -1438,14 +1437,7 @@ unsigned char *GetHashSHA1(char *file){
   NewMemory((void **)&return_hash, 2*HASH_SHA1_LEN+1);
 
   for(i = 0; i<HASH_SHA1_LEN; i++){
-    unsigned int val, high, low;
-
-    val = hash[i];
-    high = 15&(val>>4);
-    low = 15&val;
-
-    return_hash[2*i] = hex_digit[high];
-    return_hash[2*i+1] = hex_digit[low];
+    sprintf(return_hash+2*i, "%02x", hash[i]);
   }
   return_hash[2*HASH_SHA1_LEN] = 0;
   return return_hash;
@@ -1460,7 +1452,6 @@ unsigned char *GetHashMD5(char *file){
   unsigned char hash[HASH_MD5_LEN], *return_hash;
   int i;
   size_t len_data;
-  char hex_digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
@@ -1485,22 +1476,15 @@ unsigned char *GetHashMD5(char *file){
 
   mbedtls_md5_init(&ctx);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream)) != 0){
-    mbedtls_md5_update(&ctx, data, HASH_BUFFER_LEN);
+    mbedtls_md5_update(&ctx, data, len_data);
   }
   mbedtls_md5_finish(&ctx, hash);
   fclose(stream);
 
   NewMemory((void **)&return_hash, 2*HASH_MD5_LEN + 1);
 
-  for(i = 0; i < HASH_MD5_LEN; i++){
-    unsigned int val, high, low;
-
-    val = hash[i];
-    high =15&(val >> 4);
-    low = 15 & val;
-
-    return_hash[2 * i]     = hex_digit[high];
-    return_hash[2 * i + 1] = hex_digit[low];
+  for(i = 0; i<HASH_MD5_LEN; i++){
+    sprintf(return_hash+2*i, "%02x", hash[i]);
   }
   return_hash[2*HASH_MD5_LEN] = 0;
   return return_hash;
@@ -1515,7 +1499,6 @@ unsigned char *GetHashSHA256(char *file){
   unsigned char hash[HASH_SHA256_LEN], *return_hash;
   int i;
   size_t len_data;
-  char hex_digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
@@ -1540,7 +1523,7 @@ unsigned char *GetHashSHA256(char *file){
 
   mbedtls_sha256_init(&ctx);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
-    mbedtls_sha256_update(&ctx, data, HASH_BUFFER_LEN);
+    mbedtls_sha256_update(&ctx, data, len_data);
   }
   mbedtls_sha256_finish(&ctx, hash);
   fclose(stream);
@@ -1548,14 +1531,7 @@ unsigned char *GetHashSHA256(char *file){
   NewMemory((void **)&return_hash, 2*HASH_SHA256_LEN+1);
 
   for(i = 0; i<HASH_SHA256_LEN; i++){
-    int val, high, low;
-
-    val = hash[i];
-    high = val>>4;
-    low = 15&val;
-
-    return_hash[2*i] = hex_digit[high];
-    return_hash[2*i+1] = hex_digit[low];
+    sprintf(return_hash+2*i, "%02x", hash[i]);
   }
   return_hash[2*HASH_SHA256_LEN] = 0;
   return return_hash;
