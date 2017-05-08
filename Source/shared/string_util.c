@@ -1428,6 +1428,7 @@ unsigned char *GetHashSHA1(char *file){
   }
 
   mbedtls_sha1_init(&ctx);
+  mbedtls_sha1_starts(&ctx);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
     mbedtls_sha1_update(&ctx, data, len_data);
   }
@@ -1475,6 +1476,7 @@ unsigned char *GetHashMD5(char *file){
   }
 
   mbedtls_md5_init(&ctx);
+  mbedtls_md5_starts(&ctx);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream)) != 0){
     mbedtls_md5_update(&ctx, data, len_data);
   }
@@ -1522,6 +1524,7 @@ unsigned char *GetHashSHA256(char *file){
   }
 
   mbedtls_sha256_init(&ctx);
+  mbedtls_sha256_starts(&ctx,0);
   while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
     mbedtls_sha256_update(&ctx, data, len_data);
   }
