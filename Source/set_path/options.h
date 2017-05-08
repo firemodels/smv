@@ -12,7 +12,7 @@
 #ifdef pp_BETA
 #define PROGVERSION "Test"
 #else
-#define PROGVERSION "1.0"
+#define PROGVERSION "1.0.1"
 #endif
 
 int reg_path(int setget, int pathtype, char *path);
