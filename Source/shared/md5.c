@@ -1,5 +1,5 @@
 #include "options.h"
-#ifdef pp_HASH_SOURCE
+#ifdef pp_HASH
 /*
  *  RFC 1321 compliant MD5 implementation
  *
@@ -404,4 +404,4 @@ int mbedtls_md5_self_test( int verbose )
 #endif /* MBEDTLS_SELF_TEST */
 
 #endif /* MBEDTLS_MD5_C */
-#endif
+#endif /* pp_HASH */

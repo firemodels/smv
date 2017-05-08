@@ -23,6 +23,16 @@
 
 #define DEG_SYMBOL 176
 
+#ifdef pp_HASH
+#define HASH_NONE   0
+#define HASH_MD5    1
+#define HASH_SHA1   2
+#define HASH_SHA255 3
+
+SVEXTERN int SVDECL(hash_option, HASH_MD5);
+#endif
+
+
 /* --------------------------  flowlabels ------------------------------------ */
 
 typedef struct {
@@ -44,7 +54,7 @@ EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
 EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
-#ifdef pp_HASH_SOURCE
+#ifdef pp_HASH
 EXTERNCPP unsigned char *GetHashMD5(char *file);
 EXTERNCPP unsigned char *GetHashSHA256(char *file);
 EXTERNCPP unsigned char *GetHashSHA1(char *file);
@@ -86,7 +96,11 @@ EXTERNCPP char *Time2TimeLabel(float time, float dt, char *timelabel);
 EXTERNCPP char *RandStr(char* str, int length);
 EXTERNCPP void GetBaseTitle(char *progname, char *title_base);
 EXTERNCPP void GetTitle(char *progname, char *fulltitle);
+#ifdef pp_HASH
+EXTERNCPP void PRINTversion(char *progname, char *progfullpath, int hash_option);
+#else
 EXTERNCPP void PRINTversion(char *progname, char *progfullpath);
+#endif
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");

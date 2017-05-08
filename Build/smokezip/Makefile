@@ -1,4 +1,4 @@
-SOURCE_DIR = ../../../Source/
+ SOURCE_DIR = ../../../Source/
 LIB_DIR = ../../LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 FILTERC =
@@ -21,7 +21,10 @@ FORTLIBDIR = /opt/intel/composerxe/lib
 
 # Definition of the object variables
 
-obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o csphere.o dmalloc.o lightsmoke.o smv_endian.o histogram.o readfiles.o utilities.o isobox.o file_util.o string_util.o threader.o compress.o fdsmodules.o gsmv.o getdata.o getsizes.o 
+obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
+         csphere.o dmalloc.o lightsmoke.o smv_endian.o histogram.o readfiles.o utilities.o \
+         isobox.o file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o \
+         fdsmodules.o gsmv.o getdata.o getsizes.o 
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur

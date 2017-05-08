@@ -65,7 +65,7 @@ int main(int argc, char **argv){
         return 1;
       }
       else if(strcmp(arg, "-version") == 0|| strcmp(arg, "-v") == 0){
-        PRINTversion("hashfile",argv[0]);
+        PRINTVERSION("hashfile",argv[0]);
         return 1;
       }
       else if(strcmp(arg, "-sha256")==0){

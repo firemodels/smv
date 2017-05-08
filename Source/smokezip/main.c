@@ -1,11 +1,12 @@
-#include "options.h"
 #define INMAIN
+#include "options.h"
 #include "zlib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "svzip.h"
+#include "string_util.h"
 #include "MALLOC.h"
 
 //dummy change to bump version number to 1.4.8
@@ -110,7 +111,7 @@ int main(int argc, char **argv){
 
   filebase=NULL;
   if(argc==1){
-    PRINTversion("Smokezip ",argv[0]);
+    PRINTVERSION("Smokezip ",argv[0]);
     return 1;
   }
 
@@ -301,7 +302,7 @@ int main(int argc, char **argv){
         Usage(argv[0]);
         return 1;
       case 'v':
-        PRINTversion("Smokezip ", argv[0]);
+        PRINTVERSION("Smokezip ", argv[0]);
         return 1;
       default:
         Usage(argv[0]);

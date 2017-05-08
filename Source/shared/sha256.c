@@ -1,5 +1,5 @@
 #include "options.h"
-#ifdef pp_HASH_SOURCE
+#ifdef pp_HASH
 /*
  *  FIPS-180-2 compliant SHA-256 implementation
  *
@@ -458,4 +458,4 @@ exit:
 #endif /* MBEDTLS_SELF_TEST */
 
 #endif /* MBEDTLS_SHA256_C */
-#endif
+#endif /* pp_HASH */

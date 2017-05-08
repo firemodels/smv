@@ -9,7 +9,7 @@
 
 //*** define dem2fds title
 
-#define pp_HASH_SOURCE
+#define pp_HASH
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

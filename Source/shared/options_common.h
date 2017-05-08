@@ -3,8 +3,7 @@
 
 //*** options: all platforms
 
-#define pp_MD5           // testing md5 hashing
-// #define pp_MD5_DEBUG     // md5 debugging
+#define pp_HASH   // md5, sha1 and sha255 hashing
 
 //*** options: windows
 
@@ -21,6 +20,12 @@
 #endif
 
 #include "pragmas.h"
+#endif
+
+#ifdef pp_HASH
+#define PRINTVERSION(a,b) PRINTversion(a,b,hash_option)
+#else
+#define PRINTVERSION(a,b) PRINTversion(a,b)
 #endif
 
 //*** options: Mac

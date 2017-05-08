@@ -95,7 +95,7 @@ int main(int argc, char **argv){
 #endif  
 
   if(argc==1){
-    PRINTversion("background ", argv[0]);
+    PRINTVERSION("background ", argv[0]);
     return 1;
   }
 
@@ -168,7 +168,7 @@ int main(int argc, char **argv){
             }
             break;
           case 'v':
-            PRINTversion("background ", argv[0]);
+            PRINTVERSION("background ", argv[0]);
             return 1;
           default:
             printf("Unknown option: %s\n",arg);

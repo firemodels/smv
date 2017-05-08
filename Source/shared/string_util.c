@@ -14,7 +14,7 @@
 #include "MALLOC.h"
 #include "datadefs.h"
 #include "file_util.h"
-#ifdef pp_HASH_SOURCE
+#ifdef pp_HASH
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
 #include "mbedtls/sha1.h"
@@ -1276,121 +1276,7 @@ void GetTitle(char *progname, char *fulltitle){
 
 /* ------------------ GetMD5Hash ------------------------ */
 
-#ifdef pp_MD5
-
-unsigned char *GetMD5Hash(char *file){
-  FILE *stream=NULL;
-  char outfile[1024], fullpath[1024];
-  unsigned char *md5_hash;
-
-#ifdef pp_MD5_DEBUG
-    if(file!=NULL){
-      printf("*** computing md5 for %s\n",file);
-    }
-#endif
-
-  if(file==NULL||strlen(file)==0){
-#ifdef pp_MD5_DEBUG
-    printf("*** md5 error: filename is NULL\n");
-#endif
-    return NULL;
-  }
-  strcpy(fullpath, file);
-  stream = fopen(fullpath, "rb");
-  if(stream==NULL){
-    char *pathentry;
-
-    pathentry = Which(fullpath);
-    strcpy(fullpath, pathentry);
-    strcat(fullpath, file);
-#ifdef WIN32
-    {
-      const char *ext;
-
-      ext = fullpath+strlen(fullpath)-4;
-      if(strlen(fullpath)<=4||STRCMP(ext, ".exe")!=0)strcat(fullpath, ".exe");
-    }
-#endif
-    stream = fopen(fullpath, "rb");
-    if(stream==NULL){
-#ifdef pp_MD5_DEBUG
-      printf("*** md5 error: unable to open %s\n",fullpath);
-#endif
-      return NULL;
-    }
-  }
-  fclose(stream);
-
-  NewMemory((void **)&md5_hash, 32+1);
-
-  {
-    char command[1024], quote[2];
-    int result;
-    char output_suffix[256];
-
-#ifdef WIN32
-    strcpy(command, "md5sum ");
-#endif
-#ifdef pp_LINUX
-    strcpy(command, "md5sum ");
-#endif
-#ifdef pp_OSX
-    strcpy(command, "md5 -q ");
-#endif
-    quote[0] = '"';
-    quote[1] = 0;
-    strcat(command, quote);
-    strcat(command, fullpath);
-    strcat(command, quote);
-
-    RandStr(output_suffix, 30);
-    strcpy(outfile,output_suffix);
-    strcat(outfile,".md5");
-
-    strcat(command, " > ");
-    strcat(command,outfile);
-    result = system(command);
-    if(result!=0){
-#ifdef pp_MD5_DEBUG
-      printf("*** md5 error: system command to compute md5 hash failed\n");
-      printf("*** command=%s\n",command);
-#endif
-      return NULL;
-    }
-  }
-
-  {
-    int i, ii;
-    char buffer[1000];
-
-    stream = fopen(outfile, "r");
-    if(stream==NULL){
-#ifdef pp_MD5_DEBUG
-      printf("*** md5 error: unable to open output file: %s\n",outfile);
-#endif
-      return NULL;
-    }
-    fgets(buffer, 1000, stream);
-    fclose(stream);
-    UNLINK(outfile);
-
-    for(i = 0,ii=0;i<1000;i++){
-#ifdef WIN32
-      if(buffer[i]=='\\')continue;
-#endif
-      if(buffer[i]==' '||ii==32){
-        md5_hash[ii++] = 0;
-        break;
-      }
-      md5_hash[ii++] = buffer[i];
-    }
-  }
-
-  return md5_hash;
-}
-#endif
-
-#ifdef pp_HASH_SOURCE
+#ifdef pp_HASH
 #define HASH_BUFFER_LEN 1
 #define HASH_MD5_LEN   16
 #define HASH_SHA1_LEN   20
@@ -1399,12 +1285,7 @@ unsigned char *GetMD5Hash(char *file){
 /* ------------------ GeHashSHA1 ------------------------ */
 
 unsigned char *GetHashSHA1(char *file){
-  mbedtls_sha1_context ctx;
   FILE *stream = NULL;
-  unsigned char data[HASH_BUFFER_LEN];
-  unsigned char hash[HASH_SHA1_LEN], *return_hash;
-  int i;
-  size_t len_data;
 
   if(file==NULL)return NULL;
   stream = fopen(file, "rb");
@@ -1427,21 +1308,30 @@ unsigned char *GetHashSHA1(char *file){
     if(stream==NULL)return NULL;
   }
 
-  mbedtls_sha1_init(&ctx);
-  mbedtls_sha1_starts(&ctx);
-  while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
-    mbedtls_sha1_update(&ctx, data, len_data);
-  }
-  mbedtls_sha1_finish(&ctx, hash);
-  fclose(stream);
+  {
+    int i;
+    unsigned char hash[HASH_SHA1_LEN], *return_hash;
+    mbedtls_sha1_context ctx;
+    unsigned char data[HASH_BUFFER_LEN];
+    size_t len_data;
 
-  NewMemory((void **)&return_hash, 2*HASH_SHA1_LEN+1);
+    mbedtls_sha1_init(&ctx);
+    mbedtls_sha1_starts(&ctx);
+    while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
+      mbedtls_sha1_update(&ctx, data, len_data);
+    }
 
-  for(i = 0; i<HASH_SHA1_LEN; i++){
-    sprintf(return_hash+2*i, "%02x", hash[i]);
+    mbedtls_sha1_finish(&ctx, hash);
+    fclose(stream);
+
+    NewMemory((void **)&return_hash, 2 * HASH_SHA1_LEN + 1);
+
+    for(i = 0; i < HASH_SHA1_LEN; i++){
+      sprintf((char *)return_hash + 2 * i, "%02x", hash[i]);
+    }
+    return_hash[2 * HASH_SHA1_LEN] = 0;
+    return return_hash;
   }
-  return_hash[2*HASH_SHA1_LEN] = 0;
-  return return_hash;
 }
 
 /* ------------------ GeHashMD5 ------------------------ */
@@ -1486,7 +1376,7 @@ unsigned char *GetHashMD5(char *file){
   NewMemory((void **)&return_hash, 2*HASH_MD5_LEN + 1);
 
   for(i = 0; i<HASH_MD5_LEN; i++){
-    sprintf(return_hash+2*i, "%02x", hash[i]);
+    sprintf((char *)return_hash+2*i, "%02x", hash[i]);
   }
   return_hash[2*HASH_MD5_LEN] = 0;
   return return_hash;
@@ -1534,7 +1424,7 @@ unsigned char *GetHashSHA256(char *file){
   NewMemory((void **)&return_hash, 2*HASH_SHA256_LEN+1);
 
   for(i = 0; i<HASH_SHA256_LEN; i++){
-    sprintf(return_hash+2*i, "%02x", hash[i]);
+    sprintf((char *)return_hash+2*i, "%02x", hash[i]);
   }
   return_hash[2*HASH_SHA256_LEN] = 0;
   return return_hash;
@@ -1543,21 +1433,19 @@ unsigned char *GetHashSHA256(char *file){
 
 /* ------------------ version ------------------------ */
 
+#ifdef pp_HASH
+void PRINTversion(char *progname, char *progfullpath, int option){
+#else
 void PRINTversion(char *progname, char *progfullpath){
+#endif
   char version[256];
   char githash[256];
   char gitdate[256];
   char releasetitle[1024];
-#ifdef pp_MD5
-  unsigned char *md5_hash;
-#endif
 
   GetProgVersion(version);
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
-#ifdef pp_MD5
-  md5_hash = GetMD5Hash(progfullpath);
-#endif
 
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
@@ -1565,10 +1453,30 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
-#ifdef pp_MD5
-  if(md5_hash!=NULL){
-    PRINTF("MD5 hash         : %s\n", md5_hash);
-    FREEMEMORY(md5_hash);
+#ifdef pp_HASH
+  {
+    unsigned char *hash;
+    
+    switch (option){
+      case HASH_MD5:
+        hash = GetHashMD5(progfullpath);
+        if(hash!=NULL)PRINTF("MD5 hash         : %s\n", hash);
+        break;
+      case HASH_SHA1:
+        hash = GetHashSHA1(progfullpath);
+        if(hash!=NULL)PRINTF("SHA1 hash        : %s\n", hash);
+        break;
+      case HASH_SHA255:
+        hash = GetHashSHA256(progfullpath);
+        if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
+        break;
+      case HASH_NONE:
+        break;
+      default:
+        ASSERT(0);
+        break;
+    }
+    FREEMEMORY(hash);
   }
 #endif
 #ifdef WIN32

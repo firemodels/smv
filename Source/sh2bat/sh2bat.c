@@ -8,7 +8,6 @@
 #include "string_util.h"
 #include "file_util.h"
 
-
 /* ------------------ usage ------------------------ */
 
 void usage(char *prog){
@@ -49,7 +48,7 @@ int main(int argc, char **argv){
         exit(1);
         break;
       case 'v':
-        PRINTversion("sh2bat ", argv[0]);
+        PRINTVERSION("sh2bat ", argv[0]);
         exit(1);
         break;
       default:

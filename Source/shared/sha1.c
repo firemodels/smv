@@ -1,3 +1,5 @@
+#include "options.h"
+#ifdef pp_HASH
 /*
  *  FIPS-180-1 compliant SHA-1 implementation
  *
@@ -446,3 +448,4 @@ exit:
 #endif /* MBEDTLS_SELF_TEST */
 
 #endif /* MBEDTLS_SHA1_C */
+#endif /* pp_HASH*/

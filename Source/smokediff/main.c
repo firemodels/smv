@@ -1,10 +1,11 @@
-#include "options.h"
 #define INMAIN
+#include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "svdiff.h"
+#include "string_util.h"
 #include "MALLOC.h"
 
 //dummy change to bump version number to 1.0.10
@@ -49,7 +50,7 @@ int main(int argc, char **argv){
   strcpy(type_label,"");
 
   if(argc==1){
-    PRINTversion("Smokediff ",argv[0]);
+    PRINTVERSION("Smokediff ",argv[0]);
     return 1;
   }
 
@@ -123,7 +124,7 @@ int main(int argc, char **argv){
         i++;
         break;
       case 'v':
-        PRINTversion("Smokediff ",argv[0]);
+        PRINTVERSION("Smokediff ",argv[0]);
         return 1;
       case 'w':
         display_warnings=0;
