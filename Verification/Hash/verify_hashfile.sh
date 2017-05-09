@@ -15,8 +15,7 @@ fi
 $HASHFILE -hash_all base > result
 ndiff=`diff result reference_$platform | wc -l`
 if [ $ndiff -eq 0 ]; then
-  echo The hashes computed by hashfile match the reference file
+  echo PASS! The hashes computed by hashfile match the reference file.
 else
-  echo "***Warning: the hashes computed by hashfile do not match the reference file"
-  diff reference result
+  echo FAIL! The hashes computed by hashfile do not match the reference file.
 fi
