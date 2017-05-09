@@ -1,6 +1,12 @@
 @echo off
 
-set HASHFILE=..\..\Build\hashfile\intel_win_64\hashfile_win_64.exe
+set CURDIR=%CD%
+set HASHFILEDIR=..\..\Build\hashfile\intel_win_64
+cd %HASHFILEDIR%
+set HASHFILEDIR=%CD%
+set HASHFILE=%HASHFILEDIR%\hashfile_win_64.exe
+cd %CURDIR%
+
 if not exist %HASHFILE% (
   echo "***error: the program %HASHFILE% does not exist"
   echo "verification aborted"
@@ -10,8 +16,8 @@ if not exist %HASHFILE% (
 diff result reference_win | wc -l > diffcount.out
 set /p diffcount=<diffcount.out
 if %diffcount% EQU 0 (
-  echo PASS! The hashes computed by hashfile match the reference file.
+  echo PASS! The hashes computed by %HASHFILE% match the reference file.
 ) else (
-  echo FAIL! The hashes computed by hashfile do not match the reference file.
+  echo FAIL! The hashes computed by %HASHFILE% do not match the reference file.
 )
 erase diffcount.out
