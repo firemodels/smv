@@ -23,7 +23,6 @@
 
 //dummy change to bump version number to 0.9
 
-void usage(char *prog);
 #ifdef WIN32
 void GetSystemTimesAddress(void);
 #endif
@@ -51,13 +50,52 @@ void Sleep(int ticks){
 }
 #endif
 
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog){
+  char prog_version[100];
+  char githash[100];
+  char gitdate[100];
+  char pp[] = "%";
+
+  GetProgVersion(prog_version);  // get version (ie 5.x.z)
+  GetGitInfo(githash, gitdate);    // get githash
+
+  printf("\n");
+  printf("background %s(%s) - %s\n", prog_version, githash, __DATE__);
+  printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
+  printf("  %s", prog);
+  printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
+
+  printf("where\n\n");
+
+  printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
+  printf("  -debug    - display debug messages\n");
+  printf("  -h        - display this message\n");
+#ifdef pp_LINUX
+  printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
+#endif
+  printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
+#ifdef pp_LINUX
+  printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
+#endif
+  printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
+  printf("  -v        - display version information\n");
+  UsageCommon(prog);
+  printf("  prog      - program to run in the background\n");
+  printf("  arguments - command line arguments of prog\n\n");
+  printf("Example:\n");
+  printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
+  printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n", pp);
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
   int i;
 #ifdef pp_LINUXOSX
   int debug;
-#endif  
+#endif
   int argstart=-1;
   float delay_time=0.0;
   int cpu_usage, cpu_usage_max=25;
@@ -92,10 +130,20 @@ int main(int argc, char **argv){
 
 #ifdef pp_LINUXOSX
   debug=0;
-#endif  
+#endif
 
   if(argc==1){
     PRINTVERSION("background ", argv[0]);
+    return 1;
+  }
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("background");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("background", argv[0]);
     return 1;
   }
 
@@ -116,21 +164,15 @@ int main(int argc, char **argv){
                 if(delay_time<0.0)delay_time=0.0;
               }
             }
-#ifdef pp_LINUXOSX            
+#ifdef pp_LINUXOSX
             else{
               debug=1;
             }
-#endif		        
-            break;
-          case 'h':
-#ifdef pp_LINUX
-            if(strlen(arg)<=2||strcmp(arg,"-hosts")!=0){
 #endif
-              usage(argv[0]);
-              return 1;
-#ifdef pp_LINUX
-            }
-            else{
+            break;
+#ifdef LINUX
+          case 'h':
+            if(strcmp(arg,"-hosts")==0){
               i++;
               if(i<argc){
                 arg=argv[i];
@@ -167,12 +209,9 @@ int main(int argc, char **argv){
               if(cpu_usage_max>100)cpu_usage_max=100;
             }
             break;
-          case 'v':
-            PRINTVERSION("background ", argv[0]);
-            return 1;
           default:
             printf("Unknown option: %s\n",arg);
-            usage(argv[0]);
+            Usage(argv[0]);
             return 1;
         }
       }
@@ -298,44 +337,6 @@ int main(int argc, char **argv){
   system(command_buffer);
 #endif
   return 0;
-}
-
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
-  char prog_version[100];
-  char githash[100];
-  char gitdate[100];
-  char pp[] = "%";
-
-  GetProgVersion(prog_version);  // get version (ie 5.x.z)
-  GetGitInfo(githash,gitdate);    // get githash
-
-  printf("\n");
-  printf("background %s(%s) - %s\n",prog_version,githash,__DATE__);
-  printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
-  printf("  %s",prog);
-  printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
-
-  printf("where\n\n");
-
-  printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
-  printf("  -debug    - display debug messages\n");
-  printf("  -h        - display this message\n");
-#ifdef pp_LINUX
-  printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
-#endif
-  printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n",pp);
-#ifdef pp_LINUX
-  printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
-#endif
-  printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n",pp);
-  printf("  -v        - display version information\n");
-  printf("  prog      - program to run in the background\n");
-  printf("  arguments - command line arguments of prog\n\n");
-  printf("Example:\n");
-  printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
-  printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n",pp);
 }
 
 #ifdef WIN32

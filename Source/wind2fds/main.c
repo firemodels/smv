@@ -10,9 +10,9 @@
 
 //dummy change to bump version number to  0.9
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
-void usage(char *prog){
+void Usage(char *prog){
   char prog_version[100];
   char githash[100];
   char gitdate[100];
@@ -38,6 +38,7 @@ void usage(char *prog){
   printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
   printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
   printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
+  UsageCommon(prog);
   printf("  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
   printf("                   from standard input\n");
 }
@@ -96,6 +97,17 @@ int main(int argc, char **argv){
 
   SetStdOut(stdout);
   initMALLOC();
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("wind2fds");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("wind2fds", argv[0]);
+    return 1;
+  }
+
   strcpy(percen,"%");
   strcpy(prefix,"");
 
@@ -127,10 +139,6 @@ int main(int argc, char **argv){
       strcpy(c_date,arg);
       lendate=strlen(c_date);
       continue;
-    }
-    else if(strcmp(arg,"-v")==0){
-      PRINTVERSION("wind2fds ", argv[0]);
-      return 1;
     }
     else if(strcmp(arg,"-mintime")==0){
       i++;
@@ -190,10 +198,6 @@ int main(int argc, char **argv){
       strcpy(prefix,arg);
       strcat(prefix,"_");
       continue;
-    }
-    else if(strcmp(arg,"-h")==0||strcmp(arg,"-help")==0){
-      usage(argv[0]);
-      exit(0);
     }
     if(argin==NULL){
       argin=arg;

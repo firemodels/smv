@@ -9,11 +9,6 @@
 #include "file_util.h"
 #include "MALLOC.h"
 
-#define MD5    0
-#define SHA256 1
-#define SHA1   2
-#define ALL    3
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog){
@@ -28,9 +23,7 @@ void Usage(char *prog){
   fprintf(stdout, "  hashfile [option] file\n");
   fprintf(stdout, "  -all     - compute all hashes of a file\n");
   fprintf(stdout, "  -help    - display this message\n");
-  fprintf(stdout, "  -md5     - compute the md5 hash of a file[default]\n");
-  fprintf(stdout, "  -sha1    - compute the sha1 hash of a file\n");
-  fprintf(stdout, "  -sha256  - compute the sha256 hash of a file\n");
+  UsageCommon(prog);
   fprintf(stdout, "  -version - show version information\n");
 }
 
@@ -40,7 +33,6 @@ int main(int argc, char **argv){
   int i;
   char *casename = NULL;
   unsigned char *hash = NULL;
-  int hashtype = MD5;
 
   if(argc == 1){
     Usage("hashfile");
@@ -50,52 +42,18 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
   initMALLOC();
 
-  for(i = 1; i<argc; i++){
-    int lenarg;
-    char *arg;
-
-    arg=argv[i];
-    lenarg=strlen(arg);
-    if(arg[0]=='-'&&lenarg>1){
-      int badarg;
-
-      badarg = 1;
-      if(strncmp(arg, "-help", 5) == 0 || strncmp(arg, "-h", 2) == 0){
-        Usage("hashfile");
-        return 1;
-      }
-      else if(strcmp(arg, "-version") == 0|| strcmp(arg, "-v") == 0){
-        PRINTVERSION("hashfile",argv[0]);
-        return 1;
-      }
-      else if(strcmp(arg, "-sha256")==0){
-        badarg = 0;
-        hashtype = SHA256;
-      }
-      else if(strcmp(arg, "-sha1")==0){
-        badarg = 0;
-        hashtype = SHA1;
-      }
-      else if(strcmp(arg, "-md5")==0){
-        badarg = 0;
-        hashtype = MD5;
-      }
-      else if(strncmp(arg, "-all", 4)==0||strncmp(arg, "-a", 2)==0){
-        badarg = 0;
-        hashtype = ALL;
-      }
-      if(badarg == 1){
-        fprintf(stderr, "\n***error: unknown parameter: %s\n\n", arg);
-        Usage("hashfile");
-        return 1;
-      }
-    }
-    else{
-      if(casename == NULL)casename = argv[i];
-    }
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("hashfile");
+    return 1;
   }
+  if(show_version==1){
+    PRINTVERSION("hashfile",argv[0]);
+    return 1;
+  }
+  casename = argv[argc-1];
 
-  if(casename==NULL){
+  if(casename==NULL||strlen(casename)==0||casename[0]=='-'){
     fprintf(stderr, "\n***error: input file not specified\n");
     return 1;
   }
@@ -106,7 +64,7 @@ int main(int argc, char **argv){
 
   // output MD5 hash
 
-  if(hashtype==MD5||hashtype==ALL){
+  if(hash_option==HASH_MD5||hash_option==HASH_ALL){
     hash = GetHashMD5(casename);
     if(hash==NULL){
       printf("***error: MD5 computation of %s failed\n", casename);
@@ -118,7 +76,7 @@ int main(int argc, char **argv){
 
   // output SHA1 hash
 
-  if(hashtype==SHA1||hashtype==ALL){
+  if(hash_option==HASH_SHA1||hash_option==HASH_ALL){
     hash = GetHashSHA1(casename);
     if(hash==NULL){
       printf("***error: SHA1 computation of %s failed\n", casename);
@@ -130,7 +88,7 @@ int main(int argc, char **argv){
 
   // output SHA256 hash
 
-  if(hashtype==SHA256||hashtype==ALL){
+  if(hash_option==HASH_SHA256||hash_option==HASH_ALL){
     hash = GetHashSHA256(casename);
     if(hash==NULL){
       printf("***error: SHA256 computation of %s failed\n", casename);

@@ -7,10 +7,11 @@
 #include <string.h>
 #include "string_util.h"
 #include "file_util.h"
+#include "MALLOC.h"
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
-void usage(char *prog){
+void Usage(char *prog){
  char githash[256];
  char gitdate[256];
 
@@ -22,6 +23,7 @@ void usage(char *prog){
   fprintf(stderr, " convert the Linux/OSX script file file_in to an equivalent windows batch\n");
   fprintf(stderr, " file file_out by ignoring lines beginning with # and converting variables\n");
   fprintf(stderr, " such as $var to %svar%s\n", "%", "%");
+  UsageCommon(prog);
 }
 
 /* ------------------ main ------------------------ */
@@ -35,6 +37,17 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
   initMALLOC();
   prog=argv[0];
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("sh2bat");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("sh2bat", argv[0]);
+    return 1;
+  }
+
   for(i=1;i<argc;i++){
     int lenarg;
     char *arg;
@@ -43,16 +56,8 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
-      case 'h':
-        usage(prog);
-        exit(1);
-        break;
-      case 'v':
-        PRINTVERSION("sh2bat ", argv[0]);
-        exit(1);
-        break;
       default:
-        usage(prog);
+        Usage(prog);
         exit(1);
         break;
       }
@@ -69,7 +74,7 @@ int main(int argc, char **argv){
     }
   }
   if(filein==NULL||fileout==NULL){
-    usage(prog);
+    Usage(prog);
     exit(1);
   }
   streamin=fopen(filein,"r");

@@ -21,12 +21,12 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char **argv,int option){
+void Usage(char *prog,int option){
   char buffer[1000];
 
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, argv[0]));
+  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, prog));
   PRINTF("%s\n\n", _("where "));
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
@@ -36,36 +36,37 @@ void Usage(char **argv,int option){
   PRINTF("%s\n", _(" -runscript     - run the script file casename.ssf"));
   PRINTF("%s\n", _(" -version       - display version information"));
   if(option==2){
-  PRINTF("\n%s\n", _("Other options:"));
+    PRINTF("\n%s\n", _("Other options:"));
 #ifdef pp_READBUFFER
-  PRINTF("%s\n", _(" -buffer        - scan .smv file using a memory buffer"));
+    PRINTF("%s\n", _(" -buffer        - scan .smv file using a memory buffer"));
 #endif
-  PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
-  PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
-  PRINTF("%s\n", _("                  and save results into case2.ini"));
-  PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
-  PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
-  PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
-  PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
+    PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
+    PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
+    PRINTF("%s\n", _("                  and save results into case2.ini"));
+    PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
+    PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
+    PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+    PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
 #ifdef pp_READBUFFER
-  PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
+    PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
 #endif
-  PRINTF("%s\n", _(" -setup         - only show geometry"));
-  PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
+    PRINTF("%s\n", _(" -setup         - only show geometry"));
+    PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
-  PRINTF("%s\n", _(" -runluascript  - run the lua script file casename.lua"));
-  PRINTF("%s\n", _(" -luascript scriptfile - run the Lua script file scriptfile"));
-  PRINTF("%s\n", _(" -killscript    - exit smokeview (with an error code) if the script fails"));
+    PRINTF("%s\n", _(" -runluascript  - run the lua script file casename.lua"));
+    PRINTF("%s\n", _(" -luascript scriptfile - run the Lua script file scriptfile"));
+    PRINTF("%s\n", _(" -killscript    - exit smokeview (with an error code) if the script fails"));
 #endif
-  PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
-  PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
-  PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
-  PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
-  PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.bini"));
-  PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
-  PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
-  PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
-  PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
+    PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
+    PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
+    PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
+    PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
+    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.bini"));
+    PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
+    PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
+    PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
+    PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
+    UsageCommon(prog);
   }
 
   if(showbuild == 1){
@@ -487,11 +488,11 @@ void ParseCommandline(int argc, char **argv){
     }
 #endif
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0){
-      Usage(argv,1);
+      Usage(argv[0],1);
       exit(0);
     }
     else if(strncmp(argv[i], "-help_all", 9)==0){
-      Usage(argv,2);
+      Usage(argv[0],2);
       exit(0);
     }
     else if(strncmp(argv[i], "-noblank", 8) == 0){
@@ -607,12 +608,12 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-build", 6) == 0){
       showbuild = 1;
-      Usage(argv,2);
+      Usage(argv[0],2);
       exit(0);
     }
     else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
-      Usage(argv,2);
+      Usage(argv[0],2);
       exit(1);
     }
   }
@@ -657,6 +658,17 @@ int main(int argc, char **argv){
   if(argc==0||argc==1)return 0;
 
   progname=argv_sv[0];
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("smokeview",1);
+    return 1;
+}
+  if(show_version==1){
+    PRINTVERSION("smokeview", argv[0]);
+    return 1;
+  }
+
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);

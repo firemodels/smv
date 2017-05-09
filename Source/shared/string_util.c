@@ -1232,10 +1232,10 @@ unsigned int DiffDate(char *token, char *tokenbase){
 
 void GetBaseTitle(char *progname, char *title_base){
   char version[100];
-  char svn_version[100];
-  char svn_date[100];
+  char git_version[100];
+  char git_date[100];
 
-  GetGitInfo(svn_version, svn_date);    // get githash
+  GetGitInfo(git_version, git_date);    // get githash
 
   // construct string of the form:
   //   5.x.y_#
@@ -1244,15 +1244,16 @@ void GetBaseTitle(char *progname, char *title_base){
 
   strcpy(title_base, progname);
 
+  strcat(title_base, " ");
   strcat(title_base, version);
 #ifdef pp_BETA
-  strcat(title_base, " (");
-  strcat(title_base, svn_version);
+  strcat(title_base, "(");
+  strcat(title_base, git_version);
   strcat(title_base, ")");
 #else
 #ifndef pp_OFFICIAL_RELEASE
-  strcat(title_base, " (");
-  strcat(title_base, svn_version);
+  strcat(title_base, "(");
+  strcat(title_base, git_version);
   strcat(title_base, ")");
 #endif
 #endif
@@ -1273,8 +1274,6 @@ void GetTitle(char *progname, char *fulltitle){
   STRCAT(fulltitle, __TIME__);
 #endif
 }
-
-/* ------------------ GetMD5Hash ------------------------ */
 
 #ifdef pp_HASH
 #define HASH_BUFFER_LEN 1
@@ -1431,6 +1430,60 @@ unsigned char *GetHashSHA256(char *file){
 }
 #endif
 
+/* ------------------ UsageCommon ------------------------ */
+
+void UsageCommon(char *prog){
+#ifdef pp_HASH
+  PRINTF("  -md5       - display an md5 hash of %s with the -version option\n",prog);
+  PRINTF("  -sha1      - display a sha1 hash of %s with the -version option\n", prog);
+  PRINTF("  -sha256    - display a sha256 hash of %s with the -version option\n", prog);
+  PRINTF("  -hash_all  - display all %s hashes with the -version option\n", prog);
+  PRINTF("  -hash_none - do not display a hash  with the -version option\n");
+#endif
+}
+
+/* ------------------ ParseCommonOptions ------------------------ */
+
+void ParseCommonOptions(int argc, char **argv){
+  int i;
+
+  for(i = 1; i<argc; i++){
+    char *argi;
+
+    argi = argv[i];
+    if(argi[0]!='-')continue;
+    if(STRCMP("-help", argi)==0||STRCMP("-h", argi)==0){
+      show_help = 1;
+      continue;
+    }
+    if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0){
+      show_version = 1;
+      continue;
+    }
+#ifdef pp_HASH
+    if(STRCMP("-sha256", argi)==0){
+      hash_option = HASH_SHA256;
+      continue;
+    }
+    if(STRCMP("-sha1", argi)==0){
+      hash_option = HASH_SHA1;
+      continue;
+    }
+    if(STRCMP("-md5", argi)==0){
+      hash_option = HASH_MD5;
+      continue;
+    }
+    if(STRCMP("-hash_all", argi)==0){
+      hash_option = HASH_ALL;
+      continue;
+    }
+    if(STRCMP("-hash_none", argi)==0){
+      hash_option = HASH_NONE;
+      continue;
+    }
+#endif
+  }
+}
 /* ------------------ version ------------------------ */
 
 #ifdef pp_HASH
@@ -1454,28 +1507,25 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef pp_HASH
-  {
-    unsigned char *hash;
-    
-    switch (option){
-      case HASH_MD5:
-        hash = GetHashMD5(progfullpath);
-        if(hash!=NULL)PRINTF("MD5 hash         : %s\n", hash);
-        break;
-      case HASH_SHA1:
-        hash = GetHashSHA1(progfullpath);
-        if(hash!=NULL)PRINTF("SHA1 hash        : %s\n", hash);
-        break;
-      case HASH_SHA255:
-        hash = GetHashSHA256(progfullpath);
-        if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
-        break;
-      case HASH_NONE:
-        break;
-      default:
-        ASSERT(0);
-        break;
-    }
+  if(option==HASH_MD5||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashMD5(progfullpath);
+    if(hash!=NULL)PRINTF("MD5 hash         : %s\n", hash);
+    FREEMEMORY(hash);
+  }
+  if(option==HASH_SHA1||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashSHA1(progfullpath);
+    if(hash!=NULL)PRINTF("SHA1 hash        : %s\n", hash);
+    FREEMEMORY(hash);
+  }
+  if(option==HASH_SHA256||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashSHA256(progfullpath);
+    if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
     FREEMEMORY(hash);
   }
 #endif

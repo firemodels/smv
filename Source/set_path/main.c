@@ -9,6 +9,7 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "datadefs.h"
+#include "MALLOC.h"
 
 // dummy change to bump version to 1.0
 
@@ -26,9 +27,6 @@ int path_summary=0;
 int batch_mode=0;
 
 char path_type[10];
-
-
-void usage(void);
 
 /* ------------------ backup_path ------------------------ */
 
@@ -76,6 +74,34 @@ int prompt_user(char *path_type_local, char *pathbuffer){
   return answer;
 }
 
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog){
+  char githash[100];
+  char gitdate[100];
+
+  GetGitInfo(githash, gitdate);
+
+  printf("%s Build:%s\n", prog, githash);
+  printf("  Modify or display the User or System path environmental variables.\n\n");
+  printf("Usage:\n\n");
+  printf("  set_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n\n");
+  printf("where\n\n");
+  printf("  -a entry - append entry to the path variable being modified\n");
+  printf("  -f entry - prepend entry to the path variable being modified\n");
+  printf("  -r label - remove any entry containing label from the path\n");
+  printf("             variable being modified\n");
+  printf("  -s - add/remove/display entries in the System path\n");
+  printf("  -u - add/remove/display entries in the User path (default)\n");
+  printf("  -m - display a summary message changes made or made to the path\n");
+  printf("  -d - display path before and after changes are made\n");
+  printf("  -b - batch or script mode.  Override prompt option when set_path is run from a script\n");
+  printf("  -p - prompt user before making any changes (default when path entries are being removed)\n");
+  printf("  -t - test, show but do not change Path variables\n");
+  UsageCommon(prog);
+  printf("  -v - show versioning information\n");
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -91,10 +117,22 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
   initMALLOC();
   strcpy(path_type,"User");
+
   if(argc==1){
-    usage();
+    Usage("set_path");
     return 1;
   }
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("set_path");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("set_file", argv[0]);
+    return 1;
+  }
+
 
   for(i=1;i<argc;i++){
     arg=argv[i];
@@ -146,11 +184,8 @@ int main(int argc, char **argv){
       case 't':
         test_mode=1;
         break;
-      case 'v':
-        PRINTVERSION("set_path ", argv[0]);
-        return 0;
       default:
-        usage();
+        Usage("set_path");
         return 1;
     }
   }
@@ -180,7 +215,7 @@ int main(int argc, char **argv){
     }
   }
   else{
-    usage();
+    Usage("set_path");
     return 0;
   }
   if(add_path==1&&newentry!=NULL){
@@ -386,31 +421,4 @@ int reg_path(int setget, int pathtype, char *path){
       break;
   }
   return 1;
-}
-
-/* ------------------ usage ------------------------ */
-
-void usage(void){
-  char githash[100];
-  char gitdate[100];
-
-  GetGitInfo(githash,gitdate);
-
-  printf("set_path Build:%s\n",githash);
-  printf("  Modify or display the User or System path environmental variables.\n\n");
-  printf("Usage:\n\n");
-  printf("  set_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n\n");
-  printf("where\n\n");
-  printf("  -a entry - append entry to the path variable being modified\n");
-  printf("  -f entry - prepend entry to the path variable being modified\n");
-  printf("  -r label - remove any entry containing label from the path\n");
-  printf("             variable being modified\n");
-  printf("  -s - add/remove/display entries in the System path\n");
-  printf("  -u - add/remove/display entries in the User path (default)\n");
-  printf("  -m - display a summary message changes made or made to the path\n");
-  printf("  -d - display path before and after changes are made\n");
-  printf("  -b - batch or script mode.  Override prompt option when set_path is run from a script\n");
-  printf("  -p - prompt user before making any changes (default when path entries are being removed)\n");
-  printf("  -t - test, show but do not change Path variables\n");
-  printf("  -v - show versioning information\n");
 }

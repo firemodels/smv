@@ -27,10 +27,12 @@
 #define HASH_NONE   0
 #define HASH_MD5    1
 #define HASH_SHA1   2
-#define HASH_SHA255 3
+#define HASH_SHA256 3
+#define HASH_ALL    4
 
-SVEXTERN int SVDECL(hash_option, HASH_MD5);
+SVEXTERN int SVDECL(hash_option, HASH_NONE);
 #endif
+SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help,0);
 
 
 /* --------------------------  flowlabels ------------------------------------ */
@@ -39,6 +41,8 @@ typedef struct {
   char *longlabel, *shortlabel, *unit;
 } flowlabels;
 
+EXTERNCPP void UsageCommon(char *prog);
+EXTERNCPP void ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void InitRandAB(int size);
 EXTERNCPP float RandAB(int seed, float minval, float maxval);
 EXTERNCPP void ToLower(char *string);

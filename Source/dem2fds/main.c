@@ -35,6 +35,7 @@ void Usage(char *prog){
   fprintf(stdout, "  -obst     - represent terrain using &OBST keywords \n");
   fprintf(stdout, "  -show     - highlight image and fds scenario boundaries\n");
   fprintf(stdout, "  -surf surf_id - specify surf ID for use with OBSTs or geometry \n");
+  UsageCommon(prog);
   fprintf(stdout, "  -version  - show version information\n");
 }
 
@@ -62,6 +63,16 @@ int main(int argc, char **argv){
   initMALLOC();
   SetStdOut(stdout);
 
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("dem2fds");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("dem2fds", argv[0]);
+    return 1;
+  }
+
   for(i = 1; i<argc; i++){
     int lenarg;
     char *arg;
@@ -77,14 +88,6 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
-      }
-      else if(strncmp(arg, "-help", 5) == 0 || strncmp(arg, "-h", 2) == 0){
-        Usage("dem2fds");
-        return 1;
-      }
-      else if(strncmp(arg, "-version", 8) == 0|| strncmp(arg, "-v", 2) == 0){
-        PRINTVERSION("dem2fds",argv[0]);
-        return 1;
       }
     }
     else{

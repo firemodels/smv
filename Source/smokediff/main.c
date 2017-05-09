@@ -11,6 +11,44 @@
 //dummy change to bump version number to 1.0.10
 //dummy change to force githash change
 
+/* ------------------ usage ------------------------ */
+
+void Usage(char *prog){
+  char smv_version[100];
+  char githash[100];
+  char gitdate[100];
+
+  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
+  GetGitInfo(githash, gitdate);    // get githash
+
+  PRINTF("\n");
+  PRINTF("  %s [options] smv_case1 smv_case2\n", prog);
+  PRINTF("    version: %s (githash %s) - %s\n\n", smv_version, githash, __DATE__);
+
+  PRINTF("  smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
+  PRINTF("  corresponding data referenced in smv_case1 (smv_case1 - smv_case2).  Slice, PLOT3d\n");
+  PRINTF("  and boundary files are supported.  Differenced results may be viewed by opening\n");
+  PRINTF("  smv_case1_diff.smv in Smokeview or by using the -smv option when running smokediff.\n\n");
+
+  PRINTF("  Mesh bounds must be identical for corresponding meshes.  Mesh resolutions must be\n");
+  PRINTF("  identical when differencing boundary and PLOT3D files.  The x, y, and z mesh\n");
+  PRINTF("  resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
+  PRINTF("  resolutions in smv_case1 when differencing slice files.\n\n");
+
+  PRINTF("  -h  - display this message\n");
+  PRINTF("  -v  - display version information\n");
+  PRINTF("  -s1 dir1 - directory containing case smv_case1.smv\n");
+  PRINTF("  -s2 dir2 - directory containing case smv_case2.smv\n");
+  PRINTF("  -d  dir  - directory containing created differenced files\n");
+  PRINTF("  -nb      - do not difference boundary files\n");
+  PRINTF("  -np      - do not difference Plot3d files\n");
+  PRINTF("  -ns      - do not difference slice files\n");
+  PRINTF("  -smv     - view case in smokeview when differencing is complete\n");
+  PRINTF("  -type label - difference only data of type label (in boundary and slice files)\n");
+  UsageCommon(prog);
+  PRINTF("  smv_case1,smv_case2 - Two smokeview cases to compare.\n");
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -38,6 +76,16 @@ int main(int argc, char **argv){
   strcpy(dirseparator,"/");
 #endif
   strcpy(pp,"%");
+
+  ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("smokediff");
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("smokediff", argv[0]);
+    return 1;
+  }
 
   NewMemory((void **)&caseinfo,2*sizeof(casedata));
 
@@ -79,9 +127,6 @@ int main(int argc, char **argv){
           test_mode=1;
         }
         break;
-      case 'h':
-        Usage();
-        return 1;
       case 'n':
         if(arg[2]=='p'){
           no_plot3d=1;
@@ -93,7 +138,7 @@ int main(int argc, char **argv){
           no_boundary=1;
         }
         else{
-          Usage();
+          Usage("smokediff");
           return 1;
         }
         break;
@@ -123,14 +168,11 @@ int main(int argc, char **argv){
         if(destdir==NULL)return 1;
         i++;
         break;
-      case 'v':
-        PRINTVERSION("Smokediff ",argv[0]);
-        return 1;
       case 'w':
         display_warnings=0;
         break;
       default:
-        Usage();
+        Usage("smokediff");
         return 1;
       }
     }
@@ -258,42 +300,3 @@ int main(int argc, char **argv){
 
   return 0;
 }
-
-/* ------------------ usage ------------------------ */
-
-void Usage(void){
-  char smv_version[100];
-  char githash[100];
-  char gitdate[100];
-
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
-  GetGitInfo(githash,gitdate);    // get githash
-
-  PRINTF("\n");
-  PRINTF("  smokediff [options] smv_case1 smv_case2\n");
-  PRINTF("    version: %s (githash %s) - %s\n\n",smv_version,githash,__DATE__);
-
-  PRINTF("  smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
-  PRINTF("  corresponding data referenced in smv_case1 (smv_case1 - smv_case2).  Slice, PLOT3d\n");
-  PRINTF("  and boundary files are supported.  Differenced results may be viewed by opening\n");
-  PRINTF("  smv_case1_diff.smv in Smokeview or by using the -smv option when running smokediff.\n\n");
-
-  PRINTF("  Mesh bounds must be identical for corresponding meshes.  Mesh resolutions must be\n");
-  PRINTF("  identical when differencing boundary and PLOT3D files.  The x, y, and z mesh\n");
-  PRINTF("  resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
-  PRINTF("  resolutions in smv_case1 when differencing slice files.\n\n");
-
-  PRINTF("  -h  - display this message\n");
-  PRINTF("  -v  - display version information\n");
-  PRINTF("  -s1 dir1 - directory containing case smv_case1.smv\n");
-  PRINTF("  -s2 dir2 - directory containing case smv_case2.smv\n");
-  PRINTF("  -d  dir  - directory containing created differenced files\n");
-  PRINTF("  -nb      - do not difference boundary files\n");
-  PRINTF("  -np      - do not difference Plot3d files\n");
-  PRINTF("  -ns      - do not difference slice files\n");
-  PRINTF("  -smv     - view case in smokeview when differencing is complete\n");
-  PRINTF("  -type label - difference only data of type label (in boundary and slice files)\n");
-  PRINTF("  smv_case1,smv_case2 - Two smokeview cases to compare.\n");
-}
-
-
