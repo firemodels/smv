@@ -22,7 +22,7 @@ void Usage(char *prog,int option){
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  hashfile [option] file\n");
   UsageCommon(prog, HELP_SUMMARY);
-  UsageCommon(prog, HELP_ALL);
+  if(option==HELP_ALL)UsageCommon(prog, HELP_ALL);
 }
 
 /* ------------------ main ------------------------ */
@@ -33,7 +33,7 @@ int main(int argc, char **argv){
   unsigned char *hash = NULL;
 
   if(argc == 1){
-    Usage("hashfile"0,HELP_ALL);
+    Usage("hashfile",HELP_ALL);
     return 0;
   }
 
