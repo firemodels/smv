@@ -1,5 +1,4 @@
 #!/bin/bash
-CURDIR=`pwd`
 
 platform="linux"
 if [ "`uname`" == "Darwin" ]; then
@@ -14,7 +13,7 @@ if [ ! -e $HASHFILE ]; then
 fi
 
 $HASHFILE -hash_all base > result
-ndiff=`diff result reference | wc -l`
+ndiff=`diff result reference_$platform | wc -l`
 if [ $ndiff -eq 0 ]; then
   echo The hashes computed by hashfile match the reference file
 else
