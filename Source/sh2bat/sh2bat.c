@@ -11,7 +11,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
  char githash[256];
  char gitdate[256];
 
@@ -23,7 +23,8 @@ void Usage(char *prog){
   fprintf(stderr, " convert the Linux/OSX script file file_in to an equivalent windows batch\n");
   fprintf(stderr, " file file_out by ignoring lines beginning with # and converting variables\n");
   fprintf(stderr, " such as $var to %svar%s\n", "%", "%");
-  UsageCommon(prog);
+  UsageCommon(prog,HELP_SUMMARY);
+  if(option == HELP_ALL)UsageCommon(prog, HELP_ALL);
 }
 
 /* ------------------ main ------------------------ */
@@ -39,8 +40,8 @@ int main(int argc, char **argv){
   prog=argv[0];
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("sh2bat");
+  if(show_help!=0){
+    Usage("sh2bat",show_help);
     return 1;
   }
   if(show_version==1){
@@ -57,7 +58,7 @@ int main(int argc, char **argv){
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
       default:
-        Usage(prog);
+        Usage(prog,HELP_ALL);
         exit(1);
         break;
       }
@@ -74,7 +75,7 @@ int main(int argc, char **argv){
     }
   }
   if(filein==NULL||fileout==NULL){
-    Usage(prog);
+    Usage(prog,HELP_ALL);
     exit(1);
   }
   streamin=fopen(filein,"r");

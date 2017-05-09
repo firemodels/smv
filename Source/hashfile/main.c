@@ -11,7 +11,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog,int option){
  char githash[100];
  char gitdate[100];
 
@@ -21,10 +21,8 @@ void Usage(char *prog){
   fprintf(stdout, "Compute the md5, sha1 or sha256 hash of a specified file\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  hashfile [option] file\n");
-  fprintf(stdout, "  -all     - compute all hashes of a file\n");
-  fprintf(stdout, "  -help    - display this message\n");
-  UsageCommon(prog);
-  fprintf(stdout, "  -version - show version information\n");
+  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(prog, HELP_ALL);
 }
 
 /* ------------------ main ------------------------ */
@@ -35,7 +33,7 @@ int main(int argc, char **argv){
   unsigned char *hash = NULL;
 
   if(argc == 1){
-    Usage("hashfile");
+    Usage("hashfile"0,HELP_ALL);
     return 0;
   }
 
@@ -43,8 +41,8 @@ int main(int argc, char **argv){
   initMALLOC();
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("hashfile");
+  if(show_help!=0){
+    Usage("hashfile",show_help);
     return 1;
   }
   if(show_version==1){

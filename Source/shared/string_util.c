@@ -1432,13 +1432,20 @@ unsigned char *GetHashSHA256(char *file){
 
 /* ------------------ UsageCommon ------------------------ */
 
-void UsageCommon(char *prog){
+void UsageCommon(char *prog, int option){
+  if(option == HELP_SUMMARY){
+    PRINTF("  -help      - display help summary\n");
+    PRINTF("  -help_all  - display all help info\n");
+    PRINTF("  -version   - display version information\n");
+  }
 #ifdef pp_HASH
-  PRINTF("  -md5       - display an md5 hash of %s with the -version option\n",prog);
-  PRINTF("  -sha1      - display a sha1 hash of %s with the -version option\n", prog);
-  PRINTF("  -sha256    - display a sha256 hash of %s with the -version option\n", prog);
-  PRINTF("  -hash_all  - display all %s hashes with the -version option\n", prog);
-  PRINTF("  -hash_none - do not display a hash  with the -version option\n");
+  if(option == HELP_ALL){
+    PRINTF("  -md5       - display an md5 hash of %s with the -version option\n", prog);
+    PRINTF("  -sha1      - display a sha1 hash of %s with the -version option\n", prog);
+    PRINTF("  -sha256    - display a sha256 hash of %s with the -version option\n", prog);
+    PRINTF("  -hash_all  - display all %s hashes with the -version option\n", prog);
+    PRINTF("  -hash_none - do not display a hash  with the -version option\n");
+  }
 #endif
 }
 
@@ -1452,8 +1459,12 @@ void ParseCommonOptions(int argc, char **argv){
 
     argi = argv[i];
     if(argi[0]!='-')continue;
-    if(STRCMP("-help", argi)==0||STRCMP("-h", argi)==0){
+    if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0)){
       show_help = 1;
+      continue;
+    }
+    if(STRCMP("-help_all", argi) == 0){
+      show_help = 2;
       continue;
     }
     if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0){

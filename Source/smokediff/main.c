@@ -13,7 +13,7 @@
 
 /* ------------------ usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
   char smv_version[100];
   char githash[100];
   char gitdate[100];
@@ -35,18 +35,20 @@ void Usage(char *prog){
   PRINTF("  resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
   PRINTF("  resolutions in smv_case1 when differencing slice files.\n\n");
 
-  PRINTF("  -h  - display this message\n");
-  PRINTF("  -v  - display version information\n");
-  PRINTF("  -s1 dir1 - directory containing case smv_case1.smv\n");
-  PRINTF("  -s2 dir2 - directory containing case smv_case2.smv\n");
-  PRINTF("  -d  dir  - directory containing created differenced files\n");
-  PRINTF("  -nb      - do not difference boundary files\n");
-  PRINTF("  -np      - do not difference Plot3d files\n");
-  PRINTF("  -ns      - do not difference slice files\n");
-  PRINTF("  -smv     - view case in smokeview when differencing is complete\n");
-  PRINTF("  -type label - difference only data of type label (in boundary and slice files)\n");
-  UsageCommon(prog);
-  PRINTF("  smv_case1,smv_case2 - Two smokeview cases to compare.\n");
+  UsageCommon(prog, HELP_SUMMARY);
+
+  if(option == HELP_ALL){
+    PRINTF("  -s1 dir1 - directory containing case smv_case1.smv\n");
+    PRINTF("  -s2 dir2 - directory containing case smv_case2.smv\n");
+    PRINTF("  -d  dir  - directory containing created differenced files\n");
+    PRINTF("  -nb      - do not difference boundary files\n");
+    PRINTF("  -np      - do not difference Plot3d files\n");
+    PRINTF("  -ns      - do not difference slice files\n");
+    PRINTF("  -smv     - view case in smokeview when differencing is complete\n");
+    PRINTF("  -type label - difference only data of type label (in boundary and slice files)\n");
+    UsageCommon(prog, HELP_ALL);
+  }
+  PRINTF("\n  smv_case1,smv_case2 - Two smokeview cases to compare.\n");
 }
 
 /* ------------------ main ------------------------ */
@@ -78,8 +80,8 @@ int main(int argc, char **argv){
   strcpy(pp,"%");
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("smokediff");
+  if(show_help!=0){
+    Usage("smokediff",show_help);
     return 1;
   }
   if(show_version==1){
@@ -138,7 +140,7 @@ int main(int argc, char **argv){
           no_boundary=1;
         }
         else{
-          Usage("smokediff");
+          Usage("smokediff",HELP_ALL);
           return 1;
         }
         break;
@@ -172,7 +174,7 @@ int main(int argc, char **argv){
         display_warnings=0;
         break;
       default:
-        Usage("smokediff");
+        Usage("smokediff",HELP_ALL);
         return 1;
       }
     }

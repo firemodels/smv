@@ -12,7 +12,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
   char prog_version[100];
   char githash[100];
   char gitdate[100];
@@ -29,17 +29,19 @@ void Usage(char *prog){
 
   printf("where\n\n");
 
-  printf("  -h             - displays this message\n");
   printf("  -prefix label  - prefix column headers with label\n");
   printf("  -offset x y z  - offset sensor locations by (x,y,z)\n");
-  printf("  -wv            - converting a non-sodar file\n");
-  printf("  -date mm/dd/yyyy - only convert data recorded on mm/dd/yyyy\n");
-  printf("  -mindate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded before specified date\n");
-  printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
-  printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
-  printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
-  UsageCommon(prog);
-  printf("  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
+  UsageCommon(prog, HELP_SUMMARY);
+  if(option == HELP_ALL){
+    printf("  -wv            - converting a non-sodar file\n");
+    printf("  -date mm/dd/yyyy - only convert data recorded on mm/dd/yyyy\n");
+    printf("  -mindate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded before specified date\n");
+    printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
+    printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
+    printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
+    UsageCommon(prog, HELP_ALL);
+  }
+  printf("\n  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
   printf("                   from standard input\n");
 }
 
@@ -99,8 +101,8 @@ int main(int argc, char **argv){
   initMALLOC();
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("wind2fds");
+  if(show_help!=0){
+    Usage("wind2fds",show_help);
     return 1;
   }
   if(show_version==1){

@@ -76,7 +76,7 @@ int prompt_user(char *path_type_local, char *pathbuffer){
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
   char githash[100];
   char gitdate[100];
 
@@ -93,13 +93,15 @@ void Usage(char *prog){
   printf("             variable being modified\n");
   printf("  -s - add/remove/display entries in the System path\n");
   printf("  -u - add/remove/display entries in the User path (default)\n");
-  printf("  -m - display a summary message changes made or made to the path\n");
-  printf("  -d - display path before and after changes are made\n");
-  printf("  -b - batch or script mode.  Override prompt option when set_path is run from a script\n");
-  printf("  -p - prompt user before making any changes (default when path entries are being removed)\n");
-  printf("  -t - test, show but do not change Path variables\n");
-  UsageCommon(prog);
-  printf("  -v - show versioning information\n");
+  UsageCommon(prog, HELP_SUMMARY);
+  if(option == HELP_ALL){
+    printf("  -m - display a summary message changes made or made to the path\n");
+    printf("  -d - display path before and after changes are made\n");
+    printf("  -b - batch or script mode.  Override prompt option when set_path is run from a script\n");
+    printf("  -p - prompt user before making any changes (default when path entries are being removed)\n");
+    printf("  -t - test, show but do not change Path variables\n");
+    UsageCommon(prog, HELP_ALL);
+  }
 }
 
 /* ------------------ main ------------------------ */
@@ -119,13 +121,13 @@ int main(int argc, char **argv){
   strcpy(path_type,"User");
 
   if(argc==1){
-    Usage("set_path");
+    Usage("set_path",HELP_ALL);
     return 1;
   }
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("set_path");
+  if(show_help!=0){
+    Usage("set_path",show_help);
     return 1;
   }
   if(show_version==1){
@@ -185,7 +187,7 @@ int main(int argc, char **argv){
         test_mode=1;
         break;
       default:
-        Usage("set_path");
+        Usage("set_path",HELP_ALL);
         return 1;
     }
   }
@@ -215,7 +217,7 @@ int main(int argc, char **argv){
     }
   }
   else{
-    Usage("set_path");
+    Usage("set_path",HELP_ALL);
     return 0;
   }
   if(add_path==1&&newentry!=NULL){

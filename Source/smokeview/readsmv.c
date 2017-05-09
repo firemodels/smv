@@ -13056,7 +13056,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", visWalls);
   fprintf(fileout, "SKIPEMBEDSLICE\n");
   fprintf(fileout, " %i\n", skip_slice_in_embedded_mesh);
-#ifdef pp_SLICEUP
+#ifdef pp_SLICEDUP
   fprintf(fileout, "SLICEDUP\n");
   fprintf(fileout, " %i %i\n", slicedup_option, vectorslicedup_option);
 #endif

@@ -52,7 +52,7 @@ void Sleep(int ticks){
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
   char prog_version[100];
   char githash[100];
   char gitdate[100];
@@ -65,28 +65,30 @@ void Usage(char *prog){
   printf("background %s(%s) - %s\n", prog_version, githash, __DATE__);
   printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
   printf("  %s", prog);
+
   printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
 
   printf("where\n\n");
 
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
-  printf("  -debug    - display debug messages\n");
-  printf("  -h        - display this message\n");
-#ifdef pp_LINUX
-  printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
-#endif
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
-#ifdef pp_LINUX
-  printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
-#endif
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
-  printf("  -v        - display version information\n");
-  UsageCommon(prog);
+  UsageCommon(prog, HELP_SUMMARY);
   printf("  prog      - program to run in the background\n");
   printf("  arguments - command line arguments of prog\n\n");
-  printf("Example:\n");
-  printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
-  printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n", pp);
+  if(option == HELP_ALL){
+    printf("  -debug    - display debug messages\n");
+#ifdef pp_LINUX
+    printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
+#endif
+#ifdef pp_LINUX
+    printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
+#endif
+    UsageCommon(prog, HELP_ALL);
+    printf("Example:\n");
+    printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
+    printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n", pp);
+  }
 }
 
 /* ------------------ main ------------------------ */
@@ -138,8 +140,8 @@ int main(int argc, char **argv){
   }
 
   ParseCommonOptions(argc, argv);
-  if(show_help==1){
-    Usage("background");
+  if(show_help!=0){
+    Usage("background",show_help);
     return 1;
   }
   if(show_version==1){
@@ -211,7 +213,7 @@ int main(int argc, char **argv){
             break;
           default:
             printf("Unknown option: %s\n",arg);
-            Usage(argv[0]);
+            Usage(argv[0],HELP_ALL);
             return 1;
         }
       }
