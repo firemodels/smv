@@ -14,7 +14,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog){
+void Usage(char *prog, int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
@@ -27,15 +27,17 @@ void Usage(char *prog){
   fprintf(stdout, "  dem2fds [options] casename.in\n");
   fprintf(stdout, "  -dir dir  - directory containing map and elevation files\n");
   fprintf(stdout, "  -elevdir dir - directory containing elevation files (if different than -dir directory)\n");
-  fprintf(stdout, "  -elevs    - output elevations, do not create an FDS input file\n");
   fprintf(stdout, "  -geom     - represent terrain using using &GEOM keywords (experimental)\n");
-  fprintf(stdout, "  -help     - display this message\n");
-  fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
-  fprintf(stdout, "  -overlap - assume that there is a 300 pixel overlap between maps.\n");
   fprintf(stdout, "  -obst     - represent terrain using &OBST keywords \n");
-  fprintf(stdout, "  -show     - highlight image and fds scenario boundaries\n");
-  fprintf(stdout, "  -surf surf_id - specify surf ID for use with OBSTs or geometry \n");
-  fprintf(stdout, "  -version  - show version information\n");
+  UsageCommon(prog, HELP_SUMMARY);
+  if(option == HELP_ALL){
+    fprintf(stdout, "  -elevs    - output elevations, do not create an FDS input file\n");
+    fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
+    fprintf(stdout, "  -overlap - assume that there is a 300 pixel overlap between maps.\n");
+    fprintf(stdout, "  -show     - highlight image and fds scenario boundaries\n");
+    fprintf(stdout, "  -surf surf_id - specify surf ID for use with OBSTs or geometry \n");
+    UsageCommon(prog, HELP_ALL);
+  }
 }
 
 /* ------------------ main ------------------------ */
@@ -49,7 +51,7 @@ int main(int argc, char **argv){
   int fatal_error = 0;
 
   if(argc == 1){
-    Usage("dem2fds");
+    Usage("dem2fds",HELP_ALL);
     return 0;
   }
 
@@ -61,6 +63,16 @@ int main(int argc, char **argv){
 
   initMALLOC();
   SetStdOut(stdout);
+
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("dem2fds",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("dem2fds", argv[0]);
+    return 1;
+  }
 
   for(i = 1; i<argc; i++){
     int lenarg;
@@ -77,14 +89,6 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
-      }
-      else if(strncmp(arg, "-help", 5) == 0 || strncmp(arg, "-h", 2) == 0){
-        Usage("dem2fds");
-        return 1;
-      }
-      else if(strncmp(arg, "-version", 8) == 0|| strncmp(arg, "-v", 2) == 0){
-        PRINTversion("dem2fds");
-        return 1;
       }
     }
     else{
@@ -160,7 +164,7 @@ int main(int argc, char **argv){
         strcpy(surf_id, argv[i]);
       }
       else{
-        Usage("dem2fds");
+        Usage("dem2fds",HELP_ALL);
         return 1;
       }
     }

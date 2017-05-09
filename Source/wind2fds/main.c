@@ -10,9 +10,9 @@
 
 //dummy change to bump version number to  0.9
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
-void usage(char *prog){
+void Usage(char *prog, int option){
   char prog_version[100];
   char githash[100];
   char gitdate[100];
@@ -29,16 +29,19 @@ void usage(char *prog){
 
   printf("where\n\n");
 
-  printf("  -h             - displays this message\n");
   printf("  -prefix label  - prefix column headers with label\n");
   printf("  -offset x y z  - offset sensor locations by (x,y,z)\n");
-  printf("  -wv            - converting a non-sodar file\n");
-  printf("  -date mm/dd/yyyy - only convert data recorded on mm/dd/yyyy\n");
-  printf("  -mindate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded before specified date\n");
-  printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
-  printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
-  printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
-  printf("  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
+  UsageCommon(prog, HELP_SUMMARY);
+  if(option == HELP_ALL){
+    printf("  -wv            - converting a non-sodar file\n");
+    printf("  -date mm/dd/yyyy - only convert data recorded on mm/dd/yyyy\n");
+    printf("  -mindate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded before specified date\n");
+    printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
+    printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
+    printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
+    UsageCommon(prog, HELP_ALL);
+  }
+  printf("\n  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
   printf("                   from standard input\n");
 }
 
@@ -65,7 +68,6 @@ int gettokens(char *tokens, char **tokenptrs){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  char *prog;
   char *arg,*csv,*argin=NULL,*argout=NULL;
   char file_in[256],file_out[256];
   FILE *stream_in=NULL, *stream_out=NULL;
@@ -96,13 +98,23 @@ int main(int argc, char **argv){
   int lendate=0;
 
   SetStdOut(stdout);
+  initMALLOC();
+
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("wind2fds",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("wind2fds", argv[0]);
+    return 1;
+  }
+
   strcpy(percen,"%");
   strcpy(prefix,"");
 
-  prog=argv[0];
-
   if(argc==1){
-   PRINTversion("wind2fds ");
+    PRINTVERSION("wind2fds ", argv[0]);
    return 1;
   }
 
@@ -129,10 +141,6 @@ int main(int argc, char **argv){
       strcpy(c_date,arg);
       lendate=strlen(c_date);
       continue;
-    }
-    else if(strcmp(arg,"-v")==0){
-      PRINTversion("wind2fds ");
-      return 1;
     }
     else if(strcmp(arg,"-mintime")==0){
       i++;
@@ -192,10 +200,6 @@ int main(int argc, char **argv){
       strcpy(prefix,arg);
       strcat(prefix,"_");
       continue;
-    }
-    else if(strcmp(arg,"-h")==0||strcmp(arg,"-help")==0){
-      usage(prog);
-      exit(0);
     }
     if(argin==NULL){
       argin=arg;

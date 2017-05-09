@@ -1,6 +1,10 @@
 #ifndef OPTIONS_COMMON_H_DEFINED
 #define OPTIONS_COMMON_H_DEFINED
 
+//*** options: all platforms
+
+#define pp_HASH   // md5, sha1 and sha255 hashing
+
 //*** options: windows
 
 #ifdef WIN32
@@ -16,6 +20,12 @@
 #endif
 
 #include "pragmas.h"
+#endif
+
+#ifdef pp_HASH
+#define PRINTVERSION(a,b) PRINTversion(a,b,hash_option)
+#else
+#define PRINTVERSION(a,b) PRINTversion(a,b)
 #endif
 
 //*** options: Mac

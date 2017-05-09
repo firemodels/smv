@@ -1,15 +1,93 @@
-#include "options.h"
 #define INMAIN
+#include "options.h"
 #include "zlib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "svzip.h"
+#include "string_util.h"
 #include "MALLOC.h"
 
 //dummy change to bump version number to 1.4.8
 //dummy change to force githash update
+
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog, int option){
+  char smv_version[100];
+  char buffer[1000];
+  char githash[256];
+  char gitdate[256];
+
+  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
+  GetGitInfo(githash, gitdate);    // get githash
+
+  PRINTF("\n");
+  PRINTF("  smokezip %s(%s) - %s\n\n", smv_version, githash, __DATE__);
+  PRINTF("  Compress FDS data files\n\n");
+  PRINTF("  %s [options] casename\n\n", GetBaseFileName(buffer, prog));
+  PRINTF("  casename - Smokeview .smv file for case to be compressed\n\n");
+  PRINTF("options:\n");
+  PRINTF("  -c  - cleans or removes all compressed files\n");
+#ifdef pp_THREAD
+  PRINTF("  -t nthread - Compress nthread files at a time (up to %i)\n", NTHREADS_MAX);
+#endif
+
+  UsageCommon(prog, HELP_SUMMARY);
+  if(option == HELP_ALL){
+    PRINTF("overwrite options:\n");
+    PRINTF("  -f  - overwrites all compressed files\n");
+    PRINTF("  -2  - overwrites 2d slice compressed files\n");
+    PRINTF("  -3  - overwrites 3d smoke files\n");
+    PRINTF("  -b  - overwrites boundary compressed files\n");
+#ifdef pp_PLOT3D
+    PRINTF("  -p  - overwrites PLOT3D files\n");
+#endif
+#ifdef pp_PART2
+    PRINTF("  -P  - overwrites particle files\n");
+#endif
+#ifdef pp_PART
+    PRINTF("  -part2iso - generate isosurfaces from particle data\n");
+#endif
+    PRINTF("bound options:\n");
+    PRINTF("  -bounds - estimate data bounds for all file types\n");
+    PRINTF("  -bb - estimate data bounds for boundary files\n");
+    PRINTF("  -bs - estimate data bounds for slice files\n");
+    PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
+    PRINTF("        slice data truncating data above and below chop values\n");
+    PRINTF("        specified in the .ini file\n");
+#ifdef pp_PLOT3D
+    PRINTF("  -bp - estimate data bounds for plot3d files\n");
+#endif
+#ifdef pp_PART2
+    PRINTF("  -bP - estimate data bounds for particle files\n");
+#endif
+    PRINTF("compress options:\n");
+    PRINTF("  -n3 - do not compress 3d smoke files\n");
+    PRINTF("  -nb - do not compress boundary files\n");
+#ifdef pp_PLOT3D
+    PRINTF("  -np - do not compress PLOT3D files\n");
+#endif
+    PRINTF("  -ns - do not compress slice files\n");
+#ifdef pp_PART2
+    PRINTF("  -nP - do not compress particle files\n");
+    PRINTF("  -yP - compress particle files\n");
+#endif
+    PRINTF("output options:\n");
+    PRINTF("  -auto - compress only files that are auto-loaded by Smokeview\n");
+    PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
+    PRINTF("        to view the case) to the directory destdir\n");
+    PRINTF("  -s GLOBsourcedir - specifies directory containing source files\n");
+    PRINTF("  -demo - Creates the files (compressed and .svd ) needed by the\n");
+    PRINTF("        Smokeview demonstrator mode.  Compresses files that are autoloaded, \n");
+    PRINTF("        uses (20.0,620.0) and (0.0,0.23) for temperature and oxygen bounds\n");
+    PRINTF("        and creates the .svd file which activates the Smokeview demonstrator\n");
+    PRINTF("        mode.\n");
+    PRINTF("  -skip skipval - skip frames when compressing files\n\n");
+    UsageCommon(prog, HELP_ALL);
+  }
+}
 
 /* ------------------ main ------------------------ */
 
@@ -29,7 +107,6 @@ int main(int argc, char **argv){
   char *ext;
   char inifile[1024];
   char inifilebase[1024];
-  char *prog;
   int i;
   int endian_fds;
   int endian_info;
@@ -37,6 +114,17 @@ int main(int argc, char **argv){
 
   SetStdOut(stdout);
   initMALLOC();
+
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("smokezip",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("smokezip", argv[0]);
+    return 1;
+  }
+
   GLOBdoit_lighting=0;
   GLOBdoit_smoke3d=1;
   GLOBdoit_boundary=1;
@@ -109,10 +197,9 @@ int main(int argc, char **argv){
   patchinfo=NULL;
   smoke3dinfo=NULL;
 
-  prog=argv[0];
   filebase=NULL;
   if(argc==1){
-    PRINTversion("Smokezip ");
+    PRINTVERSION("Smokezip ",argv[0]);
     return 1;
   }
 
@@ -299,14 +386,8 @@ int main(int argc, char **argv){
         }
         break;
 #endif
-      case 'h':
-        Usage(prog);
-        return 1;
-      case 'v':
-        PRINTversion("Smokezip ");
-        return 1;
       default:
-        Usage(prog);
+        Usage(argv[0],HELP_ALL);
         return 1;
       }
     }
@@ -324,7 +405,7 @@ int main(int argc, char **argv){
   // construct smv filename
 
   if(filebase==NULL){
-    Usage(prog);
+    Usage(argv[0],HELP_ALL);
     return 1;
   }
 #ifdef pp_THREAD
@@ -523,80 +604,7 @@ void makesvd(char *in_dir, char *smvfile){
 
 }
 
-/* ------------------ usage ------------------------ */
-
-void Usage(char *prog){
-  char smv_version[100];
-  char buffer[1000];
-  char githash[256];
-  char gitdate[256];
-
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
-  GetGitInfo(githash,gitdate);    // get githash
-
-  PRINTF("\n");
-  PRINTF("  smokezip %s(%s) - %s\n\n",smv_version,githash,__DATE__);
-  PRINTF("  Compress FDS data files\n\n");
-  PRINTF("  %s [options] casename\n\n", GetBaseFileName(buffer,prog));
-  PRINTF("  casename - Smokeview .smv file for case to be compressed\n\n");
-  PRINTF("options:\n");
-  PRINTF("  -c  - cleans or removes all compressed files\n");
-#ifdef pp_THREAD
-  PRINTF("  -t nthread - Compress nthread files at a time (up to %i)\n",NTHREADS_MAX);
-#endif
-  PRINTF("overwrite options:\n");
-  PRINTF("  -f  - overwrites all compressed files\n");
-  PRINTF("  -2  - overwrites 2d slice compressed files\n");
-  PRINTF("  -3  - overwrites 3d smoke files\n");
-  PRINTF("  -b  - overwrites boundary compressed files\n");
-#ifdef pp_PLOT3D
-  PRINTF("  -p  - overwrites PLOT3D files\n");
-#endif
-#ifdef pp_PART2
-  PRINTF("  -P  - overwrites particle files\n");
-#endif
-#ifdef pp_PART
-  PRINTF("  -part2iso - generate isosurfaces from particle data\n");
-#endif
-  PRINTF("bound options:\n");
-  PRINTF("  -bounds - estimate data bounds for all file types\n");
-  PRINTF("  -bb - estimate data bounds for boundary files\n");
-  PRINTF("  -bs - estimate data bounds for slice files\n");
-  PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
-  PRINTF("        slice data truncating data above and below chop values\n");
-  PRINTF("        specified in the .ini file\n");
-#ifdef pp_PLOT3D
-  PRINTF("  -bp - estimate data bounds for plot3d files\n");
-#endif
-#ifdef pp_PART2
-  PRINTF("  -bP - estimate data bounds for particle files\n");
-#endif
-  PRINTF("compress options:\n");
-  PRINTF("  -n3 - do not compress 3d smoke files\n");
-  PRINTF("  -nb - do not compress boundary files\n");
-#ifdef pp_PLOT3D
-  PRINTF("  -np - do not compress PLOT3D files\n");
-#endif
-  PRINTF("  -ns - do not compress slice files\n");
-#ifdef pp_PART2
-  PRINTF("  -nP - do not compress particle files\n");
-  PRINTF("  -yP - compress particle files\n");
-#endif
-  PRINTF("output options:\n");
-  PRINTF("  -auto - compress only files that are auto-loaded by Smokeview\n");
-  PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
-  PRINTF("        to view the case) to the directory destdir\n");
-  PRINTF("  -s GLOBsourcedir - specifies directory containing source files\n");
-  PRINTF("  -demo - Creates the files (compressed and .svd ) needed by the\n");
-  PRINTF("        Smokeview demonstrator mode.  Compresses files that are autoloaded, \n");
-  PRINTF("        uses (20.0,620.0) and (0.0,0.23) for temperature and oxygen bounds\n");
-  PRINTF("        and creates the .svd file which activates the Smokeview demonstrator\n");
-  PRINTF("        mode.\n");
-  PRINTF("  -skip skipval - skip frames when compressing files\n\n");
-  PRINTF("  -h  - display this message\n\n");
-}
-
-/* ------------------ usage ------------------------ */
+/* ------------------ print_summary ------------------------ */
 
 void print_summary(void){
   int i;
