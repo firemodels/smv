@@ -1,9 +1,19 @@
 #!/bin/bash
-revision=$1
-REMOTESVNROOT=$2
-PLATFORMHOST=$3
-SVNROOT=~/$4
+edition=$1
+revision=$2
+REMOTESVNROOT=$3
+PLATFORMHOST=$4
+SVNROOT=~/$5
+
 errlog=/tmp/smv_errlog.$$
+
+TEST=
+RELEASE=
+if [ "$edition" == "test" ]; then
+  TEST=test_
+else
+  RELEASE=smv_
+fi
 
 platform="linux"
 platform2="LINUX"
@@ -76,7 +86,7 @@ SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_${platform}_64
 WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_${platform}_64
 HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
-PLATFORMDIR=$revision\_${platform}64
+PLATFORMDIR=$RELEASE$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 uploads=$SVNROOT/smv/uploads
 hashfile=$SVNROOT/smv/Build/hashfile/intel_${platform}_64/hashfile_${platform}_64
@@ -98,7 +108,7 @@ CPDIR $FORBUNDLE/textures $PLATFORMDIR/bin/textures
 cp $FORBUNDLE/*.po $PLATFORMDIR/bin/.
 CP $FORBUNDLE volrender.ssf $PLATFORMDIR/bin volrender.ssf
 SCP $PLATFORMHOST $BACKGROUNDDIR background $PLATFORMDIR/bin background
-SCP $PLATFORMHOST $SMVDIR smokeview_${platform}_test_64 $PLATFORMDIR/bin smokeview
+SCP $PLATFORMHOST $SMVDIR smokeview_${platform}_${TEST}64 $PLATFORMDIR/bin smokeview
 SCP $PLATFORMHOST $DEM2FDSDIR dem2fds_${platform}_64 $PLATFORMDIR/bin dem2fds
 SCP $PLATFORMHOST $SMDDIR smokediff_${platform}_64 $PLATFORMDIR/bin smokediff
 SCP $PLATFORMHOST $WIND2FDSDIR wind2fds_${platform}_64 $PLATFORMDIR/bin wind2fds
