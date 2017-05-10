@@ -25,9 +25,11 @@ call %envfile%
 set type=
 if "%buildtype%" == "test" (
    set type=test
+   set version=%smv_revision%
 )
 if "%buildtype%" == "release" (
    set type=
+   set version=%smv_version%
 )
 
 echo.
@@ -42,7 +44,6 @@ if "%platform%" == "windows" (
 )
 
 cd %svn_root%\smv\scripts
-set version=%smv_version%
 
 set scriptdir=%linux_svn_root%/smv/scripts
 set bundledir=%linux_svn_root%/smv/uploads
@@ -54,12 +55,7 @@ if "%platform%" == "linux" (
   echo.
   echo --- making 64 bit Linux Smokeview installer ---
   echo.
-  if "%buildtype%" == "release" (
-    plink %linux_logon% %scriptdir%/MAKEdistgen.sh %version% linux %linux_hostname% %fds_edition% %linux_svn_root%
-  )
-  if "%buildtype%" == "test" (
-    plink %linux_logon% %scriptdir%/MAKEtestdistgen.sh %smv_revision% %linux_svn_root% %linux_hostname% %linux_svn_root%
-  )
+  plink %linux_logon% %scriptdir%/MAKEsmvdist.sh %buildtype% %version% %linux_svn_root% %linux_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---
@@ -70,8 +66,8 @@ if "%platform%" == "linux" (
     pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
-    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
   )
   goto eof
 )
@@ -82,12 +78,7 @@ if "%platform%" == "osx" (
   echo.
   echo --- making 64 bit OSX Smokeview installer ---
   echo.
-  if "%buildtype%" == "release" (
-    plink %osx_logon% %scriptdir%/MAKEdistgen.sh %version% osx %osx_hostname% %fds_edition% %linux_svn_root%
-  )
-  if "%buildtype%" == "test" (
-    plink %osx_logon% %scriptdir%/MAKEtestdistgen.sh %smv_revision% %linux_svn_root% %osx_hostname% %linux_svn_root%
-  )
+  plink %osx_logon% %scriptdir%/MAKEsmvdist.sh %buildtype%  %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---
@@ -98,8 +89,8 @@ if "%platform%" == "osx" (
     pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
-    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sh   ..\uploads\.
-    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sha1 ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\uploads\.
   )
   goto eof
 )
