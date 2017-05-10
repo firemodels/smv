@@ -5,24 +5,17 @@ OSXHOST=$3
 SVNROOT=~/$4
 errlog=/tmp/smv_errlog.$$
 
-MD5HASH ()
+HASH ()
 {
-local PLATSIZE=$1
-local DIR=$2
-local FILE=$3
+local DIR=$1
+local FILE=$2
 
 local curdir=`pwd`
 
-md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
+hashfile=$SVNROOT/smv/Build/hashfile/intel_osx_64/hashfile_osx_64
 
 cd $DIR
-md5file=${FILE}.md5
-hash2file=MD5/${FILE}_${PLATSIZE}.md5
-
-$md5hash $FILE
-if [ -e $md5file ]; then
-  mv $md5file $hash2file
-fi
+$hashfile $FILE > ${FILE}.sha1
 cd $curdir
 }
 
@@ -92,13 +85,14 @@ HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_osx_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
 OSXDIR=$revision\_osx64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
+uploads=$SVNROOT/smv/uploads
 
 cd $SVNROOT/smv/uploads
 
 rm -rf $OSXDIR
 mkdir -p $OSXDIR
 mkdir -p $OSXDIR/bin
-mkdir -p $OSXDIR/bin/MD5
+mkdir -p $OSXDIR/bin/hash
 mkdir -p $OSXDIR/Documentation
 
 echo ""
@@ -116,13 +110,14 @@ SCP $OSXHOST $SMDDIR smokediff_osx_64 $OSXDIR/bin smokediff
 SCP $OSXHOST $WIND2FDSDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
 SCP $OSXHOST $HASHFILEDIR hashfile_osx_64 $OSXDIR/bin hashfile
 
-MD5HASH $revision $OSXDIR/bin background
-MD5HASH $revision $OSXDIR/bin smokediff
-MD5HASH $revision $OSXDIR/bin smokeview
-MD5HASH $revision $OSXDIR/bin smokezip
-MD5HASH $revision $OSXDIR/bin dem2fds
-MD5HASH $revision $OSXDIR/bin wind2fds
-MD5HASH $revision $OSXDIR/bin hashfile
+HASH $OSXDIR/bin background
+HASH $OSXDIR/bin smokediff
+HASH $OSXDIR/bin smokeview
+HASH $OSXDIR/bin smokezip
+HASH $OSXDIR/bin dem2fds
+HASH $OSXDIR/bin wind2fds
+HASH $OSXDIR/bin hashfile
+cat $OSXDIR/bin/*.sha1 > $uploads/$OSXDIR.sha1
 
 rm -f $OSXDIR.tar $OSXDIR.tar.gz
 cd $OSXDIR
@@ -133,6 +128,8 @@ tar cvf ../$OSXDIR.tar .
 cd ..
 gzip $OSXDIR.tar
 $UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6
+HASH $uploads $OSXDIR.sh
+cat $OSXDIR.sh.sha1 >> $uploads/$OSXDIR.sha1
 
 if [ -e $errlog ]; then
   numerrs=`cat $errlog | wc -l `
