@@ -1,9 +1,17 @@
 #!/bin/bash
 revision=$1
 REMOTESVNROOT=$2
-OSXHOST=$3
+PLATFORMHOST=$3
 SVNROOT=~/$4
 errlog=/tmp/smv_errlog.$$
+
+platform="linux"
+platform2="LINUX"
+if [ "`uname`" == "Darwin" ]
+then
+  platform="osx"
+  platform2="OSX"
+fi
 
 SCP ()
 {
@@ -60,44 +68,44 @@ CPDIR ()
 }
 
 
-BACKGROUNDDIR=$REMOTESVNROOT/smv/Build/background/intel_osx_64
-SMVDIR=$REMOTESVNROOT/smv/Build/smokeview/intel_osx_64
-SMZDIR=$REMOTESVNROOT/smv/Build/smokezip/intel_osx_64
-DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_osx_64
-SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_osx_64
-WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_osx_64
-HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_osx_64
+BACKGROUNDDIR=$REMOTESVNROOT/smv/Build/background/intel_${platform}_64
+SMVDIR=$REMOTESVNROOT/smv/Build/smokeview/intel_${platform}_64
+SMZDIR=$REMOTESVNROOT/smv/Build/smokezip/intel_${platform}_64
+DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_${platform}_64
+SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_${platform}_64
+WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_${platform}_64
+HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
-OSXDIR=$revision\_osx64
+PLATFORMDIR=$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 uploads=$SVNROOT/smv/uploads
-hashfile=$SVNROOT/smv/Build/hashfile/intel_osx_64/hashfile_osx_64
+hashfile=$SVNROOT/smv/Build/hashfile/intel_${platform}_64/hashfile_${platform}_64
 
 cd $SVNROOT/smv/uploads
 
-rm -rf $OSXDIR
-mkdir -p $OSXDIR
-mkdir -p $OSXDIR/bin
-mkdir -p $OSXDIR/bin/hash
-mkdir -p $OSXDIR/Documentation
+rm -rf $PLATFORMDIR
+mkdir -p $PLATFORMDIR
+mkdir -p $PLATFORMDIR/bin
+mkdir -p $PLATFORMDIR/bin/hash
+mkdir -p $PLATFORMDIR/Documentation
 
 echo ""
 echo "---- copying files ----"
 echo ""
-CP $FORBUNDLE objects.svo $OSXDIR/bin objects.svo
-CP $FORBUNDLE smokeview.ini $OSXDIR/bin smokeview.ini
-CPDIR $FORBUNDLE/textures $OSXDIR/bin/textures
-cp $FORBUNDLE/*.po $OSXDIR/bin/.
-CP $FORBUNDLE volrender.ssf $OSXDIR/bin volrender.ssf
-SCP $OSXHOST $BACKGROUNDDIR background $OSXDIR/bin background
-SCP $OSXHOST $SMVDIR smokeview_osx_test_64 $OSXDIR/bin smokeview
-SCP $OSXHOST $DEM2FDSDIR dem2fds_osx_64 $OSXDIR/bin dem2fds
-SCP $OSXHOST $SMDDIR smokediff_osx_64 $OSXDIR/bin smokediff
-SCP $OSXHOST $WIND2FDSDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
-SCP $OSXHOST $HASHFILEDIR hashfile_osx_64 $OSXDIR/bin hashfile
+CP $FORBUNDLE objects.svo $PLATFORMDIR/bin objects.svo
+CP $FORBUNDLE smokeview.ini $PLATFORMDIR/bin smokeview.ini
+CPDIR $FORBUNDLE/textures $PLATFORMDIR/bin/textures
+cp $FORBUNDLE/*.po $PLATFORMDIR/bin/.
+CP $FORBUNDLE volrender.ssf $PLATFORMDIR/bin volrender.ssf
+SCP $PLATFORMHOST $BACKGROUNDDIR background $PLATFORMDIR/bin background
+SCP $PLATFORMHOST $SMVDIR smokeview_${platform}_test_64 $PLATFORMDIR/bin smokeview
+SCP $PLATFORMHOST $DEM2FDSDIR dem2fds_${platform}_64 $PLATFORMDIR/bin dem2fds
+SCP $PLATFORMHOST $SMDDIR smokediff_${platform}_64 $PLATFORMDIR/bin smokediff
+SCP $PLATFORMHOST $WIND2FDSDIR wind2fds_${platform}_64 $PLATFORMDIR/bin wind2fds
+SCP $PLATFORMHOST $HASHFILEDIR hashfile_${platform}_64 $PLATFORMDIR/bin hashfile
 
 CURDIR=`pwd`
-cd $OSXDIR/bin
+cd $PLATFORMDIR/bin
 $hashfile background > background.sha1
 $hashfile smokediff  > smokediff.sha1
 $hashfile smokeview  > smokeview.sha1
@@ -105,21 +113,21 @@ $hashfile smokezip   > smokezip.sha1
 $hashfile dem2fds    > dem2fds.sha1
 $hashfile wind2fds   > wind2fds.sha1
 $hashfile hashfile   > hashfile.sha1
-cat *.sha1 > $uploads/$OSXDIR.sha1
+cat *.sha1 > $uploads/$PLATFORMDIR.sha1
 cd $CURDIR
 
-rm -f $OSXDIR.tar $OSXDIR.tar.gz
-cd $OSXDIR
+rm -f $PLATFORMDIR.tar $PLATFORMDIR.tar.gz
+cd $PLATFORMDIR
 echo ""
 echo "---- building installer ----"
 echo ""
-tar cvf ../$OSXDIR.tar .
+tar cvf ../$PLATFORMDIR.tar .
 cd ..
-gzip $OSXDIR.tar
-$UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6
-$hashfile $OSXDIR.sh > $OSXDIR.sh.sha1
-cat $OSXDIR.sh.sha1 >> $uploads/$OSXDIR.sha1
-rm $OSXDIR.sh.sha1
+gzip $PLATFORMDIR.tar
+$UPDATER ${platform2} $revision $PLATFORMDIR.tar.gz $PLATFORMDIR.sh FDS/FDS6
+$hashfile $PLATFORMDIR.sh > $PLATFORMDIR.sh.sha1
+cat $PLATFORMDIR.sh.sha1 >> $uploads/$PLATFORMDIR.sha1
+rm $PLATFORMDIR.sh.sha1
 
 if [ -e $errlog ]; then
   numerrs=`cat $errlog | wc -l `
