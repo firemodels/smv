@@ -5,21 +5,6 @@ OSXHOST=$3
 SVNROOT=~/$4
 errlog=/tmp/smv_errlog.$$
 
-HASH ()
-{
-local DIR=$1
-local FILE=$2
-
-local curdir=`pwd`
-
-hashfile=$SVNROOT/smv/Build/hashfile/intel_osx_64/hashfile_osx_64
-
-cd $DIR
-$hashfile $FILE > ${FILE}.sha1
-cd $curdir
-}
-
-
 SCP ()
 {
   HOST=$1
@@ -86,6 +71,7 @@ FORBUNDLE=$SVNROOT/smv/for_bundle
 OSXDIR=$revision\_osx64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 uploads=$SVNROOT/smv/uploads
+hashfile=$SVNROOT/smv/Build/hashfile/intel_osx_64/hashfile_osx_64
 
 cd $SVNROOT/smv/uploads
 
@@ -110,14 +96,17 @@ SCP $OSXHOST $SMDDIR smokediff_osx_64 $OSXDIR/bin smokediff
 SCP $OSXHOST $WIND2FDSDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
 SCP $OSXHOST $HASHFILEDIR hashfile_osx_64 $OSXDIR/bin hashfile
 
-HASH $OSXDIR/bin background
-HASH $OSXDIR/bin smokediff
-HASH $OSXDIR/bin smokeview
-HASH $OSXDIR/bin smokezip
-HASH $OSXDIR/bin dem2fds
-HASH $OSXDIR/bin wind2fds
-HASH $OSXDIR/bin hashfile
-cat $OSXDIR/bin/*.sha1 > $uploads/$OSXDIR.sha1
+CURDIR=`pwd`
+cd $OSXDIR/bin
+$hashfile background > background.sha1
+$hashfile smokediff  > smokediff.sha1
+$hashfile smokeview  > smokeview.sha1
+$hashfile smokezip   > smokezip.sha1
+$hashfile dem2fds    > dem2fds.sha1
+$hashfile wind2fds   > wind2fds.sha1
+$hashfile hashfile   > hashfile.sha1
+cat *.sha1 > $uploads/$OSXDIR.sha1
+cd $CURDIR
 
 rm -f $OSXDIR.tar $OSXDIR.tar.gz
 cd $OSXDIR
@@ -128,8 +117,9 @@ tar cvf ../$OSXDIR.tar .
 cd ..
 gzip $OSXDIR.tar
 $UPDATER OSX $revision $OSXDIR.tar.gz $OSXDIR.sh FDS/FDS6
-HASH $uploads $OSXDIR.sh
+$hashfile $OSXDIR.sh > $OSXDIR.sh.sha1
 cat $OSXDIR.sh.sha1 >> $uploads/$OSXDIR.sha1
+rm $OSXDIR.sh.sha1
 
 if [ -e $errlog ]; then
   numerrs=`cat $errlog | wc -l `
