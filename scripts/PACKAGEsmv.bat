@@ -66,15 +66,12 @@ if "%platform%" == "linux" (
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sh ..\uploads\.
-    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sh.md5 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sh   ..\uploads\.
+    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
-    if exist ..\uploads\%smv_revision%_linux64 rmdir /s /q ..\uploads\%smv_revision%_linux64
-    mkdir ..\uploads\%smv_revision%_linux64
-    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sh ..\uploads\.
-    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sh.md5 ..\uploads\%smv_revision%_linux64\.
-    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64/bin/MD5/*.md5 ..\uploads\%smv_revision%_linux64\.
+    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sh   ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%smv_revision%_linux64.sha1 ..\uploads\.
   )
   goto eof
 )
@@ -97,15 +94,12 @@ if "%platform%" == "osx" (
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sh ..\uploads\.
-    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sh.md5 ..\uploads\.
+    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sh   ..\uploads\.
+    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
-    if exist ..\uploads\%smv_revision%_osx64 rmdir /s /q ..\uploads\%smv_revision%_osx64
-    mkdir ..\uploads\%smv_revision%_osx64
-    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sh ..\uploads\.
-    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sh.md5 ..\uploads\%smv_revision%_osx64\.
-    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64/bin/MD5/*.md5 ..\uploads\%smv_revision%_osx64\.
+    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sh   ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%smv_revision%_osx64.sha1 ..\uploads\.
   )
   goto eof
 )
