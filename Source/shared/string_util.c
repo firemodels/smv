@@ -1441,7 +1441,7 @@ void UsageCommon(char *prog, int option){
 #ifdef pp_HASH
   if(option == HELP_ALL){
     PRINTF("  -md5       - display an md5 hash of %s with the -version option\n", prog);
-    PRINTF("  -sha1      - display a sha1 hash of %s with the -version option\n", prog);
+    PRINTF("  -sha1      - display a sha1 hash of %s with the -version option [default]\n", prog);
     PRINTF("  -sha256    - display a sha256 hash of %s with the -version option\n", prog);
     PRINTF("  -hash_all  - display all %s hashes with the -version option\n", prog);
     PRINTF("  -hash_none - do not display a hash  with the -version option\n");

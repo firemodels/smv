@@ -34,7 +34,7 @@
 #define HELP_ALL 2
 
 #ifdef pp_HASH
-SVEXTERN int SVDECL(hash_option, HASH_NONE);
+SVEXTERN int SVDECL(hash_option, HASH_SHA1);
 #endif
 SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help,0);
 
