@@ -41,7 +41,7 @@ set zipbase=smv_%version%_win%platform%
 set smvdir=%zipbase%
 
 cd %svn_root%\smv\uploads
-set upload=%CD%
+set uploads=%CD%
 
 echo.
 echo --- filling distribution directory ---
@@ -79,7 +79,7 @@ hashfile background.exe >  hash\background_%revision%.sha1
 hashfile hashfile.exe   >  hash\hashfile_%revision%.sha1
 hashfile wind2fds.exe   >  hash\wind2fds_%revision%.sha1
 cd hash
-cat *.sha1              >  %zipbase%.hash
+cat *.sha1              >  %uploads%\%zipbase%.sha1
 cd %curdir%
 
 CALL :COPY  %forbundle%\smokeview.ini %smvdir%\smokeview.ini
@@ -108,17 +108,15 @@ echo --- creating installer ---
 echo.
 wzipse32 %zipbase%.zip -runasadmin -d "C:\Program Files\firemodels\%smv_edition%" -c wrapup_smv_install.bat
 
-hashfile %zipbase%.exe >   hash\%zipbase%.exe.sha1
-copy hash\%zipbase%.exe.sha1 ..\%zipbase%.exe.sha1
+hashfile %zipbase%.exe >  hash\%zipbase%.exe.sha1
 cd hash
-cat %zipbase%.exe.sha1 >> %zipbase%.hash
-CALL :COPY  %zipbase%.hash "%upload%"
+cat %zipbase%.exe.sha1 >> %uploads%\%zipbase%.sha1
 
 cd ..
 
 copy  %zipbase%.exe ..\.>Nul
 
-CALL :COPY  %zipbase%.exe "%upload%"
+CALL :COPY  %zipbase%.exe "%uploads%"
 
 echo.
 echo --- Smokeview win%platform% installer built

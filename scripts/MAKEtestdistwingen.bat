@@ -26,6 +26,7 @@ set platform=%1
 set version=%smv_revision%
 set zipbase=%version%_win%platform%
 set smvdir=%svn_root%\smv\uploads\%zipbase%
+set uploads=%svn_root%\smv\uploads
 set smvscripts=%svn_root%\smv\scripts
 set forbundle=%svn_root%\smv\for_bundle
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
@@ -60,16 +61,16 @@ CALL :COPY %smvbuild%\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe 
 set curdir=%CD%
 cd %smvdir%
 
-hashfile hashfile.exe   >  hash\hashfile_%revision%.sha1
-hashfile background.exe >  hash\background_%revision%.sha1
-hashfile dem2fds.exe    >  hash\dem2fds_%revision%.sha1
-hashfile set_path.exe   >  hash\set_path.sha1
-hashfile smokediff.exe  >  hash\smokediff_%revision%.sha1
-hashfile smokezip.exe   >  hash\smokezip_%revision%.sha1
-hashfile smokeview.exe  >  hash\smokeview_%revision%.sha1
-hashfile wind2fds.exe   >  hash\wind2fds_%revision%.sha1
+hashfile hashfile.exe   >  hash\hashfile_%smv_revision%.sha1
+hashfile background.exe >  hash\background_%smv_revision%.sha1
+hashfile dem2fds.exe    >  hash\dem2fds_%smv_revision%.sha1
+hashfile set_path.exe   >  hash\set_path_%smv_revision%.sha1
+hashfile smokediff.exe  >  hash\smokediff_%smv_revision%.sha1
+hashfile smokezip.exe   >  hash\smokezip_%smv_revision%.sha1
+hashfile smokeview.exe  >  hash\smokeview_%smv_revision%.sha1
+hashfile wind2fds.exe   >  hash\wind2fds_%smv_revision%.sha1
 cd hash
-cat *.sha1              >  %zipbase%.hash
+cat *.sha1              >  %uploads%\%zipbase%.sha1
 
 cd %curdir%
 
@@ -96,8 +97,7 @@ wzipse32 %zipbase%.zip -runasadmin -d "c:\Program Files\firemodels\%smv_edition%
 
 hashfile %zipbase%.exe  >   hash\%zipbase%.exe.sha1
 cd hash
-cat %zipbase%.exe.sha1 >> %zipbase%.hash
-CALL :COPY  %zipbase%.hash ..\..\.
+cat %zipbase%.exe.sha1 >> %uploads%\%zipbase%.sha1
 
 cd ..
 CALL :COPY %zipbase%.exe ..\.
