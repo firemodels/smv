@@ -97,7 +97,8 @@ SMOKEVIEWDIR=$SVNROOT/smv/Build/smokeview/intel_$platformsize
 SMOKEZIPDIR=$SVNROOT/smv/Build/smokezip/intel_$platformsize
 DEM2FDSDIR=$SVNROOT/smv/Build/dem2fds/intel_$platformsize
 SMOKEDIFFDIR=$SVNROOT/smv/Build/smokediff/intel_$platformsize
-WINDDIR=$SVNROOT/smv/Build/wind2fds/intel_$platformsize
+WIND2FDSDIR=$SVNROOT/smv/Build/wind2fds/intel_$platformsize
+HASHFILEDIR=$SVNROOT/smv/Build/hashfile/intel_$platformsize
 FORBUNDLE=~/$SVNROOT/smv/for_bundle
 DIR=smv_${version}_$platform$size
 UPDATER=~/$SVNROOT/fds/Utilities/Scripts/make_updater.sh
@@ -123,7 +124,8 @@ SCP $HOST $SMOKEDIFFDIR smokediff_$platformsize $DIR/bin smokediff
 SCP $HOST $SMOKEVIEWDIR smokeview_$platformsize $DIR/bin smokeview
 SCP $HOST $SMOKEZIPDIR smokezip_$platformsize $DIR/bin smokezip
 SCP $HOST $DEM2FDSDIR dem2fds_$platformsize $DIR/bin dem2fds
-SCP $HOST $WINDDIR wind2fds_$platformsize $DIR/bin wind2fds
+SCP $HOST $WIND2FDSDIR wind2fds_$platformsize $DIR/bin wind2fds
+SCP $HOST $HASHFILEDIR hashfile_$platformsize $DIR/bin hashfile
 
 mdversion=_$version.md5
 MD5DIR=$DIR/bin/MD5
@@ -133,6 +135,7 @@ MD5HASH $DIR/bin smokeview  > $MD5DIR/smokeview$mdversion
 MD5HASH $DIR/bin smokezip   > $MD5DIR/smokezip$mdversion
 MD5HASH $DIR/bin dem2fds    > $MD5DIR/dem2fds$mdversion
 MD5HASH $DIR/bin wind2fds   > $MD5DIR/wind2fds$mdversion
+MD5HASH $DIR/bin hashfile   > $MD5DIR/hashfile$mdversion
 cat     $DIR/bin/MD5/*.md5  > $MD5DIR/smv_${version}_${platform}_bundle.md5s
 
 echo ""

@@ -15,12 +15,12 @@ local curdir=`pwd`
 md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
 
 cd $DIR
-hashfile=${FILE}.md5
+md5file=${FILE}.md5
 hash2file=MD5/${FILE}_${PLATSIZE}.md5
 
 $md5hash $FILE
-if [ -e $hashfile ]; then
-  mv $hashfile $hash2file
+if [ -e $md5file ]; then
+  mv $md5file $hash2file
 fi
 cd $curdir
 }
@@ -85,7 +85,8 @@ SMVDIR=$SVNROOT/smv/Build/smokeview/intel_linux_64
 SMZDIR=$SVNROOT/smv/Build/smokezip/intel_linux_64
 DEM2FDSDIR=$SVNROOT/smv/Build/dem2fds/intel_linux_64
 SMDDIR=$SVNROOT/smv/Build/smokediff/intel_linux_64
-WINDDIR=$SVNROOT/smv/Build/wind2fds/intel_linux_64
+WIND2FDSDIR=$SVNROOT/smv/Build/wind2fds/intel_linux_64
+HASHFILEDIR=$SVNROOT/smv/Build/hashfile/intel_linux_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
 LINUXDIR=$revision\_linux64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
@@ -109,7 +110,8 @@ CP $BACKGROUNDDIR background $LINUXDIR/bin background
 CP $SMVDIR smokeview_linux_test_64 $LINUXDIR/bin smokeview
 CP $DEM2FDSDIR dem2fds_linux_64 $LINUXDIR/bin dem2fds
 CP $SMDDIR smokediff_linux_64 $LINUXDIR/bin smokediff
-CP $WINDDIR wind2fds_linux_64 $LINUXDIR/bin wind2fds
+CP $WIND2FDSDIR wind2fds_linux_64 $LINUXDIR/bin wind2fds
+CP $HASHFILEDIR hashfile_linux_64 $LINUXDIR/bin hashfile
 
 MD5HASH $revision $LINUXDIR/bin background
 MD5HASH $revision $LINUXDIR/bin smokediff
@@ -117,6 +119,7 @@ MD5HASH $revision $LINUXDIR/bin smokeview
 MD5HASH $revision $LINUXDIR/bin smokezip
 MD5HASH $revision $LINUXDIR/bin dem2fds
 MD5HASH $revision $LINUXDIR/bin wind2fds
+MD5HASH $revision $LINUXDIR/bin hashfile
 
 rm -f $LINUXDIR.tar $LINUXDIR.tar.gz
 cd $LINUXDIR

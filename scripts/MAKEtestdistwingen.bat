@@ -51,6 +51,7 @@ CALL :COPY %forbundle%\volrender.ssf %smvdir%\volrender.ssf
 
 CALL :COPY %smvbuild%\background\intel_win_64\background.exe %smvdir%\background.exe
 CALL :COPY %smvbuild%\dem2fds\intel_win_%platform%\dem2fds_win_%platform%.exe %smvdir%\dem2fds.exe
+CALL :COPY %smvbuild%\hashfile\intel_win_%platform%\hashfile_win_%platform%.exe %smvdir%\hashfile.exe
 CALL :COPY %smvbuild%\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
 CALL :COPY %smvbuild%\smokediff\intel_win_%platform%\smokediff_win_%platform%.exe %smvdir%\smokediff.exe
 CALL :COPY %smvbuild%\smokezip\intel_win_%platform%\smokezip_win_%platform%.exe %smvdir%\smokezip.exe

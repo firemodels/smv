@@ -33,6 +33,7 @@ set svzipbuild=%svn_root%\smv\Build\smokezip\%BUILDDIR%
 set dem2fdsbuild=%svn_root%\smv\Build\dem2fds\%BUILDDIR%
 set svdiffbuild=%svn_root%\smv\Build\smokediff\%BUILDDIR%
 set bgbuild=%svn_root%\smv\Build\background\intel_win_64
+set hashfilebuild=%svn_root%\smv\Build\hashfile\%BUILDDIR%
 set windbuild=%svn_root%\smv\Build\wind2fds\%BUILDDIR%
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
 set md5hash=%svn_root%\smv\Utilities\Scripts\md5hash.bat
@@ -65,6 +66,7 @@ CALL :COPY  %svzipbuild%\smokezip_win_%platform%.exe    %smvdir%\smokezip.exe
 CALL :COPY  %svdiffbuild%\smokediff_win_%platform%.exe  %smvdir%\smokediff.exe
 CALL :COPY  %dem2fdsbuild%\dem2fds_win_%platform%.exe   %smvdir%\dem2fds.exe
 CALL :COPY  %bgbuild%\background.exe                    %smvdir%\background.exe
+CALL :COPY  %hashfilebuild%\hashfile_win_%platform%.exe %smvdir%\hashfile.exe
 CALL :COPY  %windbuild%\wind2fds_win_%platform%.exe     %smvdir%\wind2fds.exe
 
 set curdir=%CD%

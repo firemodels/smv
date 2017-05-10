@@ -16,12 +16,12 @@ local curdir=`pwd`
 md5hash=$SVNROOT/smv/Utilities/Scripts/md5hash.sh
 
 cd $DIR
-hashfile=${FILE}.md5
+md5file=${FILE}.md5
 hash2file=MD5/${FILE}_${PLATSIZE}.md5
 
 $md5hash $FILE
-if [ -e $hashfile ]; then
-  mv $hashfile $hash2file
+if [ -e $md5file ]; then
+  mv $md5file $hash2file
 fi
 cd $curdir
 }
@@ -87,7 +87,8 @@ SMVDIR=$REMOTESVNROOT/smv/Build/smokeview/intel_osx_64
 SMZDIR=$REMOTESVNROOT/smv/Build/smokezip/intel_osx_64
 DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_osx_64
 SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_osx_64
-WINDDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_osx_64
+WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_osx_64
+HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_osx_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
 OSXDIR=$revision\_osx64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
@@ -112,7 +113,8 @@ SCP $OSXHOST $BACKGROUNDDIR background $OSXDIR/bin background
 SCP $OSXHOST $SMVDIR smokeview_osx_test_64 $OSXDIR/bin smokeview
 SCP $OSXHOST $DEM2FDSDIR dem2fds_osx_64 $OSXDIR/bin dem2fds
 SCP $OSXHOST $SMDDIR smokediff_osx_64 $OSXDIR/bin smokediff
-SCP $OSXHOST $WINDDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
+SCP $OSXHOST $WIND2FDSDIR wind2fds_osx_64 $OSXDIR/bin wind2fds
+SCP $OSXHOST $HASHFILEDIR hashfile_osx_64 $OSXDIR/bin hashfile
 
 MD5HASH $revision $OSXDIR/bin background
 MD5HASH $revision $OSXDIR/bin smokediff
@@ -120,6 +122,7 @@ MD5HASH $revision $OSXDIR/bin smokeview
 MD5HASH $revision $OSXDIR/bin smokezip
 MD5HASH $revision $OSXDIR/bin dem2fds
 MD5HASH $revision $OSXDIR/bin wind2fds
+MD5HASH $revision $OSXDIR/bin hashfile
 
 rm -f $OSXDIR.tar $OSXDIR.tar.gz
 cd $OSXDIR
