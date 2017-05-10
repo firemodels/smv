@@ -1443,7 +1443,7 @@ void UsageCommon(char *prog, int option){
     PRINTF("  -md5       - display an md5 hash when -version is invoked\n");
     PRINTF("  -sha1      - display a sha1 hash when -version is invoked\n");
     PRINTF("  -sha256    - display a sha256 hash when -version is invoked\n");
-    PRINTF("  -hash_all  - display all hashes when -version option\n");
+    PRINTF("  -hash_all  - display all hashes when -version option is invoked\n");
     PRINTF("  -hash_none - do not display any hashes  when -version is invoked\n");
   }
 #endif
