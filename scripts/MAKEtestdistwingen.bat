@@ -26,6 +26,7 @@ set platform=%1
 set version=%smv_revision%
 set zipbase=%version%_win%platform%
 set smvdir=%svn_root%\smv\uploads\%zipbase%
+set uploads=%svn_root%\smv\uploads
 set smvscripts=%svn_root%\smv\scripts
 set forbundle=%svn_root%\smv\for_bundle
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
@@ -38,7 +39,7 @@ echo --- filling distribution directory ---
 echo.
 IF EXIST %smvdir% rmdir /S /Q %smvdir%
 mkdir %smvdir%
-mkdir %smvdir%\MD5
+mkdir %smvdir%\hash
 
 CALL :COPY %smvbuild%\smokeview\intel_win_%platform%\smokeview_win_test_%platform%.exe %smvdir%\smokeview.exe
 
@@ -51,6 +52,7 @@ CALL :COPY %forbundle%\volrender.ssf %smvdir%\volrender.ssf
 
 CALL :COPY %smvbuild%\background\intel_win_64\background.exe %smvdir%\background.exe
 CALL :COPY %smvbuild%\dem2fds\intel_win_%platform%\dem2fds_win_%platform%.exe %smvdir%\dem2fds.exe
+CALL :COPY %smvbuild%\hashfile\intel_win_%platform%\hashfile_win_%platform%.exe %smvdir%\hashfile.exe
 CALL :COPY %smvbuild%\set_path\intel_win_64\set_path64.exe "%smvdir%\set_path.exe"
 CALL :COPY %smvbuild%\smokediff\intel_win_%platform%\smokediff_win_%platform%.exe %smvdir%\smokediff.exe
 CALL :COPY %smvbuild%\smokezip\intel_win_%platform%\smokezip_win_%platform%.exe %smvdir%\smokezip.exe
@@ -59,26 +61,28 @@ CALL :COPY %smvbuild%\wind2fds\intel_win_%platform%\wind2fds_win_%platform%.exe 
 set curdir=%CD%
 cd %smvdir%
 
-certutil -hashfile background.exe MD5 >  MD5\background_%revision%.md5
-certutil -hashfile dem2fds.exe    MD5 >  MD5\dem2fds_%revision%.md5
-certutil -hashfile set_path.exe   MD5 >  MD5\set_path.md5
-certutil -hashfile smokediff.exe  MD5 >  MD5\smokediff_%revision%.md5
-certutil -hashfile smokezip.exe   MD5 >  MD5\smokezip_%revision%.md5
-certutil -hashfile wind2fds.exe   MD5 >  MD5\wind2fds_%revision%.md5
+hashfile hashfile.exe   >  hash\hashfile_%smv_revision%.sha1
+hashfile background.exe >  hash\background_%smv_revision%.sha1
+hashfile dem2fds.exe    >  hash\dem2fds_%smv_revision%.sha1
+hashfile set_path.exe   >  hash\set_path_%smv_revision%.sha1
+hashfile smokediff.exe  >  hash\smokediff_%smv_revision%.sha1
+hashfile smokezip.exe   >  hash\smokezip_%smv_revision%.sha1
+hashfile smokeview.exe  >  hash\smokeview_%smv_revision%.sha1
+hashfile wind2fds.exe   >  hash\wind2fds_%smv_revision%.sha1
+cd hash
+cat *.sha1              >  %uploads%\%zipbase%.sha1
+
 cd %curdir%
 
-CALL :COPY %forbundle%\objects.svo %smvdir%\.
-
-CALL :COPY %sh2bat%\sh2bat.exe %smvdir%\sh2bat.exe
-
+CALL :COPY %forbundle%\objects.svo                       %smvdir%\.
+CALL :COPY %sh2bat%\sh2bat.exe                           %smvdir%\sh2bat.exe
 CALL :COPY %forbundle%\wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat
-
-CALL :COPY %forbundle%\smokeview.ini %smvdir%\smokeview.ini
+CALL :COPY %forbundle%\smokeview.ini                     %smvdir%\smokeview.ini
 
 echo copying textures
 mkdir %smvdir%\textures
-copy %forbundle%\textures\*.jpg %smvdir%\textures>Nul
-copy %forbundle%\textures\*.png %smvdir%\textures>Nul
+copy %forbundle%\textures\*.jpg                          %smvdir%\textures>Nul
+copy %forbundle%\textures\*.png                          %smvdir%\textures>Nul
 
 echo.
 echo --- compressing distribution directory ---
@@ -91,8 +95,11 @@ echo --- creating installer ---
 echo.
 wzipse32 %zipbase%.zip -runasadmin -d "c:\Program Files\firemodels\%smv_edition%" -c wrapup_smv_install.bat
 
-certutil -hashfile %zipbase%.exe MD5 >   MD5\%zipbase%.exe.md5
+hashfile %zipbase%.exe  >   hash\%zipbase%.exe.sha1
+cd hash
+cat %zipbase%.exe.sha1 >> %uploads%\%zipbase%.sha1
 
+cd ..
 CALL :COPY %zipbase%.exe ..\.
 
 echo.
