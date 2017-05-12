@@ -291,7 +291,14 @@ int Writable(char *dir){
 
   if(dir == NULL || strlen(dir) == 0)return NO;
 
-#ifdef WIN32
+#ifdef pp_LINUX
+  if(ACCESS(dir,F_OK|W_OK)==-1){
+    return NO;
+  }
+  else{
+    return YES;
+  }
+#else
   {
     char tempfullfile[100], tempfile[40];
     FILE *stream;
@@ -309,13 +316,6 @@ int Writable(char *dir){
       fclose(stream);
       return YES;
     }
-  }
-#else
-  if(ACCESS(dir,F_OK|W_OK)==-1){
-    return NO;
-  }
-  else{
-    return YES;
   }
 #endif
 }
