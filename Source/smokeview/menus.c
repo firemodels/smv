@@ -3157,6 +3157,9 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
+#ifdef pp_PARTDEFER
+    parti->compute_bounds_color = 1;
+#endif
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3176,6 +3179,10 @@ void LoadParticleMenu(int value){
       }
     }
     else{
+#ifdef pp_PARTDEFER
+      int lasti = 0;
+#endif
+
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
@@ -3194,12 +3201,33 @@ void LoadParticleMenu(int value){
           readpart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
         }
       }
+#ifdef pp_PARTDEFER
+      lasti = 0;
+      for(i = 0;i < npartinfo;i++){
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->evac == 1)continue;
+        if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
+        lasti = i;
+      }
+#endif
       for(i=0;i<npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
         if(parti->evac==1)continue;
         if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
+#ifdef pp_PARTDEFER
+        if(lasti == i){
+          parti->compute_bounds_color = 1;
+        }
+        else{
+          parti->compute_bounds_color = 0;
+        }
+#else
+        parti->compute_bounds_color = 1;
+#endif
         readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
       force_redisplay=1;

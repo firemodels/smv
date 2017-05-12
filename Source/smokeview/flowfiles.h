@@ -1089,6 +1089,9 @@ typedef struct {
   int blocknumber, num_memblocks;
   int *timeslist, ntimes, itime;
   int data_type;
+#ifdef pp_PARTDEFER
+  int compute_bounds_color;
+#endif
 
   float zoffset, *times;
 
