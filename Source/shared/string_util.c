@@ -1518,6 +1518,7 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef pp_HASH
+#ifndef _DEBUG
   if(option==HASH_MD5||option==HASH_ALL){
     unsigned char *hash = NULL;
 
@@ -1539,6 +1540,7 @@ void PRINTversion(char *progname, char *progfullpath){
     if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
     FREEMEMORY(hash);
   }
+#endif
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
