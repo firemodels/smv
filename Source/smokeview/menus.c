@@ -3225,8 +3225,6 @@ void LoadParticleMenu(int value){
         else{
           parti->compute_bounds_color = 0;
         }
-#else
-        parti->compute_bounds_color = 1;
 #endif
         readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
