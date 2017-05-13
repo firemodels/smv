@@ -3182,7 +3182,7 @@ void ParseDatabase(char *file){
 
       slashptr = strstr(buffer, "/");
       if(slashptr!=NULL)strcpy(buffer2, buffer);
-	  buffer3 = buffer2;
+      buffer3 = buffer2;
       while(slashptr!=NULL){
         fgets(buffer, 1000, stream);
         lenbuffer = strlen(buffer);
@@ -3439,7 +3439,7 @@ void MakeFileLists(void){
   char filter_casedir[256], filter_casename[256];
 
   // create list of all files for the case being visualized (casename*.* )
-  
+
   strcpy(filter_casename, "");
   if(fdsprefix != NULL&&strlen(fdsprefix) > 0){
     strcat(filter_casename, fdsprefix);
@@ -3447,7 +3447,7 @@ void MakeFileLists(void){
   }
 
   // create a list of all files in the current directory
-  
+
   nfilelist_casename = GetFileListSize(".", filter_casename);
   MakeFileList(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
 
@@ -3516,7 +3516,7 @@ int ReadSMV(char *file, char *file2){
 
   STOP_TIMER(read_time);
   STOP_TIMER(read_time_elapsed);
-  
+
   npropinfo=1; // the 0'th prop is the default human property
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
@@ -4310,7 +4310,7 @@ int ReadSMV(char *file, char *file2){
     }
 
   }
-  
+
   STOP_TIMER(pass1_time);
 
 
@@ -6384,7 +6384,7 @@ int ReadSMV(char *file, char *file2){
  */
 
   START_TIMER(pass4_time);
-  
+
   // look for DEVICE entries in "experimental" spread sheet files
 
   if(ncsvinfo>0){
@@ -12117,10 +12117,10 @@ int ReadINI(char *inifile){
 
     returnval = ReadINI2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
-	if(returnval == 0){
-	  PRINTF("complete");
-	  PRINTF("\n");
-	}
+    if(returnval == 0){
+      PRINTF("complete");
+      PRINTF("\n");
+    }
     update_terrain_options();
   }
 
@@ -12731,8 +12731,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "HEATONCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoncolor[0], heatoncolor[1], heatoncolor[2]);
   fprintf(fileout, "ISOCOLORS\n");
-	fprintf(fileout," %f %f : shininess, default opaqueness\n",iso_shininess, iso_transparency);
-	fprintf(fileout," %f %f %f : specular\n",iso_specular[0],iso_specular[1],iso_specular[2]);
+  fprintf(fileout," %f %f : shininess, default opaqueness\n",iso_shininess, iso_transparency);
+  fprintf(fileout," %f %f %f : specular\n",iso_specular[0],iso_specular[1],iso_specular[2]);
   fprintf(fileout," %i : number of levels\n",MAX_ISO_COLORS);
   for(i=0;i<MAX_ISO_COLORS;i++){
     fprintf(fileout, " %f %f %f %f", iso_colors[4*i], iso_colors[4*i+1], iso_colors[4*i+2], iso_colors[4*i+3]);

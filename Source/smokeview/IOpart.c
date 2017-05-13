@@ -1478,7 +1478,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   parti->loaded = 1;
   parti->display = 1;
-#ifdef pp_PARTDEFER  
+#ifdef pp_PARTDEFER
   if(parti->compute_bounds_color == 1){
 #endif
     if(data_type == PARTDATA)update_partcolorbounds(parti);
@@ -2105,9 +2105,9 @@ void update_part_menulabels(void){
       }
       lenlabel=strlen(parti->menulabel);
       if(nmeshes>1){
-	    meshdata *partmesh;
+        meshdata *partmesh;
 
-		partmesh = meshinfo + parti->blocknumber;
+        partmesh = meshinfo + parti->blocknumber;
         sprintf(label,"%s",partmesh->label);
         if(lenlabel>0)STRCAT(parti->menulabel,", ");
         STRCAT(parti->menulabel,label);

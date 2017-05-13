@@ -340,7 +340,7 @@ int STRCMP(const char *s1, const char *s2){
 //  same as the standard function, strcmp, but ignores case
 
   while (toupper(*s1) == toupper(*s2++)){
-		if(*s1++ == 0)return (0);
+    if(*s1++ == 0)return (0);
   }
   return (toupper(*(const unsigned char *)s1) - toupper(*(const unsigned char *)(s2 - 1)));
 }

@@ -41,14 +41,14 @@ slicedata *gslice;
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
 #define GET_SLICE_COLOR(color,index) \
-	   if(sd->constant_color==NULL){\
-	     int i11;\
-         i11 = sd->iqsliceframe[(index)];\
-         color = rgb_slice + 4*i11;\
-       }\
-       else{\
-         color = sd->constant_color;\
-       }
+     if(sd->constant_color==NULL){\
+       int i11;\
+       i11 = sd->iqsliceframe[(index)];\
+       color = rgb_slice + 4*i11;\
+     }\
+     else{\
+       color = sd->constant_color;\
+     }
 
 #define GET_VAL(U,VAL,n) \
          VAL=0.0;           \
@@ -1081,7 +1081,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 // Fort_val(i,j,k) = i + j*ni + k*ni*nj
 
         CCIsoSurface2File(isofile, times+i, vals, iblank_cell,
-		              fed_iso->levels, &fed_iso->nlevels,
+                  fed_iso->levels, &fed_iso->nlevels,
                   xplt, &nx,  yplt, &ny, zplt, &nz,
                   &reduce_triangles, &error_local2);
       }
@@ -2028,7 +2028,7 @@ void UpdateVsliceMenulabels(void){
     if(nmeshes>1){
       meshdata *slicemesh;
 
-	  slicemesh = meshinfo + sd->blocknumber;
+      slicemesh = meshinfo + sd->blocknumber;
       sprintf(label,", %s",slicemesh->label);
       STRCAT(vsd->menulabel,label);
     }
@@ -2050,9 +2050,9 @@ void UpdateVsliceMenulabels(void){
         STRCAT(mvslicei->menulabel2,mvslicei->menulabel);
       }
       if(nmeshes>1){
-	    meshdata *slicemesh;
+        meshdata *slicemesh;
 
-		slicemesh = meshinfo + sd->blocknumber;
+        slicemesh = meshinfo + sd->blocknumber;
         sprintf(label,", %s",slicemesh->label);
         STRCAT(vsd->menulabel,label);
       }
@@ -2086,12 +2086,12 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
     delta_orig = MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
     if(ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled // test whether two slices are identical
-	   &&ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled
-	   &&ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
+     &&ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled
+     &&ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
      &&sd->blocknumber==sdold->blocknumber
         ){
-	    return 1;
-	  }
+      return 1;
+    }
 
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir

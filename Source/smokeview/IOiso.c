@@ -1339,7 +1339,7 @@ void drawstaticiso(const isosurface *asurface,int surfacetype,
         glVertex3fv(vv3);
         glVertex3fv(vv3n);
       }
-		  else{
+      else{
         for(k=0;k<3;k++){
           vv1n[k]=vv1[k]+norm[k]/(8.*32768.)/4.0;
           vv2n[k]=vv2[k]+norm[k]/(8.*32768.)/4.0;
@@ -1486,9 +1486,9 @@ void update_iso_menulabels(void){
       isoi = isoinfo + i;
       STRCPY(isoi->menulabel,isoi->surface_label.longlabel);
       if(nmeshes>1){
-	      meshdata *isomesh;
+        meshdata *isomesh;
 
-		    isomesh = meshinfo + isoi->blocknumber;
+        isomesh = meshinfo + isoi->blocknumber;
         sprintf(label,"%s",isomesh->label);
         STRCAT(isoi->menulabel,", ");
         STRCAT(isoi->menulabel,label);

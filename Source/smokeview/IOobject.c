@@ -1421,26 +1421,26 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
       }
       break;
-   	case SV_INCLUDE:
-	  case SV_INCLUDEF:
-	    {
+    case SV_INCLUDE:
+    case SV_INCLUDEF:
+      {
         sv_object *included_object;
         int iframe_local2;
-	      char *object_name;
+        char *object_name;
 
-	      if(toki->included_object==NULL){
-	        if(toki->command==SV_INCLUDEF){
-	          iframe_local2=arg[0];
-		      }
-	        else{
+        if(toki->included_object==NULL){
+          if(toki->command==SV_INCLUDEF){
+            iframe_local2=arg[0];
+          }
+          else{
             iframe_local2=0;
-		      }
+          }
           object_name = (toki-1)->string;
           included_object = get_SVOBJECT_type(object_name,missing_device);
-	        toki->included_frame=iframe_local2;
-	        toki->included_object=included_object;
+          toki->included_frame=iframe_local2;
+          toki->included_object=included_object;
         }
-	      else{
+        else{
           iframe_local2=toki->included_frame;
           included_object = toki->included_object;
         }
@@ -3401,22 +3401,22 @@ void drawdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
-	  glVertex3f(                    0.0,                    0.0,0.0);
+      glVertex3f(                    0.0,                    0.0,0.0);
 
-	  glVertex3f(                    0.0,                    0.0,0.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
+      glVertex3f(                    0.0,                    0.0,0.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
     }
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
-	  glVertex3f(                    0.0,                    0.0, height);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
+      glVertex3f(                    0.0,                    0.0, height);
 
-	  glVertex3f(                    0.0,                    0.0, height);
+      glVertex3f(                    0.0,                    0.0, height);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
     }
     glEnd();
@@ -3590,15 +3590,15 @@ void drawcdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.00); // 1
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
-	  glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
+      glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
 
-	  glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
+      glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.00); // 1
     }
     glEnd();
@@ -3628,22 +3628,22 @@ void drawcdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.0);
-	  glVertex3f(                    0.0,                    0.0,-height/2.0);
+      glVertex3f(                    0.0,                    0.0,-height/2.0);
 
-	  glVertex3f(                    0.0,                    0.0,-height/2.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
+      glVertex3f(                    0.0,                    0.0,-height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.0);
     }
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
-	  glVertex3f(                    0.0,                    0.0, height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
+      glVertex3f(                    0.0,                    0.0, height/2.0);
 
-	  glVertex3f(                    0.0,                    0.0, height/2.0);
+      glVertex3f(                    0.0,                    0.0, height/2.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0);
     }
     glEnd();
@@ -5053,8 +5053,8 @@ char *parse_device_frame(char *buffer, FILE *stream, int *eof, sv_object_frame *
 
       toki->type=TOKEN_COMMAND;
       error_code=get_token_id(toki->token, &toki->command, &toki->nvars, &toki->noutvars, &use_displaylist);
-	    toki->included_frame=0;
-	    toki->included_object=NULL;
+      toki->included_frame=0;
+      toki->included_object=NULL;
       if(error_code==1){
         frame->error=1;
         fprintf(stderr,"*** Error: unable to identify the command, %s, while parsing:\n\n",toki->token);
@@ -7187,9 +7187,9 @@ void parse_object_string(char *string,char **tokens, int *ntokens){
         int j;
         sv_object *included_object;
         int iframe_local;
-	      char *object_name;
-	      int nparms;
-	      sv_object_frame *frame;
+        char *object_name;
+        int nparms;
+        sv_object_frame *frame;
         int len2;
 
         object_name=tokens_tail[ntail-2];

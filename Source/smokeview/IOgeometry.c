@@ -531,8 +531,8 @@ void draw_geom(int flag, int timestate){
       }
       glEnd();
       glDisable(GL_COLOR_MATERIAL);
-	  glDisable(GL_LIGHTING);
-	  glPopMatrix();
+      glDisable(GL_LIGHTING);
+      glPopMatrix();
     }
 
       // draw volume outline
