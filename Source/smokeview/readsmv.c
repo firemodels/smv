@@ -7972,18 +7972,26 @@ typedef struct {
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
       ){
-      int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
+      char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
-      slicedata *sd;
-      char *slicelabelptr, slicelabel[256];
+      float sliceoffset_fds=0.0;
+      int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
       int has_reg, has_comp;
       int i1=-1, i2=-1, j1=-1, j2=-1, k1=-1, k2=-1;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
-      char *sliceparms;
       int blocknumber;
+      slicedata *sd;
       size_t len;
 
       if(setup_only == 1)continue;
+
+      sliceoffsetptr = strchr(buffer, '$');
+      if(sliceoffsetptr!=NULL){
+        *sliceoffsetptr = 0;
+        sliceoffsetptr++;
+        sscanf(sliceoffsetptr, "%f", &sliceoffset_fds);
+      }
+
       sliceparms=strchr(buffer,'&');
       if(sliceparms!=NULL){
         sliceparms++;
@@ -8040,6 +8048,7 @@ typedef struct {
       len=strlen(bufferptr);
 
       sd = sliceinfo + nn_slice - 1;
+      sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
       sd->vol_file=NULL;

@@ -1180,7 +1180,7 @@ typedef struct _slicedata {
   int nsliceijk;
   int *timeslist;
   int idir;
-  float sliceoffset;
+  float sliceoffset, sliceoffset_fds;
   int nslicei, nslicej, nslicek;
   int nslicex, nslicey;
   int ndirxyz[4];
