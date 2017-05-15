@@ -302,7 +302,7 @@ void ShowMultiSliceMenu(int value){
     return;
   case MENU_SHOWSLICE_INBLOCKAGE:
     show_slice_in_obst = 1 - show_slice_in_obst;
-	update_show_slice_in_obst();
+    update_show_slice_in_obst();
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -538,7 +538,7 @@ void LabelMenu(int value){
     visHRRlabel=1;
     show_hrrcutoff=1;
     visFramelabel=1;
-	  if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
+    if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
     gversion=1;
     break;
    case MENU_LABEL_HideAll:
@@ -554,7 +554,7 @@ void LabelMenu(int value){
     visMeshlabel=0;
     visHRRlabel=0;
     show_hrrcutoff=0;
-	if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
+    if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -950,7 +950,7 @@ void ShowVSliceMenu(int value){
   }
   if(value == MENU_SHOWSLICE_INBLOCKAGE){
     show_slice_in_obst=1-show_slice_in_obst;
-	update_show_slice_in_obst();
+    update_show_slice_in_obst();
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -3157,6 +3157,9 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
+#ifdef pp_PARTDEFER
+    parti->compute_bounds_color = 1;
+#endif
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3176,6 +3179,10 @@ void LoadParticleMenu(int value){
       }
     }
     else{
+#ifdef pp_PARTDEFER
+      int lasti = 0;
+#endif
+
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
@@ -3194,12 +3201,31 @@ void LoadParticleMenu(int value){
           readpart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
         }
       }
+#ifdef pp_PARTDEFER
+      lasti = 0;
+      for(i = 0;i < npartinfo;i++){
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->evac == 1)continue;
+        if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
+        lasti = i;
+      }
+#endif
       for(i=0;i<npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
         if(parti->evac==1)continue;
         if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
+#ifdef pp_PARTDEFER
+        if(lasti == i){
+          parti->compute_bounds_color = 1;
+        }
+        else{
+          parti->compute_bounds_color = 0;
+        }
+#endif
         readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
       force_redisplay=1;
@@ -4256,7 +4282,7 @@ void ShowPatchMenu(int value){
       int i,n,val;
 
       allexterior = 1-allexterior;
-  	  showexterior=1-showexterior;
+      showexterior=1-showexterior;
       val = allexterior;
       for(n=0;n<current_mesh->npatches;n++){
         if(current_mesh->patchtype[n]!=INTERIORwall){
@@ -8223,10 +8249,10 @@ updatemenu=0;
 
         vi = vsliceinfo + (multivsliceinfo+i)->ivslices[0];
         si = sliceinfo + vi->ival;
-		    if(i>0){
-		      vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
+        if(i>0){
+          vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
           sim1 = sliceinfo + vim1->ival;
-	    	}
+        }
         if(i==0||(i>0&&strcmp(si->label.longlabel,sim1->label.longlabel)!=0)){
           if(si->vec_comp==0||showallslicevectors==1){
             char mlabel[1024], mlabel2[1024];
@@ -8298,10 +8324,10 @@ updatemenu=0;
           i=vsliceorderindex[ii];
           vd = vsliceinfo + i;
           sd = sliceinfo + vd->ival;
-		      if(ii>0){
+          if(ii>0){
             vdim1 = vsliceinfo + vsliceorderindex[ii-1];
             sdm1 = sliceinfo + vdim1->ival;
-		      }
+          }
           if(ii==0||strcmp(sd->label.longlabel,sdm1->label.longlabel)!=0){
             nloadsubvslicemenu++;
           }
@@ -8369,10 +8395,10 @@ updatemenu=0;
           i=vsliceorderindex[ii];
           vd = vsliceinfo + i;
           sd = sliceinfo + vd->ival;
-		  if(ii>0){
+          if(ii>0){
             vdim1 = vsliceinfo + vsliceorderindex[ii-1];
             sdm1 = sliceinfo + vdim1->ival;
-		  }
+          }
           if(ii==0||strcmp(sd->label.longlabel,sdm1->label.longlabel)!=0){
             if(sd->vec_comp==0||showallslicevectors==1){
               char mlabel[1024], mlabel2[1024];

@@ -340,7 +340,7 @@ int STRCMP(const char *s1, const char *s2){
 //  same as the standard function, strcmp, but ignores case
 
   while (toupper(*s1) == toupper(*s2++)){
-		if(*s1++ == 0)return (0);
+    if(*s1++ == 0)return (0);
   }
   return (toupper(*(const unsigned char *)s1) - toupper(*(const unsigned char *)(s2 - 1)));
 }
@@ -1518,6 +1518,7 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
 #ifdef pp_HASH
+#ifndef _DEBUG
   if(option==HASH_MD5||option==HASH_ALL){
     unsigned char *hash = NULL;
 
@@ -1539,6 +1540,7 @@ void PRINTversion(char *progname, char *progfullpath){
     if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
     FREEMEMORY(hash);
   }
+#endif
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");

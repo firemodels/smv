@@ -1478,29 +1478,35 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   parti->loaded = 1;
   parti->display = 1;
-  if(data_type==PARTDATA)update_partcolorbounds(parti);
-  UpdateGlui();
-#ifdef pp_MEMPRINT
-  if(data_type==PARTDATA)PRINTF("After particle file load: \n");
-  PrintMemoryInfo;
+#ifdef pp_PARTDEFER
+  if(parti->compute_bounds_color == 1){
 #endif
-  if(parti->evac==0){
-    visParticles=1;
-    ReadPartFile=1;
-  }
-  else{
-    visEvac=1;
-    ReadEvacFile=1;
-  }
+    if(data_type == PARTDATA)update_partcolorbounds(parti);
+    UpdateGlui();
+#ifdef pp_MEMPRINT
+    if(data_type == PARTDATA)PRINTF("After particle file load: \n");
+    PrintMemoryInfo;
+#endif
+    if(parti->evac == 0){
+      visParticles = 1;
+      ReadPartFile = 1;
+    }
+    else{
+      visEvac = 1;
+      ReadEvacFile = 1;
+    }
 
-  parttype=0;
-  Part_CB_Init();
-  ParticlePropShowMenu(part5colorindex);
-  plotstate=GetPlotState(DYNAMIC_PLOTS);
-  UpdateTimes();
-  UpdatePart5Extremes();
-  updatemenu=1;
-  Idle_CB();
+    parttype = 0;
+    Part_CB_Init();
+    ParticlePropShowMenu(part5colorindex);
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    UpdateTimes();
+    UpdatePart5Extremes();
+    updatemenu = 1;
+    Idle_CB();
+#ifdef pp_PARTDEFER
+  }
+#endif
 
   STOP_TIMER(total_time);
 
@@ -2099,9 +2105,9 @@ void update_part_menulabels(void){
       }
       lenlabel=strlen(parti->menulabel);
       if(nmeshes>1){
-	    meshdata *partmesh;
+        meshdata *partmesh;
 
-		partmesh = meshinfo + parti->blocknumber;
+        partmesh = meshinfo + parti->blocknumber;
         sprintf(label,"%s",partmesh->label);
         if(lenlabel>0)STRCAT(parti->menulabel,", ");
         STRCAT(parti->menulabel,label);

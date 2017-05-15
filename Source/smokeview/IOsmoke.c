@@ -5063,7 +5063,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   nframes_found=0;
   START_TIMER(read_time);
   for(i=0;i<smoke3di->ntimes_full;i++){
-	  SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
+    SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
     if(feof(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
       smoke3di->ntimes=nframes_found;
@@ -5401,9 +5401,9 @@ void UpdateSmoke3DMenuLabels(void){
     }
 //    len=strlen(smoke3di->menulabel);
     if(nmeshes>1){
-	  meshdata *smokemesh;
+      meshdata *smokemesh;
 
-	  smokemesh = meshinfo + smoke3di->blocknumber;
+      smokemesh = meshinfo + smoke3di->blocknumber;
       sprintf(meshlabel,"%s",smokemesh->label);
       STRCAT(smoke3di->menulabel," - ");
       STRCAT(smoke3di->menulabel,meshlabel);

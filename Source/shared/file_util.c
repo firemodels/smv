@@ -289,13 +289,35 @@ int Writable(char *dir){
 
   // returns 1 if the directory can be written to, 0 otherwise
 
-  if(dir==NULL||strlen(dir)==0||ACCESS(dir,F_OK|W_OK)==-1){
+  if(dir == NULL || strlen(dir) == 0)return NO;
+
+#ifdef pp_LINUX
+  if(ACCESS(dir,F_OK|W_OK)==-1){
     return NO;
   }
   else{
     return YES;
   }
+#else
+  {
+    char tempfullfile[100], tempfile[40];
+    FILE *stream;
 
+    strcpy(tempfullfile,dir);
+    strcat(tempfullfile,dirseparator);
+    RandStr(tempfile,35);
+    strcat(tempfullfile,tempfile);
+    stream = fopen(tempfullfile,"w");
+    if(stream==NULL){
+      return NO;
+    }
+    else{
+      UNLINK(tempfullfile);
+      fclose(stream);
+      return YES;
+    }
+  }
+#endif
 }
 
 /* ------------------ IsFileNewer ------------------------ */

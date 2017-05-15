@@ -2253,7 +2253,7 @@ void DrawSmoke3DGPUVOL(void){
 /* ------------------ GetVolsmokeFrameTime ------------------------ */
 
 float GetVolsmokeFrameTime(volrenderdata *vr, int framenum){
-	slicedata *smokeslice;
+  slicedata *smokeslice;
   FILE *SLICEFILE;
   int framesize;
   float time_local=0.0;
