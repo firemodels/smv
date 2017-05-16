@@ -402,9 +402,9 @@ extern "C" void UpdateHistogramType(void){
   CHECKBOX_histogram_show_outline->set_int_val(histogram_show_outline);
 }
 
-/* ------------------ update_show_slice_in_obst ------------------------ */
+/* ------------------ UpdateShowSliceInObst ------------------------ */
 
-extern "C" void update_show_slice_in_obst(void){
+extern "C" void UpdateShowSliceInObst(void){
   CHECKBOX_show_slice_in_obst->set_int_val(show_slice_in_obst);
 }
 
