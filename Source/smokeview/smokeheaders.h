@@ -42,7 +42,7 @@ EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
 #endif
-EXTERNCPP void update_show_slice_in_obst(void);
+EXTERNCPP void UpdateShowSliceInObst(void);
 EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
 EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void write_part_histogram(partdata *parti);

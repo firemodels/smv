@@ -302,7 +302,7 @@ void ShowMultiSliceMenu(int value){
     return;
   case MENU_SHOWSLICE_INBLOCKAGE:
     show_slice_in_obst = 1 - show_slice_in_obst;
-    update_show_slice_in_obst();
+    UpdateShowSliceInObst();
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -950,7 +950,7 @@ void ShowVSliceMenu(int value){
   }
   if(value == MENU_SHOWSLICE_INBLOCKAGE){
     show_slice_in_obst=1-show_slice_in_obst;
-    update_show_slice_in_obst();
+    UpdateShowSliceInObst();
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1027,7 +1027,7 @@ void ShowHideSliceMenu(int value){
       break;
     case MENU_SHOWSLICE_INBLOCKAGE:
       show_slice_in_obst=1-show_slice_in_obst;
-      update_show_slice_in_obst();
+      UpdateShowSliceInObst();
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -3784,7 +3784,7 @@ void LoadSliceMenu(int value){
     }
     else if(value==MENU_SHOWSLICE_INBLOCKAGE){
       show_slice_in_obst=1-show_slice_in_obst;
-      update_show_slice_in_obst();
+      UpdateShowSliceInObst();
     }
     else{
       int submenutype;
@@ -7935,6 +7935,7 @@ updatemenu=0;
     }
     glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
     glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
     glutAddMenuEntry(_("  L: unload last slice file loaded"), MENU_DUMMY);
     glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
   }

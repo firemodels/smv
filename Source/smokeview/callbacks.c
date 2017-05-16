@@ -1654,11 +1654,15 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-    case 'I':
       if(cache_qdata==1){
         handleiso();
         return;
       }
+      break;
+    case 'I':
+      show_slice_in_obst = 1-show_slice_in_obst;
+      UpdateShowSliceInObst();
+      updatemenu = 1;
       break;
     case 'j':
     case 'J':
