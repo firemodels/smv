@@ -494,12 +494,12 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
   return 0;
 }
 
-/* ------------------ nodein_intvent ------------------------ */
+/* ------------------ NodeInInternalVent ------------------------ */
 
-int nodein_intvent(const meshdata *meshi, int i, int j, int k, int dir, int option){
+int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int mesh_boundary, int option){
   int ii;
 
-  if(option == 1)return 1;
+  if(option == 1)return YES;
   for(ii = 0; ii < meshi->nvents; ii++){
     ventdata *vi;
 
@@ -513,9 +513,9 @@ int nodein_intvent(const meshdata *meshi, int i, int j, int k, int dir, int opti
           vi->jmin < j&&j < vi->jmax&&
           vi->kmin < k&&k < vi->kmax){
           if((i == 0 && meshi->is_extface[0] == 0) || (i == meshi->ibar&&meshi->is_extface[1] == 0)){
-            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)continue;
+            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
-          return 0;
+          return NO;
         }
         break;
       case YDIR:
@@ -523,9 +523,9 @@ int nodein_intvent(const meshdata *meshi, int i, int j, int k, int dir, int opti
           vi->imin < i&&i < vi->imax&&
           vi->kmin < k&&k < vi->kmax){
           if((j == 0 && meshi->is_extface[2] == 0) || (j == meshi->jbar&&meshi->is_extface[3] == 0)){
-            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)continue;
+            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
-          return 0;
+          return NO;
         }
         break;
       case ZDIR:
@@ -533,9 +533,9 @@ int nodein_intvent(const meshdata *meshi, int i, int j, int k, int dir, int opti
           vi->imin < i&&i < vi->imax&&
           vi->jmin < j&&j < vi->jmax){
           if((k == 0 && meshi->is_extface[4] == 0) || (k == meshi->kbar&&meshi->is_extface[5] == 0)){
-            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)continue;
+            if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
-          return 0;
+          return NO;
         }
         break;
       default:
@@ -544,12 +544,13 @@ int nodein_intvent(const meshdata *meshi, int i, int j, int k, int dir, int opti
       }
     }
   }
-  return 1;
+  if(mesh_boundary==YES)return NO;
+  return YES;
 }
 
-/* ------------------ nodein_extvent ------------------------ */
+/* ------------------ NodeInExternalVent ------------------------ */
 
-void nodein_extvent(int ipatch, int *patchblank, const meshdata *meshi,
+void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
   int i1, int i2, int j1, int j2, int k1, int k2, int option){
   int ii, dir = 0;
 
@@ -1066,13 +1067,15 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     meshi->patchtype[n]=INTERIORwall;
     is_extface = meshi->is_extface;
     if(i1==i2){
-      int ext_wall;
+      int ext_wall, mesh_boundary;
 
       meshi->patchcol[n] = j2 + 1 - j1;
       meshi->patchrow[n] = k2 + 1 - k1;
 
       ext_wall=0;
+      mesh_boundary = NO;
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
+        mesh_boundary = YES;
         if(i1==0||i2==ibartemp){
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
@@ -1116,7 +1119,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             *xyzpatch_ignitecopy++ = xplttemp[i1]+dxx;
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k]+dz_factor;
-            *patchblankcopy++ = nodein_intvent(meshi,i1,j,k,1,wallcenter);
+            *patchblankcopy++ = NodeInInternalVent(meshi,i1,j,k,1,mesh_boundary,wallcenter);
           }
         }
       }
@@ -1157,18 +1160,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             patchblankcopy[iii++]=SOLID;
           }
         }
-        nodein_extvent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
+        NodeInExternalVent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
         patchblankcopy += (k2+1-k1)*(j2+1-j1);
       }
     }
     else if(j1==j2){
-      int ext_wall;
+      int ext_wall, mesh_boundary;
 
       meshi->patchcol[n] = i2 + 1 - i1;
       meshi->patchrow[n] = k2 + 1 - k1;
 
       ext_wall=0;
+      mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
+        mesh_boundary = YES;
         if(j1==0||j2==jbartemp){
           if(is_extface[2]==1&&j1 == 0){
             ext_wall = 1;
@@ -1195,23 +1200,26 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           else{
             dz_factor=0.0;
           }
-          for(i=i1;i<=i2;i++){
-            if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+          for(i = i1;i <= i2;i++){
+            int val;
+
+            if(i == i1){
+              dx_factor = -meshi->xplt[1] * IG_FACTOR;
             }
-            else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+            else if(i == i2){
+              dx_factor = meshi->xplt[1] * IG_FACTOR;
             }
             else{
-              dx_factor=0.0;
+              dx_factor = 0.0;
             }
             *xyzpatchcopy++ = xplttemp[i];
-            *xyzpatchcopy++ = yplttemp[j1]+dyy2;
+            *xyzpatchcopy++ = yplttemp[j1] + dyy2;
             *xyzpatchcopy++ = zplttemp[k];
-            *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
-            *xyzpatch_ignitecopy++ = yplttemp[j1]+dyy;
-            *xyzpatch_ignitecopy++ = zplttemp[k]+dz_factor;
-            *patchblankcopy++ = nodein_intvent(meshi,i,j1,k,2,wallcenter);
+            *xyzpatch_ignitecopy++ = xplttemp[i] + dx_factor;
+            *xyzpatch_ignitecopy++ = yplttemp[j1] + dyy;
+            *xyzpatch_ignitecopy++ = zplttemp[k] + dz_factor;
+            val = NodeInInternalVent(meshi, i, j1, k, 2, mesh_boundary, wallcenter);
+            *patchblankcopy++ = val;
           }
         }
       }
@@ -1252,18 +1260,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             patchblankcopy[iii++]=SOLID;
           }
         }
-        nodein_extvent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
+        NodeInExternalVent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
         patchblankcopy += (k2+1-k1)*(i2+1-i1);
       }
     }
     else if(k1==k2){
-      int ext_wall;
+      int ext_wall, mesh_boundary;
 
       meshi->patchcol[n] = i2 + 1 - i1;
       meshi->patchrow[n] = j2 + 1 - j1;
 
       ext_wall=0;
+      mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
+        mesh_boundary = YES;
         if(k1==0||k2==kbartemp){
           if(is_extface[4]==1&&k1 == 0){
             ext_wall = 1;
@@ -1306,7 +1316,12 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k1]+dzz;
-            *patchblankcopy++ = nodein_intvent(meshi,i,j,k1,3,wallcenter);
+            if(mesh_boundary == 1){
+              *patchblankcopy++ = SOLID;
+            }
+            else{
+              *patchblankcopy++ = NodeInInternalVent(meshi, i, j, k1, 3, mesh_boundary, wallcenter);
+            }
           }
         }
       }
@@ -1348,7 +1363,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             patchblankcopy[iii++]=SOLID;
           }
         }
-        nodein_extvent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
+        NodeInExternalVent(n,patchblankcopy,meshi,i1,i2,j1,j2,k1,k2,wallcenter);
         patchblankcopy += (j2+1-j1)*(i2+1-i1);
       }
     }
