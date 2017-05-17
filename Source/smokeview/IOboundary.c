@@ -498,15 +498,15 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
 
 int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int mesh_boundary, int option){
   int ii;
+  int imesh, iblockage;
 
   if(option == 1)return YES;
+  if(mesh_boundary==NO&&NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == YES)return YES;
   for(ii = 0; ii < meshi->nvents; ii++){
     ventdata *vi;
 
     vi = meshi->ventinfo + ii;
     if(vi->hideboundary == 1){
-      int imesh, iblockage;
-
       switch(dir){
       case XDIR:
         if(vi->imin == i&&i == vi->imax&&
@@ -1075,8 +1075,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
-        mesh_boundary = YES;
         if(i1==0||i2==ibartemp){
+          mesh_boundary = YES;
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
             meshi->patchtype[n] = LEFTwall;
@@ -1173,8 +1173,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
-        mesh_boundary = YES;
         if(j1==0||j2==jbartemp){
+          mesh_boundary = YES;
           if(is_extface[2]==1&&j1 == 0){
             ext_wall = 1;
             meshi->patchtype[n] = FRONTwall;
@@ -1218,8 +1218,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             *xyzpatch_ignitecopy++ = xplttemp[i] + dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j1] + dyy;
             *xyzpatch_ignitecopy++ = zplttemp[k] + dz_factor;
-            val = NodeInInternalVent(meshi, i, j1, k, 2, mesh_boundary, wallcenter);
-            *patchblankcopy++ = val;
+            *patchblankcopy++ = NodeInInternalVent(meshi, i, j1, k, 2, mesh_boundary, wallcenter);
           }
         }
       }
@@ -1273,8 +1272,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
-        mesh_boundary = YES;
         if(k1==0||k2==kbartemp){
+          mesh_boundary = YES;
           if(is_extface[4]==1&&k1 == 0){
             ext_wall = 1;
             meshi->patchtype[n] = DOWNwall;
