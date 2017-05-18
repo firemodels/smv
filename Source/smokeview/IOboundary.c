@@ -1201,8 +1201,6 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
             dz_factor=0.0;
           }
           for(i = i1;i <= i2;i++){
-            int val;
-
             if(i == i1){
               dx_factor = -meshi->xplt[1] * IG_FACTOR;
             }
