@@ -653,6 +653,7 @@ void write_part_histogram(partdata *parti){
 
     fwrite(valminmax, sizeof(float), 2, STREAM_HIST);
     fwrite(&histi->nbuckets, sizeof(int), 1, STREAM_HIST);
+
     if(sizeof(int)*histi->nbuckets>ncompressed_bucketsMAX){
       ncompressed_bucketsMAX = sizeof(int)*histi->nbuckets;
       FREEMEMORY(compressed_buckets);
