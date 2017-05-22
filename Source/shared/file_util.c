@@ -308,11 +308,11 @@ int Writable(char *dir){
     RandStr(tempfile,35);
     strcat(tempfullfile,tempfile);
     stream = fopen(tempfullfile,"w");
+    UNLINK(tempfullfile);
     if(stream==NULL){
       return NO;
     }
     else{
-      UNLINK(tempfullfile);
       fclose(stream);
       return YES;
     }
