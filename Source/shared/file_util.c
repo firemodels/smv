@@ -309,11 +309,12 @@ int Writable(char *dir){
     strcat(tempfullfile,tempfile);
     stream = fopen(tempfullfile,"w");
     if(stream==NULL){
+      UNLINK(tempfullfile);
       return NO;
     }
     else{
-      UNLINK(tempfullfile);
       fclose(stream);
+      UNLINK(tempfullfile);
       return YES;
     }
   }
