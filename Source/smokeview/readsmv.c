@@ -8269,7 +8269,6 @@ typedef struct {
       patchi->filetype = PATCH_NODE_CENTER;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
-        cellcenter_bound_active=1;
       }
       if(Match(buffer,"BNDE") == 1){
         patchi->filetype=PATCH_GEOMETRY;
@@ -8398,7 +8397,7 @@ typedef struct {
           if(ReadLabels(&patchi->label,stream)==2)return 2;
         }
         else if(patchi->filetype==PATCH_GEOMETRY){
-          if(ReadLabels(&patchi->label,stream)==2)return 2;
+          if(ReadLabelsGeom(&patchi->label,stream)==2)return 2;
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
