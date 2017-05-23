@@ -1047,7 +1047,7 @@ void ReadSMVDynamic(char *file){
         plot3di->v = -1;
         plot3di->w = -1;
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
           if(STRCMP(plot3di->label[n].shortlabel, "U-VEL")==0){
             plot3di->u = n;
           }
@@ -1084,7 +1084,7 @@ void ReadSMVDynamic(char *file){
         int n;
 
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
         }
         nplot3dinfo--;
       }
@@ -5140,7 +5140,7 @@ int ReadSMV(char *file, char *file2){
           labelj->longlabel=NULL;
           labelj->shortlabel=NULL;
           labelj->unit=NULL;
-          ReadLabels(labelj,stream);
+          ReadLabels(labelj,stream,NULL);
           partclassi->vars_dep[j-2]=labelj->shortlabel;
           if(strcmp(labelj->shortlabel,"DIAMETER")==0){
             partclassi->col_diameter=j-2;
@@ -5540,14 +5540,14 @@ int ReadSMV(char *file, char *file2){
           smoke3di->file=smoke3di->reg_file;
         }
         if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
-          if(ReadLabels(&smoke3di->label,stream)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
           }
           ismoke3d++;
         }
         else{
-          if(ReadLabels(&smoke3di->label,stream)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
           nsmoke3dinfo--;
         }
         if(strncmp(smoke3di->label.shortlabel,"soot",4)==0){
@@ -5832,7 +5832,7 @@ int ReadSMV(char *file, char *file2){
         int nn;
 
         for(nn=0;nn<4;nn++){
-          if(ReadLabels(&zonei->label[nn],stream)==2){
+          if(ReadLabels(&zonei->label[nn],stream,NULL)==2){
             return 2;
           }
         }
@@ -5843,7 +5843,7 @@ int ReadSMV(char *file, char *file2){
         NewMemory((void **)&zonei->file,(unsigned int)(len+1));
         STRCPY(zonei->file,filename);
         for(n=0;n<4;n++){
-          if(ReadLabels(&zonei->label[n],stream)==2){
+          if(ReadLabels(&zonei->label[n],stream,NULL)==2){
             return 2;
           }
         }
@@ -8103,16 +8103,16 @@ typedef struct {
       }
 
       if(sd->slicetype==SLICE_TERRAIN){
-        if(ReadLabelsTerrain(&sd->label,stream)==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
       else if(sd->slicetype==SLICE_CELL_CENTER){
-        if(ReadLabelsCellCenter(&sd->label,stream)==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
       else if(sd->slicetype == SLICE_FACE_CENTER){
-        if(ReadLabelsFaceCenter(&sd->label, stream) == 2)return 2;
+        if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
       else{
-        if(ReadLabels(&sd->label,stream)==2)return 2;
+        if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
 
 
@@ -8391,13 +8391,13 @@ typedef struct {
       meshinfo[blocknumber].patchfilenum=-1;
       if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
         if(patchi->filetype==PATCH_CELL_CENTER){
-          if(ReadLabelsCellCenter(&patchi->label,stream)==2)return 2;
+          if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
         else if(patchi->filetype==PATCH_NODE_CENTER){
-          if(ReadLabels(&patchi->label,stream)==2)return 2;
+          if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
         else if(patchi->filetype==PATCH_GEOMETRY){
-          if(ReadLabelsGeom(&patchi->label,stream)==2)return 2;
+          if(ReadLabels(&patchi->label,stream,"(geometry)")==2)return 2;
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
@@ -8407,7 +8407,7 @@ typedef struct {
         if(trainer_mode==0){
           fprintf(stderr,"*** Error: The file %s does not exist\n",buffer);
         }
-        if(ReadLabels(&patchi->label,stream)==2)return 2;
+        if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         npatchinfo--;
       }
       continue;
@@ -8508,7 +8508,7 @@ typedef struct {
       if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
-        if(ReadLabels(&isoi->surface_label,stream)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
         if(geomflag==1){
           int ntimes_local;
           geomdata *geomi;
@@ -8534,7 +8534,7 @@ typedef struct {
           getisolevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
         }
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
         }
         iiso++;
       }
@@ -8544,9 +8544,9 @@ typedef struct {
           fprintf(stderr,"*** Error: the file %s does not exist\n",buffer);
         }
 
-        if(ReadLabels(&isoi->surface_label,stream)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
         }
         nisoinfo--;
       }
