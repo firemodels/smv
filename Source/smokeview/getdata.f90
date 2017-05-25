@@ -283,12 +283,12 @@ end subroutine getdata1
 
 !  ------------------ getslicefiledirection ------------------------
 
-subroutine getslicefiledirection(is1,is2,js1,js2,ks1,ks2,idir,joff,koff,volslice)
+subroutine getslicefiledirection(is1,is2,iis1, iis2, js1,js2,ks1,ks2,idir,joff,koff,volslice)
 implicit none
 integer :: nxsp, nysp, nzsp
 integer, intent(in) :: is1, js1, ks1
 integer, intent(inout) :: is2, js2, ks2
-integer, intent(out) :: idir, koff, joff, volslice
+integer, intent(out) :: iis1, iis2, idir, koff, joff, volslice
 integer :: imin
 
 nxsp = is2 + 1 - is1
@@ -297,6 +297,8 @@ nzsp = ks2 + 1 - ks1
 joff=0
 koff=0
 volslice=0
+iis1 = is1
+iis2 = is2
 if(is1.ne.is2.and.js1.ne.js2.and.ks1.ne.ks2)then
   idir=1
   is2 = is1
@@ -463,6 +465,7 @@ logical :: connected, load
 integer :: ii, kk
 integer :: joff, koff, volslice
 integer :: count
+integer :: iis1, iis2
 
 lu11 = file_unit
 joff = 0
@@ -516,7 +519,7 @@ endif
 nxsp = is2 + 1 - is1
 nysp = js2 + 1 - js1
 nzsp = ks2 + 1 - ks1
-call getslicefiledirection(is1,is2,js1,js2,ks1,ks2,idir,joff,koff,volslice)
+call getslicefiledirection(is1,is2,iis1,iis2,js1,js2,ks1,ks2,idir,joff,koff,volslice)
 
 allocate(qq(nxsp,nysp+joff,nzsp+koff))
 
