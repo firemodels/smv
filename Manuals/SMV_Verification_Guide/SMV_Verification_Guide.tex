@@ -1008,19 +1008,29 @@ distinguish nearly equal shades of grey.
 \label{figgraysquare}%
 \end{figure}
 
-\section{Verifying Smoke Levels}
+\section{Verifying Smoke Opacity}
 \label{sect:verify_smoke}
 
-Smoke levels are verified in Smokeview by setting up an FDS case with a
-constant smoke density throughout the domain.  A smoke density $S=\SI{79.67}{mg/m^3}$ and
-mass extinction coefficient $K=\SI{8700}{m^2}$ are chosen in Eq. \ref{eq:Beers}
-to generate opacity levels 192, 128, 64, 32, 16 and 8 at path lengths
-$\Delta x = \SI{0.4}{m}, \SI{1}{m}, \SI{2}{m}, \SI{3}{m}, \SI{4}{m} , \SI{5}{m}$
+Smoke opacities are verified in Smokeview by setting up a scenario with a
+constant smoke density throughout the domain and comparing observed opacities
+with opacities calculated using
+
 \begin{equation}
-\alpha = 255 \; \exp(-K \, S \, \Delta x)
+\alpha = 255 \; \exp(-K_m \, S \, \Delta x)
 \label{eq:Beers}
 \end{equation}
-where $\alpha$ is a scaled opacity (from 0 to 255 rather than the usual 0 to 1).
+
+\noindent where $\alpha$ is opacity (scaled from 0 to 255), $K_m=\SI{8700}{m^2/mg}$ is the mass extinction coefficient, $S$ is soot density and $\Delta x$ is the distance at which opacity is observed.
+Solving Eq. \ref{eq:Beers} for $S$ and assuming that $\Delta x=\SI{2}{m}$ and $\alpha=64$
+one obtains 
+\begin{eqnarray*}
+S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{79.44}{mg/m^3}
+\end{eqnarray*}
+
+This value of $S$, a mass concentration, after converting to a mass fraction, 
+along with $K_m$ and path lengths
+$\Delta x = \SI{0.4}{m}, \SI{1}{m}, \SI{2}{m}, \SI{3}{m}, \SI{4}{m} , \SI{5}{m}$
+are used to verify that opacities at these path lengths should be $\alpha=192, 128, 64, 32, 16$ and $8$.
 
 Figure \ref{figsmoketestgeom} shows a side view of the numerical smoke box used to
 perform this test.  In addition to the walls surrounding the box, this box consists
@@ -1061,7 +1071,7 @@ may be computed by using Eq.~(\ref{eq:Beers}).  Solving Eq.~(\ref{eq:Beers})
 for $\Delta x$ gives
 \begin{eqnarray}
 \label{eq:deltaX}
-\Delta x = -\frac{\ln(\alpha/255)}{K \, S}
+\Delta x = -\frac{\ln(\alpha/255)}{K_m \, S}
 \end{eqnarray}
 Path lengths (smoke sensor locations) are chosen to obtain grey levels, $\alpha$,
 of 192, 128, 64, 32, 16 and 8.  These path lengths may be found by substituting

@@ -58,10 +58,9 @@ EXTERNCPP unsigned int Date2Sec2(char *tokenorig);
 EXTERNCPP unsigned int Date2Day(char *tokenorig);
 EXTERNCPP int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
-EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
+
+EXTERNCPP int ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
+
 #ifdef pp_HASH
 EXTERNCPP unsigned char *GetHashMD5(char *file);
 EXTERNCPP unsigned char *GetHashSHA256(char *file);
