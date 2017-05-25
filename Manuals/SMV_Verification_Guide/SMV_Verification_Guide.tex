@@ -1011,26 +1011,21 @@ distinguish nearly equal shades of grey.
 \section{Verifying Smoke Opacity}
 \label{sect:verify_smoke}
 
-Smoke opacities are verified in Smokeview by setting up a scenario with a
-constant smoke density throughout the domain and comparing observed opacities
-with opacities calculated using
+Smoke opacities are verified in Smokeview by setting up a scenario with uniform smoke density and 
+comparing observed opacities\footnote{Grey levels are recorded by Smokeview and output to the screen as a numerical value ranging from 0 to 255.  
+Grey levels may also be observed by capturing a screen image and using an image program that reports pixel values.}
+with opacities calculated using a scaled form of Bouguer's Law,
 
 \begin{equation}
-\alpha = 255 \; \exp(-K_m \, S \, \Delta x)
+\alpha = 255 \; \exp(-K_m \, S \, \Delta x),
 \label{eq:Beers}
 \end{equation}
 
-\noindent where $\alpha$ is opacity (scaled from 0 to 255), $K_m=\SI{8700}{m^2/mg}$ is the mass extinction coefficient, $S$ is soot density and $\Delta x$ is the distance at which opacity is observed.
-Solving Eq. \ref{eq:Beers} for $S$ and assuming that $\Delta x=\SI{2}{m}$ and $\alpha=64$
-one obtains 
+\noindent where $\alpha$ is opacity scaled from 0 to 255, $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which opacity is observed. The scenario is then setup so that opacities $\alpha=8, 16, 32, 64, 128$ and $192$ correspond to path lengths $\Delta x = \SI{5.0}{m}, \SI{4.0}{m}, \SI{3.0}{m}, \SI{2.0}{m}, \SI{1.0}{m} , \SI{0.41}{m}$.
+This can be accomplished by solving Eq.~\ref{eq:Beers} for $S$ and assuming an opacity level of $\alpha=64$ at $\Delta x=\SI{2.0}{m}$ giving
 \begin{eqnarray*}
-S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{79.44}{mg/m^3}
+S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{79.44}{kg/m^3}~.
 \end{eqnarray*}
-
-This value of $S$, a mass concentration, after converting to a mass fraction, 
-along with $K_m$ and path lengths
-$\Delta x = \SI{0.4}{m}, \SI{1}{m}, \SI{2}{m}, \SI{3}{m}, \SI{4}{m} , \SI{5}{m}$
-are used to verify that opacities at these path lengths should be $\alpha=192, 128, 64, 32, 16$ and $8$.
 
 Figure \ref{figsmoketestgeom} shows a side view of the numerical smoke box used to
 perform this test.  In addition to the walls surrounding the box, this box consists
