@@ -93,7 +93,6 @@ GLUI_Spinner *SPINNER_skipframe=NULL;
 GLUI_Spinner *SPINNER_cull_portsize=NULL;
 #endif
 GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
-GLUI_Spinner *SPINNER_albedo=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
 
@@ -428,9 +427,6 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap4,"",GLUI_PANEL_NONE);
 
 #define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
-
-  SPINNER_albedo = glui_3dsmoke->add_spinner_to_panel(PANEL_colormap2, _d("smoke albedo"), GLUI_SPINNER_FLOAT, &smoke_albedo, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
-  SPINNER_albedo->set_float_limits(0.0, 1.0);
 
   ROLLOUT_colormap_hrrpuv_smoke = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2,"HRRPUV (kW/m3)");
   SPINNER_hrrpuv_cutoff=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv_smoke,_d("hrrpuv cutoff"),GLUI_SPINNER_FLOAT,&global_hrrpuv_cutoff,GLOBAL_FIRE_CUTOFF,Smoke3d_CB);
