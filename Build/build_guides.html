@@ -34,25 +34,24 @@ function get_figs(guide){
 
 <hr size="1">
 
-<h3>Bundle Steps - Guides</h3>
+<h3>Copy Guides</h3>
+
 <ol>
 <li>Run firebot and smokebot
-<li>After both bots successfully complete, copy guides to FDS_Guides on all three platforms
+<li>Copy guides to FDS_Guides on all three platforms
 </ol>
-
-<h3>Copy Guides to Bundle Directories (FDS_Guides)</h3>
 
 <p><table border=on>
 <tr>
-<td>smokebot SMV guides</td>
+<td>SMV guides (smokebot)</td>
 <td><button onclick="copy_guides('from_smv_linux')">==></button></td>
-<td rowspan=2 align=center>Windows <br>~\FDS_Guides</td>
+<td rowspan=2 align=center>Windows ~\FDS_Guides</td>
 <td><button onclick="copy_guides('to_linux')">==></button></td>
 <td>Linux ~/FDS_Guides</td>
 </tr>
 
 <tr>
-<td align=center>firebot FDS guides</td>
+<td align=center>FDS guides (firebot)</td>
 <td><button onclick="copy_guides('from_fds_linux')">==></button></td>
 <td><button onclick="copy_guides('to_osx')">==></button></td>
 <td>OSX ~/FDS_Guides</td>
@@ -70,7 +69,7 @@ function get_figs(guide){
 <p><table border=on>
 <tr>
 <td rowspan=2, align=center>Linux smokebot</td>
-<td>SMV User</td>
+<td align=center>SMV User</td>
 <td><button onclick="get_figs('smvug')">==></button></td>
 <td rowspan=5>Windows repo</td>
 </tr>
