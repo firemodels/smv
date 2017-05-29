@@ -3606,10 +3606,14 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     pdata = sd->qslicedata;
     ndata = sd->nslicetotal;
 
-#define EPS_BUCKET 0.0000001
+#define EPS_BUCKET 0.0001
     if(setslicemin==PERCENTILE_MIN||setslicemax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
-      if(ABS(dp) < EPS_BUCKET)dp = 0.0;
+      float abs_diff, denom;
+
+      abs_diff = ABS(*pmax-*pmin);
+      denom = MAX(ABS(*pmax), ABS(*pmin));
+      if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
+      dp = abs_diff/NBUCKETS;
       nsmall=0;
       nbig=NBUCKETS;
       if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
