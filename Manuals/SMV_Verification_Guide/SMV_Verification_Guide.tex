@@ -1008,19 +1008,26 @@ distinguish nearly equal shades of grey.
 \label{figgraysquare}%
 \end{figure}
 
-\section{Verifying Smoke Levels}
+\section{Verifying Smoke Opacity}
 \label{sect:verify_smoke}
 
-Smoke levels are verified in Smokeview by setting up an FDS case with a
-constant smoke density throughout the domain.  A smoke density $S=\SI{79.67}{mg/m^3}$ and
-mass extinction coefficient $K=\SI{8700}{m^2}$ are chosen in Eq. \ref{eq:Beers}
-to generate opacity levels 192, 128, 64, 32, 16 and 8 at path lengths
-$\Delta x = \SI{0.4}{m}, \SI{1}{m}, \SI{2}{m}, \SI{3}{m}, \SI{4}{m} , \SI{5}{m}$
+Smoke opacities are verified in Smokeview by setting up a scenario with uniform smoke density and
+comparing observed opacities\footnote{Grey levels are recorded by Smokeview and output to the screen as a numerical value ranging from 0 to 255.
+Grey levels may also be observed by capturing a screen image and using an image program that reports pixel values.}
+with opacities calculated using a scaled form of Bouguer's Law,
+
 \begin{equation}
-\alpha = 255 \; \exp(-K \, S \, \Delta x)
+\alpha = 255 \; \exp(-K_m \, S \, \Delta x),
 \label{eq:Beers}
 \end{equation}
-where $\alpha$ is a scaled opacity (from 0 to 255 rather than the usual 0 to 1).
+
+\noindent where $\alpha$ is opacity scaled from 0 to 255, $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which opacity is observed. The scenario is then setup so that opacities $\alpha=8, 16, 32, 64, 128$ and $192$ correspond to path lengths $\Delta x = \SI{5.0}{m}, \SI{4.0}{m}, \SI{3.0}{m}, \SI{2.0}{m}, \SI{1.0}{m} , \SI{0.41}{m}$.
+This can be accomplished by solving Eq.~\ref{eq:Beers} for $S$ and assuming an opacity level of $\alpha=64$ at $\Delta x=\SI{2.0}{m}$ giving
+\begin{eqnarray*}
+S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{79.44}{kg/m^3}~.
+\end{eqnarray*}
+
+\noindent This soot density is converted to a soot mass fraction used in the FDS input file by dividing by the gas density or  $Y_{\rm soot}=S/\rho_{\rm air}$.
 
 Figure \ref{figsmoketestgeom} shows a side view of the numerical smoke box used to
 perform this test.  In addition to the walls surrounding the box, this box consists
@@ -1061,7 +1068,7 @@ may be computed by using Eq.~(\ref{eq:Beers}).  Solving Eq.~(\ref{eq:Beers})
 for $\Delta x$ gives
 \begin{eqnarray}
 \label{eq:deltaX}
-\Delta x = -\frac{\ln(\alpha/255)}{K \, S}
+\Delta x = -\frac{\ln(\alpha/255)}{K_m \, S}
 \end{eqnarray}
 Path lengths (smoke sensor locations) are chosen to obtain grey levels, $\alpha$,
 of 192, 128, 64, 32, 16 and 8.  These path lengths may be found by substituting
@@ -1070,33 +1077,26 @@ these grey levels into Eq.~ (\ref{eq:deltaX}) to obtain $\Delta x$ values of
 {\tt smoketest2.fds} are placed at these distances from the front of the
 simulation domain. Comparing the Smokeview generated smoke levels with
 theoretical values one finds as expected that better results are achieved
-when using a more refined grid (0.1~m rather than 0.2~m) and using all planes
-(no skipping).
+when using a more refined grid (0.1~m rather than 0.2~m).
 
 \begin{figure}[bph]
 \begin{center}
  \centering
-\begin{tabular}{rcc}
- planes&0.1 m grid&0.2 m grid\\
- \raisebox{0.5in}{all} &
- \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test_all}&
- \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test2_all}\\ \\
- \raisebox{0.5in}{every 2nd} &
- \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test_every2}&
- \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test2_every2}\\ \\
- \raisebox{0.5in}{every 3rd} &
- \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test_every3}&
-  \includegraphics[height=1.20in]{SCRIPT_FIGURES/smoke_test2_every3}\\ \\
-\raisebox{0.35in}{theoretical} &
- \multicolumn{2}{c}{\includegraphics[height=0.75in]{FIGURES/graysquares}}\\
+\begin{tabular}{c}
+ \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test_all}\\
+0.1 m grid\\ \\
+ \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test2_all} \\ 
+0.2 m grid\\ \\
+ \includegraphics[width=5.00in]{FIGURES/graysquares}\\
+ theoretical 
  \end{tabular}
 \end{center}
  \caption[A test verifying the smoke opacity calculation]{A test verifying the
  smoke opacity calculation.  This test simplifies
   the general case by assuming a uniform distribution of smoke.  The test is
-  repeated for two grid resolutions and three grid spacings.  The FDS input
+  repeated for two grid resolutions.  The FDS input
   file is set up to result in theoretical grey levels of 8, 16, 32, 64, 128
-  and 192 for the different regions of the test.}
+  and 192.}
 \label{figsmoketest2}%
 \end{figure}
 

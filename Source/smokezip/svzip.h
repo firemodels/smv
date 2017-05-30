@@ -285,7 +285,6 @@ int convertable_part(part *parti);
 void *compress_patches(void *arg);
 patch *getpatch(char *string);
 int patchdup(patch *patchj, int ipatch);
-int ReadLabels(flowlabels *flowlabel, FILE *stream);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
 void Get_Boundary_Bounds(void);

@@ -2633,6 +2633,7 @@ void GetSliceParams(void){
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
+    int iis1, iis2;
     int ni, nj, nk;
 
     sd = sliceinfo + i;
@@ -2677,7 +2678,11 @@ void GetSliceParams(void){
         ks1=sd->ks1;
         ks2=sd->ks2;
 #ifdef pp_SLICELOAD
-        FORTgetslicefiledirection(&is1, &is2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
+        FORTgetslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
+        if(volslice == 1){
+          is1 = iis1;
+          is2 = iis2;
+        }
         ni = is2+1-is1;
         nj = js2+1-js1;
         nk = ks2+1-ks1;
@@ -3601,8 +3606,14 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     pdata = sd->qslicedata;
     ndata = sd->nslicetotal;
 
+#define EPS_BUCKET 0.0001
     if(setslicemin==PERCENTILE_MIN||setslicemax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
+      float abs_diff, denom;
+
+      abs_diff = ABS(*pmax-*pmin);
+      denom = MAX(ABS(*pmax), ABS(*pmin));
+      if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
+      dp = abs_diff/NBUCKETS;
       nsmall=0;
       nbig=NBUCKETS;
       if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){

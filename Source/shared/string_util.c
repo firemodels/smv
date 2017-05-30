@@ -824,9 +824,10 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
 
 /* ------------------ ReadLabels ------------------------ */
 
-int ReadLabels(flowlabels *flowlabel, BFILE *stream){
+int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   char buffer2[255], *buffer;
   size_t len;
+  int len_suffix_label = 0;
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
@@ -836,8 +837,10 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream){
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
+  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+len_suffix_label+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
+  if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
@@ -865,175 +868,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream){
 
     unit=(unsigned char *)flowlabel->unit;
     unit[0]=DEG_SYMBOL;
-    unit[1]='C';
-    unit[2]='\0';
-  }
-  else{
-    STRCPY(flowlabel->unit,buffer);
-  }
-#else
-  STRCPY(flowlabel->unit,buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsFaceCenter ------------------------ */
-
-int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255], *buffer;
-  size_t len;
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "*");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1 + 15)) == 0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel, buffer);
-  STRCAT(flowlabel->longlabel, "(face centered)");
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "**");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel, buffer);
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "***");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer) == 1 && strcmp(buffer, "C") == 0){
-    unsigned char *unit;
-
-    unit = (unsigned char *)flowlabel->unit;
-    unit[0] = DEG_SYMBOL;
-    unit[1] = 'C';
-    unit[2] = '\0';
-  }
-  else{
-    STRCPY(flowlabel->unit, buffer);
-  }
-#else
-  STRCPY(flowlabel->unit, buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsCellCenter ------------------------ */
-
-int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255], *buffer;
-  size_t len;
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"*");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1+15))==0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel,buffer);
-  STRCAT(flowlabel->longlabel,"(cell centered)");
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"**");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel,buffer);
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"***");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer)==1&&strcmp(buffer,"C")==0){
-    unsigned char *unit;
-
-    unit=(unsigned char *)flowlabel->unit;
-    unit[0]=DEG_SYMBOL;
-    unit[1]='C';
-    unit[2]='\0';
-  }
-  else{
-    STRCPY(flowlabel->unit,buffer);
-  }
-#else
-  STRCPY(flowlabel->unit,buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsTerrain ------------------------ */
-
-int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255],*buffer;
-  size_t len;
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"*");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1+9))==0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel,buffer);
-  STRCAT(flowlabel->longlabel,"(terrain)");
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"**");
-  }
-
-  len=strlen(buffer2);
-  buffer2[len-1]='\0';
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel,buffer);
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"***");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer)==1&&strcmp(buffer,"C")==0){
-    unsigned char *unit;
-
-    unit=(unsigned char *)flowlabel->unit;
-    unit[0]=176;
     unit[1]='C';
     unit[2]='\0';
   }

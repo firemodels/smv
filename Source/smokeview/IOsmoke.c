@@ -191,9 +191,9 @@ else{\
     fvalue[3]=firecolor[n21];\
   }\
   else{\
-    fvalue[0]=smoke_albedo;\
-    fvalue[1]=smoke_albedo;\
-    fvalue[2]=smoke_albedo;\
+    fvalue[0]=0.0;\
+    fvalue[1]=0.0;\
+    fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
@@ -235,9 +235,9 @@ else{\
     fvalue[3]=firecolor[n21];\
   }\
   else{\
-    fvalue[0]=smoke_albedo;\
-    fvalue[1]=smoke_albedo;\
-    fvalue[2]=smoke_albedo;\
+    fvalue[0]=0.0;\
+    fvalue[1]=0.0;\
+    fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
@@ -5297,9 +5297,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
     mergecolor=meshi->merge_color;
     mergealpha=meshi->merge_alpha;
-    firesmokeval[0] = smoke_albedo;
-    firesmokeval[1] = smoke_albedo;
-    firesmokeval[2] = smoke_albedo;
+    firesmokeval[0] = 0.0;
+    firesmokeval[1] = 0.0;
+    firesmokeval[2] = 0.0;
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       float *firesmoke_color;
