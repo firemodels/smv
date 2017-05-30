@@ -8,7 +8,7 @@ SETTIMEVAL
 LOADINIFILE
  smoke_test2_all.ini
 RENDERCLIP
- 1 30 30 148 104
+ 1 5 5 110 110
 RENDERONCE
  smoke_test2_all
  

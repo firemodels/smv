@@ -4834,7 +4834,7 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
 }
 
 /* ------------------ DrawFacesOLD ------------------------ */
-
+// add option to turn off lighting when verifying smoke
 void DrawFacesOLD(){
   float *new_color,*old_color=NULL;
   int **showtimelist_handle, *showtimelist;

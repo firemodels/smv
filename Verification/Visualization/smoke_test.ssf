@@ -5,19 +5,8 @@ LOADFILE
  smoke_test_01.s3d
 SETTIMEVAL
  0.159000
-LOADINIFILE
- smoke_test_all.ini
 RENDERCLIP
  1 30 30 125 125
 RENDERONCE
  smoke_test_all
-UNLOADALL
-LOADINIFILE
- smoke_test_geom.ini
-RENDERCLIP
- 1 85 151 20 19
-SETVIEWPOINT
- view 1
-RENDERONCE
- smoke_test_side
 
