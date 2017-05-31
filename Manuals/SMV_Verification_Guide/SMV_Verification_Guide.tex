@@ -983,31 +983,6 @@ will pick up a color elsewhere).
 \label{figsmokesensor}%
 \end{figure}
 
-Figure \ref{figgraysquare} shows two colorbars, both containing shades of grey.
-One shows white and near-white shades, the other shows black and near black shades.
-This figure illustrates the difficulty one has in distinguishing nearly equal shades
-and by inference the difficulty in distinguishing two smoke scenes drawn using nearly
-the same {\em amounts}\ of smoke.  When comparing a computed smoke shade with the actual
-(as in Figure \ref{figsmoketest2}) one must keep in mind the eye's inability to
-distinguish nearly equal shades of grey.
-
-\begin{figure}[bph]
-\begin{center}
- \centering
-\begin{tabular}{c}
-\includegraphics[width=6.0in]{FIGURES/graysquares_black}\\
-\includegraphics[width=6.0in]{FIGURES/graysquares_white}\\
- \end{tabular}
-\end{center}
- \caption[Shade of grey resolution test.]{Shade of grey resolution test.
- The number within each square represents the shade of grey used to color
- that square,  0 for black and 255 for white.  Adjacent squares are drawn
- with nearly equal shades  testing the ability of sensors such as the eye,
- computer monitor or the printed page  to distinguish them.
- }
-\label{figgraysquare}%
-\end{figure}
-
 \section{Verifying Smoke Opacity}
 \label{sect:verify_smoke}
 
@@ -1085,10 +1060,8 @@ when using a more refined grid (0.1~m rather than 0.2~m).
 \begin{tabular}{c}
  \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test_all}\\
 0.1 m grid\\ \\
- \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test2_all} \\ 
+ \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test2_all} \\
 0.2 m grid\\ \\
- \includegraphics[width=5.00in]{FIGURES/graysquares}\\
- theoretical 
  \end{tabular}
 \end{center}
  \caption[A test verifying the smoke opacity calculation]{A test verifying the
