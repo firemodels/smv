@@ -11045,6 +11045,12 @@ int ReadINI2(char *inifile, int localfile){
       UpdateLIGHTS = 1;
       continue;
     }
+    if(Match(buffer, "LIGHTFACES") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%d", &light_faces);
+      ONEORZERO(light_faces);
+      continue;
+    }
     if(Match(buffer, "LIGHTPOS0") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f", light_position0, light_position0 + 1, light_position0 + 2, light_position0 + 3);
@@ -12757,6 +12763,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", light_enabled0);
   fprintf(fileout, "LIGHT1\n");
   fprintf(fileout, " %i\n", light_enabled1);
+  fprintf(fileout, "LIGHTFACES\n");
+  fprintf(fileout, " %i\n", light_faces);
   fprintf(fileout, "LIGHTMODELLOCALVIEWER\n");
   fprintf(fileout, " %i\n", lightmodel_localviewer);
   fprintf(fileout, "LIGHTMODELSEPARATESPECULARCOLOR\n");

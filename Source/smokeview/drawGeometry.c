@@ -4834,7 +4834,7 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
 }
 
 /* ------------------ DrawFacesOLD ------------------------ */
-
+// add option to turn off lighting when verifying smoke
 void DrawFacesOLD(){
   float *new_color,*old_color=NULL;
   int **showtimelist_handle, *showtimelist;
@@ -4846,11 +4846,13 @@ void DrawFacesOLD(){
     int j;
 
     glEnable(GL_CULL_FACE);
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
-    glEnable(GL_COLOR_MATERIAL);
+    if(light_faces==1){
+      glEnable(GL_LIGHTING);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+      glEnable(GL_COLOR_MATERIAL);
+    }
     glBegin(GL_TRIANGLES);
     for(j=0;j<nmeshes;j++){
       meshdata *meshi;
@@ -4913,17 +4915,21 @@ void DrawFacesOLD(){
       }
     }
     glEnd();
-    glDisable(GL_COLOR_MATERIAL);
-    glDisable(GL_LIGHTING);
+    if(light_faces==1){
+      glDisable(GL_COLOR_MATERIAL);
+      glDisable(GL_LIGHTING);
+   }
   }
   if(nface_normals_double>0){
     int j;
 
-    glEnable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
-    glEnable(GL_COLOR_MATERIAL);
+    if(light_faces==1){
+      glEnable(GL_LIGHTING);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+      glEnable(GL_COLOR_MATERIAL);
+    }
     if(cullfaces==1)glDisable(GL_CULL_FACE);
     glBegin(GL_QUADS);
     for(j=0;j<nmeshes;j++){
@@ -4985,8 +4991,10 @@ void DrawFacesOLD(){
     }
     glEnd();
     if(cullfaces==1)glEnable(GL_CULL_FACE);
-    glDisable(GL_COLOR_MATERIAL);
-    glDisable(GL_LIGHTING);
+    if(light_faces==1){
+      glDisable(GL_COLOR_MATERIAL);
+      glDisable(GL_LIGHTING);
+    }
   }
   if(nface_outlines>0){
     int j;
@@ -5053,12 +5061,16 @@ void DrawFacesOLD(){
   if(nface_textures>0){
     int j;
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_COLOR_MATERIAL);
+    if(light_faces==1){
+      glEnable(GL_LIGHTING);
+      glEnable(GL_COLOR_MATERIAL);
+    }
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,enable_texture_lighting? GL_MODULATE : GL_REPLACE);
-    glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+    if(light_faces==1){
+      glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+    }
     glEnable(GL_TEXTURE_2D);
     glColor4ub(255, 255, 255, 255);
     for(j=0;j<nmeshes;j++){
@@ -5112,8 +5124,10 @@ void DrawFacesOLD(){
 
     }
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_COLOR_MATERIAL);
+    if(light_faces==1){
+      glDisable(GL_LIGHTING);
+      glDisable(GL_COLOR_MATERIAL);
+    }
   }
   if(show_triangle_count==1)printf("obst/vent triangles: %i\n",n_geom_triangles);
 }

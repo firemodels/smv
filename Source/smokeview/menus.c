@@ -4531,6 +4531,11 @@ void ImmersedMenu(int value){
 void BlockageMenu(int value){
   int change_state=0;
 
+  if(value==visLightFaces){
+    light_faces = 1 - light_faces;
+    updatemenu=1;
+    return;
+  }
   if(solid_state<0)solid_state=visBlocks;
   if(outline_state<0)outline_state=OUTLINE_NONE;
   switch(value){
@@ -5533,6 +5538,12 @@ updatemenu=0;
   }
   else{
     glutAddMenuEntry(_("   Hidden"),visBLOCKHide);
+  }
+  if(light_faces == 1){
+    glutAddMenuEntry(_("   *Light faces"), visLightFaces);
+  }
+  else{
+    glutAddMenuEntry(_("   Light faces"), visLightFaces);
   }
   glutAddMenuEntry("-",MENU_DUMMY);
   glutAddMenuEntry(_(" Outline color:"),MENU_DUMMY);

@@ -983,31 +983,6 @@ will pick up a color elsewhere).
 \label{figsmokesensor}%
 \end{figure}
 
-Figure \ref{figgraysquare} shows two colorbars, both containing shades of grey.
-One shows white and near-white shades, the other shows black and near black shades.
-This figure illustrates the difficulty one has in distinguishing nearly equal shades
-and by inference the difficulty in distinguishing two smoke scenes drawn using nearly
-the same {\em amounts}\ of smoke.  When comparing a computed smoke shade with the actual
-(as in Figure \ref{figsmoketest2}) one must keep in mind the eye's inability to
-distinguish nearly equal shades of grey.
-
-\begin{figure}[bph]
-\begin{center}
- \centering
-\begin{tabular}{c}
-\includegraphics[width=6.0in]{FIGURES/graysquares_black}\\
-\includegraphics[width=6.0in]{FIGURES/graysquares_white}\\
- \end{tabular}
-\end{center}
- \caption[Shade of grey resolution test.]{Shade of grey resolution test.
- The number within each square represents the shade of grey used to color
- that square,  0 for black and 255 for white.  Adjacent squares are drawn
- with nearly equal shades  testing the ability of sensors such as the eye,
- computer monitor or the printed page  to distinguish them.
- }
-\label{figgraysquare}%
-\end{figure}
-
 \section{Verifying Smoke Opacity}
 \label{sect:verify_smoke}
 
@@ -1022,7 +997,7 @@ with opacities calculated using a scaled form of Bouguer's Law,
 \end{equation}
 
 \noindent where $\alpha$ is opacity scaled from 0 to 255, $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which opacity is observed. The scenario is then setup so that opacities $\alpha=8, 16, 32, 64, 128$ and $192$ correspond to path lengths $\Delta x = \SI{5.0}{m}, \SI{4.0}{m}, \SI{3.0}{m}, \SI{2.0}{m}, \SI{1.0}{m} , \SI{0.41}{m}$.
-This can be accomplished by solving Eq.~\ref{eq:Beers} for $S$ and assuming an opacity level of $\alpha=64$ at $\Delta x=\SI{2.0}{m}$ giving
+This can be accomplished by solving Eq.~(\ref{eq:Beers}) for $S$ and assuming an opacity level of $\alpha=64$ at $\Delta x=\SI{2.0}{m}$ giving
 \begin{eqnarray*}
 S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{79.44}{kg/m^3}~.
 \end{eqnarray*}
@@ -1053,8 +1028,8 @@ smoke obscurations work out to {\em nice}\ values.
 \end{figure}
 
 Figure \ref{figsmoketest2} shows quantitative tests of the smoke opacity
-calculation performed in Smokeview for two different FDS grid resolutions
-and three different skip levels\footnote{Smokeview allows one to skip grid planes when visualizing smoke.  The smoke opacity is adjusted by Smokeview to account for the skips.}. This figure also gives the predicted shades of grey based upon the specified soot densities, mass extinction coefficient and path lengths.  The smoke visualization algorithm is verified then if the shades of grey in the Smokeview visualizations match the corresponding predicted shades of grey.  Each shaded rectangle is accompanied by a numerical value that can also be used to judge whether the visualization is verified.
+calculation performed in Smokeview for two different FDS grid resolutions.
+This figure also gives the predicted shades of grey based upon the specified soot densities, mass extinction coefficient and path lengths.  The smoke visualization algorithm is verified then if the shades of grey in the Smokeview visualizations match the corresponding predicted shades of grey.  Each shaded rectangle is accompanied by a numerical value that can also be used to judge whether the visualization is verified.
 
 The numbers displayed in this Fig. \ref{figsmoketest2} represent the shade
 of the underlying rectangle.  These numbers may be verified by using a
@@ -1064,7 +1039,7 @@ values as reported by Photoshop or any other program that can report
 image values.
 
 When soot densities are constant, smoke grey level or opacity, $\alpha$
-may be computed by using Eq.~(\ref{eq:Beers}).  Solving Eq.~(\ref{eq:Beers})
+may be computed using Eq.~(\ref{eq:Beers}).  Solving Eq.~(\ref{eq:Beers})
 for $\Delta x$ gives
 \begin{eqnarray}
 \label{eq:deltaX}
@@ -1073,8 +1048,8 @@ for $\Delta x$ gives
 Path lengths (smoke sensor locations) are chosen to obtain grey levels, $\alpha$,
 of 192, 128, 64, 32, 16 and 8.  These path lengths may be found by substituting
 these grey levels into Eq.~ (\ref{eq:deltaX}) to obtain $\Delta x$ values of
-0.41~m, 1.0~m, 2.0~m, 3.0~m, 4.0~m and 5.0~m respectively.  The walls in
-{\tt smoketest2.fds} are placed at these distances from the front of the
+0.41~m, 1.0~m, 2.0~m, 3.0~m, 4.0~m and 5.0~m respectively.  The blockages in
+these two test cases are placed at these distances from the front of the
 simulation domain. Comparing the Smokeview generated smoke levels with
 theoretical values one finds as expected that better results are achieved
 when using a more refined grid (0.1~m rather than 0.2~m).
@@ -1085,18 +1060,14 @@ when using a more refined grid (0.1~m rather than 0.2~m).
 \begin{tabular}{c}
  \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test_all}\\
 0.1 m grid\\ \\
- \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test2_all} \\ 
+ \includegraphics[width=5.00in]{SCRIPT_FIGURES/smoke_test2_all} \\
 0.2 m grid\\ \\
- \includegraphics[width=5.00in]{FIGURES/graysquares}\\
- theoretical 
  \end{tabular}
 \end{center}
- \caption[A test verifying the smoke opacity calculation]{A test verifying the
- smoke opacity calculation.  This test simplifies
-  the general case by assuming a uniform distribution of smoke.  The test is
-  repeated for two grid resolutions.  The FDS input
-  file is set up to result in theoretical grey levels of 8, 16, 32, 64, 128
-  and 192.}
+ \caption[A test verifying visualized smoke opacity.]{A test verifying visualized
+ smoke opacity.  This test initializes a uniform distribution of smoke within the domain and places blockages at various distance (using Eq.~(\ref{eq:deltaX})) within the domain resulting
+ in grey levels of  8, 16, 32, 64, 128 and 192.
+ }
 \label{figsmoketest2}%
 \end{figure}
 
