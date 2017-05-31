@@ -468,6 +468,7 @@ void _Sniff_Errors(char *whereat);
 #define visBLOCKOnlyOutline 15
 #define visBLOCKOutlineColor 16
 #define visCADOpaque 17
+#define visLightFaces 18
 
 #define OUTLINE_NONE 0
 #define OUTLINE_ONLY 1
