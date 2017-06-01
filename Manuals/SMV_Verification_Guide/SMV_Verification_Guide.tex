@@ -1003,7 +1003,7 @@ where to place blockages so that known opacity levels result by
 solving Eq.~(\ref{eq:Beers}) for $S$ and assuming an opacity level of $\alpha=128$ at $\Delta x=\SI{1.0}{m}$ giving
 
 \begin{equation}
-S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{0.00007922}{kg/m^3}~.
+S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =7.922 \times 10^{-5}\,{\rm kg/m}^3~.
 \label{eq:soot}
 \end{equation}
 
@@ -1031,7 +1031,7 @@ expected opacity levels of $\alpha\approx 8$, 16, 32, 64, 128 and 181.  These op
 \label{figsmoketestgeom}%
 \end{figure}
 
-The soot density found in Eq.~(\ref{eq:soot}) is converted to a soot mass fraction used in the FDS input file by dividing by the gas density $\rho_{\rm air}\approx \SI{1.196}{kg/m^3}$ or  $Y_{\rm soot}=S/\rho_{\rm air}=\SI{0.00006624}{kg/kg}$ to generated the images found in Figure~\ref{figsmoketest2}.
+The soot density found in Eq.~(\ref{eq:soot}) is converted to a soot mass fraction used in the FDS input file by dividing by the gas density $\rho_{\rm air}\approx \SI{1.196}{kg/m^3}$ or  $Y_{\rm soot}=S/\rho_{\rm air}=6.624 \times 10^{-5}\,{\rm kg/kg}$ to generated the images found in Figure~\ref{figsmoketest2}.
 This figure shows quantitative tests of the smoke opacity
 calculation performed in Smokeview for two grid resolutions.
 This figure also gives the expected opacity levels based upon the specified soot densities, mass extinction coefficient and path lengths.  The smoke visualization algorithm is verified then if the expected shades of grey match the corresponding predicted shades of grey.  Each shaded rectangle is accompanied by a numerical value that can also be used to judge whether the visualization is verified.
