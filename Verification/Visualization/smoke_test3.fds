@@ -1,4 +1,4 @@
-&HEAD CHID='smoke_test', TITLE='Verify Smokeview Smoke3D Feature' /
+&HEAD CHID='smoke_test3', TITLE='Verify Smokeview Smoke3D Feature' /
 
   A quantitative test of the smoke opacity calculation in Smokeview.  This test simplifies
   the general case by assuming a uniform distribution of smoke.  Smoke grey levels are computed
@@ -14,7 +14,7 @@
   and is used to place smoke sensors at particular distances so that the predicted 
   grey levels are 192, 128, 64, 32, 16 and 8 . 
 
-&MESH IJK=80,52,32, XB=0.0,10.0,0.0,6.5,0.0,4.0 /
+&MESH IJK=20,13,8, XB=0.0,10.0,0.0,6.5,0.0,4.0 /
 
 &TIME T_END=1.0 /
 

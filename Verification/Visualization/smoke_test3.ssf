@@ -1,0 +1,12 @@
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+UNLOADALL
+LOADFILE
+ smoke_test3_01.s3d
+SETTIMEVAL
+ 0.159000
+RENDERCLIP
+ 1 3 3 110 110
+RENDERONCE
+ smoke_test3_all
+ 
