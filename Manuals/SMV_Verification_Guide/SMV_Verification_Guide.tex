@@ -999,10 +999,10 @@ with opacities calculated using a scaled form of Bouguer's Law,
 \noindent where $\alpha$ is opacity scaled from 0 to 255, $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which opacity is observed. Blockages are then placed in the computational domain, as illustrated in Figure \ref{figsmoketestgeom}, so that opacities $\alpha=8, 16, 32, 64, 128$ and $192$ correspond to path lengths $\Delta x = \SI{5.0}{m}, \SI{4.0}{m}, \SI{3.0}{m}, \SI{2.0}{m}, \SI{1.0}{m} , \SI{0.41}{m}$ from the front of the domain to those blockages.
 This can be accomplished by solving Eq.~(\ref{eq:Beers}) for $S$ and assuming an opacity level of $\alpha=64$ at $\Delta x=\SI{2.0}{m}$ giving
 \begin{eqnarray*}
-S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{0.07945}{g/m^3}~.
+S=-\frac{\ln(\alpha/255)}{K_m\Delta x} =\SI{0.00007945}{kg/m^3}~.
 \end{eqnarray*}
 
-\noindent This soot density is converted to a soot mass fraction used in the FDS input file by dividing by the gas density $\rho_{\rm air}\approx \SI{1.2}{kg/m^3}$ or  $Y_{\rm soot}=S/\rho_{\rm air}=\SI{0.06643}{kg/kg}$.
+\noindent This soot density is converted to a soot mass fraction used in the FDS input file by dividing by the gas density $\rho_{\rm air}\approx \SI{1.196}{kg/m^3}$ or  $Y_{\rm soot}=S/\rho_{\rm air}=\SI{0.00006643}{kg/kg}$.
 
 \begin{figure}[bph]
 \begin{center}
