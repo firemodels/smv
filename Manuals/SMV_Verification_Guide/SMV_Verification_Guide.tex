@@ -1004,25 +1004,33 @@ levels with transparency levels calculated using a scaled form of Bouguer's Law,
 \end{equation}
 
 \noindent where $\tau$ is the
-transparency\footnote{Smokeview, as all OpenGL programs, draw objects in terms of opaqueness the inverse of transparency, $\alpha = 255 - \tau$.}
-scaled from 0 (completely opaque) to 255 (completely transparent), $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which transparency is observed. This equation is then used to place blockages so that known transparency levels result.  
+transparency\footnote{Smokeview, as all do OpenGL programs, draw objects in terms of opaqueness the inverse of transparency, $\alpha = 255 - \tau$.}
+scaled from 0 (completely opaque) to 255 (completely transparent), $K_m=\SI{8700}{m^2/kg}$~\cite{Mulholland:F+M} is the mass extinction coefficient, $S$ is the soot density and $\Delta x$ is the path length through which transparency is observed. This equation is then used to place blockages so that known transparency levels result.
 
-Solving Eq.~(\ref{eq:Beers}) for $S$ and assuming a transparency level of $\tau=128$ for a path length of $\Delta x=\SI{1.0}{m}$ gives
+The soot density required to obtain a transparency of $\tau=128$ for a path length of $\Delta x=\SI{1.0}{m}$ is found by solving Eq.~(\ref{eq:Beers}) for $S$ to obtain
 
 \begin{equation}
-S=-\frac{\ln(\tau/255)}{K_m\Delta x} =7.922 \times 10^{-5}\,{\rm kg/m}^3~.
+S=-\frac{\ln(\tau/255)}{K_m\Delta x} = 7.922 \times 10^{-5}\,{\rm kg/m}^3
 \label{eq:soot}
 \end{equation}
 
-\noindent which can then be used to simplify Eq. (\ref{eq:Beers}) to obtain
+\noindent This soot density is converted to a soot mass fraction for use in the FDS input file by dividing by the air density $\rho_{\rm air}\approx \SI{1.196}{kg/m^3}$ to obtain
+
+\begin{equation}
+Y_{\rm soot}=S/\rho_{\rm air}=6.624 \times 10^{-5}\,{\rm kg/kg}~.
+\end{equation}
+
+\noindent Eq.~(\ref{eq:soot}) can used to simplify Eq. (\ref{eq:Beers}) (for this particular value of soot density) to obtain
 
 \begin{equation}
 \tau = 255 \; \left(\frac{128}{255}\right)^{\Delta x}
 \label{eq:Beers2}
 \end{equation}
 
-\noindent Finally, substituting path lengths of $\Delta x=\SI{5}{m}$, $\SI{4}{m}$, $\SI{3}{m}$, $\SI{2}{m}$, $\SI{1}{m}$, $\SI{0.5}{m}$ into Eq. (\ref{eq:Beers2}) gives
-expected transparency levels of $\tau\approx 8$, 16, 32, 64, 128 and 181.  These transparency levels can then be compared to observed levels when viewing the case.
+\noindent which is then used to find transparencies for path lengths of 
+$\Delta x=\SI{5}{m}$, $\SI{4}{m}$, $\SI{3}{m}$, $\SI{2}{m}$, $\SI{1}{m}$, $\SI{0.5}{m}$
+which are approximately $\tau=8$, 16, 32, 64, 128 and 181 .
+These transparency levels can then be compared to observed levels when viewing the case.
 
 \begin{figure}[bph]
 \begin{center}
@@ -1038,29 +1046,14 @@ expected transparency levels of $\tau\approx 8$, 16, 32, 64, 128 and 181.  These
 \label{figsmoketestgeom}%
 \end{figure}
 
-The soot density found in Eq.~(\ref{eq:soot}) is converted to a soot mass fraction used in the FDS input file by dividing by the gas density $\rho_{\rm air}\approx \SI{1.196}{kg/m^3}$ or  $Y_{\rm soot}=S/\rho_{\rm air}=6.624 \times 10^{-5}\,{\rm kg/kg}$ to generated the images found in Figure~\ref{figsmoketest2}.
-This figure shows quantitative tests of the smoke opacity
-calculation performed in Smokeview for two grid resolutions.
-This figure also gives the expected opacity levels based upon the specified soot densities, mass extinction coefficient and path lengths.  The smoke visualization algorithm is verified then if the expected shades of grey match the corresponding predicted shades of grey.  Each shaded rectangle is accompanied by a numerical value that can also be used to judge whether the visualization is verified.
+Figure~\ref{figsmoketest2} shows quantitative tests of the smoke transparency
+calculation performed in Smokeview for three grid resolutions.
+This figure also gives the expected transparency levels based upon the specified soot densities, mass extinction coefficient and path lengths.  The smoke visualization algorithm is verified then if the expected shades of grey match the corresponding predicted shades of grey.  Each shaded rectangle is accompanied by a numerical value that can also be used to judge whether the visualization is verified.
 
 The numbers displayed in the upper row of the \SI{0.125}{m}, \SI{0.25}{m} and \SI{0.50}{m} resolution images in Fig. \ref{figsmoketest2} represent the computed smoke transparency levels (ranging from 0 to 255).  These numbers may be verified by using a
 program that reports pixel values of this
 rectangular region.  The numbers are verified when they match the reported pixel
 values. The numbers displayed in the lower row of both resolution images represent the expected transparency levels.
-
-When soot densities are constant, smoke grey level or transparency, $\tau$
-may be computed using Eq.~(\ref{eq:Beers}).  Solving Eq.~(\ref{eq:Beers})
-for $\Delta x$ gives
-\begin{eqnarray}
-\label{eq:deltaX}
-\Delta x = -\frac{\ln(\tau/255)}{K_m \, S}
-\end{eqnarray}
-Path lengths (smoke sensor locations) are chosen to obtain grey levels, $\tau$,
-of 181, 128, 64, 32, 16 and 8.  These path lengths may be found by substituting
-these grey levels into Eq.~ (\ref{eq:deltaX}) to obtain $\Delta x$ values of
-$\SI{0.5}{m}$, $\SI{1}{m}$, $\SI{2}{m}$, $\SI{3}{m}$, $\SI{4}{m}$ and $\SI{5}{m}$ respectively.  The blockages in
-these two test cases are placed at these distances from the front of the
-simulation domain.
 
 \begin{figure}[bph]
 \begin{center}
@@ -1074,10 +1067,10 @@ simulation domain.
 0.5 m grid\\ \\
  \end{tabular}
 \end{center}
- \caption[A test verifying visualized smoke transparency for three grid resolutions.]{A test verifying visualized
- smoke transparency for three grid resolutions.  This test initializes a uniform distribution of soot within the domain so that blockages
- placed at various distance using Eq.~(\ref{eq:deltaX}) result in
- in grey levels of  8, 16, 32, 64, 128 and 181.
+ \caption[A test verifying smoke transparency for three grid resolutions.]{A test verifying
+ smoke transparency for three grid resolutions.  This test fills the space with a uniform distribution of soot so that blockages
+ placed 0.5, 1.0, 2.0, 3.0, 4.0 and 5.0 m from the front of the domain result in
+ in grey levels of  181, 128, 64, 32, 16 and 8 respectively.
  }
 \label{figsmoketest2}%
 \end{figure}
