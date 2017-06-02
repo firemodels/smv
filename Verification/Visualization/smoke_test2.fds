@@ -6,7 +6,7 @@
 
      grey level (GL) = 255*exp(-K*S*DX)
 
-  where K=8700 m2/kg is the mass extinction value, S=79.22 * 10**-5 kg/m3 is the soot density 
+  where K=8700 m2/kg is the mass extinction value, S=7.922 * 10**-5 kg/m3 is the soot density 
   and DX is the path length through the smoke.  This equation is inverted to obtain
 
     DX = -LN(GL/255)/(K*S)
