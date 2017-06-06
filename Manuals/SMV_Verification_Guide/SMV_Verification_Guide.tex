@@ -953,15 +953,15 @@ Smokeview displays the sensor as a white disk with color (255,255,255) at locati
 always oriented towards the observer. When drawing smoke that resides between
 the sensor and the observer (your eye), the smoke sensor is partially obscured by the smoke.
 Smokeview then alters the smoke sensor color according to how much and how thick the
-intervening smoke is.  It does this by blending each smoke plane one plane at a time using
+intervening smoke is.  It does this by blending each smoke plane, one plane at a time, using
 the color and opacity levels of that plane. The grey level is simply Smokeview's
 computation of the integrated {\em smoke thickness}\ along a path between the sensor
-location and the eye.  The colors displayed are the result computations performed by the
+location and the eye.  The colors displayed are the result of computations performed by the
 video card using OpenGL, the graphics library used by Smokeview to visualize FDS scenarios.
 
 Figure \ref{figsmokesensor} illustrates an initial test of this process.
 It verifies that Smokeview can transform the sensor location from physical
-`FDS' coordinates to screen coordinates (pixel locations) and further
+or FDS coordinates to screen coordinates (pixel locations) and further
 can correctly record the grey level at those screen coordinates even when
 surrounded by other objects with different colors.
 In this case, the smoke sensor is white and there is no intervening smoke.
@@ -1020,14 +1020,14 @@ S=-\frac{\ln(\tau/255)}{K_m\Delta x} = 7.922 \times 10^{-5}\,{\rm kg/m}^3
 Y_{\rm soot}=S/\rho_{\rm air}=6.624 \times 10^{-5}\,{\rm kg/kg}~.
 \end{equation}
 
-\noindent Eq.~(\ref{eq:soot}) can used to simplify Eq. (\ref{eq:Beers}) (for this particular value of soot density) to obtain
+\noindent For this value of soot density, Eq.~(\ref{eq:soot}) can used to simplify Eq. (\ref{eq:Beers}) after noting that $128/255=\exp(-K_mS)$ to obtain
 
 \begin{equation}
 \tau = 255 \; \left(\frac{128}{255}\right)^{\Delta x}
 \label{eq:Beers2}
 \end{equation}
 
-\noindent which is then used to find transparencies for path lengths of 
+\noindent which is then used to find transparencies for path lengths of
 $\Delta x=\SI{5}{m}$, $\SI{4}{m}$, $\SI{3}{m}$, $\SI{2}{m}$, $\SI{1}{m}$, $\SI{0.5}{m}$
 which are approximately $\tau=8$, 16, 32, 64, 128 and 181 .
 These transparency levels can then be compared to observed levels when viewing the case.
