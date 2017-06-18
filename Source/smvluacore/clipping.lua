@@ -20,7 +20,7 @@ _clipping = {
 -- the real table value
 clipping._x = {
    set = function (min, max)
-       clipping.x.max = min
+       clipping.x.min = min
        clipping.x.max = max
    end,
    min = {
@@ -61,7 +61,7 @@ setmetatable(clipping.x, x_mt)
 -- the real table value
 clipping._y = {
    set = function (min, max)
-       clipping.y.max = min
+       clipping.y.min = min
        clipping.y.max = max
    end,
    min = {
@@ -102,7 +102,7 @@ setmetatable(clipping.y, y_mt)
 -- the real table value
 clipping._z = {
    set = function (min, max)
-       clipping.z.max = min
+       clipping.z.min = min
        clipping.z.max = max
    end,
    min = {
