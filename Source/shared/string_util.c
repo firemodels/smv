@@ -1292,7 +1292,7 @@ void ParseCommonOptions(int argc, char **argv){
     char *argi;
 
     argi = argv[i];
-    if(argi[0]!='-')continue;
+    if(argi==NULL||argi[0]!='-')continue;
     if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0)){
       show_help = 1;
       continue;

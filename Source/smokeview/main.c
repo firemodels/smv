@@ -700,13 +700,13 @@ int main(int argc, char **argv){
 
   progname=argv_sv[0];
 
-  ParseCommonOptions(argc, argv);
+  ParseCommonOptions(argc, argv_sv);
   if(show_help==1){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
 }
   if(show_version==1){
-    PRINTVERSION("smokeview", argv[0]);
+    PRINTVERSION("smokeview", argv_sv[0]);
     return 1;
   }
 
