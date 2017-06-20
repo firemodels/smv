@@ -301,7 +301,7 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_INBLOCKAGE:
-    show_slice_in_obst = 1 - show_slice_in_obst;
+    CYCLE_VAL(show_slice_in_obst);
     UpdateShowSliceInObst();
     break;
   case -12:
@@ -949,7 +949,7 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value == MENU_SHOWSLICE_INBLOCKAGE){
-    show_slice_in_obst=1-show_slice_in_obst;
+    CYCLE_VAL(show_slice_in_obst);
     UpdateShowSliceInObst();
     return;
   }
@@ -1026,7 +1026,7 @@ void ShowHideSliceMenu(int value){
       show_all_slices=0;
       break;
     case MENU_SHOWSLICE_INBLOCKAGE:
-      show_slice_in_obst=1-show_slice_in_obst;
+      CYCLE_VAL(show_slice_in_obst);
       UpdateShowSliceInObst();
       break;
     case MENU_SHOWSLICE_OFFSET:
@@ -3783,7 +3783,7 @@ void LoadSliceMenu(int value){
       }
     }
     else if(value==MENU_SHOWSLICE_INBLOCKAGE){
-      show_slice_in_obst=1-show_slice_in_obst;
+      CYCLE_VAL(show_slice_in_obst);
       UpdateShowSliceInObst();
     }
     else{
@@ -6980,8 +6980,8 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == GAS_AND_SOLID)glutAddMenuEntry(_("*Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == ONLY_IN_GAS)glutAddMenuEntry(_("Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
     if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
     if(show_slices_and_vectors == 0)glutAddMenuEntry(_("Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
@@ -7030,8 +7030,8 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == GAS_AND_SOLID)glutAddMenuEntry(_("*Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == ONLY_IN_GAS)glutAddMenuEntry(_("Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(nfedinfo>0){
@@ -7074,8 +7074,8 @@ updatemenu=0;
       if(planar_terrain_slice == 1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
       if(planar_terrain_slice == 0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == GAS_AND_SOLID)glutAddMenuEntry(_("*Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    if(show_slice_in_obst == ONLY_IN_GAS)glutAddMenuEntry(_("Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
@@ -8717,8 +8717,8 @@ updatemenu=0;
         }
       }
       glutAddMenuEntry("-", MENU_DUMMY);
-      if(show_slice_in_obst == 1)glutAddMenuEntry("*Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
-      if(show_slice_in_obst == 0)glutAddMenuEntry("Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
+      if(show_slice_in_obst == GAS_AND_SOLID)glutAddMenuEntry("*Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
+      if(show_slice_in_obst == ONLY_IN_GAS)glutAddMenuEntry("Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
       glutAddMenuEntry("-",MENU_DUMMY);
       if(nsliceloaded>1){
         glutAddSubMenu(_("Unload"),unloadslicemenu);

@@ -9777,7 +9777,7 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "SHOWSLICEINOBST") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &show_slice_in_obst);
-      ONEORZERO(show_slice_in_obst);
+      CLAMP(show_slice_in_obst,0,2);
       continue;
     }
     if(Match(buffer, "SKIPEMBEDSLICE") == 1){

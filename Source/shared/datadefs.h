@@ -8,6 +8,12 @@
   nprocinfo++
 #endif
 
+// change (val)>1 to (val)>2 after third slice view only in solid is implemented
+
+#define CYCLE_VAL(val) \
+val++;\
+((val)>1 ? (0) : (val))
+
 #define ONEORZERO(val) if(val!=0)val=1
 
 #define K2C(T) ((T)-273.15)
