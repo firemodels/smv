@@ -484,7 +484,7 @@ SVEXTERN int terrain_rgba_zmin[3];
 SVEXTERN int terrain_rgba_zmax[3];
 SVEXTERN float vertical_factor;
 
-SVEXTERN char input_filename_ext[4];
+SVEXTERN char input_filename_ext[5];
 
 SVEXTERN float percentile_level;
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
