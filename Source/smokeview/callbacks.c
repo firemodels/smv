@@ -1660,7 +1660,8 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'I':
-      CYCLE_VAL(show_slice_in_obst);
+      show_slice_in_obst++;
+      if(show_slice_in_obst>2)show_slice_in_obst = 0;
       UpdateShowSliceInObst();
       updatemenu = 1;
       break;
