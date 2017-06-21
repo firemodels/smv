@@ -179,10 +179,11 @@ GLUI_Rollout *ROLLOUT_slicedups = NULL;
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 
-GLUI_Panel *PANEL_slicedup;
-GLUI_Panel *PANEL_vectorslicedup;
-GLUI_Panel *PANEL_iso_eachlevel;
-GLUI_Panel *PANEL_iso_alllevels;
+GLUI_Panel *PANEL_sliceshow=NULL;
+GLUI_Panel *PANEL_slicedup = NULL;
+GLUI_Panel *PANEL_vectorslicedup = NULL;
+GLUI_Panel *PANEL_iso_eachlevel = NULL;
+GLUI_Panel *PANEL_iso_alllevels = NULL;
 GLUI_Panel *PANEL_files = NULL;
 GLUI_Panel *PANEL_bounds = NULL;
 GLUI_Panel *PANEL_zone_a=NULL, *PANEL_zone_b=NULL;
@@ -260,7 +261,6 @@ GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
-GLUI_Checkbox *CHECKBOX_show_slice_in_obst=NULL;
 GLUI_Checkbox *CHECKBOX_show_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
@@ -297,7 +297,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
-
+GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
 GLUI_RadioGroup *RADIO_histogram_static=NULL;
@@ -405,7 +405,7 @@ extern "C" void UpdateHistogramType(void){
 /* ------------------ UpdateShowSliceInObst ------------------------ */
 
 extern "C" void UpdateShowSliceInObst(void){
-  CHECKBOX_show_slice_in_obst->set_int_val(show_slice_in_obst);
+  RADIO_show_slice_in_obst->set_int_val(show_slice_in_obst);
 }
 
 /* ------------------ update_iso_colorlevel ------------------------ */
@@ -2081,7 +2081,12 @@ extern "C" void glui_bounds_setup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice, _d("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, Slice_CB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
 
-    CHECKBOX_show_slice_in_obst=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, "Include data within blockages", &show_slice_in_obst,SLICE_IN_OBST,Slice_CB);
+    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "show slice", true);
+    RADIO_show_slice_in_obst = glui_bounds->add_radiogroup_to_panel(PANEL_sliceshow, &show_slice_in_obst, SLICE_IN_OBST, Slice_CB);
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("gas"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("gas and solid"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("solid"));
+
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,"Regenerate FED data",&regenerate_fed);
     }
@@ -2586,7 +2591,7 @@ extern "C"  void glui_script_disable(void){
     BUTTON_script_setsuffix->disable();
     EDIT_ini->disable();
   }
-  
+
 /* ------------------ updatepatchlistindex ------------------------ */
 
 extern "C" void updatepatchlistindex(int patchfilenum){

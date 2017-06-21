@@ -132,7 +132,9 @@
 #define MENU_ZONE_VENT_SLAB 19
 #define MENU_ZONE_VENT_PROFILE 20
 
-#define MENU_SHOWSLICE_INBLOCKAGE -11
+#define MENU_SHOWSLICE_IN_GAS -16
+#define MENU_SHOWSLICE_IN_GASANDSOLID -17
+#define MENU_SHOWSLICE_IN_SOLID -18
 #define MENU_SHOWSLICE_SLICEANDVECTORS -15
 #define MENU_SHOWSLICE_TERRAIN -13
 #define MENU_SHOWSLICE_OFFSET -12
@@ -300,8 +302,16 @@ void ShowMultiSliceMenu(int value){
   case HIDE_ALL:
     ShowHideSliceMenu(value);
     return;
-  case MENU_SHOWSLICE_INBLOCKAGE:
-    show_slice_in_obst = 1 - show_slice_in_obst;
+  case MENU_SHOWSLICE_IN_GAS:
+    show_slice_in_obst = ONLY_IN_GAS;
+    UpdateShowSliceInObst();
+    break;
+  case MENU_SHOWSLICE_IN_GASANDSOLID:
+    show_slice_in_obst = GAS_AND_SOLID;
+    UpdateShowSliceInObst();
+    break;
+  case MENU_SHOWSLICE_IN_SOLID:
+    show_slice_in_obst = ONLY_IN_SOLID;
     UpdateShowSliceInObst();
     break;
   case -12:
@@ -948,8 +958,18 @@ void ShowVSliceMenu(int value){
     UpdateTimes();
     return;
   }
-  if(value == MENU_SHOWSLICE_INBLOCKAGE){
-    show_slice_in_obst=1-show_slice_in_obst;
+  if(value==MENU_SHOWSLICE_IN_GAS){
+    show_slice_in_obst = ONLY_IN_GAS;
+    UpdateShowSliceInObst();
+    return;
+  }
+  else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
+    show_slice_in_obst = GAS_AND_SOLID;
+    UpdateShowSliceInObst();
+    return;
+  }
+  else if(value==MENU_SHOWSLICE_IN_SOLID){
+    show_slice_in_obst = ONLY_IN_SOLID;
     UpdateShowSliceInObst();
     return;
   }
@@ -1025,8 +1045,16 @@ void ShowHideSliceMenu(int value){
       }
       show_all_slices=0;
       break;
-    case MENU_SHOWSLICE_INBLOCKAGE:
-      show_slice_in_obst=1-show_slice_in_obst;
+    case MENU_SHOWSLICE_IN_GAS:
+      show_slice_in_obst = ONLY_IN_GAS;
+      UpdateShowSliceInObst();
+      break;
+    case MENU_SHOWSLICE_IN_GASANDSOLID:
+      show_slice_in_obst = GAS_AND_SOLID;
+      UpdateShowSliceInObst();
+      break;
+    case MENU_SHOWSLICE_IN_SOLID:
+      show_slice_in_obst = ONLY_IN_SOLID;
       UpdateShowSliceInObst();
       break;
     case MENU_SHOWSLICE_OFFSET:
@@ -3782,8 +3810,16 @@ void LoadSliceMenu(int value){
         ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
       }
     }
-    else if(value==MENU_SHOWSLICE_INBLOCKAGE){
-      show_slice_in_obst=1-show_slice_in_obst;
+    else if(value==MENU_SHOWSLICE_IN_GAS){
+      show_slice_in_obst = ONLY_IN_GAS;
+      UpdateShowSliceInObst();
+    }
+    else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
+      show_slice_in_obst = GAS_AND_SOLID;
+      UpdateShowSliceInObst();
+    }
+    else if(MENU_SHOWSLICE_IN_SOLID){
+      show_slice_in_obst = ONLY_IN_SOLID;
       UpdateShowSliceInObst();
     }
     else{
@@ -6980,8 +7016,22 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show vector slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    glutAddMenuEntry("Show vector slice", MENU_DUMMY);
+    if(show_slice_in_obst==ONLY_IN_GAS){
+      glutAddMenuEntry(_("  *gas"),  MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==GAS_AND_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==ONLY_IN_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
     if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
     if(show_slices_and_vectors == 0)glutAddMenuEntry(_("Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
@@ -7030,8 +7080,22 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show multi slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+    glutAddMenuEntry("Show multislice", MENU_DUMMY);
+    if(show_slice_in_obst==ONLY_IN_GAS){
+      glutAddMenuEntry(_("  *gas"),  MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==GAS_AND_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==ONLY_IN_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(nfedinfo>0){
@@ -7074,8 +7138,23 @@ updatemenu=0;
       if(planar_terrain_slice == 1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
       if(planar_terrain_slice == 0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
     }
-    if(show_slice_in_obst == 1)glutAddMenuEntry(_("*Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
-    if(show_slice_in_obst == 0)glutAddMenuEntry(_("Show slice in blockage"), MENU_SHOWSLICE_INBLOCKAGE);
+
+    glutAddMenuEntry("Show slice", MENU_DUMMY);
+    if(show_slice_in_obst==ONLY_IN_GAS){
+      glutAddMenuEntry(_("  *gas"),  MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==GAS_AND_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==ONLY_IN_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
@@ -8717,8 +8796,22 @@ updatemenu=0;
         }
       }
       glutAddMenuEntry("-", MENU_DUMMY);
-      if(show_slice_in_obst == 1)glutAddMenuEntry("*Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
-      if(show_slice_in_obst == 0)glutAddMenuEntry("Show slice in blockage", MENU_SHOWSLICE_INBLOCKAGE);
+      glutAddMenuEntry("Show slice", MENU_DUMMY);
+    if(show_slice_in_obst==ONLY_IN_GAS){
+      glutAddMenuEntry(_("  *gas"),  MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==GAS_AND_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==ONLY_IN_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
       glutAddMenuEntry("-",MENU_DUMMY);
       if(nsliceloaded>1){
         glutAddSubMenu(_("Unload"),unloadslicemenu);

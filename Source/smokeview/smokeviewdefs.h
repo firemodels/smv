@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ONLY_IN_GAS   0
+#define GAS_AND_SOLID 1
+#define ONLY_IN_SOLID 2
+
 #define UPDATE_WINDROSE_DEVICE   0
 #define UPDATE_WINDROSE_CHECKBOX 1
 #define UPDATE_WINDROSE_SHOWHIDE 2
