@@ -6425,8 +6425,6 @@ void DrawVVolSlice(const vslicedata *vd){
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       yy1 = yplttemp[j];
       for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        int doit;
-
         n += vectorskip;
         if(color_vector_black == 0 && show_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
