@@ -1507,12 +1507,11 @@ void script_showsmokesensors(scriptdata *scripti){
   nsmokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
-    char *label;
 
     devicei = deviceinfo + i;
-    label = devicei->object->label;
-    if(STRCMP(label,"smokesensor")==0)nsmokesensors++;
+    if(STRCMP(devicei->object->label,"smokesensor")==0)nsmokesensors++;
   }
+  if(nsmokesensors == 0)return;
 
   // first time, create a file to put smokesensor values in
 
@@ -1521,6 +1520,29 @@ void script_showsmokesensors(scriptdata *scripti){
     strcpy(file_smokesensors,fdsprefix);
     strcat(file_smokesensors,"_ss.csv");
     stream_smokesensors = fopen(file_smokesensors, "w");
+
+    fprintf(stream_smokesensors, "s,");
+    for(i = 1;i < nsmokesensors-1;i++){
+      fprintf(stream_smokesensors, "alpha,");
+    }
+    fprintf(stream_smokesensors, "alpha\n");
+
+    j = 0;
+    fprintf(stream_smokesensors, "Time,");
+    for(i = 0;i < ndeviceinfo;i++){
+      devicedata *devicei;
+
+      devicei = deviceinfo + i;
+      if(STRCMP(devicei->object->label, "smokesensor") == 0){
+        j++;
+        if(j == nsmokesensors){
+          fprintf(stream_smokesensors, "%s\n",devicei->label);
+        }
+        else{
+          fprintf(stream_smokesensors, "%s,", devicei->label);
+        }
+      }
+    }
   }
   else{
     stream_smokesensors = fopen(file_smokesensors, "a");
@@ -1533,11 +1555,9 @@ void script_showsmokesensors(scriptdata *scripti){
   j = 0;
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
-    char *label;
 
     devicei = deviceinfo + i;
-    label = devicei->object->label;
-    if(STRCMP(label,"smokesensor")==0){
+    if(STRCMP(devicei->object->label,"smokesensor")==0){
       j++;
       if(j==nsmokesensors){
         fprintf(stream_smokesensors,"%i\n",devicei->visval);
