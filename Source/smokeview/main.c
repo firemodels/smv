@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include GLUT_H
 
-// dummy
+//  dummy
 
 #include "string_util.h"
 #include "smokeviewvars.h"
@@ -16,8 +16,6 @@
 #include "c_api.h"
 #include "lua_api.h"
 #endif
-
-// version 6.3.12
 
 /* ------------------ Usage ------------------------ */
 
