@@ -98,7 +98,6 @@ void getsmokesensors(void){
     }
     devicei->visval=val;
   }
-
 }
 
 /* ----------------------- getdevice_screencoords ----------------------------- */
@@ -106,7 +105,6 @@ void getsmokesensors(void){
 void getdevice_screencoords(void){
   double mv_setup[16], projection_setup[16];
   GLint viewport_setup[4];
-//  double d_ijk[3];
   int i;
   int doit;
 
@@ -117,8 +115,10 @@ void getdevice_screencoords(void){
 
     devicei = deviceinfo + i;
     label = devicei->object->label;
-    if(STRCMP(label,"smokesensor")!=0)continue;
-    doit=1;
+    if(STRCMP(label,"smokesensor")==0){
+      doit=1;
+      break;
+    }
   }
   if(doit==0)return;
 
