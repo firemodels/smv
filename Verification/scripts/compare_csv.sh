@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Determine if integers in last row (col column) of files
+# file1 and file2 are with tol of each other.
+# Return 1 if yes, 0 if no
+
+file1=$1
+file2=$2
+col=$3
+tol=$4
+
+ # Absolute value
+ abs() {
+   [ $1 -lt 0 ] && echo $((-$1)) || echo $1
+ }
+
+num1=`tail -n 1 $file1 | awk -v var="$col" -F',' '{print $var}'`
+num2=`tail -n 1 $file2 | awk -v var="$col" -F',' '{print $var}'`
+diff=`expr $num1 - $num2`
+diff=`abs $diff`
+[ $diff -lt $tol ] && echo 1 || echo 0
