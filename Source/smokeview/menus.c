@@ -1091,6 +1091,21 @@ void ShowHideSliceMenu(int value){
       islicetype = sd->type;
       sd->display=1;
     }
+    if(value < nsliceinfo - nfedinfo){
+      colorbardata *fed_colorbar;
+      int reset_colorbar = 0;
+
+      fed_colorbar = GetColorbar(default_fed_colorbar);
+      if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
+      if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
+    }
+    else{
+      colorbardata *fed_colorbar;
+
+      colorbartype_save = colorbartype;
+      fed_colorbar = GetColorbar(default_fed_colorbar);
+      if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
+    }
   }
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
@@ -3785,10 +3800,23 @@ void LoadSlicei(int set_slicecolor, int value){
   }
   if(scriptoutstream == NULL || defer_file_loading == 0){
     if(value < nsliceinfo - nfedinfo){
+      colorbardata *fed_colorbar;
+      int reset_colorbar = 0;
+
+      fed_colorbar = GetColorbar(default_fed_colorbar);
+      if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
+
       ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+
+      if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
     else{
+      colorbardata *fed_colorbar;
+
+      colorbartype_save = colorbartype;
       ReadFed(value, LOAD, FED_SLICE, &errorcode);
+      fed_colorbar = GetColorbar(default_fed_colorbar);
+      if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
     }
   }
   slicei->loading=0;
