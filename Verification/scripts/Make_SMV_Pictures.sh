@@ -232,9 +232,9 @@ fi
 # test smoke_test image output
   
 cd $SVNROOT/smv/Verification/Visualization
-../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 2 8
-../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 3 8
-../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 4 8
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 2 1
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 3 1
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 4 1
 
 # copy generated images to web summary directory
 
