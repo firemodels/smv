@@ -8,7 +8,6 @@ file1=$1
 file2=$2
 col=$3
 tol=$4
-comnpare=compare.out
 
 if ! [ -e $file1 ]; then
   echo "*** error: file $file1 does not exist"
@@ -28,4 +27,7 @@ num1=`tail -n 1 $file1 | awk -v var="$col" -F',' '{print $var}'`
 num2=`tail -n 1 $file2 | awk -v var="$col" -F',' '{print $var}'`
 diff=`expr $num1 - $num2`
 diff=`abs $diff`
-[ $diff -lt $tol ] && echo 1 || echo 0 > $compare
+if [ $diff -gt $tol ]; then
+  echo "*** warning: column $col of file $file2 is out of tolerance"
+  echo "             (|diff|=$diff, tolerance=$tol"
+fi
