@@ -29,5 +29,5 @@ diff=`expr $num1 - $num2`
 diff=`abs $diff`
 if [ $diff -gt $tol ]; then
   echo "*** warning: column $col of file $file2 is out of tolerance"
-  echo "             (|diff|=$diff, tolerance=$tol"
+  echo "             |diff|=$diff, tolerance=$tol"
 fi
