@@ -7,15 +7,15 @@ erase *.lib
 
 :: ZLIB
 cd %SRCDIR%\zlib128
-makelib %OPTS% -copy libz.lib %LIBDIR%\zlib.lib
+call makelib %OPTS% -copy libz.lib %LIBDIR%\zlib.lib
 
 :: JPEG
 cd %SRCDIR%\jpeg-9b
-makelib %OPTS% -copy libjpeg.lib  %LIBDIR%\jpeg.lib
+call makelib %OPTS% -copy libjpeg.lib  %LIBDIR%\jpeg.lib
 
 :: PNG
 cd %SRCDIR%\png-1.6.21
-makelib %OPTS% -copy libpng.lib %LIBDIR%\png.lib
+call makelib %OPTS% -copy libpng.lib %LIBDIR%\png.lib
 
 :: GD
 cd %SRCDIR%\gd-2.0.15
@@ -23,15 +23,15 @@ call makelib %OPTS% -copy libgd.lib %LIBDIR%\gd.lib
 
 :: GLUT
 cd %SRCDIR%\glut-3.7.6
-makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
+call makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
-makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+call makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
 
 :: pthreads
 cd %SRCDIR%\pthreads
-makelib %OPTS% -copy libpthreads.lib %LIBDIR%\pthreads.lib
+call makelib %OPTS% -copy libpthreads.lib %LIBDIR%\pthreads.lib
 
 cd %LIBDIR%
 
