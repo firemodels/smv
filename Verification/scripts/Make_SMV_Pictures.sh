@@ -229,9 +229,14 @@ if [ "$RUN_GEOM" == "1" ] ; then
   source $STOPX
 fi
 
+# test smoke_test image output
+  
+cd $SVNROOT/smv/Verification/Visualization
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 2 8
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 3 8
+../scripts/compare_csv.sh smoke_test_ss_check.csv smoke_test_ss.csv 4 8
+
 # copy generated images to web summary directory
 
-cp $SMVVG/FIGURES/graysquares.png $SUMMARY/images/.
-cp $FDSUG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
 cp $SMVUG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
 cp $SMVVG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
