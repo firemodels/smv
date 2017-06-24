@@ -28,6 +28,6 @@ num2=`tail -n 1 $file2 | awk -v var="$col" -F',' '{print $var}'`
 diff=`expr $num1 - $num2`
 diff=`abs $diff`
 if [ $diff -gt $tol ]; then
-  echo "*** Warning: column $col of file $file2 is out of tolerance"
+  echo "*** Error: column $col of file $file2 is out of tolerance"
   echo "             |diff|=$diff, tolerance=$tol"
 fi
