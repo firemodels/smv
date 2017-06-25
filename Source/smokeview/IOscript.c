@@ -1523,9 +1523,9 @@ void script_showsmokesensors(scriptdata *scripti){
 
     fprintf(stream_smokesensors, "s,");
     for(i = 1;i < nsmokesensors-1;i++){
-      fprintf(stream_smokesensors, "alpha,");
+      fprintf(stream_smokesensors, ",");
     }
-    fprintf(stream_smokesensors, "alpha\n");
+    fprintf(stream_smokesensors, "\n");
 
     j = 0;
     fprintf(stream_smokesensors, "Time,");
