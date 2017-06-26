@@ -10,12 +10,14 @@ col=$3
 tol=$4
 
 if ! [ -e $file1 ]; then
-  echo "*** error: file $file1 does not exist"
-  echo 0 > $compare
+  echo "*** Warning: file $file1 does not exist"
+  echo "command: $0 $*"
+  exit
 fi
 if ! [ -e $file2 ]; then
-  echo "*** error: file $file2 does not exist"
-  echo 0 > $compare
+  echo "*** Warning: file $file2 does not exist"
+  echo "command: $0 $*"
+  exit
 fi
 
  # Absolute value
