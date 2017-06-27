@@ -7773,7 +7773,7 @@ typedef struct {
 
       // parti->size_file can't be written to, then put it in a world writable temp directory
 
-      if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&Writable(".")==NO&&smokeviewtempdir!=NULL){
+      if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable ==NO&&smokeviewtempdir!=NULL){
         len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
         FREEMEMORY(parti->size_file);
         if(NewMemory((void **)&parti->size_file,(unsigned int)len)==0)return 2;
@@ -7785,7 +7785,7 @@ typedef struct {
 
       // parti->hist_file can't be written to, then put it in a world writable temp directory
 
-      if(FILE_EXISTS_CASEDIR(parti->hist_file) == NO && Writable(".") == NO && smokeviewtempdir != NULL){
+      if(FILE_EXISTS_CASEDIR(parti->hist_file) == NO && curdir_writable == NO && smokeviewtempdir != NULL){
         len = strlen(smokeviewtempdir) + strlen(bufferptr) + 1 + 5 + 1;
         FREEMEMORY(parti->hist_file);
         if(NewMemory((void **)&parti->hist_file, (unsigned int)len) == 0)return 2;

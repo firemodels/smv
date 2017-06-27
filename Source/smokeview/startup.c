@@ -18,6 +18,9 @@
 void Init(void){
   int i;
 
+
+  curdir_writable = Writable(".");
+
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
 
