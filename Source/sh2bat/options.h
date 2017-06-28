@@ -12,7 +12,7 @@
 #ifdef pp_BETA
 #define PROGVERSION "Test"
 #else
-#define PROGVERSION "1.0.1"
+#define PROGVERSION "1.0.2"
 #endif
 
 #endif
