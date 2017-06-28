@@ -109,6 +109,7 @@ int main(int argc, char **argv){
     }
     if(buffer[0]=='$'){
       char *comm_beg, *comm_end, *data;
+      int j;
 
       comm_beg=buffer+1;
       comm_end=strchr(buffer,' ');
@@ -117,9 +118,11 @@ int main(int argc, char **argv){
       *comm_end=0;
 
       TrimBack(data);
+      for(j = 0;j<strlen(data);j++){
+        if(data[j]=='/')data[j] = '\\';
+      }
       fprintf(streamout,"%s%s%s %s\n","%",comm_beg,"%",data);
       continue;
-
     }
     fprintf(streamout,"%s\n",buffer);
   }
