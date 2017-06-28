@@ -30,6 +30,7 @@ set uploads=%svn_root%\smv\uploads
 set smvscripts=%svn_root%\smv\scripts
 set forbundle=%svn_root%\smv\for_bundle
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
+set gettime=%svn_root%\smv\Build\get_time\intel_win_64
 set smvbuild=%svn_root%\smv\Build
 
 cd %forbundle%
@@ -76,6 +77,7 @@ cd %curdir%
 
 CALL :COPY %forbundle%\objects.svo                       %smvdir%\.
 CALL :COPY %sh2bat%\sh2bat.exe                           %smvdir%\sh2bat.exe
+CALL :COPY %gettime%\get_time_64.exe                     %smvdir%\get_time.exe
 CALL :COPY %forbundle%\wrapup_smv_install_%platform%.bat %smvdir%\wrapup_smv_install.bat
 CALL :COPY %forbundle%\smokeview.ini                     %smvdir%\smokeview.ini
 

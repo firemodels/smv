@@ -36,6 +36,7 @@ set bgbuild=%svn_root%\smv\Build\background\intel_win_64
 set hashfilebuild=%svn_root%\smv\Build\hashfile\%BUILDDIR%
 set windbuild=%svn_root%\smv\Build\wind2fds\%BUILDDIR%
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
+set gettime=%svn_root%\smv\Build\get_time\%BUILDDIR%
 
 set zipbase=smv_%version%_win%platform%
 set smvdir=%zipbase%
@@ -92,6 +93,8 @@ copy %forbundle%\textures\*.png %smvdir%\textures>Nul
 CALL :COPY  %forbundle%\objects.svo %smvdir%\.
 
 CALL :COPY  %sh2bat%\sh2bat.exe %smvdir%\.
+
+CALL :COPY  %gettime%\get_time_64.exe %smvdir%\get_time.exe
 
 CALL :COPY  %svn_root%\webpages\smv_readme.html %smvdir%\release_notes.html
 
