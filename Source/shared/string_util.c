@@ -1286,13 +1286,17 @@ void UsageCommon(char *prog, int option){
 /* ------------------ ParseCommonOptions ------------------------ */
 
 void ParseCommonOptions(int argc, char **argv){
-  int i;
+  int i, no_minus;
 
+  no_minus = 0;
   for(i = 1; i<argc; i++){
     char *argi;
 
     argi = argv[i];
-    if(argi==NULL||argi[0]!='-')continue;
+    if(argi==NULL||argi[0]!='-'){
+      no_minus = 1;
+      continue;
+    }
     if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0)){
       show_help = 1;
       continue;
@@ -1302,7 +1306,7 @@ void ParseCommonOptions(int argc, char **argv){
       continue;
     }
     if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0){
-      show_version = 1;
+      if(no_minus==0)show_version = 1;
       continue;
     }
 #ifdef pp_HASH
