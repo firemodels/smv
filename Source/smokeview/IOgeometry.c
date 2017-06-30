@@ -3055,7 +3055,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(patchi->slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY){
             int insolid;
 
             insolid = trianglei->insolid & 3;
@@ -3135,7 +3135,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           int show_edge1=1, show_edge2=1, show_edge3 = 1;
 
           trianglei = geomlisti->triangles + j;
-          if(patchi->slice==1){
+          if(patchi->filetype==PATCH_GEOMETRY){
             int insolid;
 
             insolid = trianglei->insolid & 3;
