@@ -3055,7 +3055,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(patchi->slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY){
             int insolid;
 
             insolid = trianglei->insolid & 3;
@@ -3135,7 +3135,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
           int show_edge1=1, show_edge2=1, show_edge3 = 1;
 
           trianglei = geomlisti->triangles + j;
-          if(patchi->slice==1){
+          if(patchi->filetype==PATCH_GEOMETRY){
             int insolid;
 
             insolid = trianglei->insolid & 3;
@@ -3144,7 +3144,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_GAS     && show_patch_ingas == 0)continue;
             if(show_patch_cutcell_polygon == 1){
               int insolid4, insolid8, insolid16;
-              
+
               insolid4 = trianglei->insolid&4;
               if(insolid4  ==  4)show_edge1 = 0;
 
@@ -3269,7 +3269,18 @@ int CompareTransparentTriangles(const void *arg1, const void *arg2){
 
 void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
   geomdata **gptr;
-  int i,count=0;
+  int i, count = 0, hide_geom = 0;
+
+  hide_geom = 0;
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->filetype == PATCH_GEOMETRY && patchi->loaded == 1 && patchi->display == 1){
+      hide_geom = 1;
+      break;
+    }
+  }
 
   count=0;
   for(i=0;i<ngeominfo;i++){
@@ -3277,6 +3288,8 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
 
     geomi = geominfo + i;
     if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->geomtype!=GEOM_GEOM)continue;
+    if(hide_geom==1&&geomi->geomtype==GEOM_GEOM)continue;
     count++;
   }
   for(i=0;i<nisoinfo;i++){
@@ -3304,6 +3317,8 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
 
     geomi = geominfo + i;
     if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->geomtype!=GEOM_GEOM)continue;
+    if(hide_geom == 1 && geomi->geomtype == GEOM_GEOM)continue;
     *gptr++=geomi;
   }
   for(i=0;i<nisoinfo;i++){
@@ -3341,6 +3356,9 @@ void ShowHideSortGeometry(float *mm){
       geomdata *geomi;
 
       geomi = geominfoptrs[i];
+
+      // reject unwanted geometry
+
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
         if(itime == 0){
@@ -3419,9 +3437,9 @@ void ShowHideSortGeometry(float *mm){
   }
 }
 
-/* ------------------ init_geom ------------------------ */
+/* ------------------ InitGeom ------------------------ */
 
-void init_geom(geomdata *geomi,int geomtype, int fdsblock){
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->file=NULL;
   geomi->display=0;
   geomi->loaded=0;
