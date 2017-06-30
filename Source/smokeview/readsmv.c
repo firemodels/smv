@@ -3968,7 +3968,9 @@ int ReadSMV(char *file, char *file2){
       ngeomdiaginfo++;
       continue;
     }
-    if(Match(buffer, "GEOM") == 1){
+    if(Match(buffer, "GEOM") == 1 ||
+       Match(buffer, "BGEOM") == 1 ||
+       Match(buffer, "SGEOM") == 1){
       ngeominfo++;
       continue;
     }
@@ -4763,7 +4765,7 @@ int ReadSMV(char *file, char *file2){
       strcpy(geomdiagi->geomfile, buffptr);
 
       NewMemory((void **)&geomdiagi->geom, sizeof(geomdata));
-      init_geom(geomdiagi->geom,GEOM_GEOM,NOT_FDSBLOCK);
+      InitGeom(geomdiagi->geom,GEOM_GEOM,NOT_FDSBLOCK);
 
       NewMemory((void **)&geomdiagi->geom->file, strlen(buffptr) + 1);
       strcpy(geomdiagi->geom->file, buffptr);
@@ -4780,7 +4782,9 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++ GEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"GEOM") == 1){
+    if(Match(buffer, "GEOM") == 1 ||
+       Match(buffer, "BGEOM") == 1 ||
+       Match(buffer, "SGEOM") == 1){
       geomdata *geomi;
       char *buff2;
       int ngeomobjinfo=0;
@@ -4796,8 +4800,15 @@ int ReadSMV(char *file, char *file2){
         buff2 = buffer+5;
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
-
-      init_geom(geomi,GEOM_GEOM,FDSBLOCK);
+      if(Match(buffer, "BGEOM") == 1){
+        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK);
+      }
+      else if(Match(buffer, "SGEOM") == 1){
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK);
+      }
+      else{
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK);
+      }
 
       FGETS(buffer,255,stream);
       TrimBack(buffer);
@@ -8353,7 +8364,7 @@ typedef struct {
           if(strcmp(geomi->file,patchi->geomfile)==0){
             patchi->geominfo=geomi;
             if(patchi->slice == 0){
-              geomi->geomtype = GEOM_GEOM;
+              geomi->geomtype = GEOM_BOUNDARY;
               geomi->fdsblock = FDSBLOCK;
             }
             else{
@@ -8481,7 +8492,7 @@ typedef struct {
       NewMemory((void **)&isoi->geominfo,sizeof(geomdata));
       nmemory_ids++;
       isoi->geominfo->memory_id=nmemory_ids;
-      init_geom(isoi->geominfo,GEOM_ISO,NOT_FDSBLOCK);
+      InitGeom(isoi->geominfo,GEOM_ISO,NOT_FDSBLOCK);
 
       bufferptr=TrimFrontBack(buffer);
 
