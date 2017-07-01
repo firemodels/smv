@@ -1111,7 +1111,6 @@ void toggle_timehms() {
   if(vishmsTimelabel==1)PRINTF("Time label in s\n");
 }
 
-// arbitrary
 void set_units(int unitclass, int unit_index) {
   unitclasses[unitclass].unit_index=unit_index;
   updatemenu=1;
