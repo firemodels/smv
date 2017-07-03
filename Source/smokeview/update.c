@@ -190,6 +190,7 @@ void UpdateFrameNumber(int changetime){
         meshdata *meshi;
 
         meshi = meshinfo+i;
+        if(meshi->patchfilenum < 0||meshi->patchfilenum>npatchinfo-1)continue;
         patchi=patchinfo + meshi->patchfilenum;
         if(patchi->filetype==PATCH_GEOMETRY||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[itimes];
