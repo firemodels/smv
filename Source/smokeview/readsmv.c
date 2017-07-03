@@ -8278,17 +8278,20 @@ typedef struct {
       strcpy(patchi->scale, "");
       patchi->geomtype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
+      patchi->filesubtype = PATCH_GEOMETRY_BOUNDARY;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         patchi->filetype=PATCH_GEOMETRY;
+        patchi->filesubtype=PATCH_GEOMETRY_BOUNDARY;
         patchi->slice = 0;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
         patchi->filetype = PATCH_GEOMETRY;
+        patchi->filesubtype = PATCH_GEOMETRY_SLICE;
         patchi->slice = 1;
 
         sliceparms = strchr(buffer, '&');

@@ -107,6 +107,9 @@ void _Sniff_Errors(char *whereat);
 #define PATCH_CELL_CENTER 1
 #define PATCH_GEOMETRY 2
 
+#define PATCH_GEOMETRY_BOUNDARY 0
+#define PATCH_GEOMETRY_SLICE 1
+
 #define NODATA 0
 #define HASDATA 1
 
