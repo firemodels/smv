@@ -1102,9 +1102,11 @@ void ShowHideSliceMenu(int value){
     else{
       colorbardata *fed_colorbar;
 
-      colorbartype_save = colorbartype;
       fed_colorbar = GetColorbar(default_fed_colorbar);
-      if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
+      if(fed_colorbar!=NULL){
+        if(current_colorbar!=fed_colorbar)colorbartype_save = current_colorbar - colorbarinfo;
+        ColorbarMenu(fed_colorbar - colorbarinfo);
+      }
     }
   }
   UpdateSliceFilenum();
@@ -3813,9 +3815,9 @@ void LoadSlicei(int set_slicecolor, int value){
     else{
       colorbardata *fed_colorbar;
 
-      colorbartype_save = colorbartype;
-      ReadFed(value, LOAD, FED_SLICE, &errorcode);
       fed_colorbar = GetColorbar(default_fed_colorbar);
+      if(fed_colorbar != NULL && current_colorbar != fed_colorbar)colorbartype_save = current_colorbar - colorbarinfo;
+      ReadFed(value, LOAD, FED_SLICE, &errorcode);
       if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
     }
   }
