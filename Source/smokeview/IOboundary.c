@@ -3779,6 +3779,8 @@ int patchcompare( const void *arg1, const void *arg2 ){
 
   if(strcmp(patchi->label.longlabel,patchj->label.longlabel)<0)return -1;
   if(strcmp(patchi->label.longlabel,patchj->label.longlabel)>0)return 1;
+  if(strcmp(patchi->gslicedir, patchj->gslicedir)<0)return -1;
+  if(strcmp(patchi->gslicedir, patchj->gslicedir)>0)return 1;
   if(patchi->blocknumber<patchj->blocknumber)return -1;
   if(patchi->blocknumber>patchj->blocknumber)return 1;
   return 0;
@@ -3802,6 +3804,7 @@ void update_patch_menulabels(void){
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       STRCPY(patchi->menulabel,patchi->label.longlabel);
+      STRCPY(patchi->menulabel_base, patchi->label.longlabel);
       if(nmeshes>1){
         meshdata *patchmesh;
 
@@ -3820,9 +3823,11 @@ void update_patch_menulabels(void){
         if(patchi->geomtype!=NULL&&strlen(patchi->geomtype)>0){
           if(strcmp(patchi->geomtype, "INBOUND_FACES")==0){
             STRCAT(patchi->menulabel, ", in boundary");
+            STRCAT(patchi->menulabel_base, ", in boundary");
           }
           if(strcmp(patchi->geomtype, "EXIMBND_FACES")==0){
             STRCAT(patchi->menulabel, ", EXIM faces");
+            STRCAT(patchi->menulabel_base, ", EXIM faces");
           }
         }
       }

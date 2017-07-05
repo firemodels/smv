@@ -12,7 +12,7 @@
 #ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
-  #define PROGVERSION "6.5.2"
+  #define PROGVERSION "6.5.3"
 #endif
 
 //*** options: all platforms
