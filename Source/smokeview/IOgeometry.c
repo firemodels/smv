@@ -3276,7 +3276,7 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->filesubtype == PATCH_GEOMETRY_BOUNDARY && patchi->loaded == 1 && patchi->display == 1){
+    if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY && patchi->loaded == 1 && patchi->display == 1){
       hide_geom = 1;
       break;
     }
