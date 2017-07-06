@@ -440,16 +440,16 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       strcpy(slicei->keyword,buffer);
 
       if(Match(buffer,"SLCF") == 1){
-        slicei->slicetype=1;
+        slicei->slicetype= SLICE_NODE_CENTER;
       }
       if(Match(buffer,"SLCC") == 1||Match(buffer, "SLCD") == 1){
-          slicei->slicetype = 2;
+          slicei->slicetype = SLICE_CELL_CENTER;
       }
       if(Match(buffer,"SLFL") == 1){
-        slicei->slicetype=3;
+        slicei->slicetype= SLICE_FIRELINE;
       }
       if(Match(buffer,"SLCT") == 1){
-        slicei->slicetype=4;
+        slicei->slicetype= SLICE_TERRAIN;
       }
 
       slicei->version=version_local;
