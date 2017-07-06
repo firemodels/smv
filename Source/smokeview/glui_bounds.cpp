@@ -368,7 +368,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define MEMCHECK_ROLLOUT 7
 
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
-procdata sliceprocinfo[4];
+procdata sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
 
 /* ------------------ update_iso_controls ------------------------ */
