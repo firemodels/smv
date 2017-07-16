@@ -12,23 +12,26 @@ function get_fullpath(command,platform){
   var fullpath = directoryPath.concat(command).concat(platform);
   return fullpath;
 }
+function run_script(script){
+  MyObject.Run(get_fullpath("../scripts/webRUN_script.bat ",script));
+}
 function build_libs(platform){
-  MyObject.Run(get_fullpath("../scripts/BUILDlibs.bat ",platform));
+  MyObject.Run(get_fullpath("../scripts/webBUILDlibs.bat ",platform));
 }
 function build_smv(args){
-  MyObject.Run(get_fullpath("../scripts/BUILDsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/webBUILDsmv.bat ",args));
 }
 function build_prog(args){
-  MyObject.Run(get_fullpath("../scripts/BUILDprog.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/webBUILDprog.bat ",args));
 }
 function build_utilprog(args){
   MyObject.Run(get_fullpath("../../fds/Utilities/Scripts/BUILDutilprog.bat ",args));
 }
 function package_smv(args){
-  MyObject.Run(get_fullpath("../scripts/PACKAGEsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/webPACKAGEsmv.bat ",args));
 }
 function install_smv(args){
-  MyObject.Run(get_fullpath("../scripts/INSTALLsmv.bat ",args));
+  MyObject.Run(get_fullpath("../scripts/webINSTALLsmv.bat ",args));
 }
 </script>
 </HEAD>
@@ -42,15 +45,15 @@ function install_smv(args){
 
 <p><table border=on>
 <tr><th colspan=2>Preliminaries</th></tr>
-<tr><th>Settings</th><td align=center><a href="../scripts/EDIT_setup.bat">Edit</a></td></tr>
-<tr><th rowspan=3>Repos</th><td align=center><a href="../scripts/clean_repos_sourcebuild.bat">Clean</a></td></tr>
-<tr><td align=center><a href="../scripts/UPDATErepos.bat">Update</a></td></tr>
-<tr><td align=center><a href="../scripts/SHOW_revisions.bat">Show</a></td></tr>
-<tr><th>Revision</th><td align=center><a href="../scripts/SET_bundle_revision.bat">Set</a>/<a href="../scripts/SHOW_bundle_revision.bat">Show</a></td></tr>
+<tr><th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td></tr>
+<tr><th rowspan=3>Repos</th><td align=center><button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button></td></tr>
+<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">Update</button></td></tr>
+<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button></td></tr>
+<tr><th>Revision</th><td align=center><button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>/<button onclick="run_script('\\smv\\scripts\\SHOW_bundle_revision.bat')">Show</button></td></tr>
 <tr><th>Release notes</th>
 <td align=center>
-<a href="../scripts/EDIT_release_notes.bat">Edit</a>/<a href="../scripts/VIEW_release_notes.bat">View</a><br>
-<a href="../scripts/GET_smvlog.bat">Add</a>/<a href="../scripts/EDIT_setup.bat">after smvlogdate</a></td>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_release_notes.bat')">Edit</button>/<button onclick="run_script('\\smv\\scripts\\VIEW_release_notes.bat')">View</button><br>
+<button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>/<button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">after smvlogdate</button></td>
 </tr>
 </table>
 
@@ -177,22 +180,22 @@ function install_smv(args){
 </tr>
 
 <tr>
-<td align=center COLSPAN=3><a href="../scripts/GET_smv_version.bat">Revision</a></td>
-<td align=center COLSPAN=3><a href="../scripts/GET_smvtest_version.bat">Revision</a></td>
+<td align=center COLSPAN=3><button onclick="run_script('\\smv\\scripts\\webGET_smv_version.bat')">Revision</button></td>
+<td align=center COLSPAN=3><button onclick="run_script('\\smv\\scripts\\webGET_smvtest_version.bat')">Revision</button></td>
 </tr>
 
 <tr>
-<td align=center COLSPAN=6><a href="../scripts/UPLOADsmv2git.bat">Upload</a></td>
+<td align=center COLSPAN=6><button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button></td>
 </tr>
 
 </table>
 
 <h3>Other</h3>
 <ul>
-<li><a href="../scripts/EDIT_build_smokeview.bat">Edit</a> this page
-<li><a href="../scripts/COPYhome2config.bat">settings ===>> repo.</a>
-<li><a href="../scripts/COPYconfig2home.bat">settings <<=== repo.</a>
-<li><a href="../scripts/TEST_setup.bat">Test</a> settings and build/bundle environment. 
+<li><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button> 
+<li><button onclick="run_script('\\smv\\scripts\\webCOPYhome2config.bat')">settings ===>> repo</button>
+<li><button onclick="run_script('\\smv\\scripts\\webCOPYconfig2home.bat')">settings <<=== repo</button>
+<li><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button>
 <li><a href="getting_started.html">FDS/Smokeview build page checklist</a>
 </ul>
 

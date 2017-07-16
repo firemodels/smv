@@ -12,6 +12,9 @@ function get_fullpath(command,platform){
   var fullpath = directoryPath.concat(command).concat(platform);
   return fullpath;
 }
+function run_script(script){
+  MyObject.Run(get_fullpath("../scripts/webRUN_script.bat ",script));
+}
 function build_guide(guide){
   MyObject.Run(get_fullpath("../scripts/BUILDguide.bat ",guide));
 }
@@ -144,9 +147,8 @@ function get_figs(guide){
 </table>
 
 <h3>Other</h3>
-<ul>
-<li><a href="../scripts/EDIT_build_guides.bat">Edit</a> this page
-</ul>
+<p><button onclick="run_script('\\smv\\scripts\\webEDIT_build_guides.bat')">Edit this page</button>
+
 
 <p><hr>
 
