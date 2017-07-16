@@ -27,7 +27,7 @@ pause >NUL
 %svn_drive%
 call %envfile%
 
-call %svn_root%\smv\scripts\SHOW_setup.bat
+call %svn_root%\smv\scripts\batSHOW_setup.bat
 
 echo.
 echo Press any key to test putty installation
