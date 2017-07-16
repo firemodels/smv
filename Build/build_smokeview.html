@@ -25,7 +25,7 @@ function build_prog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDprog.bat ",args));
 }
 function build_utilprog(args){
-  MyObject.Run(get_fullpath("../../fds/Utilities/Scripts/BUILDutilprog.bat ",args));
+  MyObject.Run(get_fullpath("../../fds/Utilities/Scripts/webBUILDutilprog.bat ",args));
 }
 function package_smv(args){
   MyObject.Run(get_fullpath("../scripts/webPACKAGEsmv.bat ",args));
@@ -52,8 +52,10 @@ function install_smv(args){
 <tr><th>Revision</th><td align=center><button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button><button onclick="run_script('\\smv\\scripts\\SHOW_bundle_revision.bat')">Show</button></td></tr>
 <tr><th>Release notes</th>
 <td align=center>
-<button onclick="run_script('\\smv\\scripts\\webEDIT_release_notes.bat')">Edit</button><button onclick="run_script('\\smv\\scripts\\VIEW_release_notes.bat')">View</button><br>
-<button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">after smvlogdate</button></td>
+<button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_release_notes.bat')">Edit</button>
+<button onclick="run_script('\\smv\\scripts\\webVIEW_release_notes.bat')">View</button><br>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Set smvlogdate</button></td>
 </tr>
 </table>
 
