@@ -39,7 +39,7 @@ Title Bundling %type% Smokeview for %platform%
 :: windows
 
 if "%platform%" == "windows" (
-  call %svn_root%\smv\scripts\MAKE%type%distwingen 64
+  call %svn_root%\smv\scripts\batMAKE%type%distwingen 64
   goto eof
 )
 

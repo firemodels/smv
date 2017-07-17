@@ -3814,18 +3814,18 @@ void update_patch_menulabels(void){
         STRCAT(patchi->menulabel,label);
       }
       if(patchi->filetype == PATCH_GEOMETRY){
-        if(patchi->geomtype==NULL||strlen(patchi->geomtype)==0||strcmp(patchi->geomtype, "INCLUDE_GEOM")==0){
+        if(patchi->geom_fdsfiletype==NULL||strlen(patchi->geom_fdsfiletype)==0||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
           if(strlen(patchi->gslicedir) != 0){
             STRCAT(patchi->menulabel, ", ");
             STRCAT(patchi->menulabel, patchi->gslicedir);
           }
         }
-        if(patchi->geomtype!=NULL&&strlen(patchi->geomtype)>0){
-          if(strcmp(patchi->geomtype, "INBOUND_FACES")==0){
+        if(patchi->geom_fdsfiletype!=NULL&&strlen(patchi->geom_fdsfiletype)>0){
+          if(strcmp(patchi->geom_fdsfiletype, "INBOUND_FACES")==0){
             STRCAT(patchi->menulabel, ", in boundary");
             STRCAT(patchi->menulabel_base, ", in boundary");
           }
-          if(strcmp(patchi->geomtype, "EXIMBND_FACES")==0){
+          if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES")==0){
             STRCAT(patchi->menulabel, ", EXIM faces");
             STRCAT(patchi->menulabel_base, ", EXIM faces");
           }

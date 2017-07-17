@@ -8250,7 +8250,7 @@ typedef struct {
       int version;
       int blocknumber;
       size_t len;
-      char *geomtype;
+      char *geom_fdsfiletype;
 
       if(setup_only == 1)continue;
       nn_patch++;
@@ -8276,22 +8276,22 @@ typedef struct {
 
       patchi->version=version;
       strcpy(patchi->scale, "");
-      patchi->geomtype=NULL;
+      patchi->geom_fdsfiletype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
-      patchi->filesubtype = PATCH_GEOMETRY_BOUNDARY;
+      patchi->geom_smvfiletype = PATCH_STRUCTURED;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         patchi->filetype=PATCH_GEOMETRY;
-        patchi->filesubtype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
         patchi->slice = 0;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
         patchi->filetype = PATCH_GEOMETRY;
-        patchi->filesubtype = PATCH_GEOMETRY_SLICE;
+        patchi->geom_smvfiletype = PATCH_GEOMETRY_SLICE;
         patchi->slice = 1;
 
         sliceparms = strchr(buffer, '&');
@@ -8306,17 +8306,17 @@ typedef struct {
           }
         }
 
-        geomtype = strchr(buffer, '#');
-        if(geomtype != NULL){
-          int len_geomtype;
+        geom_fdsfiletype = strchr(buffer, '#');
+        if(geom_fdsfiletype != NULL){
+          int len_geom_fdsfiletype;
 
-          geomtype++;
-          geomtype[-1] = 0;
-          geomtype = TrimFrontBack(geomtype);
-          len_geomtype = strlen(geomtype);
-          if(len_geomtype>0){
-            NewMemory((void **)&patchi->geomtype,(unsigned int)(len_geomtype+1));
-            strcpy(patchi->geomtype,geomtype);
+          geom_fdsfiletype++;
+          geom_fdsfiletype[-1] = 0;
+          geom_fdsfiletype = TrimFrontBack(geom_fdsfiletype);
+          len_geom_fdsfiletype = strlen(geom_fdsfiletype);
+          if(len_geom_fdsfiletype>0){
+            NewMemory((void **)&patchi->geom_fdsfiletype,(unsigned int)(len_geom_fdsfiletype+1));
+            strcpy(patchi->geom_fdsfiletype,geom_fdsfiletype);
           }
         }
       }

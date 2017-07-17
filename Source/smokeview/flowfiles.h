@@ -1305,11 +1305,11 @@ typedef struct {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
-  char *geomfile, *geomtype;
+  char *geomfile, *geom_fdsfiletype;
   geomdata *geominfo;
   //int *patchsize;
   int version;
-  int filetype, filesubtype, slice;
+  int filetype, geom_smvfiletype, slice;
   int type;
   int inuse,inuse_getbounds;
   int unit_start;

@@ -39,6 +39,11 @@
 #define FILE_SIZE unsigned long long
 #endif
 
+#define SLICE_NODE_CENTER 1
+#define SLICE_CELL_CENTER 2
+#define SLICE_FIRELINE 3
+#define SLICE_TERRAIN 4
+
 //************************** data structures ****************************************
 
 typedef struct {
