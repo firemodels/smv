@@ -493,7 +493,7 @@ char* form_filename(int view_mode, char *renderfile_name, char *renderfile_dir,
                 break;
         }
 
-        if(can_write_to_dir(renderfile_dir)==0){
+        if(Writable(renderfile_dir)==NO){
             printf("Creating directory: %s\n", renderfile_dir);
 
             // TODO: ensure this can be made cross-platform
@@ -1948,7 +1948,7 @@ int setrenderdir(const char *dir) {
     fprintf(stderr, "%s\n", "making directory(linux/osx)\n");
     mkdir(dir_path_temp, 0755);
 #endif
-      if(can_write_to_dir(dir_path_temp)==0){
+      if(Writable(dir_path_temp)==NO){
         fprintf(stderr,"*** Error: Cannot write to the RENDERDIR "
                 "directory: %s\n",dir_path_temp);
         return 1;

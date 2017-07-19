@@ -780,10 +780,10 @@ char *getprogdirabs(char *progname, char **svpath){
   char *progpath;
 #ifdef WIN32
   NewMemory((void **)&progpath,_MAX_PATH);
-  _fullpath(progpath,getprogdir(progname,svpath),_MAX_PATH);
+  _fullpath(progpath,GetProgDir(progname,svpath),_MAX_PATH);
 #else
   NewMemory((void **)&progpath,PATH_MAX);
-  realpath(getprogdir(progname,svpath),progpath);
+  realpath(GetProgDir(progname,svpath),progpath);
 #endif
   return progpath;
 }
