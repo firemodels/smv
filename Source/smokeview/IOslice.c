@@ -22,7 +22,7 @@
                            fread(var,4,size,SLICEFILE);\
                            if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
-
+// dummy change
 int endianswitch;
 float gslice_valmin, gslice_valmax, *gslicedata;
 meshdata *gslice_valmesh;
