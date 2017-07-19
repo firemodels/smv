@@ -9487,8 +9487,9 @@ int ReadINI2(char *inifile, int localfile){
     }
     if(Match(buffer, "VECCONTOURS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_slices_and_vectors);
-      ONEORZERO(show_slices_and_vectors);
+      sscanf(buffer, "%i %i", &show_node_slices_and_vectors,&show_cell_slices_and_vectors);
+      ONEORZERO(show_node_slices_and_vectors);
+      ONEORZERO(show_cell_slices_and_vectors);
       continue;
     }
     if(Match(buffer, "ISOTRAN2") == 1){
@@ -12844,7 +12845,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "USENEWDRAWFACE\n");
   fprintf(fileout, " %i\n", use_new_drawface);
   fprintf(fileout, "VECCONTOURS\n");
-  fprintf(fileout, " %i\n", show_slices_and_vectors);
+  fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
   fprintf(fileout, " %i %f 1.0\n", 4, vecfactor);
   fprintf(fileout, "VECTORCOLOR\n");

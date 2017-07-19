@@ -135,7 +135,8 @@
 #define MENU_SHOWSLICE_IN_GAS -16
 #define MENU_SHOWSLICE_IN_GASANDSOLID -17
 #define MENU_SHOWSLICE_IN_SOLID -18
-#define MENU_SHOWSLICE_SLICEANDVECTORS -15
+#define MENU_SHOWSLICE_NODESLICEANDVECTORS -15
+#define MENU_SHOWSLICE_CELLSLICEANDVECTORS -19
 #define MENU_SHOWSLICE_TERRAIN -13
 #define MENU_SHOWSLICE_OFFSET -12
 #define MENU_SHOWSLICE_FEDAREA -14
@@ -977,8 +978,12 @@ void ShowVSliceMenu(int value){
     offset_slice=1-offset_slice;
     return;
   }
-  if(value == MENU_SHOWSLICE_SLICEANDVECTORS){
-    show_slices_and_vectors=1-show_slices_and_vectors;
+  if(value == MENU_SHOWSLICE_NODESLICEANDVECTORS){
+    show_node_slices_and_vectors=1-show_node_slices_and_vectors;
+    return;
+  }
+  if(value == MENU_SHOWSLICE_CELLSLICEANDVECTORS){
+    show_cell_slices_and_vectors=1-show_cell_slices_and_vectors;
     return;
   }
   vd = vsliceinfo + value;
@@ -1066,8 +1071,11 @@ void ShowHideSliceMenu(int value){
     case MENU_SHOWSLICE_FEDAREA:
       show_fed_area=1-show_fed_area;
       break;
-    case MENU_SHOWSLICE_SLICEANDVECTORS:
-      show_slices_and_vectors=1-show_slices_and_vectors;
+    case MENU_SHOWSLICE_NODESLICEANDVECTORS:
+      show_node_slices_and_vectors=1-show_node_slices_and_vectors;
+      return;
+    case MENU_SHOWSLICE_CELLSLICEANDVECTORS:
+      show_cell_slices_and_vectors=1-show_cell_slices_and_vectors;
       return;
     default:
       ASSERT(FFALSE);
@@ -7062,8 +7070,10 @@ updatemenu=0;
       glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
       glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
-    if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
-    if(show_slices_and_vectors == 0)glutAddMenuEntry(_("Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
+    if(show_node_slices_and_vectors == 1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+    if(show_node_slices_and_vectors == 0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+    if(show_cell_slices_and_vectors == 1)glutAddMenuEntry(_("*Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
+    if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(vd_shown!=NULL&&nvsliceloaded0!=0){
@@ -7187,8 +7197,10 @@ updatemenu=0;
     }
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
-    if(show_slices_and_vectors == 1)glutAddMenuEntry(_("*Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
-    if(show_slices_and_vectors == 0)glutAddMenuEntry(_("Show slices and vectors"), MENU_SHOWSLICE_SLICEANDVECTORS);
+    if(show_node_slices_and_vectors == 1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+    if(show_node_slices_and_vectors == 0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+    if(show_cell_slices_and_vectors == 1)glutAddMenuEntry(_("*Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
+    if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(nfedinfo>0){
       if(show_fed_area == 1)glutAddMenuEntry("*Show FED areas", MENU_SHOWSLICE_FEDAREA);
       if(show_fed_area == 0)glutAddMenuEntry("Show FED areas", MENU_SHOWSLICE_FEDAREA);

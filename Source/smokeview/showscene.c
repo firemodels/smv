@@ -319,7 +319,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     CLIP_VALS;
     DrawGSliceOutline();
   }
-  if((show_slices_and_vectors == 1 && showvslice == 1) || (showslice == 1 && use_transparency_data == 0)){
+  if(((show_node_slices_and_vectors == 1 || show_cell_slices_and_vectors==1)&& showvslice == 1) || (showslice == 1 && use_transparency_data == 0)){
     CLIP_VALS;
     DrawSliceFrame();
   }
@@ -424,7 +424,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
 
-  if((show_slices_and_vectors == 1 && showvslice == 1) || (showslice == 1 && use_transparency_data == 1)){
+  if((show_node_slices_and_vectors == 1 || show_cell_slices_and_vectors==1) || (showslice == 1 && use_transparency_data == 1)){
     CLIP_VALS;
     DrawSliceFrame();
     SNIFF_ERRORS("after DrawSliceFrame");
