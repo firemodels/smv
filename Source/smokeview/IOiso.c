@@ -387,6 +387,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   int break_frame;
   int skip_local;
   float *fed_colors[3];
+  float read_time, total_time;
 
   int blocknumber;
   int error;
@@ -395,12 +396,9 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   meshdata *meshi;
   isodata *ib;
 
-  int local_starttime=0, local_stoptime=0;
   FILE_SIZE file_size=0;
-  int local_starttime0=0, local_stoptime0=0;
-  float delta_time, delta_time0;
 
-  local_starttime0 = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(total_time);
 
   ASSERT(ifile>=0&&ifile<nisoinfo);
   ib = isoinfo+ifile;
@@ -439,7 +437,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
     &ib->tmin, &ib->tmax, endian_data);
 
-  file_size=get_filesize(file);
+  file_size= GetFILESize(file);
 
   if(meshi->isolevels==NULL){
     readiso("",ifile,UNLOAD,NULL,&error);
@@ -505,7 +503,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   iitime=0;
   itime=0;
   time_max = -1000000.0;
-  local_starttime = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(read_time);
   for(;;){
     int skip_frame;
     int ntri_total;
@@ -773,8 +771,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   PRINTF("size verts=%i tris=%i\n",(int)(ntotal_isoverts*sizeof(isovert)),(int)(ntotal_isotris*sizeof(isotri)/3));
 #endif
 
-  local_stoptime = glutGet(GLUT_ELAPSED_TIME);
-  delta_time = (local_stoptime-local_starttime)/1000.0;
+  STOP_TIMER(read_time);
   fclose(isostream);
   if(*errorcode!=0){
     unloadiso(meshi);
@@ -807,19 +804,18 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
 #endif
   Idle_CB();
 
-  local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
-  delta_time0=(local_stoptime0-local_starttime0)/1000.0;
+  STOP_TIMER(total_time);
 
-  if(file_size!=0&&delta_time>0.0){
+  if(file_size!=0&&read_time>0.0){
     float loadrate;
 
-    loadrate = ((float)file_size*8.0/1000000.0)/delta_time;
+    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
     PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,delta_time,loadrate,delta_time0-delta_time);
+    (float)file_size/1000000.,read_time,loadrate,total_time - read_time);
   }
   else{
     PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-    (float)file_size/1000000.,delta_time,delta_time0-delta_time);
+    (float)file_size/1000000.,read_time,total_time-read_time);
   }
 
   glutPostRedisplay();
@@ -1343,7 +1339,7 @@ void drawstaticiso(const isosurface *asurface,int surfacetype,
         glVertex3fv(vv3);
         glVertex3fv(vv3n);
       }
-		  else{
+      else{
         for(k=0;k<3;k++){
           vv1n[k]=vv1[k]+norm[k]/(8.*32768.)/4.0;
           vv2n[k]=vv2[k]+norm[k]/(8.*32768.)/4.0;
@@ -1490,9 +1486,9 @@ void update_iso_menulabels(void){
       isoi = isoinfo + i;
       STRCPY(isoi->menulabel,isoi->surface_label.longlabel);
       if(nmeshes>1){
-	      meshdata *isomesh;
+        meshdata *isomesh;
 
-		    isomesh = meshinfo + isoi->blocknumber;
+        isomesh = meshinfo + isoi->blocknumber;
         sprintf(label,"%s",isomesh->label);
         STRCAT(isoi->menulabel,", ");
         STRCAT(isoi->menulabel,label);

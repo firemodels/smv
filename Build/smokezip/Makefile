@@ -1,4 +1,4 @@
-SOURCE_DIR = ../../../Source/
+ SOURCE_DIR = ../../../Source/
 LIB_DIR = ../../LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 FILTERC =
@@ -21,7 +21,10 @@ FORTLIBDIR = /opt/intel/composerxe/lib
 
 # Definition of the object variables
 
-obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o csphere.o dmalloc.o lightsmoke.o smv_endian.o histogram.o readfiles.o utilities.o isobox.o file_util.o string_util.o threader.o compress.o fdsmodules.o gsmv.o getdata.o getsizes.o 
+obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
+         csphere.o dmalloc.o lightsmoke.o smv_endian.o histogram.o readfiles.o utilities.o \
+         isobox.o file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o \
+         fdsmodules.o gsmv.o getdata.o getsizes.o 
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -63,7 +66,7 @@ intel_win_64 : $(objwin)
 
 # ------------- 32 bit gnu Linux ----------------
 
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
@@ -76,7 +79,7 @@ gnu_linux_32 : $(obj)
 
 # ------------- 64 bit gnu Linux ----------------
 
-gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
@@ -90,7 +93,7 @@ gnu_linux_64 : $(obj)
 # ------------- gnu OSX ----------------
 #  gnu linux
 
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_OSX $(GITINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
@@ -107,7 +110,7 @@ gnu_osx_64 : $(obj)
 LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_noappend -D pp_LINUX
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX -D pp_INTEL $(GITINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc

@@ -20,8 +20,18 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int curdir_writable;
+SVEXTERN char SVDECL(*file_smokesensors, NULL);
+SVEXTERN int SVDECL(light_faces, 1);
+SVEXTERN char SVDECL(*prog_fullpath, NULL);
+SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
+SVEXTERN int SVDECL(quicktime_compatibility, 0);
+SVEXTERN float startup_time, read_time_elapsed;
+SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
 SVEXTERN int SVDECL(show_patch_cutcell_polygon, 0);
-SVEXTERN int SVDECL(alt_ctrl_key_state, 0);
+#ifdef pp_GLUTGET
+SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
+#endif
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
 
@@ -140,17 +150,11 @@ SVEXTERN float SVDECL(geom_outline_offset,0.005);
 SVEXTERN float SVDECL(geom_max_angle, 30.0), cos_geom_max_angle;
 SVEXTERN int SVDECL(use_max_angle, 1);
 SVEXTERN int SVDECL(update_setvents, 0);
-#ifdef pp_SLICECOLORDEFER
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
-#else
-SVEXTERN int SVDECL(use_set_slicecolor, 0);
-#endif
 SVEXTERN int SVDECL(cvents_defined, 0);
-#ifdef pp_SLICEDUP
 SVEXTERN int SVDECL(slicedup_option , SLICEDUP_KEEPFINE);
 SVEXTERN int SVDECL(vectorslicedup_option, SLICEDUP_KEEPALL);
 SVEXTERN int SVDECL(nslicedups, 0);
-#endif
 SVEXTERN int SVDECL(vis_xtree, 0), SVDECL(vis_ytree, 0), SVDECL(vis_ztree, 1);
 SVEXTERN int SVDECL(max_device_tree,0);
 #ifdef INMAIN
@@ -163,7 +167,8 @@ SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 
 SVEXTERN int SVDECL(viswindrose, 0), SVDECL(visxy_windrose, 1), SVDECL(visxz_windrose, 0), SVDECL(visyz_windrose, 0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
-SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0),SVDECL(scale_increment_windrose,0.05), SVDECL(scale_max_windrose, 0.25);
+SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);
+SVEXTERN int SVDECL(scale_increment_windrose, 5), SVDECL(scale_max_windrose, 25);
 SVEXTERN int    SVDECL(showref_windrose,1), SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
 SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_DIRECTION);
 
@@ -301,8 +306,8 @@ SVEXTERN char default_fed_colorbar[255];
 SVEXTERN int SVDECL(*meshvisptr,NULL);
 SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);
 SVEXTERN int SVDECL(from_commandline,0);
-SVEXTERN filelistdata SVDECL(*ini_filelist,NULL);
-SVEXTERN int SVDECL(nini_filelist,0);
+SVEXTERN filelistdata SVDECL(*ini_filelist,NULL), SVDECL(*filelist_casename, NULL), SVDECL(*filelist_casedir, NULL);
+SVEXTERN int          SVDECL(nini_filelist,0),    SVDECL(nfilelist_casename, 0),    SVDECL(nfilelist_casedir, 0);
 SVEXTERN float this_mouse_time, SVDECL(last_mouse_time,0.0);
 SVEXTERN int move_gslice;
 
@@ -392,7 +397,7 @@ SVEXTERN int SVDECL(levelset_colorbar,-1), SVDECL(wallthickness_colorbar,-1);
 SVEXTERN colorbardata SVDECL(*fire_colorbar,NULL);
 SVEXTERN float SVDECL(glui_time,0.0);
 SVEXTERN int show_mode;
-SVEXTERN int SVDECL(cellcenter_slice_active,0), SVDECL(cellcenter_bound_active,0), SVDECL(facecenter_slice_active,0);
+SVEXTERN int SVDECL(cellcenter_slice_active,0), SVDECL(facecenter_slice_active,0);
 SVEXTERN int SVDECL(part5colorindex,0), SVDECL(show_tracers_always,0);
 SVEXTERN int navatar_colors;
 SVEXTERN int select_avatar, selected_avatar_tag, view_from_selected_avatar;
@@ -402,7 +407,7 @@ SVEXTERN unsigned char select_device_color[4], SVDECL(*select_device_color_ptr,N
 SVEXTERN float SVDECL(*avatar_colors,NULL);
 SVEXTERN int SVDECL(script_render_flag,0), SVDECL(script_itime,0);
 
-SVEXTERN int SVDECL(show_slice_in_obst,0), offset_slice;
+SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice;
 SVEXTERN int skip_slice_in_embedded_mesh;
 SVEXTERN int n_embedded_meshes;
 
@@ -481,7 +486,7 @@ SVEXTERN int terrain_rgba_zmin[3];
 SVEXTERN int terrain_rgba_zmax[3];
 SVEXTERN float vertical_factor;
 
-SVEXTERN char input_filename_ext[4];
+SVEXTERN char input_filename_ext[5];
 
 SVEXTERN float percentile_level;
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);

@@ -31,7 +31,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj =    assert.o dmalloc.o file_util.o string_util.o dem_util.o main.o
+obj =    assert.o dmalloc.o file_util.o string_util.o dem_util.o  md5.o sha1.o sha256.o main.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -83,7 +83,7 @@ gnu_linux_64: $(obj)
 #  64 bit linux
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL $(GITINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = dem2fds_linux_64
 
@@ -95,7 +95,7 @@ intel_linux_64 : $(obj)
 #  64 bit OSX
 
 intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL $(GITINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = dem2fds_osx_64
 

@@ -468,9 +468,10 @@ logical :: exists
 integer, intent(inout) :: ip1, ip2, jp1, jp2, kp1, kp2
 integer, intent(out) :: ni, nj, nk, slice3d, error
 
-integer :: idir, joff, koff
+integer :: idir, joff, koff, volslice
 logical :: connected
 character(len=30) :: longlbl, shortlbl, unitlbl
+integer :: iip1, iip2
 
 integer :: lu11
 
@@ -514,7 +515,7 @@ if(ip1.eq.ip2.or.jp1.eq.jp2.or.kp1.eq.kp2)then
   slice3d=1
 endif
 
-call getdirval(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
+call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
 
 return
 end subroutine getsliceparms
@@ -534,6 +535,7 @@ integer, intent(out) :: headersize, framesize
 real, intent(in) :: tmin_s, tmax_s
 
 integer :: ip1, ip2, jp1, jp2, kp1, kp2
+integer :: iip1, iip2
 integer :: nxsp, nysp, nzsp
 integer :: i, j, k
 
@@ -542,7 +544,7 @@ real :: time, time_max
 real, dimension(:,:,:), pointer :: qq
 character(len=30) :: longlbl, shortlbl, unitlbl
 logical :: connected, load
-integer :: idir, joff, koff
+integer :: idir, joff, koff, volslice
 integer :: count
 
 error=0
@@ -579,7 +581,7 @@ nzsp = kp2 + 1 - kp1
 
 allocate(qq(nxsp,nysp,nzsp))
 
-call getdirval(ip1,ip2,jp1,jp2,kp1,kp2,idir,joff,koff)
+call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
 nslicei = nxsp
 nslicej = nysp + joff
 nslicek = nzsp + koff

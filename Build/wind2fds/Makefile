@@ -18,7 +18,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj =    main.o assert.o dmalloc.o string_util.o file_util.o
+obj =    main.o assert.o dmalloc.o string_util.o file_util.o  md5.o sha1.o sha256.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur

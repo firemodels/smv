@@ -907,8 +907,8 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   default:
-	  ASSERT(FFALSE);
-	  break;
+    ASSERT(FFALSE);
+    break;
   }
   return returnval;
 }

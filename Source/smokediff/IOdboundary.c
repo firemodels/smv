@@ -24,7 +24,7 @@ void setup_boundary(FILE *stream_out){
       char outfile[1024];
 
       fprintf(stream_out,"%s\n",boundaryi->keyword);
-      make_outfile(outfile,NULL,boundaryi->file,".bf");
+      MakeOutFile(outfile,NULL,boundaryi->file,".bf");
       fprintf(stream_out," %s\n",outfile);
       fprintf(stream_out," %s\n",boundaryi->label.longlabel);
       fprintf(stream_out," %s\n",boundaryi->label.shortlabel);
@@ -126,8 +126,8 @@ void diff_boundaryes(FILE *stream_out){
     boundary2 = boundaryi->boundary2;
     file1 = boundary1->file;
     file2 = boundary2->file;
-    fullfile(fullfile1,sourcedir1,file1);
-    fullfile(fullfile2,sourcedir2,file2);
+    FullFile(fullfile1,sourcedir1,file1);
+    FullFile(fullfile2,sourcedir2,file2);
 
     p1i1 = boundary1->pi1;
     p1i2 = boundary1->pi2;
@@ -179,12 +179,12 @@ void diff_boundaryes(FILE *stream_out){
     if(stream==NULL)continue;
     fclose(stream);
 
-    make_outfile(outfile,destdir,file1,".bf");
+    MakeOutFile(outfile,destdir,file1,".bf");
     if(strlen(outfile)==0)continue;
     stream=fopen(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
-    make_outfile(outfile2,NULL,boundary1->file,".bf");
+    MakeOutFile(outfile2,NULL,boundary1->file,".bf");
 
     PRINTF("Subtracting %s from %s\n",fullfile2,fullfile1);
 

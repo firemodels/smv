@@ -27,7 +27,7 @@ void setup_plot3d(FILE *stream_out){
       int j;
 
       fprintf(stream_out,"%s\n",plot3di->keyword);
-      make_outfile(outfile,NULL,plot3di->file,".q");
+      MakeOutFile(outfile,NULL,plot3di->file,".q");
       fprintf(stream_out," %s\n",outfile);
       for(j=0;j<5;j++){
         flowlabels *label;
@@ -103,8 +103,8 @@ void diff_plot3ds(FILE *stream_out){
     plot3d2 = plot3di->plot3d2;
     file1 = plot3d1->file;
     file2 = plot3d2->file;
-    fullfile(fullfile1,sourcedir1,file1);
-    fullfile(fullfile2,sourcedir2,file2);
+    FullFile(fullfile1,sourcedir1,file1);
+    FullFile(fullfile2,sourcedir2,file2);
 
     stream=fopen(fullfile1,"r");
     if(stream==NULL)continue;
@@ -114,13 +114,13 @@ void diff_plot3ds(FILE *stream_out){
     if(stream==NULL)continue;
     fclose(stream);
 
-    make_outfile(outfile,destdir,file1,".q");
+    MakeOutFile(outfile,destdir,file1,".q");
     if(strlen(outfile)==0)continue;
     stream=fopen(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
 
-    make_outfile(outfile2,NULL,plot3d1->file,".q");
+    MakeOutFile(outfile2,NULL,plot3d1->file,".q");
 
     plot3dmesh = plot3d1->plot3dmesh;
     nx = plot3dmesh->ibar+1;

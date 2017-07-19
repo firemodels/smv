@@ -9,6 +9,9 @@
 #ifdef pp_GCC
 #include <unistd.h>
 #endif
+#ifdef pp_LINUX
+#include <unistd.h>
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
@@ -48,8 +51,8 @@ typedef struct bufferstreamdata{
 #define READFILE 0
 #define READBUFFER 1
 
-#define FEOF(stream)              (readfile_option==READBUFFER ? feof_buffer(stream->fileinfo)              : feof(stream->stream))
-#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? fgets_buffer(stream->fileinfo,buffer,size) : fgets(buffer,size,stream->stream) )
+#define FEOF(stream)              (readfile_option==READBUFFER ? FeofBuffer(stream->fileinfo)               : feof(stream->stream))
+#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? FgetsBuffer(stream->fileinfo,buffer,size) : fgets(buffer,size,stream->stream) )
 #define REWIND(stream)   \
 if(readfile_option==READBUFFER){\
   RewindFileBuffer(stream->fileinfo);\
@@ -84,8 +87,8 @@ else{\
 
 #ifdef pp_READBUFFER
 EXTERNCPP int MergeFileBuffers(filedata *fileto, filedata *filefrom);
-EXTERNCPP int feof_buffer(filedata *fileinfo);
-EXTERNCPP char *fgets_buffer(filedata *fileinfo,char *buffer,int size);
+EXTERNCPP int FeofBuffer(filedata *fileinfo);
+EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
 EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
 EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
 EXTERNCPP void FreeFileBuffer(filedata *fileinfo);
@@ -93,36 +96,58 @@ EXTERNCPP filedata *File2Buffer(char *filename);
 #endif
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
-EXTERNCPP void set_stdout(FILE *stream);
-EXTERNCPP void getfilesizelabel(int size, char *sizelabel);
-EXTERNCPP void copyfile(char *destdir, char *filein, char *fileout, int mode);
-EXTERNCPP char *get_smokezippath(char *progdir);
-EXTERNCPP int have_prog(char *prog);
-EXTERNCPP int filecat(char *file_in1, char *file_in2, char *file_out);
-EXTERNCPP void make_outfile(char *outfile, char *destdir, char *file1, char *ext);
-EXTERNCPP void fullfile(char *fileout, char *dir, char *file);
-EXTERNCPP char *get_filename(char *temp_dir, char *file, int flag);
-EXTERNCPP char *get_basefilename(char *buffer, char *file);
+EXTERNCPP void SetStdOut(FILE *stream);
+EXTERNCPP void GetFileSizeLabel(int size, char *sizelabel);
+EXTERNCPP void CopyFILE(char *destdir, char *filein, char *fileout, int mode);
+EXTERNCPP char *GetSmokeZipPath(char *progdir);
+EXTERNCPP int HaveProg(char *prog);
+EXTERNCPP int FileCat(char *file_in1, char *file_in2, char *file_out);
+EXTERNCPP void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext);
+EXTERNCPP void FullFile(char *fileout, char *dir, char *file);
+EXTERNCPP char *GetFileName(char *temp_dir, char *file, int flag);
+EXTERNCPP char *GetBaseFileName(char *buffer, char *file);
 
-EXTERNCPP char *setdir(char *argdir);
-EXTERNCPP int getfileinfo(char *filename, char *sourcedir, FILE_SIZE *filesize);
-EXTERNCPP char *get_zonefilename(char *buffer);
-EXTERNCPP int can_write_to_dir(char *dir);
-EXTERNCPP int file_exists(char *filename);
+EXTERNCPP char *SetDir(char *argdir);
+EXTERNCPP int GetFileInfo(char *filename, char *sourcedir, FILE_SIZE *filesize);
+EXTERNCPP char *GetZoneFileName(char *buffer);
+EXTERNCPP int Writable(char *dir);
 
-EXTERNCPP void free_filelist(filelistdata *filelist, int *nfilelist);
-EXTERNCPP int get_nfilelist(const char *path, char *key) ;
-EXTERNCPP int get_filelist(const char *path, char *key, int maxfiles, filelistdata **filelist);
-EXTERNCPP char *which(char *progname);
-EXTERNCPP FILE_SIZE get_filesize(const char *filename);
-EXTERNCPP time_t file_modtime(char *filename);
-EXTERNCPP int is_file_newer(char *file1, char *file2);
-EXTERNCPP char *getprogdir(char *progname, char **svpath);
+#ifdef pp_FILELIST
+#define FILE_EXISTS(a)         FileExists(a,NULL,0,NULL,0)
+#define FILE_EXISTS_CASEDIR(a) FileExists(a,filelist_casename, nfilelist_casename,filelist_casedir,nfilelist_casedir)
+#else
+#define FILE_EXISTS(a)         FileExists(a)
+#define FILE_EXISTS_CASEDIR(a) FileExists(a)
+#endif
+
+#ifdef WIN32
+  #define ACCESS _access
+  #define F_OK 0
+  #define W_OK 2
+#else
+  #define ACCESS access
+#endif
+
+
+#ifdef pp_FILELIST
+EXTERNCPP   int FileExists(char *filename, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
+EXTERNCPP filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
+#else
+EXTERNCPP int FileExists(char *filename);
+#endif
+EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
+EXTERNCPP int GetFileListSize(const char *path, char *filter) ;
+EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist);
+EXTERNCPP char *Which(char *progname);
+EXTERNCPP FILE_SIZE GetFILESize(const char *filename);
+EXTERNCPP time_t FileModtime(char *filename);
+EXTERNCPP int IsFileNewer(char *file1, char *file2);
+EXTERNCPP char *GetProgDir(char *progname, char **svpath);
 #ifdef pp_LUA
 EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
 
-EXTERNCPP char *lastname(char *argi);
+EXTERNCPP char *LastName(char *argi);
 
 #ifdef pp_READBUFFER
 #ifdef INMAIN
@@ -141,5 +166,12 @@ STREXTERN char STRDECL(dirseparator[],"/");
 #endif
 
 #define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)
+
+#ifndef NO
+#define NO 0
+#endif
+#ifndef YES
+#define YES 1
+#endif
 
 #endif

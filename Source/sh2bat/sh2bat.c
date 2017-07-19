@@ -7,11 +7,11 @@
 #include <string.h>
 #include "string_util.h"
 #include "file_util.h"
+#include "MALLOC.h"
 
+/* ------------------ Usage ------------------------ */
 
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
+void Usage(char *prog, int option){
  char githash[256];
  char gitdate[256];
 
@@ -23,6 +23,8 @@ void usage(char *prog){
   fprintf(stderr, " convert the Linux/OSX script file file_in to an equivalent windows batch\n");
   fprintf(stderr, " file file_out by ignoring lines beginning with # and converting variables\n");
   fprintf(stderr, " such as $var to %svar%s\n", "%", "%");
+  UsageCommon(prog,HELP_SUMMARY);
+  if(option == HELP_ALL)UsageCommon(prog, HELP_ALL);
 }
 
 /* ------------------ main ------------------------ */
@@ -33,8 +35,20 @@ int main(int argc, char **argv){
   char *filein=NULL,*fileout=NULL,*prog;
   FILE *streamin=NULL,*streamout=NULL;
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
+  initMALLOC();
   prog=argv[0];
+
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("sh2bat",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("sh2bat", argv[0]);
+    return 1;
+  }
+
   for(i=1;i<argc;i++){
     int lenarg;
     char *arg;
@@ -43,16 +57,8 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
-      case 'h':
-        usage(prog);
-        exit(1);
-        break;
-      case 'v':
-        PRINTversion("sh2bat ");
-        exit(1);
-        break;
       default:
-        usage(prog);
+        Usage(prog,HELP_ALL);
         exit(1);
         break;
       }
@@ -69,7 +75,7 @@ int main(int argc, char **argv){
     }
   }
   if(filein==NULL||fileout==NULL){
-    usage(prog);
+    Usage(prog,HELP_ALL);
     exit(1);
   }
   streamin=fopen(filein,"r");
@@ -103,6 +109,7 @@ int main(int argc, char **argv){
     }
     if(buffer[0]=='$'){
       char *comm_beg, *comm_end, *data;
+      int j;
 
       comm_beg=buffer+1;
       comm_end=strchr(buffer,' ');
@@ -111,9 +118,11 @@ int main(int argc, char **argv){
       *comm_end=0;
 
       TrimBack(data);
+      for(j = 0;j<strlen(data);j++){
+        if(data[j]=='/')data[j] = '\\';
+      }
       fprintf(streamout,"%s%s%s %s\n","%",comm_beg,"%",data);
       continue;
-
     }
     fprintf(streamout,"%s\n",buffer);
   }

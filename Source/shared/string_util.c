@@ -14,7 +14,12 @@
 #include "MALLOC.h"
 #include "datadefs.h"
 #include "file_util.h"
-#include "compress.h"
+#ifdef pp_HASH
+#include "mbedtls/md5.h"
+#include "mbedtls/sha256.h"
+#include "mbedtls/sha1.h"
+#endif
+
 
 unsigned int *random_ints, nrandom_ints;
 
@@ -204,13 +209,24 @@ int RandInt(int min, int max){
 
 /* ------------------ RandStr ------------------------ */
 
+#ifdef WIN32
+#define GETPID GetCurrentProcessId
+#else
+#define GETPID getpid
+#endif
+
 char *RandStr(char* str, int length){
 
 //  returns a random character string of length length
 
     int i;
+    int seed;
 
     if(str==NULL||length<=0)return NULL;
+
+    seed = time(NULL)%1000;
+    seed += GETPID();
+    srand(seed);
 
     for(i=0;i<length;i++){
       str[i]=(char)RandInt(65,90);
@@ -324,7 +340,7 @@ int STRCMP(const char *s1, const char *s2){
 //  same as the standard function, strcmp, but ignores case
 
   while (toupper(*s1) == toupper(*s2++)){
-		if(*s1++ == 0)return (0);
+    if(*s1++ == 0)return (0);
   }
   return (toupper(*(const unsigned char *)s1) - toupper(*(const unsigned char *)(s2 - 1)));
 }
@@ -808,9 +824,10 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
 
 /* ------------------ ReadLabels ------------------------ */
 
-int ReadLabels(flowlabels *flowlabel, BFILE *stream){
+int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   char buffer2[255], *buffer;
   size_t len;
+  int len_suffix_label = 0;
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
@@ -820,8 +837,10 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream){
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
+  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+len_suffix_label+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
+  if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
@@ -849,175 +868,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream){
 
     unit=(unsigned char *)flowlabel->unit;
     unit[0]=DEG_SYMBOL;
-    unit[1]='C';
-    unit[2]='\0';
-  }
-  else{
-    STRCPY(flowlabel->unit,buffer);
-  }
-#else
-  STRCPY(flowlabel->unit,buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsFaceCenter ------------------------ */
-
-int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255], *buffer;
-  size_t len;
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "*");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1 + 15)) == 0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel, buffer);
-  STRCAT(flowlabel->longlabel, "(face centered)");
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "**");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel, buffer);
-
-  if(FGETS(buffer2, 255, stream) == NULL){
-    strcpy(buffer2, "***");
-  }
-
-  len = strlen(buffer2);
-  buffer = TrimFront(buffer2);
-  TrimBack(buffer);
-  len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer) == 1 && strcmp(buffer, "C") == 0){
-    unsigned char *unit;
-
-    unit = (unsigned char *)flowlabel->unit;
-    unit[0] = DEG_SYMBOL;
-    unit[1] = 'C';
-    unit[2] = '\0';
-  }
-  else{
-    STRCPY(flowlabel->unit, buffer);
-  }
-#else
-  STRCPY(flowlabel->unit, buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsCellCenter ------------------------ */
-
-int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255], *buffer;
-  size_t len;
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"*");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1+15))==0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel,buffer);
-  STRCAT(flowlabel->longlabel,"(cell centered)");
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"**");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel,buffer);
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"***");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer)==1&&strcmp(buffer,"C")==0){
-    unsigned char *unit;
-
-    unit=(unsigned char *)flowlabel->unit;
-    unit[0]=DEG_SYMBOL;
-    unit[1]='C';
-    unit[2]='\0';
-  }
-  else{
-    STRCPY(flowlabel->unit,buffer);
-  }
-#else
-  STRCPY(flowlabel->unit,buffer);
-#endif
-  return LABEL_OK;
-}
-
-/* ------------------ ReadLabelsTerrain ------------------------ */
-
-int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream){
-  char buffer2[255],*buffer;
-  size_t len;
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"*");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1+9))==0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel,buffer);
-  STRCAT(flowlabel->longlabel,"(terrain)");
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"**");
-  }
-
-  len=strlen(buffer2);
-  buffer2[len-1]='\0';
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel,buffer);
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"***");
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer)==1&&strcmp(buffer,"C")==0){
-    unsigned char *unit;
-
-    unit=(unsigned char *)flowlabel->unit;
-    unit[0]=176;
     unit[1]='C';
     unit[2]='\0';
   }
@@ -1216,10 +1066,10 @@ unsigned int DiffDate(char *token, char *tokenbase){
 
 void GetBaseTitle(char *progname, char *title_base){
   char version[100];
-  char svn_version[100];
-  char svn_date[100];
+  char git_version[100];
+  char git_date[100];
 
-  GetGitInfo(svn_version, svn_date);    // get githash
+  GetGitInfo(git_version, git_date);    // get githash
 
   // construct string of the form:
   //   5.x.y_#
@@ -1228,15 +1078,16 @@ void GetBaseTitle(char *progname, char *title_base){
 
   strcpy(title_base, progname);
 
+  strcat(title_base, " ");
   strcat(title_base, version);
 #ifdef pp_BETA
-  strcat(title_base, " (");
-  strcat(title_base, svn_version);
+  strcat(title_base, "(");
+  strcat(title_base, git_version);
   strcat(title_base, ")");
 #else
 #ifndef pp_OFFICIAL_RELEASE
-  strcat(title_base, " (");
-  strcat(title_base, svn_version);
+  strcat(title_base, "(");
+  strcat(title_base, git_version);
   strcat(title_base, ")");
 #endif
 #endif
@@ -1258,9 +1109,237 @@ void GetTitle(char *progname, char *fulltitle){
 #endif
 }
 
+#ifdef pp_HASH
+#define HASH_BUFFER_LEN 1
+#define HASH_MD5_LEN   16
+#define HASH_SHA1_LEN   20
+#define HASH_SHA256_LEN   32
+
+/* ------------------ GeHashSHA1 ------------------------ */
+
+unsigned char *GetHashSHA1(char *file){
+  FILE *stream = NULL;
+
+  if(file==NULL)return NULL;
+  stream = fopen(file, "rb");
+  if(stream==NULL){
+    char *pathentry, fullpath[1024];
+
+    pathentry = Which(file);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath+strlen(fullpath)-4;
+      if(strlen(fullpath)<=4||STRCMP(ext, ".exe")!=0)strcat(fullpath, ".exe");
+    }
+#endif
+
+    stream = fopen(fullpath, "rb");
+    if(stream==NULL)return NULL;
+  }
+
+  {
+    int i;
+    unsigned char hash[HASH_SHA1_LEN], *return_hash;
+    mbedtls_sha1_context ctx;
+    unsigned char data[HASH_BUFFER_LEN];
+    size_t len_data;
+
+    mbedtls_sha1_init(&ctx);
+    mbedtls_sha1_starts(&ctx);
+    while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
+      mbedtls_sha1_update(&ctx, data, len_data);
+    }
+
+    mbedtls_sha1_finish(&ctx, hash);
+    fclose(stream);
+
+    NewMemory((void **)&return_hash, 2 * HASH_SHA1_LEN + 1);
+
+    for(i = 0; i < HASH_SHA1_LEN; i++){
+      sprintf((char *)return_hash + 2 * i, "%02x", hash[i]);
+    }
+    return_hash[2 * HASH_SHA1_LEN] = 0;
+    return return_hash;
+  }
+}
+
+/* ------------------ GeHashMD5 ------------------------ */
+
+unsigned char *GetHashMD5(char *file){
+  mbedtls_md5_context ctx;
+  FILE *stream=NULL;
+  unsigned char data[HASH_BUFFER_LEN];
+  unsigned char hash[HASH_MD5_LEN], *return_hash;
+  int i;
+  size_t len_data;
+
+  if(file==NULL)return NULL;
+  stream = fopen(file, "rb");
+  if(stream == NULL){
+    char *pathentry, fullpath[1024];
+
+    pathentry = Which(file);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath + strlen(fullpath) - 4;
+      if(strlen(fullpath) <= 4 || STRCMP(ext, ".exe") != 0)strcat(fullpath, ".exe");
+    }
+#endif
+
+    stream = fopen(fullpath, "rb");
+    if(stream == NULL)return NULL;
+  }
+
+  mbedtls_md5_init(&ctx);
+  mbedtls_md5_starts(&ctx);
+  while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream)) != 0){
+    mbedtls_md5_update(&ctx, data, len_data);
+  }
+  mbedtls_md5_finish(&ctx, hash);
+  fclose(stream);
+
+  NewMemory((void **)&return_hash, 2*HASH_MD5_LEN + 1);
+
+  for(i = 0; i<HASH_MD5_LEN; i++){
+    sprintf((char *)return_hash+2*i, "%02x", hash[i]);
+  }
+  return_hash[2*HASH_MD5_LEN] = 0;
+  return return_hash;
+}
+
+/* ------------------ GetHashSHA256 ------------------------ */
+
+unsigned char *GetHashSHA256(char *file){
+  mbedtls_sha256_context ctx;
+  FILE *stream = NULL;
+  unsigned char data[HASH_BUFFER_LEN];
+  unsigned char hash[HASH_SHA256_LEN], *return_hash;
+  int i;
+  size_t len_data;
+
+  if(file==NULL)return NULL;
+  stream = fopen(file, "rb");
+  if(stream==NULL){
+    char *pathentry, fullpath[1024];
+
+    pathentry = Which(file);
+    strcpy(fullpath, pathentry);
+    strcat(fullpath, file);
+#ifdef WIN32
+    {
+      const char *ext;
+
+      ext = fullpath+strlen(fullpath)-4;
+      if(strlen(fullpath)<=4||STRCMP(ext, ".exe")!=0)strcat(fullpath, ".exe");
+    }
+#endif
+
+    stream = fopen(fullpath, "rb");
+    if(stream==NULL)return NULL;
+  }
+
+  mbedtls_sha256_init(&ctx);
+  mbedtls_sha256_starts(&ctx,0);
+  while((len_data = fread(data, 1, HASH_BUFFER_LEN, stream))!=0){
+    mbedtls_sha256_update(&ctx, data, len_data);
+  }
+  mbedtls_sha256_finish(&ctx, hash);
+  fclose(stream);
+
+  NewMemory((void **)&return_hash, 2*HASH_SHA256_LEN+1);
+
+  for(i = 0; i<HASH_SHA256_LEN; i++){
+    sprintf((char *)return_hash+2*i, "%02x", hash[i]);
+  }
+  return_hash[2*HASH_SHA256_LEN] = 0;
+  return return_hash;
+}
+#endif
+
+/* ------------------ UsageCommon ------------------------ */
+
+void UsageCommon(char *prog, int option){
+  if(option == HELP_SUMMARY){
+    PRINTF("  -help      - display help summary\n");
+    PRINTF("  -help_all  - display all help info\n");
+    PRINTF("  -version   - display version information\n");
+  }
+#ifdef pp_HASH
+  if(option == HELP_ALL){
+    PRINTF("  -md5       - display an md5 hash when -version is invoked\n");
+    PRINTF("  -sha1      - display a sha1 hash when -version is invoked\n");
+    PRINTF("  -sha256    - display a sha256 hash when -version is invoked\n");
+    PRINTF("  -hash_all  - display all hashes when -version option is invoked\n");
+    PRINTF("  -hash_none - do not display any hashes  when -version is invoked\n");
+  }
+#endif
+}
+
+/* ------------------ ParseCommonOptions ------------------------ */
+
+void ParseCommonOptions(int argc, char **argv){
+  int i, no_minus;
+
+  no_minus = 0;
+  for(i = 1; i<argc; i++){
+    char *argi;
+
+    argi = argv[i];
+    if(argi==NULL||argi[0]!='-'){
+      no_minus = 1;
+      continue;
+    }
+    if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0)){
+      show_help = 1;
+      continue;
+    }
+    if(STRCMP("-help_all", argi) == 0){
+      show_help = 2;
+      continue;
+    }
+    if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0){
+      if(no_minus==0)show_version = 1;
+      continue;
+    }
+#ifdef pp_HASH
+    if(STRCMP("-sha256", argi)==0){
+      hash_option = HASH_SHA256;
+      continue;
+    }
+    if(STRCMP("-sha1", argi)==0){
+      hash_option = HASH_SHA1;
+      continue;
+    }
+    if(STRCMP("-md5", argi)==0){
+      hash_option = HASH_MD5;
+      continue;
+    }
+    if(STRCMP("-hash_all", argi)==0){
+      hash_option = HASH_ALL;
+      continue;
+    }
+    if(STRCMP("-hash_none", argi)==0){
+      hash_option = HASH_NONE;
+      continue;
+    }
+#endif
+  }
+}
 /* ------------------ version ------------------------ */
 
-void PRINTversion(char *progname){
+#ifdef pp_HASH
+void PRINTversion(char *progname, char *progfullpath, int option){
+#else
+void PRINTversion(char *progname, char *progfullpath){
+#endif
   char version[256];
   char githash[256];
   char gitdate[256];
@@ -1269,12 +1348,38 @@ void PRINTversion(char *progname){
   GetProgVersion(version);
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
+
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
   PRINTF("Version          : %s\n", version);
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
+#ifdef pp_HASH
+#ifndef _DEBUG
+  if(option==HASH_MD5||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashMD5(progfullpath);
+    if(hash!=NULL)PRINTF("MD5 hash         : %s\n", hash);
+    FREEMEMORY(hash);
+  }
+  if(option==HASH_SHA1||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashSHA1(progfullpath);
+    if(hash!=NULL)PRINTF("SHA1 hash        : %s\n", hash);
+    FREEMEMORY(hash);
+  }
+  if(option==HASH_SHA256||option==HASH_ALL){
+    unsigned char *hash = NULL;
+
+    hash = GetHashSHA256(progfullpath);
+    if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
+    FREEMEMORY(hash);
+  }
+#endif
+#endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
 #ifdef pp_INTEL

@@ -16,7 +16,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj = main.o string_util.o dmalloc.o file_util.o
+obj = main.o string_util.o dmalloc.o file_util.o  md5.o sha1.o sha256.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -46,7 +46,7 @@ intel_win_32 : exe       = set_path32.exe
 intel_win_32 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
 
-# ------------- Win 64 ----------------
+# ------------- intel_win_64 ----------------
 #  64 bit windows
 
 intel_win_64 : CFLAGS    = -D WIN32 -D pp_INTEL -O2 /nologo $(GITINFO)
@@ -56,6 +56,16 @@ intel_win_64 : FC        = ifort
 intel_win_64 : exe       = set_path64.exe
 
 intel_win_64 : $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
+
+# ------------- ms_win_64 ----------------
+
+ms_win_64 : CFLAGS    = -O2 -D WIN32 -D _CONSOLE 
+ms_win_64 : CC        = cl
+ms_win_64 : CPP       = cl
+ms_win_64 : exe       = set_path64
+
+ms_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
 
 #-------------- Clean Target to remove Object and Module files -----------

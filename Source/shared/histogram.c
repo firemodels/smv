@@ -74,7 +74,7 @@ void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax){
   for(i = 0; i<histogram->nbuckets; i++){
     histogram->buckets[i] = 0;
   }
-  histogram->defined = 0.0;
+  histogram->defined = 0;
   histogram->ntotal = 0;
   if(valmin != NULL){
     histogram->val_min = *valmin;

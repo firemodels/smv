@@ -1,0 +1,6 @@
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+RENDERCLIP
+ 1 80 85 5 5
+RENDERONCE
+ smoke_test_side

@@ -190,6 +190,7 @@ void UpdateFrameNumber(int changetime){
         meshdata *meshi;
 
         meshi = meshinfo+i;
+        if(meshi->patchfilenum < 0||meshi->patchfilenum>npatchinfo-1)continue;
         patchi=patchinfo + meshi->patchfilenum;
         if(patchi->filetype==PATCH_GEOMETRY||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[itimes];
@@ -926,39 +927,10 @@ void ConvertSsf(void){
     char *tofile;
 
     tofile = ssf_from;
-    copyfile(".",tempfile,tofile,REPLACE_FILE);
+    CopyFILE(".",tempfile,tofile,REPLACE_FILE);
     UNLINK(tempfile);
   }
 }
-
-#ifdef pp_NAN
-/* ------------------ TestForNan ------------------------ */
-
-void TestForNan(float *vals, int nvals, char *array, char *label){
-  int have_nan=0, i;
-
-  for(i = 0; i < nvals; i++){
-    if(vals[i]!=vals[i])have_nan++;
-  }
-  if(have_nan != 0){
-    if(label==NULL){
-      fprintf(stderr, "***Error: %i NaNs out of %i present in array %s at position(s):",have_nan,nvals,array);
-    }
-    else{
-      fprintf(stderr, "***Error: %i NaNs out of %i present in array %s %s at position(s):",have_nan,nvals,array,label);
-    }
-    for(i = 0; i < nvals; i++){
-      if(vals[i] != vals[i]){
-        fprintf(stderr, " %i ", i+1);
-      }
-    }
-    fprintf(stderr,"\n");
-  }
-#define TEST_FOR_NAN(a,b,c,d) TestForNan(a,b,c,d)
-}
-#else
-#define TEST_FOR_NAN(a,b,c,d)
-#endif
 
   /* ------------------ UpdateTimes ------------------------ */
 
@@ -1095,7 +1067,6 @@ void UpdateTimes(void){
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
     memcpy(global_times + nglobal_times_copy, geomi->times, geomi->ntimes * sizeof(float));
-    TEST_FOR_NAN(geomi->times, geomi->ntimes, "geomi->times", NULL);
     nglobal_times_copy += geomi->ntimes;
   }
   if(visTerrainType!=TERRAIN_HIDDEN){
@@ -1105,7 +1076,6 @@ void UpdateTimes(void){
       terri = terraininfo + i;
       if(terri->loaded==0)continue;
       memcpy(global_times + nglobal_times_copy, terri->times, terri->ntimes * sizeof(float));
-      TEST_FOR_NAN(terri->times, terri->ntimes, "terri->times", NULL);
       nglobal_times_copy += terri->ntimes;
     }
   }
@@ -1121,7 +1091,6 @@ void UpdateTimes(void){
     touri = tourinfo + i;
     if(touri->display==0)continue;
     memcpy(global_times + nglobal_times_copy, touri->path_times, touri->ntimes * sizeof(float));
-    TEST_FOR_NAN(touri->path_times, touri->ntimes, "touri->path_times", NULL);
     nglobal_times_copy += touri->ntimes;
   }
 
@@ -1132,7 +1101,6 @@ void UpdateTimes(void){
     parti = partinfo + i;
     if(parti->loaded==0)continue;
     memcpy(global_times + nglobal_times_copy, parti->times, parti->ntimes * sizeof(float));
-    TEST_FOR_NAN(parti->times, parti->ntimes, "parti->times", NULL);
     nglobal_times_copy += parti->ntimes;
     tmax_part=MAX(parti->times[parti->ntimes-1],tmax_part);
   }
@@ -1143,7 +1111,6 @@ void UpdateTimes(void){
     sd = sliceinfo + i;
     if(sd->loaded==1||sd->vloaded==1){
       memcpy(global_times + nglobal_times_copy, sd->times, sd->ntimes * sizeof(float));
-      TEST_FOR_NAN(sd->times, sd->ntimes, "sd->times", NULL);
       nglobal_times_copy += sd->ntimes;
     }
   }
@@ -1154,7 +1121,6 @@ void UpdateTimes(void){
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
       memcpy(global_times + nglobal_times_copy, patchi->geom_times, patchi->ngeom_times * sizeof(float));
-      TEST_FOR_NAN(patchi->geom_times, patchi->ngeom_times, "patchi->geom_times", NULL);
       nglobal_times_copy += patchi->ngeom_times;
     }
   }
@@ -1169,7 +1135,6 @@ void UpdateTimes(void){
       patchi = patchinfo + filenum;
       if(patchi->loaded==1&&patchi->filetype!=PATCH_GEOMETRY){
         memcpy(global_times + nglobal_times_copy, meshi->patch_times, meshi->npatch_times * sizeof(float));
-        TEST_FOR_NAN(meshi->patch_times, meshi->npatch_times, "meshi->patch_times", NULL);
         nglobal_times_copy += meshi->npatch_times;
       }
     }
@@ -1184,13 +1149,11 @@ void UpdateTimes(void){
       if(vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       memcpy(global_times + nglobal_times_copy, vr->times, vr->ntimes * sizeof(float));
-      TEST_FOR_NAN(vr->times, vr->ntimes, "vr->times", NULL);
       nglobal_times_copy += vr->ntimes;
     }
   }
   if(ReadZoneFile==1&&visZone==1){
     memcpy(global_times + nglobal_times_copy, zone_times, nzone_times * sizeof(float));
-    TEST_FOR_NAN(zone_times, nzone_times, "zone_times", NULL);
     nglobal_times_copy += nzone_times;
   }
   if(ReadIsoFile==1&&visAIso!=0){
@@ -1202,7 +1165,6 @@ void UpdateTimes(void){
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
       memcpy(global_times + nglobal_times_copy, meshi->iso_times, meshi->niso_times * sizeof(float));
-      TEST_FOR_NAN(meshi->iso_times, meshi->niso_times, "meshi->iso_times", NULL);
       nglobal_times_copy += meshi->niso_times;
     }
   }
@@ -1213,7 +1175,6 @@ void UpdateTimes(void){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==0)continue;
       memcpy(global_times + nglobal_times_copy, smoke3di->times, smoke3di->ntimes * sizeof(float));
-      TEST_FOR_NAN(smoke3di->times, smoke3di->ntimes, "smoke3di->times", NULL);
       nglobal_times_copy += smoke3di->ntimes;
     }
   }
@@ -1230,13 +1191,8 @@ void UpdateTimes(void){
 
     memcpy(global_times_copy, global_times, nglobal_times * sizeof(float));
 
-    TEST_FOR_NAN(global_times_copy,nglobal_times,"global_times_copy","(before qsort)");
-
     qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
     CheckMemory;
-
-    TEST_FOR_NAN(global_times_copy,nglobal_times,"global_times_copy","(after qsort)");
-
 
 #define DT_EPS 0.0001
 
@@ -1250,8 +1206,6 @@ void UpdateTimes(void){
     }
     nglobal_times = to;
     FREEMEMORY(global_times_copy);
-
-    TEST_FOR_NAN(global_times,nglobal_times,"global_times","(after remove dup)");
 
     for(n = 0; n < nglobal_times-1; n++){
       int it;
@@ -2005,6 +1959,6 @@ void UpdateDisplay(void){
     InitAllLightFractions(xyz_light_global, light_type_global);
   }
   if(update_windrose_showhide==1){
-    UpdateWindroseShowhide();
+    UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }
 }

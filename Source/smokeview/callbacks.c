@@ -575,26 +575,32 @@ int get_colorbar_index(int flag, int x, int y){
 #ifdef pp_GLUTGET
 #define GLUTGETMODIFIERS glutGetModifiersNew
 int glutGetModifiersNew(void){
+  int modifier;
 
   switch(alt_ctrl_key_state){
-  case 0:
-    return glutGetModifiers();
+  case KEY_NONE:
+    modifier = glutGetModifiers();
     break;
-  case 1:
-    return GLUT_ACTIVE_ALT;
+  case KEY_CTRL:
+    modifier = GLUT_ACTIVE_CTRL;
     break;
-  case 2:
-    return GLUT_ACTIVE_CTRL;
+  case KEY_ALT:
+    modifier = GLUT_ACTIVE_ALT;
     break;
   default:
+    modifier = glutGetModifiers();
     ASSERT(FFALSE);
     break;
   }
-  return glutGetModifiers();
+#ifdef _DEBUG
+  printf("modifier=%i\n", modifier);
+#endif
+  return modifier;
 }
 #else
 #define GLUTGETMODIFIERS glutGetModifiers
 #endif
+
 /* ------------------ colorbar_click ------------------------ */
 
 int colorbar_click(int x, int y){
@@ -685,7 +691,7 @@ void update_mouseinfo(int flag, int xm, int ym){
       mi->direction[1]=0;
       mi->angle = 0.0;
       mi->lastangle=0.0;
-      mi->lasttime = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+      START_TIMER(mi->lasttime);
       mi->xcurrent[0] = (float)(mi->current[0]-screenWidth/2)/(float)maxWH;
       mi->xcurrent[1] = (float)(mi->current[1]-screenHeight/2)/(float)maxWH;
       mi->angle=atan2(mi->xcurrent[1],mi->xcurrent[0]);
@@ -704,7 +710,7 @@ void update_mouseinfo(int flag, int xm, int ym){
       delta_distance=0.0;
       break;
     case MOUSE_MOTION:
-      thistime_local=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+      START_TIMER(thistime_local);
       mi->current[0]=xm;
       mi->current[1]=ym;
       if(thistime_local-mi->lasttime>0.2){
@@ -808,8 +814,7 @@ void mouse_CB(int button, int state, int xm, int ym){
 
 #ifdef pp_GLUTGET
   if(state == GLUT_UP){
-    alt_ctrl_key_state = 2;
-    keyboard('d', FROM_SMOKEVIEW);
+    alt_ctrl_key_state = KEY_NONE;
   }
 #endif
   if(rotation_type==ROTATION_3AXIS){
@@ -854,7 +859,7 @@ void mouse_CB(int button, int state, int xm, int ym){
   // check for double click for translating/rotating 3D slice plane
 
   if(vis_gslice_data==1||show_gslice_triangles==1||show_gslice_triangulation==1){
-    this_mouse_time=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    START_TIMER(this_mouse_time);
     if(this_mouse_time-last_mouse_time<0.5){
       gslice_xyz0[0]=gslice_xyz[0];
       gslice_xyz0[1]=gslice_xyz[1];
@@ -1215,7 +1220,7 @@ void Move_Scene(int xm, int ym){
 int throttle_gpu(void){
   float fps;
 
-  thisMOTIONtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(thisMOTIONtime);
   fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
   if(fps>GPU_VOLframemax)return 1;
   MOTIONnframes++;
@@ -1276,6 +1281,9 @@ void motion_CB(int xm, int ym){
 
 void keyboard_up_CB(unsigned char key, int x, int y){
   resetclock=1;
+#ifdef pp_GLUTGET
+  alt_ctrl_key_state = KEY_NONE;
+#endif
 }
 
 #ifdef pp_GPU_CULL_STATE
@@ -1332,7 +1340,7 @@ void keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = (GLUT_ACTIVE_ALT||GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
+    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
       switch(keystate){
@@ -1478,19 +1486,9 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-      alt_ctrl_key_state++;
-      if(alt_ctrl_key_state > 2)alt_ctrl_key_state = 0;
-      switch(alt_ctrl_key_state){
-      case 0:
-        printf("ALT and CTRL keys off\n");
-        break;
-      case 1:
-        printf("ALT key activated\n");
-        break;
-      case 2:
-        printf("CTRL key activated\n");
-        break;
-      }
+#ifdef pp_GLUTGET
+      alt_ctrl_key_state = KEY_CTRL;
+#endif
       break;
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
@@ -1531,10 +1529,11 @@ void keyboard(unsigned char key, int flag){
     case 'f':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-        DialogMenu(DIALOG_BOUNDS); // file/bounds dialog
-        break;
       case GLUT_ACTIVE_CTRL:
       default:
+#ifdef pp_GLUTGET
+        alt_ctrl_key_state = KEY_ALT;
+#endif
         break;
       }
       break;
@@ -1655,11 +1654,16 @@ void keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-    case 'I':
       if(cache_qdata==1){
         handleiso();
         return;
       }
+      break;
+    case 'I':
+      show_slice_in_obst++;
+      if(show_slice_in_obst>2)show_slice_in_obst = 0;
+      UpdateShowSliceInObst();
+      updatemenu = 1;
       break;
     case 'j':
     case 'J':
@@ -2683,7 +2687,7 @@ void Idle_CB(void){
   CheckMemory;
   glutSetWindow(mainwindow_id);
   UpdateShow();
-  thistime = glutGet(GLUT_ELAPSED_TIME);
+  START_TICKS(thistime);
   thisinterval = thistime - lasttime;
   frame_count++;
 
@@ -2738,12 +2742,9 @@ void Reshape_CB(int width, int height){
 /* ------------------ reset_gltime ------------------------ */
 
 void reset_gltime(void){
-  int inttime;
-
   if(showtime!=1)return;
   reset_frame=itimes;
-  inttime  = glutGet(GLUT_ELAPSED_TIME);
-  reset_time = (float)inttime/1000.0;
+  START_TIMER(reset_time);
   if(global_times!=NULL&&nglobal_times>0){
     start_frametime=global_times[0];
     stop_frametime=global_times[nglobal_times-1];
@@ -2984,7 +2985,7 @@ void DoScript(void){
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){
     script_step_now=0;
 #ifndef WIN32
-    if(file_exists(stop_filename)){
+    if(FILE_EXISTS(stop_filename)==YES){
       fprintf(stderr,"*** Warning: stop file found.  Remove before running smokeview script\n");
       exit(0);
     }

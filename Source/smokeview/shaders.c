@@ -303,7 +303,7 @@ int SetVolSmokeShaders(){
         "  return (near*far)/(far+z*(near-far));"
         "}"
     #endif
-    
+
     "float color2bw(vec3 color){"
     " return 0.299*color.r+0.587*color.g+0.114*color.b;"
     "}"
@@ -372,14 +372,14 @@ int SetVolSmokeShaders(){
     "  alphan=0.0;"
     "  in_fire=0;"
     "  color_total=vec3(0.0,0.0,0.0);"
-    
+
     "  dfactor0 = 1.0/(float)n_iter;"
     "  dfactor = dfactor0;"
     "  dstep = pathdist*xyzmaxdiff/(float)n_iter;"
-    
+
     "  factor0=0.5*dfactor;"
     "  factor=factor0;"
-    
+
     "  last_tempval=0.0;"
     "  tempval=0.0;"
     "  while(factor<1.0){"
@@ -769,7 +769,7 @@ int InitShaders(void){
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
     if(SetSmokeShaders()==1){
 #ifdef _DEBUG
-  		PRINTF("   GPU smoke shader successfully compiled, linked and loaded.\n");
+      PRINTF("   GPU smoke shader successfully compiled, linked and loaded.\n");
 #endif
       gpuactive=1;
       err=0;
@@ -781,7 +781,7 @@ int InitShaders(void){
     }
     if(SetVolSmokeShaders()==1){
 #ifdef _DEBUG
-  		PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
+      PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
 #endif
       gpuactive=1;
       err=0;
@@ -793,7 +793,7 @@ int InitShaders(void){
     }
     if(Set3DSliceShaders()==1){
 #ifdef _DEBUG
-  		PRINTF("   GPU 3d slice shader successfully compiled, linked and loaded.\n");
+      PRINTF("   GPU 3d slice shader successfully compiled, linked and loaded.\n");
 #endif
       gpuactive=1;
       err=0;
@@ -806,7 +806,7 @@ int InitShaders(void){
     if(err==0){
       if(SetZoneSmokeShaders()==1){
 #ifdef _DEBUG
-  		PRINTF("   GPU zone smoke shader successfully compiled, linked and loaded.\n");
+        PRINTF("   GPU zone smoke shader successfully compiled, linked and loaded.\n");
 #endif
         gpuactive=1;
         err=0;
@@ -831,9 +831,9 @@ int InitShaders(void){
 
 void CreateDepthTexture( void ){
   if( depthtexture_id!=0 ){
-		glDeleteTextures( 1, &depthtexture_id );
-		depthtexture_id = 0;
-	}
+    glDeleteTextures( 1, &depthtexture_id );
+    depthtexture_id = 0;
+  }
 
   glActiveTexture(GL_TEXTURE4);
   glGenTextures(1, &depthtexture_id);

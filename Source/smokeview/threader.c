@@ -49,7 +49,6 @@ void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexTHREADSLICE, NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
 #endif
@@ -106,7 +105,7 @@ void *mt_MakeIBlank(void *arg){
 void *mt_PSystem(void *arg){
   char command_line[1024], moviefile_path[1024];
 
-  if(file_exists(GetMovieFilePath(moviefile_path))==1){
+  if(FILE_EXISTS(GetMovieFilePath(moviefile_path))==YES){
     strcpy(command_line, "ffplay ");
     strcat(command_line, moviefile_path);
 #ifdef WIN32
@@ -191,14 +190,3 @@ void mt_ReadVolsmokeAllFramesAllMeshes2(void){
   pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif
-
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-/* ------------------ mt_UpdateVSlices ------------------------ */
-
-void mt_UpdateVSlices(void){
-  pthread_create(&threadslice_id, NULL, UpdateVSlices2, NULL);
-}
-#endif
-#endif
-

@@ -746,7 +746,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
                                                  // nframes = (totalsize - skip_local)/(12 + framesize);
 
     nframes = 0;
-    filesize = get_filesize(smokeslice->reg_file);
+    filesize = GetFILESize(smokeslice->reg_file);
     if(filesize>0){
       nframes = (int)(filesize-skip_local)/(int)(12+framesize);
     }
@@ -807,7 +807,7 @@ void InitVolRender(void){
     slicei = sliceinfo + i;
     blocknumber = slicei->blocknumber;
     if(blocknumber<0||blocknumber>=nmeshes)continue;
-    if(file_exists(slicei->reg_file)!=1)continue;
+    if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
     meshi = meshinfo + blocknumber;
     if(slicei->nslicei!=meshi->ibar+1||slicei->nslicej!=meshi->jbar+1||slicei->nslicek!=meshi->kbar+1)continue;
@@ -2033,7 +2033,7 @@ void DrawSmoke3DGPUVOL(void){
 
 //  SVEXTERN int GPUload[30],GPUtime[30],SVDECL(nGPUframes,0),SVDECL(iGPUframes,0);
 #ifdef pp_GPUTHROTTLE
-  thisGPUtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+  START_TIMER(thisGPUtime);
   if(thisGPUtime>lastGPUtime+0.25){
     PRINTF("CPU->GPU %4.1f Mbytes/s\n",4.0*GPUnframes/(thisGPUtime-lastGPUtime)/(1024.0*1024.0));
     lastGPUtime=thisGPUtime;
@@ -2253,7 +2253,7 @@ void DrawSmoke3DGPUVOL(void){
 /* ------------------ GetVolsmokeFrameTime ------------------------ */
 
 float GetVolsmokeFrameTime(volrenderdata *vr, int framenum){
-	slicedata *smokeslice;
+  slicedata *smokeslice;
   FILE *SLICEFILE;
   int framesize;
   float time_local=0.0;
@@ -2678,7 +2678,8 @@ void UnloadVolsmokeAllFrames(volrenderdata *vr){
   vr->display=0;
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
-  PRINTF("completed\n");
+  PRINTF("completed");
+  PRINTF("\n");
 }
 
 /* ------------------ ReadVolsmokeAllFrames ------------------------ */
@@ -2818,7 +2819,8 @@ void UnloadVolsmokeSuperTextures(void){
     FREEMEMORY(smesh->fire_texture_buffer);
     FREEMEMORY(smesh->smoke_texture_buffer);
   }
-  PRINTF("complete\n");
+  PRINTF("complete");
+  PRINTF("\n");
 }
 
 /* ------------------ InitVolsmokeTexture ------------------------ */
@@ -2918,7 +2920,8 @@ void InitVolsmokeTexture(meshdata *meshi){
 #endif
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("complete\n");
+  PRINTF("complete");
+  PRINTF("\n");
   FFLUSH();
 }
 

@@ -191,9 +191,9 @@ else{\
     fvalue[3]=firecolor[n21];\
   }\
   else{\
-    fvalue[0]=smoke_albedo;\
-    fvalue[1]=smoke_albedo;\
-    fvalue[2]=smoke_albedo;\
+    fvalue[0]=0.0;\
+    fvalue[1]=0.0;\
+    fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
@@ -235,9 +235,9 @@ else{\
     fvalue[3]=firecolor[n21];\
   }\
   else{\
-    fvalue[0]=smoke_albedo;\
-    fvalue[1]=smoke_albedo;\
-    fvalue[2]=smoke_albedo;\
+    fvalue[0]=0.0;\
+    fvalue[1]=0.0;\
+    fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
   for(node=0;node<6;node++){                             \
@@ -4877,10 +4877,8 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   int error;
   int ncomp_smoke_total;
   int ncomp_smoke_total_skipped;
-  int local_starttime=0, local_stoptime=0;
   FILE_SIZE file_size=0;
-  int local_starttime0=0, local_stoptime0=0;
-  float delta_time, delta_time0;
+  float read_time, total_time;
   int iii,ii,i,j;
   int nxyz[8];
   int nchars[2];
@@ -4891,7 +4889,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   meshdata *meshi;
   int fortran_skip;
 
-  local_starttime0 = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(total_time);
   ASSERT(ifile>=0&&ifile<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile;
   if(smoke3di->filetype==FORTRAN_GENERATED){
@@ -5042,7 +5040,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 
 // read in data
 
-  file_size=get_filesize(smoke3di->file);
+  file_size= GetFILESize(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     ReadSmoke3D(ifile,UNLOAD,&error);
@@ -5063,9 +5061,9 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 
   iii=0;
   nframes_found=0;
-  local_starttime = glutGet(GLUT_ELAPSED_TIME);
+  START_TIMER(read_time);
   for(i=0;i<smoke3di->ntimes_full;i++){
-	  SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
+    SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
     if(feof(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
       smoke3di->ntimes=nframes_found;
@@ -5112,8 +5110,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
       }
     }
   }
-  local_stoptime = glutGet(GLUT_ELAPSED_TIME);
-  delta_time = (local_stoptime-local_starttime)/1000.0;
+  STOP_TIMER(read_time);
 
   if(SMOKE3DFILE!=NULL){
     fclose(SMOKE3DFILE);
@@ -5135,19 +5132,18 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 #endif
   Smoke3d_CB(UPDATE_SMOKEFIRE_COLORS);
   Idle_CB();
-  local_stoptime0 = glutGet(GLUT_ELAPSED_TIME);
-  delta_time0=(local_stoptime0-local_starttime0)/1000.0;
+  STOP_TIMER(total_time);
 
-  if(file_size!=0&&delta_time>0.0){
+  if(file_size!=0&&read_time>0.0){
     float loadrate;
 
-    loadrate = ((float)file_size*8.0/1000000.0)/delta_time;
+    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
     PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,delta_time,loadrate,delta_time0-delta_time);
+    (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
   }
   else{
     PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-    (float)file_size/1000000.,delta_time,delta_time0-delta_time);
+    (float)file_size/1000000.,read_time,total_time-read_time);
   }
 #ifdef pp_MEMPRINT
   PRINTF("After 3D Smoke load: \n");
@@ -5301,9 +5297,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
     mergecolor=meshi->merge_color;
     mergealpha=meshi->merge_alpha;
-    firesmokeval[0] = smoke_albedo;
-    firesmokeval[1] = smoke_albedo;
-    firesmokeval[2] = smoke_albedo;
+    firesmokeval[0] = 0.0;
+    firesmokeval[1] = 0.0;
+    firesmokeval[2] = 0.0;
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       float *firesmoke_color;
@@ -5405,9 +5401,9 @@ void UpdateSmoke3DMenuLabels(void){
     }
 //    len=strlen(smoke3di->menulabel);
     if(nmeshes>1){
-	  meshdata *smokemesh;
+      meshdata *smokemesh;
 
-	  smokemesh = meshinfo + smoke3di->blocknumber;
+      smokemesh = meshinfo + smoke3di->blocknumber;
       sprintf(meshlabel,"%s",smokemesh->label);
       STRCAT(smoke3di->menulabel," - ");
       STRCAT(smoke3di->menulabel,meshlabel);

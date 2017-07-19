@@ -18,6 +18,9 @@
 void Init(void){
   int i;
 
+
+  curdir_writable = Writable(".");
+
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
 
@@ -129,9 +132,9 @@ void InitLang(void){
   int i;
 
   nlanglistinfo=0;
-  maxlangs = get_nfilelist(smokeview_bindir,"*.po");
+  maxlangs = GetFileListSize(smokeview_bindir,"*.po");
   if(maxlangs==0)return;
-  nlangs = get_filelist(smokeview_bindir,"*.po", maxlangs, &filelistinfo);
+  nlangs = MakeFileList(smokeview_bindir,"*.po", maxlangs, NO, &filelistinfo);
   if(nlangs==0)return;
   for(i=0;i<nlangs;i++){
     char *file;
@@ -197,9 +200,9 @@ void ReadBoundINI(void){
   char *fullfilename = NULL;
 
   if(boundini_filename == NULL)return;
-  fullfilename = get_filename(smokeviewtempdir, boundini_filename, tempdir_flag);
+  fullfilename = GetFileName(smokeviewtempdir, boundini_filename, tempdir_flag);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
-  if(stream == NULL || is_file_newer(smv_filename, fullfilename) == 1){
+  if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
     FREEMEMORY(fullfilename);
     return;
@@ -234,7 +237,7 @@ void ReadBoundINI(void){
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
           patchi->filetype == filetype&&
-          is_file_newer(boundini_filename, patchi->file) == 1){
+          IsFileNewer(boundini_filename, patchi->file) == 1){
           bounddata *boundi;
 
           boundi = &patchi->bounds;
@@ -404,9 +407,9 @@ void SetupGlut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s",_("initializing Glut\n"));
+    PRINTF("%s\n",_("initializing Glut"));
     glutInit(&argc, argv);
-    PRINTF("%s\n",_("complete\n"));
+    PRINTF("%s\n",_("complete"));
   }
 #ifdef pp_OSX
   chdir(workingdir);
@@ -489,7 +492,7 @@ void InitOpenGL(void){
   int type;
   int err;
 
-  PRINTF("%s",_("initializing OpenGL\n"));
+  PRINTF("%s\n",_("initializing OpenGL"));
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
@@ -513,6 +516,9 @@ void InitOpenGL(void){
 
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing Glut display mode - "));
+#endif
+#ifdef pp_OSXGLUT32
+  type|=GLUT_3_2_CORE_PROFILE;
 #endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
@@ -614,7 +620,7 @@ void InitOpenGL(void){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  PRINTF("%s",_("complete\n\n"));
+  PRINTF("%s\n\n",_("complete"));
 }
 
 /* ------------------ Set3DSmokeStartup ------------------------ */

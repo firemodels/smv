@@ -19,7 +19,7 @@ FORTLIBDIR = /opt/intel/composerxe/lib
 
 # Definition of the object variables
 
-obj = assert.o dmalloc.o histogram.o IOdboundary.o IOdplot.o IOdslice.o main.o readsmv.o smv_endian.o file_util.o string_util.o utilities.o fdsmodules.o gsmv.o getdata.o getsizes.o
+obj = assert.o dmalloc.o histogram.o IOdboundary.o IOdplot.o IOdslice.o main.o readsmv.o smv_endian.o file_util.o string_util.o utilities.o  md5.o sha1.o sha256.o fdsmodules.o gsmv.o getdata.o getsizes.o 
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -71,7 +71,7 @@ LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 
 # ------------- 32 bit Linux gnu ----------------
 
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
@@ -84,7 +84,7 @@ gnu_linux_32 : $(obj)
 
 # ------------- 64 bit Linux gnu ----------------
 
-gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX $(GITINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
@@ -98,7 +98,7 @@ gnu_linux_64 : $(obj)
 # ------------- OSX gnu ----------------
 #  gnu osx
 
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_noappend -ffree-form -frecord-marker=4
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D  pp_OSX $(GITINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
@@ -112,7 +112,7 @@ gnu_osx_64 : $(obj)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_noappend -D pp_LINUX
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
@@ -122,7 +122,7 @@ intel_linux_64 : exe       = smokediff_linux_64
 intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64)
 
-intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_noappend -D pp_LINUX
+intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc

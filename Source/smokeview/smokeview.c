@@ -219,7 +219,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 /* ------------------ DisplayVersionInfo ------------------------ */
 
 void DisplayVersionInfo(char *progname){
-  PRINTversion(progname);
+  PRINTVERSION(progname,prog_fullpath);
   PRINTF("\n");
   if(fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",fds_githash);

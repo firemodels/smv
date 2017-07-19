@@ -1,41 +1,18 @@
-#define _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_WARNING
-#define PROGVERSION "1.0"
+#ifndef OPTIONS_H_DEFINED
+#define OPTIONS_H_DEFINED
 
+#include "options_common.h"
 
- /* ------------------ options ------------------------ */
+//*** uncomment the following two lines to force all versions to be beta
+//#undef pp_BETA
+//#define pp_BETA
 
+//*** define dem2fds title
 
-int reg_path(int setget, int pathtype, char *path);
-
-#define FILE_SIZE unsigned long long
-
-#ifdef CPP
-#define CCC "C"
+#ifdef pp_BETA
+#define PROGVERSION "Test"
 #else
-#define CCC
+#define PROGVERSION "1.0.1"
 #endif
 
-#ifdef INMAIN
-#define SVEXTERN
-#define SVDECL(var,val)  var=val
-#else
-#define SVEXTERN extern CCC
-#define SVDECL(var,val)  var
 #endif
-
-#ifdef CPP
-#define EXTERNCPP extern "C"
-#else
-#define EXTERNCPP
-#endif
-
-#ifdef X64
-#define STRUCTSTAT struct __stat64
-#define STAT _stat64
-#else
-#define STRUCTSTAT struct stat
-#define STAT stat
-#endif
-
-#include "lint.h"

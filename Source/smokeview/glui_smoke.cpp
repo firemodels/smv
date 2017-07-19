@@ -93,7 +93,6 @@ GLUI_Spinner *SPINNER_skipframe=NULL;
 GLUI_Spinner *SPINNER_cull_portsize=NULL;
 #endif
 GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
-GLUI_Spinner *SPINNER_albedo=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
 
@@ -429,9 +428,6 @@ extern "C" void glui_3dsmoke_setup(int main_window){
 
 #define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
 
-  SPINNER_albedo = glui_3dsmoke->add_spinner_to_panel(PANEL_colormap2, _d("smoke albedo"), GLUI_SPINNER_FLOAT, &smoke_albedo, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
-  SPINNER_albedo->set_float_limits(0.0, 1.0);
-
   ROLLOUT_colormap_hrrpuv_smoke = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2,"HRRPUV (kW/m3)");
   SPINNER_hrrpuv_cutoff=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv_smoke,_d("hrrpuv cutoff"),GLUI_SPINNER_FLOAT,&global_hrrpuv_cutoff,GLOBAL_FIRE_CUTOFF,Smoke3d_CB);
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
@@ -550,7 +546,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("both"));
   }
-  
+
   // smoke test dialog
 
   ROLLOUT_smoke_test = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _d("Test"), false);
@@ -566,7 +562,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_smoke_test_nslices = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("n slices"), GLUI_SPINNER_INT, &smoke_test_nslices);
   SPINNER_smoke_test_nslices->set_int_limits(3,100);
   SPINNER_smoke_test_range = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("range"), GLUI_SPINNER_FLOAT, &smoke_test_range);
-  
+
   // volume render dialog
 
   if(nvolrenderinfo > 0){
@@ -634,7 +630,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_d("Schlick"));
     SPINNER_scatter_param  = glui_3dsmoke->add_spinner_to_panel(PANEL_scatter,   _d("param"), GLUI_SPINNER_FLOAT, &scatter_param);
     SPINNER_scatter_param->set_float_limits(-1.0,1.0);
-    
+
     ROLLOUT_generate_images = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Generate images"), false);
 
     SPINNER_startframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_generate_images, _d("start frame"), GLUI_SPINNER_INT, &vol_startframe0, START_FRAME, Smoke3d_CB);

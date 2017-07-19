@@ -55,6 +55,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
+#define ALLFILERELOAD 27
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
@@ -64,9 +65,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define DATA_EVAC_COLORING 209
 #define SLICE_VECTORSKIP 210
 #define PLOT3D_VECTORSKIP 211
-#ifdef pp_SLICEDUP
 #define UPDATE_SLICEDUPS 212
-#endif
 #define UPDATE_HISTOGRAM 213
 #define INIT_HISTOGRAM 214
 
@@ -176,18 +175,15 @@ GLUI_Rollout *ROLLOUT_slice_average = NULL;
 GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_slice_vector = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
-#ifdef pp_SLICEDUP
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 
-#ifdef pp_SLICEDUP
-GLUI_Panel *PANEL_slicedup;
-GLUI_Panel *PANEL_vectorslicedup;
-#endif
-GLUI_Panel *PANEL_iso_eachlevel;
-GLUI_Panel *PANEL_iso_alllevels;
+GLUI_Panel *PANEL_sliceshow=NULL;
+GLUI_Panel *PANEL_slicedup = NULL;
+GLUI_Panel *PANEL_vectorslicedup = NULL;
+GLUI_Panel *PANEL_iso_eachlevel = NULL;
+GLUI_Panel *PANEL_iso_alllevels = NULL;
 GLUI_Panel *PANEL_files = NULL;
 GLUI_Panel *PANEL_bounds = NULL;
 GLUI_Panel *PANEL_zone_a=NULL, *PANEL_zone_b=NULL;
@@ -265,7 +261,6 @@ GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
-GLUI_Checkbox *CHECKBOX_show_slice_in_obst=NULL;
 GLUI_Checkbox *CHECKBOX_show_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
@@ -302,11 +297,9 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
-
-#ifdef pp_SLICEDUP
+GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
-#endif
 GLUI_RadioGroup *RADIO_histogram_static=NULL;
 GLUI_RadioGroup *RADIO_showhide = NULL;
 GLUI_RadioGroup *RADIO_contour_type = NULL;
@@ -360,9 +353,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define SLICE_VECTOR_ROLLOUT 1
 #define LINE_CONTOUR_ROLLOUT 2
 #define SLICE_HISTOGRAM_ROLLOUT 3
-#ifdef pp_SLICEDUP
 #define SLICE_DUP_ROLLOUT 4
-#endif
 
 #define VECTOR_ROLLOUT 0
 #define ISOSURFACE_ROLLOUT 1
@@ -377,21 +368,15 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define MEMCHECK_ROLLOUT 7
 
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
-#ifdef pp_SLICEDUP
-procdata sliceprocinfo[4];
-#else
-procdata sliceprocinfo[3];
-#endif
+procdata sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
 
-#ifdef pp_SLICEDUP
 /* ------------------ update_iso_controls ------------------------ */
 
 extern "C" void update_slicedup_dialog(void){
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
 }
-#endif
 
 /* ------------------ update_iso_controls ------------------------ */
 
@@ -417,10 +402,10 @@ extern "C" void UpdateHistogramType(void){
   CHECKBOX_histogram_show_outline->set_int_val(histogram_show_outline);
 }
 
-/* ------------------ update_show_slice_in_obst ------------------------ */
+/* ------------------ UpdateShowSliceInObst ------------------------ */
 
-extern "C" void update_show_slice_in_obst(void){
-  CHECKBOX_show_slice_in_obst->set_int_val(show_slice_in_obst);
+extern "C" void UpdateShowSliceInObst(void){
+  RADIO_show_slice_in_obst->set_int_val(show_slice_in_obst);
 }
 
 /* ------------------ update_iso_colorlevel ------------------------ */
@@ -1565,7 +1550,7 @@ extern "C" void glui_bounds_setup(int main_window){
 
       file = scriptfile->file;
       if(file == NULL)continue;
-      if(file_exists(file) == 0)continue;
+      if(FILE_EXISTS(file) == NO)continue;
       len = strlen(file);
       if(len <= 0)continue;
 
@@ -1592,7 +1577,7 @@ extern "C" void glui_bounds_setup(int main_window){
     inifiledata *inifile;
 
     for(inifile = first_inifile.next; inifile->next != NULL; inifile = inifile->next){
-      if(inifile->file != NULL&&file_exists(inifile->file) == 1){
+      if(inifile->file != NULL&&FILE_EXISTS(inifile->file) == YES){
         if(ini_index == -2)ini_index = inifile->id;
         LIST_ini_list->add_item(inifile->id, inifile->file);
       }
@@ -2033,7 +2018,7 @@ extern "C" void glui_bounds_setup(int main_window){
       if(view_tstop>tttmax)tttmax=view_tstop;
       SPINNER_sliceaverage->set_float_limits(0.0,tttmax);
     }
-    glui_bounds->add_button_to_panel(ROLLOUT_slice_average,"Reload",FILERELOAD,Slice_CB);
+    glui_bounds->add_button_to_panel(ROLLOUT_slice_average,"Reload",ALLFILERELOAD,Slice_CB);
 
     ROLLOUT_slice_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Vector"), false, SLICE_VECTOR_ROLLOUT, Slice_Rollout_CB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_vector, SLICE_VECTOR_ROLLOUT);
@@ -2076,7 +2061,6 @@ extern "C" void glui_bounds_setup(int main_window){
     if(n_embedded_meshes>0){
       CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
     }
-#ifdef pp_SLICEDUP
     if(nslicedups > 0){
       ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _d("Duplicates"), false, SLICE_DUP_ROLLOUT, Slice_Rollout_CB);
       ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slicedups, SLICE_DUP_ROLLOUT);
@@ -2093,13 +2077,17 @@ extern "C" void glui_bounds_setup(int main_window){
       glui_bounds->add_radiobutton_to_group(RADIO_vectorslicedup, _d("Keep fine"));
       glui_bounds->add_radiobutton_to_group(RADIO_vectorslicedup, _d("Keep coarse"));
     }
-#endif
 
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice, _d("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, Slice_CB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
 
-	CHECKBOX_show_slice_in_obst=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, "Include data within blockages", &show_slice_in_obst,SLICE_IN_OBST,Slice_CB);
-	if(nfedinfo>0){
+    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "show slice", true);
+    RADIO_show_slice_in_obst = glui_bounds->add_radiogroup_to_panel(PANEL_sliceshow, &show_slice_in_obst, SLICE_IN_OBST, Slice_CB);
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("gas"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("gas and solid"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, _d("solid"));
+
+    if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,"Regenerate FED data",&regenerate_fed);
     }
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Research display mode"),&research_mode,RESEARCH_MODE,Slice_CB);
@@ -2603,7 +2591,7 @@ extern "C"  void glui_script_disable(void){
     BUTTON_script_setsuffix->disable();
     EDIT_ini->disable();
   }
-  
+
 /* ------------------ updatepatchlistindex ------------------------ */
 
 extern "C" void updatepatchlistindex(int patchfilenum){
@@ -2946,11 +2934,9 @@ extern "C" void Slice_CB(int var){
     return;
   }
   switch(var){
-#ifdef pp_SLICEDUP
     case UPDATE_SLICEDUPS:
     updatemenu = 1;
     break;
-#endif
     case SLICE_VECTORSKIP:
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
       break;
@@ -3391,19 +3377,21 @@ extern "C" void Slice_CB(int var){
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type != islicetype)continue;
-        last_slice = i;
-        break;
+        if(sd->type == islicetype){
+          last_slice = i;
+          break;
+        }
       }
       for(ii = 0; ii < nslice_loaded; ii++){
         int set_slicecolor;
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type != islicetype)continue;
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
+        if(sd->type == islicetype){
+          set_slicecolor = DEFER_SLICECOLOR;
+          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+          ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
+        }
       }
     break;
   case FILERELOAD:
@@ -3415,6 +3403,9 @@ extern "C" void Slice_CB(int var){
       LoadSliceMenu(0);
     }
     UpdateGlui();
+    break;
+  case ALLFILERELOAD:
+    ReloadAllSliceFiles();
     break;
   default:
     ASSERT(FFALSE);

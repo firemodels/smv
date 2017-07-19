@@ -69,8 +69,8 @@ int main(int argc, char **argv){
     trdata *trinfo_lang, *trinfo_template;
     int ntrinfo_lang, ntrinfo_template;
 
-    return1 = parse_lang(file_lang, &trinfo_lang, &ntrinfo_lang);
-    return2 = parse_lang(file_template, &trinfo_template, &ntrinfo_template);
+    return1 = ParseLang(file_lang, &trinfo_lang, &ntrinfo_lang);
+    return2 = ParseLang(file_template, &trinfo_template, &ntrinfo_template);
     if(return1==1&&return2==1){
       printf("\n");
       for(i=0;i<ntrinfo_template;i++){
@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 
         tri = trinfo_template + i;
         // foreach string in template look for a translation and store it in lang
-        tr_otherlangi = bsearch(tri,trinfo_lang,ntrinfo_lang,sizeof(trdata),compare_trdata);
+        tr_otherlangi = bsearch(tri,trinfo_lang,ntrinfo_lang,sizeof(trdata),CompareTrdata);
         if(tr_otherlangi!=NULL){
           tri->value=tr_otherlangi->value;
         }

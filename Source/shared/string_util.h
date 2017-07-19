@@ -23,12 +23,30 @@
 
 #define DEG_SYMBOL 176
 
+#ifdef pp_HASH
+#define HASH_NONE   0
+#define HASH_MD5    1
+#define HASH_SHA1   2
+#define HASH_SHA256 3
+#define HASH_ALL    4
+#endif
+#define HELP_SUMMARY 1
+#define HELP_ALL 2
+
+#ifdef pp_HASH
+SVEXTERN int SVDECL(hash_option, HASH_SHA1);
+#endif
+SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help,0);
+
+
 /* --------------------------  flowlabels ------------------------------------ */
 
 typedef struct {
   char *longlabel, *shortlabel, *unit;
 } flowlabels;
 
+EXTERNCPP void UsageCommon(char *prog, int option);
+EXTERNCPP void ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void InitRandAB(int size);
 EXTERNCPP float RandAB(int seed, float minval, float maxval);
 EXTERNCPP void ToLower(char *string);
@@ -40,10 +58,14 @@ EXTERNCPP unsigned int Date2Sec2(char *tokenorig);
 EXTERNCPP unsigned int Date2Day(char *tokenorig);
 EXTERNCPP int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
-EXTERNCPP int ReadLabelsFaceCenter(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabelsCellCenter(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabelsTerrain(flowlabels *flowlabel, BFILE *stream);
-EXTERNCPP int ReadLabels(flowlabels *label, BFILE *stream);
+
+EXTERNCPP int ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
+
+#ifdef pp_HASH
+EXTERNCPP unsigned char *GetHashMD5(char *file);
+EXTERNCPP unsigned char *GetHashSHA256(char *file);
+EXTERNCPP unsigned char *GetHashSHA1(char *file);
+#endif
 EXTERNCPP void GetProgVersion(char *PROGversion);
 EXTERNCPP int MatchWild(char *pTameText, char *pWildText);
 EXTERNCPP int Match(char *buffer, const char *key);
@@ -81,7 +103,11 @@ EXTERNCPP char *Time2TimeLabel(float time, float dt, char *timelabel);
 EXTERNCPP char *RandStr(char* str, int length);
 EXTERNCPP void GetBaseTitle(char *progname, char *title_base);
 EXTERNCPP void GetTitle(char *progname, char *fulltitle);
-EXTERNCPP void PRINTversion(char *progname);
+#ifdef pp_HASH
+EXTERNCPP void PRINTversion(char *progname, char *progfullpath, int hash_option);
+#else
+EXTERNCPP void PRINTversion(char *progname, char *progfullpath);
+#endif
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");

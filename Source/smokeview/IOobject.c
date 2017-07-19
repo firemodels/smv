@@ -98,7 +98,6 @@ void getsmokesensors(void){
     }
     devicei->visval=val;
   }
-
 }
 
 /* ----------------------- getdevice_screencoords ----------------------------- */
@@ -106,7 +105,6 @@ void getsmokesensors(void){
 void getdevice_screencoords(void){
   double mv_setup[16], projection_setup[16];
   GLint viewport_setup[4];
-//  double d_ijk[3];
   int i;
   int doit;
 
@@ -117,8 +115,10 @@ void getdevice_screencoords(void){
 
     devicei = deviceinfo + i;
     label = devicei->object->label;
-    if(STRCMP(label,"smokesensor")!=0)continue;
-    doit=1;
+    if(STRCMP(label,"smokesensor")==0){
+      doit=1;
+      break;
+    }
   }
   if(doit==0)return;
 
@@ -534,21 +534,25 @@ void DrawWindRose(windrosedata *wr,int orientation){
     glLineWidth(2.0);
     for(icirc = 1;icirc<100;icirc++){
       float scalei,scalei_normalized,diameter;
+      char scale_percen[256];
 
-      scalei=(float)icirc*scale_increment_windrose;
-      if(scalei > scale_max_windrose)continue;
+      scalei=(float)icirc*(float)scale_increment_windrose/100.0;
+      if(scalei > (float)scale_max_windrose/100.0)continue;
       scalei_normalized = scalei/(maxr/hist->ntotal);
       if(scalei_normalized>1.0)break;
       diameter = 2.0*radius_windrose*scalei_normalized;
       drawcircle(diameter, uc_foregroundcolor, &windrose_circ);
-      if(showlabels_windrose==1)Output3Val(0.01+diameter / 2.0, 0.0, 0.0, scalei);
+      if(showlabels_windrose == 1){
+        sprintf(scale_percen, "%.0f%s", 100.0*scalei, "%");
+        Output3Text(foregroundcolor, 0.01 + diameter / 2.0, 0.0, 0.0, scale_percen);
+      }
     }
     glTranslatef(0.0, 0.0, -0.002);
     for(icirc = 1;icirc<100;icirc++){
       float scalei, scalei_normalized, diameter;
 
-      scalei=(float)icirc*scale_increment_windrose;
-      if(scalei > scale_max_windrose)continue;
+      scalei=(float)icirc*(float)scale_increment_windrose/100.0;
+      if(scalei > (float)scale_max_windrose/100.0)continue;
       scalei_normalized = scalei /(maxr/hist->ntotal);
       if(scalei_normalized>1.0)break;
       diameter = 2.0*radius_windrose*scalei_normalized;
@@ -557,35 +561,6 @@ void DrawWindRose(windrosedata *wr,int orientation){
   }
   glPopMatrix();
   glDisable(GL_LIGHTING);
-}
-
-/* ----------------------- UpdateWindroseShowhide ----------------------------- */
-
-void UpdateWindroseShowhide(void){
-  int i,nvals;
-
-  update_windrose_showhide=0;
-  if(windrose_showhide==NULL)return;
-  nvals = 0;
-  for(i = 0; i<nztreedeviceinfo; i++){
-    treedevicedata *treei;
-    int j;
-
-    treei = ztreedeviceinfo[i];
-    for(j = treei->first; j<=treei->last; j++){
-      vdevicesortdata *vdevsorti;
-
-      vdevsorti = vdevices_sorted+j;
-      if(vdevsorti->dir==ZDIR){
-        vdevicedata *vd;
-
-        if(nvals>=nwindrose_showhide)return;
-        vd = vdevsorti->vdeviceinfo;
-        vd->display = windrose_showhide[nvals];
-        nvals++;
-      }
-    }
-  }
 }
 
 /* ----------------------- DrawWindRosesDevices ----------------------------- */
@@ -1446,26 +1421,26 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
       }
       break;
-   	case SV_INCLUDE:
-	  case SV_INCLUDEF:
-	    {
+    case SV_INCLUDE:
+    case SV_INCLUDEF:
+      {
         sv_object *included_object;
         int iframe_local2;
-	      char *object_name;
+        char *object_name;
 
-	      if(toki->included_object==NULL){
-	        if(toki->command==SV_INCLUDEF){
-	          iframe_local2=arg[0];
-		      }
-	        else{
+        if(toki->included_object==NULL){
+          if(toki->command==SV_INCLUDEF){
+            iframe_local2=arg[0];
+          }
+          else{
             iframe_local2=0;
-		      }
+          }
           object_name = (toki-1)->string;
           included_object = get_SVOBJECT_type(object_name,missing_device);
-	        toki->included_frame=iframe_local2;
-	        toki->included_object=included_object;
+          toki->included_frame=iframe_local2;
+          toki->included_object=included_object;
         }
-	      else{
+        else{
           iframe_local2=toki->included_frame;
           included_object = toki->included_object;
         }
@@ -2593,18 +2568,17 @@ void drawfilledcircle(float diameter,unsigned char *rgbcolor, circdata *circinfo
 
 void drawcircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   int i;
-  int ncirc;
   float *xcirc, *ycirc;
 
   if(circinfo->ncirc==0)Init_Circle(CIRCLE_SEGS,circinfo);
-  ncirc = circinfo->ncirc;
   xcirc = circinfo->xcirc;
   ycirc = circinfo->ycirc;
 
-  glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINES);
   if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-  for(i=0;i<ncirc;i++){
-    glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
+  for(i=0;i<circinfo->ncirc;i++){
+    glVertex3f(diameter*xcirc[  i]/2.0, diameter*ycirc[  i]/2.0,0.0);
+    glVertex3f(diameter*xcirc[i+1]/2.0, diameter*ycirc[i+1]/2.0, 0.0);
   }
   glEnd();
 }
@@ -3427,22 +3401,22 @@ void drawdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
-	  glVertex3f(                    0.0,                    0.0,0.0);
+      glVertex3f(                    0.0,                    0.0,0.0);
 
-	  glVertex3f(                    0.0,                    0.0,0.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
+      glVertex3f(                    0.0,                    0.0,0.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
     }
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
-	  glVertex3f(                    0.0,                    0.0, height);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
+      glVertex3f(                    0.0,                    0.0, height);
 
-	  glVertex3f(                    0.0,                    0.0, height);
+      glVertex3f(                    0.0,                    0.0, height);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
     }
     glEnd();
@@ -3616,15 +3590,15 @@ void drawcdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.00); // 1
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0); // 2
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
-	  glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0); // 3
+      glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
 
-	  glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
+      glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0); // 4
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.00); // 1
     }
     glEnd();
@@ -3654,22 +3628,22 @@ void drawcdisk(float diameter, float height, unsigned char *rgbcolor){
 
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.0);
-	  glVertex3f(                    0.0,                    0.0,-height/2.0);
+      glVertex3f(                    0.0,                    0.0,-height/2.0);
 
-	  glVertex3f(                    0.0,                    0.0,-height/2.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
+      glVertex3f(                    0.0,                    0.0,-height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,-height/2.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,-height/2.0);
     }
     for(i=0;i<ncirc;i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0);
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
 
-	  glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
-	  glVertex3f(                    0.0,                    0.0, height/2.0);
+      glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height/2.0);
+      glVertex3f(                    0.0,                    0.0, height/2.0);
 
-	  glVertex3f(                    0.0,                    0.0, height/2.0);
+      glVertex3f(                    0.0,                    0.0, height/2.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height/2.0);
     }
     glEnd();
@@ -5079,8 +5053,8 @@ char *parse_device_frame(char *buffer, FILE *stream, int *eof, sv_object_frame *
 
       toki->type=TOKEN_COMMAND;
       error_code=get_token_id(toki->token, &toki->command, &toki->nvars, &toki->noutvars, &use_displaylist);
-	    toki->included_frame=0;
-	    toki->included_object=NULL;
+      toki->included_frame=0;
+      toki->included_object=NULL;
       if(error_code==1){
         frame->error=1;
         fprintf(stderr,"*** Error: unable to identify the command, %s, while parsing:\n\n",toki->token);
@@ -5997,49 +5971,8 @@ void setup_device_data(void){
   int i;
   char **devcunits=NULL, **devclabels=NULL;
   int is_dup;
-  int build_cache = 0;
-  FILE *stream = NULL;
 
   if(ndeviceinfo==0)return;
-
-  if(is_file_newer(deviceinfo_filename, smv_filename)!=1){
-    build_cache = 1;
-    stream = fopen(deviceinfo_filename, "w");
-  }
-  else{
-    build_cache = 0;
-    stream = fopen(deviceinfo_filename, "r");
-  }
-
-  if(vel_devices==NULL){
-    int *idevices;
-
-    NewMemory((void **)&idevices, ndeviceinfo*sizeof(int));
-    for(i = 0;i<ndeviceinfo;i++){
-      devicedata *devi;
-
-      devi = deviceinfo+i;
-      if(strcmp(devi->quantity, "VELOCITY"   )==0||
-         strcmp(devi->quantity, "SD_VELOCITY")==0||
-         strcmp(devi->quantity, "ANGKE"      )==0||
-         strcmp(devi->quantity, "U-VELOCITY" )==0||
-         strcmp(devi->quantity, "V-VELOCITY" )==0||
-         strcmp(devi->quantity, "W-VELOCITY" )==0){
-        idevices[nvel_devices++] = i;
-      }
-    }
-    if(nvel_devices>0){
-      NewMemory((void **)&vel_devices, nvel_devices*sizeof(devicedata *));
-    }
-    else{
-      NewMemory((void **)&vel_devices, 1*sizeof(devicedata *));
-    }
-    for(i = 0;i<nvel_devices;i++){
-      vel_devices[i] = deviceinfo+idevices[i];
-    }
-    FREEMEMORY(idevices);
-  }
-
   FREEMEMORY(vdeviceinfo);
   NewMemory((void **)&vdeviceinfo,ndeviceinfo*sizeof(vdevicedata));
   FREEMEMORY(vdevices_sorted);
@@ -6047,95 +5980,65 @@ void setup_device_data(void){
   nvdeviceinfo=0;
   for(i=0;i<ndeviceinfo;i++){
     vdevicedata *vdevi;
-    devicedata *devi;
+    devicedata *devi,*devj;
     float *xyzval;
-    devicedata *devices[7];
-    int idev[7];
 
-    if(build_cache==0){
-      int k;
-      char buffer[256];
+    if(ndeviceinfo>1000&&i%100==0)PRINTF("processing device %i of %i\n", i, ndeviceinfo);
+    devi = deviceinfo+i;
+    xyzval = devi->xyz;
+    devi->vdevice = NULL;
 
-      fgets(buffer, 256, stream);
-      sscanf(buffer, "%i %i %i %i %i %i %i", idev, idev+1, idev+2, idev+3, idev+4, idev+5, idev+6);
-      for(k = 0;k<7;k++){
-        if(idev[k]>=0){
-          devices[k] = deviceinfo+idev[k];
-        }
-        else{
-          devices[k] = NULL;
-        }
-      }
-    }
-    devi = deviceinfo + i;
-    xyzval=devi->xyz;
-    devi->vdevice=NULL;
-
-    vdevi = vdeviceinfo + nvdeviceinfo;
+    vdevi = vdeviceinfo+nvdeviceinfo;
     vdevi->valdev = devi;
-    vdevi->udev=NULL;
-    vdevi->vdev=NULL;
-    vdevi->wdev=NULL;
-    vdevi->angledev=NULL;
-    vdevi->veldev=NULL;
-    vdevi->sd_angledev=NULL;
-    vdevi->sd_veldev=NULL;
-    vdevi->colordev=NULL;
+    vdevi->udev = NULL;
+    vdevi->vdev = NULL;
+    vdevi->wdev = NULL;
+    vdevi->angledev = NULL;
+    vdevi->veldev = NULL;
+    vdevi->sd_angledev = NULL;
+    vdevi->sd_veldev = NULL;
+    vdevi->colordev = NULL;
 
-    if(build_cache==1)devices[0] = get_vel_device(xyzval, "VELOCITY", CSV_EXP);
-    if(devices[0]!=NULL){
-      vdevi->veldev= devices[0];
-      vdevi->filetype=CSV_EXP;
+    devj = get_device(xyzval, "VELOCITY", CSV_EXP);
+    if(devj!=NULL){
+      vdevi->veldev = devj;
+      vdevi->filetype = CSV_EXP;
     }
 
-    if(build_cache==1)devices[1] = get_vel_device(xyzval,"SD_VELOCITY",CSV_EXP);
-    if(devices[1]!=NULL){
-      vdevi->sd_veldev= devices[1];
-      vdevi->filetype=CSV_EXP;
+    devj = get_device(xyzval, "SD_VELOCITY", CSV_EXP);
+    if(devj!=NULL){
+      vdevi->sd_veldev = devj;
+      vdevi->filetype = CSV_EXP;
     }
 
-    if(build_cache==1)devices[2] = get_vel_device(xyzval,"ANGLE",CSV_EXP);
-    if(devices[2]!=NULL){
-      vdevi->angledev= devices[2];
-      vdevi->filetype=CSV_EXP;
+    devj = get_device(xyzval, "ANGLE", CSV_EXP);
+    if(devj!=NULL){
+      vdevi->angledev = devj;
+      vdevi->filetype = CSV_EXP;
     }
 
-    if(build_cache==1)devices[3] = get_vel_device(xyzval,"SD_ANGLE",CSV_EXP);
-    if(devices[3]!=NULL){
-      vdevi->sd_angledev= devices[3];
-      vdevi->filetype=CSV_EXP;
+    devj = get_device(xyzval, "SD_ANGLE", CSV_EXP);
+    if(devj!=NULL){
+      vdevi->sd_angledev = devj;
+      vdevi->filetype = CSV_EXP;
     }
 
-    if(build_cache==1)devices[4] = get_vel_device(xyzval,"U-VELOCITY",CSV_FDS);
-    if(devices[4]!=NULL){
-      vdevi->udev= devices[4];
-      vdevi->filetype=CSV_FDS;
+    devj = get_device(xyzval, "U-VELOCITY", CSV_FDS);
+    if(devj!=NULL){
+      vdevi->udev = devj;
+      vdevi->filetype = CSV_FDS;
     }
 
-    if(build_cache==1)devices[5] = get_vel_device(xyzval,"V-VELOCITY",CSV_FDS);
-    if(devices[5]!=NULL){
-      vdevi->vdev= devices[5];
-      vdevi->filetype=CSV_FDS;
+    devj = get_device(xyzval, "V-VELOCITY", CSV_FDS);
+    if(devj!=NULL){
+      vdevi->vdev = devj;
+      vdevi->filetype = CSV_FDS;
     }
 
-    if(build_cache==1)devices[6] = get_vel_device(xyzval,"W-VELOCITY",CSV_FDS);
-    if(devices[6]!=NULL){
-      vdevi->wdev= devices[6];
-      vdevi->filetype=CSV_FDS;
-    }
-
-    if(build_cache==1){
-      int k;
-
-      for(k = 0;k<7;k++){
-        if(devices[k]==NULL){
-          idev[k] = -1;
-        }
-        else{
-          idev[k] = devices[k]-deviceinfo;
-        }
-      }
-      fprintf(stream, "%i %i %i %i %i %i %i\n", idev[0], idev[1], idev[2], idev[3], idev[4], idev[5], idev[6]);
+    devj = get_device(xyzval, "W-VELOCITY", CSV_FDS);
+    if(devj!=NULL){
+      vdevi->wdev = devj;
+      vdevi->filetype = CSV_FDS;
     }
 
     if(vdevi->udev!=NULL||vdevi->vdev!=NULL||vdevi->wdev!=NULL||
@@ -6145,7 +6048,6 @@ void setup_device_data(void){
       nvdeviceinfo++;
     }
   }
-  fclose(stream);
 
   // look for duplicate device labels
 
@@ -6495,7 +6397,8 @@ int read_object_defs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("complete\n\n");
+  PRINTF("complete");
+  PRINTF("\n\n");
   return ndevices;
 }
 
@@ -7284,9 +7187,9 @@ void parse_object_string(char *string,char **tokens, int *ntokens){
         int j;
         sv_object *included_object;
         int iframe_local;
-	      char *object_name;
-	      int nparms;
-	      sv_object_frame *frame;
+        char *object_name;
+        int nparms;
+        sv_object_frame *frame;
         int len2;
 
         object_name=tokens_tail[ntail-2];

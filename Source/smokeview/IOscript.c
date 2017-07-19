@@ -289,6 +289,7 @@ int get_script_keyword_index(char *keyword){
   if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;
   if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;
   if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;
+  if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
   if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;
   if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;
   if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;
@@ -477,6 +478,9 @@ int compile_script(char *scriptfile){
 
 // CBARNORMAL:
       case SCRIPT_CBARNORMAL:
+
+// SHOWSMOKESENSORS
+      case SCRIPT_SHOWSMOKESENSORS:
         break;
 
 // RENDERSIZE
@@ -1490,6 +1494,82 @@ void script_plot3dprops(scriptdata *scripti){
   }
 }
 
+/* ------------------ script_showsmokesensors ------------------------ */
+
+void script_showsmokesensors(scriptdata *scripti){
+  int i,j;
+  FILE *stream_smokesensors;
+  int nsmokesensors;
+  float sensor_time=0.0;
+
+  // count smokesensors
+  
+  nsmokesensors=0;
+  for(i=0;i<ndeviceinfo;i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if(STRCMP(devicei->object->label,"smokesensor")==0)nsmokesensors++;
+  }
+  if(nsmokesensors == 0)return;
+
+  // first time, create a file to put smokesensor values in
+
+  if(file_smokesensors==NULL){
+    NewMemory((void **)&file_smokesensors,strlen(fdsprefix)+17+1);
+    strcpy(file_smokesensors,fdsprefix);
+    strcat(file_smokesensors,"_ss.csv");
+    stream_smokesensors = fopen(file_smokesensors, "w");
+
+    fprintf(stream_smokesensors, "s,");
+    for(i = 1;i < nsmokesensors-1;i++){
+      fprintf(stream_smokesensors, ",");
+    }
+    fprintf(stream_smokesensors, "\n");
+
+    j = 0;
+    fprintf(stream_smokesensors, "Time,");
+    for(i = 0;i < ndeviceinfo;i++){
+      devicedata *devicei;
+
+      devicei = deviceinfo + i;
+      if(STRCMP(devicei->object->label, "smokesensor") == 0){
+        j++;
+        if(j == nsmokesensors){
+          fprintf(stream_smokesensors, "%s\n",devicei->label);
+        }
+        else{
+          fprintf(stream_smokesensors, "%s,", devicei->label);
+        }
+      }
+    }
+  }
+  else{
+    stream_smokesensors = fopen(file_smokesensors, "a");
+  }
+
+  if(global_times!=NULL&&itimes>=0&&itimes<nglobal_times){
+    sensor_time = global_times[itimes];
+  }
+  fprintf(stream_smokesensors,"%f,",sensor_time);
+  j = 0;
+  for(i=0;i<ndeviceinfo;i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if(STRCMP(devicei->object->label,"smokesensor")==0){
+      j++;
+      if(j==nsmokesensors){
+        fprintf(stream_smokesensors,"%i\n",devicei->visval);
+      }
+      else{
+        fprintf(stream_smokesensors,"%i,",devicei->visval);
+      }
+    }
+  }
+  fclose(stream_smokesensors);
+}
+
 /* ------------------ script_showplot3ddata ------------------------ */
 
 void script_showplot3ddata(scriptdata *scripti){
@@ -1621,7 +1701,7 @@ void script_loadfile(scriptdata *scripti){
 
     parti = partinfo + i;
     if(strcmp(parti->file,scripti->cval)==0){
-      readpart(parti->file,i,LOAD,PARTDATA,&errorcode);
+      LoadParticleMenu(i);
       return;
     }
   }
@@ -1997,7 +2077,7 @@ int run_script(void){
     case SCRIPT_RENDERDIR:
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         script_dir_path=scripti->cval;
-        if(can_write_to_dir(script_dir_path)==0){
+        if(Writable(script_dir_path)==NO){
           fprintf(stderr,"*** Error: Cannot write to the RENDERDIR directory: %s\n",script_dir_path);
         }
         PRINTF("script: setting render path to %s\n",script_dir_path);
@@ -2099,6 +2179,9 @@ int run_script(void){
       break;
     case SCRIPT_PARTCLASSCOLOR:
       script_partclasscolor(scripti);
+      break;
+    case SCRIPT_SHOWSMOKESENSORS:
+      script_showsmokesensors(scripti);
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       script_showplot3ddata(scripti);

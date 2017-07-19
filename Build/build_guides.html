@@ -12,17 +12,20 @@ function get_fullpath(command,platform){
   var fullpath = directoryPath.concat(command).concat(platform);
   return fullpath;
 }
+function run_script(script){
+  MyObject.Run(get_fullpath("../scripts/webRUN_script.bat ",script));
+}
 function build_guide(guide){
-  MyObject.Run(get_fullpath("../scripts/BUILDguide.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/webBUILDguide.bat ",guide));
 }
 function view_guide(guide){
-  MyObject.Run(get_fullpath("../scripts/VIEWguide.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/webVIEWguide.bat ",guide));
 }
 function copy_guides(guide){
-  MyObject.Run(get_fullpath("../scripts/COPYguides.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/webCOPYguides.bat ",guide));
 }
 function get_figs(guide){
-  MyObject.Run(get_fullpath("../scripts/GETfigs.bat ",guide));
+  MyObject.Run(get_fullpath("../scripts/webGETfigs.bat ",guide));
 }
 </script>
 </HEAD>
@@ -34,25 +37,23 @@ function get_figs(guide){
 
 <hr size="1">
 
-<h3>Bundle Steps - Guides</h3>
-<ol>
-<li>Run firebot and smokebot
-<li>After both bots successfully complete, copy guides to FDS_Guides on all three platforms
-</ol>
+<h3>Copy Guides</h3>
 
-<h3>Copy Guides to Bundle Directories (FDS_Guides)</h3>
+<ul>
+<li>Run firebot and smokebot
+</ul>
 
 <p><table border=on>
 <tr>
-<td>smokebot SMV guides</td>
+<td>SMV guides (smokebot)</td>
 <td><button onclick="copy_guides('from_smv_linux')">==></button></td>
-<td rowspan=2 align=center>Windows <br>~\FDS_Guides</td>
+<td rowspan=2 align=center>Windows ~\FDS_Guides</td>
 <td><button onclick="copy_guides('to_linux')">==></button></td>
 <td>Linux ~/FDS_Guides</td>
 </tr>
 
 <tr>
-<td align=center>firebot FDS guides</td>
+<td align=center>FDS guides (firebot)</td>
 <td><button onclick="copy_guides('from_fds_linux')">==></button></td>
 <td><button onclick="copy_guides('to_osx')">==></button></td>
 <td>OSX ~/FDS_Guides</td>
@@ -70,7 +71,7 @@ function get_figs(guide){
 <p><table border=on>
 <tr>
 <td rowspan=2, align=center>Linux smokebot</td>
-<td>SMV User</td>
+<td align=center>SMV User</td>
 <td><button onclick="get_figs('smvug')">==></button></td>
 <td rowspan=5>Windows repo</td>
 </tr>
@@ -146,9 +147,8 @@ function get_figs(guide){
 </table>
 
 <h3>Other</h3>
-<ul>
-<li><a href="../scripts/EDIT_build_guides.bat">Edit</a> this page
-</ul>
+<p><button onclick="run_script('\\smv\\scripts\\webVIEW_localimages.bat')">View local images</button><br>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_build_guides.bat')">Edit this page</button>
 
 <p><hr>
 

@@ -1526,7 +1526,7 @@ void DrawColorbarRegLabels(void){
       colorbar_left_pos - colorbar_label_width,
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Plot3d");
+    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Plot3D");
     OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, p3label);
     OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
     if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){

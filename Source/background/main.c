@@ -23,7 +23,6 @@
 
 //dummy change to bump version number to 0.9
 
-void usage(char *prog);
 #ifdef WIN32
 void GetSystemTimesAddress(void);
 #endif
@@ -51,14 +50,54 @@ void Sleep(int ticks){
 }
 #endif
 
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog, int option){
+  char prog_version[100];
+  char githash[100];
+  char gitdate[100];
+  char pp[] = "%";
+
+  GetProgVersion(prog_version);  // get version (ie 5.x.z)
+  GetGitInfo(githash, gitdate);    // get githash
+
+  printf("\n");
+  printf("background %s(%s) - %s\n", prog_version, githash, __DATE__);
+  printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
+  printf("  %s", prog);
+
+  printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
+
+  printf("where\n\n");
+
+  printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
+  printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
+  printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
+  UsageCommon(prog, HELP_SUMMARY);
+  printf("  prog      - program to run in the background\n");
+  printf("  arguments - command line arguments of prog\n\n");
+  if(option == HELP_ALL){
+    printf("  -debug    - display debug messages\n");
+#ifdef pp_LINUX
+    printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
+#endif
+#ifdef pp_LINUX
+    printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
+#endif
+    UsageCommon(prog, HELP_ALL);
+    printf("Example:\n");
+    printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
+    printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n", pp);
+  }
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  char *prog;
   int i;
 #ifdef pp_LINUXOSX
   int debug;
-#endif  
+#endif
   int argstart=-1;
   float delay_time=0.0;
   int cpu_usage, cpu_usage_max=25;
@@ -79,7 +118,8 @@ int main(int argc, char **argv){
   char *command;
 #endif
 
-  set_stdout(stdout);
+  SetStdOut(stdout);
+  initMALLOC();
 #ifdef pp_LINUX
   hostlistfile=NULL;
   host=NULL;
@@ -92,11 +132,20 @@ int main(int argc, char **argv){
 
 #ifdef pp_LINUXOSX
   debug=0;
-#endif  
-  prog=argv[0];
+#endif
 
   if(argc==1){
-    PRINTversion("background ");
+    PRINTVERSION("background ", argv[0]);
+    return 1;
+  }
+
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("background",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("background", argv[0]);
     return 1;
   }
 
@@ -117,21 +166,15 @@ int main(int argc, char **argv){
                 if(delay_time<0.0)delay_time=0.0;
               }
             }
-#ifdef pp_LINUXOSX            
+#ifdef pp_LINUXOSX
             else{
-		          debug=1;
-		        }
-#endif		        
-            break;
-          case 'h':
-#ifdef pp_LINUX
-            if(strlen(arg)<=2||strcmp(arg,"-hosts")!=0){
-#endif
-              usage(prog);
-              return 1;
-#ifdef pp_LINUX
+              debug=1;
             }
-            else{
+#endif
+            break;
+#ifdef LINUX
+          case 'h':
+            if(strcmp(arg,"-hosts")==0){
               i++;
               if(i<argc){
                 arg=argv[i];
@@ -168,14 +211,11 @@ int main(int argc, char **argv){
               if(cpu_usage_max>100)cpu_usage_max=100;
             }
             break;
-          case 'v':
-            PRINTversion("background ");
-            return 1;
           default:
             printf("Unknown option: %s\n",arg);
-            usage(prog);
+            Usage(argv[0],HELP_ALL);
             return 1;
-	      }
+        }
       }
     }
     else{
@@ -301,44 +341,6 @@ int main(int argc, char **argv){
   return 0;
 }
 
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
-  char prog_version[100];
-  char githash[100];
-  char gitdate[100];
-  char pp[] = "%";
-
-  GetProgVersion(prog_version);  // get version (ie 5.x.z)
-  GetGitInfo(githash,gitdate);    // get githash
-
-  printf("\n");
-  printf("background %s(%s) - %s\n",prog_version,githash,__DATE__);
-  printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
-  printf("  %s",prog);
-  printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
-
-  printf("where\n\n");
-
-  printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
-  printf("  -debug    - display debug messages\n");
-  printf("  -h        - display this message\n");
-#ifdef pp_LINUX
-  printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
-#endif
-  printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n",pp);
-#ifdef pp_LINUX
-  printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
-#endif
-  printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n",pp);
-  printf("  -v        - display version information\n");
-  printf("  prog      - program to run in the background\n");
-  printf("  arguments - command line arguments of prog\n\n");
-  printf("Example:\n");
-  printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
-  printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n",pp);
-}
-
 #ifdef WIN32
 typedef BOOL ( __stdcall * pfnGetSystemTimes)( LPFILETIME lpIdleTime, LPFILETIME lpKernelTime, LPFILETIME lpUserTime );
 static pfnGetSystemTimes s_pfnGetSystemTimes = NULL;
@@ -348,74 +350,70 @@ static HMODULE s_hKernel = NULL;
 /* ------------------ GetSystemTimesAddress ------------------------ */
 
 void GetSystemTimesAddress(){
-	if( s_hKernel == NULL )
-	{
-		s_hKernel = LoadLibrary((wchar_t *)"Kernel32.dll" );
-		if( s_hKernel != NULL )
-		{
-			s_pfnGetSystemTimes = (pfnGetSystemTimes)GetProcAddress( s_hKernel, "GetSystemTimes" );
-			if( s_pfnGetSystemTimes == NULL )
-			{
-				FreeLibrary( s_hKernel ); s_hKernel = NULL;
-			}
-		}
-	}
+  if( s_hKernel == NULL ){
+    s_hKernel = LoadLibrary((wchar_t *)"Kernel32.dll" );
+    if( s_hKernel != NULL ){
+      s_pfnGetSystemTimes = (pfnGetSystemTimes)GetProcAddress( s_hKernel, "GetSystemTimes" );
+      if( s_pfnGetSystemTimes == NULL ){
+        FreeLibrary( s_hKernel ); s_hKernel = NULL;
+      }
+    }
+  }
 }
 
 /* ------------------ cpuusage ------------------------ */
 
-unsigned char cpuusage()
-{
-	FILETIME               ft_sys_idle;
-	FILETIME               ft_sys_kernel;
-	FILETIME               ft_sys_user;
+unsigned char cpuusage(){
+  FILETIME               ft_sys_idle;
+  FILETIME               ft_sys_kernel;
+  FILETIME               ft_sys_user;
 
-	ULARGE_INTEGER         ul_sys_idle;
-	ULARGE_INTEGER         ul_sys_kernel;
-	ULARGE_INTEGER         ul_sys_user;
+  ULARGE_INTEGER         ul_sys_idle;
+  ULARGE_INTEGER         ul_sys_kernel;
+  ULARGE_INTEGER         ul_sys_user;
 
-	static ULARGE_INTEGER	 ul_sys_idle_old;
-	static ULARGE_INTEGER  ul_sys_kernel_old;
-	static ULARGE_INTEGER  ul_sys_user_old;
+  static ULARGE_INTEGER	 ul_sys_idle_old;
+  static ULARGE_INTEGER  ul_sys_kernel_old;
+  static ULARGE_INTEGER  ul_sys_user_old;
 
-	unsigned char usage_local = 0;
+  unsigned char usage_local = 0;
 
-	// we cannot directly use GetSystemTimes on C language
-	/* add this line :: pfnGetSystemTimes */
-	s_pfnGetSystemTimes(&ft_sys_idle,    /* System idle time */
-		&ft_sys_kernel,  /* system kernel time */
-		&ft_sys_user);   /* System user time */
+// we cannot directly use GetSystemTimes on C language
+/* add this line :: pfnGetSystemTimes */
+  s_pfnGetSystemTimes(&ft_sys_idle,    /* System idle time */
+  &ft_sys_kernel,  /* system kernel time */
+  &ft_sys_user);   /* System user time */
 
-	CopyMemory(&ul_sys_idle  , &ft_sys_idle  , sizeof(FILETIME)); // Could been optimized away...
-	CopyMemory(&ul_sys_kernel, &ft_sys_kernel, sizeof(FILETIME)); // Could been optimized away...
-	CopyMemory(&ul_sys_user  , &ft_sys_user  , sizeof(FILETIME)); // Could been optimized away...
+  CopyMemory(&ul_sys_idle  , &ft_sys_idle  , sizeof(FILETIME)); // Could been optimized away...
+  CopyMemory(&ul_sys_kernel, &ft_sys_kernel, sizeof(FILETIME)); // Could been optimized away...
+  CopyMemory(&ul_sys_user  , &ft_sys_user  , sizeof(FILETIME)); // Could been optimized away...
 
-	usage_local  =
-		(
-		(
-		(
-		(
-		(ul_sys_kernel.QuadPart - ul_sys_kernel_old.QuadPart)+
-		(ul_sys_user.QuadPart   - ul_sys_user_old.QuadPart)
-		)
-		-
-		(ul_sys_idle.QuadPart-ul_sys_idle_old.QuadPart)
-		)
-		*
-		(100)
-		)
-		/
-		(
-		(ul_sys_kernel.QuadPart - ul_sys_kernel_old.QuadPart)+
-		(ul_sys_user.QuadPart   - ul_sys_user_old.QuadPart)
-		)
-		);
+  usage_local  =
+    (
+    (
+    (
+    (
+    (ul_sys_kernel.QuadPart - ul_sys_kernel_old.QuadPart)+
+    (ul_sys_user.QuadPart   - ul_sys_user_old.QuadPart)
+    )
+    -
+    (ul_sys_idle.QuadPart-ul_sys_idle_old.QuadPart)
+    )
+    *
+    (100)
+    )
+    /
+    (
+    (ul_sys_kernel.QuadPart - ul_sys_kernel_old.QuadPart)+
+    (ul_sys_user.QuadPart   - ul_sys_user_old.QuadPart)
+    )
+    );
 
-	ul_sys_idle_old.QuadPart   = ul_sys_idle.QuadPart;
-	ul_sys_user_old.QuadPart   = ul_sys_user.QuadPart;
-	ul_sys_kernel_old.QuadPart = ul_sys_kernel.QuadPart;
+  ul_sys_idle_old.QuadPart   = ul_sys_idle.QuadPart;
+  ul_sys_user_old.QuadPart   = ul_sys_user.QuadPart;
+  ul_sys_kernel_old.QuadPart = ul_sys_kernel.QuadPart;
 
-	return usage_local;
+  return usage_local;
 }
 #endif
 #ifdef pp_OSX

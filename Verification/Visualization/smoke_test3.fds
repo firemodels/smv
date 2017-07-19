@@ -1,0 +1,57 @@
+&HEAD CHID='smoke_test3', TITLE='Verify Smokeview Smoke3D Feature' /
+
+  A quantitative test of the smoke opacity calculation in Smokeview.  This test simplifies
+  the general case by assuming a uniform distribution of smoke.  Smoke grey levels are computed
+  using 
+
+     grey level (GL) = 255*exp(-K*S*DX)
+
+  where K=8700 m2/kg is the mass extinction value, S=7.922 * 10**-5 kg/m3 is the soot density 
+  and DX is the path length through the smoke.  This equation is inverted to obtain
+
+    DX = -LN(GL/255)/(K*S)
+
+  and is used to place smoke sensors at 0.5, 1, 3, 4 and 5 meters so that the predicted 
+  grey levels are 181, 128, 64, 32, 16 and 8 . 
+
+&MESH IJK=20,13,8, XB=0.0,10.0,0.0,6.5,0.0,4.0 /
+
+&TIME T_END=1.0 /
+
+&SPEC ID='SOOT'/
+&INIT XB=0.0,10.0,0.0,6.4,0.0,4.0,MASS_FRACTION=0.00006624,SPEC_ID='SOOT' /
+
+&OBST XB=0.0,2.6, 0.5,0.7,1.0,4.0, RGB=255,255,255 / 
+&OBST XB=0.0,4.0, 1.0,1.2,1.0,4.0, RGB=255,255,255 / 
+&OBST XB=0.0,5.6, 2.0,2.2,1.0,4.0, RGB=255,255,255 / 
+&OBST XB=0.0,7.0, 3.0,3.2,1.0,4.0, RGB=255,255,255 / 
+&OBST XB=0.0,8.6, 4.0,4.2,1.0,4.0, RGB=255,255,255 / 
+&OBST XB=0.0,10.0,5.0,5.4,1.0,4.0, RGB=255,255,255 / 
+
+&OBST XB=0.0,2.6, 0.0,1.0,0.0,1.0, RGB=181,181,181 / 
+&OBST XB=2.6,4.0, 0.0,1.0,0.0,1.0, RGB=128,128,128 / 
+&OBST XB=4.0,5.6, 0.0,1.0,0.0,1.0, RGB=64,64,64 / 
+&OBST XB=5.6,7.0, 0.0,1.0,0.0,1.0, RGB=32,32,32 / 
+&OBST XB=7.0,8.6, 0.0,1.0,0.0,1.0, RGB=16,16,16 / 
+&OBST XB=8.6,10.0, 0.0,1.0,0.0,1.0, RGB=8,8,8 / 
+
+
+&PROP ID='smoketest' SMOKEVIEW_ID='smokesensor' /
+&DEVC XYZ=1.8,0.55,2.00, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=3.2,1.05,2.00, QUANTITY='VISIBILITY', ID='vis2' PROP_ID='smoketest' /
+&DEVC XYZ=4.8,2.05,2.00, QUANTITY='VISIBILITY', ID='vis3' PROP_ID='smoketest' /
+&DEVC XYZ=6.2,3.05,2.00, QUANTITY='VISIBILITY', ID='vis4' PROP_ID='smoketest' /
+&DEVC XYZ=7.8,4.05,2.00, QUANTITY='VISIBILITY', ID='vis5' PROP_ID='smoketest' /
+&DEVC XYZ=9.2,5.05,2.00, QUANTITY='VISIBILITY', ID='vis6' PROP_ID='smoketest' /
+
+&SLCF PBX=5.0, QUANTITY='DENSITY',SPEC_ID='SOOT' /
+&SLCF PBY=5.0, QUANTITY='DENSITY',SPEC_ID='SOOT' /
+&SLCF PBZ=2.0, QUANTITY='DENSITY',SPEC_ID='SOOT' /
+&SLCF XB=0.0,10.0,0.0,6.5,0.0,4.0,QUANTITY='DENSITY',SPEC_ID='SOOT' /
+&SLCF XB=0.0,10.0,0.0,6.5,0.0,4.0,QUANTITY='TEMPERATURE' /
+
+&SLCF XB=0.0,10.0,0.0,6.5,0.0,4.0, QUANTITY='DENSITY',SPEC_ID='SOOT',CELL_CENTERED=.TRUE.  / 3D slice
+&SLCF XB=0.0,10.0,0.0,6.5,0.0,4.0, QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE.  / 3D slice
+
+&TAIL /
+

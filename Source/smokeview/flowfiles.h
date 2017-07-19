@@ -1089,6 +1089,9 @@ typedef struct {
   int blocknumber, num_memblocks;
   int *timeslist, ntimes, itime;
   int data_type;
+#ifdef pp_PARTDEFER
+  int compute_bounds_color;
+#endif
 
   float zoffset, *times;
 
@@ -1177,7 +1180,7 @@ typedef struct _slicedata {
   int nsliceijk;
   int *timeslist;
   int idir;
-  float sliceoffset;
+  float sliceoffset, sliceoffset_fds;
   int nslicei, nslicej, nslicek;
   int nslicex, nslicey;
   int ndirxyz[4];
@@ -1302,11 +1305,11 @@ typedef struct {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
-  char *geomfile;
+  char *geomfile, *geom_fdsfiletype;
   geomdata *geominfo;
   //int *patchsize;
   int version;
-  int filetype, slice;
+  int filetype, geom_smvfiletype, slice;
   int type;
   int inuse,inuse_getbounds;
   int unit_start;
@@ -1329,8 +1332,7 @@ typedef struct {
   int geom_nvals, ngeom_times;
   flowlabels label;
   char scale[31];
-  char menulabel[128];
-  char gslicedir[50];
+  char menulabel[128], menulabel_base[128], gslicedir[50];
   int ijk[6];
   int extreme_min, extreme_max;
   time_t modtime;

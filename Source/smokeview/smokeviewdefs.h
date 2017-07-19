@@ -7,6 +7,28 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ONLY_IN_GAS   0
+#define GAS_AND_SOLID 1
+#define ONLY_IN_SOLID 2
+
+#define UPDATE_WINDROSE_DEVICE   0
+#define UPDATE_WINDROSE_CHECKBOX 1
+#define UPDATE_WINDROSE_SHOWHIDE 2
+
+#ifndef START_TIMER
+#define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
+#endif
+#ifndef STOP_TIMER
+#define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
+#endif
+
+#ifndef START_TICKS
+#define START_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME)
+#endif
+#ifndef STOP_TICKS
+#define STOP_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME) - a
+#endif
+
 #define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
 
 #define ISOTROPIC 0
@@ -33,11 +55,9 @@ void _Sniff_Errors(char *whereat);
 #define PARTDATA 0
 #define HISTDATA 1
 
-#ifdef pp_SLICEDUP
 #define SLICEDUP_KEEPALL 0
 #define SLICEDUP_KEEPFINE 1
 #define SLICEDUP_KEEPCOARSE 2
-#endif
 
 #define SMOKESENSORS_HIDDEN 0
 #define SMOKESENSORS_0255 1
@@ -78,13 +98,18 @@ void _Sniff_Errors(char *whereat);
 #define NOT_FDSBLOCK 0
 #define FDSBLOCK 1
 
-#define GEOM_GEOM 0
-#define GEOM_ISO 1
-#define GEOM_SLICE 2
+#define GEOM_GEOM     0
+#define GEOM_ISO      1
+#define GEOM_SLICE    2
+#define GEOM_BOUNDARY 3
 
 #define PATCH_NODE_CENTER 0
 #define PATCH_CELL_CENTER 1
 #define PATCH_GEOMETRY 2
+
+#define PATCH_STRUCTURED 0
+#define PATCH_GEOMETRY_BOUNDARY 1
+#define PATCH_GEOMETRY_SLICE 2
 
 #define NODATA 0
 #define HASDATA 1
@@ -317,6 +342,7 @@ void _Sniff_Errors(char *whereat);
 #define SCRIPT_LOADBOUNDARYM 220
 #define SCRIPT_LOADSLICEM 221
 #define SCRIPT_LOADVSLICEM 222
+#define SCRIPT_SHOWSMOKESENSORS 223
 
 #define SCRIPT_SETTIMEVAL 301
 #define SCRIPT_SETVIEWPOINT 302
@@ -452,6 +478,7 @@ void _Sniff_Errors(char *whereat);
 #define visBLOCKOnlyOutline 15
 #define visBLOCKOutlineColor 16
 #define visCADOpaque 17
+#define visLightFaces 18
 
 #define OUTLINE_NONE 0
 #define OUTLINE_ONLY 1

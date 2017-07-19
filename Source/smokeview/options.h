@@ -1,170 +1,83 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
-// build Smokeview as a standard release unless the pp_BETA directive is defined
 
-#define pp_release
+#include "options_common.h"
 
 //*** uncomment the following two lines to force all versions to be beta
 //#undef pp_BETA
 //#define pp_BETA
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  define smokeview title VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** define smokeview title
+
 #ifdef pp_BETA
-#define PROGVERSION "Test"
-#undef pp_release
-#endif
-
-// comment the following line when building an unofficial release
-#define pp_OFFICIAL_RELEASE
-
-#ifdef pp_release
-#ifdef pp_OFFICIAL_RELEASE
-#define PROGVERSION "6.4.4"
+  #define PROGVERSION "Test"
 #else
-#define PROGVERSION "Unofficial release"
+  #define PROGVERSION "6.5.3"
 #endif
-#endif
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options available on all platforms VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** options: all platforms
 
-#define pp_NAN
-#define pp_GPU
-#define pp_ffmpeg
-#define pp_GLUTGET
-#define pp_READBUFFER
-//#define pp_THREADSLICE
-#define pp_TIMES
+#define pp_DRAWISO      // turn on drawing routines
+#define pp_ffmpeg       // support compression
+#define pp_FILELIST     // use list of file names
+//#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 
+#define pp_GPU          // support the GPU
 #ifdef pp_GPU
-#define pp_CULL
-#define pp_GPUTHROTTLE
+#define pp_CULL         // pp_GPU dircective must also be set
+#define pp_GPUTHROTTLE  // pp_GPU dircective must also be set
+#endif
+#define pp_HAZARD
+
+//#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
+#define pp_READBUFFER   // read .smv file from a memory buffer
+#define pp_RENDER360    // render 360 images
+#define pp_SLICELOAD     // use slice file parameters found in .smv file to construct menus
+
+#define pp_THREAD       // turn on multi-threading
+#ifdef pp_THREAD
+#define pp_THREADIBLANK // construct iblank arrays in background
 #endif
 
-#ifdef VS2015
-#define HAVE_SNPRINTF
-#define HAVE_STRUCT_TIMESPEC
-#endif
-#define pp_DRAWISO
-#define pp_LANG
-#define pp_DEG
-#define pp_SLICEDUP
-#define pp_SLICECOLORDEFER
 
-#define pp_THREAD
-#define pp_THREADIBLANK // test iblank computation in background.
-#ifdef pp_THREADIBLANK  // if pp_THREADIBLANK is set then pp_THREAD also has to be set
-#define pp_THREAD
+//*** options: windows
+
+#ifdef WIN32
+#define pp_LANG         // support other languages
+#define pp_DEG          // output degree symbol
+#define pp_memstatus
+#define pp_COMPRESS     // support for smokezip
 #endif
 
-#define _CRT_SECURE_NO_DEPRECATE
+//*** options: Linux
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#ifdef pp_LINUX
+#define pp_LANG         // support other languages
+#define pp_DEG          // output degree symbol
+#endif
 
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on options that are being tested VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//*** options: Mac
+
+#ifdef pp_OSX
+#define pp_QUICKTIME    // add option to make .avi files compatible with quicktime
+#define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
+// #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
+#endif
+
+//*** options: options being tested on all platforms
 
 #ifdef pp_BETA
 #define pp_SHOWTERRAIN
-#define pp_GEOMTEST
-#define pp_HAZARD
+#define pp_GEOMTEST      // used to test tetrahedron box intersections
+#define pp_TIMINGS
 //#define pp_GPUDEPTH
 #endif
 
-#define pp_RENDER360
+//*** options: for debugging
+
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
-#define pp_MEMPRINT
 #endif
 
-// for debugging, set particle values to 100*parti->seq_id + small random number
-//#define pp_PARTTEST
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#ifdef _DEBUG  // comment the following line when debugging REALLY large cases (to avoid memory checks)
-#define pp_MEMDEBUG
-#endif
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  turn on windows only options VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-#ifdef WIN32
-#define pp_memstatus
-#define pp_COMPRESS
-#define pp_noappend
-//#define GLUT_DISABLE_ATEXIT_HACK
-#include "pragmas.h"
-#endif
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  used to access fortran routines from C VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-#ifndef _F
-#ifdef pp_noappend
-#define _F(name) name
-#else
-#define _F(name) name ## _
-#endif
-#endif
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-// VVVVVVVVVVVVVVVVVVVVVVVVV  set platform defines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-#define FILE_SIZE unsigned long long
-
-#ifdef X64
-#define STRUCTSTAT struct __stat64
-#define STAT _stat64
-#else
-#define STRUCTSTAT struct stat
-#define STAT stat
-#endif
-
-#define LINT long int
-#ifdef X64
-#undef LINT
-#ifdef WIN32
-#define LINT __int64
-#else
-#define LINT long long int
-#endif
-#endif
-
-//*** turn off features on the Mac that don't work there
-
-#ifdef pp_OSX
-#undef pp_LANG
-#undef pp_DEG
-#endif
-
-// VVVVVVVVVVVVVVVVVVVVVVVVV  set defines used by various headers VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-#ifdef CPP
-#define CCC "C"
-#else
-#define CCC
-#endif
-
-#ifdef INMAIN
-#define SVEXTERN
-#define SVDECL(var,val)  var=val
-#else
-#define SVEXTERN extern CCC
-#define SVDECL(var,val)  var
-#endif
-
-#ifdef CPP
-#define EXTERNCPP extern "C"
-#else
-#define EXTERNCPP
-#endif
-
-#ifdef pp_OSX
-#define GLUT_H <GLUT/glut.h>
-#else
-#define GLUT_H <GL/glut.h>
-#endif
-
-
-#include "lint.h"
 #endif
 

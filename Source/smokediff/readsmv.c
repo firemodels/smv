@@ -321,7 +321,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       len=strlen(buffer);
       buffer[len-1]='\0';
       TrimBack(buffer);
-      fullfile(endian_filename,smvcase->dir,buffer);
+      FullFile(endian_filename,smvcase->dir,buffer);
       ENDIANfile = fopen(endian_filename,"rb");
       if(ENDIANfile!=NULL){
         endian_native = GetEndian();
@@ -335,9 +335,9 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(stream_out!=NULL){
         int lenout;
 
-        make_outfile(endian_filename, NULL, buffer, ".end");
+        MakeOutFile(endian_filename, NULL, buffer, ".end");
         fprintf(stream_out,"ENDF\n %s\n",endian_filename);
-        make_outfile(endian_filename, destdir, buffer, ".end");
+        MakeOutFile(endian_filename, destdir, buffer, ".end");
         lenout=strlen(endian_filename);
         FORTendianout(endian_filename,lenout);
       }
@@ -369,8 +369,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       strcpy(plot3di->keyword,buffer);
 
       fgets(buffer,255,streamsmv);
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int i;
 
         NewMemory((void **)&plot3di->file,(unsigned int)(strlen(full_file)+1));
@@ -382,11 +382,11 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         CheckMemory;
         strcpy(plot3di->file,TrimFront(buffer));
         CheckMemory;
-        if(ReadLabels(plot3di->labels+0,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+1,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+2,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+3,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+4,streamsmv)==2)break;
+        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==2)break;
 
         CheckMemory;
 
@@ -395,11 +395,11 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       else{
         if(display_warnings==1)fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",full_file);
         CheckMemory;
-        if(ReadLabels(plot3di->labels+0,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+1,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+2,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+3,streamsmv)==2)break;
-        if(ReadLabels(plot3di->labels+4,streamsmv)==2)break;
+        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==2)break;
         nplot3dinfo--;
         smvcase->nplot3dinfo=nplot3dinfo;
       }
@@ -440,16 +440,16 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       strcpy(slicei->keyword,buffer);
 
       if(Match(buffer,"SLCF") == 1){
-        slicei->slicetype=1;
+        slicei->slicetype= SLICE_NODE_CENTER;
       }
       if(Match(buffer,"SLCC") == 1||Match(buffer, "SLCD") == 1){
-          slicei->slicetype = 2;
+          slicei->slicetype = SLICE_CELL_CENTER;
       }
       if(Match(buffer,"SLFL") == 1){
-        slicei->slicetype=3;
+        slicei->slicetype= SLICE_FIRELINE;
       }
       if(Match(buffer,"SLCT") == 1){
-        slicei->slicetype=4;
+        slicei->slicetype= SLICE_TERRAIN;
       }
 
       slicei->version=version_local;
@@ -457,8 +457,8 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(fgets(buffer,255,streamsmv)==NULL)break;
       TrimBack(buffer);
       if(strlen(buffer)==0)break;
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int is1=-1, is2=-1, js1=-1, js2=-1, ks1=-1, ks2=-1;
         int ni, nj, nk;
         int error, lenfile;
@@ -468,7 +468,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
         InitHistogram(slicei->histogram,NHIST_BUCKETS, NULL, NULL);
         STRCPY(slicei->file, TrimFront(buffer));
-        if(ReadLabels(&slicei->label,streamsmv)==2){
+        if(ReadLabels(&slicei->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading SLCF entry\n");
           break;
         }
@@ -496,7 +496,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       }
       else{
         if(display_warnings==1)fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&sliceinfo[islice].label,streamsmv)==2)break;
+        if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==2)break;
         nsliceinfo--;
         smvcase->nsliceinfo=nsliceinfo;
       }
@@ -543,15 +543,15 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       if(fgets(buffer,255,streamsmv)==NULL)break;
       TrimBack(buffer);
       if(strlen(buffer)==0)break;
-      fullfile(full_file,smvcase->dir,buffer);
-      if(getfileinfo(full_file,NULL,&filesize)==0){
+      FullFile(full_file,smvcase->dir,buffer);
+      if(GetFileInfo(full_file,NULL,&filesize)==0){
         int lenfile, npatches, error, boundaryunitnumber;
 
         NewMemory((void **)&boundaryi->file,(unsigned int)(strlen(full_file)+1));
         NewMemory((void **)&boundaryi->histogram,sizeof(histogramdata));
         InitHistogram(boundaryi->histogram,NHIST_BUCKETS, NULL, NULL);
         STRCPY(boundaryi->file, TrimFront(buffer));
-        if(ReadLabels(&boundaryi->label,streamsmv)==2){
+        if(ReadLabels(&boundaryi->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading BNDF entry\n");
           break;
         }
@@ -603,7 +603,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       }
       else{
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&boundaryinfo[iboundary].label,streamsmv)==2)break;
+        if(ReadLabels(&boundaryinfo[iboundary].label,streamsmv,NULL)==2)break;
         nboundary_files--;
         smvcase->nboundary_files=nboundary_files;
       }

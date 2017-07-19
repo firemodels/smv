@@ -948,7 +948,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     vertices[3*i+2]=(unsigned short)65535*SCALE2SMV(z[i]-zmin);
     sortedlist[i]=i;
     map[i]=i;
-  	rank[i]=i;
+    rank[i]=i;
   }
 
   for(i=0;i<nvertices;i++){
@@ -990,9 +990,9 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   nmap2=1;
   for(i=1;i<nvertices;i++){
     if(CompareIsoNodes(sortinfo+i-1,sortinfo+i)!=0){
-  	  j++;
-  	  map2[j]=i;
-  	  nmap2++;
+      j++;
+      map2[j]=i;
+      nmap2++;
     }
     map[i]=j;
   }
@@ -1015,16 +1015,16 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   closestnodes=surface->closestnodes;
 
   for(i=0;i<nvertices;i++){
-	  j=sortedlist[map2[i]];
-	  newvertices[3*i]=vertices[3*j];
-	  newvertices[3*i+1]=vertices[3*j+1];
-	  newvertices[3*i+2]=vertices[3*j+2];
+    j=sortedlist[map2[i]];
+    newvertices[3*i]=vertices[3*j];
+    newvertices[3*i+1]=vertices[3*j+1];
+    newvertices[3*i+2]=vertices[3*j+2];
     cs[i] = closestnodes[j];
   }
   if(surface->dataflag==1){
     for(i=0;i<nvertices;i++){
-	    j=sortedlist[map2[i]];
-	    newtvertices[i]=tvertices[j];
+      j=sortedlist[map2[i]];
+      newtvertices[i]=tvertices[j];
     }
   }
 
@@ -1442,7 +1442,7 @@ void SmoothIsoSurface(isosurface *surfacedata){
     norm[3*n  ]=(short)(out[0]*32767);
     norm[3*n+1]=(short)(out[1]*32767);
     norm[3*n+2]=(short)(out[2]*32767);
-	  xyznorm[i1  ] += out[0]*area;
+    xyznorm[i1  ] += out[0]*area;
     xyznorm[i1+1] += out[1]*area;
     xyznorm[i1+2] += out[2]*area;
     xyznorm[i2  ] += out[0]*area;
@@ -1587,9 +1587,9 @@ void CCTIsoHeader(char *isofile,
 /* ------------------ IsoOut ------------------------ */
 
 void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *error){
-	unsigned char czero=0,*trilist1=NULL;
-	unsigned short szero=0,*trilist2=NULL;
-	int i;
+  unsigned char czero=0,*trilist1=NULL;
+  unsigned short szero=0,*trilist2=NULL;
+  int i;
   unsigned short *vertices, *tvertices;
   int nvertices, *trilist, ntrilist;
 
@@ -1599,9 +1599,9 @@ void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *er
   trilist=surface->triangles;
   ntrilist=surface->ntriangles;
 
-	if(timeindex==0)fwrite(&t,4,1,isostream);
-	fwrite(&nvertices,4,1,isostream);
-	fwrite(&ntrilist,4,1,isostream);
+  if(timeindex==0)fwrite(&t,4,1,isostream);
+  fwrite(&nvertices,4,1,isostream);
+  fwrite(&ntrilist,4,1,isostream);
   if(nvertices>0){
     fwrite(vertices,2,3*nvertices,isostream);
     if(tvertices!=NULL){
@@ -1611,39 +1611,43 @@ void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *er
     }
   }
   if(ntrilist==0)return;
-	if(nvertices<256){
+  if(nvertices<256){
     if(NewMemory((void **)&trilist1,sizeof(unsigned char)*ntrilist)==0){
       for(i=0;i<ntrilist;i++){
         fwrite(&czero,1,1,isostream);
       }
     }
     else{
-	    for(i=0;i<ntrilist;i++){trilist1[i] = (unsigned char)trilist[i];}
-	    fwrite(trilist1,1,ntrilist,isostream);
+      for(i=0;i<ntrilist;i++){
+        trilist1[i] = (unsigned char)trilist[i];
+      }
+      fwrite(trilist1,1,ntrilist,isostream);
       FREEMEMORY(trilist1);
     }
-	}
-	else if(nvertices>=256&&nvertices<65536){
+  }
+  else if(nvertices>=256&&nvertices<65536){
     if(NewMemory((void **)&trilist2,sizeof(unsigned short)*ntrilist)==0){
       for(i=0;i<ntrilist;i++){
         fwrite(&szero,2,1,isostream);
       }
     }
     else{
-	    for(i=0;i<ntrilist;i++){trilist2[i] = (unsigned short)trilist[i];}
-	    fwrite(trilist2,2,ntrilist,isostream);
+      for(i=0;i<ntrilist;i++){
+        trilist2[i] = (unsigned short)trilist[i];
+      }
+      fwrite(trilist2,2,ntrilist,isostream);
       FREEMEMORY(trilist2);
     }
-	}
-	else{
-	  fwrite(trilist,4,ntrilist,isostream);
-	}
+  }
+  else{
+    fwrite(trilist,4,ntrilist,isostream);
+  }
 }
 
 /* ------------------ CCIsoSurface2File ------------------------ */
 
 void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
-						float *level, int *nlevels,
+            float *level, int *nlevels,
                    float *xplt, int *nx,
                    float *yplt, int *ny,
                    float *zplt, int *nz,
@@ -1710,7 +1714,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
 /* ------------------ CCIsoSurfaceT2File ------------------------ */
 
 void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, float *data2, int *iblank,
-						float *level, int *nlevels,
+            float *level, int *nlevels,
                    float *xplt, int *nx,
                    float *yplt, int *ny,
                    float *zplt, int *nz,

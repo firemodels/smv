@@ -270,7 +270,6 @@ int slicedup(slice *slicej, int islice);
 void *compress_plot3ds(void *arg);
 void initpdf(pdfdata *pdf);
 void makesvd(char *destdir, char *smvfile);
-void Usage(char *prog);
 void getpdf(float *vals, int nvals, pdfdata *pdf);
 void mergepdf(pdfdata *pdf1, pdfdata *pdf2, pdfdata *pdfmerge);
 void SmoothLabel(float *a, float *b, int n);
@@ -286,7 +285,6 @@ int convertable_part(part *parti);
 void *compress_patches(void *arg);
 patch *getpatch(char *string);
 int patchdup(patch *patchj, int ipatch);
-int ReadLabels(flowlabels *flowlabel, FILE *stream);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
 void Get_Boundary_Bounds(void);
@@ -302,18 +300,18 @@ void initvolrender(void);
 void getsliceparms_c(char *file, int *ni, int *nj, int *nk);
 
 
-#define FORTgetpartheader1 _F(getpartheader1)
-#define FORTgetpartheader2 _F(getpartheader2)
-#define FORTgetpartdataframe _F(getpartdataframe)
-#define FORTclosefortranfile _F(closefortranfile)
+#define FORTgetpartheader1     _F(getpartheader1)
+#define FORTgetpartheader2     _F(getpartheader2)
+#define FORTgetpartdataframe   _F(getpartdataframe)
+#define FORTclosefortranfile   _F(closefortranfile)
 #define FORTgetboundaryheader1 _F(getboundaryheader1)
 #define FORTgetboundaryheader2 _F(getboundaryheader2)
-#define FORTopenboundary _F(openboundary)
-#define FORTgetpatchdata _F(getpatchdata)
-#define FORTopenslice _F(openslice)
-#define FORTopenpart _F(openpart)
-#define FORTgetsliceframe _F(getsliceframe)
-#define FORTget_file_unit _F(get_file_unit)
+#define FORTopenboundary       _F(openboundary)
+#define FORTgetpatchdata       _F(getpatchdata)
+#define FORTopenslice          _F(openslice)
+#define FORTopenpart           _F(openpart)
+#define FORTgetsliceframe      _F(getsliceframe)
+#define FORTget_file_unit      _F(get_file_unit)
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall

@@ -369,11 +369,11 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
   int longlatref_mode = LONGLATREF_NONE;
   int xymax_defined=0;
 
-  nimageinfo = get_nfilelist(image_dir, "m_*.jpg");
+  nimageinfo = GetFileListSize(image_dir, "m_*.jpg");
   if(nimageinfo > 0){
     NewMemory((void **)&imagefiles, nimageinfo * sizeof(filelistdata));
     NewMemory((void **)&imageinfo, nimageinfo * sizeof(elevdata));
-    get_filelist(image_dir, "m_*.jpg", nimageinfo, &imagefiles);
+    MakeFileList(image_dir, "m_*.jpg", nimageinfo, NO, &imagefiles);
   }
   for(i = 0; i < nimageinfo; i++){
     elevdata *imagei;
@@ -455,14 +455,14 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
   }
 
-  nelevinfo = get_nfilelist(elev_dir, "*.hdr");
+  nelevinfo = GetFileListSize(elev_dir, "*.hdr");
   if(nelevinfo == 0){
     fprintf(stderr, "***error: unable to create an FDS input file, elevation files\n");
     fprintf(stderr, "          not found in directory: %s\n",elev_dir);
     return 0;
   }
 
-  get_filelist(elev_dir, "*.hdr", nelevinfo, &headerfiles);
+  MakeFileList(elev_dir, "*.hdr", nelevinfo, NO, &headerfiles);
   NewMemory((void **)&elevinfo, nelevinfo * sizeof(elevdata));
   for(i = 0; i < nelevinfo; i++){
     filelistdata *headerfilei;

@@ -404,7 +404,7 @@ int ReadSMV(char *smvfile){
         filelen+=strlen(GLOBsourcedir)+1;
       }
       if(filelen<=0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         NewMemory((void **)&smoke3di->file,(unsigned int)(filelen+1));
         NewMemory((void **)&smoke3di->filebase,(unsigned int)(filelen+1));
         STRCPY(smoke3di->filebase,buffer2);
@@ -468,7 +468,7 @@ int ReadSMV(char *smvfile){
           labelj->longlabel=NULL;
           labelj->shortlabel=NULL;
           labelj->unit=NULL;
-          ReadLabels(labelj,streamsmv);
+          ReadLabels(labelj,streamsmv,NULL);
           part5propi=getpartprop(labelj->shortlabel);
           if(part5propi==NULL){
             part5propi = part5propinfo + npart5propinfo;
@@ -523,7 +523,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -591,7 +591,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -605,7 +605,7 @@ int ReadSMV(char *smvfile){
         else{
           STRCPY(patchi->file,buffer2);
         }
-        if(ReadLabels(&patchi->label,streamsmv)==2){
+        if(ReadLabels(&patchi->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading BNDF entry\n");
           break;
         }
@@ -652,7 +652,7 @@ int ReadSMV(char *smvfile){
       }
       else{
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&patchi->label,streamsmv)==2)break;
+        if(ReadLabels(&patchi->label,streamsmv,NULL)==2)break;
         npatchinfo--;
       }
       continue;
@@ -716,7 +716,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -730,7 +730,7 @@ int ReadSMV(char *smvfile){
         else{
           STRCPY(slicei->file,buffer2);
         }
-        if(ReadLabels(&slicei->label,streamsmv)==2){
+        if(ReadLabels(&slicei->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading SLCF entry\n");
           break;
         }
@@ -739,7 +739,7 @@ int ReadSMV(char *smvfile){
       }
       else{
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer2);
-        if(ReadLabels(&sliceinfo[islice].label,streamsmv)==2)break;
+        if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==2)break;
         nsliceinfo--;
       }
       continue;
@@ -789,7 +789,7 @@ int ReadSMV(char *smvfile){
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
       if(strlen(buffer2)==0)break;
-      if(getfileinfo(buffer2,GLOBsourcedir,&filesize)==0){
+      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
@@ -803,11 +803,11 @@ int ReadSMV(char *smvfile){
           STRCPY(plot3di->file,"");
         }
         STRCAT(plot3di->file,buffer2);
-        if(ReadLabels(&plot3di->labels[0],streamsmv)==2||
-           ReadLabels(&plot3di->labels[1],streamsmv)==2||
-           ReadLabels(&plot3di->labels[2],streamsmv)==2||
-           ReadLabels(&plot3di->labels[3],streamsmv)==2||
-           ReadLabels(&plot3di->labels[4],streamsmv)==2){
+        if(ReadLabels(&plot3di->labels[0],streamsmv,NULL)==2||
+           ReadLabels(&plot3di->labels[1],streamsmv,NULL)==2||
+           ReadLabels(&plot3di->labels[2],streamsmv,NULL)==2||
+           ReadLabels(&plot3di->labels[3],streamsmv,NULL)==2||
+           ReadLabels(&plot3di->labels[4],streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading PL3D entry\n");
           break;
         }
@@ -816,11 +816,11 @@ int ReadSMV(char *smvfile){
       }
       else{
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[0],streamsmv)==2)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[1],streamsmv)==2)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[2],streamsmv)==2)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[3],streamsmv)==2)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[4],streamsmv)==2)break;
+        if(ReadLabels(&plot3dinfo[iplot3d].labels[0],streamsmv,NULL)==2)break;
+        if(ReadLabels(&plot3dinfo[iplot3d].labels[1],streamsmv,NULL)==2)break;
+        if(ReadLabels(&plot3dinfo[iplot3d].labels[2],streamsmv,NULL)==2)break;
+        if(ReadLabels(&plot3dinfo[iplot3d].labels[3],streamsmv,NULL)==2)break;
+        if(ReadLabels(&plot3dinfo[iplot3d].labels[4],streamsmv,NULL)==2)break;
         nplot3dinfo--;
       }
       continue;

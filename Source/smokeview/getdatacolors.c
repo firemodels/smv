@@ -173,7 +173,7 @@ void WriteBoundINI(void){
   int i;
 
   if(boundini_filename == NULL)return;
-  fullfilename = get_filename(smokeviewtempdir, boundini_filename, tempdir_flag);
+  fullfilename = GetFileName(smokeviewtempdir, boundini_filename, tempdir_flag);
 
   if(fullfilename == NULL)return;
 
@@ -1381,14 +1381,14 @@ void UpdateSmokeColormap(int option){
         fire1 = fire_cb + 3 * nn2;
         fire2 = fire1 + 3;
         if(firecolormap_type == FIRECOLORMAP_CONSTRAINT&&val <= valcut){
-          smoke_color1[0] = fire1[0]*(1 - smoke_albedo) + smoke_albedo;
-          smoke_color1[1] = fire1[1]*(1 - smoke_albedo) + smoke_albedo;
-          smoke_color1[2] = fire1[2]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color1[0] = fire1[0];
+          smoke_color1[1] = fire1[1];
+          smoke_color1[2] = fire1[2];
           fire1 = smoke_color1;
 
-          smoke_color2[0] = fire2[0]*(1 - smoke_albedo) + smoke_albedo;
-          smoke_color2[1] = fire2[1]*(1 - smoke_albedo) + smoke_albedo;
-          smoke_color2[2] = fire2[2]*(1 - smoke_albedo) + smoke_albedo;
+          smoke_color2[0] = fire2[0];
+          smoke_color2[1] = fire2[1];
+          smoke_color2[2] = fire2[2];
           fire2 = smoke_color2;
         }
         rgb_colormap[4*n]  =(1.0-factor)*fire1[0]+factor*fire2[0];

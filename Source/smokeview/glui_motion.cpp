@@ -273,7 +273,7 @@ void update_render_start_button(void){
 void enable_disable_playmovie(void){
   char moviefile_path[1024];
 
-  if(file_exists(GetMovieFilePath(moviefile_path)) == 1&&play_movie_now==1){
+  if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES&&play_movie_now==1){
     if(BUTTON_play_movie != NULL)BUTTON_play_movie->enable();
   }
   else{
@@ -1120,8 +1120,8 @@ extern "C" void glui_motion_setup(int main_window){
   SPINNER_window_height360 = glui_motion->add_spinner_to_panel(ROLLOUT_render360, _d("height"), GLUI_SPINNER_INT, &nheight360, RENDER_360CB, Render_CB);
   SPINNER_window_height360->set_int_limits(100, max_screenHeight);
   Render_CB(RENDER_360CB);
-#ifdef pp_RENDER360_DEBUG
 
+#ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&CHECKBOX_screenvis, nscreeninfo * sizeof(GLUI_Checkbox *));
 
   ROLLOUT_screenvis = glui_motion->add_rollout_to_panel(ROLLOUT_render360, "screenvis", false);
@@ -1163,6 +1163,7 @@ extern "C" void glui_motion_setup(int main_window){
   BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _d("Show All"), SHOWALL_SCREENS, Viewpoint_CB);
   BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _d("Hide All"), HIDEALL_SCREENS, Viewpoint_CB);
 #endif
+
 #endif
 
   update_glui_filelabel(render_label_type);
@@ -1210,6 +1211,9 @@ extern "C" void glui_motion_setup(int main_window){
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
     glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
+#ifdef pp_QUICKTIME
+    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility);
+#endif
     SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
@@ -1475,7 +1479,7 @@ extern "C" void Motion_CB(int var){
     ){
     float fps;
 
-    thisMOTIONtime=glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    START_TIMER(thisMOTIONtime);
     fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
     if(fps>GPU_VOLframemax)return;
     MOTIONnframes++;

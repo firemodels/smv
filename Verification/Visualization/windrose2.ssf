@@ -1,0 +1,22 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADINIFILE
+ windrose.ini
+
+
+// render slice files
+
+RENDERONCE
+ windrose_xz
+
+LOADINIFILE
+ windrose_xy.ini
+SETVIEWPOINT
+ view_xy
+RENDERONCE
+ windrose_xy
+

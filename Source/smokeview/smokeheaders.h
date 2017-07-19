@@ -5,7 +5,8 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void UpdateWindroseShowhide(void);
+EXTERNCPP void ReloadAllSliceFiles(void);
+EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void update_geom_normals();
 EXTERNCPP void Plot3DListMenu(int value);
@@ -41,15 +42,13 @@ EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
 #endif
-EXTERNCPP void update_show_slice_in_obst(void);
+EXTERNCPP void UpdateShowSliceInObst(void);
 EXTERNCPP void get_geom_zbounds(float *zmin, float *zmax);
 EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void write_part_histogram(partdata *parti);
 EXTERNCPP void read_part_histogram(partdata *parti);
 EXTERNCPP void MakeIBlankAll(void);
-#ifdef pp_SLICEDUP
 EXTERNCPP void update_slicedup_dialog(void);
-#endif
 EXTERNCPP void drawnorth(void);
 EXTERNCPP void draw_geomdata(int flag, patchdata *patchi, int geom_type);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
@@ -589,11 +588,6 @@ EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
 EXTERNCPP void UpdateVSlices(void);
-#ifdef pp_THREAD
-#ifdef pp_THREADSLICE
-EXTERNCPP void *UpdateVSlices2(void *arg);
-#endif
-#endif
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void update_part_menulabels(void);
 EXTERNCPP void update_iso_menulabels(void);
@@ -779,7 +773,7 @@ EXTERNCPP void readplot3d(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void read_geom_header(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void read_all_geom(void);
 EXTERNCPP void read_geom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
-EXTERNCPP void init_geom(geomdata *geomi, int hasdata, int fdsblock);
+EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
 EXTERNCPP void read_geomdata(int ifile, int load_flag, int *errorcode);
 EXTERNCPP void readpatch(int ifile, int flag, int *errorcode);
 EXTERNCPP void readpart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);

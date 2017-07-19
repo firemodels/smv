@@ -138,7 +138,7 @@ int convert_boundary(patch *patchi, int *thread_index){
   if(strlen(shortlabel)>0)strcat(filetype,shortlabel);
   TrimBack(filetype);
 
-  if(getfileinfo(boundary_file,NULL,NULL)!=0){
+  if(GetFileInfo(boundary_file,NULL,NULL)!=0){
     fprintf(stderr,"*** Warning: The file %s does not exist\n",boundary_file);
     return 0;
   }
@@ -402,8 +402,8 @@ wrapup:
   fclose(boundarysizestream);
   {
     char before_label[256],after_label[256];
-    getfilesizelabel(sizebefore,before_label);
-    getfilesizelabel(sizeafter,after_label);
+    GetFileSizeLabel(sizebefore,before_label);
+    GetFileSizeLabel(sizeafter,after_label);
 #ifdef pp_THREAD
     patchi->compressed=1;
     sprintf(patchi->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
