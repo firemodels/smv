@@ -572,7 +572,7 @@ int lua_get_devices(lua_State *L) {
   lua_createtable(L, 0, entries);
   int i;
   for (i = 0; i < entries; i++) {
-    lua_pushnumber(L, i);
+    lua_pushstring(L, infotable[i].label);
     lua_createtable(L, 0, 2);
 
     lua_pushstring(L, infotable[i].label);
@@ -586,7 +586,7 @@ int lua_get_devices(lua_State *L) {
 /*
   Get the number of CSV files available to the model.
 */
-int lua_get_ncsvinfo(lua_State*L) {
+int lua_get_ncsvinfo(lua_State *L) {
   lua_pushnumber(L, ncsvinfo);
   return 1;
 }
@@ -600,25 +600,55 @@ int lua_get_ncsvinfo(lua_State*L) {
 // TODO: Consider converting most of these to userdata, rather than copying them
 // into the lua interpreter.
 int lua_initsmvdata(lua_State *L) {
-  lua_get_nglobal_times(L);
-  lua_setglobal(L, "nglobal_times");
   lua_get_global_times(L);
+  // global_times is currently on the stack
+  // add a metatable to it.
+  // first create the table
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction (L, &lua_get_nglobal_times);
+  lua_setfield(L, -2, "__len");
+  // then set the metatable
+  lua_setmetatable(L, -2);
   lua_setglobal(L, "global_times");
 
   lua_get_nmeshes(L);
   lua_setglobal(L, "nmeshes");
   lua_get_meshes(L);
+  // meshes is currently on the stack
+  // add a metatable to it.
+  // first create the table
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction (L, &lua_get_nmeshes);
+  lua_setfield(L, -2, "__len");
+  // then set the metatable
+  lua_setmetatable(L, -2);
   lua_setglobal(L, "meshinfo");
 
-  lua_get_ndevices(L);
-  lua_setglobal(L, "ndevices");
   lua_get_devices(L);
+  // devices is currently on the stack
+  // add a metatable to it.
+  // first create the table
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction (L, &lua_get_ndevices);
+  lua_setfield(L, -2, "__len");
+  // then set the metatable
+  lua_setmetatable(L, -2);
   lua_setglobal(L, "deviceinfo");
 
+  // sliceinfo is a 1-indexed array so the lua length operator
+  // works without the need for a metatable
   lua_get_sliceinfo(L);
   lua_setglobal(L, "sliceinfo");
 
   lua_get_csvinfo(L);
+  // csvinfo is currently on the stack
+  // add a metatable to it.
+  // first create the table
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction (L, &lua_get_ncsvinfo);
+  lua_setfield(L, -2, "__len");
+  // then set the metatable
+  lua_setmetatable(L, -2);
   lua_setglobal(L, "csvinfo");
 
   lua_pushstring(L, chidfilebase);
@@ -884,7 +914,7 @@ int lua_get_sliceinfo(lua_State *L) {
   lua_createtable(L, 0, nsliceinfo);
   int i;
   for (i = 0; i < nsliceinfo; i++) {
-    lua_pushnumber(L, i);
+    lua_pushnumber(L, i+1);
     lua_createtable(L, 0, 19);
 
     if(sliceinfo[i].slicelabel != NULL) {
@@ -964,7 +994,19 @@ int lua_get_csvinfo(lua_State *L) {
   lua_createtable(L, 0, ncsvinfo);
   int i;
   for (i = 0; i < ncsvinfo; i++) {
-    lua_pushnumber(L, i);
+    switch (csvinfo[i].type) {
+      case (CSVTYPE_HRR):
+        lua_pushstring(L, "hrr");
+        break;
+      case (CSVTYPE_DEVC):
+        lua_pushstring(L, "devc");
+        break;
+      case (CSVTYPE_EXT):
+        lua_pushstring(L, "ext");
+        break;
+      default:
+        lua_pushstring(L, "(unknown)");
+    }
     lua_createtable(L, 0, 4);
 
     lua_pushstring(L, csvinfo[i].file);
@@ -976,8 +1018,6 @@ int lua_get_csvinfo(lua_State *L) {
     lua_pushboolean(L, csvinfo[i].display);
     lua_setfield(L, -2, "display");
 
-    lua_pushnumber(L, csvinfo[i].type);
-    lua_setfield(L, -2, "type");
 
     lua_settable(L, -3);
   }
@@ -2276,13 +2316,6 @@ int lua_set_usenewdrawface(lua_State *L) {
   return 1;
 }
 
-int lua_set_veccontours(lua_State *L) {
-  float v = lua_tonumber(L, 1);
-  int return_code = set_veccontours(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_veclength(lua_State *L) {
   float a = lua_tonumber(L, 1);
   float b = lua_tonumber(L, 2);
@@ -3271,6 +3304,97 @@ int lua_set_renderfiletype(lua_State *L) {
 //   lua_pushnumber(L, return_code);
 //   return 1;
 // }
+
+int lua_get_unit_defs(lua_State *L, f_units unitclass) {
+  lua_createtable(L, 0, 4);
+  // Loop through all of the units
+  int j;
+  for (j = 0; j < unitclass.nunits; j++) {
+    lua_pushstring(L, unitclass.units[j].unit);
+    lua_createtable(L, 0, 4);
+
+    lua_pushstring(L, unitclass.units[j].unit);
+    lua_setfield(L, -2, "unit");
+
+    lua_pushstring(L, "scale");
+    lua_createtable(L, 0, 2);
+    lua_pushnumber(L, unitclass.units[j].scale[0]);
+    lua_setfield(L, -2, "factor");
+    lua_pushnumber(L, unitclass.units[j].scale[1]);
+    lua_setfield(L, -2, "offset");
+    lua_settable(L, -3);
+
+    lua_pushstring(L, unitclass.units[j].rel_val);
+    lua_setfield(L, -2, "rel_val");
+
+    lua_pushboolean(L, unitclass.units[j].rel_defined);
+    lua_setfield(L, -2, "rel_defined");
+
+    lua_settable(L, -3);
+  }
+  return 1;
+}
+
+// TODO: implement iterators for this table
+int lua_get_unitclass(lua_State *L) {
+  const char *classname = lua_tostring(L, 1);
+  int i;
+  for (i = 0; i < nunitclasses_default; i++) {
+    // if the classname matches, put a table on the stack
+    if (strcmp(classname,unitclasses_default[i].unitclass)==0) {
+      lua_createtable(L, 0, 4);
+      // Loop through all of the units
+      lua_get_unit_defs(L, unitclasses_default[i]);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int lua_get_units(lua_State *L) {
+  const char *classname = lua_tostring(L, 1);
+  int i;
+  for (i = 0; i < nunitclasses_default; i++) {
+    // if the classname matches, put a table on the stack
+    if (strcmp(classname,unitclasses_default[i].unitclass)==0) {
+      // lua_createtable(L, 0, 4);
+      // // Loop through all of the units
+      // lua_get_units(L, unitclasses_default[i]);
+      lua_pushstring(L, unitclasses_default[i].units[unitclasses_default[i].unit_index].unit);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int lua_set_units(lua_State *L) {
+  fprintf(stderr, "set_units\n");
+  const char *unitclassname = lua_tostring(L, 1);
+  const char *unitname = lua_tostring(L, 2);
+  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
+  // fprintf(stderr, "set_units (unitname): %s\n", unitname);
+
+  int unitclass_index;
+  int unit_index;
+  for (int i=0; i < nunitclasses_default; i++) {
+    // fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
+    if (strcmp(unitclasses[i].unitclass,unitclassname)==0) {
+      unitclass_index = i;
+      break;
+    }
+  }
+  for (int i=0; i < unitclasses[unitclass_index].nunits; i++) {
+    if (strcmp(unitclasses[unitclass_index].units[i].unit,unitname)==0) {
+      unit_index = i;
+      break;
+    }
+  }
+
+  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
+  // fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
+  set_units(unitclass_index, unit_index);
+  return 0;
+}
 
 int lua_set_unitclasses(lua_State *L) {
   int i = 0;
@@ -4460,7 +4584,6 @@ void initLua() {
   lua_register(L, "set_streaklinewidth", lua_set_streaklinewidth);
   lua_register(L, "set_ticklinewidth", lua_set_ticklinewidth);
   lua_register(L, "set_usenewdrawface", lua_set_usenewdrawface);
-  lua_register(L, "set_veccontours", lua_set_veccontours);
   lua_register(L, "set_veclength", lua_set_veclength);
   lua_register(L, "set_vectorlinewidth", lua_set_vectorlinewidth);
   lua_register(L, "set_vectorpointsize", lua_set_vectorpointsize);
@@ -4597,6 +4720,10 @@ void initLua() {
 
   // lua_register(L, "set_skybox", lua_set_skybox);
   // lua_register(L, "set_renderoption", lua_set_renderoption);
+  lua_register(L, "get_units", lua_get_units);
+  lua_register(L, "get_unitclass", lua_get_unitclass);
+
+  lua_register(L, "set_units", lua_set_units);
   lua_register(L, "set_unitclasses", lua_set_unitclasses);
   lua_register(L, "set_zaxisangles", lua_set_zaxisangles);
   lua_register(L, "set_adjustalpha", lua_set_adjustalpha);

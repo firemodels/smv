@@ -42,7 +42,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_devices.o glui_shooter.o glui_w
       glui_colorbar.o skybox.o file_util.o string_util.o startup.o glui_trainer.o\
       shaders.o unit.o threader.o histogram.o translate.o update.o viewports.o\
       smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
-      fdsmodules.o gsmv.o getdata.o getsizes.o 
+      fdsmodules.o gsmv.o getdata.o getsizes.o
 
 ifeq ($(LUA_SCRIPTING),true)
 obj += c_api.o lua_api.o
@@ -277,7 +277,7 @@ gnu_linux_32 : $(obj)
 # ------------- gnu_linux_32_db ----------------
 
 gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC 
+gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC
 gnu_linux_32_db : LFLAGS    =
 gnu_linux_32_db : CC        = gcc
 gnu_linux_32_db : CPP       = g++
@@ -296,7 +296,7 @@ mingw_win_64 : LIBS_PLAT = $(LIB_DIR_PLAT)/libglui.a \
 	$(LIB_DIR_PLAT)/libglutwin.a
 mingw_win_64 : INC += -I $(SOURCE_DIR)/GLINC-mingw -I $(SOURCE_DIR)/pthreads
 mingw_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC \
-						       -ffree-form -frecord-marker=4 -fno-underscoring
+						       -ffree-form -frecord-marker=4
 mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
 ifeq ($(LUA_SCRIPTING),true)
 mingw_win_64 : CFLAGS    += -D pp_LUA
@@ -325,7 +325,7 @@ OSX_INTEL_LIBS = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libim
 
 intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64 : LIBS_PLAT =
-intel_osx_64 : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.4 
+intel_osx_64 : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.4
 intel_osx_64 : CFLAGS    = -O0 -m64 -static-intel -D pp_OSX  -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) $(GITINFO)
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)

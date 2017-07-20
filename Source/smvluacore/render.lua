@@ -72,18 +72,19 @@ local render_mt = {
     __call = function (t,...)
         return _renderF(...)
     end,
-   -- get method
-   __index = function (t,k)
+    -- get method
+    __index = function (t,k)
        if type(_render[k]) == "function" then
            return _render[k]
        else
            return _render[k].get()
        end
-   end,
-   -- set method
-   __newindex = function (t,k,v)
-       _render[k].set(v)
-   end
+    end,
+    -- set method
+    __newindex = function (t,k,v)
+        print("render __newindex")
+        _render[k].set(v)
+    end
 }
 setmetatable(render, render_mt)
 
