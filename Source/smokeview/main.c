@@ -356,7 +356,7 @@ void ParseCommandline(int argc, char **argv){
 
       STRCPY(luascriptbuffer, fdsprefix);
       STRCAT(luascriptbuffer, ".lua");
-      if(default_luascript == NULL&&STAT(luascriptbuffer, &statbuffer) == 0){
+      if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
         default_luascript = insert_luascriptfile(luascriptbuffer);
       }
     }

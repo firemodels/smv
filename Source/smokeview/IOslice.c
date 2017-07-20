@@ -5826,7 +5826,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         }
         if(i + 1 != sd->nslicei){
           int index_w;
-          float *color_w;
           float dz;
 
           index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
@@ -5962,7 +5961,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         }
         if(i + 1 != sd->nslicei){
           int index_v;
-          float *color_v;
           float dy;
 
           index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;

@@ -3,6 +3,7 @@ local load  = {}
 
 require("constants")
 
+-- Load all slices for which matchFunc returns true.
 function load.slice(matchFunc)
     local nslices = 0
     local slice_indices = {}
@@ -21,6 +22,7 @@ function load.slice(matchFunc)
     return 1
 end
 
+-- Load all vector slices for which matchFunc returns true.
 function load.vslice(matchFunc)
     for key,value in pairs(sliceinfo) do
         if (matchFunc(value)) then
@@ -31,7 +33,6 @@ end
 
 function load.namedslice(name)
     local result, indices = load.slice(function(slice)
-        print(name, slice.label)
         return (slice.label == name)
     end)
     if (result ~= 0) then
@@ -55,7 +56,7 @@ local function findCellDimension(mesh,axis,distance)
     else
         error("invalid axis")
     end
-    -- TODO: account for being slightly out
+    -- TODO: Account for being slightly out.
     for i=0,bar-2,1 do
         if (orig_plt[i] <= distance and distance <= orig_plt[i+1]) then
             return (orig_plt[i+1]-orig_plt[i])
@@ -66,18 +67,18 @@ local function findCellDimension(mesh,axis,distance)
 end
 
 function load.slice_std(slice_type, axis, distance)
-    -- validate inputs
+    -- Validate inputs.
     assert(type(slice_type) == "string", "slice_type must be a string")
     assert(type(axis) == "number", "axis must be a number")
     assert(axis == 1 or axis == 2 or axis == 3, "axis must be 1, 2, or 3")
     assert(type(distance) == "number", "distance must be a number")
-    -- load applicable slices
+    -- Load applicable slices.
     load.slice(function(slice)
         local meshnumber = slice.blocknumber
         local mesh = meshinfo[meshnumber]
-        -- find the cell size at the specified location
+        -- Find the cell size at the specified location.
         local cellWidth = findCellDimension(mesh, axis, distance)
-        -- go a quarter cell in either direction
+        -- Go a quarter cell in either direction.
         return (cellWidth and slice.longlabel == slice_type
             and slice.idir == axis
             and (slice.position_orig > (distance-cellWidth*0.25)) and (slice.position_orig < (distance+cellWidth*0.25)))
@@ -94,6 +95,7 @@ function load.datafile(filename)
     return errorcode
 end
 
+-- Load a file as a vector slice by filename.
 function load.vdatafile(filename)
     local errorcode = loadvdatafile(filename)
     if errorcode == 1 then
@@ -103,6 +105,7 @@ function load.vdatafile(filename)
     return errorcode
 end
 
+-- Load a tour with the name @name@.
 function load.tour(name)
     local errorcode = loadtour(name)
     if errorcode == 1 then
