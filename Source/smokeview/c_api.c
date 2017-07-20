@@ -2523,11 +2523,6 @@ int set_usenewdrawface(int v) {
   return 0;
 } // USENEWDRAWFACE
 
-int set_veccontours(int v) {
-  show_slices_and_vectors = v;
-  return 0;
-} // VECCONTOURS
-
 int set_veclength(int a, float b, float c) {
   int dummy1 = a; // TODO: what is the point of this value
   vecfactor = b;

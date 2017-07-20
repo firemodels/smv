@@ -2316,13 +2316,6 @@ int lua_set_usenewdrawface(lua_State *L) {
   return 1;
 }
 
-int lua_set_veccontours(lua_State *L) {
-  float v = lua_tonumber(L, 1);
-  int return_code = set_veccontours(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_veclength(lua_State *L) {
   float a = lua_tonumber(L, 1);
   float b = lua_tonumber(L, 2);
@@ -4591,7 +4584,6 @@ void initLua() {
   lua_register(L, "set_streaklinewidth", lua_set_streaklinewidth);
   lua_register(L, "set_ticklinewidth", lua_set_ticklinewidth);
   lua_register(L, "set_usenewdrawface", lua_set_usenewdrawface);
-  lua_register(L, "set_veccontours", lua_set_veccontours);
   lua_register(L, "set_veclength", lua_set_veclength);
   lua_register(L, "set_vectorlinewidth", lua_set_vectorlinewidth);
   lua_register(L, "set_vectorpointsize", lua_set_vectorpointsize);
