@@ -19,6 +19,7 @@ GLUI_Spinner *SPINNER_clip_zmax=NULL, *SPINNER_clip_zmin=NULL;
 GLUI_Checkbox *CHECKBOX_clip_xmin=NULL, *CHECKBOX_clip_xmax=NULL;
 GLUI_Checkbox *CHECKBOX_clip_ymin=NULL, *CHECKBOX_clip_ymax=NULL;
 GLUI_Checkbox *CHECKBOX_clip_zmin=NULL, *CHECKBOX_clip_zmax=NULL;
+GLUI_Checkbox *CHECKBOX_clip_rotate = NULL;
 
 GLUI_Panel *PANEL_clip_lower=NULL, *PANEL_clip_upper=NULL, *PANEL_clip=NULL,*panel_wrapup=NULL;
 GLUI_Panel *PANEL_clipx=NULL, *PANEL_clipX=NULL;
@@ -41,6 +42,7 @@ GLUI_Button *BUTTON_clip_2=NULL;
 #define CLIP_xupper 3
 #define CLIP_yupper 4
 #define CLIP_zupper 5
+#define CLIP_ROTATE 6
 
 #define CLIP_all 12
 
@@ -65,6 +67,14 @@ void CLIP_CB(int var){
 
   glutPostRedisplay();
   switch(var){
+  case CLIP_ROTATE:
+    if(clip_rotate==0){
+      update_glui_rotate_about(nmeshes);
+    }
+    else{
+      update_glui_rotate_about(ROTATE_ABOUT_CLIPPING_CENTER);
+    }
+    break;
   case CLIP_MESH:
     if(clip_mesh == 0){
       set_clip_controls(DEFAULT_VALS);
@@ -171,7 +181,7 @@ void CLIP_CB(int var){
     ASSERT(FFALSE);
     break;
   }
-  if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)update_rotation_index(ROTATE_ABOUT_CLIPPING_CENTER);
+  if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
   if(var >= CLIP_xlower&&var <= CLIP_zupper){
     Clip2Cam(camera_current);
   }
@@ -262,6 +272,8 @@ extern "C" void glui_clip_setup(int main_window){
   RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip blockages and data"));
   RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip blockages"));
   RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip data"));
+
+  CHECKBOX_clip_rotate = glui_clip->add_checkbox_to_panel(PANEL_clip,"Rotate about center of clipping planes", &clip_rotate, CLIP_ROTATE, CLIP_CB);
 
   glui_clip->add_column_to_panel(PANEL_clip,false);
 

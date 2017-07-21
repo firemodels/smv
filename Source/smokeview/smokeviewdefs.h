@@ -7,7 +7,7 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
-#define ROTATE_ABOUT_WORLD_CENTER -1
+#define ROTATE_ABOUT_USER_CENTER -1
 #define ROTATE_ABOUT_CLIPPING_CENTER -2
 
 #define ONLY_IN_GAS   0
