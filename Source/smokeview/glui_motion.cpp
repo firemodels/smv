@@ -885,7 +885,8 @@ extern "C" void glui_motion_setup(int main_window){
   *rotation_index=glui_rotation_index_ini;
 
   LIST_mesh2 = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_d("Rotate about:"),rotation_index,MESH_LIST,Motion_CB);
-  LIST_mesh2->add_item(-1,_d("user specified center"));
+  LIST_mesh2->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _d("center of clipping planes"));
+  LIST_mesh2->add_item(ROTATE_ABOUT_WORLD_CENTER,_d("user specified center"));
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
@@ -1040,7 +1041,7 @@ extern "C" void glui_motion_setup(int main_window){
   SPINNER_window_height->set_int_limits(100, max_screenHeight);
 
   PANEL_colors = glui_motion->add_panel_to_panel(ROLLOUT_projection, "Colors", true);
-  
+
   ROLLOUT_foreground = glui_motion->add_rollout_to_panel(PANEL_colors,_d("Background"), false);
   SPINNER_foreground_red = glui_motion->add_spinner_to_panel(ROLLOUT_foreground,_d("red"),GLUI_SPINNER_INT,glui_foregroundbasecolor,WINDOW_COLORS,Motion_CB);
   SPINNER_foreground_green = glui_motion->add_spinner_to_panel(ROLLOUT_foreground, _d("green"), GLUI_SPINNER_INT, glui_foregroundbasecolor+1, WINDOW_COLORS, Motion_CB);
@@ -1059,7 +1060,6 @@ extern "C" void glui_motion_setup(int main_window){
 
   BUTTON_flip = glui_motion->add_button_to_panel(PANEL_colors, _d("Flip"), COLOR_FLIP, Motion_CB);
 
-  
   BUTTON_window_update = glui_motion->add_button_to_panel(ROLLOUT_projection, _d("Apply"), WINDOW_RESIZE, Motion_CB);
 
   ROLLOUT_scale = glui_motion->add_rollout_to_panel(PANEL_viewA,_d("Scaling"),false,SCALING_ROLLOUT,Motion_Rollout_CB);
@@ -1308,7 +1308,7 @@ extern "C" void update_translate(void){
 
 /* ------------------ update_rotation_index ------------------------ */
 
-void update_rotation_index(int val){
+extern "C" void update_rotation_index(int val){
   float *az_elev;
   int *rotation_index;
 
@@ -1331,9 +1331,16 @@ void update_rotation_index(int val){
       camera_current->zcen=zcenGLOBAL;
     }
     else{
-      camera_current->xcen=xcenCUSTOM;
-      camera_current->ycen=ycenCUSTOM;
-      camera_current->zcen=zcenCUSTOM;
+      if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
+        camera_current->xcen = xcenCUSTOM;
+        camera_current->ycen = ycenCUSTOM;
+        camera_current->zcen = zcenCUSTOM;
+      }
+      else{
+        camera_current->xcen = NORMALIZE_X((clipinfo.xmin+clipinfo.xmax)/2.0);
+        camera_current->ycen = NORMALIZE_Y((clipinfo.ymin+clipinfo.ymax)/2.0);
+        camera_current->zcen = NORMALIZE_Z((clipinfo.zmin+clipinfo.zmax)/2.0);
+      }
     }
   }
 
@@ -1627,23 +1634,29 @@ extern "C" void Motion_CB(int var){
       break;
     case CUSTOM_ROTATION_X:
       xcenCUSTOM = NORMALIZE_X(xcenCUSTOMsmv);
-      update_rotation_index(-1);
+      update_rotation_index(ROTATE_ABOUT_WORLD_CENTER);
       break;
     case CUSTOM_ROTATION_Y:
       ycenCUSTOM = NORMALIZE_Y(ycenCUSTOMsmv);
-      update_rotation_index(-1);
+      update_rotation_index(ROTATE_ABOUT_WORLD_CENTER);
       break;
     case CUSTOM_ROTATION_Z:
       zcenCUSTOM = NORMALIZE_Z(zcenCUSTOMsmv);
-      update_rotation_index(-1);
+      update_rotation_index(ROTATE_ABOUT_WORLD_CENTER);
       break;
     case MESH_LIST:
       glui_rotation_index = *rotation_index;
-      if(*rotation_index==-1){
+      if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
         custom_worldcenter=1;
         SPINNER_xcenCUSTOM->enable();
         SPINNER_ycenCUSTOM->enable();
         SPINNER_zcenCUSTOM->enable();
+      }
+      else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
+        custom_worldcenter = 1;
+        SPINNER_xcenCUSTOM->disable();
+        SPINNER_ycenCUSTOM->disable();
+        SPINNER_zcenCUSTOM->disable();
       }
       else{
         custom_worldcenter=0;
@@ -1655,8 +1668,11 @@ extern "C" void Motion_CB(int var){
         update_current_mesh(meshinfo + (*rotation_index));
         update_rotation_index(*rotation_index);
       }
-      else if(*rotation_index==-1){
-        update_rotation_index(-1);
+      else if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
+        update_rotation_index(ROTATE_ABOUT_WORLD_CENTER);
+      }
+      else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
+        update_rotation_index(ROTATE_ABOUT_CLIPPING_CENTER);
       }
       else{
         update_current_mesh(meshinfo);
