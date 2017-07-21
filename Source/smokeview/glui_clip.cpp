@@ -171,6 +171,7 @@ void CLIP_CB(int var){
     ASSERT(FFALSE);
     break;
   }
+  if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)update_rotation_index(ROTATE_ABOUT_CLIPPING_CENTER);
   if(var >= CLIP_xlower&&var <= CLIP_zupper){
     Clip2Cam(camera_current);
   }
