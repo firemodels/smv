@@ -5,7 +5,8 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void update_rotation_index(int val);
+EXTERNCPP void update_glui_rotate_about(int val);
+EXTERNCPP void UpdateRotationIndex(int val);
 EXTERNCPP void ReloadAllSliceFiles(void);
 EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
