@@ -3295,6 +3295,7 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   float color[4];
   roomdata *roomi;
   int roomfrom=-1, roomto=-1;
+  int vertical_vent_type=0;
   float area_fraction = 1.0;
 
   color[0]=1.0;
@@ -3302,15 +3303,14 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   color[2]=1.0;
   color[3]=1.0;
   if(flag==ZVENT_2ROOM){
-    sscanf(buffer, "%i %i %f %f %f %f %f %f %f %f %f %f",
+    sscanf(buffer, "%i %i %f %f %f %f %f %f %i",
       &roomfrom, &roomto, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
-      color, color + 1, color + 2, &area_fraction
+      &vertical_vent_type
   );
   }
   else{
-    sscanf(buffer, "%i %f %f %f %f %f %f %f %f %f %f",
-      &roomfrom, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5,
-      color, color + 1, color + 2, &area_fraction);
+    sscanf(buffer, "%i %f %f %f %f %f %f",
+      &roomfrom, xyz, xyz + 1, xyz + 2, xyz + 3, xyz + 4, xyz + 5);
     roomto = roomfrom;
   }
 
@@ -3325,13 +3325,18 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   zvi->y1 = roomi->y0 + xyz[3];
   zvi->z0 = roomi->z0 + xyz[4];
   zvi->z1 = roomi->z0 + xyz[5];
+  zvi->xcen = (zvi->x0 + zvi->x1)/2.0;
+  zvi->ycen = (zvi->y0 + zvi->y1)/2.0;
   dxyz[0] = ABS(xyz[0] - xyz[1]);
   dxyz[1] = ABS(xyz[2] - xyz[3]);
   dxyz[2] = ABS(xyz[4] - xyz[5]);
   zvi->area = 1.0;
+  zvi->vertical_vent_type = vertical_vent_type;
   if(dxyz[0] > 0.0)zvi->area *= dxyz[0];
   if(dxyz[1] > 0.0)zvi->area *= dxyz[1];
   if(dxyz[2] > 0.0)zvi->area *= dxyz[2];
+  zvi->radius = sqrt(zvi->area/PI);
+
   // see which side of room vent is closest too
   if(dxyz[0] < MIN(dxyz[1], dxyz[2])){
     if(ABS(zvi->x0 - roomi->x0) < ABS(zvi->x0 - roomi->x1)){
@@ -6708,8 +6713,10 @@ int ReadSMV(char *file, char *file2){
           zvi->z1 = roomi->z1;
         }
         switch(vertical_vent_type){
-        case 1:
-        case 2:
+        case ZONEVENT_SQUARE:
+        case ZONEVENT_CIRCLE:
+          zvi->xcen = xcen;
+          zvi->ycen = ycen;
           zvi->x0 = xcen - ventside/2.0;
           zvi->x1 = xcen + ventside/2.0;
           zvi->y0 = ycen - ventside/2.0;

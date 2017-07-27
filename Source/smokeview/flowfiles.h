@@ -1388,6 +1388,7 @@ typedef struct {
   int wall, nslab;
   float x0, y0, z0;
   float x1, y1, z1;
+  float xcen, ycen, radius;
   float vmin, vmax;
   float g_vmin, g_vmax;
   roomdata *room1, *room2;
