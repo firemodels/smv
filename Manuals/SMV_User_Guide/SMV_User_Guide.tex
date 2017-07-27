@@ -4311,266 +4311,25 @@ which can be viewed with Smokeview.  Background may be used to take advantage of
 core computers by running more than one FDS case at a time.  This is most useful when running
 a long list of FDS cases. Background runs a case whenever the CPU load is below a specified level.
 
+%------------------------ smokezip ------------------------------------------------
 
-\section{Compressing Data - Using smokezip to reduce FDS file sizes}
-\label{ch:smokezip}
+\input{smokezip}
 
-\begin{figure}[bph]
-\centerline{\includegraphics[width=1.881944in]{FIGURES/figBOUNDcompress}\ }
-\caption[Compress Files and Autoload dialog box.] {File/Bounds dialog
-box showing compression and autoload options.  3D smoke,  boundary and slice
-files may be compressed using Smokezip.  All currently loaded
-files may be loaded automatically when Smokeview first starts by
-selecting the autoload checkbox.}\ \label{figBOUNDScompress}
-\end{figure}
+%------------------------ smokediff ------------------------------------------------
 
-3D smoke, boundary, isosurface and slice files may be compressed
-using the utility Smokezip.  FDS data files may also be compressed
-from within Smokeview using the compression menu item found in the
-{\em Load/Unload}\ menu.  File compression may also be activated
-from the Compressions, Autoload section of the File/Bounds
-dialog box illustrated in Fig. \ref{figBOUNDScompress}.
-Compression is performed using the ZLIB compression library (see
-\hhref{http://www.zlib.org}). Smokeview compresses files in the
-background allowing one to continue visualizing cases.  Smokeview
-adds the label {\em ZLIB}\ to Load menu entries for any file that
-has been compressed. Smokezip adds the extension .svz to any FDS
-data file that has been compressed.
+\input{smokediff}
 
-The usage for Smokezip (which may be obtained by typing Smokezip~-help at a command line) is
+%------------------------ background ------------------------------------------------
 
-\lstinputlisting{SCRIPT_FIGURES/smokezip.help}
+\input{background}
 
-Smokezip either determines data bounds itself (if the -bounds option was specified)
-or uses min and max values found in the casename.ini
-file.  These bounds are used to map four byte floating point data
-found in FDS data files to one byte color indices used by
-Smokeview.  The algorithms for determining
-the data mappings used by Smokeview and Smokezip are identical so it
-should result in the same views.
+%------------------------ wind2fds ------------------------------------------------
 
-Particle files may be converted to isosurface files using the {\tt
--part2iso}\ option as in {\tt Smokezip -part2iso casename}.  The
-resulting isosurface file highlights particle boundaries (where
-particle density is 0.5 particles per grid cell). These isosurface
-files are accessible in the .smv file named {\tt
-casename\_smvzip.smv}.
+\input{wind2fds}
 
-\section{Differencing Data - Using smokediff to compare two FDS cases}
-\label{ch:smokediff}
-The utility Smokediff compares two FDS cases with the same
-geometry.  Smokediff examines two {\tt .smv}\ files looking for
-boundary, slice and Plot3D files containing the same type of data
-and located in the same region in space. Data in one file is subtracted from corresponding data in the
-other.  Smokediff then generates a new {\tt .smv}\ file referencing the differenced boundary,
-slice and Plot3D data files. To compare two .smv files named {\tt
-casename1.smv}\ and {\tt casename2.smv}\ one would use the command
+%------------------------ dem2fds ------------------------------------------------
 
-\begin{lstlisting}
-smokediff -smv casename1 casename2
-\end{lstlisting}
-
-\noindent The {\tt -smv}\ option caused Smokeview to open after the differencing is complete to examine the differenced results.
-Smokediff allows the grid for slice files in casename2 to be
-refined by an integer multiple.  Other usage options for Smokediff are
-detailed below
-
-\lstinputlisting{SCRIPT_FIGURES/smokediff.help}
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_slice_diff_005}&
-\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_slice_diff_010}\\
-5.0 s&10.0 s\\
-\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_slice_diff_030}&
-\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_slice_diff_060}\\
-30.0 s&60.0 s
-&\raisebox{0.0ex}[0pt]{\includegraphics[height=5.5in]{FIGURES/colorbar_m100_100}}\\
-\end{tabular}
-\end{center}
-\caption [Slice file snapshots of differenced temperature data.]
-{Slice file snapshots of differenced temperature data.}
-\label{figdiffslice}%
-\end{figure}
-
-\section{Background - Using background to run multiple programs simultaneously}
-
-This section explains the use of the utility named {\em background.exe}, what it is and
-how it might be useful to FDS users.  It is included with the Windows and Linux FDS/Smokeview
-bundles.  The Windows {\em start}\ command can be used to run Windows programs in the
-background.  {\em background.exe}\ has the additional feature of checking the current
-CPU usage level and only starting new programs when the usage level is below a specified
-level.  This enables one to submit a long list of FDS cases without saturating the CPU,
-since only a small number (depending on the maximum usage level specified) will be
-running at any one time.
-
-MPI is a message passing software library used to enable implement parallel processing
-at the program i.e., FORTRAN source code level.  This enables one to make use of
-multiple CPUs thereby speeding up a calculation. {\em background.exe}\ allows parallel
-processing to occur at the program level.  It is often the case that one is doing a
-parameter study or running a long list of cases to verify the use of FDS. Typically you
-would create a windows batch file (.bat) containing a list of commands like
-
-\begin{lstlisting}
-fds casename_1.fds
-....
-fds casename_n.fds
-\end{lstlisting}
-
-On a Windows system, each entry in the above list will not start until the previous entry
-has completed, even if the computer has multiple cores or CPUs.
-
-Unix/Linux based systems have the capability of putting computer jobs in the background,
-meaning that when a job is run, control returns immediately allowing the next job in the
-list to start running.  With computers that have multiple cores or CPUS, one can then run
-more than one job simultaneously.
-
-Here is how one might use {\em background}\ with FDS
-
-\begin{lstlisting}
-background -d 1.0 -u 90 fds casename.fds
-\end{lstlisting}
-
-This command runs ``fds casename.fds'' after waiting 1~s and ensuring that the CPU usage is
-less than 90 \%. If the CPU usage happens to be more than 90 \%, the program {\em background}\
-waits to submit the fds command until the usage drops below 90 \% .  Once this occurs, it runs
-the command, {\tt fds casename.fds}.
-
-The purpose of the delay before submitting a job is to give windows a
-chance to update the usage level from the
-previous invocations.  This feature is a fail safe to ensure that a
-large number of jobs are not
-submitted at once.
-
-The background utility is designed to use in a windows batch file.
-For example, suppose you have
-a list of 5 FDS jobs you want to run in a windows batch file. On a
-windows computer you would have \
-a batch file with the contents something like
-
-\begin{lstlisting}
-fds case1.fds
-fds case2.fds
-fds case3.fds
-fds case4.fds
-fds case5.fds
-\end{lstlisting}
-
-Using background with a 2 second delay and 75 per cent maximum
-load level, you would change your script to something like
-
-\begin{lstlisting}
-background -d 2 -u 75 fds case1.fds
-background -d 2 -u 75 fds case2.fds
-background -d 2 -u 75 fds case3.fds
-background -d 2 -u 75 fds case4.fds
-background -d 2 -u 75 fds case5.fds
-\end{lstlisting}
-
-Usage information for {\tt background}\ may be obtained
-by typing {\tt background -h}\ which gives output listed Figure \ref{fig:background}.
-
-\begin{figure}[bph]
-{\small
-\lstinputlisting{SCRIPT_FIGURES/background.help}
-}
-\caption {Usage information for the program {\tt background}}
-\label{fig:background}%
-\end{figure}
-
-\section{Converting Wind Data - Using wind2fds to convert wind data for use by FDS and Smokeview}
-The utility {\tt wind2fds}\ is designed to enable Smokeview to visualize wind velocity measurements made by SODARs
-(SOnic Detection And Ranging).
-A SODAR uses sound waves to measure wind velocity at various heights above ground level.
-Vertical wind profiles can then be visualized using Smokeview and compared with velocity profiles generated by FDS.
-
-A typical (abbreviated) output generated by a SODAR is listed in Figure \ref{fig:winddata}\ where
-the {\tt ws30}, {\tt ws35}\ headings indicate wind speed
-and the {\tt wd30}, {\tt wd35}\ headings indicate wind direction.
-The utility, {\tt wind2fds}, then converts this data into a form given in Figure \ref{fig:convertedwinddata}.
-The converted wind data file begins with a {\tt HEADER}\ section
-containing information about where various wind measurements were taken. Smokeview uses the information in the {\tt HEADER}\ section to associate wind data measurements with locations. The {\tt HEADER}\ section is followed by a {\tt DATA}\ section.  This section is identical
-to the file format used by Smokeview to visualize device data.
-
-\begin{figure}[bph]
-{\small
-\begin{verbatim}
-date,          time, ws30, ws35, wd30, wd35
-10/26/2011, 0:00:00,  6.5, 6.56,  333,  334
-10/26/2011, 0:05:00, 7.83, 8.09,  336,  336
-10/26/2011, 0:10:00, 8.36, 8.41,  334,  336
-10/26/2011, 0:15:00, 7.6,  8.57,  335,  336
-10/26/2011, 0:20:00, 7.44,  8.3,  340,  342
-10/26/2011, 0:25:00, 7.92,  9.2,  343,  339
-10/26/2011, 0:30:00, 9.36, 9.25,  336,  340
-\end{verbatim}
-}
-\caption {Experimental wind data.}
-\label{fig:winddata}%
-\end{figure}
-
-
-\begin{figure}[bph]
-{\small
-\begin{verbatim}
-//HEADER
-DEVICE
- ws30 % VELOCITY % sensor
- 0.0 0.0 30.0
-DEVICE
- ws35 % VELOCITY % sensor
- 0.0 0.0 35.0
-DEVICE
- wd30 % ANGLE % sensor
- 0.0 0.0 30.0
-DEVICE
- wd35 % ANGLE % sensor
- 0.0 0.0 35.0
-//DATA
-s,s,m/s,m/s,deg,deg
-time,time_orig,ws30,ws35,wd30,wd35
-0,0:00:00,6.5,6.56,333,334
-300,0:05:00,7.83,8.09,336,336
-600,0:10:00,8.36,8.41,334,336
-900,0:15:00,7.6,8.57,335,336
-1200,0:20:00,7.44,8.3,340,342
-1500,0:25:00,7.92,9.2,343,339
-1800,0:30:00,9.36,9.25,336,340
-\end{verbatim}
-}
-\caption {Experimental wind data converted by wind2fds for use by Smokeview.}
-\label{fig:convertedwinddata}%
-\end{figure}
-
-\begin{figure}[bph]
-{\small
-\lstinputlisting{SCRIPT_FIGURES/wind2fds.help}
-}
-\caption {Usage information for the program {\tt wind2fds}.}
-\label{figwind2fdsusage}%
-\end{figure}
-
-{\tt wind2fds}\ allows one to link measurement locations with wind data, to exclude data before and/or after specified date/times and to label measurements as presented in Smokeview.
-Help information may be obtained at the command line
-by typing {\tt wind2fds -h}\ as given in Figure \ref{figwind2fdsusage}.
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{c}
- \includegraphics[height=5.0in]{../SMV_Verification_Guide/SCRIPT_FIGURES/wind_test1_002}
- \end{tabular}
-\end{center}
- \caption{Visualization of wind data converted for use by Smokeview using wind2fds. The line segments represent
- wind speed and direction.  The spherical shells represent uncertainty
- in wind direction (shell diameter) and wind speed (shell thickness).}
-\label{figwind}%
-\end{figure}
-
-Figure \ref{figwind}\ gives an example of a visualization of wind data converted for use by Smokeview using wind2fds. The line segments represent
- wind speed and direction.  The spherical shells represent uncertainty
- in wind direction (shell diameter) and wind speed (shell thickness).
-
+\input{dem2fds}
 
 %---------------------------------------------------------------------------------
 %------------------------ Summary ------------------------------------------------
@@ -5004,7 +4763,6 @@ both move grid and Plot3D planes around the scene and to move
 through the scene while in {\em eye centered}\ mode.  The upper
 case ``P`` key is then used to switch the way these keys are used
 between grid/Plot3D movement mode and scene movement mode.
-
 
 \kitem{q,Q}Switch between blockage views.  These views are blocks
 that are aligned on grid lines, blocks as specified by the user

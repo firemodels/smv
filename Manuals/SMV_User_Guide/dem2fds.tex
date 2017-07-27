@@ -1,0 +1,180 @@
+\section{dem2fds - A program for creating FDS an input file from digital elevation map (dem) data}
+
+\subsection{Preliminaries}
+
+\begin{itemize}
+\item Install Smokeview from \hhref{https://pages.nist.gov/fds-smv/downloads.html}
+\item Install Imagemagick from \hhref{http://www.imagemagick.org/script/binary-releases.php}.
+This program is used to convert terrain images files from jpeg 2000 to jpeg format.
+
+\item Go to the USGS National Map website at \hhref{https://viewer.nationalmap.gov/basic/}to obtain elevation data and terrain images.
+A map of the United States is on the right and a set of data download options is on the left.
+\begin{itemize}
+\item Obtain Elevation data
+
+\begin{enumerate}
+\item Select the {\em Elevation Products (3DEP)}\ checkbox.
+\item Select 1/3 arc-second DEM checkbox
+\item Select the {\em GridFloat}\ File format option
+\item Click on the map and zoom in to a region of interest.
+\item Click on the {\em Find Products}\ button.  You should see one or more
+entries listed with headings beginning with
+USGS NED 1/3 arc-second ...... 1 x 1 degree .
+\item Click on the {\em Footprint}\ link to verify where various files are located.
+\item Click on {\em Download}\ link to download files of interest.
+\item Unzip these files using a program such as Winzip. Open the directory created with the unzip operation and
+copy the .flt and .hdr files to a directory where you'll keep your elevation and image files.
+\end{enumerate}
+
+\item Obtain Terrain Images
+\begin{enumerate}
+\item Click on the {\em Return to Search}\ button
+and uncheck (if checked) the {\em Elevation Products (3DEP)}\ checkbox
+\item Select the {\em Imagery - 1 meter (NAIP)}\ checkbox
+\item Click on the map and zoom in to
+a region of interest within the elevation region selected for for elevation files.
+\item Click on the {\em Find Products}\ button.  You should see one or more
+entries with each entry beginning with {\tt m\_}\ and ending with {\tt .jp2} .
+\item Click on the {\em Footprint}\ link to verify image file locations.
+\item Click on {\em Download}\ link to download files of interest. The image files should
+cover the region you are using to define an FDS input file.
+\item Copy the downloaded files to the same directory you used to copy the .flt and .hdr elevation files.
+\item The .jp2 files you just downloaded are in {\em jpeg 2000}\ format.
+They need to be converted to jpeg format .
+To do this on a PC, run the {\tt jp2conv}\ command.
+On Linux or a Mac, run the {\tt jp2conv.sh}\ command.
+These commands are installed with the latest version of Smokeview.
+\end{enumerate}
+\end{itemize}
+\end{itemize}
+
+\subsection{Creating an FDS input file from dem data}
+\begin{itemize}
+\item Create a dem2fds input file.
+
+Create a file named {\tt casename.in}\ containing the following lines
+
+\begin{verbatim}
+GRID
+  ibar jbar kbar
+LONGLATMINMAX
+  longmin  longmax latmin latmax
+\end{verbatim}
+
+where {\tt ibar}\ and {\tt jbar}\ are the number of longitude and latitude divisions
+and {\tt kbar}\ is the number of divisions along the z direction and
+{\tt longmin}, {\tt longmax}, {\tt latmin}\ and {\tt latmax}\
+are the minimum and maximum
+longitude and latitude of the region  being modeled.
+
+Two other methods for specifying a terrain region are to use the
+{\tt LONGLATCENTER}\ or {\tt LONGLATORIG}\ keywords as in
+
+\begin{verbatim}
+GRID
+  ibar jbar kbar dx dy
+LONGLATCENTER
+  longcen  latcen
+\end{verbatim}
+
+or
+
+\begin{verbatim}
+GRID
+  ibar jbar kbar dx dy
+LONGLATORIG
+  longorig  latorig
+\end{verbatim}
+
+where {\tt dx}\ and {\tt dy}\ are the scenario width and length in meters
+( {\tt ibar}, {\tt jbar}\ and {\tt ibar}\ are defined as before),
+{\tt longcen}\ and {\tt latcen}\ are the longitude and
+latitude at the scenario center,
+{\tt i.e.}\ at position ({\tt dx/2}, {\tt dy/2})
+and {\tt longorig}\ and {\tt latorig}\ are the longitude and
+latitude at the scenario origin,
+{\tt i.e.}\ at position ({\tt 0.0, 0.0}).
+
+\item To create an FDS input file, run the command:
+\begin{verbatim}
+ dem2fds -d elevation_directory casename.in
+\end{verbatim}
+where {\tt elevation\_directory}\ is the path of the directory containing the
+elevation and image files downloaded previously and
+casename.in is the file containing {\tt GRID}\ and {\tt LATLONG...}\ keywords.
+
+\item To view the case, run the commands:
+\begin{verbatim}
+fds casename.fds
+smokeview casename
+\end{verbatim}
+\end{itemize}
+
+Note, the FDS input file, {\tt casename.fds}\ is only a starting point.  You will need to
+edit it to model your scenario as you wish.
+
+\subsection{dem2fds Input Keywords}
+
+\blist
+\hitem{GRID} Specifying the simulation grid
+\begin{verbatim}
+GRID
+ ibar jbar kbar dx dy zmin zmax
+\end{verbatim}
+
+ibar, jbar, bar - number of divisions along the x, y and z directions
+dx, dy - distance along the x and y axis.
+
+Note, dx and dy are required if LATLONGCENTER or
+LATLONGORIG are used to specify a terrain region and
+optional if LATLONGMINMAX is used to specify a terrain region (dem2fds computes
+dx and dy for LATLONGMINMAX keywords).
+
+zmin, zmax - minimum and maximum z elevation.  These parameters are optional.
+
+
+\hitem{LONGLATCENTER} - specifying the longitude and latitude at the scenario center
+
+\begin{verbatim}
+LONGLATCENTER
+ longcen latcen
+\end{verbatim}
+
+
+longcen, latcen - longitude and latitude at the center of the scenario, at
+position (dx/2,dy/2) .
+
+\hitem{LONGLATORIG}- specifying the longitude and latitude at the scenario origin
+\begin{verbatim}
+LONGLATORIG
+ longorig latorig
+\end{verbatim}
+
+
+longorig, latorig - longitude and latitude at the origin of the scenario, at
+position (0,0) .
+
+\hitem{LONGLATMINMAX} - specifying longitudes and latitudes that bound the scenario
+\begin{verbatim}
+LONGLATMINMAX
+ longmin longmax latmin latmax
+\end{verbatim}
+
+
+longmin, longmax - minimum and maximum longitude
+latmin, latmax - minimum and maximum latitude
+
+\elist
+
+\subsection{dem2fds Command Line Options}
+
+\lstinputlisting{SCRIPT_FIGURES/dem2fds.help}
+
+\begin{enumerate}
+\item The {\tt -obst}\ option is used by default.
+\item The {\tt -geom}\ option is experimental testing the new geometry file format.
+\item All terrain images should contain a 300 pixel overlap buffer.  However
+this is not always the case.  The {\tt -nobuffer}\ option is used for those
+cases when there is no overlap between two adjacent images.
+\end{enumerate}
+

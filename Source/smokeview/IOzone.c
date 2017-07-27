@@ -1153,52 +1153,70 @@ void drawroomgeom(void){
         glLineWidth(ventlinewidth);
       }
       glColor4fv(zvi->color);
-      glBegin(GL_LINE_LOOP);
-      switch(zvi->wall){
-      case LEFT_WALL:
-      case RIGHT_WALL:
-        xx = x1;
-        if(zvi->wall==RIGHT_WALL)xx = x2;
+      if(zvi->vent_type==VFLOW_VENT&&zvi->vertical_vent_type==ZONEVENT_CIRCLE){
+        unsigned char uc_color[4];
+        float zz;
 
-        p = xyz;
-        *p++ = xx, *p++ = y1, *p++ = z1;
-        *p++ = xx, *p++ = y2, *p++ = z1;
-        *p++ = xx, *p++ = y2, *p++ = z2;
-        *p++ = xx, *p++ = y1, *p++ = z2;
-        DRAWZONEVENT2;
-        break;
-
-      case FRONT_WALL:
-      case BACK_WALL:
-        yy = y1;
-        if(zvi->wall==BACK_WALL)yy = y2;
-
-        p = xyz;
-        *p++ = x1, *p++ = yy, *p++ = z1;
-        *p++ = x2, *p++ = yy, *p++ = z1;
-        *p++ = x2, *p++ = yy, *p++ = z2;
-        *p++ = x1, *p++ = yy, *p++ = z2;
-        DRAWZONEVENT2;
-        break;
-
-      case BOTTOM_WALL:
-      case TOP_WALL:
         zz = z1;
         if(zvi->wall==TOP_WALL)zz = z2;
 
-        p = xyz;
-        *p++ = x1, *p++ = y1, *p++ = zz;
-        *p++ = x2, *p++ = y1, *p++ = zz;
-        *p++ = x2, *p++ = y2, *p++ = zz;
-        *p++ = x1, *p++ = y2, *p++ = zz;
-        DRAWZONEVENT2;
-        break;
-
-      default:
-        ASSERT(FFALSE);
-        break;
+        glPushMatrix();
+        glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), zz);
+        uc_color[0] = zvi->color[0]*255;
+        uc_color[1] = zvi->color[1]*255;
+        uc_color[2] = zvi->color[2]*255;
+        uc_color[3] = zvi->color[3]*255;
+        drawcircle(2.0*SCALE2SMV(zvi->radius), uc_color, &cvent_circ);
+        glPopMatrix();
       }
-      glEnd();
+      else{
+        glBegin(GL_LINE_LOOP);
+        switch(zvi->wall){
+        case LEFT_WALL:
+        case RIGHT_WALL:
+          xx = x1;
+          if(zvi->wall==RIGHT_WALL)xx = x2;
+
+          p = xyz;
+          *p++ = xx, *p++ = y1, *p++ = z1;
+          *p++ = xx, *p++ = y2, *p++ = z1;
+          *p++ = xx, *p++ = y2, *p++ = z2;
+          *p++ = xx, *p++ = y1, *p++ = z2;
+          DRAWZONEVENT2;
+          break;
+
+        case FRONT_WALL:
+        case BACK_WALL:
+          yy = y1;
+          if(zvi->wall==BACK_WALL)yy = y2;
+
+          p = xyz;
+          *p++ = x1, *p++ = yy, *p++ = z1;
+          *p++ = x2, *p++ = yy, *p++ = z1;
+          *p++ = x2, *p++ = yy, *p++ = z2;
+          *p++ = x1, *p++ = yy, *p++ = z2;
+          DRAWZONEVENT2;
+          break;
+
+        case BOTTOM_WALL:
+        case TOP_WALL:
+          zz = z1;
+          if(zvi->wall==TOP_WALL)zz = z2;
+
+          p = xyz;
+          *p++ = x1, *p++ = y1, *p++ = zz;
+          *p++ = x2, *p++ = y1, *p++ = zz;
+          *p++ = x2, *p++ = y2, *p++ = zz;
+          *p++ = x1, *p++ = y2, *p++ = zz;
+          DRAWZONEVENT2;
+          break;
+
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glEnd();
+      }
     }
   }
 }
