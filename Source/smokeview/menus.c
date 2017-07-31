@@ -2585,7 +2585,7 @@ void ReloadAllSliceFiles(void){
     i = slice_loaded_list[ii];
     slicei = sliceinfo + i;
     set_slicecolor = DEFER_SLICECOLOR;
-    if(i == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
+    if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
     ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
   }
   islicetype = islicetype_save;
