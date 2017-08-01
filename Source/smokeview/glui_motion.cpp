@@ -54,6 +54,7 @@
 #endif
 #define WINDOW_COLORS 33
 #define COLOR_FLIP 34
+#define CLIP_SHOW_ROTATE 35
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -158,6 +159,7 @@ GLUI_Spinner *SPINNER_background_blue=NULL;
 
 GLUI_StaticText *STATIC_width360=NULL;
 
+GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
 GLUI_Checkbox *CHECKBOX_render360 = NULL;
 #ifdef pp_RENDER360_DEBUG
 GLUI_Checkbox *CHECKBOX_screenview = NULL;
@@ -220,6 +222,12 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 procdata motionprocinfo[9];
 int nmotionprocinfo = 0;
+
+/* ------------------ UpdateShowRotationCenter ------------------------ */
+
+extern "C" void UpdateShowRotationCenter(void){
+  if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->set_int_val(show_rotation_center);
+}
 
 /* ------------------ update_glui_rotate_about ------------------------ */
 
@@ -903,7 +911,7 @@ extern "C" void glui_motion_setup(int main_window){
   LIST_mesh2->add_item(nmeshes,_d("world center"));
   LIST_mesh2->set_int_val(*rotation_index);
 
-  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(ROLLOUT_rotation_type,"Show rotation center",&show_rotation_center);
+  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(ROLLOUT_rotation_type,"Show rotation center",&show_rotation_center, CLIP_SHOW_ROTATE, Motion_CB);
   xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
   ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
   zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
@@ -1489,6 +1497,11 @@ extern "C" void Motion_CB(int var){
   float *azimuth;
   int *rotation_index;
   int i;
+
+  if(var==CLIP_SHOW_ROTATE){
+    UpdateShowRotationCenter2();
+    return;
+  }
 
 #ifdef pp_GPUTHROTTLE
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1&&
