@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateShowRotationCenter(void);
+EXTERNCPP void UpdateShowRotationCenter2(void);
 EXTERNCPP void update_glui_rotate_about(int val);
 EXTERNCPP void UpdateRotationIndex(int val);
 EXTERNCPP void ReloadAllSliceFiles(void);
