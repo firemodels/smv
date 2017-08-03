@@ -338,7 +338,7 @@ void mouse_edit_blockage(int button, int state, int x, int y){
     highlight_block=sd->blockage;
     highlight_mesh=sd->mesh;
     meshi = meshinfo + highlight_mesh;
-    update_current_mesh(meshi);
+    UpdateCurrentMesh(meshi);
     bchighlight_old=bchighlight;
     bchighlight = meshi->blockageinfoptrs[highlight_block];
     for(i=0;i<6;i++){
@@ -1401,12 +1401,12 @@ void keyboard(unsigned char key, int flag){
         for(i=0;i<nmeshes;i++){
           gbi = meshinfo + i;
           if(gbi->plot3dfilenum==-1)continue;
-          update_current_mesh(gbi);
+          UpdateCurrentMesh(gbi);
           updateplotslice(XDIR);
           updateplotslice(YDIR);
           updateplotslice(ZDIR);
         }
-        update_current_mesh(gbsave);
+        UpdateCurrentMesh(gbsave);
       }
       break;
     case 'A':
@@ -1708,7 +1708,7 @@ void keyboard(unsigned char key, int flag){
         if(nmeshes>1){
           highlight_mesh++;
           if(highlight_mesh>nmeshes-1)highlight_mesh=0;
-          update_current_mesh(meshinfo+highlight_mesh);
+          UpdateCurrentMesh(meshinfo+highlight_mesh);
         }
       }
       break;
@@ -2751,9 +2751,9 @@ void reset_gltime(void){
   }
 }
 
-/* ------------------ update_current_mesh ------------------------ */
+/* ------------------ UpdateCurrentMesh ------------------------ */
 
-void update_current_mesh(meshdata *meshi){
+void UpdateCurrentMesh(meshdata *meshi){
   current_mesh=meshi;
   loaded_isomesh=get_loaded_isomesh();
   update_iso_showlevels();
