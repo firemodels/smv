@@ -76,10 +76,10 @@ void CLIP_CB(int var){
   switch(var){
   case CLIP_ROTATE:
     if(clip_rotate==0){
-      update_glui_rotate_about(nmeshes);
+      UpdateGluiRotateAbout(nmeshes);
     }
     else{
-      update_glui_rotate_about(ROTATE_ABOUT_CLIPPING_CENTER);
+      UpdateGluiRotateAbout(ROTATE_ABOUT_CLIPPING_CENTER);
     }
     break;
   case CLIP_SHOW_ROTATE2:

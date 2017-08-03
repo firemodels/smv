@@ -228,7 +228,7 @@ int ndisplayprocinfo = 0;
 /* ------------------ Display_Rollout_CB ------------------------ */
 
 void Display_Rollout_CB(int var){
-  toggle_rollout(displayprocinfo, ndisplayprocinfo, var);
+  ToggleRollout(displayprocinfo, ndisplayprocinfo, var);
 }
 /* ------------------ update_glui_label_text ------------------------ */
 

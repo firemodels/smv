@@ -1234,7 +1234,7 @@ void DialogMenu(int value){
   case DIALOG_SCALING:
   case DIALOG_VIEW:
   case DIALOG_WINDOW:
-    show_glui_motion(value);
+    ShowGluiMotion(value);
     break;
   case DIALOG_TICKS:
   case DIALOG_COLORING:
@@ -1289,7 +1289,7 @@ void DialogMenu(int value){
     hide_glui_shooter();
     hide_glui_display();
     hide_glui_bounds();
-    hide_glui_motion();
+    HideGluiMotion();
     hide_glui_tour();
     hide_glui_clip();
     hide_glui_wui();
@@ -1327,12 +1327,12 @@ void ZoomMenu(int value){
     if(projection_type!=0){
       camera_current->projection_type=projection_type;
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
-      update_projection_type();
+      UpdateProjectionType();
     }
   }
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
-    update_projection_type();
+    UpdateProjectionType();
     if(projection_type==0){
       UpdateCameraYpos(camera_current);
     }
@@ -1348,11 +1348,11 @@ void ZoomMenu(int value){
     if(projection_type!=0){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
       camera_current->projection_type=projection_type;
-      update_projection_type();
+      UpdateProjectionType();
     }
   }
   camera_current->zoom=zoom;
-  update_glui_zoom();
+  UpdateGluiZoom();
 }
 
 /* ------------------ ApertureMenu ------------------------ */
@@ -1487,7 +1487,7 @@ void ResetMenu(int value){
       cameradata *ca;
 
       GetNextViewLabel(view_label);
-      add_list_view(view_label);
+      AddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){
         ResetMenu(ca->view_id);
@@ -1501,7 +1501,7 @@ void ResetMenu(int value){
   default:
     ASSERT(value>=0);
     if(value<100000){
-      reset_glui_view(value);
+      ResetGluiView(value);
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"SETVIEWPOINT\n");
         fprintf(scriptoutstream," %s\n",camera_current->name);
@@ -1559,7 +1559,7 @@ void RenderMenu(int value){
   }
   if(value>=10000&&value<=10005){
     nrender_rows=value-10000;
-    update_nrender_rows();
+    UpdateNRenderRows();
     return;
   }
   switch(value){
@@ -1608,11 +1608,11 @@ void RenderMenu(int value){
     break;
   case RenderLABELframenumber:
     render_label_type=RENDER_LABEL_FRAMENUM;
-    update_glui_filelabel(render_label_type);
+    UpdateGluiFileLabel(render_label_type);
     break;
   case RenderLABELtime:
     render_label_type=RENDER_LABEL_TIME;
-    update_glui_filelabel(render_label_type);
+    UpdateGluiFileLabel(render_label_type);
     break;
   case RenderPNG:
      render_filetype=PNG;
@@ -1655,7 +1655,7 @@ void RenderMenu(int value){
     render_times = RENDER_ALLTIMES;
     break;
   }
-  update_nrender_rows();
+  UpdateNRenderRows();
 }
 
 /* ------------------ EvacShowMenu ------------------------ */
@@ -4750,8 +4750,8 @@ void BlockageMenu(int value){
 void RotateTypeMenu(int value){
   if(value==MENU_DUMMY)return;
   rotation_type = value;
-  update_rotation_type(rotation_type);
-  rotation_type_CB(rotation_type);
+  UpdateRotationType(rotation_type);
+  RotationTypeCB(rotation_type);
   updatemenu=1;
   glutPostRedisplay();
 }

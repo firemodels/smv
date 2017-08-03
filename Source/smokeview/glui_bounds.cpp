@@ -419,31 +419,31 @@ extern "C" void update_iso_colorlevel(void){
 /* ------------------ Plot3d_Rollout_CB ------------------------ */
 
 void Plot3d_Rollout_CB(int var){
-  toggle_rollout(plot3dprocinfo, nplot3dprocinfo, var);
+  ToggleRollout(plot3dprocinfo, nplot3dprocinfo, var);
 }
 
 /* ------------------ Slice_Rollout_CB ------------------------ */
 
 void Slice_Rollout_CB(int var){
-  toggle_rollout(sliceprocinfo, nsliceprocinfo, var);
+  ToggleRollout(sliceprocinfo, nsliceprocinfo, var);
 }
 
 /* ------------------ Iso_Rollout_CB ------------------------ */
 
 void Iso_Rollout_CB(int var){
-  toggle_rollout(isoprocinfo, nisoprocinfo, var);
+  ToggleRollout(isoprocinfo, nisoprocinfo, var);
 }
 
 /* ------------------ Bound_Rollout_CB ------------------------ */
 
 void Bound_Rollout_CB(int var){
-  toggle_rollout(boundprocinfo, nboundprocinfo, var);
+  ToggleRollout(boundprocinfo, nboundprocinfo, var);
 }
 
 /* ------------------ File_Rollout_CB ------------------------ */
 
 void File_Rollout_CB(int var){
-  toggle_rollout(fileprocinfo, nfileprocinfo, var);
+  ToggleRollout(fileprocinfo, nfileprocinfo, var);
 }
 
 /* ------------------ update_glui_zonebounds ------------------------ */

@@ -189,7 +189,7 @@ int ncolorprocinfo = 0;
 /* ------------------ Color_Rollout_CB ------------------------ */
 
 void Color_Rollout_CB(int var){
-  toggle_rollout(colorprocinfo, ncolorprocinfo, var);
+  ToggleRollout(colorprocinfo, ncolorprocinfo, var);
 }
 
 /* ------------------ Smoke_Rollout_CB ------------------------ */
@@ -198,7 +198,7 @@ extern "C" void Smoke_Rollout_CB(int var){
   if(  var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
   Smoke3d_CB(SMOKE_OPTIONS);
-  toggle_rollout(smokeprocinfo, nsmokeprocinfo, var);
+  ToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
 /* ------------------ delete_vol_tourlsit ------------------------ */

@@ -2057,21 +2057,21 @@ int run_script(void){
       break;
     case SCRIPT_RENDERTYPE:
       if(STRCMP(scripti->cval, "JPG")==0){
-        update_render_type(JPEG);
+        UpdateRenderType(JPEG);
       }
       else{
-        update_render_type(PNG);
+        UpdateRenderType(PNG);
       }
       break;
     case SCRIPT_MOVIETYPE:
       if(STRCMP(scripti->cval, "WMV") == 0){
-        update_movie_type(WMV);
+        UpdateMovieType(WMV);
       }
       if(STRCMP(scripti->cval, "MP4") == 0){
-        update_movie_type(MP4);
+        UpdateMovieType(MP4);
       }
       else{
-        update_movie_type(AVI);
+        UpdateMovieType(AVI);
       }
       break;
     case SCRIPT_RENDERDIR:

@@ -107,7 +107,7 @@ int is_tour_open(void){
 /* ------------------ Tours_Rollout_CB ------------------------ */
 
 void Tours_Rollout_CB(int var){
-  toggle_rollout(toursprocinfo, ntoursprocinfo, var);
+  ToggleRollout(toursprocinfo, ntoursprocinfo, var);
 }
 
 
