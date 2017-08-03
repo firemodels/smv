@@ -742,7 +742,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   blocknumber = patchi->blocknumber;
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
-  update_current_mesh(meshi);
+  UpdateCurrentMesh(meshi);
   filenum = meshi->patchfilenum;
   if(filenum>=0&&filenum<npatchinfo){
     patchi->loaded=0;

@@ -4433,7 +4433,7 @@ int ReadSMV(char *file, char *file2){
   FREEMEMORY(supermeshinfo);
   if(NewMemory((void **)&supermeshinfo,nmeshes*sizeof(supermeshdata))==0)return 2;
   meshinfo->plot3dfilenum=-1;
-  update_current_mesh(meshinfo);
+  UpdateCurrentMesh(meshinfo);
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     supermeshdata *smeshi;
