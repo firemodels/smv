@@ -692,7 +692,7 @@ EXTERNCPP void update_plot3dtitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void init_plot3dtimelist(void);
 EXTERNCPP void update_iso_showlevels(void);
-EXTERNCPP void update_current_mesh(meshdata *meshi);
+EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);

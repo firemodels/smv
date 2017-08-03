@@ -889,7 +889,7 @@ extern "C" void glui_motion_setup(int main_window){
   ROLLOUT_rotation_type = glui_motion->add_rollout_to_panel(PANEL_motion,_d("Specify Rotation"),false,ROTATION_ROLLOUT,Motion_Rollout_CB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_rotation_type, ROTATION_ROLLOUT);
 
-  PANEL_radiorotate = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "Rotation type:", GLUI_PANEL_NONE);
+  PANEL_radiorotate = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "Rotation type:");
   RADIO_rotation_type=glui_motion->add_radiogroup_to_panel(PANEL_radiorotate,&rotation_type,0,rotation_type_CB);
   RADIOBUTTON_1c=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"2 axis");
   RADIOBUTTON_1d=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"eye centered");
@@ -911,11 +911,11 @@ extern "C" void glui_motion_setup(int main_window){
   LIST_mesh2->add_item(nmeshes,_d("world center"));
   LIST_mesh2->set_int_val(*rotation_index);
 
-  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(ROLLOUT_rotation_type,"Show rotation center",&show_rotation_center, CLIP_SHOW_ROTATE, Motion_CB);
+  PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
+  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,"Show",&show_rotation_center, CLIP_SHOW_ROTATE, Motion_CB);
   xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
   ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
   zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
-  PANEL_user_center=glui_motion->add_panel_to_panel(ROLLOUT_rotation_type,"rotation center (user specified)");
   SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv,CUSTOM_ROTATION_X,Motion_CB);
   SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv,CUSTOM_ROTATION_Y,Motion_CB);
   SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv,CUSTOM_ROTATION_Z,Motion_CB);
@@ -933,7 +933,6 @@ extern "C" void glui_motion_setup(int main_window){
   BUTTON_snap=glui_motion->add_button_to_panel(PANEL_anglebuttons,_d("Snap"),SNAPSCENE,Motion_CB);
 
   //glui_motion->add_column(false);
-
 
   ROLLOUT_orientation=glui_motion->add_rollout_to_panel(PANEL_motion,_d("Specify Orientation"),false,ORIENTATION_ROLLOUT,Motion_Rollout_CB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_orientation, ORIENTATION_ROLLOUT);
@@ -1361,6 +1360,17 @@ extern "C" void UpdateRotationIndex(int val){
       }
     }
   }
+  if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
+    xcenCUSTOM = camera_current->xcen;
+    ycenCUSTOM = camera_current->ycen;
+    zcenCUSTOM = camera_current->zcen;
+    xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
+    ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
+    zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
+    if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
+    if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
+    if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
+  }
 
   az_elev = camera_current->az_elev;
 
@@ -1420,6 +1430,7 @@ extern "C" void showhide_translate(int var){
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
     if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case ROTATION_2AXIS:
@@ -1434,6 +1445,7 @@ extern "C" void showhide_translate(int var){
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
     if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case EYE_CENTERED:
@@ -1448,6 +1460,7 @@ extern "C" void showhide_translate(int var){
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->enable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->enable();
     if(LIST_mesh2!=NULL)LIST_mesh2->disable();
+    if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->disable();
     if(BUTTON_snap!=NULL)BUTTON_snap->disable();
     break;
   case ROTATION_1AXIS:
@@ -1462,6 +1475,7 @@ extern "C" void showhide_translate(int var){
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
     if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   default:
@@ -1572,6 +1586,7 @@ extern "C" void Motion_CB(int var){
         }
       }
       if(*azimuth>=360.0)*azimuth-=360.0;
+      motion_dir[0] = *azimuth;
       Motion_CB(EYE_ROTATE);
       glui_move_mode=EYE_ROTATE_90;
       return;
@@ -1688,7 +1703,7 @@ extern "C" void Motion_CB(int var){
         SPINNER_zcenCUSTOM->disable();
       }
       if(*rotation_index>=0&&*rotation_index<nmeshes){
-        update_current_mesh(meshinfo + (*rotation_index));
+        UpdateCurrentMesh(meshinfo + (*rotation_index));
         UpdateRotationIndex(*rotation_index);
       }
       else if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
@@ -1698,7 +1713,7 @@ extern "C" void Motion_CB(int var){
         UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
       }
       else{
-        update_current_mesh(meshinfo);
+        UpdateCurrentMesh(meshinfo);
         UpdateRotationIndex(nmeshes);
       }
       update_rotation_center=1;

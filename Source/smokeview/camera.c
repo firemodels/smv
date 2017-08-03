@@ -206,10 +206,10 @@ void UpdateCamera(cameradata *ca){
   if(ca==camera_current){
     rotation_type=ca->rotation_type;
     if(ca->rotation_index>=0&&ca->rotation_index<nmeshes){
-      update_current_mesh(meshinfo + ca->rotation_index);
+      UpdateCurrentMesh(meshinfo + ca->rotation_index);
     }
     else{
-      update_current_mesh(meshinfo);
+      UpdateCurrentMesh(meshinfo);
     }
     highlight_mesh = current_mesh-meshinfo;
     handle_rotation_type(EYE_CENTERED);
