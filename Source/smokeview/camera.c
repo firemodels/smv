@@ -186,7 +186,7 @@ void CopyCamera(cameradata *to, cameradata *from){
   memcpy(to,from,sizeof(cameradata));
   if(to==camera_current){
     zoom=camera_current->zoom;
-    update_glui_zoom();
+    UpdateGluiZoom();
   }
   to->dirty=1;
   if(to==camera_current&&updateclipvals==0){
@@ -213,7 +213,7 @@ void UpdateCamera(cameradata *ca){
     }
     highlight_mesh = current_mesh-meshinfo;
     handle_rotation_type(EYE_CENTERED);
-    update_meshlist1(ca->rotation_index);
+    UpdateMeshList1(ca->rotation_index);
     update_trainer_moves();
 
     ca->clip_mode=clip_mode;
@@ -229,7 +229,7 @@ void UpdateCamera(cameradata *ca){
     ca->ymax=clipinfo.ymax;
     ca->zmax=clipinfo.zmax;
   }
-  update_glui_set_view_xyz(ca->eye);
+  UpdateGluiSetViewXYZ(ca->eye);
   ca->dirty=0;
 }
 

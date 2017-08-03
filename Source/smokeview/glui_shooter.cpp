@@ -91,7 +91,7 @@ int nshooterprocinfo = 0;
 /* ------------------ Shooter_Rollout_CB ------------------------ */
 
 void Shooter_Rollout_CB(int var){
-  toggle_rollout(shooterprocinfo, nshooterprocinfo, var);
+  ToggleRollout(shooterprocinfo, nshooterprocinfo, var);
 }
 
 /* ------------------ hide_glui_shooter ------------------------ */

@@ -9963,7 +9963,7 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
       Motion_CB(PROJECTION);
-      update_projection_type();
+      UpdateProjectionType();
       continue;
     }
     if(Match(buffer, "V_PARTICLES") == 1){
@@ -11262,7 +11262,7 @@ int ReadINI2(char *inifile, int localfile){
       InitCameraList();
       InsertCamera(&camera_list_first, camera_ini, bufferptr);
 
-      enable_reset_saved_view();
+      EnableResetSavedView();
       ci->dirty = 1;
       ci->defined = 1;
       continue;

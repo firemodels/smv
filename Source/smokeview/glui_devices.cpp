@@ -112,7 +112,7 @@ int ndeviceprocinfo = 0;
 /* ------------------ Device_Rollout_CB ------------------------ */
 
 void Device_Rollout_CB(int var){
-  toggle_rollout(deviceprocinfo, ndeviceprocinfo, var);
+  ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */

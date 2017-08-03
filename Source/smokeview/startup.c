@@ -97,7 +97,7 @@ void Init(void){
   CopyCamera(camera_external_save,camera_external);
   UpdateGluiViewList();
 
-  //reset_glui_view(i_view_list);
+  //ResetGluiView(i_view_list);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
@@ -119,7 +119,7 @@ void Init(void){
   mat_ambient2[3] = 1.0;
   mat_specular2[3] = 1.0;
 
-  reset_glui_view(startup_view_ini);
+  ResetGluiView(startup_view_ini);
   UpdateShow();
 }
 
@@ -317,7 +317,7 @@ int SetupCase(int argc, char **argv){
 
   if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
-  glui_motion_setup(mainwindow_id);
+  gluiMotionSetup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
   glui_shooter_setup(mainwindow_id);
   glui_geometry_setup(mainwindow_id);

@@ -127,8 +127,8 @@ void MakeMovie(void){
 
 // enable movie making button
 
-  enable_disable_makemovie(ON);
-  enable_disable_playmovie();
+  EnableDisableMakeMovie(ON);
+  EnableDisablePlayMovie();
 
   update_makemovie = 0;
 }

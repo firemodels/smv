@@ -845,7 +845,7 @@ void mouse_CB(int button, int state, int xm, int ym){
     eye_xyz0[0]=eye_xyz[0];
     eye_xyz0[1]=eye_xyz[1];
     eye_xyz0[2]=eye_xyz[2];
-    update_translate();
+    UpdateTranslate();
     timebar_drag=0;
     colorbar_drag=0;
     colorbar_splitdrag=0;
@@ -896,7 +896,7 @@ void mouse_CB(int button, int state, int xm, int ym){
     if(canrestorelastview==0){
       updatemenu=1;
       canrestorelastview=1;
-      enable_reset_saved_view();
+      EnableResetSavedView();
     }
     switch(button){
       case GLUT_MIDDLE_BUTTON:
@@ -1071,7 +1071,7 @@ void Move_Gen_Slice(int xm, int ym){
         delev = 360.0*dym/(float)screenHeight;
         gslice_normal_azelev[0] += daz;
         gslice_normal_azelev[1] += delev;
-        update_gslice_parms();
+        UpdateGsliceParms();
         start_xyz0[0]=xm;
         start_xyz0[1]=ym;
       }
@@ -1093,7 +1093,7 @@ void Move_Gen_Slice(int xm, int ym){
         gslice_xyz0[1] = gslice_xyz[1];
         mouse_down_xy0[0]=xm;
         mouse_down_xy0[1]=ym;
-        update_gslice_parms();
+        UpdateGsliceParms();
       }
       break;
     case KEY_ALT:
@@ -1104,7 +1104,7 @@ void Move_Gen_Slice(int xm, int ym){
         yy = yy/(float)screenHeight;
 
         gslice_xyz[2] = gslice_xyz0[2] - DENORMALIZE_Z(4*(xyzbox-NORMALIZE_Z(gslice_xyz0[2]))*yy);
-        update_gslice_parms();
+        UpdateGsliceParms();
       }
       break;
     case KEY_SHIFT:
@@ -1272,7 +1272,7 @@ void motion_CB(int xm, int ym){
     update_mouseinfo(MOUSE_MOTION,xm,ym);
   }
   if((rotation_type==ROTATION_2AXIS||rotation_type==ROTATION_3AXIS)&&gvec_down==1&&key_state == KEY_NONE){
-    update_gvec_down(0);
+    UpdateGvecDown(0);
   }
   Move_Scene(xm,ym);
 }
@@ -1521,8 +1521,8 @@ void keyboard(unsigned char key, int flag){
       default:
         rotation_type++;
         if(rotation_type>3)rotation_type=0;
-        rotation_type_CB(rotation_type);
-        update_rotation_type(rotation_type);
+        RotationTypeCB(rotation_type);
+        UpdateRotationType(rotation_type);
         handle_rotation_type(ROTATION_2AXIS);
       }
       break;
@@ -1794,7 +1794,7 @@ void keyboard(unsigned char key, int flag){
       break;
     case 'P':
       cursorPlot3D=1-cursorPlot3D;
-      update_cursor_checkbox();
+      UpdateCursorCheckbox();
       break;
     case 'q':
     case 'Q':
@@ -2031,7 +2031,7 @@ void keyboard(unsigned char key, int flag){
           }
           else{
             vis_gslice_data = 1 - vis_gslice_data;
-            update_gslice_parms();
+            UpdateGsliceParms();
           }
           break;
       }
@@ -2259,7 +2259,7 @@ void handle_rotation_type(int flag){
     ASSERT(FFALSE);
     break;
   }
-  showhide_translate(rotation_type);
+  ShowHideTranslate(rotation_type);
   rotation_type_old = rotation_type;
   return;
 }
@@ -2588,7 +2588,7 @@ void handle_move_keys(int  key){
     eye_xyz0[0]=eye_xyz[0];
     eye_xyz0[1]=eye_xyz[1];
     eye_xyz0[2]=eye_xyz[2];
-    update_translate();
+    UpdateTranslate();
   }
 }
 
@@ -2731,7 +2731,7 @@ void Reshape_CB(int width, int height){
   if(strcmp(camera_current->name,"external")==0&&in_external==1){
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
   }
-  update_windowsizelist();
+  UpdateWindowSizeList();
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
   CreateDepthTexture();

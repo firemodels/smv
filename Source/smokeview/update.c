@@ -1803,10 +1803,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 
 void UpdateShowScene(void){
   if(update_playmovie==1){
-    enable_disable_playmovie();
+    EnableDisablePlayMovie();
     update_playmovie = 0;
   }
-  update_render_start_button();
+  UpdateRenderStartButton();
   if(update_makemovie == 1)MakeMovie();
   if(compute_fed == 1)DefineAllFEDs();
   if(restart_time == 1){
@@ -1832,7 +1832,7 @@ void UpdateShowScene(void){
     Update_Tourlist();
   }
   if(update_gslice == 1){
-    update_gslice_parms();
+    UpdateGsliceParms();
   }
 #define MESH_LIST 4
   if(update_rotation_center == 1){
@@ -1893,7 +1893,7 @@ void UpdateDisplay(void){
   UNLOCK_IBLANK
   if(update_have_gvec == 1){
     update_have_gvec = 0;
-    update_gvec_down(1);
+    UpdateGvecDown(1);
   }
   if(update_smokecolorbar == 1){
     update_smokecolorbar = 0;
@@ -1933,7 +1933,7 @@ void UpdateDisplay(void){
   }
   if(update_screensize == 1){
     update_screensize = 0;
-    update_windowsizelist();
+    UpdateWindowSizeList();
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
