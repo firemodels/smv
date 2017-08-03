@@ -1,6 +1,6 @@
-\section{dem2fds - A program for creating FDS an input file from digital elevation map (dem) data}
+\utilchap{dem2fds - A utility for creating FDS an input file from digital elevation map (dem) data}
 
-\subsection{Preliminaries}
+\utilsect{Preliminaries}
 
 \begin{itemize}
 \item Install Smokeview from \hhref{https://pages.nist.gov/fds-smv/downloads.html}
@@ -48,7 +48,7 @@ These commands are installed with the latest version of Smokeview.
 \end{itemize}
 \end{itemize}
 
-\subsection{Creating an FDS input file from dem data}
+\utilsect{Creating an FDS input file from dem data}
 \begin{itemize}
 \item Create a dem2fds input file.
 
@@ -113,7 +113,7 @@ smokeview casename
 Note, the FDS input file, {\tt casename.fds}\ is only a starting point.  You will need to
 edit it to model your scenario as you wish.
 
-\subsection{dem2fds Input Keywords}
+\utilsect{dem2fds Input Keywords}
 
 \blist
 \hitem{GRID} Specifying the simulation grid
@@ -166,7 +166,7 @@ latmin, latmax - minimum and maximum latitude
 
 \elist
 
-\subsection{dem2fds Command Line Options}
+\utilsect{dem2fds Command Line Options}
 
 \lstinputlisting{SCRIPT_FIGURES/dem2fds.help}
 
