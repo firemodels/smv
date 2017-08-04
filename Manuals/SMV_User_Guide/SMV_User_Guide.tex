@@ -1,5 +1,9 @@
 \documentclass[11pt,twoside]{book}
 
+\newcommand{\utilchap}{\section}
+\newcommand{\utilsect}{\subsection}
+\newcommand{\textchap}{section}
+
 %% include commands for bios, titles etc used in multiple documents
 %%
 \input{../Bibliography/commoncommands}
@@ -55,7 +59,8 @@
 \newcommand{\hitemNULL}[1]{}
 \newcommand{\hhitem}[2]{\item[{\bf #1}\ ({\em #2}) \hfill]}
 
-%\doublespace
+% command to double space
+%\linespread{2.0}
 \begin{document}
 
 \bibliographystyle{unsrt}
