@@ -14,7 +14,6 @@
 
 %% commands only used by this guide
 
-\newcommand{\svini}{{\tt smokeview.ini}\ }
 \newcommand{\infigheight}{0.85in}
 \newcommand{\figheightAbar}{2.2in}
 \newcommand{\figheightC}{2.5in}
@@ -71,7 +70,7 @@
 %
 \begin{minipage}[t][9in][s]{6.5in}
 
-\headerA{1017-1\\Sixth Edition\\}
+\headerA{1017-4\\Sixth Edition\\}
 
 
 \vspace{1in}
@@ -102,7 +101,7 @@ Volume IV: Utilities's Guide\\
 %
 \begin{minipage}[t][9in][s]{6.5in}
 
-\headerA{1017-1\\Sixth Edition}
+\headerA{1017-4\\Sixth Edition}
 
 \vspace{1.in}
 
@@ -164,8 +163,8 @@ entities, materials, or equipment are necessarily the best available for the pur
 
 \large
 \begin{flushright}
-\bf National Institute of Standards and Technology Special Publication 1017-1 \\
-Natl.~Inst.~Stand.~Technol.~Spec.~Publ.~1017-1, \pageref{LastPage} pages (June 2016) \\
+\bf National Institute of Standards and Technology Special Publication 1017-4 \\
+Natl.~Inst.~Stand.~Technol.~Spec.~Publ.~1017-4, \pageref{LastPage} pages (August 2017) \\
 CODEN: NSPUE2
 \end{flushright}
 
@@ -183,7 +182,7 @@ CODEN: NSPUE2
 %---------------------------------------------------------------------------------
 
 \chapter{Preface}
-\smvoverview
+\smvoverviewb
 This guide is Volume IV the  Smokeview Utilities's guide.
 
 %---------------------------------------------------------------------------------
@@ -244,19 +243,25 @@ intended purpose.
 
 \chapter{Introduction}
 
-Several utilities are included with the FDS/Smokeview distribution allowing one
-to more easily analyze and generate data.  Smokezip may be used to compress
-FDS data files resulting in quicker load times in Smokeview.  Smokediff may be used
-to compare two FDS cases.  Smokediff generates another .smv file and a set of data files
-which can be viewed with Smokeview.  Background may be used to take advantage of multiple
-core computers by running more than one FDS case at a time.  This is most useful when running
-a long list of FDS cases. Background runs a case whenever the CPU load is below a specified level.
+Several utilities are included with FDS and Smokeview allowing one
+to more easily analyze simulated data.  For example, Smokezip is used to compress FDS data files resulting in smaller file sizes and quicker Smokeview load times.  Smokediff is used
+to compare two FDS cases showing the affect of small changes in one or both of the two FDS input files.  Smokediff take as input two .smv files say case1.smv and case2.smv.    Smokediff then generates another .smv file that references data files which which are the
+difference of case1 and case2.  These differenced files can then be viewed in Smokeview.  Background is used to take advantage of multiple
+core computers by running multiple FDS cases simultaneously.  This is most useful when running
+a long list of FDS cases on a computer that does not have a queuing system.. Background runs a case whenever the CPU load is below a specified level.
+Dem2fds is used to generate FDS input files for cases  containing terrain.  
+Elevation data obtained from a USGS website is converted to blockages.  
+
+Several scripts are used to verify various components of FDS, Smokeview and CFAST.
+Bourne shell versions of these scripts run on Linux and OSX systems and Dos batch file versions run on the PC.  These scripts obtain the latest version of the 
+software from a Git repository, build the software, run test cases and perform various types of checks.  
+These scripts are valuable at catching errors early in the development process.
 
 %------------------------ background ------------------------------------------------
 
 \input{background}
 
-%------------------------ background ------------------------------------------------
+%------------------------ bots ------------------------------------------------
 
 \chapter{bots - firebot, smokebot and cfastbot, scripts for verifying fds, smokeview and cfast}
 

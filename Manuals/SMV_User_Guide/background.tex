@@ -1,12 +1,14 @@
 \utilchap{background - A utility for running multiple programs simultaneously}
 
-This \textchap\ explains the use of the utility named {\em background.exe}, what it is and
+This \textchap\ explains the use of the utility {\em background} ({\em background.exe}\ on the PC, what it is and
 how it might be useful to FDS users.  It is included with the Windows and Linux FDS/Smokeview
-bundles.  The Windows {\em start}\ command can be used to run Windows programs in the
-background.  {\em background.exe}\ has the additional feature of checking the current
-CPU usage level and only starting new programs when the usage level is below a specified
-level.  This enables one to submit a long list of FDS cases without saturating the CPU,
-since only a small number (depending on the maximum usage level specified) will be
+bundles.  A Windows user can use the {\em Start}\ command to run a program in the
+background.  This is fine for a few programs but a computer can become
+easily overloaded if many jobs are run using this method. 
+Similarly, a Linux/Mac user can run a program appending an {\tt \&}\ on the
+command line to put a job in the background.  As on the PC, if many jobs are run, the system can become overloaded.  The program {\em background}\ throttles job submissions so that a job won't start until the CPU load is below a 
+specified level.  This enables one to submit a long list of FDS cases without saturating the CPU,
+since only a small number  will be
 running at any one time.
 
 MPI is a message passing software library used to enable implement parallel processing
