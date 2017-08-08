@@ -371,11 +371,7 @@ void SetupGlut(int argc, char **argv){
   startup_pass=2;
 
   smoketempdir=getenv("SVTEMPDIR");
-  /*
   if(smoketempdir==NULL)smoketempdir=getenv("svtempdir");
-  if(smoketempdir==NULL)smoketempdir=getenv("TEMP");
-  if(smoketempdir==NULL)smoketempdir=getenv("temp");
-  */
   if(smoketempdir == NULL){
     char *homedir;
 
@@ -384,7 +380,7 @@ void SetupGlut(int argc, char **argv){
       int len;
 
       len = strlen(homedir);
-      NewMemory((void **)&smoketempdir, len + 1 + 9 + 1);
+      NewMemory((void **)&smoketempdir, len + 1 + 10 + 1);
       strcpy(smoketempdir, homedir);
       strcat(smoketempdir, dirseparator);
       strcat(smoketempdir, ".smokeview");
@@ -392,24 +388,19 @@ void SetupGlut(int argc, char **argv){
         const char *smt;
 
         smt = smoketempdir;
-#ifdef WIN32
-        _mkdir(smt);
-#else
-#endif
+        if(MKDIR(smt)!=0){
+          FREEMEMORY(smoketempdir);
+        }
       }
     }
   }
 
   if(smoketempdir == NULL){
     NewMemory((void **)&smoketempdir,8);
-#ifdef pp_LINUX
-    strcpy(smoketempdir,"/tmp");
-#endif
-#ifdef pp_OSX
-    strcpy(smoketempdir,"/tmp");
-#endif
 #ifdef WIN32
     strcpy(smoketempdir,"c:\temp");
+#else
+    strcpy(smoketempdir, "/tmp");
 #endif
   }
 
