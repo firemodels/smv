@@ -124,7 +124,7 @@ int FileExistsOrig(char *filename);
 #ifdef WIN32
 #define MKDIR(a) _mkdir(a)
 #else
-#define MKDIR(a) mkdir(a,755)
+#define MKDIR(a) mkdir(a,0755)
 #endif
 
 #ifdef WIN32
