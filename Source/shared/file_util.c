@@ -543,7 +543,19 @@ filedata *File2Buffer(char *filename){
 }
 #endif
 
+/* ------------------ FileExistsOrig ------------------------ */
+
+int FileExistsOrig(char *filename){
+  if(ACCESS(filename, F_OK) == -1){
+    return NO;
+  }
+  else{
+    return YES;
+  }
+}
+
   /* ------------------ FileExists ------------------------ */
+
 #ifdef pp_FILELIST
 int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
 #else

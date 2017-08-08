@@ -119,6 +119,8 @@ EXTERNCPP int Writable(char *dir);
 #define FILE_EXISTS(a)         FileExists(a)
 #define FILE_EXISTS_CASEDIR(a) FileExists(a)
 #endif
+int FileExistsOrig(char *filename);
+
 
 #ifdef WIN32
   #define ACCESS _access
