@@ -254,3 +254,6 @@ cd $SVNROOT/smv/Verification/Visualization
 
 cp $SMVUG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
 cp $SMVVG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
+
+# copy files to utilities script directory for now
+cp $SMVUG/SCRIPT_FIGURES/*.png $SMVUTILG/SCRIPT_FIGURES/.
