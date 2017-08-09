@@ -2070,7 +2070,7 @@ void drawroomdata(void){
         glVertex3f(xroom, yroom0+dy,zroom);
         glVertex3f(xroom0,yroom0+dy,zroom);
 
-        if(show_zonelower == 1){
+        if(show_zonelower == 1&&zonecolortype!=ZONEHAZARD_COLOR){
           glColor4fv(colorvL);
           glVertex3f(xroom0, yroom0 + dy, zroom0);
           glVertex3f(xroom, yroom0 + dy, zroom0);
