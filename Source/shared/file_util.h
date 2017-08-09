@@ -12,6 +12,9 @@
 #ifdef pp_LINUX
 #include <unistd.h>
 #endif
+#ifndef WIN32
+#include <sys/stat.h>
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
@@ -124,7 +127,7 @@ int FileExistsOrig(char *filename);
 #ifdef WIN32
 #define MKDIR(a) _mkdir(a)
 #else
-#define MKDIR(a) mkdir(a,0755)
+#define MKDIR(a) mkdir(a,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
 #endif
 
 #ifdef WIN32
