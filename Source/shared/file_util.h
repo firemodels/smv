@@ -89,7 +89,7 @@ else{\
 #endif
 
 #ifdef pp_READBUFFER
-EXTERNCPP int MergeFileBuffers(filedata *fileto, filedata *filefrom);
+EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
 EXTERNCPP int FeofBuffer(filedata *fileinfo);
 EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
 EXTERNCPP void RewindFileBuffer(filedata *fileinfo);

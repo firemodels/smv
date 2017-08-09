@@ -3512,7 +3512,7 @@ int ReadSMV(char *file, char *file2){
 
       stream2->fileinfo = File2Buffer(file2);
       if(stream2->fileinfo!=NULL){
-        MergeFileBuffers(stream->fileinfo, stream2->fileinfo);
+        AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
       }
       FreeFileBuffer(stream2->fileinfo);
     }
