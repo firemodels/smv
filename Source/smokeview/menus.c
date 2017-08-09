@@ -118,6 +118,7 @@
 #define MENU_ISOSHOW_SMOOTH 4
 #define MENU_ISOSHOW_NORMALS 5
 
+#define MENU_ZONE_2DTEMP2 21
 #define MENU_ZONE_2DTEMP 6
 #define MENU_ZONE_2DHAZARD 5
 #define MENU_ZONE_3DSMOKE 7
@@ -4858,6 +4859,9 @@ void ZoneShowMenu(int value){
     visZone=1;
     break;
   case MENU_ZONE_2DTEMP:
+  case MENU_ZONE_2DTEMP2:
+    show_zonelower = 1;
+    if(value==MENU_ZONE_2DTEMP)show_zonelower = 0;
     zonecolortype=ZONETEMP_COLOR;
     visSZone=0;
     if(visVZone==0&&visHZone==0)visVZone=1;
@@ -6322,24 +6326,27 @@ updatemenu=0;
     glutAddMenuEntry(_("Layers"),MENU_DUMMY);
     glutAddMenuEntry(_("   Representation:"),MENU_DUMMY);
     if(visZone==1&&zonecolortype==ZONETEMP_COLOR){
-      glutAddMenuEntry(_("      *Temperature"), MENU_ZONE_2DTEMP);
-#ifdef pp_HAZARD
+      if(show_zonelower==1){
+        glutAddMenuEntry(_("      Temperature(upper)"), MENU_ZONE_2DTEMP);
+        glutAddMenuEntry(_("      *Temperature(upper/lower))"), MENU_ZONE_2DTEMP2);
+      }
+      else{
+        glutAddMenuEntry(_("      *Temperature(upper)"), MENU_ZONE_2DTEMP);
+        glutAddMenuEntry(_("      Temperature(upper/lower))"), MENU_ZONE_2DTEMP2);
+      }
       glutAddMenuEntry(_("      Hazard"), MENU_ZONE_2DHAZARD);
-#endif
-      glutAddMenuEntry(_("      Smoke"), 7);
+      glutAddMenuEntry(_("      Smoke"), MENU_ZONE_3DSMOKE);
     }
     else if(visZone==1&&zonecolortype==ZONEHAZARD_COLOR){
-      glutAddMenuEntry(_("      Temperature"), MENU_ZONE_2DTEMP);
-#ifdef pp_HAZARD
+      glutAddMenuEntry(_("      Temperature(upper)"), MENU_ZONE_2DTEMP);
+      glutAddMenuEntry(_("      Temperature(upper/lower))"), MENU_ZONE_2DTEMP2);
       glutAddMenuEntry(_("      *Hazard"), MENU_ZONE_2DHAZARD);
-#endif
       glutAddMenuEntry(_("      Smoke"), MENU_ZONE_3DSMOKE);
     }
     else{
-      glutAddMenuEntry(_("      Temperature"), MENU_ZONE_2DTEMP);
-#ifdef pp_HAZARD
+      glutAddMenuEntry(_("      Temperature(upper)"), MENU_ZONE_2DTEMP);
+      glutAddMenuEntry(_("      Temperature(upper/lower))"), MENU_ZONE_2DTEMP2);
       glutAddMenuEntry(_("      Hazard"), MENU_ZONE_2DHAZARD);
-#endif
       glutAddMenuEntry(_("      *Smoke"), MENU_ZONE_3DSMOKE);
     }
     glutAddMenuEntry(_("   Orientation:"), MENU_DUMMY);

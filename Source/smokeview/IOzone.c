@@ -647,6 +647,9 @@ void readzone(int ifile, int flag, int *errorcode){
   FREEMEMORY(zonefdiam);
   FREEMEMORY(zonefbase);
   FREEMEMORY(izonetu);
+#ifdef pp_ZONETL
+  FREEMEMORY(izonetl);
+#endif
   FREEMEMORY(zoneodl);
   FREEMEMORY(zoneodu);
   FREEMEMORY(zoneslab_n);
@@ -785,6 +788,13 @@ void readzone(int ifile, int flag, int *errorcode){
       *errorcode=1;
       return;
     }
+#ifdef pp_ZONETL
+    FREEMEMORY(izonetl);
+    if(NewMemory((void **)&izonetl, ntotal * sizeof(unsigned char)) == 0){
+      *errorcode = 1;
+      return;
+    }
+#endif
   }
   else{
     return;
@@ -851,6 +861,10 @@ void readzone(int ifile, int flag, int *errorcode){
   update_glui_zonebounds();
   GetZoneColors(zonetu, ntotal, izonetu, zonemin, zonemax, nrgb, nrgb_full,
     colorlabelzone, zonescale, zonelevels256);
+#ifdef pp_ZONETL
+  GetZoneColors(zonetl, ntotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
+    colorlabelzone, zonescale, zonelevels256);
+#endif
 
   ReadZoneFile=1;
   visZone=1;
@@ -1957,11 +1971,17 @@ void drawfiredata(void){
 void drawroomdata(void){
   float xroom0, yroom0, zroom0, xroom, yroom, zroom;
   float *zoneylaybase,dy;
-  unsigned char *hazardcolorbase, *zonecolorbase;
+  unsigned char *hazardcolorbase, *zonecolorbaseU;
+#ifdef pp_ZONETL
+  unsigned char *zonecolorbaseL;
+#endif
   float ylay;
-  float *colorv;
-  unsigned char color;
+  float *colorvU;
   unsigned char *izonetubase;
+#ifdef pp_ZONETL
+  unsigned char *izonetlbase;
+  float *colorvL;
+#endif
   int i;
 
   if(zone_times[0]>global_times[itimes])return;
@@ -1970,14 +1990,20 @@ void drawroomdata(void){
   if(use_transparency_data==1)TransparentOn();
 
   izonetubase = izonetu + izone*nrooms;
+#ifdef pp_ZONETL
+  izonetlbase = izonetl + izone*nrooms;
+#endif
   hazardcolorbase = hazardcolor + izone*nrooms;
   zoneylaybase = zoneylay + izone*nrooms;
 
   if(zonecolortype==ZONEHAZARD_COLOR){
-    zonecolorbase=hazardcolorbase;
+    zonecolorbaseU=hazardcolorbase;
   }
   else{
-    zonecolorbase=izonetubase;
+    zonecolorbaseU=izonetubase;
+#ifdef pp_ZONETL
+    zonecolorbaseL = izonetlbase;
+#endif
   }
 
 #ifdef pp_GPU
@@ -1987,16 +2013,24 @@ void drawroomdata(void){
 #endif
   for(i=0;i<nrooms;i++){
     roomdata *roomi;
+    unsigned char colorU;
+#ifdef pp_ZONETL
+    unsigned char colorL;
+#endif
 
     roomi = roominfo + i;
 
     ylay = *(zoneylaybase+i);
-    color = *(zonecolorbase+i);
+    colorU = *(zonecolorbaseU+i);
     if(zonecolortype==ZONEHAZARD_COLOR){
-      colorv = rgbhazard[color];
+      colorvU = rgbhazard[colorU];
     }
     else{
-      colorv = rgb_full[color];
+      colorvU = rgb_full[colorU];
+#ifdef pp_ZONETL
+      colorL = *(zonecolorbaseL+i);
+      colorvL = rgb_full[colorL];
+#endif
     }
     xroom0 = roomi->x0;
     yroom0 = roomi->y0;
@@ -2020,7 +2054,7 @@ void drawroomdata(void){
     }
     else{
       if(visHZone==1){
-        glColor4fv(colorv);
+        glColor4fv(colorvU);
         glBegin(GL_QUADS);
         glVertex3f(xroom0,yroom0,ylay+zroom0);
         glVertex3f(xroom,yroom0,ylay+zroom0);
@@ -2029,12 +2063,20 @@ void drawroomdata(void){
         glEnd();
       }
       if(visVZone==1){
-        glColor4fv(colorv);
         glBegin(GL_QUADS);
+        glColor4fv(colorvU);
         glVertex3f(xroom0,yroom0+dy,ylay+zroom0);
         glVertex3f(xroom,yroom0+dy,ylay+zroom0);
         glVertex3f(xroom, yroom0+dy,zroom);
         glVertex3f(xroom0,yroom0+dy,zroom);
+
+        if(show_zonelower == 1){
+          glColor4fv(colorvL);
+          glVertex3f(xroom0, yroom0 + dy, zroom0);
+          glVertex3f(xroom, yroom0 + dy, zroom0);
+          glVertex3f(xroom, yroom0 + dy, zroom0 + ylay);
+          glVertex3f(xroom0, yroom0 + dy, zroom0 + ylay);
+        }
         glEnd();
       }
     }
