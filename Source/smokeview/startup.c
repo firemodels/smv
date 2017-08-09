@@ -18,9 +18,6 @@
 void Init(void){
   int i;
 
-
-  curdir_writable = Writable(".");
-
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
 
@@ -377,18 +374,12 @@ void SetupGlut(int argc, char **argv){
 
     homedir = getenv("HOME");
     if(homedir != NULL){
-      int len;
-
-      len = strlen(homedir);
-      NewMemory((void **)&smoketempdir, len + 1 + 10 + 1);
+      NewMemory((void **)&smoketempdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
       strcpy(smoketempdir, homedir);
       strcat(smoketempdir, dirseparator);
       strcat(smoketempdir, ".smokeview");
       if(FileExistsOrig(smoketempdir)==NO){
-        const char *smt;
-
-        smt = smoketempdir;
-        if(MKDIR(smt)!=0){
+        if(MKDIR(smoketempdir)!=0){
           FREEMEMORY(smoketempdir);
         }
       }
@@ -408,7 +399,7 @@ void SetupGlut(int argc, char **argv){
     lensmoketempdir = strlen(smoketempdir);
     if(NewMemory((void **)&smokeviewtempdir,(unsigned int)(lensmoketempdir+2))!=0){
       STRCPY(smokeviewtempdir,smoketempdir);
-      if(strncmp(smokeviewtempdir+lensmoketempdir-1,dirseparator,1)!=0){
+      if(smokeviewtempdir[lensmoketempdir-1]!=dirseparator[0]){
         STRCAT(smokeviewtempdir,dirseparator);
       }
       PRINTF("%s",_("Scratch directory:"));
@@ -1163,6 +1154,7 @@ void InitTextureDir(void){
 void InitVars(void){
   int i;
 
+  curdir_writable = Writable(".");
   windrose_circ.ncirc=0;
   Init_Circle(180, &windrose_circ);
 

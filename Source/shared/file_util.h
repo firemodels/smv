@@ -125,7 +125,7 @@ EXTERNCPP int Writable(char *dir);
 int FileExistsOrig(char *filename);
 
 #ifdef WIN32
-#define MKDIR(a) _mkdir(a)
+#define MKDIR(a) CreateDirectory(a,NULL)
 #else
 #define MKDIR(a) mkdir(a,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
 #endif

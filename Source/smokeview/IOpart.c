@@ -630,7 +630,6 @@ wrapup:
   fclose(PART5FILE);
 }
 
-
 /* ------------------ write_part_histogram ------------------------ */
 
 void write_part_histogram(partdata *parti){
