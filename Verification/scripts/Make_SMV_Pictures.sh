@@ -27,6 +27,40 @@ is_file_installed()
   fi
 }
 
+make_helpinfo_files()
+{
+  dir=$1
+
+  cd $dir
+  rm -f *.png
+  rm -f *.help
+
+  rm -f smokeview.version
+  rm -f smokediff.version
+  rm -f smokezip.version
+  rm -f background.version
+  rm -f wind2fds.version
+
+  rm -f smokeview.help
+  rm -f smokediff.help
+  rm -f smokezip.help
+  rm -f background.help
+  rm -f wind2fds.help
+
+  $SMV -help_all    > smokeview.help
+  $SMOKEZIP -help   > smokezip.help
+  $SMOKEDIFF -help  > smokediff.help
+  $BACKGROUND -help > background.help
+  $DEM2FDS -help    > dem2fds.help
+  $WIND2FDS -help   > wind2fds.help
+
+  $SMV -version        > smokeview.version
+  $SMOKEZIP -v         > smokezip.version
+  $SMOKEDIFF -v        > smokediff.version
+  $BACKGROUND -version > background.version
+  $DEM2FDS -version    > background.version
+  $WIND2FDS            > wind2fds.version
+}
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -132,6 +166,7 @@ export BASEDIR=`pwd`
 
 export FDSUG=$SVNROOT/fds/Manuals/FDS_User_Guide
 export SMVUG=$SVNROOT/smv/Manuals/SMV_User_Guide
+export SMVUTILG=$SVNROOT/smv/Manuals/SMV_Utilities_Guide
 export SMVVG=$SVNROOT/smv/Manuals/SMV_Verification_Guide
 SUMMARY=$SVNROOT/smv/Manuals/SMV_Summary
 
@@ -142,38 +177,11 @@ is_file_installed $BACKGROUND
 is_file_installed $DEM2FDS
 is_file_installed $WIND2FDS
 
-cd $SMVUG/SCRIPT_FIGURES
-rm -f *.png
-rm -f *.help
-
-rm -f smokeview.version
-rm -f smokediff.version
-rm -f smokezip.version
-rm -f background.version
-rm -f wind2fds.version
-
-rm -f smokeview.help
-rm -f smokediff.help
-rm -f smokezip.help
-rm -f background.help
-rm -f wind2fds.help
+make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+make_helpinfo_files $SMVUTILG/SCRIPT_FIGURES
 
 rm -f $SUMMARY/images/*.png
 source ~/.bashrc_fds
-
-$SMV -help_all    > smokeview.help
-$SMOKEZIP -help   > smokezip.help
-$SMOKEDIFF -help  > smokediff.help
-$BACKGROUND -help > background.help
-$DEM2FDS -help    > dem2fds.help
-$WIND2FDS -help   > wind2fds.help
-
-$SMV -version        > smokeview.version
-$SMOKEZIP -v         > smokezip.version
-$SMOKEDIFF -v        > smokediff.version
-$BACKGROUND -version > background.version
-$DEM2FDS -version    > background.version
-$WIND2FDS            > wind2fds.version
 
 cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
