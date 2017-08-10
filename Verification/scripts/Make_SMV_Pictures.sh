@@ -27,6 +27,40 @@ is_file_installed()
   fi
 }
 
+make_helpinfo_files()
+{
+  dir=$1
+
+  cd $dir
+  rm -f *.png
+  rm -f *.help
+
+  rm -f smokeview.version
+  rm -f smokediff.version
+  rm -f smokezip.version
+  rm -f background.version
+  rm -f wind2fds.version
+
+  rm -f smokeview.help
+  rm -f smokediff.help
+  rm -f smokezip.help
+  rm -f background.help
+  rm -f wind2fds.help
+
+  $SMV -help_all    > smokeview.help
+  $SMOKEZIP -help   > smokezip.help
+  $SMOKEDIFF -help  > smokediff.help
+  $BACKGROUND -help > background.help
+  $DEM2FDS -help    > dem2fds.help
+  $WIND2FDS -help   > wind2fds.help
+
+  $SMV -version        > smokeview.version
+  $SMOKEZIP -v         > smokezip.version
+  $SMOKEDIFF -v        > smokediff.version
+  $BACKGROUND -version > background.version
+  $DEM2FDS -version    > background.version
+  $WIND2FDS            > wind2fds.version
+}
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -102,12 +136,14 @@ if [ "$use_installed" == "1" ] ; then
   export SMOKEDIFF=smokediff
   export WIND2FDS=wind2fds
   export BACKGROUND=background
+  export DEM2FDS=background
 else
   export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
   export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background
+  export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds
 fi
 
 export SMVBINDIR="-bindir $SVNROOT/smv/for_bundle"
@@ -116,10 +152,11 @@ export STARTX=$SVNROOT/fds/Utilities/Scripts/startXserver.sh
 export STOPX=$SVNROOT/fds/Utilities/Scripts/stopXserver.sh
 
 echo Generating smokeview images using:
+echo background: $BACKGROUND
+echo    dem2fds: $DEM2FDS
+echo smokediff : $SMOKEDIFF
 echo smokeview : $SMV $SMVBINDIR
 echo smokezip  : $SMOKEZIP
-echo smokediff : $SMOKEDIFF
-echo background: $BACKGROUND
 echo
 
 RUNSMV=$SVNROOT/fds/Utilities/Scripts/runsmv.sh
@@ -129,6 +166,7 @@ export BASEDIR=`pwd`
 
 export FDSUG=$SVNROOT/fds/Manuals/FDS_User_Guide
 export SMVUG=$SVNROOT/smv/Manuals/SMV_User_Guide
+export SMVUTILG=$SVNROOT/smv/Manuals/SMV_Utilities_Guide
 export SMVVG=$SVNROOT/smv/Manuals/SMV_Verification_Guide
 SUMMARY=$SVNROOT/smv/Manuals/SMV_Summary
 
@@ -136,38 +174,14 @@ is_file_installed $SMV
 is_file_installed $SMOKEZIP
 is_file_installed $SMOKEDIFF
 is_file_installed $BACKGROUND
+is_file_installed $DEM2FDS
 is_file_installed $WIND2FDS
 
-cd $SMVUG/SCRIPT_FIGURES
-rm -f *.png
-rm -f *.help
-
-rm -f smokeview.version
-rm -f smokediff.version
-rm -f smokezip.version
-rm -f background.version
-rm -f wind2fds.version
-
-rm -f smokeview.help
-rm -f smokediff.help
-rm -f smokezip.help
-rm -f background.help
-rm -f wind2fds.help
+make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+make_helpinfo_files $SMVUTILG/SCRIPT_FIGURES
 
 rm -f $SUMMARY/images/*.png
 source ~/.bashrc_fds
-
-$SMV -help_all > smokeview.help
-$SMOKEZIP -help > smokezip.help
-$SMOKEDIFF -help > smokediff.help
-$BACKGROUND -help > background.help
-$WIND2FDS -help > wind2fds.help
-
-$SMV -version > smokeview.version
-$SMOKEZIP -v > smokezip.version
-$SMOKEDIFF -v > smokediff.version
-$BACKGROUND -version > background.version
-$WIND2FDS  > wind2fds.version
 
 cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
@@ -240,3 +254,6 @@ cd $SVNROOT/smv/Verification/Visualization
 
 cp $SMVUG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
 cp $SMVVG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
+
+# copy files to utilities script directory for now
+cp $SMVUG/SCRIPT_FIGURES/*.png $SMVUTILG/SCRIPT_FIGURES/.

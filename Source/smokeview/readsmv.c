@@ -3512,7 +3512,7 @@ int ReadSMV(char *file, char *file2){
 
       stream2->fileinfo = File2Buffer(file2);
       if(stream2->fileinfo!=NULL){
-        MergeFileBuffers(stream->fileinfo, stream2->fileinfo);
+        AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
       }
       FreeFileBuffer(stream2->fileinfo);
     }
@@ -10941,7 +10941,7 @@ int ReadINI2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWVZONE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visVZone);
+      sscanf(buffer, "%i %i", &visVZone, &show_zonelower);
       continue;
     }
     if(Match(buffer, "SHOWZONEFIRE") == 1){
@@ -13304,7 +13304,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "SHOWSZONE\n");
   fprintf(fileout, " %i\n", visSZone);
   fprintf(fileout, "SHOWVZONE\n");
-  fprintf(fileout, " %i\n", visVZone);
+  fprintf(fileout, " %i %i\n", visVZone, show_zonelower);
   fprintf(fileout, "SHOWZONEFIRE\n");
   fprintf(fileout, " %i\n", viszonefire);
 

@@ -436,41 +436,42 @@ void OutputFileBuffer(filedata *fileinfo){
   }
 }
 
-/* ------------------ MergeFileBuffers ------------------------ */
+/* ------------------ AppendFileBuffer ------------------------ */
 
-int MergeFileBuffers(filedata *fileto, filedata *filefrom){
-  char *new_buffer, *new_buffer2, **new_lines;
+int AppendFileBuffer(filedata *file1, filedata *file2){
+  char *new_buffer, *new_buffer1, *new_buffer2, **new_lines;
   int new_filesize, new_nlines, i;
 
-  new_filesize = filefrom->filesize+fileto->filesize;
+  new_filesize = file1->filesize + file2->filesize;
   if(NewMemory((void **)&new_buffer, new_filesize)==0){
     readfile_option = READFILE;
     return -1;
   }
-  new_buffer2 = new_buffer+fileto->filesize;
-  memcpy(new_buffer, fileto->buffer, fileto->filesize);
-  memcpy(new_buffer2, filefrom->buffer, filefrom->filesize);
+  new_buffer1 = new_buffer;
+  new_buffer2 = new_buffer + file1->filesize;
+  memcpy(new_buffer1, file1->buffer, file1->filesize);
+  memcpy(new_buffer2, file2->buffer, file2->filesize);
 
-  new_nlines = filefrom->nlines+fileto->nlines;
+  new_nlines = file1->nlines+file2->nlines;
   if(NewMemory((void **)&new_lines, new_nlines*sizeof(char *))==0){
     FREEMEMORY(new_buffer);
     readfile_option = READFILE;
     return  -1;
   }
 
-  for(i = 0;i<fileto->nlines;i++){
-    new_lines[i] = new_buffer+(fileto->lines[i]-fileto->buffer);
+  for(i = 0;i<file1->nlines;i++){
+    new_lines[i]               = file1->lines[i] + (new_buffer  - file1->buffer);
   }
-  for(i = 0;i<filefrom->nlines;i++){
-    new_lines[i+fileto->nlines] = new_buffer2+(filefrom->lines[i]-filefrom->buffer);
+  for(i = 0;i<file2->nlines;i++){
+    new_lines[i+file1->nlines] = file2->lines[i] + (new_buffer2 - file2->buffer);
   }
 
-  FREEMEMORY(fileto->buffer);
-  FREEMEMORY(fileto->lines);
-  fileto->buffer = new_buffer;
-  fileto->lines = new_lines;
-  fileto->filesize = new_filesize;
-  fileto->nlines = new_nlines;
+  FREEMEMORY(file1->buffer);
+  FREEMEMORY(file1->lines);
+  file1->buffer = new_buffer;
+  file1->lines = new_lines;
+  file1->filesize = new_filesize;
+  file1->nlines = new_nlines;
   return 0;
 }
 
@@ -543,7 +544,19 @@ filedata *File2Buffer(char *filename){
 }
 #endif
 
+/* ------------------ FileExistsOrig ------------------------ */
+
+int FileExistsOrig(char *filename){
+  if(ACCESS(filename, F_OK) == -1){
+    return NO;
+  }
+  else{
+    return YES;
+  }
+}
+
   /* ------------------ FileExists ------------------------ */
+
 #ifdef pp_FILELIST
 int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
 #else

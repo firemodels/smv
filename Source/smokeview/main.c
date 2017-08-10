@@ -121,9 +121,6 @@ void Usage(char *prog,int option){
 #ifdef pp_HASH
     strcat(label, ", pp_HASH");
 #endif
-#ifdef pp_HAZARD
-    strcat(label, ", pp_HAZARD");
-#endif
 #ifdef pp_INTEL
     strcat(label, ", pp_INTEL");
 #endif

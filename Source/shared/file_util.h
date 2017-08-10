@@ -12,6 +12,9 @@
 #ifdef pp_LINUX
 #include <unistd.h>
 #endif
+#ifndef WIN32
+#include <sys/stat.h>
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
@@ -86,7 +89,7 @@ else{\
 #endif
 
 #ifdef pp_READBUFFER
-EXTERNCPP int MergeFileBuffers(filedata *fileto, filedata *filefrom);
+EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
 EXTERNCPP int FeofBuffer(filedata *fileinfo);
 EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
 EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
@@ -118,6 +121,13 @@ EXTERNCPP int Writable(char *dir);
 #else
 #define FILE_EXISTS(a)         FileExists(a)
 #define FILE_EXISTS_CASEDIR(a) FileExists(a)
+#endif
+int FileExistsOrig(char *filename);
+
+#ifdef WIN32
+#define MKDIR(a) CreateDirectory(a,NULL)
+#else
+#define MKDIR(a) mkdir(a,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
 #endif
 
 #ifdef WIN32

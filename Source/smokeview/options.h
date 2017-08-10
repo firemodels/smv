@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_ZONETL
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
@@ -24,10 +25,9 @@
 
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU
-#define pp_CULL         // pp_GPU dircective must also be set
-#define pp_GPUTHROTTLE  // pp_GPU dircective must also be set
+#define pp_CULL         // pp_GPU directive must also be set
+#define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
-#define pp_HAZARD
 
 //#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_READBUFFER   // read .smv file from a memory buffer
