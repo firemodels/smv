@@ -28,12 +28,16 @@ if "%whichguides%" == "smvug" (
 
   cd %svn_root%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES
   pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/* .
+  cd %svn_root%\smv\Manuals\SMV_Utilities_Guide\SCRIPT_FIGURES
+  pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "smvvg" (
   Title Download smokeview verification guide images
 
   cd %svn_root%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+  pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Verification_Guide/SCRIPT_FIGURES/* .
+  cd %svn_root%\smv\Manuals\SMV_Utilities_Guide\SCRIPT_FIGURES
   pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Verification_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
