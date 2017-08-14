@@ -244,17 +244,20 @@ intended purpose.
 \chapter{Introduction}
 
 Several utilities are included with FDS and Smokeview allowing one
-to more easily analyze simulated data.  For example, Smokezip is used to compress FDS data files resulting in smaller file sizes and quicker Smokeview load times.  Smokediff is used
-to compare two FDS cases showing the affect of small changes in one or both of the two FDS input files.  Smokediff take as input two .smv files say case1.smv and case2.smv.    Smokediff then generates another .smv file that references data files which which are the
-difference of case1 and case2.  These differenced files can then be viewed in Smokeview.  Background is used to take advantage of multiple
+to more easily analyze simulated data.  
+For example, Smokezip is used to compress FDS data files resulting in smaller file sizes and quicker Smokeview load times.  
+Smokediff is used to compare two FDS cases with essentially the same geometry showing the affect of small changes in one or both of these cases.  
+Smokediff take as input two .smv files.  It then generates a differenced slice and boundary file for each slice and boundary file shared by these two cases.
+These differenced files can then be viewed in Smokeview.  
+Background is used to take advantage of multiple
 core computers by running multiple FDS cases simultaneously.  This is most useful when running
-a long list of FDS cases on a computer that does not have a queuing system.. Background runs a case whenever the CPU load is below a specified level.
-Dem2fds is used to generate FDS input files for cases  containing terrain.  
-Elevation data obtained from a USGS website is converted to blockages.  
+a long list of FDS cases on a computer that does not have a queuing system. Background runs a case whenever the CPU load is below a specified level.
+Dem2fds is used to generate FDS input files for cases  containing terrain.
+Elevation data obtained from a USGS website is converted to blockages.
 
-Several scripts are used to verify various components of FDS, Smokeview and CFAST.
-Bourne shell versions of these scripts run on Linux and OSX systems and Dos batch file versions run on the PC.  These scripts obtain the latest version of the 
-software from a Git repository, build the software, run test cases and perform various types of checks.  
+Several scripts, firebot, smokebot and cfastbot, are used to verify various components of FDS, Smokeview and CFAST.
+Bourne shell versions of these scripts run on Linux and OSX systems and DOS batch file versions run on the PC.  These scripts obtain the latest version of the
+software from a Git repository, build the software, run test cases and perform various types of checks.
 These scripts are valuable at catching errors early in the development process.
 
 %------------------------ background ------------------------------------------------
