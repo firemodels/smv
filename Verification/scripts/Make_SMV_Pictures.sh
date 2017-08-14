@@ -46,13 +46,19 @@ make_helpinfo_files()
   rm -f smokezip.help
   rm -f background.help
   rm -f wind2fds.help
+  rm -f cfastbot.help
+  rm -f firebot.help
+  rm -f smokebot.help
 
-  $SMV -help_all    > smokeview.help
-  $SMOKEZIP -help   > smokezip.help
-  $SMOKEDIFF -help  > smokediff.help
-  $BACKGROUND -help > background.help
-  $DEM2FDS -help    > dem2fds.help
-  $WIND2FDS -help   > wind2fds.help
+  $SMV        -help_all > smokeview.help
+  $SMOKEZIP   -help     > smokezip.help
+  $SMOKEDIFF  -help     > smokediff.help
+  $BACKGROUND -help     > background.help
+  $DEM2FDS    -help     > dem2fds.help
+  $WIND2FDS   -help     > wind2fds.help
+  $CFASTBOT   -H        > cfastbot.help
+  $FIREBOT    -H        > firebot.help
+  $SMOKEBOT   -H        > smokebot.help
 
   $SMV -version        > smokeview.version
   $SMOKEZIP -v         > smokezip.version
@@ -145,6 +151,9 @@ else
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background
   export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds
 fi
+SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
+FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
+CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
 
 export SMVBINDIR="-bindir $SVNROOT/smv/for_bundle"
 
