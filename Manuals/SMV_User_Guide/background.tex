@@ -1,19 +1,19 @@
 \utilchap{background - A utility for running multiple programs simultaneously}
 
-This \textchap\ explains the use of the utility {\em background} ({\em background.exe}\ on the PC, what it is and
-how it might be useful to FDS users.  It is included with the Windows and Linux FDS/Smokeview
-bundles.  A Windows user can use the {\em Start}\ command to run a program in the
-background.  This is fine for a few programs but a computer can become
-easily overloaded if many jobs are run using this method. 
-Similarly, a Linux/Mac user can run a program appending an {\tt \&}\ on the
-command line to put a job in the background.  As on the PC, if many jobs are run, the system can become overloaded.  The program {\em background}\ throttles job submissions so that a job won't start until the CPU load is below a 
-specified level.  This enables one to submit a long list of FDS cases without saturating the CPU,
-since only a small number  will be
+This \textchap\ explains how to use the utility {\em background} ({\em background.exe}\ on the PC) what it is and
+how it might be useful to FDS users.  It is included with the FDS/Smokeview
+bundle.  A Windows user can use the {\em Start}\ command to run multiple programs at the same time.  
+This is fine for a few programs but a computer can easily become
+overloaded if many jobs are run using this method.  
+Similarly, a Linux/Mac user can run a program appending an {\tt \&}\ character to the end of a 
+command line to put a job in the background.  As on the PC, if many jobs are run, the system can become overloaded.  
+The program {\em background}\ throttles job submissions so that a job won't start until the CPU load is below a
+specified level.  A job submission can also be delayed until the memory usage is below a specified level.  
+This enables one to submit a long list of FDS cases without saturating the CPU,
+since only a small number  of jobs will be
 running at any one time.
 
-MPI is a message passing software library used to enable implement parallel processing
-at the program i.e., FORTRAN source code level.  This enables one to make use of
-multiple CPUs thereby speeding up a calculation. {\em background.exe}\ allows parallel
+The utility {\em background.exe}\ allows parallel
 processing to occur at the program level.  It is often the case that one is doing a
 parameter study or running a long list of cases to verify the use of FDS. Typically you
 would create a windows batch file (.bat) containing a list of commands like
@@ -26,7 +26,6 @@ fds casename_n.fds
 
 On a Windows system, each entry in the above list will not start until the previous entry
 has completed, even if the computer has multiple cores or CPUs.
-
 Unix/Linux based systems have the capability of putting computer jobs in the background,
 meaning that when a job is run, control returns immediately allowing the next job in the
 list to start running.  With computers that have multiple cores or CPUS, one can then run
@@ -43,17 +42,17 @@ less than 90 \%. If the CPU usage happens to be more than 90 \%, the program {\e
 waits to submit the fds command until the usage drops below 90 \% .  Once this occurs, it runs
 the command, {\tt fds casename.fds}.
 
-The purpose of the delay before submitting a job is to give windows a
-chance to update the usage level from the
-previous invocations.  This feature is a fail safe to ensure that a
+The purpose of the delay before submitting a job is to give Windows a
+chance to update the usage level from 
+previous invocations.  This ensures that a
 large number of jobs are not
 submitted at once.
 
-The background utility is designed to use in a windows batch file.
+The background utility is designed to be used in a Windows batch file.
 For example, suppose you have
-a list of 5 FDS jobs you want to run in a windows batch file. On a
-windows computer you would have \
-a batch file with the contents something like
+a list of five FDS jobs you want to run in a Windows batch file. On a
+Windows computer you would have \
+a batch file containing something like
 
 \begin{lstlisting}
 fds case1.fds
@@ -75,7 +74,7 @@ background -d 2 -u 75 fds case5.fds
 \end{lstlisting}
 
 Usage information for {\tt background}\ may be obtained
-by typing {\tt background -h}\ which gives output listed Figure \ref{fig:background}.
+by typing {\tt background -h}\ which gives output listed in Figure \ref{fig:background}.
 
 \begin{figure}[bph]
 {\small
