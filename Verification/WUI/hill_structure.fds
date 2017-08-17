@@ -1,5 +1,6 @@
 &HEAD CHID='hill_structure', TITLE='Simple hill case with boundary fuel' /
-&MISC U0=3,TERRAIN_CASE=.TRUE./ 
+&MISC TERRAIN_CASE=.TRUE./ 
+&WIND U0=3 /
 &TIME T_END=60 / 
 
 - 1 Computational grid
