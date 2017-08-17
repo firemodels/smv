@@ -16,7 +16,8 @@ REM  5) repeaset setp 3.  Value noted should remain the same.
 
 &TIME T_END=10.0 / 
 
-&MISC  LAPSE_RATE=10.0, TMPA=10. /
+&MISC  TMPA=10. /
+&WIND  LAPSE_RATE=10.0 /
 
 &RADI RADIATION=.FALSE./
 
