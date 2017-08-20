@@ -219,7 +219,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
 
   if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
-  glui_motion_setup(mainwindow_id);
+  gluiMotionSetup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
   glui_shooter_setup(mainwindow_id);
   glui_geometry_setup(mainwindow_id);
@@ -1331,10 +1331,10 @@ void load3dsmoke(const char *smoke_type){
 
 void rendertype(const char *type) {
     if(STRCMP(type, "JPG")==0){
-      update_render_type(JPEG);
+      UpdateRenderType(JPEG);
     }
     else{
-      update_render_type(PNG);
+      UpdateRenderType(PNG);
     }
 }
 
@@ -1344,13 +1344,13 @@ int get_rendertype() {
 
 void set_movietype(const char *type) {
     if(STRCMP(type, "WMV") == 0){
-      update_movie_type(WMV);
+      UpdateMovieType(WMV);
     }
     if(STRCMP(type, "MP4") == 0){
-      update_movie_type(MP4);
+      UpdateMovieType(MP4);
     }
     else{
-      update_movie_type(AVI);
+      UpdateMovieType(AVI);
     }
 }
 
@@ -1522,12 +1522,12 @@ void plot3dprops(int variable_index, int showvector, int vector_length_index,
     for(i=0;i<nmeshes;i++){
       gbi = meshinfo + i;
       if(gbi->plot3dfilenum==-1)continue;
-      update_current_mesh(gbi);
+      UpdateCurrentMesh(gbi);
       updateplotslice(XDIR);
       updateplotslice(YDIR);
       updateplotslice(ZDIR);
     }
-    update_current_mesh(gbsave);
+    UpdateCurrentMesh(gbsave);
   }
 }
 
@@ -2036,8 +2036,8 @@ int getcolorbarflip(int flip) {
 void camera_set_rotation_type(int rotation_typev) {
   rotation_type = rotation_typev;
   camera_current->rotation_type = rotation_typev;
-  rotation_type_CB(rotation_type);
-  update_rotation_type(rotation_type);
+  RotationTypeCB(rotation_type);
+  UpdateRotationType(rotation_type);
   handle_rotation_type(ROTATION_2AXIS);
 }
 
