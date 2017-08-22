@@ -1,0 +1,26 @@
+script:
+  - sudo ln -fs /usr/bin/gfortran-5 /usr/bin/gfortran && gfortran --version
+  - sudo ln -fs /usr/bin/gcc-5 /usr/bin/gcc && gcc --version
+  - sudo ln -fs /usr/bin/g++-5 /usr/bin/g++ && g++ --version
+  - cd Build/smokeview/gnu_linux_64 && ./make_smv_lua.sh
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gfortran-5
+      - freeglut3-dev
+      - libx11-dev
+      - libxmu-dev
+      - gcc-5
+      - g++-5
+      # - gcc-4.8
+env:
+  global:
+    - OMP_NUM_THREADS=4
+    - BUILD_PLATFORM=gnu_linux_64
+  matrix:
+    # - LUA_SCRIPTING=true DEBUG_SUFFIX=_db
+    # - LUA_SCRIPTING= DEBUG_SUFFIX=_db
+    - LUA_SCRIPTING=true DEBUG_SUFFIX=
+    # - LUA_SCRIPTING= DEBUG_SUFFIX=
