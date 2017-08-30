@@ -810,7 +810,8 @@ void InitVolRender(void){
     if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
     meshi = meshinfo + blocknumber;
-    if(slicei->nslicei!=meshi->ibar+1||slicei->nslicej!=meshi->jbar+1||slicei->nslicek!=meshi->kbar+1)continue;
+    if(slicei->full_mesh==NO)continue;
+
     vr = &(meshi->volrenderinfo);
     shortlabel = slicei->label.shortlabel;
     longlabel = slicei->label.longlabel;
