@@ -585,7 +585,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Load data only at render times"), &load_at_rendertimes);
 
     SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
-    SPINNER_fire_opacity_factor->set_float_limits(1.0, 10.0);
+    SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
     SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
