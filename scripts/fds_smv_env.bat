@@ -1,8 +1,8 @@
 @echo off
 
 :: ---- version: official FDS and smokeview ----
-set fds_version=6.5.3
-set smv_version=6.4.4
+set fds_version=6.5.3test
+set smv_version=6.5.4test
 
 :: ---- revision: test FDS and smokeview ----
 set smv_revision=unknown
@@ -15,7 +15,7 @@ if exist %userprofile%\fds_revision.txt (
 )
 
 :: ---- log entry date ----
-set smvlogdate="11-Apr-2017"
+set smvlogdate="5-Jul-2017"
 
 :: ---- repo locations ----
 
@@ -28,6 +28,7 @@ set svn_drive=c:
 set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u2
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
+set openmpi_version=2.1.1
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
@@ -36,7 +37,7 @@ set smokebotrepo=/home/smokebot/FireModels_central
 :: ---- hostnames ----
 
 ::*** linux
-set linux_hostname=blaze.nist.gov
+set linux_hostname=burn.el.nist.gov
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 

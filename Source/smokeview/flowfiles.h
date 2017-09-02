@@ -1162,6 +1162,7 @@ typedef struct _slicedata {
   float *qslicedata, *qsliceframe, *times, *qslice;
   unsigned char *qslicedata_compressed;
   unsigned char *slicecomplevel;
+  unsigned char full_mesh;
   contour *line_contours;
   int nline_contours;
   compdata *compindex;

@@ -52,7 +52,9 @@ function install_smv(args){
 <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">Update</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button>
 </td></tr>
-<tr><th>Revision</th><td align=center><button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button><button onclick="run_script('\\smv\\scripts\\SHOW_bundle_revision.bat')">Show</button></td></tr>
+<tr><th>Revision</th><td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td></tr>
 <tr><th align=center>Release<br>notes</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>
@@ -79,6 +81,10 @@ function install_smv(args){
 <td align=center><button onclick="build_libs('linux')">Build</button></td>
 <td align=center><button onclick="build_libs('osx')">Build</button></td>
 </tr>
+
+<tr></tr>
+<tr></tr>
+<tr></tr>
 
 <tr>
 <th>background</th>

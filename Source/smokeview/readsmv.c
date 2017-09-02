@@ -8232,7 +8232,12 @@ typedef struct {
 
         meshi = meshinfo + blocknumber;
         sd->mesh_type=meshi->mesh_type;
+        sd->full_mesh = NO;
+        if(sd->is2 - sd->is1 == meshi->ibar &&
+           sd->js2 - sd->js1 == meshi->jbar &&
+           sd->ks2 - sd->ks1 == meshi->kbar)sd->full_mesh = YES;
       }
+
       if(IsSliceDup(sd,nn_slice)==1){
         FREEMEMORY(sd->reg_file);
         FREEMEMORY(sd->comp_file);

@@ -63,7 +63,7 @@
       value = MIX(dz, val1, val0);\
     }\
     else{\
-      vv = data+IJKNODE(i+1, j+1, k+1);\
+      vv = data+IJKCELL(i, j, k);\
       value = *vv;\
     }
 
@@ -365,15 +365,17 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   nx = smesh->ibar;
   ny = smesh->jbar;
   nz = smesh->kbar;
-  glActiveTexture(GL_TEXTURE3);
-  if(smesh->blockage_texture_id==0)glGenTextures(1, &smesh->blockage_texture_id);
-  glBindTexture(GL_TEXTURE_3D, smesh->blockage_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
+  if(smesh->f_iblank_cell != NULL){
+    glActiveTexture(GL_TEXTURE3);
+    if(smesh->blockage_texture_id == 0)glGenTextures(1, &smesh->blockage_texture_id);
+    glBindTexture(GL_TEXTURE_3D, smesh->blockage_texture_id);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
+  }
 #endif
   glActiveTexture(GL_TEXTURE0);
   FFLUSH();
@@ -810,7 +812,8 @@ void InitVolRender(void){
     if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
     meshi = meshinfo + blocknumber;
-    if(slicei->nslicei!=meshi->ibar+1||slicei->nslicej!=meshi->jbar+1||slicei->nslicek!=meshi->kbar+1)continue;
+    if(slicei->full_mesh==NO)continue;
+
     vr = &(meshi->volrenderinfo);
     shortlabel = slicei->label.shortlabel;
     longlabel = slicei->label.longlabel;
@@ -1970,7 +1973,9 @@ void UpdateVolsmokeSupertexture(supermeshdata *smesh){
     GPUnframes+=3*ni*nj*nk;
 #endif
 
-    glTexSubImage3D(GL_TEXTURE_3D,0,s_offset[0],s_offset[1],s_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, meshi->f_iblank_cell);
+    if(meshi->f_iblank_cell != NULL){
+      glTexSubImage3D(GL_TEXTURE_3D, 0, s_offset[0], s_offset[1], s_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
+    }
   }
   glActiveTexture(GL_TEXTURE0);
 }
@@ -2908,15 +2913,17 @@ void InitVolsmokeTexture(meshdata *meshi){
   ny = meshi->jbar;
   nz = meshi->kbar;
 
-  glActiveTexture(GL_TEXTURE3);
-  glGenTextures(1, &meshi->blockage_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->blockage_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
+  if(meshi->f_iblank_cell != NULL){
+    glActiveTexture(GL_TEXTURE3);
+    glGenTextures(1, &meshi->blockage_texture_id);
+    glBindTexture(GL_TEXTURE_3D, meshi->blockage_texture_id);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
+  }
 #endif
 
   glActiveTexture(GL_TEXTURE0);
