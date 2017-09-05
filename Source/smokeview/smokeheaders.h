@@ -758,7 +758,7 @@ EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int set
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
-EXTERNCPP int SetupCase(int argc, char **argv);
+EXTERNCPP simdata *SetupCase(char *input_path);
 EXTERNCPP int GetMinPartFrames(int flag);
 EXTERNCPP int Update_Bounds(void);
 
@@ -788,10 +788,11 @@ EXTERNCPP void ReadSmoke3D(int ifile,int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
+EXTERNCPP void InitLang(void);
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);
-EXTERNCPP int ReadSMV(char *file, char *file2);
+EXTERNCPP int ReadSMV(char *file, char *file2, simdata *sim);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP int STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);

@@ -1161,6 +1161,8 @@ SVEXTERN char SVDECL(*fdsprefix,NULL), SVDECL(*fdsprefix2,NULL);
 SVEXTERN char SVDECL(*endian_filename,NULL);
 SVEXTERN char SVDECL(*target_filename,NULL);
 
+SVEXTERN appdata app;
+
 SVEXTERN int SVDECL(update_bounds,0);
 SVEXTERN int SVDECL(*sorted_surfidlist,NULL),SVDECL(*inv_sorted_surfidlist,NULL),nsorted_surfidlist;
 SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);

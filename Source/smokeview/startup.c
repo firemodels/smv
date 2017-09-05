@@ -61,35 +61,6 @@ void Init(void){
 
   xyzbox = MAX(MAX(xbar,ybar),zbar);
 
-  {
-    char name_external[32];
-
-    strcpy(name_external,"external");
-    InitCamera(camera_external,name_external);
-    camera_external->view_id=EXTERNAL_LIST_ID;
-  }
-  if(camera_ini!=NULL&&camera_ini->defined==1){
-    CopyCamera(camera_current,camera_ini);
-  }
-  else{
-    camera_external->zoom=zoom;
-    CopyCamera(camera_current,camera_external);
-  }
-  strcpy(camera_label,camera_current->name);
-  UpdateCameraLabel();
-  {
-    char name_internal[32];
-    strcpy(name_internal,"internal");
-    InitCamera(camera_internal,name_internal);
-  }
-  camera_internal->eye[0]=0.5*xbar;
-  camera_internal->eye[1]=0.5*ybar;
-  camera_internal->eye[2]=0.5*zbar;
-  camera_internal->view_id=0;
-  CopyCamera(camera_save,camera_current);
-  CopyCamera(camera_last,camera_current);
-
-  InitCameraList();
   AddDefaultViews();
   CopyCamera(camera_external_save,camera_external);
   UpdateGluiViewList();
@@ -252,12 +223,11 @@ void ReadBoundINI(void){
   return;
 }
 
-/* ------------------ SetupCase ------------------------ */
-
-int SetupCase(int argc, char **argv){
-  int return_code;
+/* ----------------------------- ReadCaseData ------------------------------- */
+// Read from the smv file (at input_path) and load the data into sim.
+int ReadCaseData(char *input_path, simdata *sim) {
   char *input_file;
-
+  int return_code;
   return_code=-1;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
@@ -271,27 +241,34 @@ int SetupCase(int argc, char **argv){
     else{
       input_file=smv_filename;
     }
-    return_code=ReadSMV(input_file,iso_filename);
+    return_code=ReadSMV(input_path,iso_filename, sim);
     if(return_code==0){
       show_glui_trainer();
       show_glui_alert();
     }
   }
   else{
-    input_file=smv_filename;
-    return_code=ReadSMV(input_file,iso_filename);
+    NEWMEMORY(sim->smv_filename, sizeof(char)*strlen(input_path)+1);
+    STRCPY(sim->smv_filename, input_path);
+    FREEMEMORY(sim->smv_filename);
+    input_file=input_path;
+    // The sim is passed to ReadSMV so that the read data can be placed inside.
+    return_code=ReadSMV(input_file,iso_filename, sim);
   }
   switch(return_code){
     case 1:
       fprintf(stderr,"*** Error: Smokeview file, %s, not found\n",input_file);
+      FREEMEMORY(sim);
       return 1;
     case 2:
       fprintf(stderr,"*** Error: problem reading Smokeview file, %s\n",input_file);
+      FREEMEMORY(sim);
       return 2;
     case 0:
       ReadSMVDynamic(input_file);
       break;
     case 3:
+      FREEMEMORY(sim);
       return 3;
       break;
     default:
@@ -299,18 +276,42 @@ int SetupCase(int argc, char **argv){
   }
 
   /* initialize units */
+  fprintf(stderr,"%s:%d\n", __FILE__, __LINE__);
 
-  InitUnits();
+  // Now that we've read in the .ini file we can set the unit definitions. This
+  // function selects the unitclasses defined in the .ini file if there are any
+  // otherwise uses the defaults.
+  // TODO: it seems we haven't read the .ini file yet.
   InitUnitDefs();
+  // Set the visibility of each unitclass. If the units are not present in the
+  // model the visibility is set to zero and the units are not used.
   SetUnitVis();
 
   CheckMemory;
   ReadINI(NULL);
   ReadBoundINI();
-  if(use_graphics==0)return 0;
-#ifdef pp_LANG
-  InitLang();
-#endif
+  return return_code;
+}
+
+/* ----------------------------- ReadCaseData ------------------------------- */
+// Initialise the GUI data. This does not initilise and case specific data. That
+// is done via SetupGUI.
+int InitGUI() {
+
+  // Create a camera for use during the InitGUI process. Many of the callbacks
+  // assume that a camera exists, so we need one at least as a dummy.
+
+  // Initialise a camera on the stack (this will be copied into the current
+  // camera).
+  cameradata default_camera = {0};
+  InitCamera(&default_camera, "default_camera");
+
+  // Make sure we have memory allocated for the current camera.
+  FREEMEMORY(camera_current);
+  NewMemory((void **)&camera_current,sizeof(cameradata));
+
+  // Copy the default camera into the current camera.
+  CopyCamera(camera_current, &default_camera);
 
   if(ntourinfo==0)setup_tour();
   glui_colorbar_setup(mainwindow_id);
@@ -333,7 +334,7 @@ int SetupCase(int argc, char **argv){
 
   glutSetWindow(mainwindow_id);
   glutShowWindow();
-  glutSetWindowTitle(fdsprefix);
+
   Init();
   glui_trainer_setup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
@@ -343,10 +344,43 @@ int SetupCase(int argc, char **argv){
     show_glui_trainer();
     show_glui_alert();
   }
-  // intialise info header
-  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
-                       chidfilebase);
   return 0;
+}
+
+/* ------------------------------- SetupGUI --------------------------------- */
+// Load the relevant case data from sim into the GUI.
+int SetupGUI(simdata *sim) {
+
+  // if(UpdateLIGHTS==1)UpdateLights(light_position0,light_position1);
+
+  glutSetWindowTitle(sim->chid);
+    // intialise info header
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
+                       sim->chid);
+  return 0;
+}
+
+/* ------------------ SetupCase ------------------------ */
+// Returns a pointer to a heap allocated struct owning all the data for the
+// simulation. Simulation data should only be accessed via this struct.
+simdata *SetupCase(char *input_path){
+  int return_code;
+
+  // Allocate memory for a simdata struct.
+  simdata *sim;
+  NewMemory((void **)&sim, sizeof(simdata));
+  // TODO: set the entire struct to NULL
+  sim->chid = NULL;
+
+  return_code = ReadCaseData(input_path, sim);
+  if(use_graphics==0)return sim;
+
+  if(return_code!=0) {
+    FREEMEMORY(sim);
+    return NULL;
+  } else {
+    return sim;
+  }
 }
 
 /* ------------------ SetupGlut ------------------------ */
@@ -366,7 +400,6 @@ void SetupGlut(int argc, char **argv){
   STRCAT(smokeviewini,"smokeview.ini");
 
   startup_pass=2;
-
   smoketempdir=getenv("SVTEMPDIR");
   if(smoketempdir==NULL)smoketempdir=getenv("svtempdir");
   if(smoketempdir == NULL){

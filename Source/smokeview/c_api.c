@@ -156,6 +156,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   if(input_filename_ext==NULL){
       printf("ERROR: input_filename_ext is NULL\n");
   }
+  simdata *sim;
   fflush(stdout);
   printf("loading smv: %s\n", input_filename);
   printf("ext: %s\n", input_filename_ext);
@@ -178,7 +179,8 @@ int loadsmv(char *input_filename, char *input_filename_ext){
     else{
       input_file=smv_filename;
     }
-    return_code=ReadSMV(input_file,iso_filename);
+
+    return_code=ReadSMV(input_file,iso_filename, sim);
     if(return_code==0){
       show_glui_trainer();
       show_glui_alert();
@@ -186,7 +188,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   }
   else{
     input_file=smv_filename;
-    return_code=ReadSMV(input_file,iso_filename);
+    return_code=ReadSMV(input_file,iso_filename, sim);
   }
   switch(return_code){
     case 1:
@@ -527,8 +529,8 @@ char* form_filename(int view_mode, char *renderfile_name, char *renderfile_dir,
 
         snprintf(renderfile_name, 1024,
                   "%s%s%s",
-                  chidfilebase, view_suffix, renderfile_ext);
-        printf("chidfilebase is: %s\n", chidfilebase);
+                  app.simulation->chid, view_suffix, renderfile_ext);
+        printf("app.simulation->chid is: %s\n", app.simulation->chid);
         printf("fdsprefix is: %s\n", fdsprefix);
         printf("directory is: %s\n", renderfile_dir);
         printf("filename is: %s\n", renderfile_name);
