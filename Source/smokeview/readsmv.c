@@ -8207,7 +8207,7 @@ typedef struct {
       sd->compindex=NULL;
       sd->slicecomplevel=NULL;
       sd->qslicedata_compressed=NULL;
-      if(i1!=i2&&j1!=j2&&k1!=k2){
+      if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
         sd->volslice=1;
       }
       else{
