@@ -4688,8 +4688,7 @@ int ReadSMV(char *file, char *file2, simdata *sim){
 
       csvi->loaded=0;
       csvi->display=0;
-      NewMemory((void **)&csvi->key,strlen(type_ptr)+1);
-      strcpy(csvi->key,type_ptr);
+
       if(strcmp(type_ptr,"hrr")==0){
         if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
           csvi->type=CSVTYPE_HRR;
