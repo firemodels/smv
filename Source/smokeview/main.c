@@ -761,20 +761,19 @@ int main(int argc, char **argv){
   // to free the memory it uses. SetupCase can currently be run multiple times
   // (pending memory leaks).
   simdata *sim1 = SetupCase(smv_filename);
-  simdata *sim2 = SetupCase(smv_filename);
+  // Free the original case we read in.
   FreeCase(sim1);
-  FreeCase(sim2);
+  // Load a new case (the same case again here)
+  simdata *sim2 = SetupCase(smv_filename);
   // InitGUI is run once to set up the GUI. It should always go before SetupCase
   // but currently cannot due to errors.
   InitGUI();
   // Setup GUI updates the GUI (which was initilialised with InitGUI) with the
   // information of the current case.
-  simdata *sim = SetupCase("room_fire.smv");
-  SetupGUI(sim);
-  // sim = SetupCase(argc,argv_sv);
+  SetupGUI(sim2);
   // This simulation data is then assigned to the current simulation field of
   // the app.
-  AssignCase(sim);
+  AssignCase(sim2);
   // If SetupCase fails it returns NULL. Therefore we will have assigned a NULL
   // case and we can exit with an error.
   if(app.simulation==NULL)exit(1);
