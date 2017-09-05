@@ -63,7 +63,7 @@
       value = MIX(dz, val1, val0);\
     }\
     else{\
-      vv = data+IJKCELL(i, j, k);\
+      vv = data+IJKNODE(i+1, j+1, k+1);\
       value = *vv;\
     }
 
