@@ -1710,7 +1710,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
 
 /* ------------------ GetInpf ------------------------ */
 
-int GetInpf(char *file, char *file2){
+int GetInpf(char *file, char *file2, simdata *sim){
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
   char buffer[255],*bufferptr;
   int len;
@@ -1747,34 +1747,33 @@ int GetInpf(char *file, char *file2){
       if(FILE_EXISTS_CASEDIR(fds_filein)==NO){
         FreeMemory(fds_filein);
       }
-
-      if(chidfilebase==NULL){
+      if(sim->chid==NULL){
         char *chidptr=NULL;
         char buffer_chid[1024];
 
         if(fds_filein!=NULL)chidptr=GetChid(fds_filein,buffer_chid);
         if(chidptr!=NULL){
-          NewMemory((void **)&chidfilebase,(unsigned int)(strlen(chidptr)+1));
-          STRCPY(chidfilebase,chidptr);
+          NewMemory((void **)&sim->chid,(unsigned int)(strlen(chidptr)+1));
+          STRCPY(sim->chid,chidptr);
         }
       }
-      if(chidfilebase!=NULL){
-        NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(hrr_csv_filename,chidfilebase);
+      if(sim->chid!=NULL){
+        NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(sim->chid)+8+1));
+        STRCPY(hrr_csv_filename,sim->chid);
         STRCAT(hrr_csv_filename,"_hrr.csv");
         if(FILE_EXISTS_CASEDIR(hrr_csv_filename)==NO){
           FREEMEMORY(hrr_csv_filename);
         }
 
-        NewMemory((void **)&devc_csv_filename,(unsigned int)(strlen(chidfilebase)+9+1));
-        STRCPY(devc_csv_filename,chidfilebase);
+        NewMemory((void **)&devc_csv_filename,(unsigned int)(strlen(sim->chid)+9+1));
+        STRCPY(devc_csv_filename,sim->chid);
         STRCAT(devc_csv_filename,"_devc.csv");
         if(FILE_EXISTS_CASEDIR(devc_csv_filename)==NO){
           FREEMEMORY(devc_csv_filename);
         }
 
-        NewMemory((void **)&exp_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(exp_csv_filename,chidfilebase);
+        NewMemory((void **)&exp_csv_filename,(unsigned int)(strlen(sim->chid)+8+1));
+        STRCPY(exp_csv_filename,sim->chid);
         STRCAT(exp_csv_filename,"_exp.csv");
         if(FILE_EXISTS_CASEDIR(exp_csv_filename)==NO){
           FREEMEMORY(exp_csv_filename);
@@ -3462,8 +3461,10 @@ void MakeFileLists(void){
 }
 
 /* ------------------ ReadSMV ------------------------ */
-
-int ReadSMV(char *file, char *file2){
+// Takes the simdata as a final argument. By only assigning to variables under
+// the sim, and not to any globals, control is maintained on where the data
+// lies.
+int ReadSMV(char *file, char *file2, simdata *sim){
 
 /* read the .smv file */
   float read_time, processing_time, wrapup_time, getfilelist_time;
@@ -3585,30 +3586,6 @@ int ReadSMV(char *file, char *file2){
   ntickinfo=0;
   ntickinfo_smv=0;
 
-  FREEMEMORY(camera_external);
-  if(file!=NULL)NewMemory((void **)&camera_external,sizeof(cameradata));
-
-  FREEMEMORY(camera_external_save);
-  if(file!=NULL)NewMemory((void **)&camera_external_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_ini);
-  if(file!=NULL){
-    NewMemory((void **)&camera_ini,sizeof(cameradata));
-    camera_ini->defined=0;
-  }
-
-  FREEMEMORY(camera_current);
-  if(file!=NULL)NewMemory((void **)&camera_current,sizeof(cameradata));
-
-  FREEMEMORY(camera_internal);
-  if(file!=NULL)NewMemory((void **)&camera_internal,sizeof(cameradata));
-
-  FREEMEMORY(camera_save);
-  if(file!=NULL)NewMemory((void **)&camera_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_last);
-  if(file!=NULL)NewMemory((void **)&camera_last,sizeof(cameradata));
-
   updatefaces=1;
   nfires=0;
   nrooms=0;
@@ -3668,8 +3645,7 @@ int ReadSMV(char *file, char *file2){
     int return_code;
 
   // get input file name
-
-    return_code=GetInpf(file,file2);
+    return_code=GetInpf(file,file2,sim);
     if(return_code!=0)return return_code;
   }
 
@@ -3792,6 +3768,24 @@ int ReadSMV(char *file, char *file2){
     FREEMEMORY(isoinfo);
   }
   nisoinfo=0;
+
+  // Free plot3dinfo
+  if(nplot3dinfo>0){
+    int n;
+
+    for(i=0;i<nplot3dinfo;i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo + i;
+      for(n=0;n<6;n++){
+        FreeLabels(&plot3di->label[n]);
+      }
+      FREEMEMORY(plot3di->reg_file);
+      FREEMEMORY(plot3di->comp_file);
+    }
+//    FREEMEMORY(plot3dinfo);
+  }
+  nplot3dinfo=0;
 
   FreeCADInfo();
 
@@ -7964,13 +7958,13 @@ typedef struct {
       }
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
-      FREEMEMORY(chidfilebase);
-      NewMemory((void **)&chidfilebase,(unsigned int)(len+1));
-      STRCPY(chidfilebase,bufferptr);
+      FREEMEMORY(sim->chid);
+      NewMemory((void **)&(sim->chid),(unsigned int)(len+1));
+      STRCPY(sim->chid,bufferptr);
 
-      if(chidfilebase!=NULL){
-        NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(hrr_csv_filename,chidfilebase);
+      if(sim->chid!=NULL){
+        NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(sim->chid)+8+1));
+        STRCPY(hrr_csv_filename,sim->chid);
         STRCAT(hrr_csv_filename,"_hrr.csv");
         if(FILE_EXISTS_CASEDIR(hrr_csv_filename)==NO){
           FREEMEMORY(hrr_csv_filename);
@@ -11263,7 +11257,6 @@ int ReadINI2(char *inifile, int localfile){
       TrimBack(buffer);
       bufferptr = TrimFront(buffer);
       strcpy(camera_ini->name, bufferptr);
-      InitCameraList();
       InsertCamera(&camera_list_first, camera_ini, bufferptr);
 
       EnableResetSavedView();

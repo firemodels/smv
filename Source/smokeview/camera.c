@@ -46,10 +46,67 @@ void InitCameraList(void){
   ca->next=NULL;
 }
 
-/* ------------------ AddDefaultViews ------------------------ */
+/* --------------------------- InitDefaultViews ----------------------------- */
+// Initialise some default cameras to add to the camera list.
+void InitDefaultViews() {
+  FREEMEMORY(camera_external);
+  NewMemory((void **)&camera_external,sizeof(cameradata));
 
+  FREEMEMORY(camera_external_save);
+  NewMemory((void **)&camera_external_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_ini);
+  NewMemory((void **)&camera_ini,sizeof(cameradata));
+  camera_ini->defined=0;
+
+  FREEMEMORY(camera_current);
+  NewMemory((void **)&camera_current,sizeof(cameradata));
+
+  FREEMEMORY(camera_internal);
+  NewMemory((void **)&camera_internal,sizeof(cameradata));
+
+  FREEMEMORY(camera_save);
+  NewMemory((void **)&camera_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_last);
+  NewMemory((void **)&camera_last,sizeof(cameradata));
+
+  {
+    char name_external[32];
+
+    strcpy(name_external,"external");
+    InitCamera(camera_external,name_external);
+    camera_external->view_id=EXTERNAL_LIST_ID;
+  }
+  if(camera_ini!=NULL&&camera_ini->defined==1){
+    CopyCamera(camera_current,camera_ini);
+  }
+  else{
+    camera_external->zoom=zoom;
+    CopyCamera(camera_current,camera_external);
+  }
+  strcpy(camera_label,camera_current->name);
+  UpdateCameraLabel();
+  {
+    char name_internal[32];
+    strcpy(name_internal,"internal");
+    InitCamera(camera_internal,name_internal);
+  }
+  camera_internal->eye[0]=0.5*xbar;
+  camera_internal->eye[1]=0.5*ybar;
+  camera_internal->eye[2]=0.5*zbar;
+  camera_internal->view_id=0;
+  CopyCamera(camera_save,camera_current);
+  CopyCamera(camera_last,camera_current);
+
+}
+
+/* ------------------ AddDefaultViews ------------------------ */
+// Add default views to the camera list (i.e. external and internal views).
 void AddDefaultViews(void){
   cameradata *cb, *ca;
+
+  InitDefaultViews();
 
   cb=&camera_list_first;
   ca=cb->next;

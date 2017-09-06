@@ -1434,4 +1434,20 @@ typedef struct {
   texturedata face[6];
 } skyboxdata;
 
+/* --------------------------  simdata ------------------------------------ */
+typedef struct {
+  // all the simulation data goes here
+  // The CHID of the simulation.
+  char *chid;
+  // The filename of the SMV file which is being read.
+  char *smv_filename;
+  // The filename of the input file (i.e. INPF)
+} simdata;
+
+/* --------------------------  appdata ------------------------------------ */
+typedef struct {
+  // All the application data goes here.
+  simdata *simulation;
+} appdata;
+
 #endif

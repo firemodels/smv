@@ -224,7 +224,6 @@ void ParseCommandline(int argc, char **argv){
     exit(1);
   }
   if(strncmp(argv[1], "-ini", 3) == 0){
-    InitCameraList();
     InitOpenGL();
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteINI(GLOBAL_INI, NULL);
@@ -232,7 +231,6 @@ void ParseCommandline(int argc, char **argv){
   }
 
   if(strncmp(argv[1], "-ng_ini", 6) == 0){
-    InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteINI(GLOBAL_INI, NULL);
@@ -678,16 +676,36 @@ void ParseCommandline(int argc, char **argv){
   }
 }
 
+// The application data struct needs to be global.
+appdata app = {0};
+int SetupGUI(simdata *sim);
+int InitGUI();
+
+int FreeCase(simdata *sim) {
+  FREEMEMORY(sim->chid);
+  FREEMEMORY(sim->smv_filename);
+  FREEMEMORY(sim);
+  return 0;
+}
+
+int AssignCase(simdata *sim) {
+  app.simulation = sim;
+  return 0;
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
   char **argv_sv;
   int return_code;
   char *progname;
-
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
+  // InitCameraList simply allocates 2 nodes in a doubly linked list for use as
+  // the camera list. It does not initialise any cameras.
+  InitCameraList();
+  // Initialise various global variables.
   InitVars();
   if(argc==1)DisplayVersionInfo("Smokeview ");
   CopyArgs(&argc, argv, &argv_sv);
@@ -704,7 +722,6 @@ int main(int argc, char **argv){
     PRINTVERSION("smokeview", argv_sv[0]);
     return 1;
   }
-
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
@@ -729,16 +746,48 @@ int main(int argc, char **argv){
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
 
-#ifdef pp_LUA
-  // Initialise the lua interpreter, it does not take control at this point
-  initLua();
+  InitUnits();
+#ifdef pp_LANG
+  InitLang();
 #endif
-  return_code= SetupCase(argc,argv_sv);
-  if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
-  if(return_code!=0)return 1;
+
+  // SetupCase builds all of the information in a struct for the case, allocates
+  // it and returns a pointer to it. All of the information relevant to this
+  // case is owned by this struct. SetupCase allocates a case totally
+  // independent of any existing case. While there are some globals, in future
+  // it should be possible to hold multiple simulations in memory. Once the
+  // simulation is held in memory it is assigned to be display using the
+  // AssignCase function. TODO: this will also require an UnSetupCase function
+  // to free the memory it uses. SetupCase can currently be run multiple times
+  // (pending memory leaks).
+  simdata *sim1 = SetupCase(smv_filename);
+  // Free the original case we read in.
+  FreeCase(sim1);
+  // Load a new case (the same case again here)
+  simdata *sim2 = SetupCase(smv_filename);
+  // InitGUI is run once to set up the GUI. It should always go before SetupCase
+  // but currently cannot due to errors.
+  InitGUI();
+  // Setup GUI updates the GUI (which was initilialised with InitGUI) with the
+  // information of the current case.
+  SetupGUI(sim2);
+  // This simulation data is then assigned to the current simulation field of
+  // the app.
+  AssignCase(sim2);
+  // If SetupCase fails it returns NULL. Therefore we will have assigned a NULL
+  // case and we can exit with an error.
+  if(app.simulation==NULL)exit(1);
+  // Update the bounds, this can probably go under the setup case function.
+  if(update_bounds==1)return_code=Update_Bounds();
   if(convert_ini==1){
     ReadINI(ini_from);
   }
+#ifdef pp_LUA
+  // Initialise the lua interpreter, it does not take control at this point
+  lua_State *L = initLua();
+  lua_initsmvdata(L);
+#endif
+
 
   STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);

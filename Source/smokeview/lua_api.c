@@ -642,6 +642,7 @@ int lua_initsmvdata(lua_State *L) {
 
   lua_get_csvinfo(L);
   // csvinfo is currently on the stack
+
   // add a metatable to it.
   // first create the table
   lua_createtable(L, 0, 1);
@@ -651,7 +652,7 @@ int lua_initsmvdata(lua_State *L) {
   lua_setmetatable(L, -2);
   lua_setglobal(L, "csvinfo");
 
-  lua_pushstring(L, chidfilebase);
+  lua_pushstring(L, app.simulation->chid);
   lua_setglobal(L, "chid");
 
   // lua_get_geomdata(L);
@@ -1018,8 +1019,8 @@ int lua_get_csvinfo(lua_State *L) {
     lua_pushboolean(L, csvinfo[i].display);
     lua_setfield(L, -2, "display");
 
-
     lua_settable(L, -3);
+
   }
   return 1;
 }
@@ -4330,7 +4331,7 @@ void addLuaPaths(lua_State *L) {
   return;
 }
 
-void initLua() {
+lua_State *initLua() {
   L = luaL_newstate();
 
   luaL_openlibs(L);
@@ -4847,6 +4848,7 @@ void initLua() {
   luaL_dostring(L, "require(\"smv\")");
   // luaL_loadfile(L, "smv.lua");
   // int luaL_1dofile (lua_State *L, const char *filename);
+  return L;
 
 }
 
