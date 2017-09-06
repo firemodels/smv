@@ -20,7 +20,7 @@ ifeq ($(shell echo "check_quotes"),"check_quotes")
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
-  COMP_VERSION := $(shell ..\..\..\Utilities\Scripts\comp_version)
+  COMP_VERSION := $(shell ../../../Utilities/Scripts/comp_version.sh)
 endif
 GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
