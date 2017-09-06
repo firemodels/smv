@@ -1355,27 +1355,32 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
+#ifndef pp_COMPVER
+#define pp_COMPVER "unknown"
+#endif
+  PRINTF("Compiler         : %s\n", pp_COMPVER);
+
 #ifdef pp_HASH
 #ifndef _DEBUG
   if(option==HASH_MD5||option==HASH_ALL){
     unsigned char *hash = NULL;
 
     hash = GetHashMD5(progfullpath);
-    if(hash!=NULL)PRINTF("MD5 hash         : %s\n", hash);
+    if(hash!=NULL)PRINTF("Checksum(MD5)    : %s\n", hash);
     FREEMEMORY(hash);
   }
   if(option==HASH_SHA1||option==HASH_ALL){
     unsigned char *hash = NULL;
 
     hash = GetHashSHA1(progfullpath);
-    if(hash!=NULL)PRINTF("SHA1 hash        : %s\n", hash);
+    if(hash!=NULL)PRINTF("Checksum(SHA1)   : %s\n", hash);
     FREEMEMORY(hash);
   }
   if(option==HASH_SHA256||option==HASH_ALL){
     unsigned char *hash = NULL;
 
     hash = GetHashSHA256(progfullpath);
-    if(hash!=NULL)PRINTF("SHA256 hash      : %s\n", hash);
+    if(hash!=NULL)PRINTF("Checksum(SHA256) : %s\n", hash);
     FREEMEMORY(hash);
   }
 #endif

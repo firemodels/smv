@@ -7983,9 +7983,17 @@ updatemenu=0;
     char version_label[256];
 #endif
     char menulabel[1024];
+    char compiler_version_label[256];
 
     sprintf(menulabel,"  Smokeview (64 bit) build: %s",smv_githash);
     glutAddMenuEntry(menulabel,1);
+#ifndef pp_COMPVER
+#define pp_COMPVER "unknown"
+#endif
+    strcpy(compiler_version_label, _("    Compiler version:"));
+    strcat(compiler_version_label, " ");
+    strcat(compiler_version_label, pp_COMPVER);
+    glutAddMenuEntry(compiler_version_label, 1);
     if(fds_version!=NULL){
       sprintf(menulabel, "  FDS version: %s", fds_version);
       glutAddMenuEntry(menulabel, 1);
