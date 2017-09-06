@@ -7995,7 +7995,6 @@ typedef struct {
       float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
       int has_reg, has_comp;
-      int i1=-1, i2=-1, j1=-1, j2=-1, k1=-1, k2=-1;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
       slicedata *sd;
@@ -8207,7 +8206,7 @@ typedef struct {
       sd->compindex=NULL;
       sd->slicecomplevel=NULL;
       sd->qslicedata_compressed=NULL;
-      if(i1!=i2&&j1!=j2&&k1!=k2){
+      if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
         sd->volslice=1;
       }
       else{
