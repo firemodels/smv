@@ -11,15 +11,18 @@ SMV_TESTFLAG =
 SMV_TESTSTRING =
 SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
+COMP_VERSION =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
+  COMP_VERSION := $(shell ..\..\..\Utilities\Scripts\comp_version)
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
+  COMP_VERSION := $(shell ..\..\..\Utilities\Scripts\comp_version)
 endif
-GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 #----------------------------------------------------------------------------
 # Should not need to edit lines below except to add or 'debug' target entries

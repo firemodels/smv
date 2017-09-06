@@ -1355,6 +1355,11 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
+#ifndef pp_COMPVER
+#define pp_COMPVER "unknown"
+#endif
+  PRINTF("Compiler         : %s\n", pp_COMPVER);
+
 #ifdef pp_HASH
 #ifndef _DEBUG
   if(option==HASH_MD5||option==HASH_ALL){
