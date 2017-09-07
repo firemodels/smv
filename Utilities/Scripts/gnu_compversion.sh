@@ -19,13 +19,13 @@ is_file_installed()
   exit
 }
 
-icc_installed=`is_file_installed icc`
-if [ "$icc_installed" == "0" ]; then
-  echo Unknown
+gcc_installed=`is_file_installed gcc`
+if [ "$gcc_installed" == "0" ]; then
+  echo unknown
   exit
 fi
 
-icc -v > icc_version 2>&1 
-ICCVERSION=`cat icc_version | awk '{print $3}' `
-rm icc_version
-echo "\"Intel C/C++ $ICCVERSION\""
+gcc -v > gcc_version 2>&1 
+GCCVERSION=`cat gcc_version | awk '{print $3}' `
+rm gcc_version
+echo "\"Gnu C/C++ $GCCVERSION\""
