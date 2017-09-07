@@ -690,7 +690,6 @@ int main(int argc, char **argv){
   lua_State *L = initLua();
   // This code branch gives more control to the interpreter during startup.
   RunLuaBranch(L, argc, argv);
-  // lua_initsmvdata(L);
   // All of the below code is run by the lua interpreter, therefore if we want
   // to use the lua interpreter we ignore the code below and exit once the lua
   // run is complete.

@@ -686,16 +686,11 @@ void ParseCommandlineLua(int argc, char **argv){
   }
 }
 
-int RunLuaBranch(lua_State *L, int argc, char **argv) {
-  char **argv_sv;
-  int return_code;
+int ProgramSetupLua(lua_State *L, int argc, char **argv_sv) {
   char *progname;
-  SetStdOut(stdout);
-  initMALLOC();
-  InitRandAB(1000000);
   InitVars();
   if(argc==1)DisplayVersionInfo("Smokeview ");
-  CopyArgs(&argc, argv, &argv_sv);
+
   if(argc==0||argc==1)return 0;
 
   progname=argv_sv[0];
@@ -730,9 +725,41 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
 #endif
 #endif
   DisplayVersionInfo("Smokeview ");
+
+  return 0;
+}
+
+// TODO: needs to be passed the commandline strings to pass to GLUT.
+int lua_setupGLUT(lua_State *L) {
+  return 0;
+}
+
+int RunLuaBranch(lua_State *L, int argc, char **argv) {
+  int return_code;
+  char **argv_sv;
+  SetStdOut(stdout);
+  initMALLOC();
+  InitRandAB(1000000);
+  fprintf(stderr, "copying arguments\n");
+  CopyArgs(&argc, argv, &argv_sv);
+  fprintf(stderr, "arguments copied\n");
+  // Setup the program, including parsing commandline arguments. Does not
+  // initialise any graphical components.
+  ProgramSetupLua(L, argc, argv_sv);
+  // From here on out, control is passed to the lua interpreter. All further
+  // setup, including graphical display setup, is handled (or at least
+  // triggered) by the interpreter.
+  // TODO: currently the commands are issued here via C, but they are designed
+  // such that they can be issued from lua.
+  // Setup glut. TODO: this is currently done via to C because the commandline
+  // arguments are required for glutInit.
+  fprintf(stderr, "argv[0]: %s\n", argv[0]);
+  fprintf(stderr, "argv_sv[0]: %s\n", argv_sv[0]);
   SetupGlut(argc,argv_sv);
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
+  // Load information about smokeview into the lua interpreter.
+  lua_initsmvproginfo(L);
 
   return_code= SetupCase(argc,argv_sv);
   if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
@@ -740,8 +767,6 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   if(convert_ini==1){
     ReadINI(ini_from);
   }
-  // Load information about smokeview into the lua interpreter.
-  lua_initsmvproginfo(L);
   // Load information about the case into the lua interpreter.
   lua_initsmvdata(L);
 
