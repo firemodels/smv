@@ -1,3 +1,6 @@
+
+# background makefile
+
 SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/background
 FILTERC =
@@ -5,6 +8,7 @@ FILTERF =
 
 VPATH = $(SOURCE_DIR)/background $(SOURCE_DIR)/shared
 bin = .
+
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -14,6 +18,15 @@ else
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
+else
+  INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
+  GNU_COMPVERSION := $(shell ../../../Utilities/Scripts/gnu_compversion.sh)
+endif
+INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
+GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
@@ -38,7 +51,7 @@ no_target:
 # ------------- Win 64 ----------------
 #  64 bit windows
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -D pp_INTEL -I $(SOURCE_DIR)/shared $(GITINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -D pp_INTEL -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = background.exe
 
@@ -48,7 +61,7 @@ intel_win_64 : $(objwin)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_LINUX $(GITINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = background
 
@@ -57,7 +70,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu Linux 32 ----------------
 
-gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
+gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : exe       = background
 
@@ -66,7 +79,7 @@ gnu_linux_32: $(obj)
 
 # ------------- gnu Linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = background
 
@@ -76,7 +89,7 @@ gnu_linux_64: $(obj)
 # ------------- OSX 64 ----------------
 #  64 bit osx
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = background
 
@@ -84,7 +97,7 @@ intel_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) -m64 $(obj) 
 
 # ------------- gcc OSX 64 ----------------
-gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO)
+gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = background
 
