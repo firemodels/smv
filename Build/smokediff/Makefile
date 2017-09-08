@@ -1,3 +1,6 @@
+
+# smokediff makefile
+
 SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff
 FILTERC =
@@ -5,6 +8,7 @@ FILTERF =
 
 VPATH = $(SOURCE_DIR)/smokediff ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
 bin = .
+
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -14,6 +18,15 @@ else
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
+else
+  INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
+  GNU_COMPVERSION := $(shell ../../../Utilities/Scripts/gnu_compversion.sh)
+endif
+INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
+GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 FORTLIBDIR = /opt/intel/composerxe/lib
 
@@ -47,7 +60,7 @@ no_target:
 #  64 bit windows
 
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08 /fpscomp:general
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = icl
 intel_win_64_db : CPP       = icl
 intel_win_64_db : FC        = ifort
@@ -56,8 +69,8 @@ intel_win_64_db : exe       = smokediff_win_64_db.exe
 intel_win_64_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 
-intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 -D pp_INTEL $(GITINFO)
 intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /fpscomp:general
+intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort
@@ -71,7 +84,7 @@ LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
 
 # ------------- 32 bit Linux gnu ----------------
 
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
@@ -84,7 +97,7 @@ gnu_linux_32 : $(obj)
 
 # ------------- 64 bit Linux gnu ----------------
 
-gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX $(GITINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
@@ -98,7 +111,7 @@ gnu_linux_64 : $(obj)
 # ------------- OSX gnu ----------------
 #  gnu osx
 
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D  pp_OSX $(GITINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
@@ -113,7 +126,7 @@ gnu_osx_64 : $(obj)
 #  64 bit linux
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
 intel_linux_64 : FC        = ifort
@@ -123,7 +136,7 @@ intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64)
 
 intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX
-intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO)
+intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
 intel_linux_64_db : FC        = ifort
@@ -139,7 +152,7 @@ MACFORTLIBS=$(FORTLIBDIR)/libifcoremt.a $(FORTLIBDIR)/libimf.a $(FORTLIBDIR)/lib
 #  64 bit OSX
 
 intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : FC        = ifort

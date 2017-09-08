@@ -1,3 +1,6 @@
+
+# dem2fds makefile
+
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
@@ -20,6 +23,7 @@ FILTERF =
 
 VPATH = $(SOURCE_DIR)/dem2fds $(SOURCE_DIR)/shared  
 bin = .
+
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -28,6 +32,16 @@ else
   GIT_DATE := $(shell git log -1 --format=%cd)
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
+else
+  INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
+  GNU_COMPVERSION := $(shell ../../../Utilities/Scripts/gnu_compversion.sh)
+endif
+INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
+GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
@@ -53,7 +67,7 @@ no_target:
 
 # ------------- Windows 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO)
+intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = dem2fds_win_64.exe
 
@@ -62,7 +76,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu Linux 32 ----------------
 
-gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
+gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_32 : CC        = gcc
 gnu_linux_32 : exe       = dem2fds_linux_32
 
@@ -71,7 +85,7 @@ gnu_linux_32: $(obj)
 
 # ------------- gnu Linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = dem2fds_linux_64
 
@@ -83,7 +97,7 @@ gnu_linux_64: $(obj)
 #  64 bit linux
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = dem2fds_linux_64
 
@@ -95,7 +109,7 @@ intel_linux_64 : $(obj)
 #  64 bit OSX
 
 intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = dem2fds_osx_64
 
