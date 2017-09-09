@@ -260,7 +260,7 @@ void Device_CB(int var){
   case SHOWDEVICEVALS:
   case COLORDEVICEVALS:
     if(PANEL_devicevis != NULL){
-      if(colordeviceval == 1 || showdeviceval == 1){
+      if(colordevice_val == 1 || showdevice_val == 1){
         PANEL_devicevis->enable();
       }
       else{
@@ -340,7 +340,7 @@ extern "C" void glui_device_setup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT);
 
       if(nvdeviceinfo==0)ROLLOUT_velocityvectors->disable();
-      CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_d("Show"),&showvdeviceval);
+      CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_d("Show"),&showvdevice_val);
       PANEL_vector_type=glui_device->add_panel_to_panel(ROLLOUT_velocityvectors,"type",true);
       RADIO_vectortype=glui_device->add_radiogroup_to_panel(PANEL_vector_type,&vectortype);
       glui_device->add_radiobutton_to_group(RADIO_vectortype,"line");
@@ -472,10 +472,11 @@ extern "C" void glui_device_setup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT);
 
 
-      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdeviceval, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevicetype, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Unit"), &showdeviceunit, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_d("Color"),&colordeviceval,COLORDEVICEVALS,Device_CB);
+      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdevice_val, SHOWDEVICEVALS, Device_CB);
+      CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Id"), &showdevice_id, SHOWDEVICEVALS, Device_CB);
+      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevice_type, SHOWDEVICEVALS, Device_CB);
+      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Unit"), &showdevice_unit, SHOWDEVICEVALS, Device_CB);
+      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_d("Color"),&colordevice_val,COLORDEVICEVALS,Device_CB);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"min",GLUI_SPINNER_FLOAT,&device_valmin);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"max",GLUI_SPINNER_FLOAT,&device_valmax);
 

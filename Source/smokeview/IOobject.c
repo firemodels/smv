@@ -397,13 +397,17 @@ void Output_Device_Val(devicedata *devicei){
     }
     strcpy(label, "");
     sprintf(valuelabel, "%.1f",val);
-    if(showdevicetype == 1){
+    if(showdevice_id==1&&strcmp(devicei->label,"null")!=0&&strlen(devicei->label)>0){
+      strcat(label, devicei->label);
+      strcat(label, ": ");
+    }
+    if(showdevice_type == 1){
       strcat(label, devicei->quantity);
       strcat(label, " ");
     }
     strcat(label, valuelabel);
     strcat(label, " ");
-    if(showdeviceunit == 1)strcat(label, unit);
+    if(showdevice_unit == 1)strcat(label, unit);
     Output3Text(foregroundcolor,0.0,0.0,0.0,label);
   }
   else{
@@ -608,7 +612,7 @@ void draw_devices(void){
     }
   }
   drawobjects_as_vectors=0;
-  if(showtime==1&&itimes>=0&&itimes<nglobal_times&&showvdeviceval==1&&nvdeviceinfo>0){
+  if(showtime==1&&itimes>=0&&itimes<nglobal_times&&showvdevice_val==1&&nvdeviceinfo>0){
     unsigned char arrow_color[4];
     float arrow_color_float[4];
     int j;
@@ -659,7 +663,7 @@ void draw_devices(void){
         if(vdevi->unique == 0)continue;
         xyz = vdevi->valdev->xyz;
         get_vdevice_vel(global_times[itimes], vdevi, vel, &angle, &dvel, &dangle, &velocity_type);
-        if(colordeviceval == 1){
+        if(colordevice_val == 1){
           int type, vistype = 0;
 
           type = devicei->type2;
@@ -1080,7 +1084,7 @@ void draw_devices(void){
         prop->vars_indep_index[j]=j;
       }
     }
-    if(showtime==1&&itimes>=0&&itimes<nglobal_times&&showdeviceval==1&&ndevicetypes>0){
+    if(showtime==1&&itimes>=0&&itimes<nglobal_times&&showdevice_val==1&&ndevicetypes>0){
       int type,vistype=0;
 
       type=devicei->type2;
@@ -1099,7 +1103,7 @@ void draw_devices(void){
         else{
           state=devicei->showstatelist[itimes];
         }
-        if(colordeviceval==1){
+        if(colordevice_val==1){
           int type,vistype=0;
 
           type=devicei->type2;
