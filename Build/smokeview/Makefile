@@ -1,5 +1,5 @@
 
-#*** Smokeview, VMakefile ***
+# Smokeview makefile
 
 #To use this Makefile cd to a sub-directory and type make_smv.sh or make_smv.bat
 
@@ -13,18 +13,23 @@ SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
 COMP_VERSION =
 LUA_SCRIPTING =
+
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
-  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
-  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
+endif
+GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
+else
   INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
   GNU_COMPVERSION := $(shell ../../../Utilities/Scripts/gnu_compversion.sh)
 endif
-GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 

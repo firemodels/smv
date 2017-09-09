@@ -193,10 +193,10 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
 
   // construct filename for image to be rendered
 
-  strcpy(renderfile_dir, "");
+  strcpy(renderfile_dir, ".");
   strcpy(renderfile_suffix, "");
   use_scriptfile = 0;
-  *renderfile_dir_ptr = NULL;
+  *renderfile_dir_ptr = renderfile_dir;
 
   // filename base
 
@@ -225,7 +225,6 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
       }
       else{
         strcpy(renderfile_dir, script_dir_path);
-        *renderfile_dir_ptr = renderfile_dir;
       }
     }
   }
