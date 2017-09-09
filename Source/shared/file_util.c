@@ -191,10 +191,12 @@ char *GetFileName(char *temp_dir, char *file, int flag){
   }
   if(file_out==NULL&&temp_dir!=NULL&&Writable(temp_dir)==YES){
     NewMemory((void **)&file_out,strlen(temp_dir)+1+strlen(file2)+1);
-    strcpy(file_out,"");
-    strcat(file_out,temp_dir);
-    strcat(file_out,dirseparator);
-    strcat(file_out,file);
+    strcpy(file_out, "");
+    if(strcmp(temp_dir, ".")!=0){
+      strcat(file_out, temp_dir);
+      strcat(file_out, dirseparator);
+    }
+    strcat(file_out, file);
   }
   return file_out;
 }
