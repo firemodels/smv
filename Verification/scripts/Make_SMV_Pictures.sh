@@ -149,7 +149,7 @@ else
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background
-  export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds
+  export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds$VERSION2
 fi
 SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
