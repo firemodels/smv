@@ -731,6 +731,9 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv_sv) {
 
 // TODO: needs to be passed the commandline strings to pass to GLUT.
 int lua_setupGLUT(lua_State *L) {
+  int argc = lua_tonumber(L, 1);
+  char **argv_sv = lua_topointer(L, 2);
+  SetupGlut(argc,argv_sv);
   return 0;
 }
 
@@ -740,9 +743,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
-  fprintf(stderr, "copying arguments\n");
   CopyArgs(&argc, argv, &argv_sv);
-  fprintf(stderr, "arguments copied\n");
   // Setup the program, including parsing commandline arguments. Does not
   // initialise any graphical components.
   ProgramSetupLua(L, argc, argv_sv);
@@ -753,9 +754,10 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // such that they can be issued from lua.
   // Setup glut. TODO: this is currently done via to C because the commandline
   // arguments are required for glutInit.
-  fprintf(stderr, "argv[0]: %s\n", argv[0]);
-  fprintf(stderr, "argv_sv[0]: %s\n", argv_sv[0]);
-  SetupGlut(argc,argv_sv);
+
+  lua_pushnumber(L, argc);
+  lua_pushlightuserdata(L, argv_sv);
+  lua_setupGLUT(L);
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
   // Load information about smokeview into the lua interpreter.
