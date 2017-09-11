@@ -211,18 +211,14 @@ character command*256
 character(1), allocatable, dimension(:) :: prog_file
 
 call get_command_argument (0, command, len, status)
-if (status .ne. 0) then
-   write (*,*) 'Getting command name failed with status = ', status
-   stop
-end if
-
-write(6,*)"command=",command
-INQUIRE(FILE=command,SIZE=file_size)
-allocate(prog_file(file_size))
-write (*,*) 'file size=',file_size
-open(5,form='binary',file=command,action='read')
-read(5)prog_file
-print *, SHA1(prog_file)
-write(6,*)"complete"
+if (status .eq. 0) then
+   write(6,*)"command=",command
+   INQUIRE(FILE=command,SIZE=file_size)
+   allocate(prog_file(file_size))
+   write (*,*) 'file size=',file_size
+   open(5,form='binary',file=command,action='read')
+   read(5)prog_file
+   print *, SHA1(prog_file)
+endif
 end program main
 
