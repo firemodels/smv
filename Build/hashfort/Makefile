@@ -6,8 +6,8 @@ bin = .
 
 # Definition of the object variables
 
-obj = main.o
-objwin = main.obj
+obj = hashfort.o main.o
+objwin =  hashfort.obj main.obj
 
 #*** General Purpose Rules ***
 
