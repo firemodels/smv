@@ -4,134 +4,30 @@
 module sha1Module
     use, intrinsic :: iso_fortran_env
     implicit none
-    private
 
-    interface SHA1
-        module procedure SHA1Scalar, SHA1Array
-    end interface
+    public :: SHA1file
 
-    public :: SHA1
+   contains
 
-    contains
-    function SHA1Scalar(value) result(hash)
-        class(*), intent(in) :: value
-        character(len=40) :: hash
+    function SHA1file(file) result(hash)
+      character(len=*), intent(in) :: file
+      character(len=40) :: hash
 
-        integer(int8), dimension(:), allocatable :: bytes
-        integer(int64) :: length
+      integer(int64) :: file_size
+      character(1), allocatable, dimension(:) :: file_contents
+      integer(int8), dimension(:), allocatable :: bytes
 
-        select type (value)
-            type is (character(len=*))
-                length = len(value)
-                allocate(bytes(((length+8)/64 + 1)*64))
-                bytes(:length) = transfer(value, bytes(:length))
-            type is (integer(int8))
-                length = 1
-                allocate(bytes(64))
-                bytes(1) = value
-            type is (integer(int16))
-                length = 2
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            type is (integer(int32))
-                length = 4
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            type is (integer(int64))
-                length = 8
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            type is (real(real32))
-                length = 4
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            type is (real(real64))
-                length = 8
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            type is (real(real128))
-                length = 16
-                allocate(bytes(64))
-                bytes(1:length) = transfer(value, bytes(1:length))
-            class default
-                print *, "Error: Unsupported type in SHA1."
-                stop
-        end select
+      INQUIRE(FILE=file,SIZE=file_size)
+      allocate(file_contents(file_size))
+      open(5,form='binary',file=file,action='read')
+      read(5)file_contents
 
-        hash = SHA1Hash(bytes, length)
-        deallocate(bytes)
-    end function SHA1Scalar
-
-    function SHA1Array(value) result(hash)
-        class(*), dimension(:), intent(in) :: value
-        character(len=40) :: hash
-
-        integer(int8), dimension(:), allocatable :: bytes
-        integer(int64) :: length
-        integer :: i, width
-
-        select type (value)
-            type is (character(len=*))
-                length = size(value) * len(value(1))
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*len(value(i)) + 1:i*len(value(i))) = &
-                    transfer(value(i), bytes((i - 1)*len(value(i)) + 1:i*len(value(i))))
-                end do
-            type is (integer(int8))
-                length = size(value)
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                bytes(1:length) = value
-            type is (integer(int16))
-                width = 2
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            type is (integer(int32))
-                width = 4
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            type is (integer(int64))
-                width = 8
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            type is (real(real32))
-                width = 4
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            type is (real(real64))
-                width = 8
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            type is (real(real128))
-                width = 16
-                length = size(value) * width
-                allocate(bytes(((length + 8)/64 + 1)*64))
-                do i = 1,size(value)
-                    bytes((i - 1)*width + 1:i*width) = transfer(value(i), bytes((i - 1)*width + 1:i*width))
-                end do
-            class default
-                print *, "Error: Unsupported type in SHA1."
-                stop
-        end select
-
-        hash = SHA1Hash(bytes, length)
-        deallocate(bytes)
-    end function SHA1Array
+      allocate(bytes(((file_size+8)/64 + 1)*64))
+      bytes(:file_size) = transfer(file_contents, bytes(:file_size))
+      hash = SHA1Hash(bytes, file_size)
+      deallocate(bytes)
+      deallocate(file_contents)
+    end function SHA1file
 
     function SHA1Hash(bytes, length)
         integer(int8), dimension(:) :: bytes
@@ -207,18 +103,13 @@ use sha1Module
 implicit none
 
 integer len, status, file_size
-character command*256
-character(1), allocatable, dimension(:) :: prog_file
+character prog_path*256
 
-call get_command_argument (0, command, len, status)
+call get_command_argument (0, prog_path, len, status)
 if (status .eq. 0) then
-   write(6,*)"command=",command
-   INQUIRE(FILE=command,SIZE=file_size)
-   allocate(prog_file(file_size))
-   write (*,*) 'file size=',file_size
-   open(5,form='binary',file=command,action='read')
-   read(5)prog_file
-   print *, SHA1(prog_file)
+   write(6,*)"program path=",prog_path
+   print *, SHA1file(prog_path)
+   write(6,*)"complete"
 endif
 end program main
 
