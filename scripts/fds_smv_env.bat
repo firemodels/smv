@@ -29,6 +29,7 @@ set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u2
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 set openmpi_version=2.1.1
+set linux_ib=ib
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
