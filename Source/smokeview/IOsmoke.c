@@ -5297,9 +5297,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
     mergecolor=meshi->merge_color;
     mergealpha=meshi->merge_alpha;
-    firesmokeval[0] = 0.0;
-    firesmokeval[1] = 0.0;
-    firesmokeval[2] = 0.0;
+    firesmokeval[0] = (float)smoke_red/255.0;
+    firesmokeval[1] = (float)smoke_green/255.0;
+    firesmokeval[2] = (float)smoke_blue/255.0;
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       float *firesmoke_color;
