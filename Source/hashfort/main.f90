@@ -201,48 +201,28 @@ module sha1Module
     end function SHA1Hash
 end module sha1Module
 
-program echo_command_line
-    use, intrinsic :: iso_fortran_env
-    use sha1Module
-    implicit none
+program main
+use, intrinsic :: iso_fortran_env
+use sha1Module
+implicit none
 
-    integer i, cnt, len, status, file_size
-character c*256, b*100
+integer len, status, file_size
+character command*256
 character(1), allocatable, dimension(:) :: prog_file
 
-    print *, "message"
-    print *, SHA1("message")
-
-    print *, ""
-    print *, SHA1("")
-
-    print *, 0_int64
-    print *, SHA1(0_int64)
-
-    print *, 700_int64
-    print *, SHA1(700_int64)
-
-call get_command (b, len, status)
-if (status .ne. 0) then
-   write (*,*) 'get_command failed with status = ', status
-   stop
-end if
-write (*,*) 'command line = ', b (1:len)
-
-
-call get_command_argument (0, c, len, status)
+call get_command_argument (0, command, len, status)
 if (status .ne. 0) then
    write (*,*) 'Getting command name failed with status = ', status
    stop
 end if
 
-write(6,*)"command=",c
-INQUIRE(FILE=c,SIZE=file_size)
+write(6,*)"command=",command
+INQUIRE(FILE=command,SIZE=file_size)
 allocate(prog_file(file_size))
 write (*,*) 'file size=',file_size
-open(5,form='binary',file=c)
+open(5,form='binary',file=command,action='read')
 read(5)prog_file
-    print *, SHA1(prog_file)
-    write(6,*)"complete"
-end
+print *, SHA1(prog_file)
+write(6,*)"complete"
+end program main
 
