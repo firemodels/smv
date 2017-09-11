@@ -73,7 +73,8 @@ module sha1Module
 
         do i = 1,size(bytes)/64
             do j = 1,16 ! take 512 bit chunk of string
-                w(j) = transfer(bytes((i-1)*64 + j*4:(i-1)*64 + (j-1)*4 + 1:-1), w(j)) ! is the source size less than the result size?
+                ! is the source size less than the result size?
+                w(j) = transfer(bytes((i-1)*64 + j*4:(i-1)*64 + (j-1)*4 + 1:-1), w(j))
             end do
             do j = 17,80 ! Extend the sixteen 32-bit words into eighty 32-bit words
                 w(j) = ishftc(ieor(ieor(ieor(w(j-3), w(j-8)), w(j-14)), w(j-16)), 1)
