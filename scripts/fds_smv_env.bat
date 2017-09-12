@@ -15,7 +15,7 @@ if exist %userprofile%\fds_revision.txt (
 )
 
 :: ---- log entry date ----
-set smvlogdate="5-Jul-2017"
+set smvlogdate="10-Aug-2017"
 
 :: ---- repo locations ----
 
@@ -26,10 +26,9 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u2
+set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u4
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 set openmpi_version=2.1.1
-set linux_ib=ib
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
