@@ -2,7 +2,7 @@
 
 :: ---- version: official FDS and smokeview ----
 set fds_version=6.5.3test
-set smv_version=6.5.4test
+set smv_version=6.5.5
 
 :: ---- revision: test FDS and smokeview ----
 set smv_revision=unknown
@@ -29,6 +29,7 @@ set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u4
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 set openmpi_version=2.1.1
+set linux_ib=ib
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
