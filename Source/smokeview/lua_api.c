@@ -72,11 +72,19 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv_sv) {
 }
 
 // TODO: needs to be passed the commandline strings to pass to GLUT.
-int lua_setupGLUT(lua_State *L) {
+int lua_SetupGLUT(lua_State *L) {
   int argc = lua_tonumber(L, 1);
   char **argv_sv = lua_topointer(L, 2);
   SetupGlut(argc,argv_sv);
   return 0;
+}
+
+int lua_SetupCase(lua_State *L) {
+  int argc = lua_tonumber(L, 1);
+  char **argv_sv = lua_topointer(L, 2);
+  int return_code = SetupCase(argc,argv_sv);
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int RunLuaBranch(lua_State *L, int argc, char **argv) {
@@ -99,13 +107,18 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
 
   lua_pushnumber(L, argc);
   lua_pushlightuserdata(L, argv_sv);
-  lua_setupGLUT(L);
+  lua_SetupGLUT(L);
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
   // Load information about smokeview into the lua interpreter.
   lua_initsmvproginfo(L);
 
-  return_code= SetupCase(argc,argv_sv);
+  // return_code= SetupCase(argc,argv_sv);
+  lua_pushnumber(L, argc);
+  lua_pushlightuserdata(L, argv_sv);
+  lua_SetupCase(L);
+  return_code = lua_tonumber(L,-1);
+  fprintf(stderr, "SetupCase return code: %d\n", return_code);
   if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
   if(return_code!=0)return 1;
   if(convert_ini==1){
