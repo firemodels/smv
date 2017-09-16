@@ -3839,14 +3839,14 @@ int set_showdevices(int ndevices_ini, const char **names) {
 int set_showdevicevals(int vshowdeviceval, int vshowvdeviceval,
     int vdevicetypes_index, int vcolordeviceval, int vvectortype,
     int vviswindrose, int vshowdevicetype, int vshowdeviceunit) {
-  showdeviceval = vshowdeviceval;
-  showvdeviceval = vshowvdeviceval;
+  showdevice_val = vshowdeviceval;
+  showvdevice_val = vshowvdeviceval;
   devicetypes_index = vdevicetypes_index;
-  colordeviceval = vcolordeviceval;
+  colordevice_val = vcolordeviceval;
   vectortype = vvectortype;
   viswindrose = vviswindrose;
-  showdevicetype = vshowdevicetype;
-  showdeviceunit = vshowdeviceunit;
+  showdevice_type = vshowdevicetype;
+  showdevice_unit = vshowdeviceunit;
   devicetypes_index = CLAMP(vdevicetypes_index, 0, ndevicetypes - 1);
   update_glui_devices();
 } // SHOWDEVICEVALS
