@@ -33,14 +33,14 @@ function smv.colorbarnormal()
     setcolorbarflip(1)
 end
 colorbarnormal = smv.colorbarnormal
-model = {}
-_model = {
+case = {}
+_case = {
     chid = {
         get = function()
-            return fdsprefix
+            return chid
         end,
         set = function()
-            error("model.chid is read-only")
+            error("case.chid is read-only")
         end
     },
     slices = {
@@ -48,7 +48,7 @@ _model = {
             return sliceinfo
         end,
         set = function()
-            error("model.slices is read-only")
+            error("case.slices is read-only")
         end,
         -- __len = function()
         --     error("len called slices")
@@ -57,10 +57,10 @@ _model = {
     -- TODO: provide this by overriding the len operator
     nslices = {
         get = function()
-            return #model.slices + 1
+            return #case.slices
         end,
         set = function()
-            error("model.nslices is read-only")
+            error("case.nslices is read-only")
         end,
     },
     meshes = {
@@ -69,33 +69,33 @@ _model = {
             return meshinfo
         end,
         set = function()
-            error("model.meshes is read-only")
+            error("case.meshes is read-only")
         end
     },
     nmeshes = {
         get = function()
-            return #model.meshes + 1
+            return #case.meshes
         end,
         set = function()
-            error("model.nmeshes is read-only")
+            error("case.nmeshes is read-only")
         end,
     }
 }
-local model_mt = {
+local case_mt = {
    -- get method
    __index = function (t,k)
-       if type(_model[k]) == "function" then
-           return _model[k]
+       if type(_case[k]) == "function" then
+           return _case[k]
        else
-           return _model[k].get()
+           return _case[k].get()
        end
    end,
    -- set method
    __newindex = function (t,k,v)
-       _model[k].set(v)
+       _case[k].set(v)
    end
 }
-setmetatable(model, model_mt)
+setmetatable(case, case_mt)
 
 timebar = {}
 _timebar = {
