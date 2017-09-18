@@ -428,7 +428,6 @@ void RenderFrame(int view_mode){
 
   int woffset=0,hoffset=0;
   int screenH;
-  char *renderfile_dir_ptr;
 
 #ifdef WIN32
   SetThreadExecutionState(ES_DISPLAY_REQUIRED); // reset display idle timer to prevent screen saver from activating
@@ -446,7 +445,7 @@ void RenderFrame(int view_mode){
 
   if(GetRenderFileName(view_mode, renderfile_dir, renderfile_full)!=0)return;
 
-  SmokeviewImage2File(renderfile_dir_ptr,renderfile_full,render_filetype,woffset,screenWidth,hoffset,screenH);
+  SmokeviewImage2File(renderfile_dir,renderfile_full,render_filetype,woffset,screenWidth,hoffset,screenH);
   if(RenderTime==1&&output_slicedata==1){
     OutputSliceData();
   }
@@ -848,7 +847,7 @@ void SetupScreeninfo(void){
 
 int MergeRenderScreenBuffers360(void){
 
-  char *renderfile, renderfile_base[1024], renderfullfile[1024], renderfile_dir[1024], *ext;
+  char renderfile[1024], renderfullfile[1024], renderfile_dir[1024], *ext;
   FILE *RENDERfile = NULL;
   gdImagePtr RENDERimage;
   int i, j, ijk360;
@@ -882,7 +881,6 @@ int MergeRenderScreenBuffers360(void){
   RENDERfile = fopen(renderfullfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
-    FREEMEMORY(renderfile);
     return 1;
   }
   PRINTF("Rendering to: %s .", renderfullfile);
@@ -942,7 +940,6 @@ int MergeRenderScreenBuffers360(void){
   /* free up memory used by both OpenGL and GIF images */
 
   gdImageDestroy(RENDERimage);
-  FREEMEMORY(renderfile);
   FREEMEMORY(screenbuffer360);
   if(render_frame!=NULL&&itimes>=0&&itimes<nglobal_times){
     render_frame[itimes]++;
