@@ -1,4 +1,4 @@
-print("Running script for " .. fdsprefix .. ".")
+print("Running script for " .. chid .. ".")
 --hidewindow()
 print("Date: " .. os.date("%c"))
 package.path=package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
@@ -8,10 +8,6 @@ smv = require "smv"
 -- ssfparser = require "ssfparser"
 string = require "string"
 
--- this initsmvdata is necessary to bring some data into the Lua interpreter
--- from the model. This is included here rather than doing in the Smokeview
--- code to increase separation. This will likely be removed in future versions.
-initsmvdata()
 redWrite = function(...)
     io.stderr:write("\27[31m")
     io.stderr:write(...)
@@ -733,22 +729,22 @@ test("loaded file test", function()
     testException("render.movie.type invalid", function()
         render.movie.type = "qwer"
     end)
-    test("model.chid", function() assert(model.chid) end)
-    test("model.slices", function() assert(model.slices) end)
+    test("case.chid", function() assert(case.chid) end)
+    test("case.slices", function() assert(case.slices) end)
     test("number of slices", function()
-        assert(model.nslices == 8, "number of slices is incorrect, is : "
-            .. tostring(model.nslices))
+        assert(case.nslices == 8, "number of slices is incorrect, is : "
+            .. tostring(case.nslices) .. "should be 8")
     end)
-    test("model.meshes", function() assert(model.meshes) end)
+    test("case.meshes", function() assert(case.meshes) end)
     test("number of meshes", function()
-        assert(model.nmeshes == 1, "number of meshes is incorrect, is : "
-            .. tostring(model.nmeshes))
+        assert(case.nmeshes == 1, "number of meshes is incorrect, is : "
+            .. tostring(case.nmeshes))
     end)
     test("print slice info", function()
         print("printing slice info")
-        print(model.slices)
-        for key,value in pairs(model.slices) do print(key,value.label) end
-        for key,value in pairs(model.slices) do print(key,value.file) end
+        print(case.slices)
+        for key,value in pairs(case.slices) do print(key,value.label) end
+        for key,value in pairs(case.slices) do print(key,value.file) end
     end)
 
 end)
