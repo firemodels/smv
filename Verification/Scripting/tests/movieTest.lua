@@ -7,11 +7,6 @@ smv = require "smv"
 -- ssfparser = require "ssfparser"
 string = require "string"
 
--- this initsmvdata is necessary to bring some data into the Lua interpreter
--- from the model. This is included here rather than doing in the Smokeview
--- code to increase separation. This will likely be removed in future versions.
-initsmvdata()
-
 function mkMovie()
     local f = assert(io.popen("uname", r))
     local sys = assert(f:read('*a'))
