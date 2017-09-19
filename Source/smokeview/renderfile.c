@@ -187,7 +187,7 @@ void Render(int view_mode){
 
 /* ------------------ GetRenderFileName ------------------------ */
 
-void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfile_dir, char *renderfile_full){
+int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full){
   char renderfile_name[1024], renderfile_suffix[1024], *renderfile_ext;
   int use_scriptfile;
 
@@ -196,7 +196,6 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
   strcpy(renderfile_dir, ".");
   strcpy(renderfile_suffix, "");
   use_scriptfile = 0;
-  *renderfile_dir_ptr = renderfile_dir;
 
   // filename base
 
@@ -236,8 +235,14 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
       strcpy(renderfile_dir, smokeviewtempdir);
     }
     else{
-      fprintf(stderr, "*** Error: unable to output render file\n");
-      return;
+      if(smokeviewtempdir!=NULL&&strlen(smokeviewtempdir)>0){
+        fprintf(stderr, "*** Error: unable to render screen image to either directories %s or %s\n",
+        renderfile_dir,smokeviewtempdir);
+      }
+      else{
+        fprintf(stderr, "*** Error: unable to render screen image to directory %s \n",renderfile_dir);
+      }
+      return 1;
     }
   }
 
@@ -331,6 +336,7 @@ void GetRenderFileName(int view_mode, char **renderfile_dir_ptr, char *renderfil
   strcpy(renderfile_full, renderfile_name);
   if(strlen(renderfile_suffix) > 0)strcat(renderfile_full, renderfile_suffix);
   strcat(renderfile_full, renderfile_ext);
+  return 0;
 }
 
 /* ------------------ OutputSliceData ------------------------ */
@@ -422,7 +428,6 @@ void RenderFrame(int view_mode){
 
   int woffset=0,hoffset=0;
   int screenH;
-  char *renderfile_dir_ptr;
 
 #ifdef WIN32
   SetThreadExecutionState(ES_DISPLAY_REQUIRED); // reset display idle timer to prevent screen saver from activating
@@ -438,9 +443,9 @@ void RenderFrame(int view_mode){
     if(view_mode == VIEW_RIGHT)woffset = screenWidth;
   }
 
-  GetRenderFileName(view_mode, &renderfile_dir_ptr, renderfile_dir, renderfile_full);
+  if(GetRenderFileName(view_mode, renderfile_dir, renderfile_full)!=0)return;
 
-  SmokeviewImage2File(renderfile_dir_ptr,renderfile_full,render_filetype,woffset,screenWidth,hoffset,screenH);
+  SmokeviewImage2File(renderfile_dir,renderfile_full,render_filetype,woffset,screenWidth,hoffset,screenH);
   if(RenderTime==1&&output_slicedata==1){
     OutputSliceData();
   }
@@ -472,8 +477,7 @@ GLubyte *GetScreenBuffer(void){
 
 int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
-  char *renderfile,renderfile_base[1024],renderfile2[1024];
-  char *ext;
+  char renderfile[1024], renderfile_dir[1024], renderfullfile[1024], *ext;
   FILE *RENDERfile=NULL;
   GLubyte *p;
   gdImagePtr RENDERimage;
@@ -496,33 +500,24 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
     break;
   }
 
-  if(current_script_command!=NULL&&current_script_command->cval2!=NULL){
-    strcpy(renderfile2,current_script_command->cval2);
-    strcpy(renderfile_base, renderfile2);
+  if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
+
+  strcpy(renderfullfile,"");
+  if(strcmp(renderfile_dir,".")!=0){
+    int len;
+
+    strcat(renderfullfile,renderfile_dir);
+    len = strlen(renderfile_dir);
+    if(len>0&&renderfile_dir[len-1]!=dirseparator[0])strcat(renderfullfile,dirseparator);
   }
-  else{
-    strcpy(renderfile2,fdsprefix);
-    if(RenderTime == 1){
-      sprintf(renderfile_base, "%s_%04i", renderfile2, itimes / RenderSkip);
-    }
-    if(RenderTime == 0){
-      sprintf(renderfile_base, "%s_s%04i", renderfile2, seqnum);
-      seqnum++;
-    }
-  }
-  strcat(renderfile_base,ext);
-  renderfile= GetFileName(smokeviewtempdir,renderfile_base,tempdir_flag);
-  if(renderfile==NULL){
-    fprintf(stderr,"*** Error: unable to write to %s",renderfile_base);
-    return 1;
-  }
-  RENDERfile = fopen(renderfile, "wb");
-  PRINTF("Rendering to: %s .",renderfile);
+  strcat(renderfullfile,renderfile);
+
+  RENDERfile = fopen(renderfullfile, "wb");
   if(RENDERfile == NULL){
-    fprintf(stderr,"*** Error: unable to write to %s",renderfile);
-    FREEMEMORY(renderfile);
+    fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
   }
+  PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(nscreen_cols*screenWidth,nscreen_rows*screenHeight);
 
   p = *screenbuffers++;
@@ -560,7 +555,6 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   /* free up memory used by both OpenGL and GIF images */
 
   gdImageDestroy(RENDERimage);
-  FREEMEMORY(renderfile);
   if(render_frame != NULL&&itimes >= 0 && itimes < nglobal_times){
     render_frame[itimes]++;
   }
@@ -853,8 +847,7 @@ void SetupScreeninfo(void){
 
 int MergeRenderScreenBuffers360(void){
 
-  char *renderfile, renderfile_base[1024], renderfile2[1024];
-  char *ext;
+  char renderfile[1024], renderfullfile[1024], renderfile_dir[1024], *ext;
   FILE *RENDERfile = NULL;
   gdImagePtr RENDERimage;
   int i, j, ijk360;
@@ -873,32 +866,24 @@ int MergeRenderScreenBuffers360(void){
     break;
   }
 
-  if(scriptoutstream != NULL&&current_script_command != NULL&&current_script_command->cval2 != NULL){
-    strcpy(renderfile2, current_script_command->cval2);
+  if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
+
+  strcpy(renderfullfile,"");
+  if(strcmp(renderfile_dir,".")!=0){
+    int len;
+
+    strcat(renderfullfile,renderfile_dir);
+    len = strlen(renderfile_dir);
+    if(len>0&&renderfile_dir[len-1]!=dirseparator[0])strcat(renderfullfile,dirseparator);
   }
-  else{
-    strcpy(renderfile2, fdsprefix);
-  }
-  if(RenderTime == 1){
-    sprintf(renderfile_base, "%s_%04i", renderfile2, itimes / RenderSkip);
-  }
-  if(RenderTime == 0){
-    sprintf(renderfile_base, "%s_s%04i", renderfile2, seqnum);
-    seqnum++;
-  }
-  strcat(renderfile_base, ext);
-  renderfile = GetFileName(smokeviewtempdir, renderfile_base, tempdir_flag);
-  if(renderfile == NULL){
-    fprintf(stderr, "*** Error: unable to write to %s", renderfile_base);
-    return 1;
-  }
-  RENDERfile = fopen(renderfile, "wb");
-  PRINTF("Rendering to: %s .", renderfile);
+  strcat(renderfullfile,renderfile);
+
+  RENDERfile = fopen(renderfullfile, "wb");
   if(RENDERfile == NULL){
-    fprintf(stderr, "*** Error: unable to write to %s", renderfile);
-    FREEMEMORY(renderfile);
+    fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
   }
+  PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(nwidth360, nheight360);
   NewMemory((void **)&screenbuffer360,nwidth360*nheight360 * sizeof(int));
 
@@ -955,7 +940,6 @@ int MergeRenderScreenBuffers360(void){
   /* free up memory used by both OpenGL and GIF images */
 
   gdImageDestroy(RENDERimage);
-  FREEMEMORY(renderfile);
   FREEMEMORY(screenbuffer360);
   if(render_frame!=NULL&&itimes>=0&&itimes<nglobal_times){
     render_frame[itimes]++;
@@ -1033,12 +1017,12 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     renderfile= GetFileName(directory,RENDERfilename,1);
   }
   if(renderfile == NULL){
-    fprintf(stderr,"*** Error: Unable to write to %s\n",RENDERfilename);
+    fprintf(stderr,"*** Error: unable to render screen image to %s", RENDERfilename);
     return 1;
   }
   RENDERfile = fopen(renderfile, "wb");
   if(RENDERfile == NULL){
-    fprintf(stderr,"*** Error: Unable to write to %s\n",renderfile);
+    fprintf(stderr,"*** Error: unable to render screen image to %s", renderfile);
     return 1;
   }
   NewMemory((void **)&OpenGLimage,width2 * height2 * sizeof(GLubyte) * 3);

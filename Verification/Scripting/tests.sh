@@ -77,7 +77,7 @@ then
     SMV=$(which "$SMV")
     SMV=$(readlink -f "$SMV") # use absolute path
 else
-    SMV=../../SMV/Build/smokeview/${BUILD_TARGET}_${WORD_SIZE}/smokeview_${PLATFORM}_${WORD_SIZE}${EXT}
+    SMV=../../Build/smokeview/${BUILD_TARGET}_${WORD_SIZE}/smokeview_${PLATFORM}_${WORD_SIZE}${EXT}
     SMV=$(which "$SMV")
     SMV=$(readlink -f "$SMV") # use absolute path
 fi
@@ -99,6 +99,7 @@ fi
 # if it is not present, abort testing
 echo -n "running smokeview... "
 "$SMV" -version > /dev/null
+echo $?
 if [ $? -ne 0 ]
 then
     echo "Smokeview could not be found at: $SMV"
@@ -137,14 +138,14 @@ echo "running test1.log"
         room_fire > test1.log)
 test1_result=$?
 
-echo "testing paths"
-(mkdir -p test_outputs/path_testing/obs1/obs2/obs3/obs4/room_fire \
-    && cp test_outputs/room_fire/room_fire* test_outputs/path_testing/obs1/obs2/obs3/obs4/room_fire \
-    && cd test_outputs/path_testing/obs1/obs2/obs3 \
-    && pwd \
-    && "$SMV" -killscript -luascript ../../../../../tests/test1.lua \
-        obs4/room_fire/room_fire.smv > test1paths.log)
-test2_result=$?
+# echo "testing paths"
+# (mkdir -p test_outputs/path_testing/obs1/obs2/obs3/obs4/room_fire \
+#     && cp test_outputs/room_fire/room_fire* test_outputs/path_testing/obs1/obs2/obs3/obs4/room_fire \
+#     && cd test_outputs/path_testing/obs1/obs2/obs3 \
+#     && pwd \
+#     && "$SMV" -killscript -luascript ../../../../../tests/test1.lua \
+#         obs4/room_fire/room_fire.smv > test1paths.log)
+# test2_result=$?
 
 echo -n "Test 1 (test1.lua): "
 if [ $test1_result -eq 0 ]
@@ -154,10 +155,10 @@ else
     cecho "[Failure]" $red
 fi
 
-echo -n "Test 2 (test1.lua with paths): "
-if [ $test1_result -eq 0 ]
-then
-    cecho "[OK]" $green
-else
-    cecho "[Failure]" $red
-fi
+# echo -n "Test 2 (test1.lua with paths): "
+# if [ $test1_result -eq 0 ]
+# then
+#     cecho "[OK]" $green
+# else
+#     cecho "[Failure]" $red
+# fi
