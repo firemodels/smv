@@ -1,0 +1,5 @@
+#ifndef ENV2MOD_H_DEFINED
+#define ENV2MOD_H_DEFINED
+
+#define LEN_BUFFER 1024
+#endif
