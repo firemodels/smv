@@ -1,8 +1,8 @@
 #define INMAIN
+#include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "options.h"
 #include "env2mod.h"
 #include "datadefs.h"
 #include "string_util.h"
@@ -26,21 +26,16 @@ void Usage(char *prog, int option){
   fprintf(stdout, "        env | sort > filei\n");
   fprintf(stdout, "    -m modulefile - file containing module commands\n");
   fprintf(stdout, "    -s script.sh - bash script used to create a module\n");
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
   }
-}
-
-/* ------------------ CreateModule ------------------------ */
-
-void CreateModule(char *file1, char* file2, char *modulefile_ptr){
 }
 
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  int i, fatal_error = 0, f_opt = 0, s_opt = 0;
+  int i, f_opt = 0, s_opt = 0;
   char *file1 = NULL, *file2 = NULL, *scriptfile = NULL, *modulefile_ptr=NULL;
   char modulefile[1024];
 
@@ -108,9 +103,6 @@ int main(int argc, char **argv){
       }
     }
     if(strncmp(arg, "-m", 2) == 0){
-      int error = 0;
-
-      i++;
       modulefile_ptr = argv[i];
     }
   }

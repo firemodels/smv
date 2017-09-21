@@ -45,7 +45,7 @@ typedef struct {
   char *longlabel, *shortlabel, *unit;
 } flowlabels;
 
-EXTERNCPP void UsageCommon(char *prog, int option);
+EXTERNCPP void UsageCommon(int option);
 EXTERNCPP void ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void InitRandAB(int size);
 EXTERNCPP float RandAB(int seed, float minval, float maxval);
@@ -106,7 +106,7 @@ EXTERNCPP void GetTitle(char *progname, char *fulltitle);
 #ifdef pp_HASH
 EXTERNCPP void PRINTversion(char *progname, char *progfullpath, int hash_option);
 #else
-EXTERNCPP void PRINTversion(char *progname, char *progfullpath);
+EXTERNCPP void PRINTversion(char *progname);
 #endif
 
 #ifdef WIN32

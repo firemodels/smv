@@ -73,7 +73,7 @@ void Usage(char *prog, int option){
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   printf("  prog      - program to run in the background\n");
   printf("  arguments - command line arguments of prog\n\n");
   if(option == HELP_ALL){
@@ -84,7 +84,7 @@ void Usage(char *prog, int option){
 #ifdef pp_LINUX
     printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
 #endif
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
     printf("Example:\n");
     printf("  background -d 1.5 -u 50 prog arg1 arg2\n");
     printf("    runs prog (with arguments arg1 and arg2) after 1.5 seconds\n    and when the CPU usage drops below 50%s\n", pp);

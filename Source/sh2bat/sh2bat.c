@@ -24,7 +24,7 @@ void Usage(char *prog, int option){
   fprintf(stderr, " file file_out by ignoring lines beginning with # and converting variables\n");
   fprintf(stderr, " such as $var to %svar%s\n", "%", "%");
   UsageCommon(prog,HELP_SUMMARY);
-  if(option == HELP_ALL)UsageCommon(prog, HELP_ALL);
+  if(option == HELP_ALL)UsageCommon(HELP_ALL);
 }
 
 /* ------------------ main ------------------------ */

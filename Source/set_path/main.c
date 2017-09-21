@@ -93,14 +93,14 @@ void Usage(char *prog, int option){
   printf("             variable being modified\n");
   printf("  -s - add/remove/display entries in the System path\n");
   printf("  -u - add/remove/display entries in the User path (default)\n");
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     printf("  -m - display a summary message changes made or made to the path\n");
     printf("  -d - display path before and after changes are made\n");
     printf("  -b - batch or script mode.  Override prompt option when set_path is run from a script\n");
     printf("  -p - prompt user before making any changes (default when path entries are being removed)\n");
     printf("  -t - test, show but do not change Path variables\n");
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
   }
 }
 

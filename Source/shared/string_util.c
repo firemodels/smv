@@ -1266,7 +1266,7 @@ unsigned char *GetHashSHA256(char *file){
 
 /* ------------------ UsageCommon ------------------------ */
 
-void UsageCommon(char *prog, int option){
+void UsageCommon(int option){
   if(option == HELP_SUMMARY){
     PRINTF("  -help      - display help summary\n");
     PRINTF("  -help_all  - display all help info\n");
@@ -1338,7 +1338,7 @@ void ParseCommonOptions(int argc, char **argv){
 #ifdef pp_HASH
 void PRINTversion(char *progname, char *progfullpath, int option){
 #else
-void PRINTversion(char *progname, char *progfullpath){
+void PRINTversion(char *progname){
 #endif
   char version[256];
   char githash[256];
@@ -1361,7 +1361,6 @@ void PRINTversion(char *progname, char *progfullpath){
   PRINTF("Compiler         : %s\n", pp_COMPVER);
 
 #ifdef pp_HASH
-#ifndef _DEBUG
   if(option==HASH_MD5||option==HASH_ALL){
     unsigned char *hash = NULL;
 
@@ -1383,7 +1382,6 @@ void PRINTversion(char *progname, char *progfullpath){
     if(hash!=NULL)PRINTF("Checksum(SHA256) : %s\n", hash);
     FREEMEMORY(hash);
   }
-#endif
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
