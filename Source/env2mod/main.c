@@ -17,15 +17,35 @@ void Usage(char *prog, int option){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "Create a module from a bash script\n");
+  fprintf(stdout, "This program creates a module file from a bash script by comparing\n");
+  fprintf(stdout, "bash environments before and after an environment setting script is run.\n");
+  fprintf(stdout, "This is done by running commands such as:\n");
+  fprintf(stdout, "    env | sort > file1\n");
+  fprintf(stdout, "    source environment_setting_script.sh\n");
+  fprintf(stdout, "    env | sort > file2\n");
+  fprintf(stdout, "in a bash shell and then running this program specifying file1 and file2\n");
+  fprintf(stdout, "using the -f option");
+#ifdef WIN32
+  fprintf(stdout,"\n");
+#else
+  fprintf(stdout, " or running this program specifying the \n");
+  fprintf(stdout, " environment_setting_script.sh using the -s option\n\n");
+#endif
+  fprintf(stdout, "\n\n");
   fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  env2mod -f file1 file2 -s script.sh -m modulefile\n");
-  fprintf(stdout, "    -f file1 file2 - construct a module from files file1 and file2\n");
-  fprintf(stdout, "    where file1 is created before running the script.sh and file2\n");
-  fprintf(stdout, "    was after running script.sh .  In each case using:\n");
-  fprintf(stdout, "        env | sort > filei\n");
-  fprintf(stdout, "    -m modulefile - file containing module commands\n");
+  fprintf(stdout, "  env2mod -f before_env after_env");
+#ifndef WIN32
+  fprintf(stdout, " -s script.sh");
+#endif
+  fprintf(stdout, " -m module_file");
+  fprintf(stdout, "\n");
+  fprintf(stdout, "    -f before_env after _env - two files containing sorted environment\n");
+  fprintf(stdout, "       variables before and after a bash script has been run\n");
+  fprintf(stdout, "    -m modulefile - file containing module commands or if '-', module\n");
+  fprintf(stdout, "       module commands are output to the screen\n");
+#ifndef WIN32
   fprintf(stdout, "    -s script.sh - bash script used to create a module\n");
+#endif
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     UsageCommon(HELP_ALL);

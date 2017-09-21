@@ -66,20 +66,25 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
   char *key_left = NULL, *key_right = NULL;
   char *val_left = NULL, *val_right = NULL;
 
-  if(left_file==NULL||strlen(left_file)==0)return -1;
-  if(right_file==NULL||strlen(right_file)==0)return -1;
-  if(module_file==NULL||strlen(module_file)==0)return -1;
+  if(left_file == NULL || strlen(left_file) == 0)return -1;
+  if(right_file == NULL || strlen(right_file) == 0)return -1;
+  if(module_file == NULL || strlen(module_file) == 0)return -1;
 
   stream_left = fopen(left_file, "r");
-  if(stream_left==NULL)return -1;
+  if(stream_left == NULL)return -1;
 
   stream_right = fopen(right_file, "r");
-  if(stream_right==NULL){
+  if(stream_right == NULL){
     fclose(stream_left);
     return -1;
   }
 
-  stream_module = fopen(module_file, "w");
+  if(strcmp(module_file, "-") == 0){
+    stream_module = stdout;
+  }
+  else{
+    stream_module = fopen(module_file, "w");
+  }
   if(stream_module==NULL){
     fclose(stream_left);
     fclose(stream_right);
