@@ -41,6 +41,22 @@ void Split(char *buffer, char **keyptr, char **valptr){
   *valptr = val;
 }
 
+/* ------------------ OutputPath ------------------------ */
+
+void OutputPath(FILE *stream, char *prepost, char *key, char *values){
+  char *entry,delim[2];
+
+  if(values==NULL||strlen(values) == 0)return;
+  strcpy(delim, ":");
+  entry = strtok(values, delim);
+  while(entry != NULL){
+    if(strlen(entry)>0)fprintf(stream, "%s %s %s\n", prepost, key, entry);
+    entry = strtok(NULL, delim);
+  }
+
+}
+
+
 /* ------------------ CreateModule ------------------------ */
 
 int CreateModule(char *left_file, char* right_file, char *module_file){
@@ -99,15 +115,19 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
       if(read_left != NULL)Split(read_left, &key_left, &val_left);
     }
     else if(key_compare==0){
-      if(strcmp(key_right, "MANPATH") == 0){
-        printf("I'm here\n");
-      }
       if(strcmp(val_left, val_right)!=0){
         char *match;
 
         match=strstr(val_right, val_left);
         if(match==NULL){
-          fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+          if(strlen(val_right)>0){
+            if(strstr(key_right, "PATH") != NULL){
+              OutputPath(stream_module, "prepend-path", key_right, val_right);
+            }
+            else{
+              fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+            }
+          }
         }
         else{
           char *prepend_string, *append_string;
@@ -117,11 +137,10 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           match[0] = 0;
 
           prepend_string = TrimFrontBack(prepend_string);
-          if(strlen(prepend_string)>0)fprintf(stream_module, "prepend-path %s %s\n", key_right, prepend_string);
+          OutputPath(stream_module, "prepend-path", key_right, prepend_string);
 
           append_string = TrimFrontBack(append_string);
-          if(strlen(append_string)>0 && append_string[strlen(append_string) - 1] == ':')append_string[strlen(append_string) - 1] = 0;
-          if(strlen(append_string)>0)fprintf(stream_module, "append-path %s %s\n", key_right, append_string);
+          OutputPath(stream_module, "append-path", key_right, append_string);
         }
       }
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
@@ -131,7 +150,14 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
       if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }
     else{
-      if(strlen(val_right)>0)fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+      if(strlen(val_right)>0){
+        if(strstr(key_right, "PATH") != NULL){
+          OutputPath(stream_module, "prepend-path", key_right, val_right);
+        }
+        else{
+          fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+        }
+      }
       read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
       if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }

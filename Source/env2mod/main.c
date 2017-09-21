@@ -88,12 +88,9 @@ int main(int argc, char **argv){
       }
     }
     if(strncmp(arg, "-s", 2) == 0){
-      int error = 0;
-
       i++;
       scriptfile = argv[i];
-      if(FILE_EXISTS(scriptfile) == NO)error = 1;
-      if(error == 1){
+      if(FILE_EXISTS(scriptfile) == NO){
         fprintf(stderr, "***error: invalid or missing script file specified\n");
         Usage("env2mod", HELP_SUMMARY);
         return 1;
