@@ -25,11 +25,9 @@ void Usage(char *prog, int option){
   fprintf(stdout, "    env | sort > file2\n");
   fprintf(stdout, "in a bash shell and then running this program specifying file1 and file2\n");
   fprintf(stdout, "using the -f option");
-#ifdef WIN32
-  fprintf(stdout,"\n");
-#else
+#ifndef WIN32
   fprintf(stdout, " or running this program specifying the \n");
-  fprintf(stdout, " environment_setting_script.sh using the -s option\n\n");
+  fprintf(stdout, "environment_setting_script.sh using the -s option");
 #endif
   fprintf(stdout, "\n\n");
   fprintf(stdout, "Usage:\n");
