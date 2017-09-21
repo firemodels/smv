@@ -16,6 +16,7 @@ char *NextLine(char *buffer, int len, FILE *stream){
     read = fgets(buffer, len, stream);
     if(read==NULL)return NULL;
     if(buffer[0] == '#')continue;
+    if(strchr(buffer, '=') == NULL)continue;
     return buffer;
   }
 }
@@ -46,6 +47,8 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
   FILE *stream_left = NULL, *stream_right = NULL, *stream_module = NULL;
   char buffer_left[LEN_BUFFER], buffer_right[LEN_BUFFER];
   char *read_left, *read_right;
+  char *key_left = NULL, *key_right = NULL;
+  char *val_left = NULL, *val_right = NULL;
 
   if(left_file==NULL||strlen(left_file)==0)return -1;
   if(right_file==NULL||strlen(right_file)==0)return -1;
@@ -53,11 +56,13 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
 
   stream_left = fopen(left_file, "r");
   if(stream_left==NULL)return -1;
-  stream_right = fopen(left_file, "r");
+
+  stream_right = fopen(right_file, "r");
   if(stream_right==NULL){
     fclose(stream_left);
     return -1;
   }
+
   stream_module = fopen(module_file, "w");
   if(stream_module==NULL){
     fclose(stream_left);
@@ -65,23 +70,38 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     return -1;
   }
 
-  fprintf(stream_module, "#%Module\n");
+  {
+    char headerstring[100];
+
+    strcpy(headerstring, "#%Module");
+    fprintf(stream_module, "%s\n",headerstring);
+  }
 
   read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+  if(read_left != NULL)Split(read_left, &key_left, &val_left);
+
   read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
-  while(read_left!=NULL&&read_right!=NULL){
+  if(read_right!=NULL)Split(read_right, &key_right, &val_right);
+
+  while(read_right!=NULL){
     int key_compare;
-    char *key_left, *key_right;
-    char *val_left, *val_right;
 
-    Split(read_left, &key_left, &val_left);
-    Split(read_right, &key_right, &val_right);
 
-    key_compare = strcmp(key_left, key_right);
+    if(read_left == NULL){
+      key_compare = 1;
+    }
+    else{
+      key_compare = strcmp(key_left, key_right);
+    }
+
     if(key_compare<0){
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+      if(read_left != NULL)Split(read_left, &key_left, &val_left);
     }
     else if(key_compare==0){
+      if(strcmp(key_right, "MANPATH") == 0){
+        printf("I'm here\n");
+      }
       if(strcmp(val_left, val_right)!=0){
         char *match;
 
@@ -92,7 +112,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
         else{
           char *prepend_string, *append_string;
 
-          prepend_string = val_left;
+          prepend_string = val_right;
           append_string = match+strlen(val_left);
           match[0] = 0;
 
@@ -100,14 +120,20 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           if(strlen(prepend_string)>0)fprintf(stream_module, "prepend-path %s %s\n", key_right, prepend_string);
 
           append_string = TrimFrontBack(append_string);
+          if(strlen(append_string)>0 && append_string[strlen(append_string) - 1] == ':')append_string[strlen(append_string) - 1] = 0;
           if(strlen(append_string)>0)fprintf(stream_module, "append-path %s %s\n", key_right, append_string);
         }
       }
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+      if(read_left != NULL)Split(read_left, &key_left, &val_left);
+
       read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
+      if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }
     else{
+      if(strlen(val_right)>0)fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
       read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
+      if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }
   }
   fclose(stream_left);

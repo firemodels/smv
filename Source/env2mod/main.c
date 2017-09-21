@@ -103,6 +103,7 @@ int main(int argc, char **argv){
       }
     }
     if(strncmp(arg, "-m", 2) == 0){
+      i++;
       modulefile_ptr = argv[i];
     }
   }
