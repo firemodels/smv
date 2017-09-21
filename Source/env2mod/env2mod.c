@@ -21,7 +21,7 @@ char *NextLine(char *buffer, int len, FILE *stream){
   }
 }
 
-/* ------------------ CreateModule ------------------------ */
+/* ------------------ Split ------------------------ */
 
 void Split(char *buffer, char **keyptr, char **valptr){
   char *eq,*key,*val;
@@ -101,7 +101,6 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
 
   while(read_right!=NULL){
     int key_compare;
-
 
     if(read_left == NULL){
       key_compare = 1;

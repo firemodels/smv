@@ -37,6 +37,7 @@ void Usage(char *prog, int option){
 int main(int argc, char **argv){
   int i, f_opt = 0, s_opt = 0;
   char *file1 = NULL, *file2 = NULL, *scriptfile = NULL, *modulefile_ptr=NULL;
+  char file1val[1024], file2val[1024];
   char modulefile[1024];
 
   modulefile_ptr = modulefile;
@@ -119,7 +120,20 @@ int main(int argc, char **argv){
   }
 #else
   if(s_opt == 1){
+    char command[1024];
 
+    strcpy(command,"env | sort > file1");
+    system(command);
+
+    strcpy(command,"source ");
+    strcat(command,scriptfile);
+    strcat(command," intel64 ; env | sort > file2");
+    system(command);
+
+    strcpy(file1val,"file1");
+    strcpy(file2val,"file2");
+    file1 = file1val;
+    file2 = file2val;
   }
 #endif
   CreateModule(file1, file2, modulefile_ptr);
