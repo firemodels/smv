@@ -17,32 +17,31 @@ void Usage(char *prog, int option){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "This program creates a module file from a bash script by comparing\n");
-  fprintf(stdout, "bash environments before and after an environment setting script is run.\n");
-  fprintf(stdout, "This is done by running commands such as:\n");
+  fprintf(stdout, "This program converts a bash script into a module file by comparing\n");
+  fprintf(stdout, "the bash environment before and after the bash script is run. This\n");
+  fprintf(stdout, "is done by running commands such as:\n");
   fprintf(stdout, "    env | sort > file1\n");
-  fprintf(stdout, "    source environment_setting_script.sh\n");
+  fprintf(stdout, "    source bash_script.sh\n");
   fprintf(stdout, "    env | sort > file2\n");
-  fprintf(stdout, "in a bash shell and then running this program specifying file1 and file2\n");
-  fprintf(stdout, "using the -f option");
+  fprintf(stdout, "and then running env2mod specifying file1 and file2 with the -f option\n");
 #ifndef WIN32
-  fprintf(stdout, " or running this program specifying the \n");
-  fprintf(stdout, "environment_setting_script.sh using the -s option");
+  fprintf(stdout, "or by specifying the script file with the -s option\n");
 #endif
-  fprintf(stdout, "\n\n");
+  fprintf(stdout, "\n");
   fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  env2mod -f before_env after_env");
+  fprintf(stdout, "  env2mod -f file1 file2");
 #ifndef WIN32
   fprintf(stdout, " -s script.sh");
 #endif
   fprintf(stdout, " -m module_file");
   fprintf(stdout, "\n");
-  fprintf(stdout, "    -f before_env after _env - two files containing sorted environment\n");
-  fprintf(stdout, "       variables before and after a bash script has been run\n");
-  fprintf(stdout, "    -m modulefile - file containing module commands or if '-', module\n");
+  fprintf(stdout, "    -f file1 file2 - two files containing sorted environment variables before\n");
+  fprintf(stdout, "       and after a bash script has been run (not used if -s is specified)\n");
+  fprintf(stdout, "    -m modulefile - file containing module commands or if '-' is specified,\n");
   fprintf(stdout, "       module commands are output to the screen\n");
 #ifndef WIN32
-  fprintf(stdout, "    -s script.sh - bash script used to create a module\n");
+  fprintf(stdout, "    -s script.sh - bash script used to create a module file (not used if\n");
+  fprintf(stdout, "       -f is specified)\n");
 #endif
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
