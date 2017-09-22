@@ -41,8 +41,8 @@ void Usage(char *prog, int option){
   fprintf(stdout, "       module commands are output to the screen\n");
 #ifndef WIN32
   fprintf(stdout, "    -s script.sh - bash script used to create a module file (not used if\n");
-  fprintf(stdout, "       -f is specified).  If script has arguemnts enclose in quotes as in:\n");
-  fprintf(stdout, "        \"-s script_command.sh arg1 arg2\"\n");
+  fprintf(stdout, "       -f is specified).  If script.sh has arguemnts enclose in quotes as in:\n");
+  fprintf(stdout, "        -s \"script.sh arg1 arg2\"\n");
 #endif
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
