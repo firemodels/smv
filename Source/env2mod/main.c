@@ -97,7 +97,6 @@ int main(int argc, char **argv){
         if(FILE_EXISTS(file2) == NO)error = 1;
         if(error == 1){
           fprintf(stderr, "***error: invalid or missing files specified after the -f option\n");
-          Usage("env2mod", HELP_SUMMARY);
           return 1;
         }
         else{
@@ -110,7 +109,6 @@ int main(int argc, char **argv){
       scriptfile = argv[i];
       if(FILE_EXISTS(scriptfile) == NO){
         fprintf(stderr, "***error: invalid or missing script file specified\n");
-        Usage("env2mod", HELP_SUMMARY);
         return 1;
       }
       else{
@@ -125,14 +123,12 @@ int main(int argc, char **argv){
 
   if(s_opt == 0 && f_opt == 0){
     fprintf(stderr, "***error: The -f or -s option must be specified\n");
-    Usage("env2mod", HELP_SUMMARY);
     return 1;
   }
 
 #ifdef WIN32
   if(f_opt == 0){
     fprintf(stderr, "***error: -f option required for Windows version of env2mod\n");
-    Usage("env2mod", HELP_SUMMARY);
     return 1;
   }
 #else
