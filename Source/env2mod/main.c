@@ -41,7 +41,8 @@ void Usage(char *prog, int option){
   fprintf(stdout, "       module commands are output to the screen\n");
 #ifndef WIN32
   fprintf(stdout, "    -s script.sh - bash script used to create a module file (not used if\n");
-  fprintf(stdout, "       -f is specified)\n");
+  fprintf(stdout, "       -f is specified).  If script.sh has arguemnts enclose in quotes as in:\n");
+  fprintf(stdout, "        -s \"script.sh arg1 arg2\"\n");
 #endif
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
@@ -49,13 +50,32 @@ void Usage(char *prog, int option){
   }
 }
 
+/* ------------------ SplitCommandline ------------------------ */
+
+void SplitCommandline(char *commandline, char **command, char **args){
+  int len;
+  char *blank;
+
+  *args = NULL;
+  if(commandline[0] == '"')commandline[0] = ' ';
+  len = strlen(commandline);
+  if(commandline[len - 1] == '"')commandline[len - 1] = ' ';
+  *command = TrimFrontBack(commandline);
+  blank = strchr(*command,' ');
+  if(blank==NULL)return;
+  blank[0] = 0;
+  *args = TrimFrontBack(blank+1);
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
   int i, f_opt = 0, s_opt = 0;
-  char *file1 = NULL, *file2 = NULL, *scriptfile = NULL, *modulefile_ptr=NULL;
+  char *file1 = NULL, *file2 = NULL, *modulefile_ptr=NULL;
+  char *script_command, *script_args;
   char file1val[1024], file2val[1024];
   char modulefile[1024];
+  int error = 0;
 
   modulefile_ptr = modulefile;
   strcpy(modulefile, "modulefile");
@@ -87,17 +107,18 @@ int main(int argc, char **argv){
     lenarg = strlen(arg);
     if(arg[0] == '-'&&lenarg > 1){
       if(strncmp(arg, "-f", 2) == 0){
-        int error = 0;
-
         i++;
         file1 = argv[i];
-        if(FILE_EXISTS(file1) == NO)error = 1;
+        if(FILE_EXISTS(file1) == NO){
+          fprintf(stderr, "***error: file %s specified after the -f option not found\n",file1);
+          error = 1;
+        }
         i++;
         file2 = argv[i];
         if(FILE_EXISTS(file2) == NO)error = 1;
         if(error == 1){
-          fprintf(stderr, "***error: invalid or missing files specified after the -f option\n");
-          return 1;
+          fprintf(stderr, "***error: file %s specified after the -f option not found\n",file2);
+          error = 1;
         }
         else{
           f_opt = 1;
@@ -106,10 +127,10 @@ int main(int argc, char **argv){
     }
     if(strncmp(arg, "-s", 2) == 0){
       i++;
-      scriptfile = argv[i];
-      if(FILE_EXISTS(scriptfile) == NO){
-        fprintf(stderr, "***error: invalid or missing script file specified\n");
-        return 1;
+      SplitCommandline(argv[i], &script_command, &script_args);
+      if(FILE_EXISTS(script_command) == NO){
+        fprintf(stderr, "***error: script %s not found\n",script_command);
+        error = 1;
       }
       else{
         s_opt = 1;
@@ -123,24 +144,28 @@ int main(int argc, char **argv){
 
   if(s_opt == 0 && f_opt == 0){
     fprintf(stderr, "***error: The -f or -s option must be specified\n");
-    return 1;
+    error = 1;
   }
 
 #ifdef WIN32
   if(f_opt == 0){
     fprintf(stderr, "***error: -f option required for Windows version of env2mod\n");
-    return 1;
+    error = 1;
   }
 #else
-  if(s_opt == 1){
+  if(error==0&&s_opt == 1){
     char command[1024];
 
     strcpy(command,"env | sort > file1");
     system(command);
 
     strcpy(command,"source ");
-    strcat(command,scriptfile);
-    strcat(command," intel64 ; env | sort > file2");
+    strcat(command,script_command);
+    if(script_args!=NULL){
+      strcat(command," ");
+      strcat(command,script_args);
+    }
+    strcat(command," ; env | sort > file2");
     system(command);
 
     strcpy(file1val,"file1");
@@ -149,6 +174,7 @@ int main(int argc, char **argv){
     file2 = file2val;
   }
 #endif
+  if(error!=0)return 1;
   CreateModule(file1, file2, modulefile_ptr);
   return 0;
 }
