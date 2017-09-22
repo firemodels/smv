@@ -34,7 +34,7 @@ void Usage(char *prog, int option){
   PRINTF("  -t nthread - Compress nthread files at a time (up to %i)\n", NTHREADS_MAX);
 #endif
 
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     PRINTF("overwrite options:\n");
     PRINTF("  -f  - overwrites all compressed files\n");
@@ -85,7 +85,7 @@ void Usage(char *prog, int option){
     PRINTF("        and creates the .svd file which activates the Smokeview demonstrator\n");
     PRINTF("        mode.\n");
     PRINTF("  -skip skipval - skip frames when compressing files\n\n");
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
   }
 }
 

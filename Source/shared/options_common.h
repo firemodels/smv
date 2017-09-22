@@ -25,7 +25,7 @@
 #ifdef pp_HASH
 #define PRINTVERSION(a,b) PRINTversion(a,b,hash_option)
 #else
-#define PRINTVERSION(a,b) PRINTversion(a,b)
+#define PRINTVERSION(a,b) PRINTversion(a)
 #endif
 
 //*** options: Mac

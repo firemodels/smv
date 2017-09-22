@@ -31,7 +31,7 @@ void Usage(char *prog, int option){
 
   printf("  -prefix label  - prefix column headers with label\n");
   printf("  -offset x y z  - offset sensor locations by (x,y,z)\n");
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     printf("  -wv            - converting a non-sodar file\n");
     printf("  -date mm/dd/yyyy - only convert data recorded on mm/dd/yyyy\n");
@@ -39,7 +39,7 @@ void Usage(char *prog, int option){
     printf("  -maxdate \"mm/dd/yyyy [hh:mm:ss]\" - ignore data recorded after specified date\n");
     printf("  -mintime \"hh:mm:ss\" - ignore data recorded before specified time (on any date)\n");
     printf("  -maxtime \"hh:mm:ss\" - ignore data recorded after specified time (on any date)\n");
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
   }
   printf("\n  datafile.csv   - spreadsheet file to be converted. Use '-' to input data\n");
   printf("                   from standard input\n");

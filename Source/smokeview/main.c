@@ -30,7 +30,7 @@ void Usage(char *prog,int option){
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
   PRINTF("%s\n", _(" -runscript     - run the script file casename.ssf"));
-  UsageCommon(prog, HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
 #ifdef pp_READBUFFER
@@ -62,7 +62,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
     PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
-    UsageCommon(prog, HELP_ALL);
+    UsageCommon(HELP_ALL);
   }
 
   if(showbuild == 1){
