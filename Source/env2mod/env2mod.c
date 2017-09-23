@@ -91,7 +91,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     return -1;
   }
 
-  fprintf(stream_module,"#%Module####################################\n");
+  fprintf(stream_module,"#%%Module####################################\n");
   fprintf(stream_module,"\n");
   fprintf(stream_module,"# put name of module here\n");
   fprintf(stream_module,"\n\n");
