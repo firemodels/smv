@@ -176,5 +176,11 @@ int main(int argc, char **argv){
 #endif
   if(error!=0)return 1;
   CreateModule(file1, file2, modulefile_ptr);
+#ifndef WIN32
+  if(s_opt==1){
+    if(FileExists(file1))UNLINK(file1);
+    if(FileExists(file2))UNLINK(file2);
+  }
+#endif
   return 0;
 }
