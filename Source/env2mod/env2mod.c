@@ -91,12 +91,17 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     return -1;
   }
 
-  {
-    char headerstring[100];
-
-    strcpy(headerstring, "#%Module");
-    fprintf(stream_module, "%s\n",headerstring);
-  }
+  fprintf(stream_module,"#%Module####################################\n");
+  fprintf(stream_module,"\n");
+  fprintf(stream_module,"# put name of module here\n");
+  fprintf(stream_module,"\n\n");
+  fprintf(stream_module,"module-whatis   \"brief description of this module\"\n");
+  fprintf(stream_module,"\n");
+  fprintf(stream_module,"proc ModulesHelp { } {\n");
+  fprintf(stream_module,"        puts stderr \"no so brief information\"\n");
+  fprintf(stream_module,"        puts stderr \"about this module\"\n");
+  fprintf(stream_module,"}\n");
+  fprintf(stream_module,"\n");
 
   read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
   if(read_left != NULL)Split(read_left, &key_left, &val_left);
