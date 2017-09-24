@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef pp_OSX
+#include <unistd.h>
+#endif
 #include "env2mod.h"
 #include "datadefs.h"
 #include "string_util.h"
