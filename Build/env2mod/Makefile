@@ -81,7 +81,7 @@ intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = env2mod_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ************** OSX 64 *************************
 
@@ -99,11 +99,12 @@ gnu_osx_64 : $(obj)
 # ------------- intel_osx_64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : LFLAGS    = -m64
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = env2mod_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj)
+	$(CC) -o $(bin)/$(exe) $(LFLABS) $(obj)
 
 .PHONY : clean
 clean:
