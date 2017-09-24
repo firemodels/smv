@@ -73,7 +73,9 @@ int main(int argc, char **argv){
   int i, f_opt = 0, s_opt = 0;
   char *file1 = NULL, *file2 = NULL, *modulefile_ptr=NULL;
   char *script_command, *script_args;
+#ifndef WIN32
   char file1val[1024], file2val[1024];
+#endif
   char modulefile[1024];
   int error = 0;
 
