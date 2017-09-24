@@ -62,6 +62,17 @@ intel_win_64 : exe       = env2mod_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
 
+# ------------- gnu_linux_64 ----------------
+
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings $(GNU_COMPINFO)
+gnu_linux_64 : LFLAGS    = -m64
+gnu_linux_64 : CC        = gcc
+gnu_linux_64 : CPP       = g++
+gnu_linux_64 : exe       = env2mod_linux_64
+
+gnu_linux_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
