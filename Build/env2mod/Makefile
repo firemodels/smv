@@ -98,13 +98,12 @@ gnu_osx_64 : $(obj)
 
 # ------------- intel_osx_64 ----------------
 
-intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = env2mod_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX)
+	$(CC) -o $(bin)/$(exe) -m64 $(obj)
 
 .PHONY : clean
 clean:
