@@ -100,7 +100,7 @@ SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
 
 SMV_LIBS_LINUX = $(SMV_LIBS_OSX) -lglut
 SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm
-INTEL_LIBS_LINUX = -L $(LIBRARY_PATH) -lifcore  -lirc
+INTEL_LIBS_LINUX =-lifcore  -lirc
 
 
 #*** General Purpose Rules ***
@@ -331,7 +331,7 @@ mingw_win_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-OSX_INTEL_LIBS = -L $(LIBRARY_PATH) -lifcoremt -limf -lirc -lsvml
+OSX_INTEL_LIBS = -lifcoremt -limf -lirc -lsvml
 
 # ------------- intel_osx_64 ----------------
 
