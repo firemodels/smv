@@ -49,11 +49,9 @@ no_target:
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 
+# ************** Windows 64 *************************
 
-
-# ********  rules for each platform supported *************
-
-# ------------- Windows 64 ----------------
+# ------------- intel_win_64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
@@ -62,8 +60,20 @@ intel_win_64 : exe       = env2mod_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- gnu_linux_64 ----------------
+
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings $(GNU_COMPINFO)
+gnu_linux_64 : LFLAGS    = -m64
+gnu_linux_64 : CC        = gcc
+gnu_linux_64 : CPP       = g++
+gnu_linux_64 : exe       = env2mod_linux_64
+
+gnu_linux_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ************** Linux 64 *************************
+
+# ------------- intel_linux_64  -----------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
@@ -71,16 +81,32 @@ intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = env2mod_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
-	
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+# ************** OSX 64 *************************
 
-intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
+# ------------- gnu_osx_64 ----------------
+
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -Wno-write-strings $(GNU_COMPINFO)
+gnu_osx_64 : LFLAGS    = -m64
+gnu_osx_64 : CC        = gcc
+gnu_osx_64 : CPP       = g++
+gnu_osx_64 : exe       = env2mod_osx_64
+
+gnu_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
+
+# ------------- intel_osx_64 ----------------
+
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : LFLAGS    = -m64
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = env2mod_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX)
+	$(CC) -o $(bin)/$(exe) $(LFLABS) $(obj)
+
+.PHONY : clean
+clean:
+	rm -f *.o
+

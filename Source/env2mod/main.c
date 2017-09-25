@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef pp_OSX
+#include <unistd.h>
+#endif
 #include "env2mod.h"
 #include "datadefs.h"
 #include "string_util.h"
@@ -73,7 +76,9 @@ int main(int argc, char **argv){
   int i, f_opt = 0, s_opt = 0;
   char *file1 = NULL, *file2 = NULL, *modulefile_ptr=NULL;
   char *script_command, *script_args;
+#ifndef WIN32
   char file1val[1024], file2val[1024];
+#endif
   char modulefile[1024];
   int error = 0;
 
@@ -176,5 +181,11 @@ int main(int argc, char **argv){
 #endif
   if(error!=0)return 1;
   CreateModule(file1, file2, modulefile_ptr);
+#ifndef WIN32
+  if(s_opt==1){
+    if(FileExists(file1))UNLINK(file1);
+    if(FileExists(file2))UNLINK(file2);
+  }
+#endif
   return 0;
 }

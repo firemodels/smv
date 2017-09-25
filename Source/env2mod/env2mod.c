@@ -43,17 +43,42 @@ void Split(char *buffer, char **keyptr, char **valptr){
 
 /* ------------------ OutputPath ------------------------ */
 
-void OutputPath(FILE *stream, char *prepost, char *key, char *values){
+void OutputPath(FILE *stream, int list_type, char *key, char *values){
   char *entry,delim[2];
+  char *entrylist[ENV2MOD_MAXLIST];
+  int nlist = 0;
 
   if(values==NULL||strlen(values) == 0)return;
+  if(list_type!=ENV2MOD_PREPEND&&list_type!=ENV2MOD_APPEND)return;
+
+  // need to construct a list because prepend-path entries need to be outputted in reverse order
+
   strcpy(delim, ":");
   entry = strtok(values, delim);
   while(entry != NULL){
-    if(strlen(entry)>0)fprintf(stream, "%s %s %s\n", prepost, key, entry);
+    if(strlen(entry)>0){
+      entrylist[nlist] = entry;
+      nlist++;
+    }
     entry = strtok(NULL, delim);
   }
+  if(list_type==ENV2MOD_APPEND){
+    int i;
 
+    for(i = 0;i<nlist;i++){
+
+      entry = entrylist[i];
+      fprintf(stream, "append-path %s %s\n", key, entry);
+    }
+  }
+  else if(list_type==ENV2MOD_PREPEND){
+    int i;
+
+    for(i = 0;i<nlist;i++){
+      entry = entrylist[nlist-1-i];
+      fprintf(stream, "prepend-path %s %s\n", key, entry);
+    }
+  }
 }
 
 
@@ -91,12 +116,17 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     return -1;
   }
 
-  {
-    char headerstring[100];
-
-    strcpy(headerstring, "#%Module");
-    fprintf(stream_module, "%s\n",headerstring);
-  }
+  fprintf(stream_module,"#%%Module####################################\n");
+  fprintf(stream_module,"\n");
+  fprintf(stream_module,"# put name of module here\n");
+  fprintf(stream_module,"\n\n");
+  fprintf(stream_module,"module-whatis   \"brief description of this module\"\n");
+  fprintf(stream_module,"\n");
+  fprintf(stream_module,"proc ModulesHelp { } {\n");
+  fprintf(stream_module,"        puts stderr \"no so brief information\"\n");
+  fprintf(stream_module,"        puts stderr \"about this module\"\n");
+  fprintf(stream_module,"}\n");
+  fprintf(stream_module,"\n");
 
   read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
   if(read_left != NULL)Split(read_left, &key_left, &val_left);
@@ -126,7 +156,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
         if(match==NULL){
           if(strlen(val_right)>0){
             if(strstr(key_right, "PATH") != NULL){
-              OutputPath(stream_module, "prepend-path", key_right, val_right);
+              OutputPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
             }
             else{
               fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
@@ -141,10 +171,10 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           match[0] = 0;
 
           prepend_string = TrimFrontBack(prepend_string);
-          OutputPath(stream_module, "prepend-path", key_right, prepend_string);
+          OutputPath(stream_module, ENV2MOD_PREPEND, key_right, prepend_string);
 
           append_string = TrimFrontBack(append_string);
-          OutputPath(stream_module, "append-path", key_right, append_string);
+          OutputPath(stream_module, ENV2MOD_APPEND, key_right, append_string);
         }
       }
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
@@ -156,7 +186,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     else{
       if(strlen(val_right)>0){
         if(strstr(key_right, "PATH") != NULL){
-          OutputPath(stream_module, "prepend-path", key_right, val_right);
+          OutputPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
         }
         else{
           fprintf(stream_module, "setenv %s %s\n", key_right, val_right);

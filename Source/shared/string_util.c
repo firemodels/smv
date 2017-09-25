@@ -6,6 +6,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef pp_OSX
+#include <unistd.h>
+#endif
 #ifdef WIN32
 #include <dirent_win.h>
 #else
