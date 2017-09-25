@@ -7,7 +7,6 @@ LUA=$1
 
 # build using 64 bit intel compilers
 OPTS="-i -6"
-source $IFORT_COMPILER/bin/compilervars.sh intel64
 
 LIBDIR=`pwd`
 SRCDIR=$LIBDIR/../../../Source

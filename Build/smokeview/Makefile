@@ -100,7 +100,7 @@ SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
 
 SMV_LIBS_LINUX = $(SMV_LIBS_OSX) -lglut
 SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm
-INTEL_LIBS_LINUX = $(IFORT_COMPILER_LIB)/intel64/libifcore.a  $(IFORT_COMPILER_LIB)/intel64/libirc.a
+INTEL_LIBS_LINUX = -L $(LIBRARY_PATH) -lifcore  -lirc
 
 
 #*** General Purpose Rules ***

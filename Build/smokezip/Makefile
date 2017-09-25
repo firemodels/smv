@@ -30,8 +30,6 @@ endif
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
-FORTLIBDIR = /opt/intel/composerxe/lib
-
 # Definition of the object variables
 
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
@@ -120,7 +118,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
-LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
+LINUXFORTLIBS_64=-L $(LIBRARY_PATH) -lifcore
 
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
