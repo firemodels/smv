@@ -79,8 +79,7 @@ intel_win_64 : exe       = smokediff_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 	
-LINUXFORTLIBS_32=$(FORTLIBDIR)/ia32/libifcore.a
-LINUXFORTLIBS_64=$(FORTLIBDIR)/intel64/libifcore.a
+LINUXFORTLIBS=-lifcore
 
 # ------------- 32 bit Linux gnu ----------------
 
@@ -133,7 +132,7 @@ intel_linux_64 : FC        = ifort
 intel_linux_64 : exe       = smokediff_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS)
 
 intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
@@ -143,7 +142,7 @@ intel_linux_64_db : FC        = ifort
 intel_linux_64_db : exe       = smokediff_linux_64_db
 
 intel_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS)
 	
 
 MACFORTLIBS=-lifcoremt -limf -lirc -lsvml
