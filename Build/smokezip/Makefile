@@ -134,7 +134,7 @@ intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread
 
 	
-OSXFORTLIBS=$(FORTLIBDIR)/libifcoremt.a $(FORTLIBDIR)/libimf.a $(FORTLIBDIR)/libirc.a $(FORTLIBDIR)/libsvml.a
+OSXFORTLIBS=-L $(LIBRARY_PATH) -lifcoremt -limf -lirc -lsvml
 
 # ------------- OSX 64 ----------------
 #  64 bit OSX

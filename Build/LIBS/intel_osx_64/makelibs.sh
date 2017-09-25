@@ -5,7 +5,6 @@ cd $DIR
 LUA=$1
 
 OPTS="-i -6"
-source $IFORT_COMPILER/bin/compilervars.sh intel64
 LIBDIR=`pwd`
 rm *.a
 SRCDIR=$LIBDIR/../../../Source

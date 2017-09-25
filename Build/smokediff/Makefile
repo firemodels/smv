@@ -146,7 +146,7 @@ intel_linux_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64)
 	
 
-MACFORTLIBS=$(FORTLIBDIR)/libifcoremt.a $(FORTLIBDIR)/libimf.a $(FORTLIBDIR)/libirc.a $(FORTLIBDIR)/libsvml.a
+MACFORTLIBS=-L $(LIBRARY_PATH) -lifcoremt -limf -lirc -lsvml
 
 # ------------- OSX 64 ----------------
 #  64 bit OSX
