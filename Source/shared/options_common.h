@@ -3,7 +3,9 @@
 
 //*** options: all platforms
 
+#ifndef _DEBUG
 #define pp_HASH   // md5, sha1 and sha255 hashing
+#endif
 
 //*** options: windows
 
