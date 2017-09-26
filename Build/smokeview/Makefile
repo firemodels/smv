@@ -94,7 +94,7 @@ SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\glut32.lib $(SMV_WIN
 #--- OSX
 
 SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
-INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libimf.a $(IFORT_COMPILER_LIB)/libirc.a $(IFORT_COMPILER_LIB)/libsvml.a
+INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a
 
 #--- Linux
 
