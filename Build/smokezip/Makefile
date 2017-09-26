@@ -118,7 +118,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
-LINUXFORTLIBS_64=-lifcore
+LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
@@ -132,7 +132,7 @@ intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread
 
 	
-OSXFORTLIBS=-lifcoremt -limf -lirc -lsvml
+OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
 
 # ------------- OSX 64 ----------------
 #  64 bit OSX
