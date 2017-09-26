@@ -100,8 +100,7 @@ INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libim
 
 SMV_LIBS_LINUX = $(SMV_LIBS_OSX) -lglut
 SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm
-INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a  $(IFORT_COMPILER_LIB)/libirc.a
-
+INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a
 
 #*** General Purpose Rules ***
 

@@ -79,7 +79,7 @@ intel_win_64 : exe       = smokediff_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 	
-LINUXFORTLIBS=-lifcore
+LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
 # ------------- 32 bit Linux gnu ----------------
 
