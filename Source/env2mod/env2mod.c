@@ -124,7 +124,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
   fprintf(stream_module,"    puts stderr \"\\t$helpmsg\\n\"\n");
   fprintf(stream_module,"}\n\n");
 
-  fprintf(stream_module,"#set home=path_to_module\n\n");
+  fprintf(stream_module,"#set home path_to_module\n\n");
   fprintf(stream_module,"#if [ file isdirectory $home ] {\n");
   fprintf(stream_module,"   module-whatis   \"Sets up your enviornment to use $home\"\n");
   fprintf(stream_module,"   set helpmsg \"Sets up your environment to use $home\"\n\n");
@@ -190,7 +190,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           OutputPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
         }
         else{
-          fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+          fprintf(stream_module, "   setenv %s %s\n", key_right, val_right);
         }
       }
       read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
@@ -198,8 +198,8 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
     }
   }
   fprintf(stream_module,"#} else {\n");
-  fprintf(stream_module,"#    module-whatis \"directory $home does NOT exist\"\n");
-  fprintf(stream_module,"#    set helpmsg \"directory $home does NOT exist\"\n");
+  fprintf(stream_module,"#   module-whatis \"directory $home does NOT exist\"\n");
+  fprintf(stream_module,"#   set helpmsg \"directory $home does NOT exist\"\n");
   fprintf(stream_module,"#}\n");
 
   fclose(stream_left);
