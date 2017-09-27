@@ -68,7 +68,7 @@ void OutputPath(FILE *stream, int list_type, char *key, char *values){
     for(i = 0;i<nlist;i++){
 
       entry = entrylist[i];
-      fprintf(stream, "append-path %s %s\n", key, entry);
+      fprintf(stream, "   append-path %s %s\n", key, entry);
     }
   }
   else if(list_type==ENV2MOD_PREPEND){
@@ -76,7 +76,7 @@ void OutputPath(FILE *stream, int list_type, char *key, char *values){
 
     for(i = 0;i<nlist;i++){
       entry = entrylist[nlist-1-i];
-      fprintf(stream, "prepend-path %s %s\n", key, entry);
+      fprintf(stream, "   prepend-path %s %s\n", key, entry);
     }
   }
 }
@@ -118,15 +118,16 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
 
   fprintf(stream_module,"#%%Module####################################\n");
   fprintf(stream_module,"\n");
-  fprintf(stream_module,"# put name of module here\n");
-  fprintf(stream_module,"\n\n");
-  fprintf(stream_module,"module-whatis   \"brief description of this module\"\n");
-  fprintf(stream_module,"\n");
+  fprintf(stream_module,"# put name of module here\n\n");
   fprintf(stream_module,"proc ModulesHelp { } {\n");
-  fprintf(stream_module,"        puts stderr \"no so brief information\"\n");
-  fprintf(stream_module,"        puts stderr \"about this module\"\n");
-  fprintf(stream_module,"}\n");
-  fprintf(stream_module,"\n");
+  fprintf(stream_module,"    global helpmsg\n");
+  fprintf(stream_module,"    puts stderr \"\\t$helpmsg\\n\"\n");
+  fprintf(stream_module,"}\n\n");
+
+  fprintf(stream_module,"#set home path_to_module\n\n");
+  fprintf(stream_module,"#if [ file isdirectory $home ] {\n");
+  fprintf(stream_module,"   module-whatis   \"Sets up your enviornment to use $home\"\n");
+  fprintf(stream_module,"   set helpmsg \"Sets up your environment to use $home\"\n\n");
 
   read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
   if(read_left != NULL)Split(read_left, &key_left, &val_left);
@@ -159,7 +160,7 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
               OutputPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
             }
             else{
-              fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+              fprintf(stream_module, "   setenv %s %s\n", key_right, val_right);
             }
           }
         }
@@ -189,13 +190,18 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           OutputPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
         }
         else{
-          fprintf(stream_module, "setenv %s %s\n", key_right, val_right);
+          fprintf(stream_module, "   setenv %s %s\n", key_right, val_right);
         }
       }
       read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
       if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }
   }
+  fprintf(stream_module,"#} else {\n");
+  fprintf(stream_module,"#   module-whatis \"directory $home does NOT exist\"\n");
+  fprintf(stream_module,"#   set helpmsg \"directory $home does NOT exist\"\n");
+  fprintf(stream_module,"#}\n");
+
   fclose(stream_left);
   fclose(stream_right);
   fclose(stream_module);
