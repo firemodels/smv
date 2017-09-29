@@ -81,7 +81,6 @@ void OutputPath(FILE *stream, int list_type, char *key, char *values){
   }
 }
 
-
 /* ------------------ CreateModule ------------------------ */
 
 int CreateModule(char *left_file, char* right_file, char *module_file){
@@ -207,4 +206,3 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
   fclose(stream_module);
   return 0;
 }
-
