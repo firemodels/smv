@@ -81,7 +81,6 @@ void OutputPath(FILE *stream, int list_type, char *key, char *values){
   }
 }
 
-
 /* ------------------ CreateModule ------------------------ */
 
 int CreateModule(char *left_file, char* right_file, char *module_file){
@@ -201,6 +200,162 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
   fprintf(stream_module,"#   module-whatis \"directory $home does NOT exist\"\n");
   fprintf(stream_module,"#   set helpmsg \"directory $home does NOT exist\"\n");
   fprintf(stream_module,"#}\n");
+
+  fclose(stream_left);
+  fclose(stream_right);
+  fclose(stream_module);
+  return 0;
+}
+
+/* ------------------ OutputScriptPath ------------------------ */
+
+void OutputScriptPath(FILE *stream, int list_type, char *key, char *values){
+  char *entry,delim[2],dollar[2];
+  char *entrylist[ENV2MOD_MAXLIST];
+  int nlist = 0;
+
+  if(values==NULL||strlen(values) == 0)return;
+  if(list_type!=ENV2MOD_PREPEND&&list_type!=ENV2MOD_APPEND)return;
+
+  // need to construct a list because prepend-path entries need to be outputted in reverse order
+
+  strcpy(delim, ":");
+  strcpy(dollar,"$");
+  entry = strtok(values, delim);
+  while(entry != NULL){
+    if(strlen(entry)>0){
+      entrylist[nlist] = entry;
+      nlist++;
+    }
+    entry = strtok(NULL, delim);
+  }
+  if(list_type==ENV2MOD_APPEND){
+    int i;
+
+    for(i = 0;i<nlist;i++){
+
+      entry = entrylist[i];
+      fprintf(stream, "   %s=%s%s:%s\n", key, dollar,key,entry);
+    }
+  }
+  else if(list_type==ENV2MOD_PREPEND){
+    int i;
+
+    for(i = 0;i<nlist;i++){
+      entry = entrylist[nlist-1-i];
+      fprintf(stream, "   %s=%s:%s%s\n", key, entry,dollar,key);
+    }
+  }
+}
+
+/* ------------------ CreateScript ------------------------ */
+
+int CreateScript(char *left_file, char* right_file, char *module_file){
+  FILE *stream_left = NULL, *stream_right = NULL, *stream_module = NULL;
+  char buffer_left[LEN_BUFFER], buffer_right[LEN_BUFFER];
+  char *read_left, *read_right;
+  char *key_left = NULL, *key_right = NULL;
+  char *val_left = NULL, *val_right = NULL;
+
+  if(left_file == NULL || strlen(left_file) == 0)return -1;
+  if(right_file == NULL || strlen(right_file) == 0)return -1;
+  if(module_file == NULL || strlen(module_file) == 0)return -1;
+
+  stream_left = fopen(left_file, "r");
+  if(stream_left == NULL)return -1;
+
+  stream_right = fopen(right_file, "r");
+  if(stream_right == NULL){
+    fclose(stream_left);
+    return -1;
+  }
+
+  if(strcmp(module_file, "-") == 0){
+    stream_module = stdout;
+  }
+  else{
+    stream_module = fopen(module_file, "w");
+  }
+  if(stream_module==NULL){
+    fclose(stream_left);
+    fclose(stream_right);
+    return -1;
+  }
+
+  fprintf(stream_module,"#!/bin/bash\n");
+  fprintf(stream_module,"\n");
+  fprintf(stream_module,"#home=path_to_module\n\n");
+  fprintf(stream_module,"#if [ -e $home ]; then\n");
+
+  read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+  if(read_left != NULL)Split(read_left, &key_left, &val_left);
+
+  read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
+  if(read_right!=NULL)Split(read_right, &key_right, &val_right);
+
+  while(read_right!=NULL){
+    int key_compare;
+
+    if(read_left == NULL){
+      key_compare = 1;
+    }
+    else{
+      key_compare = strcmp(key_left, key_right);
+    }
+
+    if(key_compare<0){
+      read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+      if(read_left != NULL)Split(read_left, &key_left, &val_left);
+    }
+    else if(key_compare==0){
+      if(strcmp(val_left, val_right)!=0){
+        char *match;
+
+        match=strstr(val_right, val_left);
+        if(match==NULL){
+          if(strlen(val_right)>0){
+            if(strstr(key_right, "PATH") != NULL){
+              OutputScriptPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
+            }
+            else{
+              fprintf(stream_module, "   %s=%s\n", key_right, val_right);
+            }
+          }
+        }
+        else{
+          char *prepend_string, *append_string;
+
+          prepend_string = val_right;
+          append_string = match+strlen(val_left);
+          match[0] = 0;
+
+          prepend_string = TrimFrontBack(prepend_string);
+          OutputScriptPath(stream_module, ENV2MOD_PREPEND, key_right, prepend_string);
+
+          append_string = TrimFrontBack(append_string);
+          OutputScriptPath(stream_module, ENV2MOD_APPEND, key_right, append_string);
+        }
+      }
+      read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
+      if(read_left != NULL)Split(read_left, &key_left, &val_left);
+
+      read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
+      if(read_right != NULL)Split(read_right, &key_right, &val_right);
+    }
+    else{
+      if(strlen(val_right)>0){
+        if(strstr(key_right, "PATH") != NULL){
+          OutputScriptPath(stream_module, ENV2MOD_PREPEND, key_right, val_right);
+        }
+        else{
+          fprintf(stream_module, "   %s=%s\n", key_right, val_right);
+        }
+      }
+      read_right = NextLine(buffer_right, LEN_BUFFER, stream_right);
+      if(read_right != NULL)Split(read_right, &key_right, &val_right);
+    }
+  }
+  fprintf(stream_module,"#fi\n");
 
   fclose(stream_left);
   fclose(stream_right);
