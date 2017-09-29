@@ -75,13 +75,17 @@ void SplitCommandline(char *commandline, char **command, char **args){
 int main(int argc, char **argv){
   int i, f_opt = 0, s_opt = 0;
   char *file1 = NULL, *file2 = NULL, *modulefile_ptr=NULL;
+  char scriptfile[1024], *scriptfile_ptr;
   char *script_command, *script_args;
 #ifndef WIN32
   char file1val[1024], file2val[1024];
 #endif
   char modulefile[1024];
   int error = 0;
+  int create_script=0;
 
+  strcpy(scriptfile,"scriptfile.sh");
+  scriptfile_ptr = scriptfile;
   modulefile_ptr = modulefile;
   strcpy(modulefile, "modulefile");
 
@@ -141,6 +145,9 @@ int main(int argc, char **argv){
         s_opt = 1;
       }
     }
+    if(strncmp(arg, "-S", 2) == 0){
+      create_script=1;
+    }
     if(strncmp(arg, "-m", 2) == 0){
       i++;
       modulefile_ptr = argv[i];
@@ -181,6 +188,9 @@ int main(int argc, char **argv){
 #endif
   if(error!=0)return 1;
   CreateModule(file1, file2, modulefile_ptr);
+  if(create_script==1){
+    CreateScript(file1, file2, scriptfile_ptr);
+  }
 #ifndef WIN32
   if(s_opt==1){
     if(FileExists(file1))UNLINK(file1);
