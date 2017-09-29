@@ -286,10 +286,8 @@ int CreateScript(char *left_file, char* right_file, char *module_file){
   fprintf(stream_module,"\n");
   fprintf(stream_module,"# put name of script here\n\n");
 
-  fprintf(stream_module,"#set home path_to_module\n\n");
-  fprintf(stream_module,"#if [ file isdirectory $home ] {\n");
-  fprintf(stream_module,"   module-whatis   \"Sets up your enviornment to use $home\"\n");
-  fprintf(stream_module,"   set helpmsg \"Sets up your environment to use $home\"\n\n");
+  fprintf(stream_module,"#home=path_to_module\n\n");
+  fprintf(stream_module,"#if [ -e $home ]; then\n");
 
   read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
   if(read_left != NULL)Split(read_left, &key_left, &val_left);
@@ -359,10 +357,7 @@ int CreateScript(char *left_file, char* right_file, char *module_file){
       if(read_right != NULL)Split(read_right, &key_right, &val_right);
     }
   }
-  fprintf(stream_module,"#} else {\n");
-  fprintf(stream_module,"#   module-whatis \"directory $home does NOT exist\"\n");
-  fprintf(stream_module,"#   set helpmsg \"directory $home does NOT exist\"\n");
-  fprintf(stream_module,"#}\n");
+  fprintf(stream_module,"#fi\n");
 
   fclose(stream_left);
   fclose(stream_right);
