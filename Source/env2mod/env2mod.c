@@ -284,8 +284,6 @@ int CreateScript(char *left_file, char* right_file, char *module_file){
 
   fprintf(stream_module,"#!/bin/bash\n");
   fprintf(stream_module,"\n");
-  fprintf(stream_module,"# put name of script here\n\n");
-
   fprintf(stream_module,"#home=path_to_module\n\n");
   fprintf(stream_module,"#if [ -e $home ]; then\n");
 
