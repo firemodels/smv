@@ -204,7 +204,7 @@ float GetUnitVal(const char *unittype, float oldval){
       unit_index = unitclasses[i].unit_index;
       scale = unitclasses[i].units[unit_index].scale;
       val =  scale[0]*oldval + scale[1];
-      val = (float)((int)(val*10.0 + 0.5))/10.0;
+      val = SIGN(val)*(float)((int)(ABS(val)*10.0 + 0.5))/10.0;
       return val;
     }
   }
