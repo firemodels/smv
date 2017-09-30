@@ -2,10 +2,6 @@
 TEST=$1
 
 size=_64
-IB=
-if [ "$FDSNETWORK" == "infiniband" ] ; then
-IB=ib
-fi
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -20,7 +16,7 @@ GITROOT=`pwd`
 cd $CURDIR
 
 export SMV=$GITROOT/smv/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$TEST$size
-FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size$IB/fds_mpi_intel$PLATFORM$size$IB
+FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size/fds_mpi_intel$PLATFORM$size
 RUNSMV="$GITROOT/fds/Utilities/Scripts/runsmv.sh"
 export SMVBINDIR="-bindir $GITROOT/smv/for_bundle"
 MAKEMOVIE=$GITROOT/fds/Utilities/Scripts/make_movie.sh
