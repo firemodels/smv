@@ -308,12 +308,34 @@ extern "C" void glui_clip_setup(int main_window){
   glui_clip->add_column_to_panel(PANEL_clipZ,false);
   CHECKBOX_clip_zmax=glui_clip->add_checkbox_to_panel(PANEL_clipZ,"",&clipinfo.clip_zmax,CLIP_zupper,CLIP_CB);
 
-  PANEL_blockageview = glui_clip->add_rollout_to_panel(PANEL_clip,"Hide blockages",false);
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
+  {
+    int nblocks = 0;
 
-    meshi = meshinfo + i;
-    glui_clip->add_checkbox_to_panel(PANEL_blockageview,meshi->label,&meshi->blockvis);
+    for(i = 0;i < nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      if(meshi->nbptrs > 0)nblocks++;
+    }
+    if(nblocks > 0){
+      int ncolumns,ib=0;
+
+#define MAXCLIPROWS 40
+
+      PANEL_blockageview = glui_clip->add_rollout_to_panel(PANEL_clip, "Hide blockages", false);
+      ncolumns = nblocks / MAXCLIPROWS + 1;
+
+      for(i = 0;i < nmeshes;i++){
+        meshdata *meshi;
+
+        meshi = meshinfo + i;
+        if(meshi->nbptrs > 0){
+          glui_clip->add_checkbox_to_panel(PANEL_blockageview, meshi->label, &meshi->blockvis);
+          ib++;
+          if(ib % (nblocks / ncolumns) == 0)glui_clip->add_column_to_panel(PANEL_blockageview);
+        }
+      }
+    }
   }
 
   panel_wrapup = glui_clip->add_panel_to_panel(PANEL_clip,"",GLUI_PANEL_NONE);
