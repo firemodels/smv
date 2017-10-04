@@ -384,7 +384,10 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   RADIOBUTTON_constraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,"Use colormap with constraints");
   RADIOBUTTON_noconstraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,"Use colormap without constraints");
 
-  ROLLOUT_firesmokecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap,"Color, opacity",false);
+  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
+  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 10.0);
+
+  ROLLOUT_firesmokecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap,"Fire, Smoke Color",false);
 
   ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmokecolor,"fire",true, FIRECOLOR_ROLLOUT, Color_Rollout_CB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
@@ -395,9 +398,6 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_smoke3d_fire_green->set_int_limits(0,255);
   SPINNER_smoke3d_fire_blue=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor,_d("blue"),GLUI_SPINNER_INT,&fire_blue,FIRE_BLUE,Smoke3d_CB);
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
-
-  SPINNER_smoke3d_fire_halfdepth=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor,_d("50% opacity at: (m)"),GLUI_SPINNER_FLOAT,&fire_halfdepth,UPDATE_SMOKEFIRE_COLORS,Smoke3d_CB);
-  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0,10.0);
 
   ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmokecolor, "smoke",false, SMOKECOLOR_ROLLOUT, Color_Rollout_CB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT);
