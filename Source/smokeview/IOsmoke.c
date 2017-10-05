@@ -5380,9 +5380,19 @@ void UpdateSmoke3DMenuLabels(void){
 
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3di = smoke3dinfo + i;
-    STRCPY(smoke3di->menulabel,smoke3di->label.longlabel);
+    STRCPY(smoke3di->menulabel, "");
+    if(nmeshes > 1){
+      meshdata *smokemesh;
+
+      smokemesh = meshinfo + smoke3di->blocknumber;
+      sprintf(meshlabel, "%s", smokemesh->label);
+      STRCAT(smoke3di->menulabel, meshlabel);
+    }
+    else{
+      STRCAT(smoke3di->menulabel,smoke3di->label.longlabel);
+    }
     if(showfiles==1){
-      STRCAT(smoke3di->menulabel,", ");
+      if(strcmp(smoke3di->menulabel, "") != 0)STRCAT(smoke3di->menulabel, ", ");
       STRCAT(smoke3di->menulabel,smoke3di->file);
     }
     switch(smoke3di->compression_type){
@@ -5398,15 +5408,6 @@ void UpdateSmoke3DMenuLabels(void){
     default:
       ASSERT(FFALSE);
       break;
-    }
-//    len=strlen(smoke3di->menulabel);
-    if(nmeshes>1){
-      meshdata *smokemesh;
-
-      smokemesh = meshinfo + smoke3di->blocknumber;
-      sprintf(meshlabel,"%s",smokemesh->label);
-      STRCAT(smoke3di->menulabel," - ");
-      STRCAT(smoke3di->menulabel,meshlabel);
     }
   }
 }
