@@ -1484,14 +1484,16 @@ void update_iso_menulabels(void){
 
     for(i=0;i<nisoinfo;i++){
       isoi = isoinfo + i;
-      STRCPY(isoi->menulabel,isoi->surface_label.longlabel);
+
       if(nmeshes>1){
         meshdata *isomesh;
 
         isomesh = meshinfo + isoi->blocknumber;
         sprintf(label,"%s",isomesh->label);
-        STRCAT(isoi->menulabel,", ");
-        STRCAT(isoi->menulabel,label);
+        STRCPY(isoi->menulabel,label);
+      }
+      else{
+        STRCPY(isoi->menulabel, isoi->surface_label.longlabel);
       }
       if(showfiles==1){
         STRCAT(isoi->menulabel,", ");
