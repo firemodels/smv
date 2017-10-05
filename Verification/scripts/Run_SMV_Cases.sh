@@ -168,10 +168,6 @@ if [ "$OS" == "Darwin" ]; then
 else
   PLATFORM=linux$size
 fi
-IB=
-if [ "$FDSNETWORK" == "infiniband" ] ; then
-IB=ib
-fi
 
 if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
@@ -181,9 +177,9 @@ else
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
 fi
 export GEOM=$SVNROOT/smv/source/geomtest/${COMPILER}_$PLATFORM/geomtest
-export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
+export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$IB$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$IB$DEBUG
+export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
 QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 

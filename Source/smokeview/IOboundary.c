@@ -3803,14 +3803,17 @@ void update_patch_menulabels(void){
 
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
-      STRCPY(patchi->menulabel,patchi->label.longlabel);
-      STRCPY(patchi->menulabel_base, patchi->label.longlabel);
-      if(nmeshes>1){
+      STRCPY(patchi->menulabel, "");
+      STRCPY(patchi->menulabel_base, "");
+      if(nmeshes == 1){
+        STRCAT(patchi->menulabel, patchi->label.longlabel);
+        STRCAT(patchi->menulabel_base, patchi->label.longlabel);
+      }
+      else{
         meshdata *patchmesh;
 
         patchmesh = meshinfo + patchi->blocknumber;
         sprintf(label,"%s",patchmesh->label);
-        STRCAT(patchi->menulabel,", ");
         STRCAT(patchi->menulabel,label);
       }
       if(patchi->filetype == PATCH_GEOMETRY){
