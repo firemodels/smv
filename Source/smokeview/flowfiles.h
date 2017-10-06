@@ -1200,7 +1200,7 @@ typedef struct _slicedata {
 typedef struct _multislicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;
+  int loaded,display;
   int ndirxyz[4];
   int nslices;
   int *islices;
