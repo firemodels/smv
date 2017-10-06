@@ -7617,7 +7617,7 @@ updatemenu=0;
   }
   if(nvsliceloaded0+nvsliceloaded1+nvsliceloaded2>0){
     showhide_data = 1;
-    glutAddSubMenu(_("Slices (vector)"), showvslicemenu);
+    glutAddSubMenu(_("Vector slice"), showvslicemenu);
   }
   if(nsliceloaded>0){
     showhide_data = 1;
