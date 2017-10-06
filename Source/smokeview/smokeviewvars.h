@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(vol_framenumber, 0);
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);

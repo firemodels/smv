@@ -58,6 +58,7 @@ extern GLUI *glui_bounds;
 #define VOL_UNLOAD_ALL 48
 #define LIGHT_XYZ 49
 #define LIGHT_UPDATE 50
+#define LOAD_FRAME 55
 
 // two defines below are also defined elsewhere
 
@@ -162,6 +163,7 @@ GLUI_Rollout *ROLLOUT_colormap4=NULL;
 GLUI_Rollout *ROLLOUT_firecolor=NULL;
 GLUI_Rollout *ROLLOUT_smokecolor=NULL;
 GLUI_Rollout *ROLLOUT_generate_images=NULL;
+GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_light=NULL;
 GLUI_Rollout *ROLLOUT_colormap_temp=NULL;
 GLUI_Rollout *ROLLOUT_colormap_hrrpuv_smoke=NULL;
@@ -664,6 +666,10 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     Smoke3d_CB(SMOKE_OPTIONS);
   }
 
+  ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
+  glui_3dsmoke->add_spinner_to_panel(ROLLOUT_loadframe, _d("frame number"), GLUI_SPINNER_INT, &vol_framenumber);
+  glui_3dsmoke->add_button_to_panel(ROLLOUT_loadframe, _d("Load"), LOAD_FRAME, Smoke3d_CB);
+
   Update_Smoke_Type();
 
 #ifdef pp_GPU
@@ -684,6 +690,9 @@ extern "C" void Smoke3d_CB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case LOAD_FRAME:
+    loadvolsmokeframe(-1, vol_framenumber);
+  break;
   case LIGHT_XYZ:
     break;
   case LIGHT_UPDATE:

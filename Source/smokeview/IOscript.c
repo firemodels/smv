@@ -916,32 +916,28 @@ void script_render360all(scriptdata *scripti){
   Render_CB(RENDER_START);
 }
 
-/* ------------------ script_loadvolsmokeframe ------------------------ */
+/* ------------------ loadvolsmokeframe ------------------------ */
 
-void script_loadvolsmokeframe(scriptdata *scripti, int flag){
-  int framenum, index;
+void loadvolsmokeframe(int meshnum, int framenum){
   int first = 1;
   int i;
 
-  index = scripti->ival;
-  framenum = scripti->ival2;
-  if(index > nmeshes - 1)index = -1;
+  if(meshnum > nmeshes - 1)meshnum = -1;
   for(i = 0; i < nmeshes; i++){
-    if(index == i || index < 0){
-      meshdata *meshi;
-      volrenderdata *vr;
+    meshdata *meshi;
+    volrenderdata *vr;
 
-      meshi = meshinfo + i;
-      vr = &meshi->volrenderinfo;
-      FreeVolsmokeFrame(vr, framenum);
-      ReadVolsmokeFrame(vr, framenum, &first);
-      if(vr->times_defined == 0){
-        vr->times_defined = 1;
-        GetVolsmokeAllTimes(vr);
-      }
-      vr->loaded = 1;
-      vr->display = 1;
+    if(meshnum != i && meshnum >= 0)continue;
+    meshi = meshinfo + i;
+    vr = &meshi->volrenderinfo;
+    FreeVolsmokeFrame(vr, framenum);
+    ReadVolsmokeFrame(vr, framenum, &first);
+    if(vr->times_defined == 0){
+      vr->times_defined = 1;
+      GetVolsmokeAllTimes(vr);
     }
+    vr->loaded = 1;
+    vr->display = 1;
   }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   stept = 1;
@@ -954,7 +950,21 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
   stept = 1;
   force_redisplay = 1;
   UpdateFrameNumber(0);
+  stept=1;
+  keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
+}
+
+/* ------------------ script_loadvolsmokeframe ------------------------ */
+
+void script_loadvolsmokeframe(scriptdata *scripti, int flag){
+  int framenum, index;
+  int first = 1;
+  int i;
+
+  index = scripti->ival;
+  framenum = scripti->ival2;
+  loadvolsmokeframe(index, framenum);
   keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }

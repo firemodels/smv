@@ -291,6 +291,7 @@ EXTERNCPP void update_colorbar_list(void);
 EXTERNCPP void update_colorbar_list2(void);
 EXTERNCPP void update_colorbarflip(void);
 
+EXTERNCPP void loadvolsmokeframe(int meshnum, int framenum);
 EXTERNCPP void script_loadvolsmokeframe2(void);
 EXTERNCPP void script_loadisoframe2(scriptdata *scripti);
 EXTERNCPP void init_device_plane(devicedata *devicei);
