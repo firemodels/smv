@@ -921,6 +921,7 @@ void script_render360all(scriptdata *scripti){
 void loadvolsmokeframe(int meshnum, int framenum){
   int first = 1;
   int i;
+  int max_frames = -1;
 
   if(meshnum > nmeshes - 1)meshnum = -1;
   for(i = 0; i < nmeshes; i++){
@@ -936,9 +937,11 @@ void loadvolsmokeframe(int meshnum, int framenum){
       vr->times_defined = 1;
       GetVolsmokeAllTimes(vr);
     }
+    if(vr->ntimes > max_frames)max_frames = vr->ntimes;
     vr->loaded = 1;
     vr->display = 1;
   }
+  if(max_frames > 0)UpdateVolLoadFrames(max_frames);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   stept = 1;
   UpdateTimes();

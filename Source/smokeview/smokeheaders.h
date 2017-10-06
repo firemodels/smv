@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateVolLoadFrames(int maxframes);
 EXTERNCPP void UpdateShowRotationCenter(void);
 EXTERNCPP void UpdateShowRotationCenter2(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);

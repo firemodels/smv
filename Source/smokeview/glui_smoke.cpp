@@ -129,6 +129,7 @@ GLUI_Spinner *SPINNER_smoke_test_range=NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices=NULL;
 GLUI_Spinner *SPINNER_light_intensity = NULL;
 GLUI_Spinner *SPINNER_scatter_param = NULL;
+GLUI_Spinner *SPINNER_loadframe = NULL;
 
 GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
 #ifdef pp_CULL
@@ -187,6 +188,12 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
+
+/* ------------------ UpdateVolLoadFrames ------------------------ */
+
+extern "C" void UpdateVolLoadFrames(int maxframes){
+  SPINNER_loadframe->set_int_limits(0, maxframes - 1);
+}
 
 /* ------------------ Color_Rollout_CB ------------------------ */
 
@@ -667,7 +674,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   }
 
   ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
-  glui_3dsmoke->add_spinner_to_panel(ROLLOUT_loadframe, _d("frame number"), GLUI_SPINNER_INT, &vol_framenumber);
+  SPINNER_loadframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_loadframe, _d("frame number"), GLUI_SPINNER_INT, &vol_framenumber);
   glui_3dsmoke->add_button_to_panel(ROLLOUT_loadframe, _d("Load"), LOAD_FRAME, Smoke3d_CB);
 
   Update_Smoke_Type();
