@@ -189,10 +189,16 @@ int nsmokeprocinfo = 0;
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
 
-/* ------------------ UpdateVolLoadFrames ------------------------ */
+/* ------------------ Update_loadframe_val ------------------------ */
 
-extern "C" void UpdateVolLoadFrames(int maxframes){
-  SPINNER_loadframe->set_int_limits(0, maxframes - 1);
+extern "C" void Update_loadframe_val(int frames){
+  SPINNER_loadframe->set_int_val(frames);
+}
+
+/* ------------------ Update_loadframe_max ------------------------ */
+
+extern "C" void Update_loadframe_max(int max_frames){
+  SPINNER_loadframe->set_int_limits(0, max_frames-1);
 }
 
 /* ------------------ Color_Rollout_CB ------------------------ */
