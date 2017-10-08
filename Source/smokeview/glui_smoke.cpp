@@ -59,6 +59,7 @@ extern GLUI *glui_bounds;
 #define LIGHT_XYZ 49
 #define LIGHT_UPDATE 50
 #define LOAD_FRAME 55
+#define VOL_UPDATELIMITS 56
 
 // two defines below are also defined elsewhere
 
@@ -158,6 +159,9 @@ GLUI_Panel *PANEL_loadcutoff=NULL;
 GLUI_Panel *PANEL_light_color = NULL;
 GLUI_Panel *PANEL_light_position = NULL;
 GLUI_Panel *PANEL_scatter = NULL;
+GLUI_Panel *PANEL_frametimelimits = NULL;
+GLUI_Panel *PANEL_frametimelimits2 = NULL;
+GLUI_Panel *PANEL_loadframe = NULL;
 
 GLUI_Rollout *ROLLOUT_firesmokecolor=NULL;
 GLUI_Rollout *ROLLOUT_colormap4=NULL;
@@ -174,7 +178,13 @@ GLUI_Rollout *ROLLOUT_volume=NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
 
 GLUI_StaticText *TEXT_smokealpha=NULL;
-GLUI_StaticText *TEXT_smokedepth=NULL;
+GLUI_StaticText *TEXT_smokedepth = NULL;
+GLUI_StaticText *STATIC_smokeframelimit_min = NULL;
+GLUI_StaticText *STATIC_smokeframelimit_max = NULL;
+GLUI_StaticText *STATIC_globalframelimit_min=NULL;
+GLUI_StaticText *STATIC_globalframelimit_max = NULL;
+GLUI_StaticText *STATIC_timelimit_min=NULL;
+GLUI_StaticText *STATIC_timelimit_max = NULL;
 
 
 #define VOLRENDER_ROLLOUT 0
@@ -188,6 +198,43 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
+
+/* ------------------ Update_timeframe_limits ------------------------ */
+
+extern "C" void Update_timeframe_limits(int option){
+  if(global_times==NULL||nglobal_times==0||option==0){
+    STATIC_globalframelimit_min->set_name("unknown");
+    STATIC_globalframelimit_max->set_name("unknown");
+    STATIC_smokeframelimit_min->set_name("unknown");
+    STATIC_smokeframelimit_max->set_name("unknown");
+    STATIC_timelimit_min->set_name("unknown");
+    STATIC_timelimit_max->set_name("unknown");
+  }
+  else{
+    char labelmin[256], labelmax[256];
+
+    sprintf(labelmin, "%i", 0);
+    sprintf(labelmax, "%i", nglobal_times-1);
+    STATIC_globalframelimit_min->set_name(labelmin);
+    STATIC_globalframelimit_max->set_name(labelmax);
+
+    sprintf(labelmin, "%f", global_times[0]);
+    sprintf(labelmax, "%f", global_times[nglobal_times-1]);
+    STATIC_timelimit_min->set_name(labelmin);
+    STATIC_timelimit_max->set_name(labelmax);
+
+    if(vol_maxframenumber>0){
+      sprintf(labelmin, "%i", 0);
+      sprintf(labelmax, "%i", vol_maxframenumber-1);
+      STATIC_smokeframelimit_min->set_name(labelmin);
+      STATIC_smokeframelimit_max->set_name(labelmax);
+    }
+    else{
+      STATIC_smokeframelimit_min->set_name("unknown");
+      STATIC_smokeframelimit_max->set_name("unknown");
+    }
+  }
+}
 
 /* ------------------ Update_loadframe_val ------------------------ */
 
@@ -680,8 +727,34 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   }
 
   ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
-  SPINNER_loadframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_loadframe, _d("frame number"), GLUI_SPINNER_INT, &vol_framenumber);
-  glui_3dsmoke->add_button_to_panel(ROLLOUT_loadframe, _d("Load"), LOAD_FRAME, Smoke3d_CB);
+  PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
+  glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_FRAME, Smoke3d_CB);
+  glui_3dsmoke->add_column_to_panel(PANEL_loadframe, false);
+  SPINNER_loadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("frame number"), GLUI_SPINNER_INT, &vol_framenumber);
+
+  PANEL_frametimelimits = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, _d("Limits"), false);
+  PANEL_frametimelimits2 = glui_3dsmoke->add_panel_to_panel(PANEL_frametimelimits, "", false);
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "time:");
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "smoke frame:");
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "global frame:");
+  glui_3dsmoke->add_column_to_panel(PANEL_frametimelimits2,false);
+
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "min");
+  STATIC_timelimit_min=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  STATIC_smokeframelimit_min=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  STATIC_globalframelimit_min=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  glui_3dsmoke->add_column_to_panel(PANEL_frametimelimits2,false);
+
+  glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "max");
+  STATIC_timelimit_max=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  STATIC_smokeframelimit_max=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+  STATIC_globalframelimit_max=glui_3dsmoke->add_statictext_to_panel(PANEL_frametimelimits2, "");
+
+  glui_3dsmoke->add_button_to_panel(PANEL_frametimelimits, _d("Update"), VOL_UPDATELIMITS, Smoke3d_CB);
+
+  Update_timeframe_limits(0);
+
 
   Update_Smoke_Type();
 
@@ -703,6 +776,9 @@ extern "C" void Smoke3d_CB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case VOL_UPDATELIMITS:
+    Update_timeframe_limits(1);
+    break;
   case LOAD_FRAME:
     loadvolsmokeframe(-1, vol_framenumber);
   break;
