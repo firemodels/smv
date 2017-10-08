@@ -8290,13 +8290,13 @@ typedef struct {
       patchi->geom_fdsfiletype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
       patchi->geom_smvfiletype = PATCH_STRUCTURED;
+      patchi->slice = 0;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         patchi->filetype=PATCH_GEOMETRY;
         patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
-        patchi->slice = 0;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;

@@ -77,7 +77,6 @@
 
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
-#define pp_VOLRENDERSINGLE
 #endif
 
 #endif

@@ -4364,6 +4364,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     histogram_nbuckets = 255;
     histogram_show_numbers=0;
   }
+  showall_slices=1;
   glutPostRedisplay();
 }
 

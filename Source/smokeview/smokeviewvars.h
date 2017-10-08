@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(showall_boundary, 1);
+SVEXTERN int SVDECL(show_singlemesh_menus, 0);
 SVEXTERN int SVDECL(vol_framenumber, 0), SVDECL(vol_maxframenumber,-1);
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
@@ -902,7 +904,7 @@ SVEXTERN int visAvailmemory;
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
 SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
-SVEXTERN int SVDECL(show_all_slices,1);
+SVEXTERN int SVDECL(showall_slices,1);
 SVEXTERN int SVDECL(autoterrain,0),SVDECL(manual_terrain,0);
 SVEXTERN float zterrain_max, zterrain_min;
 SVEXTERN char SVDECL(*fds_version, NULL), SVDECL(*fds_githash, NULL);
@@ -1044,7 +1046,6 @@ SVEXTERN int loadfiles_at_startup;
 
 SVEXTERN char SVDECL(*smokeviewtempdir,NULL);
 
-SVEXTERN int SVDECL(showall_boundary,1);
 SVEXTERN int nmenus;
 SVEXTERN menudata menuinfo[10000];
 SVEXTERN int showbuild;

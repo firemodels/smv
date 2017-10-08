@@ -1632,7 +1632,7 @@ void keyboard(unsigned char key, int flag){
         }
         stept=1;
         if(nvslice_loaded_local>0){
-          if(show_all_slices==0){
+          if(showall_slices==0){
             ShowVSliceMenu(SHOW_ALL);
             force_redisplay=1;
           }
@@ -1642,7 +1642,7 @@ void keyboard(unsigned char key, int flag){
           }
         }
         if(nvslice_loaded_local==0&&nslice_loaded_local>0){
-          if(show_all_slices==0){
+          if(showall_slices==0){
             ShowHideSliceMenu(SHOW_ALL);
             force_redisplay=1;
           }

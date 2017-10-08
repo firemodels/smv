@@ -947,22 +947,12 @@ void ShowVSliceMenu(int value){
   updatemenu = 1;
   glutPostRedisplay();
   if(value==SHOW_ALL){
+    showall_slices = 1 - showall_slices;
     for(i=0;i<nvsliceinfo;i++){
       vd = vsliceinfo+i;
       if(vd->loaded==0)continue;
-      vd->display=1;
+      vd->display= showall_slices;
     }
-    show_all_slices=1;
-    UpdateTimes();
-    return;
-  }
-  if(value==HIDE_ALL){
-    for(i=0;i<nvsliceinfo;i++){
-      vd = vsliceinfo+i;
-      if(vd->loaded==0)continue;
-      vd->display=0;
-    }
-    show_all_slices=0;
     UpdateTimes();
     return;
   }
@@ -1046,16 +1036,10 @@ void ShowHideSliceMenu(int value){
   if(value<0){
     switch(value){
     case SHOW_ALL:
+      showall_slices = 1-showall_slices;
       for(i=0;i<nsliceinfo;i++){
-        sliceinfo[i].display=1;
+        sliceinfo[i].display=showall_slices;
       }
-      show_all_slices=1;
-      break;
-    case HIDE_ALL:
-      for(i=0;i<nsliceinfo;i++){
-        sliceinfo[i].display=0;
-      }
-      show_all_slices=0;
       break;
     case MENU_SHOWSLICE_IN_GAS:
       show_slice_in_obst = ONLY_IN_GAS;
@@ -2763,6 +2747,10 @@ void LoadUnloadMenu(int value){
     update_tour_menulabels();
     update_plot3d_menulabels();
   }
+  if(value==SHOWSINGLEMESHMENUS){
+    show_singlemesh_menus = 1 - show_singlemesh_menus;
+    updatemenu=1;
+  }
   if(value==REDIRECT){
     updatemenu=1;
     glutPostRedisplay();
@@ -4339,25 +4327,14 @@ void ShowPatchMenu(int value){
   if(value==SHOWALL_BOUNDARY){
     int ii;
 
+    showall_boundary = 1-showall_boundary;
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
       int i;
 
       i = patch_loaded_list[ii];
       patchi = patchinfo + i;
-      patchi->display=1;
-    }
-  }
-  if(value==HIDEALL_BOUNDARY){
-    int ii;
-
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-      int i;
-
-      i = patch_loaded_list[ii];
-      patchi = patchinfo + i;
-      patchi->display=0;
+      patchi->display=showall_boundary;
     }
   }
   if(value<0){
@@ -5107,6 +5084,7 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int patchsinglemeshmenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
+static int showsingleslicemenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
 static int scriptmenu=0;
@@ -5349,6 +5327,29 @@ updatemenu=0;
     }
 
     CREATEMENU(showpatchmenu,ShowPatchMenu);
+    if(npatchloaded>1){
+      char *label=NULL, menulabel[1024];
+
+      for(i = 0;i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(patchi->loaded==1){
+          label = patchi->label.longlabel;
+          break;
+        }
+      }
+      strcpy(menulabel, "");
+      if(showall_boundary==1)strcat(menulabel, "*");
+      if(label!=NULL){
+        strcat(menulabel, label);
+      }
+      else{
+        strcat(menulabel, "Show");
+      }
+      glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
+      if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showpatchsinglemenu);
+    }
     npatchloaded=0;
     {
       int local_do_threshold=0;
@@ -5373,6 +5374,8 @@ updatemenu=0;
         }
       }
       if(npatchslice>0){
+        int hide_edges = 1;
+
         glutAddMenuEntry("Geometry slice data", DUMMYwallmenu);
         if(show_patch_solid==1){
           glutAddMenuEntry("  *solid", SOLIDpatchmenu);
@@ -5399,22 +5402,18 @@ updatemenu=0;
         else{
           glutAddMenuEntry("  in solid", INSOLIDpatchmenu);
         }
-      }
-      if(show_patch_ingas==1){
-        glutAddMenuEntry("  *in gas", INGASpatchmenu);
-      }
-      else{
-        glutAddMenuEntry("  in gas", INGASpatchmenu);
-      }
-      if(show_patch_incutcell == 1){
-        glutAddMenuEntry("  *in cutcell", INCUTCELLpatchmenu);
-      }
-      else{
-        glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
-      }
-      {
-        int hide_edges=1;
-
+        if(show_patch_ingas==1){
+          glutAddMenuEntry("  *in gas", INGASpatchmenu);
+        }
+        else{
+          glutAddMenuEntry("  in gas", INGASpatchmenu);
+        }
+        if(show_patch_incutcell==1){
+          glutAddMenuEntry("  *in cutcell", INCUTCELLpatchmenu);
+        }
+        else{
+          glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
+        }
         if(show_patch_outline==1&&show_patch_cutcell_polygon==1){
           glutAddMenuEntry("      *show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
           hide_edges = 0;
@@ -5441,65 +5440,23 @@ updatemenu=0;
         if(vis_threshold==1)glutAddMenuEntry("*char",SHOW_CHAR);
         if(vis_threshold==0)glutAddMenuEntry("char",SHOW_CHAR);
       }
-
     }
-    if(npatchloaded>0){
-      glutAddMenuEntry("-",DUMMYwallmenu);
-    }
-    if(npatchloaded>1){
-      glutAddMenuEntry(_("Show all"), SHOWALL_BOUNDARY);
-      glutAddMenuEntry(_("Hide all"), HIDEALL_BOUNDARY);
-      glutAddSubMenu(_("Single mesh"),showpatchsinglemenu);
-      glutAddMenuEntry("-",DUMMYwallmenu);
-    }
-    if(showexterior==1){
-      glutAddMenuEntry(_("*Exterior"),EXTERIORwallmenu);
-    }
-    if(showexterior==0){
-      glutAddMenuEntry(_("Exterior"),EXTERIORwallmenu);
-    }
-    if(visPatchType[INTERIORwall]==1){
-      glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
-    }
-    if(visPatchType[INTERIORwall]==0){
-      glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
-    }
-    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==1){
-      glutAddMenuEntry(_("*Front"),FRONTwallmenu);
-    }
-    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==0){
-      glutAddMenuEntry(_("Front"),FRONTwallmenu);
-    }
-    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==1){
-      glutAddMenuEntry(_("*Back"),BACKwallmenu);
-    }
-    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==0){
-      glutAddMenuEntry(_("Back"),BACKwallmenu);
-    }
-    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==1){
-      glutAddMenuEntry(_("*Left"),LEFTwallmenu);
-    }
-    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==0){
-      glutAddMenuEntry(_("Left"),LEFTwallmenu);
-    }
-    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==1){
-      glutAddMenuEntry(_("*Right"),RIGHTwallmenu);
-    }
-    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==0){
-      glutAddMenuEntry(_("Right"),RIGHTwallmenu);
-    }
-    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==1){
-      glutAddMenuEntry(_("*Up"),UPwallmenu);
-    }
-    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==0){
-      glutAddMenuEntry(_("Up"),UPwallmenu);
-    }
-    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==1){
-      glutAddMenuEntry(_("*Down"),DOWNwallmenu);
-    }
-    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==0){
-      glutAddMenuEntry(_("Down"),DOWNwallmenu);
-    }
+    if(showexterior==1)glutAddMenuEntry(_("*Exterior"),EXTERIORwallmenu);
+    if(showexterior==0)glutAddMenuEntry(_("Exterior"),EXTERIORwallmenu);
+    if(visPatchType[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
+    if(visPatchType[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
+    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==1)glutAddMenuEntry(_("*Front"),FRONTwallmenu);
+    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==0)glutAddMenuEntry(_("Front"),FRONTwallmenu);
+    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==1)glutAddMenuEntry(_("*Back"),BACKwallmenu);
+    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==0)glutAddMenuEntry(_("Back"),BACKwallmenu);
+    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==1)glutAddMenuEntry(_("*Left"),LEFTwallmenu);
+    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==0)glutAddMenuEntry(_("Left"),LEFTwallmenu);
+    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==1)glutAddMenuEntry(_("*Right"),RIGHTwallmenu);
+    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==0)glutAddMenuEntry(_("Right"),RIGHTwallmenu);
+    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==1)glutAddMenuEntry(_("*Up"),UPwallmenu);
+    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==0)glutAddMenuEntry(_("Up"),UPwallmenu);
+    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==1)glutAddMenuEntry(_("*Down"),DOWNwallmenu);
+    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==0)glutAddMenuEntry(_("Down"),DOWNwallmenu);
   }
 
 /* --------------------------------surface menu -------------------------- */
@@ -6858,11 +6815,11 @@ updatemenu=0;
         }
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
         if(nsmoke3dinfo > 1){
-          glutAddMenuEntry(_("Show all"), SHOW_ALL);
-          glutAddMenuEntry(_("Hide all"), HIDE_ALL);
+          glutAddMenuEntry(_("Show"), SHOW_ALL);
+          glutAddMenuEntry(_("Hide"), HIDE_ALL);
         }
         glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
-        glutAddSubMenu(_("Single mesh"), smoke3dshowsinglemenu);
+        if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), smoke3dshowsinglemenu);
       }
     }
   }
@@ -7064,7 +7021,7 @@ updatemenu=0;
     vd_shown=NULL;
   }
   if(nvsliceinfo>0&&nvsliceloaded>0){
-    CREATEMENU(showvslicemenu,ShowVSliceMenu);
+    CREATEMENU(showsingleslicemenu,ShowVSliceMenu);
     nvsliceloaded0=0;
     for(i=0;i<nvsliceinfo;i++){
       vslicedata *vd;
@@ -7087,21 +7044,30 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
-    glutAddMenuEntry("Show vector slice", MENU_DUMMY);
+    CREATEMENU(showvslicemenu,ShowVSliceMenu);
+    if(vd_shown!=NULL&&nvsliceloaded0!=0){
+      char menulabel[1024];
+
+      STRCPY(menulabel, "");
+      if(showall_slices==1)STRCAT(menulabel, "*");
+      STRCAT(menulabel, sliceinfo[vd_shown->ival].label.longlabel);
+      glutAddMenuEntry(menulabel,SHOW_ALL);
+    }
+    glutAddMenuEntry("  Show in:", MENU_DUMMY);
     if(show_slice_in_obst==ONLY_IN_GAS){
-      glutAddMenuEntry(_("  *gas"),  MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    *gas"),  MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_slice_in_obst==GAS_AND_SOLID){
-      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_slice_in_obst==ONLY_IN_SOLID){
-      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_node_slices_and_vectors == 1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
     if(show_node_slices_and_vectors == 0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
@@ -7109,23 +7075,7 @@ updatemenu=0;
     if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset vector slice"), MENU_SHOWSLICE_OFFSET);
-    if(vd_shown!=NULL&&nvsliceloaded0!=0){
-      char menulabel[1024];
-
-      glutAddMenuEntry("",MENU_DUMMY);
-      STRCPY(menulabel,_("Show all"));
-      STRCAT(menulabel," ");
-      STRCAT(menulabel,sliceinfo[vd_shown->ival].label.longlabel);
-      STRCAT(menulabel," ");
-      STRCAT(menulabel,_("vector slices"));
-      glutAddMenuEntry(menulabel,SHOW_ALL);
-      STRCPY(menulabel,_("Hide all"));
-      STRCAT(menulabel," ");
-      STRCAT(menulabel,sliceinfo[vd_shown->ival].label.longlabel);
-      STRCAT(menulabel," ");
-      STRCAT(menulabel,_("vector slices"));
-      glutAddMenuEntry(menulabel,HIDE_ALL);
-    }
+    if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showsingleslicemenu);
   }
 
 /* --------------------------------showslice menu -------------------------- */
@@ -7167,7 +7117,7 @@ updatemenu=0;
         if(planar_terrain_slice==0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
       }
 
-      glutAddMenuEntry("Show slice", MENU_DUMMY);
+      glutAddMenuEntry("Show inxx:", MENU_DUMMY);
       if(show_slice_in_obst==ONLY_IN_GAS){
         glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
         glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
@@ -7210,18 +7160,11 @@ updatemenu=0;
         char menulabel[1024];
 
         glutAddMenuEntry("-", MENU_DUMMY);
-        STRCPY(menulabel, _("Show all"));
-        STRCAT(menulabel, " ");
+        STRCPY(menulabel, "");
+        if(showall_slices==1)STRCAT(menulabel, "*");
         STRCAT(menulabel, sd_shown->label.longlabel);
-        STRCAT(menulabel, " ");
-        STRCAT(menulabel, _("slices"));
         glutAddMenuEntry(menulabel, SHOW_ALL);
-        STRCPY(menulabel, _("Hide all"));
-        STRCAT(menulabel, " ");
-        STRCAT(menulabel, sd_shown->label.longlabel);
-        STRCAT(menulabel, " ");
-        STRCAT(menulabel, _("slices"));
-        glutAddMenuEntry(menulabel, HIDE_ALL);
+        glutAddMenuEntry("", MENU_DUMMY);
       }
     }
   }
@@ -7251,21 +7194,21 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel, i);
     }
-    glutAddMenuEntry("Show in:", MENU_DUMMY);
+    glutAddMenuEntry("  Show in:", MENU_DUMMY);
     if(show_slice_in_obst==ONLY_IN_GAS){
-      glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    *gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_slice_in_obst==GAS_AND_SOLID){
-      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_slice_in_obst==ONLY_IN_SOLID){
-      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-      glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
-      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("    *solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice==0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
@@ -7286,7 +7229,7 @@ updatemenu=0;
         if(show_fed_area==0)glutAddMenuEntry("Show FED areas", MENU_SHOWSLICE_FEDAREA);
       }
     }
-    glutAddSubMenu(_("Single mesh"), showhideslicemenu);
+    if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showhideslicemenu);
   }
 
 /* -------------------------------- avatartour menu -------------------------- */
@@ -7413,15 +7356,14 @@ updatemenu=0;
     if(nvolsmoke3dloaded>1){
       char vlabel[256];
 
-      strcpy(vlabel,_("Show all"));
+      strcpy(vlabel,_("Show"));
       glutAddMenuEntry(vlabel,SHOW_ALL);
 
-      strcpy(vlabel,_("Hide all"));
+      strcpy(vlabel,_("Hide"));
       glutAddMenuEntry(vlabel,HIDE_ALL);
-      glutAddMenuEntry("-",MENU_DUMMY);
     }
     glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
-    glutAddSubMenu(_("Single mesh"), showvolsmokesinglemenu);
+    if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showvolsmokesinglemenu);
   }
 
   CREATEMENU(aperturemenu,ApertureMenu);
@@ -8298,9 +8240,10 @@ updatemenu=0;
       if(npartinfo > 0){
         strcpy(menulabel, _("Particles"));
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
-        strcpy(menulabel, _("Single mesh"));
-        glutAddSubMenu(menulabel, particlesubmenu);
-        glutAddMenuEntry("-", MENU_PARTICLE_DUMMY);
+        if(show_singlemesh_menus==1){
+          strcpy(menulabel, _("Single mesh"));
+          glutAddSubMenu(menulabel, particlesubmenu);
+        }
       }
     }
 
@@ -8622,7 +8565,7 @@ updatemenu=0;
     if(nvsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
     if(showallslicevectors==0)glutAddMenuEntry(_("Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
     if(showallslicevectors==1)glutAddMenuEntry(_("*Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
-    if(nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
+    if(show_singlemesh_menus==1&&nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
 
@@ -8925,7 +8868,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
     }
-    if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
+    if(show_singlemesh_menus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
 
@@ -8989,11 +8932,9 @@ updatemenu=0;
 
         strcpy(vlabel,_("3D smoke (Volume rendered)"));
         glutAddMenuEntry(vlabel,LOAD_ALL);
-        glutAddMenuEntry("-",MENU_DUMMY);
       }
-#ifdef pp_VOLRENDERSINGLE
-      glutAddSubMenu(_("Single mesh"), loadvolsmokesinglemenu);
-#endif
+      if(show_singlemesh_menus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
+      if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), loadvolsmokesinglemenu);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadvolsmoke3dmenu);
     }
@@ -9040,9 +8981,11 @@ updatemenu=0;
           if(nsootloaded>1) glutAddMenuEntry(_("SOOT MASS FRACTION"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
           if(nhrrloaded>1)  glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
           if(nwaterloaded>1)glutAddMenuEntry(_("water"), MENU_UNLOADSMOKE3D_UNLOADALLWATER);
-          if(nsootloaded>1||nhrrloaded>1||nwaterloaded>1)glutAddMenuEntry("-",MENU_DUMMY);
+          if(show_singlemesh_menus==1){
+            if(nsootloaded>1||nhrrloaded>1||nwaterloaded>1)glutAddMenuEntry("-", MENU_DUMMY);
+            glutAddSubMenu(_("Single mesh"), unloadsmoke3dsinglemenu);
+          }
         }
-        glutAddSubMenu(_("Single mesh"), unloadsmoke3dsinglemenu);
       }
     {
       smoke3ddata *smoke3di;
@@ -9125,9 +9068,11 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
-          glutAddMenuEntry("-",MENU_DUMMY3);
           if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
-            glutAddSubMenu(_("Single mesh"),loadsmoke3dsinglemenu);
+            if(show_singlemesh_menus==1){
+              glutAddMenuEntry("-", MENU_DUMMY3);
+              glutAddSubMenu(_("Single mesh"), loadsmoke3dsinglemenu);
+            }
           }
 
         }
@@ -9390,7 +9335,7 @@ updatemenu=0;
       }
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
-      if(nmeshes>1)glutAddSubMenu("Single mesh", patchsinglemeshmenu);
+      if(nmeshes>1&&show_singlemesh_menus==1)glutAddSubMenu("Single mesh", patchsinglemeshmenu);
       if(npatchloaded>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
@@ -9500,8 +9445,10 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
-          glutAddMenuEntry("-",MENU_DUMMY3);
-          glutAddSubMenu(_("Single mesh"),isosinglemeshmenu);
+          if(show_singlemesh_menus==1){
+            glutAddMenuEntry("-", MENU_DUMMY3);
+            glutAddSubMenu(_("Single mesh"), isosinglemeshmenu);
+          }
         }
       }
 
@@ -9872,6 +9819,8 @@ updatemenu=0;
 #endif
       if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
+      if(show_singlemesh_menus==1)glutAddMenuEntry(_("*Show Single mesh menus"), SHOWSINGLEMESHMENUS);
+      if(show_singlemesh_menus==0)glutAddMenuEntry(_("Show Single mesh menus"), SHOWSINGLEMESHMENUS);
 
       {
         char menulabel[1024];

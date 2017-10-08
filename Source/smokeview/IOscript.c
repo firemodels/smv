@@ -927,7 +927,7 @@ void loadvolsmokeframe(int meshnum, int framenum){
   if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
 
   // first time called, set bounds on volume render frame widget
-  
+
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -1535,7 +1535,7 @@ void script_showsmokesensors(scriptdata *scripti){
   float sensor_time=0.0;
 
   // count smokesensors
-  
+
   nsmokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
