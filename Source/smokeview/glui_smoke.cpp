@@ -717,18 +717,18 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     BUTTON_volunload = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _d("Unload"), VOL_UNLOAD_ALL, Smoke3d_CB);
     UpdateSmokeColormap(RENDER_VOLUME);
     Smoke3d_CB(SMOKE_OPTIONS);
+
+    ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
+    PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
+
+    glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_SMOKEFRAME, Smoke3d_CB);
+    glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_TIMEFRAME, Smoke3d_CB);
+
+    glui_3dsmoke->add_column_to_panel(PANEL_loadframe, false);
+
+    SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("smoke frame"), GLUI_SPINNER_INT, &smoke_framenumber);
+    SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("time"), GLUI_SPINNER_FLOAT, &time_frameval);
   }
-
-  ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
-  PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
-
-  glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_SMOKEFRAME, Smoke3d_CB);
-  glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_TIMEFRAME, Smoke3d_CB);
-
-  glui_3dsmoke->add_column_to_panel(PANEL_loadframe, false);
-
-  SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("smoke frame"), GLUI_SPINNER_INT, &smoke_framenumber);
-  SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("time"), GLUI_SPINNER_FLOAT, &time_frameval);
 
   Update_Smoke_Type();
 
