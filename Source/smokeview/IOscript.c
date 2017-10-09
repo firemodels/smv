@@ -1040,8 +1040,6 @@ void LoadTimeFrame(int meshnum, float timeval){
 
 void script_loadvolsmokeframe(scriptdata *scripti, int flag){
   int framenum, index;
-  int first = 1;
-  int i;
 
   index = scripti->ival;
   framenum = scripti->ival2;

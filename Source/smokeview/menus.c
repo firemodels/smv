@@ -5353,7 +5353,6 @@ updatemenu=0;
     npatchloaded=0;
     {
       int local_do_threshold=0;
-      char menulabel[1024];
       int ii;
 
       for(ii=0;ii<npatchinfo;ii++){
