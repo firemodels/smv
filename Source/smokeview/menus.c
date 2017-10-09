@@ -5337,7 +5337,7 @@ updatemenu=0;
     }
 
     CREATEMENU(showpatchmenu,ShowPatchMenu);
-    if(npatchloaded>1){
+    if(npatchloaded>0){
       char *label=NULL, menulabel[1024];
 
       for(i = 0;i<npatchinfo;i++){
@@ -5358,7 +5358,7 @@ updatemenu=0;
         strcat(menulabel, "Show");
       }
       glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
-      if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showpatchsinglemenu);
+      if(show_singlemesh_menus==1&&npatchloaded>1)glutAddSubMenu(_("Single mesh"), showpatchsinglemenu);
     }
     npatchloaded=0;
     {
