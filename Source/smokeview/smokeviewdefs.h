@@ -428,6 +428,8 @@ void _Sniff_Errors(char *whereat);
 #define DYNAMIC_PLOTS 2
 #define DYNAMIC_PLOTS_NORECURSE 4
 
+#define DISPLAY_PLOT3D 996
+#define TOGGLESHOW_PLOT3D 995
 #define SHOWALL_PLOT3D 998
 #define HIDEALL_PLOT3D 999
 #define SHOWALL_BOUNDARY 998

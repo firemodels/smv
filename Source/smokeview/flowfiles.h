@@ -1354,7 +1354,7 @@ typedef struct {
   int extreme_min[6], extreme_max[6];
   int blocknumber,loaded,display;
   flowlabels label[6];
-  char menulabel[256],longlabel[256];
+  char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
 
 /* --------------------------  zonedata ------------------------------------ */

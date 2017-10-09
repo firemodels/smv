@@ -2079,8 +2079,10 @@ void TextureShowMenu(int value){
 void Plot3DShowMenu(int value){
   int i;
 
-  if(value==MENU_PLOT3D_DUMMY)return;
   switch(value){
+  case MENU_PLOT3D_DUMMY:
+    return;
+    break;
   case MENU_PLOT3D_Z:
       visz_all=1-visz_all;
       break;
@@ -2116,13 +2118,20 @@ void Plot3DShowMenu(int value){
       plotstate=DYNAMIC_PLOTS;
       break;
    case HIDEALL_PLOT3D:
-     for(i=0;i<nplot3dinfo;i++){
-       if(plot3dinfo[i].loaded==1)plot3dinfo[i].display=0;
-     }
+     showall_plot3dfiles = 0;
+     Plot3DShowMenu(DISPLAY_PLOT3D);
      break;
    case SHOWALL_PLOT3D:
+     showall_plot3dfiles = 1;
+     Plot3DShowMenu(DISPLAY_PLOT3D);
+     break;
+   case TOGGLESHOW_PLOT3D:
+     showall_plot3dfiles = 1 - showall_plot3dfiles;
+     Plot3DShowMenu(DISPLAY_PLOT3D);
+     break;
+   case DISPLAY_PLOT3D:
      for(i=0;i<nplot3dinfo;i++){
-       if(plot3dinfo[i].loaded==1)plot3dinfo[i].display=1;
+       if(plot3dinfo[i].loaded==1)plot3dinfo[i].display=showall_plot3dfiles;
      }
      break;
    default:
@@ -5084,6 +5093,7 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int patchsinglemeshmenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
+static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
@@ -5863,7 +5873,7 @@ updatemenu=0;
     glutAddMenuEntry(_("Show all planes"), MENU_PLOT3D_SHOWALL);
     glutAddMenuEntry(_("Hide all planes"), MENU_PLOT3D_HIDEALL);
 
-    CREATEMENU(plot3dshowmenu,Plot3DShowMenu);
+    CREATEMENU(plot3dshowsinglemeshmenu,Plot3DShowMenu);
     if(nplot3dloaded>0){
       int ii;
 
@@ -5873,14 +5883,6 @@ updatemenu=0;
 
         i=plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
-        if(ii==0){
-          glutAddMenuEntry(plot3di->longlabel, MENU_PLOT3D_DUMMY);
-        }
-        else{
-          if(strcmp(plot3di->longlabel, plot3dinfo[plot3dorderindex[ii - 1]].longlabel) != 0){
-            glutAddMenuEntry(plot3di->longlabel, MENU_PLOT3D_DUMMY);
-          }
-        }
         if(plot3di->loaded==0)continue;
         if(plotstate==STATIC_PLOTS&&plot3di->display==1){
           STRCPY(menulabel,"*");
@@ -5891,18 +5893,32 @@ updatemenu=0;
         }
         glutAddMenuEntry(menulabel,1000+i);
       }
-      if(nplot3dloaded>1){
-        glutAddMenuEntry("-",MENU_PLOT3D_DUMMY);
-        glutAddMenuEntry(_("Show all PLOT3D files"),SHOWALL_PLOT3D);
-        glutAddMenuEntry(_("Hide all PLOT3D files"),HIDEALL_PLOT3D);
+    }
+
+    CREATEMENU(plot3dshowmenu,Plot3DShowMenu);
+    if(nplot3dloaded>0){
+      int ii;
+      plot3ddata *plot3di;
+      char menulabel[1024];
+
+      for(ii = 0;ii<nplot3dinfo;ii++){
+        i = plot3dorderindex[ii];
+        plot3di = plot3dinfo+i;
+        if(plot3di->loaded==0)continue;
+        strcpy(menulabel, "");
+        if(showall_plot3dfiles==1)strcat(menulabel, "*");
+        strcat(menulabel, plot3di->timelabel);
+        strcat(menulabel, ", ");
+        strcat(menulabel, plot3di->longlabel);
+        glutAddMenuEntry(menulabel, TOGGLESHOW_PLOT3D);
+        break;
       }
-      glutAddMenuEntry("-",MENU_PLOT3D_DUMMY);
     }
     glutAddSubMenu(_("2D contours"),staticslicemenu);
     if(cache_qdata==1){
       glutAddSubMenu(_("3D contours"),isosurfacemenu);
     }
-
+    if(nplot3dloaded>1&&show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"),plot3dshowsinglemeshmenu);
   }
 
 /* --------------------------------grid slice menu -------------------------- */

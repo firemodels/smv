@@ -387,6 +387,18 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
   }
   update_glui_plot3d();
   update_plot3dtitle();
+  if(p->time>=0.0){
+    char label[256];
+
+    sprintf(label, "%f", p->time);
+    TrimZeros(label);
+    STRCAT(label, " s");
+    STRCPY(p->timelabel, label);
+  }
+  else{
+    STRCPY(p->timelabel, "");
+  }
+  showall_plot3dfiles = 1;
   glutPostRedisplay();
 }
 
