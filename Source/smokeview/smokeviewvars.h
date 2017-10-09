@@ -22,7 +22,10 @@
 
 SVEXTERN int SVDECL(showall_boundary, 1);
 SVEXTERN int SVDECL(show_singlemesh_menus, 0);
-SVEXTERN int SVDECL(vol_framenumber, 0), SVDECL(vol_maxframenumber,-1);
+
+SVEXTERN int SVDECL(smoke_framenumber, 0);
+SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);
+
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);

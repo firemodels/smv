@@ -5,8 +5,11 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void Update_loadframe_val(int frames);
-EXTERNCPP void Update_loadframe_max(int max_frames);
+EXTERNCPP void UpdateLoadtimeVal(float val);
+EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
+EXTERNCPP int GetVolFrameMax(int meshnum);
+EXTERNCPP void UpdateLoadframeVal(int frames);
+EXTERNCPP void UpdateLoadframeMax(int max_frames);
 EXTERNCPP void UpdateShowRotationCenter(void);
 EXTERNCPP void UpdateShowRotationCenter2(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
@@ -293,7 +296,8 @@ EXTERNCPP void update_colorbar_list(void);
 EXTERNCPP void update_colorbar_list2(void);
 EXTERNCPP void update_colorbarflip(void);
 
-EXTERNCPP void loadvolsmokeframe(int meshnum, int framenum);
+EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
+EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
 EXTERNCPP void script_loadvolsmokeframe2(void);
 EXTERNCPP void script_loadisoframe2(scriptdata *scripti);
 EXTERNCPP void init_device_plane(devicedata *devicei);

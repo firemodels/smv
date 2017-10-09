@@ -9,6 +9,7 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "smokeviewdefs.h" 
 
 #define RENDER_START 3
 
@@ -916,18 +917,12 @@ void script_render360all(scriptdata *scripti){
   Render_CB(RENDER_START);
 }
 
-/* ------------------ loadvolsmokeframe ------------------------ */
+/* ------------------ GetVolFrameMax ------------------------ */
 
-void loadvolsmokeframe(int meshnum, int framenum){
-  int first = 1;
-  int i;
-  int max_frames = -1, frame_old;
+int GetVolFrameMax(int meshnum){
+  int i, volframemax=-1;
 
-
-  if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
-
-  // first time called, set bounds on volume render frame widget
-
+  volframemax = -1;
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -935,15 +930,26 @@ void loadvolsmokeframe(int meshnum, int framenum){
     if(meshnum!=i && meshnum>=0)continue;
     meshi = meshinfo+i;
     vr = &meshi->volrenderinfo;
-    max_frames = MAX(max_frames,vr->ntimes);
+    volframemax = MAX(volframemax,vr->ntimes);
   }
-  if(max_frames != vol_maxframenumber){
-    Update_loadframe_max(max_frames);
-    vol_maxframenumber = max_frames;
-  }
+  return volframemax;
+}
+
+/* ------------------ LoadSmokeFrame ------------------------ */
+
+void LoadSmokeFrame(int meshnum, int framenum){
+  int first = 1;
+  int i;
+  int max_frames = -1, frame_old;
+  float valtime;
+
+  if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
+
+  max_frames = GetVolFrameMax(meshnum);
+  if(max_frames > 0)UpdateLoadframeMax(max_frames);
   frame_old = framenum;
-  framenum = CLAMP(framenum, 0, vol_maxframenumber-1);
-  if(framenum!=frame_old)Update_loadframe_val(framenum);
+  framenum = CLAMP(framenum, 0, max_frames-1);
+  if(framenum!=frame_old)UpdateLoadframeVal(framenum);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -960,6 +966,7 @@ void loadvolsmokeframe(int meshnum, int framenum){
     }
     vr->loaded = 1;
     vr->display = 1;
+    valtime = vr->times[framenum];
   }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   stept = 1;
@@ -975,6 +982,58 @@ void loadvolsmokeframe(int meshnum, int framenum){
   stept=1;
   keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
+  UpdateLoadtimeVal(valtime);
+}
+
+/* ------------------ LoadTimeFrame ------------------------ */
+
+void LoadTimeFrame(int meshnum, float timeval){
+  int i, smokeframe;
+  float vrtime, mindiff;
+  meshdata *meshi;
+  volrenderdata *vr;
+  int meshnum_orig;
+  int update_timebounds = 0;
+
+  meshnum_orig = meshnum;
+  if(meshnum<0||meshnum>nmeshes-1)meshnum = 0;
+
+  meshi = meshinfo+meshnum;
+  vr = &meshi->volrenderinfo;
+
+  if(vr->times_defined==0)LoadSmokeFrame(meshnum_orig, 0);
+  if(time_framemin>time_framemax){
+    time_framemin = vr->times[0];
+    time_framemax = vr->times[vr->ntimes-1];
+    update_timebounds = 1;
+  }
+  else{
+    if(vr->times[0]<time_framemin){
+      time_framemin = vr->times[0];
+      update_timebounds = 1;
+    }
+    if(vr->times[vr->ntimes-1]>time_framemax){
+      time_framemax = vr->times[vr->ntimes-1];
+      update_timebounds = 1;
+    }
+  }
+  if(update_timebounds==1)UpdateTimeFrameBounds(time_framemin, time_framemax);
+
+  vrtime = vr->times[0];
+  mindiff = ABS(timeval-vrtime);
+  smokeframe = 0;
+  for(i = 1;i<vr->ntimes;i++){
+    float diff;
+
+    vrtime = vr->times[i];
+    diff = ABS(timeval-vrtime);
+    if(diff<mindiff){
+      mindiff = diff;
+      smokeframe = i;
+    }
+  }
+  UpdateLoadframeVal(smokeframe);
+  LoadSmokeFrame(meshnum, smokeframe);
 }
 
 /* ------------------ script_loadvolsmokeframe ------------------------ */
@@ -986,7 +1045,7 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
 
   index = scripti->ival;
   framenum = scripti->ival2;
-  loadvolsmokeframe(index, framenum);
+  LoadSmokeFrame(index, framenum);
   keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
