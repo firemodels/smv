@@ -477,7 +477,7 @@ GLubyte *GetScreenBuffer(void){
 
 int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
-  char renderfile[1024], renderfile_dir[1024], renderfullfile[1024], *ext;
+  char renderfile[1024], renderfile_dir[1024], renderfullfile[1024];
   FILE *RENDERfile=NULL;
   GLubyte *p;
   gdImagePtr RENDERimage;
@@ -487,18 +487,7 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   int irow;
 
   nscreen_cols=nscreen_rows;
-  switch(render_filetype){
-  case PNG:
-    ext=ext_png;
-    break;
-  case JPEG:
-    ext=ext_jpg;
-    break;
-  default:
-    render_filetype=PNG;
-    ext=ext_png;
-    break;
-  }
+  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -847,24 +836,13 @@ void SetupScreeninfo(void){
 
 int MergeRenderScreenBuffers360(void){
 
-  char renderfile[1024], renderfullfile[1024], renderfile_dir[1024], *ext;
+  char renderfile[1024], renderfullfile[1024], renderfile_dir[1024];
   FILE *RENDERfile = NULL;
   gdImagePtr RENDERimage;
   int i, j, ijk360;
   int *screenbuffer360;
 
-  switch (render_filetype){
-  case PNG:
-    ext = ext_png;
-    break;
-  case JPEG:
-    ext = ext_jpg;
-    break;
-  default:
-    render_filetype = PNG;
-    ext = ext_png;
-    break;
-  }
+  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
