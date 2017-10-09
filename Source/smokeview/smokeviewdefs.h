@@ -437,6 +437,7 @@ void _Sniff_Errors(char *whereat);
 #define SHOW_CHAR 997
 #define HIDEALL_PARTICLE 4
 #define SHOWALL_PARTICLE 3
+#define TOGGLE_ISO  10003
 #define HIDEALL_ISO 10002
 #define SHOWALL_ISO 10001
 #define HIDEALL_EVAC 4

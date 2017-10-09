@@ -918,16 +918,18 @@ void IsoShowMenu(int value){
     else if(value>=SHOWALL_ISO){
       if(value==SHOWALL_ISO){
         plotstate=DYNAMIC_PLOTS;
-        for(i=0;i<nisoinfo;i++){
-          isoinfo[i].display=1;
-        }
+        showall_iso = 1;
       }
       else if(value==HIDEALL_ISO){
-        for(i=0;i<nisoinfo;i++){
-          isoinfo[i].display=0;
-        }
+        showall_iso = 0;
       }
-     UpdateShow();
+      else if(value==TOGGLE_ISO){
+        showall_iso = 1 - showall_iso;
+      }
+      for(i=0;i<nisoinfo;i++){
+        isoinfo[i].display=showall_iso;
+      }
+      UpdateShow();
     }
   }
   update_iso_showlevels();
@@ -5092,7 +5094,7 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int patchsinglemeshmenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
+static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
@@ -6918,19 +6920,10 @@ updatemenu=0;
       if(iso2!=NULL){
         char menulabel[1024];
 
-        glutAddSubMenu(iso2->surface_label.longlabel, isoshowsubmenu);
-        STRCPY(menulabel, _("Show all"));
-        STRCAT(menulabel," ");
+        STRCPY(menulabel,"");
+        if(showall_iso==1)STRCAT(menulabel,"*");
         STRCAT(menulabel,iso2->surface_label.longlabel);
-        STRCAT(menulabel," ");
-        STRCAT(menulabel,_("isosurfaces"));
-        glutAddMenuEntry(menulabel,SHOWALL_ISO);
-        STRCPY(menulabel,_("Hide all"));
-        STRCAT(menulabel," ");
-        STRCAT(menulabel,iso2->surface_label.longlabel);
-        STRCAT(menulabel," ");
-        STRCAT(menulabel,_("isosurfaces"));
-        glutAddMenuEntry(menulabel,HIDEALL_ISO);
+        glutAddMenuEntry(menulabel,TOGGLE_ISO);
         glutAddMenuEntry("-", MENU_DUMMY);
       }
       if((visAIso & 1) == 1)glutAddMenuEntry(_("*Solid"), MENU_ISOSHOW_SOLID);
@@ -6954,6 +6947,7 @@ updatemenu=0;
       }
       if(show_iso_normal == 1)glutAddMenuEntry(_("*Show normals"), MENU_ISOSHOW_NORMALS);
       if(show_iso_normal == 0)glutAddMenuEntry(_("Show normals"), MENU_ISOSHOW_NORMALS);
+      if(show_singlemesh_menus==1)glutAddSubMenu("Single  mesh", isoshowsubmenu);
     }
   }
 
@@ -9330,7 +9324,7 @@ updatemenu=0;
       if(nmeshes>1){
         char menulabel[1024];
 
-        CREATEMENU(patchsinglemeshmenu, LoadPatchMenu);
+        CREATEMENU(loadpatchsinglemenu, LoadPatchMenu);
         for(ii=0;ii<npatchinfo;ii++){
           patchdata *patch1, *patch2;
 
@@ -9385,7 +9379,7 @@ updatemenu=0;
       }
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
-      if(nmeshes>1&&show_singlemesh_menus==1)glutAddSubMenu("Single mesh", patchsinglemeshmenu);
+      if(nmeshes>1&&show_singlemesh_menus==1)glutAddSubMenu("Single mesh", loadpatchsinglemenu);
       if(npatchloaded>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }

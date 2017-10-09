@@ -275,6 +275,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   PRINTF("After iso load: \n");
   PrintMemoryInfo;
 #endif
+  showall_iso = 1;
 
   glutPostRedisplay();
   CheckMemory;
@@ -817,7 +818,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
     PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
     (float)file_size/1000000.,read_time,total_time-read_time);
   }
-
+  showall_iso = 1;
   glutPostRedisplay();
   CheckMemory;
 }
