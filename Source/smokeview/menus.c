@@ -5084,7 +5084,7 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int patchsinglemeshmenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
-static int showsingleslicemenu=0;
+static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
 static int scriptmenu=0;
@@ -9147,7 +9147,6 @@ updatemenu=0;
         plot3di = plot3dinfo + i;
         plot3dim1 = plot3dinfo + im1;
         if(ABS(plot3di->time-plot3dim1->time)>0.1){
-          if(nmeshes>1)glutAddMenuEntry("  All meshes",-100000+nloadsubplot3dmenu-1);
           CREATEMENU(loadsubplot3dmenu[nloadsubplot3dmenu],LoadPlot3dMenu);
           nloadsubplot3dmenu++;
         }
@@ -9158,7 +9157,42 @@ updatemenu=0;
         strcat(menulabel,plot3di->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-      if(nmeshes>1)glutAddMenuEntry(_("  All meshes"),-100000+nloadsubplot3dmenu-1);
+
+      nloadsubplot3dmenu=0;
+      CREATEMENU(plot3dsinglemeshmenu,LoadPlot3dMenu);
+      for(ii=0;ii<nplot3dinfo;ii++){
+        int im1;
+
+        i = plot3dorderindex[ii];
+        plot3di = plot3dinfo + i;
+        if(ii==0){
+          sprintf(menulabel,"  %f",plot3di->time);
+          TrimZeros(menulabel);
+          strcat(menulabel," s");
+          if(nmeshes>1){
+            glutAddSubMenu(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
+          }
+          nloadsubplot3dmenu++;
+        }
+        if(ii!=0){
+          i = plot3dorderindex[ii];
+          im1 = plot3dorderindex[ii-1];
+          plot3di = plot3dinfo + i;
+          plot3dim1 = plot3dinfo + im1;
+          if(strcmp(plot3di->longlabel,plot3dim1->longlabel)!=0){
+            glutAddMenuEntry(plot3di->longlabel,MENU_PLOT3D_DUMMY);
+          }
+          if(ABS(plot3di->time-plot3dim1->time)>0.1){
+            sprintf(menulabel,"  %f",plot3di->time);
+            TrimZeros(menulabel);
+            strcat(menulabel," s");
+            if(nmeshes>1){
+              glutAddSubMenu(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
+            }
+            nloadsubplot3dmenu++;
+          }
+        }
+      }
 
       nloadsubplot3dmenu=0;
       CREATEMENU(loadplot3dmenu,LoadPlot3dMenu);
@@ -9167,6 +9201,7 @@ updatemenu=0;
 
         i = plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
+        if(ii==nplot3dinfo-1&&nmeshes>1&&show_singlemesh_menus==1)glutAddSubMenu("Single mesh",plot3dsinglemeshmenu);
         if(ii==0){
           strcpy(menulabel,plot3di->longlabel);
           glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
@@ -9174,7 +9209,7 @@ updatemenu=0;
           TrimZeros(menulabel);
           strcat(menulabel," s");
           if(nmeshes>1){
-            glutAddSubMenu(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
+            glutAddMenuEntry(menulabel,-100000+nloadsubplot3dmenu);
           }
           else{
             strcpy(menulabel,"  ");
@@ -9199,7 +9234,7 @@ updatemenu=0;
             TrimZeros(menulabel);
             strcat(menulabel," s");
             if(nmeshes>1){
-              glutAddSubMenu(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
+              glutAddMenuEntry(menulabel,-100000+nloadsubplot3dmenu);
             }
             else{
               strcpy(menulabel,"  ");
