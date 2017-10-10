@@ -1421,8 +1421,8 @@ void keyboard(unsigned char key, int flag){
         break;
       case GLUT_ACTIVE_CTRL:
       default:
-        showall_boundary = 1-showall_boundary;
-        if(showall_boundary==1){
+        show_boundaryfiles = 1-show_boundaryfiles;
+        if(show_boundaryfiles==1){
           ShowPatchMenu(SHOWALL_BOUNDARY);
           if(key2=='B'){
             VentMenu(HIDE_ALL_VENTS);

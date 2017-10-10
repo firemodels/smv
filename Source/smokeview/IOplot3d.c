@@ -398,7 +398,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
   else{
     STRCPY(p->timelabel, "");
   }
-  showall_plot3dfiles = 1;
+  show_plot3dfiles = 1;
   glutPostRedisplay();
 }
 

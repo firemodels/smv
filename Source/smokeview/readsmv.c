@@ -9215,7 +9215,7 @@ int ReadINI2(char *inifile, int localfile){
 #endif
     if(Match(buffer, "SHOWMESHMENUS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &show_singlemesh_menus);
+      sscanf(buffer, " %i", &show_meshmenus);
       continue;
     }
     if(Match(buffer, "SHOWPATCH")==1){
@@ -13178,7 +13178,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, "LABELSTARTUPVIEW\n");
   fprintf(fileout, " %s\n", startup_view_label);
   fprintf(fileout, "SHOWMESHMENUS\n");
-  fprintf(fileout, " %i\n", show_singlemesh_menus);
+  fprintf(fileout, " %i\n", show_meshmenus);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);
