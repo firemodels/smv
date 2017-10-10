@@ -868,6 +868,10 @@ void InitVolRender(void){
         NewMemory((void **)&vr->nsmokedata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nlightdata_compressed, vr->ntimes*sizeof(int));
 
+        vr->firedataptr = NULL;
+        vr->smokedataptr = NULL;
+        vr->lightdataptr = NULL;
+
         for(j=0;j<vr->ntimes;j++){
           vr->firedataptrs[j]  = NULL;
           vr->smokedataptrs[j] = NULL;

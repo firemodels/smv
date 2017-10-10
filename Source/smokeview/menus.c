@@ -2761,6 +2761,7 @@ void LoadUnloadMenu(int value){
   if(value==SHOWSINGLEMESHMENUS){
     show_singlemesh_menus = 1 - show_singlemesh_menus;
     updatemenu=1;
+    glutPostRedisplay();
   }
   if(value==REDIRECT){
     updatemenu=1;
@@ -8935,13 +8936,11 @@ updatemenu=0;
       }
     }
     if(nvolrenderinfo>0){
+      char vlabel[256];
       CREATEMENU(loadvolsmoke3dmenu,LoadVolsmoke3DMenu);
-      if(nvolrenderinfo>1){
-        char vlabel[256];
 
-        strcpy(vlabel,_("3D smoke (Volume rendered)"));
-        glutAddMenuEntry(vlabel,LOAD_ALL);
-      }
+      strcpy(vlabel,_("3D smoke (Volume rendered)"));
+      glutAddMenuEntry(vlabel,LOAD_ALL);
       if(show_singlemesh_menus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
       if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), loadvolsmokesinglemenu);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
@@ -9863,8 +9862,8 @@ updatemenu=0;
 #endif
       if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
-      if(show_singlemesh_menus==1)glutAddMenuEntry(_("*Show Single mesh menus"), SHOWSINGLEMESHMENUS);
-      if(show_singlemesh_menus==0)glutAddMenuEntry(_("Show Single mesh menus"), SHOWSINGLEMESHMENUS);
+      if(show_singlemesh_menus==1)glutAddMenuEntry(_("*Show single mesh menus"), SHOWSINGLEMESHMENUS);
+      if(show_singlemesh_menus==0)glutAddMenuEntry(_("Show single mesh menus"), SHOWSINGLEMESHMENUS);
 
       {
         char menulabel[1024];
