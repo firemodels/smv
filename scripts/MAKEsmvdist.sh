@@ -111,6 +111,7 @@ SCP $PLATFORMHOST $BACKGROUNDDIR background $PLATFORMDIR/bin background
 SCP $PLATFORMHOST $SMVDIR smokeview_${platform}_${TEST}64 $PLATFORMDIR/bin smokeview
 SCP $PLATFORMHOST $DEM2FDSDIR dem2fds_${platform}_64 $PLATFORMDIR/bin dem2fds
 SCP $PLATFORMHOST $SMDDIR smokediff_${platform}_64 $PLATFORMDIR/bin smokediff
+SCP $PLATFORMHOST $SMZDIR smokezip_${platform}_64 $PLATFORMDIR/bin smokezip
 SCP $PLATFORMHOST $WIND2FDSDIR wind2fds_${platform}_64 $PLATFORMDIR/bin wind2fds
 SCP $PLATFORMHOST $HASHFILEDIR hashfile_${platform}_64 $PLATFORMDIR/bin hashfile
 
