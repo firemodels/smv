@@ -3577,21 +3577,16 @@ void ShowVolsmoke3DMenu(int value){
       }
     }
   }
-  else if(value==HIDE_ALL){  // hide all
-    for(i=0;i<nmeshes;i++){
-      meshdata *meshi;
-      volrenderdata *vr;
-
-      meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
-      if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-      if(vr->loaded==1){
-        vr->display=0;
-        PRINTF("%s vis state:%i\n",meshi->label,vr->display);
-      }
+  else{
+    if(value==HIDE_VOLSMOKE){  // hide all
+      show_volsmoke=0;
     }
-  }
-  else if(value==SHOW_ALL){  // show all
+    else if(value==SHOW_VOLSMOKE){  // show all
+      show_volsmoke=1;
+    }
+    else if(value==TOGGLE_VOLSMOKE){  // show all
+      show_volsmoke=1-show_volsmoke;
+    }
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       volrenderdata *vr;
@@ -3600,7 +3595,7 @@ void ShowVolsmoke3DMenu(int value){
       vr = &(meshi->volrenderinfo);
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==1){
-        vr->display=1;
+        vr->display=show_volsmoke;
         PRINTF("%s vis state:%i\n",meshi->label,vr->display);
       }
     }
@@ -7366,11 +7361,10 @@ updatemenu=0;
     if(nvolsmoke3dloaded>1){
       char vlabel[256];
 
-      strcpy(vlabel,_("Show"));
-      glutAddMenuEntry(vlabel,SHOW_ALL);
-
-      strcpy(vlabel,_("Hide"));
-      glutAddMenuEntry(vlabel,HIDE_ALL);
+      strcpy(vlabel, "");
+      if(show_volsmoke==1)strcat(vlabel, "*");
+      strcat(vlabel,_("Show"));
+      glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     }
     glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
     if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showvolsmokesinglemenu);

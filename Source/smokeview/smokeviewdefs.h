@@ -616,6 +616,10 @@ void _Sniff_Errors(char *whereat);
 #define HIDEALL_VSLICE HIDE_ALL
 #define SHOWALL_VSLICE SHOW_ALL
 
+#define SHOW_VOLSMOKE -2
+#define HIDE_VOLSMOKE -1
+#define TOGGLE_VOLSMOKE -3
+
 #define MAXPOINTS 50000000
 #define INCFRAMES 20
 #define MAXFRAMES 5001
