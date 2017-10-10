@@ -772,17 +772,23 @@ void Smoke3DShowMenu(int value){
     switch(value){
     case SHOW_ALL:
       plotstate=DYNAMIC_PLOTS;
-      for(i=0;i<nsmoke3dinfo;i++){
-        smoke3di = smoke3dinfo + i;
-        if(smoke3di->loaded==1)smoke3di->display=1;
-      }
+      show_3dsmoke=1;
+      Smoke3DShowMenu(SET_SMOKE3D);
       break;
     case HIDE_ALL:
+      show_3dsmoke=0;
+      Smoke3DShowMenu(SET_SMOKE3D);
+      break;
+    case TOGGLE_SMOKE3D:
+      show_3dsmoke=1-show_3dsmoke;
+      Smoke3DShowMenu(SET_SMOKE3D);
+    break;
+    case SET_SMOKE3D:
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        if(smoke3di->loaded==1)smoke3di->display=0;
+        if(smoke3di->loaded==1)smoke3di->display=show_3dsmoke;
       }
-      break;
+    break;
     default:
       ASSERT(FFALSE);
     }
@@ -6793,7 +6799,6 @@ updatemenu=0;
 
     CREATEMENU(smokecolorbarmenu,SmokeColorbarMenu);
 
-    glutAddMenuEntry(_("Smoke map:"),MENU_DUMMY);
     for(i=0;i<ncolorbars;i++){
       cbi = colorbarinfo + i;
 
@@ -6827,10 +6832,8 @@ updatemenu=0;
           glutAddMenuEntry(menulabel,i);
         }
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
-        if(nsmoke3dinfo > 1){
-          glutAddMenuEntry(_("Show"), SHOW_ALL);
-          glutAddMenuEntry(_("Hide"), HIDE_ALL);
-        }
+        if(show_3dsmoke==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
+        if(show_3dsmoke==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
         glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
         if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), smoke3dshowsinglemenu);
       }
@@ -7342,6 +7345,8 @@ updatemenu=0;
  /* --------------------------------Show Volume smoke menu -------------------------- */
 
   if(nvolsmoke3dloaded>0){
+    char vlabel[256];
+
     CREATEMENU(showvolsmokesinglemenu,ShowVolsmoke3DMenu);
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
@@ -7358,14 +7363,10 @@ updatemenu=0;
       glutAddMenuEntry(menulabel,i);
     }
     CREATEMENU(showvolsmoke3dmenu,ShowVolsmoke3DMenu);
-    if(nvolsmoke3dloaded>1){
-      char vlabel[256];
-
-      strcpy(vlabel, "");
-      if(show_volsmoke==1)strcat(vlabel, "*");
-      strcat(vlabel,_("Show"));
-      glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
-    }
+    strcpy(vlabel, "");
+    if(show_volsmoke==1)strcat(vlabel, "*");
+    strcat(vlabel,_("Show"));
+    glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
     if(show_singlemesh_menus==1)glutAddSubMenu(_("Single mesh"), showvolsmokesinglemenu);
   }
@@ -8980,11 +8981,11 @@ updatemenu=0;
               break;
             }
           }
-          if(nsootloaded>1) glutAddMenuEntry(_("SOOT MASS FRACTION"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
-          if(nhrrloaded>1)  glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
-          if(nwaterloaded>1)glutAddMenuEntry(_("water"), MENU_UNLOADSMOKE3D_UNLOADALLWATER);
+          if(nsootloaded>0) glutAddMenuEntry(_("SOOT MASS FRACTION"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
+          if(nhrrloaded>0)  glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
+          if(nwaterloaded>0)glutAddMenuEntry(_("water"), MENU_UNLOADSMOKE3D_UNLOADALLWATER);
           if(show_singlemesh_menus==1){
-            if(nsootloaded>1||nhrrloaded>1||nwaterloaded>1)glutAddMenuEntry("-", MENU_DUMMY);
+            if(nsootloaded+nhrrloaded+nwaterloaded>0)glutAddMenuEntry("-", MENU_DUMMY);
             glutAddSubMenu(_("Single mesh"), unloadsmoke3dsinglemenu);
           }
         }
@@ -9044,6 +9045,7 @@ updatemenu=0;
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
+          int load_3dhrrpuv, load_3dsmoke;
 
           if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
@@ -9053,6 +9055,17 @@ updatemenu=0;
           }
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
+
+          load_3dhrrpuv = 0;
+          load_3dsmoke = 0;
+          for(i=0;i<nsmoke3dinfo;i++){
+            smoke3di=smoke3dinfo + i;
+            if(smoke3di->loaded==0)continue;
+            if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0)load_3dhrrpuv = 1;
+            if(strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)load_3dsmoke = 1;
+            if(load_3dhrrpuv==1&&load_3dsmoke==1)break;
+          }
+
           for(i=0;i<nsmoke3dinfo;i++){
             int j;
 
@@ -9066,7 +9079,10 @@ updatemenu=0;
               }
             }
             if(useitem!=-1){
-              strcpy(menulabel,smoke3di->label.longlabel);
+              strcpy(menulabel, "");
+              if(load_3dsmoke==1&&strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)strcat(menulabel, "*");
+              if(load_3dhrrpuv==1&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
+              strcat(menulabel,smoke3di->label.longlabel);
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }

@@ -615,6 +615,8 @@ void _Sniff_Errors(char *whereat);
 #define HIDEALL_SMOKE3D HIDE_ALL
 #define HIDEALL_VSLICE HIDE_ALL
 #define SHOWALL_VSLICE SHOW_ALL
+#define TOGGLE_SMOKE3D  -3
+#define SET_SMOKE3D -4
 
 #define SHOW_VOLSMOKE -2
 #define HIDE_VOLSMOKE -1
