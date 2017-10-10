@@ -58,6 +58,8 @@ extern GLUI *glui_bounds;
 #define VOL_UNLOAD_ALL 48
 #define LIGHT_XYZ 49
 #define LIGHT_UPDATE 50
+#define LOAD_SMOKEFRAME 55
+#define LOAD_TIMEFRAME 58
 
 // two defines below are also defined elsewhere
 
@@ -117,61 +119,72 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
 GLUI_Spinner *SPINNER_extinct=NULL;
-GLUI_Spinner *SPINNER_smokedens=NULL;
-GLUI_Spinner *SPINNER_pathlength=NULL;
-GLUI_Spinner *SPINNER_load_3dsmoke=NULL;
-GLUI_Spinner *SPINNER_load_hrrpuv=NULL;
+GLUI_Spinner *SPINNER_smokedens = NULL;
+GLUI_Spinner *SPINNER_pathlength = NULL;
+GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
+GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
 GLUI_Spinner *SPINNER_light_color[3];
 GLUI_Spinner *SPINNER_smoke_test_color[4];
-GLUI_Spinner *SPINNER_smoke_test_range=NULL;
-GLUI_Spinner *SPINNER_smoke_test_nslices=NULL;
+GLUI_Spinner *SPINNER_smoke_test_range = NULL;
+GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
 GLUI_Spinner *SPINNER_light_intensity = NULL;
 GLUI_Spinner *SPINNER_scatter_param = NULL;
+GLUI_Spinner *SPINNER_smokeloadframe = NULL;
+GLUI_Spinner *SPINNER_globalloadframe = NULL;
+GLUI_Spinner *SPINNER_timeloadframe = NULL;
 
-GLUI_Checkbox *CHECKBOX_combine_meshes=NULL;
+GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
 #ifdef pp_CULL
-GLUI_Checkbox *CHECKBOX_show_cullports=NULL;
+GLUI_Checkbox *CHECKBOX_show_cullports = NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_compress_volsmoke=NULL;
-GLUI_Checkbox *CHECKBOX_smokecullflag=NULL;
-GLUI_Checkbox *CHECKBOX_test_smokesensors=NULL;
-GLUI_Checkbox *CHECKBOX_smokeGPU=NULL;
-GLUI_Checkbox *CHECKBOX_smokedrawtest=NULL;
-GLUI_Checkbox *CHECKBOX_smokedrawtest2=NULL;
-GLUI_Checkbox *CHECKBOX_zlib=NULL;
-GLUI_Checkbox **CHECKBOX_meshvisptr=NULL;
-GLUI_Checkbox *CHECKBOX_meshvis=NULL;
-GLUI_Checkbox *CHECKBOX_show_smoketest=NULL;
-GLUI_Checkbox *CHECKBOX_show_light_position_direction=NULL;
+GLUI_Checkbox *CHECKBOX_compress_volsmoke = NULL;
+GLUI_Checkbox *CHECKBOX_smokecullflag = NULL;
+GLUI_Checkbox *CHECKBOX_test_smokesensors = NULL;
+GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
+GLUI_Checkbox *CHECKBOX_smokedrawtest = NULL;
+GLUI_Checkbox *CHECKBOX_smokedrawtest2 = NULL;
+GLUI_Checkbox *CHECKBOX_zlib = NULL;
+GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
+GLUI_Checkbox *CHECKBOX_meshvis = NULL;
+GLUI_Checkbox *CHECKBOX_show_smoketest = NULL;
+GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 
-GLUI_Panel *PANEL_overall=NULL;
-GLUI_Panel *PANEL_colormap2=NULL;
-GLUI_Panel *PANEL_colormap=NULL;
-GLUI_Panel *PANEL_absorption=NULL,*PANEL_smokesensor=NULL;
-GLUI_Panel *PANEL_testsmoke=NULL;
-GLUI_Panel *PANEL_color=NULL;
-GLUI_Panel *PANEL_smoke=NULL;
-GLUI_Panel *PANEL_loadcutoff=NULL;
+GLUI_Panel *PANEL_overall = NULL;
+GLUI_Panel *PANEL_colormap2 = NULL;
+GLUI_Panel *PANEL_colormap = NULL;
+GLUI_Panel *PANEL_absorption = NULL, *PANEL_smokesensor = NULL;
+GLUI_Panel *PANEL_testsmoke = NULL;
+GLUI_Panel *PANEL_color = NULL;
+GLUI_Panel *PANEL_smoke = NULL;
+GLUI_Panel *PANEL_loadcutoff = NULL;
 GLUI_Panel *PANEL_light_color = NULL;
 GLUI_Panel *PANEL_light_position = NULL;
 GLUI_Panel *PANEL_scatter = NULL;
+GLUI_Panel *PANEL_loadframe = NULL;
 
-GLUI_Rollout *ROLLOUT_firesmokecolor=NULL;
-GLUI_Rollout *ROLLOUT_colormap4=NULL;
-GLUI_Rollout *ROLLOUT_firecolor=NULL;
-GLUI_Rollout *ROLLOUT_smokecolor=NULL;
-GLUI_Rollout *ROLLOUT_generate_images=NULL;
-GLUI_Rollout *ROLLOUT_light=NULL;
-GLUI_Rollout *ROLLOUT_colormap_temp=NULL;
-GLUI_Rollout *ROLLOUT_colormap_hrrpuv_smoke=NULL;
-GLUI_Rollout *ROLLOUT_meshvis=NULL;
-GLUI_Rollout *ROLLOUT_slices=NULL;
-GLUI_Rollout *ROLLOUT_volume=NULL;
+GLUI_Rollout *ROLLOUT_firesmokecolor = NULL;
+GLUI_Rollout *ROLLOUT_colormap4 = NULL;
+GLUI_Rollout *ROLLOUT_firecolor = NULL;
+GLUI_Rollout *ROLLOUT_smokecolor = NULL;
+GLUI_Rollout *ROLLOUT_generate_images = NULL;
+GLUI_Rollout *ROLLOUT_loadframe = NULL;
+GLUI_Rollout *ROLLOUT_light = NULL;
+GLUI_Rollout *ROLLOUT_colormap_temp = NULL;
+GLUI_Rollout *ROLLOUT_colormap_hrrpuv_smoke = NULL;
+GLUI_Rollout *ROLLOUT_meshvis = NULL;
+GLUI_Rollout *ROLLOUT_slices = NULL;
+GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
 
-GLUI_StaticText *TEXT_smokealpha=NULL;
-GLUI_StaticText *TEXT_smokedepth=NULL;
+GLUI_StaticText *TEXT_smokealpha = NULL;
+GLUI_StaticText *TEXT_smokedepth = NULL;
+GLUI_StaticText *STATIC_smokeframelimit_min = NULL;
+GLUI_StaticText *STATIC_smokeframelimit_max = NULL;
+GLUI_StaticText *STATIC_globalframelimit_min = NULL;
+GLUI_StaticText *STATIC_globalframelimit_max = NULL;
+GLUI_StaticText *STATIC_timelimit_min = NULL;
+GLUI_StaticText *STATIC_timelimit_max = NULL;
 
 
 #define VOLRENDER_ROLLOUT 0
@@ -185,6 +198,48 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
+
+/* ------------------ UpdateLoadframeVal ------------------------ */
+
+extern "C" void UpdateLoadframeVal(int frames){
+  SPINNER_smokeloadframe->set_int_val(frames);
+}
+
+/* ------------------ UpdateLoadtimeVal ------------------------ */
+
+extern "C" void UpdateLoadtimeVal(float val){
+  SPINNER_timeloadframe->set_float_val(val);
+}
+
+/* ------------------ UpdateLoadframeMax ------------------------ */
+
+extern "C" void UpdateLoadframeMax(int max_frames){
+  int val;
+
+  val = SPINNER_smokeloadframe->get_int_val();
+  if(val<0){
+    SPINNER_smokeloadframe->set_int_val(0);
+  }
+  else if(val>max_frames-1){
+    SPINNER_smokeloadframe->set_int_val(max_frames-1);
+  }
+  SPINNER_smokeloadframe->set_int_limits(0, max_frames-1);
+}
+
+/* ------------------ UpdateTimeFrameBounds ------------------------ */
+
+extern "C" void UpdateTimeFrameBounds(float time_min, float time_max){
+  float val;
+
+  val = SPINNER_timeloadframe->get_float_val();
+  if(val>time_max){
+    SPINNER_timeloadframe->set_float_val(time_max);
+  }
+  else if(val<time_min){
+    SPINNER_timeloadframe->set_float_val(time_min);
+  }
+  SPINNER_timeloadframe->set_float_limits(time_min,time_max);
+}
 
 /* ------------------ Color_Rollout_CB ------------------------ */
 
@@ -662,6 +717,17 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     BUTTON_volunload = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _d("Unload"), VOL_UNLOAD_ALL, Smoke3d_CB);
     UpdateSmokeColormap(RENDER_VOLUME);
     Smoke3d_CB(SMOKE_OPTIONS);
+
+    ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load frame"), false);
+    PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
+
+    glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_SMOKEFRAME, Smoke3d_CB);
+    glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _d("Load"), LOAD_TIMEFRAME, Smoke3d_CB);
+
+    glui_3dsmoke->add_column_to_panel(PANEL_loadframe, false);
+
+    SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("smoke frame"), GLUI_SPINNER_INT, &smoke_framenumber);
+    SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _d("time"), GLUI_SPINNER_FLOAT, &time_frameval);
   }
 
   Update_Smoke_Type();
@@ -684,6 +750,12 @@ extern "C" void Smoke3d_CB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case LOAD_SMOKEFRAME:
+    LoadSmokeFrame(-1, smoke_framenumber);
+  break;
+  case LOAD_TIMEFRAME:
+    LoadTimeFrame(-1, time_frameval);
+    break;
   case LIGHT_XYZ:
     break;
   case LIGHT_UPDATE:

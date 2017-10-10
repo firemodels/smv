@@ -8290,13 +8290,13 @@ typedef struct {
       patchi->geom_fdsfiletype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
       patchi->geom_smvfiletype = PATCH_STRUCTURED;
+      patchi->slice = 0;
       if(Match(buffer,"BNDC") == 1){
         patchi->filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         patchi->filetype=PATCH_GEOMETRY;
         patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
-        patchi->slice = 0;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
@@ -9213,6 +9213,11 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
+    if(Match(buffer, "SHOWMESHMENUS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &show_meshmenus);
+      continue;
+    }
     if(Match(buffer, "SHOWPATCH")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %i",
@@ -13172,6 +13177,8 @@ void WriteINI(int flag,char *filename){
   }
   fprintf(fileout, "LABELSTARTUPVIEW\n");
   fprintf(fileout, " %s\n", startup_view_label);
+  fprintf(fileout, "SHOWMESHMENUS\n");
+  fprintf(fileout, " %i\n", show_meshmenus);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);

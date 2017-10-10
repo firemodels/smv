@@ -1421,8 +1421,8 @@ void keyboard(unsigned char key, int flag){
         break;
       case GLUT_ACTIVE_CTRL:
       default:
-        showall_boundary = 1-showall_boundary;
-        if(showall_boundary==1){
+        show_boundaryfiles = 1-show_boundaryfiles;
+        if(show_boundaryfiles==1){
           ShowPatchMenu(SHOWALL_BOUNDARY);
           if(key2=='B'){
             VentMenu(HIDE_ALL_VENTS);
@@ -1632,7 +1632,7 @@ void keyboard(unsigned char key, int flag){
         }
         stept=1;
         if(nvslice_loaded_local>0){
-          if(show_all_slices==0){
+          if(showall_slices==0){
             ShowVSliceMenu(SHOW_ALL);
             force_redisplay=1;
           }
@@ -1642,7 +1642,7 @@ void keyboard(unsigned char key, int flag){
           }
         }
         if(nvslice_loaded_local==0&&nslice_loaded_local>0){
-          if(show_all_slices==0){
+          if(showall_slices==0){
             ShowHideSliceMenu(SHOW_ALL);
             force_redisplay=1;
           }

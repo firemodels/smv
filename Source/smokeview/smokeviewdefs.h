@@ -428,6 +428,8 @@ void _Sniff_Errors(char *whereat);
 #define DYNAMIC_PLOTS 2
 #define DYNAMIC_PLOTS_NORECURSE 4
 
+#define DISPLAY_PLOT3D 996
+#define TOGGLESHOW_PLOT3D 995
 #define SHOWALL_PLOT3D 998
 #define HIDEALL_PLOT3D 999
 #define SHOWALL_BOUNDARY 998
@@ -435,6 +437,7 @@ void _Sniff_Errors(char *whereat);
 #define SHOW_CHAR 997
 #define HIDEALL_PARTICLE 4
 #define SHOWALL_PARTICLE 3
+#define TOGGLE_ISO  10003
 #define HIDEALL_ISO 10002
 #define SHOWALL_ISO 10001
 #define HIDEALL_EVAC 4
@@ -565,6 +568,7 @@ void _Sniff_Errors(char *whereat);
 #define UNLOADALL 1
 #define SHOWFILES 5
 #define REDIRECT 6
+#define SHOWMESHMENUS 7
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING -2
@@ -611,6 +615,12 @@ void _Sniff_Errors(char *whereat);
 #define HIDEALL_SMOKE3D HIDE_ALL
 #define HIDEALL_VSLICE HIDE_ALL
 #define SHOWALL_VSLICE SHOW_ALL
+#define TOGGLE_SMOKE3D  -3
+#define SET_SMOKE3D -4
+
+#define SHOW_VOLSMOKE -2
+#define HIDE_VOLSMOKE -1
+#define TOGGLE_VOLSMOKE -3
 
 #define MAXPOINTS 50000000
 #define INCFRAMES 20

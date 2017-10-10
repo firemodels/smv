@@ -2900,7 +2900,7 @@ void GetSliceParams(void){
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      mslicei->type=sd->type;
+      mslicei->type=sd->type;//check  'type'
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -2911,7 +2911,7 @@ void GetSliceParams(void){
           nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
-          mslicei->type=sd->type;
+          mslicei->type=sd->type;//check 'type'
           mslicei->mesh_type=sd->mesh_type;
           mslicei->islices=NULL;
           NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
@@ -4366,6 +4366,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     histogram_nbuckets = 255;
     histogram_show_numbers=0;
   }
+  showall_slices=1;
   glutPostRedisplay();
 }
 

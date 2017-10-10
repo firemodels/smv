@@ -1200,7 +1200,7 @@ typedef struct _slicedata {
 typedef struct _multislicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;
+  int loaded,display,type;// possible problem with 'type'
   int ndirxyz[4];
   int nslices;
   int *islices;
@@ -1354,7 +1354,7 @@ typedef struct {
   int extreme_min[6], extreme_max[6];
   int blocknumber,loaded,display;
   flowlabels label[6];
-  char menulabel[256],longlabel[256];
+  char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
 
 /* --------------------------  zonedata ------------------------------------ */

@@ -20,6 +20,14 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
+SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
+SVEXTERN int SVDECL(show_boundaryfiles, 1);
+SVEXTERN int SVDECL(show_meshmenus, 0);
+
+SVEXTERN int SVDECL(smoke_framenumber, 0);
+SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);
+
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
@@ -901,7 +909,7 @@ SVEXTERN int visAvailmemory;
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
 SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
-SVEXTERN int SVDECL(show_all_slices,1);
+SVEXTERN int SVDECL(showall_slices,1);
 SVEXTERN int SVDECL(autoterrain,0),SVDECL(manual_terrain,0);
 SVEXTERN float zterrain_max, zterrain_min;
 SVEXTERN char SVDECL(*fds_version, NULL), SVDECL(*fds_githash, NULL);
@@ -1043,7 +1051,6 @@ SVEXTERN int loadfiles_at_startup;
 
 SVEXTERN char SVDECL(*smokeviewtempdir,NULL);
 
-SVEXTERN int SVDECL(showall_boundary,1);
 SVEXTERN int nmenus;
 SVEXTERN menudata menuinfo[10000];
 SVEXTERN int showbuild;
