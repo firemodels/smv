@@ -3144,8 +3144,8 @@ void drawpatch_cellcenter(const meshdata *meshi){
 
   switch(patchi->compression_type){
   case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
     cpatchval_iframe=meshi->cpatchval_iframe;
+    if(cpatchval_iframe==NULL)return;
     break;
   case COMPRESSED_ZLIB:
     ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
