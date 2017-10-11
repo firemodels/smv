@@ -9213,6 +9213,11 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
+    if(Match(buffer, "FREEZEVOLSMOKE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i", &freeze_volsmoke,&autofreeze_volsmoke);
+      continue;
+    }
     if(Match(buffer, "SHOWMESHMENUS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_meshmenus);
@@ -12949,6 +12954,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", fontindex);
   fprintf(fileout, "FRAMERATEVALUE\n");
   fprintf(fileout, " %i\n", frameratevalue);
+  fprintf(fileout, "FREEZEVOLSMOKE\n");
+  fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMDIAGS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
@@ -13453,6 +13460,19 @@ void UpdateLoadedLists(void){
     }
   }
 
+  nvolsmoke_loaded = 0;
+  if(nvolrenderinfo>0){
+    for(i=0;i<nmeshes;i++){
+      meshdata *meshi;
+      volrenderdata *vr;
+
+      meshi = meshinfo + i;
+      vr = &(meshi->volrenderinfo);
+      if(vr==NULL||vr->fireslice==NULL||vr->smokeslice==NULL)continue;
+      if(vr->loaded==0||vr->display==0)continue;
+      nvolsmoke_loaded++;
+    }
+  }
 }
 
 /* ------------------ GetElevAz ------------------------ */

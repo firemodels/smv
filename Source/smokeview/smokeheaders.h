@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadtimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
 EXTERNCPP int GetVolFrameMax(int meshnum);
