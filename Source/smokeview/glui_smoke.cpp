@@ -134,6 +134,7 @@ GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 
+GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
 #ifdef pp_CULL
 GLUI_Checkbox *CHECKBOX_show_cullports = NULL;
@@ -198,6 +199,12 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
+
+/* ------------------ UpdateFreeze ------------------------ */
+
+extern "C" void UpdateFreeze(int val){
+  CHECKBOX_freeze->set_int_val(val);
+}
 
 /* ------------------ UpdateLoadframeVal ------------------------ */
 
@@ -643,7 +650,8 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
     SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Auto freeze"), &autofreeze_volsmoke);
+    CHECKBOX_freeze=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("adaptive integration"), &vol_adaptive);
 
 #ifdef _DEBUG
