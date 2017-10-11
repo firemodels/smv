@@ -133,6 +133,9 @@ GLUI_Spinner *SPINNER_scatter_param = NULL;
 GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
+GLUI_Spinner *SPINNER_tempfactor=NULL;
+GLUI_Spinner *SPINNER_tempoffset=NULL;
+
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
@@ -163,6 +166,7 @@ GLUI_Panel *PANEL_light_color = NULL;
 GLUI_Panel *PANEL_light_position = NULL;
 GLUI_Panel *PANEL_scatter = NULL;
 GLUI_Panel *PANEL_loadframe = NULL;
+GLUI_Panel *PANEL_voltemp = NULL;
 
 GLUI_Rollout *ROLLOUT_firesmokecolor = NULL;
 GLUI_Rollout *ROLLOUT_colormap4 = NULL;
@@ -177,6 +181,10 @@ GLUI_Rollout *ROLLOUT_meshvis = NULL;
 GLUI_Rollout *ROLLOUT_slices = NULL;
 GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
+GLUI_Rollout *ROLLOUT_volsmoke_load = NULL;
+GLUI_Rollout *ROLLOUT_volsmoke_display = NULL;
+GLUI_Rollout *ROLLOUT_volsmoke_compute = NULL;
+GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
 
 GLUI_StaticText *TEXT_smokealpha = NULL;
 GLUI_StaticText *TEXT_smokedepth = NULL;
@@ -637,32 +645,47 @@ extern "C" void glui_3dsmoke_setup(int main_window){
       glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _d("Load compressed data"));
     }
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Show"), &usevolrender, VOL_SMOKE, Smoke3d_CB);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Load data in background"), &use_multi_threading);
-    CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Compress data while loading"), &glui_compress_volsmoke);
+
+    //*** move
+    ROLLOUT_volsmoke_move = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Move scene"), false);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _d("Auto freeze"), &autofreeze_volsmoke);
+    CHECKBOX_freeze = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _d("Freeze"), &freeze_volsmoke);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _d("Show data while moving scene (GPU)"), &show_volsmoke_moving);
+
+    //*** compute
+    ROLLOUT_volsmoke_compute = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Compute"), false);
+    SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _d("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
+    SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
+    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
+    SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _d("adaptive integration"), &vol_adaptive);
+    CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _d("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3d_CB);
+    SPINNER_nongpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _d("non-gpu grid multiplier"), GLUI_SPINNER_FLOAT, &nongpu_vol_factor, NONGPU_VOL_FACTOR, Smoke3d_CB);
+    SPINNER_nongpu_vol_factor->set_float_limits(1.0, 10.0);
+    SPINNER_gpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _d("gpu grid multiplier"), GLUI_SPINNER_FLOAT, &gpu_vol_factor, GPU_VOL_FACTOR, Smoke3d_CB);
+    SPINNER_gpu_vol_factor->set_float_limits(1.0, 10.0);
+
+    //*** display
+    ROLLOUT_volsmoke_display = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Display"), false);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_display, _d("Display data as b/w"), &volbw);
+    PANEL_voltemp = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volsmoke_display, _d("Temperature"), true);
+
+    SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_display, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
+    SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_display, _d("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
+
+    //*** load 
+    ROLLOUT_volsmoke_load = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load"), false);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _d("Load data in background"), &use_multi_threading);
+    CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _d("Compress data while loading"), &glui_compress_volsmoke);
     if(have_volcompressed == 1){
       Smoke3d_CB(LOAD_COMPRESSED_DATA);
     }
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Display data as b/w"), &volbw);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Show data while moving scene"), &show_volsmoke_moving);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Load data only at render times"), &load_at_rendertimes);
-
-    SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
-    SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
-    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
-    SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Auto freeze"), &autofreeze_volsmoke);
-    CHECKBOX_freeze=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Freeze"), &freeze_volsmoke);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("adaptive integration"), &vol_adaptive);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _d("Load data only at render times"), &load_at_rendertimes);
 
 #ifdef _DEBUG
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, "block smoke", &block_volsmoke);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, "debug", &smoke3dVoldebug);
 #endif
-    CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volume, _d("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3d_CB);
-    SPINNER_nongpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("non-gpu grid multiplier"), GLUI_SPINNER_FLOAT, &nongpu_vol_factor, NONGPU_VOL_FACTOR, Smoke3d_CB);
-    SPINNER_nongpu_vol_factor->set_float_limits(1.0, 10.0);
-    SPINNER_gpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volume, _d("gpu grid multiplier"), GLUI_SPINNER_FLOAT, &gpu_vol_factor, GPU_VOL_FACTOR, Smoke3d_CB);
-    SPINNER_gpu_vol_factor->set_float_limits(1.0, 10.0);
 
     ROLLOUT_light = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Light"), false);
     PANEL_light_position = glui_3dsmoke->add_panel_to_panel(ROLLOUT_light, _d(""));

@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(voltemp_factor, 900.0), SVDECL(voltemp_offset, 0.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
