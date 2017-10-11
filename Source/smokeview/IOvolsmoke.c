@@ -104,7 +104,7 @@ float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase
 
 /* ----------------------- GetSmokeColor ----------------------------- */
 
-void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -167,6 +167,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fraction
     }
   }
 
+  *scaled_intensity = 1.0;
   if(firedata_local!=NULL){
     float dtemp;
 
@@ -176,9 +177,13 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *light_fraction
       index = GETINDEX(temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
     }
     else{
+      float ratio;
+      
       dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
+      index = GETINDEX(temperature+voltemp_offset, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
       index += (MAXSMOKERGB/2);
+      ratio = (temperature+273) / (273.0+voltemp_factor);
+      if(ratio>1.0)*scaled_intensity = MAX(1.0,ratio*ratio*ratio*ratio);
     }
     *smoke_color = rgb_volsmokecolormap+4*index;
   }
@@ -1060,7 +1065,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   alphahat=0.0;
   last_xi = 0.5;
   for(xi = 0.5;xi+0.0001<(float)nsteps;){
-    float factor, alphai;
+    float factor, alphai, scaled_intensity;
     int inobst;
 
     factor = xi/(float)nsteps;
@@ -1073,13 +1078,13 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetSmokeColor(&smoke_transparency,&smoke_color, &smoke_light_fraction,
+      GetSmokeColor(&smoke_transparency,&smoke_color, &scaled_intensity, &smoke_light_fraction,
                          dlength,xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetSmokeColor(&smoke_transparency,&smoke_color, &smoke_light_fraction,
+      GetSmokeColor(&smoke_transparency,&smoke_color, &scaled_intensity, &smoke_light_fraction,
                          dlength, xyz, meshi, &inobst, blank_local);
     }
     if(vol_adaptive==1&&xi>0.5){
@@ -1128,20 +1133,33 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
 
       scatter_fraction = GetScatterFraction(uvec, vvec, scatter_param, scatter_type_glui);
       light_factor = alphai*light_intensity*smoke_light_fraction*scatter_fraction/255.0;
-      integrated_smokecolor[0] += alphai*tauhat*(smoke_color[0] + light_factor*light_color[0]);
-      integrated_smokecolor[1] += alphai*tauhat*(smoke_color[1] + light_factor*light_color[1]);
-      integrated_smokecolor[2] += alphai*tauhat*(smoke_color[2] + light_factor*light_color[2]);
+      integrated_smokecolor[0] += alphai*tauhat*(scaled_intensity*smoke_color[0] + light_factor*light_color[0]);
+      integrated_smokecolor[1] += alphai*tauhat*(scaled_intensity*smoke_color[1] + light_factor*light_color[1]);
+      integrated_smokecolor[2] += alphai*tauhat*(scaled_intensity*smoke_color[2] + light_factor*light_color[2]);
     }
     else{
-      integrated_smokecolor[0] += alphai*tauhat*smoke_color[0];
-      integrated_smokecolor[1] += alphai*tauhat*smoke_color[1];
-      integrated_smokecolor[2] += alphai*tauhat*smoke_color[2];
+      integrated_smokecolor[0] += alphai*tauhat*scaled_intensity*smoke_color[0];
+      integrated_smokecolor[1] += alphai*tauhat*scaled_intensity*smoke_color[1];
+      integrated_smokecolor[2] += alphai*tauhat*scaled_intensity*smoke_color[2];
     }
     tauhat *= smoke_transparency;
   }
+#define MAXABS3(x) (MAX(ABS((x)[0]),MAX(ABS((x)[1]),ABS((x)[2]))))
+
   if(alphahat>0.0){
-    VEC3DA(integrated_smokecolor,alphahat);
-    integrated_smokecolor[3]=alphahat;
+    float maxval;
+    float *sc;
+
+    sc = integrated_smokecolor;
+    maxval = MAXABS3(sc);
+    if(maxval > 0.0){
+      sc[0] /= maxval;
+      sc[1] /= maxval;
+      sc[2] /= maxval;
+      alphahat *= maxval;
+    }
+    alphahat = CLAMP(alphahat, 0.0, 1.0);
+    sc[3]=alphahat;
     if(volbw==1){
       float gray;
 
