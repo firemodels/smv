@@ -812,13 +812,9 @@ void update_mouseinfo(int flag, int xm, int ym){
 void mouse_CB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
-  if(autofreeze_volsmoke==1&&nvolsmoke_loaded>0){
-    if(state==GLUT_DOWN&&freeze_volsmoke==0){
-      UpdateFreeze(1);
-    }
-    else if(state==GLUT_UP&&freeze_volsmoke==1){
-      UpdateFreeze(0);
-    }
+  if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
+    if(state==GLUT_DOWN)UpdateFreeze(ON);
+    if(state==GLUT_UP)UpdateFreeze(OFF);
   }
 #ifdef pp_GLUTGET
   if(state == GLUT_UP){

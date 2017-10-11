@@ -362,7 +362,7 @@ SVEXTERN char startup_lang_code[3];
 SVEXTERN int SVDECL(mouse_down,0);
 SVEXTERN int SVDECL(show_volsmoke_moving,0);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
-SVEXTERN int SVDECL(autofreeze_volsmoke, 0);
+SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
 SVEXTERN int SVDECL(show_iso_solid,1),SVDECL(show_iso_outline,1),SVDECL(show_iso_verts,0);
 SVEXTERN int SVDECL(show_patch_solid, 1), SVDECL(show_patch_outline, 0), SVDECL(show_patch_verts, 0);
 SVEXTERN int SVDECL(show_patch_ingas, 1), SVDECL(show_patch_insolid, 1), SVDECL(show_patch_incutcell, 1);

@@ -203,7 +203,6 @@ int ncolorprocinfo = 0;
 /* ------------------ UpdateFreeze ------------------------ */
 
 extern "C" void UpdateFreeze(int val){
-  freeze_volsmoke=val;
   CHECKBOX_freeze->set_int_val(val);
 }
 
