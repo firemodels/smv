@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN float SVDECL(voltemp_factor, 900.0), SVDECL(voltemp_offset, 0.0);
+SVEXTERN float SVDECL(voltemp_factor, 300.0), SVDECL(voltemp_offset, 0.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
@@ -477,6 +477,8 @@ SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;
 SVEXTERN int GPU3dslice_boxmin, GPU3dslice_boxmax;
 SVEXTERN int GPU3dslice_transparent_level;
 SVEXTERN int GPUvol_block_volsmoke;
+SVEXTERN int GPUvol_voltemp_offset;
+SVEXTERN int GPUvol_voltemp_factor;
 
 #ifdef pp_GPUDEPTH
 SVEXTERN int GPUvol_depthtexture, GPUvol_screensize,GPUvol_nearfar;
