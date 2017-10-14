@@ -5320,7 +5320,10 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 // set opacity
 
       if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
-        *mergealpha++=fire_alpha;
+        float factor;
+
+        factor = (float)firecolor[j]/(float)MAX(1,i_hrrpuv_cutoff);
+        *mergealpha++= CLAMP((sootcolor[j]>>smoke3d_thick)*factor,0,255);
       }
       else if(sootcolor!=NULL){
        *mergealpha++=(sootcolor[j]>>smoke3d_thick);
