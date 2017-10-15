@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef  pp_SPECTRAL
+EXTERNCPP void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n);
+#endif
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadtimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);

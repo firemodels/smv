@@ -192,6 +192,10 @@
 #define MAX(a,b)  ((a)>(b) ? (a) : (b))
 #endif
 
+#ifndef MAX3
+#define MAX3(a,b,c) ((a)<(b)?(MAX(b,c)):(MAX(a,c)))
+#endif
+
 #ifndef MIN
 #define MIN(a,b)  ((a)<(b) ? (a) : (b))
 #endif

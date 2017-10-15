@@ -6381,3 +6381,73 @@ int HaveFire(void){
   }
   return 0;
 }
+
+#ifdef pp_SPECTRAL
+/* ------------------ SpectralDensity ------------------------ */
+
+float SpectralDensity(float  temperature, float wavelength){
+  float val;
+  const float c1 = 1.19104e-16, c2 = 0.014387774;
+  float arg1, denom;
+  // temperature K
+  // wavelength m
+  // c1  =  2*h*c^2  m^4 kg/s^3   W m^2
+  // c2 - hc/kB  m K
+  // where
+  // c== speed of light = 299792458 m/s
+  // h== plank constant = 6.62607 * 10^-34 m^2 kg/s
+  // kB == boltzman constant = 1.38065*10^-23 m^2kg/(s^2 K )
+
+  arg1 = c2/(wavelength*temperature);
+  denom = pow(wavelength,5.0)*(exp(arg1)-1.0);
+  val = c1/denom;
+  return val;
+}
+
+/* ------------------ GetVisBlackBodyCurve ------------------------ */
+
+void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
+  int i;
+  float dtemp=0.0;
+  float wave1 = 575.0, wave2 = 535.0, wave3 = 445.0;
+#define RR 0
+#define GG 1
+#define BB 2
+  float color1[3] = {236,255,0};
+  float color2[3] = {91,255,0};
+  float color3[3] = {0, 25, 255};
+  float v[4];
+
+  NORMALIZE3(color1);
+  NORMALIZE3(color2);
+  NORMALIZE3(color3);
+
+  tmin += 273.15; // convert from C to K
+  tmax += 273.15;
+  wave1 *= 10.0E-9; // convert from nM  to M
+  wave2 *= 10.0E-9;
+  wave3 *= 10.0E-9;
+  if(n>1)dtemp = (tmax-tmin)/(float)n;
+  for(i = 0;i<n;i++){
+    float temp;
+    float vals[4];
+
+    temp = tmin+i*dtemp;
+    vals[0] = 1.0*SpectralDensity(temp, wave1);
+    vals[1] = 1.0*SpectralDensity(temp, wave2);
+    vals[2] = 0.1*SpectralDensity(temp, wave3);
+    v[RR] = vals[0]*color1[RR]+vals[1]*color2[RR]+vals[2]*color3[RR];
+    v[GG] = vals[0]*color1[GG]+vals[1]*color2[GG]+vals[2]*color3[GG];
+    v[BB] = vals[0]*color1[BB]+vals[1]*color2[BB]+vals[2]*color3[BB];
+    v[3] = MAX3(v[RR],v[GG],v[BB])/255.0;
+
+    v[0] /= v[3];
+    v[1] /= v[3];
+    v[2] /= v[3];
+    intensities[4*i+0] = v[0];
+    intensities[4*i+1] = v[1];
+    intensities[4*i+2] = v[2];
+    printf("%i %f %f %f %f\n", i, v[0], v[1], v[2], v[3]);
+  }
+}
+#endif
