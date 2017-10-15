@@ -5245,6 +5245,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     unsigned char *firecolor,*sootcolor;
     unsigned char *mergecolor,*mergealpha;
     float firesmokeval[3];
+    int i_hrrpuv_offset=0;
 
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
@@ -5253,7 +5254,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 #ifdef pp_CULL
     meshi->cull_smoke3d=smoke3di;
 #endif
-    i_hrrpuv_cutoff=254*global_hrrpuv_cutoff/hrrpuv_max_smv;
+    i_hrrpuv_cutoff = 254*global_hrrpuv_cutoff/hrrpuv_max_smv;
+    if(smoke3d_orig==0)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
     if(fire_halfdepth<=0.0){
       smoke3di->fire_alpha=255;
@@ -5303,11 +5305,15 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       float *firesmoke_color;
+      float soot_val;
 
 // set color
 
       if(firecolor!=NULL){
-        firesmoke_color=rgb_slicesmokecolormap+4*firecolor[j];
+        int fire_index;
+
+        fire_index = CLAMP(firecolor[j]+i_hrrpuv_offset,0,254);
+        firesmoke_color=rgb_slicesmokecolormap+4*fire_index;
       }
       else{
         firesmoke_color=firesmokeval;
@@ -5319,17 +5325,28 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
 // set opacity
 
-      if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
-        float factor;
-
-        factor = (float)firecolor[j]/(float)MAX(1,i_hrrpuv_cutoff);
-        *mergealpha++= CLAMP((sootcolor[j]>>smoke3d_thick)*factor,0,255);
-      }
-      else if(sootcolor!=NULL){
-       *mergealpha++=(sootcolor[j]>>smoke3d_thick);
+      if(sootcolor!=NULL){
+        soot_val=(sootcolor[j]>>smoke3d_thick);
       }
       else{
-       *mergealpha++=0;
+        soot_val=1;
+      }
+      if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
+        if(smoke3d_orig==1){
+          *mergealpha++=fire_alpha;
+        }
+        else{
+          float factor;
+
+          factor = 1.0 + slicehrrpuv_factor*(float)(firecolor[j]-i_hrrpuv_cutoff)/(float)MAX(1,i_hrrpuv_cutoff);
+          *mergealpha++= CLAMP(soot_val*factor,0,255);
+        }
+      }
+      else if(sootcolor!=NULL){
+        *mergealpha++=soot_val;
+      }
+      else{
+        *mergealpha++=0;
       }
     }
   }

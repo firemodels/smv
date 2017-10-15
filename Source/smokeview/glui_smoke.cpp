@@ -60,6 +60,8 @@ extern GLUI *glui_bounds;
 #define LIGHT_UPDATE 50
 #define LOAD_SMOKEFRAME 55
 #define LOAD_TIMEFRAME 58
+#define UPDATE_FACTOROFFSETS 59
+#define UPDATE_HRRPUV_CONTROLS 60
 
 // two defines below are also defined elsewhere
 
@@ -135,7 +137,8 @@ GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_tempfactor=NULL;
 GLUI_Spinner *SPINNER_tempoffset=NULL;
-
+GLUI_Spinner *SPINNER_hrrpuvfactor=NULL;
+GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
@@ -185,6 +188,10 @@ GLUI_Rollout *ROLLOUT_volsmoke_load = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_display = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_compute = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
+GLUI_Rollout *ROLLOUT_smokedebug = NULL;
+GLUI_Rollout *ROLLOUT_display=NULL;
+GLUI_Rollout *ROLLOUT_slicegpu=NULL;
+GLUI_Rollout *ROLLOUT_hrrpuv = NULL;
 
 GLUI_StaticText *TEXT_smokealpha = NULL;
 GLUI_StaticText *TEXT_smokedepth = NULL;
@@ -561,13 +568,14 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     }
 #endif
 #ifdef pp_CULL
-    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices,_d("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3d_CB);
+    ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_d("GPU"),false);
+    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_d("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3d_CB);
     if(cullactive==0){
       cullsmoke=0;
       CHECKBOX_smokecullflag->disable();
     }
-    CHECKBOX_show_cullports=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices,_d("Show cull ports"),&show_cullports);
-    SPINNER_cull_portsize=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slices,_d("Cull port size"),GLUI_SPINNER_INT,&cull_portsize,CULL_PORTSIZE,Smoke3d_CB);
+    CHECKBOX_show_cullports=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_d("Show cull ports"),&show_cullports);
+    SPINNER_cull_portsize=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicegpu,_d("Cull port size"),GLUI_SPINNER_INT,&cull_portsize,CULL_PORTSIZE,Smoke3d_CB);
     {
       int ijk_max=0;
       for(i=0;i<nmeshes;i++){
@@ -581,24 +589,30 @@ extern "C" void glui_3dsmoke_setup(int main_window){
       SPINNER_cull_portsize->set_int_limits(3,ijk_max);
     }
 #else
-    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices,"Cull hidden slices",&smokecullflag);
+    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,"Cull hidden slices",&smokecullflag);
 #endif
 #ifdef _DEBUG
-    CHECKBOX_smokedrawtest=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices,"Show only back slices",&smokedrawtest);
-    CHECKBOX_smokedrawtest2=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices,"Show only X slices",&smokedrawtest2);
 
-    SPINNER_smokedrawtest_nummin=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slices,"Back slice",GLUI_SPINNER_INT,&smokedrawtest_nummin);
+    ROLLOUT_smokedebug = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_d("Debug"),false);
+
+    CHECKBOX_smokedrawtest=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug,"Show only back slices",&smokedrawtest);
+    CHECKBOX_smokedrawtest2=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug,"Show only X slices",&smokedrawtest2);
+
+    SPINNER_smokedrawtest_nummin=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug,"Back slice",GLUI_SPINNER_INT,&smokedrawtest_nummin);
     SPINNER_smokedrawtest_nummin->set_int_limits(1,ijkbarmax);
 
-    SPINNER_smokedrawtest_nummax=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slices,"Front slice",GLUI_SPINNER_INT,&smokedrawtest_nummax);
+    SPINNER_smokedrawtest_nummax=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug,"Front slice",GLUI_SPINNER_INT,&smokedrawtest_nummax);
     SPINNER_smokedrawtest_nummax->set_int_limits(1,ijkbarmax);
 #endif
-    RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_slices,&smokeskipm1);
+
+    ROLLOUT_display=glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_d("Slice"),false);
+    RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_display,&smokeskipm1);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_d("Display all"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_d("   ... Every 2nd"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_d("   ... Every 3rd"));
+
 #ifdef pp_GPU
-    SPINNER_smoke3d_rthick=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slices,_d("Thickness"),
+    SPINNER_smoke3d_rthick=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display,_d("Thickness"),
       GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3d_CB);
     SPINNER_smoke3d_rthick->set_float_limits(1.0,255.0);
     smoke3d_thick = LogBase2(smoke3d_rthick);
@@ -608,7 +622,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_smoke3d_thick->set_int_limits(0,7);
 #endif
 
-    PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices,_d("Absorption adjustments"));
+    PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_display,_d("Absorption adjustments"));
     PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
     RADIO_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_absorption,&adjustalphaflag);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("None"));
@@ -618,6 +632,12 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   }
 
   // smoke test dialog
+
+  ROLLOUT_hrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_d("hrrpuv"),false);
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_hrrpuv, "Use original algorithm", &smoke3d_orig, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
+  SPINNER_hrrpuvfactor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_hrrpuv, _d("factor"), GLUI_SPINNER_FLOAT, &slicehrrpuv_factor,UPDATE_FACTOROFFSETS,Smoke3d_CB);
+  SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_hrrpuv, _d("offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset,UPDATE_FACTOROFFSETS,Smoke3d_CB);
+  Smoke3d_CB(UPDATE_HRRPUV_CONTROLS);
 
   ROLLOUT_smoke_test = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _d("Test"), false);
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_test, _d("Show"), &smoke_test);
@@ -673,7 +693,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_display, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
     SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_display, _d("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
 
-    //*** load 
+    //*** load
     ROLLOUT_volsmoke_load = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _d("Load"), false);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _d("Load data in background"), &use_multi_threading);
     CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _d("Compress data while loading"), &glui_compress_volsmoke);
@@ -781,6 +801,26 @@ extern "C" void Smoke3d_CB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case UPDATE_HRRPUV_CONTROLS:
+    if(smoke3d_orig==1){
+      SPINNER_hrrpuvfactor->disable();
+      SPINNER_hrrpuvoffset->disable();
+    }
+    else{
+      SPINNER_hrrpuvfactor->enable();
+      SPINNER_hrrpuvoffset->enable();
+    }
+
+  break;
+  case UPDATE_FACTOROFFSETS:
+    for(i = 0;i<nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo+i;
+      meshi->update_smoke3dcolors = 1;
+    }
+    glutPostRedisplay();
+  break;
   case LOAD_SMOKEFRAME:
     LoadSmokeFrame(-1, smoke_framenumber);
   break;
