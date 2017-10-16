@@ -695,12 +695,6 @@ int main(int argc, char **argv){
   // run is complete.
   return return_code;
 #endif
-#ifdef pp_SPECTRAL
-{
-  float tmin = 300.0, tmax = 1200.0, intensities[256*4];
-  GetVisBlackBodyCurve(tmin, tmax, intensities, 256);
-}
-#endif
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);

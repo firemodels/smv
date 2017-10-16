@@ -6408,15 +6408,17 @@ double SpectralDensity(double  temperature, double lambda){
   return val;
 }
 
-/* ------------------ GetVisBlackBodyCurve ------------------------ */
+/* ------------------ GetBlackBodyColors ------------------------ */
 
 #define NVALS 89
-void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
+void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n){
   int i;
   float dtemp=0.0;
   float dlambda;
   float lambda_min = 390.0;
   float lambda_max = 830.0;
+
+  if(intensities==NULL)NewMemory((void **)&intensities, 4*n*sizeof(float));
 
   // https://en.wikipedia.org/wiki/CIE_1931_color_space#Color_matching_functions
   // 390 nm to 830 nm
@@ -6502,7 +6504,9 @@ void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
     intensities[4*i+1] = vals[1];
     intensities[4*i+2] = vals[2];
     intensities[4*i+3] = vals[3];
+#ifdef _DEBUG
     printf("%f %f %f %f %f\n", temp-273.15, vals[0], vals[1], vals[2], vals[3]);
+#endif
   }
 }
 #endif

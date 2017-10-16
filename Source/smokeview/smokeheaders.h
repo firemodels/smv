@@ -6,7 +6,7 @@
 #endif
 
 #ifdef  pp_SPECTRAL
-EXTERNCPP void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n);
+EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
 #endif
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadtimeVal(float val);
