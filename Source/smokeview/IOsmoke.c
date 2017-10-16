@@ -6388,7 +6388,7 @@ int HaveFire(void){
 float SpectralDensity(float  temperature, float wavelength){
   float val;
   const float c1 = 1.19104e-16, c2 = 0.014387774;
-  float arg1, denom;
+  float arg1, denom, logval;
   // temperature K
   // wavelength m
   // c1  =  2*h*c^2  m^4 kg/s^3   W m^2
@@ -6399,6 +6399,10 @@ float SpectralDensity(float  temperature, float wavelength){
   // kB == boltzman constant = 1.38065*10^-23 m^2kg/(s^2 K )
 
   arg1 = c2/(wavelength*temperature);
+  logval = log(c1)-(5.0*log(wavelength)+arg1);
+  if(logval<-150.0){
+    return 0.0;
+  }
   denom = pow(wavelength,5.0)*(exp(arg1)-1.0);
   val = c1/denom;
   return val;
@@ -6406,48 +6410,97 @@ float SpectralDensity(float  temperature, float wavelength){
 
 /* ------------------ GetVisBlackBodyCurve ------------------------ */
 
+#define NVALS 89
 void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
   int i;
   float dtemp=0.0;
-  float wave1 = 575.0, wave2 = 535.0, wave3 = 445.0;
-#define RR 0
-#define GG 1
-#define BB 2
-  float color1[3] = {236,255,0};
-  float color2[3] = {91,255,0};
-  float color3[3] = {0, 25, 255};
-  float v[4];
+  float dlambda;
+  float lambda_min = 390.0;
+  float lambda_max = 830.0;
 
-  NORMALIZE3(color1);
-  NORMALIZE3(color2);
-  NORMALIZE3(color3);
+  // https://en.wikipedia.org/wiki/CIE_1931_color_space#Color_matching_functions
+  // 390 nm to 830 nm
+    float xhat[NVALS] = {
+      2.95E-03,7.64E-03,1.88E-02,4.20E-02,8.28E-02,1.40E-01,2.08E-01,2.69E-01,3.28E-01,3.69E-01,
+      4.03E-01,4.04E-01,3.93E-01,3.48E-01,3.01E-01,2.53E-01,1.91E-01,1.28E-01,7.59E-02,3.84E-02,
+      1.40E-02,3.45E-03,5.65E-03,1.56E-02,3.78E-02,7.54E-02,1.20E-01,1.76E-01,2.38E-01,3.05E-01,
+      3.84E-01,4.63E-01,5.37E-01,6.23E-01,7.12E-01,8.02E-01,8.93E-01,9.72E-01,1.03E+00,1.11E+00,
+      1.15E+00,1.16E+00,1.15E+00,1.11E+00,1.05E+00,9.62E-01,8.63E-01,7.60E-01,6.41E-01,5.29E-01,
+      4.32E-01,3.50E-01,2.71E-01,2.06E-01,1.54E-01,1.14E-01,8.28E-02,5.95E-02,4.22E-02,2.95E-02,
+      2.03E-02,1.41E-02,9.82E-03,6.81E-03,4.67E-03,3.19E-03,2.21E-03,1.52E-03,1.06E-03,7.40E-04,
+      5.15E-04,3.63E-04,2.56E-04,1.81E-04,1.29E-04,9.17E-05,6.58E-05,4.71E-05,3.41E-05,2.47E-05,
+      1.79E-05,1.31E-05,9.57E-06,7.04E-06,5.17E-06,3.82E-06,2.84E-06,2.11E-06,1.58E-06
+    };
 
-  tmin += 273.15; // convert from C to K
-  tmax += 273.15;
-  wave1 *= 10.0E-9; // convert from nM  to M
-  wave2 *= 10.0E-9;
-  wave3 *= 10.0E-9;
+    float yhat[NVALS] = {
+      4.08E-04,1.08E-03,2.59E-03,5.47E-03,1.04E-02,1.71E-02,2.58E-02,3.53E-02,4.70E-02,6.05E-02,
+      7.47E-02,8.82E-02,1.04E-01,1.20E-01,1.41E-01,1.70E-01,2.00E-01,2.31E-01,2.68E-01,3.11E-01,
+      3.55E-01,4.15E-01,4.78E-01,5.49E-01,6.25E-01,7.01E-01,7.79E-01,8.38E-01,8.83E-01,9.23E-01,
+      9.67E-01,9.89E-01,9.91E-01,1.00E+00,9.94E-01,9.85E-01,9.64E-01,9.29E-01,8.78E-01,8.37E-01,
+      7.87E-01,7.27E-01,6.63E-01,5.97E-01,5.28E-01,4.60E-01,3.95E-01,3.35E-01,2.75E-01,2.22E-01,
+      1.78E-01,1.41E-01,1.08E-01,8.14E-02,6.03E-02,4.43E-02,3.21E-02,2.30E-02,1.63E-02,1.14E-02,
+      7.80E-03,5.43E-03,3.78E-03,2.62E-03,1.80E-03,1.23E-03,8.50E-04,5.88E-04,4.10E-04,2.86E-04,
+      1.99E-04,1.41E-04,9.93E-05,7.04E-05,5.02E-05,3.58E-05,2.57E-05,1.85E-05,1.34E-05,9.72E-06,
+      7.07E-06,5.16E-06,3.79E-06,2.79E-06,2.06E-06,1.52E-06,1.14E-06,8.48E-07,6.35E-07
+    };
+
+    float zhat[NVALS] = {
+      1.32E-02,3.42E-02,8.51E-02,1.93E-01,3.83E-01,6.57E-01,9.93E-01,1.31E+00,1.62E+00,1.87E+00,
+      2.08E+00,2.13E+00,2.13E+00,1.95E+00,1.77E+00,1.58E+00,1.31E+00,1.01E+00,7.52E-01,5.55E-01,
+      3.98E-01,2.91E-01,2.08E-01,1.39E-01,8.85E-02,5.82E-02,3.78E-02,2.43E-02,1.54E-02,9.75E-03,
+      6.08E-03,3.77E-03,2.32E-03,1.43E-03,8.78E-04,5.41E-04,3.34E-04,2.08E-04,1.30E-04,8.18E-05,
+      5.21E-05,3.35E-05,2.18E-05,1.43E-05,9.53E-06,6.43E-06,0.00E+00,0.00E+00,0.00E+00,0.00E+00,
+      0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,
+      0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,
+      0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,
+      0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00
+    };
+
+  tmin += 273.15E0; // convert from C to K
+  tmax += 273.15E0;
+  lambda_min /= 10.0E9;
+  lambda_max /= 10.0E9;
+  dlambda = (lambda_max-lambda_min)/(float)(NVALS-1);
   if(n>1)dtemp = (tmax-tmin)/(float)n;
   for(i = 0;i<n;i++){
-    float temp;
-    float vals[4];
+    float temp, vals[4];
+    int j;
 
     temp = tmin+i*dtemp;
-    vals[0] = 1.0*SpectralDensity(temp, wave1);
-    vals[1] = 1.0*SpectralDensity(temp, wave2);
-    vals[2] = 0.1*SpectralDensity(temp, wave3);
-    v[RR] = vals[0]*color1[RR]+vals[1]*color2[RR]+vals[2]*color3[RR];
-    v[GG] = vals[0]*color1[GG]+vals[1]*color2[GG]+vals[2]*color3[GG];
-    v[BB] = vals[0]*color1[BB]+vals[1]*color2[BB]+vals[2]*color3[BB];
-    v[3] = MAX3(v[RR],v[GG],v[BB])/255.0;
+    vals[0] = 0.0;
+    vals[1] = 0.0;
+    vals[2] = 0.0;
+    for(j = 0;j<NVALS;j++){
+      float lambda, intensity;
 
-    v[0] /= v[3];
-    v[1] /= v[3];
-    v[2] /= v[3];
-    intensities[4*i+0] = v[0];
-    intensities[4*i+1] = v[1];
-    intensities[4*i+2] = v[2];
-    printf("%i %f %f %f %f\n", i, v[0], v[1], v[2], v[3]);
+      lambda = lambda_min+(float)j*dlambda;
+      intensity = SpectralDensity((float)temp, (float)lambda);
+      if(j==0||j==NVALS-1){
+        vals[0] += xhat[j]*intensity/2.0;
+        vals[1] += yhat[j]*intensity/2.0;
+        vals[2] += zhat[j]*intensity/2.0;
+      }
+      else{
+        vals[0] += xhat[j]*intensity;
+        vals[1] += yhat[j]*intensity;
+        vals[2] += zhat[j]*intensity;
+      }
+    }
+    vals[0] *= dlambda;
+    vals[1] *= dlambda;
+    vals[2] *= dlambda;
+    vals[3] = MAX3(vals[0], vals[1], vals[2]);
+    if(vals[3]!=0.0){
+      vals[0] /= vals[3]/255.0;
+      vals[1] /= vals[3]/255.0;
+      vals[2] /= vals[3]/255.0;
+    }
+
+    intensities[4*i+0] = vals[0];
+    intensities[4*i+1] = vals[1];
+    intensities[4*i+2] = vals[2];
+    intensities[4*i+3] = vals[3];
+    printf("%f %f %f %f %f\n", temp-273.15, vals[0], vals[1], vals[2], vals[3]);
   }
 }
 #endif
