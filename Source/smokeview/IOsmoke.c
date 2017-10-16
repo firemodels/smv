@@ -6385,26 +6385,26 @@ int HaveFire(void){
 #ifdef pp_SPECTRAL
 /* ------------------ SpectralDensity ------------------------ */
 
-float SpectralDensity(float  temperature, float wavelength){
-  float val;
-  const float c1 = 1.19104e-16, c2 = 0.014387774;
-  float arg1, denom, logval;
+double SpectralDensity(double  temperature, double lambda){
+  double val;
+  const double c1 = 1.19104e-16, c2 = 0.014387774;
+  float arg1, AA;
+  
   // temperature K
-  // wavelength m
+  // lambda m
   // c1  =  2*h*c^2  m^4 kg/s^3   W m^2
   // c2 - hc/kB  m K
   // where
   // c== speed of light = 299792458 m/s
   // h== plank constant = 6.62607 * 10^-34 m^2 kg/s
   // kB == boltzman constant = 1.38065*10^-23 m^2kg/(s^2 K )
+  // compute: spectral_density(plank's law)=(c1/lambda^5)*(1.0/(exp(c2/(lambda*T))-1.0) = (c1/lambda^5)*A/(1-A)
+  // where A=exp(-c2/(lambda*T))
 
-  arg1 = c2/(wavelength*temperature);
-  logval = log(c1)-(5.0*log(wavelength)+arg1);
-  if(logval<-150.0){
-    return 0.0;
-  }
-  denom = pow(wavelength,5.0)*(exp(arg1)-1.0);
-  val = c1/denom;
+  arg1 = c2/(lambda*temperature);
+  AA = exp(-arg1);
+  val = c1 / pow(lambda, 5.0);
+  val *= (AA / (1.0 - AA));
   return val;
 }
 
@@ -6458,8 +6458,8 @@ void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
 
   tmin += 273.15E0; // convert from C to K
   tmax += 273.15E0;
-  lambda_min /= 10.0E9;
-  lambda_max /= 10.0E9;
+  lambda_min /= 1.0E9;
+  lambda_max /= 1.0E9;
   dlambda = (lambda_max-lambda_min)/(float)(NVALS-1);
   if(n>1)dtemp = (tmax-tmin)/(float)n;
   for(i = 0;i<n;i++){
@@ -6467,14 +6467,15 @@ void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
     int j;
 
     temp = tmin+i*dtemp;
+
     vals[0] = 0.0;
     vals[1] = 0.0;
     vals[2] = 0.0;
-    for(j = 0;j<NVALS;j++){
+    for(j = 0;j<NVALS;j++){      // trapezoidal rule
       float lambda, intensity;
 
       lambda = lambda_min+(float)j*dlambda;
-      intensity = SpectralDensity((float)temp, (float)lambda);
+      intensity = SpectralDensity((double)temp, (double)lambda);
       if(j==0||j==NVALS-1){
         vals[0] += xhat[j]*intensity/2.0;
         vals[1] += yhat[j]*intensity/2.0;
@@ -6489,6 +6490,7 @@ void GetVisBlackBodyCurve(float tmin, float tmax, float *intensities, int n){
     vals[0] *= dlambda;
     vals[1] *= dlambda;
     vals[2] *= dlambda;
+
     vals[3] = MAX3(vals[0], vals[1], vals[2]);
     if(vals[3]!=0.0){
       vals[0] /= vals[3]/255.0;
