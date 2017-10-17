@@ -727,6 +727,8 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL){
     char hrrcut_label[256];
     int ihrrcut;
+    float x1, x2, y1, y2;
+    float f_red, f_green, f_blue, *colors;
 
     ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
 
@@ -735,10 +737,13 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 
     glBegin(GL_QUADS);
     if(firecolormap_type == 0){
-      glColor3f(fire_red / 255.0, fire_green / 255.0, fire_blue / 255.0);
+      f_red = (float)fire_red / 255.0;
+      f_green = (float)fire_green / 255.0;
+      f_blue = (float)fire_blue / 255.0;
+      glColor3f(f_red, f_green, f_blue);
     }
     else{
-      float f_red, f_green, f_blue, *colors;
+      float *colors;
       int icolor;
 
       if(strcmp(fire_colorbar->label, "fire") == 0){
@@ -759,10 +764,15 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       glColor3f(f_red, f_green, f_blue);
     }
 
-    glVertex3f(right_label_pos+h_space-20,5+2*VP_timebar.text_height   ,0.0);
-    glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height   ,0.0);
-    glVertex3f(right_label_pos+h_space   ,5+2*VP_timebar.text_height+20,0.0);
-    glVertex3f(right_label_pos+h_space-20,5+2*VP_timebar.text_height+20,0.0);
+    x1 = (float)(right_label_pos + h_space - 20);
+    x2 = x1 + (float)20;
+    y1 = (float)(5 + 2*VP_timebar.text_height);
+    y2 = y1 + (float)20;
+
+    glVertex3f(x1,y1,0.0);
+    glVertex3f(x2,y1,0.0);
+    glVertex3f(x2,y2,0.0);
+    glVertex3f(x1,y2,0.0);
     glEnd();
   }
 #ifdef pp_memstatus
