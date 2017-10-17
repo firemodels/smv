@@ -355,6 +355,7 @@ void RemapColorbar(colorbardata *cbi){
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
   alpha=cbi->alpha;
+
   for(i=0;i<cbi->index_node[0];i++){
     colorbar[3*i]=rgb_node[0]/255.0;
     colorbar[1+3*i]=rgb_node[1]/255.0;
@@ -423,6 +424,43 @@ void RemapColorbar(colorbardata *cbi){
     colorbar[2+3*255]=rgb_above_max[2];
   }
   CheckMemory;
+}
+
+/* ------------------ UpdateColorbarNodes ------------------------ */
+
+void UpdateColorbarNodes(colorbardata *cbi){
+  float total_dist = 0.0;
+  int i;
+
+  for(i = 0;i<cbi->nnodes-1;i++){
+    unsigned char *node1, *node2;
+    float dist,dx,dy,dz;
+
+    node1 = cbi->rgb_node+3*i;
+    node2 = node1+3;
+    dx = node1[0]-node2[0];
+    dy = node1[1]-node2[1];
+    dz = node1[2]-node2[2];
+    dist = sqrt(dx*dx+dy*dy+dz*dz);
+    total_dist += dist;
+  }
+  cbi->index_node[0] = 0;
+  for(i = 1;i<cbi->nnodes-1;i++){
+    int index;
+    unsigned char *node1, *node2;
+    float dist, dx, dy, dz;
+
+    node1 = cbi->rgb_node+3*(i-1);
+    node2 = node1+3;
+    dx = node1[0]-node2[0];
+    dy = node1[1]-node2[1];
+    dz = node1[2]-node2[2];
+    dist = sqrt(dx*dx+dy*dy+dz*dz);
+    index = 255*dist/total_dist;
+    cbi->index_node[i] = CLAMP(cbi->index_node[i-1]+index,0,255);
+  }
+  cbi->index_node[cbi->nnodes-1] = 255;
+  RemapColorbar(cbi);
 }
 
 /* ------------------ RemapColorbarType ------------------------ */

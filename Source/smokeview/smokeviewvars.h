@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
 SVEXTERN float SVDECL(slicehrrpuv_factor, 1.0), SVDECL(slicehrrpuv_offset, 0.0);
