@@ -735,7 +735,6 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     sprintf(hrrcut_label,">%i (kW/m3)",ihrrcut);
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
 
-    glBegin(GL_QUADS);
     if(firecolormap_type == 0){
       f_red = (float)fire_red / 255.0;
       f_green = (float)fire_green / 255.0;
@@ -769,10 +768,13 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     y1 = (float)(5 + 2*VP_timebar.text_height);
     y2 = y1 + (float)20;
 
+    glBegin(GL_TRIANGLES);
     glVertex3f(x1,y1,0.0);
     glVertex3f(x2,y1,0.0);
     glVertex3f(x2,y2,0.0);
-    glVertex3f(x1,y2,0.0);
+    glVertex3f(x1, y1, 0.0);
+    glVertex3f(x2, y2, 0.0);
+    glVertex3f(x1, y2, 0.0);
     glEnd();
   }
 #ifdef pp_memstatus
