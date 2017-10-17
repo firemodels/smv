@@ -7,6 +7,13 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define DLG_3DSMOKE 0
+#define DLG_BOUNDARY 1
+#define DLG_SLICE 2
+#define DLG_PART 3
+#define DLG_PLOT3D 4
+#define DLG_ISO 5
+
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2
 

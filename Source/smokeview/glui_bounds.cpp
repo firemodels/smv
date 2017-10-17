@@ -3471,9 +3471,9 @@ extern "C" void UpdateGlui(void){
   GLUI_Master.sync_live_all();
 }
 
-/* ------------------ show_glui_bounds ------------------------ */
+/* ------------------ ShowGluiBounds ------------------------ */
 
-extern "C" void show_glui_bounds(int menu_id){
+extern "C" void ShowGluiBounds(int menu_id){
   int islice, ipatch;
 
   if(menu_id==DIALOG_BOUNDS){
@@ -3528,6 +3528,29 @@ extern "C" void show_glui_bounds(int menu_id){
     Bound_Rollout_CB(SMOKE3D_ROLLOUT);
   }
   glui_bounds->show();
+}
+
+
+/* ------------------ ShowBoundsDialog ------------------------ */
+
+extern "C" void ShowBoundsDialog(int type){
+  ShowGluiBounds(DIALOG_3DSMOKE);
+  switch (type){
+    case DLG_3DSMOKE:
+      if(ROLLOUT_smoke3d!=NULL)ROLLOUT_smoke3d->open();
+      break;
+    case DLG_BOUNDARY:
+      break;
+    case DLG_SLICE:
+      if(ROLLOUT_slice != NULL)ROLLOUT_slice->open();
+      break;
+    case DLG_PART:
+      break;
+    case DLG_PLOT3D:
+      break;
+    case DLG_ISO:
+      break;
+  }
 }
 
 /* ------------------ enable_boundary_glui ------------------------ */

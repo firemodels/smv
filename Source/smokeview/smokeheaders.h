@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ShowBoundsDialog(int type);
 #ifdef  pp_SPECTRAL
 EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
 #endif
@@ -168,7 +169,7 @@ EXTERNCPP void hide_glui_stereo(void);
 EXTERNCPP void enable_boundary_glui(void);
 EXTERNCPP void disable_boundary_glui(void);
 EXTERNCPP void update_clipplanes(void);
-EXTERNCPP void show_glui_bounds(int menu_id);
+EXTERNCPP void ShowGluiBounds(int menu_id);
 EXTERNCPP void hide_glui_bounds(void);
 EXTERNCPP void show_glui_geometry(void);
 EXTERNCPP void hide_glui_geometry(void);

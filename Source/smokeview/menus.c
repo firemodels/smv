@@ -17,12 +17,14 @@
 #endif
 
 #define MENU_SMOKE3D_IBLANK -2
+#define SHOWSMOKEDIALOG -3
 
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
+#define MENU_SLICESETTINGS -6
 
 #define MENU_OPTION_TRAINERMENU 2
 
@@ -1225,7 +1227,7 @@ void DialogMenu(int value){
   case DIALOG_SHOWFILES:
   case DIALOG_SMOKEZIP:
   case DIALOG_TIME:
-    show_glui_bounds(value);
+    ShowGluiBounds(value);
     break;
   case DIALOG_MOTION:
   case DIALOG_RENDER:
@@ -3698,6 +3700,9 @@ void LoadSmoke3DMenu(int value){
   else if(value==MENU_SMOKE3D_IBLANK){
     update_makeiblank_smoke3d = 1;
   }
+  else if(value == SHOWSMOKEDIALOG){
+    ShowBoundsDialog(DLG_3DSMOKE);
+  }
   else if(value==-9){
     if(scriptoutstream==NULL||defer_file_loading==0){
       for(i=0;i<nsmoke3dinfo;i++){
@@ -4089,6 +4094,9 @@ void LoadMultiSliceMenu(int value){
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
+        break;
+      case MENU_SLICESETTINGS:
+        ShowBoundsDialog(DLG_SLICE);
         break;
       default:
       ASSERT(FFALSE);
@@ -8873,6 +8881,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
     }
+    glutAddMenuEntry("Settings", MENU_SLICESETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -9086,6 +9095,7 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
+          glutAddMenuEntry("Settings", SHOWSMOKEDIALOG);
           if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
             if(show_meshmenus==1){
               glutAddMenuEntry("-", MENU_DUMMY3);
