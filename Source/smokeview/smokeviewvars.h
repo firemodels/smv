@@ -21,7 +21,7 @@
 #include "threader.h"
 
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
-SVEXTERN int SVDECL(smoke3d_orig, 0);
+SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
 SVEXTERN float SVDECL(slicehrrpuv_factor, 1.0), SVDECL(slicehrrpuv_offset, 0.0);
 SVEXTERN float SVDECL(voltemp_factor, 300.0), SVDECL(voltemp_offset, 0.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);

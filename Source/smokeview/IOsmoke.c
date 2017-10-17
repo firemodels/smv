@@ -5255,7 +5255,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     meshi->cull_smoke3d=smoke3di;
 #endif
     i_hrrpuv_cutoff = 254*global_hrrpuv_cutoff/hrrpuv_max_smv;
-    if(smoke3d_orig==0)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
+    if(smoke3d_testsmoke==1)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
     if(fire_halfdepth<=0.0){
       smoke3di->fire_alpha=255;
@@ -5332,14 +5332,19 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         soot_val=1;
       }
       if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
-        if(smoke3d_orig==1){
+        if(smoke3d_testsmoke==0){
           *mergealpha++=fire_alpha;
         }
         else{
-          float factor;
+          float i1, ii, i2, y1, yy, y2;
 
-          factor = 1.0 + slicehrrpuv_factor*(float)(firecolor[j]-i_hrrpuv_cutoff)/(float)MAX(1,i_hrrpuv_cutoff);
-          *mergealpha++= CLAMP(soot_val*factor,0,255);
+          i1 = i_hrrpuv_cutoff;
+          i2 = 255;
+          y1 = 5.0*soot_val;
+          y2 = (5.0+slicehrrpuv_factor)*soot_val;
+          ii = firecolor[j];
+          yy = y1+(y2-y1)*(ii-i1)/(i2-i1);
+          *mergealpha++= CLAMP(yy,0,255);
         }
       }
       else if(sootcolor!=NULL){
@@ -6389,7 +6394,7 @@ double SpectralDensity(double  temperature, double lambda){
   double val;
   const double c1 = 1.19104e-16, c2 = 0.014387774;
   float arg1, AA;
-  
+
   // temperature K
   // lambda m
   // c1  =  2*h*c^2  m^4 kg/s^3   W m^2

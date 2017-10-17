@@ -510,7 +510,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
   PANEL_slicehrrpuv = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_hrrpuv_smoke, _d("Intensity (test)"),true);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_slicehrrpuv, "Use original algorithm", &smoke3d_orig, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_slicehrrpuv, "Show 3D smoke (test)", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
   SPINNER_hrrpuvfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("factor"), GLUI_SPINNER_FLOAT, &slicehrrpuv_factor, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   Smoke3d_CB(UPDATE_HRRPUV_CONTROLS);
@@ -801,7 +801,7 @@ extern "C" void Smoke3d_CB(int var){
   float temp_min, temp_max;
 
   case UPDATE_HRRPUV_CONTROLS:
-    if(smoke3d_orig==1){
+    if(smoke3d_testsmoke==0){
       SPINNER_hrrpuvfactor->disable();
       SPINNER_hrrpuvoffset->disable();
     }
