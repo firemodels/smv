@@ -728,7 +728,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     char hrrcut_label[256];
     int ihrrcut;
     float x1, x2, y1, y2;
-    float f_red, f_green, f_blue, *colors;
+    float f_red, f_green, f_blue;
 
     ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
 
