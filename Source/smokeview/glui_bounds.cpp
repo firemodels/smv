@@ -3575,9 +3575,9 @@ extern "C" void update_overwrite(void){
   if(CHECKBOX_compress_autoloaded!=NULL)CHECKBOX_compress_autoloaded->set_int_val(compress_autoloaded);
 }
 
-/* ------------------ hide_glui_bounds ------------------------ */
+/* ------------------ HideGluiBounds ------------------------ */
 
-extern "C" void hide_glui_bounds(void){
+extern "C" void HideGluiBounds(void){
   if(glui_bounds!=NULL)glui_bounds->hide();
 }
 

@@ -2098,12 +2098,12 @@ void keyboard(unsigned char key, int flag){
       if(trainer_active==1){
         PRINTF("Trainer mode active\n");
         trainer_mode=1;
-        show_glui_trainer();
+        ShowGluiTrainer();
       }
       if(trainer_active==0){
         PRINTF("Trainer mode inactive\n");
         trainer_mode=0;
-        hide_glui_trainer();
+        HideGluiTrainer();
       }
       break;
     case '%':

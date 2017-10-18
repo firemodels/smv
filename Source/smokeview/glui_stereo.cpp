@@ -87,7 +87,7 @@ void STEREO_CB(int var){
     SPINNER_zero_parallax->set_float_val(SCALE2FDS(0.25));
     break;
   case STEREO_CLOSE:
-    hide_glui_stereo();
+    HideGluiStereo();
     break;
   case SAVE_SETTINGS:
     WriteINI(LOCAL_INI, NULL);
@@ -143,15 +143,15 @@ extern "C" void glui_stereo_setup(int main_window){
   glui_stereo->set_main_gfx_window( main_window );
 }
 
-/* ------------------ hide_glui_stereo ------------------------ */
+/* ------------------ HideGluiStereo ------------------------ */
 
-extern "C" void hide_glui_stereo(void){
+extern "C" void HideGluiStereo(void){
   if(glui_stereo!=NULL)glui_stereo->hide();
   updatemenu=1;
 }
 
-/* ------------------ show_glui_stereo ------------------------ */
+/* ------------------ ShowGluiStereo ------------------------ */
 
-extern "C" void show_glui_stereo(void){
+extern "C" void ShowGluiStereo(void){
   if(glui_stereo!=NULL)glui_stereo->show();
 }

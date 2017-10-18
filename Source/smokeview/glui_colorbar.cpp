@@ -93,9 +93,9 @@ extern "C" void update_colorbar_label(void){
   EDITTEXT_colorbar_label->set_text(colorbar_label);
 }
 
-/* ------------------ hide_glui_colorbar ------------------------ */
+/* ------------------ HideGluiColorbar ------------------------ */
 
-extern "C" void hide_glui_colorbar(void){
+extern "C" void HideGluiColorbar(void){
   viscolorbarpath=0;
   showcolorbar_dialog=0;
   if(show_extreme_mindata_save==1){
@@ -115,9 +115,9 @@ extern "C" void hide_glui_colorbar(void){
   updatemenu=1;
 }
 
-/* ------------------ show_glui_colorbar ------------------------ */
+/* ------------------ ShowGluiColorbar ------------------------ */
 
-extern "C" void show_glui_colorbar(void){
+extern "C" void ShowGluiColorbar(void){
 // show colorbar dialog box and redefine initial view point
   showcolorbar_dialog=1;
   viscolorbarpath=1;
@@ -272,7 +272,7 @@ void Colorbar_CB(int var){
   }
   break;
   case COLORBAR_CLOSE:
-    hide_glui_colorbar();
+    HideGluiColorbar();
     break;
   case COLORBAR_NEXT:
   case COLORBAR_PREV:

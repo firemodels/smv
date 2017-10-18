@@ -640,9 +640,9 @@ extern "C" void Volume_CB(int var){
   }
 }
 
-/* ------------------ hide_glui_geometry ------------------------ */
+/* ------------------ HideGluiGeometry ------------------------ */
 
-extern "C" void hide_glui_geometry(void){
+extern "C" void HideGluiGeometry(void){
   blockageSelect=0;
   if(glui_geometry!=NULL)glui_geometry->hide();
   showedit_dialog=0;
@@ -650,9 +650,9 @@ extern "C" void hide_glui_geometry(void){
   editwindow_status=CLOSE_WINDOW;
 }
 
-/* ------------------ show_glui_geometry ------------------------ */
+/* ------------------ ShowGluiGeometry ------------------------ */
 
-extern "C" void show_glui_geometry(void){
+extern "C" void ShowGluiGeometry(void){
   showedit_dialog=1;
   blockageSelect=1;
   Update_Blockvals(NOT_SELECT_BLOCKS);

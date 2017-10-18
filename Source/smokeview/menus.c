@@ -1227,13 +1227,13 @@ void DialogMenu(int value){
   glutPostRedisplay();
   switch(value){
   case DIALOG_SHOOTER:
-    show_glui_shooter();
+    ShowGluiShooter();
     break;
   case DIALOG_TRAINER:
-    show_glui_trainer();
+    ShowGluiTrainer();
     break;
   case DIALOG_DEVICE:
-    show_glui_device();
+    ShowGluiDevice();
     break;
   case DIALOG_3DSMOKE:
   case DIALOG_AUTOLOAD:
@@ -1261,24 +1261,24 @@ void DialogMenu(int value){
     ShowGluiDisplay(value);
     break;
   case DIALOG_TOUR:
-   show_glui_tour();
+   ShowGluiTour();
    break;
   case DIALOG_CLIP:
-    show_glui_clip();
+    ShowGluiClip();
     break;
   case DIALOG_STEREO:
-    show_glui_stereo();
+    ShowGluiStereo();
     break;
   case DIALOG_WUI:
-    show_glui_wui();
+    ShowGluiWui();
     break;
   case DIALOG_COLORBAR:
     showcolorbar_dialog=1-showcolorbar_dialog;
     if(showcolorbar_dialog==1){
-      show_glui_colorbar();
+      ShowGluiColorbar();
     }
     if(showcolorbar_dialog==0){
-      hide_glui_colorbar();
+      HideGluiColorbar();
     }
     break;
   case DIALOG_GEOMETRY:
@@ -1291,11 +1291,11 @@ void DialogMenu(int value){
         updategetobstlabels=0;
       }
       visBlocksSave=visBlocks;
-      show_glui_geometry();
+      ShowGluiGeometry();
       visBlocks=visBLOCKNormal;
     }
     if(showedit_dialog==0){
-      hide_glui_geometry();
+      HideGluiGeometry();
       visBlocks=visBlocksSave;
     }
     update_trainer_outline();
@@ -1303,18 +1303,18 @@ void DialogMenu(int value){
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
-    hide_glui_shooter();
-    hide_glui_display();
-    hide_glui_bounds();
+    HideGluiShooter();
+    HideGluiDisplay();
+    HideGluiBounds();
     HideGluiMotion();
-    hide_glui_tour();
-    hide_glui_clip();
-    hide_glui_wui();
-    hide_glui_stereo();
-    hide_glui_colorbar();
+    HideGluiTour();
+    HideGluiClip();
+    HideGluiWui();
+    HideGluiStereo();
+    HideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
-    hide_glui_trainer();
-    hide_glui_device();
+    HideGluiTrainer();
+    HideGluiDevice();
     break;
   default:
     ASSERT(FFALSE);
@@ -1453,7 +1453,7 @@ void OptionMenu(int value){
   if(value == MENU_OPTION_TRAINERMENU){
     trainer_mode=1;
     if(showtrainer_dialog==0){
-      show_glui_trainer();
+      ShowGluiTrainer();
     }
     FontMenu(LARGE_FONT);
   }
@@ -2890,7 +2890,7 @@ void TourMenu(int value){
   case MENU_TOUR_SHOWDIALOG:
     edittour=1-edittour;
     if(edittour==1&&showtour_dialog==0){
-      show_glui_tour();
+      ShowGluiTour();
     }
     break;
   case MENU_TOUR_SHOWALL:               // show all tours

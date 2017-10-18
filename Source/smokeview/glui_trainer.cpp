@@ -54,15 +54,15 @@ extern "C" void update_glui_viewlist(void){
   }
 }
 
-/* ------------------ show_glui_alert ------------------------ */
+/* ------------------ ShowGluiAlert ------------------------ */
 
-extern "C" void show_glui_alert(void){
+extern "C" void ShowGluiAlert(void){
   if(glui_alert!=NULL)glui_alert->show();
 }
 
-/* ------------------ hide_glui_alert ------------------------ */
+/* ------------------ HideGluiAlert ------------------------ */
 
-extern "C" void hide_glui_alert(void){
+extern "C" void HideGluiAlert(void){
   if(glui_alert!=NULL)glui_alert->hide();
 }
 
@@ -79,9 +79,9 @@ extern "C" void glui_alert_setup(int main_window){
   STATIC_alert = glui_alert->add_statictext(_d("Loading smoke and fire data"));
 }
 
-/* ------------------ hide_glui_trainer ------------------------ */
+/* ------------------ HideGluiTrainer ------------------------ */
 
-extern "C" void hide_glui_trainer(void){
+extern "C" void HideGluiTrainer(void){
   if(glui_trainer!=NULL){
     glui_trainer->hide();
     showtrainer_dialog=0;
@@ -89,9 +89,9 @@ extern "C" void hide_glui_trainer(void){
   }
 }
 
-/* ------------------ show_glui_trainer ------------------------ */
+/* ------------------ ShowGluiTrainer ------------------------ */
 
-extern "C" void show_glui_trainer(void){
+extern "C" void ShowGluiTrainer(void){
   if(glui_trainer!=NULL){
     glui_trainer->show();
     showtrainer_dialog=1;

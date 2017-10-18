@@ -97,7 +97,7 @@ void CLIP_CB(int var){
     WriteINI(LOCAL_INI, NULL);
     break;
   case CLIP_CLOSE:
-    hide_glui_clip();
+    HideGluiClip();
     break;
   case CLIP_xlower:
     if(clipinfo.clip_xmin == 0)SPINNER_clip_xmin->disable();
@@ -363,16 +363,16 @@ extern "C" void glui_clip_setup(int main_window){
   glui_clip->set_main_gfx_window( main_window );
 }
 
-/* ------------------ hide_glui_clip ------------------------ */
+/* ------------------ HideGluiClip ------------------------ */
 
-extern "C" void hide_glui_clip(void){
+extern "C" void HideGluiClip(void){
   if(glui_clip!=NULL)glui_clip->hide();
   updatemenu=1;
 }
 
-/* ------------------ show_glui_clip ------------------------ */
+/* ------------------ ShowGluiClip ------------------------ */
 
-extern "C" void show_glui_clip(void){
+extern "C" void ShowGluiClip(void){
   if(glui_clip!=NULL)glui_clip->show();
 }
 
