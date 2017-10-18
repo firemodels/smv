@@ -17,14 +17,12 @@
 #endif
 
 #define MENU_SMOKE3D_IBLANK -2
-#define SHOWSMOKEDIALOG -3
 
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
-#define MENU_SLICESETTINGS -6
 
 #define MENU_OPTION_TRAINERMENU 2
 
@@ -70,6 +68,15 @@
 #define MENU_LOADTERRAIN_DUMMY -1
 
 #define MENU_LOADVSLICE_SHOWALL -20
+
+#define MENU_LOADVSLICE_SETTINGS -21
+#define MENU_ISO_SETTINGS -3
+#define MENU_BOUNDARY_SETTINGS -4
+#define MENU_PART_SETTINGS -4
+#define MENU_PLOT3D_SETTINGS -4
+#define MENU_VOLSMOKE_SETTINGS -4
+#define MENU_SMOKE_SETTINGS -4
+#define MENU_SLICE_SETTINGS -6
 
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
@@ -2573,6 +2580,9 @@ void LoadVolsmoke3DMenu(int value){
       fprintf(stderr, "    Continue when this is complete.\n");
     }
   }
+  else if(value==MENU_VOLSMOKE_SETTINGS){
+    ShowBoundsDialog(DLG_3DSMOKE);
+  }
   updatemenu = 1;
   Idle_CB();
   glutPostRedisplay();
@@ -3248,6 +3258,9 @@ void LoadParticleMenu(int value){
         readpart("", i, UNLOAD, PARTDATA,&errorcode);
       }
     }
+    else if(value==MENU_PART_SETTINGS){
+      ShowBoundsDialog(DLG_PART);
+    }
     else{
 #ifdef pp_PARTDEFER
       int lasti = 0;
@@ -3460,6 +3473,9 @@ void LoadVSliceMenu(int value){
     showallslicevectors=1-showallslicevectors;
     updatemenu=1;
     glutPostRedisplay();
+  }
+  else if(value==MENU_LOADVSLICE_SETTINGS){
+    ShowBoundsDialog(DLG_SLICE);
   }
   else if(value>=0){
     vslicedata *vslicei;
@@ -3700,7 +3716,7 @@ void LoadSmoke3DMenu(int value){
   else if(value==MENU_SMOKE3D_IBLANK){
     update_makeiblank_smoke3d = 1;
   }
-  else if(value == SHOWSMOKEDIALOG){
+  else if(value == MENU_SMOKE_SETTINGS)     {
     ShowBoundsDialog(DLG_3DSMOKE);
   }
   else if(value==-9){
@@ -3858,59 +3874,63 @@ void LoadSliceMenu(int value){
     LoadSlicei(SET_SLICECOLOR,value);
   }
   else{
-    if(value==UNLOAD_ALL){
-      for(i=0;i<nsliceinfo;i++){
-        ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
-      }
-    }
-    else if(value==MENU_SHOWSLICE_IN_GAS){
-      show_slice_in_obst = ONLY_IN_GAS;
-      UpdateShowSliceInObst();
-    }
-    else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-      show_slice_in_obst = GAS_AND_SOLID;
-      UpdateShowSliceInObst();
-    }
-    else if(MENU_SHOWSLICE_IN_SOLID){
-      show_slice_in_obst = ONLY_IN_SOLID;
-      UpdateShowSliceInObst();
-    }
-    else{
+    switch (value){
       int submenutype;
       char *submenulabel;
       slicedata *slicei;
       int dir;
       int last_slice;
 
-      value = -(1000 + value);
-      submenutype=value/4;
-      dir=value%4;
-      submenutype=subslice_menuindex[submenutype];
-      slicei = sliceinfo + submenutype;
-      submenulabel = slicei->label.longlabel;
-      last_slice = nsliceinfo - 1;
-      for(i = nsliceinfo-1; i>=0; i--){
-        char *longlabel;
-
-        slicei = sliceinfo + i;
-        longlabel = slicei->label.longlabel;
-        if(strcmp(longlabel, submenulabel) != 0)continue;
-        if(dir != 0 && dir != slicei->idir)continue;
-        last_slice = i;
+      case UNLOAD_ALL:
+        for(i=0;i<nsliceinfo;i++){
+          ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        }
         break;
-      }
-      for(i = 0; i<nsliceinfo; i++){
-        char *longlabel;
-        int set_slicecolor;
+      case MENU_SHOWSLICE_IN_GAS:
+        show_slice_in_obst = ONLY_IN_GAS;
+        UpdateShowSliceInObst();
+        break;
+      case  MENU_SHOWSLICE_IN_GASANDSOLID:
+        show_slice_in_obst = GAS_AND_SOLID;
+        UpdateShowSliceInObst();
+        break;
+      case MENU_SHOWSLICE_IN_SOLID:
+        show_slice_in_obst = ONLY_IN_SOLID;
+        UpdateShowSliceInObst();
+        break;
+      case MENU_SLICE_SETTINGS:
+        ShowBoundsDialog(DLG_SLICE);
+        break;
+      default:
+        value = -(1000 + value);
+        submenutype=value/4;
+        dir=value%4;
+        submenutype=subslice_menuindex[submenutype];
+        slicei = sliceinfo + submenutype;
+        submenulabel = slicei->label.longlabel;
+        last_slice = nsliceinfo - 1;
+        for(i = nsliceinfo-1; i>=0; i--){
+          char *longlabel;
 
-        slicei = sliceinfo + i;
-        longlabel = slicei->label.longlabel;
-        if(strcmp(longlabel,submenulabel)!=0)continue;
-        if(dir!=0&&dir!=slicei->idir)continue;
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
-      }
+          slicei = sliceinfo + i;
+          longlabel = slicei->label.longlabel;
+          if(strcmp(longlabel, submenulabel) != 0)continue;
+          if(dir != 0 && dir != slicei->idir)continue;
+          last_slice = i;
+          break;
+        }
+        for(i = 0; i<nsliceinfo; i++){
+          char *longlabel;
+          int set_slicecolor;
+
+          slicei = sliceinfo + i;
+          longlabel = slicei->label.longlabel;
+          if(strcmp(longlabel,submenulabel)!=0)continue;
+          if(dir!=0&&dir!=slicei->idir)continue;
+          set_slicecolor = DEFER_SLICECOLOR;
+          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+          ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        }
     }
   }
   updatemenu=1;
@@ -3989,6 +4009,9 @@ void LoadMultiVSliceMenu(int value){
         update_slicedup_dialog();
       }
       break;
+      case MENU_LOADVSLICE_SETTINGS:
+        ShowBoundsDialog(DLG_SLICE);
+        break;
       default:
         ASSERT(FFALSE);
         break;
@@ -4095,7 +4118,7 @@ void LoadMultiSliceMenu(int value){
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
         break;
-      case MENU_SLICESETTINGS:
+      case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
@@ -4159,6 +4182,9 @@ void LoadPlot3dMenu(int value){
     for(i=0;i<nplot3dinfo;i++){
       readplot3d("",i,UNLOAD,&errorcode);
     }
+  }
+  else if(value==MENU_PLOT3D_SETTINGS){
+    ShowBoundsDialog(DLG_PLOT3D);
   }
   else{
     value+=100000;
@@ -4226,6 +4252,10 @@ void LoadIsoMenu(int value){
       isoi = isoinfo + i;
       if(isoi->loaded==1)readiso("",i,UNLOAD,NULL,&errorcode);
     }
+  }
+  if(value==MENU_ISO_SETTINGS){
+    ShowBoundsDialog(DLG_ISO);
+    return;
   }
   if(value<=-10){
     isodata *isoi;
@@ -4311,6 +4341,9 @@ void LoadPatchMenu(int value){
   }
   else if(value==MENU_UPDATEBOUNDS){
     UpdateAllPatchBounds();
+  }
+  else if(value==MENU_BOUNDARY_SETTINGS){
+    ShowBoundsDialog(DLG_BOUNDARY);
   }
   else{
     for(i=0;i<npatchinfo;i++){
@@ -8259,7 +8292,7 @@ updatemenu=0;
         }
       }
     }
-
+    glutAddMenuEntry(_("Settings"), MENU_PART_SETTINGS);
     if(npartloaded<=1){
       glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
     }
@@ -8589,6 +8622,7 @@ updatemenu=0;
       }
       glutAddSubMenu(loadmenulabel, vsliceloadmenu);
     }
+    glutAddMenuEntry(_("Settings"), MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadvslicemenu);
     }
@@ -8752,6 +8786,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
+    glutAddMenuEntry("Settings", MENU_SLICE_SETTINGS);
     if(nsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadslicemenu);
     }
@@ -8760,7 +8795,7 @@ updatemenu=0;
     }
   }
 
-  /* --------------------------------unload and load multieslice menus -------------------------- */
+  /* --------------------------------unload and load multislice menus -------------------------- */
 
   if(nmultisliceinfo+nfedinfo<nsliceinfo){
     CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
@@ -8881,7 +8916,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
     }
-    glutAddMenuEntry("Settings", MENU_SLICESETTINGS);
+    glutAddMenuEntry("Settings", MENU_SLICE_SETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -8947,6 +8982,7 @@ updatemenu=0;
       glutAddMenuEntry(vlabel,LOAD_ALL);
       if(show_meshmenus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
       if(show_meshmenus==1)glutAddSubMenu("Mesh", loadvolsmokesinglemenu);
+      glutAddMenuEntry("Settings", MENU_VOLSMOKE_SETTINGS);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadvolsmoke3dmenu);
     }
@@ -9095,14 +9131,12 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
-          glutAddMenuEntry("Settings", SHOWSMOKEDIALOG);
           if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
             if(show_meshmenus==1){
               glutAddMenuEntry("-", MENU_DUMMY3);
               glutAddSubMenu("Mesh", loadsmoke3dsinglemenu);
             }
           }
-
         }
 
         if(use_iblank==0){
@@ -9110,6 +9144,7 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
           if(nsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY3);
         }
+        glutAddMenuEntry("Settings", MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadsmoke3dmenu);
       }
@@ -9277,6 +9312,7 @@ updatemenu=0;
           }
         }
       }
+      glutAddMenuEntry(_("Settings"), MENU_PLOT3D_SETTINGS);
       if(nplot3dloaded>1){
         glutAddSubMenu(_("Unload"),unloadplot3dmenu);
       }
@@ -9399,6 +9435,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
+      glutAddMenuEntry("Settings", MENU_BOUNDARY_SETTINGS);
       if(npatchloaded>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
@@ -9514,7 +9551,7 @@ updatemenu=0;
           }
         }
       }
-
+      glutAddMenuEntry(_("Settings"), MENU_ISO_SETTINGS);
       if(nisoloaded>1){
         glutAddSubMenu(_("Unload"),unloadisomenu);
       }
