@@ -867,9 +867,9 @@ extern "C" void hide_glui_display(void){
   updatemenu=1;
 }
 
-/* ------------------ show_glui_display ------------------------ */
+/* ------------------ ShowGluiDisplay ------------------------ */
 
-extern "C" void show_glui_display(int menu_id){
+extern "C" void ShowGluiDisplay(int menu_id){
   if(glui_labels!=NULL)glui_labels->show();
   switch(menu_id){
   case DIALOG_DISPLAY:

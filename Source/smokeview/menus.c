@@ -34,6 +34,7 @@
 #define MENU_OVERWRITECOMPRESS 2
 #define MENU_COMPRESSNOW 3
 #define MENU_COMPRESSAUTOLOAD 4
+#define MENU_COMPRESS_SETTINGS 5
 
 #define MENU_TRAINER_CLEAR 998
 #define MENU_MAIN_QUIT 3
@@ -43,6 +44,7 @@
 #define MENU_WRITEINI 2
 #define MENU_WRITECASEINI 3
 #define MENU_READSVO 4
+#define MENU_CONFIG_SETTINGS 5
 
 #define MENU_DUMMY2 -1
 
@@ -169,6 +171,7 @@
 #define MENU_STARTUPVIEW -102
 #define MENU_OUTLINEVIEW -104
 #define MENU_SIZEPRESERVING -105
+#define MENU_VIEWPOINT_SETTINGS -107
 #define MENU_DUMMY -999
 
 #define MENU_SHOWHIDE_EVAC 13
@@ -530,6 +533,9 @@ void LabelMenu(int value){
   if(value == MENU_DUMMY)return;
   glutPostRedisplay();
   switch(value){
+  case MENU_LABEL_SETTINGS:
+    ShowGluiDisplay(DIALOG_DISPLAY);
+    break;
   case MENU_LABEL_colorbar:
     visColorbar=1-visColorbar;
     break;
@@ -687,6 +693,9 @@ void ColorbarMenu(int value){
   glutPostRedisplay();
   if(value<0){
     switch(value){
+    case MENU_COLORBAR_SETTINGS:
+      ShowGluiDisplay(DIALOG_COLORING);
+      break;
     case COLORBAR_FLIP:
       colorbarflip=1-colorbarflip;
       update_colorbarflip();
@@ -1249,7 +1258,7 @@ void DialogMenu(int value){
   case DIALOG_FONTS:
   case DIALOG_LABELS:
   case DIALOG_DISPLAY:
-    show_glui_display(value);
+    ShowGluiDisplay(value);
     break;
   case DIALOG_TOUR:
    show_glui_tour();
@@ -1382,6 +1391,9 @@ void FontMenu(int value){
     glutPostRedisplay();
   }
   switch(value){
+  case MENU_FONT_SETTINGS:
+    ShowGluiDisplay(DIALOG_FONTS);
+    break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
     large_font=GLUT_BITMAP_HELVETICA_12;
@@ -1470,6 +1482,9 @@ void ResetMenu(int value){
 
   if(value==MENU_DUMMY)return;
   switch(value){
+  case MENU_VIEWPOINT_SETTINGS:
+    ShowGluiMotion(DIALOG_VIEW);
+    break;
   case MENU_SIZEPRESERVING:
     projection_type = 1 - projection_type;
     Motion_CB(PROJECTION);
@@ -1571,6 +1586,9 @@ void RenderMenu(int value){
     return;
   }
   switch(value){
+  case MENU_RENDER_SETTINGS:
+    ShowGluiMotion(DIALOG_RENDER);
+    break;
   case RenderCustom:
     render_window_size = value;
     renderW = script_render_width;
@@ -2253,6 +2271,9 @@ void GridSliceMenu(int value){
 void CompressMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
+  case MENU_CONFIG_SETTINGS:
+    ShowGluiBounds(DIALOG_SMOKEZIP);
+    break;
   case MENU_ERASECOMPRESS:
     erase_all=1;
     overwrite_all=0;
@@ -2319,6 +2340,9 @@ void SmokeviewIniMenu(int value){
     break;
   case MENU_DUMMY:
     break;
+  case MENU_CONFIG_SETTINGS:
+    ShowGluiBounds(DIALOG_CONFIG);
+    break;
   default:
     ASSERT(FFALSE);
     break;
@@ -2356,6 +2380,9 @@ void ScriptMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   switch(value){
+    case MENU_SCRIPT_SETTINGS:
+      ShowGluiBounds(DIALOG_SCRIPT);
+      break;
     case SCRIPT_FILE_LOADING:
       defer_file_loading = 1 - defer_file_loading;
       update_defer();
@@ -2820,7 +2847,7 @@ void TourMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   switch(value){
-  case MENU_TOUR_EDIT:
+  case MENU_TOUR_SETTINGS:
     DialogMenu(DIALOG_TOUR);
     break;
   case MENU_TOUR_NEW:
@@ -4787,6 +4814,10 @@ void BlockageMenu(int value){
 
 void RotateTypeMenu(int value){
   if(value==MENU_DUMMY)return;
+  if(value==MENU_MOTION_SETTINGS){
+    ShowGluiMotion(DIALOG_MOTION);
+    return;
+  }
   rotation_type = value;
   UpdateRotationType(rotation_type);
   RotationTypeCB(rotation_type);
@@ -6324,6 +6355,7 @@ updatemenu=0;
   glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Show all"), MENU_LABEL_ShowAll);
   glutAddMenuEntry(_("Hide all"), MENU_LABEL_HideAll);
+  glutAddMenuEntry("Settings...", MENU_LABEL_SETTINGS);
 
 /* --------------------------------rotate type menu -------------------------- */
 
@@ -6358,6 +6390,7 @@ updatemenu=0;
     ASSERT(FFALSE);
     break;
   }
+  glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
 
@@ -7064,6 +7097,7 @@ updatemenu=0;
   if(setbw == 1)glutAddMenuEntry("*Black/White (geometry)", COLORBAR_TOGGLE_BW);
   if(setbw == 0)glutAddMenuEntry("Black/White (geometry)", COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
+  glutAddMenuEntry("Settings...", MENU_COLORBAR_SETTINGS);
 
 /* --------------------------------showVslice menu -------------------------- */
   if(nvsliceloaded==0){
@@ -7334,12 +7368,6 @@ updatemenu=0;
 
   glutAddMenuEntry(_("New..."),MENU_TOUR_NEW);
   if(ntourinfo>0){
-    if(showtour_dialog==1){
-      glutAddMenuEntry(_("*Edit..."),MENU_TOUR_EDIT);
-    }
-    else{
-      glutAddMenuEntry(_("Edit..."),MENU_TOUR_EDIT);
-    }
     if(ntourinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
     for(i=0;i<ntourinfo;i++){
       tourdata *touri;
@@ -7381,6 +7409,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Show all"),MENU_TOUR_SHOWALL);
     glutAddMenuEntry(_("Hide all"),MENU_TOUR_MANUAL);
+    glutAddMenuEntry("Settings...", MENU_TOUR_SETTINGS);
   }
 
  /* --------------------------------Show Volume smoke menu -------------------------- */
@@ -7505,6 +7534,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Time"),MENU_TIMEVIEW);
   }
+  glutAddMenuEntry("Settings...", MENU_VIEWPOINT_SETTINGS);
 
   /* --------------------------------showhide menu -------------------------- */
 
@@ -7832,6 +7862,7 @@ updatemenu=0;
     }
 
     glutAddSubMenu(_("Start rendering:"),startrenderingmenu);
+    glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }
 
@@ -7937,6 +7968,7 @@ updatemenu=0;
       ASSERT(FFALSE);
       break;
     }
+    glutAddMenuEntry("Settings...", MENU_FONT_SETTINGS);
   }
 
   /* -------------------------------- units menu -------------------------- */
@@ -8292,7 +8324,7 @@ updatemenu=0;
         }
       }
     }
-    glutAddMenuEntry(_("Settings"), MENU_PART_SETTINGS);
+    glutAddMenuEntry("Settings...", MENU_PART_SETTINGS);
     if(npartloaded<=1){
       glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
     }
@@ -8622,7 +8654,7 @@ updatemenu=0;
       }
       glutAddSubMenu(loadmenulabel, vsliceloadmenu);
     }
-    glutAddMenuEntry(_("Settings"), MENU_LOADVSLICE_SETTINGS);
+    glutAddMenuEntry("Settings...", MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadvslicemenu);
     }
@@ -8786,7 +8818,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
-    glutAddMenuEntry("Settings", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
     if(nsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadslicemenu);
     }
@@ -8916,7 +8948,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
     }
-    glutAddMenuEntry("Settings", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -8982,7 +9014,7 @@ updatemenu=0;
       glutAddMenuEntry(vlabel,LOAD_ALL);
       if(show_meshmenus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
       if(show_meshmenus==1)glutAddSubMenu("Mesh", loadvolsmokesinglemenu);
-      glutAddMenuEntry("Settings", MENU_VOLSMOKE_SETTINGS);
+      glutAddMenuEntry("Settings...", MENU_VOLSMOKE_SETTINGS);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadvolsmoke3dmenu);
     }
@@ -9144,7 +9176,7 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
           if(nsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY3);
         }
-        glutAddMenuEntry("Settings", MENU_SMOKE_SETTINGS);
+        glutAddMenuEntry("Settings...", MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadsmoke3dmenu);
       }
@@ -9312,7 +9344,7 @@ updatemenu=0;
           }
         }
       }
-      glutAddMenuEntry(_("Settings"), MENU_PLOT3D_SETTINGS);
+      glutAddMenuEntry("Settings...", MENU_PLOT3D_SETTINGS);
       if(nplot3dloaded>1){
         glutAddSubMenu(_("Unload"),unloadplot3dmenu);
       }
@@ -9435,7 +9467,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
-      glutAddMenuEntry("Settings", MENU_BOUNDARY_SETTINGS);
+      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
       if(npatchloaded>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
@@ -9551,7 +9583,7 @@ updatemenu=0;
           }
         }
       }
-      glutAddMenuEntry(_("Settings"), MENU_ISO_SETTINGS);
+      glutAddMenuEntry("Settings...", MENU_ISO_SETTINGS);
       if(nisoloaded>1){
         glutAddSubMenu(_("Unload"),unloadisomenu);
       }
@@ -9607,6 +9639,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);  // -c
     glutAddMenuEntry(_("Compress now"),MENU_COMPRESSNOW);
     glutAddMenuEntry(_("Erase compressed files"),MENU_ERASECOMPRESS);  // -c
+    glutAddMenuEntry("Settings...", MENU_COMPRESS_SETTINGS);
   }
 #endif
 
@@ -9674,6 +9707,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY);
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
+    glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("Reload now"),RELOAD_NOW);
@@ -9803,6 +9837,7 @@ updatemenu=0;
         if(script_step==1||current_script_command!=NULL)glutAddMenuEntry(_("Cancel"),SCRIPT_CANCEL);
       }
       glutAddSubMenu(_("Record"),scriptrecordmenu);
+      glutAddMenuEntry("Settings...", MENU_SCRIPT_SETTINGS);
     }
 
   /* --------------------------------loadunload menu -------------------------- */

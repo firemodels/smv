@@ -155,7 +155,7 @@ EXTERNCPP void show_glui_clip(void);
 EXTERNCPP void hide_glui_clip(void);
 EXTERNCPP void show_glui_wui(void);
 EXTERNCPP void hide_glui_wui(void);
-EXTERNCPP void show_glui_display(int menu_id);
+EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void show_glui_device(void);
 EXTERNCPP void hide_glui_device(void);
 EXTERNCPP void SetLabelControls(void);
