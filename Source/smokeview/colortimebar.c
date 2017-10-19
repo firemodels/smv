@@ -120,7 +120,12 @@ void DrawColorbarPath(void){
   colorbardata *cbi;
   int ncolors;
 
-  cbi = colorbarinfo + colorbartype;
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
   glPointSize(5.0);
   glBegin(GL_POINTS);
   for(i=0;i<255;i++){
@@ -221,7 +226,7 @@ void DrawColorbarPath(void){
       glVertex3f(1.5,0.0,dzpoint);
       glEnd();
     }
-    if(show_firecolormap==1){
+    if(show_firecolormap!=0){
       char vvlabel[255];
       float vval_min, vval_cutoff, vval_max;
 
@@ -245,7 +250,7 @@ void DrawColorbarPath(void){
       Output3Text(foregroundcolor, 1.0,0.0,1.0,vvlabel);
     }
 
-    if(show_firecolormap==1){
+    if(show_firecolormap!=0){
       ncolors=MAXSMOKERGB-1;
     }
     else{
@@ -256,7 +261,7 @@ void DrawColorbarPath(void){
       float *rgbi;
       float zbot, ztop;
 
-      if(show_firecolormap==1){
+      if(show_firecolormap!=0){
         rgbi=rgb_volsmokecolormap+4*i;
       }
       else{

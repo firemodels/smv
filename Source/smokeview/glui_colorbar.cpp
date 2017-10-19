@@ -264,13 +264,17 @@ void Colorbar_CB(int var){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   case COLORBAR_LIST:
-  {
     selectedcolorbar_index2 = LISTBOX_colorbar->get_int_val();
+    if(show_firecolormap==0){
+      colorbartype=selectedcolorbar_index2;
+    }
+    else{
+      fire_colorbar_index= selectedcolorbar_index2;
+    }
     update_colorbar_list2();
     ColorbarMenu(selectedcolorbar_index2);
     colorbar_global2local();
-  }
-  break;
+    break;
   case COLORBAR_CLOSE:
     HideGluiColorbar();
     break;

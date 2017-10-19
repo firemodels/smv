@@ -81,7 +81,11 @@ GLUI_Button *BUTTON_startrender=NULL;
 GLUI_Button *BUTTON_cancelrender=NULL;
 
 GLUI_Listbox *LISTBOX_smoke_colorbar=NULL;
+#ifdef pp_OPACITYMAP
+GLUI_Listbox *LISTBOX_smoke_opacitybar = NULL;
+#endif
 
+GLUI_RadioGroup *RADIO_showmap=NULL;
 GLUI_RadioGroup *RADIO_alpha=NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
@@ -489,10 +493,17 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 20.0);
 
-  ROLLOUT_firesmoke_colormap = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "smoke/fire colormap", false);
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, "Show colormap", &show_firecolormap, SHOW_FIRECOLORMAP, Smoke3d_CB);
+  ROLLOUT_firesmoke_colormap = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "color/opacity maps", false);
+
+  RADIO_showmap = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_firesmoke_colormap,&show_firecolormap, SHOW_FIRECOLORMAP, Smoke3d_CB);
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_d("Hide"));
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_d("Show color map"));
+#ifdef pp_OPACITYMAP
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_d("Show opacity map"));
+#endif
+
   if(ncolorbars>0){
-    LISTBOX_smoke_colorbar=glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firesmoke_colormap,_d("smoke/fire colormap:"),&fire_colorbar_index,SMOKE_COLORBAR_LIST,Smoke3d_CB);
+    LISTBOX_smoke_colorbar=glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firesmoke_colormap,_d("color map:"),&fire_colorbar_index,SMOKE_COLORBAR_LIST,Smoke3d_CB);
 
     for(i=0;i<ncolorbars;i++){
       colorbardata *cbi;
@@ -503,6 +514,21 @@ extern "C" void glui_3dsmoke_setup(int main_window){
     }
     LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
   }
+
+#ifdef OPACITYMAP
+  if(ncolorbars>0){
+    LISTBOX_smoke_opacitybar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firesmoke_colormap, _d("opacity map:"), &fire_opacitybar_index, SMOKE_COLORBAR_LIST, Smoke3d_CB);
+
+    for(i = 0;i<ncolorbars;i++){
+      colorbardata *cbi;
+
+      cbi = colorbarinfo+i;
+      cbi->label_ptr = cbi->label;
+      LISTBOX_smoke_opacitybar->add_item(i, cbi->label_ptr);
+    }
+    LISTBOX_smoke_opacitybar->set_int_val(fire_opacitybar_index);
+  }
+#endif
 
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3d_CB);
   SPINNER_smoke3d_fire_halfdepth2->set_float_limits(0.0, 20.0);
@@ -884,7 +910,7 @@ extern "C" void Smoke3d_CB(int var){
     break;
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap(smoke_render_option);
-    if(show_firecolormap==1){
+    if(show_firecolormap!=0){
       ShowGluiColorbar();
     }
     else{

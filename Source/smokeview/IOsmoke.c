@@ -6337,11 +6337,12 @@ void GetPixelCount(void){
   int i;
   int icull;
 
+  if(have_setpixelcount==0)return;
   for(i=0;i<nmeshes;i++){
     meshi = meshinfo + i;
 
     if(meshi->culldefined==0)continue;
-    if(show_cullports==0&&have_setpixelcount==1){
+    if(show_cullports==0){
       for(icull=0;icull<meshi->ncullinfo;icull++){
         culldata *culli;
 
@@ -6370,6 +6371,7 @@ void GetPixelCount(void){
 #ifdef _DEBUG
   if(update_initcullplane==1)PRINTF("pixel count has changed - 1\n");
 #endif
+  have_setpixelcount = 0;
 }
 #endif
 
