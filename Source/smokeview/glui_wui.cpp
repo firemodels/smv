@@ -143,16 +143,16 @@ extern "C" void glui_wui_setup(int main_window){
   glui_wui->set_main_gfx_window( main_window );
 }
 
-/* ------------------ hide_glui_wui ------------------------ */
+/* ------------------ HideGluiWui ------------------------ */
 
-extern "C" void hide_glui_wui(void){
+extern "C" void HideGluiWui(void){
   if(glui_wui!=NULL)glui_wui->hide();
   updatemenu=1;
 }
 
-/* ------------------ show_glui_wui ------------------------ */
+/* ------------------ ShowGluiWui ------------------------ */
 
-extern "C" void show_glui_wui(void){
+extern "C" void ShowGluiWui(void){
   if(glui_wui!=NULL)glui_wui->show();
 }
 
@@ -213,7 +213,7 @@ extern "C" void WUI_CB(int var){
     WriteINI(LOCAL_INI,NULL);
     break;
   case WUI_CLOSE:
-    hide_glui_wui();
+    HideGluiWui();
     break;
 
   default:

@@ -178,12 +178,14 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
     }
     else{
       float ratio;
-      
+
       dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
       index = GETINDEX(temperature+voltemp_offset, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
       index += (MAXSMOKERGB/2);
-      ratio = (temperature+273) / (273.0+voltemp_factor);
-      if(ratio>1.0)*scaled_intensity = MAX(1.0,ratio*ratio*ratio*ratio);
+      if(temperature>voltemp_factor){
+        ratio = (273.0+temperature)/(273.0+voltemp_factor);
+        *scaled_intensity = ratio*ratio*ratio*ratio;
+      }
     }
     *smoke_color = rgb_volsmokecolormap+4*index;
   }
@@ -2097,6 +2099,8 @@ void DrawSmoke3DGPUVOL(void){
   glUniform1f(GPUvol_temperature_cutoff,temperature_cutoff);
   glUniform1f(GPUvol_temperature_max,temperature_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
+  glUniform1f(GPUvol_voltemp_factor, voltemp_factor);
+  glUniform1f(GPUvol_voltemp_offset, voltemp_offset);
 
   SNIFF_ERRORS("after DrawSmoke3DGPUVOL before update textures");
   if(use_transparency_data==1)TransparentOn();

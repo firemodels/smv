@@ -7,6 +7,13 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define DLG_3DSMOKE 0
+#define DLG_BOUNDARY 1
+#define DLG_SLICE 2
+#define DLG_PART 3
+#define DLG_PLOT3D 4
+#define DLG_ISO 5
+
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2
 
@@ -392,6 +399,7 @@ void _Sniff_Errors(char *whereat);
 #define EYE_CENTERED 1
 #define ROTATION_1AXIS 2
 #define ROTATION_3AXIS 3
+#define MENU_MOTION_SETTINGS 4
 
 #define FIRSTCALL 1
 #define NOT_FIRSTCALL 0
@@ -577,6 +585,7 @@ void _Sniff_Errors(char *whereat);
 #define SCRIPT_STEP -5
 #define SCRIPT_CONTINUE -7
 #define SCRIPT_CANCEL -8
+#define MENU_SCRIPT_SETTINGS -9
 
 #define DRAWSCENE 1
 #define SELECTOBJECT 2
@@ -642,6 +651,7 @@ void _Sniff_Errors(char *whereat);
 #define LABELLEN 30
 #define RenderLABELframenumber 980
 #define RenderLABELtime 979
+#define MENU_RENDER_SETTINGS 900
 
 #define EXTERIORwallmenu -1
 #define INTERIORwallmenu -2
@@ -689,6 +699,7 @@ void _Sniff_Errors(char *whereat);
 #define COLORBAR_TRANSPARENT -13
 #define COLORBAR_RESET -4
 #define COLORBAR_TOGGLE_BW_DATA -21
+#define MENU_COLORBAR_SETTINGS -22
 
 #define LOAD 0
 #define UNLOAD 1
@@ -703,6 +714,7 @@ void _Sniff_Errors(char *whereat);
 #define SMALL_FONT 0
 #define LARGE_FONT 1
 #define SCALED_FONT 2
+#define MENU_FONT_SETTINGS 3
 
 #define FFALSE 0
 #define TTRUE 1
@@ -748,6 +760,7 @@ void _Sniff_Errors(char *whereat);
 #define MENU_LABEL_hrr 16
 #define MENU_LABEL_northangle 21
 #define MENU_LABEL_chid 22
+#define MENU_LABEL_SETTINGS 23
 
 #define MENU_TRAINER_smoke 1
 #define MENU_TRAINER_temp 2
@@ -797,7 +810,7 @@ void _Sniff_Errors(char *whereat);
 #define MENU_TOUR_VIEWFROMROUTE -5
 #define MENU_TOUR_NEW -12
 #define MENU_TOUR_CLEARALL -13
-#define MENU_TOUR_EDIT -14
+#define MENU_TOUR_SETTINGS -14
 
 #define MENU_TEXTURE_SHOWALL -1
 #define MENU_TEXTURE_HIDEALL -2

@@ -1730,7 +1730,6 @@ extern "C" void glui_bounds_setup(int main_window){
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit,&STATIC_bound_cmax_unit,
       &BUTTON_updatebound, &BUTTON_reloadbound,
-
       &setpatchmin,&setpatchmax,&patchmin,&patchmax,
       &setpatchchopmin, &setpatchchopmax,
       &patchchopmin, &patchchopmax,
@@ -3471,9 +3470,9 @@ extern "C" void UpdateGlui(void){
   GLUI_Master.sync_live_all();
 }
 
-/* ------------------ show_glui_bounds ------------------------ */
+/* ------------------ ShowGluiBounds ------------------------ */
 
-extern "C" void show_glui_bounds(int menu_id){
+extern "C" void ShowGluiBounds(int menu_id){
   int islice, ipatch;
 
   if(menu_id==DIALOG_BOUNDS){
@@ -3530,6 +3529,33 @@ extern "C" void show_glui_bounds(int menu_id){
   glui_bounds->show();
 }
 
+
+/* ------------------ ShowBoundsDialog ------------------------ */
+
+extern "C" void ShowBoundsDialog(int type){
+  ShowGluiBounds(DIALOG_3DSMOKE);
+  switch (type){
+    case DLG_3DSMOKE:
+      if(ROLLOUT_smoke3d!=NULL)ROLLOUT_smoke3d->open();
+      break;
+    case DLG_BOUNDARY:
+      if(ROLLOUT_bound!=NULL)ROLLOUT_bound->open();
+      break;
+    case DLG_SLICE:
+      if(ROLLOUT_slice != NULL)ROLLOUT_slice->open();
+      break;
+    case DLG_PART:
+      if(ROLLOUT_part!=NULL)ROLLOUT_part->open();
+      break;
+    case DLG_PLOT3D:
+      if(ROLLOUT_plot3d!=NULL)ROLLOUT_plot3d->open();
+      break;
+    case DLG_ISO:
+      if(ROLLOUT_iso!=NULL)ROLLOUT_iso->open();
+      break;
+  }
+}
+
 /* ------------------ enable_boundary_glui ------------------------ */
 
 extern "C" void enable_boundary_glui(void){
@@ -3549,9 +3575,9 @@ extern "C" void update_overwrite(void){
   if(CHECKBOX_compress_autoloaded!=NULL)CHECKBOX_compress_autoloaded->set_int_val(compress_autoloaded);
 }
 
-/* ------------------ hide_glui_bounds ------------------------ */
+/* ------------------ HideGluiBounds ------------------------ */
 
-extern "C" void hide_glui_bounds(void){
+extern "C" void HideGluiBounds(void){
   if(glui_bounds!=NULL)glui_bounds->hide();
 }
 

@@ -9213,6 +9213,11 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
+    if(Match(buffer, "FIREPARAMS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f %f %f %f %f", &slicehrrpuv_cutoff, &slicehrrpuv_lower, &slicehrrpuv_upper, &slicehrrpuv_offset,&voltemp_factor,&voltemp_offset);
+      continue;
+    }
     if(Match(buffer, "FREEZEVOLSMOKE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &freeze_volsmoke,&autofreeze_volsmoke);
@@ -12952,6 +12957,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %f\n", eyezfactor);
   fprintf(fileout, "FONTSIZE\n");
   fprintf(fileout, " %i\n", fontindex);
+  fprintf(fileout, "FIREPARAMS\n");
+  fprintf(fileout, " %f %f %f %f %f %f\n", slicehrrpuv_cutoff, slicehrrpuv_lower, slicehrrpuv_upper, slicehrrpuv_offset, voltemp_factor, voltemp_offset);
   fprintf(fileout, "FRAMERATEVALUE\n");
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");

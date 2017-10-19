@@ -312,17 +312,17 @@ extern "C" void Update_Tourlist(void){
   TOUR_CB(TOUR_LIST);
 }
 
-/* ------------------ hide_glui_tour ------------------------ */
+/* ------------------ HideGluiTour ------------------------ */
 
-extern "C" void hide_glui_tour(void){
+extern "C" void HideGluiTour(void){
   if(glui_tour!=NULL)glui_tour->hide();
   showtour_dialog=0;
   updatemenu=1;
 }
 
-/* ------------------ show_glui_tour ------------------------ */
+/* ------------------ ShowGluiTour ------------------------ */
 
-extern "C" void show_glui_tour(void){
+extern "C" void ShowGluiTour(void){
   showtour_dialog=1;
   if(glui_tour!=NULL)glui_tour->show();
   updatemenu=1;
@@ -539,7 +539,7 @@ void TOUR_CB(int var){
     }
     break;
   case TOUR_CLOSE:
-    hide_glui_tour();
+    HideGluiTour();
     break;
   case SAVE_SETTINGS:
     WriteINI(LOCAL_INI,NULL);

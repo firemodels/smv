@@ -273,8 +273,8 @@ int SetupCase(int argc, char **argv){
     }
     return_code=ReadSMV(input_file,iso_filename);
     if(return_code==0){
-      show_glui_trainer();
-      show_glui_alert();
+      ShowGluiTrainer();
+      ShowGluiAlert();
     }
   }
   else{
@@ -340,8 +340,8 @@ int SetupCase(int argc, char **argv){
   InitMenus(LOAD);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
-    show_glui_trainer();
-    show_glui_alert();
+    ShowGluiTrainer();
+    ShowGluiAlert();
   }
   // intialise info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
@@ -1024,7 +1024,7 @@ void InitOpenGL(void){
     int i;
     int errorcode;
 
-//    show_glui_alert();
+//    ShowGluiAlert();
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
 
@@ -1123,7 +1123,7 @@ void InitOpenGL(void){
     UpdateFrameNumber(0);
     updatemenu=1;
     update_load_files=0;
-    hide_glui_alert();
+    HideGluiAlert();
     TrainerViewMenu(trainerview);
   }
 
@@ -1166,6 +1166,10 @@ void InitVars(void){
   for(i = 0; i < nscreeninfo; i++){
     screenvis[i] = 1;
   }
+#endif
+
+#ifdef pp_SPECTRAL
+  GetBlackBodyColors(300.0,1200.0, blackbody_colors, 256);
 #endif
 
   beam_color[0] = 255 * foregroundcolor[0];

@@ -20,7 +20,11 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN float SVDECL(voltemp_factor, 900.0), SVDECL(voltemp_offset, 0.0);
+SVEXTERN int SVDECL(colorbar_autonode, 1);
+SVEXTERN float SVDECL(*blackbody_colors, NULL);
+SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
+SVEXTERN float SVDECL(slicehrrpuv_cutoff, 1.0), SVDECL(slicehrrpuv_upper, 1.0), SVDECL(slicehrrpuv_lower, 1.0), SVDECL(slicehrrpuv_offset, 0.0);
+SVEXTERN float SVDECL(voltemp_factor, 300.0), SVDECL(voltemp_offset, 0.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
@@ -477,6 +481,8 @@ SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;
 SVEXTERN int GPU3dslice_boxmin, GPU3dslice_boxmax;
 SVEXTERN int GPU3dslice_transparent_level;
 SVEXTERN int GPUvol_block_volsmoke;
+SVEXTERN int GPUvol_voltemp_offset;
+SVEXTERN int GPUvol_voltemp_factor;
 
 #ifdef pp_GPUDEPTH
 SVEXTERN int GPUvol_depthtexture, GPUvol_screensize,GPUvol_nearfar;
@@ -615,6 +621,9 @@ SVEXTERN int SVDECL(visgridloc,0);
 SVEXTERN int valindex;
 
 SVEXTERN int fire_colorbar_index,SVDECL(fire_colorbar_index_save,-1);
+#ifdef pp_OPACITYMAP
+SVEXTERN int fire_opacitybar_index, SVDECL(fire_opacitybar_index_save, -1);
+#endif
 SVEXTERN int SVDECL(update_fire_colorbar_index,0);
 SVEXTERN int SVDECL(fire_colorbar_index_ini,0);
 SVEXTERN float SVDECL(*rgb2_ini,NULL);
@@ -1136,7 +1145,7 @@ SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 
-SVEXTERN int SVDECL(show_hrrcutoff,1), SVDECL(show_hrrcutoff_active,0),SVDECL(hrrpuv_loaded,0);
+SVEXTERN int SVDECL(show_hrrcutoff,0), SVDECL(show_hrrcutoff_active,0),SVDECL(hrrpuv_loaded,0);
 SVEXTERN int trainerview;
 SVEXTERN int apertureindex;
 SVEXTERN int zoomindex;
@@ -1418,7 +1427,7 @@ SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
 SVEXTERN int SVDECL(fire_red,255), SVDECL(fire_green,128), SVDECL(fire_blue,0);
 
 SVEXTERN int SVDECL(smoke_red, 0), SVDECL(smoke_green, 0), SVDECL(smoke_blue, 0);
-SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
+SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(fire_halfdepth2, 2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
 
 SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(firecolormap_type, FIRECOLORMAP_CONSTRAINT);

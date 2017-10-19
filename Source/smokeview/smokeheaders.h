@@ -5,6 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ShowBoundsDialog(int type);
+#ifdef  pp_SPECTRAL
+EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
+#endif
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadtimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
@@ -136,39 +140,39 @@ EXTERNCPP void update_glui_streakvalue(float rvalue);
 EXTERNCPP void UpdateGluiZoom(void);
 EXTERNCPP void Update_Glui_Clip(void);
 
-EXTERNCPP void show_glui_alert(void);
-EXTERNCPP void hide_glui_alert(void);
-EXTERNCPP void show_glui_shooter(void);
-EXTERNCPP void hide_glui_shooter(void);
-EXTERNCPP void show_glui_trainer(void);
-EXTERNCPP void hide_glui_trainer(void);
-EXTERNCPP void show_glui_colorbar(void);
-EXTERNCPP void hide_glui_colorbar(void);
+EXTERNCPP void ShowGluiAlert(void);
+EXTERNCPP void HideGluiAlert(void);
+EXTERNCPP void ShowGluiShooter(void);
+EXTERNCPP void HideGluiShooter(void);
+EXTERNCPP void ShowGluiTrainer(void);
+EXTERNCPP void HideGluiTrainer(void);
+EXTERNCPP void ShowGluiColorbar(void);
+EXTERNCPP void HideGluiColorbar(void);
 EXTERNCPP void ShowGluiMotion(int menu_id);
 EXTERNCPP void HideGluiMotion(void);
-EXTERNCPP void show_glui_clip(void);
+EXTERNCPP void ShowGluiClip(void);
 
-EXTERNCPP void hide_glui_clip(void);
-EXTERNCPP void show_glui_wui(void);
-EXTERNCPP void hide_glui_wui(void);
-EXTERNCPP void show_glui_display(int menu_id);
-EXTERNCPP void show_glui_device(void);
-EXTERNCPP void hide_glui_device(void);
+EXTERNCPP void HideGluiClip(void);
+EXTERNCPP void ShowGluiWui(void);
+EXTERNCPP void HideGluiWui(void);
+EXTERNCPP void ShowGluiDisplay(int menu_id);
+EXTERNCPP void ShowGluiDevice(void);
+EXTERNCPP void HideGluiDevice(void);
 EXTERNCPP void SetLabelControls(void);
 EXTERNCPP void SetColorControls(void);
-EXTERNCPP void hide_glui_display(void);
-EXTERNCPP void show_glui_tour(void);
-EXTERNCPP void hide_glui_tour(void);
-EXTERNCPP void show_glui_stereo(void);
-EXTERNCPP void hide_glui_stereo(void);
+EXTERNCPP void HideGluiDisplay(void);
+EXTERNCPP void ShowGluiTour(void);
+EXTERNCPP void HideGluiTour(void);
+EXTERNCPP void ShowGluiStereo(void);
+EXTERNCPP void HideGluiStereo(void);
 
 EXTERNCPP void enable_boundary_glui(void);
 EXTERNCPP void disable_boundary_glui(void);
 EXTERNCPP void update_clipplanes(void);
-EXTERNCPP void show_glui_bounds(int menu_id);
-EXTERNCPP void hide_glui_bounds(void);
-EXTERNCPP void show_glui_geometry(void);
-EXTERNCPP void hide_glui_geometry(void);
+EXTERNCPP void ShowGluiBounds(int menu_id);
+EXTERNCPP void HideGluiBounds(void);
+EXTERNCPP void ShowGluiGeometry(void);
+EXTERNCPP void HideGluiGeometry(void);
 
 EXTERNCPP void UpdateAllPatchColors(void);
 EXTERNCPP void UpdateSliceListIndex(int sfn);
@@ -399,6 +403,7 @@ EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPath(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
+EXTERNCPP void UpdateColorbarNodes(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void RemapColorbarType(int cb_oldtype, char *cb_newname);

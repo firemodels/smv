@@ -281,7 +281,7 @@ void Device_CB(int var){
     WriteINI(LOCAL_INI, NULL);
     break;
   case DEVICE_close:
-    hide_glui_device();
+    HideGluiDevice();
     break;
   default:
     ASSERT(FFALSE);
@@ -502,16 +502,16 @@ extern "C" void glui_device_setup(int main_window){
   glui_device->set_main_gfx_window( main_window );
 }
 
-/* ------------------ hide_glui_device ------------------------ */
+/* ------------------ HideGluiDevice ------------------------ */
 
-extern "C" void hide_glui_device(void){
+extern "C" void HideGluiDevice(void){
   if(glui_device!=NULL)glui_device->hide();
   updatemenu=1;
 }
 
-/* ------------------ show_glui_device ------------------------ */
+/* ------------------ ShowGluiDevice ------------------------ */
 
-extern "C" void show_glui_device(void){
+extern "C" void ShowGluiDevice(void){
   if(glui_device!=NULL)glui_device->show();
 }
 

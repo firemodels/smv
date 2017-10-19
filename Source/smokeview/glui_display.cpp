@@ -860,16 +860,16 @@ extern "C" void glui_labels_setup(int main_window){
   glui_labels->set_main_gfx_window( main_window );
 }
 
-/* ------------------ hide_glui_display ------------------------ */
+/* ------------------ HideGluiDisplay ------------------------ */
 
-extern "C" void hide_glui_display(void){
+extern "C" void HideGluiDisplay(void){
   if(glui_labels!=NULL)glui_labels->hide();
   updatemenu=1;
 }
 
-/* ------------------ show_glui_display ------------------------ */
+/* ------------------ ShowGluiDisplay ------------------------ */
 
-extern "C" void show_glui_display(int menu_id){
+extern "C" void ShowGluiDisplay(int menu_id){
   if(glui_labels!=NULL)glui_labels->show();
   switch(menu_id){
   case DIALOG_DISPLAY:
@@ -973,7 +973,7 @@ extern "C" void Labels_CB(int var){
     }
     break;
   case LABELS_close:
-    hide_glui_display();
+    HideGluiDisplay();
     break;
   case LABELS_fontsize:
     FontMenu(fontindex);
