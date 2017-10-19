@@ -58,6 +58,24 @@
 #endif
 #endif
 
+#ifdef pp_SMOKE3D_FORT
+#ifndef C_FILE
+#define C_FILE 0
+#endif
+#ifndef FORTRAN_FILE
+#define FORTRAN_FILE 1
+#endif
+
+#ifndef FORTSMOKEREAD
+#define FORTSMOKEREAD(var,size, count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
+                           returncode=fread(var,size,count,STREAM);\
+                           if(returncode!=count)returncode=0;\
+                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
+                           FSEEK(STREAM,4,SEEK_CUR)
+#endif
+#endif
+
+
 //***********************
 //************* structures
 //***********************
@@ -165,6 +183,9 @@ typedef struct {
 typedef struct {
   char *file,*filebase;
   int unit_start;
+#ifdef pp_SMOKE3D_FORT
+  int file_type;
+#endif
   char summary[1024];
   int compressed;
   int inuse,is_soot;

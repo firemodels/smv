@@ -24,6 +24,8 @@
 
 //*** options: options being tested
 
+//#define pp_SMOKE3D_FORT
+
 #ifdef pp_BETA
   #define pp_PART2
 #endif  

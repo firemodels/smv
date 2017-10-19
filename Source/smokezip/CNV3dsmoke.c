@@ -138,7 +138,16 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     return;
   }
 
+#ifdef pp_SMOKE3D_FORT  
+  if(smoke3di->file_type == 1){
+    FORTSMOKEREAD(nxyz, 4, 8, SMOKE3DFILE);
+  }
+  else{
+    fread(nxyz, 4, 8, SMOKE3DFILE);
+  }
+#else
   fread(nxyz,4,8,SMOKE3DFILE);
+#endif
 
   nxyz[0] = 1;
   version_local = nxyz[1];
@@ -197,16 +206,45 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   for(;;){
     int nlight_data;
 
+#ifdef pp_SMOKE3D_FORT
+    if(smoke3di->file_type == 1){
+      FORTSMOKEREAD(&time_local, 4, 1, SMOKE3DFILE);
+    }
+    else{
+      fread(&time_local, 4, 1, SMOKE3DFILE);
+    }
+#else
     fread(&time_local,4,1,SMOKE3DFILE);
+#endif
     if(feof(SMOKE3DFILE)!=0)break;
 
+#ifdef pp_SMOKE3D_FORT
+    if(smoke3di->file_type == 1){
+      FORTSMOKEREAD(nchars, 4,2, SMOKE3DFILE);
+    }
+    else{
+      fread(nchars, 4, 2, SMOKE3DFILE);
+    }
+#else
     fread(nchars,4,2,SMOKE3DFILE);
+#endif
     nfull_file=nchars[0];
     ncompressed_rle=nchars[1];
 
     // read compressed frame
 
+#ifdef pp_SMOKE3D_FORT
+    if(ncompressed_rle > 0){
+      if(smoke3di->file_type == 1){
+        FORTSMOKEREAD(compressed_alphabuffer, ncompressed_rle, 1, SMOKE3DFILE);
+      }
+      else{
+        fread(compressed_alphabuffer,ncompressed_rle,1,SMOKE3DFILE);
+      }
+    }
+#else
     fread(compressed_alphabuffer,ncompressed_rle,1,SMOKE3DFILE);
+#endif
 
     if(time_local<time_max)continue;
     count++;
