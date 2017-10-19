@@ -144,7 +144,9 @@ GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_tempfactor=NULL;
 GLUI_Spinner *SPINNER_tempoffset=NULL;
-GLUI_Spinner *SPINNER_hrrpuvfactor=NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_cutoff=NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_upper = NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_lower = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
@@ -543,7 +545,9 @@ extern "C" void glui_3dsmoke_setup(int main_window){
 
   PANEL_slicehrrpuv = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_hrrpuv, _d("Intensity (test)"),true);
   glui_3dsmoke->add_checkbox_to_panel(PANEL_slicehrrpuv, "Show 3D smoke (test)", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
-  SPINNER_hrrpuvfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("factor"), GLUI_SPINNER_FLOAT, &slicehrrpuv_factor, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Cutoff"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cutoff, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_upper = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Upper opacity"), GLUI_SPINNER_FLOAT, &slicehrrpuv_upper, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_lower = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Lower opacity"), GLUI_SPINNER_FLOAT, &slicehrrpuv_lower, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   Smoke3d_CB(UPDATE_HRRPUV_CONTROLS);
 
@@ -834,11 +838,15 @@ extern "C" void Smoke3d_CB(int var){
 
   case UPDATE_HRRPUV_CONTROLS:
     if(smoke3d_testsmoke==0){
-      SPINNER_hrrpuvfactor->disable();
+      SPINNER_slicehrrpuv_cutoff->disable();
+      SPINNER_slicehrrpuv_upper->disable();
+      SPINNER_slicehrrpuv_lower->disable();
       SPINNER_hrrpuvoffset->disable();
     }
     else{
-      SPINNER_hrrpuvfactor->enable();
+      SPINNER_slicehrrpuv_cutoff->enable();
+      SPINNER_slicehrrpuv_upper->enable();
+      SPINNER_slicehrrpuv_lower->enable();
       SPINNER_hrrpuvoffset->enable();
     }
 

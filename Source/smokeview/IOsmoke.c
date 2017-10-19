@@ -5338,12 +5338,18 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         else{
           float i1, ii, i2, y1, yy, y2;
 
-          i1 = i_hrrpuv_cutoff;
-          i2 = 255;
-          y1 = 5.0*soot_val;
-          y2 = (5.0+slicehrrpuv_factor)*soot_val;
           ii = firecolor[j];
-          yy = y1+(y2-y1)*(ii-i1)/(i2-i1);
+          if(ii>(int)slicehrrpuv_cutoff){
+            yy = (int)slicehrrpuv_upper;
+          }
+          else{
+            i1 = i_hrrpuv_cutoff;
+            i2 = (int)slicehrrpuv_upper;
+            y1 = 5.0*soot_val;
+            y2 = (int)slicehrrpuv_cutoff;
+            yy = y1+(y2-y1)*(ii-i1)/(i2-i1);
+            yy = (int)slicehrrpuv_lower;
+          }
           *mergealpha++= CLAMP(yy,0,255);
         }
       }

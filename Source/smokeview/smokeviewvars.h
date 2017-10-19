@@ -23,7 +23,7 @@
 SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
-SVEXTERN float SVDECL(slicehrrpuv_factor, 1.0), SVDECL(slicehrrpuv_offset, 0.0);
+SVEXTERN float SVDECL(slicehrrpuv_cutoff, 1.0), SVDECL(slicehrrpuv_upper, 1.0), SVDECL(slicehrrpuv_lower, 1.0), SVDECL(slicehrrpuv_offset, 0.0);
 SVEXTERN float SVDECL(voltemp_factor, 300.0), SVDECL(voltemp_offset, 0.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
