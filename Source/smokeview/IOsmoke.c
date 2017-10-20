@@ -4892,7 +4892,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   START_TIMER(total_time);
   ASSERT(ifile>=0&&ifile<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile;
-  if(smoke3di->filetype==FORTRAN_GENERATED){
+  if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0){
     fortran_skip=4;
   }
   else{

@@ -5551,6 +5551,7 @@ int ReadSMV(char *file, char *file2){
         if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
           smoke3di->file=smoke3di->comp_file;
           smoke3di->is_zlib=1;
+          smoke3di->compression_type = COMPRESSED_ZLIB;
         }
         else{
           smoke3di->file=smoke3di->reg_file;
