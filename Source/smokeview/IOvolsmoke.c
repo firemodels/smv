@@ -2667,7 +2667,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   CheckMemory;
   vr->dataready[framenum]=1;
   if(vr->is_compressed==1&&load_volcompressed==0){
-    PRINTF(" (%4.1f%s reduction)",(float)size_before/(float)size_after,"X");
+    PRINTF(" (%4.1f%s)",(float)size_before/(float)size_after,"X");
   }
   PRINTF("\n");
 }

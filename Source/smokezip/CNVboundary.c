@@ -406,12 +406,12 @@ wrapup:
     GetFileSizeLabel(sizeafter,after_label);
 #ifdef pp_THREAD
     patchi->compressed=1;
-    sprintf(patchi->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    sprintf(patchi->summary,"%s -> %s (%4.1f%s)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     threadinfo[*thread_index].stat=-1;
 #else
     PRINTF("  records=%i, ",count);
     PRINTF("Sizes: original=%s, ",before_label);
-    PRINTF("compressed=%s (%4.1f%s reduction)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    PRINTF("compressed=%s (%4.1f%s)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
 #endif
   }
 

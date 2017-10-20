@@ -283,7 +283,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     GetFileSizeLabel(sizebefore,before_label);
     GetFileSizeLabel(sizeafter,after_label);
     smoke3di->compressed=1;
-    sprintf(smoke3di->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    sprintf(smoke3di->summary,"%s -> %s (%4.1f%s)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     FFLUSH();
     threadinfo[*thread_index].stat=-1;
   }
@@ -298,7 +298,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
 
     PRINTF("Sizes: original=%s, ",before_label);
 
-    PRINTF("compressed=%s (%4.1f%s reduction)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    PRINTF("compressed=%s (%4.1f%s)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     FFLUSH();
   }
 #endif
