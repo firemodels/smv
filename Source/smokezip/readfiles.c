@@ -42,7 +42,10 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 #ifdef pp_SMOKE3D_FORT
-    if(Match(buffer,"SMOKE3D") == 1|| Match(buffer, "SMOKF3D") == 1){
+    if(Match(buffer,"SMOKE3D") == 1||
+       Match(buffer, "SMOKF3D") == 1||
+       Match(buffer, "VSMOKE3D")==1||
+       Match(buffer, "VSMOKF3D")==1){
 #else
     if(Match(buffer,"SMOKE3D") == 1){
 #endif
@@ -386,7 +389,10 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 #ifdef pp_SMOKE3D_FORT
-    if(Match(buffer,"SMOKE3D") == 1|| Match(buffer, "SMOKF3D") == 1){
+    if(Match(buffer,"SMOKE3D") == 1||
+       Match(buffer, "SMOKF3D") == 1||
+       Match(buffer, "VSMOKE3D")==1||
+       Match(buffer, "VSMOKF3D")==1){
 #else
     if(Match(buffer,"SMOKE3D") == 1){
 #endif
@@ -405,7 +411,7 @@ int ReadSMV(char *smvfile){
       smoke3di->smokemesh=meshinfo + ioffset - 1;
 #ifdef pp_SMOKE3D_FORT
       smoke3di->file_type = C_FILE;
-      if(Match(buffer, "SMOKF3D") == 1)smoke3di->file_type = FORTRAN_FILE;
+      if(Match(buffer, "SMOKF3D") == 1||Match(buffer, "VSMOKF3D")==1)smoke3di->file_type = FORTRAN_FILE;
 #endif
 
       if(fgets(buffer,BUFFERSIZE,streamsmv)==NULL)break;

@@ -66,13 +66,25 @@
 #define FORTRAN_FILE 1
 #endif
 
-#ifndef FORTSMOKEREAD
-#define FORTSMOKEREAD(var,size, count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
+#define FORTSMOKEREAD(var,size, count,STREAM,option) \
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}\
+                           fread(var,size,count,STREAM);\
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}
+
+#define FORTSMOKEREADBR(var,size, count,STREAM,option) \
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}\
                            returncode=fread(var,size,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
-                           FSEEK(STREAM,4,SEEK_CUR)
-#endif
+                           if(returncode!=count||returncode==0)break;\
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}
+#else
+#define FORTSMOKEREAD(var,size, count,STREAM,option) \
+                           fread(var,size,count,STREAM)
+
+#define FORTSMOKEREADBR(var,size, count,STREAM,option) \
+                           returncode=fread(var,size,count,STREAM);\
+                           if(returncode!=count||returncode==0){
+                             break;\
+                           }
 #endif
 
 
