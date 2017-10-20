@@ -20,6 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_MULTISLICE
+SVEXTERN int SVDECL(nplotx_list,0), SVDECL(nploty_list,0), SVDECL(nplotz_list,0);
+SVEXTERN int SVDECL(*plotx_list, NULL);
+SVEXTERN int SVDECL(*ploty_list, NULL);
+SVEXTERN int SVDECL(*plotz_list, NULL);
+#endif
 SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(smoke3d_testsmoke, 0);

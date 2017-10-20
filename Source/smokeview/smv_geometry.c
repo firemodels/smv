@@ -298,6 +298,26 @@ void UpdatePlotxyzAll(void){
     nploty_all+=(meshi->jbar+1);
     nplotz_all+=(meshi->kbar+1);
   }
+#ifdef pp_MULTISLICE  
+  NewMemory((void **)&plotx_list, nplotx_all*sizeof(int));
+  for(i=0;i<nplotx_all;i++){
+    plotx_list[i] = 0;
+  }
+  nplotx_list =  0;
+
+  NewMemory((void **)&ploty_list, nploty_all*sizeof(int));
+  for(i=0;i<nploty_all;i++){
+    ploty_list[i] = 0;
+  }
+  nploty_list = 0;
+
+  NewMemory((void **)&plotz_list, nplotz_all*sizeof(int));
+  for(i=0;i<nplotz_all;i++){
+    plotz_list[i] = 0;
+  }
+  nplotz_list = 0;
+#endif
+
   NewMemory((void **)&plotx_all,nplotx_all*sizeof(float));
   NewMemory((void **)&ploty_all,nploty_all*sizeof(float));
   NewMemory((void **)&plotz_all,nplotz_all*sizeof(float));
@@ -408,6 +428,14 @@ void UpdatePlotxyzAll(void){
     if(ival<0)continue;
     iplotz_all = ival;
   }
+
+#ifdef pp_MULTISLICE
+  nploty_list = 0;
+  for(i=0;i<nploty_all/4;i++){
+    ploty_list[i] = 4*i;
+    nploty_list++;
+  }
+#endif
 }
 
 #define MESHEPS 0.001

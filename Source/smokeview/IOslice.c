@@ -5491,6 +5491,9 @@ void DrawVolSlice(const slicedata *sd){
 
 void DrawSliceFrame(){
     int ii;
+#ifdef pp_MULTISLICE
+    int jjj;
+#endif
 
     for(ii=0;ii<nslice_loaded;ii++){
       slicedata *sd;
@@ -5521,8 +5524,15 @@ void DrawSliceFrame(){
         ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
       }
 #endif
-
       if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
+
+#ifdef pp_MULTISLICE
+      for(jjj=0;jjj<MAX(nploty_list,1);jjj++){
+        if(ploty_list!=NULL&&nploty_list>0){
+           iploty_all = ploty_list[jjj];
+        }
+#endif
+
       if(vis_slice_contours==1&&sd->line_contours!=NULL){
         if(slice_contour_type==SLICE_LINE_CONTOUR){
           DrawLineContours(sd->line_contours+sd->itime, slice_line_contour_width);
@@ -5534,6 +5544,7 @@ void DrawSliceFrame(){
         }
         continue;
       }
+
       switch(sd->slicetype){
         case SLICE_NODE_CENTER:
           if(usetexturebar!=0){
@@ -5580,6 +5591,9 @@ void DrawSliceFrame(){
         default:
           ASSERT(FFALSE);
           break;
+#ifdef pp_MULTISLICE
+      }
+#endif
       }
   }
 }
