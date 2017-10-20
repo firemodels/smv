@@ -546,7 +546,7 @@ void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
-  ndefaultcolorbars=14;
+  ndefaultcolorbars=15;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -837,6 +837,38 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[27]=255;
   cbi->rgb_node[28]=255;
   cbi->rgb_node[29]=238;
+  cbi++;
+
+  // fire 3
+
+  fire_colorbar_index = cbi - colorbarinfo;
+  fire_colorbar = cbi;
+  strcpy(cbi->label, "fire 3");
+  cbi->label_ptr = cbi->label;
+
+  cbi->nnodes = 4;
+  cbi->nodehilight = 0;
+
+  cbi->index_node[0] = 0;
+  cbi->rgb_node[0] = 0;
+  cbi->rgb_node[1] = 0;
+  cbi->rgb_node[2] = 0;
+
+  cbi->index_node[1] = 108;
+  cbi->rgb_node[3] = 255;
+  cbi->rgb_node[4] = 127;
+  cbi->rgb_node[5] = 0;
+
+  cbi->index_node[2] = 156;
+  cbi->rgb_node[6] = 255;
+  cbi->rgb_node[7] = 255;
+  cbi->rgb_node[8] = 0;
+
+  cbi->index_node[3] = 255;
+  cbi->rgb_node[9] = 255;
+  cbi->rgb_node[10] = 255;
+  cbi->rgb_node[11] = 255;
+
   cbi++;
 
   // cool
