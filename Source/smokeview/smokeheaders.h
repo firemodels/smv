@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
 #ifdef  pp_SPECTRAL
 EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
