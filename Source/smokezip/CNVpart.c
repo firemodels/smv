@@ -532,7 +532,7 @@ void convert_part(part *parti, int *thread_index){
     GetFileSizeLabel(sizeafter,after_label);
     PRINTF("    records=%i, ",count);
     PRINTF("Sizes: original=%s, ",before_label);
-    PRINTF("compressed=%s (%4.1f%s reduction)\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    PRINTF("compressed=%s (%4.1f%s)\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
   }
 
 }

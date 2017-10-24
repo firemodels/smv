@@ -144,9 +144,11 @@ GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_tempfactor=NULL;
 GLUI_Spinner *SPINNER_tempoffset=NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_upper = NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_middle = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_lower = NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
+GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
@@ -179,10 +181,10 @@ GLUI_Panel *PANEL_light_position = NULL;
 GLUI_Panel *PANEL_scatter = NULL;
 GLUI_Panel *PANEL_loadframe = NULL;
 GLUI_Panel *PANEL_voltemp = NULL;
-GLUI_Panel *PANEL_slicehrrpuv = NULL;
 GLUI_Panel *PANEL_voldisplay = NULL;
 GLUI_Panel *PANEL_volsmoke_move = NULL;
 
+GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_firesmoke_color = NULL;
 GLUI_Rollout *ROLLOUT_firesmoke_colormap = NULL;
 GLUI_Rollout *ROLLOUT_firecolor = NULL;
@@ -492,7 +494,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_smoke3d_fire_blue=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor,_d("blue"),GLUI_SPINNER_INT,&fire_blue,FIRE_BLUE,Smoke3d_CB);
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
 
-  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
+  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _d("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3d_CB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 20.0);
 
   ROLLOUT_firesmoke_colormap = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "color/opacity maps", false);
@@ -543,12 +545,17 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_hrrpuv_cutoff=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv,_d("color as fire >"),GLUI_SPINNER_FLOAT,&global_hrrpuv_cutoff,GLOBAL_FIRE_CUTOFF,Smoke3d_CB);
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
-  PANEL_slicehrrpuv = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_hrrpuv, _d("Intensity (test)"),true);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_slicehrrpuv, "Show 3D smoke (test)", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
-  SPINNER_slicehrrpuv_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Cutoff"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cutoff, UPDATE_FACTOROFFSETS, Smoke3d_CB);
-  SPINNER_slicehrrpuv_upper = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Upper opacity"), GLUI_SPINNER_FLOAT, &slicehrrpuv_upper, UPDATE_FACTOROFFSETS, Smoke3d_CB);
-  SPINNER_slicehrrpuv_lower = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("Lower opacity"), GLUI_SPINNER_FLOAT, &slicehrrpuv_lower, UPDATE_FACTOROFFSETS, Smoke3d_CB);
-  SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_slicehrrpuv, _d("offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  ROLLOUT_slicehrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _d("Opacity correction - test"),false);
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicehrrpuv, "Implement", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_upper = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% upper opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_upper, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_cut2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("middle/upper boundary"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cut2, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_cut2->set_float_limits(0.0, 1.0);
+  SPINNER_slicehrrpuv_middle = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% middle opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_middle, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_cut1 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("lower/middle boundary"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cut1, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+  SPINNER_slicehrrpuv_cut1->set_float_limits(0.0, 1.0);
+  SPINNER_slicehrrpuv_lower = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% lower opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_lower, UPDATE_FACTOROFFSETS, Smoke3d_CB);
+
+  SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("HRRPUV offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   Smoke3d_CB(UPDATE_HRRPUV_CONTROLS);
 
   {
@@ -573,24 +580,6 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   PANEL_voltemp = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_temp, _d("Intensity (test)"),true);
   SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
   SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
-
-  PANEL_loadcutoff = glui_3dsmoke->add_panel_to_panel(PANEL_overall, _d("Load 3D smoke/HRRPUV when..."));
-  SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("soot alpha>"),GLUI_SPINNER_FLOAT,&load_3dsmoke_cutoff);
-  SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
-
-  SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff,_d("HRRPUV>"),GLUI_SPINNER_FLOAT,&load_hrrpuv_cutoff);
-  SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
-
-
-  if(nsmoke3dinfo>0){
-    ROLLOUT_meshvis = glui_3dsmoke->add_rollout_to_panel(PANEL_overall,"Mesh Visibility",false);
-    for(i=0;i<nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo + i;
-      glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_meshvis,meshi->label,meshvisptr+i);
-    }
-  }
 
   glui_3dsmoke->add_column_to_panel(PANEL_overall,false);
 
@@ -818,6 +807,24 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_smoke_test_range = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _d("range"), GLUI_SPINNER_FLOAT, &smoke_test_range);
 #endif
 
+  PANEL_loadcutoff = glui_3dsmoke->add_panel_to_panel(PANEL_overall, _d("Load 3D smoke/HRRPUV when..."));
+  SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff, _d("soot alpha>"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
+  SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
+
+  SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_loadcutoff, _d("HRRPUV>"), GLUI_SPINNER_FLOAT, &load_hrrpuv_cutoff);
+  SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
+
+
+  if(nsmoke3dinfo>0){
+    ROLLOUT_meshvis = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "Mesh Visibility", false);
+    for(i = 0;i<nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo+i;
+      glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_meshvis, meshi->label, meshvisptr+i);
+    }
+  }
+
 #ifdef pp_GPU
   Smoke3d_CB(VOL_SMOKE);
 #endif
@@ -838,15 +845,19 @@ extern "C" void Smoke3d_CB(int var){
 
   case UPDATE_HRRPUV_CONTROLS:
     if(smoke3d_testsmoke==0){
-      SPINNER_slicehrrpuv_cutoff->disable();
       SPINNER_slicehrrpuv_upper->disable();
+      SPINNER_slicehrrpuv_middle->disable();
       SPINNER_slicehrrpuv_lower->disable();
+      SPINNER_slicehrrpuv_cut1->disable();
+      SPINNER_slicehrrpuv_cut2->disable();
       SPINNER_hrrpuvoffset->disable();
     }
     else{
-      SPINNER_slicehrrpuv_cutoff->enable();
       SPINNER_slicehrrpuv_upper->enable();
+      SPINNER_slicehrrpuv_middle->enable();
       SPINNER_slicehrrpuv_lower->enable();
+      SPINNER_slicehrrpuv_cut1->enable();
+      SPINNER_slicehrrpuv_cut2->enable();
       SPINNER_hrrpuvoffset->enable();
     }
 
@@ -858,6 +869,7 @@ extern "C" void Smoke3d_CB(int var){
       meshi = meshinfo+i;
       meshi->update_smoke3dcolors = 1;
     }
+    UpdateOpacityMap();
     glutPostRedisplay();
   break;
   case LOAD_SMOKEFRAME:

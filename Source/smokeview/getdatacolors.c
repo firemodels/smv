@@ -1365,10 +1365,20 @@ void UpdateSmokeColormap(int option){
         val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
         if(firecolormap_type==FIRECOLORMAP_CONSTRAINT){
           if(val<=valcut){
-            n2 = 1+127*(val-valmin)/(valcut-valmin);
+            if(valcut>valmin){
+              n2 = 1+127*(val-valmin)/(valcut-valmin);
+            }
+            else{
+              n2 = 1;
+            }
           }
           else{
-            n2 = 128 + 126*(val-valcut)/(valmax-valcut);
+            if(valmax>valcut){
+              n2 = 128 + 126*(val-valcut)/(valmax-valcut);
+            }
+            else{
+              n2 = 128;
+            }
           }
         }
         else{

@@ -138,7 +138,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     return;
   }
 
-  fread(nxyz,4,8,SMOKE3DFILE);
+  FORTSMOKEREAD(nxyz, 4, 8, SMOKE3DFILE,smoke3di->file_type);
 
   nxyz[0] = 1;
   version_local = nxyz[1];
@@ -197,16 +197,17 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   for(;;){
     int nlight_data;
 
-    fread(&time_local,4,1,SMOKE3DFILE);
-    if(feof(SMOKE3DFILE)!=0)break;
+    FORTSMOKEREADBR(&time_local, 4, 1, SMOKE3DFILE, smoke3di->file_type);
+    FORTSMOKEREADBR(nchars, 4,2, SMOKE3DFILE,smoke3di->file_type);
 
-    fread(nchars,4,2,SMOKE3DFILE);
     nfull_file=nchars[0];
     ncompressed_rle=nchars[1];
 
     // read compressed frame
 
-    fread(compressed_alphabuffer,ncompressed_rle,1,SMOKE3DFILE);
+    if(ncompressed_rle > 0){
+      FORTSMOKEREADBR(compressed_alphabuffer, ncompressed_rle, 1, SMOKE3DFILE, smoke3di->file_type);
+    }
 
     if(time_local<time_max)continue;
     count++;
@@ -282,7 +283,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     GetFileSizeLabel(sizebefore,before_label);
     GetFileSizeLabel(sizeafter,after_label);
     smoke3di->compressed=1;
-    sprintf(smoke3di->summary,"compressed from %s to %s (%4.1f%s reduction)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    sprintf(smoke3di->summary,"%s -> %s (%4.1f%s)",before_label,after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     FFLUSH();
     threadinfo[*thread_index].stat=-1;
   }
@@ -297,7 +298,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
 
     PRINTF("Sizes: original=%s, ",before_label);
 
-    PRINTF("compressed=%s (%4.1f%s reduction)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
+    PRINTF("compressed=%s (%4.1f%s)\n\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
     FFLUSH();
   }
 #endif

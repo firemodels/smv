@@ -626,8 +626,8 @@ void print_summary(void){
       slicei = sliceinfo + i;
       if(slicei->compressed==0)continue;
       label=&slicei->label;
-      PRINTF("%s (%s)\n  %s\n",slicei->file,label->longlabel,slicei->summary);
-      PRINTF("  using: min=%f %s, max=%f %s \n\n",slicei->valmin,label->unit,slicei->valmax,label->unit);
+      PRINTF("%s  (%s)\n %s\n",slicei->file,label->longlabel,slicei->summary);
+      PRINTF("  min=%f %s, max=%f %s \n",slicei->valmin,label->unit,slicei->valmax,label->unit);
     }
   }
 
@@ -663,7 +663,7 @@ void print_summary(void){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->compressed==0)continue;
-      PRINTF("%s\n  %s\n\n",smoke3di->file,smoke3di->summary);
+      PRINTF("%s\n  %s\n",smoke3di->file,smoke3di->summary);
     }
   }
 
@@ -683,7 +683,7 @@ void print_summary(void){
       if(patchi->compressed==0)continue;
       label=&patchi->label;
       PRINTF("%s (%s)\n  %s\n",patchi->file,label->longlabel,patchi->summary);
-      PRINTF("  using: min=%f %s, max=%f %s \n\n",patchi->valmin,label->unit,patchi->valmax,label->unit);
+      PRINTF("  min=%f %s, max=%f %s \n",patchi->valmin,label->unit,patchi->valmax,label->unit);
     }
   }
 

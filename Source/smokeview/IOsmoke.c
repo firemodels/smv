@@ -18,6 +18,47 @@
 
 int cull_count=0;
 
+
+/* ------------------ UpdateOpacityMap ------------------------ */
+
+void UpdateOpacityMap(void){
+  int i;
+
+  unsigned char alpha;
+  int ival0, ival1, ival2, ival3;
+  float dx, *xplt;
+  float ods[3];
+
+  update_opacity_map=0;
+
+  ods[0]  = slicehrrpuv_lower;
+  ods[1]  = slicehrrpuv_middle;
+  ods[2]  = slicehrrpuv_upper;
+
+  ival0 = 0;
+  ival1 = slicehrrpuv_cut1;
+  ival2 = slicehrrpuv_cut2;
+  ival3 = 256;
+
+  xplt = meshinfo->xplt_orig;
+  dx = xplt[1] - xplt[0];
+
+  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[0],0.001))), 0, 255);
+  for(i = ival0;i<ival1;i++){
+    opacity_map[i] = alpha;
+  }
+
+  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[1],0.001))), 0, 255);
+  for(i = ival1;i<ival2;i++){
+    opacity_map[i] = alpha;
+  }
+
+  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[2],0.001))), 0, 255);
+  for(i = ival2;i<ival3;i++){
+    opacity_map[i] = alpha;
+  }
+}
+
 /* ------------------ AdjustAlpha ------------------------ */
 
 unsigned char AdjustAlpha(unsigned char alpha, float factor){
@@ -4892,7 +4933,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   START_TIMER(total_time);
   ASSERT(ifile>=0&&ifile<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile;
-  if(smoke3di->filetype==FORTRAN_GENERATED){
+  if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0){
     fortran_skip=4;
   }
   else{
@@ -5336,21 +5377,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
           *mergealpha++=fire_alpha;
         }
         else{
-          float i1, ii, i2, y1, yy, y2;
-
-          ii = firecolor[j];
-          if(ii>(int)slicehrrpuv_cutoff){
-            yy = (int)slicehrrpuv_upper;
-          }
-          else{
-            i1 = i_hrrpuv_cutoff;
-            i2 = (int)slicehrrpuv_upper;
-            y1 = 5.0*soot_val;
-            y2 = (int)slicehrrpuv_cutoff;
-            yy = y1+(y2-y1)*(ii-i1)/(i2-i1);
-            yy = (int)slicehrrpuv_lower;
-          }
-          *mergealpha++= CLAMP(yy,0,255);
+          *mergealpha++= CLAMP(opacity_map[firecolor[j]],0,255);
         }
       }
       else if(sootcolor!=NULL){

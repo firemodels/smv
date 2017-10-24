@@ -1802,6 +1802,9 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(update_opacity_map==1){
+    UpdateOpacityMap();
+  }
   if(update_playmovie==1){
     EnableDisablePlayMovie();
     update_playmovie = 0;

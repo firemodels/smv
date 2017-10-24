@@ -58,6 +58,36 @@
 #endif
 #endif
 
+#ifdef pp_SMOKE3D_FORT
+#ifndef C_FILE
+#define C_FILE 0
+#endif
+#ifndef FORTRAN_FILE
+#define FORTRAN_FILE 1
+#endif
+
+#define FORTSMOKEREAD(var,size, count,STREAM,option) \
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}\
+                           fread(var,size,count,STREAM);\
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}
+
+#define FORTSMOKEREADBR(var,size, count,STREAM,option) \
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}\
+                           returncode=fread(var,size,count,STREAM);\
+                           if(returncode!=count||returncode==0)break;\
+                           if(option==1){FSEEK(STREAM,4,SEEK_CUR);}
+#else
+#define FORTSMOKEREAD(var,size, count,STREAM,option) \
+                           fread(var,size,count,STREAM)
+
+#define FORTSMOKEREADBR(var,size, count,STREAM,option) \
+                           returncode=fread(var,size,count,STREAM);\
+                           if(returncode!=count||returncode==0){
+                             break;\
+                           }
+#endif
+
+
 //***********************
 //************* structures
 //***********************
@@ -165,6 +195,9 @@ typedef struct {
 typedef struct {
   char *file,*filebase;
   int unit_start;
+#ifdef pp_SMOKE3D_FORT
+  int file_type;
+#endif
   char summary[1024];
   int compressed;
   int inuse,is_soot;

@@ -12,7 +12,7 @@
 #ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
-  #define PROGVERSION "1.4.10"
+  #define PROGVERSION "1.5.0"
 #endif
 
 
@@ -24,9 +24,11 @@
 
 //*** options: options being tested
 
+#define pp_SMOKE3D_FORT
+
 #ifdef pp_BETA
   #define pp_PART2
-#endif  
+#endif
 
 //*** options: Windows
 
