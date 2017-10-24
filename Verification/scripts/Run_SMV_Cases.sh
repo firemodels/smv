@@ -21,6 +21,7 @@ COMPILER="intel"
 WAIT=0
 NOPT=
 INTEL=
+INTEL2=
 
 wait_cases_end()
 {
@@ -90,7 +91,6 @@ export SVNROOT=`pwd`
 
 cd $CURDIR/..
 
-INTEL=
 use_installed="0"
 while getopts 'c:dghI:Jj:m:No:p:q:rsuWwY' OPTION
 do
@@ -115,6 +115,7 @@ case $OPTION in
    ;;
   J)
    INTEL=i
+   INTEL2="-I"
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -214,8 +215,8 @@ fi
 # run cases    
 
 export  RUNCFAST="$QFDSSH -e $CFAST $QUEUE $STOPFDS $JOBPREFIX"
-export      QFDS="$QFDSSH -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
-export   RUNTFDS="$QFDSSH -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
+export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
+export   RUNTFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
