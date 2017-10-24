@@ -20,6 +20,7 @@ CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
 NOPT=
+INTEL=
 
 wait_cases_end()
 {
@@ -50,6 +51,7 @@ echo "-g - run only geometry cases"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
 echo "-j - job prefix"
+echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
@@ -88,9 +90,9 @@ export SVNROOT=`pwd`
 
 cd $CURDIR/..
 
-
+INTEL=
 use_installed="0"
-while getopts 'c:dghI:j:m:No:p:q:rsuWwY' OPTION
+while getopts 'c:dghI:Jj:m:No:p:q:rsuWwY' OPTION
 do
 case $OPTION in
   c)
@@ -110,6 +112,9 @@ case $OPTION in
    ;;
   I)
    COMPILER="$OPTARG"
+   ;;
+  J)
+   INTEL=i
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -177,9 +182,9 @@ else
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
 fi
 export GEOM=$SVNROOT/smv/source/geomtest/${COMPILER}_$PLATFORM/geomtest
-export FDSEXE=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$DEBUG
+export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$SVNROOT/fds/Build/mpi_${COMPILER}_$PLATFORM$DEBUG/fds_mpi_${COMPILER}_$PLATFORM$DEBUG
+export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
 QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 
