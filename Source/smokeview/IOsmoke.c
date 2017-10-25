@@ -2565,6 +2565,13 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   meshdata *meshi;
 
+  if(show_all_3dslices){
+    glBlendEquation(GL_MAX);
+  }
+  else{
+    glBlendEquation(GL_FUNC_ADD);
+  }
+
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
