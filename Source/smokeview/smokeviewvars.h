@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(show_all_3dslices, 1);
 SVEXTERN int SVDECL(update_opacity_map, 1);
 SVEXTERN unsigned char opacity_map[256];
 #ifdef pp_MULTISLICE

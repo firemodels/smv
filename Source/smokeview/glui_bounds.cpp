@@ -2093,6 +2093,7 @@ extern "C" void glui_bounds_setup(int main_window){
     }
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Research display mode"),&research_mode,RESEARCH_MODE,Slice_CB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Output data to file"),&output_slicedata);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show all 3d slices"), &show_all_3dslices);
     Slice_CB(FILETYPEINDEX);
   }
 
