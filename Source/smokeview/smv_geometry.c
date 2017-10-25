@@ -298,7 +298,7 @@ void UpdatePlotxyzAll(void){
     nploty_all+=(meshi->jbar+1);
     nplotz_all+=(meshi->kbar+1);
   }
-#ifdef pp_MULTISLICE  
+#ifdef pp_MULTISLICE
   NewMemory((void **)&plotx_list, nplotx_all*sizeof(int));
   for(i=0;i<nplotx_all;i++){
     plotx_list[i] = 0;
@@ -307,7 +307,7 @@ void UpdatePlotxyzAll(void){
 
   NewMemory((void **)&ploty_list, nploty_all*sizeof(int));
   for(i=0;i<nploty_all;i++){
-    ploty_list[i] = 0;
+    ploty_list[i] = 1;
   }
   nploty_list = 0;
 
@@ -430,10 +430,22 @@ void UpdatePlotxyzAll(void){
   }
 
 #ifdef pp_MULTISLICE
+  nplotx_list = 0;
+  for(i=0;i<nploty_all;i++){
+    plotx_list[i] = i;
+    nplotx_list++;
+  }
+
   nploty_list = 0;
-  for(i=0;i<nploty_all/4;i++){
-    ploty_list[i] = 4*i;
+  for(i = 0;i<nploty_all;i++){
+    ploty_list[i] = i;
     nploty_list++;
+  }
+
+  nplotz_list = 0;
+  for(i = 0;i<nplotz_all;i++){
+    plotz_list[i] = i;
+    nplotz_list++;
   }
 #endif
 }
