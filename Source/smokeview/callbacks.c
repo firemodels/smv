@@ -637,12 +637,12 @@ int colorbar_click(int x, int y){
 /* ------------------ timebar_click ------------------------ */
 
 int timebar_click(int x, int y){
-  if(screenHeight-y<VP_timebar.height&&nglobal_times>0){
+  if(screenHeight-y<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
     int timebar_right_pos;
     int timebar_left_pos;
 
     timebar_left_pos = VP_timebar.left+timebar_left_width;
-    timebar_right_pos=VP_timebar.right-timebar_right_width;
+    timebar_right_pos = VP_timebar.right-timebar_right_width;
 
     if(timebar_right_pos>timebar_left_pos){
       itimes = (float)nglobal_times*(float)(x-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
