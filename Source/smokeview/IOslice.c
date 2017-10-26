@@ -5492,7 +5492,7 @@ void DrawVolSlice(const slicedata *sd){
 void DrawSliceFrame(){
     int ii;
 #ifdef pp_MULTISLICE
-    int jjj, nslicemax;
+    int jjj, nslicemax, blend_mode;
 #endif
 
     for(ii=0;ii<nslice_loaded;ii++){
@@ -5530,11 +5530,12 @@ void DrawSliceFrame(){
       if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
 
 #ifdef pp_MULTISLICE
-      if(show_all_3dslices==1){
+      if(sd->volslice==1&&slices3d_max_blending==1){
         visx_all = 0;
         visy_all = 0;
         visz_all = 0;
         slicemesh = meshinfo+sd->blocknumber;
+      //  printf("dir=%i\n", slicemesh->smokedir);
         switch (ABS(slicemesh->smokedir)){
         // x direction
         case 1:
@@ -5558,14 +5559,15 @@ void DrawSliceFrame(){
         break;
         }
         nslicemax = MAX(nslicemax, 1);
+        blend_mode=1;
         glBlendEquation(GL_MAX);
       }
       else{
+        blend_mode = 0;
         nslicemax = 1;
-        glBlendEquation(GL_FUNC_ADD);
       }
       for(jjj=0;jjj<nslicemax;jjj++){
-        if(show_all_3dslices==1){
+        if(sd->volslice==1&&slices3d_max_blending==1){
            if(visx_all==1&&plotx_list!=NULL&&nplotx_list>0){
              iplotx_all = plotx_list[jjj];
            }
@@ -5638,8 +5640,11 @@ void DrawSliceFrame(){
           break;
 #ifdef pp_MULTISLICE
       }
-#endif
+      if(blend_mode==1){
+        //glBlendEquation(GL_FUNC_ADD);
       }
+#endif
+    }
   }
 }
 
