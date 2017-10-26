@@ -7200,7 +7200,7 @@ updatemenu=0;
         if(planar_terrain_slice==0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
       }
 
-      glutAddMenuEntry("Show inxx:", MENU_DUMMY);
+      glutAddMenuEntry("Show in:", MENU_DUMMY);
       if(show_slice_in_obst==ONLY_IN_GAS){
         glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
         glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
