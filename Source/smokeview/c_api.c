@@ -180,8 +180,8 @@ int loadsmv(char *input_filename, char *input_filename_ext){
     }
     return_code=ReadSMV(input_file,iso_filename);
     if(return_code==0){
-      show_glui_trainer();
-      show_glui_alert();
+      ShowGluiTrainer();
+      ShowGluiAlert();
     }
   }
   else{
@@ -246,8 +246,8 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   InitMenus(LOAD);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
-    show_glui_trainer();
-    show_glui_alert();
+    ShowGluiTrainer();
+    ShowGluiAlert();
   }
   return 0;
 }
@@ -4161,7 +4161,7 @@ int show_slices_showall(){
   for(i=0;i<nsliceinfo;i++){
     sliceinfo[i].display=1;
   }
-  show_all_slices=1;
+  showall_slices=1;
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -4180,7 +4180,7 @@ int show_slices_hideall(){
   for(i=0;i<nsliceinfo;i++){
     sliceinfo[i].display=0;
   }
-  show_all_slices=0;
+  showall_slices=0;
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
