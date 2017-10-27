@@ -30,7 +30,8 @@ set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u4
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: set to INTEL if using Intel MPI library
-set mpi_version=2.1.1
+set linux_mpi_version=INTEL
+set osx_mpi_version=3.0.0
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
