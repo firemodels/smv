@@ -5278,6 +5278,215 @@ void DrawVolSliceTexture(const slicedata *sd){
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
 }
 
+/* ------------------ DrawVolSliceDiag ------------------------ */
+
+void DrawVolSliceDiag(const slicedata *sd){
+  int i, j, k, n, n2;
+  int i11, i31, i13, i33;
+  float constval, x1, x3, yy1, y3, z1, z3;
+
+  float *xplt, *yplt, *zplt;
+  int plotx, ploty, plotz;
+  int ibar, jbar;
+  int nx, ny, nxy;
+  char *iblank_x, *iblank_y, *iblank_z;
+  char *iblank_embed;
+
+  meshdata *meshi;
+
+  float *rgb_ptr;
+
+  rgb_ptr = rgb_slice;
+
+  meshi = meshinfo + sd->blocknumber;
+
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+  if(sd->volslice == 1){
+    plotx = meshi->iplotx_all[iplotx_all];
+    ploty = meshi->iploty_all[iploty_all];
+    plotz = meshi->iplotz_all[iplotz_all];
+  }
+  else{
+    plotx = sd->is1;
+    ploty = sd->js1;
+    plotz = sd->ks1;
+  }
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  iblank_x = meshi->c_iblank_x;
+  iblank_y = meshi->c_iblank_y;
+  iblank_z = meshi->c_iblank_z;
+  iblank_embed = meshi->c_iblank_embed;
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nxy = nx*ny;
+
+  if(cullfaces == 1)glDisable(GL_CULL_FACE);
+
+  if(use_transparency_data == 1)TransparentOn();
+  if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
+    int maxj;
+
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    glBegin(GL_TRIANGLES);
+    maxj = MAX(sd->js1 + 1, sd->js2);
+    for(j = sd->js1; j<maxj; j++){
+      n = (j - sd->js1)*sd->nslicek - 1;
+      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
+      n2 = n + sd->nslicek;
+      yy1 = yplt[j];
+      y3 = yplt[j + 1];
+      // val(i,j,k) = di*nj*nk + dj*nk + dk
+      for(k = sd->ks1; k<sd->ks2; k++){
+        n++; n2++;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] == GASGAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] != GASGAS)continue;
+        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(plotx, j, k)] == EMBED_YES)continue;
+        i11 = 4 * sd->iqsliceframe[n];
+        i31 = 4 * sd->iqsliceframe[n2];
+        i13 = 4 * sd->iqsliceframe[n + 1];
+        i33 = 4 * sd->iqsliceframe[n2 + 1];
+        z1 = zplt[k];
+        z3 = zplt[k + 1];
+        /*
+        n+1 (y1,z3)     n2+1 (y3,z3)
+        n (y1,z1)     n2   (y3,z1)
+        */
+        if(ABS(i11 - i33)<ABS(i13 - i31)){
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
+
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+        }
+        else{
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+        }
+      }
+    }
+    glEnd();
+  }
+  if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
+    int maxi;
+
+    constval = yplt[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    glBegin(GL_TRIANGLES);
+    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
+    for(i = sd->is1; i<maxi; i++){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - 1;
+      n += (ploty - sd->js1)*sd->nslicek;
+      n2 = n + sd->nslicej*sd->nslicek;
+
+      x1 = xplt[i];
+      x3 = xplt[i + 1];
+      for(k = sd->ks1; k<sd->ks2; k++){
+        n++; n2++;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_y != NULL&&iblank_y[IJK(i, ploty, k)] == GASGAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_y != NULL&&iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
+        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, sd->js1, k)] == EMBED_YES)continue;
+        i11 = 4 * sd->iqsliceframe[n];
+        i31 = 4 * sd->iqsliceframe[n2];
+        i13 = 4 * sd->iqsliceframe[n + 1];
+        i33 = 4 * sd->iqsliceframe[n2 + 1];
+        z1 = zplt[k];
+        z3 = zplt[k + 1];
+        /*
+        n+1 (x1,z3)   n2+1 (x3,z3)
+        n (x1,z1)     n2 (x3,z1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        if(ABS(i11 - i33)<ABS(i13 - i31)){
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, constval, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, constval, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, constval, z3);
+
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, constval, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, constval, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, constval, z3);
+        }
+        else{
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, constval, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, constval, z1);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, constval, z3);
+
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, constval, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, constval, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, constval, z3);
+        }
+      }
+    }
+    glEnd();
+  }
+  // i*nj*nk + j*nk + k
+  if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
+    int maxi;
+
+    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    glBegin(GL_TRIANGLES);
+    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
+    for(i = sd->is1; i<maxi; i++){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - sd->nslicek;
+      n += (plotz - sd->ks1);
+      n2 = n + sd->nslicej*sd->nslicek;
+
+      x1 = xplt[i];
+      x3 = xplt[i + 1];
+      for(j = sd->js1; j<sd->js2; j++){
+        n += sd->nslicek;
+        n2 += sd->nslicek;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] == GASGAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
+        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+        i11 = 4 * sd->iqsliceframe[n];
+        i31 = 4 * sd->iqsliceframe[n2];
+        i13 = 4 * sd->iqsliceframe[n + sd->nslicek];
+        i33 = 4 * sd->iqsliceframe[n2 + sd->nslicek];
+        yy1 = yplt[j];
+        y3 = yplt[j + 1];
+        /*
+        n+nk (x1,y3)   n2+nk (x3,y3)
+        n (x1,y1)      n2 (x3,y1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        if(ABS(i11 - i33)<ABS(i13 - i31)){
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, constval);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, yy1, constval);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, constval);
+
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, constval);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, constval);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, y3, constval);
+        }
+        else{
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, constval);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, yy1, constval);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, y3, constval);
+
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, yy1, constval);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, constval);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, y3, constval);
+        }
+      }
+    }
+    glEnd();
+  }
+  if(use_transparency_data == 1)TransparentOff();
+  if(cullfaces == 1)glEnable(GL_CULL_FACE);
+
+}
+
 /* ------------------ DrawVolSlice ------------------------ */
 
 void DrawVolSlice(const slicedata *sd){
@@ -5501,6 +5710,7 @@ void DrawSliceFrame(){
 #ifdef pp_MULTISLICE
       meshdata *slicemesh;
 #endif
+      int orien;
 
       i=slice_loaded_list[ii];
       sd = sliceinfo + i;
@@ -5529,15 +5739,26 @@ void DrawSliceFrame(){
 #endif
       if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
 
+      orien = 0;
 #ifdef pp_MULTISLICE
       if(sd->volslice==1&&slices3d_max_blending==1){
         visx_all = 0;
         visy_all = 0;
         visz_all = 0;
         slicemesh = meshinfo+sd->blocknumber;
-      //  printf("dir=%i\n", slicemesh->smokedir);
+       // printf("dir=%i\n", slicemesh->smokedir);
         switch (ABS(slicemesh->smokedir)){
-        // x direction
+        case 4:  // -45 slope slices
+          visy_all = 1;
+          nslicemax = nploty_list;
+          orien = 1;
+          break;
+        case 5:  // 45 slope slices
+          visx_all = 1;
+          nslicemax = nplotx_list;
+          orien = 1;
+          break;
+          // x direction
         case 1:
         case 8:
         case 9:
@@ -5546,8 +5767,6 @@ void DrawSliceFrame(){
         break;
         // y direction
         case 2:
-        case 4:
-        case 5:
         case 6:
         case 7:
         visy_all = 1;
@@ -5595,11 +5814,21 @@ void DrawSliceFrame(){
       switch(sd->slicetype){
         case SLICE_NODE_CENTER:
           if(usetexturebar!=0){
-            DrawVolSliceTexture(sd);
+            if(orien==1){
+              DrawVolSliceTexture(sd);
+            }
+            else{
+              DrawVolSliceTexture(sd);
+            }
             SNIFF_ERRORS("after DrawVolSliceTexture");
           }
           else{
-            DrawVolSlice(sd);
+            if(orien==1){
+              DrawVolSliceDiag(sd);
+            }
+            else{
+              DrawVolSlice(sd);
+            }
             SNIFF_ERRORS("after DrawVolSlice");
           }
 #ifdef pp_GPU
