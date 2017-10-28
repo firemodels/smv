@@ -5897,7 +5897,8 @@ void DrawSliceFrame(){
 
     orien = 0;
 #ifdef pp_MULTISLICE
-    if(sd->volslice==1&&slices3d_max_blending==1){
+    blend_mode = 0;
+    if(sd->volslice==1&&showall_3dslices==1){
       visx_all = 0;
       visy_all = 0;
       visz_all = 0;
@@ -5934,15 +5935,17 @@ void DrawSliceFrame(){
       break;
       }
       nslicemax = MAX(nslicemax, 1);
-      blend_mode=1;
-      glBlendEquation(GL_MAX);
+      if(slices3d_max_blending==1){
+        blend_mode=1;
+        glBlendEquation(GL_MAX);
+      }
     }
     else{
       blend_mode = 0;
       nslicemax = 1;
     }
     for(jjj = 0;jjj<nslicemax;jjj++){
-      if(sd->volslice==1&&slices3d_max_blending==1){
+      if(sd->volslice==1&&showall_3dslices==1){
         if(visx_all==1&&plotx_list!=NULL&&nplotx_list>0){
           iplotx_all = plotx_list[jjj];
         }

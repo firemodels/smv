@@ -4552,7 +4552,7 @@ void DrawSmokeFrame(void){
       }
 #ifdef pp_MULTISLICE
       if(blend_mode==1){
-//        glBlendEquation(GL_FUNC_ADD);
+        glBlendEquation(GL_FUNC_ADD);
       }
 #endif
     }

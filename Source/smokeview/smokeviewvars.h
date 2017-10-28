@@ -21,6 +21,7 @@
 #include "threader.h"
 
 #ifdef pp_MULTISLICE
+SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
 SVEXTERN int SVDECL(hrrpuv_max_blending, 0);
 #endif

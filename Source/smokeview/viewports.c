@@ -1209,7 +1209,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 #endif
     }
 #ifdef pp_MULTISLICE
-    else if(showslice==1&&slices3d_max_blending==1){
+    else if(showslice==1&&showall_3dslices==1){
       GetSmokeDir(modelview_scratch);
     }
 #endif
