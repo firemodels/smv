@@ -5315,24 +5315,40 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
-  if(visx_all == 3){
-    int maxj;
+  if(visx_all == 1){
+    int icol;
+    int nx, ny;
 
-    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    nx = sd->nslicei;
+    ny = sd->nslicej;
+
     glBegin(GL_TRIANGLES);
-    maxj = MAX(sd->js1 + 1, sd->js2);
-    for(j = sd->js1; j<maxj; j++){
-      n = (j - sd->js1)*sd->nslicek - 1;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
-      n2 = n + sd->nslicek;
-      yy1 = yplt[j];
-      y3 = yplt[j + 1];
+    for(icol=1;icol<nx+ny-2;icol++){
+      int iimin;
+
+      iimin = nx-icol - 1;
+      if(icol>=nx-1)iimin = 0;
+      // icol + i - j = nx - 1
+      for(i = iimin; i<nx-1; i++){
+      j = icol + i + 1 - nx;
+      if(j>ny-2)break;
+
+#define VALIJK(i,j,k) ( ((i))*sd->nslicej*sd->nslicek + ((j))*sd->nslicek+ (k)    )
+
+      n = VALIJK(i,j,-1);
+      n2 = VALIJK(i+1,j+1,-1);
+
       // val(i,j,k) = di*nj*nk + dj*nk + dk
+      x1 = xplt[i];
+      x3 = xplt[i + 1];
+      yy1 = yplt[j];
+      y3 = yplt[j+1];
+
       for(k = sd->ks1; k<sd->ks2; k++){
         n++; n2++;
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] == GASGAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(plotx, j, k)] == EMBED_YES)continue;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_y != NULL&&iblank_x[IJK(i, j, k)] == GASGAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_y != NULL&&iblank_x[IJK(i, j, k)] != GASGAS)continue;
+        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(sd->is1, j, k)] == EMBED_YES)continue;
         i11 = 4 * sd->iqsliceframe[n];
         i31 = 4 * sd->iqsliceframe[n2];
         i13 = 4 * sd->iqsliceframe[n + 1];
@@ -5340,28 +5356,31 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
         z1 = zplt[k];
         z3 = zplt[k + 1];
         /*
-        n+1 (y1,z3)     n2+1 (y3,z3)
-        n (y1,z1)     n2   (y3,z1)
+        n+1 (x1,z3)   n2+1 (x3,z3)
+        n (x1,z1)     n2 (x3,z1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
         */
         if(ABS(i11 - i33)<ABS(i13 - i31)){
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, y3, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, z3);
 
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, yy1, z3);
         }
         else{
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+          glColor4fv(&rgb_ptr[i11]); glVertex3f(x1, yy1, z1);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, y3, z1);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, yy1, z3);
 
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+          glColor4fv(&rgb_ptr[i31]); glVertex3f(x3, y3, z1);
+          glColor4fv(&rgb_ptr[i33]); glVertex3f(x3, y3, z3);
+          glColor4fv(&rgb_ptr[i13]); glVertex3f(x1, yy1, z3);
         }
       }
+    }
     }
     glEnd();
   }
@@ -5374,7 +5393,7 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
 
     glBegin(GL_TRIANGLES);
     for(jrow=1;jrow<nx+ny-2;jrow++){
-      int iimin, iimax;
+      int iimin;
 
       iimin = 0;
       if(jrow>=ny)iimin = jrow - (ny-1);
@@ -5382,8 +5401,6 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
       for(i = iimin; i<nx-1; i++){
       j = jrow - i;
       if(j<=0)break;
-
-#define VALIJK(i,j,k) ( ((i))*sd->nslicej*sd->nslicek + ((j))*sd->nslicek+ (k)    )
 
       n = VALIJK(i,j,-1);
       n2 = VALIJK(i+1,j-1,-1);
