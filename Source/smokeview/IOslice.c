@@ -5856,16 +5856,12 @@ void DrawVolSlice(const slicedata *sd){
 
 void DrawSliceFrame(){
   int ii;
-#ifdef pp_MULTISLICE
   int jjj, nslicemax, blend_mode;
-#endif
 
   for(ii=0;ii<nslice_loaded;ii++){
     slicedata *sd;
     int i;
-#ifdef pp_MULTISLICE
     meshdata *slicemesh;
-#endif
     int orien;
 
     i=slice_loaded_list[ii];
@@ -5896,7 +5892,6 @@ void DrawSliceFrame(){
     if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
 
     orien = 0;
-#ifdef pp_MULTISLICE
     blend_mode = 0;
     if(sd->volslice==1&&showall_3dslices==1){
       visx_all = 0;
@@ -5956,7 +5951,6 @@ void DrawSliceFrame(){
           iplotz_all = plotz_list[jjj];
         }
       }
-#endif
 
       if(vis_slice_contours==1&&sd->line_contours!=NULL){
         if(slice_contour_type==SLICE_LINE_CONTOUR){
@@ -6018,11 +6012,8 @@ void DrawSliceFrame(){
       default:
         ASSERT(FFALSE);
         break;
-#ifdef pp_MULTISLICE
       }
-#endif
     }
-#ifdef pp_MULTISLICE
     if(orien==1&&sd->slicetype==SLICE_NODE_CENTER){
       if(usetexturebar!=0){
         DrawVolAllSlicesTextureDiag(sd);
@@ -6036,7 +6027,6 @@ void DrawSliceFrame(){
     if(blend_mode==1){
       glBlendEquation(GL_FUNC_ADD);
     }
-#endif
   }
 }
 

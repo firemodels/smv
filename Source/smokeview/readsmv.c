@@ -9214,12 +9214,10 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
-#ifdef pp_MULTISLICE
     if(Match(buffer, "BLENDMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
     }
-#endif
     if(Match(buffer, "FIREPARAMS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %f %f %f %f %f",
@@ -12947,10 +12945,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", blocklocation);
   fprintf(fileout, "BEAM\n");
   fprintf(fileout, " %i %f %i %i %i %i\n", showbeam_as_line,beam_line_width,use_beamcolor,beam_color[0], beam_color[1], beam_color[2]);
-#ifdef pp_MULTISLICE
   fprintf(fileout, "BLENDMODE\n");
   fprintf(fileout, " %i %i %i\n", slices3d_max_blending, hrrpuv_max_blending,showall_3dslices);
-#endif
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");

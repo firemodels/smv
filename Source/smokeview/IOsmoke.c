@@ -4522,7 +4522,6 @@ void DrawSmokeFrame(void){
     int i;
 
     if(showvolrender==0){
-#ifdef pp_MULTISLICE
       int blend_mode;
 
       blend_mode = 0;
@@ -4530,7 +4529,6 @@ void DrawSmokeFrame(void){
         blend_mode = 1;
         glBlendEquation(GL_MAX);
       }
-#endif
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3ddata *smoke3di;
 
@@ -4550,11 +4548,9 @@ void DrawSmokeFrame(void){
         DrawSmoke3D(smoke3di);
 #endif
       }
-#ifdef pp_MULTISLICE
       if(blend_mode==1){
         glBlendEquation(GL_FUNC_ADD);
       }
-#endif
     }
     if(showvolrender==1){
 #ifdef pp_GPU
