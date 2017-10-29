@@ -1176,6 +1176,19 @@ void GetSmokeDir(float *mm){
   xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
   xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
 
+  for(j = 0;j<nmeshes;j++){
+    meshdata  *meshi;
+    float dx, dy, dz;
+    float *bm;
+
+    meshi = meshinfo+j;
+    bm = meshi->boxmiddle;
+    dx = meshi->boxmiddle[0]-xyzeyeorig[0];
+    dy = meshi->boxmiddle[1]-xyzeyeorig[1];
+    dz = meshi->boxmiddle[2]-xyzeyeorig[2];
+    meshi->eyedist = sqrt(dx*dx+dy*dy+dz*dz);
+  }
+
   for(j=0;j<nmeshes;j++){
     meshj = meshinfo + j;
 

@@ -2514,6 +2514,9 @@ void UpdateMeshCoords(void){
     meshi->dbox[0]=meshi->boxmax[0]-meshi->boxmin[0];
     meshi->dbox[1]=meshi->boxmax[1]-meshi->boxmin[1];
     meshi->dbox[2]=meshi->boxmax[2]-meshi->boxmin[2];
+    meshi->boxmiddle[0] = meshi->boxmin[0]+meshi->dbox[0]/2.0;
+    meshi->boxmiddle[1] = meshi->boxmin[1]+meshi->dbox[1]/2.0;
+    meshi->boxmiddle[2] = meshi->boxmin[2]+meshi->dbox[2]/2.0;
     meshi->boxeps[0]=0.5*meshi->dbox[0]/(float)ibar;
     meshi->boxeps[1]=0.5*meshi->dbox[1]/(float)jbar;
     meshi->boxeps[2]=0.5*meshi->dbox[2]/(float)kbar;
@@ -8864,6 +8867,12 @@ typedef struct {
   if(nsliceinfo>0){
     NewMemory((void **)&slice_loaded_list,nsliceinfo*sizeof(int));
   }
+
+  FREEMEMORY(slice_sorted_loaded_list);
+  if(nsliceinfo>0){
+    NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
+  }
+
   FREEMEMORY(patch_loaded_list);
   if(npatchinfo>0){
     NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));

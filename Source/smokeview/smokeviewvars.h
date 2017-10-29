@@ -1185,7 +1185,7 @@ SVEXTERN int reset_time_flag;
 SVEXTERN float SVDECL(velocity_range,0.0);
 SVEXTERN int niso_compressed;
 SVEXTERN int nslice_loaded, npatch_loaded, nvolsmoke_loaded;
-SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*patch_loaded_list,NULL);
+SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*slice_sorted_loaded_list,NULL),SVDECL(*patch_loaded_list,NULL);
 SVEXTERN char SVDECL(*fdsprefix,NULL), SVDECL(*fdsprefix2,NULL);
 SVEXTERN char SVDECL(*endian_filename,NULL);
 SVEXTERN char SVDECL(*target_filename,NULL);

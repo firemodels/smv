@@ -5044,7 +5044,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
 /* ------------------ DrawVolAllSlicesTextureDiag ------------------------ */
 
-void DrawVolAllSlicesTextureDiag(const slicedata *sd){
+void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   int i, j, k, n, n2;
   float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
@@ -5081,15 +5081,17 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd){
   glBegin(GL_TRIANGLES);
 
   if(visx_all==1){
-    int icol;
+    int icol, icol2;
     int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
 
-    for(icol = 1;icol<nx+ny-2;icol++){
+    for(icol2 = 1;icol2<nx+ny-2;icol2++){
       int iimin;
 
+      icol = icol2;
+      if(direction<0)icol = nx + ny - 2 - icol2;
       iimin = nx-icol-1;
       if(icol>=nx-1)iimin = 0;
       // icol + i - j = nx - 1
@@ -5152,16 +5154,18 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd){
     }
   }
   if(visy_all==1){
-    int jrow;
+    int jrow, jrow2;
     int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
 
-    for(jrow = 1;jrow<nx+ny-2;jrow++){
+    for(jrow2 = 1;jrow2<nx+ny-2;jrow2++){
       int iimin;
       int ijk;
 
+      jrow = jrow2;
+      if(direction<0)jrow = nx + ny - 2 - jrow2;
       iimin = 0;
       if(jrow>=ny)iimin = jrow-(ny-1);
       // i + j = jrow
@@ -5469,7 +5473,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 
 /* ------------------ DrawVolAllSlicesDiag ------------------------ */
 
-void DrawVolAllSlicesDiag(const slicedata *sd){
+void DrawVolAllSlicesDiag(const slicedata *sd, int direction){
   int i, j, k, n, n2;
   int i11, i31, i13, i33;
   float constval, x1, x3, yy1, y3, z1, z3;
@@ -5505,16 +5509,18 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
 
   if(use_transparency_data == 1)TransparentOn();
   if(visx_all == 1){
-    int icol;
+    int icol, icol2;
     int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
 
     glBegin(GL_TRIANGLES);
-    for(icol=1;icol<nx+ny-2;icol++){
+    for(icol2=1;icol2<nx+ny-2;icol2++){
       int iimin;
 
+      icol = icol2;
+      if(direction<0)icol = nx + ny - 2 - icol2;
       iimin = nx-icol - 1;
       if(icol>=nx-1)iimin = 0;
       // icol + i - j = nx - 1
@@ -5572,16 +5578,18 @@ void DrawVolAllSlicesDiag(const slicedata *sd){
     glEnd();
   }
   if(visy_all == 1){
-    int jrow;
+    int jrow, jrow2;
     int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
 
     glBegin(GL_TRIANGLES);
-    for(jrow=1;jrow<nx+ny-2;jrow++){
+    for(jrow2=1;jrow2<nx+ny-2;jrow2++){
       int iimin;
 
+      jrow = jrow2;
+      if(direction<0)jrow = nx + ny - 2 - jrow2;
       iimin = 0;
       if(jrow>=ny)iimin = jrow - (ny-1);
       // i + j = jrow
@@ -5852,19 +5860,48 @@ void DrawVolSlice(const slicedata *sd){
 
 }
 
+/* ------------------ CompareLoadedSliceList ------------------------ */
+
+int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
+  slicedata *slicei, *slicej;
+  meshdata *meshi, *meshj;
+
+  slicei = sliceinfo + *(int *)arg1;
+  slicej = sliceinfo + *(int *)arg2;
+  meshi = meshinfo+slicei->blocknumber;
+  meshj = meshinfo+slicej->blocknumber;
+  if(meshi->eyedist>meshj->eyedist)return -1;
+  if(meshi->eyedist<meshj->eyedist)return 1;
+  return 0;
+}
+
+/* ------------------ SortLoadedSliceList ------------------------ */
+
+void SortLoadedSliceList(void){
+  int i;
+
+  for(i=0;i<nslice_loaded;i++){
+    slice_sorted_loaded_list[i] = slice_loaded_list[i];
+  }
+  qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
+}
+
 /* ------------------ DrawSliceFrame ------------------------ */
 
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
 
+  SortLoadedSliceList();
+
   for(ii=0;ii<nslice_loaded;ii++){
     slicedata *sd;
     int i;
     meshdata *slicemesh;
-    int orien;
+    int orien, direction;
+    int jjjj;
 
-    i=slice_loaded_list[ii];
+    i=slice_sorted_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->type!=islicetype)continue;
     if(sd->display==0){
@@ -5892,6 +5929,7 @@ void DrawSliceFrame(){
     if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
 
     orien = 0;
+    direction = 1;
     blend_mode = 0;
     if(sd->volslice==1&&showall_3dslices==1){
       visx_all = 0;
@@ -5899,6 +5937,7 @@ void DrawSliceFrame(){
       visz_all = 0;
       slicemesh = meshinfo+sd->blocknumber;
      // printf("dir=%i\n", slicemesh->smokedir);
+      if(slicemesh->smokedir<0)direction = -1;
       switch (ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
         visy_all = 1;
@@ -5939,7 +5978,9 @@ void DrawSliceFrame(){
       blend_mode = 0;
       nslicemax = 1;
     }
-    for(jjj = 0;jjj<nslicemax;jjj++){
+    for(jjjj = 0;jjjj<nslicemax;jjjj++){
+      jjj = jjjj;
+      if(direction<0)jjj = nslicemax - 1 - jjjj;
       if(sd->volslice==1&&showall_3dslices==1){
         if(visx_all==1&&plotx_list!=NULL&&nplotx_list>0){
           iplotx_all = plotx_list[jjj];
@@ -6016,11 +6057,11 @@ void DrawSliceFrame(){
     }
     if(orien==1&&sd->slicetype==SLICE_NODE_CENTER){
       if(usetexturebar!=0){
-        DrawVolAllSlicesTextureDiag(sd);
+        DrawVolAllSlicesTextureDiag(sd,direction);
         SNIFF_ERRORS("after DrawVolAllSlicesTextureDiag");
       }
       else{
-        DrawVolAllSlicesDiag(sd);
+        DrawVolAllSlicesDiag(sd,direction);
         SNIFF_ERRORS("after DrawVolAllSlicesDiag");
       }
     }
