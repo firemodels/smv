@@ -20,18 +20,15 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-#ifdef pp_MULTISLICE
+SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
 SVEXTERN int SVDECL(hrrpuv_max_blending, 0);
-#endif
 SVEXTERN int SVDECL(update_opacity_map, 1);
 SVEXTERN unsigned char opacity_map[256];
-#ifdef pp_MULTISLICE
 SVEXTERN int SVDECL(nplotx_list,0), SVDECL(nploty_list,0), SVDECL(nplotz_list,0);
 SVEXTERN int SVDECL(*plotx_list, NULL);
 SVEXTERN int SVDECL(*ploty_list, NULL);
 SVEXTERN int SVDECL(*plotz_list, NULL);
-#endif
 SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
@@ -1188,7 +1185,7 @@ SVEXTERN int reset_time_flag;
 SVEXTERN float SVDECL(velocity_range,0.0);
 SVEXTERN int niso_compressed;
 SVEXTERN int nslice_loaded, npatch_loaded, nvolsmoke_loaded;
-SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*patch_loaded_list,NULL);
+SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*slice_sorted_loaded_list,NULL),SVDECL(*patch_loaded_list,NULL);
 SVEXTERN char SVDECL(*fdsprefix,NULL), SVDECL(*fdsprefix2,NULL);
 SVEXTERN char SVDECL(*endian_filename,NULL);
 SVEXTERN char SVDECL(*target_filename,NULL);

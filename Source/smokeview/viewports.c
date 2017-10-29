@@ -1208,11 +1208,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       }
 #endif
     }
-#ifdef pp_MULTISLICE
-    else if(showslice==1&&slices3d_max_blending==1){
+    else if(showslice==1&&showall_3dslices==1){
       GetSmokeDir(modelview_scratch);
     }
-#endif
     if(nface_transparent>0&&sort_transparent_faces==1)SortTransparentFaces(modelview_scratch);
     if(showiso==1)Update_Isotris(0);
     FREEMEMORY(geominfoptrs);

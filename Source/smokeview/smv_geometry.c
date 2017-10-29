@@ -298,7 +298,6 @@ void UpdatePlotxyzAll(void){
     nploty_all+=(meshi->jbar+1);
     nplotz_all+=(meshi->kbar+1);
   }
-#ifdef pp_MULTISLICE
   NewMemory((void **)&plotx_list, nplotx_all*sizeof(int));
   for(i=0;i<nplotx_all;i++){
     plotx_list[i] = 0;
@@ -316,7 +315,6 @@ void UpdatePlotxyzAll(void){
     plotz_list[i] = 0;
   }
   nplotz_list = 0;
-#endif
 
   NewMemory((void **)&plotx_all,nplotx_all*sizeof(float));
   NewMemory((void **)&ploty_all,nploty_all*sizeof(float));
@@ -429,7 +427,6 @@ void UpdatePlotxyzAll(void){
     iplotz_all = ival;
   }
 
-#ifdef pp_MULTISLICE
   nplotx_list = 0;
   for(i=0;i<nploty_all;i++){
     plotx_list[i] = i;
@@ -447,7 +444,6 @@ void UpdatePlotxyzAll(void){
     plotz_list[i] = i;
     nplotz_list++;
   }
-#endif
 }
 
 #define MESHEPS 0.001
@@ -1179,6 +1175,17 @@ void GetSmokeDir(float *mm){
   xyzeyeorig[0] = -DOT3(mm+0,mm+12)/mscale[0];
   xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
   xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
+
+  for(j = 0;j<nmeshes;j++){
+    meshdata  *meshi;
+    float dx, dy, dz;
+
+    meshi = meshinfo+j;
+    dx = meshi->boxmiddle[0]-xyzeyeorig[0];
+    dy = meshi->boxmiddle[1]-xyzeyeorig[1];
+    dz = meshi->boxmiddle[2]-xyzeyeorig[2];
+    meshi->eyedist = sqrt(dx*dx+dy*dy+dz*dz);
+  }
 
   for(j=0;j<nmeshes;j++){
     meshj = meshinfo + j;
