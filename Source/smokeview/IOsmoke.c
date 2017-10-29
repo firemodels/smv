@@ -2565,13 +2565,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   meshdata *meshi;
 
-  if(show_all_3dslices){
-    glBlendEquation(GL_MAX);
-  }
-  else{
-    glBlendEquation(GL_FUNC_ADD);
-  }
-
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
@@ -4330,7 +4323,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   }
   TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
-  //  PRINTF("majorcull=%i minorcull=%i\n",majorcull,minorcull);
 }
 
 /* ------------------ SetPixelCountOrthog ------------------------ */
@@ -4530,6 +4522,13 @@ void DrawSmokeFrame(void){
     int i;
 
     if(showvolrender==0){
+      int blend_mode;
+
+      blend_mode = 0;
+      if(usegpu==0&&hrrpuv_max_blending==1){
+        blend_mode = 1;
+        glBlendEquation(GL_MAX);
+      }
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3ddata *smoke3di;
 
@@ -4548,6 +4547,9 @@ void DrawSmokeFrame(void){
 #else
         DrawSmoke3D(smoke3di);
 #endif
+      }
+      if(blend_mode==1){
+        glBlendEquation(GL_FUNC_ADD);
       }
     }
     if(showvolrender==1){

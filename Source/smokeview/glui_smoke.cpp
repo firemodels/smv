@@ -536,6 +536,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
 
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3d_CB);
   SPINNER_smoke3d_fire_halfdepth2->set_float_limits(0.0, 20.0);
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _d("max blending"), &hrrpuv_max_blending);
 
   PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"",GLUI_PANEL_NONE);
 

@@ -26,9 +26,12 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64_i17u4
+set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_17u4
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
-set openmpi_version=2.1.1
+
+:: set to INTEL if using Intel MPI library
+set linux_mpi_version=INTEL
+set osx_mpi_version=3.0.0
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central

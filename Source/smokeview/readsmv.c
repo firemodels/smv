@@ -2514,6 +2514,9 @@ void UpdateMeshCoords(void){
     meshi->dbox[0]=meshi->boxmax[0]-meshi->boxmin[0];
     meshi->dbox[1]=meshi->boxmax[1]-meshi->boxmin[1];
     meshi->dbox[2]=meshi->boxmax[2]-meshi->boxmin[2];
+    meshi->boxmiddle[0] = meshi->boxmin[0]+meshi->dbox[0]/2.0;
+    meshi->boxmiddle[1] = meshi->boxmin[1]+meshi->dbox[1]/2.0;
+    meshi->boxmiddle[2] = meshi->boxmin[2]+meshi->dbox[2]/2.0;
     meshi->boxeps[0]=0.5*meshi->dbox[0]/(float)ibar;
     meshi->boxeps[1]=0.5*meshi->dbox[1]/(float)jbar;
     meshi->boxeps[2]=0.5*meshi->dbox[2]/(float)kbar;
@@ -8864,6 +8867,12 @@ typedef struct {
   if(nsliceinfo>0){
     NewMemory((void **)&slice_loaded_list,nsliceinfo*sizeof(int));
   }
+
+  FREEMEMORY(slice_sorted_loaded_list);
+  if(nsliceinfo>0){
+    NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
+  }
+
   FREEMEMORY(patch_loaded_list);
   if(npatchinfo>0){
     NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));
@@ -9214,6 +9223,10 @@ int ReadINI2(char *inifile, int localfile){
       continue;
     }
 #endif
+    if(Match(buffer, "BLENDMODE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
+    }
     if(Match(buffer, "FIREPARAMS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %f %f %f %f %f",
@@ -12941,6 +12954,8 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout, " %i\n", blocklocation);
   fprintf(fileout, "BEAM\n");
   fprintf(fileout, " %i %f %i %i %i %i\n", showbeam_as_line,beam_line_width,use_beamcolor,beam_color[0], beam_color[1], beam_color[2]);
+  fprintf(fileout, "BLENDMODE\n");
+  fprintf(fileout, " %i %i %i\n", slices3d_max_blending, hrrpuv_max_blending,showall_3dslices);
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");
