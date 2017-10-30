@@ -5047,14 +5047,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
 void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   int i, j, k, n, n2;
   float r11, r31, r13, r33;
-  float constval, x1, x3, yy1, y3, z1, z3;
+  float x1, x3, yy1, y3, z1, z3;
 
   float *xplt, *yplt, *zplt;
   int ibar, jbar;
   int nx, ny, nxy;
   char *c_iblank_x, *c_iblank_y;
   char *iblank_embed;
-  int plotx, ploty;
 
   meshdata *meshi;
 
@@ -5476,10 +5475,9 @@ void DrawVolSliceTexture(const slicedata *sd){
 void DrawVolAllSlicesDiag(const slicedata *sd, int direction){
   int i, j, k, n, n2;
   int i11, i31, i13, i33;
-  float constval, x1, x3, yy1, y3, z1, z3;
+  float x1, x3, yy1, y3, z1, z3;
 
   float *xplt, *yplt, *zplt;
-  int plotx, ploty;
   int ibar, jbar;
   int nx, ny, nxy;
   char *iblank_x, *iblank_y;
