@@ -5889,6 +5889,8 @@ void SortLoadedSliceList(void){
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
+  int first_file = 1;
+  int smokedir;
 
   SortLoadedSliceList();
 
@@ -5934,9 +5936,13 @@ void DrawSliceFrame(){
       visy_all = 0;
       visz_all = 0;
       slicemesh = meshinfo+sd->blocknumber;
+      if(first_file == 1){
+        smokedir = slicemesh->smokedir;
+        first_file = 0;
+      }
      // printf("dir=%i\n", slicemesh->smokedir);
-      if(slicemesh->smokedir<0)direction = -1;
-      switch (ABS(slicemesh->smokedir)){
+      if(smokedir<0)direction = -1;
+      switch (ABS(smokedir)){
       case 4:  // -45 slope slices
         visy_all = 1;
         nslicemax = nploty_list;
