@@ -5881,7 +5881,9 @@ void SortLoadedSliceList(void){
   for(i=0;i<nslice_loaded;i++){
     slice_sorted_loaded_list[i] = slice_loaded_list[i];
   }
-  qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
+  if(sort_slices==1){
+    qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
+  }
 }
 
 /* ------------------ DrawSliceFrame ------------------------ */
@@ -5936,6 +5938,14 @@ void DrawSliceFrame(){
       visy_all = 0;
       visz_all = 0;
       slicemesh = meshinfo+sd->blocknumber;
+      if(show_sort_labels==1){
+        float *mid;
+        char label[100];
+
+        mid = slicemesh->boxmiddle_scaled;
+        sprintf(label, "%i %f", ii,slicemesh->eyedist);
+        Output3Text(foregroundcolor, mid[0], mid[1], mid[2], label);
+      }
       if(first_file == 1){
         smokedir = slicemesh->smokedir;
         first_file = 0;

@@ -2095,6 +2095,10 @@ extern "C" void glui_bounds_setup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Output data to file"),&output_slicedata);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show all 3d slices"), &showall_3dslices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("max blending"), &slices3d_max_blending);
+#ifdef pp_SMOKETEST
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("sort slices"), &sort_slices);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show sorted slice labels"), &show_sort_labels);
+#endif
     Slice_CB(FILETYPEINDEX);
   }
 

@@ -546,6 +546,7 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_hrrpuv_cutoff=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv,_d("color as fire >"),GLUI_SPINNER_FLOAT,&global_hrrpuv_cutoff,GLOBAL_FIRE_CUTOFF,Smoke3d_CB);
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
+#ifdef pp_SMOKETEST
   ROLLOUT_slicehrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _d("Opacity correction - test"),false);
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicehrrpuv, "Implement", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3d_CB);
   SPINNER_slicehrrpuv_upper = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% upper opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_upper, UPDATE_FACTOROFFSETS, Smoke3d_CB);
@@ -555,9 +556,9 @@ extern "C" void glui_3dsmoke_setup(int main_window){
   SPINNER_slicehrrpuv_cut1 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("lower/middle boundary"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cut1, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   SPINNER_slicehrrpuv_cut1->set_float_limits(0.0, 1.0);
   SPINNER_slicehrrpuv_lower = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% lower opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_lower, UPDATE_FACTOROFFSETS, Smoke3d_CB);
-
   SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("HRRPUV offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3d_CB);
   Smoke3d_CB(UPDATE_HRRPUV_CONTROLS);
+#endif
 
   {
     char label[256];
@@ -845,23 +846,29 @@ extern "C" void Smoke3d_CB(int var){
   float temp_min, temp_max;
 
   case UPDATE_HRRPUV_CONTROLS:
-    if(smoke3d_testsmoke==0){
-      SPINNER_slicehrrpuv_upper->disable();
-      SPINNER_slicehrrpuv_middle->disable();
-      SPINNER_slicehrrpuv_lower->disable();
-      SPINNER_slicehrrpuv_cut1->disable();
-      SPINNER_slicehrrpuv_cut2->disable();
-      SPINNER_hrrpuvoffset->disable();
+    if(
+      SPINNER_slicehrrpuv_upper != NULL&&
+      SPINNER_slicehrrpuv_middle != NULL&&
+      SPINNER_slicehrrpuv_lower != NULL&&
+      SPINNER_slicehrrpuv_cut1 != NULL&&
+      SPINNER_slicehrrpuv_cut2 != NULL){
+      if(smoke3d_testsmoke == 0){
+        SPINNER_slicehrrpuv_upper->disable();
+        SPINNER_slicehrrpuv_middle->disable();
+        SPINNER_slicehrrpuv_lower->disable();
+        SPINNER_slicehrrpuv_cut1->disable();
+        SPINNER_slicehrrpuv_cut2->disable();
+        SPINNER_hrrpuvoffset->disable();
+      }
+      else{
+        if(SPINNER_slicehrrpuv_upper != NULL)SPINNER_slicehrrpuv_upper->enable();
+        SPINNER_slicehrrpuv_middle->enable();
+        SPINNER_slicehrrpuv_lower->enable();
+        SPINNER_slicehrrpuv_cut1->enable();
+        SPINNER_slicehrrpuv_cut2->enable();
+        SPINNER_hrrpuvoffset->enable();
+      }
     }
-    else{
-      SPINNER_slicehrrpuv_upper->enable();
-      SPINNER_slicehrrpuv_middle->enable();
-      SPINNER_slicehrrpuv_lower->enable();
-      SPINNER_slicehrrpuv_cut1->enable();
-      SPINNER_slicehrrpuv_cut2->enable();
-      SPINNER_hrrpuvoffset->enable();
-    }
-
   break;
   case UPDATE_FACTOROFFSETS:
     for(i = 0;i<nmeshes;i++){
