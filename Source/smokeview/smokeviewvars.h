@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
 SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
 SVEXTERN int SVDECL(hrrpuv_max_blending, 0);

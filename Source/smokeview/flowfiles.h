@@ -617,7 +617,7 @@ typedef struct _meshdata {
   int inside;
   float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], eyedist;
   float slice_min[3], slice_max[3];
-  float boxmin_scaled[3], boxmax_scaled[3];
+  float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
   float *zcell;
   float xyz_bar0[3], xyz_bar[3];
   float xcen, ycen, zcen;

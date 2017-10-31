@@ -2525,6 +2525,7 @@ void UpdateMeshCoords(void){
     meshi->dcell3[2] = zplt[1]-zplt[0];
     NORMALIZE_XYZ(meshi->boxmin_scaled,meshi->boxmin);
     NORMALIZE_XYZ(meshi->boxmax_scaled,meshi->boxmax);
+    NORMALIZE_XYZ(meshi->boxmiddle_scaled, meshi->boxmiddle);
     meshi->x0 = xplt[0];
     meshi->x1 = xplt[ibar];
     meshi->y0 = yplt[0];
