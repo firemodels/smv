@@ -73,6 +73,7 @@
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS
 //#define pp_GPUDEPTH
+#define pp_SMOKETEST
 #endif
 
 //*** options: for debugging
