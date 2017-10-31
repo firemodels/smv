@@ -4,7 +4,7 @@
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
 &MULT ID='mesh array', DX=0.8,DY=0.8,DZ=0.8, I_UPPER=1,J_UPPER=1,K_UPPER=3 /
-&MESH IJK=16,16,16, XB=0.0,0.8,0.0,0.8,0.0,0.8, MULT_ID='mesh array' /
+&MESH IJK=64,64,64, XB=0.0,0.8,0.0,0.8,0.0,0.8, MULT_ID='mesh array' /
 
 &MISC IBLANK_SMV=.TRUE.,HRRPUV_MAX_SMV=10000.0 /
 
