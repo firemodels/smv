@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
 SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
 SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
@@ -1293,6 +1294,11 @@ SVEXTERN float SVDECL(*global_times,NULL),cputimes[20];
 SVEXTERN int cpuframe;
 
 SVEXTERN float xyzeyeorig[3],xeyedir[3], yeyedir[3], zeyedir[3];
+//#ifdef INMAIN
+//  SVEXTERN float eyzeyeorig_OLD[3]={-1.000000, -1.000000, -1.000000};
+// #else
+//  SVEXTERN float eyzeyeorig_OLD[3];
+//#endif
 SVEXTERN int adjustalphaflag;
 SVEXTERN int SVDECL(colorband,5);
 SVEXTERN int SVDECL(have_extreme_mindata,0), SVDECL(have_extreme_maxdata,0);

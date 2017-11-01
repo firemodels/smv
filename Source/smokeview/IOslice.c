@@ -5699,7 +5699,9 @@ void DrawVolSlice(const slicedata *sd){
   if(use_transparency_data == 1)TransparentOn();
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
+    float *opacity_adjustments;
 
+    opacity_adjustments = meshi->opacity_adjustments;
     constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
     glBegin(GL_TRIANGLES);
     maxj = MAX(sd->js1 + 1, sd->js2);
@@ -5711,6 +5713,10 @@ void DrawVolSlice(const slicedata *sd){
       y3 = yplt[j + 1];
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<sd->ks2; k++){
+        float *rgb11, *rgb13, *rgb33, *rgb31;
+        float  alpha11, alpha13, alpha33, alpha31;
+        int ijk;
+
         n++; n2++;
         if(show_slice_in_obst == ONLY_IN_SOLID && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] == GASGAS)continue;
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_x != NULL&&iblank_x[IJK(plotx, j, k)] != GASGAS)continue;
@@ -5723,25 +5729,60 @@ void DrawVolSlice(const slicedata *sd){
         z3 = zplt[k + 1];
         /*
         n+1 (y1,z3)     n2+1 (y3,z3)
-        n (y1,z1)     n2   (y3,z1)
+        n   (y1,z1)     n2   (y3,z1)
         */
-        if(ABS(i11 - i33)<ABS(i13 - i31)){
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
 
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+        rgb11 = rgb_ptr + i11;
+        rgb13 = rgb_ptr + i13;
+        rgb33 = rgb_ptr + i33;
+        rgb31 = rgb_ptr + i31;
+        if(slice_opacity_adjustment==1){
+          float opacity;
+#define POW 0.5
+#define OPMIN 0.1
+          ijk = IJK(plotx, j, k);
+          opacity = CLAMP(transparent_level*pow((float)i11/1024.0,POW),0.0,1.0);
+          if(opacity<OPMIN)opacity = 0.0;
+          alpha11 = 1.0-pow(1.0-opacity,opacity_adjustments[ijk]);
+
+          ijk = IJK(plotx,j+1,k);
+          opacity = CLAMP(transparent_level*pow((float)i13/1024.0,POW),0.0,1.0);
+          if(opacity<OPMIN)opacity = 0.0;
+          alpha13 = 1.0-pow(1.0-opacity,opacity_adjustments[ijk]);
+
+          ijk = IJK(plotx,j+1,k+1);
+          opacity = CLAMP(transparent_level*pow((float)i33/1024.0,POW),0.0,1.0);
+          if(opacity<OPMIN)opacity = 0.0;
+          alpha33 = 1.0-pow(1.0-opacity,opacity_adjustments[ijk]);
+
+          ijk = IJK(plotx,j,k+1);
+          opacity = CLAMP(transparent_level*pow((float)i31/1024.0,POW),0.0,1.0);
+          if(opacity<OPMIN)opacity = 0.0;
+          alpha31 = 1.0-pow(1.0-opacity,opacity_adjustments[ijk]);
         }
         else{
-          glColor4fv(&rgb_ptr[i11]); glVertex3f(constval, yy1, z1);
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+          alpha11 = rgb11[3];
+          alpha13 = rgb13[3];
+          alpha33 = rgb33[3];
+          alpha31 = rgb31[3];
+        }
+        if(ABS(i11 - i33)<ABS(i13 - i31)){
+          glColor4f(rgb11[0],rgb11[1],rgb11[2],alpha11); glVertex3f(constval, yy1, z1);
+          glColor4f(rgb31[0],rgb31[1],rgb31[2],alpha31); glVertex3f(constval, y3, z1);
+          glColor4f(rgb33[0],rgb33[1],rgb33[2],alpha33); glVertex3f(constval, y3, z3);
 
-          glColor4fv(&rgb_ptr[i31]); glVertex3f(constval, y3, z1);
-          glColor4fv(&rgb_ptr[i33]); glVertex3f(constval, y3, z3);
-          glColor4fv(&rgb_ptr[i13]); glVertex3f(constval, yy1, z3);
+          glColor4f(rgb11[0],rgb11[1],rgb11[2],alpha11); glVertex3f(constval, yy1, z1);
+          glColor4f(rgb33[0],rgb33[1],rgb33[2],alpha33); glVertex3f(constval, y3, z3);
+          glColor4f(rgb13[0],rgb13[1],rgb13[2],alpha13); glVertex3f(constval, yy1, z3);
+        }
+        else{
+          glColor4f(rgb11[0],rgb11[1],rgb11[2],alpha11); glVertex3f(constval, yy1, z1);
+          glColor4f(rgb31[0],rgb31[1],rgb31[2],alpha31); glVertex3f(constval, y3, z1);
+          glColor4f(rgb13[0],rgb13[1],rgb13[2],alpha13); glVertex3f(constval, yy1, z3);
+
+          glColor4f(rgb31[0],rgb31[1],rgb31[2],alpha31); glVertex3f(constval, y3, z1);
+          glColor4f(rgb33[0],rgb33[1],rgb33[2],alpha33); glVertex3f(constval, y3, z3);
+          glColor4f(rgb13[0],rgb13[1],rgb13[2],alpha13); glVertex3f(constval, yy1, z3);
         }
       }
     }
@@ -5858,6 +5899,49 @@ void DrawVolSlice(const slicedata *sd){
 
 }
 
+/* ------------------ ComputeOpacityCorrections ------------------------ */
+
+void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
+  int k, nx, ny, nz;
+  float *opacity_adjustments;
+  float *xplt, *yplt, *zplt;
+
+  nx = meshi->ibar+1;
+  ny = meshi->jbar+1;
+  nz = meshi->kbar+1;
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+  opacity_adjustments = meshi->opacity_adjustments;
+  if(opacity_adjustments==NULL){
+    NewMemory((void **)&opacity_adjustments, nx*ny*nz*sizeof(float));
+    meshi->opacity_adjustments = opacity_adjustments;
+  }
+  for(k = 0;k<nz;k++){
+    int j;
+    float xyz[3];
+
+    xyz[2] = zplt[k]-xyz0[2];
+
+    for(j = 0;j<ny;j++){
+      int i;
+
+      xyz[1] = yplt[j]-xyz0[1];
+
+      for(i = 0;i<nx;i++){
+        float dist, xyzproj;
+
+        xyz[0] = xplt[i]-xyz0[0];
+
+        dist = NORM3(xyz);
+        xyzproj = DOT3(xyz, normal);
+        // alphahat = 1.0 - (1.0-alpha)^(xhat/x)
+        *opacity_adjustments++ = dist/ABS(xyzproj);
+      }
+    }
+  }
+}
+
 /* ------------------ CompareLoadedSliceList ------------------------ */
 
 int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
@@ -5891,8 +5975,6 @@ void SortLoadedSliceList(void){
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
-  int first_file = 1;
-  int smokedir;
 
   SortLoadedSliceList();
 
@@ -5934,9 +6016,14 @@ void DrawSliceFrame(){
     direction = 1;
     blend_mode = 0;
     if(sd->volslice==1&&showall_3dslices==1){
+      float slice_normal[3];
+
       visx_all = 0;
       visy_all = 0;
       visz_all = 0;
+      slice_normal[0] = 0.0;
+      slice_normal[1] = 0.0;
+      slice_normal[2] = 0.0;
       slicemesh = meshinfo+sd->blocknumber;
       if(show_sort_labels==1){
         float *mid;
@@ -5946,22 +6033,21 @@ void DrawSliceFrame(){
         sprintf(label, "%i %f", ii,slicemesh->eyedist);
         Output3Text(foregroundcolor, mid[0], mid[1], mid[2], label);
       }
-      if(first_file == 1){
-        smokedir = slicemesh->smokedir;
-        first_file = 0;
-      }
-     // printf("dir=%i\n", slicemesh->smokedir);
-      if(smokedir<0)direction = -1;
-      switch (ABS(smokedir)){
+      if(slicemesh->smokedir<0)direction = -1;
+      switch (ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
         visy_all = 1;
         nslicemax = nploty_list;
         orien = 1;
+        slice_normal[0] = direction*slicemesh->dy;
+        slice_normal[1] = direction*slicemesh->dx;
         break;
       case 5:  // 45 slope slices
         visx_all = 1;
         nslicemax = nplotx_list;
         orien = 1;
+        slice_normal[0] = -direction*slicemesh->dy;
+        slice_normal[1] = direction*slicemesh->dx;
         break;
         // x direction
       case 1:
@@ -5969,6 +6055,7 @@ void DrawSliceFrame(){
       case 9:
       visx_all = 1;
       nslicemax = nplotx_list;
+      slice_normal[0] = direction;
       break;
       // y direction
       case 2:
@@ -5976,10 +6063,12 @@ void DrawSliceFrame(){
       case 7:
       visy_all = 1;
       nslicemax = nploty_list;
+      slice_normal[1] = direction;
       break;
       case 3:
       visz_all = 1;
       nslicemax = nplotz_list;
+      slice_normal[2] = direction;
       break;
       }
       nslicemax = MAX(nslicemax, 1);
@@ -5987,6 +6076,7 @@ void DrawSliceFrame(){
         blend_mode=1;
         glBlendEquation(GL_MAX);
       }
+      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, xyzeyeorig, slice_normal);
     }
     else{
       blend_mode = 0;
