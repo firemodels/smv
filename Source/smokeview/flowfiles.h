@@ -635,6 +635,7 @@ typedef struct _meshdata {
   float *f_iblank_cell0;
   char *c_iblank_embed0;
   float *block_zdist0;
+  float *opacity_adjustments;
 
   char *c_iblank_node, *c_iblank_cell, *c_iblank_x, *c_iblank_y, *c_iblank_z;
   float *f_iblank_cell;
