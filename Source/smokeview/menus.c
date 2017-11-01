@@ -1260,9 +1260,12 @@ void DialogMenu(int value){
   case DIALOG_DISPLAY:
     ShowGluiDisplay(value);
     break;
-  case DIALOG_TOUR:
-   ShowGluiTour();
-   break;
+  case DIALOG_TOUR_SHOW:
+    ShowGluiTour();
+    break;
+  case DIALOG_TOUR_HIDE:
+    HideGluiTour();
+    break;
   case DIALOG_CLIP:
     ShowGluiClip();
     break;
@@ -2848,11 +2851,11 @@ void TourMenu(int value){
   glutPostRedisplay();
   switch(value){
   case MENU_TOUR_SETTINGS:
-    DialogMenu(DIALOG_TOUR);
+    DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_NEW:
     add_new_tour();
-    DialogMenu(DIALOG_TOUR);
+    DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_CLEARALL:
     for(i=0;i<ntourinfo;i++){  // clear all tours
@@ -2885,7 +2888,7 @@ void TourMenu(int value){
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADTOUR\n");
     }
-    DialogMenu(DIALOG_TOUR);
+    DialogMenu(DIALOG_TOUR_HIDE);
     break;
   case MENU_TOUR_SHOWDIALOG:
     edittour=1-edittour;
@@ -7885,7 +7888,8 @@ updatemenu=0;
   /* --------------------------------viewdialog menu -------------------------- */
 
   CREATEMENU(viewdialogmenu, DialogMenu);
-  glutAddMenuEntry(_("Create/edit tours...  ALT t"), DIALOG_TOUR);
+  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours...  ALT t"), DIALOG_TOUR_HIDE);
+  if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours...  ALT t"), DIALOG_TOUR_SHOW);
   glutAddMenuEntry(_("Edit colorbar...  ALT C"), DIALOG_COLORBAR);
   if(isZoneFireModel==0){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
