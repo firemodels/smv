@@ -3519,13 +3519,15 @@ void angleaxis2quat(float angle, float *axis, float *quat){
 /* ------------------ quat2rot------------------ */
 
 void quat2rot(float quat[4], float rot[16]){
-  float w, x, y, z, sum;
+  float w=0.0, x=0.0, y=0.0, z=0.0, sum;
 
   sum = sqrt(quat[0] * quat[0] + quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]);
-  w = quat[0] / sum;
-  x = quat[1] / sum;
-  y = quat[2] / sum;
-  z = quat[3] / sum;
+  if(sum!=0.0){
+    w = quat[0]/sum;
+    x = quat[1]/sum;
+    y = quat[2]/sum;
+    z = quat[3]/sum;
+  }
 
   rot[0] = 1.0 - 2.0*y*y - 2.0*z*z;
   rot[1] = 2.0*x*y + 2.0*w*z;
