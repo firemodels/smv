@@ -4342,7 +4342,7 @@ int ReadSMV(char *file, char *file2){
    NewMemory((void **)&fds_githash,7+1);
    strcpy(fds_githash,"unknown");
  }
- if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = nisoinfo / nmeshes;
+ if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
  if(ncsvinfo > 0){
    NewMemory((void **)&csvinfo,ncsvinfo*sizeof(csvdata));
    ncsvinfo=0;
