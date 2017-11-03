@@ -1968,7 +1968,12 @@ void keyboard(unsigned char key, int flag){
     case 't':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-        DialogMenu(DIALOG_TOUR); // tour dialog
+        if(showtour_dialog==1){
+          DialogMenu(DIALOG_TOUR_HIDE);
+        }
+        else{
+          DialogMenu(DIALOG_TOUR_SHOW);
+        }
         break;
       case GLUT_ACTIVE_CTRL:
       default:

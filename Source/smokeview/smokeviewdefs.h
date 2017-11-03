@@ -783,7 +783,8 @@ void _Sniff_Errors(char *whereat);
 #define DIALOG_SHOOTER 27
 #define DIALOG_SMOKEZIP 24
 #define DIALOG_STEREO 19
-#define DIALOG_TOUR 21
+#define DIALOG_TOUR_SHOW 21
+#define DIALOG_TOUR_HIDE 44
 #define DIALOG_TRAINER 25
 #define DIALOG_WUI 26
 #define DIALOG_SHOWFILES 33
