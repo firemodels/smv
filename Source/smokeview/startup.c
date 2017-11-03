@@ -1866,14 +1866,12 @@ void InitVars(void){
   show_path_knots=0;
   keyframe_snap=0;
   tourviewtype=0;
-  tourlocus_type=0;
   tourrad_avatar=0.1;
   dirtycircletour=0;
   view_tstart=0.0, view_tstop=100.0;
   tour_constant_vel=0;
   tour_bias=0.0,tour_continuity=0.0;
   view_ntimes=1000;
-  glui_avatar_index=0;
   iavatar_evac=0;
   viewtourfrompath=0,viewalltours=0,viewanytours=0,edittour=0;
   tour_usecurrent=0;
