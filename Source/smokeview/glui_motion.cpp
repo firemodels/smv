@@ -55,6 +55,7 @@
 #define WINDOW_COLORS 33
 #define COLOR_FLIP 34
 #define CLIP_SHOW_ROTATE 35
+#define QUICKTIME_COMPATIBILITY 40
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -185,6 +186,7 @@ GLUI_RadioGroup *RADIO_render_type=NULL;
 GLUI_RadioGroup *RADIO_render_label=NULL;
 GLUI_RadioGroup *RADIO_movie_type = NULL;
 
+GLUI_RadioButton *RADIOBUTTON_movie_type[3];
 GLUI_RadioButton *RADIOBUTTON_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_1c=NULL;
@@ -1222,12 +1224,12 @@ extern "C" void gluiMotionSetup(int main_window){
     EDIT_movie_name->set_w(200);
     PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "movie type:", true);
     RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_TYPE, Render_CB);
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
-#ifdef pp_QUICKTIME
-    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility);
-#endif
+    RADIOBUTTON_movie_type[0]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
+    RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
+    RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
+    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility,QUICKTIME_COMPATIBILITY,Render_CB);
+    Render_CB(QUICKTIME_COMPATIBILITY);
+    Render_CB(MOVIE_TYPE);
     SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
@@ -1995,6 +1997,18 @@ void Render_CB(int var){
 
   updatemenu=1;
   switch(var){
+    case QUICKTIME_COMPATIBILITY:
+    if(quicktime_compatibility==1){
+      RADIO_movie_type->set_int_val(MP4);
+      Render_CB(MOVIE_TYPE);
+      RADIOBUTTON_movie_type[0]->disable();
+      RADIOBUTTON_movie_type[2]->disable();
+    }
+    else{
+      RADIOBUTTON_movie_type[0]->enable();
+      RADIOBUTTON_movie_type[2]->enable();
+    }
+    break;
     case RENDER_360CB:
       if(render_360 == 1){
         render_mode = RENDER_360;
@@ -2025,6 +2039,12 @@ void Render_CB(int var){
     case RENDER_TYPE:
       break;
     case MOVIE_TYPE:
+      if(quicktime_compatibility==1){
+        if(movie_filetype!=MP4){
+          movie_filetype=MP4;
+          RADIO_movie_type->set_int_val(MP4);
+        }
+      }
       if(movie_filetype==WMV){
         strcpy(movie_ext, ".wmv");
       }

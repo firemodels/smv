@@ -52,7 +52,11 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
+#ifdef pp_OSX
+SVEXTERN int SVDECL(quicktime_compatibility, 1);
+#else
 SVEXTERN int SVDECL(quicktime_compatibility, 0);
+#endif
 SVEXTERN float startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
 SVEXTERN int SVDECL(show_patch_cutcell_polygon, 0);
