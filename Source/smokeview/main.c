@@ -157,9 +157,6 @@ void Usage(char *prog,int option){
 #ifdef pp_PARTTEST
     strcat(label, ", pp_PARTTEST");
 #endif
-#ifdef pp_QUICKTIME
-    strcat(label, ", pp_QUICKTIME");
-#endif
 #ifdef pp_READBUFFER
     strcat(label, ", pp_READBUFFER");
 #endif

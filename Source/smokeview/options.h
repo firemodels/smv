@@ -61,7 +61,6 @@
 //*** options: Mac
 
 #ifdef pp_OSX
-#define pp_QUICKTIME    // add option to make .avi files compatible with quicktime
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif

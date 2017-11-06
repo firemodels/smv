@@ -55,6 +55,7 @@
 #define WINDOW_COLORS 33
 #define COLOR_FLIP 34
 #define CLIP_SHOW_ROTATE 35
+#define QUICKTIME_COMPATIBILITY 40
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -63,7 +64,7 @@
 #define RENDER_STOP 4
 #define RENDER_LABEL 5
 #define RENDER_MULTIPLIER 6
-#define MOVIE_TYPE 7
+#define MOVIE_FILETYPE 7
 
 #define SLICE_ROLLOUT 0
 #define VIEWPOINTS_ROLLOUT 1
@@ -185,6 +186,7 @@ GLUI_RadioGroup *RADIO_render_type=NULL;
 GLUI_RadioGroup *RADIO_render_label=NULL;
 GLUI_RadioGroup *RADIO_movie_type = NULL;
 
+GLUI_RadioButton *RADIOBUTTON_movie_type[4];
 GLUI_RadioButton *RADIOBUTTON_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_1c=NULL;
@@ -1221,13 +1223,14 @@ extern "C" void gluiMotionSetup(int main_window){
     EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, Render_CB);
     EDIT_movie_name->set_w(200);
     PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "movie type:", true);
-    RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_TYPE, Render_CB);
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
-    glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
-#ifdef pp_QUICKTIME
-    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility);
-#endif
+    RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_FILETYPE, Render_CB);
+    RADIOBUTTON_movie_type[0]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
+    RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
+    RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
+    RADIOBUTTON_movie_type[3]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mov");
+    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility,QUICKTIME_COMPATIBILITY,Render_CB);
+    Render_CB(QUICKTIME_COMPATIBILITY);
+    Render_CB(MOVIE_FILETYPE);
     SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
@@ -1995,6 +1998,35 @@ void Render_CB(int var){
 
   updatemenu=1;
   switch(var){
+    case QUICKTIME_COMPATIBILITY:
+    {
+      int call_movie_filetype=0;
+
+      if(quicktime_compatibility==1){
+        RADIOBUTTON_movie_type[AVI]->disable();
+        RADIOBUTTON_movie_type[MP4]->enable();
+        RADIOBUTTON_movie_type[WMV]->disable();
+        RADIOBUTTON_movie_type[MOV]->enable();
+        if(movie_filetype==AVI||movie_filetype==WMV){
+          call_movie_filetype = 1;
+          movie_filetype=MP4;
+          RADIO_movie_type->set_int_val(movie_filetype);
+        }
+      }
+      else{
+        RADIOBUTTON_movie_type[AVI]->enable();
+        RADIOBUTTON_movie_type[MP4]->enable();
+        RADIOBUTTON_movie_type[WMV]->enable();
+        RADIOBUTTON_movie_type[MOV]->disable();
+        if(movie_filetype==MOV){
+          call_movie_filetype = 1;
+          movie_filetype=AVI;
+          RADIO_movie_type->set_int_val(movie_filetype);
+        }
+      }
+      if(call_movie_filetype==1)Render_CB(MOVIE_FILETYPE);
+    }
+    break;
     case RENDER_360CB:
       if(render_360 == 1){
         render_mode = RENDER_360;
@@ -2024,15 +2056,23 @@ void Render_CB(int var){
       break;
     case RENDER_TYPE:
       break;
-    case MOVIE_TYPE:
-      if(movie_filetype==WMV){
-        strcpy(movie_ext, ".wmv");
-      }
-      else if(movie_filetype==MP4){
-        strcpy(movie_ext, ".mp4");
-      }
-      else{
+    case MOVIE_FILETYPE:
+      switch (movie_filetype){
+      case AVI:
         strcpy(movie_ext, ".avi");
+        break;
+      case MP4:
+        strcpy(movie_ext, ".mp4");
+        break;
+      case WMV:
+        strcpy(movie_ext, ".wmv");
+        break;
+      case MOV:
+        strcpy(movie_ext, ".mov");
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
       }
       break;
     case RENDER_MULTIPLIER:

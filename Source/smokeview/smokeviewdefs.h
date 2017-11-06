@@ -165,6 +165,7 @@ void _Sniff_Errors(char *whereat);
 #define AVI 0
 #define MP4 1
 #define WMV 2
+#define MOV 3
 
 #define EXTERNAL_LIST_ID 1
 
