@@ -988,8 +988,7 @@ void DefaultTour(void){
 /* ------------------ CopyFrame ------------------------ */
 
 keyframe *CopyFrame(keyframe *framei){
-  keyframe *frame, *framen;
-  float *feye, *fxyz_view;
+  keyframe *frame;
 
   NewMemory((void **)&frame, sizeof(keyframe));
   memcpy(frame, framei, sizeof(keyframe));
