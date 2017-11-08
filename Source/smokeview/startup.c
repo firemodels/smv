@@ -312,7 +312,7 @@ int SetupCase(int argc, char **argv){
   InitLang();
 #endif
 
-  if(ntourinfo==0)setup_tour();
+  if(ntourinfo==0)SetupTour();
   glui_colorbar_setup(mainwindow_id);
   gluiMotionSetup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
@@ -1673,7 +1673,6 @@ void InitVars(void){
   tload_end=1.0;
   tload_skip=0;
 
-  defaulttour_loaded=0;
   blockages_dirty=0;
   usetextures=0;
   canrestorelastview=0;

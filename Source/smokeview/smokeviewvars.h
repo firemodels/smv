@@ -1022,7 +1022,6 @@ SVEXTERN int use_tload_begin,use_tload_end,use_tload_skip;
 
 SVEXTERN float frameinterval;
 
-SVEXTERN int defaulttour_loaded;
 SVEXTERN int blockages_dirty;
 SVEXTERN int usetextures;
 SVEXTERN int canrestorelastview;

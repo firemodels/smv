@@ -281,7 +281,7 @@ void mouse_edit_tour(int button, int state, int x, int y){
     val--;
     itourknots=val;
     if(tourknotskeylist!=NULL){
-      new_select(tourknotskeylist[itourknots]);
+      NewSelect(tourknotskeylist[itourknots]);
       selected_tour=tourknotstourlist[itourknots];
     }
     else{

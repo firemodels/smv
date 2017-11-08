@@ -2052,9 +2052,10 @@ void Render_CB(int var){
       EnableDisableMakeMovie(OFF);
       update_makemovie = 1;
       break;
+    case RENDER_SKIP:
     case RENDER_LABEL:
-      break;
     case RENDER_TYPE:
+    case RENDER_MULTIPLIER:
       break;
     case MOVIE_FILETYPE:
       switch (movie_filetype){
@@ -2075,12 +2076,8 @@ void Render_CB(int var){
         break;
       }
       break;
-    case RENDER_MULTIPLIER:
-      break;
     case RENDER_RESOLUTION:
       RenderMenu(render_size_index);
-      break;
-    case RENDER_SKIP:
       break;
     case RENDER_START:
       if(render_360 == 1)render_mode = RENDER_360;

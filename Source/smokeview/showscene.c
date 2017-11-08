@@ -195,8 +195,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(mode == SELECTOBJECT){
     if(edittour == 1 && ntourinfo>0){
       CLIP_GEOMETRY;
-      drawselect_tours();
-      SNIFF_ERRORS("after drawselect_tours");
+      DrawSelectTours();
+      SNIFF_ERRORS("after DrawSelectTours");
       return;
     }
   }
@@ -206,8 +206,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showtours == 1){
     CLIP_GEOMETRY;
-    drawtours();
-    SNIFF_ERRORS("after drawtours");
+    DrawTours();
+    SNIFF_ERRORS("after DrawTours");
   }
 
   /* ++++++++++++++++++++++++ draw stereo parallax indicator +++++++++++++++++++++++++ */

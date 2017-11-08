@@ -998,6 +998,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     float dx_factor, dy_factor, dz_factor;
     int i1, i2, j1, j2, k1, k2;
     int *is_extface;
+    float ig_factor_x, ig_factor_y, ig_factor_z;
+    float block_factor_x, block_factor_y, block_factor_z;
 
 
     i1=meshi->pi1[n];
@@ -1025,39 +1027,43 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
 
-#define IG_FACTOR 0.001
-#define BLOCK_FACTOR 0.001
+    ig_factor_x = ABS(meshi->xplt[1] - meshi->xplt[0]) / 10.0;
+    ig_factor_y = ABS(meshi->yplt[1] - meshi->yplt[0]) / 10.0;
+    ig_factor_z = ABS(meshi->zplt[1] - meshi->zplt[0]) / 10.0;
+    block_factor_x = ig_factor_x;
+    block_factor_y = ig_factor_y;
+    block_factor_z = ig_factor_z;
 
     switch(meshi->patchdir[n]){
     case XDIRNEG:
       meshi->patch_surfindex[n]=0;
-      dxx = -meshi->xplt[1]*IG_FACTOR;
-      dxx2 = -meshi->xplt[1]*BLOCK_FACTOR;
+      dxx = -meshi->xplt[1]*ig_factor_x;
+      dxx2 = -meshi->xplt[1]*block_factor_x;
       break;
     case XDIR:
       meshi->patch_surfindex[n]=1;
-      dxx = meshi->xplt[1]*IG_FACTOR;
-      dxx2 = meshi->xplt[1]*BLOCK_FACTOR;
+      dxx = meshi->xplt[1]*ig_factor_x;
+      dxx2 = meshi->xplt[1]*block_factor_x;
       break;
     case YDIRNEG:
       meshi->patch_surfindex[n]=2;
-      dyy = meshi->yplt[1]*IG_FACTOR;
-      dyy2 = meshi->yplt[1]*BLOCK_FACTOR;
+      dyy = meshi->yplt[1]*ig_factor_y;
+      dyy2 = meshi->yplt[1]*block_factor_y;
       break;
     case YDIR:
       meshi->patch_surfindex[n]=3;
-      dyy = -meshi->yplt[1]*IG_FACTOR;
-      dyy2 = -meshi->yplt[1]*BLOCK_FACTOR;
+      dyy = -meshi->yplt[1]*ig_factor_y;
+      dyy2 = -meshi->yplt[1]*block_factor_y;
       break;
     case ZDIRNEG:
       meshi->patch_surfindex[n]=4;
-      dzz = -meshi->zplt[1]*IG_FACTOR;
-      dzz2 = -meshi->zplt[1]*BLOCK_FACTOR;
+      dzz = -meshi->zplt[1]*ig_factor_z;
+      dzz2 = -meshi->zplt[1]*block_factor_z;
       break;
     case ZDIR:
       meshi->patch_surfindex[n]=5;
-      dzz = meshi->zplt[1]*IG_FACTOR;
-      dzz2 = meshi->zplt[1]*BLOCK_FACTOR;
+      dzz = meshi->zplt[1]*ig_factor_z;
+      dzz2 = meshi->zplt[1]*block_factor_z;
       break;
     default:
       ASSERT(FFALSE);
@@ -1095,20 +1101,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*IG_FACTOR;
+              dy_factor=-meshi->yplt[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*IG_FACTOR;
+              dy_factor=meshi->yplt[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1133,20 +1139,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*IG_FACTOR;
+              dy_factor=-meshi->yplt[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*IG_FACTOR;
+              dy_factor=meshi->yplt[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1192,20 +1198,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i = i1;i <= i2;i++){
             if(i == i1){
-              dx_factor = -meshi->xplt[1] * IG_FACTOR;
+              dx_factor = -meshi->xplt[1] * ig_factor_x;
             }
             else if(i == i2){
-              dx_factor = meshi->xplt[1] * IG_FACTOR;
+              dx_factor = meshi->xplt[1] * ig_factor_x;
             }
             else{
               dx_factor = 0.0;
@@ -1230,20 +1236,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1289,20 +1295,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*IG_FACTOR;
+            dy_factor=-meshi->yplt[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*IG_FACTOR;
+            dy_factor=meshi->yplt[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1333,20 +1339,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*IG_FACTOR;
+            dy_factor=-meshi->yplt[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*IG_FACTOR;
+            dy_factor=meshi->yplt[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;

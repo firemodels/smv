@@ -9,9 +9,9 @@
 #include "smokeviewvars.h"
 #include "IOobject.h"
 
-/* ------------------ freetours ------------------------ */
+/* ------------------ FreeTours ------------------------ */
 
-void freetours(void){
+void FreeTours(void){
   int i;
 
   if(ntourinfo>0){
@@ -19,16 +19,16 @@ void freetours(void){
       tourdata *touri;
 
       touri = tourinfo + i;
-      freetour(touri);
+      FreeTour(touri);
     }
     FREEMEMORY(tourinfo);
   }
   ntourinfo=0;
 }
 
-  /* ------------------ freetour ------------------------ */
+  /* ------------------ FreeTour ------------------------ */
 
-void freetour(tourdata *touri){
+void FreeTour(tourdata *touri){
   int i;
   keyframe *framei;
 
@@ -43,9 +43,9 @@ void freetour(tourdata *touri){
   FREEMEMORY(touri->path_times);
 }
 
-/* ------------------ inittour ------------------------ */
+/* ------------------ InitTour ------------------------ */
 
-void inittour(tourdata *touri){
+void InitTour(tourdata *touri){
   touri->glui_avatar_index=0;
   touri->display2=0;
   touri->global_tension=0.0;
@@ -76,9 +76,9 @@ void inittour(tourdata *touri){
   touri->isDefault=0;
 }
 
-/* ------------------ updateviewtour ------------------------ */
+/* ------------------ UpdateViewTour ------------------------ */
 
-void updateviewtour(void){
+void UpdateViewTour(void){
   int i;
   tourdata *touri;
 
@@ -95,9 +95,9 @@ void updateviewtour(void){
   }
 }
 
-/* ------------------ update_tour_menulabels ------------------------ */
+/* ------------------ UpdateTourMenulabels ------------------------ */
 
-void update_tour_menulabels(void){
+void UpdateTourMenulabels(void){
   int i;
   tourdata *touri;
 
@@ -112,7 +112,7 @@ void update_tour_menulabels(void){
 
 /* ------------------ drawcir ------------------------ */
 
-void drawcir(float *center, float rad, float *color){
+void DrawCir(float *center, float rad, float *color){
   glColor3fv(color);
   glBegin(GL_QUADS);
   glVertex3f(center[0] - rad / 2.0, center[1] - rad / 2.0, center[2]);
@@ -122,9 +122,9 @@ void drawcir(float *center, float rad, float *color){
   glEnd();
 }
 
-/* ------------------ drawtours ------------------------ */
+/* ------------------ DrawTours ------------------------ */
 
-void drawtours(void){
+void DrawTours(void){
   int i;
   float *tmp_tourcol_text;
   float *tmp_tourcol_pathline;
@@ -353,7 +353,7 @@ void drawtours(void){
           if(keyframe_snap==1)pj = pj->keysnap;
 
 
-          drawcir(pj->eye,tourrad_avatar,tourcol_avatar);
+          DrawCir(pj->eye,tourrad_avatar,tourcol_avatar);
 
         }
         break;
@@ -400,9 +400,9 @@ void drawtours(void){
   }
 }
 
-/* ------------------ drawselect_tours ------------------------ */
+/* ------------------ DrawSelectTours ------------------------ */
 
-void drawselect_tours(void){
+void DrawSelectTours(void){
   int i,j;
   tourdata *touri;
   keyframe *framej;
@@ -437,9 +437,9 @@ void drawselect_tours(void){
 #define HERMVAL() ((2.0*t3-3.0*t2+1.0)*p0 + (t3-2.0*t2+t)*m0 + (t3-t2)*m1 + (-2.0*t3+3.0*t2)*p1)
 #define HERMDERIV() ((6.0*t2-6.0*t)*p0 + (3.0*t2-4.0*t+1.0)*m0 + (3.0*t2-2.0*t)*m1 + (-6.0*t2+6.0*t)*p1)
 
-/* ------------------ hermiteye ------------------------ */
+/* ------------------ HermiteEye ------------------------ */
 
-void hermiteeye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope){
+void HermiteEye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope){
   int i;
   float t3, t2;
 
@@ -459,9 +459,9 @@ void hermiteeye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope)
   }
 }
 
-/* ------------------ hermiteother ------------------------ */
+/* ------------------ HermiteOther ------------------------ */
 
-void hermiteother(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
+void HermiteOther(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
   float p0, p1, m0, m1;
   float t3, t2;
 
@@ -487,9 +487,9 @@ void hermiteother(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
   pj->elev_path = HERMVAL();
 }
 
-/* ------------------ hermiteview ------------------------ */
+/* ------------------ HermiteView ------------------------ */
 
-void hermiteview(float t, keyframe *kf1, keyframe *kf2, float *view){
+void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
   int i;
 
   for(i = 0;i < 3;i++){
@@ -506,9 +506,9 @@ void hermiteview(float t, keyframe *kf1, keyframe *kf2, float *view){
   }
 }
 
-/* ------------------ createtourpaths ------------------------ */
+/* ------------------ CreateTourPaths ------------------------ */
 
-void createtourpaths(void){
+void CreateTourPaths(void){
   int i;
 
   //  keyframe *framejm1;
@@ -525,7 +525,7 @@ void createtourpaths(void){
     tourdata *touri;
 
     touri = tourinfo + i;
-    adjusttourtimes(touri);
+    AdjustTourTimes(touri);
   }
 
   for(i=0;i<ntourinfo;i++){
@@ -688,7 +688,7 @@ void createtourpaths(void){
       keyj->keyview_xyz[0]=keyj->d_eye[0];
       keyj->keyview_xyz[1]=keyj->d_eye[1];
       keyj->keyview_xyz[2]=0.0;
-      if(keyj->viewtype==ABS_VIEW)xyzview2azelev(keyj,NULL,NULL);
+      if(keyj->viewtype==ABS_VIEW)XYZView2AzElev(keyj,NULL,NULL);
 
       ROTATE(keyj->keyview_xyz2,keyj->keyview_xyz,keyj->az_path*DEG2RAD);
       keyj->keyview_xyz2[2]=0.0;
@@ -742,16 +742,16 @@ void createtourpaths(void){
       if(kf1->nodeval.eye[0]==kf2->nodeval.eye[0]&&
          kf1->nodeval.eye[1]==kf2->nodeval.eye[1]&&
          kf1->nodeval.eye[2]==kf2->nodeval.eye[2]){
-        hermiteeye(1.0,kf1->prev,kf1,eye,view_local);
+        HermiteEye(1.0,kf1->prev,kf1,eye,view_local);
         Slerp(kf1->prev->keyview_xyz2,kf1->keyview_xyz2,1.0,view_local);
       }
       else{
-        hermiteeye(f1,kf1,kf2,eye,view_local);
+        HermiteEye(f1,kf1,kf2,eye,view_local);
         Slerp(kf1->keyview_xyz2,kf2->keyview_xyz2,f1,view_local);
       }
 
-      hermiteview(f1,kf1,kf2, xyz_view);
-      hermiteother(f1,kf1,kf2,pj);
+      HermiteView(f1,kf1,kf2, xyz_view);
+      HermiteOther(f1,kf1,kf2,pj);
 
       tour_view[0]=view_local[0];
       tour_view[1]=view_local[1];
@@ -922,9 +922,9 @@ void createtourpaths(void){
       xyz_view=pj->xyz_view_abs;
       tour_view=pj->tour_view;
 
-      hermiteeye(f1,kf1,kf2,eye,view_local);
-      hermiteother(f1,kf1,kf2,pj);
-      hermiteview(f1,kf1,kf2,xyz_view);
+      HermiteEye(f1,kf1,kf2,eye,view_local);
+      HermiteOther(f1,kf1,kf2,pj);
+      HermiteView(f1,kf1,kf2,xyz_view);
 
       if(kf1->viewtype==REL_VIEW||kf2->viewtype==REL_VIEW){
         float az;
@@ -964,9 +964,9 @@ void createtourpaths(void){
   }
 }
 
-/* ------------------ defaulttour ------------------------ */
+/* ------------------ DefaultTour ------------------------ */
 
-void defaulttour(void){
+void DefaultTour(void){
   float *eye_xyz,*az_elev;
 
   touring=1;
@@ -985,9 +985,22 @@ void defaulttour(void){
 
 }
 
-/* ------------------ addframe ------------------------ */
+/* ------------------ CopyFrame ------------------------ */
 
-keyframe *add_frame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank, float params[3],
+keyframe *CopyFrame(keyframe *framei){
+  keyframe *frame, *framen;
+  float *feye, *fxyz_view;
+
+  NewMemory((void **)&frame, sizeof(keyframe));
+  memcpy(frame, framei, sizeof(keyframe));
+
+  CheckMemory;
+  return frame;
+}
+
+/* ------------------ AddFrame ------------------------ */
+
+keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank, float params[3],
                     int viewtype,float zoom_local,float view[3]){
   keyframe *frame,*framen;
   float *feye, *fxyz_view;
@@ -1032,9 +1045,9 @@ keyframe *add_frame(keyframe *framei, float time_local, float *eye, float key_az
   return frame;
 }
 
-/* ------------------ delete_frame ------------------------ */
+/* ------------------ DeleteFrame ------------------------ */
 
-keyframe *delete_frame(keyframe *frame){
+keyframe *DeleteFrame(keyframe *frame){
   keyframe *prev, *next;
   tourdata *thistour;
 
@@ -1054,17 +1067,17 @@ keyframe *delete_frame(keyframe *frame){
   return NULL;
 }
 
-/* ------------------ new_select ------------------------ */
+/* ------------------ NewSelect ------------------------ */
 
-void new_select(keyframe *newselect){
+void NewSelect(keyframe *newselect){
   if(newselect!=selected_frame&&selected_frame!=NULL)selected_frame->selected=0;
   selected_frame=newselect;
   if(newselect!=NULL)selected_frame->selected=1;
 }
 
-/* ------------------ init_circulartour ------------------------ */
+/* ------------------ InitCircularTour ------------------------ */
 
-void init_circulartour(void){
+void InitCircularTour(void){
   int nkeyframes,j;
   float key_az_path, elev_path, key_bank, params[3],key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
@@ -1077,7 +1090,7 @@ void init_circulartour(void){
   keyframe *thisframe,*addedframe;
 
   touri = tourinfo;
-  inittour(touri);
+  InitTour(touri);
   touri->isDefault=1;
   touri->startup=1;
   touri->periodic=1;
@@ -1126,17 +1139,18 @@ void init_circulartour(void){
 
     viewtype=1;
     zoom_local=1.0;
-    addedframe=add_frame(thisframe, key_time, key_xyz,
+    addedframe=AddFrame(thisframe, key_time, key_xyz,
       key_az_path, elev_path, key_bank, params, viewtype,zoom_local,key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
-
+  touri->last_frame.prev = thisframe;
+  thisframe->next = &(touri->last_frame);
 }
 
-/* ------------------ add_tour  ------------------------ */
+/* ------------------ AddTour  ------------------------ */
 
-tourdata *add_tour(char *label){
+tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
   float key_az_path, elev_path, key_bank, params[3],key_view[3], key_xyz[3], zoom_local;
@@ -1144,6 +1158,7 @@ tourdata *add_tour(char *label){
   float key_time;
   int i;
   keyframe *thisframe, *addedframe;
+  int itour=-1;
 
   delete_tourlist();
   ntourinfo++;
@@ -1153,44 +1168,86 @@ tourdata *add_tour(char *label){
   tourinfo=tourtemp;
   touri = tourinfo + ntourinfo - 1;
 
-  inittour(touri);
+  InitTour(touri);
+  if(label!=NULL){
+    for(i = 0;i<ntourinfo-1;i++){
+      tourdata *tourj;
+
+      tourj = tourinfo+i;
+      if(strcmp(tourj->label, label)==0){
+        itour = i;
+        sprintf(touri->label, "Copy of %s", TrimFront(label));
+        nkeyframes=tourj->nkeyframes;
+        break;
+      }
+    }
+    if(itour==-1)label=NULL;
+  }
   if(label==NULL){
     sprintf(touri->label,"Tour %i",ntourinfo);
+    nkeyframes=2;
   }
-  else{
-    strcpy(touri->label,TrimFront(label));
-  }
-  nkeyframes=2;
+
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->pathnodes,view_ntimes*sizeof(pathdata));
   NewMemory((void **)&touri->path_times,view_ntimes*sizeof(float));
 
-  VEC3EQCONS(key_view,0.0);
+  if(itour==-1){
+    VEC3EQCONS(key_view,0.0);
 
-  key_az_path = 0.0;
-  key_bank = 0.0;
-  elev_path=0.0;
-  VEC3EQCONS(params,0.0);
-  viewtype=0;
-  zoom_local=1.0;
+    key_az_path = 0.0;
+    key_bank = 0.0;
+    elev_path=0.0;
+    VEC3EQCONS(params,0.0);
+    viewtype=0;
+    zoom_local=1.0;
 
-  key_xyz[0] = xbar0 - 1.0;
-  key_xyz[1] = ybar0 - 1.0;
-  key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-  key_time = view_tstart;
-  thisframe=&touri->first_frame;
-  addedframe=add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-    params, viewtype,zoom_local,key_view);
-  touri->keyframe_times[0]=key_time;
+    key_xyz[0] = xbar0 - 1.0;
+    key_xyz[1] = ybar0 - 1.0;
+    key_xyz[2] = (zbar0 + zbarORIG)/2.0;
+    key_time = view_tstart;
+    thisframe=&touri->first_frame;
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
+      params, viewtype,zoom_local,key_view);
+    touri->keyframe_times[0]=key_time;
 
-  key_xyz[0] = xbarORIG + 1.0;
-  key_xyz[1] = ybarORIG + 1.0;
-  key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-  key_time = view_tstop;
-  thisframe=addedframe;
-  add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-    params, viewtype,zoom_local,key_view);
-  touri->keyframe_times[1]=key_time;
+    key_xyz[0] = xbarORIG + 1.0;
+    key_xyz[1] = ybarORIG + 1.0;
+    key_xyz[2] = (zbar0 + zbarORIG)/2.0;
+    key_time = view_tstop;
+    thisframe=addedframe;
+    AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
+      params, viewtype,zoom_local,key_view);
+    touri->keyframe_times[1]=key_time;
+  }
+  else{
+    keyframe *keyfrom, *keylast;;
+    tourdata *tourfrom;
+    int first=1;
+
+    tourfrom = tourinfo+itour;
+
+    keylast=NULL;
+    keyfrom = &(tourfrom->first_frame);
+    for(i = 0;i<tourfrom->nkeyframes;i++){
+      keyframe *keyj;
+
+      keyfrom = keyfrom->next;
+      keyj = CopyFrame(keyfrom);
+      if(first==1){
+        first = 0;
+        touri->first_frame.next=keyj;
+        keyj->prev = &(touri->first_frame);
+      }
+      else{
+        keylast->next = keyj;
+        keyj->prev = keylast;
+      }
+      keylast = keyj;
+    }
+    touri->last_frame.prev = keylast;
+    keylast->next = &(touri->last_frame);
+  }
   touri->display=1;
 
   for(i=0;i<ntourinfo;i++){
@@ -1205,13 +1262,12 @@ tourdata *add_tour(char *label){
   }
   updatemenu=1;
 
-  update_tour_menulabels();
-  createtourpaths();
+  UpdateTourMenulabels();
+  CreateTourPaths();
   UpdateTimes();
   create_tourlist();
   return tourinfo + ntourinfo-1;
 }
-
 
 /* ------------------ delete_tour  ------------------------ */
 
@@ -1221,7 +1277,7 @@ void delete_tour(int tour_index){
 
   delete_tourlist();
   touri = tourinfo + tour_index;
-  freetour(touri);
+  FreeTour(touri);
   ntourinfo--;
   if(ntourinfo>0){
     NewMemory( (void **)&tourtemp, ntourinfo*sizeof(tourdata));
@@ -1244,7 +1300,7 @@ void delete_tour(int tour_index){
     viewalltours=0;
   }
   updatemenu=1;
-  createtourpaths();
+  CreateTourPaths();
   selectedtour_index=tour_index-1;
   selectedtour_index_old=selectedtour_index;
   if(ntourinfo>0){
@@ -1257,7 +1313,7 @@ void delete_tour(int tour_index){
     selected_frame=NULL;
   }
   set_glui_keyframe();
-  update_tour_menulabels();
+  UpdateTourMenulabels();
   UpdateTimes();
   create_tourlist();
 
@@ -1292,17 +1348,17 @@ void ReallocTourMemory(void){
   }
 }
 
-/* ------------------ setup_tour  ------------------------ */
+/* ------------------ SetupTour  ------------------------ */
 
-void setup_tour(void){
+void SetupTour(void){
 
   if(ntourinfo==0){
     ReallocTourMemory();
     ntourinfo=1;
     NewMemory( (void **)&tourinfo, ntourinfo*sizeof(tourdata));
-    init_circulartour();
-    update_tour_menulabels();
-    createtourpaths();
+    InitCircularTour();
+    UpdateTourMenulabels();
+    CreateTourPaths();
     UpdateTimes();
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     selectedtour_index = TOURINDEX_MANUAL;
@@ -1313,9 +1369,9 @@ void setup_tour(void){
   }
 }
 
-/* ------------------ xyzview2azelev ------------------------ */
+/* ------------------ XYZView2AzElev ------------------------ */
 
-void xyzview2azelev(keyframe *kf, float *az_path, float *elev_path){
+void XYZView2AzElev(keyframe *kf, float *az_path, float *elev_path){
   float dxyz[3];
   float dxy2[2];
   float distxy, distxy2;
@@ -1353,9 +1409,9 @@ void xyzview2azelev(keyframe *kf, float *az_path, float *elev_path){
   if(elev_path!=NULL)*elev_path = elev;
 }
 
-/* ------------------ adjusttourtimes ------------------------ */
+/* ------------------ AdjustTourTimes ------------------------ */
 
-void adjusttourtimes(tourdata *touri){
+void AdjustTourTimes(tourdata *touri){
   float dt;
   keyframe *keyj;
   float tstart, tstop,dtmin;
