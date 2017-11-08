@@ -513,7 +513,7 @@ EXTERNCPP void close_volsmokepanel(void);
 EXTERNCPP void close_smokezippanel(void);
 EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void AdjustTourTimes(tourdata *touri);
-EXTERNCPP void update_tourindex(void);
+EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void update_plot3d_display(void);
 EXTERNCPP void update_smoke3dflags(void);

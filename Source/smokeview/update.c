@@ -1857,7 +1857,7 @@ void UpdateShowScene(void){
     updateclipvals = 0;
   }
   if(update_selectedtour_index == 1){
-    update_tourindex();
+    UpdateTourIndex();
   }
   if(trainer_mode == 1 && fontindex != LARGE_FONT)FontMenu(LARGE_FONT);
   if(updateindexcolors == 1){

@@ -1193,12 +1193,13 @@ tourdata *AddTour(char *label){
 
   if(itour==-1){
     VEC3EQCONS(key_view,0.0);
+    float relpos[3];
 
     key_az_path = 0.0;
     key_bank = 0.0;
     elev_path=0.0;
     VEC3EQCONS(params,0.0);
-    viewtype=0;
+    viewtype=1;
     zoom_local=1.0;
 
     key_xyz[0] = xbar0 - 1.0;
@@ -1209,15 +1210,23 @@ tourdata *AddTour(char *label){
     addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
       params, viewtype,zoom_local,key_view);
     touri->keyframe_times[0]=key_time;
+    relpos[0] =  -key_xyz[0];
+    relpos[1] =  -key_xyz[1];
+    relpos[2] =  -key_xyz[2];
+    xyz2azelev(relpos,&addedframe->az_path,&addedframe->nodeval.az_path);
 
     key_xyz[0] = xbarORIG + 1.0;
     key_xyz[1] = ybarORIG + 1.0;
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = view_tstop;
     thisframe=addedframe;
-    AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
       params, viewtype,zoom_local,key_view);
     touri->keyframe_times[1]=key_time;
+    relpos[0] =  -key_xyz[0];
+    relpos[1] =  -key_xyz[1];
+    relpos[2] =  -key_xyz[2];
+    xyz2azelev(relpos, &addedframe->az_path, &addedframe->nodeval.az_path);
   }
   else{
     keyframe *keyfrom, *keylast;;
