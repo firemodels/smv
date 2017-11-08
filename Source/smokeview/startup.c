@@ -322,7 +322,7 @@ int SetupCase(int argc, char **argv){
   glui_wui_setup(mainwindow_id);
   glui_labels_setup(mainwindow_id);
   glui_device_setup(mainwindow_id);
-  glui_tour_setup(mainwindow_id);
+  GluiTourSetup(mainwindow_id);
   glui_alert_setup(mainwindow_id);
   glui_stereo_setup(mainwindow_id);
   glui_3dsmoke_setup(mainwindow_id);
@@ -1836,7 +1836,7 @@ void InitVars(void){
   glui_move_mode=-1;
 
   timeoffset=0.0;
-  update_tourlist=0;
+  update_tour_list =0;
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
   realtime_flag=0;

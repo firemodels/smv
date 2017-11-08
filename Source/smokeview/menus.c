@@ -2854,7 +2854,7 @@ void TourMenu(int value){
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_NEW:
-    add_new_tour();
+    AddNewTour();
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_CLEARALL:
@@ -2952,9 +2952,9 @@ void TourMenu(int value){
     break;
   }
   UpdateViewTour();
-  delete_tourlist();
-  create_tourlist();
-  update_tourcontrols();
+  DeleteTourList();
+  CreateTourList();
+  UpdateTourControls();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(value!=-5&&value!=-4)UpdateTimes();
   callfrom_tourglui=0;

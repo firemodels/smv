@@ -1831,8 +1831,8 @@ void UpdateShowScene(void){
     update_rotation_center_ini = 0;
     update_startup_view = 0;
   }
-  if(update_tourlist == 1){
-    Update_Tourlist();
+  if(update_tour_list == 1){
+    UpdateTourList();
   }
   if(update_gslice == 1){
     UpdateGsliceParms();

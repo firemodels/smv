@@ -288,8 +288,8 @@ void mouse_edit_tour(int button, int state, int x, int y){
       selected_tour=NULL;
       itourknots=-1;
     }
-    set_glui_keyframe();
-    update_tourcontrols();
+    SetGluiKeyframe();
+    UpdateTourControls();
     tour_drag=1;
   }
   glShadeModel(GL_SMOOTH);
@@ -1049,8 +1049,8 @@ void Drag_Tour_Node(int xm, int ym){
 
 // update tour data structures with new tour node location
 
-        update_tour_parms();
-        update_glui_keyframe();
+        UpdateTourParms();
+        UpdateGluiKeyframe();
       }
       break;
     default:
@@ -1369,7 +1369,7 @@ void keyboard(unsigned char key, int flag){
   switch(key2){
     case 'a':
       if(showtour_dialog==1&&edittour==1){
-        add_delete_keyframe(ADD_KEYFRAME);
+        AddDeleteKeyframe(ADD_KEYFRAME);
         break;
       }
       if(rotation_type==EYE_CENTERED){
@@ -1496,7 +1496,7 @@ void keyboard(unsigned char key, int flag){
       break;
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
-        add_delete_keyframe(DELETE_KEYFRAME);
+        AddDeleteKeyframe(DELETE_KEYFRAME);
         break;
       }
       switch(keystate){
@@ -2135,11 +2135,11 @@ void keyboard(unsigned char key, int flag){
       break;
     case '[':
       edittour=1;
-      update_edit_tour();
+      UpdateEditTour();
       break;
     case ']':
       edittour=0;
-      update_edit_tour();
+      UpdateEditTour();
       break;
     case ';':
       ColorbarMenu(COLORBAR_FLIP);

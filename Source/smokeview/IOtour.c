@@ -1159,7 +1159,7 @@ tourdata *AddTour(char *label){
   keyframe *thisframe, *addedframe;
   int itour=-1;
 
-  delete_tourlist();
+  DeleteTourList();
   ntourinfo++;
   NewMemory( (void **)&tourtemp, ntourinfo*sizeof(tourdata));
   if(ntourinfo>1)memcpy(tourtemp,tourinfo,(ntourinfo-1)*sizeof(tourdata));
@@ -1273,17 +1273,17 @@ tourdata *AddTour(char *label){
   UpdateTourMenulabels();
   CreateTourPaths();
   UpdateTimes();
-  create_tourlist();
+  CreateTourList();
   return tourinfo + ntourinfo-1;
 }
 
-/* ------------------ delete_tour  ------------------------ */
+/* ------------------ DeleteTour  ------------------------ */
 
-void delete_tour(int tour_index){
+void DeleteTour(int tour_index){
   tourdata *touri,*tourtemp;
   int i;
 
-  delete_tourlist();
+  DeleteTourList();
   touri = tourinfo + tour_index;
   FreeTour(touri);
   ntourinfo--;
@@ -1320,10 +1320,10 @@ void delete_tour(int tour_index){
     selected_tour=NULL;
     selected_frame=NULL;
   }
-  set_glui_keyframe();
+  SetGluiKeyframe();
   UpdateTourMenulabels();
   UpdateTimes();
-  create_tourlist();
+  CreateTourList();
 
 }
 
