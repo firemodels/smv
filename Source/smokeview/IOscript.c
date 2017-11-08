@@ -1932,8 +1932,8 @@ void script_settourkeyframe(scriptdata *scripti){
   }
   if(minkey!=NULL){
     NewSelect(minkey);
-    set_glui_keyframe();
-    update_tourcontrols();
+    SetGluiKeyframe();
+    UpdateTourControls();
   }
 }
 
@@ -1962,7 +1962,7 @@ void script_settourview(scriptdata *scripti){
       keyframe_snap=0;
       break;
   }
-  update_tour_state();
+  UpdateTourState();
 }
 
 /* ------------------ script_settimeval ------------------------ */

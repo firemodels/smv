@@ -899,7 +899,7 @@ extern "C" void Smoke3d_CB(int var){
   case VOL_PREFIX:
     break;
   case VOL_TOUR_LIST:
-    TOUR_CB(TOUR_LIST);
+    TourCB(TOUR_LIST);
     break;
   case START_FRAME:
     if(vol_startframe0<0){

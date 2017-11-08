@@ -1831,8 +1831,8 @@ void UpdateShowScene(void){
     update_rotation_center_ini = 0;
     update_startup_view = 0;
   }
-  if(update_tourlist == 1){
-    Update_Tourlist();
+  if(update_tour_list == 1){
+    UpdateTourList();
   }
   if(update_gslice == 1){
     UpdateGsliceParms();
@@ -1857,7 +1857,7 @@ void UpdateShowScene(void){
     updateclipvals = 0;
   }
   if(update_selectedtour_index == 1){
-    update_tourindex();
+    UpdateTourIndex();
   }
   if(trainer_mode == 1 && fontindex != LARGE_FONT)FontMenu(LARGE_FONT);
   if(updateindexcolors == 1){

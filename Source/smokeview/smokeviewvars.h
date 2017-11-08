@@ -1268,7 +1268,7 @@ SVEXTERN float viewx, viewy, viewz;
 SVEXTERN float anglexy0,azimuth0;
 SVEXTERN int mouse_down_xy0[2];
 SVEXTERN int touring;
-SVEXTERN int update_tourlist;
+SVEXTERN int update_tour_list;
 SVEXTERN float desired_view_height;
 SVEXTERN int thistime, lasttime, resetclock,initialtime;
 SVEXTERN int realtime_flag;
