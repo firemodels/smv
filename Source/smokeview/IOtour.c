@@ -985,7 +985,20 @@ void defaulttour(void){
 
 }
 
-/* ------------------ addframe ------------------------ */
+/* ------------------ copy_frame ------------------------ */
+
+keyframe *copy_frame(keyframe *framei){
+  keyframe *frame, *framen;
+  float *feye, *fxyz_view;
+
+  NewMemory((void **)&frame, sizeof(keyframe));
+  memcpy(frame, framei, sizeof(keyframe));
+
+  CheckMemory;
+  return frame;
+}
+
+/* ------------------ add_frame ------------------------ */
 
 keyframe *add_frame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank, float params[3],
                     int viewtype,float zoom_local,float view[3]){
@@ -1131,7 +1144,8 @@ void init_circulartour(void){
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
-
+  touri->last_frame.prev = thisframe;
+  thisframe->next = &(touri->last_frame);
 }
 
 /* ------------------ add_tour  ------------------------ */
@@ -1144,6 +1158,7 @@ tourdata *add_tour(char *label){
   float key_time;
   int i;
   keyframe *thisframe, *addedframe;
+  int itour=-1;
 
   delete_tourlist();
   ntourinfo++;
@@ -1154,43 +1169,85 @@ tourdata *add_tour(char *label){
   touri = tourinfo + ntourinfo - 1;
 
   inittour(touri);
+  if(label!=NULL){
+    for(i = 0;i<ntourinfo-1;i++){
+      tourdata *tourj;
+
+      tourj = tourinfo+i;
+      if(strcmp(tourj->label, label)==0){
+        itour = i;
+        sprintf(touri->label, "Copy of %s", TrimFront(label));
+        nkeyframes=tourj->nkeyframes;
+        break;
+      }
+    }
+    if(itour==-1)label=NULL;
+  }
   if(label==NULL){
     sprintf(touri->label,"Tour %i",ntourinfo);
+    nkeyframes=2;
   }
-  else{
-    strcpy(touri->label,TrimFront(label));
-  }
-  nkeyframes=2;
+
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->pathnodes,view_ntimes*sizeof(pathdata));
   NewMemory((void **)&touri->path_times,view_ntimes*sizeof(float));
 
-  VEC3EQCONS(key_view,0.0);
+  if(itour==-1){
+    VEC3EQCONS(key_view,0.0);
 
-  key_az_path = 0.0;
-  key_bank = 0.0;
-  elev_path=0.0;
-  VEC3EQCONS(params,0.0);
-  viewtype=0;
-  zoom_local=1.0;
+    key_az_path = 0.0;
+    key_bank = 0.0;
+    elev_path=0.0;
+    VEC3EQCONS(params,0.0);
+    viewtype=0;
+    zoom_local=1.0;
 
-  key_xyz[0] = xbar0 - 1.0;
-  key_xyz[1] = ybar0 - 1.0;
-  key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-  key_time = view_tstart;
-  thisframe=&touri->first_frame;
-  addedframe=add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-    params, viewtype,zoom_local,key_view);
-  touri->keyframe_times[0]=key_time;
+    key_xyz[0] = xbar0 - 1.0;
+    key_xyz[1] = ybar0 - 1.0;
+    key_xyz[2] = (zbar0 + zbarORIG)/2.0;
+    key_time = view_tstart;
+    thisframe=&touri->first_frame;
+    addedframe=add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
+      params, viewtype,zoom_local,key_view);
+    touri->keyframe_times[0]=key_time;
 
-  key_xyz[0] = xbarORIG + 1.0;
-  key_xyz[1] = ybarORIG + 1.0;
-  key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-  key_time = view_tstop;
-  thisframe=addedframe;
-  add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-    params, viewtype,zoom_local,key_view);
-  touri->keyframe_times[1]=key_time;
+    key_xyz[0] = xbarORIG + 1.0;
+    key_xyz[1] = ybarORIG + 1.0;
+    key_xyz[2] = (zbar0 + zbarORIG)/2.0;
+    key_time = view_tstop;
+    thisframe=addedframe;
+    add_frame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
+      params, viewtype,zoom_local,key_view);
+    touri->keyframe_times[1]=key_time;
+  }
+  else{
+    keyframe *keyfrom, *keylast;;
+    tourdata *tourfrom;
+    int first=1;
+
+    tourfrom = tourinfo+itour;
+
+    keylast=NULL;
+    keyfrom = &(tourfrom->first_frame);
+    for(i = 0;i<tourfrom->nkeyframes;i++){
+      keyframe *keyj;
+
+      keyfrom = keyfrom->next;
+      keyj = copy_frame(keyfrom);
+      if(first==1){
+        first = 0;
+        touri->first_frame.next=keyj;
+        keyj->prev = &(touri->first_frame);
+      }
+      else{
+        keylast->next = keyj;
+        keyj->prev = keylast;
+      }
+      keylast = keyj;
+    }
+    touri->last_frame.prev = keylast;
+    keylast->next = &(touri->last_frame);
+  }
   touri->display=1;
 
   for(i=0;i<ntourinfo;i++){
@@ -1211,7 +1268,6 @@ tourdata *add_tour(char *label){
   create_tourlist();
   return tourinfo + ntourinfo-1;
 }
-
 
 /* ------------------ delete_tour  ------------------------ */
 
