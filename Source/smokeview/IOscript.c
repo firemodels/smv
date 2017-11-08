@@ -1931,7 +1931,7 @@ void script_settourkeyframe(scriptdata *scripti){
     }
   }
   if(minkey!=NULL){
-    new_select(minkey);
+    NewSelect(minkey);
     set_glui_keyframe();
     update_tourcontrols();
   }

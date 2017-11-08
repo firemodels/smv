@@ -9010,7 +9010,7 @@ typedef struct {
   update_patch_menulabels();
   update_iso_menulabels();
   update_part_menulabels();
-  update_tour_menulabels();
+  UpdateTourMenulabels();
   InitUserTicks();
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -12005,7 +12005,7 @@ int ReadINI2(char *inifile, int localfile){
               tourdata *touri;
 
               touri = tourinfo + i;
-              freetour(touri);
+              FreeTour(touri);
             }
             FREEMEMORY(tourinfo);
           }
@@ -12025,7 +12025,7 @@ int ReadINI2(char *inifile, int localfile){
             }
           }
           ReallocTourMemory();
-          init_circulartour();
+          InitCircularTour();
           {
             keyframe *thisframe, *addedframe;
             tourdata *touri;
@@ -12035,7 +12035,7 @@ int ReadINI2(char *inifile, int localfile){
               int j;
 
               touri = tourinfo + i;
-              inittour(touri);
+              InitTour(touri);
               fgets(buffer, 255, stream);
               TrimBack(buffer);
               strcpy(touri->label, TrimFront(buffer));
@@ -12096,7 +12096,7 @@ int ReadINI2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = add_frame(thisframe, key_time, key_xyz, key_az_path, key_elev_path,
+                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path,
                   key_bank, params, viewtype, zzoom, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
@@ -12111,8 +12111,8 @@ int ReadINI2(char *inifile, int localfile){
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
             }
-            update_tour_menulabels();
-            createtourpaths();
+            UpdateTourMenulabels();
+            CreateTourPaths();
             UpdateTimes();
             plotstate = GetPlotState(DYNAMIC_PLOTS);
             selectedtour_index = TOURINDEX_MANUAL;

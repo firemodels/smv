@@ -2803,7 +2803,7 @@ void LoadUnloadMenu(int value){
     update_patch_menulabels();
     update_iso_menulabels();
     update_part_menulabels();
-    update_tour_menulabels();
+    UpdateTourMenulabels();
     update_plot3d_menulabels();
   }
   if(value==SHOWMESHMENUS){
@@ -2913,7 +2913,7 @@ void TourMenu(int value){
       touri->display=0;
     }
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
-    defaulttour();
+    DefaultTour();
     break;
   default:
     if(value<-22){
@@ -2951,7 +2951,7 @@ void TourMenu(int value){
     }
     break;
   }
-  updateviewtour();
+  UpdateViewTour();
   delete_tourlist();
   create_tourlist();
   update_tourcontrols();

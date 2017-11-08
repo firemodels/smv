@@ -581,7 +581,7 @@ void TOUR_CB(int var){
       SPINNER_viewy->enable();
       SPINNER_viewz->enable();
       if(selected_frame!=NULL){
-        xyzview2azelev(selected_frame,NULL,NULL);
+        XYZView2AzElev(selected_frame,NULL,NULL);
         SPINNER_az_path->set_float_val(tour_az_path);
         SPINNER_elev_path->set_float_val(tour_elev_path);
       }
@@ -603,11 +603,11 @@ void TOUR_CB(int var){
     if(selected_frame!=NULL){
       selected_frame->viewtype=viewtype1;
     }
-    createtourpaths();
+    CreateTourPaths();
     break;
   case VIEW_times:
     ReallocTourMemory();
-    createtourpaths();
+    CreateTourPaths();
     UpdateTimes();
     break;
   case KEYFRAME_viewXYZ:
@@ -617,11 +617,11 @@ void TOUR_CB(int var){
       xyz_view = selected_frame->nodeval.xyz_view_abs;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
 
-      xyzview2azelev(selected_frame,&tour_az_path,&tour_elev_path);
+      XYZView2AzElev(selected_frame,&tour_az_path,&tour_elev_path);
       SPINNER_az_path->set_float_val(tour_az_path);
       SPINNER_elev_path->set_float_val(tour_elev_path);
 
-      createtourpaths();
+      CreateTourPaths();
       selected_frame->selected=1;
     }
     break;
@@ -649,7 +649,7 @@ void TOUR_CB(int var){
       selected_frame->viewtype=viewtype1;
       selected_frame->nodeval.zoom=tour_zoom;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
-      createtourpaths();
+      CreateTourPaths();
       selected_frame->selected=1;
       if(viewtype1==ABS_VIEW){
         TOUR_CB(KEYFRAME_viewXYZ);
@@ -667,13 +667,13 @@ void TOUR_CB(int var){
         SPINNER_globaltourtension->disable();
         SPINNER_tourtension->enable();
       }
-      createtourpaths();
+      CreateTourPaths();
     }
     break;
   case GLOBAL_TENSION:
     if(selected_tour!=NULL){
       selected_tour->global_tension=tour_global_tension;
-      createtourpaths();
+      CreateTourPaths();
     }
     break;
   case KEYFRAME_NEXT:
@@ -684,10 +684,10 @@ void TOUR_CB(int var){
     if(selected_frame!=NULL){
       thistour=selected_tour;
       if(selected_frame->next!=&thistour->last_frame){
-        new_select(selected_frame->next);
+        NewSelect(selected_frame->next);
       }
       else{
-        new_select(thistour->first_frame.next);
+        NewSelect(thistour->first_frame.next);
       }
     }
     set_glui_keyframe();
@@ -701,17 +701,17 @@ void TOUR_CB(int var){
       thistour=selected_tour;
       selected_tour=thistour;
       if(selected_frame->prev!=&thistour->first_frame){
-        new_select(selected_frame->prev);
+        NewSelect(selected_frame->prev);
       }
       else{
-        new_select(thistour->last_frame.prev);
+        NewSelect(thistour->last_frame.prev);
       }
     }
     set_glui_keyframe();
     break;
   case CONSTANTTOURVEL:
     update_tourcontrols();
-    createtourpaths();
+    CreateTourPaths();
     UpdateTimes();
     set_glui_keyframe();
     break;
@@ -771,18 +771,18 @@ void TOUR_CB(int var){
         }
         viewtype2=1-viewtype1;
       }
-      newframe=add_frame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,key_params,viewtype1,key_zoom,key_view);
-      createtourpaths();
-      new_select(newframe);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,key_params,viewtype1,key_zoom,key_view);
+      CreateTourPaths();
+      NewSelect(newframe);
       set_glui_keyframe();
     }
     break;
   case KEYFRAME_DELETE:
     if(selected_frame!=NULL){
-      selected_frame=delete_frame(selected_frame);
+      selected_frame=DeleteFrame(selected_frame);
       if(selected_frame!=NULL){
         selected_frame->selected=1;
-        createtourpaths();
+        CreateTourPaths();
       }
       else{
         if(thistour!=NULL)delete_tour(thistour-tourinfo);
@@ -844,7 +844,7 @@ void TOUR_CB(int var){
     }
     delete_tourlist();
     create_tourlist();
-    updateviewtour();
+    UpdateViewTour();
     update_tourcontrols();
     selectedtour_index_old=selectedtour_index;
     break;
@@ -854,17 +854,17 @@ void TOUR_CB(int var){
   case TOUR_INSERT_NEW:
   case TOUR_INSERT_COPY:
     if(var==TOUR_INSERT_NEW){
-      thistour=add_tour(NULL);
+      thistour=AddTour(NULL);
     }
     else{
       if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
         char label[300];
 
         strcpy(label, tourinfo[selectedtour_index].label);
-        thistour = add_tour(label);
+        thistour = AddTour(label);
       }
       else{
-        thistour = add_tour(NULL);
+        thistour = AddTour(NULL);
       }
     }
     if(CHECKBOX_showtourroute!=NULL&&edittour==0)CHECKBOX_showtourroute->set_int_val(1);
@@ -873,8 +873,8 @@ void TOUR_CB(int var){
     selectedtour_index = thistour - tourinfo;
     selectedtour_index_old=selectedtour_index;
     set_glui_keyframe();
-    createtourpaths();
-    updateviewtour();
+    CreateTourPaths();
+    UpdateViewTour();
     update_tourcontrols();
     selected_tour->display=0;
     TOURMENU(selectedtour_index);
@@ -888,7 +888,7 @@ void TOUR_CB(int var){
         LISTBOX_tour->delete_item(thistour-tourinfo);
         LISTBOX_tour->add_item(thistour-tourinfo,thistour->label);
       }
-      update_tour_menulabels();
+      UpdateTourMenulabels();
       updatemenu=1;
     }
     break;
@@ -907,7 +907,7 @@ void TOUR_CB(int var){
       updatemenu=1;
       delete_tourlist();
       create_tourlist();
-      updateviewtour();
+      UpdateViewTour();
       update_tourcontrols();
     }
     break;
