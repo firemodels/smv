@@ -601,7 +601,7 @@ void draw_geom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glLineWidth(2.0);
+      glLineWidth(geom_outline_width);
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
         float *xyzptr[3];
@@ -687,6 +687,7 @@ void draw_geom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
+      glLineWidth(geom_outline_width);
       glBegin(GL_LINES);
       glColor3fv(blue);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -757,6 +758,7 @@ void draw_geom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glLineWidth(geom_outline_width);
       glBegin(GL_LINES);
       glColor3fv(blue);
       for(j = 0; j < geomlisti->ntriangles; j++){
@@ -826,6 +828,7 @@ void draw_geom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glLineWidth(geom_outline_width);
       glBegin(GL_LINES);
 
       for(ii = 0; ii < geomlisti->nedges; ii++){
@@ -3127,6 +3130,7 @@ void draw_geomdata(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glLineWidth(geom_outline_width);
       glBegin(GL_LINES);
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];

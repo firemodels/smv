@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(geom_outline_width, 2.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
 SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
 SVEXTERN int SVDECL(showall_3dslices, 0);

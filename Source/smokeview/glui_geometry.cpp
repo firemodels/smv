@@ -384,6 +384,7 @@ extern "C" void glui_geometry_setup(int main_window){
   SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
   SPINNER_geom_transparency->set_float_limits(0.0,1.0);
   CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, Volume_CB);
+  glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
   CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "smooth", &smooth_geom_normal);
 
   glui_geometry->add_column_to_panel(PANEL_group1,false);
