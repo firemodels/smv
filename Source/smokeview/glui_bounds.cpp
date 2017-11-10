@@ -1157,7 +1157,7 @@ void Script_CB(int var){
 
   switch(var){
   case SCRIPT_STEP_NOW:
-    keyboard('^', FROM_SMOKEVIEW);
+    Keyboard('^', FROM_SMOKEVIEW);
     break;
   case SCRIPT_CANCEL_NOW:
     current_script_command = NULL;
@@ -1211,7 +1211,7 @@ void Script_CB(int var){
     }
     break;
   case SCRIPT_RENDER:
-    keyboard('r', FROM_SMOKEVIEW);
+    Keyboard('r', FROM_SMOKEVIEW);
     break;
   case SCRIPT_RENDER_SUFFIX:
   {

@@ -1503,7 +1503,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     UpdateTimes();
     UpdatePart5Extremes();
     updatemenu = 1;
-    Idle_CB();
+    IdleCB();
 #ifdef pp_PARTDEFER
   }
 #endif

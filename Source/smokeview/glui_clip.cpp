@@ -131,7 +131,7 @@ void CLIP_CB(int var){
     break;
   case CLIP_all:
     updatefacelists = 1;
-    update_clipplanes();
+    UpdateClipPlanes();
     if(clip_mode != CLIP_OFF){
       for(i = 0;i < 6;i++){
         CLIP_CB(i);

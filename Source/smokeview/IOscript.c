@@ -980,7 +980,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   force_redisplay = 1;
   UpdateFrameNumber(0);
   stept=1;
-  keyboard('t', FROM_SMOKEVIEW);
+  Keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
   UpdateLoadtimeVal(valtime);
 }
@@ -1044,7 +1044,7 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
   index = scripti->ival;
   framenum = scripti->ival2;
   LoadSmokeFrame(index, framenum);
-  keyboard('r', FROM_SMOKEVIEW);
+  Keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
@@ -1124,7 +1124,7 @@ void script_loadisoframe(scriptdata *scripti, int flag){
   force_redisplay = 1;
   UpdateFrameNumber(0);
   UpdateTimeLabels();
-  keyboard('r', FROM_SMOKEVIEW);
+  Keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
@@ -1683,21 +1683,21 @@ void script_showplot3ddata(scriptdata *scripti){
   switch(dir){
     case XDIR:
       visx_all=showhide;
-      iplotx_all=get_index(val,XDIR,plotx_all,nplotx_all);
-      next_xindex(1,0);
-      next_xindex(-1,0);
+      iplotx_all=GetGridIndex(val,XDIR,plotx_all,nplotx_all);
+      NextXIndex(1,0);
+      NextXIndex(-1,0);
       break;
     case YDIR:
       visy_all=showhide;
-      iploty_all=get_index(val,YDIR,ploty_all,nploty_all);
-      next_yindex(1,0);
-      next_yindex(-1,0);
+      iploty_all=GetGridIndex(val,YDIR,ploty_all,nploty_all);
+      NextYIndex(1,0);
+      NextYIndex(-1,0);
       break;
     case ZDIR:
       visz_all=showhide;
-      iplotz_all=get_index(val,ZDIR,plotz_all,nplotz_all);
-      next_zindex(1,0);
-      next_zindex(-1,0);
+      iplotz_all=GetGridIndex(val,ZDIR,plotz_all,nplotz_all);
+      NextZIndex(1,0);
+      NextZIndex(-1,0);
       break;
     case ISO:
       isolevel=scripti->ival5;
@@ -2083,7 +2083,7 @@ void settimeval(float timeval){
         force_redisplay=1;
         UpdateFrameNumber(0);
         UpdateTimeLabels();
-        keyboard('t',FROM_SMOKEVIEW);
+        Keyboard('t',FROM_SMOKEVIEW);
         break;
       }
     }
@@ -2183,7 +2183,7 @@ int run_script(void){
         key = scripti->cval + strlen(scripti->cval) - 1;
         if(strncmp(scripti->cval,"ALT",3)==0)script_keystate=GLUT_ACTIVE_ALT;
 
-        keyboard(*key,FROM_SCRIPT);
+        Keyboard(*key,FROM_SCRIPT);
         returnval=1;
       }
       break;
@@ -2223,11 +2223,11 @@ int run_script(void){
       render_clip_top=scripti->ival5;
       break;
     case SCRIPT_RENDERONCE:
-      keyboard('r',FROM_SMOKEVIEW);
+      Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
     case SCRIPT_RENDERDOUBLEONCE:
-      keyboard('R',FROM_SMOKEVIEW);
+      Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;
       break;
     case SCRIPT_RENDERSTART:

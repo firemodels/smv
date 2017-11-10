@@ -611,7 +611,7 @@ void UpdateShow(void){
   olddrawColorLabel=drawColorLabel;
   if(showtime2==1)showtime=1;
   if(plotstate==DYNAMIC_PLOTS&&stept==1){
-    glutIdleFunc(Idle_CB);
+    glutIdleFunc(IdleCB);
   }
   else{
     glutIdleFunc(NULL);
@@ -776,7 +776,7 @@ void SynchTimes(void){
     }
 
   }
-  reset_gltime();
+  ResetGLTime();
 }
 
 /* ------------------ GetLoadvfileinfo ------------------------ */

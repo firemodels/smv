@@ -1176,7 +1176,7 @@ void readterrain(char *file, int ifile, int flag, int *errorcode){
   PRINTF("After terrain file load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
   glutPostRedisplay();
 }
 

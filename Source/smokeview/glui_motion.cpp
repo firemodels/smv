@@ -435,7 +435,7 @@ extern "C" void UpdateGluiSetViewXYZ(float *xyz){
 /* ------------------ gluiIdle ------------------------ */
 
 extern "C" void gluiIdle(void){
-  GLUI_Master.set_glutIdleFunc(Idle_CB);
+  GLUI_Master.set_glutIdleFunc(IdleCB);
 }
 
 /* ------------------ gluiIdleNULL ------------------------ */
@@ -1647,7 +1647,7 @@ extern "C" void Motion_CB(int var){
       if(windowsize_pointer>=2){
         SPINNER_window_width->set_int_val(glui_screenWidth);
         SPINNER_window_height->set_int_val(glui_screenHeight);
-        setScreenSize(&glui_screenWidth,&glui_screenHeight);
+        SetScreenSize(&glui_screenWidth,&glui_screenHeight);
         ResizeWindow(screenWidth,screenHeight);
       }
       break;
@@ -1655,7 +1655,7 @@ extern "C" void Motion_CB(int var){
       SnapScene();
       break;
     case WINDOW_RESIZE:
-      setScreenSize(&glui_screenWidth,&glui_screenHeight);
+      SetScreenSize(&glui_screenWidth,&glui_screenHeight);
       UpdateWindowSizeList();
       ResizeWindow(screenWidth,screenHeight);
       break;
@@ -1881,7 +1881,7 @@ extern "C" void UpdateMeshList1(int val){
   LIST_mesh2->set_int_val(val);
   if(val>=0&&val<nmeshes){
     RADIO_rotation_type->set_int_val(ROTATION_2AXIS);
-    handle_rotation_type(ROTATION_2AXIS);
+    HandleRotationType(ROTATION_2AXIS);
   }
 }
 
@@ -1972,7 +1972,7 @@ extern "C" void RotationTypeCB(int var){
   else{
     camera_current->quat_defined=0;
   }
-  handle_rotation_type(ROTATION_2AXIS);
+  HandleRotationType(ROTATION_2AXIS);
 }
 
 /* ------------------ Enable360Zoom ------------------------ */
@@ -2109,7 +2109,7 @@ void Render_CB(int var){
         }
         // change render skip to render one frame (there is no RENDER_CURRENT_MULTIPLE in the list)
         LIST_render_skip->set_int_val(RENDER_CURRENT_SINGLE);
-        keyboard('0', FROM_SMOKEVIEW);
+        Keyboard('0', FROM_SMOKEVIEW);
       }
       break;
     case RENDER_STOP:

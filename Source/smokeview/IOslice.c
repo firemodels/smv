@@ -1299,7 +1299,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
   PRINTF("After vslice load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 }
 
 /* ------------------ UpdateSliceFilenum ------------------------ */
@@ -4288,7 +4288,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #endif
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   exportdata = 1;
   if(exportdata == 0){

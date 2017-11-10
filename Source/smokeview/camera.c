@@ -212,7 +212,7 @@ void UpdateCamera(cameradata *ca){
       UpdateCurrentMesh(meshinfo);
     }
     highlight_mesh = current_mesh-meshinfo;
-    handle_rotation_type(EYE_CENTERED);
+    HandleRotationType(EYE_CENTERED);
     UpdateMeshList1(ca->rotation_index);
     update_trainer_moves();
 

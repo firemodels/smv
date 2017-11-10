@@ -879,7 +879,7 @@ void readzone(int ifile, int flag, int *errorcode){
     PRINTF("computing vent bounds\n");
     getzoneventbounds();
   }
-  Idle_CB();
+  IdleCB();
   CheckMemory;
 
 }

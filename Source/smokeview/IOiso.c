@@ -154,7 +154,7 @@ void readiso_geom_wrapup(void){
 
   UpdateTimes();
   get_faceinfo();
-  Idle_CB();
+  IdleCB();
 }
 
 /* ------------------ unloadiso ------------------------ */
@@ -200,7 +200,7 @@ void unloadiso(meshdata *meshi){
 
   UpdateTimes();
   updatemenu = 1;
-  Idle_CB();
+  IdleCB();
 
   return;
 }
@@ -803,7 +803,7 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   PRINTF("After iso load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   STOP_TIMER(total_time);
 

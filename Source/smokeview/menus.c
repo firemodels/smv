@@ -675,12 +675,12 @@ void SmokeColorbarMenu(int value){
   fire_colorbar = colorbarinfo + value;
   UpdateRGBColors(COLORBAR_INDEX_NONE);
   if(FlowDir>0){
-    keyboard('-',FROM_SMOKEVIEW);
-    keyboard(' ',FROM_SMOKEVIEW);
+    Keyboard('-',FROM_SMOKEVIEW);
+    Keyboard(' ',FROM_SMOKEVIEW);
   }
   else{
-    keyboard(' ',FROM_SMOKEVIEW);
-    keyboard('-',FROM_SMOKEVIEW);
+    Keyboard(' ',FROM_SMOKEVIEW);
+    Keyboard('-',FROM_SMOKEVIEW);
   }
   glutPostRedisplay();
 }
@@ -1566,7 +1566,7 @@ void RenderState(int onoff){
     rendering_status = onoff;
     Enable360Zoom();
     render_mode = RENDER_XYSINGLE;
-    setScreenSize(&saveW,&saveH);
+    SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
   }
 }
@@ -1618,19 +1618,19 @@ void RenderMenu(int value){
     break;
   case RENDER_CURRENT_SINGLE:
     render_from_menu=1;
-    keyboard('r',FROM_SMOKEVIEW);
+    Keyboard('r',FROM_SMOKEVIEW);
      break;
   case RENDER_CURRENT_360:
     LabelMenu(MENU_LABEL_HideAll);
     GetViewportInfo();
     RenderMenu(RENDER_CURRENT_SINGLE);
     render_from_menu = 1;
-    keyboard('R', FROM_SMOKEVIEW);
+    Keyboard('R', FROM_SMOKEVIEW);
     break;
   case RENDER_CURRENT_MULTIPLE:
     if(nrender_rows==1)RenderMenu(RENDER_CURRENT_SINGLE);
     render_from_menu=1;
-    keyboard('R',FROM_SMOKEVIEW);
+    Keyboard('R',FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);
@@ -1657,7 +1657,7 @@ void RenderMenu(int value){
       rendertourcount=0;
     }
     if(stept==0){
-      keyboard('t',FROM_SMOKEVIEW);
+      Keyboard('t',FROM_SMOKEVIEW);
     }
     RenderState(RENDER_ON);
     ResetItimes0();
@@ -1899,7 +1899,7 @@ void FrameRateMenu(int value){
     if(global_times==NULL&&realtime_flag!=0)updateUpdateFrameRateMenu=1;
   }
   else{
-    keyboard('t',FROM_SMOKEVIEW);
+    Keyboard('t',FROM_SMOKEVIEW);
     RenderState(RENDER_OFF);
     FlowDir=1;
   }
@@ -1908,7 +1908,7 @@ void FrameRateMenu(int value){
   if(opengldefined==1){
     glutPostRedisplay();
   }
-  reset_gltime();
+  ResetGLTime();
 }
 
 /* ------------------ IsoSurfaceTypeMenu ------------------------ */
@@ -2614,7 +2614,7 @@ void LoadVolsmoke3DMenu(int value){
     ShowBoundsDialog(DLG_3DSMOKE);
   }
   updatemenu = 1;
-  Idle_CB();
+  IdleCB();
   glutPostRedisplay();
   glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }

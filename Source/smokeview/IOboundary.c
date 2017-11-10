@@ -1676,7 +1676,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   PRINTF("After boundary file load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   STOP_TIMER(total_time);
   if(file_size!=0&&read_time>0.0){

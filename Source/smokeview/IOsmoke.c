@@ -5181,7 +5181,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
     if(cullactive==1)InitCull(cullsmoke);
 #endif
   Smoke3d_CB(UPDATE_SMOKEFIRE_COLORS);
-  Idle_CB();
+  IdleCB();
   STOP_TIMER(total_time);
 
   if(file_size!=0&&read_time>0.0){

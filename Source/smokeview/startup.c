@@ -441,7 +441,7 @@ void SetupGlut(int argc, char **argv){
       TRAINER_WIDTH=300;
       scrW = glutGet(GLUT_SCREEN_WIDTH)-TRAINER_WIDTH;
       scrH = glutGet(GLUT_SCREEN_HEIGHT)-50;
-      setScreenSize(&scrW,&scrH);
+      SetScreenSize(&scrW,&scrH);
       max_screenWidth = screenWidth;
       max_screenHeight = screenHeight;
     }
@@ -545,14 +545,14 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing callbacks - "));
 #endif
-  glutSpecialUpFunc(specialkeyboard_up_CB);
-  glutKeyboardUpFunc(keyboard_up_CB);
-  glutKeyboardFunc(keyboard_CB);
-  glutMouseFunc(mouse_CB);
-  glutSpecialFunc(specialkeyboard_CB);
-  glutMotionFunc(motion_CB);
-  glutReshapeFunc(Reshape_CB);
-  glutDisplayFunc(Display_CB);
+  glutSpecialUpFunc(SpecialKeyboardUpCB);
+  glutKeyboardUpFunc(KeyboardUpCB);
+  glutKeyboardFunc(KeyboardCB);
+  glutMouseFunc(MouseCB);
+  glutSpecialFunc(SpecialKeyboardCB);
+  glutMotionFunc(MotionCB);
+  glutReshapeFunc(ReshapeCB);
+  glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatus_CB);
 #ifdef _DEBUG

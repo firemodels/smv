@@ -367,7 +367,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
 #endif
   UpdateTimes();
   UpdateUnitDefs();
-  Idle_CB();
+  IdleCB();
   STOP_TIMER(total_time);
 
   if(file_size!=0&&read_time>0.0){
