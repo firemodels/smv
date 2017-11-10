@@ -1803,9 +1803,9 @@ void keyboard(unsigned char key, int flag){
     case 'q':
     case 'Q':
       blocklocation++;
-      if((blocklocation>BLOCKlocation_cad||
-         blocklocation>BLOCKlocation_exact)&&ncadgeom==0){
-         blocklocation=BLOCKlocation_grid;
+      if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
+                       blocklocation>BLOCKlocation_cad){
+        blocklocation=BLOCKlocation_grid;
       }
       if(showedit_dialog==1&&geomtest_option==NO_TEST){
         if(blocklocation==BLOCKlocation_exact){
