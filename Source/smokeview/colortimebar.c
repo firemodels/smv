@@ -113,6 +113,34 @@ void AddColorbar(int icolorbar){
 
 }
 
+/* ------------------ DrawSelectColorbar ------------------------ */
+
+void DrawSelectColorbar(void){
+  int i;
+  colorbardata *cbi;
+
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
+
+  glPointSize(20.0f);
+  glBegin(GL_POINTS);
+  for(i=0;i<cbi->nnodes;i++){
+    unsigned char *rrgb, r, g, b;
+
+    GetRGB(i+1, &r, &g, &b);
+    glColor3ub(r, g, b);
+
+    rrgb=cbi->rgb_node+3*i;
+    glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
+  }
+  glEnd();
+}
+
+
 /* ------------------ DrawColorbarPath ------------------------ */
 
 void DrawColorbarPath(void){

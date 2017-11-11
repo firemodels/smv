@@ -242,6 +242,65 @@ void WindowStatus(int state){
   }
 }
 
+
+/* ------------------ MouseEditColorbar ------------------------ */
+
+void MouseEditColorbar(int button, int state, int x, int y){
+  int val;
+  int mouse_x, mouse_y;
+  GLubyte r, g, b;
+  colorbardata *cbi;
+
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
+
+  mouse_x = x;
+  mouse_y = screenHeight-y;
+
+  glDisable(GL_BLEND);
+  glShadeModel(GL_FLAT);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DITHER);
+  glDisable(GL_FOG);
+  glDisable(GL_TEXTURE_1D);
+  glDisable(GL_TEXTURE_2D);
+
+  ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
+  glReadBuffer(GL_BACK);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED,   GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE,  GL_UNSIGNED_BYTE, &b);
+
+  r = r>>nredshift;
+  g = g>>ngreenshift;
+  b = b>>nblueshift;
+
+  val = (r<<(nbluebits+ngreenbits))|(g<<nbluebits)|b;
+  colorbaredit_drag = 0;
+  if(val>0&&val<=cbi->nnodes){
+
+    /* need to start colors at 1 so that black (color 0,0,0) is not interpreted as a blockage */
+
+    val--;
+    colorbaredit_drag = 1;
+    colorbarpoint = val;
+    Colorbar_CB(COLORBAR_SET);
+  }
+  glEnable(GL_BLEND);
+  glEnable(GL_LIGHTING);
+  glShadeModel(GL_SMOOTH);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_DITHER);
+  glEnable(GL_TEXTURE_1D);
+  glEnable(GL_TEXTURE_2D);
+}
+
 /* ------------------ MouseEditTour ------------------------ */
 
 void MouseEditTour(int button, int state, int x, int y){
@@ -886,6 +945,7 @@ void MouseCB(int button, int state, int xm, int ym){
         if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(button, state, xm, ym);
       }
       if(edittour==1&&blockageSelect==0)MouseEditTour(button,state,xm,ym);
+      if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
     }
@@ -999,6 +1059,56 @@ void TimebarDrag(int xm, int ym){
     timebar_drag=1;
   }
   IdleCB();
+}
+
+/* ------------------ DragColorbarEditNode ------------------------ */
+
+void DragColorbarEditNode(int xm, int ym){
+  float screen_perm[9];
+
+  if(viscolorbarpath==0)return;
+
+  switch(key_state){
+  case KEY_NONE:
+  case KEY_ALT:
+  case KEY_SHIFT:
+  case KEY_CTRL:
+  {
+    float xy[2] = {0.0,0.0}, xyz[3];
+    float rgb_node[3];
+
+    xyz[0] = (float)cb_rgb[0]/255.0;
+    xyz[1] = (float)cb_rgb[1]/255.0;
+    xyz[2] = (float)cb_rgb[2]/255.0;
+    GetScreenMapping(xyz, screen_perm);
+
+    // scale mouse coordinates
+
+    if(key_state!=KEY_ALT) xy[0] =  (float)(xm-mouse_down_xy0[0])/(float)screenWidth;
+    if(key_state!=KEY_CTRL)xy[1] = -(float)(ym-mouse_down_xy0[1])/(float)screenHeight;
+
+    // permute coordinates according to how screen is rotated
+
+    xyz[0] = DOT2(xy, screen_perm);
+    xyz[1] = DOT2(xy, screen_perm+3);
+    xyz[2] = DOT2(xy, screen_perm+6);
+
+    // compute mouse movement in rgb coordinates
+
+    cb_rgb[0] = CLAMP(cb_rgb[0]+255*xyz[0],0,255);
+    cb_rgb[1] = CLAMP(cb_rgb[1]+255*xyz[1],0,255);
+    cb_rgb[2] = CLAMP(cb_rgb[2]+255*xyz[2],0,255);
+    Colorbar_CB(COLORBAR_RGB);
+
+    mouse_down_xy0[0] = xm;
+    mouse_down_xy0[1] = ym;
+
+  }
+  break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
 }
 
 /* ------------------ DragTourNode ------------------------ */
@@ -1269,6 +1379,10 @@ void MotionCB(int xm, int ym){
   }
   if(tour_drag==1){
     DragTourNode(xm,ym);
+    return;
+  }
+  if(colorbaredit_drag==1){
+    DragColorbarEditNode(xm, ym);
     return;
   }
 

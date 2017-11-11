@@ -190,7 +190,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     }
   }
 
-  /* ++++++++++++++++++++++++ draw selected tours +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ DrawSelectTours +++++++++++++++++++++++++ */
 
   if(mode == SELECTOBJECT){
     if(edittour == 1 && ntourinfo>0){
@@ -504,14 +504,18 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     SNIFF_ERRORS("after ViewportScene");
   }
 
-
-
-  /* ++++++++++++++++++++++++ draw "fancy" colorbar +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ draw colorbar path using rgb as physical coordinates +++++++++++++++++++++++++ */
 
   if(viscolorbarpath == 1){
     if(colorbar_hidescene == 1)UNCLIP;
-    DrawColorbarPath();
-    SNIFF_ERRORS("after setColorbarClipPlanes 1");
+    if(mode==SELECTOBJECT){
+      DrawSelectColorbar();
+      SNIFF_ERRORS("after DrawSelectColorbars");
+    }
+    else{
+      DrawColorbarPath();
+      SNIFF_ERRORS("after DrawColorbarPath");
+    }
   }
   if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode, view_mode, quad, s_left, s_down);
 

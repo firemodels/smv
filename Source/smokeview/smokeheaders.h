@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void Colorbar_CB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
 #ifdef  pp_SPECTRAL
@@ -631,6 +632,7 @@ EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
 EXTERNCPP void SetGluiTourKeyframe(void);
 EXTERNCPP void DrawSelectTours(void);
+EXTERNCPP void DrawSelectColorbar(void);
 EXTERNCPP void FreeTour(tourdata *touri);
 EXTERNCPP void FreeTours(void);
 EXTERNCPP void InitTour(tourdata *touri);

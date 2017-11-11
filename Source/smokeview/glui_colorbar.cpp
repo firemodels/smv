@@ -56,12 +56,10 @@ GLUI_EditText *EDITTEXT_colorbar_label=NULL;
 
 GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL;
 
-int cb_rgb[3];
 int cb_usecolorbar_extreme;
 
 #define COLORBAR_LIST 0
 #define COLORBAR_CLOSE 1
-#define COLORBAR_RGB 2
 #define COLORBAR_NEXT 3
 #define COLORBAR_PREV 4
 #define COLORBAR_NEW 5
@@ -140,7 +138,7 @@ extern "C" void ShowGluiColorbar(void){
 
 /* ------------------ Colorbar_CB ------------------------ */
 
-void Colorbar_CB(int var){
+extern "C" void Colorbar_CB(int var){
   colorbardata *cbi;
   unsigned char *rgb_nodes;
   int i;
@@ -280,6 +278,7 @@ void Colorbar_CB(int var){
     break;
   case COLORBAR_NEXT:
   case COLORBAR_PREV:
+  case COLORBAR_SET:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(var == COLORBAR_NEXT){
