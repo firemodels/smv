@@ -23,20 +23,20 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     glPointSize((float)1.0);
 
 
-    /* ++++++++++++++++++++++++ draw north  +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ DrawNorth  +++++++++++++++++++++++++ */
 
     if(vis_northangle == 1){
       CLIP_GEOMETRY;
-      drawnorth();
-      SNIFF_ERRORS("after drawnorth");
+      DrawNorth();
+      SNIFF_ERRORS("after DrawNorth");
     }
 
-    /* ++++++++++++++++++++++++ draw trees +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ DrawTrees +++++++++++++++++++++++++ */
 
     if(ntreeinfo>0){
       CLIP_GEOMETRY;
-      drawtrees();
-      SNIFF_ERRORS("after drawtrees");
+      DrawTrees();
+      SNIFF_ERRORS("after DrawTrees");
     }
 
     /* ++++++++++++++++++++++++ draw particles +++++++++++++++++++++++++ */
@@ -280,7 +280,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       }
       switch(visTerrainType){
       case TERRAIN_3D:
-        drawterrain(terri, only_geom);
+        DrawTerrain(terri, only_geom);
         break;
       case TERRAIN_2D_STEPPED:
         if(cullfaces == 1)glDisable(GL_CULL_FACE);
@@ -300,10 +300,10 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
         break;
       case TERRAIN_3D_MAP:
         if(terrain_texture != NULL&&terrain_texture->loaded == 1){
-          drawterrain_texture(terri, only_geom);
+          DrawTerrainTexture(terri, only_geom);
         }
         else{
-          drawterrain(terri, only_geom);
+          DrawTerrain(terri, only_geom);
         }
         break;
       default:

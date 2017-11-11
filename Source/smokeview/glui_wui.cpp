@@ -195,10 +195,10 @@ extern "C" void WUI_CB(int var){
       Slice_CB(CHOPUPDATE);
       break;
     case TERRAIN_COLORS:
-      update_terrain_colors();
+      UpdateTerrainColors();
       break;
     case TERRAIN_VERT:
-      update_terrain(0,vertical_factor);
+      UpdateTerrain(0,vertical_factor);
       break;
     case TERRAIN_TYPE:
       if(visTerrainType==TERRAIN_3D){

@@ -1945,7 +1945,7 @@ void draw_part(const partdata *parti){
                 yy = yplts[sy[j]];
                 zz = zplts[sz[j]];
 
-                zoffset = get_zcell_val_offset(meshinfo,xx,yy,&loc);
+                zoffset = GetZCellValOffset(meshinfo,xx,yy,&loc);
                 if(vis[j]==1)glVertex3f(xx,yy,zz+zoffset);
               }
             }

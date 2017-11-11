@@ -2654,7 +2654,7 @@ void LoadUnloadMenu(int value){
   if(value==UNLOADALL){
    // leaving code here commented in case I later decide to unload terrain files
    // for(i=0;i<nterraininfo;i++){
-   //   readterrain("",i,UNLOAD,&errorcode);
+   //   ReadTerrain("",i,UNLOAD,&errorcode);
    // }
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
@@ -2709,7 +2709,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nterraininfo;i++){
       if(terraininfo[i].loaded==1){
-        readterrain(terraininfo[i].file,i,LOAD,&errorcode);
+        ReadTerrain(terraininfo[i].file,i,LOAD,&errorcode);
       }
     }
     for(i=0;i<nvsliceinfo;i++){
@@ -3806,7 +3806,7 @@ void UnloadTerrainMenu(int value){
   int errorcode;
 
   if(value >= 0 && value < nterraininfo){
-    readterrain("", value, UNLOAD, &errorcode);
+    ReadTerrain("", value, UNLOAD, &errorcode);
   }
   else if(value == MENU_UNLOADTERRAIN_UNLOADALL){
     for(i = 0; i < nterraininfo; i++){
@@ -3828,7 +3828,7 @@ void LoadTerrainMenu(int value){
     terraindata *terri;
 
     terri = terraininfo + value;
-    readterrain(terri->file,value,LOAD,&errorcode);
+    ReadTerrain(terri->file,value,LOAD,&errorcode);
   }
   else if(value==MENU_LOADTERRAIN_UNLOAD){
     UnloadTerrainMenu(value);
@@ -7198,7 +7198,7 @@ updatemenu=0;
     else{
 
       glutAddMenuEntry("-", MENU_DUMMY);
-      if(have_terrain_slice()==1){
+      if(HaveTerrainSlice()==1){
         if(planar_terrain_slice==1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
         if(planar_terrain_slice==0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
       }

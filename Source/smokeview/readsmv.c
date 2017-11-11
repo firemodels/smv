@@ -9003,8 +9003,8 @@ typedef struct {
       }
     }
   }
-  update_terrain(1,vertical_factor);
-  update_terrain_colors();
+  UpdateTerrain(1,vertical_factor);
+  UpdateTerrainColors();
   UpdateSmoke3DMenuLabels();
   UpdateVSliceTypes();
   update_patch_menulabels();
@@ -9044,7 +9044,7 @@ typedef struct {
 
   if(cullactive==1)InitCull(cullsmoke);
 #endif
-  update_mesh_terrain();
+  UpdateMeshTerrain();
 
   read_all_geom();
   ngeominfoptrs=0;
@@ -9604,8 +9604,8 @@ int ReadINI2(char *inifile, int localfile){
         terrain_rgba_zmax[i] = CLAMP(terrain_rgba_zmax[i], 0, 2255);
       }
       vertical_factor = CLAMP(vertical_factor, 0.25, 4.0);
-      update_terrain(0, vertical_factor);
-      update_terrain_colors();
+      UpdateTerrain(0, vertical_factor);
+      UpdateTerrainColors();
       continue;
     }
     if(Match(buffer, "SMOKESENSORS") == 1){
@@ -12186,7 +12186,7 @@ int ReadINI(char *inifile){
       PRINTF("complete");
       PRINTF("\n");
     }
-    update_terrain_options();
+    UpdateTerrainOptions();
   }
 
   // smokeview.ini in case directory

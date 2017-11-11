@@ -1102,8 +1102,8 @@ void InitOpenGL(void){
       terraindata *terri;
 
       terri = terraininfo + i;
-      if(terri->autoload==0&&terri->loaded==1)readterrain(terri->file,i,UNLOAD,&errorcode);
-      if(terri->autoload==1&&terri->loaded==0)readterrain(terri->file,i,LOAD,&errorcode);
+      if(terri->autoload==0&&terri->loaded==1)ReadTerrain(terri->file,i,UNLOAD,&errorcode);
+      if(terri->autoload==1&&terri->loaded==0)ReadTerrain(terri->file,i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
