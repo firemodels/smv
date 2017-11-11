@@ -629,7 +629,7 @@ EXTERNCPP void XYZView2AzElev(keyframe *kf,float *azimuth, float *elevation);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
-EXTERNCPP void SetGluiKeyframe(void);
+EXTERNCPP void SetGluiTourKeyframe(void);
 EXTERNCPP void DrawSelectTours(void);
 EXTERNCPP void FreeTour(tourdata *touri);
 EXTERNCPP void FreeTours(void);

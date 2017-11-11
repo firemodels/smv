@@ -1320,7 +1320,7 @@ void DeleteTour(int tour_index){
     selected_tour=NULL;
     selected_frame=NULL;
   }
-  SetGluiKeyframe();
+  SetGluiTourKeyframe();
   UpdateTourMenulabels();
   UpdateTimes();
   CreateTourList();

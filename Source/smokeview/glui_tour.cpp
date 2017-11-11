@@ -317,9 +317,9 @@ extern "C" void UpdateGluiKeyframe(void){
   SPINNER_z->set_float_val(tour_xyz[2]);
 }
 
-/* ------------------ SetGluiKeyframe ------------------------ */
+/* ------------------ SetGluiTourKeyframe ------------------------ */
 
-extern "C" void SetGluiKeyframe(void){
+extern "C" void SetGluiTourKeyframe(void){
   tourdata *ti;
   float *eye,*xyz_view;
 
@@ -470,7 +470,7 @@ void TourCB(int var){
   //  selected_frame=tourinfo[0].first_frame.next;
   //  selected_tour=tourinfo;
   //  if(selected_frame->next==NULL)selected_frame=NULL;
-  //  SetGluiKeyframe();
+  //  SetGluiTourKeyframe();
   //}
   if(selected_frame!=NULL){
     thistour=selected_tour;
@@ -483,14 +483,14 @@ void TourCB(int var){
     if(NextTour()==1){
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case TOUR_PREVIOUS:
     if(PrevTour()==1){
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case TOUR_CLOSE:
@@ -631,7 +631,7 @@ void TourCB(int var){
         NewSelect(thistour->first_frame.next);
       }
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case KEYFRAME_PREVIOUS:
     if(selected_frame==NULL&&tourinfo!=NULL){
@@ -648,13 +648,13 @@ void TourCB(int var){
         NewSelect(thistour->last_frame.prev);
       }
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case CONSTANTTOURVEL:
     UpdateTourControls();
     CreateTourPaths();
     UpdateTimes();
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case KEYFRAME_INSERT:
     if(selected_frame!=NULL){
@@ -715,7 +715,7 @@ void TourCB(int var){
       newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,key_params,viewtype1,key_zoom,key_view);
       CreateTourPaths();
       NewSelect(newframe);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case KEYFRAME_DELETE:
@@ -766,7 +766,7 @@ void TourCB(int var){
     switch(selectedtour_index){
     case TOURINDEX_ALL:
       TOURMENU(MENU_TOUR_SHOWALL); // show all tours
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       break;
     case TOURINDEX_MANUAL:
       edittour=0;
@@ -780,7 +780,7 @@ void TourCB(int var){
       selected_frame=selected_tour->first_frame.next;
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       break;
     }
     DeleteTourList();
@@ -813,7 +813,7 @@ void TourCB(int var){
     selected_tour=thistour;
     selectedtour_index = thistour - tourinfo;
     selectedtour_index_old=selectedtour_index;
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     CreateTourPaths();
     UpdateViewTour();
     UpdateTourControls();
@@ -824,7 +824,7 @@ void TourCB(int var){
   case TOUR_LABEL:
     if(thistour!=NULL){
       strcpy(thistour->label,tour_label);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       if(LISTBOX_tour!=NULL){
         LISTBOX_tour->delete_item(thistour-tourinfo);
         LISTBOX_tour->add_item(thistour-tourinfo,thistour->label);
@@ -839,7 +839,7 @@ void TourCB(int var){
         thistour->display=1;
         TOURMENU(thistour-tourinfo);
         NextTour();
-        SetGluiKeyframe();
+        SetGluiTourKeyframe();
         thistour->display=0;
       }
       else{

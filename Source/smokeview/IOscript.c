@@ -1932,7 +1932,7 @@ void script_settourkeyframe(scriptdata *scripti){
   }
   if(minkey!=NULL){
     NewSelect(minkey);
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     UpdateTourControls();
   }
 }

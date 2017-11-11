@@ -288,7 +288,7 @@ void MouseEditTour(int button, int state, int x, int y){
       selected_tour=NULL;
       itourknots=-1;
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     UpdateTourControls();
     tour_drag=1;
   }
