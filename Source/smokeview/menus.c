@@ -762,8 +762,8 @@ void ColorbarMenu(int value){
     colorbartype=value;
     selectedcolorbar_index2=colorbartype;
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
-    update_colorbar_type();
-    update_colorbar_list2();
+    UpdateColorbarType();
+    UpdateColorbarList2();
     if(colorbartype == bw_colorbar_index){
       setbwdata = 1;
     }

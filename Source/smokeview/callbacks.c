@@ -288,7 +288,7 @@ void MouseEditColorbar(int button, int state, int x, int y){
     val--;
     colorbaredit_drag = 1;
     colorbarpoint = val;
-    Colorbar_CB(COLORBAR_SET);
+    ColorbarCB(COLORBAR_SET);
   }
   glEnable(GL_BLEND);
   glEnable(GL_LIGHTING);
@@ -1098,7 +1098,7 @@ void DragColorbarEditNode(int xm, int ym){
     cb_rgb[0] = CLAMP(cb_rgb[0]+255*xyz[0],0,255);
     cb_rgb[1] = CLAMP(cb_rgb[1]+255*xyz[1],0,255);
     cb_rgb[2] = CLAMP(cb_rgb[2]+255*xyz[2],0,255);
-    Colorbar_CB(COLORBAR_RGB);
+    ColorbarCB(COLORBAR_RGB);
 
     mouse_down_xy0[0] = xm;
     mouse_down_xy0[1] = ym;

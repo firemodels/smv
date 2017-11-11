@@ -5,7 +5,7 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void Colorbar_CB(int var);
+EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
 #ifdef  pp_SPECTRAL
@@ -36,7 +36,7 @@ EXTERNCPP void update_extreme_vals(void);
 EXTERNCPP void Part_CB(int var);
 EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void Plot3D_CB(int var);
-EXTERNCPP void colorbar_global2local(void);
+EXTERNCPP void ColorbarGlobal2Local(void);
 EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
@@ -108,7 +108,7 @@ EXTERNCPP void update_glui_zonebounds(void);
 EXTERNCPP void glui_3dsmoke_setup(int main_window);
 EXTERNCPP void glui_bounds_setup(int main_window);
 EXTERNCPP void glui_clip_setup(int main_window);
-EXTERNCPP void glui_colorbar_setup(int main_window);
+EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void glui_device_setup(int main_window);
 EXTERNCPP void glui_geometry_setup(int main_window);
 EXTERNCPP void glui_labels_setup(int main_window);
@@ -299,8 +299,8 @@ EXTERNCPP void updateGluiTimeBounds(float time_min, float time_max);
 EXTERNCPP void settimeval(float timeval);
 EXTERNCPP void get_indep_var_indices(sv_object *smv_object,char **var_indep_strings, int nvars_indep,int *index);
 EXTERNCPP void get_evac_indices(sv_object *smv_object, int *evac_index,int *nevac_index);
-EXTERNCPP void update_colorbar_list(void);
-EXTERNCPP void update_colorbar_list2(void);
+EXTERNCPP void UpdateColorbarList(void);
+EXTERNCPP void UpdateColorbarList2(void);
 EXTERNCPP void update_colorbarflip(void);
 
 EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
@@ -551,8 +551,7 @@ EXTERNCPP void Labels_CB(int value);
 EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
 EXTERNCPP void update_extreme(void);
-EXTERNCPP void update_colorbar_type(void);
-EXTERNCPP void update_colorbar_label(void);
+EXTERNCPP void UpdateColorbarType(void);
 EXTERNCPP void InitCameraList(void);
 EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
 EXTERNCPP void AddDefaultViews(void);

@@ -2933,9 +2933,9 @@ extern "C" void Slice_CB(int var){
   }
   if(var==COLORBAR_LIST2){
       selectedcolorbar_index=get_colorbar_list_index();
-      update_colorbar_list();
+      UpdateColorbarList();
       ColorbarMenu(selectedcolorbar_index);
-      colorbar_global2local();
+      ColorbarGlobal2Local();
   }
   if(var==COLORBAR_SMOOTH){
     updatemenu=1;

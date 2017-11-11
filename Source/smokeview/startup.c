@@ -313,7 +313,7 @@ int SetupCase(int argc, char **argv){
 #endif
 
   if(ntourinfo==0)SetupTour();
-  glui_colorbar_setup(mainwindow_id);
+  GluiColorbarSetup(mainwindow_id);
   gluiMotionSetup(mainwindow_id);
   glui_bounds_setup(mainwindow_id);
   glui_shooter_setup(mainwindow_id);

@@ -640,7 +640,7 @@ extern "C" void glui_labels_setup(int main_window){
     CHECKBOX_show_extreme_mindata->set_int_val(0);
     Extreme_CB(COLORBAR_EXTREME_RGB);
   }
-  colorbar_global2local();
+  ColorbarGlobal2Local();
 
   ROLLOUT_split = glui_labels->add_rollout_to_panel(ROLLOUT_coloring, "Define split colorbar",false);
   PANEL_split1H = glui_labels->add_panel_to_panel(ROLLOUT_split, "color below split");
@@ -1044,9 +1044,9 @@ extern "C" void update_colorbarflip(void){
   CHECKBOX_colorbarflip->set_int_val(colorbarflip);
 }
 
-/* ------------------ update_colorbar_list2 ------------------------ */
+/* ------------------ UpdateColorbarList2 ------------------------ */
 
-extern "C" void update_colorbar_list2(void){
+extern "C" void UpdateColorbarList2(void){
   LIST_colorbar2->set_int_val(selectedcolorbar_index2);
 }
 
