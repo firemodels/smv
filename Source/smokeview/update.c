@@ -1853,7 +1853,7 @@ void UpdateShowScene(void){
   }
   if(updateclipvals == 1){
     Clip2Cam(camera_current);
-    update_clip_all();
+    UpdateClipAll();
     updateclipvals = 0;
   }
   if(update_selectedtour_index == 1){

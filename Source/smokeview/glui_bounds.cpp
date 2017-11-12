@@ -2921,18 +2921,18 @@ extern "C" void SliceCB(int var){
   }
   if(var==DATA_transparent){
     if(CHECKBOX_transparentflag2!=NULL)CHECKBOX_transparentflag2->set_int_val(use_transparency_data);
-    update_transparency();
+    UpdateTransparency();
     UpdateChopColors();
     UpdateIsoControls();
     return;
   }
 
   if(var==COLORBAR_EXTREME2){
-    update_extreme();
+    UpdateExtreme();
     return;
   }
   if(var==COLORBAR_LIST2){
-      selectedcolorbar_index=get_colorbar_list_index();
+      selectedcolorbar_index= GetColorbarListIndex();
       UpdateColorbarList();
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();
@@ -3169,7 +3169,7 @@ extern "C" void SliceCB(int var){
 
         PRINTF("research mode off\n");
       }
-      update_axislabels_smooth();
+      UpdateAxisLabelsSmooth();
       SliceCB(FILEUPDATE);
       break;
 #ifdef pp_BETA

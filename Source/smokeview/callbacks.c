@@ -1529,7 +1529,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'A':
       axislabels_smooth=1-axislabels_smooth;
-      update_axislabels_smooth();
+      UpdateAxisLabelsSmooth();
       break;
     case 'b':
     case 'B':
@@ -1791,7 +1791,7 @@ void Keyboard(unsigned char key, int flag){
       else{
         sensorrelsize *= 1.5;
       }
-      update_device_size();
+      UpdateDeviceSize();
       break;
     case 'k':
     case 'K':
@@ -2162,7 +2162,7 @@ void Keyboard(unsigned char key, int flag){
     case 'W':
       clip_mode++;
       if(clip_mode>3)clip_mode=0;
-      update_clip_all();
+      UpdateClipAll();
       break;
     case 'x':
     case 'X':

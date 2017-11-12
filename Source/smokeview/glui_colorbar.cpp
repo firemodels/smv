@@ -92,11 +92,11 @@ extern "C" void HideGluiColorbar(void){
   showcolorbar_dialog=0;
   if(show_extreme_mindata_save==1){
     show_extreme_mindata=1;
-    update_extreme();
+    UpdateExtreme();
   }
   if(show_extreme_maxdata_save==1){
     show_extreme_maxdata=1;
-    update_extreme();
+    UpdateExtreme();
   }
   if(glui_colorbar!=NULL){
     CopyCamera(camera_external,camera_external_save);
@@ -116,12 +116,12 @@ extern "C" void ShowGluiColorbar(void){
   show_extreme_mindata_save = show_extreme_mindata;
   if(show_extreme_mindata==1){
     show_extreme_mindata=0;
-    update_extreme();
+    UpdateExtreme();
   }
   show_extreme_maxdata_save = show_extreme_maxdata;
   if(show_extreme_maxdata==1){
     show_extreme_maxdata=0;
-    update_extreme();
+    UpdateExtreme();
   }
   if(glui_colorbar!=NULL){
     ReshapeCB(screenWidth,screenHeight);
@@ -295,7 +295,7 @@ extern "C" void ColorbarCB(int var){
     cbi = colorbarinfo + colorbartype;  //AddColorbar resizes (and possibly moves) colorbarinfo
     LISTBOX_colorbar->add_item(colorbartype, cbi->label);
     LISTBOX_colorbar->set_int_val(colorbartype);
-    add_colorbar_list2(colorbartype, cbi->label);
+    AddColorbarList2(colorbartype, cbi->label);
     ColorbarCB(COLORBAR_LIST);
     break;
   case COLORBAR_DELETE:
@@ -458,7 +458,7 @@ extern "C" void ColorbarGlobal2Local(void){
   SPINNER_right_green->set_int_val((int)(rgb_local[1]));
   SPINNER_right_blue->set_int_val( (int)(rgb_local[2]));
 
-  update_extreme_vals();
+  UpdateExtremeVals();
 
-  Extreme_CB(COLORBAR_EXTREME);
+  ExtremeCB(COLORBAR_EXTREME);
 }

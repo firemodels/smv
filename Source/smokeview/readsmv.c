@@ -9324,7 +9324,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-      update_glui_devices();
+      UpdateGluiDevices();
       continue;
     }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){

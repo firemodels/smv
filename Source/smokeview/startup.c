@@ -318,10 +318,10 @@ int SetupCase(int argc, char **argv){
   GluiBoundsSetup(mainwindow_id);
   glui_shooter_setup(mainwindow_id);
   glui_geometry_setup(mainwindow_id);
-  glui_clip_setup(mainwindow_id);
+  GluiClipSetup(mainwindow_id);
   glui_wui_setup(mainwindow_id);
-  glui_labels_setup(mainwindow_id);
-  glui_device_setup(mainwindow_id);
+  GluiLabelsSetup(mainwindow_id);
+  GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
   glui_alert_setup(mainwindow_id);
   glui_stereo_setup(mainwindow_id);

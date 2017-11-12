@@ -698,7 +698,7 @@ void ColorbarMenu(int value){
       break;
     case COLORBAR_FLIP:
       colorbarflip=1-colorbarflip;
-      update_colorbarflip();
+      UpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
@@ -706,17 +706,17 @@ void ColorbarMenu(int value){
       colorbarflip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
-      update_extreme();
+      UpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_BELOW:
       show_extreme_mindata=1-show_extreme_mindata;
-      update_extreme();
+      UpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_ABOVE:
       show_extreme_maxdata=1-show_extreme_maxdata;
-      update_extreme();
+      UpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_TOGGLE_BW_DATA:
@@ -739,7 +739,7 @@ void ColorbarMenu(int value){
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
      SetLabelControls();
-     update_transparency();
+     UpdateTransparency();
      break;
    case COLORBAR_CONTINUOUS:
      contour_type=SHADED_CONTOURS;
@@ -1417,7 +1417,7 @@ void FontMenu(int value){
   default:
     ASSERT(FFALSE);
   }
-  glui_update_fontindex();
+  GluiUpdateFontIndex();
   SetLabelControls();
 }
 
@@ -4883,7 +4883,7 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_ORIENTATION){
     show_device_orientation=1-show_device_orientation;
-    update_device_orientation();
+    UpdateDeviceOrientation();
   }
   else if(value == OBJECT_SHOWBEAM){
     showbeam_as_line = 1 - showbeam_as_line;

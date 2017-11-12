@@ -1106,7 +1106,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     cb = GetColorbar(default_fed_colorbar);
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
-      set_colorbar_list_index(colorbartype);
+      SetColorbarListIndex(colorbartype);
       SliceCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }
