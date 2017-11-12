@@ -914,7 +914,7 @@ extern "C" void Smoke3d_CB(int var){
     }
     break;
   case CANCEL_GENERATE_IMAGES:
-    Script_CB(SCRIPT_CANCEL_NOW);
+    ScriptCB(SCRIPT_CANCEL_NOW);
     break;
   case GENERATE_IMAGES:
     if(selected_tour==NULL){

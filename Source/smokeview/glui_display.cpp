@@ -565,7 +565,7 @@ extern "C" void glui_labels_setup(int main_window){
     int i;
 
     selectedcolorbar_index2=-1;
-    LIST_colorbar2=glui_labels->add_listbox_to_panel(ROLLOUT_coloring,_d("Colorbar:"),&selectedcolorbar_index2,COLORBAR_LIST2,Slice_CB);
+    LIST_colorbar2=glui_labels->add_listbox_to_panel(ROLLOUT_coloring,_d("Colorbar:"),&selectedcolorbar_index2,COLORBAR_LIST2,SliceCB);
 
     for(i=0;i<ncolorbars;i++){
       colorbardata *cbi;
@@ -580,13 +580,13 @@ extern "C" void glui_labels_setup(int main_window){
   PANEL_cb11=glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);
 
   PANEL_contours = glui_labels->add_panel_to_panel(PANEL_cb11,_d("Colorbar type:"));
-  RADIO2_plot3d_display=glui_labels->add_radiogroup_to_panel(PANEL_contours,&contour_type,UPDATEPLOT,Plot3D_CB);
+  RADIO2_plot3d_display=glui_labels->add_radiogroup_to_panel(PANEL_contours,&contour_type,UPDATEPLOT,Plot3DCB);
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Continuous"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Stepped"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Line"));
   CHECKBOX_colorbarflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _d("flip"), &colorbarflip, FLIP, Labels_CB);
 
-  SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,"Selection width:",GLUI_SPINNER_INT,&colorband,COLORBAND,Slice_CB);
+  SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,"Selection width:",GLUI_SPINNER_INT,&colorband,COLORBAND,SliceCB);
   SPINNER_colorband->set_int_limits(1,10);
 
   glui_labels->add_column_to_panel(PANEL_cb11,false);
@@ -594,12 +594,12 @@ extern "C" void glui_labels_setup(int main_window){
   CHECKBOX_labels_shade=glui_labels->add_checkbox_to_panel(PANEL_cb11,_d("Black/White (geometry)"),&setbw,LABELS_shade,Labels_CB);
   CHECKBOX_labels_shadedata=glui_labels->add_checkbox_to_panel(PANEL_cb11,_d("Black/White (data)"),&setbwdata,LABELS_shadedata,Labels_CB);
   CHECKBOX_transparentflag = glui_labels->add_checkbox_to_panel(PANEL_cb11, _d("Transparent (data)"),
-    &use_transparency_data, DATA_transparent, Slice_CB);
+    &use_transparency_data, DATA_transparent, SliceCB);
   SPINNER_labels_transparency_data = glui_labels->add_spinner_to_panel(PANEL_cb11, _d("level"),
-    GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, Slice_CB);
+    GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceCB);
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
-  CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_cb11, _d("Smooth colorbar labels"), &axislabels_smooth, COLORBAR_SMOOTH, Slice_CB);
+  CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_cb11, _d("Smooth colorbar labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceCB);
 
 
   PANEL_extreme = glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);

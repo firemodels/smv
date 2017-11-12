@@ -149,7 +149,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
 #endif
     UpdateTimes();
     UpdateUnitDefs();
-    update_glui_plot3d();
+    UpdateGluiPlot3D();
     return;
   }
   if(ReadPlot3dFile==0){
@@ -360,7 +360,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
     updatesurface();
   }
 
-  updateplot3dlistindex();
+  UpdatePlot3dListIndex();
 #ifdef pp_MEMPRINT
   PRINTF("After plot3d load: \n");
   PrintMemoryInfo;
@@ -385,7 +385,7 @@ void readplot3d(char *file, int ifile, int flag, int *errorcode){
     cache_qdata=0;
     FREEMEMORY(meshi->qdata);
   }
-  update_glui_plot3d();
+  UpdateGluiPlot3D();
   update_plot3dtitle();
   if(p->time>=0.0){
     char label[256];

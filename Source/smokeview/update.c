@@ -1559,7 +1559,7 @@ void UpdateTimes(void){
   updatefaces=1;
   if(nglobal_times>0){
     UpdateTimeLabels();
-    updateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
+    UpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
   }
   show_slice_terrain=0;
   if(visTerrainType==TERRAIN_3D_MAP){
@@ -1784,7 +1784,7 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
     colortabledata *newentryi, *fromi;
 
     fromi = ctableinfo+i;
-    newentryi=get_colortable(fromi->label);
+    newentryi= GetColorTable(fromi->label);
     if(newentryi==NULL){
       newentryi = colortableinfo + ncolortableinfo;
       ncolortableinfo++;

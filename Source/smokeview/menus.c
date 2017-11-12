@@ -497,7 +497,7 @@ void StaticVariableMenu(int value){
   updateallplotslices();
   updatemenu=1;
   glutPostRedisplay();
-  updateplot3dlistindex();
+  UpdatePlot3dListIndex();
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
@@ -522,7 +522,7 @@ void IsoVariableMenu(int value){
     updateplotslice(ZDIR);
     updatemenu=1;
     glutPostRedisplay();
-    updateplot3dlistindex();
+    UpdatePlot3dListIndex();
   }
 }
 
@@ -850,7 +850,7 @@ void IsoShowMenu(int value){
     if(visAIso!=0){
       plotstate=DYNAMIC_PLOTS;
     }
-    update_glui_isotype();
+    UpdateGluiIsotype();
     break;
    case MENU_ISOSHOW_ALLSOLID:
     transparent_state=ALL_SOLID;
@@ -1934,7 +1934,7 @@ void IsoSurfaceTypeMenu(int value){
       ASSERT(FFALSE);
       break;
     }
-    update_glui_plot3dtype();
+    UpdateGluiPlot3Dtype();
     updatemenu=1;
     glutPostRedisplay();
   }
@@ -2280,13 +2280,13 @@ void CompressMenu(int value){
   case MENU_ERASECOMPRESS:
     erase_all=1;
     overwrite_all=0;
-    update_overwrite();
+    UpdateOverwrite();
     CompressSVZip();
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
     overwrite_all=1-overwrite_all;
-    update_overwrite();
+    UpdateOverwrite();
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
@@ -2294,7 +2294,7 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
-    update_overwrite();
+    UpdateOverwrite();
     break;
   default:
     ASSERT(FFALSE);
@@ -2388,7 +2388,7 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_FILE_LOADING:
       defer_file_loading = 1 - defer_file_loading;
-      update_defer();
+      UpdateDefer();
       break;
     case SCRIPT_STEP:
       script_step=1-script_step;
@@ -2401,18 +2401,18 @@ void ScriptMenu(int value){
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;
-      glui_script_enable();
+      GluiScriptEnable();
       break;
     case SCRIPT_CONTINUE:
       script_step=0;
       break;
     case SCRIPT_START_RECORDING2:
       defer_file_loading = 1;
-      update_defer();
+      UpdateDefer();
       ScriptMenu(SCRIPT_START_RECORDING);
       break;
     case SCRIPT_START_RECORDING:
-      update_script_start();
+      UpdateScriptStart();
       get_newscriptfilename(newscriptfilename);
       script_recording = insert_scriptfile(newscriptfilename);
       scriptoutstream=fopen(newscriptfilename,"w");
@@ -2459,7 +2459,7 @@ void ScriptMenu(int value){
         scriptoutstream=NULL;
         PRINTF("Script recorder off\n");
       }
-      update_script_stop();
+      UpdateScriptStop();
       break;
     default:
       for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
@@ -2498,7 +2498,7 @@ void LuaScriptMenu(int value){
   switch(value){
     // case SCRIPT_FILE_LOADING:
     //   defer_file_loading = 1 - defer_file_loading;
-    //   update_defer();
+    //   UpdateDefer();
     //   break;
     default:
       for(luascriptfile=first_luascriptfile.next;luascriptfile->next!=NULL;luascriptfile=luascriptfile->next){
@@ -3074,7 +3074,7 @@ void ParticleStreakShowMenu(int value){
     streak5step=0;
     rvalue=streak_rvalue[value];
     UpdateStreakValue(rvalue-0.001);
-    update_glui_streakvalue(rvalue);
+    UpdateGluiStreakValue(rvalue);
 
   }
   updatemenu=1;
@@ -3218,7 +3218,7 @@ void ParticlePropShowMenu(int value){
   }
   else if(value==MENU_PROP_TRACERS){
     show_tracers_always=1-show_tracers_always;
-    updatetracers();
+    UpdateTracers();
   }
   else{
     int iclass;
@@ -4016,7 +4016,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateVSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4026,7 +4026,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateVSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4036,7 +4036,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateVSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
       case MENU_LOADVSLICE_SETTINGS:
@@ -4121,7 +4121,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4131,7 +4131,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4141,7 +4141,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateSliceDups();
-        update_slicedup_dialog();
+        UpdateSliceDupDialog();
       }
       break;
       case MENU_SLICECOLORDEFER:
@@ -4406,7 +4406,7 @@ void ShowPatchMenu(int value){
   }
   if(value==SHOW_CHAR){
     vis_threshold = 1 - vis_threshold;
-    updatechar();
+    UpdateChar();
   }
   if(value==SHOWALL_BOUNDARY){
     int ii;
@@ -5217,7 +5217,7 @@ updatemenu=0;
   PRINTF("Updating Menus %i In menu %i\n",menu_count++,in_menu);
   in_menu=1;
 #endif
-  update_showhidebuttons();
+  UpdateShowHideButtons();
   glutPostRedisplay();
 
   nsliceloaded=0;

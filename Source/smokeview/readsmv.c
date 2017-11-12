@@ -2160,7 +2160,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
-  updatechar();
+  UpdateChar();
 }
 
 /* ------------------ UpdateEndianInfo ------------------------ */
@@ -9500,7 +9500,7 @@ int ReadINI2(char *inifile, int localfile){
       data_evac_coloring = 1 - constant_evac_coloring;
       ONEORZERO(show_evac_colorbar);
       UpdateSliceMenuShow();
-      update_evac_parms();
+      UpdateEvacParms();
       continue;
     }
     if(Match(buffer, "DIRECTIONCOLOR") == 1){
@@ -9512,7 +9512,7 @@ int ReadINI2(char *inifile, int localfile){
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
       UpdateSliceMenuShow();
-      update_evac_parms();
+      UpdateEvacParms();
       continue;
     }
     if(Match(buffer, "OFFSETSLICE") == 1){
@@ -10261,7 +10261,7 @@ int ReadINI2(char *inifile, int localfile){
           patchi->setchopmax = setvalmax;
         }
       }
-      updatepatchlistindex2(buffer2ptr);
+      UpdatePatchListIndex2(buffer2ptr);
       continue;
     }
     if(Match(buffer, "V_ZONE") == 1){
@@ -10271,7 +10271,7 @@ int ReadINI2(char *inifile, int localfile){
       if(setzonemax == PERCENTILE_MIN)setzonemax = GLOBAL_MIN;
       if(setzonemin == SET_MIN)zonemin = zoneusermin;
       if(setzonemax == SET_MAX)zonemax = zoneusermax;
-      update_glui_zonebounds();
+      UpdateGluiZoneBounds();
       continue;
     }
     if(Match(buffer, "V_TARGET") == 1){
@@ -11369,7 +11369,7 @@ int ReadINI2(char *inifile, int localfile){
         iso_color[3] = CLAMP(iso_color[3], 0.0, 1.0);
       }
       update_isocolors();
-      update_iso_colorlevel();
+      UpdateIsoColorlevel();
       continue;
     }
     if(Match(buffer, "UNITCLASSES") == 1){

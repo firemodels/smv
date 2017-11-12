@@ -1107,7 +1107,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
       set_colorbar_list_index(colorbartype);
-      Slice_CB(COLORBAR_LIST2);
+      SliceCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }
   }
@@ -3455,7 +3455,7 @@ void SetSliceBounds(int slicetype){
     setslicechopmax=slicebounds[slicetype].setchopmax;
     slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
     slicemax_unit = slicemin_unit;
-    update_glui_slice_units();
+    UpdateGluiSliceUnits();
   }
 }
 

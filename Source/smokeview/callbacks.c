@@ -1512,7 +1512,7 @@ void Keyboard(unsigned char key, int flag){
           vecfactor*=1.5;
         }
         PRINTF("vector length factor: %f\n",vecfactor);
-        update_glui_vecfactor();
+        UpdateGluiVecFactor();
       }
       if(visVector==1&&ReadPlot3dFile==1){
         gbsave=current_mesh;
@@ -1572,7 +1572,7 @@ void Keyboard(unsigned char key, int flag){
         else{
           contour_type++;
           if(contour_type>2)contour_type=0;
-          update_plot3d_display();
+          UpdatePlot3dDisplay();
           UpdateRGBColors(COLORBAR_INDEX_NONE);
         }
       }
@@ -1659,7 +1659,7 @@ void Keyboard(unsigned char key, int flag){
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;
       UpdateHiddenFaces();
-      update_showhidebuttons();
+      UpdateShowHideButtons();
       glutPostRedisplay();
       break;
     case 'g':
@@ -1908,7 +1908,7 @@ void Keyboard(unsigned char key, int flag){
       }
       updateallplotslices();
       if(visiso==1&&cache_qdata==1)updatesurface();
-      updateplot3dlistindex();
+      UpdatePlot3dListIndex();
       break;
     case 'P':
       cursorPlot3D=1-cursorPlot3D;
@@ -1938,7 +1938,7 @@ void Keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT){
           research_mode=1-research_mode;
-          update_research_mode();
+          UpdateResearchMode();
           return;
         }
 
@@ -3140,7 +3140,7 @@ void DoScript(void){
         exit(0);
       }
       if(current_script_command==NULL){
-        glui_script_enable();
+        GluiScriptEnable();
       }
     }
     else{
