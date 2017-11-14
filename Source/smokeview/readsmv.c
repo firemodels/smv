@@ -10000,7 +10000,7 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "PROJECTION") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
-      Motion_CB(PROJECTION);
+      SceneMotionCB(PROJECTION);
       UpdateProjectionType();
       continue;
     }

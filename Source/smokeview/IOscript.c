@@ -914,7 +914,7 @@ void script_render360all(scriptdata *scripti){
   skip_render_frames = 1;
   //RenderMenu(skip_local);
   render_360=1;
-  Render_CB(RENDER_START);
+  RenderCB(RENDER_START);
 }
 
 /* ------------------ GetVolFrameMax ------------------------ */
@@ -1174,7 +1174,7 @@ void script_makemovie(scriptdata *scripti){
   strcpy(movie_name, scripti->cval);
   strcpy(render_file_base,scripti->cval2);
   movie_framerate=scripti->fval;
-  Render_CB(MAKE_MOVIE);
+  RenderCB(MAKE_MOVIE);
 }
 
 /* ------------------ script_loadparticles ------------------------ */

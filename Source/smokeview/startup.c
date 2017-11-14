@@ -314,7 +314,7 @@ int SetupCase(int argc, char **argv){
 
   if(ntourinfo==0)SetupTour();
   GluiColorbarSetup(mainwindow_id);
-  gluiMotionSetup(mainwindow_id);
+  GluiMotionSetup(mainwindow_id);
   GluiBoundsSetup(mainwindow_id);
   glui_shooter_setup(mainwindow_id);
   glui_geometry_setup(mainwindow_id);
@@ -550,7 +550,7 @@ void InitOpenGL(void){
   glutKeyboardFunc(KeyboardCB);
   glutMouseFunc(MouseCB);
   glutSpecialFunc(SpecialKeyboardCB);
-  glutMotionFunc(MotionCB);
+  glutMotionFunc(MouseDragCB);
   glutReshapeFunc(ReshapeCB);
   glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);

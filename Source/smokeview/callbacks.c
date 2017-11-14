@@ -1346,9 +1346,9 @@ int ThrottleGPU(void){
   return 0;
 }
 
-/* ------------------ MotionCB ------------------------ */
+/* ------------------ MouseDragCB ------------------------ */
 
-void MotionCB(int xm, int ym){
+void MouseDragCB(int xm, int ym){
 
   in_external=0;
 #ifdef pp_GPUTHROTTLE
@@ -2123,7 +2123,7 @@ void Keyboard(unsigned char key, int flag){
       switch(keystate){
         case GLUT_ACTIVE_ALT:
           projection_type = 1 - projection_type;
-          Motion_CB(PROJECTION);
+          SceneMotionCB(PROJECTION);
           break;
         default:
           visVector=1-visVector;

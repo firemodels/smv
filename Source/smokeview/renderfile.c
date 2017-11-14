@@ -75,7 +75,7 @@ void MakeMovie(void){
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
   if(runscript==0&& FILE_EXISTS(frame0)==NO){
-    Render_CB(RENDER_START);
+    RenderCB(RENDER_START);
     return;
   }
 
