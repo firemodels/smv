@@ -113,7 +113,7 @@ EXTERNCPP void GluiDeviceSetup(int main_window);
 EXTERNCPP void glui_geometry_setup(int main_window);
 EXTERNCPP void GluiLabelsSetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
-EXTERNCPP void glui_shooter_setup(int main_window);
+EXTERNCPP void GluiShooterSetup(int main_window);
 EXTERNCPP void glui_stereo_setup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void glui_trainer_setup(int main_window);
