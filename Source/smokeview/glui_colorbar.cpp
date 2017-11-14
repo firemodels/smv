@@ -244,6 +244,7 @@ extern "C" void ColorbarCB(int var){
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
     break;
   case COLORBAR_RGB:
+    show_colorbar_hint = 0;
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;

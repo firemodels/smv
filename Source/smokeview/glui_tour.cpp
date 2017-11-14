@@ -570,6 +570,7 @@ void TourCB(int var){
     break;
   case KEYFRAME_tXYZ:
     if(selected_frame!=NULL){
+      show_tour_hint = 0;
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
       eye = selected_frame->nodeval.eye;

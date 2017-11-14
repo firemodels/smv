@@ -274,7 +274,12 @@ void DrawTours(void){
         glVertex3fv(selected_frame->nodeval.xyz_view_abs);
       }
       glEnd();
+      if(show_tour_hint==1){
+        float *xyz;
 
+        xyz = selected_frame->nodeval.eye;
+        Output3Text(foregroundcolor,xyz[0],xyz[1],xyz[2],"click and drag to change tour node");
+      }
     }
 
     /* keyframe times */

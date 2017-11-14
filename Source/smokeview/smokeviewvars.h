@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(show_colorbar_hint, 1);
+SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
 SVEXTERN float SVDECL(geom_outline_width, 2.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
