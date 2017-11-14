@@ -82,6 +82,7 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 #define VIEW_times 27
 #define TOUR_UPDATELABEL 28
 #define TOUR_USECURRENT 29
+#define TOUR_REVERSE 35
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
@@ -161,6 +162,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_column_to_panel(PANEL_tour1,false);
   BUTTON_next_tour = glui_tour->add_button_to_panel(PANEL_tour1, _d("Next"), TOUR_NEXT, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _d("New"), TOUR_INSERT_NEW, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tour1, _d("Reverse"), TOUR_REVERSE, TourCB);
 
   if(ntourinfo>0){
     selectedtour_index = TOURINDEX_MANUAL;
@@ -792,6 +794,11 @@ void TourCB(int var){
     break;
   case TOUR_DELETE:
     DeleteTour(selectedtour_index);
+    break;
+  case TOUR_REVERSE:
+    if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
+      ReverseTour(tourinfo[selectedtour_index].label);
+    }
     break;
   case TOUR_INSERT_NEW:
   case TOUR_INSERT_COPY:

@@ -634,6 +634,7 @@ EXTERNCPP void DefaultTour(void);
 EXTERNCPP void NewSelect(keyframe *newselect);
 EXTERNCPP void DeleteTour(int tour_index);
 EXTERNCPP tourdata *AddTour(char *label);
+EXTERNCPP void ReverseTour(char *label);
 EXTERNCPP void InitCircularTour(void);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
