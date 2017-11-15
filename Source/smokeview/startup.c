@@ -324,7 +324,7 @@ int SetupCase(int argc, char **argv){
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
   glui_alert_setup(mainwindow_id);
-  glui_stereo_setup(mainwindow_id);
+  GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
 
   if(UpdateLIGHTS==1)UpdateLights(light_position0,light_position1);
