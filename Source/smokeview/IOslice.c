@@ -1107,7 +1107,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
       SetColorbarListIndex(colorbartype);
-      SliceCB(COLORBAR_LIST2);
+      SliceBoundCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }
   }

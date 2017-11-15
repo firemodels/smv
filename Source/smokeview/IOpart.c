@@ -1497,7 +1497,7 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     }
 
     parttype = 0;
-    PartCB_Init();
+    PartBoundCBInit();
     ParticlePropShowMenu(part5colorindex);
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();

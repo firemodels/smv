@@ -171,7 +171,7 @@ extern "C" void WUI_CB(int var){
       list_slice_index=fire_line_type;
       UpdateSliceList(list_slice_index);
 
-      SliceCB(FILETYPEINDEX);
+      SliceBoundCB(FILETYPEINDEX);
 
       setslicemin=1;
       setslicemax=1;
@@ -181,18 +181,18 @@ extern "C" void WUI_CB(int var){
       setslicechopmax=0;
       slicechopmin=fire_line_min;
 
-      SliceCB(SETVALMIN);
-      SliceCB(SETVALMAX);
-      SliceCB(VALMIN);
-      SliceCB(VALMAX);
+      SliceBoundCB(SETVALMIN);
+      SliceBoundCB(SETVALMAX);
+      SliceBoundCB(VALMIN);
+      SliceBoundCB(VALMAX);
 
-      SliceCB(SETCHOPMINVAL);
-      SliceCB(SETCHOPMAXVAL);
-      SliceCB(CHOPVALMIN);
-      SliceCB(CHOPVALMAX);
+      SliceBoundCB(SETCHOPMINVAL);
+      SliceBoundCB(SETCHOPMAXVAL);
+      SliceBoundCB(CHOPVALMIN);
+      SliceBoundCB(CHOPVALMAX);
 
-      SliceCB(FILEUPDATE);
-      SliceCB(CHOPUPDATE);
+      SliceBoundCB(FILEUPDATE);
+      SliceBoundCB(CHOPUPDATE);
       break;
     case TERRAIN_COLORS:
       UpdateTerrainColors();

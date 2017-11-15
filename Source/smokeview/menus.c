@@ -728,7 +728,7 @@ void ColorbarMenu(int value){
       else{
         ColorbarMenu(colorbartype_save);
       }
-      IsoCB(ISO_COLORS);
+      IsoBoundCB(ISO_COLORS);
       break;
     case COLORBAR_TOGGLE_BW:
       setbw=1-setbw;
@@ -770,7 +770,7 @@ void ColorbarMenu(int value){
     else{
       setbwdata = 0;
     }
-    IsoCB(ISO_COLORS);
+    IsoBoundCB(ISO_COLORS);
     SetLabelControls();
   }
   if(value>-10){

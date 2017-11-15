@@ -376,7 +376,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
       break;
     }
   }
-  if(is_fed_colorbar==1&&fed_loaded==1)SliceCB(FILEUPDATE);
+  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILEUPDATE);
 }
 
 /* ------------------ RemapColorbar ------------------------ */
