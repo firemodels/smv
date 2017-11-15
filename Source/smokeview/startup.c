@@ -317,7 +317,7 @@ int SetupCase(int argc, char **argv){
   GluiMotionSetup(mainwindow_id);
   GluiBoundsSetup(mainwindow_id);
   GluiShooterSetup(mainwindow_id);
-  glui_geometry_setup(mainwindow_id);
+  GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
   glui_wui_setup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);

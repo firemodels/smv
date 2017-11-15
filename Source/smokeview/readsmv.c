@@ -12947,7 +12947,7 @@ void WriteINI(int flag,char *filename){
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 
-  get_geom_dialog_state();
+  GetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
   fprintf(fileout, "AXISSMOOTH\n");

@@ -47,7 +47,7 @@ EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
 EXTERNCPP void UpdateGluiRender(void);
 EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
-EXTERNCPP void Volume_CB(int var);
+EXTERNCPP void VolumeCB(int var);
 EXTERNCPP void DrawSmokeTest(void);
 EXTERNCPP void Smoke3d_CB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
@@ -94,12 +94,12 @@ EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void UpdateGvecDown(int gvec_down_local);
 EXTERNCPP void DrawGravityAxis(void);
 EXTERNCPP void xyz2azelev(float *xyz,float *azimuth, float *elevation);
-EXTERNCPP void get_geom_dialog_state(void);
+EXTERNCPP void GetGeomDialogState(void);
 EXTERNCPP void UpdateDeviceOrientation(void);
 EXTERNCPP void UpdateGluiDevices(void);
 EXTERNCPP void update_colordevs(void);
-EXTERNCPP void update_visaxislabels(void);
-EXTERNCPP void update_geometry_controls(void);
+EXTERNCPP void UpdateVisAxisLabels(void);
+EXTERNCPP void UpdateGeometryControls(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
 // glui headers
@@ -110,7 +110,7 @@ EXTERNCPP void GluiBoundsSetup(int main_window);
 EXTERNCPP void GluiClipSetup(int main_window);
 EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
-EXTERNCPP void glui_geometry_setup(int main_window);
+EXTERNCPP void GluiGeometrySetup(int main_window);
 EXTERNCPP void GluiLabelsSetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
 EXTERNCPP void GluiShooterSetup(int main_window);
@@ -332,7 +332,7 @@ EXTERNCPP int GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
-EXTERNCPP void  OBJECT_CB(int flag);
+EXTERNCPP void  ObjectCB(int flag);
 EXTERNCPP void WUI_CB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
@@ -611,7 +611,7 @@ EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, in
 EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height);
 EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height);
 
-EXTERNCPP void Update_Blockvals(int flag);
+EXTERNCPP void UpdateBlockVals(int flag);
 
 EXTERNCPP void create_vol_tourlist(void);
 EXTERNCPP void delete_vol_tourlist(void);

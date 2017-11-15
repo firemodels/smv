@@ -601,7 +601,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_axis:
     visaxislabels = 1 - visaxislabels;
-    update_visaxislabels();
+    UpdateVisAxisLabels();
     break;
    case MENU_LABEL_textlabels:
      visLabels = 1 - visLabels;
@@ -4665,7 +4665,7 @@ void ImmersedMenu(int value){
       ASSERT(FFALSE);
       break;
   }
-  update_geometry_controls();
+  UpdateGeometryControls();
 
   glutPostRedisplay();
 }

@@ -441,7 +441,7 @@ void MouseEditBlockage(int button, int state, int x, int y){
         ASSERT(FFALSE);
         break;
     }
-    Update_Blockvals(SELECT_BLOCKS);
+    UpdateBlockVals(SELECT_BLOCKS);
   }
 }
 
@@ -941,7 +941,7 @@ void MouseCB(int button, int state, int xm, int ym){
 
     if(button==GLUT_LEFT_BUTTON){
       if(blockageSelect == 1){
-        get_geom_dialog_state();
+        GetGeomDialogState();
         if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(button, state, xm, ym);
       }
       if(edittour==1&&blockageSelect==0)MouseEditTour(button,state,xm,ym);
@@ -1004,7 +1004,7 @@ void MouseCB(int button, int state, int xm, int ym){
   }
   glutPostRedisplay();
   if(blockageSelect == 1){
-    get_geom_dialog_state();
+    GetGeomDialogState();
     if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
   }
 }
@@ -1927,7 +1927,7 @@ void Keyboard(unsigned char key, int flag){
         else{
           blockage_as_input=0;
         }
-        OBJECT_CB(BLOCKAGE_AS_INPUT2);
+        ObjectCB(BLOCKAGE_AS_INPUT2);
       }
       break;
     case 'r':
