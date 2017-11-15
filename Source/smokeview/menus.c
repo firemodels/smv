@@ -5058,7 +5058,7 @@ void GeometryMenu(int value){
     else{
       planar_terrain_slice=1;
     }
-    Update_Glui_Wui();
+    UpdateGluiWui();
     break;
   case GEOM_ShowAll:
     if(isZoneFireModel)visFrame=1;
