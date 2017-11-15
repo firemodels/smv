@@ -319,7 +319,7 @@ int SetupCase(int argc, char **argv){
   GluiShooterSetup(mainwindow_id);
   GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
-  glui_wui_setup(mainwindow_id);
+  GluiWuiSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);

@@ -117,7 +117,7 @@ EXTERNCPP void GluiShooterSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void glui_trainer_setup(int main_window);
-EXTERNCPP void glui_wui_setup(int main_window);
+EXTERNCPP void GluiWuiSetup(int main_window);
 
 EXTERNCPP void GluiUpdateFontIndex(void);
 EXTERNCPP void GluiScriptDisable(void);
@@ -136,7 +136,7 @@ EXTERNCPP void UpdateGluiPlot3D_units(void);
 EXTERNCPP void UpdateGluiPlot3Dtype(void);
 EXTERNCPP void UpdateGluiIsotype(void);
 EXTERNCPP void update_glui_viewlist(void);
-EXTERNCPP void Update_Glui_Wui(void);
+EXTERNCPP void UpdateGluiWui(void);
 EXTERNCPP void UpdateGluiStereo(void);
 EXTERNCPP void UpdateGluiStreakValue(float rvalue);
 EXTERNCPP void UpdateGluiZoom(void);
@@ -333,7 +333,7 @@ EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float l
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
 EXTERNCPP void  ObjectCB(int flag);
-EXTERNCPP void WUI_CB(int var);
+EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
