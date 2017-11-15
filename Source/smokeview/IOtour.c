@@ -278,7 +278,7 @@ void DrawTours(void){
         float *xyz;
 
         xyz = selected_frame->nodeval.eye;
-        Output3Text(foregroundcolor,xyz[0],xyz[1],xyz[2],"click and drag to change tour node");
+        Output3Text(foregroundcolor,xyz[0]+0.1,xyz[1]+0.1,xyz[2]+0.1,"click and drag to change tour node");
       }
     }
 
