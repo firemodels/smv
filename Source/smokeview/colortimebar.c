@@ -208,7 +208,12 @@ void DrawColorbarPath(void){
     glVertex3f(rgbleft[0]/255.0,rgbleft[1]/255.0,rgbleft[2]/255.0);
     glEnd();
     if(show_colorbar_hint==1){
-      Output3Text(foregroundcolor, rgbleft[0]/255.0, rgbleft[1]/255.0, rgbleft[2]/255.0, "click and drag to change colorbar node");
+      float xyz[3];
+
+      xyz[0] = rgbleft[0] / 255.0 + 0.1;
+      xyz[1] = rgbleft[1] / 255.0 + 0.1;
+      xyz[2] = rgbleft[2] / 255.0 + 0.1;
+      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], "click and drag to change colorbar node");
     }
   }
 
