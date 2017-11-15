@@ -814,7 +814,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
         break;
       }
     }
-    if(enableflag==1)enable_boundary_glui();
+    if(enableflag==1)EnableBoundaryGlui();
     updatemenu=1;
 #ifdef pp_MEMPRINT
     PRINTF("After boundary file unload: \n");
@@ -1643,7 +1643,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   }
 
   local2globalpatchbounds(patchi->label.shortlabel);
-  updatepatchlistindex(patchfilenum);
+  UpdatePatchListIndex(patchfilenum);
 
   if(wallcenter==1){
     int i;
@@ -1668,7 +1668,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   allexterior = 1-allexterior;
   ShowPatchMenu(EXTERIORwallmenu);
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->compression_type==COMPRESSED_ZLIB)disable_boundary_glui();
+  if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
@@ -1676,7 +1676,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   PRINTF("After boundary file load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   STOP_TIMER(total_time);
   if(file_size!=0&&read_time>0.0){
@@ -1754,7 +1754,7 @@ void global2localpatchbounds(const char *key){
       setpatchchopmax=patchi->setchopmax;
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
-      update_glui_patch_units();
+      UpdateGluiPatchUnits();
       update_hidepatchsurface();
 
       local2globalpatchbounds(key);

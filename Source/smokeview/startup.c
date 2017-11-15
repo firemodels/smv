@@ -92,7 +92,7 @@ void Init(void){
   InitCameraList();
   AddDefaultViews();
   CopyCamera(camera_external_save,camera_external);
-  UpdateGluiViewList();
+  UpdateGluiCameraViewList();
 
   //ResetGluiView(i_view_list);
 
@@ -313,19 +313,19 @@ int SetupCase(int argc, char **argv){
 #endif
 
   if(ntourinfo==0)SetupTour();
-  glui_colorbar_setup(mainwindow_id);
-  gluiMotionSetup(mainwindow_id);
-  glui_bounds_setup(mainwindow_id);
-  glui_shooter_setup(mainwindow_id);
-  glui_geometry_setup(mainwindow_id);
-  glui_clip_setup(mainwindow_id);
-  glui_wui_setup(mainwindow_id);
-  glui_labels_setup(mainwindow_id);
-  glui_device_setup(mainwindow_id);
+  GluiColorbarSetup(mainwindow_id);
+  GluiMotionSetup(mainwindow_id);
+  GluiBoundsSetup(mainwindow_id);
+  GluiShooterSetup(mainwindow_id);
+  GluiGeometrySetup(mainwindow_id);
+  GluiClipSetup(mainwindow_id);
+  GluiWuiSetup(mainwindow_id);
+  GluiLabelsSetup(mainwindow_id);
+  GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
-  glui_alert_setup(mainwindow_id);
-  glui_stereo_setup(mainwindow_id);
-  glui_3dsmoke_setup(mainwindow_id);
+  GluiAlertSetup(mainwindow_id);
+  GluiStereoSetup(mainwindow_id);
+  Glui3dSmokeSetup(mainwindow_id);
 
   if(UpdateLIGHTS==1)UpdateLights(light_position0,light_position1);
 
@@ -335,7 +335,7 @@ int SetupCase(int argc, char **argv){
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   Init();
-  glui_trainer_setup(mainwindow_id);
+  GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -441,7 +441,7 @@ void SetupGlut(int argc, char **argv){
       TRAINER_WIDTH=300;
       scrW = glutGet(GLUT_SCREEN_WIDTH)-TRAINER_WIDTH;
       scrH = glutGet(GLUT_SCREEN_HEIGHT)-50;
-      setScreenSize(&scrW,&scrH);
+      SetScreenSize(&scrW,&scrH);
       max_screenWidth = screenWidth;
       max_screenHeight = screenHeight;
     }
@@ -545,14 +545,14 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing callbacks - "));
 #endif
-  glutSpecialUpFunc(specialkeyboard_up_CB);
-  glutKeyboardUpFunc(keyboard_up_CB);
-  glutKeyboardFunc(keyboard_CB);
-  glutMouseFunc(mouse_CB);
-  glutSpecialFunc(specialkeyboard_CB);
-  glutMotionFunc(motion_CB);
-  glutReshapeFunc(Reshape_CB);
-  glutDisplayFunc(Display_CB);
+  glutSpecialUpFunc(SpecialKeyboardUpCB);
+  glutKeyboardUpFunc(KeyboardUpCB);
+  glutKeyboardFunc(KeyboardCB);
+  glutMouseFunc(MouseCB);
+  glutSpecialFunc(SpecialKeyboardCB);
+  glutMotionFunc(MouseDragCB);
+  glutReshapeFunc(ReshapeCB);
+  glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatus_CB);
 #ifdef _DEBUG
@@ -1102,8 +1102,8 @@ void InitOpenGL(void){
       terraindata *terri;
 
       terri = terraininfo + i;
-      if(terri->autoload==0&&terri->loaded==1)readterrain(terri->file,i,UNLOAD,&errorcode);
-      if(terri->autoload==1&&terri->loaded==0)readterrain(terri->file,i,LOAD,&errorcode);
+      if(terri->autoload==0&&terri->loaded==1)ReadTerrain(terri->file,i,UNLOAD,&errorcode);
+      if(terri->autoload==1&&terri->loaded==0)ReadTerrain(terri->file,i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;

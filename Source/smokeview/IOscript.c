@@ -183,7 +183,7 @@ void start_script(void){
     fprintf(stderr,"*** Error: Smokeview script does not exist\n");
     return;
   }
-  glui_script_disable();
+  GluiScriptDisable();
   current_script_command=scriptinfo-1;
 }
 
@@ -914,7 +914,7 @@ void script_render360all(scriptdata *scripti){
   skip_render_frames = 1;
   //RenderMenu(skip_local);
   render_360=1;
-  Render_CB(RENDER_START);
+  RenderCB(RENDER_START);
 }
 
 /* ------------------ GetVolFrameMax ------------------------ */
@@ -946,10 +946,10 @@ void LoadSmokeFrame(int meshnum, int framenum){
   if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
 
   max_frames = GetVolFrameMax(meshnum);
-  if(max_frames > 0)UpdateLoadframeMax(max_frames);
+  if(max_frames > 0)UpdateLoadFrameMax(max_frames);
   frame_old = framenum;
   framenum = CLAMP(framenum, 0, max_frames-1);
-  if(framenum!=frame_old)UpdateLoadframeVal(framenum);
+  if(framenum!=frame_old)UpdateLoadFrameVal(framenum);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -980,9 +980,9 @@ void LoadSmokeFrame(int meshnum, int framenum){
   force_redisplay = 1;
   UpdateFrameNumber(0);
   stept=1;
-  keyboard('t', FROM_SMOKEVIEW);
+  Keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
-  UpdateLoadtimeVal(valtime);
+  UpdateLoadTimeVal(valtime);
 }
 
 /* ------------------ LoadTimeFrame ------------------------ */
@@ -1032,7 +1032,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       smokeframe = i;
     }
   }
-  UpdateLoadframeVal(smokeframe);
+  UpdateLoadFrameVal(smokeframe);
   LoadSmokeFrame(meshnum, smokeframe);
 }
 
@@ -1044,7 +1044,7 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
   index = scripti->ival;
   framenum = scripti->ival2;
   LoadSmokeFrame(index, framenum);
-  keyboard('r', FROM_SMOKEVIEW);
+  Keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
@@ -1124,7 +1124,7 @@ void script_loadisoframe(scriptdata *scripti, int flag){
   force_redisplay = 1;
   UpdateFrameNumber(0);
   UpdateTimeLabels();
-  keyboard('r', FROM_SMOKEVIEW);
+  Keyboard('r', FROM_SMOKEVIEW);
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
@@ -1174,7 +1174,7 @@ void script_makemovie(scriptdata *scripti){
   strcpy(movie_name, scripti->cval);
   strcpy(render_file_base,scripti->cval2);
   movie_framerate=scripti->fval;
-  Render_CB(MAKE_MOVIE);
+  RenderCB(MAKE_MOVIE);
 }
 
 /* ------------------ script_loadparticles ------------------------ */
@@ -1556,16 +1556,16 @@ void script_plot3dprops(scriptdata *scripti){
   }
   updateallplotslices();
   if(visiso==1)updatesurface();
-  updateplot3dlistindex();
+  UpdatePlot3dListIndex();
 
   vecfactor=1.0;
   if(scripti->fval>=0.0)vecfactor=scripti->fval;
-  update_vector_widgets();
+  UpdateVectorWidgets();
 
   PRINTF("script: vecfactor=%f\n",vecfactor);
 
   contour_type=CLAMP(scripti->ival4,0,2);
-  update_plot3d_display();
+  UpdatePlot3dDisplay();
 
   if(visVector==1&&ReadPlot3dFile==1){
     meshdata *gbsave,*gbi;
@@ -1683,21 +1683,21 @@ void script_showplot3ddata(scriptdata *scripti){
   switch(dir){
     case XDIR:
       visx_all=showhide;
-      iplotx_all=get_index(val,XDIR,plotx_all,nplotx_all);
-      next_xindex(1,0);
-      next_xindex(-1,0);
+      iplotx_all=GetGridIndex(val,XDIR,plotx_all,nplotx_all);
+      NextXIndex(1,0);
+      NextXIndex(-1,0);
       break;
     case YDIR:
       visy_all=showhide;
-      iploty_all=get_index(val,YDIR,ploty_all,nploty_all);
-      next_yindex(1,0);
-      next_yindex(-1,0);
+      iploty_all=GetGridIndex(val,YDIR,ploty_all,nploty_all);
+      NextYIndex(1,0);
+      NextYIndex(-1,0);
       break;
     case ZDIR:
       visz_all=showhide;
-      iplotz_all=get_index(val,ZDIR,plotz_all,nplotz_all);
-      next_zindex(1,0);
-      next_zindex(-1,0);
+      iplotz_all=GetGridIndex(val,ZDIR,plotz_all,nplotz_all);
+      NextZIndex(1,0);
+      NextZIndex(-1,0);
       break;
     case ISO:
       isolevel=scripti->ival5;
@@ -1932,7 +1932,7 @@ void script_settourkeyframe(scriptdata *scripti){
   }
   if(minkey!=NULL){
     NewSelect(minkey);
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     UpdateTourControls();
   }
 }
@@ -2083,7 +2083,7 @@ void settimeval(float timeval){
         force_redisplay=1;
         UpdateFrameNumber(0);
         UpdateTimeLabels();
-        keyboard('t',FROM_SMOKEVIEW);
+        Keyboard('t',FROM_SMOKEVIEW);
         break;
       }
     }
@@ -2183,7 +2183,7 @@ int run_script(void){
         key = scripti->cval + strlen(scripti->cval) - 1;
         if(strncmp(scripti->cval,"ALT",3)==0)script_keystate=GLUT_ACTIVE_ALT;
 
-        keyboard(*key,FROM_SCRIPT);
+        Keyboard(*key,FROM_SCRIPT);
         returnval=1;
       }
       break;
@@ -2223,11 +2223,11 @@ int run_script(void){
       render_clip_top=scripti->ival5;
       break;
     case SCRIPT_RENDERONCE:
-      keyboard('r',FROM_SMOKEVIEW);
+      Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
     case SCRIPT_RENDERDOUBLEONCE:
-      keyboard('R',FROM_SMOKEVIEW);
+      Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;
       break;
     case SCRIPT_RENDERSTART:

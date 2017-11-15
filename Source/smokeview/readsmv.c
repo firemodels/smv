@@ -2160,7 +2160,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
-  updatechar();
+  UpdateChar();
 }
 
 /* ------------------ UpdateEndianInfo ------------------------ */
@@ -9003,8 +9003,8 @@ typedef struct {
       }
     }
   }
-  update_terrain(1,vertical_factor);
-  update_terrain_colors();
+  UpdateTerrain(1,vertical_factor);
+  UpdateTerrainColors();
   UpdateSmoke3DMenuLabels();
   UpdateVSliceTypes();
   update_patch_menulabels();
@@ -9044,7 +9044,7 @@ typedef struct {
 
   if(cullactive==1)InitCull(cullsmoke);
 #endif
-  update_mesh_terrain();
+  UpdateMeshTerrain();
 
   read_all_geom();
   ngeominfoptrs=0;
@@ -9324,7 +9324,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-      update_glui_devices();
+      UpdateGluiDevices();
       continue;
     }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
@@ -9500,7 +9500,7 @@ int ReadINI2(char *inifile, int localfile){
       data_evac_coloring = 1 - constant_evac_coloring;
       ONEORZERO(show_evac_colorbar);
       UpdateSliceMenuShow();
-      update_evac_parms();
+      UpdateEvacParms();
       continue;
     }
     if(Match(buffer, "DIRECTIONCOLOR") == 1){
@@ -9512,7 +9512,7 @@ int ReadINI2(char *inifile, int localfile){
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
       UpdateSliceMenuShow();
-      update_evac_parms();
+      UpdateEvacParms();
       continue;
     }
     if(Match(buffer, "OFFSETSLICE") == 1){
@@ -9586,7 +9586,7 @@ int ReadINI2(char *inifile, int localfile){
       sscanf(buffer, "%i", &stereotype);
       stereotype = CLAMP(stereotype, 0, 5);
       if(stereotype == STEREO_TIME&&videoSTEREO != 1)stereotype = STEREO_NONE;
-      Update_Glui_Stereo();
+      UpdateGluiStereo();
       continue;
     }
     if(Match(buffer, "TERRAINPARMS") == 1){
@@ -9604,8 +9604,8 @@ int ReadINI2(char *inifile, int localfile){
         terrain_rgba_zmax[i] = CLAMP(terrain_rgba_zmax[i], 0, 2255);
       }
       vertical_factor = CLAMP(vertical_factor, 0.25, 4.0);
-      update_terrain(0, vertical_factor);
-      update_terrain_colors();
+      UpdateTerrain(0, vertical_factor);
+      UpdateTerrainColors();
       continue;
     }
     if(Match(buffer, "SMOKESENSORS") == 1){
@@ -10000,7 +10000,7 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "PROJECTION") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
-      Motion_CB(PROJECTION);
+      SceneMotionCB(PROJECTION);
       UpdateProjectionType();
       continue;
     }
@@ -10261,7 +10261,7 @@ int ReadINI2(char *inifile, int localfile){
           patchi->setchopmax = setvalmax;
         }
       }
-      updatepatchlistindex2(buffer2ptr);
+      UpdatePatchListIndex2(buffer2ptr);
       continue;
     }
     if(Match(buffer, "V_ZONE") == 1){
@@ -10271,7 +10271,7 @@ int ReadINI2(char *inifile, int localfile){
       if(setzonemax == PERCENTILE_MIN)setzonemax = GLOBAL_MIN;
       if(setzonemin == SET_MIN)zonemin = zoneusermin;
       if(setzonemax == SET_MAX)zonemax = zoneusermax;
-      update_glui_zonebounds();
+      UpdateGluiZoneBounds();
       continue;
     }
     if(Match(buffer, "V_TARGET") == 1){
@@ -11046,7 +11046,7 @@ int ReadINI2(char *inifile, int localfile){
           scrWidth = glutGet(GLUT_SCREEN_WIDTH);
         }
         if(scrWidth != screenWidth){
-          setScreenSize(&scrWidth, NULL);
+          SetScreenSize(&scrWidth, NULL);
           screenWidthINI = scrWidth;
           update_screensize = 1;
         }
@@ -11061,7 +11061,7 @@ int ReadINI2(char *inifile, int localfile){
           scrHeight = glutGet(GLUT_SCREEN_HEIGHT);
         }
         if(scrHeight != screenHeight){
-          setScreenSize(NULL, &scrHeight);
+          SetScreenSize(NULL, &scrHeight);
           screenHeightINI = scrHeight;
           update_screensize = 1;
         }
@@ -11369,7 +11369,7 @@ int ReadINI2(char *inifile, int localfile){
         iso_color[3] = CLAMP(iso_color[3], 0.0, 1.0);
       }
       update_isocolors();
-      update_iso_colorlevel();
+      UpdateIsoColorlevel();
       continue;
     }
     if(Match(buffer, "UNITCLASSES") == 1){
@@ -12186,7 +12186,7 @@ int ReadINI(char *inifile){
       PRINTF("complete");
       PRINTF("\n");
     }
-    update_terrain_options();
+    UpdateTerrainOptions();
   }
 
   // smokeview.ini in case directory
@@ -12947,7 +12947,7 @@ void WriteINI(int flag,char *filename){
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 
-  get_geom_dialog_state();
+  GetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
   fprintf(fileout, "AXISSMOOTH\n");

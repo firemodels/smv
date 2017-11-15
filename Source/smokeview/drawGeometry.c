@@ -4694,7 +4694,7 @@ void DrawBlockages(int mode, int trans_flag){
   if(trans_flag!=DRAW_TRANSPARENT&&blocklocation!=BLOCKlocation_cad){
     if(mode==SELECTOBJECT){
       if(blockageSelect==1){
-        get_geom_dialog_state();
+        GetGeomDialogState();
         if(structured_isopen == 1 && unstructured_isopen == 0){
           DrawSelectFaces();
           return;
@@ -4740,7 +4740,7 @@ void LevelScene(int level_x, int level_y, float *quat){
 
     elev = camera_current->az_elev+1;
     *elev = 0.0;
-    update_trainer_moves();
+    UpdateTrainerMoves();
     camera_current->dirty=1;
   }
 
@@ -4789,7 +4789,7 @@ void SnapScene(void){
     ielev = (*elev-DELTA/2.0)/DELTA;
   }
   *elev = (int)(DELTA*ielev);
-  update_trainer_moves();
+  UpdateTrainerMoves();
   camera_current->dirty=1;
 
   if(rotation_type==ROTATION_3AXIS&&key_state == KEY_NONE){

@@ -611,7 +611,7 @@ void UpdateShow(void){
   olddrawColorLabel=drawColorLabel;
   if(showtime2==1)showtime=1;
   if(plotstate==DYNAMIC_PLOTS&&stept==1){
-    glutIdleFunc(Idle_CB);
+    glutIdleFunc(IdleCB);
   }
   else{
     glutIdleFunc(NULL);
@@ -776,7 +776,7 @@ void SynchTimes(void){
     }
 
   }
-  reset_gltime();
+  ResetGLTime();
 }
 
 /* ------------------ GetLoadvfileinfo ------------------------ */
@@ -1559,7 +1559,7 @@ void UpdateTimes(void){
   updatefaces=1;
   if(nglobal_times>0){
     UpdateTimeLabels();
-    updateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
+    UpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
   }
   show_slice_terrain=0;
   if(visTerrainType==TERRAIN_3D_MAP){
@@ -1784,7 +1784,7 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
     colortabledata *newentryi, *fromi;
 
     fromi = ctableinfo+i;
-    newentryi=get_colortable(fromi->label);
+    newentryi= GetColorTable(fromi->label);
     if(newentryi==NULL){
       newentryi = colortableinfo + ncolortableinfo;
       ncolortableinfo++;
@@ -1840,12 +1840,12 @@ void UpdateShowScene(void){
 #define MESH_LIST 4
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
-    Motion_CB(MESH_LIST);
+    SceneMotionCB(MESH_LIST);
     update_rotation_center = 0;
   }
   if(update_rotation_center_ini == 1){
     camera_current->rotation_index = glui_rotation_index_ini;
-    Motion_CB(MESH_LIST);
+    SceneMotionCB(MESH_LIST);
     update_rotation_center_ini = 0;
   }
   if(camera_current->dirty == 1){
@@ -1853,7 +1853,7 @@ void UpdateShowScene(void){
   }
   if(updateclipvals == 1){
     Clip2Cam(camera_current);
-    update_clip_all();
+    UpdateClipAll();
     updateclipvals = 0;
   }
   if(update_selectedtour_index == 1){
@@ -1916,7 +1916,7 @@ void UpdateDisplay(void){
     update_colorbartype = 0;
   }
   if(update_fire_line == 1){
-    WUI_CB(TERRAIN_FIRE_LINE_UPDATE);
+    WuiCB(TERRAIN_FIRE_LINE_UPDATE);
     update_fire_line = 0;
   }
   if(updatezoommenu == 1 || first_display > 0){

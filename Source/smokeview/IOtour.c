@@ -274,7 +274,12 @@ void DrawTours(void){
         glVertex3fv(selected_frame->nodeval.xyz_view_abs);
       }
       glEnd();
+      if(show_tour_hint==1){
+        float *xyz;
 
+        xyz = selected_frame->nodeval.eye;
+        Output3Text(foregroundcolor,xyz[0],xyz[1],xyz[2],"click and drag to change tour node");
+      }
     }
 
     /* keyframe times */
@@ -1147,6 +1152,64 @@ void InitCircularTour(void){
   thisframe->next = &(touri->last_frame);
 }
 
+/* ------------------ ReverseTour  ------------------------ */
+
+void ReverseTour(char *label){
+  tourdata *tourreverse=NULL;
+  keyframe *keyi, **keys;
+  float *times_con, *times_noncon;
+  int i;
+
+  if(label==NULL)return;
+  for(i = 0;i<ntourinfo;i++){
+    tourdata *tourj;
+
+    tourj = tourinfo+i;
+    if(strcmp(tourj->label, label)==0){
+      tourreverse = tourinfo+i;
+      break;
+    }
+  }
+  if(tourreverse==NULL)return;
+
+  NewMemory((void **)&keys, tourreverse->nkeyframes*sizeof(keyframe *));
+  NewMemory((void **)&times_con, tourreverse->nkeyframes*sizeof(float));
+  NewMemory((void **)&times_noncon, tourreverse->nkeyframes*sizeof(float));
+
+  keyi = &(tourreverse->first_frame);
+  for(i = 0;i<tourreverse->nkeyframes;i++){
+    keyi = keyi->next;
+    keys[tourreverse->nkeyframes-1-i] = keyi;
+    times_con[i] = keyi->con_time;
+    times_noncon[i] = keyi->noncon_time;
+  }
+
+  tourreverse->first_frame.next = keys[0];
+  keys[0]->prev = &tourreverse->first_frame;
+  for(i = 0;i<tourreverse->nkeyframes-1;i++){
+    keys[i]->next=keys[i+1];
+  }
+  for(i = 0;i<tourreverse->nkeyframes;i++){
+    keys[i]->con_time = times_con[i];
+    keys[i]->noncon_time = times_noncon[i];
+  }
+  for(i = 1;i<tourreverse->nkeyframes;i++){
+    keys[i]->prev = keys[i-1];
+  }
+  tourreverse->last_frame.prev = keys[tourreverse->nkeyframes-1];
+  keys[tourreverse->nkeyframes-1]->next = &tourreverse->last_frame;
+
+  FREEMEMORY(keys);
+  FREEMEMORY(times_con);
+  FREEMEMORY(times_noncon);
+
+  updatemenu = 1;
+
+  CreateTourPaths();
+  UpdateTimes();
+  return;
+}
+
 /* ------------------ AddTour  ------------------------ */
 
 tourdata *AddTour(char *label){
@@ -1320,7 +1383,7 @@ void DeleteTour(int tour_index){
     selected_tour=NULL;
     selected_frame=NULL;
   }
-  SetGluiKeyframe();
+  SetGluiTourKeyframe();
   UpdateTourMenulabels();
   UpdateTimes();
   CreateTourList();

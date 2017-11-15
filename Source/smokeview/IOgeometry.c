@@ -2502,7 +2502,7 @@ void draw_test_clip(void){
           }
         }
       }
-      Volume_CB(2);
+      VolumeCB(2);
     }
 
     if(npolys>10){

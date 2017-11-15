@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(show_colorbar_hint, 1);
+SVEXTERN int SVDECL(show_tour_hint, 1);
+SVEXTERN int cb_rgb[3];
 SVEXTERN float SVDECL(geom_outline_width, 2.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
 SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
@@ -751,7 +754,7 @@ SVEXTERN int SVDECL(glui_screenWidth,640), SVDECL(glui_screenHeight,480);
 SVEXTERN int windowsize_pointer;
 SVEXTERN int SVDECL(zonecolortype, ZONETEMP_COLOR);
 SVEXTERN int mxframepoints;
-SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbar_splitdrag,0);
+SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbar_splitdrag,0),SVDECL(colorbaredit_drag,0);
 SVEXTERN int SVDECL(global_colorbar_index,-1);
 SVEXTERN int fontindex;
 

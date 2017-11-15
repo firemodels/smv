@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define COLORBAR_SET 18
+#define COLORBAR_RGB 2
+
 #define DLG_3DSMOKE 0
 #define DLG_BOUNDARY 1
 #define DLG_SLICE 2

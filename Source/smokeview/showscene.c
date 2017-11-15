@@ -23,20 +23,20 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     glPointSize((float)1.0);
 
 
-    /* ++++++++++++++++++++++++ draw north  +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ DrawNorth  +++++++++++++++++++++++++ */
 
     if(vis_northangle == 1){
       CLIP_GEOMETRY;
-      drawnorth();
-      SNIFF_ERRORS("after drawnorth");
+      DrawNorth();
+      SNIFF_ERRORS("after DrawNorth");
     }
 
-    /* ++++++++++++++++++++++++ draw trees +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ DrawTrees +++++++++++++++++++++++++ */
 
     if(ntreeinfo>0){
       CLIP_GEOMETRY;
-      drawtrees();
-      SNIFF_ERRORS("after drawtrees");
+      DrawTrees();
+      SNIFF_ERRORS("after DrawTrees");
     }
 
     /* ++++++++++++++++++++++++ draw particles +++++++++++++++++++++++++ */
@@ -190,7 +190,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     }
   }
 
-  /* ++++++++++++++++++++++++ draw selected tours +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ DrawSelectTours +++++++++++++++++++++++++ */
 
   if(mode == SELECTOBJECT){
     if(edittour == 1 && ntourinfo>0){
@@ -280,7 +280,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       }
       switch(visTerrainType){
       case TERRAIN_3D:
-        drawterrain(terri, only_geom);
+        DrawTerrain(terri, only_geom);
         break;
       case TERRAIN_2D_STEPPED:
         if(cullfaces == 1)glDisable(GL_CULL_FACE);
@@ -300,10 +300,10 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
         break;
       case TERRAIN_3D_MAP:
         if(terrain_texture != NULL&&terrain_texture->loaded == 1){
-          drawterrain_texture(terri, only_geom);
+          DrawTerrainTexture(terri, only_geom);
         }
         else{
-          drawterrain(terri, only_geom);
+          DrawTerrain(terri, only_geom);
         }
         break;
       default:
@@ -504,14 +504,18 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     SNIFF_ERRORS("after ViewportScene");
   }
 
-
-
-  /* ++++++++++++++++++++++++ draw "fancy" colorbar +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ draw colorbar path using rgb as physical coordinates +++++++++++++++++++++++++ */
 
   if(viscolorbarpath == 1){
     if(colorbar_hidescene == 1)UNCLIP;
-    DrawColorbarPath();
-    SNIFF_ERRORS("after setColorbarClipPlanes 1");
+    if(mode==SELECTOBJECT){
+      DrawSelectColorbar();
+      SNIFF_ERRORS("after DrawSelectColorbars");
+    }
+    else{
+      DrawColorbarPath();
+      SNIFF_ERRORS("after DrawColorbarPath");
+    }
   }
   if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode, view_mode, quad, s_left, s_down);
 

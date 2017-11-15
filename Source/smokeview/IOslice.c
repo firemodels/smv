@@ -1106,8 +1106,8 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     cb = GetColorbar(default_fed_colorbar);
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
-      set_colorbar_list_index(colorbartype);
-      Slice_CB(COLORBAR_LIST2);
+      SetColorbarListIndex(colorbartype);
+      SliceBoundCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }
   }
@@ -1299,7 +1299,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
   PRINTF("After vslice load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 }
 
 /* ------------------ UpdateSliceFilenum ------------------------ */
@@ -3455,7 +3455,7 @@ void SetSliceBounds(int slicetype){
     setslicechopmax=slicebounds[slicetype].setchopmax;
     slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
     slicemax_unit = slicemin_unit;
-    update_glui_slice_units();
+    UpdateGluiSliceUnits();
   }
 }
 
@@ -4288,7 +4288,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #endif
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   exportdata = 1;
   if(exportdata == 0){

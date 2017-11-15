@@ -24,9 +24,9 @@
 #endif
 #endif
 
-/* ------------------ get_index ------------------------ */
+/* ------------------ GetGridIndex ------------------------ */
 
-int get_index(float val, int dir, float *plotxyz, int nplotxyz){
+int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
   int i;
   int return_index=0;
   float min_val,vali;
@@ -60,9 +60,9 @@ int get_index(float val, int dir, float *plotxyz, int nplotxyz){
   return return_index;
 }
 
-/* ------------------ next_xindex ------------------------ */
+/* ------------------ NexteXIndex  ------------------------ */
 
-void next_xindex(int inc,int flag){
+void NextXIndex(int inc,int flag){
   int i,j,first;
 
   first=1;
@@ -117,7 +117,7 @@ void next_xindex(int inc,int flag){
 
 /* ------------------ next_yindex ------------------------ */
 
-void next_yindex(int inc,int flag){
+void NextYIndex(int inc,int flag){
   int i,j,first;
 
   first=1;
@@ -172,7 +172,7 @@ void next_yindex(int inc,int flag){
 
 /* ------------------ next_zindex ------------------------ */
 
-void next_zindex(int inc,int flag){
+void NextZIndex(int inc,int flag){
   int i,j,first;
 
   first=1;
@@ -242,9 +242,68 @@ void WindowStatus(int state){
   }
 }
 
-/* ------------------ mouse_edit_tour ------------------------ */
 
-void mouse_edit_tour(int button, int state, int x, int y){
+/* ------------------ MouseEditColorbar ------------------------ */
+
+void MouseEditColorbar(int button, int state, int x, int y){
+  int val;
+  int mouse_x, mouse_y;
+  GLubyte r, g, b;
+  colorbardata *cbi;
+
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
+
+  mouse_x = x;
+  mouse_y = screenHeight-y;
+
+  glDisable(GL_BLEND);
+  glShadeModel(GL_FLAT);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DITHER);
+  glDisable(GL_FOG);
+  glDisable(GL_TEXTURE_1D);
+  glDisable(GL_TEXTURE_2D);
+
+  ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
+  glReadBuffer(GL_BACK);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED,   GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE,  GL_UNSIGNED_BYTE, &b);
+
+  r = r>>nredshift;
+  g = g>>ngreenshift;
+  b = b>>nblueshift;
+
+  val = (r<<(nbluebits+ngreenbits))|(g<<nbluebits)|b;
+  colorbaredit_drag = 0;
+  if(val>0&&val<=cbi->nnodes){
+
+    /* need to start colors at 1 so that black (color 0,0,0) is not interpreted as a blockage */
+
+    val--;
+    colorbaredit_drag = 1;
+    colorbarpoint = val;
+    ColorbarCB(COLORBAR_SET);
+  }
+  glEnable(GL_BLEND);
+  glEnable(GL_LIGHTING);
+  glShadeModel(GL_SMOOTH);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_DITHER);
+  glEnable(GL_TEXTURE_1D);
+  glEnable(GL_TEXTURE_2D);
+}
+
+/* ------------------ MouseEditTour ------------------------ */
+
+void MouseEditTour(int button, int state, int x, int y){
   int val, val1;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -288,7 +347,7 @@ void mouse_edit_tour(int button, int state, int x, int y){
       selected_tour=NULL;
       itourknots=-1;
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     UpdateTourControls();
     tour_drag=1;
   }
@@ -297,9 +356,9 @@ void mouse_edit_tour(int button, int state, int x, int y){
   glEnable(GL_LIGHTING);
 }
 
-/* ------------------ mouse_edit_blockage ------------------------ */
+/* ------------------ MouseEditBlockage ------------------------ */
 
-void mouse_edit_blockage(int button, int state, int x, int y){
+void MouseEditBlockage(int button, int state, int x, int y){
   int val, val1;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -382,13 +441,13 @@ void mouse_edit_blockage(int button, int state, int x, int y){
         ASSERT(FFALSE);
         break;
     }
-    Update_Blockvals(SELECT_BLOCKS);
+    UpdateBlockVals(SELECT_BLOCKS);
   }
 }
 
-/* ------------------ mouse_select_device ------------------------ */
+/* ------------------ MouseSelectDevice ------------------------ */
 
-void mouse_select_device(int button, int state, int x, int y){
+void MouseSelectDevice(int button, int state, int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -434,9 +493,9 @@ void mouse_select_device(int button, int state, int x, int y){
   }
 }
 
-/* ------------------ mouse_select_avatar ------------------------ */
+/* ------------------ MouseSelectAvatar ------------------------ */
 
-void mouse_select_avatar(int button, int state, int x, int y){
+void MouseSelectAvatar(int button, int state, int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -470,9 +529,9 @@ void mouse_select_avatar(int button, int state, int x, int y){
   }
 }
 
-/* ------------------ checktimebound ------------------------ */
+/* ------------------ CheckTimeBound ------------------------ */
 
-void checktimebound(void){
+void CheckTimeBound(void){
   int i;
 
   if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
@@ -554,9 +613,9 @@ void checktimebound(void){
 
 #define CB_SELECT_CONTINUE -2
 #define CB_SELECT_STOP -1
-/* ------------------ get_colorbar_index ------------------------ */
+/* ------------------ GetColorbarIndex ------------------------ */
 
-int get_colorbar_index(int flag, int x, int y){
+int GetColorbarIndex(int flag, int x, int y){
 
   if(flag==0||(colorbar_left_pos<=x&&x<=colorbar_right_pos)){
       y = screenHeight - y;
@@ -601,12 +660,12 @@ int glutGetModifiersNew(void){
 #define GLUTGETMODIFIERS glutGetModifiers
 #endif
 
-/* ------------------ colorbar_click ------------------------ */
+/* ------------------ ColorbarClick ------------------------ */
 
-int colorbar_click(int x, int y){
+int ColorbarClick(int x, int y){
   int colorbar_index;
 
-  colorbar_index = get_colorbar_index(1,x,y);
+  colorbar_index = GetColorbarIndex(1,x,y);
   if(colorbar_index>=0){
     int state;
 
@@ -634,9 +693,9 @@ int colorbar_click(int x, int y){
   return 0;
 }
 
-/* ------------------ timebar_click ------------------------ */
+/* ------------------ TimebarClick ------------------------ */
 
-int timebar_click(int x, int y){
+int TimebarClick(int x, int y){
   if(screenHeight-y<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
     int timebar_right_pos;
     int timebar_left_pos;
@@ -651,22 +710,22 @@ int timebar_click(int x, int y){
       itimes=0;
     }
 //    PRINTF("ngt=%i xl=%i x=%i xr=%i\n",nglobal_times,timebar_left_pos,x,timebar_right_pos);
-    checktimebound();
+    CheckTimeBound();
     timebar_drag=1;
     stept=0;
-    Idle_CB();
+    IdleCB();
     return 1;
   }
   return 0;
 }
 
-/* ------------------ update_mouseinfo ------------------------ */
+/* ------------------ UpdateMouseInfo ------------------------ */
 
 #define MOUSE_DOWN 0
 #define MOUSE_UP 1
 #define MOUSE_MOTION 2
 
-void update_mouseinfo(int flag, int xm, int ym){
+void UpdateMouseInfo(int flag, int xm, int ym){
   float thistime_local;
   float dx, dy;
   int maxWH;
@@ -807,9 +866,9 @@ void update_mouseinfo(int flag, int xm, int ym){
   camera_current->quat_defined=1;
 }
 
-/* ------------------ mouse_CB ------------------------ */
+/* ------------------ MouseCB ------------------------ */
 
-void mouse_CB(int button, int state, int xm, int ym){
+void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
@@ -823,15 +882,15 @@ void mouse_CB(int button, int state, int xm, int ym){
 #endif
   if(rotation_type==ROTATION_3AXIS){
     if(state==GLUT_DOWN){
-      update_mouseinfo(MOUSE_DOWN,xm,ym);
+      UpdateMouseInfo(MOUSE_DOWN,xm,ym);
     }
     else if(state==GLUT_UP){
-      update_mouseinfo(MOUSE_UP,xm,ym);
+      UpdateMouseInfo(MOUSE_UP,xm,ym);
     }
   }
 
   if(trainer_mode==1){
-    update_glui_viewlist();
+    SetGLuiViewListManual();
   }
   eye_xyz = camera_current->eye;
   if(selected_view!=-999){
@@ -854,7 +913,7 @@ void mouse_CB(int button, int state, int xm, int ym){
     colorbar_drag=0;
     colorbar_splitdrag=0;
     glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
-    update_trainer_moves();
+    UpdateTrainerMoves();
     return;
   }
 
@@ -882,19 +941,20 @@ void mouse_CB(int button, int state, int xm, int ym){
 
     if(button==GLUT_LEFT_BUTTON){
       if(blockageSelect == 1){
-        get_geom_dialog_state();
-        if(structured_isopen == 1 && unstructured_isopen == 0)mouse_edit_blockage(button, state, xm, ym);
+        GetGeomDialogState();
+        if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(button, state, xm, ym);
       }
-      if(edittour==1&&blockageSelect==0)mouse_edit_tour(button,state,xm,ym);
-      if(select_avatar==1)mouse_select_avatar(button,state,xm,ym);
-      if(select_device==1)mouse_select_device(button,state,xm,ym);
+      if(edittour==1&&blockageSelect==0)MouseEditTour(button,state,xm,ym);
+      if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
+      if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
+      if(select_device==1)MouseSelectDevice(button,state,xm,ym);
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
-      if(colorbar_click(xm,ym)==1)return;
+      if(ColorbarClick(xm,ym)==1)return;
     }
     if(visTimebar==1&&showtime==1){
-      if(timebar_click(xm,ym)==1)return;
+      if(TimebarClick(xm,ym)==1)return;
     }
     CopyCamera(camera_last,camera_current);
     if(canrestorelastview==0){
@@ -944,29 +1004,29 @@ void mouse_CB(int button, int state, int xm, int ym){
   }
   glutPostRedisplay();
   if(blockageSelect == 1){
-    get_geom_dialog_state();
-    if(structured_isopen == 1 && unstructured_isopen == 0)Display_CB();
+    GetGeomDialogState();
+    if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
   }
 }
 
-/* ------------------ Colorbar_Drag ------------------------ */
+/* ------------------ ColorbarDrag ------------------------ */
 
-void Colorbar_Drag(int xm, int ym){
+void ColorbarDrag(int xm, int ym){
   int colorbar_index;
 
-  colorbar_index = get_colorbar_index(0,xm,ym);
+  colorbar_index = GetColorbarIndex(0,xm,ym);
   if(colorbar_index>=0){
     colorbar_select_index=colorbar_index;
     UpdateRGBColors(colorbar_index);
   }
 }
 
-/* ------------------ Colorbar_SplitDrag ------------------------ */
+/* ------------------ ColorbarSplitDrag ------------------------ */
 
-void Colorbar_SplitDrag(int xm, int ym){
+void ColorbarSplitDrag(int xm, int ym){
   int colorbar_index;
 
-  colorbar_index = get_colorbar_index(0,xm,ym);
+  colorbar_index = GetColorbarIndex(0,xm,ym);
   if(colorbar_index>=0){
     int ii;
 
@@ -981,9 +1041,9 @@ void Colorbar_SplitDrag(int xm, int ym){
   }
 }
 
-/* ------------------ Timebar_Drag ------------------------ */
+/* ------------------ TimebarDrag ------------------------ */
 
-void Timebar_Drag(int xm, int ym){
+void TimebarDrag(int xm, int ym){
   if(nglobal_times>0){
     int timebar_right_pos;
     int timebar_left_pos;
@@ -995,15 +1055,64 @@ void Timebar_Drag(int xm, int ym){
     if(timebar_right_pos>timebar_left_pos){
       itimes = (float)nglobal_times*(float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
     }
-    checktimebound();
+    CheckTimeBound();
     timebar_drag=1;
   }
-  Idle_CB();
+  IdleCB();
 }
 
-/* ------------------ Drag_Tour_Node ------------------------ */
+/* ------------------ DragColorbarEditNode ------------------------ */
 
-void Drag_Tour_Node(int xm, int ym){
+void DragColorbarEditNode(int xm, int ym){
+  float screen_perm[9];
+
+  if(viscolorbarpath==0)return;
+
+  switch(key_state){
+  case KEY_NONE:
+  case KEY_ALT:
+  case KEY_SHIFT:
+  case KEY_CTRL:
+  {
+    float xy[2] = {0.0,0.0}, xyz[3];
+
+    xyz[0] = (float)cb_rgb[0]/255.0;
+    xyz[1] = (float)cb_rgb[1]/255.0;
+    xyz[2] = (float)cb_rgb[2]/255.0;
+    GetScreenMapping(xyz, screen_perm);
+
+    // scale mouse coordinates
+
+    if(key_state!=KEY_ALT) xy[0] =  (float)(xm-mouse_down_xy0[0])/(float)screenWidth;
+    if(key_state!=KEY_CTRL)xy[1] = -(float)(ym-mouse_down_xy0[1])/(float)screenHeight;
+
+    // permute coordinates according to how screen is rotated
+
+    xyz[0] = DOT2(xy, screen_perm);
+    xyz[1] = DOT2(xy, screen_perm+3);
+    xyz[2] = DOT2(xy, screen_perm+6);
+
+    // compute mouse movement in rgb coordinates
+
+    cb_rgb[0] = CLAMP(cb_rgb[0]+255*xyz[0],0,255);
+    cb_rgb[1] = CLAMP(cb_rgb[1]+255*xyz[1],0,255);
+    cb_rgb[2] = CLAMP(cb_rgb[2]+255*xyz[2],0,255);
+    ColorbarCB(COLORBAR_RGB);
+
+    mouse_down_xy0[0] = xm;
+    mouse_down_xy0[1] = ym;
+
+  }
+  break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ DragTourNode ------------------------ */
+
+void DragTourNode(int xm, int ym){
   float screen_perm[9];
 
   if(showtour_dialog==1&&edittour==1&&selected_frame!=NULL){
@@ -1059,9 +1168,9 @@ void Drag_Tour_Node(int xm, int ym){
   }
 }
 
-/* ------------------ Move_Gen_Slice ------------------------ */
+/* ------------------ MoveGenSlice ------------------------ */
 
-void Move_Gen_Slice(int xm, int ym){
+void MoveGenSlice(int xm, int ym){
   int dxm, dym;
 
   dxm = xm - start_xyz0[0];
@@ -1119,9 +1228,9 @@ void Move_Gen_Slice(int xm, int ym){
   }
 }
 
-/* ------------------ Move_Scene ------------------------ */
+/* ------------------ MoveScene ------------------------ */
 
-void Move_Scene(int xm, int ym){
+void MoveScene(int xm, int ym){
   float *eye_xyz, *az_elev;
   int dxm, dym;
   float elevation;
@@ -1219,9 +1328,9 @@ void Move_Scene(int xm, int ym){
   }
 }
 
-/* ------------------ throttle_gpu ------------------------ */
+/* ------------------ ThrottleGPU ------------------------ */
 
-int throttle_gpu(void){
+int ThrottleGPU(void){
   float fps;
 
   START_TIMER(thisMOTIONtime);
@@ -1236,54 +1345,58 @@ int throttle_gpu(void){
   return 0;
 }
 
-/* ------------------ motion_CB ------------------------ */
+/* ------------------ MouseDragCB ------------------------ */
 
-void motion_CB(int xm, int ym){
+void MouseDragCB(int xm, int ym){
 
   in_external=0;
 #ifdef pp_GPUTHROTTLE
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
-    if(throttle_gpu()==1)return;
+    if(ThrottleGPU()==1)return;
   }
 #endif
 
   glutPostRedisplay();
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
-    Colorbar_Drag(xm,ym);
+    ColorbarDrag(xm,ym);
     return;
   }
   if(
     colorbar_splitdrag==1&&
     (showtime==1 || showplot3d==1)&&current_colorbar!=NULL&&current_colorbar->nsplits==1){
-    Colorbar_SplitDrag(xm,ym);
+    ColorbarSplitDrag(xm,ym);
     return;
   }
   if(timebar_drag==1){
-    Timebar_Drag(xm,ym);
+    TimebarDrag(xm,ym);
     return;
   }
   if(move_gslice==1){
-    Move_Gen_Slice(xm,ym);
+    MoveGenSlice(xm,ym);
     return;
   }
   if(tour_drag==1){
-    Drag_Tour_Node(xm,ym);
+    DragTourNode(xm,ym);
+    return;
+  }
+  if(colorbaredit_drag==1){
+    DragColorbarEditNode(xm, ym);
     return;
   }
 
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
-    update_mouseinfo(MOUSE_MOTION,xm,ym);
+    UpdateMouseInfo(MOUSE_MOTION,xm,ym);
   }
   if((rotation_type==ROTATION_2AXIS||rotation_type==ROTATION_3AXIS)&&gvec_down==1&&key_state == KEY_NONE){
     UpdateGvecDown(0);
   }
-  Move_Scene(xm,ym);
+  MoveScene(xm,ym);
 }
 
-/* ------------------ keyboard_up_CB ------------------------ */
+/* ------------------ KeyboardUpCB ------------------------ */
 
-void keyboard_up_CB(unsigned char key, int x, int y){
+void KeyboardUpCB(unsigned char key, int x, int y){
   resetclock=1;
 #ifdef pp_GLUTGET
   alt_ctrl_key_state = KEY_NONE;
@@ -1291,9 +1404,9 @@ void keyboard_up_CB(unsigned char key, int x, int y){
 }
 
 #ifdef pp_GPU_CULL_STATE
-/* ------------------ print_gpu_cull_state ------------------------ */
+/* ------------------ PrintGPUCullState ------------------------ */
 
-void print_gpu_cull_state(void){
+void PrintGPUCullState(void){
   char gpu_label[128];
 #ifdef pp_CULL
   char cull_label[128];
@@ -1334,9 +1447,9 @@ void print_gpu_cull_state(void){
 }
 #endif
 
-/* ------------------ keyboard ------------------------ */
+/* ------------------ Keyboard ------------------------ */
 
-void keyboard(unsigned char key, int flag){
+void Keyboard(unsigned char key, int flag){
   char key2;
   int skip2;
   meshdata *gbsave,*gbi;
@@ -1373,7 +1486,7 @@ void keyboard(unsigned char key, int flag){
         break;
       }
       if(rotation_type==EYE_CENTERED){
-        handle_move_keys(256+key2);
+        HandleMoveKeys(256+key2);
         break;
       }
       if((visVector==1&&ReadPlot3dFile==1)||showvslice==1||isZoneFireModel==1){
@@ -1398,7 +1511,7 @@ void keyboard(unsigned char key, int flag){
           vecfactor*=1.5;
         }
         PRINTF("vector length factor: %f\n",vecfactor);
-        update_glui_vecfactor();
+        UpdateGluiVecFactor();
       }
       if(visVector==1&&ReadPlot3dFile==1){
         gbsave=current_mesh;
@@ -1415,7 +1528,7 @@ void keyboard(unsigned char key, int flag){
       break;
     case 'A':
       axislabels_smooth=1-axislabels_smooth;
-      update_axislabels_smooth();
+      UpdateAxisLabelsSmooth();
       break;
     case 'b':
     case 'B':
@@ -1458,7 +1571,7 @@ void keyboard(unsigned char key, int flag){
         else{
           contour_type++;
           if(contour_type>2)contour_type=0;
-          update_plot3d_display();
+          UpdatePlot3dDisplay();
           UpdateRGBColors(COLORBAR_INDEX_NONE);
         }
       }
@@ -1480,9 +1593,9 @@ void keyboard(unsigned char key, int flag){
           else{
             if(nsmoke3dinfo>0&&cullactive==1&&gpuactive==1){
               cullsmoke=1-cullsmoke;
-              update_smoke3dflags();
+              UpdateSmoke3dFlags();
               InitCull(cullsmoke);
-              print_gpu_cull_state();
+              PrintGPUCullState();
             }
             if(cullactive==0||gpuactive==0)cullsmoke=0;
           }
@@ -1506,7 +1619,7 @@ void keyboard(unsigned char key, int flag){
       case GLUT_ACTIVE_CTRL:
       default:
         if(rotation_type==EYE_CENTERED){
-          handle_move_keys(256+key2);
+          HandleMoveKeys(256+key2);
         }
         else{
           demo_mode++;
@@ -1527,7 +1640,7 @@ void keyboard(unsigned char key, int flag){
         if(rotation_type>3)rotation_type=0;
         RotationTypeCB(rotation_type);
         UpdateRotationType(rotation_type);
-        handle_rotation_type(ROTATION_2AXIS);
+        HandleRotationType(ROTATION_2AXIS);
       }
       break;
     case 'f':
@@ -1545,7 +1658,7 @@ void keyboard(unsigned char key, int flag){
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;
       UpdateHiddenFaces();
-      update_showhidebuttons();
+      UpdateShowHideButtons();
       glutPostRedisplay();
       break;
     case 'g':
@@ -1587,9 +1700,9 @@ void keyboard(unsigned char key, int flag){
         usegpu=0;
       }
       if(nsmoke3dinfo>0){
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
       }
-      print_gpu_cull_state();
+      PrintGPUCullState();
       return;
 #endif
     case 'h':
@@ -1677,7 +1790,7 @@ void keyboard(unsigned char key, int flag){
       else{
         sensorrelsize *= 1.5;
       }
-      update_device_size();
+      UpdateDeviceSize();
       break;
     case 'k':
     case 'K':
@@ -1693,7 +1806,7 @@ void keyboard(unsigned char key, int flag){
           smokedrawtest=1-smokedrawtest;
         }
         PRINTF("smokecullflag=%i\n smokedrawtest=%i\n",smokecullflag,smokedrawtest);
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
         return;
       }
       break;
@@ -1723,7 +1836,7 @@ void keyboard(unsigned char key, int flag){
         adjustalphaflag++;
         if(adjustalphaflag>3)adjustalphaflag=0;
         PRINTF("adjustalphaflag=%i\n",adjustalphaflag);
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
         return;
       }
       break;
@@ -1794,7 +1907,7 @@ void keyboard(unsigned char key, int flag){
       }
       updateallplotslices();
       if(visiso==1&&cache_qdata==1)updatesurface();
-      updateplot3dlistindex();
+      UpdatePlot3dListIndex();
       break;
     case 'P':
       cursorPlot3D=1-cursorPlot3D;
@@ -1803,9 +1916,9 @@ void keyboard(unsigned char key, int flag){
     case 'q':
     case 'Q':
       blocklocation++;
-      if((blocklocation>BLOCKlocation_cad||
-         blocklocation>BLOCKlocation_exact)&&ncadgeom==0){
-         blocklocation=BLOCKlocation_grid;
+      if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
+                       blocklocation>BLOCKlocation_cad){
+        blocklocation=BLOCKlocation_grid;
       }
       if(showedit_dialog==1&&geomtest_option==NO_TEST){
         if(blocklocation==BLOCKlocation_exact){
@@ -1814,7 +1927,7 @@ void keyboard(unsigned char key, int flag){
         else{
           blockage_as_input=0;
         }
-        OBJECT_CB(BLOCKAGE_AS_INPUT2);
+        ObjectCB(BLOCKAGE_AS_INPUT2);
       }
       break;
     case 'r':
@@ -1824,7 +1937,7 @@ void keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT){
           research_mode=1-research_mode;
-          update_research_mode();
+          UpdateResearchMode();
           return;
         }
 
@@ -1950,7 +2063,7 @@ void keyboard(unsigned char key, int flag){
         break;
       default:
         if(rotation_type==EYE_CENTERED){
-          handle_move_keys(GLUT_KEY_DOWN);
+          HandleMoveKeys(GLUT_KEY_DOWN);
         }
         else{
           vectorskip++;
@@ -1963,7 +2076,7 @@ void keyboard(unsigned char key, int flag){
       stereotype++;
       if(stereotype>5)stereotype=0;
       if(stereotype==STEREO_TIME&&videoSTEREO!=1)stereotype=STEREO_LR;
-      Update_Glui_Stereo();
+      UpdateGluiStereo();
       break;
     case 't':
       switch(keystate){
@@ -1981,7 +2094,7 @@ void keyboard(unsigned char key, int flag){
         if(stept==1){
           plotstate=GetPlotState(DYNAMIC_PLOTS);
           if(plotstate==DYNAMIC_PLOTS){
-            reset_gltime();
+            ResetGLTime();
           }
           else{
             stept=0;
@@ -2009,7 +2122,7 @@ void keyboard(unsigned char key, int flag){
       switch(keystate){
         case GLUT_ACTIVE_ALT:
           projection_type = 1 - projection_type;
-          Motion_CB(PROJECTION);
+          SceneMotionCB(PROJECTION);
           break;
         default:
           visVector=1-visVector;
@@ -2021,9 +2134,9 @@ void keyboard(unsigned char key, int flag){
     case 'V':
       if(nvolrenderinfo>0){
         usevolrender=1-usevolrender;
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
 #ifdef pp_GPU
-        print_gpu_cull_state();
+        PrintGPUCullState();
 #endif
         return;
       }
@@ -2036,7 +2149,7 @@ void keyboard(unsigned char key, int flag){
         case GLUT_ACTIVE_CTRL:
         default:
           if(rotation_type==EYE_CENTERED){
-            handle_move_keys(GLUT_KEY_UP);
+            HandleMoveKeys(GLUT_KEY_UP);
           }
           else{
             vis_gslice_data = 1 - vis_gslice_data;
@@ -2048,7 +2161,7 @@ void keyboard(unsigned char key, int flag){
     case 'W':
       clip_mode++;
       if(clip_mode>3)clip_mode=0;
-      update_clip_all();
+      UpdateClipAll();
       break;
     case 'x':
     case 'X':
@@ -2189,21 +2302,21 @@ void keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0)itimes += skip_global*FlowDir;
-    checktimebound();
-    Idle_CB();
+    CheckTimeBound();
+    IdleCB();
 
     return;
   }
   switch(iplot_state){
     case XDIR:
-      next_xindex(skip_global*FlowDir,0);
+      NextXIndex(skip_global*FlowDir,0);
       break;
     case 0:
     case YDIR:
-      next_yindex(skip_global*FlowDir,0);
+      NextYIndex(skip_global*FlowDir,0);
       break;
     case ZDIR:
-      next_zindex(skip_global*FlowDir,0);
+      NextZIndex(skip_global*FlowDir,0);
       break;
     default:
       ASSERT(FFALSE);
@@ -2220,17 +2333,17 @@ void keyboard(unsigned char key, int flag){
   if(iplot_state!=0)updateplotslice(iplot_state);
 }
 
-/* ------------------ keyboard_CB ------------------------ */
+/* ------------------ KeyboardCB ------------------------ */
 
-void keyboard_CB(unsigned char key, int x, int y){
-  keyboard(key,FROM_CALLBACK);
+void KeyboardCB(unsigned char key, int x, int y){
+  Keyboard(key,FROM_CALLBACK);
   glutPostRedisplay();
   updatemenu=1;
 }
 
-/* ------------------ handle_rotation_type ------------------------ */
+/* ------------------ HandleRotationType ------------------------ */
 
-void handle_rotation_type(int flag){
+void HandleRotationType(int flag){
   float *az_elev;
 
   if(rotation_type==rotation_type_old)return;
@@ -2273,9 +2386,9 @@ void handle_rotation_type(int flag){
   return;
 }
 
-/* ------------------ update_clipplanes ------------------------ */
+/* ------------------ UpdateClipPlanes ------------------------ */
 
-void update_clipplanes(void){
+void UpdateClipPlanes(void){
   if(trainer_mode==0){
     if(clip_mode!=clip_mode_last){
       if(clip_mode==CLIP_OFF)PRINTF("clipping off\n");
@@ -2304,15 +2417,15 @@ void handleiso(void){
     return;
 }
 
-/* ------------------ specialkeyboard_up_CB ------------------------ */
+/* ------------------ SpecialKeyboardUpCB ------------------------ */
 
-void specialkeyboard_up_CB(int key, int x, int y){
+void SpecialKeyboardUpCB(int key, int x, int y){
   resetclock=1;
 }
 
-/* ------------------ specialkeyboard_CB ------------------------ */
+/* ------------------ SpecialKeyboardCB ------------------------ */
 
-void specialkeyboard_CB(int key, int x, int y){
+void SpecialKeyboardCB(int key, int x, int y){
 
 #define EYE_MODE 0
 #define P3_MODE 1
@@ -2344,11 +2457,11 @@ void specialkeyboard_CB(int key, int x, int y){
 
   switch(keymode){
     case P3_MODE:
-      handle_plot3d_keys(key);
+      HandlePLOT3DKeys(key);
       stept=0;
       break;
     case EYE_MODE:
-      handle_move_keys(key);
+      HandleMoveKeys(key);
       break;
     default:
       ASSERT(FFALSE);
@@ -2356,51 +2469,51 @@ void specialkeyboard_CB(int key, int x, int y){
   }
 }
 
-/* ------------------ handle_plot3d_keys ------------------------ */
+/* ------------------ HandlePLOT3DKeys ------------------------ */
 
-void handle_plot3d_keys(int  key){
+void HandlePLOT3DKeys(int  key){
   switch(key){
   case GLUT_KEY_LEFT:
     visx_all=1;
-    next_xindex(-1,0);
+    NextXIndex(-1,0);
     iplot_state=XDIR;
     break;
   case GLUT_KEY_RIGHT:
     visx_all=1;
-    next_xindex(1,0);
+    NextXIndex(1,0);
     iplot_state=XDIR;
     break;
   case GLUT_KEY_DOWN:
     visy_all=1;
-    next_yindex(-1,0);
+    NextYIndex(-1,0);
     iplot_state=YDIR;
     break;
   case GLUT_KEY_UP:
     visy_all=1;
-    next_yindex(1,0);
+    NextYIndex(1,0);
     iplot_state=YDIR;
     break;
   case GLUT_KEY_PAGE_DOWN:
     visz_all=1;
-    next_zindex(-1,0);
+    NextZIndex(-1,0);
     iplot_state=ZDIR;
     break;
   case GLUT_KEY_PAGE_UP:
     visz_all=1;
-    next_zindex(1,0);
+    NextZIndex(1,0);
     iplot_state=ZDIR;
     break;
   case GLUT_KEY_HOME:
     switch(iplot_state){
       case 0:
       case XDIR:
-        next_xindex(0,-1);
+        NextXIndex(0,-1);
         break;
       case YDIR:
-        next_yindex(0,-1);
+        NextYIndex(0,-1);
         break;
       case ZDIR:
-        next_zindex(0,-1);
+        NextZIndex(0,-1);
         break;
       default:
         ASSERT(FFALSE);
@@ -2411,13 +2524,13 @@ void handle_plot3d_keys(int  key){
     switch(iplot_state){
       case 0:
       case XDIR:
-        next_xindex(0,1);
+        NextXIndex(0,1);
         break;
       case YDIR:
-        next_yindex(0,1);
+        NextYIndex(0,1);
         break;
       case ZDIR:
-        next_zindex(0,1);
+        NextZIndex(0,1);
         break;
       default:
         ASSERT(FFALSE);
@@ -2435,9 +2548,9 @@ void handle_plot3d_keys(int  key){
 
 }
 
-/* ------------------ handle_move_keys ------------------------ */
+/* ------------------ HandleMoveKeys ------------------------ */
 
-void handle_move_keys(int  key){
+void HandleMoveKeys(int  key){
   int state;
   float dx, dy;
   float *azimuth, cos_azimuth, sin_azimuth;
@@ -2679,16 +2792,16 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
       if(shooter_firstframe==1&&visShooter!=0&&shooter_active==1){
         ResetItimes0();
       }
-      checktimebound();
+      CheckTimeBound();
       UpdateTimeLabels();
     }
     *redisplay=1;
   }
 }
 
-/* ------------------ Idle_CB ------------------------ */
+/* ------------------ IdleCB ------------------------ */
 
-void Idle_CB(void){
+void IdleCB(void){
   int changetime=0;
   float thisinterval;
   int redisplay=0;
@@ -2706,7 +2819,7 @@ void Idle_CB(void){
   UpdateFrame(thisinterval,&changetime,&redisplay);
   if(showtime==1&&stept==0&&itimeold!=itimes){
     changetime=1;
-    checktimebound();
+    CheckTimeBound();
     UpdateTimeLabels();
   }
   UpdateFrameNumber(changetime);
@@ -2715,9 +2828,9 @@ void Idle_CB(void){
   }
 }
 
-/* ------------------ setScreenSize ------------------------ */
+/* ------------------ SetScreenSize ------------------------ */
 
-void setScreenSize(int *width, int *height){
+void SetScreenSize(int *width, int *height){
   if(width!=NULL){
     screenWidth=*width;
     if(screenWidth%2==1)screenWidth++;
@@ -2727,14 +2840,14 @@ void setScreenSize(int *width, int *height){
   }
 }
 
-/* ------------------ Reshape_CB ------------------------ */
+/* ------------------ ReshapeCB ------------------------ */
 
-void Reshape_CB(int width, int height){
+void ReshapeCB(int width, int height){
   if(disable_reshape==1)return;
   updatemenu=1;
   window_aspect_ratio = (float)width/(float)height;
   if(window_aspect_ratio<1.0)window_aspect_ratio=1.0/window_aspect_ratio;
-  setScreenSize(&width,&height);
+  SetScreenSize(&width,&height);
   windowresized=1;
   UpdateCameraYpos(camera_external);
   if(strcmp(camera_current->name,"external")==0&&in_external==1){
@@ -2748,9 +2861,9 @@ void Reshape_CB(int width, int height){
 #endif
 }
 
-/* ------------------ reset_gltime ------------------------ */
+/* ------------------ ResetGLTime ------------------------ */
 
-void reset_gltime(void){
+void ResetGLTime(void){
   if(showtime!=1)return;
   reset_frame=itimes;
   START_TIMER(reset_time);
@@ -3026,7 +3139,7 @@ void DoScript(void){
         exit(0);
       }
       if(current_script_command==NULL){
-        glui_script_enable();
+        GluiScriptEnable();
       }
     }
     else{
@@ -3060,9 +3173,9 @@ void DoScript(void){
 }
 #endif
 
-/* ------------------ Display_CB ------------------------ */
+/* ------------------ DisplayCB ------------------------ */
 
-void Display_CB(void){
+void DisplayCB(void){
   int dostereo;
 
   DoScript();

@@ -858,7 +858,7 @@ void readzone(int ifile, int flag, int *errorcode){
   if(setzonemax==GLOBAL_MAX)zonemax = zoneglobalmax;
   if(setzonemin==SET_MIN)zonemin = zoneusermin;
   if(setzonemax==SET_MAX)zonemax = zoneusermax;
-  update_glui_zonebounds();
+  UpdateGluiZoneBounds();
   GetZoneColors(zonetu, ntotal, izonetu, zonemin, zonemax, nrgb, nrgb_full,
     colorlabelzone, zonescale, zonelevels256);
 #ifdef pp_ZONETL
@@ -879,7 +879,7 @@ void readzone(int ifile, int flag, int *errorcode){
     PRINTF("computing vent bounds\n");
     getzoneventbounds();
   }
-  Idle_CB();
+  IdleCB();
   CheckMemory;
 
 }

@@ -1497,13 +1497,13 @@ void readpart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     }
 
     parttype = 0;
-    Part_CB_Init();
+    PartBoundCBInit();
     ParticlePropShowMenu(part5colorindex);
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     UpdatePart5Extremes();
     updatemenu = 1;
-    Idle_CB();
+    IdleCB();
 #ifdef pp_PARTDEFER
   }
 #endif
@@ -1945,7 +1945,7 @@ void draw_part(const partdata *parti){
                 yy = yplts[sy[j]];
                 zz = zplts[sz[j]];
 
-                zoffset = get_zcell_val_offset(meshinfo,xx,yy,&loc);
+                zoffset = GetZCellValOffset(meshinfo,xx,yy,&loc);
                 if(vis[j]==1)glVertex3f(xx,yy,zz+zoffset);
               }
             }

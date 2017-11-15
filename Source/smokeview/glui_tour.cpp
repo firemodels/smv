@@ -82,6 +82,7 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 #define VIEW_times 27
 #define TOUR_UPDATELABEL 28
 #define TOUR_USECURRENT 29
+#define TOUR_REVERSE 35
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
@@ -92,9 +93,9 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 procdata toursprocinfo[3];
 int ntoursprocinfo = 0;
 
-/* ------------------ Tours_Rollout_CB ------------------------ */
+/* ------------------ ToursRolloutCB ------------------------ */
 
-void Tours_Rollout_CB(int var){
+void ToursRolloutCB(int var){
   ToggleRollout(toursprocinfo, ntoursprocinfo, var);
 }
 
@@ -150,7 +151,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->hide();
 
 
-  ROLLOUT_tour = glui_tour->add_rollout("Tours",true,TOURS_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_tour = glui_tour->add_rollout("Tours",true,TOURS_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_tour, TOURS_TOURS_ROLLOUT);
 
   PANEL_tour1 = glui_tour->add_panel_to_panel(ROLLOUT_tour,"",GLUI_PANEL_NONE);
@@ -161,6 +162,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_column_to_panel(PANEL_tour1,false);
   BUTTON_next_tour = glui_tour->add_button_to_panel(PANEL_tour1, _d("Next"), TOUR_NEXT, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _d("New"), TOUR_INSERT_NEW, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tour1, _d("Reverse"), TOUR_REVERSE, TourCB);
 
   if(ntourinfo>0){
     selectedtour_index = TOURINDEX_MANUAL;
@@ -182,7 +184,7 @@ extern "C" void GluiTourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(ROLLOUT_tour, _d("Update label"), TOUR_UPDATELABEL, TourCB);
 
-  ROLLOUT_settings = glui_tour->add_rollout(_d("Settings"),true,SETTINGS_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_settings = glui_tour->add_rollout(_d("Settings"),true,SETTINGS_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_settings, SETTINGS_TOURS_ROLLOUT);
 
   CHECKBOX_showtourroute=glui_tour->add_checkbox_to_panel(ROLLOUT_settings,_d("Edit tour"),&edittour,SHOWTOURROUTE,TourCB);
@@ -229,7 +231,7 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_globaltourtension->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
   SPINNER_tourtension->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
 
-  ROLLOUT_keyframe = glui_tour->add_rollout("Keyframe",true,KEYFRAME_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_keyframe = glui_tour->add_rollout("Keyframe",true,KEYFRAME_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_keyframe, KEYFRAME_TOURS_ROLLOUT);
 
   PANEL_pos = glui_tour->add_panel_to_panel(ROLLOUT_keyframe,"",GLUI_PANEL_NONE);
@@ -317,9 +319,9 @@ extern "C" void UpdateGluiKeyframe(void){
   SPINNER_z->set_float_val(tour_xyz[2]);
 }
 
-/* ------------------ SetGluiKeyframe ------------------------ */
+/* ------------------ SetGluiTourKeyframe ------------------------ */
 
-extern "C" void SetGluiKeyframe(void){
+extern "C" void SetGluiTourKeyframe(void){
   tourdata *ti;
   float *eye,*xyz_view;
 
@@ -470,7 +472,7 @@ void TourCB(int var){
   //  selected_frame=tourinfo[0].first_frame.next;
   //  selected_tour=tourinfo;
   //  if(selected_frame->next==NULL)selected_frame=NULL;
-  //  SetGluiKeyframe();
+  //  SetGluiTourKeyframe();
   //}
   if(selected_frame!=NULL){
     thistour=selected_tour;
@@ -483,14 +485,14 @@ void TourCB(int var){
     if(NextTour()==1){
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case TOUR_PREVIOUS:
     if(PrevTour()==1){
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case TOUR_CLOSE:
@@ -570,6 +572,7 @@ void TourCB(int var){
     break;
   case KEYFRAME_tXYZ:
     if(selected_frame!=NULL){
+      show_tour_hint = 0;
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
       eye = selected_frame->nodeval.eye;
@@ -618,6 +621,7 @@ void TourCB(int var){
     }
     break;
   case KEYFRAME_NEXT:
+    show_tour_hint = 0;
     if(selected_frame==NULL&&tourinfo!=NULL){
       selected_frame=&(tourinfo[0].first_frame);
       selected_tour=tourinfo;
@@ -631,9 +635,10 @@ void TourCB(int var){
         NewSelect(thistour->first_frame.next);
       }
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case KEYFRAME_PREVIOUS:
+    show_tour_hint = 0;
     if(selected_frame==NULL&&tourinfo!=NULL){
       selected_frame=&(tourinfo[0].last_frame);
       selected_tour=tourinfo;
@@ -648,15 +653,16 @@ void TourCB(int var){
         NewSelect(thistour->last_frame.prev);
       }
     }
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case CONSTANTTOURVEL:
     UpdateTourControls();
     CreateTourPaths();
     UpdateTimes();
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     break;
   case KEYFRAME_INSERT:
+    show_tour_hint = 0;
     if(selected_frame!=NULL){
       thistour=selected_tour;
       thiskey=selected_frame;
@@ -715,10 +721,11 @@ void TourCB(int var){
       newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,key_params,viewtype1,key_zoom,key_view);
       CreateTourPaths();
       NewSelect(newframe);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
     }
     break;
   case KEYFRAME_DELETE:
+    show_tour_hint = 0;
     if(selected_frame!=NULL){
       selected_frame=DeleteFrame(selected_frame);
       if(selected_frame!=NULL){
@@ -766,7 +773,7 @@ void TourCB(int var){
     switch(selectedtour_index){
     case TOURINDEX_ALL:
       TOURMENU(MENU_TOUR_SHOWALL); // show all tours
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       break;
     case TOURINDEX_MANUAL:
       edittour=0;
@@ -780,7 +787,7 @@ void TourCB(int var){
       selected_frame=selected_tour->first_frame.next;
       selected_tour->display=0;
       TOURMENU(selectedtour_index);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       break;
     }
     DeleteTourList();
@@ -791,6 +798,11 @@ void TourCB(int var){
     break;
   case TOUR_DELETE:
     DeleteTour(selectedtour_index);
+    break;
+  case TOUR_REVERSE:
+    if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
+      ReverseTour(tourinfo[selectedtour_index].label);
+    }
     break;
   case TOUR_INSERT_NEW:
   case TOUR_INSERT_COPY:
@@ -813,7 +825,7 @@ void TourCB(int var){
     selected_tour=thistour;
     selectedtour_index = thistour - tourinfo;
     selectedtour_index_old=selectedtour_index;
-    SetGluiKeyframe();
+    SetGluiTourKeyframe();
     CreateTourPaths();
     UpdateViewTour();
     UpdateTourControls();
@@ -824,7 +836,7 @@ void TourCB(int var){
   case TOUR_LABEL:
     if(thistour!=NULL){
       strcpy(thistour->label,tour_label);
-      SetGluiKeyframe();
+      SetGluiTourKeyframe();
       if(LISTBOX_tour!=NULL){
         LISTBOX_tour->delete_item(thistour-tourinfo);
         LISTBOX_tour->add_item(thistour-tourinfo,thistour->label);
@@ -839,7 +851,7 @@ void TourCB(int var){
         thistour->display=1;
         TOURMENU(thistour-tourinfo);
         NextTour();
-        SetGluiKeyframe();
+        SetGluiTourKeyframe();
         thistour->display=0;
       }
       else{
@@ -866,7 +878,7 @@ extern "C" void DeleteTourList(void){
   for(i=0;i<ntourinfo;i++){
     LISTBOX_tour->delete_item(i);
   }
-  delete_vol_tourlist(); //xx comment this line if smokebot fails with seg fault
+  DeleteVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ CreateTourList ------------------------ */
@@ -892,7 +904,7 @@ extern "C" void CreateTourList(void){
   }
   if(selectedtour_index>=-1&&selectedtour_index<ntourinfo)LISTBOX_tour->set_int_val(selectedtour_index);
 
- create_vol_tourlist(); //xx comment this line if smokebot fails with seg fault
+  CreateVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ UpdateTourControls ------------------------ */

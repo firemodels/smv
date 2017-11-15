@@ -113,6 +113,34 @@ void AddColorbar(int icolorbar){
 
 }
 
+/* ------------------ DrawSelectColorbar ------------------------ */
+
+void DrawSelectColorbar(void){
+  int i;
+  colorbardata *cbi;
+
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
+
+  glPointSize(20.0f);
+  glBegin(GL_POINTS);
+  for(i=0;i<cbi->nnodes;i++){
+    unsigned char *rrgb, r, g, b;
+
+    GetRGB(i+1, &r, &g, &b);
+    glColor3ub(r, g, b);
+
+    rrgb=cbi->rgb_node+3*i;
+    glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
+  }
+  glEnd();
+}
+
+
 /* ------------------ DrawColorbarPath ------------------------ */
 
 void DrawColorbarPath(void){
@@ -179,6 +207,9 @@ void DrawColorbarPath(void){
     glColor3ubv(rgbleft);
     glVertex3f(rgbleft[0]/255.0,rgbleft[1]/255.0,rgbleft[2]/255.0);
     glEnd();
+    if(show_colorbar_hint==1){
+      Output3Text(foregroundcolor, rgbleft[0]/255.0, rgbleft[1]/255.0, rgbleft[2]/255.0, "click and drag to change colorbar node");
+    }
   }
 
   {
@@ -345,7 +376,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
       break;
     }
   }
-  if(is_fed_colorbar==1&&fed_loaded==1)Slice_CB(FILEUPDATE);
+  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILEUPDATE);
 }
 
 /* ------------------ RemapColorbar ------------------------ */
