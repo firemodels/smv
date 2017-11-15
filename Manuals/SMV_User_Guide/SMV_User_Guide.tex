@@ -2927,16 +2927,15 @@ of the tour path. }
 The touring option allows one to specify paths or tours through a
 Smokeview scene.  One may then view a scene from the vantage point of an
 observer moving along one of these paths. Smokeview creates a tour surrounding
-the scene by default.  An example for the townhouse case is illustrated
+the scene by default.  This tour is given the name {\em Circular}.
+An example for the townhouse case is illustrated
 in Fig. \ref{figTOUREXAMPLE}.
 The user may create a new tour (or modify an existing one) using the Tour
 dialog box illustrated in Fig. \ref{figTOUR}. The user creates a tour by
 defining two or more key frames each with an associated view direction.
-The default view direction is towards the direction of
-motion.  View directions may be specified in terms of an azimuthal and
-elevation angle relative to the path direction (default 0.0 for both)
-or as an $(x,y,z)$ position coordinate.  Smokeview creates a smooth
-path through these points using cubic Hermite polynomials.
+The default view direction is towards the position (0.0,0.0,0.0) or lower front left of the scene.
+Smokeview creates a smooth
+path through these positions using piecewise cubic Hermite polynomials.
 
 \section{Tour Settings}
 A new tour is created
@@ -2973,11 +2972,14 @@ The start and stop times of the tour may also be specified using the {\em start 
 A tour is created from a series of key frames.  One may specify
  the time, position and view direction at each key frame.  Smokeview then
 obtains positions and view directions between key frames by interpolating
-using cubic Hermite cubic splines.
+using piecewise cubic Hermite cubic splines.
 A tour is created by pressing the
 \frameit{Add Tour}\ button.  This tour has two key frames located
 at opposite ends of the Smokeview scene.  Additional key frames may
-be created by selected the \frameit{Add}\ button.
+be created by selected the \frameit{Add}\ button. A tour may also be 
+created by pressing the \frameit{Copy} button which makes a copy of the 
+currently selected tour.  A orientation of a tour may be reversed by selecting
+the \frameit{Reverse} button.
 
 The position and viewpoint of a key frame may be adjusted.  First
 it must be selected.  A key frame may be selected by either
@@ -2985,7 +2987,7 @@ clicking on it with the left mouse button or by {\em moving}\ through
 the key frames using the \frameit{Next}\ or \frameit{Previous}\
 buttons. The active key frame as drawn within the Smokeview scene changes color from red to green.
 Key frame positions may then be modified by changing
-data in the t, X, Y or Z edit boxes. A different view direction
+data in the t, X, Y or Z edit boxes or dragging the key frame rectangle with the mouse.  A different view direction
 may also be set.
 
 A key frame may also be moved with the mouse.  Clicking on a
@@ -3013,22 +3015,9 @@ direction angles relative to the path (an azimuthal and an elevation
 angle) or by setting a direction relative to the scene geometry (a
 Cartesian (X,Y,Z) view direction).
 
-Path relative view directions are enabled by default.  To define a
-Cartesian view direction, select the {\em X,Y,Z View}\ checkbox
-and edit the X, Y and Z View edit boxes to change the view
-location. To define an path relative view direction, uncheck the
-{\em X,Y,Z View}\ checkbox and edit the Azimuth and Elevation edit
-boxes. Checking the {\em View From Selected Keyframe}\ checkbox in
-the Edit Tours dialog box allows one to see the effects of
-the  view changes from the key frame being edited. To see the
-effect of a change in one of the key frame's parameters, uncheck
-the {\em View From Selected Keyframe}\ checkbox and position the
-tour locator (vertical and horizontal red lines) near the
-key frame.  The horizontal red line always points in the view
-direction.
+Path view directions are absolute.  One selects the (x,y,z) view position by
+editing the x,y and/or z edit boxes in the View direction panel.
 
-Using cartesian view directions result in {\em better}\ tours as the view directions are more
-stable than relative view directions as one moves along a tour.
 
 Spline tension settings may also be changed, though normally this is not
 necessary except when one wishes abrupt rather than smooth path
