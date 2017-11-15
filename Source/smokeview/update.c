@@ -1916,7 +1916,7 @@ void UpdateDisplay(void){
     update_colorbartype = 0;
   }
   if(update_fire_line == 1){
-    WuiCB(TERRAIN_FIRE_LINE_UPDATE);
+    WUI_CB(TERRAIN_FIRE_LINE_UPDATE);
     update_fire_line = 0;
   }
   if(updatezoommenu == 1 || first_display > 0){

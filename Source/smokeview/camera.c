@@ -214,7 +214,7 @@ void UpdateCamera(cameradata *ca){
     highlight_mesh = current_mesh-meshinfo;
     HandleRotationType(EYE_CENTERED);
     UpdateMeshList1(ca->rotation_index);
-    UpdateTrainerMoves();
+    update_trainer_moves();
 
     ca->clip_mode=clip_mode;
     ca->clip_xmin=clipinfo.clip_xmin;

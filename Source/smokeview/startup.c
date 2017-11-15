@@ -319,11 +319,11 @@ int SetupCase(int argc, char **argv){
   GluiShooterSetup(mainwindow_id);
   GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
-  GluiWuiSetup(mainwindow_id);
+  glui_wui_setup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
-  GluiAlertSetup(mainwindow_id);
+  glui_alert_setup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
 
@@ -335,7 +335,7 @@ int SetupCase(int argc, char **argv){
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   Init();
-  GluiTrainerSetup(mainwindow_id);
+  glui_trainer_setup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
   glutAttachMenu(GLUT_RIGHT_BUTTON);

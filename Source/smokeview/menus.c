@@ -1301,7 +1301,7 @@ void DialogMenu(int value){
       HideGluiGeometry();
       visBlocks=visBlocksSave;
     }
-    UpdateTrainerOutline();
+    update_trainer_outline();
 
     break;
   case DIALOG_HIDEALL:
@@ -4769,7 +4769,7 @@ void BlockageMenu(int value){
    case visBLOCKAsInputOutline:
    case visBLOCKAsInput:
      visBlocks=value;
-     UpdateTrainerOutline();
+     update_trainer_outline();
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -4777,7 +4777,7 @@ void BlockageMenu(int value){
    case visBLOCKSolidOutline:
      visBlocks=value;
      if(value==visBLOCKSolidOutline||visBLOCKold==visBLOCKSolidOutline)updatefaces=1;
-     UpdateTrainerOutline();
+     update_trainer_outline();
      break;
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
@@ -5058,7 +5058,7 @@ void GeometryMenu(int value){
     else{
       planar_terrain_slice=1;
     }
-    UpdateGluiWui();
+    Update_Glui_Wui();
     break;
   case GEOM_ShowAll:
     if(isZoneFireModel)visFrame=1;
