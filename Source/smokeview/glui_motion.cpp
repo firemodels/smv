@@ -793,9 +793,9 @@ extern "C" void UpdateCursorCheckbox(void){
   CHECKBOX_cursor_blockpath->set_int_val(cursorPlot3D);
 }
 
-/* ------------------ UpdateGluiViewList ------------------------ */
+/* ------------------ UpdateGluiCameraViewList ------------------------ */
 
-extern "C" void UpdateGluiViewList(void){
+extern "C" void UpdateGluiCameraViewList(void){
   cameradata *ca;
   int i;
 
@@ -812,7 +812,6 @@ extern "C" void UpdateGluiViewList(void){
   selected_view=startup_view_ini;
   EnableDisableViews();
   ViewpointCB(RESTORE_VIEW);
-
 }
 
 /* ------------------ MotionDlgCB ------------------------ */

@@ -890,7 +890,7 @@ void MouseCB(int button, int state, int xm, int ym){
   }
 
   if(trainer_mode==1){
-    update_glui_viewlist();
+    SetGLuiViewListManual();
   }
   eye_xyz = camera_current->eye;
   if(selected_view!=-999){
@@ -913,7 +913,7 @@ void MouseCB(int button, int state, int xm, int ym){
     colorbar_drag=0;
     colorbar_splitdrag=0;
     glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
-    update_trainer_moves();
+    UpdateTrainerMoves();
     return;
   }
 

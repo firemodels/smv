@@ -92,7 +92,7 @@ void Init(void){
   InitCameraList();
   AddDefaultViews();
   CopyCamera(camera_external_save,camera_external);
-  UpdateGluiViewList();
+  UpdateGluiCameraViewList();
 
   //ResetGluiView(i_view_list);
 
@@ -323,7 +323,7 @@ int SetupCase(int argc, char **argv){
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
-  glui_alert_setup(mainwindow_id);
+  GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
 
@@ -335,7 +335,7 @@ int SetupCase(int argc, char **argv){
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   Init();
-  glui_trainer_setup(mainwindow_id);
+  GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
