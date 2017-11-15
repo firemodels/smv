@@ -93,9 +93,9 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 procdata toursprocinfo[3];
 int ntoursprocinfo = 0;
 
-/* ------------------ Tours_Rollout_CB ------------------------ */
+/* ------------------ ToursRolloutCB ------------------------ */
 
-void Tours_Rollout_CB(int var){
+void ToursRolloutCB(int var){
   ToggleRollout(toursprocinfo, ntoursprocinfo, var);
 }
 
@@ -151,7 +151,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->hide();
 
 
-  ROLLOUT_tour = glui_tour->add_rollout("Tours",true,TOURS_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_tour = glui_tour->add_rollout("Tours",true,TOURS_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_tour, TOURS_TOURS_ROLLOUT);
 
   PANEL_tour1 = glui_tour->add_panel_to_panel(ROLLOUT_tour,"",GLUI_PANEL_NONE);
@@ -184,7 +184,7 @@ extern "C" void GluiTourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(ROLLOUT_tour, _d("Update label"), TOUR_UPDATELABEL, TourCB);
 
-  ROLLOUT_settings = glui_tour->add_rollout(_d("Settings"),true,SETTINGS_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_settings = glui_tour->add_rollout(_d("Settings"),true,SETTINGS_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_settings, SETTINGS_TOURS_ROLLOUT);
 
   CHECKBOX_showtourroute=glui_tour->add_checkbox_to_panel(ROLLOUT_settings,_d("Edit tour"),&edittour,SHOWTOURROUTE,TourCB);
@@ -231,7 +231,7 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_globaltourtension->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
   SPINNER_tourtension->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
 
-  ROLLOUT_keyframe = glui_tour->add_rollout("Keyframe",true,KEYFRAME_TOURS_ROLLOUT, Tours_Rollout_CB);
+  ROLLOUT_keyframe = glui_tour->add_rollout("Keyframe",true,KEYFRAME_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_keyframe, KEYFRAME_TOURS_ROLLOUT);
 
   PANEL_pos = glui_tour->add_panel_to_panel(ROLLOUT_keyframe,"",GLUI_PANEL_NONE);
@@ -621,6 +621,7 @@ void TourCB(int var){
     }
     break;
   case KEYFRAME_NEXT:
+    show_tour_hint = 0;
     if(selected_frame==NULL&&tourinfo!=NULL){
       selected_frame=&(tourinfo[0].first_frame);
       selected_tour=tourinfo;
@@ -637,6 +638,7 @@ void TourCB(int var){
     SetGluiTourKeyframe();
     break;
   case KEYFRAME_PREVIOUS:
+    show_tour_hint = 0;
     if(selected_frame==NULL&&tourinfo!=NULL){
       selected_frame=&(tourinfo[0].last_frame);
       selected_tour=tourinfo;
@@ -660,6 +662,7 @@ void TourCB(int var){
     SetGluiTourKeyframe();
     break;
   case KEYFRAME_INSERT:
+    show_tour_hint = 0;
     if(selected_frame!=NULL){
       thistour=selected_tour;
       thiskey=selected_frame;
@@ -722,6 +725,7 @@ void TourCB(int var){
     }
     break;
   case KEYFRAME_DELETE:
+    show_tour_hint = 0;
     if(selected_frame!=NULL){
       selected_frame=DeleteFrame(selected_frame);
       if(selected_frame!=NULL){

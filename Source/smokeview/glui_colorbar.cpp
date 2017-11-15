@@ -275,6 +275,7 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_PREV:
   case COLORBAR_SET:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
+    show_colorbar_hint = 0;
     cbi = colorbarinfo + colorbartype;
     if(var == COLORBAR_NEXT){
       colorbarpoint++;
