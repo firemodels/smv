@@ -3809,16 +3809,16 @@ Editor dialog box. One may create or edit existing colorbars by specifying a seq
 
 \section{Using the Colorbar Editor}
 \label{section:colorbar}
-The Colorbar Editor dialog box is opened from the {\em
+The Colorbar Editor dialog box is opened by selecting the {\em
 Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
 selected, a spatial representation of the currently selected
-colorbar is displayed within the Smokeview scene along the
+colorbar is displayed within the Smokeview scene along with the
 Colorbar Editor dialog box.  The FDS simulation scene is hidden
 by default but may be shown along with the colorbar display by
 un-checking the {\em Hide scene}\ checkbox.
 
 The colorbar is represented visually in two ways.  First, as a series
-of colored nodes and lines.
+of colored nodes and lines within a unit cube. The cube has axese red (x direction), green (y direction) and blue (z direction).
 The nodes and lines are a spatial representation of the colorbar where as
 stated earlier the r, g, b color components are mapped to x, y, z spatial
 coordinates.
@@ -3832,17 +3832,24 @@ form a table of colors (256 rows, 3 columns).
 
 The Colorbar Editor dialog box contains a list of colorbars
 pre-defined by Smokeview and others if defined by the user. A new
-colorbar is created by selecting the \frameit{New}\ button . The
+colorbar is created by selecting the \frameit{New}\ button. The
 new colorbar is created initially by making a copy of the
 currently selected colorbar. Once created, it may be altered by
 adding/deleting nodes with the \frameit{Add/Delete}\ buttons and
-altering color with the red, green, blue spinners. Note that only
+altering color with the red, green, blue spinners. The colorbar 
+nodes may also be selected with the mouse and dragged to change 
+their position and hence their value. If the {\tt CTRL}\ key is 
+pressed when dragging then the node only moves along a horizontal 
+direction.  If the {\tt ALT}\ key is pressed when dragging then 
+the node is constrained along a vertical direction. Note that only
 colorbars created by a user may be changed. The {\em Add/Delete}\
 and other buttons for modifying colorbar characteristics are only
 enabled for user defined colorbars.  They are disabled for
 Smokeview predefined colorbars. Colorbar definitions (only
 colorbars created by the user) are saved in the Smokeview
-configuration (.ini) file.
+configuration (.ini) file.  The \frameit{Distribute nodes uniformly}\
+button is used as the name infers to distribute the individual colors 
+of the colorbar uniformly along the colorbar path.
 
 The bottom portion of the Colorbar Editor dialog box is
 used to define colors for extreme data.  That is, data occurring
