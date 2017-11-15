@@ -1075,7 +1075,6 @@ void DragColorbarEditNode(int xm, int ym){
   case KEY_CTRL:
   {
     float xy[2] = {0.0,0.0}, xyz[3];
-    float rgb_node[3];
 
     xyz[0] = (float)cb_rgb[0]/255.0;
     xyz[1] = (float)cb_rgb[1]/255.0;
