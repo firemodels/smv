@@ -1301,7 +1301,7 @@ void DialogMenu(int value){
       HideGluiGeometry();
       visBlocks=visBlocksSave;
     }
-    update_trainer_outline();
+    UpdateTrainerOutline();
 
     break;
   case DIALOG_HIDEALL:
@@ -4769,7 +4769,7 @@ void BlockageMenu(int value){
    case visBLOCKAsInputOutline:
    case visBLOCKAsInput:
      visBlocks=value;
-     update_trainer_outline();
+     UpdateTrainerOutline();
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -4777,7 +4777,7 @@ void BlockageMenu(int value){
    case visBLOCKSolidOutline:
      visBlocks=value;
      if(value==visBLOCKSolidOutline||visBLOCKold==visBLOCKSolidOutline)updatefaces=1;
-     update_trainer_outline();
+     UpdateTrainerOutline();
      break;
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
