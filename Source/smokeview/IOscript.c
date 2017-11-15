@@ -946,10 +946,10 @@ void LoadSmokeFrame(int meshnum, int framenum){
   if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
 
   max_frames = GetVolFrameMax(meshnum);
-  if(max_frames > 0)UpdateLoadframeMax(max_frames);
+  if(max_frames > 0)UpdateLoadFrameMax(max_frames);
   frame_old = framenum;
   framenum = CLAMP(framenum, 0, max_frames-1);
-  if(framenum!=frame_old)UpdateLoadframeVal(framenum);
+  if(framenum!=frame_old)UpdateLoadFrameVal(framenum);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -982,7 +982,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   stept=1;
   Keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
-  UpdateLoadtimeVal(valtime);
+  UpdateLoadTimeVal(valtime);
 }
 
 /* ------------------ LoadTimeFrame ------------------------ */
@@ -1032,7 +1032,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       smokeframe = i;
     }
   }
-  UpdateLoadframeVal(smokeframe);
+  UpdateLoadFrameVal(smokeframe);
   LoadSmokeFrame(meshnum, smokeframe);
 }
 

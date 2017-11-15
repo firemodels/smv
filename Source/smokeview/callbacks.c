@@ -1593,7 +1593,7 @@ void Keyboard(unsigned char key, int flag){
           else{
             if(nsmoke3dinfo>0&&cullactive==1&&gpuactive==1){
               cullsmoke=1-cullsmoke;
-              update_smoke3dflags();
+              UpdateSmoke3dFlags();
               InitCull(cullsmoke);
               PrintGPUCullState();
             }
@@ -1700,7 +1700,7 @@ void Keyboard(unsigned char key, int flag){
         usegpu=0;
       }
       if(nsmoke3dinfo>0){
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
       }
       PrintGPUCullState();
       return;
@@ -1806,7 +1806,7 @@ void Keyboard(unsigned char key, int flag){
           smokedrawtest=1-smokedrawtest;
         }
         PRINTF("smokecullflag=%i\n smokedrawtest=%i\n",smokecullflag,smokedrawtest);
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
         return;
       }
       break;
@@ -1836,7 +1836,7 @@ void Keyboard(unsigned char key, int flag){
         adjustalphaflag++;
         if(adjustalphaflag>3)adjustalphaflag=0;
         PRINTF("adjustalphaflag=%i\n",adjustalphaflag);
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
         return;
       }
       break;
@@ -2134,7 +2134,7 @@ void Keyboard(unsigned char key, int flag){
     case 'V':
       if(nvolrenderinfo>0){
         usevolrender=1-usevolrender;
-        update_smoke3dflags();
+        UpdateSmoke3dFlags();
 #ifdef pp_GPU
         PrintGPUCullState();
 #endif

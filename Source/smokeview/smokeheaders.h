@@ -12,11 +12,11 @@ EXTERNCPP void ShowBoundsDialog(int type);
 EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
 #endif
 EXTERNCPP void UpdateFreeze(int val);
-EXTERNCPP void UpdateLoadtimeVal(float val);
+EXTERNCPP void UpdateLoadTimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
 EXTERNCPP int GetVolFrameMax(int meshnum);
-EXTERNCPP void UpdateLoadframeVal(int frames);
-EXTERNCPP void UpdateLoadframeMax(int max_frames);
+EXTERNCPP void UpdateLoadFrameVal(int frames);
+EXTERNCPP void UpdateLoadFrameMax(int max_frames);
 EXTERNCPP void UpdateShowRotationCenter(void);
 EXTERNCPP void UpdateShowRotationCenter2(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
@@ -49,7 +49,7 @@ EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void VolumeCB(int var);
 EXTERNCPP void DrawSmokeTest(void);
-EXTERNCPP void Smoke3d_CB(int var);
+EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);
 EXTERNCPP void UpdateHistogramType(void);
@@ -105,7 +105,7 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 // glui headers
 
 EXTERNCPP void UpdateGluiZoneBounds(void);
-EXTERNCPP void glui_3dsmoke_setup(int main_window);
+EXTERNCPP void Glui3dSmokeSetup(int main_window);
 EXTERNCPP void GluiBoundsSetup(int main_window);
 EXTERNCPP void GluiClipSetup(int main_window);
 EXTERNCPP void GluiColorbarSetup(int main_window);
@@ -508,7 +508,7 @@ EXTERNCPP void AdjustTourTimes(tourdata *touri);
 EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
-EXTERNCPP void update_smoke3dflags(void);
+EXTERNCPP void UpdateSmoke3dFlags(void);
 EXTERNCPP void MergeSmoke3DColors(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
@@ -613,8 +613,8 @@ EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height);
 
 EXTERNCPP void UpdateBlockVals(int flag);
 
-EXTERNCPP void create_vol_tourlist(void);
-EXTERNCPP void delete_vol_tourlist(void);
+EXTERNCPP void CreateVolTourList(void);
+EXTERNCPP void DeleteVolTourList(void);
 EXTERNCPP void CreateTourList(void);
 EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);
