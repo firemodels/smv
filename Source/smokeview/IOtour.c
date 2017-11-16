@@ -1276,7 +1276,7 @@ tourdata *AddTour(char *label){
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
     relpos[2] =  -key_xyz[2];
-    xyz2azelev(relpos,&addedframe->az_path,&addedframe->nodeval.az_path);
+    XYZ2AzElev(relpos,&addedframe->az_path,&addedframe->nodeval.az_path);
 
     key_xyz[0] = xbarORIG + 1.0;
     key_xyz[1] = ybarORIG + 1.0;
@@ -1289,7 +1289,7 @@ tourdata *AddTour(char *label){
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
     relpos[2] =  -key_xyz[2];
-    xyz2azelev(relpos, &addedframe->az_path, &addedframe->nodeval.az_path);
+    XYZ2AzElev(relpos, &addedframe->az_path, &addedframe->nodeval.az_path);
   }
   else{
     keyframe *keyfrom, *keylast;;

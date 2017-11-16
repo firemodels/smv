@@ -58,17 +58,17 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 #ifdef pp_GEOMTEST
     if(geomtest_option == TETRAHEDRON_TEST){
       CLIP_GEOMETRY;
-      draw_test_clip();
-      draw_test_outline();
+      DrawTestClip();
+      DrawTestOutline();
     }
-    if(show_cutcells == 1)draw_geom_cutcells();
+    if(show_cutcells == 1)DrawGeomCutCells();
     if(geomtest_option == TRIANGLE_TEST){
       CLIP_GEOMETRY;
-      draw_test_triangle();
+      DrawTestTriangle();
     }
     if(geomtest_option == POLYGON_TEST){
       CLIP_GEOMETRY;
-      draw_test_polygon();
+      DrawTestPolygon();
     }
 #endif
 
@@ -234,25 +234,25 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
-    draw_geom(DRAW_OPAQUE, GEOM_STATIC);
-    draw_geom(DRAW_OPAQUE, GEOM_DYNAMIC);
-    SNIFF_ERRORS("draw_geom");
+    DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+    DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    SNIFF_ERRORS("DrawGeom");
   }
 
   /* ++++++++++++++++++++++++ draw diagnostic geometry +++++++++++++++++++++++++ */
 
   if(show_geometry_diagnostics == 1){
     CLIP_GEOMETRY;
-    draw_geomdiag();
-    SNIFF_ERRORS("draw_geomdiag");
+    DrawGeomDiag();
+    SNIFF_ERRORS("DrawGeomDiag");
   }
 
   /* ++++++++++++++++++++++++ draw shooter points +++++++++++++++++++++++++ */
 
   if(showshooter != 0 && shooter_active == 1){
     CLIP_VALS;
-    draw_shooter();
-    SNIFF_ERRORS("draw_shooter");
+    DrawShooter();
+    SNIFF_ERRORS("DrawShooter");
   }
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
@@ -378,8 +378,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
-    draw_geom(DRAW_TRANSPARENT, GEOM_STATIC);
-    draw_geom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
+    DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
+    DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
   }
 
   if(showiso == 1){

@@ -762,7 +762,7 @@ void draw_devices(void){
             memcpy(arrow_color_old, arrow_color_new, 4 * sizeof(unsigned char));
             break;
           case VECTOR_LINE:
-            rotateu2v(zvec, dxyz, axis, &angle);
+            RotateU2V(zvec, dxyz, axis, &angle);
             glPushMatrix();
             glTranslatef(xyz[0], xyz[1], xyz[2]);
             glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
@@ -778,7 +778,7 @@ void draw_devices(void){
             glPopMatrix();
             break;
           case VECTOR_ARROW:
-            rotateu2v(zvec, dxyz, axis, &angle);
+            RotateU2V(zvec, dxyz, axis, &angle);
             glPushMatrix();
             glTranslatef(xyz[0], xyz[1], xyz[2]);
             glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
@@ -791,7 +791,7 @@ void draw_devices(void){
             glPopMatrix();
             break;
           case VECTOR_OBJECT:
-            rotateu2v(zvec, dxyz, axis, &angle);
+            RotateU2V(zvec, dxyz, axis, &angle);
             glPushMatrix();
             glTranslatef(xyz[0], xyz[1], xyz[2]);
             glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
@@ -1353,7 +1353,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
       if(arg[2]<10.0){
         float u[3]={1.0,0.0,0.0}, axis[3], angle;
 
-        rotateu2v(u, arg, axis, &angle);
+        RotateU2V(u, arg, axis, &angle);
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
 
       }
@@ -1362,7 +1362,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
       if(arg[2]<10.0){
         float u[3]={0.0,1.0,0.0}, axis[3], angle;
 
-        rotateu2v(u, arg, axis, &angle);
+        RotateU2V(u, arg, axis, &angle);
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
 
       }
@@ -1371,7 +1371,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
       if(arg[2]<10.0){
         float u[3]={0.0,0.0,1.0}, axis[3], angle;
 
-        rotateu2v(u, arg, axis, &angle);
+        RotateU2V(u, arg, axis, &angle);
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
 
       }
@@ -1421,7 +1421,7 @@ void draw_SVOBJECT(sv_object *object_dev, int iframe_local, propdata *prop, int 
         newdir[0]=xx;
         newdir[1]=yy;
         newdir[2]=zz;
-        rotateu2v(olddir, newdir, axis, &angle);
+        RotateU2V(olddir, newdir, axis, &angle);
         glRotatef(RAD2DEG*angle,axis[0],axis[1],axis[2]);
       }
       break;

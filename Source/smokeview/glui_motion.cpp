@@ -493,18 +493,18 @@ void Camera2Quat(cameradata *ca, float *quat, float *rotation){
     axis[1] = 0.0;
     axis[2] = 0.0;
 
-    angleaxis2quat(elevation, axis, quat_temp);
+    AngleAxis2Quat(elevation, axis, quat_temp);
 
     axis[0] = 0.0;
     axis[1] = 0.0;
     axis[2] = 1.0;
 
-    angleaxis2quat(azimuth, axis, quat);
+    AngleAxis2Quat(azimuth, axis, quat);
 
-    mult_quat(quat_temp, quat, quat);
+    MultQuat(quat_temp, quat, quat);
   }
 
-  if(rotation != NULL)quat2rot(quat, rotation);
+  if(rotation != NULL)Quat2Rot(quat, rotation);
 }
 
 /* ------------------ EnableDisableViews ------------------------ */
@@ -952,7 +952,7 @@ extern "C" void GluiMotionSetup(int main_window){
     vv[0]=-gvecphys[0];
     vv[1]=-gvecphys[1];
     vv[2]=-gvecphys[2];
-    xyz2azelev(vv,zaxis_angles,zaxis_angles+1);
+    XYZ2AzElev(vv,zaxis_angles,zaxis_angles+1);
   }
   SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"azimuth:",GLUI_SPINNER_FLOAT,zaxis_angles,CHANGE_ZAXIS,SceneMotionCB);
   SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"elevation:",GLUI_SPINNER_FLOAT,zaxis_angles+1,CHANGE_ZAXIS,SceneMotionCB);
@@ -1796,7 +1796,7 @@ extern "C" void SceneMotionCB(int var){
         vv[0] = -gvecphys[0];
         vv[1] = -gvecphys[1];
         vv[2] = -gvecphys[2];
-        xyz2azelev(vv,zaxis_angles,zaxis_angles+1);
+        XYZ2AzElev(vv,zaxis_angles,zaxis_angles+1);
         UpdateZaxisAngles();
         {
           float *elev, *az;

@@ -150,10 +150,10 @@ void readiso_geom_wrapup(void){
   update_readiso_geom_wrapup=UPDATE_ISO_OFF;
   ngeominfoptrs = 0;
   GetGeomInfoPtrs(&geominfoptrs, &ngeominfoptrs);
-  update_triangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
 
   UpdateTimes();
-  get_faceinfo();
+  GetFaceInfo();
   IdleCB();
 }
 
@@ -223,7 +223,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 
-  read_geom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
+  ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
   FREEMEMORY(geominfoptrs);
   if(load_flag == UNLOAD){
     meshi->isofilenum = -1;

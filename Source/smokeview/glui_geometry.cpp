@@ -406,7 +406,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
   CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
 
-  get_geom_zbounds(&terrain_zmin, &terrain_zmax);
+  GetGeomZBounds(&terrain_zmin, &terrain_zmax);
   SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin,TERRAIN_ZMIN,VolumeCB);
   SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
 
@@ -546,14 +546,14 @@ extern "C" void VolumeCB(int var){
   int i;
   switch(var){
   case GEOM_VERT_EXAG:
-    update_geom_normals();
+    UpdateGeomNormals();
     break;
   case SHOW_ZLEVEL:
   case TERRAIN_ZLEVEL:
     UpdateChopColors();
   break;
   case RESET_ZBOUNDS:
-    get_geom_zbounds(&terrain_zmin, &terrain_zmax);
+    GetGeomZBounds(&terrain_zmin, &terrain_zmax);
     SPINNER_geom_zmin->set_float_val(terrain_zmin);
     SPINNER_geom_zmax->set_float_val(terrain_zmax);
     SPINNER_geom_zlevel->set_float_limits(terrain_zmin, terrain_zmax);
@@ -597,7 +597,7 @@ extern "C" void VolumeCB(int var){
     break;
   case GEOM_MAX_ANGLE:
     cos_geom_max_angle=cos(DEG2RAD*geom_max_angle);
-    update_triangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
+    UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
     break;
   case GEOM_OUTLINE_IOFFSET:
     geom_outline_offset = (float)geom_outline_ioffset/1000.0;

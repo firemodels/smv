@@ -4808,7 +4808,7 @@ void SnapScene(void){
     quat_general[1]=0.0;
     quat_general[2]=0.0;
     quat_general[3]=sin(DEG2RAD*angle/2.0);
-    quat2rot(quat_general,quat_rotation);
+    Quat2Rot(quat_general,quat_rotation);
   }
 
 }

@@ -2275,6 +2275,119 @@ void ReadPatchBndf(int ifile, int flag, int *errorcode){
   glutPostRedisplay();
 }
 
+/* ------------------ ReadGeomData ------------------------ */
+
+void ReadGeomData(int ifile, int load_flag, int *errorcode){
+  patchdata *patchi;
+  char *file;
+  int ntimes_local;
+  int i;
+  int nvals;
+  float patchmin_global, patchmax_global;
+  int n;
+  int error;
+  FILE_SIZE lenfile;
+
+  // 1
+  // time
+  // nstatic
+  // vals_1, ...vals_nstatic
+  // ndynamic
+  // vals_1, ... vals_ndyamic
+
+  patchi = patchinfo+ifile;
+  if(patchi->filetype!=PATCH_GEOMETRY)return;
+  file = patchi->file;
+
+  patchi->loaded = 0;
+  patchi->display = 0;
+
+  FREEMEMORY(patchi->geom_nstatics);
+  FREEMEMORY(patchi->geom_ndynamics);
+  FREEMEMORY(patchi->geom_ivals_static);
+  FREEMEMORY(patchi->geom_ivals_dynamic);
+  FREEMEMORY(patchi->geom_vals);
+  FREEMEMORY(patchi->geom_ivals);
+  FREEMEMORY(patchi->geom_times);
+  if(load_flag==UNLOAD){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    UpdatePatchType();
+    UpdateUnitDefs();
+    UpdateTimes();
+    return;
+  }
+
+  //GetGeomDataHeader(file,&ntimes,&nvals);
+  endian_smv = GetEndian();
+  lenfile = strlen(file);
+
+  FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
+
+  if(nvals==0){
+    PRINTF("***warning: no data in %s\n", file);
+    return;
+  }
+  if(nvals>0&&ntimes_local>0){
+    NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_ndynamics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
+  }
+  FORTgetembeddata(file, &ntimes_local, &nvals, patchi->geom_times,
+    patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
+
+  ResetHistogram(patchi->histogram, NULL, NULL);
+
+  UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+
+  CompleteHistogram(patchi->histogram);
+
+  patchi->ngeom_times = ntimes_local;
+  patchi->geom_nvals = nvals;
+  patchi->geom_ivals_static[0] = patchi->geom_ivals;
+  patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
+  for(i = 1;i<ntimes_local;i++){
+    patchi->geom_ivals_static[i] = patchi->geom_ivals_dynamic[i-1]+patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]+patchi->geom_nstatics[i];
+  }
+  if(colorlabelpatch!=NULL){
+    for(n = 0;n<MAXRGB;n++){
+      FREEMEMORY(colorlabelpatch[n]);
+    }
+    FREEMEMORY(colorlabelpatch);
+  }
+  if(NewMemory((void **)&colorlabelpatch, MAXRGB*sizeof(char *))==0){
+    ReadPatch(ifile, UNLOAD, &error);
+    return;
+  }
+  for(n = 0;n<MAXRGB;n++){
+    colorlabelpatch[n] = NULL;
+  }
+  for(n = 0;n<nrgb;n++){
+    if(NewMemory((void **)&colorlabelpatch[n], 11)==0){
+      ReadPatch(ifile, UNLOAD, &error);
+      return;
+    }
+  }
+  GetBoundaryColors3(patchi, patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+    setpatchmin, &patchmin, setpatchmax, &patchmax,
+    &patchmin_global, &patchmax_global,
+    nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
+    &patchi->extreme_min, &patchi->extreme_max);
+  FREEMEMORY(patchi->geom_vals);
+  patchi->loaded = 1;
+  patchi->display = 1;
+  ipatchtype = GetPatchType(patchinfo+ifile);
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdatePatchType();
+  UpdateUnitDefs();
+  UpdateTimes();
+  UpdateFrameNumber(1);
+}
+
 /* ------------------ ReadPatch ------------------------ */
 
 void ReadPatch(int ifile, int load_flag, int *errorcode){
@@ -2283,7 +2396,7 @@ void ReadPatch(int ifile, int load_flag, int *errorcode){
   patchi = patchinfo + ifile;
   if(patchi->filetype==PATCH_GEOMETRY){
     ASSERT(ifile>=0&&ifile<ngeominfo);
-    read_geomdata(ifile,load_flag,errorcode);
+    ReadGeomData(ifile,load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);
@@ -3946,14 +4059,14 @@ void DrawPatchFrame(int flag){
     if(patchi->filetype == PATCH_GEOMETRY && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->slice == 0){
-          draw_geomdata(flag, patchi, GEOM_STATIC);
-          draw_geomdata(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, patchi, GEOM_STATIC);
+          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
       else{
         if(patchi->slice == 1){
-          draw_geomdata(flag, patchi, GEOM_STATIC);
-          draw_geomdata(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, patchi, GEOM_STATIC);
+          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
     }

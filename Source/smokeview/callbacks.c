@@ -829,10 +829,10 @@ void UpdateMouseInfo(int flag, int xm, int ym){
         axis[1]=0.0;
         axis[2]=mi->xdirection[0];
       }
-      angleaxis2quat(delta_angle,axis,quat_temp);
-      mult_quat(quat_temp,quat_general,quat_general);
+      AngleAxis2Quat(delta_angle,axis,quat_temp);
+      MultQuat(quat_temp,quat_general,quat_general);
      // LevelScene(0,1,quat_general);
-      quat2rot(quat_general,quat_rotation);
+      Quat2Rot(quat_general,quat_rotation);
     }
   }
   else{
@@ -841,10 +841,10 @@ void UpdateMouseInfo(int flag, int xm, int ym){
     axis[0]=0.0;
     axis[1]=1.0;
     axis[2]=0.0;
-    angleaxis2quat(-delta_angle2,axis,quat_temp);
-    mult_quat(quat_temp,quat_general,quat_general);
+    AngleAxis2Quat(-delta_angle2,axis,quat_temp);
+    MultQuat(quat_temp,quat_general,quat_general);
    // LevelScene(0,1,quat_general);
-    quat2rot(quat_general,quat_rotation);
+    Quat2Rot(quat_general,quat_rotation);
   }
 #ifdef _DEBUG
   {
@@ -2200,7 +2200,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '~':
       LevelScene(1,1,quat_general);
-      quat2rot(quat_general,quat_rotation);
+      Quat2Rot(quat_general,quat_rotation);
       break;
     case '!':
       SnapScene();

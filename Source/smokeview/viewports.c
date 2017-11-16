@@ -1164,7 +1164,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       u[0] = 0.0;
       u[1] = 0.0;
       u[2] = 1.0;
-      rotateu2v(user_zaxis, u, axis, &angle);
+      RotateU2V(user_zaxis, u, axis, &angle);
       glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
       glRotatef(zaxis_angles[2], u[0], u[1], u[2]);
     }
