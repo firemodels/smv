@@ -1833,7 +1833,7 @@ void drawgrid(const meshdata *meshi){
       pcolor[0]=255*foregroundcolor[0];
       pcolor[1]=255*foregroundcolor[1];
       pcolor[2]=255*foregroundcolor[2];
-      drawsphere(0.03,pcolor);
+      DrawSphere(0.03,pcolor);
       glPopMatrix();
     }
   }

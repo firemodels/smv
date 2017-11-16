@@ -88,9 +88,9 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
     CLIP_GEOMETRY;
-    draw_devices();
+    DrawDevices();
     if(viswindrose)DrawWindRosesDevices();
-    SNIFF_ERRORS("after draw_devices");
+    SNIFF_ERRORS("after DrawDevices");
 
     if(visaxislabels == 1){
       UNCLIP;
@@ -145,7 +145,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       pcolor[0] = 255 * foregroundcolor[0];
       pcolor[1] = 255 * foregroundcolor[1];
       pcolor[2] = 255 * foregroundcolor[2];
-      drawsphere(0.03, pcolor);
+      DrawSphere(0.03, pcolor);
       glPopMatrix();
     }
 
@@ -173,7 +173,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(mode == SELECTOBJECT){
     if(select_device == 1){
       CLIP_GEOMETRY;
-      draw_devices();
+      DrawDevices();
       SNIFF_ERRORS("after drawselect_devices");
       return;
     }
@@ -403,8 +403,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN){
     CLIP_VALS;
-    getsmokesensors();
-    draw_devices_val();
+    GetSmokeSensors();
+    DrawDevicesVal();
   }
 
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */

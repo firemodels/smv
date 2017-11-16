@@ -2679,7 +2679,7 @@ void DrawTestOutline(void){
 
   Antialias(ON);
   glLineWidth(tetra_line_thickness);
-  drawcubec_outline(1.0,cubecolor);
+  DrawCubeCOutline(1.0,cubecolor);
   Antialias(OFF);
 
   glPopMatrix();
@@ -2716,7 +2716,7 @@ void DrawGeomCutCells(void){
       kk = ijk/nxy;
       jj = (ijk-kk*nxy)/nx;
       ii = ijk%nx;
-      drawbox_outline(x[ii],x[ii+1],y[jj],y[jj+1],z[kk],z[kk+1],foregroundcolor);
+      DrawBoxOutline(x[ii],x[ii+1],y[jj],y[jj+1],z[kk],z[kk+1],foregroundcolor);
     }
   }
   glPopMatrix();

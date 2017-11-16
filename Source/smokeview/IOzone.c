@@ -23,7 +23,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
      char label[100];
 
      sprintf(label,"ULT_%i",i+1);
-     dev=getdevice(label,-1);
+     dev=GetDeviceFromLabel(label,-1);
      if(dev==NULL)break;
      *nzone_times_local=dev->nvals;
      nr++;
@@ -35,7 +35,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
      char label[100];
 
      sprintf(label,"HVENT_%i",i+1);
-     dev=getdevice(label,-1);
+     dev=GetDeviceFromLabel(label,-1);
      if(dev==NULL)break;
      nv++;
    }
@@ -46,7 +46,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
      char label[100];
 
      sprintf(label,"VVENT_%i",i+1);
-     dev=getdevice(label,-1);
+     dev=GetDeviceFromLabel(label,-1);
      if(dev==NULL)break;
      nv++;
    }
@@ -57,7 +57,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
      char label[100];
 
      sprintf(label,"MVENT_%i",i+1);
-     dev=getdevice(label,-1);
+     dev=GetDeviceFromLabel(label,-1);
      if(dev==NULL)break;
      nv++;
    }
@@ -68,7 +68,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
      char label[100];
 
      sprintf(label,"HRR_%i",i+1);
-     dev=getdevice(label,-1);
+     dev=GetDeviceFromLabel(label,-1);
      if(dev==NULL)break;
      nf++;
    }
@@ -96,7 +96,7 @@ void getzonesizecsv(int *nzone_times_local, int *nroom, int *nfires_local, int *
   FREEMEMORY(zonefbase_devs)
 
 #define GETZONEDEV(zonedev)\
-      zonedev = getdevice(label, -1);\
+      zonedev = GetDeviceFromLabel(label, -1);\
       if(zonedev == NULL || zonedev->nvals != nzone_times_local){\
         *error=1;\
         FREEZONEMEM;\
@@ -157,7 +157,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     char label[100];
 
     sprintf(label,"PRS_%i",i+1);
-    zonepr_devs[i]=getdevice(label,-1);
+    zonepr_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonepr_devs[i]==NULL||zonepr_devs[i]->nvals!=nzone_times_local){
       *error = 1;
       FREEZONEMEM;
@@ -166,7 +166,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     zonepr_devs[i]->in_zone_csv=1;
 
     sprintf(label,"HGT_%i",i+1);
-    zoneylay_devs[i]=getdevice(label,-1);
+    zoneylay_devs[i]=GetDeviceFromLabel(label,-1);
     if(zoneylay_devs[i]==NULL||zoneylay_devs[i]->nvals!=nzone_times_local){
       zoneylay_devs[i]=NULL;
     }
@@ -175,7 +175,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label,"LLT_%i",i+1);
-    zonetl_devs[i]=getdevice(label,-1);
+    zonetl_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonetl_devs[i]==NULL||zonetl_devs[i]->nvals!=nzone_times_local){
       zonetl_devs[i]=NULL;
     }
@@ -184,7 +184,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label,"ULT_%i",i+1);
-    zonetu_devs[i]=getdevice(label,-1);
+    zonetu_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonetu_devs[i]==NULL||zonetu_devs[i]->nvals!=nzone_times_local){
       *error = 1;
       FREEZONEMEM;
@@ -195,7 +195,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label, "RHOL_%i", i+1);
-    zonerhol_devs[i] = getdevice(label, -1);
+    zonerhol_devs[i] = GetDeviceFromLabel(label, -1);
     if(zonerhol_devs[i]==NULL||zonerhol_devs[i]->nvals!=nzone_times_local){
       zonerhol_devs[i] = NULL;
       zone_rho=0;
@@ -205,7 +205,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label, "RHOU_%i", i+1);
-    zonerhou_devs[i] = getdevice(label, -1);
+    zonerhou_devs[i] = GetDeviceFromLabel(label, -1);
     if(zonerhou_devs[i]==NULL||zonerhou_devs[i]->nvals!=nzone_times_local){
       zonerhou_devs[i] = NULL;
       zone_rho=0;
@@ -215,7 +215,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label,"ULOD_%i",i+1);
-    zoneodu_devs[i]=getdevice(label,-1);
+    zoneodu_devs[i]=GetDeviceFromLabel(label,-1);
     if(zoneodu_devs[i]==NULL){
       use_od=0;
     }
@@ -224,7 +224,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     }
 
     sprintf(label,"LLOD_%i",i+1);
-    zoneodl_devs[i]=getdevice(label,-1);
+    zoneodl_devs[i]=GetDeviceFromLabel(label,-1);
     if(zoneodl_devs[i]==NULL)zoneodl_devs[i]=zoneodu_devs[i];
     if(zoneodl_devs[i]==NULL){
       use_od=0;
@@ -248,7 +248,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     char label[100];
 
     sprintf(label,"HRR_%i",i+1);
-    zoneqfire_devs[i]=getdevice(label,-1);
+    zoneqfire_devs[i]=GetDeviceFromLabel(label,-1);
     if(zoneqfire_devs[i]==NULL||zoneqfire_devs[i]->nvals!=nzone_times_local){
       *error=1;
       FREEZONEMEM;
@@ -257,7 +257,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     zoneqfire_devs[i]->in_zone_csv=1;
 
     sprintf(label,"FLHGT_%i",i+1);
-    zonefheight_devs[i]=getdevice(label,-1);
+    zonefheight_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonefheight_devs[i]==NULL||zonefheight_devs[i]->nvals!=nzone_times_local){
       *error=1;
       FREEZONEMEM;
@@ -266,7 +266,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     zonefheight_devs[i]->in_zone_csv=1;
 
     sprintf(label,"FBASE_%i",i+1);
-    zonefbase_devs[i]=getdevice(label,-1);
+    zonefbase_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonefbase_devs[i]==NULL||zonefbase_devs[i]->nvals!=nzone_times_local){
       *error=1;
       FREEZONEMEM;
@@ -275,7 +275,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
     zonefbase_devs[i]->in_zone_csv=1;
 
     sprintf(label,"FAREA_%i",i+1);
-    zonefarea_devs[i]=getdevice(label,-1);
+    zonefarea_devs[i]=GetDeviceFromLabel(label,-1);
     if(zonefarea_devs[i]==NULL||zonefarea_devs[i]->nvals!=nzone_times_local){
       *error=1;
       FREEZONEMEM;
@@ -301,7 +301,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
       vent_index=i+1-nzhvents-nzvvents;
     }
     sprintf(label, "%s_%i", vent_type,vent_index);
-    zonevents_devs[i] = getdevice(label, -1);
+    zonevents_devs[i] = GetDeviceFromLabel(label, -1);
     if(zonevents_devs[i] == NULL || zonevents_devs[i]->nvals != nzone_times_local){
       *error=1;
       FREEZONEMEM;
@@ -332,7 +332,7 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
       max_slabs = MAX_MSLABS;
     }
     sprintf(label, "%s_%i", vent_type, vent_index);
-    zoneslab_n_devs[i] = getdevice(label, -1);
+    zoneslab_n_devs[i] = GetDeviceFromLabel(label, -1);
     if(zoneslab_n_devs[i] != NULL){
       have_ventslab_flow = 1;
       break;
@@ -342,19 +342,19 @@ void getzonedatacsv(int nzone_times_local, int nrooms_local, int nfires_local,
 
       idev = MAX_HSLABS * i + islab;
       sprintf(label, "%s_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_T_devs[idev] = getdevice(label, -1);
+      zoneslab_T_devs[idev] = GetDeviceFromLabel(label, -1);
       if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
 
       sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_F_devs[idev] = getdevice(label, -1);
+      zoneslab_F_devs[idev] = GetDeviceFromLabel(label, -1);
       if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
 
       sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YB_devs[idev] = getdevice(label, -1);
+      zoneslab_YB_devs[idev] = GetDeviceFromLabel(label, -1);
       if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
 
       sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YT_devs[idev] = getdevice(label, -1);
+      zoneslab_YT_devs[idev] = GetDeviceFromLabel(label, -1);
       if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
     }
     if(have_ventslab_flow == 1)break;
@@ -598,7 +598,7 @@ void getzonesmokedir(float *mm){
       eyedir[0]=xyzeyeorig[0]-eyedir[0];
       eyedir[1]=xyzeyeorig[1]-eyedir[1];
       eyedir[2]=xyzeyeorig[2]-eyedir[2];
-      normalize(eyedir,3);
+      Normalize(eyedir,3);
       cosdir = (eyedir[0]*norm[0]+eyedir[1]*norm[1]+eyedir[2]*norm[2]);
       if(cosdir>1.0)cosdir=1.0;
       if(cosdir<-1.0)cosdir=-1.0;
@@ -672,8 +672,8 @@ void readzone(int ifile, int flag, int *errorcode){
   }
   zonefilelen = strlen(file);
   if(zonei->csv==1){
-    read_device_data(zonei->file,CSV_CFAST,UNLOAD);
-    read_device_data(zonei->file,CSV_CFAST,LOAD);
+    ReadDeviceData(zonei->file,CSV_CFAST,UNLOAD);
+    ReadDeviceData(zonei->file,CSV_CFAST,LOAD);
     getzonesizecsv(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2, &error);
   }
   else{
@@ -1158,7 +1158,7 @@ void drawroomgeom(void){
           hvac_sphere_color[0] = 255 * foregroundcolor[0];
           hvac_sphere_color[1] = 255 * foregroundcolor[1];
           hvac_sphere_color[2] = 255 * foregroundcolor[2];
-          drawsphere(SCALE2SMV(zone_hvac_diam), hvac_sphere_color);
+          DrawSphere(SCALE2SMV(zone_hvac_diam), hvac_sphere_color);
         }
         glPopMatrix();
         glLineWidth(2.0*ventlinewidth);
@@ -1180,7 +1180,7 @@ void drawroomgeom(void){
         uc_color[1] = zvi->color[1]*255;
         uc_color[2] = zvi->color[2]*255;
         uc_color[3] = zvi->color[3]*255;
-        drawcircle(2.0*SCALE2SMV(zvi->radius), uc_color, &cvent_circ);
+        DrawCircle(2.0*SCALE2SMV(zvi->radius), uc_color, &cvent_circ);
         glPopMatrix();
       }
       else{
@@ -2101,7 +2101,7 @@ void DrawFirePlume(float diameter, float height, float maxheight){
 
     dlower=diameter;
     dupper=0.0;
-    drawtrunccone(dlower,dupper,height,firecolor);
+    DrawTruncCone(dlower,dupper,height,firecolor);
   }
   else{
     float dh;
@@ -2111,13 +2111,13 @@ void DrawFirePlume(float diameter, float height, float maxheight){
     dh = height-maxheight;
     dlower1=diameter;
     dupper1=diameter*dh/height;
-    drawtrunccone(dlower1,dupper1,maxheight,firecolor);
+    DrawTruncCone(dlower1,dupper1,maxheight,firecolor);
 
     glPushMatrix();
     glTranslatef(0.0,0.0,maxheight-dupper1/2.0);
     dlower2=0.0;
     dupper2=2.0*dh;
-    drawtrunccone(dlower2,dupper2,dupper1/2.0,firecolor);
+    DrawTruncCone(dlower2,dupper2,dupper1/2.0,firecolor);
     glPopMatrix();
   }
 }

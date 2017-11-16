@@ -435,12 +435,12 @@ void DrawCircVentsExactSolid(int option){
           break;
       }
       if(option==VENT_CIRCLE){
-        if(cvi->type==VENT_SOLID)drawfilledcircle(2.0*cvi->radius,vcolor,&cvent_circ);
-        if(cvi->type==VENT_OUTLINE)drawcircle(2.0*cvi->radius,vcolor,&cvent_circ);
+        if(cvi->type==VENT_SOLID)DrawFilledCircle(2.0*cvi->radius,vcolor,&cvent_circ);
+        if(cvi->type==VENT_OUTLINE)DrawCircle(2.0*cvi->radius,vcolor,&cvent_circ);
       }
       if(option==VENT_RECTANGLE){
-        if(cvi->type==VENT_SOLID)drawfilledrectangle(width,height,vcolor);
-        if(cvi->type==VENT_OUTLINE)drawrectangle(width,height,vcolor);
+        if(cvi->type==VENT_SOLID)DrawFilledRectangle(width,height,vcolor);
+        if(cvi->type==VENT_OUTLINE)DrawRectangle(width,height,vcolor);
       }
       glPopMatrix();
       if(option==VENT_CIRCLE)SetClipPlanes(&clipinfo,CLIP_ON);
@@ -545,10 +545,10 @@ void DrawCircVentsExactOutline(int option){
           break;
       }
       if(option==VENT_CIRCLE){
-        drawcircle(2.0*cvi->radius,vcolor,&cvent_circ);
+        DrawCircle(2.0*cvi->radius,vcolor,&cvent_circ);
       }
       if(option==VENT_RECTANGLE){
-        drawrectangle(width,height,vcolor);
+        DrawRectangle(width,height,vcolor);
       }
       glPopMatrix();
       if(option==VENT_CIRCLE)SetClipPlanes(&clipinfo,CLIP_ON);
@@ -764,7 +764,7 @@ void GetBlockVals(  float *xmin, float *xmax,
 void SetCVentDirs(void){
   int ii;
 
-  Init_Circle(90,&cvent_circ);
+  InitCircle(90,&cvent_circ);
   for(ii=0;ii<nmeshes;ii++){
     meshdata *meshi;
     int ibar, jbar;

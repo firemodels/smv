@@ -1156,7 +1156,7 @@ void InitVars(void){
 
   curdir_writable = Writable(".");
   windrose_circ.ncirc=0;
-  Init_Circle(180, &windrose_circ);
+  InitCircle(180, &windrose_circ);
 
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;

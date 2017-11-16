@@ -273,34 +273,9 @@
 #define TOKEN_STRING 3
 #define TOKEN_TEXTURE 4
 
-char *parse_device_frame(char *buffer, FILE *stream, int *eof, sv_object_frame *frame);
-void reporterror(char *buffer, char *token, int numargs_found, int numargs_expected);
-float get_point2box_dist(float boxmin[3], float boxmax[3], float p1[3], float p2[3]);
-
-void drawsphereseg(float anglemin, float anglemax, float rmin, float rmax);
-void rotateeye(void);
-void rotateaxis(float angle, float ax, float ay, float az);
-void rotatexyz(float x, float y, float z);
-void drawcone(float d1, float height, unsigned char *rgbcolor);
-void drawtrunccone(float d1, float d2, float height, unsigned char *rgbcolor);
-void drawline(float *xyz1, float *xyz2, unsigned char *rgbcolor);
-void drawarc(float angle, float diameter, unsigned char *rgbcolor);
-void drawpoint(unsigned char *rgbcolor);
-void drawsphere(float diameter, unsigned char *rgbcolor);
-void drawhsphere(float diameter, unsigned char *rgbcolor);
-void drawtriblock(float size, float height, unsigned char *rgbcolor);
-void drawtsphere(int texture_index, float diameter, unsigned char *rgbcolor);
-void drawcube(float size, unsigned char *rgbcolor);
-void drawsquare(float size, unsigned char *rgbcolor);
-void drawvent(float width, float height, unsigned char *rgbcolor);
-void drawcdisk(float diameter, float height, unsigned char *rgbcolor);
-void drawdisk(float diameter, float height, unsigned char *rgbcolor);
-void drawarcdisk(float angle, float diameter, float height, unsigned char *rgbcolor);
-void drawhexdisk(float diameter, float height, unsigned char *rgbcolor);
-void drawpolydisk(int nsides, float diameter, float height, unsigned char *rgbcolor);
-void drawring(float d_inner, float d_outer, float height, unsigned char *rgbcolor);
-void drawnotchplate(float diameter, float height, float notchheight, float direction, unsigned char *rgbcolor);
-void draw_SVOBJECT(sv_object *object, int frame_index_local, propdata *prop, int recurse_level, float *valrgb, int vis_override);
-void free_object(sv_object *object);
-void freecircle(circdata *circinfo);
+void DrawCone(float d1, float height, unsigned char *rgbcolor);
+void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor);
+void DrawSphere(float diameter, unsigned char *rgbcolor);
+void DrawDisk(float diameter, float height, unsigned char *rgbcolor);
+void DrawSmvObject(sv_object *object, int frame_index_local, propdata *prop, int recurse_level, float *valrgb, int vis_override);
 #endif

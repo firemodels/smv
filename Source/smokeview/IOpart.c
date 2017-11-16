@@ -1803,7 +1803,7 @@ void draw_part(const partdata *parti){
                 }
               }
               copy_dep_vals(partclassi,datacopy,colorptr,prop,j);
-              draw_SVOBJECT(avatar_types[avatar_type],0,prop,0,NULL,0);
+              DrawSmvObject(avatar_types[avatar_type],0,prop,0,NULL,0);
               select_device_color_ptr=NULL;
               avatar_types[avatar_type]->use_displaylist=save_use_displaylist;
               glPopMatrix();
@@ -1874,7 +1874,7 @@ void draw_part(const partdata *parti){
                 partfacedir[1]=ybar0+SCALE2SMV(world_eyepos[1])-yplts[sy[j]];
                 partfacedir[2]=zbar0+SCALE2SMV(world_eyepos[2])-zplts[sz[j]];
 
-                draw_SVOBJECT(prop->smv_object,0,prop,0,NULL,0);
+                DrawSmvObject(prop->smv_object,0,prop,0,NULL,0);
                 glPopMatrix();
               }
             }

@@ -254,7 +254,7 @@ void DeviceCB(int var){
     }
     if(ndevicetypes > 0){
       devicetypes[devicetypes_index]->type2vis = 1;
-      update_colordevs();
+      UpdateColorDevices();
     }
     break;
   case SHOWDEVICEVALS:

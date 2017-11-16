@@ -2339,7 +2339,7 @@ void SmokeviewIniMenu(int value){
     WriteINI(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
-    init_object_defs();
+    InitObjectDefs();
     break;
   case MENU_DUMMY:
     break;
@@ -3105,7 +3105,7 @@ void PropMenu(int value){
       propi->smokeview_id = propi->smokeview_ids[iobject];
       propi->smv_object = propi->smv_objects[iobject];
       updatemenu = 1;
-      get_indep_var_indices(propi->smv_object,
+      GetIndepVarIndices(propi->smv_object,
         propi->vars_indep, propi->nvars_indep,
         propi->vars_indep_index);
 
@@ -3113,7 +3113,7 @@ void PropMenu(int value){
         partclassdata *partclassi;
 
         partclassi = partclassinfo + i;
-        update_partclass_depend(partclassi);
+        UpdatePartClassDepend(partclassi);
 
       }
 
@@ -4893,8 +4893,8 @@ void ShowObjectsMenu(int value){
   }
   else{
     device_sphere_segments=ABS(value);
-    Init_Sphere(device_sphere_segments,2*device_sphere_segments);
-    Init_Circle(2*device_sphere_segments,&object_circ);
+    InitSphere(device_sphere_segments,2*device_sphere_segments);
+    InitCircle(2*device_sphere_segments,&object_circ);
   }
   updatemenu=1;
   glutPostRedisplay();

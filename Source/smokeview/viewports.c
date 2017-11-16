@@ -1174,7 +1174,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_scratch);
     MatMultMat(inverse_modelview_setup,modelview_scratch,modelview_current);
 
-    get_world_eyepos(modelview_scratch, world_eyepos,scaled_eyepos);
+    GetWorldEyePos(modelview_scratch, world_eyepos,scaled_eyepos);
 
     if(show_gslice_triangles==1||SHOW_gslice_data==1){
       UpdateGslicePlanes();

@@ -72,27 +72,27 @@ void DrawTrees(void){
     switch(state){
       case 0:
         glColor4fv(trunccolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
+        DrawDisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
 
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
         glColor4fv(treecolor);
-        drawcone(treei->base_diam,crown_height,treecolor_uc);
+        DrawCone(treei->base_diam,crown_height,treecolor_uc);
         break;
       case 1:
         glColor4fv(treecharcolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
+        DrawDisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
 
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
-        drawcone(treei->base_diam,crown_height,treecolor_uc);
+        DrawCone(treei->base_diam,crown_height,treecolor_uc);
         break;
       case 2:
         glColor4fv(treecharcolor);
-        drawdisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
+        DrawDisk(treei->trunk_diam,treei->base_height,trunccolor_uc);
         crown_height=treei->tree_height-treei->base_height;
         glTranslatef(0.0,0.0,treei->base_height);
-        drawcone(treei->trunk_diam,crown_height,trunccolor_uc);
+        DrawCone(treei->trunk_diam,crown_height,trunccolor_uc);
         break;
       default:
         ASSERT(FFALSE);
