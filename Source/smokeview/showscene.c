@@ -43,14 +43,14 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
     if(showsmoke == 1){
       CLIP_VALS;
-      draw_partframe();
+      DrawPartFrame();
     }
 
     /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
 
     if(showevac == 1){
       CLIP_VALS;
-      draw_evacframe();
+      DrawEvacFrame();
     }
 
     /* ++++++++++++++++++++++++ draw test geometry +++++++++++++++++++++++++ */
@@ -184,8 +184,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(mode == SELECTOBJECT){
     if(select_avatar == 1){
       CLIP_GEOMETRY;
-      draw_select_avatars();
-      SNIFF_ERRORS("after draw_select_avatars");
+      DrawSelectAvatars();
+      SNIFF_ERRORS("after DrawSelectAvatars");
       return;
     }
   }

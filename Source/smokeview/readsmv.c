@@ -8850,7 +8850,7 @@ typedef struct {
 
   InitMultiThreading();
 
-  init_partprop();
+  InitPartProp();
 
   InitClip();
 
@@ -9008,7 +9008,7 @@ typedef struct {
   UpdateVSliceTypes();
   UpdatePatchMenuLabels();
   UpdateIsoMenuLabels();
-  update_part_menulabels();
+  UpdatePartMenuLabels();
   UpdateTourMenulabels();
   InitUserTicks();
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
@@ -10028,7 +10028,7 @@ int ReadINI2(char *inifile, int localfile){
 
         TrimBack(short_label);
         s1 = TrimFront(short_label);
-        if(strlen(s1)>0)label_index = get_partprop_index_s(s1);
+        if(strlen(s1)>0)label_index = GetPartPropIndexS(s1);
         if(label_index >= 0 && label_index<npart5prop){
           partpropdata *propi;
 
@@ -10083,7 +10083,7 @@ int ReadINI2(char *inifile, int localfile){
 
         TrimBack(short_label);
         s1 = TrimFront(short_label);
-        if(strlen(s1)>0)label_index = get_partprop_index_s(s1);
+        if(strlen(s1)>0)label_index = GetPartPropIndexS(s1);
         if(label_index >= 0 && label_index<npart5prop){
           partpropdata *propi;
 
