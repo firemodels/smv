@@ -14,7 +14,7 @@ void GetShooterVel(float *uvw, float *xyz){
 
   if(shooter_vel_type==0&&plot3dtimelist!=NULL){
     // plot3d velocities
-    get_plot3d_uvw(xyz, uvw);
+    GetPlot3dUVW(xyz, uvw);
   }
   else{
     // power law velocities

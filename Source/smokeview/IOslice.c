@@ -2005,7 +2005,7 @@ void UpdateSliceMenuLabels(void){
 
 /* ------------------ UpdateVsliceMenulabels ------------------------ */
 
-void UpdateVsliceMenulabels(void){
+void UpdateVsliceMenuLabels(void){
   int i;
   slicedata *sd, *sdold;
   vslicedata *vsd, *vsdold;
@@ -3168,7 +3168,7 @@ void UpdateVSlices(void){
     }
   }
 
-  UpdateVsliceMenulabels();
+  UpdateVsliceMenuLabels();
 }
 
   /* ------------------ GetVSliceIndex ------------------------ */

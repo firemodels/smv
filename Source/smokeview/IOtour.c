@@ -97,7 +97,7 @@ void UpdateViewTour(void){
 
 /* ------------------ UpdateTourMenulabels ------------------------ */
 
-void UpdateTourMenulabels(void){
+void UpdateTourMenuLabels(void){
   int i;
   tourdata *touri;
 
@@ -1333,7 +1333,7 @@ tourdata *AddTour(char *label){
   }
   updatemenu=1;
 
-  UpdateTourMenulabels();
+  UpdateTourMenuLabels();
   CreateTourPaths();
   UpdateTimes();
   CreateTourList();
@@ -1384,7 +1384,7 @@ void DeleteTour(int tour_index){
     selected_frame=NULL;
   }
   SetGluiTourKeyframe();
-  UpdateTourMenulabels();
+  UpdateTourMenuLabels();
   UpdateTimes();
   CreateTourList();
 
@@ -1428,7 +1428,7 @@ void SetupTour(void){
     ntourinfo=1;
     NewMemory( (void **)&tourinfo, ntourinfo*sizeof(tourdata));
     InitCircularTour();
-    UpdateTourMenulabels();
+    UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
     plotstate=GetPlotState(DYNAMIC_PLOTS);

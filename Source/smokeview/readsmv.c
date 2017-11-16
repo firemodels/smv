@@ -1316,8 +1316,8 @@ void ReadSMVDynamic(char *file){
     }
   }
   FCLOSE(stream);
-  update_plot3d_menulabels();
-  init_plot3dtimelist();
+  UpdatePlot3dMenuLabels();
+  InitPlot3dTimeList();
 }
 
 
@@ -9009,7 +9009,7 @@ typedef struct {
   UpdatePatchMenuLabels();
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
-  UpdateTourMenulabels();
+  UpdateTourMenuLabels();
   InitUserTicks();
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -12110,7 +12110,7 @@ int ReadINI2(char *inifile, int localfile){
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
             }
-            UpdateTourMenulabels();
+            UpdateTourMenuLabels();
             CreateTourPaths();
             UpdateTimes();
             plotstate = GetPlotState(DYNAMIC_PLOTS);

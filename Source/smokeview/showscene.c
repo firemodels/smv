@@ -160,8 +160,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
         UNCLIP;
         for(igrid = 0;igrid<nmeshes;igrid++){
           meshi = meshinfo + igrid;
-          drawgrid(meshi);
-          SNIFF_ERRORS("drawgrid");
+          DrawGrid(meshi);
+          SNIFF_ERRORS("DrawGrid");
         }
       }
     }
@@ -450,9 +450,9 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showplot3d == 1){
     CLIP_VALS;
-    draw_plot3dframe();
+    DrawPlot3dFrame();
   }
-  SNIFF_ERRORS("after drawplot3d");
+  SNIFF_ERRORS("after DrawPlot3dFrame");
 }
 
 /* ------------------ ShowScene ------------------------ */

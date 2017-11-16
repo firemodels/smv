@@ -1030,11 +1030,11 @@ void InitOpenGL(void){
 
       plot3di = plot3dinfo + i;
       if(plot3di->autoload==0&&plot3di->loaded==1){
-        readplot3d(plot3di->file,i,UNLOAD,&errorcode);
+        ReadPlot3d(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
         ReadPlot3dFile=1;
-        readplot3d(plot3di->file,i,LOAD,&errorcode);
+        ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
       }
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);

@@ -2218,9 +2218,9 @@ extern "C" void Plot3DBoundCB(int var){
     Plot3DBoundCB(UPDATE_VECTOR);
     break;
   case UPDATE_VECTOR:
-    updateplotslice(XDIR);
-    updateplotslice(YDIR);
-    updateplotslice(ZDIR);
+    UpdatePlotSlice(XDIR);
+    UpdatePlotSlice(YDIR);
+    UpdatePlotSlice(ZDIR);
     break;
   case CHOPUPDATE:
     UpdateChopColors();

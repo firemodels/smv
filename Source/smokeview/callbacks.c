@@ -1519,9 +1519,9 @@ void Keyboard(unsigned char key, int flag){
           gbi = meshinfo + i;
           if(gbi->plot3dfilenum==-1)continue;
           UpdateCurrentMesh(gbi);
-          updateplotslice(XDIR);
-          updateplotslice(YDIR);
-          updateplotslice(ZDIR);
+          UpdatePlotSlice(XDIR);
+          UpdatePlotSlice(YDIR);
+          UpdatePlotSlice(ZDIR);
         }
         UpdateCurrentMesh(gbsave);
       }
@@ -1905,8 +1905,8 @@ void Keyboard(unsigned char key, int flag){
       if(plotn>numplot3dvars){
         plotn=1;
       }
-      updateallplotslices();
-      if(visiso==1&&cache_qdata==1)updatesurface();
+      UpdateAllPlotSlices();
+      if(visiso==1&&cache_qdata==1)UpdateSurface();
       UpdatePlot3dListIndex();
       break;
     case 'P':
@@ -2326,11 +2326,11 @@ void Keyboard(unsigned char key, int flag){
     plotstate = GetPlotState(STATIC_PLOTS);
     if(visiso!=0&&current_mesh->slicedir==ISO){
       plotiso[plotn-1] += FlowDir;
-      updatesurface();
+      UpdateSurface();
     }
     glutPostRedisplay();
   }
-  if(iplot_state!=0)updateplotslice(iplot_state);
+  if(iplot_state!=0)UpdatePlotSlice(iplot_state);
 }
 
 /* ------------------ KeyboardCB ------------------------ */
@@ -2407,9 +2407,9 @@ void UpdateClipPlanes(void){
 
 void handleiso(void){
     if(ReadPlot3dFile==1){
-      updateshowstep(1-visiso,ISO);
+      UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
-        updatesurface();
+        UpdateSurface();
         plotstate=STATIC_PLOTS;
       }
     }
@@ -2541,7 +2541,7 @@ void HandlePLOT3DKeys(int  key){
     ASSERT(FFALSE);
     break;
   }
-  if(iplot_state!=0)updateplotslice(iplot_state);
+  if(iplot_state!=0)UpdatePlotSlice(iplot_state);
   return;
 
 //  plotstate=GetPlotState(STATIC_PLOTS);
@@ -2873,13 +2873,33 @@ void ResetGLTime(void){
   }
 }
 
+/* ------------------ UpdatePlot3dTitle ------------------------ */
+
+void UpdatePlot3dTitle(void){
+  int filenum;
+  plot3ddata *plot3di;
+  meshdata *meshi;
+  char title_base[1024];
+
+  GetBaseTitle("Smokeview ", title_base);
+  STRCPY(plot3d_title, title_base);
+  meshi = current_mesh;
+  if(meshi == NULL)meshi = meshinfo;
+  filenum = meshi->plot3dfilenum;
+  if(filenum != -1){
+    plot3di = plot3dinfo + meshi->plot3dfilenum;
+    STRCAT(plot3d_title, ", ");
+    STRCAT(plot3d_title, plot3di->file);
+  }
+}
+
 /* ------------------ UpdateCurrentMesh ------------------------ */
 
 void UpdateCurrentMesh(meshdata *meshi){
   current_mesh=meshi;
   loaded_isomesh= GetLoadedIsoMesh();
   UpdateIsoShowLevels();
-  update_plot3dtitle();
+  UpdatePlot3dTitle();
 }
 
 /* ------------------ ClearBuffers ------------------------ */

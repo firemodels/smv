@@ -479,22 +479,22 @@ void StaticVariableMenu(int value){
   plotstate=STATIC_PLOTS;
   visGrid=0;
   if(visiso==1){
-    updateshowstep(1,ISO);
+    UpdateShowStep(1,ISO);
   }
-  updatesurface();
+  UpdateSurface();
   if(visx_all==1){
-    updateshowstep(1,XDIR);
+    UpdateShowStep(1,XDIR);
   }
   if(visy_all==1){
-    updateshowstep(1,YDIR);
+    UpdateShowStep(1,YDIR);
   }
   if(visz_all==1){
-    updateshowstep(1,ZDIR);
+    UpdateShowStep(1,ZDIR);
   }
   if(visx_all==0&&visy_all==0&&visz_all==0){
-    updateshowstep(1,YDIR);
+    UpdateShowStep(1,YDIR);
   }
-  updateallplotslices();
+  UpdateAllPlotSlices();
   updatemenu=1;
   glutPostRedisplay();
   UpdatePlot3dListIndex();
@@ -506,20 +506,20 @@ void IsoVariableMenu(int value){
   if(ReadPlot3dFile==1){
     plotn=value;
     if(visx_all==1){
-      updateshowstep(1,XDIR);
+      UpdateShowStep(1,XDIR);
     }
     if(visy_all==1){
-      updateshowstep(1,YDIR);
+      UpdateShowStep(1,YDIR);
     }
     if(visz_all==1){
-      updateshowstep(1,ZDIR);
+      UpdateShowStep(1,ZDIR);
     }
-    updateshowstep(1,ISO);
-    updatesurface();
+    UpdateShowStep(1,ISO);
+    UpdateSurface();
     plotstate=STATIC_PLOTS;
-    updateplotslice(XDIR);
-    updateplotslice(YDIR);
-    updateplotslice(ZDIR);
+    UpdatePlotSlice(XDIR);
+    UpdatePlotSlice(YDIR);
+    UpdatePlotSlice(ZDIR);
     updatemenu=1;
     glutPostRedisplay();
     UpdatePlot3dListIndex();
@@ -1947,7 +1947,7 @@ void IsoSurfaceMenu(int value){
     updatemenu=1;
     glutPostRedisplay();
     if(value==1){
-      updateshowstep(0,ISO);
+      UpdateShowStep(0,ISO);
     }
     if(value==2){
       p3dsurfacesmooth = 1 - p3dsurfacesmooth;
@@ -1960,8 +1960,8 @@ void IsoSurfaceMenu(int value){
 void LevelMenu(int value){
   if(ReadPlot3dFile==1){
     plotiso[plotn-1]=value;
-    updateshowstep(1,ISO);
-    updatesurface();
+    UpdateShowStep(1,ISO);
+    UpdateSurface();
     updatemenu=1;
     glutPostRedisplay();
   }
@@ -2185,7 +2185,7 @@ void Plot3DShowMenu(int value){
   }
   plotstate=GetPlotState(STATIC_PLOTS);
   if(plotstate==STATIC_PLOTS&&visiso==1){
-    updatesurface();
+    UpdateSurface();
   }
   updatemenu=1;
   glutPostRedisplay();
@@ -2672,7 +2672,7 @@ void LoadUnloadMenu(int value){
       ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
     }
     for(i = 0; i<nplot3dinfo; i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       ReadPatch(i,UNLOAD,&errorcode);
@@ -2745,7 +2745,7 @@ void LoadUnloadMenu(int value){
     islicetype=islicetype_save;
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
-        readplot3d(plot3dinfo[i].file,i,LOAD,&errorcode);
+        ReadPlot3d(plot3dinfo[i].file,i,LOAD,&errorcode);
       }
     }
     for(ii=0;ii<npatch_loaded;ii++){
@@ -2798,13 +2798,13 @@ void LoadUnloadMenu(int value){
     showfiles=1-showfiles;
     updatemenu=1;
     UpdateSliceMenuLabels();
-    UpdateVsliceMenulabels();
+    UpdateVsliceMenuLabels();
     UpdateSmoke3DMenuLabels();
     UpdatePatchMenuLabels();
     UpdateIsoMenuLabels();
     UpdatePartMenuLabels();
-    UpdateTourMenulabels();
-    update_plot3d_menulabels();
+    UpdateTourMenuLabels();
+    UpdatePlot3dMenuLabels();
   }
   if(value==SHOWMESHMENUS){
     show_meshmenus = 1 - show_meshmenus;
@@ -3440,11 +3440,11 @@ void UnloadPlot3dMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readplot3d("",value,UNLOAD,&errorcode);
+    ReadPlot3d("",value,UNLOAD,&errorcode);
   }
   else{
     for(i=0;i<nplot3dinfo;i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
   }
 }
@@ -4205,12 +4205,12 @@ void LoadPlot3dMenu(int value){
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      readplot3d(plot3dfile,value,LOAD,&errorcode);
+      ReadPlot3d(plot3dfile,value,LOAD,&errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nplot3dinfo;i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
   }
   else if(value==MENU_PLOT3D_SETTINGS){

@@ -1554,8 +1554,8 @@ void script_plot3dprops(scriptdata *scripti){
   if(plotn>numplot3dvars){
     plotn=1;
   }
-  updateallplotslices();
-  if(visiso==1)updatesurface();
+  UpdateAllPlotSlices();
+  if(visiso==1)UpdateSurface();
   UpdatePlot3dListIndex();
 
   vecfactor=1.0;
@@ -1575,9 +1575,9 @@ void script_plot3dprops(scriptdata *scripti){
       gbi = meshinfo + i;
       if(gbi->plot3dfilenum==-1)continue;
       UpdateCurrentMesh(gbi);
-      updateplotslice(XDIR);
-      updateplotslice(YDIR);
-      updateplotslice(ZDIR);
+      UpdatePlotSlice(XDIR);
+      UpdatePlotSlice(YDIR);
+      UpdatePlotSlice(ZDIR);
     }
     UpdateCurrentMesh(gbsave);
   }
@@ -1702,15 +1702,15 @@ void script_showplot3ddata(scriptdata *scripti){
     case ISO:
       isolevel=scripti->ival5;
       plotiso[plotn-1]=isolevel;
-      updateshowstep(showhide,ISO);
-      updatesurface();
+      UpdateShowStep(showhide,ISO);
+      UpdateSurface();
       updatemenu=1;
       break;
     default:
       ASSERT(FFALSE);
       break;
   }
-  updateplotslice(dir);
+  UpdatePlotSlice(dir);
 
 }
 
@@ -1828,7 +1828,7 @@ void script_loadfile(scriptdata *scripti){
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,scripti->cval)==0){
       ReadPlot3dFile=1;
-      readplot3d(plot3di->file,i,LOAD,&errorcode);
+      ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return;
     }

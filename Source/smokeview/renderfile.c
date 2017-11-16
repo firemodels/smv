@@ -280,7 +280,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       else{
         sprintf(suffix, "%04i", image_num);
       }
-      code = getplot3dtime(&time_local);
+      code = GetPlot3dTime(&time_local);
       if(code == 1 && render_label_type == RENDER_LABEL_TIME){
         char timelabel_local[20], *timelabelptr, dt = 1.0;
 
