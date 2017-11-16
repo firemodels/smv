@@ -2545,7 +2545,7 @@ extern "C" void IsoBoundCB(int var){
       iso_colorsbw[4 * i + 2] = graylevel;
       iso_colorsbw[4 * i + 3] = iso_colors[4 * i + 3];
     }
-    update_isocolors();
+    UpdateIsoColors();
     if(LIST_colortable!=NULL){
       i_colortable_list = CLAMP(GetColorTableIndex(glui_iso_colors), -1, ncolortableinfo-1);
       LIST_colortable->set_int_val(i_colortable_list);

@@ -74,7 +74,7 @@ EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *GetColorTable(char *label);
 EXTERNCPP void UpdateIsoColorlevel(void);
-EXTERNCPP void readiso_geom_wrapup(void);
+EXTERNCPP void ReadIsoGeomWrapup(void);
 EXTERNCPP void PSystem(char *commandline);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
@@ -259,9 +259,9 @@ EXTERNCPP void IdleCB(void);
 
 SVEXTERN void UpdateVectorWidgets(void);
 EXTERNCPP void UpdateGsliceParms(void);
-EXTERNCPP void readiso_orig(const char *file, int ifile, int flag, int *errorcode);
+EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
 EXTERNCPP void UpdatePlotxyzAll(void);
-EXTERNCPP void update_isocolors(void);
+EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP void GetFaceInfo(void);
 EXTERNCPP void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local);
 EXTERNCPP devicedata *getdevice(char *label, int index);
@@ -276,8 +276,8 @@ EXTERNCPP void DrawGeomDiag(void);
 EXTERNCPP void getzonesizecsv(int *nzone_times, int *nroom2, int *nfires, int *nzhvents, int *nzvvents, int *nzmvents, int *error);
 EXTERNCPP void getzoneventbounds(void);
 EXTERNCPP void RemoveDupBlockages(void);
-EXTERNCPP void Sort_Iso_Triangles(float *mm);
-EXTERNCPP void Update_Isotris(int flag);
+EXTERNCPP void SortIsoTriangles(float *mm);
+EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateEvacParms(void);
 EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdatePatchBounds(patchdata *patchi);
@@ -574,23 +574,18 @@ EXTERNCPP void UpdateUnitDefs(void);
 
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void UpdateSliceFilenum(void);
-EXTERNCPP void drawstaticiso(const isosurface *asurface,int surfacetype,
+EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,
                              int smoothnorms, int trans_flag, int data_type,
                              float line_width);
 EXTERNCPP int getplot3dtime(float *time);
 EXTERNCPP void normalize(float *xyz, int n);
-#ifndef CPP
-EXTERNCPP void getisosizes(const char *isofile, int dataflag, FILE **isostreamptr,
-                           int *nvertices, int *ntriangles, float **levels, int *nisolevels,
-                           int *niso_times, float *tmin, float *tmax, int endian);
-#endif
 EXTERNCPP void Array2String(float *array, int narray, char *string);
-EXTERNCPP void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
+EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
 EXTERNCPP void UpdateVSlices(void);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void update_part_menulabels(void);
-EXTERNCPP void update_iso_menulabels(void);
+EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdatePatchMenuLabels(void);
 EXTERNCPP void UpdateSliceMenuLabels(void);
 EXTERNCPP void UpdateVsliceMenulabels(void);
@@ -655,7 +650,7 @@ EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint 
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
 EXTERNCPP void UpdateGlui(void);
 EXTERNCPP void UpdateSliceList(int index);
-EXTERNCPP void drawiso(int tranflag);
+EXTERNCPP void DrawIso(int tranflag);
 EXTERNCPP void drawplot3d(meshdata *gb);
 EXTERNCPP void drawplot3d_texture(meshdata *gb);
 EXTERNCPP void updateshowstep(int val, int slicedir);
@@ -669,11 +664,8 @@ EXTERNCPP int GetSliceTypeFromLabel(char *label);
 EXTERNCPP void UpdateSliceTypes(void);
 EXTERNCPP int GetSliceIndex(const slicedata *sd);
 EXTERNCPP void UpdateSliceBoundLabels(void);
-EXTERNCPP int getisotype(const isodata *isoi);
-EXTERNCPP int getisottype(const isodata *isoi);
-EXTERNCPP int getisoindex(const isodata *isoi);
-EXTERNCPP void update_isotype(void);
-EXTERNCPP void updateisotypes(void);
+EXTERNCPP void UpdateIsoType(void);
+EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP int GetPatchType(const patchdata *patchi);
 EXTERNCPP void UpdatePatchType(void);
 EXTERNCPP void UpdatePatchTypes(void);
@@ -683,7 +675,7 @@ EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void update_plot3dtitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void init_plot3dtimelist(void);
-EXTERNCPP void update_iso_showlevels(void);
+EXTERNCPP void UpdateIsoShowLevels(void);
 EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
@@ -779,7 +771,7 @@ EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void ReadSmoke3D(int ifile,int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
+EXTERNCPP void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);
@@ -838,9 +830,8 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               char labels[12][11],char **scale, float *fscale, float *tlevels2,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP meshdata *get_loaded_isomesh(void);
-EXTERNCPP void unload_iso_trans(void);
-EXTERNCPP void setisolabels(float smin, float smax,
+EXTERNCPP meshdata *GetLoadedIsoMesh(void);
+EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);
 EXTERNCPP void GetIsoLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],char **scale, float *tlevels256);

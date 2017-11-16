@@ -1105,11 +1105,11 @@ void script_loadisoframe(scriptdata *scripti, int flag){
 
     isoi = isoinfo + i;
     if(isoi->isof_index + 1 == fileindex){
-      readiso(isoi->file, i, LOAD, &framenum, &errorcode);
+      ReadIso(isoi->file, i, LOAD, &framenum, &errorcode);
       count++;
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -1240,7 +1240,7 @@ void script_loadiso(scriptdata *scripti, int meshnum){
       strncpy(label2, isoi->surface_label.longlabel, lencval);
       label2[lencval] = 0;
       if(STRCMP(label2, scripti->cval)==0){
-        readiso(isoi->file, i, LOAD, NULL, &errorcode);
+        ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
         if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
           FREEMEMORY(loaded_file);
           NewMemory((void **)&loaded_file, strlen(scripti->cval)+1);
@@ -1250,7 +1250,7 @@ void script_loadiso(scriptdata *scripti, int meshnum){
       }
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(count == 0)fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
   force_redisplay=1;
@@ -1799,8 +1799,8 @@ void script_loadfile(scriptdata *scripti){
 
     isoi = isoinfo + i;
     if(strcmp(isoi->file,scripti->cval)==0){
-      readiso(isoi->file,i,LOAD,NULL,&errorcode);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)readiso_geom_wrapup();
+      ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
       return;
     }
   }

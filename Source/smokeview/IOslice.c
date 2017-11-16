@@ -894,7 +894,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     ReadSlice(fed_slice->file,fedi->fed_index,UNLOAD,SET_SLICECOLOR,&error_local);
   }
   else if(file_type==FED_ISO){
-    readiso_orig(fed_iso->file,file_index,UNLOAD,&error_local);
+    ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
   }
 
   if(flag==UNLOAD)return;
@@ -1096,7 +1096,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     ReadSlice(fed_slice->file,fedi->fed_index,flag,SET_SLICECOLOR,&error_local);
   }
   else{
-    readiso_orig(fed_iso->file,file_index,flag,&error_local);
+    ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
   {
     colorbardata *cb;
@@ -2539,7 +2539,7 @@ void UpdateFedinfo(void){
     }
   }
   if(stream_fedsmv != NULL)fclose(stream_fedsmv);
-  if(nfediso > 0)update_iso_menulabels();
+  if(nfediso > 0)UpdateIsoMenuLabels();
 }
 
 /* ------------------ UpdateSliceDirCount ------------------------ */

@@ -1212,12 +1212,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       GetSmokeDir(modelview_scratch);
     }
     if(nface_transparent>0&&sort_transparent_faces==1)SortTransparentFaces(modelview_scratch);
-    if(showiso==1)Update_Isotris(0);
+    if(showiso==1)UpdateIsoTriangles(0);
     FREEMEMORY(geominfoptrs);
     ngeominfoptrs=0;
     GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
     if(ngeominfoptrs>0)ShowHideSortGeometry(modelview_scratch);
-    if(showiso==1&&sort_iso_triangles==1&&niso_trans>0)Sort_Iso_Triangles(modelview_scratch);
+    if(showiso==1&&sort_iso_triangles==1&&niso_trans>0)SortIsoTriangles(modelview_scratch);
 
     glScalef(mscale[0],mscale[1],mscale[2]);
     ExtractFrustum();

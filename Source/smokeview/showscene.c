@@ -342,7 +342,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showiso == 1){
     CLIP_VALS;
-    drawiso(DRAW_OPAQUE);
+    DrawIso(DRAW_OPAQUE);
   }
 
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */
@@ -384,7 +384,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showiso == 1){
     CLIP_VALS;
-    drawiso(DRAW_TRANSPARENT);
+    DrawIso(DRAW_TRANSPARENT);
   }
 
   /* ++++++++++++++++++++++++ draw transparent faces +++++++++++++++++++++++++ */

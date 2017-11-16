@@ -2877,8 +2877,8 @@ void ResetGLTime(void){
 
 void UpdateCurrentMesh(meshdata *meshi){
   current_mesh=meshi;
-  loaded_isomesh=get_loaded_isomesh();
-  update_iso_showlevels();
+  loaded_isomesh= GetLoadedIsoMesh();
+  UpdateIsoShowLevels();
   update_plot3dtitle();
 }
 

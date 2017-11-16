@@ -8562,7 +8562,7 @@ typedef struct {
           }
         }
         else{
-          getisolevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
+          GetIsoLevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
         }
         if(dataflag==1){
           if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
@@ -8822,7 +8822,7 @@ typedef struct {
 
   PRINTF("  wrapping up\n");
   CheckMemory;
-  update_isocolors();
+  UpdateIsoColors();
   CheckMemory;
 
   //RemoveDupBlockages();
@@ -8981,7 +8981,7 @@ typedef struct {
   UpdateSelectFaces();
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
-  updateisotypes();
+  UpdateIsoTypes();
   UpdatePatchTypes();
   if(autoterrain==1){
     for(i=0;i<nmeshes;i++){
@@ -9008,7 +9008,7 @@ typedef struct {
   UpdateSmoke3DMenuLabels();
   UpdateVSliceTypes();
   UpdatePatchMenuLabels();
-  update_iso_menulabels();
+  UpdateIsoMenuLabels();
   update_part_menulabels();
   UpdateTourMenulabels();
   InitUserTicks();
@@ -11368,7 +11368,7 @@ int ReadINI2(char *inifile, int localfile){
         iso_color[2] = CLAMP(iso_color[2], 0.0, 1.0);
         iso_color[3] = CLAMP(iso_color[3], 0.0, 1.0);
       }
-      update_isocolors();
+      UpdateIsoColors();
       UpdateIsoColorlevel();
       continue;
     }

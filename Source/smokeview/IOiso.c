@@ -8,9 +8,9 @@
 #include "update.h"
 #include "smokeviewvars.h"
 
-/* ------------------ getisolevels ------------------------ */
+/* ------------------ GetIsoLevels ------------------------ */
 
-void getisolevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels){
+void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels){
   int one;
   int version;
   int len[3],labellengths=0;
@@ -44,9 +44,9 @@ void getisolevels(const char *isofile, int dataflag, float **levelsptr, float **
   *colorlevelsptr=colorlevels;
 }
 
-/* ------------------ getisosizes ------------------------ */
+/* ------------------ GetIsoSizes ------------------------ */
 
-void getisosizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nvertices, int *ntriangles,
+void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nvertices, int *ntriangles,
                  float **levelsptr, int *nisolevels, int *niso_times,
                  float *tmin_local, float *tmax_local, int endian_local){
   int len[3],labellengths=0;
@@ -144,9 +144,9 @@ void getisosizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
   }
 }
 
-/* ------------------ readiso_geom_wrapup ------------------------ */
+/* ------------------ ReadIsoGeomWrapup ------------------------ */
 
-void readiso_geom_wrapup(void){
+void ReadIsoGeomWrapup(void){
   update_readiso_geom_wrapup=UPDATE_ISO_OFF;
   ngeominfoptrs = 0;
   GetGeomInfoPtrs(&geominfoptrs, &ngeominfoptrs);
@@ -157,9 +157,35 @@ void readiso_geom_wrapup(void){
   IdleCB();
 }
 
-/* ------------------ unloadiso ------------------------ */
+/* ------------------ UnloadIsoTrans ------------------------ */
 
-void unloadiso(meshdata *meshi){
+void UnloadIsoTrans(void){
+  if(iso_trans_list != NULL){
+    int i;
+
+    for(i = 0;i < niso_timesteps;i++){
+      FREEMEMORY(iso_trans_list[i]);
+    }
+    FREEMEMORY(niso_trans_list);
+    FREEMEMORY(iso_trans_list);
+  }
+  if(iso_opaques_list != NULL){
+    int i;
+
+    for(i = 0;i < niso_timesteps;i++){
+      FREEMEMORY(iso_opaques_list[i]);
+    }
+    FREEMEMORY(niso_opaques_list);
+    FREEMEMORY(iso_opaques_list);
+  }
+
+  niso_trans = 0;
+  niso_opaques = 0;
+}
+
+/* ------------------ UnloadIso ------------------------ */
+
+void UnloadIso(meshdata *meshi){
   isosurface *asurface;
   isodata *ib;
   int nloaded = 0;
@@ -184,7 +210,7 @@ void unloadiso(meshdata *meshi){
   meshi->niso_times = 0;
   FREEMEMORY(ib->normaltable);
 
-  unload_iso_trans();
+  UnloadIsoTrans();
 
   ib->loaded = 0;
   ib->display = 0;
@@ -205,9 +231,23 @@ void unloadiso(meshdata *meshi){
   return;
 }
 
-/* ------------------ readiso_geom ------------------------ */
+/* ------------------ GetIsoType ------------------------ */
 
-void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
+int GetIsoType(const isodata *isoi){
+  isodata *isoi2;
+  int j;
+
+  for(j = 0;j < nisotypes;j++){
+    isoi2 = isoinfo + isotypes[j];
+
+    if(strcmp(isoi->surface_label.longlabel, isoi2->surface_label.longlabel) == 0)return j;
+  }
+  return -1;
+}
+
+/* ------------------ ReadIsoGeom ------------------------ */
+
+void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
   isodata *isoi;
   geomdata *geomi;
   int ilevel,error;
@@ -218,7 +258,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   isoi = isoinfo + ifile;
   meshi = meshinfo + isoi->blocknumber;
   geomi = isoi->geominfo;
-  unloadiso(meshi);
+  UnloadIso(meshi);
   FreeAllMemory(isoi->memory_id);
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
@@ -231,7 +271,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   }
 
   surfi = surfinfo + nsurfinfo+1;
-  update_isocolors();
+  UpdateIsoColors();
   if(strcmp(isoi->surface_label.shortlabel,"hrrpuv")==0){
     surfi->color=GetColorPtr(hrrpuv_iso_color);
   }
@@ -239,7 +279,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   meshi->isofilenum=ifile;
   meshi->niso_times=geomi->ntimes;
   if(NewMemoryMemID((void **)&meshi->iso_times, sizeof(float)*meshi->niso_times, isoi->memory_id) == 0){
-    readiso("",ifile,UNLOAD,geom_frame_index,&error);
+    ReadIso("",ifile,UNLOAD,geom_frame_index,&error);
     *errorcode=1;
     return;
   }
@@ -253,7 +293,7 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
     NewMemoryMemID((void **)&meshi->isolevels, sizeof(int)*meshi->nisolevels, isoi->memory_id) == 0
     ){
     *errorcode=1;
-    readiso("",ifile,UNLOAD,geom_frame_index,&error);
+    ReadIso("",ifile,UNLOAD,geom_frame_index,&error);
     return;
   }
   for(ilevel=0;ilevel<meshi->nisolevels;ilevel++){
@@ -262,12 +302,12 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   }
   isoi->loaded=1;
   isoi->display=1;
-  loaded_isomesh=get_loaded_isomesh();
-  update_iso_showlevels();
+  loaded_isomesh= GetLoadedIsoMesh();
+  UpdateIsoShowLevels();
   ReadIsoFile=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
-  iisotype=getisotype(isoi);
+  iisotype=GetIsoType(isoi);
 
   if(update_readiso_geom_wrapup==UPDATE_ISO_OFF)update_readiso_geom_wrapup=UPDATE_ISO_ONE_NOW;
   if(update_readiso_geom_wrapup==UPDATE_ISO_START_ALL)update_readiso_geom_wrapup=UPDATE_ISO_ALL_NOW;
@@ -280,6 +320,26 @@ void readiso_geom(const char *file, int ifile, int load_flag, int *geom_frame_in
   glutPostRedisplay();
   CheckMemory;
 
+}
+
+/* ------------------ GetIsoTType ------------------------ */
+
+int GetIsoTType(const isodata *isoi){
+  isodata *isoi2;
+  int j;
+  int jj;
+
+  if(isoi->dataflag == 0)return -1;
+  jj = 0;
+  for(j = 0;j < nisoinfo;j++){
+    isoi2 = isoinfo + j;
+
+    if(isoi2->dataflag == 0)continue;
+    if(isoi2->firstshort == 0)continue;
+    if(strcmp(isoi->color_label.longlabel, isoi2->color_label.longlabel) == 0)return jj;
+    jj++;
+  }
+  return -1;
 }
 
 /* ------------------ SyncIsoBounds ------------------------ */
@@ -297,7 +357,7 @@ void SyncIsoBounds(int isottype){
 
     isoi = isoinfo + i;
     if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != getisottype(isoi))continue;
+    if(iisottype != GetIsoTType(isoi))continue;
     ncount++;
   }
   if(ncount <= 1)return;
@@ -309,7 +369,7 @@ void SyncIsoBounds(int isottype){
 
     isoi = isoinfo + i;
     if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != getisottype(isoi))continue;
+    if(iisottype != GetIsoTType(isoi))continue;
     if(firsttime == 1){
       firsttime = 0;
       tmin_local = isoi->tmin;
@@ -328,7 +388,7 @@ void SyncIsoBounds(int isottype){
 
     isoi = isoinfo + i;
     if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != getisottype(isoi))continue;
+    if(iisottype != GetIsoTType(isoi))continue;
     isoi->tmin = tmin_local;
     isoi->tmax = tmax_local;
   }
@@ -343,7 +403,7 @@ void SyncIsoBounds(int isottype){
 
     isoi = isoinfo + i;
     if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != getisottype(isoi))continue;
+    if(iisottype != GetIsoTType(isoi))continue;
 
     meshi = meshinfo + isoi->blocknumber;
     asurface = meshi->animatedsurfaces;
@@ -374,9 +434,9 @@ void SyncIsoBounds(int isottype){
   }
 }
 
-/* ------------------ readiso_orig ------------------------ */
+/* ------------------ ReadIsoOrig ------------------------ */
 
-void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
+void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   int itime,ilevel,itri,ivert,iitime;
   isosurface *asurface;
   int nisopoints, nisotriangles;
@@ -407,8 +467,8 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   blocknumber=ib->blocknumber;
   ib->isoupdate_timestep=-1;
   meshi = meshinfo+blocknumber;
-  unloadiso(meshi);
-  unload_iso_trans();
+  UnloadIso(meshi);
+  UnloadIsoTrans();
   ib->loaded=0;
   ib->display=0;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
@@ -421,11 +481,11 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
     PrintAllMemoryInfo;
   }
 #endif
-  update_isotype();
+  UpdateIsoType();
   if(flag==UNLOAD){
     updatemenu=1;
-    loaded_isomesh=get_loaded_isomesh();
-    update_iso_showlevels();
+    loaded_isomesh= GetLoadedIsoMesh();
+    UpdateIsoShowLevels();
     return;
   }
   meshi->isofilenum=ifile;
@@ -434,27 +494,27 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   factor = (SCALE2SMV(meshi->xyzmaxdiff))/65535.0;
   NORMALIZE_XYZ(offset,meshi->xyz_bar0);
 
-  getisosizes(file, ib->dataflag, &isostream, &nisopoints, &nisotriangles,
+  GetIsoSizes(file, ib->dataflag, &isostream, &nisopoints, &nisotriangles,
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
     &ib->tmin, &ib->tmax, endian_data);
 
   file_size= GetFILESize(file);
 
   if(meshi->isolevels==NULL){
-    readiso("",ifile,UNLOAD,NULL,&error);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     *errorcode=1;
     fclose(isostream);
     return;
   }
   if(NewMemory((void **)&meshi->iso_times,sizeof(float)*meshi->niso_times)==0){
-    readiso("",ifile,UNLOAD,NULL,&error);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     *errorcode=1;
     fclose(isostream);
     return;
   }
   if(NewMemory((void **)&meshi->showlevels,sizeof(int)*meshi->nisolevels)==0){
     *errorcode=1;
-    readiso("",ifile,UNLOAD,NULL,&error);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     fclose(isostream);
     return;
   }
@@ -478,13 +538,13 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   ASSERT(meshi->animatedsurfaces==NULL);
   if(NewMemory((void **)&meshi->animatedsurfaces,meshi->nisolevels*meshi->niso_times*sizeof(isosurface))==0){
     *errorcode=1;
-    readiso("",ifile,UNLOAD,NULL,&error);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     fclose(isostream);
     return;
   }
   if(ResizeMemory((void **)&meshi->iso_times,sizeof(float)*meshi->niso_times)==0){
     *errorcode=1;
-    readiso("",ifile,UNLOAD,NULL,&error);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     fclose(isostream);
     return;
   }
@@ -775,26 +835,26 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   STOP_TIMER(read_time);
   fclose(isostream);
   if(*errorcode!=0){
-    unloadiso(meshi);
-    readiso("",ifile,UNLOAD,NULL,&error);
+    UnloadIso(meshi);
+    ReadIso("",ifile,UNLOAD,NULL,&error);
     return;
     }
 
 
   ib->loaded=1;
   ib->display=1;
-  loaded_isomesh=get_loaded_isomesh();
-  update_iso_showlevels();
+  loaded_isomesh= GetLoadedIsoMesh();
+  UpdateIsoShowLevels();
   ReadIsoFile=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
-  iisotype=getisotype(ib);
+  iisotype= GetIsoType(ib);
 
   CheckMemory;
   if(ib->dataflag==1){
-    iisottype = getisottype(ib);
+    iisottype = GetIsoTType(ib);
     SyncIsoBounds(iisottype);
-    setisolabels(ib->tmin, ib->tmax, ib, errorcode);
+    SetIsoLabels(ib->tmin, ib->tmax, ib, errorcode);
     CheckMemory;
   }
 
@@ -823,9 +883,9 @@ void readiso_orig(const char *file, int ifile, int flag, int *errorcode){
   CheckMemory;
 }
 
-/* ------------------ readiso ------------------------ */
+/* ------------------ ReadIso ------------------------ */
 
-void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode){
+void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode){
   isodata *isoi;
 
   if(ifile>=0&&ifile<nisoinfo){
@@ -843,44 +903,18 @@ void readiso(const char *file, int ifile, int flag, int *geom_frame_index, int *
     }
     else{
       if(isoi->geomflag==1){
-        readiso_geom(file,ifile,flag,geom_frame_index,errorcode);
+        ReadIsoGeom(file,ifile,flag,geom_frame_index,errorcode);
       }
       else{
-        readiso_orig(file,ifile,flag,errorcode);
+        ReadIsoOrig(file,ifile,flag,errorcode);
       }
     }
   }
 }
 
-/* ------------------ unloadiso_iso_trans ------------------------ */
+/* ------------------ DrawIsoOrig ------------------------ */
 
-void unload_iso_trans(void){
-  if(iso_trans_list!=NULL){
-    int i;
-
-    for(i=0;i<niso_timesteps;i++){
-      FREEMEMORY(iso_trans_list[i]);
-    }
-    FREEMEMORY(niso_trans_list);
-    FREEMEMORY(iso_trans_list);
-  }
-  if(iso_opaques_list!=NULL){
-      int i;
-
-      for(i=0;i<niso_timesteps;i++){
-        FREEMEMORY(iso_opaques_list[i]);
-      }
-    FREEMEMORY(niso_opaques_list);
-    FREEMEMORY(iso_opaques_list);
-  }
-
-  niso_trans=0;
-  niso_opaques=0;
-}
-
-/* ------------------ drawiso_orig ------------------------ */
-
-void drawiso_orig(int tranflag){
+void DrawIsoOrig(int tranflag){
   int i;
   isosurface *asurface;
   isodata *isoi=NULL;
@@ -1110,17 +1144,17 @@ void drawiso_orig(int tranflag){
   }
 }
 
-/* ------------------ drawiso ------------------------ */
+/* ------------------ DrawIso ------------------------ */
 
-void drawiso(int tranflag){
+void DrawIso(int tranflag){
   if(niso_opaques>0||niso_trans>0){
-    drawiso_orig(tranflag);
+    DrawIsoOrig(tranflag);
   }
 }
 
-/* ------------------ drawstaticiso ------------------------ */
+/* ------------------ DrawStaticIso ------------------------ */
 
-void drawstaticiso(const isosurface *asurface,int surfacetype,
+void DrawStaticIso(const isosurface *asurface,int surfacetype,
                    int smoothnorm, int trans_flag, int data_type,
                    float line_width){
   int j,k;
@@ -1362,73 +1396,39 @@ void drawstaticiso(const isosurface *asurface,int surfacetype,
   }
 }
 
-/* ------------------ updateisotypes ------------------------ */
+/* ------------------ GetIsoIndex ------------------------ */
 
-void updateisotypes(void){
+int GetIsoIndex(const isodata *isoi){
+  isodata *isoi2;
+  int j;
+
+  for(j = 0;j < nisotypes;j++){
+    isoi2 = isoinfo + isotypes[j];
+    if(strcmp(isoi->surface_label.longlabel, isoi2->surface_label.longlabel) == 0)return isotypes[j];
+  }
+  return -1;
+}
+
+/* ------------------ UpdateIsoTypes ------------------------ */
+
+void UpdateIsoTypes(void){
   int i;
   isodata *isoi;
 
   nisotypes = 0;
   for(i=0;i<nisoinfo;i++){
     isoi = isoinfo+i;
-    if(getisoindex(isoi)==-1)isotypes[nisotypes++]=i;
+    if(GetIsoIndex(isoi)==-1)isotypes[nisotypes++]=i;
   }
   for(i=0;i<nisoinfo;i++){
     isoi = isoinfo+i;
-    isoi->type=getisotype(isoi);
+    isoi->type= GetIsoType(isoi);
   }
 }
 
-/* ------------------ getisoindex ------------------------ */
+/* ------------------ UpdateIsoType ------------------------ */
 
-int getisoindex(const isodata *isoi){
-  isodata *isoi2;
-  int j;
-
-  for(j=0;j<nisotypes;j++){
-    isoi2 = isoinfo+isotypes[j];
-    if(strcmp(isoi->surface_label.longlabel,isoi2->surface_label.longlabel)==0)return isotypes[j];
-  }
-  return -1;
-}
-
-/* ------------------ getisotype ------------------------ */
-
-int getisotype(const isodata *isoi){
-  isodata *isoi2;
-  int j;
-
-  for(j=0;j<nisotypes;j++){
-    isoi2 = isoinfo+isotypes[j];
-
-    if(strcmp(isoi->surface_label.longlabel,isoi2->surface_label.longlabel)==0)return j;
-  }
-  return -1;
-}
-
-/* ------------------ getisottype ------------------------ */
-
-int getisottype(const isodata *isoi){
-  isodata *isoi2;
-  int j;
-  int jj;
-
-  if(isoi->dataflag==0)return -1;
-  jj = 0;
-  for(j=0;j<nisoinfo;j++){
-    isoi2 = isoinfo+j;
-
-    if(isoi2->dataflag==0)continue;
-    if(isoi2->firstshort==0)continue;
-    if(strcmp(isoi->color_label.longlabel,isoi2->color_label.longlabel)==0)return jj;
-    jj++;
-  }
-  return -1;
-}
-
-/* ------------------ update_isotype ------------------------ */
-
-void update_isotype(void){
+void UpdateIsoType(void){
   int i;
   isodata *isoi;
 
@@ -1443,7 +1443,7 @@ void update_isotype(void){
     isoi = isoinfo + i;
     if(isoi->loaded==0)continue;
     if(isoi->display==1){
-      iisotype = getisoindex(isoi);
+      iisotype = GetIsoIndex(isoi);
       return;
     }
   }
@@ -1453,9 +1453,9 @@ void update_isotype(void){
 
 }
 
-/* ------------------ isocompare ------------------------ */
+/* ------------------ IsoCompare ------------------------ */
 
-int isocompare( const void *arg1, const void *arg2 ){
+int IsoCompare( const void *arg1, const void *arg2 ){
   isodata *isoi, *isoj;
 
   isoi = isoinfo + *(int *)arg1;
@@ -1468,9 +1468,9 @@ int isocompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ update_iso_menulabels ------------------------ */
+/* ------------------ UpdateIsoMenuLabels ------------------------ */
 
-void update_iso_menulabels(void){
+void UpdateIsoMenuLabels(void){
   int i;
   isodata *isoi;
   char label[128];
@@ -1481,7 +1481,7 @@ void update_iso_menulabels(void){
     for(i=0;i<nisoinfo;i++){
       isoorderindex[i]=i;
     }
-    qsort( (int *)isoorderindex, (size_t)nisoinfo, sizeof(int), isocompare );
+    qsort( (int *)isoorderindex, (size_t)nisoinfo, sizeof(int), IsoCompare);
 
     for(i=0;i<nisoinfo;i++){
       isoi = isoinfo + i;
@@ -1504,9 +1504,9 @@ void update_iso_menulabels(void){
   }
 }
 
-/* ------------------ update_iso_showlevels ------------------------ */
+/* ------------------ UpdateIsoShowLevels ------------------------ */
 
-void update_iso_showlevels(void){
+void UpdateIsoShowLevels(void){
   int nisolevels;
   int *showlevels;
   int i, j;
@@ -1526,15 +1526,15 @@ void update_iso_showlevels(void){
   }
 }
 
-/* ------------------ setisolabels ------------------------ */
+/* ------------------ SetIsoLabels ------------------------ */
 
-void setisolabels(float smin, float smax,
+void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode){
   char *scale;
   int isotype;
   boundsdata *sb;
 
-  isotype=getisottype(sd);
+  isotype= GetIsoTType(sd);
   sb = isobounds + isotype;
   sb->label=&(sd->color_label);
 
@@ -1546,9 +1546,9 @@ void setisolabels(float smin, float smax,
                 sb->colorlabels,&scale,sb->levels256);
 }
 
-/* ------------------ compare_iso_triangles ------------------------ */
+/* ------------------ CompareIsoTriangles ------------------------ */
 
-int compare_iso_triangles( const void *arg1, const void *arg2 ){
+int CompareIsoTriangles( const void *arg1, const void *arg2 ){
   isotri *trii, *trij;
   float disti, distj;
 
@@ -1564,9 +1564,9 @@ int compare_iso_triangles( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ Sort_Iso_Triangles ------------------------ */
+/* ------------------ SortIsoTriangles ------------------------ */
 
-void Sort_Iso_Triangles(float *mm){
+void SortIsoTriangles(float *mm){
   int itri;
   int newflag;
   int dosort=0;
@@ -1624,12 +1624,12 @@ void Sort_Iso_Triangles(float *mm){
 
     if(itri>0&&dosort==0&&dist1>dist2)dosort=1;
   }
-  if(dosort==1)qsort((isotri **)iso_trans,(size_t)niso_trans,sizeof(isotri **),compare_iso_triangles);
+  if(dosort==1)qsort((isotri **)iso_trans,(size_t)niso_trans,sizeof(isotri **), CompareIsoTriangles);
 }
 
-/* ------------------ Update_Isotris ------------------------ */
+/* ------------------ UpdateIsoTriangles ------------------------ */
 
-void Update_Isotris(int flag){
+void UpdateIsoTriangles(int flag){
   int itri;
   isosurface *asurfi;
   isotri **iso_trans_tmp,**iso_opaques_tmp;
@@ -1816,7 +1816,7 @@ void Update_Isotris(int flag){
   }
 
   if(sort_iso_triangles==1&&niso_trans>0){
-    Sort_Iso_Triangles(modelview_scratch);
+    SortIsoTriangles(modelview_scratch);
   }
   niso_trans_list[loaded_isomesh->iso_itime]=niso_trans;
   niso_opaques_list[loaded_isomesh->iso_itime]=niso_opaques;
@@ -1824,9 +1824,9 @@ void Update_Isotris(int flag){
   CheckMemory;
 }
 
-/* ------------------ get_loaded_isomesh ------------------------ */
+/* ------------------ GetLoadedIsoMesh ------------------------ */
 
-meshdata *get_loaded_isomesh(void){
+meshdata *GetLoadedIsoMesh(void){
   meshdata *return_mesh;
   int i,nsteps=-1;
 
@@ -1847,9 +1847,9 @@ meshdata *get_loaded_isomesh(void){
   return return_mesh;
 }
 
-/* ------------------ update_isocolors ------------------------ */
+/* ------------------ UpdateIsoColors ------------------------ */
 
-void update_isocolors(void){
+void UpdateIsoColors(void){
   int i;
 
   for(i = 0; i < MAX_ISO_COLORS; i++){

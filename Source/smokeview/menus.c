@@ -930,7 +930,7 @@ void IsoShowMenu(int value){
      else{
        if(isoi->type==iisotype){
          isoi->display = 1 - isoi->display;
-         update_isotype();
+         UpdateIsoType();
        }
        else{
          isoi->display=1;
@@ -956,8 +956,8 @@ void IsoShowMenu(int value){
       UpdateShow();
     }
   }
-  update_iso_showlevels();
-  Update_Isotris(1);
+  UpdateIsoShowLevels();
+  UpdateIsoTriangles(1);
 
   updatemenu=1;
   glutPostRedisplay();
@@ -2681,7 +2681,7 @@ void LoadUnloadMenu(int value){
       readpart("",i,UNLOAD,PARTDATA,&errorcode);
     }
     for(i=0;i<nisoinfo;i++){
-      readiso("",i,UNLOAD,NULL,&errorcode);
+      ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
     for(i=0;i<nzoneinfo;i++){
       readzone(i,UNLOAD,&errorcode);
@@ -2783,9 +2783,9 @@ void LoadUnloadMenu(int value){
 
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
-      readiso(isoi->file,i,LOAD,NULL,&errorcode);
+      ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
     }
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
@@ -2801,7 +2801,7 @@ void LoadUnloadMenu(int value){
     UpdateVsliceMenulabels();
     UpdateSmoke3DMenuLabels();
     UpdatePatchMenuLabels();
-    update_iso_menulabels();
+    UpdateIsoMenuLabels();
     update_part_menulabels();
     UpdateTourMenulabels();
     update_plot3d_menulabels();
@@ -3423,11 +3423,11 @@ void UnloadIsoMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readiso("",value,UNLOAD,NULL,&errorcode);
+    ReadIso("",value,UNLOAD,NULL,&errorcode);
   }
   else{
     for(i=0;i<nisoinfo;i++){
-      readiso("",i,UNLOAD,NULL,&errorcode);
+      ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
   }
 }
@@ -4244,8 +4244,8 @@ void LoadIsoi(int value){
     fprintf(scriptoutstream, " %i\n", isoi->blocknumber+1);
   }
   if(scriptoutstream==NULL||defer_file_loading==0){
-    readiso(file,value,LOAD,NULL,&errorcode);
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)readiso_geom_wrapup();
+    ReadIso(file,value,LOAD,NULL,&errorcode);
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
   }
   isoi->loading=0;
 }
@@ -4280,7 +4280,7 @@ void LoadIsoMenu(int value){
       isodata *isoi;
 
       isoi = isoinfo + i;
-      if(isoi->loaded==1)readiso("",i,UNLOAD,NULL,&errorcode);
+      if(isoi->loaded==1)ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
   }
   if(value==MENU_ISO_SETTINGS){
@@ -4300,7 +4300,7 @@ void LoadIsoMenu(int value){
     if(scriptoutstream==NULL||defer_file_loading==0){
       update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
       LoadAllIsos(isoi->type);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
       update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     }
     script_iso=0;

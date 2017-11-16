@@ -743,7 +743,7 @@ void GetProgVersion(char *PROGversion){
   strcpy(PROGversion,PROGVERSION);
 }
 
-/* ------------------ setisolabels ------------------------ */
+/* ------------------ SetLabelsIso ------------------------ */
 
 int SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels){
   char buffer[255];
