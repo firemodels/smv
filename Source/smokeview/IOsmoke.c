@@ -703,9 +703,9 @@ int IsFireOrSoot(smoke3ddata *smoke3di){
 }
 #ifdef pp_CULL
 
-/* ------------------ DrawSmoke3DCULL ------------------------ */
+/* ------------------ DrawSmoke3dCull ------------------------ */
 
-void DrawSmoke3DCULL(void){
+void DrawSmoke3dCull(void){
   int i, j, k, n, nn;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1;
@@ -736,7 +736,7 @@ void DrawSmoke3DCULL(void){
   if(cullfaces==1)glDisable(GL_CULL_FACE);
   TransparentOn();
 
-  SNIFF_ERRORS("before DrawSmoke3DCULL");
+  SNIFF_ERRORS("before DrawSmoke3dCull");
   value[0] = 255;
   value[1] = 255;
   value[2] = 255;
@@ -757,7 +757,7 @@ void DrawSmoke3DCULL(void){
   xyzindex2[5] = 3;
 
   CheckMemory;
-  SNIFF_ERRORS("in DrawSmoke3DCULL 1");
+  SNIFF_ERRORS("in DrawSmoke3dCull 1");
   glBegin(GL_TRIANGLES);
   mesh_old = NULL;
   for(nn = 0;nn<ncullplaneinfo;nn++){
@@ -774,7 +774,7 @@ void DrawSmoke3DCULL(void){
       if(nterraininfo>0){
         znode_offset = meshi->terrain->znode_offset;
       }
-      SNIFF_ERRORS("in DrawSmoke3DCULL 4");
+      SNIFF_ERRORS("in DrawSmoke3dCull 4");
       smoke3di = meshi->cull_smoke3d;
 
       firecolor = smoke3di->hrrpuv_color;
@@ -1398,7 +1398,7 @@ void DrawSmoke3DCULL(void){
     }
   }
   glEnd();
-  SNIFF_ERRORS("in DrawSmoke3DCULL 12");
+  SNIFF_ERRORS("in DrawSmoke3dCull 12");
   TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
   SNIFF_ERRORS("after drawsmokecull");
@@ -1407,9 +1407,9 @@ void DrawSmoke3DCULL(void){
 #endif
 
 #ifdef pp_GPU
-/* ------------------ DrawSmoke3DGPU ------------------------ */
+/* ------------------ DrawSmoke3dGpu ------------------------ */
 
-void DrawSmoke3DGPU(smoke3ddata *smoke3di){
+void DrawSmoke3dGpu(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
@@ -2532,9 +2532,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 }
 
 #endif
-/* ------------------ DrawSmoke3D ------------------------ */
+/* ------------------ DrawSmoke3d ------------------------ */
 
-void DrawSmoke3D(smoke3ddata *smoke3di){
+void DrawSmoke3d(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
@@ -2570,7 +2570,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   if(meshi->merge_alpha==NULL||meshi->update_smoke3dcolors==1){
     meshi->update_smoke3dcolors = 0;
-    MergeSmoke3DColors(smoke3di);
+    MergeSmoke3dColors(smoke3di);
   }
   mergealphaptr = meshi->merge_alpha;
   mergecolorptr = meshi->merge_color;
@@ -4499,7 +4499,7 @@ void SetPixelCount(void){
 void DrawSmokeFrame(void){
   CheckMemory;
   if(showvolrender==1&&smoke3dVoldebug==1){
-    DrawSmoke3DVOLdebug();
+    DrawSmoke3dVolDebug();
   }
 #ifdef pp_GPU
   if(usegpu==1){
@@ -4513,7 +4513,7 @@ void DrawSmokeFrame(void){
 #endif
 #ifdef pp_CULL
   if(usegpu==1&&cullsmoke==1&&showvolrender==0){
-    DrawSmoke3DCULL();
+    DrawSmoke3dCull();
   }
   else{
 #else
@@ -4539,13 +4539,13 @@ void DrawSmokeFrame(void){
 
 #ifdef pp_GPU
         if(usegpu==1){
-          DrawSmoke3DGPU(smoke3di);
+          DrawSmoke3dGpu(smoke3di);
         }
         else{
-          DrawSmoke3D(smoke3di);
+          DrawSmoke3d(smoke3di);
         }
 #else
-        DrawSmoke3D(smoke3di);
+        DrawSmoke3d(smoke3di);
 #endif
       }
       if(blend_mode==1){
@@ -4556,17 +4556,17 @@ void DrawSmokeFrame(void){
 #ifdef pp_GPU
       if(usegpu==1){
       //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-        SNIFF_ERRORS("before DrawSmoke3DGPUVOL");
-        DrawSmoke3DGPUVOL();
-        SNIFF_ERRORS("after DrawSmoke3DGPUVOL");
+        SNIFF_ERRORS("before DrawSmoke3dGpuVol");
+        DrawSmoke3dGpuVol();
+        SNIFF_ERRORS("after DrawSmoke3dGpuVol");
       //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       }
       else{
-        DrawSmoke3DVOL();
-        SNIFF_ERRORS("after DrawSmoke3DVOL");
+        DrawSmoke3dVol();
+        SNIFF_ERRORS("after DrawSmoke3dVol");
       }
 #else
-      DrawSmoke3DVOL();
+      DrawSmoke3dVol();
 #endif
     }
   }
@@ -4583,9 +4583,9 @@ void DrawSmokeFrame(void){
   SNIFF_ERRORS("after drawsmoke");
 }
 
-/* ------------------ GetSmoke3DSizes ------------------------ */
+/* ------------------ GetSmoke3dSizes ------------------------ */
 
-int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **timelist_found, int **use_smokeframe,
+int GetSmoke3dSizes(int fortran_skip, char *smokefile, int version, float **timelist_found, int **use_smokeframe,
   int *nchars_smoke_uncompressed,
   int **nchars_smoke_compressed_found,
   int **nchars_smoke_compressed_full,
@@ -4770,9 +4770,9 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   return 0;
 }
 
-/* ------------------ FreeSmoke3D ------------------------ */
+/* ------------------ FreeSmoke3d ------------------------ */
 
-void FreeSmoke3D(smoke3ddata *smoke3di){
+void FreeSmoke3d(smoke3ddata *smoke3di){
 
   smoke3di->lastiframe = -999;
   FREEMEMORY(smoke3di->smokeframe_in);
@@ -4921,7 +4921,7 @@ void SetSmokeColorFlags(void){
 
 /* ------------------ ReadSmoke3D ------------------------ */
 
-void ReadSmoke3D(int ifile,int flag, int *errorcode){
+void ReadSmoke3d(int ifile,int flag, int *errorcode){
   smoke3ddata *smoke3di;
   FILE *SMOKE3DFILE;
   int error;
@@ -4951,7 +4951,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 
 
   if(smoke3di->loaded==1){
-    FreeSmoke3D(smoke3di);
+    FreeSmoke3d(smoke3di);
     smoke3di->loaded=0;
     smoke3di->display=0;
     smoke3di->d_display=0;
@@ -5011,33 +5011,33 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
 
   if(smoke3di->compression_type==UNKNOWN){
     smoke3di->compression_type=GetSmoke3DVersion(smoke3di);
-    UpdateSmoke3DMenuLabels();
+    UpdateSmoke3dMenuLabels();
   }
 
   CheckMemory;
   smoke3di->request_load = 1;
-  if(GetSmoke3DSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
+  if(GetSmoke3dSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
                  &smoke3di->nchars_uncompressed,
                  &smoke3di->nchars_compressed_smoke,
                  &smoke3di->nchars_compressed_smoke_full,
                  &smoke3di->maxval,
                  &smoke3di->ntimes,
                  &smoke3di->ntimes_full)==1){
-    ReadSmoke3D(ifile,UNLOAD,&error);
+    ReadSmoke3d(ifile,UNLOAD,&error);
     *errorcode=1;
     fprintf(stderr,"*** Error: problems sizing 3d smoke data for %s\n",smoke3di->file);
     return;
   }
   if(smoke3di->maxval>=0.0){
     if(smoke3di->type == FIRE&&smoke3di->maxval<=load_hrrpuv_cutoff){
-      ReadSmoke3D(ifile,UNLOAD,&error);
+      ReadSmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF("*** HRRPUV file: %s skipped\n",smoke3di->file);
       PRINTF("    maximum HRRPUV %f<=%f in mesh %s\n", smoke3di->maxval,load_hrrpuv_cutoff,meshi->label);
       return;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
-      ReadSmoke3D(ifile,UNLOAD,&error);
+      ReadSmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF("*** Soot file: %s skipped\n",smoke3di->file);
       PRINTF("    maximum soot opacity %f<=%f in  mesh %s\n", smoke3di->maxval,load_3dsmoke_cutoff, meshi->label);
@@ -5053,7 +5053,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
      NewMemory((void **)&smoke3di->smokeframe_out,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewMemory((void **)&meshi->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewMemory((void **)&meshi->merge_alpha,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0){
-     ReadSmoke3D(ifile,UNLOAD,&error);
+     ReadSmoke3d(ifile,UNLOAD,&error);
      *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
      return;
@@ -5071,7 +5071,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
     }
   }
   if(NewMemory((void **)&smoke3di->smoke_comp_all,ncomp_smoke_total_skipped*sizeof(unsigned char))==0){
-    ReadSmoke3D(ifile,UNLOAD,&error);
+    ReadSmoke3d(ifile,UNLOAD,&error);
     *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
     return;
@@ -5093,7 +5093,7 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   file_size= GetFILESize(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
-    ReadSmoke3D(ifile,UNLOAD,&error);
+    ReadSmoke3d(ifile,UNLOAD,&error);
     *errorcode=1;
     return;
   }
@@ -5202,9 +5202,9 @@ void ReadSmoke3D(int ifile,int flag, int *errorcode){
   *errorcode = 0;
 }
 
-/* ------------------ UpdateSmoke3D ------------------------ */
+/* ------------------ UpdateSmoke3d ------------------------ */
 
-void UpdateSmoke3D(smoke3ddata *smoke3di){
+void UpdateSmoke3d(smoke3ddata *smoke3di){
   int iframe_local;
   int countin;
   uLongf countout;
@@ -5241,9 +5241,9 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
   ASSERT(countout==smoke3di->nchars_uncompressed);
 }
 
-/* ------------------ MergeSmoke3DColors ------------------------ */
+/* ------------------ MergeSmoke3dColors ------------------------ */
 
-void MergeSmoke3DColors(smoke3ddata *smoke3dset){
+void MergeSmoke3dColors(smoke3ddata *smoke3dset){
   int i,j;
   int i_hrrpuv_cutoff;
 
@@ -5438,9 +5438,9 @@ int InitCullExts(void){
 }
 #endif
 
-/* ------------------ UpdateSmoke3DMenuLabels ------------------------ */
+/* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 
-void UpdateSmoke3DMenuLabels(void){
+void UpdateSmoke3dMenuLabels(void){
   int i;
   smoke3ddata *smoke3di;
   char meshlabel[128];

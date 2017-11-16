@@ -1051,7 +1051,7 @@ void GetVolSmokeDir(float *mm){
         break;
       }
       VEC3DIFF(eyedir,xyzeyeorig,eyedir);
-      normalize(eyedir,3);
+      Normalize(eyedir,3);
       cosdir = CLAMP(DOT3(eyedir,norm),-1.0,1.0);
       cosdir=acos(cosdir)*RAD2DEG;
       if(cosdir<0.0)cosdir=-cosdir;

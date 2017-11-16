@@ -254,7 +254,7 @@ void DeviceCB(int var){
     }
     if(ndevicetypes > 0){
       devicetypes[devicetypes_index]->type2vis = 1;
-      update_colordevs();
+      UpdateColorDevices();
     }
     break;
   case SHOWDEVICEVALS:
@@ -278,7 +278,7 @@ void DeviceCB(int var){
     }
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case DEVICE_close:
     HideGluiDevice();

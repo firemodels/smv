@@ -90,7 +90,7 @@ void StereoCB(int var){
     HideGluiStereo();
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   default:
     ASSERT(FFALSE);

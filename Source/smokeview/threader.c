@@ -15,7 +15,7 @@ void CompressSVZip2(void){
   PRINTF("Compressing...\n");
   CompressOnOff(OFF);
 
-  WriteINI(LOCAL_INI, NULL);
+  WriteIni(LOCAL_INI, NULL);
 
   // surround smokezip path name with "'s so that the system call can handle embedded blanks
 
@@ -36,8 +36,8 @@ void CompressSVZip2(void){
 
   PRINTF("Executing shell command: %s\n", shellcommand);
   system(shellcommand);
-  UpdateSmoke3DMenuLabels();
-  update_patch_menulabels();
+  UpdateSmoke3dMenuLabels();
+  UpdatePatchMenuLabels();
   CompressOnOff(ON);
   updatemenu = 1;
   PRINTF("Compression completed\n");

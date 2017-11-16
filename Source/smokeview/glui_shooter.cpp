@@ -185,7 +185,7 @@ void ShooterCB(int var){
   case SHOOTER_UVW:
   case SHOOTER_XYZ:
     if(shooter_active == 1){
-      init_shooter_data();
+      InitShooterData();
     }
     if(shooter_cont_update == 1){
       ShooterCB(SHOOTER_APPLY);
@@ -193,7 +193,7 @@ void ShooterCB(int var){
     break;
   case SHOOTER_DXYZ:
     if(shooter_active == 1){
-      init_shooter_data();
+      InitShooterData();
     }
     if(shooter_cont_update == 1){
       ShooterCB(SHOOTER_APPLY);
@@ -214,7 +214,7 @@ void ShooterCB(int var){
       SPINNER_shooter_fps->set_int_val(shooter_fps);
     }
     if(shooter_active == 1){
-      init_shooter_data();
+      InitShooterData();
     }
     if(shooter_cont_update == 1){
       ShooterCB(SHOOTER_APPLY);
@@ -236,7 +236,7 @@ void ShooterCB(int var){
     max_shooter_points = nshooter_frames*shooter_nparts;
 
     if(AllocateShooter() == 0){
-      solve_shooter_data();
+      SolveShooterData();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
     }
@@ -263,7 +263,7 @@ void ShooterCB(int var){
     }
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case SHOOTER_CLOSE:
     HideGluiShooter();

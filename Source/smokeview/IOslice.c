@@ -894,7 +894,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     ReadSlice(fed_slice->file,fedi->fed_index,UNLOAD,SET_SLICECOLOR,&error_local);
   }
   else if(file_type==FED_ISO){
-    readiso_orig(fed_iso->file,file_index,UNLOAD,&error_local);
+    ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
   }
 
   if(flag==UNLOAD)return;
@@ -1096,7 +1096,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     ReadSlice(fed_slice->file,fedi->fed_index,flag,SET_SLICECOLOR,&error_local);
   }
   else{
-    readiso_orig(fed_iso->file,file_index,flag,&error_local);
+    ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
   {
     colorbardata *cb;
@@ -2005,7 +2005,7 @@ void UpdateSliceMenuLabels(void){
 
 /* ------------------ UpdateVsliceMenulabels ------------------------ */
 
-void UpdateVsliceMenulabels(void){
+void UpdateVsliceMenuLabels(void){
   int i;
   slicedata *sd, *sdold;
   vslicedata *vsd, *vsdold;
@@ -2539,7 +2539,7 @@ void UpdateFedinfo(void){
     }
   }
   if(stream_fedsmv != NULL)fclose(stream_fedsmv);
-  if(nfediso > 0)update_iso_menulabels();
+  if(nfediso > 0)UpdateIsoMenuLabels();
 }
 
 /* ------------------ UpdateSliceDirCount ------------------------ */
@@ -3168,7 +3168,7 @@ void UpdateVSlices(void){
     }
   }
 
-  UpdateVsliceMenulabels();
+  UpdateVsliceMenuLabels();
 }
 
   /* ------------------ GetVSliceIndex ------------------------ */
@@ -4407,9 +4407,9 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
     GL_RED, GL_FLOAT, cbuffer);
 }
 
-/* ------------------ DrawGSliceDataGPU ------------------------ */
+/* ------------------ DrawGSliceDataGpu ------------------------ */
 
-void DrawGSliceDataGPU(slicedata *slicei){
+void DrawGSliceDataGpu(slicedata *slicei){
   meshdata *meshi;
   int j;
   boundsdata *sb;
@@ -6126,8 +6126,8 @@ void DrawSliceFrame(){
           if(usegpu==1){
             Load3DSliceShaders();
             SNIFF_ERRORS("after Load3DSliceShaders");
-            DrawGSliceDataGPU(sd);
-            SNIFF_ERRORS("after DrawGSliceDataGPU");
+            DrawGSliceDataGpu(sd);
+            SNIFF_ERRORS("after DrawGSliceDataGpu");
             UnLoadShaders();
             SNIFF_ERRORS("after UnLoad3DSliceShaders");
           }

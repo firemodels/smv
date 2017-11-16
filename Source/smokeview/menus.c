@@ -479,22 +479,22 @@ void StaticVariableMenu(int value){
   plotstate=STATIC_PLOTS;
   visGrid=0;
   if(visiso==1){
-    updateshowstep(1,ISO);
+    UpdateShowStep(1,ISO);
   }
-  updatesurface();
+  UpdateSurface();
   if(visx_all==1){
-    updateshowstep(1,XDIR);
+    UpdateShowStep(1,XDIR);
   }
   if(visy_all==1){
-    updateshowstep(1,YDIR);
+    UpdateShowStep(1,YDIR);
   }
   if(visz_all==1){
-    updateshowstep(1,ZDIR);
+    UpdateShowStep(1,ZDIR);
   }
   if(visx_all==0&&visy_all==0&&visz_all==0){
-    updateshowstep(1,YDIR);
+    UpdateShowStep(1,YDIR);
   }
-  updateallplotslices();
+  UpdateAllPlotSlices();
   updatemenu=1;
   glutPostRedisplay();
   UpdatePlot3dListIndex();
@@ -506,20 +506,20 @@ void IsoVariableMenu(int value){
   if(ReadPlot3dFile==1){
     plotn=value;
     if(visx_all==1){
-      updateshowstep(1,XDIR);
+      UpdateShowStep(1,XDIR);
     }
     if(visy_all==1){
-      updateshowstep(1,YDIR);
+      UpdateShowStep(1,YDIR);
     }
     if(visz_all==1){
-      updateshowstep(1,ZDIR);
+      UpdateShowStep(1,ZDIR);
     }
-    updateshowstep(1,ISO);
-    updatesurface();
+    UpdateShowStep(1,ISO);
+    UpdateSurface();
     plotstate=STATIC_PLOTS;
-    updateplotslice(XDIR);
-    updateplotslice(YDIR);
-    updateplotslice(ZDIR);
+    UpdatePlotSlice(XDIR);
+    UpdatePlotSlice(YDIR);
+    UpdatePlotSlice(ZDIR);
     updatemenu=1;
     glutPostRedisplay();
     UpdatePlot3dListIndex();
@@ -930,7 +930,7 @@ void IsoShowMenu(int value){
      else{
        if(isoi->type==iisotype){
          isoi->display = 1 - isoi->display;
-         update_isotype();
+         UpdateIsoType();
        }
        else{
          isoi->display=1;
@@ -956,8 +956,8 @@ void IsoShowMenu(int value){
       UpdateShow();
     }
   }
-  update_iso_showlevels();
-  Update_Isotris(1);
+  UpdateIsoShowLevels();
+  UpdateIsoTriangles(1);
 
   updatemenu=1;
   glutPostRedisplay();
@@ -1947,7 +1947,7 @@ void IsoSurfaceMenu(int value){
     updatemenu=1;
     glutPostRedisplay();
     if(value==1){
-      updateshowstep(0,ISO);
+      UpdateShowStep(0,ISO);
     }
     if(value==2){
       p3dsurfacesmooth = 1 - p3dsurfacesmooth;
@@ -1960,8 +1960,8 @@ void IsoSurfaceMenu(int value){
 void LevelMenu(int value){
   if(ReadPlot3dFile==1){
     plotiso[plotn-1]=value;
-    updateshowstep(1,ISO);
-    updatesurface();
+    UpdateShowStep(1,ISO);
+    UpdateSurface();
     updatemenu=1;
     glutPostRedisplay();
   }
@@ -2185,7 +2185,7 @@ void Plot3DShowMenu(int value){
   }
   plotstate=GetPlotState(STATIC_PLOTS);
   if(plotstate==STATIC_PLOTS&&visiso==1){
-    updatesurface();
+    UpdateSurface();
   }
   updatemenu=1;
   glutPostRedisplay();
@@ -2309,18 +2309,18 @@ void CompressMenu(int value){
 
 void IniSubMenu(int value){
   if(value==MENU_READCASEINI){
-    ReadINI(NULL);
+    ReadIni(NULL);
   }
   else{
     char *ini_filename;
     char *script_filename2;
 
-    ini_filename = get_inifilename(value);
+    ini_filename = GetIniFileName(value);
     if(ini_filename==NULL||strlen(ini_filename)==0)return;
     script_filename2=script_filename;
     strcpy(script_filename,ini_filename);
     windowresized=0;
-    ReadINI(script_filename2);
+    ReadIni(script_filename2);
   }
 }
 
@@ -2329,17 +2329,17 @@ void IniSubMenu(int value){
 void SmokeviewIniMenu(int value){
   switch(value){
   case MENU_READINI:
-    ReadINI(NULL);
+    ReadIni(NULL);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   case MENU_WRITEINI:
-    WriteINI(GLOBAL_INI,NULL);
+    WriteIni(GLOBAL_INI,NULL);
     break;
   case MENU_WRITECASEINI:
-    WriteINI(LOCAL_INI,NULL);
+    WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
-    init_object_defs();
+    InitObjectDefs();
     break;
   case MENU_DUMMY:
     break;
@@ -2413,8 +2413,8 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_START_RECORDING:
       UpdateScriptStart();
-      get_newscriptfilename(newscriptfilename);
-      script_recording = insert_scriptfile(newscriptfilename);
+      GetNewScriptFileName(newscriptfilename);
+      script_recording = InsertScriptFile(newscriptfilename);
       scriptoutstream=fopen(newscriptfilename,"w");
       if(scriptoutstream!=NULL){
         PRINTF("Script recorder on\n");
@@ -2468,10 +2468,10 @@ void ScriptMenu(int value){
         file=scriptfile->file;
         if(file==NULL)continue;
         if(scriptfile->id!=value)continue;
-        error_code=compile_script(file);
+        error_code= CompileScript(file);
         if(error_code==0){
-      //    ReadINI(NULL);
-          start_script();
+      //    ReadIni(NULL);
+          StartScript();
         }
         else{
           fprintf(stderr,"*** Error (fatal): unable to open script file");
@@ -2672,22 +2672,22 @@ void LoadUnloadMenu(int value){
       ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
     }
     for(i = 0; i<nplot3dinfo; i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
-      readpart("",i,UNLOAD,PARTDATA,&errorcode);
+      ReadPart("",i,UNLOAD,PARTDATA,&errorcode);
     }
     for(i=0;i<nisoinfo;i++){
-      readiso("",i,UNLOAD,NULL,&errorcode);
+      ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
     for(i=0;i<nzoneinfo;i++){
-      readzone(i,UNLOAD,&errorcode);
+      ReadZone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(i,UNLOAD,&errorcode);
+      ReadSmoke3d(i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -2745,22 +2745,22 @@ void LoadUnloadMenu(int value){
     islicetype=islicetype_save;
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
-        readplot3d(plot3dinfo[i].file,i,LOAD,&errorcode);
+        ReadPlot3d(plot3dinfo[i].file,i,LOAD,&errorcode);
       }
     }
     for(ii=0;ii<npatch_loaded;ii++){
       i = patch_loaded_list[ii];
-      readpatch(i,LOAD,&errorcode);
+      ReadPatch(i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3D(i,LOAD,&errorcode);
+        ReadSmoke3d(i,LOAD,&errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].loaded==1){
         partinfo[i].reload=1;
-        readpart(partinfo[i].file,i,UNLOAD,PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file,i,UNLOAD,PARTDATA,&errorcode);
       }
       else{
         partinfo[i].reload=0;
@@ -2769,12 +2769,12 @@ void LoadUnloadMenu(int value){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].reload==1){
-        readpart(partinfo[i].file, i, UNLOAD, PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file, i, UNLOAD, PARTDATA,&errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].reload==1){
-        readpart(partinfo[i].file, i, LOAD, PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file, i, LOAD, PARTDATA,&errorcode);
       }
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
@@ -2783,9 +2783,9 @@ void LoadUnloadMenu(int value){
 
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
-      readiso(isoi->file,i,LOAD,NULL,&errorcode);
+      ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
     }
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
@@ -2798,13 +2798,13 @@ void LoadUnloadMenu(int value){
     showfiles=1-showfiles;
     updatemenu=1;
     UpdateSliceMenuLabels();
-    UpdateVsliceMenulabels();
-    UpdateSmoke3DMenuLabels();
-    update_patch_menulabels();
-    update_iso_menulabels();
-    update_part_menulabels();
-    UpdateTourMenulabels();
-    update_plot3d_menulabels();
+    UpdateVsliceMenuLabels();
+    UpdateSmoke3dMenuLabels();
+    UpdatePatchMenuLabels();
+    UpdateIsoMenuLabels();
+    UpdatePartMenuLabels();
+    UpdateTourMenuLabels();
+    UpdatePlot3dMenuLabels();
   }
   if(value==SHOWMESHMENUS){
     show_meshmenus = 1 - show_meshmenus;
@@ -2989,7 +2989,7 @@ void LoadEvacMenu(int value){
 
       parti=partinfo + i;
       if(parti->evac==0)continue;
-      readpart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
     }
     npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
     for(i=0;i<npartinfo;i++){
@@ -2998,7 +2998,7 @@ void LoadEvacMenu(int value){
       parti=partinfo + i;
       if(parti->evac==0)continue;
       ReadEvacFile=1;
-      readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
+      ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADFILE\n");
         fprintf(scriptoutstream," %s\n",parti->file);
@@ -3010,7 +3010,7 @@ void LoadEvacMenu(int value){
   if(value>=0){
     ReadEvacFile=1;
     npartframes_max=GetMinPartFrames(value);
-    readpart(partinfo[value].file, value, LOAD, PARTDATA,&errorcode);
+    ReadPart(partinfo[value].file, value, LOAD, PARTDATA,&errorcode);
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partinfo[value].file);
@@ -3021,7 +3021,7 @@ void LoadEvacMenu(int value){
 
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==0)continue;
-      readpart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
     }
   }
   updatemenu=1;
@@ -3105,7 +3105,7 @@ void PropMenu(int value){
       propi->smokeview_id = propi->smokeview_ids[iobject];
       propi->smv_object = propi->smv_objects[iobject];
       updatemenu = 1;
-      get_indep_var_indices(propi->smv_object,
+      GetIndepVarIndices(propi->smv_object,
         propi->vars_indep, propi->nvars_indep,
         propi->vars_indep_index);
 
@@ -3113,7 +3113,7 @@ void PropMenu(int value){
         partclassdata *partclassi;
 
         partclassi = partclassinfo + i;
-        update_partclass_depend(partclassi);
+        UpdatePartClassDepend(partclassi);
 
       }
 
@@ -3276,7 +3276,7 @@ void LoadParticleMenu(int value){
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
-    readpart(partfile, value, LOAD, PARTDATA,&errorcode);
+    ReadPart(partfile, value, LOAD, PARTDATA,&errorcode);
   }
   else{
     if(value==-1){
@@ -3285,7 +3285,7 @@ void LoadParticleMenu(int value){
 
         parti = partinfo + i;
         if(parti->evac==1)continue;
-        readpart("", i, UNLOAD, PARTDATA,&errorcode);
+        ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
       }
     }
     else if(value==MENU_PART_SETTINGS){
@@ -3311,7 +3311,7 @@ void LoadParticleMenu(int value){
 
           parti = partinfo+i;
           if(parti->evac==1)continue;
-          readpart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+          ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
         }
       }
 #ifdef pp_PARTDEFER
@@ -3339,7 +3339,7 @@ void LoadParticleMenu(int value){
           parti->compute_bounds_color = 0;
         }
 #endif
-        readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
+        ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
       force_redisplay=1;
       UpdateFrameNumber(0);
@@ -3362,11 +3362,11 @@ void ZoneMenu(int value){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",zonei->file);
     }
-    readzone(value,LOAD,&errorcode);
+    ReadZone(value,LOAD,&errorcode);
   }
   else{
     for(i=0;i<nzoneinfo;i++){
-      readzone(i,UNLOAD,&errorcode);
+      ReadZone(i,UNLOAD,&errorcode);
     }
   }
   updatemenu=1;
@@ -3406,11 +3406,11 @@ void UnloadPatchMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readpatch(value,UNLOAD,&errorcode);
+    ReadPatch(value,UNLOAD,&errorcode);
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
   }
 }
@@ -3423,11 +3423,11 @@ void UnloadIsoMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readiso("",value,UNLOAD,NULL,&errorcode);
+    ReadIso("",value,UNLOAD,NULL,&errorcode);
   }
   else{
     for(i=0;i<nisoinfo;i++){
-      readiso("",i,UNLOAD,NULL,&errorcode);
+      ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
   }
 }
@@ -3440,11 +3440,11 @@ void UnloadPlot3dMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readplot3d("",value,UNLOAD,&errorcode);
+    ReadPlot3d("",value,UNLOAD,&errorcode);
   }
   else{
     for(i=0;i<nplot3dinfo;i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
   }
 }
@@ -3457,12 +3457,12 @@ void UnloadEvacMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readpart("", value, UNLOAD, PARTDATA,&errorcode);
+    ReadPart("", value, UNLOAD, PARTDATA,&errorcode);
   }
   else{
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==0)continue;
-      readpart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
     }
   }
 }
@@ -3475,12 +3475,12 @@ void UnloadPartMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readpart("", value, UNLOAD, PARTDATA,&errorcode);
+    ReadPart("", value, UNLOAD, PARTDATA,&errorcode);
   }
   else{
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==1)continue;
-      readpart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
     }
   }
 }
@@ -3710,12 +3710,12 @@ void UnLoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
-        ReadSmoke3D(i,UNLOAD,&errorcode);
+        ReadSmoke3d(i,UNLOAD,&errorcode);
       }
     }
   }
   else{
-    ReadSmoke3D(value,UNLOAD,&errorcode);
+    ReadSmoke3d(value,UNLOAD,&errorcode);
   }
 }
 
@@ -3735,12 +3735,12 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      ReadSmoke3D(value,LOAD,&errorcode);
+      ReadSmoke3d(value,LOAD,&errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(i,UNLOAD,&errorcode);
+      ReadSmoke3d(i,UNLOAD,&errorcode);
     }
   }
   else if(value==MENU_SMOKE3D_IBLANK){
@@ -3754,7 +3754,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
-        ReadSmoke3D(i,LOAD,&errorcode);
+        ReadSmoke3d(i,LOAD,&errorcode);
       }
     }
     ASSERT(FFALSE); // check to see if this code segment is used
@@ -3770,7 +3770,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
-          ReadSmoke3D(i,LOAD,&errorcode);
+          ReadSmoke3d(i,LOAD,&errorcode);
         }
       }
     }
@@ -4205,12 +4205,12 @@ void LoadPlot3dMenu(int value){
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      readplot3d(plot3dfile,value,LOAD,&errorcode);
+      ReadPlot3d(plot3dfile,value,LOAD,&errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nplot3dinfo;i++){
-      readplot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3d("",i,UNLOAD,&errorcode);
     }
   }
   else if(value==MENU_PLOT3D_SETTINGS){
@@ -4244,8 +4244,8 @@ void LoadIsoi(int value){
     fprintf(scriptoutstream, " %i\n", isoi->blocknumber+1);
   }
   if(scriptoutstream==NULL||defer_file_loading==0){
-    readiso(file,value,LOAD,NULL,&errorcode);
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)readiso_geom_wrapup();
+    ReadIso(file,value,LOAD,NULL,&errorcode);
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
   }
   isoi->loading=0;
 }
@@ -4280,7 +4280,7 @@ void LoadIsoMenu(int value){
       isodata *isoi;
 
       isoi = isoinfo + i;
-      if(isoi->loaded==1)readiso("",i,UNLOAD,NULL,&errorcode);
+      if(isoi->loaded==1)ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
   }
   if(value==MENU_ISO_SETTINGS){
@@ -4300,7 +4300,7 @@ void LoadIsoMenu(int value){
     if(scriptoutstream==NULL||defer_file_loading==0){
       update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
       LoadAllIsos(isoi->type);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
       update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     }
     script_iso=0;
@@ -4326,7 +4326,7 @@ void LoadPatchMenu(int value){
 
         i = patch_loaded_list[ii];
         patchi = patchinfo + i;
-        if(patchi->type!=patchtypenew)readpatch(i,UNLOAD,&errorcode);
+        if(patchi->type!=patchtypenew)ReadPatch(i,UNLOAD,&errorcode);
       }
     }
     if(scriptoutstream!=NULL){
@@ -4341,7 +4341,7 @@ void LoadPatchMenu(int value){
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
       LOCK_COMPRESS
-      readpatch(value,LOAD,&errorcode);
+      ReadPatch(value,LOAD,&errorcode);
       UNLOCK_COMPRESS
     }
   }
@@ -4361,7 +4361,7 @@ void LoadPatchMenu(int value){
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
           LOCK_COMPRESS
-          readpatch(i,LOAD,&errorcode);
+          ReadPatch(i,LOAD,&errorcode);
           UNLOCK_COMPRESS
         }
       }
@@ -4377,7 +4377,7 @@ void LoadPatchMenu(int value){
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
   }
   updatemenu=1;
@@ -4893,8 +4893,8 @@ void ShowObjectsMenu(int value){
   }
   else{
     device_sphere_segments=ABS(value);
-    Init_Sphere(device_sphere_segments,2*device_sphere_segments);
-    Init_Circle(2*device_sphere_segments,&object_circ);
+    InitSphere(device_sphere_segments,2*device_sphere_segments);
+    InitCircle(2*device_sphere_segments,&object_circ);
   }
   updatemenu=1;
   glutPostRedisplay();

@@ -206,7 +206,7 @@ PROP
     NewMemory((void **)&smokeview_id,lenbuf+1);
     strcpy(smokeview_id,buffer);
     propi->smokeview_ids[i]=smokeview_id;
-    propi->smv_objects[i]=get_SVOBJECT_type(propi->smokeview_ids[i],missing_device);
+    propi->smv_objects[i]=GetSmvObjectType(propi->smokeview_ids[i],missing_device);
   }
   propi->smv_object=propi->smv_objects[0];
   propi->smokeview_id=propi->smokeview_ids[0];
@@ -273,8 +273,8 @@ PROP
         sscanf(val,"%f",propi->fvals+i);
       }
     }
-    get_indep_var_indices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
-    get_evac_indices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
+    GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
+    GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
   }
   propi->ntextures=ntextures_local;
 }
@@ -297,7 +297,7 @@ void UpdateINIList(void){
 
       filei = ini_filelist + i;
       if(filei->type!=0)continue;
-      insert_inifile(filei->file);
+      InsertIniFile(filei->file);
     }
   }
 }
@@ -1316,8 +1316,8 @@ void ReadSMVDynamic(char *file){
     }
   }
   FCLOSE(stream);
-  update_plot3d_menulabels();
-  init_plot3dtimelist();
+  UpdatePlot3dMenuLabels();
+  InitPlot3dTimeList();
 }
 
 
@@ -1493,9 +1493,9 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   else{
     strcpy(devicei->label, tok1);
   }
-  devicei->object = get_SVOBJECT_type(tok1,missing_device);
+  devicei->object = GetSmvObjectType(tok1,missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
-    devicei->object = get_SVOBJECT_type(tok3,missing_device);
+    devicei->object = GetSmvObjectType(tok3,missing_device);
   }
   if(devicei->object == missing_device)have_missing_objects = 1;
   devicei->params=NULL;
@@ -1620,9 +1620,9 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   else{
     strcpy(devicei->label, tok1);
   }
-  devicei->object = get_SVOBJECT_type(tok1, missing_device);
+  devicei->object = GetSmvObjectType(tok1, missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
-    devicei->object = get_SVOBJECT_type(tok3, missing_device);
+    devicei->object = GetSmvObjectType(tok3, missing_device);
   }
   if(devicei->object==missing_device)have_missing_objects = 1;
   devicei->params = NULL;
@@ -2854,7 +2854,7 @@ void InitEvacProp(void){
   NewMemory((void **)&smokeview_id, 6 + 1);
   strcpy(smokeview_id, "sensor");
   prop_evacdefault->smokeview_ids[0] = smokeview_id;
-  prop_evacdefault->smv_objects[0] = get_SVOBJECT_type(prop_evacdefault->smokeview_ids[0], missing_device);
+  prop_evacdefault->smv_objects[0] = GetSmvObjectType(prop_evacdefault->smokeview_ids[0], missing_device);
 
   prop_evacdefault->smv_object = prop_evacdefault->smv_objects[0];
   prop_evacdefault->smokeview_id = prop_evacdefault->smokeview_ids[0];
@@ -3658,7 +3658,7 @@ int ReadSMV(char *file, char *file2){
   }
   npartclassinfo=0;
 
-  freeall_objects();
+  FreeAllObjects();
   if(ndeviceinfo>0){
     for(i=0;i<ndeviceinfo;i++){
     }
@@ -3668,7 +3668,7 @@ int ReadSMV(char *file, char *file2){
 
   // read in device (.svo) definitions
 
-  init_object_defs();
+  InitObjectDefs();
   {
     int return_code;
 
@@ -3715,7 +3715,7 @@ int ReadSMV(char *file, char *file2){
 
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        FreeSmoke3D(smoke3di);
+        FreeSmoke3d(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -4951,7 +4951,7 @@ int ReadSMV(char *file, char *file2){
         NewMemory((void **)&smokeview_id,lenbuf+1);
         strcpy(smokeview_id,fbuffer);
         propi->smokeview_ids[i]=smokeview_id;
-        propi->smv_objects[i]=get_SVOBJECT_type(propi->smokeview_ids[i],missing_device);
+        propi->smv_objects[i]=GetSmvObjectType(propi->smokeview_ids[i],missing_device);
       }
       propi->smv_object=propi->smv_objects[0];
       propi->smokeview_id=propi->smokeview_ids[0];
@@ -5022,8 +5022,8 @@ int ReadSMV(char *file, char *file2){
             sscanf(val,"%f",propi->fvals+i);
           }
         }
-        get_indep_var_indices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
-        get_evac_indices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
+        GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
+        GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
 
       }
       propi->ntextures=ntextures_local;
@@ -5083,9 +5083,9 @@ int ReadSMV(char *file, char *file2){
       partclassi->smv_device=NULL;
       partclassi->device_name=NULL;
       if(device_ptr!=NULL){
-        partclassi->sphere=get_SVOBJECT_type("SPHERE",missing_device);
+        partclassi->sphere=GetSmvObjectType("SPHERE",missing_device);
 
-        partclassi->smv_device=get_SVOBJECT_type(device_ptr,missing_device);
+        partclassi->smv_device=GetSmvObjectType(device_ptr,missing_device);
         if(partclassi->smv_device!=NULL){
           len = strlen(device_ptr);
           NewMemory((void **)&partclassi->device_name,len+1);
@@ -5098,7 +5098,7 @@ int ReadSMV(char *file, char *file2){
           len = strlen(tube);
           NewMemory((void **)&partclassi->device_name,len+1);
           STRCPY(partclassi->device_name,tube);
-          partclassi->smv_device=get_SVOBJECT_type(tube,missing_device);
+          partclassi->smv_device=GetSmvObjectType(tube,missing_device);
         }
       }
 
@@ -6147,7 +6147,7 @@ int ReadSMV(char *file, char *file2){
           xyznorm[0]=0.0;
           xyznorm[1]=0.0;
           xyznorm[2]=-1.0;
-          device_label=get_device_label(buffer);
+          device_label= GetDeviceLabel(buffer);
           sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyznorm,xyznorm+1,xyznorm+2);
           normdenom=0.0;
           normdenom+=xyznorm[0]*xyznorm[0];
@@ -6162,14 +6162,14 @@ int ReadSMV(char *file, char *file2){
           }
           if(device_label==NULL){
             if(isZoneFireModel==1){
-              devicecopy->object = get_SVOBJECT_type("target",thcp_object_backup);
+              devicecopy->object = GetSmvObjectType("target",thcp_object_backup);
             }
             else{
-              devicecopy->object = get_SVOBJECT_type("thermoc4",thcp_object_backup);
+              devicecopy->object = GetSmvObjectType("thermoc4",thcp_object_backup);
             }
           }
           else{
-            devicecopy->object = get_SVOBJECT_type(device_label,thcp_object_backup);
+            devicecopy->object = GetSmvObjectType(device_label,thcp_object_backup);
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
@@ -6225,7 +6225,7 @@ int ReadSMV(char *file, char *file2){
           xyznorm[0]=0.0;
           xyznorm[1]=0.0;
           xyznorm[2]=-1.0;
-          device_label=get_device_label(buffer);
+          device_label= GetDeviceLabel(buffer);
           sscanf(buffer,"%f %f %f %f %f %f",xsprcopy,ysprcopy,zsprcopy,xyznorm,xyznorm+1,xyznorm+2);
           devicecopy->act_time=-1.0;
           devicecopy->type = DEVICE_SPRK;
@@ -6243,10 +6243,10 @@ int ReadSMV(char *file, char *file2){
             xyznorm[2]/=normdenom;
           }
           if(device_label==NULL){
-            devicecopy->object = get_SVOBJECT_type("sprinkler_upright",sprinkler_upright_object_backup);
+            devicecopy->object = GetSmvObjectType("sprinkler_upright",sprinkler_upright_object_backup);
           }
           else{
-            devicecopy->object = get_SVOBJECT_type(device_label,sprinkler_upright_object_backup);
+            devicecopy->object = GetSmvObjectType(device_label,sprinkler_upright_object_backup);
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
@@ -6303,7 +6303,7 @@ int ReadSMV(char *file, char *file2){
           xyznorm[0]=0.0;
           xyznorm[1]=0.0;
           xyznorm[2]=-1.0;
-          device_label=get_device_label(buffer);
+          device_label= GetDeviceLabel(buffer);
           sscanf(buffer,"%f %f %f %f %f %f",xheatcopy,yheatcopy,zheatcopy,xyznorm,xyznorm+1,xyznorm+2);
           devicecopy->type = DEVICE_HEAT;
           devicecopy->act_time=-1.0;
@@ -6321,10 +6321,10 @@ int ReadSMV(char *file, char *file2){
             xyznorm[2]/=normdenom;
           }
           if(device_label==NULL){
-            devicecopy->object = get_SVOBJECT_type("heat_detector",heat_detector_object_backup);
+            devicecopy->object = GetSmvObjectType("heat_detector",heat_detector_object_backup);
           }
           else{
-            devicecopy->object = get_SVOBJECT_type(device_label,heat_detector_object_backup);
+            devicecopy->object = GetSmvObjectType(device_label,heat_detector_object_backup);
           }
           GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
@@ -6361,7 +6361,7 @@ int ReadSMV(char *file, char *file2){
         xyznorm[0]=0.0;
         xyznorm[1]=0.0;
         xyznorm[2]=-1.0;
-        device_label=get_device_label(buffer);
+        device_label= GetDeviceLabel(buffer);
         FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyznorm,xyznorm+1,xyznorm+2);
         devicecopy->type = DEVICE_SMOKE;
@@ -6380,10 +6380,10 @@ int ReadSMV(char *file, char *file2){
           xyznorm[2]/=normdenom;
         }
         if(device_label==NULL){
-          devicecopy->object = get_SVOBJECT_type("smoke_detector",smoke_detector_object_backup);
+          devicecopy->object = GetSmvObjectType("smoke_detector",smoke_detector_object_backup);
         }
         else{
-          devicecopy->object = get_SVOBJECT_type(device_label,smoke_detector_object_backup);
+          devicecopy->object = GetSmvObjectType(device_label,smoke_detector_object_backup);
         }
         GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
 
@@ -6419,7 +6419,7 @@ int ReadSMV(char *file, char *file2){
 
       csvi = csvinfo + i;
       if(csvi->type==CSVTYPE_EXT){
-        nexp_devices[i] = get_ndevices(csvi->file);
+        nexp_devices[i] = GetNDevices(csvi->file);
         ndeviceinfo_exp += nexp_devices[i];
       }
     }
@@ -6449,7 +6449,7 @@ int ReadSMV(char *file, char *file2){
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
-  update_device_textures();
+  UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list)*sizeof(texturedata))==0)return 2;
   }
@@ -6551,7 +6551,7 @@ int ReadSMV(char *file, char *file2){
 
       GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
       partclassi->prop=GetPropID(prop_id);
-      update_partclass_depend(partclassi);
+      UpdatePartClassDepend(partclassi);
 
       npartclassinfo++;
       continue;
@@ -8548,7 +8548,7 @@ typedef struct {
           isoi->geominfo->file=isoi->file;
           geomi = isoi->geominfo;
           geomi->file=isoi->file;
-          read_geom_header(geomi,NULL,&ntimes_local);
+          ReadGeomHeader(geomi,NULL,&ntimes_local);
           isoi->nlevels=geomi->nfloat_vals;
           if(isoi->nlevels>0){
             NewMemory((void **)&levels,isoi->nlevels*sizeof(float));
@@ -8562,7 +8562,7 @@ typedef struct {
           }
         }
         else{
-          getisolevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
+          GetIsoLevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
         }
         if(dataflag==1){
           if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
@@ -8822,7 +8822,7 @@ typedef struct {
 
   PRINTF("  wrapping up\n");
   CheckMemory;
-  update_isocolors();
+  UpdateIsoColors();
   CheckMemory;
 
   //RemoveDupBlockages();
@@ -8836,22 +8836,21 @@ typedef struct {
 // update csv data
 
   if(hrr_csv_filename!=NULL)ReadHRR(LOAD, &errorcode);
-  read_device_data(NULL,CSV_FDS,UNLOAD);
-  read_device_data(NULL,CSV_EXP,UNLOAD);
+  ReadDeviceData(NULL,CSV_FDS,UNLOAD);
+  ReadDeviceData(NULL,CSV_EXP,UNLOAD);
   for(i=0;i<ncsvinfo;i++){
     csvdata *csvi;
 
     csvi = csvinfo + i;
-    if(csvi->type==CSVTYPE_DEVC)read_device_data(csvi->file,CSV_FDS,LOAD);
-    if(csvi->type==CSVTYPE_EXT)read_device_data(csvi->file,CSV_EXP,LOAD);
+    if(csvi->type==CSVTYPE_DEVC)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
+    if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
-  setup_device_data();
-  if(nzoneinfo>0)setup_zone_devs();
-
+  SetupDeviceData();
+  if(nzoneinfo>0)SetupZoneDevs();
 
   InitMultiThreading();
 
-  init_partprop();
+  InitPartProp();
 
   InitClip();
 
@@ -8941,7 +8940,7 @@ typedef struct {
       active_smokesensors=1;
     }
     if(devicei->plane_surface!=NULL){
-      init_device_plane(devicei);
+      InitDevicePlane(devicei);
     }
   }
 
@@ -8966,7 +8965,7 @@ typedef struct {
 
   UpdateBoundInfo();
 
-  update_object_used();
+  UpdateObjectUsed();
 
   // close .smv file
 
@@ -8981,7 +8980,7 @@ typedef struct {
   UpdateSelectFaces();
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
-  updateisotypes();
+  UpdateIsoTypes();
   UpdatePatchTypes();
   if(autoterrain==1){
     for(i=0;i<nmeshes;i++){
@@ -9005,12 +9004,12 @@ typedef struct {
   }
   UpdateTerrain(1,vertical_factor);
   UpdateTerrainColors();
-  UpdateSmoke3DMenuLabels();
+  UpdateSmoke3dMenuLabels();
   UpdateVSliceTypes();
-  update_patch_menulabels();
-  update_iso_menulabels();
-  update_part_menulabels();
-  UpdateTourMenulabels();
+  UpdatePatchMenuLabels();
+  UpdateIsoMenuLabels();
+  UpdatePartMenuLabels();
+  UpdateTourMenuLabels();
   InitUserTicks();
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -9046,11 +9045,11 @@ typedef struct {
 #endif
   UpdateMeshTerrain();
 
-  read_all_geom();
+  ReadAllGeom();
   ngeominfoptrs=0;
   GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
-  update_triangles(GEOM_STATIC,GEOM_UPDATE_ALL);
-  get_faceinfo();
+  UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
+  GetFaceInfo();
 
   SetupMeshWalls();
 
@@ -9180,9 +9179,9 @@ void UpdateUseTextures(void){
   }
 }
 
-/* ------------------ ReadINI2 ------------------------ */
+/* ------------------ ReadIni2 ------------------------ */
 
-int ReadINI2(char *inifile, int localfile){
+int ReadIni2(char *inifile, int localfile){
   int i;
   FILE *stream;
 
@@ -9488,8 +9487,8 @@ int ReadINI2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &device_sphere_segments);
       device_sphere_segments = CLAMP(device_sphere_segments, 6, 48);
-      Init_Sphere(device_sphere_segments, 2 * device_sphere_segments);
-      Init_Circle(2 * device_sphere_segments, &object_circ);
+      InitSphere(device_sphere_segments, 2 * device_sphere_segments);
+      InitCircle(2 * device_sphere_segments, &object_circ);
       continue;
     }
     if(Match(buffer, "SHOWEVACSLICES") == 1){
@@ -10029,7 +10028,7 @@ int ReadINI2(char *inifile, int localfile){
 
         TrimBack(short_label);
         s1 = TrimFront(short_label);
-        if(strlen(s1)>0)label_index = get_partprop_index_s(s1);
+        if(strlen(s1)>0)label_index = GetPartPropIndexS(s1);
         if(label_index >= 0 && label_index<npart5prop){
           partpropdata *propi;
 
@@ -10084,7 +10083,7 @@ int ReadINI2(char *inifile, int localfile){
 
         TrimBack(short_label);
         s1 = TrimFront(short_label);
-        if(strlen(s1)>0)label_index = get_partprop_index_s(s1);
+        if(strlen(s1)>0)label_index = GetPartPropIndexS(s1);
         if(label_index >= 0 && label_index<npart5prop){
           partpropdata *propi;
 
@@ -10235,7 +10234,7 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &setpatchmin, &patchmin, &setpatchmax, &patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)local2globalpatchbounds(buffer2);
+      if(strcmp(buffer2, "") != 0)Local2GlobalPatchBounds(buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){
@@ -11368,7 +11367,7 @@ int ReadINI2(char *inifile, int localfile){
         iso_color[2] = CLAMP(iso_color[2], 0.0, 1.0);
         iso_color[3] = CLAMP(iso_color[3], 0.0, 1.0);
       }
-      update_isocolors();
+      UpdateIsoColors();
       UpdateIsoColorlevel();
       continue;
     }
@@ -11751,7 +11750,7 @@ int ReadINI2(char *inifile, int localfile){
       }
       if(Match(buffer, "SCRIPTFILE") == 1){
         if(fgets(buffer2, 255, stream) == NULL)break;
-        insert_scriptfile(RemoveComment(buffer2));
+        InsertScriptFile(RemoveComment(buffer2));
         updatemenu = 1;
         continue;
       }
@@ -11771,7 +11770,7 @@ int ReadINI2(char *inifile, int localfile){
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           dev_label = TrimFront(buffer);
-          obj_typei = get_object(dev_label);
+          obj_typei = GetSmvObject(dev_label);
           if(obj_typei != NULL){
             obj_typei->visible = 1;
           }
@@ -11918,7 +11917,7 @@ int ReadINI2(char *inifile, int localfile){
           partclassdata *partclassi;
 
           partclassi = partclassinfo + i;
-          update_partclass_depend(partclassi);
+          UpdatePartClassDepend(partclassi);
 
         }
         continue;
@@ -12111,7 +12110,7 @@ int ReadINI2(char *inifile, int localfile){
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
             }
-            UpdateTourMenulabels();
+            UpdateTourMenuLabels();
             CreateTourPaths();
             UpdateTimes();
             plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -12142,9 +12141,9 @@ int ReadINI2(char *inifile, int localfile){
 
 }
 
-/* ------------------ ReadINI ------------------------ */
+/* ------------------ ReadIni ------------------------ */
 
-int ReadINI(char *inifile){
+int ReadIni(char *inifile){
   char smvprogini[1024];
   char *smvprogini_ptr=NULL;
 
@@ -12180,7 +12179,7 @@ int ReadINI(char *inifile){
   if(smvprogini_ptr!=NULL){
     int returnval;
 
-    returnval = ReadINI2(smvprogini_ptr, 0);
+    returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12194,7 +12193,7 @@ int ReadINI(char *inifile){
   if(INIfile!=NULL){
     int returnval;
 
-    returnval = ReadINI2(INIfile, 0);
+    returnval = ReadIni2(INIfile, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12207,7 +12206,7 @@ int ReadINI(char *inifile){
   if(caseini_filename!=NULL){
     int returnval;
 
-    returnval = ReadINI2(caseini_filename, 1);
+    returnval = ReadIni2(caseini_filename, 1);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12220,7 +12219,7 @@ int ReadINI(char *inifile){
   if(inifile!=NULL){
     int return_code;
 
-    return_code = ReadINI2(inifile,1);
+    return_code = ReadIni2(inifile,1);
     if(return_code == 0){
       PRINTF("complete");
       PRINTF("\n");
@@ -12294,9 +12293,9 @@ void OutputViewpoints(FILE *fileout){
   }
 }
 
-  /* ------------------ WriteINILocal ------------------------ */
+  /* ------------------ WriteIniLocal ------------------------ */
 
-void WriteINILocal(FILE *fileout){
+void WriteIniLocal(FILE *fileout){
   int i;
   int ndevice_vis = 0;
   sv_object *obj_typei;
@@ -12702,9 +12701,9 @@ void WriteINILocal(FILE *fileout){
 
 }
 
-  /* ------------------ WriteINI ------------------------ */
+  /* ------------------ WriteIni ------------------------ */
 
-void WriteINI(int flag,char *filename){
+void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
 
@@ -13394,7 +13393,7 @@ void WriteINI(int flag,char *filename){
   fprintf(fileout," %i\n",viewtourfrompath);
 
 
-  if(flag == LOCAL_INI)WriteINILocal(fileout);
+  if(flag == LOCAL_INI)WriteIniLocal(fileout);
   if(
     ((INI_fds_filein != NULL&&fds_filein != NULL&&strcmp(INI_fds_filein, fds_filein) == 0) ||
     flag == LOCAL_INI))OutputViewpoints(fileout);
@@ -13513,18 +13512,18 @@ void GetElevAz(float *xyznorm,float *dtheta,float *rotate_axis, float *dpsi){
   // cos(dtheta) = (xyznorm .dot. vec3(0,0,1))/||xyznorm||
   // rotate_axis = xyznorm .cross. vec3(0,0,1)
 
-  normalize(xyznorm,3);
+  Normalize(xyznorm,3);
   *dtheta = RAD2DEG*acos(xyznorm[2]);
   rotate_axis[0]=-xyznorm[1];
   rotate_axis[1]= xyznorm[0];
   rotate_axis[2]=0.0;
-  normalize(rotate_axis,2);
+  Normalize(rotate_axis,2);
   if(dpsi!=NULL){
     float xyznorm2[2];
 
     xyznorm2[0]=xyznorm[0];
     xyznorm2[1]=xyznorm[1];
-    normalize(xyznorm2,2);
+    Normalize(xyznorm2,2);
     *dpsi = RAD2DEG*acos(xyznorm2[1]);
     if(xyznorm2[0]<0.0)*dpsi=-(*dpsi);
   }

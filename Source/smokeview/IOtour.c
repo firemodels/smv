@@ -97,7 +97,7 @@ void UpdateViewTour(void){
 
 /* ------------------ UpdateTourMenulabels ------------------------ */
 
-void UpdateTourMenulabels(void){
+void UpdateTourMenuLabels(void){
   int i;
   tourdata *touri;
 
@@ -394,7 +394,7 @@ void DrawTours(void){
 
           glRotatef(az_angle,0.0,0.0,1.0);
 
-          draw_SVOBJECT(avatar_types[touri->glui_avatar_index],0,NULL,0,NULL,0);
+          DrawSmvObject(avatar_types[touri->glui_avatar_index],0,NULL,0,NULL,0);
           glPopMatrix();
         }
         break;
@@ -1276,7 +1276,7 @@ tourdata *AddTour(char *label){
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
     relpos[2] =  -key_xyz[2];
-    xyz2azelev(relpos,&addedframe->az_path,&addedframe->nodeval.az_path);
+    XYZ2AzElev(relpos,&addedframe->az_path,&addedframe->nodeval.az_path);
 
     key_xyz[0] = xbarORIG + 1.0;
     key_xyz[1] = ybarORIG + 1.0;
@@ -1289,7 +1289,7 @@ tourdata *AddTour(char *label){
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
     relpos[2] =  -key_xyz[2];
-    xyz2azelev(relpos, &addedframe->az_path, &addedframe->nodeval.az_path);
+    XYZ2AzElev(relpos, &addedframe->az_path, &addedframe->nodeval.az_path);
   }
   else{
     keyframe *keyfrom, *keylast;;
@@ -1333,7 +1333,7 @@ tourdata *AddTour(char *label){
   }
   updatemenu=1;
 
-  UpdateTourMenulabels();
+  UpdateTourMenuLabels();
   CreateTourPaths();
   UpdateTimes();
   CreateTourList();
@@ -1384,7 +1384,7 @@ void DeleteTour(int tour_index){
     selected_frame=NULL;
   }
   SetGluiTourKeyframe();
-  UpdateTourMenulabels();
+  UpdateTourMenuLabels();
   UpdateTimes();
   CreateTourList();
 
@@ -1428,7 +1428,7 @@ void SetupTour(void){
     ntourinfo=1;
     NewMemory( (void **)&tourinfo, ntourinfo*sizeof(tourdata));
     InitCircularTour();
-    UpdateTourMenulabels();
+    UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
     plotstate=GetPlotState(DYNAMIC_PLOTS);

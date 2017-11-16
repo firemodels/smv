@@ -829,10 +829,10 @@ void UpdateMouseInfo(int flag, int xm, int ym){
         axis[1]=0.0;
         axis[2]=mi->xdirection[0];
       }
-      angleaxis2quat(delta_angle,axis,quat_temp);
-      mult_quat(quat_temp,quat_general,quat_general);
+      AngleAxis2Quat(delta_angle,axis,quat_temp);
+      MultQuat(quat_temp,quat_general,quat_general);
      // LevelScene(0,1,quat_general);
-      quat2rot(quat_general,quat_rotation);
+      Quat2Rot(quat_general,quat_rotation);
     }
   }
   else{
@@ -841,10 +841,10 @@ void UpdateMouseInfo(int flag, int xm, int ym){
     axis[0]=0.0;
     axis[1]=1.0;
     axis[2]=0.0;
-    angleaxis2quat(-delta_angle2,axis,quat_temp);
-    mult_quat(quat_temp,quat_general,quat_general);
+    AngleAxis2Quat(-delta_angle2,axis,quat_temp);
+    MultQuat(quat_temp,quat_general,quat_general);
    // LevelScene(0,1,quat_general);
-    quat2rot(quat_general,quat_rotation);
+    Quat2Rot(quat_general,quat_rotation);
   }
 #ifdef _DEBUG
   {
@@ -1328,9 +1328,9 @@ void MoveScene(int xm, int ym){
   }
 }
 
-/* ------------------ ThrottleGPU ------------------------ */
+/* ------------------ ThrottleGpu ------------------------ */
 
-int ThrottleGPU(void){
+int ThrottleGpu(void){
   float fps;
 
   START_TIMER(thisMOTIONtime);
@@ -1352,7 +1352,7 @@ void MouseDragCB(int xm, int ym){
   in_external=0;
 #ifdef pp_GPUTHROTTLE
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
-    if(ThrottleGPU()==1)return;
+    if(ThrottleGpu()==1)return;
   }
 #endif
 
@@ -1519,9 +1519,9 @@ void Keyboard(unsigned char key, int flag){
           gbi = meshinfo + i;
           if(gbi->plot3dfilenum==-1)continue;
           UpdateCurrentMesh(gbi);
-          updateplotslice(XDIR);
-          updateplotslice(YDIR);
-          updateplotslice(ZDIR);
+          UpdatePlotSlice(XDIR);
+          UpdatePlotSlice(YDIR);
+          UpdatePlotSlice(ZDIR);
         }
         UpdateCurrentMesh(gbsave);
       }
@@ -1905,8 +1905,8 @@ void Keyboard(unsigned char key, int flag){
       if(plotn>numplot3dvars){
         plotn=1;
       }
-      updateallplotslices();
-      if(visiso==1&&cache_qdata==1)updatesurface();
+      UpdateAllPlotSlices();
+      if(visiso==1&&cache_qdata==1)UpdateSurface();
       UpdatePlot3dListIndex();
       break;
     case 'P':
@@ -2200,7 +2200,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '~':
       LevelScene(1,1,quat_general);
-      quat2rot(quat_general,quat_rotation);
+      Quat2Rot(quat_general,quat_rotation);
       break;
     case '!':
       SnapScene();
@@ -2209,7 +2209,7 @@ void Keyboard(unsigned char key, int flag){
       cell_center_text = 1 - cell_center_text;
       break;
     case '#':
-      WriteINI(LOCAL_INI,NULL);
+      WriteIni(LOCAL_INI,NULL);
       break;
     case '$':
       trainer_active=1-trainer_active;
@@ -2326,11 +2326,11 @@ void Keyboard(unsigned char key, int flag){
     plotstate = GetPlotState(STATIC_PLOTS);
     if(visiso!=0&&current_mesh->slicedir==ISO){
       plotiso[plotn-1] += FlowDir;
-      updatesurface();
+      UpdateSurface();
     }
     glutPostRedisplay();
   }
-  if(iplot_state!=0)updateplotslice(iplot_state);
+  if(iplot_state!=0)UpdatePlotSlice(iplot_state);
 }
 
 /* ------------------ KeyboardCB ------------------------ */
@@ -2407,9 +2407,9 @@ void UpdateClipPlanes(void){
 
 void handleiso(void){
     if(ReadPlot3dFile==1){
-      updateshowstep(1-visiso,ISO);
+      UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
-        updatesurface();
+        UpdateSurface();
         plotstate=STATIC_PLOTS;
       }
     }
@@ -2541,7 +2541,7 @@ void HandlePLOT3DKeys(int  key){
     ASSERT(FFALSE);
     break;
   }
-  if(iplot_state!=0)updateplotslice(iplot_state);
+  if(iplot_state!=0)UpdatePlotSlice(iplot_state);
   return;
 
 //  plotstate=GetPlotState(STATIC_PLOTS);
@@ -2873,13 +2873,33 @@ void ResetGLTime(void){
   }
 }
 
+/* ------------------ UpdatePlot3dTitle ------------------------ */
+
+void UpdatePlot3dTitle(void){
+  int filenum;
+  plot3ddata *plot3di;
+  meshdata *meshi;
+  char title_base[1024];
+
+  GetBaseTitle("Smokeview ", title_base);
+  STRCPY(plot3d_title, title_base);
+  meshi = current_mesh;
+  if(meshi == NULL)meshi = meshinfo;
+  filenum = meshi->plot3dfilenum;
+  if(filenum != -1){
+    plot3di = plot3dinfo + meshi->plot3dfilenum;
+    STRCAT(plot3d_title, ", ");
+    STRCAT(plot3d_title, plot3di->file);
+  }
+}
+
 /* ------------------ UpdateCurrentMesh ------------------------ */
 
 void UpdateCurrentMesh(meshdata *meshi){
   current_mesh=meshi;
-  loaded_isomesh=get_loaded_isomesh();
-  update_iso_showlevels();
-  update_plot3dtitle();
+  loaded_isomesh= GetLoadedIsoMesh();
+  UpdateIsoShowLevels();
+  UpdatePlot3dTitle();
 }
 
 /* ------------------ ClearBuffers ------------------------ */
@@ -3134,7 +3154,7 @@ void DoScript(void){
     }
     if(rendering_status==RENDER_OFF){  // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
-      script_render_flag=run_script();
+      script_render_flag= RunScript();
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         exit(0);
       }
@@ -3146,7 +3166,7 @@ void DoScript(void){
       if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
         int remove_frame;
 
-        script_loadvolsmokeframe2();
+        ScriptLoadVolSmokeFrame2();
         remove_frame=current_script_command->remove_frame;
         if(remove_frame>=0){
           UnloadVolsmokeFrameAllMeshes(remove_frame);
@@ -3155,7 +3175,7 @@ void DoScript(void){
       if(current_script_command->command==SCRIPT_ISORENDERALL){
         int remove_frame;
 
-        script_loadisoframe2(current_script_command);
+        ScriptLoadIsoFrame2(current_script_command);
         remove_frame = current_script_command->remove_frame;
         if(remove_frame>=0){
           //UnloadVolsmokeFrameAllMeshes(remove_frame);

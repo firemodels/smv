@@ -168,10 +168,10 @@ void UpdateFrameNumber(int changetime){
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
-          UpdateSmoke3D(smoke3di);
+          UpdateSmoke3d(smoke3di);
         }
       }
-      if(nsmoke3dinfo>0)MergeSmoke3DColors(NULL);
+      if(nsmoke3dinfo>0)MergeSmoke3dColors(NULL);
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){
@@ -198,7 +198,7 @@ void UpdateFrameNumber(int changetime){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
         }
         else{
-          uncompress_patchdataframe(meshi,meshi->patch_itime);
+          UncompressPatchDataFrame(meshi,meshi->patch_itime);
         }
       }
     }
@@ -1870,7 +1870,7 @@ void UpdateShowScene(void){
     ZoomMenu(UPDATE_PROJECTION);
   }
   if(convert_ini == 1){
-    WriteINI(SCRIPT_INI, ini_to);
+    WriteIni(SCRIPT_INI, ini_to);
     exit(0);
   }
   if(convert_ssf==1||update_ssf==1){

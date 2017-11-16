@@ -305,7 +305,7 @@ int SetupCase(int argc, char **argv){
   SetUnitVis();
 
   CheckMemory;
-  ReadINI(NULL);
+  ReadIni(NULL);
   ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
@@ -1030,11 +1030,11 @@ void InitOpenGL(void){
 
       plot3di = plot3dinfo + i;
       if(plot3di->autoload==0&&plot3di->loaded==1){
-        readplot3d(plot3di->file,i,UNLOAD,&errorcode);
+        ReadPlot3d(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
         ReadPlot3dFile=1;
-        readplot3d(plot3di->file,i,LOAD,&errorcode);
+        ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
       }
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
@@ -1042,27 +1042,27 @@ void InitOpenGL(void){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)readpart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)readpart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)readpart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)readpart(parti->file, i, LOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     for(i = 0; i<nisoinfo; i++){
       isodata *isoi;
 
       isoi = isoinfo + i;
-      if(isoi->autoload==0&&isoi->loaded==1)readiso(isoi->file,i,UNLOAD,NULL,&errorcode);
+      if(isoi->autoload==0&&isoi->loaded==1)ReadIso(isoi->file,i,UNLOAD,NULL,&errorcode);
       if(isoi->autoload == 1){
-        readiso(isoi->file, i, LOAD,NULL, &errorcode);
+        ReadIso(isoi->file, i, LOAD,NULL, &errorcode);
       }
     }
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     for(i = 0; i<nvsliceinfo; i++){
       vslicedata *vslicei;
@@ -1109,15 +1109,15 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3d(i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3d(i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      if(patchi->autoload==0&&patchi->loaded==1)readpatch(i,UNLOAD,&errorcode);
-      if(patchi->autoload==1)readpatch(i,LOAD,&errorcode);
+      if(patchi->autoload==0&&patchi->loaded==1)ReadPatch(i,UNLOAD,&errorcode);
+      if(patchi->autoload==1)ReadPatch(i,LOAD,&errorcode);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);
@@ -1156,7 +1156,7 @@ void InitVars(void){
 
   curdir_writable = Writable(".");
   windrose_circ.ncirc=0;
-  Init_Circle(180, &windrose_circ);
+  InitCircle(180, &windrose_circ);
 
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;

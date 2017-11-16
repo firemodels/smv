@@ -165,9 +165,9 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   }
 }
 
-/* ------------------ WriteBoundINI ------------------------ */
+/* ------------------ WriteBoundIni ------------------------ */
 
-void WriteBoundINI(void){
+void WriteBoundIni(void){
   FILE *stream = NULL;
   char *fullfilename = NULL;
   int i;
@@ -247,7 +247,7 @@ void UpdatePatchBounds(patchdata *patchi){
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));
   }
-  WriteBoundINI();
+  WriteBoundIni();
   FreeHistogram(&full_histogram);
 }
 
@@ -454,7 +454,7 @@ void UpdatePart5Extremes(void){
         for(k=2;k<partclassi->ntypes;k++){
           partpropdata *prop_id;
 
-          prop_id = get_partprop(partclassi->labels[k].longlabel);
+          prop_id = GetPartProp(partclassi->labels[k].longlabel);
           if(prop_id==NULL)continue;
 
           if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
@@ -502,7 +502,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
       for(k=2;k<partclassi->ntypes;k++){
         partpropdata *prop_id;
 
-        prop_id = get_partprop(partclassi->labels[k].longlabel);
+        prop_id = GetPartProp(partclassi->labels[k].longlabel);
         if(prop_id==NULL)continue;
 
         if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
@@ -629,9 +629,9 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
         int m;
         partpropdata *prop_U, *prop_V, *prop_W;
 
-        prop_U = get_partprop(partclassi->labels[partclassi->col_u_vel+2].longlabel);
-        prop_V = get_partprop(partclassi->labels[partclassi->col_v_vel+2].longlabel);
-        prop_W = get_partprop(partclassi->labels[partclassi->col_w_vel+2].longlabel);
+        prop_U = GetPartProp(partclassi->labels[partclassi->col_u_vel+2].longlabel);
+        prop_V = GetPartProp(partclassi->labels[partclassi->col_v_vel+2].longlabel);
+        prop_W = GetPartProp(partclassi->labels[partclassi->col_w_vel+2].longlabel);
         if(prop_U!=NULL&&prop_V!=NULL&&prop_W!=NULL){
           float umax, vmax, wmax;
 

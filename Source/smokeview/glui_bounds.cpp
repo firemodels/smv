@@ -864,7 +864,7 @@ void BoundsDlgCB(int var){
     updatemenu = 1;
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case COMPRESS_FILES:
     PRINTF("compressing\n");
@@ -909,7 +909,7 @@ void BoundBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
       EDIT_patch_chopmin->disable();
@@ -921,11 +921,11 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmax){
     case DISABLE:
       EDIT_patch_chopmax->disable();
@@ -937,18 +937,18 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case CHOPVALMIN:
     ASSERT(EDIT_patch_min != NULL);
     EDIT_patch_min->set_float_val(patchmin);
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     ASSERT(EDIT_patch_max != NULL);
     EDIT_patch_max->set_float_val(patchmax);
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case SHOWCHAR:
@@ -964,8 +964,8 @@ void BoundBoundCB(int var){
     updatefacelists = 1;
     break;
   case FILETYPEINDEX:
-    local2globalpatchbounds(patchlabellist[list_patch_index_old]);
-    global2localpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index_old]);
+    Global2LocalPatchBounds(patchlabellist[list_patch_index]);
 
     EDIT_patch_min->set_float_val(patchmin);
     EDIT_patch_max->set_float_val(patchmax);
@@ -1003,7 +1003,7 @@ void BoundBoundCB(int var){
     }
 
     list_patch_index_old = list_patch_index;
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case SETVALMIN:
     switch(setpatchmin){
@@ -1036,7 +1036,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(FILEUPDATE);
     break;
   case FILEUPDATE:
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     break;
   case FILEUPDATEDATA:
     UpdateAllPatchColors();
@@ -1109,7 +1109,7 @@ void TimeBoundCB(int var){
   updatemenu = 1;
   switch(var){
   case SET_TIME:
-    settimeval(glui_time);
+    SetTimeVal(glui_time);
     break;
   case TBOUNDS:
     if(use_tload_begin == 1 || use_tload_end == 1 || use_tload_skip == 1){
@@ -1246,7 +1246,7 @@ void ScriptCB(int var){
     break;
   case SCRIPT_LIST:
     id = LIST_scriptlist->get_int_val();
-    name = get_scriptfilename(id);
+    name = GetScriptFileName(id);
     if(name != NULL&&strlen(name) > 0){
       strcpy(label, _d("Run: "));
       strcat(label, name);
@@ -1259,23 +1259,23 @@ void ScriptCB(int var){
       inifiledata *inifile;
 
       strcpy(script_filename, name);
-      inifile = insert_inifile(name);
-      WriteINI(SCRIPT_INI, script_filename);
+      inifile = InsertIniFile(name);
+      WriteIni(SCRIPT_INI, script_filename);
       if(inifile != NULL&&LIST_ini_list != NULL){
         LIST_ini_list->add_item(inifile->id, inifile->file);
       }
     }
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case SCRIPT_LOADINI:
   {
     char *ini_filename;
 
     id = LIST_ini_list->get_int_val();
-    ini_filename = get_inifilename(id);
+    ini_filename = GetIniFileName(id);
     if(ini_filename == NULL)break;
     if(strcmp(ini_filename, caseini_filename) == 0){
-      ReadINI(NULL);
+      ReadIni(NULL);
     }
     else if(id >= 0){
       char *script_filename2;
@@ -1284,7 +1284,7 @@ void ScriptCB(int var){
       script_filename2 = script_filename;
       strcpy(script_filename, ini_filename);
       windowresized = 0;
-      ReadINI(script_filename2);
+      ReadIni(script_filename2);
     }
     if(scriptoutstream != NULL){
       fprintf(scriptoutstream, "LOADINIFILE\n");
@@ -1736,7 +1736,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
       BoundBoundCB);
     UpdatePatchListIndex2(patchinfo->label.shortlabel);
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
   }
 
@@ -2218,9 +2218,9 @@ extern "C" void Plot3DBoundCB(int var){
     Plot3DBoundCB(UPDATE_VECTOR);
     break;
   case UPDATE_VECTOR:
-    updateplotslice(XDIR);
-    updateplotslice(YDIR);
-    updateplotslice(ZDIR);
+    UpdatePlotSlice(XDIR);
+    UpdatePlotSlice(YDIR);
+    UpdatePlotSlice(ZDIR);
     break;
   case CHOPUPDATE:
     UpdateChopColors();
@@ -2545,7 +2545,7 @@ extern "C" void IsoBoundCB(int var){
       iso_colorsbw[4 * i + 2] = graylevel;
       iso_colorsbw[4 * i + 3] = iso_colors[4 * i + 3];
     }
-    update_isocolors();
+    UpdateIsoColors();
     if(LIST_colortable!=NULL){
       i_colortable_list = CLAMP(GetColorTableIndex(glui_iso_colors), -1, ncolortableinfo-1);
       LIST_colortable->set_int_val(i_colortable_list);
@@ -2612,7 +2612,7 @@ extern "C" void UpdatePatchListIndex(int patchfilenum){
     if(strcmp(patchlabellist[i],patchi->label.shortlabel)==0){
       RADIO_bf->set_int_val(i);
       list_patch_index_old=list_patch_index;
-      global2localpatchbounds(patchlabellist[i]);
+      Global2LocalPatchBounds(patchlabellist[i]);
       RADIO_patch_setmin->set_int_val(setpatchmin);
       RADIO_patch_setmax->set_int_val(setpatchmax);
       EDIT_patch_min->set_float_val(patchmin);
@@ -3493,7 +3493,7 @@ extern "C" void ShowGluiBounds(int menu_id){
     }
     if(npatchinfo>0){
       ipatch=RADIO_bf->get_int_val();
-      global2localpatchbounds(patchlabellist[ipatch]);
+      Global2LocalPatchBounds(patchlabellist[ipatch]);
       BoundBoundCB(SETVALMIN);
       BoundBoundCB(SETVALMAX);
     }

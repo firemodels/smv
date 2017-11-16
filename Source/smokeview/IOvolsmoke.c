@@ -1403,9 +1403,9 @@ void DrawLightDirections(void){
   glPopMatrix();
 }
 
-  /* ------------------ DrawSmoke3DVOLdebug ------------------------ */
+  /* ------------------ DrawSmoke3dVolDebug ------------------------ */
 
-void DrawSmoke3DVOLdebug(void){
+void DrawSmoke3dVolDebug(void){
   int ii;
 
   for(ii=0;ii<nvolfacelistinfo;ii++){
@@ -1573,9 +1573,9 @@ void DrawSmoke3DVOLdebug(void){
   glEnd();
 }
 
-/* ------------------ DrawSmoke3DVOL ------------------------ */
+/* ------------------ DrawSmoke3dVol ------------------------ */
 
-void DrawSmoke3DVOL(void){
+void DrawSmoke3dVol(void){
   int iwall;
   int ii;
 
@@ -2048,9 +2048,9 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   glActiveTexture(GL_TEXTURE0);
 }
 
-/* ------------------ DrawSmoke3DGPUVOL ------------------------ */
+/* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
-void DrawSmoke3DGPUVOL(void){
+void DrawSmoke3dGpuVol(void){
 
   int iwall;
   meshdata *meshold=NULL;
@@ -2077,7 +2077,7 @@ void DrawSmoke3DGPUVOL(void){
   glUniform1i(GPUvol_depthtexture,4);
   glUniform2f(GPUvol_screensize,(float)screenWidth,(float)screenHeight);
   glUniform2f(GPUvol_nearfar,fnear,ffar);
-  SNIFF_ERRORS("after DrawSmoke3DGPUVOL A");
+  SNIFF_ERRORS("after DrawSmoke3dGpuVol A");
 #endif
   glUniform3f(GPUvol_light_position, xyz_light_glui[0],xyz_light_glui[1],xyz_light_glui[2]);
   glUniform1i(GPUvol_light_type, light_type_glui);
@@ -2102,7 +2102,7 @@ void DrawSmoke3DGPUVOL(void){
   glUniform1f(GPUvol_voltemp_factor, voltemp_factor);
   glUniform1f(GPUvol_voltemp_offset, voltemp_offset);
 
-  SNIFF_ERRORS("after DrawSmoke3DGPUVOL before update textures");
+  SNIFF_ERRORS("after DrawSmoke3dGpuVol before update textures");
   if(use_transparency_data==1)TransparentOn();
   for(ii=0;ii<nvolfacelistinfo;ii++){
     volrenderdata *vr;
@@ -2163,7 +2163,7 @@ void DrawSmoke3DGPUVOL(void){
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-    SNIFF_ERRORS("before DrawSmoke3DGPUVOL gpu defines");
+    SNIFF_ERRORS("before DrawSmoke3dGpuVol gpu defines");
     if(newmesh==1){
       glUniform1i(GPUvol_inside,inside);
       if(combine_meshes==1){
@@ -2204,7 +2204,7 @@ void DrawSmoke3DGPUVOL(void){
 
       meshold=meshi;
     }
-    SNIFF_ERRORS("after DrawSmoke3DGPUVOL before loop");
+    SNIFF_ERRORS("after DrawSmoke3dGpuVol before loop");
     glBegin(GL_TRIANGLES);
 
     switch(iwall){
@@ -2277,7 +2277,7 @@ void DrawSmoke3DGPUVOL(void){
     }
     glEnd();
   }
-  SNIFF_ERRORS("after DrawSmoke3DGPUVOL after loop");
+  SNIFF_ERRORS("after DrawSmoke3dGpuVol after loop");
   if(use_transparency_data==1)TransparentOff();
 }
 

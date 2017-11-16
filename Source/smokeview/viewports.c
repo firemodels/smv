@@ -1164,7 +1164,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       u[0] = 0.0;
       u[1] = 0.0;
       u[2] = 1.0;
-      rotateu2v(user_zaxis, u, axis, &angle);
+      RotateU2V(user_zaxis, u, axis, &angle);
       glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
       glRotatef(zaxis_angles[2], u[0], u[1], u[2]);
     }
@@ -1174,13 +1174,13 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_scratch);
     MatMultMat(inverse_modelview_setup,modelview_scratch,modelview_current);
 
-    get_world_eyepos(modelview_scratch, world_eyepos,scaled_eyepos);
+    GetWorldEyePos(modelview_scratch, world_eyepos,scaled_eyepos);
 
     if(show_gslice_triangles==1||SHOW_gslice_data==1){
       UpdateGslicePlanes();
     }
     if(nrooms>0){
-      getzonesmokedir(modelview_scratch);
+      GetZoneSmokeDir(modelview_scratch);
     }
     if(nvolrenderinfo>0&&showvolrender==1&&usevolrender==1){
       GetVolSmokeDir(modelview_scratch);
@@ -1212,12 +1212,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       GetSmokeDir(modelview_scratch);
     }
     if(nface_transparent>0&&sort_transparent_faces==1)SortTransparentFaces(modelview_scratch);
-    if(showiso==1)Update_Isotris(0);
+    if(showiso==1)UpdateIsoTriangles(0);
     FREEMEMORY(geominfoptrs);
     ngeominfoptrs=0;
     GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
     if(ngeominfoptrs>0)ShowHideSortGeometry(modelview_scratch);
-    if(showiso==1&&sort_iso_triangles==1&&niso_trans>0)Sort_Iso_Triangles(modelview_scratch);
+    if(showiso==1&&sort_iso_triangles==1&&niso_trans>0)SortIsoTriangles(modelview_scratch);
 
     glScalef(mscale[0],mscale[1],mscale[2]);
     ExtractFrustum();

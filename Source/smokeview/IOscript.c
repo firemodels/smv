@@ -13,9 +13,9 @@
 
 #define RENDER_START 3
 
-/* ------------------ get_newscriptfilename ------------------------ */
+/* ------------------ GetNewScriptFileName ------------------------ */
 
-void get_newscriptfilename(char *newscriptfilename){
+void GetNewScriptFileName(char *newscriptfilename){
   char buffer[1024];
   int i;
   int nexti;
@@ -44,9 +44,9 @@ void get_newscriptfilename(char *newscriptfilename){
   strcpy(newscriptfilename,"");
 }
 
-/* ------------------ get_scriptfilename ------------------------ */
+/* ------------------ GetScriptFileName ------------------------ */
 
-char *get_scriptfilename(int id){
+char *GetScriptFileName(int id){
   scriptfiledata *scriptfile;
 
   for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
@@ -56,9 +56,9 @@ char *get_scriptfilename(int id){
   return NULL;
 }
 
-/* ------------------ get_inifilename ------------------------ */
+/* ------------------ GetIniFileName ------------------------ */
 
-char *get_inifilename(int id){
+char *GetIniFileName(int id){
   inifiledata *inifile;
 
   for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
@@ -68,9 +68,9 @@ char *get_inifilename(int id){
   return NULL;
 }
 
-/* ------------------ insert_inifile ------------------------ */
+/* ------------------ InsertIniFile ------------------------ */
 
-inifiledata *insert_inifile(char *file){
+inifiledata *InsertIniFile(char *file){
   inifiledata *thisptr,*prevptr,*nextptr;
   int len;
   inifiledata *inifile;
@@ -103,9 +103,9 @@ inifiledata *insert_inifile(char *file){
   return thisptr;
 }
 
-/* ------------------ insert_scriptfile ------------------------ */
+/* ------------------ InsertScriptFile ------------------------ */
 
-scriptfiledata *insert_scriptfile(char *file){
+scriptfiledata *InsertScriptFile(char *file){
   scriptfiledata *thisptr,*prevptr,*nextptr;
   int len;
   scriptfiledata *scriptfile;
@@ -176,9 +176,9 @@ luascriptfiledata *insert_luascriptfile(char *file){
 }
 #endif
 
-/* ------------------ start_script ------------------------ */
+/* ------------------ StartScript ------------------------ */
 
-void start_script(void){
+void StartScript(void){
   if(scriptinfo==NULL){
     fprintf(stderr,"*** Error: Smokeview script does not exist\n");
     return;
@@ -187,9 +187,9 @@ void start_script(void){
   current_script_command=scriptinfo-1;
 }
 
-/* ------------------ get_pointer ------------------------ */
+/* ------------------ GetPointer ------------------------ */
 
-char *get_pointer(char *buffer2){
+char *GetPointer(char *buffer2){
   char *cval=NULL, *buffptr;
   int len;
 
@@ -202,9 +202,9 @@ char *get_pointer(char *buffer2){
   return cval;
 }
 
-/* ------------------ free_script ------------------------ */
+/* ------------------ FreeScript ------------------------ */
 
-void free_script(void){
+void FreeScript(void){
   scriptdata *scripti;
   int i;
 
@@ -221,9 +221,9 @@ void free_script(void){
 
 }
 
-/* ------------------ init_scripti ------------------------ */
+/* ------------------ InitScriptI ------------------------ */
 
-void init_scripti(scriptdata *scripti, int command,char *label){
+void InitScriptI(scriptdata *scripti, int command,char *label){
   char *label2;
 
   TrimBack(label);
@@ -240,9 +240,9 @@ void init_scripti(scriptdata *scripti, int command,char *label){
   scripti->ival5=0;
 }
 
-/* ------------------ get_script_keyword_index ------------------------ */
+/* ------------------ GetScriptKeywordIndex ------------------------ */
 
-int get_script_keyword_index(char *keyword){
+int GetScriptKeywordIndex(char *keyword){
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
   if(MatchUpper(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;
@@ -302,9 +302,9 @@ int get_script_keyword_index(char *keyword){
   return SCRIPT_UNKNOWN;
 }
 
-/* ------------------ get_xyz ------------------------ */
+/* ------------------ GetXYZ ------------------------ */
 
-void get_xyz(char *buffer,int *ival){
+void GetXYZ(char *buffer,int *ival){
   int i;
 
   for(i=0;i<strlen(buffer);i++){
@@ -334,10 +334,10 @@ void get_xyz(char *buffer,int *ival){
   }
 }
 
-/* ------------------ script_error_check ------------------------ */
+/* ------------------ ScriptErrorCheck ------------------------ */
 
-void script_error_check(char *keyword, char *data){
-  if(get_script_keyword_index(data)!=SCRIPT_UNKNOWN){
+void ScriptErrorCheck(char *keyword, char *data){
+  if(GetScriptKeywordIndex(data)!=SCRIPT_UNKNOWN){
     fprintf(stderr,"*** Error: While parsing the Smokeview script entry: %s ,\n",keyword);
     fprintf(stderr,"           a keyword was found in \"%s\", data was expected.\n",data);
   }
@@ -350,15 +350,15 @@ break; \
 }\
 buffptr = RemoveComment(buffer); \
 buffptr = TrimFront(buffptr); \
-script_error_check(keyword, buffptr)
+ScriptErrorCheck(keyword, buffptr)
 
 #define SETcval \
 SETbuffer;\
-scripti->cval=get_pointer(buffptr)
+scripti->cval=GetPointer(buffptr)
 
 #define SETcval2 \
 SETbuffer;\
-scripti->cval2 = get_pointer(buffptr)
+scripti->cval2 = GetPointer(buffptr)
 
 #define SETfval \
 SETbuffer;\
@@ -373,9 +373,9 @@ SETbuffer;\
 sscanf(buffptr, "%i", &scripti->ival2)
 
 #ifndef pp_DEG
-/* ------------------ removeDEG ------------------------ */
+/* ------------------ RemoveDeg ------------------------ */
 
-void removeDEG(char *string){
+void RemoveDeg(char *string){
   int i,ii;
 
   if(string == NULL)return;
@@ -391,9 +391,9 @@ void removeDEG(char *string){
 }
 #endif
 
-/* ------------------ compile_script ------------------------ */
+/* ------------------ CompileScript ------------------------ */
 
-int compile_script(char *scriptfile){
+int CompileScript(char *scriptfile){
   FILE *stream;
   int return_val;
 
@@ -416,7 +416,7 @@ int compile_script(char *scriptfile){
    ************************************************************************
  */
 
-  free_script();
+  FreeScript();
 
   while(!feof(stream)){
     char buffer[1024], buffer2[1024], *buffptr;
@@ -426,7 +426,7 @@ int compile_script(char *scriptfile){
     strcpy(buffer, buffptr);
 
 
-    if(get_script_keyword_index(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
+    if(GetScriptKeywordIndex(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
   if(nscriptinfo==0){
@@ -458,12 +458,12 @@ int compile_script(char *scriptfile){
 
     if(strlen(buffer)==0)continue;
 
-    keyword_index = get_script_keyword_index(buffer);
+    keyword_index = GetScriptKeywordIndex(buffer);
     if(keyword_index==SCRIPT_UNKNOWN)continue;
     strcpy(keyword,buffer);
 
     scripti = scriptinfo + nscriptinfo;
-    init_scripti(scripti,keyword_index,buffer);
+    InitScriptI(scripti,keyword_index,buffer);
 
     scriptEOF=0;
     switch(keyword_index){
@@ -539,7 +539,7 @@ int compile_script(char *scriptfile){
           }
           if(buffer[len-1]!='/')strcat(buffer,dirseparator);
 #endif
-          scripti->cval=get_pointer(buffer);
+          scripti->cval= GetPointer(buffer);
         }
         }
         break;
@@ -640,7 +640,7 @@ int compile_script(char *scriptfile){
       case SCRIPT_LOADISOM:
         SETcval;
 #ifndef pp_DEG
-        removeDEG(scripti->cval);
+        RemoveDeg(scripti->cval);
 #endif
         scripti->ival = 1;
         SETival;
@@ -868,16 +868,16 @@ int compile_script(char *scriptfile){
   return return_val;
 }
 
-/* ------------------ script_renderstart ------------------------ */
+/* ------------------ ScriptRenderStart ------------------------ */
 
-void script_renderstart(scriptdata *scripti){
+void ScriptRenderStart(scriptdata *scripti){
   script_startframe=scripti->ival;
   script_skipframe=scripti->ival2;
 }
 
-/* ------------------ script_renderall ------------------------ */
+/* ------------------ ScriptRenderAll ------------------------ */
 
-void script_renderall(scriptdata *scripti){
+void ScriptRenderAll(scriptdata *scripti){
   int skip_local;
 
 
@@ -895,9 +895,9 @@ void script_renderall(scriptdata *scripti){
   RenderMenu(skip_local);
 }
 
-/* ------------------ script_render360all ------------------------ */
+/* ------------------ ScriptRender360All ------------------------ */
 
-void script_render360all(scriptdata *scripti){
+void ScriptRender360All(scriptdata *scripti){
   int skip_local;
 
 
@@ -1036,9 +1036,9 @@ void LoadTimeFrame(int meshnum, float timeval){
   LoadSmokeFrame(meshnum, smokeframe);
 }
 
-/* ------------------ script_loadvolsmokeframe ------------------------ */
+/* ------------------ ScriptLoadVolSmokeFrame ------------------------ */
 
-void script_loadvolsmokeframe(scriptdata *scripti, int flag){
+void ScriptLoadVolSmokeFrame(scriptdata *scripti, int flag){
   int framenum, index;
 
   index = scripti->ival;
@@ -1048,19 +1048,19 @@ void script_loadvolsmokeframe(scriptdata *scripti, int flag){
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
-/* ------------------ script_loadvolsmokeframe2 ------------------------ */
+/* ------------------ ScriptLoadVolSmokeFrame2 ------------------------ */
 
-void script_loadvolsmokeframe2(void){
+void ScriptLoadVolSmokeFrame2(void){
   scriptdata scripti;
 
   scripti.ival = -1;
   scripti.ival2 = itimes;
-  script_loadvolsmokeframe(&scripti, 0);
+  ScriptLoadVolSmokeFrame(&scripti, 0);
 }
 
-/* ------------------ script_volsmokerenderall ------------------------ */
+/* ------------------ ScriptVolSmokeRenderAll ------------------------ */
 
-void script_volsmokerenderall(scriptdata *scripti){
+void ScriptVolSmokeRenderAll(scriptdata *scripti){
   int skip_local;
 
   if(nvolrenderinfo==0){
@@ -1068,7 +1068,7 @@ void script_volsmokerenderall(scriptdata *scripti){
     ScriptMenu(SCRIPT_CANCEL);
     return;
   }
-  script_loadvolsmokeframe2();
+  ScriptLoadVolSmokeFrame2();
 
   if(script_startframe>0)scripti->ival3=script_startframe;
   if(vol_startframe0>0)scripti->ival3=vol_startframe0;
@@ -1086,9 +1086,9 @@ void script_volsmokerenderall(scriptdata *scripti){
   RenderMenu(skip_local);
 }
 
-/* ------------------ script_loadisoframe ------------------------ */
+/* ------------------ ScriptLoadIsoFrame ------------------------ */
 
-void script_loadisoframe(scriptdata *scripti, int flag){
+void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   int framenum, index;
   int i, count = 0;
   int fileindex;
@@ -1105,11 +1105,11 @@ void script_loadisoframe(scriptdata *scripti, int flag){
 
     isoi = isoinfo + i;
     if(isoi->isof_index + 1 == fileindex){
-      readiso(isoi->file, i, LOAD, &framenum, &errorcode);
+      ReadIso(isoi->file, i, LOAD, &framenum, &errorcode);
       count++;
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -1128,16 +1128,16 @@ void script_loadisoframe(scriptdata *scripti, int flag){
   if(flag == 1)script_render = 1;// called when only rendering a single frame
 }
 
-/* ------------------ script_loadisoframe2 ------------------------ */
+/* ------------------ ScriptLoadIsoFrame2 ------------------------ */
 
-void script_loadisoframe2(scriptdata *scripti){
+void ScriptLoadIsoFrame2(scriptdata *scripti){
   scripti->ival2 = itimes;
-  script_loadisoframe(scripti, 0);
+  ScriptLoadIsoFrame(scripti, 0);
 }
 
-/* ------------------ script_isorenderall ------------------------ */
+/* ------------------ ScriptIsoRenderAll ------------------------ */
 
-void script_isorenderall(scriptdata *scripti){
+void ScriptIsoRenderAll(scriptdata *scripti){
   int skip_local;
 
   //  skip (int) start_frame (int) iso file index (int) ( index of &ISOF line in .fds input file)
@@ -1150,7 +1150,7 @@ void script_isorenderall(scriptdata *scripti){
     ScriptMenu(SCRIPT_CANCEL);
     return;
   }
-  script_loadisoframe2(scripti);
+  ScriptLoadIsoFrame2(scripti);
 
   if(script_startframe>0)scripti->ival3 = script_startframe;
   if(startframe0>0)scripti->ival3 = startframe0;
@@ -1168,18 +1168,18 @@ void script_isorenderall(scriptdata *scripti){
   RenderMenu(skip_local);
 }
 
-/* ------------------ script_makemovie ------------------------ */
+/* ------------------ ScriptMakeMovie ------------------------ */
 
-void script_makemovie(scriptdata *scripti){
+void ScriptMakeMovie(scriptdata *scripti){
   strcpy(movie_name, scripti->cval);
   strcpy(render_file_base,scripti->cval2);
   movie_framerate=scripti->fval;
   RenderCB(MAKE_MOVIE);
 }
 
-/* ------------------ script_loadparticles ------------------------ */
+/* ------------------ ScriptLoadParticles ------------------------ */
 
-void script_loadparticles(scriptdata *scripti){
+void ScriptLoadParticles(scriptdata *scripti){
   int i;
   int errorcode;
   int count=0;
@@ -1194,7 +1194,7 @@ void script_loadparticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    readpart(parti->file,i,UNLOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,UNLOAD,PARTDATA,&errorcode);
     count++;
   }
   for(i=0;i<npartinfo;i++){
@@ -1202,7 +1202,7 @@ void script_loadparticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    readpart(parti->file,i,LOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,LOAD,PARTDATA,&errorcode);
     if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
       FREEMEMORY(loaded_file);
       NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1216,9 +1216,9 @@ void script_loadparticles(scriptdata *scripti){
   updatemenu=1;
 }
 
-/* ------------------ script_loadiso ------------------------ */
+/* ------------------ ScriptLoadIso ------------------------ */
 
-void script_loadiso(scriptdata *scripti, int meshnum){
+void ScriptLoadIso(scriptdata *scripti, int meshnum){
   int i;
   int count=0;
 
@@ -1240,7 +1240,7 @@ void script_loadiso(scriptdata *scripti, int meshnum){
       strncpy(label2, isoi->surface_label.longlabel, lencval);
       label2[lencval] = 0;
       if(STRCMP(label2, scripti->cval)==0){
-        readiso(isoi->file, i, LOAD, NULL, &errorcode);
+        ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
         if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
           FREEMEMORY(loaded_file);
           NewMemory((void **)&loaded_file, strlen(scripti->cval)+1);
@@ -1250,16 +1250,16 @@ void script_loadiso(scriptdata *scripti, int meshnum){
       }
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)readiso_geom_wrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(count == 0)fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
   force_redisplay=1;
   updatemenu=1;
 }
 
-/* ------------------ script_loadvolsmoke ------------------------ */
+/* ------------------ ScriptLoadVolSmoke ------------------------ */
 
-void script_loadvolsmoke(scriptdata *scripti){
+void ScriptLoadVolSmoke(scriptdata *scripti){
   int imesh;
 
   imesh = scripti->ival;
@@ -1277,9 +1277,9 @@ void script_loadvolsmoke(scriptdata *scripti){
   }
 }
 
-/* ------------------ script_load3dsmoke ------------------------ */
+/* ------------------ ScriptLoad3dSmoke ------------------------ */
 
-void script_load3dsmoke(scriptdata *scripti){
+void ScriptLoad3dSmoke(scriptdata *scripti){
   int i;
   int errorcode;
   int count=0;
@@ -1292,7 +1292,7 @@ void script_load3dsmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3D(i,LOAD,&errorcode);
+      ReadSmoke3d(i,LOAD,&errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1307,9 +1307,9 @@ void script_load3dsmoke(scriptdata *scripti){
 
 }
 
-/* ------------------ script_loadslice ------------------------ */
+/* ------------------ ScriptLoadSlice ------------------------ */
 
-void script_loadslice(scriptdata *scripti){
+void ScriptLoadSlice(scriptdata *scripti){
   int i;
   int count=0;
 
@@ -1350,9 +1350,9 @@ void script_loadslice(scriptdata *scripti){
 }
 
 
-/* ------------------ script_loadslicem ------------------------ */
+/* ------------------ ScriptLoadSliceM ------------------------ */
 
-void script_loadslicem(scriptdata *scripti, int meshnum){
+void ScriptLoadSliceM(scriptdata *scripti, int meshnum){
   int i;
 
   PRINTF("script: loading slice files of type: %s in mesh %i\n\n", scripti->cval,meshnum);
@@ -1382,9 +1382,9 @@ void script_loadslicem(scriptdata *scripti, int meshnum){
   }
 }
 
-/* ------------------ script_loadvslice ------------------------ */
+/* ------------------ ScriptLoadVSlice ------------------------ */
 
-void script_loadvslice(scriptdata *scripti){
+void ScriptLoadVSlice(scriptdata *scripti){
   int i;
   int count=0;
 
@@ -1417,9 +1417,9 @@ void script_loadvslice(scriptdata *scripti){
   if(count==0)fprintf(stderr,"*** Error: Vector slice files of type %s failed to load\n",scripti->cval);
 }
 
-/* ------------------ script_loadvslicem ------------------------ */
+/* ------------------ ScriptLoadVSliceM ------------------------ */
 
-void script_loadvslicem(scriptdata *scripti, int meshnum){
+void ScriptLoadVSliceM(scriptdata *scripti, int meshnum){
   int i;
   int count=0;
 
@@ -1453,9 +1453,9 @@ void script_loadvslicem(scriptdata *scripti, int meshnum){
   if(count==0)fprintf(stderr,"*** Error: Vector slice files of type %s in mesh %i failed to load\n",scripti->cval,meshnum);
 }
 
-/* ------------------ script_loadtour ------------------------ */
+/* ------------------ ScriptLoadTour ------------------------ */
 
-void script_loadtour(scriptdata *scripti){
+void ScriptLoadTour(scriptdata *scripti){
   int i;
   int count=0;
 
@@ -1479,9 +1479,9 @@ void script_loadtour(scriptdata *scripti){
   updatemenu=1;
 }
 
-/* ------------------ script_loadboundary ------------------------ */
+/* ------------------ ScriptLoadBoundary ------------------------ */
 
-void script_loadboundary(scriptdata *scripti, int meshnum){
+void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
   int i;
   int errorcode;
   int count=0;
@@ -1496,7 +1496,7 @@ void script_loadboundary(scriptdata *scripti, int meshnum){
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
         LOCK_COMPRESS
-          readpatch(i, LOAD, &errorcode);
+          ReadPatch(i, LOAD, &errorcode);
         if(scripti->cval != NULL&&strlen(scripti->cval) > 0){
           FREEMEMORY(loaded_file);
           NewMemory((void **)&loaded_file, strlen(scripti->cval) + 1);
@@ -1515,9 +1515,9 @@ void script_loadboundary(scriptdata *scripti, int meshnum){
 
 }
 
-/* ------------------ script_partclasscolor ------------------------ */
+/* ------------------ ScriptPartClassColor ------------------------ */
 
-void script_partclasscolor(scriptdata *scripti){
+void ScriptPartClassColor(scriptdata *scripti){
   int i;
   int count=0;
 
@@ -1535,9 +1535,9 @@ void script_partclasscolor(scriptdata *scripti){
 }
 
 
-/* ------------------ script_plot3dprops ------------------------ */
+/* ------------------ ScriptPlot3dProps ------------------------ */
 
-void script_plot3dprops(scriptdata *scripti){
+void ScriptPlot3dProps(scriptdata *scripti){
   int i, p_index;
 
   p_index = scripti->ival;
@@ -1554,8 +1554,8 @@ void script_plot3dprops(scriptdata *scripti){
   if(plotn>numplot3dvars){
     plotn=1;
   }
-  updateallplotslices();
-  if(visiso==1)updatesurface();
+  UpdateAllPlotSlices();
+  if(visiso==1)UpdateSurface();
   UpdatePlot3dListIndex();
 
   vecfactor=1.0;
@@ -1575,17 +1575,17 @@ void script_plot3dprops(scriptdata *scripti){
       gbi = meshinfo + i;
       if(gbi->plot3dfilenum==-1)continue;
       UpdateCurrentMesh(gbi);
-      updateplotslice(XDIR);
-      updateplotslice(YDIR);
-      updateplotslice(ZDIR);
+      UpdatePlotSlice(XDIR);
+      UpdatePlotSlice(YDIR);
+      UpdatePlotSlice(ZDIR);
     }
     UpdateCurrentMesh(gbsave);
   }
 }
 
-/* ------------------ script_showsmokesensors ------------------------ */
+/* ------------------ ScriptShowSmokeSensors ------------------------ */
 
-void script_showsmokesensors(scriptdata *scripti){
+void ScriptShowSmokeSensors(scriptdata *scripti){
   int i,j;
   FILE *stream_smokesensors;
   int nsmokesensors;
@@ -1659,9 +1659,9 @@ void script_showsmokesensors(scriptdata *scripti){
   fclose(stream_smokesensors);
 }
 
-/* ------------------ script_showplot3ddata ------------------------ */
+/* ------------------ ScriptShowPlot3dData ------------------------ */
 
-void script_showplot3ddata(scriptdata *scripti){
+void ScriptShowPlot3dData(scriptdata *scripti){
   meshdata *meshi;
   int imesh, dir, showhide;
   float val;
@@ -1702,21 +1702,21 @@ void script_showplot3ddata(scriptdata *scripti){
     case ISO:
       isolevel=scripti->ival5;
       plotiso[plotn-1]=isolevel;
-      updateshowstep(showhide,ISO);
-      updatesurface();
+      UpdateShowStep(showhide,ISO);
+      UpdateSurface();
       updatemenu=1;
       break;
     default:
       ASSERT(FFALSE);
       break;
   }
-  updateplotslice(dir);
+  UpdatePlotSlice(dir);
 
 }
 
-/* ------------------ script_partclasstype ------------------------ */
+/* ------------------ ScriptPartClassType ------------------------ */
 
-void script_partclasstype(scriptdata *scripti){
+void ScriptPartClassType(scriptdata *scripti){
   int i;
   int count=0;
 
@@ -1741,17 +1741,17 @@ void script_partclasstype(scriptdata *scripti){
   if(count==0)fprintf(stderr,"*** Error: particle class type %s failed to be set\n",scripti->cval);
 }
 
-/* ------------------ script_loadinifile ------------------------ */
+/* ------------------ ScriptLoadIniFile ------------------------ */
 
-void script_loadinifile(scriptdata *scripti){
+void ScriptLoadIniFile(scriptdata *scripti){
   PRINTF("script: loading ini file %s\n\n",scripti->cval);
   windowresized=0;
-  ReadINI(scripti->cval);
+  ReadIni(scripti->cval);
 }
 
-/* ------------------ script_loadfile ------------------------ */
+/* ------------------ ScriptLoadFile ------------------------ */
 
-void script_loadfile(scriptdata *scripti){
+void ScriptLoadFile(scriptdata *scripti){
   int i;
   int errorcode;
 
@@ -1780,7 +1780,7 @@ void script_loadfile(scriptdata *scripti){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->file,scripti->cval)==0){
-      readpatch(i,LOAD,&errorcode);
+      ReadPatch(i,LOAD,&errorcode);
       return;
     }
   }
@@ -1799,8 +1799,8 @@ void script_loadfile(scriptdata *scripti){
 
     isoi = isoinfo + i;
     if(strcmp(isoi->file,scripti->cval)==0){
-      readiso(isoi->file,i,LOAD,NULL,&errorcode);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)readiso_geom_wrapup();
+      ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
       return;
     }
   }
@@ -1809,7 +1809,7 @@ void script_loadfile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
-      ReadSmoke3D(i,LOAD,&errorcode);
+      ReadSmoke3d(i,LOAD,&errorcode);
       return;
     }
   }
@@ -1818,7 +1818,7 @@ void script_loadfile(scriptdata *scripti){
 
     zonei = zoneinfo + i;
     if(strcmp(zonei->file,scripti->cval)==0){
-      readzone(i,LOAD,&errorcode);
+      ReadZone(i,LOAD,&errorcode);
       return;
     }
   }
@@ -1828,7 +1828,7 @@ void script_loadfile(scriptdata *scripti){
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,scripti->cval)==0){
       ReadPlot3dFile=1;
-      readplot3d(plot3di->file,i,LOAD,&errorcode);
+      ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return;
     }
@@ -1837,9 +1837,9 @@ void script_loadfile(scriptdata *scripti){
   fprintf(stderr,"*** Error: file %s failed to load\n",scripti->cval);
 }
 
-/* ------------------ script_label ------------------------ */
+/* ------------------ ScriptLabel ------------------------ */
 
-void script_label(scriptdata *scripti){
+void ScriptLabel(scriptdata *scripti){
 
   FREEMEMORY(script_labelstring);
   if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
@@ -1851,9 +1851,9 @@ void script_label(scriptdata *scripti){
   }
 }
 
-/* ------------------ script_loadplot3d ------------------------ */
+/* ------------------ ScriptLoadPlot3d ------------------------ */
 
-void script_loadplot3d(scriptdata *scripti){
+void ScriptLoadPlot3d(scriptdata *scripti){
   int i;
   float time_local;
   int blocknum;
@@ -1878,9 +1878,9 @@ void script_loadplot3d(scriptdata *scripti){
   //UpdateMenu();
 }
 
-/* ------------------ script_loadvfile ------------------------ */
+/* ------------------ ScriptLoadVecFile ------------------------ */
 
-void script_loadvfile(scriptdata *scripti){
+void ScriptLoadVecFile(scriptdata *scripti){
   int i;
 
   FREEMEMORY(loaded_file);
@@ -1905,9 +1905,9 @@ void script_loadvfile(scriptdata *scripti){
 
 }
 
-/* ------------------ script_settourkeyframe ------------------------ */
+/* ------------------ ScriptSetTourKeyFrame ------------------------ */
 
-void script_settourkeyframe(scriptdata *scripti){
+void ScriptSetTourKeyFrame(scriptdata *scripti){
   float keyframe_time;
   keyframe *keyj,*minkey=NULL;
   tourdata *touri;
@@ -1937,9 +1937,9 @@ void script_settourkeyframe(scriptdata *scripti){
   }
 }
 
-/* ------------------ script_settourview ------------------------ */
+/* ------------------ ScriptSetTourView ------------------------ */
 
-void script_settourview(scriptdata *scripti){
+void ScriptSetTourView(scriptdata *scripti){
   edittour=scripti->ival;
   show_tourlocus=scripti->ival3;
   tour_global_tension_flag=1;
@@ -1965,9 +1965,9 @@ void script_settourview(scriptdata *scripti){
   UpdateTourState();
 }
 
-/* ------------------ script_settimeval ------------------------ */
+/* ------------------ ScriptSetTimeVal ------------------------ */
 
-void script_settimeval(scriptdata *scripti){
+void ScriptSetTimeVal(scriptdata *scripti){
   float timeval;
   int i,imin;
   float valmin;
@@ -2027,9 +2027,9 @@ void script_settimeval(scriptdata *scripti){
 //    sscanf(buffer,"%f %f %f",gslice_xyz,gslice_xyz+1,gslice_xyz+2);
 //    sscanf(buffer,"%f %f",gslice_normal_azelev,gslice_normal_azelev+1);
 
-/* ------------------ script_gsliceview ------------------------ */
+/* ------------------ ScriptGSliceView ------------------------ */
 
-void script_gsliceview(scriptdata *scripti){
+void ScriptGSliceView(scriptdata *scripti){
   vis_gslice_data = scripti->ival;
   show_gslice_triangles = scripti->ival2;
   show_gslice_triangulation = scripti->ival3;
@@ -2037,26 +2037,26 @@ void script_gsliceview(scriptdata *scripti){
   update_gslice=1;
 }
 
-/* ------------------ script_gslicepos ------------------------ */
+/* ------------------ ScriptGSlicePos ------------------------ */
 
-void script_gslicepos(scriptdata *scripti){
+void ScriptGSlicePos(scriptdata *scripti){
   gslice_xyz[0]=scripti->fval;
   gslice_xyz[1]=scripti->fval2;
   gslice_xyz[2]=scripti->fval3;
   update_gslice=1;
 }
 
-/* ------------------ script_gsliceorien ------------------------ */
+/* ------------------ ScriptGSliceOrien ------------------------ */
 
-void script_gsliceorien(scriptdata *scripti){
+void ScriptGSliceOrien(scriptdata *scripti){
   gslice_normal_azelev[0]=scripti->fval;
   gslice_normal_azelev[1]=scripti->fval2;
   update_gslice=1;
 }
 
-/* ------------------ settimeval ------------------------ */
+/* ------------------ SetTimeVal ------------------------ */
 
-void settimeval(float timeval){
+void SetTimeVal(float timeval){
   int i;
 
   if(global_times!=NULL&&nglobal_times>0){
@@ -2090,9 +2090,9 @@ void settimeval(float timeval){
   }
 }
 
-/* ------------------ script_setviewpoint ------------------------ */
+/* ------------------ ScriptSetViewpoint ------------------------ */
 
-void script_setviewpoint(scriptdata *scripti){
+void ScriptSetViewpoint(scriptdata *scripti){
   char *viewpoint;
   cameradata *ca;
   int count=0;
@@ -2109,9 +2109,9 @@ void script_setviewpoint(scriptdata *scripti){
   if(count==0)fprintf(stderr,"*** Error: The viewpoint %s was not found\n",viewpoint);
 }
 
-/* ------------------ run_script ------------------------ */
+/* ------------------ RunScript ------------------------ */
 
-int run_script(void){
+int RunScript(void){
 
 // This procedure should return 1 if the smokeview frame should not be advanced.
 // (to ensure images are rendered at the right time step)
@@ -2231,58 +2231,58 @@ int run_script(void){
       returnval=1;
       break;
     case SCRIPT_RENDERSTART:
-      script_renderstart(scripti);
+      ScriptRenderStart(scripti);
       break;
     case SCRIPT_RENDERALL:
-      script_renderall(scripti);
+      ScriptRenderAll(scripti);
       break;
     case SCRIPT_RENDER360ALL:
-      script_render360all(scripti);
+      ScriptRender360All(scripti);
       break;
     case SCRIPT_VOLSMOKERENDERALL:
-      script_volsmokerenderall(scripti);
+      ScriptVolSmokeRenderAll(scripti);
       break;
     case SCRIPT_ISORENDERALL:
-      script_isorenderall(scripti);
+      ScriptIsoRenderAll(scripti);
       break;
     case SCRIPT_MAKEMOVIE:
-      script_makemovie(scripti);
+      ScriptMakeMovie(scripti);
       break;
     case SCRIPT_LOADFILE:
-      script_loadfile(scripti);
+      ScriptLoadFile(scripti);
       break;
     case SCRIPT_LABEL:
-      script_label(scripti);
+      ScriptLabel(scripti);
       break;
     case SCRIPT_LOADINIFILE:
-      script_loadinifile(scripti);
+      ScriptLoadIniFile(scripti);
       break;
     case SCRIPT_LOADVFILE:
-      script_loadvfile(scripti);
+      ScriptLoadVecFile(scripti);
       break;
     case SCRIPT_LOADBOUNDARY:
-      script_loadboundary(scripti,-1);
+      ScriptLoadBoundary(scripti,-1);
       break;
     case SCRIPT_LOADBOUNDARYM:
-      script_loadboundary(scripti,scripti->ival);
+      ScriptLoadBoundary(scripti,scripti->ival);
       break;
     case SCRIPT_PARTCLASSCOLOR:
-      script_partclasscolor(scripti);
+      ScriptPartClassColor(scripti);
       break;
     case SCRIPT_SHOWSMOKESENSORS:
-      script_showsmokesensors(scripti);
+      ScriptShowSmokeSensors(scripti);
       break;
     case SCRIPT_SHOWPLOT3DDATA:
-      script_showplot3ddata(scripti);
+      ScriptShowPlot3dData(scripti);
       break;
     case SCRIPT_PLOT3DPROPS:
-      script_plot3dprops(scripti);
+      ScriptPlot3dProps(scripti);
       break;
     case SCRIPT_PARTCLASSTYPE:
-      script_partclasstype(scripti);
+      ScriptPartClassType(scripti);
       break;
     case SCRIPT_LOADTOUR:
-      script_loadtour(scripti);
+      ScriptLoadTour(scripti);
       break;
     case SCRIPT_UNLOADTOUR:
       TourMenu(MENU_TOUR_MANUAL);
@@ -2293,60 +2293,60 @@ int run_script(void){
 #endif
       break;
     case SCRIPT_LOADISO:
-      script_loadiso(scripti,-1); // load isosurface for all meshes
+      ScriptLoadIso(scripti,-1); // load isosurface for all meshes
       break;
     case SCRIPT_LOADISOM:
-      script_loadiso(scripti, scripti->ival); // load isosurface for mesh script->ival
+      ScriptLoadIso(scripti, scripti->ival); // load isosurface for mesh script->ival
       break;
     case SCRIPT_LOAD3DSMOKE:
-      script_load3dsmoke(scripti);
+      ScriptLoad3dSmoke(scripti);
       break;
     case SCRIPT_LOADVOLSMOKE:
-      script_loadvolsmoke(scripti);
+      ScriptLoadVolSmoke(scripti);
       break;
     case SCRIPT_LOADVOLSMOKEFRAME:
-      script_loadvolsmokeframe(scripti,1);
+      ScriptLoadVolSmokeFrame(scripti,1);
       returnval=1;
       break;
     case SCRIPT_LOADPARTICLES:
-      script_loadparticles(scripti);
+      ScriptLoadParticles(scripti);
       break;
     case SCRIPT_LOADSLICE:
-      script_loadslice(scripti);
+      ScriptLoadSlice(scripti);
       break;
     case SCRIPT_LOADSLICEM:
-      script_loadslicem(scripti, scripti->ival2);
+      ScriptLoadSliceM(scripti, scripti->ival2);
       break;
     case SCRIPT_LOADVSLICE:
-      script_loadvslice(scripti);
+      ScriptLoadVSlice(scripti);
       break;
     case SCRIPT_LOADVSLICEM:
-      script_loadvslicem(scripti,scripti->ival2);
+      ScriptLoadVSliceM(scripti,scripti->ival2);
       break;
     case SCRIPT_LOADPLOT3D:
-      script_loadplot3d(scripti);
+      ScriptLoadPlot3d(scripti);
       break;
     case SCRIPT_SETTIMEVAL:
       returnval=1;
-      script_settimeval(scripti);
+      ScriptSetTimeVal(scripti);
       break;
     case SCRIPT_SETTOURVIEW:
-      script_settourview(scripti);
+      ScriptSetTourView(scripti);
       break;
     case SCRIPT_SETTOURKEYFRAME:
-      script_settourkeyframe(scripti);
+      ScriptSetTourKeyFrame(scripti);
       break;
     case SCRIPT_SETVIEWPOINT:
-      script_setviewpoint(scripti);
+      ScriptSetViewpoint(scripti);
       break;
     case SCRIPT_GSLICEVIEW:
-      script_gsliceview(scripti);
+      ScriptGSliceView(scripti);
       break;
     case SCRIPT_GSLICEPOS:
-      script_gslicepos(scripti);
+      ScriptGSlicePos(scripti);
       break;
     case SCRIPT_GSLICEORIEN:
-      script_gsliceorien(scripti);
+      ScriptGSliceOrien(scripti);
       break;
     case SCRIPT_CBARFLIP:
       colorbarflip=0;
