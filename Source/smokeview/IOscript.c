@@ -1496,7 +1496,7 @@ void script_loadboundary(scriptdata *scripti, int meshnum){
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
         LOCK_COMPRESS
-          readpatch(i, LOAD, &errorcode);
+          ReadPatch(i, LOAD, &errorcode);
         if(scripti->cval != NULL&&strlen(scripti->cval) > 0){
           FREEMEMORY(loaded_file);
           NewMemory((void **)&loaded_file, strlen(scripti->cval) + 1);
@@ -1780,7 +1780,7 @@ void script_loadfile(scriptdata *scripti){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->file,scripti->cval)==0){
-      readpatch(i,LOAD,&errorcode);
+      ReadPatch(i,LOAD,&errorcode);
       return;
     }
   }

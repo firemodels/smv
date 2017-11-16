@@ -2675,7 +2675,7 @@ void LoadUnloadMenu(int value){
       readplot3d("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
       readpart("",i,UNLOAD,PARTDATA,&errorcode);
@@ -2750,7 +2750,7 @@ void LoadUnloadMenu(int value){
     }
     for(ii=0;ii<npatch_loaded;ii++){
       i = patch_loaded_list[ii];
-      readpatch(i,LOAD,&errorcode);
+      ReadPatch(i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
@@ -2800,7 +2800,7 @@ void LoadUnloadMenu(int value){
     UpdateSliceMenuLabels();
     UpdateVsliceMenulabels();
     UpdateSmoke3DMenuLabels();
-    update_patch_menulabels();
+    UpdatePatchMenuLabels();
     update_iso_menulabels();
     update_part_menulabels();
     UpdateTourMenulabels();
@@ -3406,11 +3406,11 @@ void UnloadPatchMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    readpatch(value,UNLOAD,&errorcode);
+    ReadPatch(value,UNLOAD,&errorcode);
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
   }
 }
@@ -4326,7 +4326,7 @@ void LoadPatchMenu(int value){
 
         i = patch_loaded_list[ii];
         patchi = patchinfo + i;
-        if(patchi->type!=patchtypenew)readpatch(i,UNLOAD,&errorcode);
+        if(patchi->type!=patchtypenew)ReadPatch(i,UNLOAD,&errorcode);
       }
     }
     if(scriptoutstream!=NULL){
@@ -4341,7 +4341,7 @@ void LoadPatchMenu(int value){
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
       LOCK_COMPRESS
-      readpatch(value,LOAD,&errorcode);
+      ReadPatch(value,LOAD,&errorcode);
       UNLOCK_COMPRESS
     }
   }
@@ -4361,7 +4361,7 @@ void LoadPatchMenu(int value){
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
           LOCK_COMPRESS
-          readpatch(i,LOAD,&errorcode);
+          ReadPatch(i,LOAD,&errorcode);
           UNLOCK_COMPRESS
         }
       }
@@ -4377,7 +4377,7 @@ void LoadPatchMenu(int value){
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      readpatch(i,UNLOAD,&errorcode);
+      ReadPatch(i,UNLOAD,&errorcode);
     }
   }
   updatemenu=1;

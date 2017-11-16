@@ -2405,7 +2405,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(colorlabelpatch);
   }
   if(NewMemory((void **)&colorlabelpatch,MAXRGB*sizeof(char *))==0){
-    readpatch(ifile,UNLOAD,&error);
+    ReadPatch(ifile,UNLOAD,&error);
     return;
   }
   for(n=0;n<MAXRGB;n++){
@@ -2413,7 +2413,7 @@ void read_geomdata(int ifile, int load_flag, int *errorcode){
   }
   for(n=0;n<nrgb;n++){
     if(NewMemory((void **)&colorlabelpatch[n],11)==0){
-      readpatch(ifile,UNLOAD,&error);
+      ReadPatch(ifile,UNLOAD,&error);
       return;
     }
   }

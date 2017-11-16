@@ -198,7 +198,7 @@ void UpdateFrameNumber(int changetime){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
         }
         else{
-          uncompress_patchdataframe(meshi,meshi->patch_itime);
+          UncompressPatchDataFrame(meshi,meshi->patch_itime);
         }
       }
     }

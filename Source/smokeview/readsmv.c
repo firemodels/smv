@@ -9007,7 +9007,7 @@ typedef struct {
   UpdateTerrainColors();
   UpdateSmoke3DMenuLabels();
   UpdateVSliceTypes();
-  update_patch_menulabels();
+  UpdatePatchMenuLabels();
   update_iso_menulabels();
   update_part_menulabels();
   UpdateTourMenulabels();
@@ -10235,7 +10235,7 @@ int ReadINI2(char *inifile, int localfile){
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &setpatchmin, &patchmin, &setpatchmax, &patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)local2globalpatchbounds(buffer2);
+      if(strcmp(buffer2, "") != 0)Local2GlobalPatchBounds(buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){

@@ -1116,8 +1116,8 @@ void InitOpenGL(void){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      if(patchi->autoload==0&&patchi->loaded==1)readpatch(i,UNLOAD,&errorcode);
-      if(patchi->autoload==1)readpatch(i,LOAD,&errorcode);
+      if(patchi->autoload==0&&patchi->loaded==1)ReadPatch(i,UNLOAD,&errorcode);
+      if(patchi->autoload==1)ReadPatch(i,LOAD,&errorcode);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);

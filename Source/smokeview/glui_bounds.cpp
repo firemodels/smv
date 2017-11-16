@@ -909,7 +909,7 @@ void BoundBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
       EDIT_patch_chopmin->disable();
@@ -921,11 +921,11 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmax){
     case DISABLE:
       EDIT_patch_chopmax->disable();
@@ -937,18 +937,18 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case CHOPVALMIN:
     ASSERT(EDIT_patch_min != NULL);
     EDIT_patch_min->set_float_val(patchmin);
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     ASSERT(EDIT_patch_max != NULL);
     EDIT_patch_max->set_float_val(patchmax);
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case SHOWCHAR:
@@ -964,8 +964,8 @@ void BoundBoundCB(int var){
     updatefacelists = 1;
     break;
   case FILETYPEINDEX:
-    local2globalpatchbounds(patchlabellist[list_patch_index_old]);
-    global2localpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index_old]);
+    Global2LocalPatchBounds(patchlabellist[list_patch_index]);
 
     EDIT_patch_min->set_float_val(patchmin);
     EDIT_patch_max->set_float_val(patchmax);
@@ -1003,7 +1003,7 @@ void BoundBoundCB(int var){
     }
 
     list_patch_index_old = list_patch_index;
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     break;
   case SETVALMIN:
     switch(setpatchmin){
@@ -1036,7 +1036,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(FILEUPDATE);
     break;
   case FILEUPDATE:
-    local2globalpatchbounds(patchlabellist[list_patch_index]);
+    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
     break;
   case FILEUPDATEDATA:
     UpdateAllPatchColors();
@@ -1736,7 +1736,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
       BoundBoundCB);
     UpdatePatchListIndex2(patchinfo->label.shortlabel);
-    update_hidepatchsurface();
+    UpdateHidePatchSurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
   }
 
@@ -2612,7 +2612,7 @@ extern "C" void UpdatePatchListIndex(int patchfilenum){
     if(strcmp(patchlabellist[i],patchi->label.shortlabel)==0){
       RADIO_bf->set_int_val(i);
       list_patch_index_old=list_patch_index;
-      global2localpatchbounds(patchlabellist[i]);
+      Global2LocalPatchBounds(patchlabellist[i]);
       RADIO_patch_setmin->set_int_val(setpatchmin);
       RADIO_patch_setmax->set_int_val(setpatchmax);
       EDIT_patch_min->set_float_val(patchmin);
@@ -3493,7 +3493,7 @@ extern "C" void ShowGluiBounds(int menu_id){
     }
     if(npatchinfo>0){
       ipatch=RADIO_bf->get_int_val();
-      global2localpatchbounds(patchlabellist[ipatch]);
+      Global2LocalPatchBounds(patchlabellist[ipatch]);
       BoundBoundCB(SETVALMIN);
       BoundBoundCB(SETVALMAX);
     }

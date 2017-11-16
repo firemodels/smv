@@ -328,7 +328,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showpatch == 1){
     CLIP_VALS;
-    draw_patchframe(DRAW_OPAQUE);
+    DrawPatchFrame(DRAW_OPAQUE);
   }
 
   /* ++++++++++++++++++++++++ draw labels +++++++++++++++++++++++++ */
@@ -419,7 +419,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(showpatch == 1){
     CLIP_VALS;
-    draw_patchframe(DRAW_TRANSPARENT);
+    DrawPatchFrame(DRAW_TRANSPARENT);
   }
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
