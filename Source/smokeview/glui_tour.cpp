@@ -499,7 +499,7 @@ void TourCB(int var){
     HideGluiTour();
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI,NULL);
+    WriteIni(LOCAL_INI,NULL);
     break;
   case SHOWTOURROUTE:
     edittour = 1 - edittour;

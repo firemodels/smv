@@ -165,9 +165,9 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   }
 }
 
-/* ------------------ WriteBoundINI ------------------------ */
+/* ------------------ WriteBoundIni ------------------------ */
 
-void WriteBoundINI(void){
+void WriteBoundIni(void){
   FILE *stream = NULL;
   char *fullfilename = NULL;
   int i;
@@ -247,7 +247,7 @@ void UpdatePatchBounds(patchdata *patchi){
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));
   }
-  WriteBoundINI();
+  WriteBoundIni();
   FreeHistogram(&full_histogram);
 }
 

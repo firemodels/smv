@@ -6195,9 +6195,9 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
   }
 }
 
-/* ----------------------- StupDeviceData ----------------------------- */
+/* ----------------------- SetupDeviceData ----------------------------- */
 
-void StupDeviceData(void){
+void SetupDeviceData(void){
   float *vals=NULL;
   int *valids=NULL;
   int i;

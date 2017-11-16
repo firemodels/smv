@@ -305,7 +305,7 @@ int SetupCase(int argc, char **argv){
   SetUnitVis();
 
   CheckMemory;
-  ReadINI(NULL);
+  ReadIni(NULL);
   ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
@@ -1109,8 +1109,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3d(i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3d(i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;

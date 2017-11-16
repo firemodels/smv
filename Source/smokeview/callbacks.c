@@ -1328,9 +1328,9 @@ void MoveScene(int xm, int ym){
   }
 }
 
-/* ------------------ ThrottleGPU ------------------------ */
+/* ------------------ ThrottleGpu ------------------------ */
 
-int ThrottleGPU(void){
+int ThrottleGpu(void){
   float fps;
 
   START_TIMER(thisMOTIONtime);
@@ -1352,7 +1352,7 @@ void MouseDragCB(int xm, int ym){
   in_external=0;
 #ifdef pp_GPUTHROTTLE
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
-    if(ThrottleGPU()==1)return;
+    if(ThrottleGpu()==1)return;
   }
 #endif
 
@@ -2209,7 +2209,7 @@ void Keyboard(unsigned char key, int flag){
       cell_center_text = 1 - cell_center_text;
       break;
     case '#':
-      WriteINI(LOCAL_INI,NULL);
+      WriteIni(LOCAL_INI,NULL);
       break;
     case '$':
       trainer_active=1-trainer_active;

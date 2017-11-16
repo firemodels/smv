@@ -94,7 +94,7 @@ void ClipCB(int var){
     }
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case CLIP_CLOSE:
     HideGluiClip();

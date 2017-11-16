@@ -1292,7 +1292,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3D(i,LOAD,&errorcode);
+      ReadSmoke3d(i,LOAD,&errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1746,7 +1746,7 @@ void ScriptPartClassType(scriptdata *scripti){
 void ScriptLoadIniFile(scriptdata *scripti){
   PRINTF("script: loading ini file %s\n\n",scripti->cval);
   windowresized=0;
-  ReadINI(scripti->cval);
+  ReadIni(scripti->cval);
 }
 
 /* ------------------ ScriptLoadFile ------------------------ */
@@ -1809,7 +1809,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
-      ReadSmoke3D(i,LOAD,&errorcode);
+      ReadSmoke3d(i,LOAD,&errorcode);
       return;
     }
   }
@@ -1818,7 +1818,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     zonei = zoneinfo + i;
     if(strcmp(zonei->file,scripti->cval)==0){
-      readzone(i,LOAD,&errorcode);
+      ReadZone(i,LOAD,&errorcode);
       return;
     }
   }

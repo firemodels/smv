@@ -176,7 +176,7 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_SAVE:
     updatemenu = 1;
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case COLORBAR_ADDPOINT:
     if(colorbartype < ndefaultcolorbars || colorbartype >= ncolorbars)return;

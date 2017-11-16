@@ -4135,6 +4135,79 @@ void InitUserTicks(void){
 
 }
 
+/* ------------------ GetTickDir ------------------------ */
+
+int GetTickDir(float *mm){
+  /*
+  ( m0 m4 m8  m12 ) (x)    (0)
+  ( m1 m5 m9  m13 ) (y)    (0)
+  ( m2 m6 m10 m14 ) (z)  = (0)
+  ( m3 m7 m11 m15 ) (1)    (1)
+
+  ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+  ( m2 m6 m10 )      (m14)
+
+  (Q   u) (x)     (0)
+  (v^T 1) (y)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
+  */
+  int i, ii;
+  float norm[3], scalednorm[3];
+  float normdir[3];
+  float absangle, cosangle, minangle;
+  int iminangle;
+
+  xyzeyeorig[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
+  xyzeyeorig[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
+  xyzeyeorig[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+
+  minangle = 1000000.0;
+
+  for(i = -3;i <= 3;i++){
+    if(i == 0)continue;
+    ii = ABS(i);
+    norm[0] = 0.0;
+    norm[1] = 0.0;
+    norm[2] = 0.0;
+    switch(ii){
+    case XDIR:
+      if(i<0)norm[1] = -1.0;
+      if(i>0)norm[1] = 1.0;
+      break;
+    case YDIR:
+      if(i<0)norm[0] = -1.0;
+      if(i>0)norm[0] = 1.0;
+      break;
+    case ZDIR:
+      if(i<0)norm[2] = -1.0;
+      if(i>0)norm[2] = 1.0;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+    scalednorm[0] = norm[0] * mscale[0];
+    scalednorm[1] = norm[1] * mscale[1];
+    scalednorm[2] = norm[2] * mscale[2];
+
+    normdir[0] = mm[0] * scalednorm[0] + mm[4] * scalednorm[1] + mm[8] * scalednorm[2];
+    normdir[1] = mm[1] * scalednorm[0] + mm[5] * scalednorm[1] + mm[9] * scalednorm[2];
+    normdir[2] = mm[2] * scalednorm[0] + mm[6] * scalednorm[1] + mm[10] * scalednorm[2];
+
+    cosangle = normdir[2] / sqrt(normdir[0] * normdir[0] + normdir[1] * normdir[1] + normdir[2] * normdir[2]);
+    cosangle = CLAMP(cosangle, -1.0, 1.0);
+    absangle = acos(cosangle)*RAD2DEG;
+    absangle = ABS(absangle);
+    if(absangle<minangle){
+      iminangle = i;
+      minangle = absangle;
+    }
+  }
+  return iminangle;
+}
+
 /* ------------------ DrawUserTicks ------------------------ */
 
 void DrawUserTicks(void){
@@ -4146,7 +4219,7 @@ void DrawUserTicks(void){
 #define MIN_DTICK 0.0
 #define TEXT_FACTOR 1.5
 
-  user_tick_option=get_tick_dir(modelview_scratch);
+  user_tick_option=GetTickDir(modelview_scratch);
 
   if(auto_user_tick_placement==0){
     tick_origin[0]=user_tick_origin[0];
@@ -4524,79 +4597,6 @@ void DrawUserTicks(void){
   }
 
   glPopMatrix();
-}
-
-/* ------------------ get_tick_dir ------------------------ */
-
-int get_tick_dir(float *mm){
-    /*
-      ( m0 m4 m8  m12 ) (x)    (0)
-      ( m1 m5 m9  m13 ) (y)    (0)
-      ( m2 m6 m10 m14 ) (z)  = (0)
-      ( m3 m7 m11 m15 ) (1)    (1)
-
-       ( m0 m4  m8 )      (m12)
-   Q=  ( m1 m5  m9 )  u = (m13)
-       ( m2 m6 m10 )      (m14)
-
-      (Q   u) (x)     (0)
-      (v^T 1) (y)   = (1)
-
-      m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
-    */
-  int i,ii;
-  float norm[3],scalednorm[3];
-  float normdir[3];
-  float absangle,cosangle,minangle;
-  int iminangle;
-
-  xyzeyeorig[0] = -(mm[0]*mm[12]+mm[1]*mm[13]+ mm[2]*mm[14])/mscale[0];
-  xyzeyeorig[1] = -(mm[4]*mm[12]+mm[5]*mm[13]+ mm[6]*mm[14])/mscale[1];
-  xyzeyeorig[2] = -(mm[8]*mm[12]+mm[9]*mm[13]+mm[10]*mm[14])/mscale[2];
-
-  minangle=1000000.0;
-
-  for(i=-3;i<=3;i++){
-    if(i==0)continue;
-    ii = ABS(i);
-    norm[0]=0.0;
-    norm[1]=0.0;
-    norm[2]=0.0;
-    switch(ii){
-    case XDIR:
-      if(i<0)norm[1]=-1.0;
-      if(i>0)norm[1]=1.0;
-      break;
-    case YDIR:
-      if(i<0)norm[0]=-1.0;
-      if(i>0)norm[0]=1.0;
-      break;
-    case ZDIR:
-      if(i<0)norm[2]=-1.0;
-      if(i>0)norm[2]=1.0;
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-    scalednorm[0]=norm[0]*mscale[0];
-    scalednorm[1]=norm[1]*mscale[1];
-    scalednorm[2]=norm[2]*mscale[2];
-
-    normdir[0] = mm[0]*scalednorm[0] + mm[4]*scalednorm[1] + mm[8]*scalednorm[2];
-    normdir[1] = mm[1]*scalednorm[0] + mm[5]*scalednorm[1] + mm[9]*scalednorm[2];
-    normdir[2] = mm[2]*scalednorm[0] + mm[6]*scalednorm[1] + mm[10]*scalednorm[2];
-
-    cosangle = normdir[2]/sqrt(normdir[0]*normdir[0]+normdir[1]*normdir[1]+normdir[2]*normdir[2]);
-    cosangle = CLAMP(cosangle,-1.0,1.0);
-    absangle=acos(cosangle)*RAD2DEG;
-    absangle=ABS(absangle);
-    if(absangle<minangle){
-      iminangle=i;
-      minangle=absangle;
-    }
-  }
-  return iminangle;
 }
 
 /* ------------------ DrawGravityAxis ------------------------ */

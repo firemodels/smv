@@ -200,7 +200,7 @@ void BlockeditDlgCB(int var){
   switch(var){
   case SAVE_SETTINGS:
     updatemenu = 1;
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case CLOSE_WINDOW:
     DialogMenu(DIALOG_GEOMETRY);

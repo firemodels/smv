@@ -1180,7 +1180,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       UpdateGslicePlanes();
     }
     if(nrooms>0){
-      getzonesmokedir(modelview_scratch);
+      GetZoneSmokeDir(modelview_scratch);
     }
     if(nvolrenderinfo>0&&showvolrender==1&&usevolrender==1){
       GetVolSmokeDir(modelview_scratch);

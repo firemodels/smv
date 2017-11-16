@@ -864,7 +864,7 @@ void BoundsDlgCB(int var){
     updatemenu = 1;
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case COMPRESS_FILES:
     PRINTF("compressing\n");
@@ -1260,12 +1260,12 @@ void ScriptCB(int var){
 
       strcpy(script_filename, name);
       inifile = InsertIniFile(name);
-      WriteINI(SCRIPT_INI, script_filename);
+      WriteIni(SCRIPT_INI, script_filename);
       if(inifile != NULL&&LIST_ini_list != NULL){
         LIST_ini_list->add_item(inifile->id, inifile->file);
       }
     }
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case SCRIPT_LOADINI:
   {
@@ -1275,7 +1275,7 @@ void ScriptCB(int var){
     ini_filename = GetIniFileName(id);
     if(ini_filename == NULL)break;
     if(strcmp(ini_filename, caseini_filename) == 0){
-      ReadINI(NULL);
+      ReadIni(NULL);
     }
     else if(id >= 0){
       char *script_filename2;
@@ -1284,7 +1284,7 @@ void ScriptCB(int var){
       script_filename2 = script_filename;
       strcpy(script_filename, ini_filename);
       windowresized = 0;
-      ReadINI(script_filename2);
+      ReadIni(script_filename2);
     }
     if(scriptoutstream != NULL){
       fprintf(scriptoutstream, "LOADINIFILE\n");

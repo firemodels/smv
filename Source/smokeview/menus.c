@@ -2309,7 +2309,7 @@ void CompressMenu(int value){
 
 void IniSubMenu(int value){
   if(value==MENU_READCASEINI){
-    ReadINI(NULL);
+    ReadIni(NULL);
   }
   else{
     char *ini_filename;
@@ -2320,7 +2320,7 @@ void IniSubMenu(int value){
     script_filename2=script_filename;
     strcpy(script_filename,ini_filename);
     windowresized=0;
-    ReadINI(script_filename2);
+    ReadIni(script_filename2);
   }
 }
 
@@ -2329,14 +2329,14 @@ void IniSubMenu(int value){
 void SmokeviewIniMenu(int value){
   switch(value){
   case MENU_READINI:
-    ReadINI(NULL);
+    ReadIni(NULL);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   case MENU_WRITEINI:
-    WriteINI(GLOBAL_INI,NULL);
+    WriteIni(GLOBAL_INI,NULL);
     break;
   case MENU_WRITECASEINI:
-    WriteINI(LOCAL_INI,NULL);
+    WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
     InitObjectDefs();
@@ -2470,7 +2470,7 @@ void ScriptMenu(int value){
         if(scriptfile->id!=value)continue;
         error_code= CompileScript(file);
         if(error_code==0){
-      //    ReadINI(NULL);
+      //    ReadIni(NULL);
           StartScript();
         }
         else{
@@ -2684,10 +2684,10 @@ void LoadUnloadMenu(int value){
       ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
     for(i=0;i<nzoneinfo;i++){
-      readzone(i,UNLOAD,&errorcode);
+      ReadZone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(i,UNLOAD,&errorcode);
+      ReadSmoke3d(i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -2754,7 +2754,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3D(i,LOAD,&errorcode);
+        ReadSmoke3d(i,LOAD,&errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
@@ -2799,7 +2799,7 @@ void LoadUnloadMenu(int value){
     updatemenu=1;
     UpdateSliceMenuLabels();
     UpdateVsliceMenuLabels();
-    UpdateSmoke3DMenuLabels();
+    UpdateSmoke3dMenuLabels();
     UpdatePatchMenuLabels();
     UpdateIsoMenuLabels();
     UpdatePartMenuLabels();
@@ -3362,11 +3362,11 @@ void ZoneMenu(int value){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",zonei->file);
     }
-    readzone(value,LOAD,&errorcode);
+    ReadZone(value,LOAD,&errorcode);
   }
   else{
     for(i=0;i<nzoneinfo;i++){
-      readzone(i,UNLOAD,&errorcode);
+      ReadZone(i,UNLOAD,&errorcode);
     }
   }
   updatemenu=1;
@@ -3710,12 +3710,12 @@ void UnLoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
-        ReadSmoke3D(i,UNLOAD,&errorcode);
+        ReadSmoke3d(i,UNLOAD,&errorcode);
       }
     }
   }
   else{
-    ReadSmoke3D(value,UNLOAD,&errorcode);
+    ReadSmoke3d(value,UNLOAD,&errorcode);
   }
 }
 
@@ -3735,12 +3735,12 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      ReadSmoke3D(value,LOAD,&errorcode);
+      ReadSmoke3d(value,LOAD,&errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(i,UNLOAD,&errorcode);
+      ReadSmoke3d(i,UNLOAD,&errorcode);
     }
   }
   else if(value==MENU_SMOKE3D_IBLANK){
@@ -3754,7 +3754,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
-        ReadSmoke3D(i,LOAD,&errorcode);
+        ReadSmoke3d(i,LOAD,&errorcode);
       }
     }
     ASSERT(FFALSE); // check to see if this code segment is used
@@ -3770,7 +3770,7 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
-          ReadSmoke3D(i,LOAD,&errorcode);
+          ReadSmoke3d(i,LOAD,&errorcode);
         }
       }
     }

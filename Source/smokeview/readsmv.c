@@ -3715,7 +3715,7 @@ int ReadSMV(char *file, char *file2){
 
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        FreeSmoke3D(smoke3di);
+        FreeSmoke3d(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -8845,7 +8845,7 @@ typedef struct {
     if(csvi->type==CSVTYPE_DEVC)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
-  StupDeviceData();
+  SetupDeviceData();
   if(nzoneinfo>0)SetupZoneDevs();
 
   InitMultiThreading();
@@ -9004,7 +9004,7 @@ typedef struct {
   }
   UpdateTerrain(1,vertical_factor);
   UpdateTerrainColors();
-  UpdateSmoke3DMenuLabels();
+  UpdateSmoke3dMenuLabels();
   UpdateVSliceTypes();
   UpdatePatchMenuLabels();
   UpdateIsoMenuLabels();
@@ -9179,9 +9179,9 @@ void UpdateUseTextures(void){
   }
 }
 
-/* ------------------ ReadINI2 ------------------------ */
+/* ------------------ ReadIni2 ------------------------ */
 
-int ReadINI2(char *inifile, int localfile){
+int ReadIni2(char *inifile, int localfile){
   int i;
   FILE *stream;
 
@@ -12141,9 +12141,9 @@ int ReadINI2(char *inifile, int localfile){
 
 }
 
-/* ------------------ ReadINI ------------------------ */
+/* ------------------ ReadIni ------------------------ */
 
-int ReadINI(char *inifile){
+int ReadIni(char *inifile){
   char smvprogini[1024];
   char *smvprogini_ptr=NULL;
 
@@ -12179,7 +12179,7 @@ int ReadINI(char *inifile){
   if(smvprogini_ptr!=NULL){
     int returnval;
 
-    returnval = ReadINI2(smvprogini_ptr, 0);
+    returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12193,7 +12193,7 @@ int ReadINI(char *inifile){
   if(INIfile!=NULL){
     int returnval;
 
-    returnval = ReadINI2(INIfile, 0);
+    returnval = ReadIni2(INIfile, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12206,7 +12206,7 @@ int ReadINI(char *inifile){
   if(caseini_filename!=NULL){
     int returnval;
 
-    returnval = ReadINI2(caseini_filename, 1);
+    returnval = ReadIni2(caseini_filename, 1);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("complete");
@@ -12219,7 +12219,7 @@ int ReadINI(char *inifile){
   if(inifile!=NULL){
     int return_code;
 
-    return_code = ReadINI2(inifile,1);
+    return_code = ReadIni2(inifile,1);
     if(return_code == 0){
       PRINTF("complete");
       PRINTF("\n");
@@ -12701,9 +12701,9 @@ void WriteIniLocal(FILE *fileout){
 
 }
 
-  /* ------------------ WriteINI ------------------------ */
+  /* ------------------ WriteIni ------------------------ */
 
-void WriteINI(int flag,char *filename){
+void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
 

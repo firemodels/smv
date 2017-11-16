@@ -1082,7 +1082,7 @@ extern "C" void Smoke3dCB(int var){
     updatemenu=1;
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI,NULL);
+    WriteIni(LOCAL_INI,NULL);
     break;
   case GLOBAL_FIRE_CUTOFF:
     glutPostRedisplay();

@@ -4407,9 +4407,9 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
     GL_RED, GL_FLOAT, cbuffer);
 }
 
-/* ------------------ DrawGSliceDataGPU ------------------------ */
+/* ------------------ DrawGSliceDataGpu ------------------------ */
 
-void DrawGSliceDataGPU(slicedata *slicei){
+void DrawGSliceDataGpu(slicedata *slicei){
   meshdata *meshi;
   int j;
   boundsdata *sb;
@@ -6126,8 +6126,8 @@ void DrawSliceFrame(){
           if(usegpu==1){
             Load3DSliceShaders();
             SNIFF_ERRORS("after Load3DSliceShaders");
-            DrawGSliceDataGPU(sd);
-            SNIFF_ERRORS("after DrawGSliceDataGPU");
+            DrawGSliceDataGpu(sd);
+            SNIFF_ERRORS("after DrawGSliceDataGpu");
             UnLoadShaders();
             SNIFF_ERRORS("after UnLoad3DSliceShaders");
           }
