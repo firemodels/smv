@@ -297,7 +297,7 @@ void UpdateINIList(void){
 
       filei = ini_filelist + i;
       if(filei->type!=0)continue;
-      insert_inifile(filei->file);
+      InsertIniFile(filei->file);
     }
   }
 }
@@ -11750,7 +11750,7 @@ int ReadINI2(char *inifile, int localfile){
       }
       if(Match(buffer, "SCRIPTFILE") == 1){
         if(fgets(buffer2, 255, stream) == NULL)break;
-        insert_scriptfile(RemoveComment(buffer2));
+        InsertScriptFile(RemoveComment(buffer2));
         updatemenu = 1;
         continue;
       }

@@ -341,7 +341,7 @@ void ParseCommandline(int argc, char **argv){
       STRCPY(scriptbuffer, fdsprefix);
       STRCAT(scriptbuffer, ".ssf");
       if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
-        default_script = insert_scriptfile(scriptbuffer);
+        default_script = InsertScriptFile(scriptbuffer);
       }
     }
 #ifdef pp_LUA
@@ -607,7 +607,7 @@ void ParseCommandline(int argc, char **argv){
         scriptfiledata *sfd;
 
         strcpy(scriptbuffer, argv[i]);
-        sfd = insert_scriptfile(scriptbuffer);
+        sfd = InsertScriptFile(scriptbuffer);
         if(sfd != NULL)default_script = sfd;
         runscript = 1;
       }

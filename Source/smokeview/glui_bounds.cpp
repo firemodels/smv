@@ -1109,7 +1109,7 @@ void TimeBoundCB(int var){
   updatemenu = 1;
   switch(var){
   case SET_TIME:
-    settimeval(glui_time);
+    SetTimeVal(glui_time);
     break;
   case TBOUNDS:
     if(use_tload_begin == 1 || use_tload_end == 1 || use_tload_skip == 1){
@@ -1246,7 +1246,7 @@ void ScriptCB(int var){
     break;
   case SCRIPT_LIST:
     id = LIST_scriptlist->get_int_val();
-    name = get_scriptfilename(id);
+    name = GetScriptFileName(id);
     if(name != NULL&&strlen(name) > 0){
       strcpy(label, _d("Run: "));
       strcat(label, name);
@@ -1259,7 +1259,7 @@ void ScriptCB(int var){
       inifiledata *inifile;
 
       strcpy(script_filename, name);
-      inifile = insert_inifile(name);
+      inifile = InsertIniFile(name);
       WriteINI(SCRIPT_INI, script_filename);
       if(inifile != NULL&&LIST_ini_list != NULL){
         LIST_ini_list->add_item(inifile->id, inifile->file);
@@ -1272,7 +1272,7 @@ void ScriptCB(int var){
     char *ini_filename;
 
     id = LIST_ini_list->get_int_val();
-    ini_filename = get_inifilename(id);
+    ini_filename = GetIniFileName(id);
     if(ini_filename == NULL)break;
     if(strcmp(ini_filename, caseini_filename) == 0){
       ReadINI(NULL);

@@ -3154,7 +3154,7 @@ void DoScript(void){
     }
     if(rendering_status==RENDER_OFF){  // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
-      script_render_flag=run_script();
+      script_render_flag= RunScript();
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         exit(0);
       }
@@ -3166,7 +3166,7 @@ void DoScript(void){
       if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
         int remove_frame;
 
-        script_loadvolsmokeframe2();
+        ScriptLoadVolSmokeFrame2();
         remove_frame=current_script_command->remove_frame;
         if(remove_frame>=0){
           UnloadVolsmokeFrameAllMeshes(remove_frame);
@@ -3175,7 +3175,7 @@ void DoScript(void){
       if(current_script_command->command==SCRIPT_ISORENDERALL){
         int remove_frame;
 
-        script_loadisoframe2(current_script_command);
+        ScriptLoadIsoFrame2(current_script_command);
         remove_frame = current_script_command->remove_frame;
         if(remove_frame>=0){
           //UnloadVolsmokeFrameAllMeshes(remove_frame);

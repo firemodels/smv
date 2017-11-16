@@ -2315,7 +2315,7 @@ void IniSubMenu(int value){
     char *ini_filename;
     char *script_filename2;
 
-    ini_filename = get_inifilename(value);
+    ini_filename = GetIniFileName(value);
     if(ini_filename==NULL||strlen(ini_filename)==0)return;
     script_filename2=script_filename;
     strcpy(script_filename,ini_filename);
@@ -2413,8 +2413,8 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_START_RECORDING:
       UpdateScriptStart();
-      get_newscriptfilename(newscriptfilename);
-      script_recording = insert_scriptfile(newscriptfilename);
+      GetNewScriptFileName(newscriptfilename);
+      script_recording = InsertScriptFile(newscriptfilename);
       scriptoutstream=fopen(newscriptfilename,"w");
       if(scriptoutstream!=NULL){
         PRINTF("Script recorder on\n");
@@ -2468,10 +2468,10 @@ void ScriptMenu(int value){
         file=scriptfile->file;
         if(file==NULL)continue;
         if(scriptfile->id!=value)continue;
-        error_code=compile_script(file);
+        error_code= CompileScript(file);
         if(error_code==0){
       //    ReadINI(NULL);
-          start_script();
+          StartScript();
         }
         else{
           fprintf(stderr,"*** Error (fatal): unable to open script file");
