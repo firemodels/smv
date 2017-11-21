@@ -428,7 +428,7 @@ void UpdatePlotxyzAll(void){
   }
 
   nplotx_list = 0;
-  for(i=0;i<nploty_all;i++){
+  for(i=0;i<nplotx_all;i++){
     plotx_list[i] = i;
     nplotx_list++;
   }
