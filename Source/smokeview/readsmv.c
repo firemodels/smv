@@ -8254,6 +8254,7 @@ typedef struct {
         nn_slice--;
         continue;
       }
+      sd->frames=InitFrames();
       sliceinfo_copy++;
       continue;
     }

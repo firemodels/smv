@@ -22,17 +22,42 @@
 #define UNLINK unlink
 #endif
 
+/* --------------------------  filelistdata ------------------------------------ */
+
 typedef struct {
   char *file;
   int type;
 } filelistdata;
 
+/* --------------------------  framedata ------------------------------------ */
+
+typedef struct _framedata{
+  unsigned char *cvals;
+  int nvals;
+  float *vals;
+} framedata;
+
+/* --------------------------  framesdata ------------------------------------ */
+
+typedef struct _framesdata{
+  int nframes_old, nframes;
+  float *times;
+  framedata **frames;
+} framesdata;
+
+
 #ifdef pp_READBUFFER
-typedef struct filedata{
+
+/* --------------------------  _filedata ------------------------------------ */
+
+typedef struct _filedata {
   char *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
+
+/* --------------------------  bufferstreamdata ------------------------------------ */
+
 typedef struct bufferstreamdata{
   FILE *stream,*stream1,*stream2;
   filedata *fileinfo;
@@ -153,6 +178,13 @@ EXTERNCPP FILE_SIZE GetFILESize(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
+
+EXTERNCPP framedata *NewFrame(int nvals);
+EXTERNCPP framesdata *NewFrames(framesdata *frames, int nframes);
+EXTERNCPP void FreeFrames(framesdata *frames);
+EXTERNCPP void FreeFrame(framedata *frame);
+EXTERNCPP framesdata *InitFrames(void);
+
 #ifdef pp_LUA
 EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif

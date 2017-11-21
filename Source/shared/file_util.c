@@ -21,6 +21,100 @@
 
 FILE *alt_stdout=NULL;
 
+/* --------------------------  InitFrames ------------------------------------ */
+
+framesdata *InitFrames(void){
+  framesdata *newframes;
+
+  NewMemory((void **)&newframes, sizeof(framesdata));
+  newframes->frames = NULL;
+  newframes->times = NULL;
+  newframes->nframes = 0;
+  return newframes;
+}
+
+/* --------------------------  FreeFrame ------------------------------------ */
+
+void FreeFrame(framedata *frame){
+  FREEMEMORY(frame->cvals);
+  FREEMEMORY(frame->vals);
+}
+
+ /* --------------------------  FreeFrames ------------------------------------ */
+
+void FreeFrames(framesdata *frames){
+  int i;
+
+  for(i = 0;i<frames->nframes;i++){
+    framedata *framei;
+
+    framei = frames->frames[i];
+    FreeFrame(framei);
+  }
+  FREEMEMORY(frames->frames);
+  FREEMEMORY(frames->times);
+  FREEMEMORY(frames);
+}
+
+/* --------------------------  NewFrame ------------------------------------ */
+
+framedata *NewFrame(int nvals){
+  framedata *newframe;
+
+  NewMemory((void **)&newframe, sizeof(framedata));
+  if(nvals>0){
+    NewMemory((void **)&newframe->cvals, nvals*sizeof(unsigned char));
+    NewMemory((void **)&newframe->vals, nvals*sizeof(float));
+  }
+  else{
+    newframe->cvals = NULL;
+    newframe->vals = NULL;
+  }
+  newframe->nvals = nvals;
+  return newframe;
+}
+
+  /* --------------------------  NewFrames ------------------------------------ */
+
+framesdata *NewFrames(framesdata *frames, int nframes){
+  int i;
+
+  if(frames==NULL){
+    framesdata *newframes;
+
+    NewMemory((void **)&newframes, sizeof(framesdata));
+    newframes->frames = NULL;
+    newframes->times = NULL;
+    newframes->nframes = 0;
+    frames = newframes;
+  }
+
+  if(nframes==0){
+    FreeFrames(frames);
+    frames = NULL;
+  }
+  else{
+    if(frames->times==NULL){
+      NewMemory((void **)&frames->times, nframes*sizeof(float));
+    }
+    else{
+      ResizeMemory((void **)&frames->times, nframes*sizeof(float));
+    }
+    if(frames->frames==NULL){
+      NewMemory((void **)&frames->frames, nframes*sizeof(framedata *));
+    }
+    else{
+      ResizeMemory((void **)&frames->frames, nframes*sizeof(framedata *));
+    }
+  }
+  for(i = frames->nframes;i<nframes;i++){
+    frames->frames[i] = NULL;
+  }
+  frames->nframes_old = frames->nframes;
+  frames->nframes = nframes;
+  return frames;
+}
+
 /* ------------------ FFLUSH ------------------------ */
 
 int FFLUSH(void){
