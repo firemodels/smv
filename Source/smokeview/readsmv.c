@@ -8254,7 +8254,7 @@ typedef struct {
         nn_slice--;
         continue;
       }
-      InitFrames(sd->frames);
+      //InitFrames(&sd->frames);
       sliceinfo_copy++;
       continue;
     }
@@ -8880,13 +8880,16 @@ typedef struct {
     NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));
   }
   UpdateLoadedLists();
+  CheckMemory;
 
   UpdateMeshCoords();
+  CheckMemory;
 
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
+  CheckMemory;
 
   /* compute global bar's and box's */
 
@@ -8923,6 +8926,7 @@ typedef struct {
   shooter_vel_type=1;
 
   UpdatePlotxyzAll();
+  CheckMemory;
 
   UpdateVSlices();
   if(update_slice==1)return 3;
