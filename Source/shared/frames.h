@@ -12,6 +12,7 @@
 typedef struct _framedata {
   int nvals;
   float time, *vals;
+  size_t offset, size;
   unsigned char *cvals;
 } framedata;
 
