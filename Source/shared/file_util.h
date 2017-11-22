@@ -196,13 +196,6 @@ EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
 
-EXTERNCPP void       FreeFrame(framedata *frame);
-EXTERNCPP void       FreeFrames(framesdata *frames);
-EXTERNCPP void       InitFrames(framesdata *frames);
-EXTERNCPP framedata *NewFrame(int nvals);
-EXTERNCPP void       NewFrames(framesdata *frames, int nframes, int nvals);
-
-
 #ifdef pp_LUA
 EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
