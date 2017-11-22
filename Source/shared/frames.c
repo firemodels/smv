@@ -1,25 +1,9 @@
 #include "options.h"
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <ctype.h>
 #include <stdlib.h>
-#ifdef pp_OSX
-#include <unistd.h>
-#endif
-#include <math.h>
-#ifdef WIN32
-#include <io.h>
-#include <direct.h>
-#include <dirent_win.h>
-#else
-#include <dirent.h>
-#endif
 #include "MALLOC.h"
-#include "smv_endian.h"
-
-FILE *alt_stdout=NULL;
+#include "frames.h"
 
 /* --------------------------  InitFrames ------------------------------------ */
 

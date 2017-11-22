@@ -27,23 +27,6 @@ typedef struct {
   int type;
 } filelistdata;
 
-/* --------------------------  framedata ------------------------------------ */
-
-typedef struct _framedata {
-  int nvals;
-  float time, *vals;
-  unsigned char *cvals;
-} framedata;
-
-/* --------------------------  framesdata ------------------------------------ */
-
-typedef struct _framesdata {
-  int nframes_old, nframes;
-  float *times;
-  framedata **frames;
-} framesdata;
-
-
 #ifdef pp_READBUFFER
 
 /* --------------------------  _filedata ------------------------------------ */

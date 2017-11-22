@@ -1,5 +1,6 @@
 #ifndef FLOWFILES_H_DEFINED
 #define FLOWFILES_H_DEFINED
+#include "frames.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
