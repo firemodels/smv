@@ -197,7 +197,7 @@ typedef struct _luascriptfiledata {
 
 /* --------------------------  scriptdata ------------------------------------ */
 
-typedef struct _scripdata {
+typedef struct _scriptdata {
   int command;
   char command_label[32];
   int ival,ival2,ival3,ival4,ival5;
