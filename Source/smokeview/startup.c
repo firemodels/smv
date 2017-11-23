@@ -386,14 +386,14 @@ void SetupGlut(int argc, char **argv){
     }
   }
 
-  if(smoketempdir == NULL){
+//  if(smoketempdir == NULL){
     NewMemory((void **)&smoketempdir,8);
 #ifdef WIN32
-    strcpy(smoketempdir,"c:\temp");
+    strcpy(smoketempdir,"c:\\temp");
 #else
     strcpy(smoketempdir, "/tmp");
 #endif
-  }
+//  }
 
   if(smoketempdir != NULL){
     lensmoketempdir = strlen(smoketempdir);
