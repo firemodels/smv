@@ -3874,6 +3874,128 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
+// ------------------GetSliceFileDirection------------------------
+
+void GetSliceFileDirection(int is1, int is2, int js1, int *js2, int ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice){
+  int nxsp, nysp, nzsp, imin;
+
+  nxsp =  is2+1-is1;
+  nysp = *js2+1-js1;
+  nzsp = *ks2+1-ks1;
+  joff = 0;
+  koff = 0;
+  volslice = 0;
+  if(is1!=is2&&js1!=*js2&&ks1!=*ks2){
+    *idir = 1;
+    is2 = is1;
+    *volslice = 1;
+    return;
+  }
+  imin = MIN(nxsp, nysp);
+  imin = MIN(imin, nzsp);
+  if(nxsp!=imin){
+    *idir = 1;
+    is2 = is1;
+  }
+  else if(nysp!=imin){
+    *idir = 2;
+    *js2 = js1;
+  }
+  else{
+    *idir = 3;
+    *ks2 = ks1;
+  }
+  if(is1!=is2&&js1!=*js2){
+    *idir = 1;
+    *joff = 1;
+  }
+  else if(is1!=is2&&ks1!=*ks2){
+    *idir = 1;
+    *koff = 1;
+  }
+  else if(js1!=*js2&&ks1!=*ks2){
+    *idir = 2;
+    *koff = 1;
+  }
+  return;
+}
+
+#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
+                           returncode=fread(var,4,count,STREAM);\
+                           if(returncode!=count)returncode=0;\
+                           FSEEK(STREAM,4,SEEK_CUR)
+
+/* ------------------ GetSliceSizes ------------------------ */
+
+void GetSliceSizes(char *file, int *nslicei, int *nslicej, int *nslicek,
+  int *ntimes, int slice_frame_step,
+  int set_tmin, int set_tmax,
+  float tmin, float tmax,
+  int *headersize, int *framesize, int *error){
+
+  int istep, returncode, xb[6], nt;
+  int ip1, ip2, jp1, jp2, kp1, kp2;
+  int iip1, iip2, idir, volslice, joff, koff;
+  int nxsp, nysp, nzsp;
+  float time_max = -1000000.0;
+  FILE *stream;
+
+  *error = 1;
+  if(file==NULL)return;
+  stream = fopen(file, "rb");
+  if(stream==NULL)return;
+
+  *headersize = 3*(4+30+4);
+  FSEEK(stream, *headersize, SEEK_CUR); // skip over first 3 labels
+  FORTREAD(xb, 6, stream);
+  *headersize += (4+6*4+4);
+
+  ip1 = xb[0];
+  ip2 = xb[1];
+  jp1 = xb[2];
+  jp2 = xb[3];
+  kp1 = xb[4];
+  kp2 = xb[5];
+
+  nxsp = ip2+1-ip1;
+  nysp = jp2+1-jp1;
+  nzsp = kp2+1-kp1;
+  *framesize = (4+4+4)+(4+4*nxsp*nysp*nzsp+4);
+
+  GetSliceFileDirection(ip1, ip2, jp1, &jp2, kp1, &kp2, &idir, &joff, &koff, &volslice);
+
+  *nslicei = nxsp;
+  *nslicej = nysp+joff;
+  *nslicek = nzsp+koff;
+
+  nt = 0;
+  istep = -1;
+  slice_frame_step = MAX(1, slice_frame_step);
+  for(;;){
+    float time;
+    int load;
+
+    FORTREAD(&time, 1, stream);
+    if(returncode==0)break;
+    FSEEK(stream, (4+4*nxsp*nysp*nzsp+4), SEEK_CUR);
+    if(returncode!=0)break;
+    if(set_tmin==1&&time<tmin||time<time_max){
+      load = 0;
+    }
+    else{
+      load = 1;
+      time_max = time;
+    }
+    if(set_tmax==1&&time>tmax)break;
+    istep++;
+    if(istep%slice_frame_step!=0)load = 0;
+    if(load==1)nt++;
+  }
+  fclose(stream);
+  *ntimes = nt;
+  *error = 0;
+}
+
 /* ------------------ ReadSlice ------------------------ */
 
 void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
@@ -4043,9 +4165,16 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     slicefilelen = strlen(file);
     if(sd->compression_type == UNCOMPRESSED){
+#ifdef pp_CSLICE
+      GetSliceSizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, 
+        &sd->ntimes, &sliceframestep,
+        settmin_s, settmax_s, tmin_s, tmax_s, 
+        &headersize, &framesize, &error);
+#else
       FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
         slicefilelen);
+#endif
     }
     else if(sd->compression_type == COMPRESSED_ZLIB){
       if(
