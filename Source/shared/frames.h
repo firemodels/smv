@@ -12,7 +12,8 @@
 typedef struct _framedata {
   int nvals;
   float time, *vals;
-  size_t offset, size;
+  int nsubsizes;
+  size_t offset, *subsizes;
   unsigned char *cvals;
 } framedata;
 
@@ -31,8 +32,10 @@ typedef struct _framesdata {
 EXTERNCPP void       FreeFrame(framedata *frame);
 EXTERNCPP void       FreeFrames(framesdata *frames);
 EXTERNCPP void       InitFrames(framesdata *frames);
-EXTERNCPP framedata *NewFrame(int nvals);
-EXTERNCPP void       NewFrames(framesdata *frames, int nframes, int nvals);
+EXTERNCPP framedata *NewFrame(int nvals, int nsubsizes);
+EXTERNCPP void       NewFrames(framesdata *frames, int nframes, int nvals, int nsubsizes);
+EXTERNCPP void       SetSliceFrameSizeOffsets(char *file, framesdata *frames);
+EXTERNCPP void       UpdateFrames(char *file, framesdata *frames);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
