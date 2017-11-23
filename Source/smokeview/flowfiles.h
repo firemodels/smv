@@ -1,6 +1,5 @@
 #ifndef FLOWFILES_H_DEFINED
 #define FLOWFILES_H_DEFINED
-#include "frames.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -534,7 +533,6 @@ typedef struct _feddata {
 /* --------------------------  isodata ------------------------------------ */
 
 typedef struct _isodata {
-  framesdata frames;
   int seq_id, autoload;
   int isof_index;
   char *reg_file, *size_file;
@@ -1086,7 +1084,6 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
-  framesdata frames;
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
   int seq_id, autoload, loaded, display, reload;
   int sort_tags_loaded, compression_type, evac;
@@ -1133,7 +1130,6 @@ typedef struct _hrrdata {
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
-  framesdata frames;
   int mesh_type;
   int seq_id, autoload;
   char *file;
@@ -1272,7 +1268,6 @@ typedef struct _smokedata {
 /* --------------------------  smoke3ddata ------------------------------------ */
 
 typedef struct _smoke3ddata {
-  framesdata frames;
   int seq_id,autoload;
   char *file;
   char *comp_file, *reg_file;
@@ -1309,7 +1304,6 @@ typedef struct _smoke3ddata {
 /* --------------------------  patchdata ------------------------------------ */
 
 typedef struct _patchdata {
-  framesdata frames;
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;

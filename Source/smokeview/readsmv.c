@@ -15,9 +15,6 @@
 #include "smv_endian.h"
 #include "update.h"
 #include "smokeviewvars.h"
-#ifdef pp_FRAMES
-#include "frames.h"
-#endif
 #include "IOvolsmoke.h"
 
 #ifdef pp_READBUFFER
@@ -8257,9 +8254,6 @@ typedef struct {
         nn_slice--;
         continue;
       }
-#ifdef pp_FRAMES
-      InitFrames(&sd->frames);
-#endif
       sliceinfo_copy++;
       continue;
     }
