@@ -3923,23 +3923,31 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
 #endif
-    if(sd->qslicedata != NULL){
-      FreeMemory(sd->qslicedata);
-      sd->qslicedata = NULL;
-    }
-    FREEMEMORY(sd->times);
-    FREEMEMORY(sd->slicelevel);
-    FREEMEMORY(sd->compindex);
-    FREEMEMORY(sd->qslicedata_compressed);
-    FREEMEMORY(sd->slicecomplevel);
 
-    if(sd->histograms != NULL){
-      for(i = 0; i < sd->nhistograms; i++){
-        FreeHistogram(sd->histograms + i);
+// free memory buffers
+
+    if(flag!=RELOAD){
+      if(sd->qslicedata != NULL){
+        FreeMemory(sd->qslicedata);
+        sd->qslicedata = NULL;
       }
-      FREEMEMORY(sd->histograms);
+      FREEMEMORY(sd->times);
+      FREEMEMORY(sd->slicelevel);
+      FREEMEMORY(sd->compindex);
+      FREEMEMORY(sd->qslicedata_compressed);
+      FREEMEMORY(sd->slicecomplevel);
+
+      if(sd->histograms!=NULL){
+        for(i = 0; i<sd->nhistograms; i++){
+          FreeHistogram(sd->histograms+i);
+        }
+        FREEMEMORY(sd->histograms);
+      }
     }
+
     slicefilenum = ifile;
+
+// reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
       sd->ntimes = 0;
@@ -4026,6 +4034,10 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       RemoveSliceLoadstack(slicefilenumber);
       return;
     }
+
+// load entire slice file (flag=LOAD) or
+// load only portion of slice file written to since last time it was loaded (flag=RELOAD)
+
     CountMemoryBlocks(num_memblocks_load, 0);
     file_size = GetFILESize(file);
 
@@ -4073,18 +4085,28 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
     if(sd->compression_type == COMPRESSED_ZLIB){
-      char *datafile;
+      int return_code;
 
-      if(NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed) == 0 ||
-        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0 ||
-        NewMemory((void **)&sd->compindex, sizeof(compdata)*(1 + sd->ntimes)) == 0
-        ){
+      if(flag==LOAD){
+        return_code = NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed);
+        if(return_code!=0)NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
+        if(return_code!=0)return_code = NewMemory((void **)&sd->compindex, sizeof(compdata)*(1+sd->ntimes));
+      }
+      else if(flag==RELOAD){
+        return_code = ResizeMemory((void **)&sd->qslicedata_compressed, sd->ncompressed);
+        if(return_code!=0)ResizeMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
+        if(return_code!=0)return_code = ResizeMemory((void **)&sd->compindex, sizeof(compdata)*(1+sd->ntimes));
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+
+      if(return_code==0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
-      datafile = sd->comp_file;
-      if(GetSliceCompressedData(datafile,
+      if(GetSliceCompressedData(sd->comp_file,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
@@ -4095,9 +4117,21 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     else{
       FILE_SIZE labellen = LABELLEN;
       int file_unit = 15;
+      int return_val;
 
-      if(NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
-        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0){
+      if(flag==LOAD){
+        return_val = NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
+        if(return_val!=0)NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
+      }
+      else if(flag==RELOAD){
+        return_val = ResizeMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
+        if(return_val!=0)ResizeMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+
+      if(return_val == 0){
         *errorcode = 1;
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         return;
@@ -4204,7 +4238,18 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     else{
-      if(NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0){
+      int return_code;
+
+      if(flag==LOAD){
+        return_code = NewMemory((void **)&sd->slicelevel, sd->nslicetotal*sizeof(int));
+      }
+      else if(flag==RELOAD){
+        return_code = ResizeMemory((void **)&sd->slicelevel, sd->nslicetotal*sizeof(int));
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+      if(return_code == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
