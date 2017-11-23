@@ -551,6 +551,7 @@ do
   times(nsteps) = time
   if(redirect_flag.eq.0)write(6,10)time
 10 format(" slice time=",f9.2)
+
   if(idir.eq.3)then
     istart = (nsteps-1)*nxsp*nysp
     do i = 1, nxsp
@@ -560,7 +561,7 @@ do
       qmax = max(qmax,maxval(qq(i,1:nysp,1)))
       qmin = min(qmin,minval(qq(i,1:nysp,1)))
     end do
-   elseif(idir.eq.2)then
+  elseif(idir.eq.2)then
     istart = (nsteps-1)*nxsp*(nzsp+koff)
     do i = 1, nxsp
       irowstart = (i-1)*(nzsp+koff)
@@ -569,7 +570,7 @@ do
       qmax = max(qmax,maxval(qq(i,1,1:nzsp+koff)))
       qmin = min(qmin,minval(qq(i,1,1:nzsp+koff)))
     end do
-   else
+  else
     istart = (nsteps-1)*(nysp+joff)*(nzsp+koff)*nxsp
     do i = 1, nxsp
     do j = 1, nysp+joff
