@@ -230,9 +230,11 @@ SVEXTERN int SVDECL(extreme_data_offset,1), SVDECL(colorbar_offset,0), SVDECL(co
 #ifdef INMAIN
 SVEXTERN float gvecphys[3]={0.0,0.0,-9.8};
 SVEXTERN float gvecunit[3]={0.0,0.0,-1.0};
+SVEXTERN float gvecphys_orig[3] = {0.0,0.0,-9.8};
 #else
 SVEXTERN float gvecphys[3];
 SVEXTERN float gvecunit[3];
+SVEXTERN float gvecphys_orig[3];
 #endif
 SVEXTERN int SVDECL(update_have_gvec,0),SVDECL(gvec_down,1),SVDECL(have_gvec,0),SVDECL(changed_zaxis,0),SVDECL(showgravity,0);
 SVEXTERN float SVDECL(slice_line_contour_width,1.0);

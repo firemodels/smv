@@ -946,13 +946,20 @@ extern "C" void GluiMotionSetup(int main_window){
 
   PANEL_change_zaxis = glui_motion->add_panel_to_panel(ROLLOUT_orientation,_d("z axis"));
 
-  if(have_gvec==1&&changed_zaxis==0){
+  {
     float vv[3];
 
-    vv[0]=-gvecphys[0];
-    vv[1]=-gvecphys[1];
-    vv[2]=-gvecphys[2];
-    XYZ2AzElev(vv,zaxis_angles,zaxis_angles+1);
+    if(have_gvec==1&&changed_zaxis==0){
+      vv[0] = -gvecphys[0];
+      vv[1] = -gvecphys[1];
+      vv[2] = -gvecphys[2];
+    }
+    else{
+      vv[0] = -gvecphys_orig[0];
+      vv[1] = -gvecphys_orig[1];
+      vv[2] = -gvecphys_orig[2];
+    }
+    XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
   }
   SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"azimuth:",GLUI_SPINNER_FLOAT,zaxis_angles,CHANGE_ZAXIS,SceneMotionCB);
   SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"elevation:",GLUI_SPINNER_FLOAT,zaxis_angles+1,CHANGE_ZAXIS,SceneMotionCB);
@@ -1790,25 +1797,30 @@ extern "C" void SceneMotionCB(int var){
 
   switch(var){
     case USE_GVEC:
-      if(gvec_down==1){
+      {
         float vv[3];
+        float *elev, *az;
 
-        vv[0] = -gvecphys[0];
-        vv[1] = -gvecphys[1];
-        vv[2] = -gvecphys[2];
-        XYZ2AzElev(vv,zaxis_angles,zaxis_angles+1);
-        UpdateZaxisAngles();
-        {
-          float *elev, *az;
-
-          az=zaxis_angles;
-          elev=zaxis_angles+1;
-          user_zaxis[0]=cos(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
-          user_zaxis[1]=sin(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
-          user_zaxis[2]=sin(DEG2RAD*(*elev));
-          LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
-          ViewpointCB(LIST_VIEW);
+        if(gvec_down==1){
+          vv[0] = -gvecphys[0];
+          vv[1] = -gvecphys[1];
+          vv[2] = -gvecphys[2];
         }
+        else{
+          vv[0] = -gvecphys_orig[0];
+          vv[1] = -gvecphys_orig[1];
+          vv[2] = -gvecphys_orig[2];
+        }
+        XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
+        UpdateZaxisAngles();
+
+        az = zaxis_angles;
+        elev = zaxis_angles+1;
+        user_zaxis[0] = cos(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
+        user_zaxis[1] = sin(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
+        user_zaxis[2] = sin(DEG2RAD*(*elev));
+        LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
+        ViewpointCB(LIST_VIEW);
         glutPostRedisplay();
       }
       break;
