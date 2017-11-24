@@ -3935,7 +3935,7 @@ void GetSliceSizes(char *file, int *nslicei, int *nslicej, int *nslicek,
 
   int istep, returncode, xb[6], nt;
   int ip1, ip2, jp1, jp2, kp1, kp2;
-  int iip1, iip2, idir, volslice, joff, koff;
+  int idir, volslice, joff, koff;
   int nxsp, nysp, nzsp;
   float time_max = -1000000.0;
   FILE *stream;
@@ -4006,11 +4006,10 @@ void GetSliceData(char *file, float *qmin, float *qmax, float *qdata, float *tim
 
   int istep, returncode, xb[6], nsteps;
   int ip1, ip2, jp1, jp2, kp1, kp2;
-  int iip1, iip2, idir, volslice, joff, koff;
+  int idir, volslice, joff, koff;
   int nxsp, nysp, nzsp;
   float time_max = -1000000.0;
   FILE *stream;
-  int framesize;
   float *qq;
 
   *error = 1;
@@ -4089,7 +4088,7 @@ void GetSliceData(char *file, float *qmin, float *qmax, float *qdata, float *tim
 
       istart = (nsteps-1)*nxsp*(nzsp+koff);
       for(i = 0;i<nxsp;i++){
-        int ii, kk, k, irowstart;
+        int kk, k, irowstart;
 
         irowstart = (i-1)*(nzsp+koff);
         kk = istart+irowstart;
