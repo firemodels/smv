@@ -8071,6 +8071,8 @@ typedef struct {
       len=strlen(bufferptr);
 
       sd = sliceinfo + nn_slice - 1;
+      sd->ntimes = 0;
+      sd->ntimes_old = 0;
       sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;

@@ -16,6 +16,13 @@
 #include "smokeviewvars.h"
 #include "IOslice.h"
 
+#ifdef pp_INTEL
+#define pp_FSEEK
+#endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
+
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
@@ -4131,21 +4138,17 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #ifndef pp_CSLICE
   FILE_SIZE slicefilelen;
 #endif
-  float *xplt_local, *yplt_local, *zplt_local;
-  int blocknumber;
-  int error;
-  float offset;
-  int i;
-  int ii;
-  float qmin, qmax;
-  int headersize, framesize;
   char sliceshortlabels[31];
+
+  float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
+  int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
   slicedata *sd;
+  int ntimes_slice_old;
+
   vslicedata *vd;
-  int flag2 = 0;
   meshdata *meshi;
+
   FILE_SIZE file_size = 0;
-  float read_time, total_time;
 #ifdef pp_MEMDEBUG
   int num_memblocks_load, num_memblocks_unload;
 #endif
@@ -4153,6 +4156,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   unsigned int availmemory;
 #endif
 
+#ifdef pp_FSEEK
+  if(flag==LOAD&&slice_load_onlynew==1)flag=RELOAD;
+#endif
   CheckMemory;
   START_TIMER(total_time);
   *errorcode = 0;
@@ -4203,6 +4209,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+      sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
       sd->loaded = 0;
@@ -4304,6 +4311,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         settmin_s, settmax_s, tmin_s, tmax_s, 
         &headersize, &framesize, &error);
 #else
+      sd->ntimes_old = sd->ntimes;
       FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
         slicefilelen);
@@ -4349,20 +4357,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     if(sd->compression_type == COMPRESSED_ZLIB){
       int return_code;
 
-      if(flag==LOAD){
-        return_code = NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed);
-        if(return_code!=0)NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
-        if(return_code!=0)return_code = NewMemory((void **)&sd->compindex, sizeof(compdata)*(1+sd->ntimes));
-      }
-      else if(flag==RELOAD){
-        return_code = ResizeMemory((void **)&sd->qslicedata_compressed, sd->ncompressed);
-        if(return_code!=0)ResizeMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
-        if(return_code!=0)return_code = ResizeMemory((void **)&sd->compindex, sizeof(compdata)*(1+sd->ntimes));
-      }
-      else{
-        ASSERT(FFALSE);
-      }
-
+      return_code = NewResizeMemory(sd->qslicedata_compressed, sd->ncompressed);
+      if(return_code!=0)return_code = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+      if(return_code!=0)return_code = NewResizeMemory(sd->compindex, sizeof(compdata)*(1+sd->ntimes));
       if(return_code==0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
@@ -4381,17 +4378,8 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       int file_unit = 15;
       int return_val;
 
-      if(flag==LOAD){
-        return_val = NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
-        if(return_val!=0)NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
-      }
-      else if(flag==RELOAD){
-        return_val = ResizeMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
-        if(return_val!=0)ResizeMemory((void **)&sd->times, sizeof(float)*sd->ntimes);
-      }
-      else{
-        ASSERT(FFALSE);
-      }
+      return_val = NewResizeMemory(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
+      if(return_val!=0)return_val = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
 
       if(return_val == 0){
         *errorcode = 1;
@@ -4407,11 +4395,13 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         settmin_s, settmax_s, tmin_s, tmax_s, redirect, &error);
 #else
       FORTget_file_unit(&file_unit, &file_unit);
-      FORTgetslicedata(&file_unit, file, sliceshortlabels,
+      ntimes_slice_old = 0;
+      if(flag==RELOAD)ntimes_slice_old = sd->ntimes_old;
+      FORTgetslicedata(&file_unit, file, 
         &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-        &qmin, &qmax, sd->qslicedata, sd->times, &sd->ntimes, &sliceframestep,
+        &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &redirect,
-        slicefilelen, labellen);
+        slicefilelen);
 #endif
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
@@ -4508,15 +4498,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     else{
       int return_code;
 
-      if(flag==LOAD){
-        return_code = NewMemory((void **)&sd->slicelevel, sd->nslicetotal*sizeof(int));
-      }
-      else if(flag==RELOAD){
-        return_code = ResizeMemory((void **)&sd->slicelevel, sd->nslicetotal*sizeof(int));
-      }
-      else{
-        ASSERT(FFALSE);
-      }
+      return_code = NewResizeMemory(sd->slicelevel, sd->nslicetotal*sizeof(int));
       if(return_code == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;

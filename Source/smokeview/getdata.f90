@@ -9,6 +9,13 @@
 !  IF (N_FACE_S>0)  WRITE(LU_GEOM) (SURF_S(I),I=1,N_FACE_S)
 !  IF (N_FACE_D>0)  WRITE(LU_GEOM) (SURF_D(I),I=1,N_FACE_D)
 
+#ifdef pp_INTEL
+#define pp_FSEEK
+#endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
+
 !  ------------------ geomout ------------------------
 
 subroutine geomout(verts, N_VERT_S, faces, N_FACE_S)
@@ -431,22 +438,26 @@ end subroutine writeslicedata2
 
 !  ------------------ getslicedata ------------------------
 
-subroutine getslicedata(file_unit,slicefilename,shortlabel,&
-            is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,nstepsmax,sliceframestep,&
-            settmin_s,settmax_s,tmin_s,tmax_s,redirect_flag)
+subroutine getslicedata(file_unit,slicefilename,&
+            is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
+            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
+            redirect_flag)
+#ifdef pp_INTEL
+#ifdef pp_FSEEK
+USE IFPORT
+#endif
+#endif
 implicit none
 
-character(len=*) :: slicefilename, shortlabel
+character(len=*), intent(in) :: slicefilename
 
-integer, intent(in) :: file_unit
+integer, intent(in) :: file_unit, redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
+
 real, intent(out) :: qmin, qmax
-real, intent(out), dimension(*) :: qdata
-real, intent(out), dimension(*) :: times
-integer, intent(out) :: idir
-integer, intent(out) :: is1, is2, js1, js2, ks1, ks2
-integer, intent(in) :: redirect_flag
-integer, intent(inout) :: nstepsmax
-integer, intent(in) :: settmin_s, settmax_s, sliceframestep
+real, intent(out), dimension(*) :: qdata, times
+
+integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2
+integer, intent(inout) :: ntimes
 real, intent(in) :: tmin_s, tmax_s
 
 real, dimension(:,:,:), pointer :: qq
@@ -457,15 +468,17 @@ logical :: exists
 integer :: ip1, ip2, jp1, jp2, kp1, kp2
 integer :: nxsp, nysp, nzsp
 integer :: error, istart, irowstart
-real :: time, time_max
+real :: timeval, time_max
 character(len=30) :: longlbl, shortlbl, unitlbl
-integer :: lenshort, lenunits
 character(len=3) :: blank
 logical :: connected, load
 integer :: ii, kk
 integer :: joff, koff, volslice
 integer :: count
 integer :: iis1, iis2
+#ifdef pp_FSEEK
+integer :: skip_data
+#endif
 
 lu11 = file_unit
 joff = 0
@@ -492,17 +505,13 @@ longlbl=" "
 shortlbl=" "
 unitlbl=" "
 
+#ifdef pp_FSEEK
+error=FSEEK(lu11,3*(4+30+4),SEEK_SET)
+#else
 read(lu11,iostat=error)longlbl
 read(lu11,iostat=error)shortlbl
 read(lu11,iostat=error)unitlbl
-
-! longlabel=trim(longlbl)//char(0)
-
-lenshort = min(len_trim(shortlabel),6)
-! shortlabel=shortlbl(1:lenshort)//char(0)
-
-lenunits = min(len_trim(unitlbl),6)
-! units=unitlbl(1:lenunits)//char(0)
+#endif
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 is1 = ip1
@@ -527,16 +536,23 @@ qmin = 1.0e30
 qmax = -1.0e30
 count=-1
 time_max=-1000000.0
+#ifdef pp_FSEEK
+if(ntimes/=ntimes_old.and.ntimes_old>0)then
+  skip_data = ntimes_old*((4+4+4)+4+4*nxsp*nysp*nzsp + 4)
+  error = FSEEK(lu11,skip_data,SEEK_CUR)
+  nsteps = ntimes_old
+endif
+#endif
 do
-  read(lu11,iostat=error)time
+  read(lu11,iostat=error)timeval
   if(error.ne.0)exit
-  if((settmin_s.ne.0.and.time<tmin_s).or.time.le.time_max)then
+  if((settmin_s.ne.0.and.timeval<tmin_s).or.timeval.le.time_max)then
     load = .false.
    else
     load = .true.
-    time_max = time
+    time_max = timeval
   endif
-  if(settmax_s.ne.0.and.time>tmax_s)exit
+  if(settmax_s.ne.0.and.timeval>tmax_s)exit
   read(lu11,iostat=error)(((qq(i,j,k),i=1,nxsp),j=1,nysp),k=1,nzsp)
   count=count+1
   if(mod(count,sliceframestep).ne.0)load = .false.
@@ -545,11 +561,11 @@ do
    elseif(joff.eq.1)then
     qq(1:nxsp,2,1:nzsp)=qq(1:nxsp,1,1:nzsp)
   endif
-  if(error.ne.0.or.nsteps.ge.nstepsmax)go to 999
+  if(error.ne.0.or.nsteps.ge.ntimes)go to 999
   if(.not.load)cycle
   nsteps = nsteps + 1
-  times(nsteps) = time
-  if(redirect_flag.eq.0)write(6,10)time
+  times(nsteps) = timeval
+  if(redirect_flag.eq.0)write(6,10)timeval
 10 format(" slice time=",f9.2)
 
   if(idir.eq.3)then
@@ -588,7 +604,7 @@ end do
 999 continue
 ks2 = ks2 + koff
 js2 = js2 + joff
-nstepsmax=nsteps
+ntimes=nsteps
 deallocate(qq)
 close(lu11)
 

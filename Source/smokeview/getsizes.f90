@@ -1,4 +1,11 @@
 
+#ifdef pp_INTEL
+#define pp_FSEEK
+#endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
+
 !  ------------------ getembeddatasize ------------------------
 
 subroutine getembeddatasize(filename,ntimes,nvars,error)
@@ -524,6 +531,11 @@ end subroutine getsliceparms
 
 subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&
    error, settmin_s, settmax_s, tmin_s, tmax_s, headersize, framesize)
+#ifdef pp_INTEL
+#ifdef pp_FSEEK
+USE IFPORT
+#endif
+#endif
 implicit none
 
 character(len=*) :: slicefilename
@@ -540,8 +552,10 @@ integer :: nxsp, nysp, nzsp
 integer :: i, j, k
 
 integer :: lu11
-real :: time, time_max
+real :: timeval, time_max
+#ifndef pp_FSEEK
 real, dimension(:,:,:), pointer :: qq
+#endif
 character(len=30) :: longlbl, shortlbl, unitlbl
 logical :: connected, load
 integer :: idir, joff, koff, volslice
@@ -579,7 +593,9 @@ nxsp = ip2 + 1 - ip1
 nysp = jp2 + 1 - jp1
 nzsp = kp2 + 1 - kp1
 
+#ifndef pp_FSEEK
 allocate(qq(nxsp,nysp,nzsp))
+#endif
 
 call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
 nslicei = nxsp
@@ -591,19 +607,23 @@ framesize = 4*(1+nxsp*nysp*nzsp)+16
 count=-1
 time_max=-1000000.0
 do
-  read(lu11,iostat=error)time
+  read(lu11,iostat=error)timeval
   if(error.ne.0)exit
-  if((settmin_s.ne.0.and.time.lt.tmin_s).or.time.le.time_max)then
+  if((settmin_s.ne.0.and.timeval.lt.tmin_s).or.timeval.le.time_max)then
     load=.false.
    else
     load = .true.
-    time_max=time
+    time_max=timeval
   endif
-  if(settmax_s.ne.0.and.time.gt.tmax_s)then
+  if(settmax_s.ne.0.and.timeval.gt.tmax_s)then
     close(lu11)
     return
   endif
+#ifdef pp_FSEEK
+  error = FSEEK(lu11,4+4*nxsp*nysp*nzsp+4,SEEK_CUR)
+#else
   read(lu11,iostat=error)(((qq(i,j,k),i=1,nxsp),j=1,nysp),k=1,nzsp)
+#endif
   count = count + 1
   if(mod(count,sliceframestep).ne.0)load = .false.
   if(error.ne.0)exit

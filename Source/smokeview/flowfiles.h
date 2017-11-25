@@ -1171,7 +1171,7 @@ typedef struct _slicedata {
   char menulabel[128];
   char menulabel2[128];
   float *rgb_slice_ptr[256];
-  int ntimes,itime;
+  int ntimes,ntimes_old,itime;
   unsigned char *iqsliceframe;
   float above_ground_level;
   int volslice;
