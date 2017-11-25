@@ -59,7 +59,7 @@ call fseek(unit,size,mode,error)
 ! not Intel compiler, not GCC compiler so read in data to advance file pointer
 
 #ifndef pp_FSEEK
-allocate(cbuffer(size)
+allocate(cbuffer(size))
 if(mode==SEEK_SET)rewind(unit)
 do i = 1, nsizes
   read(unit)cbuffer(1:sizes(i))
@@ -89,11 +89,7 @@ inquire(unit=lu20,opened=isopen)
 if(isopen)close(lu20)
 inquire(file=trim(filename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu20,file=trim(filename),form="unformatted",shared,action="read")
-#else
   open(unit=lu20,file=trim(filename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
   error=1
@@ -139,11 +135,7 @@ if(.not.exists)then
   endian_open=1
   return
 endif
-#ifdef pp_SHARED
-open(unit=lunit,file=trim(file),form="unformatted",shared,action="read")
-#else
 open(unit=lunit,file=trim(file),form="unformatted",action="read")
-#endif
 read(lunit)one
 if(one.eq.1)then
   endian_open=0
@@ -276,11 +268,7 @@ inquire(unit=lu26,opened=isopen)
 if(isopen)close(lu26)
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu26,file=trim(zonefilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
   error=1
@@ -347,11 +335,7 @@ inquire(unit=lu15,opened=isopen)
 if(isopen)close(lu15)
 inquire(file=trim(patchfilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu15,file=trim(patchfilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu15,file=trim(patchfilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The boundary file name, ',trim(patchfilename),' does not exist'
   error=1
@@ -436,11 +420,7 @@ if(connected)close(lu10)
 
 inquire(file=trim(partfilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu10,file=trim(partfilename),form="formatted",shared,action="read")
-#else
   open(unit=lu10,file=trim(partfilename),form="formatted",action="read")
-#endif
  else
   write(6,*)' The particle file name, ',trim(partfilename),' does not exist'
   error=-1
@@ -484,11 +464,7 @@ if(connected)close(lu10)
 
 inquire(file=trim(partfilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu10,file=trim(partfilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu10,file=trim(partfilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The particle file name, ',trim(partfilename),' does not exist'
   error=-1
@@ -560,11 +536,7 @@ if(ip1.eq.-1.or.ip2.eq.-1.or.jp1.eq.-1.or.jp2.eq.-1.or.kp1.eq.-1.or.kp2.eq.-1)th
 
   inquire(file=trim(slicefilename),exist=exists)
   if(exists)then
-#ifdef pp_SHARED
-    open(unit=lu11,file=trim(slicefilename),form="unformatted",shared,action="read")
-#else
     open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
-#endif
    else
     error=1
     return
@@ -627,11 +599,7 @@ if(connected)close(lu11)
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
-#endif
  else
   error=1
   return
@@ -713,11 +681,7 @@ if(connected)close(lu11)
 
 inquire(file=partfilename,exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu11,file=partfilename,form="unformatted",shared,action="read")
-#else
   open(unit=lu11,file=partfilename,form="unformatted",action="read")
-#endif
  else
   error=1
   return
@@ -747,11 +711,7 @@ exists=.true.
 
 inquire(file=slicefilename,exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu11,file=slicefilename,form="unformatted",shared,action="read")
-#else
   open(unit=lu11,file=slicefilename,form="unformatted",action="read")
-#endif
  else
   error=1
   return
@@ -803,11 +763,7 @@ inquire(unit=lu15,opened=isopen)
 if(isopen)close(lu15)
 inquire(file=trim(boundaryfilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu15,file=trim(boundaryfilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu15,file=trim(boundaryfilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The boundary file name, ',trim(boundaryfilename),' does not exist'
   error=1
@@ -876,11 +832,7 @@ inquire(unit=lu15,opened=isopen)
 if(isopen)close(lu15)
 inquire(file=boundaryfilename,exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu15,file=boundaryfilename,form="unformatted",shared,action="read")
-#else
   open(unit=lu15,file=boundaryfilename,form="unformatted",action="read")
-#endif
  else
   write(6,*)' The boundary file name, ',boundaryfilename,' does not exist'
   error=1
@@ -1058,11 +1010,7 @@ inquire(unit=lu20,opened=isopen)
 if(isopen)close(lu20)
 inquire(file=trim(filename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu20,file=trim(filename),form="unformatted",shared,action="read")
-#else
   open(unit=lu20,file=trim(filename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
   error=1
@@ -1132,11 +1080,7 @@ inquire(unit=lu26,opened=isopen)
 if(isopen)close(lu26)
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu26,file=trim(zonefilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
   error=1
@@ -1470,11 +1414,7 @@ if(connected)close(lu11)
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",shared,action="read")
-#else
   open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
-#endif
  else
   write(6,*)' the slice file ',trim(slicefilename),' does not exist'
   nsteps = 0
@@ -1805,11 +1745,7 @@ if(isotest.eq.0)then
   error=0
   inquire(file=qfilename,exist=exists)
   if(exists)then
-#ifdef pp_SHARED
-    open(unit=u_in,file=qfilename,form="unformatted",shared,action="read",iostat=error2)
-#else
     open(unit=u_in,file=qfilename,form="unformatted",action="read",iostat=error2)
-#endif
    else
     write(6,*)' The file name, ',trim(qfilename),' does not exist'
     read(5,*)dummy
