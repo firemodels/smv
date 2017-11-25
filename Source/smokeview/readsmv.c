@@ -8073,6 +8073,8 @@ typedef struct {
       sd = sliceinfo + nn_slice - 1;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
+      sd->globalmax = -1.0e30;
+      sd->globalmin = -sd->globalmax;
       sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;

@@ -4126,7 +4126,15 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
       FORTget_file_unit(&file_unit, &file_unit);
       ntimes_slice_old = 0;
-      if(flag==RELOAD)ntimes_slice_old = sd->ntimes_old;
+      if(flag==RELOAD){
+        ntimes_slice_old = sd->ntimes_old;
+        qmin = sd->globalmin;
+        qmax = sd->globalmax;
+      }
+      else{
+        qmin = 1.0e30;
+        qmax = -1.0e30;
+      }
       FORTgetslicedata(&file_unit, file, 
         &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
         &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,

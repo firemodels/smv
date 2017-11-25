@@ -453,7 +453,7 @@ character(len=*), intent(in) :: slicefilename
 
 integer, intent(in) :: file_unit, redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
 
-real, intent(out) :: qmin, qmax
+real, intent(inout) :: qmin, qmax
 real, intent(out), dimension(*) :: qdata, times
 
 integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2
@@ -532,8 +532,6 @@ call getslicefiledirection(is1,is2,iis1,iis2,js1,js2,ks1,ks2,idir,joff,koff,vols
 
 allocate(qq(nxsp,nysp+joff,nzsp+koff))
 
-qmin = 1.0e30
-qmax = -1.0e30
 count=-1
 time_max=-1000000.0
 #ifdef pp_FSEEK
