@@ -4101,7 +4101,6 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     else{
-      FILE_SIZE labellen = LABELLEN;
       int file_unit = 15;
       int return_val;
 
