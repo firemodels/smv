@@ -16,13 +16,6 @@
 #include "smokeviewvars.h"
 #include "IOslice.h"
 
-#ifdef pp_INTEL
-#define pp_FSEEK
-#endif
-#ifdef pp_GCC
-#define pp_FSEEK
-#endif
-
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\

@@ -7,6 +7,14 @@
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif
 
+#ifdef pp_INTEL
+#define pp_FSEEK
+#endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
+
+
 //*** options: windows
 
 #ifdef WIN32

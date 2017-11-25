@@ -9,13 +9,6 @@
 #include "smokeviewvars.h"
 #include "MALLOC.h"
 
-#ifdef pp_INTEL
-#define pp_FSEEK
-#endif
-#ifdef pp_GCC
-#define pp_FSEEK
-#endif
-
 int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 
 GLUI_Rollout *ROLLOUT_slice_bound=NULL;
