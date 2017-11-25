@@ -35,7 +35,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
          csphere.o dmalloc.o lightsmoke.o smv_endian.o histogram.o readfiles.o utilities.o \
          isobox.o file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o \
-         fdsmodules.o gsmv.o getdata.o getsizes.o 
+         fdsmodules.o gsmv.o getdata.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur

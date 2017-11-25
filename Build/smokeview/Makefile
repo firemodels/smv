@@ -54,7 +54,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_devices.o glui_shooter.o glui_w
       glui_colorbar.o skybox.o file_util.o string_util.o startup.o glui_trainer.o\
       shaders.o unit.o threader.o histogram.o translate.o update.o viewports.o\
       smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
-      fdsmodules.o gsmv.o getdata.o getsizes.o
+      fdsmodules.o gsmv.o getdata.o
 
 ifeq ($(LUA_SCRIPTING),true)
 obj += c_api.o lua_api.o
