@@ -343,7 +343,7 @@ intel_osx_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
 intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_osx_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_osx_64 : LFLAGS    = -m64 -static-intel -framework OpenGL -framework GLUT -mmacosx-version-min=10.4
+intel_osx_64 : LFLAGS    = -m64 -static-intel -lifport -framework OpenGL -framework GLUT -mmacosx-version-min=10.4
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icpc
 intel_osx_64 : FC        = ifort
@@ -357,7 +357,7 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.4 -stand:f08
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64_db : LFLAGS    = -m64 -static-intel -framework OpenGL -framework GLUT -mmacosx-version-min=10.4
+intel_osx_64_db : LFLAGS    = -m64 -static-intel -lifport -framework OpenGL -framework GLUT -mmacosx-version-min=10.4
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
