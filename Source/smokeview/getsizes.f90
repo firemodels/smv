@@ -2,6 +2,9 @@
 #ifdef pp_INTEL
 #define pp_FSEEK
 #endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
 
 !  ------------------ getembeddatasize ------------------------
 
@@ -550,7 +553,11 @@ integer :: i, j, k
 
 integer :: lu11
 real :: timeval, time_max
-#ifndef pp_FSEEK
+#ifdef pp_FSEEK
+#ifdef pp_GCC
+integer, parameter :: SEEK_CUR=1
+#endif
+#else
 real, dimension(:,:,:), pointer :: qq
 #endif
 character(len=30) :: longlbl, shortlbl, unitlbl
@@ -617,7 +624,12 @@ do
     return
   endif
 #ifdef pp_FSEEK
+#ifdef pp_INTEL
   error = FSEEK(lu11,4+4*nxsp*nysp*nzsp+4,SEEK_CUR)
+#endif
+#ifdef pp_GCC
+  CALL FSEEK(lu11,4+4*nxsp*nysp*nzsp+4,SEEK_CUR, error)
+#endif
 #else
   read(lu11,iostat=error)(((qq(i,j,k),i=1,nxsp),j=1,nysp),k=1,nzsp)
 #endif

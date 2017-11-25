@@ -12,6 +12,9 @@
 #ifdef pp_INTEL
 #define pp_FSEEK
 #endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
 
 !  ------------------ geomout ------------------------
 
@@ -474,6 +477,9 @@ integer :: joff, koff, volslice
 integer :: count
 integer :: iis1, iis2
 #ifdef pp_FSEEK
+#ifdef pp_GCC
+integer, parameter :: SEEK_SET=0, SEEK_CUR=1
+#endif
 integer :: skip_data
 #endif
 
@@ -503,7 +509,12 @@ shortlbl=" "
 unitlbl=" "
 
 #ifdef pp_FSEEK
+#ifdef pp_INTEL
 error=FSEEK(lu11,3*(4+30+4),SEEK_SET)
+#endif
+#ifdef pp_GCC
+CALL FSEEK(lu11,3*(4+30+4),SEEK_SET,error)
+#endif
 #else
 read(lu11,iostat=error)longlbl
 read(lu11,iostat=error)shortlbl
@@ -534,7 +545,12 @@ time_max=-1000000.0
 #ifdef pp_FSEEK
 if(ntimes/=ntimes_old.and.ntimes_old>0)then
   skip_data = ntimes_old*((4+4+4)+4+4*nxsp*nysp*nzsp + 4)
+#ifdef pp_INTEL
   error = FSEEK(lu11,skip_data,SEEK_CUR)
+#endif
+#ifdef pp_GCC
+  call FSEEK(lu11,skip_data,SEEK_CUR,error)
+#endif
   nsteps = ntimes_old
 endif
 #endif
