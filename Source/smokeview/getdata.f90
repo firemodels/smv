@@ -9,12 +9,66 @@
 !  IF (N_FACE_S>0)  WRITE(LU_GEOM) (SURF_S(I),I=1,N_FACE_S)
 !  IF (N_FACE_D>0)  WRITE(LU_GEOM) (SURF_D(I),I=1,N_FACE_D)
 
+
 #ifdef pp_INTEL
 #define pp_FSEEK
 #endif
 #ifdef pp_GCC
 #define pp_FSEEK
 #endif
+
+!  ------------------ module cio ------------------------
+
+module cio
+use ifport, only: fseek, seek_set, seek_cur
+public ffseek, set_seek, set_cur
+
+contains
+
+!  ------------------ ffseek ------------------------
+
+subroutine ffseek(unit,sizes,nsizes,mode,error)
+#ifdef pp_INTEL
+use ifport, only: fseek
+#endif
+implicit none
+integer, intent(in) :: unit, mode, nsizes
+integer, intent(in), dimension(nsizes) :: sizes
+integer, intent(out) :: error
+#ifdef pp_FSEEK
+integer :: i, size
+#else
+character(len=1), dimension(:) :: cbuffer
+#endif
+
+#ifdef pp_FSEEK
+size = 0
+do i = 1, nsizes
+  size = size + 4 + sizes(i) + 4
+end do
+#endif
+
+#ifdef pp_INTEL
+error = fseek(unit,size,mode)
+#endif
+
+#ifdef pp_GCC
+call fseek(unit,size,mode,error)
+#endif
+
+! not Intel compiler, not GCC compiler so read in data to advance file pointer
+
+#ifndef pp_FSEEK
+allocate(cbuffer(size)
+if(mode==SEEK_SET)rewind(unit)
+do i = 1, nsizes
+  read(unit)cbuffer(1:sizes(i))
+end do
+deallocate(cbuffer)
+#endif
+
+end subroutine ffseek
+end module cio
 
 !  ------------------ getembeddatasize ------------------------
 
@@ -541,11 +595,7 @@ end subroutine getsliceparms
 
 subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&
    error, settmin_s, settmax_s, tmin_s, tmax_s, headersize, framesize)
-#ifdef pp_INTEL
-#ifdef pp_FSEEK
-USE IFPORT
-#endif
-#endif
+use cio
 implicit none
 
 character(len=*) :: slicefilename
@@ -563,17 +613,11 @@ integer :: i, j, k
 
 integer :: lu11
 real :: timeval, time_max
-#ifdef pp_FSEEK
-#ifdef pp_GCC
-integer, parameter :: SEEK_CUR=1
-#endif
-#else
-real, dimension(:,:,:), pointer :: qq
-#endif
 character(len=30) :: longlbl, shortlbl, unitlbl
 logical :: connected, load
 integer :: idir, joff, koff, volslice
 integer :: count
+integer :: sizes(3), nsizes
 
 error=0
 lu11 = 11
@@ -593,23 +637,22 @@ if(exists)then
   return
 endif
 
-headersize = 0
-read(lu11,iostat=error)longlbl
-read(lu11,iostat=error)shortlbl
-read(lu11,iostat=error)unitlbl
-headersize = headersize + 3*38
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+headersize = 3*(4+30+4)
+
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
-headersize = headersize + 6*4 + 8
+headersize = headersize + 4 + 6*4 + 4
 if(error.ne.0)return
 
 nxsp = ip2 + 1 - ip1
 nysp = jp2 + 1 - jp1
 nzsp = kp2 + 1 - kp1
-
-#ifndef pp_FSEEK
-allocate(qq(nxsp,nysp,nzsp))
-#endif
 
 call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
 nslicei = nxsp
@@ -620,6 +663,8 @@ framesize = 4*(1+nxsp*nysp*nzsp)+16
 
 count=-1
 time_max=-1000000.0
+sizes(1) = 4*nxsp*nysp*nzsp
+nsizes = 1
 do
   read(lu11,iostat=error)timeval
   if(error.ne.0)exit
@@ -633,16 +678,7 @@ do
     close(lu11)
     return
   endif
-#ifdef pp_FSEEK
-#ifdef pp_INTEL
-  error = FSEEK(lu11,4+4*nxsp*nysp*nzsp+4,SEEK_CUR)
-#endif
-#ifdef pp_GCC
-  CALL FSEEK(lu11,4+4*nxsp*nysp*nzsp+4,SEEK_CUR, error)
-#endif
-#else
-  read(lu11,iostat=error)(((qq(i,j,k),i=1,nxsp),j=1,nysp),k=1,nzsp)
-#endif
+  call ffseek(lu11,sizes,nsizes,seek_cur,error)
   count = count + 1
   if(mod(count,sliceframestep).ne.0)load = .false.
   if(error.ne.0)exit
@@ -1393,11 +1429,7 @@ subroutine getslicedata(file_unit,slicefilename,&
             is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
             sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
             redirect_flag)
-#ifdef pp_INTEL
-#ifdef pp_FSEEK
-USE IFPORT
-#endif
-#endif
+use cio
 implicit none
 
 character(len=*), intent(in) :: slicefilename
@@ -1427,12 +1459,8 @@ integer :: ii, kk
 integer :: joff, koff, volslice
 integer :: count
 integer :: iis1, iis2
-#ifdef pp_FSEEK
-#ifdef pp_GCC
-integer, parameter :: SEEK_SET=0, SEEK_CUR=1
-#endif
-integer :: skip_data
-#endif
+integer, allocatable, dimension(:) :: sizes
+integer :: nsizes
 
 lu11 = file_unit
 joff = 0
@@ -1459,18 +1487,14 @@ longlbl=" "
 shortlbl=" "
 unitlbl=" "
 
-#ifdef pp_FSEEK
-#ifdef pp_INTEL
-error=FSEEK(lu11,3*(4+30+4),SEEK_SET)
-#endif
-#ifdef pp_GCC
-CALL FSEEK(lu11,3*(4+30+4),SEEK_SET,error)
-#endif
-#else
-read(lu11,iostat=error)longlbl
-read(lu11,iostat=error)shortlbl
-read(lu11,iostat=error)unitlbl
-#endif
+allocate(sizes(3))
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+deallocate(sizes)
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 is1 = ip1
@@ -1493,18 +1517,17 @@ allocate(qq(nxsp,nysp+joff,nzsp+koff))
 
 count=-1
 time_max=-1000000.0
-#ifdef pp_FSEEK
 if(ntimes/=ntimes_old.and.ntimes_old>0)then
-  skip_data = ntimes_old*((4+4+4)+4+4*nxsp*nysp*nzsp + 4)
-#ifdef pp_INTEL
-  error = FSEEK(lu11,skip_data,SEEK_CUR)
-#endif
-#ifdef pp_GCC
-  call FSEEK(lu11,skip_data,SEEK_CUR,error)
-#endif
+  allocate(sizes(2*ntimes_old))
+  do i = 1, ntimes_old
+    sizes(2*i-1) = 4
+    sizes(2*i) = 4*nxsp*nysp*nzsp
+  end do
+  nsizes = 2*ntimes_old
+  call ffseek(lu11,sizes,nsizes,seek_cur,error)
+  deallocate(sizes)
   nsteps = ntimes_old
 endif
-#endif
 do
   read(lu11,iostat=error)timeval
   if(error.ne.0)exit
