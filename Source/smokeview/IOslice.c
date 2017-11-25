@@ -3881,52 +3881,6 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
-// ------------------GetSliceFileDirection------------------------
-
-void GetSliceFileDirection(int is1, int is2, int js1, int *js2, int ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice){
-  int nxsp, nysp, nzsp, imin;
-
-  nxsp =  is2+1-is1;
-  nysp = *js2+1-js1;
-  nzsp = *ks2+1-ks1;
-  joff = 0;
-  koff = 0;
-  volslice = 0;
-  if(is1!=is2&&js1!=*js2&&ks1!=*ks2){
-    *idir = 1;
-    is2 = is1;
-    *volslice = 1;
-    return;
-  }
-  imin = MIN(nxsp, nysp);
-  imin = MIN(imin, nzsp);
-  if(nxsp!=imin){
-    *idir = 1;
-    is2 = is1;
-  }
-  else if(nysp!=imin){
-    *idir = 2;
-    *js2 = js1;
-  }
-  else{
-    *idir = 3;
-    *ks2 = ks1;
-  }
-  if(is1!=is2&&js1!=*js2){
-    *idir = 1;
-    *joff = 1;
-  }
-  else if(is1!=is2&&ks1!=*ks2){
-    *idir = 1;
-    *koff = 1;
-  }
-  else if(js1!=*js2&&ks1!=*ks2){
-    *idir = 2;
-    *koff = 1;
-  }
-  return;
-}
-
   /* ------------------ ReadSlice ------------------------ */
 
 void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
