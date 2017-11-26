@@ -158,7 +158,7 @@ intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = smokediff_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 -lifport $(MACFORTLIBS)
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 
