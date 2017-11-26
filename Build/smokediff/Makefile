@@ -83,7 +83,7 @@ LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
 # ------------- 32 bit Linux gnu ----------------
 
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
@@ -96,8 +96,8 @@ gnu_linux_32 : $(obj)
 
 # ------------- 64 bit Linux gnu ----------------
 
-gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX $(GITINFO)
+gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
@@ -110,8 +110,8 @@ gnu_linux_64 : $(obj)
 # ------------- OSX gnu ----------------
 #  gnu osx
 
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D  pp_OSX $(GITINFO)
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
@@ -119,12 +119,12 @@ gnu_osx_64 : FC        = gfortran
 gnu_osx_64 : exe       = smokediff_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L/usr/local/lib/gcc/5 -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -lgfortran
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -D pp_INTEL
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
@@ -132,9 +132,9 @@ intel_linux_64 : FC        = ifort
 intel_linux_64 : exe       = smokediff_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
 
-intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX
+intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX -D pp_INTEL
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
@@ -142,7 +142,7 @@ intel_linux_64_db : FC        = ifort
 intel_linux_64_db : exe       = smokediff_linux_64_db
 
 intel_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) $(LINUXFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
 	
 
 MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
@@ -150,7 +150,7 @@ MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
 # ------------- OSX 64 ----------------
 #  64 bit OSX
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -D pp_INTEL
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
