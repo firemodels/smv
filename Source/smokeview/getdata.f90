@@ -20,8 +20,14 @@
 !  ------------------ module cio ------------------------
 
 module cio
-use ifport, only: fseek, seek_set, seek_cur
-public ffseek, set_seek, set_cur
+#ifdef pp_INTEL
+use ifport, only: seek_set, seek_cur
+#endif
+public ffseek, seek_set, seek_cur
+
+#ifndef pp_FSEEK
+integer, parameter :: seek_set=0, seek_cur=1
+#endif
 
 contains
 
@@ -35,9 +41,9 @@ implicit none
 integer, intent(in) :: unit, mode, nsizes
 integer, intent(in), dimension(nsizes) :: sizes
 integer, intent(out) :: error
-#ifdef pp_FSEEK
+
 integer :: i, size
-#else
+#ifndef pp_FSEEK
 character(len=1), dimension(:) :: cbuffer
 #endif
 
@@ -59,8 +65,12 @@ call fseek(unit,size,mode,error)
 ! not Intel compiler, not GCC compiler so read in data to advance file pointer
 
 #ifndef pp_FSEEK
+size = sizes(1)
+do i = 2, nsizes
+  size = max(size,sizes(i))
+end do
 allocate(cbuffer(size))
-if(mode==SEEK_SET)rewind(unit)
+if(mode==seek_set)rewind(unit)
 do i = 1, nsizes
   read(unit)cbuffer(1:sizes(i))
 end do
