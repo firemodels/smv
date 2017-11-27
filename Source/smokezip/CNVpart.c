@@ -363,7 +363,6 @@ void convert_part(part *parti, int *thread_index){
 
   lenfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error,lenfile);
   UNLOCK_COMPRESS;
 
@@ -579,8 +578,6 @@ void Get_Part_Bounds(void){
     PRINTF("  Examining %s\n",parti->file);
     lenfile=strlen(parti->file);
     LOCK_COMPRESS;
-    unit=15;
-    FORTget_file_unit(&unit,&parti->unit_start);
     FORTopenpart(parti->file,&unit,&error1,lenfile);
     UNLOCK_COMPRESS;
 
@@ -718,7 +715,6 @@ void part2iso(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 
@@ -1079,7 +1075,6 @@ void part2object(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 

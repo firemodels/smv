@@ -78,18 +78,14 @@ character(len=*), intent(in) :: filename
 integer, intent(out) :: ntimes, nvars, error
 
 integer :: lu20, finish
-logical :: isopen,exists
+logical :: exists
 real :: time, dummy
 integer :: i, one, version
 integer :: nvert_s, nvert_d, nface_s, nface_d
 
-lu20=20
-inquire(unit=lu20,opened=isopen)
-
-if(isopen)close(lu20)
 inquire(file=trim(filename),exist=exists)
 if(exists)then
-  open(unit=lu20,file=trim(filename),form="unformatted",action="read")
+  open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
  else
   write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
   error=1
@@ -116,36 +112,6 @@ close(lu20)
 
 end subroutine getembeddatasize
 
-!  ------------------ endian_open ------------------------
-
-integer function endian_open(file,lunit)
-character(len=*), intent(in) :: file
-integer, intent(in) :: lunit
-
-logical isopen,exists
-integer :: error
-integer :: one
-
-error=0
-inquire(unit=lunit,opened=isopen)
-if(isopen)close(lunit)
-
-inquire(file=trim(file),exist=exists)
-if(.not.exists)then
-  endian_open=1
-  return
-endif
-open(unit=lunit,file=trim(file),form="unformatted",action="read")
-read(lunit)one
-if(one.eq.1)then
-  endian_open=0
-  rewind(lunit)
- else
-  endian_open=1
-endif
-return
-end function endian_open
-
 !  ------------------ fcreate_part5sizefile ------------------------
 
 subroutine fcreate_part5sizefile(part5file, part5sizefile, angle_flag, redirect_flag, error)
@@ -162,16 +128,8 @@ integer :: i, j,one,idummy
 real :: rdummy,time
 integer :: endian_open
 
-error=1
-lu20=20
-
-error=endian_open(trim(part5file),lu20)
-if(error.ne.0)return
-
-lu21=21
-inquire(unit=lu21,opened=isopen)
-if(isopen)close(lu21)
-open(unit=lu21,file=trim(part5sizefile),form="formatted",action="write")
+open(newunit=lu20,file=trim(part5file),form="unformatted",action="read")
+open(newunit=lu21,file=trim(part5sizefile),form="formatted",action="write")
 
 error=0
 read(lu20,iostat=error)one
@@ -252,23 +210,18 @@ implicit none
 character(len=*) :: zonefilename
 integer, intent(out) :: nzonet,nrooms,nfires,error
 
-logical :: isopen, exists
+logical :: exists
 integer :: lu26, version
 integer :: i
 real :: dummy, dummy2
 integer :: exit_all
 integer :: file_unit
 
-call get_file_unit(file_unit,26)
-lu26 = file_unit
 error = 0
 
-inquire(unit=lu26,opened=isopen)
-
-if(isopen)close(lu26)
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",action="read")
+  open(newunit=lu26,file=trim(zonefilename),form="unformatted",action="read")
  else
   write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
   error=1
@@ -383,117 +336,6 @@ framesize = 8+4+8*npatch+npatchsize*4
 return
 end subroutine getpatchsizes2
 
-!  ------------------ getsizesa ------------------------
-!    FORTgetsizesa(file,&npartpoint,&npartframes,lenfile);
-
-subroutine getsizesa(partfilename,npartpoints,npartframes)
-implicit none
-
-integer, intent(out) :: npartpoints, npartframes
-character(len=*) :: partfilename
-
-integer :: lu10
-integer :: error
-logical :: connected,exists
-character(len=255) :: line
-integer :: nparts
-integer :: nlines
-integer :: i
-real :: dummy
-
-lu10 = 10
-error=0
-npartpoints=0
-npartframes=0
-inquire(unit=lu10,opened=connected)
-if(connected)close(lu10)
-
-inquire(file=trim(partfilename),exist=exists)
-if(exists)then
-  open(unit=lu10,file=trim(partfilename),form="formatted",action="read")
- else
-  write(6,*)' The particle file name, ',trim(partfilename),' does not exist'
-  error=-1
-endif
-do i = 1, 5
-  read(lu10,'(a)')line
-end do
-do
-  read(lu10,*,end=999)dummy,nparts
-  nlines = (nparts-1)*3/6 + 1
-  do i = 1, nlines
-    read(lu10,'(a)',end=999)line
-  end do
-  npartpoints = npartpoints + nparts
-  npartframes = npartframes + 1
-end do
-999 continue
-close(lu10)
-return
-end subroutine getsizesa
-
-!  ------------------ getsizes ------------------------
-
-subroutine getsizes(file_unit,partfilename,nb,nv,nspr,mxframepoints,showstaticsmoke, error)
-implicit none
-
-integer, intent(out) :: nb, nv, nspr, mxframepoints, showstaticsmoke, error
-integer, intent(in) :: file_unit
-
-integer :: lu10, ii, i, j, k
-real :: xx, yy
-character(len=*) :: partfilename
-logical :: exists, connected
-
-integer :: ibar1, jbar1, kbar1
-
-lu10 = file_unit
-error=0
-inquire(unit=lu10,opened=connected)
-if(connected)close(lu10)
-
-inquire(file=trim(partfilename),exist=exists)
-if(exists)then
-  open(unit=lu10,file=trim(partfilename),form="unformatted",action="read")
- else
-  write(6,*)' The particle file name, ',trim(partfilename),' does not exist'
-  error=-1
-endif
-read(lu10,iostat=error) xx,xx,yy,ii,mxframepoints
-showstaticsmoke=0
-if(yy.lt.0)showstaticsmoke=1
-if(error.ne.0)return
-
-read(lu10,iostat=error) ibar1,jbar1,kbar1
-if(error.ne.0)return
-
-read(lu10,iostat=error) (xx,i=0,ibar1),(xx,j=0,jbar1),(xx,k=0,kbar1)
-if(error.ne.0)return
-
-read(lu10,iostat=error) nb
-if(error.ne.0)return
-
-do i=1,nb
-  read(lu10,iostat=error) ii,ii,ii,ii,ii,ii,ii
-  if(error.ne.0)return
-end do
-
-read(lu10,iostat=error) nv
-if(error.ne.0)return
-
-do i=1,nv
-  read(lu10,iostat=error) ii,ii,ii,ii,ii,ii,ii
-  if(error.ne.0)return
-end do
-
-read(lu10,iostat=error) nspr
-if(error.ne.0)return
-rewind(lu10)
-
-return
-end subroutine getsizes
-
-
 !  ------------------ getsliceparms ------------------------
 
 subroutine getsliceparms(slicefilename, ip1, ip2, jp1, jp2, kp1, kp2, ni, nj, nk, slice3d, error)
@@ -520,13 +362,10 @@ if(ip1.eq.-1.or.ip2.eq.-1.or.jp1.eq.-1.or.jp2.eq.-1.or.kp1.eq.-1.or.kp2.eq.-1)th
   kp1 = 0
   kp2 = 0
   error=0
-  lu11 = 11
-  inquire(unit=lu11,opened=connected)
-  if(connected)close(lu11)
 
   inquire(file=trim(slicefilename),exist=exists)
   if(exists)then
-    open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+    open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
    else
     error=1
     return
@@ -648,26 +487,20 @@ end subroutine getslicesizes
 
 !  ------------------ openpart ------------------------
 
-subroutine openpart(partfilename, unit, error)
+subroutine openpart(partfilename, fileunit, error)
 implicit none
 
 character(len=*) :: partfilename
 logical :: exists
 
-integer, intent(in) :: unit
+integer, intent(out) :: fileunit
 integer, intent(out) :: error
 logical :: connected
 
-integer :: lu11
-
 error=0
-lu11 = unit
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
-
 inquire(file=partfilename,exist=exists)
 if(exists)then
-  open(unit=lu11,file=partfilename,form="unformatted",action="read")
+  open(newunit=fileunit,file=partfilename,form="unformatted",action="read")
  else
   error=1
   return
@@ -681,32 +514,27 @@ end subroutine openpart
 subroutine openslice(slicefilename, unitnum, is1, is2, js1, js2, ks1, ks2, error)
 implicit none
 
-character(len=*) :: slicefilename
+character(len=*), intent(in) :: slicefilename
 logical :: exists
 
-integer, intent(inout) :: unitnum
-integer, intent(out) :: is1, is2, js1, js2, ks1, ks2
-integer, intent(out) :: error
+integer, intent(out) :: unitnum, is1, is2, js1, js2, ks1, ks2, error
 character(len=30) :: longlbl, shortlbl, unitlbl
 
-integer :: lu11
-
 error=0
-lu11 = unitnum;
 exists=.true.
 
 inquire(file=slicefilename,exist=exists)
 if(exists)then
-  open(unit=lu11,file=slicefilename,form="unformatted",action="read")
+  open(newunit=unitnum,file=slicefilename,form="unformatted",action="read")
  else
   error=1
   return
 endif
-read(lu11,iostat=error)longlbl
-read(lu11,iostat=error)shortlbl
-read(lu11,iostat=error)unitlbl
+read(unitnum,iostat=error)longlbl
+read(unitnum,iostat=error)shortlbl
+read(unitnum,iostat=error)unitlbl
 
-read(lu11,iostat=error)is1, is2, js1, js2, ks1, ks2
+read(unitnum,iostat=error)is1, is2, js1, js2, ks1, ks2
 
 return
 end subroutine openslice
@@ -973,13 +801,9 @@ integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
 integer :: version
 
-lu20=20
-inquire(unit=lu20,opened=isopen)
-
-if(isopen)close(lu20)
 inquire(file=trim(filename),exist=exists)
 if(exists)then
-  open(unit=lu20,file=trim(filename),form="unformatted",action="read")
+  open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
  else
   write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
   error=1
@@ -1041,15 +865,9 @@ integer :: lu26,i,j,ii,ii2,idummy,version
 real :: dummy, qdot
 logical :: isopen, exists
 
-call get_file_unit(file_unit,26)
-lu26 = file_unit
-
-inquire(unit=lu26,opened=isopen)
-
-if(isopen)close(lu26)
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",action="read")
+  open(newunit=lu26,file=trim(zonefilename),form="unformatted",action="read")
  else
   write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
   error=1
@@ -1238,10 +1056,9 @@ end subroutine getslicefiledirection
 
 !  ------------------ writeslicedata ------------------------
 
-subroutine writeslicedata(file_unit,slicefilename,is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes,redirect_flag)
+subroutine writeslicedata(slicefilename,is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes,redirect_flag)
 implicit none
 
-integer, intent(in) :: file_unit
 character(len=*),intent(in) :: slicefilename
 integer, intent(in) :: is1, is2, js1, js2, ks1, ks2, redirect_flag
 real, intent(in), dimension(*) :: qdata
@@ -1254,10 +1071,10 @@ character(len=30) :: longlbl, shortlbl, unitlbl
 integer :: ibeg, iend, nframe
 integer :: nxsp, nysp, nzsp
 integer :: i,ii
-inquire(unit=file_unit,opened=connected)
-if(connected)close(file_unit)
+integer :: file_unit
 
-open(unit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
+
+open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 
 longlbl=" "
 shortlbl=" "
@@ -1288,18 +1105,18 @@ end subroutine writeslicedata
 
 !  ------------------ writeslicedata2 ------------------------
 
-subroutine writeslicedata2(file_unit,slicefilename,&
+subroutine writeslicedata2(slicefilename,&
    longlabel,shortlabel,unitlabel,&
    is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes)
 implicit none
 
-integer, intent(in) :: file_unit
 character(len=*),intent(in) :: slicefilename, longlabel, shortlabel, unitlabel
 integer, intent(in) :: is1, is2, js1, js2, ks1, ks2
 real, intent(in), dimension(*) :: qdata
 real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
+integer :: file_unit
 logical :: connected
 integer :: error
 character(len=30) :: longlabel30, shortlabel30, unitlabel30
@@ -1309,7 +1126,7 @@ integer :: i,ii
 inquire(unit=file_unit,opened=connected)
 if(connected)close(file_unit)
 
-open(unit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
+open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 
 longlabel30 = trim(longlabel)
 shortlabel30 = trim(shortlabel)
@@ -1554,21 +1371,20 @@ character(len=*) :: endianfilename
 integer :: one
 integer :: file_unit
 
-call get_file_unit(file_unit,31)
-open(unit=file_unit,file=trim(endianfilename),form="unformatted")
+open(newunit=file_unit,file=trim(endianfilename),form="unformatted")
 one=1
-write(31)one
+write(file_unit)one
 close(file_unit)
 return
 end subroutine endianout
 
 !  ------------------ outsliceheader ------------------------
 
-subroutine outsliceheader(slicefilename,unit,ip1, ip2, jp1, jp2, kp1, kp2, error)
+subroutine outsliceheader(slicefilename,fileunit,ip1, ip2, jp1, jp2, kp1, kp2, error)
 implicit none
 
 character(len=*) :: slicefilename
-integer, intent(in) :: unit
+integer, intent(out) :: fileunit
 integer, intent(in) :: ip1, ip2, jp1, jp2, kp1, kp2
 integer, intent(out) :: error
 
@@ -1576,20 +1392,16 @@ character(len=30) :: longlbl, shortlbl, unitlbl
 integer :: lu11
 logical :: connected
 
-lu11 = unit
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
-
-open(unit=lu11,file=trim(slicefilename),form="unformatted")
+open(newunit=fileunit,file=trim(slicefilename),form="unformatted")
 
 longlbl= "long                          "
 shortlbl="short                         "
 unitlbl= "unit                          "
-write(lu11,iostat=error)longlbl
-write(lu11,iostat=error)shortlbl
-write(lu11,iostat=error)unitlbl
+write(fileunit,iostat=error)longlbl
+write(fileunit,iostat=error)shortlbl
+write(fileunit,iostat=error)unitlbl
 
-write(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+write(fileunit,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 
 end subroutine outsliceheader
 
@@ -1623,7 +1435,8 @@ subroutine outboundaryheader(boundaryfilename,boundaryunitnumber,npatches,pi1,pi
 implicit none
 
 character(len=*), intent(in) :: boundaryfilename
-integer, intent(in) :: boundaryunitnumber, npatches
+integer, intent(in) :: npatches
+integer, intent(out) :: boundaryunitnumber
 integer, intent(in), dimension(npatches) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
 integer, intent(out) :: error
 
@@ -1631,17 +1444,16 @@ character(len=30) :: blank
 integer :: n, lu15
 
 error=0
-lu15 = boundaryunitnumber
-open(unit=lu15,file=trim(boundaryfilename),form="unformatted",action="write")
+open(newunit=boundaryunitnumber,file=trim(boundaryfilename),form="unformatted",action="write")
 
 blank="                              "
-write(lu15)blank
-write(lu15)blank
-write(lu15)blank
-write(lu15)npatches
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)npatches
 
 do n = 1, npatches
-  write(lu15)pi1(n), pi2(n), pj1(n), pj2(n), pk1(n), pk2(n), patchdir(n)
+  write(boundaryunitnumber)pi1(n), pi2(n), pj1(n), pj2(n), pk1(n), pk2(n), patchdir(n)
 end do
 
 return
@@ -1704,14 +1516,10 @@ integer :: u_in
 logical :: connected
 
 if(isotest.eq.0)then
-  call get_file_unit(u_in,70)
-  inquire(unit=u_in,opened=connected)
-  if(connected)close(u_in)
-
   error=0
   inquire(file=qfilename,exist=exists)
   if(exists)then
-    open(unit=u_in,file=qfilename,form="unformatted",action="read",iostat=error2)
+    open(newunit=u_in,file=qfilename,form="unformatted",action="read",iostat=error2)
    else
     write(6,*)' The file name, ',trim(qfilename),' does not exist'
     read(5,*)dummy
@@ -1772,12 +1580,8 @@ real :: dummy
 
 error3 = 0
 
-call get_file_unit(u_out,70)
-inquire(unit=u_out,opened=connected)
-if(connected)close(u_out)
-
 dummy = 0.0
-open(unit=u_out,file=trim(outfile),form="unformatted",action="write",iostat=error3)
+open(newunit=u_out,file=trim(outfile),form="unformatted",action="write",iostat=error3)
 if(error3.ne.0)return
 
 write(u_out,iostat=error3)nx, ny, nz
@@ -2334,23 +2138,6 @@ CASE DEFAULT
 END SELECT
 
 END SUBROUTINE COLOR2RGB
-
-!  ------------------ get_file_unit ------------------------
-
-subroutine get_file_unit(funit,first_unit)
-integer, intent(in) :: first_unit
-integer, intent(out) :: funit
-logical :: is_open
-
-do funit=first_unit,32767
-  inquire(UNIT=funit,OPENED=is_open)
-  if(is_open)cycle;
-  return
-end do
-funit=-1
-return
-end subroutine get_file_unit
-
 
 !  ------------------ GET_TETRABOX_VOLUME ------------------------
 

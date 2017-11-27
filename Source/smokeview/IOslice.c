@@ -633,12 +633,9 @@ int LastVSliceLoadstack(void){
 /* ------------------ OutSlicefile ------------------------ */
 
 void OutSlicefile(slicedata *sd){
-  int file_unit=20,slicefilelen;
-
-  slicefilelen=strlen(sd->file);
-  FORTwriteslicedata(&file_unit,sd->file,
+  FORTwriteslicedata(sd->file,
     &sd->is1,&sd->is2,&sd->js1,&sd->js2,&sd->ks1,&sd->ks2,
-    sd->qslicedata,sd->times,&sd->ntimes, &redirect,slicefilelen);
+    sd->qslicedata,sd->times,&sd->ntimes, &redirect, strlen(sd->file));
 }
 
 
