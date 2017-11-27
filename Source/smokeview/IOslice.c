@@ -4098,7 +4098,6 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     else{
-      int file_unit = 15;
       int return_val;
 
       return_val = NewResizeMemory(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
