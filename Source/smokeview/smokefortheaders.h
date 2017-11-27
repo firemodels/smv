@@ -17,7 +17,6 @@
 #define FORTgeomout               _F(geomout)
 #define FORTgetembeddatasize      _F(getembeddatasize)
 #define FORTgetembeddata          _F(getembeddata)
-#define FORTopenboundary          _F(openboundary)
 #define FORTfcreate_part5sizefile _F(fcreate_part5sizefile)
 #define FORTgetzonesize           _F(getzonesize)
 #define FORTgetzonedata           _F(getzonedata)
@@ -52,12 +51,9 @@ STDCALLF FORTgeomout(float *verts, int *nverts, int *faces, int *nfaces);
 STDCALLF FORTgetembeddatasize(char *filename, int *ntimes, int *nvars, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetembeddata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics,
                          float *vals, int *redirect, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *boundaryunitnumber,
-                               int *npatch, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetboundaryheader2(int *boundaryunitnumber, int *version, int *npatches,
+STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *unit1, int *npatch, int *error, FILE_SIZE lenfile);
+STDCALLF FORTgetboundaryheader2(int *unit1, int *version, int *npatches,
                                int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir);
-STDCALLF FORTopenboundary(char *boundaryfilename, int *boundaryunitnumber,
-                         int *version, int *error, FILE_SIZE len);
 STDCALLF FORTclosefortranfile(int *lunit);
 STDCALLF FORTget_file_unit(int *funit, int *first_unit);
 STDCALLF FORTcolor2rgb(int *rgb, char *color, FILE_SIZE colorsize);
@@ -72,9 +68,8 @@ STDCALLF FORTgetzonedata(char *zonefilename, int *nzone_times, int *nrooms, int 
                         float *zone_times, float *zoneqfire, float *zonepr, float *zoneylay,float *zonetl,float *zonetu,
                         int *error, FILE_SIZE len);
 STDCALLF FORTgetxyzdata(int *iblank,int *nx,int *ny,int *nz,int *error);
-STDCALLF FORTgetpatchsizes1(int *file_unit,char *patchfilename,char *patchlonglabel,char *patchshortlabel,char *patchunit,
-                           int *npatch, int *headersize, int *error,
-                           FILE_SIZE len1, FILE_SIZE len2, FILE_SIZE len3, FILE_SIZE len4);
+STDCALLF FORTgetpatchsizes1(int *file_unit,char *patchfilename,
+                           int *npatch, int *headersize, int *error,FILE_SIZE len1);
 STDCALLF FORTgetpatchsizes2(int *file_unit,int *version, int *npatch,int *npatchsize,
                            int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2, int *patchdir,
                            int *headersize, int *framesize);

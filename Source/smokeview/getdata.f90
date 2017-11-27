@@ -314,45 +314,33 @@ end subroutine getzonesize
 
 !  ------------------ getpatchsizes1 ------------------------
 
-subroutine getpatchsizes1(file_unit,patchfilename,patchlonglabel,patchshortlabel,patchunit, &
-       npatch,headersize,error)
+subroutine getpatchsizes1(file_unit,patchfilename,npatch,headersize,error)
+use cio
 implicit none
 
-character(len=*) :: patchfilename, patchlonglabel, patchshortlabel, patchunit
-integer, intent(in) :: file_unit
-integer, intent(out) :: npatch
-integer, intent(out) :: headersize
+character(len=*), intent(in) :: patchfilename
+integer, intent(out) :: file_unit,npatch, headersize, error
 
-integer, intent(out) :: error
-integer :: lu15, lenshort, lenunits
+integer :: sizes(3), nsizes
 logical :: exists
-logical :: isopen
 
 error=0
-lu15 = file_unit
-inquire(unit=lu15,opened=isopen)
-
-if(isopen)close(lu15)
 inquire(file=trim(patchfilename),exist=exists)
 if(exists)then
-  open(unit=lu15,file=trim(patchfilename),form="unformatted",action="read")
- else
+  open(newunit=file_unit,file=trim(patchfilename),form="unformatted",action="read")
+else
   write(6,*)' The boundary file name, ',trim(patchfilename),' does not exist'
   error=1
   return
 endif
 
-if(error.eq.0)read(lu15,iostat=error)patchlonglabel
-if(error.eq.0)read(lu15,iostat=error)patchshortlabel
-if(error.eq.0)read(lu15,iostat=error)patchunit
-if(error.eq.0)read(lu15,iostat=error)npatch
-headersize = 3*(30+8) + 4 + 8
-
-patchlonglabel=trim(patchlonglabel)//char(0)
-lenshort = min(len_trim(patchshortlabel),6)
-patchshortlabel=patchshortlabel(1:lenshort)//char(0)
-lenunits = min(len_trim(patchunit),6)
-patchunit=patchunit(1:lenunits)//char(0)
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+call ffseek(file_unit,sizes,nsizes,seek_set,error) ! skip over long, short and unit labels (each 30 characters in length)
+if(error.eq.0)read(file_unit,iostat=error)npatch
+headersize = 3*(4+30+4) + 4 + 4 + 4
 
 return
 end subroutine getpatchsizes1
@@ -361,22 +349,24 @@ end subroutine getpatchsizes1
 
 subroutine getpatchsizes2(file_unit,version,npatch,npatchsize,pi1,pi2,pj1,pj2,pk1,pk2,patchdir,headersize,framesize)
 implicit none
-integer, intent(in) :: version, npatch,file_unit
+
+integer, intent(in) :: file_unit,version, npatch
 integer, intent(out) :: npatchsize
 integer, intent(out), dimension(npatch) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
 integer, intent(inout) :: headersize
 integer, intent(out) :: framesize
 
-integer :: n, lu15
-integer :: i1, i2, j1, j2, k1, k2
+integer :: n, i1, i2, j1, j2, k1, k2, sizes(4), nsizes, error
+logical :: exists
 
-lu15 = file_unit
+error=0
+
 npatchsize = 0
 do n = 1, npatch
   if(version.eq.0)then
-    read(lu15)i1, i2, j1, j2, k1, k2
+    read(file_unit)i1, i2, j1, j2, k1, k2
    else
-    read(lu15)i1, i2, j1, j2, k1, k2, patchdir(n)
+    read(file_unit)i1, i2, j1, j2, k1, k2, patchdir(n)
   endif
   pi1(n)=i1
   pi2(n)=i2
@@ -386,7 +376,7 @@ do n = 1, npatch
   pk2(n)=k2
   npatchsize = npatchsize + (i2+1-i1)*(j2+1-j1)*(k2+1-k1)
 end do
-headersize = headersize + npatch*(8+6*4)
+headersize = headersize + npatch*(4+6*4+4)
 if(version.eq.1)headersize = headersize + npatch*4
 framesize = 8+4+8*npatch+npatchsize*4
 
@@ -743,38 +733,27 @@ subroutine getboundaryheader1(boundaryfilename,boundaryunitnumber,npatch,error)
 implicit none
 
 character(len=*), intent(in) :: boundaryfilename
-integer, intent(inout) :: boundaryunitnumber
-integer, intent(out) :: npatch, error
+integer, intent(out) :: boundaryunitnumber, npatch, error
 
 character(len=30) :: patchlonglabel, patchshortlabel, patchunit
 
-integer :: lu15
 logical :: exists
-logical :: isopen
-integer :: first_unit
-
-first_unit = boundaryunitnumber
 
 error=0
-call get_file_unit(boundaryunitnumber,first_unit)
-lu15 = boundaryunitnumber
-inquire(unit=lu15,opened=isopen)
-
-if(isopen)close(lu15)
 inquire(file=trim(boundaryfilename),exist=exists)
 if(exists)then
-  open(unit=lu15,file=trim(boundaryfilename),form="unformatted",action="read")
+  open(newunit=boundaryunitnumber,file=trim(boundaryfilename),form="unformatted",action="read")
  else
   write(6,*)' The boundary file name, ',trim(boundaryfilename),' does not exist'
   error=1
   return
 endif
 
-if(error.eq.0)read(lu15,iostat=error)patchlonglabel
-if(error.eq.0)read(lu15,iostat=error)patchshortlabel
-if(error.eq.0)read(lu15,iostat=error)patchunit
-if(error.eq.0)read(lu15,iostat=error)npatch
-if(error.ne.0)close(lu15)
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchlonglabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchshortlabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchunit
+if(error.eq.0)read(boundaryunitnumber,iostat=error)npatch
+if(error.ne.0)close(boundaryunitnumber)
 
 return
 end subroutine getboundaryheader1
@@ -786,15 +765,14 @@ implicit none
 integer, intent(in) :: boundaryunitnumber, version, npatch
 integer, intent(out), dimension(npatch) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
 
-integer :: n, lu15
+integer :: n
 integer :: i1, i2, j1, j2, k1, k2
 
-lu15 = boundaryunitnumber
 do n = 1, npatch
   if(version.eq.0)then
-    read(lu15)i1, i2, j1, j2, k1, k2
+    read(boundaryunitnumber)i1, i2, j1, j2, k1, k2
    else
-    read(lu15)i1, i2, j1, j2, k1, k2, patchdir(n)
+    read(boundaryunitnumber)i1, i2, j1, j2, k1, k2, patchdir(n)
   endif
   pi1(n)=i1
   pi2(n)=i2
@@ -803,7 +781,6 @@ do n = 1, npatch
   pk1(n)=k1
   pk2(n)=k2
 end do
-close(lu15)
 
 return
 end subroutine getboundaryheader2
@@ -814,7 +791,8 @@ subroutine openboundary(boundaryfilename,boundaryunitnumber,version,error)
 implicit none
 
 character(len=*), intent(in) :: boundaryfilename
-integer, intent(in) :: boundaryunitnumber,version
+integer, intent(out) :: boundaryunitnumber
+integer, intent(in) :: version
 integer, intent(out) :: error
 
 character(len=30) :: patchlonglabel, patchshortlabel, patchunit
@@ -825,34 +803,29 @@ logical :: isopen
 integer :: npatch,n
 integer :: i1, i2, j1, j2, k1, k2, patchdir
 
-error=0
-lu15 = boundaryunitnumber
-inquire(unit=lu15,opened=isopen)
-
-if(isopen)close(lu15)
 inquire(file=boundaryfilename,exist=exists)
 if(exists)then
-  open(unit=lu15,file=boundaryfilename,form="unformatted",action="read")
+  open(newunit=boundaryunitnumber,file=boundaryfilename,form="unformatted",action="read")
  else
   write(6,*)' The boundary file name, ',boundaryfilename,' does not exist'
   error=1
   return
 endif
 
-if(error.eq.0)read(lu15,iostat=error)patchlonglabel
-if(error.eq.0)read(lu15,iostat=error)patchshortlabel
-if(error.eq.0)read(lu15,iostat=error)patchunit
-if(error.eq.0)read(lu15,iostat=error)npatch
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchlonglabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchshortlabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchunit
+if(error.eq.0)read(boundaryunitnumber,iostat=error)npatch
 
 do n = 1, npatch
   if(version.eq.0)then
-    if(error.eq.0)read(lu15,iostat=error)i1, i2, j1, j2, k1, k2
+    if(error.eq.0)read(boundaryunitnumber,iostat=error)i1, i2, j1, j2, k1, k2
    else
-    if(error.eq.0)read(lu15,iostat=error)i1, i2, j1, j2, k1, k2, patchdir
+    if(error.eq.0)read(boundaryunitnumber,iostat=error)i1, i2, j1, j2, k1, k2, patchdir
   endif
 end do
 
-if(error.ne.0)close(lu15)
+if(error.ne.0)close(boundaryunitnumber)
 
 return
 end subroutine openboundary
@@ -1122,10 +1095,10 @@ end subroutine getzonedata
 
 !  ------------------ getpatchdata ------------------------
 
-subroutine getpatchdata(lunit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
+subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
 implicit none
 
-integer, intent(in) :: npatch,lunit
+integer, intent(in) :: npatch,file_unit
 integer, intent(in), dimension(*) :: pi1, pi2, pj1, pj2, pk1, pk2
 real, intent(out), dimension(*) :: pqq
 integer, intent(out) :: error,npqq
@@ -1133,10 +1106,10 @@ real, intent(out) :: patchtime
 
 integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, lu15, ii
 
-lu15 = lunit
-read(lu15,iostat=error)patchtime
+error=0
+read(file_unit,iostat=error)patchtime
 if(error.ne.0)then
-  close(lu15)
+  close(file_unit)
   return
 endif
 ibeg = 1
@@ -1151,9 +1124,9 @@ do i = 1, npatch
   size = (i2+1-i1)*(j2+1-j1)*(k2+1-k1)
   npqq=npqq+size
   iend = ibeg + size - 1
-  read(lu15,iostat=error)(pqq(ii),ii=ibeg,iend)
+  read(file_unit,iostat=error)(pqq(ii),ii=ibeg,iend)
   if(error.ne.0)then
-    close(lu15)
+    close(file_unit)
     exit
   endif
   ibeg = iend + 1
@@ -2369,7 +2342,7 @@ END SELECT
 
 END SUBROUTINE COLOR2RGB
 
-!  ------------------ funit ------------------------
+!  ------------------ get_file_unit ------------------------
 
 subroutine get_file_unit(funit,first_unit)
 integer, intent(in) :: first_unit

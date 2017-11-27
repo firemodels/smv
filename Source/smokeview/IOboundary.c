@@ -1435,14 +1435,8 @@ void ReadPatchBndf(int ifile, int flag, int *errorcode){
   UpdatePatchHist(patchi);
 
   lenfile = strlen(file);
-  file_unit=15;
-  FORTget_file_unit(&file_unit,&file_unit);
   if(patchi->compression_type==UNCOMPRESSED){
-    FILE_SIZE labellen=LABELLEN;
-    char patchlonglabel[31], patchshortlabel[31], patchunit[31];
-
-    FORTgetpatchsizes1(&file_unit,file,patchlonglabel,patchshortlabel,patchunit,&meshi->npatches,&headersize,&error,
-                       lenfile,labellen,labellen,labellen);
+    FORTgetpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error,lenfile);
     if(error!=0){
       ReadPatch(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -4354,7 +4348,6 @@ int UpdatePatchHist(patchdata *patchj){
     sum++;
     lenfile=strlen(patchi->file);
 
-    FORTget_file_unit(&unit1,&patchi->unit_start);
     FORTgetboundaryheader1(patchi->file,&unit1, &npatches, &error, lenfile);
     if(npatches==0){
       FORTclosefortranfile(&unit1);
@@ -4381,9 +4374,6 @@ int UpdatePatchHist(patchdata *patchj){
       npatchsize *= (pk2[j]+1-pk1[j]);
       patchframesize+=npatchsize;
     }
-
-    FORTget_file_unit(&unit1,&patchi->unit_start);
-    FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
 
     NewMemory((void **)&patchframe,patchframesize*sizeof(float));
     ResetHistogram(patchi->histogram,NULL,NULL);

@@ -65,8 +65,8 @@ no_target:
 # ********  rules for each platform supported *************
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
-intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64 -D pp_INTEL $(OPT) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 /iface:stdref /fpscomp:general
+intel_win_64 : CFLAGS    = -Od /nologo -D pp_INTEL -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D pp_INTEL -D WIN32 /iface:stdref /fpscomp:general
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort
@@ -77,7 +77,7 @@ intel_win_64 : $(objwin)
 
 # ------------- 32 bit gnu Linux ----------------
 
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_LINUX -D pp_GCC -ffree-form -frecord-marker=4
+gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4
 gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_32 : LFLAGS    = 
 gnu_linux_32 : CC        = gcc
@@ -104,7 +104,7 @@ gnu_linux_64 : $(obj)
 # ------------- gnu OSX ----------------
 #  gnu linux
 
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_OSX -D pp_GCC -ffree-form -frecord-marker=4
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
@@ -120,7 +120,7 @@ gnu_osx_64 : $(obj)
 #  64 bit linux
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -D pp_INTEL
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = icc
@@ -137,7 +137,7 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
 # ------------- OSX 64 ----------------
 #  64 bit OSX
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -D pp_INTEL
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc

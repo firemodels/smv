@@ -59,7 +59,7 @@ no_target:
 # ------------- Win 64 ----------------
 #  64 bit windows
 
-intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08 /fpscomp:general
+intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D pp_INTEL -D WIN32 /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08 /fpscomp:general
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = icl
 intel_win_64_db : CPP       = icl
@@ -69,7 +69,7 @@ intel_win_64_db : exe       = smokediff_win_64_db.exe
 intel_win_64_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 
-intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /fpscomp:general
+intel_win_64 : FFLAGS    = /O2 -fpp -D pp_INTEL -D WIN32 /nologo /iface:stdref /fpscomp:general
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
@@ -124,7 +124,7 @@ gnu_osx_64 : $(obj)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -D pp_INTEL
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
@@ -134,7 +134,7 @@ intel_linux_64 : exe       = smokediff_linux_64
 intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
 
-intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX -D pp_INTEL
+intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_INTEL -D pp_LINUX
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_INTEL -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
@@ -150,7 +150,7 @@ MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
 # ------------- OSX 64 ----------------
 #  64 bit OSX
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -D pp_INTEL
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
