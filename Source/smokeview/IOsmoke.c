@@ -613,7 +613,6 @@ void LightFractions2File(meshdata *meshi){
   int meshnum;
   char smvlight_file[256];
   FILE *slicesmv = NULL;
-  int fileunit = 20;
   int is1, is2, js1, js2, ks1, ks2;
   volrenderdata *vr;
 
@@ -656,7 +655,7 @@ void LightFractions2File(meshdata *meshi){
   fprintf(slicesmv, " %s\n", unitlabel);
   fclose(slicesmv);
 
-  FORTwriteslicedata2(&fileunit, slicefile, longlabel, shortlabel, unitlabel,
+  FORTwriteslicedata2(slicefile, longlabel, shortlabel, unitlabel,
     &is1, &is2, &js1, &js2, &ks1, &ks2,
     meshi->light_fraction, vr->times, &vr->ntimes, len_slicefile, len_longlabel, len_shortlabel, len_unitlabel);
 }

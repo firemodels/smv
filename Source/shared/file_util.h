@@ -1,6 +1,8 @@
 #ifndef FILE_UTIL_H_DEFINED
 #define FILE_UTIL_H_DEFINED
 
+// vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
 #include <time.h>
 #ifdef __MINGW32__
 #include <stdio.h>
@@ -16,11 +18,9 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef WIN32
-#define UNLINK _unlink
-#else
-#define UNLINK unlink
-#endif
+// vvvvvvvvvvvvvvvvvvvvvvvv structures vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+/* --------------------------  filelistdata ------------------------------------ */
 
 typedef struct {
   char *file;
@@ -28,15 +28,29 @@ typedef struct {
 } filelistdata;
 
 #ifdef pp_READBUFFER
-typedef struct filedata{
+
+/* --------------------------  _filedata ------------------------------------ */
+
+typedef struct _filedata {
   char *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;
 } filedata;
+
+/* --------------------------  bufferstreamdata ------------------------------------ */
+
 typedef struct bufferstreamdata{
   FILE *stream,*stream1,*stream2;
   filedata *fileinfo;
 } bufferstreamdata;
+#endif
+
+// vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+#ifdef WIN32
+#define UNLINK _unlink
+#else
+#define UNLINK unlink
 #endif
 
 #ifdef X64
@@ -88,6 +102,41 @@ else{\
 #define BFILE FILE
 #endif
 
+#ifdef pp_FILELIST
+#define FILE_EXISTS(a)         FileExists(a,NULL,0,NULL,0)
+#define FILE_EXISTS_CASEDIR(a) FileExists(a,filelist_casename, nfilelist_casename,filelist_casedir,nfilelist_casedir)
+#else
+#define FILE_EXISTS(a)         FileExists(a)
+#define FILE_EXISTS_CASEDIR(a) FileExists(a)
+#endif
+int FileExistsOrig(char *filename);
+
+#ifdef WIN32
+#define MKDIR(a) CreateDirectory(a,NULL)
+#else
+#define MKDIR(a) mkdir(a,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
+#endif
+
+#ifdef WIN32
+#define ACCESS _access
+#define F_OK 0
+#define W_OK 2
+#else
+#define ACCESS access
+#endif
+
+#define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)
+
+#ifndef NO
+#define NO 0
+#endif
+
+#ifndef YES
+#define YES 1
+#endif
+
+// vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
 #ifdef pp_READBUFFER
 EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
 EXTERNCPP int FeofBuffer(filedata *fileinfo);
@@ -116,30 +165,6 @@ EXTERNCPP char *GetZoneFileName(char *buffer);
 EXTERNCPP int Writable(char *dir);
 
 #ifdef pp_FILELIST
-#define FILE_EXISTS(a)         FileExists(a,NULL,0,NULL,0)
-#define FILE_EXISTS_CASEDIR(a) FileExists(a,filelist_casename, nfilelist_casename,filelist_casedir,nfilelist_casedir)
-#else
-#define FILE_EXISTS(a)         FileExists(a)
-#define FILE_EXISTS_CASEDIR(a) FileExists(a)
-#endif
-int FileExistsOrig(char *filename);
-
-#ifdef WIN32
-#define MKDIR(a) CreateDirectory(a,NULL)
-#else
-#define MKDIR(a) mkdir(a,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
-#endif
-
-#ifdef WIN32
-  #define ACCESS _access
-  #define F_OK 0
-  #define W_OK 2
-#else
-  #define ACCESS access
-#endif
-
-
-#ifdef pp_FILELIST
 EXTERNCPP   int FileExists(char *filename, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
 EXTERNCPP filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
 #else
@@ -153,11 +178,14 @@ EXTERNCPP FILE_SIZE GetFILESize(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
+
 #ifdef pp_LUA
 EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
 
 EXTERNCPP char *LastName(char *argi);
+
+// vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #ifdef pp_READBUFFER
 #ifdef INMAIN
@@ -173,15 +201,6 @@ STREXTERN char STRDECL(dirseparator[],"\\");
 #else
 STREXTERN char STRDECL(dirseparator[],"/");
 #endif
-#endif
-
-#define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)
-
-#ifndef NO
-#define NO 0
-#endif
-#ifndef YES
-#define YES 1
 #endif
 
 #endif

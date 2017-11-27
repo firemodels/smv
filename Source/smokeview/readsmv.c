@@ -8071,6 +8071,10 @@ typedef struct {
       len=strlen(bufferptr);
 
       sd = sliceinfo + nn_slice - 1;
+      sd->ntimes = 0;
+      sd->ntimes_old = 0;
+      sd->globalmax = -1.0e30;
+      sd->globalmin = -sd->globalmax;
       sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
@@ -8879,13 +8883,16 @@ typedef struct {
     NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));
   }
   UpdateLoadedLists();
+  CheckMemory;
 
   UpdateMeshCoords();
+  CheckMemory;
 
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
+  CheckMemory;
 
   /* compute global bar's and box's */
 
@@ -8922,6 +8929,7 @@ typedef struct {
   shooter_vel_type=1;
 
   UpdatePlotxyzAll();
+  CheckMemory;
 
   UpdateVSlices();
   if(update_slice==1)return 3;

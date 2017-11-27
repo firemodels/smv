@@ -633,12 +633,9 @@ int LastVSliceLoadstack(void){
 /* ------------------ OutSlicefile ------------------------ */
 
 void OutSlicefile(slicedata *sd){
-  int file_unit=20,slicefilelen;
-
-  slicefilelen=strlen(sd->file);
-  FORTwriteslicedata(&file_unit,sd->file,
+  FORTwriteslicedata(sd->file,
     &sd->is1,&sd->is2,&sd->js1,&sd->js2,&sd->ks1,&sd->ks2,
-    sd->qslicedata,sd->times,&sd->ntimes, &redirect,slicefilelen);
+    sd->qslicedata,sd->times,&sd->ntimes, &redirect, strlen(sd->file));
 }
 
 
@@ -3874,25 +3871,18 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
-/* ------------------ ReadSlice ------------------------ */
+  /* ------------------ ReadSlice ------------------------ */
 
 void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
-  FILE_SIZE slicefilelen;
-  float *xplt_local, *yplt_local, *zplt_local;
-  int blocknumber;
-  int error;
-  float offset;
-  int i;
-  int ii;
-  float qmin, qmax;
-  int headersize, framesize;
-  char sliceshortlabels[31];
+  float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
+  int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
   slicedata *sd;
+  int ntimes_slice_old;
+
   vslicedata *vd;
-  int flag2 = 0;
   meshdata *meshi;
+
   FILE_SIZE file_size = 0;
-  float read_time, total_time;
 #ifdef pp_MEMDEBUG
   int num_memblocks_load, num_memblocks_unload;
 #endif
@@ -3900,6 +3890,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   unsigned int availmemory;
 #endif
 
+#ifdef pp_FSEEK
+  if(flag==LOAD&&slice_load_onlynew==1)flag=RELOAD;
+#endif
   CheckMemory;
   START_TIMER(total_time);
   *errorcode = 0;
@@ -3923,25 +3916,34 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
 #endif
-    if(sd->qslicedata != NULL){
-      FreeMemory(sd->qslicedata);
-      sd->qslicedata = NULL;
-    }
-    FREEMEMORY(sd->times);
-    FREEMEMORY(sd->slicelevel);
-    FREEMEMORY(sd->compindex);
-    FREEMEMORY(sd->qslicedata_compressed);
-    FREEMEMORY(sd->slicecomplevel);
 
-    if(sd->histograms != NULL){
-      for(i = 0; i < sd->nhistograms; i++){
-        FreeHistogram(sd->histograms + i);
+// free memory buffers
+
+    if(flag!=RELOAD){
+      if(sd->qslicedata != NULL){
+        FreeMemory(sd->qslicedata);
+        sd->qslicedata = NULL;
       }
-      FREEMEMORY(sd->histograms);
+      FREEMEMORY(sd->times);
+      FREEMEMORY(sd->slicelevel);
+      FREEMEMORY(sd->compindex);
+      FREEMEMORY(sd->qslicedata_compressed);
+      FREEMEMORY(sd->slicecomplevel);
+
+      if(sd->histograms!=NULL){
+        for(i = 0; i<sd->nhistograms; i++){
+          FreeHistogram(sd->histograms+i);
+        }
+        FREEMEMORY(sd->histograms);
+      }
     }
+
     slicefilenum = ifile;
 
+// reset slice variables to an unloaded state
+
     if(flag == UNLOAD){
+      sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
       sd->loaded = 0;
@@ -4026,14 +4028,18 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       RemoveSliceLoadstack(slicefilenumber);
       return;
     }
+
+// load entire slice file (flag=LOAD) or
+// load only portion of slice file written to since last time it was loaded (flag=RELOAD)
+
     CountMemoryBlocks(num_memblocks_load, 0);
     file_size = GetFILESize(file);
 
-    slicefilelen = strlen(file);
     if(sd->compression_type == UNCOMPRESSED){
+      sd->ntimes_old = sd->ntimes;
       FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-        slicefilelen);
+        strlen(file));
     }
     else if(sd->compression_type == COMPRESSED_ZLIB){
       if(
@@ -4073,18 +4079,17 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
     if(sd->compression_type == COMPRESSED_ZLIB){
-      char *datafile;
+      int return_code;
 
-      if(NewMemory((void **)&sd->qslicedata_compressed, sd->ncompressed) == 0 ||
-        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0 ||
-        NewMemory((void **)&sd->compindex, sizeof(compdata)*(1 + sd->ntimes)) == 0
-        ){
+      return_code = NewResizeMemory(sd->qslicedata_compressed, sd->ncompressed);
+      if(return_code!=0)return_code = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+      if(return_code!=0)return_code = NewResizeMemory(sd->compindex, sizeof(compdata)*(1+sd->ntimes));
+      if(return_code==0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;
       }
-      datafile = sd->comp_file;
-      if(GetSliceCompressedData(datafile,
+      if(GetSliceCompressedData(sd->comp_file,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
@@ -4093,11 +4098,12 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     else{
-      FILE_SIZE labellen = LABELLEN;
-      int file_unit = 15;
+      int return_val;
 
-      if(NewMemory((void **)&sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes) == 0 ||
-        NewMemory((void **)&sd->times, sizeof(float)*sd->ntimes) == 0){
+      return_val = NewResizeMemory(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes);
+      if(return_val!=0)return_val = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+
+      if(return_val == 0){
         *errorcode = 1;
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         return;
@@ -4105,12 +4111,22 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
-      FORTget_file_unit(&file_unit, &file_unit);
-      FORTgetslicedata(&file_unit, file, sliceshortlabels,
+
+      ntimes_slice_old = 0;
+      if(flag==RELOAD){
+        ntimes_slice_old = sd->ntimes_old;
+        qmin = sd->globalmin;
+        qmax = sd->globalmax;
+      }
+      else{
+        qmin = 1.0e30;
+        qmax = -1.0e30;
+      }
+      FORTgetslicedata(file, 
         &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-        &qmin, &qmax, sd->qslicedata, sd->times, &sd->ntimes, &sliceframestep,
+        &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &redirect,
-        slicefilelen, labellen);
+        strlen(file));
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
@@ -4204,7 +4220,10 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       }
     }
     else{
-      if(NewMemory((void **)&sd->slicelevel, sd->nslicetotal * sizeof(int)) == 0){
+      int return_code;
+
+      return_code = NewResizeMemory(sd->slicelevel, sd->nslicetotal*sizeof(int));
+      if(return_code == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return;

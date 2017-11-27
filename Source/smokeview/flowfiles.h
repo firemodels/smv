@@ -3,14 +3,14 @@
 
 /* --------------------------  circdata ------------------------------------ */
 
-typedef struct {
+typedef struct _circdata {
   float *xcirc, *ycirc;
   int ncirc;
 } circdata;
 
 /* --------------------------  langlistdata ------------------------------------ */
 
-typedef struct {
+typedef struct _lanlistdata {
   char *file;
   char lang_code[3];
   char lang_name[32];
@@ -18,14 +18,14 @@ typedef struct {
 
 /* --------------------------  procdata ------------------------------------ */
 #ifdef CPP
-typedef struct {
+typedef struct _procdata {
   GLUI_Rollout *rollout;
   int rollout_id;
 } procdata;
 #endif
 /* --------------------------  csvdata ------------------------------------ */
 
-typedef struct {
+typedef struct _csvdata {
   char *file;
   int loaded, display;
   int type;
@@ -33,7 +33,7 @@ typedef struct {
 
 /* --------------------------  vertdata ------------------------------------ */
 
-typedef struct {
+typedef struct _vertdata {
   float xyz[3],vert_norm[3],texture_xy[3];
   int itriangle,ntriangles,nused;
   unsigned char on_mesh_boundary;
@@ -44,7 +44,7 @@ typedef struct {
 
 /* --------------------------  edgedata ------------------------------------ */
 
-typedef struct {
+typedef struct _edgedata {
   int ntriangles;
   int vert_index[2], itri;
   vertdata *verts[2];
@@ -75,7 +75,7 @@ typedef struct _tetdata {
 
 /* --------------------------  geomlistdata ------------------------------------ */
 
-typedef struct {
+typedef struct _geomlistdata {
   int nverts,nedges,ntriangles,nvolumes;
   float *zORIG;
   vertdata *verts;
@@ -86,7 +86,7 @@ typedef struct {
 
 /* --------------------------  geomobjdata ------------------------------------ */
 
-typedef struct {
+typedef struct _geomobjdata {
   struct _surfdata *surf;
   struct _texturedata *texture;
   char *texture_name;
@@ -96,7 +96,7 @@ typedef struct {
 
 /* --------------------------  geomdata ------------------------------------ */
 
-typedef struct {
+typedef struct _geomdata {
   char *file;
   int memory_id, loaded, display;
   float *float_vals;
@@ -111,14 +111,14 @@ typedef struct {
 
 /* --------------------------  geomdiagdata ------------------------------------ */
 
-typedef struct {
+typedef struct _geomdiagdata {
   char *geomfile, *geomdatafile;
   geomdata *geom;
 } geomdiagdata;
 
 /* --------------------------  screendata ------------------------------------ */
 
-typedef struct {
+typedef struct _screendata {
   int nwidth, nheight;
   GLubyte *screenbuffer;
   float width, height, cosmax;
@@ -127,7 +127,7 @@ typedef struct {
 
 /* --------------------------  bounddata ------------------------------------ */
 
-typedef struct {
+typedef struct _boundata {
   float percentile_min, percentile_max;
   float global_min, global_max;
   int defined;
@@ -135,7 +135,7 @@ typedef struct {
 
 /* --------------------------  propdata ------------------------------------ */
 #define PROPVARMAX 100
-typedef struct {
+typedef struct _propdata {
   char *label;
   int menu_id;
   float *rotate_axis, rotate_angle;
@@ -162,7 +162,7 @@ typedef struct _shootpointdata {
 
 /* --------------------------  shoottimedata ------------------------------------ */
 
-typedef struct {
+typedef struct _shoottimedata {
   float time;
   int frame;
   shootpointdata *beg, *end;
@@ -197,7 +197,7 @@ typedef struct _luascriptfiledata {
 
 /* --------------------------  scriptdata ------------------------------------ */
 
-typedef struct {
+typedef struct _scriptdata {
   int command;
   char command_label[32];
   int ival,ival2,ival3,ival4,ival5;
@@ -208,7 +208,7 @@ typedef struct {
 
 /* --------------------------  treedata ------------------------------------ */
 
-typedef struct {
+typedef struct _treedata {
   float xyz[3];
   float time_char, time_complete;
   float trunk_diam;
@@ -220,7 +220,7 @@ typedef struct {
 
 /* --------------------------  colorbardata ------------------------------------ */
 
-typedef struct {
+typedef struct _colorbardata {
   char label[1024], *label_ptr ;        // menu label
   int nnodes,nodehilight,nsplits;
   unsigned char rgb_node[3*1024];
@@ -232,14 +232,14 @@ typedef struct {
 
 /* --------------------------  colortabledata ------------------------------------ */
 
-typedef struct {
+typedef struct _colortabledata {
   char label[1024];
   int color[4];
 } colortabledata;
 
 /* --------------------------  surfid ------------------------------------ */
 
-typedef struct {
+typedef struct _surfid {
   char *label;
   int show;
   int location;
@@ -254,7 +254,7 @@ typedef struct _colordata {
 
 /* --------------------------  outlinedata ------------------------------------ */
 
-typedef struct {
+typedef struct _outlinedata {
   int nlines;
   float *x1, *y1, *z1;
   float *x2, *y2, *z2;
@@ -282,7 +282,7 @@ typedef struct _texturedata {
 
 /* --------------------------  terraincell ------------------------------------ */
 
-typedef struct {
+typedef struct _terraincell {
   int nallocated, nstates;
   float *time;
   int interval;
@@ -291,7 +291,7 @@ typedef struct {
 
 /* --------------------------  terraindata ------------------------------------ */
 
-typedef struct {
+typedef struct _terraindata {
   char *file;
   unsigned char *state;
   int *timeslist;
@@ -342,7 +342,7 @@ typedef struct _surfdata {
 
 /* --------------------------  facedata ------------------------------------ */
 
-typedef struct {
+typedef struct _facedata {
   int type,type2;
   float approx_vertex_coords[12];
   float exact_vertex_coords[12];
@@ -373,7 +373,7 @@ typedef struct {
 
 /* --------------------------  selectdata ------------------------------------ */
 
-typedef struct {
+typedef struct _selectdadta {
   int mesh, blockage, side,dir;
   facedata *facei;
   int type;
@@ -415,7 +415,7 @@ typedef struct _blockagedata {
 
 /* --------------------------  cadlookdata ------------------------------------ */
 
-typedef struct {
+typedef struct _cadlookdata {
   int index;
   float texture_width, texture_height, texture_origin[3];
   float rgb[4], shininess;
@@ -425,7 +425,7 @@ typedef struct {
 
 /* --------------------------  cadquad ------------------------------------ */
 
-typedef struct {
+typedef struct _cadquad {
   float xyzpoints[12];
   float txypoints[8];
   float normals[3];
@@ -437,7 +437,7 @@ typedef struct {
 
 /* --------------------------  clipdata ------------------------------------ */
 
-typedef struct {
+typedef struct _clipdata {
   int option;
   GLdouble clipvals[24];
   int clip_xmin, clip_xmax;
@@ -450,7 +450,7 @@ typedef struct {
 
 /* --------------------------  cadgeomdata ------------------------------------ */
 
-typedef struct {
+typedef struct _cadgeomdata{
   char *file;
   int *order;
   int version;
@@ -514,7 +514,7 @@ typedef struct _ventdata {
 
 /* --------------------------  tickdata ------------------------------------ */
 
-typedef struct {
+typedef struct _tickdata {
   float begin[3],end[3],length;
   float dxyz[3],dlength;
   int dir,nbars,useforegroundcolor;
@@ -523,7 +523,7 @@ typedef struct {
 
 /* --------------------------  feddata ------------------------------------ */
 
-typedef struct {
+typedef struct _feddata {
   struct _slicedata *co,*co2,*o2,*fed_slice;
   struct _isodata *fed_iso;
   int co_index, co2_index, o2_index, fed_index;
@@ -772,7 +772,7 @@ typedef struct _supermeshdata {
 
 /* --------------------------  volfacelistdata ------------------------------------ */
 
-typedef struct {
+typedef struct _volfacelistdata {
   float *xyz,dist2;
   int iwall;
   meshdata *facemesh;
@@ -792,7 +792,7 @@ typedef struct _culldata {
 #ifdef pp_CULL
 /* --------------------------  cullplanedata ------------------------------------ */
 
-typedef struct {
+typedef struct _cullplanedata {
   int   ibeg, iend, jbeg, jend, kbeg, kend;
   float xmin, xmax, ymin, ymax, zmin, zmax;
   float norm[3];
@@ -889,7 +889,7 @@ typedef struct _sv_object {
 
 /* --------------------------  device ------------------------------------ */
 
-typedef struct _device{
+typedef struct _device {
   int active;
   int screenijk[3], visval;
   char label[30], *labelptr;
@@ -926,7 +926,7 @@ typedef struct _device{
 
 /* --------------------------  windrosedata ------------------------------------ */
 
-typedef struct {
+typedef struct _windrosedata {
   histogramdata histogram[3];
   float *xyz;
 } windrosedata;
@@ -942,28 +942,28 @@ typedef struct _vdevicedata {
 
 /* --------------------------  vdevicesortdata ------------------------------------ */
 
-typedef struct {
+typedef struct _vdevicesortdata {
   int dir;
   vdevicedata *vdeviceinfo;
 } vdevicesortdata;
 
 /* --------------------------  treedevicedata ------------------------------------ */
 
-typedef struct {
+typedef struct _treedevicedata {
   int first, last, n, nz;
   float *xyz;
 } treedevicedata;
 
 /* --------------------------  camviewdata ------------------------------------ */
 
-typedef struct {
+typedef struct _camviewdata {
   float time, eye0[3], view0[3], aperture, up[3];
   float eye[3], view[3];
 } camviewdata;
 
 /* --------------------------  camdata ------------------------------------ */
 
-typedef struct {
+typedef struct _camdata {
   char *file, *label;
   int ncamviews;
   int available;
@@ -974,7 +974,7 @@ typedef struct {
 
 /* --------------------------  portdata ------------------------------------ */
 
-typedef struct {
+typedef struct _portdata {
 GLint left, right, down, top, width, height;
 int text_height, text_width;
 int doit;
@@ -982,7 +982,7 @@ int doit;
 
 /* --------------------------  mousedata ------------------------------------ */
 
-typedef struct {
+typedef struct _mousedata {
   int current[2], last[2], direction[2];
   float xcurrent[2], xdirection[2];
   int region;
@@ -1020,7 +1020,7 @@ typedef struct _cameradata {
 
 /* --------------------------  partclassdata ------------------------------------ */
 
-typedef struct {
+typedef struct _partclassdata {
   char *name;
   int kind;
   int col_diameter, col_length, col_azimuth, col_elevation;
@@ -1042,7 +1042,7 @@ typedef struct {
 
 /* --------------------------  partpropdata ------------------------------------ */
 
-typedef struct {
+typedef struct _partpropdata {
   flowlabels *label;
   char **partlabels, *scale;
   unsigned char *class_present, *class_vis;
@@ -1066,7 +1066,7 @@ typedef struct {
 
 /* --------------------------  part5data ------------------------------------ */
 
-typedef struct {
+typedef struct _part5data {
   partclassdata *partclassbase;
   float time;
   int npoints,n_rtypes, n_itypes;
@@ -1083,7 +1083,7 @@ typedef struct {
 
 /* --------------------------  partdata ------------------------------------ */
 
-typedef struct {
+typedef struct _partdata {
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
   int seq_id, autoload, loaded, display, reload;
   int sort_tags_loaded, compression_type, evac;
@@ -1107,20 +1107,20 @@ typedef struct {
 
 /* --------------------------  compdata ------------------------------------ */
 
-typedef struct {
+typedef struct _compdata {
   int offset, size;
 } compdata;
 
 /* --------------------------  menudata ------------------------------------ */
 
-typedef struct {
+typedef struct _menudata {
   int menuvar;
   char label[256];
 } menudata;
 
 /* --------------------------  hrrdata ------------------------------------ */
 
-typedef struct {
+typedef struct _hrrdata {
   char *file, hrrlabel[256];
   int loaded, display, *timeslist, itime;
   float *times_csv, *times, *hrrval_csv, *hrrval;
@@ -1171,7 +1171,7 @@ typedef struct _slicedata {
   char menulabel[128];
   char menulabel2[128];
   float *rgb_slice_ptr[256];
-  int ntimes,itime;
+  int ntimes,ntimes_old,itime;
   unsigned char *iqsliceframe;
   float above_ground_level;
   int volslice;
@@ -1211,7 +1211,7 @@ typedef struct _multislicedata {
 
 /* --------------------------  multivslicedata ------------------------------------ */
 
-typedef struct {
+typedef struct _multivslicedata {
   int mesh_type;
   int seq_id, autoload;
   int loaded,display,type;
@@ -1224,7 +1224,7 @@ typedef struct {
 
 /* --------------------------  boundsdata ------------------------------------ */
 
-typedef struct {
+typedef struct _boundsdata {
   char *datalabel;
   int setvalmin, setvalmax;
   int setchopmin, setchopmax;
@@ -1243,7 +1243,7 @@ typedef struct {
 
 /* --------------------------  vslicedata ------------------------------------ */
 
-typedef struct {
+typedef struct _vslicedata {
   int seq_id, autoload;
   slicedata *u,*v,*w,*val;
   int volslice;
@@ -1259,7 +1259,7 @@ typedef struct {
 
 /* --------------------------  smokedata ------------------------------------ */
 
-typedef struct {
+typedef struct _smokedata {
   int ncomp_total;
   int *nchars_compressed, *nchars_compressed_full;
   unsigned char *frame_in, *frame_out, *view_tmp, *comp_all, **frame_comp_list;
@@ -1303,7 +1303,7 @@ typedef struct _smoke3ddata {
 
 /* --------------------------  patchdata ------------------------------------ */
 
-typedef struct {
+typedef struct _patchdata {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
@@ -1344,7 +1344,7 @@ typedef struct {
 
 /* --------------------------  plot3ddata ------------------------------------ */
 
-typedef struct {
+typedef struct _plot3ddata {
   int seq_id, autoload;
   char *file,*reg_file,*comp_file;
   int compression_type;
@@ -1360,7 +1360,7 @@ typedef struct {
 
 /* --------------------------  zonedata ------------------------------------ */
 
-typedef struct {
+typedef struct _zonedata {
   int seq_id, autoload;
   char *file,*basefile;
   int loaded,display;
@@ -1373,7 +1373,7 @@ typedef struct {
 
 /* --------------------------  roomdata ------------------------------------ */
 
-typedef struct {
+typedef struct _roomdata {
   int valid;
   float dx,dy,dz;
   float x0,y0,z0;
@@ -1386,7 +1386,7 @@ typedef struct {
 
 /* --------------------------  zventdata ------------------------------------ */
 
-typedef struct {
+typedef struct _zventdata {
   int wall, nslab;
   float x0, y0, z0;
   float x1, y1, z1;
@@ -1404,7 +1404,7 @@ typedef struct {
 
 /* --------------------------  firedata ------------------------------------ */
 
-typedef struct {
+typedef struct _firedata {
   float x, y, z, dz;
   float absx,absy,absz;
   int valid,roomnumber;
@@ -1421,7 +1421,7 @@ typedef struct {
 
 /* --------------------------  f_units ------------------------------------ */
 
-typedef struct {
+typedef struct _f_units {
   int nunits;
   int unit_index,submenuid,visible;
   char unitclass[30]; /* ie: velocity, temperature */
@@ -1431,7 +1431,7 @@ typedef struct {
 
 /* --------------------------  skyboxdata ------------------------------------ */
 
-typedef struct {
+typedef struct _skyboxdata {
   texturedata face[6];
 } skyboxdata;
 

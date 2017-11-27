@@ -708,6 +708,7 @@ void _Sniff_Errors(char *whereat);
 #define LOAD 0
 #define UNLOAD 1
 #define RESETBOUNDS 2
+#define RELOAD 3
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1

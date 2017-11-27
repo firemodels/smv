@@ -2100,6 +2100,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show sorted slice labels"), &show_sort_labels);
 #endif
+#ifdef pp_FSEEK
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("load only new data"), &slice_load_onlynew);
+#endif
     SliceBoundCB(FILETYPEINDEX);
   }
 
