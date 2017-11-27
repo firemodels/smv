@@ -686,7 +686,7 @@ typedef struct _meshdata {
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
-  int *patchtype;
+  int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
   contour **patch_contours;
@@ -695,9 +695,9 @@ typedef struct _meshdata {
   struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;
-  int *patchrow, *patchcol, *blockstart;
+  int *boundary_row, *boundary_col, *blockstart;
   unsigned int *zipoffset, *zipsize;
-  int *visPatches;
+  int *vis_boundaries;
   float *xyzpatch, *xyzpatch_threshold;
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
@@ -709,7 +709,7 @@ typedef struct _meshdata {
   int patch_itime;
   int *patch_timeslist;
   int npatchsize;
-  int visInteriorPatches;
+  int visInteriorBoundaries;
   float surface_tempmin, surface_tempmax;
 
   int nface_textures, nface_outlines, nfaces;

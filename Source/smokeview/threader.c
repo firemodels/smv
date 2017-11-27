@@ -37,7 +37,7 @@ void CompressSVZip2(void){
   PRINTF("Executing shell command: %s\n", shellcommand);
   system(shellcommand);
   UpdateSmoke3dMenuLabels();
-  UpdatePatchMenuLabels();
+  UpdateBoundaryMenuLabels();
   CompressOnOff(ON);
   updatemenu = 1;
   PRINTF("Compression completed\n");
@@ -159,27 +159,27 @@ void MakeIBlankAll(void){
 /* ------------------ Update_Bounds ------------------------ */
 
 int Update_Bounds(void){
-  UpdateAllPatchBounds();
+  UpdateAllBoundaryBounds();
 #ifdef pp_THREAD
   pthread_join(update_all_patch_bounds_id,NULL);
 #endif
   return 1;
 }
 
-/* ------------------ UpdateAllPatchBoundsMT ------------------------ */
+/* ------------------ UpdateAllBoundaryBoundsMT ------------------------ */
 
 #ifdef pp_THREAD
-void *UpdateAllPatchBoundsMT(void *arg){
-  UpdateAllPatchBoundsST();
+void *UpdateAllBoundaryBoundsMT(void *arg){
+  UpdateAllBoundaryBoundsST();
   pthread_exit(NULL);
   return NULL;
 }
-void UpdateAllPatchBounds(void){
-  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllPatchBoundsMT,NULL);
+void UpdateAllBoundaryBounds(void){
+  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllBoundaryBoundsMT,NULL);
 }
 #else
-void UpdateAllPatchBounds(void){
-  UpdateAllPatchBoundsST();
+void UpdateAllBoundaryBounds(void){
+  UpdateAllBoundaryBoundsST();
 }
 #endif
 

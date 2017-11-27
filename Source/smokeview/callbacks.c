@@ -1540,14 +1540,14 @@ void Keyboard(unsigned char key, int flag){
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
         if(show_boundaryfiles==1){
-          ShowPatchMenu(SHOWALL_BOUNDARY);
+          ShowBoundaryMenu(SHOWALL_BOUNDARY);
           if(key2=='B'){
             VentMenu(HIDE_ALL_VENTS);
             BlockageMenu(visBLOCKHide);
           }
           }
         else{
-          ShowPatchMenu(HIDEALL_BOUNDARY);
+          ShowBoundaryMenu(HIDEALL_BOUNDARY);
           if(key2=='B'){
             VentMenu(SHOW_ALL_VENTS);
             BlockageMenu(visBLOCKAsInput);

@@ -1634,7 +1634,7 @@ void DrawColorbarRegLabels(void){
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    patchi = patchinfo + patchtypes[ipatchtype];
+    patchi = patchinfo + boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
@@ -1919,38 +1919,38 @@ void DrawColorbarRegLabels(void){
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
     if(global_colorbar_index != -1){
-      char patchcolorlabel[256], boundarylabel[256], *patchcolorlabel_ptr = NULL;
+      char boundary_colorlabel[256], boundarylabel[256], *boundary_colorlabel_ptr = NULL;
       float vert_position;
 
       // draw boundary file value selected with mouse
       tttval = boundarylevels256[valindex];
       Num2String(boundarylabel, tttval);
-      patchcolorlabel_ptr = &(boundarylabel[0]);
+      boundary_colorlabel_ptr = &(boundarylabel[0]);
       if(patchflag == 1){
-        ScaleFloat2String(tttval, patchcolorlabel, patchfactor);
-        patchcolorlabel_ptr = patchcolorlabel;
+        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor);
+        boundary_colorlabel_ptr = boundary_colorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, colorbar_top_pos, colorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
-      OutputBarText(0.0, vert_position, red_color, patchcolorlabel_ptr);
+      OutputBarText(0.0, vert_position, red_color, boundary_colorlabel_ptr);
     }
     for(i = 0; i < nrgb - 1; i++){
-      char patchcolorlabel[256];
-      char *patchcolorlabel_ptr = NULL;
+      char boundary_colorlabel[256];
+      char *boundary_colorlabel_ptr = NULL;
       float vert_position;
 
       vert_position = MIX2(i, nrgb - 2, colorbar_top_pos, colorbar_down_pos);
 
       if(iposition == i)continue;
-      patchcolorlabel_ptr = &colorlabelpatch[i + 1][0];
+      boundary_colorlabel_ptr = &colorlabelpatch[i + 1][0];
       if(patchflag == 1){
         float val;
 
         val = tttmin + i*patchrange / (nrgb - 2);
-        ScaleFloat2String(val, patchcolorlabel, patchfactor);
-        patchcolorlabel_ptr = patchcolorlabel;
+        ScaleFloat2String(val, boundary_colorlabel, patchfactor);
+        boundary_colorlabel_ptr = boundary_colorlabel;
       }
-      OutputBarText(0.0, vert_position, foreground_color, patchcolorlabel_ptr);
+      OutputBarText(0.0, vert_position, foreground_color, boundary_colorlabel_ptr);
     }
     glPopMatrix();
   }

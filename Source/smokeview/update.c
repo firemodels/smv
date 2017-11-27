@@ -198,7 +198,7 @@ void UpdateFrameNumber(int changetime){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
         }
         else{
-          UncompressPatchDataFrame(meshi,meshi->patch_itime);
+          UncompressBoundaryDataFrame(meshi,meshi->patch_itime);
         }
       }
     }
@@ -246,7 +246,7 @@ void UpdateShow(void){
   smoke3dflag=0;
   showtours=0;
   showterrain=0;
-  visTimeParticles=1; visTimeSlice=1; visTimePatch=1; visTimeZone=1; visTimeIso=1;
+  visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   RenderTime=0;
   if(global_times!=NULL){
@@ -259,8 +259,8 @@ void UpdateShow(void){
     if(settmin_i==1&&global_times[itimes]<tmin_i)visTimeIso=0;
     if(settmax_i==1&&global_times[itimes]>tmax_i)visTimeIso=0;
 
-    if(settmin_b==1&&global_times[itimes]<tmin_b)visTimePatch=0;
-    if(settmax_b==1&&global_times[itimes]>tmax_b)visTimePatch=0;
+    if(settmin_b==1&&global_times[itimes]<tmin_b)visTimeBoundary=0;
+    if(settmax_b==1&&global_times[itimes]>tmax_b)visTimeBoundary=0;
 
     if(settmin_z==1&&global_times[itimes]<tmin_z)visTimeZone=0;
     if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
@@ -430,7 +430,7 @@ void UpdateShow(void){
     }
   }
   patchflag=0;
-  if(visTimePatch==1){
+  if(visTimeBoundary==1){
     int ii;
 
     wc_flag=0;
@@ -439,7 +439,7 @@ void UpdateShow(void){
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=ipatchtype)continue;
+      if(patchi->display==0||patchi->type!=iboundarytype)continue;
       if(strcmp(patchi->label.shortlabel,"wc")==0)wc_flag=1;
       patchflag=1;
       break;
@@ -449,7 +449,7 @@ void UpdateShow(void){
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=ipatchtype)continue;
+      if(patchi->display==0||patchi->type!=iboundarytype)continue;
       if(patchi->extreme_max==1){
         have_extreme_maxdata=1;
         break;
@@ -460,7 +460,7 @@ void UpdateShow(void){
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=ipatchtype)continue;
+      if(patchi->display==0||patchi->type!=iboundarytype)continue;
       if(patchi->extreme_min==1){
         have_extreme_mindata=1;
         break;
@@ -477,7 +477,7 @@ void UpdateShow(void){
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->geominfo!=NULL&&patchi->display == 1 && patchi->type == ipatchtype){
+      if(patchi->geominfo!=NULL&&patchi->display == 1 && patchi->type == iboundarytype){
         patchi->geominfo->patchactive = 1;
       }
     }
@@ -539,9 +539,9 @@ void UpdateShow(void){
       meshdata *meshi;
 
       meshi=meshinfo+i;
-      meshi->visInteriorPatches=0;
+      meshi->visInteriorBoundaries=0;
     }
-    if(showpatch==1&&visPatchType[0]==1){
+    if(showpatch==1&&vis_boundary_type[0]==1){
       for(i=0;i<nmeshes;i++){
         patchdata *patchi;
         meshdata *meshi;
@@ -549,8 +549,8 @@ void UpdateShow(void){
         meshi=meshinfo+i;
         if(meshi->patch_times==NULL)continue;
         patchi = patchinfo+meshi->patchfilenum;
-        if(patchi->loaded==1&&patchi->display==1&&patchi->type==ipatchtype){
-          meshi->visInteriorPatches=1;
+        if(patchi->loaded==1&&patchi->display==1&&patchi->type==iboundarytype){
+          meshi->visInteriorBoundaries=1;
         }
       }
     }
@@ -1632,7 +1632,7 @@ int GetPlotState(int choice){
         patchdata *patchi;
 
         patchi = patchinfo + patch_loaded_list[i];
-        if(patchi->display==0||patchi->type!=ipatchtype)continue;
+        if(patchi->display==0||patchi->type!=iboundarytype)continue;
         return DYNAMIC_PLOTS;
       }
       for(i=0;i<npartinfo;i++){

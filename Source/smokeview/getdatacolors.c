@@ -212,9 +212,9 @@ void WriteBoundIni(void){
   FREEMEMORY(fullfilename);
 }
 
-/* ------------------ UpdatePatchBounds ------------------------ */
+/* ------------------ UpdateBoundaryBounds ------------------------ */
 
-void UpdatePatchBounds(patchdata *patchi){
+void UpdateBoundaryBounds(patchdata *patchi){
   histogramdata full_histogram;
   bounddata *boundi;
   int j;
@@ -266,7 +266,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
   int itt;
   float new_tmin, new_tmax, tmin2, tmax2;
 
-  UpdatePatchBounds(patchi);
+  UpdateBoundaryBounds(patchi);
 
   CheckMemory;
   tmin2=patchi->bounds.global_min;
@@ -354,9 +354,9 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
   Num2String(&labels[nlevel-1][0],tval);
 }
 
-/* ------------------ UpdateAllPatchColors ------------------------ */
+/* ------------------ UpdateAllBoundaryColors ------------------------ */
 
-void UpdateAllPatchColors(void){
+void UpdateAllBoundaryColors(void){
   int i;
 
   for(i=0;i<nmeshes;i++){
