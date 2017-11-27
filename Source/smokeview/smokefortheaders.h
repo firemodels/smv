@@ -90,7 +90,7 @@ STDCALLF FORTwriteslicedata(int *file_unit,char *slicefilename,
 STDCALLF FORTwriteslicedata2(int *file_unit, char *slicefilename, char *longlabel, char *shortlabel, char *unitlabel,
                           int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2,
                           float *qdata, float *times, int *ntimes, FILE_SIZE slicefilelen, FILE_SIZE longfilelen, FILE_SIZE shortfilelen, FILE_SIZE unitfilelen);
-STDCALLF FORTgetslicedata(int *file_unit,char *slicefilename,
+STDCALLF FORTgetslicedata(char *slicefilename,
                           int *is1,int *is2,int *js1,int *js2, int *ks1,int *ks2,
                           int *idir, float *qslicemin,float *qslicemax,
                           float *qslicedata,float *times, int *ntimes_old, int *ntimes, int *sliceframestep,

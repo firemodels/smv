@@ -582,14 +582,11 @@ integer :: count
 integer :: sizes(3), nsizes
 
 error=0
-lu11 = 11
 nsteps = 0
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
  else
   error=1
   return
@@ -602,7 +599,6 @@ nsizes = 3
 headersize = 3*(4+30+4)
 
 call ffseek(lu11,sizes,nsizes,seek_set,error)
-
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 headersize = headersize + 4 + 6*4 + 4
@@ -1342,7 +1338,7 @@ end subroutine writeslicedata2
 
 !  ------------------ getslicedata ------------------------
 
-subroutine getslicedata(file_unit,slicefilename,&
+subroutine getslicedata(slicefilename,&
             is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
             sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
             redirect_flag)
@@ -1351,7 +1347,7 @@ implicit none
 
 character(len=*), intent(in) :: slicefilename
 
-integer, intent(in) :: file_unit, redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
+integer, intent(in) :: redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
 
 real, intent(inout) :: qmin, qmax
 real, intent(out), dimension(*) :: qdata, times
@@ -1379,15 +1375,12 @@ integer :: iis1, iis2
 integer, allocatable, dimension(:) :: sizes
 integer :: nsizes
 
-lu11 = file_unit
 joff = 0
 koff = 0
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
  else
   write(6,*)' the slice file ',trim(slicefilename),' does not exist'
   nsteps = 0
