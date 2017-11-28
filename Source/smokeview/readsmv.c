@@ -10349,6 +10349,11 @@ int ReadIni2(char *inifile, int localfile){
       boundzipskip = boundzipstep - 1;
       continue;
     }
+    if(Match(buffer, "LOADINC") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &load_incremental);
+      continue;
+    }
     if(Match(buffer, "MSCALE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", mscale, mscale + 1, mscale + 2);
@@ -12941,6 +12946,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %s\n", default_fed_colorbar);
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
+  fprintf(fileout, "LOADINC\n");
+  fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "SHOWFEDAREA\n");
