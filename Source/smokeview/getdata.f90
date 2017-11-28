@@ -131,12 +131,10 @@ integer, intent(in) :: angle_flag, redirect_flag
 integer, intent(out) :: error
 
 integer :: lu20, lu21, version, nclasses
-logical :: isopen
 integer, allocatable, dimension(:) :: numtypes, numpoints
 character(len=30) :: dummy
 integer :: i, j,one,idummy
 real :: rdummy,time
-integer :: endian_open
 
 open(newunit=lu20,file=trim(part5file),form="unformatted",action="read")
 open(newunit=lu21,file=trim(part5sizefile),form="formatted",action="write")
@@ -225,7 +223,6 @@ integer :: lu26, version
 integer :: i
 real :: dummy, dummy2
 integer :: exit_all
-integer :: file_unit
 
 error = 0
 
@@ -319,8 +316,7 @@ integer, intent(out), dimension(npatch) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdi
 integer, intent(inout) :: headersize
 integer, intent(out) :: framesize
 
-integer :: n, i1, i2, j1, j2, k1, k2, sizes(4), nsizes, error
-logical :: exists
+integer :: n, i1, i2, j1, j2, k1, k2, error
 
 error=0
 
@@ -358,7 +354,6 @@ integer, intent(inout) :: ip1, ip2, jp1, jp2, kp1, kp2
 integer, intent(out) :: ni, nj, nk, slice3d, error
 
 integer :: idir, joff, koff, volslice
-logical :: connected
 character(len=30) :: longlbl, shortlbl, unitlbl
 integer :: iip1, iip2
 
@@ -420,12 +415,10 @@ real, intent(in) :: tmin_s, tmax_s
 integer :: ip1, ip2, jp1, jp2, kp1, kp2
 integer :: iip1, iip2
 integer :: nxsp, nysp, nzsp
-integer :: i, j, k
 
 integer :: lu11
 real :: timeval, time_max
-character(len=30) :: longlbl, shortlbl, unitlbl
-logical :: connected, load
+logical :: load
 integer :: idir, joff, koff, volslice
 integer :: count
 integer :: sizes(3), nsizes
@@ -505,7 +498,6 @@ logical :: exists
 
 integer, intent(out) :: fileunit
 integer, intent(out) :: error
-logical :: connected
 
 error=0
 inquire(file=partfilename,exist=exists)
@@ -631,9 +623,7 @@ integer, intent(out) :: error
 
 character(len=30) :: patchlonglabel, patchshortlabel, patchunit
 
-integer :: lu15
 logical :: exists
-logical :: isopen
 integer :: npatch,n
 integer :: i1, i2, j1, j2, k1, k2, patchdir
 
@@ -804,7 +794,7 @@ real, intent(out), dimension(:) :: times(ntimes), vals(nvals)
 integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
 integer :: lu20, finish
-logical :: isopen,exists
+logical :: exists
 integer :: i,ii
 integer :: one, itime, nvars
 integer :: nvert_s, ntri_s, nvert_d, ntri_d
@@ -870,10 +860,9 @@ real, intent(out), dimension(nfires*nzonet) :: zoneqfire
 real, intent(out), dimension(nzonet) :: zonet
 integer , intent(out) :: error
 
-integer  :: file_unit
 integer :: lu26,i,j,ii,ii2,idummy,version
 real :: dummy, qdot
-logical :: isopen, exists
+logical :: exists
 
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
@@ -945,7 +934,7 @@ real, intent(out), dimension(*) :: pqq
 integer, intent(out) :: error,npqq
 real, intent(out) :: patchtime
 
-integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, lu15, ii
+integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, ii
 
 error=0
 read(file_unit,iostat=error)patchtime
@@ -1092,7 +1081,6 @@ real, intent(in), dimension(*) :: qdata
 real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
-logical :: connected
 integer :: error
 character(len=30) :: longlbl, shortlbl, unitlbl
 integer :: ibeg, iend, nframe
@@ -1211,7 +1199,7 @@ integer :: error, istart, irowstart
 real :: timeval, time_max
 character(len=30) :: longlbl, shortlbl, unitlbl
 character(len=3) :: blank
-logical :: connected, load
+logical :: load
 integer :: ii, kk
 integer :: joff, koff, volslice
 integer :: count
@@ -1416,8 +1404,6 @@ integer, intent(in) :: ip1, ip2, jp1, jp2, kp1, kp2
 integer, intent(out) :: error
 
 character(len=30) :: longlbl, shortlbl, unitlbl
-integer :: lu11
-logical :: connected
 
 open(newunit=fileunit,file=trim(slicefilename),form="unformatted")
 
@@ -1468,7 +1454,7 @@ integer, intent(in), dimension(npatches) :: pi1, pi2, pj1, pj2, pk1, pk2, patchd
 integer, intent(out) :: error
 
 character(len=30) :: blank
-integer :: n, lu15
+integer :: n
 
 error=0
 open(newunit=boundaryunitnumber,file=trim(boundaryfilename),form="unformatted",action="write")
@@ -1540,7 +1526,6 @@ integer :: i, j, k, n
 real :: r2
 
 integer :: u_in
-logical :: connected
 
 if(isotest.eq.0)then
   error=0
@@ -1601,7 +1586,6 @@ real, dimension(nx,ny,nz,5)  :: qout
 integer, intent(out) :: error3
 
 integer :: u_out
-logical :: connected
 integer :: i, j, k, n
 real :: dummy
 
