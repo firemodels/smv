@@ -20,9 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(smoke3d_load_onlynew, 1);
-SVEXTERN int SVDECL(boundary_load_onlynew, 1);
-SVEXTERN int SVDECL(slice_load_onlynew, 1);
+SVEXTERN int SVDECL(load_incremental, 1);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];

@@ -1333,7 +1333,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   if(meshi->patchfilenum!=-1&&meshi->patchfilenum==filenum)newpatch=0;
 #ifdef pp_FSEEK
-  if(newpatch==0&&flag == LOAD&&boundary_load_onlynew == 1)flag = RELOAD;
+  if(newpatch==0&&flag == LOAD&&load_incremental == 1)flag = RELOAD;
 #endif
   meshi->patchfilenum=ifile;
   patchi->display=0;

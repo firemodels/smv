@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void LoadIncrementalCB(int var);
+EXTERNCPP void LoadIncrementalCB1(int var);
+EXTERNCPP void LoadIncrementalCB2(int var);
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);

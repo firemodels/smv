@@ -4962,7 +4962,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   meshdata *meshi;
   int fortran_skip;
 
-  if(smoke3d_load_onlynew==1&&flag==LOAD)flag = RELOAD;
+  if(load_incremental==1&&flag==LOAD)flag = RELOAD;
   START_TIMER(total_time);
   ASSERT(ifile>=0&&ifile<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile;

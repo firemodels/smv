@@ -125,6 +125,8 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define FILESHOW_isosurface  15
 #define FILESHOW_evac 19
 #define FILESHOW_plot3d 16
+#define BOUNDARY_LOAD_INCREMENTAL 16
+#define SLICE_LOAD_INCREMENTAL 17
 
 GLUI *glui_bounds=NULL;
 
@@ -257,6 +259,10 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+#ifdef pp_FSEEK
+GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
+GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
@@ -371,6 +377,13 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
 procdata sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
+
+/* ------------------ LoadIncrementalCB1 ------------------------ */
+
+extern "C" void LoadIncrementalCB1(int var){
+  if(CHECKBOX_boundary_load_incremental!=NULL)CHECKBOX_boundary_load_incremental->set_int_val(load_incremental);
+  if(CHECKBOX_slice_load_incremental!=NULL)CHECKBOX_slice_load_incremental->set_int_val(load_incremental);
+}
 
 /* ------------------ UpdateSliceDupDialog ------------------------ */
 
@@ -1706,7 +1719,8 @@ extern "C" void GluiBoundsSetup(int main_window){
         BoundBoundCB(SHOWCHAR);
       }
 #ifdef pp_FSEEK
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _d("load only new data"), &boundary_load_onlynew);
+      CHECKBOX_boundary_load_incremental=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _d("incremental data loading"), &load_incremental, BOUNDARY_LOAD_INCREMENTAL, LoadIncrementalCB);
+      LoadIncrementalCB(BOUNDARY_LOAD_INCREMENTAL);
 #endif
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
@@ -2104,7 +2118,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show sorted slice labels"), &show_sort_labels);
 #endif
 #ifdef pp_FSEEK
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("load only new data"), &slice_load_onlynew);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("incremental data loading"), &load_incremental,SLICE_LOAD_INCREMENTAL,LoadIncrementalCB);
+    LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
     SliceBoundCB(FILETYPEINDEX);
   }

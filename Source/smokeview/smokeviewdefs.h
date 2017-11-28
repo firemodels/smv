@@ -581,6 +581,7 @@ void _Sniff_Errors(char *whereat);
 #define SHOWFILES 5
 #define REDIRECT 6
 #define SHOWMESHMENUS 7
+#define LOADINCREMENTAL 8
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING -2

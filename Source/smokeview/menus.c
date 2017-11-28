@@ -2811,6 +2811,11 @@ void LoadUnloadMenu(int value){
     updatemenu=1;
     glutPostRedisplay();
   }
+  if(value==LOADINCREMENTAL){
+    load_incremental = 1 - load_incremental;
+    LoadIncrementalCB(-1);
+    updatemenu = 1;
+  }
   if(value==REDIRECT){
     updatemenu=1;
     glutPostRedisplay();
@@ -9960,6 +9965,8 @@ updatemenu=0;
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
       if(show_meshmenus==1)glutAddMenuEntry(_("*Show mesh menus"), SHOWMESHMENUS);
       if(show_meshmenus==0)glutAddMenuEntry(_("Show mesh menus"), SHOWMESHMENUS);
+      if(load_incremental == 1)glutAddMenuEntry(_("*incremental data loading"), LOADINCREMENTAL);
+      if(load_incremental == 0)glutAddMenuEntry(_("incremental data loading"), LOADINCREMENTAL);
 
       {
         char menulabel[1024];
