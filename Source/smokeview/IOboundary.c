@@ -2049,7 +2049,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     error=0;
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES||loadpatchbysteps==UNCOMPRESSED_BYFRAME){
       if(ii==patchi->ntimes_old&&patchi->ntimes_old>0&&patchi->ntimes != patchi->ntimes_old){
-        int iii, framesizes;
+        int framesizes;
 
         framesizes = framesize*patchi->ntimes_old-8;
         FORTskipdata(&file_unit,&framesizes);
@@ -2393,7 +2393,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
       return;
     }
   }
-  GetBoundaryColors3(patchi, 0, patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+  GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
     setpatchmin, &patchmin, setpatchmax, &patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
