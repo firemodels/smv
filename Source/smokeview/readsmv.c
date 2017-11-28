@@ -386,7 +386,7 @@ void InitMesh(meshdata *meshi){
   meshi->dxz = 1.0;
   meshi->dyz = 1.0;
   meshi->label = NULL;
-  meshi->mxpatch_frames = 0;
+  meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;
   meshi->visInteriorBoundaries = 0;
   meshi->plot3dfilenum = -1;
@@ -8296,6 +8296,8 @@ typedef struct {
       patchi = patchinfo + ipatch;
 
       patchi->version=version;
+      patchi->ntimes = 0;
+      patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
       patchi->geom_fdsfiletype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;

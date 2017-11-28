@@ -1705,6 +1705,9 @@ extern "C" void GluiBoundsSetup(int main_window){
         }
         BoundBoundCB(SHOWCHAR);
       }
+#ifdef pp_FSEEK
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _d("load only new data"), &boundary_load_onlynew);
+#endif
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
     else{

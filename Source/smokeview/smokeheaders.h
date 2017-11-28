@@ -778,7 +778,7 @@ EXTERNCPP void GetBoundaryColors2(float *t, int nt, unsigned char *it,
               int ndatalevel,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int nlevel,

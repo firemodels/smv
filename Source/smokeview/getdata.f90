@@ -917,6 +917,23 @@ end do
 close(lu26)
 end subroutine getzonedata
 
+!  ------------------ skipdata ------------------------
+
+subroutine skipdata(file_unit,skip)
+use cio
+implicit none
+
+integer, intent(in) :: file_unit, skip
+
+integer :: error, sizes(1), nsizes
+
+sizes(1) = skip
+nsizes = 1
+
+call ffseek(file_unit,sizes,nsizes,seek_cur,error)
+
+end subroutine skipdata
+
 !  ------------------ getpatchdata ------------------------
 
 subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)

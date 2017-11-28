@@ -253,7 +253,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
 
 /* ------------------ GetBoundaryColors3 ------------------------ */
 
-void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
+void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int nlevel,
@@ -301,10 +301,13 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
   range = new_tmax - new_tmin;
   factor = 0.0f;
   if(range!=0.0f)factor = (float)(255-2*extreme_data_offset)/range;
-  for(n=0;n<nt;n++){
+
+  t+=start;
+  it+=start;
+  for(n=start;n<nt;n++){
     float val;
 
-    val = *t;
+    val = *t++;
 
     if(val<new_tmin){
       itt=0;
@@ -318,7 +321,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
       itt=extreme_data_offset+(int)(factor*(val-new_tmin));
     }
     *it++=CLAMP(itt,colorbar_offset,255-colorbar_offset);
-    t++;
   }
   CheckMemory;
   STRCPY(scale,"");
@@ -372,7 +374,7 @@ void UpdateAllBoundaryColors(void){
 
     npatchvals = meshi->npatch_times*meshi->npatchsize;
 
-    GetBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
+    GetBoundaryColors3(patchi,meshi->patchval, 0, npatchvals, meshi->cpatchval,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch,patchi->scale,boundarylevels256,

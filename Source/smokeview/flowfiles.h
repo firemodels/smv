@@ -724,7 +724,7 @@ typedef struct _meshdata {
 
   int itextureoffset;
 
-  int mxpatch_frames;
+  int maxtimes_boundary;
   float vent_offset[3];
   int select_min, select_max;
 
@@ -1310,6 +1310,7 @@ typedef struct _patchdata {
   char *geomfile, *geom_fdsfiletype;
   geomdata *geominfo;
   //int *patchsize;
+  int ntimes, ntimes_old;
   int version;
   int filetype, geom_smvfiletype, slice;
   int type;

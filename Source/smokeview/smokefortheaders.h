@@ -24,6 +24,7 @@
 #define FORTgetpatchsizes1        _F(getpatchsizes1)
 #define FORTgetpatchsizes2        _F(getpatchsizes2)
 #define FORTgetpatchdata          _F(getpatchdata)
+#define FORTskipdata              _F(skipdata)
 #define FORTgetdata1              _F(getdata1)
 #define FORTgetslicesizes         _F(getslicesizes)
 #define FORTwriteslicedata        _F(writeslicedata)
@@ -71,6 +72,7 @@ STDCALLF FORTgetpatchsizes2(int *file_unit,int *version, int *npatch,int *npatch
                            int *headersize, int *framesize);
 STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2,
                          float *patch_times,float *pqq, int *npqq, int *error);
+STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 
 STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek,
