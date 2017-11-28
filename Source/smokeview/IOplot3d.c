@@ -346,7 +346,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
   UpdatePlotSlice(YDIR);
   UpdatePlotSlice(ZDIR);
   visGrid=0;
-  meshi->visInteriorPatches=0;
+  meshi->visInteriorBoundaries=0;
   if(visx_all==1){
     UpdateShowStep(1,XDIR);
   }

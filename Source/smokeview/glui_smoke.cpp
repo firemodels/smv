@@ -64,6 +64,8 @@ extern GLUI *glui_bounds;
 #define LOAD_TIMEFRAME 58
 #define UPDATE_FACTOROFFSETS 59
 #define UPDATE_HRRPUV_CONTROLS 60
+#define SMOKE3D_LOAD_INCREMENTAL 18
+
 
 // two defines below are also defined elsewhere
 
@@ -167,6 +169,9 @@ GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_show_smoketest = NULL;
 GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
+#ifdef pp_FSEEK
+GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
+#endif
 
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
@@ -225,6 +230,20 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[2];
 int ncolorprocinfo = 0;
+
+/* ------------------ LoadIncrementalCB ------------------------ */
+
+extern "C" void LoadIncrementalCB(int var){
+  LoadIncrementalCB1(var);
+  LoadIncrementalCB2(var);
+  updatemenu=1;
+}
+
+/* ------------------ LoadIncrementalCB2 ------------------------ */
+
+extern "C" void LoadIncrementalCB2(int var){
+  if(CHECKBOX_smoke3d_load_incremental != NULL)CHECKBOX_smoke3d_load_incremental->set_int_val(load_incremental);
+}
 
 /* ------------------ UpdateFreeze ------------------------ */
 
@@ -656,6 +675,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("adjust off-center"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("both"));
+    CHECKBOX_smoke3d_load_incremental=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices, _d("incremental data loading"), &load_incremental, SMOKE3D_LOAD_INCREMENTAL, LoadIncrementalCB);
   }
 
   // volume render dialog

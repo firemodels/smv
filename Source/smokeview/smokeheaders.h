@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void LoadIncrementalCB(int var);
+EXTERNCPP void LoadIncrementalCB1(int var);
+EXTERNCPP void LoadIncrementalCB2(int var);
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
@@ -127,7 +130,7 @@ EXTERNCPP void UpdateGluiSetViewXYZ(float *xyz);
 EXTERNCPP void UpdateGluiFileLabel(int var);
 EXTERNCPP void UpdateGluiVecFactor(void);
 EXTERNCPP void UpdateGluiKeyframe(void);
-EXTERNCPP void UpdateGluiPatchUnits(void);
+EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void UpdateGluiPlot3D(void);
 EXTERNCPP void UpdateGluiPlot3D_units(void);
@@ -174,10 +177,10 @@ EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiGeometry(void);
 
-EXTERNCPP void UpdateAllPatchColors(void);
+EXTERNCPP void UpdateAllBoundaryColors(void);
 EXTERNCPP void UpdateSliceListIndex(int sfn);
-EXTERNCPP void UpdatePatchListIndex(int patchfilenum);
-EXTERNCPP void UpdatePatchListIndex2(char *label);
+EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
+EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
 
 EXTERNCPP void GetSliceParams2(void);
@@ -275,11 +278,11 @@ EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateEvacParms(void);
 EXTERNCPP void UpdateSliceMenuShow(void);
-EXTERNCPP void UpdatePatchBounds(patchdata *patchi);
-EXTERNCPP void UpdateAllPatchBounds(void);
-EXTERNCPP void UpdateAllPatchBoundsST(void);
-EXTERNCPP int  UpdatePatchHist(patchdata *patchi);
-EXTERNCPP void UpdateHidePatchSurface(void);
+EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
+EXTERNCPP void UpdateAllBoundaryBounds(void);
+EXTERNCPP void UpdateAllBoundaryBoundsST(void);
+EXTERNCPP int  UpdateBoundaryHist(patchdata *patchi);
+EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
 EXTERNCPP void UpdateAxisLabelsSmooth(void);
@@ -416,7 +419,7 @@ EXTERNCPP void EvacShowMenu(int value);
 EXTERNCPP void ParticleShowMenu(int value);
 EXTERNCPP void Plot3DShowMenu(int value);
 EXTERNCPP void IsoShowMenu(int value);
-EXTERNCPP void ShowPatchMenu(int value);
+EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void Smoke3DShowMenu(int value);
 EXTERNCPP void ShowVSliceMenu(int value);
 EXTERNCPP int  GetPartPropIndexS(char *shortlabel);
@@ -428,7 +431,7 @@ EXTERNCPP void InitPartProp(void);
 EXTERNCPP void UpdateStreakValue(float value);
 EXTERNCPP void LoadParticleMenu(int value);
 EXTERNCPP void LoadEvacMenu(int value);
-EXTERNCPP void LoadPatchMenu(int value);
+EXTERNCPP void LoadBoundaryMenu(int value);
 EXTERNCPP void LoadSliceMenu(int value);
 EXTERNCPP void LoadVSliceMenu(int value);
 
@@ -456,7 +459,7 @@ EXTERNCPP void GetStartupPart(int seq_id);
 EXTERNCPP void GetStartupPlot3d(int seq_id);
 EXTERNCPP void GetStartupSmoke(int seq_id);
 EXTERNCPP void GetStartupISO(int seq_id);
-EXTERNCPP void GetStartupPatch(int seq_id);
+EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void PutStartupSmoke3d(FILE *fileout);
 EXTERNCPP void DrawTransparentFaces(void);
@@ -473,7 +476,7 @@ EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float spee
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
-EXTERNCPP void UncompressPatchDataFrame(meshdata *meshi,int frame_index);
+EXTERNCPP void UncompressBoundaryDataFrame(meshdata *meshi,int frame_index);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void AdjustTourTimes(tourdata *touri);
@@ -505,7 +508,7 @@ EXTERNCPP void DrawSliceFrame(void);
 EXTERNCPP void DrawVGSliceData(vslicedata *vslicei);
 EXTERNCPP void DrawGSliceData(slicedata *slicei);
 EXTERNCPP void DrawGSliceOutline(void);
-EXTERNCPP void DrawPatchFrame(int flag);
+EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
 
 EXTERNCPP void DrawSmoke3dVol(void);
@@ -564,7 +567,7 @@ EXTERNCPP void UpdateVSlices(void);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdatePartMenuLabels(void);
 EXTERNCPP void UpdateIsoMenuLabels(void);
-EXTERNCPP void UpdatePatchMenuLabels(void);
+EXTERNCPP void UpdateBoundaryMenuLabels(void);
 EXTERNCPP void UpdateSliceMenuLabels(void);
 EXTERNCPP void UpdateVsliceMenuLabels(void);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
@@ -616,8 +619,8 @@ EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void Antialias(int flag);
 EXTERNCPP void SetSliceBounds(int islicetype);
-EXTERNCPP void Local2GlobalPatchBounds(const char *key);
-EXTERNCPP void Global2LocalPatchBounds(const char *key);
+EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
+EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);
 EXTERNCPP void UpdateLights(float *pos1, float *pos2);
 EXTERNCPP int  MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers);
@@ -644,9 +647,9 @@ EXTERNCPP int  GetSliceIndex(const slicedata *sd);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);
-EXTERNCPP int  GetPatchType(const patchdata *patchi);
-EXTERNCPP void UpdatePatchType(void);
-EXTERNCPP void UpdatePatchTypes(void);
+EXTERNCPP int  GetBoundaryType(const patchdata *patchi);
+EXTERNCPP void UpdateBoundaryType(void);
+EXTERNCPP void UpdateBoundaryTypes(void);
 
 EXTERNCPP void UpdateMeshTerrain(void);
 EXTERNCPP void UpdateTerrainOptions(void);
@@ -738,7 +741,7 @@ EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntime
 EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
-EXTERNCPP void ReadPatch(int ifile, int flag, int *errorcode);
+EXTERNCPP void ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadPart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadVSlice(int ivslice, int flag, int *errorcode);
@@ -778,7 +781,7 @@ EXTERNCPP void GetBoundaryColors2(float *t, int nt, unsigned char *it,
               int ndatalevel,
               int *extreme_min, int *extreme_max
               );
-EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int nlevel,

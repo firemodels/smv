@@ -386,9 +386,9 @@ void InitMesh(meshdata *meshi){
   meshi->dxz = 1.0;
   meshi->dyz = 1.0;
   meshi->label = NULL;
-  meshi->mxpatch_frames = 0;
+  meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;
-  meshi->visInteriorPatches = 0;
+  meshi->visInteriorBoundaries = 0;
   meshi->plot3dfilenum = -1;
   meshi->patchfilenum = -1;
   meshi->obst_bysize = NULL;
@@ -430,11 +430,11 @@ void InitMesh(meshdata *meshi){
   meshi->ndummyvents = 0;
   meshi->ncvents = 0;
   meshi->npatches = 0;
-  meshi->patchtype = NULL;
+  meshi->boundarytype = NULL;
   meshi->offset[XXX] = 0.0;
   meshi->offset[YYY] = 0.0;
   meshi->offset[ZZZ] = 0.0;
-  meshi->patchtype = NULL;
+  meshi->boundarytype = NULL;
   meshi->patchdir = NULL;
   meshi->patch_surfindex = NULL;
   meshi->pi1 = NULL;
@@ -446,9 +446,9 @@ void InitMesh(meshdata *meshi){
   meshi->meshonpatch = NULL;
   meshi->blockonpatch = NULL;
   meshi->ptype = NULL;
-  meshi->patchrow = NULL, meshi->patchcol = NULL, meshi->blockstart = NULL;
+  meshi->boundary_row = NULL, meshi->boundary_col = NULL, meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;
-  meshi->visPatches = NULL;
+  meshi->vis_boundaries = NULL;
   meshi->xyzpatch = NULL;
   meshi->xyzpatch_threshold = NULL;
   meshi->patchventcolors = NULL;
@@ -3832,7 +3832,7 @@ int ReadSMV(char *file, char *file2){
 
   FREEMEMORY(plot3dinfo);
   FREEMEMORY(patchinfo);
-  FREEMEMORY(patchtypes);
+  FREEMEMORY(boundarytypes);
   FREEMEMORY(isoinfo);
   FREEMEMORY(isotypes);
   FREEMEMORY(roominfo);
@@ -4518,7 +4518,7 @@ int ReadSMV(char *file, char *file2){
   }
 
   FREEMEMORY(patchinfo);
-  FREEMEMORY(patchtypes);
+  FREEMEMORY(boundarytypes);
   if(npatchinfo!=0){
     if(NewMemory((void **)&patchinfo,npatchinfo*sizeof(patchdata))==0)return 2;
     for(i=0;i<npatchinfo;i++){
@@ -4530,7 +4530,7 @@ int ReadSMV(char *file, char *file2){
       patchi->file=NULL;
       patchi->size_file=NULL;
     }
-    if(NewMemory((void **)&patchtypes,npatchinfo*sizeof(int))==0)return 2;
+    if(NewMemory((void **)&boundarytypes,npatchinfo*sizeof(int))==0)return 2;
   }
   FREEMEMORY(isoinfo);
   FREEMEMORY(isotypes);
@@ -5513,6 +5513,8 @@ int ReadSMV(char *file, char *file2){
         if(NewMemory((void **)&smoke3di->reg_file,(unsigned int)(len+1))==0)return 2;
         STRCPY(smoke3di->reg_file,bufferptr);
 
+        smoke3di->ntimes = 0;
+        smoke3di->ntimes_old = 0;
         smoke3di->filetype=filetype;
         smoke3di->is_zlib=0;
         smoke3di->seq_id=nn_smoke3d;
@@ -8296,6 +8298,8 @@ typedef struct {
       patchi = patchinfo + ipatch;
 
       patchi->version=version;
+      patchi->ntimes = 0;
+      patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
       patchi->geom_fdsfiletype=NULL;
       patchi->filetype = PATCH_NODE_CENTER;
@@ -8989,7 +8993,7 @@ typedef struct {
   UpdateSliceTypes();
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
-  UpdatePatchTypes();
+  UpdateBoundaryTypes();
   if(autoterrain==1){
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
@@ -9014,7 +9018,7 @@ typedef struct {
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceTypes();
-  UpdatePatchMenuLabels();
+  UpdateBoundaryMenuLabels();
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
   UpdateTourMenuLabels();
@@ -9984,7 +9988,7 @@ int ReadIni2(char *inifile, int localfile){
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
-        GetStartupPatch(seq_id);
+        GetStartupBoundary(seq_id);
       }
       update_load_files = 1;
       continue;
@@ -10242,7 +10246,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &setpatchmin, &patchmin, &setpatchmax, &patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)Local2GlobalPatchBounds(buffer2);
+      if(strcmp(buffer2, "") != 0)Local2GlobalBoundaryBounds(buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){
@@ -10268,7 +10272,7 @@ int ReadIni2(char *inifile, int localfile){
           patchi->setchopmax = setvalmax;
         }
       }
-      UpdatePatchListIndex2(buffer2ptr);
+      UpdateBoundaryListIndex2(buffer2ptr);
       continue;
     }
     if(Match(buffer, "V_ZONE") == 1){
@@ -10343,6 +10347,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &boundzipstep);
       if(boundzipstep<1)boundzipstep = 1;
       boundzipskip = boundzipstep - 1;
+      continue;
+    }
+    if(Match(buffer, "LOADINC") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &load_incremental);
       continue;
     }
     if(Match(buffer, "MSCALE") == 1){
@@ -12937,6 +12946,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %s\n", default_fed_colorbar);
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
+  fprintf(fileout, "LOADINC\n");
+  fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "SHOWFEDAREA\n");

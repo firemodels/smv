@@ -938,9 +938,9 @@ void InitOpenGL(void){
     }
   }
 
- /* ------------------ GetStartupPatch ------------------------ */
+ /* ------------------ GetStartupBoundary ------------------------ */
 
-  void GetStartupPatch(int seq_id){
+  void GetStartupBoundary(int seq_id){
     int i;
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
@@ -1116,8 +1116,8 @@ void InitOpenGL(void){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      if(patchi->autoload==0&&patchi->loaded==1)ReadPatch(i,UNLOAD,&errorcode);
-      if(patchi->autoload==1)ReadPatch(i,LOAD,&errorcode);
+      if(patchi->autoload==0&&patchi->loaded==1)ReadBoundary(i,UNLOAD,&errorcode);
+      if(patchi->autoload==1)ReadBoundary(i,LOAD,&errorcode);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);
@@ -1840,7 +1840,7 @@ void InitVars(void){
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
   realtime_flag=0;
-  islicetype=-1,islicetype_save=-1,ipatchtype=-1;
+  islicetype=-1,islicetype_save=-1,iboundarytype=-1;
   iisotype=-1;
 
 
@@ -2159,9 +2159,9 @@ void InitVars(void){
     int iii;
 
     for(iii=0;iii<7;iii++){
-      visPatchType[iii]=0;
+      vis_boundary_type[iii]=0;
     }
-    visPatchType[0]=1;
+    vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
       setp3min[iii]=PERCENTILE_MIN;
       p3min[iii]=1.0f;

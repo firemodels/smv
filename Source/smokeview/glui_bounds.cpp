@@ -125,6 +125,8 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define FILESHOW_isosurface  15
 #define FILESHOW_evac 19
 #define FILESHOW_plot3d 16
+#define BOUNDARY_LOAD_INCREMENTAL 16
+#define SLICE_LOAD_INCREMENTAL 17
 
 GLUI *glui_bounds=NULL;
 
@@ -257,6 +259,10 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+#ifdef pp_FSEEK
+GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
+GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
@@ -371,6 +377,13 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
 procdata sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
+
+/* ------------------ LoadIncrementalCB1 ------------------------ */
+
+extern "C" void LoadIncrementalCB1(int var){
+  if(CHECKBOX_boundary_load_incremental!=NULL)CHECKBOX_boundary_load_incremental->set_int_val(load_incremental);
+  if(CHECKBOX_slice_load_incremental!=NULL)CHECKBOX_slice_load_incremental->set_int_val(load_incremental);
+}
 
 /* ------------------ UpdateSliceDupDialog ------------------------ */
 
@@ -530,9 +543,9 @@ extern "C" void UpdateGluiSliceUnits(void){
   }
 }
 
-/* ------------------ UpdateGluiPatchUnits ------------------------ */
+/* ------------------ UpdateGluiBoundaryUnits ------------------------ */
 
-extern "C" void UpdateGluiPatchUnits(void){
+extern "C" void UpdateGluiBoundaryUnits(void){
   if(STATIC_bound_min_unit!=NULL&&patchmin_unit!=NULL){
     STATIC_bound_min_unit->set_name((char *)patchmin_unit);
   }
@@ -692,7 +705,7 @@ extern "C" void FileShowCB(int var){
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
       if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       break;
     case HIDEALL_FILES:
       EvacShowMenu(HIDEALL_EVAC);
@@ -714,7 +727,7 @@ extern "C" void FileShowCB(int var){
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
       if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       break;
     case HIDEALL_FILES:
       ParticleShowMenu(HIDEALL_PARTICLE);
@@ -733,7 +746,7 @@ extern "C" void FileShowCB(int var){
       ShowHideSliceMenu(SHOWALL_SLICE);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
@@ -754,7 +767,7 @@ extern "C" void FileShowCB(int var){
     case SHOWONLY_FILE:
       ShowVSliceMenu(SHOWALL_VSLICE);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
@@ -771,10 +784,10 @@ extern "C" void FileShowCB(int var){
   case  FILESHOW_boundary:
     switch(showhide_option){
     case SHOWALL_FILES:
-      ShowPatchMenu(SHOWALL_BOUNDARY);
+      ShowBoundaryMenu(SHOWALL_BOUNDARY);
       break;
     case SHOWONLY_FILE:
-      ShowPatchMenu(SHOWALL_BOUNDARY);
+      ShowBoundaryMenu(SHOWALL_BOUNDARY);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
@@ -783,7 +796,7 @@ extern "C" void FileShowCB(int var){
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       break;
     case HIDEALL_FILES:
-      ShowPatchMenu(HIDEALL_BOUNDARY);
+      ShowBoundaryMenu(HIDEALL_BOUNDARY);
       break;
     default:
       ASSERT(FFALSE);
@@ -798,7 +811,7 @@ extern "C" void FileShowCB(int var){
     case SHOWONLY_FILE:
       Smoke3DShowMenu(SHOWALL_SMOKE3D);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
       if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
@@ -821,7 +834,7 @@ extern "C" void FileShowCB(int var){
       IsoShowMenu(SHOWALL_ISO);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
-      if(npatchloaded != 0)ShowPatchMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
       if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
@@ -909,7 +922,7 @@ void BoundBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
       EDIT_patch_chopmin->disable();
@@ -921,11 +934,11 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    UpdateHidePatchSurface();
+    UpdateHideBoundarySurface();
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmax){
     case DISABLE:
       EDIT_patch_chopmax->disable();
@@ -937,18 +950,18 @@ void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-    UpdateHidePatchSurface();
+    UpdateHideBoundarySurface();
     break;
   case CHOPVALMIN:
     ASSERT(EDIT_patch_min != NULL);
     EDIT_patch_min->set_float_val(patchmin);
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     ASSERT(EDIT_patch_max != NULL);
     EDIT_patch_max->set_float_val(patchmax);
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case SHOWCHAR:
@@ -964,8 +977,8 @@ void BoundBoundCB(int var){
     updatefacelists = 1;
     break;
   case FILETYPEINDEX:
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index_old]);
-    Global2LocalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index_old]);
+    Global2LocalBoundaryBounds(patchlabellist[list_patch_index]);
 
     EDIT_patch_min->set_float_val(patchmin);
     EDIT_patch_max->set_float_val(patchmax);
@@ -1003,7 +1016,7 @@ void BoundBoundCB(int var){
     }
 
     list_patch_index_old = list_patch_index;
-    UpdateHidePatchSurface();
+    UpdateHideBoundarySurface();
     break;
   case SETVALMIN:
     switch(setpatchmin){
@@ -1036,10 +1049,10 @@ void BoundBoundCB(int var){
     BoundBoundCB(FILEUPDATE);
     break;
   case FILEUPDATE:
-    Local2GlobalPatchBounds(patchlabellist[list_patch_index]);
+    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     break;
   case FILEUPDATEDATA:
-    UpdateAllPatchColors();
+    UpdateAllBoundaryColors();
     break;
   case FILERELOAD:
     BoundBoundCB(FILEUPDATE);
@@ -1048,7 +1061,7 @@ void BoundBoundCB(int var){
 
       patchi = patchinfo + i;
       if(patchi->loaded == 0)continue;
-      LoadPatchMenu(i);
+      LoadBoundaryMenu(i);
     }
     EDIT_patch_min->set_float_val(patchmin);
     EDIT_patch_max->set_float_val(patchmax);
@@ -1705,6 +1718,10 @@ extern "C" void GluiBoundsSetup(int main_window){
         }
         BoundBoundCB(SHOWCHAR);
       }
+#ifdef pp_FSEEK
+      CHECKBOX_boundary_load_incremental=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _d("incremental data loading"), &load_incremental, BOUNDARY_LOAD_INCREMENTAL, LoadIncrementalCB);
+      LoadIncrementalCB(BOUNDARY_LOAD_INCREMENTAL);
+#endif
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
     else{
@@ -1735,8 +1752,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       &patchchopmin, &patchchopmax,
       UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
       BoundBoundCB);
-    UpdatePatchListIndex2(patchinfo->label.shortlabel);
-    UpdateHidePatchSurface();
+    UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
+    UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
   }
 
@@ -2101,7 +2118,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show sorted slice labels"), &show_sort_labels);
 #endif
 #ifdef pp_FSEEK
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("load only new data"), &slice_load_onlynew);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("incremental data loading"), &load_incremental,SLICE_LOAD_INCREMENTAL,LoadIncrementalCB);
+    LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
     SliceBoundCB(FILETYPEINDEX);
   }
@@ -2603,9 +2621,9 @@ extern "C"  void GluiScriptDisable(void){
     EDIT_ini->disable();
   }
 
-/* ------------------ UpdatePatchListIndex ------------------------ */
+/* ------------------ UpdateBoundaryListIndex ------------------------ */
 
-extern "C" void UpdatePatchListIndex(int patchfilenum){
+extern "C" void UpdateBoundaryListIndex(int patchfilenum){
   int i;
   if(RADIO_bf==NULL)return;
   for(i=0;i<npatch2;i++){
@@ -2615,7 +2633,7 @@ extern "C" void UpdatePatchListIndex(int patchfilenum){
     if(strcmp(patchlabellist[i],patchi->label.shortlabel)==0){
       RADIO_bf->set_int_val(i);
       list_patch_index_old=list_patch_index;
-      Global2LocalPatchBounds(patchlabellist[i]);
+      Global2LocalBoundaryBounds(patchlabellist[i]);
       RADIO_patch_setmin->set_int_val(setpatchmin);
       RADIO_patch_setmax->set_int_val(setpatchmax);
       EDIT_patch_min->set_float_val(patchmin);
@@ -2656,13 +2674,13 @@ extern "C" void UpdatePatchListIndex(int patchfilenum){
   }
 }
 
-/* ------------------ UpdatePatchListIndex2 ------------------------ */
+/* ------------------ UpdateBoundaryListIndex2 ------------------------ */
 
-extern "C" void UpdatePatchListIndex2(char *label){
+extern "C" void UpdateBoundaryListIndex2(char *label){
   int i;
   for(i=0;i<npatch2;i++){
     if(strcmp(patchlabellist[i],label)==0){
-      UpdatePatchListIndex(patchlabellist_index[i]);
+      UpdateBoundaryListIndex(patchlabellist_index[i]);
       break;
     }
   }
@@ -3496,7 +3514,7 @@ extern "C" void ShowGluiBounds(int menu_id){
     }
     if(npatchinfo>0){
       ipatch=RADIO_bf->get_int_val();
-      Global2LocalPatchBounds(patchlabellist[ipatch]);
+      Global2LocalBoundaryBounds(patchlabellist[ipatch]);
       BoundBoundCB(SETVALMIN);
       BoundBoundCB(SETVALMAX);
     }

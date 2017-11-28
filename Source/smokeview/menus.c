@@ -2675,7 +2675,7 @@ void LoadUnloadMenu(int value){
       ReadPlot3d("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
-      ReadPatch(i,UNLOAD,&errorcode);
+      ReadBoundary(i,UNLOAD,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
       ReadPart("",i,UNLOAD,PARTDATA,&errorcode);
@@ -2750,7 +2750,7 @@ void LoadUnloadMenu(int value){
     }
     for(ii=0;ii<npatch_loaded;ii++){
       i = patch_loaded_list[ii];
-      ReadPatch(i,LOAD,&errorcode);
+      ReadBoundary(i,LOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
@@ -2800,7 +2800,7 @@ void LoadUnloadMenu(int value){
     UpdateSliceMenuLabels();
     UpdateVsliceMenuLabels();
     UpdateSmoke3dMenuLabels();
-    UpdatePatchMenuLabels();
+    UpdateBoundaryMenuLabels();
     UpdateIsoMenuLabels();
     UpdatePartMenuLabels();
     UpdateTourMenuLabels();
@@ -2810,6 +2810,11 @@ void LoadUnloadMenu(int value){
     show_meshmenus = 1 - show_meshmenus;
     updatemenu=1;
     glutPostRedisplay();
+  }
+  if(value==LOADINCREMENTAL){
+    load_incremental = 1 - load_incremental;
+    LoadIncrementalCB(-1);
+    updatemenu = 1;
   }
   if(value==REDIRECT){
     updatemenu=1;
@@ -3398,19 +3403,19 @@ void UnloadVSliceMenu(int value){
   }
 }
 
-/* ------------------ UnloadPatchMenu ------------------------ */
+/* ------------------ UnloadBoundaryMenu ------------------------ */
 
-void UnloadPatchMenu(int value){
+void UnloadBoundaryMenu(int value){
   int errorcode,i;
 
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    ReadPatch(value,UNLOAD,&errorcode);
+    ReadBoundary(value,UNLOAD,&errorcode);
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      ReadPatch(i,UNLOAD,&errorcode);
+      ReadBoundary(i,UNLOAD,&errorcode);
     }
   }
 }
@@ -4310,23 +4315,23 @@ void LoadIsoMenu(int value){
   glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ LoadPatchMenu ------------------------ */
+/* ------------------ LoadBoundaryMenu ------------------------ */
 
-void LoadPatchMenu(int value){
+void LoadBoundaryMenu(int value){
   int errorcode;
   int i,ii;
-  int patchtypenew;
+  int boundarytypenew;
 
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
-    patchtypenew=GetPatchType(patchinfo+value);
-    if(patchtypenew!=-1){
+    boundarytypenew=GetBoundaryType(patchinfo+value);
+    if(boundarytypenew!=-1){
       for(ii=0;ii<npatch_loaded;ii++){
         patchdata *patchi;
 
         i = patch_loaded_list[ii];
         patchi = patchinfo + i;
-        if(patchi->type!=patchtypenew)ReadPatch(i,UNLOAD,&errorcode);
+        if(patchi->type!=boundarytypenew)ReadBoundary(i,UNLOAD,&errorcode);
       }
     }
     if(scriptoutstream!=NULL){
@@ -4341,7 +4346,7 @@ void LoadPatchMenu(int value){
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
       LOCK_COMPRESS
-      ReadPatch(value,LOAD,&errorcode);
+      ReadBoundary(value,LOAD,&errorcode);
       UNLOCK_COMPRESS
     }
   }
@@ -4361,7 +4366,7 @@ void LoadPatchMenu(int value){
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
           LOCK_COMPRESS
-          ReadPatch(i,LOAD,&errorcode);
+          ReadBoundary(i,LOAD,&errorcode);
           UNLOCK_COMPRESS
         }
       }
@@ -4370,14 +4375,14 @@ void LoadPatchMenu(int value){
     UpdateFrameNumber(0);
   }
   else if(value==MENU_UPDATEBOUNDS){
-    UpdateAllPatchBounds();
+    UpdateAllBoundaryBounds();
   }
   else if(value==MENU_BOUNDARY_SETTINGS){
     ShowBoundsDialog(DLG_BOUNDARY);
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      ReadPatch(i,UNLOAD,&errorcode);
+      ReadBoundary(i,UNLOAD,&errorcode);
     }
   }
   updatemenu=1;
@@ -4385,9 +4390,9 @@ void LoadPatchMenu(int value){
   glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ ShowPatchMenu ------------------------ */
+/* ------------------ ShowBoundaryMenu ------------------------ */
 
-void ShowPatchMenu(int value){
+void ShowBoundaryMenu(int value){
   updatemenu=1;
   updatefacelists=1;
   glutPostRedisplay();
@@ -4395,14 +4400,14 @@ void ShowPatchMenu(int value){
     patchdata *patchi;
 
     patchi=patchinfo+value-1000;
-    if(patchi->type==ipatchtype){
+    if(patchi->type==iboundarytype){
       patchi->display=1-patchi->display;
     }
     else{
       patchi->display=1;
-      ipatchtype=GetPatchType(patchi);
+      iboundarytype=GetBoundaryType(patchi);
     }
-    UpdatePatchType();
+    UpdateBoundaryType();
   }
   if(value==SHOW_CHAR){
     vis_threshold = 1 - vis_threshold;
@@ -4429,12 +4434,12 @@ void ShowPatchMenu(int value){
       showexterior=1-showexterior;
       val = allexterior;
       for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->patchtype[n]!=INTERIORwall){
-          current_mesh->visPatches[n]=val;
+        if(current_mesh->boundarytype[n]!=INTERIORwall){
+          current_mesh->vis_boundaries[n]=val;
         }
       }
       for(i=1;i<7;i++){
-        visPatchType[i]=val;
+        vis_boundary_type[i]=val;
       }
     }
     else if(value==INTERIORwallmenu){
@@ -4442,10 +4447,10 @@ void ShowPatchMenu(int value){
 
       allinterior = 1 - allinterior;
       val = allinterior;
-      visPatchType[INTERIORwall]=val;
+      vis_boundary_type[INTERIORwall]=val;
       for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->patchtype[n]==INTERIORwall){
-          current_mesh->visPatches[n]=val;
+        if(current_mesh->boundarytype[n]==INTERIORwall){
+          current_mesh->vis_boundaries[n]=val;
         }
       }
     }
@@ -4486,9 +4491,9 @@ void ShowPatchMenu(int value){
 
       value = -(value+2); /* map xxxwallmenu to xxxwall */
       for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->patchtype[n]==value){
-          current_mesh->visPatches[n] = 1 - current_mesh->visPatches[n];
-          visPatchType[value]=current_mesh->visPatches[n];
+        if(current_mesh->boundarytype[n]==value){
+          current_mesh->vis_boundaries[n] = 1 - current_mesh->vis_boundaries[n];
+          vis_boundary_type[value]=current_mesh->vis_boundaries[n];
         }
       }
     }
@@ -5127,9 +5132,9 @@ int GetNTotalVents(void){
   return ntotal_vents;
 }
 
-/* ------------------ IsPatchType ------------------------ */
+/* ------------------ IsBoundaryType ------------------------ */
 
-int IsPatchType(int type){
+int IsBoundaryType(int type){
   int i;
 
   for(i = 0; i < nmeshes; i++){
@@ -5138,7 +5143,7 @@ int IsPatchType(int type){
 
     meshi = meshinfo + i;
     for(n = 0; n < meshi->npatches; n++){
-      if(meshi->patchtype[n] == type)return 1;
+      if(meshi->boundarytype[n] == type)return 1;
     }
   }
   return 0;
@@ -5397,14 +5402,14 @@ updatemenu=0;
       int ii;
       char menulabel[1024];
 
-      CREATEMENU(showpatchsinglemenu,ShowPatchMenu);
+      CREATEMENU(showpatchsinglemenu,ShowBoundaryMenu);
       for(ii=0;ii<npatchinfo;ii++){
         patchdata *patchi;
 
         i = patchorderindex[ii];
         patchi = patchinfo+i;
         if(patchi->loaded==0)continue;
-        if(patchi->display==1&&patchi->type==ipatchtype){
+        if(patchi->display==1&&patchi->type==iboundarytype){
           STRCPY(menulabel,"*");
           STRCAT(menulabel,patchi->menulabel);
         }
@@ -5415,7 +5420,7 @@ updatemenu=0;
       }
     }
 
-    CREATEMENU(showpatchmenu,ShowPatchMenu);
+    CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
       char *label=NULL, menulabel[1024];
 
@@ -5531,20 +5536,20 @@ updatemenu=0;
     }
     if(showexterior==1)glutAddMenuEntry(_("*Exterior"),EXTERIORwallmenu);
     if(showexterior==0)glutAddMenuEntry(_("Exterior"),EXTERIORwallmenu);
-    if(visPatchType[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
-    if(visPatchType[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
-    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==1)glutAddMenuEntry(_("*Front"),FRONTwallmenu);
-    if(IsPatchType(FRONTwall)==1&&visPatchType[FRONTwall]==0)glutAddMenuEntry(_("Front"),FRONTwallmenu);
-    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==1)glutAddMenuEntry(_("*Back"),BACKwallmenu);
-    if(IsPatchType(BACKwall)==1&& visPatchType[BACKwall]==0)glutAddMenuEntry(_("Back"),BACKwallmenu);
-    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==1)glutAddMenuEntry(_("*Left"),LEFTwallmenu);
-    if(IsPatchType(LEFTwall)==1&& visPatchType[LEFTwall]==0)glutAddMenuEntry(_("Left"),LEFTwallmenu);
-    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==1)glutAddMenuEntry(_("*Right"),RIGHTwallmenu);
-    if(IsPatchType(RIGHTwall)==1&&visPatchType[RIGHTwall]==0)glutAddMenuEntry(_("Right"),RIGHTwallmenu);
-    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==1)glutAddMenuEntry(_("*Up"),UPwallmenu);
-    if(IsPatchType(UPwall)==1&&   visPatchType[UPwall]==0)glutAddMenuEntry(_("Up"),UPwallmenu);
-    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==1)glutAddMenuEntry(_("*Down"),DOWNwallmenu);
-    if(IsPatchType(DOWNwall)==1&& visPatchType[DOWNwall]==0)glutAddMenuEntry(_("Down"),DOWNwallmenu);
+    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
+    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
+    if(IsBoundaryType(FRONTwall)==1&&vis_boundary_type[FRONTwall]==1)glutAddMenuEntry(_("*Front"),FRONTwallmenu);
+    if(IsBoundaryType(FRONTwall)==1&&vis_boundary_type[FRONTwall]==0)glutAddMenuEntry(_("Front"),FRONTwallmenu);
+    if(IsBoundaryType(BACKwall)==1&& vis_boundary_type[BACKwall]==1)glutAddMenuEntry(_("*Back"),BACKwallmenu);
+    if(IsBoundaryType(BACKwall)==1&& vis_boundary_type[BACKwall]==0)glutAddMenuEntry(_("Back"),BACKwallmenu);
+    if(IsBoundaryType(LEFTwall)==1&& vis_boundary_type[LEFTwall]==1)glutAddMenuEntry(_("*Left"),LEFTwallmenu);
+    if(IsBoundaryType(LEFTwall)==1&& vis_boundary_type[LEFTwall]==0)glutAddMenuEntry(_("Left"),LEFTwallmenu);
+    if(IsBoundaryType(RIGHTwall)==1&&vis_boundary_type[RIGHTwall]==1)glutAddMenuEntry(_("*Right"),RIGHTwallmenu);
+    if(IsBoundaryType(RIGHTwall)==1&&vis_boundary_type[RIGHTwall]==0)glutAddMenuEntry(_("Right"),RIGHTwallmenu);
+    if(IsBoundaryType(UPwall)==1&&   vis_boundary_type[UPwall]==1)glutAddMenuEntry(_("*Up"),UPwallmenu);
+    if(IsBoundaryType(UPwall)==1&&   vis_boundary_type[UPwall]==0)glutAddMenuEntry(_("Up"),UPwallmenu);
+    if(IsBoundaryType(DOWNwall)==1&& vis_boundary_type[DOWNwall]==1)glutAddMenuEntry(_("*Down"),DOWNwallmenu);
+    if(IsBoundaryType(DOWNwall)==1&& vis_boundary_type[DOWNwall]==0)glutAddMenuEntry(_("Down"),DOWNwallmenu);
   }
 
 /* --------------------------------surface menu -------------------------- */
@@ -9363,7 +9368,7 @@ updatemenu=0;
       int ii;
 
       nloadpatchsubmenus=0;
-      CREATEMENU(unloadpatchmenu,UnloadPatchMenu);
+      CREATEMENU(unloadpatchmenu,UnloadBoundaryMenu);
       for(ii=0;ii<npatchinfo;ii++){
         patchdata *patchi;
         char menulabel[1024];
@@ -9381,11 +9386,11 @@ updatemenu=0;
       }
 
       if(nmeshes>1){
-        CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadPatchMenu);
+        CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
         nloadpatchsubmenus++;
       }
       else{
-        CREATEMENU(loadpatchmenu,LoadPatchMenu);
+        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
       }
 
       for(ii=0;ii<npatchinfo;ii++){
@@ -9397,7 +9402,7 @@ updatemenu=0;
         if(ii>0){
           patchim1 = patchinfo + patchorderindex[ii-1];
           if(nmeshes>1&&strcmp(patchim1->label.longlabel,patchi->label.longlabel)!=0){
-            CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadPatchMenu);
+            CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
             nloadpatchsubmenus++;
           }
         }
@@ -9415,7 +9420,7 @@ updatemenu=0;
       if(nmeshes>1){
         char menulabel[1024];
 
-        CREATEMENU(loadpatchsinglemenu, LoadPatchMenu);
+        CREATEMENU(loadpatchsinglemenu, LoadBoundaryMenu);
         for(ii=0;ii<npatchinfo;ii++){
           patchdata *patch1, *patch2;
 
@@ -9439,7 +9444,7 @@ updatemenu=0;
       }
 
       if(nmeshes>1){
-        CREATEMENU(loadpatchmenu,LoadPatchMenu);
+        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
       }
 
       {
@@ -9960,6 +9965,8 @@ updatemenu=0;
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
       if(show_meshmenus==1)glutAddMenuEntry(_("*Show mesh menus"), SHOWMESHMENUS);
       if(show_meshmenus==0)glutAddMenuEntry(_("Show mesh menus"), SHOWMESHMENUS);
+      if(load_incremental == 1)glutAddMenuEntry(_("*incremental data loading"), LOADINCREMENTAL);
+      if(load_incremental == 0)glutAddMenuEntry(_("incremental data loading"), LOADINCREMENTAL);
 
       {
         char menulabel[1024];

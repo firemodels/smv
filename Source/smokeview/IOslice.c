@@ -3891,7 +3891,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 #endif
 
 #ifdef pp_FSEEK
-  if(flag==LOAD&&slice_load_onlynew==1)flag=RELOAD;
+  if(flag==LOAD&&load_incremental==1)flag=RELOAD;
 #endif
   CheckMemory;
   START_TIMER(total_time);

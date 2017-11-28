@@ -290,7 +290,7 @@ void rand_2d(float xy[2], float xmin, float xmax, float ymin, float ymax);
 void rand_3d(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 void GetStartupSlice(int seq_id);
 void GetStartupSmoke(int seq_id);
-void GetStartupPatch(int seq_id);
+void GetStartupBoundary(int seq_id);
 unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
 int GetEndian(void);
