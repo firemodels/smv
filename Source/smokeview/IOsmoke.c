@@ -4582,6 +4582,24 @@ void DrawSmokeFrame(void){
   SNIFF_ERRORS("after drawsmoke");
 }
 
+/* ------------------ SkipSmokeFrames ------------------------ */
+
+void SkipSmokeFrames(FILE *SMOKE3DFILE, int nsteps, int fortran_skip){
+  int i;
+
+  if(nsteps==0)return;
+  for(i=0;i<nsteps;i++){
+    float time_local;
+    int nchars[2], skip_local;
+
+    SKIP; fread(&time_local, 4, 1, SMOKE3DFILE); SKIP;
+    if(feof(SMOKE3DFILE)!=0)break;
+    SKIP; fread(nchars, 4, 2, SMOKE3DFILE); SKIP;
+    skip_local = ABS(nchars[1]);
+    SKIP; FSEEK(SMOKE3DFILE, skip_local, SEEK_CUR); SKIP;
+  }
+}
+
 /* ------------------ GetSmoke3dSizes ------------------------ */
 
 int GetSmoke3dSizes(int fortran_skip, char *smokefile, int version, float **timelist_found, int **use_smokeframe,
@@ -4715,10 +4733,15 @@ int GetSmoke3dSizes(int fortran_skip, char *smokefile, int version, float **time
   *ntimes_found = nframes_found;
   *ntimes_full = iframe_local + 1;
 
-  NewMemory((void **)&use_smokeframe_full, *ntimes_full * sizeof(float));
-  NewMemory((void **)&time_found, nframes_found * sizeof(float));
-  NewMemory((void **)&nch_smoke_compressed_full, (*ntimes_full) * sizeof(int));
-  NewMemory((void **)&nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
+  use_smokeframe_full=*use_smokeframe;
+  time_found =*timelist_found;
+  nch_smoke_compressed_full =*nchars_smoke_compressed_full;
+  nch_smoke_compressed_found=*nchars_smoke_compressed_found;
+
+  NewResizeMemory(use_smokeframe_full, *ntimes_full * sizeof(float));
+  NewResizeMemory(time_found, nframes_found * sizeof(float));
+  NewResizeMemory(nch_smoke_compressed_full, (*ntimes_full) * sizeof(int));
+  NewResizeMemory(nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
 
   *use_smokeframe = use_smokeframe_full;
   *timelist_found = time_found;
@@ -4932,12 +4955,14 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   int nxyz[8];
   int nchars[2];
   int nframes_found=0;
+  int framestart;
 
   float time_local;
   char compstring[128];
   meshdata *meshi;
   int fortran_skip;
 
+  if(smoke3d_load_onlynew==1&&flag==LOAD)flag = RELOAD;
   START_TIMER(total_time);
   ASSERT(ifile>=0&&ifile<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile;
@@ -4948,8 +4973,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
     fortran_skip=0;
   }
 
-
-  if(smoke3di->loaded==1){
+  if(smoke3di->loaded==1&&flag!=RELOAD){
     FreeSmoke3d(smoke3di);
     smoke3di->loaded=0;
     smoke3di->display=0;
@@ -4957,8 +4981,10 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   }
 
   meshi=meshinfo+smoke3di->blocknumber;
-  FREEMEMORY(meshi->merge_alpha);
-  FREEMEMORY(meshi->merge_color);
+  if(flag!=RELOAD){
+    FREEMEMORY(meshi->merge_alpha);
+    FREEMEMORY(meshi->merge_color);
+  }
 
   if(flag==UNLOAD){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
@@ -5015,6 +5041,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 
   CheckMemory;
   smoke3di->request_load = 1;
+  smoke3di->ntimes_old = smoke3di->ntimes;
   if(GetSmoke3dSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
                  &smoke3di->nchars_uncompressed,
                  &smoke3di->nchars_compressed_smoke,
@@ -5045,13 +5072,13 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   }
   CheckMemory;
   if(
-     NewMemory((void **)&smoke3di->smokeframe_comp_list,smoke3di->ntimes_full*sizeof(unsigned char *))==0||
-     NewMemory((void **)&smoke3di->frame_all_zeros,smoke3di->ntimes_full*sizeof(unsigned char))==0||
-     NewMemory((void **)&smoke3di->smokeframe_in,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
-     NewMemory((void **)&smoke3di->smokeview_tmp,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
-     NewMemory((void **)&smoke3di->smokeframe_out,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
-     NewMemory((void **)&meshi->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
-     NewMemory((void **)&meshi->merge_alpha,smoke3di->nchars_uncompressed*sizeof(unsigned char))==0){
+     NewResizeMemory(smoke3di->smokeframe_comp_list,smoke3di->ntimes_full*sizeof(unsigned char *))==0||
+     NewResizeMemory(smoke3di->frame_all_zeros,     smoke3di->ntimes_full*sizeof(unsigned char))==0||
+     NewResizeMemory(smoke3di->smokeframe_in,       smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
+     NewResizeMemory(smoke3di->smokeview_tmp,       smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
+     NewResizeMemory(smoke3di->smokeframe_out,      smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
+     NewResizeMemory(meshi->merge_color,          4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
+     NewResizeMemory(meshi->merge_alpha,            smoke3di->nchars_uncompressed*sizeof(unsigned char))==0){
      ReadSmoke3d(ifile,UNLOAD,&error);
      *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
@@ -5069,7 +5096,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
       ncomp_smoke_total_skipped+=smoke3di->nchars_compressed_smoke_full[i];
     }
   }
-  if(NewMemory((void **)&smoke3di->smoke_comp_all,ncomp_smoke_total_skipped*sizeof(unsigned char))==0){
+  if(NewResizeMemory(smoke3di->smoke_comp_all,ncomp_smoke_total_skipped*sizeof(unsigned char))==0){
     ReadSmoke3d(ifile,UNLOAD,&error);
     *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
@@ -5108,10 +5135,17 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 
   // read smoke data
 
-  iii=0;
-  nframes_found=0;
   START_TIMER(read_time);
-  for(i=0;i<smoke3di->ntimes_full;i++){
+  if(flag==RELOAD&&smoke3di->ntimes_old>0&&smoke3di->ntimes_old!=smoke3di->ntimes){
+    SkipSmokeFrames(SMOKE3DFILE, smoke3di->ntimes_old, fortran_skip);
+    framestart=smoke3di->ntimes_old;
+  }
+  else{
+    framestart=0;
+  }
+  iii = framestart;
+  nframes_found = framestart;
+  for(i=framestart;i<smoke3di->ntimes_full;i++){
     SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
     if(feof(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;

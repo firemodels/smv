@@ -5513,6 +5513,8 @@ int ReadSMV(char *file, char *file2){
         if(NewMemory((void **)&smoke3di->reg_file,(unsigned int)(len+1))==0)return 2;
         STRCPY(smoke3di->reg_file,bufferptr);
 
+        smoke3di->ntimes = 0;
+        smoke3di->ntimes_old = 0;
         smoke3di->filetype=filetype;
         smoke3di->is_zlib=0;
         smoke3di->seq_id=nn_smoke3d;

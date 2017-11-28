@@ -656,6 +656,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("adjust off-center"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_d("both"));
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _d("load only new data"), &smoke3d_load_onlynew);
   }
 
   // volume render dialog
