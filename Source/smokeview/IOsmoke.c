@@ -5136,7 +5136,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   // read smoke data
 
   START_TIMER(read_time);
-  if(flag==RELOAD&&smoke3di->ntimes_old>0&&smoke3di->ntimes_old!=smoke3di->ntimes){
+  if(flag==RELOAD&&smoke3di->ntimes_old>0){
     SkipSmokeFrames(SMOKE3DFILE, smoke3di->ntimes_old, fortran_skip);
     framestart=smoke3di->ntimes_old;
   }

@@ -4122,11 +4122,13 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         qmin = 1.0e30;
         qmax = -1.0e30;
       }
-      FORTgetslicedata(file, 
-        &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-        &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &redirect,
-        strlen(file));
+      if(sd->ntimes > ntimes_slice_old){
+        FORTgetslicedata(file,
+          &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+          &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
+          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &redirect,
+          strlen(file));
+      }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
