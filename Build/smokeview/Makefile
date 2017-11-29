@@ -366,7 +366,7 @@ intel_osx_64q : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
 intel_osx_64q : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_osx_64q : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_osx_64q : LFLAGS    = -m64 -static-intel -framework OpenGL -L/usr/X11/lib -lX11 -lXmu -mmacosx-version-min=10.4
+intel_osx_64q : LFLAGS    = -m64 -static-intel -L/usr/X11/lib -lX11 -lXmu -lGLU -lGL -mmacosx-version-min=10.4
 intel_osx_64q : CC        = icc
 intel_osx_64q : CPP       = icpc
 intel_osx_64q : FC        = ifort
