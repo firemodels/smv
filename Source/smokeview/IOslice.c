@@ -1178,7 +1178,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
 
     u = sliceinfo + vd->iu;
     vd->u=u;
-    ReadSlice(u->file,vd->iu,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(u->file,vd->iu,flag,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       vd->loaded=1;
       fprintf(stderr,"*** Error: unable to load U velocity vector components in %s . Vector load aborted\n",u->file);
@@ -1197,7 +1197,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
 
     v = sliceinfo + vd->iv;
     vd->v=v;
-    ReadSlice(v->file,vd->iv,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(v->file,vd->iv,flag,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load V velocity vector components in %s . Vector load aborted\n",v->file);
       vd->loaded=1;
@@ -1217,7 +1217,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
 
     w = sliceinfo + vd->iw;
     vd->w=w;
-    ReadSlice(w->file,vd->iw,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(w->file,vd->iw,flag,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load W velocity vector components in %s . Vector load aborted\n",w->file);
       vd->loaded=1;
@@ -1238,7 +1238,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
 
     val = sliceinfo + vd->ival;
     vd->val=val;
-    ReadSlice(val->file,vd->ival,LOAD,SET_SLICECOLOR,errorcode);
+    ReadSlice(val->file,vd->ival,flag,SET_SLICECOLOR,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load vector values in %s . Vector load aborted\n",val->file);
       vd->loaded=1;
@@ -3890,8 +3890,8 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   unsigned int availmemory;
 #endif
 
-#ifdef pp_FSEEK
-  if(flag==LOAD&&load_incremental==1)flag=RELOAD;
+#ifndef pp_FSEEK
+  if(flag==RELOAD)flag = LOAD;
 #endif
   CheckMemory;
   START_TIMER(total_time);
