@@ -132,7 +132,7 @@ intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 	
-OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
+OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # ------------- OSX 64 ----------------
 #  64 bit OSX
@@ -145,7 +145,7 @@ intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = smokezip_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.4 -lifport $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.4 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 
 #  64 bit debug OSX
 
@@ -157,7 +157,7 @@ intel_osx_64_db : FC        = ifort
 intel_osx_64_db : exe       = smokezip_osx_64_db
 
 intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.4 -lifport $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.4 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 
 
 
