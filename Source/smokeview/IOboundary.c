@@ -1298,6 +1298,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int newpatch=1;
+  int framestart;
 
   int nn;
   int filenum;
@@ -1325,17 +1326,18 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
+  meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
-  if(filenum>=0&&filenum<npatchinfo){
+
+  if(meshi->patchfilenum != -1 && meshi->patchfilenum == filenum)newpatch = 0;
+#ifndef pp_FSEEK
+  if(flag==RELOAD)flag = LOAD;
+#endif
+
+  if(flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
     patchi->loaded=0;
-    patchi->display=0;
   }
 
-  if(meshi->patchfilenum!=-1&&meshi->patchfilenum==filenum)newpatch=0;
-#ifdef pp_FSEEK
-  if(newpatch==0&&flag == LOAD&&load_incremental == 1)flag = RELOAD;
-#endif
-  meshi->patchfilenum=ifile;
   patchi->display=0;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -2028,15 +2030,17 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ReadBoundary(ifile, UNLOAD, &error);
       return;
     }
-    if(flag == RELOAD&&patchi->ntimes_old > 0 && patchi->ntimes != patchi->ntimes_old){
+    if(flag == RELOAD&&patchi->ntimes_old > 0){
+      framestart = patchi->ntimes_old;
     }
     else{
       meshi->npatch_times = 0;
+      framestart = 0;
     }
   }
   file_size= GetFILESize(file);
   START_TIMER(read_time);
-  for(ii=patchi->ntimes_old;ii<maxtimes_boundary;){
+  for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
       meshi->patchval_iframe = meshi->patchval;
       meshi->cpatchval_iframe = meshi->cpatchval + ii*meshi->npatchsize;
@@ -2048,10 +2052,10 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     error=0;
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES||loadpatchbysteps==UNCOMPRESSED_BYFRAME){
-      if(ii==patchi->ntimes_old&&patchi->ntimes_old>0&&patchi->ntimes != patchi->ntimes_old){
+      if(ii==framestart&&framestart>0){
         int framesizes;
 
-        framesizes = framesize*patchi->ntimes_old-8;
+        framesizes = framesize*framestart-8;
         FORTskipdata(&file_unit,&framesizes);
         local_first = 0;
       }

@@ -145,7 +145,7 @@ intel_linux_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
 	
 
-MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a
+MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # ------------- OSX 64 ----------------
 #  64 bit OSX
@@ -158,7 +158,7 @@ intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = smokediff_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 -lifport $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 $(MACFORTLIBS)
 
 #  64 bit debug OSX
 
@@ -170,7 +170,7 @@ intel_osx_64_db : FC        = ifort
 intel_osx_64_db : exe       = smokediff_osx_64_db
 
 intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 -lifport $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 $(MACFORTLIBS)
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 

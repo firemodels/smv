@@ -2358,7 +2358,8 @@ void SmokeviewIniMenu(int value){
 
 void PeriodicReloads(int value){
   if(periodic_reloads!=0){
-    LoadUnloadMenu(RELOADALL);
+    if(load_incremental==1)LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
+    if(load_incremental==0)LoadUnloadMenu(RELOADALL);
     glutTimerFunc((unsigned int)value,PeriodicReloads,value);
   }
 }
@@ -2529,11 +2530,24 @@ void ReloadMenu(int value){
   updatemenu=1;
   periodic_value=value;
   switch(value){
-  case STOP_RENDERING:
+  case STOP_RELOADING:
     periodic_reloads=0;
     break;
-  case RELOAD_NOW:
+  case RELOAD_SWITCH:
+    if(load_incremental==1)LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
+    if(load_incremental==0)LoadUnloadMenu(RELOADALL);
+  break;
+  case RELOAD_ALL_NOW:
     LoadUnloadMenu(RELOADALL);
+    break;
+  case RELOAD_INCREMENTAL_NOW:
+    LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
+    break;
+  case RELOAD_MODE_INCREMENTAL:
+    load_incremental = 1;
+    break;
+  case RELOAD_MODE_ALL:
+    load_incremental = 0;
     break;
   default:
     periodic_reloads=1;
@@ -2695,8 +2709,12 @@ void LoadUnloadMenu(int value){
     updatemenu=1;
     glutPostRedisplay();
   }
-  if(value==RELOADALL){
+  if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
     int last_slice_loaded;
+    int load_mode;
+
+    if(value==RELOADALL)load_mode = LOAD;
+    if(value==RELOAD_INCREMENTAL_ALL)load_mode = RELOAD;
 
     LOCK_COMPRESS
     ReadSMVDynamic(smv_filename);
@@ -2714,7 +2732,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
-        ReadVSlice(i,LOAD,&errorcode);
+        ReadVSlice(i, load_mode,&errorcode);
       }
     }
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
@@ -2739,7 +2757,7 @@ void LoadUnloadMenu(int value){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        ReadSlice(slicei->file,i, load_mode,set_slicecolor,&errorcode);
       }
     }
     islicetype=islicetype_save;
@@ -2750,11 +2768,11 @@ void LoadUnloadMenu(int value){
     }
     for(ii=0;ii<npatch_loaded;ii++){
       i = patch_loaded_list[ii];
-      ReadBoundary(i,LOAD,&errorcode);
+      ReadBoundary(i, load_mode,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3d(i,LOAD,&errorcode);
+        ReadSmoke3d(i, load_mode,&errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
@@ -2810,11 +2828,6 @@ void LoadUnloadMenu(int value){
     show_meshmenus = 1 - show_meshmenus;
     updatemenu=1;
     glutPostRedisplay();
-  }
-  if(value==LOADINCREMENTAL){
-    load_incremental = 1 - load_incremental;
-    LoadIncrementalCB(-1);
-    updatemenu = 1;
   }
   if(value==REDIRECT){
     updatemenu=1;
@@ -9719,14 +9732,24 @@ updatemenu=0;
     glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
-    glutAddMenuEntry(_("Reload now"),RELOAD_NOW);
-    if(periodic_value==1)glutAddMenuEntry(_("*Reload every 1 minute"),1);
-    if(periodic_value!=1)glutAddMenuEntry(_("Reload every 1 minute"),1);
-    if(periodic_value==5)glutAddMenuEntry(_("*Reload every 5 minutes"),5);
-    if(periodic_value!=5)glutAddMenuEntry(_("Reload every 5 minutes"),5);
-    if(periodic_value==10)glutAddMenuEntry(_("*Reload every 10 minutes"),10);
-    if(periodic_value!=10)glutAddMenuEntry(_("Reload every 10 minutes"),10);
-    glutAddMenuEntry(_("Stop Rendering"),STOP_RENDERING);
+    if(load_incremental==1){
+      glutAddMenuEntry(_("*Reload new data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("Reload all data"), RELOAD_MODE_ALL);
+    }
+    if(load_incremental==0){
+      glutAddMenuEntry(_("Reload new data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("*Reload all data"), RELOAD_MODE_ALL);
+    }
+    glutAddMenuEntry(_("-"), -999);
+    glutAddMenuEntry(_("Reload:"), -999);
+    glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
+    if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
+    if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);
+    if(periodic_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
+    if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
+    if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
+    if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
+    glutAddMenuEntry(_("Stop Reloading"),STOP_RELOADING);
 
 
     {
@@ -9965,9 +9988,6 @@ updatemenu=0;
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
       if(show_meshmenus==1)glutAddMenuEntry(_("*Show mesh menus"), SHOWMESHMENUS);
       if(show_meshmenus==0)glutAddMenuEntry(_("Show mesh menus"), SHOWMESHMENUS);
-      if(load_incremental == 1)glutAddMenuEntry(_("*incremental data loading"), LOADINCREMENTAL);
-      if(load_incremental == 0)glutAddMenuEntry(_("incremental data loading"), LOADINCREMENTAL);
-
       {
         char menulabel[1024];
 

@@ -60,7 +60,8 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define SET_TIME 204
 #define TBOUNDS 205
 #define TBOUNDS_USE 206
-#define RELOAD_DATA 207
+#define RELOAD_ALL_DATA 207
+#define RELOAD_INCREMENTAL_DATA 215
 #define SHOW_EVAC_SLICES 208
 #define DATA_EVAC_COLORING 209
 #define SLICE_VECTORSKIP 210
@@ -143,7 +144,6 @@ GLUI_Button *BUTTON_update_line_contour=NULL;
 GLUI_Button *BUTTON_ini_load=NULL;
 GLUI_Button *BUTTON_script_setsuffix=NULL;
 GLUI_Button *BUTTON_script_runscript=NULL;
-GLUI_Button *BUTTON_RELOAD=NULL;
 GLUI_Button *BUTTON_SETTIME=NULL;
 GLUI_Button *BUTTON_EVAC = NULL;
 GLUI_Button *BUTTON_PART = NULL;
@@ -1150,8 +1150,11 @@ void TimeBoundCB(int var){
     }
     UpdateTBounds();
     break;
-  case RELOAD_DATA:
-    ReloadMenu(RELOAD_NOW);
+  case RELOAD_ALL_DATA:
+    ReloadMenu(RELOAD_ALL_NOW);
+    break;
+  case RELOAD_INCREMENTAL_DATA:
+    ReloadMenu(RELOAD_INCREMENTAL_NOW);
     break;
   default:
     ASSERT(FFALSE);
@@ -2151,7 +2154,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   CHECKBOX_use_tload_skip=glui_bounds->add_checkbox_to_panel(PANEL_time2c,"",&use_tload_skip,TBOUNDS_USE,TimeBoundCB);
   SPINNER_tload_skip->set_int_limits(0,1000);
 
-  BUTTON_RELOAD=glui_bounds->add_button_to_panel(PANEL_time2,_d("Reload"),RELOAD_DATA,TimeBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_time2,_d("Reload all data"), RELOAD_ALL_DATA,TimeBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_time2, _d("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
 
   TimeBoundCB(TBOUNDS_USE);
 

@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(load_incremental, 1);
+SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
