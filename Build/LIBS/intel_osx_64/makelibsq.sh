@@ -18,13 +18,13 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS -c "-mmacosx-version-min=10.4"
+./make_osxq.sh $OPTS -c "-mmacosx-version-min=10.4"
 cp libglui.a $LIBDIR/.
 
 # GLUT
 cd $SRCDIR/glut-3.7.6
-./makelib.sh $OPTS -q
-cp libglut.a $LIBDIR/.
+#./makelib.sh $OPTS -q
+#cp libglut.a $LIBDIR/.
 
 # JPEG
 cd $SRCDIR/jpeg-9b
