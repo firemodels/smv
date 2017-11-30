@@ -49,7 +49,7 @@ intel_linux_64: CPPFLAGS=$(PLATFORM) ${CFLAGOPT} -fpermissive -I${GLUT_INC_LOCAT
 intel_linux_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64q: CPPFLAGS=$(PLATFORM) ${CFLAGOPT} -fpermissive -I /usr/X11/include  ${SIZE} 
+intel_osx_64q: CPPFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_QUARTZ -fpermissive -I /usr/X11/include  ${SIZE} 
 intel_osx_64q: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
