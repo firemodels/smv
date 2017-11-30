@@ -99,11 +99,17 @@
 #define SVDECL(var,val)  var
 #endif
 
+
+#define GLUT_H <GL/glut.h>
 #ifdef pp_OSX
+#undef  GLUT_H
 #define GLUT_H <GLUT/glut.h>
-#else
+#endif
+#ifdef pp_QUARTZ
+#undef  GLUT_H
 #define GLUT_H <GL/glut.h>
 #endif
+
 #include "lint.h"
 
 #endif
