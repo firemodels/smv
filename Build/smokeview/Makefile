@@ -13,6 +13,7 @@ SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
 COMP_VERSION =
 LUA_SCRIPTING =
+QUARTZ =
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
@@ -62,7 +63,13 @@ endif
 
 objwin = $(obj:.o=.obj)
 
-INC = -I $(SOURCE_DIR)/glut-3.7.6 -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
+ifeq ($(QUARTZ),true)
+INC = -I /usr/X11/include
+else
+INC = -I $(SOURCE_DIR)/glut-3.7.6
+endif
+
+INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 WININC = -I $(SOURCE_DIR)/GLINC -I $(SOURCE_DIR)/pthreads
 
 ifeq ($(LUA_SCRIPTING),true)
@@ -358,7 +365,7 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 intel_osx_64q : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64q : LIBS_PLAT =
 intel_osx_64q : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.4
-intel_osx_64q : CFLAGS    = -O0 -m64 -static-intel -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64q : CFLAGS    = -O0 -m64 -static-intel -I /usr/X11/include -D pp_QUARTZ -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64q : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64q : CFLAGS    += -D pp_LUA
