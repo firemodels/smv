@@ -612,9 +612,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       usegpu=0;
       CHECKBOX_smokeGPU->disable();
     }
+    ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _d("GPU"), false);
 #endif
 #ifdef pp_CULL
-    ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_d("GPU"),false);
     CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_d("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3dCB);
     if(cullactive==0){
       cullsmoke=0;
