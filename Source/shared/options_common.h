@@ -63,6 +63,21 @@
 #endif
 #endif
 
+// debugging macros
+
+#ifdef pp_TRACE
+#define BTRACE \
+  printf("entering, file: %s, line: %d\n",__FILE__,__LINE__)
+#define TTRACE \
+  printf("in, file: %s, line: %d\n",__FILE__,__LINE__)
+#define ETRACE \
+  printf("leaving, file: %s, line: %d\n",__FILE__,__LINE__)
+#else
+#define BTRACE
+#define TTRACE
+#define ETRACE
+#endif
+
 #define FILE_SIZE unsigned long long
 
 #ifdef X64
