@@ -4324,6 +4324,7 @@ void DrawSmoke3d(smoke3ddata *smoke3di){
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 }
 
+#ifdef pp_CULL
 /* ------------------ SetPixelCountOrthog ------------------------ */
 
 void SetPixelCountOrthog(meshdata *meshi){
@@ -4492,6 +4493,7 @@ void SetPixelCount(void){
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   }
 }
+#endif
 
 /* ------------------ DrawSmokeFrame ------------------------ */
 
