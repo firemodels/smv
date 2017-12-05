@@ -27,7 +27,9 @@
 
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU
-#define pp_CULL         // pp_GPU directive must also be set
+#ifndef pp_OSX
+#define pp_CULL         // pp_GPU directive must also be set 
+#endif
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
