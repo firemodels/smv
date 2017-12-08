@@ -22,6 +22,7 @@ WAIT=0
 NOPT=
 INTEL=
 INTEL2=
+scriptlist=
 
 wait_cases_end()
 {
@@ -92,7 +93,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dghI:Jj:m:No:p:q:rsuWwY' OPTION
+while getopts 'c:dghI:Jj:m:No:p:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -145,6 +146,9 @@ case $OPTION in
    stop_cases=true
    export STOPFDS=-s
    ;;
+  S)
+   scriptlist="$OPTARG"
+   ;;
   u)
    use_installed="1"
    ;;
@@ -194,6 +198,12 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
       is_file_installed $BACKGROUND
+      if [ "$scriptlist" != "" ]; then
+        if [ -e $scriptlist ]; then
+          rm -f $scriptlist
+        fi
+        SCRIPTLIST="-L $scriptlist"
+      fi
    fi
    QUEUE="-q $QUEUE"
 fi
@@ -214,9 +224,9 @@ fi
 
 # run cases    
 
-export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS $JOBPREFIX"
-export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
-export   RUNTFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
+export  RUNCFAST="$QFDSSH $SCRIPTLIST $INTEL2 -e $CFAST $QUEUE $STOPFDS $JOBPREFIX"
+export      QFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
+export   RUNTFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
