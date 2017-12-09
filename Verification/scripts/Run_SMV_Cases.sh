@@ -23,7 +23,6 @@ WAIT=0
 NOPT=
 INTEL=
 INTEL2=
-scriptlist=
 
 wait_cases_end()
 {
@@ -142,9 +141,6 @@ case $OPTION in
    stop_cases=true
    export STOPFDS=-s
    ;;
-  S)
-   scriptlist="$OPTARG"
-   ;;
   u)
    use_installed="1"
    ;;
@@ -194,12 +190,6 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
       is_file_installed $BACKGROUND_PROG
-      if [ "$scriptlist" != "" ]; then
-        if [ -e $scriptlist ]; then
-          rm -f $scriptlist
-        fi
-        SCRIPTLIST="-L $scriptlist"
-      fi
    fi
    QUEUE="-q $QUEUE"
 fi
@@ -220,9 +210,9 @@ fi
 
 # run cases    
 
-export  RUNCFAST="$QFDSSH $SCRIPTLIST $INTEL2 -e $CFAST $QUEUE $STOPFDS"
-export      QFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
-export   RUNTFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
+export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
+export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
+export   RUNTFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
