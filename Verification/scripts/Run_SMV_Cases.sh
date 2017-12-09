@@ -12,8 +12,9 @@ nthreads=1
 RUN_SMV=1
 RUN_GEOM=1
 RUN_WUI=1
-JOBPREFIX=
-JOBPREF=
+if [ "$JOBPREFIX" == "" ]; then
+  export JOBPREFIX=SB_
+fi
 STOPFDS=
 RUNOPTION=
 CFASTREPO=~/cfastgitclean
@@ -34,8 +35,8 @@ wait_cases_end()
         sleep 15
      done
    else
-     while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREF` != '' ]]; do
-        JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREF | wc -l`
+     while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
+        JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX | wc -l`
         echo "Waiting for ${JOBS_REMAINING} cases to complete." 
         sleep 15
      done
@@ -52,7 +53,6 @@ echo "-d - use debug version of FDS"
 echo "-g - run only geometry cases"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
-echo "-j - job prefix"
 echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
@@ -93,7 +93,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dghI:Jj:m:No:p:q:rsS:uWwY' OPTION
+while getopts 'c:dghI:Jm:No:p:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -120,10 +120,6 @@ case $OPTION in
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
-   ;;
-  j)
-   JOBPREFIX="-j $OPTARG"
-   JOBPREF="$OPTARG"
    ;;
   N)
    NOPT=-N
@@ -181,10 +177,10 @@ fi
 
 if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
-  export BACKGROUND=background
+  export BACKGROUND_PROG=background
 else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
+  export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
 fi
 export GEOM=$SVNROOT/smv/source/geomtest/${COMPILER}_$PLATFORM/geomtest
 export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
@@ -197,7 +193,7 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
-      is_file_installed $BACKGROUND
+      is_file_installed $BACKGROUND_PROG
       if [ "$scriptlist" != "" ]; then
         if [ -e $scriptlist ]; then
           rm -f $scriptlist
@@ -224,9 +220,9 @@ fi
 
 # run cases    
 
-export  RUNCFAST="$QFDSSH $SCRIPTLIST $INTEL2 -e $CFAST $QUEUE $STOPFDS $JOBPREFIX"
-export      QFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
-export   RUNTFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS $JOBPREFIX"
+export  RUNCFAST="$QFDSSH $SCRIPTLIST $INTEL2 -e $CFAST $QUEUE $STOPFDS"
+export      QFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
+export   RUNTFDS="$QFDSSH $SCRIPTLIST $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
