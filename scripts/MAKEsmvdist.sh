@@ -1,4 +1,6 @@
 #!/bin/bash
+FDSEDITION=FDS6
+
 edition=$1
 revision=$2
 REMOTESVNROOT=$3
@@ -135,7 +137,7 @@ echo ""
 tar cvf ../$PLATFORMDIR.tar .
 cd ..
 gzip $PLATFORMDIR.tar
-$UPDATER ${platform2} $revision $PLATFORMDIR.tar.gz $PLATFORMDIR.sh FDS/FDS6
+$UPDATER ${platform2} $revision $PLATFORMDIR.tar.gz $PLATFORMDIR.sh FDS/$FDSEDITION
 $hashfile $PLATFORMDIR.sh > $PLATFORMDIR.sh.sha1
 cat $PLATFORMDIR.sh.sha1 >> $uploads/$PLATFORMDIR.sha1
 rm $PLATFORMDIR.sh.sha1
@@ -152,5 +154,3 @@ if [ -e $errlog ]; then
     echo ""
   fi
   rm $errlog
-fi
-
