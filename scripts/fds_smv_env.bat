@@ -1,8 +1,8 @@
 @echo off
 
 :: ---- version: official FDS and smokeview ----
-set fds_version=6.5.3test
-set smv_version=6.5.5
+set fds_version=6.6.0test
+set smv_version=6.6.1test
 
 :: ---- revision: test FDS and smokeview ----
 set smv_revision=unknown
@@ -15,7 +15,7 @@ if exist %userprofile%\fds_revision.txt (
 )
 
 :: ---- log entry date ----
-set smvlogdate="10-Aug-2017"
+set smvlogdate="21-Nov-2017"
 
 :: ---- repo locations ----
 
@@ -32,10 +32,11 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
 set osx_mpi_version=3.0.0
+::set osx_mpi_version=1.8.4
 
 ::*** firebot/smokebot
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
-set smokebotrepo=/home/smokebot/FireModels_central
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
 
 :: ---- hostnames ----
 
@@ -46,10 +47,9 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=ignis.el.nist.gov
+::set osx_hostname=192.168.1.13
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
 
 :: ---- FDS/Smokeview version ----
 set fdssmv_major_version=6
-set fds_edition=FDS6
-set smv_edition=SMV6
