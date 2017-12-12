@@ -23,6 +23,7 @@ WAIT=0
 NOPT=
 INTEL=
 INTEL2=
+QFDS_COUNT=/tmp/qfds_count_`whoami`
 
 wait_cases_end()
 {
@@ -190,6 +191,7 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
       is_file_installed $BACKGROUND_PROG
+      echo 0 > $QFDS_COUNT
    fi
    QUEUE="-q $QUEUE"
 fi
