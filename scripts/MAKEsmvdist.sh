@@ -154,3 +154,4 @@ if [ -e $errlog ]; then
     echo ""
   fi
   rm $errlog
+fi
