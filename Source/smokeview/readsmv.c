@@ -3921,6 +3921,13 @@ int ReadSMV(char *file, char *file2){
     */
 
 
+    if(Match(buffer, "SOLID_HT3D")==1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &solid_ht3d);
+      ONEORZERO(solid_ht3d);
+      if(solid_ht3d==1)show_slice_in_obst=GAS_AND_SOLID;
+      continue;
+    }
     if(Match(buffer, "IBLANK")==1){
       FGETS(buffer, 255, stream);
       if(iblank_set_on_commandline==0){
@@ -9846,9 +9853,11 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "SHOWSLICEINOBST") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_slice_in_obst);
-      show_slice_in_obst=CLAMP(show_slice_in_obst,0,2);
+      if((localfile==0&&solid_ht3d==0)||localfile==1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i", &show_slice_in_obst);
+        show_slice_in_obst=CLAMP(show_slice_in_obst,0,2);
+      }
       continue;
     }
     if(Match(buffer, "SKIPEMBEDSLICE") == 1){
