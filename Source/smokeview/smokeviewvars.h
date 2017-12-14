@@ -189,9 +189,11 @@ SVEXTERN int SVDECL(use_max_angle, 1);
 SVEXTERN int SVDECL(update_setvents, 0);
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
 SVEXTERN int SVDECL(cvents_defined, 0);
-SVEXTERN int SVDECL(slicedup_option , SLICEDUP_KEEPFINE);
+SVEXTERN int SVDECL(boundaryslicedup_option, SLICEDUP_KEEPFINE);
+SVEXTERN int SVDECL(slicedup_option, SLICEDUP_KEEPFINE);
 SVEXTERN int SVDECL(vectorslicedup_option, SLICEDUP_KEEPALL);
 SVEXTERN int SVDECL(nslicedups, 0);
+SVEXTERN int SVDECL(nboundarydups, 0);
 SVEXTERN int SVDECL(vis_xtree, 0), SVDECL(vis_ytree, 0), SVDECL(vis_ztree, 1);
 SVEXTERN int SVDECL(max_device_tree,0);
 #ifdef INMAIN

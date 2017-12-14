@@ -26,7 +26,7 @@
 
 #define MENU_OPTION_TRAINERMENU 2
 
-#define MENU_UPDATEBOUNDS -3
+#define MENU_UPDATEBOUNDS -6
 
 #define MENU_DUMMY3 -2
 
@@ -73,7 +73,7 @@
 
 #define MENU_LOADVSLICE_SETTINGS -21
 #define MENU_ISO_SETTINGS -3
-#define MENU_BOUNDARY_SETTINGS -4
+#define MENU_BOUNDARY_SETTINGS -7
 #define MENU_PART_SETTINGS -4
 #define MENU_PLOT3D_SETTINGS -4
 #define MENU_VOLSMOKE_SETTINGS -4
@@ -4019,7 +4019,7 @@ void LoadMultiVSliceMenu(int value){
   }
   else{
     switch(value){
-      case -20:
+      case MENU_LOADVSLICE_SHOWALL:
         showallslicevectors=1-showallslicevectors;
         updatemenu=1;
         glutPostRedisplay();
@@ -4387,15 +4387,48 @@ void LoadBoundaryMenu(int value){
     force_redisplay=1;
     UpdateFrameNumber(0);
   }
-  else if(value==MENU_UPDATEBOUNDS){
-    UpdateAllBoundaryBounds();
-  }
-  else if(value==MENU_BOUNDARY_SETTINGS){
-    ShowBoundsDialog(DLG_BOUNDARY);
-  }
   else{
-    for(i=0;i<npatchinfo;i++){
-      ReadBoundary(i,UNLOAD,&errorcode);
+    switch(value){
+    case MENU_UPDATEBOUNDS:
+      UpdateAllBoundaryBounds();
+      break;
+    case MENU_BOUNDARY_SETTINGS:
+      ShowBoundsDialog(DLG_BOUNDARY);
+      break;
+      case MENU_KEEP_ALL:
+      if(boundaryslicedup_option!=SLICEDUP_KEEPALL){
+        boundaryslicedup_option = SLICEDUP_KEEPALL;
+        updatemenu = 1;
+        glutPostRedisplay();
+        UpdateBoundarySliceDups();
+        //UpdateSliceDupDialog();
+      }
+      break;
+
+      case  MENU_KEEP_COARSE:
+      if(boundaryslicedup_option!=SLICEDUP_KEEPCOARSE){
+        boundaryslicedup_option = SLICEDUP_KEEPCOARSE;
+        updatemenu = 1;
+        glutPostRedisplay();
+        UpdateBoundarySliceDups();
+        //UpdateSliceDupDialog();
+      }
+      break;
+
+      case MENU_KEEP_FINE:
+      if(boundaryslicedup_option!=SLICEDUP_KEEPFINE){
+        boundaryslicedup_option = SLICEDUP_KEEPFINE;
+        updatemenu = 1;
+        glutPostRedisplay();
+        UpdateBoundarySliceDups();
+        //UpdateSliceDupDialog();
+      }
+      break;
+    default:
+      for(i=0;i<npatchinfo;i++){
+        ReadBoundary(i,UNLOAD,&errorcode);
+      }
+      break;
     }
   }
   updatemenu=1;
@@ -9488,6 +9521,28 @@ updatemenu=0;
       }
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
+      if(nboundarydups>0){
+        glutAddMenuEntry("Duplicate boundary slices", MENU_DUMMY);
+        if(boundaryslicedup_option == SLICEDUP_KEEPALL){
+          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+        }
+        else{
+          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+        }
+        if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
+          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+        }
+        else{
+          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+        }
+        if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
+          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+        }
+        else{
+          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+        }
+        glutAddMenuEntry("-", MENU_DUMMY);
+      }
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
       glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
       if(npatchloaded>1){

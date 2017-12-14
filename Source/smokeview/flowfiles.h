@@ -682,7 +682,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dx, dy, dz, dxy,dxz,dyz;
+  float dx, dy, dz, dxy,dxz,dyz,dxyz[3];
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
@@ -1310,6 +1310,8 @@ typedef struct _patchdata {
   char *geomfile, *geom_fdsfiletype;
   geomdata *geominfo;
   //int *patchsize;
+  int skip,dir;
+  float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
   int filetype, geom_smvfiletype, slice;

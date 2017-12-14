@@ -44,6 +44,7 @@ EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
@@ -183,6 +184,7 @@ EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
 
+EXTERNCPP void GetBoundaryParams(void);
 EXTERNCPP void GetSliceParams2(void);
 
 EXTERNCPP void DrawWindRosesDevices(void);
