@@ -4252,6 +4252,9 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if( (Match(buffer,"SLCF") == 1)||
+#ifdef pp_BNDS
+        (Match(buffer,"BNDS") == 1) ||
+#endif
         (Match(buffer,"SLCC") == 1)||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
@@ -8000,6 +8003,9 @@ typedef struct {
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if( (Match(buffer,"SLCF") == 1)||
+#ifdef pp_BNDS
+        (Match(buffer, "BNDS")==1)||
+#endif
         (Match(buffer,"SLCC") == 1)||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
