@@ -305,6 +305,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
+GLUI_RadioGroup *RADIO_boundaryslicedup = NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
 GLUI_RadioGroup *RADIO_histogram_static=NULL;
@@ -388,6 +389,7 @@ extern "C" void LoadIncrementalCB1(int var){
 /* ------------------ UpdateSliceDupDialog ------------------------ */
 
 extern "C" void UpdateSliceDupDialog(void){
+  if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
 }
@@ -1758,6 +1760,15 @@ extern "C" void GluiBoundsSetup(int main_window){
     UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
     UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
+
+#ifdef XXXX
+    if(nboundarydups > 0){
+      RADIO_boundaryslicedup = glui_bounds->add_radiogroup_to_panel(ROLLOUT_boundary, &boundaryslicedup_option);
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep all"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep fine"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep coarse"));
+    }
+#endif
   }
 
   /*  Iso File Load Bounds   */
