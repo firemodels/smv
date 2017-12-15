@@ -4344,9 +4344,9 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
   return 0;
 }
 
-/* ------------------ CountBoundaryDups ------------------------ */
+/* ------------------ CountBoundarySliceDups ------------------------ */
 
-int CountBoundaryDups(void){
+int CountBoundarySliceDups(void){
   int i, count;
 
   count = 0;
@@ -4432,7 +4432,7 @@ void GetBoundaryParams(void){
     if(dxyz[2] < MIN(dxyz[0], dxyz[1]))patchi->dir = 2;
   }
   UpdateBoundarySliceDups();
-  nboundarydups = CountBoundaryDups();
+  nboundaryslicedups = CountBoundarySliceDups();
 }
 
 /* ------------------ UncompressBoundaryDataFrame ------------------------ */

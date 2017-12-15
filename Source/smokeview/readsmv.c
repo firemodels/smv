@@ -9238,13 +9238,11 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
-#ifdef pp_DUP
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i", &slicedup_option, &vectorslicedup_option);
+      sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
       continue;
     }
-#endif
     if(Match(buffer, "BLENDMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
@@ -13173,10 +13171,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visWalls);
   fprintf(fileout, "SKIPEMBEDSLICE\n");
   fprintf(fileout, " %i\n", skip_slice_in_embedded_mesh);
-#ifdef pp_SLICEDUP
   fprintf(fileout, "SLICEDUP\n");
-  fprintf(fileout, " %i %i\n", slicedup_option, vectorslicedup_option);
-#endif
+  fprintf(fileout, " %i %i %i\n", slicedup_option, vectorslicedup_option, boundaryslicedup_option);
   fprintf(fileout, "SMOKESENSORS\n");
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
 #ifdef pp_LANG

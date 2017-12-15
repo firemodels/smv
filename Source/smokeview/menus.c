@@ -5245,6 +5245,7 @@ static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
 static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
+static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int evacmenu=0, particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isoshowsubmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int smoke3dshowsinglemenu = 0;
@@ -8640,6 +8641,27 @@ updatemenu=0;
         glutAddMenuEntry(menulabel,i);
       }
 
+      if(nslicedups > 0){
+        CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
+        if(vectorslicedup_option == SLICEDUP_KEEPALL){
+          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+        }
+        else{
+          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+        }
+        if(vectorslicedup_option == SLICEDUP_KEEPFINE){
+          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+        }
+        else{
+          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+        }
+        if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
+          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+        }
+        else{
+          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+        }
+      }
       nloadsubmvslicemenu=0;
       CREATEMENU(loadmultivslicemenu,LoadMultiVSliceMenu);
       for(i=0;i<nmultivsliceinfo;i++){
@@ -8667,35 +8689,9 @@ updatemenu=0;
         }
       }
       if(nmultivsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
-      if(nslicedups > 0){
-        glutAddMenuEntry("Duplicate vector slices", MENU_DUMMY);
-        if(vectorslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
-        }
-        else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
-        }
-        if(vectorslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
-        }
-        else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
-        }
-        if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
-        }
-        else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
-        }
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-
-      if(showallslicevectors == 0)glutAddMenuEntry(_("Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
-      if(showallslicevectors == 1)glutAddMenuEntry(_("*Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
     }
       }
     }
-    if(nvsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
     if(showallslicevectors==0)glutAddMenuEntry(_("Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
     if(showallslicevectors==1)glutAddMenuEntry(_("*Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
     if(show_meshmenus==1&&nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
@@ -8708,6 +8704,9 @@ updatemenu=0;
         strcat(loadmenulabel, steplabel);
       }
       glutAddSubMenu(loadmenulabel, vsliceloadmenu);
+    }
+    if(nslicedups > 0){
+      glutAddSubMenu("Duplicate vector slices", duplicatevectorslicemenu);
     }
     glutAddMenuEntry("Settings...", MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
@@ -8938,6 +8937,27 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel, i);
     }
+    if(nslicedups>0){
+      CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
+      if(slicedup_option==SLICEDUP_KEEPALL){
+        glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+      }
+      else{
+        glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+      }
+      if(slicedup_option==SLICEDUP_KEEPFINE){
+        glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+      }
+      else{
+        glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+      }
+      if(slicedup_option==SLICEDUP_KEEPCOARSE){
+        glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+      }
+      else{
+        glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+      }
+    }
     CREATEMENU(loadmultislicemenu, LoadMultiSliceMenu);
     nloadsubmslicemenu = 0;
     for(i = 0;i<nmultisliceinfo;i++){
@@ -8975,33 +8995,14 @@ updatemenu=0;
       }
     }
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
-    if(nslicedups>0){
-      glutAddMenuEntry("Duplicate slices", MENU_DUMMY);
-      if(slicedup_option==SLICEDUP_KEEPALL){
-        glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
-      }
-      else{
-        glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
-      }
-      if(slicedup_option==SLICEDUP_KEEPFINE){
-        glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
-      }
-      else{
-        glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
-      }
-      if(slicedup_option==SLICEDUP_KEEPCOARSE){
-        glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
-      }
-      else{
-        glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
-      }
-      glutAddMenuEntry("-", MENU_DUMMY);
-    }
     if(use_set_slicecolor==1){
       glutAddMenuEntry("  *defer slice coloring", MENU_SLICECOLORDEFER);
     }
     else{
       glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
+    }
+    if(nslicedups > 0){
+      glutAddSubMenu("Duplicate slices", duplicateslicemenu);
     }
     glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
@@ -9489,6 +9490,27 @@ updatemenu=0;
         }
       }
 
+      if(nboundaryslicedups>0){
+        CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
+        if(boundaryslicedup_option == SLICEDUP_KEEPALL){
+          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+        }
+        else{
+          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+        }
+        if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
+          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+        }
+        else{
+          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+        }
+        if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
+          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+        }
+        else{
+          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+        }
+      }
       if(nmeshes>1){
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
       }
@@ -9521,27 +9543,8 @@ updatemenu=0;
       }
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
-      if(nboundarydups>0){
-        glutAddMenuEntry("Duplicate boundary slices", MENU_DUMMY);
-        if(boundaryslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
-        }
-        else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
-        }
-        else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
-        }
-        else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
-        }
-        glutAddMenuEntry("-", MENU_DUMMY);
+      if(nboundaryslicedups>0){
+        glutAddSubMenu("Duplicate boundary slices",duplicateboundaryslicemenu);
       }
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
       glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
