@@ -4401,7 +4401,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateBoundarySliceDups();
-        //UpdateSliceDupDialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4411,7 +4411,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateBoundarySliceDups();
-        //UpdateSliceDupDialog();
+        UpdateSliceDupDialog();
       }
       break;
 
@@ -4421,7 +4421,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         glutPostRedisplay();
         UpdateBoundarySliceDups();
-        //UpdateSliceDupDialog();
+        UpdateSliceDupDialog();
       }
       break;
     default:
