@@ -1967,8 +1967,10 @@ void LevelMenu(int value){
   }
 }
 
+/* ------------------ OpenUrl ------------------------ */
+
 #ifdef pp_OSX
-void openurl(char *url){
+void OpenUrl(char *url){
   char command[1000];
 
   strcpy(command,"open ");
@@ -1977,7 +1979,7 @@ void openurl(char *url){
 }
 #endif
 #ifdef pp_LINUX
-void openurl(char *url){
+void OpenUrl(char *url){
   char command[1000];
 
   strcpy(command,"xdg-open ");
@@ -1992,7 +1994,7 @@ void openurl(char *url){
 #ifdef WIN32
 #define OPENURL(url) ShellExecute(NULL,"open", url,NULL,NULL,SW_SHOWNORMAL)
 #else
-#define OPENURL(url) openurl(url)
+#define OPENURL(url) OpenUrl(url)
 #endif
 
 void HelpMenu(int value){

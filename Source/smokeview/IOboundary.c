@@ -2038,7 +2038,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       framestart = 0;
     }
   }
-  file_size= GetFILESize(file);
+  file_size= GetFileSizeSMV(file);
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
@@ -4446,7 +4446,7 @@ void UncompressBoundaryDataFrame(meshdata *meshi,int local_iframe){
   countin = meshi->zipsize[local_iframe];
   countout=meshi->npatchsize;
 
-  uncompress_zlib(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
+  UnCompressZLIB(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
 
 }
 

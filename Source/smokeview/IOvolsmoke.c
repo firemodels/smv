@@ -755,7 +755,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
                                                  // nframes = (totalsize - skip_local)/(12 + framesize);
 
     nframes = 0;
-    filesize = GetFILESize(smokeslice->reg_file);
+    filesize = GetFileSizeSMV(smokeslice->reg_file);
     if(filesize>0){
       nframes = (int)(filesize-skip_local)/(int)(12+framesize);
     }
@@ -2514,7 +2514,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       float valmin=0.0;
 
     // one,file version,ndata_compressed,nbytes 1/2/4,ndata_uncompressed,time_local,valmin,valmax,data ....
-      compress_volsliceframe(smokeframe_data, framesize, time_local, &valmin, NULL,
+      CompressVolSliceFrame(smokeframe_data, framesize, time_local, &valmin, NULL,
                   &c_smokedata_compressed, &n_smokedata_compressed);
       size_after+=n_smokedata_compressed;
       vr->smokedataptrs[framenum]=c_smokedata_compressed;
@@ -2575,7 +2575,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
         if(vr->is_compressed==1){
           float valmin=20.0, valmax=1400.0;
 
-          compress_volsliceframe(fireframe_data, framesize,  time_local, &valmin, &valmax,
+          CompressVolSliceFrame(fireframe_data, framesize,  time_local, &valmin, &valmax,
                   &c_firedata_compressed, &n_firedata_compressed);
           size_after+=n_firedata_compressed;
           vr->firedataptrs[framenum]=c_firedata_compressed;
@@ -2628,7 +2628,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
         if(vr->is_compressed==1){
           float valmin = 20.0, valmax = 1400.0;
 
-          compress_volsliceframe(lightframe_data, framesize, time_local, &valmin, &valmax,
+          CompressVolSliceFrame(lightframe_data, framesize, time_local, &valmin, &valmax,
             &c_lightdata_compressed, &n_lightdata_compressed);
           size_after += n_lightdata_compressed;
           vr->lightdataptrs[framenum] = c_lightdata_compressed;

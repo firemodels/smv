@@ -15,10 +15,10 @@ typedef struct {
   float maxerr_deg;
 } spherepoints;
 
-void initspherepoints(spherepoints *sphereinfo, int n);
-void freespherepoints(spherepoints *sphereinfo);
-unsigned int getnormalindex(spherepoints *sphereinfo, float *normal);
-void getnormalvector(spherepoints *sphereinfo, unsigned int index, float *normal);
-float *getnormalvectorptr(spherepoints *sphereinfo, unsigned int index);
+void InitSpherePoints(spherepoints *sphereinfo, int n);
+void FreeSpherePoints(spherepoints *sphereinfo);
+unsigned int GetNormalIndex(spherepoints *sphereinfo, float *normal);
+void GetNormalVector(spherepoints *sphereinfo, unsigned int index, float *normal);
+float *GetNormalVectorPtr(spherepoints *sphereinfo, unsigned int index);
 
 #endif

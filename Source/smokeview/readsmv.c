@@ -3551,11 +3551,11 @@ int ReadSMV(char *file, char *file2){
   niso_compressed=0;
   if(sphereinfo==NULL){
     NewMemory((void **)&sphereinfo,sizeof(spherepoints));
-    initspherepoints(sphereinfo,14);
+    InitSpherePoints(sphereinfo,14);
   }
   if(wui_sphereinfo==NULL){
     NewMemory((void **)&wui_sphereinfo,sizeof(spherepoints));
-    initspherepoints(wui_sphereinfo,14);
+    InitSpherePoints(wui_sphereinfo,14);
   }
 
   ntotal_blockages=0;

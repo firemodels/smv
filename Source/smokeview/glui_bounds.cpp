@@ -639,9 +639,9 @@ extern "C" void PartBoundCBInit(void){
 }
 
 
-/* ------------------ ColortableCompare ------------------------ */
+/* ------------------ ColorTableCompare ------------------------ */
 
-int ColortableCompare(const void *arg1, const void *arg2){
+int ColorTableCompare(const void *arg1, const void *arg2){
   colortabledata *cti, *ctj;
   int i, j;
 
@@ -669,7 +669,7 @@ extern "C" void UpdateColorTableList(int ncolortableinfo_old){
     for(i = 0; i < ncolortableinfo; i++){
       order[i] = i;
     }
-    qsort((int *)order, (size_t)ncolortableinfo, sizeof(int), ColortableCompare);
+    qsort((int *)order, (size_t)ncolortableinfo, sizeof(int), ColorTableCompare);
   }
 
 
@@ -2934,9 +2934,9 @@ void PartBoundCB(int var){
   }
 }
 
-/* ------------------ SETslicemin ------------------------ */
+/* ------------------ SetSliceMin ------------------------ */
 
-void SETslicemin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
+void SetSliceMin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
   if(slicebounds == NULL)return;
   slicebounds[list_slice_index].setvalmin = setslicemin_local;
   slicebounds[list_slice_index].valmin = slicemin_local;
@@ -2944,9 +2944,9 @@ void SETslicemin(int setslicemin_local, float slicemin_local, int setslicechopmi
   slicebounds[list_slice_index].chopmin = slicechopmin_local;
 }
 
-/* ------------------ SETslicemax ------------------------ */
+/* ------------------ SetSliceMax ------------------------ */
 
-void SETslicemax(int setslicemax_local, float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
+void SetSliceMax(int setslicemax_local, float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
   if(slicebounds == NULL)return;
   slicebounds[list_slice_index].setvalmax = setslicemax_local;
   slicebounds[list_slice_index].valmax = slicemax_local;
@@ -3305,7 +3305,7 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     switch(setslicechopmin){
       case DISABLE:
         EDIT_slice_chopmin->disable();
@@ -3320,7 +3320,7 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     switch(setslicechopmax){
       case DISABLE:
       EDIT_slice_chopmax->disable();
@@ -3335,12 +3335,12 @@ extern "C" void SliceBoundCB(int var){
     break;
   case CHOPVALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     UpdateChopColors();
     break;
   case SETVALMIN:
@@ -3357,7 +3357,7 @@ extern "C" void SliceBoundCB(int var){
       break;
     }
     if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     break;
   case SETVALMAX:
     switch(setslicemax){
@@ -3373,15 +3373,15 @@ extern "C" void SliceBoundCB(int var){
         break;
     }
     if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     break;
   case VALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     break;
   case VALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     break;
   case FILETYPEINDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){

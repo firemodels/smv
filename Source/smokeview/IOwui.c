@@ -467,7 +467,7 @@ void InitTerrainAll(void){
         znormal3[0]/=sum;
         znormal3[1]/=sum;
         znormal3[2]/=sum;
-        *uc_znormal = getnormalindex(wui_sphereinfo, znormal3);
+        *uc_znormal = GetNormalIndex(wui_sphereinfo, znormal3);
       }
     }
   }
@@ -705,26 +705,26 @@ void DrawTerrain(terraindata *terri, int only_geom){
         glColor4fv(ter_rgbptr);
       }
       uc_zn = uc_znormal+ijnode3(i,j);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
 
       glNormal3fv(zn);
       zval = znode[ijnode3(i,j)]+ZOFFSET;
       glVertex3f(x[i],y[j],zval);
 
       uc_zn = uc_znormal+ijnode3(ip1,j);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       zval = znode[ijnode3(ip1,j)]+ZOFFSET;
       glVertex3f(x[i+1],y[j],zval);
 
       uc_zn = uc_znormal+ijnode3(ip1,jp1);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       zval = znode[ijnode3(ip1,jp1)]+ZOFFSET;
       glVertex3f(x[i+1],y[j+1],zval);
 
       uc_zn = uc_znormal+ijnode3(i,jp1);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       zval = znode[ijnode3(i,jp1)]+ZOFFSET;
       glVertex3f(x[i],y[j+1],zval);
@@ -795,25 +795,25 @@ void DrawTerrainTexture(terraindata *terri, int only_geom){
       txp1 = (x[i+1]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
 
       uc_zn = uc_znormal+ijnode2(i,j);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       glTexCoord2f(tx,ty);
       glVertex3f(x[i],y[j],znode[ijnode3(i,j)]);
 
       uc_zn = uc_znormal+ijnode2(ip1,j);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       glTexCoord2f(txp1,ty);
       glVertex3f(x[i+1],y[j],znode[ijnode3(ip1,j)]);
 
       uc_zn = uc_znormal+ijnode2(ip1,jp1);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       glTexCoord2f(txp1,typ1);
       glVertex3f(x[i+1],y[j+1],znode[ijnode3(ip1,jp1)]);
 
       uc_zn = uc_znormal+ijnode2(i,jp1);
-      zn = getnormalvectorptr(wui_sphereinfo, (unsigned int)(*uc_zn));
+      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
       glNormal3fv(zn);
       glTexCoord2f(tx,typ1);
       glVertex3f(x[i],y[j+1],znode[ijnode3(i,jp1)]);
@@ -960,7 +960,7 @@ void InitTNorm(terraindata *terri){
       znormal3[0] /= sum;
       znormal3[1] /= sum;
       znormal3[2] /= sum;
-      *uc_znormal = getnormalindex(wui_sphereinfo, znormal3);
+      *uc_znormal = GetNormalIndex(wui_sphereinfo, znormal3);
     }
   }
 }
@@ -1047,9 +1047,9 @@ int GetTerrainData(char *file, terraindata *terri){
   return 0;
 }
 
-/* ------------------ getterrain_size ------------------------ */
+/* ------------------ GetTerrainSize ------------------------ */
 
-int getterrain_size(char *file, float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
+int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
   FILE *WUIFILE;
   int one;
   float xyminmax[4];
@@ -1129,7 +1129,7 @@ void ReadTerrain(char *file, int ifile, int flag, int *errorcode){
     return;
   }
 
-  if(getterrain_size(file,&xmin, &xmax, &nx, &ymin, &ymax, &ny, &nglobal_times)!=0)return;
+  if(GetTerrainSize(file,&xmin, &xmax, &nx, &ymin, &ymax, &ny, &nglobal_times)!=0)return;
 
   terri->xmin = xmin;
   terri->xmax = xmax;

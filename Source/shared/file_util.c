@@ -363,9 +363,9 @@ int GetFileInfo(char *filename, char *source_dir, FILE_SIZE *filesize){
   return statfile;
 }
 
-/* ------------------ GetFileSize ------------------------ */
+/* ------------------ GetFileSizeSMV ------------------------ */
 
-FILE_SIZE GetFILESize(const char *filename){
+FILE_SIZE GetFileSizeSMV(const char *filename){
   STRUCTSTAT statbuffer;
   int statfile;
   FILE_SIZE return_val;
@@ -487,7 +487,7 @@ filedata *File2Buffer(char *filename){
   FILE *stream;
 
   if(FILE_EXISTS(filename)==NO)return NULL;
-  filesize = GetFILESize(filename);
+  filesize = GetFileSizeSMV(filename);
   if(filesize==0)return NULL;
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;

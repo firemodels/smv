@@ -5120,7 +5120,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 
 // read in data
 
-  file_size= GetFILESize(smoke3di->file);
+  file_size= GetFileSizeSMV(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     ReadSmoke3d(ifile,UNLOAD,&error);
@@ -5251,10 +5251,10 @@ void UpdateSmoke3d(smoke3ddata *smoke3di){
   countout=smoke3di->nchars_uncompressed;
   switch(smoke3di->compression_type){
   case RLE:
-    countout = uncompress_rle(smoke3di->smokeframe_comp_list[iframe_local],countin,smoke3di->smokeframe_in);
+    countout = UnCompressRLE(smoke3di->smokeframe_comp_list[iframe_local],countin,smoke3di->smokeframe_in);
     break;
   case ZLIB:
-    uncompress_zlib(
+    UnCompressZLIB(
       smoke3di->smokeframe_in,&countout,
       smoke3di->smokeframe_comp_list[iframe_local],countin);
     break;
