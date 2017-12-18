@@ -58,9 +58,9 @@ void InitMultiThreading(void){
 // *************** multi-threaded compression ****************
 
 #ifdef pp_THREAD
- /* ------------------ mt_CompressSVZip ------------------------ */
+ /* ------------------ MtCompressSVZip ------------------------ */
 
-void *mt_CompressSVZip(void *arg){
+void *MtCompressSVZip(void *arg){
   LOCK_COMPRESS
   CompressSVZip2();
   updatemenu=1;
@@ -73,7 +73,7 @@ void *mt_CompressSVZip(void *arg){
 /* ------------------ CompressSVZip ------------------------ */
 #ifdef pp_THREAD
 void CompressSVZip(void){
-  pthread_create(&compress_thread_id,NULL,mt_CompressSVZip,NULL);
+  pthread_create(&compress_thread_id,NULL, MtCompressSVZip,NULL);
 }
 #else
 void CompressSVZip(void){
@@ -83,10 +83,10 @@ void CompressSVZip(void){
 
 // ************** multi threaded blank creation **********************
 
-/* ------------------ mt_MakeIBlank ------------------------ */
+/* ------------------ MtMakeIBlank ------------------------ */
 #ifdef pp_THREAD
 #ifdef pp_THREADIBLANK
-void *mt_MakeIBlank(void *arg){
+void *MtMakeIBlank(void *arg){
 
   MakeIBlank();
   SetCVentDirs();
@@ -99,10 +99,10 @@ void *mt_MakeIBlank(void *arg){
 #endif
 #endif
 
-/* ------------------ mt_PSystem ------------------------ */
+/* ------------------ MtPSystem ------------------------ */
 
 #ifdef pp_THREAD
-void *mt_PSystem(void *arg){
+void *MtPSystem(void *arg){
   char command_line[1024], moviefile_path[1024];
 
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path))==YES){
@@ -126,7 +126,7 @@ void *mt_PSystem(void *arg){
 /* ------------------ PSystem ------------------------ */
 
 void PSystem(char *commandline){
-  pthread_create(&system_thread_id, NULL, mt_PSystem, NULL);
+  pthread_create(&system_thread_id, NULL, MtPSystem, NULL);
 }
 #else
 void PSystem(char *commandline){
@@ -139,7 +139,7 @@ void PSystem(char *commandline){
 #ifdef pp_THREAD
 #ifdef pp_THREADIBLANK
 void MakeIBlankAll(void){
-  pthread_create(&makeiblank_thread_id, NULL, mt_MakeIBlank, NULL);
+  pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
 }
 #else
 void MakeIBlankAll(void){
@@ -183,10 +183,10 @@ void UpdateAllBoundaryBounds(void){
 }
 #endif
 
-/* ------------------ mt_ReadVolsmokeAllFramesAllMeshes2 ------------------------ */
+/* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
 
 #ifdef pp_THREAD
-void mt_ReadVolsmokeAllFramesAllMeshes2(void){
+void MtReadVolsmokeAllFramesAllMeshes2(void){
   pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif

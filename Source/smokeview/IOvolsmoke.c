@@ -3016,7 +3016,7 @@ void ReadVolsmokeAllFramesAllMeshes(void){
   UpdateTimes();
 #ifdef pp_THREAD
   if(use_multi_threading==1){
-    mt_ReadVolsmokeAllFramesAllMeshes2();
+    MtReadVolsmokeAllFramesAllMeshes2();
   }
   else{
     ReadVolsmokeAllFramesAllMeshes2(NULL);
