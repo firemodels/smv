@@ -303,7 +303,7 @@ extern "C" void ShowGluiTour(void){
 /* ------------------ TrimVal ------------------------ */
 
 extern "C" float TrimVal(float val){
-  if(val<0.000001&&val>-0.000001){
+  if(ABS(val)<0.000001){
     return 0.0;
   }
   else{

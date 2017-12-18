@@ -688,7 +688,7 @@ EXTERNCPP void DrawDemo2(int option);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
-EXTERNCPP void handleiso(void);
+EXTERNCPP void HandleIso(void);
 EXTERNCPP void UpdateSurface(void);
 EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void SetVentDirs(void);

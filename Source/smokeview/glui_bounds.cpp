@@ -2326,7 +2326,7 @@ extern "C" void Plot3DBoundCB(int var){
     break;
   case PLOTISO:
     visiso = 1 - visiso;
-    handleiso();
+    HandleIso();
     glutPostRedisplay();
     break;
   case PLOTISOTYPE:
