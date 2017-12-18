@@ -258,9 +258,9 @@ void GetViewportInfo(void){
 
 }
 
- /* ------------------------ SUB_portortho ------------------------- */
+ /* ------------------------ SubPortOrtho ------------------------- */
 
-int SUB_portortho(int quad,
+int SubPortOrtho(int quad,
                   portdata *p,
                    GLdouble portx_left, GLdouble portx_right, GLdouble portx_down, GLdouble portx_top,
                    GLint screen_left, GLint screen_down
@@ -333,9 +333,9 @@ int SUB_portortho(int quad,
 }
 
 
-/* ------------------------ SUB_portortho2 ------------------------- */
+/* ------------------------ SubPortOrtho2 ------------------------- */
 
-int SUB_portortho2(int quad,
+int SubPortOrtho2(int quad,
                   portdata *p,
                   GLint screen_left, GLint screen_down
                   ){
@@ -411,9 +411,9 @@ int SUB_portortho2(int quad,
   return 1;
 }
 
-/* ------------------------ SUB_portfrustum ------------------------- */
+/* ------------------------ SubPortFrustum ------------------------- */
 
-int SUB_portfrustum(int quad,
+int SubPortFrustum(int quad,
                    portdata *p,
                    GLdouble portx_left, GLdouble portx_right,
                    GLdouble portx_down, GLdouble portx_top,
@@ -519,7 +519,7 @@ void ViewportClip(int quad, GLint screen_left, GLint screen_down){
   x_down=0.0;
   x_top=screenHeight;
 
-  if(SUB_portortho(quad,&VP_fullscreen,x_left, x_right, x_down, x_top,screen_left, screen_down)==0)return;
+  if(SubPortOrtho(quad,&VP_fullscreen,x_left, x_right, x_down, x_top,screen_left, screen_down)==0)return;
 
    c_left = render_clip_left-3;
    c_right = screenWidth + 3 - render_clip_right;
@@ -562,7 +562,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   float xyz[3];
   int info_lines=0;
 
-  if(SUB_portortho2(quad,&VP_info,screen_left, screen_down)==0)return;
+  if(SubPortOrtho2(quad,&VP_info,screen_left, screen_down)==0)return;
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -691,7 +691,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   int right_label_pos,timebar_right_pos;
   int timebar_left_pos;
 
-  if(SUB_portortho2(quad,&VP_timebar,screen_left,screen_down)==0)return;
+  if(SubPortOrtho2(quad,&VP_timebar,screen_left,screen_down)==0)return;
 
   timebar_left_width = GetStringWidth("Time: 1234.11");
   timebar_right_width = GetStringWidth("Frame rate: 99.99");
@@ -811,7 +811,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 /* --------------------- ViewportColorbar ------------------------- */
 
 void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
-  if(SUB_portortho2(quad,&VP_colorbar,screen_left, screen_down)==0)return;
+  if(SubPortOrtho2(quad,&VP_colorbar,screen_left, screen_down)==0)return;
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -824,7 +824,7 @@ void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
 
 void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
 
-  if(SUB_portortho2(quad,&VP_title,screen_left,screen_down)==0)return;
+  if(SubPortOrtho2(quad,&VP_title,screen_left,screen_down)==0)return;
 
 
 
@@ -1020,7 +1020,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     FrustumAsymmetry = -0.5*EyeSeparation*fnear / SCALE2SMV(fzero);
   }
 
-  if(SUB_portfrustum(quad,&VP_scene,
+  if(SubPortFrustum(quad,&VP_scene,
     (double)(fleft+FrustumAsymmetry),(double)(fright+FrustumAsymmetry),(double)fdown,(double)fup,(double)fnear,(double)ffar,
     screen_left, screen_down)==0)return;
 

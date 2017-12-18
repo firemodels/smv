@@ -69,6 +69,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define UPDATE_SLICEDUPS 212
 #define UPDATE_HISTOGRAM 213
 #define INIT_HISTOGRAM 214
+#define UPDATE_BOUNDARYSLICEDUPS 215
 
 #define SCRIPT_START 31
 #define SCRIPT_STOP 32
@@ -83,6 +84,10 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define SCRIPT_RENDER_DIR 43
 #define SCRIPT_STEP_NOW 44
 #define SCRIPT_CANCEL_NOW 45
+
+#define BOUNDARY_OUTPUT_ROLLOUT  0
+#define BOUNDARY_THRESHOLD_ROLLOUT 1
+#define BOUNDARY_DUPLICATE_ROLLOUT 2
 
 #define ZONEVALMIN 50
 #define ZONEVALMAX 51
@@ -159,6 +164,8 @@ GLUI_Listbox *LIST_colortable = NULL;
 #ifdef pp_MEMDEBUG
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
 #endif
+GLUI_Rollout *ROLLOUT_boundary_temp_threshold;
+GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
 GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
@@ -305,6 +312,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
+GLUI_RadioGroup *RADIO_boundaryslicedup = NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
 GLUI_RadioGroup *RADIO_vectorslicedup = NULL;
 GLUI_RadioGroup *RADIO_histogram_static=NULL;
@@ -374,9 +382,9 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define TIME_ROLLOUT 6
 #define MEMCHECK_ROLLOUT 7
 
-procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2];
+procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[3];
 procdata sliceprocinfo[5];
-int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0;
+int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
 
@@ -388,6 +396,7 @@ extern "C" void LoadIncrementalCB1(int var){
 /* ------------------ UpdateSliceDupDialog ------------------------ */
 
 extern "C" void UpdateSliceDupDialog(void){
+  if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
 }
@@ -451,6 +460,12 @@ void IsoRolloutCB(int var){
 
 void BoundRolloutCB(int var){
   ToggleRollout(boundprocinfo, nboundprocinfo, var);
+}
+
+/* ------------------ SubBoundRolloutCB ------------------------ */
+
+void SubBoundRolloutCB(int var){
+  ToggleRollout(subboundprocinfo, nsubboundprocinfo, var);
 }
 
 /* ------------------ FileRolloutCB ------------------------ */
@@ -624,9 +639,9 @@ extern "C" void PartBoundCBInit(void){
 }
 
 
-/* ------------------ ColortableCompare ------------------------ */
+/* ------------------ ColorTableCompare ------------------------ */
 
-int ColortableCompare(const void *arg1, const void *arg2){
+int ColorTableCompare(const void *arg1, const void *arg2){
   colortabledata *cti, *ctj;
   int i, j;
 
@@ -654,7 +669,7 @@ extern "C" void UpdateColorTableList(int ncolortableinfo_old){
     for(i = 0; i < ncolortableinfo; i++){
       order[i] = i;
     }
-    qsort((int *)order, (size_t)ncolortableinfo, sizeof(int), ColortableCompare);
+    qsort((int *)order, (size_t)ncolortableinfo, sizeof(int), ColorTableCompare);
   }
 
 
@@ -894,6 +909,10 @@ void BoundBoundCB(int var){
   int i;
 
   switch(var){
+  case UPDATE_BOUNDARYSLICEDUPS:
+    UpdateBoundarySliceDups();
+    updatemenu = 1;
+    break;
   case SHOWPATCH_BOTH:
     updatefacelists = 1;
     updatehiddenfaces = 1;
@@ -1682,23 +1701,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     CHECKBOX_cache_boundarydata=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound,_d("Cache boundary data"),&cache_boundarydata,CACHE_BOUNDARYDATA,BoundBoundCB);
     CHECKBOX_showpatch_both=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound,_d("Display exterior data"),&showpatch_both,SHOWPATCH_BOTH,BoundBoundCB);
-    ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,"Ouput data",false);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata,_d("Output data to file"),&output_patchdata);
-
-    PANEL_outputpatchdata = glui_bounds->add_panel_to_panel(ROLLOUT_outputpatchdata,"",GLUI_PANEL_NONE);
-
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"tmin",GLUI_SPINNER_FLOAT,&patchout_tmin);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"xmin",GLUI_SPINNER_FLOAT,&patchout_xmin);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"ymin",GLUI_SPINNER_FLOAT,&patchout_ymin);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"zmin",GLUI_SPINNER_FLOAT,&patchout_zmin);
-
-    glui_bounds->add_column_to_panel(PANEL_outputpatchdata,false);
-
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"tmax",GLUI_SPINNER_FLOAT,&patchout_tmax);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"xmax",GLUI_SPINNER_FLOAT,&patchout_xmax);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"ymax",GLUI_SPINNER_FLOAT,&patchout_ymax);
-    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"zmax",GLUI_SPINNER_FLOAT,&patchout_zmax);
-
 
     if(nradio>1){
       for(i=0;i<npatchinfo;i++){
@@ -1706,20 +1708,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
         patchi = patchinfo + i;
         if(patchi->firstshort==1)glui_bounds->add_radiobutton_to_group(RADIO_bf,patchi->label.shortlabel);
-      }
-      if(activate_threshold==1){
-        glui_bounds->add_separator_to_panel(ROLLOUT_bound);
-        CHECKBOX_showchar=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound,_d("Show temp threshold"),&vis_threshold,SHOWCHAR,BoundBoundCB);
-        CHECKBOX_showonlychar=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound,_d("Show only temp threshold"),&vis_onlythreshold,SHOWCHAR,BoundBoundCB);
-        {
-          char label[256];
-
-          strcpy(label,"Temperature threshold (");
-          strcat(label,degC);
-          strcat(label,") ");
-          glui_bounds->add_spinner_to_panel(ROLLOUT_bound,label,GLUI_SPINNER_FLOAT,&temp_threshold);
-        }
-        BoundBoundCB(SHOWCHAR);
       }
 #ifdef pp_FSEEK
       CHECKBOX_boundary_load_incremental=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _d("incremental data loading"), &load_incremental, BOUNDARY_LOAD_INCREMENTAL, LoadIncrementalCB);
@@ -1758,6 +1746,52 @@ extern "C" void GluiBoundsSetup(int main_window){
     UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
     UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
+
+    ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,"Output data",false,BOUNDARY_OUTPUT_ROLLOUT,SubBoundRolloutCB);
+    ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_outputpatchdata, BOUNDARY_OUTPUT_ROLLOUT);
+
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata,_d("Output data to file"),&output_patchdata);
+
+    PANEL_outputpatchdata = glui_bounds->add_panel_to_panel(ROLLOUT_outputpatchdata,"",GLUI_PANEL_NONE);
+
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"tmin",GLUI_SPINNER_FLOAT,&patchout_tmin);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"xmin",GLUI_SPINNER_FLOAT,&patchout_xmin);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"ymin",GLUI_SPINNER_FLOAT,&patchout_ymin);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"zmin",GLUI_SPINNER_FLOAT,&patchout_zmin);
+
+    glui_bounds->add_column_to_panel(PANEL_outputpatchdata,false);
+
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"tmax",GLUI_SPINNER_FLOAT,&patchout_tmax);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"xmax",GLUI_SPINNER_FLOAT,&patchout_xmax);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"ymax",GLUI_SPINNER_FLOAT,&patchout_ymax);
+    glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"zmax",GLUI_SPINNER_FLOAT,&patchout_zmax);
+
+    if(activate_threshold==1){
+      ROLLOUT_boundary_temp_threshold = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,"Temperature threshold",false,BOUNDARY_THRESHOLD_ROLLOUT,SubBoundRolloutCB);
+      ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_temp_threshold, BOUNDARY_THRESHOLD_ROLLOUT);
+
+      CHECKBOX_showchar=glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_temp_threshold,_d("Show"),&vis_threshold,SHOWCHAR,BoundBoundCB);
+      CHECKBOX_showonlychar=glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_temp_threshold,_d("Show only threshold"),&vis_onlythreshold,SHOWCHAR,BoundBoundCB);
+      {
+        char label[256];
+
+        strcpy(label,"Temperature (");
+        strcat(label,degC);
+        strcat(label,") ");
+        glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_temp_threshold,label,GLUI_SPINNER_FLOAT,&temp_threshold);
+      }
+      BoundBoundCB(SHOWCHAR);
+    }
+
+    if(nboundaryslicedups > 0){
+      ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);
+      ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_duplicates, BOUNDARY_DUPLICATE_ROLLOUT);
+
+      RADIO_boundaryslicedup = glui_bounds->add_radiogroup_to_panel(ROLLOUT_boundary_duplicates, &boundaryslicedup_option,UPDATE_BOUNDARYSLICEDUPS,BoundBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep all"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep fine"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundaryslicedup, _d("Keep coarse"));
+    }
   }
 
   /*  Iso File Load Bounds   */
@@ -2900,9 +2934,9 @@ void PartBoundCB(int var){
   }
 }
 
-/* ------------------ SETslicemin ------------------------ */
+/* ------------------ SetSliceMin ------------------------ */
 
-void SETslicemin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
+void SetSliceMin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
   if(slicebounds == NULL)return;
   slicebounds[list_slice_index].setvalmin = setslicemin_local;
   slicebounds[list_slice_index].valmin = slicemin_local;
@@ -2910,9 +2944,9 @@ void SETslicemin(int setslicemin_local, float slicemin_local, int setslicechopmi
   slicebounds[list_slice_index].chopmin = slicechopmin_local;
 }
 
-/* ------------------ SETslicemax ------------------------ */
+/* ------------------ SetSliceMax ------------------------ */
 
-void SETslicemax(int setslicemax_local, float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
+void SetSliceMax(int setslicemax_local, float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
   if(slicebounds == NULL)return;
   slicebounds[list_slice_index].setvalmax = setslicemax_local;
   slicebounds[list_slice_index].valmax = slicemax_local;
@@ -3271,7 +3305,7 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     switch(setslicechopmin){
       case DISABLE:
         EDIT_slice_chopmin->disable();
@@ -3286,7 +3320,7 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     switch(setslicechopmax){
       case DISABLE:
       EDIT_slice_chopmax->disable();
@@ -3301,12 +3335,12 @@ extern "C" void SliceBoundCB(int var){
     break;
   case CHOPVALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     UpdateChopColors();
     break;
   case SETVALMIN:
@@ -3323,7 +3357,7 @@ extern "C" void SliceBoundCB(int var){
       break;
     }
     if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     break;
   case SETVALMAX:
     switch(setslicemax){
@@ -3339,15 +3373,15 @@ extern "C" void SliceBoundCB(int var){
         break;
     }
     if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     break;
   case VALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SETslicemin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     break;
   case VALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
-    SETslicemax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     break;
   case FILETYPEINDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){

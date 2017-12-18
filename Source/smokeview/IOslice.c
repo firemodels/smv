@@ -1327,7 +1327,7 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   countout = sd->nsliceijk;
 
   if(sd->compression_type == COMPRESSED_ZLIB){
-    uncompress_zlib(sd->slicecomplevel, &countout, compressed_data, countin);
+    UnCompressZLIB(sd->slicecomplevel, &countout, compressed_data, countin);
   }
 }
 
@@ -4033,7 +4033,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
 
     CountMemoryBlocks(num_memblocks_load, 0);
-    file_size = GetFILESize(file);
+    file_size = GetFileSizeSMV(file);
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
@@ -4066,7 +4066,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
         error = 1;
       }
       else{
-        sd->ntimes = (int)(GetFILESize(file) - headersize) / framesize;
+        sd->ntimes = (int)(GetFileSizeSMV(file) - headersize) / framesize;
         if(sliceframestep>1)sd->ntimes /= sliceframestep;
       }
     }

@@ -83,7 +83,7 @@ void UpdateFrameNumber(int changetime){
 
             c_smokedata_compressed = vr->smokedataptrs[vr->itime];
             framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
-            uncompress_volsliceframe(c_smokedata_compressed,
+            UnCompressVolSliceFrame(c_smokedata_compressed,
                            vr->smokedata_view, framesize, &timeval,
                            vr->c_smokedata_view);
 
@@ -103,7 +103,7 @@ void UpdateFrameNumber(int changetime){
 
             c_firedata_compressed = vr->firedataptrs[vr->itime];
             framesize = fireslice->nslicei*fireslice->nslicej*fireslice->nslicek;
-            uncompress_volsliceframe(c_firedata_compressed,
+            UnCompressVolSliceFrame(c_firedata_compressed,
                            vr->firedata_view, framesize, &timeval,
                            vr->c_firedata_view);
 
@@ -124,7 +124,7 @@ void UpdateFrameNumber(int changetime){
 
             c_lightdata_compressed = vr->lightdataptrs[vr->itime];
             framesize = lightslice->nslicei*lightslice->nslicej*lightslice->nslicek;
-            uncompress_volsliceframe(c_lightdata_compressed,
+            UnCompressVolSliceFrame(c_lightdata_compressed,
                            vr->lightdata_view, framesize, &timeval,
                            vr->c_lightdata_view);
 

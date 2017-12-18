@@ -2038,7 +2038,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       framestart = 0;
     }
   }
-  file_size= GetFILESize(file);
+  file_size= GetFileSizeSMV(file);
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
@@ -2341,6 +2341,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
     UpdateTimes();
     return;
   }
+  if(patchi->skip == 1)return;
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
   endian_smv = GetEndian();
@@ -4279,8 +4280,159 @@ void UpdateBoundaryMenuLabels(void){
       }
     }
   }
+}
+
+#define COUNT_DUPLICATES 1
+#define FIND_DUPLICATES 0
+
+/* ------------------ CompareMeshResolution ------------------------ */
+
+int CompareMeshResolution(int dir, meshdata *meshi, meshdata *meshj){
+  float grid_eps;
+  float *dxyzi, *dxyzj;
+
+  dxyzi = meshi->dxyz;
+  dxyzj = meshj->dxyz;
+  grid_eps = MIN(dxyzi[dir],dxyzj[dir])/2.0;
+
+  if(ABS(dxyzi[dir]-dxyzj[dir]) < grid_eps)return 0;
+  if(dxyzi[dir] > dxyzj[dir])return 1;
+  return -1;
+}
+
+/* ------------------ IsPatchDuplicate ------------------------ */
 
 
+int IsBoundaryDuplicate(patchdata *patchi, int flag){
+  int j;
+  float *xyzmini, *xyzmaxi;
+  meshdata *meshi;
+  flowlabels *labeli;
+
+  if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
+  if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
+  if(patchi->dir == 0)return 0;
+  xyzmini = patchi->xyz_min;
+  xyzmaxi = patchi->xyz_max;
+  meshi = meshinfo + patchi->blocknumber;
+  labeli = &(patchi->label);
+  for(j=0;j<npatchinfo;j++){ // identify duplicate slices
+    patchdata *patchj;
+    float *xyzminj, *xyzmaxj, grid_eps;
+    meshdata *meshj;
+    flowlabels *labelj;
+
+    patchj = patchinfo + j;
+    labelj = &(patchj->label);
+    meshj = meshinfo + patchj->blocknumber;
+
+    if(patchj==patchi||patchj->skip==1)continue;
+    if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->dir != patchj->dir||patchj->dir==0)continue;
+    if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
+
+    grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);
+
+    xyzminj = patchj->xyz_min;
+    xyzmaxj = patchj->xyz_max;
+    if(MAXDIFF3(xyzmini, xyzminj) < grid_eps&&MAXDIFF3(xyzmaxi, xyzmaxj) < grid_eps){
+      if(flag == COUNT_DUPLICATES)return 1;
+      if(boundaryslicedup_option ==SLICEDUP_KEEPFINE  &&CompareMeshResolution(patchi->dir, meshi, meshj)>=0)return 1;
+      if(boundaryslicedup_option ==SLICEDUP_KEEPCOARSE&&CompareMeshResolution(patchi->dir, meshi, meshj)<=0)return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ CountBoundarySliceDups ------------------------ */
+
+int CountBoundarySliceDups(void){
+  int i, count;
+
+  count = 0;
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    for(i = 0; i < npatchinfo; i++){
+      count += IsBoundaryDuplicate(patchi, COUNT_DUPLICATES);
+    }
+  }
+  return count;
+}
+
+/* ------------------ UpdateBoundarySliceDups ------------------------ */
+
+void UpdateBoundarySliceDups(void){
+  int i;
+
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    patchi->skip = 0;
+  }
+  // look for duplicate patches
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->filetype!=PATCH_GEOMETRY||patchi->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    patchi->skip = IsBoundaryDuplicate(patchi, FIND_DUPLICATES);
+  }
+}
+
+/* ------------------ GetBoundaryParams ------------------------ */
+
+void GetBoundaryParams(void){
+  int i;
+
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    float *xyz_min, *xyz_max;
+    int *ijk;
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+    float dxyz[3];
+
+    patchi = patchinfo + i;
+    patchi->dir = 0;
+
+    xyz_min = patchi->xyz_min;
+    xyz_min[0] = 0.0;
+    xyz_min[1] = 0.0;
+    xyz_min[2] = 0.0;
+
+    xyz_max = patchi->xyz_max;
+    xyz_max[0] = 0.0;
+    xyz_max[1] = 0.0;
+    xyz_max[2] = 0.0;
+    if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)continue;
+
+    ijk = patchi->ijk;
+    meshi = meshinfo + patchi->blocknumber;
+
+    xplt = meshi->xplt;
+    yplt = meshi->yplt;
+    zplt = meshi->zplt;
+
+    xyz_min[0] = xplt[ijk[0]];
+    xyz_min[1] = yplt[ijk[2]];
+    xyz_min[2] = zplt[ijk[4]];
+
+    xyz_max[0] = xplt[ijk[1]];
+    xyz_max[1] = yplt[ijk[3]];
+    xyz_max[2] = zplt[ijk[5]];
+
+    dxyz[0] = ABS(xyz_max[0] - xyz_min[0]);
+    dxyz[1] = ABS(xyz_max[1] - xyz_min[1]);
+    dxyz[2] = ABS(xyz_max[2] - xyz_min[2]);
+    if(dxyz[0] < MIN(dxyz[1], dxyz[2]))patchi->dir = 0;
+    if(dxyz[1] < MIN(dxyz[0], dxyz[2]))patchi->dir = 1;
+    if(dxyz[2] < MIN(dxyz[0], dxyz[1]))patchi->dir = 2;
+  }
+  UpdateBoundarySliceDups();
+  nboundaryslicedups = CountBoundarySliceDups();
 }
 
 /* ------------------ UncompressBoundaryDataFrame ------------------------ */
@@ -4294,7 +4446,7 @@ void UncompressBoundaryDataFrame(meshdata *meshi,int local_iframe){
   countin = meshi->zipsize[local_iframe];
   countout=meshi->npatchsize;
 
-  uncompress_zlib(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
+  UnCompressZLIB(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
 
 }
 

@@ -200,7 +200,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
      return;
   }
 
-  file_size= GetFILESize(file);
+  file_size= GetFileSizeSMV(file);
   plot3dfilelen = strlen(file);
   PRINTF("Loading plot3d data: %s\n",file);
   START_TIMER(read_time);
