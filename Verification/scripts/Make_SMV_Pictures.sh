@@ -64,7 +64,7 @@ make_helpinfo_files()
   $SMOKEZIP -v         > smokezip.version
   $SMOKEDIFF -v        > smokediff.version
   $BACKGROUND -version > background.version
-  $DEM2FDS -version    > background.version
+  $DEM2FDS -version    > dem2fds.version
   $WIND2FDS            > wind2fds.version
 }
 

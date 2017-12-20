@@ -1018,8 +1018,8 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
 void DrawCubeC(float size, unsigned char *rgbcolor){
   float s1, s2;
 
-  s2 = size;
-  s1 = 0.0;
+  s2 = size/2.0;
+  s1 = -size/2.0;
 
   if(object_outlines == 0){
     glBegin(GL_QUADS);
@@ -1802,8 +1802,8 @@ void DrawCube(float size, unsigned char *rgbcolor){
 void DrawCubeCOutline(float size, unsigned char *rgbcolor){
   float s1,s2;
 
-  s2 = size;
-  s1 = 0.0;
+  s2 = size/2.0;
+  s1 = -size/2.0;
 
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);

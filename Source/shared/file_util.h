@@ -174,7 +174,7 @@ EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
 EXTERNCPP int GetFileListSize(const char *path, char *filter) ;
 EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist);
 EXTERNCPP char *Which(char *progname);
-EXTERNCPP FILE_SIZE GetFILESize(const char *filename);
+EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);

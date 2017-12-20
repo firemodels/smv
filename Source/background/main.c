@@ -13,16 +13,6 @@
 #include "MALLOC.h"
 #include "file_util.h"
 
-#ifdef pp_LINUX
-#define pp_LINUXOSX
-#endif
-
-#ifdef pp_OSX
-#define pp_LINUXOSX
-#endif
-
-//dummy change to bump version number to 0.9
-
 #ifdef WIN32
 void GetSystemTimesAddress(void);
 #endif
@@ -34,11 +24,12 @@ float get_load(void);
 float get_host_load(char *host);
 unsigned char cpuusage_host(char *host,int ncores);
 #endif
+
 #ifdef pp_OSX
 unsigned char cpuusage_host(char *host,int ncores);
 #endif
 
-#ifdef pp_LINUXOSX
+#ifndef WIN32
 
 /* ------------------ Sleep ------------------------ */
 
@@ -95,21 +86,17 @@ void Usage(char *prog, int option){
 
 int main(int argc, char **argv){
   int i;
-#ifdef pp_LINUXOSX
-  int debug;
+#ifndef WIN32
+  int debug=0;
+  char command_buffer[1024];
+  char user_path[1024];
 #endif
   int argstart=-1;
   float delay_time=0.0;
   int cpu_usage, cpu_usage_max=25;
   int mem_usage, mem_usage_max=75;
 #ifdef pp_LINUX
-  char command_buffer[1024];
-  char user_path[1024];
   FILE *stream=NULL;
-#endif
-#ifdef pp_OSX
-  char command_buffer[1024];
-  char user_path[1024];
 #endif
 
   int itime;
@@ -128,10 +115,6 @@ int main(int argc, char **argv){
 #endif
 #ifdef pp_OSX
   sprintf(pid,"%i",getpid());
-#endif
-
-#ifdef pp_LINUXOSX
-  debug=0;
 #endif
 
   if(argc==1){
@@ -166,13 +149,13 @@ int main(int argc, char **argv){
                 if(delay_time<0.0)delay_time=0.0;
               }
             }
-#ifdef pp_LINUXOSX
+#ifndef WIN32
             else{
               debug=1;
             }
 #endif
             break;
-#ifdef LINUX
+#ifdef pp_LINUX
           case 'h':
             if(strcmp(arg,"-hosts")==0){
               i++;
@@ -281,8 +264,7 @@ int main(int argc, char **argv){
   }
   command=argv[argstart];
   _spawnvp(_P_NOWAIT,command, argv+argstart);
-#endif
-#ifdef pp_LINUXOSX
+#else
   strcpy(command_buffer,"");
   if(hostinfo==NULL){
     cpu_usage=cpuusage();
@@ -616,7 +598,7 @@ float get_load(void){
 }
 #endif
 
-#ifdef pp_LINUXOSX
+#ifndef WIN32
 
 /* ------------------ cpuusage ------------------------ */
 

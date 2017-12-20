@@ -291,7 +291,7 @@ void rand_3d(float xyz[3], float xmin, float xmax, float ymin, float ymax, float
 void GetStartupSlice(int seq_id);
 void GetStartupSmoke(int seq_id);
 void GetStartupBoundary(int seq_id);
-unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
+unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
 int GetEndian(void);
 int convert_slice(slice *slicei, int *thread_index);

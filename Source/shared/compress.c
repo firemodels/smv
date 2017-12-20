@@ -8,21 +8,21 @@
 
 #define MARK 255
 
-/* ------------------ compress_zlib ------------------------ */
+/* ------------------ CompressZLIB ------------------------ */
 
-int compress_zlib(unsigned char *dest, uLongf *destLen, unsigned char *source, int sourceLen){
+int CompressZLIB(unsigned char *dest, uLongf *destLen, unsigned char *source, int sourceLen){
   return compress(dest, destLen, source, sourceLen);
 }
 
-/* ------------------ uncompress_zlib ------------------------ */
+/* ------------------ UnCompressZLIB ------------------------ */
 
-int uncompress_zlib(unsigned char *dest, uLongf *destLen, unsigned char *source, int sourceLen){
+int UnCompressZLIB(unsigned char *dest, uLongf *destLen, unsigned char *source, int sourceLen){
   return uncompress(dest, destLen, source, sourceLen);
 }
 
-/* ------------------ compress_rle ------------------------ */
+/* ------------------ CompressRLE ------------------------ */
 
-unsigned int compress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out){
+unsigned int CompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out){
   unsigned char lastchar=MARK, cmark=MARK, thischar, *buffer_start;
   unsigned char *buffer_in_end;
   int nrepeats=1;
@@ -66,9 +66,9 @@ unsigned int compress_rle(unsigned char *buffer_in, int nchars_in, unsigned char
   return buffer_out-buffer_start;
 }
 
-/* ------------------ uncompress_rle ------------------------ */
+/* ------------------ UnCompressRLE ------------------------ */
 
-unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out){
+unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out){
   int nrepeats,nn;
   unsigned char thischar, *buffer_in_end;
 
@@ -95,9 +95,9 @@ unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned ch
   return nn;
 }
 
-/* ------------------ compress_volsliceframe ------------------------ */
+/* ------------------ CompressVolSliceFrame ------------------------ */
 
-void compress_volsliceframe(float *data_in, int n_data_in, float timeval_in, float *vmin_in, float *vmax_in,
+void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, float *vmin_in, float *vmax_in,
                 unsigned char **compressed_data_out, uLongf *ncompressed_data_out
                 ){
   float valmin, valmax;
@@ -181,9 +181,9 @@ void compress_volsliceframe(float *data_in, int n_data_in, float timeval_in, flo
   *ncompressed_data_out=n_data_compressed;
 }
 
-/* ------------------ uncompress_volsliceframe ------------------------ */
+/* ------------------ UnCompressVolSliceFrame ------------------------ */
 
-int uncompress_volsliceframe(unsigned char *compressed_data_in,
+int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
                            float *data_out, int n_data_in, float *timeval_out,
                            unsigned char *fullbuffer
                 ){

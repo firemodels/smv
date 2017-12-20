@@ -498,7 +498,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
     &ib->tmin, &ib->tmax, endian_data);
 
-  file_size= GetFILESize(file);
+  file_size= GetFileSizeSMV(file);
 
   if(meshi->isolevels==NULL){
     ReadIso("",ifile,UNLOAD,NULL,&error);
@@ -807,7 +807,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
           v1 = asurface->iso_vertices + ivert;
           ReduceToUnit(vertnorms+3*ivert);
-          v1->cnorm=(unsigned char)getnormalindex(sphereinfo,vertnorms+3*ivert);
+          v1->cnorm=(unsigned char)GetNormalIndex(sphereinfo,vertnorms+3*ivert);
         }
         FREEMEMORY(vertnorms);
       }
@@ -977,15 +977,15 @@ void DrawIsoOrig(int tranflag){
         v3 = tri->v3;
 
         glTexCoord1f(v1->ctexturecolor/255.0);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v1->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v1->cnorm));
         glVertex3fv(v1->xyz);
 
         glTexCoord1f(v2->ctexturecolor/255.0);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v2->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v2->cnorm));
         glVertex3fv(v2->xyz);
 
         glTexCoord1f(v3->ctexturecolor/255.0);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v3->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v3->cnorm));
         glVertex3fv(v3->xyz);
       }
     }
@@ -1001,15 +1001,15 @@ void DrawIsoOrig(int tranflag){
         v3 = tri->v3;
 
         glColor4fv(v1->color);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v1->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v1->cnorm));
         glVertex3fv(v1->xyz);
 
         glColor4fv(v2->color);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v2->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v2->cnorm));
         glVertex3fv(v2->xyz);
 
         glColor4fv(v3->color);
-        glNormal3fv(getnormalvectorptr(sphereinfo,v3->cnorm));
+        glNormal3fv(GetNormalVectorPtr(sphereinfo,v3->cnorm));
         glVertex3fv(v3->xyz);
       }
     }

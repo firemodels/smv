@@ -632,8 +632,8 @@ int GetColorbarIndex(int flag, int x, int y){
 }
 
 #ifdef pp_GLUTGET
-#define GLUTGETMODIFIERS glutGetModifiersNew
-int glutGetModifiersNew(void){
+#define GLUTGETMODIFIERS GlutGetModifiersNew
+int GlutGetModifiersNew(void){
   int modifier;
 
   switch(alt_ctrl_key_state){
@@ -1772,7 +1772,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'i':
       if(cache_qdata==1){
-        handleiso();
+        HandleIso();
         return;
       }
       break;
@@ -2408,9 +2408,9 @@ void UpdateClipPlanes(void){
   }
 }
 
-/* ------------------ handleiso ------------------------ */
+/* ------------------ HandleIso ------------------------ */
 
-void handleiso(void){
+void HandleIso(void){
     if(ReadPlot3dFile==1){
       UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
@@ -2719,9 +2719,9 @@ void HandleMoveKeys(int  key){
   }
 }
 
-/* ------------------ gmod ------------------------ */
+/* ------------------ GMod ------------------------ */
 
-float gmod(float x, float y){
+float GMod(float x, float y){
   float returnval;
 
   if(y==0.0)return 0.0;
@@ -2767,7 +2767,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             global_times[nglobal_times-1]>global_times[0]&&
             (elapsed_time>global_times[nglobal_times-1]||elapsed_time<0.0)
             ){
-            elapsed_time = gmod(elapsed_time,global_times[nglobal_times-1]-global_times[0])+global_times[0];
+            elapsed_time = GMod(elapsed_time,global_times[nglobal_times-1]-global_times[0])+global_times[0];
           }
           itimes = ISearch(global_times,nglobal_times,elapsed_time,itimes);
         }
@@ -2850,7 +2850,7 @@ void SetScreenSize(int *width, int *height){
 void ReshapeCB(int width, int height){
   if(disable_reshape==1)return;
   updatemenu=1;
-  window_aspect_ratio = (float)width/(float)height;
+  window_aspect_ratio = MAX((float)width,1.0)/MAX((float)height,1.0);
   if(window_aspect_ratio<1.0)window_aspect_ratio=1.0/window_aspect_ratio;
   SetScreenSize(&width,&height);
   windowresized=1;

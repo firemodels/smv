@@ -284,6 +284,20 @@ void UpdatePlotxyzAll(void){
   float *xp, *yp, *zp;
   float dxyz_min=100000.0;
 
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt, *dxyz;
+
+    meshi = meshinfo + i;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    dxyz = meshi->dxyz;
+    dxyz[0] = ABS(xplt[1] - xplt[0]);
+    dxyz[1] = ABS(yplt[1] - yplt[0]);
+    dxyz[2] = ABS(zplt[1] - zplt[0]);
+  }
+
   FREEMEMORY(plotx_all);
   FREEMEMORY(ploty_all);
   FREEMEMORY(plotz_all);
@@ -1195,6 +1209,9 @@ void GetSmokeDir(float *mm){
     meshj->dx=meshj->xplt_orig[1]-meshj->xplt_orig[0];
     meshj->dy=meshj->yplt_orig[1]-meshj->yplt_orig[0];
     meshj->dz=meshj->zplt_orig[1]-meshj->zplt_orig[0];
+    meshj->dxyz[0] = meshj->dx;
+    meshj->dxyz[1] = meshj->dy;
+    meshj->dxyz[2] = meshj->dz;
     meshj->dxy=meshj->dx*meshj->dx+meshj->dy*meshj->dy;
     meshj->dxy=sqrt(meshj->dxy)/2.0;
     meshj->dxz=meshj->dx*meshj->dx+meshj->dz*meshj->dz;

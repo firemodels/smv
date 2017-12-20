@@ -877,7 +877,7 @@ void ReadPartHistogram(partdata *parti){
     fread(compressed_buckets, sizeof(unsigned char), ncompressed_buckets, STREAM_HIST);
 
     nbuffer = (1.02*nbucketsmax + 600) * sizeof(int);
-    uncompress_zlib((unsigned char *)buckets, &nbuffer, compressed_buckets, ncompressed_buckets);
+    UnCompressZLIB((unsigned char *)buckets, &nbuffer, compressed_buckets, ncompressed_buckets);
     nbuckets = nbuffer / 4;
 
     histi = parti->histograms[i];
@@ -917,7 +917,7 @@ void WritePartHistogram(partdata *parti){
     }
 
     ncompressed_buckets = 1.02*ncompressed_bucketsMAX + 600;
-    compress_zlib(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets * sizeof(unsigned int));
+    CompressZLIB(compressed_buckets, &ncompressed_buckets, (unsigned char *)histi->buckets, histi->nbuckets * sizeof(unsigned int));
 
     fwrite(&ncompressed_buckets, sizeof(uLongf), 1, STREAM_HIST);
     fwrite(compressed_buckets, sizeof(unsigned char), ncompressed_buckets, STREAM_HIST);
@@ -1073,7 +1073,7 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *re
   PART5FILE=fopen(reg_file,"rb");
   if(PART5FILE==NULL)return;
 
-  if(file_size!=NULL)*file_size= GetFILESize(reg_file);
+  if(file_size!=NULL)*file_size= GetFileSizeSMV(reg_file);
   FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
 

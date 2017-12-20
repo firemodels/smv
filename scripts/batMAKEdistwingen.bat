@@ -1,4 +1,5 @@
 @echo off
+set SMVEDITION=SMV6
 
 :: Windows batch file to build a smokeview bundle
 
@@ -109,7 +110,7 @@ wzzip -a -r -P %zipbase%.zip * >Nul
 echo.
 echo --- creating installer ---
 echo.
-wzipse32 %zipbase%.zip -runasadmin -d "C:\Program Files\firemodels\%smv_edition%" -c wrapup_smv_install.bat
+wzipse32 %zipbase%.zip -runasadmin -d "C:\Program Files\firemodels\%SMVEDITION%" -c wrapup_smv_install.bat
 
 hashfile %zipbase%.exe >  hash\%zipbase%.exe.sha1
 cd hash
