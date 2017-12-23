@@ -2081,4 +2081,124 @@ void DrawColorbarRegLabels(void){
   }
 }
 
+/* ------------------ Rgb2Hsl ------------------------ */
+
+void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
+  // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
+  float cmin, cmax, r, g, b;
+  float luminance, saturation, hue;
+  int maxmode;
+  float cmaxmcmin;
+
+  r = rgbvals[0];
+  g = rgbvals[1];
+  b = rgbvals[2];
+  if(flag==1){
+    r /= 255.0;
+    g /= 255.0;
+    b /= 255.0;
+  }
+
+  cmin = MIN(r, MIN(g, b));
+  cmax = MAX(r, MAX(g, b));
+  cmaxmcmin = cmax-cmin;
+  if(r>=MAX(g, b))maxmode = 0;
+  if(g>=MAX(r, b))maxmode = 1;
+  if(b>=MAX(r, g))maxmode = 2;
+
+  luminance = (cmin+cmax)/2.0;
+  if(cmaxmcmin==0.0||luminance==0.0){
+    saturation = 0.0;
+    hue = 0.0;
+  }
+  else{
+    if(luminance>0.0&&luminance<0.5){
+      saturation = (cmax-cmin)/(2.0*luminance);
+    }
+    else if(luminance>=0.5){
+      float denom;
+
+      denom = 2.0-2.0*luminance;
+      if(denom!=0.0){
+        saturation = (cmax-cmin)/denom;
+      }
+      else{
+        saturation = 1.0;
+        hue = 0.0;
+      }
+    }
+  }
+
+  if(cmaxmcmin>0.0&&luminance!=0.0&&luminance!=1.0){
+    if(maxmode==0){
+      hue = (g-b)/cmaxmcmin;
+    }
+    else if(maxmode==1){
+      hue = 2.0+(b-r)/cmaxmcmin;
+    }
+    else{
+      hue = 4.0+(r-g)/cmaxmcmin;
+    }
+    hue *= 60.0;
+    if(hue<0.0)hue += 360.0;
+  }
+  else{
+    hue = 0.0;
+  }
+  hslvals[0] = hue;
+  hslvals[1] = saturation;
+  hslvals[2] = luminance;
+}
+
+/* ------------------ Hsl2Rgb ------------------------ */
+
+void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
+  // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
+
+  float hue, saturation, luminance;
+  float r, g, b;
+  float temp_1, temp_2;
+  float temp_r, temp_g, temp_b;
+
+  hue = ABS(hslvals[0]);
+  saturation = ABS(hslvals[1]);
+  luminance = ABS(hslvals[2]);
+  if(saturation==0.0){
+    r = saturation;
+    g = saturation;
+    b = saturation;
+    if(flag==1.0){
+      r *= 255.0;
+      g *= 255.0;
+      b *= 255.0;
+    }
+    rgbvals[0] = r;
+    rgbvals[1] = b;
+    rgbvals[2] = g;
+    return;
+  }
+  if(luminance<0.5){
+    temp_1 = luminance*(1.0+saturation);
+  }
+  else{
+    temp_1 = luminance+saturation-luminance*saturation;
+  }
+  temp_2 = 2.0*luminance-temp_1;
+
+  hue /= 360.0;
+
+  temp_r = hue+1.0/3.0;
+  if(temp_r<0.0)temp_r += 1.0;
+  if(temp_r>1.0)temp_r -= 1.0;
+
+  temp_g = hue;
+  if(temp_g<0.0)temp_g += 1.0;
+  if(temp_g>1.0)temp_g -= 1.0;
+
+  temp_b = hue-1.0/3.0;
+  if(temp_b<0.0)temp_b += 1.0;
+  if(temp_b>1.0)temp_b -= 1.0;
+
+}
+
 
