@@ -429,6 +429,10 @@ extern "C" void UpdateHistogramType(void){
 
 extern "C" void UpdateShowSliceInObst(void){
   RADIO_show_slice_in_obst->set_int_val(show_slice_in_obst);
+  if(show_slice_in_obst!=show_slice_in_obst_old){
+    SliceBoundCB(FILEUPDATE);
+    show_slice_in_obst_old = show_slice_in_obst;
+  }
 }
 
 /* ------------------ UpdateIsoColorlevel ------------------------ */
@@ -2976,6 +2980,10 @@ extern "C" void SliceBoundCB(int var){
     return;
   }
   if(var==SLICE_IN_OBST){
+    if(show_slice_in_obst!=show_slice_in_obst_old){
+      SliceBoundCB(FILEUPDATE);
+      show_slice_in_obst_old = show_slice_in_obst;
+    }
     return;
   }
   if(var==DATA_transparent){

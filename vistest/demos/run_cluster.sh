@@ -1,5 +1,5 @@
 #!/bin/bash
-QFDS="qfds.sh -p 8 -e ../../../fds/Build/mpi_intel_linux_64ib/fds_mpi_intel_linux_64ib"
+QFDS="qfds.sh -I -p 8 -e ../../../fds/Build/impi_intel_linux_64/fds_impi_intel_linux_64"
 
 $QFDS cluster1.fds
 $QFDS cluster1b.fds
