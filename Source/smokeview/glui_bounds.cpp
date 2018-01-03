@@ -2170,6 +2170,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time,"",false);
   SPINNER_timebounds=glui_bounds->add_spinner_to_panel(PANEL_time1a,_d("Time:"),GLUI_SPINNER_FLOAT,&glui_time);
+  glui_bounds->add_spinner_to_panel(PANEL_time1a, _d("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
   glui_bounds->add_column_to_panel(PANEL_time1a,false);
   SPINNER_timebounds->set_float_limits(0.0,3600.0*24);
   BUTTON_SETTIME=glui_bounds->add_button_to_panel(PANEL_time1a,_d("Set"),SET_TIME,TimeBoundCB);
