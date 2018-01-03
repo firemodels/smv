@@ -15,13 +15,21 @@ void UpdateTimeLabels(void){
   if(global_times!=NULL)time0 = timeoffset + global_times[itimes];
   if(vishmsTimelabel==1){
     int hour, min, sec,sec10;
+    char sign[2];
 
+    if(time0 < 0){
+      strcpy(sign,"-");
+      time0 = ABS(time0);
+    }
+    else{
+      strcpy(sign," ");
+    }
     hour = time0/3600;
     min = (int)(time0/60.0 - 60.0*hour);
     sec10 = (int)(10*(time0 -  60.0*min - 3600.0*hour));
     sec = sec10/10;
     sec10 = sec10 - 10*sec;
-    sprintf(timelabel,"  %i:%.2i:%.2i.%i",hour,min,sec,sec10);
+    sprintf(timelabel,"  %s%i:%.2i:%.2i.%i", sign,hour, min, sec, sec10);
   }
   else{
     float dt;

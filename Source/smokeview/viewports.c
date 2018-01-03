@@ -243,9 +243,9 @@ void GetViewportInfo(void){
   VP_scene.text_width = text_width;
   VP_scene.left=titlesafe_offset;
   VP_scene.down=titlesafe_offset+MAX(VP_timebar.height,VP_info.height);
-  VP_scene.width=screenWidth-2*titlesafe_offset-VP_colorbar.width;
+  VP_scene.width=MAX(1,screenWidth-2*titlesafe_offset-VP_colorbar.width);
   if(dohist==1)VP_scene.width+=colorbar_label_width/2;
-  VP_scene.height=screenHeight-MAX(VP_timebar.height,VP_info.height)-VP_title.height - 2*titlesafe_offset;
+  VP_scene.height=MAX(1,screenHeight-MAX(VP_timebar.height,VP_info.height)-VP_title.height - 2*titlesafe_offset);
   VP_scene.right = VP_scene.left + VP_scene.width;
   VP_scene.top = VP_scene.down + VP_scene.height;
 

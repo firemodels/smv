@@ -1267,7 +1267,7 @@ SVEXTERN float eye_xyz0[3];
 SVEXTERN float start_xyz0[3];
 SVEXTERN int glui_move_mode;
 
-SVEXTERN float timeoffset;
+SVEXTERN float SVDECL(timeoffset,0.0);
 SVEXTERN int npartpoints, npartframes;
 SVEXTERN float xslicemid, yslicemid, zslicemid;
 SVEXTERN float delx;
