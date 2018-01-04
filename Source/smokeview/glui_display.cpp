@@ -66,6 +66,8 @@ GLUI_Spinner *SPINNER_scaled_font2d_thickness=NULL;
 GLUI_Spinner *SPINNER_northangle_position_x = NULL;
 GLUI_Spinner *SPINNER_northangle_position_y = NULL;
 GLUI_Spinner *SPINNER_northangle_position_z = NULL;
+GLUI_Spinner *SPINNER_sliceoffset_factor=NULL;
+GLUI_Spinner *SPINNER_ventoffset_factor=NULL;
 
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
@@ -142,6 +144,8 @@ GLUI_Panel *PANEL_transparency = NULL;
 GLUI_Panel *PANEL_font2d=NULL;
 GLUI_Panel *PANEL_font3d=NULL;
 GLUI_Panel *PANEL_LB_tick = NULL;
+GLUI_Panel *PANEL_linewidth = NULL;
+GLUI_Panel *PANEL_offset = NULL;
 
 GLUI_RadioGroup *RADIO2_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
@@ -163,6 +167,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define COLORBAR_EXTREME_RGB 15
 #define COLORBAR_EXTREME 16
 #define FLIP 19
+#define APPLY_VENTOFFSET 20
 
 #define LB_LIST 0
 #define LB_ADD 1
@@ -520,14 +525,19 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   PANEL_gen3=glui_labels->add_panel_to_panel(ROLLOUT_general,"",GLUI_PANEL_NONE);
 
-  CHECKBOX_labels_flip=glui_labels->add_checkbox_to_panel(PANEL_gen3,_d("Flip background"),&background_flip,LABELS_flip,LabelsCB);
-  CHECKBOX_labels_hms=glui_labels->add_checkbox_to_panel(PANEL_gen3,_d("hms time"),&vishmsTimelabel,LABELS_HMS,LabelsCB);
-  SPINNER_linewidth=glui_labels->add_spinner_to_panel(PANEL_gen3,"blockage line width",GLUI_SPINNER_FLOAT,&linewidth);
+  PANEL_linewidth=glui_labels->add_panel_to_panel(PANEL_gen3,"line width");
+  SPINNER_linewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,"blockage",GLUI_SPINNER_FLOAT,&linewidth);
   SPINNER_linewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
-  SPINNER_gridlinewidth=glui_labels->add_spinner_to_panel(PANEL_gen3,"grid line width",GLUI_SPINNER_FLOAT,&gridlinewidth);
+  SPINNER_gridlinewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,"grid",GLUI_SPINNER_FLOAT,&gridlinewidth);
   SPINNER_gridlinewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
-  SPINNER_ticklinewidth = glui_labels->add_spinner_to_panel(PANEL_gen3, "tick line width", GLUI_SPINNER_FLOAT, &ticklinewidth);
+  SPINNER_ticklinewidth = glui_labels->add_spinner_to_panel(PANEL_linewidth, "tick", GLUI_SPINNER_FLOAT, &ticklinewidth);
   SPINNER_ticklinewidth->set_float_limits(1.0, 10.0, GLUI_LIMIT_CLAMP);
+  PANEL_offset=glui_labels->add_panel_to_panel(PANEL_gen3,"offset");
+  SPINNER_ventoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,"vent",GLUI_SPINNER_FLOAT,&ventoffset_factor,APPLY_VENTOFFSET,LabelsCB);
+  SPINNER_ventoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
+  SPINNER_sliceoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,"slice",GLUI_SPINNER_FLOAT,&sliceoffset_factor);
+  SPINNER_sliceoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
+
   if(nzoneinfo > 0){
     SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);
     SPINNER_zone_hvac_diam->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
@@ -543,6 +553,8 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   glui_labels->add_column_to_panel(PANEL_gen3,false);
 
+  CHECKBOX_labels_flip = glui_labels->add_checkbox_to_panel(PANEL_gen3, _d("Flip background"), &background_flip, LABELS_flip, LabelsCB);
+  CHECKBOX_labels_hms = glui_labels->add_checkbox_to_panel(PANEL_gen3, _d("hms time"), &vishmsTimelabel, LABELS_HMS, LabelsCB);
   CHECKBOX_label_1=glui_labels->add_checkbox_to_panel(PANEL_gen3,_d("Fast blockage drawing"),&use_new_drawface,LABELS_drawface,LabelsCB);
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_d("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,LabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_d("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,LabelsCB);
@@ -898,7 +910,11 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
-    case FLIP:
+  case APPLY_VENTOFFSET:
+    UpdateVentOffset();
+    updatefaces=1;
+    break;
+  case FLIP:
       colorbarflip = 1 - colorbarflip;
       ColorbarMenu(COLORBAR_FLIP);
       break;

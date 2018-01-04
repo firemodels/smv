@@ -2236,6 +2236,21 @@ void BackupBlockage(blockagedata *bc){
   }
 }
 
+/* ------------------ UpdateVentOffset ------------------------ */
+
+void UpdateVentOffset(void){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->vent_offset[XXX] = ventoffset_factor*(meshi->xplt[1] - meshi->xplt[0]);
+    meshi->vent_offset[YYY] = ventoffset_factor*(meshi->yplt[1] - meshi->yplt[0]);
+    meshi->vent_offset[ZZZ] = ventoffset_factor*(meshi->zplt[1] - meshi->zplt[0]);
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2749,15 +2764,7 @@ void UpdateMeshCoords(void){
       vi->zvent2plot=NORMALIZE_Z(offset[ZZZ]+vi->zvent2);
     }
   }
-
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi=meshinfo + i;
-    meshi->vent_offset[XXX] = ventoffset_factor*(meshi->xplt[1]-meshi->xplt[0]);
-    meshi->vent_offset[YYY] = ventoffset_factor*(meshi->yplt[1]-meshi->yplt[0]);
-    meshi->vent_offset[ZZZ] = ventoffset_factor*(meshi->zplt[1]-meshi->zplt[0]);
-  }
+  UpdateVentOffset();
   if(nsmoke3dinfo>0)NewMemory((void **)&smoke3dinfo_sorted,nsmoke3dinfo*sizeof(smoke3ddata *));
   NewMemory((void **)&meshvisptr,nmeshes*sizeof(int));
   for(i=0;i<nmeshes;i++){
