@@ -1835,7 +1835,6 @@ void InitVars(void){
   start_xyz0[2]=0.0;
   glui_move_mode=-1;
 
-  timeoffset=0.0;
   update_tour_list =0;
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
