@@ -1,5 +1,7 @@
 #!/bin/bash
-QFDS="qfds.sh -I -p 8 -e ../../../fds/Build/impi_intel_linux_64/fds_impi_intel_linux_64"
+QFDS="../../../fds/Utilities/Scripts/qfds.sh -I "
 
-$QFDS chassis.fds
-$QFDS cluster1.fds
+#$QFDS -p 4  chassis1.fds
+#$QFDS -p 32 chassis2.fds
+#$QFDS -p 16 cluster1.fds
+$QFDS -p 128 -n 8 cluster2.fds
