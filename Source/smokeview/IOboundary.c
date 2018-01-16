@@ -1297,7 +1297,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int local_first,nsize,iblock;
   int npatchvals;
   char patchcsvfile[1024];
-  int newpatch=1;
   int framestart;
 
   int nn;
@@ -1329,7 +1328,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
 
-  if(meshi->patchfilenum != -1 && meshi->patchfilenum == filenum)newpatch = 0;
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
 #endif

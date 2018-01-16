@@ -580,9 +580,10 @@ void _CheckMemory(void){
 void _CheckMemoryNOTHREAD(void){
   blockinfo *pbi;
   if(checkmemoryflag==0)return;
-  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
-  {
-  if(sizeofDebugByte!=0)ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
+    if(sizeofDebugByte!=0){
+      ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    }
   }
   return;
 }
@@ -623,7 +624,9 @@ void FreeBlockInfo(bbyte *pbToFree){
     pbiPrev = pbi;
   }
   ASSERT(pbi != NULL);
-  if(sizeofDebugByte!=0)ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  if(sizeofDebugByte!=0){
+    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  }
   free(pbi);
 }
 
@@ -648,7 +651,9 @@ size_t sizeofBlock(bbyte *pb){
 
   pbi = GetBlockInfo(pb);
   ASSERT(pb==pbi->pb);
-  if(sizeofDebugByte!=0)ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  if(sizeofDebugByte!=0){
+    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  }
   return(pbi->size);
 }
 
@@ -665,7 +670,9 @@ mallocflag _ValidPointer(void *pv, size_t size){
 
   ASSERT(fPtrLessEq(pb+size,pbi->pb + pbi->size));
 
-  if(sizeofDebugByte!=0)ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  if(sizeofDebugByte!=0){
+    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+  }
   return(1);
 }
 
