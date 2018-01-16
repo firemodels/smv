@@ -22,12 +22,10 @@
 module cio
 #ifdef pp_INTEL
 use ifport, only: seek_set, seek_cur
-#endif
-public ffseek, seek_set, seek_cur
-
-#ifndef pp_FSEEK
+#else
 integer, parameter :: seek_set=0, seek_cur=1
 #endif
+public ffseek, seek_set, seek_cur
 
 contains
 

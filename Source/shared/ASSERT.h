@@ -13,7 +13,7 @@
 
 ASSERT_EXTERN void _Assert(char *file, unsigned linenumber);
 ASSERT_EXTERN void _WAssert(char *comment, char *file, unsigned linenumber);
-#define ASSERT(f) if(f){}else{_Assert(__FILE__,__LINE__);}
+#define ASSERT(f) if((f)){}else{_Assert(__FILE__,__LINE__);}
 #else
   #define ASSERT(f)
 #endif
