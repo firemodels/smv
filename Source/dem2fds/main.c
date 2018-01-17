@@ -27,6 +27,9 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  dem2fds [options] casename.in\n");
   fprintf(stdout, "  -dir dir  - directory containing map and elevation files\n");
   fprintf(stdout, "  -elevdir dir - directory containing elevation files (if different than -dir directory)\n");
+#ifdef pp_CSVF
+  fprintf(stdout, "  -csvf  file  - obtain elevations from a spreadsheet file\n");
+#endif
   fprintf(stdout, "  -geom     - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst     - represent terrain using &OBST keywords \n");
   UsageCommon(HELP_SUMMARY);
@@ -58,6 +61,9 @@ int main(int argc, char **argv){
   strcpy(file_default, "terrain");
   strcpy(image_dir, ".");
   strcpy(elev_dir, "");
+#ifdef pp_CSVF
+  strcpy(csv_file, "");
+#endif
   strcpy(surf_id, "surf1");
   strcpy(matl_id, "matl1");
 
@@ -140,6 +146,18 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
+#ifdef pp_CSCF
+      else if(strncmp(arg, "-csvf", 5)==0) {
+        i++;
+        if(FILE_EXISTS(argv[i])==YES) {
+          strcpy(csv_file, argv[i]);
+        }
+        else {
+          fprintf(stderr, "***error: spreadsheet file %s does not exist or cannot be accessed\n", argv[i]);
+          fatal_error = 1;
+        }
+      }
+#endif
       else if(strncmp(arg, "-elevs", 6) == 0 ) {
         elev_file = 1;
       }
