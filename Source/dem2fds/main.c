@@ -146,7 +146,7 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-#ifdef pp_CSCF
+#ifdef pp_CSVF
       else if(strncmp(arg, "-csvf", 5)==0) {
         i++;
         if(FILE_EXISTS(argv[i])==YES) {
