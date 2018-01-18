@@ -4,4 +4,5 @@ directory=$1
 host=$2
 
 cd ~/$directory
-git describe --dirty 
+
+git branch
