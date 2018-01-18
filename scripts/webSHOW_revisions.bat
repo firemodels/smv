@@ -26,6 +26,8 @@ cd %svn_root%\fds
 echo Windows
 git describe --dirty
 echo.
+echo branches:
+git branch
 
 set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
