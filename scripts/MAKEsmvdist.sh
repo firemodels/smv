@@ -23,6 +23,8 @@ if [ "`uname`" == "Darwin" ]
 then
   platform="osx"
   platform2="OSX"
+else
+  INTELLIBDIR=fire-notes/INSTALL/INTEL/INTEL_17u4/LIB
 fi
 
 SCP ()
@@ -104,18 +106,21 @@ mkdir -p $PLATFORMDIR/Documentation
 echo ""
 echo "---- copying files ----"
 echo ""
-CP $FORBUNDLE objects.svo $PLATFORMDIR/bin objects.svo
-CP $FORBUNDLE smokeview.ini $PLATFORMDIR/bin smokeview.ini
 CPDIR $FORBUNDLE/textures $PLATFORMDIR/bin/textures
+
 cp $FORBUNDLE/*.po $PLATFORMDIR/bin/.
+
+CP $FORBUNDLE objects.svo   $PLATFORMDIR/bin objects.svo
+CP $FORBUNDLE smokeview.ini $PLATFORMDIR/bin smokeview.ini
 CP $FORBUNDLE volrender.ssf $PLATFORMDIR/bin volrender.ssf
-SCP $PLATFORMHOST $BACKGROUNDDIR background $PLATFORMDIR/bin background
-SCP $PLATFORMHOST $SMVDIR smokeview_${platform}_${TEST}64 $PLATFORMDIR/bin smokeview
-SCP $PLATFORMHOST $DEM2FDSDIR dem2fds_${platform}_64 $PLATFORMDIR/bin dem2fds
-SCP $PLATFORMHOST $SMDDIR smokediff_${platform}_64 $PLATFORMDIR/bin smokediff
-SCP $PLATFORMHOST $SMZDIR smokezip_${platform}_64 $PLATFORMDIR/bin smokezip
-SCP $PLATFORMHOST $WIND2FDSDIR wind2fds_${platform}_64 $PLATFORMDIR/bin wind2fds
-SCP $PLATFORMHOST $HASHFILEDIR hashfile_${platform}_64 $PLATFORMDIR/bin hashfile
+
+SCP $PLATFORMHOST $BACKGROUNDDIR background                      $PLATFORMDIR/bin background
+SCP $PLATFORMHOST $SMVDIR        smokeview_${platform}_${TEST}64 $PLATFORMDIR/bin smokeview
+SCP $PLATFORMHOST $DEM2FDSDIR    dem2fds_${platform}_64          $PLATFORMDIR/bin dem2fds
+SCP $PLATFORMHOST $SMDDIR        smokediff_${platform}_64        $PLATFORMDIR/bin smokediff
+SCP $PLATFORMHOST $SMZDIR        smokezip_${platform}_64         $PLATFORMDIR/bin smokezip
+SCP $PLATFORMHOST $WIND2FDSDIR   wind2fds_${platform}_64         $PLATFORMDIR/bin wind2fds
+SCP $PLATFORMHOST $HASHFILEDIR   hashfile_${platform}_64         $PLATFORMDIR/bin hashfile
 
 CURDIR=`pwd`
 cd $PLATFORMDIR/bin

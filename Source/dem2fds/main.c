@@ -146,7 +146,7 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-#ifdef pp_CSCF
+#ifdef pp_CSVF
       else if(strncmp(arg, "-csvf", 5)==0) {
         i++;
         if(FILE_EXISTS(argv[i])==YES) {
@@ -197,8 +197,18 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
-  if(GetElevations(casename,&fds_elevs) == 1) {
+#ifdef pp_CSVFILE
+  if(strcmp(csv_file, "")==0){
+    if(GetElevations(casename, &fds_elevs)==1) {
+      GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+    }
+  }
+  else{
+  }
+#else
+  if(GetElevations(casename, &fds_elevs)==1) {
     GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
   }
+#endif
   return 0;
 }
