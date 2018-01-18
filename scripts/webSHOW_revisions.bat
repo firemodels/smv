@@ -32,6 +32,7 @@ git branch
 set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
+echo.
 echo Linux
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/fds %linux_hostname%
 echo.
@@ -48,11 +49,17 @@ cd %svn_root%\smv
 echo Windows
 git describe --dirty
 echo.
+echo branches:
+git branch
 
+echo.
 echo Linux
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/smv %linux_hostname%
 echo.
+echo branches:
+git branch
 
+echo.
 echo OSX
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
@@ -64,7 +71,10 @@ cd %svn_root%\webpages
 echo Windows
 git describe --dirty
 echo.
+echo branches:
+git branch
 
+echo.
 echo Linux
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/webpages %linux_hostname%
 echo.
