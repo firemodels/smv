@@ -197,6 +197,7 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
+#ifdef pp_CSVFILE
   if(strcmp(csv_file, "")==0){
     if(GetElevations(casename, &fds_elevs)==1) {
       GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
@@ -204,5 +205,10 @@ int main(int argc, char **argv){
   }
   else{
   }
+#else
+  if(GetElevations(casename, &fds_elevs)==1) {
+    GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+  }
+#endif
   return 0;
 }
