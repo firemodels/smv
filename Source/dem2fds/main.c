@@ -197,8 +197,12 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
-  if(GetElevations(casename,&fds_elevs) == 1) {
-    GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+  if(strcmp(csv_file, "")==0){
+    if(GetElevations(casename, &fds_elevs)==1) {
+      GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+    }
+  }
+  else{
   }
   return 0;
 }
