@@ -110,9 +110,6 @@ CPDIR $FORBUNDLE/textures $PLATFORMDIR/bin/textures
 
 cp $FORBUNDLE/*.po $PLATFORMDIR/bin/.
 
-if [ "$INTELLIBDIR" != "" ]; then
-  CP $HOME/$INTELLIBDIR libifport.so $PLATFORMDIR/bin libifport.so
-fi
 CP $FORBUNDLE objects.svo   $PLATFORMDIR/bin objects.svo
 CP $FORBUNDLE smokeview.ini $PLATFORMDIR/bin smokeview.ini
 CP $FORBUNDLE volrender.ssf $PLATFORMDIR/bin volrender.ssf
