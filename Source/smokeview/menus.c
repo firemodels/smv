@@ -4020,10 +4020,9 @@ void LoadMultiVSliceMenu(int value){
     script_multivslice=0;
   }
   else if(value<=-1000){ // load multi v slice
-    int submenutype, last_slice, dir, errorcode;
+    int submenutype, dir;
     char *submenulabel;
     slicedata *slicei;
-    multivslicedata *mvslicei;
 
     value = -(1000 + value);
     submenutype=value/4-1;
@@ -4034,7 +4033,6 @@ void LoadMultiVSliceMenu(int value){
     submenulabel = slicei->label.longlabel;
     for(i = 0; i<nmultivsliceinfo; i++){
       char *longlabel;
-      int set_slicecolor;
       multivslicedata *mvslicei;
       slicedata *slicej;
       vslicedata *vslicej;
