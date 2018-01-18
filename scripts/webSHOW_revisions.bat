@@ -27,7 +27,7 @@ echo Windows
 git describe --dirty
 echo.
 
-set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
+set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo Linux
