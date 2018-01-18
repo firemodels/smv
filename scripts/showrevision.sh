@@ -5,4 +5,6 @@ host=$2
 
 cd ~/$directory
 git describe --dirty 
+
+echo branches:
 git branch
