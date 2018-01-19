@@ -19,8 +19,7 @@ goto:eof
 call %envfile%
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** fds ***
+echo ---------------------------*** fds ***--------------------------------
 %svn_drive%
 cd %svn_root%\fds
 echo Windows
@@ -30,44 +29,42 @@ set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
-echo Linux %linux_hostname%
+echo Linux: %linux_hostname%
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/fds %linux_hostname%
 echo.
 
-echo OSX %osx_hostname%
+echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 echo.
 
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** smv ***
+echo ---------------------------*** smv ***--------------------------------
 cd %svn_root%\smv
 echo Windows
 git describe --dirty
 
 echo.
-echo Linux %linux_hostname%
+echo Linux: %linux_hostname%
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/smv %linux_hostname%
 
 echo.
-echo OSX %osx_hostname%
+echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** webpages ***
+echo ---------------------------*** web ***--------------------------------
 cd %svn_root%\webpages
 echo Windows
 git describe --dirty
 
 echo.
-echo Linux %linux_hostname%
+echo Linux: %linux_hostname%
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/webpages %linux_hostname%
 echo.
 
-echo OSX %osx_hostname%
+echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
 echo.
 pause
