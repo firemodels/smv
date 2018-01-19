@@ -18,7 +18,7 @@ if exist %userprofile%\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="16-Dec-2017"
+set smvlogdate="18-Jan-2017"
 
 :: ---- repo locations ----
 
