@@ -30,11 +30,11 @@ set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
-echo Linux
+echo Linux %linux_hostname%
 plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds %linux_hostname%
 echo.
 
-echo OSX
+echo OSX %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 echo.
 
@@ -47,11 +47,11 @@ echo Windows
 git branch
 
 echo.
-echo Linux
+echo Linux %linux_hostname%
 plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv %linux_hostname%
 
 echo.
-echo OSX
+echo OSX %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
@@ -63,11 +63,11 @@ echo Windows
 git branch
 
 echo.
-echo Linux
+echo Linux %linux_hostname%
 plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/webpages %linux_hostname%
 echo.
 
-echo OSX
+echo OSX %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
 echo.
 pause
