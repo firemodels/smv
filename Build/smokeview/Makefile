@@ -22,7 +22,7 @@ else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
 endif
-GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
@@ -295,7 +295,7 @@ gnu_linux_32 : $(obj)
 # ------------- gnu_linux_32_db ----------------
 
 gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
+gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-unknown-pragmas -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
 gnu_linux_32_db : LFLAGS    =
 gnu_linux_32_db : CC        = gcc
 gnu_linux_32_db : CPP       = g++
