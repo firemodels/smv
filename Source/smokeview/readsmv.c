@@ -4510,8 +4510,10 @@ int ReadSMV(char *file, char *file2){
        NewMemory( (void **)&slice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&vslice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&subslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&subvslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&mslice_loadstack, nsliceinfo*sizeof(int)      )==0||
+       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0||
        NewMemory( (void **)&mvslice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&vslicetypes,3*nsliceinfo*sizeof(int)    )==0){
        return 2;

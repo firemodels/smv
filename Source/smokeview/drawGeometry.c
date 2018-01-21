@@ -2088,7 +2088,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
-  ASSERT(bc!=NULL&&vi==NULL||bc==NULL&&vi!=NULL);
+  ASSERT((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
   if(bc!=NULL){
     jend=6;
     xminmax[0] = xplt[bc->ijk[IMIN]];
