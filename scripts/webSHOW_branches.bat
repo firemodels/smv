@@ -20,54 +20,51 @@ call %envfile%
 
 echo.
 echo ---------------------------*** fds ***--------------------------------
-echo.
 %svn_drive%
 cd %svn_root%\fds
-echo | set /p=Windows: 
-git describe --dirty
+echo Windows
+git branch
 
 set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.
-echo | set /p=Linux:   
-plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/fds %linux_hostname%
+echo Linux: %linux_hostname%
+plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds %linux_hostname%
 echo.
 
-echo | set /p=OSX:     
-plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/fds %osx_hostname%
+echo OSX: %osx_hostname%
+plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 echo.
 
 
 echo.
 echo ---------------------------*** smv ***--------------------------------
-echo.
 cd %svn_root%\smv
-echo | set /p=Windows: 
-git describe --dirty
+echo Windows
+git branch
 
 echo.
-echo | set /p=Linux:   
-plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/smv %linux_hostname%
+echo Linux: %linux_hostname%
+plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv %linux_hostname%
 
 echo.
-echo | set /p=OSX:     
-plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+echo OSX: %osx_hostname%
+plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
 echo.
 echo ---------------------------*** web ***--------------------------------
-echo.
 cd %svn_root%\webpages
-echo | set /p=Windows: 
-git describe --dirty
+echo Windows
+git branch
 
 echo.
-echo | set /p=Linux:   
-plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/webpages %linux_hostname%
+echo Linux: %linux_hostname%
+plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/webpages %linux_hostname%
 echo.
 
-echo | set /p=OSX:     
-plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
+echo OSX: %osx_hostname%
+plink %osx_logon% %scriptdir%/showbranch_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
 echo.
 pause

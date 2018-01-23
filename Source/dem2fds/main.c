@@ -27,9 +27,6 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  dem2fds [options] casename.in\n");
   fprintf(stdout, "  -dir dir  - directory containing map and elevation files\n");
   fprintf(stdout, "  -elevdir dir - directory containing elevation files (if different than -dir directory)\n");
-#ifdef pp_CSVF
-  fprintf(stdout, "  -csvf  file  - obtain elevations from a spreadsheet file\n");
-#endif
   fprintf(stdout, "  -geom     - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst     - represent terrain using &OBST keywords \n");
   UsageCommon(HELP_SUMMARY);
@@ -146,18 +143,6 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-#ifdef pp_CSVF
-      else if(strncmp(arg, "-csvf", 5)==0) {
-        i++;
-        if(FILE_EXISTS(argv[i])==YES) {
-          strcpy(csv_file, argv[i]);
-        }
-        else {
-          fprintf(stderr, "***error: spreadsheet file %s does not exist or cannot be accessed\n", argv[i]);
-          fatal_error = 1;
-        }
-      }
-#endif
       else if(strncmp(arg, "-elevs", 6) == 0 ) {
         elev_file = 1;
       }
@@ -197,18 +182,8 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
-#ifdef pp_CSVFILE
-  if(strcmp(csv_file, "")==0){
-    if(GetElevations(casename, &fds_elevs)==1) {
-      GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
-    }
-  }
-  else{
-  }
-#else
   if(GetElevations(casename, &fds_elevs)==1) {
-    GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+     GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
   }
-#endif
   return 0;
 }

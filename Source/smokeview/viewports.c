@@ -121,15 +121,15 @@ void GetViewportInfo(void){
   // timebar viewport dimensions
 
   doit=0;
-  if(
-    ((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1)||
-    (showtime==1&&(visFramerate==1||(vis_slice_average==1&&show_slice_average&&slice_average_flag==1))||
-    (hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)
-    )
+  if(showtime==1){
+    if(visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1)doit=1;
+    if(doit==0&&hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)doit=1;
+    if(doit==0&&visFramerate==1)doit=1;
+    if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
+  }
 #ifdef pp_memstatus
-    ||visAvailmemory==1
+  if(doit==0&&visAvailmemory==1)doit=1;
 #endif
-    )doit=1;
 
   VP_timebar.left = titlesafe_offset;
   VP_timebar.down = titlesafe_offset;

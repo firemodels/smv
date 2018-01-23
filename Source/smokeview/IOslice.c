@@ -2371,7 +2371,9 @@ void UpdateFedinfo(void){
     ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int));
     ResizeMemory((void **)&subvslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int));
     ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&vslicetypes, 3 * nsliceinfo * sizeof(int));
