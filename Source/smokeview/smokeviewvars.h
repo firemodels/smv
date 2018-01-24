@@ -1307,7 +1307,7 @@ SVEXTERN int SVDECL(*plotiso,NULL);
 SVEXTERN float SVDECL(*global_times,NULL),cputimes[20];
 SVEXTERN int cpuframe;
 
-SVEXTERN float xyzeyeorig[3],xeyedir[3], yeyedir[3], zeyedir[3];
+SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
 //#ifdef INMAIN
 //  SVEXTERN float eyzeyeorig_OLD[3]={-1.000000, -1.000000, -1.000000};
 // #else
