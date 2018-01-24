@@ -525,9 +525,9 @@ void GetZoneSmokeDir(float *mm){
   float cosdir;
   float angles[7];
 
-  xyzeyeorig[0] = -(mm[0]*mm[12]+mm[1]*mm[13]+ mm[2]*mm[14])/mscale[0];
-  xyzeyeorig[1] = -(mm[4]*mm[12]+mm[5]*mm[13]+ mm[6]*mm[14])/mscale[1];
-  xyzeyeorig[2] = -(mm[8]*mm[12]+mm[9]*mm[13]+mm[10]*mm[14])/mscale[2];
+  eye_position_fds[0] = -(mm[0]*mm[12]+mm[1]*mm[13]+ mm[2]*mm[14])/mscale[0];
+  eye_position_fds[1] = -(mm[4]*mm[12]+mm[5]*mm[13]+ mm[6]*mm[14])/mscale[1];
+  eye_position_fds[2] = -(mm[8]*mm[12]+mm[9]*mm[13]+mm[10]*mm[14])/mscale[2];
 
   for(j=0;j<nrooms;j++){
     roomdata *roomj;
@@ -536,9 +536,9 @@ void GetZoneSmokeDir(float *mm){
 
     roomj->zoneinside=0;
     if(
-      xyzeyeorig[0]>roomj->x0&&xyzeyeorig[0]<roomj->x1&&
-      xyzeyeorig[1]>roomj->y0&&xyzeyeorig[1]<roomj->y1&&
-      xyzeyeorig[2]>roomj->z0&&xyzeyeorig[2]<roomj->z1
+      eye_position_fds[0]>roomj->x0&&eye_position_fds[0]<roomj->x1&&
+      eye_position_fds[1]>roomj->y0&&eye_position_fds[1]<roomj->y1&&
+      eye_position_fds[2]>roomj->z0&&eye_position_fds[2]<roomj->z1
       ){
       for(i=-3;i<=3;i++){
         if(i==0)continue;
@@ -595,9 +595,9 @@ void GetZoneSmokeDir(float *mm){
         ASSERT(FFALSE);
         break;
       }
-      eyedir[0]=xyzeyeorig[0]-eyedir[0];
-      eyedir[1]=xyzeyeorig[1]-eyedir[1];
-      eyedir[2]=xyzeyeorig[2]-eyedir[2];
+      eyedir[0]=eye_position_fds[0]-eyedir[0];
+      eyedir[1]=eye_position_fds[1]-eyedir[1];
+      eyedir[2]=eye_position_fds[2]-eyedir[2];
       Normalize(eyedir,3);
       cosdir = (eyedir[0]*norm[0]+eyedir[1]*norm[1]+eyedir[2]*norm[2]);
       if(cosdir>1.0)cosdir=1.0;
@@ -1529,9 +1529,9 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
   alpha_min = 100000.0;
   ylay = roomi->z0 + roomi->ylay;
 
-  dx = xyz[0] - xyzeyeorig[0];
-  dy = xyz[1] - xyzeyeorig[1];
-  dz = xyz[2] - xyzeyeorig[2];
+  dx = xyz[0] - eye_position_fds[0];
+  dy = xyz[1] - eye_position_fds[1];
+  dz = xyz[2] - eye_position_fds[2];
   L = sqrt(dx*dx+dy*dy+dz*dz);
 
   alpha_ylay = (ylay - xyz[2])/dz;
@@ -1572,7 +1572,7 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
       alpha_min=alpha;
     }
   }
-  if(xyzeyeorig[2]>ylay&&xyz[2]>ylay){
+  if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
     if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
       factor_U=alpha_ylay/odu;
       factor_L=(alpha_min-alpha_ylay)/odl;
@@ -1582,15 +1582,15 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
       factor_L=0.0;
     }
   }
-  if(xyzeyeorig[2]>ylay&&xyz[2]<=ylay){
+  if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
     factor_U=0.0;
     factor_L=alpha_min/odl;
   }
-  if(xyzeyeorig[2]<=ylay&&xyz[2]>ylay){
+  if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
     factor_U=alpha_min/odu;
     factor_L=0.0;
   }
-  if(xyzeyeorig[2]<=ylay&&xyz[2]<=ylay){
+  if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
     if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
       factor_U=(alpha_min-alpha_ylay)/odu;
       factor_L=alpha_ylay/odl;
@@ -1602,19 +1602,19 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
   }
   }
   else{
-    if(xyzeyeorig[2]>ylay&&xyz[2]>ylay){
+    if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
       factor_U=1.0/odu;
       factor_L=0.0;
     }
-    if(xyzeyeorig[2]>ylay&&xyz[2]<=ylay){
+    if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
       factor_U=(1.0+alpha_ylay)/odu;
       factor_L=-alpha_ylay/odl;
     }
-    if(xyzeyeorig[2]<=ylay&&xyz[2]>ylay){
+    if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
       factor_U=-alpha_ylay/odu;
       factor_L=(1.0+alpha_ylay)/odl;
     }
-    if(xyzeyeorig[2]<=ylay&&xyz[2]<=ylay){
+    if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
       factor_U=0.0;
       factor_L=1.0/odl;
     }
@@ -1634,7 +1634,7 @@ void DrawZoneSmokeGpu(roomdata *roomi){
   int iwall;
   float dx, dy, dz;
 
-  glUniform3f(GPUzone_eyepos,xyzeyeorig[0],xyzeyeorig[1],xyzeyeorig[2]);
+  glUniform3f(GPUzone_eyepos,eye_position_fds[0],eye_position_fds[1],eye_position_fds[2]);
   glUniform1i(GPUzone_zoneinside,roomi->zoneinside);
   glUniform1f(GPUzone_xyzmaxdiff,xyzmaxdiff);
   glUniform3f(GPUzone_boxmin,roomi->x0,roomi->y0,roomi->z0);

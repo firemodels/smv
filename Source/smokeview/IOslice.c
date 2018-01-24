@@ -5969,14 +5969,24 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
 
 int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
-  meshdata *meshi, *meshj;
+  float position_i, position_j;
+  int dir;
 
   slicei = sliceinfo + *(int *)arg1;
   slicej = sliceinfo + *(int *)arg2;
-  meshi = meshinfo+slicei->blocknumber;
-  meshj = meshinfo+slicej->blocknumber;
-  if(meshi->eyedist>meshj->eyedist)return -1;
-  if(meshi->eyedist<meshj->eyedist)return 1;
+  if(slicei->idir < slicej->idir)return -1;
+  if(slicei->idir > slicej->idir)return 1;
+  dir = slicei->idir - 1;
+  position_i = slicei->xyz_min[dir];
+  position_j = slicej->xyz_min[dir];
+  if(eye_position_fds[dir] < position_i){
+    if(position_i > position_j)return -1;
+    if(position_i < position_j)return 1;
+  }
+  else{
+    if(position_i > position_j)return 1;
+    if(position_i < position_j)return -1;
+  }
   return 0;
 }
 
@@ -6099,7 +6109,7 @@ void DrawSliceFrame(){
         blend_mode=1;
         glBlendEquation(GL_MAX);
       }
-      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, xyzeyeorig, slice_normal);
+      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, eye_position_fds, slice_normal);
     }
     else{
       blend_mode = 0;

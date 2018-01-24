@@ -977,9 +977,9 @@ void GetVolSmokeDir(float *mm){
 
   if(freeze_volsmoke==1)return;
 
-  xyzeyeorig[0] = -DOT3(mm+0,mm+12)/mscale[0];
-  xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
-  xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
+  eye_position_fds[0] = -DOT3(mm+0,mm+12)/mscale[0];
+  eye_position_fds[1] = -DOT3(mm+4,mm+12)/mscale[1];
+  eye_position_fds[2] = -DOT3(mm+8,mm+12)/mscale[2];
 
   for(j=0;j<nmeshes;j++){
     meshdata *meshj;
@@ -1005,9 +1005,9 @@ void GetVolSmokeDir(float *mm){
 
     *inside=0;
     if(
-      xyzeyeorig[0]>x0&&xyzeyeorig[0]<x1&&
-      xyzeyeorig[1]>yy0&&xyzeyeorig[1]<yy1&&
-      xyzeyeorig[2]>z0&&xyzeyeorig[2]<z1
+      eye_position_fds[0]>x0&&eye_position_fds[0]<x1&&
+      eye_position_fds[1]>yy0&&eye_position_fds[1]<yy1&&
+      eye_position_fds[2]>z0&&eye_position_fds[2]<z1
       ){
       for(i=-3;i<=3;i++){
         if(i==0)continue;
@@ -1064,7 +1064,7 @@ void GetVolSmokeDir(float *mm){
         ASSERT(FFALSE);
         break;
       }
-      VEC3DIFF(eyedir,xyzeyeorig,eyedir);
+      VEC3DIFF(eyedir,eye_position_fds,eyedir);
       Normalize(eyedir,3);
       cosdir = CLAMP(DOT3(eyedir,norm),-1.0,1.0);
       cosdir=acos(cosdir)*RAD2DEG;
@@ -1142,9 +1142,9 @@ void GetVolSmokeDir(float *mm){
       vi->iwall=j;
       xyz=meshi->face_centers+facemap[j+3];
 
-      dx = xyz[0]-xyzeyeorig[0];
-      dy = xyz[1]-xyzeyeorig[1];
-      dz = xyz[2]-xyzeyeorig[2];
+      dx = xyz[0]-eye_position_fds[0];
+      dy = xyz[1]-eye_position_fds[1];
+      dz = xyz[2]-eye_position_fds[2];
       vi->dist2=dx*dx+dy*dy+dz*dz;
       vi->xyz=xyz;
       vi++;
@@ -1186,18 +1186,18 @@ void GetSmokeDir(float *mm){
   float dx, dy, dz;
   float factor;
 
-  xyzeyeorig[0] = -DOT3(mm+0,mm+12)/mscale[0];
-  xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
-  xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
+  eye_position_fds[0] = -DOT3(mm+0,mm+12)/mscale[0];
+  eye_position_fds[1] = -DOT3(mm+4,mm+12)/mscale[1];
+  eye_position_fds[2] = -DOT3(mm+8,mm+12)/mscale[2];
 
   for(j = 0;j<nmeshes;j++){
     meshdata  *meshi;
     float dx, dy, dz;
 
     meshi = meshinfo+j;
-    dx = meshi->boxmiddle_scaled[0]-xyzeyeorig[0];
-    dy = meshi->boxmiddle_scaled[1]-xyzeyeorig[1];
-    dz = meshi->boxmiddle_scaled[2]-xyzeyeorig[2];
+    dx = meshi->boxmiddle_scaled[0]-eye_position_fds[0];
+    dy = meshi->boxmiddle_scaled[1]-eye_position_fds[1];
+    dz = meshi->boxmiddle_scaled[2]-eye_position_fds[2];
     meshi->eyedist = sqrt(dx*dx+dy*dy+dz*dz);
   }
 

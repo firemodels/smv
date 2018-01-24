@@ -1208,7 +1208,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       }
 #endif
     }
-    else if(showslice==1&&showall_3dslices==1){
+    else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){
       GetSmokeDir(modelview_scratch);
     }
     if(nface_transparent>0&&sort_transparent_faces==1)SortTransparentFaces(modelview_scratch);
