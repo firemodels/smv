@@ -968,7 +968,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
     boxmax = meshi->boxmax_scaled;
   }
 
-  // xyz(t) = xyzvert + t*(xyzvert - xyzeyeorig )
+  // xyz(t) = xyzvert + t*(xyzvert - eye_position_fds )
   // integrate from t=0 to t=t_intersect_min  (if outside mesh)
   //     ie from vertex to nearest wall along a line from the eye position
   //        intersecting the vertex position
@@ -976,16 +976,16 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   //     ie from the eye position to the vertex position
 
   if(meshi->inside==1){
-    vert_beg=xyzeyeorig;
+    vert_beg=eye_position_fds;
     vert_end=xyzvert;
   }
   else{
     vert_beg=xyzvert;
     vert_end=xyzvals;
 
-    dx = xyzvert[0] - xyzeyeorig[0];
-    dy = xyzvert[1] - xyzeyeorig[1];
-    dz = xyzvert[2] - xyzeyeorig[2];
+    dx = xyzvert[0] - eye_position_fds[0];
+    dy = xyzvert[1] - eye_position_fds[1];
+    dz = xyzvert[2] - eye_position_fds[2];
     for(i=1;i<4;i++){
       int ii;
       float diffmin,diffmax,denom;
@@ -993,7 +993,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       ii=i-1;
       diffmin = boxmin[ii]-xyzvert[ii];
       diffmax = boxmax[ii]-xyzvert[ii];
-      denom = xyzvert[ii]-xyzeyeorig[ii];
+      denom = xyzvert[ii]-eye_position_fds[ii];
       if(iwall!=-i&&denom<0.0){
         t_intersect = diffmin/denom;
         if(t_intersect<t_intersect_min){
@@ -1124,7 +1124,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       float uvec[3], vvec[3];
 
       if(scatter_type_glui!=ISOTROPIC){
-        VEC3DIFF(uvec,xyz,xyzeyeorig);
+        VEC3DIFF(uvec,xyz,eye_position_fds);
         if(light_type_glui==LOCAL_LIGHT){
           VEC3DIFF(vvec,xyz,xyz_light_glui);
         }
@@ -2088,7 +2088,7 @@ void DrawSmoke3dGpuVol(void){
   glUniform3f(GPUvol_light_color, (float)light_color[0], (float)light_color[1], (float)light_color[2]);
   glUniform1i(GPUvol_use_light, use_light);
 
-  glUniform3f(GPUvol_eyepos,xyzeyeorig[0],xyzeyeorig[1],xyzeyeorig[2]);
+  glUniform3f(GPUvol_eyepos,eye_position_fds[0],eye_position_fds[1],eye_position_fds[2]);
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
   glUniform1f(GPUvol_fire_opacity_factor,fire_opacity_factor);
