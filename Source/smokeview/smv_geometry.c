@@ -272,7 +272,10 @@ int ClosestNodeIndex(float val,float *vals,int nvals, float eps){
   if(val<vals[0])return -1;
   if(val>vals[nvals-1])return -1;
   for(j=0;j<nvals-1;j++){
-    if(vals[j]<=val&&val<vals[j+1])return j;
+    if(vals[j] <= val&&val <= vals[j + 1]){
+      if(ABS(vals[j] - val) < ABS(vals[j + 1] - val))return j;
+      return j+1;
+    }
   }
   return nvals-1;
 }
@@ -388,7 +391,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotx_all[j]=-1;
       val = plotx_all[j];
-      ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
+        ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
       if(ival<0)continue;
       meshi->iplotx_all[j]=ival;
     }
