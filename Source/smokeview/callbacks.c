@@ -1605,8 +1605,8 @@ void Keyboard(unsigned char key, int flag){
     case 'd':
 #ifdef pp_GLUTGET
       alt_ctrl_key_state = KEY_CTRL;
-#endif
       break;
+#endif
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(DELETE_KEYFRAME);
