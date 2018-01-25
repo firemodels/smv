@@ -8044,7 +8044,11 @@ updatemenu=0;
 
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
   glutAddMenuEntry(_("Data bounds... ALT b"), DIALOG_BOUNDS);
+#ifdef pp_GLUTGET
+  glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
+#else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
+#endif
   glutAddMenuEntry(_("Motion...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 
