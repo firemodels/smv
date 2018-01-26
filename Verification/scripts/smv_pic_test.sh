@@ -20,7 +20,7 @@ fi
 if [ ! -e $SMVDIR/$SMVPROG ]; then
   echo smokeview does not exist - building smokeview
   cd $SMVDIR
-  ./make_smv.sh
+  ./make_smokeview.sh
 fi
 
 cd $visdir

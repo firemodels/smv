@@ -42,7 +42,10 @@ set osx_mpi_version=3.0.0
 :: ---- bot locations ----
 
 set firebotrepo=/home2/smokevis2/firebot/FireModels_central
+set firebothome=/home2/smokevis2/firebot
+
 set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
+set smokebothome=/home2/smokevis2/smokebot
 
 :: ---- hostnames ----
 

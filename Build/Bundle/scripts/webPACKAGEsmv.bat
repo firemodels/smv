@@ -39,13 +39,13 @@ Title Bundling %type% Smokeview for %platform%
 :: windows
 
 if "%platform%" == "windows" (
-  call %svn_root%\smv\scripts\batMAKE%type%distwingen 64
+  call %svn_root%\smv\Build\Bundle\make_%type%bundle 64
   goto eof
 )
 
 cd %svn_root%\smv\scripts
 
-set scriptdir=%linux_svn_root%/smv/scripts
+set scriptdir=%linux_svn_root%/smv/Build/Bundle/
 set bundledir=%linux_svn_root%/smv/uploads
 
 :: linux
@@ -55,7 +55,7 @@ if "%platform%" == "linux" (
   echo.
   echo --- making 64 bit Linux Smokeview installer ---
   echo.
-  plink %linux_logon% %scriptdir%/MAKEsmvdist.sh %buildtype% %version% %linux_svn_root% %linux_hostname% %linux_svn_root%
+  plink %linux_logon% %scriptdir%/linux/make_bundle.sh %buildtype% %version% %linux_svn_root% %linux_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---
@@ -78,7 +78,7 @@ if "%platform%" == "osx" (
   echo.
   echo --- making 64 bit OSX Smokeview installer ---
   echo.
-  plink %osx_logon% %scriptdir%/MAKEsmvdist.sh %buildtype%  %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
+  plink %osx_logon% %scriptdir%/osx/make_bundle.sh %buildtype%  %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---
