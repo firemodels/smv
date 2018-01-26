@@ -1065,6 +1065,14 @@ unsigned int DiffDate(char *token, char *tokenbase){
   return difft;
 }
 
+#ifdef pp_BETA
+  #define SET_VERSIONTITLE
+#else
+#ifndef pp_OFFICIAL_RELEASE
+  #define SET_VERSIONTITLE
+#endif
+#endif
+
 /* ------------------ GetBaseTitle ------------------------ */
 
 void GetBaseTitle(char *progname, char *title_base){
@@ -1083,16 +1091,11 @@ void GetBaseTitle(char *progname, char *title_base){
 
   strcat(title_base, " ");
   strcat(title_base, version);
-#ifdef pp_BETA
-  strcat(title_base, "(");
+
+#ifdef SET_VERSIONTITLE
+  if(strcmp(version,"")!=0)strcat(title_base, "(");
   strcat(title_base, git_version);
-  strcat(title_base, ")");
-#else
-#ifndef pp_OFFICIAL_RELEASE
-  strcat(title_base, "(");
-  strcat(title_base, git_version);
-  strcat(title_base, ")");
-#endif
+  if(strcmp(version,"")!=0)strcat(title_base, ")");
 #endif
   strcat(title_base, " - ");
 }
@@ -1354,7 +1357,9 @@ void PRINTversion(char *progname){
 
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
-  PRINTF("Version          : %s\n", version);
+  if(strcmp(version, "") != 0){
+    PRINTF("Version          : %s\n", version);
+  }
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
