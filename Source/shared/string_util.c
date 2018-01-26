@@ -1354,7 +1354,9 @@ void PRINTversion(char *progname){
 
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
-  PRINTF("Version          : %s\n", version);
+  if(strcmp(version, "") != 0){
+    PRINTF("Version          : %s\n", version);
+  }
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
