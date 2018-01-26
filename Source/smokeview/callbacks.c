@@ -2114,7 +2114,7 @@ void Keyboard(unsigned char key, int flag){
           skip_slice_in_embedded_mesh = 1 - skip_slice_in_embedded_mesh;
           break;
         default:
-          if(key2=='u'){
+          if(key2=='U'){
             ReloadMenu(RELOAD_INCREMENTAL_NOW);
           }
           else{
