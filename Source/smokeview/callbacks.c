@@ -2837,11 +2837,12 @@ void IdleCB(void){
 
 void SetScreenSize(int *width, int *height){
   if(width!=NULL){
-    screenWidth=*width;
+    screenWidth=MAX(*width,1);
+    screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
   }
   if(height!=NULL){
-    screenHeight=*height;
+    screenHeight=MAX(*height,1);
   }
 }
 
@@ -2962,6 +2963,7 @@ int DoStereo(void){
 
         screenWidth_save=screenWidth;
         screenWidth/=2;
+        screenWidth = MAX(screenWidth, 1);
         ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,screeni);
         screenWidth=screenWidth_save;
       }
@@ -2970,8 +2972,10 @@ int DoStereo(void){
 
         screenWidth_save=screenWidth;
         screenWidth/=2;
+        screenWidth = MAX(screenWidth, 1);
         ShowScene(DRAWSCENE,VIEW_RIGHT,0,screenWidth,0,screeni);
         screenWidth=screenWidth_save;
+        screenWidth = MAX(screenWidth, 1);
       }
       if(render_mode == RENDER_360 && rendering_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
       if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
