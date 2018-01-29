@@ -8160,6 +8160,15 @@ typedef struct {
       else{
         if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
+#ifdef pp_COLORBARFLIP
+      if(strlen(sd->label.longlabel)>14&&
+         strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
+         sd->colorbarflip_state=1;
+      }
+      else{
+         sd->colorbarflip_state=0;
+      }
+#endif
 
 
       {
@@ -10779,6 +10788,13 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &background_flip);
       continue;
     }
+#ifdef pp_COLORBARFLIP
+    if(Match(buffer, "COLORBARVIS_FLIP") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &colorbarvisflip);
+      continue;
+    }
+#endif
     if(Match(buffer, "COLORBAR_FLIP") == 1 || Match(buffer, "COLORBARFLIP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &colorbarflip);
@@ -12814,6 +12830,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout," %f %f %f :black  \n",rgb2[7][0],rgb2[7][1],rgb2[7][2]);
   fprintf(fileout, "COLORBAR_FLIP\n");
   fprintf(fileout, " %i\n", colorbarflip);
+#ifdef pp_COLORBARFLIP
+  fprintf(fileout, "COLORBARVIS_FLIP\n");
+  fprintf(fileout, " %i\n", colorbarvisflip);
+#endif
   fprintf(fileout, "COLORBAR_SPLIT\n");
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
