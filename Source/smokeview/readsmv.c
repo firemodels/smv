@@ -8120,6 +8120,7 @@ typedef struct {
       if(has_reg==0&&has_comp==0){
         nsliceinfo--;
         nslicefiles--;
+        nn_slice--;
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
