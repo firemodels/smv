@@ -699,6 +699,7 @@ void _Sniff_Errors(char *whereat);
 #define RENDER_VOLUME 1
 
 #define COLORBAR_FLIP -2
+#define COLORBAR_AUTOFLIP -6
 #define COLORBAR_TOGGLE_BW -12
 #define COLORBAR_CONTINUOUS -17
 #define COLORBAR_STEPPED -18

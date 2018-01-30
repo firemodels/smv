@@ -79,6 +79,9 @@ void Usage(char *prog,int option){
 #ifdef pp_BETA
     strcat(label, ", pp_BETA");
 #endif
+#ifdef pp_COLORBARFLIP
+    strcat(label, ", pp_COLORBARFLIP");
+#endif
 #ifdef pp_COMPRESS
     strcat(label, ", pp_COMPRESS");
 #endif

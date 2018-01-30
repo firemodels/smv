@@ -696,14 +696,19 @@ void ColorbarMenu(int value){
     case MENU_COLORBAR_SETTINGS:
       ShowGluiDisplay(DIALOG_COLORING);
       break;
+    case COLORBAR_AUTOFLIP:
+      colorbar_autoflip = 1 - colorbar_autoflip;
+      update_flipped_colorbar = 1;
+      UpdateColorbarFlip();
+      break;
     case COLORBAR_FLIP:
-      colorbarflip=1-colorbarflip;
+      colorbar_flip=1-colorbar_flip;
       UpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
       show_extreme_maxdata=0;
-      colorbarflip=0;
+      colorbar_flip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
       UpdateExtreme();
@@ -1134,6 +1139,7 @@ void ShowHideSliceMenu(int value){
       }
     }
   }
+  update_flipped_colorbar = 1;
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -7173,11 +7179,17 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Highlight data below specified min"), COLORBAR_HIGHLIGHT_BELOW);
   }
-  if(colorbarflip == 1){
+  if(colorbar_flip == 1){
     glutAddMenuEntry(_("  *Flip"), COLORBAR_FLIP);
   }
   else{
     glutAddMenuEntry(_("  Flip"), COLORBAR_FLIP);
+  }
+  if(colorbar_autoflip == 1){
+    glutAddMenuEntry(_("  *Auto flip"), COLORBAR_AUTOFLIP);
+  }
+  else{
+    glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
 
   CREATEMENU(colorbarsmenu,ColorbarMenu);

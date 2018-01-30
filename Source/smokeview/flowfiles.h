@@ -1138,7 +1138,7 @@ typedef struct _slicedata {
   char *slicelabel;
   int compression_type;
 #ifdef pp_COLORBARFLIP  
-  int colorbarflip_state;
+  int colorbar_autoflip;
 #endif
   int ncompressed;
   int slicetype;

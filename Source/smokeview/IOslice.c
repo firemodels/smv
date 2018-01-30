@@ -3946,9 +3946,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 
     if(flag == UNLOAD){
 #ifdef pp_COLORBARFLIP
-      if(sd->colorbarflip_state==1){
-        update_flipped_colorbar=1;
-      }
+      update_flipped_colorbar = 1;
 #endif
       sd->ntimes_old = 0;
       sd->ntimes = 0;
@@ -4343,9 +4341,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     update_fire_line = 1;
   }
 #ifdef pp_COLORBARFLIP
-  if(sd->colorbarflip_state==1){
-    update_flipped_colorbar=1;
-  }
+  update_flipped_colorbar=1;
 #endif
 
   if(colorbartype_ini == -1){

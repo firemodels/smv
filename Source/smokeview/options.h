@@ -21,6 +21,8 @@
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
+#define pp_COLORBARFLIP // flip colorbar if soot visibility is shown
+
 //#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 //#define pp_OPACITYMAP

@@ -1892,14 +1892,16 @@ void UpdateFlippedColorbar(void){
   for(i = 0;i < nslice_loaded;i++){
     slicedata *slicei;
 
-    slicei = sliceinfo + i;
-    if(slicei->colorbarflip_state == 1&&colorbarvisflip == 1){
+    slicei = sliceinfo + slice_loaded_list[i];
+    if(slicei->type!=islicetype)continue;
+    if(slicei->display == 0)continue;
+    if(slicei->colorbar_autoflip == 1&&colorbar_autoflip == 1){
       flip = 1;
       break;
     }
   }
-  if(flip != colorbarflip){
-    colorbarflip = 1 - flip;
+  if(flip != colorbar_flip){
+    colorbar_flip = 1 - flip;
     ColorbarMenu(COLORBAR_FLIP);
   }
 }
