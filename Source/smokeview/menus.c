@@ -9065,7 +9065,6 @@ updatemenu=0;
         }
       }
     }
-    glutAddMenuEntry("-", MENU_DUMMY);
     if(nslicedups>0){
       CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
       if(slicedup_option==SLICEDUP_KEEPALL){
