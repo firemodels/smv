@@ -635,6 +635,7 @@ void ReadSMVDynamic(char *file){
 
       bc_local=meshi->blockageinfoptrs[j];
       bc_local->nshowtime=0;
+      bc_local->nshowtime_save = 0;
       FREEMEMORY(bc_local->showtime);
       FREEMEMORY(bc_local->showhide);
     }
@@ -788,7 +789,7 @@ void ReadSMVDynamic(char *file){
       tempval--;
       if(tempval<0||tempval>=meshi->nbptrs)continue;
       bc=meshi->blockageinfoptrs[tempval];
-      bc->nshowtime++;
+      bc->nshowtime_save++;
       continue;
     }
 
@@ -1204,10 +1205,14 @@ void ReadSMVDynamic(char *file){
       if(tempval<0||tempval>=meshi->nbptrs)continue;
       bc=meshi->blockageinfoptrs[tempval];
 
+      if(bc->nshowtime+1>bc->nshowtime_save)continue;
       if(bc->showtime==NULL){
-        if(time_local!=0.0)bc->nshowtime++;
-        NewMemory((void **)&bc->showtime,bc->nshowtime*sizeof(float));
-        NewMemory((void **)&bc->showhide,bc->nshowtime*sizeof(unsigned char));
+        int nchanges;
+
+        nchanges = bc->nshowtime_save;
+        if(time_local!=0.0)nchanges++;
+        NewMemory((void **)&bc->showtime,nchanges*sizeof(float));
+        NewMemory((void **)&bc->showhide,nchanges*sizeof(unsigned char));
         bc->nshowtime=0;
         if(time_local!=0.0){
           bc->nshowtime=1;
@@ -1220,14 +1225,14 @@ void ReadSMVDynamic(char *file){
           }
         }
       }
-      bc->nshowtime++;
       if(showobst==1){
-        bc->showhide[bc->nshowtime-1]=1;
+        bc->showhide[bc->nshowtime]=1;
       }
       else{
-        bc->showhide[bc->nshowtime-1]=0;
+        bc->showhide[bc->nshowtime]=0;
       }
-      bc->showtime[bc->nshowtime-1]=time_local;
+      bc->showtime[bc->nshowtime]=time_local;
+      bc->nshowtime++;
       continue;
     }
   /*
@@ -2890,6 +2895,7 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
   bc->usecolorindex = 0;
   bc->colorindex = -1;
   bc->nshowtime = 0;
+  bc->nshowtime_save = 0;
   bc->hole = 0;
   bc->showtime = NULL;
   bc->showhide = NULL;
@@ -4899,7 +4905,6 @@ int ReadSMV(char *file, char *file2){
 
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nobsts);
-
 
       meshi=meshinfo+iobst-1;
 
