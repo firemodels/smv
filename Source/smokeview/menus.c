@@ -9939,7 +9939,7 @@ updatemenu=0;
     if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
     if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
     if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
-    glutAddMenuEntry(_("Stop Reloading"),STOP_RELOADING);
+    glutAddMenuEntry(_("Cancel"),STOP_RELOADING);
 
 
     {
