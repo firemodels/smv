@@ -1323,6 +1323,7 @@ void ReadSMVDynamic(char *file){
   FCLOSE(stream);
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
+  UpdateTimes();
 }
 
 

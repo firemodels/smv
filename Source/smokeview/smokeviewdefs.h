@@ -579,6 +579,7 @@ void _Sniff_Errors(char *whereat);
 #define STOP_RELOADING -1
 #define RELOAD_MODE_INCREMENTAL -5
 #define RELOAD_MODE_ALL -6
+#define RELOAD_SMV_FILE -7
 
 #define RELOAD_INCREMENTAL_ALL 9
 #define RELOADALL 4
