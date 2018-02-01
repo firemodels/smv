@@ -39,24 +39,20 @@ function get_figs(guide){
 
 <h3>Copy Guides</h3>
 
-<ul>
-<li>Run firebot and smokebot
-</ul>
-
 <p><table border=on>
 <tr>
 <td>SMV guides (smokebot)</td>
 <td><button onclick="copy_guides('from_smv_linux')">==></button></td>
-<td rowspan=2 align=center>Windows ~\FDS_Guides</td>
+<td rowspan=2 align=center>Windows ~\.bundle\pubs</td>
 <td><button onclick="copy_guides('to_linux')">==></button></td>
-<td>Linux ~/FDS_Guides</td>
+<td>Linux ~/.bundle/pubs</td>
 </tr>
 
 <tr>
 <td align=center>FDS guides (firebot)</td>
 <td><button onclick="copy_guides('from_fds_linux')">==></button></td>
 <td><button onclick="copy_guides('to_osx')">==></button></td>
-<td>OSX ~/FDS_Guides</td>
+<td>OSX ~/.bundle/pubs</td>
 </tr>
 
 </table>
@@ -135,16 +131,6 @@ function get_figs(guide){
 </tr>
 </table>
 
-
-<h3>Copy Guides To FDS_Guides</h3>
-
-<p><table border=on>
-<tr>
-<td>Windows SMV guides</td>
-<td><button onclick="copy_guides('from_smv_local')">==></button></td>
-<td rowspan=3>Windows ~\FDS_Guides</td>
-</tr>
-</table>
 
 <h3>Other</h3>
 <p><button onclick="run_script('\\smv\\scripts\\webVIEW_localimages.bat')">View local images</button><br>
