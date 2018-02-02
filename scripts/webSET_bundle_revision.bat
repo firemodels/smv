@@ -21,12 +21,12 @@ set rev_file=%temp%\revision.txt
 
 %svn_drive%
 cd %svn_root%\smv
-git describe --long --dirty > %rev_file% > %userprofile%\smv_revision.txt
+git describe --long --dirty > %rev_file% > %userprofile%\.bundle\smv_revision.txt
 echo.
 echo smv revision:
 type %userprofile%\smv_revision.txt
 cd %svn_root%\fds
-git describe --long --dirty > %rev_file% > %userprofile%\fds_revision.txt
+git describe --long --dirty > %rev_file% > %userprofile%\.bundle\fds_revision.txt
 echo.
 echo fds revision:
 type %userprofile%\fds_revision.txt
