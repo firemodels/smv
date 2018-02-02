@@ -9,11 +9,11 @@ set smv_version=6.6.1test
 
 set smv_revision=unknown
 set fds_revision=unknown
-if exist %userprofile%\smv_revision.txt (
-  set /p smv_revision=<%userprofile%\smv_revision.txt
+if exist %userprofile%\.bundle\smv_revision.txt (
+  set /p smv_revision=<%userprofile%\.bundle\smv_revision.txt
 )
-if exist %userprofile%\fds_revision.txt (
-  set /p fds_revision=<%userprofile%\fds_revision.txt
+if exist %userprofile%\.bundle\fds_revision.txt (
+  set /p fds_revision=<%userprofile%\.bundle\fds_revision.txt
 )
 
 :: ---- log entry date ----
@@ -38,6 +38,18 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 set linux_mpi_version=INTEL
 set osx_mpi_version=3.0.0
 ::set osx_mpi_version=1.8.4
+
+:: ---- Guide locations ----
+
+set GUIDE_DIR=.bundle/pubs
+
+:: ---- openmpi library locations ----
+
+set OPENMPI_DIR=.bundle/OPENMPI
+
+:: ---- bundle locations ----
+
+set BUNDLE_DIR=.bundle/BUNDLE
 
 :: ---- bot locations ----
 
