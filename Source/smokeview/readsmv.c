@@ -9398,6 +9398,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &gversion);
       ONEORZERO(gversion);
     }
+    if(Match(buffer, "GVECDOWN") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &gvec_down);
+      ONEORZERO(gvec_down);
+    }
     if(Match(buffer, "SCALEDFONT") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i", &scaled_font2d_height, &scaled_font2d_height2width, &scaled_font2d_thickness);
@@ -13051,6 +13056,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", gversion);
+  fprintf(fileout, "GVECDOWN\n");
+  fprintf(fileout, " %i\n", gvec_down);
   fprintf(fileout, "HISTOGRAM\n");
   fprintf(fileout, " %i %i %i %i %i %f\n",
   histogram_static, histogram_nbuckets, histogram_show_numbers, histogram_show_graph, histogram_show_outline, histogram_width_factor);
