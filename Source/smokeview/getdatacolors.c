@@ -1517,7 +1517,7 @@ void UpdateRGBColors(int colorbar_index){
       }
     }
   }
-  if(colorbarflip==1){
+  if(colorbar_flip==1){
     {
       int nnn;
 

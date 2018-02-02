@@ -3945,6 +3945,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+#ifdef pp_COLORBARFLIP
+      update_flipped_colorbar = 1;
+#endif
       sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
@@ -4337,6 +4340,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
     update_fire_line = 1;
   }
+#ifdef pp_COLORBARFLIP
+  update_flipped_colorbar=1;
+#endif
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){

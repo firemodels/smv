@@ -635,6 +635,7 @@ void ReadSMVDynamic(char *file){
 
       bc_local=meshi->blockageinfoptrs[j];
       bc_local->nshowtime=0;
+      bc_local->nshowtime_save = 0;
       FREEMEMORY(bc_local->showtime);
       FREEMEMORY(bc_local->showhide);
     }
@@ -788,7 +789,7 @@ void ReadSMVDynamic(char *file){
       tempval--;
       if(tempval<0||tempval>=meshi->nbptrs)continue;
       bc=meshi->blockageinfoptrs[tempval];
-      bc->nshowtime++;
+      bc->nshowtime_save++;
       continue;
     }
 
@@ -1204,10 +1205,14 @@ void ReadSMVDynamic(char *file){
       if(tempval<0||tempval>=meshi->nbptrs)continue;
       bc=meshi->blockageinfoptrs[tempval];
 
+      if(bc->nshowtime+1>bc->nshowtime_save)continue;
       if(bc->showtime==NULL){
-        if(time_local!=0.0)bc->nshowtime++;
-        NewMemory((void **)&bc->showtime,bc->nshowtime*sizeof(float));
-        NewMemory((void **)&bc->showhide,bc->nshowtime*sizeof(unsigned char));
+        int nchanges;
+
+        nchanges = bc->nshowtime_save;
+        if(time_local!=0.0)nchanges++;
+        NewMemory((void **)&bc->showtime,nchanges*sizeof(float));
+        NewMemory((void **)&bc->showhide,nchanges*sizeof(unsigned char));
         bc->nshowtime=0;
         if(time_local!=0.0){
           bc->nshowtime=1;
@@ -1220,14 +1225,14 @@ void ReadSMVDynamic(char *file){
           }
         }
       }
-      bc->nshowtime++;
       if(showobst==1){
-        bc->showhide[bc->nshowtime-1]=1;
+        bc->showhide[bc->nshowtime]=1;
       }
       else{
-        bc->showhide[bc->nshowtime-1]=0;
+        bc->showhide[bc->nshowtime]=0;
       }
-      bc->showtime[bc->nshowtime-1]=time_local;
+      bc->showtime[bc->nshowtime]=time_local;
+      bc->nshowtime++;
       continue;
     }
   /*
@@ -1318,6 +1323,7 @@ void ReadSMVDynamic(char *file){
   FCLOSE(stream);
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
+  UpdateTimes();
 }
 
 
@@ -2890,6 +2896,7 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
   bc->usecolorindex = 0;
   bc->colorindex = -1;
   bc->nshowtime = 0;
+  bc->nshowtime_save = 0;
   bc->hole = 0;
   bc->showtime = NULL;
   bc->showhide = NULL;
@@ -4899,7 +4906,6 @@ int ReadSMV(char *file, char *file2){
 
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nobsts);
-
 
       meshi=meshinfo+iobst-1;
 
@@ -8160,6 +8166,15 @@ typedef struct {
       else{
         if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
+#ifdef pp_COLORBARFLIP
+      if(strlen(sd->label.longlabel)>14&&
+         strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
+         sd->colorbar_autoflip=1;
+      }
+      else{
+         sd->colorbar_autoflip=0;
+      }
+#endif
 
 
       {
@@ -10781,7 +10796,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "COLORBAR_FLIP") == 1 || Match(buffer, "COLORBARFLIP") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &colorbarflip);
+      sscanf(buffer, "%i %i", &colorbar_flip,&colorbar_autoflip);
       continue;
     }
     if(Match(buffer, "TRANSPARENT") == 1){
@@ -12813,7 +12828,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout," %f %f %f :cyan   \n",rgb2[6][0],rgb2[6][1],rgb2[6][2]);
   fprintf(fileout," %f %f %f :black  \n",rgb2[7][0],rgb2[7][1],rgb2[7][2]);
   fprintf(fileout, "COLORBAR_FLIP\n");
-  fprintf(fileout, " %i\n", colorbarflip);
+  fprintf(fileout, " %i %i\n", colorbar_flip,colorbar_autoflip);
   fprintf(fileout, "COLORBAR_SPLIT\n");
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);

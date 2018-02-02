@@ -76,7 +76,10 @@ GLUI_Checkbox *CHECKBOX_visUSERticks=NULL;
 GLUI_Checkbox *CHECKBOX_visUSERticks2=NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata=NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata=NULL;
-GLUI_Checkbox *CHECKBOX_colorbarflip=NULL;
+GLUI_Checkbox *CHECKBOX_colorbar_flip=NULL;
+#ifdef pp_COLORBARFLIP
+GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
+#endif
 #ifdef pp_BETA
 GLUI_Checkbox *CHECKBOX_cullgeom=NULL;
 #endif
@@ -596,7 +599,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Continuous"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Stepped"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_d("Line"));
-  CHECKBOX_colorbarflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _d("flip"), &colorbarflip, FLIP, LabelsCB);
+  CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_contours, _d("flip"), &colorbar_flip, FLIP, LabelsCB);
+#ifdef pp_COLORBARFLIP
+  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _d("auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
+#endif
 
   SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,"Selection width:",GLUI_SPINNER_INT,&colorband,COLORBAND,SliceBoundCB);
   SPINNER_colorband->set_int_limits(1,10);
@@ -915,7 +921,7 @@ extern "C" void LabelsCB(int var){
     updatefaces=1;
     break;
   case FLIP:
-      colorbarflip = 1 - colorbarflip;
+      colorbar_flip = 1 - colorbar_flip;
       ColorbarMenu(COLORBAR_FLIP);
       break;
   case LABELS_hide_overlaps:
@@ -1057,7 +1063,10 @@ extern "C" void LabelsCB(int var){
 /* ------------------ UpdateColorbarFlip ------------------------ */
 
 extern "C" void UpdateColorbarFlip(void){
-  CHECKBOX_colorbarflip->set_int_val(colorbarflip);
+  CHECKBOX_colorbar_flip->set_int_val(colorbar_flip);
+#ifdef pp_COLORBARFLIP
+  CHECKBOX_colorbar_autoflip->set_int_val(colorbar_autoflip);
+#endif
 }
 
 /* ------------------ UpdateColorbarList2 ------------------------ */

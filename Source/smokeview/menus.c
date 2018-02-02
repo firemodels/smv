@@ -696,14 +696,19 @@ void ColorbarMenu(int value){
     case MENU_COLORBAR_SETTINGS:
       ShowGluiDisplay(DIALOG_COLORING);
       break;
+    case COLORBAR_AUTOFLIP:
+      colorbar_autoflip = 1 - colorbar_autoflip;
+      update_flipped_colorbar = 1;
+      UpdateColorbarFlip();
+      break;
     case COLORBAR_FLIP:
-      colorbarflip=1-colorbarflip;
+      colorbar_flip=1-colorbar_flip;
       UpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
       show_extreme_maxdata=0;
-      colorbarflip=0;
+      colorbar_flip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
       UpdateExtreme();
@@ -1134,6 +1139,7 @@ void ShowHideSliceMenu(int value){
       }
     }
   }
+  update_flipped_colorbar = 1;
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -2545,6 +2551,9 @@ void ReloadMenu(int value){
   case RELOAD_INCREMENTAL_NOW:
     LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
     break;
+  case RELOAD_SMV_FILE:
+    ReadSMVDynamic(smv_filename);
+    break;
   case RELOAD_MODE_INCREMENTAL:
     load_incremental = 1;
     break;
@@ -2719,7 +2728,6 @@ void LoadUnloadMenu(int value){
     if(value==RELOAD_INCREMENTAL_ALL)load_mode = RELOAD;
 
     LOCK_COMPRESS
-    ReadSMVDynamic(smv_filename);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD, &errorcode);
     }
@@ -2807,6 +2815,7 @@ void LoadUnloadMenu(int value){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
+    ReadSMVDynamic(smv_filename);
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
@@ -7173,11 +7182,17 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Highlight data below specified min"), COLORBAR_HIGHLIGHT_BELOW);
   }
-  if(colorbarflip == 1){
+  if(colorbar_flip == 1){
     glutAddMenuEntry(_("  *Flip"), COLORBAR_FLIP);
   }
   else{
     glutAddMenuEntry(_("  Flip"), COLORBAR_FLIP);
+  }
+  if(colorbar_autoflip == 1){
+    glutAddMenuEntry(_("  *Auto flip"), COLORBAR_AUTOFLIP);
+  }
+  else{
+    glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
 
   CREATEMENU(colorbarsmenu,ColorbarMenu);
@@ -9053,7 +9068,6 @@ updatemenu=0;
         }
       }
     }
-    glutAddMenuEntry("-", MENU_DUMMY);
     if(nslicedups>0){
       CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
       if(slicedup_option==SLICEDUP_KEEPALL){
@@ -9907,16 +9921,17 @@ updatemenu=0;
     glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
+    glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
     if(load_incremental==1){
-      glutAddMenuEntry(_("*Reload new data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("Reload all data"), RELOAD_MODE_ALL);
+      glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
     }
     if(load_incremental==0){
-      glutAddMenuEntry(_("Reload new data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("*Reload all data"), RELOAD_MODE_ALL);
+      glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
     glutAddMenuEntry(_("-"), -999);
-    glutAddMenuEntry(_("Reload:"), -999);
+    glutAddMenuEntry(_("When:"), -999);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
     if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);
@@ -9924,7 +9939,7 @@ updatemenu=0;
     if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
     if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
     if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
-    glutAddMenuEntry(_("Stop Reloading"),STOP_RELOADING);
+    glutAddMenuEntry(_("Cancel"),STOP_RELOADING);
 
 
     {

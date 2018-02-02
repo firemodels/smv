@@ -2349,11 +2349,11 @@ int RunScript(void){
       ScriptGSliceOrien(scripti);
       break;
     case SCRIPT_CBARFLIP:
-      colorbarflip=0;
+      colorbar_flip=0;
       ColorbarMenu(COLORBAR_FLIP);
       break;
     case SCRIPT_CBARNORMAL:
-      colorbarflip=1;
+      colorbar_flip=1;
       ColorbarMenu(COLORBAR_FLIP);
       break;
     default:

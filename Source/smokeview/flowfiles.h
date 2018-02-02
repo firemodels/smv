@@ -404,7 +404,7 @@ typedef struct _blockagedata {
   float *showtime;
   int *showtimelist;
   unsigned char *showhide;
-  int nshowtime, show;
+  int nshowtime, nshowtime_save, show;
   char *label;
   float *color;
   int colorindex;
@@ -1137,6 +1137,9 @@ typedef struct _slicedata {
   char *comp_file, *reg_file, *vol_file;
   char *slicelabel;
   int compression_type;
+#ifdef pp_COLORBARFLIP  
+  int colorbar_autoflip;
+#endif
   int ncompressed;
   int slicetype;
   struct _multislicedata *mslice;
