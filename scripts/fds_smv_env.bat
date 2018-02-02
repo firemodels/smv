@@ -2,8 +2,8 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=6.6.0test
-set smv_version=6.6.1test
+set fds_version=FDS_6.6.0test
+set smv_version=SMV_6.6.1test
 
 :: ---- FDS and smokeview revision ----
 
