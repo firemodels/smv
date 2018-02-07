@@ -1757,8 +1757,10 @@ extern "C" void SceneMotionCB(int var){
       camera_current->zoom=zoom;
       if(SPINNER_zoom!=NULL)SPINNER_zoom->set_float_val(zoom);
       break;
-    case CHANGE_ZAXIS:
     case USE_GVEC:
+      updatemenu = 1;
+      break;
+    case CHANGE_ZAXIS:
     case SET_VIEW_XYZ:
     case TRANSLATE_XY:
     case GLUI_Z:
@@ -1821,6 +1823,7 @@ extern "C" void SceneMotionCB(int var){
         user_zaxis[2] = sin(DEG2RAD*(*elev));
         LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
         ViewpointCB(LIST_VIEW);
+        updatemenu = 1;
         glutPostRedisplay();
       }
       break;

@@ -1920,7 +1920,7 @@ void UpdateDisplay(void){
   UNLOCK_IBLANK
   if(update_have_gvec == 1){
     update_have_gvec = 0;
-    UpdateGvecDown(1);
+    UpdateGvecDown(gvec_down);
   }
 #ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){

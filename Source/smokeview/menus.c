@@ -4945,10 +4945,16 @@ void RotateTypeMenu(int value){
     ShowGluiMotion(DIALOG_MOTION);
     return;
   }
-  rotation_type = value;
-  UpdateRotationType(rotation_type);
-  RotationTypeCB(rotation_type);
-  updatemenu=1;
+  else if(value == MENU_MOTION_GRAVITY_VECTOR){
+    gvec_down = 1 - gvec_down;
+    update_have_gvec = 1;
+  }
+  else{
+    rotation_type = value;
+    UpdateRotationType(rotation_type);
+    RotationTypeCB(rotation_type);
+  }
+  updatemenu = 1;
   glutPostRedisplay();
 }
 
@@ -6518,6 +6524,8 @@ updatemenu=0;
     ASSERT(FFALSE);
     break;
   }
+  if(gvec_down==1)glutAddMenuEntry("*gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
+  if(gvec_down==0)glutAddMenuEntry("gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
   glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
