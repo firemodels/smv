@@ -9,7 +9,748 @@
 !  IF (N_FACE_S>0)  WRITE(LU_GEOM) (SURF_S(I),I=1,N_FACE_S)
 !  IF (N_FACE_D>0)  WRITE(LU_GEOM) (SURF_D(I),I=1,N_FACE_D)
 
-!  ------------------ geomout ------------------------
+
+#ifdef pp_INTEL
+#define pp_FSEEK
+#endif
+#ifdef pp_GCC
+#define pp_FSEEK
+#endif
+
+!  ------------------ module cio ------------------------
+
+module cio
+#ifdef pp_INTEL
+use ifport, only: seek_set, seek_cur
+#else
+integer, parameter :: seek_set=0, seek_cur=1
+#endif
+public ffseek, seek_set, seek_cur
+
+contains
+
+!  ------------------ ffseek ------------------------
+
+subroutine ffseek(unit,sizes,nsizes,mode,error)
+#ifdef pp_INTEL
+use ifport, only: fseek
+#endif
+implicit none
+integer, intent(in) :: unit, mode, nsizes
+integer, intent(in), dimension(nsizes) :: sizes
+integer, intent(out) :: error
+
+integer :: i, size
+#ifndef pp_FSEEK
+character(len=1), dimension(:) :: cbuffer
+#endif
+
+#ifdef pp_FSEEK
+size = 0
+do i = 1, nsizes
+  size = size + 4 + sizes(i) + 4
+end do
+#endif
+
+#ifdef pp_INTEL
+error = fseek(unit,size,mode)
+#endif
+
+#ifdef pp_GCC
+call fseek(unit,size,mode,error)
+#endif
+
+! not Intel compiler, not GCC compiler so read in data to advance file pointer
+
+#ifndef pp_FSEEK
+size = sizes(1)
+do i = 2, nsizes
+  size = max(size,sizes(i))
+end do
+allocate(cbuffer(size))
+if(mode==seek_set)rewind(unit)
+do i = 1, nsizes
+  read(unit)cbuffer(1:sizes(i))
+end do
+deallocate(cbuffer)
+#endif
+
+end subroutine ffseek
+end module cio
+
+!  ------------------ getembeddatasize ------------------------
+
+subroutine getembeddatasize(filename,ntimes,nvars,error)
+implicit none
+character(len=*), intent(in) :: filename
+integer, intent(out) :: ntimes, nvars, error
+
+integer :: lu20, finish
+logical :: exists
+real :: time, dummy
+integer :: i, one, version
+integer :: nvert_s, nvert_d, nface_s, nface_d
+
+inquire(file=trim(filename),exist=exists)
+if(exists)then
+  open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
+ else
+  write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
+  error=1
+  return
+endif
+
+error = 0
+read(lu20)one
+read(lu20)version
+ntimes=0
+nvars=0
+do
+  read(lu20,iostat=finish)time
+  if(finish.eq.0)read(lu20,iostat=finish)nvert_s,nface_s,nvert_d,nface_d
+  if(finish.eq.0.and.nvert_s>0)read(lu20,iostat=finish)(dummy,i=1,nvert_s)
+  if(finish.eq.0.and.nvert_d>0)read(lu20,iostat=finish)(dummy,i=1,nvert_d)
+  if(finish.eq.0.and.nface_s>0)read(lu20,iostat=finish)(dummy,i=1,nface_s)
+  if(finish.eq.0.and.nface_d>0)read(lu20,iostat=finish)(dummy,i=1,nface_d)
+  if(finish.ne.0)return
+  nvars = nvars + nvert_s + nvert_d + nface_s + nface_d
+  ntimes = ntimes + 1
+end do
+close(lu20)
+
+end subroutine getembeddatasize
+
+!  ------------------ fcreate_part5sizefile ------------------------
+
+subroutine fcreate_part5sizefile(part5file, part5sizefile, angle_flag, redirect_flag, error)
+implicit none
+character(len=*), intent(in) :: part5file, part5sizefile
+integer, intent(in) :: angle_flag, redirect_flag
+integer, intent(out) :: error
+
+integer :: lu20, lu21, version, nclasses
+integer, allocatable, dimension(:) :: numtypes, numpoints
+character(len=30) :: dummy
+integer :: i, j,one,idummy
+real :: rdummy,time
+
+open(newunit=lu20,file=trim(part5file),form="unformatted",action="read")
+open(newunit=lu21,file=trim(part5sizefile),form="formatted",action="write")
+
+error=0
+read(lu20,iostat=error)one
+if(error.ne.0)go to 998
+read(lu20,iostat=error)version
+if(error.ne.0)go to 998
+read(lu20,iostat=error)nclasses
+if(error.ne.0)go to 998
+allocate(numtypes(2*nclasses))
+allocate(numpoints(nclasses))
+do i = 1, nclasses
+  read(lu20,iostat=error)numtypes(2*i-1),numtypes(2*i)
+  if(error.ne.0)go to 999
+  do j = 1, (numtypes(2*i-1)+numtypes(2*i))
+    read(lu20,iostat=error)dummy
+    if(error.ne.0)go to 999
+    read(lu20,iostat=error)dummy
+    if(error.ne.0)go to 999
+  end do
+end do
+do
+  read(lu20,iostat=error)time
+  if(redirect_flag.eq.0)write(6,10)time
+10 format(" sizing particle time=",f9.2)
+  if(error.ne.0)go to 999
+  do i = 1, nclasses
+    read(lu20,iostat=error)numpoints(i)
+    if(error.ne.0)go to 999
+    if(angle_flag.eq.1)then
+      read(lu20,iostat=error)(rdummy,j=1,7*numpoints(i))
+     else
+      read(lu20,iostat=error)(rdummy,j=1,3*numpoints(i))
+    endif
+    if(error.ne.0)go to 999
+    read(lu20,iostat=error)(rdummy,j=1,numpoints(i))
+    if(error.ne.0)go to 999
+    if(numtypes(2*i-1)>0)then
+      read(lu20,iostat=error)(rdummy,j=1,numpoints(i)*numtypes(2*i-1))
+      if(error.ne.0)go to 999
+    endif
+    if(numtypes(2*i)>0)then
+      read(lu20,iostat=error)(idummy,j=1,numpoints(i)*numtypes(2*i))
+      if(error.ne.0)go to 999
+    endif
+  end do
+  write(lu21,"(e15.8)")time
+  do i = 1, nclasses
+    write(lu21,"(1x,i9)")numpoints(i)
+  end do
+end do
+!     for(i=0;i<nclasses;i++){
+!      FORTPART5READ(&nparts,1);
+!      if(returncode==0)goto wrapup;
+!      numpoints[i]=nparts;
+!      skip = 4 + 4*nparts*3 + 4;
+!      skip += 4 + 4*nparts + 4;
+!      if(numtypes[2*i]>0)skip += 4 + 4*nparts*numtypes[2*i] + 4;
+!      if(numtypes[2*i+1]>0)skip += 4 + 4*nparts*numtypes[2*i+1] + 4;
+!
+!      returncode=fseek(PART5FILE,skip,SEEK_CUR);
+!      if(returncode!=0)goto wrapup;
+!    }
+
+
+999 continue
+deallocate(numpoints,numtypes)
+998 continue
+close(lu20)
+close(lu21)
+
+return
+end subroutine fcreate_part5sizefile
+
+!  ------------------ getzonesize ------------------------
+
+subroutine getzonesize(zonefilename,nzonet,nrooms,nfires,error)
+implicit none
+character(len=*) :: zonefilename
+integer, intent(out) :: nzonet,nrooms,nfires,error
+
+logical :: exists
+integer :: lu26, version
+integer :: i
+real :: dummy, dummy2
+integer :: exit_all
+
+error = 0
+
+inquire(file=trim(zonefilename),exist=exists)
+if(exists)then
+  open(newunit=lu26,file=trim(zonefilename),form="unformatted",action="read")
+ else
+  write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
+  error=1
+  return
+endif
+
+nzonet = 0
+read(lu26,iostat=error)version
+if(error.eq.0)read(lu26,iostat=error)nrooms
+if(error.eq.0)read(lu26,iostat=error)nfires
+if(error.ne.0)then
+  error=0
+  rewind(lu26)
+  return
+endif
+do
+  exit_all=0
+  read(lu26,iostat=error)dummy
+  if(error.ne.0)then
+    error = 0
+    exit
+  endif
+  do i = 1, nrooms
+    read(lu26,iostat=error)dummy,dummy,dummy,dummy
+    if(error.eq.0)cycle
+    error = 0
+    exit_all=1
+    exit
+  end do
+  if(exit_all.eq.1)exit
+  do i = 1, nfires
+    read(lu26,iostat=error)dummy,dummy2
+    if(error.eq.0)cycle
+    error = 0
+    exit_all=1
+    exit
+  end do
+  if(exit_all.eq.1)exit
+  nzonet = nzonet + 1
+end do
+close(lu26)
+end subroutine getzonesize
+
+!  ------------------ getpatchsizes1 ------------------------
+
+subroutine getpatchsizes1(file_unit,patchfilename,npatch,headersize,error)
+use cio
+implicit none
+
+character(len=*), intent(in) :: patchfilename
+integer, intent(out) :: file_unit,npatch, headersize, error
+
+integer :: sizes(3), nsizes
+logical :: exists
+
+error=0
+inquire(file=trim(patchfilename),exist=exists)
+if(exists)then
+  open(newunit=file_unit,file=trim(patchfilename),form="unformatted",action="read")
+else
+  write(6,*)' The boundary file name, ',trim(patchfilename),' does not exist'
+  error=1
+  return
+endif
+
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+call ffseek(file_unit,sizes,nsizes,seek_set,error) ! skip over long, short and unit labels (each 30 characters in length)
+if(error.eq.0)read(file_unit,iostat=error)npatch
+headersize = 3*(4+30+4) + 4 + 4 + 4
+
+return
+end subroutine getpatchsizes1
+
+!  ------------------ getpatchsizes2 ------------------------
+
+subroutine getpatchsizes2(file_unit,version,npatch,npatchsize,pi1,pi2,pj1,pj2,pk1,pk2,patchdir,headersize,framesize)
+implicit none
+
+integer, intent(in) :: file_unit,version, npatch
+integer, intent(out) :: npatchsize
+integer, intent(out), dimension(npatch) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
+integer, intent(inout) :: headersize
+integer, intent(out) :: framesize
+
+integer :: n, i1, i2, j1, j2, k1, k2, error
+
+error=0
+
+npatchsize = 0
+do n = 1, npatch
+  if(version.eq.0)then
+    read(file_unit)i1, i2, j1, j2, k1, k2
+   else
+    read(file_unit)i1, i2, j1, j2, k1, k2, patchdir(n)
+  endif
+  pi1(n)=i1
+  pi2(n)=i2
+  pj1(n)=j1
+  pj2(n)=j2
+  pk1(n)=k1
+  pk2(n)=k2
+  npatchsize = npatchsize + (i2+1-i1)*(j2+1-j1)*(k2+1-k1)
+end do
+headersize = headersize + npatch*(4+6*4+4)
+if(version.eq.1)headersize = headersize + npatch*4
+framesize = 8+4+8*npatch+npatchsize*4
+
+return
+end subroutine getpatchsizes2
+
+!  ------------------ getsliceparms ------------------------
+
+subroutine getsliceparms(slicefilename, ip1, ip2, jp1, jp2, kp1, kp2, ni, nj, nk, slice3d, error)
+implicit none
+
+character(len=*) :: slicefilename
+logical :: exists
+
+integer, intent(inout) :: ip1, ip2, jp1, jp2, kp1, kp2
+integer, intent(out) :: ni, nj, nk, slice3d, error
+
+integer :: idir, joff, koff, volslice
+character(len=30) :: longlbl, shortlbl, unitlbl
+integer :: iip1, iip2
+
+integer :: lu11
+
+if(ip1.eq.-1.or.ip2.eq.-1.or.jp1.eq.-1.or.jp2.eq.-1.or.kp1.eq.-1.or.kp2.eq.-1)then
+  ip1 = 0
+  ip2 = 0
+  jp1 = 0
+  jp2 = 0
+  kp1 = 0
+  kp2 = 0
+  error=0
+
+  inquire(file=trim(slicefilename),exist=exists)
+  if(exists)then
+    open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+   else
+    error=1
+    return
+  endif
+  read(lu11,iostat=error)longlbl
+  read(lu11,iostat=error)shortlbl
+  read(lu11,iostat=error)unitlbl
+
+  read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+  close(lu11)
+endif
+
+ni = ip2 + 1 - ip1
+nj = jp2 + 1 - jp1
+nk = kp2 + 1 - kp1
+if(ip1.eq.ip2.or.jp1.eq.jp2.or.kp1.eq.kp2)then
+  slice3d=0
+ else
+  slice3d=1
+endif
+
+call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
+
+return
+end subroutine getsliceparms
+
+!  ------------------ getslicesizes ------------------------
+
+subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&
+   error, settmin_s, settmax_s, tmin_s, tmax_s, headersize, framesize)
+use cio
+implicit none
+
+character(len=*) :: slicefilename
+logical :: exists
+
+integer, intent(out) :: nslicei, nslicej, nslicek, nsteps, error
+integer, intent(in) :: settmin_s, settmax_s, sliceframestep
+integer, intent(out) :: headersize, framesize
+real, intent(in) :: tmin_s, tmax_s
+
+integer :: ip1, ip2, jp1, jp2, kp1, kp2
+integer :: iip1, iip2
+integer :: nxsp, nysp, nzsp
+
+integer :: lu11
+real :: timeval, time_max
+logical :: load
+integer :: idir, joff, koff, volslice
+integer :: count
+integer :: sizes(3), nsizes
+
+error=0
+nsteps = 0
+
+inquire(file=trim(slicefilename),exist=exists)
+if(exists)then
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+ else
+  error=1
+  return
+endif
+
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+headersize = 3*(4+30+4)
+
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+
+read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+headersize = headersize + 4 + 6*4 + 4
+if(error.ne.0)return
+
+nxsp = ip2 + 1 - ip1
+nysp = jp2 + 1 - jp1
+nzsp = kp2 + 1 - kp1
+
+call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,volslice)
+nslicei = nxsp
+nslicej = nysp + joff
+nslicek = nzsp + koff
+
+framesize = 4*(1+nxsp*nysp*nzsp)+16
+
+count=-1
+time_max=-1000000.0
+sizes(1) = 4*nxsp*nysp*nzsp
+nsizes = 1
+do
+  read(lu11,iostat=error)timeval
+  if(error.ne.0)exit
+  if((settmin_s.ne.0.and.timeval.lt.tmin_s).or.timeval.le.time_max)then
+    load=.false.
+   else
+    load = .true.
+    time_max=timeval
+  endif
+  if(settmax_s.ne.0.and.timeval.gt.tmax_s)then
+    close(lu11)
+    return
+  endif
+  call ffseek(lu11,sizes,nsizes,seek_cur,error)
+  count = count + 1
+  if(mod(count,sliceframestep).ne.0)load = .false.
+  if(error.ne.0)exit
+  if(load)nsteps = nsteps + 1
+end do
+
+error = 0
+close(lu11)
+
+return
+
+end subroutine getslicesizes
+
+!  ------------------ openpart ------------------------
+
+subroutine openpart(partfilename, fileunit, error)
+implicit none
+
+character(len=*) :: partfilename
+logical :: exists
+
+integer, intent(out) :: fileunit
+integer, intent(out) :: error
+
+error=0
+inquire(file=partfilename,exist=exists)
+if(exists)then
+  open(newunit=fileunit,file=partfilename,form="unformatted",action="read")
+ else
+  error=1
+  return
+endif
+
+return
+end subroutine openpart
+
+!  ------------------ openslice ------------------------
+
+subroutine openslice(slicefilename, unitnum, is1, is2, js1, js2, ks1, ks2, error)
+implicit none
+
+character(len=*), intent(in) :: slicefilename
+logical :: exists
+
+integer, intent(out) :: unitnum, is1, is2, js1, js2, ks1, ks2, error
+character(len=30) :: longlbl, shortlbl, unitlbl
+
+error=0
+exists=.true.
+
+inquire(file=slicefilename,exist=exists)
+if(exists)then
+  open(newunit=unitnum,file=slicefilename,form="unformatted",action="read")
+ else
+  error=1
+  return
+endif
+read(unitnum,iostat=error)longlbl
+read(unitnum,iostat=error)shortlbl
+read(unitnum,iostat=error)unitlbl
+
+read(unitnum,iostat=error)is1, is2, js1, js2, ks1, ks2
+
+return
+end subroutine openslice
+
+!  ------------------ closefortranfile ------------------------
+
+subroutine closefortranfile(unit)
+implicit none
+
+integer, intent(in) :: unit
+
+close(unit)
+
+return
+end subroutine closefortranfile
+
+!  ------------------ getboundaryheader1 ------------------------
+
+subroutine getboundaryheader1(boundaryfilename,boundaryunitnumber,npatch,error)
+implicit none
+
+character(len=*), intent(in) :: boundaryfilename
+integer, intent(out) :: boundaryunitnumber, npatch, error
+
+character(len=30) :: patchlonglabel, patchshortlabel, patchunit
+
+logical :: exists
+
+error=0
+inquire(file=trim(boundaryfilename),exist=exists)
+if(exists)then
+  open(newunit=boundaryunitnumber,file=trim(boundaryfilename),form="unformatted",action="read")
+ else
+  write(6,*)' The boundary file name, ',trim(boundaryfilename),' does not exist'
+  error=1
+  return
+endif
+
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchlonglabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchshortlabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchunit
+if(error.eq.0)read(boundaryunitnumber,iostat=error)npatch
+if(error.ne.0)close(boundaryunitnumber)
+
+return
+end subroutine getboundaryheader1
+
+!  ------------------ getboundaryheader2 ------------------------
+
+subroutine getboundaryheader2(boundaryunitnumber,version,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchdir)
+implicit none
+integer, intent(in) :: boundaryunitnumber, version, npatch
+integer, intent(out), dimension(npatch) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
+
+integer :: n
+integer :: i1, i2, j1, j2, k1, k2
+
+do n = 1, npatch
+  if(version.eq.0)then
+    read(boundaryunitnumber)i1, i2, j1, j2, k1, k2
+   else
+    read(boundaryunitnumber)i1, i2, j1, j2, k1, k2, patchdir(n)
+  endif
+  pi1(n)=i1
+  pi2(n)=i2
+  pj1(n)=j1
+  pj2(n)=j2
+  pk1(n)=k1
+  pk2(n)=k2
+end do
+
+return
+end subroutine getboundaryheader2
+
+!  ------------------ openboundary ------------------------
+
+subroutine openboundary(boundaryfilename,boundaryunitnumber,version,error)
+implicit none
+
+character(len=*), intent(in) :: boundaryfilename
+integer, intent(out) :: boundaryunitnumber
+integer, intent(in) :: version
+integer, intent(out) :: error
+
+character(len=30) :: patchlonglabel, patchshortlabel, patchunit
+
+logical :: exists
+integer :: npatch,n
+integer :: i1, i2, j1, j2, k1, k2, patchdir
+
+inquire(file=boundaryfilename,exist=exists)
+if(exists)then
+  open(newunit=boundaryunitnumber,file=boundaryfilename,form="unformatted",action="read")
+ else
+  write(6,*)' The boundary file name, ',boundaryfilename,' does not exist'
+  error=1
+  return
+endif
+
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchlonglabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchshortlabel
+if(error.eq.0)read(boundaryunitnumber,iostat=error)patchunit
+if(error.eq.0)read(boundaryunitnumber,iostat=error)npatch
+
+do n = 1, npatch
+  if(version.eq.0)then
+    if(error.eq.0)read(boundaryunitnumber,iostat=error)i1, i2, j1, j2, k1, k2
+   else
+    if(error.eq.0)read(boundaryunitnumber,iostat=error)i1, i2, j1, j2, k1, k2, patchdir
+  endif
+end do
+
+if(error.ne.0)close(boundaryunitnumber)
+
+return
+end subroutine openboundary
+
+!  ------------------ getpartheader1 ------------------------
+
+subroutine getpartheader1(unit,nclasses,fdsversion,size)
+implicit none
+
+integer, intent(in) :: unit
+integer, intent(out) :: nclasses,fdsversion,size
+
+integer :: one
+
+read(unit)one
+read(unit)fdsversion
+
+read(unit)nclasses
+size=12
+
+return
+
+end subroutine getpartheader1
+
+!  ------------------ getpartheader2 ------------------------
+
+subroutine getpartheader2(unit,nclasses,nquantities,size)
+implicit none
+
+integer, intent(in) :: unit,nclasses
+integer, intent(out), dimension(nclasses) :: nquantities
+integer, intent(out) :: size
+
+character(len=30) :: clabel
+integer :: i, j, dummy
+
+size=0
+
+do i = 1, nclasses
+  read(unit)nquantities(i),dummy
+  size=size+4+2*nquantities(i)*(4+30+4)
+  do j=1, nquantities(i)
+    read(unit)clabel
+    read(unit)clabel
+  end do
+end do
+
+return
+
+end subroutine getpartheader2
+
+!  ------------------ getpartdataframe ------------------------
+
+subroutine getpartdataframe(unit,nclasses,nquantities,npoints,time,tagdata,pdata,size,error)
+implicit none
+
+integer, intent(in) :: unit,nclasses
+integer, intent(in), dimension(nclasses) :: nquantities
+integer, intent(out), dimension(nclasses) :: npoints
+real, intent(out), dimension(*) :: pdata
+integer, intent(out), dimension(*) :: tagdata
+real, intent(out) :: time
+integer, intent(out) :: size,error
+
+integer :: pstart, pend
+integer :: tagstart, tagend
+integer :: i, j, nparticles
+
+size=0
+pend=0
+tagend=0
+error=0
+read(unit,iostat=error)time
+size=4
+if(error.ne.0)return
+do i = 1, nclasses
+  read(unit,iostat=error)nparticles
+  if(error.ne.0)return
+  npoints(i)=nparticles
+
+  pstart=pend+1
+  pend=pstart+3*nparticles-1
+  read(unit,iostat=error)(pdata(j),j=pstart,pend)
+  if(error.ne.0)return
+
+  tagstart = tagend + 1
+  tagend = tagstart + nparticles - 1
+  read(unit,iostat=error)(tagdata(j),j=tagstart,tagend)
+  if(error.ne.0)return
+
+  if(nquantities(i).gt.0)then
+    pstart = pend + 1
+    pend = pstart + nparticles*nquantities(i) - 1
+    read(unit,iostat=error)(pdata(j),j=pstart,pend)
+    if(error.ne.0)return
+  endif
+  size=size+4+(4*3*nparticles)+4*nparticles+4*nparticles*nquantities(i)
+end do
+error=0
+
+   end subroutine getpartdataframe
+
+   !  ------------------ geomout ------------------------
 
 subroutine geomout(verts, N_VERT_S, faces, N_FACE_S)
 implicit none
@@ -51,24 +792,16 @@ real, intent(out), dimension(:) :: times(ntimes), vals(nvals)
 integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
 integer :: lu20, finish
-logical :: isopen,exists
+logical :: exists
 integer :: i,ii
 integer :: one, itime, nvars
 integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
 integer :: version
 
-lu20=20
-inquire(unit=lu20,opened=isopen)
-
-if(isopen)close(lu20)
 inquire(file=trim(filename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu20,file=trim(filename),form="unformatted",shared,action="read")
-#else
-  open(unit=lu20,file=trim(filename),form="unformatted",action="read")
-#endif
+  open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
  else
   write(6,*)' The boundary element file name, ',trim(filename),' does not exist'
   error=1
@@ -125,24 +858,13 @@ real, intent(out), dimension(nfires*nzonet) :: zoneqfire
 real, intent(out), dimension(nzonet) :: zonet
 integer , intent(out) :: error
 
-integer  :: file_unit
 integer :: lu26,i,j,ii,ii2,idummy,version
 real :: dummy, qdot
-logical :: isopen, exists
+logical :: exists
 
-call get_file_unit(file_unit,26)
-lu26 = file_unit
-
-inquire(unit=lu26,opened=isopen)
-
-if(isopen)close(lu26)
 inquire(file=trim(zonefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",shared,action="read")
-#else
-  open(unit=lu26,file=trim(zonefilename),form="unformatted",action="read")
-#endif
+  open(newunit=lu26,file=trim(zonefilename),form="unformatted",action="read")
  else
   write(6,*)' The zone file name, ',trim(zonefilename),' does not exist'
   error=1
@@ -182,23 +904,40 @@ end do
 close(lu26)
 end subroutine getzonedata
 
-!  ------------------ getpatchdata ------------------------
+!  ------------------ skipdata ------------------------
 
-subroutine getpatchdata(lunit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
+subroutine skipdata(file_unit,skip)
+use cio
 implicit none
 
-integer, intent(in) :: npatch,lunit
+integer, intent(in) :: file_unit, skip
+
+integer :: error, sizes(1), nsizes
+
+sizes(1) = skip
+nsizes = 1
+
+call ffseek(file_unit,sizes,nsizes,seek_cur,error)
+
+end subroutine skipdata
+
+!  ------------------ getpatchdata ------------------------
+
+subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
+implicit none
+
+integer, intent(in) :: npatch,file_unit
 integer, intent(in), dimension(*) :: pi1, pi2, pj1, pj2, pk1, pk2
 real, intent(out), dimension(*) :: pqq
 integer, intent(out) :: error,npqq
 real, intent(out) :: patchtime
 
-integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, lu15, ii
+integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, ii
 
-lu15 = lunit
-read(lu15,iostat=error)patchtime
+error=0
+read(file_unit,iostat=error)patchtime
 if(error.ne.0)then
-  close(lu15)
+  close(file_unit)
   return
 endif
 ibeg = 1
@@ -213,9 +952,9 @@ do i = 1, npatch
   size = (i2+1-i1)*(j2+1-j1)*(k2+1-k1)
   npqq=npqq+size
   iend = ibeg + size - 1
-  read(lu15,iostat=error)(pqq(ii),ii=ibeg,iend)
+  read(file_unit,iostat=error)(pqq(ii),ii=ibeg,iend)
   if(error.ne.0)then
-    close(lu15)
+    close(file_unit)
     exit
   endif
   ibeg = iend + 1
@@ -331,26 +1070,24 @@ end subroutine getslicefiledirection
 
 !  ------------------ writeslicedata ------------------------
 
-subroutine writeslicedata(file_unit,slicefilename,is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes,redirect_flag)
+subroutine writeslicedata(slicefilename,is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes,redirect_flag)
 implicit none
 
-integer, intent(in) :: file_unit
 character(len=*),intent(in) :: slicefilename
 integer, intent(in) :: is1, is2, js1, js2, ks1, ks2, redirect_flag
 real, intent(in), dimension(*) :: qdata
 real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
-logical :: connected
 integer :: error
 character(len=30) :: longlbl, shortlbl, unitlbl
 integer :: ibeg, iend, nframe
 integer :: nxsp, nysp, nzsp
 integer :: i,ii
-inquire(unit=file_unit,opened=connected)
-if(connected)close(file_unit)
+integer :: file_unit
 
-open(unit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
+
+open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 
 longlbl=" "
 shortlbl=" "
@@ -381,18 +1118,18 @@ end subroutine writeslicedata
 
 !  ------------------ writeslicedata2 ------------------------
 
-subroutine writeslicedata2(file_unit,slicefilename,&
+subroutine writeslicedata2(slicefilename,&
    longlabel,shortlabel,unitlabel,&
    is1,is2,js1,js2,ks1,ks2,qdata,times,ntimes)
 implicit none
 
-integer, intent(in) :: file_unit
 character(len=*),intent(in) :: slicefilename, longlabel, shortlabel, unitlabel
 integer, intent(in) :: is1, is2, js1, js2, ks1, ks2
 real, intent(in), dimension(*) :: qdata
 real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
+integer :: file_unit
 logical :: connected
 integer :: error
 character(len=30) :: longlabel30, shortlabel30, unitlabel30
@@ -402,7 +1139,7 @@ integer :: i,ii
 inquire(unit=file_unit,opened=connected)
 if(connected)close(file_unit)
 
-open(unit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
+open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 
 longlabel30 = trim(longlabel)
 shortlabel30 = trim(shortlabel)
@@ -431,22 +1168,22 @@ end subroutine writeslicedata2
 
 !  ------------------ getslicedata ------------------------
 
-subroutine getslicedata(file_unit,slicefilename,shortlabel,&
-            is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,nstepsmax,sliceframestep,&
-            settmin_s,settmax_s,tmin_s,tmax_s,redirect_flag)
+subroutine getslicedata(slicefilename,&
+            is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
+            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
+            redirect_flag)
+use cio
 implicit none
 
-character(len=*) :: slicefilename, shortlabel
+character(len=*), intent(in) :: slicefilename
 
-integer, intent(in) :: file_unit
-real, intent(out) :: qmin, qmax
-real, intent(out), dimension(*) :: qdata
-real, intent(out), dimension(*) :: times
-integer, intent(out) :: idir
-integer, intent(out) :: is1, is2, js1, js2, ks1, ks2
-integer, intent(in) :: redirect_flag
-integer, intent(inout) :: nstepsmax
-integer, intent(in) :: settmin_s, settmax_s, sliceframestep
+integer, intent(in) :: redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
+
+real, intent(inout) :: qmin, qmax
+real, intent(out), dimension(*) :: qdata, times
+
+integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2
+integer, intent(inout) :: ntimes
 real, intent(in) :: tmin_s, tmax_s
 
 real, dimension(:,:,:), pointer :: qq
@@ -457,29 +1194,23 @@ logical :: exists
 integer :: ip1, ip2, jp1, jp2, kp1, kp2
 integer :: nxsp, nysp, nzsp
 integer :: error, istart, irowstart
-real :: time, time_max
+real :: timeval, time_max
 character(len=30) :: longlbl, shortlbl, unitlbl
-integer :: lenshort, lenunits
 character(len=3) :: blank
-logical :: connected, load
+logical :: load
 integer :: ii, kk
 integer :: joff, koff, volslice
 integer :: count
 integer :: iis1, iis2
+integer, allocatable, dimension(:) :: sizes
+integer :: nsizes
 
-lu11 = file_unit
 joff = 0
 koff = 0
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
-#ifdef pp_SHARED
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",shared,action="read")
-#else
-  open(unit=lu11,file=trim(slicefilename),form="unformatted",action="read")
-#endif
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
  else
   write(6,*)' the slice file ',trim(slicefilename),' does not exist'
   nsteps = 0
@@ -492,17 +1223,14 @@ longlbl=" "
 shortlbl=" "
 unitlbl=" "
 
-read(lu11,iostat=error)longlbl
-read(lu11,iostat=error)shortlbl
-read(lu11,iostat=error)unitlbl
+allocate(sizes(3))
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
 
-! longlabel=trim(longlbl)//char(0)
-
-lenshort = min(len_trim(shortlabel),6)
-! shortlabel=shortlbl(1:lenshort)//char(0)
-
-lenunits = min(len_trim(unitlbl),6)
-! units=unitlbl(1:lenunits)//char(0)
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+deallocate(sizes)
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 is1 = ip1
@@ -523,20 +1251,29 @@ call getslicefiledirection(is1,is2,iis1,iis2,js1,js2,ks1,ks2,idir,joff,koff,vols
 
 allocate(qq(nxsp,nysp+joff,nzsp+koff))
 
-qmin = 1.0e30
-qmax = -1.0e30
 count=-1
 time_max=-1000000.0
+if(ntimes/=ntimes_old.and.ntimes_old>0)then
+  allocate(sizes(2*ntimes_old))
+  do i = 1, ntimes_old
+    sizes(2*i-1) = 4
+    sizes(2*i) = 4*nxsp*nysp*nzsp
+  end do
+  nsizes = 2*ntimes_old
+  call ffseek(lu11,sizes,nsizes,seek_cur,error)
+  deallocate(sizes)
+  nsteps = ntimes_old
+endif
 do
-  read(lu11,iostat=error)time
+  read(lu11,iostat=error)timeval
   if(error.ne.0)exit
-  if((settmin_s.ne.0.and.time<tmin_s).or.time.le.time_max)then
+  if((settmin_s.ne.0.and.timeval<tmin_s).or.timeval.le.time_max)then
     load = .false.
    else
     load = .true.
-    time_max = time
+    time_max = timeval
   endif
-  if(settmax_s.ne.0.and.time>tmax_s)exit
+  if(settmax_s.ne.0.and.timeval>tmax_s)exit
   read(lu11,iostat=error)(((qq(i,j,k),i=1,nxsp),j=1,nysp),k=1,nzsp)
   count=count+1
   if(mod(count,sliceframestep).ne.0)load = .false.
@@ -545,12 +1282,13 @@ do
    elseif(joff.eq.1)then
     qq(1:nxsp,2,1:nzsp)=qq(1:nxsp,1,1:nzsp)
   endif
-  if(error.ne.0.or.nsteps.ge.nstepsmax)go to 999
+  if(error.ne.0.or.nsteps.ge.ntimes)go to 999
   if(.not.load)cycle
   nsteps = nsteps + 1
-  times(nsteps) = time
-  if(redirect_flag.eq.0)write(6,10)time
+  times(nsteps) = timeval
+  if(redirect_flag.eq.0)write(6,10)timeval
 10 format(" slice time=",f9.2)
+
   if(idir.eq.3)then
     istart = (nsteps-1)*nxsp*nysp
     do i = 1, nxsp
@@ -560,7 +1298,7 @@ do
       qmax = max(qmax,maxval(qq(i,1:nysp,1)))
       qmin = min(qmin,minval(qq(i,1:nysp,1)))
     end do
-   elseif(idir.eq.2)then
+  elseif(idir.eq.2)then
     istart = (nsteps-1)*nxsp*(nzsp+koff)
     do i = 1, nxsp
       irowstart = (i-1)*(nzsp+koff)
@@ -569,7 +1307,7 @@ do
       qmax = max(qmax,maxval(qq(i,1,1:nzsp+koff)))
       qmin = min(qmin,minval(qq(i,1,1:nzsp+koff)))
     end do
-   else
+  else
     istart = (nsteps-1)*(nysp+joff)*(nzsp+koff)*nxsp
     do i = 1, nxsp
     do j = 1, nysp+joff
@@ -587,7 +1325,7 @@ end do
 999 continue
 ks2 = ks2 + koff
 js2 = js2 + joff
-nstepsmax=nsteps
+ntimes=nsteps
 deallocate(qq)
 close(lu11)
 
@@ -646,42 +1384,35 @@ character(len=*) :: endianfilename
 integer :: one
 integer :: file_unit
 
-call get_file_unit(file_unit,31)
-open(unit=file_unit,file=trim(endianfilename),form="unformatted")
+open(newunit=file_unit,file=trim(endianfilename),form="unformatted")
 one=1
-write(31)one
+write(file_unit)one
 close(file_unit)
 return
 end subroutine endianout
 
 !  ------------------ outsliceheader ------------------------
 
-subroutine outsliceheader(slicefilename,unit,ip1, ip2, jp1, jp2, kp1, kp2, error)
+subroutine outsliceheader(slicefilename,fileunit,ip1, ip2, jp1, jp2, kp1, kp2, error)
 implicit none
 
 character(len=*) :: slicefilename
-integer, intent(in) :: unit
+integer, intent(out) :: fileunit
 integer, intent(in) :: ip1, ip2, jp1, jp2, kp1, kp2
 integer, intent(out) :: error
 
 character(len=30) :: longlbl, shortlbl, unitlbl
-integer :: lu11
-logical :: connected
 
-lu11 = unit
-inquire(unit=lu11,opened=connected)
-if(connected)close(lu11)
-
-open(unit=lu11,file=trim(slicefilename),form="unformatted")
+open(newunit=fileunit,file=trim(slicefilename),form="unformatted")
 
 longlbl= "long                          "
 shortlbl="short                         "
 unitlbl= "unit                          "
-write(lu11,iostat=error)longlbl
-write(lu11,iostat=error)shortlbl
-write(lu11,iostat=error)unitlbl
+write(fileunit,iostat=error)longlbl
+write(fileunit,iostat=error)shortlbl
+write(fileunit,iostat=error)unitlbl
 
-write(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+write(fileunit,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 
 end subroutine outsliceheader
 
@@ -715,25 +1446,25 @@ subroutine outboundaryheader(boundaryfilename,boundaryunitnumber,npatches,pi1,pi
 implicit none
 
 character(len=*), intent(in) :: boundaryfilename
-integer, intent(in) :: boundaryunitnumber, npatches
+integer, intent(in) :: npatches
+integer, intent(out) :: boundaryunitnumber
 integer, intent(in), dimension(npatches) :: pi1, pi2, pj1, pj2, pk1, pk2, patchdir
 integer, intent(out) :: error
 
 character(len=30) :: blank
-integer :: n, lu15
+integer :: n
 
 error=0
-lu15 = boundaryunitnumber
-open(unit=lu15,file=trim(boundaryfilename),form="unformatted",action="write")
+open(newunit=boundaryunitnumber,file=trim(boundaryfilename),form="unformatted",action="write")
 
 blank="                              "
-write(lu15)blank
-write(lu15)blank
-write(lu15)blank
-write(lu15)npatches
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)blank
+write(boundaryunitnumber)npatches
 
 do n = 1, npatches
-  write(lu15)pi1(n), pi2(n), pj1(n), pj2(n), pk1(n), pk2(n), patchdir(n)
+  write(boundaryunitnumber)pi1(n), pi2(n), pj1(n), pj2(n), pk1(n), pk2(n), patchdir(n)
 end do
 
 return
@@ -793,21 +1524,12 @@ integer :: i, j, k, n
 real :: r2
 
 integer :: u_in
-logical :: connected
 
 if(isotest.eq.0)then
-  call get_file_unit(u_in,70)
-  inquire(unit=u_in,opened=connected)
-  if(connected)close(u_in)
-
   error=0
   inquire(file=qfilename,exist=exists)
   if(exists)then
-#ifdef pp_SHARED
-    open(unit=u_in,file=qfilename,form="unformatted",shared,action="read",iostat=error2)
-#else
-    open(unit=u_in,file=qfilename,form="unformatted",action="read",iostat=error2)
-#endif
+    open(newunit=u_in,file=qfilename,form="unformatted",action="read",iostat=error2)
    else
     write(6,*)' The file name, ',trim(qfilename),' does not exist'
     read(5,*)dummy
@@ -862,18 +1584,13 @@ real, dimension(nx,ny,nz,5)  :: qout
 integer, intent(out) :: error3
 
 integer :: u_out
-logical :: connected
 integer :: i, j, k, n
 real :: dummy
 
 error3 = 0
 
-call get_file_unit(u_out,70)
-inquire(unit=u_out,opened=connected)
-if(connected)close(u_out)
-
 dummy = 0.0
-open(unit=u_out,file=trim(outfile),form="unformatted",action="write",iostat=error3)
+open(newunit=u_out,file=trim(outfile),form="unformatted",action="write",iostat=error3)
 if(error3.ne.0)return
 
 write(u_out,iostat=error3)nx, ny, nz
@@ -1430,23 +2147,6 @@ CASE DEFAULT
 END SELECT
 
 END SUBROUTINE COLOR2RGB
-
-!  ------------------ funit ------------------------
-
-subroutine get_file_unit(funit,first_unit)
-integer, intent(in) :: first_unit
-integer, intent(out) :: funit
-logical :: is_open
-
-do funit=first_unit,32767
-  inquire(UNIT=funit,OPENED=is_open)
-  if(is_open)cycle;
-  return
-end do
-funit=-1
-return
-end subroutine get_file_unit
-
 
 !  ------------------ GET_TETRABOX_VOLUME ------------------------
 

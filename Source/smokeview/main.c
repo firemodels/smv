@@ -79,6 +79,9 @@ void Usage(char *prog,int option){
 #ifdef pp_BETA
     strcat(label, ", pp_BETA");
 #endif
+#ifdef pp_COLORBARFLIP
+    strcat(label, ", pp_COLORBARFLIP");
+#endif
 #ifdef pp_COMPRESS
     strcat(label, ", pp_COMPRESS");
 #endif
@@ -157,9 +160,6 @@ void Usage(char *prog,int option){
 #ifdef pp_PARTTEST
     strcat(label, ", pp_PARTTEST");
 #endif
-#ifdef pp_QUICKTIME
-    strcat(label, ", pp_QUICKTIME");
-#endif
 #ifdef pp_READBUFFER
     strcat(label, ", pp_READBUFFER");
 #endif
@@ -180,9 +180,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_SLICELOAD
     strcat(label, ", pp_SLICELOAD");
-#endif
-#ifdef pp_SLICEDUP
-    strcat(label, ", pp_SLICEDUP");
 #endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
@@ -227,7 +224,7 @@ void ParseCommandline(int argc, char **argv){
     InitCameraList();
     InitOpenGL();
     UpdateRGBColors(COLORBAR_INDEX_NONE);
-    WriteINI(GLOBAL_INI, NULL);
+    WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
 
@@ -235,7 +232,7 @@ void ParseCommandline(int argc, char **argv){
     InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
-    WriteINI(GLOBAL_INI, NULL);
+    WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
   strcpy(SMVFILENAME, "");
@@ -344,7 +341,7 @@ void ParseCommandline(int argc, char **argv){
       STRCPY(scriptbuffer, fdsprefix);
       STRCAT(scriptbuffer, ".ssf");
       if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
-        default_script = insert_scriptfile(scriptbuffer);
+        default_script = InsertScriptFile(scriptbuffer);
       }
     }
 #ifdef pp_LUA
@@ -610,7 +607,7 @@ void ParseCommandline(int argc, char **argv){
         scriptfiledata *sfd;
 
         strcpy(scriptbuffer, argv[i]);
-        sfd = insert_scriptfile(scriptbuffer);
+        sfd = InsertScriptFile(scriptbuffer);
         if(sfd != NULL)default_script = sfd;
         runscript = 1;
       }
@@ -743,7 +740,7 @@ int main(int argc, char **argv){
   if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
   if(return_code!=0)return 1;
   if(convert_ini==1){
-    ReadINI(ini_from);
+    ReadIni(ini_from);
   }
 
   STOP_TIMER(startup_time);

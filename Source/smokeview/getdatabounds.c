@@ -148,7 +148,7 @@ void AdjustPart5Bounds(partdata *parti){
   }
   AdjustPart5Chops(parti);
 #ifdef _DEBUG
-  print_partprop();
+  PrintPartProp();
 #endif
 }
 

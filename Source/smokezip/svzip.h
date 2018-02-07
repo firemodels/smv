@@ -290,8 +290,8 @@ void rand_2d(float xy[2], float xmin, float xmax, float ymin, float ymax);
 void rand_3d(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 void GetStartupSlice(int seq_id);
 void GetStartupSmoke(int seq_id);
-void GetStartupPatch(int seq_id);
-unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
+void GetStartupBoundary(int seq_id);
+unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
 int GetEndian(void);
 int convert_slice(slice *slicei, int *thread_index);
@@ -344,7 +344,6 @@ void getsliceparms_c(char *file, int *ni, int *nj, int *nk);
 #define FORTopenslice          _F(openslice)
 #define FORTopenpart           _F(openpart)
 #define FORTgetsliceframe      _F(getsliceframe)
-#define FORTget_file_unit      _F(get_file_unit)
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
@@ -352,7 +351,6 @@ void getsliceparms_c(char *file, int *ni, int *nj, int *nk);
 #define STDCALLF extern void
 #endif
 
-STDCALLF FORTget_file_unit(int *file_unit,int *file_unit_start);
 STDCALLF FORTopenpart(char *partfilename, int *unit, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetpartheader1(int *unit, int *nclasses, int *fdsversion, int *size);
 STDCALLF FORTgetpartheader2(int *unit, int *nclasses, int *nquantities, int *size);

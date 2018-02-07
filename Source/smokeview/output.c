@@ -48,12 +48,12 @@ void OutputSText3(float x, float y, float z, char *string){
   v[0]=world_eyepos[0]-x;
   v[1]=world_eyepos[1]-y;
   v[2]=world_eyepos[2]-z;
-  rotateu2v(u,v,axis,&angle);
+  RotateU2V(u,v,axis,&angle);
   theta=atan2(v[0],-v[1])*RAD2DEG;
-  angleaxis2quat(theta*DEG2RAD,u,quatz);
-  angleaxis2quat(angle,axis,quateye);
-  mult_quat(quateye,quatz,quateye);
-  quat2rot(quateye,rot);
+  AngleAxis2Quat(theta*DEG2RAD,u,quatz);
+  AngleAxis2Quat(angle,axis,quateye);
+  MultQuat(quateye,quatz,quateye);
+  Quat2Rot(quateye,rot);
 
   glRotatef(90.0,cos(theta*DEG2RAD),sin(theta*DEG2RAD),0.0);
   glRotatef(theta,u[0],u[1],u[2]);

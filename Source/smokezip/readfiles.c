@@ -1122,7 +1122,7 @@ void ReadINI2(char *inifile){
       for(i=0;i<n3dsmokes;i++){
         fgets(buffer,BUFFERSIZE,stream);
         sscanf(buffer,"%i",&seq_id);
-        GetStartupPatch(seq_id);
+        GetStartupBoundary(seq_id);
       }
       continue;
     }
@@ -1132,9 +1132,9 @@ void ReadINI2(char *inifile){
 
 }
 
- /* ------------------ GetStartupPatch ------------------------ */
+ /* ------------------ GetStartupBoundary ------------------------ */
 
-  void GetStartupPatch(int seq_id){
+  void GetStartupBoundary(int seq_id){
     int i;
     for(i=0;i<npatchinfo;i++){
       patch *patchi;

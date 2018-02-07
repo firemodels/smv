@@ -58,6 +58,9 @@ int main(int argc, char **argv){
   strcpy(file_default, "terrain");
   strcpy(image_dir, ".");
   strcpy(elev_dir, "");
+#ifdef pp_CSVF
+  strcpy(csv_file, "");
+#endif
   strcpy(surf_id, "surf1");
   strcpy(matl_id, "matl1");
 
@@ -179,8 +182,8 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
-  if(GetElevations(casename,&fds_elevs) == 1) {
-    GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+  if(GetElevations(casename, &fds_elevs)==1) {
+     GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
   }
   return 0;
 }

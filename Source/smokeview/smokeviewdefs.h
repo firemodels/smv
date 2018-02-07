@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define COLORBAR_SET 18
+#define COLORBAR_RGB 2
+
 #define DLG_3DSMOKE 0
 #define DLG_BOUNDARY 1
 #define DLG_SLICE 2
@@ -165,6 +168,7 @@ void _Sniff_Errors(char *whereat);
 #define AVI 0
 #define MP4 1
 #define WMV 2
+#define MOV 3
 
 #define EXTERNAL_LIST_ID 1
 
@@ -400,6 +404,7 @@ void _Sniff_Errors(char *whereat);
 #define ROTATION_1AXIS 2
 #define ROTATION_3AXIS 3
 #define MENU_MOTION_SETTINGS 4
+#define MENU_MOTION_GRAVITY_VECTOR 5
 
 #define FIRSTCALL 1
 #define NOT_FIRSTCALL 0
@@ -569,9 +574,15 @@ void _Sniff_Errors(char *whereat);
 
 #define NTARGTIMES 100
 
-#define RELOAD_NOW 0
-#define STOP_RENDERING -1
+#define RELOAD_ALL_NOW 0
+#define RELOAD_INCREMENTAL_NOW -2
+#define RELOAD_SWITCH -4
+#define STOP_RELOADING -1
+#define RELOAD_MODE_INCREMENTAL -5
+#define RELOAD_MODE_ALL -6
+#define RELOAD_SMV_FILE -7
 
+#define RELOAD_INCREMENTAL_ALL 9
 #define RELOADALL 4
 #define UNLOADALL 1
 #define SHOWFILES 5
@@ -690,6 +701,7 @@ void _Sniff_Errors(char *whereat);
 #define RENDER_VOLUME 1
 
 #define COLORBAR_FLIP -2
+#define COLORBAR_AUTOFLIP -6
 #define COLORBAR_TOGGLE_BW -12
 #define COLORBAR_CONTINUOUS -17
 #define COLORBAR_STEPPED -18
@@ -704,6 +716,7 @@ void _Sniff_Errors(char *whereat);
 #define LOAD 0
 #define UNLOAD 1
 #define RESETBOUNDS 2
+#define RELOAD 3
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1
@@ -783,7 +796,8 @@ void _Sniff_Errors(char *whereat);
 #define DIALOG_SHOOTER 27
 #define DIALOG_SMOKEZIP 24
 #define DIALOG_STEREO 19
-#define DIALOG_TOUR 21
+#define DIALOG_TOUR_SHOW 21
+#define DIALOG_TOUR_HIDE 44
 #define DIALOG_TRAINER 25
 #define DIALOG_WUI 26
 #define DIALOG_SHOWFILES 33

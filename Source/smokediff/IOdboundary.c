@@ -188,13 +188,9 @@ void diff_boundaryes(FILE *stream_out){
 
     PRINTF("Subtracting %s from %s\n",fullfile2,fullfile1);
 
-    unit1=11;
-    FORTget_file_unit(&unit1,&unit1);
     len1=strlen(fullfile1);
     FORTopenboundary(fullfile1,&unit1,&boundary1->version,&error1,len1);
 
-    unit2=12;
-    FORTget_file_unit(&unit2,&unit2);
     len2=strlen(fullfile2);
     FORTopenboundary(fullfile2,&unit2,&boundary2->version,&error2,len2);
 
@@ -223,12 +219,10 @@ void diff_boundaryes(FILE *stream_out){
 
         ii++;
       }
-      unit3=15;
-      FORTget_file_unit(&unit3,&unit3);
       len3=strlen(outfile);
       size_sofar=0;
       FORToutboundaryheader(outfile,&unit3,&npatches3,
-        p3i1,p3i2,p3j1,p3j2,p3k1,p3k2,patchdir3,&error1,len3);
+        p3i1,p3i2,p3j1,p3j2,p3k1,p3k2,patchdir3,&error3,len3);
       PRINTF("  Progress: ");
       FFLUSH();
       percent_complete=0;
@@ -326,5 +320,6 @@ void diff_boundaryes(FILE *stream_out){
 
     if(error1!=0)FORTclosefortranfile(&unit1);
     if(error2!=0)FORTclosefortranfile(&unit2);
+    if(error3!=0)FORTclosefortranfile(&unit3);
   }
 }

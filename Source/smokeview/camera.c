@@ -212,9 +212,9 @@ void UpdateCamera(cameradata *ca){
       UpdateCurrentMesh(meshinfo);
     }
     highlight_mesh = current_mesh-meshinfo;
-    handle_rotation_type(EYE_CENTERED);
+    HandleRotationType(EYE_CENTERED);
     UpdateMeshList1(ca->rotation_index);
-    update_trainer_moves();
+    UpdateTrainerMoves();
 
     ca->clip_mode=clip_mode;
     ca->clip_xmin=clipinfo.clip_xmin;
@@ -328,7 +328,7 @@ cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){
     cam->view_id = camera_max_id;
     camera_max_id++;
   }
-  UpdateGluiViewList();
+  UpdateGluiCameraViewList();
   updatemenu=1;
   return cam;
 }

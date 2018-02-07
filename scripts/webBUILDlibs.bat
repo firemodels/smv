@@ -24,26 +24,26 @@ call %envfile%
 :: windows
 
 if "%platform%" == "windows" (
-title building libraries for windows
-cd %svn_root%\smv\Build\LIBS\intel_win_64
-makelibs
-goto eof
+  title building libraries for windows
+  cd %svn_root%\smv\Build\LIBS\intel_win_64
+  make_LIBS
+  goto eof
 )
 
 :: osx
 
 if "%platform%" == "osx" (
-title building libraries for osx
-plink %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/makelibs.sh
-goto eof
+  title building libraries for osx
+  plink %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh
+  goto eof
 )
 
 :: linux
 
 if "%platform%" == "linux" (
-title building libraries for linux
-plink %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/makelibs.sh
-goto eof
+  title building libraries for linux
+  plink %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh
+  goto eof
 )
 
 

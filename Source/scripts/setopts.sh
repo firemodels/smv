@@ -1,12 +1,11 @@
 #!/bin/bash
-# test
-# test 2
 SIZE="-m64"
 COMPILER="icc"
 COMPILER2="icc"
 CFLAGOPT=
+QUARTZ=
 PLATFORM=""
-while getopts '36c:ghit' OPTION
+while getopts '36c:ghitq' OPTION
 do
 case $OPTION in
   h)
@@ -17,6 +16,7 @@ case $OPTION in
   echo "-c - add CFLAG option (for the Mac for now)"
   echo "-g - use the gcc compiler"
   echo "-i - use the Intel icc compiler"
+  echo "-q - using Quartz X11"
   exit
   ;;
   3)
@@ -36,6 +36,9 @@ case $OPTION in
    COMPILER="icc"
    COMPILER2="icc"
   ;;
+  q)
+   QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
+  ;;
   t)
    SIZE=""
   ;;
@@ -49,3 +52,4 @@ export COMPILER
 export CFLAGOPT
 export SIZE
 export PLATFORM
+export QUARTZ

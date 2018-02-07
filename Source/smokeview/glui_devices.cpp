@@ -172,22 +172,22 @@ extern "C" void UpdateShowbeamAsLine(void){
   if(CHECKBOX_showbeam_as_line!=NULL)CHECKBOX_showbeam_as_line->set_int_val(showbeam_as_line);
 }
 
-/* ------------------ update_device_size ------------------------ */
+/* ------------------ UpdateDeviceSize ------------------------ */
 
-extern "C" void update_device_size(void){
+extern "C" void UpdateDeviceSize(void){
   if(sensorrelsize<sensorrelsizeMIN)sensorrelsize = sensorrelsizeMIN;
   if(SPINNER_sensorrelsize!=NULL)SPINNER_sensorrelsize->set_float_val(sensorrelsize);
 }
 
-/* ------------------ update_device_orientation ------------------------ */
+/* ------------------ UpdateDeviceOrientation ------------------------ */
 
-extern "C" void update_device_orientation(void){
+extern "C" void UpdateDeviceOrientation(void){
   if(CHECKBOX_device_orientation!=NULL)CHECKBOX_device_orientation->set_int_val(show_device_orientation);
 }
 
-/* ------------------ Device_CB ------------------------ */
+/* ------------------ DeviceCB ------------------------ */
 
-void Device_CB(int var){
+void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
@@ -254,7 +254,7 @@ void Device_CB(int var){
     }
     if(ndevicetypes > 0){
       devicetypes[devicetypes_index]->type2vis = 1;
-      update_colordevs();
+      UpdateColorDevices();
     }
     break;
   case SHOWDEVICEVALS:
@@ -278,7 +278,7 @@ void Device_CB(int var){
     }
     break;
   case SAVE_SETTINGS:
-    WriteINI(LOCAL_INI, NULL);
+    WriteIni(LOCAL_INI, NULL);
     break;
   case DEVICE_close:
     HideGluiDevice();
@@ -288,17 +288,17 @@ void Device_CB(int var){
   }
 }
 
-/* ------------------ update_glui_devices ------------------------ */
+/* ------------------ UpdateGluiDevices ------------------------ */
 
-extern "C" void update_glui_devices(void){
-  Device_CB(SHOWDEVICEVALS);
-  Device_CB(COLORDEVICEVALS);
-  Device_CB(DEVICE_devicetypes);
+extern "C" void UpdateGluiDevices(void){
+  DeviceCB(SHOWDEVICEVALS);
+  DeviceCB(COLORDEVICEVALS);
+  DeviceCB(DEVICE_devicetypes);
 }
 
-/* ------------------ glui_device_setup ------------------------ */
+/* ------------------ GluiDeviceSetup ------------------------ */
 
-extern "C" void glui_device_setup(int main_window){
+extern "C" void GluiDeviceSetup(int main_window){
 
   update_glui_device=0;
   if(glui_device!=NULL){
@@ -316,14 +316,14 @@ extern "C" void glui_device_setup(int main_window){
     ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,"Objects",false, OBJECTS_ROLLOUT, Device_Rollout_CB);
     ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT);
 
-    SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,Device_CB);
+    SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,DeviceCB);
     CHECKBOX_device_3=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Outline"),&object_outlines);
-    CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Orientation"),&show_device_orientation,DEVICE_show_orientation,Device_CB);
+    CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Orientation"),&show_device_orientation,DEVICE_show_orientation,DeviceCB);
     SPINNER_orientation_scale=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Orientation scale"),GLUI_SPINNER_FLOAT,&orientation_scale);
     SPINNER_orientation_scale->set_float_limits(0.1,10.0);
     if(have_beam){
       PANEL_beam = glui_device->add_panel_to_panel(ROLLOUT_smvobjects, "Beam sensor", true);
-      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_beam,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,Device_CB);
+      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_beam,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,DeviceCB);
       SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_beam, _d("line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
       SPINNER_beam_line_width->set_float_limits(1.0, 20.0);
       CHECKBOX_use_beamcolor = glui_device->add_checkbox_to_panel(PANEL_beam, _d("Use color"), &use_beamcolor);
@@ -423,8 +423,8 @@ extern "C" void glui_device_setup(int main_window){
           TrimZeros(ylabel);
           sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
           ROLLOUT_show_windrose[i] = glui_device->add_rollout_to_panel(PANEL_show_windrose, roselabel, false);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Show all",WINDROSE_SHOWHIDEALL+i,Device_CB);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Hide all",WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,Device_CB);
+          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Show all",WINDROSE_SHOWHIDEALL+i,DeviceCB);
+          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Hide all",WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
 
           for(j = treei->first; j<=treei->last; j++){
             vdevicesortdata *vdevsorti;
@@ -448,11 +448,11 @@ extern "C" void glui_device_setup(int main_window){
       }
 
       ROLLOUT_properties=glui_device->add_rollout_to_panel(ROLLOUT_windrose,"properties",false);
-      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, DeviceCB);
       SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, Device_CB);
+      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, DeviceCB);
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, Device_CB);
+      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, DeviceCB);
       RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(ROLLOUT_properties, &windstate_windrose);
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "heading");
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
@@ -472,32 +472,31 @@ extern "C" void glui_device_setup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT);
 
 
-      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdevice_val, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Id"), &showdevice_id, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevice_type, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Unit"), &showdevice_unit, SHOWDEVICEVALS, Device_CB);
-      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_d("Color"),&colordevice_val,COLORDEVICEVALS,Device_CB);
+      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevice_type, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Unit"), &showdevice_unit, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_d("Color"),&colordevice_val,COLORDEVICEVALS,DeviceCB);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"min",GLUI_SPINNER_FLOAT,&device_valmin);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"max",GLUI_SPINNER_FLOAT,&device_valmax);
 
       PANEL_devicevis=glui_device->add_panel_to_panel(ROLLOUT_devicevalues,"",false);
       devicetypes_index=CLAMP(devicetypes_index,0,ndevicetypes-1);
-      RADIO_devicetypes=glui_device->add_radiogroup_to_panel(PANEL_devicevis,&devicetypes_index,DEVICE_devicetypes,Device_CB);
+      RADIO_devicetypes=glui_device->add_radiogroup_to_panel(PANEL_devicevis,&devicetypes_index,DEVICE_devicetypes,DeviceCB);
       for(i=0;i<ndevicetypes;i++){
         glui_device->add_radiobutton_to_group(RADIO_devicetypes,devicetypes[i]->quantity);
       }
-
-      update_glui_devices();
+      UpdateGluiDevices();
     }
   }
 
   PANEL_label3 = glui_device->add_panel("",false);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_d("Save settings"),SAVE_SETTINGS,Device_CB);
+  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_d("Save settings"),SAVE_SETTINGS,DeviceCB);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_d("Close"),DEVICE_close,Device_CB);
+  BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_d("Close"),DEVICE_close,DeviceCB);
 
   glui_device->set_main_gfx_window( main_window );
 }
@@ -515,9 +514,9 @@ extern "C" void ShowGluiDevice(void){
   if(glui_device!=NULL)glui_device->show();
 }
 
-/* ------------------ Open_CB ------------------------ */
+/* ------------------ OpenCB ------------------------ */
 
-void Open_CB(int var){
+void OpenCB(int var){
   int i;
   filelistdata *filei;
   char *open_filter_ptr;
@@ -527,7 +526,7 @@ void Open_CB(int var){
     case OPEN_UP:
       strcat(gluiopen_path_dir,dirseparator);
       strcat(gluiopen_path_dir,"..");
-      Open_CB(OPEN_UPDATE_LIST);
+      OpenCB(OPEN_UPDATE_LIST);
       break;
     case OPEN_DOWN:
       if(gluiopen_filelist==NULL)break;
@@ -535,7 +534,7 @@ void Open_CB(int var){
       if(filei->type==1){
         strcat(gluiopen_path_dir,dirseparator);
         strcat(gluiopen_path_dir,filei->file);
-        Open_CB(OPEN_UPDATE_LIST);
+        OpenCB(OPEN_UPDATE_LIST);
       }
       break;
     case OPEN_FILEINDEX:
@@ -555,7 +554,7 @@ void Open_CB(int var){
       if(filei->type==1){
         strcat(gluiopen_path_dir,dirseparator);
         strcat(gluiopen_path_dir,filei->file);
-        Open_CB(OPEN_UPDATE_LIST);
+        OpenCB(OPEN_UPDATE_LIST);
       }
       else{
         PRINTF("opening file: %s\n",filei->file);
@@ -570,7 +569,7 @@ void Open_CB(int var){
       TrimBack(gluiopen_filter2);
       open_filter_ptr = TrimFront(gluiopen_filter2);
       EDIT_filter->set_text(open_filter_ptr);
-      Open_CB(OPEN_UPDATE_LIST);
+      OpenCB(OPEN_UPDATE_LIST);
       break;
     case OPEN_UPDATE_LIST:
       LIST_open->delete_item("");

@@ -166,17 +166,17 @@ void SetViewPoint(int option){
     axis[1]=0.0;
     axis[2]=1.0;
 
-    angleaxis2quat(azimuth,axis,quat_temp);
+    AngleAxis2Quat(azimuth,axis,quat_temp);
 
     axis[0]=x;
     axis[1]=y;
     axis[2]=0.0;
 
-    angleaxis2quat(acos(z),axis,quat_general);
+    AngleAxis2Quat(acos(z),axis,quat_general);
 
-    mult_quat(quat_temp,quat_general,quat_general);
+    MultQuat(quat_temp,quat_general,quat_general);
 
-    quat2rot(quat_general,quat_rotation);
+    Quat2Rot(quat_general,quat_rotation);
   }
   if(option==RESTORE_EXTERIOR_VIEW_ZOOM)camera_current->zoom=zooms[zoomindex];
   zoom=camera_current->zoom;
@@ -198,7 +198,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
     STRCAT(volrender_scriptname,"_volrender.ssf");
   }
 
-  sfd = insert_scriptfile(volrender_scriptname);
+  sfd = InsertScriptFile(volrender_scriptname);
   if(sfd!=NULL)default_script=sfd;
   script_stream=fopen(volrender_scriptname,"w");
   if(script_stream!=NULL){

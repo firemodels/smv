@@ -355,7 +355,7 @@ int convert_boundary(patch *patchi, int *thread_index){
 
       //int compress (Bytef *dest,   uLongf *destLen, const Bytef *source, uLong sourceLen);
       ncompressed_zlib=ncompressed_zlibSAVE;
-      returncode=compress_zlib(compressed_boundarybuffer, &ncompressed_zlib, full_boundarybuffer, npatchfull);
+      returncode=CompressZLIB(compressed_boundarybuffer, &ncompressed_zlib, full_boundarybuffer, npatchfull);
       if(returncode!=0){
         fprintf(stderr,"*** Error: compress returncode=%i\n",returncode);
       }
@@ -572,7 +572,6 @@ void update_patch_hist(void){
     pk2 = patchi->pk2;
 
     LOCK_COMPRESS;
-    FORTget_file_unit(&unit1,&patchi->unit_start);
     FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
     UNLOCK_COMPRESS;
 

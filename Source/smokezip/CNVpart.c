@@ -363,7 +363,6 @@ void convert_part(part *parti, int *thread_index){
 
   lenfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error,lenfile);
   UNLOCK_COMPRESS;
 
@@ -479,7 +478,7 @@ void convert_part(part *parti, int *thread_index){
     ncompressed_int=0;
     if(ntotal_int>0){
       ncompressed_zlib=BUFFER_SIZE;
-      compress_zlib(int_buffer_compressed, &ncompressed_zlib, (unsigned char *)int_buffer_uncompressed, 4*ntotal_int);
+      CompressZLIB(int_buffer_compressed, &ncompressed_zlib, (unsigned char *)int_buffer_uncompressed, 4*ntotal_int);
       ncompressed_int = ncompressed_zlib;
       sizeafter+=(4+ncompressed_int);
       fwrite(&ncompressed_int,4,1,partstream);
@@ -489,7 +488,7 @@ void convert_part(part *parti, int *thread_index){
     ncompressed_char=0;
     if(ntotal_char>0){
       ncompressed_zlib=BUFFER_SIZE;
-      compress_zlib(char_buffer_compressed, &ncompressed_zlib, char_buffer_uncompressed, ntotal_char);
+      CompressZLIB(char_buffer_compressed, &ncompressed_zlib, char_buffer_uncompressed, ntotal_char);
       ncompressed_char = ncompressed_zlib;
       sizeafter+=(4+ncompressed_char);
       fwrite(&ncompressed_char,4,1,partstream);
@@ -579,8 +578,6 @@ void Get_Part_Bounds(void){
     PRINTF("  Examining %s\n",parti->file);
     lenfile=strlen(parti->file);
     LOCK_COMPRESS;
-    unit=15;
-    FORTget_file_unit(&unit,&parti->unit_start);
     FORTopenpart(parti->file,&unit,&error1,lenfile);
     UNLOCK_COMPRESS;
 
@@ -718,7 +715,6 @@ void part2iso(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 
@@ -1079,7 +1075,6 @@ void part2object(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTget_file_unit(&unit,&parti->unit_start);
   FORTopenpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 

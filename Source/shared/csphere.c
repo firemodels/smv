@@ -5,9 +5,9 @@
 #include <math.h>
 #include "csphere.h"
 
-/* ------------------ initspherepoints ------------------------ */
+/* ------------------ InitSpherePoints ------------------------ */
 
-void initspherepoints(spherepoints *sphereinfo, int n){
+void InitSpherePoints(spherepoints *sphereinfo, int n){
   int i,j;
   float pi;
   float *normals;
@@ -127,9 +127,9 @@ void initspherepoints(spherepoints *sphereinfo, int n){
   sphereinfo->maxerr_deg=asin(maxerr/2.0)*180.0/pi;
 }
 
-/* ------------------ freespherepoints ------------------------ */
+/* ------------------ FreeSpherePoints ------------------------ */
 
-void freespherepoints(spherepoints *sphereinfo){
+void FreeSpherePoints(spherepoints *sphereinfo){
   FREEMEMORY(sphereinfo->dtheta);
   FREEMEMORY(sphereinfo->nlong);
   FREEMEMORY(sphereinfo->vallist);
@@ -137,9 +137,9 @@ void freespherepoints(spherepoints *sphereinfo){
 }
 
 
-/* ------------------ getnormalvectorptr ------------------------ */
+/* ------------------ GetNormalVectorPtr ------------------------ */
 
-float *getnormalvectorptr(spherepoints *sphereinfo, unsigned int index){
+float *GetNormalVectorPtr(spherepoints *sphereinfo, unsigned int index){
   float *normptr;
 
   if(index>sphereinfo->npoints)index=sphereinfo->npoints;
@@ -147,9 +147,9 @@ float *getnormalvectorptr(spherepoints *sphereinfo, unsigned int index){
   return normptr;
 }
 
-/* ------------------ getnormalvector ------------------------ */
+/* ------------------ GetNormalVector ------------------------ */
 
-void getnormalvector(spherepoints *sphereinfo, unsigned int index, float *normal){
+void GetNormalVector(spherepoints *sphereinfo, unsigned int index, float *normal){
   float *normptr;
 
   if(index>sphereinfo->npoints)index=sphereinfo->npoints;
@@ -159,9 +159,9 @@ void getnormalvector(spherepoints *sphereinfo, unsigned int index, float *normal
   normal[2]=normptr[2];
 }
 
-/* ------------------ getnormalindex2 ------------------------ */
+/* ------------------ GetNormalIndex2 ------------------------ */
 
-unsigned int getnormalindex2(spherepoints *sphereinfo, float *normal){
+unsigned int GetNormalIndex2(spherepoints *sphereinfo, float *normal){
   float norm;
   float x, y, z;
   float theta, phi;
@@ -201,9 +201,9 @@ unsigned int getnormalindex2(spherepoints *sphereinfo, float *normal){
   return returnval;
 }
 
-/* ------------------ getnormalindex ------------------------ */
+/* ------------------ GetNormalIndex ------------------------ */
 
-unsigned int getnormalindex(spherepoints *sphereinfo, float *normal){
+unsigned int GetNormalIndex(spherepoints *sphereinfo, float *normal){
   float norm;
   float x, y, z;
   unsigned int i;

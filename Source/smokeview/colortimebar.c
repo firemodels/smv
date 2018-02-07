@@ -15,13 +15,21 @@ void UpdateTimeLabels(void){
   if(global_times!=NULL)time0 = timeoffset + global_times[itimes];
   if(vishmsTimelabel==1){
     int hour, min, sec,sec10;
+    char sign[2];
 
+    if(time0 < 0){
+      strcpy(sign,"-");
+      time0 = ABS(time0);
+    }
+    else{
+      strcpy(sign," ");
+    }
     hour = time0/3600;
     min = (int)(time0/60.0 - 60.0*hour);
     sec10 = (int)(10*(time0 -  60.0*min - 3600.0*hour));
     sec = sec10/10;
     sec10 = sec10 - 10*sec;
-    sprintf(timelabel,"  %i:%.2i:%.2i.%i",hour,min,sec,sec10);
+    sprintf(timelabel,"  %s%i:%.2i:%.2i.%i", sign,hour, min, sec, sec10);
   }
   else{
     float dt;
@@ -113,6 +121,34 @@ void AddColorbar(int icolorbar){
 
 }
 
+/* ------------------ DrawSelectColorbar ------------------------ */
+
+void DrawSelectColorbar(void){
+  int i;
+  colorbardata *cbi;
+
+  if(show_firecolormap==0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo+fire_colorbar_index;
+  }
+
+  glPointSize(20.0f);
+  glBegin(GL_POINTS);
+  for(i=0;i<cbi->nnodes;i++){
+    unsigned char *rrgb, r, g, b;
+
+    GetRGB(i+1, &r, &g, &b);
+    glColor3ub(r, g, b);
+
+    rrgb=cbi->rgb_node+3*i;
+    glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
+  }
+  glEnd();
+}
+
+
 /* ------------------ DrawColorbarPath ------------------------ */
 
 void DrawColorbarPath(void){
@@ -179,6 +215,14 @@ void DrawColorbarPath(void){
     glColor3ubv(rgbleft);
     glVertex3f(rgbleft[0]/255.0,rgbleft[1]/255.0,rgbleft[2]/255.0);
     glEnd();
+    if(show_colorbar_hint==1){
+      float xyz[3];
+
+      xyz[0] = rgbleft[0] / 255.0 + 0.1;
+      xyz[1] = rgbleft[1] / 255.0 + 0.1;
+      xyz[2] = rgbleft[2] / 255.0 + 0.1;
+      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], "click and drag to change colorbar node");
+    }
   }
 
   {
@@ -345,7 +389,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
       break;
     }
   }
-  if(is_fed_colorbar==1&&fed_loaded==1)Slice_CB(FILEUPDATE);
+  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILEUPDATE);
 }
 
 /* ------------------ RemapColorbar ------------------------ */
@@ -1598,7 +1642,7 @@ void DrawColorbarRegLabels(void){
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    patchi = patchinfo + patchtypes[ipatchtype];
+    patchi = patchinfo + boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
@@ -1883,38 +1927,38 @@ void DrawColorbarRegLabels(void){
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
     if(global_colorbar_index != -1){
-      char patchcolorlabel[256], boundarylabel[256], *patchcolorlabel_ptr = NULL;
+      char boundary_colorlabel[256], boundarylabel[256], *boundary_colorlabel_ptr = NULL;
       float vert_position;
 
       // draw boundary file value selected with mouse
       tttval = boundarylevels256[valindex];
       Num2String(boundarylabel, tttval);
-      patchcolorlabel_ptr = &(boundarylabel[0]);
+      boundary_colorlabel_ptr = &(boundarylabel[0]);
       if(patchflag == 1){
-        ScaleFloat2String(tttval, patchcolorlabel, patchfactor);
-        patchcolorlabel_ptr = patchcolorlabel;
+        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor);
+        boundary_colorlabel_ptr = boundary_colorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, colorbar_top_pos, colorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
-      OutputBarText(0.0, vert_position, red_color, patchcolorlabel_ptr);
+      OutputBarText(0.0, vert_position, red_color, boundary_colorlabel_ptr);
     }
     for(i = 0; i < nrgb - 1; i++){
-      char patchcolorlabel[256];
-      char *patchcolorlabel_ptr = NULL;
+      char boundary_colorlabel[256];
+      char *boundary_colorlabel_ptr = NULL;
       float vert_position;
 
       vert_position = MIX2(i, nrgb - 2, colorbar_top_pos, colorbar_down_pos);
 
       if(iposition == i)continue;
-      patchcolorlabel_ptr = &colorlabelpatch[i + 1][0];
+      boundary_colorlabel_ptr = &colorlabelpatch[i + 1][0];
       if(patchflag == 1){
         float val;
 
         val = tttmin + i*patchrange / (nrgb - 2);
-        ScaleFloat2String(val, patchcolorlabel, patchfactor);
-        patchcolorlabel_ptr = patchcolorlabel;
+        ScaleFloat2String(val, boundary_colorlabel, patchfactor);
+        boundary_colorlabel_ptr = boundary_colorlabel;
       }
-      OutputBarText(0.0, vert_position, foreground_color, patchcolorlabel_ptr);
+      OutputBarText(0.0, vert_position, foreground_color, boundary_colorlabel_ptr);
     }
     glPopMatrix();
   }
@@ -2043,6 +2087,126 @@ void DrawColorbarRegLabels(void){
     }
     glPopMatrix();
   }
+}
+
+/* ------------------ Rgb2Hsl ------------------------ */
+
+void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
+  // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
+  float cmin, cmax, r, g, b;
+  float luminance, saturation, hue;
+  int maxmode;
+  float cmaxmcmin;
+
+  r = rgbvals[0];
+  g = rgbvals[1];
+  b = rgbvals[2];
+  if(flag==1){
+    r /= 255.0;
+    g /= 255.0;
+    b /= 255.0;
+  }
+
+  cmin = MIN(r, MIN(g, b));
+  cmax = MAX(r, MAX(g, b));
+  cmaxmcmin = cmax-cmin;
+  if(r>=MAX(g, b))maxmode = 0;
+  if(g>=MAX(r, b))maxmode = 1;
+  if(b>=MAX(r, g))maxmode = 2;
+
+  luminance = (cmin+cmax)/2.0;
+  if(cmaxmcmin==0.0||luminance==0.0){
+    saturation = 0.0;
+    hue = 0.0;
+  }
+  else{
+    if(luminance>0.0&&luminance<0.5){
+      saturation = (cmax-cmin)/(2.0*luminance);
+    }
+    else if(luminance>=0.5){
+      float denom;
+
+      denom = 2.0-2.0*luminance;
+      if(denom!=0.0){
+        saturation = (cmax-cmin)/denom;
+      }
+      else{
+        saturation = 1.0;
+        hue = 0.0;
+      }
+    }
+  }
+
+  if(cmaxmcmin>0.0&&luminance!=0.0&&luminance!=1.0){
+    if(maxmode==0){
+      hue = (g-b)/cmaxmcmin;
+    }
+    else if(maxmode==1){
+      hue = 2.0+(b-r)/cmaxmcmin;
+    }
+    else{
+      hue = 4.0+(r-g)/cmaxmcmin;
+    }
+    hue *= 60.0;
+    if(hue<0.0)hue += 360.0;
+  }
+  else{
+    hue = 0.0;
+  }
+  hslvals[0] = hue;
+  hslvals[1] = saturation;
+  hslvals[2] = luminance;
+}
+
+/* ------------------ Hsl2Rgb ------------------------ */
+
+void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
+  // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
+
+  float hue, saturation, luminance;
+  float r, g, b;
+  float temp_1, temp_2;
+  float temp_r, temp_g, temp_b;
+
+  hue = ABS(hslvals[0]);
+  saturation = ABS(hslvals[1]);
+  luminance = ABS(hslvals[2]);
+  if(saturation==0.0){
+    r = saturation;
+    g = saturation;
+    b = saturation;
+    if(flag==1.0){
+      r *= 255.0;
+      g *= 255.0;
+      b *= 255.0;
+    }
+    rgbvals[0] = r;
+    rgbvals[1] = b;
+    rgbvals[2] = g;
+    return;
+  }
+  if(luminance<0.5){
+    temp_1 = luminance*(1.0+saturation);
+  }
+  else{
+    temp_1 = luminance+saturation-luminance*saturation;
+  }
+  temp_2 = 2.0*luminance-temp_1;
+
+  hue /= 360.0;
+
+  temp_r = hue+1.0/3.0;
+  if(temp_r<0.0)temp_r += 1.0;
+  if(temp_r>1.0)temp_r -= 1.0;
+
+  temp_g = hue;
+  if(temp_g<0.0)temp_g += 1.0;
+  if(temp_g>1.0)temp_g -= 1.0;
+
+  temp_b = hue-1.0/3.0;
+  if(temp_b<0.0)temp_b += 1.0;
+  if(temp_b>1.0)temp_b -= 1.0;
+
 }
 
 

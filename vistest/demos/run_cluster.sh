@@ -1,7 +1,8 @@
 #!/bin/bash
-QFDS="qfds.sh -p 8 -e ../../../fds/Build/mpi_intel_linux_64ib/fds_mpi_intel_linux_64ib"
+QFDS="../../../fds/Utilities/Scripts/qfds.sh -I "
 
-$QFDS cluster1.fds
-$QFDS cluster1b.fds
-$QFDS cluster2.fds
-$QFDS cluster2b.fds
+$QFDS -p   4      chassis1.fds
+$QFDS -p  32 -n 8 chassis2.fds
+$QFDS -p  4       chassis3.fds
+$QFDS -p  16 -n 8 cluster1.fds
+$QFDS -p 128 -n 8 cluster2.fds

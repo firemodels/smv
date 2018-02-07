@@ -32,6 +32,9 @@ EXTERNCPP void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int opt
 EXTERNCPP int GetElevations(char *elevfile, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
+#ifdef pp_CSVF
+SVEXTERN char csv_file[1024];
+#endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN int SVDECL(elev_file, 0);
 SVEXTERN char surf_id[1024], matl_id[1024];

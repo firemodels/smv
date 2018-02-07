@@ -7,14 +7,14 @@
 
 #include "smokeviewvars.h"
 
-/* ------------------ get_shooter_vel ------------------------ */
+/* ------------------ GetShooterVel ------------------------ */
 
-void get_shooter_vel(float *uvw, float *xyz){
+void GetShooterVel(float *uvw, float *xyz){
   float factor;
 
   if(shooter_vel_type==0&&plot3dtimelist!=NULL){
     // plot3d velocities
-    get_plot3d_uvw(xyz, uvw);
+    GetPlot3dUVW(xyz, uvw);
   }
   else{
     // power law velocities
@@ -25,9 +25,9 @@ void get_shooter_vel(float *uvw, float *xyz){
   }
 }
 
-/* ------------------ increment_shooter_data ------------------------ */
+/* ------------------ IncrementShooterData ------------------------ */
 
-void increment_shooter_data(shootpointdata *pold, shootpointdata *pnew, float dtstep){
+void IncrementShooterData(shootpointdata *pold, shootpointdata *pnew, float dtstep){
   int i;
   float *xyzold, *uvwold, uvw_air[3];
   float *xyznew, *uvwnew;
@@ -58,7 +58,7 @@ void increment_shooter_data(shootpointdata *pold, shootpointdata *pnew, float dt
     for(tstep=0.0;tstep<dtstep;tstep+=dt){
       float dvelmin;
 
-      get_shooter_vel(uvw_air,xyznew);
+      GetShooterVel(uvw_air,xyznew);
       meshpoint = GetMeshNoFail(xyznew);
       if(meshpoint==NULL)meshpoint=meshinfo;
       grid_vel =  sqrt(uvwnew[0]*uvwnew[0]+uvwnew[1]*uvwnew[1]+uvwnew[2]*uvwnew[2]);
@@ -94,9 +94,9 @@ void increment_shooter_data(shootpointdata *pold, shootpointdata *pnew, float dt
   shooter_active=1;
 }
 
-/* ------------------ init_shooter_data ------------------------ */
+/* ------------------ InitShooterData ------------------------ */
 
-void init_shooter_data(void){
+void InitShooterData(void){
   int i;
   float *xyz, *uvw;
   float xmin, ymin, zmin;
@@ -126,9 +126,9 @@ void init_shooter_data(void){
   shooter_time=0.0;
 }
 
-/* ------------------ solve_shooter_data ------------------------ */
+/* ------------------ SolveShooterData ------------------------ */
 
-void solve_shooter_data(void){
+void SolveShooterData(void){
   int i;
   float shooter_dt;
 
@@ -139,14 +139,14 @@ void solve_shooter_data(void){
     shooter_dt=1.0/(float)shooter_fps;
   }
 
-  init_shooter_data();
+  InitShooterData();
   for(i=1;i<nshooter_frames;i++){
     shootpointdata *pold, *pnew;
 
     pold = shootpointinfo + (i-1)*shooter_nparts;
     pnew = pold + shooter_nparts;
     pnew->prev=pold;
-    increment_shooter_data(pold,pnew,shooter_dt);
+    IncrementShooterData(pold,pnew,shooter_dt);
     shoottimeinfo[i].beg=pold;
     shoottimeinfo[i].end=pnew-1;
     shoottimeinfo[i].frame=i;
@@ -154,9 +154,9 @@ void solve_shooter_data(void){
   }
 }
 
-/* ------------------ draw_shooter ------------------------ */
+/* ------------------ DrawShooter ------------------------ */
 
-void draw_shooter(void){
+void DrawShooter(void){
   int i;
   int iframe_local;
   shootpointdata *pb, *pe;

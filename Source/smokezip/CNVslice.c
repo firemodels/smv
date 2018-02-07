@@ -182,7 +182,7 @@ int convert_volslice(slice *slicei, int *thread_index){
         ASSERT(0);
       }
       CheckMemory;
-      compress_volsliceframe(sliceframe_data, framesize, time_local, valmin, valmax,
+      CompressVolSliceFrame(sliceframe_data, framesize, time_local, valmin, valmax,
                 &compressed_data_out, &ncompressed_data_out);
       CheckMemory;
       sizeafter+=ncompressed_data_out;
@@ -256,7 +256,7 @@ int convert_volslice(slice *slicei, int *thread_index){
 
 /* ------------------ convert_slice ------------------------ */
 
-// unsigned int uncompress_rle(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out)
+// unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out)
 
 int convert_slice(slice *slicei, int *thread_index){
 
@@ -664,7 +664,7 @@ int convert_slice(slice *slicei, int *thread_index){
 
       //int compress (Bytef *dest,   uLongf *destLen, const Bytef *source, uLong sourceLen);
       ncompressed_zlib=ncompressed_save;
-      returncode=compress_zlib(sliceframe_compressed,&ncompressed_zlib,sliceframe_uncompressed,framesize);
+      returncode=CompressZLIB(sliceframe_compressed,&ncompressed_zlib,sliceframe_uncompressed,framesize);
 
       file_loc=FTELL(slicestream);
       fwrite(&time_local,4,1,slicestream);
@@ -899,7 +899,6 @@ void update_slice_hist(void){
     lenfile=strlen(slicei->file);
 
     LOCK_COMPRESS;
-    FORTget_file_unit(&unit1,&slicei->unit_start);
     FORTopenslice(slicei->file,&unit1,&is1,&is2,&js1,&js2,&ks1,&ks2,&error1,lenfile);
     UNLOCK_COMPRESS;
 

@@ -10,9 +10,9 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 
-/* ------------------ output_Patchdata ------------------------ */
+/* ------------------ OutputBoundaryData ------------------------ */
 
-void output_Patchdata(char *csvfile, char *patchfile, meshdata *meshi){
+void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi){
   int iframe;
   float *vals;
   float *xplt, *yplt, *zplt;
@@ -29,7 +29,7 @@ void output_Patchdata(char *csvfile, char *patchfile, meshdata *meshi){
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
 
-  for(iframe=0;iframe<meshi->mxpatch_frames;iframe++){
+  for(iframe=0;iframe<meshi->maxtimes_boundary;iframe++){
     int ipatch;
     float pt;
 
@@ -159,9 +159,9 @@ void output_Patchdata(char *csvfile, char *patchfile, meshdata *meshi){
 
 }
 
-/* ------------------ getpatchfacedir ------------------------ */
+/* ------------------ GetBoundaryFaceDir ------------------------ */
 
-int getpatchfacedir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2,
+int GetBoundaryFaceDir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2,
   int *blockonpatch, meshdata **meshonpatch){
   int i;
 
@@ -261,9 +261,9 @@ int getpatchfacedir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int
   return(0);
 }
 
-/* ------------------ getpatchface2dir ------------------------ */
+/* ------------------ GetBoundaryFace2Dir ------------------------ */
 
-int getpatchface2dir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2, int patchdir,
+int GetBoundaryFace2Dir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2, int patchdir,
   int *blockonpatch, meshdata **meshonpatch){
   int i;
   blockagedata *bc;
@@ -358,23 +358,23 @@ int getpatchface2dir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, in
   return(0);
 }
 
-/* ------------------ getpatchindex ------------------------ */
+/* ------------------ GetBoundaryIndex ------------------------ */
 
-int getpatchindex(const patchdata *patchi){
+int GetBoundaryIndex(const patchdata *patchi){
   int j;
 
-  for(j = 0; j < npatchtypes; j++){
+  for(j = 0; j < nboundarytypes; j++){
     patchdata *patchi2;
 
-    patchi2 = patchinfo + patchtypes[j];
-    if(strcmp(patchi->label.shortlabel, patchi2->label.shortlabel) == 0)return patchtypes[j];
+    patchi2 = patchinfo + boundarytypes[j];
+    if(strcmp(patchi->label.shortlabel, patchi2->label.shortlabel) == 0)return boundarytypes[j];
   }
   return -1;
 }
 
-/* ------------------ update_vent_colors ------------------------ */
+/* ------------------ InitVentColors ------------------------ */
 
-void init_vent_colors(void){
+void InitVentColors(void){
   int i;
 
   nventcolors = 0;
@@ -691,16 +691,597 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
   }
 }
 
-/* ------------------ readpatch_bndf ------------------------ */
+/* ------------------ DrawOnlyThreshold ------------------------ */
 
-void readpatch_bndf(int ifile, int flag, int *errorcode){
+void DrawOnlyThreshold(const meshdata *meshi){
+  int n, nn, nn1, nn2;
+  int nrow, ncol, irow, icol;
+  float *xyzpatchcopy;
+  int *patchblankcopy;
+  float *patch_times;
+  int *vis_boundaries;
+  float *xyzpatch;
+  int *patchdir, *boundary_row, *boundary_col;
+  int *blockstart;
+  int *patchblank;
+  int iblock;
+  blockagedata *bc;
+  patchdata *patchi;
+  float *color11, *color12, *color21, *color22;
+  float *color_black;
+  meshdata *meshblock;
+
+  if(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)return;
+
+  patch_times = meshi->patch_times;
+  vis_boundaries = meshi->vis_boundaries;
+  xyzpatch = meshi->xyzpatch_threshold;
+  patchdir = meshi->patchdir;
+  boundary_row = meshi->boundary_row;
+  boundary_col = meshi->boundary_col;
+  blockstart = meshi->blockstart;
+  patchblank = meshi->patchblank;
+  patchi = patchinfo+meshi->patchfilenum;
+  switch(patchi->compression_type){
+  case UNCOMPRESSED:
+    ASSERT(meshi->cpatchval_iframe!=NULL);
+    break;
+  case COMPRESSED_ZLIB:
+    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
+    break;
+  default:
+    ASSERT(FFALSE);
+  }
+  patchi = patchinfo+meshi->patchfilenum;
+
+  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(cullfaces==1)glDisable(GL_CULL_FACE);
+
+  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
+
+  nn = 0;
+  color_black = &char_color[0];
+  glBegin(GL_TRIANGLES);
+  glColor4fv(color_black);
+  for(n = 0;n<meshi->npatches;n++){
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    if(vis_boundaries[n]==1&&patchdir[n]==0){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            int nnulls;
+
+            nnulls = 4;
+            color11 = NULL;
+            color12 = NULL;
+            color21 = NULL;
+            color22 = NULL;
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+              color11 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+              color12 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+              color21 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+              color22 = &char_color[0];
+              nnulls--;
+            }
+
+            if(nnulls==0){
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp1+3);
+              glVertex3fv(xyzp2+3);
+
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp2+3);
+              glVertex3fv(xyzp2);
+            }
+            if(nnulls==1){
+              if(color11!=NULL)glVertex3fv(xyzp1);
+              if(color12!=NULL)glVertex3fv(xyzp1+3);
+              if(color22!=NULL)glVertex3fv(xyzp2+3);
+              if(color21!=NULL)glVertex3fv(xyzp2);
+            }
+          }
+          patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  glEnd();
+  if(cullfaces==1)glEnable(GL_CULL_FACE);
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+
+  glBegin(GL_TRIANGLES);
+  glColor4fv(color_black);
+  nn = 0;
+  for(n = 0;n<meshi->npatches;n++){
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    if(iblock!=-1){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+
+        xyzp2 = xyzp1+3*ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            int nnulls;
+
+            color11 = NULL;
+            color12 = NULL;
+            color21 = NULL;
+            color22 = NULL;
+            nnulls = 4;
+
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+              color11 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+              color12 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+              color21 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+              color22 = &char_color[0];
+              nnulls--;
+            }
+
+            if(nnulls==0){
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp1+3);
+              glVertex3fv(xyzp2+3);
+
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp2+3);
+              glVertex3fv(xyzp2);
+            }
+            if(nnulls==1){
+              if(color11!=NULL)glVertex3fv(xyzp1);
+              if(color12!=NULL)glVertex3fv(xyzp1+3);
+              if(color22!=NULL)glVertex3fv(xyzp2+3);
+              if(color21!=NULL)glVertex3fv(xyzp2);
+            }
+          }
+          patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+  nn = 0;
+  for(n = 0;n<meshi->npatches;n++){
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            int nnulls;
+
+            color11 = NULL;
+            color12 = NULL;
+            color21 = NULL;
+            color22 = NULL;
+            nnulls = 4;
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+              color11 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+              color12 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+              color21 = &char_color[0];
+              nnulls--;
+            }
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+              color22 = &char_color[0];
+              nnulls--;
+            }
+            if(nnulls==0){
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp2+3);
+              glVertex3fv(xyzp1+3);
+
+              glVertex3fv(xyzp1);
+              glVertex3fv(xyzp2);
+              glVertex3fv(xyzp2+3);
+            }
+            if(nnulls==1){
+              if(color21!=NULL)glVertex3fv(xyzp2);
+              if(color22!=NULL)glVertex3fv(xyzp2+3);
+              if(color12!=NULL)glVertex3fv(xyzp1+3);
+              if(color11!=NULL)glVertex3fv(xyzp1);
+            }
+          }
+          patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  glEnd();
+}
+
+/* ------------------ GetBoundaryDataZlib ------------------------ */
+
+void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
+  float *local_times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes_local){
+  FILE *stream;
+  float local_time;
+  unsigned int compressed_size;
+  int npatches;
+  int version;
+  int return_code;
+  int i;
+  int local_skip;
+  unsigned char *datacopy;
+  unsigned int offset;
+  int local_count;
+  float time_max;
+
+  // endian
+  // completion (0/1)
+  // fileversion (compressed format)
+  // version  (bndf version)
+  // global min max (used to perform conversion)
+  // local min max  (min max found for this file)
+  // npatch
+  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
+  // time
+  // compressed size of frame
+  // compressed buffer
+
+  stream = fopen(patchi->file, "rb");
+  if(stream==NULL)return;
+
+  FSEEK(stream, 12, SEEK_CUR);
+  fread(&version, 4, 1, stream);
+  FSEEK(stream, 16, SEEK_CUR);
+  fread(&npatches, 4, 1, stream);
+  if(version==0){
+    local_skip = 6*npatches*4;
+  }
+  else{
+    local_skip = 9*npatches*4;
+  }
+  return_code = FSEEK(stream, local_skip, SEEK_CUR);
+  if(return_code!=0){
+    fclose(stream);
+    return;
+  }
+  datacopy = data;
+  offset = 0;
+  local_count = -1;
+  i = -1;
+  time_max = -1000000.0;
+  CheckMemory;
+  for(;;){
+    int skip_frame;
+
+    if(fread(&local_time, 4, 1, stream)==0)break;
+    skip_frame = 1;
+    if(local_time>time_max){
+      time_max = local_time;
+      skip_frame = 0;
+      local_count++;
+    }
+    if(fread(&compressed_size, 4, 1, stream)==0)break;
+    if(skip_frame==0&&local_count%boundframestep==0){
+      if(fread(datacopy, 1, compressed_size, stream)==0)break;
+    }
+    else{
+      FSEEK(stream, compressed_size, SEEK_CUR);
+    }
+
+    if(skip_frame==1||local_count%boundframestep!=0)continue;
+    i++;
+    if(i>=ntimes_local)break;
+    PRINTF("boundary time=%.2f\n", local_time);
+    ASSERT(i<ntimes_local);
+    local_times[i] = local_time;
+    zipoffset[i] = offset;
+    zipsize[i] = compressed_size;
+    datacopy += compressed_size;
+    offset += compressed_size;
+  }
+  fclose(stream);
+}
+/* ------------------ GetBoundaryHeader ------------------------ */
+
+void GetBoundaryHeader(char *file, int *npatches, float *ppatchmin, float *ppatchmax){
+  FILE *stream;
+  float minmax[2];
+
+  stream = fopen(file, "rb");
+
+  if(stream==NULL)return;
+
+  // endian
+  // completion (0/1)
+  // fileversion (compressed format)
+  // version  (bndf version)
+  // global min max (used to perform conversion)
+  // local min max  (min max found for this file)
+  // npatch
+  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
+  // time
+  // compressed size of frame
+  // compressed buffer
+
+  FSEEK(stream, 16, SEEK_CUR);
+
+  fread(minmax, 4, 2, stream);
+  FSEEK(stream, 8, SEEK_CUR);
+  fread(npatches, 4, 1, stream);
+  *ppatchmin = minmax[0];
+  *ppatchmax = minmax[1];
+  fclose(stream);
+}
+
+/* ------------------ GetBoundaryHeader2 ------------------------ */
+
+void GetBoundaryHeader2(char *file,
+  int *version,
+  int *pi1, int *pi2,
+  int *pj1, int *pj2,
+  int *pk1, int *pk2,
+  int *patchdir){
+  int i;
+  int buffer[9];
+  FILE *stream;
+  int npatches;
+
+  // endian
+  // completion (0/1)
+  // fileversion (compressed format)
+  // version  (bndf version)
+  // global min max (used to perform conversion)
+  // local min max  (min max found for this file)
+  // npatch
+  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
+  // time
+  // compressed size of frame
+  // compressed buffer
+
+  stream = fopen(file, "rb");
+
+  if(stream==NULL)return;
+
+  FSEEK(stream, 12, SEEK_CUR);
+  fread(version, 4, 1, stream);
+  FSEEK(stream, 16, SEEK_CUR);
+  fread(&npatches, 4, 1, stream);
+  for(i = 0;i<npatches;i++){
+    buffer[6] = 0;
+    if(*version==0){
+      fread(buffer, 4, 6, stream);
+    }
+    else{
+      fread(buffer, 4, 9, stream);
+    }
+    pi1[i] = buffer[0];
+    pi2[i] = buffer[1];
+    pj1[i] = buffer[2];
+    pj2[i] = buffer[3];
+    pk1[i] = buffer[4];
+    pk2[i] = buffer[5];
+    patchdir[i] = buffer[6];
+  }
+  fclose(stream);
+}
+
+/* ------------------ GetBoundarySizeInfo ------------------------ */
+
+void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
+  FILE *streamsize;
+  FILE *stream;
+  int nf = 0, bsize = 0;
+  float local_time;
+  char buffer[255];
+  int full_size, compressed_size;
+  int npatches;
+  int buff[9];
+  int version;
+  int size;
+  size_t return_code;
+  int i;
+  char sizefile[1024];
+  int local_count;
+  float time_max;
+
+  // endian
+  // completion (0/1)
+  // fileversion (compressed format)
+  // version  (bndf version)
+  // global min max (used to perform conversion)
+  // local min max  (min max found for this file)
+  // npatch
+  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
+  // time
+  // compressed size of frame
+  // compressed buffer
+
+  strcpy(sizefile, patchi->size_file);
+  strcat(sizefile, ".szz");
+  streamsize = fopen(sizefile, "r");
+  if(streamsize==NULL){
+    *nframes = 0;
+    *buffersize = 0;
+
+    strcpy(sizefile, patchi->size_file);
+    strcat(sizefile, ".sz");
+    streamsize = fopen(sizefile, "r");
+
+    stream = fopen(patchi->file, "rb");
+    if(stream==NULL){
+      if(streamsize!=NULL)fclose(streamsize);
+      return;
+    }
+
+    streamsize = fopen(sizefile, "w");
+    if(streamsize==NULL){
+      fclose(stream);
+      return;
+    }
+
+    FSEEK(stream, 12, SEEK_CUR);
+    fread(&version, 4, 1, stream);
+    FSEEK(stream, 16, SEEK_CUR);
+    fread(&npatches, 4, 1, stream);
+    size = 0;
+    return_code = 0;
+    for(i = 0;i<npatches;i++){
+      if(version==0){
+        return_code = fread(buff, 4, 6, stream);
+      }
+      else{
+        return_code = fread(buff, 4, 9, stream);
+      }
+      if(return_code==0)break;
+      size += (buff[1]+1-buff[0])*(buff[3]+1-buff[2])*(buff[5]+1-buff[4]);
+    }
+    if(return_code==0){
+      fclose(stream);
+      fclose(streamsize);
+      return;
+    }
+    for(;;){
+      return_code = fread(&local_time, 4, 1, stream);
+      if(return_code==0)break;
+      return_code = fread(&compressed_size, 4, 1, stream);
+      if(return_code==0)break;
+      return_code = FSEEK(stream, compressed_size, SEEK_CUR);
+      if(return_code!=0)break;
+      fprintf(streamsize, "%f %i %i\n", local_time, size, compressed_size);
+    }
+    fclose(stream);
+    fclose(streamsize);
+    streamsize = fopen(sizefile, "r");
+    if(streamsize==NULL)return;
+  }
+
+  local_count = -1;
+  time_max = -1000000.0;
+  for(;;){
+    int frame_skip;
+
+    if(fgets(buffer, 255, streamsize)==NULL)break;
+
+    sscanf(buffer, "%f %i %i", &local_time, &full_size, &compressed_size);
+    frame_skip = 1;
+    if(local_time>time_max){
+      time_max = local_time;
+      frame_skip = 0;
+    }
+    if(frame_skip==1)continue;
+
+    local_count++;
+    if(local_count%boundframestep!=0)continue;
+
+    nf++;
+    bsize += compressed_size;
+  }
+  *nframes = nf;
+  *buffersize = bsize;
+  fclose(streamsize);
+}
+
+/* ------------------ ReadBoundaryBndf ------------------------ */
+
+void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int error;
   FILE_SIZE lenfile;
   int patchfilenum;
   float *xyzpatchcopy;
   float *xyzpatch_ignitecopy;
   int *patchblankcopy;
-  int mxpatch_frames;
+  int maxtimes_boundary;
   int n;
   int ii;
   int headersize, framesize;
@@ -716,6 +1297,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   int local_first,nsize,iblock;
   int npatchvals;
   char patchcsvfile[1024];
+  int framestart;
 
   int nn;
   int filenum;
@@ -743,13 +1325,17 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
+  meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
-  if(filenum>=0&&filenum<npatchinfo){
+
+#ifndef pp_FSEEK
+  if(flag==RELOAD)flag = LOAD;
+#endif
+
+  if(flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
     patchi->loaded=0;
-    patchi->display=0;
   }
 
-  meshi->patchfilenum=ifile;
   patchi->display=0;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -757,51 +1343,53 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   if(nbb==0)nbb=1;
   updatefaces=1;
   *errorcode=0;
-  FREEMEMORY(meshi->blockonpatch);
-  FREEMEMORY(meshi->meshonpatch);
-  FREEMEMORY(meshi->patchdir);
-  FREEMEMORY(meshi->patch_surfindex);
-  FREEMEMORY(meshi->pi1);
-  FREEMEMORY(meshi->pi2);
-  FREEMEMORY(meshi->pj1);
-  FREEMEMORY(meshi->pj2);
-  FREEMEMORY(meshi->pk1);
-  FREEMEMORY(meshi->pk2);
-  FREEMEMORY(meshi->patchrow);
-  FREEMEMORY(meshi->patchcol);
-  FREEMEMORY(meshi->blockstart);
-  FREEMEMORY(meshi->zipoffset);
-  FREEMEMORY(meshi->zipsize);
-  FREEMEMORY(meshi->patchtype);
-  FREEMEMORY(meshi->visPatches);
-  FREEMEMORY(meshi->xyzpatch);
-  FREEMEMORY(meshi->xyzpatch_threshold);
-  FREEMEMORY(meshi->patchventcolors);
-  FREEMEMORY(meshi->cpatchval);
-  FREEMEMORY(meshi->cpatchval_zlib);
-  FREEMEMORY(meshi->cpatchval_iframe_zlib);
-  FREEMEMORY(meshi->patchval);
-  FREEMEMORY(meshi->thresholdtime);
-  FREEMEMORY(meshi->patch_times);
-  FREEMEMORY(meshi->patchblank);
+  if(flag != RELOAD){
+    FREEMEMORY(meshi->blockonpatch);
+    FREEMEMORY(meshi->meshonpatch);
+    FREEMEMORY(meshi->patchdir);
+    FREEMEMORY(meshi->patch_surfindex);
+    FREEMEMORY(meshi->pi1);
+    FREEMEMORY(meshi->pi2);
+    FREEMEMORY(meshi->pj1);
+    FREEMEMORY(meshi->pj2);
+    FREEMEMORY(meshi->pk1);
+    FREEMEMORY(meshi->pk2);
+    FREEMEMORY(meshi->boundary_row);
+    FREEMEMORY(meshi->boundary_col);
+    FREEMEMORY(meshi->blockstart);
+    FREEMEMORY(meshi->zipoffset);
+    FREEMEMORY(meshi->zipsize);
+    FREEMEMORY(meshi->boundarytype);
+    FREEMEMORY(meshi->vis_boundaries);
+    FREEMEMORY(meshi->xyzpatch);
+    FREEMEMORY(meshi->xyzpatch_threshold);
+    FREEMEMORY(meshi->patchventcolors);
+    FREEMEMORY(meshi->cpatchval);
+    FREEMEMORY(meshi->cpatchval_zlib);
+    FREEMEMORY(meshi->cpatchval_iframe_zlib);
+    FREEMEMORY(meshi->patchval);
+    FREEMEMORY(meshi->thresholdtime);
+    FREEMEMORY(meshi->patch_times);
+    FREEMEMORY(meshi->patchblank);
 
-  if(meshi->patch_contours!=NULL){
-    int i;
+    if(meshi->patch_contours != NULL){
+      int i;
 
-    ASSERT(meshi->npatches>0&&meshi->mxpatch_frames>0);
-    for(i=0;i<meshi->npatches*meshi->mxpatch_frames;i++){
-      if(meshi->patch_contours[i]!=NULL){
-        FreeContour(meshi->patch_contours[i]);
+      ASSERT(meshi->npatches > 0 && meshi->maxtimes_boundary > 0);
+      for(i = 0;i < meshi->npatches*meshi->maxtimes_boundary;i++){
+        if(meshi->patch_contours[i] != NULL){
+          FreeContour(meshi->patch_contours[i]);
+        }
       }
+      FREEMEMORY(meshi->patch_contours);
     }
-    FREEMEMORY(meshi->patch_contours);
   }
 
   if(flag==UNLOAD){
     int enableflag=1;
     int i;
 
-    UpdatePatchType();
+    UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
     meshi->npatches=0;
@@ -814,7 +1402,9 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
         break;
       }
     }
-    if(enableflag==1)enable_boundary_glui();
+    if(enableflag==1)EnableBoundaryGlui();
+    patchi->ntimes_old=0;
+    patchi->ntimes=0;
     updatemenu=1;
 #ifdef pp_MEMPRINT
     PRINTF("After boundary file unload: \n");
@@ -823,7 +1413,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     return;
   }
   if(ifile>=0&&ifile<npatchinfo){
-    global2localpatchbounds(patchi->label.shortlabel);
+    Global2LocalBoundaryBounds(patchi->label.shortlabel);
   }
 
   if(colorlabelpatch!=NULL){
@@ -851,51 +1441,45 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     }
   }
 
-  update_patch_hist(patchi);
+  UpdateBoundaryHist(patchi);
 
   lenfile = strlen(file);
-  file_unit=15;
-  FORTget_file_unit(&file_unit,&file_unit);
   if(patchi->compression_type==UNCOMPRESSED){
-    FILE_SIZE labellen=LABELLEN;
-    char patchlonglabel[31], patchshortlabel[31], patchunit[31];
-
-    FORTgetpatchsizes1(&file_unit,file,patchlonglabel,patchshortlabel,patchunit,&meshi->npatches,&headersize,&error,
-                       lenfile,labellen,labellen,labellen);
+    FORTgetpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error,lenfile);
     if(error!=0){
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
       return;
     }
   }
   else{
     meshi->npatches=0;
-    getpatchheader(file,&meshi->npatches,&patchmin,&patchmax);
+    GetBoundaryHeader(file,&meshi->npatches,&patchmin,&patchmax);
     patchmin_global = patchmin;
     patchmax_global = patchmax;
   }
   if(meshi->npatches>0){
     if(
-       NewMemory((void **)&meshi->meshonpatch,sizeof(meshdata *)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->blockonpatch,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->patchdir    ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->patch_surfindex   ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pi1         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pi2         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pj1         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pj2         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pk1         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->pk2         ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->patchtype   ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->visPatches  ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->patchrow    ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->patchcol    ,sizeof(int)*meshi->npatches)==0||
-       NewMemory((void **)&meshi->blockstart  ,sizeof(int)*(1+meshi->npatches))==0){
+       NewResizeMemory(meshi->meshonpatch,       sizeof(meshdata *)*meshi->npatches)==0||
+       NewResizeMemory(meshi->blockonpatch,      sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->patchdir,          sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->patch_surfindex,   sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pi1,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pi2,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pj1,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pj2,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pk1,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->pk2,               sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->boundarytype,      sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->vis_boundaries,    sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->boundary_row,      sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->boundary_col,      sizeof(int)*meshi->npatches)==0||
+       NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0){
       *errorcode=1;
       if(patchi->compression_type==UNCOMPRESSED){
         FORTclosefortranfile(&file_unit);
       }
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       return;
     }
   }
@@ -912,16 +1496,18 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     //  2 - load compressed data set
 
     loadpatchbysteps=UNCOMPRESSED_ALLFRAMES;
-    if(flag==LOAD){
-      mxpatch_frames = MAXFRAMES+51;
+    if(flag==LOAD||flag==RELOAD){
+      maxtimes_boundary = MAXFRAMES+51;
       statfile=STAT(file,&statbuffer);
       if(statfile==0&&framesize!=0){
         int file_frames;
 
-        file_frames=(statbuffer.st_size-headersize)/framesize+51;
-        if(file_frames<mxpatch_frames)mxpatch_frames=file_frames;
+        patchi->ntimes_old = patchi->ntimes;
+        patchi->ntimes = (statbuffer.st_size-headersize)/framesize;
+        file_frames=patchi->ntimes+51;
+        if(file_frames<maxtimes_boundary)maxtimes_boundary=file_frames;
       }
-      meshi->mxpatch_frames=mxpatch_frames;
+      meshi->maxtimes_boundary=maxtimes_boundary;
 
 
   /*
@@ -930,14 +1516,14 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   one time step at a time rather than for all time steps.
   */
 
-      if(statfile==0&&setpatchmin==1&&setpatchmax==1&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
+      if(statfile==0&&(setpatchmin==1||setpatchmax==1)&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
     }
   }
   else{
     int nnsize=0;
     int i;
 
-    getpatchheader2(file,
+    GetBoundaryHeader2(file,
       &patchi->version,
       meshi->pi1,meshi->pi2,
       meshi->pj1,meshi->pj2,
@@ -960,10 +1546,10 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
   if(meshi->npatchsize>0){
     if(
-       NewMemory((void **)&meshi->xyzpatch,3*sizeof(float)*meshi->npatchsize)==0||
-       NewMemory((void **)&meshi->xyzpatch_threshold,3*sizeof(float)*meshi->npatchsize)==0||
-       NewMemory((void **)&meshi->thresholdtime,sizeof(float)*meshi->npatchsize)==0||
-       NewMemory((void **)&meshi->patchblank,meshi->npatchsize*sizeof(int))==0
+       NewResizeMemory(meshi->xyzpatch,          3*sizeof(float)*meshi->npatchsize)==0||
+       NewResizeMemory(meshi->xyzpatch_threshold,3*sizeof(float)*meshi->npatchsize)==0||
+       NewResizeMemory(meshi->thresholdtime,     sizeof(float)*meshi->npatchsize)==0||
+       NewResizeMemory(meshi->patchblank,        meshi->npatchsize*sizeof(int))==0
        ){
       *errorcode=1;
       patchi->loaded=0;
@@ -971,7 +1557,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       if(patchi->compression_type==UNCOMPRESSED){
         FORTclosefortranfile(&file_unit);
       }
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       return;
     }
   }
@@ -998,6 +1584,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     float dx_factor, dy_factor, dz_factor;
     int i1, i2, j1, j2, k1, k2;
     int *is_extface;
+    float ig_factor_x, ig_factor_y, ig_factor_z;
+    float block_factor_x, block_factor_y, block_factor_z;
 
 
     i1=meshi->pi1[n];
@@ -1007,14 +1595,14 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     k1=meshi->pk1[n];
     k2=meshi->pk2[n];
     if(patchi->version==0){
-      meshi->patchdir[n]=getpatchfacedir(meshi,i1,i2,j1,j2,k1,k2,
+      meshi->patchdir[n]= GetBoundaryFaceDir(meshi,i1,i2,j1,j2,k1,k2,
         meshi->blockonpatch+n,meshi->meshonpatch+n);
     }
     else{
       int patchdir;
 
       patchdir=meshi->patchdir[n];
-      getpatchface2dir(meshi,i1,i2,j1,j2,k1,k2,patchdir,
+      GetBoundaryFace2Dir(meshi,i1,i2,j1,j2,k1,k2,patchdir,
         meshi->blockonpatch+n,meshi->meshonpatch+n);
       if(meshi->patchdir[n]==YDIR||meshi->patchdir[n]==YDIRNEG){
         meshi->patchdir[n]=-meshi->patchdir[n];
@@ -1025,52 +1613,56 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
 
-#define IG_FACTOR 0.001
-#define BLOCK_FACTOR 0.001
+    ig_factor_x = ABS(meshi->xplt[1] - meshi->xplt[0]) / 10.0;
+    ig_factor_y = ABS(meshi->yplt[1] - meshi->yplt[0]) / 10.0;
+    ig_factor_z = ABS(meshi->zplt[1] - meshi->zplt[0]) / 10.0;
+    block_factor_x = ig_factor_x;
+    block_factor_y = ig_factor_y;
+    block_factor_z = ig_factor_z;
 
     switch(meshi->patchdir[n]){
     case XDIRNEG:
       meshi->patch_surfindex[n]=0;
-      dxx = -meshi->xplt[1]*IG_FACTOR;
-      dxx2 = -meshi->xplt[1]*BLOCK_FACTOR;
+      dxx = -meshi->xplt[1]*ig_factor_x;
+      dxx2 = -meshi->xplt[1]*block_factor_x;
       break;
     case XDIR:
       meshi->patch_surfindex[n]=1;
-      dxx = meshi->xplt[1]*IG_FACTOR;
-      dxx2 = meshi->xplt[1]*BLOCK_FACTOR;
+      dxx = meshi->xplt[1]*ig_factor_x;
+      dxx2 = meshi->xplt[1]*block_factor_x;
       break;
     case YDIRNEG:
       meshi->patch_surfindex[n]=2;
-      dyy = meshi->yplt[1]*IG_FACTOR;
-      dyy2 = meshi->yplt[1]*BLOCK_FACTOR;
+      dyy = meshi->yplt[1]*ig_factor_y;
+      dyy2 = meshi->yplt[1]*block_factor_y;
       break;
     case YDIR:
       meshi->patch_surfindex[n]=3;
-      dyy = -meshi->yplt[1]*IG_FACTOR;
-      dyy2 = -meshi->yplt[1]*BLOCK_FACTOR;
+      dyy = -meshi->yplt[1]*ig_factor_y;
+      dyy2 = -meshi->yplt[1]*block_factor_y;
       break;
     case ZDIRNEG:
       meshi->patch_surfindex[n]=4;
-      dzz = -meshi->zplt[1]*IG_FACTOR;
-      dzz2 = -meshi->zplt[1]*BLOCK_FACTOR;
+      dzz = -meshi->zplt[1]*ig_factor_z;
+      dzz2 = -meshi->zplt[1]*block_factor_z;
       break;
     case ZDIR:
       meshi->patch_surfindex[n]=5;
-      dzz = meshi->zplt[1]*IG_FACTOR;
-      dzz2 = meshi->zplt[1]*BLOCK_FACTOR;
+      dzz = meshi->zplt[1]*ig_factor_z;
+      dzz2 = meshi->zplt[1]*block_factor_z;
       break;
     default:
       ASSERT(FFALSE);
     }
 
 
-    meshi->patchtype[n]=INTERIORwall;
+    meshi->boundarytype[n]=INTERIORwall;
     is_extface = meshi->is_extface;
     if(i1==i2){
       int ext_wall, mesh_boundary;
 
-      meshi->patchcol[n] = j2 + 1 - j1;
-      meshi->patchrow[n] = k2 + 1 - k1;
+      meshi->boundary_col[n] = j2 + 1 - j1;
+      meshi->boundary_row[n] = k2 + 1 - k1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -1079,11 +1671,11 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           mesh_boundary = YES;
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
-            meshi->patchtype[n] = LEFTwall;
+            meshi->boundarytype[n] = LEFTwall;
           }
           if(is_extface[1]==1&&i2 == ibartemp){
             ext_wall = 1;
-            meshi->patchtype[n] = RIGHTwall;
+            meshi->boundarytype[n] = RIGHTwall;
           }
         }
       }
@@ -1095,20 +1687,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*IG_FACTOR;
+              dy_factor=-meshi->yplt[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*IG_FACTOR;
+              dy_factor=meshi->yplt[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1133,20 +1725,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*IG_FACTOR;
+              dy_factor=-meshi->yplt[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*IG_FACTOR;
+              dy_factor=meshi->yplt[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1167,8 +1759,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     else if(j1==j2){
       int ext_wall, mesh_boundary;
 
-      meshi->patchcol[n] = i2 + 1 - i1;
-      meshi->patchrow[n] = k2 + 1 - k1;
+      meshi->boundary_col[n] = i2 + 1 - i1;
+      meshi->boundary_row[n] = k2 + 1 - k1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -1177,11 +1769,11 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           mesh_boundary = YES;
           if(is_extface[2]==1&&j1 == 0){
             ext_wall = 1;
-            meshi->patchtype[n] = FRONTwall;
+            meshi->boundarytype[n] = FRONTwall;
           }
           if(is_extface[3]==1&&j2 == jbartemp){
             ext_wall = 1;
-            meshi->patchtype[n] = BACKwall;
+            meshi->boundarytype[n] = BACKwall;
           }
         }
       }
@@ -1192,20 +1784,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i = i1;i <= i2;i++){
             if(i == i1){
-              dx_factor = -meshi->xplt[1] * IG_FACTOR;
+              dx_factor = -meshi->xplt[1] * ig_factor_x;
             }
             else if(i == i2){
-              dx_factor = meshi->xplt[1] * IG_FACTOR;
+              dx_factor = meshi->xplt[1] * ig_factor_x;
             }
             else{
               dx_factor = 0.0;
@@ -1230,20 +1822,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*IG_FACTOR;
+            dz_factor=-meshi->zplt[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*IG_FACTOR;
+            dz_factor=meshi->zplt[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1264,8 +1856,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     else if(k1==k2){
       int ext_wall, mesh_boundary;
 
-      meshi->patchcol[n] = i2 + 1 - i1;
-      meshi->patchrow[n] = j2 + 1 - j1;
+      meshi->boundary_col[n] = i2 + 1 - i1;
+      meshi->boundary_row[n] = j2 + 1 - j1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -1274,11 +1866,11 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           mesh_boundary = YES;
           if(is_extface[4]==1&&k1 == 0){
             ext_wall = 1;
-            meshi->patchtype[n] = DOWNwall;
+            meshi->boundarytype[n] = DOWNwall;
           }
           if(is_extface[5]==1&&k2 == kbartemp){
             ext_wall = 1;
-            meshi->patchtype[n] = UPwall;
+            meshi->boundarytype[n] = UPwall;
           }
         }
       }
@@ -1289,20 +1881,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*IG_FACTOR;
+            dy_factor=-meshi->yplt[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*IG_FACTOR;
+            dy_factor=meshi->yplt[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1333,20 +1925,20 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*IG_FACTOR;
+            dy_factor=-meshi->yplt[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*IG_FACTOR;
+            dy_factor=meshi->yplt[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*IG_FACTOR;
+              dx_factor=-meshi->xplt[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*IG_FACTOR;
+              dx_factor=meshi->xplt[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1364,8 +1956,8 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
         patchblankcopy += (j2+1-j1)*(i2+1-i1);
       }
     }
-    meshi->blockstart[n+1]=meshi->blockstart[n]+meshi->patchrow[n]*meshi->patchcol[n];
-    meshi->visPatches[n]=visPatchType[meshi->patchtype[n]];
+    meshi->blockstart[n+1]=meshi->blockstart[n]+meshi->boundary_row[n]*meshi->boundary_col[n];
+    meshi->vis_boundaries[n]=vis_boundary_type[meshi->boundarytype[n]];
   }
 
   for(n=0;n<meshi->nbptrs;n++){
@@ -1385,63 +1977,68 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   meshi->patchval = NULL;
   switch(loadpatchbysteps){
   case UNCOMPRESSED_ALLFRAMES:
-    while(meshi->patchval==NULL&&mxpatch_frames>100){
-      mxpatch_frames-=50;
-      meshi->mxpatch_frames=mxpatch_frames;
-      NewMemory((void **)&meshi->patchval,sizeof(float)*mxpatch_frames*meshi->npatchsize);
+    while(meshi->patchval==NULL&&maxtimes_boundary>100){
+      maxtimes_boundary-=50;
+      meshi->maxtimes_boundary=maxtimes_boundary;
+      NewResizeMemory(meshi->patchval,sizeof(float)*maxtimes_boundary*meshi->npatchsize);
     }
     if(meshi->patchval==NULL){
-      NewMemory((void **)&meshi->patchval,sizeof(float)*mxpatch_frames*meshi->npatchsize);
+      NewResizeMemory(meshi->patchval,sizeof(float)*maxtimes_boundary*meshi->npatchsize);
     }
     break;
   case UNCOMPRESSED_BYFRAME:
-    npatchvals = meshi->npatchsize*meshi->mxpatch_frames;
+    npatchvals = meshi->npatchsize*meshi->maxtimes_boundary;
     if(
-      NewMemory((void **)&meshi->patchval,sizeof(float)*meshi->npatchsize)==0||
-      NewMemory((void **)&meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
+      NewResizeMemory(meshi->patchval, sizeof(float)*meshi->npatchsize)==0||
+      NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       return;
     }
     break;
   case COMPRESSED_ALLFRAMES:
-    getpatchsizeinfo(patchi, &mxpatch_frames, &ncompressed_buffer);
-    NewMemory((void **)&meshi->cpatchval_zlib,sizeof(unsigned char)*ncompressed_buffer);
-    NewMemory((void **)&meshi->cpatchval_iframe_zlib,sizeof(unsigned char)*meshi->npatchsize);
+    GetBoundarySizeInfo(patchi, &maxtimes_boundary, &ncompressed_buffer);
+    NewResizeMemory(meshi->cpatchval_zlib,       sizeof(unsigned char)*ncompressed_buffer);
+    NewResizeMemory(meshi->cpatchval_iframe_zlib,sizeof(unsigned char)*meshi->npatchsize);
     break;
   default:
     ASSERT(FFALSE);
     break;
   }
 
-  NewMemory((void **)&meshi->patch_times,sizeof(float)*mxpatch_frames);
-  NewMemory((void **)&meshi->zipoffset,sizeof(unsigned int)*mxpatch_frames);
-  NewMemory((void **)&meshi->zipsize,sizeof(unsigned int)*mxpatch_frames);
+  NewResizeMemory(meshi->patch_times,sizeof(float)*maxtimes_boundary);
+  NewResizeMemory(meshi->zipoffset,  sizeof(unsigned int)*maxtimes_boundary);
+  NewResizeMemory(meshi->zipsize,    sizeof(unsigned int)*maxtimes_boundary);
   if(meshi->patch_times==NULL){
     *errorcode=1;
     FORTclosefortranfile(&file_unit);
-    readpatch(ifile,UNLOAD,&error);
+    ReadBoundary(ifile,UNLOAD,&error);
     return;
   }
   if(loadpatchbysteps==COMPRESSED_ALLFRAMES){
-    getpatchdata_zlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
-      meshi->patch_times,meshi->zipoffset,meshi->zipsize,mxpatch_frames);
-    meshi->npatch_times=mxpatch_frames;
+    GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
+      meshi->patch_times,meshi->zipoffset,meshi->zipsize,maxtimes_boundary);
+    meshi->npatch_times=maxtimes_boundary;
   }
   else{
-    if(meshi->patchval==NULL){
-      *errorcode=1;
+    if(meshi->patchval == NULL){
+      *errorcode = 1;
       FORTclosefortranfile(&file_unit);
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile, UNLOAD, &error);
       return;
     }
-    meshi->npatch_times=0;
+    if(flag == RELOAD&&patchi->ntimes_old > 0){
+      framestart = patchi->ntimes_old;
+    }
+    else{
+      meshi->npatch_times = 0;
+      framestart = 0;
+    }
   }
-
-  file_size= GetFILESize(file);
+  file_size= GetFileSizeSMV(file);
   START_TIMER(read_time);
-  for(ii=0;ii<mxpatch_frames;){
+  for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
       meshi->patchval_iframe = meshi->patchval;
       meshi->cpatchval_iframe = meshi->cpatchval + ii*meshi->npatchsize;
@@ -1453,6 +2050,13 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
     error=0;
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES||loadpatchbysteps==UNCOMPRESSED_BYFRAME){
+      if(ii==framestart&&framestart>0){
+        int framesizes;
+
+        framesizes = framesize*framestart-8;
+        FORTskipdata(&file_unit,&framesizes);
+        local_first = 0;
+      }
       for(n=0;n<boundframestep;n++){
         if(error==0){
           int npatchval_iframe;
@@ -1479,7 +2083,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
       {
 
         nn=0;
-        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)uncompress_patchdataframe(meshi,ii);
+        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)UncompressBoundaryDataFrame(meshi,ii);
         for(n=0;n<meshi->npatches;n++){
           meshdata *meshblock;
           float dval;
@@ -1487,7 +2091,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
           iblock=meshi->blockonpatch[n];
           meshblock = meshi->meshonpatch[n];
-          nsize=meshi->patchrow[n]*meshi->patchcol[n];
+          nsize=meshi->boundary_row[n]*meshi->boundary_col[n];
           ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
           if(iblock!=-1&&meshblock!=NULL){
             switch(loadpatchbysteps){
@@ -1540,16 +2144,17 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
           PRINTF("boundary time=%.2f\n",*meshi->patch_timesi);
 
           meshi->npatch_times++;
-          if(meshi->npatch_times + 1 > mxpatch_frames){
+          patchi->ntimes=meshi->npatch_times;
+          if(meshi->npatch_times + 1 > maxtimes_boundary){
             PRINTF("reallocating memory\n");
-            mxpatch_frames = meshi->npatch_times + 50; /* this + 50 must match - 50 below */
-            meshi->mxpatch_frames=mxpatch_frames;
+            maxtimes_boundary = meshi->npatch_times + 50; /* this + 50 must match - 50 below */
+            meshi->maxtimes_boundary=maxtimes_boundary;
             if(
-              ResizeMemory((void **)&meshi->patchval,           mxpatch_frames*meshi->npatchsize*sizeof(float))==0||
-              ResizeMemory((void **)&meshi->patch_times,    mxpatch_frames*sizeof(float))==0
+              ResizeMemory((void **)&meshi->patchval,   maxtimes_boundary*meshi->npatchsize*sizeof(float))==0||
+              ResizeMemory((void **)&meshi->patch_times,maxtimes_boundary*sizeof(float))==0
              ){
               *errorcode=1;
-              readpatch(ifile,UNLOAD,&error);
+              ReadBoundary(ifile,UNLOAD,&error);
               FORTclosefortranfile(&file_unit);
               return;
             }
@@ -1571,50 +2176,55 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
 
   if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
     if(output_patchdata==1){
-      output_Patchdata(patchcsvfile,patchi->file,meshi);
+      OutputBoundaryData(patchcsvfile,patchi->file,meshi);
     }
     npatchvals = meshi->npatch_times*meshi->npatchsize;
-    if(npatchvals==0||NewMemory((void **)&meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
+    if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       return;
     }
   }
 
   PRINTF("computing boundary color levels \n");
-  if(NewMemory((void **)&colorlabelpatch,MAXRGB*sizeof(char *))==0){
+  if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
       FORTclosefortranfile(&file_unit);
     }
-    readpatch(ifile,UNLOAD,&error);
+    ReadBoundary(ifile,UNLOAD,&error);
     return;
   }
   for(n=0;n<MAXRGB;n++){
     colorlabelpatch[n]=NULL;
   }
   for(n=0;n<nrgb;n++){
-    if(NewMemory((void **)&colorlabelpatch[n],11)==0){
+    if(NewResizeMemory(colorlabelpatch[n],11)==0){
       *errorcode=1;
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
         FORTclosefortranfile(&file_unit);
       }
-      readpatch(ifile,UNLOAD,&error);
+      ReadBoundary(ifile,UNLOAD,&error);
       return;
     }
   }
   patchscale = patchi->scale;
-  patchbase = patchinfo + getpatchindex(patchi);
+  patchbase = patchinfo + GetBoundaryIndex(patchi);
   patchi->loaded=1;
-  ipatchtype=GetPatchType(patchi);
+  iboundarytype=GetBoundaryType(patchi);
   switch(loadpatchbysteps){
   case UNCOMPRESSED_ALLFRAMES:
-    GetBoundaryColors3(patchi,meshi->patchval, npatchvals, meshi->cpatchval,
-      setpatchmin,&patchmin, setpatchmax,&patchmax,
+  {
+    int patchstart;
+
+    patchstart = patchi->ntimes_old*meshi->npatchsize;
+    GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
+      setpatchmin, &patchmin, setpatchmax, &patchmax,
       &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch,patchscale,boundarylevels256,
-      &patchi->extreme_min,&patchi->extreme_max);
+      nrgb, colorlabelpatch, patchscale, boundarylevels256,
+      &patchi->extreme_min, &patchi->extreme_max);
+  }
     break;
   case UNCOMPRESSED_BYFRAME:
     GetBoundaryLabels(
@@ -1636,15 +2246,15 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
     meshi->surface_tempmin=patchmin_global;
   }
 
-  local2globalpatchbounds(patchi->label.shortlabel);
-  updatepatchlistindex(patchfilenum);
+  Local2GlobalBoundaryBounds(patchi->label.shortlabel);
+  UpdateBoundaryListIndex(patchfilenum);
 
   if(wallcenter==1){
     int i;
 
-    init_vent_colors();
+    InitVentColors();
     FREEMEMORY(meshi->patchventcolors);
-    NewMemory((void **)&meshi->patchventcolors,sizeof(float *)*npatchvals);
+    NewResizeMemory(meshi->patchventcolors,sizeof(float *)*npatchvals);
     for(i=0;i<npatchvals;i++){
       int vent_index;
 
@@ -1657,12 +2267,12 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   }
   patchi->loaded=1;
   patchi->display=1;
-  ipatchtype=GetPatchType(patchi);
+  iboundarytype=GetBoundaryType(patchi);
   showexterior=1-showexterior;
   allexterior = 1-allexterior;
-  ShowPatchMenu(EXTERIORwallmenu);
+  ShowBoundaryMenu(EXTERIORwallmenu);
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->compression_type==COMPRESSED_ZLIB)disable_boundary_glui();
+  if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
@@ -1670,7 +2280,7 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   PRINTF("After boundary file load: \n");
   PrintMemoryInfo;
 #endif
-  Idle_CB();
+  IdleCB();
 
   STOP_TIMER(total_time);
   if(file_size!=0&&read_time>0.0){
@@ -1688,25 +2298,139 @@ void readpatch_bndf(int ifile, int flag, int *errorcode){
   glutPostRedisplay();
 }
 
-/* ------------------ readpatch ------------------------ */
+/* ------------------ ReadGeomData ------------------------ */
 
-void readpatch(int ifile, int load_flag, int *errorcode){
+void ReadGeomData(int ifile, int load_flag, int *errorcode){
+  patchdata *patchi;
+  char *file;
+  int ntimes_local;
+  int i;
+  int nvals;
+  float patchmin_global, patchmax_global;
+  int n;
+  int error;
+  FILE_SIZE lenfile;
+
+  // 1
+  // time
+  // nstatic
+  // vals_1, ...vals_nstatic
+  // ndynamic
+  // vals_1, ... vals_ndyamic
+
+  patchi = patchinfo+ifile;
+  if(patchi->filetype!=PATCH_GEOMETRY)return;
+  file = patchi->file;
+
+  patchi->loaded = 0;
+  patchi->display = 0;
+
+  FREEMEMORY(patchi->geom_nstatics);
+  FREEMEMORY(patchi->geom_ndynamics);
+  FREEMEMORY(patchi->geom_ivals_static);
+  FREEMEMORY(patchi->geom_ivals_dynamic);
+  FREEMEMORY(patchi->geom_vals);
+  FREEMEMORY(patchi->geom_ivals);
+  FREEMEMORY(patchi->geom_times);
+  if(load_flag==UNLOAD){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    UpdateBoundaryType();
+    UpdateUnitDefs();
+    UpdateTimes();
+    return;
+  }
+  if(patchi->skip == 1)return;
+
+  //GetGeomDataHeader(file,&ntimes,&nvals);
+  endian_smv = GetEndian();
+  lenfile = strlen(file);
+
+  FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
+
+  if(nvals==0){
+    PRINTF("***warning: no data in %s\n", file);
+    return;
+  }
+  if(nvals>0&&ntimes_local>0){
+    NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_ndynamics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
+  }
+  FORTgetembeddata(file, &ntimes_local, &nvals, patchi->geom_times,
+    patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
+
+  ResetHistogram(patchi->histogram, NULL, NULL);
+
+  UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+
+  CompleteHistogram(patchi->histogram);
+
+  patchi->ngeom_times = ntimes_local;
+  patchi->geom_nvals = nvals;
+  patchi->geom_ivals_static[0] = patchi->geom_ivals;
+  patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
+  for(i = 1;i<ntimes_local;i++){
+    patchi->geom_ivals_static[i] = patchi->geom_ivals_dynamic[i-1]+patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]+patchi->geom_nstatics[i];
+  }
+  if(colorlabelpatch!=NULL){
+    for(n = 0;n<MAXRGB;n++){
+      FREEMEMORY(colorlabelpatch[n]);
+    }
+    FREEMEMORY(colorlabelpatch);
+  }
+  if(NewMemory((void **)&colorlabelpatch, MAXRGB*sizeof(char *))==0){
+    ReadBoundary(ifile, UNLOAD, &error);
+    return;
+  }
+  for(n = 0;n<MAXRGB;n++){
+    colorlabelpatch[n] = NULL;
+  }
+  for(n = 0;n<nrgb;n++){
+    if(NewMemory((void **)&colorlabelpatch[n], 11)==0){
+      ReadBoundary(ifile, UNLOAD, &error);
+      return;
+    }
+  }
+  GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+    setpatchmin, &patchmin, setpatchmax, &patchmax,
+    &patchmin_global, &patchmax_global,
+    nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
+    &patchi->extreme_min, &patchi->extreme_max);
+  FREEMEMORY(patchi->geom_vals);
+  patchi->loaded = 1;
+  patchi->display = 1;
+  iboundarytype = GetBoundaryType(patchinfo+ifile);
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdateBoundaryType();
+  UpdateUnitDefs();
+  UpdateTimes();
+  UpdateFrameNumber(1);
+}
+
+/* ------------------ ReadBoundary ------------------------ */
+
+void ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
 
   patchi = patchinfo + ifile;
   if(patchi->filetype==PATCH_GEOMETRY){
     ASSERT(ifile>=0&&ifile<ngeominfo);
-    read_geomdata(ifile,load_flag,errorcode);
+    ReadGeomData(ifile,load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);
-    readpatch_bndf(ifile,load_flag,errorcode);
+    ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
 }
 
-/* ------------------ local2globalpatchbounds ------------------------ */
+/* ------------------ Local2GlobalBoundaryBounds ------------------------ */
 
-void local2globalpatchbounds(const char *key){
+void Local2GlobalBoundaryBounds(const char *key){
   int i;
 
   for(i=0;i<npatchinfo;i++){
@@ -1727,9 +2451,9 @@ void local2globalpatchbounds(const char *key){
   }
 }
 
-/* ------------------ global2localpatchbounds ------------------------ */
+/* ------------------ Global2LocalBoundaryBounds ------------------------ */
 
-void global2localpatchbounds(const char *key){
+void Global2LocalBoundaryBounds(const char *key){
   int i;
 
   for(i=0;i<npatchinfo;i++){
@@ -1748,18 +2472,18 @@ void global2localpatchbounds(const char *key){
       setpatchchopmax=patchi->setchopmax;
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
-      update_glui_patch_units();
-      update_hidepatchsurface();
+      UpdateGluiBoundaryUnits();
+      UpdateHideBoundarySurface();
 
-      local2globalpatchbounds(key);
+      Local2GlobalBoundaryBounds(key);
       return;
     }
   }
 }
 
-/* ------------------ drawpatch_texture ------------------------ */
+/* ------------------ DrawBoundaryTexture ------------------------ */
 
-void drawpatch_texture(const meshdata *meshi){
+void DrawBoundaryTexture(const meshdata *meshi){
   float r11, r12, r21, r22;
   int n;
   int nrow, ncol, irow, icol;
@@ -1767,9 +2491,9 @@ void drawpatch_texture(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *visPatches;
+  int *vis_boundaries;
   float *xyzpatch;
-  int *patchdir, *patchrow, *patchcol, *patchtype;
+  int *patchdir, *boundary_row, *boundary_col, *boundarytype;
   int *blockstart;
   int *patchblank;
   unsigned char *cpatchval_iframe;
@@ -1793,12 +2517,12 @@ void drawpatch_texture(const meshdata *meshi){
   }
 
   patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
+  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   patchdir=meshi->patchdir;
-  patchtype=meshi->patchtype;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
+  boundarytype=meshi->boundarytype;
+  boundary_row=meshi->boundary_row;
+  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -1840,11 +2564,11 @@ void drawpatch_texture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(visPatches[n]==1&&patchdir[n]==0)drawit=1;
-    if(patchtype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
+    if(vis_boundaries[n]==1&&patchdir[n]==0)drawit=1;
+    if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
     if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -1863,10 +2587,10 @@ void drawpatch_texture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(r11-r22)<ABS(r12-r21)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r12);glVertex3fv(xyzp1+3);
@@ -1912,14 +2636,14 @@ void drawpatch_texture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;
       }
     }
     if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -1956,10 +2680,10 @@ void drawpatch_texture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r12);glVertex3fv(xyzp1+3);
@@ -2003,14 +2727,14 @@ void drawpatch_texture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(visPatches[n]==1&&patchdir[n]<0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;
       }
     }
     if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -2046,10 +2770,10 @@ void drawpatch_texture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r22);glVertex3fv(xyzp2+3);
@@ -2085,9 +2809,9 @@ void drawpatch_texture(const meshdata *meshi){
   if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
 }
 
-/* ------------------ drawpatch_texture_threshold ------------------------ */
+/* ------------------ DrawBoundaryTextureThreshold ------------------------ */
 
-void drawpatch_texture_threshold(const meshdata *meshi){
+void DrawBoundaryTextureThreshold(const meshdata *meshi){
   float r11, r12, r21, r22;
   int n,nn,nn1,nn2;
   int nrow, ncol, irow, icol;
@@ -2096,9 +2820,9 @@ void drawpatch_texture_threshold(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *visPatches;
+  int *vis_boundaries;
   float *xyzpatch;
-  int *patchdir, *patchrow, *patchcol;
+  int *patchdir, *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
   unsigned char *cpatchval_iframe;
@@ -2113,11 +2837,11 @@ void drawpatch_texture_threshold(const meshdata *meshi){
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
   patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
+  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   patchdir=meshi->patchdir;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
+  boundary_row=meshi->boundary_row;
+  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -2153,13 +2877,13 @@ void drawpatch_texture_threshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(visPatches[n]==1&&patchdir[n]==0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(vis_boundaries[n]==1&&patchdir[n]==0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -2179,10 +2903,10 @@ void drawpatch_texture_threshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -2225,7 +2949,7 @@ void drawpatch_texture_threshold(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -2240,13 +2964,13 @@ void drawpatch_texture_threshold(const meshdata *meshi){
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -2266,10 +2990,10 @@ void drawpatch_texture_threshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -2312,7 +3036,7 @@ void drawpatch_texture_threshold(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -2324,13 +3048,13 @@ void drawpatch_texture_threshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(visPatches[n]==1&&patchdir[n]<0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
@@ -2349,10 +3073,10 @@ void drawpatch_texture_threshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -2395,23 +3119,23 @@ void drawpatch_texture_threshold(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
   glEnd();
   glDisable(GL_TEXTURE_1D);
 }
 
-/* ------------------ drawpatch_threshold_cellcenter ------------------------ */
+/* ------------------ DrawBoundaryThresholdCellcenter ------------------------ */
 
-void drawpatch_threshold_cellcenter(const meshdata *meshi){
+void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   int n,nn,nn1;
   int nrow, ncol, irow, icol;
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *visPatches;
+  int *vis_boundaries;
   float *xyzpatch;
-  int *patchdir, *patchrow, *patchcol;
+  int *patchdir, *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
   int iblock;
@@ -2425,11 +3149,11 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
   patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
+  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   patchdir=meshi->patchdir;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
+  boundary_row=meshi->boundary_row;
+  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -2459,13 +3183,13 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(visPatches[n]==1&&patchdir[n]==0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(vis_boundaries[n]==1&&patchdir[n]==0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -2499,7 +3223,7 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -2514,13 +3238,13 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -2555,7 +3279,7 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -2567,13 +3291,13 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
+        nn += boundary_row[n]*boundary_col[n];
         continue;
       }
     }
-    if(visPatches[n]==1&&patchdir[n]<0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      nrow=boundary_row[n];
+      ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -2606,14 +3330,749 @@ void drawpatch_threshold_cellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += patchrow[n]*patchcol[n];
+    nn += boundary_row[n]*boundary_col[n];
   }
   glEnd();
 }
 
-/* ------------------ draw_patchframe ------------------------ */
+/* ------------------ DrawBoundaryCellCenter ------------------------ */
 
-void draw_patchframe(int flag){
+void DrawBoundaryCellCenter(const meshdata *meshi){
+  int n, nn, nn1;
+  int nrow, ncol, irow, icol;
+  unsigned char *cpatchval1;
+  unsigned char *cpatchval_iframe_copy;
+  float *patch_times;
+  int *vis_boundaries;
+  int *patchdir, *boundary_row, *boundary_col, *boundarytype;
+  int *blockstart;
+  unsigned char *cpatchval_iframe;
+  int iblock;
+  blockagedata *bc;
+  patchdata *patchi;
+  float *color11;
+  meshdata *meshblock;
+
+  float dboundx, dboundy, dboundz;
+  float *xplt, *yplt, *zplt;
+  float **patchventcolors;
+
+  if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+
+  if(hidepatchsurface==0){
+    xplt = meshi->xplt;
+    yplt = meshi->yplt;
+    zplt = meshi->zplt;
+
+    dboundx = (xplt[1]-xplt[0])/10.0;
+    dboundy = (yplt[1]-yplt[0])/10.0;
+    dboundz = (zplt[1]-zplt[0])/10.0;
+  }
+
+  patch_times = meshi->patch_times;
+  vis_boundaries = meshi->vis_boundaries;
+  patchdir = meshi->patchdir;
+  boundarytype = meshi->boundarytype;
+  boundary_row = meshi->boundary_row;
+  boundary_col = meshi->boundary_col;
+  blockstart = meshi->blockstart;
+  patchventcolors = meshi->patchventcolors;
+  patchi = patchinfo+meshi->patchfilenum;
+
+  switch(patchi->compression_type){
+  case UNCOMPRESSED:
+    cpatchval_iframe = meshi->cpatchval_iframe;
+    if(cpatchval_iframe==NULL)return;
+    break;
+  case COMPRESSED_ZLIB:
+    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
+    cpatchval_iframe = meshi->cpatchval_iframe_zlib;
+    break;
+  default:
+    ASSERT(FFALSE);
+  }
+  patchi = patchinfo+meshi->patchfilenum;
+
+  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(cullfaces==1)glDisable(GL_CULL_FACE);
+
+  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
+
+  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
+  nn = 0;
+  glBegin(GL_TRIANGLES);
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(vis_boundaries[n]==1&&patchdir[n]==0)drawit = 1;
+    if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit = 1;
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = meshi->xyzpatch+3*blockstart[n]+3*irow*ncol;
+        patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        patchblank2 = patchblank1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            if(patchventcolors==NULL){
+              color11 = rgb_patch+4*(*cpatchval1);
+              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              }
+            }
+            else{
+              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+            }
+            glColor4fv(color11);
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp1+3);
+            glVertex3fv(xyzp2+3);
+
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp2+3);
+            glVertex3fv(xyzp2);
+          }
+          cpatchval1++;
+          patchblank1++;
+          patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  glEnd();
+  if(cullfaces==1)glEnable(GL_CULL_FACE);
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+
+  nn = 0;
+  if(hidepatchsurface==1){
+    glBegin(GL_TRIANGLES);
+  }
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    if(iblock!=-1){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+        drawit = 1;
+      }
+    }
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      if(hidepatchsurface==0){
+        glPushMatrix();
+        switch(meshi->patchdir[n]){
+        case XDIR:
+          glTranslatef(dboundx, 0.0, 0.0);
+          break;
+        case YDIR:
+          glTranslatef(0.0, -dboundy, 0.0);
+          break;
+        case ZDIR:
+          glTranslatef(0.0, 0.0, dboundz);
+          break;
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glBegin(GL_TRIANGLES);
+      }
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = meshi->xyzpatch+3*blockstart[n]+3*irow*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
+        nn1 = nn+irow*ncol;
+
+        xyzp2 = xyzp1+3*ncol;
+        patchblank2 = patchblank1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            if(patchventcolors==NULL){
+              color11 = rgb_patch+4*(*cpatchval1);
+              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              }
+            }
+            else{
+              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+            }
+            glColor4fv(color11);
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp1+3);
+            glVertex3fv(xyzp2+3);
+
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp2+3);
+            glVertex3fv(xyzp2);
+          }
+          cpatchval1++;
+          patchblank1++;
+          patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+      if(hidepatchsurface==0){
+        glEnd();
+        glPopMatrix();
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+  nn = 0;
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+        drawit = 1;
+      }
+    }
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      if(hidepatchsurface==0){
+        glPushMatrix();
+        switch(meshi->patchdir[n]){
+        case XDIRNEG:
+          glTranslatef(-dboundx, 0.0, 0.0);
+          break;
+        case YDIRNEG:
+          glTranslatef(0.0, dboundy, 0.0);
+          break;
+        case ZDIRNEG:
+          glTranslatef(0.0, 0.0, -dboundz);
+          break;
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glBegin(GL_TRIANGLES);
+      }
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = meshi->xyzpatch+3*blockstart[n]+3*irow*ncol;
+        patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        patchblank2 = patchblank1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            if(patchventcolors==NULL){
+              color11 = rgb_patch+4*(*cpatchval1);
+              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              }
+            }
+            else{
+              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+            }
+            glColor4fv(color11);
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp2+3);
+            glVertex3fv(xyzp1+3);
+
+            glVertex3fv(xyzp1);
+            glVertex3fv(xyzp2);
+            glVertex3fv(xyzp2+3);
+          }
+          cpatchval1++;
+          patchblank1++;
+          patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+      if(hidepatchsurface==0){
+        glEnd();
+        glPopMatrix();
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  if(hidepatchsurface==1){
+    glEnd();
+  }
+  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
+}
+
+/* ------------------ DrawBoundary ------------------------ */
+
+void DrawBoundary(const meshdata *meshi){
+  int n, nn, nn1, nn2;
+  int nrow, ncol, irow, icol;
+  unsigned char *cpatchval1, *cpatchval2;
+  unsigned char *cpatchval_iframe_copy;
+  float *xyzpatchcopy;
+  int *patchblankcopy;
+  float *patch_times;
+  int *vis_boundaries;
+  float *xyzpatch;
+  int *patchdir, *boundary_row, *boundary_col, *boundarytype;
+  int *blockstart;
+  int *patchblank;
+  unsigned char *cpatchval_iframe;
+  int iblock;
+  blockagedata *bc;
+  patchdata *patchi;
+  float *color11, *color12, *color21, *color22;
+  meshdata *meshblock;
+  float dboundx, dboundy, dboundz;
+  float *xplt, *yplt, *zplt;
+
+  if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+
+  if(hidepatchsurface==0){
+    xplt = meshi->xplt;
+    yplt = meshi->yplt;
+    zplt = meshi->zplt;
+
+    dboundx = (xplt[1]-xplt[0])/10.0;
+    dboundy = (yplt[1]-yplt[0])/10.0;
+    dboundz = (zplt[1]-zplt[0])/10.0;
+  }
+
+  patch_times = meshi->patch_times;
+  vis_boundaries = meshi->vis_boundaries;
+  xyzpatch = meshi->xyzpatch;
+  patchdir = meshi->patchdir;
+  boundarytype = meshi->boundarytype;
+  boundary_row = meshi->boundary_row;
+  boundary_col = meshi->boundary_col;
+  blockstart = meshi->blockstart;
+  patchblank = meshi->patchblank;
+  patchi = patchinfo+meshi->patchfilenum;
+  switch(patchi->compression_type){
+  case UNCOMPRESSED:
+    ASSERT(meshi->cpatchval_iframe!=NULL);
+    cpatchval_iframe = meshi->cpatchval_iframe;
+    break;
+  case COMPRESSED_ZLIB:
+    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
+    cpatchval_iframe = meshi->cpatchval_iframe_zlib;
+    break;
+  default:
+    ASSERT(FFALSE);
+  }
+  patchi = patchinfo+meshi->patchfilenum;
+
+  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(cullfaces==1)glDisable(GL_CULL_FACE);
+
+  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
+
+  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
+  nn = 0;
+  glBegin(GL_TRIANGLES);
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(vis_boundaries[n]==1&&patchdir[n]==0)drawit = 1;
+    if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit = 1;
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        cpatchval2 = cpatchval1+ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            color11 = rgb_patch+4*(*cpatchval1);
+            color12 = rgb_patch+4*(*(cpatchval1+1));
+            color21 = rgb_patch+4*(*cpatchval2);
+            color22 = rgb_patch+4*(*(cpatchval2+1));
+            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
+            }
+            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+            }
+            else{
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+            }
+          }
+          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  glEnd();
+  if(cullfaces==1)glEnable(GL_CULL_FACE);
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+
+  nn = 0;
+  if(hidepatchsurface==1){
+    glBegin(GL_TRIANGLES);
+  }
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    if(iblock!=-1){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+        drawit = 1;
+      }
+    }
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      if(hidepatchsurface==0){
+        glPushMatrix();
+        switch(meshi->patchdir[n]){
+        case XDIR:
+          glTranslatef(dboundx, 0.0, 0.0);
+          break;
+        case YDIR:
+          glTranslatef(0.0, -dboundy, 0.0);
+          break;
+        case ZDIR:
+          glTranslatef(0.00, 0.0, dboundz);
+          break;
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glBegin(GL_TRIANGLES);
+      }
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+
+        xyzp2 = xyzp1+3*ncol;
+        cpatchval2 = cpatchval1+ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            color11 = rgb_patch+4*(*cpatchval1);
+            color12 = rgb_patch+4*(*(cpatchval1+1));
+            color21 = rgb_patch+4*(*cpatchval2);
+            color22 = rgb_patch+4*(*(cpatchval2+1));
+            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
+            }
+            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+            }
+            else{
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+            }
+          }
+          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+      if(hidepatchsurface==0){
+        glEnd();
+        glPopMatrix();
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+
+  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
+  nn = 0;
+  for(n = 0;n<meshi->npatches;n++){
+    int drawit;
+
+    iblock = meshi->blockonpatch[n];
+    meshblock = meshi->meshonpatch[n];
+    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    if(iblock!=-1&&meshblock!=NULL){
+      bc = meshblock->blockageinfoptrs[iblock];
+      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
+        nn += boundary_row[n]*boundary_col[n];
+        continue;
+      }
+    }
+    drawit = 0;
+    if(vis_boundaries[n]==1&&patchdir[n]<0){
+      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+        drawit = 1;
+      }
+    }
+    if(drawit==1){
+      nrow = boundary_row[n];
+      ncol = boundary_col[n];
+      xyzpatchcopy = xyzpatch+3*blockstart[n];
+      patchblankcopy = patchblank+blockstart[n];
+      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+      if(hidepatchsurface==0){
+        glPushMatrix();
+        switch(meshi->patchdir[n]){
+        case XDIRNEG:
+          glTranslatef(-dboundx, 0.0, 0.0);
+          break;
+        case YDIRNEG:
+          glTranslatef(0.0, dboundy, 0.0);
+          break;
+        case ZDIRNEG:
+          glTranslatef(0.00, 0.0, -dboundz);
+          break;
+        default:
+          ASSERT(FFALSE);
+          break;
+        }
+        glBegin(GL_TRIANGLES);
+      }
+      for(irow = 0;irow<nrow-1;irow++){
+        int *patchblank1, *patchblank2;
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = xyzpatchcopy+3*irow*ncol;
+        patchblank1 = patchblankcopy+irow*ncol;
+        nn1 = nn+irow*ncol;
+        xyzp2 = xyzp1+3*ncol;
+        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
+        cpatchval2 = cpatchval1+ncol;
+        patchblank2 = patchblank1+ncol;
+        nn2 = nn1+ncol;
+
+        for(icol = 0;icol<ncol-1;icol++){
+          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            color11 = rgb_patch+4*(*cpatchval1);
+            color12 = rgb_patch+4*(*(cpatchval1+1));
+            color21 = rgb_patch+4*(*cpatchval2);
+            color22 = rgb_patch+4*(*(cpatchval2+1));
+            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
+              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
+              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
+            }
+            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+            }
+            else{
+              glColor4fv(color11);
+              glVertex3fv(xyzp1);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color12);
+              glVertex3fv(xyzp1+3);
+
+              glColor4fv(color21);
+              glVertex3fv(xyzp2);
+
+              glColor4fv(color22);
+              glVertex3fv(xyzp2+3);
+            }
+          }
+          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+      if(hidepatchsurface==0){
+        glEnd();
+        glPopMatrix();
+      }
+    }
+    nn += boundary_row[n]*boundary_col[n];
+  }
+  if(hidepatchsurface==1){
+    glEnd();
+  }
+  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
+}
+
+/* ------------------ DrawBoundaryFrame ------------------------ */
+
+void DrawBoundaryFrame(int flag){
   meshdata *meshi;
   int i;
 
@@ -2624,14 +4083,14 @@ void draw_patchframe(int flag){
     if(patchi->filetype == PATCH_GEOMETRY && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->slice == 0){
-          draw_geomdata(flag, patchi, GEOM_STATIC);
-          draw_geomdata(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, patchi, GEOM_STATIC);
+          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
       else{
         if(patchi->slice == 1){
-          draw_geomdata(flag, patchi, GEOM_STATIC);
-          draw_geomdata(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, patchi, GEOM_STATIC);
+          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
     }
@@ -2647,1112 +4106,80 @@ void draw_patchframe(int flag){
         patchdata *patchi;
 
         patchi = patchinfo + filenum;
-        if(patchi->loaded==0||patchi->display==0||patchi->type!=ipatchtype)continue;
+        if(patchi->loaded==0||patchi->display==0||patchi->type!=iboundarytype)continue;
         if(usetexturebar!=0){
           if(vis_threshold==1&&do_threshold==1){
             if(patchi->filetype==PATCH_CELL_CENTER){
-              drawpatch_threshold_cellcenter(meshi);
+              DrawBoundaryThresholdCellcenter(meshi);
             }
             else if(patchi->filetype==PATCH_NODE_CENTER){
-              drawpatch_texture_threshold(meshi);
+              DrawBoundaryTextureThreshold(meshi);
             }
           }
           else{
             if(patchi->filetype==PATCH_CELL_CENTER){
-              drawpatch_cellcenter(meshi);
+              DrawBoundaryCellCenter(meshi);
             }
             else if(patchi->filetype==PATCH_NODE_CENTER){
-              drawpatch_texture(meshi);
+              DrawBoundaryTexture(meshi);
             }
           }
         }
         else{
           if(patchi->filetype==PATCH_CELL_CENTER){
-            drawpatch_cellcenter(meshi);
+            DrawBoundaryCellCenter(meshi);
           }
           else if(patchi->filetype==PATCH_NODE_CENTER){
-            drawpatch(meshi);
+            DrawBoundary(meshi);
           }
         }
-        if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)drawonlythreshold(meshi);
+        if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)DrawOnlyThreshold(meshi);
       }
     }
   }
 }
 
-/* ------------------ drawpatch ------------------------ */
+/* ------------------ UpdateBoundaryTypes ------------------------ */
 
-void drawpatch(const meshdata *meshi){
-  int n,nn,nn1,nn2;
-  int nrow, ncol, irow, icol;
-  unsigned char *cpatchval1, *cpatchval2;
-  unsigned char *cpatchval_iframe_copy;
-  float *xyzpatchcopy;
-  int *patchblankcopy;
-  float *patch_times;
-  int *visPatches;
-  float *xyzpatch;
-  int *patchdir, *patchrow, *patchcol, *patchtype;
-  int *blockstart;
-  int *patchblank;
-  unsigned char *cpatchval_iframe;
-  int iblock;
-  blockagedata *bc;
-  patchdata *patchi;
-  float *color11, *color12, *color21, *color22;
-  meshdata *meshblock;
-  float dboundx,dboundy,dboundz;
-  float *xplt, *yplt, *zplt;
-
-  if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
-
-  if(hidepatchsurface==0){
-    xplt=meshi->xplt;
-    yplt=meshi->yplt;
-    zplt=meshi->zplt;
-
-    dboundx = (xplt[1]-xplt[0])/10.0;
-    dboundy = (yplt[1]-yplt[0])/10.0;
-    dboundz = (zplt[1]-zplt[0])/10.0;
-  }
-
-  patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
-  xyzpatch=meshi->xyzpatch;
-  patchdir=meshi->patchdir;
-  patchtype=meshi->patchtype;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
-  blockstart=meshi->blockstart;
-  patchblank=meshi->patchblank;
-  patchi=patchinfo+meshi->patchfilenum;
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
-    cpatchval_iframe=meshi->cpatchval_iframe;
-    break;
-  case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
-    cpatchval_iframe=meshi->cpatchval_iframe_zlib;
-    break;
-  default:
-    ASSERT(FFALSE);
-  }
-  patchi = patchinfo + meshi->patchfilenum;
-
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
-  if(cullfaces==1)glDisable(GL_CULL_FACE);
-
-  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
-
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
-  nn =0;
-  glBegin(GL_TRIANGLES);
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(visPatches[n]==1&&patchdir[n]==0)drawit=1;
-    if(patchtype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        cpatchval2 = cpatchval1 + ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=&char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  glEnd();
-  if(cullfaces==1)glEnable(GL_CULL_FACE);
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-
-  nn=0;
-  if(hidepatchsurface==1){
-    glBegin(GL_TRIANGLES);
-  }
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
-    if(iblock!=-1){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
-        drawit=1;
-      }
-    }
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-          case XDIR:
-            glTranslatef(dboundx,0.0,0.0);
-            break;
-          case YDIR:
-            glTranslatef(0.0,-dboundy,0.0);
-            break;
-          case ZDIR:
-            glTranslatef(0.00,0.0,dboundz);
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-
-        xyzp2 = xyzp1 + 3*ncol;
-        cpatchval2 = cpatchval1 + ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=&char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-  nn=0;
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(visPatches[n]==1&&patchdir[n]<0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
-        drawit=1;
-      }
-    }
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-          case XDIRNEG:
-            glTranslatef(-dboundx,0.0,0.0);
-            break;
-          case YDIRNEG:
-            glTranslatef(0.0,dboundy,0.0);
-            break;
-          case ZDIRNEG:
-            glTranslatef(0.00,0.0,-dboundz);
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        cpatchval2 = cpatchval1 + ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=&char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=&char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  if(hidepatchsurface==1){
-    glEnd();
-  }
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
-}
-
-/* ------------------ drawpatch_cellcenter ------------------------ */
-
-void drawpatch_cellcenter(const meshdata *meshi){
-  int n,nn,nn1;
-  int nrow, ncol, irow, icol;
-  unsigned char *cpatchval1;
-  unsigned char *cpatchval_iframe_copy;
-  float *patch_times;
-  int *visPatches;
-  int *patchdir, *patchrow, *patchcol, *patchtype;
-  int *blockstart;
-  unsigned char *cpatchval_iframe;
-  int iblock;
-  blockagedata *bc;
-  patchdata *patchi;
-  float *color11;
-  meshdata *meshblock;
-
-  float dboundx,dboundy,dboundz;
-  float *xplt, *yplt, *zplt;
-  float **patchventcolors;
-
-  if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
-
-  if(hidepatchsurface==0){
-    xplt=meshi->xplt;
-    yplt=meshi->yplt;
-    zplt=meshi->zplt;
-
-    dboundx = (xplt[1]-xplt[0])/10.0;
-    dboundy = (yplt[1]-yplt[0])/10.0;
-    dboundz = (zplt[1]-zplt[0])/10.0;
-  }
-
-  patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
-  patchdir=meshi->patchdir;
-  patchtype=meshi->patchtype;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
-  blockstart=meshi->blockstart;
-  patchventcolors=meshi->patchventcolors;
-  patchi=patchinfo+meshi->patchfilenum;
-
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
-    cpatchval_iframe=meshi->cpatchval_iframe;
-    if(cpatchval_iframe==NULL)return;
-    break;
-  case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
-    cpatchval_iframe=meshi->cpatchval_iframe_zlib;
-    break;
-  default:
-    ASSERT(FFALSE);
-  }
-  patchi = patchinfo + meshi->patchfilenum;
-
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
-  if(cullfaces==1)glDisable(GL_CULL_FACE);
-
-  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
-
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
-  nn =0;
-  glBegin(GL_TRIANGLES);
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(visPatches[n]==1&&patchdir[n]==0)drawit=1;
-    if(patchtype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = meshi->xyzpatch + 3*blockstart[n] + 3*irow*ncol;
-        patchblank1 = meshi->patchblank + blockstart[n] + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        patchblank2 = patchblank1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
-              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              }
-            }
-            else{
-              color11=patchventcolors[(cpatchval1-cpatchval_iframe)];
-            }
-            glColor4fv(color11);
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp1+3);
-            glVertex3fv(xyzp2+3);
-
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp2+3);
-            glVertex3fv(xyzp2);
-          }
-          cpatchval1++;
-          patchblank1++;
-          patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  glEnd();
-  if(cullfaces==1)glEnable(GL_CULL_FACE);
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-
-  nn=0;
-  if(hidepatchsurface==1){
-    glBegin(GL_TRIANGLES);
-  }
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
-    if(iblock!=-1){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
-        drawit=1;
-      }
-    }
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-          case XDIR:
-            glTranslatef(dboundx,0.0,0.0);
-            break;
-          case YDIR:
-            glTranslatef(0.0,-dboundy,0.0);
-            break;
-          case ZDIR:
-            glTranslatef(0.0,0.0,dboundz);
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = meshi->xyzpatch + 3*blockstart[n] + 3*irow*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        patchblank1 = meshi->patchblank + blockstart[n] + irow*ncol;
-        nn1 = nn + irow*ncol;
-
-        xyzp2 = xyzp1 + 3*ncol;
-        patchblank2 = patchblank1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
-              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              }
-            }
-            else{
-              color11=patchventcolors[(cpatchval1-cpatchval_iframe)];
-            }
-            glColor4fv(color11);
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp1+3);
-            glVertex3fv(xyzp2+3);
-
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp2+3);
-            glVertex3fv(xyzp2);
-          }
-          cpatchval1++;
-          patchblank1++;
-          patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-  nn=0;
-  for(n=0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    drawit=0;
-    if(visPatches[n]==1&&patchdir[n]<0){
-      if(patchtype[n]==INTERIORwall||showpatch_both==0){
-        drawit=1;
-      }
-    }
-    if(drawit==1){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-          case XDIRNEG:
-            glTranslatef(-dboundx,0.0,0.0);
-            break;
-          case YDIRNEG:
-            glTranslatef(0.0,dboundy,0.0);
-            break;
-          case ZDIRNEG:
-            glTranslatef(0.0,0.0,-dboundz);
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = meshi->xyzpatch + 3*blockstart[n] + 3*irow*ncol;
-        patchblank1 = meshi->patchblank + blockstart[n] + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        patchblank2 = patchblank1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
-              if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=&char_color[0];
-              }
-            }
-            else{
-              color11=patchventcolors[(cpatchval1-cpatchval_iframe)];
-            }
-            glColor4fv(color11);
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp2+3);
-            glVertex3fv(xyzp1+3);
-
-            glVertex3fv(xyzp1);
-            glVertex3fv(xyzp2);
-            glVertex3fv(xyzp2+3);
-          }
-          cpatchval1++;
-          patchblank1++;
-          patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  if(hidepatchsurface==1){
-    glEnd();
-  }
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
-}
-
-/* ------------------ drawolythreshold ------------------------ */
-
-void drawonlythreshold(const meshdata *meshi){
-  int n,nn,nn1,nn2;
-  int nrow, ncol, irow, icol;
-  float *xyzpatchcopy;
-  int *patchblankcopy;
-  float *patch_times;
-  int *visPatches;
-  float *xyzpatch;
-  int *patchdir, *patchrow, *patchcol;
-  int *blockstart;
-  int *patchblank;
-  int iblock;
-  blockagedata *bc;
-  patchdata *patchi;
-  float *color11, *color12, *color21, *color22;
-  float *color_black;
-  meshdata *meshblock;
-
-  if(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)return;
-
-  patch_times=meshi->patch_times;
-  visPatches=meshi->visPatches;
-  xyzpatch=meshi->xyzpatch_threshold;
-  patchdir=meshi->patchdir;
-  patchrow=meshi->patchrow;
-  patchcol=meshi->patchcol;
-  blockstart=meshi->blockstart;
-  patchblank=meshi->patchblank;
-  patchi=patchinfo+meshi->patchfilenum;
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
-    break;
-  case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
-    break;
-  default:
-    ASSERT(FFALSE);
-  }
-  patchi = patchinfo + meshi->patchfilenum;
-
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
-  if(cullfaces==1)glDisable(GL_CULL_FACE);
-
-  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
-
-  nn =0;
-  color_black=&char_color[0];
-  glBegin(GL_TRIANGLES);
-  glColor4fv(color_black);
-  for(n=0;n<meshi->npatches;n++){
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    if(visPatches[n]==1&&patchdir[n]==0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            int nnulls;
-
-            nnulls=4;
-            color11 = NULL;
-            color12 = NULL;
-            color21 = NULL;
-            color22 = NULL;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ]){
-              color11=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
-              color12=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ]){
-              color21=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
-              color22=&char_color[0];
-              nnulls--;
-            }
-
-            if(nnulls==0){
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp1+3);
-              glVertex3fv(xyzp2+3);
-
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp2+3);
-              glVertex3fv(xyzp2);
-            }
-            if(nnulls==1){
-              if(color11!=NULL)glVertex3fv(xyzp1);
-              if(color12!=NULL)glVertex3fv(xyzp1+3);
-              if(color22!=NULL)glVertex3fv(xyzp2+3);
-              if(color21!=NULL)glVertex3fv(xyzp2);
-            }
-          }
-          patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  glEnd();
-  if(cullfaces==1)glEnable(GL_CULL_FACE);
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-
-  glBegin(GL_TRIANGLES);
-  glColor4fv(color_black);
-  nn=0;
-  for(n=0;n<meshi->npatches;n++){
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
-    if(iblock!=-1){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    if(meshi->visPatches[n]==1&&meshi->patchdir[n]>0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-
-        xyzp2 = xyzp1 + 3*ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            int nnulls;
-
-            color11 = NULL;
-            color12 = NULL;
-            color21 = NULL;
-            color22 = NULL;
-            nnulls=4;
-
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ]){
-              color11=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
-              color12=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ]){
-              color21=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
-              color22=&char_color[0];
-              nnulls--;
-            }
-
-            if(nnulls==0){
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp1+3);
-              glVertex3fv(xyzp2+3);
-
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp2+3);
-              glVertex3fv(xyzp2);
-            }
-            if(nnulls==1){
-              if(color11!=NULL)glVertex3fv(xyzp1);
-              if(color12!=NULL)glVertex3fv(xyzp1+3);
-              if(color22!=NULL)glVertex3fv(xyzp2+3);
-              if(color21!=NULL)glVertex3fv(xyzp2);
-            }
-          }
-          patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-  nn=0;
-  for(n=0;n<meshi->npatches;n++){
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc=meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += patchrow[n]*patchcol[n];
-        continue;
-      }
-    }
-    if(visPatches[n]==1&&patchdir[n]<0){
-      nrow=patchrow[n];
-      ncol=patchcol[n];
-      xyzpatchcopy = xyzpatch + 3*blockstart[n];
-      patchblankcopy = patchblank + blockstart[n];
-      for(irow=0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        patchblank1 = patchblankcopy + irow*ncol;
-        nn1 = nn + irow*ncol;
-        xyzp2 = xyzp1 + 3*ncol;
-        patchblank2 = patchblank1 + ncol;
-        nn2 = nn1 + ncol;
-
-        for(icol=0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            int nnulls;
-
-            color11 = NULL;
-            color12 = NULL;
-            color21 = NULL;
-            color22 = NULL;
-            nnulls=4;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ]){
-              color11=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
-              color12=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ]){
-              color21=&char_color[0];
-              nnulls--;
-            }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
-              color22=&char_color[0];
-              nnulls--;
-            }
-            if(nnulls==0){
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp2+3);
-              glVertex3fv(xyzp1+3);
-
-              glVertex3fv(xyzp1);
-              glVertex3fv(xyzp2);
-              glVertex3fv(xyzp2+3);
-            }
-            if(nnulls==1){
-              if(color21!=NULL)glVertex3fv(xyzp2);
-              if(color22!=NULL)glVertex3fv(xyzp2+3);
-              if(color12!=NULL)glVertex3fv(xyzp1+3);
-              if(color11!=NULL)glVertex3fv(xyzp1);
-            }
-          }
-          patchblank1++; patchblank2++;
-          xyzp1+=3;
-          xyzp2+=3;
-        }
-      }
-    }
-    nn += patchrow[n]*patchcol[n];
-  }
-  glEnd();
-}
-
-/* ------------------ UpdatePatchTypes ------------------------ */
-
-void UpdatePatchTypes(void){
+void UpdateBoundaryTypes(void){
   int i;
   patchdata *patchi;
 
-  npatchtypes = 0;
+  nboundarytypes = 0;
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo+i;
-    if(getpatchindex(patchi)==-1)patchtypes[npatchtypes++]=i;
+    if(GetBoundaryIndex(patchi)==-1)boundarytypes[nboundarytypes++]=i;
   }
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo+i;
-    patchi->type=GetPatchType(patchi);
+    patchi->type=GetBoundaryType(patchi);
   }
 }
 
-/* ------------------ GetPatchType ------------------------ */
+/* ------------------ GetBoundaryType ------------------------ */
 
-int GetPatchType(const patchdata *patchi){
+int GetBoundaryType(const patchdata *patchi){
   int j;
 
-  for(j=0;j<npatchtypes;j++){
+  for(j=0;j<nboundarytypes;j++){
     patchdata *patchi2;
 
-    patchi2 = patchinfo+patchtypes[j];
+    patchi2 = patchinfo+boundarytypes[j];
     if(strcmp(patchi->label.shortlabel,patchi2->label.shortlabel)==0)return j;
   }
   return -1;
 }
 
-/* ------------------ UpdatePatchType ------------------------ */
+/* ------------------ UpdateBoundaryType ------------------------ */
 
-void UpdatePatchType(){
+void UpdateBoundaryType(void){
   int i;
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1&&patchi->type==ipatchtype)return;
+    if(patchi->loaded==1&&patchi->display==1&&patchi->type==iboundarytype)return;
   }
 
   for(i=0;i<npatchinfo;i++){
@@ -3760,18 +4187,18 @@ void UpdatePatchType(){
 
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->display==1){
-      ipatchtype = getpatchindex(patchi);
+      iboundarytype = GetBoundaryIndex(patchi);
       return;
     }
   }
-  ipatchtype = -1;
+  iboundarytype = -1;
   return;
 
 }
 
-/* ------------------ patchcompare ------------------------ */
+/* ------------------ BoundaryCompare ------------------------ */
 
-int patchcompare( const void *arg1, const void *arg2 ){
+int BoundaryCompare( const void *arg1, const void *arg2 ){
   patchdata *patchi, *patchj;
 
   patchi = patchinfo + *(int *)arg1;
@@ -3786,9 +4213,9 @@ int patchcompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ update_patch_menulabels ------------------------ */
+/* ------------------ UpdateBoundaryMenuLabels ------------------------ */
 
-void update_patch_menulabels(void){
+void UpdateBoundaryMenuLabels(void){
   int i;
   patchdata *patchi;
   char label[128];
@@ -3799,7 +4226,7 @@ void update_patch_menulabels(void){
     for(i=0;i<npatchinfo;i++){
       patchorderindex[i]=i;
     }
-    qsort( (int *)patchorderindex, (size_t)npatchinfo, sizeof(int), patchcompare );
+    qsort( (int *)patchorderindex, (size_t)npatchinfo, sizeof(int), BoundaryCompare);
 
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
@@ -3851,298 +4278,164 @@ void update_patch_menulabels(void){
       }
     }
   }
-
-
 }
 
-/* ------------------ getpatchheader ------------------------ */
+#define COUNT_DUPLICATES 1
+#define FIND_DUPLICATES 0
 
-void getpatchheader(char *file,int *npatches, float *ppatchmin, float *ppatchmax){
-  FILE *stream;
-  float minmax[2];
+/* ------------------ CompareMeshResolution ------------------------ */
 
-  stream=fopen(file,"rb");
+int CompareMeshResolution(int dir, meshdata *meshi, meshdata *meshj){
+  float grid_eps;
+  float *dxyzi, *dxyzj;
 
-  if(stream==NULL)return;
+  dxyzi = meshi->dxyz;
+  dxyzj = meshj->dxyz;
+  grid_eps = MIN(dxyzi[dir],dxyzj[dir])/2.0;
 
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (bndf version)
-  // global min max (used to perform conversion)
-  // local min max  (min max found for this file)
-  // npatch
-  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
-  // time
-  // compressed size of frame
-  // compressed buffer
-
-  FSEEK(stream,16,SEEK_CUR);
-
-  fread(minmax,4,2,stream);
-  FSEEK(stream,8,SEEK_CUR);
-  fread(npatches,4,1,stream);
-  *ppatchmin=minmax[0];
-  *ppatchmax=minmax[1];
-  fclose(stream);
+  if(ABS(dxyzi[dir]-dxyzj[dir]) < grid_eps)return 0;
+  if(dxyzi[dir] > dxyzj[dir])return 1;
+  return -1;
 }
 
-/* ------------------ getpatchheader2 ------------------------ */
+/* ------------------ IsPatchDuplicate ------------------------ */
 
-void getpatchheader2(char *file,
-      int *version,
-      int *pi1,int *pi2,
-      int *pj1,int *pj2,
-      int *pk1,int *pk2,
-      int *patchdir){
+
+int IsBoundaryDuplicate(patchdata *patchi, int flag){
+  int j;
+  float *xyzmini, *xyzmaxi;
+  meshdata *meshi;
+  flowlabels *labeli;
+
+  if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
+  if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
+  if(patchi->dir == 0)return 0;
+  xyzmini = patchi->xyz_min;
+  xyzmaxi = patchi->xyz_max;
+  meshi = meshinfo + patchi->blocknumber;
+  labeli = &(patchi->label);
+  for(j=0;j<npatchinfo;j++){ // identify duplicate slices
+    patchdata *patchj;
+    float *xyzminj, *xyzmaxj, grid_eps;
+    meshdata *meshj;
+    flowlabels *labelj;
+
+    patchj = patchinfo + j;
+    labelj = &(patchj->label);
+    meshj = meshinfo + patchj->blocknumber;
+
+    if(patchj==patchi||patchj->skip==1)continue;
+    if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->dir != patchj->dir||patchj->dir==0)continue;
+    if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
+
+    grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);
+
+    xyzminj = patchj->xyz_min;
+    xyzmaxj = patchj->xyz_max;
+    if(MAXDIFF3(xyzmini, xyzminj) < grid_eps&&MAXDIFF3(xyzmaxi, xyzmaxj) < grid_eps){
+      if(flag == COUNT_DUPLICATES)return 1;
+      if(boundaryslicedup_option ==SLICEDUP_KEEPFINE  &&CompareMeshResolution(patchi->dir, meshi, meshj)>=0)return 1;
+      if(boundaryslicedup_option ==SLICEDUP_KEEPCOARSE&&CompareMeshResolution(patchi->dir, meshi, meshj)<=0)return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ CountBoundarySliceDups ------------------------ */
+
+int CountBoundarySliceDups(void){
+  int i, count;
+
+  count = 0;
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    for(i = 0; i < npatchinfo; i++){
+      count += IsBoundaryDuplicate(patchi, COUNT_DUPLICATES);
+    }
+  }
+  return count;
+}
+
+/* ------------------ UpdateBoundarySliceDups ------------------------ */
+
+void UpdateBoundarySliceDups(void){
   int i;
-  int buffer[9];
-  FILE *stream;
-  int npatches;
 
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (bndf version)
-  // global min max (used to perform conversion)
-  // local min max  (min max found for this file)
-  // npatch
-  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
-  // time
-  // compressed size of frame
-  // compressed buffer
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
 
-  stream=fopen(file,"rb");
-
-  if(stream==NULL)return;
-
-  FSEEK(stream,12,SEEK_CUR);
-  fread(version,4,1,stream);
-  FSEEK(stream,16,SEEK_CUR);
-  fread(&npatches,4,1,stream);
-  for(i=0;i<npatches;i++){
-    buffer[6]=0;
-    if(*version==0){
-      fread(buffer,4,6,stream);
-    }
-    else{
-      fread(buffer,4,9,stream);
-    }
-    pi1[i]=buffer[0];
-    pi2[i]=buffer[1];
-    pj1[i]=buffer[2];
-    pj2[i]=buffer[3];
-    pk1[i]=buffer[4];
-    pk2[i]=buffer[5];
-    patchdir[i]=buffer[6];
+    patchi = patchinfo + i;
+    patchi->skip = 0;
   }
-  fclose(stream);
+  // look for duplicate patches
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->filetype!=PATCH_GEOMETRY||patchi->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    patchi->skip = IsBoundaryDuplicate(patchi, FIND_DUPLICATES);
+  }
 }
 
-/* ------------------ getpatchsizeinfo ------------------------ */
+/* ------------------ GetBoundaryParams ------------------------ */
 
-void getpatchsizeinfo(patchdata *patchi, int *nframes, int *buffersize){
-  FILE *streamsize;
-  FILE *stream;
-  int nf=0, bsize=0;
-  float local_time;
-  char buffer[255];
-  int full_size, compressed_size;
-  int npatches;
-  int buff[9];
-  int version;
-  int size;
-  size_t return_code;
+void GetBoundaryParams(void){
   int i;
-  char sizefile[1024];
-  int local_count;
-  float time_max;
 
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (bndf version)
-  // global min max (used to perform conversion)
-  // local min max  (min max found for this file)
-  // npatch
-  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
-  // time
-  // compressed size of frame
-  // compressed buffer
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    float *xyz_min, *xyz_max;
+    int *ijk;
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+    float dxyz[3];
 
-  strcpy(sizefile,patchi->size_file);
-  strcat(sizefile,".szz");
-  streamsize=fopen(sizefile,"r");
-  if(streamsize==NULL){
-    *nframes=0;
-    *buffersize=0;
+    patchi = patchinfo + i;
+    patchi->dir = 0;
 
-    strcpy(sizefile,patchi->size_file);
-    strcat(sizefile,".sz");
-    streamsize=fopen(sizefile,"r");
+    xyz_min = patchi->xyz_min;
+    xyz_min[0] = 0.0;
+    xyz_min[1] = 0.0;
+    xyz_min[2] = 0.0;
 
-    stream=fopen(patchi->file,"rb");
-    if(stream==NULL){
-      if(streamsize!=NULL)fclose(streamsize);
-      return;
-    }
+    xyz_max = patchi->xyz_max;
+    xyz_max[0] = 0.0;
+    xyz_max[1] = 0.0;
+    xyz_max[2] = 0.0;
+    if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)continue;
 
-    streamsize=fopen(sizefile,"w");
-    if(streamsize==NULL){
-      fclose(stream);
-      return;
-    }
+    ijk = patchi->ijk;
+    meshi = meshinfo + patchi->blocknumber;
 
-    FSEEK(stream,12,SEEK_CUR);
-    fread(&version,4,1,stream);
-    FSEEK(stream,16,SEEK_CUR);
-    fread(&npatches,4,1,stream);
-    size=0;
-    return_code=0;
-    for(i=0;i<npatches;i++){
-      if(version==0){
-        return_code=fread(buff,4,6,stream);
-      }
-      else{
-        return_code=fread(buff,4,9,stream);
-      }
-      if(return_code==0)break;
-      size+=(buff[1]+1-buff[0])*(buff[3]+1-buff[2])*(buff[5]+1-buff[4]);
-    }
-    if(return_code==0){
-      fclose(stream);
-      fclose(streamsize);
-      return;
-    }
-    for(;;){
-      return_code=fread(&local_time,4,1,stream);
-      if(return_code==0)break;
-      return_code=fread(&compressed_size,4,1,stream);
-      if(return_code==0)break;
-      return_code=FSEEK(stream,compressed_size,SEEK_CUR);
-      if(return_code!=0)break;
-      fprintf(streamsize,"%f %i %i\n",local_time,size,compressed_size);
-    }
-    fclose(stream);
-    fclose(streamsize);
-    streamsize=fopen(sizefile,"r");
-    if(streamsize==NULL)return;
+    xplt = meshi->xplt;
+    yplt = meshi->yplt;
+    zplt = meshi->zplt;
+
+    xyz_min[0] = xplt[ijk[0]];
+    xyz_min[1] = yplt[ijk[2]];
+    xyz_min[2] = zplt[ijk[4]];
+
+    xyz_max[0] = xplt[ijk[1]];
+    xyz_max[1] = yplt[ijk[3]];
+    xyz_max[2] = zplt[ijk[5]];
+
+    dxyz[0] = ABS(xyz_max[0] - xyz_min[0]);
+    dxyz[1] = ABS(xyz_max[1] - xyz_min[1]);
+    dxyz[2] = ABS(xyz_max[2] - xyz_min[2]);
+    if(dxyz[0] < MIN(dxyz[1], dxyz[2]))patchi->dir = 0;
+    if(dxyz[1] < MIN(dxyz[0], dxyz[2]))patchi->dir = 1;
+    if(dxyz[2] < MIN(dxyz[0], dxyz[1]))patchi->dir = 2;
   }
-
-  local_count=-1;
-  time_max=-1000000.0;
-  for(;;){
-    int frame_skip;
-
-    if(fgets(buffer,255,streamsize)==NULL)break;
-
-    sscanf(buffer,"%f %i %i",&local_time,&full_size,&compressed_size);
-    frame_skip=1;
-    if(local_time>time_max){
-      time_max=local_time;
-      frame_skip=0;
-    }
-    if(frame_skip==1)continue;
-
-    local_count++;
-    if(local_count%boundframestep!=0)continue;
-
-    nf++;
-    bsize+=compressed_size;
-  }
-  *nframes=nf;
-  *buffersize=bsize;
-  fclose(streamsize);
+  UpdateBoundarySliceDups();
+  nboundaryslicedups = CountBoundarySliceDups();
 }
 
-/* ------------------ getpatchdata_zlib ------------------------ */
+/* ------------------ UncompressBoundaryDataFrame ------------------------ */
 
-void getpatchdata_zlib(patchdata *patchi,unsigned char *data,int ndata,
-                       float *local_times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes_local){
-  FILE *stream;
-  float local_time;
-  unsigned int compressed_size;
-  int npatches;
-  int version;
-  int return_code;
-  int i;
-  int local_skip;
-  unsigned char *datacopy;
-  unsigned int offset;
-  int local_count;
-  float time_max;
-
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (bndf version)
-  // global min max (used to perform conversion)
-  // local min max  (min max found for this file)
-  // npatch
-  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
-  // time
-  // compressed size of frame
-  // compressed buffer
-
-  stream=fopen(patchi->file,"rb");
-  if(stream==NULL)return;
-
-  FSEEK(stream,12,SEEK_CUR);
-  fread(&version,4,1,stream);
-  FSEEK(stream,16,SEEK_CUR);
-  fread(&npatches,4,1,stream);
-  if(version==0){
-    local_skip = 6*npatches*4;
-  }
-  else{
-    local_skip = 9*npatches*4;
-  }
-  return_code=FSEEK(stream,local_skip,SEEK_CUR);
-  if(return_code!=0){
-    fclose(stream);
-    return;
-  }
-  datacopy=data;
-  offset=0;
-  local_count=-1;
-  i=-1;
-  time_max=-1000000.0;
-  CheckMemory;
-  for(;;){
-    int skip_frame;
-
-    if(fread(&local_time,4,1,stream)==0)break;
-    skip_frame=1;
-    if(local_time>time_max){
-      time_max=local_time;
-      skip_frame=0;
-      local_count++;
-    }
-    if(fread(&compressed_size,4,1,stream)==0)break;
-    if(skip_frame==0&&local_count%boundframestep==0){
-      if(fread(datacopy,1,compressed_size,stream)==0)break;
-    }
-    else{
-      FSEEK(stream,compressed_size,SEEK_CUR);
-    }
-
-    if(skip_frame==1||local_count%boundframestep!=0)continue;
-    i++;
-    if(i>=ntimes_local)break;
-    PRINTF("boundary time=%.2f\n",local_time);
-    ASSERT(i<ntimes_local);
-    local_times[i]=local_time;
-    zipoffset[i]=offset;
-    zipsize[i]=compressed_size;
-    datacopy+=compressed_size;
-    offset+=compressed_size;
-  }
-  fclose(stream);
-}
-
-/* ------------------ uncompress_patchdataframe ------------------------ */
-
-void uncompress_patchdataframe(meshdata *meshi,int local_iframe){
+void UncompressBoundaryDataFrame(meshdata *meshi,int local_iframe){
   unsigned int countin;
   uLongf countout;
   unsigned char *compressed_data;
@@ -4151,13 +4444,13 @@ void uncompress_patchdataframe(meshdata *meshi,int local_iframe){
   countin = meshi->zipsize[local_iframe];
   countout=meshi->npatchsize;
 
-  uncompress_zlib(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
+  UnCompressZLIB(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
 
 }
 
-/* ------------------ update_hidepatchsurface ------------------------ */
+/* ------------------ UpdateHideBoundarySurface ------------------------ */
 
-void update_hidepatchsurface(void){
+void UpdateHideBoundarySurface(void){
   int hidepatchsurface_old;
 
   hidepatchsurface_old=hidepatchsurface;
@@ -4171,9 +4464,9 @@ void update_hidepatchsurface(void){
 }
 
 
-/* ------------------ UpdateAllPatchBoundsST ------------------------ */
+/* ------------------ UpdateAllBoundaryBoundsST ------------------------ */
 
-void UpdateAllPatchBoundsST(void){
+void UpdateAllBoundaryBoundsST(void){
   int i;
   int total=0;
 
@@ -4182,8 +4475,8 @@ void UpdateAllPatchBoundsST(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    total+=update_patch_hist(patchi);
-    UpdatePatchBounds(patchi);
+    total+= UpdateBoundaryHist(patchi);
+    UpdateBoundaryBounds(patchi);
   }
   if(total==0){
     PRINTF("Boundary file bounds already computed.\n");
@@ -4194,9 +4487,9 @@ void UpdateAllPatchBoundsST(void){
   UNLOCK_COMPRESS;
 }
 
-/* ------------------ update_patch_hist ------------------------ */
+/* ------------------ UpdateBoundaryHist ------------------------ */
 
-int update_patch_hist(patchdata *patchj){
+int UpdateBoundaryHist(patchdata *patchj){
   int i;
   int first=1;
   int sum=0;
@@ -4236,7 +4529,6 @@ int update_patch_hist(patchdata *patchj){
     sum++;
     lenfile=strlen(patchi->file);
 
-    FORTget_file_unit(&unit1,&patchi->unit_start);
     FORTgetboundaryheader1(patchi->file,&unit1, &npatches, &error, lenfile);
     if(npatches==0){
       FORTclosefortranfile(&unit1);
@@ -4263,9 +4555,6 @@ int update_patch_hist(patchdata *patchj){
       npatchsize *= (pk2[j]+1-pk1[j]);
       patchframesize+=npatchsize;
     }
-
-    FORTget_file_unit(&unit1,&patchi->unit_start);
-    FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
 
     NewMemory((void **)&patchframe,patchframesize*sizeof(float));
     ResetHistogram(patchi->histogram,NULL,NULL);

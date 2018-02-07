@@ -272,7 +272,10 @@ int ClosestNodeIndex(float val,float *vals,int nvals, float eps){
   if(val<vals[0])return -1;
   if(val>vals[nvals-1])return -1;
   for(j=0;j<nvals-1;j++){
-    if(vals[j]<=val&&val<vals[j+1])return j;
+    if(vals[j] <= val&&val <= vals[j + 1]){
+      if(ABS(vals[j] - val) < ABS(vals[j + 1] - val))return j;
+      return j+1;
+    }
   }
   return nvals-1;
 }
@@ -283,6 +286,20 @@ void UpdatePlotxyzAll(void){
   int i;
   float *xp, *yp, *zp;
   float dxyz_min=100000.0;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt, *dxyz;
+
+    meshi = meshinfo + i;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    dxyz = meshi->dxyz;
+    dxyz[0] = ABS(xplt[1] - xplt[0]);
+    dxyz[1] = ABS(yplt[1] - yplt[0]);
+    dxyz[2] = ABS(zplt[1] - zplt[0]);
+  }
 
   FREEMEMORY(plotx_all);
   FREEMEMORY(ploty_all);
@@ -298,7 +315,6 @@ void UpdatePlotxyzAll(void){
     nploty_all+=(meshi->jbar+1);
     nplotz_all+=(meshi->kbar+1);
   }
-#ifdef pp_MULTISLICE
   NewMemory((void **)&plotx_list, nplotx_all*sizeof(int));
   for(i=0;i<nplotx_all;i++){
     plotx_list[i] = 0;
@@ -316,7 +332,6 @@ void UpdatePlotxyzAll(void){
     plotz_list[i] = 0;
   }
   nplotz_list = 0;
-#endif
 
   NewMemory((void **)&plotx_all,nplotx_all*sizeof(float));
   NewMemory((void **)&ploty_all,nploty_all*sizeof(float));
@@ -376,7 +391,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotx_all[j]=-1;
       val = plotx_all[j];
-      ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
+        ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
       if(ival<0)continue;
       meshi->iplotx_all[j]=ival;
     }
@@ -429,9 +444,8 @@ void UpdatePlotxyzAll(void){
     iplotz_all = ival;
   }
 
-#ifdef pp_MULTISLICE
   nplotx_list = 0;
-  for(i=0;i<nploty_all;i++){
+  for(i=0;i<nplotx_all;i++){
     plotx_list[i] = i;
     nplotx_list++;
   }
@@ -447,7 +461,6 @@ void UpdatePlotxyzAll(void){
     plotz_list[i] = i;
     nplotz_list++;
   }
-#endif
 }
 
 #define MESHEPS 0.001
@@ -967,9 +980,9 @@ void GetVolSmokeDir(float *mm){
 
   if(freeze_volsmoke==1)return;
 
-  xyzeyeorig[0] = -DOT3(mm+0,mm+12)/mscale[0];
-  xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
-  xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
+  eye_position_fds[0] = -DOT3(mm+0,mm+12)/mscale[0];
+  eye_position_fds[1] = -DOT3(mm+4,mm+12)/mscale[1];
+  eye_position_fds[2] = -DOT3(mm+8,mm+12)/mscale[2];
 
   for(j=0;j<nmeshes;j++){
     meshdata *meshj;
@@ -995,9 +1008,9 @@ void GetVolSmokeDir(float *mm){
 
     *inside=0;
     if(
-      xyzeyeorig[0]>x0&&xyzeyeorig[0]<x1&&
-      xyzeyeorig[1]>yy0&&xyzeyeorig[1]<yy1&&
-      xyzeyeorig[2]>z0&&xyzeyeorig[2]<z1
+      eye_position_fds[0]>x0&&eye_position_fds[0]<x1&&
+      eye_position_fds[1]>yy0&&eye_position_fds[1]<yy1&&
+      eye_position_fds[2]>z0&&eye_position_fds[2]<z1
       ){
       for(i=-3;i<=3;i++){
         if(i==0)continue;
@@ -1054,8 +1067,8 @@ void GetVolSmokeDir(float *mm){
         ASSERT(FFALSE);
         break;
       }
-      VEC3DIFF(eyedir,xyzeyeorig,eyedir);
-      normalize(eyedir,3);
+      VEC3DIFF(eyedir,eye_position_fds,eyedir);
+      Normalize(eyedir,3);
       cosdir = CLAMP(DOT3(eyedir,norm),-1.0,1.0);
       cosdir=acos(cosdir)*RAD2DEG;
       if(cosdir<0.0)cosdir=-cosdir;
@@ -1132,9 +1145,9 @@ void GetVolSmokeDir(float *mm){
       vi->iwall=j;
       xyz=meshi->face_centers+facemap[j+3];
 
-      dx = xyz[0]-xyzeyeorig[0];
-      dy = xyz[1]-xyzeyeorig[1];
-      dz = xyz[2]-xyzeyeorig[2];
+      dx = xyz[0]-eye_position_fds[0];
+      dy = xyz[1]-eye_position_fds[1];
+      dz = xyz[2]-eye_position_fds[2];
       vi->dist2=dx*dx+dy*dy+dz*dz;
       vi->xyz=xyz;
       vi++;
@@ -1176,9 +1189,20 @@ void GetSmokeDir(float *mm){
   float dx, dy, dz;
   float factor;
 
-  xyzeyeorig[0] = -DOT3(mm+0,mm+12)/mscale[0];
-  xyzeyeorig[1] = -DOT3(mm+4,mm+12)/mscale[1];
-  xyzeyeorig[2] = -DOT3(mm+8,mm+12)/mscale[2];
+  eye_position_fds[0] = -DOT3(mm+0,mm+12)/mscale[0];
+  eye_position_fds[1] = -DOT3(mm+4,mm+12)/mscale[1];
+  eye_position_fds[2] = -DOT3(mm+8,mm+12)/mscale[2];
+
+  for(j = 0;j<nmeshes;j++){
+    meshdata  *meshi;
+    float dx, dy, dz;
+
+    meshi = meshinfo+j;
+    dx = meshi->boxmiddle_scaled[0]-eye_position_fds[0];
+    dy = meshi->boxmiddle_scaled[1]-eye_position_fds[1];
+    dz = meshi->boxmiddle_scaled[2]-eye_position_fds[2];
+    meshi->eyedist = sqrt(dx*dx+dy*dy+dz*dz);
+  }
 
   for(j=0;j<nmeshes;j++){
     meshj = meshinfo + j;
@@ -1188,6 +1212,9 @@ void GetSmokeDir(float *mm){
     meshj->dx=meshj->xplt_orig[1]-meshj->xplt_orig[0];
     meshj->dy=meshj->yplt_orig[1]-meshj->yplt_orig[0];
     meshj->dz=meshj->zplt_orig[1]-meshj->zplt_orig[0];
+    meshj->dxyz[0] = meshj->dx;
+    meshj->dxyz[1] = meshj->dy;
+    meshj->dxyz[2] = meshj->dz;
     meshj->dxy=meshj->dx*meshj->dx+meshj->dy*meshj->dy;
     meshj->dxy=sqrt(meshj->dxy)/2.0;
     meshj->dxz=meshj->dx*meshj->dx+meshj->dz*meshj->dz;

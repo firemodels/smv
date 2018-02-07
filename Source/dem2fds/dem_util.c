@@ -905,6 +905,7 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
         float vavg, xcen;
         int k;
         int exclude;
+        float x1, x2, y1, y2;
 
         xcen = (xgrid[i] + xgrid[i + 1]) / 2.0;
 
@@ -920,8 +921,11 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
         }
         if(exclude == 1)continue;
         vavg = (vals[count] + vals[count + 1] + valsp1[count] + valsp1[count + 1]) / 4.0;
-        fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n",
-          xgrid[i], xgrid[i + 1], ygrid[j], ygrid[j + 1], vavg,surf_id);
+        x1 = MIN(xgrid[i], xgrid[i+1]);
+        x2 = MAX(xgrid[i], xgrid[i+1]);
+        y1 = MIN(ygrid[j], ygrid[j+1]);
+        y2 = MAX(ygrid[j], ygrid[j+1]);
+        fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n",x1,x2,y1,y2,vavg,surf_id);
         count++;
       }
       count++;

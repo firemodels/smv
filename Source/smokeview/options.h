@@ -12,7 +12,7 @@
 #ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
-  #define PROGVERSION "6.5.5"
+  #define PROGVERSION ""
 #endif
 
 //*** options: all platforms
@@ -21,14 +21,17 @@
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
+#define pp_COLORBARFLIP // flip colorbar if soot visibility is shown
+
 //#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 //#define pp_OPACITYMAP
-#define pp_MULTISLICE
 
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU
-#define pp_CULL         // pp_GPU directive must also be set
+#ifndef pp_OSX
+#define pp_CULL         // pp_GPU directive must also be set 
+#endif
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
@@ -62,7 +65,6 @@
 //*** options: Mac
 
 #ifdef pp_OSX
-#define pp_QUICKTIME    // add option to make .avi files compatible with quicktime
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
@@ -74,6 +76,7 @@
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS
 //#define pp_GPUDEPTH
+#define pp_SMOKETEST
 #endif
 
 //*** options: for debugging
