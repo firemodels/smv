@@ -404,7 +404,7 @@ typedef struct _blockagedata {
   float *showtime;
   int *showtimelist;
   unsigned char *showhide;
-  int nshowtime, nshowtime_save, show;
+  int nshowtime, show;
   char *label;
   float *color;
   int colorindex;
