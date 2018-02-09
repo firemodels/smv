@@ -7942,10 +7942,10 @@ updatemenu=0;
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
     if(nrender_rows==2){
-      glutAddMenuEntry("  *2",HIDEALL_ISO);
+      glutAddMenuEntry("  *2",10002);
     }
     else{
-      glutAddMenuEntry("  2",HIDEALL_ISO);
+      glutAddMenuEntry("  2",10002);
     }
     if(nrender_rows==3){
       glutAddMenuEntry("  *3",10003);
@@ -8335,7 +8335,12 @@ updatemenu=0;
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  r: render the current scene to an image file"), MENU_DUMMY);
-  glutAddMenuEntry(_("  R:   (same as r but at twice the resolution)"), MENU_DUMMY);
+  {
+    char render_label[1024];
+
+    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", nrender_rows);
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+  }
   if(ntotal_blockages>0||isZoneFireModel==1){
     glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
   }
