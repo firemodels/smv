@@ -199,7 +199,7 @@ void ReadBoundINI(void){
   if(boundini_filename == NULL)return;
   fullfilename = GetFileName(smokeviewtempdir, boundini_filename, tempdir_flag);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
-  if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
+  if(stream == NULL || IsFileNewer(smv_filename, fullfilename,NOT_CHECK_EMPTY) == 1){
     if(stream != NULL)fclose(stream);
     FREEMEMORY(fullfilename);
     return;
@@ -234,7 +234,7 @@ void ReadBoundINI(void){
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
           patchi->filetype == filetype&&
-          IsFileNewer(boundini_filename, patchi->file) == 1){
+          IsFileNewer(boundini_filename, patchi->file,NOT_CHECK_EMPTY) == 1){
           bounddata *boundi;
 
           boundi = &patchi->bounds;

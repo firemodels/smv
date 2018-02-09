@@ -135,6 +135,9 @@ int FileExistsOrig(char *filename);
 #define YES 1
 #endif
 
+#define CHECK_EMPTY 0
+#define NOT_CHECK_EMPTY 1
+
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #ifdef pp_READBUFFER
@@ -176,7 +179,7 @@ EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sor
 EXTERNCPP char *Which(char *progname);
 EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
-EXTERNCPP int IsFileNewer(char *file1, char *file2);
+EXTERNCPP int IsFileNewer(char *file1, char *file2, int option);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
 
 #ifdef pp_LUA

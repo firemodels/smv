@@ -900,12 +900,12 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
   // either the CO, CO2 or O2 slice files
 
   if(regenerate_fed==1||
-     (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
-       IsFileNewer(fed_slice->file,co2->file)!=1||
-       IsFileNewer(fed_slice->file,co->file)!=1))||
-     (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
-       IsFileNewer(fed_iso->file,co2->file)!=1||
-       IsFileNewer(fed_iso->file,co->file)!=1))){
+     (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file,NOT_CHECK_EMPTY)!=1||
+       IsFileNewer(fed_slice->file,co2->file,NOT_CHECK_EMPTY)!=1||
+       IsFileNewer(fed_slice->file,co->file,NOT_CHECK_EMPTY)!=1))||
+     (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file,NOT_CHECK_EMPTY)!=1||
+       IsFileNewer(fed_iso->file,co2->file,NOT_CHECK_EMPTY)!=1||
+       IsFileNewer(fed_iso->file,co->file,NOT_CHECK_EMPTY)!=1))){
     int i,j,k;
     int frame_size;
     float *fed_frame,*fed_framem1;
@@ -2620,7 +2620,7 @@ void GetSliceParams(void){
   int build_cache=0;
   FILE *stream;
 
-  if(IsFileNewer(sliceinfo_filename,smv_filename)!=1){
+  if(IsFileNewer(sliceinfo_filename,smv_filename,CHECK_EMPTY)!=1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
   }

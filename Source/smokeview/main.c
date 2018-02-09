@@ -57,7 +57,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
     PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
-    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.bini"));
+    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.binfo"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
@@ -329,7 +329,7 @@ void ParseCommandline(int argc, char **argv){
   FREEMEMORY(boundini_filename);
   NewMemory((void **)&boundini_filename, len_casename + 5 + 1);
   STRCPY(boundini_filename, fdsprefix);
-  STRCAT(boundini_filename, ".bini");
+  STRCAT(boundini_filename, ".binfo");
 
   if(smv_filename == NULL){
     NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
@@ -378,7 +378,7 @@ void ParseCommandline(int argc, char **argv){
   if(sliceinfo_filename == NULL){
     NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + 11 + 1);
     STRCPY(sliceinfo_filename, fdsprefix);
-    STRCAT(sliceinfo_filename, "_slice.info");
+    STRCAT(sliceinfo_filename, ".sinfo");
   }
   if(deviceinfo_filename==NULL){
     NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+12+1);

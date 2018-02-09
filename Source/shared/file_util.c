@@ -325,7 +325,7 @@ int Writable(char *dir){
 
 /* ------------------ IsFileNewer ------------------------ */
 
-int IsFileNewer(char *file1, char *file2){
+int IsFileNewer(char *file1, char *file2, int option){
 
 // returns 1 if file1 is newer than file2, 0 otherwise
 
@@ -337,6 +337,20 @@ int IsFileNewer(char *file1, char *file2){
   statfile1=STAT(file1,&statbuff1);
   statfile2=STAT(file2,&statbuff2);
   if(statfile1!=0||statfile2!=0)return -1;
+
+  if(option == CHECK_EMPTY){
+    FILE *stream=NULL;
+    char buffer[255], *buffptr;
+
+    stream = fopen(file1, "r");
+    if(stream == NULL||fgets(buffer, 255, stream) == NULL){
+      if(stream!=NULL)fclose(stream);
+      return 0;
+    }
+    fclose(stream);
+    buffptr=TrimFrontBack(buffer);
+    if(strlen(buffptr) == 0)return 0;
+  }
 
   if(statbuff1.st_mtime>statbuff2.st_mtime)return 1;
   return 0;
