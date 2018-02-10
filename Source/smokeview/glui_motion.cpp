@@ -1218,17 +1218,17 @@ extern "C" void GluiMotionSetup(int main_window){
 
   glui_motion->add_separator_to_panel(ROLLOUT_render);
 
-  BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Generate Images"), RENDER_START, RenderCB);
-  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Stop Image Generation"), RENDER_STOP, RenderCB);
+  BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Start image generatation"), RENDER_START, RenderCB);
+  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Stop image generation"), RENDER_STOP, RenderCB);
 
   if(have_ffmpeg == 1){
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT,MotionRolloutCB);
     ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_make_movie, MOVIE_ROLLOUT);
 
-    CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "overwrite movie", &overwrite_movie);
-    EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, RenderCB);
+    CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
+    EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "Movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, RenderCB);
     EDIT_movie_name->set_w(200);
-    PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "movie type:", true);
+    PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "Movie type:", true);
     RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_FILETYPE, RenderCB);
     RADIOBUTTON_movie_type[0]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
     RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
@@ -1237,14 +1237,14 @@ extern "C" void GluiMotionSetup(int main_window){
     glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility,QUICKTIME_COMPATIBILITY,RenderCB);
     RenderCB(QUICKTIME_COMPATIBILITY);
     RenderCB(MOVIE_FILETYPE);
-    SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "frame rate", GLUI_SPINNER_INT, &movie_framerate);
+    SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
-    SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
+    SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
     SPINNER_bitrate->set_int_limits(100, 20000);
-    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Generate Images"), RENDER_START, RenderCB);
-    BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make Movie", MAKE_MOVIE, RenderCB);
+    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Generate images"), RENDER_START, RenderCB);
+    BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
     if(have_ffplay == 1){
-      BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play Movie", PLAY_MOVIE, RenderCB);
+      BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);
       EnableDisablePlayMovie();
     }
   }

@@ -3223,7 +3223,7 @@ void DisplayCB(void){
     if(render_mode == RENDER_XYSINGLE||render_status==RENDER_OFF){
       glDrawBuffer(GL_BACK);
       ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
-      if(render_mode != RENDER_360&&render_status==RENDER_OFF)Render(VIEW_CENTER);
+      if(render_mode != RENDER_360)Render(VIEW_CENTER);
       if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
     }
     else{
