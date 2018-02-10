@@ -126,7 +126,7 @@ SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
 SVEXTERN int SVDECL(render_from_menu, 0);
 SVEXTERN int SVDECL(render_360, 0);
-SVEXTERN int SVDECL(rendering_status, 0);
+SVEXTERN int SVDECL(render_status, 0);
 SVEXTERN int SVDECL(resolution_multiplier, 2);
 SVEXTERN char render_file_base[1024];
 SVEXTERN int SVDECL(script_render_width, 320), SVDECL(script_render_height, 240);

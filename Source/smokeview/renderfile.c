@@ -60,7 +60,7 @@ void MakeMovie(void){
 
 // wait to make movie until after images are rendered
 
-  if(rendering_status == RENDER_ON)return;
+  if(render_status == RENDER_ON)return;
 
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
@@ -136,7 +136,7 @@ void MakeMovie(void){
 /* ------------------ Render ------------------------ */
 
 void Render(int view_mode){
-  if(rendering_status == RENDER_OFF)return;
+  if(render_status == RENDER_OFF)return;
   if(current_script_command!=NULL&&(current_script_command->command==SCRIPT_VOLSMOKERENDERALL||current_script_command->command==SCRIPT_ISORENDERALL)){
     int command;
 
@@ -156,7 +156,7 @@ void Render(int view_mode){
       }
     }
   }
-  if(render_times == RENDER_ALLTIMES && rendering_status == RENDER_ON&&render_mode == RENDER_XYSINGLE && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
+  if(render_times == RENDER_ALLTIMES && render_status == RENDER_ON&&render_mode == RENDER_XYSINGLE && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
     if(itimes>=0&&itimes<nglobal_times&&
      ((render_frame[itimes] == 0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
      ){

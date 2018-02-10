@@ -1551,7 +1551,7 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
-    rendering_status = onoff;
+    render_status = onoff;
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
@@ -1568,8 +1568,8 @@ void RenderState(int onoff){
     }
   }
   else{
-    if(rendering_status==RENDER_OFF)return;
-    rendering_status = onoff;
+    if(render_status==RENDER_OFF)return;
+    render_status = onoff;
     Enable360Zoom();
     render_mode = RENDER_XYSINGLE;
     SetScreenSize(&saveW,&saveH);
