@@ -7941,41 +7941,20 @@ updatemenu=0;
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    if(resolution_multiplier==1){
-      glutAddMenuEntry("  *1", 10001);
+    for(i = 1;i<=10;i++){
+      char render_label[256];
+      int render_index;
+
+      render_index = 10000+MIN(5, i);
+      if(resolution_multiplier==i){
+        sprintf(render_label, "  *%i", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+      else if(i<=5){
+        sprintf(render_label, "  %i", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
     }
-    else{
-      glutAddMenuEntry("  1", 10001);
-    }
-    if(resolution_multiplier==2){
-      glutAddMenuEntry("  *2",10002);
-    }
-    else{
-      glutAddMenuEntry("  2",10002);
-    }
-    if(resolution_multiplier==3){
-      glutAddMenuEntry("  *3",10003);
-    }
-    else{
-      glutAddMenuEntry("  3",10003);
-    }
-    if(resolution_multiplier==4){
-      glutAddMenuEntry("  *4",10004);
-    }
-    else{
-      glutAddMenuEntry("  4",10004);
-    }
-    if(resolution_multiplier==5){
-      glutAddMenuEntry("  *5",10005);
-    }
-    else{
-      glutAddMenuEntry("  5",10005);
-    }
-    if(resolution_multiplier==6)glutAddMenuEntry("  *6",10005);
-    if(resolution_multiplier==7)glutAddMenuEntry("  *7",10005);
-    if(resolution_multiplier==8)glutAddMenuEntry("  *8",10005);
-    if(resolution_multiplier==9)glutAddMenuEntry("  *9",10005);
-    if(resolution_multiplier==10)glutAddMenuEntry("  *10",10005);
 
     CREATEMENU(rendermenu,RenderMenu);
     glutAddMenuEntry(_("Resolution:"),11000);
