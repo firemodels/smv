@@ -166,9 +166,6 @@ void Usage(char *prog,int option){
 #ifdef pp_release
     strcat(label, ", pp_release");
 #endif
-#ifdef pp_RENDER360
-    strcat(label, ", pp_RENDER360");
-#endif
 #ifdef pp_RENDER360_DEBUG
     strcat(label, ", pp_RENDER360_DEBUG");
 #endif
