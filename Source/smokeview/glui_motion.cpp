@@ -124,7 +124,7 @@ GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
 
-GLUI_Spinner *SPINNER_nrender_rows=NULL;
+GLUI_Spinner *SPINNER_resolution_multiplier=NULL;
 GLUI_Spinner *SPINNER_clip_left=NULL;
 GLUI_Spinner *SPINNER_clip_right=NULL;
 GLUI_Spinner *SPINNER_clip_bottom=NULL;
@@ -339,18 +339,18 @@ void UpdateGvecDown(int gvec_down_local){
   if(CHECKBOX_gvec_down!=NULL)CHECKBOX_gvec_down->set_int_val(gvec_down);
 }
 
-/* ------------------ UpdateNRenderRows ------------------------ */
+/* ------------------ UpdateResolutionMultiplier ------------------------ */
 
-extern "C" void UpdateNRenderRows(void){
-  if(SPINNER_nrender_rows!=NULL){
+extern "C" void UpdateResolutionMultiplier(void){
+  if(SPINNER_resolution_multiplier!=NULL){
     if(render_size_index==RenderWindow){
-      SPINNER_nrender_rows->enable();
+      SPINNER_resolution_multiplier->enable();
     }
     else{
-      SPINNER_nrender_rows->disable();
+      SPINNER_resolution_multiplier->disable();
     }
-    if(nrender_rows!=SPINNER_nrender_rows->get_int_val()){
-      SPINNER_nrender_rows->set_int_val(nrender_rows);
+    if(resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
+      SPINNER_resolution_multiplier->set_int_val(resolution_multiplier);
     }
   }
   if(LIST_render_size!=NULL&&LIST_render_size->get_int_val()!=render_size_index){
@@ -1132,8 +1132,8 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_size->add_item(Render640, "640x480");
   LIST_render_size->add_item(RenderWindow, _d("Current"));
   LIST_render_size->set_int_val(render_size_index);
-  SPINNER_nrender_rows = glui_motion->add_spinner_to_panel(PANEL_xy, "multiplier:", GLUI_SPINNER_INT, &nrender_rows, RENDER_MULTIPLIER, RenderCB);
-  SPINNER_nrender_rows->set_int_limits(1, 10);
+  SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(PANEL_xy, "multiplier:", GLUI_SPINNER_INT, &resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
+  SPINNER_resolution_multiplier->set_int_limits(1, 10);
 
 #ifdef pp_RENDER360
   ROLLOUT_render360 = glui_motion->add_rollout_to_panel(ROLLOUT_render, "360 rendering", false);
@@ -2106,7 +2106,7 @@ void RenderCB(int var){
         RenderMenu(render_skip_index);
       }
       else{
-        if(nrender_rows==1&& render_mode != RENDER_360){
+        if(resolution_multiplier==1&& render_mode != RENDER_360){
           RenderMenu(RENDER_CURRENT_SINGLE);
         }
         else if(render_mode == RENDER_360){

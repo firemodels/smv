@@ -81,9 +81,9 @@ void OutputSText2r(float x, float y, float z, char *string){
   glPushMatrix();
   scale_x = port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
-  if(render_mode==RENDER_XYMULTI&&nrender_rows>0){
-    scale_x *= (float)nrender_rows;
-    scale_y *= (float)nrender_rows;
+  if(render_mode==RENDER_XYMULTI&&resolution_multiplier>0){
+    scale_x *= (float)resolution_multiplier;
+    scale_y *= (float)resolution_multiplier;
   }
   glTranslatef(x-scale_x*total_width,y,z);
   glScalef(scale_x,scale_y,1.0);
@@ -108,9 +108,9 @@ void OutputSText2(float x, float y, float z, char *string){
   glPushMatrix();
   scale_x = (25.0/36.0)*port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = (12.0/18.0)*(25.0/18.0)*port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
-  if(render_mode == RENDER_XYMULTI&&nrender_rows > 0){
-    scale_x *= (float)nrender_rows;
-    scale_y *= (float)nrender_rows;
+  if(render_mode == RENDER_XYMULTI&&resolution_multiplier > 0){
+    scale_x *= (float)resolution_multiplier;
+    scale_y *= (float)resolution_multiplier;
   }
   glTranslatef(x,y,z);
   glScalef(scale_x,scale_y,1.0);
@@ -449,7 +449,7 @@ labeldata *LabelInsert(labeldata *labeltemp){
 
 void ScaleFont2D(void){
   if(render_mode != RENDER_XYSINGLE){
-    glLineWidth((float)nrender_rows*(float)scaled_font2d_thickness);
+    glLineWidth((float)resolution_multiplier*(float)scaled_font2d_thickness);
   }
   else{
     glLineWidth((float)scaled_font2d_thickness);
@@ -460,7 +460,7 @@ void ScaleFont2D(void){
 
 void ScaleFont3D(void){
   if(render_mode != RENDER_XYSINGLE){
-    glLineWidth((float)nrender_rows*(float)scaled_font3d_thickness);
+    glLineWidth((float)resolution_multiplier*(float)scaled_font3d_thickness);
   }
   else{
     glLineWidth((float)scaled_font3d_thickness);

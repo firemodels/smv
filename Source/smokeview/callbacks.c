@@ -1953,7 +1953,7 @@ void Keyboard(unsigned char key, int flag){
         render_times = RENDER_SINGLETIME;
 
         if(strncmp((const char *)&key2,"R",1)==0|| render_mode == RENDER_360){
-          if(nrender_rows==1)nrender_rows=2;
+          if(resolution_multiplier==1)resolution_multiplier=2;
           rflag=1;
         }
         else{
@@ -3239,28 +3239,26 @@ void DisplayCB(void){
         }
       }
       if(rendering_status == RENDER_ON&&render_mode==RENDER_XYMULTI){
-        int nrender_cols;
         int i,ibuffer=0;
         GLubyte **screenbuffers;
 
-        NewMemory((void **)&screenbuffers,nrender_rows*nrender_rows*sizeof(GLubyte *));
+        NewMemory((void **)&screenbuffers,resolution_multiplier*resolution_multiplier*sizeof(GLubyte *));
 
         glDrawBuffer(GL_BACK);
 
-        nrender_cols=nrender_rows;
-        for(i=0;i<nrender_rows;i++){
+        for(i=0;i<resolution_multiplier;i++){
           int j;
 
-          for(j=0;j<nrender_cols;j++){
+          for(j=0;j<resolution_multiplier;j++){
             ShowScene(DRAWSCENE,VIEW_CENTER,1,j*screenWidth,i*screenHeight,NULL);
             screenbuffers[ibuffer++]=GetScreenBuffer();
             if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
           }
         }
 
-        MergeRenderScreenBuffers(nrender_rows,screenbuffers);
+        MergeRenderScreenBuffers(resolution_multiplier,screenbuffers);
 
-        for(i=0;i<nrender_rows*nrender_cols;i++){
+        for(i=0;i<resolution_multiplier*resolution_multiplier;i++){
           FREEMEMORY(screenbuffers[i]);
         }
         FREEMEMORY(screenbuffers);

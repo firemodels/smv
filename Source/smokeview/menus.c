@@ -1590,8 +1590,8 @@ void RenderMenu(int value){
     glutPostRedisplay();
   }
   if(value>=10000&&value<=10005){
-    nrender_rows=value-10000;
-    UpdateNRenderRows();
+    resolution_multiplier=value-10000;
+    UpdateResolutionMultiplier();
     return;
   }
   switch(value){
@@ -1634,7 +1634,7 @@ void RenderMenu(int value){
     Keyboard('R', FROM_SMOKEVIEW);
     break;
   case RENDER_CURRENT_MULTIPLE:
-    if(nrender_rows==1)RenderMenu(RENDER_CURRENT_SINGLE);
+    if(resolution_multiplier==1)RenderMenu(RENDER_CURRENT_SINGLE);
     render_from_menu=1;
     Keyboard('R',FROM_SMOKEVIEW);
     break;
@@ -1690,7 +1690,7 @@ void RenderMenu(int value){
     render_times = RENDER_ALLTIMES;
     break;
   }
-  UpdateNRenderRows();
+  UpdateResolutionMultiplier();
 }
 
 /* ------------------ EvacShowMenu ------------------------ */
@@ -7926,7 +7926,7 @@ updatemenu=0;
     if(render_current==1){
       char menulabel[1024];
 
-      sprintf(menulabel,"  One frame (%i x %i parts)",nrender_rows,nrender_rows);
+      sprintf(menulabel,"  One frame (%i x %i parts)",resolution_multiplier,resolution_multiplier);
       glutAddMenuEntry(menulabel,RENDER_CURRENT_MULTIPLE);
     }
     if(RenderTime==1||touring==1){
@@ -7941,35 +7941,41 @@ updatemenu=0;
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    if(nrender_rows==2){
+    if(resolution_multiplier==1){
+      glutAddMenuEntry("  *1", 10001);
+    }
+    else{
+      glutAddMenuEntry("  1", 10001);
+    }
+    if(resolution_multiplier==2){
       glutAddMenuEntry("  *2",10002);
     }
     else{
       glutAddMenuEntry("  2",10002);
     }
-    if(nrender_rows==3){
+    if(resolution_multiplier==3){
       glutAddMenuEntry("  *3",10003);
     }
     else{
       glutAddMenuEntry("  3",10003);
     }
-    if(nrender_rows==4){
+    if(resolution_multiplier==4){
       glutAddMenuEntry("  *4",10004);
     }
     else{
       glutAddMenuEntry("  4",10004);
     }
-    if(nrender_rows==5){
+    if(resolution_multiplier==5){
       glutAddMenuEntry("  *5",10005);
     }
     else{
       glutAddMenuEntry("  5",10005);
     }
-    if(nrender_rows==6)glutAddMenuEntry("  *6",10005);
-    if(nrender_rows==7)glutAddMenuEntry("  *7",10005);
-    if(nrender_rows==8)glutAddMenuEntry("  *8",10005);
-    if(nrender_rows==9)glutAddMenuEntry("  *9",10005);
-    if(nrender_rows==10)glutAddMenuEntry("  *10",10005);
+    if(resolution_multiplier==6)glutAddMenuEntry("  *6",10005);
+    if(resolution_multiplier==7)glutAddMenuEntry("  *7",10005);
+    if(resolution_multiplier==8)glutAddMenuEntry("  *8",10005);
+    if(resolution_multiplier==9)glutAddMenuEntry("  *9",10005);
+    if(resolution_multiplier==10)glutAddMenuEntry("  *10",10005);
 
     CREATEMENU(rendermenu,RenderMenu);
     glutAddMenuEntry(_("Resolution:"),11000);
@@ -8338,7 +8344,7 @@ updatemenu=0;
   {
     char render_label[1024];
 
-    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", nrender_rows);
+    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", resolution_multiplier);
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   if(ntotal_blockages>0||isZoneFireModel==1){

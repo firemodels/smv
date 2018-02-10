@@ -11063,7 +11063,7 @@ int ReadIni2(char *inifile, int localfile){
       int nheight360_temp = 0;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &render_window_size, &nrender_rows, &nheight360_temp);
+      sscanf(buffer, "%i %i %i", &render_window_size, &resolution_multiplier, &nheight360_temp);
       if(nheight360_temp > 0){
         nheight360 = nheight360_temp;
         nwidth360 = 2 * nheight360;
@@ -13300,7 +13300,7 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "RENDEROPTION\n");
-  fprintf(fileout, " %i %i %i\n", render_window_size, nrender_rows, nheight360);
+  fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){
