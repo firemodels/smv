@@ -323,9 +323,36 @@ int Writable(char *dir){
 #endif
 }
 
+/* ------------------ IfFirstLineBlank ------------------------ */
+
+int IfFirstLineBlank(char *file){
+
+  // returns 1 if first line of file is blank
+
+  STRUCTSTAT statbuff1;
+  int statfile1;
+  FILE *stream = NULL;
+  char buffer[255], *buffptr;
+
+  if(file==NULL)return 1;
+
+  statfile1 = STAT(file, &statbuff1);
+  if(statfile1!=0)return 1;
+
+  stream = fopen(file, "r");
+  if(stream==NULL||fgets(buffer, 255, stream)==NULL){
+    if(stream!=NULL)fclose(stream);
+    return 1;
+  }
+  fclose(stream);
+  buffptr = TrimFrontBack(buffer);
+  if(strlen(buffptr)==0)return 1;
+  return 0;
+}
+
 /* ------------------ IsFileNewer ------------------------ */
 
-int IsFileNewer(char *file1, char *file2, int option){
+int IsFileNewer(char *file1, char *file2){
 
 // returns 1 if file1 is newer than file2, 0 otherwise
 
@@ -337,20 +364,6 @@ int IsFileNewer(char *file1, char *file2, int option){
   statfile1=STAT(file1,&statbuff1);
   statfile2=STAT(file2,&statbuff2);
   if(statfile1!=0||statfile2!=0)return -1;
-
-  if(option == CHECK_EMPTY){
-    FILE *stream=NULL;
-    char buffer[255], *buffptr;
-
-    stream = fopen(file1, "r");
-    if(stream == NULL||fgets(buffer, 255, stream) == NULL){
-      if(stream!=NULL)fclose(stream);
-      return 0;
-    }
-    fclose(stream);
-    buffptr=TrimFrontBack(buffer);
-    if(strlen(buffptr) == 0)return 0;
-  }
 
   if(statbuff1.st_mtime>statbuff2.st_mtime)return 1;
   return 0;

@@ -317,7 +317,7 @@ void ParseCommandline(int argc, char **argv){
   }
 
   FREEMEMORY(log_filename);
-  NewMemory((void **)&log_filename, len_casename + 7 + 1);
+  NewMemory((void **)&log_filename, len_casename + strlen(.smvlog) + 1);
   STRCPY(log_filename, fdsprefix);
   STRCAT(log_filename, ".smvlog");
 
@@ -326,10 +326,10 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ini_ext);
 
-  FREEMEMORY(boundini_filename);
-  NewMemory((void **)&boundini_filename, len_casename + 6 + 1);
-  STRCPY(boundini_filename, fdsprefix);
-  STRCAT(boundini_filename, ".binfo");
+  FREEMEMORY(boundinfo_filename);
+  NewMemory((void **)&boundinfo_filename, len_casename + strlen(.binfo) + 1);
+  STRCPY(boundinfo_filename, fdsprefix);
+  STRCAT(boundinfo_filename, ".binfo");
 
   if(smv_filename == NULL){
     NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
@@ -371,17 +371,17 @@ void ParseCommandline(int argc, char **argv){
     fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, tempdir_flag);
   }
   if(stop_filename == NULL){
-    NewMemory((void **)&stop_filename, (unsigned int)(len_casename + 6));
+    NewMemory((void **)&stop_filename, (unsigned int)(len_casename + strlen(.stop) + 1));
     STRCPY(stop_filename, fdsprefix);
     STRCAT(stop_filename, ".stop");
   }
   if(sliceinfo_filename == NULL){
-    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + 6 + 1);
+    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + strlen(.sinfo) + 1);
     STRCPY(sliceinfo_filename, fdsprefix);
     STRCAT(sliceinfo_filename, ".sinfo");
   }
   if(deviceinfo_filename==NULL){
-    NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+12+1);
+    NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+strlen("_device.info")+1);
     STRCPY(deviceinfo_filename, fdsprefix);
     STRCAT(deviceinfo_filename, "_device.info");
   }
@@ -392,7 +392,7 @@ void ParseCommandline(int argc, char **argv){
   {
     FILE *stream_iso = NULL;
 
-    NewMemory((void **)&iso_filename, len_casename + 7 + 1);
+    NewMemory((void **)&iso_filename, len_casename + strlen(.isosmv) + 1);
     STRCPY(iso_filename, fdsprefix);
     STRCAT(iso_filename, ".isosmv");
     stream_iso = fopen(iso_filename, "r");
