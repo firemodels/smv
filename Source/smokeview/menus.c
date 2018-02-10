@@ -8323,7 +8323,7 @@ updatemenu=0;
   {
     char render_label[1024];
 
-    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", resolution_multiplier);
+    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", MAX(2,resolution_multiplier));
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   if(ntotal_blockages>0||isZoneFireModel==1){

@@ -1953,7 +1953,7 @@ void Keyboard(unsigned char key, int flag){
         render_times = RENDER_SINGLETIME;
 
         if(strncmp((const char *)&key2,"R",1)==0|| render_mode == RENDER_360){
-          if(resolution_multiplier==1)resolution_multiplier=2;
+          resolution_multiplier=MAX(2,resolution_multiplier);
           rflag=1;
         }
         else{
