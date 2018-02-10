@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(glui_render_mode, 0);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
@@ -125,7 +126,6 @@ SVEXTERN float SVDECL(load_3dsmoke_cutoff, 0.0), SVDECL(load_hrrpuv_cutoff,200.0
 SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
 SVEXTERN int SVDECL(render_from_menu, 0);
-SVEXTERN int SVDECL(render_360, 0);
 SVEXTERN int SVDECL(render_status, 0);
 SVEXTERN int SVDECL(resolution_multiplier, 2);
 SVEXTERN char render_file_base[1024];

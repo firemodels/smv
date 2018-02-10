@@ -1941,7 +1941,6 @@ void Keyboard(unsigned char key, int flag){
           return;
         }
 
-        if(render_360 == 1)render_mode = RENDER_360;
         if(render_mode!=RENDER_360){
           if(strncmp((const char *)&key2, "r", 1) == 0){
             render_mode = RENDER_XYSINGLE;

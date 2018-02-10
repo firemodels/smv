@@ -65,6 +65,7 @@
 #define RENDER_LABEL 5
 #define RENDER_MULTIPLIER 6
 #define MOVIE_FILETYPE 7
+#define RENDER_MODE 8
 
 #define SLICE_ROLLOUT 0
 #define VIEWPOINTS_ROLLOUT 1
@@ -79,7 +80,6 @@
 
 GLUI *glui_motion=NULL;
 
-GLUI_Panel *PANEL_xy = NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
@@ -103,8 +103,11 @@ GLUI_Panel *PANEL_reset=NULL;
 GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
 GLUI_Panel *PANEL_colors=NULL;
+GLUI_Panel *PANEL_render_mode=NULL;
 
 GLUI_Rollout *ROLLOUT_render360 = NULL;
+GLUI_Rollout *ROLLOUT_name = NULL;
+GLUI_Rollout *ROLLOUT_image2 = NULL;
 GLUI_Rollout *ROLLOUT_rotation_type = NULL;
 GLUI_Rollout *ROLLOUT_orientation=NULL;
 GLUI_Rollout *ROLLOUT_scene_clip=NULL;
@@ -185,6 +188,7 @@ GLUI_RadioGroup *RADIO_projection=NULL,*RADIO_rotation_type=NULL;
 GLUI_RadioGroup *RADIO_render_type=NULL;
 GLUI_RadioGroup *RADIO_render_label=NULL;
 GLUI_RadioGroup *RADIO_movie_type = NULL;
+GLUI_RadioGroup *RADIO_render_mode=NULL;
 
 GLUI_RadioButton *RADIOBUTTON_movie_type[4];
 GLUI_RadioButton *RADIOBUTTON_1a=NULL;
@@ -1102,14 +1106,30 @@ extern "C" void GluiMotionSetup(int main_window){
   SPINNER_farclip=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_d("Far depth"),GLUI_SPINNER_FLOAT,&farclip);
   SPINNER_farclip->set_float_limits(0.001,10.0,GLUI_LIMIT_CLAMP);
 
-  ROLLOUT_render = glui_motion->add_rollout(_d("Images"), false,RENDER_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_render = glui_motion->add_rollout(_d("Render"), false,RENDER_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
 
-  ROLLOUT_render = ROLLOUT_render;
-  EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_render, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);
+  PANEL_render_mode = glui_motion->add_panel_to_panel(ROLLOUT_render, "render type:", true);
+  if(render_mode==RENDER_XYSINGLE||render_mode==RENDER_XYMULTI){
+    glui_render_mode = 0;
+  }
+  else{
+    glui_render_mode = 1;
+  }
+  RADIO_render_mode = glui_motion->add_radiogroup_to_panel(PANEL_render_mode, &glui_render_mode, RENDER_MODE, RenderCB);
+  glui_motion->add_radiobutton_to_group(RADIO_render_mode, "normal");
+  glui_motion->add_radiobutton_to_group(RADIO_render_mode, "360");
+
+  BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Start render"), RENDER_START, RenderCB);
+  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Stop render"), RENDER_STOP, RenderCB);
+
+  glui_motion->add_separator_to_panel(ROLLOUT_render);
+
+  ROLLOUT_name = glui_motion->add_rollout_to_panel(ROLLOUT_render, "Image name", false);
+  EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_name, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);
   EDIT_render_file_base->set_w(200);
 
-  PANEL_render_file = glui_motion->add_panel_to_panel(ROLLOUT_render, "", false);
+  PANEL_render_file = glui_motion->add_panel_to_panel(ROLLOUT_name, "", false);
 
   PANEL_file_suffix = glui_motion->add_panel_to_panel(PANEL_render_file, "suffix:", true);
   RADIO_render_label = glui_motion->add_radiogroup_to_panel(PANEL_file_suffix, &render_label_type, RENDER_LABEL, RenderCB);
@@ -1124,20 +1144,19 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
-
-  PANEL_xy = glui_motion->add_panel_to_panel(ROLLOUT_render, "resolution", true);
+  ROLLOUT_image2 = glui_motion->add_rollout_to_panel(ROLLOUT_render, "Image size", false);
   render_size_index = RenderWindow;
-  LIST_render_size = glui_motion->add_listbox_to_panel(PANEL_xy, _d(""), &render_size_index, RENDER_RESOLUTION, RenderCB);
+  LIST_render_size = glui_motion->add_listbox_to_panel(ROLLOUT_image2, _d("base:"), &render_size_index, RENDER_RESOLUTION, RenderCB);
   LIST_render_size->add_item(Render320, "320x240");
   LIST_render_size->add_item(Render640, "640x480");
   LIST_render_size->add_item(RenderWindow, _d("Current"));
   LIST_render_size->set_int_val(render_size_index);
-  SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(PANEL_xy, "multiplier:", GLUI_SPINNER_INT, &resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
+
+  SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image2, "multiplier:", GLUI_SPINNER_INT, &resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
   SPINNER_resolution_multiplier->set_int_limits(1, 10);
 
 #ifdef pp_RENDER360
-  ROLLOUT_render360 = glui_motion->add_rollout_to_panel(ROLLOUT_render, "360 rendering", false);
-  CHECKBOX_render360=glui_motion->add_checkbox_to_panel(ROLLOUT_render360,"activate",&render_360,RENDER_360CB,RenderCB);
+  ROLLOUT_render360 = glui_motion->add_rollout_to_panel(ROLLOUT_render, "360 image size:", false);
   STATIC_width360 = glui_motion->add_statictext_to_panel(ROLLOUT_render360, "width");
   SPINNER_window_height360 = glui_motion->add_spinner_to_panel(ROLLOUT_render360, _d("height"), GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
   SPINNER_window_height360->set_int_limits(100, max_screenHeight);
@@ -1216,16 +1235,19 @@ extern "C" void GluiMotionSetup(int main_window){
 
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
-  glui_motion->add_separator_to_panel(ROLLOUT_render);
-
-  BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Start image generatation"), RENDER_START, RenderCB);
-  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _d("Stop image generation"), RENDER_STOP, RenderCB);
-
   if(have_ffmpeg == 1){
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT,MotionRolloutCB);
     ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_make_movie, MOVIE_ROLLOUT);
 
     CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
+    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Generate images"), RENDER_START, RenderCB);
+    BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
+    if(have_ffplay==1){
+      BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);
+      EnableDisablePlayMovie();
+    }
+    glui_motion->add_separator_to_panel(ROLLOUT_make_movie);
+
     EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "Movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, RenderCB);
     EDIT_movie_name->set_w(200);
     PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "Movie type:", true);
@@ -1241,12 +1263,6 @@ extern "C" void GluiMotionSetup(int main_window){
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
     SPINNER_bitrate->set_int_limits(100, 20000);
-    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Generate images"), RENDER_START, RenderCB);
-    BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
-    if(have_ffplay == 1){
-      BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);
-      EnableDisablePlayMovie();
-    }
   }
 
   CHECKBOX_cursor_blockpath=glui_motion->add_checkbox(_d("Map cursor keys for Plot3D use"),&cursorPlot3D,CURSOR,SceneMotionCB);
@@ -2042,12 +2058,6 @@ void RenderCB(int var){
     }
     break;
     case RENDER_360CB:
-      if(render_360 == 1){
-        render_mode = RENDER_360;
-      }
-      else{
-        render_mode = RENDER_XYSINGLE;
-      }
       nwidth360 = nheight360*2;
       sprintf(widthlabel,"width: %i",nwidth360);
       STATIC_width360->set_name(widthlabel);
@@ -2090,11 +2100,24 @@ void RenderCB(int var){
         break;
       }
       break;
+    case RENDER_MODE:
+      if(glui_render_mode==0){
+        if(resolution_multiplier==1){
+          render_mode = RENDER_XYSINGLE;
+        }
+        else{
+          render_mode = RENDER_XYMULTI;
+        }
+      }
+      else{
+        render_mode = RENDER_360;
+      }
+      break;
     case RENDER_RESOLUTION:
       RenderMenu(render_size_index);
       break;
     case RENDER_START:
-      if(render_360 == 1)render_mode = RENDER_360;
+      if(PANEL_render_mode!=NULL)PANEL_render_mode->disable();
       if(render_frame != NULL){
         int i;
 
@@ -2127,6 +2150,7 @@ void RenderCB(int var){
       }
       break;
     case RENDER_STOP:
+      if(PANEL_render_mode!=NULL)PANEL_render_mode->enable();
       RenderMenu(RenderCancel);
       break;
     default:
