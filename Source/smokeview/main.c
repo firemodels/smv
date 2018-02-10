@@ -327,7 +327,7 @@ void ParseCommandline(int argc, char **argv){
   STRCAT(caseini_filename, ini_ext);
 
   FREEMEMORY(boundini_filename);
-  NewMemory((void **)&boundini_filename, len_casename + 5 + 1);
+  NewMemory((void **)&boundini_filename, len_casename + 6 + 1);
   STRCPY(boundini_filename, fdsprefix);
   STRCAT(boundini_filename, ".binfo");
 
@@ -376,7 +376,7 @@ void ParseCommandline(int argc, char **argv){
     STRCAT(stop_filename, ".stop");
   }
   if(sliceinfo_filename == NULL){
-    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + 11 + 1);
+    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + 6 + 1);
     STRCPY(sliceinfo_filename, fdsprefix);
     STRCAT(sliceinfo_filename, ".sinfo");
   }
