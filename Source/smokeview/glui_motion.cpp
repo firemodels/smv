@@ -245,7 +245,7 @@ void GluiRenderStart(void){
 /* ------------------ UpdateGluiRenderMode ------------------------ */
 
 void UpdateGluiRenderMode(void){
-  if(RADIO_render_mode!=NULL)RADIO_render_mode->set_int_val(glui_render_mode);
+  if(RADIO_render_mode!=NULL)RADIO_render_mode->set_int_val(render_mode);
 }
 
 /* ------------------ UpdateGluiRotateAbout ------------------------ */
@@ -1123,21 +1123,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
 
   PANEL_render_mode = glui_motion->add_panel_to_panel(ROLLOUT_render, "render type:", true);
-  if(render_mode!=RENDER_360){
-    if(resolution_multiplier==1){
-      render_mode = RENDER_XYSINGLE;
-    }
-    else{
-      render_mode = RENDER_XYMULTI;
-    }
-  }
-  if(render_mode==RENDER_XYSINGLE||render_mode==RENDER_XYMULTI){
-    glui_render_mode = 0;
-  }
-  else{
-    glui_render_mode = 1;
-  }
-  RADIO_render_mode = glui_motion->add_radiogroup_to_panel(PANEL_render_mode, &glui_render_mode, RENDER_MODE, RenderCB);
+  RADIO_render_mode = glui_motion->add_radiogroup_to_panel(PANEL_render_mode, &render_mode, RENDER_MODE, RenderCB);
   glui_motion->add_radiobutton_to_group(RADIO_render_mode, "normal");
   glui_motion->add_radiobutton_to_group(RADIO_render_mode, "360");
 
@@ -2119,17 +2105,6 @@ void RenderCB(int var){
       }
       break;
     case RENDER_MODE:
-      if(glui_render_mode==0){
-        if(resolution_multiplier==1){
-          render_mode = RENDER_XYSINGLE;
-        }
-        else{
-          render_mode = RENDER_XYMULTI;
-        }
-      }
-      else{
-        render_mode = RENDER_360;
-      }
       break;
     case RENDER_RESOLUTION:
       RenderMenu(render_size_index);

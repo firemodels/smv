@@ -205,9 +205,8 @@ void _Sniff_Errors(char *whereat);
 #define RENDER_OFF 0
 
 // render_mode values:
-#define RENDER_XYSINGLE 0
-#define RENDER_XYMULTI 1
-#define RENDER_360 2
+#define RENDER_NORMAL 0
+#define RENDER_360 1
 
 // render_times values:
 #define RENDER_SINGLETIME 0
@@ -651,6 +650,8 @@ void _Sniff_Errors(char *whereat);
 #define StepOn 10000
 #define RenderCancel 999
 #define RenderStart 990
+#define RenderStartHIGHRES 988
+#define RenderStartORIGRES 987
 #define Render360 989
 #define RENDER_CURRENT_SINGLE 998
 #define RENDER_CURRENT_MULTIPLE 978

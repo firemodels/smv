@@ -1551,20 +1551,6 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
-    if(glui_render_mode==0){
-      int render_current=0;
-
-      if(renderW!=320&&renderW!=640&&renderW!=2*screenWidth)render_current=1;
-      if(resolution_multiplier==1||render_current!=1){
-        render_mode = RENDER_XYSINGLE;
-      }
-      else{
-        render_mode = RENDER_XYMULTI;
-      }
-    }
-    else{
-      render_mode = RENDER_360;
-    }
     render_status = onoff;
     update_screeninfo = 1;
     saveW=screenWidth;
@@ -1656,24 +1642,35 @@ void RenderMenu(int value){
     Keyboard('R', FROM_SMOKEVIEW);
     break;
   case RENDER_CURRENT_MULTIPLE:
-    if(resolution_multiplier==1)RenderMenu(RENDER_CURRENT_SINGLE);
-    render_from_menu=1;
+    render_from_menu = 1;
+    if(resolution_multiplier==1){
+      RenderMenu(RENDER_CURRENT_SINGLE);
+      return;
+    }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
   case Render360:
-    glui_render_mode = 1-glui_render_mode;
+    render_mode = 1-render_mode;
     updatemenu = 1;
     UpdateGluiRenderMode();
+    break;
+  case RenderStartORIGRES:
+    resolution_multiplier=1;
+    RenderMenu(RenderStart);
+    break;
+  case RenderStartHIGHRES:
+    resolution_multiplier=MAX(2,resolution_multiplier);
+    RenderMenu(RenderStart);
     break;
   case RenderStart:
     if(RenderTime==0&&touring==0){
       RenderMenu(RENDER_CURRENT_MULTIPLE);
       return;
     }
-    if(glui_render_mode==1){
+    if(render_mode==RENDER_360){
       GluiRenderStart();
       return;
     }
@@ -7979,7 +7976,7 @@ updatemenu=0;
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    for(i = 1;i<=10;i++){
+    for(i = 2;i<=10;i++){
       char render_label[256];
       int render_index;
 
@@ -8022,16 +8019,9 @@ updatemenu=0;
     glutAddMenuEntry(renderwindow, Render320);
     glutAddMenuEntry(renderwindow2, Render640);
     glutAddMenuEntry(renderwindow3, RenderWindow);
-    if(render_current==1){
-      char res_menu[128];
-
-      sprintf(res_menu, "size multiplier/%ix", resolution_multiplier);
-      glutAddSubMenu(res_menu, resolutionmultipliermenu);
-    }
-
 
     CREATEMENU(render_typemenu, RenderMenu);
-    if(glui_render_mode==1){
+    if(render_mode==RENDER_360){
       glutAddMenuEntry(_("Normal"), Render360);
       glutAddMenuEntry(_("*360"), Render360);
     }
@@ -8054,13 +8044,37 @@ updatemenu=0;
     glutAddSubMenu(skip_label, render_skipmenu);
 }
     glutAddSubMenu(_("Image size"),  render_resolutionmenu);
+    if(render_current==1){
+      char res_menu[128];
+
+      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
+      glutAddSubMenu(res_menu, resolutionmultipliermenu);
+    }
     glutAddSubMenu(_("Image type"),        render_filetypemenu);
     glutAddSubMenu(_("File suffix"), render_filesuffixmenu);
-
-    glutAddMenuEntry("-", MENU_DUMMY);
     glutAddSubMenu("Render type", render_typemenu);
 
-    glutAddMenuEntry(_("Start rendering"), RenderStart);
+    glutAddMenuEntry("-", MENU_DUMMY);
+
+    {
+      char sizeORIGRES[128], sizeHIGHRES[128];
+      int width, height, factor;
+
+      if(render_current==1){
+        width = screenWidth;
+        height = screenHeight;
+      }
+      else{
+        width = renderW;
+        height = renderH;
+      }
+
+      factor = MAX(2, resolution_multiplier);
+      sprintf(sizeORIGRES, "Start rendering(%ix%i)", width, height);
+      sprintf(sizeHIGHRES, "Start rendering(%ix%i)", width*factor, height*factor);
+      glutAddMenuEntry(sizeORIGRES, RenderStartORIGRES);
+      glutAddMenuEntry(sizeHIGHRES, RenderStartHIGHRES);
+    }
     glutAddMenuEntry(_("Stop rendering"),  RenderCancel);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
@@ -8396,7 +8410,7 @@ updatemenu=0;
   {
     char render_label[1024];
 
-    sprintf(render_label, "  R:   (same as r but at %ix times the resolution)", MAX(2,resolution_multiplier));
+    sprintf(render_label, "  R:   (same as r but at %ix the resolution)", MAX(2,resolution_multiplier));
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   if(ntotal_blockages>0||isZoneFireModel==1){

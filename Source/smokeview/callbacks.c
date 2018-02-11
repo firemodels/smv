@@ -1935,24 +1935,21 @@ void Keyboard(unsigned char key, int flag){
       {
         int rflag=0;
 
+        if(strncmp((const char *)&key2, "R", 1)==0){
+          resolution_multiplier = MAX(2, resolution_multiplier);
+        }
+        else{
+          resolution_multiplier = 1;
+        }
         if(keystate==GLUT_ACTIVE_ALT){
           research_mode=1-research_mode;
           UpdateResearchMode();
           return;
         }
 
-        if(render_mode!=RENDER_360){
-          if(strncmp((const char *)&key2, "r", 1) == 0){
-            render_mode = RENDER_XYSINGLE;
-          }
-          else{
-            render_mode = RENDER_XYMULTI;
-          }
-        }
         render_times = RENDER_SINGLETIME;
 
-        if(strncmp((const char *)&key2,"R",1)==0|| render_mode == RENDER_360){
-          resolution_multiplier=MAX(2,resolution_multiplier);
+        if(strncmp((const char *)&key2, "R", 1)==0||render_mode==RENDER_360){
           rflag=1;
         }
         else{
@@ -3219,10 +3216,9 @@ void DisplayCB(void){
     dostereo=DoStereo();
   }
   if(dostereo==0){
-    if(render_mode == RENDER_XYSINGLE||render_status==RENDER_OFF){
+    if(render_status==RENDER_OFF){
       glDrawBuffer(GL_BACK);
       ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
-      if(render_mode != RENDER_360)Render(VIEW_CENTER);
       if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
     }
     else{
@@ -3237,7 +3233,7 @@ void DisplayCB(void){
           stop_rendering = 0;
         }
       }
-      if(render_status == RENDER_ON&&render_mode==RENDER_XYMULTI){
+      if(render_mode==RENDER_NORMAL){
         int i,ibuffer=0;
         GLubyte **screenbuffers;
 
@@ -3299,7 +3295,7 @@ void DisplayCB(void){
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
-  if(render_mode != RENDER_XYSINGLE)return;
+  if(render_mode == RENDER_360)return;
   glutSetWindow(mainwindow_id);
   wscaled = (float)width/(float)max_screenWidth;
   hscaled = (float)height/(float)max_screenHeight;

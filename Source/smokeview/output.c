@@ -81,7 +81,7 @@ void OutputSText2r(float x, float y, float z, char *string){
   glPushMatrix();
   scale_x = port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
-  if(render_mode==RENDER_XYMULTI&&resolution_multiplier>0){
+  if(render_mode==RENDER_NORMAL&&resolution_multiplier>1&&render_status==RENDER_ON){
     scale_x *= (float)resolution_multiplier;
     scale_y *= (float)resolution_multiplier;
   }
@@ -108,7 +108,7 @@ void OutputSText2(float x, float y, float z, char *string){
   glPushMatrix();
   scale_x = (25.0/36.0)*port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = (12.0/18.0)*(25.0/18.0)*port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
-  if(render_mode == RENDER_XYMULTI&&resolution_multiplier > 0){
+  if(render_mode == RENDER_NORMAL&&resolution_multiplier > 1&&render_status==RENDER_ON){
     scale_x *= (float)resolution_multiplier;
     scale_y *= (float)resolution_multiplier;
   }
@@ -448,7 +448,7 @@ labeldata *LabelInsert(labeldata *labeltemp){
 /* ----------------------- ScaleFont2D ----------------------------- */
 
 void ScaleFont2D(void){
-  if(render_mode != RENDER_XYSINGLE){
+  if(render_mode == RENDER_360){
     glLineWidth((float)resolution_multiplier*(float)scaled_font2d_thickness);
   }
   else{
@@ -459,7 +459,7 @@ void ScaleFont2D(void){
 /* ----------------------- ScaleFont3D ----------------------------- */
 
 void ScaleFont3D(void){
-  if(render_mode != RENDER_XYSINGLE){
+  if(render_mode == RENDER_360){
     glLineWidth((float)resolution_multiplier*(float)scaled_font3d_thickness);
   }
   else{
