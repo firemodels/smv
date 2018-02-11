@@ -2780,7 +2780,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
         }
       }
       if(stept==1&&timebar_drag==0&&render_status==RENDER_ON){
-        itimes+=RenderSkip*FlowDir;
+        itimes+=render_skip*FlowDir;
       }
 
 // if toggling time display with H then show the frame that was visible
@@ -3287,9 +3287,8 @@ void DisplayCB(void){
         }
       }
       if(stop_rendering==1){
-        ASSERT(RenderSkip>0);
+        ASSERT(render_skip>0);
         RenderState(RENDER_OFF);
-        RenderSkip=1;
       }
     }
   }

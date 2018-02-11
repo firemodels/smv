@@ -1577,6 +1577,14 @@ void RenderState(int onoff){
   }
 }
 
+/* ------------------ SkipMenu ------------------------ */
+
+void SkipMenu(int value){
+  render_skip=value;
+  glutPostRedisplay();
+  updatemenu=1;
+}
+
 /* ------------------ RenderMenu ------------------------ */
 
 void RenderMenu(int value){
@@ -1677,14 +1685,14 @@ void RenderMenu(int value){
       meshi->patch_itime=0;
     }
     UpdateTimeLabels();
-    RenderSkip=value;
+    render_skip=value;
     FlowDir=1;
     for(n=0;n<nglobal_times;n++){
       render_frame[n]=0;
     }
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"RENDERALL\n");
-      fprintf(scriptoutstream," %i\n",RenderSkip);
+      fprintf(scriptoutstream," %i\n",render_skip);
       fprintf(scriptoutstream,"\n");
     }
     render_times = RENDER_ALLTIMES;
@@ -5291,7 +5299,8 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int startrenderingmenu=0;
+static int render_startmenu=0;
+static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
@@ -7921,7 +7930,45 @@ updatemenu=0;
     }
     strcat(renderwindow3,rendertemp);
 
-    CREATEMENU(startrenderingmenu,RenderMenu);
+    CREATEMENU(render_skipmenu,SkipMenu);
+    {
+      char *skips[]={"All frames","2nd","3rd","4th","5th","10th","20th"};
+      char iskips[] = {1,2,3,4,5,10,20};
+
+      for(i = 0;i<7;i++){
+        char skiplabel[128];
+
+        strcpy(skiplabel, "  ");
+        if(render_skip==iskips[i])strcat(skiplabel, "*");
+        if(i==0){
+          strcat(skiplabel, skips[0]);
+        }
+        else{
+          strcat(skiplabel, "Every ");
+          strcat(skiplabel, skips[i]);
+          strcat(skiplabel, " frame");
+        }
+        glutAddMenuEntry(skiplabel, iskips[i]);
+      }
+    }
+
+    CREATEMENU(resolutionmultipliermenu,RenderMenu);
+    for(i = 1;i<=10;i++){
+      char render_label[256];
+      int render_index;
+
+      render_index = 10000+MIN(5, i);
+      if(resolution_multiplier==i){
+        sprintf(render_label, "  *%i", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+      else if(i<=5){
+        sprintf(render_label, "  %i", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+    }
+
+    CREATEMENU(render_startmenu,RenderMenu);
     glutAddMenuEntry(_("  One frame (single part)"),RENDER_CURRENT_SINGLE);
     if(render_current==1){
       char menulabel[1024];
@@ -7956,15 +8003,17 @@ updatemenu=0;
       }
     }
 
-    CREATEMENU(rendermenu,RenderMenu);
-    glutAddMenuEntry(_("Resolution:"),11000);
-    glutAddMenuEntry(renderwindow,Render320);
-    glutAddMenuEntry(renderwindow2,Render640);
-    glutAddMenuEntry(renderwindow3,RenderWindow);
+    CREATEMENU(render_filesuffixmenu, RenderMenu);
+    if(render_label_type==RENDER_LABEL_FRAMENUM){
+      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  Time"),RenderLABELtime);
+    }
+    if(render_label_type==RENDER_LABEL_TIME){
+      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
+    }
 
-    if(render_current==1)glutAddSubMenu(_("Resolution multiplier"),resolutionmultipliermenu);
-
-    glutAddMenuEntry(_("Type:"),11000);
+    CREATEMENU(render_filetypemenu, RenderMenu);
     if(render_filetype==PNG){
       glutAddMenuEntry("  *PNG",RenderPNG);
       glutAddMenuEntry("  JPEG",RenderJPEG);
@@ -7978,17 +8027,26 @@ updatemenu=0;
       glutAddMenuEntry("  JPEG",RenderJPEG);
     }
 
-    glutAddMenuEntry(_("File suffix:"),11000);
-    if(render_label_type==RENDER_LABEL_FRAMENUM){
-      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  Time"),RenderLABELtime);
-    }
-    if(render_label_type==RENDER_LABEL_TIME){
-      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
-    }
+    CREATEMENU(render_resolutionmenu, RenderMenu);
+    glutAddMenuEntry(renderwindow, Render320);
+    glutAddMenuEntry(renderwindow2, Render640);
+    glutAddMenuEntry(renderwindow3, RenderWindow);
 
-    glutAddSubMenu(_("Start rendering:"),startrenderingmenu);
+    CREATEMENU(rendermenu,RenderMenu);
+
+{
+    char skip_label[128];
+
+    sprintf(skip_label,"Skip/%i",render_skip);
+    glutAddSubMenu(skip_label, render_skipmenu);
+}
+    glutAddSubMenu(_("Resolution"),  render_resolutionmenu);
+    glutAddSubMenu(_("Type"),        render_filetypemenu);
+    glutAddSubMenu(_("File suffix"), render_filesuffixmenu);
+
+    if(render_current==1)glutAddSubMenu(_("Resolution multiplier"),resolutionmultipliermenu);
+
+    glutAddSubMenu(_("Start rendering:"),render_startmenu);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }

@@ -164,9 +164,8 @@ void Render(int view_mode){
       RenderFrame(view_mode);
     }
     else{
-      ASSERT(RenderSkip>0);
+      ASSERT(render_skip>0);
       RenderState(RENDER_OFF);
-      RenderSkip=1;
     }
   }
 
@@ -174,7 +173,6 @@ void Render(int view_mode){
     RenderFrame(view_mode);
     if(render_mode == RENDER_XYSINGLE){
       RenderState(RENDER_OFF);
-      RenderSkip=1;
       SNIFF_ERRORS("after render");
     }
   }
@@ -267,7 +265,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
         image_num = itimes;
       }
       else{
-        image_num = itimes / RenderSkip;
+        image_num = itimes / render_skip;
       }
     }
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
