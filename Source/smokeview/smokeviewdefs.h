@@ -650,6 +650,8 @@ void _Sniff_Errors(char *whereat);
 #define MAXSMOKERGB 256
 #define StepOn 10000
 #define RenderCancel 999
+#define RenderStart 990
+#define Render360 989
 #define RENDER_CURRENT_SINGLE 998
 #define RENDER_CURRENT_MULTIPLE 978
 #define RENDER_CURRENT_360 991

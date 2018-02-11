@@ -1551,6 +1551,20 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
+    if(glui_render_mode==0){
+      int render_current=0;
+
+      if(renderW!=320&&renderW!=640&&renderW!=2*screenWidth)render_current=1;
+      if(resolution_multiplier==1||render_current!=1){
+        render_mode = RENDER_XYSINGLE;
+      }
+      else{
+        render_mode = RENDER_XYMULTI;
+      }
+    }
+    else{
+      render_mode = RENDER_360;
+    }
     render_status = onoff;
     update_screeninfo = 1;
     saveW=screenWidth;
@@ -1571,7 +1585,6 @@ void RenderState(int onoff){
     if(render_status==RENDER_OFF)return;
     render_status = onoff;
     Enable360Zoom();
-    render_mode = RENDER_XYSINGLE;
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
   }
@@ -1592,6 +1605,7 @@ void RenderMenu(int value){
   int i,n;
   meshdata *meshi;
 
+  if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value>=11000)return;
   if(opengldefined==1){
@@ -1649,24 +1663,20 @@ void RenderMenu(int value){
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
-  case RenderLABELframenumber:
-    render_label_type=RENDER_LABEL_FRAMENUM;
-    UpdateGluiFileLabel(render_label_type);
+  case Render360:
+    glui_render_mode = 1-glui_render_mode;
+    updatemenu = 1;
+    UpdateGluiRenderMode();
     break;
-  case RenderLABELtime:
-    render_label_type=RENDER_LABEL_TIME;
-    UpdateGluiFileLabel(render_label_type);
-    break;
-  case RenderPNG:
-     render_filetype=PNG;
-     updatemenu=1;
-     break;
-  case RenderJPEG:
-     render_filetype=JPEG;
-     updatemenu=1;
-     break;
-  default:
-    if(RenderTime==0&&touring==0)return;
+  case RenderStart:
+    if(RenderTime==0&&touring==0){
+      RenderMenu(RENDER_CURRENT_MULTIPLE);
+      return;
+    }
+    if(glui_render_mode==1){
+      GluiRenderStart();
+      return;
+    }
     if(touring==1){
       rendertourcount=0;
     }
@@ -1685,7 +1695,6 @@ void RenderMenu(int value){
       meshi->patch_itime=0;
     }
     UpdateTimeLabels();
-    render_skip=value;
     FlowDir=1;
     for(n=0;n<nglobal_times;n++){
       render_frame[n]=0;
@@ -1697,6 +1706,25 @@ void RenderMenu(int value){
     }
     render_times = RENDER_ALLTIMES;
     break;
+  case RenderLABELframenumber:
+    render_label_type=RENDER_LABEL_FRAMENUM;
+    UpdateGluiFileLabel(render_label_type);
+    break;
+  case RenderLABELtime:
+    render_label_type=RENDER_LABEL_TIME;
+    UpdateGluiFileLabel(render_label_type);
+    break;
+  case RenderPNG:
+     render_filetype=PNG;
+     updatemenu=1;
+     break;
+  case RenderJPEG:
+     render_filetype=JPEG;
+     updatemenu=1;
+     break;
+  default:
+     ASSERT(FFALSE);
+     break;
   }
   UpdateResolutionMultiplier();
 }
@@ -5299,8 +5327,7 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int render_startmenu=0;
-static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
+static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0, render_typemenu=0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
@@ -7932,7 +7959,7 @@ updatemenu=0;
 
     CREATEMENU(render_skipmenu,SkipMenu);
     {
-      char *skips[]={"All frames","2nd","3rd","4th","5th","10th","20th"};
+      char *skips[]={"All","2nd","3rd","4th","5th","10th","20th"};
       char iskips[] = {1,2,3,4,5,10,20};
 
       for(i = 0;i<7;i++){
@@ -7946,7 +7973,6 @@ updatemenu=0;
         else{
           strcat(skiplabel, "Every ");
           strcat(skiplabel, skips[i]);
-          strcat(skiplabel, " frame");
         }
         glutAddMenuEntry(skiplabel, iskips[i]);
       }
@@ -7959,46 +7985,11 @@ updatemenu=0;
 
       render_index = 10000+MIN(5, i);
       if(resolution_multiplier==i){
-        sprintf(render_label, "  *%i", i);
+        sprintf(render_label, "  *%ix", i);
         glutAddMenuEntry(render_label, render_index);
       }
       else if(i<=5){
-        sprintf(render_label, "  %i", i);
-        glutAddMenuEntry(render_label, render_index);
-      }
-    }
-
-    CREATEMENU(render_startmenu,RenderMenu);
-    glutAddMenuEntry(_("  One frame (single part)"),RENDER_CURRENT_SINGLE);
-    if(render_current==1){
-      char menulabel[1024];
-
-      sprintf(menulabel,"  One frame (%i x %i parts)",resolution_multiplier,resolution_multiplier);
-      glutAddMenuEntry(menulabel,RENDER_CURRENT_MULTIPLE);
-    }
-    if(RenderTime==1||touring==1){
-      glutAddMenuEntry(_("  All frames"),1);
-      glutAddMenuEntry(_("  Every 2nd frame"),2);
-      glutAddMenuEntry(_("  Every 3rd frame"),3);
-      glutAddMenuEntry(_("  Every 4th frame"),4);
-      glutAddMenuEntry(_("  Every 5th frame"),5);
-      glutAddMenuEntry(_("  Every 10th frame"),10);
-      glutAddMenuEntry(_("  Every 20th frame"),20);
-      glutAddMenuEntry(_("  Cancel"),RenderCancel);
-    }
-
-    CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    for(i = 1;i<=10;i++){
-      char render_label[256];
-      int render_index;
-
-      render_index = 10000+MIN(5, i);
-      if(resolution_multiplier==i){
-        sprintf(render_label, "  *%i", i);
-        glutAddMenuEntry(render_label, render_index);
-      }
-      else if(i<=5){
-        sprintf(render_label, "  %i", i);
+        sprintf(render_label, "  %ix", i);
         glutAddMenuEntry(render_label, render_index);
       }
     }
@@ -8031,22 +8022,46 @@ updatemenu=0;
     glutAddMenuEntry(renderwindow, Render320);
     glutAddMenuEntry(renderwindow2, Render640);
     glutAddMenuEntry(renderwindow3, RenderWindow);
+    if(render_current==1){
+      char res_menu[128];
+
+      sprintf(res_menu, "size multiplier/%ix", resolution_multiplier);
+      glutAddSubMenu(res_menu, resolutionmultipliermenu);
+    }
+
+
+    CREATEMENU(render_typemenu, RenderMenu);
+    if(glui_render_mode==1){
+      glutAddMenuEntry(_("Normal"), Render360);
+      glutAddMenuEntry(_("*360"), Render360);
+    }
+    else{
+      glutAddMenuEntry(_("*Normal"), Render360);
+      glutAddMenuEntry(_("360"), Render360);
+    }
 
     CREATEMENU(rendermenu,RenderMenu);
 
 {
     char skip_label[128];
 
-    sprintf(skip_label,"Skip/%i",render_skip);
+    if(render_skip==1){
+      strcpy(skip_label,"Which frames/all");
+    }
+    else{
+      sprintf(skip_label, "Which frames/%i", render_skip);
+    }
     glutAddSubMenu(skip_label, render_skipmenu);
 }
-    glutAddSubMenu(_("Resolution"),  render_resolutionmenu);
-    glutAddSubMenu(_("Type"),        render_filetypemenu);
+    glutAddSubMenu(_("Image size"),  render_resolutionmenu);
+    glutAddSubMenu(_("Image type"),        render_filetypemenu);
     glutAddSubMenu(_("File suffix"), render_filesuffixmenu);
 
-    if(render_current==1)glutAddSubMenu(_("Resolution multiplier"),resolutionmultipliermenu);
+    glutAddMenuEntry("-", MENU_DUMMY);
+    glutAddSubMenu("Render type", render_typemenu);
 
-    glutAddSubMenu(_("Start rendering:"),render_startmenu);
+    glutAddMenuEntry(_("Start rendering"), RenderStart);
+    glutAddMenuEntry(_("Stop rendering"),  RenderCancel);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }

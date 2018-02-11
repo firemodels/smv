@@ -235,6 +235,19 @@ extern "C" void UpdateShowRotationCenter(void){
   if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->set_int_val(show_rotation_center);
 }
 
+/* ------------------ GluiRenderStart ------------------------ */
+
+void GluiRenderStart(void){
+  RenderCB(RENDER_MODE);
+  RenderCB(RENDER_START);
+}
+
+/* ------------------ UpdateGluiRenderMode ------------------------ */
+
+void UpdateGluiRenderMode(void){
+  if(RADIO_render_mode!=NULL)RADIO_render_mode->set_int_val(glui_render_mode);
+}
+
 /* ------------------ UpdateGluiRotateAbout ------------------------ */
 
 void UpdateGluiRotateAbout(int val){
@@ -1110,6 +1123,14 @@ extern "C" void GluiMotionSetup(int main_window){
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
 
   PANEL_render_mode = glui_motion->add_panel_to_panel(ROLLOUT_render, "render type:", true);
+  if(render_mode!=RENDER_360){
+    if(resolution_multiplier==1){
+      render_mode = RENDER_XYSINGLE;
+    }
+    else{
+      render_mode = RENDER_XYMULTI;
+    }
+  }
   if(render_mode==RENDER_XYSINGLE||render_mode==RENDER_XYMULTI){
     glui_render_mode = 0;
   }
