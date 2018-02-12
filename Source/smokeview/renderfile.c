@@ -261,7 +261,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      if(skip_render_frames == 1){
+      if(skip_render_frames == 1||skip_render_frames==0){
         image_num = itimes;
       }
       else{

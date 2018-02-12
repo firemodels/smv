@@ -1680,20 +1680,23 @@ void RenderMenu(int value){
     if(touring==1){
       rendertourcount=0;
     }
-    if(stept==0){
-      Keyboard('t',FROM_SMOKEVIEW);
+    if(render_skip_index == RENDER_CURRENT_SINGLE){
+      UpdateFrameNumber(0);
+    }
+    else{
+      if(stept == 0)Keyboard('t', FROM_SMOKEVIEW);
+      ResetItimes0();
+      for(i=0;i<nsliceinfo;i++){
+        sd=sliceinfo+i;
+        sd->itime=0;
+      }
+      frame_index=first_frame_index;
+      for(i=0;i<nmeshes;i++){
+        meshi=meshinfo+i;
+        meshi->patch_itime=0;
+      }
     }
     RenderState(RENDER_ON);
-    ResetItimes0();
-    for(i=0;i<nsliceinfo;i++){
-      sd=sliceinfo+i;
-      sd->itime=0;
-    }
-    frame_index=first_frame_index;
-    for(i=0;i<nmeshes;i++){
-      meshi=meshinfo+i;
-      meshi->patch_itime=0;
-    }
     UpdateTimeLabels();
     FlowDir=1;
     for(n=0;n<nglobal_times;n++){
@@ -1788,7 +1791,6 @@ void EvacShowMenu(int value){
   updatemenu=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   glutPostRedisplay();
-
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */

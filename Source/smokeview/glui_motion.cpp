@@ -2108,6 +2108,8 @@ void RenderCB(int var){
       update_makemovie = 1;
       break;
     case RENDER_SKIP:
+      render_skip = render_skip_index;
+      break;
     case RENDER_LABEL:
     case RENDER_TYPE:
     case RENDER_MULTIPLIER:
@@ -2139,6 +2141,9 @@ void RenderCB(int var){
     case RENDER_START_360:
       resolution_multiplier = 1;
       render_mode=RENDER_360;
+      if(render_skip_index == RENDER_CURRENT_SINGLE){
+        UpdateFrameNumber(0);
+      }
       if(render_frame != NULL){
         int i;
 
@@ -2153,7 +2158,9 @@ void RenderCB(int var){
       }
       Disable360Zoom();
       RenderMenu(RENDER_CURRENT_360);
-      Keyboard('0', FROM_SMOKEVIEW);
+      if(render_skip_index != RENDER_CURRENT_SINGLE){
+        Keyboard('0', FROM_SMOKEVIEW);
+      }
       break;
     case RENDER_START_HIGHRES:
       RenderMenu(RenderStartHIGHRES);
