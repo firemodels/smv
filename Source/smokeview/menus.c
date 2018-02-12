@@ -1551,6 +1551,7 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
+    EnableDisableStartButtons(DISABLE);
     render_status = onoff;
     update_screeninfo = 1;
     saveW=screenWidth;
@@ -1573,6 +1574,7 @@ void RenderState(int onoff){
     Enable360Zoom();
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
+    EnableDisableStartButtons(ENABLE);
   }
 }
 
@@ -1655,23 +1657,24 @@ void RenderMenu(int value){
   case Render360:
     render_mode = 1-render_mode;
     updatemenu = 1;
-    UpdateGluiRenderMode();
+    break;
+  case RenderStart360:
+#define RENDER_START_360 10
+    RenderCB(RENDER_START_360);
     break;
   case RenderStartORIGRES:
+    render_mode = RENDER_NORMAL;
     resolution_multiplier=1;
     RenderMenu(RenderStart);
     break;
   case RenderStartHIGHRES:
+    render_mode = RENDER_NORMAL;
     resolution_multiplier=MAX(2,resolution_multiplier);
     RenderMenu(RenderStart);
     break;
   case RenderStart:
     if(RenderTime==0&&touring==0){
       RenderMenu(RENDER_CURRENT_MULTIPLE);
-      return;
-    }
-    if(render_mode==RENDER_360){
-      GluiRenderStart();
       return;
     }
     if(touring==1){
@@ -5325,6 +5328,7 @@ static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smok
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0, render_typemenu=0;
+static int render_startmenu = 0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
@@ -8015,47 +8019,7 @@ updatemenu=0;
       glutAddMenuEntry("  JPEG",RenderJPEG);
     }
 
-    CREATEMENU(render_resolutionmenu, RenderMenu);
-    glutAddMenuEntry(renderwindow, Render320);
-    glutAddMenuEntry(renderwindow2, Render640);
-    glutAddMenuEntry(renderwindow3, RenderWindow);
-
-    CREATEMENU(render_typemenu, RenderMenu);
-    if(render_mode==RENDER_360){
-      glutAddMenuEntry(_("Normal"), Render360);
-      glutAddMenuEntry(_("*360"), Render360);
-    }
-    else{
-      glutAddMenuEntry(_("*Normal"), Render360);
-      glutAddMenuEntry(_("360"), Render360);
-    }
-
-    CREATEMENU(rendermenu,RenderMenu);
-
-{
-    char skip_label[128];
-
-    if(render_skip==1){
-      strcpy(skip_label,"Which frames/all");
-    }
-    else{
-      sprintf(skip_label, "Which frames/%i", render_skip);
-    }
-    glutAddSubMenu(skip_label, render_skipmenu);
-}
-    glutAddSubMenu(_("Image size"),  render_resolutionmenu);
-    if(render_current==1){
-      char res_menu[128];
-
-      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
-      glutAddSubMenu(res_menu, resolutionmultipliermenu);
-    }
-    glutAddSubMenu(_("Image type"),        render_filetypemenu);
-    glutAddSubMenu(_("File suffix"), render_filesuffixmenu);
-    glutAddSubMenu("Render type", render_typemenu);
-
-    glutAddMenuEntry("-", MENU_DUMMY);
-
+    CREATEMENU(render_startmenu,RenderMenu);
     {
       char sizeORIGRES[128], sizeHIGHRES[128];
       int width, height, factor;
@@ -8070,11 +8034,53 @@ updatemenu=0;
       }
 
       factor = MAX(2, resolution_multiplier);
-      sprintf(sizeORIGRES, "Start rendering(%ix%i)", width, height);
-      sprintf(sizeHIGHRES, "Start rendering(%ix%i)", width*factor, height*factor);
+      sprintf(sizeORIGRES, "%ix%i", width, height);
+      sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);
       glutAddMenuEntry(sizeORIGRES, RenderStartORIGRES);
       glutAddMenuEntry(sizeHIGHRES, RenderStartHIGHRES);
+      {
+        char rend_label[100];
+#ifdef pp_DEG
+        char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+        char deg360[] = {'3','6','0',0};
+#endif
+
+        sprintf(rend_label,"%s - %ix%i",deg360,nwidth360, nheight360);
+        glutAddMenuEntry(rend_label, RenderStart360);
+      }
     }
+
+    CREATEMENU(render_resolutionmenu, RenderMenu);
+    glutAddMenuEntry(renderwindow, Render320);
+    glutAddMenuEntry(renderwindow2, Render640);
+    glutAddMenuEntry(renderwindow3, RenderWindow);
+
+    CREATEMENU(rendermenu,RenderMenu);
+{
+    char skip_label[128];
+
+    if(render_skip==1){
+      strcpy(skip_label,"Frames/all");
+    }
+    else{
+      sprintf(skip_label, "Frames/%i", render_skip);
+    }
+    glutAddSubMenu(skip_label, render_skipmenu);
+}
+    glutAddSubMenu(_("Image size"),  render_resolutionmenu);
+    if(render_current==1){
+      char res_menu[128];
+
+      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
+      glutAddSubMenu(res_menu, resolutionmultipliermenu);
+    }
+    glutAddSubMenu(_("Image type"),        render_filetypemenu);
+    glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
+
+    glutAddMenuEntry("-", MENU_DUMMY);
+
+    glutAddSubMenu(_("Start rendering"), render_startmenu);
     glutAddMenuEntry(_("Stop rendering"),  RenderCancel);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();

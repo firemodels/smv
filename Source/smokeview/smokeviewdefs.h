@@ -652,6 +652,7 @@ void _Sniff_Errors(char *whereat);
 #define RenderStart 990
 #define RenderStartHIGHRES 988
 #define RenderStartORIGRES 987
+#define RenderStart360 986
 #define Render360 989
 #define RENDER_CURRENT_SINGLE 998
 #define RENDER_CURRENT_MULTIPLE 978

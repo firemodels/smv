@@ -5,8 +5,7 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void GluiRenderStart(void);
-EXTERNCPP void UpdateGluiRenderMode(void);
+EXTERNCPP void EnableDisableStartButtons(int val);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void LoadIncrementalCB(int var);
 EXTERNCPP void LoadIncrementalCB1(int var);
