@@ -3295,7 +3295,7 @@ void DisplayCB(void){
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
-  if(render_mode == RENDER_360)return;
+  if(render_mode == RENDER_360&&render_status==RENDER_ON)return;
   glutSetWindow(mainwindow_id);
   wscaled = (float)width/(float)max_screenWidth;
   hscaled = (float)height/(float)max_screenHeight;
