@@ -477,7 +477,6 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
   char renderfile[1024], renderfile_dir[1024], renderfullfile[1024];
   FILE *RENDERfile=NULL;
-  GLubyte *p;
   gdImagePtr RENDERimage;
   unsigned int r, g, b;
   int i,j,rgb_local;
@@ -507,20 +506,20 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(nscreen_cols*screenWidth,nscreen_rows*screenHeight);
 
-  p = *screenbuffers++;
   for(irow=0;irow<nscreen_rows;irow++){
     int icol;
 
     for(icol=0;icol<nscreen_cols;icol++){
+      GLubyte *p;
+
+      p = *screenbuffers++;
       for(i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
         for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
           r=*p++; g=*p++; b=*p++;
           rgb_local = (r<<16)|(g<<8)|b;
           gdImageSetPixel(RENDERimage,j,i,rgb_local);
-
         }
       }
-      p=*screenbuffers++;
     }
   }
 
