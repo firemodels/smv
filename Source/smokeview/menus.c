@@ -1662,7 +1662,6 @@ void RenderMenu(int value){
     updatemenu = 1;
     break;
   case RenderStart360:
-#define RENDER_START_360 10
     RenderCB(RENDER_START_360);
     break;
   case RenderStartORIGRES:

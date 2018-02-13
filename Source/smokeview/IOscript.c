@@ -11,8 +11,6 @@
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h" 
 
-#define RENDER_START 3
-
 /* ------------------ GetNewScriptFileName ------------------------ */
 
 void GetNewScriptFileName(char *newscriptfilename){

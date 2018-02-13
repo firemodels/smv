@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define RENDER_START 3
+#define RENDER_START_NORMAL 12
+#define RENDER_START_360 10
+
 #define COLORBAR_SET 18
 #define COLORBAR_RGB 2
 

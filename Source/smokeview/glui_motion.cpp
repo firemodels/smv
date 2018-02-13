@@ -60,10 +60,7 @@
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
 #define RENDER_SKIP 2
-#define RENDER_START 3
-#define RENDER_START_NORMAL 12
 #define RENDER_START_HIGHRES 11
-#define RENDER_START_360 10
 #define RENDER_STOP 4
 #define RENDER_LABEL 5
 #define RENDER_MULTIPLIER 6
@@ -320,11 +317,13 @@ void UpdateRenderStartButton(void){
 void EnableDisablePlayMovie(void){
   char moviefile_path[1024];
 
-  if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES&&play_movie_now==1){
-    if(BUTTON_play_movie != NULL)BUTTON_play_movie->enable();
-  }
-  else{
-    if(BUTTON_play_movie != NULL)BUTTON_play_movie->disable();
+  if(BUTTON_play_movie != NULL){
+    if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES&&play_movie_now == 1){
+      BUTTON_play_movie->enable();
+    }
+    else{
+      BUTTON_play_movie->disable();
+    }
   }
 }
 
@@ -1271,7 +1270,7 @@ extern "C" void GluiMotionSetup(int main_window){
     ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_make_movie, MOVIE_ROLLOUT);
 
     CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
-    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Generate images"), RENDER_START, RenderCB);
+    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _d("Render normal"), RENDER_START_NORMAL, RenderCB);
     BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
     if(have_ffplay==1){
       BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);

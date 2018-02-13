@@ -11,8 +11,6 @@
 #include GLUT_H
 #include "gd.h"
 
-#define RENDER_START 3
-
 /* ------------------ PlayMovie ------------------------ */
 
 void PlayMovie(void){
@@ -75,7 +73,7 @@ void MakeMovie(void){
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
   if(runscript==0&& FILE_EXISTS(frame0)==NO){
-    RenderCB(RENDER_START);
+    RenderCB(RENDER_START_NORMAL);
     return;
   }
 
