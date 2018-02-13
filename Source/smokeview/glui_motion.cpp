@@ -1240,8 +1240,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
   UpdateGluiFileLabel(render_label_type);
 
-  render_skip_index = RENDER_CURRENT_SINGLE;
-  LIST_render_skip = glui_motion->add_listbox_to_panel(PANEL_render_other, _d("Frame(s):"), &render_skip_index, RENDER_SKIP, RenderCB);
+  LIST_render_skip = glui_motion->add_listbox_to_panel(PANEL_render_other, _d("Frame(s):"), &render_skip, RENDER_SKIP, RenderCB);
   LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _d("Current"));
   LIST_render_skip->add_item(1, _d("All"));
   LIST_render_skip->add_item(2, _d("Every 2nd"));
@@ -1250,7 +1249,7 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_skip->add_item(5, _d("Every 5th"));
   LIST_render_skip->add_item(10, _d("Every 10th"));
   LIST_render_skip->add_item(20, _d("Every 20th"));
-  UpdateRenderListSkip();
+  LIST_render_skip->set_int_val(render_skip);
 
   ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(PANEL_render_other, "Clip rendered scene", false);
   SPINNER_clip_left = glui_motion->add_spinner_to_panel(ROLLOUT_scene_clip, "left:", GLUI_SPINNER_INT, &render_clip_left);
@@ -2109,7 +2108,6 @@ void RenderCB(int var){
       update_makemovie = 1;
       break;
     case RENDER_SKIP:
-      render_skip = render_skip_index;
       break;
     case RENDER_LABEL:
     case RENDER_TYPE:
@@ -2142,7 +2140,7 @@ void RenderCB(int var){
     case RENDER_START_360:
       resolution_multiplier = 1;
       render_mode=RENDER_360;
-      if(render_skip_index == RENDER_CURRENT_SINGLE){
+      if(render_skip == RENDER_CURRENT_SINGLE){
         UpdateFrameNumber(0);
       }
       if(render_frame != NULL){
@@ -2159,7 +2157,7 @@ void RenderCB(int var){
       }
       Disable360Zoom();
       RenderMenu(RENDER_CURRENT_360);
-      if(render_skip_index != RENDER_CURRENT_SINGLE){
+      if(render_skip != RENDER_CURRENT_SINGLE){
         Keyboard('0', FROM_SMOKEVIEW);
       }
       break;
@@ -2201,9 +2199,9 @@ void UpdateRenderListSkip(void){
 
 extern "C" void UpdateGluiRender(void){
   if(RenderTime==1&&RenderTimeOld==0){
-    if(LIST_render_skip!=NULL&&render_skip_index==RENDER_CURRENT_SINGLE){
-      render_skip_index=1;
-      LIST_render_skip->set_int_val(render_skip_index);
+    if(LIST_render_skip!=NULL&&render_skip==RENDER_CURRENT_SINGLE){
+      render_skip=1;
+      LIST_render_skip->set_int_val(render_skip);
     }
   }
   RenderTimeOld=RenderTime;

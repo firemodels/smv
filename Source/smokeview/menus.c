@@ -1683,7 +1683,7 @@ void RenderMenu(int value){
     if(touring==1){
       rendertourcount=0;
     }
-    if(render_skip_index == RENDER_CURRENT_SINGLE){
+    if(render_skip == RENDER_CURRENT_SINGLE){
       UpdateFrameNumber(0);
     }
     else{
