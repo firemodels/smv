@@ -1586,6 +1586,7 @@ void SkipMenu(int value){
   render_skip=value;
   glutPostRedisplay();
   updatemenu=1;
+  UpdateRenderListSkip();
 }
 
 /* ------------------ RenderMenu ------------------------ */

@@ -1250,6 +1250,7 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_skip->add_item(5, _d("Every 5th"));
   LIST_render_skip->add_item(10, _d("Every 10th"));
   LIST_render_skip->add_item(20, _d("Every 20th"));
+  UpdateRenderListSkip();
 
   ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(PANEL_render_other, "Clip rendered scene", false);
   SPINNER_clip_left = glui_motion->add_spinner_to_panel(ROLLOUT_scene_clip, "left:", GLUI_SPINNER_INT, &render_clip_left);
@@ -2188,6 +2189,12 @@ void RenderCB(int var){
       ASSERT(FFALSE);
       break;
   }
+}
+
+/* ------------------ UpdateRenderListSkip ------------------------ */
+
+void UpdateRenderListSkip(void){
+  if(LIST_render_skip!=NULL)LIST_render_skip->set_int_val(render_skip);
 }
 
 /* ------------------ UpdateGluiRender ------------------------ */
