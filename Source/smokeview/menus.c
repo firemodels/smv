@@ -1553,6 +1553,7 @@ void RenderState(int onoff){
   if(onoff==RENDER_ON){
     EnableDisableStartButtons(DISABLE);
     render_status = onoff;
+    render_firsttime = YES;
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
@@ -1571,6 +1572,7 @@ void RenderState(int onoff){
   else{
     if(render_status==RENDER_OFF)return;
     render_status = onoff;
+    render_firsttime = NO;
     Enable360Zoom();
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
@@ -7962,16 +7964,16 @@ updatemenu=0;
 
     CREATEMENU(render_skipmenu,SkipMenu);
     {
-      char *skips[]={"All","2nd","3rd","4th","5th","10th","20th"};
-      char iskips[] = {1,2,3,4,5,10,20};
+      char *skips[]={"Current","All","2nd","3rd","4th","5th","10th","20th"};
+      int iskips[] = {RENDER_CURRENT_SINGLE,1,2,3,4,5,10,20};
 
       for(i = 0;i<7;i++){
         char skiplabel[128];
 
         strcpy(skiplabel, "  ");
         if(render_skip==iskips[i])strcat(skiplabel, "*");
-        if(i==0){
-          strcat(skiplabel, skips[0]);
+        if(i<=1){
+          strcat(skiplabel, skips[i]);
         }
         else{
           strcat(skiplabel, "Every ");
@@ -8059,11 +8061,19 @@ updatemenu=0;
     glutAddMenuEntry(renderwindow3, RenderWindow);
 
     CREATEMENU(rendermenu,RenderMenu);
-{
+    glutAddSubMenu(_("Start rendering"), render_startmenu);
+    glutAddMenuEntry(_("Stop rendering"), RenderCancel);
+
+    glutAddMenuEntry("-", MENU_DUMMY);
+
+    {
     char skip_label[128];
 
     if(render_skip==1){
       strcpy(skip_label,"Frames/all");
+    }
+    else if(render_skip==RENDER_CURRENT_SINGLE){
+      sprintf(skip_label, "Frames/Current");
     }
     else{
       sprintf(skip_label, "Frames/%i", render_skip);
@@ -8079,11 +8089,6 @@ updatemenu=0;
     }
     glutAddSubMenu(_("Image type"),        render_filetypemenu);
     glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
-
-    glutAddMenuEntry("-", MENU_DUMMY);
-
-    glutAddSubMenu(_("Start rendering"), render_startmenu);
-    glutAddMenuEntry(_("Stop rendering"),  RenderCancel);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }

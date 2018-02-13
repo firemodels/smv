@@ -2777,7 +2777,13 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
         }
       }
       if(stept==1&&timebar_drag==0&&render_status==RENDER_ON){
-        itimes+=render_skip*FlowDir;
+        if(render_firsttime==YES){
+          render_firsttime = NO;
+          itimes = first_frame_index;
+        }
+        else{
+          itimes += render_skip*FlowDir;
+        }
       }
 
 // if toggling time display with H then show the frame that was visible
