@@ -869,9 +869,9 @@ extern "C" void GluiMotionSetup(int main_window){
   int *rotation_index;
   float *eye_xyz;
 #ifdef pp_DEG
-  char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+  unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
 #else
-  char deg360[] = {'3','6','0',0};
+  unsigned char deg360[] = {'3','6','0',0};
 #endif
 
   if(camera_label!=NULL){
