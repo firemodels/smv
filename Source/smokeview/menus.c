@@ -8420,11 +8420,19 @@ updatemenu=0;
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
-  glutAddMenuEntry(_("  r: render the current scene to an image file"), MENU_DUMMY);
+  glutAddMenuEntry(_("  r/R/ALT R: render the current scene to an image file"), MENU_DUMMY);
+  glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
   {
     char render_label[1024];
+#ifdef pp_DEG
+    char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+    char deg360[] = {'3','6','0',0};
+#endif
 
-    sprintf(render_label, "  R:   (same as r but at %ix the resolution)", MAX(2,resolution_multiplier));
+    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2,resolution_multiplier));
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+    sprintf(render_label, "    ALT R: %s view - all view directions are shown in a 1024x512 image", deg360);
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   if(ntotal_blockages>0||isZoneFireModel==1){

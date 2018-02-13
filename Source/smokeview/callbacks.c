@@ -1935,18 +1935,25 @@ void Keyboard(unsigned char key, int flag){
       {
         int rflag=0;
 
-        if(strncmp((const char *)&key2, "R", 1)==0){
-          resolution_multiplier = MAX(2, resolution_multiplier);
-        }
-        else{
-          resolution_multiplier = 1;
-        }
-        if(keystate==GLUT_ACTIVE_ALT){
+        if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode=1-research_mode;
           UpdateResearchMode();
           return;
         }
 
+        if(strncmp((const char *)&key2, "R", 1&&keystate!=GLUT_ACTIVE_ALT)==0){
+          resolution_multiplier = MAX(2, resolution_multiplier);
+        }
+        else{
+          resolution_multiplier = 1;
+        }
+
+        if(keystate == GLUT_ACTIVE_ALT){
+          render_mode = RENDER_360;
+        }
+        else{
+          render_mode = RENDER_NORMAL;
+        }
         render_times = RENDER_SINGLETIME;
 
         if(strncmp((const char *)&key2, "R", 1)==0||render_mode==RENDER_360){
@@ -2096,7 +2103,15 @@ void Keyboard(unsigned char key, int flag){
             stept=0;
           }
         }
-        if(stept==0)itime_save = -1;
+        if(stept == 1){
+          if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
+        }
+        else{
+          itime_save = -1;
+          render_skip = RENDER_CURRENT_SINGLE;
+        }
+        updatemenu = 1;
+        UpdateRenderListSkip();
       }
       break;
     case 'T':
