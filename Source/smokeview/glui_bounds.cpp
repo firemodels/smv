@@ -1205,7 +1205,7 @@ void ScriptCB(int var){
     script_skipframe = -1;
     script_step = 0;
     GluiScriptEnable();
-    rendering_status = RENDER_OFF;
+    render_status = RENDER_OFF;
     break;
   case SCRIPT_RENDER_DIR:
     strcpy(label, script_renderdir);

@@ -903,7 +903,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
      (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
        IsFileNewer(fed_slice->file,co2->file)!=1||
        IsFileNewer(fed_slice->file,co->file)!=1))||
-     (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
+       (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
        IsFileNewer(fed_iso->file,co2->file)!=1||
        IsFileNewer(fed_iso->file,co->file)!=1))){
     int i,j,k;
@@ -2620,7 +2620,7 @@ void GetSliceParams(void){
   int build_cache=0;
   FILE *stream;
 
-  if(IsFileNewer(sliceinfo_filename,smv_filename)!=1){
+  if(IfFirstLineBlank(sliceinfo_filename)==1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
   }

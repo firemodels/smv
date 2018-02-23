@@ -11,8 +11,6 @@
 #include GLUT_H
 #include "gd.h"
 
-#define RENDER_START 3
-
 /* ------------------ PlayMovie ------------------------ */
 
 void PlayMovie(void){
@@ -60,7 +58,7 @@ void MakeMovie(void){
 
 // wait to make movie until after images are rendered
 
-  if(rendering_status == RENDER_ON)return;
+  if(render_status == RENDER_ON)return;
 
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
@@ -75,7 +73,7 @@ void MakeMovie(void){
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
   if(runscript==0&& FILE_EXISTS(frame0)==NO){
-    RenderCB(RENDER_START);
+    RenderCB(RENDER_START_NORMAL);
     return;
   }
 
@@ -136,7 +134,7 @@ void MakeMovie(void){
 /* ------------------ Render ------------------------ */
 
 void Render(int view_mode){
-  if(rendering_status == RENDER_OFF)return;
+  if(render_status == RENDER_OFF)return;
   if(current_script_command!=NULL&&(current_script_command->command==SCRIPT_VOLSMOKERENDERALL||current_script_command->command==SCRIPT_ISORENDERALL)){
     int command;
 
@@ -156,7 +154,7 @@ void Render(int view_mode){
       }
     }
   }
-  if(render_times == RENDER_ALLTIMES && rendering_status == RENDER_ON&&render_mode == RENDER_XYSINGLE && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
+  if(render_times == RENDER_ALLTIMES && render_status == RENDER_ON&&render_mode == RENDER_NORMAL && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
     if(itimes>=0&&itimes<nglobal_times&&
      ((render_frame[itimes] == 0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
      ){
@@ -164,17 +162,15 @@ void Render(int view_mode){
       RenderFrame(view_mode);
     }
     else{
-      ASSERT(RenderSkip>0);
+      ASSERT(render_skip>0);
       RenderState(RENDER_OFF);
-      RenderSkip=1;
     }
   }
 
   if(render_times == RENDER_SINGLETIME){
     RenderFrame(view_mode);
-    if(render_mode == RENDER_XYSINGLE){
+    if(render_mode == RENDER_NORMAL){
       RenderState(RENDER_OFF);
-      RenderSkip=1;
       SNIFF_ERRORS("after render");
     }
   }
@@ -263,11 +259,11 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      if(skip_render_frames == 1){
+      if(skip_render_frames == 1||skip_render_frames==0){
         image_num = itimes;
       }
       else{
-        image_num = itimes / RenderSkip;
+        image_num = itimes / render_skip;
       }
     }
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
@@ -479,7 +475,6 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
   char renderfile[1024], renderfile_dir[1024], renderfullfile[1024];
   FILE *RENDERfile=NULL;
-  GLubyte *p;
   gdImagePtr RENDERimage;
   unsigned int r, g, b;
   int i,j,rgb_local;
@@ -509,20 +504,20 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(nscreen_cols*screenWidth,nscreen_rows*screenHeight);
 
-  p = *screenbuffers++;
   for(irow=0;irow<nscreen_rows;irow++){
     int icol;
 
     for(icol=0;icol<nscreen_cols;icol++){
+      GLubyte *p;
+
+      p = *screenbuffers++;
       for(i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
         for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
           r=*p++; g=*p++; b=*p++;
           rgb_local = (r<<16)|(g<<8)|b;
           gdImageSetPixel(RENDERimage,j,i,rgb_local);
-
         }
       }
-      p=*screenbuffers++;
     }
   }
 

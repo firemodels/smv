@@ -11,8 +11,6 @@
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h" 
 
-#define RENDER_START 3
-
 /* ------------------ GetNewScriptFileName ------------------------ */
 
 void GetNewScriptFileName(char *newscriptfilename){
@@ -913,7 +911,7 @@ void ScriptRender360All(scriptdata *scripti){
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
   skip_render_frames = 1;
   //RenderMenu(skip_local);
-  render_360=1;
+  render_mode = RENDER_360;
   RenderCB(RENDER_START);
 }
 

@@ -323,6 +323,33 @@ int Writable(char *dir){
 #endif
 }
 
+/* ------------------ IfFirstLineBlank ------------------------ */
+
+int IfFirstLineBlank(char *file){
+
+  // returns 1 if first line of file is blank
+
+  STRUCTSTAT statbuff1;
+  int statfile1;
+  FILE *stream = NULL;
+  char buffer[255], *buffptr;
+
+  if(file==NULL)return 1;
+
+  statfile1 = STAT(file, &statbuff1);
+  if(statfile1!=0)return 1;
+
+  stream = fopen(file, "r");
+  if(stream==NULL||fgets(buffer, 255, stream)==NULL){
+    if(stream!=NULL)fclose(stream);
+    return 1;
+  }
+  fclose(stream);
+  buffptr = TrimFrontBack(buffer);
+  if(strlen(buffptr)==0)return 1;
+  return 0;
+}
+
 /* ------------------ IsFileNewer ------------------------ */
 
 int IsFileNewer(char *file1, char *file2){

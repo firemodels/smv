@@ -1,7 +1,7 @@
 &HEAD CHID='sillytexture', TITLE='Silly Test Case' /
 &MISC TEXTURE_ORIGIN=0.1,0.1,0.1 /
 
-&MESH IJK=20,20,02, XB=0.0,1.0,0.0,1.0,0.0,1.0 /
+&MESH IJK=20,20,20, XB=0.0,1.0,0.0,1.0,0.0,1.0 /
 &TIME T_END=0. /
 &SURF ID     = 'TEXTURE 1'
       TEXTURE_MAP= 'nistleft.jpg'

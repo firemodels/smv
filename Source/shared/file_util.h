@@ -152,6 +152,7 @@ EXTERNCPP void SetStdOut(FILE *stream);
 EXTERNCPP void GetFileSizeLabel(int size, char *sizelabel);
 EXTERNCPP void CopyFILE(char *destdir, char *filein, char *fileout, int mode);
 EXTERNCPP char *GetSmokeZipPath(char *progdir);
+EXTERNCPP int IfFirstLineBlank(char *file);
 EXTERNCPP int HaveProg(char *prog);
 EXTERNCPP int FileCat(char *file_in1, char *file_in2, char *file_out);
 EXTERNCPP void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext);
