@@ -14,7 +14,7 @@ RELEASE=
 if [ "$edition" == "test" ]; then
   TEST=test_
 else
-  RELEASE=smv_
+  RELEASE=
 fi
 
 platform="linux"
