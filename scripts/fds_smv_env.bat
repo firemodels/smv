@@ -2,8 +2,9 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS_6.6.0test
-set smv_version=SMV_6.6.1test
+set fds_version=FDS6.6.0
+set smv_version=SMV6.6.3
+set fds_debug=1
 
 :: ---- FDS and smokeview revision ----
 
@@ -18,7 +19,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="18-Jan-2017"
+set smvlogdate="13-Feb-2018"
 
 :: ---- repo locations ----
 
