@@ -597,10 +597,7 @@ int FileExists(char *filename){
   if(filename == NULL)return NO;
 #ifdef pp_FILELIST
   if(filelist != NULL&&nfilelist>0){
-    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) == NULL){
-      return NO;
-    }
-    else{
+    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) != NULL){
       return YES;
     }
   }

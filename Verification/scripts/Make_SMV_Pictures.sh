@@ -6,7 +6,6 @@ echo "Generates figures for Smokeview verification suite"
 echo ""
 echo "Options"
 echo "-d - use debug version of smokeview"
-echo "-g - only generate geometry case images"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
 echo "-I - compiler (intel or gnu)"
@@ -81,7 +80,6 @@ DEBUG=
 TEST=
 use_installed="0"
 RUN_SMV=1
-RUN_GEOM=0
 RUN_WUI=1
 
 while getopts 'dghiI:s:tWY' OPTION
@@ -89,11 +87,6 @@ do
 case $OPTION  in
   d)
    DEBUG=_db
-   ;;
-  g)
-   RUN_SMV=0
-   RUN_GEOM=1
-   RUN_WUI=0
    ;;
   h)
    usage;
@@ -117,12 +110,10 @@ case $OPTION  in
   ;;
   W)
    RUN_SMV=0
-   RUN_GEOM=0
    RUN_WUI=1
    ;;
   Y)
    RUN_SMV=1
-   RUN_GEOM=0
    RUN_WUI=1
    ;;
 esac
@@ -242,12 +233,6 @@ if [ "$RUN_WUI" == "1" ] ; then
   source $STARTX
   cd $SVNROOT/smv/Verification
   scripts/WUI_Cases.sh
-  source $STOPX
-fi
-if [ "$RUN_GEOM" == "1" ] ; then
-  source $STARTX
-  cd $SVNROOT/smv/Verification
-  scripts/GEOM_Cases.sh
   source $STOPX
 fi
 
