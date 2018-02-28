@@ -21,11 +21,29 @@ call %envfile%
 echo.
 echo ------------------------------------------------------------------------
 %svn_drive%
+
+echo Cleaning %svn_root%\fds\Source
+cd %svn_root%\fds\Source
+git clean -dxf
+
+echo Cleaning %svn_root%\fds\Build
+cd %svn_root%\fds\Build
+git clean -dxf
+
+echo Cleaning %svn_root%\fds\Utilities\uploads
+cd %svn_root%\fds\Utilities\uploads
+git clean -dxf
+
+echo Cleaning %svn_root%\smv\source
+cd %svn_root%\smv\source
+git clean -dxf
+
 echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
-echo Cleaning %svn_root%\smv\source
-cd %svn_root%\smv\source
+
+echo Cleaning %svn_root%\smv\uploads
+cd %svn_root%\smv\uploads
 git clean -dxf
 
 set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/

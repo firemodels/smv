@@ -1,7 +1,6 @@
 @echo off
 
 set curdir=%CD%
-set rungeomcases=1
 set runwuicases=1
 set runsmvcases=1
 
@@ -27,9 +26,6 @@ set RUNTFDS=call %SVNROOT%\fds\Utilities\Scripts\checkfds.bat
 if "%runsmvcases%" == "1" (
   call %SCRIPT_DIR%\SMV_Cases.bat
 )
-if "%rungeomcases%" == "1" (
-  call %SCRIPT_DIR%\GEOM_Cases.bat
-)
 if "%runwuicases%" == "1" (
   call %SCRIPT_DIR%\WUI_Cases.bat
 )
@@ -45,23 +41,15 @@ goto eof
    set stopscript=1
    exit /b
  )
- if /I "%1" EQU "-geom" (
-   set valid=1
-   set runwuicases=0
-   set runsmvcases=0
-   set rungeomcases=1
- )
  if /I "%1" EQU "-smvwui" (
    set valid=1
    set runwuicases=1
    set runsmvcases=1
-   set rungeomcases=0
  )
  if /I "%1" EQU "-wui" (
    set valid=1
    set runwuicases=1
    set runsmvcases=0
-   set rungeomcases=0
  )
  shift
  if %valid% == 0 (
@@ -80,7 +68,6 @@ exit /b
 echo Check_SMV_Cases [options]
 echo. 
 echo -help   - display this message
-echo -geom   - run only geom cases
 echo -smvwui - run only SMV and WUI cases
 echo -wui    - run only WUI cases
 exit /b
