@@ -480,6 +480,9 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   int i,j,rgb_local;
   int nscreen_cols;
   int irow;
+  int clip_left, clip_right, clip_bottom, clip_top;
+  int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
+  int width_hat, height_hat;
 
   nscreen_cols=nscreen_rows;
   if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
@@ -501,8 +504,31 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
   }
+
+  if(clip_rendered_scene==1){
+    clip_left = render_clip_left;
+    clip_right = screenWidth - render_clip_right;
+    clip_left_hat = nscreen_rows*clip_left;
+    clip_right_hat = nscreen_rows*clip_right - 1;
+
+    clip_bottom = render_clip_bottom;
+    clip_top = screenHeight - render_clip_top;
+    clip_bottom_hat = nscreen_rows*clip_bottom;
+    clip_top_hat = nscreen_rows*clip_top-1;
+
+    width_hat = clip_right_hat - clip_left_hat + 1;
+    height_hat = clip_top_hat - clip_bottom_hat + 1;
+  }
+  else{
+    width_hat = nscreen_cols*screenWidth;
+    height_hat = nscreen_rows*screenHeight;
+    clip_left_hat = 0;
+    clip_bottom_hat = 0;
+    clip_top_hat = nscreen_rows*screenHeight-1;
+  }
+
   PRINTF("Rendering to: %s .", renderfullfile);
-  RENDERimage = gdImageCreateTrueColor(nscreen_cols*screenWidth,nscreen_rows*screenHeight);
+  RENDERimage = gdImageCreateTrueColor(width_hat,height_hat);
 
   for(irow=0;irow<nscreen_rows;irow++){
     int icol;
@@ -511,11 +537,13 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
       GLubyte *p;
 
       p = *screenbuffers++;
-      for(i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
+      for(i = irow*screenHeight ; i<(irow+1)*screenHeight-1; i++){
         for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
           r=*p++; g=*p++; b=*p++;
-          rgb_local = (r<<16)|(g<<8)|b;
-          gdImageSetPixel(RENDERimage,j,i,rgb_local);
+          if(clip_rendered_scene==0||(clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
+            rgb_local = (r<<16)|(g<<8)|b;
+            gdImageSetPixel(RENDERimage,j-clip_left_hat,clip_top_hat - i,rgb_local);
+          }
         }
       }
     }
