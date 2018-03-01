@@ -471,20 +471,18 @@ GLubyte *GetScreenBuffer(void){
 
 /* ------------------ MergeRenderScreenBuffers ------------------------ */
 
-int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
+int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
   char renderfile[1024], renderfile_dir[1024], renderfullfile[1024];
   FILE *RENDERfile=NULL;
   gdImagePtr RENDERimage;
   unsigned int r, g, b;
   int i,j,rgb_local;
-  int nscreen_cols;
   int irow;
   int clip_left, clip_right, clip_bottom, clip_top;
   int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
   int width_hat, height_hat;
 
-  nscreen_cols=nscreen_rows;
   if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
@@ -507,40 +505,60 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
 
   if(clip_rendered_scene==1){
     clip_left = render_clip_left;
-    clip_right = screenWidth - render_clip_right;
-    clip_left_hat = nscreen_rows*clip_left;
-    clip_right_hat = nscreen_rows*clip_right - 1;
+    clip_right = screenWidth - render_clip_right-1;
+    clip_left_hat = nfactor*clip_left;
+    clip_right_hat = nfactor*(clip_right+1) - 1;
 
     clip_bottom = render_clip_bottom;
-    clip_top = screenHeight - render_clip_top;
-    clip_bottom_hat = nscreen_rows*clip_bottom;
-    clip_top_hat = nscreen_rows*clip_top-1;
+    clip_top = screenHeight - render_clip_top - 1;
+    clip_bottom_hat = nfactor*clip_bottom;
+    clip_top_hat = nfactor*(clip_top+1)-1;
 
     width_hat = clip_right_hat - clip_left_hat + 1;
     height_hat = clip_top_hat - clip_bottom_hat + 1;
   }
   else{
-    width_hat = nscreen_cols*screenWidth;
-    height_hat = nscreen_rows*screenHeight;
+    clip_left = 0;
+    clip_right = screenWidth - 1;
     clip_left_hat = 0;
+    clip_right_hat = nfactor*screenWidth - 1;
+
+    clip_bottom = 0;
+    clip_top = screenHeight - 1;
     clip_bottom_hat = 0;
-    clip_top_hat = nscreen_rows*screenHeight-1;
+    clip_top_hat = nfactor*screenHeight - 1;
+
+    width_hat = nfactor*screenWidth;
+    height_hat = nfactor*screenHeight;
   }
 
   PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(width_hat,height_hat);
 
-  for(irow=0;irow<nscreen_rows;irow++){
-    int icol;
+  for(irow=0;irow<nfactor;irow++){
+    int icol, imin, imax;
 
-    for(icol=0;icol<nscreen_cols;icol++){
+    imin = irow*screenHeight;
+    imax = (irow+1)*screenHeight;
+
+    for(icol=0;icol<nfactor;icol++){
       GLubyte *p;
+      int jmin, jmax;
+
+      jmin = icol*screenWidth;
+      jmax = (icol+1)*screenWidth;
 
       p = *screenbuffers++;
-      for(i = irow*screenHeight ; i<(irow+1)*screenHeight-1; i++){
-        for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
+      if(clip_rendered_scene==1&&
+            (jmax<clip_left_hat||jmin>clip_right_hat||imax<clip_bottom_hat||imin>clip_top_hat)){
+            continue;
+      }
+
+      for(i=imin; i<imax; i++){
+        for(j=jmin; j<jmax; j++){
           r=*p++; g=*p++; b=*p++;
-          if(clip_rendered_scene==0||(clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
+          if(clip_rendered_scene==0||
+            (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
             rgb_local = (r<<16)|(g<<8)|b;
             gdImageSetPixel(RENDERimage,j-clip_left_hat,clip_top_hat - i,rgb_local);
           }
