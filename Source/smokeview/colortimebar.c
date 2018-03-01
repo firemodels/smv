@@ -2165,7 +2165,8 @@ void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
 
   float hue, saturation, luminance;
   float r, g, b;
-  float temp_1, temp_2;
+//  float temp_1;
+//  float  temp_2;
   float temp_r, temp_g, temp_b;
 
   hue = ABS(hslvals[0]);
@@ -2186,12 +2187,12 @@ void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
     return;
   }
   if(luminance<0.5){
-    temp_1 = luminance*(1.0+saturation);
+//    temp_1 = luminance*(1.0+saturation);
   }
   else{
-    temp_1 = luminance+saturation-luminance*saturation;
+//    temp_1 = luminance+saturation-luminance*saturation;
   }
-  temp_2 = 2.0*luminance-temp_1;
+//  temp_2 = 2.0*luminance-temp_1;
 
   hue /= 360.0;
 
