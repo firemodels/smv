@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
 SVEXTERN int SVDECL(script_viewpoint_found, YES);
 SVEXTERN int SVDECL(render_firsttime, NO);

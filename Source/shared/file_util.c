@@ -213,6 +213,24 @@ void FullFile(char *file_out, char *dir, char *file){
   strcat(file_out,file2);
 }
 
+/* ------------------ StreamCopy ------------------------ */
+
+unsigned int StreamCopy(FILE *stream_in, FILE *stream_out){
+  int c;
+  unsigned int nchars = 0;
+
+  if(stream_in == NULL || stream_out == NULL)return 0;
+
+  rewind(stream_in);
+  c = fgetc(stream_in);
+  while(c != EOF){
+    fputc(c, stream_out);
+    c = fgetc(stream_in);
+    nchars++;
+  }
+  return nchars;
+}
+
 /* ------------------ FileCopy ------------------------ */
 
 void FileCopy(char *file_in, char *file_out){
