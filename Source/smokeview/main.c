@@ -718,6 +718,7 @@ int main(int argc, char **argv){
     smokeview_bindir= GetProgDir(progname,&smokeviewpath);
   }
   InitTextureDir();
+  InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
 #ifdef pp_ffmpeg
 #ifdef WIN32

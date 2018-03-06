@@ -2096,6 +2096,7 @@ void ScriptSetViewpoint(scriptdata *scripti){
   int count=0;
 
   viewpoint = scripti->cval;
+  script_viewpoint_found = YES;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
     if(strcmp(scripti->cval,ca->name)==0){
@@ -2104,7 +2105,10 @@ void ScriptSetViewpoint(scriptdata *scripti){
       break;
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: The viewpoint %s was not found\n",viewpoint);
+  if(count == 0){
+    fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
+    script_viewpoint_found = NO;
+  }
 }
 
 /* ------------------ RunScript ------------------------ */

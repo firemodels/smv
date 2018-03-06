@@ -1149,6 +1149,16 @@ void InitTextureDir(void){
   }
 }
 
+/* ------------------ InitScriptError ------------------------ */
+
+void InitScriptErrorFiles(void){
+  if(smokeview_bindir != NULL){
+    NewMemory((void **)&script_error1_filename, strlen(smokeview_bindir)+strlen("script_error1.png") + 1);
+    strcpy(script_error1_filename, smokeview_bindir);
+    strcat(script_error1_filename, "script_error1.png");
+  }
+}
+
 /* ------------------ InitVars ------------------------ */
 
 void InitVars(void){

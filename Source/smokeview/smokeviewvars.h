@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN char SVDECL(*script_error1_filename,NULL);
+SVEXTERN int SVDECL(script_viewpoint_found, YES);
 SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
