@@ -61,6 +61,9 @@ CALL :COPY  %smvscripts%\jp2conv.bat %smvdir%\jp2conv.bat
 echo copying .po files
 copy %forbundle%\*.po %smvdir%\.>Nul
 
+echo copying .png files
+copy %forbundle%\*.png %smvdir%\.>Nul
+
 CALL :COPY  %forbundle%\volrender.ssf %smvdir%\volrender.ssf
 
 CALL :COPY  %svzipbuild%\smokezip_win_%platform%.exe    %smvdir%\smokezip.exe

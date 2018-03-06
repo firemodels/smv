@@ -47,6 +47,9 @@ CALL :COPY %smvbuild%\smokeview\intel_win_%platform%\smokeview_win_test_%platfor
 
 CALL :COPY  %smvscripts%\jp2conv.bat %smvdir%\jp2conv.bat
 
+echo copying .png files
+copy %forbundle%\*.png %smvdir%\.>Nul
+
 echo copying .po files
 copy %forbundle%\*.po %smvdir%\.>Nul
 
