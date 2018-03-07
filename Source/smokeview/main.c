@@ -57,7 +57,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
     PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
-    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.bini"));
+    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.binfo"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
@@ -165,9 +165,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_release
     strcat(label, ", pp_release");
-#endif
-#ifdef pp_RENDER360
-    strcat(label, ", pp_RENDER360");
 #endif
 #ifdef pp_RENDER360_DEBUG
     strcat(label, ", pp_RENDER360_DEBUG");
@@ -317,7 +314,7 @@ void ParseCommandline(int argc, char **argv){
   }
 
   FREEMEMORY(log_filename);
-  NewMemory((void **)&log_filename, len_casename + 7 + 1);
+  NewMemory((void **)&log_filename, len_casename + strlen(".smvlog") + 1);
   STRCPY(log_filename, fdsprefix);
   STRCAT(log_filename, ".smvlog");
 
@@ -326,10 +323,10 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ini_ext);
 
-  FREEMEMORY(boundini_filename);
-  NewMemory((void **)&boundini_filename, len_casename + 5 + 1);
-  STRCPY(boundini_filename, fdsprefix);
-  STRCAT(boundini_filename, ".bini");
+  FREEMEMORY(boundinfo_filename);
+  NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
+  STRCPY(boundinfo_filename, fdsprefix);
+  STRCAT(boundinfo_filename, ".binfo");
 
   if(smv_filename == NULL){
     NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
@@ -371,17 +368,17 @@ void ParseCommandline(int argc, char **argv){
     fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, tempdir_flag);
   }
   if(stop_filename == NULL){
-    NewMemory((void **)&stop_filename, (unsigned int)(len_casename + 6));
+    NewMemory((void **)&stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
     STRCPY(stop_filename, fdsprefix);
     STRCAT(stop_filename, ".stop");
   }
   if(sliceinfo_filename == NULL){
-    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + 11 + 1);
+    NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + strlen(".sinfo") + 1);
     STRCPY(sliceinfo_filename, fdsprefix);
-    STRCAT(sliceinfo_filename, "_slice.info");
+    STRCAT(sliceinfo_filename, ".sinfo");
   }
   if(deviceinfo_filename==NULL){
-    NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+12+1);
+    NewMemory((void **)&deviceinfo_filename, strlen(fdsprefix)+strlen("_device.info")+1);
     STRCPY(deviceinfo_filename, fdsprefix);
     STRCAT(deviceinfo_filename, "_device.info");
   }
@@ -392,7 +389,7 @@ void ParseCommandline(int argc, char **argv){
   {
     FILE *stream_iso = NULL;
 
-    NewMemory((void **)&iso_filename, len_casename + 7 + 1);
+    NewMemory((void **)&iso_filename, len_casename + strlen(".isosmv") + 1);
     STRCPY(iso_filename, fdsprefix);
     STRCAT(iso_filename, ".isosmv");
     stream_iso = fopen(iso_filename, "r");
@@ -721,6 +718,7 @@ int main(int argc, char **argv){
     smokeview_bindir= GetProgDir(progname,&smokeviewpath);
   }
   InitTextureDir();
+  InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
 #ifdef pp_ffmpeg
 #ifdef WIN32

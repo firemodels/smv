@@ -14,7 +14,7 @@ RELEASE=
 if [ "$edition" == "test" ]; then
   TEST=test_
 else
-  RELEASE=smv_
+  RELEASE=
 fi
 
 platform="linux"
@@ -108,6 +108,7 @@ echo "---- copying files ----"
 echo ""
 CPDIR $FORBUNDLE/textures $PLATFORMDIR/bin/textures
 
+cp $FORBUNDLE/*.png $PLATFORMDIR/bin/.
 cp $FORBUNDLE/*.po $PLATFORMDIR/bin/.
 
 CP $FORBUNDLE objects.svo   $PLATFORMDIR/bin objects.svo

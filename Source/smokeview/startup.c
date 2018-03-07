@@ -196,8 +196,8 @@ void ReadBoundINI(void){
   FILE *stream = NULL;
   char *fullfilename = NULL;
 
-  if(boundini_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundini_filename, tempdir_flag);
+  if(boundinfo_filename == NULL)return;
+  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, tempdir_flag);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
   if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
@@ -234,7 +234,7 @@ void ReadBoundINI(void){
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
           patchi->filetype == filetype&&
-          IsFileNewer(boundini_filename, patchi->file) == 1){
+          IfFirstLineBlank(boundinfo_filename) == 1){
           bounddata *boundi;
 
           boundi = &patchi->bounds;
@@ -1146,6 +1146,16 @@ void InitTextureDir(void){
     NewMemory((void **)&texturedir,texture_len+2);
     strcpy(texturedir,smokeview_bindir);
     strcat(texturedir,"textures");
+  }
+}
+
+/* ------------------ InitScriptError ------------------------ */
+
+void InitScriptErrorFiles(void){
+  if(smokeview_bindir != NULL){
+    NewMemory((void **)&script_error1_filename, strlen(smokeview_bindir)+strlen("script_error1.png") + 1);
+    strcpy(script_error1_filename, smokeview_bindir);
+    strcat(script_error1_filename, "script_error1.png");
   }
 }
 

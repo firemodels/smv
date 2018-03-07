@@ -10,7 +10,6 @@ OPENMP_OPTS=
 FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
-RUN_GEOM=1
 RUN_WUI=1
 if [ "$JOBPREFIX" == "" ]; then
   export JOBPREFIX=SB_
@@ -50,7 +49,6 @@ echo ""
 echo "Options"
 echo "-c - cfast repo directory"
 echo "-d - use debug version of FDS"
-echo "-g - run only geometry cases"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
 echo "-J - use Intel MPI version of FDS"
@@ -93,7 +91,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dghI:Jm:No:p:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:Jm:No:p:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -102,11 +100,6 @@ case $OPTION in
   d)
    DEBUG=_db
    FDS_DEBUG=1
-   ;;
-  g)
-   RUN_SMV=0
-   RUN_GEOM=1
-   RUN_WUI=0
    ;;
   h)
    usage;
@@ -136,7 +129,6 @@ case $OPTION in
    ;;
   r)
    RUN_SMV=1
-   RUN_GEOM=0
    ;;
   s)
    stop_cases=true
@@ -150,12 +142,10 @@ case $OPTION in
    ;;
   W)
    RUN_SMV=0
-   RUN_GEOM=0
    RUN_WUI=1
    ;;
   Y)
    RUN_SMV=1
-   RUN_GEOM=0
    RUN_WUI=1
 esac
 #shift
@@ -179,7 +169,6 @@ else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
   export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
 fi
-export GEOM=$SVNROOT/smv/source/geomtest/${COMPILER}_$PLATFORM/geomtest
 export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
@@ -205,7 +194,6 @@ if [[ ! $stop_cases ]] ; then
   export QFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
   export RUNTFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
   scripts/SMV_Cases.sh
-  scripts/GEOM_Cases.sh
   scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
 fi
@@ -232,10 +220,6 @@ fi
 if [ "$RUN_SMV" == "1" ] ; then
   cd $SVNROOT/smv/Verification
   scripts/SMV_Cases.sh
-fi
-if [ "$RUN_GEOM" == "1" ] ; then
-  cd $SVNROOT/smv/Verification
-  scripts/GEOM_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
   cd $SVNROOT/smv/Verification

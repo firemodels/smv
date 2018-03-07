@@ -39,7 +39,7 @@ set windbuild=%svn_root%\smv\Build\wind2fds\%BUILDDIR%
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
 set gettime=%svn_root%\smv\Build\get_time\%BUILDDIR%
 
-set zipbase=smv_%version%_win%platform%
+set zipbase=%version%_win%platform%
 set smvdir=%zipbase%
 
 cd %svn_root%\smv\uploads
@@ -60,6 +60,9 @@ CALL :COPY  %smvscripts%\jp2conv.bat %smvdir%\jp2conv.bat
 
 echo copying .po files
 copy %forbundle%\*.po %smvdir%\.>Nul
+
+echo copying .png files
+copy %forbundle%\*.png %smvdir%\.>Nul
 
 CALL :COPY  %forbundle%\volrender.ssf %smvdir%\volrender.ssf
 

@@ -11,8 +11,6 @@
 #include GLUT_H
 #include "gd.h"
 
-#define RENDER_START 3
-
 /* ------------------ PlayMovie ------------------------ */
 
 void PlayMovie(void){
@@ -60,7 +58,7 @@ void MakeMovie(void){
 
 // wait to make movie until after images are rendered
 
-  if(rendering_status == RENDER_ON)return;
+  if(render_status == RENDER_ON)return;
 
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
@@ -75,7 +73,7 @@ void MakeMovie(void){
   strcat(frame0, "_0001");
   strcat(frame0, image_ext);
   if(runscript==0&& FILE_EXISTS(frame0)==NO){
-    RenderCB(RENDER_START);
+    RenderCB(RENDER_START_NORMAL);
     return;
   }
 
@@ -136,7 +134,7 @@ void MakeMovie(void){
 /* ------------------ Render ------------------------ */
 
 void Render(int view_mode){
-  if(rendering_status == RENDER_OFF)return;
+  if(render_status == RENDER_OFF)return;
   if(current_script_command!=NULL&&(current_script_command->command==SCRIPT_VOLSMOKERENDERALL||current_script_command->command==SCRIPT_ISORENDERALL)){
     int command;
 
@@ -156,7 +154,7 @@ void Render(int view_mode){
       }
     }
   }
-  if(render_times == RENDER_ALLTIMES && rendering_status == RENDER_ON&&render_mode == RENDER_XYSINGLE && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
+  if(render_times == RENDER_ALLTIMES && render_status == RENDER_ON&&render_mode == RENDER_NORMAL && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
     if(itimes>=0&&itimes<nglobal_times&&
      ((render_frame[itimes] == 0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
      ){
@@ -164,17 +162,15 @@ void Render(int view_mode){
       RenderFrame(view_mode);
     }
     else{
-      ASSERT(RenderSkip>0);
+      ASSERT(render_skip>0);
       RenderState(RENDER_OFF);
-      RenderSkip=1;
     }
   }
 
   if(render_times == RENDER_SINGLETIME){
     RenderFrame(view_mode);
-    if(render_mode == RENDER_XYSINGLE){
+    if(render_mode == RENDER_NORMAL){
       RenderState(RENDER_OFF);
-      RenderSkip=1;
       SNIFF_ERRORS("after render");
     }
   }
@@ -263,11 +259,11 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      if(skip_render_frames == 1){
+      if(skip_render_frames == 1||skip_render_frames==0){
         image_num = itimes;
       }
       else{
-        image_num = itimes / RenderSkip;
+        image_num = itimes / render_skip;
       }
     }
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
@@ -475,18 +471,18 @@ GLubyte *GetScreenBuffer(void){
 
 /* ------------------ MergeRenderScreenBuffers ------------------------ */
 
-int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
+int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
   char renderfile[1024], renderfile_dir[1024], renderfullfile[1024];
   FILE *RENDERfile=NULL;
-  GLubyte *p;
   gdImagePtr RENDERimage;
   unsigned int r, g, b;
   int i,j,rgb_local;
-  int nscreen_cols;
   int irow;
+  int clip_left, clip_right, clip_bottom, clip_top;
+  int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
+  int width_hat, height_hat;
 
-  nscreen_cols=nscreen_rows;
   if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
@@ -501,28 +497,78 @@ int MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers){
   }
   strcat(renderfullfile,renderfile);
 
+  if(script_viewpoint_found==NO&&current_script_command!=NULL){
+    FileCopy(script_error1_filename,renderfullfile);
+    return 0;
+  }
+
   RENDERfile = fopen(renderfullfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
   }
+
+  if(clip_rendered_scene==1){
+    clip_left = render_clip_left;
+    clip_right = screenWidth - render_clip_right-1;
+    clip_left_hat = nfactor*clip_left;
+    clip_right_hat = nfactor*(clip_right+1) - 1;
+
+    clip_bottom = render_clip_bottom;
+    clip_top = screenHeight - render_clip_top - 1;
+    clip_bottom_hat = nfactor*clip_bottom;
+    clip_top_hat = nfactor*(clip_top+1)-1;
+
+    width_hat = clip_right_hat - clip_left_hat + 1;
+    height_hat = clip_top_hat - clip_bottom_hat + 1;
+  }
+  else{
+    clip_left = 0;
+    clip_right = screenWidth - 1;
+    clip_left_hat = 0;
+    clip_right_hat = nfactor*screenWidth - 1;
+
+    clip_bottom = 0;
+    clip_top = screenHeight - 1;
+    clip_bottom_hat = 0;
+    clip_top_hat = nfactor*screenHeight - 1;
+
+    width_hat = nfactor*screenWidth;
+    height_hat = nfactor*screenHeight;
+  }
+
   PRINTF("Rendering to: %s .", renderfullfile);
-  RENDERimage = gdImageCreateTrueColor(nscreen_cols*screenWidth,nscreen_rows*screenHeight);
+  RENDERimage = gdImageCreateTrueColor(width_hat,height_hat);
 
-  p = *screenbuffers++;
-  for(irow=0;irow<nscreen_rows;irow++){
-    int icol;
+  for(irow=0;irow<nfactor;irow++){
+    int icol, imin, imax;
 
-    for(icol=0;icol<nscreen_cols;icol++){
-      for(i = (nscreen_rows-irow)*screenHeight-1 ; i>=(nscreen_rows-irow-1)*screenHeight; i--){
-        for(j=icol*screenWidth;j<(icol+1)*screenWidth;j++){
+    imin = irow*screenHeight;
+    imax = (irow+1)*screenHeight;
+
+    for(icol=0;icol<nfactor;icol++){
+      GLubyte *p;
+      int jmin, jmax;
+
+      jmin = icol*screenWidth;
+      jmax = (icol+1)*screenWidth;
+
+      p = *screenbuffers++;
+      if(clip_rendered_scene==1&&
+            (jmax<clip_left_hat||jmin>clip_right_hat||imax<clip_bottom_hat||imin>clip_top_hat)){
+            continue;
+      }
+
+      for(i=imin; i<imax; i++){
+        for(j=jmin; j<jmax; j++){
           r=*p++; g=*p++; b=*p++;
-          rgb_local = (r<<16)|(g<<8)|b;
-          gdImageSetPixel(RENDERimage,j,i,rgb_local);
-
+          if(clip_rendered_scene==0||
+            (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
+            rgb_local = (r<<16)|(g<<8)|b;
+            gdImageSetPixel(RENDERimage,j-clip_left_hat,clip_top_hat - i,rgb_local);
+          }
         }
       }
-      p=*screenbuffers++;
     }
   }
 

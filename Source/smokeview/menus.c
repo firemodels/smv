@@ -1551,7 +1551,9 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
-    rendering_status = onoff;
+    EnableDisableStartButtons(DISABLE);
+    render_status = onoff;
+    render_firsttime = YES;
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
@@ -1568,13 +1570,23 @@ void RenderState(int onoff){
     }
   }
   else{
-    if(rendering_status==RENDER_OFF)return;
-    rendering_status = onoff;
+    if(render_status==RENDER_OFF)return;
+    render_status = onoff;
+    render_firsttime = NO;
     Enable360Zoom();
-    render_mode = RENDER_XYSINGLE;
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
+    EnableDisableStartButtons(ENABLE);
   }
+}
+
+/* ------------------ SkipMenu ------------------------ */
+
+void SkipMenu(int value){
+  render_skip=value;
+  glutPostRedisplay();
+  updatemenu=1;
+  UpdateRenderListSkip();
 }
 
 /* ------------------ RenderMenu ------------------------ */
@@ -1584,14 +1596,15 @@ void RenderMenu(int value){
   int i,n;
   meshdata *meshi;
 
+  if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value>=11000)return;
   if(opengldefined==1){
     glutPostRedisplay();
   }
   if(value>=10000&&value<=10005){
-    nrender_rows=value-10000;
-    UpdateNRenderRows();
+    resolution_multiplier=value-10000;
+    UpdateResolutionMultiplier();
     return;
   }
   switch(value){
@@ -1634,12 +1647,69 @@ void RenderMenu(int value){
     Keyboard('R', FROM_SMOKEVIEW);
     break;
   case RENDER_CURRENT_MULTIPLE:
-    if(nrender_rows==1)RenderMenu(RENDER_CURRENT_SINGLE);
-    render_from_menu=1;
+    render_from_menu = 1;
+    if(resolution_multiplier==1){
+      RenderMenu(RENDER_CURRENT_SINGLE);
+      return;
+    }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);
+    break;
+  case Render360:
+    render_mode = 1-render_mode;
+    updatemenu = 1;
+    break;
+  case RenderStart360:
+    RenderCB(RENDER_START_360);
+    break;
+  case RenderStartORIGRES:
+    render_mode = RENDER_NORMAL;
+    resolution_multiplier=1;
+    RenderMenu(RenderStart);
+    break;
+  case RenderStartHIGHRES:
+    render_mode = RENDER_NORMAL;
+    resolution_multiplier=MAX(2,resolution_multiplier);
+    RenderMenu(RenderStart);
+    break;
+  case RenderStart:
+    if(RenderTime==0&&touring==0){
+      RenderMenu(RENDER_CURRENT_MULTIPLE);
+      return;
+    }
+    if(touring==1){
+      rendertourcount=0;
+    }
+    if(render_skip == RENDER_CURRENT_SINGLE){
+      UpdateFrameNumber(0);
+    }
+    else{
+      if(stept == 0)Keyboard('t', FROM_SMOKEVIEW);
+      ResetItimes0();
+      for(i=0;i<nsliceinfo;i++){
+        sd=sliceinfo+i;
+        sd->itime=0;
+      }
+      frame_index=first_frame_index;
+      for(i=0;i<nmeshes;i++){
+        meshi=meshinfo+i;
+        meshi->patch_itime=0;
+      }
+    }
+    RenderState(RENDER_ON);
+    UpdateTimeLabels();
+    FlowDir=1;
+    for(n=0;n<nglobal_times;n++){
+      render_frame[n]=0;
+    }
+    if(scriptoutstream!=NULL){
+      fprintf(scriptoutstream,"RENDERALL\n");
+      fprintf(scriptoutstream," %i\n",render_skip);
+      fprintf(scriptoutstream,"\n");
+    }
+    render_times = RENDER_ALLTIMES;
     break;
   case RenderLABELframenumber:
     render_label_type=RENDER_LABEL_FRAMENUM;
@@ -1658,39 +1728,10 @@ void RenderMenu(int value){
      updatemenu=1;
      break;
   default:
-    if(RenderTime==0&&touring==0)return;
-    if(touring==1){
-      rendertourcount=0;
-    }
-    if(stept==0){
-      Keyboard('t',FROM_SMOKEVIEW);
-    }
-    RenderState(RENDER_ON);
-    ResetItimes0();
-    for(i=0;i<nsliceinfo;i++){
-      sd=sliceinfo+i;
-      sd->itime=0;
-    }
-    frame_index=first_frame_index;
-    for(i=0;i<nmeshes;i++){
-      meshi=meshinfo+i;
-      meshi->patch_itime=0;
-    }
-    UpdateTimeLabels();
-    RenderSkip=value;
-    FlowDir=1;
-    for(n=0;n<nglobal_times;n++){
-      render_frame[n]=0;
-    }
-    if(scriptoutstream!=NULL){
-      fprintf(scriptoutstream,"RENDERALL\n");
-      fprintf(scriptoutstream," %i\n",RenderSkip);
-      fprintf(scriptoutstream,"\n");
-    }
-    render_times = RENDER_ALLTIMES;
-    break;
+     ASSERT(FFALSE);
+     break;
   }
-  UpdateNRenderRows();
+  UpdateResolutionMultiplier();
 }
 
 /* ------------------ EvacShowMenu ------------------------ */
@@ -1752,7 +1793,6 @@ void EvacShowMenu(int value){
   updatemenu=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   glutPostRedisplay();
-
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */
@@ -5291,7 +5331,8 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int startrenderingmenu=0;
+static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
+static int render_startmenu = 0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
@@ -7921,65 +7962,54 @@ updatemenu=0;
     }
     strcat(renderwindow3,rendertemp);
 
-    CREATEMENU(startrenderingmenu,RenderMenu);
-    glutAddMenuEntry(_("  One frame (single part)"),RENDER_CURRENT_SINGLE);
-    if(render_current==1){
-      char menulabel[1024];
+    CREATEMENU(render_skipmenu,SkipMenu);
+    {
+      char *skips[]={"Current","All","2nd","3rd","4th","5th","10th","20th"};
+      int iskips[] = {RENDER_CURRENT_SINGLE,1,2,3,4,5,10,20};
 
-      sprintf(menulabel,"  One frame (%i x %i parts)",nrender_rows,nrender_rows);
-      glutAddMenuEntry(menulabel,RENDER_CURRENT_MULTIPLE);
-    }
-    if(RenderTime==1||touring==1){
-      glutAddMenuEntry(_("  All frames"),1);
-      glutAddMenuEntry(_("  Every 2nd frame"),2);
-      glutAddMenuEntry(_("  Every 3rd frame"),3);
-      glutAddMenuEntry(_("  Every 4th frame"),4);
-      glutAddMenuEntry(_("  Every 5th frame"),5);
-      glutAddMenuEntry(_("  Every 10th frame"),10);
-      glutAddMenuEntry(_("  Every 20th frame"),20);
-      glutAddMenuEntry(_("  Cancel"),RenderCancel);
+      for(i = 0;i<7;i++){
+        char skiplabel[128];
+
+        strcpy(skiplabel, "  ");
+        if(render_skip==iskips[i])strcat(skiplabel, "*");
+        if(i<=1){
+          strcat(skiplabel, skips[i]);
+        }
+        else{
+          strcat(skiplabel, "Every ");
+          strcat(skiplabel, skips[i]);
+        }
+        glutAddMenuEntry(skiplabel, iskips[i]);
+      }
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    if(nrender_rows==2){
-      glutAddMenuEntry("  *2",HIDEALL_ISO);
-    }
-    else{
-      glutAddMenuEntry("  2",HIDEALL_ISO);
-    }
-    if(nrender_rows==3){
-      glutAddMenuEntry("  *3",10003);
-    }
-    else{
-      glutAddMenuEntry("  3",10003);
-    }
-    if(nrender_rows==4){
-      glutAddMenuEntry("  *4",10004);
-    }
-    else{
-      glutAddMenuEntry("  4",10004);
-    }
-    if(nrender_rows==5){
-      glutAddMenuEntry("  *5",10005);
-    }
-    else{
-      glutAddMenuEntry("  5",10005);
-    }
-    if(nrender_rows==6)glutAddMenuEntry("  *6",10005);
-    if(nrender_rows==7)glutAddMenuEntry("  *7",10005);
-    if(nrender_rows==8)glutAddMenuEntry("  *8",10005);
-    if(nrender_rows==9)glutAddMenuEntry("  *9",10005);
-    if(nrender_rows==10)glutAddMenuEntry("  *10",10005);
+    for(i = 2;i<=10;i++){
+      char render_label[256];
+      int render_index;
 
-    CREATEMENU(rendermenu,RenderMenu);
-    glutAddMenuEntry(_("Resolution:"),11000);
-    glutAddMenuEntry(renderwindow,Render320);
-    glutAddMenuEntry(renderwindow2,Render640);
-    glutAddMenuEntry(renderwindow3,RenderWindow);
+      render_index = 10000+MIN(5, i);
+      if(resolution_multiplier==i){
+        sprintf(render_label, "  *%ix", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+      else if(i<=5){
+        sprintf(render_label, "  %ix", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+    }
 
-    if(render_current==1)glutAddSubMenu(_("Resolution multiplier"),resolutionmultipliermenu);
+    CREATEMENU(render_filesuffixmenu, RenderMenu);
+    if(render_label_type==RENDER_LABEL_FRAMENUM){
+      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  Time"),RenderLABELtime);
+    }
+    if(render_label_type==RENDER_LABEL_TIME){
+      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
+    }
 
-    glutAddMenuEntry(_("Type:"),11000);
+    CREATEMENU(render_filetypemenu, RenderMenu);
     if(render_filetype==PNG){
       glutAddMenuEntry("  *PNG",RenderPNG);
       glutAddMenuEntry("  JPEG",RenderJPEG);
@@ -7993,17 +8023,72 @@ updatemenu=0;
       glutAddMenuEntry("  JPEG",RenderJPEG);
     }
 
-    glutAddMenuEntry(_("File suffix:"),11000);
-    if(render_label_type==RENDER_LABEL_FRAMENUM){
-      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  Time"),RenderLABELtime);
-    }
-    if(render_label_type==RENDER_LABEL_TIME){
-      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
+    CREATEMENU(render_startmenu,RenderMenu);
+    {
+      char sizeORIGRES[128], sizeHIGHRES[128];
+      int width, height, factor;
+
+      if(render_current==1){
+        width = screenWidth;
+        height = screenHeight;
+      }
+      else{
+        width = renderW;
+        height = renderH;
+      }
+
+      factor = MAX(2, resolution_multiplier);
+      sprintf(sizeORIGRES, "%ix%i", width, height);
+      sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);
+      glutAddMenuEntry(sizeORIGRES, RenderStartORIGRES);
+      glutAddMenuEntry(sizeHIGHRES, RenderStartHIGHRES);
+      {
+        char rend_label[100];
+#ifdef pp_DEG
+        unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+        unsigned char deg360[] = {'3','6','0',0};
+#endif
+
+        sprintf(rend_label,"%s - %ix%i",deg360,nwidth360, nheight360);
+        glutAddMenuEntry(rend_label, RenderStart360);
+      }
     }
 
-    glutAddSubMenu(_("Start rendering:"),startrenderingmenu);
+    CREATEMENU(render_resolutionmenu, RenderMenu);
+    glutAddMenuEntry(renderwindow, Render320);
+    glutAddMenuEntry(renderwindow2, Render640);
+    glutAddMenuEntry(renderwindow3, RenderWindow);
+
+    CREATEMENU(rendermenu,RenderMenu);
+    glutAddSubMenu(_("Start rendering"), render_startmenu);
+    glutAddMenuEntry(_("Stop rendering"), RenderCancel);
+
+    glutAddMenuEntry("-", MENU_DUMMY);
+
+    {
+    char skip_label[128];
+
+    if(render_skip==1){
+      strcpy(skip_label,"Frames/all");
+    }
+    else if(render_skip==RENDER_CURRENT_SINGLE){
+      sprintf(skip_label, "Frames/Current");
+    }
+    else{
+      sprintf(skip_label, "Frames/%i", render_skip);
+    }
+    glutAddSubMenu(skip_label, render_skipmenu);
+}
+    glutAddSubMenu(_("Image size"),  render_resolutionmenu);
+    if(render_current==1){
+      char res_menu[128];
+
+      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
+      glutAddSubMenu(res_menu, resolutionmultipliermenu);
+    }
+    glutAddSubMenu(_("Image type"),        render_filetypemenu);
+    glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }
@@ -8334,8 +8419,21 @@ updatemenu=0;
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
-  glutAddMenuEntry(_("  r: render the current scene to an image file"), MENU_DUMMY);
-  glutAddMenuEntry(_("  R:   (same as r but at twice the resolution)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  r/R/ALT R: render the current scene to an image file"), MENU_DUMMY);
+  glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
+  {
+    char render_label[1024];
+#ifdef pp_DEG
+    unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+    unsigned char deg360[] = {'3','6','0',0};
+#endif
+
+    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2,resolution_multiplier));
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+    sprintf(render_label, "    ALT R: %s view - all view directions are shown in a 1024x512 image", deg360);
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+  }
   if(ntotal_blockages>0||isZoneFireModel==1){
     glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
   }

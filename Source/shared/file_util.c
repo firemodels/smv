@@ -213,7 +213,49 @@ void FullFile(char *file_out, char *dir, char *file){
   strcat(file_out,file2);
 }
 
-/* ------------------ FileCat ------------------------ */
+/* ------------------ StreamCopy ------------------------ */
+
+unsigned int StreamCopy(FILE *stream_in, FILE *stream_out){
+  int c;
+  unsigned int nchars = 0;
+
+  if(stream_in == NULL || stream_out == NULL)return 0;
+
+  rewind(stream_in);
+  c = fgetc(stream_in);
+  while(c != EOF){
+    fputc(c, stream_out);
+    c = fgetc(stream_in);
+    nchars++;
+  }
+  return nchars;
+}
+
+/* ------------------ FileCopy ------------------------ */
+
+void FileCopy(char *file_in, char *file_out){
+  FILE *stream_in, *stream_out;
+  int c;
+
+  if(file_in == NULL || file_out == NULL)return;
+  stream_in = fopen(file_in, "rb");
+  if(stream_in == NULL)return;
+  stream_out = fopen(file_out, "wb");
+  if(stream_out == NULL){
+    fclose(stream_in);
+    return;
+  }
+
+  c = fgetc(stream_in);
+  while(c != EOF){
+    fputc(c, stream_out);
+    c = fgetc(stream_in);
+  }
+  fclose(stream_in);
+  fclose(stream_out);
+}
+
+  /* ------------------ FileCat ------------------------ */
 
 int FileCat(char *file_in1, char *file_in2, char *file_out){
   char buffer[FILE_BUFFER];
@@ -321,6 +363,33 @@ int Writable(char *dir){
     }
   }
 #endif
+}
+
+/* ------------------ IfFirstLineBlank ------------------------ */
+
+int IfFirstLineBlank(char *file){
+
+  // returns 1 if first line of file is blank
+
+  STRUCTSTAT statbuff1;
+  int statfile1;
+  FILE *stream = NULL;
+  char buffer[255], *buffptr;
+
+  if(file==NULL)return 1;
+
+  statfile1 = STAT(file, &statbuff1);
+  if(statfile1!=0)return 1;
+
+  stream = fopen(file, "r");
+  if(stream==NULL||fgets(buffer, 255, stream)==NULL){
+    if(stream!=NULL)fclose(stream);
+    return 1;
+  }
+  fclose(stream);
+  buffptr = TrimFrontBack(buffer);
+  if(strlen(buffptr)==0)return 1;
+  return 0;
 }
 
 /* ------------------ IsFileNewer ------------------------ */
@@ -570,10 +639,7 @@ int FileExists(char *filename){
   if(filename == NULL)return NO;
 #ifdef pp_FILELIST
   if(filelist != NULL&&nfilelist>0){
-    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) == NULL){
-      return NO;
-    }
-    else{
+    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) != NULL){
       return YES;
     }
   }

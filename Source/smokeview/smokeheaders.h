@@ -5,6 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void InitScriptErrorFiles(void);
+EXTERNCPP void UpdateRenderListSkip(void);
+EXTERNCPP void UpdateFrameNumber(int changetime);
+EXTERNCPP void EnableDisableStartButtons(int val);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void LoadIncrementalCB(int var);
 EXTERNCPP void LoadIncrementalCB1(int var);
@@ -239,7 +243,7 @@ EXTERNCPP void LabelDelete(labeldata *label);
 EXTERNCPP void LabelPrint(void);
 EXTERNCPP labeldata *LabelInsert(labeldata *labeltemp);
 
-EXTERNCPP void UpdateNRenderRows(void);
+EXTERNCPP void UpdateResolutionMultiplier(void);
 EXTERNCPP void RotateU2V(float *u, float *v, float *axis, float *angle);
 EXTERNCPP void RotationTypeCB(int var);
 EXTERNCPP void UpdateRotationType(int val);

@@ -24,7 +24,6 @@ fi
 cd $SVNROOT/Verification
 if [[ "$MODE" == "smokebot" ]]; then
   scripts/SMV_Cases.sh >> $tmpout
-  scripts/GEOM_Cases.sh >> $tmpout
   scripts/WUI_Cases.sh >> $tmpout
 else
   ./FDS_Cases.sh >> $tmpout

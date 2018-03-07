@@ -62,12 +62,14 @@ if "%platform%" == "linux" (
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/smv_%version%_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
     pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/
+
+_linux64.sha1 ..\uploads\.
   )
   goto eof
 )
@@ -85,8 +87,8 @@ if "%platform%" == "osx" (
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sh   ..\uploads\.
-    pscp %osx_logon%:%bundledir%/smv_%version%_osx64.sha1 ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\uploads\.
   )
   if "%buildtype%" == "test" (
     pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\uploads\.

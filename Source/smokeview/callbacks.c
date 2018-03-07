@@ -537,7 +537,7 @@ void CheckTimeBound(void){
   if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
     izone=0;
     itimes=first_frame_index;
-    if(rendering_status==RENDER_ON){
+    if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
       // following exits render command, do this a better way
       if(current_script_command!=NULL)current_script_command->exit=1;
@@ -1935,25 +1935,28 @@ void Keyboard(unsigned char key, int flag){
       {
         int rflag=0;
 
-        if(keystate==GLUT_ACTIVE_ALT){
+        if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode=1-research_mode;
           UpdateResearchMode();
           return;
         }
 
-        if(render_360 == 1)render_mode = RENDER_360;
-        if(render_mode!=RENDER_360){
-          if(strncmp((const char *)&key2, "r", 1) == 0){
-            render_mode = RENDER_XYSINGLE;
-          }
-          else{
-            render_mode = RENDER_XYMULTI;
-          }
+        if(strncmp((const char *)&key2, "R", 1&&keystate!=GLUT_ACTIVE_ALT)==0){
+          resolution_multiplier = MAX(2, resolution_multiplier);
+        }
+        else{
+          resolution_multiplier = 1;
+        }
+
+        if(keystate == GLUT_ACTIVE_ALT){
+          render_mode = RENDER_360;
+        }
+        else{
+          render_mode = RENDER_NORMAL;
         }
         render_times = RENDER_SINGLETIME;
 
-        if(strncmp((const char *)&key2,"R",1)==0|| render_mode == RENDER_360){
-          if(nrender_rows==1)nrender_rows=2;
+        if(strncmp((const char *)&key2, "R", 1)==0||render_mode==RENDER_360){
           rflag=1;
         }
         else{
@@ -2100,7 +2103,15 @@ void Keyboard(unsigned char key, int flag){
             stept=0;
           }
         }
-        if(stept==0)itime_save = -1;
+        if(stept == 1){
+          if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
+        }
+        else{
+          itime_save = -1;
+          render_skip = RENDER_CURRENT_SINGLE;
+        }
+        updatemenu = 1;
+        UpdateRenderListSkip();
       }
       break;
     case 'T':
@@ -2737,7 +2748,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
   float totalcpu;
   float elapsed_time;
 
-  if(showtime==1&&((stept==1&&(float)thisinterval>frameinterval)||rendering_status==RENDER_ON||timebar_drag==1)){       /* ready for a new frame */
+  if(showtime==1&&((stept==1&&(float)thisinterval>frameinterval)||render_status==RENDER_ON||timebar_drag==1)){       /* ready for a new frame */
     cputimes[cpuframe]=thistime/1000.;
 
     oldcpuframe=cpuframe-10;
@@ -2757,7 +2768,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
     lasttime = thistime;
     if(nglobal_times>0){
       *changetime=1;
-      if(stept ==1 && plotstate == DYNAMIC_PLOTS && timebar_drag==0 && rendering_status==RENDER_OFF){
+      if(stept ==1 && plotstate == DYNAMIC_PLOTS && timebar_drag==0 && render_status==RENDER_OFF){
         /*  skip frames here if displaying in real time and frame rate is too slow*/
         if(global_times!=NULL&&realtime_flag!=0&&FlowDir>0){
           elapsed_time = (float)thistime/1000.0 - reset_time;
@@ -2780,8 +2791,14 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
           }
         }
       }
-      if(stept==1&&timebar_drag==0&&rendering_status==RENDER_ON){
-        itimes+=RenderSkip*FlowDir;
+      if(stept==1&&timebar_drag==0&&render_status==RENDER_ON){
+        if(render_firsttime==YES){
+          render_firsttime = NO;
+          itimes = first_frame_index;
+        }
+        else{
+          itimes += render_skip*FlowDir;
+        }
       }
 
 // if toggling time display with H then show the frame that was visible
@@ -2948,7 +2965,7 @@ int DoStereo(void){
     ClearBuffers(DRAWSCENE);
 
     nscreens = 1;
-    if(render_mode == RENDER_360&&rendering_status==RENDER_ON){
+    if(render_mode == RENDER_360&&render_status==RENDER_ON){
       nscreens = nscreeninfo;
       if(screeninfo == NULL || update_screeninfo == 1)SetupScreeninfo();
     }
@@ -2957,7 +2974,7 @@ int DoStereo(void){
       screendata *screeni;
 
       screeni = NULL;
-      if(render_mode == RENDER_360 && rendering_status == RENDER_ON)screeni = screeninfo + i;
+      if(render_mode == RENDER_360 && render_status == RENDER_ON)screeni = screeninfo + i;
       if(stereotype_frame==LEFT_EYE||stereotype_frame==BOTH_EYES){
         int screenWidth_save;
 
@@ -2977,10 +2994,10 @@ int DoStereo(void){
         screenWidth=screenWidth_save;
         screenWidth = MAX(screenWidth, 1);
       }
-      if(render_mode == RENDER_360 && rendering_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
+      if(render_mode == RENDER_360 && render_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
       if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
     }
-    if(rendering_status == RENDER_ON){
+    if(render_status == RENDER_ON){
       if(render_mode == RENDER_360){
         MergeRenderScreenBuffers360();
         for(i = 0; i < nscreeninfo; i++){
@@ -3161,7 +3178,7 @@ void DoScript(void){
         current_script_command->exit=0;
       }
     }
-    if(rendering_status==RENDER_OFF){  // don't advance command if Smokeview is executing a RENDERALL command
+    if(render_status==RENDER_OFF){  // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
       script_render_flag= RunScript();
       if(runscript==2&&noexit==0&&current_script_command==NULL){
@@ -3220,10 +3237,9 @@ void DisplayCB(void){
     dostereo=DoStereo();
   }
   if(dostereo==0){
-    if(render_mode == RENDER_XYSINGLE||rendering_status==RENDER_OFF){
+    if(render_status==RENDER_OFF){
       glDrawBuffer(GL_BACK);
       ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
-      if(render_mode != RENDER_360)Render(VIEW_CENTER);
       if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
     }
     else{
@@ -3238,29 +3254,27 @@ void DisplayCB(void){
           stop_rendering = 0;
         }
       }
-      if(rendering_status == RENDER_ON&&render_mode==RENDER_XYMULTI){
-        int nrender_cols;
+      if(render_mode==RENDER_NORMAL){
         int i,ibuffer=0;
         GLubyte **screenbuffers;
 
-        NewMemory((void **)&screenbuffers,nrender_rows*nrender_rows*sizeof(GLubyte *));
+        NewMemory((void **)&screenbuffers,resolution_multiplier*resolution_multiplier*sizeof(GLubyte *));
 
         glDrawBuffer(GL_BACK);
 
-        nrender_cols=nrender_rows;
-        for(i=0;i<nrender_rows;i++){
+        for(i=0;i<resolution_multiplier;i++){
           int j;
 
-          for(j=0;j<nrender_cols;j++){
+          for(j=0;j<resolution_multiplier;j++){
             ShowScene(DRAWSCENE,VIEW_CENTER,1,j*screenWidth,i*screenHeight,NULL);
             screenbuffers[ibuffer++]=GetScreenBuffer();
             if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
           }
         }
 
-        MergeRenderScreenBuffers(nrender_rows,screenbuffers);
+        MergeRenderScreenBuffers(resolution_multiplier,screenbuffers);
 
-        for(i=0;i<nrender_rows*nrender_cols;i++){
+        for(i=0;i<resolution_multiplier*resolution_multiplier;i++){
           FREEMEMORY(screenbuffers[i]);
         }
         FREEMEMORY(screenbuffers);
@@ -3290,9 +3304,8 @@ void DisplayCB(void){
         }
       }
       if(stop_rendering==1){
-        ASSERT(RenderSkip>0);
+        ASSERT(render_skip>0);
         RenderState(RENDER_OFF);
-        RenderSkip=1;
       }
     }
   }
@@ -3303,7 +3316,7 @@ void DisplayCB(void){
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
-  if(render_mode != RENDER_XYSINGLE)return;
+  if(render_mode == RENDER_360&&render_status==RENDER_ON)return;
   glutSetWindow(mainwindow_id);
   wscaled = (float)width/(float)max_screenWidth;
   hscaled = (float)height/(float)max_screenHeight;

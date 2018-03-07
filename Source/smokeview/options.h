@@ -37,7 +37,6 @@
 
 //#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_READBUFFER   // read .smv file from a memory buffer
-#define pp_RENDER360    // render 360 images
 #define pp_SLICELOAD     // use slice file parameters found in .smv file to construct menus
 
 #define pp_THREAD       // turn on multi-threading

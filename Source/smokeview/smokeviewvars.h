@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN FILE SVDECL(*stderr2,NULL);
+SVEXTERN char SVDECL(*script_error1_filename,NULL);
+SVEXTERN int SVDECL(script_viewpoint_found, YES);
+SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
@@ -125,9 +129,8 @@ SVEXTERN float SVDECL(load_3dsmoke_cutoff, 0.0), SVDECL(load_hrrpuv_cutoff,200.0
 SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
 SVEXTERN int SVDECL(render_from_menu, 0);
-SVEXTERN int SVDECL(render_360, 0);
-SVEXTERN int SVDECL(rendering_status, 0);
-SVEXTERN int SVDECL(nrender_rows, 2);
+SVEXTERN int SVDECL(render_status, 0);
+SVEXTERN int SVDECL(resolution_multiplier, 1);
 SVEXTERN char render_file_base[1024];
 SVEXTERN int SVDECL(script_render_width, 320), SVDECL(script_render_height, 240);
 SVEXTERN int SVDECL(render_clip_left, 0);
@@ -135,7 +138,6 @@ SVEXTERN int SVDECL(render_clip_right, 0);
 SVEXTERN int SVDECL(render_clip_bottom, 0);
 SVEXTERN int SVDECL(render_clip_top, 0);
 SVEXTERN int render_size_index;
-SVEXTERN int render_skip_index;
 SVEXTERN int SVDECL(renderW, 640), SVDECL(renderH, 480), render_window_size;
 SVEXTERN int render_filetype;
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
@@ -794,7 +796,7 @@ SVEXTERN int slicefilenumber;
 SVEXTERN int exportdata;
 SVEXTERN int SVDECL(frame_count,1), SVDECL(last_frame_count,1);
 SVEXTERN int nspr;
-SVEXTERN int SVDECL(RenderSkip,1);
+SVEXTERN int SVDECL(render_skip,RENDER_CURRENT_SINGLE);
 SVEXTERN int SVDECL(isoframestep_global,1),SVDECL(isoframeskip_global,0);
 SVEXTERN int smoke3dframestep;
 SVEXTERN int smoke3dframeskip;
@@ -1247,7 +1249,7 @@ SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVD
 SVEXTERN hrrdata SVDECL(*hrrinfo,NULL);
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
-SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundini_filename,NULL);
+SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN char SVDECL(*smokeviewini,NULL);
 SVEXTERN int overwrite_all,erase_all;
