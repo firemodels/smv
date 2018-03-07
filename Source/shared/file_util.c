@@ -213,7 +213,49 @@ void FullFile(char *file_out, char *dir, char *file){
   strcat(file_out,file2);
 }
 
-/* ------------------ FileCat ------------------------ */
+/* ------------------ StreamCopy ------------------------ */
+
+unsigned int StreamCopy(FILE *stream_in, FILE *stream_out){
+  int c;
+  unsigned int nchars = 0;
+
+  if(stream_in == NULL || stream_out == NULL)return 0;
+
+  rewind(stream_in);
+  c = fgetc(stream_in);
+  while(c != EOF){
+    fputc(c, stream_out);
+    c = fgetc(stream_in);
+    nchars++;
+  }
+  return nchars;
+}
+
+/* ------------------ FileCopy ------------------------ */
+
+void FileCopy(char *file_in, char *file_out){
+  FILE *stream_in, *stream_out;
+  int c;
+
+  if(file_in == NULL || file_out == NULL)return;
+  stream_in = fopen(file_in, "rb");
+  if(stream_in == NULL)return;
+  stream_out = fopen(file_out, "wb");
+  if(stream_out == NULL){
+    fclose(stream_in);
+    return;
+  }
+
+  c = fgetc(stream_in);
+  while(c != EOF){
+    fputc(c, stream_out);
+    c = fgetc(stream_in);
+  }
+  fclose(stream_in);
+  fclose(stream_out);
+}
+
+  /* ------------------ FileCat ------------------------ */
 
 int FileCat(char *file_in1, char *file_in2, char *file_out){
   char buffer[FILE_BUFFER];

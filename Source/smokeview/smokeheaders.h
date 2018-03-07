@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void EnableDisableStartButtons(int val);
