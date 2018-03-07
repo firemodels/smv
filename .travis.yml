@@ -2,7 +2,7 @@ script:
   - sudo ln -fs /usr/bin/gfortran-5 /usr/bin/gfortran && gfortran --version
   - sudo ln -fs /usr/bin/gcc-5 /usr/bin/gcc && gcc --version
   - sudo ln -fs /usr/bin/g++-5 /usr/bin/g++ && g++ --version
-  - cd Build/smokeview/gnu_linux_64 && ./make_smv_lua.sh
+  - cd Build/smokeview/gnu_linux_64 && ./make_smokeview_lua.sh
 addons:
   apt:
     sources:
