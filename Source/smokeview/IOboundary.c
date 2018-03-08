@@ -4309,6 +4309,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
 
   if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
   if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
+  if(strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;
@@ -4326,7 +4327,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
 
     if(patchj==patchi||patchj->skip==1)continue;
     if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
-    if(patchi->dir != patchj->dir||patchj->dir==0)continue;
+    if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
     grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);
