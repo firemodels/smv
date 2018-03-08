@@ -224,7 +224,7 @@ unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag){
   rewind(stream_in);
   c = fgetc(stream_in);
   while(c != EOF){
-    if(flag = 0)return 1;
+    if(flag == 0)return 1;
     fputc(c, stream_out);
     c = fgetc(stream_in);
     nchars++;

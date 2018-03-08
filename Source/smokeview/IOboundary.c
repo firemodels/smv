@@ -4259,6 +4259,10 @@ void UpdateBoundaryMenuLabels(void){
             STRCAT(patchi->menulabel, ", EXIM faces");
             STRCAT(patchi->menulabel_base, ", EXIM faces");
           }
+          if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+            STRCAT(patchi->menulabel, ", Cut cell faces");
+            STRCAT(patchi->menulabel_base, ", Cut cell faces");
+          }
         }
       }
       if(FILE_EXISTS(patchi->comp_file)==YES){

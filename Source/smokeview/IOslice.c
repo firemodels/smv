@@ -2151,6 +2151,13 @@ void GetGSliceParams(void){
         sprintf(patchi->gslicedir, "Z=%f", position);
       }
       TrimZeros(patchi->gslicedir);
+      if(patchi->geom_fdsfiletype != NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM") == 0){
+        char geomlabel[256];
+
+        strcpy(geomlabel, " - ");
+        strcat(geomlabel, patchi->gslicedir);
+        AppendLabels(&(patchi->label),geomlabel);
+      }
     }
   }
 }

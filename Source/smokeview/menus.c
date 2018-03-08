@@ -5576,13 +5576,11 @@ updatemenu=0;
         i = patchorderindex[ii];
         patchi = patchinfo+i;
         if(patchi->loaded==0)continue;
+        STRCPY(menulabel, "");
         if(patchi->display==1&&patchi->type==iboundarytype){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,patchi->menulabel);
+          STRCAT(menulabel,"*");
         }
-        else{
-          STRCPY(menulabel,patchi->menulabel);
-        }
+        STRCAT(menulabel,patchi->menulabel);
         glutAddMenuEntry(menulabel,1000+i);
       }
     }
@@ -9691,13 +9689,9 @@ updatemenu=0;
           }
         }
 
-        if(patchi->loaded==1){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,patchi->menulabel);
-        }
-        else{
-          STRCPY(menulabel,patchi->menulabel);
-        }
+        STRCPY(menulabel, "");
+        if(patchi->loaded==1)STRCAT(menulabel,"*");
+        STRCAT(menulabel,patchi->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
 
@@ -9752,29 +9746,22 @@ updatemenu=0;
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
       }
 
-      {
-        int useitem;
-        patchdata *patchi, *patchj;
+      if(nmeshes>1){
+        char menulabel[1024];
 
-        if(nmeshes>1){
-          char menulabel[1024];
+        for(ii=0;ii<npatchinfo;ii++){
+          int im1;
+          patchdata *patchi, *patchim1;
 
-          for(i=0;i<npatchinfo;i++){
-            int j;
-
-            useitem=i;
-            patchi = patchinfo + i;
-            for(j=0;j<i;j++){
-              patchj = patchinfo + j;
-              if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0){
-                useitem=-1;
-                break;
-              }
-            }
-            if(useitem!=-1){
-              strcpy(menulabel,patchi->label.longlabel);
-              glutAddMenuEntry(menulabel,-useitem-10);
-            }
+          i = patchorderindex[ii];
+          if(ii>0){
+            im1 = patchorderindex[ii-1];
+            patchim1=patchinfo + im1;
+          }
+          patchi = patchinfo + i;
+          if(ii==0||strcmp(patchi->label.longlabel,patchim1->label.longlabel)!=0){
+            strcpy(menulabel,patchi->label.longlabel);
+            glutAddMenuEntry(menulabel,-i-10);
           }
         }
       }

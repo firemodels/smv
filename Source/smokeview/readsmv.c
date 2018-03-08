@@ -8463,7 +8463,18 @@ typedef struct {
           if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
         else if(patchi->filetype==PATCH_GEOMETRY){
-          if(ReadLabels(&patchi->label,stream,"(geometry)")==2)return 2;
+          char geomlabel[256];
+
+          strcpy(geomlabel, "(geometry)");
+          if(patchi->geom_fdsfiletype != NULL){
+            if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES") == 0){
+              strcat(geomlabel, " - EXIM faces");
+            }
+            if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+              strcat(geomlabel, " - Cut cell faces");
+            }
+          }
+          if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
