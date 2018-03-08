@@ -155,7 +155,7 @@ EXTERNCPP char *GetSmokeZipPath(char *progdir);
 EXTERNCPP int IfFirstLineBlank(char *file);
 EXTERNCPP int HaveProg(char *prog);
 EXTERNCPP int FileCat(char *file_in1, char *file_in2, char *file_out);
-EXTERNCPP unsigned int StreamCopy(FILE *stream_in, FILE *stream_out);
+EXTERNCPP unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag);
 EXTERNCPP void FileCopy(char *file_in, char *file_out);
 EXTERNCPP void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext);
 EXTERNCPP void FullFile(char *fileout, char *dir, char *file);
