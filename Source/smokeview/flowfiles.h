@@ -1137,6 +1137,9 @@ typedef struct _slicedata {
   char *comp_file, *reg_file, *vol_file;
   char *slicelabel;
   int compression_type;
+#ifdef pp_COLORBARFLIP  
+  int colorbar_autoflip;
+#endif
   int ncompressed;
   int slicetype;
   struct _multislicedata *mslice;

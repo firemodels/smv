@@ -696,14 +696,19 @@ void ColorbarMenu(int value){
     case MENU_COLORBAR_SETTINGS:
       ShowGluiDisplay(DIALOG_COLORING);
       break;
+    case COLORBAR_AUTOFLIP:
+      colorbar_autoflip = 1 - colorbar_autoflip;
+      update_flipped_colorbar = 1;
+      UpdateColorbarFlip();
+      break;
     case COLORBAR_FLIP:
-      colorbarflip=1-colorbarflip;
+      colorbar_flip=1-colorbar_flip;
       UpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
       show_extreme_maxdata=0;
-      colorbarflip=0;
+      colorbar_flip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
       UpdateExtreme();
@@ -1134,6 +1139,7 @@ void ShowHideSliceMenu(int value){
       }
     }
   }
+  update_flipped_colorbar = 1;
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
@@ -1545,7 +1551,9 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
-    rendering_status = onoff;
+    EnableDisableStartButtons(DISABLE);
+    render_status = onoff;
+    render_firsttime = YES;
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
@@ -1562,13 +1570,23 @@ void RenderState(int onoff){
     }
   }
   else{
-    if(rendering_status==RENDER_OFF)return;
-    rendering_status = onoff;
+    if(render_status==RENDER_OFF)return;
+    render_status = onoff;
+    render_firsttime = NO;
     Enable360Zoom();
-    render_mode = RENDER_XYSINGLE;
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
+    EnableDisableStartButtons(ENABLE);
   }
+}
+
+/* ------------------ SkipMenu ------------------------ */
+
+void SkipMenu(int value){
+  render_skip=value;
+  glutPostRedisplay();
+  updatemenu=1;
+  UpdateRenderListSkip();
 }
 
 /* ------------------ RenderMenu ------------------------ */
@@ -1578,14 +1596,15 @@ void RenderMenu(int value){
   int i,n;
   meshdata *meshi;
 
+  if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value>=11000)return;
   if(opengldefined==1){
     glutPostRedisplay();
   }
   if(value>=10000&&value<=10005){
-    nrender_rows=value-10000;
-    UpdateNRenderRows();
+    resolution_multiplier=value-10000;
+    UpdateResolutionMultiplier();
     return;
   }
   switch(value){
@@ -1628,12 +1647,69 @@ void RenderMenu(int value){
     Keyboard('R', FROM_SMOKEVIEW);
     break;
   case RENDER_CURRENT_MULTIPLE:
-    if(nrender_rows==1)RenderMenu(RENDER_CURRENT_SINGLE);
-    render_from_menu=1;
+    render_from_menu = 1;
+    if(resolution_multiplier==1){
+      RenderMenu(RENDER_CURRENT_SINGLE);
+      return;
+    }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);
+    break;
+  case Render360:
+    render_mode = 1-render_mode;
+    updatemenu = 1;
+    break;
+  case RenderStart360:
+    RenderCB(RENDER_START_360);
+    break;
+  case RenderStartORIGRES:
+    render_mode = RENDER_NORMAL;
+    resolution_multiplier=1;
+    RenderMenu(RenderStart);
+    break;
+  case RenderStartHIGHRES:
+    render_mode = RENDER_NORMAL;
+    resolution_multiplier=MAX(2,resolution_multiplier);
+    RenderMenu(RenderStart);
+    break;
+  case RenderStart:
+    if(RenderTime==0&&touring==0){
+      RenderMenu(RENDER_CURRENT_MULTIPLE);
+      return;
+    }
+    if(touring==1){
+      rendertourcount=0;
+    }
+    if(render_skip == RENDER_CURRENT_SINGLE){
+      UpdateFrameNumber(0);
+    }
+    else{
+      if(stept == 0)Keyboard('t', FROM_SMOKEVIEW);
+      ResetItimes0();
+      for(i=0;i<nsliceinfo;i++){
+        sd=sliceinfo+i;
+        sd->itime=0;
+      }
+      frame_index=first_frame_index;
+      for(i=0;i<nmeshes;i++){
+        meshi=meshinfo+i;
+        meshi->patch_itime=0;
+      }
+    }
+    RenderState(RENDER_ON);
+    UpdateTimeLabels();
+    FlowDir=1;
+    for(n=0;n<nglobal_times;n++){
+      render_frame[n]=0;
+    }
+    if(scriptoutstream!=NULL){
+      fprintf(scriptoutstream,"RENDERALL\n");
+      fprintf(scriptoutstream," %i\n",render_skip);
+      fprintf(scriptoutstream,"\n");
+    }
+    render_times = RENDER_ALLTIMES;
     break;
   case RenderLABELframenumber:
     render_label_type=RENDER_LABEL_FRAMENUM;
@@ -1652,39 +1728,10 @@ void RenderMenu(int value){
      updatemenu=1;
      break;
   default:
-    if(RenderTime==0&&touring==0)return;
-    if(touring==1){
-      rendertourcount=0;
-    }
-    if(stept==0){
-      Keyboard('t',FROM_SMOKEVIEW);
-    }
-    RenderState(RENDER_ON);
-    ResetItimes0();
-    for(i=0;i<nsliceinfo;i++){
-      sd=sliceinfo+i;
-      sd->itime=0;
-    }
-    frame_index=first_frame_index;
-    for(i=0;i<nmeshes;i++){
-      meshi=meshinfo+i;
-      meshi->patch_itime=0;
-    }
-    UpdateTimeLabels();
-    RenderSkip=value;
-    FlowDir=1;
-    for(n=0;n<nglobal_times;n++){
-      render_frame[n]=0;
-    }
-    if(scriptoutstream!=NULL){
-      fprintf(scriptoutstream,"RENDERALL\n");
-      fprintf(scriptoutstream," %i\n",RenderSkip);
-      fprintf(scriptoutstream,"\n");
-    }
-    render_times = RENDER_ALLTIMES;
-    break;
+     ASSERT(FFALSE);
+     break;
   }
-  UpdateNRenderRows();
+  UpdateResolutionMultiplier();
 }
 
 /* ------------------ EvacShowMenu ------------------------ */
@@ -1746,7 +1793,6 @@ void EvacShowMenu(int value){
   updatemenu=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   glutPostRedisplay();
-
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */
@@ -2545,6 +2591,9 @@ void ReloadMenu(int value){
   case RELOAD_INCREMENTAL_NOW:
     LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
     break;
+  case RELOAD_SMV_FILE:
+    ReadSMVDynamic(smv_filename);
+    break;
   case RELOAD_MODE_INCREMENTAL:
     load_incremental = 1;
     break;
@@ -2719,7 +2768,6 @@ void LoadUnloadMenu(int value){
     if(value==RELOAD_INCREMENTAL_ALL)load_mode = RELOAD;
 
     LOCK_COMPRESS
-    ReadSMVDynamic(smv_filename);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD, &errorcode);
     }
@@ -2807,6 +2855,7 @@ void LoadUnloadMenu(int value){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
+    ReadSMVDynamic(smv_filename);
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
@@ -4019,6 +4068,33 @@ void LoadMultiVSliceMenu(int value){
     }
     script_multivslice=0;
   }
+  else if(value<=-1000){ // load multi v slice
+    int submenutype, dir;
+    char *submenulabel;
+    slicedata *slicei;
+
+    value = -(1000 + value);
+    submenutype=value/4-1;
+    dir=value%4;
+    submenutype=msubvslice_menuindex[submenutype];
+
+    slicei = sliceinfo + submenutype;
+    submenulabel = slicei->label.longlabel;
+    for(i = 0; i<nmultivsliceinfo; i++){
+      char *longlabel;
+      multivslicedata *mvslicei;
+      slicedata *slicej;
+      vslicedata *vslicej;
+
+      mvslicei = multivsliceinfo + i;
+      vslicej = vsliceinfo + mvslicei->ivslices[0];
+      slicej = sliceinfo+vslicej->ival;
+      longlabel = slicej->label.longlabel;
+      if(strcmp(longlabel,submenulabel)!=0)continue;
+      if(dir!=0&&dir!=slicej->idir)continue;
+      LoadMultiVSliceMenu(i);
+    }
+  }
   else{
     switch(value){
       case MENU_LOADVSLICE_SHOWALL:
@@ -4130,6 +4206,41 @@ void LoadMultiSliceMenu(int value){
     }
     script_multislice=0;
   }
+  else if(value<=-1000){
+    int submenutype, last_slice, dir, errorcode;
+    char *submenulabel;
+    slicedata *slicei;
+
+    value = -(1000 + value);
+    submenutype=value/4;
+    dir=value%4;
+    submenutype=msubslice_menuindex[submenutype];
+    slicei = sliceinfo + submenutype;
+    submenulabel = slicei->label.longlabel;
+    last_slice = nsliceinfo - 1;
+    for(i = nsliceinfo-1; i>=0; i--){
+      char *longlabel;
+
+      slicei = sliceinfo + i;
+      longlabel = slicei->label.longlabel;
+      if(strcmp(longlabel, submenulabel) != 0)continue;
+      if(dir != 0 && dir != slicei->idir)continue;
+      last_slice = i;
+      break;
+    }
+    for(i = 0; i<nsliceinfo; i++){
+      char *longlabel;
+      int set_slicecolor;
+
+      slicei = sliceinfo + i;
+      longlabel = slicei->label.longlabel;
+      if(strcmp(longlabel,submenulabel)!=0)continue;
+      if(dir!=0&&dir!=slicei->idir)continue;
+      set_slicecolor = DEFER_SLICECOLOR;
+      if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+      ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+    }
+  }
   else{
     switch(value){
       case UNLOAD_ALL:
@@ -4172,8 +4283,8 @@ void LoadMultiSliceMenu(int value){
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
-      ASSERT(FFALSE);
-      break;
+        ASSERT(FFALSE);
+        break;
     }
   }
 }
@@ -4874,10 +4985,16 @@ void RotateTypeMenu(int value){
     ShowGluiMotion(DIALOG_MOTION);
     return;
   }
-  rotation_type = value;
-  UpdateRotationType(rotation_type);
-  RotationTypeCB(rotation_type);
-  updatemenu=1;
+  else if(value == MENU_MOTION_GRAVITY_VECTOR){
+    gvec_down = 1 - gvec_down;
+    update_have_gvec = 1;
+  }
+  else{
+    rotation_type = value;
+    UpdateRotationType(rotation_type);
+    RotationTypeCB(rotation_type);
+  }
+  updatemenu = 1;
   glutPostRedisplay();
 }
 
@@ -5214,7 +5331,8 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int startrenderingmenu=0;
+static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
+static int render_startmenu = 0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
@@ -6447,6 +6565,8 @@ updatemenu=0;
     ASSERT(FFALSE);
     break;
   }
+  if(gvec_down==1)glutAddMenuEntry("*gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
+  if(gvec_down==0)glutAddMenuEntry("gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
   glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
@@ -7111,11 +7231,17 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Highlight data below specified min"), COLORBAR_HIGHLIGHT_BELOW);
   }
-  if(colorbarflip == 1){
+  if(colorbar_flip == 1){
     glutAddMenuEntry(_("  *Flip"), COLORBAR_FLIP);
   }
   else{
     glutAddMenuEntry(_("  Flip"), COLORBAR_FLIP);
+  }
+  if(colorbar_autoflip == 1){
+    glutAddMenuEntry(_("  *Auto flip"), COLORBAR_AUTOFLIP);
+  }
+  else{
+    glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
 
   CREATEMENU(colorbarsmenu,ColorbarMenu);
@@ -7836,65 +7962,54 @@ updatemenu=0;
     }
     strcat(renderwindow3,rendertemp);
 
-    CREATEMENU(startrenderingmenu,RenderMenu);
-    glutAddMenuEntry(_("  One frame (single part)"),RENDER_CURRENT_SINGLE);
-    if(render_current==1){
-      char menulabel[1024];
+    CREATEMENU(render_skipmenu,SkipMenu);
+    {
+      char *skips[]={"Current","All","2nd","3rd","4th","5th","10th","20th"};
+      int iskips[] = {RENDER_CURRENT_SINGLE,1,2,3,4,5,10,20};
 
-      sprintf(menulabel,"  One frame (%i x %i parts)",nrender_rows,nrender_rows);
-      glutAddMenuEntry(menulabel,RENDER_CURRENT_MULTIPLE);
-    }
-    if(RenderTime==1||touring==1){
-      glutAddMenuEntry(_("  All frames"),1);
-      glutAddMenuEntry(_("  Every 2nd frame"),2);
-      glutAddMenuEntry(_("  Every 3rd frame"),3);
-      glutAddMenuEntry(_("  Every 4th frame"),4);
-      glutAddMenuEntry(_("  Every 5th frame"),5);
-      glutAddMenuEntry(_("  Every 10th frame"),10);
-      glutAddMenuEntry(_("  Every 20th frame"),20);
-      glutAddMenuEntry(_("  Cancel"),RenderCancel);
+      for(i = 0;i<7;i++){
+        char skiplabel[128];
+
+        strcpy(skiplabel, "  ");
+        if(render_skip==iskips[i])strcat(skiplabel, "*");
+        if(i<=1){
+          strcat(skiplabel, skips[i]);
+        }
+        else{
+          strcat(skiplabel, "Every ");
+          strcat(skiplabel, skips[i]);
+        }
+        glutAddMenuEntry(skiplabel, iskips[i]);
+      }
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    if(nrender_rows==2){
-      glutAddMenuEntry("  *2",HIDEALL_ISO);
-    }
-    else{
-      glutAddMenuEntry("  2",HIDEALL_ISO);
-    }
-    if(nrender_rows==3){
-      glutAddMenuEntry("  *3",10003);
-    }
-    else{
-      glutAddMenuEntry("  3",10003);
-    }
-    if(nrender_rows==4){
-      glutAddMenuEntry("  *4",10004);
-    }
-    else{
-      glutAddMenuEntry("  4",10004);
-    }
-    if(nrender_rows==5){
-      glutAddMenuEntry("  *5",10005);
-    }
-    else{
-      glutAddMenuEntry("  5",10005);
-    }
-    if(nrender_rows==6)glutAddMenuEntry("  *6",10005);
-    if(nrender_rows==7)glutAddMenuEntry("  *7",10005);
-    if(nrender_rows==8)glutAddMenuEntry("  *8",10005);
-    if(nrender_rows==9)glutAddMenuEntry("  *9",10005);
-    if(nrender_rows==10)glutAddMenuEntry("  *10",10005);
+    for(i = 2;i<=10;i++){
+      char render_label[256];
+      int render_index;
 
-    CREATEMENU(rendermenu,RenderMenu);
-    glutAddMenuEntry(_("Resolution:"),11000);
-    glutAddMenuEntry(renderwindow,Render320);
-    glutAddMenuEntry(renderwindow2,Render640);
-    glutAddMenuEntry(renderwindow3,RenderWindow);
+      render_index = 10000+MIN(5, i);
+      if(resolution_multiplier==i){
+        sprintf(render_label, "  *%ix", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+      else if(i<=5){
+        sprintf(render_label, "  %ix", i);
+        glutAddMenuEntry(render_label, render_index);
+      }
+    }
 
-    if(render_current==1)glutAddSubMenu(_("Resolution multiplier"),resolutionmultipliermenu);
+    CREATEMENU(render_filesuffixmenu, RenderMenu);
+    if(render_label_type==RENDER_LABEL_FRAMENUM){
+      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  Time"),RenderLABELtime);
+    }
+    if(render_label_type==RENDER_LABEL_TIME){
+      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
+      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
+    }
 
-    glutAddMenuEntry(_("Type:"),11000);
+    CREATEMENU(render_filetypemenu, RenderMenu);
     if(render_filetype==PNG){
       glutAddMenuEntry("  *PNG",RenderPNG);
       glutAddMenuEntry("  JPEG",RenderJPEG);
@@ -7908,17 +8023,72 @@ updatemenu=0;
       glutAddMenuEntry("  JPEG",RenderJPEG);
     }
 
-    glutAddMenuEntry(_("File suffix:"),11000);
-    if(render_label_type==RENDER_LABEL_FRAMENUM){
-      glutAddMenuEntry(_("  *Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  Time"),RenderLABELtime);
-    }
-    if(render_label_type==RENDER_LABEL_TIME){
-      glutAddMenuEntry(_("  Frame number"),RenderLABELframenumber);
-      glutAddMenuEntry(_("  *Time"),RenderLABELtime);
+    CREATEMENU(render_startmenu,RenderMenu);
+    {
+      char sizeORIGRES[128], sizeHIGHRES[128];
+      int width, height, factor;
+
+      if(render_current==1){
+        width = screenWidth;
+        height = screenHeight;
+      }
+      else{
+        width = renderW;
+        height = renderH;
+      }
+
+      factor = MAX(2, resolution_multiplier);
+      sprintf(sizeORIGRES, "%ix%i", width, height);
+      sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);
+      glutAddMenuEntry(sizeORIGRES, RenderStartORIGRES);
+      glutAddMenuEntry(sizeHIGHRES, RenderStartHIGHRES);
+      {
+        char rend_label[100];
+#ifdef pp_DEG
+        unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+        unsigned char deg360[] = {'3','6','0',0};
+#endif
+
+        sprintf(rend_label,"%s - %ix%i",deg360,nwidth360, nheight360);
+        glutAddMenuEntry(rend_label, RenderStart360);
+      }
     }
 
-    glutAddSubMenu(_("Start rendering:"),startrenderingmenu);
+    CREATEMENU(render_resolutionmenu, RenderMenu);
+    glutAddMenuEntry(renderwindow, Render320);
+    glutAddMenuEntry(renderwindow2, Render640);
+    glutAddMenuEntry(renderwindow3, RenderWindow);
+
+    CREATEMENU(rendermenu,RenderMenu);
+    glutAddSubMenu(_("Start rendering"), render_startmenu);
+    glutAddMenuEntry(_("Stop rendering"), RenderCancel);
+
+    glutAddMenuEntry("-", MENU_DUMMY);
+
+    {
+    char skip_label[128];
+
+    if(render_skip==1){
+      strcpy(skip_label,"Frames/all");
+    }
+    else if(render_skip==RENDER_CURRENT_SINGLE){
+      sprintf(skip_label, "Frames/Current");
+    }
+    else{
+      sprintf(skip_label, "Frames/%i", render_skip);
+    }
+    glutAddSubMenu(skip_label, render_skipmenu);
+}
+    glutAddSubMenu(_("Image size"),  render_resolutionmenu);
+    if(render_current==1){
+      char res_menu[128];
+
+      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
+      glutAddSubMenu(res_menu, resolutionmultipliermenu);
+    }
+    glutAddSubMenu(_("Image type"),        render_filetypemenu);
+    glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
     glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }
@@ -7982,7 +8152,11 @@ updatemenu=0;
 
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
   glutAddMenuEntry(_("Data bounds... ALT b"), DIALOG_BOUNDS);
+#ifdef pp_GLUTGET
+  glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
+#else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
+#endif
   glutAddMenuEntry(_("Motion...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 
@@ -8245,8 +8419,21 @@ updatemenu=0;
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
-  glutAddMenuEntry(_("  r: render the current scene to an image file"), MENU_DUMMY);
-  glutAddMenuEntry(_("  R:   (same as r but at twice the resolution)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  r/R/ALT R: render the current scene to an image file"), MENU_DUMMY);
+  glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
+  {
+    char render_label[1024];
+#ifdef pp_DEG
+    unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
+#else
+    unsigned char deg360[] = {'3','6','0',0};
+#endif
+
+    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2,resolution_multiplier));
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+    sprintf(render_label, "    ALT R: %s view - all view directions are shown in a 1024x512 image", deg360);
+    glutAddMenuEntry(render_label, MENU_DUMMY);
+  }
   if(ntotal_blockages>0||isZoneFireModel==1){
     glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
   }
@@ -8607,22 +8794,26 @@ updatemenu=0;
       nmultisliceloaded=0;
       nloadsubmvslicemenu=0;
       for(i=0;i<nmultivsliceinfo;i++){
-        vslicedata *vi, *vim1;
-        slicedata *si, *sim1;
+        vslicedata *vi, *vim1, *vip1;
+        slicedata *si, *sim1, *sip1;
         char menulabel[1024];
         multivslicedata *mvslicei;
 
         mvslicei = multivsliceinfo + i;
 
-        vi = vsliceinfo + mvslicei->ivslices[0];
-        si = sliceinfo + vi->ival;
         if(i>0){
           vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
           sim1 = sliceinfo + vim1->ival;
         }
-        if(i==0||(i!=0&&strcmp(si->label.longlabel,sim1->label.longlabel)!=0)){
+        vi = vsliceinfo + mvslicei->ivslices[0];
+        si = sliceinfo + vi->ival;
+        if(i<nmultivsliceinfo-1){
+          vip1 = vsliceinfo + (multivsliceinfo+i+1)->ivslices[0];
+          sip1 = sliceinfo + vip1->ival;
+        }
+        if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
           CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu],LoadMultiVSliceMenu);
-          nloadsubmvslicemenu++;
+          msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
         }
 
         STRCPY(menulabel,"");
@@ -8641,6 +8832,26 @@ updatemenu=0;
           STRCAT(menulabel,si->slicelabel);
         }
         glutAddMenuEntry(menulabel,i);
+        if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel,sip1->label.longlabel)!=0){
+          if(mvslicei->ndirxyz[1]+si->ndirxyz[2]+si->ndirxyz[3]>1){
+            glutAddMenuEntry("-",MENU_DUMMY);
+          }
+          if(mvslicei->ndirxyz[1]>1){
+            glutAddMenuEntry(_("Load All x"),-1000-4*nloadsubmvslicemenu-1);
+          }
+          if(mvslicei->ndirxyz[2]>1){
+            glutAddMenuEntry(_("Load All y"),-1000-4*nloadsubmvslicemenu-2);
+          }
+          if(mvslicei->ndirxyz[3]>1){
+            glutAddMenuEntry(_("Load All z"),-1000-4*nloadsubmvslicemenu-3);
+          }
+          if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
+            glutAddMenuEntry(_("Load All"),-1000-4*nloadsubmvslicemenu);
+          }
+        }
+        if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
+          nloadsubmvslicemenu++;
+        }
       }
 
       if(nslicedups > 0){
@@ -8912,14 +9123,23 @@ updatemenu=0;
     }
     nloadsubmslicemenu = 0;
     for(i = 0;i<nmultisliceinfo;i++){
-      slicedata *sd, *sdim1;
+      slicedata *sd, *sdim1, *sdip1;
       char menulabel[1024];
-      multislicedata *mslicei;
+      multislicedata *mslicei,*msliceim1,*msliceip1;
 
-      sd = sliceinfo+(multisliceinfo+i)->islices[0];
-      if(i>0)sdim1 = sliceinfo+(multisliceinfo+i-1)->islices[0];
+      if(i>0){
+        msliceim1 = multisliceinfo+i-1;
+        sdim1 = sliceinfo+msliceim1->islices[0];
+      }
       mslicei = multisliceinfo+i;
+      sd = sliceinfo+mslicei->islices[0];
+      if(i<nmultisliceinfo-1){
+        msliceip1 = multisliceinfo+i+1;
+        sdip1 = sliceinfo+msliceip1->islices[0];
+      }
+
       if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
+        msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
         CREATEMENU(loadsubmslicemenu[nloadsubmslicemenu], LoadMultiSliceMenu);
         nloadsubmslicemenu++;
       }
@@ -8938,6 +9158,21 @@ updatemenu=0;
         STRCAT(menulabel, sd->slicelabel);
       }
       glutAddMenuEntry(menulabel, i);
+      if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
+        glutAddMenuEntry("-", MENU_DUMMY);
+        if(mslicei->ndirxyz[1]>1){
+          glutAddMenuEntry(_("Load All x"),-1000-4*(nloadsubmslicemenu-1)-1);
+        }
+        if(mslicei->ndirxyz[2]>1){
+          glutAddMenuEntry(_("Load All y"),-1000-4*(nloadsubmslicemenu-1)-2);
+        }
+        if(mslicei->ndirxyz[3]>1){
+          glutAddMenuEntry(_("Load All z"),-1000-4*(nloadsubmslicemenu-1)-3);
+        }
+        if(mslicei->ndirxyz[1]+mslicei->ndirxyz[2]+mslicei->ndirxyz[3]>1){
+          glutAddMenuEntry(_("Load All"),  -1000-4*(nloadsubmslicemenu-1));
+        }
+      }
     }
     if(nslicedups>0){
       CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
@@ -9792,16 +10027,17 @@ updatemenu=0;
     glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
+    glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
     if(load_incremental==1){
-      glutAddMenuEntry(_("*Reload new data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("Reload all data"), RELOAD_MODE_ALL);
+      glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
     }
     if(load_incremental==0){
-      glutAddMenuEntry(_("Reload new data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("*Reload all data"), RELOAD_MODE_ALL);
+      glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
+      glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
     glutAddMenuEntry(_("-"), -999);
-    glutAddMenuEntry(_("Reload:"), -999);
+    glutAddMenuEntry(_("When:"), -999);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
     if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);
@@ -9809,7 +10045,7 @@ updatemenu=0;
     if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
     if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
     if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
-    glutAddMenuEntry(_("Stop Reloading"),STOP_RELOADING);
+    glutAddMenuEntry(_("Cancel"),STOP_RELOADING);
 
 
     {

@@ -17,17 +17,18 @@ goto:eof
 :endif_envexist
 
 call %envfile%
+set bundledir=%userprofile%\.bundle
 
 %svn_drive%
 set CURDIR=%CD%
 cd %svn_root%\smv
 echo.
-echo smv revision:
-type %userprofile%\smv_revision.txt
+echo | set /p=smv revision: 
+type %bundledir%\smv_revision.txt
 
 cd %svn_root%\fds
-echo.
-echo fds revision:
-type %userprofile%\fds_revision.txt
 cd %CURDIR%
+echo | set /p=fds revision: 
+type %bundledir%\fds_revision.txt
+echo.
 pause

@@ -11,8 +11,6 @@
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h" 
 
-#define RENDER_START 3
-
 /* ------------------ GetNewScriptFileName ------------------------ */
 
 void GetNewScriptFileName(char *newscriptfilename){
@@ -181,6 +179,7 @@ luascriptfiledata *insert_luascriptfile(char *file){
 void StartScript(void){
   if(scriptinfo==NULL){
     fprintf(stderr,"*** Error: Smokeview script does not exist\n");
+    if(stderr2!=NULL)fprintf(stderr2,"*** Error: Smokeview script does not exist\n");
     return;
   }
   GluiScriptDisable();
@@ -340,6 +339,8 @@ void ScriptErrorCheck(char *keyword, char *data){
   if(GetScriptKeywordIndex(data)!=SCRIPT_UNKNOWN){
     fprintf(stderr,"*** Error: While parsing the Smokeview script entry: %s ,\n",keyword);
     fprintf(stderr,"           a keyword was found in \"%s\", data was expected.\n",data);
+    if(stderr2!=NULL)fprintf(stderr2,"*** Error: While parsing the Smokeview script entry: %s ,\n",keyword);
+    if(stderr2!=NULL)fprintf(stderr2,"           a keyword was found in \"%s\", data was expected.\n",data);
   }
 }
 
@@ -913,7 +914,7 @@ void ScriptRender360All(scriptdata *scripti){
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
   skip_render_frames = 1;
   //RenderMenu(skip_local);
-  render_360=1;
+  render_mode = RENDER_360;
   RenderCB(RENDER_START);
 }
 
@@ -1210,7 +1211,10 @@ void ScriptLoadParticles(scriptdata *scripti){
     }
     count++;
   }
-  if(count==0)fprintf(stderr,"*** Error: Particles files failed to load\n");
+  if(count == 0){
+    fprintf(stderr, "*** Error: Particles files failed to load\n");
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Particles files failed to load\n");
+  }
   force_redisplay=1;
   UpdateFrameNumber(0);
   updatemenu=1;
@@ -1252,7 +1256,10 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
   }
   if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
-  if(count == 0)fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
+  }
   force_redisplay=1;
   updatemenu=1;
 }
@@ -1301,7 +1308,10 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
       count++;
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: Smoke3d files of type %s failed to load\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Smoke3d files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Smoke3d files of type %s failed to load\n", scripti->cval);
+  }
   force_redisplay=1;
   updatemenu=1;
 
@@ -1346,7 +1356,10 @@ void ScriptLoadSlice(scriptdata *scripti){
     }
     break;
   }
-  if(count==0)fprintf(stderr,"*** Error: Slice files of type %s failed to load\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Slice files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s failed to load\n", scripti->cval);
+  }
 }
 
 
@@ -1414,7 +1427,10 @@ void ScriptLoadVSlice(scriptdata *scripti){
     }
     break;
   }
-  if(count==0)fprintf(stderr,"*** Error: Vector slice files of type %s failed to load\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Vector slice files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Vector slice files of type %s failed to load\n", scripti->cval);
+  }
 }
 
 /* ------------------ ScriptLoadVSliceM ------------------------ */
@@ -1450,7 +1466,10 @@ void ScriptLoadVSliceM(scriptdata *scripti, int meshnum){
     }
     break;
   }
-  if(count==0)fprintf(stderr,"*** Error: Vector slice files of type %s in mesh %i failed to load\n",scripti->cval,meshnum);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Vector slice files of type %s in mesh %i failed to load\n", scripti->cval, meshnum);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Vector slice files of type %s in mesh %i failed to load\n", scripti->cval, meshnum);
+  }
 }
 
 /* ------------------ ScriptLoadTour ------------------------ */
@@ -1474,7 +1493,10 @@ void ScriptLoadTour(scriptdata *scripti){
     }
   }
 
-  if(count==0)fprintf(stderr,"*** Error: The tour %s failed to load\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: The tour %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: The tour %s failed to load\n", scripti->cval);
+  }
   force_redisplay=1;
   updatemenu=1;
 }
@@ -1508,7 +1530,10 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
       }
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: Boundary files of type %s failed to load\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
+  }
   force_redisplay=1;
   updatemenu=1;
   UpdateFrameNumber(0);
@@ -1531,7 +1556,11 @@ void ScriptPartClassColor(scriptdata *scripti){
       count++;
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: particle class color: %s failed to be set\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
+  }
+
 }
 
 
@@ -1738,7 +1767,10 @@ void ScriptPartClassType(scriptdata *scripti){
       }
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: particle class type %s failed to be set\n",scripti->cval);
+  if(count == 0){
+    fprintf(stderr, "*** Error: particle class type %s failed to be set\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class type %s failed to be set\n", scripti->cval);
+  }
 }
 
 /* ------------------ ScriptLoadIniFile ------------------------ */
@@ -1835,6 +1867,7 @@ void ScriptLoadFile(scriptdata *scripti){
   }
 
   fprintf(stderr,"*** Error: file %s failed to load\n",scripti->cval);
+  if(stderr2!=NULL)fprintf(stderr2, "*** Error: file %s failed to load\n", scripti->cval);
 }
 
 /* ------------------ ScriptLabel ------------------------ */
@@ -1873,7 +1906,10 @@ void ScriptLoadPlot3d(scriptdata *scripti){
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
   SetLabelControls();
-  if(count==0)fprintf(stderr,"*** Error: Plot3d file failed to load\n");
+  if(count == 0){
+    fprintf(stderr, "*** Error: Plot3d file failed to load\n");
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Plot3d file failed to load\n");
+  }
 
   //UpdateMenu();
 }
@@ -1902,6 +1938,7 @@ void ScriptLoadVecFile(scriptdata *scripti){
     }
   }
   fprintf(stderr,"*** Error: Vector slice file %s was not loaded\n",scripti->cval);
+  if(stderr2!=NULL)fprintf(stderr2, "*** Error: Vector slice file %s was not loaded\n", scripti->cval);
 
 }
 
@@ -1994,12 +2031,26 @@ void ScriptSetTimeVal(scriptdata *scripti){
         fprintf(stderr,"           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
           timeval,global_times[0],global_times[nglobal_times-1],nglobal_times);
         fprintf(stderr,"all times: ");
+
+        if(stderr2!=NULL)fprintf(stderr2, "*** Error: data not available at time requested\n");
+        if(stderr2!=NULL)fprintf(stderr2, "           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
+          timeval, global_times[0], global_times[nglobal_times - 1], nglobal_times);
+        if(stderr2!=NULL)fprintf(stderr2, "all times: ");
+
         for(i=0;i<nglobal_times;i++){
           fprintf(stderr,"%f ",global_times[i]);
+          if(stderr2!=NULL)fprintf(stderr2, "%f ", global_times[i]);
         }
         fprintf(stderr," ***\n");
-        if(loaded_file!=NULL)fprintf(stderr,"           loaded file: %s\n",loaded_file);
-        if(script_labelstring!=NULL)fprintf(stderr,"                 label: %s\n",script_labelstring);
+        if(stderr2!=NULL)fprintf(stderr2, " ***\n");
+        if(loaded_file != NULL){
+          fprintf(stderr, "           loaded file: %s\n", loaded_file);
+          if(stderr2!=NULL)fprintf(stderr2, "           loaded file: %s\n", loaded_file);
+        }
+        if(script_labelstring != NULL){
+          fprintf(stderr, "                 label: %s\n", script_labelstring);
+          if(stderr2!=NULL)fprintf(stderr2, "                 label: %s\n", script_labelstring);
+        }
       }
       timeval=maxtime;
     }
@@ -2098,6 +2149,7 @@ void ScriptSetViewpoint(scriptdata *scripti){
   int count=0;
 
   viewpoint = scripti->cval;
+  script_viewpoint_found = YES;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
     if(strcmp(scripti->cval,ca->name)==0){
@@ -2106,7 +2158,11 @@ void ScriptSetViewpoint(scriptdata *scripti){
       break;
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: The viewpoint %s was not found\n",viewpoint);
+  if(count == 0){
+    fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
+    script_viewpoint_found = NO;
+  }
 }
 
 /* ------------------ RunScript ------------------------ */
@@ -2117,12 +2173,24 @@ int RunScript(void){
 // (to ensure images are rendered at the right time step)
 
   scriptdata *scripti;
-  int returnval;
+  int returnval=0;
 
-  returnval=0;
-
+  if(stderr2 == NULL){
+    stderr2 = tmpfile();
+  }
   if(current_script_command>scriptinfo+nscriptinfo-1){
     current_script_command=NULL;
+    if(stderr2 != NULL){
+      unsigned int nchars;
+
+      fprintf(stderr, "----------------------------------------------\n");
+      fprintf(stderr, "Smokeview script errors :\n");
+      nchars = StreamCopy(stderr2, stderr);
+      if(nchars==0)fprintf(stderr, "*** none ***\n");
+      fprintf(stderr, "----------------------------------------------\n");
+      fclose(stderr2);
+      stderr2 = NULL;
+    }
     return returnval;
   }
   scripti = current_script_command;
@@ -2168,6 +2236,7 @@ int RunScript(void){
         script_dir_path=scripti->cval;
         if(Writable(script_dir_path)==NO){
           fprintf(stderr,"*** Error: Cannot write to the RENDERDIR directory: %s\n",script_dir_path);
+          if(stderr2!=NULL)fprintf(stderr2, "*** Error: Cannot write to the RENDERDIR directory: %s\n", script_dir_path);
         }
         PRINTF("script: setting render path to %s\n",script_dir_path);
       }
@@ -2349,11 +2418,11 @@ int RunScript(void){
       ScriptGSliceOrien(scripti);
       break;
     case SCRIPT_CBARFLIP:
-      colorbarflip=0;
+      colorbar_flip=0;
       ColorbarMenu(COLORBAR_FLIP);
       break;
     case SCRIPT_CBARNORMAL:
-      colorbarflip=1;
+      colorbar_flip=1;
       ColorbarMenu(COLORBAR_FLIP);
       break;
     default:

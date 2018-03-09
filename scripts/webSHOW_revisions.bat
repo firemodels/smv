@@ -19,55 +19,55 @@ goto:eof
 call %envfile%
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** fds ***
+echo ---------------------------*** fds ***--------------------------------
+echo.
 %svn_drive%
 cd %svn_root%\fds
-echo Windows
+echo | set /p=Windows: 
 git describe --dirty
-echo.
 
-set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
+set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
 
-echo Linux
+echo.
+echo | set /p=Linux:   
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/fds %linux_hostname%
 echo.
 
-echo OSX
+echo | set /p=OSX:     
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/fds %osx_hostname%
 echo.
 
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** smv ***
+echo ---------------------------*** smv ***--------------------------------
+echo.
 cd %svn_root%\smv
-echo Windows
+echo | set /p=Windows: 
 git describe --dirty
-echo.
 
-echo Linux
+echo.
+echo | set /p=Linux:   
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/smv %linux_hostname%
-echo.
 
-echo OSX
+echo.
+echo | set /p=OSX:     
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** webpages ***
-cd %svn_root%\webpages
-echo Windows
-git describe --dirty
+echo ---------------------------*** web ***--------------------------------
 echo.
+cd %svn_root%\webpages
+echo | set /p=Windows: 
+git describe --dirty
 
-echo Linux
+echo.
+echo | set /p=Linux:   
 plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/webpages %linux_hostname%
 echo.
 
-echo OSX
+echo | set /p=OSX:     
 plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
 echo.
 pause

@@ -82,7 +82,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   return alpha;
 }
 
-//              alphaf_out[n]=AdjustAlpha(ALPHAIN, xyzeyeorig, xp, ASPECTRATIO, NORM, NORMTYPE);
+//              alphaf_out[n]=AdjustAlpha(ALPHAIN, eye_position_fds, xp, ASPECTRATIO, NORM, NORMTYPE);
 
 // -------------------------- ADJUSTALPHA ----------------------------------
 

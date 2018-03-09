@@ -266,10 +266,8 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
-#ifdef pp_FSEEK
 GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
@@ -1207,7 +1205,7 @@ void ScriptCB(int var){
     script_skipframe = -1;
     script_step = 0;
     GluiScriptEnable();
-    rendering_status = RENDER_OFF;
+    render_status = RENDER_OFF;
     break;
   case SCRIPT_RENDER_DIR:
     strcpy(label, script_renderdir);
@@ -2151,9 +2149,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Research display mode"),&research_mode,RESEARCH_MODE,SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_d("Output data to file"),&output_slicedata);
+#ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show all 3d slices"), &showall_3dslices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("max blending"), &slices3d_max_blending);
-#ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("opacity adjustment"), &slice_opacity_adjustment);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _d("show sorted slice labels"), &show_sort_labels);

@@ -23,54 +23,39 @@ echo.
 
 %svn_drive%
 
-
-if "%whichguides%" == "from_smv_local" (
-  set fromdir=%svn_root%\smv\Manuals
-  set todir="%userprofile%"\FDS_Guides
-
-  Title Copying smokeview guides from local repo to %userprofile%\FDS_Guides
-  echo copying guides
-  echo from directory: !fromdir!
-  echo to directory: !todir!
-
-  call :COPY !fromdir!\SMV_User_Guide\SMV_User_Guide.pdf                                !todir!\.
-  call :COPY !fromdir!\SMV_Verification_Guide\SMV_Verification_Guide.pdf                !todir!\.
-  call :COPY !fromdir!\SMV_Technical_Reference_Guide\SMV_Technical_Reference_Guide.pdf  !todir!\.
-  goto eof
-)
 if "%whichguides%" == "from_smv_linux" (
-  set fromdir=%smokebotrepo%/smv/Manuals
-  set todir="%userprofile%"\FDS_Guides
+  set fromdir=%smokebothome%/.smokebot/pubs
+  set todir="%userprofile%"\.bundle\pubs
 
   Title Copying smokeview guides from linux smokebot
   echo copying guides
   echo from directory: !fromdir!
   echo to directory: !todir!
 
-  pscp %linux_logon%:!fromdir!/SMV_User_Guide/SMV_User_Guide.pdf                                !todir!\.
-  pscp %linux_logon%:!fromdir!/SMV_Verification_Guide/SMV_Verification_Guide.pdf                !todir!\.
-  pscp %linux_logon%:!fromdir!/SMV_Technical_Reference_Guide/SMV_Technical_Reference_Guide.pdf  !todir!\.
+  pscp %linux_logon%:!fromdir!/SMV_User_Guide.pdf                !todir!\.
+  pscp %linux_logon%:!fromdir!/SMV_Verification_Guide.pdf        !todir!\.
+  pscp %linux_logon%:!fromdir!/SMV_Technical_Reference_Guide.pdf !todir!\.
   goto eof
 )
 if "%whichguides%" == "from_fds_linux" (
-  set fromdir=%firebotrepo%/fds/Manuals
-  set todir="%userprofile%"\FDS_Guides
+  set fromdir=%firebothome%/.firebot/pubs
+  set todir="%userprofile%"\.bundle\pubs
 
   Title Copying FDS guides from linux firebot
   echo copying guides
   echo from directory: !fromdir!
   echo to directory: !todir!
 
-  pscp %linux_logon%:!fromdir!/FDS_Config_Management_Plan/FDS_Config_Management_Plan.pdf        !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Technical_Reference_Guide/FDS_Technical_Reference_Guide.pdf  !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_User_Guide/FDS_User_Guide.pdf                                !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Verification_Guide/FDS_Verification_Guide.pdf                !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Validation_Guide/FDS_Validation_Guide.pdf                    !todir!\.
+  pscp %linux_logon%:!fromdir!/FDS_Config_Management_Plan.pdf    !todir!\.
+  pscp %linux_logon%:!fromdir!/FDS_Technical_Reference_Guide.pdf !todir!\.
+  pscp %linux_logon%:!fromdir!/FDS_User_Guide.pdf                !todir!\.
+  pscp %linux_logon%:!fromdir!/FDS_Verification_Guide.pdf        !todir!\.
+  pscp %linux_logon%:!fromdir!/FDS_Validation_Guide.pdf          !todir!\.
   goto eof
 )
 if "%whichguides%" == "to_linux" (
-  set fromdir="%userprofile%"\FDS_Guides
-  set todir=FDS_Guides
+  set fromdir="%userprofile%"\.bundle\pubs
+  set todir=.bundle/pubs
 
   Title uploading guides to Linux:%linux_hostname%
   echo uploading guides to %linux_hostname%
@@ -81,8 +66,8 @@ if "%whichguides%" == "to_linux" (
   goto eof
 )
 if "%whichguides%" == "to_osx" (
-  set fromdir="%userprofile%"\FDS_Guides
-  set todir=FDS_Guides
+  set fromdir="%userprofile%"\.bundle\pubs
+  set todir=.bundle/pubs
 
   Title uploading guides to OSX:%osx_hostname%
   echo uploading guides to %osx_hostname%

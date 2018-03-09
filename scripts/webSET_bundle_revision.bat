@@ -17,17 +17,19 @@ goto:eof
 :endif_envexist
 
 call %envfile%
-set rev_file=%temp%\revision.txt
+
+set bundledir=%userprofile%\.bundle
 
 %svn_drive%
 cd %svn_root%\smv
-git describe --long --dirty > %rev_file% > %userprofile%\smv_revision.txt
+git describe --long --dirty > %bundledir%\smv_revision.txt
 echo.
 echo smv revision:
-type %userprofile%\smv_revision.txt
+type %bundledir%\smv_revision.txt
+
 cd %svn_root%\fds
-git describe --long --dirty > %rev_file% > %userprofile%\fds_revision.txt
+git describe --long --dirty > %bundledir%\fds_revision.txt
 echo.
 echo fds revision:
-type %userprofile%\fds_revision.txt
+type %bundledir%\fds_revision.txt
 pause

@@ -903,7 +903,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
      (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
        IsFileNewer(fed_slice->file,co2->file)!=1||
        IsFileNewer(fed_slice->file,co->file)!=1))||
-     (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
+       (file_type==FED_ISO&&(IsFileNewer(fed_iso->file,o2->file)!=1||
        IsFileNewer(fed_iso->file,co2->file)!=1||
        IsFileNewer(fed_iso->file,co->file)!=1))){
     int i,j,k;
@@ -2371,7 +2371,9 @@ void UpdateFedinfo(void){
     ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int));
     ResizeMemory((void **)&subvslice_menuindex, nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int));
     ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&vslicetypes, 3 * nsliceinfo * sizeof(int));
@@ -2618,7 +2620,7 @@ void GetSliceParams(void){
   int build_cache=0;
   FILE *stream;
 
-  if(IsFileNewer(sliceinfo_filename,smv_filename)!=1){
+  if(IfFirstLineBlank(sliceinfo_filename)==1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
   }
@@ -3943,6 +3945,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+#ifdef pp_COLORBARFLIP
+      update_flipped_colorbar = 1;
+#endif
       sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
@@ -4335,6 +4340,9 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
     update_fire_line = 1;
   }
+#ifdef pp_COLORBARFLIP
+  update_flipped_colorbar=1;
+#endif
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
@@ -4490,6 +4498,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
   int ibar, jbar;
   char *iblank_cell, *iblank_embed;
   int incx = 0, incy = 0, incz = 0;
+  int iimin;
 
   meshdata *meshi;
 
@@ -4509,15 +4518,14 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     incx = 1;
     incy = 1;
     incz = 1;
+    iimin = 0;
   }
   else{
     plotx = sd->is1;
     ploty = sd->js1;
     plotz = sd->ks1;
+    iimin = plotx;
   }
-  plotx = MAX(1, plotx);
-  ploty = MAX(1, ploty);
-  plotz = MAX(1, plotz);
 
   ibar = meshi->ibar;
   jbar = meshi->jbar;
@@ -4528,7 +4536,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
-  if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
+  if((sd->volslice == 1 && plotx > 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     float constval;
     int maxj;
     int j;
@@ -4569,7 +4577,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
-        index_cell = (plotx + 1 - incx - sd->is1)*sd->nslicej*sd->nslicek + (j + 1 - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+        index_cell = (plotx + 1 - incx - iimin)*sd->nslicej*sd->nslicek + (j + 1 - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
 
         i33 = 4 * sd->iqsliceframe[index_cell];
         z1 = zplt[k];
@@ -4612,7 +4620,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           n+1 (y1,z3) n2+1 (y3,z3)
           n (y1,z1)     n2 (y3,z1)
           */
-          index_cell = (plotx + 1 - incx - sd->is1)*sd->nslicej*sd->nslicek + (j + 1 - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_cell = (plotx + 1 - incx - iimin)*sd->nslicej*sd->nslicek + (j + 1 - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
 
           GET_VAL(sd, val, index_cell);
           Output3Val(constval, (yy1 + y3) / 2.0, (z1 + z3) / 2.0, val);
@@ -4620,7 +4628,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       }
     }
   }
-  if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
+  if((sd->volslice == 1 && ploty > 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
     float constval;
     int i;
     int maxi;
@@ -4709,7 +4717,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       }
     }
   }
-  if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
+  if((sd->volslice == 1 && plotz > 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float constval;
     int i;
     int maxi;
@@ -5967,14 +5975,24 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
 
 int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
-  meshdata *meshi, *meshj;
+  float position_i, position_j;
+  int dir;
 
   slicei = sliceinfo + *(int *)arg1;
   slicej = sliceinfo + *(int *)arg2;
-  meshi = meshinfo+slicei->blocknumber;
-  meshj = meshinfo+slicej->blocknumber;
-  if(meshi->eyedist>meshj->eyedist)return -1;
-  if(meshi->eyedist<meshj->eyedist)return 1;
+  if(slicei->idir < slicej->idir)return -1;
+  if(slicei->idir > slicej->idir)return 1;
+  dir = slicei->idir - 1;
+  position_i = slicei->xyz_min[dir];
+  position_j = slicej->xyz_min[dir];
+  if(eye_position_fds[dir] < position_i){
+    if(position_i > position_j)return -1;
+    if(position_i < position_j)return 1;
+  }
+  else{
+    if(position_i > position_j)return 1;
+    if(position_i < position_j)return -1;
+  }
   return 0;
 }
 
@@ -6097,7 +6115,7 @@ void DrawSliceFrame(){
         blend_mode=1;
         glBlendEquation(GL_MAX);
       }
-      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, xyzeyeorig, slice_normal);
+      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, eye_position_fds, slice_normal);
     }
     else{
       blend_mode = 0;
@@ -6228,7 +6246,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   u = vd->u;
   v = vd->v;
   w = vd->w;
-  if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
+  if((vd->volslice == 1 && plotx > 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int j;
     int maxj;
     float xhalf;
@@ -6246,13 +6264,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glColor4fv(foregroundcolor);
     maxj = sd->js2;
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j++){
+    for(j = sd->js1; j < maxj; j++){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2 + 1; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6288,13 +6306,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(j = sd->js1; j < maxj + 1; j++){
+    for(j = sd->js1; j < maxj; j++){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2 + 1; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6322,13 +6340,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=1");
 
     if(cell_center_text == 1){
-      for(j = sd->js1; j < maxj + 1; j++){
+      for(j = sd->js1; j < maxj; j++){
         float yy1, yhalf;
         int k;
 
         yy1 = yplttemp[j];
         if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-        for(k = sd->ks1; k < sd->ks2 + 1; k++){
+        for(k = sd->ks1; k < sd->ks2; k++){
           float zhalf, z1;
 
           z1 = zplttemp[k];
@@ -6355,7 +6373,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       }
     }
   }
-  if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
+  if((vd->volslice == 1 && ploty > 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
     float yhalf;
 
@@ -6372,7 +6390,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi + 1; i++){
+    for(i = sd->is1; i < maxi; i++){
       float x1, xhalf;
       int k;
 
@@ -6382,7 +6400,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6413,7 +6431,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi + 1; i++){
+    for(i = sd->is1; i < maxi; i++){
       float x1, xhalf;
       int k;
 
@@ -6423,7 +6441,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6451,7 +6469,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=2");
 
     if(cell_center_text == 1){
-      for(i = sd->is1; i < maxi + 1; i++){
+      for(i = sd->is1; i < maxi; i++){
         float x1, xhalf;
         int k;
 
@@ -6487,7 +6505,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       }
     }
   }
-  if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
+  if((vd->volslice == 1 && plotz > 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
     float zhalf;
 
@@ -6504,7 +6522,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi + 1; i++){
+    for(i = sd->is1; i < maxi; i++){
       float xhalf;
       float x1;
       int j;
@@ -6514,7 +6532,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j < sd->js2 + 1; j++){
+      for(j = sd->js1; j < sd->js2; j++){
         float yhalf;
         float yy1;
 
@@ -6547,7 +6565,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi + 1; i++){
+    for(i = sd->is1; i < maxi; i++){
       float xhalf;
       float x1;
       int j;
@@ -6557,7 +6575,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j < sd->js2 + 1; j++){
+      for(j = sd->js1; j < sd->js2; j++){
         float yhalf;
         float yy1;
 

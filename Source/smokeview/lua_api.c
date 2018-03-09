@@ -121,7 +121,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
   if(return_code!=0)return 1;
   if(convert_ini==1){
-    ReadINI(ini_from);
+    ReadIni(ini_from);
   }
   // Load information about the case into the lua interpreter.
   lua_initsmvdata(L);
@@ -135,7 +135,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
 // There are two options for scripting, Lua and SSF. Which is run is set here
 // based on the commandline arguments. If either (exclusive) of these values
 // are set to true, then that script will run from within the display callback
-// (Display_CB, in callbacks.c). These two loading routines are included to
+// (DisplayCB, in callbacks.c). These two loading routines are included to
 // load the scripts early in the piece, before the display callback.
 // Both runluascript and runscript are global.
 int load_script(char *filename) {
@@ -280,7 +280,7 @@ int lua_settourkeyframe(lua_State *L) {
 */
 int lua_displayCB(lua_State *L) {
   // runluascript=0;
-  Display_CB();
+  DisplayCB();
   // runluascript=1;
   return 0;
 }
@@ -1320,7 +1320,7 @@ int lua_setwindowsize(lua_State *L) {
   int width = lua_tonumber(L, 1);
   int height = lua_tonumber(L, 2);
   setwindowsize(width, height);
-  // Using the Display_CB is not sufficient in this case,
+  // Using the DisplayCB is not sufficient in this case,
   // control must be temporarily returned to the main glut loop.
   lua_tempyieldscript(L);
   return 0;

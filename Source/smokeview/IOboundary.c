@@ -1297,7 +1297,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int local_first,nsize,iblock;
   int npatchvals;
   char patchcsvfile[1024];
-  int newpatch=1;
   int framestart;
 
   int nn;
@@ -1329,7 +1328,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
 
-  if(meshi->patchfilenum != -1 && meshi->patchfilenum == filenum)newpatch = 0;
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
 #endif
@@ -1518,7 +1516,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   one time step at a time rather than for all time steps.
   */
 
-      if(statfile==0&&setpatchmin==1&&setpatchmax==1&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
+      if(statfile==0&&(setpatchmin==1||setpatchmax==1)&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
     }
   }
   else{
@@ -2589,10 +2587,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(r11-r22)<ABS(r12-r21)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r12);glVertex3fv(xyzp1+3);
@@ -2682,10 +2680,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r12);glVertex3fv(xyzp1+3);
@@ -2772,10 +2770,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
               glTexCoord1f(r11);glVertex3fv(xyzp1);
               glTexCoord1f(r22);glVertex3fv(xyzp2+3);
@@ -2905,10 +2903,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -2992,10 +2990,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -3075,10 +3073,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)(*cpatchval1)/255.0;
-            r12 = (float)(*(cpatchval1+1))/255.0;
-            r21 = (float)(*cpatchval2)/255.0;
-            r22 = (float)(*(cpatchval2+1))/255.0;
+            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
+            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
+            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
+            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;

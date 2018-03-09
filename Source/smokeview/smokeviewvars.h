@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN FILE SVDECL(*stderr2,NULL);
+SVEXTERN char SVDECL(*script_error1_filename,NULL);
+SVEXTERN int SVDECL(script_viewpoint_found, YES);
+SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
@@ -125,9 +129,8 @@ SVEXTERN float SVDECL(load_3dsmoke_cutoff, 0.0), SVDECL(load_hrrpuv_cutoff,200.0
 SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
 SVEXTERN int SVDECL(render_from_menu, 0);
-SVEXTERN int SVDECL(render_360, 0);
-SVEXTERN int SVDECL(rendering_status, 0);
-SVEXTERN int SVDECL(nrender_rows, 2);
+SVEXTERN int SVDECL(render_status, 0);
+SVEXTERN int SVDECL(resolution_multiplier, 1);
 SVEXTERN char render_file_base[1024];
 SVEXTERN int SVDECL(script_render_width, 320), SVDECL(script_render_height, 240);
 SVEXTERN int SVDECL(render_clip_left, 0);
@@ -135,7 +138,6 @@ SVEXTERN int SVDECL(render_clip_right, 0);
 SVEXTERN int SVDECL(render_clip_bottom, 0);
 SVEXTERN int SVDECL(render_clip_top, 0);
 SVEXTERN int render_size_index;
-SVEXTERN int render_skip_index;
 SVEXTERN int SVDECL(renderW, 640), SVDECL(renderH, 480), render_window_size;
 SVEXTERN int render_filetype;
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
@@ -229,7 +231,12 @@ SVEXTERN int SVDECL(show_tetratest_labels, 1);
 SVEXTERN float SVDECL(tetra_line_thickness, 2.0);
 SVEXTERN float SVDECL(tetra_point_size, 10.0);
 SVEXTERN int SVDECL(use_data_extremes, 1);
-SVEXTERN int SVDECL(extreme_data_offset,1), SVDECL(colorbar_offset,0), SVDECL(colorbarflip,0);
+SVEXTERN int SVDECL(extreme_data_offset, 1), SVDECL(colorbar_offset, 0);
+SVEXTERN int SVDECL(colorbar_flip, 0);
+#ifdef pp_COLORBARFLIP
+SVEXTERN int SVDECL(colorbar_autoflip,1);
+SVEXTERN int SVDECL(update_flipped_colorbar,0);
+#endif
 
 #ifdef INMAIN
 SVEXTERN float gvecphys[3]={0.0,0.0,-9.8};
@@ -789,7 +796,7 @@ SVEXTERN int slicefilenumber;
 SVEXTERN int exportdata;
 SVEXTERN int SVDECL(frame_count,1), SVDECL(last_frame_count,1);
 SVEXTERN int nspr;
-SVEXTERN int SVDECL(RenderSkip,1);
+SVEXTERN int SVDECL(render_skip,RENDER_CURRENT_SINGLE);
 SVEXTERN int SVDECL(isoframestep_global,1),SVDECL(isoframeskip_global,0);
 SVEXTERN int smoke3dframestep;
 SVEXTERN int smoke3dframeskip;
@@ -1164,6 +1171,7 @@ SVEXTERN int SVDECL(*mslice_loadstack,NULL), SVDECL(nmslice_loadstack,0), SVDECL
 SVEXTERN int SVDECL(*vslice_loadstack,NULL), SVDECL(nvslice_loadstack,0), SVDECL(ivslice_loadstack,0);
 SVEXTERN int SVDECL(*mvslice_loadstack,NULL),SVDECL(nmvslice_loadstack,0),SVDECL(imvslice_loadstack,0);
 SVEXTERN int SVDECL(*subslice_menuindex,NULL),SVDECL(*subvslice_menuindex,NULL);
+SVEXTERN int SVDECL(*msubslice_menuindex, NULL), SVDECL(*msubvslice_menuindex, NULL);
 
 SVEXTERN float xtimeleft, xtimeright;
 
@@ -1241,7 +1249,7 @@ SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVD
 SVEXTERN hrrdata SVDECL(*hrrinfo,NULL);
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
-SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundini_filename,NULL);
+SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN char SVDECL(*smokeviewini,NULL);
 SVEXTERN int overwrite_all,erase_all;
@@ -1306,7 +1314,7 @@ SVEXTERN int SVDECL(*plotiso,NULL);
 SVEXTERN float SVDECL(*global_times,NULL),cputimes[20];
 SVEXTERN int cpuframe;
 
-SVEXTERN float xyzeyeorig[3],xeyedir[3], yeyedir[3], zeyedir[3];
+SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
 //#ifdef INMAIN
 //  SVEXTERN float eyzeyeorig_OLD[3]={-1.000000, -1.000000, -1.000000};
 // #else

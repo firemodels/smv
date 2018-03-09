@@ -12,7 +12,7 @@
 #ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
-  #define PROGVERSION "6.6.1"
+  #define PROGVERSION ""
 #endif
 
 //*** options: all platforms
@@ -21,6 +21,8 @@
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
+#define pp_COLORBARFLIP // flip colorbar if soot visibility is shown
+
 //#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 //#define pp_OPACITYMAP
@@ -35,7 +37,6 @@
 
 //#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_READBUFFER   // read .smv file from a memory buffer
-#define pp_RENDER360    // render 360 images
 #define pp_SLICELOAD     // use slice file parameters found in .smv file to construct menus
 
 #define pp_THREAD       // turn on multi-threading

@@ -2088,7 +2088,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
-  ASSERT(bc!=NULL&&vi==NULL||bc==NULL&&vi!=NULL);
+  ASSERT((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
   if(bc!=NULL){
     jend=6;
     xminmax[0] = xplt[bc->ijk[IMIN]];
@@ -4159,9 +4159,9 @@ int GetTickDir(float *mm){
   float absangle, cosangle, minangle;
   int iminangle;
 
-  xyzeyeorig[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
-  xyzeyeorig[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
-  xyzeyeorig[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+  eye_position_fds[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
+  eye_position_fds[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
+  eye_position_fds[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
 
   minangle = 1000000.0;
 

@@ -1318,6 +1318,7 @@ void ReadSMVDynamic(char *file){
   FCLOSE(stream);
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
+  UpdateTimes();
 }
 
 
@@ -4510,8 +4511,10 @@ int ReadSMV(char *file, char *file2){
        NewMemory( (void **)&slice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&vslice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&subslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&subvslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&mslice_loadstack, nsliceinfo*sizeof(int)      )==0||
+       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
+       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0||
        NewMemory( (void **)&mvslice_loadstack, nsliceinfo*sizeof(int)      )==0||
        NewMemory( (void **)&vslicetypes,3*nsliceinfo*sizeof(int)    )==0){
        return 2;
@@ -8118,6 +8121,7 @@ typedef struct {
       if(has_reg==0&&has_comp==0){
         nsliceinfo--;
         nslicefiles--;
+        nn_slice--;
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
@@ -8157,6 +8161,15 @@ typedef struct {
       else{
         if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
+#ifdef pp_COLORBARFLIP
+      if(strlen(sd->label.longlabel)>14&&
+         strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
+         sd->colorbar_autoflip=1;
+      }
+      else{
+         sd->colorbar_autoflip=0;
+      }
+#endif
 
 
       {
@@ -9379,6 +9392,11 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &gversion);
       ONEORZERO(gversion);
+    }
+    if(Match(buffer, "GVECDOWN") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &gvec_down);
+      ONEORZERO(gvec_down);
     }
     if(Match(buffer, "SCALEDFONT") == 1){
       fgets(buffer, 255, stream);
@@ -10778,7 +10796,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "COLORBAR_FLIP") == 1 || Match(buffer, "COLORBARFLIP") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &colorbarflip);
+      sscanf(buffer, "%i %i", &colorbar_flip,&colorbar_autoflip);
       continue;
     }
     if(Match(buffer, "TRANSPARENT") == 1){
@@ -11045,7 +11063,7 @@ int ReadIni2(char *inifile, int localfile){
       int nheight360_temp = 0;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &render_window_size, &nrender_rows, &nheight360_temp);
+      sscanf(buffer, "%i %i %i", &render_window_size, &resolution_multiplier, &nheight360_temp);
       if(nheight360_temp > 0){
         nheight360 = nheight360_temp;
         nwidth360 = 2 * nheight360;
@@ -12810,7 +12828,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout," %f %f %f :cyan   \n",rgb2[6][0],rgb2[6][1],rgb2[6][2]);
   fprintf(fileout," %f %f %f :black  \n",rgb2[7][0],rgb2[7][1],rgb2[7][2]);
   fprintf(fileout, "COLORBAR_FLIP\n");
-  fprintf(fileout, " %i\n", colorbarflip);
+  fprintf(fileout, " %i %i\n", colorbar_flip,colorbar_autoflip);
   fprintf(fileout, "COLORBAR_SPLIT\n");
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
@@ -13033,6 +13051,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", gversion);
+  fprintf(fileout, "GVECDOWN\n");
+  fprintf(fileout, " %i\n", gvec_down);
   fprintf(fileout, "HISTOGRAM\n");
   fprintf(fileout, " %i %i %i %i %i %f\n",
   histogram_static, histogram_nbuckets, histogram_show_numbers, histogram_show_graph, histogram_show_outline, histogram_width_factor);
@@ -13280,7 +13300,7 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "RENDEROPTION\n");
-  fprintf(fileout, " %i %i %i\n", render_window_size, nrender_rows, nheight360);
+  fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){
@@ -13441,7 +13461,9 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout,"\n\n");
     fprintf(fileout,"# FDS/Smokeview Environment\n");
     fprintf(fileout,"# -------------------------\n\n");
-    fprintf(fileout,"# Smokeview Version: %s\n",version);
+    if(strcmp(version,"")!=0){
+      fprintf(fileout,"# Smokeview Version: %s\n",version);
+    }
     fprintf(fileout,"# Smokeview Build: %s\n",githash);
     fprintf(fileout,"# Smokeview Build Date: %s\n",__DATE__);
     if(fds_version!=NULL){

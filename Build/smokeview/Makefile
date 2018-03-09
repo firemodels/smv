@@ -22,7 +22,7 @@ else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
 endif
-GITINFO=-Dpp_COMPVER=\"$(COMP_VERSION)\" -Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
@@ -107,7 +107,7 @@ INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libif
 
 SMV_LIBS_LINUX = $(SMV_LIBS_OSX) -lglut
 SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm
-INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a
+INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifport.a
 
 #*** General Purpose Rules ***
 
@@ -217,7 +217,7 @@ intel_linux_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
 intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_linux_64 : LFLAGS    = -m64 -static-intel -lifport $(SMV_PROFILEFLAG)
+intel_linux_64 : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icpc
 intel_linux_64 : FC        = ifort
@@ -232,7 +232,7 @@ intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
 
 intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -D pp_INTEL  -WB -fpp -stand:f08 $(SMV_PROFILEFLAG)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64_db : LFLAGS    = -m64 -static-intel -lifport -traceback $(SMV_PROFILEFLAG)
+intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icpc
 intel_linux_64_db : FC        = ifort
@@ -244,7 +244,7 @@ intel_linux_64_db : $(obj)
 # ------------- gnu_linux_64_db ----------------
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -295,7 +295,7 @@ gnu_linux_32 : $(obj)
 # ------------- gnu_linux_32_db ----------------
 
 gnu_linux_32_db : FFLAGS    = -O0 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
+gnu_linux_32_db : CFLAGS    = -O0 -ggdb -Wall -Wno-unknown-pragmas -Wno-write-strings -Wno-comment -Wno-unused-function -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO)
 gnu_linux_32_db : LFLAGS    =
 gnu_linux_32_db : CC        = gcc
 gnu_linux_32_db : CPP       = g++

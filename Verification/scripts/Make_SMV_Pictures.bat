@@ -7,7 +7,6 @@ set DEBUG=
 set TEST=
 set SCRIPT_DIR=%CD%
 set runsmvcases=1
-set rungeomcases=1
 set runwuicases=1
 set useinstalled=0
 
@@ -122,10 +121,6 @@ if %runsmvcases% == 1 (
   %SH2BAT% SMV_Cases.sh SMV_Pictures_Cases.bat
   %SH2BAT% SMV_DIFF_Cases.sh SMV_DIFF_Pictures_Cases.bat
 )
-if %rungeomcases% == 1 (
-  echo creating case list from GEOM_Cases.sh
-  %SH2BAT% GEOM_Cases.sh GEOM_Pictures_Cases.bat
-)
 if %runwuicases% == 1 (
   echo creating case list from WUI_Cases.sh
   %SH2BAT% WUI_Cases.sh WUI_Pictures_Cases.bat
@@ -164,10 +159,6 @@ if "%runsmvcases%" == "1" (
 
   cd %BASEDIR%
   call %SCRIPT_DIR%\SMV_DIFF_Pictures_Cases.bat
-)
-if "%rungeomcases%" == "1" (
-  cd %BASEDIR%
-  call %SCRIPT_DIR%\GEOM_Pictures_Cases.bat
 )
 if "%runwuicases%" == "1" (
   cd %BASEDIR%
@@ -219,22 +210,14 @@ goto eof
    set valid=1
    set DEBUG=_db
  )
- if /I "%1" EQU "-geom" (
-   set valid=1
-   set runsmvcases=0
-   set rungeomcases=1
-   set runwuicases=0
- )
  if /I "%1" EQU "-smvwui" (
    set valid=1
    set runsmvcases=1
-   set rungeomcases=0
    set runwuicases=1
  )
  if /I "%1" EQU "-wui" (
    set valid=1
    set runsmvcases=0
-   set rungeomcases=0
    set runwuicases=1
  )
  if /I "%1" EQU "-test" (
@@ -265,7 +248,6 @@ echo -help  - display this message
 echo -debug - run with debug Smokeview
 echo -installed - use installed Smokeview
 echo -test - use test Smokeview
-echo -geom  - run only geometry cases
 echo -wui   - run only Wui cases
 exit /b
   

@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define RENDER_START 3
+#define RENDER_START_NORMAL 12
+#define RENDER_START_360 10
+
 #define COLORBAR_SET 18
 #define COLORBAR_RGB 2
 
@@ -205,9 +209,8 @@ void _Sniff_Errors(char *whereat);
 #define RENDER_OFF 0
 
 // render_mode values:
-#define RENDER_XYSINGLE 0
-#define RENDER_XYMULTI 1
-#define RENDER_360 2
+#define RENDER_NORMAL 0
+#define RENDER_360 1
 
 // render_times values:
 #define RENDER_SINGLETIME 0
@@ -404,6 +407,7 @@ void _Sniff_Errors(char *whereat);
 #define ROTATION_1AXIS 2
 #define ROTATION_3AXIS 3
 #define MENU_MOTION_SETTINGS 4
+#define MENU_MOTION_GRAVITY_VECTOR 5
 
 #define FIRSTCALL 1
 #define NOT_FIRSTCALL 0
@@ -579,6 +583,7 @@ void _Sniff_Errors(char *whereat);
 #define STOP_RELOADING -1
 #define RELOAD_MODE_INCREMENTAL -5
 #define RELOAD_MODE_ALL -6
+#define RELOAD_SMV_FILE -7
 
 #define RELOAD_INCREMENTAL_ALL 9
 #define RELOADALL 4
@@ -648,6 +653,11 @@ void _Sniff_Errors(char *whereat);
 #define MAXSMOKERGB 256
 #define StepOn 10000
 #define RenderCancel 999
+#define RenderStart 990
+#define RenderStartHIGHRES 988
+#define RenderStartORIGRES 987
+#define RenderStart360 986
+#define Render360 989
 #define RENDER_CURRENT_SINGLE 998
 #define RENDER_CURRENT_MULTIPLE 978
 #define RENDER_CURRENT_360 991
@@ -699,6 +709,7 @@ void _Sniff_Errors(char *whereat);
 #define RENDER_VOLUME 1
 
 #define COLORBAR_FLIP -2
+#define COLORBAR_AUTOFLIP -6
 #define COLORBAR_TOGGLE_BW -12
 #define COLORBAR_CONTINUOUS -17
 #define COLORBAR_STEPPED -18

@@ -244,7 +244,7 @@ void TrainerCB(int var){
       }
     }
     UpdateChopColors();
-    colorbarflip = 1;
+    colorbar_flip = 1;
     ColorbarMenu(COLORBAR_FLIP);
     break;
   case LOAD_OXY:
@@ -262,7 +262,7 @@ void TrainerCB(int var){
       }
     }
     UpdateChopColors();
-    colorbarflip = 0;
+    colorbar_flip = 0;
     ColorbarMenu(COLORBAR_FLIP);
     break;
   default:

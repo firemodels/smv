@@ -15,4 +15,6 @@
 #define PROGVERSION "1.0.1"
 #endif
 
+//#define pp_CSVF
+
 #endif

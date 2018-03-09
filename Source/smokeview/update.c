@@ -1883,6 +1883,30 @@ void UpdateShowScene(void){
   if(updatefacelists==1)UpdateFaceLists();
 }
 
+#ifdef pp_COLORBARFLIP
+/* ------------------ UpdateFlippedColorbar ------------------------ */
+
+void UpdateFlippedColorbar(void){
+  int i, flip = 0;
+
+  for(i = 0;i < nslice_loaded;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + slice_loaded_list[i];
+    if(slicei->type!=islicetype)continue;
+    if(slicei->display == 0)continue;
+    if(slicei->colorbar_autoflip == 1&&colorbar_autoflip == 1){
+      flip = 1;
+      break;
+    }
+  }
+  if(flip != colorbar_flip){
+    colorbar_flip = 1 - flip;
+    ColorbarMenu(COLORBAR_FLIP);
+  }
+}
+#endif
+
 /* ------------------ UpdateDisplay ------------------------ */
 #define TERRAIN_FIRE_LINE_UPDATE 39
 
@@ -1896,8 +1920,14 @@ void UpdateDisplay(void){
   UNLOCK_IBLANK
   if(update_have_gvec == 1){
     update_have_gvec = 0;
-    UpdateGvecDown(1);
+    UpdateGvecDown(gvec_down);
   }
+#ifdef pp_COLORBARFLIP
+  if(update_flipped_colorbar == 1){
+    update_flipped_colorbar = 0;
+    UpdateFlippedColorbar();
+  }
+#endif
   if(update_smokecolorbar == 1){
     update_smokecolorbar = 0;
     SmokeColorbarMenu(fire_colorbar_index);

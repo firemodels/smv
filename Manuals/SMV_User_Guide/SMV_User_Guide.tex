@@ -747,14 +747,18 @@ problems found in video cards on older computers.
 
 \section{Manipulating the Scene}
 
-A Smokeview scene may be rotated or translated by clicking and dragging the mouse with the left mouse button.
-Rotations have two different reference
-points, the scene center and the user location. Motion about the
+A Smokeview scene may be rotated or moved by using either the mouse or the Motion/View/Render dialog box.
+The scene may be rotated about a point within the scene, usually the scene center, or rotated about the point where the user is located.
+In either case, to rotate, click the scene with the left mouse button and drag either horizontally or vertically.
+Motion about the
 scene center which is the default is called world or global view while motion about the
-user location is called eye or first person view. These view
-methods may be swapped by pressing the ``e'' key or by selecting
+user location is called eye or first person view. These viewing modes
+ may be swapped by pressing the ``e'' key or by selecting
 the appropriate radio button in the Motion/View/Render
 dialog box.
+
+Similarly, the scene may be translated by clicking the scene with the left mouse button while either the {\tt ALT}\ or {\tt CTRL}\ keys are pressed.
+The {\tt ALT} key results in vertical motion of the scene while the {\tt CTRL} key results in motion in and out.
 
 \subsection{World View}
 
@@ -762,15 +766,6 @@ The scene may be rotated or translated using the mouse or
 by using controls in the Motion/View/Render dialog box.
 This dialog box, illustrated in Fig. \ref{figMOTIONmotion}, is opened
 using the {\em Dialogs$>$Motion}\ menu item.
-
-\begin{figure}[bph]
-\centerline{
-\begin{tabular}{cc}
-\includegraphics[width=2.4027777in]{FIGURES/figMOTION}
-\end{tabular}
-}\ \caption[Dialog box for controlling scene motion.]{Dialog box for controlling scene motion. To rotate the scene, select the rotation type
-then select and move the mouse in the  rotation control.  One may also select where to rotate about (scene center, any mesh center or user specified center). To translate the scene, select and move the mouse in the horizontal or vertical control.}\ \label{figMOTIONmotion}
-\end{figure}
 
 Clicking the left mouse button and dragging horizontally,
 vertically or a combination of both results in scene rotation or
@@ -801,22 +796,6 @@ translation up and down along the Z axis. Horizontal mouse
 movement has no effect.
 
 \elist
-
-
-The Motion dialog box may also be used to move the
-scene. Buttons in the Motion
-region of the dialog box allow one to translate or rotate the scene. The
-\frameit{Horizontal}\ button is used to translate the scene
-horizontally within a horizontal plane (left/right or in/out within the scene).  The
-\frameit{Vertical}\ button allows one to translate the scene vertically.
-Scene translation and rotations may also be specified by using controls to set x, y, z
-coordinates and azimuth, elevation rotation angles in the within the {\em Specify Orientation}\ panel.
-
-The \frameit{Rotate about}\ selection list allows one to change the center of rotation.
-Rotation center choices are: the scene center, denoted as {\em world center}\ in this list, the center of each mesh and a center specified by the user.
-Changing the rotation center is useful for cases where the portion of the scene being viewed is far away from the currently used rotation center.
-To allow for easier changes, the rotation center may be made visible (drawn as a small black sphere) by selecting the {\em Show user center}\ checkbox.  The rotation center may be changed by using the
-{\em x, y, z}\ spinners below this checkbox.
 
 \subsection{First Person View}
 \label{section:eyeview}
@@ -853,6 +832,32 @@ results in a  4x speedup of these actions. }\ \\ \hline
 \label{tabKEYS}
 \end{center}
 \end{table}
+
+\subsection{Motion Dialog Box}
+The Motion dialog box illustrated in Fig \ref{figMOTIONmotion} may also be used to manipulate the
+scene. Buttons in the Motion
+region of the dialog box allow one to translate or rotate the scene. The
+\frameit{Horizontal}\ button is used to translate the scene
+horizontally within a horizontal plane (left/right or in/out within the scene).  The
+\frameit{Vertical}\ button allows one to translate the scene vertically.
+Scene translation and rotations may also be specified by using controls to set x, y, z
+coordinates and azimuth, elevation rotation angles within the {\em Specify Orientation}\ panel.
+Within this same panel one may also specify whether the gravity vector (usually pointed down) is visualized and/or used to draw the scene.
+
+The \frameit{Rotate about}\ selection list allows one to change the center of rotation.
+Rotation center choices are: the scene center, denoted as {\em world center}\ in this list, the center of each mesh and a center specified by the user.
+Changing the rotation center is useful for cases where the portion of the scene being viewed is far away from the currently used rotation center.
+To allow for easier changes, the rotation center may be made visible (drawn as a small black sphere) by selecting the {\em Show}\ checkbox within the {\em rotation center panel}.  The rotation center may be changed by using the
+{\em x, y, z}\ spinners below this checkbox.
+
+\begin{figure}[bph]
+\centerline{
+\begin{tabular}{cc}
+\includegraphics[width=2.104166667in]{FIGURES/figMOTION}
+\end{tabular}
+}\ \caption[Dialog box for controlling scene motion.]{Dialog box for controlling scene motion. To rotate the scene, select the rotation type
+then select and move the mouse in the  rotation control.  One may also select where to rotate about (scene center, any mesh center or user specified center). To translate the scene, select and move the mouse in the horizontal or vertical control.}\ \label{figMOTIONmotion}
+\end{figure}
 
 %---------------------------------------------------------------------------------
 %---------------Realistic or Qualitative Visualization - 3D Smoke--------------
@@ -1228,7 +1233,7 @@ input file. }
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=2.083333in]{FIGURES/figGSLICE}
+\includegraphics[width=2.10416666in]{FIGURES/figGSLICE}
 }
 \caption[Dialog box for controlling the orientation of a 3D slice file.]{Dialog box for controlling the orientation of a 3D slice file.}
 \label{figGSLICE}
@@ -1938,7 +1943,7 @@ depressed then every other vector is skipped.
 \section{Display Options}
 \subsection{General}
 \begin{figure}[bph]
-\centerline{\includegraphics[width=2.791667in]{FIGURES/figProperties}
+\centerline{\includegraphics[width=2.7908333in]{FIGURES/figProperties}
 }\ \caption [Dialog Box for setting miscellaneous Smokeview scene
 properties.] {Dialog Box for setting miscellaneous Smokeview scene
 properties.}\ \label{figProperties}
@@ -2093,7 +2098,7 @@ A skipping interval may be selected to generate fewer images using the {\em Wher
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=1.79166667in]{FIGURES/figIMAGES}
+\includegraphics[width=2.027777in]{FIGURES/figRENDER}
 \caption[Dialog box for creating images of the smokeview scene.]
 {Dialog box for creating images of the smokeview scene. The Render portion of the Motion/View/Render dialog box allows one to create images of the smokeview scene. One may also clip or crop the rendered image.}
 \label{figMOTIONrender}
@@ -2976,8 +2981,8 @@ using piecewise cubic Hermite cubic splines.
 A tour is created by pressing the
 \frameit{Add Tour}\ button.  This tour has two key frames located
 at opposite ends of the Smokeview scene.  Additional key frames may
-be created by selected the \frameit{Add}\ button. A tour may also be 
-created by pressing the \frameit{Copy} button which makes a copy of the 
+be created by selected the \frameit{Add}\ button. A tour may also be
+created by pressing the \frameit{Copy} button which makes a copy of the
 currently selected tour.  A orientation of a tour may be reversed by selecting
 the \frameit{Reverse} button.
 
@@ -3836,11 +3841,11 @@ colorbar is created by selecting the \frameit{New}\ button. The
 new colorbar is created initially by making a copy of the
 currently selected colorbar. Once created, it may be altered by
 adding/deleting nodes with the \frameit{Add/Delete}\ buttons and
-altering color with the red, green, blue spinners. The colorbar 
-nodes may also be selected with the mouse and dragged to change 
-their position and hence their value. If the {\tt CTRL}\ key is 
-pressed when dragging then the node only moves along a horizontal 
-direction.  If the {\tt ALT}\ key is pressed when dragging then 
+altering color with the red, green, blue spinners. The colorbar
+nodes may also be selected with the mouse and dragged to change
+their position and hence their value. If the {\tt CTRL}\ key is
+pressed when dragging then the node only moves along a horizontal
+direction.  If the {\tt ALT}\ key is pressed when dragging then
 the node is constrained along a vertical direction. Note that only
 colorbars created by a user may be changed. The {\em Add/Delete}\
 and other buttons for modifying colorbar characteristics are only
@@ -3848,7 +3853,7 @@ enabled for user defined colorbars.  They are disabled for
 Smokeview predefined colorbars. Colorbar definitions (only
 colorbars created by the user) are saved in the Smokeview
 configuration (.ini) file.  The \frameit{Distribute nodes uniformly}\
-button is used as the name infers to distribute the individual colors 
+button is used as the name infers to distribute the individual colors
 of the colorbar uniformly along the colorbar path.
 
 The bottom portion of the Colorbar Editor dialog box is
@@ -4086,7 +4091,7 @@ file. If ffmpeg is installed use the Movie dialog illustrated in Figure \ref{fig
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=1.7916666in]{FIGURES/figIMAGES}&
+\includegraphics[width=2.0277777in]{FIGURES/figRENDER}&
 \includegraphics[width=1.7916666in]{FIGURES/figMOVIE}
 \end{tabular}
 \end{center}
@@ -4776,8 +4781,8 @@ and how it is represented by FDS, a series of grid cell faces.
 
 \kitem{r,R}Render the current scene as a JPEG or a PNG file which
 can be viewed in a web browser or inserted into a word processing
-document.  If the upper case {\tt R}\ key is selected then the
-scene is rendered in with double the screen resolution.
+document.  If {\tt R}\ is selected then the
+scene is rendered in with double the screen resolution (or greater if the image multiplier menu is selected).
 
 \kitem{s}Increment the number of vectors skipped. This is useful
 for making vector displays more readable when grids are finely
@@ -4826,11 +4831,12 @@ to the yz, xz and xy planes).
 
 \kitem{ALT c}Open the Clipping dialog box.
 
-\kitem{ALT d}Open the Display dialog box.
+\kitem{ALT d, D}Open the Display dialog box.
+On the OSX version of smokeview only {\tt ALT D}\ can be used to open the Display dialog box
+as {\tt d}\ and {\tt f}\ are used for {\tt CTRL}\ and
+{\tt ALT}\ modifier keys respectively.
 
 \kitem{ALT e}Open the Blockage info dialog box.
-
-\kitem{ALT f}Open the File bounds dialog box.
 
 \kitem{ALT g}Open the Viewpoint dialog box.
 
@@ -4848,6 +4854,8 @@ to the yz, xz and xy planes).
 \kitem{ALT r}Toggle research mode (research mode uses global min
 and max for coloring data and turns off axis label smoothing when
 displaying it.)
+
+\kitem{ALT R}Display scene in 360$^\circ$ view mode - all view directions of the scene are displayed in a $1024\times 512$ image.
 
 \kitem{ALT s}Open the 3D Smoke dialog box.
 
