@@ -5361,6 +5361,7 @@ static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0, iloadsubslicemenu=0;
+static int *loadsubpatchmenu = NULL, *nsubpatchmenus=NULL, iloadsubpatchmenu=0, nloadsubpatchmenu = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
 static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
@@ -5540,6 +5541,10 @@ updatemenu=0;
       }
     }
     nmenus=0;
+  }
+  if(nloadsubpatchmenu > 0){
+    FREEMEMORY(loadsubpatchmenu);
+    FREEMEMORY(nsubpatchmenus);
   }
   if(nloadsubslicemenu>0){
     FREEMEMORY(loadsubslicemenu);
@@ -9743,12 +9748,11 @@ updatemenu=0;
         }
       }
       if(nmeshes>1){
-        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-      }
-
-      if(nmeshes>1){
         char menulabel[1024];
 
+        // count patch submenus
+
+        nloadsubpatchmenu=0;
         for(ii=0;ii<npatchinfo;ii++){
           int im1;
           patchdata *patchi, *patchim1;
@@ -9759,12 +9763,67 @@ updatemenu=0;
             patchim1=patchinfo + im1;
           }
           patchi = patchinfo + i;
-          if(ii==0||strcmp(patchi->label.longlabel,patchim1->label.longlabel)!=0){
-            strcpy(menulabel,patchi->label.longlabel);
-            glutAddMenuEntry(menulabel,-i-10);
+          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
+            nloadsubpatchmenu++;
+          }
+        }
+
+        // create patch submenus
+
+        NewMemory((void **)&loadsubpatchmenu,nloadsubpatchmenu*sizeof(int));
+        NewMemory((void **)&nsubpatchmenus,nloadsubpatchmenu*sizeof(int));
+        for(i=0;i<nloadsubpatchmenu;i++){
+          loadsubpatchmenu[i]=0;
+          nsubpatchmenus[i]=0;
+        }
+
+        iloadsubpatchmenu=0;
+        for(ii=0;ii<npatchinfo;ii++){
+          int im1;
+          patchdata *patchi, *patchim1;
+
+          i = patchorderindex[ii];
+          if(ii>0){
+            im1 = patchorderindex[ii-1];
+            patchim1=patchinfo + im1;
+          }
+          patchi = patchinfo + i;
+          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
+            CREATEMENU(loadsubpatchmenu[iloadsubpatchmenu],LoadBoundaryMenu);
+            iloadsubpatchmenu++;
+          }
+          if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
+            nsubpatchmenus[iloadsubpatchmenu-1]++;
+            glutAddMenuEntry(patchi->menulabel_suffix,-i-10);
+          }
+        }
+
+        // call patch submenus from main patch menu
+
+        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
+        iloadsubpatchmenu=0;
+        for(ii=0;ii<npatchinfo;ii++){
+          int im1;
+          patchdata *patchi, *patchim1;
+
+          i = patchorderindex[ii];
+          if(ii>0){
+            im1 = patchorderindex[ii-1];
+            patchim1=patchinfo + im1;
+          }
+          patchi = patchinfo + i;
+          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
+            if(nsubpatchmenus[iloadsubpatchmenu]>1){
+              glutAddSubMenu(patchi->menulabel_base,loadsubpatchmenu[iloadsubpatchmenu]);
+            }
+            else{
+              glutAddMenuEntry(patchi->label.longlabel,-i-10);
+            }
+            iloadsubpatchmenu++;
           }
         }
       }
+
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){

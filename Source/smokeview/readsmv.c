@@ -8456,6 +8456,9 @@ typedef struct {
       patchi->chopmax=0.0;
       meshinfo[blocknumber].patchfilenum=-1;
       if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
+        char geomlabel2[256], *geomptr=NULL;
+
+        strcpy(geomlabel2, "");
         if(patchi->filetype==PATCH_CELL_CENTER){
           if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
@@ -8469,12 +8472,19 @@ typedef struct {
           if(patchi->geom_fdsfiletype != NULL){
             if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES") == 0){
               strcat(geomlabel, " - EXIM faces");
+              strcpy(geomlabel2, " - EXIM faces");
             }
             if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
               strcat(geomlabel, " - Cut cell faces");
+              strcpy(geomlabel2, " - Cut cell faces");
             }
           }
           if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+        }
+        strcpy(patchi->menulabel_base, patchi->label.longlabel);
+        if(strlen(geomlabel2) > 0){
+          geomptr = strstr(patchi->menulabel_base, geomlabel2);
+          if(geomptr != NULL)geomptr[0] = 0;
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
