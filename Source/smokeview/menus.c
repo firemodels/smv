@@ -5568,7 +5568,7 @@ updatemenu=0;
 
 /* --------------------------------patch menu -------------------------- */
   if(npatchinfo>0){
-    int npatchslice = 0;
+    int patchgeom_showhide = 0;
 
     {
       int ii;
@@ -5626,7 +5626,7 @@ updatemenu=0;
         patchi = patchinfo+i;
         if(patchi->loaded==0)continue;
         npatchloaded++;
-        if(patchi->slice == 1)npatchslice++;
+        if(patchi->slice == 1 || patchi->filetype == PATCH_GEOMETRY)patchgeom_showhide = 1;
         if(activate_threshold==1){
           if(
             strncmp(patchi->label.shortlabel,"TEMP",4) == 0||
@@ -5636,7 +5636,7 @@ updatemenu=0;
           }
         }
       }
-      if(npatchslice>0){
+      if(patchgeom_showhide==1){
         int hide_edges = 1;
 
         glutAddMenuEntry("Geometry slice data", DUMMYwallmenu);
