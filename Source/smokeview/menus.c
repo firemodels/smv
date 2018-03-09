@@ -9000,7 +9000,7 @@ updatemenu=0;
     glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
     glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
-//  count number of subslice menus
+//  count slice submenus
 
     nloadsubslicemenu=1;
     for(i=1;i<nsliceinfo;i++){
@@ -9011,7 +9011,7 @@ updatemenu=0;
       if(strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0)nloadsubslicemenu++;
     }
 
-// allocate and initialize subslicemenus
+// create slice submenus
 
     NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
     for(i=0;i<nloadsubslicemenu;i++){
@@ -9066,6 +9066,9 @@ updatemenu=0;
         iloadsubslicemenu++;
       }
     }
+
+// call slice submenus from main slice menu
+
     CREATEMENU(loadslicemenu,LoadSliceMenu);
     iloadsubslicemenu=0;
     for(i=0;i<nsliceinfo;i++){
@@ -9750,7 +9753,7 @@ updatemenu=0;
       if(nmeshes>1){
         char menulabel[1024];
 
-        // count patch submenus
+// count patch submenus
 
         nloadsubpatchmenu=0;
         for(ii=0;ii<npatchinfo;ii++){
@@ -9768,7 +9771,7 @@ updatemenu=0;
           }
         }
 
-        // create patch submenus
+// create patch submenus
 
         NewMemory((void **)&loadsubpatchmenu,nloadsubpatchmenu*sizeof(int));
         NewMemory((void **)&nsubpatchmenus,nloadsubpatchmenu*sizeof(int));
@@ -9798,7 +9801,7 @@ updatemenu=0;
           }
         }
 
-        // call patch submenus from main patch menu
+// call patch submenus from main patch menu
 
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
         iloadsubpatchmenu=0;
