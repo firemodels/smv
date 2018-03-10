@@ -5361,7 +5361,8 @@ static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0, iloadsubslicemenu=0;
-static int *loadsubpatchmenu = NULL, *nsubpatchmenus=NULL, iloadsubpatchmenu=0, nloadsubpatchmenu = 0;
+static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
+static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, iloadsubpatchmenu_s=0, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
 static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
@@ -5542,9 +5543,13 @@ updatemenu=0;
     }
     nmenus=0;
   }
-  if(nloadsubpatchmenu > 0){
-    FREEMEMORY(loadsubpatchmenu);
-    FREEMEMORY(nsubpatchmenus);
+  if(nloadsubpatchmenu_b > 0){
+    FREEMEMORY(loadsubpatchmenu_b);
+    FREEMEMORY(nsubpatchmenus_b);
+  }
+  if(nloadsubpatchmenu_s>0){
+    FREEMEMORY(loadsubpatchmenu_s);
+    FREEMEMORY(nsubpatchmenus_s);
   }
   if(nloadsubslicemenu>0){
     FREEMEMORY(loadsubslicemenu);
@@ -7744,7 +7749,7 @@ updatemenu=0;
   }
   if(npatchloaded>0){
     showhide_data = 1;
-    glutAddSubMenu(_("Boundaries"), showpatchmenu);
+    glutAddSubMenu(_("Boundary"), showpatchmenu);
   }
   {
     int human_present=0;
@@ -8981,6 +8986,62 @@ updatemenu=0;
     }
   }
 
+// setup boundary slices for slice files
+
+    if(nmeshes>1){
+      int ii;
+
+      // count patch submenus
+
+      nloadsubpatchmenu_s = 0;
+      for(ii = 0;ii<npatchinfo;ii++){
+        int im1;
+        patchdata *patchi, *patchim1;
+
+        i = patchorderindex[ii];
+        if(ii>0){
+          im1 = patchorderindex[ii-1];
+          patchim1 = patchinfo+im1;
+        }
+        patchi = patchinfo+i;
+        if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+          nloadsubpatchmenu_s++;
+        }
+      }
+
+      // create patch submenus
+
+      NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s*sizeof(int));
+      NewMemory(  (void **)&nsubpatchmenus_s, nloadsubpatchmenu_s*sizeof(int));
+      for(i = 0;i<nloadsubpatchmenu_s;i++){
+        loadsubpatchmenu_s[i] = 0;
+        nsubpatchmenus_s[i] = 0;
+      }
+
+      iloadsubpatchmenu_s = 0;
+      for(ii = 0;ii<npatchinfo;ii++){
+        int im1;
+        patchdata *patchi, *patchim1;
+
+        i = patchorderindex[ii];
+        if(ii>0){
+          im1 = patchorderindex[ii-1];
+          patchim1 = patchinfo+im1;
+        }
+        patchi = patchinfo+i;
+        if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+          CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
+          iloadsubpatchmenu_s++;
+        }
+        if(ii==0||strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix)!=0){
+          if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+            nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
+            glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
+          }
+        }
+      }
+    }
+
   /* --------------------------------unload and load slice menus -------------------------- */
 
   if(nsliceinfo>0){
@@ -9237,6 +9298,29 @@ updatemenu=0;
         nloadsubmslicemenu++;
       }
     }
+    if(nmeshes>1){
+      int ii;
+
+      iloadsubpatchmenu_s = 0;
+      for(ii = 0;ii<npatchinfo;ii++){
+        int im1;
+        patchdata *patchi, *patchim1;
+
+        i = patchorderindex[ii];
+        if(ii>0){
+          im1 = patchorderindex[ii-1];
+          patchim1 = patchinfo+im1;
+        }
+        patchi = patchinfo+i;
+        if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+          if(nsubpatchmenus_s[iloadsubpatchmenu_s]>0){
+            glutAddSubMenu(patchi->menulabel_base, loadsubpatchmenu_s[iloadsubpatchmenu_s]);
+          }
+          iloadsubpatchmenu_s++;
+        }
+      }
+    }
+
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
     if(use_set_slicecolor==1){
       glutAddMenuEntry("  *defer slice coloring", MENU_SLICECOLORDEFER);
@@ -9505,8 +9589,6 @@ updatemenu=0;
       }
       glutAddMenuEntry("Unload all",UNLOAD_ALL);
 
-
-
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
         int im1;
@@ -9751,11 +9833,10 @@ updatemenu=0;
         }
       }
       if(nmeshes>1){
-        char menulabel[1024];
 
 // count patch submenus
 
-        nloadsubpatchmenu=0;
+        nloadsubpatchmenu_b=0;
         for(ii=0;ii<npatchinfo;ii++){
           int im1;
           patchdata *patchi, *patchim1;
@@ -9767,20 +9848,20 @@ updatemenu=0;
           }
           patchi = patchinfo + i;
           if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            nloadsubpatchmenu++;
+            nloadsubpatchmenu_b++;
           }
         }
 
 // create patch submenus
 
-        NewMemory((void **)&loadsubpatchmenu,nloadsubpatchmenu*sizeof(int));
-        NewMemory((void **)&nsubpatchmenus,nloadsubpatchmenu*sizeof(int));
-        for(i=0;i<nloadsubpatchmenu;i++){
-          loadsubpatchmenu[i]=0;
-          nsubpatchmenus[i]=0;
+        NewMemory((void **)&loadsubpatchmenu_b,nloadsubpatchmenu_b*sizeof(int));
+        NewMemory((void **)&nsubpatchmenus_b,nloadsubpatchmenu_b*sizeof(int));
+        for(i=0;i<nloadsubpatchmenu_b;i++){
+          loadsubpatchmenu_b[i]=0;
+          nsubpatchmenus_b[i]=0;
         }
 
-        iloadsubpatchmenu=0;
+        iloadsubpatchmenu_b=0;
         for(ii=0;ii<npatchinfo;ii++){
           int im1;
           patchdata *patchi, *patchim1;
@@ -9792,19 +9873,21 @@ updatemenu=0;
           }
           patchi = patchinfo + i;
           if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            CREATEMENU(loadsubpatchmenu[iloadsubpatchmenu],LoadBoundaryMenu);
-            iloadsubpatchmenu++;
+            CREATEMENU(loadsubpatchmenu_b[iloadsubpatchmenu_b],LoadBoundaryMenu);
+            iloadsubpatchmenu_b++;
           }
           if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
-            nsubpatchmenus[iloadsubpatchmenu-1]++;
-            glutAddMenuEntry(patchi->menulabel_suffix,-i-10);
+            if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOM")!=0){
+              nsubpatchmenus_b[iloadsubpatchmenu_b-1]++;
+              glutAddMenuEntry(patchi->menulabel_suffix,-i-10);
+            }
           }
         }
 
 // call patch submenus from main patch menu
 
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-        iloadsubpatchmenu=0;
+        iloadsubpatchmenu_b=0;
         for(ii=0;ii<npatchinfo;ii++){
           int im1;
           patchdata *patchi, *patchim1;
@@ -9816,13 +9899,13 @@ updatemenu=0;
           }
           patchi = patchinfo + i;
           if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            if(nsubpatchmenus[iloadsubpatchmenu]>1){
-              glutAddSubMenu(patchi->menulabel_base,loadsubpatchmenu[iloadsubpatchmenu]);
+            if(nsubpatchmenus_b[iloadsubpatchmenu_b]>1){
+              glutAddSubMenu(patchi->menulabel_base,loadsubpatchmenu_b[iloadsubpatchmenu_b]);
             }
-            else{
+            else if(nsubpatchmenus_b[iloadsubpatchmenu_b]==1){
               glutAddMenuEntry(patchi->label.longlabel,-i-10);
             }
-            iloadsubpatchmenu++;
+            iloadsubpatchmenu_b++;
           }
         }
       }
