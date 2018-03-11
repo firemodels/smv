@@ -4245,15 +4245,12 @@ void UpdateBoundaryMenuLabels(void){
         }
         if(patchi->geom_fdsfiletype!=NULL&&strlen(patchi->geom_fdsfiletype)>0){
           if(strcmp(patchi->geom_fdsfiletype, "INBOUND_FACES")==0){
-            STRCAT(patchi->menulabel, ", in boundary");
             STRCPY(patchi->menulabel_suffix, "in boundary");
           }
           if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES")==0){
-            STRCAT(patchi->menulabel, ", EXIM faces");
             STRCPY(patchi->menulabel_suffix, "EXIM faces");
           }
           if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
-            STRCAT(patchi->menulabel, ", Cut cell faces");
             STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
