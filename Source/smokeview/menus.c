@@ -4558,7 +4558,12 @@ void LoadBoundaryMenu(int value){
       break;
     default:
       for(i=0;i<npatchinfo;i++){
-        ReadBoundary(i,UNLOAD,&errorcode);
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+          ReadBoundary(i, UNLOAD, &errorcode);
+        }
       }
       break;
     }
