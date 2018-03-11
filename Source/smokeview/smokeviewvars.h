@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
 SVEXTERN int SVDECL(script_viewpoint_found, YES);

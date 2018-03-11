@@ -3479,7 +3479,12 @@ void UnloadBoundaryMenu(int value){
   }
   else{
     for(i=0;i<npatchinfo;i++){
-      ReadBoundary(i,UNLOAD,&errorcode);
+      patchdata *patchi;
+
+      patchi = patchinfo+i;
+      if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+        ReadBoundary(i,UNLOAD,&errorcode);
+      }
     }
   }
 }
@@ -3628,10 +3633,21 @@ void UnloadSliceMenu(int value){
   if(value>=0){
     ReadSlice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
   }
+  if(value<=-3){
+    UnloadBoundaryMenu(-3-value);
+  }
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
         ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+      }
+      for(i=0;i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo + i;
+        if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+          UnloadBoundaryMenu(i);
+        }
       }
     }
     else if(value==UNLOAD_LAST){
@@ -3673,6 +3689,9 @@ void UnloadMultiSliceMenu(int value){
     for(i=0;i<mslicei->nslices;i++){
       UnloadSliceMenu(mslicei->islices[i]);
     }
+  }
+  else if(value<=-3){
+    UnloadSliceMenu(value);
   }
   else{
     UnloadSliceMenu(UNLOAD_ALL);
@@ -8988,11 +9007,12 @@ updatemenu=0;
 
 // setup boundary slices for slice files
 
-    if(nmeshes>0){
+    {
       int ii;
 
       // count patch submenus
 
+      have_geom_slice_menus=0;
       nloadsubpatchmenu_s = 0;
       for(ii = 0;ii<npatchinfo;ii++){
         int im1;
@@ -9036,6 +9056,7 @@ updatemenu=0;
         if(ii==0||strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix)!=0){
           if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
             nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
+            have_geom_slice_menus=1;
             glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
           }
         }
@@ -9044,8 +9065,7 @@ updatemenu=0;
 
   /* --------------------------------unload and load slice menus -------------------------- */
 
-  if(nsliceinfo>0){
-
+  if(nsliceinfo>0||have_geom_slice_menus==1){
     CREATEMENU(unloadslicemenu,UnloadSliceMenu);
     for(i=0;i<nsliceinfo;i++){
       slicedata *sd;
@@ -9057,6 +9077,16 @@ updatemenu=0;
         glutAddMenuEntry(menulabel,sliceorderindex[i]);
       }
     }
+    for(i = 0;i<npatchinfo;i++){
+      patchdata *patchi;
+
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+        glutAddMenuEntry(patchi->label.longlabel, -3-i);
+        geom_slice_loaded++;
+      }
+    }
+
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
     glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
@@ -9074,7 +9104,7 @@ updatemenu=0;
 
 // create slice submenus
 
-    NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
+    if(nloadsubslicemenu>0)NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
     for(i=0;i<nloadsubslicemenu;i++){
       loadsubslicemenu[i]=0;
     }
@@ -9152,7 +9182,7 @@ updatemenu=0;
       }
     }
 // menus for boundary/slice geometry files
-    if(nmeshes>0){
+    {
       int ii;
 
       iloadsubpatchmenu_s = 0;
@@ -9176,7 +9206,7 @@ updatemenu=0;
     }
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
-    if(nsliceloaded>1){
+    if(nsliceloaded+geom_slice_loaded>1){
       glutAddSubMenu(_("Unload"),unloadslicemenu);
     }
     else{
@@ -9186,7 +9216,7 @@ updatemenu=0;
 
   /* --------------------------------unload and load multislice menus -------------------------- */
 
-  if(nmultisliceinfo+nfedinfo<nsliceinfo){
+  if(nmultisliceinfo+nfedinfo<nsliceinfo||geom_slice_loaded>0){
     CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
     nmultisliceloaded = 0;
     for(i = 0;i<nmultisliceinfo;i++){
@@ -9195,6 +9225,14 @@ updatemenu=0;
       mslicei = multisliceinfo+i;
       if(mslicei->loaded!=0){
         glutAddMenuEntry(mslicei->menulabel2, i);
+      }
+    }
+    for(i = 0;i<npatchinfo;i++){
+      patchdata *patchi;
+
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+        glutAddMenuEntry(patchi->label.longlabel, -3-i);
       }
     }
     glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
@@ -9366,7 +9404,7 @@ updatemenu=0;
       }
       glutAddSubMenu(loadmenulabel,loadslicemenu);
     }
-    if(nmultisliceloaded>1){
+    if(nmultisliceloaded+geom_slice_loaded>1){
       glutAddSubMenu(_("Unload"), unloadmultislicemenu);
     }
     else{
@@ -9761,8 +9799,10 @@ updatemenu=0;
 
     if(npatchinfo>0){
       int ii;
+      int npatchloaded2=0;
 
       nloadpatchsubmenus=0;
+
       CREATEMENU(unloadpatchmenu,UnloadBoundaryMenu);
       for(ii=0;ii<npatchinfo;ii++){
         patchdata *patchi;
@@ -9770,9 +9810,13 @@ updatemenu=0;
 
         i = patchorderindex[ii];
         patchi = patchinfo + i;
-        if(patchi->loaded==0)continue;
-        STRCPY(menulabel,patchi->menulabel);
-        glutAddMenuEntry(menulabel,i);
+        if(patchi->loaded==1){
+          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+            STRCPY(menulabel, patchi->menulabel);
+            glutAddMenuEntry(menulabel, i);
+            npatchloaded2++;
+          }
+        }
       }
       glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
@@ -9942,7 +9986,7 @@ updatemenu=0;
       }
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
       glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
-      if(npatchloaded>1){
+      if(npatchloaded2>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
       else{
