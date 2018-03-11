@@ -4510,9 +4510,11 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
-          LOCK_COMPRESS
-          ReadBoundary(i,LOAD,&errorcode);
-          UNLOCK_COMPRESS
+          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+            LOCK_COMPRESS
+              ReadBoundary(i, LOAD, &errorcode);
+            UNLOCK_COMPRESS
+          }
         }
       }
     }
@@ -5546,7 +5548,9 @@ updatemenu=0;
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1)npatchloaded++;
+    if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->loaded==1)npatchloaded++;
+    }
   }
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
