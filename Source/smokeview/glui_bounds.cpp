@@ -3617,6 +3617,7 @@ extern "C" void UpdateSliceListIndex(int sfn){
     UpdateSliceFilenum();
     sfn=slicefilenum;
   }
+  if(sfn < 0)return;
   sd = sliceinfo+sfn;
   slicefiletype = GetSliceIndex(sd);
   if(slicefiletype>=0&&slicefiletype<nslice_type){
