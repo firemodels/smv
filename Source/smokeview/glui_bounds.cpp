@@ -21,6 +21,14 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define MEMCHECK 1
 #endif
 
+#define IMMERSED_INSOLID 0
+#define IMMERSED_INGAS 1
+#define IMMERSED_INCUTCELL 2
+#define IMMERSED_SOLID 3
+#define IMMERSED_OUTLINE 4
+#define IMMERSED_POINTS 5
+#define IMMERSED_SHOWEDGES 6
+
 #define SMOOTH_SURFACES 402
 #define SORT_SURFACES 401
 #define ISO_SURFACE 1
@@ -88,6 +96,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define BOUNDARY_OUTPUT_ROLLOUT  0
 #define BOUNDARY_THRESHOLD_ROLLOUT 1
 #define BOUNDARY_DUPLICATE_ROLLOUT 2
+#define BOUNDARY_BOUNDIMMERSED_ROLLOUT 3
 
 #define ZONEVALMIN 50
 #define ZONEVALMAX 51
@@ -178,6 +187,7 @@ GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
 GLUI_Rollout *ROLLOUT_outputpatchdata=NULL;
+GLUI_Rollout *ROLLOUT_boundimmersed = NULL;
 GLUI_Rollout *ROLLOUT_filebounds = NULL;
 GLUI_Rollout *ROLLOUT_showhide = NULL;
 GLUI_Rollout *ROLLOUT_slice_average = NULL;
@@ -188,6 +198,9 @@ GLUI_Rollout *ROLLOUT_slicedups = NULL;
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 
+GLUI_Panel *PANEL_type = NULL;
+GLUI_Panel *PANEL_where = NULL;
+GLUI_Panel *PANEL_edgeshow = NULL;
 GLUI_Panel *PANEL_sliceshow=NULL;
 GLUI_Panel *PANEL_slicedup = NULL;
 GLUI_Panel *PANEL_vectorslicedup = NULL;
@@ -266,6 +279,14 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_immersed_solid=NULL;
+GLUI_Checkbox *CHECKBOX_immersed_outline=NULL;
+GLUI_Checkbox *CHECKBOX_immersed_points=NULL;
+
+GLUI_Checkbox *CHECKBOX_immersed_insolid=NULL;
+GLUI_Checkbox *CHECKBOX_immersed_ingas=NULL;
+GLUI_Checkbox *CHECKBOX_immersed_incutcell=NULL;
+
 GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
@@ -309,6 +330,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
+GLUI_RadioGroup *RADIO_show_immersed_edges=NULL;
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
 GLUI_RadioGroup *RADIO_boundaryslicedup = NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
@@ -380,8 +402,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define TIME_ROLLOUT 6
 #define MEMCHECK_ROLLOUT 7
 
-procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[3];
-procdata sliceprocinfo[5];
+procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
@@ -397,6 +418,20 @@ extern "C" void UpdateSliceDupDialog(void){
   if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
+}
+
+/* ------------------ UpdateImmersedControls ------------------------ */
+
+extern "C" void UpdateImmersedControls(void){
+  if(CHECKBOX_immersed_solid!=NULL)CHECKBOX_immersed_solid->set_int_val(show_patch_solid);
+  if(CHECKBOX_immersed_outline!=NULL)CHECKBOX_immersed_outline->set_int_val(show_patch_outline);
+  if(CHECKBOX_immersed_points!=NULL)CHECKBOX_immersed_points->set_int_val(show_patch_points);
+
+  if(CHECKBOX_immersed_insolid!=NULL)CHECKBOX_immersed_insolid->set_int_val(show_patch_insolid);
+  if(CHECKBOX_immersed_ingas!=NULL)CHECKBOX_immersed_ingas->set_int_val(show_patch_ingas);
+  if(CHECKBOX_immersed_incutcell!=NULL)CHECKBOX_immersed_incutcell->set_int_val(show_patch_incutcell);
+
+  if(RADIO_show_immersed_edges!=NULL)RADIO_show_immersed_edges->set_int_val(show_immersed_edges);
 }
 
 /* ------------------ UpdateIsoControls ------------------------ */
@@ -898,6 +933,49 @@ void BoundsDlgCB(int var){
     break;
   case COMPRESS_FILES:
     PRINTF("compressing\n");
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ ImmersedBoundCB ------------------------ */
+
+#define SHOW_POLYGON_EDGES 0
+#define SHOW_TRIANGLE_EDGES 1
+#define HIDE_EDGES 2
+extern "C" void ImmersedBoundCB(int var){
+  updatemenu = 1;
+  switch(var){
+  case IMMERSED_SOLID:
+  case IMMERSED_OUTLINE:
+  case IMMERSED_POINTS:
+  case IMMERSED_INSOLID:
+  case IMMERSED_INGAS:
+  case IMMERSED_INCUTCELL:
+    break;
+  case IMMERSED_SHOWEDGES:
+    switch (show_immersed_edges){
+    case SHOW_POLYGON_EDGES:
+      show_patch_incutcell = 1;
+      show_patch_cutcell_polygon = 1;
+      show_patch_outline = 1;
+      break;
+    case SHOW_TRIANGLE_EDGES:
+      show_patch_incutcell = 1;
+      show_patch_cutcell_polygon = 0;
+      show_patch_outline = 1;
+      break;
+    case HIDE_EDGES:
+      show_patch_cutcell_polygon = 0;
+      show_patch_outline = 0;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+    if(CHECKBOX_immersed_outline!=NULL)CHECKBOX_immersed_outline->set_int_val(show_patch_outline);
     break;
   default:
     ASSERT(FFALSE);
@@ -1748,6 +1826,26 @@ extern "C" void GluiBoundsSetup(int main_window){
     UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
     UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
+
+    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Immersed parameters", false, BOUNDARY_BOUNDIMMERSED_ROLLOUT, SubBoundRolloutCB);
+    ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundimmersed, BOUNDARY_BOUNDIMMERSED_ROLLOUT);
+
+    PANEL_type = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "type", true);
+    CHECKBOX_immersed_solid=glui_bounds->add_checkbox_to_panel(PANEL_type, _d("solid"),   &show_patch_solid,   IMMERSED_SOLID,   ImmersedBoundCB);
+    CHECKBOX_immersed_outline=glui_bounds->add_checkbox_to_panel(PANEL_type, _d("outline"), &show_patch_outline, IMMERSED_OUTLINE, ImmersedBoundCB);
+    CHECKBOX_immersed_points=glui_bounds->add_checkbox_to_panel(PANEL_type, _d("points"),  &show_patch_points,  IMMERSED_POINTS,  ImmersedBoundCB);
+
+    PANEL_where = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "where", true);
+    CHECKBOX_immersed_insolid=glui_bounds->add_checkbox_to_panel(PANEL_where, _d("in solid"),   &show_patch_insolid,   IMMERSED_INSOLID,   ImmersedBoundCB);
+    CHECKBOX_immersed_ingas=glui_bounds->add_checkbox_to_panel(PANEL_where, _d("in gas"),     &show_patch_ingas,     IMMERSED_INGAS,     ImmersedBoundCB);
+    CHECKBOX_immersed_incutcell=glui_bounds->add_checkbox_to_panel(PANEL_where, _d("in cutcell"), &show_patch_incutcell, IMMERSED_INCUTCELL, ImmersedBoundCB);
+
+    PANEL_edgeshow = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "edges", true);
+    RADIO_show_immersed_edges = glui_bounds->add_radiogroup_to_panel(PANEL_edgeshow, &show_immersed_edges,IMMERSED_SHOWEDGES,ImmersedBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_show_immersed_edges, _d("polygon"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_immersed_edges, _d("triangle"));
+    glui_bounds->add_radiobutton_to_group(RADIO_show_immersed_edges, _d("hide"));
+    ImmersedBoundCB(IMMERSED_SHOWEDGES);
 
     ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,"Output data",false,BOUNDARY_OUTPUT_ROLLOUT,SubBoundRolloutCB);
     ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_outputpatchdata, BOUNDARY_OUTPUT_ROLLOUT);

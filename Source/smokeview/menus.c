@@ -4577,6 +4577,8 @@ void LoadBoundaryMenu(int value){
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
+#define IMMERSED_SHOWEDGES 6
+
 void ShowBoundaryMenu(int value){
   updatemenu=1;
   updatefacelists=1;
@@ -4641,35 +4643,42 @@ void ShowBoundaryMenu(int value){
     }
     else if(value == SOLIDpatchmenu){
       show_patch_solid = 1 - show_patch_solid;
+      UpdateImmersedControls();
     }
     else if(value == OUTLINEpatchmenu){
       show_patch_outline = 1 - show_patch_outline;
+      UpdateImmersedControls();
     }
     else if(value == POINTSpatchmenu){
-      show_patch_verts = 1 - show_patch_verts;
+      show_patch_points = 1 - show_patch_points;
+      UpdateImmersedControls();
     }
     else if(value==INSOLIDpatchmenu){
       show_patch_insolid = 1-show_patch_insolid;
+      UpdateImmersedControls();
     }
     else if(value==INGASpatchmenu){
       show_patch_ingas = 1-show_patch_ingas;
+      UpdateImmersedControls();
     }
     else if(value == INCUTCELLpatchmenu){
       show_patch_incutcell = 1 - show_patch_incutcell;
+      UpdateImmersedControls();
     }
     else if(value==SHOWCUTCELLPOLYGONSpatchmenu){
-      show_patch_incutcell = 1;
-      show_patch_cutcell_polygon = 1;
-      show_patch_outline = 1;
+      show_immersed_edges=0;
+      ImmersedBoundCB(IMMERSED_SHOWEDGES);
+      UpdateImmersedControls();
     }
     else if(value == SHOWCUTCELLTRIANGLESpatchmenu){
-      show_patch_incutcell = 1;
-      show_patch_cutcell_polygon = 0;
-      show_patch_outline = 1;
+      show_immersed_edges=1;
+      ImmersedBoundCB(IMMERSED_SHOWEDGES);
+      UpdateImmersedControls();
     }
     else if(value == HIDECUTCELLTRIANGLESpatchmenu){
-      show_patch_cutcell_polygon = 0;
-      show_patch_outline = 0;
+      show_immersed_edges=2;
+      ImmersedBoundCB(IMMERSED_SHOWEDGES);
+      UpdateImmersedControls();
     }
     else if(value != DUMMYwallmenu){
       int n;
@@ -5670,8 +5679,6 @@ updatemenu=0;
         }
       }
       if(patchgeom_showhide==1){
-        int hide_edges = 1;
-
         glutAddMenuEntry("Geometry slice data", DUMMYwallmenu);
         if(show_patch_solid==1){
           glutAddMenuEntry("  *solid", SOLIDpatchmenu);
@@ -5685,7 +5692,7 @@ updatemenu=0;
         else{
           glutAddMenuEntry("  outline", OUTLINEpatchmenu);
         }
-        if(show_patch_verts==1){
+        if(show_patch_points==1){
           glutAddMenuEntry("  *points", POINTSpatchmenu);
         }
         else{
@@ -5710,25 +5717,25 @@ updatemenu=0;
         else{
           glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
         }
-        if(show_patch_outline==1&&show_patch_cutcell_polygon==1){
-          glutAddMenuEntry("      *show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
-          hide_edges = 0;
-        }
-        else{
-          glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
-        }
-        if(show_patch_outline==1&&show_patch_cutcell_polygon == 0){
-          glutAddMenuEntry("      *show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
-          hide_edges = 0;
-        }
-        else{
-          glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
-        }
-        if(hide_edges==1){
-          glutAddMenuEntry("      *hide edges", HIDECUTCELLTRIANGLESpatchmenu);
-        }
-        else{
-          glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+        switch (show_immersed_edges){
+          case 0:
+            glutAddMenuEntry("      *show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
+            glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
+            glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+            break;
+          case 1:
+            glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
+            glutAddMenuEntry("      *show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
+            glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+            break;
+          case 2:
+            glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
+            glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
+            glutAddMenuEntry("      *hide edges", HIDECUTCELLTRIANGLESpatchmenu);
+            break;
+          default:
+            ASSERT(FFALSE);
+            break;
         }
       }
       if(activate_threshold == 1 && local_do_threshold == 1){
