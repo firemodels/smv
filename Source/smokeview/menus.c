@@ -5608,7 +5608,7 @@ updatemenu=0;
 
   {
     CREATEMENU(showpatchgeometry, ShowBoundaryMenu);
-    glutAddMenuEntry("Geometry slice data", DUMMYwallmenu);
+    glutAddMenuEntry("type", DUMMYwallmenu);
     if(show_patch_solid == 1){
       glutAddMenuEntry("  *solid", SOLIDpatchmenu);
     }
@@ -5627,7 +5627,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  points", POINTSpatchmenu);
     }
-    glutAddMenuEntry("-", DUMMYwallmenu);
+    glutAddMenuEntry("where", DUMMYwallmenu);
     if(show_patch_insolid == 1){
       glutAddMenuEntry("  *in solid", INSOLIDpatchmenu);
     }
