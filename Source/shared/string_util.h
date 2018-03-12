@@ -61,6 +61,7 @@ EXTERNCPP unsigned int   Date2Day(char *tokenorig);
 EXTERNCPP int            SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int            SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
 EXTERNCPP int            ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
+EXTERNCPP int            AppendLabels(flowlabels *flow_label, char *suffix_label);
 
 #ifdef pp_HASH
 EXTERNCPP unsigned char *GetHashMD5(char *file);

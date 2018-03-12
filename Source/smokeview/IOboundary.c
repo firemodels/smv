@@ -4204,10 +4204,10 @@ int BoundaryCompare( const void *arg1, const void *arg2 ){
   patchi = patchinfo + *(int *)arg1;
   patchj = patchinfo + *(int *)arg2;
 
-  if(strcmp(patchi->label.longlabel,patchj->label.longlabel)<0)return -1;
-  if(strcmp(patchi->label.longlabel,patchj->label.longlabel)>0)return 1;
-  if(strcmp(patchi->gslicedir, patchj->gslicedir)<0)return -1;
-  if(strcmp(patchi->gslicedir, patchj->gslicedir)>0)return 1;
+  if(strcmp(patchi->menulabel_base,patchj->menulabel_base)<0)return -1;
+  if(strcmp(patchi->menulabel_base,patchj->menulabel_base)>0)return 1;
+  if(strcmp(patchi->menulabel_suffix,patchj->menulabel_suffix)<0)return -1;
+  if(strcmp(patchi->menulabel_suffix,patchj->menulabel_suffix)>0)return 1;
   if(patchi->blocknumber<patchj->blocknumber)return -1;
   if(patchi->blocknumber>patchj->blocknumber)return 1;
   return 0;
@@ -4221,20 +4221,12 @@ void UpdateBoundaryMenuLabels(void){
   char label[128];
 
   if(npatchinfo>0){
-    FREEMEMORY(patchorderindex);
-    NewMemory((void **)&patchorderindex,sizeof(int)*npatchinfo);
-    for(i=0;i<npatchinfo;i++){
-      patchorderindex[i]=i;
-    }
-    qsort( (int *)patchorderindex, (size_t)npatchinfo, sizeof(int), BoundaryCompare);
-
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       STRCPY(patchi->menulabel, "");
-      STRCPY(patchi->menulabel_base, "");
+      STRCPY(patchi->menulabel_suffix, "");
       if(nmeshes == 1){
         STRCAT(patchi->menulabel, patchi->label.longlabel);
-        STRCAT(patchi->menulabel_base, patchi->label.longlabel);
       }
       else{
         meshdata *patchmesh;
@@ -4248,16 +4240,18 @@ void UpdateBoundaryMenuLabels(void){
           if(strlen(patchi->gslicedir) != 0){
             STRCAT(patchi->menulabel, ", ");
             STRCAT(patchi->menulabel, patchi->gslicedir);
+            STRCPY(patchi->menulabel_suffix, patchi->gslicedir);
           }
         }
         if(patchi->geom_fdsfiletype!=NULL&&strlen(patchi->geom_fdsfiletype)>0){
           if(strcmp(patchi->geom_fdsfiletype, "INBOUND_FACES")==0){
-            STRCAT(patchi->menulabel, ", in boundary");
-            STRCAT(patchi->menulabel_base, ", in boundary");
+            STRCPY(patchi->menulabel_suffix, "in boundary");
           }
           if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES")==0){
-            STRCAT(patchi->menulabel, ", EXIM faces");
-            STRCAT(patchi->menulabel_base, ", EXIM faces");
+            STRCPY(patchi->menulabel_suffix, "EXIM faces");
+          }
+          if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+            STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
       }
@@ -4277,6 +4271,13 @@ void UpdateBoundaryMenuLabels(void){
         STRCAT(patchi->menulabel," (ZLIB)");
       }
     }
+
+    FREEMEMORY(patchorderindex);
+    NewMemory((void **)&patchorderindex, sizeof(int)*npatchinfo);
+    for(i = 0;i < npatchinfo;i++){
+      patchorderindex[i] = i;
+    }
+    qsort((int *)patchorderindex, (size_t)npatchinfo, sizeof(int), BoundaryCompare);
   }
 }
 
@@ -4309,6 +4310,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
 
   if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
   if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
+  if(strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;
@@ -4326,7 +4328,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
 
     if(patchj==patchi||patchj->skip==1)continue;
     if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
-    if(patchi->dir != patchj->dir||patchj->dir==0)continue;
+    if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
     grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);

@@ -2183,11 +2183,13 @@ int RunScript(void){
     if(stderr2 != NULL){
       unsigned int nchars;
 
-      fprintf(stderr, "----------------------------------------------\n");
-      fprintf(stderr, "Smokeview script errors :\n");
-      nchars = StreamCopy(stderr2, stderr);
-      if(nchars==0)fprintf(stderr, "*** none ***\n");
-      fprintf(stderr, "----------------------------------------------\n");
+      nchars = StreamCopy(stderr2, stderr, 0);
+      if(nchars>0){
+        fprintf(stderr, "----------------------------------------------\n");
+        fprintf(stderr, "Smokeview script errors :\n");
+        StreamCopy(stderr2, stderr, 1);
+        fprintf(stderr, "----------------------------------------------\n");
+      }
       fclose(stderr2);
       stderr2 = NULL;
     }
