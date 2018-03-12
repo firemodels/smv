@@ -4510,11 +4510,9 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
-          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
-            LOCK_COMPRESS
-              ReadBoundary(i, LOAD, &errorcode);
-            UNLOCK_COMPRESS
-          }
+          LOCK_COMPRESS
+          ReadBoundary(i, LOAD, &errorcode);
+          UNLOCK_COMPRESS
         }
       }
     }
