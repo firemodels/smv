@@ -1325,6 +1325,16 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
+  if(flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
+    patchdata *patchold;
+
+    patchold = patchinfo + meshi->patchfilenum;
+    if(patchold->loaded == 1){
+      int errorcode2;
+
+      ReadBoundaryBndf(meshi->patchfilenum, UNLOAD, &errorcode2);
+    }
+  }
   meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
 
