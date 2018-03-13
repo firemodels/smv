@@ -4255,6 +4255,9 @@ void UpdateBoundaryMenuLabels(void){
           }
         }
       }
+      else{
+        STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
+      }
       if(FILE_EXISTS(patchi->comp_file)==YES){
         patchi->file=patchi->comp_file;
         patchi->compression_type=COMPRESSED_ZLIB;

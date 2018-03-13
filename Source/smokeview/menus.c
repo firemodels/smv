@@ -7420,6 +7420,7 @@ updatemenu=0;
     int ii;
 
     CREATEMENU(showhideslicemenu,ShowHideSliceMenu);
+    // loaded slice entries
     for(ii=0;ii<nslice_loaded;ii++){
       slicedata *sd;
       char menulabel[1024];
@@ -7440,6 +7441,16 @@ updatemenu=0;
         STRCAT(menulabel,sd->slicelabel);
       }
       glutAddMenuEntry(menulabel,i);
+    }
+    // loaded geometry slice entries
+    for(ii = 0;ii<npatchinfo;ii++){
+      patchdata *patchi;
+
+      i = patchorderindex[ii];
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+        //glutAddMenuEntry(patchi->label.longlabel,-20-i);
+      }
     }
     if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
     }
@@ -7509,6 +7520,8 @@ updatemenu=0;
     }
   }
   if((nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)||patchgeom_slice_showhide==1){
+    int ii;
+
     CREATEMENU(showmultislicemenu, ShowMultiSliceMenu);
     for(i = 0;i<nmultisliceinfo;i++){
       slicedata *sd;
@@ -7533,6 +7546,16 @@ updatemenu=0;
         STRCAT(menulabel, sd->slicelabel);
       }
       glutAddMenuEntry(menulabel, i);
+    }
+    // loaded geometry slice entries
+    for(ii = 0;ii<npatchinfo;ii++){
+      patchdata *patchi;
+
+      i = patchorderindex[ii];
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+        //glutAddMenuEntry(patchi->label.longlabel,-20-i);
+      }
     }
     if(nsliceloaded>0){
       glutAddMenuEntry("  Show in:", MENU_DUMMY);
