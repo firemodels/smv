@@ -815,37 +815,52 @@ error = 0
 read(lu20)one
 read(lu20)version
 nvars=0
-valmin = 1000000000000.0;
-valmax = -valmin
 do itime=1, ntimes
   read(lu20,iostat=finish)times(itime)
   if(redirect_flag.eq.0)write(6,10)times(itime)
 10 format(" boundary element time=",f9.2)
-  if(finish.eq.0)read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
-  nstatics(itime)=nvert_s+ntri_s
+  if(finish.eq.0)then
+    read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
+    nstatics(itime)=nvert_s+ntri_s
+  endif
 
-  if(finish.eq.0.and.nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
-  nvars = nvars + nvert_s
+  if(finish.eq.0)then
+    if(nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+    nvars = nvars + nvert_s
+  endif
 
-  if(finish.eq.0.and.ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
-  nvars = nvars + ntri_s
+  if(finish.eq.0)then
+    if(ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+    nvars = nvars + ntri_s
+  endif
 
   ndynamics(itime)=nvert_d+ntri_d
-  if(finish.eq.0.and.nvert_d.ne.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
-  nvars = nvars + nvert_d
+  if(finish.eq.0)then
+    if(nvert_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+    nvars = nvars + nvert_d
+  endif
 
-  if(finish.eq.0.and.ntri_d.ne.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
-  nvars = nvars + ntri_d
+  if(finish.eq.0)then
+    if(ntri_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+    nvars = nvars + ntri_d
+  endif
 
-  do i = 1, ntri_s+ntri_d+nvert_s+nvert_d
-    ii = nvars + i - ntri_s-ntri_d-nvert_s-nvert_d
-    if(vals(ii).lt.valmin)valmin=vals(ii)
-    if(vals(ii).gt.valmax)valmax=vals(ii)
-  end do
   if(finish.ne.0)then
+    valmin = vals(1)
+    valmax = valmin
+    do i = 2, nvars
+      if(vals(i).lt.valmin)valmin=vals(i)
+      if(vals(i).gt.valmax)valmax=vals(i)
+    end do
     close(lu20)
     return
   endif
+end do
+valmin = vals(1)
+valmax = valmin
+do i = 2, nvars
+  if(vals(i).lt.valmin)valmin=vals(i)
+  if(vals(i).gt.valmax)valmax=vals(i)
 end do
 if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)
