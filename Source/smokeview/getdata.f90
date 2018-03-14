@@ -842,7 +842,10 @@ do itime=1, ntimes
     if(vals(ii).lt.valmin)valmin=vals(ii)
     if(vals(ii).gt.valmax)valmax=vals(ii)
   end do
-  if(finish.ne.0)return
+  if(finish.ne.0)then
+    close(lu20)
+    return
+  endif
 end do
 if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)
