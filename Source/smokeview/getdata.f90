@@ -112,7 +112,10 @@ do
   if(finish.eq.0.and.nvert_d>0)read(lu20,iostat=finish)(dummy,i=1,nvert_d)
   if(finish.eq.0.and.nface_s>0)read(lu20,iostat=finish)(dummy,i=1,nface_s)
   if(finish.eq.0.and.nface_d>0)read(lu20,iostat=finish)(dummy,i=1,nface_d)
-  if(finish.ne.0)return
+  if(finish.ne.0)then
+    close(lu20)
+    return
+  endif
   nvars = nvars + nvert_s + nvert_d + nface_s + nface_d
   ntimes = ntimes + 1
 end do
