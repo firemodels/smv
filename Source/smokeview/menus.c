@@ -335,32 +335,38 @@ void ShowMultiSliceMenu(int value){
     show_fed_area = 1 - show_fed_area;
     break;
   default:
-    mslicei = multisliceinfo + value;
-    mdisplay = 0;
-    {
-      slicedata *sd;
+    if(value<=-20){
+      value = -20 - value;
+      ShowBoundaryMenu(value+1000);
+    }
+    else{
+      mslicei = multisliceinfo+value;
+      mdisplay = 0;
+      {
+        slicedata *sd;
 
-      sd = sliceinfo+mslicei->islices[0];
-      if(islicetype==sd->type){
-        if(plotstate!=DYNAMIC_PLOTS){
-          plotstate = DYNAMIC_PLOTS;
-          mdisplay = 1;
+        sd = sliceinfo+mslicei->islices[0];
+        if(islicetype==sd->type){
+          if(plotstate!=DYNAMIC_PLOTS){
+            plotstate = DYNAMIC_PLOTS;
+            mdisplay = 1;
+          }
+          else{
+            mdisplay = 1-mslicei->display;
+          }
         }
         else{
-          mdisplay = 1-mslicei->display;
+          plotstate = DYNAMIC_PLOTS;
+          sd = sliceinfo+mslicei->islices[0];
+          islicetype = sd->type;
+          mdisplay = 1;
         }
       }
-      else{
-        plotstate = DYNAMIC_PLOTS;
-        sd = sliceinfo+mslicei->islices[0];
-        islicetype = sd->type;
-        mdisplay = 1;
+      for(i = 0; i<mslicei->nslices; i++){
+        sd = sliceinfo+mslicei->islices[i];
+        if(sd->loaded==0)continue;
+        sd->display = mdisplay;
       }
-    }
-    for(i = 0; i < mslicei->nslices; i++){
-      sd = sliceinfo + mslicei->islices[i];
-      if(sd->loaded == 0)continue;
-      sd->display = mdisplay;
     }
     break;
   }
@@ -1100,7 +1106,10 @@ void ShowHideSliceMenu(int value){
       show_cell_slices_and_vectors=1-show_cell_slices_and_vectors;
       return;
     default:
-      ASSERT(FFALSE);
+      if(value<=-20){
+        value = -20 - value;
+        ShowBoundaryMenu(value+1000);
+      }
     }
   }
   else{
@@ -4582,15 +4591,19 @@ void ShowBoundaryMenu(int value){
   updatefacelists=1;
   glutPostRedisplay();
   if(value>=1000){
-    patchdata *patchi;
+    int ii,ibtype;
+    patchdata *patchj;
 
-    patchi=patchinfo+value-1000;
-    if(patchi->type==iboundarytype){
-      patchi->display=1-patchi->display;
-    }
-    else{
-      patchi->display=1;
-      iboundarytype=GetBoundaryType(patchi);
+    patchj = patchinfo + value-1000;
+    patchj->display = 1 - patchj->display;
+    ibtype=GetBoundaryType(patchj);
+    for(ii=0;ii<npatch_loaded;ii++){
+      patchdata *patchi;
+      int i;
+
+      i = patch_loaded_list[ii];
+      patchi = patchinfo + i;
+      if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0)patchi->display=patchj->display;
     }
     UpdateBoundaryType();
   }
@@ -4608,7 +4621,7 @@ void ShowBoundaryMenu(int value){
 
       i = patch_loaded_list[ii];
       patchi = patchinfo + i;
-      patchi->display=show_boundaryfiles;
+      if(patchi->filetype != PATCH_GEOMETRY)patchi->display=show_boundaryfiles;
     }
   }
   if(value<0){
@@ -5708,26 +5721,37 @@ updatemenu=0;
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
       char *label=NULL, menulabel[1024];
+      patchdata *patchi=NULL, *patchim1=NULL;
 
-      for(i = 0;i<npatchinfo;i++){
-        patchdata *patchi;
+      for(ii = 0;ii<npatchinfo;ii++){
 
+        i = patchorderindex[ii];
         patchi = patchinfo+i;
+        if(patchi->loaded==0)continue;
         if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0)continue;
-        if(patchi->loaded==1){
-          label = patchi->label.longlabel;
-          break;
+        if(ii>0){
+          if(patchim1!=NULL){
+            if(strcmp(patchi->label.longlabel,patchim1->label.longlabel)==0){
+              patchim1 = patchi;
+              continue;
+            }
+          }
+        }
+        patchim1 = patchi;
+        strcpy(menulabel,"");
+        if(patchi->display==1){
+          strcat(menulabel,"*");
+        }
+        strcat(menulabel,patchi->label.longlabel);
+        if(patchi->filetype == PATCH_GEOMETRY){
+          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+            glutAddMenuEntry(menulabel, 1000+i);
+          }
+        }
+        else{
+          glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
         }
       }
-      strcpy(menulabel, "");
-      if(show_boundaryfiles==1)strcat(menulabel, "*");
-      if(label!=NULL){
-        strcat(menulabel, label);
-      }
-      else{
-        strcat(menulabel, "Show");
-      }
-      glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
       if(show_meshmenus==1&&npatchloaded>1)glutAddSubMenu("Mesh", showpatchsinglemenu);
     }
     npatchloaded=0;
@@ -7449,7 +7473,7 @@ updatemenu=0;
       i = patchorderindex[ii];
       patchi = patchinfo+i;
       if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
-        //glutAddMenuEntry(patchi->label.longlabel,-20-i);
+        glutAddMenuEntry(patchi->label.longlabel,-20-i);
       }
     }
     if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
@@ -7521,6 +7545,7 @@ updatemenu=0;
   }
   if((nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)||patchgeom_slice_showhide==1){
     int ii;
+    patchdata *patchim1=NULL;
 
     CREATEMENU(showmultislicemenu, ShowMultiSliceMenu);
     for(i = 0;i<nmultisliceinfo;i++){
@@ -7554,7 +7579,15 @@ updatemenu=0;
       i = patchorderindex[ii];
       patchi = patchinfo+i;
       if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
-        //glutAddMenuEntry(patchi->label.longlabel,-20-i);
+        if(patchim1==NULL||strcmp(patchi->label.longlabel, patchim1->label.longlabel)!=0){
+          char mlabel[128];
+
+          strcpy(mlabel, "");
+          if(patchi->display==1)strcat(mlabel, "*");
+          strcat(mlabel, patchi->label.longlabel);
+          glutAddMenuEntry(mlabel, -20-i);
+        }
+        patchim1 = patchi;
       }
     }
     if(nsliceloaded>0){
