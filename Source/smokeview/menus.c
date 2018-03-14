@@ -5720,7 +5720,7 @@ updatemenu=0;
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
-      char *label=NULL, menulabel[1024];
+      char menulabel[1024];
       patchdata *patchi=NULL, *patchim1=NULL;
 
       for(ii = 0;ii<npatchinfo;ii++){
