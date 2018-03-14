@@ -7473,7 +7473,12 @@ updatemenu=0;
       i = patchorderindex[ii];
       patchi = patchinfo+i;
       if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
-        glutAddMenuEntry(patchi->label.longlabel,-20-i);
+        char mlabel[250];
+
+        strcpy(mlabel, "");
+        if(patchi->display == 1)strcat(mlabel, "*");
+        strcat(mlabel, patchi->label.longlabel);
+        glutAddMenuEntry(mlabel,-20-i);
       }
     }
     if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
