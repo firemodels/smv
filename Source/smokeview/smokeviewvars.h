@@ -20,6 +20,15 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(glui_drawas_immersed_solid,1);
+SVEXTERN int SVDECL(glui_drawas_immersed_outline,0);
+SVEXTERN int SVDECL(glui_drawas_immersed_point,0);
+SVEXTERN int drawas_immersed_solids[4], drawas_immersed_outlines[4], drawas_immersed_points[4];
+
+SVEXTERN int show_patch_cutcell_polygons[4], drawas_immersed_outlines[4];
+SVEXTERN int SVDECL(which_immersed_edgetype,0);
+SVEXTERN int show_immersed_edgetypes[4], SVDECL(glui_show_immersed_edgetype, 0);
+
 SVEXTERN int SVDECL(show_immersed_edges, 2);
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
@@ -405,7 +414,7 @@ SVEXTERN int SVDECL(show_volsmoke_moving,0);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
 SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
 SVEXTERN int SVDECL(show_iso_solid,1),SVDECL(show_iso_outline,1),SVDECL(show_iso_verts,0);
-SVEXTERN int SVDECL(show_patch_solid, 1), SVDECL(show_patch_outline, 0), SVDECL(show_patch_points, 0);
+SVEXTERN int SVDECL(drawas_immersed_solid, 1), SVDECL(drawas_immersed_outline, 0), SVDECL(drawas_immersed_point, 0);
 SVEXTERN int SVDECL(show_patch_ingas, 1), SVDECL(show_patch_insolid, 1), SVDECL(show_patch_incutcell, 1);
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 SVEXTERN int SVDECL(show_faces_solid, 1), SVDECL(show_faces_outline, 1), SVDECL(show_geom_verts, 0);

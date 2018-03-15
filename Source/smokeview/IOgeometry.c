@@ -2858,7 +2858,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
   else{
     ivals = patchi->geom_ival_dynamic;
   }
-  if(show_patch_solid == 1){
+  if(drawas_immersed_solid == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -2994,7 +2994,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->slice == 1)TransparentOff();
     }
   }
-  if(show_patch_outline == 1){
+  if(drawas_immersed_outline == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -3049,7 +3049,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(show_patch_solid == 1){
+          if(drawas_immersed_solid == 1){
             glColor4fv(foregroundcolor);
           }
           else{
@@ -3079,7 +3079,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPopMatrix();
     }
   }
-  if(show_patch_points == 1){
+  if(drawas_immersed_point == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -3117,7 +3117,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           if(insolid == IN_SOLID   && show_patch_insolid == 0)continue;
           if(insolid == IN_GAS     && show_patch_ingas==0)continue;
         }
-        if(show_patch_solid == 1||show_patch_outline==1){
+        if(drawas_immersed_solid == 1||drawas_immersed_outline==1){
           glColor4fv(foregroundcolor);
         }
         else{

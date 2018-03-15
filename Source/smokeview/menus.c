@@ -4653,15 +4653,15 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value == SOLIDpatchmenu){
-      show_patch_solid = 1 - show_patch_solid;
+      drawas_immersed_solid = 1 - drawas_immersed_solid;
       UpdateImmersedControls();
     }
     else if(value == OUTLINEpatchmenu){
-      show_patch_outline = 1 - show_patch_outline;
+      drawas_immersed_outline = 1 - drawas_immersed_outline;
       UpdateImmersedControls();
     }
     else if(value == POINTSpatchmenu){
-      show_patch_points = 1 - show_patch_points;
+      drawas_immersed_point = 1 - drawas_immersed_point;
       UpdateImmersedControls();
     }
     else if(value==INSOLIDpatchmenu){
@@ -5621,19 +5621,19 @@ updatemenu=0;
   {
     CREATEMENU(showpatchgeometry, ShowBoundaryMenu);
     glutAddMenuEntry("type", DUMMYwallmenu);
-    if(show_patch_solid == 1){
+    if(drawas_immersed_solid == 1){
       glutAddMenuEntry("  *solid", SOLIDpatchmenu);
     }
     else{
       glutAddMenuEntry("  solid", SOLIDpatchmenu);
     }
-    if(show_patch_outline == 1){
+    if(drawas_immersed_outline == 1){
       glutAddMenuEntry("  *outline", OUTLINEpatchmenu);
     }
     else{
       glutAddMenuEntry("  outline", OUTLINEpatchmenu);
     }
-    if(show_patch_points == 1){
+    if(drawas_immersed_point == 1){
       glutAddMenuEntry("  *points", POINTSpatchmenu);
     }
     else{
