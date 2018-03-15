@@ -944,7 +944,7 @@ extern "C" void ImmersedBoundCB(int var){
 
   case IMMERSED_WHICH_EDGETYPE:
     glui_show_immersed_edgetype  = show_immersed_edgetypes[which_immersed_edgetype];
-    glui_drawas_immersed_solid   = drawas_immersed_solids[which_immersed_edgetype];
+    glui_drawas_immersed_shaded  = drawas_immersed_shaded[which_immersed_edgetype];
     glui_drawas_immersed_outline = drawas_immersed_outlines[which_immersed_edgetype];
     glui_drawas_immersed_point   = drawas_immersed_points[which_immersed_edgetype];
     if(which_immersed_edgetype==0){
@@ -952,7 +952,7 @@ extern "C" void ImmersedBoundCB(int var){
 
       for(i=0;i<4;i++){
         show_immersed_edgetypes[i]  = glui_show_immersed_edgetype;
-        drawas_immersed_solids[i]   = glui_drawas_immersed_solid;
+        drawas_immersed_shaded[i]   = glui_drawas_immersed_shaded;
         drawas_immersed_outlines[i] = glui_drawas_immersed_outline;
         drawas_immersed_points[i]   = glui_drawas_immersed_point;
       }
@@ -974,7 +974,7 @@ extern "C" void ImmersedBoundCB(int var){
       }
     }
     if(RADIO_show_immersed_edgetype!=NULL)RADIO_show_immersed_edgetype->set_int_val(glui_show_immersed_edgetype);
-    if(CHECKBOX_drawas_immersed_solid!=NULL)CHECKBOX_drawas_immersed_solid->set_int_val(glui_drawas_immersed_solid);
+    if(CHECKBOX_drawas_immersed_solid!=NULL)CHECKBOX_drawas_immersed_solid->set_int_val(glui_drawas_immersed_shaded);
     if(CHECKBOX_drawas_immersed_outline!=NULL)CHECKBOX_drawas_immersed_outline->set_int_val(glui_drawas_immersed_outline);
     if(CHECKBOX_drawas_immersed_point!=NULL)CHECKBOX_drawas_immersed_point->set_int_val(glui_drawas_immersed_point);
 
@@ -987,15 +987,15 @@ extern "C" void ImmersedBoundCB(int var){
       if(glui_show_immersed_edgetype == 2)glui_show_immersed_edgetype = 1;
     }
     show_immersed_edgetypes[which_immersed_edgetype]  = glui_show_immersed_edgetype;
-    drawas_immersed_solids[which_immersed_edgetype]   = glui_drawas_immersed_solid;
+    drawas_immersed_shaded[which_immersed_edgetype]   = glui_drawas_immersed_shaded;
     drawas_immersed_outlines[which_immersed_edgetype] = glui_drawas_immersed_outline;
     drawas_immersed_points[which_immersed_edgetype]   = glui_drawas_immersed_point;
     if(which_immersed_edgetype==0){
       int i;
 
       for(i=0;i<4;i++){
-        show_immersed_edgetypes[i]   = glui_show_immersed_edgetype;
-        drawas_immersed_solids[i]   = glui_drawas_immersed_solid;
+        show_immersed_edgetypes[i]  = glui_show_immersed_edgetype;
+        drawas_immersed_shaded[i]   = glui_drawas_immersed_shaded;
         drawas_immersed_outlines[i] = glui_drawas_immersed_outline;
         drawas_immersed_points[i]   = glui_drawas_immersed_point;
       }
@@ -1925,7 +1925,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
     PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "draw as", true);
-    CHECKBOX_drawas_immersed_solid   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("shaded"),  &glui_drawas_immersed_solid, IMMERSED_HOW_DRAWAS, ImmersedBoundCB);
+    CHECKBOX_drawas_immersed_solid   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("shaded"),  &glui_drawas_immersed_shaded, IMMERSED_HOW_DRAWAS, ImmersedBoundCB);
     CHECKBOX_drawas_immersed_outline = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("outline"), &glui_drawas_immersed_outline, IMMERSED_HOW_DRAWAS, ImmersedBoundCB);
     CHECKBOX_drawas_immersed_point   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("points"),  &glui_drawas_immersed_point, IMMERSED_HOW_DRAWAS, ImmersedBoundCB);
 

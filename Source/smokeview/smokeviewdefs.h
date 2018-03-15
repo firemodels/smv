@@ -259,6 +259,10 @@ void _Sniff_Errors(char *whereat);
 #define IN_SOLID 1
 #define IN_CUTCELL 2
 
+#define IN_GAS_GLUI 2
+#define IN_SOLID_GLUI 1
+#define IN_CUTCELL_GLUI 3
+
 #define EMBED_YES 0
 #define EMBED_NO  1
 

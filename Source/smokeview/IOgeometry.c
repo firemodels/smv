@@ -2858,7 +2858,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
   else{
     ivals = patchi->geom_ival_dynamic;
   }
-  if(drawas_immersed_solid == 1){
+  if(drawas_immersed_shaded[IN_CUTCELL_GLUI]==1||
+     drawas_immersed_shaded[IN_SOLID_GLUI]==1||
+     drawas_immersed_shaded[IN_GAS_GLUI] == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -2910,9 +2912,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             int insolid;
 
             insolid = trianglei->insolid & 3;
-            if(insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-            if(insolid == IN_SOLID   && show_patch_insolid == 0)continue;
-            if(insolid == IN_GAS     && show_patch_ingas==0)continue;
+            if(insolid == IN_CUTCELL && drawas_immersed_shaded[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && drawas_immersed_shaded[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && drawas_immersed_shaded[IN_GAS_GLUI] == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -2949,9 +2951,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             int insolid;
 
             insolid = trianglei->insolid & 3;
-            if(insolid == IN_CUTCELL && show_patch_incutcell==0)continue;
-            if(insolid == IN_SOLID   && show_patch_insolid == 0)continue;
-            if(insolid == IN_GAS     && show_patch_ingas == 0)continue;
+            if(insolid == IN_CUTCELL && drawas_immersed_shaded[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && drawas_immersed_shaded[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && drawas_immersed_shaded[IN_GAS_GLUI] == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -2994,7 +2996,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->slice == 1)TransparentOff();
     }
   }
-  if(drawas_immersed_outline == 1){
+  if(drawas_immersed_outlines[IN_CUTCELL_GLUI]==1||
+     drawas_immersed_outlines[IN_SOLID_GLUI]==1||
+     drawas_immersed_outlines[IN_GAS_GLUI] == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -3030,9 +3034,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             int insolid;
 
             insolid = trianglei->insolid & 3;
-            if(insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-            if(insolid == IN_SOLID   && show_patch_insolid == 0)continue;
-            if(insolid == IN_GAS     && show_patch_ingas == 0)continue;
+            if(insolid == IN_CUTCELL && drawas_immersed_outlines[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && drawas_immersed_outlines[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && drawas_immersed_outlines[IN_GAS_GLUI] == 0)continue;
             if(show_patch_cutcell_polygon == 1){
               int insolid4, insolid8, insolid16;
 
@@ -3049,7 +3053,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(drawas_immersed_solid == 1){
+          if(drawas_immersed_shaded[IN_CUTCELL_GLUI]==1||
+             drawas_immersed_shaded[IN_SOLID_GLUI]==1||
+             drawas_immersed_shaded[IN_GAS_GLUI] == 1){
             glColor4fv(foregroundcolor);
           }
           else{
@@ -3079,7 +3085,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPopMatrix();
     }
   }
-  if(drawas_immersed_point == 1){
+  if(drawas_immersed_points[IN_CUTCELL_GLUI]==1||
+     drawas_immersed_points[IN_SOLID_GLUI]==1||
+     drawas_immersed_points[IN_GAS_GLUI] == 1){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -3113,11 +3121,16 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int insolid;
 
           insolid = trianglei->insolid & 3;
-          if(insolid == IN_CUTCELL && show_patch_incutcell == 0)continue;
-          if(insolid == IN_SOLID   && show_patch_insolid == 0)continue;
-          if(insolid == IN_GAS     && show_patch_ingas==0)continue;
+          if(insolid == IN_CUTCELL && drawas_immersed_points[IN_CUTCELL_GLUI] == 0)continue;
+          if(insolid == IN_SOLID   && drawas_immersed_points[IN_SOLID_GLUI] == 0)continue;
+          if(insolid == IN_GAS     && drawas_immersed_points[IN_GAS_GLUI] == 0)continue;
         }
-        if(drawas_immersed_solid == 1||drawas_immersed_outline==1){
+        if(drawas_immersed_shaded[IN_CUTCELL_GLUI]==1||
+           drawas_immersed_shaded[IN_SOLID_GLUI]==1||
+           drawas_immersed_shaded[IN_GAS_GLUI] == 1||
+           drawas_immersed_outlines[IN_CUTCELL_GLUI]==1||
+           drawas_immersed_outlines[IN_SOLID_GLUI]==1||
+           drawas_immersed_outlines[IN_GAS_GLUI] == 1){
           glColor4fv(foregroundcolor);
         }
         else{

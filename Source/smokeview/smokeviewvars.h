@@ -20,10 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(glui_drawas_immersed_solid,1);
+SVEXTERN int SVDECL(glui_drawas_immersed_shaded,1);
 SVEXTERN int SVDECL(glui_drawas_immersed_outline,0);
 SVEXTERN int SVDECL(glui_drawas_immersed_point,0);
-SVEXTERN int drawas_immersed_solids[4], drawas_immersed_outlines[4], drawas_immersed_points[4];
+SVEXTERN int drawas_immersed_shaded[4], drawas_immersed_outlines[4], drawas_immersed_points[4];
 
 SVEXTERN int show_patch_cutcell_polygons[4], drawas_immersed_outlines[4];
 SVEXTERN int SVDECL(which_immersed_edgetype,0);
