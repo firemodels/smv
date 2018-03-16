@@ -92,7 +92,6 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define BOUNDARY_OUTPUT_ROLLOUT  0
 #define BOUNDARY_THRESHOLD_ROLLOUT 1
 #define BOUNDARY_DUPLICATE_ROLLOUT 2
-#define BOUNDARY_BOUNDIMMERSED_ROLLOUT 3
 
 #define ZONEVALMIN 50
 #define ZONEVALMAX 51
@@ -374,6 +373,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define EVAC_ROLLOUT 5
 #define PLOT3D_ROLLOUT 6
 #define SLICE_ROLLOUT 7
+#define BOUNDARY_BOUNDIMMERSED_ROLLOUT 8
 
 #define ISO_ROLLOUT_SETTINGS 0
 #define ISO_ROLLOUT_COLOR 1
@@ -396,7 +396,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define TIME_ROLLOUT 6
 #define MEMCHECK_ROLLOUT 7
 
-procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[5];
+procdata boundprocinfo[9], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
@@ -1723,6 +1723,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   EDIT_rendersuffix->set_w(130);
   ScriptCB(SCRIPT_RENDER_SUFFIX);
 
+// ----------------------------------- Bounds ----------------------------------------
 
   PANEL_bounds = glui_bounds->add_panel("Bounds",true);
   ROLLOUT_filebounds = glui_bounds->add_rollout_to_panel(PANEL_bounds,"Data", false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
@@ -1766,14 +1767,14 @@ extern "C" void GluiBoundsSetup(int main_window){
     SliceBoundCB(SETZONEVALMAX);
   }
 
-  /*  3d smoke   */
+  // ----------------------------------- 3D smoke ----------------------------------------
 
   if(nsmoke3dinfo>0||nvolrenderinfo>0){
     ROLLOUT_smoke3d = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"3D smoke",false,SMOKE3D_ROLLOUT,BoundRolloutCB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_smoke3d, SMOKE3D_ROLLOUT);
   }
 
-  /*  Boundary File Bounds   */
+  // ----------------------------------- Boundary ----------------------------------------
 
   if(npatchinfo>0){
     glui_active=1;
@@ -1836,31 +1837,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_BOUNDARYDATA);
 
-    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Immersed parameters", false, BOUNDARY_BOUNDIMMERSED_ROLLOUT, SubBoundRolloutCB);
-    ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundimmersed, BOUNDARY_BOUNDIMMERSED_ROLLOUT);
-
-    PANEL_immersed_region = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "region", true);
-    RADIO_immersed_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &immersed_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("gas"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("solid"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("cut cell"));
-
-    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
-    PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "draw as", true);
-    CHECKBOX_show_immersed_solid   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("shaded"),  &glui_show_immersed_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_immersed_outline = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("outline"), &glui_show_immersed_outline, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_immersed_point   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("points"),  &glui_show_immersed_point, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-
-    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed,false);
-    PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "outline type", true);
-    RADIO_immersed_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_immersed_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("polygon"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("triangle"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("none"));
-
-    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
-    ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
-
     ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,"Output data",false,BOUNDARY_OUTPUT_ROLLOUT,SubBoundRolloutCB);
     ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_outputpatchdata, BOUNDARY_OUTPUT_ROLLOUT);
 
@@ -1908,7 +1884,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
   }
 
-  /*  Iso File Load Bounds   */
+  // ----------------------------------- Isosurface ----------------------------------------
 
   if(nisoinfo>0){
     ROLLOUT_iso = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Isosurface", false, ISO_ROLLOUT, BoundRolloutCB);
@@ -2052,7 +2028,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_d("View from selected Avatar"),&view_from_selected_avatar);
   }
 
-  /* Plot3D file bounds */
+  // ----------------------------------- Plot3D ----------------------------------------
 
   if(nplot3dinfo>0){
     glui_active=1;
@@ -2121,7 +2097,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     Plot3DBoundCB(UNLOAD_QDATA);
   }
 
-  /*  Slice File Bounds   */
+  // ----------------------------------- Slice ----------------------------------------
 
   if(nsliceinfo>0){
     int index;
@@ -2275,6 +2251,37 @@ extern "C" void GluiBoundsSetup(int main_window){
     SliceBoundCB(FILETYPEINDEX);
   }
 
+  // ----------------------------------- Immersed parameters ----------------------------------------
+
+  if(ngeom_data>0){
+    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Geometry settings", false, BOUNDARY_BOUNDIMMERSED_ROLLOUT, BoundRolloutCB);
+    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_boundimmersed, BOUNDARY_BOUNDIMMERSED_ROLLOUT);
+
+    PANEL_immersed_region = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "region", true);
+    RADIO_immersed_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &immersed_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("gas"));
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("solid"));
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _d("cut cell"));
+
+    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
+    PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "draw as", true);
+    CHECKBOX_show_immersed_solid = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("shaded"), &glui_show_immersed_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_immersed_outline = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("outline"), &glui_show_immersed_outline, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_immersed_point = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _d("points"), &glui_show_immersed_point, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+
+    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
+    PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "outline type", true);
+    RADIO_immersed_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_immersed_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("polygon"));
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("triangle"));
+    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _d("none"));
+
+    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+    ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
+  }
+
+  // ----------------------------------- Time ----------------------------------------
+
   ROLLOUT_time = glui_bounds->add_rollout_to_panel(PANEL_bounds,"Time", false, TIME_ROLLOUT, FileRolloutCB);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT);
 
@@ -2307,6 +2314,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_button_to_panel(PANEL_time2, _d("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
 
   TimeBoundCB(TBOUNDS_USE);
+
+  // ----------------------------------- Memory check ----------------------------------------
 
 #ifdef pp_MEMDEBUG
   ROLLOUT_memcheck = glui_bounds->add_rollout(_d("Memory check"),false,MEMCHECK_ROLLOUT,FileRolloutCB);

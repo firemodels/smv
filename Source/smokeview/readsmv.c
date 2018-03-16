@@ -8336,12 +8336,14 @@ typedef struct {
         patchi->filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
+        ngeom_data++;
         patchi->filetype=PATCH_GEOMETRY;
         patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
+        ngeom_data++;
         patchi->filetype = PATCH_GEOMETRY;
         patchi->geom_smvfiletype = PATCH_GEOMETRY_SLICE;
         patchi->slice = 1;

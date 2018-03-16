@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(ngeom_data, 0);
 SVEXTERN int SVDECL(glui_show_immersed_shaded,1);
 SVEXTERN int SVDECL(glui_show_immersed_outline,0);
 SVEXTERN int SVDECL(glui_show_immersed_point,0);
