@@ -9306,12 +9306,35 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i", &show_meshmenus);
       continue;
     }
-    if(Match(buffer, "SHOWPATCH")==1){
+    if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %i %i",
-        &drawas_immersed_solid, &drawas_immersed_outline, &drawas_immersed_point,
-        &show_patch_insolid, &show_patch_ingas, &show_patch_incutcell,
-        &show_patch_cutcell_polygon, &show_immersed_edges);
+      sscanf(buffer, " %i",
+        &immersed_celltype);
+      immersed_celltype = CLAMP(immersed_celltype,0,MAX_CELL_TYPES-1);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i",
+        immersed_edgetypes,immersed_edgetypes+1,immersed_edgetypes+2);
+
+      for(i=0;i<3;i++){
+        immersed_edgetypes[i] = CLAMP(immersed_edgetypes[i],0,2);
+      }
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i",
+        show_immersed_shaded,show_immersed_shaded+1,show_immersed_shaded+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i",
+        show_immersed_outlines,show_immersed_outlines+1,show_immersed_outlines+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i",
+        show_immersed_points,show_immersed_points+1,show_immersed_points+2);
+
+      for(i=0;i<MAX_CELL_TYPES;i++){
+        show_immersed_shaded[i]   = CLAMP(show_immersed_shaded[i],0,1);
+        show_immersed_outlines[i] = CLAMP(show_immersed_outlines[i],0,1);
+        show_immersed_points[i]   = CLAMP(show_immersed_points[i],0,1);
+      }
       continue;
     }
     if(Match(buffer, "NORTHANGLE") == 1){
@@ -13061,6 +13084,17 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
+  fprintf(fileout, "GEOMCELLPROPS\n");
+  fprintf(fileout, " %i\n",
+    immersed_celltype);
+  fprintf(fileout, " %i %i %i\n",
+    immersed_edgetypes[0], immersed_edgetypes[1], immersed_edgetypes[2]);
+  fprintf(fileout, " %i %i %i\n",
+    show_immersed_shaded[0], show_immersed_shaded[1], show_immersed_shaded[2]);
+  fprintf(fileout, " %i %i %i\n",
+    show_immersed_outlines[0], show_immersed_outlines[1], show_immersed_outlines[2]);
+  fprintf(fileout, " %i %i %i\n",
+    show_immersed_points[0], show_immersed_points[1], show_immersed_points[2]);
   fprintf(fileout, "GEOMDIAGS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
@@ -13168,10 +13202,6 @@ void WriteIni(int flag,char *filename){
 #endif
   fprintf(fileout, "SHOWOPENVENTS\n");
   fprintf(fileout, " %i %i\n", visOpenVents, visOpenVentsAsOutline);
-  fprintf(fileout, "SHOWPATCH\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i %i\n",
-     drawas_immersed_solid, drawas_immersed_outline, drawas_immersed_point, show_patch_insolid,
-     show_patch_ingas, show_patch_incutcell, show_patch_cutcell_polygon, show_immersed_edges);
   fprintf(fileout, "SHOWOTHERVENTS\n");
   fprintf(fileout, " %i\n", visOtherVents);
   fprintf(fileout, "SHOWSENSORS\n");

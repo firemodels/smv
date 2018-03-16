@@ -4584,8 +4584,6 @@ void LoadBoundaryMenu(int value){
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
-#define IMMERSED_SHOWEDGES 6
-
 void ShowBoundaryMenu(int value){
   updatemenu=1;
   updatefacelists=1;
@@ -4651,45 +4649,6 @@ void ShowBoundaryMenu(int value){
           current_mesh->vis_boundaries[n]=val;
         }
       }
-    }
-    else if(value == SOLIDpatchmenu){
-      drawas_immersed_solid = 1 - drawas_immersed_solid;
-      UpdateImmersedControls();
-    }
-    else if(value == OUTLINEpatchmenu){
-      drawas_immersed_outline = 1 - drawas_immersed_outline;
-      UpdateImmersedControls();
-    }
-    else if(value == POINTSpatchmenu){
-      drawas_immersed_point = 1 - drawas_immersed_point;
-      UpdateImmersedControls();
-    }
-    else if(value==INSOLIDpatchmenu){
-      show_patch_insolid = 1-show_patch_insolid;
-      UpdateImmersedControls();
-    }
-    else if(value==INGASpatchmenu){
-      show_patch_ingas = 1-show_patch_ingas;
-      UpdateImmersedControls();
-    }
-    else if(value == INCUTCELLpatchmenu){
-      show_patch_incutcell = 1 - show_patch_incutcell;
-      UpdateImmersedControls();
-    }
-    else if(value==SHOWCUTCELLPOLYGONSpatchmenu){
-      show_immersed_edges=0;
-      ImmersedBoundCB(IMMERSED_SHOWEDGES);
-      UpdateImmersedControls();
-    }
-    else if(value == SHOWCUTCELLTRIANGLESpatchmenu){
-      show_immersed_edges=1;
-      ImmersedBoundCB(IMMERSED_SHOWEDGES);
-      UpdateImmersedControls();
-    }
-    else if(value == HIDECUTCELLTRIANGLESpatchmenu){
-      show_immersed_edges=2;
-      ImmersedBoundCB(IMMERSED_SHOWEDGES);
-      UpdateImmersedControls();
     }
     else if(value != DUMMYwallmenu){
       int n;
@@ -5393,7 +5352,7 @@ static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
-static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchgeometry=0;
+static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
 static int scriptmenu=0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
@@ -5618,68 +5577,6 @@ updatemenu=0;
   }
   if(unload==UNLOAD)return;
 
-  {
-    CREATEMENU(showpatchgeometry, ShowBoundaryMenu);
-    glutAddMenuEntry("type", DUMMYwallmenu);
-    if(drawas_immersed_solid == 1){
-      glutAddMenuEntry("  *solid", SOLIDpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  solid", SOLIDpatchmenu);
-    }
-    if(drawas_immersed_outline == 1){
-      glutAddMenuEntry("  *outline", OUTLINEpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  outline", OUTLINEpatchmenu);
-    }
-    if(drawas_immersed_point == 1){
-      glutAddMenuEntry("  *points", POINTSpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  points", POINTSpatchmenu);
-    }
-    glutAddMenuEntry("where", DUMMYwallmenu);
-    if(show_patch_insolid == 1){
-      glutAddMenuEntry("  *in solid", INSOLIDpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  in solid", INSOLIDpatchmenu);
-    }
-    if(show_patch_ingas == 1){
-      glutAddMenuEntry("  *in gas", INGASpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  in gas", INGASpatchmenu);
-    }
-    if(show_patch_incutcell == 1){
-      glutAddMenuEntry("  *in cutcell", INCUTCELLpatchmenu);
-    }
-    else{
-      glutAddMenuEntry("  in cutcell", INCUTCELLpatchmenu);
-    }
-    switch(show_immersed_edges){
-    case 0:
-      glutAddMenuEntry("      *show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
-      glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
-      glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
-      break;
-    case 1:
-      glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
-      glutAddMenuEntry("      *show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
-      glutAddMenuEntry("      hide edges", HIDECUTCELLTRIANGLESpatchmenu);
-      break;
-    case 2:
-      glutAddMenuEntry("      show polygon edges", SHOWCUTCELLPOLYGONSpatchmenu);
-      glutAddMenuEntry("      show triangle edges", SHOWCUTCELLTRIANGLESpatchmenu);
-      glutAddMenuEntry("      *hide edges", HIDECUTCELLTRIANGLESpatchmenu);
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-  }
-
   patchgeom_slice_showhide = 0;
   patchgeom_bound_showhide = 0;
   for(i=0;i<npatchinfo;i++){
@@ -5783,10 +5680,6 @@ updatemenu=0;
           }
         }
       }
-      if(patchgeom_bound_showhide==1){
-        glutAddSubMenu(_("Geometry settings"),showpatchgeometry);
-      }
-
       if(activate_threshold == 1 && local_do_threshold == 1){
         glutAddMenuEntry("-",DUMMYwallmenu);
         if(vis_threshold==1)glutAddMenuEntry("*char",SHOW_CHAR);
@@ -7508,9 +7401,6 @@ updatemenu=0;
           glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
         }
       }
-      if(patchgeom_slice_showhide==1){
-        glutAddSubMenu(_("Geometry settings"),showpatchgeometry);
-      }
       if(nsliceloaded>0){
         if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
         if(offset_slice==0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
@@ -7612,9 +7502,6 @@ updatemenu=0;
         glutAddMenuEntry(_("    *solid"), MENU_SHOWSLICE_IN_SOLID);
         glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
       }
-    }
-    if(patchgeom_slice_showhide==1){
-      glutAddSubMenu(_("Geometry settings"),showpatchgeometry);
     }
     if(nsliceloaded>0){
       if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);

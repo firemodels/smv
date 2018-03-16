@@ -248,20 +248,26 @@ void _Sniff_Errors(char *whereat);
     else if( clipon==1&&clip_data==0){UNCLIP;}\
   }
 
-#define GAS 1
-#define SOLID 0
-#define GASGAS 2
+#define GAS        1
+#define SOLID      0
+#define GASGAS     2
 #define SOLIDSOLID 0
-#define SOLIDGAS 1
-#define GASSOLID 1
+#define SOLIDGAS   1
+#define GASSOLID   1
 
-#define IN_GAS 0
-#define IN_SOLID 1
+#define IN_GAS     0
+#define IN_SOLID   1
 #define IN_CUTCELL 2
 
-#define IN_GAS_GLUI 2
-#define IN_SOLID_GLUI 1
-#define IN_CUTCELL_GLUI 3
+#define IN_GAS_GLUI     0
+#define IN_SOLID_GLUI   1
+#define IN_CUTCELL_GLUI 2
+
+#define MAX_CELL_TYPES 3
+
+#define IMMERSED_POLYGON  0
+#define IMMERSED_TRIANGLE 1
+#define IMMERSED_HIDDEN   2
 
 #define EMBED_YES 0
 #define EMBED_NO  1
