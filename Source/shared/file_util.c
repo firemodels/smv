@@ -215,7 +215,7 @@ void FullFile(char *file_out, char *dir, char *file){
 
 /* ------------------ StreamCopy ------------------------ */
 
-unsigned int StreamCopy(FILE *stream_in, FILE *stream_out){
+unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag){
   int c;
   unsigned int nchars = 0;
 
@@ -224,6 +224,7 @@ unsigned int StreamCopy(FILE *stream_in, FILE *stream_out){
   rewind(stream_in);
   c = fgetc(stream_in);
   while(c != EOF){
+    if(flag == 0)return 1;
     fputc(c, stream_out);
     c = fgetc(stream_in);
     nchars++;

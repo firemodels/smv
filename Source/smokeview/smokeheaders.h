@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ImmersedBoundCB(int var);
+EXTERNCPP void UpdateImmersedControls(void);
+
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);

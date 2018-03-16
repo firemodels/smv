@@ -20,6 +20,18 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(ngeom_data, 0);
+SVEXTERN int SVDECL(glui_show_immersed_shaded,1);
+SVEXTERN int SVDECL(glui_show_immersed_outline,0);
+SVEXTERN int SVDECL(glui_show_immersed_point,0);
+SVEXTERN int SVDECL(glui_immersed_edgetype, IMMERSED_POLYGON);
+SVEXTERN int SVDECL(immersed_celltype, 0);
+SVEXTERN int immersed_edgetypes[3];
+SVEXTERN int show_immersed_shaded[MAX_CELL_TYPES];
+SVEXTERN int show_immersed_outlines[MAX_CELL_TYPES];
+SVEXTERN int show_immersed_points[MAX_CELL_TYPES];
+
+SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
 SVEXTERN int SVDECL(script_viewpoint_found, YES);
@@ -69,7 +81,6 @@ SVEXTERN int SVDECL(quicktime_compatibility, 0);
 #endif
 SVEXTERN float startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
-SVEXTERN int SVDECL(show_patch_cutcell_polygon, 0);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 #endif
@@ -403,8 +414,6 @@ SVEXTERN int SVDECL(show_volsmoke_moving,0);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
 SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
 SVEXTERN int SVDECL(show_iso_solid,1),SVDECL(show_iso_outline,1),SVDECL(show_iso_verts,0);
-SVEXTERN int SVDECL(show_patch_solid, 1), SVDECL(show_patch_outline, 0), SVDECL(show_patch_verts, 0);
-SVEXTERN int SVDECL(show_patch_ingas, 1), SVDECL(show_patch_insolid, 1), SVDECL(show_patch_incutcell, 1);
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 SVEXTERN int SVDECL(show_faces_solid, 1), SVDECL(show_faces_outline, 1), SVDECL(show_geom_verts, 0);
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
@@ -905,7 +914,6 @@ SVEXTERN int nisoinfo, niso_bounds;
 SVEXTERN int ntrnx, ntrny, ntrnz,npdim,nmeshes,clip_mesh;
 SVEXTERN int SVDECL(nOBST,0),SVDECL(nVENT,0),SVDECL(nCVENT,0),SVDECL(ncvents,0),noffset;
 SVEXTERN int visLabels;
-SVEXTERN int showallslicevectors;
 SVEXTERN float framerate;
 SVEXTERN int nglobal_times, SVDECL(ntimes_old,0), itimes, itime_save, itimeold, seqnum,RenderTime,RenderTimeOld;
 SVEXTERN int SVDECL(fed_seqnum, 0);

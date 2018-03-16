@@ -825,6 +825,25 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
   return LABEL_OK;
 }
 
+/* ------------------ AppendLabels ------------------------ */
+
+int AppendLabels(flowlabels *flowlabel, char *suffix_label){
+  size_t newlen;
+  char *longlabel;
+
+  if(flowlabel==NULL || flowlabel->longlabel==NULL)return LABEL_OK;
+  if(suffix_label == NULL || strlen(suffix_label)==0)return LABEL_OK;
+
+  newlen = strlen(flowlabel->longlabel) + strlen(suffix_label);
+  if(NewMemory((void **)&longlabel, (unsigned int)(newlen+1)) == 0)return LABEL_ERR;
+  STRCPY(longlabel,flowlabel->longlabel);
+  STRCAT(longlabel, suffix_label);
+  FREEMEMORY(flowlabel->longlabel);
+  flowlabel->longlabel=longlabel;
+
+  return LABEL_OK;
+}
+
 /* ------------------ ReadLabels ------------------------ */
 
 int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
