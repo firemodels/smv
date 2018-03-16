@@ -1887,14 +1887,6 @@ void UpdateSliceMenuShow(void){
     sd = sliceinfo + i;
     slicemesh = meshinfo + sd->blocknumber;
     sd->menu_show=1;
-    if(sd->slicetype==SLICE_CELL_CENTER){
-      flowlabels *label;
-
-      label = &sd->label;
-      if(STRCMP(label->shortlabel,"U-VEL")==0||STRCMP(label->shortlabel,"V-VEL")==0||STRCMP(label->shortlabel,"W-VEL")==0){
-        sd->menu_show=0;
-      }
-    }
     if(show_evac_slices==0&&slicemesh->mesh_type!=0){
       sd->menu_show=0;
     }

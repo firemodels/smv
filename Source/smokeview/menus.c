@@ -3582,11 +3582,6 @@ void LoadVSliceMenu(int value){
     }
     return;
   }
-  else if(value==MENU_LOADVSLICE_SHOWALL){
-    showallslicevectors=1-showallslicevectors;
-    updatemenu=1;
-    glutPostRedisplay();
-  }
   else if(value==MENU_LOADVSLICE_SETTINGS){
     ShowBoundsDialog(DLG_SLICE);
   }
@@ -4125,11 +4120,6 @@ void LoadMultiVSliceMenu(int value){
   }
   else{
     switch(value){
-      case MENU_LOADVSLICE_SHOWALL:
-        showallslicevectors=1-showallslicevectors;
-        updatemenu=1;
-        glutPostRedisplay();
-        return;
       case UNLOAD_ALL:
         LoadVSliceMenu(UNLOAD_ALL);
         break;
@@ -8733,7 +8723,7 @@ updatemenu=0;
           else{
             STRCPY(menulabel,sd->menulabel);
           }
-          if(sd->vec_comp==0||showallslicevectors==1)glutAddMenuEntry(menulabel,i);
+          glutAddMenuEntry(menulabel,i);
           if(ii==nvsliceinfo-1||strcmp(sd->label.longlabel,sdp1->label.longlabel)!=0){
             subvslice_menuindex[nloadsubvslicemenu]=vsliceorderindex[ii];
             if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
@@ -8770,25 +8760,17 @@ updatemenu=0;
             sdm1 = sliceinfo + vdim1->ival;
           }
           if(ii==0||strcmp(sd->label.longlabel,sdm1->label.longlabel)!=0){
-            if(sd->vec_comp==0||showallslicevectors==1){
-              char mlabel[1024], mlabel2[1024];
+            char mlabel[1024], mlabel2[1024];
 
-              STRCPY(mlabel,sd->label.longlabel);
-              if((ii==0&&sd->mesh_type>0)||(ii>0&&sd->mesh_type!=sdm1->mesh_type)){
-                sprintf(mlabel2,"*** Evac type %i meshdata ***",sd->mesh_type);
-                glutAddMenuEntry(mlabel2,MENU_DUMMY);
-              }
-              glutAddSubMenu(mlabel,loadsubvslicemenu[nloadsubvslicemenu]);
+            STRCPY(mlabel,sd->label.longlabel);
+            if((ii==0&&sd->mesh_type>0)||(ii>0&&sd->mesh_type!=sdm1->mesh_type)){
+              sprintf(mlabel2,"*** Evac type %i meshdata ***",sd->mesh_type);
+              glutAddMenuEntry(mlabel2,MENU_DUMMY);
             }
+            glutAddSubMenu(mlabel,loadsubvslicemenu[nloadsubvslicemenu]);
             nloadsubvslicemenu++;
           }
         }
-    //  if(nmultisliceloaded>1){
-    //    glutAddSubMenu(_("Unload"),unloadmultivslicemenu);
-    //  }
-    //  else{
-    //    glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-    //  }
 
     if(nmultivsliceinfo<nvsliceinfo){
       CREATEMENU(unloadmultivslicemenu,UnloadMultiVSliceMenu);
@@ -8862,7 +8844,7 @@ updatemenu=0;
         }
         glutAddMenuEntry(menulabel,i);
         if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel,sip1->label.longlabel)!=0){
-          if(mvslicei->ndirxyz[1]+si->ndirxyz[2]+si->ndirxyz[3]>1){
+          if(mvslicei->ndirxyz[1]+ mvslicei->ndirxyz[2] + mvslicei->ndirxyz[3]>1){
             glutAddMenuEntry("-",MENU_DUMMY);
           }
           if(mvslicei->ndirxyz[1]>1){
@@ -8917,16 +8899,14 @@ updatemenu=0;
           sim1 = sliceinfo + vim1->ival;
         }
         if(i==0||(i>0&&strcmp(si->label.longlabel,sim1->label.longlabel)!=0)){
-          if(si->vec_comp==0||showallslicevectors==1){
-            char mlabel[1024], mlabel2[1024];
+          char mlabel[1024], mlabel2[1024];
 
-            STRCPY(mlabel,si->label.longlabel);
-            if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
-              sprintf(mlabel2,"*** Evac type %i meshes ***",si->mesh_type);
-              glutAddMenuEntry(mlabel2,MENU_DUMMY);
-            }
-            glutAddSubMenu(mlabel,loadsubmvslicemenu[nloadsubmvslicemenu]);
+          STRCPY(mlabel,si->label.longlabel);
+          if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
+            sprintf(mlabel2,"*** Evac type %i meshes ***",si->mesh_type);
+            glutAddMenuEntry(mlabel2,MENU_DUMMY);
           }
+          glutAddSubMenu(mlabel,loadsubmvslicemenu[nloadsubmvslicemenu]);
           nloadsubmvslicemenu++;
         }
       }
@@ -8934,8 +8914,6 @@ updatemenu=0;
     }
       }
     }
-    if(showallslicevectors==0)glutAddMenuEntry(_("Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
-    if(showallslicevectors==1)glutAddMenuEntry(_("*Show all vector slice menu entries"), MENU_LOADVSLICE_SHOWALL);
     if(show_meshmenus==1&&nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -9033,8 +9011,10 @@ updatemenu=0;
 
       // create patch submenus
 
-      NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s*sizeof(int));
-      NewMemory(  (void **)&nsubpatchmenus_s, nloadsubpatchmenu_s*sizeof(int));
+      if(nloadsubpatchmenu_s > 0){
+        NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
+        NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
+      }
       for(i = 0;i<nloadsubpatchmenu_s;i++){
         loadsubpatchmenu_s[i] = 0;
         nsubpatchmenus_s[i] = 0;
@@ -9289,7 +9269,9 @@ updatemenu=0;
       }
       glutAddMenuEntry(menulabel, i);
       if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
-        glutAddMenuEntry("-", MENU_DUMMY);
+        if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
+          glutAddMenuEntry("-", MENU_DUMMY);
+        }
         if(mslicei->ndirxyz[1]>1){
           glutAddMenuEntry(_("Load All x"),-1000-4*(nloadsubmslicemenu-1)-1);
         }
@@ -9339,23 +9321,7 @@ updatemenu=0;
         STRCPY(mlabel, sd->label.longlabel);
         if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
           sprintf(mlabel2, "*** Evac type %i meshes ***", sd->mesh_type);
-          if(sd->slicetype==SLICE_CELL_CENTER){
-            flowlabels *label;
-
-            label = &sd->label;
-            if(STRCMP(label->shortlabel, "U-VEL")==0||STRCMP(label->shortlabel, "V-VEL")==0||STRCMP(label->shortlabel, "W-VEL")==0){
-              continue;
-            }
-          }
           glutAddMenuEntry(mlabel2, MENU_DUMMY);
-        }
-        if(sd->slicetype==SLICE_CELL_CENTER){
-          flowlabels *label;
-
-          label = &sd->label;
-          if(STRCMP(label->shortlabel, "U-VEL")==0||STRCMP(label->shortlabel, "V-VEL")==0||STRCMP(label->shortlabel, "W-VEL")==0){
-            continue;
-          }
         }
         glutAddSubMenu(mlabel, loadsubmslicemenu[nloadsubmslicemenu]);
         nloadsubmslicemenu++;
@@ -9925,8 +9891,10 @@ updatemenu=0;
 
 // create patch submenus
 
-        NewMemory((void **)&loadsubpatchmenu_b,nloadsubpatchmenu_b*sizeof(int));
-        NewMemory((void **)&nsubpatchmenus_b,nloadsubpatchmenu_b*sizeof(int));
+        if(nloadsubpatchmenu_b > 0){
+          NewMemory((void **)&loadsubpatchmenu_b, nloadsubpatchmenu_b * sizeof(int));
+          NewMemory((void **)&nsubpatchmenus_b, nloadsubpatchmenu_b * sizeof(int));
+        }
         for(i=0;i<nloadsubpatchmenu_b;i++){
           loadsubpatchmenu_b[i]=0;
           nsubpatchmenus_b[i]=0;
