@@ -2448,7 +2448,7 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
 void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 #ifdef pp_VOLCO2
   slicedata *fireslice, *smokeslice, *lightslice, *co2slice;
-else
+#else
   slicedata *fireslice, *smokeslice, *lightslice;
 #endif
   FILE *SLICEFILE;
