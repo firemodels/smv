@@ -46,9 +46,9 @@ Volume III: Verification Guide\\
 
 %\vfill
 
-%\flushright{\includegraphics[width=4.0in]{FIGURES/nistlogo_1line}}
+%\flushright{\includegraphics[width=4.0in]{\SMVfigdir/nistlogo_1line}}
 \begin{flushright}
-\includegraphics[width=2.in]{FIGURES/nistident_flright_vec}
+\includegraphics[width=2.in]{\SMVfigdir/nistident_flright_vec}
 \end{flushright}
 \end{minipage}
 
@@ -92,7 +92,7 @@ Smokeview Version \smvversion \\
 \vfill
 
 \begin{flushright}
-\includegraphics[width=1in]{FIGURES/doc}
+\includegraphics[width=1in]{\SMVfigdir/doc}
 \end{flushright}
 
 \titlesigs
@@ -361,7 +361,7 @@ The second column of images colors data using data values at cell centers.
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_bound_chop_30}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_bound_cell_30}\\
 cell averaged  data&chopped data&cell centered data\\
- &&&\raisebox{0.0in}[0pt]{\includegraphics[height=7.0in]{FIGURES/colorbar_20_620}}\\
+ &&&\raisebox{0.0in}[0pt]{\includegraphics[height=7.0in]{\SMVfigdir/colorbar_20_620}}\\
   \end{tabular}
 \end{center}
 \caption[Boundary file test of shaded and chopped
@@ -430,7 +430,7 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
 \subsection{Sensitivity Analysis}
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[height=3.0in]{FIGURES/linear_interpolationiso}
+\includegraphics[height=3.0in]{\SMVfigdir/linear_interpolationiso}
 \end{center}
  \caption{A portion of an iso-surface defined by $f(x,y,z)=T_m$
  (for some arbitrary function $f$)  crossing a line segment at the point $(x_m,y,z)$.
@@ -450,7 +450,7 @@ $(x_1,y,z)$ and $(x_2,y,z)$, where interpolated data takes on a particular value
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[height=3.0in]{FIGURES/linear_interpolation}
+\includegraphics[height=3.0in]{\SMVfigdir/linear_interpolation}
 \end{center}
 \caption[Diagram setting up an inverse linear interpolation calculation]
 {Diagram setting up an inverse linear interpolation calculation.
@@ -601,7 +601,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_slice_chop_30}\\
 
  node centered data&node centered chopped data\\
-&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_20_620}}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
  \caption[A test showing shaded and chopped contours of node centered slice
@@ -627,7 +627,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_slice_cellchop_30}\\
 
  cell centered data&cell centered chopped data\\
- &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_20_620}}\\
+ &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
  \caption[A test showing shaded and chopped contours of cell centered slice file
@@ -704,7 +704,7 @@ above on boundary&above
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_vslice_30}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_vslicechop_30}\\
  &data chopped below \SI{140}{\degreeCelsius}\\
- &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_20_620}}\\
+ &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
 
  \end{tabular}
 \end{center}
@@ -725,7 +725,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_120}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_360}\\
 \SI{120}{s}, FED=1.2&3\SI{60}{s}, FED=3.5\\
-&&\raisebox{0.25in}[0pt]{\includegraphics[height=5.5in]{../SMV_User_Guide/FIGURES/colorbar_fed}}
+&&\raisebox{0.25in}[0pt]{\includegraphics[height=5.5in]{\SMVfigdir/colorbar_fed}}
  \end{tabular}
 \end{center}
  \caption[A test showing cell centered FED slice file data]{A test showing cell
@@ -747,7 +747,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice2_30}\\
 
  general orientation&second orientation\\
- &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_20_620}}\\
+ &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
  \caption[A test showing arbitrarily oriented slice file planes generated from
@@ -771,7 +771,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_vgslice2_30}\\
 
  general orientation&second orientation\\
- &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_20_620}}\\
+ &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
  \caption[A test showing arbitrarily oriented vector slice file planes generated from
@@ -787,7 +787,7 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_diff_slice_00}\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_diff_slice_10}\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_diff_slice_30}\\
-&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_tempdiff}}\\
+&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_tempdiff}}\\
  \end{tabular}
 \end{center}
  \caption[A test showing slice contours generated by differencing two cases with
@@ -894,7 +894,7 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
   \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_i3}&
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_i4}\\
  \SI{410}{\degreeCelsius}&\SI{590}{\degreeCelsius}\\
-&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{FIGURES/colorbar_050_590_plot3d_iso}}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_050_590_plot3d_iso}}\\
  \end{tabular}
 \end{center}
  \caption{A test showing PLOT3D iso-surfaces for \SI{50}{\degreeCelsius},
@@ -1263,7 +1263,7 @@ test were created automatically by running the Smokeview script, {\tt colorbar.s
  \includegraphics[width=\figheightG]{SCRIPT_FIGURES/colorconv_slice_00300}&
  \includegraphics[width=\figheightG]{SCRIPT_FIGURES/colorconv_slice_00325}&
  \includegraphics[width=\figheightG]{SCRIPT_FIGURES/colorconv_slice_02000}\\
-&&&\raisebox{0.0in}[0pt]{\includegraphics[height=8.0in]{FIGURES/colorbar_20_100}}\\
+&&&\raisebox{0.0in}[0pt]{\includegraphics[height=8.0in]{\SMVfigdir/colorbar_20_100}}\\
 \end{tabular}
 \end{center}
  \caption[A test showing that data is converted to color properly]{

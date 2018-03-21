@@ -34,7 +34,7 @@ Volume II: Technical Reference Guide\\
 \vfill
 
 \begin{flushright}
-\includegraphics[width=2.in]{FIGURES/nistident_flright_vec}
+\includegraphics[width=2.in]{\SMVfigdir/nistident_flright_vec}
 \end{flushright}
 
 \end{minipage}
@@ -455,7 +455,7 @@ vents, etc. are transformed internally within Smokeview to lie between 0.0 and 1
 All Smokeview objects are drawn by grouping appropriately {\em OpenGL} vertices.
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=3.0in]{FIGURES/righthandrule}
+\includegraphics[width=3.0in]{\SMVfigdir/righthandrule}
 \end{center}
 \caption{Right hand rule used by Smokeview for specifying a 3D vertex locations.}
 \label{figrighthand}
@@ -498,7 +498,7 @@ GL\_TRIANGLE}\ above with {\tt GL\_POINTS}\ or {\tt GL\_LINES}\
 respectively.
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=6.0in]{FIGURES/shapes}
+\includegraphics[width=6.0in]{\SMVfigdir/shapes}
 \end{center}
 \caption[Points, lines and a shaded triangle drawn using OpenGL.]
 {Points, lines and a shaded triangle drawn using OpenGL. Vertices
@@ -565,7 +565,7 @@ see interior objects or visualizations (hence the term clipping plane).  OpenGL
 allows one to define clipping planes along arbitrarily oriented planes.
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=4.0in]{FIGURES/figviewport}
+\includegraphics[width=4.0in]{\SMVfigdir/figviewport}
 \end{center}
 \caption{Example view frustum used to convert 3D scenes to 2D
 screen viewport.}
@@ -584,7 +584,7 @@ illustrates the two view frustums used for a stereo projection.
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=3.0in]{FIGURES/fig_stereo}
+\includegraphics[width=3.0in]{\SMVfigdir/fig_stereo}
 \end{center}
 \caption{View frustums for stereo pairs.}
  \label{figstereo}
@@ -599,7 +599,7 @@ scene and the 2D screen giving several viewport examples used by
 Smokeview.
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=4.0in]{FIGURES/figviewport2}
+\includegraphics[width=4.0in]{\SMVfigdir/figviewport2}
 \end{center}
 \caption{Examples of several viewports in a typical Smokeview scene.}
  \label{figviewports}
@@ -670,9 +670,9 @@ Flat shading diminishes the three dimensionality of the scene.
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=5.0in]{FIGURES/th_unlit}\\
+\includegraphics[width=5.0in]{\SMVfigdir/th_unlit}\\
 flat shading\\
-\includegraphics[width=5.0in]{FIGURES/th_lit}\\
+\includegraphics[width=5.0in]{\SMVfigdir/th_lit}\\
 smooth (Gouraud) shading\\
 \end{tabular}
 \end{center}
@@ -706,10 +706,10 @@ averaged normals.
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=3.0in]{FIGURES/triangle_normal}&
-\includegraphics[width=3.0in]{FIGURES/triangle_normal2}\\
-\includegraphics[width=3.0in]{FIGURES/sphere_facet}&
-\includegraphics[width=3.0in]{FIGURES/sphere_lit}\\
+\includegraphics[width=3.0in]{\SMVfigdir/triangle_normal}&
+\includegraphics[width=3.0in]{\SMVfigdir/triangle_normal2}\\
+\includegraphics[width=3.0in]{\SMVfigdir/sphere_facet}&
+\includegraphics[width=3.0in]{\SMVfigdir/sphere_lit}\\
 separate normals $\rightarrow$ faceted drawing&averaged normals $\rightarrow$ smooth drawing\\
 \end{tabular}
 \end{center}
@@ -760,9 +760,9 @@ alpha value of 0.0 causing it to be completely transparent.
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[width=5.0in]{FIGURES/th_transparent}\\
+\includegraphics[width=5.0in]{\SMVfigdir/th_transparent}\\
 partially transparent slice plane\\
-\includegraphics[width=5.0in]{FIGURES/th_solid}\\
+\includegraphics[width=5.0in]{\SMVfigdir/th_solid}\\
 opaque slice plane\\
 \end{tabular}
 \end{center}
@@ -911,7 +911,7 @@ so that the OpenGL call to perform the desired rotation would be
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[width=2.5in]{FIGURES/rotate_uv}
+\includegraphics[width=2.5in]{\SMVfigdir/rotate_uv}
 \end{tabular}
 \end{center}
 \caption{Diagram relating the vector $u\times v$ and the angle $\theta$
@@ -1105,7 +1105,7 @@ shades of gray from white to black.
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[height=4.0in]
-{FIGURES/rainbowcolor}&\includegraphics[height=4.0in]{FIGURES/3dcolorcube}\\
+{\SMVfigdir/rainbowcolor}&\includegraphics[height=4.0in]{\SMVfigdir/3dcolorcube}\\
 a) colorbar&b) 3D color cube\\
 \end{tabular}
 \end{center}
@@ -1221,7 +1221,7 @@ the cube have value (r,g,b).  Colors are interpolated in Fig.
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3.0in]
-{FIGURES/plume_bad}&\includegraphics[width=3.0in]{FIGURES/plume_good}\\
+{\SMVfigdir/plume_bad}&\includegraphics[width=3.0in]{\SMVfigdir/plume_good}\\
 interpolate colors within a 3D color cube&interpolate colors within 1D texture color bar\\
 \end{tabular}
 \caption [Slice file snapshots illustrating old and new method for
@@ -1236,9 +1236,9 @@ method for coloring data.}
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[height=4.0in]{FIGURES/interpcolorrgb}\\
+\includegraphics[height=4.0in]{\SMVfigdir/interpcolorrgb}\\
 a) colors interpolated within the color cube\\
-\includegraphics[height=4.0in]{FIGURES/interpcolorindex}\\
+\includegraphics[height=4.0in]{\SMVfigdir/interpcolorindex}\\
 b) colors interpolated within the colorbar\\
 \end{tabular}
 \end{center}
@@ -1266,7 +1266,7 @@ to the grid set up in the FDS input file.
 \subsection{Line contours}
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=7.0in]{FIGURES/2d_linecontours}
+\includegraphics[width=7.0in]{\SMVfigdir/2d_linecontours}
 \end{center}
 \caption{2D line contour canonical forms.
   }
@@ -1309,7 +1309,7 @@ scheme, the cases are numbered from left to right 0 1, 5 and 3.
 \subsection{Banded contours}
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=7.0in]{FIGURES/2d_bandcontours}
+\includegraphics[width=7.0in]{\SMVfigdir/2d_bandcontours}
 \end{center}
 \caption{2D band contour canonical forms.
   }
@@ -1438,7 +1438,7 @@ is a unit vector normal to the triangle.
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[height=8.5in]{FIGURES/plume5a_iso_full}\\
+\includegraphics[height=8.5in]{\SMVfigdir/plume5a_iso_full}\\
 \end{center}
 \caption{Snapshot of an isosurface of temperature at 100 \degC\ (212 \degF).
   }
@@ -1448,9 +1448,9 @@ is a unit vector normal to the triangle.
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[height=4.0in]{FIGURES/plume5a_iso_lines}\\
+\includegraphics[height=4.0in]{\SMVfigdir/plume5a_iso_lines}\\
 outline view\\
-\includegraphics[height=4.0in]{FIGURES/plume5a_iso_solid}\\
+\includegraphics[height=4.0in]{\SMVfigdir/plume5a_iso_solid}\\
 solid view
 \end{tabular}
 \end{center}
@@ -1461,7 +1461,7 @@ solid view
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=7.0in]{FIGURES/3d_contours}
+\includegraphics[width=7.0in]{\SMVfigdir/3d_contours}
 \end{center}
 \caption[3D isosurface canonical forms.]{3D isosurface canonical
 forms. Dots occur at corners where the data value is greater than
@@ -1477,9 +1477,9 @@ zero dots on the ends.
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[height=4.0in]{FIGURES/decimate_before}\\
+\includegraphics[height=4.0in]{\SMVfigdir/decimate_before}\\
 before decimation\\
-\includegraphics[height=4.0in]{FIGURES/decimate_after}\\
+\includegraphics[height=4.0in]{\SMVfigdir/decimate_after}\\
 after decimation
 \end{tabular}
 \end{center}
@@ -1495,7 +1495,7 @@ any edges connected to a red dot with the blue dot (average position of removed 
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=5.0in]{FIGURES/3point_line_smooth}
+\includegraphics[width=5.0in]{\SMVfigdir/3point_line_smooth}
 \end{center}
 \caption{Setup for determining the slope of a smooth curve passing through three points.}
 \label{figlinesmooth}%
@@ -1662,8 +1662,8 @@ $\mathrm{CO_2}=0 \%$ and $\mathrm{O_2}=21 \%$
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=3.0in]{FIGURES/fed_clear}&
-\includegraphics[width=3.0in]{FIGURES/fed_smoke}\\
+\includegraphics[width=3.0in]{\SMVfigdir/fed_clear}&
+\includegraphics[width=3.0in]{\SMVfigdir/fed_smoke}\\
 a) ambient&b) smoke filled\\
 \end{tabular}
 \end{center}
@@ -1886,7 +1886,7 @@ Figure \ref{smvlibstruct} illustrates how these libraries and
 Smokeview are organized.
 
 \begin{figure}
-\includegraphics[width=5.0in]{FIGURES/smvlibstruct}
+\includegraphics[width=5.0in]{\SMVfigdir/smvlibstruct}
 \caption{Smokeview external library usage}
 \label{smvlibstruct}
 \end{figure}
@@ -1934,7 +1934,7 @@ will use most of the callbacks named in this figure.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=5.0in]{FIGURES/smvprogstruct}
+\includegraphics[width=5.0in]{\SMVfigdir/smvprogstruct}
 \end{center}
 \caption{Smokeview program structure}
 \label{figprogstruct}
