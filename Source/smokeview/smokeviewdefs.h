@@ -418,6 +418,8 @@ void _Sniff_Errors(char *whereat);
 #define ROTATION_3AXIS 3
 #define MENU_MOTION_SETTINGS 4
 #define MENU_MOTION_GRAVITY_VECTOR 5
+#define MENU_MOTION_Z_VECTOR 6
+#define MENU_MOTION_SHOW_VECTORS 7
 
 #define FIRSTCALL 1
 #define NOT_FIRSTCALL 0

@@ -1384,12 +1384,8 @@ void MouseDragCB(int xm, int ym){
     DragColorbarEditNode(xm, ym);
     return;
   }
-
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
     UpdateMouseInfo(MOUSE_MOTION,xm,ym);
-  }
-  if((rotation_type==ROTATION_2AXIS||rotation_type==ROTATION_3AXIS)&&gvec_down==1&&key_state == KEY_NONE){
-    UpdateGvecDown(0);
   }
   MoveScene(xm,ym);
 }
