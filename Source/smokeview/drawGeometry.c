@@ -4626,7 +4626,7 @@ void DrawGravityAxis(void){
   glVertex3f(xbar/2.0+gvecunit[0],ybar/2.0+gvecunit[1],zbar/2.0+gvecunit[2]);
 
   glEnd();
-  Output3Text(foregroundcolor, xbar / 2.0, ybar / 2.0, zbar / 2.0 + 0.5, "x");
+  Output3Text(foregroundcolor, xbar / 2.0, ybar / 2.0, zbar / 2.0 + 0.5, "z");
   Output3Text(foregroundcolor, xbar / 2.0, ybar / 2.0 + 0.5, zbar / 2.0, "y");
   Output3Text(foregroundcolor, xbar / 2.0 + 0.5, ybar / 2.0, zbar / 2.0, "x");
   Output3Text(foregroundcolor, xbar / 2.0 + gvecunit[0], ybar / 2.0 + gvecunit[1], zbar / 2.0 + gvecunit[2], "g");
