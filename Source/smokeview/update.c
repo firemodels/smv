@@ -1918,6 +1918,10 @@ void UpdateDisplay(void){
     update_setvents=0;
   }
   UNLOCK_IBLANK
+  if(update_zaxis_custom == 1){
+    update_zaxis_custom = 0;
+    UpdateZAxisCustom();
+  }
 #ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){
     update_flipped_colorbar = 0;

@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateZAxisCustom(void);
 EXTERNCPP void SkipMenu(int value);
 EXTERNCPP void UpdateShowGravityVector(void);
 EXTERNCPP void ImmersedBoundCB(int var);

@@ -9369,18 +9369,19 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-	if (Match(buffer, "SHOWGRAVVECTOR") == 1) {
-		fgets(buffer, 255, stream);
-		sscanf(buffer, " %i", &showgravity_vector);
-		continue;
-	}
-	if(Match(buffer, "ZAXISANGLES") == 1){
+    if(Match(buffer, "SHOWGRAVVECTOR") == 1) {
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &showgravity_vector);
+      continue;
+    }
+    if(Match(buffer, "ZAXISANGLES") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f", zaxis_angles, zaxis_angles + 1, zaxis_angles + 2);
       zaxis_angles_orig[0] = zaxis_angles[0];
       zaxis_angles_orig[1] = zaxis_angles[1];
       zaxis_angles_orig[2] = zaxis_angles[2];
       zaxis_custom = 1;
+      update_zaxis_custom = 1;
       continue;
     }
     if(Match(buffer, "HISTOGRAM") == 1){
