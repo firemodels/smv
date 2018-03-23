@@ -5,10 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void SkipMenu(int value);
 EXTERNCPP void UpdateShowGravityVector(void);
 EXTERNCPP void ImmersedBoundCB(int var);
 EXTERNCPP void UpdateImmersedControls(void);
-
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);

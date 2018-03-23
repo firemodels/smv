@@ -2455,7 +2455,6 @@ void ScriptMenu(int value){
       current_script_command=NULL;
       runscript=0;
       first_frame_index=0;
-      skip_render_frames=0;
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;

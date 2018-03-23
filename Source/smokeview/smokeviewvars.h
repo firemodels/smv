@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
 SVEXTERN int SVDECL(glui_show_immersed_shaded,1);
 SVEXTERN int SVDECL(glui_show_immersed_outline,0);
@@ -152,7 +153,6 @@ SVEXTERN int render_size_index;
 SVEXTERN int SVDECL(renderW, 640), SVDECL(renderH, 480), render_window_size;
 SVEXTERN int render_filetype;
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
-SVEXTERN int SVDECL(skip_render_frames, 0);
 SVEXTERN int SVDECL(*render_frame, NULL);
 
 SVEXTERN int SVDECL(movie_bitrate, 5000);

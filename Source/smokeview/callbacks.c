@@ -2824,6 +2824,7 @@ void IdleCB(void){
   float thisinterval;
   int redisplay=0;
 
+  if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
   glutSetWindow(mainwindow_id);
   UpdateShow();
@@ -3208,12 +3209,20 @@ void DoScript(void){
   }
   else{
     first_frame_index=0;
-    skip_render_frames=0;
     script_startframe=-1;
     script_skipframe=-1;
   }
 }
 #endif
+
+/* ------------------ IdleDisplay ------------------------ */
+
+void IdleDisplay(void){
+// when rendering files, onlyl call Idle routine from DisplayCB callback
+  from_DisplayCB=1;
+  IdleCB();
+  from_DisplayCB=0;
+}
 
 /* ------------------ DisplayCB ------------------------ */
 
@@ -3240,6 +3249,8 @@ void DisplayCB(void){
     }
     else{
       int stop_rendering;
+
+      IdleDisplay();
 
       stop_rendering = 1;
       if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
