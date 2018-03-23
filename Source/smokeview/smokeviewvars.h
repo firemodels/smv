@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
 SVEXTERN int SVDECL(glui_show_immersed_shaded,1);
 SVEXTERN int SVDECL(glui_show_immersed_outline,0);
@@ -152,7 +153,6 @@ SVEXTERN int render_size_index;
 SVEXTERN int SVDECL(renderW, 640), SVDECL(renderH, 480), render_window_size;
 SVEXTERN int render_filetype;
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
-SVEXTERN int SVDECL(skip_render_frames, 0);
 SVEXTERN int SVDECL(*render_frame, NULL);
 
 SVEXTERN int SVDECL(movie_bitrate, 5000);
@@ -258,7 +258,7 @@ SVEXTERN float gvecphys[3];
 SVEXTERN float gvecunit[3];
 SVEXTERN float gvecphys_orig[3];
 #endif
-SVEXTERN int SVDECL(update_have_gvec,0),SVDECL(gvec_down,1),SVDECL(have_gvec,0),SVDECL(changed_zaxis,0),SVDECL(showgravity,0);
+SVEXTERN int SVDECL(gvec_down,1),SVDECL(have_gvec,0),SVDECL(zaxis_custom,0),SVDECL(showgravity_vector,0);
 SVEXTERN float SVDECL(slice_line_contour_width,1.0);
 SVEXTERN int SVDECL(slice_contour_type,0);
 SVEXTERN int SVDECL(viscadopaque,0);
@@ -560,8 +560,10 @@ SVEXTERN float xtemp;
 SVEXTERN float set_view_xyz[3],user_zaxis[3];
 #ifdef INMAIN
   SVEXTERN float zaxis_angles[3]={0.000000, 90.000000, 0.000000};
+  SVEXTERN float zaxis_angles_orig[3] = {0.000000, 90.000000, 0.000000};
 #else
   SVEXTERN float zaxis_angles[3];
+  SVEXTERN float zaxis_angles_orig[3];
 #endif
 
 SVEXTERN char INIfile[1024];

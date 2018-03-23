@@ -3953,7 +3953,6 @@ int ReadSMV(char *file, char *file2){
       NORMALIZE3(gvecunit);
       if(NORM3(gvecphys)>0.0){
         have_gvec=1;
-        update_have_gvec=1;
       }
       continue;
     }
@@ -9370,10 +9369,18 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(Match(buffer, "ZAXISANGLES") == 1){
+	if (Match(buffer, "SHOWGRAVVECTOR") == 1) {
+		fgets(buffer, 255, stream);
+		sscanf(buffer, " %i", &showgravity_vector);
+		continue;
+	}
+	if(Match(buffer, "ZAXISANGLES") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f ", zaxis_angles, zaxis_angles + 1, zaxis_angles + 2);
-      changed_zaxis = 1;
+      sscanf(buffer, " %f %f %f", zaxis_angles, zaxis_angles + 1, zaxis_angles + 2);
+      zaxis_angles_orig[0] = zaxis_angles[0];
+      zaxis_angles_orig[1] = zaxis_angles[1];
+      zaxis_angles_orig[2] = zaxis_angles[2];
+      zaxis_custom = 1;
       continue;
     }
     if(Match(buffer, "HISTOGRAM") == 1){
@@ -13360,7 +13367,9 @@ void WriteIni(int flag,char *filename){
   for(i = 0; i<nunitclasses; i++){
     fprintf(fileout, " %i\n", unitclasses[i].unit_index);
   }
-  if(changed_zaxis == 1){
+  fprintf(fileout, "SHOWGRAVVECTOR\n");
+  fprintf(fileout, " %i\n", showgravity_vector);
+  if(zaxis_custom == 1){
     fprintf(fileout, "ZAXISANGLES\n");
     fprintf(fileout, " %f %f %f\n", zaxis_angles[0], zaxis_angles[1], zaxis_angles[2]);
   }

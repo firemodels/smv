@@ -41,7 +41,7 @@
 #define WINDOWSIZE_LIST 17
 #define SNAPSCENE 21
 #define SET_VIEW_XYZ 22
-#define CHANGE_ZAXIS 25
+#define ZAXIS_CUSTOM 25
 #define USE_GVEC 28
 #define GSLICE_TRANSLATE 24
 #define GSLICE_NORMAL 27
@@ -56,6 +56,7 @@
 #define COLOR_FLIP 34
 #define CLIP_SHOW_ROTATE 35
 #define QUICKTIME_COMPATIBILITY 40
+#define ZAXIS_UP 41
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -174,8 +175,7 @@ GLUI_Checkbox *CHECKBOX_clip_rendered_scene=NULL;
 GLUI_Checkbox *CHECKBOX_general_rotation=NULL;
 GLUI_Checkbox *CHECKBOX_blockpath=NULL,*CHECKBOX_cursor_blockpath=NULL;
 GLUI_Checkbox *CHECKBOX_gslice_data=NULL;
-GLUI_Checkbox *CHECKBOX_gvec_down=NULL;
-GLUI_Checkbox *CHECKBOX_showgravity=NULL;
+GLUI_Checkbox *CHECKBOX_showgravity_vector=NULL;
 GLUI_Checkbox *CHECKBOX_overwrite_movie = NULL;
 #ifdef pp_RENDER360_DEBUG
 GLUI_Checkbox **CHECKBOX_screenvis = NULL;
@@ -263,6 +263,12 @@ extern "C" void EnableDisableStartButtons(int val){
 void UpdateGluiRotateAbout(int val){
   if(LIST_mesh2 != NULL)LIST_mesh2->set_int_val(val);
   SceneMotionCB(MESH_LIST);
+}
+
+/* ------------------ UpdateShowGravityVector ------------------------ */
+
+extern "C" void UpdateShowGravityVector(void){
+  if(CHECKBOX_showgravity_vector!=NULL)CHECKBOX_showgravity_vector->set_int_val(showgravity_vector);
 }
 
 /* ------------------ SetColorControls ------------------------ */
@@ -359,13 +365,6 @@ void UpdateRenderType(int type){
 void UpdateZaxisAngles(void){
   SPINNER_zaxis_angles[0]->set_float_val(zaxis_angles[0]);
   SPINNER_zaxis_angles[1]->set_float_val(zaxis_angles[1]);
-}
-
-/* ------------------ UpdateGvecDown ------------------------ */
-
-void UpdateGvecDown(int gvec_down_local){
-  gvec_down = gvec_down_local;
-  if(CHECKBOX_gvec_down!=NULL)CHECKBOX_gvec_down->set_int_val(gvec_down);
 }
 
 /* ------------------ UpdateResolutionMultiplier ------------------------ */
@@ -980,10 +979,10 @@ extern "C" void GluiMotionSetup(int main_window){
 
   PANEL_change_zaxis = glui_motion->add_panel_to_panel(ROLLOUT_orientation,_d("z axis"));
 
-  {
+  if(zaxis_custom==0){
     float vv[3];
 
-    if(have_gvec==1&&changed_zaxis==0){
+    if(have_gvec==1){
       vv[0] = -gvecphys[0];
       vv[1] = -gvecphys[1];
       vv[2] = -gvecphys[2];
@@ -995,22 +994,24 @@ extern "C" void GluiMotionSetup(int main_window){
     }
     XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
   }
-  SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"azimuth:",GLUI_SPINNER_FLOAT,zaxis_angles,CHANGE_ZAXIS,SceneMotionCB);
-  SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"elevation:",GLUI_SPINNER_FLOAT,zaxis_angles+1,CHANGE_ZAXIS,SceneMotionCB);
-  SPINNER_zaxis_angles[2] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"angle (about z axis):",GLUI_SPINNER_FLOAT,zaxis_angles+2,CHANGE_ZAXIS,SceneMotionCB);
+  SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"azimuth:",GLUI_SPINNER_FLOAT, zaxis_angles,ZAXIS_CUSTOM, SceneMotionCB);
+  SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"elevation:",GLUI_SPINNER_FLOAT,zaxis_angles+1,ZAXIS_CUSTOM,SceneMotionCB);
+  SPINNER_zaxis_angles[2] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"angle (about z axis):",GLUI_SPINNER_FLOAT,zaxis_angles+2,ZAXIS_CUSTOM,SceneMotionCB);
   SPINNER_zaxis_angles[0]->set_float_limits(-180.0,180.0);
   SPINNER_zaxis_angles[1]->set_float_limits(-90.0,90.0);
   SPINNER_zaxis_angles[2]->set_float_limits(-180.0,180.0);
+
+  glui_motion->add_button_to_panel(PANEL_change_zaxis, "z vector up", ZAXIS_UP, SceneMotionCB);
   if(have_gvec==1){
-    CHECKBOX_gvec_down = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,"Gravity vector down",&gvec_down,USE_GVEC,SceneMotionCB);
-    CHECKBOX_showgravity = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,"Show gravity, axis vectors",&showgravity);
+    glui_motion->add_button_to_panel(PANEL_change_zaxis, "Gravity vector down", USE_GVEC, SceneMotionCB);
+    CHECKBOX_showgravity_vector = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis, "Show gravity, axis vectors", &showgravity_vector);
   }
   else{
-    CHECKBOX_showgravity = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,"Show axis vectors",&showgravity);
+    CHECKBOX_showgravity_vector = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,"Show axis vectors",&showgravity_vector);
   }
-  SceneMotionCB(CHANGE_ZAXIS);
+  SceneMotionCB(ZAXIS_CUSTOM);
   ROLLOUT_orientation->close();
-  changed_zaxis=0;
+  zaxis_custom=0;
 
   ROLLOUT_gslice = glui_motion->add_rollout_to_panel(PANEL_motion,"Slice motion",false,SLICE_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT);
@@ -1648,7 +1649,6 @@ extern "C" void SceneMotionCB(int var){
         az_elev = camera_current->az_elev;
         az_elev[0] = ROTATE_2axis->get_x();
         az_elev[1] = -ROTATE_2axis->get_y();
-        if(gvec_down==1)UpdateGvecDown(0);
       }
       break;
     case WINDOWSIZE_LIST:
@@ -1806,7 +1806,8 @@ extern "C" void SceneMotionCB(int var){
     case USE_GVEC:
       updatemenu = 1;
       break;
-    case CHANGE_ZAXIS:
+    case ZAXIS_CUSTOM:
+    case ZAXIS_UP:
     case SET_VIEW_XYZ:
     case TRANSLATE_XY:
     case GLUI_Z:
@@ -1846,19 +1847,16 @@ extern "C" void SceneMotionCB(int var){
   switch(var){
     case USE_GVEC:
       {
+        int gvec_down_save;
         float vv[3];
         float *elev, *az;
 
-        if(gvec_down==1){
-          vv[0] = -gvecphys[0];
-          vv[1] = -gvecphys[1];
-          vv[2] = -gvecphys[2];
-        }
-        else{
-          vv[0] = -gvecphys_orig[0];
-          vv[1] = -gvecphys_orig[1];
-          vv[2] = -gvecphys_orig[2];
-        }
+        gvec_down=1;
+        SceneMotionCB(ZAXIS_UP);
+        gvec_down=1;
+        vv[0] = -gvecphys[0];
+        vv[1] = -gvecphys[1];
+        vv[2] = -gvecphys[2];
         XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
         UpdateZaxisAngles();
 
@@ -1867,13 +1865,22 @@ extern "C" void SceneMotionCB(int var){
         user_zaxis[0] = cos(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
         user_zaxis[1] = sin(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
         user_zaxis[2] = sin(DEG2RAD*(*elev));
-        LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
+        if(LIST_viewpoints!=NULL)LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
         ViewpointCB(LIST_VIEW);
         updatemenu = 1;
         glutPostRedisplay();
       }
       break;
-    case CHANGE_ZAXIS:
+    case ZAXIS_UP:
+      zaxis_angles[0] = 0.0;
+      zaxis_angles[1] = 90.0;
+      zaxis_angles[2] = 0.0;
+      SPINNER_zaxis_angles[0]->set_float_val(zaxis_angles[0]);
+      SPINNER_zaxis_angles[1]->set_float_val(zaxis_angles[1]);
+      SPINNER_zaxis_angles[2]->set_float_val(zaxis_angles[2]);
+      SceneMotionCB(ZAXIS_CUSTOM);
+      break;
+    case ZAXIS_CUSTOM:
       {
         float *elev, *az;
 
@@ -1882,8 +1889,7 @@ extern "C" void SceneMotionCB(int var){
         user_zaxis[0]=cos(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
         user_zaxis[1]=sin(DEG2RAD*(*az))*cos(DEG2RAD*(*elev));
         user_zaxis[2]=sin(DEG2RAD*(*elev));
-        changed_zaxis=1;
-        UpdateGvecDown(0);
+        zaxis_custom=1;
       }
       break;
     case SET_VIEW_XYZ:

@@ -2455,7 +2455,6 @@ void ScriptMenu(int value){
       current_script_command=NULL;
       runscript=0;
       first_frame_index=0;
-      skip_render_frames=0;
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;
@@ -4980,9 +4979,18 @@ void RotateTypeMenu(int value){
     ShowGluiMotion(DIALOG_MOTION);
     return;
   }
+  else if (value == MENU_MOTION_SHOW_VECTORS){
+	showgravity_vector = 1-showgravity_vector;
+	UpdateShowGravityVector();
+  }
   else if(value == MENU_MOTION_GRAVITY_VECTOR){
-    gvec_down = 1 - gvec_down;
-    update_have_gvec = 1;
+    gvec_down = 1;
+#define USE_GVEC 28
+    SceneMotionCB(USE_GVEC);
+  }
+  else if(value==MENU_MOTION_Z_VECTOR){
+#define ZAXIS_UP 41
+    SceneMotionCB(ZAXIS_UP);
   }
   else{
     rotation_type = value;
@@ -6540,8 +6548,11 @@ updatemenu=0;
     ASSERT(FFALSE);
     break;
   }
-  if(gvec_down==1)glutAddMenuEntry("*gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
-  if(gvec_down==0)glutAddMenuEntry("gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
+  glutAddMenuEntry("Direction vectors:", MENU_DUMMY);
+  if(showgravity_vector==1)glutAddMenuEntry("  *show gravity, axis vectors", MENU_MOTION_SHOW_VECTORS);
+  if(showgravity_vector==0)glutAddMenuEntry("  show gravity, axis vectors", MENU_MOTION_SHOW_VECTORS);
+  glutAddMenuEntry("  gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
+  glutAddMenuEntry("  z vector up", MENU_MOTION_Z_VECTOR);
   glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
@@ -8275,7 +8286,7 @@ updatemenu=0;
 
   CREATEMENU(optionmenu,OptionMenu);
   if(nunitclasses>0)glutAddSubMenu(_("Display Units"),unitsmenu);
-  glutAddSubMenu(_("Rotation type"),rotatetypemenu);
+  glutAddSubMenu(_("Rotation parameters"),rotatetypemenu);
   glutAddSubMenu(_("Max frame rate"),frameratemenu);
   glutAddSubMenu(_("Render"),rendermenu);
   glutAddSubMenu(_("Tours"),tourmenu);

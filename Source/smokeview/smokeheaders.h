@@ -5,9 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void SkipMenu(int value);
+EXTERNCPP void UpdateShowGravityVector(void);
 EXTERNCPP void ImmersedBoundCB(int var);
 EXTERNCPP void UpdateImmersedControls(void);
-
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
@@ -101,7 +102,6 @@ EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDeviceSize(void);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
-EXTERNCPP void UpdateGvecDown(int gvec_down_local);
 EXTERNCPP void DrawGravityAxis(void);
 EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
 EXTERNCPP void GetGeomDialogState(void);
