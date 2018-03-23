@@ -231,6 +231,13 @@ GLUI_Listbox *LIST_render_skip=NULL;
 procdata motionprocinfo[9];
 int nmotionprocinfo = 0;
 
+/* ------------------ UpdateZAxisCustom ------------------------ */
+
+extern "C" void UpdateZAxisCustom(void){
+  update_zaxis_custom = 0;
+  SceneMotionCB(ZAXIS_CUSTOM);
+}
+
 /* ------------------ UpdateShowRotationCenter ------------------------ */
 
 extern "C" void UpdateShowRotationCenter(void){
@@ -1847,7 +1854,6 @@ extern "C" void SceneMotionCB(int var){
   switch(var){
     case USE_GVEC:
       {
-        int gvec_down_save;
         float vv[3];
         float *elev, *az;
 
