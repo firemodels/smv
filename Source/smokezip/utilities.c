@@ -88,10 +88,10 @@ void RandABsdir(float xyz[3], int dir){
   xyz[2]=z/sqrt(sum);
   if(abs(dir)>=1&&abs(dir)<=3){
     if(dir>0){
-      xyz[dir]=abs(xyz[dir]);
+      xyz[dir]=ABS(xyz[dir]);
     }
     else{
-      xyz[-dir]=-abs(xyz[-dir]);
+      xyz[-dir]=-ABS(xyz[-dir]);
     }
   }
 }
