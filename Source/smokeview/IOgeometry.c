@@ -3051,9 +3051,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
               if(insolid16 == 16)show_edge3 = 0;
             }
             if(
-              insolid==IN_CUTCELL&&show_immersed_shaded[IN_CUTCELL_GLUI]==1||
-              insolid==IN_SOLID&&show_immersed_shaded[IN_SOLID_GLUI]==1||
-              insolid==IN_GAS&&show_immersed_shaded[IN_GAS_GLUI]==1){
+              (insolid==IN_CUTCELL&&show_immersed_shaded[IN_CUTCELL_GLUI]==1)||
+              (insolid==IN_SOLID&&show_immersed_shaded[IN_SOLID_GLUI]==1)||
+              (insolid==IN_GAS&&show_immersed_shaded[IN_GAS_GLUI]==1)){
                 draw_foreground=1;
               }
               else{

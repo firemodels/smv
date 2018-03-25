@@ -48,18 +48,6 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Win 32 ----------------
-#  32 bit windows
-
-intel_win_32 : CFLAGS    = -D WIN32 -D pp_INTEL -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_32 : CC        = icl
-intel_win_32 : CPP       = icl
-intel_win_32 : FC        = ifort
-intel_win_32 : exe       = set_path32.exe
-
-intel_win_32 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
-
 # ------------- intel_win_64 ----------------
 #  64 bit windows
 

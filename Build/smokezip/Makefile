@@ -75,19 +75,6 @@ intel_win_64 : exe       = smokezip_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)/intel_win_64/pthreads.lib $(LIB_DIR)/intel_win_64/zlib.lib
 
-# ------------- 32 bit gnu Linux ----------------
-
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4
-gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_32 : LFLAGS    = 
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : CPP       = g++
-gnu_linux_32 : FC        = gfortran
-gnu_linux_32 : exe       = smokezip_linux_32
-
-gnu_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_32 -lz -lpthread
-
 # ------------- 64 bit gnu Linux ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4
@@ -102,7 +89,6 @@ gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_64 -lz -lpthread
 
 # ------------- gnu OSX ----------------
-#  gnu linux
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
@@ -113,8 +99,20 @@ gnu_osx_64 : FC        = gfortran
 gnu_osx_64 : exe       = smokezip_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)  -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 
+# ------------- gnu OSX debug ----------------
+
+gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : LFLAGS    = -m64
+gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : CPP       = g++
+gnu_osx_64_db : FC        = gfortran
+gnu_osx_64_db : exe       = smokezip_osx_64_db
+
+gnu_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 
 # ------------- Linux 64 ----------------
 #  64 bit linux

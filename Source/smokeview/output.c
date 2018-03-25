@@ -318,7 +318,6 @@ labeldata *LabelGet(char *name){
 
   if(name==NULL)return NULL;
   for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
-    if(thislabel->name==NULL)return NULL;
     if(strcmp(thislabel->name,name)==0)return thislabel;
   }
   return NULL;

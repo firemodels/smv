@@ -61,15 +61,6 @@ intel_win_64 : exe       = hashfile_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
 
-# ------------- gnu Linux 32 ----------------
-
-gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : exe       = hashfile_linux_32
-
-gnu_linux_32: $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -lm
-
 # ------------- gnu Linux 64 ----------------
 
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)

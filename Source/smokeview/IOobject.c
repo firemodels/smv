@@ -6091,13 +6091,13 @@ int IsDupDeviceLabel(int index, int direction){
     i2=ndeviceinfo;
   }
   dev_index = deviceinfo + index;
-  if(index<0||index>=ndeviceinfo||dev_index->label==NULL||STRCMP(dev_index->label,"null")==0||dev_index->in_devc_csv==0)return 0;
+  if(index<0||index>=ndeviceinfo||STRCMP(dev_index->label,"null")==0||dev_index->in_devc_csv==0)return 0;
 
   for(i=i1;i<i2;i++){
     devicedata *devi;
 
     devi = deviceinfo + i;
-    if(devi->label==NULL||STRCMP(devi->label,"null")==0)continue;
+    if(STRCMP(devi->label,"null")==0)continue;
     if(STRCMP(dev_index->label,devi->label)==0)return 1;
   }
   return 0;
@@ -6288,7 +6288,7 @@ void SetupDeviceData(void){
     devicedata *devi;
 
     devi = deviceinfo + i;
-    if(devi->label==NULL||STRCMP(devi->label,"null")==0)continue;
+    if(STRCMP(devi->label,"null")==0)continue;
     if(IsDupDeviceLabel(i,AFTER)==1){
       is_dup=1;
       break;
@@ -6302,7 +6302,7 @@ void SetupDeviceData(void){
       devicedata *devi;
 
       devi = deviceinfo + ii;
-      if(devi->label==NULL||STRCMP(devi->label,"null")==0)continue;
+      if(STRCMP(devi->label,"null")==0)continue;
       if(IsDupDeviceLabel(ii,BEFORE)==0&& IsDupDeviceLabel(ii,AFTER)==1){
         fprintf(stderr," %s,",devi->label);
       }

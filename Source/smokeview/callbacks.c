@@ -1937,7 +1937,7 @@ void Keyboard(unsigned char key, int flag){
           return;
         }
 
-        if(strncmp((const char *)&key2, "R", 1&&keystate!=GLUT_ACTIVE_ALT)==0){
+        if(strncmp((const char *)&key2, "R", 1)==0&&keystate!=GLUT_ACTIVE_ALT){
           resolution_multiplier = MAX(2, resolution_multiplier);
         }
         else{
