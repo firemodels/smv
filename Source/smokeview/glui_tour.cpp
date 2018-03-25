@@ -894,7 +894,7 @@ extern "C" void CreateTourList(void){
     touri = tourinfo + i;
     strcpy(label,"");
     if(i==selectedtour_index)strcat(label,"*");
-    if(touri->label!=NULL&&strlen(touri->label)>0)strcat(label,touri->label);
+    if(strlen(touri->label)>0)strcat(label,touri->label);
     if(strlen(label)>0){
       LISTBOX_tour->add_item(i,label);
     }

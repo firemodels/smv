@@ -5696,7 +5696,7 @@ int ReadSMV(char *file, char *file2){
           STRCPY(surfi->texturefile,buffer3);
           found_texture=1;
         }
-        if(texturebuffer!=NULL&&buffer3!=NULL&&found_texture==0&&strncmp(buffer3,"null",4)!=0){
+        if(buffer3!=NULL&&found_texture==0&&strncmp(buffer3,"null",4)!=0){
           fprintf(stderr,"*** Error: The texture file %s was not found\n",buffer3);
         }
       }
@@ -12296,7 +12296,7 @@ int ReadIni(char *inifile){
 
   // smokeview.ini in case directory
 
-  if(INIfile!=NULL){
+  {
     int returnval;
 
     returnval = ReadIni2(INIfile, 0);
