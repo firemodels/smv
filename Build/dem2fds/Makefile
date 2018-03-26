@@ -82,7 +82,7 @@ gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = dem2fds_linux_64
 
 gnu_linux_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 
 # ------------- Linux 64 ----------------
