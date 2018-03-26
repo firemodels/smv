@@ -354,17 +354,16 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
   FILE *stream_in;
   elevdata *elevinfo, *imageinfo;
   int kbar;
-  int longlat_defined = 0;
   int nlongs = 100, nlats = 100;
   float dlat, dlong;
-  int count, *have_vals, have_data = 0;
-  float valmin, valmax, *vals;
+  int count, *have_vals;
+  float valmin=0.0, valmax=1.0, *vals;
   char *ext;
   float longref = -1000.0, latref = -1000.0;
   float xref = 0.0, yref = 0.0;
   float xmax = -1000.0, ymax = -1000.0, zmin = -1000.0, zmax = -1000.0;
   float *longlats = NULL, *longlatsorig;
-  float image_long_min, image_long_max, image_lat_min, image_lat_max;
+  float image_long_min=0.0, image_long_max=1.0, image_lat_min=0.0, image_lat_max=1.0;
   float fds_long_min, fds_long_max, fds_lat_min, fds_lat_max;
   int longlatref_mode = LONGLATREF_NONE;
   int xymax_defined=0;
@@ -639,7 +638,6 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     }
 
     if(Match(buffer, "LONGLATMINMAX") == 1){
-      have_data = 1;
       fds_long_min = -1000.0;
       fds_long_max = -1000.0;
       fds_lat_min = -1000.0;
@@ -667,7 +665,6 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
       exi->ymin = -1.0;
       exi->ymax = -1.0;
       sscanf(buffer, "%f %f %f %f", &exi->xmin, &exi->ymin, &exi->xmax, &exi->ymax);
-      longlat_defined = 1;
       continue;
     }
   }
@@ -680,7 +677,6 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
   }
 
   if(show_maps==1){
-    have_data = 1;
     longlatref_mode = LONGLATREF_MINMAX;
     longref = (image_long_min + image_long_max) / 2.0;
     latref = (image_lat_min + image_lat_max) / 2.0;
@@ -805,7 +801,6 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
   char basename[LEN_BUFFER];
   int nlong, nlat, nz;
   int i, j;
-  float llat1, llat2, llong1, llong2;
   float xmax, ymax, zmin, zmax;
   float *xgrid, *ygrid;
   int count;
@@ -830,12 +825,8 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
     return;
   }
 
-  llong1 = fds_elevs->long_min;
-  llong2 = fds_elevs->long_max;
   nlong = fds_elevs->ncols;
 
-  llat1 = fds_elevs->lat_min;
-  llat2 = fds_elevs->lat_max;
   nlat = fds_elevs->nrows;
 
   zmin = fds_elevs->zmin;

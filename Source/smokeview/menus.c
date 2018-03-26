@@ -4578,12 +4578,11 @@ void ShowBoundaryMenu(int value){
   updatefacelists=1;
   glutPostRedisplay();
   if(value>=1000){
-    int ii,ibtype;
+    int ii;
     patchdata *patchj;
 
     patchj = patchinfo + value-1000;
     patchj->display = 1 - patchj->display;
-    ibtype=GetBoundaryType(patchj);
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
       int i;
@@ -5329,7 +5328,7 @@ void InitMenus(int unload){
   int nplot3dloaded;
   int nisoloaded;
   int showhide_data = 0;
-  int patchgeom_slice_showhide, patchgeom_bound_showhide;
+  int patchgeom_slice_showhide;
 
 
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
@@ -5576,7 +5575,6 @@ updatemenu=0;
   if(unload==UNLOAD)return;
 
   patchgeom_slice_showhide = 0;
-  patchgeom_bound_showhide = 0;
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
@@ -5584,11 +5582,6 @@ updatemenu=0;
     if(patchi->loaded==1){
       if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
         patchgeom_slice_showhide = 1;
-      }
-      if(patchi->slice == 1 || patchi->filetype == PATCH_GEOMETRY){
-        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
-          patchgeom_bound_showhide = 1;
-        }
       }
     }
   }

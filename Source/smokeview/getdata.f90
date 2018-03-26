@@ -796,7 +796,7 @@ integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
 integer :: lu20, finish
 logical :: exists
-integer :: i,ii
+integer :: i;
 integer :: one, itime, nvars
 integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
