@@ -5537,7 +5537,6 @@ int ReadSMV(char *file, char *file2){
         smoke3di->autoload=0;
         smoke3di->compression_type=UNKNOWN;
         smoke3di->hrrpuv_color=NULL;
-        smoke3di->water_color=NULL;
         smoke3di->soot_color=NULL;
         smoke3di->file=NULL;
         smoke3di->smokeframe_in=NULL;
@@ -5560,7 +5559,6 @@ int ReadSMV(char *file, char *file2){
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         smoke3di->soot_index=-1;
-        smoke3di->water_index=-1;
         smoke3di->hrrpuv_index=-1;
         smoke3di->ismoke3d_time=0;
 
@@ -5595,9 +5593,6 @@ int ReadSMV(char *file, char *file2){
         }
         else if(strncmp(smoke3di->label.shortlabel,"hrrpuv",6)==0){
           smoke3di->type=FIRE;
-        }
-        else if(strncmp(smoke3di->label.shortlabel,"water",5)==0){
-          smoke3di->type=WATER;
         }
         else{
           smoke3di->type=SOOT;

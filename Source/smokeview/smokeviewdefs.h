@@ -144,7 +144,6 @@ void _Sniff_Errors(char *whereat);
 #endif
 #define SOOT 1
 #define FIRE 2
-#define WATER 3
 
 #define NELEV_ZONE 100
 
