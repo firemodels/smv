@@ -625,7 +625,11 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
        Match(buffer,"SMOKE3D")==1||
        Match(buffer,"SMOKF3D")==1||
        Match(buffer,"VSMOKF3D")==1||
-       Match(buffer,"PART")==1||
+#ifdef pp_CO2SMOKE
+      Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKG3D") == 1 ||
+#endif
+      Match(buffer, "PART") == 1 ||
        Match(buffer,"EVAC")==1||
        Match(buffer,"PRT5")==1||
        Match(buffer,"EVA5")==1

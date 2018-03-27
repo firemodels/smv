@@ -4286,6 +4286,10 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
+#ifdef pp_CO2SMOKE
+      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKG3D") == 1
+#endif
       ){
       if(setup_only==1)continue;
       nsmoke3dinfo++;
@@ -5470,6 +5474,10 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
+#ifdef pp_CO2SMOKE
+      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKG3D") == 1
+#endif
       ){
 
       size_t len;
@@ -5480,11 +5488,13 @@ int ReadSMV(char *file, char *file2){
       int blocknumber;
 
       if(setup_only==1)continue;
-      if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1){
+      if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1||
+         Match(buffer, "SMOKG3D") == 1 || Match(buffer, "VSMOKG3D") == 1
+        ){
         filetype=FORTRAN_GENERATED;
       }
 
-      if(Match(buffer,"VSMOKE3D") == 1||Match(buffer,"VSMOKF3D") == 1){
+      if(Match(buffer,"VSMOKE3D") == 1||Match(buffer,"VSMOKF3D") == 1|| Match(buffer, "VSMOKG3D") == 1){
         int idummy;
 
         buffer_temp=buffer+8;
@@ -5591,11 +5601,17 @@ int ReadSMV(char *file, char *file2){
           if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
           nsmoke3dinfo--;
         }
-        if(strncmp(smoke3di->label.shortlabel,"soot",4)==0){
+        if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
           smoke3di->type=SOOT;
         }
-        else if(strncmp(smoke3di->label.shortlabel,"hrrpuv",6)==0){
+        else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
           smoke3di->type=FIRE;
+        }
+        else if(Match(smoke3di->label.shortlabel, "temp") == 1){
+          smoke3di->type = TEMP;
+        }
+        else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
+          smoke3di->type = CO2;
         }
         else{
           smoke3di->type=SOOT;

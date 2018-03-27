@@ -1400,7 +1400,7 @@ void DrawSmoke3dCull(void){
 #ifdef pp_GPU
 /* ------------------ DrawSmoke3dGpu ------------------------ */
 
-void DrawSmoke3dGpu(smoke3ddata *smoke3di){
+void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
@@ -2525,7 +2525,7 @@ void DrawSmoke3dGpu(smoke3ddata *smoke3di){
 #endif
 /* ------------------ DrawSmoke3d ------------------------ */
 
-void DrawSmoke3d(smoke3ddata *smoke3di){
+void DrawSmoke3D(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
@@ -4532,13 +4532,13 @@ void DrawSmokeFrame(void){
 
 #ifdef pp_GPU
         if(usegpu==1){
-          DrawSmoke3dGpu(smoke3di);
+          DrawSmoke3DGPU(smoke3di);
         }
         else{
-          DrawSmoke3d(smoke3di);
+          DrawSmoke3D(smoke3di);
         }
 #else
-        DrawSmoke3d(smoke3di);
+        DrawSmoke3D(smoke3di);
 #endif
       }
       if(blend_mode==1){
@@ -4550,16 +4550,16 @@ void DrawSmokeFrame(void){
       if(usegpu==1){
       //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
         SNIFF_ERRORS("before DrawSmoke3dGpuVol");
-        DrawSmoke3dGpuVol();
+        DrawSmoke3DGPUVol();
         SNIFF_ERRORS("after DrawSmoke3dGpuVol");
       //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       }
       else{
-        DrawSmoke3dVol();
+        DrawSmoke3DVol();
         SNIFF_ERRORS("after DrawSmoke3dVol");
       }
 #else
-      DrawSmoke3dVol();
+      DrawSmoke3DVol();
 #endif
     }
   }

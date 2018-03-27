@@ -11,7 +11,7 @@
 
 EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
 EXTERNCPP void ComputeAllSmokecolors(void);
-EXTERNCPP void DrawSmoke3dGpuVol(void);
+EXTERNCPP void DrawSmoke3DGPUVol(void);
 EXTERNCPP void DrawSmoke3dVolDebug(void);
 EXTERNCPP void GetVolsmokeAllTimes(volrenderdata *vr);
 EXTERNCPP void InitVolRender(void);

@@ -1611,7 +1611,7 @@ void DrawSmoke3dVolDebug(void){
 
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
-void DrawSmoke3dVol(void){
+void DrawSmoke3DVol(void){
   int iwall;
   int ii;
 
@@ -2086,7 +2086,7 @@ void UpdateVolsmokeTexture(meshdata *meshi){
 
 /* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
-void DrawSmoke3dGpuVol(void){
+void DrawSmoke3DGPUVol(void){
 
   int iwall;
   meshdata *meshold=NULL;

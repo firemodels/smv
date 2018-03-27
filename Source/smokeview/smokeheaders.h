@@ -522,7 +522,7 @@ EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
 
-EXTERNCPP void DrawSmoke3dVol(void);
+EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void LabelsCB(int value);
