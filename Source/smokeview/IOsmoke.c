@@ -676,29 +676,21 @@ void InitAllLightFractions(float *xyz_light, int light_type){
 }
 
 
-/* ------------------ IsFireOrSoot ------------------------ */
+/* ------------------ IsSmokeComponentPresent ------------------------ */
 
-int IsFireOrSoot(smoke3ddata *smoke3di){
-  smoke3ddata *soot=NULL, *fire=NULL;
-  int is_fire, is_soot;
-  int return_val;
+int IsSmokeComponentPresent(smoke3ddata *smoke3di){
+  int i;
 
-  is_soot=0;
-  if(smoke3di->soot_index!=-1)soot = smoke3dinfo + smoke3di->soot_index;
-  if(soot!=NULL&&soot->loaded==1&&soot->display==1){
-    is_soot=1;
-    if(soot->frame_all_zeros[soot->ismoke3d_time]==1)is_soot=0;
+  for(i = 0;i < MAXSMOKETYPES;i++){
+    smoke3ddata *smoke_component;
+
+    if(smoke3di->smokestate[i].index == -1)continue;
+    smoke_component = smoke3dinfo + smoke3di->smokestate[i].index;
+    if(smoke_component->loaded != 1 || smoke_component->display != 1)continue;
+    if(smoke_component->frame_all_zeros[smoke_component->ismoke3d_time] == 1)continue;
+    return 1;
   }
-
-  is_fire=0;
-  if(smoke3di->hrrpuv_index!=-1)fire = smoke3dinfo + smoke3di->hrrpuv_index;
-  if(fire!=NULL&&fire->loaded==1&&fire->display==1){
-    is_fire=1;
-    if(fire->frame_all_zeros[fire->ismoke3d_time]==1)is_fire=0;
-  }
-  return_val=0;
-  if(is_soot==1||is_fire==1)return_val=1;
-  return return_val;
+  return 0;
 }
 #ifdef pp_CULL
 
@@ -776,7 +768,7 @@ void DrawSmoke3dCull(void){
       SNIFF_ERRORS("in DrawSmoke3dCull 4");
       smoke3di = meshi->cull_smoke3d;
 
-      firecolor = smoke3di->hrrpuv_color;
+      firecolor = smoke3di->smokestate[HRRPUV].color;
 
       xplt = meshi->xplt;
       yplt = meshi->yplt;
@@ -832,8 +824,8 @@ void DrawSmoke3dCull(void){
       {
         smoke3ddata *sooti = NULL;
 
-        if(smoke3di->soot_index>=0){
-          sooti = smoke3dinfo+smoke3di->soot_index;
+        if(smoke3di->smokestate[SOOT].index >=0){
+          sooti = smoke3dinfo+smoke3di->smokestate[SOOT].index;
         }
         if(sooti!=NULL&&sooti->display==1){
           have_smoke = 1;
@@ -854,7 +846,7 @@ void DrawSmoke3dCull(void){
       glBegin(GL_TRIANGLES);
     }
 
-    if(IsFireOrSoot(smoke3di)==0)continue;
+    if(IsSmokeComponentPresent(smoke3di)==0)continue;
     switch(meshi->smokedir){
 
       // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
@@ -1441,13 +1433,13 @@ void DrawSmoke3dGpu(smoke3ddata *smoke3di){
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
-  firecolor = smoke3di->hrrpuv_color;
+  firecolor = smoke3di->smokestate[HRRPUV].color;
 
   {
     smoke3ddata *sooti = NULL;
 
-    if(smoke3di->soot_index>=0){
-      sooti = smoke3dinfo+smoke3di->soot_index;
+    if(smoke3di->smokestate[SOOT].index >=0){
+      sooti = smoke3dinfo+smoke3di->smokestate[SOOT].index;
     }
     if(sooti!=NULL&&sooti->display==1){
       have_smoke = 1;
@@ -4536,7 +4528,7 @@ void DrawSmokeFrame(void){
         smoke3di = smoke3dinfo_sorted[i];
         if(smoke3di->loaded==0||smoke3di->display==0)continue;
         if(smoke3di->d_display==0)continue;
-        if(IsFireOrSoot(smoke3di)==0)continue;
+        if(IsSmokeComponentPresent(smoke3di)==0)continue;
 
 #ifdef pp_GPU
         if(usegpu==1){
@@ -4857,10 +4849,12 @@ void SetSmokeColorFlags(void){
 
   for(i = 0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
+    int j;
 
-    smoke3di = smoke3dinfo+i;
-    smoke3di->soot_loaded = 0;
-    smoke3di->hrrpuv_loaded = 0;
+    smoke3di = smoke3dinfo + i;
+    for(j = 0;j < MAXSMOKETYPES;j++){
+      smoke3di->smokestate[j].loaded = 0;
+    }
   }
 
   for(i = 0;i<nsmoke3dinfo;i++){
@@ -4868,28 +4862,23 @@ void SetSmokeColorFlags(void){
     int j;
 
     smoke3di = smoke3dinfo+i;
-    smoke3di->hrrpuv_color = NULL;
-    smoke3di->soot_color = NULL;
-    smoke3di->hrrpuv_index = -1;
-    smoke3di->soot_index = -1;
+    for(j = 0;j < MAXSMOKETYPES;j++){
+      smoke3di->smokestate[j].color = NULL;
+      smoke3di->smokestate[j].index = -1;
+    }
     if(smoke3di->loaded==0)continue;
 
-    switch(smoke3di->type){
-    case SOOT:
-      smoke3di->soot_color = smoke3di->smokeframe_in;
-      smoke3di->soot_index = i;
-      break;
-    case FIRE:
-      smoke3di->hrrpuv_color = smoke3di->smokeframe_in;
-      smoke3di->hrrpuv_index = i;
-      break;
-    default:
+    if(smoke3di->type >= 0 && smoke3di->type < MAXSMOKETYPES){
+      smoke3di->smokestate[smoke3di->type].color = smoke3di->smokeframe_in;
+      smoke3di->smokestate[smoke3di->type].index = i;
+    }
+    else{
       ASSERT(FFALSE);
-      break;
     }
 
     for(j = 0;j<nsmoke3dinfo;j++){
       smoke3ddata *smoke3dj;
+      int k;
 
       if(i==j)continue;
       smoke3dj = smoke3dinfo+j;
@@ -4902,21 +4891,16 @@ void SetSmokeColorFlags(void){
       if(smoke3di->ks1!=smoke3dj->ks1)continue;
       if(smoke3di->ks2!=smoke3dj->ks2)continue;
 
-      switch(smoke3dj->type){
-      case SOOT:
-        smoke3di->soot_color = smoke3dj->smokeframe_in;
-        smoke3di->soot_index = j;
-        break;
-      case FIRE:
-        smoke3di->hrrpuv_color = smoke3dj->smokeframe_in;
-        smoke3di->hrrpuv_index = j;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
+      if(smoke3dj->type >= 0 && smoke3dj->type < MAXSMOKETYPES){
+        smoke3di->smokestate[smoke3dj->type].color = smoke3dj->smokeframe_in;
+        smoke3di->smokestate[smoke3dj->type].index = j;
       }
-      if(smoke3di->soot_color!=NULL)smoke3dj->soot_loaded = 1;
-      if(smoke3di->hrrpuv_color!=NULL)smoke3dj->hrrpuv_loaded = 1;
+      else{
+        ASSERT(FFALSE);
+      }
+      for(k = 0;k < MAXSMOKETYPES;k++){
+        if(smoke3di->smokestate[k].color != NULL)smoke3dj->smokestate[k].loaded = 1;
+      }
     }
   }
   for(i = 0;i<nsmoke3dinfo;i++){
@@ -5297,8 +5281,8 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
       smoke3di->d_display=1;
       break;
     case FIRE:
-      if(smoke3di->soot_index!=-1)smoke_soot=smoke3dinfo + smoke3di->soot_index;
-      if(smoke3di->soot_loaded==0||(smoke_soot!=NULL&&smoke_soot->display==0)){
+      if(smoke3di->smokestate[SOOT].index!=-1)smoke_soot=smoke3dinfo + smoke3di->smokestate[SOOT].index;
+      if(smoke3di->smokestate[SOOT].loaded==0||(smoke_soot!=NULL&&smoke_soot->display==0)){
         smoke3di->d_display=1;
       }
       break;
@@ -5337,21 +5321,21 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
 
     firecolor=NULL;
     sootcolor=NULL;
-    if(smoke3di->hrrpuv_color!=NULL){
-      firecolor=smoke3di->hrrpuv_color;
-      if(smoke3di->hrrpuv_index!=-1){
+    if(smoke3di->smokestate[HRRPUV].color!=NULL){
+      firecolor=smoke3di->smokestate[HRRPUV].color;
+      if(smoke3di->smokestate[HRRPUV].index !=-1){
         smoke3ddata *smoke3dref;
 
-        smoke3dref=smoke3dinfo + smoke3di->hrrpuv_index;
+        smoke3dref=smoke3dinfo + smoke3di->smokestate[HRRPUV].index;
         if(smoke3dref->display==0)firecolor=NULL;
       }
     }
-    if(smoke3di->soot_color!=NULL){
-      sootcolor=smoke3di->soot_color;
-      if(smoke3di->soot_index!=-1){
+    if(smoke3di->smokestate[SOOT].color !=NULL){
+      sootcolor=smoke3di->smokestate[SOOT].color;
+      if(smoke3di->smokestate[SOOT].index !=-1){
         smoke3ddata *smoke3dref;
 
-        smoke3dref=smoke3dinfo + smoke3di->soot_index;
+        smoke3dref=smoke3dinfo + smoke3di->smokestate[SOOT].index;
         if(smoke3dref->display==0){
           sootcolor=NULL;
         }

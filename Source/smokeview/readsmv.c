@@ -5516,6 +5516,7 @@ int ReadSMV(char *file, char *file2){
       lenbuffer=len;
       {
         smoke3ddata *smoke3di;
+        int i;
 
         smoke3di = smoke3dinfo + ismoke3d;
 
@@ -5536,8 +5537,9 @@ int ReadSMV(char *file, char *file2){
         smoke3di->seq_id=nn_smoke3d;
         smoke3di->autoload=0;
         smoke3di->compression_type=UNKNOWN;
-        smoke3di->hrrpuv_color=NULL;
-        smoke3di->soot_color=NULL;
+        for(i = 0;i < MAXSMOKETYPES;i++){
+          smoke3di->smokestate[i].color = NULL;
+        }
         smoke3di->file=NULL;
         smoke3di->smokeframe_in=NULL;
         smoke3di->smokeframe_comp_list=NULL;
@@ -5558,8 +5560,9 @@ int ReadSMV(char *file, char *file2){
         smoke3di->d_display=0;
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
-        smoke3di->soot_index=-1;
-        smoke3di->hrrpuv_index=-1;
+        for(i = 0;i < MAXSMOKETYPES;i++){
+          smoke3di->smokestate[i].index = -1;
+        }
         smoke3di->ismoke3d_time=0;
 
         STRCPY(buffer2,bufferptr);
