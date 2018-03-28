@@ -60,6 +60,8 @@
 
 #define MENU_UNLOADSMOKE3D_UNLOADALLSOOT -1
 #define MENU_UNLOADSMOKE3D_UNLOADALLFIRE -2
+#define MENU_UNLOADSMOKE3D_UNLOADALLTEMP -3
+#define MENU_UNLOADSMOKE3D_UNLOADALLCO2 -4
 
 #define MENU_UNLOADTERRAIN_UNLOADALL -10
 #define MENU_UNLOADTERRAIN_DUMMY -1
@@ -3796,7 +3798,7 @@ void UnLoadSmoke3DMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value<0){
-    value= -value;
+    value= -value-1;
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
@@ -9451,7 +9453,7 @@ updatemenu=0;
         }
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
         {
-          int nsootloaded=0,nhrrloaded=0;
+          int nsootloaded=0,nhrrloaded=0,ntemploaded=0,nco2loaded=0;
 
           for(i=0;i<nsmoke3dinfo;i++){
             smoke3ddata *smoke3di;
@@ -9466,15 +9468,20 @@ updatemenu=0;
               nhrrloaded++;
               break;
 			case TEMP:
-			case CO2:
-				break;
+              ntemploaded++;
+              break;
+            case CO2:
+              nco2loaded++;
+              break;
             default:
               ASSERT(FFALSE);
               break;
             }
           }
-          if(nsootloaded>0) glutAddMenuEntry(_("SOOT MASS FRACTION"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
-          if(nhrrloaded>0)  glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
+          if(nsootloaded>0)glutAddMenuEntry(_("SOOT DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
+          if(nhrrloaded>0)glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
+          if(ntemploaded>0)glutAddMenuEntry(_("TEMPERATURE"), MENU_UNLOADSMOKE3D_UNLOADALLTEMP);
+          if(nco2loaded>0)glutAddMenuEntry(_("CARBON DIOXIDE DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLCO2);
           if(show_meshmenus==1){
             if(nsootloaded+nhrrloaded>0)glutAddMenuEntry("-", MENU_DUMMY);
             glutAddSubMenu("Mesh", unloadsmoke3dsinglemenu);
@@ -9522,11 +9529,11 @@ updatemenu=0;
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
-          int load_3dhrrpuv, load_3dsmoke;
+          int load_3dhrrpuv, load_3dsmoke, load_3dtemp, load_3dco2;
 
           if(n_soot_menu>0||n_hrr_menu>0){
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
-            if(n_soot_menu>0)glutAddSubMenu(_("SOOT MASS FRACTION"),loadsmoke3dsootmenu);
+            if(n_soot_menu>0)glutAddSubMenu(_("SOOT DENSITY"),loadsmoke3dsootmenu);
             if(n_hrr_menu>0)glutAddSubMenu(_("HRRPUV"),loadsmoke3dhrrmenu);
           }
 
@@ -9534,12 +9541,21 @@ updatemenu=0;
 
           load_3dhrrpuv = 0;
           load_3dsmoke = 0;
+          load_3dtemp = 0;
+          load_3dco2 = 0;
           for(i=0;i<nsmoke3dinfo;i++){
             smoke3di=smoke3dinfo + i;
             if(smoke3di->loaded==0)continue;
             if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0)load_3dhrrpuv = 1;
-            if(strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)load_3dsmoke = 1;
+            if(strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0||
+               strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0)load_3dsmoke = 1;
+            if (strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)load_3dtemp = 1;
+            if (strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)load_3dco2 = 1;
+#ifdef pp_CO2SMOKE
+            if (load_3dhrrpuv == 1 && load_3dsmoke == 1&&load_3dtemp==1&&load_3dco2==1)break;
+#else
             if(load_3dhrrpuv==1&&load_3dsmoke==1)break;
+#endif
           }
 
           for(i=0;i<nsmoke3dinfo;i++){
@@ -9556,8 +9572,15 @@ updatemenu=0;
             }
             if(useitem!=-1){
               strcpy(menulabel, "");
-              if(load_3dsmoke==1&&strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)strcat(menulabel, "*");
+			        if(load_3dsmoke == 1 && (
+				         strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION") == 0||
+				         strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0 )
+				           ){
+				               strcat(menulabel, "*");
+			              }
               if(load_3dhrrpuv==1&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
+              if(load_3dtemp == 1 && strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)strcat(menulabel, "*");
+              if (load_3dco2 == 1 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
               strcat(menulabel,smoke3di->label.longlabel);
               glutAddMenuEntry(menulabel,-useitem-10);
             }
