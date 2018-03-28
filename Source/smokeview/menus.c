@@ -9465,6 +9465,9 @@ updatemenu=0;
             case FIRE:
               nhrrloaded++;
               break;
+			case TEMP:
+			case CO2:
+				break;
             default:
               ASSERT(FFALSE);
               break;

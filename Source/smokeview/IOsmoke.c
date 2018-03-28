@@ -5286,6 +5286,9 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
         smoke3di->d_display=1;
       }
       break;
+	case TEMP:
+	case CO2:
+		break;
     default:
       ASSERT(FFALSE);
       break;
