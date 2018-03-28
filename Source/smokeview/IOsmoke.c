@@ -4527,7 +4527,7 @@ void DrawSmokeFrame(void){
 
         smoke3di = smoke3dinfo_sorted[i];
         if(smoke3di->loaded==0||smoke3di->display==0)continue;
-        if(smoke3di->d_display==0)continue;
+        if(smoke3di->primary_file==0)continue;
         if(IsSmokeComponentPresent(smoke3di)==0)continue;
 
 #ifdef pp_GPU
@@ -4953,7 +4953,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
     FreeSmoke3d(smoke3di);
     smoke3di->loaded=0;
     smoke3di->display=0;
-    smoke3di->d_display=0;
+    smoke3di->primary_file=0;
   }
 
   meshi=meshinfo+smoke3di->blocknumber;
@@ -5268,27 +5268,26 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
 #endif
 
   for(i=0;i<nsmoke3dinfo;i++){
-    smoke3ddata *smoke3di;
-    smoke3ddata *smoke_soot;
+    smoke3ddata *smoke3di, *smoke_soot;
 
     smoke3di=smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
-    smoke3di->d_display=0;
+    smoke3di->primary_file=0;
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     smoke_soot=NULL;
     switch(smoke3di->type){
     case SOOT:
-      smoke3di->d_display=1;
+      smoke3di->primary_file=1;
       break;
     case FIRE:
       if(smoke3di->smokestate[SOOT].index!=-1)smoke_soot=smoke3dinfo + smoke3di->smokestate[SOOT].index;
       if(smoke3di->smokestate[SOOT].loaded==0||(smoke_soot!=NULL&&smoke_soot->display==0)){
-        smoke3di->d_display=1;
+        smoke3di->primary_file=1;
       }
       break;
-	case TEMP:
-	case CO2:
-		break;
+    case TEMP:
+    case CO2:
+      break;
     default:
       ASSERT(FFALSE);
       break;
@@ -5306,7 +5305,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
 
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
-    if(smoke3di->loaded==0||smoke3di->d_display==0)continue;
+    if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
     meshi=meshinfo+smoke3di->blocknumber;
 #ifdef pp_CULL
     meshi->cull_smoke3d=smoke3di;

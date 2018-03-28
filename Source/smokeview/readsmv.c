@@ -5567,7 +5567,7 @@ int ReadSMV(char *file, char *file2){
         smoke3di->display=0;
         smoke3di->loaded=0;
         smoke3di->request_load = 0;
-        smoke3di->d_display=0;
+        smoke3di->primary_file=0;
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         for(i = 0;i < MAXSMOKETYPES;i++){
