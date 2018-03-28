@@ -5298,7 +5298,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
     smoke3ddata *smoke3di;
     meshdata *meshi;
     float fire_alpha;
-    unsigned char *firecolor,*sootcolor;
+    unsigned char *firecolor,*sootcolor,*co2color;
     unsigned char *mergecolor,*mergealpha;
     float firesmokeval[3];
     int i_hrrpuv_offset=0;
@@ -5323,6 +5323,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
 
     firecolor=NULL;
     sootcolor=NULL;
+    co2color = NULL;
     if(smoke3di->smokestate[HRRPUV].color!=NULL){
       firecolor=smoke3di->smokestate[HRRPUV].color;
       if(smoke3di->smokestate[HRRPUV].index !=-1){
@@ -5338,9 +5339,16 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
         smoke3ddata *smoke3dref;
 
         smoke3dref=smoke3dinfo + smoke3di->smokestate[SOOT].index;
-        if(smoke3dref->display==0){
-          sootcolor=NULL;
-        }
+        if(smoke3dref->display==0)sootcolor=NULL;
+      }
+    }
+    if(smoke3di->smokestate[CO2].color != NULL){
+      co2color = smoke3di->smokestate[CO2].color;
+      if(smoke3di->smokestate[CO2].index != -1){
+        smoke3ddata *smoke3dref;
+
+        smoke3dref = smoke3dinfo + smoke3di->smokestate[CO2].index;
+        if(smoke3dref->display == 0)co2color = NULL;
       }
     }
 #ifdef pp_GPU
@@ -5374,9 +5382,29 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
       else{
         firesmoke_color=firesmokeval;
       }
-      *mergecolor++ = 255*firesmoke_color[0];
-      *mergecolor++ = 255*firesmoke_color[1];
-      *mergecolor++ = 255*firesmoke_color[2];
+      if(co2color != NULL&&firecolor != NULL&&sootcolor!=NULL){
+        float f1, f2, denom;
+
+        f1 = ABS(co2factor)*co2color[j];
+        f2 = ABS(sootfactor)*sootcolor[j];
+        denom = f1+f2;
+        if(denom>0.0){
+          f1/=denom;
+          f2/=denom;
+        }
+        else{
+          f1 = 0.0;
+          f2 = 1.0;
+        }
+        *mergecolor++ = f1*0.0   + f2*255*firesmoke_color[0];
+        *mergecolor++ = f1*0.0   + f2*255*firesmoke_color[1];
+        *mergecolor++ = f1*255.0 + f2*255*firesmoke_color[2];
+      }
+      else{
+        *mergecolor++ = 255 * firesmoke_color[0];
+        *mergecolor++ = 255 * firesmoke_color[1];
+        *mergecolor++ = 255 * firesmoke_color[2];
+      }
       mergecolor++;
 
 // set opacity

@@ -99,6 +99,8 @@ GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
 
 GLUI_RadioButton *RADIOBUTTON_direct=NULL,*RADIOBUTTON_constraint=NULL, *RADIOBUTTON_noconstraint=NULL;
 
+GLUI_Spinner *SPINNER_sootfactor=NULL;
+GLUI_Spinner *SPINNER_co2factor=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
 GLUI_Spinner *SPINNER_skipframe=NULL;
 #ifdef pp_CULL
@@ -544,6 +546,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth2->set_float_limits(0.0, 20.0);
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _d("max blending"), &hrrpuv_max_blending);
+  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("co2 factor"), GLUI_SPINNER_FLOAT,&co2factor);
+  SPINNER_co2factor->set_float_limits(0.0, 100.0);
+  SPINNER_sootfactor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor);
+  SPINNER_sootfactor->set_float_limits(0.0, 100.0);
 
   PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"",GLUI_PANEL_NONE);
 

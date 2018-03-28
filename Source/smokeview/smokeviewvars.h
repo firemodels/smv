@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(co2factor, 1.0);
+SVEXTERN float SVDECL(sootfactor, 15.0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
