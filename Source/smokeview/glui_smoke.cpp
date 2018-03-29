@@ -23,6 +23,8 @@ extern GLUI *glui_bounds;
 #endif
 #define UPDATE_SMOKEFIRE_COLORS2 61
 #define UPDATE_SMOKEFIRE_COLORS_COMMON 62
+#define CO2SMOKE 63
+#define SOOTSMOKE 64
 #define UPDATE_SMOKECOLORS 4
 #define GLOBAL_FIRE_CUTOFF 15
 #define SMOKE_SHADE 7
@@ -546,9 +548,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth2->set_float_limits(0.0, 20.0);
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _d("max blending"), &hrrpuv_max_blending);
-  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("co2 factor"), GLUI_SPINNER_FLOAT,&co2factor);
+  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("co2 factor"), GLUI_SPINNER_FLOAT,&co2factor,CO2SMOKE,Smoke3dCB);
   SPINNER_co2factor->set_float_limits(0.0, 100.0);
-  SPINNER_sootfactor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor);
+  SPINNER_sootfactor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor,SOOTSMOKE,Smoke3dCB);
   SPINNER_sootfactor->set_float_limits(0.0, 100.0);
 
   PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"",GLUI_PANEL_NONE);
@@ -859,6 +861,10 @@ extern "C" void Smoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case SOOTSMOKE:
+  case CO2SMOKE:
+    glutPostRedisplay();
+    break;
   case UPDATE_HRRPUV_CONTROLS:
     if(
       SPINNER_slicehrrpuv_upper != NULL&&
@@ -883,7 +889,7 @@ extern "C" void Smoke3dCB(int var){
         SPINNER_hrrpuvoffset->enable();
       }
     }
-  break;
+    break;
   case UPDATE_FACTOROFFSETS:
     for(i = 0;i<nmeshes;i++){
       meshdata *meshi;
@@ -893,10 +899,10 @@ extern "C" void Smoke3dCB(int var){
     }
     UpdateOpacityMap();
     glutPostRedisplay();
-  break;
+    break;
   case LOAD_SMOKEFRAME:
     LoadSmokeFrame(-1, smoke_framenumber);
-  break;
+    break;
   case LOAD_TIMEFRAME:
     LoadTimeFrame(-1, time_frameval);
     break;
