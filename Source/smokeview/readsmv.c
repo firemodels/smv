@@ -5605,7 +5605,7 @@ int ReadSMV(char *file, char *file2){
           smoke3di->type=SOOT;
         }
         else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
-          smoke3di->type=FIRE;
+          smoke3di->type=HRRPUV;
         }
         else if(Match(smoke3di->label.shortlabel, "temp") == 1){
           smoke3di->type = TEMP;

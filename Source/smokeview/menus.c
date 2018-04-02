@@ -9464,7 +9464,7 @@ updatemenu=0;
             case SOOT:
               nsootloaded++;
               break;
-            case FIRE:
+            case HRRPUV:
               nhrrloaded++;
               break;
             case TEMP:
@@ -9517,7 +9517,7 @@ updatemenu=0;
         }
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=FIRE)continue;
+          if(smoke3di->type!=HRRPUV)continue;
           n_hrr_menu++;
           strcpy(menulabel,"");
           if(smoke3di->loaded==1){

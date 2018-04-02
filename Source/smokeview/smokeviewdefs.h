@@ -145,7 +145,6 @@ void _Sniff_Errors(char *whereat);
 
 #define MAXSMOKETYPES 4
 #define SOOT 0
-#define FIRE 1
 #define HRRPUV 1
 #define TEMP 2
 #define CO2  3

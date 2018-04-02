@@ -5009,9 +5009,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 #endif
     return;
   }
-  // if loading HRRPUV (FIRE) then unload all TEMP's
-  // if loading TEMP then unload all HRRPUV's
-  if(smoke3di->type == FIRE||smoke3di->type==TEMP){
+  if(smoke3di->type == HRRPUV||smoke3di->type==TEMP){
     int nhrrloaded = 0, ntemploaded = 0;
 
     for(j = 0; j<nsmoke3dinfo; j++){
@@ -5019,20 +5017,26 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 
       smoke3dj = smoke3dinfo + j;
       if (smoke3dj->loaded == 1){
-        if(smoke3dj->type==FIRE)nhrrloaded++;
+        if(smoke3dj->type==HRRPUV)nhrrloaded++;
         if(smoke3dj->type==TEMP)ntemploaded++;
       }
     }
-    if(smoke3di->type == FIRE&&ntemploaded > 0)printf("unloading all 3d smoke hrrpuv files\n");
-    if(smoke3di->type == TEMP&&nhrrloaded > 0)printf("unloading all 3d smoke temperature files\n");
+    // if we are loading an HRRPUV then unload all TEMP's
+    if(smoke3di->type == HRRPUV&&ntemploaded > 0)printf("unloading all smoke3d temperature files\n");
+
+    // if we are loading a TEMP then unload all HRRPUV's
+    if(smoke3di->type == TEMP&&nhrrloaded > 0)printf("unloading all  smoke3d hrrpuv files\n");
+
     for(j = 0; j<nsmoke3dinfo; j++) {
       smoke3ddata *smoke3dj;
       int error2;
 
       smoke3dj = smoke3dinfo + j;
+      if(smoke3di == smoke3dj)continue;
+
       if (smoke3dj->loaded == 1){
-        if((smoke3di->type == TEMP&&smoke3dj->type == FIRE) ||
-          (smoke3di->type == FIRE&&smoke3dj->type == TEMP)){
+        if((smoke3di->type == TEMP&&smoke3dj->type == HRRPUV) ||
+          (smoke3di->type == HRRPUV&&smoke3dj->type == TEMP)){
           printf("unloading %s\n", smoke3dj->file);
           ReadSmoke3d(j, UNLOAD, &error2);
         }
@@ -5061,7 +5065,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
     return;
   }
   if(smoke3di->maxval>=0.0){
-    if(smoke3di->type == FIRE&&smoke3di->maxval<=load_hrrpuv_cutoff){
+    if(smoke3di->type == HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
       ReadSmoke3d(ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF("*** HRRPUV file: %s skipped\n",smoke3di->file);
@@ -5285,7 +5289,7 @@ void UpdateSmoke3d(smoke3ddata *smoke3di){
 void MergeSmoke3dColors(smoke3ddata *smoke3dset){
   int i,j;
   int i_hrrpuv_cutoff;
-  int fire_index = FIRE;
+  int fire_index = HRRPUV;
 
   i_hrrpuv_cutoff=254*global_hrrpuv_cutoff/hrrpuv_max_smv;
 
@@ -5310,7 +5314,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
     case SOOT:
       smoke3di->primary_file=1;
       break;
-    case FIRE:
+    case HRRPUV:
       if(smoke3di->smokestate[SOOT].index!=-1)smoke_soot=smoke3dinfo + smoke3di->smokestate[SOOT].index;
       if(smoke3di->smokestate[SOOT].loaded==0||(smoke_soot!=NULL&&smoke_soot->display==0)){
         smoke3di->primary_file=1;
@@ -6496,7 +6500,7 @@ int HaveFire(void){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->type==FIRE)return 1;
+    if(smoke3di->loaded==1&&smoke3di->type==HRRPUV)return 1;
   }
   return 0;
 }
