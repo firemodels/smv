@@ -5009,6 +5009,31 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 #endif
     return;
   }
+  // if loading HRRPUV (FIRE) then unload all TEMP's
+  // if loading TEMP then unload all HRRPUV's
+  if(smoke3di->type == FIRE||smoke3di->type==TEMP){
+    int nhrrloaded = 0, ntemploaded = 0;
+
+    for(j = 0; j<nsmoke3dinfo; j++){
+      smoke3ddata *smoke3dj;
+
+      smoke3dj = smoke3dinfo + j;
+      if (smoke3dj->loaded == 1){
+        if(smoke3dj->type==FIRE)nhrrloaded++;
+        if(smoke3dj->type==TEMP)ntemploaded++;
+      }
+    }
+    for(j = 0; j<nsmoke3dinfo; j++) {
+      smoke3ddata *smoke3dj;
+      int error2;
+
+      smoke3dj = smoke3dinfo + j;
+      if (smoke3dj->loaded == 1){
+        if(smoke3di->type==TEMP&&smoke3dj->type==FIRE)ReadSmoke3d(j, UNLOAD, &error2);
+        if(smoke3di->type==FIRE&&smoke3dj->type==TEMP)ReadSmoke3d(j, UNLOAD, &error2);
+      }
+    }
+  }
 
   if(smoke3di->compression_type==UNKNOWN){
     smoke3di->compression_type=GetSmoke3DVersion(smoke3di);
@@ -5255,6 +5280,7 @@ void UpdateSmoke3d(smoke3ddata *smoke3di){
 void MergeSmoke3dColors(smoke3ddata *smoke3dset){
   int i,j;
   int i_hrrpuv_cutoff;
+  int fire_index = FIRE;
 
   i_hrrpuv_cutoff=254*global_hrrpuv_cutoff/hrrpuv_max_smv;
 
@@ -5286,6 +5312,11 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
       }
       break;
     case TEMP:
+      if (smoke3di->smokestate[SOOT].index != -1)smoke_soot = smoke3dinfo + smoke3di->smokestate[SOOT].index;
+      if (smoke3di->smokestate[SOOT].loaded == 0 || (smoke_soot != NULL&&smoke_soot->display == 0)) {
+        smoke3di->primary_file = 1;
+      }
+      fire_index = TEMP;
     case CO2:
       break;
     default:
@@ -5324,12 +5355,12 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
     firecolor=NULL;
     sootcolor=NULL;
     co2color = NULL;
-    if(smoke3di->smokestate[HRRPUV].color!=NULL){
-      firecolor=smoke3di->smokestate[HRRPUV].color;
-      if(smoke3di->smokestate[HRRPUV].index !=-1){
+    if(smoke3di->smokestate[fire_index].color!=NULL){
+      firecolor=smoke3di->smokestate[fire_index].color;
+      if(smoke3di->smokestate[fire_index].index !=-1){
         smoke3ddata *smoke3dref;
 
-        smoke3dref=smoke3dinfo + smoke3di->smokestate[HRRPUV].index;
+        smoke3dref=smoke3dinfo + smoke3di->smokestate[fire_index].index;
         if(smoke3dref->display==0)firecolor=NULL;
       }
     }
@@ -5396,9 +5427,9 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
           f1 = 0.0;
           f2 = 1.0;
         }
-        *mergecolor++ = f1*0.0   + f2*255*firesmoke_color[0];
-        *mergecolor++ = f1*0.0   + f2*255*firesmoke_color[1];
-        *mergecolor++ = f1*255.0 + f2*255*firesmoke_color[2];
+        *mergecolor++ = f1*64.0    + f2*255*firesmoke_color[0];
+        *mergecolor++ = f1*156.0   + f2*255*firesmoke_color[1];
+        *mergecolor++ = f1*215.0   + f2*255*firesmoke_color[2];
       }
       else{
         *mergecolor++ = 255 * firesmoke_color[0];
