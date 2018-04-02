@@ -5023,14 +5023,19 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
         if(smoke3dj->type==TEMP)ntemploaded++;
       }
     }
+    if(smoke3di->type == FIRE&&ntemploaded > 0)printf("unloading all 3d smoke hrrpuv files\n");
+    if(smoke3di->type == TEMP&&nhrrloaded > 0)printf("unloading all 3d smoke temperature files\n");
     for(j = 0; j<nsmoke3dinfo; j++) {
       smoke3ddata *smoke3dj;
       int error2;
 
       smoke3dj = smoke3dinfo + j;
       if (smoke3dj->loaded == 1){
-        if(smoke3di->type==TEMP&&smoke3dj->type==FIRE)ReadSmoke3d(j, UNLOAD, &error2);
-        if(smoke3di->type==FIRE&&smoke3dj->type==TEMP)ReadSmoke3d(j, UNLOAD, &error2);
+        if((smoke3di->type == TEMP&&smoke3dj->type == FIRE) ||
+          (smoke3di->type == FIRE&&smoke3dj->type == TEMP)){
+          printf("unloading %s\n", smoke3dj->file);
+          ReadSmoke3d(j, UNLOAD, &error2);
+        }
       }
     }
   }
