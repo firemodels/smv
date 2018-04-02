@@ -9467,7 +9467,7 @@ updatemenu=0;
             case FIRE:
               nhrrloaded++;
               break;
-			case TEMP:
+            case TEMP:
               ntemploaded++;
               break;
             case CO2:
