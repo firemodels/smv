@@ -5603,18 +5603,23 @@ int ReadSMV(char *file, char *file2){
         }
         if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
           smoke3di->type=SOOT;
+          nsmoke3d_soot++;
         }
         else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
           smoke3di->type=HRRPUV;
+          nsmoke3d_hrrpuv++;
         }
         else if(Match(smoke3di->label.shortlabel, "temp") == 1){
           smoke3di->type = TEMP;
+          nsmoke3d_temp++;
         }
         else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
           smoke3di->type = CO2;
+          nsmoke3d_co2++;
         }
         else{
           smoke3di->type=SOOT;
+          nsmoke3d_soot++;
         }
       }
       continue;
@@ -9294,6 +9299,14 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+    if(Match(buffer, "CO2COLOR") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i", global_co2color,global_co2color+1,global_co2color+2);
+      global_co2color[0] = CLAMP(global_co2color[0], 0, 2550);
+      global_co2color[1] = CLAMP(global_co2color[1], 0, 2550);
+      global_co2color[2] = CLAMP(global_co2color[2], 0, 2550);
+        continue;
+    }
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
@@ -9510,7 +9523,7 @@ int ReadIni2(char *inifile, int localfile){
         &glui_compress_volsmoke, &use_multi_threading, &load_at_rendertimes, &volbw, &show_volsmoke_moving);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f %f %f %f",
-        &temperature_min, &temperature_cutoff, &temperature_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+        &global_temp_min, &global_temp_cutoff, &global_temp_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
@@ -12902,6 +12915,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
   fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
+  fprintf(fileout,"CO2COLOR\n");
+  fprintf(fileout," %i %i %i", global_co2color[0],global_co2color[1],global_co2color[2]);
   fprintf(fileout, "DIFFUSELIGHT\n");
   fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");
@@ -13310,7 +13325,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
   fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    temperature_min, temperature_cutoff, temperature_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
@@ -13472,7 +13487,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
   fprintf(fileout, " %f %f %f %f %f\n",
-    temperature_min, temperature_cutoff, temperature_max, fire_opacity_factor, mass_extinct);
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 

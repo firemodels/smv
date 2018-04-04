@@ -156,6 +156,7 @@ GLUI_Spinner *SPINNER_slicehrrpuv_lower = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
+GLUI_Spinner *SPINNER_co2color[3];
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
@@ -200,6 +201,8 @@ GLUI_Rollout *ROLLOUT_generate_images = NULL;
 GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_light = NULL;
 GLUI_Rollout *ROLLOUT_colormap_temp = NULL;
+GLUI_Rollout *ROLLOUT_colormap_co2 = NULL;
+GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
 GLUI_Rollout *ROLLOUT_colormap_hrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_meshvis = NULL;
 GLUI_Rollout *ROLLOUT_slices = NULL;
@@ -304,7 +307,7 @@ void ColorRolloutCB(int var){
 /* ------------------ SmokeRolloutCB ------------------------ */
 
 extern "C" void SmokeRolloutCB(int var){
-  if(  var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
+  if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
   Smoke3dCB(SMOKE_OPTIONS);
   ToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
@@ -562,7 +565,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
 #ifdef pp_SMOKETEST
-  ROLLOUT_slicehrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _d("Opacity correction - test"),false);
+  ROLLOUT_slicehrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _d("Opacity correction (test)"),false);
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicehrrpuv, "Implement", &smoke3d_testsmoke, UPDATE_HRRPUV_CONTROLS, Smoke3dCB);
   SPINNER_slicehrrpuv_upper = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("50% upper opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_upper, UPDATE_FACTOROFFSETS, Smoke3dCB);
   SPINNER_slicehrrpuv_cut2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _d("middle/upper boundary"), GLUI_SPINNER_FLOAT, &slicehrrpuv_cut2, UPDATE_FACTOROFFSETS, Smoke3dCB);
@@ -584,15 +587,26 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ROLLOUT_colormap_temp = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2,label);
   }
   SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp, _d("color as fire > "), GLUI_SPINNER_FLOAT,
-    &temperature_cutoff, TEMP_CUTOFF, Smoke3dCB);
-  SPINNER_temperature_min=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp,_d("min"),GLUI_SPINNER_FLOAT,
-    &temperature_min,TEMP_MIN,Smoke3dCB);
-  SPINNER_temperature_max=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp,_d("max"),GLUI_SPINNER_FLOAT,
-    &temperature_max,TEMP_MAX,Smoke3dCB);
+    &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
+  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp,"settings (test)",FALSE);
+  SPINNER_temperature_min=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_d("min"),GLUI_SPINNER_FLOAT,
+    &global_temp_min,TEMP_MIN,Smoke3dCB);
+  SPINNER_temperature_max=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_d("max"),GLUI_SPINNER_FLOAT,
+    &global_temp_max,TEMP_MAX,Smoke3dCB);
 
   Smoke3dCB(TEMP_MIN);
   Smoke3dCB(TEMP_CUTOFF);
   Smoke3dCB(TEMP_MAX);
+
+  if(nsmoke3d_co2>0){
+    ROLLOUT_colormap_co2 = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2, "CO2 (kg/m3)");
+    SPINNER_co2color[0]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("red"),   GLUI_SPINNER_INT,global_co2color);
+    SPINNER_co2color[1]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("green"), GLUI_SPINNER_INT,global_co2color+1);
+    SPINNER_co2color[2]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("blue"),  GLUI_SPINNER_INT,global_co2color+2);
+    SPINNER_co2color[0]->set_int_limits(0, 255);
+    SPINNER_co2color[1]->set_int_limits(0, 255);
+    SPINNER_co2color[2]->set_int_limits(0, 255);
+  }
 
   PANEL_voltemp = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_temp, _d("Intensity (test)"),true);
   SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
@@ -967,18 +981,18 @@ extern "C" void Smoke3dCB(int var){
     break;
   case TEMP_MIN:
     temp_min = 20.0;
-    temp_max = (float)(10.0*(int)(temperature_cutoff/10.0)-10.0);
+    temp_max = (float)(10.0*(int)(global_temp_cutoff/10.0)-10.0);
     SPINNER_temperature_min->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
     break;
   case TEMP_CUTOFF:
-    temp_min = (float)(10*(int)(temperature_min/10.0) + 10.0);
-    temp_max = (float)(10*(int)(temperature_max/10.0) - 10.0);
+    temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
+    temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
     SPINNER_temperature_cutoff->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
     break;
   case TEMP_MAX:
-    temp_min = (float)(10*(int)(temperature_cutoff/10.0)+10.0);
+    temp_min = (float)(10*(int)(global_temp_cutoff/10.0)+10.0);
     temp_max = 1800.0;
     SPINNER_temperature_max->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
@@ -992,7 +1006,7 @@ extern "C" void Smoke3dCB(int var){
     }
     break;
   case SMOKE_OPTIONS:
-    if(smoke_render_option==RENDER_SLICE){
+    if(nsmoke3d_temp==0&&smoke_render_option==RENDER_SLICE){
       if(ROLLOUT_colormap_temp!=NULL){
         ROLLOUT_colormap_temp->disable();
         ROLLOUT_colormap_temp->close();
@@ -1199,7 +1213,7 @@ extern "C" void Smoke3dCB(int var){
         }
       }
     }
-    if(smoke_render_option==RENDER_SLICE){
+    if(have_fire==HRRPUV&&smoke_render_option==RENDER_SLICE){
 #ifdef pp_GPU
       if(usegpu==1){
         RADIO_skipframes->set_int_val(0);

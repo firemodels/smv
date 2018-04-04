@@ -5288,10 +5288,18 @@ void UpdateSmoke3d(smoke3ddata *smoke3di){
 
 void MergeSmoke3dColors(smoke3ddata *smoke3dset){
   int i,j;
-  int i_hrrpuv_cutoff;
+  int i_smoke3d_cutoff;
   int fire_index = HRRPUV;
 
-  i_hrrpuv_cutoff=254*global_hrrpuv_cutoff/hrrpuv_max_smv;
+  if(have_fire==HRRPUV){
+    i_smoke3d_cutoff = 254 * global_hrrpuv_cutoff/hrrpuv_max_smv;
+  }
+  else if(have_fire==TEMP){
+    i_smoke3d_cutoff = 254*((global_temp_cutoff - global_temp_min)/(global_temp_max- global_temp_min));
+  }
+  else{
+    i_smoke3d_cutoff = 255;
+  }
 
 #ifdef pp_CULL
   for(i=0;i<nmeshes;i++){
@@ -5350,7 +5358,6 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
 #ifdef pp_CULL
     meshi->cull_smoke3d=smoke3di;
 #endif
-    i_hrrpuv_cutoff = 254*global_hrrpuv_cutoff/hrrpuv_max_smv;
     if(smoke3d_testsmoke==1)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
     if(fire_halfdepth<=0.0){
@@ -5436,9 +5443,9 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
           f1 = 0.0;
           f2 = 1.0;
         }
-        *mergecolor++ = f1*64.0    + f2*255*firesmoke_color[0];
-        *mergecolor++ = f1*156.0   + f2*255*firesmoke_color[1];
-        *mergecolor++ = f1*215.0   + f2*255*firesmoke_color[2];
+        *mergecolor++ = f1*(float)global_co2color[0]   + f2*255*firesmoke_color[0];
+        *mergecolor++ = f1*(float)global_co2color[1]   + f2*255*firesmoke_color[1];
+        *mergecolor++ = f1*(float)global_co2color[2]   + f2*255*firesmoke_color[2];
       }
       else{
         *mergecolor++ = 255 * firesmoke_color[0];
@@ -5455,7 +5462,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
       else{
         soot_val=1;
       }
-      if(firecolor!=NULL&&firecolor[j]>i_hrrpuv_cutoff){
+      if(firecolor!=NULL&&firecolor[j]>i_smoke3d_cutoff){
         if(smoke3d_testsmoke==0){
           *mergealpha++=fire_alpha;
         }
@@ -6490,20 +6497,6 @@ void GetPixelCount(void){
   have_setpixelcount = 0;
 }
 #endif
-
-/* ------------------ HaveFire ------------------------ */
-
-int HaveFire(void){
-  int i;
-
-  for(i = 0; i<nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->type==HRRPUV)return 1;
-  }
-  return 0;
-}
 
 #ifdef pp_SPECTRAL
 /* ------------------ SpectralDensity ------------------------ */
