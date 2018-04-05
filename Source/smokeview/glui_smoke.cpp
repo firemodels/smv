@@ -588,7 +588,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   }
   SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp, _d("color as fire > "), GLUI_SPINNER_FLOAT,
     &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
-  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp,"settings (test)",FALSE);
+  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp,"settings (test)",false);
   SPINNER_temperature_min=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_d("min"),GLUI_SPINNER_FLOAT,
     &global_temp_min,TEMP_MIN,Smoke3dCB);
   SPINNER_temperature_max=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_d("max"),GLUI_SPINNER_FLOAT,
