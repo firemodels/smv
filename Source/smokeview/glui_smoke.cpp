@@ -598,19 +598,19 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   Smoke3dCB(TEMP_CUTOFF);
   Smoke3dCB(TEMP_MAX);
 
-  if(nsmoke3d_co2>0){
+  PANEL_voltemp = glui_3dsmoke->add_panel_to_panel(ROLLOUT_temperature_settings, _d("Intensity (test)"),true);
+  SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
+  SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
+
+  if(nsmoke3d_co2 > 0){
     ROLLOUT_colormap_co2 = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2, "CO2 (kg/m3)");
-    SPINNER_co2color[0]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("red"),   GLUI_SPINNER_INT,global_co2color);
-    SPINNER_co2color[1]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("green"), GLUI_SPINNER_INT,global_co2color+1);
-    SPINNER_co2color[2]=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("blue"),  GLUI_SPINNER_INT,global_co2color+2);
+    SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("red"), GLUI_SPINNER_INT, global_co2color);
+    SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("green"), GLUI_SPINNER_INT, global_co2color + 1);
+    SPINNER_co2color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("blue"), GLUI_SPINNER_INT, global_co2color + 2);
     SPINNER_co2color[0]->set_int_limits(0, 255);
     SPINNER_co2color[1]->set_int_limits(0, 255);
     SPINNER_co2color[2]->set_int_limits(0, 255);
   }
-
-  PANEL_voltemp = glui_3dsmoke->add_panel_to_panel(ROLLOUT_colormap_temp, _d("Intensity (test)"),true);
-  SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
-  SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _d("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
 
   glui_3dsmoke->add_column_to_panel(PANEL_overall,false);
 
