@@ -4286,6 +4286,10 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
+#ifdef pp_CO2SMOKE
+      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKG3D") == 1
+#endif
       ){
       if(setup_only==1)continue;
       nsmoke3dinfo++;
@@ -5470,6 +5474,10 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
+#ifdef pp_CO2SMOKE
+      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKG3D") == 1
+#endif
       ){
 
       size_t len;
@@ -5480,11 +5488,13 @@ int ReadSMV(char *file, char *file2){
       int blocknumber;
 
       if(setup_only==1)continue;
-      if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1){
+      if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1||
+         Match(buffer, "SMOKG3D") == 1 || Match(buffer, "VSMOKG3D") == 1
+        ){
         filetype=FORTRAN_GENERATED;
       }
 
-      if(Match(buffer,"VSMOKE3D") == 1||Match(buffer,"VSMOKF3D") == 1){
+      if(Match(buffer,"VSMOKE3D") == 1||Match(buffer,"VSMOKF3D") == 1|| Match(buffer, "VSMOKG3D") == 1){
         int idummy;
 
         buffer_temp=buffer+8;
@@ -5516,6 +5526,7 @@ int ReadSMV(char *file, char *file2){
       lenbuffer=len;
       {
         smoke3ddata *smoke3di;
+        int i;
 
         smoke3di = smoke3dinfo + ismoke3d;
 
@@ -5536,9 +5547,9 @@ int ReadSMV(char *file, char *file2){
         smoke3di->seq_id=nn_smoke3d;
         smoke3di->autoload=0;
         smoke3di->compression_type=UNKNOWN;
-        smoke3di->hrrpuv_color=NULL;
-        smoke3di->water_color=NULL;
-        smoke3di->soot_color=NULL;
+        for(i = 0;i < MAXSMOKETYPES;i++){
+          smoke3di->smokestate[i].color = NULL;
+        }
         smoke3di->file=NULL;
         smoke3di->smokeframe_in=NULL;
         smoke3di->smokeframe_comp_list=NULL;
@@ -5556,12 +5567,12 @@ int ReadSMV(char *file, char *file2){
         smoke3di->display=0;
         smoke3di->loaded=0;
         smoke3di->request_load = 0;
-        smoke3di->d_display=0;
+        smoke3di->primary_file=0;
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
-        smoke3di->soot_index=-1;
-        smoke3di->water_index=-1;
-        smoke3di->hrrpuv_index=-1;
+        for(i = 0;i < MAXSMOKETYPES;i++){
+          smoke3di->smokestate[i].index = -1;
+        }
         smoke3di->ismoke3d_time=0;
 
         STRCPY(buffer2,bufferptr);
@@ -5590,17 +5601,25 @@ int ReadSMV(char *file, char *file2){
           if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
           nsmoke3dinfo--;
         }
-        if(strncmp(smoke3di->label.shortlabel,"soot",4)==0){
+        if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
           smoke3di->type=SOOT;
+          nsmoke3d_soot++;
         }
-        else if(strncmp(smoke3di->label.shortlabel,"hrrpuv",6)==0){
-          smoke3di->type=FIRE;
+        else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
+          smoke3di->type=HRRPUV;
+          nsmoke3d_hrrpuv++;
         }
-        else if(strncmp(smoke3di->label.shortlabel,"water",5)==0){
-          smoke3di->type=WATER;
+        else if(Match(smoke3di->label.shortlabel, "temp") == 1){
+          smoke3di->type = TEMP;
+          nsmoke3d_temp++;
+        }
+        else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
+          smoke3di->type = CO2;
+          nsmoke3d_co2++;
         }
         else{
           smoke3di->type=SOOT;
+          nsmoke3d_soot++;
         }
       }
       continue;
@@ -8882,6 +8901,8 @@ typedef struct {
   UpdateIsoColors();
   CheckMemory;
 
+  UpdateSmoke3dFileParms();
+
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
   InitEvacProp();
@@ -9280,6 +9301,14 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+    if(Match(buffer, "CO2COLOR") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i", global_co2color,global_co2color+1,global_co2color+2);
+      global_co2color[0] = CLAMP(global_co2color[0], 0, 2550);
+      global_co2color[1] = CLAMP(global_co2color[1], 0, 2550);
+      global_co2color[2] = CLAMP(global_co2color[2], 0, 2550);
+        continue;
+    }
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
@@ -9496,7 +9525,7 @@ int ReadIni2(char *inifile, int localfile){
         &glui_compress_volsmoke, &use_multi_threading, &load_at_rendertimes, &volbw, &show_volsmoke_moving);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f %f %f %f",
-        &temperature_min, &temperature_cutoff, &temperature_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+        &global_temp_min, &global_temp_cutoff, &global_temp_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
@@ -12888,6 +12917,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
   fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
+  fprintf(fileout,"CO2COLOR\n");
+  fprintf(fileout," %i %i %i", global_co2color[0],global_co2color[1],global_co2color[2]);
   fprintf(fileout, "DIFFUSELIGHT\n");
   fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");
@@ -13296,7 +13327,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
   fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    temperature_min, temperature_cutoff, temperature_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
@@ -13458,7 +13489,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
   fprintf(fileout, " %f %f %f %f %f\n",
-    temperature_min, temperature_cutoff, temperature_max, fire_opacity_factor, mass_extinct);
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 

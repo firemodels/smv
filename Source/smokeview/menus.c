@@ -60,7 +60,8 @@
 
 #define MENU_UNLOADSMOKE3D_UNLOADALLSOOT -1
 #define MENU_UNLOADSMOKE3D_UNLOADALLFIRE -2
-#define MENU_UNLOADSMOKE3D_UNLOADALLWATER -3
+#define MENU_UNLOADSMOKE3D_UNLOADALLTEMP -3
+#define MENU_UNLOADSMOKE3D_UNLOADALLCO2 -4
 
 #define MENU_UNLOADTERRAIN_UNLOADALL -10
 #define MENU_UNLOADTERRAIN_DUMMY -1
@@ -3797,7 +3798,7 @@ void UnLoadSmoke3DMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value<0){
-    value= -value;
+    value= -value-1;
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
@@ -3815,6 +3816,10 @@ void UnLoadSmoke3DMenu(int value){
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
   smoke3ddata *smoke3di, *smoke3dj;
+#define MENU_SMOKE_SOOT_HRRPUV -5
+#define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
+#define MENU_SMOKE_SOOT_TEMP -7
+#define MENU_SMOKE_SOOT_TEMP_CO2 -8
 
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -3849,6 +3854,46 @@ void LoadSmoke3DMenu(int value){
       }
     }
     ASSERT(FFALSE); // check to see if this code segment is used
+  }
+  else if (value == MENU_SMOKE_SOOT_HRRPUV) {
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+      
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->type==SOOT||smoke3di->type==HRRPUV){
+        ReadSmoke3d(i,LOAD,&errorcode);
+      }
+    }
+  }
+  else if (value == MENU_SMOKE_SOOT_HRRPUV_CO2) {
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+      
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->type==SOOT||smoke3di->type==HRRPUV||smoke3di->type==CO2){
+        ReadSmoke3d(i,LOAD,&errorcode);
+      }
+    }
+  }
+  else if (value == MENU_SMOKE_SOOT_TEMP) {
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+      
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->type==SOOT||smoke3di->type==TEMP){
+        ReadSmoke3d(i,LOAD,&errorcode);
+      }
+    }
+  }
+  else if (value == MENU_SMOKE_SOOT_TEMP_CO2) {
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+      
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->type==SOOT||smoke3di->type==TEMP||smoke3di->type==CO2){
+        ReadSmoke3d(i,LOAD,&errorcode);
+      }
+    }
   }
   else if(value<=-10){
     value = -(value + 10);
@@ -5359,7 +5404,7 @@ static int luascriptlistmenu=0;
 #endif
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadterrainmenu=0, unloadterrainmenu=0;
-static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0,loadsmoke3dwatermenu=0;
+static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
@@ -9451,41 +9496,18 @@ updatemenu=0;
           glutAddMenuEntry(smokemenulabel,i);
         }
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
-        {
-          int nsootloaded=0,nhrrloaded=0,nwaterloaded=0;
-
-          for(i=0;i<nsmoke3dinfo;i++){
-            smoke3ddata *smoke3di;
-
-            smoke3di=smoke3dinfo + i;
-            if(smoke3di->loaded==0)continue;
-            switch(smoke3di->type){
-            case SOOT:
-              nsootloaded++;
-              break;
-            case FIRE:
-              nhrrloaded++;
-              break;
-            case WATER:
-              nwaterloaded++;
-              break;
-            default:
-              ASSERT(FFALSE);
-              break;
-            }
-          }
-          if(nsootloaded>0) glutAddMenuEntry(_("SOOT MASS FRACTION"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
-          if(nhrrloaded>0)  glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
-          if(nwaterloaded>0)glutAddMenuEntry(_("water"), MENU_UNLOADSMOKE3D_UNLOADALLWATER);
-          if(show_meshmenus==1){
-            if(nsootloaded+nhrrloaded+nwaterloaded>0)glutAddMenuEntry("-", MENU_DUMMY);
-            glutAddSubMenu("Mesh", unloadsmoke3dsinglemenu);
-          }
+        if(nsootloaded>0)glutAddMenuEntry(_("SOOT DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
+        if(nhrrpuvloaded>0)glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
+        if(ntemploaded>0)glutAddMenuEntry(_("TEMPERATURE"), MENU_UNLOADSMOKE3D_UNLOADALLTEMP);
+        if(nco2loaded>0)glutAddMenuEntry(_("CARBON DIOXIDE DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLCO2);
+        if(show_meshmenus==1){
+          if(nsootloaded+nhrrpuvloaded+ntemploaded+nco2loaded>0)glutAddMenuEntry("-", MENU_DUMMY);
+          glutAddSubMenu("Mesh", unloadsmoke3dsinglemenu);
         }
       }
     {
       smoke3ddata *smoke3di;
-      int n_soot_menu=0, n_hrr_menu=0, n_water_menu=0;
+      int n_soot_menu=0, n_hrr_menu=0;
 
       if(nsmoke3dinfo>0){
         char menulabel[1024];
@@ -9512,22 +9534,8 @@ updatemenu=0;
         }
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=FIRE)continue;
+          if(smoke3di->type!=HRRPUV)continue;
           n_hrr_menu++;
-          strcpy(menulabel,"");
-          if(smoke3di->loaded==1){
-            strcat(menulabel,"*");
-          }
-          strcat(menulabel,smoke3di->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
-        if(nmeshes>1){
-          CREATEMENU(loadsmoke3dwatermenu,LoadSmoke3DMenu);
-        }
-        for(i=0;i<nsmoke3dinfo;i++){
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=WATER)continue;
-          n_water_menu++;
           strcpy(menulabel,"");
           if(smoke3di->loaded==1){
             strcat(menulabel,"*");
@@ -9538,27 +9546,41 @@ updatemenu=0;
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
-          int load_3dhrrpuv, load_3dsmoke;
 
-          if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
+          if(n_soot_menu>0||n_hrr_menu>0){
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
-            if(n_soot_menu>0)glutAddSubMenu(_("SOOT MASS FRACTION"),loadsmoke3dsootmenu);
+            if(n_soot_menu>0)glutAddSubMenu(_("SOOT DENSITY"),loadsmoke3dsootmenu);
             if(n_hrr_menu>0)glutAddSubMenu(_("HRRPUV"),loadsmoke3dhrrmenu);
-            if(n_water_menu>0)glutAddSubMenu(_("Water"),loadsmoke3dwatermenu);
           }
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
-
-          load_3dhrrpuv = 0;
-          load_3dsmoke = 0;
-          for(i=0;i<nsmoke3dinfo;i++){
-            smoke3di=smoke3dinfo + i;
-            if(smoke3di->loaded==0)continue;
-            if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0)load_3dhrrpuv = 1;
-            if(strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)load_3dsmoke = 1;
-            if(load_3dhrrpuv==1&&load_3dsmoke==1)break;
+          {
+            char smoke3dmenulabel[256];
+            int menu_callback_entry;
+ 
+            strcpy(smoke3dmenulabel,"");  
+            if(nsootfiles>0&&nhrrpuvfiles>0){
+              if((nco2files==0||nco2loaded>0)&&nsootloaded>0&&nhrrpuvloaded>0)strcat(smoke3dmenulabel,"*");
+              strcat(smoke3dmenulabel,"SOOT DENSITY/HRRPUV");
+              menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV;
+              if(nco2files>0){
+                strcat(smoke3dmenulabel,"/CO2");
+                menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV_CO2;
+              }
+              glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
+            }
+            strcpy(smoke3dmenulabel,"");  
+            if(nsootfiles>0&&ntempfiles>0){
+              if((nco2files==0||nco2loaded>0)&&nsootloaded>0&&ntemploaded>0)strcat(smoke3dmenulabel,"*");
+              strcat(smoke3dmenulabel,"SOOT DENSITY/TEMPERATURE");
+              menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
+              if(nco2files>0){
+                strcat(smoke3dmenulabel,"/CO2");
+                menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
+              }
+              glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
+            }
           }
-
           for(i=0;i<nsmoke3dinfo;i++){
             int j;
 
@@ -9573,13 +9595,20 @@ updatemenu=0;
             }
             if(useitem!=-1){
               strcpy(menulabel, "");
-              if(load_3dsmoke==1&&strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION")==0)strcat(menulabel, "*");
-              if(load_3dhrrpuv==1&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
+              if(nsootloaded>0 && (
+                strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION") == 0 ||
+                strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0)
+                ){
+                strcat(menulabel, "*");
+              }
+              if(nhrrpuvloaded>0&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
+              if(ntemploaded>0 && strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)strcat(menulabel, "*");
+              if (nco2loaded>0 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
               strcat(menulabel,smoke3di->label.longlabel);
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
-          if(n_soot_menu>0||n_hrr_menu>0||n_water_menu>0){
+          if(n_soot_menu>0||n_hrr_menu>0){
             if(show_meshmenus==1){
               glutAddMenuEntry("-", MENU_DUMMY3);
               glutAddSubMenu("Mesh", loadsmoke3dsinglemenu);

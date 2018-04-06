@@ -1279,16 +1279,24 @@ typedef struct _smokedata {
   unsigned char *frame_in, *frame_out, *view_tmp, *comp_all, **frame_comp_list;
 } smokedata;
 
+
 /* --------------------------  smoke3ddata ------------------------------------ */
+
+typedef struct {
+  int loaded, index;
+  unsigned char *color;
+} smokestatedata;
+
+  /* --------------------------  smoke3ddata ------------------------------------ */
 
 typedef struct _smoke3ddata {
   int seq_id,autoload;
   char *file;
   char *comp_file, *reg_file;
   int filetype;
-  int loaded, display, request_load, d_display;
+  int loaded, display, request_load, primary_file;
   int is_zlib;
-  int soot_loaded,water_loaded,hrrpuv_loaded;
+  smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
   int type;
   int is1, is2, js1, js2, ks1, ks2;
@@ -1310,8 +1318,6 @@ typedef struct _smoke3ddata {
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;
   smokedata smoke, light;
-  unsigned char *hrrpuv_color, *water_color, *soot_color;
-  int hrrpuv_index, water_index, soot_index;
   int dir;
 } smoke3ddata;
 

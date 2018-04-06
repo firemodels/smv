@@ -1302,6 +1302,23 @@ void InitRGB(void){
   }
 }
 
+/* ------------------ HaveFire ------------------------ */
+
+int HaveFire(void) {
+  int i;
+
+  for (i = 0; i < nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if (smoke3di->loaded == 1) {
+      if (smoke3di->type == HRRPUV)return HRRPUV;
+      if (smoke3di->type == TEMP)return TEMP;
+    }
+  }
+  return 0;
+}
+
 /* ------------------ UpdateSmokeColormap ------------------------ */
 
 void UpdateSmokeColormap(int option){
@@ -1311,21 +1328,21 @@ void UpdateSmokeColormap(int option){
   float *fire_cb;
   float val, valmin, valmax, valcut;
   int icut;
-  float *rgb_colormap;
-  int have_fire;
+  float *rgb_colormap=NULL;
 
   have_fire = HaveFire();
-  if(option==RENDER_SLICE){
+  if(have_fire==HRRPUV&&option==RENDER_SLICE){
     valmin=global_hrrpuv_min;
     valcut=global_hrrpuv_cutoff;
     valmax=global_hrrpuv_max;
     rgb_colormap = rgb_slicesmokecolormap;
   }
   else{
-    valmin=temperature_min;
-    valcut=temperature_cutoff;
-    valmax=temperature_max;
+    valmin = global_temp_min;
+    valcut = global_temp_cutoff;
+    valmax = global_temp_max;
     rgb_colormap = rgb_volsmokecolormap;
+    if(have_fire == TEMP)rgb_colormap=rgb_slicesmokecolormap;
   }
   icut = (MAXSMOKERGB-1)*((valcut-valmin)/(valmax-valmin));
   icut = CLAMP(icut,2,(MAXSMOKERGB-3));

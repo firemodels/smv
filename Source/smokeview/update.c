@@ -227,6 +227,7 @@ void UpdateShow(void){
   int slicecolorbarflag;
   int shooter_flag;
 
+  have_fire = HaveFire();
   showtime=0;
   showtime2=0;
   showplot3d=0;

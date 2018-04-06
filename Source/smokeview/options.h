@@ -71,7 +71,7 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
-//#define pp_CO2
+#define pp_CO2SMOKE
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS

@@ -142,9 +142,12 @@ void _Sniff_Errors(char *whereat);
 #ifndef UPDATE_SMOKEFIRE_COLORS
 #define UPDATE_SMOKEFIRE_COLORS 54
 #endif
-#define SOOT 1
-#define FIRE 2
-#define WATER 3
+
+#define MAXSMOKETYPES 4
+#define SOOT 0
+#define HRRPUV 1
+#define TEMP 2
+#define CO2  3
 
 #define NELEV_ZONE 100
 

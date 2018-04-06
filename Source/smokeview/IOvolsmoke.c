@@ -172,15 +172,15 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
     float dtemp;
 
     INTERP3D(firedata_local, temperature);
-    if(temperature<temperature_cutoff){
-      dtemp = (temperature_cutoff-temperature_min)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature, temperature_min, dtemp, (MAXSMOKERGB/2));
+    if(temperature<global_temp_cutoff){
+      dtemp = (global_temp_cutoff- global_temp_min)/(MAXSMOKERGB/2);
+      index = GETINDEX(temperature, global_temp_min, dtemp, (MAXSMOKERGB/2));
     }
     else{
       float ratio;
 
-      dtemp = (temperature_max-temperature_cutoff)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature+voltemp_offset, temperature_cutoff, dtemp, (MAXSMOKERGB/2));
+      dtemp = (global_temp_max- global_temp_cutoff)/(MAXSMOKERGB/2);
+      index = GETINDEX(temperature+voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB/2));
       index += (MAXSMOKERGB/2);
       if(temperature>voltemp_factor){
         ratio = (273.0+temperature)/(273.0+voltemp_factor);
@@ -1611,7 +1611,7 @@ void DrawSmoke3dVolDebug(void){
 
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
-void DrawSmoke3dVol(void){
+void DrawSmoke3DVol(void){
   int iwall;
   int ii;
 
@@ -2086,7 +2086,7 @@ void UpdateVolsmokeTexture(meshdata *meshi){
 
 /* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
-void DrawSmoke3dGpuVol(void){
+void DrawSmoke3DGPUVol(void){
 
   int iwall;
   meshdata *meshold=NULL;
@@ -2131,9 +2131,9 @@ void DrawSmoke3dGpuVol(void){
   glUniform1i(GPUvol_vol_adaptive, vol_adaptive);
   glUniform1f(GPUvol_mass_extinct,mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
-  glUniform1f(GPUvol_temperature_min,temperature_min);
-  glUniform1f(GPUvol_temperature_cutoff,temperature_cutoff);
-  glUniform1f(GPUvol_temperature_max,temperature_max);
+  glUniform1f(GPUvol_temperature_min, global_temp_min);
+  glUniform1f(GPUvol_temperature_cutoff, global_temp_cutoff);
+  glUniform1f(GPUvol_temperature_max, global_temp_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
   glUniform1f(GPUvol_voltemp_factor, voltemp_factor);
   glUniform1f(GPUvol_voltemp_offset, voltemp_offset);

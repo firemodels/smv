@@ -19,6 +19,9 @@ goto:eof
 call %envfile%
 
 set bundledir=%userprofile%\.bundle
+if not exist %bundledir% (
+  mkdir %bundledir%
+)
 
 %svn_drive%
 cd %svn_root%\smv

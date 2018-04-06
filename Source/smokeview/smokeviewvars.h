@@ -20,6 +20,20 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
+SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
+SVEXTERN int SVDECL(have_fire, 0);
+SVEXTERN int SVDECL(nsmoke3d_temp, 0);
+SVEXTERN int SVDECL(nsmoke3d_co2, 0);
+SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
+SVEXTERN int SVDECL(nsmoke3d_soot, 0);
+#ifdef INMAIN
+  SVEXTERN int global_co2color[3]={64,156,215};
+#else
+  SVEXTERN int global_co2color[3];
+#endif
+SVEXTERN float SVDECL(co2factor, 1.0);
+SVEXTERN float SVDECL(sootfactor, 15.0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
@@ -1382,7 +1396,7 @@ SVEXTERN int SVDECL(device_sphere_segments,6);
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
-SVEXTERN float SVDECL(temperature_min,20.0),SVDECL(temperature_cutoff,700.0),SVDECL(temperature_max,1200.0);
+SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_cutoff,700.0),SVDECL(global_temp_max,1200.0);
 SVEXTERN float SVDECL(global_hrrpuv_min,0.0),SVDECL(global_hrrpuv_cutoff,200.0),SVDECL(global_hrrpuv_max,1200.0);
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float tourrad_avatar;
