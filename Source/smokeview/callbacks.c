@@ -2269,6 +2269,9 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 
   skip2=key2-'1'+1;

@@ -9558,7 +9558,18 @@ updatemenu=0;
             char smoke3dmenulabel[256];
             int menu_callback_entry;
  
-            strcpy(smoke3dmenulabel,"");  
+            strcpy(smoke3dmenulabel, "");
+            if(nsootfiles > 0 && ntempfiles > 0){
+              if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
+              strcat(smoke3dmenulabel, "SOOT DENSITY/TEMPERATURE");
+              menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
+              if(nco2files > 0){
+                strcat(smoke3dmenulabel, "/CO2");
+                menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
+              }
+              glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
+            }
+            strcpy(smoke3dmenulabel,"");
             if(nsootfiles>0&&nhrrpuvfiles>0){
               if((nco2files==0||nco2loaded>0)&&nsootloaded>0&&nhrrpuvloaded>0)strcat(smoke3dmenulabel,"*");
               strcat(smoke3dmenulabel,"SOOT DENSITY/HRRPUV");
@@ -9566,17 +9577,6 @@ updatemenu=0;
               if(nco2files>0){
                 strcat(smoke3dmenulabel,"/CO2");
                 menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV_CO2;
-              }
-              glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
-            }
-            strcpy(smoke3dmenulabel,"");  
-            if(nsootfiles>0&&ntempfiles>0){
-              if((nco2files==0||nco2loaded>0)&&nsootloaded>0&&ntemploaded>0)strcat(smoke3dmenulabel,"*");
-              strcat(smoke3dmenulabel,"SOOT DENSITY/TEMPERATURE");
-              menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
-              if(nco2files>0){
-                strcat(smoke3dmenulabel,"/CO2");
-                menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
               }
               glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
             }

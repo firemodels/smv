@@ -5526,7 +5526,7 @@ int ReadSMV(char *file, char *file2){
       lenbuffer=len;
       {
         smoke3ddata *smoke3di;
-        int i;
+        int ii;
 
         smoke3di = smoke3dinfo + ismoke3d;
 
@@ -5547,8 +5547,8 @@ int ReadSMV(char *file, char *file2){
         smoke3di->seq_id=nn_smoke3d;
         smoke3di->autoload=0;
         smoke3di->compression_type=UNKNOWN;
-        for(i = 0;i < MAXSMOKETYPES;i++){
-          smoke3di->smokestate[i].color = NULL;
+        for(ii = 0;ii < MAXSMOKETYPES;ii++){
+          smoke3di->smokestate[ii].color = NULL;
         }
         smoke3di->file=NULL;
         smoke3di->smokeframe_in=NULL;
@@ -5570,8 +5570,8 @@ int ReadSMV(char *file, char *file2){
         smoke3di->primary_file=0;
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
-        for(i = 0;i < MAXSMOKETYPES;i++){
-          smoke3di->smokestate[i].index = -1;
+        for(ii = 0;ii < MAXSMOKETYPES;ii++){
+          smoke3di->smokestate[ii].index = -1;
         }
         smoke3di->ismoke3d_time=0;
 
@@ -6810,6 +6810,9 @@ int ReadSMV(char *file, char *file2){
       case MFLOW_VENT:
         nzmvents++;
         ReadZVentData(zvi, buffer, ZVENT_1ROOM);
+        break;
+      default:
+        ASSERT(FFALSE);
         break;
       }
       CheckMemory;
@@ -9147,7 +9150,7 @@ typedef struct {
   PRINTF("---------------------\n");
 
 #ifdef pp_TIMINGS
-#define ALWAYS 1==1||
+#define ALWAYS (1==1)||
 #else
 #define ALWAYS
 #endif
@@ -13335,14 +13338,14 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     if(nwindrose_showhide > 0){
-      int i;
+      int ii;
 
       UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
       fprintf(fileout, "WINDROSESHOWHIDE\n");
       fprintf(fileout, " %i\n", nwindrose_showhide);
-      for(i = 0; i < nwindrose_showhide; i++){
-        fprintf(fileout, " %i", windrose_showhide[i]);
-        if((i+1)%WINDROSE_PER_ROW==0)fprintf(fileout, "\n");
+      for(ii = 0; ii < nwindrose_showhide; ii++){
+        fprintf(fileout, " %i", windrose_showhide[ii]);
+        if((ii+1)%WINDROSE_PER_ROW==0)fprintf(fileout, "\n");
       }
       fprintf(fileout, "\n");
     }

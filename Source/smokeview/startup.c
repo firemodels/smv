@@ -293,7 +293,6 @@ int SetupCase(int argc, char **argv){
       break;
     case 3:
       return 3;
-      break;
     default:
       ASSERT(FFALSE);
   }
