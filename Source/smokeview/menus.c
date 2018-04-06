@@ -9546,7 +9546,6 @@ updatemenu=0;
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
-          int load_3dhrrpuv, load_3dsmoke, load_3dtemp, load_3dco2;
 
           if(n_soot_menu>0||n_hrr_menu>0){
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
