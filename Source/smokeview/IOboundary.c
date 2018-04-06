@@ -4367,9 +4367,7 @@ int CountBoundarySliceDups(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    for(i = 0; i < npatchinfo; i++){
-      count += IsBoundaryDuplicate(patchi, COUNT_DUPLICATES);
-    }
+    count += IsBoundaryDuplicate(patchi, COUNT_DUPLICATES);
   }
   return count;
 }

@@ -5363,6 +5363,7 @@ void MergeSmoke3dColors(smoke3ddata *smoke3dset){
         smoke3di->primary_file = 1;
       }
       fire_index = TEMP;
+      break;
     case CO2:
       break;
     default:
