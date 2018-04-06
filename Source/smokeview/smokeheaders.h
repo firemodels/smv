@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateZAxisCustom(void);
 EXTERNCPP void SkipMenu(int value);
 EXTERNCPP void UpdateShowGravityVector(void);

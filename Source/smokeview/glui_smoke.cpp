@@ -67,6 +67,7 @@ extern GLUI *glui_bounds;
 #define UPDATE_FACTOROFFSETS 59
 #define UPDATE_HRRPUV_CONTROLS 60
 #define SMOKE3D_LOAD_INCREMENTAL 18
+#define CO2_COLOR 71
 
 
 // two defines below are also defined elsewhere
@@ -604,9 +605,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   if(nsmoke3d_co2 > 0){
     ROLLOUT_colormap_co2 = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2, "CO2 (kg/m3)");
-    SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("red"), GLUI_SPINNER_INT, global_co2color);
-    SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("green"), GLUI_SPINNER_INT, global_co2color + 1);
-    SPINNER_co2color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("blue"), GLUI_SPINNER_INT, global_co2color + 2);
+    SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("red"),   GLUI_SPINNER_INT, global_co2color     ,CO2_COLOR, Smoke3dCB);
+    SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("green"), GLUI_SPINNER_INT, global_co2color + 1, CO2_COLOR, Smoke3dCB);
+    SPINNER_co2color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _d("blue"),  GLUI_SPINNER_INT, global_co2color + 2, CO2_COLOR, Smoke3dCB);
     SPINNER_co2color[0]->set_int_limits(0, 255);
     SPINNER_co2color[1]->set_int_limits(0, 255);
     SPINNER_co2color[2]->set_int_limits(0, 255);
@@ -985,11 +986,15 @@ extern "C" void Smoke3dCB(int var){
     SPINNER_temperature_min->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
     break;
+  case CO2_COLOR:
+     glutPostRedisplay();
+     break;
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
     temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
     SPINNER_temperature_cutoff->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
+    glutPostRedisplay();
     break;
   case TEMP_MAX:
     temp_min = (float)(10*(int)(global_temp_cutoff/10.0)+10.0);

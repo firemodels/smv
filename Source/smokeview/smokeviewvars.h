@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
+SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
 SVEXTERN int SVDECL(have_fire, 0);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);

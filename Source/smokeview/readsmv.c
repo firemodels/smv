@@ -8901,6 +8901,8 @@ typedef struct {
   UpdateIsoColors();
   CheckMemory;
 
+  UpdateSmoke3dFileParms();
+
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
   InitEvacProp();

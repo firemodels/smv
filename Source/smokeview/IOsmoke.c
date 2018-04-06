@@ -18,6 +18,46 @@
 
 int cull_count=0;
 
+/* ------------------ UpdateSmoke3dFileParms ------------------------ */
+
+void UpdateSmoke3dFileParms(void) {
+  int i;
+
+  nsootfiles = 0;
+  nsootloaded = 0;
+  nhrrpuvfiles = 0;
+  nhrrpuvloaded = 0;
+  ntempfiles = 0;
+  ntemploaded = 0;
+  nco2files = 0;
+  nco2loaded = 0;
+  for (i = 0; i < nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    switch (smoke3di->type) {
+    case SOOT:
+      if (smoke3di->loaded == 1)nsootloaded++;
+      nsootfiles++;
+      break;
+    case HRRPUV:
+      if (smoke3di->loaded == 1)nhrrpuvloaded++;
+      nhrrpuvfiles++;
+      break;
+    case TEMP:
+      if (smoke3di->loaded == 1)ntemploaded++;
+      ntempfiles++;
+      break;
+    case CO2:
+      if (smoke3di->loaded == 1)nco2loaded++;
+      nco2files++;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+  }
+}
 
 /* ------------------ UpdateOpacityMap ------------------------ */
 
@@ -5007,34 +5047,22 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
 #ifdef pp_CULL
     if(cullactive==1)update_initcull=1;
 #endif
+    UpdateSmoke3dFileParms();
     return;
   }
   if(smoke3di->type == HRRPUV||smoke3di->type==TEMP){
-    int nhrrloaded = 0, ntemploaded = 0;
-
-    for(j = 0; j<nsmoke3dinfo; j++){
-      smoke3ddata *smoke3dj;
-
-      smoke3dj = smoke3dinfo + j;
-      if (smoke3dj->loaded == 1){
-        if(smoke3dj->type==HRRPUV)nhrrloaded++;
-        if(smoke3dj->type==TEMP)ntemploaded++;
-      }
-    }
     // if we are loading an HRRPUV then unload all TEMP's
     if(smoke3di->type == HRRPUV&&ntemploaded > 0)printf("unloading all smoke3d temperature files\n");
 
     // if we are loading a TEMP then unload all HRRPUV's
-    if(smoke3di->type == TEMP&&nhrrloaded > 0)printf("unloading all  smoke3d hrrpuv files\n");
+    if(smoke3di->type == TEMP&&nhrrpuvloaded > 0)printf("unloading all  smoke3d hrrpuv files\n");
 
     for(j = 0; j<nsmoke3dinfo; j++) {
       smoke3ddata *smoke3dj;
       int error2;
 
       smoke3dj = smoke3dinfo + j;
-      if(smoke3di == smoke3dj)continue;
-
-      if (smoke3dj->loaded == 1){
+      if(smoke3di != smoke3dj&&smoke3dj->loaded == 1){
         if((smoke3di->type == TEMP&&smoke3dj->type == HRRPUV) ||
           (smoke3di->type == HRRPUV&&smoke3dj->type == TEMP)){
           printf("unloading %s\n", smoke3dj->file);
@@ -5219,6 +5247,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
+  UpdateSmoke3dFileParms();
   UpdateTimes();
 #ifdef pp_CULL
     if(cullactive==1)InitCull(cullsmoke);
