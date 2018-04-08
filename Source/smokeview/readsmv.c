@@ -4286,10 +4286,8 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
-#ifdef pp_CO2SMOKE
       ||Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
-#endif
       ){
       if(setup_only==1)continue;
       nsmoke3dinfo++;
@@ -5474,10 +5472,8 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
-#ifdef pp_CO2SMOKE
       ||Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
-#endif
       ){
 
       size_t len;
