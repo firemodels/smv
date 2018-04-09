@@ -1179,9 +1179,9 @@ extern "C" void Smoke3dCB(int var){
     break;
   case UPDATE_SMOKEFIRE_COLORS:
     co2_halfdepth = MAX(co2_halfdepth, 0.001);
-    SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
+    if(SPINNER_smoke3d_co2_halfdepth!=NULL)SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
 
-    SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth);
+    if(SPINNER_smoke3d_fire_halfdepth2!=NULL)SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
 
     glui_co2_alpha = 255*(1.0-pow(0.5,meshinfo->dx/co2_halfdepth));
