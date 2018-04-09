@@ -1305,7 +1305,7 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
-  int fire_alpha;
+  int fire_alpha, co2_alpha;
   int *timeslist;
   int ntimes,ntimes_old,ismoke3d_time,lastiframe,ntimes_full;
   int nchars_uncompressed;

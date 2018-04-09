@@ -68,6 +68,8 @@ extern GLUI *glui_bounds;
 #define UPDATE_HRRPUV_CONTROLS 60
 #define SMOKE3D_LOAD_INCREMENTAL 18
 #define CO2_COLOR 71
+#define UPDATE_FIRE_ALPHA 72
+#define UPDATE_CO2_ALPHA 73
 
 
 // two defines below are also defined elsewhere
@@ -130,8 +132,11 @@ GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_blue=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_halfdepth=NULL;
+GLUI_Spinner *SPINNER_smoke3d_co2_halfdepth = NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_halfdepth2=NULL;
+GLUI_Spinner *SPINNER_smoke3d_co2_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
+GLUI_Spinner *SPINNER_smoke3d_fire_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
 GLUI_Spinner *SPINNER_extinct=NULL;
@@ -192,6 +197,7 @@ GLUI_Panel *PANEL_loadframe = NULL;
 GLUI_Panel *PANEL_voltemp = NULL;
 GLUI_Panel *PANEL_voldisplay = NULL;
 GLUI_Panel *PANEL_volsmoke_move = NULL;
+GLUI_Panel *PANEL_alpha = NULL;
 
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_firesmoke_color = NULL;
@@ -510,7 +516,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
 
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _d("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
-  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 20.0);
+  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
 
   ROLLOUT_firesmoke_colormap = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "color/opacity maps", false);
 
@@ -550,7 +556,22 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
 
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% fire opacity at: (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3dCB);
-  SPINNER_smoke3d_fire_halfdepth2->set_float_limits(0.0, 20.0);
+  if(nco2files>0){
+    SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("50% co2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+  }
+
+#ifdef pp_SMOKEALPHA
+  PANEL_alpha = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"experimental");
+  SPINNER_smoke3d_fire_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _d("50% fire alpha"), GLUI_SPINNER_INT, &glui_fire_alpha, UPDATE_FIRE_ALPHA, Smoke3dCB);
+  SPINNER_smoke3d_fire_alpha->set_int_limits(1,254);
+  if(nco2files>0){
+    SPINNER_smoke3d_co2_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _d("50% co2 alpha"), GLUI_SPINNER_INT, &glui_co2_alpha, UPDATE_CO2_ALPHA, Smoke3dCB);
+    SPINNER_smoke3d_co2_alpha->set_int_limits(1, 254);
+  }
+#endif
+  Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+  Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _d("max blending"), &hrrpuv_max_blending);
   SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _d("co2 factor"), GLUI_SPINNER_FLOAT,&co2factor,CO2SMOKE,Smoke3dCB);
   SPINNER_co2factor->set_float_limits(0.0, 100.0);
@@ -876,6 +897,14 @@ extern "C" void Smoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case UPDATE_FIRE_ALPHA:
+    fire_halfdepth2 = meshinfo->dx*log(0.5)/log(1.0-glui_fire_alpha/255.0);
+    SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth2);
+    break;
+  case UPDATE_CO2_ALPHA:
+    co2_halfdepth = meshinfo->dx*log(0.5)/log(1.0-glui_co2_alpha/255.0);
+    SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
+    break;
   case SOOTSMOKE:
   case CO2SMOKE:
     glutPostRedisplay();
@@ -1140,12 +1169,24 @@ extern "C" void Smoke3dCB(int var){
     UpdateSmokeColormap(smoke_render_option);
     break;
   case UPDATE_SMOKEFIRE_COLORS2:
+    fire_halfdepth2 = MAX(fire_halfdepth2, 0.001);
     SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth2);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+
+    glui_fire_alpha = 255*(1.0-pow(0.5,meshinfo->dx/fire_halfdepth2));
+    glui_fire_alpha = CLAMP(glui_fire_alpha,1,254);
+    if(SPINNER_smoke3d_fire_alpha!=NULL)SPINNER_smoke3d_fire_alpha->set_int_val(glui_fire_alpha);
     break;
   case UPDATE_SMOKEFIRE_COLORS:
+    co2_halfdepth = MAX(co2_halfdepth, 0.001);
+    SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
+
     SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+
+    glui_co2_alpha = 255*(1.0-pow(0.5,meshinfo->dx/co2_halfdepth));
+    glui_co2_alpha = CLAMP(glui_co2_alpha,1,254);
+    if(SPINNER_smoke3d_co2_alpha!=NULL)SPINNER_smoke3d_co2_alpha->set_int_val(glui_co2_alpha);
     break;
   case UPDATE_SMOKEFIRE_COLORS_COMMON:
   case FIRE_RED:
