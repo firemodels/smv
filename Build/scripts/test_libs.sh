@@ -6,7 +6,7 @@ makelibs()
   if [ ! -e $LIBDIR/$lib ] ; then
     CURDIR=`pwd`
     cd $LIBDIR
-    ./makelibs.sh $LUA
+    ./make_LIBS.sh $LUA
     cd $CURDIR
   fi
 }
