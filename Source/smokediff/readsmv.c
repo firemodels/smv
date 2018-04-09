@@ -619,18 +619,18 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
     // skip over the following keywords
 
     if(
-       Match(buffer,"ISOF") == 1||
-       Match(buffer,"ISOG") == 1||
-       Match(buffer,"TISOF")==1||
-       Match(buffer,"SMOKE3D")==1||
-       Match(buffer,"SMOKF3D")==1||
-       Match(buffer,"VSMOKF3D")==1||
-      Match(buffer, "SMOKG3D") == 1 ||
-      Match(buffer, "VSMOKG3D") == 1 ||
-      Match(buffer, "PART") == 1 ||
-       Match(buffer,"EVAC")==1||
-       Match(buffer,"PRT5")==1||
-       Match(buffer,"EVA5")==1
+       Match(buffer,"ISOF")      == 1 ||
+       Match(buffer,"ISOG")      == 1 ||
+       Match(buffer,"TISOF")     == 1 ||
+       Match(buffer,"SMOKE3D")   == 1 ||
+       Match(buffer,"SMOKF3D")   == 1 ||
+       Match(buffer,"VSMOKF3D")  == 1 ||
+       Match(buffer, "SMOKG3D")  == 1 ||
+       Match(buffer, "VSMOKG3D") == 1 ||
+       Match(buffer, "PART")     == 1 ||
+       Match(buffer,"EVAC")      == 1 ||
+       Match(buffer,"PRT5")      == 1 ||
+       Match(buffer,"EVA5")      == 1
        ){
       char comm[1024];
 

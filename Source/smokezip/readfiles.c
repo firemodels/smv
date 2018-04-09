@@ -42,11 +42,11 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 #ifdef pp_SMOKE3D_FORT
-    if(Match(buffer,"SMOKE3D") == 1||
-       Match(buffer, "SMOKF3D") == 1||
-       Match(buffer, "VSMOKE3D")==1||
-       Match(buffer, "VSMOKF3D")==1
-       ||Match(buffer, "SMOKG3D") == 1 ||
+    if(Match(buffer,"SMOKE3D")   == 1 ||
+       Match(buffer, "SMOKF3D")  == 1 ||
+       Match(buffer, "VSMOKE3D") == 1 ||
+       Match(buffer, "VSMOKF3D") == 1 ||
+       Match(buffer, "SMOKG3D")  == 1 ||
        Match(buffer, "VSMOKG3D") == 1
        ){
 #else
@@ -392,12 +392,12 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 #ifdef pp_SMOKE3D_FORT
-    if(Match(buffer,"SMOKE3D") == 1||
-       Match(buffer, "SMOKF3D") == 1||
+    if(Match(buffer, "SMOKE3D")  == 1 ||
+       Match(buffer, "SMOKF3D")  == 1 ||
        Match(buffer, "VSMOKE3D") == 1 ||
-       Match(buffer, "VSMOKF3D")==1
-       ||Match(buffer, "SMOKG3D") == 1 ||
-      Match(buffer, "VSMOKG3D") == 1
+       Match(buffer, "VSMOKF3D") == 1 ||
+       Match(buffer, "SMOKG3D")  == 1 ||
+       Match(buffer, "VSMOKG3D") == 1
       ){
 #else
     if(Match(buffer,"SMOKE3D") == 1){

@@ -4282,12 +4282,12 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
-      Match(buffer, "VSMOKG3D") == 1
+      Match(buffer,"SMOKE3D")  == 1 ||
+      Match(buffer,"VSMOKE3D") == 1 ||
+      Match(buffer,"SMOKF3D")  == 1 ||
+      Match(buffer,"VSMOKF3D") == 1 ||
+      Match(buffer,"SMOKG3D")  == 1 ||
+      Match(buffer,"VSMOKG3D") == 1
       ){
       if(setup_only==1)continue;
       nsmoke3dinfo++;
@@ -5468,12 +5468,12 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
-      Match(buffer, "VSMOKG3D") == 1
+      Match(buffer,"SMOKE3D")  == 1 ||
+      Match(buffer,"VSMOKE3D") == 1 ||
+      Match(buffer,"SMOKF3D")  == 1 ||
+      Match(buffer,"VSMOKF3D") == 1 ||
+      Match(buffer,"SMOKG3D")  == 1 ||
+      Match(buffer,"VSMOKG3D") == 1
       ){
 
       size_t len;
