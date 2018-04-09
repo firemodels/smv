@@ -36,17 +36,17 @@ void _Sniff_Errors(char *whereat);
 #define UPDATE_WINDROSE_SHOWHIDE 2
 
 #ifndef START_TIMER
-#define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
+#define START_TIMER(a) ((a) = (glutGet(GLUT_ELAPSED_TIME)/1000.0))
 #endif
 #ifndef STOP_TIMER
-#define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
+#define STOP_TIMER(a) ((a) = (glutGet(GLUT_ELAPSED_TIME)/1000.0 - (a)))
 #endif
 
 #ifndef START_TICKS
-#define START_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME)
+#define START_TICKS(a) ((a) = (glutGet(GLUT_ELAPSED_TIME)))
 #endif
 #ifndef STOP_TICKS
-#define STOP_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME) - a
+#define STOP_TICKS(a) ((a) = (glutGet(GLUT_ELAPSED_TIME) - (a)))
 #endif
 
 #define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])

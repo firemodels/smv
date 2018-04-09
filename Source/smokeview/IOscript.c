@@ -2021,12 +2021,9 @@ void ScriptSetTimeVal(scriptdata *scripti){
   float timeval;
   int i,imin;
   float valmin;
-  char message[255];
 
   timeval = scripti->fval;
-  updatetimes_debug = message;
   UpdateTimes();
-  updatetimes_debug = NULL;
   PRINTF("script: setting time to %f\n\n",timeval);
   if(global_times!=NULL&&nglobal_times>0){
     float mintime, maxtime;

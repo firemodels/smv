@@ -15,7 +15,6 @@
 #include "isodefs.h"
 #include "datadefs.h"
 
-#define GAS 1
 #define SOLID 0
 #define UNCOMPRESSED 0
 
