@@ -18,12 +18,8 @@
 
 #define SCALE2FDSL(x) ((x)*xyzmaxdiff_local)
 
-#ifndef YES
 #define YES 1
-#endif
-#ifndef NO
 #define NO 0
-#endif
 
 #define NORMALIZE_X(x) (((x)-xbar0)/xyzmaxdiff)
 #define NORMALIZE_Y(y) (((y)-ybar0)/xyzmaxdiff)

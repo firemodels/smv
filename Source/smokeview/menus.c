@@ -70,6 +70,8 @@
 #define MENU_LOADTERRAIN_UNLOAD -10
 #define MENU_LOADTERRAIN_DUMMY -1
 
+#define MENU_LOADVSLICE_SHOWALL -20
+
 #define MENU_LOADVSLICE_SETTINGS -21
 #define MENU_ISO_SETTINGS -3
 #define MENU_BOUNDARY_SETTINGS -7
@@ -83,6 +85,7 @@
 #define MENU_EVAC_DUMMY -2
 
 #define MENU_PARTICLE_UNLOAD -1
+#define MENU_PARTICLE_DUMMY -2
 #define MENU_PARTICLE_ALLMESHES -11
 
 #define MENU_UNLOADEVAC_UNLOADALL -1
@@ -303,6 +306,7 @@ void ShowAllSmoke(void){
 
 void ShowMultiSliceMenu(int value){
   multislicedata *mslicei;
+  slicedata *sd;
   int mdisplay;
   int i;
 
@@ -360,8 +364,6 @@ void ShowMultiSliceMenu(int value){
         }
       }
       for(i = 0; i<mslicei->nslices; i++){
-        slicedata *sd;
-
         sd = sliceinfo+mslicei->islices[i];
         if(sd->loaded==0)continue;
         sd->display = mdisplay;
@@ -2176,6 +2178,7 @@ void Plot3DShowMenu(int value){
   switch(value){
   case MENU_PLOT3D_DUMMY:
     return;
+    break;
   case MENU_PLOT3D_Z:
       visz_all=1-visz_all;
       break;
@@ -3812,6 +3815,7 @@ void UnLoadSmoke3DMenu(int value){
 
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
+  smoke3ddata *smoke3di, *smoke3dj;
 #define MENU_SMOKE_SOOT_HRRPUV -5
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
 #define MENU_SMOKE_SOOT_TEMP -7
@@ -3844,8 +3848,6 @@ void LoadSmoke3DMenu(int value){
   else if(value==-9){
     if(scriptoutstream==NULL||defer_file_loading==0){
       for(i=0;i<nsmoke3dinfo;i++){
-        smoke3ddata *smoke3di;
-
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
         ReadSmoke3d(i,LOAD,&errorcode);
@@ -3894,8 +3896,6 @@ void LoadSmoke3DMenu(int value){
     }
   }
   else if(value<=-10){
-    smoke3ddata *smoke3dj;
-
     value = -(value + 10);
     smoke3dj = smoke3dinfo + value;
     if(scriptoutstream!=NULL){
@@ -3904,8 +3904,6 @@ void LoadSmoke3DMenu(int value){
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
       for(i=0;i<nsmoke3dinfo;i++){
-        smoke3ddata *smoke3di;
-
         smoke3di = smoke3dinfo + i;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
           ReadSmoke3d(i,LOAD,&errorcode);
@@ -4110,11 +4108,10 @@ void LoadSliceMenu(int value){
 
 void LoadMultiVSliceMenu(int value){
   int i;
+  multivslicedata *mvslicei;
 
   if(value==MENU_DUMMY)return;
   if(value>=0){
-    multivslicedata *mvslicei;
-
     mvslicei = multivsliceinfo + value;
     if(scriptoutstream!=NULL){
       if(mvslicei->nvslices>0){
@@ -5656,6 +5653,7 @@ updatemenu=0;
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
+      char menulabel[1024];
       patchdata *patchi=NULL, *patchim1=NULL;
 
       for(ii = 0;ii<npatchinfo;ii++){
@@ -5692,6 +5690,8 @@ updatemenu=0;
     npatchloaded=0;
     {
       int local_do_threshold=0;
+      int ii;
+
 
       for(i = 0;i<npatchinfo;i++){
         patchdata *patchi;
@@ -10405,6 +10405,9 @@ updatemenu=0;
         glutAddSubMenu(loadmenulabel,loadmultivslicemenu);
       }
       else if(nvsliceinfo>0){
+        char loadmenulabel[100];
+        char steplabel[100];
+
         strcpy(loadmenulabel,_("Vector slice"));
         if(sliceframestep>1){
           sprintf(steplabel,"/Skip %i",sliceframeskip);
