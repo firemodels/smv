@@ -58,7 +58,7 @@ typedef struct _tridata {
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9];
   struct _texturedata *textureinfo;
   struct _surfdata *surf;
-  int vert_index[3], exterior, geomtype, insolid;
+  int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
 } tridata;

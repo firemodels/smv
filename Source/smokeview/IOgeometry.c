@@ -311,6 +311,8 @@ void DrawGeom(int flag, int timestate){
       int  j;
 
       trianglei = tris[i];
+      if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+      if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
       if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
       if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
       if(trianglei->geomtype == GEOM_GEOM&&show_faces_solid == 0)continue;
@@ -376,6 +378,8 @@ void DrawGeom(int flag, int timestate){
         int j;
 
         trianglei = tris[i];
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
         if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
         if(trianglei->geomtype == GEOM_ISO &&show_iso_outline == 0)continue;
@@ -609,6 +613,8 @@ void DrawGeom(int flag, int timestate){
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
         if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
         if(trianglei->geomtype == GEOM_GEOM&&show_faces_outline == 0)continue;
@@ -697,6 +703,8 @@ void DrawGeom(int flag, int timestate){
         float xyz1[3], xyz2[3];
 
         trianglei = geomlisti->triangles+j;
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
 
@@ -731,6 +739,8 @@ void DrawGeom(int flag, int timestate){
         float xyz1[3], xyz2[3];
 
         trianglei = geomlisti->triangles+j;
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 1))continue;
@@ -766,6 +776,8 @@ void DrawGeom(int flag, int timestate){
         int k;
 
         trianglei = geomlisti->triangles + j;
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 0))continue;
@@ -796,6 +808,8 @@ void DrawGeom(int flag, int timestate){
         int k;
 
         trianglei = geomlisti->triangles + j;
+        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
+        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
         if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 0))continue;
@@ -1576,7 +1590,7 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
     FORTREADBR(nvertfacesvolumes,2,stream);
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
-    if(skipframe==0&&iframe>=0){
+    if(skipframe==0&&iframe>=0&&ntris>0){
       PRINTF("time=%.2f triangles: %i\n",times_local[0],ntris);
     }
     if(skipframe==1){
@@ -1643,6 +1657,35 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
   }
   geomi->loaded = 1;
   geomi->display=1;
+}
+
+/* ------------------ InMesh ------------------------ */
+
+int InMesh(float *xyz){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    float *boxmin, *boxmax;
+
+    meshi = meshinfo + i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+    if(xyz[0]<boxmin[0] || xyz[0]>boxmax[0])continue;
+    if(xyz[1]<boxmin[1] || xyz[1]>boxmax[1])continue;
+    if(xyz[2]<boxmin[2] || xyz[2]>boxmax[2])continue;
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ OutSideDomain ------------------------ */
+
+int OutSideDomain(vertdata **verts){
+  if(InMesh(verts[0]->xyz) == 0 &&
+    InMesh(verts[1]->xyz) == 0 &&
+    InMesh(verts[2]->xyz) == 0)return 1;
+  return 0;
 }
 
 /* ------------------ ReadGeom2 ------------------------ */
@@ -1720,7 +1763,7 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     nvolumes=nvertfacesvolumes[2];
     if(nvolumes>0)have_volume=1;
 
-    if(i>=0){
+    if(i>=0&&ntris>0){
       PRINTF("time=%.2f triangles: %i\n",time_local,ntris);
     }
     if(nverts>0){
@@ -1783,6 +1826,7 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         triangles[ii].surf=surfi;
         triangles[ii].insolid = surf_ind[ii];
         triangles[ii].textureinfo=surfi->textureinfo;
+        triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
 
       FREEMEMORY(ijk);
