@@ -326,8 +326,8 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=1.0;
       }
       else{
-        color = trianglei->surf->color;
-        transparent_level_local=trianglei->surf->transparent_level;
+        color = trianglei->geomsurf->color;
+        transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
@@ -631,7 +631,7 @@ void DrawGeom(int flag, int timestate){
           color = black;
         }
         else{
-          color = trianglei->surf->color;
+          color = trianglei->geomsurf->color;
         }
         if(last_color!=color){
           glColor3fv(color);
@@ -676,7 +676,7 @@ void DrawGeom(int flag, int timestate){
         if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
         if(verti->geomtype == GEOM_ISO&&show_iso_verts == 0)continue;
         if(verti->ntriangles==0)continue;
-        color = verti->triangles[0]->surf->color;
+        color = verti->triangles[0]->geomsurf->color;
         if(last_color!=color){
           glColor3fv(color);
           last_color=color;
@@ -1642,7 +1642,7 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
         triangles[ii].verts[2]=verts+ijk[3*ii+2]-1;
 
         surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
-        triangles[ii].surf=surfi;
+        triangles[ii].geomsurf=surfi;
         triangles[ii].textureinfo=NULL;
       }
       FREEMEMORY(ijk);
@@ -1791,7 +1791,6 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       int *surf_ind=NULL,*ijk=NULL;
       float *texture_coords=NULL;
       int ii;
-      int offset=0;
 
       NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata),geomi->memory_id);
       NewMemory((void **)&ijk,3*ntris*sizeof(int));
@@ -1803,10 +1802,9 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FORTREADBR(surf_ind,ntris,stream);
       FORTREADBR(texture_coords,6*ntris,stream);
       CheckMemory;
-      if(type==GEOM_ISO)offset=nsurfinfo;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
-        int k, surf_index;
+        int k;
 
         for(k=0;k<3;k++){
           triangles[ii].verts[k]=verts+ijk[3*ii+k]-1;
@@ -1816,14 +1814,18 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].tverts[k]=texture_coords[6*ii+k];
         }
 
-        if(type==GEOM_ISO){
-          surf_index = surf_ind[ii] + offset;
+        switch(type){
+        case GEOM_GEOM:
+        case GEOM_ISO:
+          surfi=surfinfo + surf_ind[ii];
+          if(type==GEOM_ISO)surfi+=nsurfinfo;
+          break;
+        case GEOM_SLICE:
+        case GEOM_BOUNDARY:
+          surfi=surfinfo;
+          break;
         }
-        else{
-          surf_index = (surf_ind[ii] & 3) + offset;
-        }
-        surfi=surfinfo + surf_index;
-        triangles[ii].surf=surfi;
+        triangles[ii].geomsurf=surfi;
         triangles[ii].insolid = surf_ind[ii];
         triangles[ii].textureinfo=surfi->textureinfo;
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
@@ -3338,10 +3340,10 @@ void ShowHideSortGeometry(float *mm){
           is_opaque = 0;
           tri = geomlisti->triangles + j;
           if(hilight_skinny == 1 && tri->skinny == 1)is_opaque = 1;
-          if(tri->surf->transparent_level >= 1.0)is_opaque = 1;
+          if(tri->geomsurf->transparent_level >= 1.0)is_opaque = 1;
           if(geom_force_transparent == 1)is_opaque = 0;
-          isurf = tri->surf - surfinfo - nsurfinfo - 1;
-          if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->surf->transparent_level <= 0.0){
+          isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
+          if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;
           }
           if(iter == 1){
