@@ -1604,7 +1604,6 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
       float *xyz=NULL;
       float *zORIG;
 
-      if(iframe<0)PRINTF("static geometry\n");
       NewMemory((void **)&xyz,3*nverts*sizeof(float));
       NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata),geomi->memory_id);
       NewMemory((void **)&zORIG, nverts*sizeof(float));
@@ -1771,7 +1770,6 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       float *xyz=NULL;
       float *zORIG;
 
-      if(i<0)PRINTF("static geometry\n");
       NewMemory((void **)&xyz,3*nverts*sizeof(float));
       NewMemory((void **)&zORIG,nverts*sizeof(float));
       NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata),geomi->memory_id);
@@ -1817,16 +1815,17 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         switch(type){
         case GEOM_GEOM:
         case GEOM_ISO:
-          surfi=surfinfo + surf_ind[ii];
+          surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           if(type==GEOM_ISO)surfi+=nsurfinfo;
+          triangles[ii].insolid = surf_ind[ii];
           break;
         case GEOM_SLICE:
         case GEOM_BOUNDARY:
           surfi=surfinfo;
+          triangles[ii].insolid = 0;
           break;
         }
         triangles[ii].geomsurf=surfi;
-        triangles[ii].insolid = surf_ind[ii];
         triangles[ii].textureinfo=surfi->textureinfo;
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
