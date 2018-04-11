@@ -4774,13 +4774,16 @@ void VentMenu(int value){
 #define GEOMETRY_SHOWDIAGNOSTICS 13
 #define GEOMETRY_HILIGHTSKINNY 5
 #define GEOMETRY_HIDEALL 8
+#define GEOMETRY_INSIDE_DOMAIN 14
+#define GEOMETRY_OUTSIDE_DOMAIN 15
+#define GEOMETRY_DUMMY -999
 
 /* ------------------ ImmersedMenu ------------------------ */
 
 void ImmersedMenu(int value){
+  if(value==GEOMETRY_DUMMY)return;
   updatemenu=1;
   switch(value){
-
     case GEOMETRY_INTERIOR_SOLID:
       show_volumes_solid=1-show_volumes_solid;
       break;
@@ -4862,6 +4865,12 @@ void ImmersedMenu(int value){
       show_geom_normal = 0;
       break;
     case MENU_DUMMY:
+      break;
+    case GEOMETRY_INSIDE_DOMAIN:
+      showgeom_inside_domain = 1 - showgeom_inside_domain;
+      break;
+    case GEOMETRY_OUTSIDE_DOMAIN:
+      showgeom_outside_domain = 1 - showgeom_outside_domain;
       break;
     default:
       ASSERT(FFALSE);
@@ -5743,29 +5752,43 @@ updatemenu=0;
 /* --------------------------------surface menu -------------------------- */
 
   CREATEMENU(immersedsurfacemenu,ImmersedMenu);
+  glutAddMenuEntry("How",GEOMETRY_DUMMY);
   if(show_faces_solid==1&&show_faces_outline==1){
-    glutAddMenuEntry(_("*Solid and outline"),GEOMETRY_SOLIDOUTLINE);
+    glutAddMenuEntry(_("   *Solid and outline"),GEOMETRY_SOLIDOUTLINE);
   }
   else{
-    glutAddMenuEntry(_("Solid and outline"),GEOMETRY_SOLIDOUTLINE);
+    glutAddMenuEntry(_("   Solid and outline"),GEOMETRY_SOLIDOUTLINE);
   }
   if(show_faces_solid==1&&show_faces_outline==0){
-    glutAddMenuEntry(_("*Solid only"),GEOMETRY_SOLID);
+    glutAddMenuEntry(_("   *Solid only"),GEOMETRY_SOLID);
   }
   else{
-    glutAddMenuEntry(_("Solid only"),GEOMETRY_SOLID);
+    glutAddMenuEntry(_("   Solid only"),GEOMETRY_SOLID);
   }
   if(show_faces_outline==1&&show_faces_solid==0){
-    glutAddMenuEntry(_("*Outline only"),GEOMETRY_OUTLINE);
+    glutAddMenuEntry(_("   *Outline only"),GEOMETRY_OUTLINE);
   }
   else{
-    glutAddMenuEntry(_("Outline only"),GEOMETRY_OUTLINE);
+    glutAddMenuEntry(_("   Outline only"),GEOMETRY_OUTLINE);
   }
   if(show_faces_solid == 0 && show_faces_outline == 0){
-    glutAddMenuEntry(_("*Hide"),GEOMETRY_HIDE);
+    glutAddMenuEntry(_("   *Hide"),GEOMETRY_HIDE);
   }
   else{
-    glutAddMenuEntry(_("Hide"),GEOMETRY_HIDE);
+    glutAddMenuEntry(_("   Hide"),GEOMETRY_HIDE);
+  }
+  glutAddMenuEntry("Where",GEOMETRY_DUMMY);
+  if(showgeom_inside_domain == 1){
+    glutAddMenuEntry("   *Inside domain", GEOMETRY_INSIDE_DOMAIN);
+  }
+  else {
+    glutAddMenuEntry("   Inside domain", GEOMETRY_INSIDE_DOMAIN);
+  }
+  if (showgeom_outside_domain == 1) {
+    glutAddMenuEntry("   *Outside domain", GEOMETRY_OUTSIDE_DOMAIN);
+  }
+  else {
+    glutAddMenuEntry("   Outside domain", GEOMETRY_OUTSIDE_DOMAIN);
   }
 
 /* --------------------------------interior geometry menu -------------------------- */

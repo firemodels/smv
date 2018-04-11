@@ -4323,7 +4323,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
 
   if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
   if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
-  if(strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
+  if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;

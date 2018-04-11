@@ -4286,10 +4286,8 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
-#ifdef pp_CO2SMOKE
       ||Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
-#endif
       ){
       if(setup_only==1)continue;
       nsmoke3dinfo++;
@@ -5474,10 +5472,8 @@ int ReadSMV(char *file, char *file2){
       Match(buffer,"VSMOKE3D") == 1||
       Match(buffer,"SMOKF3D") == 1||
       Match(buffer,"VSMOKF3D") == 1
-#ifdef pp_CO2SMOKE
       ||Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
-#endif
       ){
 
       size_t len;
@@ -9304,7 +9300,14 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
-    if(Match(buffer, "CO2COLOR") == 1){
+   if(Match(buffer, "GEOMDOMAIN") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
+      showgeom_inside_domain = CLAMP(showgeom_inside_domain, 0, 1);
+      showgeom_outside_domain = CLAMP(showgeom_outside_domain, 0, 1);
+      continue;
+   }
+   if(Match(buffer, "CO2COLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", global_co2color,global_co2color+1,global_co2color+2);
       global_co2color[0] = CLAMP(global_co2color[0], 0, 2550);
@@ -11594,7 +11597,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "FIREDEPTH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f", &fire_halfdepth);
+        sscanf(buffer, "%f %f", &fire_halfdepth,&co2_halfdepth);
         continue;
       }
       if(Match(buffer, "VIEWTOURFROMPATH") == 1){
@@ -13142,6 +13145,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMDIAGS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
+  fprintf(fileout, "GEOMDOMAIN\n");
+  fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f\n",
      show_faces_interior, show_faces_exterior, show_faces_solid, show_faces_outline, smooth_geom_normal,
@@ -13438,7 +13443,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "FIRECOLORMAP\n");
   fprintf(fileout, " %i %i\n", firecolormap_type, fire_colorbar_index);
   fprintf(fileout, "FIREDEPTH\n");
-  fprintf(fileout, " %f\n", fire_halfdepth);
+  fprintf(fileout, " %f %f\n", fire_halfdepth, co2_halfdepth);
   if(ncolorbars > ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;
