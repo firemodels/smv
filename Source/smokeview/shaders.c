@@ -707,39 +707,38 @@ int InitShaders(void){
   }
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
+    PRINTF("  GPU shaders\n");
     if(SetSmokeShaders()==1){
-      PRINTF("   3D smoke shader successfully loaded.\n");
+      PRINTF("    3D smoke loaded\n");
     }
     else{
-      PRINTF("   *** warning: smoke shader failed to load.\n");
+      PRINTF("    3D smoke failed to load\n");
       err=1;
     }
     if(SetVolSmokeShaders()==1){
-      PRINTF("   volume smoke shader successfully loaded.\n");
+      PRINTF("    volume smoke loaded\n");
     }
     else{
-      PRINTF("   *** warning: volume smoke shader failed to load.\n");
+      PRINTF("    volume smoke failed to load\n");
       err=1;
     }
     if(Set3DSliceShaders()==1){
-      PRINTF("   3D slice shader successfully loaded.\n");
+      PRINTF("    3D slice loaded\n");
     }
     else{
-      PRINTF("   *** warning: 3d slice shader failed to load.\n");
+      PRINTF("    3D slice failed to load\n");
       err=1;
     }
-    if(err==0){
-      if(SetZoneSmokeShaders()==1){
-        PRINTF("   zone smoke shader successfully loaded.\n");
-      }
-      else{
-        PRINTF("   *** warning: zone smoke shader failed to load.\n");
-        err=1;
-      }
+    if(SetZoneSmokeShaders()==1){
+      PRINTF("    zone smoke loaded\n");
+    }
+    else{
+      PRINTF("    zone smoke failed to load\n");
+      err=1;
     }
   }
   else{
-    PRINTF("   *** GPU not supported.\n");
+    PRINTF("  *** GPU not supported.\n");
     err=1;
   }
   if(err==0)gpuactive=1;
