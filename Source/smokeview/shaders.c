@@ -73,6 +73,7 @@ int SetZoneSmokeShaders(){
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
+    "#version 110\n"
     "uniform int zonedir,zoneinside;"
     "uniform float xyzmaxdiff,zlay,odl,odu;"
     "uniform vec3 eyepos,boxmin, boxmax;"
@@ -149,6 +150,7 @@ int SetZoneSmokeShaders(){
   };
 
   const GLchar *VertexShaderSource[]={
+    "#version 110\n"
     "varying vec3 fragpos;"
     "void main(){"
     "  fragpos=gl_Vertex;"
@@ -194,6 +196,7 @@ int Set3DSliceShaders(void){
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
+    "#version 110\n"
    "  uniform sampler1D colormap;"
    "  uniform sampler3D val_texture;"
    "  uniform float val_min,val_max;"
@@ -214,6 +217,7 @@ int Set3DSliceShaders(void){
   };
 
   const GLchar *VertexShaderSource[]={
+    "#version 110\n"
     "varying vec3 fragpos;"
     "void main(){"
     "  fragpos=gl_Vertex;"
@@ -257,6 +261,7 @@ int SetVolSmokeShaders(){
   GLint error_code;
 
   const GLchar *FragmentShaderSource[] = {
+    "#version 110\n"
     "uniform sampler1D smokecolormap;"
 #ifdef pp_GPUDEPTH
     "uniform sampler2D depthtexture;"
@@ -494,6 +499,7 @@ int SetVolSmokeShaders(){
   };
 
   const GLchar *VertexShaderSource[]={
+    "#version 110\n"
     "varying vec3 fragpos;"
     "void main(){"
     "  fragpos=gl_Vertex;"
@@ -570,6 +576,7 @@ int SetSmokeShaders(){
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
+    "#version 110\n"
     "varying vec4 newcolor;"
     "void main(){"
     "  gl_FragColor = newcolor;"
@@ -577,6 +584,7 @@ int SetSmokeShaders(){
   };
 
   const GLchar *VertexShaderSource[]={
+    "#version 110\n"
     "uniform sampler1D smokecolormap;"
     "uniform float hrrpuv_max_smv, hrrpuv_cutoff;"
     "uniform float aspectratio, smoke3d_rthick, fire_alpha;"
