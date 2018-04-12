@@ -9,31 +9,67 @@
 
 #include "smokeviewvars.h"
 
-GLhandleARB p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
+GLuint p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
 
 #define LINK_BAD 0
 #define LINK_GOOD 1
 
-/* ------------------ PrintInfoLog ------------------------ */
+/* ------------------ ShaderLinkStatus ------------------------ */
 
-void PrintInfoLog(GLhandleARB obj){
-  int infologLength = 0;
-  int charsWritten = 0;
-  char *infoLog;
+int ShaderLinkStatus(GLuint program) {
+  GLint isLinked;
 
-  glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
-  if(infologLength > 0){
-    NewMemory((void **)&infoLog, infologLength);
-    glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
-    PRINTF("%s\n", infoLog);
-    FREEMEMORY(infoLog);
+  glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+  if (isLinked == GL_FALSE){
+    GLint maxLength = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+    if (maxLength > 0) {
+#ifdef _DEBUG
+      char *infoLog;
+
+      NewMemory((void **)&infoLog, maxLength+1);
+      glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);
+      PRINTF("%s\n", infoLog);
+      FREEMEMORY(infoLog);
+#endif
+      glDeleteProgram(program);
+    }
+    return GL_FALSE;
   }
+  return GL_TRUE;
 }
+
+/* ------------------ ShaderCompileStatus ------------------------ */
+
+int ShaderCompileStatus(GLuint obj) {
+  GLint isCompiled;
+
+  glGetShaderiv(obj, GL_COMPILE_STATUS, &isCompiled);
+  if (isCompiled == GL_FALSE) {
+    GLint logLength = 0;
+
+    glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+#ifdef _DEBUG
+      char *infoLog;
+
+      NewMemory((void **)&infoLog, logLength);
+      glGetShaderInfoLog(obj, logLength, &logLength, infoLog);
+      PRINTF("%s\n", infoLog);
+      FREEMEMORY(infoLog);
+#endif
+      glDeleteShader(obj);
+    }
+    return GL_FALSE;
+  }
+  return GL_TRUE;
+}
+
 
 /* ------------------ SetZoneSmokeShaders ------------------------ */
 
 int SetZoneSmokeShaders(){
-  GLhandleARB vert_shader, frag_shader;
+  GLuint vert_shader, frag_shader;
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
@@ -120,50 +156,24 @@ int SetZoneSmokeShaders(){
     "}"
   };
 
-  vert_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-  frag_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+  vert_shader = glCreateShader(GL_VERTEX_SHADER);
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
-  glCompileShaderARB(vert_shader);
+  glCompileShader(vert_shader);
+  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
 
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
-  glCompileShaderARB(frag_shader);
+  glCompileShader(frag_shader);
+  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
 
-#ifdef _DEBUG
-  PrintInfoLog(vert_shader);
-  PrintInfoLog(frag_shader);
-#endif
-
-  p_zonesmoke = glCreateProgramObjectARB();
-  glAttachObjectARB(p_zonesmoke,vert_shader);
-  glAttachObjectARB(p_zonesmoke,frag_shader);
+  p_zonesmoke = glCreateProgram();
+  glAttachShader(p_zonesmoke,vert_shader);
+  glAttachShader(p_zonesmoke,frag_shader);
 
   glLinkProgram(p_zonesmoke);
-  glGetObjectParameterivARB(p_zonesmoke,GL_OBJECT_LINK_STATUS_ARB,&error_code);
-#ifdef _DEBUG
-  PRINTF("  Zone Smoke shader completion code:");
-  switch(error_code){
-  case GL_INVALID_VALUE:
-    PRINTF(" INVALID VALUE\n");
-    break;
-  case GL_INVALID_OPERATION:
-    PRINTF(" INVALID OPERATION\n");
-    break;
-  case GL_INVALID_ENUM:
-    PRINTF(" INVALID ENUM\n");
-    break;
-  case LINK_BAD:
-    PRINTF(" Link failed\n");
-    break;
-  case LINK_GOOD:
-    PRINTF(" Link succeeded\n");
-    break;
-  default:
-    PRINTF(" unknown error\n");
-    break;
-  }
-  PrintInfoLog(p_zonesmoke);
-#endif
+  if(ShaderLinkStatus(p_zonesmoke)==GL_FALSE)return 0;
+  
   GPUzone_zoneinside = glGetUniformLocation(p_zonesmoke,"zoneinside");
   GPUzone_zonedir = glGetUniformLocation(p_zonesmoke,"zonedir");
   GPUzone_eyepos = glGetUniformLocation(p_zonesmoke,"eyepos");
@@ -174,15 +184,13 @@ int SetZoneSmokeShaders(){
   GPUzone_odl = glGetUniformLocation(p_zonesmoke,"odl");
   GPUzone_odu = glGetUniformLocation(p_zonesmoke,"odu");
 
-  if(error_code!=1)return error_code;
-  return error_code;
-
+  return 1;
 }
 
 /* ------------------ Set3DSliceShaders ------------------------ */
 
 int Set3DSliceShaders(void){
-  GLhandleARB vert_shader, frag_shader;
+  GLuint vert_shader, frag_shader;
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
@@ -213,50 +221,23 @@ int Set3DSliceShaders(void){
     "}"
   };
 
-  vert_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-  frag_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+  vert_shader = glCreateShader(GL_VERTEX_SHADER);
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
-  glCompileShaderARB(vert_shader);
+  glCompileShader(vert_shader);
+  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
 
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
-  glCompileShaderARB(frag_shader);
+  glCompileShader(frag_shader);
+  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
 
-#ifdef _DEBUG
-  PrintInfoLog(vert_shader);
-  PrintInfoLog(frag_shader);
-#endif
-
-  p_3dslice = glCreateProgramObjectARB();
-  glAttachObjectARB(p_3dslice,vert_shader);
-  glAttachObjectARB(p_3dslice,frag_shader);
+  p_3dslice = glCreateProgram();
+  glAttachShader(p_3dslice,vert_shader);
+  glAttachShader(p_3dslice,frag_shader);
 
   glLinkProgram(p_3dslice);
-  glGetObjectParameterivARB(p_3dslice,GL_OBJECT_LINK_STATUS_ARB,&error_code);
-#ifdef _DEBUG
-  PRINTF("  3D Slice shader completion code:");
-  switch(error_code){
-  case GL_INVALID_VALUE:
-    PRINTF(" INVALID VALUE\n");
-    break;
-  case GL_INVALID_OPERATION:
-    PRINTF(" INVALID OPERATION\n");
-    break;
-  case GL_INVALID_ENUM:
-    PRINTF(" INVALID ENUM\n");
-    break;
-  case LINK_BAD:
-    PRINTF(" Link failed\n");
-    break;
-  case LINK_GOOD:
-    PRINTF(" Link succeeded\n");
-    break;
-  default:
-    PRINTF(" unknown error\n");
-    break;
-  }
-  PrintInfoLog(p_3dslice);
-#endif
+  if(ShaderLinkStatus(p_3dslice) == GL_FALSE)return 0;;
 
   GPU3dslice_valtexture = glGetUniformLocation(p_3dslice,"valtexture");
   GPU3dslice_colormap = glGetUniformLocation(p_3dslice,"colormap");
@@ -266,14 +247,13 @@ int Set3DSliceShaders(void){
   GPU3dslice_boxmax = glGetUniformLocation(p_3dslice,"boxmax");
   GPU3dslice_transparent_level = glGetUniformLocation(p_3dslice,"transparent_level");
 
-  if(error_code!=1)return error_code;
-  return error_code;
+  return 1;
 }
 
 /* ------------------ SetVolSmokeShaders ------------------------ */
 
 int SetVolSmokeShaders(){
-  GLhandleARB vert_shader, frag_shader;
+  GLuint vert_shader, frag_shader;
   GLint error_code;
 
   const GLchar *FragmentShaderSource[] = {
@@ -521,50 +501,24 @@ int SetVolSmokeShaders(){
     "}"
   };
 
-  vert_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-  frag_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+  vert_shader = glCreateShader(GL_VERTEX_SHADER);
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
-  glCompileShaderARB(vert_shader);
+  glCompileShader(vert_shader);
+  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
 
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
-  glCompileShaderARB(frag_shader);
+  glCompileShader(frag_shader);
+  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
 
-#ifdef _DEBUG
-  PrintInfoLog(vert_shader);
-  PrintInfoLog(frag_shader);
-#endif
-
-  p_volsmoke = glCreateProgramObjectARB();
-  glAttachObjectARB(p_volsmoke,vert_shader);
-  glAttachObjectARB(p_volsmoke,frag_shader);
+  p_volsmoke = glCreateProgram();
+  glAttachShader(p_volsmoke,vert_shader);
+  glAttachShader(p_volsmoke,frag_shader);
 
   glLinkProgram(p_volsmoke);
-  glGetObjectParameterivARB(p_volsmoke,GL_OBJECT_LINK_STATUS_ARB,&error_code);
-#ifdef _DEBUG
-  PRINTF("  Volume Smoke shader completion code:");
-  switch(error_code){
-  case GL_INVALID_VALUE:
-    PRINTF(" INVALID VALUE\n");
-    break;
-  case GL_INVALID_OPERATION:
-    PRINTF(" INVALID OPERATION\n");
-    break;
-  case GL_INVALID_ENUM:
-    PRINTF(" INVALID ENUM\n");
-    break;
-  case LINK_BAD:
-    PRINTF(" Link failed\n");
-    break;
-  case LINK_GOOD:
-    PRINTF(" Link succeeded\n");
-    break;
-  default:
-    PRINTF(" unknown error\n");
-    break;
-  }
-  PrintInfoLog(p_volsmoke);
-#endif
+  if(ShaderLinkStatus(p_volsmoke)==GL_FALSE)return 0;
+  
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
 #ifdef pp_GPUDEPTH
@@ -606,14 +560,13 @@ int SetVolSmokeShaders(){
   GPUvol_smokecolormap = glGetUniformLocation(p_volsmoke,"smokecolormap");
   GPUvol_drawsides = glGetUniformLocation(p_volsmoke,"drawsides");
 
-  if(error_code!=1)return error_code;
-  return error_code;
+  return 1;
 }
 
 /* ------------------ SetSmokeShaders ------------------------ */
 
 int SetSmokeShaders(){
-  GLhandleARB vert_shader, frag_shader;
+  GLuint vert_shader, frag_shader;
   GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
@@ -676,51 +629,24 @@ int SetSmokeShaders(){
     "}"
 };
 
-  vert_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-  frag_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+  vert_shader = glCreateShader(GL_VERTEX_SHADER);
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
-  glCompileShaderARB(vert_shader);
+  glCompileShader(vert_shader);
+  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
 
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
-  glCompileShaderARB(frag_shader);
+  glCompileShader(frag_shader);
+  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
 
-#ifdef _DEBUG
-  PrintInfoLog(vert_shader);
-  PrintInfoLog(frag_shader);
-#endif
-
-  p_smoke = glCreateProgramObjectARB();
-  glAttachObjectARB(p_smoke,vert_shader);
-  glAttachObjectARB(p_smoke,frag_shader);
+  p_smoke = glCreateProgram();
+  glAttachShader(p_smoke,vert_shader);
+  glAttachShader(p_smoke,frag_shader);
 
   glLinkProgram(p_smoke);
-  glGetObjectParameterivARB(p_smoke,GL_OBJECT_LINK_STATUS_ARB,&error_code);
-#ifdef _DEBUG
-  PRINTF("  Smoke shader completion code:");
-  switch(error_code){
-  case GL_INVALID_VALUE:
-    PRINTF(" INVALID VALUE\n");
-    break;
-  case GL_INVALID_OPERATION:
-    PRINTF(" INVALID OPERATION\n");
-    break;
-  case GL_INVALID_ENUM:
-    PRINTF(" INVALID ENUM\n");
-    break;
-  case LINK_BAD:
-    PRINTF(" Link failed\n");
-    break;
-  case LINK_GOOD:
-    PRINTF(" Link succeeded\n");
-    break;
-  default:
-    PRINTF(" unknown error\n");
-    break;
-  }
-  PrintInfoLog(p_smoke);
-#endif
-  if(error_code!=1)return error_code;
+  if(ShaderLinkStatus(p_smoke)==GL_FALSE)return 0;
+
   GPU_hrrpuv_max_smv = glGetUniformLocation(p_smoke,"hrrpuv_max_smv");
   GPU_hrrpuv_cutoff =  glGetUniformLocation(p_smoke,"hrrpuv_cutoff");
   GPU_fire_alpha =     glGetUniformLocation(p_smoke,"fire_alpha");
@@ -732,45 +658,44 @@ int SetSmokeShaders(){
 
   GPU_hrr =            glGetAttribLocation(p_smoke,"hrr");
   GPU_smokealpha =     glGetAttribLocation(p_smoke,"smoke_alpha");
-  return error_code;
-
+  return 1;
 }
 
 
 /* ------------------ Load3DSliceShaders ------------------------ */
 
 void Load3DSliceShaders(void){
-  glUseProgramObjectARB(p_3dslice);
+  glUseProgram(p_3dslice);
 }
 
 /* ------------------ LoadZoneSmokeShaders ------------------------ */
 
 void LoadZoneSmokeShaders(void){
-  glUseProgramObjectARB(p_zonesmoke);
+  glUseProgram(p_zonesmoke);
 }
 
 /* ------------------ LoadSmokeShaders ------------------------ */
 
 void LoadSmokeShaders(void){
-  glUseProgramObjectARB(p_smoke);
+  glUseProgram(p_smoke);
 }
 
 /* ------------------ LoadVolsmokeShaders ------------------------ */
 
 void LoadVolsmokeShaders(void){
-  glUseProgramObjectARB(p_volsmoke);
+  glUseProgram(p_volsmoke);
 }
 
 /* ------------------ UnloadShaders ------------------------ */
 
 void UnLoadShaders(void){
-  glUseProgramObjectARB(0);
+  glUseProgram(0);
 }
 
 /* ------------------ InitShaders ------------------------ */
 
 int InitShaders(void){
-  GLenum err;
+  GLenum err=0;
 
   gpuactive=0;
   usegpu=0;
@@ -783,61 +708,41 @@ int InitShaders(void){
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
     if(SetSmokeShaders()==1){
-#ifdef _DEBUG
-      PRINTF("   GPU smoke shader successfully compiled, linked and loaded.\n");
-#endif
-      gpuactive=1;
-      err=0;
+      PRINTF("   3D smoke shader successfully loaded.\n");
     }
     else{
-      PRINTF("   *** GPU smoke shader failed to load.\n");
-      usegpu=0;
+      PRINTF("   *** warning: smoke shader failed to load.\n");
       err=1;
     }
     if(SetVolSmokeShaders()==1){
-#ifdef _DEBUG
-      PRINTF("   GPU smoke Volume shader successfully compiled, linked and loaded.\n");
-#endif
-      gpuactive=1;
-      err=0;
+      PRINTF("   volume smoke shader successfully loaded.\n");
     }
     else{
-      PRINTF("   *** GPU smoke volume shader failed to load.\n");
-      usegpu=0;
+      PRINTF("   *** warning: volume smoke shader failed to load.\n");
       err=1;
     }
     if(Set3DSliceShaders()==1){
-#ifdef _DEBUG
-      PRINTF("   GPU 3d slice shader successfully compiled, linked and loaded.\n");
-#endif
-      gpuactive=1;
-      err=0;
+      PRINTF("   3D slice shader successfully loaded.\n");
     }
     else{
-      PRINTF("   *** GPU 3d slice shader failed to load.\n");
-      usegpu=0;
+      PRINTF("   *** warning: 3d slice shader failed to load.\n");
       err=1;
     }
     if(err==0){
       if(SetZoneSmokeShaders()==1){
-#ifdef _DEBUG
-        PRINTF("   GPU zone smoke shader successfully compiled, linked and loaded.\n");
-#endif
-        gpuactive=1;
-        err=0;
+        PRINTF("   zone smoke shader successfully loaded.\n");
       }
       else{
-        PRINTF("   *** GPU zone smoke shader failed to load.\n");
-        usegpu=0;
+        PRINTF("   *** warning: zone smoke shader failed to load.\n");
         err=1;
       }
     }
   }
   else{
-    PRINTF("   *** GPU smoke shader not supported.\n");
-    usegpu=0;
+    PRINTF("   *** GPU not supported.\n");
     err=1;
   }
+  if(err==0)gpuactive=1;
   return err;
 }
 
