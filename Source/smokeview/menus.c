@@ -10402,6 +10402,9 @@ updatemenu=0;
 
       CREATEMENU(loadunloadmenu,LoadUnloadMenu);
       strcpy(steplabel,_("error: steplabel not defined"));
+
+      // 3d smoke
+
       if(nsmoke3dinfo>0){
         strcpy(loadmenulabel,_("3D smoke"));
         if(smoke3dframeskip>0){
@@ -10410,16 +10413,44 @@ updatemenu=0;
         }
         glutAddSubMenu(loadmenulabel,loadsmoke3dmenu);
       }
+
+      // volume rendered smoke
+
       if(nvolrenderinfo>0&&smokediff==0){
         char vlabel[256];
 
         strcpy(vlabel,_("3D smoke (Volume rendered)"));
         glutAddSubMenu(vlabel,loadvolsmoke3dmenu);
       }
+
+      // terrain
+
       if(manual_terrain==1&&nterraininfo>0){
         glutAddSubMenu(_("Terrain"),loadterrainmenu);
       }
-       if(nvsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
+
+      // slice
+
+      if (nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo) {
+        strcpy(loadmenulabel, _("Slice"));
+        if (sliceframeskip > 0) {
+          sprintf(steplabel, "/Skip %i", sliceframeskip);
+          strcat(loadmenulabel, steplabel);
+        }
+        glutAddSubMenu(loadmenulabel, loadmultislicemenu);
+      }
+      else if (nsliceinfo > 0) {
+        strcpy(loadmenulabel, "Slice");
+        if (sliceframeskip > 0) {
+          sprintf(steplabel, "/Skip %i", sliceframeskip);
+          strcat(loadmenulabel, steplabel);
+        }
+        glutAddSubMenu(loadmenulabel, loadslicemenu);
+      }
+
+      // vector slice
+
+      if (nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo) {
         strcpy(loadmenulabel,_("Vector Slice"));
         if(sliceframeskip>0){
           sprintf(steplabel,"/Skip %i",sliceframeskip);
@@ -10438,22 +10469,8 @@ updatemenu=0;
         }
         glutAddSubMenu(loadmenulabel,vsliceloadmenu);
       }
-      if(nmultisliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
-        strcpy(loadmenulabel,_("Slice"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadmultislicemenu);
-      }
-      else if(nsliceinfo>0){
-        strcpy(loadmenulabel,"Slice");
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
-          strcat(loadmenulabel,steplabel);
-        }
-        glutAddSubMenu(loadmenulabel,loadslicemenu);
-      }
+
+      // isosurface
 
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface");
@@ -10463,6 +10480,9 @@ updatemenu=0;
         }
         glutAddSubMenu(loadmenulabel,loadisomenu);
       }
+
+      // boundary
+
       if(npatchinfo>0){
         strcpy(loadmenulabel,"Boundary");
         if(boundframeskip>0){
@@ -10471,6 +10491,9 @@ updatemenu=0;
         }
         glutAddSubMenu(loadmenulabel,loadpatchmenu);
       }
+
+      // particle
+
       if(npartinfo>0){
         if(nevac!=npartinfo){
           strcpy(loadmenulabel,"Particles");
@@ -10489,7 +10512,13 @@ updatemenu=0;
           glutAddSubMenu(loadmenulabel,evacmenu);
         }
       }
+
+      // plot3d
+
       if(nplot3dinfo>0)glutAddSubMenu("Plot3d",loadplot3dmenu);
+
+      // zone fire
+
       if(nzoneinfo>0){
         strcpy(loadmenulabel,"Zone fire");
         glutAddSubMenu(loadmenulabel,zonemenu);
