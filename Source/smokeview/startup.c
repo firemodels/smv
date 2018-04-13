@@ -579,11 +579,11 @@ void InitOpenGL(void){
     }
 #ifdef _DEBUG
     if(err==0){
-      PRINTF("%s\n",_("   GPU shader initialization succeeded"));
+      PRINTF("%s\n",_("  GPU shader initialization succeeded"));
     }
 #endif
     if(err!=0){
-      PRINTF("%s\n",_("   GPU shader initialization failed"));
+      PRINTF("%s\n",_("  GPU shader initialization failed"));
     }
   }
 #endif
@@ -592,11 +592,11 @@ void InitOpenGL(void){
     err= InitCullExts();
 #ifdef _DEBUG
     if(err==0){
-      PRINTF("%s\n",_("   Culling extension initialization succeeded"));
+      PRINTF("%s\n",_("  Culling extension initialization succeeded"));
     }
 #endif
     if(err!=0){
-      PRINTF("%s\n",_("   Culling extension initialization failed"));
+      PRINTF("%s\n",_("  Culling extension initialization failed"));
     }
   }
 #endif
