@@ -41,7 +41,7 @@ int ShaderLinkStatus(GLuint program) {
 
 /* ------------------ ShaderCompileStatus ------------------------ */
 
-int ShaderCompileStatus(GLuint obj) {
+int ShaderCompileStatus(GLuint obj,char *label) {
   GLint isCompiled;
 
   glGetShaderiv(obj, GL_COMPILE_STATUS, &isCompiled);
@@ -55,6 +55,9 @@ int ShaderCompileStatus(GLuint obj) {
 
       NewMemory((void **)&infoLog, logLength);
       glGetShaderInfoLog(obj, logLength, &logLength, infoLog);
+      PRINTF("*****************\n");
+      PRINTF("%s\n", label);
+      PRINTF("*****************\n");
       PRINTF("%s\n", infoLog);
       FREEMEMORY(infoLog);
 #endif
@@ -159,15 +162,14 @@ int SetZoneSmokeShaders(){
   };
 
   vert_shader = glCreateShader(GL_VERTEX_SHADER);
-  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
   glCompileShader(vert_shader);
-  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(vert_shader,"zone vertex shader")==GL_FALSE)return 0;;
 
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
   glCompileShader(frag_shader);
-  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(frag_shader,"zone fragment shader")==GL_FALSE)return 0;;
 
   p_zonesmoke = glCreateProgram();
   glAttachShader(p_zonesmoke,vert_shader);
@@ -226,15 +228,14 @@ int Set3DSliceShaders(void){
   };
 
   vert_shader = glCreateShader(GL_VERTEX_SHADER);
-  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
   glCompileShader(vert_shader);
-  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(vert_shader,"3D slice vertex shader")==GL_FALSE)return 0;;
 
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
   glCompileShader(frag_shader);
-  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(frag_shader,"3D slice fragment shader")==GL_FALSE)return 0;;
 
   p_3dslice = glCreateProgram();
   glAttachShader(p_3dslice,vert_shader);
@@ -508,15 +509,14 @@ int SetVolSmokeShaders(){
   };
 
   vert_shader = glCreateShader(GL_VERTEX_SHADER);
-  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
   glCompileShader(vert_shader);
-  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(vert_shader,"volume vertex shader")==GL_FALSE)return 0;;
 
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
   glCompileShader(frag_shader);
-  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(frag_shader,"volume fragment shader")==GL_FALSE)return 0;;
 
   p_volsmoke = glCreateProgram();
   glAttachShader(p_volsmoke,vert_shader);
@@ -638,15 +638,14 @@ int SetSmokeShaders(){
 };
 
   vert_shader = glCreateShader(GL_VERTEX_SHADER);
-  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
   glShaderSource(vert_shader,1, VertexShaderSource,NULL);
   glCompileShader(vert_shader);
-  if(ShaderCompileStatus(vert_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(vert_shader,"slice vertex shader")==GL_FALSE)return 0;;
 
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(frag_shader, 1, FragmentShaderSource,NULL);
   glCompileShader(frag_shader);
-  if(ShaderCompileStatus(frag_shader)==GL_FALSE)return 0;;
+  if(ShaderCompileStatus(frag_shader,"slice fragment shader")==GL_FALSE)return 0;;
 
   p_smoke = glCreateProgram();
   glAttachShader(p_smoke,vert_shader);
