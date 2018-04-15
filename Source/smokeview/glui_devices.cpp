@@ -372,9 +372,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show"), &viswindrose);
 
       PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &visxy_windrose);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xz"), &visxz_windrose);
-      glui_device->add_checkbox_to_panel(PANEL_orientation, _d("yz"), &visyz_windrose);
+      if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &windrose_xy_vis);
+      if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xz"), &windrose_xz_vis);
+      if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("yz"), &windrose_yz_vis);
 
       if(nztreedeviceinfo>0){
         int icheckboxes;

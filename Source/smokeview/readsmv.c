@@ -9119,6 +9119,7 @@ typedef struct {
 
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
+  radius_windrose = 0.2*xyzmaxdiff;
 
 #ifdef pp_CULL
 
@@ -9543,12 +9544,12 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose, &windstate_windrose, &showlabels_windrose);
+        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose);
       viswindrose         = CLAMP(viswindrose, 0, 1);
       showref_windrose    = CLAMP(showref_windrose, 0, 1);
-      visxy_windrose      = CLAMP(visxy_windrose, 0, 1);
-      visxz_windrose      = CLAMP(visxz_windrose, 0, 1);
-      visyz_windrose      = CLAMP(visyz_windrose, 0, 1);
+      windrose_xy_vis      = CLAMP(windrose_xy_vis, 0, 1);
+      windrose_xz_vis      = CLAMP(windrose_xz_vis, 0, 1);
+      windrose_yz_vis      = CLAMP(windrose_yz_vis, 0, 1);
       windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
 
@@ -13339,7 +13340,7 @@ void WriteIni(int flag,char *filename){
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose, windstate_windrose, showlabels_windrose);
+    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose);
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     if(nwindrose_showhide > 0){

@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(windrose_xy_active, 0), SVDECL(windrose_xz_active, 0), SVDECL(windrose_yz_active, 0);
 SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 0);
 SVEXTERN int glui_fire_alpha, glui_co2_alpha;
@@ -235,7 +236,7 @@ SVEXTERN float northangle_position[3];
 SVEXTERN float SVDECL(northangle, 0.0);
 SVEXTERN int SVDECL(vis_northangle, 0), SVDECL(have_northangle,0);
 
-SVEXTERN int SVDECL(viswindrose, 0), SVDECL(visxy_windrose, 1), SVDECL(visxz_windrose, 0), SVDECL(visyz_windrose, 0);
+SVEXTERN int SVDECL(viswindrose, 0), SVDECL(windrose_xy_vis, 1), SVDECL(windrose_xz_vis, 0), SVDECL(windrose_yz_vis, 0);
 SVEXTERN int SVDECL(nr_windrose, 8), SVDECL(ntheta_windrose, 12);
 SVEXTERN float SVDECL(radius_windrose, 1.0),SVDECL(maxr_windrose,0.0);
 SVEXTERN int SVDECL(scale_increment_windrose, 5), SVDECL(scale_max_windrose, 25);

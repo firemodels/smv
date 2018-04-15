@@ -715,9 +715,9 @@ void DrawWindRosesDevices(void){
     vdevi = vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
     wr = &vdevi->windroseinfo;
-    if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
-    if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
-    if(visyz_windrose == 1)DrawWindRose(wr, WINDROSE_YZ);
+    if(windrose_xy_vis == 1)DrawWindRose(wr, WINDROSE_XY);
+    if(windrose_xz_vis == 1)DrawWindRose(wr, WINDROSE_XZ);
+    if(windrose_yz_vis == 1)DrawWindRose(wr, WINDROSE_YZ);
   }
 }
 
@@ -6146,6 +6146,10 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       if(wdev != NULL)nvals = MIN(nvals, wdev->nvals);
       windrosei->xyz = udev->xyz;
 
+      if (udev != NULL&&vdev != NULL)windrose_xy_active = 1;
+      if (udev != NULL&&wdev != NULL)windrose_xz_active = 1;
+      if (vdev != NULL&&wdev != NULL)windrose_yz_active = 1;
+
       for(j = 0;j < 3;j++){
         float *uvals, *vvals;
 
@@ -6181,6 +6185,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       histogramdata *histogram;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
+      windrose_xy_active = 1;
 
       windrosei->xyz = angledev->xyz;
       histogram = windrosei->histogram;
