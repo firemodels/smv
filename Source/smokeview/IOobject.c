@@ -588,7 +588,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(xyz[0], xyz[1], xyz[2]);
+  glTranslatef(xyz[0]-xbar0ORIG, xyz[1]-ybar0ORIG, xyz[2]-zbar0ORIG);
 
   dtheta = DEG2RAD*360.0/(float)(hist->ntheta+1);
   glBegin(GL_TRIANGLES);
@@ -715,9 +715,9 @@ void DrawWindRosesDevices(void){
     vdevi = vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
     wr = &vdevi->windroseinfo;
-    if(visxy_windrose == 1)DrawWindRose(wr, WINDROSE_XY);
-    if(visxz_windrose == 1)DrawWindRose(wr, WINDROSE_XZ);
-    if(visyz_windrose == 1)DrawWindRose(wr, WINDROSE_YZ);
+    if(windrose_xy_vis == 1)DrawWindRose(wr, WINDROSE_XY);
+    if(windrose_xz_vis == 1)DrawWindRose(wr, WINDROSE_XZ);
+    if(windrose_yz_vis == 1)DrawWindRose(wr, WINDROSE_YZ);
   }
 }
 
@@ -5779,6 +5779,8 @@ void SetupTreeDevices(void){
         if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
         if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
         if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+        if(xyz == NULL&&vd->angledev != NULL)xyz = vd->angledev->xyz;
+        if(xyz == NULL&&vd->veldev != NULL)xyz = vd->veldev->xyz;
         if(xyz!=NULL){
           treei->xyz = xyz;
           nz++;
@@ -5795,7 +5797,6 @@ void SetupTreeDevices(void){
   for(i = 0; i<ntreedeviceinfo; i++){
     int j, nz;
     vdevicedata *vd;
-    float *xyz;
 
     treei = treedeviceinfo+i;
     nz = 0;
@@ -5806,11 +5807,9 @@ void SetupTreeDevices(void){
       if(vdevsorti->dir==ZDIR){
         vd = vdevsorti->vdeviceinfo;
         if(vd->unique==0)continue;
-        xyz = NULL;
-        if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
-        if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
-        if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
-        if(xyz!=NULL)nz++;
+        if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
+           vd->angledev == NULL&&vd->veldev == NULL)continue;
+        nz++;
       }
     }
     if(nz>0)ztreedeviceinfo[nztreedeviceinfo++] = treei;
@@ -6146,6 +6145,10 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       if(wdev != NULL)nvals = MIN(nvals, wdev->nvals);
       windrosei->xyz = udev->xyz;
 
+      if (udev != NULL&&vdev != NULL)windrose_xy_active = 1;
+      if (udev != NULL&&wdev != NULL)windrose_xz_active = 1;
+      if (vdev != NULL&&wdev != NULL)windrose_yz_active = 1;
+
       for(j = 0;j < 3;j++){
         float *uvals, *vvals;
 
@@ -6181,6 +6184,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       histogramdata *histogram;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
+      windrose_xy_active = 1;
 
       windrosei->xyz = angledev->xyz;
       histogram = windrosei->histogram;
