@@ -19,6 +19,8 @@
 #define DEVICE_SHOWBEAM 6
 #define DEVICE_RADIUS 7
 #define WINDROSE_SHOWHIDEALL 1000
+#define WINDROSE_SHOW_FIRST 1001
+#define WINDROSE_SHOW_NEXT 1002
 
 #define OPEN_UP 0
 #define OPEN_DOWN 1
@@ -74,6 +76,7 @@ GLUI_Panel *PANEL_beam=NULL;
 GLUI_Panel *PANEL_orientation=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_show_windrose = NULL;
+GLUI_Panel *PANEL_show_windrose2 = NULL;
 
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
@@ -100,6 +103,8 @@ GLUI_Spinner *SPINNER_ntheta_windrose = NULL;
 GLUI_Spinner *SPINNER_radius_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
+GLUI_Spinner *SPINNER_windrose_first=NULL;
+GLUI_Spinner *SPINNER_windrose_next=NULL;
 
 #define OBJECTS_ROLLOUT     0
 #define FLOWVECTORS_ROLLOUT 1
@@ -129,15 +134,13 @@ extern "C" void UpdateWindRoseDevices(int option){
     for(j = treei->first; j<=treei->last; j++){
       vdevicesortdata *vdevsorti;
       vdevicedata *vd;
-      float *xyz;
 
       vdevsorti = vdevices_sorted+j;
       vd = vdevsorti->vdeviceinfo;
-      xyz = NULL;
-      if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
-      if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
-      if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
-      if(xyz!=NULL&&vdevsorti->dir == ZDIR&&vd->unique != 0){
+      if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
+         vd->angledev == NULL&&vd->veldev == NULL)continue;
+
+      if(vdevsorti->dir == ZDIR&&vd->unique != 0){
 
       // when reading ini file
         if(option==UPDATE_WINDROSE_DEVICE&&windrose_showhide!=NULL){
@@ -185,12 +188,71 @@ extern "C" void UpdateDeviceOrientation(void){
   if(CHECKBOX_device_orientation!=NULL)CHECKBOX_device_orientation->set_int_val(show_device_orientation);
 }
 
+/* ------------------ UpdateShowWindRoses ------------------------ */
+
+void UpdateShowWindRoses(void) {
+  int i;
+  int icheckbox;
+
+  icheckbox=0;
+  for (i = 0; i < nztreedeviceinfo; i++) {
+    treedevicedata *treei;
+    int j;
+    int idev;
+
+    treei = ztreedeviceinfo[i];
+
+    idev = 0;
+    for (j = treei->first; j <= treei->last; j++) {
+      vdevicesortdata *vdevsorti;
+      vdevicedata *vd;
+
+      vdevsorti = vdevices_sorted + j;
+      vd = vdevsorti->vdeviceinfo;
+      if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
+         vd->angledev == NULL&&vd->veldev == NULL)continue;
+
+      if(vdevsorti->dir == ZDIR&&vd->unique != 0) {
+        int kk, idev_hat;
+        //idev = istart + k*iskip
+        kk = (idev-windrose_first)/windrose_next;
+        idev_hat = windrose_first + kk*windrose_next;
+        if(kk>=0&&idev==idev_hat){
+          vd->display = 1;
+        }
+        else {
+          vd->display = 0;
+        }
+        CHECKBOX_show_windrose[icheckbox]->set_int_val(vd->display);
+        idev++;
+        icheckbox++;
+      }
+    }
+  }
+}
+
 /* ------------------ DeviceCB ------------------------ */
 
 void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
+  if(var == WINDROSE_SHOW_FIRST){
+    if(windrose_first<0){
+      windrose_first=0;
+      SPINNER_windrose_first->set_int_val(windrose_first);
+    }
+    UpdateShowWindRoses();
+    return;
+  }
+  if(var == WINDROSE_SHOW_NEXT){
+    if(windrose_next<1){
+      windrose_first=1;
+      SPINNER_windrose_next->set_int_val(windrose_next);
+    }
+    UpdateShowWindRoses();
+    return;
+  }
   if(var>=WINDROSE_SHOWHIDEALL&&var<WINDROSE_SHOWHIDEALL+nztreedeviceinfo){
     int iztree, j;
     treedevicedata *treei;
@@ -369,7 +431,10 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
-      glui_device->add_checkbox_to_panel(PANEL_show_windrose, _d("show"), &viswindrose);
+      PANEL_show_windrose2 = glui_device->add_panel_to_panel(PANEL_show_windrose, "", true);
+      glui_device->add_checkbox_to_panel(PANEL_show_windrose2, _d("show"), &viswindrose);
+      SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
+      SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
 
       PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
       if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &windrose_xy_vis);
@@ -390,15 +455,12 @@ extern "C" void GluiDeviceSetup(int main_window){
           for(j = treei->first; j <= treei->last; j++){
             vdevicesortdata *vdevsorti;
             vdevicedata *vd;
-            float *xyz;
 
             vdevsorti = vdevices_sorted + j;
             vd = vdevsorti->vdeviceinfo;
-            xyz = NULL;
-            if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
-            if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
-            if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
-            if(xyz!=NULL&&vdevsorti->dir == ZDIR&&vd->unique != 0)nwindrose_checkboxes++;
+            if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
+               vd->angledev == NULL&&vd->veldev == NULL)continue;
+            if(vdevsorti->dir == ZDIR&&vd->unique != 0)nwindrose_checkboxes++;
           }
         }
         NewMemory((void **)&CHECKBOX_show_windrose, nwindrose_checkboxes*sizeof(GLUI_Checkbox *));
@@ -436,6 +498,8 @@ extern "C" void GluiDeviceSetup(int main_window){
             if(xyz==NULL&&vd->udev!=NULL)xyz = vd->udev->xyz;
             if(xyz==NULL&&vd->vdev!=NULL)xyz = vd->vdev->xyz;
             if(xyz==NULL&&vd->wdev!=NULL)xyz = vd->wdev->xyz;
+            if(xyz==NULL&&vd->veldev!=NULL)xyz = vd->veldev->xyz;
+            if(xyz==NULL&&vd->angledev!=NULL)xyz = vd->angledev->xyz;
             if(xyz!=NULL&&vdevsorti->dir==ZDIR&&vd->unique!=0){
               char zlabel[256];
 
