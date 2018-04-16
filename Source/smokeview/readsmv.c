@@ -9543,8 +9543,9 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose);
+      sscanf(buffer," %i %i %i %i %i %i %i %i %i",
+        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose,
+        &windrose_first,&windrose_next);
       viswindrose         = CLAMP(viswindrose, 0, 1);
       showref_windrose    = CLAMP(showref_windrose, 0, 1);
       windrose_xy_vis      = CLAMP(windrose_xy_vis, 0, 1);
@@ -9552,6 +9553,8 @@ int ReadIni2(char *inifile, int localfile){
       windrose_yz_vis      = CLAMP(windrose_yz_vis, 0, 1);
       windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
+      if(windrose_first < 0)windrose_first = 0;
+      if(windrose_next < 1)windrose_next = 1;
 
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
@@ -13339,8 +13342,9 @@ void WriteIni(int flag,char *filename){
     global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose);
+  fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
+    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
+    windrose_first,windrose_next);
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     if(nwindrose_showhide > 0){
