@@ -946,7 +946,8 @@ typedef struct _windrosedata {
 
 typedef struct _vdevicedata {
   int unique, filetype, display;
-  windrosedata windroseinfo;
+  int nwindroseinfo;
+  windrosedata *windroseinfo;
   devicedata *udev,*vdev,*wdev,*valdev,*colordev,*veldev,*angledev,*sd_veldev,*sd_angledev;
 } vdevicedata;
 

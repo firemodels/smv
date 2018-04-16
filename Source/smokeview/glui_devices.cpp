@@ -21,6 +21,7 @@
 #define WINDROSE_SHOWHIDEALL 1000
 #define WINDROSE_SHOW_FIRST 1001
 #define WINDROSE_SHOW_NEXT 1002
+#define WINDROSE_DXYZT 1003
 
 #define OPEN_UP 0
 #define OPEN_DOWN 1
@@ -77,7 +78,9 @@ GLUI_Panel *PANEL_orientation=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_show_windrose = NULL;
 GLUI_Panel *PANEL_show_windrose2 = NULL;
+GLUI_Panel *PANEL_windrose_merge = NULL;
 
+GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
@@ -93,6 +96,7 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_show_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
+GLUI_Spinner *SPINNER_windrose_merge_dxyzt[4];
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
 GLUI_Spinner *SPINNER_beam_line_width = NULL;
@@ -237,6 +241,16 @@ void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
+  if(var == WINDROSE_DXYZT){
+    for(i=0;i<4;i++){
+      if(windrose_merge_dxyzt[i]<0.0){
+        windrose_merge_dxyzt[i]=0.0;
+        SPINNER_windrose_merge_dxyzt[i]->set_float_val(windrose_merge_dxyzt[i]);
+      }
+    }
+    DeviceData2WindRose(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    return;
+  }
   if(var == WINDROSE_SHOW_FIRST){
     if(windrose_first<0){
       windrose_first=0;
@@ -435,6 +449,17 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_checkbox_to_panel(PANEL_show_windrose2, _d("show"), &viswindrose);
       SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
       SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
+
+      SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dx"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dy"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dz"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dt"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
+
+      PANEL_windrose_merge = glui_device->add_panel_to_panel(PANEL_show_windrose, "merge type", true);
+      RADIO_windrose_merge_type=glui_device->add_radiogroup_to_panel(PANEL_windrose_merge,&windrose_merge_type,WINDROSE_DXYZT, DeviceCB);
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"none");
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"stepped");
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"sliding");
 
       PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
       if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &windrose_xy_vis);

@@ -9541,6 +9541,17 @@ int ReadIni2(char *inifile, int localfile){
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
+    if(Match(buffer, "WINDROSEMERGE")==1){
+      float *xyzt;
+
+      xyzt = windrose_merge_dxyzt;
+      fgets(buffer, 255, stream);
+      sscanf(buffer," %i %f %f %f %f",&windrose_merge_type,xyzt,xyzt+1,xyzt+2,xyzt+3);
+      xyzt[0]=MAX(xyzt[0],0.0);
+      xyzt[1]=MAX(xyzt[1],0.0);
+      xyzt[2]=MAX(xyzt[2],0.0);
+      xyzt[3]=MAX(xyzt[3],0.0);
+    }
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %i %i %i %i %i %i",
@@ -13359,6 +13370,13 @@ void WriteIni(int flag,char *filename){
       }
       fprintf(fileout, "\n");
     }
+  }
+  {
+    float *xyzt;
+
+    xyzt = windrose_merge_dxyzt;
+    fprintf(fileout, "WINDROSEMERGE\n");
+    fprintf(fileout, " %i %f %f %f %f\n",windrose_merge_type,xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
   }
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);

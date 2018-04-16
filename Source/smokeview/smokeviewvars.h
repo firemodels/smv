@@ -20,8 +20,15 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef INMAIN
+  SVEXTERN float windrose_merge_dxyzt[4] = { 0.0,0.0,0.0,0.0 };
+#else
+  SVEXTERN float windrose_merge_dxyzt[4];
+#endif
+SVEXTERN int SVDECL(windrose_merge_type,WINDROSE_POINT);
 SVEXTERN int SVDECL(windrose_first, 0), SVDECL(windrose_next, 1);
 SVEXTERN int SVDECL(windrose_xy_active, 0), SVDECL(windrose_xz_active, 0), SVDECL(windrose_yz_active, 0);
+
 SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 0);
 SVEXTERN int glui_fire_alpha, glui_co2_alpha;
