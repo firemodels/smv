@@ -8041,6 +8041,7 @@ typedef struct {
       int blocknumber;
       slicedata *sd;
       size_t len;
+      int read_slice_header=0;
 
       if(setup_only == 1)continue;
 
@@ -8052,7 +8053,10 @@ typedef struct {
       }
 
       sliceparms=strchr(buffer,'&');
-      if(sliceparms!=NULL){
+      if(sliceparms==NULL){
+        read_slice_header=1;
+      }
+      else{
         sliceparms++;
         sliceparms[-1]=0;
         sscanf(sliceparms,"%i %i %i %i %i %i",&ii1,&ii2,&jj1,&jj2,&kk1,&kk2);
@@ -8214,7 +8218,11 @@ typedef struct {
         NewMemory((void **)&sd->slicelabel,lenslicelabel);
         strcpy(sd->slicelabel,slicelabel);
       }
-#ifdef pp_SLICELOAD
+      if(read_slice_header==1){
+        int error;
+
+        FORTgetsliceheader(sd->file,&ii1,&ii2,&jj1,&jj2,&kk1,&kk2,&error,strlen(sd->file));
+      }
       sd->is1=ii1;
       sd->is2=ii2;
       sd->js1=jj1;
@@ -8227,30 +8235,6 @@ typedef struct {
       sd->ijk_max[1] = jj2;
       sd->ijk_min[2] = kk1;
       sd->ijk_max[2] = kk2;
-#else
-      sd->is1=i1;
-      sd->is2=i2;
-      sd->js1=j1;
-      sd->js2=j2;
-      sd->ks1=k1;
-      sd->ks2=k2;
-      if(ii1>=0){
-        sd->ijk_min[0] = ii1;
-        sd->ijk_max[0] = ii2;
-        sd->ijk_min[1] = jj1;
-        sd->ijk_max[1] = jj2;
-        sd->ijk_min[2] = kk1;
-        sd->ijk_max[2] = kk2;
-      }
-      else{
-        sd->ijk_min[0] = i1;
-        sd->ijk_max[0] = i2;
-        sd->ijk_min[1] = j1;
-        sd->ijk_max[1] = j2;
-        sd->ijk_min[2] = k1;
-        sd->ijk_max[2] = k2;
-      }
-#endif
       sd->is_fed=0;
       sd->above_ground_level=above_ground_level;
       sd->seq_id=nn_slice;
@@ -9541,10 +9525,22 @@ int ReadIni2(char *inifile, int localfile){
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
+    if(Match(buffer, "WINDROSEMERGE")==1){
+      float *xyzt;
+
+      xyzt = windrose_merge_dxyzt;
+      fgets(buffer, 255, stream);
+      sscanf(buffer," %i %f %f %f %f",&windrose_merge_type,xyzt,xyzt+1,xyzt+2,xyzt+3);
+      xyzt[0]=MAX(xyzt[0],0.0);
+      xyzt[1]=MAX(xyzt[1],0.0);
+      xyzt[2]=MAX(xyzt[2],0.0);
+      xyzt[3]=MAX(xyzt[3],0.0);
+    }
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose);
+      sscanf(buffer," %i %i %i %i %i %i %i %i %i",
+        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose,
+        &windrose_first,&windrose_next);
       viswindrose         = CLAMP(viswindrose, 0, 1);
       showref_windrose    = CLAMP(showref_windrose, 0, 1);
       windrose_xy_vis      = CLAMP(windrose_xy_vis, 0, 1);
@@ -9552,6 +9548,8 @@ int ReadIni2(char *inifile, int localfile){
       windrose_yz_vis      = CLAMP(windrose_yz_vis, 0, 1);
       windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
+      if(windrose_first < 0)windrose_first = 0;
+      if(windrose_next < 1)windrose_next = 1;
 
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
@@ -13339,8 +13337,9 @@ void WriteIni(int flag,char *filename){
     global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose);
+  fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
+    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
+    windrose_first,windrose_next);
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     if(nwindrose_showhide > 0){
@@ -13355,6 +13354,13 @@ void WriteIni(int flag,char *filename){
       }
       fprintf(fileout, "\n");
     }
+  }
+  {
+    float *xyzt;
+
+    xyzt = windrose_merge_dxyzt;
+    fprintf(fileout, "WINDROSEMERGE\n");
+    fprintf(fileout, " %i %f %f %f %f\n",windrose_merge_type,xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
   }
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);
