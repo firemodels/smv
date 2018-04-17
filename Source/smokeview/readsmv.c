@@ -8041,6 +8041,7 @@ typedef struct {
       int blocknumber;
       slicedata *sd;
       size_t len;
+      int read_slice_header=0;
 
       if(setup_only == 1)continue;
 
@@ -8052,7 +8053,10 @@ typedef struct {
       }
 
       sliceparms=strchr(buffer,'&');
-      if(sliceparms!=NULL){
+      if(sliceparms==NULL){
+        read_slice_header=1;
+      }
+      else{
         sliceparms++;
         sliceparms[-1]=0;
         sscanf(sliceparms,"%i %i %i %i %i %i",&ii1,&ii2,&jj1,&jj2,&kk1,&kk2);
@@ -8213,6 +8217,11 @@ typedef struct {
         lenslicelabel=strlen(slicelabel)+1;
         NewMemory((void **)&sd->slicelabel,lenslicelabel);
         strcpy(sd->slicelabel,slicelabel);
+      }
+      if(read_slice_header==1){
+        int error;
+
+        FORTgetsliceheader(sd->file,&ii1,&ii2,&jj1,&jj2,&kk1,&kk2,&error,strlen(sd->file));
       }
 #ifdef pp_SLICELOAD
       sd->is1=ii1;
