@@ -175,9 +175,7 @@ void Usage(char *prog,int option){
 #ifdef pp_SHOWTERRAIN
     strcat(label, ", pp_SHOWTERRAIN");
 #endif
-#ifdef pp_SLICELOAD
     strcat(label, ", pp_SLICELOAD");
-#endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
 #endif

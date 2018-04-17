@@ -2608,14 +2608,8 @@ void UpdateSliceDirCount(void){
 
 void GetSliceParams(void){
   int i;
-#ifndef pp_SLICELOAD
-  char *file;
-#endif
   int error;
 
-#ifndef pp_SLICELOAD
-  FILE_SIZE  lenfile;
-#endif
   int build_cache=0;
   FILE *stream;
 
@@ -2642,10 +2636,6 @@ void GetSliceParams(void){
     }
 #endif
 
-#ifndef pp_SLICELOAD
-    file = sd->file;
-    lenfile = strlen(file);
-#endif
     if(sd->compression_type==UNCOMPRESSED){
       int doit_anyway;
 
@@ -2665,9 +2655,7 @@ void GetSliceParams(void){
         error=0;
       }
       if(build_cache==1||stream==NULL||doit_anyway==1){
-#ifdef pp_SLICELOAD
         int idir, joff, koff, volslice;
-#endif
 
         is1=sd->is1;
         is2=sd->is2;
@@ -2675,7 +2663,6 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-#ifdef pp_SLICELOAD
         FORTgetslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
         if(volslice == 1){
           is1 = iis1;
@@ -2686,14 +2673,6 @@ void GetSliceParams(void){
         nk = ks2+1-ks1;
         sd->volslice = volslice;
         error = 0;
-#else
-        ni = is2+1-is1;
-        nj = js2+1-js1;
-        nk = ks2+1-ks1;
-        sd->volslice = 0;
-        if(is1<=0||is2<0||js1<0||js2<0||ks1<0||ks2<0)FORTgetsliceparms(file,
-          &is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&sd->volslice,&error,lenfile);
-#endif
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
       }
     }
