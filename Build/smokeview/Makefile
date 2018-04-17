@@ -244,7 +244,7 @@ intel_linux_64_db : $(obj)
 # ------------- gnu_linux_64_db ----------------
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO)
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -259,7 +259,7 @@ gnu_linux_64_db : $(obj)
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : LIBS_PLAT =
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 ifeq ($(LUA_SCRIPTING),true)
 gnu_linux_64 : CFLAGS    += -D pp_LUA
 gnu_linux_64 : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
