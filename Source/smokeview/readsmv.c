@@ -9128,6 +9128,7 @@ typedef struct {
 
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
+  radius_windrose = 0.2*xyzmaxdiff;
 
 #ifdef pp_CULL
 
@@ -9549,17 +9550,31 @@ int ReadIni2(char *inifile, int localfile){
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
+    if(Match(buffer, "WINDROSEMERGE")==1){
+      float *xyzt;
+
+      xyzt = windrose_merge_dxyzt;
+      fgets(buffer, 255, stream);
+      sscanf(buffer," %i %f %f %f %f",&windrose_merge_type,xyzt,xyzt+1,xyzt+2,xyzt+3);
+      xyzt[0]=MAX(xyzt[0],0.0);
+      xyzt[1]=MAX(xyzt[1],0.0);
+      xyzt[2]=MAX(xyzt[2],0.0);
+      xyzt[3]=MAX(xyzt[3],0.0);
+    }
     if(Match(buffer, "WINDROSEDEVICE")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %i %i %i %i",
-        &viswindrose, &showref_windrose, &visxy_windrose, &visxz_windrose, &visyz_windrose, &windstate_windrose, &showlabels_windrose);
+      sscanf(buffer," %i %i %i %i %i %i %i %i %i",
+        &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose,
+        &windrose_first,&windrose_next);
       viswindrose         = CLAMP(viswindrose, 0, 1);
       showref_windrose    = CLAMP(showref_windrose, 0, 1);
-      visxy_windrose      = CLAMP(visxy_windrose, 0, 1);
-      visxz_windrose      = CLAMP(visxz_windrose, 0, 1);
-      visyz_windrose      = CLAMP(visyz_windrose, 0, 1);
+      windrose_xy_vis      = CLAMP(windrose_xy_vis, 0, 1);
+      windrose_xz_vis      = CLAMP(windrose_xz_vis, 0, 1);
+      windrose_yz_vis      = CLAMP(windrose_yz_vis, 0, 1);
       windstate_windrose  = CLAMP(windstate_windrose, 0, 1);
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
+      if(windrose_first < 0)windrose_first = 0;
+      if(windrose_next < 1)windrose_next = 1;
 
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
@@ -13347,8 +13362,9 @@ void WriteIni(int flag,char *filename){
     global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
     );
   fprintf(fileout, "WINDROSEDEVICE\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n",
-    viswindrose, showref_windrose, visxy_windrose, visxz_windrose, visyz_windrose, windstate_windrose, showlabels_windrose);
+  fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
+    viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
+    windrose_first,windrose_next);
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
     if(nwindrose_showhide > 0){
@@ -13363,6 +13379,13 @@ void WriteIni(int flag,char *filename){
       }
       fprintf(fileout, "\n");
     }
+  }
+  {
+    float *xyzt;
+
+    xyzt = windrose_merge_dxyzt;
+    fprintf(fileout, "WINDROSEMERGE\n");
+    fprintf(fileout, " %i %f %f %f %f\n",windrose_merge_type,xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
   }
   fprintf(fileout, "ZOOM\n");
   fprintf(fileout, " %i %f\n", zoomindex, zoom);
