@@ -6242,7 +6242,7 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         for (j = 0; j < nvdeviceinfo; j++) {
           vdevicedata *vdevicej;
           devicedata *angledevj, *veldevj;
-          float *xyzj, rminj, rmaxj;
+          float *xyzj;
 
           vdevicej = vdeviceinfo + j;
           angledevj = vdevicej->angledev;
