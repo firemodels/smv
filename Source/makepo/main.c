@@ -46,7 +46,6 @@ int main(int argc, char **argv){
     return 0;
   }
 
-  //stream=fopen("menus.c","r");
   stream=stdin;
   prog=argv[0];
   ParseCommonOptions(argc, argv);
