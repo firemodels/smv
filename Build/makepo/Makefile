@@ -60,7 +60,7 @@ no_target:
 # ------------- Win 64 ----------------
 #  64 bit windows
 
-intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB
+intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D pp_INTEL -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
