@@ -73,7 +73,7 @@ intel_win_64 : $(objwin)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
 intel_linux_64 : exe       = mergepo_linux_64
@@ -81,14 +81,14 @@ intel_linux_64 : exe       = mergepo_linux_64
 intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- Linux 64 debug ----------------
-#  64 bit linux debug
+# ------------- gcc Linux 64 ----------------
+#  #  64 bit linux
 
-intel_linux_64_db : CFLAGS    =  -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64_db : LFLAGS    = -m64 -static-intel -traceback
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icc
-intel_linux_64_db : exe       = mergepo_linux_64_db
+gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gcc_linux_64 : CC        = gcc
+gcc_linux_64 : CPP       = g++
+gcc_linux_64 : exe       = mergepo_linux_64
 
-intel_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+gcc_linux_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
