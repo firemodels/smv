@@ -6,11 +6,31 @@ FILTERF =
 VPATH = $(SOURCE_DIR)/mergepo:$(SOURCE_DIR)/shared
 bin = .
 
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
+else
+  GIT_HASH := $(shell git describe --long --dirty)
+  GIT_DATE := $(shell git log -1 --format=%cd)
+endif
+GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
+else
+  INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
+  GNU_COMPVERSION := $(shell ../../../Utilities/Scripts/gnu_compversion.sh)
+endif
+INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
+GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
+
+
 LINUX64FORTLIBDIR = $(IFORT_COMPILER)/lib/intel64
 
 # Definition of the object variables
 
-obj = main.o dmalloc.o assert.o file_util.o translate.o string_util.o
+obj = main.o dmalloc.o assert.o file_util.o translate.o string_util.o md5.o sha1.o sha256.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -53,7 +73,7 @@ intel_win_64 : $(objwin)
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX64
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
 intel_linux_64 : exe       = mergepo_linux_64
@@ -64,7 +84,7 @@ intel_linux_64 : $(obj)
 # ------------- Linux 64 debug ----------------
 #  64 bit linux debug
 
-intel_linux_64_db : CFLAGS    =  -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable
+intel_linux_64_db : CFLAGS    =  -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel -traceback
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
