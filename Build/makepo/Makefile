@@ -93,6 +93,18 @@ gcc_linux_64 : exe       = makepo_linux_64
 gcc_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) 
 
+# ------------- OSX 64 ----------------
+#  64 bit OSX
+
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : LFLAGS    = -lpthread
+intel_osx_64 : CC        = icc
+intel_osx_64 : CPP       = icc
+intel_osx_64 : exe       = makepo_osx_64
+
+intel_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
 
 #-------------- Clean Target to remove Object and Module files -----------
 
