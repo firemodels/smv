@@ -92,3 +92,24 @@ gcc_linux_64 : exe       = mergepo_linux_64
 gcc_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
+# ------------- OSX 64 ----------------
+#  64 bit linux
+
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CC        = icc
+intel_osx_64 : CPP       = icc
+intel_osx_64 : exe       = mergepo_osx_64
+
+intel_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
+# ------------- gcc Linux 64 ----------------
+#  #  64 bit linux
+
+gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gcc_osx_64 : CC        = gcc
+gcc_osx_64 : CPP       = g++
+gcc_osx_64 : exe       = mergepo_osx_64
+
+gcc_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
