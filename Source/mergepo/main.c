@@ -38,10 +38,6 @@ int main(int argc, char **argv){
 
   initMALLOC();
   SetStdOut(stdout);
-  if(argc == 1){
-    Usage("mergeo",HELP_ALL);
-    return 0;
-  }
 
   prog=argv[0];
   ParseCommonOptions(argc, argv);
@@ -132,14 +128,3 @@ int main(int argc, char **argv){
     }
   }
 }
-
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
-  printf("%s smokeview_template.po smokeview_xx.po\n",prog);
-  printf("Merge two .po files, typically smokeview_template.po with smokeview_xx.po\n");
-  printf("where xx is the language being translated.\n");
-  printf("\n");
-  printf("The updated .po files is output to stdout\n");
-}
-

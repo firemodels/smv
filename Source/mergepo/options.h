@@ -7,8 +7,6 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-#define pp_HASH
-
 //*** define mergepo title
 
 #ifdef pp_BETA
