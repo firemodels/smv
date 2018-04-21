@@ -42,10 +42,6 @@ int main(int argc, char **argv){
 
   initMALLOC();
   SetStdOut(stdout);
-  if(argc == 1){
-    Usage("makepo",HELP_ALL);
-    return 0;
-  }
 
   stream=stdin;
   prog=argv[0];
