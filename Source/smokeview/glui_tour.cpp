@@ -247,13 +247,13 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_button_to_panel(PANEL_tournavigate,_("Insert after"),KEYFRAME_INSERT,TourCB);
 
   PANEL_tourpositionview = glui_tour->add_panel_to_panel(PANEL_pos,"",GLUI_PANEL_NONE);
-  PANEL_tourposition = glui_tour->add_panel_to_panel(PANEL_tourpositionview,"Position");
+  PANEL_tourposition = glui_tour->add_panel_to_panel(PANEL_tourpositionview, _("Position"));
   SPINNER_t=glui_tour->add_spinner_to_panel(PANEL_tourposition,"t:",GLUI_SPINNER_FLOAT,&tour_ttt,KEYFRAME_tXYZ,TourCB);
   SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,tour_xyz,KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,tour_xyz+2,KEYFRAME_tXYZ,TourCB);
   glui_tour->add_column_to_panel(PANEL_tourpositionview,false);
-  PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_tourpositionview,"View direction");
+  PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_tourpositionview, _("View direction"));
   SPINNER_tourzoom=glui_tour->add_spinner_to_panel(PANEL_tourview,_("Zoom:"),GLUI_SPINNER_FLOAT,&tour_zoom,KEYFRAME_tXYZ,TourCB);
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,tour_view_xyz,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,tour_view_xyz+1,KEYFRAME_viewXYZ,TourCB);

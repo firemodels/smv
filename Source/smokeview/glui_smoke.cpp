@@ -482,18 +482,18 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_cvis=glui_3dsmoke->add_spinner_to_panel(PANEL_smokesensor,"C",GLUI_SPINNER_FLOAT,&smoke3d_cvis);
     SPINNER_cvis->set_float_limits(1.0,20.0);
 #ifdef _DEBUG
-    CHECKBOX_test_smokesensors=glui_3dsmoke->add_checkbox_to_panel(PANEL_smokesensor,"Test visibility sensor",&test_smokesensors);
+    CHECKBOX_test_smokesensors=glui_3dsmoke->add_checkbox_to_panel(PANEL_smokesensor,_("Test visibility sensor"),&test_smokesensors);
 #endif
   }
 
   PANEL_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Color"));
 
   RADIO_use_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_colormap,&firecolormap_type,FIRECOLORMAP_TYPE,Smoke3dCB);
-  RADIOBUTTON_direct=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,"Use specified color, opacity");
-  RADIOBUTTON_constraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,"Use colormap with constraints");
-  RADIOBUTTON_noconstraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,"Use colormap without constraints");
+  RADIOBUTTON_direct=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,_("Use specified color, opacity"));
+  RADIOBUTTON_constraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap with constraints"));
+  RADIOBUTTON_noconstraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap without constraints"));
 
-  ROLLOUT_firesmoke_color = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap,"smoke/fire color",false);
+  ROLLOUT_firesmoke_color = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("smoke/fire color"),false);
 
   ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmoke_color, "smoke",false, SMOKECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT);
@@ -505,7 +505,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_blue = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"), GLUI_SPINNER_INT, &smoke_blue, SMOKE_BLUE, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
 
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmoke_color,"fire",true, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmoke_color, _("fire"),true, FIRECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_fire_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("red"), GLUI_SPINNER_INT, &fire_red, FIRE_RED, Smoke3dCB);
@@ -610,7 +610,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   }
   SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp, _("color as fire > "), GLUI_SPINNER_FLOAT,
     &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
-  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp,"settings (test)",false);
+  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp, _("settings (test)"),false);
   SPINNER_temperature_min=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_("min"),GLUI_SPINNER_FLOAT,
     &global_temp_min,TEMP_MIN,Smoke3dCB);
   SPINNER_temperature_max=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_("max"),GLUI_SPINNER_FLOAT,
@@ -677,19 +677,19 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       SPINNER_cull_portsize->set_int_limits(3,ijk_max);
     }
 #else
-    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,"Cull hidden slices",&smokecullflag);
+    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu, _("Cull hidden slices"),&smokecullflag);
 #endif
 #ifdef _DEBUG
 
     ROLLOUT_smokedebug = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Debug"),false);
 
-    CHECKBOX_smokedrawtest=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug,"Show only back slices",&smokedrawtest);
-    CHECKBOX_smokedrawtest2=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug,"Show only X slices",&smokedrawtest2);
+    CHECKBOX_smokedrawtest=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug, _("Show only back slices"),&smokedrawtest);
+    CHECKBOX_smokedrawtest2=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smokedebug, _("Show only X slices"),&smokedrawtest2);
 
-    SPINNER_smokedrawtest_nummin=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug,"Back slice",GLUI_SPINNER_INT,&smokedrawtest_nummin);
+    SPINNER_smokedrawtest_nummin=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug, _("Back slice"),GLUI_SPINNER_INT,&smokedrawtest_nummin);
     SPINNER_smokedrawtest_nummin->set_int_limits(1,ijkbarmax);
 
-    SPINNER_smokedrawtest_nummax=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug,"Front slice",GLUI_SPINNER_INT,&smokedrawtest_nummax);
+    SPINNER_smokedrawtest_nummax=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokedebug, _("Front slice"),GLUI_SPINNER_INT,&smokedrawtest_nummax);
     SPINNER_smokedrawtest_nummax->set_int_limits(1,ijkbarmax);
 #endif
 

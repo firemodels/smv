@@ -902,7 +902,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(PANEL_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_translaterotate, TRANSLATEROTATE_ROLLOUT);
 
-  PANEL_translate2 = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,"Translate");
+  PANEL_translate2 = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,_("Translate"));
   d_eye_xyz[0]=0.0;
   d_eye_xyz[1]=0.0;
   d_eye_xyz[2]=0.0;
@@ -918,7 +918,7 @@ extern "C" void GluiMotionSetup(int main_window){
   TRANSLATE_z=glui_motion->add_translation_to_panel(PANEL_translate2,_("Vertical"),GLUI_TRANSLATION_Y,eye_xyz+2,GLUI_Z,SceneMotionCB);
   TRANSLATE_z->set_speed(TRANSLATE_SPEED);
 
-  PANEL_rotate = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,"Rotate");
+  PANEL_rotate = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,_("Rotate"));
 
   ROTATE_2axis=glui_motion->add_translation_to_panel(PANEL_rotate,_("2 axis"),GLUI_TRANSLATION_XY,motion_ab,ROTATE_2AXIS,SceneMotionCB);
   glui_motion->add_column_to_panel(PANEL_rotate,false);
@@ -932,10 +932,10 @@ extern "C" void GluiMotionSetup(int main_window){
 
   PANEL_radiorotate = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "Rotation type:");
   RADIO_rotation_type=glui_motion->add_radiogroup_to_panel(PANEL_radiorotate,&rotation_type,0, RotationTypeCB);
-  RADIOBUTTON_1c=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"2 axis");
-  RADIOBUTTON_1d=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"eye centered");
-  RADIOBUTTON_1e=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"level (1 axis)");
-  RADIOBUTTON_1e=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,"3 axis");
+  RADIOBUTTON_1c=glui_motion->add_radiobutton_to_group(RADIO_rotation_type,_("2 axis"));
+  RADIOBUTTON_1d=glui_motion->add_radiobutton_to_group(RADIO_rotation_type, _("eye centered"));
+  RADIOBUTTON_1e=glui_motion->add_radiobutton_to_group(RADIO_rotation_type, _("level (1 axis)"));
+  RADIOBUTTON_1e=glui_motion->add_radiobutton_to_group(RADIO_rotation_type, _("3 axis"));
   RotationTypeCB(rotation_type);
   rotation_index=&camera_current->rotation_index;
   *rotation_index=glui_rotation_index_ini;
@@ -953,7 +953,7 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_mesh2->set_int_val(*rotation_index);
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
-  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,"Show",&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
+  CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
   xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
   ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
   zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
@@ -1001,9 +1001,9 @@ extern "C" void GluiMotionSetup(int main_window){
     }
     XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
   }
-  SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"azimuth:",GLUI_SPINNER_FLOAT, zaxis_angles,ZAXIS_CUSTOM, SceneMotionCB);
-  SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"elevation:",GLUI_SPINNER_FLOAT,zaxis_angles+1,ZAXIS_CUSTOM,SceneMotionCB);
-  SPINNER_zaxis_angles[2] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis,"angle (about z axis):",GLUI_SPINNER_FLOAT,zaxis_angles+2,ZAXIS_CUSTOM,SceneMotionCB);
+  SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis, _("azimuth:"),GLUI_SPINNER_FLOAT, zaxis_angles,ZAXIS_CUSTOM, SceneMotionCB);
+  SPINNER_zaxis_angles[1] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis, _("elevation:"),GLUI_SPINNER_FLOAT,zaxis_angles+1,ZAXIS_CUSTOM,SceneMotionCB);
+  SPINNER_zaxis_angles[2] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis, _("angle (about z axis):"),GLUI_SPINNER_FLOAT,zaxis_angles+2,ZAXIS_CUSTOM,SceneMotionCB);
   SPINNER_zaxis_angles[0]->set_float_limits(-180.0,180.0);
   SPINNER_zaxis_angles[1]->set_float_limits(-90.0,90.0);
   SPINNER_zaxis_angles[2]->set_float_limits(-180.0,180.0);
@@ -1014,13 +1014,13 @@ extern "C" void GluiMotionSetup(int main_window){
     CHECKBOX_showgravity_vector = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis, "Show gravity, axis vectors", &showgravity_vector);
   }
   else{
-    CHECKBOX_showgravity_vector = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,"Show axis vectors",&showgravity_vector);
+    CHECKBOX_showgravity_vector = glui_motion->add_checkbox_to_panel(PANEL_change_zaxis,_("Show axis vectors"),&showgravity_vector);
   }
   SceneMotionCB(ZAXIS_CUSTOM);
   ROLLOUT_orientation->close();
   zaxis_custom=0;
 
-  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(PANEL_motion,"Slice motion",false,SLICE_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(PANEL_motion, _("Slice motion"),false,SLICE_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT);
 
   if(gslice_xyz[0]<-1000000.0&&gslice_xyz[1]<-1000000.0&&gslice_xyz[2]<-1000000.0){
@@ -1044,7 +1044,7 @@ extern "C" void GluiMotionSetup(int main_window){
   GSliceCB(GSLICE_NORMAL);
 
   PANEL_gslice_show = glui_motion->add_panel_to_panel(ROLLOUT_gslice,_("show"),true);
-  CHECKBOX_gslice_data=glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"data",&vis_gslice_data);
+  CHECKBOX_gslice_data=glui_motion->add_checkbox_to_panel(PANEL_gslice_show,_("data"),&vis_gslice_data);
   glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"triangle outline",&show_gslice_triangles);
   glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"triangulation",&show_gslice_triangulation);
   glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"plane normal",&show_gslice_normal);
