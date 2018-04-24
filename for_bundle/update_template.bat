@@ -27,7 +27,4 @@ set sort=%userprofile%\bin\sort
 
 echo updating smokeview_template.po
 
-cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | gawk "{if(NF==2){print}}" | %MAKEPO% -a -c >  %OUT%
-cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | gawk "{if(NF==3){print}}" | %MAKEPO% -a    >> %OUT%
-cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | gawk "{if(NF==4){print}}" | %MAKEPO% -a    >> %OUT%
-cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | gawk "{if(NF>4){print}}"  | %MAKEPO% -a    >> %OUT%
+cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | %MAKEPO% -a    > %OUT%
