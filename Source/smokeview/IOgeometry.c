@@ -451,7 +451,7 @@ void DrawGeom(int flag, int timestate){
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
     if(geomi->geomtype!=GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
-    if(timestate==GEOM_STATIC){
+    if(timestate==GEOM_STATIC||geomi->ntimes==0){
       geomlisti = geomi->geomlistinfo-1;
     }
     else{
@@ -3324,6 +3324,7 @@ void ShowHideSortGeometry(float *mm){
           geomlisti = geomi->geomlistinfo - 1;
         }
         else{
+          if(geomi->ntimes == 0)continue;
           geomlisti = geomi->geomlistinfo + geomi->itime;
           if(geomi->currentframe != NULL)geomlisti = geomi->currentframe;
         }

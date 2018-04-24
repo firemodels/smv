@@ -389,23 +389,23 @@ extern "C" void GluiDeviceSetup(int main_window){
 
     PANEL_objects = glui_device->add_panel("Devices/Objects",false);
 
-    ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,"Objects",false, OBJECTS_ROLLOUT, Device_Rollout_CB);
+    ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,_("Objects"),false, OBJECTS_ROLLOUT, Device_Rollout_CB);
     ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT);
 
-    SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,DeviceCB);
-    CHECKBOX_device_3=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Outline"),&object_outlines);
-    CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_d("Orientation"),&show_device_orientation,DEVICE_show_orientation,DeviceCB);
-    SPINNER_orientation_scale=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_d("Orientation scale"),GLUI_SPINNER_FLOAT,&orientation_scale);
+    SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,DeviceCB);
+    CHECKBOX_device_3=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_("Outline"),&object_outlines);
+    CHECKBOX_device_orientation=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_("Orientation"),&show_device_orientation,DEVICE_show_orientation,DeviceCB);
+    SPINNER_orientation_scale=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_("Orientation scale"),GLUI_SPINNER_FLOAT,&orientation_scale);
     SPINNER_orientation_scale->set_float_limits(0.1,10.0);
     if(have_beam){
       PANEL_beam = glui_device->add_panel_to_panel(ROLLOUT_smvobjects, "Beam sensor", true);
-      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_beam,_d("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,DeviceCB);
-      SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_beam, _d("line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
+      CHECKBOX_showbeam_as_line=glui_device->add_checkbox_to_panel(PANEL_beam,_("Show beam as line"),&showbeam_as_line,DEVICE_SHOWBEAM,DeviceCB);
+      SPINNER_beam_line_width = glui_device->add_spinner_to_panel(PANEL_beam, _("line width"), GLUI_SPINNER_FLOAT, &beam_line_width);
       SPINNER_beam_line_width->set_float_limits(1.0, 20.0);
-      CHECKBOX_use_beamcolor = glui_device->add_checkbox_to_panel(PANEL_beam, _d("Use color"), &use_beamcolor);
-      SPINNER_beam_color[0] = glui_device->add_spinner_to_panel(PANEL_beam, _d("red"), GLUI_SPINNER_INT, beam_color);
-      SPINNER_beam_color[1] = glui_device->add_spinner_to_panel(PANEL_beam, _d("green"), GLUI_SPINNER_INT, beam_color+1);
-      SPINNER_beam_color[2] = glui_device->add_spinner_to_panel(PANEL_beam, _d("blue"), GLUI_SPINNER_INT, beam_color+2);
+      CHECKBOX_use_beamcolor = glui_device->add_checkbox_to_panel(PANEL_beam, _("Use color"), &use_beamcolor);
+      SPINNER_beam_color[0] = glui_device->add_spinner_to_panel(PANEL_beam, _("red"), GLUI_SPINNER_INT, beam_color);
+      SPINNER_beam_color[1] = glui_device->add_spinner_to_panel(PANEL_beam, _("green"), GLUI_SPINNER_INT, beam_color+1);
+      SPINNER_beam_color[2] = glui_device->add_spinner_to_panel(PANEL_beam, _("blue"), GLUI_SPINNER_INT, beam_color+2);
       SPINNER_beam_color[0]->set_int_limits(0,255);
       SPINNER_beam_color[1]->set_int_limits(0, 255);
       SPINNER_beam_color[2]->set_int_limits(0, 255);
@@ -416,28 +416,28 @@ extern "C" void GluiDeviceSetup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT);
 
       if(nvdeviceinfo==0)ROLLOUT_velocityvectors->disable();
-      CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_d("Show"),&showvdevice_val);
-      PANEL_vector_type=glui_device->add_panel_to_panel(ROLLOUT_velocityvectors,"type",true);
+      CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_("Show"),&showvdevice_val);
+      PANEL_vector_type=glui_device->add_panel_to_panel(ROLLOUT_velocityvectors,_("type"),true);
       RADIO_vectortype=glui_device->add_radiogroup_to_panel(PANEL_vector_type,&vectortype);
-      glui_device->add_radiobutton_to_group(RADIO_vectortype,"line");
-      glui_device->add_radiobutton_to_group(RADIO_vectortype,"arrow");
-      glui_device->add_radiobutton_to_group(RADIO_vectortype,"object");
-      glui_device->add_radiobutton_to_group(RADIO_vectortype, "profile");
-      ROLLOUT_arrow_dimensions = glui_device->add_rollout_to_panel(ROLLOUT_velocityvectors, "Dimensions", false);
-      PANEL_arrow_base=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,"base",true);
-      glui_device->add_spinner_to_panel(PANEL_arrow_base,_d("length"),GLUI_SPINNER_FLOAT,&vector_baselength);
-      glui_device->add_spinner_to_panel(PANEL_arrow_base,_d("diameter"),GLUI_SPINNER_FLOAT,&vector_basediameter);
-      PANEL_arrow_height=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,"head",true);
-      glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("length"),GLUI_SPINNER_FLOAT,&vector_headlength);
-      glui_device->add_spinner_to_panel(PANEL_arrow_height,_d("diameter"),GLUI_SPINNER_FLOAT,&vector_headdiameter);
+      glui_device->add_radiobutton_to_group(RADIO_vectortype,_("line"));
+      glui_device->add_radiobutton_to_group(RADIO_vectortype,_("arrow"));
+      glui_device->add_radiobutton_to_group(RADIO_vectortype,_("object"));
+      glui_device->add_radiobutton_to_group(RADIO_vectortype, _("profile"));
+      ROLLOUT_arrow_dimensions = glui_device->add_rollout_to_panel(ROLLOUT_velocityvectors, _("Dimensions"), false);
+      PANEL_arrow_base=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,_("base"),true);
+      glui_device->add_spinner_to_panel(PANEL_arrow_base,_("length"),GLUI_SPINNER_FLOAT,&vector_baselength);
+      glui_device->add_spinner_to_panel(PANEL_arrow_base,_("diameter"),GLUI_SPINNER_FLOAT,&vector_basediameter);
+      PANEL_arrow_height=glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions,_("head"),true);
+      glui_device->add_spinner_to_panel(PANEL_arrow_height,_("length"),GLUI_SPINNER_FLOAT,&vector_headlength);
+      glui_device->add_spinner_to_panel(PANEL_arrow_height,_("diameter"),GLUI_SPINNER_FLOAT,&vector_headdiameter);
 
       if(ntreedeviceinfo>0){
         ROLLOUT_trees = glui_device->add_rollout_to_panel(ROLLOUT_velocityvectors, "Device trees", false);
-        SPINNER_mintreesize = glui_device->add_spinner_to_panel(ROLLOUT_trees, _d("min size"), GLUI_SPINNER_INT, &mintreesize);
+        SPINNER_mintreesize = glui_device->add_spinner_to_panel(ROLLOUT_trees, _("min size"), GLUI_SPINNER_INT, &mintreesize);
         SPINNER_mintreesize->set_int_limits(2, MAX(2, max_device_tree));
-        CHECKBOX_vis_xtree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _d("Show x"), &vis_xtree);
-        CHECKBOX_vis_ytree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _d("Show y"), &vis_ytree);
-        CHECKBOX_vis_ztree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _d("Show z"), &vis_ztree);
+        CHECKBOX_vis_xtree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _("Show x"), &vis_xtree);
+        CHECKBOX_vis_ytree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _("Show y"), &vis_ytree);
+        CHECKBOX_vis_ztree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _("Show z"), &vis_ztree);
       }
 
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
@@ -446,25 +446,25 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
       PANEL_show_windrose2 = glui_device->add_panel_to_panel(PANEL_show_windrose, "", true);
-      glui_device->add_checkbox_to_panel(PANEL_show_windrose2, _d("show"), &viswindrose);
-      SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
-      SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
+      glui_device->add_checkbox_to_panel(PANEL_show_windrose2, _("show"), &viswindrose);
+      SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
+      SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
 
-      SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dx"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dy"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dz"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _d("dt"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dx"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dy"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dz"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dt"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
 
       PANEL_windrose_merge = glui_device->add_panel_to_panel(PANEL_show_windrose, "merge type", true);
       RADIO_windrose_merge_type=glui_device->add_radiogroup_to_panel(PANEL_windrose_merge,&windrose_merge_type,WINDROSE_DXYZT, DeviceCB);
-      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"none");
-      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"stepped");
-      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,"sliding");
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("none"));
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("stepped"));
+      glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("sliding"));
 
       PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
-      if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xy"), &windrose_xy_vis);
-      if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("xz"), &windrose_xz_vis);
-      if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _d("yz"), &windrose_yz_vis);
+      if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("xy"), &windrose_xy_vis);
+      if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("xz"), &windrose_xz_vis);
+      if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("yz"), &windrose_yz_vis);
 
       if(nztreedeviceinfo>0){
         int icheckboxes;
@@ -510,8 +510,8 @@ extern "C" void GluiDeviceSetup(int main_window){
           TrimZeros(ylabel);
           sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
           ROLLOUT_show_windrose[i] = glui_device->add_rollout_to_panel(PANEL_show_windrose, roselabel, false);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Show all",WINDROSE_SHOWHIDEALL+i,DeviceCB);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],"Hide all",WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
+          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],_("Show all"),WINDROSE_SHOWHIDEALL+i,DeviceCB);
+          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
 
           for(j = treei->first; j<=treei->last; j++){
             vdevicesortdata *vdevsorti;
@@ -536,36 +536,36 @@ extern "C" void GluiDeviceSetup(int main_window){
         }
       }
 
-      ROLLOUT_properties=glui_device->add_rollout_to_panel(ROLLOUT_windrose,"properties",false);
-      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, DeviceCB);
+      ROLLOUT_properties=glui_device->add_rollout_to_panel(ROLLOUT_windrose,_("properties"),false);
+      SPINNER_nr_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _("radii"), GLUI_SPINNER_INT, &nr_windrose, DEVICE_NBUCKETS, DeviceCB);
       SPINNER_nr_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, DeviceCB);
+      SPINNER_ntheta_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _("angles"), GLUI_SPINNER_INT, &ntheta_windrose, DEVICE_NBUCKETS, DeviceCB);
       SPINNER_ntheta_windrose->set_int_limits(3, 72, GLUI_LIMIT_CLAMP);
-      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _d("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, DeviceCB);
+      SPINNER_radius_windrose = glui_device->add_spinner_to_panel(ROLLOUT_properties, _("radius"), GLUI_SPINNER_FLOAT, &radius_windrose, DEVICE_RADIUS, DeviceCB);
       RADIO_windstate_windrose = glui_device->add_radiogroup_to_panel(ROLLOUT_properties, &windstate_windrose);
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "heading");
       glui_device->add_radiobutton_to_group(RADIO_windstate_windrose, "direction");
 
-      ROLLOUT_scale_windrose=glui_device->add_rollout_to_panel(ROLLOUT_windrose,"scale",false);
-      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _d("show scale"), &showref_windrose);
-      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _d("show labels"), &showlabels_windrose);
+      ROLLOUT_scale_windrose=glui_device->add_rollout_to_panel(ROLLOUT_windrose,_("scale"),false);
+      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _("show scale"), &showref_windrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _("show labels"), &showlabels_windrose);
       RADIO_scale_windrose=glui_device->add_radiogroup_to_panel(ROLLOUT_scale_windrose,&scale_windrose);
-      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"local");
-      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,"global");
-      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _d("increment"), GLUI_SPINNER_INT, &scale_increment_windrose);
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,_("local"));
+      glui_device->add_radiobutton_to_group(RADIO_scale_windrose,_("global"));
+      SPINNER_scale_increment_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _("increment"), GLUI_SPINNER_INT, &scale_increment_windrose);
       SPINNER_scale_increment_windrose->set_int_limits(1, 50);
-      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _d("max"), GLUI_SPINNER_INT, &scale_max_windrose);
+      SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _("max"), GLUI_SPINNER_INT, &scale_max_windrose);
       SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
-      ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,"Device values",false, DEVICE_ROLLOUT, Device_Rollout_CB);
+      ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,_("Device values"),false, DEVICE_ROLLOUT, Device_Rollout_CB);
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT);
 
 
-      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
-      CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);
-      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Type"), &showdevice_type, SHOWDEVICEVALS, DeviceCB);
-      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _d("Unit"), &showdevice_unit, SHOWDEVICEVALS, DeviceCB);
-      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_d("Color"),&colordevice_val,COLORDEVICEVALS,DeviceCB);
+      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Type"), &showdevice_type, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Unit"), &showdevice_unit, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues,_("Color"),&colordevice_val,COLORDEVICEVALS,DeviceCB);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"min",GLUI_SPINNER_FLOAT,&device_valmin);
       glui_device->add_spinner_to_panel(ROLLOUT_devicevalues,"max",GLUI_SPINNER_FLOAT,&device_valmax);
 
@@ -582,10 +582,10 @@ extern "C" void GluiDeviceSetup(int main_window){
   PANEL_label3 = glui_device->add_panel("",false);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_d("Save settings"),SAVE_SETTINGS,DeviceCB);
+  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_("Save settings"),SAVE_SETTINGS,DeviceCB);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_d("Close"),DEVICE_close,DeviceCB);
+  BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_("Close"),DEVICE_close,DeviceCB);
 
   glui_device->set_main_gfx_window( main_window );
 }

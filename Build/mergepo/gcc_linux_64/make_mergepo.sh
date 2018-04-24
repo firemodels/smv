@@ -1,3 +1,3 @@
-#!/bin/bash -f
-rm *.o
+#!/bin/bash
+rm -f *.o
 make -j4 -f ../Makefile gcc_linux_64

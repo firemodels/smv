@@ -934,7 +934,7 @@ msgid "Load full data"
 msgstr ""
 
 msgid "Load/Unload"
-msgstr "Carico / Scarico"
+msgstr "Carico/Scarico"
 
 msgid "Loading colorbar texture"
 msgstr ""
@@ -1501,10 +1501,10 @@ msgid "Show walls"
 msgstr ""
 
 msgid "Show/Hide"
-msgstr "Mostra / Nascondi"
+msgstr "Mostra/Nascondi"
 
 msgid "Show/Hide blockage types"
-msgstr "Mostra / Nascondi i tipi di blocco"
+msgstr "Mostra/Nascondi i tipi di blocco"
 
 msgid "Show/Hide Loaded Files"
 msgstr ""

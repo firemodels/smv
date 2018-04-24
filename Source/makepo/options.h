@@ -7,6 +7,8 @@
 //#undef pp_BETA
 //#define pp_BETA
 
+#define pp_HASH
+
 //*** define makepo title
 
 #ifdef pp_BETA

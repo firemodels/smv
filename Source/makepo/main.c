@@ -1,11 +1,36 @@
+#define INMAIN
 #include "options.h"
 #include <stdio.h>
 #include <string.h>
 #include "string_util.h"
+#include "MALLOC.h"
      
 int add_msgstring=0;
 int add_comments=0;
-void usage(char *prog);
+
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog, int option){
+  char githash[1024];
+  char gitdate[1024];
+
+  GetGitInfo(githash,gitdate);
+
+  fprintf(stdout, "\n%s (%s) %s \n",prog, githash, __DATE__);
+  fprintf(stdout,"Create a .po file by parsing a collection of .c/.h/.cpp files\n");
+  fprintf(stdout,"looking for strings of the form _(\"....\") , outputting each\n");
+  fprintf(stdout,"string found as \n");
+  fprintf(stdout,"MSGID \".....\"\n\n");
+  fprintf(stdout,"Usage:\n");
+  fprintf(stdout,"  makepo [options]\n");
+  fprintf(stdout,"  -a  - the string\n");
+  fprintf(stdout,"MSGSTR \"\"\n");
+  fprintf(stdout,"is also output\n");
+  UsageCommon(HELP_SUMMARY);
+  if(option == HELP_ALL){
+    UsageCommon(HELP_ALL);
+  }
+}
 
 /* ------------------ main ------------------------ */
 
@@ -15,9 +40,20 @@ int main(int argc, char **argv){
   char *arg,*prog;
   FILE *stream;
 
-  //stream=fopen("menus.c","r");
+  initMALLOC();
+  SetStdOut(stdout);
+
   stream=stdin;
   prog=argv[0];
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("makepo",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("makepo",argv[0]);
+    return 1;
+  }
   for(ii=1;ii<argc;ii++){
     int lenarg;
 
@@ -32,12 +68,12 @@ int main(int argc, char **argv){
         add_comments=1;
         break;
       default:
-        usage(prog);
+        Usage(prog,HELP_ALL);
         return 1;
       }
     }
     else{
-      usage(prog);
+      Usage(prog,HELP_ALL);
       return 1;
     }
   }
@@ -116,18 +152,3 @@ int main(int argc, char **argv){
     }
   }
 }
-
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
-  printf("%s [-a] < stdin > stdout \n",prog);
-  printf("Create a .po file by parsing a collection of .c/.h/.cpp files\n");
-  printf("looking for strings of the form _(\"....\") , outputting each\n");
-  printf("string found as \n");
-  printf("MSGID \".....\"\n");
-  printf("If the -a option is  used then the string\n");
-  printf("MSGSTR \"\"\n");
-  printf("is also output\n");
-}
-
-
