@@ -47,6 +47,7 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+EXTERNCPP char           *PrependLabel(char *label, int option);
 EXTERNCPP void           UsageCommon(int option);
 EXTERNCPP void           ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void           InitRandAB(int size);
@@ -117,6 +118,7 @@ EXTERNCPP void           PRINTversion(char *progname);
 SVEXTERN int SVDECL(hash_option, HASH_SHA1);
 #endif
 SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help, 0);
+SVEXTERN char prepend_label[1024];
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");
