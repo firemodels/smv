@@ -557,7 +557,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3dCB);
   if(nco2files>0){
-    SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("50% co2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+    SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("50% CO2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
   }
 
 #ifdef pp_SMOKEALPHA
@@ -565,7 +565,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% fire alpha"), GLUI_SPINNER_INT, &glui_fire_alpha, UPDATE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_alpha->set_int_limits(1,254);
   if(nco2files>0){
-    SPINNER_smoke3d_co2_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% co2 alpha"), GLUI_SPINNER_INT, &glui_co2_alpha, UPDATE_CO2_ALPHA, Smoke3dCB);
+    SPINNER_smoke3d_co2_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% CO2 alpha"), GLUI_SPINNER_INT, &glui_co2_alpha, UPDATE_CO2_ALPHA, Smoke3dCB);
     SPINNER_smoke3d_co2_alpha->set_int_limits(1, 254);
   }
 #endif
@@ -573,7 +573,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
 
   glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _("max blending"), &hrrpuv_max_blending);
-  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("co2 factor"), GLUI_SPINNER_FLOAT,&co2factor,CO2SMOKE,Smoke3dCB);
+  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("CO2 factor"), GLUI_SPINNER_FLOAT,&co2factor,CO2SMOKE,Smoke3dCB);
   SPINNER_co2factor->set_float_limits(0.0, 100.0);
   SPINNER_sootfactor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor,SOOTSMOKE,Smoke3dCB);
   SPINNER_sootfactor->set_float_limits(0.0, 100.0);
