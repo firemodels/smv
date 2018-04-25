@@ -1371,7 +1371,7 @@ void ScriptCB(int var){
     id = LIST_scriptlist->get_int_val();
     name = GetScriptFileName(id);
     if(name != NULL&&strlen(name) > 0){
-      strcpy(label, _("Run: "));
+      strcpy(label, _("Run:"));
       strcat(label, name);
       BUTTON_script_runscript->set_name(label);
     }
@@ -1423,7 +1423,7 @@ void ScriptCB(int var){
     updatemenu = 1;
     break;
   case SCRIPT_EDIT_INI:
-    strcpy(label, _("Save "));
+    strcpy(label, _("Save"));
     strcat(label, fdsprefix);
     TrimBack(script_inifile_suffix);
     if(strlen(script_inifile_suffix) > 0){
@@ -2237,7 +2237,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Research display mode"),&research_mode,RESEARCH_MODE,SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Output data to file"),&output_slicedata);
 #ifdef pp_SMOKETEST
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show all 3d slices"), &showall_3dslices);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show all 3D slices"), &showall_3dslices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("opacity adjustment"), &slice_opacity_adjustment);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("sort slices"), &sort_slices);

@@ -5878,16 +5878,16 @@ updatemenu=0;
     glutAddMenuEntry(_("   Solid"),visBLOCKNormal);
   }
   if(outline_state==OUTLINE_ONLY){
-    glutAddMenuEntry(_("   *Outline Only"),visBLOCKOnlyOutline);
+    glutAddMenuEntry(_("   *Outline only"),visBLOCKOnlyOutline);
   }
   else{
-    glutAddMenuEntry(_("   Outline Only"),visBLOCKOnlyOutline);
+    glutAddMenuEntry(_("   Outline only"),visBLOCKOnlyOutline);
   }
   if(outline_state==OUTLINE_ADDED){
-    glutAddMenuEntry(_("   *Outline Added"),visBLOCKAddOutline);
+    glutAddMenuEntry(_("   *Outline added"),visBLOCKAddOutline);
   }
   else{
-    glutAddMenuEntry(_("   Outline Added"),visBLOCKAddOutline);
+    glutAddMenuEntry(_("   Outline added"),visBLOCKAddOutline);
   }
   if(ncadgeom>0){
     if(viscadopaque==1){

@@ -3894,7 +3894,7 @@ int ReadSMV(char *file, char *file2){
   smv_modtime= FileModtime(file);
 
   PRINTF(_("processing smokeview file:"));
-  PRINTF(_(" %s\n"), file);
+  PRINTF(" %s\n", file);
   STOP_TIMER(pass0_time );
 
 /*

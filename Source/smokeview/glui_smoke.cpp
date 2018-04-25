@@ -749,7 +749,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ROLLOUT_volsmoke_compute = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Compute"), false);
     SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
-    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff"), GLUI_SPINNER_FLOAT, &mass_extinct);
+    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff (m2/g)"), GLUI_SPINNER_FLOAT, &mass_extinct);
     SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("adaptive integration"), &vol_adaptive);
     CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3dCB);
@@ -792,8 +792,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     PANEL_scatter = glui_3dsmoke->add_panel_to_panel(ROLLOUT_light, _("scatter"));
     RADIO_scatter_type_glui = glui_3dsmoke->add_radiogroup_to_panel(PANEL_scatter,&scatter_type_glui);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_("isotropic"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_("Henjey-Greenstein"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_("Schlick"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,"Henjey-Greenstein");
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,"Schlick");
     SPINNER_scatter_param  = glui_3dsmoke->add_spinner_to_panel(PANEL_scatter,   _("param"), GLUI_SPINNER_FLOAT, &scatter_param);
     SPINNER_scatter_param->set_float_limits(-1.0,1.0);
 
