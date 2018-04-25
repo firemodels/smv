@@ -10529,7 +10529,7 @@ updatemenu=0;
       glutAddSubMenu(_("Configuration files"),smokeviewinimenu);
       glutAddSubMenu(_("Scripts"),scriptmenu);
 #ifdef pp_LUA
-      glutAddSubMenu(_("Lua Scripts"),luascriptmenu);
+      glutAddSubMenu("Lua Scripts",luascriptmenu);
 #endif
 #ifdef pp_COMPRESS
       if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){
