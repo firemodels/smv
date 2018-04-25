@@ -9,9 +9,7 @@
 #define TRDECL(var,val)  var
 #endif
 
-#define _(String) Translate((char *)String,1)
-#define _d(String) Translate((char *)String,0)
-// #define _(String) (String)
+#define _(String) Translate((char *)String)
 
 /* --------------------------  structs ------------------------------------ */
 
@@ -22,7 +20,7 @@ typedef struct {
 //************************** headers ****************************************
 
 TREXTERN int CompareTrdata( const void *arg1, const void *arg2 );
-TREXTERN char *Translate(char *string, int option);
+TREXTERN char *Translate(char *string);
 TREXTERN void InitTranslate(char *bindir, char *tr_name);
 TREXTERN int ParseLang(char *file, trdata **trinfoptr, int *ntrinfoptr);
 
