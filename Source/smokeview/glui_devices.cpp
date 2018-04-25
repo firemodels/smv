@@ -450,10 +450,10 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
       SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
 
-      SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dx"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dy"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dz"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
-      SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("dt"), GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dx", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dy", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dz", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dt", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
 
       PANEL_windrose_merge = glui_device->add_panel_to_panel(PANEL_show_windrose, "merge type", true);
       RADIO_windrose_merge_type=glui_device->add_radiogroup_to_panel(PANEL_windrose_merge,&windrose_merge_type,WINDROSE_DXYZT, DeviceCB);
@@ -462,9 +462,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("sliding"));
 
       PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
-      if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("xy"), &windrose_xy_vis);
-      if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("xz"), &windrose_xz_vis);
-      if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, _("yz"), &windrose_yz_vis);
+      if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "xy", &windrose_xy_vis);
+      if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "xz", &windrose_xz_vis);
+      if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "yz", &windrose_yz_vis);
 
       if(nztreedeviceinfo>0){
         int icheckboxes;

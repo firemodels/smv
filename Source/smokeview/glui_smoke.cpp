@@ -773,9 +773,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_("position"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_("direction"));
     CHECKBOX_show_light_position_direction = glui_3dsmoke->add_checkbox_to_panel(PANEL_light_position, _("Show position/direction"), &show_light_position_direction);
-    SPINNER_light_xyz[0] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _("x:"), GLUI_SPINNER_FLOAT, xyz_light_glui,   LIGHT_XYZ, Smoke3dCB);
-    SPINNER_light_xyz[1] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _("y:"), GLUI_SPINNER_FLOAT, xyz_light_glui+1, LIGHT_XYZ, Smoke3dCB);
-    SPINNER_light_xyz[2] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, _("z:"), GLUI_SPINNER_FLOAT, xyz_light_glui+2, LIGHT_XYZ, Smoke3dCB);
+    SPINNER_light_xyz[0] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, "x:", GLUI_SPINNER_FLOAT, xyz_light_glui,   LIGHT_XYZ, Smoke3dCB);
+    SPINNER_light_xyz[1] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, "y:", GLUI_SPINNER_FLOAT, xyz_light_glui+1, LIGHT_XYZ, Smoke3dCB);
+    SPINNER_light_xyz[2] = glui_3dsmoke->add_spinner_to_panel(PANEL_light_position, "z:", GLUI_SPINNER_FLOAT, xyz_light_glui+2, LIGHT_XYZ, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_light_position, _("Use light"), &use_light);
     glui_3dsmoke->add_button_to_panel(PANEL_light_position, _("Update"), LIGHT_UPDATE, Smoke3dCB);
 
