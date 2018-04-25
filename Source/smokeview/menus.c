@@ -6574,7 +6574,7 @@ updatemenu=0;
   glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Show all"), MENU_LABEL_ShowAll);
   glutAddMenuEntry(_("Hide all"), MENU_LABEL_HideAll);
-  glutAddMenuEntry("Settings...", MENU_LABEL_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_LABEL_SETTINGS);
 
 /* --------------------------------rotate type menu -------------------------- */
 
@@ -6614,7 +6614,7 @@ updatemenu=0;
   if(showgravity_vector==0)glutAddMenuEntry("  show gravity, axis vectors", MENU_MOTION_SHOW_VECTORS);
   glutAddMenuEntry("  gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
   glutAddMenuEntry("  z vector up", MENU_MOTION_Z_VECTOR);
-  glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
 
@@ -7327,7 +7327,7 @@ updatemenu=0;
   if(setbw == 1)glutAddMenuEntry("*Black/White (geometry)", COLORBAR_TOGGLE_BW);
   if(setbw == 0)glutAddMenuEntry("Black/White (geometry)", COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
-  glutAddMenuEntry("Settings...", MENU_COLORBAR_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_COLORBAR_SETTINGS);
 
 /* --------------------------------showVslice menu -------------------------- */
   if(nvsliceloaded==0){
@@ -7683,7 +7683,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Show all"),MENU_TOUR_SHOWALL);
     glutAddMenuEntry(_("Hide all"),MENU_TOUR_MANUAL);
-    glutAddMenuEntry("Settings...", MENU_TOUR_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_TOUR_SETTINGS);
   }
 
  /* --------------------------------Show Volume smoke menu -------------------------- */
@@ -7808,7 +7808,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Time"),MENU_TIMEVIEW);
   }
-  glutAddMenuEntry("Settings...", MENU_VIEWPOINT_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_VIEWPOINT_SETTINGS);
 
   /* --------------------------------showhide menu -------------------------- */
 
@@ -8180,7 +8180,7 @@ updatemenu=0;
     }
     glutAddSubMenu(_("Image type"),        render_filetypemenu);
     glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
-    glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }
 
@@ -8291,7 +8291,7 @@ updatemenu=0;
       ASSERT(FFALSE);
       break;
     }
-    glutAddMenuEntry("Settings...", MENU_FONT_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
   }
 
   /* -------------------------------- units menu -------------------------- */
@@ -8660,7 +8660,7 @@ updatemenu=0;
         }
       }
     }
-    glutAddMenuEntry("Settings...", MENU_PART_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
     if(npartloaded<=1){
       glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
     }
@@ -8742,7 +8742,6 @@ updatemenu=0;
       glutAddMenuEntry(vd->menulabel2,i);
     }
     glutAddMenuEntry("-",MENU_DUMMY);
-    //glutAddMenuEntry("Unload last",-2);
     glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
     if(nvslice0>0){
@@ -9000,7 +8999,7 @@ updatemenu=0;
     if(nslicedups > 0){
       glutAddSubMenu("Duplicate vector slices", duplicatevectorslicemenu);
     }
-    glutAddMenuEntry("Settings...", MENU_LOADVSLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadvslicemenu);
     }
@@ -9259,7 +9258,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
-    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nsliceloaded+geom_slice_loaded>1){
       glutAddSubMenu(_("Unload"),unloadslicemenu);
     }
@@ -9432,7 +9431,7 @@ updatemenu=0;
     if(nslicedups > 0){
       glutAddSubMenu("Duplicate slices", duplicateslicemenu);
     }
-    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -9498,7 +9497,7 @@ updatemenu=0;
       glutAddMenuEntry(vlabel,LOAD_ALL);
       if(show_meshmenus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
       if(show_meshmenus==1)glutAddSubMenu("Mesh", loadvolsmokesinglemenu);
-      glutAddMenuEntry("Settings...", MENU_VOLSMOKE_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_VOLSMOKE_SETTINGS);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadvolsmoke3dmenu);
     }
@@ -9644,7 +9643,7 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
           if(nsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY3);
         }
-        glutAddMenuEntry("Settings...", MENU_SMOKE_SETTINGS);
+        glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadsmoke3dmenu);
       }
@@ -9810,7 +9809,7 @@ updatemenu=0;
           }
         }
       }
-      glutAddMenuEntry("Settings...", MENU_PLOT3D_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
       if(nplot3dloaded>1){
         glutAddSubMenu(_("Unload"),unloadplot3dmenu);
       }
@@ -10011,7 +10010,7 @@ updatemenu=0;
         glutAddSubMenu("Duplicate boundary slices",duplicateboundaryslicemenu);
       }
       if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
       if(npatchloaded2>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
@@ -10127,7 +10126,7 @@ updatemenu=0;
           }
         }
       }
-      glutAddMenuEntry("Settings...", MENU_ISO_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_ISO_SETTINGS);
       if(nisoloaded>1){
         glutAddSubMenu(_("Unload"),unloadisomenu);
       }
@@ -10183,7 +10182,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);  // -c
     glutAddMenuEntry(_("Compress now"),MENU_COMPRESSNOW);
     glutAddMenuEntry(_("Erase compressed files"),MENU_ERASECOMPRESS);  // -c
-    glutAddMenuEntry("Settings...", MENU_COMPRESS_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_COMPRESS_SETTINGS);
   }
 #endif
 
@@ -10251,7 +10250,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY);
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
-    glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
@@ -10392,7 +10391,7 @@ updatemenu=0;
         if(script_step==1||current_script_command!=NULL)glutAddMenuEntry(_("Cancel"),SCRIPT_CANCEL);
       }
       glutAddSubMenu(_("Record"),scriptrecordmenu);
-      glutAddMenuEntry("Settings...", MENU_SCRIPT_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_SCRIPT_SETTINGS);
     }
 
   /* --------------------------------loadunload menu -------------------------- */
