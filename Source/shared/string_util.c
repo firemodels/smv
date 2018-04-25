@@ -1427,17 +1427,3 @@ void PRINTversion(char *progname){
   PRINTF("Platform         : LINUX64\n");
 #endif
 }
-
-/* ------------------ PrependLabel ------------------------ */
-
-char *PrependLabel(char *label, int option){
-  if(option == 0)return label;
-  strcpy(prepend_label, "*");
-  strcat(prepend_label, label);
-  return prepend_label;
-}
-
-
-
-
-
