@@ -8802,16 +8802,16 @@ updatemenu=0;
               glutAddMenuEntry("-",MENU_DUMMY);
             }
             if(sd->ndirxyz[1]>1){
-              glutAddMenuEntry(_("Load All x"),-1000-4*nloadsubvslicemenu-1);
+              glutAddMenuEntry(_("Load all x"),-1000-4*nloadsubvslicemenu-1);
             }
             if(sd->ndirxyz[2]>1){
-              glutAddMenuEntry(_("Load All y"),-1000-4*nloadsubvslicemenu-2);
+              glutAddMenuEntry(_("Load all y"),-1000-4*nloadsubvslicemenu-2);
             }
             if(sd->ndirxyz[3]>1){
-              glutAddMenuEntry(_("Load All z"),-1000-4*nloadsubvslicemenu-3);
+              glutAddMenuEntry(_("Load all z"),-1000-4*nloadsubvslicemenu-3);
             }
             if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-              glutAddMenuEntry(_("Load All"),-1000-4*nloadsubvslicemenu);
+              glutAddMenuEntry(_("Load all"),-1000-4*nloadsubvslicemenu);
             }
           }
           if(ii==0||strcmp(sd->label.longlabel,sdm1->label.longlabel)!=0){
@@ -8920,16 +8920,16 @@ updatemenu=0;
             glutAddMenuEntry("-",MENU_DUMMY);
           }
           if(mvslicei->ndirxyz[1]>1){
-            glutAddMenuEntry(_("Load All x"),-1000-4*nloadsubmvslicemenu-1);
+            glutAddMenuEntry(_("Load all x"),-1000-4*nloadsubmvslicemenu-1);
           }
           if(mvslicei->ndirxyz[2]>1){
-            glutAddMenuEntry(_("Load All y"),-1000-4*nloadsubmvslicemenu-2);
+            glutAddMenuEntry(_("Load all y"),-1000-4*nloadsubmvslicemenu-2);
           }
           if(mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_("Load All z"),-1000-4*nloadsubmvslicemenu-3);
+            glutAddMenuEntry(_("Load all z"),-1000-4*nloadsubmvslicemenu-3);
           }
           if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_("Load All"),-1000-4*nloadsubmvslicemenu);
+            glutAddMenuEntry(_("Load all"),-1000-4*nloadsubmvslicemenu);
           }
         }
         if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
@@ -9195,16 +9195,16 @@ updatemenu=0;
           glutAddMenuEntry("-",MENU_DUMMY);
         }
         if(sd->ndirxyz[1]>1){
-          glutAddMenuEntry(_("Load All x"),-1000-4*iloadsubslicemenu-1);
+          glutAddMenuEntry(_("Load all x"),-1000-4*iloadsubslicemenu-1);
         }
         if(sd->ndirxyz[2]>1){
-          glutAddMenuEntry(_("Load All y"),-1000-4*iloadsubslicemenu-2);
+          glutAddMenuEntry(_("Load all y"),-1000-4*iloadsubslicemenu-2);
         }
         if(sd->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All z"),-1000-4*iloadsubslicemenu-3);
+          glutAddMenuEntry(_("Load all z"),-1000-4*iloadsubslicemenu-3);
         }
         if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All"),-1000-4*iloadsubslicemenu);
+          glutAddMenuEntry(_("Load all"),-1000-4*iloadsubslicemenu);
         }
       }
       if(i!=nsliceinfo-1&&strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
@@ -9345,16 +9345,16 @@ updatemenu=0;
           glutAddMenuEntry("-", MENU_DUMMY);
         }
         if(mslicei->ndirxyz[1]>1){
-          glutAddMenuEntry(_("Load All x"),-1000-4*(nloadsubmslicemenu-1)-1);
+          glutAddMenuEntry(_("Load all x"),-1000-4*(nloadsubmslicemenu-1)-1);
         }
         if(mslicei->ndirxyz[2]>1){
-          glutAddMenuEntry(_("Load All y"),-1000-4*(nloadsubmslicemenu-1)-2);
+          glutAddMenuEntry(_("Load all y"),-1000-4*(nloadsubmslicemenu-1)-2);
         }
         if(mslicei->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All z"),-1000-4*(nloadsubmslicemenu-1)-3);
+          glutAddMenuEntry(_("Load all z"),-1000-4*(nloadsubmslicemenu-1)-3);
         }
         if(mslicei->ndirxyz[1]+mslicei->ndirxyz[2]+mslicei->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All"),  -1000-4*(nloadsubmslicemenu-1));
+          glutAddMenuEntry(_("Load all"),  -1000-4*(nloadsubmslicemenu-1));
         }
       }
     }
