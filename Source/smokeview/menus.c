@@ -10263,7 +10263,7 @@ updatemenu=0;
       glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
-    glutAddMenuEntry(_("-"), -999);
+    glutAddMenuEntry("-", -999);
     glutAddMenuEntry(_("When:"), -999);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);

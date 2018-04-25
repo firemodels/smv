@@ -601,7 +601,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Line"));
   CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("flip"), &colorbar_flip, FLIP, LabelsCB);
 #ifdef pp_COLORBARFLIP
-  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
+  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
 #endif
 
   SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,_("Selection width:"),GLUI_SPINNER_INT,&colorband,COLORBAND,SliceBoundCB);

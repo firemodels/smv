@@ -1241,8 +1241,8 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_screenvis[24] = glui_motion->add_checkbox_to_panel(ROLLOUT_upper, "8", screenvis + 24);
 
   CHECKBOX_screenvis[25] = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "top", screenvis + 25);
-  BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Show All"), SHOWALL_SCREENS, ViewpointCB);
-  BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Hide All"), HIDEALL_SCREENS, ViewpointCB);
+  BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Show all"), SHOWALL_SCREENS, ViewpointCB);
+  BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Hide all"), HIDEALL_SCREENS, ViewpointCB);
 #endif
 
   UpdateGluiFileLabel(render_label_type);
