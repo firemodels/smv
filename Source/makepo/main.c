@@ -102,38 +102,32 @@ int main(int argc, char **argv){
       fgets(buffer,sizeof(buffer),stream);
       beg=strstr(buffer,"_(\"");
       if(beg==NULL)continue;
-      beg+=2;
-      for(beg2=beg+1;beg2<buffer+sizeof(buffer);beg2++){
+      beg+=3;
+      for(beg2=beg;beg2<buffer+sizeof(buffer);beg2++){
         char c;
    
         c = *beg2;
-        if((c<'a'||c>'z')&&(c<'A'||c>'Z')){
-          if((c=='1'||c=='2'||c=='3')&&(*(beg2+1)=='D'||*(beg2+1)=='d')){
-          }
-          else{
-            continue;
-          }
+        if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))break;
+        if((c=='1'||c=='2'||c=='3')&&(beg2[1]=='D'||beg2[1]=='d')){
+          beg2+=2;
         }
-        beg=beg2-1;
-        *beg='"';
-        break;
       }
       end=strstr(beg+1,"\"");
       if(end!=NULL){
         int i,len;
 
-        end[1]=0;
-        len=strlen(beg);
-        for(i=len-2;i>=0;i--){
-          char c;
-   
-          c = beg[i];
-          if((c<'a'||c>'z')&&(c<'A'||c>'Z'))continue;
-          beg[i+1]='"';
-          beg[i+2]=0;
-          break;
+        end[0]=0;
+        TrimBack(beg2);
+        len=strlen(beg2);
+        if(len>0&&beg2[len-1]==':')beg2[len-1]=0;
+        len=strlen(beg2);
+        if(len>3){
+          char *match;
+
+          match=strstr(beg2+len-3,"...");
+          if(match!=NULL)match[0]=0;
         }
-        printf("msgid %s\n",beg);
+        printf("msgid \"%s\"\n",beg2);
       }
     }
   }
