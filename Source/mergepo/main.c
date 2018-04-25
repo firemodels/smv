@@ -116,7 +116,7 @@ int main(int argc, char **argv){
         else{
           tri->value=NULL;
         }
-        printf("msgid \"%s\"\n",tri->key);
+        printf("msgid  \"%s\"\n",tri->key);
         if(tri->value!=NULL){
           printf("msgstr \"%s\"\n",tri->value);
         }

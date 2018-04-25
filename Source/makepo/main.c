@@ -127,7 +127,7 @@ int main(int argc, char **argv){
           match=strstr(beg2+len-3,"...");
           if(match!=NULL)match[0]=0;
         }
-        printf("msgid \"%s\"\n",beg2);
+        printf("msgid  \"%s\"\n",beg2);
       }
     }
   }
