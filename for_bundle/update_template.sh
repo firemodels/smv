@@ -24,4 +24,4 @@ if [ ! -e $MAKEPO ]; then
 fi
 
 echo updating smokeview_template.po
-cat $SMVDIR/*.h $SHAREDDIR/*.h $SMVDIR/*.c $SMVDIR/*.cpp $SHAREDDIR/*.c | $MAKEPO | sort -u | $MAKEPO -a > $OUT
+cat $SMVDIR/*.h $SHAREDDIR/*.h $SMVDIR/*.c $SMVDIR/*.cpp $SHAREDDIR/*.c | $MAKEPO | sort -f -u | $MAKEPO -a > $OUT
