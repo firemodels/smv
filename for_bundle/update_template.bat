@@ -7,7 +7,7 @@ cd %CURDIR%
 set MAKEPODIR=%ROOT%\Build\makepo\intel_win_64
 set MAKEPO=%MAKEPODIR%\makepo_win_64
 set SMVDIR=%ROOT%\Source%\smokeview
-set SHAREDDIR=%ROOT%\Source%shared
+set SHAREDDIR=%ROOT%\Source%\shared
 set OUT=smokeview_template.pl
 set sort=%userprofile%\bin\sort
 
@@ -26,6 +26,5 @@ set sort=%userprofile%\bin\sort
 ::fi
 
 echo updating smokeview_template.po
-cat %SMVDIR%\*.h %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp %SMVDIR%\*.c | %MAKEPO% | %sort% -u | gawk "{if(NF==2){print}}" | %MAKEPO% -a -c > %OUT%
-cat %SMVDIR%\*.h %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp %SMVDIR%\*.c | %MAKEPO% | %sort% -u | gawk "{if(NF==3){print}}" | %MAKEPO% -a -c >> %OUT%
-cat %SMVDIR%\*.h %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp %SMVDIR%\*.c | %MAKEPO% | %sort% -u | gawk "{if(NF>3){print}}" | %MAKEPO% -a -c >> %OUT%
+
+cat %SHAREDDIR%\*.h %SHAREDDIR%\*.c %SMVDIR%\*.h %SMVDIR%\*.c %SMVDIR%\*.cpp | %MAKEPO% | %sort% -u | %MAKEPO% -a    > %OUT%

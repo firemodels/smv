@@ -5694,7 +5694,7 @@ updatemenu=0;
           glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
         }
       }
-      if(show_meshmenus==1&&npatchloaded>1)glutAddSubMenu("Mesh", showpatchsinglemenu);
+      if(show_meshmenus==1&&npatchloaded>1)glutAddSubMenu(_("Mesh"), showpatchsinglemenu);
     }
     npatchloaded=0;
     {
@@ -5752,7 +5752,7 @@ updatemenu=0;
 /* --------------------------------surface menu -------------------------- */
 
   CREATEMENU(immersedsurfacemenu,ImmersedMenu);
-  glutAddMenuEntry("How",GEOMETRY_DUMMY);
+  glutAddMenuEntry(_("How"),GEOMETRY_DUMMY);
   if(show_faces_solid==1&&show_faces_outline==1){
     glutAddMenuEntry(_("   *Solid and outline"),GEOMETRY_SOLIDOUTLINE);
   }
@@ -5777,18 +5777,18 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("   Hide"),GEOMETRY_HIDE);
   }
-  glutAddMenuEntry("Where",GEOMETRY_DUMMY);
+  glutAddMenuEntry(_("Where"),GEOMETRY_DUMMY);
   if(showgeom_inside_domain == 1){
-    glutAddMenuEntry("   *Inside domain", GEOMETRY_INSIDE_DOMAIN);
+    glutAddMenuEntry(_("   *Inside domain"), GEOMETRY_INSIDE_DOMAIN);
   }
   else {
-    glutAddMenuEntry("   Inside domain", GEOMETRY_INSIDE_DOMAIN);
+    glutAddMenuEntry(_("   Inside domain"), GEOMETRY_INSIDE_DOMAIN);
   }
   if (showgeom_outside_domain == 1) {
-    glutAddMenuEntry("   *Outside domain", GEOMETRY_OUTSIDE_DOMAIN);
+    glutAddMenuEntry(_("   *Outside domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
   else {
-    glutAddMenuEntry("   Outside domain", GEOMETRY_OUTSIDE_DOMAIN);
+    glutAddMenuEntry(_("   Outside domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
 
 /* --------------------------------interior geometry menu -------------------------- */
@@ -5878,16 +5878,16 @@ updatemenu=0;
     glutAddMenuEntry(_("   Solid"),visBLOCKNormal);
   }
   if(outline_state==OUTLINE_ONLY){
-    glutAddMenuEntry(_("   *Outline Only"),visBLOCKOnlyOutline);
+    glutAddMenuEntry(_("   *Outline only"),visBLOCKOnlyOutline);
   }
   else{
-    glutAddMenuEntry(_("   Outline Only"),visBLOCKOnlyOutline);
+    glutAddMenuEntry(_("   Outline only"),visBLOCKOnlyOutline);
   }
   if(outline_state==OUTLINE_ADDED){
-    glutAddMenuEntry(_("   *Outline Added"),visBLOCKAddOutline);
+    glutAddMenuEntry(_("   *Outline added"),visBLOCKAddOutline);
   }
   else{
-    glutAddMenuEntry(_("   Outline Added"),visBLOCKAddOutline);
+    glutAddMenuEntry(_("   Outline added"),visBLOCKAddOutline);
   }
   if(ncadgeom>0){
     if(viscadopaque==1){
@@ -6213,7 +6213,7 @@ updatemenu=0;
     if(cache_qdata==1){
       glutAddSubMenu(_("3D contours"),isosurfacemenu);
     }
-    if(nplot3dloaded>1&&show_meshmenus==1)glutAddSubMenu("Mesh",plot3dshowsinglemeshmenu);
+    if(nplot3dloaded>1&&show_meshmenus==1)glutAddSubMenu(_("Mesh"),plot3dshowsinglemeshmenu);
   }
 
 /* --------------------------------grid slice menu -------------------------- */
@@ -6274,8 +6274,8 @@ updatemenu=0;
     glutAddMenuEntry(_("*Hide"), MENU_VENT_CIRCLEHIDE);
   }
   glutAddMenuEntry("-",MENU_DUMMY2);
-  if(circle_outline == 1)glutAddMenuEntry("*Outline", MENU_VENT_CIRCLEOUTLINE);
-  if(circle_outline == 0)glutAddMenuEntry("Outline", MENU_VENT_CIRCLEOUTLINE);
+  if(circle_outline == 1)glutAddMenuEntry(_("*Outline"), MENU_VENT_CIRCLEOUTLINE);
+  if(circle_outline == 0)glutAddMenuEntry(_("Outline"), MENU_VENT_CIRCLEOUTLINE);
 
 /* --------------------------------vent menu -------------------------- */
 
@@ -6431,8 +6431,8 @@ updatemenu=0;
     }
     if(have_missing_objects == 1&&isZoneFireModel==0){
       glutAddMenuEntry("-", MENU_DUMMY);
-      if(show_missing_objects==1)glutAddMenuEntry("*undefined",OBJECT_MISSING);
-      if(show_missing_objects == 0)glutAddMenuEntry("undefined",OBJECT_MISSING);
+      if(show_missing_objects==1)glutAddMenuEntry(_("*undefined"),OBJECT_MISSING);
+      if(show_missing_objects == 0)glutAddMenuEntry(_("undefined"),OBJECT_MISSING);
     }
     glutAddMenuEntry("-",MENU_DUMMY);
     if(ndeviceinfo>0){
@@ -6554,8 +6554,8 @@ updatemenu=0;
   if(visUsagememory == 1)glutAddMenuEntry(_("*Memory usage"), MENU_LABEL_memusage);
   if(visUsagememory == 0)glutAddMenuEntry(_("Memory usage"), MENU_LABEL_memusage);
 #endif
-  if(visMeshlabel == 1)glutAddMenuEntry("*Mesh", MENU_LABEL_meshlabel);
-  if(visMeshlabel == 0)glutAddMenuEntry("Mesh", MENU_LABEL_meshlabel);
+  if(visMeshlabel == 1)glutAddMenuEntry(_("*Mesh"), MENU_LABEL_meshlabel);
+  if(visMeshlabel == 0)glutAddMenuEntry(_("Mesh"), MENU_LABEL_meshlabel);
   if(vis_slice_average == 1)glutAddMenuEntry(_("*Slice average"), MENU_LABEL_sliceaverage);
   if(vis_slice_average == 0)glutAddMenuEntry(_("Slice average"), MENU_LABEL_sliceaverage);
   if(LabelGetNUserLabels() > 0){
@@ -6574,47 +6574,47 @@ updatemenu=0;
   glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Show all"), MENU_LABEL_ShowAll);
   glutAddMenuEntry(_("Hide all"), MENU_LABEL_HideAll);
-  glutAddMenuEntry("Settings...", MENU_LABEL_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_LABEL_SETTINGS);
 
 /* --------------------------------rotate type menu -------------------------- */
 
   CREATEMENU(rotatetypemenu,RotateTypeMenu);
-  glutAddMenuEntry("Scene centered:",MENU_DUMMY);
+  glutAddMenuEntry(_("Scene centered:"),MENU_DUMMY);
   switch(rotation_type){
   case EYE_CENTERED:
-    glutAddMenuEntry("  2 axis",ROTATION_2AXIS);
-    glutAddMenuEntry("  Level (1 axis)",ROTATION_1AXIS);
-    glutAddMenuEntry("  3 axis",ROTATION_3AXIS);
-    glutAddMenuEntry("*Eye centered",EYE_CENTERED);
+    glutAddMenuEntry(_("  2 axis"),ROTATION_2AXIS);
+    glutAddMenuEntry(_("  Level (1 axis)"),ROTATION_1AXIS);
+    glutAddMenuEntry(_("  3 axis"),ROTATION_3AXIS);
+    glutAddMenuEntry(_("*Eye centered"),EYE_CENTERED);
     break;
   case ROTATION_2AXIS:
-    glutAddMenuEntry("  *2 axis",ROTATION_2AXIS);
-    glutAddMenuEntry("  Level (1 axis)",ROTATION_1AXIS);
-    glutAddMenuEntry("  3 axis",ROTATION_3AXIS);
-    glutAddMenuEntry("Eye centered",EYE_CENTERED);
+    glutAddMenuEntry(_("  *2 axis"),ROTATION_2AXIS);
+    glutAddMenuEntry(_("  Level (1 axis)"),ROTATION_1AXIS);
+    glutAddMenuEntry(_("  3 axis"),ROTATION_3AXIS);
+    glutAddMenuEntry(_("Eye centered"),EYE_CENTERED);
     break;
   case ROTATION_1AXIS:
-    glutAddMenuEntry("  2 axis",ROTATION_2AXIS);
-    glutAddMenuEntry("  *Level (1 axis)",ROTATION_1AXIS);
-    glutAddMenuEntry("  3 axis",ROTATION_3AXIS);
-    glutAddMenuEntry("Eye centered",EYE_CENTERED);
+    glutAddMenuEntry(_("  2 axis"),ROTATION_2AXIS);
+    glutAddMenuEntry(_("  *Level (1 axis)"),ROTATION_1AXIS);
+    glutAddMenuEntry(_("  3 axis"),ROTATION_3AXIS);
+    glutAddMenuEntry(_("Eye centered"),EYE_CENTERED);
     break;
   case ROTATION_3AXIS:
-    glutAddMenuEntry("  2 axis",ROTATION_2AXIS);
-    glutAddMenuEntry("  Level (1 axis)",ROTATION_1AXIS);
-    glutAddMenuEntry("  *3 axis",ROTATION_3AXIS);
-    glutAddMenuEntry("Eye centered",EYE_CENTERED);
+    glutAddMenuEntry(_("  2 axis"),ROTATION_2AXIS);
+    glutAddMenuEntry(_("  Level (1 axis)"),ROTATION_1AXIS);
+    glutAddMenuEntry(_("  *3 axis"),ROTATION_3AXIS);
+    glutAddMenuEntry(_("Eye centered"),EYE_CENTERED);
     break;
   default:
     ASSERT(FFALSE);
     break;
   }
-  glutAddMenuEntry("Direction vectors:", MENU_DUMMY);
-  if(showgravity_vector==1)glutAddMenuEntry("  *show gravity, axis vectors", MENU_MOTION_SHOW_VECTORS);
-  if(showgravity_vector==0)glutAddMenuEntry("  show gravity, axis vectors", MENU_MOTION_SHOW_VECTORS);
-  glutAddMenuEntry("  gravity vector down", MENU_MOTION_GRAVITY_VECTOR);
-  glutAddMenuEntry("  z vector up", MENU_MOTION_Z_VECTOR);
-  glutAddMenuEntry("Settings...", MENU_MOTION_SETTINGS);
+  glutAddMenuEntry(_("Direction vectors:"), MENU_DUMMY);
+  if(showgravity_vector==1)glutAddMenuEntry(_("  *show gravity, axis vectors"), MENU_MOTION_SHOW_VECTORS);
+  if(showgravity_vector==0)glutAddMenuEntry(_("  show gravity, axis vectors"), MENU_MOTION_SHOW_VECTORS);
+  glutAddMenuEntry(_("  gravity vector down"), MENU_MOTION_GRAVITY_VECTOR);
+  glutAddMenuEntry(_("  z vector up"), MENU_MOTION_Z_VECTOR);
+  glutAddMenuEntry(_("Settings..."), MENU_MOTION_SETTINGS);
 
 /* --------------------------------zone show menu -------------------------- */
 
@@ -7133,7 +7133,7 @@ updatemenu=0;
         if(show_3dsmokefiles==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
         if(show_3dsmokefiles==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
         glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
-        if(show_meshmenus==1)glutAddSubMenu("Mesh", smoke3dshowsinglemenu);
+        if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), smoke3dshowsinglemenu);
       }
     }
   }
@@ -7244,7 +7244,7 @@ updatemenu=0;
       }
       if(show_iso_normal == 1)glutAddMenuEntry(_("*Show normals"), MENU_ISOSHOW_NORMALS);
       if(show_iso_normal == 0)glutAddMenuEntry(_("Show normals"), MENU_ISOSHOW_NORMALS);
-      if(show_meshmenus==1)glutAddSubMenu("Mesh", isoshowsubmenu);
+      if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), isoshowsubmenu);
     }
   }
 
@@ -7252,18 +7252,18 @@ updatemenu=0;
 
   CREATEMENU(colorbarshademenu,ColorbarMenu);
   if(contour_type==SHADED_CONTOURS){
-    glutAddMenuEntry("*Continuous",COLORBAR_CONTINUOUS);
-    glutAddMenuEntry("Stepped",COLORBAR_STEPPED);
-    glutAddMenuEntry("Lines",COLORBAR_LINES);
+    glutAddMenuEntry(_("*Continuous"),COLORBAR_CONTINUOUS);
+    glutAddMenuEntry(_("Stepped"),COLORBAR_STEPPED);
+    glutAddMenuEntry(_("Lines"),COLORBAR_LINES);
   }
   else if(contour_type==STEPPED_CONTOURS){
-    glutAddMenuEntry("Continuous",COLORBAR_CONTINUOUS);
-    glutAddMenuEntry("*Stepped",COLORBAR_STEPPED);
-    glutAddMenuEntry("Lines",COLORBAR_LINES);
+    glutAddMenuEntry(_("Continuous"),COLORBAR_CONTINUOUS);
+    glutAddMenuEntry(_("*Stepped"),COLORBAR_STEPPED);
+    glutAddMenuEntry(_("Lines"),COLORBAR_LINES);
   }else if(contour_type==LINE_CONTOURS){
-    glutAddMenuEntry("Continuous",COLORBAR_CONTINUOUS);
-    glutAddMenuEntry("Stepped",COLORBAR_STEPPED);
-    glutAddMenuEntry("*Lines",COLORBAR_LINES);
+    glutAddMenuEntry(_("Continuous"),COLORBAR_CONTINUOUS);
+    glutAddMenuEntry(_("Stepped"),COLORBAR_STEPPED);
+    glutAddMenuEntry(_("*Lines"),COLORBAR_LINES);
   }
   glutAddMenuEntry("-",MENU_DUMMY);
   if(show_extreme_maxdata == 1){
@@ -7322,12 +7322,12 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Transparent (data)"),COLORBAR_TRANSPARENT);
   }
-  if(setbwdata == 1)glutAddMenuEntry("*Black/White (data)", COLORBAR_TOGGLE_BW_DATA);
-  if(setbwdata == 0)glutAddMenuEntry("Black/White  (data)", COLORBAR_TOGGLE_BW_DATA);
-  if(setbw == 1)glutAddMenuEntry("*Black/White (geometry)", COLORBAR_TOGGLE_BW);
-  if(setbw == 0)glutAddMenuEntry("Black/White (geometry)", COLORBAR_TOGGLE_BW);
+  if(setbwdata == 1)glutAddMenuEntry(_("*Black/White (data)"), COLORBAR_TOGGLE_BW_DATA);
+  if(setbwdata == 0)glutAddMenuEntry(_("Black/White (data)"), COLORBAR_TOGGLE_BW_DATA);
+  if(setbw == 1)glutAddMenuEntry(_("*Black/White (geometry)"), COLORBAR_TOGGLE_BW);
+  if(setbw == 0)glutAddMenuEntry(_("Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
-  glutAddMenuEntry("Settings...", MENU_COLORBAR_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_COLORBAR_SETTINGS);
 
 /* --------------------------------showVslice menu -------------------------- */
   if(nvsliceloaded==0){
@@ -7366,7 +7366,7 @@ updatemenu=0;
       STRCAT(menulabel, sliceinfo[vd_shown->ival].label.longlabel);
       glutAddMenuEntry(menulabel,SHOW_ALL);
     }
-    glutAddMenuEntry("  Show in:", MENU_DUMMY);
+    glutAddMenuEntry(_("  Show in:"), MENU_DUMMY);
     if(show_slice_in_obst==ONLY_IN_GAS){
       glutAddMenuEntry(_("    *gas"),  MENU_SHOWSLICE_IN_GAS);
       glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
@@ -7388,7 +7388,7 @@ updatemenu=0;
     if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset vector slice"), MENU_SHOWSLICE_OFFSET);
-    if(show_meshmenus==1)glutAddSubMenu("Mesh", showsingleslicemenu);
+    if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), showsingleslicemenu);
   }
 
 /* --------------------------------showslice menu -------------------------- */
@@ -7446,7 +7446,7 @@ updatemenu=0;
       }
 
       if(nsliceloaded>0){
-        glutAddMenuEntry("Show in:", MENU_DUMMY);
+        glutAddMenuEntry(_("Show in:"), MENU_DUMMY);
         if(show_slice_in_obst==ONLY_IN_GAS){
           glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
           glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
@@ -7484,8 +7484,8 @@ updatemenu=0;
           }
         }
         if(showfedmenu==1){
-          if(show_fed_area==1)glutAddMenuEntry("*Show FED areas", MENU_SHOWSLICE_FEDAREA);
-          if(show_fed_area==0)glutAddMenuEntry("Show FED areas", MENU_SHOWSLICE_FEDAREA);
+          if(show_fed_area==1)glutAddMenuEntry(_("*Show FED areas"), MENU_SHOWSLICE_FEDAREA);
+          if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
         }
       }
       if(nsliceloaded>0&&sd_shown!=NULL){
@@ -7548,7 +7548,7 @@ updatemenu=0;
       }
     }
     if(nsliceloaded>0){
-      glutAddMenuEntry("  Show in:", MENU_DUMMY);
+      glutAddMenuEntry(_("  Show in:"), MENU_DUMMY);
       if(show_slice_in_obst==ONLY_IN_GAS){
         glutAddMenuEntry(_("    *gas"), MENU_SHOWSLICE_IN_GAS);
         glutAddMenuEntry(_("    solid"), MENU_SHOWSLICE_IN_SOLID);
@@ -7582,11 +7582,11 @@ updatemenu=0;
         }
       }
       if(showfedmenu==1){
-        if(show_fed_area==1)glutAddMenuEntry("*Show FED areas", MENU_SHOWSLICE_FEDAREA);
-        if(show_fed_area==0)glutAddMenuEntry("Show FED areas", MENU_SHOWSLICE_FEDAREA);
+        if(show_fed_area==1)glutAddMenuEntry(_("*Show FED areas"), MENU_SHOWSLICE_FEDAREA);
+        if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
-    if(show_meshmenus==1)glutAddSubMenu("Mesh", showhideslicemenu);
+    if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), showhideslicemenu);
   }
 
 /* -------------------------------- avatartour menu -------------------------- */
@@ -7683,7 +7683,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Show all"),MENU_TOUR_SHOWALL);
     glutAddMenuEntry(_("Hide all"),MENU_TOUR_MANUAL);
-    glutAddMenuEntry("Settings...", MENU_TOUR_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_TOUR_SETTINGS);
   }
 
  /* --------------------------------Show Volume smoke menu -------------------------- */
@@ -7712,7 +7712,7 @@ updatemenu=0;
     strcat(vlabel,_("Show"));
     glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     glutAddSubMenu(_("Smoke colorbar"),smokecolorbarmenu);
-    if(show_meshmenus==1)glutAddSubMenu("Mesh", showvolsmokesinglemenu);
+    if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), showvolsmokesinglemenu);
   }
 
   CREATEMENU(aperturemenu,ApertureMenu);
@@ -7808,7 +7808,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Time"),MENU_TIMEVIEW);
   }
-  glutAddMenuEntry("Settings...", MENU_VIEWPOINT_SETTINGS);
+  glutAddMenuEntry(_("Settings..."), MENU_VIEWPOINT_SETTINGS);
 
   /* --------------------------------showhide menu -------------------------- */
 
@@ -8180,7 +8180,7 @@ updatemenu=0;
     }
     glutAddSubMenu(_("Image type"),        render_filetypemenu);
     glutAddSubMenu(_("Image suffix"), render_filesuffixmenu);
-    glutAddMenuEntry("Settings...", MENU_RENDER_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_RENDER_SETTINGS);
     UpdateGluiRender();
   }
 
@@ -8291,7 +8291,7 @@ updatemenu=0;
       ASSERT(FFALSE);
       break;
     }
-    glutAddMenuEntry("Settings...", MENU_FONT_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
   }
 
   /* -------------------------------- units menu -------------------------- */
@@ -8337,8 +8337,8 @@ updatemenu=0;
     if(vishmsTimelabel==0)glutAddMenuEntry(_("time (h:m:s)"), MENU_UNITS_HMS);
     if(vishmsTimelabel==1)glutAddMenuEntry(_("*time (h:m:s)"), MENU_UNITS_HMS);
 #ifdef pp_BETA
-    if(show_all_units==1)glutAddMenuEntry("*show all units", MENU_UNITS_SHOWALL);
-    if(show_all_units==0)glutAddMenuEntry("show all units", MENU_UNITS_SHOWALL);
+    if(show_all_units==1)glutAddMenuEntry(_("*show all units"), MENU_UNITS_SHOWALL);
+    if(show_all_units==0)glutAddMenuEntry(_("show all units"), MENU_UNITS_SHOWALL);
 #endif
     glutAddMenuEntry(_("Reset"), MENU_UNITS_RESET);
   }
@@ -8551,7 +8551,7 @@ updatemenu=0;
   if(caseini_filename!=NULL&&strlen(caseini_filename)>0){
     char inilabel[512];
 
-    sprintf(inilabel,_("  #: save settings to %s"),caseini_filename);
+    sprintf(inilabel,"  #: save settings to %s",caseini_filename);
     glutAddMenuEntry(inilabel,MENU_DUMMY);
   }
   else{
@@ -8660,7 +8660,7 @@ updatemenu=0;
         }
       }
     }
-    glutAddMenuEntry("Settings...", MENU_PART_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
     if(npartloaded<=1){
       glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
     }
@@ -8742,7 +8742,6 @@ updatemenu=0;
       glutAddMenuEntry(vd->menulabel2,i);
     }
     glutAddMenuEntry("-",MENU_DUMMY);
-    //glutAddMenuEntry("Unload last",-2);
     glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
     if(nvslice0>0){
@@ -8802,16 +8801,16 @@ updatemenu=0;
               glutAddMenuEntry("-",MENU_DUMMY);
             }
             if(sd->ndirxyz[1]>1){
-              glutAddMenuEntry(_("Load All x"),-1000-4*nloadsubvslicemenu-1);
+              glutAddMenuEntry(_A(_("Load all")," x"),-1000-4*nloadsubvslicemenu-1);
             }
             if(sd->ndirxyz[2]>1){
-              glutAddMenuEntry(_("Load All y"),-1000-4*nloadsubvslicemenu-2);
+              glutAddMenuEntry(_A(_("Load all"), "y"),-1000-4*nloadsubvslicemenu-2);
             }
             if(sd->ndirxyz[3]>1){
-              glutAddMenuEntry(_("Load All z"),-1000-4*nloadsubvslicemenu-3);
+              glutAddMenuEntry(_A(_("Load all"), "z"),-1000-4*nloadsubvslicemenu-3);
             }
             if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-              glutAddMenuEntry(_("Load All"),-1000-4*nloadsubvslicemenu);
+              glutAddMenuEntry(_("Load all"),-1000-4*nloadsubvslicemenu);
             }
           }
           if(ii==0||strcmp(sd->label.longlabel,sdm1->label.longlabel)!=0){
@@ -8920,16 +8919,16 @@ updatemenu=0;
             glutAddMenuEntry("-",MENU_DUMMY);
           }
           if(mvslicei->ndirxyz[1]>1){
-            glutAddMenuEntry(_("Load All x"),-1000-4*nloadsubmvslicemenu-1);
+            glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*nloadsubmvslicemenu-1);
           }
           if(mvslicei->ndirxyz[2]>1){
-            glutAddMenuEntry(_("Load All y"),-1000-4*nloadsubmvslicemenu-2);
+            glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*nloadsubmvslicemenu-2);
           }
           if(mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_("Load All z"),-1000-4*nloadsubmvslicemenu-3);
+            glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*nloadsubmvslicemenu-3);
           }
           if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_("Load All"),-1000-4*nloadsubmvslicemenu);
+            glutAddMenuEntry(_("Load all"),-1000-4*nloadsubmvslicemenu);
           }
         }
         if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
@@ -8940,22 +8939,22 @@ updatemenu=0;
       if(nslicedups > 0){
         CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
         if(vectorslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+          glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
         }
         else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+          glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
         }
         if(vectorslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+          glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
         }
         else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+          glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
         }
         if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+          glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
         }
         else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+          glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
         }
       }
       nloadsubmvslicemenu=0;
@@ -8998,9 +8997,9 @@ updatemenu=0;
       glutAddSubMenu(loadmenulabel, vsliceloadmenu);
     }
     if(nslicedups > 0){
-      glutAddSubMenu("Duplicate vector slices", duplicatevectorslicemenu);
+      glutAddSubMenu(_("Duplicate vector slices"), duplicatevectorslicemenu);
     }
-    glutAddMenuEntry("Settings...", MENU_LOADVSLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
       glutAddSubMenu(_("Unload"),unloadvslicemenu);
     }
@@ -9195,16 +9194,16 @@ updatemenu=0;
           glutAddMenuEntry("-",MENU_DUMMY);
         }
         if(sd->ndirxyz[1]>1){
-          glutAddMenuEntry(_("Load All x"),-1000-4*iloadsubslicemenu-1);
+          glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*iloadsubslicemenu-1);
         }
         if(sd->ndirxyz[2]>1){
-          glutAddMenuEntry(_("Load All y"),-1000-4*iloadsubslicemenu-2);
+          glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*iloadsubslicemenu-2);
         }
         if(sd->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All z"),-1000-4*iloadsubslicemenu-3);
+          glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*iloadsubslicemenu-3);
         }
         if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All"),-1000-4*iloadsubslicemenu);
+          glutAddMenuEntry(_("Load all"),-1000-4*iloadsubslicemenu);
         }
       }
       if(i!=nsliceinfo-1&&strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
@@ -9259,7 +9258,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
-    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nsliceloaded+geom_slice_loaded>1){
       glutAddSubMenu(_("Unload"),unloadslicemenu);
     }
@@ -9345,38 +9344,38 @@ updatemenu=0;
           glutAddMenuEntry("-", MENU_DUMMY);
         }
         if(mslicei->ndirxyz[1]>1){
-          glutAddMenuEntry(_("Load All x"),-1000-4*(nloadsubmslicemenu-1)-1);
+          glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*(nloadsubmslicemenu-1)-1);
         }
         if(mslicei->ndirxyz[2]>1){
-          glutAddMenuEntry(_("Load All y"),-1000-4*(nloadsubmslicemenu-1)-2);
+          glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*(nloadsubmslicemenu-1)-2);
         }
         if(mslicei->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All z"),-1000-4*(nloadsubmslicemenu-1)-3);
+          glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*(nloadsubmslicemenu-1)-3);
         }
         if(mslicei->ndirxyz[1]+mslicei->ndirxyz[2]+mslicei->ndirxyz[3]>1){
-          glutAddMenuEntry(_("Load All"),  -1000-4*(nloadsubmslicemenu-1));
+          glutAddMenuEntry(_("Load all"),  -1000-4*(nloadsubmslicemenu-1));
         }
       }
     }
     if(nslicedups>0){
       CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
       if(slicedup_option==SLICEDUP_KEEPALL){
-        glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+        glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
       }
       else{
-        glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+        glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
       }
       if(slicedup_option==SLICEDUP_KEEPFINE){
-        glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+        glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
       }
       else{
-        glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+        glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
       }
       if(slicedup_option==SLICEDUP_KEEPCOARSE){
-        glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+        glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
       }
       else{
-        glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+        glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
       }
     }
     CREATEMENU(loadmultislicemenu, LoadMultiSliceMenu);
@@ -9424,15 +9423,15 @@ updatemenu=0;
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
     if(use_set_slicecolor==1){
-      glutAddMenuEntry("  *defer slice coloring", MENU_SLICECOLORDEFER);
+      glutAddMenuEntry(_("  *defer slice coloring"), MENU_SLICECOLORDEFER);
     }
     else{
-      glutAddMenuEntry("  defer slice coloring", MENU_SLICECOLORDEFER);
+      glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
     }
     if(nslicedups > 0){
-      glutAddSubMenu("Duplicate slices", duplicateslicemenu);
+      glutAddSubMenu(_("Duplicate slices"), duplicateslicemenu);
     }
-    glutAddMenuEntry("Settings...", MENU_SLICE_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(show_meshmenus==1&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -9497,8 +9496,8 @@ updatemenu=0;
       strcpy(vlabel,_("3D smoke (Volume rendered)"));
       glutAddMenuEntry(vlabel,LOAD_ALL);
       if(show_meshmenus==1||nvolsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY);
-      if(show_meshmenus==1)glutAddSubMenu("Mesh", loadvolsmokesinglemenu);
-      glutAddMenuEntry("Settings...", MENU_VOLSMOKE_SETTINGS);
+      if(show_meshmenus==1)glutAddSubMenu(_("Mesh"), loadvolsmokesinglemenu);
+      glutAddMenuEntry(_("Settings..."), MENU_VOLSMOKE_SETTINGS);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadvolsmoke3dmenu);
     }
@@ -9525,7 +9524,7 @@ updatemenu=0;
         if(nco2loaded>0)glutAddMenuEntry(_("CARBON DIOXIDE DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLCO2);
         if(show_meshmenus==1){
           if(nsootloaded+nhrrpuvloaded+ntemploaded+nco2loaded>0)glutAddMenuEntry("-", MENU_DUMMY);
-          glutAddSubMenu("Mesh", unloadsmoke3dsinglemenu);
+          glutAddSubMenu(_("Mesh"), unloadsmoke3dsinglemenu);
         }
       }
     {
@@ -9634,7 +9633,7 @@ updatemenu=0;
           if(n_soot_menu>0||n_hrr_menu>0){
             if(show_meshmenus==1){
               glutAddMenuEntry("-", MENU_DUMMY3);
-              glutAddSubMenu("Mesh", loadsmoke3dsinglemenu);
+              glutAddSubMenu(_("Mesh"), loadsmoke3dsinglemenu);
             }
           }
         }
@@ -9644,7 +9643,7 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
           if(nsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY3);
         }
-        glutAddMenuEntry("Settings...", MENU_SMOKE_SETTINGS);
+        glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)glutAddSubMenu(_("Unload"),unloadsmoke3dmenu);
       }
@@ -9672,7 +9671,7 @@ updatemenu=0;
         STRCPY(menulabel,plot3dinfo[i].menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-      glutAddMenuEntry("Unload all",UNLOAD_ALL);
+      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
@@ -9763,7 +9762,7 @@ updatemenu=0;
 
         i = plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
-        if(ii==nplot3dinfo-1&&nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh",plot3dsinglemeshmenu);
+        if(ii==nplot3dinfo-1&&nmeshes>1&&show_meshmenus==1)glutAddSubMenu(_("Mesh"),plot3dsinglemeshmenu);
         if(ii==0){
           strcpy(menulabel,plot3di->longlabel);
           glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
@@ -9810,7 +9809,7 @@ updatemenu=0;
           }
         }
       }
-      glutAddMenuEntry("Settings...", MENU_PLOT3D_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
       if(nplot3dloaded>1){
         glutAddSubMenu(_("Unload"),unloadplot3dmenu);
       }
@@ -9907,22 +9906,22 @@ updatemenu=0;
       if(nboundaryslicedups>0){
         CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
         if(boundaryslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
+          glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
         }
         else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
+          glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
         }
         if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
+          glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
         }
         else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
+          glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
         }
         if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
+          glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
         }
         else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
+          glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
         }
       }
       if(nmeshes>1){
@@ -10008,10 +10007,10 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
-        glutAddSubMenu("Duplicate boundary slices",duplicateboundaryslicemenu);
+        glutAddSubMenu(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
-      if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu("Mesh", loadpatchsinglemenu);
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
+      if(nmeshes>1&&show_meshmenus==1)glutAddSubMenu(_("Mesh"), loadpatchsinglemenu);
+      glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
       if(npatchloaded2>1){
         glutAddSubMenu(_("Unload"),unloadpatchmenu);
       }
@@ -10036,7 +10035,7 @@ updatemenu=0;
         STRCPY(menulabel,isoi->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-      glutAddMenuEntry("Unload all",UNLOAD_ALL);
+      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
       if(nisoinfo>0){
         if(isosubmenus==NULL){
@@ -10123,11 +10122,11 @@ updatemenu=0;
           }
           if(show_meshmenus==1){
             glutAddMenuEntry("-", MENU_DUMMY3);
-            glutAddSubMenu("Mesh", isosinglemeshmenu);
+            glutAddSubMenu(_("Mesh"), isosinglemeshmenu);
           }
         }
       }
-      glutAddMenuEntry("Settings...", MENU_ISO_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_ISO_SETTINGS);
       if(nisoloaded>1){
         glutAddSubMenu(_("Unload"),unloadisomenu);
       }
@@ -10159,7 +10158,7 @@ updatemenu=0;
         STRCAT(menulabel,zonei->label[3].shortlabel);
         glutAddMenuEntry(menulabel,i);
       }
-      glutAddMenuEntry("Unload",UNLOAD_ALL);
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
 
     }
 /* -------------------------------- compress menu -------------------------- */
@@ -10183,7 +10182,7 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);  // -c
     glutAddMenuEntry(_("Compress now"),MENU_COMPRESSNOW);
     glutAddMenuEntry(_("Erase compressed files"),MENU_ERASECOMPRESS);  // -c
-    glutAddMenuEntry("Settings...", MENU_COMPRESS_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_COMPRESS_SETTINGS);
   }
 #endif
 
@@ -10251,7 +10250,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY);
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
-    glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
+    glutAddMenuEntry(_("Settings..."), MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
@@ -10263,7 +10262,7 @@ updatemenu=0;
       glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
-    glutAddMenuEntry(_("-"), -999);
+    glutAddMenuEntry("-", -999);
     glutAddMenuEntry(_("When:"), -999);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
@@ -10392,7 +10391,7 @@ updatemenu=0;
         if(script_step==1||current_script_command!=NULL)glutAddMenuEntry(_("Cancel"),SCRIPT_CANCEL);
       }
       glutAddSubMenu(_("Record"),scriptrecordmenu);
-      glutAddMenuEntry("Settings...", MENU_SCRIPT_SETTINGS);
+      glutAddMenuEntry(_("Settings..."), MENU_SCRIPT_SETTINGS);
     }
 
   /* --------------------------------loadunload menu -------------------------- */
@@ -10515,7 +10514,7 @@ updatemenu=0;
 
       // plot3d
 
-      if(nplot3dinfo>0)glutAddSubMenu("Plot3d",loadplot3dmenu);
+      if(nplot3dinfo>0)glutAddSubMenu(_("Plot3d"),loadplot3dmenu);
 
       // zone fire
 
@@ -10529,7 +10528,7 @@ updatemenu=0;
       glutAddSubMenu(_("Configuration files"),smokeviewinimenu);
       glutAddSubMenu(_("Scripts"),scriptmenu);
 #ifdef pp_LUA
-      glutAddSubMenu(_("Lua Scripts"),luascriptmenu);
+      glutAddSubMenu("Lua Scripts",luascriptmenu);
 #endif
 #ifdef pp_COMPRESS
       if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){

@@ -966,6 +966,7 @@ void CreateTourPaths(void){
       keyj->nodeval.time = tour_tstart + (tour_tstop-tour_tstart)*keyj->total_distance/total_distance;
     }
     if(selected_frame!=NULL)selected_frame->selected=1;
+    UpdateTimes();
   }
 }
 
