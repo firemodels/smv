@@ -8551,7 +8551,7 @@ updatemenu=0;
   if(caseini_filename!=NULL&&strlen(caseini_filename)>0){
     char inilabel[512];
 
-    sprintf(inilabel,_("  #: save settings to %s"),caseini_filename);
+    sprintf(inilabel,"  #: save settings to %s",caseini_filename);
     glutAddMenuEntry(inilabel,MENU_DUMMY);
   }
   else{
