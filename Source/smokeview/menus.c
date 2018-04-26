@@ -7323,7 +7323,7 @@ updatemenu=0;
     glutAddMenuEntry(_("  Transparent (data)"),COLORBAR_TRANSPARENT);
   }
   if(setbwdata == 1)glutAddMenuEntry(_("*Black/White (data)"), COLORBAR_TOGGLE_BW_DATA);
-  if(setbwdata == 0)glutAddMenuEntry(_("Black/White  (data)"), COLORBAR_TOGGLE_BW_DATA);
+  if(setbwdata == 0)glutAddMenuEntry(_("Black/White (data)"), COLORBAR_TOGGLE_BW_DATA);
   if(setbw == 1)glutAddMenuEntry(_("*Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   if(setbw == 0)glutAddMenuEntry(_("Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
