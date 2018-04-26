@@ -42,6 +42,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+#ifdef pp_LANG
+    PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
+#endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
 #ifdef pp_READBUFFER
     PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
