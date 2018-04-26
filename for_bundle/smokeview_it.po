@@ -502,7 +502,7 @@ msgid  "Devices/Objects"
 msgstr ""
 
 msgid  "Dialogs"
-msgstr ""
+msgstr "Finestre di dialogo"
 
 msgid  "diameter"
 msgstr ""
@@ -859,7 +859,7 @@ msgid  "height/width"
 msgstr ""
 
 msgid  "Help"
-msgstr ""
+msgstr "Aiuto"
 
 msgid  "Hidden"
 msgstr ""
@@ -1129,7 +1129,7 @@ msgid  "Load full data"
 msgstr ""
 
 msgid  "Load/Unload"
-msgstr ""
+msgstr "Caricare/Scaricare"
 
 msgid  "Loading smoke and fire data"
 msgstr ""
@@ -1336,7 +1336,7 @@ msgid  "OpenGL version"
 msgstr ""
 
 msgid  "Options"
-msgstr ""
+msgstr "Opzioni"
 
 msgid  "Orientation"
 msgstr ""
@@ -1480,7 +1480,7 @@ msgid  "q: display blockage locations as specified by user or by FDS"
 msgstr ""
 
 msgid  "Quit"
-msgstr ""
+msgstr "Smettere"
 
 msgid  "r/R/ALT R: render the current scene to an image file"
 msgstr ""
@@ -1870,7 +1870,7 @@ msgid  "Show walls"
 msgstr ""
 
 msgid  "Show/Hide"
-msgstr ""
+msgstr "Mostrare/Nascondere"
 
 msgid  "Show/Hide blockage types"
 msgstr ""
