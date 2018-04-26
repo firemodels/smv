@@ -198,7 +198,7 @@ char *Translate(char *string){
       if(string_before != NULL)string_before[i] = 0;
       break;
     }
-    if(string_before!=NULL)string_before = string;
+    if(string_before==NULL)string_before = tr_string_before;
     string_before[i] = c;
   }
 
