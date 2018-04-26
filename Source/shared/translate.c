@@ -177,8 +177,7 @@ void InitTranslate(char *bindir, char *tr_name){
 /* ------------------ Translate ------------------------ */
 
 char *Translate(char *string){
-  int i, len, nchars_before=0, nchars_after=0;
-  unsigned int nchars_in=0;
+  int i, len;
   char *string_before, *string_in, *string_out, *string_after;
 
   if(tr_otherlang==0)return string;
