@@ -258,7 +258,7 @@ extern "C" void GluiClipSetup(int main_window){
   glui_clip->hide();
 
   PANEL_clip = glui_clip->add_panel("",GLUI_PANEL_NONE);
-  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip Lower"));
+  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip lower"));
   PANEL_clipx = glui_clip->add_panel_to_panel(PANEL_clip_lower,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmin=glui_clip->add_spinner_to_panel(PANEL_clipx,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmin,SPINNER_xlower,ClipCB);
   SPINNER_clip_xmin->set_float_limits(xclip_min,xclip_max,GLUI_LIMIT_CLAMP);

@@ -1129,13 +1129,13 @@ extern "C" void GluiMotionSetup(int main_window){
   ROLLOUT_scale = glui_motion->add_rollout_to_panel(PANEL_viewA,_("Scaling"),false,SCALING_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_scale,SCALING_ROLLOUT);
 
-  SPINNER_scalex=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Scale x"),GLUI_SPINNER_FLOAT,mscale);
+  SPINNER_scalex=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_A(_("Scale")," x"),GLUI_SPINNER_FLOAT,mscale);
   SPINNER_scalex->set_float_limits(0.01,100.0,GLUI_LIMIT_CLAMP);
 
-  SPINNER_scaley=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Scale y"),GLUI_SPINNER_FLOAT,mscale+1);
+  SPINNER_scaley=glui_motion->add_spinner_to_panel(ROLLOUT_scale, _A(_("Scale"), " y"),GLUI_SPINNER_FLOAT,mscale+1);
   SPINNER_scaley->set_float_limits(0.01,100.0,GLUI_LIMIT_CLAMP);
 
-  SPINNER_scalez=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Scale z"),GLUI_SPINNER_FLOAT,mscale+2);
+  SPINNER_scalez=glui_motion->add_spinner_to_panel(ROLLOUT_scale, _A(_("Scale"), " z"),GLUI_SPINNER_FLOAT,mscale+2);
   SPINNER_scalez->set_float_limits(0.01,100.0,GLUI_LIMIT_CLAMP);
 
   SPINNER_nearclip=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Near depth"),GLUI_SPINNER_FLOAT,&nearclip);
@@ -1241,8 +1241,8 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_screenvis[24] = glui_motion->add_checkbox_to_panel(ROLLOUT_upper, "8", screenvis + 24);
 
   CHECKBOX_screenvis[25] = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "top", screenvis + 25);
-  BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Show All"), SHOWALL_SCREENS, ViewpointCB);
-  BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Hide All"), HIDEALL_SCREENS, ViewpointCB);
+  BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Show all"), SHOWALL_SCREENS, ViewpointCB);
+  BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, _("Hide all"), HIDEALL_SCREENS, ViewpointCB);
 #endif
 
   UpdateGluiFileLabel(render_label_type);
