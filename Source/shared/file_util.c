@@ -589,7 +589,7 @@ filedata *File2Buffer(char *filename){
       buffer[i]=' ';   //  if a \r is found set it to a blank character
       continue;
     }
-    if(ch=='\n'||ch==EOF){
+    if(ch=='\n'||ch==EOF||ch==0){
       buffer[i]=0;
       nlines++;
     }
