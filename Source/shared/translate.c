@@ -16,6 +16,9 @@ int CompareTrdata( const void *arg1, const void *arg2 ){
   tri = (trdata *)arg1;
   trj = (trdata *)arg2;
 
+  if(tri->key == NULL&&trj->key!=NULL)return -1;
+  if(tri->key != NULL&&trj->key == NULL)return 1;
+  if(tri->key == NULL&&trj->key == NULL)return 0;
   compval = STRCMP(tri->key,trj->key);
   if(compval!=0)return compval;
   return strcmp(tri->key,trj->key);
