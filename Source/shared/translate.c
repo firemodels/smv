@@ -11,7 +11,6 @@
 
 int CompareTrdata( const void *arg1, const void *arg2 ){
   trdata *tri, *trj;
-  int compval;
 
   tri = (trdata *)arg1;
   trj = (trdata *)arg2;
