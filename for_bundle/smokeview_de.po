@@ -16,7 +16,7 @@
 // 
 
 msgid  "a/ALT a: increase/decrease flow vector length by 1.5"
-msgstr ""
+msgstr "A/ALT a: Laenge des Stroemungsvektors um 1.5 erhoehen/erniedrigen"
 
 msgid  "About"
 msgstr "Ueber"
@@ -31,7 +31,7 @@ msgid  "Actual"
 msgstr "Aktuell"
 
 msgid  "adaptive integration"
-msgstr ""
+msgstr "Adaptive Integration"
 
 msgid  "Add"
 msgstr "Hinzufuegen"
@@ -43,13 +43,13 @@ msgid  "All"
 msgstr "Alle"
 
 msgid  "All data"
-msgstr ""
+msgstr "Alle Daten"
 
 msgid  "All keyframes"
 msgstr "Alle Keyframes"
 
 msgid  "All levels solid"
-msgstr "Alle Ebenen solid darstellen"
+msgstr "Alle Ebenen solide darstellen"
 
 msgid  "All levels transparent"
 msgstr "Alle Ebenen transparent darstellen"
@@ -58,52 +58,55 @@ msgid  "All terrains"
 msgstr "Alle Gelaende"
 
 msgid  "all times"
-msgstr ""
+msgstr "Alle Zeiten"
 
 msgid  "Alpha"
 msgstr "Alpha"
 
 msgid  "also, toggles cell center display on/off)"
-msgstr ""
+msgstr "Anzeige der Zellmitten auch ein-/ausgeschaltet"
 
 msgid  "ALT o: cycle between all blockage view types"
-msgstr ""
+msgstr "ALT o: wechseln zwischen allen Blockage-Ansichtsarten"
 
 msgid  "ALT u: toggle coarse slice display in embedded mesh"
-msgstr ""
+msgstr "ALT u: grobe Slice-Ansicht im eingebetteten Mesh wechseln"
 
 msgid  "ALT v: toggle projection  method (between perspective and size preserving)"
-msgstr ""
+msgstr "ALT v: Projektionsmethode wechseln (zwischen perspektivisch und groessenerhaltend)"
 
 msgid  "ALT vertical: translate along z axis"
-msgstr "ALT vertikal: verschiebe entlang z-Achse"
+msgstr "ALT vertikal: entlang z-Achse verschieben"
 
 msgid  "ALT y: if current slice is cell centered, toggle interpolation on/off"
-msgstr ""
+msgstr "ALT y: Interpolation an-/ausschalten, falls aktuelles Slice zellzentriert ist"
 
 msgid  "ALT:   up/down cursor: slide up/down"
-msgstr "ALT + Hoch/Runter: Anzeige nach oben/unten verschieben"
+msgstr "ALT:   hoch/runter: Anzeige nach oben/unten verschieben"
 
 msgid  "ALT:left/right cursor: slide left/right"
-msgstr "ALT + links/rechts: Anzeige nach links/rechts verschieben"
+msgstr "ALT:links/rechts: Anzeige nach links/rechts verschieben"
 
 msgid  "Always show tracers"
-msgstr "Immer Tracer anzeigen"
+msgstr "Tracer immer anzeigen"
+
+msgid  "and apply at startup"
+msgstr "und beim start anwenden"
 
 msgid  "and save results into case2.ini"
-msgstr ""
+msgstr "Und Resultate in case2.ini speichern"
 
 msgid  "angle (about z axis)"
-msgstr ""
+msgstr "Winkel (um z-Achse)"
 
 msgid  "angles"
-msgstr ""
+msgstr "Winkel"
 
 msgid  "Animation"
 msgstr "Animation"
 
 msgid  "Antialias tour path line"
-msgstr ""
+msgstr "Antialias der Weglinie"
 
 msgid  "aperture"
 msgstr "Blende"
@@ -112,22 +115,25 @@ msgid  "Apply"
 msgstr "Anwenden"
 
 msgid  "Apply at startup"
-msgstr "Wende zu Beginn an"
+msgstr "beim start anwenden"
 
 msgid  "arrow"
-msgstr ""
+msgstr "Pfeil"
 
 msgid  "As circle"
-msgstr ""
+msgstr "Als Kreis"
 
 msgid  "As rectangle"
-msgstr ""
+msgstr "Als Rechteck"
+
+msgid  "at startup"
+msgstr "beim start"
 
 msgid  "Auto flip"
-msgstr ""
+msgstr "Automatisch umdrehen"
 
 msgid  "Auto freeze"
-msgstr ""
+msgstr "Automatisch einfrieren"
 
 msgid  "Auto load"
 msgstr "Automatisch laden"
@@ -136,76 +142,73 @@ msgid  "Auto load at startup"
 msgstr "Automatisch laden beim Start"
 
 msgid  "Auto load data files"
-msgstr ""
+msgstr "Automatisch Datenfiles laden"
 
 msgid  "Auto load now"
-msgstr "Automatisches Laden jetzt auswaehlen"
+msgstr "Jetzt automatisch laden"
 
 msgid  "Auto place (2D)"
-msgstr ""
+msgstr "Automatisch platzieren (2D)"
 
 msgid  "Avatar"
 msgstr "Avatar"
 
 msgid  "Average"
-msgstr "Durchschnittliche"
+msgstr "Durchschnitt ermitteln"
 
 msgid  "Average data"
-msgstr ""
+msgstr "Durchschnitt der Daten ermitteln"
 
 msgid  "Average slice data"
-msgstr ""
+msgstr "Durchschnitt der Slice-Daten ermitteln"
 
 msgid  "Axis"
 msgstr "Achse"
 
 msgid  "azimuth"
-msgstr ""
+msgstr "Azimut"
 
 msgid  "Back"
 msgstr "Zurueck"
 
 msgid  "Back slice"
-msgstr ""
+msgstr "Eine Slice zurueck"
 
 msgid  "Background"
-msgstr ""
+msgstr "Hintergrund"
 
 msgid  "Background velocity field"
 msgstr "Geschwindigkeitsfeld im Hintergrund"
 
 msgid  "base"
-msgstr ""
+msgstr "Basis"
 
 msgid  "Below"
 msgstr "Unter"
 
 msgid  "bindir dir    - specify location of smokeview bin directory"
-msgstr "bindir dir - gib die Position des Smokeview bin-Directories an"
+msgstr "Bindir dir - Position des Smokeview bin-Directories angeben"
 
 msgid  "bins"
-msgstr ""
+msgstr "Bins"
 
 msgid  "black/white"
-msgstr ""
-
-msgid  "Black/White  (data)"
-msgstr ""
+msgstr "Schwarz/Weiss"
 
 msgid  "Black/White (data)"
-msgstr ""
+msgstr "Schwarz/Weiss (Daten)"
 
 msgid  "Black/White (geometry)"
-msgstr ""
+msgstr "Schwarz/Weiss (Geometry)"
 
 msgid  "blockage"
-msgstr ""
+msgstr "Blockage"
 
 msgid  "blue"
-msgstr "blau"
+msgstr "Blau"
 
 msgid  "both"
-msgstr "beide"
+msgstr "Beide"
 
 msgid  "Both eyes"
 msgstr "Beide Augen"
@@ -214,160 +217,160 @@ msgid  "Bound data"
 msgstr "Daten begrenzen"
 
 msgid  "Boundary"
-msgstr ""
+msgstr "Rand"
 
 msgid  "Boundary file frame skip"
 msgstr "Boundary-File Frame ueberspringen"
 
 msgid  "buffer        - scan .smv file using a memory buffer"
-msgstr ""
+msgstr "Puffer        - .smv Datei unter Verwendung eines Speicherpuffers scannen"
 
 msgid  "build         - show directives used in this build of Smokeview"
-msgstr "build         - zeige die in dieser Smokeviewversion verwendeten Direktiven"
+msgstr "Build         - Direktiven dieser Smokeview-Version anzeigen"
 
 msgid  "c: toggle between continuous and 2D stepped contours"
-msgstr "c: Umschalten zwischen kontinuierlichen und unterbrochenen 2D-Konturen"
+msgstr "C: Zwischen kontinuierlichen und 2D-stufigen Konturen wechseln"
 
 msgid  "Cache boundary data"
-msgstr ""
+msgstr "Randdaten im Cache zwischenspeichern"
 
 msgid  "Cache Plot3D data"
-msgstr ""
+msgstr "Plot3D-Daten im Cache zwischenspeichern"
 
 msgid  "Cad"
 msgstr "CAD"
 
 msgid  "Cad surface drawn opaque"
-msgstr ""
+msgstr "CAD Oberflaeche undurchsichtig darstellen"
 
 msgid  "Cancel"
 msgstr "Abbrechen"
 
 msgid  "Cancel script"
-msgstr "Breche das Skript ab"
+msgstr "Skript abbrechen"
 
 msgid  "CARBON DIOXIDE DENSITY"
-msgstr ""
+msgstr "Kohlendioxid-Dichte"
 
 msgid  "casename       - project id (file names without the extension)"
-msgstr ""
+msgstr "Fallbezeichnung - Projekt-ID (Dateinamen ohne Endung)"
 
 msgid  "Center"
 msgstr "Mittig"
 
 msgid  "center of clipping planes"
-msgstr ""
+msgstr "Mittig zu Ausschnittsebenen"
 
 msgid  "CHID"
-msgstr ""
+msgstr "CHID"
 
 msgid  "Circular"
-msgstr ""
+msgstr "Kreisfoermig"
 
 msgid  "Clear"
-msgstr "Loesche"
+msgstr "Loeschen"
 
 msgid  "Clip blockages"
-msgstr "Geometrie schneiden"
+msgstr "Blockagen beschneiden"
 
 msgid  "Clip blockages and data"
-msgstr "Geometrie und Daten schneiden"
+msgstr "Geometrie und Daten beschneiden"
 
 msgid  "Clip data"
-msgstr ""
+msgstr "Daten beschneiden"
 
 msgid  "Clip lower"
-msgstr ""
+msgstr "Unterhalb beschneiden"
 
 msgid  "Clip scene...  ALT c"
-msgstr ""
+msgstr "Szene beschneiden... ALT c"
 
 msgid  "Clip upper"
-msgstr "oberhalb schneiden"
+msgstr "Oberhalb beschneiden"
 
 msgid  "Clipping disabled"
-msgstr "Schneiden deaktiviert"
+msgstr "Schneiden deaktivieren"
 
 msgid  "clock/counter clockwise: rotate about y axis (click near scene edge)"
-msgstr ""
+msgstr "(Gegen-)Uhrzeigersinn: um y-Achse rotieren (nahe Szenenrand klicken)"
 
 msgid  "Close"
 msgstr "Schliessen"
 
 msgid  "Close all dialogs  ALT x"
-msgstr ""
+msgstr "Alle Dialoge schliessen... ALT x"
 
 msgid  "CO2 alpha"
-msgstr ""
+msgstr "CO2 alpha"
 
 msgid  "CO2 factor"
-msgstr ""
+msgstr "CO2 Faktor"
 
 msgid  "CO2 opacity (m)"
-msgstr ""
+msgstr "CO2 Opazitaet"
 
 msgid  "Color"
 msgstr "Farbe"
 
 msgid  "Color above max"
-msgstr "Farbe fuer ueber max."
+msgstr "Farbe ueber max"
 
 msgid  "color as fire >"
-msgstr ""
+msgstr "Farbe wie Feuer >"
 
 msgid  "Color below min"
-msgstr "Farbe fuer unter min."
+msgstr "Farbe unter min"
 
 msgid  "Color black"
-msgstr ""
+msgstr "Farbe schwarz"
 
 msgid  "color map"
-msgstr ""
+msgstr "Farbpalette"
 
 msgid  "Color with"
-msgstr "faerbe ein mit"
+msgstr "Einfaerben mit"
 
 msgid  "color/intensity"
-msgstr ""
+msgstr "Farbe/Intensitaet"
 
 msgid  "Colorbar"
 msgstr "Farbbalken"
 
 msgid  "Colorbar type"
-msgstr "Farbbalken Typ"
+msgstr "Farbbalken-Typ"
 
 msgid  "Coloring"
-msgstr ""
+msgstr "Einfaerben"
 
 msgid  "Combine meshes"
-msgstr "kombiniere Meshes"
+msgstr "Meshes kombinieren"
 
 msgid  "Compartments"
-msgstr ""
+msgstr "Compartments"
 
 msgid  "Compiler version"
-msgstr ""
+msgstr "Compiler-Version"
 
 msgid  "complete"
-msgstr ""
+msgstr "Vollstaendig"
 
 msgid  "Compress"
-msgstr ""
+msgstr "Komprimieren"
 
 msgid  "Compress data files...  ALT z"
-msgstr ""
+msgstr "Datenfiles komprimieren... ALT z"
 
 msgid  "Compress data while loading"
-msgstr "komprimiere Daten während des Ladens"
+msgstr "Daten waehrend des Ladens komprimieren"
 
 msgid  "Compress now"
-msgstr "jetzt Komprimieren"
+msgstr "Jetzt komprimieren"
 
 msgid  "Compress only autoloaded files"
-msgstr "komprimiere nur automatisch geladene Dateien"
+msgstr "Nur automatisch geladene Dateien komprimieren"
 
 msgid  "Compressed file frame skip"
-msgstr "Ueberspringe komprimierte Datei"
+msgstr "Komprimierten Datenframe ueberspringen"
 
 msgid  "Compression"
 msgstr "Komprimierung"
@@ -376,58 +379,58 @@ msgid  "Compression options"
 msgstr "Komprimierungsoptionen"
 
 msgid  "Compute"
-msgstr ""
+msgstr "Berechnen"
 
 msgid  "Compute tracks"
-msgstr "berechne Tracks"
+msgstr "Tracks berechnen"
 
 msgid  "Configuration files"
 msgstr "Konfigurationsdateien"
 
 msgid  "Constant coloring"
-msgstr "gleichmaessige Faerbung"
+msgstr "Gleichmaessige Faerbung"
 
 msgid  "Constant speed"
-msgstr "konstante Geschwindigkeit"
+msgstr "Konstante Geschwindigkeit"
 
 msgid  "Continue"
 msgstr "Weiter"
 
 msgid  "Continuous"
-msgstr "kontinuierlich"
+msgstr "Kontinuierlich"
 
 msgid  "Continuous contours"
-msgstr "kontinuierliche Konturen"
+msgstr "Kontinuierliche Konturen"
 
 msgid  "contour width"
-msgstr ""
+msgstr "Konturenbreite"
 
 msgid  "contours"
-msgstr ""
+msgstr "Konturen"
 
 msgid  "convert_ini case1.ini case2.ini - update case1.ini to the current format"
-msgstr ""
+msgstr "Convert_ini case1.ini case2.ini - case1.ine in das aktuelle Format updaten"
 
 msgid  "Copy"
-msgstr ""
+msgstr "Kopieren"
 
 msgid  "Create/edit tours...  ALT t"
-msgstr ""
+msgstr "Touren erzeugen/editieren... ALT t"
 
 msgid  "creating window"
 msgstr "Fenster erstellen"
 
 msgid  "CTRL horizontal/vertical: translate along x, y axis"
-msgstr "CTRL horizontal/vertikal: verschiebe entlang x-, y-Achse"
+msgstr "CTRL horizontal/vertikal: entlang x-, y-Achse verschieben"
 
 msgid  "CTRL:up/down cursor: move forward/backward 5 times slower"
 msgstr "CTRL + hoch/runter: vorwaerts/rueckwaerts 5 mal langsamer"
 
 msgid  "Cull hidden slices"
-msgstr "schliesse versteckte Slices aus"
+msgstr "Versteckte Slices aussortieren"
 
 msgid  "Cull port size"
-msgstr "cull port size"
+msgstr "Cull port size"
 
 msgid  "Culling extension initialization failed"
 msgstr "Culling-Verfahren konnte nicht initialisiert werden"
@@ -436,19 +439,19 @@ msgid  "Culling extension initialization succeeded"
 msgstr "Culling-Verfahren erfolgreich initialisiert"
 
 msgid  "Current"
-msgstr "aktuelle"
+msgstr "Aktuell"
 
 msgid  "Custom"
-msgstr "benutzerdefinierte"
+msgstr "Benutzerdefiniert"
 
 msgid  "Custom Red/Custom Blue"
-msgstr "angepasstes Rot/angepasstes Blau"
+msgstr "Benutzerdefiniertes Rot/benutzerdefiniertes Blau"
 
 msgid  "Customize Colorbar"
-msgstr ""
+msgstr "Farbpalette anpassen"
 
 msgid  "cut cell"
-msgstr ""
+msgstr "Zelle abschneiden"
 
 msgid  "Cycle"
 msgstr "Ueberspringen"
@@ -457,7 +460,7 @@ msgid  "Data"
 msgstr "Daten"
 
 msgid  "Data bounds... ALT b"
-msgstr ""
+msgstr "Datengrenzen... ALT b"
 
 msgid  "Data coloring"
 msgstr "Einfaerbung der Daten"
@@ -466,37 +469,37 @@ msgid  "Data loading"
 msgstr "Dateien laden"
 
 msgid  "Debug"
-msgstr ""
+msgstr "Debuggen"
 
 msgid  "decay, p"
 msgstr "Abklingen, p"
 
 msgid  "defer slice coloring"
-msgstr ""
+msgstr "Kolorierung der Slices zurueckstellen"
 
 msgid  "Defined in evac file"
-msgstr "in EVAC Datei definiert"
+msgstr "In EVAC Datei definiert"
 
 msgid  "Defined in input file"
-msgstr "in Eingabedatei definiert"
+msgstr "In Eingabedatei definiert"
 
 msgid  "Delete"
 msgstr "Loeschen"
 
 msgid  "Delete colorbar"
-msgstr "Farbbalken loeschen"
+msgstr "Farbpalette loeschen"
 
 msgid  "demo          - use demonstrator mode of Smokeview"
-msgstr "demo          - benutze Demo-Modus von Smokeview"
+msgstr "Demo          - Demo-Modus von Smokeview benutzen"
 
 msgid  "Demonstrator"
-msgstr "Demonstration"
+msgstr "Demonstrator"
 
 msgid  "Depth"
 msgstr "Tiefe"
 
 msgid  "Device values"
-msgstr ""
+msgstr "Device-Werte"
 
 msgid  "Devices/Objects"
 msgstr "Devices/Objekte"
@@ -505,16 +508,16 @@ msgid  "Dialogs"
 msgstr "Dialoge"
 
 msgid  "diameter"
-msgstr ""
+msgstr "Durchmesser"
 
 msgid  "Dimensions"
-msgstr ""
+msgstr "Abmessungen"
 
 msgid  "Dimensions snapped to grid"
-msgstr "Abmessungen ans Gitter anpassen"
+msgstr "Abmessungen an Gitter angepasst"
 
 msgid  "direction"
-msgstr ""
+msgstr "Richtung"
 
 msgid  "Direction vectors"
 msgstr "Richtungsvektoren"
@@ -526,52 +529,52 @@ msgid  "Disclaimer"
 msgstr "Haftungsausschluss"
 
 msgid  "Discussion forum"
-msgstr ""
+msgstr "Diskussionsforum"
 
 msgid  "Discussion forum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"
-msgstr ""
+msgstr "Diskussionsforum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"
 
 msgid  "Display"
 msgstr "Anzeige"
 
 msgid  "Display all"
-msgstr "alle anzeigen"
+msgstr "Alle anzeigen"
 
 msgid  "Display exterior data"
-msgstr ""
+msgstr "Externe Daten anzeigen"
 
 msgid  "display FDS values in cell centered slices"
-msgstr "zeige FDS-Werte in zellzentrierten Slices an"
+msgstr "FDS-Werte in zellzentrierten Slices anzeigen"
 
 msgid  "Display Units"
-msgstr ""
+msgstr "Einheiten anzeigen"
 
 msgid  "Display...  ALT D"
-msgstr ""
+msgstr "Anzeigen... ALT D"
 
 msgid  "Distance to zero parallax plane (m)"
-msgstr ""
+msgstr "Abstand zur Null-Parallaxenebene"
 
 msgid  "Distribute nodes uniformly"
-msgstr ""
+msgstr "Knoten gleichmaessig verteilen"
 
 msgid  "Documentation"
-msgstr ""
+msgstr "Dokumentation"
 
 msgid  "Documentation:  https://pages.nist.gov/fds-smv/manuals.html"
-msgstr ""
+msgstr "Dokumentation:  https://pages.nist.gov/fds-smv/manuals.html"
 
 msgid  "double-click: rotate/translate 3D node-centered slice"
-msgstr "Doppelklick: rotiere/verschiebe knotenzentriertes Slice in 3D"
+msgstr "Doppelklick: knotenzentriertes Slice in 3D rotieren/verschieben"
 
 msgid  "Down"
 msgstr "Runter"
 
 msgid  "Downloads"
-msgstr ""
+msgstr "Downloads"
 
 msgid  "Downloads: https://pages.nist.gov/fds-smv/"
-msgstr ""
+msgstr "Downloads: https://pages.nist.gov/fds-smv/"
 
 msgid  "Draw"
 msgstr "Zeichnen"
@@ -580,46 +583,46 @@ msgid  "Droplets"
 msgstr "Tropfen"
 
 msgid  "Duplicate boundary slices"
-msgstr ""
+msgstr "Rand-Slices duplizieren"
 
 msgid  "Duplicate slices"
-msgstr ""
+msgstr "Slices duplizieren"
 
 msgid  "Duplicate vector slices"
-msgstr ""
+msgstr "Vektor-Slices duplizieren"
 
 msgid  "Duplicates"
-msgstr ""
+msgstr "Duplikate"
 
 msgid  "Duration"
-msgstr ""
+msgstr "Dauer"
 
 msgid  "duration (s)"
-msgstr ""
+msgstr "Dauer (s)"
 
 msgid  "e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"
-msgstr "e: schalte um zwischen Rotationsansichten: Szenen-zentriert 2 Achsen, 1 Achse, 3 Achsen und Auge-Zentr"
+msgstr "E: zwischen Rotationsansichten wechseln: Szenen-zentriert 2 Achsen, 1 Achse, 3 Achsen und Auge-zentriert"
 
 msgid  "each time"
-msgstr ""
+msgstr "Jedes Mal"
 
 msgid  "Edit"
-msgstr "Editiere"
+msgstr "Editieren"
 
 msgid  "Edit colorbar...  ALT C"
-msgstr ""
+msgstr "Farbpalette editieren... ALT C"
 
 msgid  "Edit tour"
-msgstr ""
+msgstr "Tour editieren"
 
 msgid  "elevation"
-msgstr ""
+msgstr "Erhebung"
 
 msgid  "Erase compressed files"
-msgstr "Loesche komprimierten Dateien"
+msgstr "Komprimierte Dateien loeschen"
 
 msgid  "Error: CAD geometry file: %s could not be opened"
-msgstr ""
+msgstr "Fehler: CAD Geometriefile: %s kann nicht geoeffnet werden"
 
 msgid  "error: steplabel not defined"
 msgstr "Fehler: steplabel nicht definiert"
@@ -628,100 +631,100 @@ msgid  "Evacuation"
 msgstr "Evakuierung"
 
 msgid  "every 10 minutes"
-msgstr ""
+msgstr "Alle 10 Minuten"
 
 msgid  "Every 10th"
-msgstr "Jedes 10."
+msgstr "Jedes 10. Mal"
 
 msgid  "Every 20th"
-msgstr "Jedes 20."
+msgstr "Jedes 20. Mal"
 
 msgid  "Every 2nd"
-msgstr "Jedes 2."
+msgstr "Jedes 2. Mal"
 
 msgid  "Every 3rd"
-msgstr "Jedes 3."
+msgstr "Jedes 3. Mal"
 
 msgid  "Every 4th"
-msgstr "Jedes 4."
+msgstr "Jedes 4. Mal"
 
 msgid  "every 5 minutes"
-msgstr ""
+msgstr "Alle 5 Minuten"
 
 msgid  "Every 5th"
-msgstr "Jedes 5."
+msgstr "Jedes 5. Mal"
 
 msgid  "every minute"
-msgstr ""
+msgstr "Jede Minute"
 
 msgid  "Examine geometry...  ALT e"
-msgstr ""
+msgstr "Geometrie untersuchen... ALT e"
 
 msgid  "Exterior"
 msgstr "Aussenansicht"
 
 msgid  "external"
-msgstr "extern"
+msgstr "Extern"
 
 msgid  "eye"
-msgstr ""
+msgstr "Auge"
 
 msgid  "Eye centered"
-msgstr ""
+msgstr "Auge-zentriert"
 
 msgid  "Faces"
-msgstr ""
+msgstr "Flaechen"
 
 msgid  "Facets"
 msgstr "Facetten"
 
 msgid  "factor"
-msgstr ""
+msgstr "Faktor"
 
 msgid  "Far depth"
 msgstr "Weite Tiefe"
 
 msgid  "fast          - assume slice files exist in order to reduce startup time"
-msgstr ""
+msgstr "Schnell       - von existierenden Slice-Files ausgehen, um Startup-Zeit zu reduzieren"
 
 msgid  "Fast blockage drawing"
-msgstr "schnelle Geometrie anzeige"
+msgstr "Schnelle Blockage-Anzeige"
 
 msgid  "FDS generated ticks"
 msgstr "FDS erzeugt Ticks"
 
 msgid  "fed           - pre-calculate all FED slice files"
-msgstr ""
+msgstr "Fed           - berechne alle FED Slices-Files im Voraus"
 
 msgid  "Files"
-msgstr ""
+msgstr "Dateien"
 
 msgid  "fire"
-msgstr ""
+msgstr "Feuer"
 
 msgid  "fire alpha"
-msgstr ""
+msgstr "Feuer alpha"
 
 msgid  "Fire line"
-msgstr "Feuerlinie"
+msgstr "Feuer-Linie"
 
 msgid  "fire opacity (m)"
-msgstr ""
+msgstr "Feuer-Opazitaet (m)"
 
 msgid  "Fire opacity multiplier"
-msgstr "Feuertransparenz-Multiplikator"
+msgstr "Multiplikator fuer Feuer-Transparenz"
 
 msgid  "Fires"
 msgstr "Feuer"
 
 msgid  "first"
-msgstr ""
+msgstr "Zuerst"
 
 msgid  "Flip"
-msgstr "Wechseln"
+msgstr "Umkehren"
 
 msgid  "Flip background"
-msgstr "Hintergrund wechseln"
+msgstr "Hintergrund umkehren"
 
 msgid  "Flow vectors"
 msgstr "Flussvektoren"
@@ -730,28 +733,28 @@ msgid  "Font"
 msgstr "Schriftart"
 
 msgid  "Fonts"
-msgstr ""
+msgstr "Schriftarten"
 
 msgid  "Foreground"
-msgstr ""
+msgstr "Vordergrund"
 
 msgid  "Frame"
-msgstr ""
+msgstr "Rahmen"
 
 msgid  "Frame label"
 msgstr "Bildbeschriftung"
 
 msgid  "Frame number"
-msgstr "Bild Nummer"
+msgstr "Frame-Nummer"
 
 msgid  "Frame rate"
-msgstr "Bildfrequenz"
+msgstr "Frame-Rate"
 
 msgid  "frame skip"
 msgstr "Frame ueberspringen"
 
 msgid  "Frame(s)"
-msgstr ""
+msgstr "Frame(s)"
 
 msgid  "frames per second"
 msgstr "Frames pro Sekunde"
@@ -769,22 +772,22 @@ msgid  "Front"
 msgstr "Vorne"
 
 msgid  "Front slice"
-msgstr ""
+msgstr "Vordere Slice"
 
 msgid  "g: toggle grid visibility"
-msgstr "g: Gittersichtbarkeit ein/ausschalten"
+msgstr "G: Gittersichtbarkeit ein/ausschalten"
 
 msgid  "gas"
-msgstr ""
+msgstr "Gas"
 
 msgid  "gas and solid"
-msgstr ""
+msgstr "Gas und Solid"
 
 msgid  "General"
 msgstr "Allgemein"
 
 msgid  "Generate images"
-msgstr ""
+msgstr "Bilder erzeugen"
 
 msgid  "Geometry"
 msgstr "Geometrie"
@@ -796,19 +799,19 @@ msgid  "German"
 msgstr "Deutsch"
 
 msgid  "global"
-msgstr ""
+msgstr "Global"
 
 msgid  "global max"
-msgstr "globales Max."
+msgstr "Globales max"
 
 msgid  "global min"
-msgstr "globales Min."
+msgstr "Globales min"
 
 msgid  "GPU activated. (Press G to deactivate)"
-msgstr ""
+msgstr "GPU aktiviert. (Druecke G zum Deaktivieren)"
 
 msgid  "GPU available but not in use. (Press G to activate)"
-msgstr ""
+msgstr "CPU verfuegbar, aber nicht in Benutzung (Druecke G zum Aktivieren)"
 
 msgid  "gpu grid multiplier"
 msgstr "GPU Gitter-Multiplikator"
@@ -823,229 +826,229 @@ msgid  "GPU shader initialization succeeded"
 msgstr "Initialisierung des GPU-Shaders erfolgreich"
 
 msgid  "graph"
-msgstr ""
+msgstr "Graph"
 
 msgid  "gravity vector down"
-msgstr ""
+msgstr "Gravitationsvektor nach unten"
 
 msgid  "green"
-msgstr "gruen"
+msgstr "Gruen"
 
 msgid  "Grey (0-255)"
-msgstr ""
+msgstr "Grau (0-255)"
 
 msgid  "Grid"
 msgstr "Gitter"
 
 msgid  "Grid location"
-msgstr ""
-
-msgid  "Grid locations"
 msgstr "Gitterposition"
 
+msgid  "Grid locations"
+msgstr "Gitterpositionen"
+
 msgid  "H: toggle  visibility of slice and vector slice files"
-msgstr ""
+msgstr "H: Sichtbarkeit der Slice und Vektor-Slice Dateien wechseln"
 
 msgid  "Hazard"
-msgstr ""
+msgstr "Hazard"
 
 msgid  "head"
-msgstr ""
+msgstr "Kopf"
 
 msgid  "height"
 msgstr "Hoehe"
 
 msgid  "height/width"
-msgstr ""
+msgstr "Hoehe/Weite"
 
 msgid  "Help"
 msgstr "Hilfe"
 
 msgid  "Hidden"
-msgstr "Ausblenden"
+msgstr "Ausgeblendet"
 
 msgid  "Hide"
-msgstr "Verdecken"
+msgstr "Ausblenden"
 
 msgid  "Hide all"
 msgstr "Alles ausblenden"
 
 msgid  "Hide all levels"
-msgstr "Alle Ebenen ausblenden"
+msgstr "Alle Level ausblenden"
 
 msgid  "Hide all planes"
-msgstr "Alle Ebenen verbergen"
+msgstr "Alle Ebenen ausblenden"
 
 msgid  "Hide overlaps"
-msgstr "Ueberlappungsbereiche verbergen"
+msgstr "Ueberlappungsbereiche ausblenden"
 
 msgid  "Hide scene"
-msgstr "Szene verbergen"
+msgstr "Szene ausblenden"
 
 msgid  "Highlight data above specified max"
-msgstr "Daten ueber dem ausgewaehlten max. hervorheben"
+msgstr "Daten ueber dem ausgewaehlten max hervorheben"
 
 msgid  "Highlight data below specified min"
-msgstr "Daten unter dem ausgewaehlten min. hervorheben"
+msgstr "Daten unter dem ausgewaehlten min hervorheben"
 
 msgid  "Hilight skinny triangles"
 msgstr "Schmale Dreiecke hervorheben"
 
 msgid  "Histogram"
-msgstr ""
+msgstr "Histogramm"
 
 msgid  "hms time"
-msgstr ""
+msgstr "Hms Zeit"
 
 msgid  "Home page"
-msgstr ""
+msgstr "Homepage"
 
 msgid  "Home page: https://pages.nist.gov/fds-smv/"
-msgstr ""
+msgstr "Homepage: https://pages.nist.gov/fds-smv/"
 
 msgid  "Horizontal"
 msgstr "Horizontal"
 
 msgid  "horizontal/vertical: rotate about user location"
-msgstr "horizontal/vertikal: rotiere um Benutzerposition"
+msgstr "Horizontal/Vertikal: um Benutzerposition rotieren"
 
 msgid  "horizontal/vertical: rotate about z, x axis"
-msgstr "horizontal/vertikal: rotiere um z-, x-Achse"
+msgstr "Horizontal/Vertikal: um z-, x-Achse rotieren"
 
 msgid  "horizontal/vertical: rotate about z, x axis (click near scene center)"
-msgstr ""
+msgstr "Horizontal/Vertikal: um z-, x-Achse (klicke in Naehe des Szenen-Zentrums) rotieren"
 
 msgid  "horizontal: rotate about z axis"
-msgstr "horizontal: rotiere um die z-Achse"
+msgstr "Horizontal: um die z-Achse rotieren"
 
 msgid  "How"
-msgstr ""
+msgstr "Wie"
 
 msgid  "HRR"
-msgstr ""
+msgstr "HRR"
 
 msgid  "HRRPUV"
-msgstr ""
+msgstr "HRRPUV"
 
 msgid  "HRRPUV >"
-msgstr ""
+msgstr "HRRPUV >"
 
 msgid  "HRRPUV cutoff"
 msgstr "HRRPUV Cutoff"
 
 msgid  "HRRPUV offset"
-msgstr ""
+msgstr "HRRPUV Versatz"
 
 msgid  "Humans"
 msgstr "Personen"
 
 msgid  "Humans - all meshes"
-msgstr "Personen - alle alle Gitter"
+msgstr "Personen - alle Gitter"
 
 msgid  "I: toggle  visibility of slices in blockages"
-msgstr ""
+msgstr "I: Sichtbarkeit der Slices in den Blockagen wechseln"
 
 msgid  "i: toggle iso-surface visibility"
-msgstr "i: Aendern der ISO-Oberflaechendarstellung"
+msgstr "I: die ISO-Oberflaechendarstellung aendern"
 
 msgid  "Id"
-msgstr ""
+msgstr "Id"
 
 msgid  "Image"
 msgstr "Bild"
 
 msgid  "Image size"
-msgstr ""
+msgstr "Bildgroesse"
 
 msgid  "Image suffix"
-msgstr ""
+msgstr "Bildsuffix"
 
 msgid  "Image type"
-msgstr ""
+msgstr "Bildtype"
 
 msgid  "Immersed"
-msgstr ""
+msgstr "Einbettet"
 
 msgid  "increment"
-msgstr ""
+msgstr "Zuwachs"
 
 msgid  "incremental data loading"
-msgstr ""
+msgstr "Daten inkrementell laden"
 
 msgid  "ini           - output smokeview parameter values to smokeview.ini"
-msgstr ""
+msgstr "Ini           - Smokeview Parameterwerte nach smokeview.ini ausgeben"
 
 msgid  "Initialize smoke blockage info"
-msgstr ""
+msgstr "Information zu Rauch-Blockagen initialisieren"
 
 msgid  "initialized"
-msgstr "initialisiert"
+msgstr "Initialisiert"
 
 msgid  "Initializing callbacks -"
-msgstr ""
+msgstr "Callbacks initialisieren -"
 
 msgid  "initializing Glut"
-msgstr ""
+msgstr "Glut initialisieren"
 
 msgid  "Initializing Glut display mode -"
-msgstr ""
+msgstr "Glut Anzeigemodus initialisieren -"
 
 msgid  "initializing OpenGL"
-msgstr ""
+msgstr "OpenGLinitialisieren"
 
 msgid  "initializing Smokeview graphics window -"
-msgstr ""
+msgstr "Smokeview Grafikfenster initialisieren -"
 
 msgid  "Insert"
 msgstr "Einfuegen"
 
 msgid  "Insert after"
-msgstr ""
+msgstr "Einfuegen nach"
 
 msgid  "INSERT/HOME/PageUP: tilt down/reset/tilt up"
-msgstr "Einfuegen/Pos1/Bild nach oben: Neigung vor/zurueck /schraeg stellen"
+msgstr "Einfuegen/Home/PageUP: Neigung vor/zurueck/schraeg stellen"
 
 msgid  "Inside domain"
-msgstr ""
+msgstr "Innerhalb des Gebietes"
 
 msgid  "intensity"
-msgstr ""
+msgstr "Intensitaet"
 
 msgid  "Intensity (test)"
-msgstr ""
+msgstr "Intensitaet (Test)"
 
 msgid  "Interior"
 msgstr "Innen"
 
 msgid  "internal"
-msgstr "intern"
+msgstr "Intern"
 
 msgid  "Isosurfaces"
-msgstr ""
+msgstr "Isoflaechen"
 
 msgid  "isotropic"
-msgstr ""
+msgstr "Isotrop"
 
 msgid  "Issue tracker"
-msgstr ""
+msgstr "Issue tracker"
 
 msgid  "Issue tracker: https://pages.nist.gov/fds-smv/"
-msgstr ""
+msgstr "Issue tracker: https://pages.nist.gov/fds-smv/"
 
 msgid  "Italian"
 msgstr "Italienisch"
 
 msgid  "keep all"
-msgstr ""
+msgstr "Alle behalten"
 
 msgid  "keep coarse"
-msgstr ""
+msgstr "Grobe behalten"
 
 msgid  "keep fine"
-msgstr ""
+msgstr "Feine behalten"
 
 msgid  "L: unload last slice file loaded"
-msgstr "L: letztes geladenes Slice entladen"
+msgstr "L: zuletzt geladenes Slice entladen"
 
 msgid  "Label"
 msgstr "Bezeichnung"
@@ -1053,8 +1056,11 @@ msgstr "Bezeichnung"
 msgid  "Labels"
 msgstr "Bezeichnungen"
 
+msgid  "lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"
+msgstr ""
+
 msgid  "Large"
-msgstr "gross"
+msgstr "Gross"
 
 msgid  "Layers"
 msgstr "Ebenen"
@@ -1069,31 +1075,31 @@ msgid  "Left/Right"
 msgstr "Links/Rechts"
 
 msgid  "left/right cursor: rotate left/right"
-msgstr "links/rechts: links/rechts drehen"
+msgstr "Links/Rechts: entsprechend drehen"
 
 msgid  "length"
-msgstr ""
+msgstr "Laenge"
 
 msgid  "level"
-msgstr ""
+msgstr "Level"
 
 msgid  "Level (1 axis)"
-msgstr ""
+msgstr "Level (1 Achse)"
 
 msgid  "level the scene"
-msgstr "passe die Szene an"
+msgstr "Szene anpassen"
 
 msgid  "Levels"
 msgstr "Ebenen"
 
 msgid  "Light"
-msgstr ""
+msgstr "Hell"
 
 msgid  "Light faces"
-msgstr ""
+msgstr "Helle Flaechen"
 
 msgid  "line"
-msgstr ""
+msgstr "Linie"
 
 msgid  "Line Contours"
 msgstr "Linienkonturen"
@@ -1102,85 +1108,85 @@ msgid  "Line width"
 msgstr "Linienbreite"
 
 msgid  "lines"
-msgstr ""
+msgstr "Linien"
 
 msgid  "Load"
 msgstr "Laden"
 
 msgid  "Load 3D smoke/HRRPUV when"
-msgstr ""
+msgstr "3D-Rauch/HRRPUV laden, falls"
 
 msgid  "Load all"
-msgstr ""
+msgstr "Alle laden"
 
 msgid  "Load compressed data"
-msgstr "Lade komprimierte Daten"
+msgstr "Komprimierte Daten laden"
 
 msgid  "Load data in background"
-msgstr "Lade Daten im Hintergrund"
+msgstr "Daten in den Hintergrund laden"
 
 msgid  "Load data only at render times"
-msgstr "Lade Daten nur waehrend des Renderns"
+msgstr "Daten nur waehrend des Renderns laden"
 
 msgid  "Load frame"
-msgstr ""
+msgstr "Rahmen laden"
 
 msgid  "Load full data"
-msgstr "Lade Daten vollstaendig"
+msgstr "Vollstaendige Daten laden"
 
 msgid  "Load/Unload"
 msgstr "Laden/Entladen"
 
 msgid  "Loading smoke and fire data"
-msgstr "Lade Daten von Rauch und Feuer"
+msgstr "Rauch- und Feuer-Daten laden"
 
 msgid  "local"
-msgstr ""
+msgstr "Lokal"
 
 msgid  "Locations"
 msgstr "Standorte"
 
 msgid  "lower opacity (m)"
-msgstr ""
+msgstr "Niedrige Opazitaet (m)"
 
 msgid  "lower/middle boundary"
-msgstr ""
+msgstr "Unterer/mittlerer Rand"
 
 msgid  "Make movies"
-msgstr ""
+msgstr "Movies erzeugen"
 
 msgid  "Manual"
-msgstr "Manuelle"
+msgstr "Manuell"
 
 msgid  "Map cursor keys for Plot3D use"
-msgstr "Tasten fuer Plot3D-Nutzung"
+msgstr "Tasten fuer Plot3D-Nutzung zurordnen"
 
 msgid  "Mass extinction coeff (m2/g)"
-msgstr ""
+msgstr "Massenextinktionskoeffizient (m2/g)"
 
 msgid  "mass slab"
-msgstr ""
+msgstr "Massen Slab"
 
 msgid  "Max"
 msgstr "Max"
 
 msgid  "max blending"
-msgstr ""
+msgstr "Maximale Mischung"
 
 msgid  "Max frame rate"
-msgstr "Max. Framerate"
+msgstr "Maximale Frame-Rate"
 
 msgid  "max time"
-msgstr ""
+msgstr "Maximale Zeit"
 
 msgid  "Maximum level solid"
 msgstr "Oberste Ebene als Solid"
 
 msgid  "Mechanical"
-msgstr ""
+msgstr "Mechanisch"
 
 msgid  "Memory check"
-msgstr ""
+msgstr "Speichercheck"
 
 msgid  "Memory load"
 msgstr "Speicherauslastung"
@@ -1192,19 +1198,19 @@ msgid  "Mesh"
 msgstr "Gitter"
 
 msgid  "middle opacity (m)"
-msgstr ""
+msgstr "Mittlere Opazitaet (m)"
 
 msgid  "middle/upper boundary"
-msgstr ""
+msgstr "Mittlere/oberer Rand"
 
 msgid  "Min"
 msgstr "Min"
 
 msgid  "min size"
-msgstr ""
+msgstr "Minimale Groesse"
 
 msgid  "min time"
-msgstr ""
+msgstr "Minimale Zeit"
 
 msgid  "Minimum level solid"
 msgstr "Unterste Ebene als Solid"
@@ -1216,7 +1222,7 @@ msgid  "Motion"
 msgstr "Bewegung"
 
 msgid  "Motion...  ALT m"
-msgstr ""
+msgstr "Bewegung... ALT m"
 
 msgid  "Motion/View/Render"
 msgstr "Bewegung/Ansicht/Rendern"
@@ -1225,13 +1231,13 @@ msgid  "Mouse"
 msgstr "Maus"
 
 msgid  "Move"
-msgstr "Bewege"
+msgstr "Bewegen"
 
 msgid  "n slices"
-msgstr ""
+msgstr "N Slices"
 
 msgid  "Near depth"
-msgstr "nahe Tiefe"
+msgstr "Nahe der Tiefe"
 
 msgid  "New"
 msgstr "Neue"
@@ -1240,13 +1246,13 @@ msgid  "New colorbar"
 msgstr "Neuer Farbbalken"
 
 msgid  "New data"
-msgstr ""
+msgstr "Neue Daten"
 
 msgid  "Next"
 msgstr "Weiter"
 
 msgid  "ng_ini        - non-graphics version of -ini."
-msgstr ""
+msgstr "Ng_ini        - Non-Grafik Version of -ini."
 
 msgid  "Node"
 msgstr "Knoten"
@@ -1258,22 +1264,22 @@ msgid  "non-gpu grid multiplier"
 msgstr "Non-GPU Gitter-Multiplikator"
 
 msgid  "none"
-msgstr ""
+msgstr "Keine"
 
 msgid  "Normal"
 msgstr "Normal"
 
 msgid  "North"
-msgstr ""
+msgstr "Norden"
 
 msgid  "North direction"
-msgstr ""
+msgstr "Nordrichtung"
 
 msgid  "now"
-msgstr ""
+msgstr "Jetzt"
 
 msgid  "no_buffer     - scan .smv file using file I/O rather from memory"
-msgstr ""
+msgstr "No_buffer     - .smv Datei via Ein-/Ausgabe und nicht via Speicher scannen"
 
 msgid  "Number of contours"
 msgstr "Anzahl der Konturen"
@@ -1285,52 +1291,52 @@ msgid  "number of particles"
 msgstr "Anzahl der Partikel"
 
 msgid  "O: toggle blockage view (normal <--> outline)"
-msgstr ""
+msgstr "O: Blockage-Ansicht (normal <--> Umriss) umschalten"
 
 msgid  "object"
-msgstr ""
+msgstr "Objekt"
 
 msgid  "Objects"
 msgstr "Objekte"
 
 msgid  "Obstacles"
-msgstr "Hindernisse (Obstacles)"
+msgstr "Hindernisse"
 
 msgid  "Off"
 msgstr "Aus"
 
 msgid  "Offset"
-msgstr ""
+msgstr "Versatz"
 
 msgid  "Offset slice"
-msgstr "Slice-Offset"
+msgstr "Slice Versatz"
 
 msgid  "Offset vector slice"
-msgstr "Vektor-Slice Offset"
+msgstr "Vektor-Slice Versatz"
 
 msgid  "Offset window"
-msgstr "Fenster-Versatz (offset)"
+msgstr "Fenster Versatz"
 
 msgid  "Online"
-msgstr ""
+msgstr "Online"
 
 msgid  "opacity"
-msgstr ""
+msgstr "Opazitaet"
 
 msgid  "opacity adjustment"
-msgstr ""
+msgstr "Opazitaet anpassen"
 
 msgid  "Opacity correction (test)"
-msgstr ""
+msgstr "Korrektur der Opazitaet (test)"
 
 msgid  "opacity map"
-msgstr ""
+msgstr "Anzeige der Opazitaet"
 
 msgid  "Open"
 msgstr "Open"
 
 msgid  "Open vents as outlines"
-msgstr "Oeffne Vents als Konturen"
+msgstr "Vents als Konturen oeffnen"
 
 msgid  "OpenGL version"
 msgstr "OpenGL Version"
@@ -1339,10 +1345,10 @@ msgid  "Options"
 msgstr "Optionen"
 
 msgid  "Orientation"
-msgstr ""
+msgstr "Orientierung"
 
 msgid  "Orientation scale"
-msgstr ""
+msgstr "Orientierungsskala"
 
 msgid  "origin"
 msgstr "Ursprung"
@@ -1351,34 +1357,34 @@ msgid  "Other"
 msgstr "Andere"
 
 msgid  "Other options"
-msgstr ""
+msgstr "Andere Optionen"
 
 msgid  "Outline"
 msgstr "Gliederung"
 
 msgid  "Outline added"
-msgstr ""
+msgstr "Umriss hinzugefuegt"
 
 msgid  "Outline color"
 msgstr "Umrissfarbe"
 
 msgid  "Outline only"
-msgstr ""
+msgstr "Nur Umriss"
 
 msgid  "Output data"
-msgstr ""
+msgstr "Daten ausgeben"
 
 msgid  "Output data to file"
-msgstr "Schreibe Daten in Datei"
+msgstr "Daten in Datei ausgeben"
 
 msgid  "Outside"
 msgstr "Ausserhalb"
 
 msgid  "Outside domain"
-msgstr ""
+msgstr "Ausserhalb des Gebietes"
 
 msgid  "Overwrite compressed files"
-msgstr "Ueberschreibe komprimierte Dateien"
+msgstr "Komprimierte Dateien ueberschreiben"
 
 msgid  "Oxygen"
 msgstr "Sauerstoff"
@@ -1387,25 +1393,25 @@ msgid  "oxygen VOLUME FRACTION"
 msgstr "Sauerstoff-Volumenanteil"
 
 msgid  "p: increment plot3d variable"
-msgstr "p: Erhoehe plot3d Variable"
+msgstr "P: plot3d Variable erhoehen"
 
 msgid  "P: toggle cursor key mappings"
-msgstr "P: Schalte Cursor-Tastenzuordnungen um"
+msgstr "P: Cursor-Tastenzuordnungen umschalten"
 
 msgid  "param"
-msgstr ""
+msgstr "Param"
 
 msgid  "Parameters"
 msgstr "Parameter"
 
 msgid  "Particle head"
-msgstr "Partikel-Kopf (??)"
+msgstr "Partikelkopf"
 
 msgid  "Particle size"
 msgstr "Partikelgroesse"
 
 msgid  "Particle tracking"
-msgstr "Partikelverfolgung (tracking)"
+msgstr "Partikelverfolgung"
 
 msgid  "Particles"
 msgstr "Partikel"
@@ -1414,22 +1420,22 @@ msgid  "Path"
 msgstr "Pfad"
 
 msgid  "Path length (m)"
-msgstr ""
+msgstr "Pfadlaenge (m)"
 
 msgid  "Pause"
 msgstr "Pause"
 
 msgid  "percentages"
-msgstr ""
+msgstr "Prozentsatz"
 
 msgid  "percentile max"
-msgstr "max Prozent"
+msgstr "Maximaler Prozentsatz"
 
 msgid  "percentile min"
-msgstr "min Prozent"
+msgstr "Minimaler Prozentsatz"
 
 msgid  "Perspective"
-msgstr "perspektivisch"
+msgstr "Perspektivisch"
 
 msgid  "Planar terrain slice"
 msgstr "Ebenes Terrain-Slice"
@@ -1444,64 +1450,64 @@ msgid  "Points"
 msgstr "Punkte"
 
 msgid  "Polish"
-msgstr ""
+msgstr "Glaette"
 
 msgid  "polygon"
-msgstr ""
+msgstr "Poligon"
 
 msgid  "position"
-msgstr ""
+msgstr "Position"
 
 msgid  "Positions"
 msgstr "Positionen"
 
 msgid  "Power law"
-msgstr "Potenzgesetz (power law)"
+msgstr "Potenzgesetz"
 
 msgid  "Press"
-msgstr "Druecke"
+msgstr "Druecken"
 
 msgid  "Previous"
 msgstr "Zurueck"
 
 msgid  "processing config file"
-msgstr "Bearbeite Konfigurations-Datei"
+msgstr "Konfigurations-Datei bearbeiten"
 
 msgid  "processing smokeview file"
-msgstr ""
+msgstr "Smokeview Datei bearbeiten"
 
 msgid  "profile"
-msgstr ""
+msgstr "Profil"
 
 msgid  "Properties"
 msgstr "Eigenschaften"
 
 msgid  "q: display blockage locations as specified by user or by FDS"
-msgstr ""
+msgstr "Q: Blockage-Positionen anzeigen wie durch Nutzer oder FDS spezifiziert"
 
 msgid  "Quit"
 msgstr "Beenden"
 
 msgid  "r/R/ALT R: render the current scene to an image file"
-msgstr ""
+msgstr "R/R/ALT R: aktuelle Szene in eine Image-Datei rendern"
 
 msgid  "radii"
-msgstr ""
+msgstr "Radii"
 
 msgid  "radius"
-msgstr ""
+msgstr "Radius"
 
 msgid  "range"
-msgstr ""
+msgstr "Bereich"
 
 msgid  "Read .svo files"
-msgstr "Lese .svo Dateien"
+msgstr ".svo Dateien einlesen"
 
 msgid  "Read ini files"
-msgstr "Lese ini-Dateien"
+msgstr "ini-Dateien einlesen"
 
 msgid  "reading"
-msgstr "einlesen"
+msgstr "Einlesen"
 
 msgid  "Real time"
 msgstr "Realzeit"
@@ -1510,13 +1516,13 @@ msgid  "Realistic"
 msgstr "Realistisch"
 
 msgid  "Record"
-msgstr "Zeichne auf"
+msgstr "Aufzeichnen"
 
 msgid  "Record/run scripts"
-msgstr ""
+msgstr "Skript aufzeichnen/ausfuehren"
 
 msgid  "red"
-msgstr "rot"
+msgstr "Rot"
 
 msgid  "Red/Blue"
 msgstr "Rot/Blau"
@@ -1525,64 +1531,64 @@ msgid  "Red/Cyan"
 msgstr "Rot/Cyan"
 
 msgid  "reference elevation, Z0 (m)"
-msgstr ""
+msgstr "Referenz-Erhoehung, Z0 (m)"
 
 msgid  "reference velocity, U0 (m/s)"
-msgstr ""
+msgstr "Referenz-Geschwindigkeit, U0 (m/s)"
 
 msgid  "Release notes"
-msgstr ""
+msgstr "Veroeffentlichungshinweise"
 
 msgid  "Release notes: https://pages.nist.gov/fds-smv/smv_readme.html"
-msgstr ""
+msgstr "Veroeffentlichungshinweise: https://pages.nist.gov/fds-smv/smv_readme.html"
 
 msgid  "Reload"
-msgstr "Lade neu"
+msgstr "Erneut laden"
 
 msgid  "Reload all data"
-msgstr ""
+msgstr "Alle Daten erneut laden"
 
 msgid  "Reload Boundary File(s)"
-msgstr ""
+msgstr "Alle Randdaten erneut laden"
 
 msgid  "Reload new data"
-msgstr ""
+msgstr "Neue Daten erneut laden"
 
 msgid  "Render"
-msgstr "Rendere"
+msgstr "Rendern"
 
 msgid  "Render high res"
-msgstr ""
+msgstr "In hoher Aufloesung rendern"
 
 msgid  "Render images"
-msgstr ""
+msgstr "Bilder rendern"
 
 msgid  "Render normal"
-msgstr ""
+msgstr "Normal rendern"
 
 msgid  "Replace"
-msgstr "Ersetze"
+msgstr "Ersetzen"
 
 msgid  "Representation"
-msgstr ""
+msgstr "Representation"
 
 msgid  "Requested"
-msgstr "Angeforderte"
+msgstr "Angefordert"
 
 msgid  "Research display mode"
-msgstr "Untersuche Display-Modus"
+msgstr "Display-Modus untersuchen"
 
 msgid  "Reset"
-msgstr "Reset"
+msgstr "Zuruecksetzen"
 
 msgid  "reset animation to the initial time"
-msgstr "Setze Animation zur Anfangszeit zurueck"
+msgstr "Animation zur Anfangszeit zuruecksetzen"
 
 msgid  "Reset zmin/zmax"
-msgstr ""
+msgstr "zmin/zmax zuruecksetzen"
 
 msgid  "Reverse"
-msgstr ""
+msgstr "Umdrehen"
 
 msgid  "Right"
 msgstr "Rechts"
@@ -1591,73 +1597,76 @@ msgid  "Right eye"
 msgstr "Rechtes Auge"
 
 msgid  "Rotate"
-msgstr "Rotiere"
+msgstr "Rotieren"
 
 msgid  "Rotate about"
-msgstr "Rotiere um"
+msgstr "Rotieren um"
 
 msgid  "rotation center"
 msgstr "Rotationszentrum"
 
 msgid  "Rotation parameters"
-msgstr ""
+msgstr "Rotationsparameter"
 
 msgid  "Run"
 msgstr "Ausfuehren"
 
 msgid  "Run script"
-msgstr "Fuehre Skript aus"
+msgstr "Skript ausfuehren"
 
 msgid  "Run smokezip"
-msgstr "Starte smokezip"
+msgstr "smokezip starten"
 
 msgid  "runscript     - run the script file casename.ssf"
-msgstr "runscript     - Fuehre die Skriptdatei casename.ssf aus"
+msgstr "Runscript     - Skriptdatei casename.ssf ausfuehren"
 
 msgid  "Russian"
-msgstr ""
+msgstr "Russisch"
 
 msgid  "s: change interval between adjacent vectors"
-msgstr "S: Veraendere Abstand zwischen benachbarten Vektoren"
+msgstr "S: Abstand zwischen benachbarten Vektoren veraendern"
 
 msgid  "Save"
-msgstr "Speichere"
+msgstr "Speichern"
 
 msgid  "Save auto load file list"
-msgstr "Speichere automatische Dateiliste"
+msgstr "Automatische Dateiliste speichern"
 
 msgid  "Save settings"
-msgstr "Speichere Einstellungen"
+msgstr "Einstellungen speichern"
 
 msgid  "save settings (create casename.ini file)"
-msgstr ""
+msgstr "Einstellungen speichern (Datei casename.ini erzeugen)"
+
+msgid  "Save viewpoint as"
+msgstr "Blickwinkel speichern unter"
 
 msgid  "Save/load configuration files"
-msgstr ""
+msgstr "Konfigurationsdateien speichern/laden"
 
 msgid  "Scale"
-msgstr ""
+msgstr "Skalieren"
 
 msgid  "Scaled"
 msgstr "Skaliert"
 
 msgid  "Scaled optical depth (SCD)"
-msgstr ""
+msgstr "Skalierte optische Tiefe (SCD)"
 
 msgid  "Scaling"
 msgstr "Skalierung"
 
 msgid  "scatter"
-msgstr ""
+msgstr "Streuen"
 
 msgid  "scene"
-msgstr ""
+msgstr "Szene"
 
 msgid  "Scene centered"
-msgstr ""
+msgstr "Szenen-zentriert"
 
 msgid  "Scene movement"
-msgstr ""
+msgstr "Szenen-Bewegung"
 
 msgid  "Scratch directory"
 msgstr "Verzeichnis fuer temporaere Dateien"
@@ -1666,7 +1675,7 @@ msgid  "Script files"
 msgstr "Skript-Dateien"
 
 msgid  "script scriptfile - run the script file scriptfile"
-msgstr "script scriptfile - fuehrt die Skriptdatei scriptfile aus"
+msgstr "Script scriptfile - Skriptdatei scriptfile ausfuehren"
 
 msgid  "Scripts"
 msgstr "Skripte"
@@ -1675,274 +1684,274 @@ msgid  "Segments"
 msgstr "Segmente"
 
 msgid  "Select"
-msgstr "Waehle aus"
+msgstr "Auswaehlen"
 
 msgid  "Select avatar"
-msgstr "Waehle Avatar"
+msgstr "Avatar auswaehlen"
 
 msgid  "Selected keyframe"
 msgstr "Ausgewaehlter Keyframe"
 
 msgid  "Selection width"
-msgstr ""
+msgstr "Auswahlbreite"
 
 msgid  "Set"
-msgstr "Setze"
+msgstr "Setzen"
 
 msgid  "set max"
-msgstr "Setze max"
+msgstr "max setzen"
 
 msgid  "set min"
-msgstr "Setze min"
+msgstr "min setzen"
 
 msgid  "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 msgid  "settings (test)"
-msgstr ""
+msgstr "Einstellungen (test)"
 
 msgid  "setup         - only show geometry"
-msgstr ""
+msgstr "Setup         - nur Geometrie anzeigen"
 
 msgid  "shaded"
-msgstr ""
+msgstr "Schattiert"
 
 msgid  "SHIFT: left/right cursor: rotate 90 degrees"
-msgstr "SHIFT: links/rechts Cursor: rotiere um 90 Grad"
+msgstr "SHIFT: links/rechts Cursor: um 90 Grad rotieren"
 
 msgid  "Shortcuts"
 msgstr "Abkuerzungen"
 
 msgid  "Show"
-msgstr "Zeige"
+msgstr "Anzeigen"
 
 msgid  "Show all"
-msgstr "Zeige alle"
+msgstr "Alle anzeigen"
 
 msgid  "show all 3D slices"
-msgstr ""
+msgstr "Alle 3D Slices anzeigen"
 
 msgid  "Show all levels"
-msgstr "Zeige alle Ebenen"
+msgstr "Alle Ebenen anzeigen"
 
 msgid  "Show all planes"
-msgstr "Zeige alle Ebenen"
+msgstr "Alle Ebenen anzeigen"
 
 msgid  "show all units"
-msgstr ""
+msgstr "Alle Einheiten anzeigen"
 
 msgid  "Show always"
-msgstr ""
+msgstr "Immer anzeigen"
 
 msgid  "Show avatar"
-msgstr "Zeige Avatar"
+msgstr "Avatar anzeigen"
 
 msgid  "Show axis labels"
-msgstr ""
+msgstr "Achsenbezeichnungen anzeigen"
 
 msgid  "Show axis vectors"
-msgstr ""
+msgstr "Achsenvektoren anzeigen"
 
 msgid  "Show beam as line"
-msgstr ""
+msgstr "Balken als Linie anzeigen"
 
 msgid  "Show CAD textures"
-msgstr "Zeige CAD Texturen"
+msgstr "CAD Texturen anzeigen"
 
 msgid  "Show cell centered slices and vectors"
-msgstr ""
+msgstr "Zellzentrierte Slices und Vektoren anzeigen"
 
 msgid  "Show color map"
-msgstr ""
+msgstr "Farbpalette anzeigen"
 
 msgid  "Show colorbar (when data coloring)"
-msgstr ""
+msgstr "Farbpalette (bei Daten-Kolorierung) anzeigen"
 
 msgid  "Show contours"
-msgstr "Zeige Konturen"
+msgstr "Konturen anzeigen"
 
 msgid  "Show cull ports"
-msgstr "Zeige Cull-Port (??)"
+msgstr "Cull-Port anzeigen"
 
 msgid  "Show cutcells"
-msgstr ""
+msgstr "Schnitt-Zellen anzeigen"
 
 msgid  "Show data while moving scene (GPU)"
-msgstr ""
+msgstr "Daten beim Bewegen der Szene (GPU) anzeigen"
 
 msgid  "Show FED areas"
-msgstr ""
+msgstr "FED Bereiche anzeigen"
 
 msgid  "Show file names"
-msgstr "Zeige Dateinamen"
+msgstr "Dateinamen anzeigen"
 
 msgid  "Show geometry diagnostics"
-msgstr ""
+msgstr "Geometrie-Diagnose anzeigen"
 
 msgid  "show gravity, axis vectors"
-msgstr ""
+msgstr "Gravitations-, Achsenvektoren anzeigen"
 
 msgid  "show grid"
-msgstr "Zeige Gitter"
+msgstr "Gitter anzeigen"
 
 msgid  "show grid location"
-msgstr "Zeige Gitterposition"
+msgstr "Gitterposition anzeigen"
 
 msgid  "Show in"
-msgstr ""
+msgstr "Anzeigen in"
 
 msgid  "Show intermediate path nodes"
-msgstr "Zeige dazwischenliegende Pfad-Knoten"
+msgstr "Dazwischenliegende Pfad-Knoten anzeigen"
 
 msgid  "show labels"
-msgstr ""
+msgstr "Label anzeigen"
 
 msgid  "Show mesh menus"
-msgstr ""
+msgstr "Mesh-Menue anzeigen"
 
 msgid  "Show node centered slices and vectors"
-msgstr ""
+msgstr "Knotenzentrierte Slices und Vektoren anzeigen"
 
 msgid  "Show normal"
-msgstr "Zeige Normalansicht"
+msgstr "Normalansicht anzeigen"
 
 msgid  "Show normals"
-msgstr "Zeige Normalen"
+msgstr "Normalen anzeigen"
 
 msgid  "Show Only"
-msgstr "Zeige nur"
+msgstr "Anzeigen beschraenken auf"
 
 msgid  "Show only back slices"
-msgstr ""
+msgstr "Nur Rueckseiten anzeigen"
 
 msgid  "Show only first frame"
-msgstr "Zeige nur den ersten Frame"
+msgstr "Nur ersten Frame anzeigen"
 
 msgid  "Show only threshold"
-msgstr "Zeige nur Schwellenwert"
+msgstr "Nur Schwellenwert anzeigen"
 
 msgid  "Show only X slices"
-msgstr ""
+msgstr "Nur X-Slices anzeigen"
 
 msgid  "Show opacity map"
-msgstr ""
+msgstr "Opazitaets-Farbpalette anzeigen"
 
 msgid  "Show orientation"
-msgstr ""
+msgstr "Orientierung anzeigen"
 
 msgid  "Show particles"
-msgstr "Zeige Partikel"
+msgstr "Partikel anzeigen"
 
 msgid  "Show position/direction"
-msgstr ""
+msgstr "Position/Richtung anzeigen"
 
 msgid  "show scale"
-msgstr ""
+msgstr "Skala anzeigen"
 
 msgid  "Show slice menus"
-msgstr ""
+msgstr "Slice-Menues anzeigen"
 
 msgid  "show sorted slice labels"
-msgstr ""
+msgstr "Sortierte Slice-Beschriftungen anzeigen"
 
 msgid  "Show temp threshold"
-msgstr "Zeige Temperatur-Schwellenwert"
+msgstr "Temperatur-Schwellenwert anzeigen"
 
 msgid  "Show test smoke"
-msgstr "Zeige Test-Rauch"
+msgstr "Test-Rauch anzeigen"
 
 msgid  "Show tracers always"
-msgstr "Zeige Indikatoren (Tracers) fortlaufend  (??)"
+msgstr "Tracers fortlaufend anzeigen"
 
 msgid  "Show user ticks"
-msgstr "Zeige Ticks"
+msgstr "Nutzer-Ticks anzeigen"
 
 msgid  "Show vectors"
-msgstr "Zeige Vektoren"
+msgstr "Vektoren anzeigen"
 
 msgid  "Show vectors and cell centered slices"
-msgstr ""
+msgstr "Vektoren und zellzentrierte Slices anzeigen"
 
 msgid  "Show vectors and node centered slices"
-msgstr ""
+msgstr "Vektoren und knotenzentrierte Slices anzeigen"
 
 msgid  "Show walls"
-msgstr "Zeige Waende"
+msgstr "Waende anzeigen"
 
 msgid  "Show/Hide"
-msgstr "Zeigen/Verbergen"
+msgstr "Anzeigen/Verbergen"
 
 msgid  "Show/Hide blockage types"
-msgstr "Zeige/Verstecke Blockage-Typen"
+msgstr "Blockage-Typen anzeigen/verstecken"
 
 msgid  "Size"
 msgstr "Groesse"
 
 msgid  "Size preserving"
-msgstr "groessenerhaltend"
+msgstr "Groessenerhaltend"
 
 msgid  "Skip coarse sub-slice"
-msgstr "Ueberspringe grobes Sub-Slice"
+msgstr "Grobes Sub-Slice ueberspringen"
 
 msgid  "skip frame"
-msgstr ""
+msgstr "Rahmen ueberspringen"
 
 msgid  "skipframe n   - render every n frames"
-msgstr "skipframe n   - rendere alle n Frames"
+msgstr "Skipframe n   - alle n Frames rendern"
 
 msgid  "Slice"
-msgstr ""
+msgstr "Slice"
 
 msgid  "Slice average"
 msgstr "Slice-Durchschnitt"
 
 msgid  "Slice frame Skip"
-msgstr "Slice Frame Skip (??)"
+msgstr "Slice-Frame Versatz"
 
 msgid  "Slice motion"
-msgstr ""
+msgstr "Slice-Bewegung"
 
 msgid  "Slice rendered"
-msgstr ""
+msgstr "Slice gerendert"
 
 msgid  "sliding"
-msgstr ""
+msgstr "Gleitend"
 
 msgid  "small"
-msgstr "klein"
+msgstr "Klein"
 
 msgid  "Smoke"
-msgstr ""
+msgstr "Rauch"
 
 msgid  "smoke (Volume rendered)"
-msgstr ""
+msgstr "Rauch (Volumen-gerendert)"
 
 msgid  "Smoke colorbar"
-msgstr ""
+msgstr "Rauch Farbpalette"
 
 msgid  "Smoke culling activated. (Press C to deactivate)"
-msgstr ""
+msgstr "Smoke culling aktiviert (Zum Deaktivieren C druecken)"
 
 msgid  "Smoke culling available but not in use. ( To activate"
-msgstr "Rauchausblendung (smoke culling) verfuegbar, aber nicht in Gebrauch. (Zum Aktivieren"
+msgstr "Smoke culling verfuegbar, aber nicht in Gebrauch. Zum Aktivieren ( druecken"
 
 msgid  "Smoke culling not available"
-msgstr "Rauchausblendung (smoke culling) nicht verfuegbar"
+msgstr "Smoke culling nicht verfuegbar"
 
 msgid  "Smoke density (g/m3)"
-msgstr ""
+msgstr "Rauchdichte (g/m3)"
 
 msgid  "smoke frame"
-msgstr ""
+msgstr "Rauch-Frame"
 
 msgid  "smoke frame skip"
-msgstr ""
+msgstr "Rauch-Frame ueberspringen"
 
 msgid  "Smoke/Fire"
 msgstr "Rauch/Feuer"
 
 msgid  "smoke/fire color"
-msgstr ""
+msgstr "Rauch/Feuer Farbe"
 
 msgid  "Smokeview menus"
 msgstr "Smokeview Menues"
@@ -1951,25 +1960,25 @@ msgid  "Smokeview was built using the following pre-processing directives"
 msgstr "Smokeview wurde mit den folgenden Pre-Prozessing Direktiven compiliert"
 
 msgid  "Smooth"
-msgstr "glatt"
+msgstr "Glatt"
 
 msgid  "Smooth colorbar labels"
-msgstr "Glaette Colorbar-Beschriftungen"
+msgstr "Farbpaletten-Beschriftungen glaetten"
 
 msgid  "Smooth isosurfaces"
-msgstr ""
+msgstr "Isoflaechen glaetten"
 
 msgid  "Smooth normal"
-msgstr "Glaette normal"
+msgstr "Normal glaetten"
 
 msgid  "smv"
-msgstr ""
+msgstr "Smv"
 
 msgid  "Snap"
 msgstr "Momentaufnahme (snap)"
 
 msgid  "snap scene to closest 45 degree orientation"
-msgstr "Einrasten der Szene an der naechsten 45-Grad Orientierung"
+msgstr "Szene an der naechsten 45-Grad Orientierung einrasten"
 
 msgid  "Solid"
 msgstr "Solide"
@@ -1978,115 +1987,115 @@ msgid  "Solid and outline"
 msgstr "Solide und mit Konturen"
 
 msgid  "Solid only"
-msgstr ""
+msgstr "Nur solide"
 
 msgid  "Solution value"
-msgstr "Solution Wert"
+msgstr "Loesungswert"
 
 msgid  "Solution variable"
-msgstr "Solution Variable"
+msgstr "Loesungsvariable"
 
 msgid  "soot alpha >"
-msgstr ""
+msgstr "Russ alpha >"
 
 msgid  "SOOT DENSITY"
-msgstr ""
+msgstr "Russ-Dichte"
 
 msgid  "soot factor"
-msgstr ""
+msgstr "Russ-Faktor"
 
 msgid  "Sort faces"
-msgstr "Sortierte Flaechen"
+msgstr "Flaechen sortieren"
 
 msgid  "sort slices"
-msgstr ""
+msgstr "Slices sortieren"
 
 msgid  "Sort transparent faces"
-msgstr "Sortiere transparent Flaechen"
+msgstr "Transparente Flaechen sortieren"
 
 msgid  "Sort transparent surfaces"
-msgstr "Sortiere transparente Oberflaechen"
+msgstr "Transparente Oberflaechen sortieren"
 
 msgid  "space bar: decrement/increment time step, 2D contour planes, 3D contour levels"
-msgstr ""
+msgstr "Spacebar: Zeitschritte erniedrigen/erhoehen, 2D Konturebenen, 3D Konturlevel"
 
 msgid  "Spanish"
 msgstr "Spanisch"
 
 msgid  "Specify Orientation"
-msgstr ""
+msgstr "Orientierung spezifizieren"
 
 msgid  "Specify Rotation"
-msgstr ""
+msgstr "Rotation spezifizieren"
 
 msgid  "spheres"
-msgstr "Bereiche (spheres)"
+msgstr "Bereiche"
 
 msgid  "split"
-msgstr ""
+msgstr "Aufsplitten"
 
 msgid  "Start"
-msgstr "Start"
+msgstr "Starten"
 
 msgid  "Start (disable file loading)"
-msgstr ""
+msgstr "Starten (Laden von Dateien deaktivieren)"
 
 msgid  "start frame"
-msgstr ""
+msgstr "Frame starten"
 
 msgid  "Start rendering"
-msgstr "Starte Rendern"
+msgstr "Rendern starten"
 
 msgid  "start time"
 msgstr "Startzeit"
 
 msgid  "startframe n  - start rendering at frame n"
-msgstr "startframe n  - starte Rendern bei Frame n"
+msgstr "Startframe n  - Rendern bei Frame n starten"
 
 msgid  "Starting locations/velocities"
-msgstr "Starte Positionen/Geschwindigkeiten (??)"
+msgstr "Positionen/Geschwindigkeiten starten"
 
 msgid  "Step"
-msgstr "Schritt"
+msgstr "Einen Schritt ausfuehren"
 
 msgid  "Step (using ^)"
-msgstr ""
+msgstr "Einen Schritt ausfuehren (using ^)"
 
 msgid  "Step through script"
-msgstr "Gehe schrittweise durch Skript"
+msgstr "Schrittweise durch Skript gehen"
 
 msgid  "stepped"
-msgstr ""
+msgstr "Schrittweise"
 
 msgid  "stereo        - activate stereo mode"
-msgstr "stereo        - aktiviere Stereo-Modus"
+msgstr "Stereo        - Stereo-Modus aktivieren"
 
 msgid  "Stereo Method"
 msgstr "Stereo-Methode"
 
 msgid  "Stereo settings"
-msgstr ""
+msgstr "Stereo Einstellungen"
 
 msgid  "Stop"
-msgstr "Stop"
+msgstr "Beenden"
 
 msgid  "Stop render"
-msgstr ""
+msgstr "Rendern beenden"
 
 msgid  "Stop rendering"
-msgstr ""
+msgstr "Rendern beenden"
 
 msgid  "stop time"
 msgstr "Endzeit"
 
 msgid  "Streak length (s)"
-msgstr ""
+msgstr "Laenge der Partikellinien (s)"
 
 msgid  "Streak line width"
-msgstr "Linienbreite bei Partikelverfolgung"
+msgstr "Breite der Partikellinien"
 
 msgid  "Streaks"
-msgstr "Partikelverfolgung"
+msgstr "Partikellinien"
 
 msgid  "sub-intervals"
 msgstr "Teilintervalle"
@@ -2098,10 +2107,10 @@ msgid  "suffix"
 msgstr "Suffix"
 
 msgid  "surface"
-msgstr ""
+msgstr "Oberflaeche"
 
 msgid  "surface color"
-msgstr ""
+msgstr "Oberflaechenfarbe"
 
 msgid  "Surface type"
 msgstr "Oberflaechenart"
@@ -2113,16 +2122,16 @@ msgid  "Surfaces"
 msgstr "Oberflaechen"
 
 msgid  "Switch to perspective view       ALT v"
-msgstr ""
+msgstr "Zur perspektivischen Ansicht wechseln    ALT v"
 
 msgid  "Switch to size preserving view   ALT v"
-msgstr ""
+msgstr "zur groessenerhaltenden Ansicht wechseln    ALT v"
 
 msgid  "t: set/unset single time step mode"
-msgstr "t: aktiviere/deaktiviere Einzel-Zeitschritt-Modus"
+msgstr "T: Einzel-Zeitschritt-Modus aktivieren/deaktivieren"
 
 msgid  "T: toggle method for interpolating data color"
-msgstr "T: Wechsle Methode zur Interpolation der Datenfarbe"
+msgstr "T: Methode zur Interpolation der Datenfarbe wechseln"
 
 msgid  "Target orientation"
 msgstr "Ziel-Orientierung"
@@ -2131,19 +2140,19 @@ msgid  "Targets"
 msgstr "Ziele"
 
 msgid  "tempdir       - forces output files to be written to the temporary directory"
-msgstr ""
+msgstr "Tempdir       - Dateiausgabe in das temporaere Verzeichnis erzwingen"
 
 msgid  "TEMPERATURE"
-msgstr ""
+msgstr "TEMPERATURE"
 
 msgid  "Temperature threshold"
-msgstr ""
+msgstr "Temperatur Schwellenwert"
 
 msgid  "Temperature(upper)"
-msgstr ""
+msgstr "Temperatur (obere)"
 
 msgid  "Temperature(upper/lower)"
-msgstr ""
+msgstr "Temperatur (untere/obere)"
 
 msgid  "Tension"
 msgstr "Spannung"
@@ -2152,16 +2161,16 @@ msgid  "terminal velocity"
 msgstr "Endgeschwindigkeit"
 
 msgid  "Terrain"
-msgstr "Gelaende (terrain)"
+msgstr "Gelaende"
 
 msgid  "Test"
-msgstr ""
+msgstr "Testen"
 
 msgid  "Test smoke"
-msgstr "Test-Rauch"
+msgstr "Rauch testen"
 
 msgid  "Test visibility sensor"
-msgstr ""
+msgstr "Visibilitaetssensor testen"
 
 msgid  "Text labels"
 msgstr "Textfelder"
@@ -2176,46 +2185,46 @@ msgid  "Thermocouples"
 msgstr "Thermocouples"
 
 msgid  "thickness"
-msgstr ""
+msgstr "Dicke"
 
 msgid  "tick"
-msgstr ""
+msgstr "Tick"
 
 msgid  "Ticks (FDS)"
-msgstr ""
+msgstr "Ticks (FDS)"
 
 msgid  "Ticks (User)"
-msgstr ""
+msgstr "Ticks (User)"
 
 msgid  "Time"
 msgstr "Zeit"
 
 msgid  "time (h:m:s)"
-msgstr ""
+msgstr "Zeit (h:m:s)"
 
 msgid  "Time bar"
 msgstr "Zeitleiste"
 
 msgid  "Time bounds"
-msgstr ""
+msgstr "Zeitgrenzen"
 
 msgid  "Time interval"
 msgstr "Zeitintervall"
 
 msgid  "Time label"
-msgstr "Zeit-Label"
+msgstr "Zeitlabel"
 
 msgid  "Title"
 msgstr "Titel"
 
 msgid  "Toggle dialogs"
-msgstr ""
+msgstr "Dialoge umschalten"
 
 msgid  "toggle line anti-aliasing (draw lines smoothly)"
-msgstr ""
+msgstr "Linien-Anti-Aliasing umschalten (glatte Linien zeichnen)"
 
 msgid  "Toggle View"
-msgstr "Wechsle Ansicht"
+msgstr "Ansicht umschalten"
 
 msgid  "Tours"
 msgstr "Touren"
@@ -2230,208 +2239,208 @@ msgid  "Trainer menus"
 msgstr "Trainer Menues"
 
 msgid  "Translate"
-msgstr ""
+msgstr "Verschieben"
 
 msgid  "Translate/Rotate"
-msgstr ""
+msgstr "Verschieben/rotieren"
 
 msgid  "Transparent"
-msgstr "Transparente"
+msgstr "Transparent"
 
 msgid  "Transparent (data)"
-msgstr ""
+msgstr "Transparent (Daten)"
 
 msgid  "Transparent level"
 msgstr "Transparenter Level"
 
 msgid  "triangle"
-msgstr ""
+msgstr "Dreiecke"
 
 msgid  "Triangle count"
-msgstr ""
+msgstr "Anzahl Dreiecke"
 
 msgid  "Triangles"
 msgstr "Dreiecke"
 
 msgid  "Truncate data"
-msgstr "Schneide Daten ab"
+msgstr "Daten beschneiden"
 
 msgid  "Turn off file loading while recording"
-msgstr "Schalte Datei-Laden waehrend Aufzeichnung aus"
+msgstr "Laden der Datei waehrend Aufzeichnung deaktivieren"
 
 msgid  "Two sided (exterior)"
-msgstr ""
+msgstr "Zweiseitig (ausserhalb)"
 
 msgid  "Two sided (interior)"
-msgstr ""
+msgstr "Zweiseitig (innerhalb)"
 
 msgid  "type"
-msgstr ""
+msgstr "Typ"
 
 msgid  "u: reload files"
-msgstr "u: lade Dateien neu"
+msgstr "U: Dateien erneut laden"
 
 msgid  "undefined"
-msgstr ""
+msgstr "Undefiniert"
 
 msgid  "Unit"
-msgstr ""
+msgstr "Einheit"
 
 msgid  "Unlimited"
-msgstr "unbeschraenkt"
+msgstr "Unbeschraenkt"
 
 msgid  "Unload"
 msgstr "Entladen"
 
 msgid  "Unload all"
-msgstr "Entlade alle"
+msgstr "Alle entladen"
 
 msgid  "Unload last"
-msgstr "Entlade den letzten"
+msgstr "Letzten entladen"
 
 msgid  "Unload terrain"
-msgstr "Entlade Gelaende (terain)"
+msgstr "Gelaende entladen"
 
 msgid  "Up"
-msgstr "hoch"
+msgstr "Hoch"
 
 msgid  "up/down cursor: move forward/backward"
-msgstr "Hoch/Runter Cursor: bewege vorwaerts/rueckwaerts"
+msgstr "Up/Down Cursor: vorwaerts/rueckwaerts bewegen"
 
 msgid  "Update"
-msgstr "Aktualisiere"
+msgstr "Aktualisieren"
 
 msgid  "update        - equivalent to -update_bounds and -update_slice"
-msgstr ""
+msgstr "Update        - aequivalent zu -update_bounds und -update_slice"
 
 msgid  "Update bounds"
-msgstr "Aktualisiere Grenzen"
+msgstr "Grenzen aktualisieren"
 
 msgid  "Update continuously"
-msgstr "Aktualisiere kontinuierlich"
+msgstr "Kontinuierlich aktualisieren"
 
 msgid  "Update contours"
-msgstr "Aktualisiere Konturen"
+msgstr "Konturen aktualisieren"
 
 msgid  "Update label"
-msgstr "Aktualisiere Label"
+msgstr "Label aktualisieren"
 
 msgid  "Update using cached data"
-msgstr ""
+msgstr "Update unter Verwendung der Cache-Daten"
 
 msgid  "update_bounds - calculate boundary file bounds and save to casename.binfo"
-msgstr ""
+msgstr "Update_bounds - Grenzen fuer Rand-Datei berechnen und in casename.binfo speichern"
 
 msgid  "update_ini case.ini - update case.ini to the current format"
-msgstr ""
+msgstr "Update_ini case.ini - case.ini im aktuellen Format updaten"
 
 msgid  "update_slice  - calculate slice file parameters"
-msgstr ""
+msgstr "Update_slice  - Parameter fuer Slice-Datei berechnen"
 
 msgid  "Upper layer temperature"
-msgstr ""
+msgstr "Oberer Temperature-Layer"
 
 msgid  "upper opacity (m)"
-msgstr ""
+msgstr "Obere Opazitaet (m)"
 
 msgid  "use blockage"
-msgstr "nutze Ueberdeckung"
+msgstr "Blockage verwenden"
 
 msgid  "Use color"
-msgstr ""
+msgstr "Farbe verwenden"
 
 msgid  "Use colormap with constraints"
-msgstr ""
+msgstr "Farbpalette mit Einschraenkgungen verwenden"
 
 msgid  "Use colormap without constraints"
-msgstr ""
+msgstr "Farbpalette ohne Einschraenkungen verwenden"
 
 msgid  "use foreground"
-msgstr "nutze Vordergrund"
+msgstr "Vordergrund verwenden"
 
 msgid  "Use foreground color"
-msgstr ""
+msgstr "Vordergrundfarbe verwenden"
 
 msgid  "Use GPU"
-msgstr "Verwende GPU"
+msgstr "GPU verwenden"
 
 msgid  "Use level"
-msgstr "Verwende Level"
+msgstr "Level verwenden"
 
 msgid  "Use light"
-msgstr ""
+msgstr "Licht verwenden"
 
 msgid  "Use specified color, opacity"
-msgstr ""
+msgstr "Spezifizierte Farbe, Opazitaet verwenden"
 
 msgid  "Use transparency"
-msgstr "Verwende Transparenz"
+msgstr "Transparenz verwenden"
 
 msgid  "User settable ticks"
 msgstr "Benutzerdefinierte Ticks"
 
 msgid  "user specified center"
-msgstr ""
+msgstr "Benutzerdefiniertes Zentrum"
 
 msgid  "User ticks"
-msgstr ""
+msgstr "Nutzer-Ticks"
 
 msgid  "using"
-msgstr "Benutze"
+msgstr "Unter Verwendung von"
 
 msgid  "v: toggle flow vector visiblity"
-msgstr "v: Schalte Stroemungsvektor auf sofort sichtbar"
+msgstr "V: Sichtbarkeit fuer Stroemungsvektoren umschalten"
 
 msgid  "val at left"
-msgstr ""
+msgstr "Linker Wert"
 
 msgid  "Values"
-msgstr ""
+msgstr "Werte"
 
 msgid  "Vector"
 msgstr "Vektor"
 
 msgid  "Vector length"
-msgstr ""
+msgstr "Vektorlaenge"
 
 msgid  "Vector skip"
-msgstr ""
+msgstr "Vektor ueberspringen"
 
 msgid  "Vector slice"
-msgstr ""
+msgstr "Vektor-Slice"
 
 msgid  "Vector width"
-msgstr ""
+msgstr "Vektorbreite"
 
 msgid  "Velocities"
 msgstr "Geschwindigkeiten"
 
 msgid  "velocity direction (deg)"
-msgstr ""
+msgstr "Richtung der Geschwindigkeit (deg)"
 
 msgid  "velocity profile"
-msgstr ""
+msgstr "Geschwindigkeitsprofil"
 
 msgid  "vent"
-msgstr ""
+msgstr "Vent"
 
 msgid  "Vent flow"
-msgstr ""
+msgstr "Vent Flow"
 
 msgid  "Vents"
 msgstr "Vents"
 
 msgid  "Version info"
-msgstr ""
+msgstr "Versions-Information"
 
 msgid  "Vertical"
-msgstr "vertikal"
+msgstr "Vertikal"
 
 msgid  "View"
 msgstr "Ansicht"
 
 msgid  "View direction"
-msgstr ""
+msgstr "Blickrichtung"
 
 msgid  "View from selected Avatar"
 msgstr "Ansicht vom ausgewaehlten Avatar"
@@ -2440,10 +2449,10 @@ msgid  "View from selected keyframe"
 msgstr "Ansicht vom ausgewaehlten Keyframe"
 
 msgid  "View from tour path"
-msgstr "Ansicht vom Tour-Pfad"
+msgstr "Ansicht vom Tourpfad"
 
 msgid  "View Method"
-msgstr "Ansichts-Methode"
+msgstr "Ansichtsmethode"
 
 msgid  "Viewpoint"
 msgstr "Blickpunkt"
@@ -2452,58 +2461,58 @@ msgid  "Viewpoints"
 msgstr "Blickpunkte"
 
 msgid  "Viewpoints... ALT g"
-msgstr ""
+msgstr "Blickpunkte... ALT g"
 
 msgid  "Visibility"
 msgstr "Sichtweite"
 
 msgid  "Visualize fire/smoke flow simulations."
-msgstr ""
+msgstr "Feuer-/Rauchausbreitungssimulation visualisieren"
 
 msgid  "volrender     - generate images of volume rendered smoke and fire"
-msgstr "volrender     - erzeuge Bilder von volumengerendertem Rauch und Feuer"
+msgstr "Volrender     - Bilder von volumengerendertem Rauch und Feuer erzeugen"
 
 msgid  "Volume rendered"
-msgstr ""
+msgstr "Volumen gerendert"
 
 msgid  "Volumes"
-msgstr ""
+msgstr "Volumen"
 
 msgid  "W: toggle clipping - use Options/Clip menu to specify clipping planes"
-msgstr "W: wechsle Ausschnitt - benutze Options/Clip-Menue zur Spezifikation der Schnittebenen"
+msgstr "W: Ausschnitt wechseln - Options/Clip-Menue zur Spezifikation der Schnittebenen benutzen"
 
 msgid  "When"
-msgstr ""
+msgstr "Wann"
 
 msgid  "where"
-msgstr "wo"
+msgstr "Wo"
 
 msgid  "width"
 msgstr "Breite"
 
 msgid  "Window"
-msgstr ""
+msgstr "Fenster"
 
 msgid  "window created"
-msgstr "Fenster aufgebaut"
+msgstr "Fenster erzeugt"
 
 msgid  "Window properties"
-msgstr "Fenster-Eigenschaften"
+msgstr "Fenstereigenschaften"
 
 msgid  "world center"
-msgstr "Welt-Zentrum"
+msgstr "Weltzentrum"
 
 msgid  "Write"
 msgstr "Schreibe"
 
 msgid  "WUI display... ALT w"
-msgstr ""
+msgstr "WUI-Ansicht... ALT w"
 
 msgid  "x Real time"
 msgstr "x Realzeit"
 
 msgid  "x,y,z: toggle contour plot visibility along x, y and z axis"
-msgstr "x, y, z: Toggle Konturdiagramm Sicht entlang x, y und z-Achse"
+msgstr "x, y, z: Sichtbarkeit des Konturplots entlang x, y und z-Achse wechseln"
 
 msgid  "xy plane"
 msgstr "xy-Ebene"
@@ -2515,13 +2524,13 @@ msgid  "yz plane"
 msgstr "yz-Ebene"
 
 msgid  "z axis"
-msgstr ""
+msgstr "z-Achse"
 
 msgid  "z vector up"
-msgstr ""
+msgstr "z-Vektor up"
 
 msgid  "z vector up"
-msgstr ""
+msgstr "z-Vektor up"
 
 msgid  "zero at boundaries"
 msgstr "Null an Grenzen"
