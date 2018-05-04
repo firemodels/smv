@@ -3200,9 +3200,9 @@ int set_volsmoke(int a, int b, int c, int d, int e,
   load_at_rendertimes = c;
   volbw = d;
   show_volsmoke_moving = e;
-  temperature_min = f;
-  temperature_cutoff = g;
-  temperature_max = h;
+  global_temp_min = f;
+  global_temp_cutoff = g;
+  global_temp_max = h;
   fire_opacity_factor = i;
   mass_extinct = j;
   gpu_vol_factor = k;
