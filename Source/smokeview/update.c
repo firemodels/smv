@@ -227,6 +227,7 @@ void UpdateShow(void){
   int slicecolorbarflag;
   int shooter_flag;
 
+  have_fire = HaveFire();
   showtime=0;
   showtime2=0;
   showplot3d=0;
@@ -1918,9 +1919,9 @@ void UpdateDisplay(void){
     update_setvents=0;
   }
   UNLOCK_IBLANK
-  if(update_have_gvec == 1){
-    update_have_gvec = 0;
-    UpdateGvecDown(gvec_down);
+  if(update_zaxis_custom == 1){
+    update_zaxis_custom = 0;
+    UpdateZAxisCustom();
   }
 #ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){

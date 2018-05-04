@@ -1384,12 +1384,8 @@ void MouseDragCB(int xm, int ym){
     DragColorbarEditNode(xm, ym);
     return;
   }
-
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
     UpdateMouseInfo(MOUSE_MOTION,xm,ym);
-  }
-  if((rotation_type==ROTATION_2AXIS||rotation_type==ROTATION_3AXIS)&&gvec_down==1&&key_state == KEY_NONE){
-    UpdateGvecDown(0);
   }
   MoveScene(xm,ym);
 }
@@ -1941,7 +1937,7 @@ void Keyboard(unsigned char key, int flag){
           return;
         }
 
-        if(strncmp((const char *)&key2, "R", 1&&keystate!=GLUT_ACTIVE_ALT)==0){
+        if(strncmp((const char *)&key2, "R", 1)==0&&keystate!=GLUT_ACTIVE_ALT){
           resolution_multiplier = MAX(2, resolution_multiplier);
         }
         else{
@@ -2828,6 +2824,7 @@ void IdleCB(void){
   float thisinterval;
   int redisplay=0;
 
+  if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
   glutSetWindow(mainwindow_id);
   UpdateShow();
@@ -3212,12 +3209,20 @@ void DoScript(void){
   }
   else{
     first_frame_index=0;
-    skip_render_frames=0;
     script_startframe=-1;
     script_skipframe=-1;
   }
 }
 #endif
+
+/* ------------------ IdleDisplay ------------------------ */
+
+void IdleDisplay(void){
+// when rendering files, onlyl call Idle routine from DisplayCB callback
+  from_DisplayCB=1;
+  IdleCB();
+  from_DisplayCB=0;
+}
 
 /* ------------------ DisplayCB ------------------------ */
 
@@ -3244,6 +3249,8 @@ void DisplayCB(void){
     }
     else{
       int stop_rendering;
+
+      IdleDisplay();
 
       stop_rendering = 1;
       if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){

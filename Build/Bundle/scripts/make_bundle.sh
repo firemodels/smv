@@ -1,6 +1,7 @@
 #!/bin/bash
 FDSEDITION=FDS6
 
+
 edition=$1
 revision=$2
 REMOTESVNROOT=$3

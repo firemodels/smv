@@ -119,7 +119,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
     /* ++++++++++++++++++++++++ draw ticks +++++++++++++++++++++++++ */
 
-    if(showgravity == 1){
+    if(showgravity_vector == 1){
       UNCLIP;
       DrawGravityAxis();
       SNIFF_ERRORS("after drawaxis");
@@ -425,9 +425,11 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
 
   if((show_node_slices_and_vectors == 1 || show_cell_slices_and_vectors==1) || (showslice == 1 && use_transparency_data == 1)){
-    CLIP_VALS;
-    DrawSliceFrame();
-    SNIFF_ERRORS("after DrawSliceFrame");
+    if(nslice_loaded>0){
+      CLIP_VALS;
+      DrawSliceFrame();
+      SNIFF_ERRORS("after DrawSliceFrame");
+    }
   }
 
   /* ++++++++++++++++++++++++ draw transparent blockages +++++++++++++++++++++++++ */

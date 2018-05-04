@@ -876,11 +876,27 @@ void ScriptRenderStart(scriptdata *scripti){
   script_skipframe=scripti->ival2;
 }
 
+/* ------------------ PrintRenderMessage ------------------------ */
+
+void PrintRenderMessage(int skip_frame, int first_frame){
+  if(skip_frame==1){
+    PRINTF("script: Rendering every frame starting at frame %i\n\n",first_frame);
+  }
+  else if(skip_frame==2){
+    PRINTF("script: Rendering every %i'nd frame starting at frame %i\n\n",skip_frame,first_frame);
+  }
+  else if(skip_frame==3){
+    PRINTF("script: Rendering every %i'rd frame starting at frame %i\n\n",skip_frame,first_frame);
+  }
+  else{
+    PRINTF("script: Rendering every %i'th frame starting at frame %i\n\n",skip_frame,first_frame);
+  }
+}
+
 /* ------------------ ScriptRenderAll ------------------------ */
 
 void ScriptRenderAll(scriptdata *scripti){
   int skip_local;
-
 
   if(script_startframe>0)scripti->ival3=script_startframe;
   if(startframe0>=0)scripti->ival3=startframe0;
@@ -891,9 +907,9 @@ void ScriptRenderAll(scriptdata *scripti){
   if(skipframe0>0)scripti->ival=skipframe0;
   skip_local=MAX(1,scripti->ival);
 
-  PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n",skip_local,scripti->ival3);
-  skip_render_frames=1;
-  RenderMenu(skip_local);
+  PrintRenderMessage(skip_local,first_frame_index);
+  SkipMenu(skip_local);
+  RenderMenu(RenderStartORIGRES);
 }
 
 /* ------------------ ScriptRender360All ------------------------ */
@@ -911,10 +927,9 @@ void ScriptRender360All(scriptdata *scripti){
   if(skipframe0>0)scripti->ival = skipframe0;
   skip_local = MAX(1, scripti->ival);
 
-  PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
-  skip_render_frames = 1;
-  //RenderMenu(skip_local);
+  PrintRenderMessage(skip_local,first_frame_index);
   render_mode = RENDER_360;
+  SkipMenu(skip_local);
   RenderCB(RENDER_START);
 }
 
@@ -1082,7 +1097,6 @@ void ScriptVolSmokeRenderAll(scriptdata *scripti){
   skip_local=MAX(1,scripti->ival);
 
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n",skip_local,scripti->ival3);
-  skip_render_frames=1;
   scripti->ival=skip_local;
   RenderMenu(skip_local);
 }
@@ -1164,7 +1178,6 @@ void ScriptIsoRenderAll(scriptdata *scripti){
   skip_local = MAX(1, scripti->ival);
 
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
-  skip_render_frames = 1;
   scripti->ival = skip_local;
   RenderMenu(skip_local);
 }
@@ -2183,11 +2196,13 @@ int RunScript(void){
     if(stderr2 != NULL){
       unsigned int nchars;
 
-      fprintf(stderr, "----------------------------------------------\n");
-      fprintf(stderr, "Smokeview script errors :\n");
-      nchars = StreamCopy(stderr2, stderr);
-      if(nchars==0)fprintf(stderr, "*** none ***\n");
-      fprintf(stderr, "----------------------------------------------\n");
+      nchars = StreamCopy(stderr2, stderr, 0);
+      if(nchars>0){
+        fprintf(stderr, "----------------------------------------------\n");
+        fprintf(stderr, "Smokeview script errors :\n");
+        StreamCopy(stderr2, stderr, 1);
+        fprintf(stderr, "----------------------------------------------\n");
+      }
       fclose(stderr2);
       stderr2 = NULL;
     }

@@ -7,6 +7,9 @@
 #include <process.h>
 #include <windows.h>
 #endif
+#ifdef pp_OSX
+#include <unistd.h>
+#endif
 #include "string_util.h"
 #include "background.h"
 #include "datadefs.h"

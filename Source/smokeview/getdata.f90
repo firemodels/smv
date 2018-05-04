@@ -112,7 +112,10 @@ do
   if(finish.eq.0.and.nvert_d>0)read(lu20,iostat=finish)(dummy,i=1,nvert_d)
   if(finish.eq.0.and.nface_s>0)read(lu20,iostat=finish)(dummy,i=1,nface_s)
   if(finish.eq.0.and.nface_d>0)read(lu20,iostat=finish)(dummy,i=1,nface_d)
-  if(finish.ne.0)return
+  if(finish.ne.0)then
+    close(lu20)
+    return
+  endif
   nvars = nvars + nvert_s + nvert_d + nface_s + nface_d
   ntimes = ntimes + 1
 end do
@@ -395,6 +398,40 @@ call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,vo
 return
 end subroutine getsliceparms
 
+!  ------------------ getslicesizes ------------------------
+
+subroutine getsliceheader(slicefilename, ip1, ip2, jp1, jp2, kp1, kp2, error)
+use cio
+implicit none
+
+character(len=*), intent(in) :: slicefilename
+integer, intent(out) :: ip1, ip2, jp1, jp2, kp1, kp2
+integer, intent(out) :: error
+
+logical :: exists
+integer :: lu11, nsizes, sizes(3)
+
+error=0
+inquire(file=trim(slicefilename),exist=exists)
+if(exists)then
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+ else
+  error=1
+  return
+endif
+
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+
+read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+close(lu11)
+
+end subroutine getsliceheader
+   
 !  ------------------ getslicesizes ------------------------
 
 subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&
@@ -793,7 +830,7 @@ integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
 integer :: lu20, finish
 logical :: exists
-integer :: i,ii
+integer :: i;
 integer :: one, itime, nvars
 integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
@@ -812,34 +849,52 @@ error = 0
 read(lu20)one
 read(lu20)version
 nvars=0
-valmin = 1000000000000.0;
-valmax = -valmin
 do itime=1, ntimes
   read(lu20,iostat=finish)times(itime)
   if(redirect_flag.eq.0)write(6,10)times(itime)
 10 format(" boundary element time=",f9.2)
-  if(finish.eq.0)read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
-  nstatics(itime)=nvert_s+ntri_s
+  if(finish.eq.0)then
+    read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
+    nstatics(itime)=nvert_s+ntri_s
+  endif
 
-  if(finish.eq.0.and.nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
-  nvars = nvars + nvert_s
+  if(finish.eq.0)then
+    if(nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+    nvars = nvars + nvert_s
+  endif
 
-  if(finish.eq.0.and.ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
-  nvars = nvars + ntri_s
+  if(finish.eq.0)then
+    if(ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+    nvars = nvars + ntri_s
+  endif
 
   ndynamics(itime)=nvert_d+ntri_d
-  if(finish.eq.0.and.nvert_d.ne.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
-  nvars = nvars + nvert_d
+  if(finish.eq.0)then
+    if(nvert_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+    nvars = nvars + nvert_d
+  endif
 
-  if(finish.eq.0.and.ntri_d.ne.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
-  nvars = nvars + ntri_d
+  if(finish.eq.0)then
+    if(ntri_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+    nvars = nvars + ntri_d
+  endif
 
-  do i = 1, ntri_s+ntri_d+nvert_s+nvert_d
-    ii = nvars + i - ntri_s-ntri_d-nvert_s-nvert_d
-    if(vals(ii).lt.valmin)valmin=vals(ii)
-    if(vals(ii).gt.valmax)valmax=vals(ii)
-  end do
-  if(finish.ne.0)return
+  if(finish.ne.0)then
+    valmin = vals(1)
+    valmax = valmin
+    do i = 2, nvars
+      if(vals(i).lt.valmin)valmin=vals(i)
+      if(vals(i).gt.valmax)valmax=vals(i)
+    end do
+    close(lu20)
+    return
+  endif
+end do
+valmin = vals(1)
+valmax = valmin
+do i = 2, nvars
+  if(vals(i).lt.valmin)valmin=vals(i)
+  if(vals(i).gt.valmax)valmax=vals(i)
 end do
 if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)

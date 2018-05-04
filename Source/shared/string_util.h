@@ -27,6 +27,8 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+#define _A(String1,String2) AppendString((char *)String1,(char *)String2)
+
 #define MATCH 1
 #define NOTMATCH 0
 
@@ -47,6 +49,7 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+EXTERNCPP char          *AppendString(char *S1, char *S2);
 EXTERNCPP void           UsageCommon(int option);
 EXTERNCPP void           ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void           InitRandAB(int size);
@@ -61,6 +64,7 @@ EXTERNCPP unsigned int   Date2Day(char *tokenorig);
 EXTERNCPP int            SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int            SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
 EXTERNCPP int            ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
+EXTERNCPP int            AppendLabels(flowlabels *flow_label, char *suffix_label);
 
 #ifdef pp_HASH
 EXTERNCPP unsigned char *GetHashMD5(char *file);
@@ -116,6 +120,7 @@ EXTERNCPP void           PRINTversion(char *progname);
 SVEXTERN int SVDECL(hash_option, HASH_SHA1);
 #endif
 SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help, 0);
+SVEXTERN char append_string[1024];
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");

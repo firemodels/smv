@@ -293,7 +293,6 @@ int SetupCase(int argc, char **argv){
       break;
     case 3:
       return 3;
-      break;
     default:
       ASSERT(FFALSE);
   }
@@ -407,7 +406,7 @@ void SetupGlut(int argc, char **argv){
     }
   }
 #ifdef pp_BETA
-  fprintf(stderr,"%s\n",_("\n*** This version of Smokeview is intended for review and testing ONLY. ***"));
+  fprintf(stderr,"%s\n","\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
 
 #ifdef pp_OSX
@@ -1587,7 +1586,6 @@ void InitVars(void){
   ntrnx=0, ntrny=0, ntrnz=0,npdim=0,nmeshes=0,clip_mesh=0;
   noffset=0;
   visLabels=0;
-  showallslicevectors=0;
   framerate=-1.0;
   itimes=0, itimeold=-999, seqnum=0,RenderTime=0; RenderTimeOld=0; itime_save=-1;
   nopart=1;

@@ -67,9 +67,7 @@ if "%platform%" == "linux" (
   )
   if "%buildtype%" == "test" (
     pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/
-
-_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
   )
   goto eof
 )

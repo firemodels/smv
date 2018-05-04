@@ -6,9 +6,29 @@
 #include <string.h>
 #include "MALLOC.h"
 #include "translate.h"
-     
-void usage(char *prog);
 
+/* ------------------ Usage ------------------------ */
+
+void Usage(char *prog, int option){
+  char githash[1024];
+  char gitdate[1024];
+
+  GetGitInfo(githash,gitdate);
+
+  fprintf(stdout, "\n%s (%s) %s \n",prog, githash, __DATE__);
+  printf("Merge two .po files, typically smokeview_template.po with smokeview_xx.po\n");
+  printf("where xx is the language being translated.\n");
+  printf("\n");
+  printf("The updated .po files is output to stdout\n");
+  fprintf(stdout,"Usage:\n");
+  fprintf(stdout,"  mergepo \n");
+  UsageCommon(HELP_SUMMARY);
+  if(option == HELP_ALL){
+    UsageCommon(HELP_ALL);
+  }
+}
+
+     
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -17,7 +37,18 @@ int main(int argc, char **argv){
   int add_comments=0;
 
   initMALLOC();
+  SetStdOut(stdout);
+
   prog=argv[0];
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage("makepo",show_help);
+    return 1;
+  }
+  if(show_version==1){
+    PRINTVERSION("makepo",argv[0]);
+    return 1;
+  }
   for(i=1;i<argc;i++){
     int lenarg;
 
@@ -29,7 +60,7 @@ int main(int argc, char **argv){
         add_comments=1;
         break;
       default:
-        usage(prog);
+        Usage(prog,HELP_ALL);
         return 1;
       }
     }
@@ -43,7 +74,7 @@ int main(int argc, char **argv){
     }
   }
   if(file_lang==NULL||file_template==NULL){
-    usage(prog);
+    Usage(prog,HELP_ALL);
     return 1;
   }
   if(add_comments==1){
@@ -85,7 +116,7 @@ int main(int argc, char **argv){
         else{
           tri->value=NULL;
         }
-        printf("msgid \"%s\"\n",tri->key);
+        printf("msgid  \"%s\"\n",tri->key);
         if(tri->value!=NULL){
           printf("msgstr \"%s\"\n",tri->value);
         }
@@ -97,14 +128,3 @@ int main(int argc, char **argv){
     }
   }
 }
-
-/* ------------------ usage ------------------------ */
-
-void usage(char *prog){
-  printf("%s smokeview_template.po smokeview_xx.po\n",prog);
-  printf("Merge two .po files, typically smokeview_template.po with smokeview_xx.po\n");
-  printf("where xx is the language being translated.\n");
-  printf("\n");
-  printf("The updated .po files is output to stdout\n");
-}
-

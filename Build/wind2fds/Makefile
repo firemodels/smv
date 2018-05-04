@@ -65,17 +65,6 @@ intel_win_64 : exe       = wind2fds_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 
-# ------------- gnu Linux 32 ----------------
-#  32 bit gnu linux
-
-gnu_linux_32 : CFLAGS    = -O0 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : CPP       = g++
-gnu_linux_32 : exe       = wind2fds_linux_32
-
-gnu_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
-
 # ------------- gnu Linux 64 ----------------
 #  64 bit gnu linux
 

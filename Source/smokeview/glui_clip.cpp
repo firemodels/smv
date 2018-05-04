@@ -258,7 +258,7 @@ extern "C" void GluiClipSetup(int main_window){
   glui_clip->hide();
 
   PANEL_clip = glui_clip->add_panel("",GLUI_PANEL_NONE);
-  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_d("Clip Lower"));
+  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip lower"));
   PANEL_clipx = glui_clip->add_panel_to_panel(PANEL_clip_lower,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmin=glui_clip->add_spinner_to_panel(PANEL_clipx,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmin,SPINNER_xlower,ClipCB);
   SPINNER_clip_xmin->set_float_limits(xclip_min,xclip_max,GLUI_LIMIT_CLAMP);
@@ -278,17 +278,17 @@ extern "C" void GluiClipSetup(int main_window){
   CHECKBOX_clip_zmin=glui_clip->add_checkbox_to_panel(PANEL_clipz,"",&clipinfo.clip_zmin,CLIP_zlower,ClipCB);
 
   radio_clip = glui_clip->add_radiogroup_to_panel(PANEL_clip,&clip_mode,CLIP_all,ClipCB);
-  RADIOBUTTON_clip_1a=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clipping disabled"));
-  RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip blockages and data"));
-  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip blockages"));
-  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_d("Clip data"));
+  RADIOBUTTON_clip_1a=glui_clip->add_radiobutton_to_group(radio_clip,_("Clipping disabled"));
+  RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages and data"));
+  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages"));
+  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip data"));
 
   PANEL_rotation_center = glui_clip->add_panel_to_panel(PANEL_clip,"rotation center");
   CHECKBOX_clip_rotate = glui_clip->add_checkbox_to_panel(PANEL_rotation_center,"center of clipping planes", &clip_rotate, CLIP_ROTATE, ClipCB);
   CHECKBOX_clip_show_rotation_center2 = glui_clip->add_checkbox_to_panel(PANEL_rotation_center, "Show", &show_rotation_center, CLIP_SHOW_ROTATE2, ClipCB);
   glui_clip->add_column_to_panel(PANEL_clip,false);
 
-  PANEL_clip_upper = glui_clip->add_panel_to_panel(PANEL_clip,_d("Clip upper"));
+  PANEL_clip_upper = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip upper"));
 
   PANEL_clipX = glui_clip->add_panel_to_panel(PANEL_clip_upper,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmax=glui_clip->add_spinner_to_panel(PANEL_clipX,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmax,SPINNER_xupper,ClipCB);
@@ -342,11 +342,11 @@ extern "C" void GluiClipSetup(int main_window){
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
-  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,_d("Save settings"),SAVE_SETTINGS,ClipCB);
+  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,_("Save settings"),SAVE_SETTINGS,ClipCB);
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
-  BUTTON_clip_2=glui_clip->add_button_to_panel(panel_wrapup,_d("Close"),CLIP_CLOSE,ClipCB);
+  BUTTON_clip_2=glui_clip->add_button_to_panel(panel_wrapup,_("Close"),CLIP_CLOSE,ClipCB);
 
   if(updateclipvals==1){
     SetClipControls(INI_VALS);  // clip vals from ini file

@@ -5,6 +5,12 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateSmoke3dFileParms(void);
+EXTERNCPP void UpdateZAxisCustom(void);
+EXTERNCPP void SkipMenu(int value);
+EXTERNCPP void UpdateShowGravityVector(void);
+EXTERNCPP void ImmersedBoundCB(int var);
+EXTERNCPP void UpdateImmersedControls(void);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
@@ -98,7 +104,6 @@ EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDeviceSize(void);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
-EXTERNCPP void UpdateGvecDown(int gvec_down_local);
 EXTERNCPP void DrawGravityAxis(void);
 EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
 EXTERNCPP void GetGeomDialogState(void);
@@ -518,7 +523,7 @@ EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
 
-EXTERNCPP void DrawSmoke3dVol(void);
+EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void LabelsCB(int value);

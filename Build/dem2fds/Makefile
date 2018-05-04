@@ -74,23 +74,15 @@ intel_win_64 : exe       = dem2fds_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
 
-# ------------- gnu Linux 32 ----------------
-
-gnu_linux_32 : CFLAGS    = -O2 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : exe       = dem2fds_linux_32
-
-gnu_linux_32: $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -lm
-
 # ------------- gnu Linux 64 ----------------
 
+gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = dem2fds_linux_64
 
 gnu_linux_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 
 # ------------- Linux 64 ----------------
@@ -115,3 +107,13 @@ intel_osx_64 : exe       = dem2fds_osx_64
 
 intel_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX)
+
+# ------------- gnu OSX 64 ----------------
+
+gnu_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_osx_64
+gnu_osx_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CC        = gcc
+gnu_osx_64 : exe       = dem2fds_osx_64
+
+gnu_osx_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_OSX)

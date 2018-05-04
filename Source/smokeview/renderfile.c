@@ -259,12 +259,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      if(skip_render_frames == 1||skip_render_frames==0){
-        image_num = itimes;
-      }
-      else{
-        image_num = itimes / render_skip;
-      }
+      image_num = itimes;
     }
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
       float time_local;

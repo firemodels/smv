@@ -81,19 +81,6 @@ intel_win_64 : $(objwin)
 	
 LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
-# ------------- 32 bit Linux gnu ----------------
-
-gnu_linux_32 : FFLAGS    = -O0 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
-gnu_linux_32 : CFLAGS    = -O0 -Wall -D pp_GCC -D pp_LINUX $(GITINFO)
-gnu_linux_32 : LFLAGS    = 
-gnu_linux_32 : CC        = gcc
-gnu_linux_32 : CPP       = g++
-gnu_linux_32 : FC        = gfortran
-gnu_linux_32 : exe       = smokediff_linux_32
-
-gnu_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
-
 # ------------- 64 bit Linux gnu ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
@@ -158,19 +145,19 @@ intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = smokediff_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.7 $(MACFORTLIBS)
 
 #  64 bit debug OSX
 
-intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.4 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.4 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7 -stand:f08
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icc
 intel_osx_64_db : FC        = ifort
 intel_osx_64_db : exe       = smokediff_osx_64_db
 
 intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.4 $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.7 $(MACFORTLIBS)
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 

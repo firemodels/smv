@@ -142,9 +142,12 @@ void _Sniff_Errors(char *whereat);
 #ifndef UPDATE_SMOKEFIRE_COLORS
 #define UPDATE_SMOKEFIRE_COLORS 54
 #endif
-#define SOOT 1
-#define FIRE 2
-#define WATER 3
+
+#define MAXSMOKETYPES 4
+#define SOOT 0
+#define HRRPUV 1
+#define TEMP 2
+#define CO2  3
 
 #define NELEV_ZONE 100
 
@@ -248,16 +251,26 @@ void _Sniff_Errors(char *whereat);
     else if( clipon==1&&clip_data==0){UNCLIP;}\
   }
 
-#define GAS 1
-#define SOLID 0
-#define GASGAS 2
+#define GAS        1
+#define SOLID      0
+#define GASGAS     2
 #define SOLIDSOLID 0
-#define SOLIDGAS 1
-#define GASSOLID 1
+#define SOLIDGAS   1
+#define GASSOLID   1
 
-#define IN_GAS 0
-#define IN_SOLID 1
+#define IN_GAS     0
+#define IN_SOLID   1
 #define IN_CUTCELL 2
+
+#define IN_GAS_GLUI     0
+#define IN_SOLID_GLUI   1
+#define IN_CUTCELL_GLUI 2
+
+#define MAX_CELL_TYPES 3
+
+#define IMMERSED_POLYGON  0
+#define IMMERSED_TRIANGLE 1
+#define IMMERSED_HIDDEN   2
 
 #define EMBED_YES 0
 #define EMBED_NO  1
@@ -408,6 +421,8 @@ void _Sniff_Errors(char *whereat);
 #define ROTATION_3AXIS 3
 #define MENU_MOTION_SETTINGS 4
 #define MENU_MOTION_GRAVITY_VECTOR 5
+#define MENU_MOTION_Z_VECTOR 6
+#define MENU_MOTION_SHOW_VECTORS 7
 
 #define FIRSTCALL 1
 #define NOT_FIRSTCALL 0
@@ -551,6 +566,10 @@ void _Sniff_Errors(char *whereat);
 #define WINDROSE_GLOBALSCALE 1
 #define WINDROSE_DIRECTION 0
 #define WINDROSE_HEADING 1
+
+#define WINDROSE_POINT 0
+#define WINDROSE_STEPPED 1
+#define WINDROSE SLIDING 2
 
 #define CLOSE_WINDOW -2
 #define UPDATE_WINDOW -3

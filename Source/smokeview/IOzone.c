@@ -1209,7 +1209,6 @@ void DrawRoomGeom(void){
       glColor4fv(zvi->color);
       if(zvi->vent_type==VFLOW_VENT&&zvi->vertical_vent_type==ZONEVENT_CIRCLE){
         unsigned char uc_color[4];
-        float zz;
 
         zz = z1;
         if(zvi->wall==TOP_WALL)zz = z2;

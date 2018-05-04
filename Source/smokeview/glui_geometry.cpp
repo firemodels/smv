@@ -247,7 +247,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   if(nsurfinfo>0){
     glui_geometry->add_statictext_to_panel(PANEL_faces,"");
 
-    LIST_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Left"),surface_indices+DOWN_X,UPDATE_LIST,ObjectCB);
+    LIST_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Left"),surface_indices+DOWN_X,UPDATE_LIST,ObjectCB);
     LIST_surface[DOWN_X]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -257,7 +257,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_surface[DOWN_X]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Right"),surface_indices+UP_X,UPDATE_LIST,ObjectCB);
+    LIST_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Right"),surface_indices+UP_X,UPDATE_LIST,ObjectCB);
     LIST_surface[UP_X]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -267,7 +267,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_surface[UP_X]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Front"),surface_indices+DOWN_Y,UPDATE_LIST,ObjectCB);
+    LIST_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Front"),surface_indices+DOWN_Y,UPDATE_LIST,ObjectCB);
     LIST_surface[DOWN_Y]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -277,7 +277,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_surface[DOWN_Y]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Back"),surface_indices+UP_Y,UPDATE_LIST,ObjectCB);
+    LIST_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Back"),surface_indices+UP_Y,UPDATE_LIST,ObjectCB);
     LIST_surface[UP_Y]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -287,7 +287,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_surface[UP_Y]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Down"),surface_indices+DOWN_Z,UPDATE_LIST,ObjectCB);
+    LIST_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Down"),surface_indices+DOWN_Z,UPDATE_LIST,ObjectCB);
     LIST_surface[DOWN_Z]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -297,7 +297,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_surface[DOWN_Z]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_d("Up"),surface_indices+UP_Z,UPDATE_LIST,ObjectCB);
+    LIST_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Up"),surface_indices+UP_Z,UPDATE_LIST,ObjectCB);
     LIST_surface[UP_Z]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
@@ -320,7 +320,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   {
     char meshlabel[255];
 
-    strcpy(meshlabel,_d("Mesh:"));
+    strcpy(meshlabel,_("Mesh:"));
     strcat(meshlabel,meshinfo->label);
     STATIC_mesh_index=glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4,meshlabel);
 
@@ -330,9 +330,9 @@ extern "C" void GluiGeometrySetup(int main_window){
 
   PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured,"Coordinates");
 
-  CHECKBOX_blockage=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_d("Dimensions snapped to grid"),&blockage_snapped,
+  CHECKBOX_blockage=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Dimensions snapped to grid"),&blockage_snapped,
     BLOCKAGE_AS_INPUT,ObjectCB);
-  CHECKBOX_visaxislabels=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_d("Show axis labels"),&visaxislabels,VISAXISLABELS,ObjectCB);
+  CHECKBOX_visaxislabels=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Show axis labels"),&visaxislabels,VISAXISLABELS,ObjectCB);
   PANEL_obj_stretch3 = glui_geometry->add_panel_to_panel(PANEL_obj_stretch2,"",GLUI_PANEL_NONE);
   EDIT_xmin=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"x",GLUI_EDITTEXT_FLOAT,&glui_block_xmin,XMIN_SPIN,ObjectCB);
   EDIT_ymin=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"y",GLUI_EDITTEXT_FLOAT,&glui_block_ymin,YMIN_SPIN,ObjectCB);
@@ -359,183 +359,185 @@ extern "C" void GluiGeometrySetup(int main_window){
   EDIT_zmin->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
   EDIT_zmax->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
 
-#ifdef pp_GEOMTEST
-  ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed",false);
-  if(unstructured_isopen==1)ROLLOUT_unstructured->open();
+  if(ngeominfo > 0){
+    ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
+    if(unstructured_isopen == 1)ROLLOUT_unstructured->open();
 
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
+    for(i = 0;i < nmeshes;i++){
+      meshdata *meshi;
 
-    meshi = meshinfo + i;
-    if(meshi->ncutcells>0){
-      glui_geometry->add_checkbox_to_panel(ROLLOUT_unstructured,_d("Show cutcells"),&show_cutcells);
-      break;
+      meshi = meshinfo + i;
+      if(meshi->ncutcells > 0){
+        glui_geometry->add_checkbox_to_panel(ROLLOUT_unstructured, _("Show cutcells"), &show_cutcells);
+        break;
+      }
     }
-  }
 
-  PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
-  PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
-  PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1,"faces");
-  CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
-  CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
-  CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_solid, VOL_SHOWHIDE, VolumeCB);
-  PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
-  CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
-  SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
-  SPINNER_geom_transparency->set_float_limits(0.0,1.0);
-  CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
-  glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
-  CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "smooth", &smooth_geom_normal);
+    PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
+    PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
+    PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1, "faces");
+    CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
+    CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_solid, VOL_SHOWHIDE, VolumeCB);
+    PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
+    CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
+    SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
+    SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
+    CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
+    glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
+    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "smooth", &smooth_geom_normal);
 
-  glui_geometry->add_column_to_panel(PANEL_group1,false);
-
-
-  PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1,"volumes");
-  CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
-  CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
-  CHECKBOX_interior_solid=glui_geometry->add_checkbox_to_panel(PANEL_volumes,"solid",&show_volumes_solid,VOL_SHOWHIDE,VolumeCB);
-  CHECKBOX_interior_outline=glui_geometry->add_checkbox_to_panel(PANEL_volumes,"outline",&show_volumes_outline,VOL_SHOWHIDE,VolumeCB);
-
-  PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide,"normals");
-  CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
-  SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
-  SPINNER_geom_ivecfactor->set_int_limits(0, 200);
-
-  ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters",false);
-  SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
-  SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
-  CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
-
-  GetGeomZBounds(&terrain_zmin, &terrain_zmax);
-  SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin,TERRAIN_ZMIN,VolumeCB);
-  SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
-
-  SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax,TERRAIN_ZMAX,VolumeCB);
-  SPINNER_geom_zmax->set_float_limits(zbar0ORIG, zbarORIG);
-
-  terrain_zlevel=(terrain_zmin+terrain_zmax)/2.0;
-  CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show zlevel", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
-  SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zlevel", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
-  SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
-
-  VolumeCB(GEOM_VERT_EXAG);
-  BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(ROLLOUT_geomtest2, _d("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
-
-  if(HaveTexture()==1){
-    show_texture_2dimage = GetTextureShow();
-    CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "image",&show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
-    VolumeCB(SHOW_TEXTURE_2D_IMAGE);
-  }
+    glui_geometry->add_column_to_panel(PANEL_group1, false);
 
 
-  glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-  SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-  SPINNER_geom_max_angle->set_float_limits(0.0,180.0);
-  SPINNER_geom_outline_ioffset = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "outline offset", GLUI_SPINNER_INT, &geom_outline_ioffset, GEOM_OUTLINE_IOFFSET, VolumeCB);
-  SPINNER_geom_outline_ioffset->set_int_limits(0,200);
-  SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
-  SPINNER_face_factor->set_float_limits(0.0, 0.5);
+    PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
+    CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
+    CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
+    CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "solid", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
 
-  ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks",false);
-  PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
-  CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
-  CHECKBOX_highlight_edge1 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "1", &highlight_edge1);
-  CHECKBOX_highlight_edge2 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "2", &highlight_edge2);
-  CHECKBOX_highlight_edgeother = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "3 or more", &highlight_edgeother);
+    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
+    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
+    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
+    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
-  CHECKBOX_highlight_vertexdup = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomcheck, "duplicate vertices", &highlight_vertexdup);
+    ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
+    SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
+    SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
+    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
 
-  // -------------- Cube/Tetra intersection test -------------------
+    GetGeomZBounds(&terrain_zmin, &terrain_zmax);
+    SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
+    SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
 
-  ROLLOUT_geomtest = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured,"Geometry tests",false);
-  PANEL_geom_testoptions=glui_geometry->add_panel_to_panel(ROLLOUT_geomtest,"geometry test:");
-  RADIO_geomtest_option = glui_geometry->add_radiogroup_to_panel(PANEL_geom_testoptions, &geomtest_option, GEOMETRYTEST, VolumeCB);
-  glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "none");
-  glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "triangle");
-  glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "polygon");
-  glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "tetrahedron");
+    SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax, TERRAIN_ZMAX, VolumeCB);
+    SPINNER_geom_zmax->set_float_limits(zbar0ORIG, zbarORIG);
 
-  glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest, "show area labels", &show_tetratest_labels);
-  SPINNER_tetra_line_thickness=glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest,"line thickness",GLUI_SPINNER_FLOAT,&tetra_line_thickness);
-//  SPINNER_tetra_line_thickness->set_float_limits(1.0, 10.0);
-  SPINNER_tetra_point_size = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "point size", GLUI_SPINNER_FLOAT, &tetra_point_size);
-//  SPINNER_tetra_point_size->set_float_limits(1.0, 20.0);
+    terrain_zlevel = (terrain_zmin + terrain_zmax) / 2.0;
+    CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show zlevel", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
+    SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zlevel", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
+    SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
 
-  PANEL_geom1 = glui_geometry->add_panel_to_panel(ROLLOUT_geomtest,"bounding planes");
+    VolumeCB(GEOM_VERT_EXAG);
+    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(ROLLOUT_geomtest2, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
 
-  PANEL_geom1d=glui_geometry->add_panel_to_panel(PANEL_geom1,"",GLUI_PANEL_NONE);
-  PANEL_geom1a=glui_geometry->add_panel_to_panel(PANEL_geom1d,"",GLUI_PANEL_NONE);
-  glui_geometry->add_column_to_panel(PANEL_geom1d,false);
-  PANEL_geom1b=glui_geometry->add_panel_to_panel(PANEL_geom1d,"",GLUI_PANEL_NONE);
-
-  PANEL_geom1c=glui_geometry->add_panel_to_panel(PANEL_geom1,"",GLUI_PANEL_NONE);
-
-  SPINNER_box_bounds[0]=glui_geometry->add_spinner_to_panel(PANEL_geom1a,"xmin",GLUI_SPINNER_FLOAT,box_bounds2,VOL_BOXTRANSLATE,VolumeCB);
-  SPINNER_box_bounds[2]=glui_geometry->add_spinner_to_panel(PANEL_geom1a,"ymin",GLUI_SPINNER_FLOAT,box_bounds2+2,VOL_BOXTRANSLATE,VolumeCB);
-  SPINNER_box_bounds[4]=glui_geometry->add_spinner_to_panel(PANEL_geom1a,"zmin",GLUI_SPINNER_FLOAT,box_bounds2+4,VOL_BOXTRANSLATE,VolumeCB);
-  SPINNER_box_bounds[1]=glui_geometry->add_spinner_to_panel(PANEL_geom1b,"xmax",GLUI_SPINNER_FLOAT,box_bounds2+1,VOL_BOXTRANSLATE,VolumeCB);
-  SPINNER_box_bounds[3]=glui_geometry->add_spinner_to_panel(PANEL_geom1b,"ymax",GLUI_SPINNER_FLOAT,box_bounds2+3,VOL_BOXTRANSLATE,VolumeCB);
-  SPINNER_box_bounds[5]=glui_geometry->add_spinner_to_panel(PANEL_geom1b,"zmax",GLUI_SPINNER_FLOAT,box_bounds2+5,VOL_BOXTRANSLATE,VolumeCB);
-
-  SPINNER_box_translate[0]=glui_geometry->add_spinner_to_panel(PANEL_geom1c,"translate: x",GLUI_SPINNER_FLOAT,box_translate,VOL_BOXTRANSLATE,VolumeCB);
-  glui_geometry->add_column_to_panel(PANEL_geom1c,false);
-  SPINNER_box_translate[1]=glui_geometry->add_spinner_to_panel(PANEL_geom1c,"y",GLUI_SPINNER_FLOAT,box_translate+1,VOL_BOXTRANSLATE,VolumeCB);
-  glui_geometry->add_column_to_panel(PANEL_geom1c,false);
-  SPINNER_box_translate[2]=glui_geometry->add_spinner_to_panel(PANEL_geom1c,"z",GLUI_SPINNER_FLOAT,box_translate+2,VOL_BOXTRANSLATE,VolumeCB);
-  VolumeCB(VOL_BOXTRANSLATE);
-  PANEL_geom2=glui_geometry->add_panel_to_panel(ROLLOUT_geomtest,"vertices");
-  PANEL_geom2a=glui_geometry->add_panel_to_panel(PANEL_geom2,"",GLUI_PANEL_NONE);
-  glui_geometry->add_column_to_panel(PANEL_geom2,false);
-  PANEL_geom2b=glui_geometry->add_panel_to_panel(PANEL_geom2,"",GLUI_PANEL_NONE);
-  glui_geometry->add_column_to_panel(PANEL_geom2,false);
-  PANEL_geom2c=glui_geometry->add_panel_to_panel(PANEL_geom2,"",GLUI_PANEL_NONE);
-
-  SPINNER_tetra_vertices[0]=glui_geometry->add_spinner_to_panel(PANEL_geom2a,"v1 x:",GLUI_SPINNER_FLOAT,tetra_vertices,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[3]=glui_geometry->add_spinner_to_panel(PANEL_geom2a,"v2 x:",GLUI_SPINNER_FLOAT,tetra_vertices+3,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[6]=glui_geometry->add_spinner_to_panel(PANEL_geom2a,"v3 x:",GLUI_SPINNER_FLOAT,tetra_vertices+6,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[9]=glui_geometry->add_spinner_to_panel(PANEL_geom2a,"v4 x:",GLUI_SPINNER_FLOAT,tetra_vertices+9,VOL_TETRA,VolumeCB);
-
-  SPINNER_tetra_vertices[1]=glui_geometry->add_spinner_to_panel(PANEL_geom2b,"y:",GLUI_SPINNER_FLOAT,tetra_vertices+1,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[4]=glui_geometry->add_spinner_to_panel(PANEL_geom2b,"y:",GLUI_SPINNER_FLOAT,tetra_vertices+4,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[7]=glui_geometry->add_spinner_to_panel(PANEL_geom2b,"y:",GLUI_SPINNER_FLOAT,tetra_vertices+7,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[10]=glui_geometry->add_spinner_to_panel(PANEL_geom2b,"y:",GLUI_SPINNER_FLOAT,tetra_vertices+10,VOL_TETRA,VolumeCB);
-
-  SPINNER_tetra_vertices[2]=glui_geometry->add_spinner_to_panel(PANEL_geom2c,"z:",GLUI_SPINNER_FLOAT,tetra_vertices+2,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[5]=glui_geometry->add_spinner_to_panel(PANEL_geom2c,"z:",GLUI_SPINNER_FLOAT,tetra_vertices+5,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[8]=glui_geometry->add_spinner_to_panel(PANEL_geom2c,"z:",GLUI_SPINNER_FLOAT,tetra_vertices+8,VOL_TETRA,VolumeCB);
-  SPINNER_tetra_vertices[11]=glui_geometry->add_spinner_to_panel(PANEL_geom2c,"z:",GLUI_SPINNER_FLOAT,tetra_vertices+11,VOL_TETRA,VolumeCB);
-
-  PANEL_geom3abc=glui_geometry->add_panel_to_panel(ROLLOUT_geomtest,"box/tetrahedron faces",GLUI_PANEL_NONE);
-
-  glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest,"tetra test",&show_test_in_tetra);
-  glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest,"tetra x:",GLUI_SPINNER_FLOAT,tetra_xyz);
-  glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest,"tetra y:",GLUI_SPINNER_FLOAT,tetra_xyz+1);
-  glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest,"tetra z:",GLUI_SPINNER_FLOAT,tetra_xyz+2);
-
-  PANEL_geom3ab=glui_geometry->add_panel_to_panel(PANEL_geom3abc,"box");
-  PANEL_geom3a=glui_geometry->add_panel_to_panel(PANEL_geom3ab,"",GLUI_PANEL_NONE);
-  glui_geometry->add_column_to_panel(PANEL_geom3ab,false);
-  PANEL_geom3b=glui_geometry->add_panel_to_panel(PANEL_geom3ab,"",GLUI_PANEL_NONE);
+    if(HaveTexture() == 1){
+      show_texture_2dimage = GetTextureShow();
+      CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "image", &show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
+      VolumeCB(SHOW_TEXTURE_2D_IMAGE);
+    }
 
 
-  glui_geometry->add_column_to_panel(PANEL_geom3abc,false);
-  PANEL_geom3c=glui_geometry->add_panel_to_panel(PANEL_geom3abc,"tetrahedron");
+    glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
+    SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
+    SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
+    SPINNER_geom_outline_ioffset = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "outline offset", GLUI_SPINNER_INT, &geom_outline_ioffset, GEOM_OUTLINE_IOFFSET, VolumeCB);
+    SPINNER_geom_outline_ioffset->set_int_limits(0, 200);
+    SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
+    SPINNER_face_factor->set_float_limits(0.0, 0.5);
 
-  CHECKBOX_tetrabox_showhide[0]=glui_geometry->add_checkbox_to_panel(PANEL_geom3a,"xmin",tetrabox_vis+0);
-  CHECKBOX_tetrabox_showhide[1]=glui_geometry->add_checkbox_to_panel(PANEL_geom3b,"xmax",tetrabox_vis+1);
-  CHECKBOX_tetrabox_showhide[2]=glui_geometry->add_checkbox_to_panel(PANEL_geom3a,"ymin",tetrabox_vis+2);
-  CHECKBOX_tetrabox_showhide[3]=glui_geometry->add_checkbox_to_panel(PANEL_geom3b,"ymax",tetrabox_vis+3);
-  CHECKBOX_tetrabox_showhide[4]=glui_geometry->add_checkbox_to_panel(PANEL_geom3a,"zmin",tetrabox_vis+4);
-  CHECKBOX_tetrabox_showhide[5]=glui_geometry->add_checkbox_to_panel(PANEL_geom3b,"zmax",tetrabox_vis+5);
-  CHECKBOX_tetrabox_showhide[8]=glui_geometry->add_checkbox_to_panel(PANEL_geom3c,"v1 v3 v4",tetrabox_vis+6);
-  CHECKBOX_tetrabox_showhide[7]=glui_geometry->add_checkbox_to_panel(PANEL_geom3c,"v2 v3 v4",tetrabox_vis+7);
-  CHECKBOX_tetrabox_showhide[6]=glui_geometry->add_checkbox_to_panel(PANEL_geom3c,"v1 v2 v4",tetrabox_vis+8);
-  CHECKBOX_tetrabox_showhide[9]=glui_geometry->add_checkbox_to_panel(PANEL_geom3c,"v1 v2 v3",tetrabox_vis+9);
+    ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
+    PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
+    CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
+    CHECKBOX_highlight_edge1 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "1", &highlight_edge1);
+    CHECKBOX_highlight_edge2 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "2", &highlight_edge2);
+    CHECKBOX_highlight_edgeother = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "3 or more", &highlight_edgeother);
+
+    CHECKBOX_highlight_vertexdup = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomcheck, "duplicate vertices", &highlight_vertexdup);
+
+    // -------------- Cube/Tetra intersection test -------------------
+
+#ifdef pp_GEOMTEST
+    ROLLOUT_geomtest = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "Geometry tests", false);
+    PANEL_geom_testoptions = glui_geometry->add_panel_to_panel(ROLLOUT_geomtest, "geometry test:");
+    RADIO_geomtest_option = glui_geometry->add_radiogroup_to_panel(PANEL_geom_testoptions, &geomtest_option, GEOMETRYTEST, VolumeCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "none");
+    glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "triangle");
+    glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "polygon");
+    glui_geometry->add_radiobutton_to_group(RADIO_geomtest_option, "tetrahedron");
+
+    glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest, "show area labels", &show_tetratest_labels);
+    SPINNER_tetra_line_thickness = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "line thickness", GLUI_SPINNER_FLOAT, &tetra_line_thickness);
+    //  SPINNER_tetra_line_thickness->set_float_limits(1.0, 10.0);
+    SPINNER_tetra_point_size = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "point size", GLUI_SPINNER_FLOAT, &tetra_point_size);
+    //  SPINNER_tetra_point_size->set_float_limits(1.0, 20.0);
+
+    PANEL_geom1 = glui_geometry->add_panel_to_panel(ROLLOUT_geomtest, "bounding planes");
+
+    PANEL_geom1d = glui_geometry->add_panel_to_panel(PANEL_geom1, "", GLUI_PANEL_NONE);
+    PANEL_geom1a = glui_geometry->add_panel_to_panel(PANEL_geom1d, "", GLUI_PANEL_NONE);
+    glui_geometry->add_column_to_panel(PANEL_geom1d, false);
+    PANEL_geom1b = glui_geometry->add_panel_to_panel(PANEL_geom1d, "", GLUI_PANEL_NONE);
+
+    PANEL_geom1c = glui_geometry->add_panel_to_panel(PANEL_geom1, "", GLUI_PANEL_NONE);
+
+    SPINNER_box_bounds[0] = glui_geometry->add_spinner_to_panel(PANEL_geom1a, "xmin", GLUI_SPINNER_FLOAT, box_bounds2, VOL_BOXTRANSLATE, VolumeCB);
+    SPINNER_box_bounds[2] = glui_geometry->add_spinner_to_panel(PANEL_geom1a, "ymin", GLUI_SPINNER_FLOAT, box_bounds2 + 2, VOL_BOXTRANSLATE, VolumeCB);
+    SPINNER_box_bounds[4] = glui_geometry->add_spinner_to_panel(PANEL_geom1a, "zmin", GLUI_SPINNER_FLOAT, box_bounds2 + 4, VOL_BOXTRANSLATE, VolumeCB);
+    SPINNER_box_bounds[1] = glui_geometry->add_spinner_to_panel(PANEL_geom1b, "xmax", GLUI_SPINNER_FLOAT, box_bounds2 + 1, VOL_BOXTRANSLATE, VolumeCB);
+    SPINNER_box_bounds[3] = glui_geometry->add_spinner_to_panel(PANEL_geom1b, "ymax", GLUI_SPINNER_FLOAT, box_bounds2 + 3, VOL_BOXTRANSLATE, VolumeCB);
+    SPINNER_box_bounds[5] = glui_geometry->add_spinner_to_panel(PANEL_geom1b, "zmax", GLUI_SPINNER_FLOAT, box_bounds2 + 5, VOL_BOXTRANSLATE, VolumeCB);
+
+    SPINNER_box_translate[0] = glui_geometry->add_spinner_to_panel(PANEL_geom1c, "translate: x", GLUI_SPINNER_FLOAT, box_translate, VOL_BOXTRANSLATE, VolumeCB);
+    glui_geometry->add_column_to_panel(PANEL_geom1c, false);
+    SPINNER_box_translate[1] = glui_geometry->add_spinner_to_panel(PANEL_geom1c, "y", GLUI_SPINNER_FLOAT, box_translate + 1, VOL_BOXTRANSLATE, VolumeCB);
+    glui_geometry->add_column_to_panel(PANEL_geom1c, false);
+    SPINNER_box_translate[2] = glui_geometry->add_spinner_to_panel(PANEL_geom1c, "z", GLUI_SPINNER_FLOAT, box_translate + 2, VOL_BOXTRANSLATE, VolumeCB);
+    VolumeCB(VOL_BOXTRANSLATE);
+    PANEL_geom2 = glui_geometry->add_panel_to_panel(ROLLOUT_geomtest, "vertices");
+    PANEL_geom2a = glui_geometry->add_panel_to_panel(PANEL_geom2, "", GLUI_PANEL_NONE);
+    glui_geometry->add_column_to_panel(PANEL_geom2, false);
+    PANEL_geom2b = glui_geometry->add_panel_to_panel(PANEL_geom2, "", GLUI_PANEL_NONE);
+    glui_geometry->add_column_to_panel(PANEL_geom2, false);
+    PANEL_geom2c = glui_geometry->add_panel_to_panel(PANEL_geom2, "", GLUI_PANEL_NONE);
+
+    SPINNER_tetra_vertices[0] = glui_geometry->add_spinner_to_panel(PANEL_geom2a, "v1 x:", GLUI_SPINNER_FLOAT, tetra_vertices, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[3] = glui_geometry->add_spinner_to_panel(PANEL_geom2a, "v2 x:", GLUI_SPINNER_FLOAT, tetra_vertices + 3, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[6] = glui_geometry->add_spinner_to_panel(PANEL_geom2a, "v3 x:", GLUI_SPINNER_FLOAT, tetra_vertices + 6, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[9] = glui_geometry->add_spinner_to_panel(PANEL_geom2a, "v4 x:", GLUI_SPINNER_FLOAT, tetra_vertices + 9, VOL_TETRA, VolumeCB);
+
+    SPINNER_tetra_vertices[1] = glui_geometry->add_spinner_to_panel(PANEL_geom2b, "y:", GLUI_SPINNER_FLOAT, tetra_vertices + 1, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[4] = glui_geometry->add_spinner_to_panel(PANEL_geom2b, "y:", GLUI_SPINNER_FLOAT, tetra_vertices + 4, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[7] = glui_geometry->add_spinner_to_panel(PANEL_geom2b, "y:", GLUI_SPINNER_FLOAT, tetra_vertices + 7, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[10] = glui_geometry->add_spinner_to_panel(PANEL_geom2b, "y:", GLUI_SPINNER_FLOAT, tetra_vertices + 10, VOL_TETRA, VolumeCB);
+
+    SPINNER_tetra_vertices[2] = glui_geometry->add_spinner_to_panel(PANEL_geom2c, "z:", GLUI_SPINNER_FLOAT, tetra_vertices + 2, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[5] = glui_geometry->add_spinner_to_panel(PANEL_geom2c, "z:", GLUI_SPINNER_FLOAT, tetra_vertices + 5, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[8] = glui_geometry->add_spinner_to_panel(PANEL_geom2c, "z:", GLUI_SPINNER_FLOAT, tetra_vertices + 8, VOL_TETRA, VolumeCB);
+    SPINNER_tetra_vertices[11] = glui_geometry->add_spinner_to_panel(PANEL_geom2c, "z:", GLUI_SPINNER_FLOAT, tetra_vertices + 11, VOL_TETRA, VolumeCB);
+
+    PANEL_geom3abc = glui_geometry->add_panel_to_panel(ROLLOUT_geomtest, "box/tetrahedron faces", GLUI_PANEL_NONE);
+
+    glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest, "tetra test", &show_test_in_tetra);
+    glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "tetra x:", GLUI_SPINNER_FLOAT, tetra_xyz);
+    glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "tetra y:", GLUI_SPINNER_FLOAT, tetra_xyz + 1);
+    glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest, "tetra z:", GLUI_SPINNER_FLOAT, tetra_xyz + 2);
+
+    PANEL_geom3ab = glui_geometry->add_panel_to_panel(PANEL_geom3abc, "box");
+    PANEL_geom3a = glui_geometry->add_panel_to_panel(PANEL_geom3ab, "", GLUI_PANEL_NONE);
+    glui_geometry->add_column_to_panel(PANEL_geom3ab, false);
+    PANEL_geom3b = glui_geometry->add_panel_to_panel(PANEL_geom3ab, "", GLUI_PANEL_NONE);
+
+
+    glui_geometry->add_column_to_panel(PANEL_geom3abc, false);
+    PANEL_geom3c = glui_geometry->add_panel_to_panel(PANEL_geom3abc, "tetrahedron");
+
+    CHECKBOX_tetrabox_showhide[0] = glui_geometry->add_checkbox_to_panel(PANEL_geom3a, "xmin", tetrabox_vis + 0);
+    CHECKBOX_tetrabox_showhide[1] = glui_geometry->add_checkbox_to_panel(PANEL_geom3b, "xmax", tetrabox_vis + 1);
+    CHECKBOX_tetrabox_showhide[2] = glui_geometry->add_checkbox_to_panel(PANEL_geom3a, "ymin", tetrabox_vis + 2);
+    CHECKBOX_tetrabox_showhide[3] = glui_geometry->add_checkbox_to_panel(PANEL_geom3b, "ymax", tetrabox_vis + 3);
+    CHECKBOX_tetrabox_showhide[4] = glui_geometry->add_checkbox_to_panel(PANEL_geom3a, "zmin", tetrabox_vis + 4);
+    CHECKBOX_tetrabox_showhide[5] = glui_geometry->add_checkbox_to_panel(PANEL_geom3b, "zmax", tetrabox_vis + 5);
+    CHECKBOX_tetrabox_showhide[8] = glui_geometry->add_checkbox_to_panel(PANEL_geom3c, "v1 v3 v4", tetrabox_vis + 6);
+    CHECKBOX_tetrabox_showhide[7] = glui_geometry->add_checkbox_to_panel(PANEL_geom3c, "v2 v3 v4", tetrabox_vis + 7);
+    CHECKBOX_tetrabox_showhide[6] = glui_geometry->add_checkbox_to_panel(PANEL_geom3c, "v1 v2 v4", tetrabox_vis + 8);
+    CHECKBOX_tetrabox_showhide[9] = glui_geometry->add_checkbox_to_panel(PANEL_geom3c, "v1 v2 v3", tetrabox_vis + 9);
 #endif
+  }
 
   glui_geometry->add_separator();
-  glui_geometry->add_button(_d("Save settings"),SAVE_SETTINGS, BlockeditDlgCB);
-  BUTTON_blockage_1=glui_geometry->add_button(_d("Close"),CLOSE_WINDOW, BlockeditDlgCB);
+  glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS, BlockeditDlgCB);
+  BUTTON_blockage_1=glui_geometry->add_button(_("Close"),CLOSE_WINDOW, BlockeditDlgCB);
 
   glui_geometry->set_main_gfx_window( main_window );
 }
