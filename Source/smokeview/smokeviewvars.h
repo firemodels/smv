@@ -426,8 +426,6 @@ SVEXTERN int SVDECL(update_glui_shooter,0);
 
 SVEXTERN int SVDECL(update_glui_dialogs,0);
 #ifdef pp_LANG
-SVEXTERN langlistdata SVDECL(*langlistinfo,NULL);
-SVEXTERN int nlanglistinfo,SVDECL(show_lang_menu,1);
 SVEXTERN char startup_lang_code[3];
 #endif
 
