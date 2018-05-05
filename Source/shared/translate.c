@@ -192,7 +192,7 @@ char *Translate(char *string){
     char c;
 
     c=string[i];
-    if(c >= 'a'&&c <= 'z' || c >= 'A'&&c <= 'Z' || c >= '0'&&c <= '9'){
+    if((c >= 'a'&&c <= 'z') || (c >= 'A'&&c <= 'Z') || (c >= '0'&&c <= '9')){
       string_in = string + i;
       if(string_before != NULL)string_before[i] = 0;
       break;
