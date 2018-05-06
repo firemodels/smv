@@ -680,11 +680,8 @@ int GetFileListSize(const char *path, char *filter){
     perror("opendir");
     return 0;
   }
-  while( (entry = readdir(dp)) ){
-    if(((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1)){
-      maxfiles++;
-      continue;
-    }
+  while( (entry = readdir(dp))!=NULL ){
+    if(((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1))maxfiles++;
   }
   closedir(dp);
   return maxfiles;
@@ -731,19 +728,18 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   // DT_DIR - is a directory
   // DT_REG - is a regular file
 
+  if (maxfiles == 0) {
+    *filelist = NULL;
+    return 0;
+  }
   dp = opendir(path);
   if(dp == NULL){
     perror("opendir");
     *filelist=NULL;
     return 0;
   }
-  if(maxfiles==0){
-    closedir(dp);
-    *filelist=NULL;
-    return 0;
-  }
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
-  while( (entry = readdir(dp))&&nfiles<maxfiles ){
+  while( (entry = readdir(dp))!=NULL&&nfiles<maxfiles ){
     if((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
       char *file;
       filelistdata *flisti;
@@ -756,11 +752,11 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
       nfiles++;
     }
   }
+  closedir(dp);
   if(sort_files == YES&&nfiles>0){
     qsort((filelistdata *)flist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
   }
   *filelist=flist;
-  closedir(dp);
   return nfiles;
 }
 
