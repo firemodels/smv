@@ -589,7 +589,7 @@ void ReadSMVDynamic(char *file){
 
 #ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
-    stream->fileinfo = File2Buffer(file);\
+    stream->fileinfo = File2Buffer(file);
   }
 #endif
 
