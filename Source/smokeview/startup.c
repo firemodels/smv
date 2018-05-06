@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef pp_OSX
+#include <sys/resource.h>
+#endif
 #include "glew.h"
 #include GLUT_H
 
@@ -13,10 +16,28 @@
 #include "lua_api.h"
 #endif
 
+
+
+/* ------------------ SetMaxOpenFiles ------------------------ */
+#ifdef pp_OSX
+void SetMaxOpenFiles(void){
+  struct rlimit resource, *rlp;
+
+  rlp  = &resource;
+  rlp->rlim_cur=10240;
+  rlp->rlim_max=10240;
+  setrlimit(RLIMIT_NOFILE,rlp);
+}
+#endif
+
 /* ------------------ Init ------------------------ */
 
 void Init(void){
   int i;
+
+#ifdef pp_OSX
+  SetMaxOpenFiles();
+#endif
 
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
