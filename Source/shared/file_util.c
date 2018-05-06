@@ -565,6 +565,7 @@ filedata *File2Buffer(char *filename){
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
     readfile_option = READFILE;
+    fclose(stream);
     return NULL;
   }
   fread(buffer, sizeof(char), filesize, stream);
