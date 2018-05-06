@@ -462,6 +462,7 @@ char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
   char *file_buffer, *from, *to;
   int iline, i;
 
+  if(fileinfo==NULL)return NULL;
   iline = fileinfo->iline;
   if(iline>=fileinfo->nlines)return NULL;
   file_buffer = fileinfo->lines[iline];
@@ -479,6 +480,7 @@ char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
 /* ------------------ RewindFileBuffer ------------------------ */
 
 void RewindFileBuffer(filedata *fileinfo){
+  if(fileinfo==NULL)return;
   fileinfo->iline=0;
 }
 
