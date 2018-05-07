@@ -1656,6 +1656,7 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
   }
   geomi->loaded = 1;
   geomi->display=1;
+  fclose(stream);
 }
 
 /* ------------------ InMesh ------------------------ */
@@ -1867,6 +1868,7 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   }
   geomi->loaded=1;
   geomi->display=1;
+  fclose(stream);
 }
 
 /* ------------------ ReorderFace ------------------------ */
