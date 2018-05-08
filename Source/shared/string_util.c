@@ -26,6 +26,14 @@
 
 unsigned int *random_ints, nrandom_ints;
 
+/* ----------------------- AppendString ----------------------------- */
+
+char *AppendString(char *S1, char *S2) {
+  strcpy(append_string, S1);
+  strcat(append_string, S2);
+  return append_string;
+}
+
 /* ----------------------- InitRandAB ----------------------------- */
 
 void InitRandAB(int size){
@@ -244,7 +252,7 @@ void TrimCommas(char *line){
   char *c;
 
   for(c = line + strlen(line) - 1;c>=line;c--){
-    if(isspace(*c))continue;
+    if(isspace((unsigned char)(*c)))continue;
     if(strncmp(c,",",1)!=0)break;
     *c=' ';
   }
@@ -263,7 +271,7 @@ void TrimBack(char *line){
   len = strlen(line);
   if(len==0)return;
   for(c=line+len-1; c>=line; c--){
-    if(isspace(*c))continue;
+    if(isspace((unsigned char)(*c)))continue;
     *(c+1)='\0';
     return;
   }
@@ -279,7 +287,7 @@ char *TrimFront(char *line){
   char *c;
 
   for(c=line;c<=line+strlen(line)-1;c++){
-    if(!isspace(*c))return c;
+    if(!isspace((unsigned char)(*c)))return c;
   }
   return line;
 }
@@ -620,7 +628,7 @@ int Match(char *buffer, const char *key){
   lenbuffer=strlen(buffer);
   if(lenbuffer<lenkey)return NOTMATCH; // buffer shorter than key so no match
   if(strncmp(buffer,key,lenkey) != 0)return NOTMATCH; // key doesn't match buffer so no match
-  if(lenbuffer>lenkey&&!isspace(buffer[lenkey]))return NOTMATCH;
+  if(lenbuffer>lenkey&&!isspace((unsigned char)buffer[lenkey]))return NOTMATCH;
   return MATCH;
 }
 
@@ -639,7 +647,7 @@ int MatchUpper(char *buffer, const char *key){
   for(i=0;i<lenkey;i++){
     if(toupper(buffer[i])!=toupper(key[i]))return NOTMATCH;
   }
-  if(lenbuffer>lenkey&&!isspace(buffer[lenkey]))return NOTMATCH;
+  if(lenbuffer>lenkey&&!isspace((unsigned char)buffer[lenkey]))return NOTMATCH;
   return MATCH;
 }
 
@@ -1358,6 +1366,7 @@ void ParseCommonOptions(int argc, char **argv){
 #endif
   }
 }
+
 /* ------------------ version ------------------------ */
 
 #ifdef pp_HASH
@@ -1426,8 +1435,3 @@ void PRINTversion(char *progname){
   PRINTF("Platform         : LINUX64\n");
 #endif
 }
-
-
-
-
-

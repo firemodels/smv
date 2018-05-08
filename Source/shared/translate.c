@@ -11,14 +11,14 @@
 
 int CompareTrdata( const void *arg1, const void *arg2 ){
   trdata *tri, *trj;
-  int compval;
 
   tri = (trdata *)arg1;
   trj = (trdata *)arg2;
 
-  compval = STRCMP(tri->key,trj->key);
-  if(compval!=0)return compval;
-  return strcmp(tri->key,trj->key);
+  if(tri->key == NULL&&trj->key!=NULL)return -1;
+  if(tri->key != NULL&&trj->key == NULL)return 1;
+  if(tri->key == NULL&&trj->key == NULL)return 0;
+  return STRCMP(tri->key,trj->key);
 }
 
 /* ------------------ ParseLang ------------------------ */
@@ -176,67 +176,53 @@ void InitTranslate(char *bindir, char *tr_name){
 
 /* ------------------ Translate ------------------------ */
 
-char *Translate(char *string,int option){
-  int i, len, nchars_before=0, nchars_after=0;
-  unsigned int nchars_in=0;
+char *Translate(char *string){
+  int i, len;
   char *string_before, *string_in, *string_out, *string_after;
 
-  if(tr_otherlang==0||option==0)return string;
-
+  if(tr_otherlang==0)return string;
 
   len = strlen(string);
 
   // find leading non-alpha characters
 
+  string_before = NULL;
   string_in = string;
-  string_before = tr_string_before;
   for(i = 0; i<len; i++){
-    char C,D;
     char c;
 
     c=string[i];
-    C=toupper(c);
-    D=toupper(string[i+1]);
-    if((C>='A'&&C<='Z')||( (c=='1'||c=='2'||c=='3') && D=='D' ) ){
-      nchars_before=i;
-      string_in=string+i;
-      if(nchars_before>0){
-        string_before=tr_string_before;
-        string_before[nchars_before]=0;
-      }
-      else{
-        string_before=NULL;
-      }
+    if((c >= 'a'&&c <= 'z') || (c >= 'A'&&c <= 'Z') || (c >= '0'&&c <= '9')){
+      string_in = string + i;
+      if(string_before != NULL)string_before[i] = 0;
       break;
     }
-    tr_string_before[i]=c;
+    if(string_before==NULL)string_before = tr_string_before;
+    string_before[i] = c;
   }
 
-  // find trailing non-alpha characters
+  // find trailing : or ...
 
-  string_after = string+len;
-  for(i=len-1;i>=nchars_before;i--){
-    char c;
+  string_after = NULL;
+  len = strlen(string_in);
+  if(len > 0&&string_in[len-1]==':'){
+    string_after = tr_string_after;
+    strcpy(string_after,":");
+    len--;
+  }
+  if(len > 3){
+    char *match;
 
-    c=string[i];
-    if((c>='a'&&c<='z')||(c>='A'&&c<='Z')){
-      nchars_after=len-1-i;
-      string_after=string+i+1;
-      if(nchars_after>0){
-        memcpy(tr_string_after,string_after,nchars_after);
-        tr_string_after[nchars_after]=0;
-        string_after=tr_string_after;
-      }
-      else{
-        string_after=NULL;
-      }
-      break;
+    match = strstr(string_in + len - 3, "...");
+    if(match != NULL){
+      string_after = tr_string_after;
+      strcpy(string_after, "...");
+      len -= 3;
     }
   }
-  nchars_in=len-nchars_before-nchars_after;
-  if(nchars_in==0)return string;
-  memcpy(tr_string_in,string_in,nchars_in);
-  tr_string_in[nchars_in]=0;
+
+  memcpy(tr_string_in,string_in,len);
+  tr_string_in[len]=0;
   string_in=tr_string_in;
 
   // translate string_in
@@ -252,8 +238,8 @@ char *Translate(char *string,int option){
   }
 
   strcpy(tr_string,"");
-  if(string_before!=NULL)strcat(tr_string,string_before);
+  if(string_before!=NULL&&strlen(string_before)>0)strcat(tr_string,string_before);
   strcat(tr_string,string_out);
-  if(string_after!=NULL)strcat(tr_string,string_after);
+  if(string_after!=NULL&&strlen(string_after)>0)strcat(tr_string,string_after);
   return tr_string;
 }

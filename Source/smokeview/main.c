@@ -42,6 +42,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+#ifdef pp_LANG
+    PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
+#endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
 #ifdef pp_READBUFFER
     PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
@@ -49,9 +52,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
-    PRINTF("%s\n", _(" -runluascript  - run the lua script file casename.lua"));
-    PRINTF("%s\n", _(" -luascript scriptfile - run the Lua script file scriptfile"));
-    PRINTF("%s\n", _(" -killscript    - exit smokeview (with an error code) if the script fails"));
+    PRINTF("%s\n", " -runluascript  - run the lua script file casename.lua");
+    PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
+    PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
@@ -458,7 +461,6 @@ void ParseCommandline(int argc, char **argv){
         langlen = strlen(lang);
         NewMemory((void **)&tr_name, langlen + 48 + 1);
         strcpy(tr_name, lang);
-        show_lang_menu = 1;
       }
     }
 #endif

@@ -2419,6 +2419,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   UpdateBoundaryType();
   UpdateUnitDefs();
   UpdateTimes();
+  force_redisplay=1;
   UpdateFrameNumber(1);
 }
 

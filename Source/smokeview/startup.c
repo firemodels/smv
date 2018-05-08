@@ -120,76 +120,6 @@ void Init(void){
   UpdateShow();
 }
 
-/* ------------------ InitLang ------------------------ */
-
-#ifdef pp_LANG
-void InitLang(void){
-  int maxlangs, nlangs;
-  filelistdata *filelistinfo;
-  int i;
-
-  nlanglistinfo=0;
-  maxlangs = GetFileListSize(smokeview_bindir,"*.po");
-  if(maxlangs==0)return;
-  nlangs = MakeFileList(smokeview_bindir,"*.po", maxlangs, NO, &filelistinfo);
-  if(nlangs==0)return;
-  for(i=0;i<nlangs;i++){
-    char *file;
-    filelistdata *filelisti;
-
-    filelisti = filelistinfo + i;
-    file=filelisti->file;
-    if(strstr(file,"template")!=NULL||filelisti->type==1)continue;
-    nlanglistinfo++;
-  }
-  if(nlanglistinfo==0)return;
-  NewMemory((void **)&langlistinfo,nlanglistinfo*sizeof(langlistdata));
-  nlanglistinfo=0;
-  for(i=0;i<nlangs;i++){
-    char *file;
-    filelistdata *filelisti;
-    langlistdata *langi;
-    int len;
-    char *lang_code;
-
-    langi = langlistinfo + nlanglistinfo;
-    filelisti = filelistinfo + i;
-    file=filelisti->file;
-    if(strstr(file,"template")!=NULL||filelisti->type==1)continue;
-    TrimBack(file);
-    file=TrimFront(file);
-    len=strlen(file);
-    langi->file=file;
-    strncpy(langi->lang_code,file+len-5,2);
-    langi->lang_code[2]='\0';
-    lang_code=langi->lang_code;
-    if(strcmp(lang_code,"fr")==0){
-      strcpy(langi->lang_name,_("French"));
-    }
-    else if(strcmp(lang_code,"it")==0){
-      strcpy(langi->lang_name,_("Italian"));
-    }
-    else if(strcmp(lang_code,"de")==0){
-      strcpy(langi->lang_name,_("German"));
-    }
-    else if(strcmp(lang_code,"pl")==0){
-      strcpy(langi->lang_name,_("Polish"));
-    }
-    else if(strcmp(lang_code,"es")==0){
-      strcpy(langi->lang_name,_("Spanish"));
-    }
-    else if(strcmp(lang_code, "ru")==0){
-      strcpy(langi->lang_name, _("Russian"));
-    }
-    else{
-      strcpy(langi->lang_name,langi->lang_code);
-    }
-    nlanglistinfo++;
-  }
-  InitTranslate(smokeview_bindir,tr_name);
-}
-#endif
-
 /* ------------------ ReadBoundINI ------------------------ */
 
 void ReadBoundINI(void){
@@ -308,7 +238,7 @@ int SetupCase(int argc, char **argv){
   ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
-  InitLang();
+  InitTranslate(smokeview_bindir, tr_name);
 #endif
 
   if(ntourinfo==0)SetupTour();
@@ -406,7 +336,7 @@ void SetupGlut(int argc, char **argv){
     }
   }
 #ifdef pp_BETA
-  fprintf(stderr,"%s\n",_("\n*** This version of Smokeview is intended for review and testing ONLY. ***"));
+  fprintf(stderr,"%s\n","\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
 
 #ifdef pp_OSX

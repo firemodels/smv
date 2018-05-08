@@ -3,8 +3,8 @@ CURDIR=`pwd`
 cd ..
 ROOT=`pwd`
 cd $CURDIR
-MERGEPODIR=$ROOT/Build/mergepo/intel_linux_64_db
-MERGEPO=$MERGEPODIR/mergepo_linux_64_db
+MERGEPODIR=$ROOT/Build/mergepo/intel_linux_64
+MERGEPO=$MERGEPODIR/mergepo_linux_64
 if [ ! -e $MERGEPO ]; then
   echo "***warning: The application $MERGEPO does not exist."
   echo "Building mergepo"

@@ -1195,7 +1195,7 @@ void UpdateTimes(void){
     qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
     CheckMemory;
 
-#define DT_EPS 0.0001
+#define DT_EPS 0.00001
 
     to = 1;
     global_times[0]=global_times_copy[0];

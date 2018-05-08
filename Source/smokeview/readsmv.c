@@ -589,7 +589,7 @@ void ReadSMVDynamic(char *file){
 
 #ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
-    stream->fileinfo = File2Buffer(file);\
+    stream->fileinfo = File2Buffer(file);
   }
 #endif
 
@@ -3894,7 +3894,7 @@ int ReadSMV(char *file, char *file2){
   smv_modtime= FileModtime(file);
 
   PRINTF(_("processing smokeview file:"));
-  PRINTF(_(" %s\n"), file);
+  PRINTF(" %s\n", file);
   STOP_TIMER(pass0_time );
 
 /*
@@ -3911,8 +3911,7 @@ int ReadSMV(char *file, char *file2){
   ntc_total=0;
   nspr_total=0;
   nheat_total=0;
-  PRINTF("%s",_("  pass 1"));
-  PRINTF("\n");
+  PRINTF("%s","  pass 1\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -4655,8 +4654,7 @@ int ReadSMV(char *file, char *file2){
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
 #endif
-  PRINTF("%s",_("  pass 2"));
-  PRINTF("\n");
+  PRINTF("%s","  pass 2\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -6051,8 +6049,7 @@ int ReadSMV(char *file, char *file2){
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
 #endif
-  PRINTF("%s",_("  pass 3"));
-  PRINTF("\n");
+  PRINTF("%s","  pass 3\n");
 
   /*
    ************************************************************************
@@ -6538,8 +6535,7 @@ int ReadSMV(char *file, char *file2){
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
 #endif
-  PRINTF("%s",_("  pass 4"));
-  PRINTF("\n");
+  PRINTF("%s","  pass 4\n");
   startpass=1;
   CheckMemory;
 
@@ -8730,8 +8726,7 @@ typedef struct {
 #endif
   if(do_pass4==1||autoterrain==1){
     do_pass5 = 1;
-    PRINTF("%s",_("  pass 5"));
-    PRINTF("\n");
+    PRINTF("%s","  pass 5\n");
   }
 
   while((autoterrain==1||do_pass4==1)){
@@ -9588,9 +9583,6 @@ int ReadIni2(char *inifile, int localfile){
       bufptr = TrimFront(buffer);
       strncpy(startup_lang_code, bufptr, 2);
       startup_lang_code[2] = '\0';
-      if(strcmp(startup_lang_code, "en") != 0){
-        show_lang_menu = 1;
-      }
       if(tr_name == NULL){
         int langlen;
 
