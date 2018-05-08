@@ -11,14 +11,14 @@
 
 int CompareTrdata( const void *arg1, const void *arg2 ){
   trdata *tri, *trj;
-  int compval;
 
   tri = (trdata *)arg1;
   trj = (trdata *)arg2;
 
-  compval = STRCMP(tri->key,trj->key);
-  if(compval!=0)return compval;
-  return strcmp(tri->key,trj->key);
+  if(tri->key == NULL&&trj->key!=NULL)return -1;
+  if(tri->key != NULL&&trj->key == NULL)return 1;
+  if(tri->key == NULL&&trj->key == NULL)return 0;
+  return STRCMP(tri->key,trj->key);
 }
 
 /* ------------------ ParseLang ------------------------ */
@@ -192,7 +192,7 @@ char *Translate(char *string){
     char c;
 
     c=string[i];
-    if(c >= 'a'&&c <= 'z' || c >= 'A'&&c <= 'Z' || c >= '0'&&c <= '9'){
+    if((c >= 'a'&&c <= 'z') || (c >= 'A'&&c <= 'Z') || (c >= '0'&&c <= '9')){
       string_in = string + i;
       if(string_before != NULL)string_before[i] = 0;
       break;

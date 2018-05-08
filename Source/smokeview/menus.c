@@ -7766,17 +7766,27 @@ updatemenu=0;
       char view_label[255], menu_label[255];
 
       GetNextViewLabel(view_label);
-      sprintf(menu_label, "Save viewpoint as %s", view_label);
+      strcpy(menu_label, _("Save viewpoint as"));
+      strcat(menu_label, " ");
+      strcat(menu_label,view_label);
 
       glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
       if(current_view != NULL){
         if(strcmp(current_view,startup_view_label)!=0){
-          sprintf(menu_label, "Apply %s at startup", current_view);
+          strcpy(menu_label, _("Apply"));
+          strcat(menu_label, " ");
+          strcat(menu_label, current_view);
+          strcat(menu_label, " ");
+          strcat(menu_label, _("at startup"));
           glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
         }
       }
       else{
-        sprintf(menu_label, "Save viewpoint as %s and apply at startup", view_label);
+        strcpy(menu_label, _("Save viewpoint as"));
+        strcat(menu_label, " ");
+        strcat(menu_label, view_label);
+        strcat(menu_label, " ");
+        strcat(menu_label, _("and apply at startup"));
         glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
       }
       glutAddSubMenu(_("Zoom"),zoommenu);
