@@ -1010,9 +1010,14 @@ extern "C" void Smoke3dCB(int var){
     }
     break;
   case TEMP_MIN:
-    temp_min = 20.0;
-    temp_max = (float)(10.0*(int)(global_temp_cutoff/10.0)-10.0);
-    SPINNER_temperature_min->set_float_limits(temp_min,temp_max);
+    if(global_temp_min < 0.0){
+      global_temp_min = 0.0;
+      SPINNER_temperature_min->set_float_val(global_temp_min);
+    }
+    if(global_temp_max<global_temp_min){
+      global_temp_max = global_temp_min+1.0;
+      SPINNER_temperature_max->set_float_val(global_temp_max);
+    }
     UpdateSmokeColormap(smoke_render_option);
     break;
   case CO2_COLOR:
@@ -1026,9 +1031,10 @@ extern "C" void Smoke3dCB(int var){
     glutPostRedisplay();
     break;
   case TEMP_MAX:
-    temp_min = (float)(10*(int)(global_temp_cutoff/10.0)+10.0);
-    temp_max = 1800.0;
-    SPINNER_temperature_max->set_float_limits(temp_min,temp_max);
+    if(global_temp_max<global_temp_min){
+      global_temp_max = global_temp_min+1.0;
+      SPINNER_temperature_max->set_float_val(global_temp_max);
+    }
     UpdateSmokeColormap(smoke_render_option);
     break;
   case LOAD_COMPRESSED_DATA:
