@@ -26,7 +26,6 @@
 
 //#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
-//#define pp_OPACITYMAP
 
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU

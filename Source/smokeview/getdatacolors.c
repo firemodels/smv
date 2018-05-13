@@ -1373,7 +1373,6 @@ void UpdateSmokeColormap(int option){
         }
       }
       break;
-    case FIRECOLORMAP_NOCONSTRAINT:
     case FIRECOLORMAP_CONSTRAINT:
       for(n=0;n<MAXSMOKERGB;n++){
         float n2,factor;
