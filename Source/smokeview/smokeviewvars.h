@@ -691,9 +691,6 @@ SVEXTERN int SVDECL(visgridloc,0);
 SVEXTERN int valindex;
 
 SVEXTERN int fire_colorbar_index,SVDECL(fire_colorbar_index_save,-1);
-#ifdef pp_OPACITYMAP
-SVEXTERN int fire_opacitybar_index, SVDECL(fire_opacitybar_index_save, -1);
-#endif
 SVEXTERN int SVDECL(update_fire_colorbar_index,0);
 SVEXTERN int SVDECL(fire_colorbar_index_ini,0);
 SVEXTERN float SVDECL(*rgb2_ini,NULL);

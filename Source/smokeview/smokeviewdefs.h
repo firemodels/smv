@@ -722,7 +722,6 @@ void _Sniff_Errors(char *whereat);
 
 #define FIRECOLORMAP_DIRECT 0
 #define FIRECOLORMAP_CONSTRAINT 1
-#define FIRECOLORMAP_NOCONSTRAINT 2
 
 #define RENDER_SLICE 0
 #define RENDER_VOLUME 1
