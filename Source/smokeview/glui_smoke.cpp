@@ -88,11 +88,7 @@ GLUI_Button *BUTTON_startrender=NULL;
 GLUI_Button *BUTTON_cancelrender=NULL;
 
 GLUI_Listbox *LISTBOX_smoke_colorbar=NULL;
-#ifdef pp_OPACITYMAP
-GLUI_Listbox *LISTBOX_smoke_opacitybar = NULL;
-#endif
 
-GLUI_RadioGroup *RADIO_showmap=NULL;
 GLUI_RadioGroup *RADIO_alpha=NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
@@ -101,8 +97,6 @@ GLUI_RadioGroup *RADIO_loadvol=NULL;
 GLUI_RadioGroup *RADIO_use_colormap=NULL;
 GLUI_RadioGroup *RADIO_light_type = NULL;
 GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
-
-GLUI_RadioButton *RADIOBUTTON_direct=NULL,*RADIOBUTTON_constraint=NULL, *RADIOBUTTON_noconstraint=NULL;
 
 GLUI_Spinner *SPINNER_sootfactor=NULL;
 GLUI_Spinner *SPINNER_co2factor=NULL;
@@ -154,8 +148,6 @@ GLUI_Spinner *SPINNER_scatter_param = NULL;
 GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
-GLUI_Spinner *SPINNER_tempfactor=NULL;
-GLUI_Spinner *SPINNER_tempoffset=NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_upper = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_middle = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_lower = NULL;
@@ -194,21 +186,21 @@ GLUI_Panel *PANEL_light_color = NULL;
 GLUI_Panel *PANEL_light_position = NULL;
 GLUI_Panel *PANEL_scatter = NULL;
 GLUI_Panel *PANEL_loadframe = NULL;
-GLUI_Panel *PANEL_voltemp = NULL;
 GLUI_Panel *PANEL_voldisplay = NULL;
 GLUI_Panel *PANEL_volsmoke_move = NULL;
 GLUI_Panel *PANEL_alpha = NULL;
 
+#ifdef pp_SMOKETEST
+GLUI_Rollout *ROLLOUT_voltemp = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
-GLUI_Rollout *ROLLOUT_firesmoke_color = NULL;
-GLUI_Rollout *ROLLOUT_firesmoke_colormap = NULL;
 GLUI_Rollout *ROLLOUT_firecolor = NULL;
 GLUI_Rollout *ROLLOUT_smokecolor = NULL;
 GLUI_Rollout *ROLLOUT_generate_images = NULL;
 GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_light = NULL;
 GLUI_Rollout *ROLLOUT_colormap_temp = NULL;
-GLUI_Rollout *ROLLOUT_colormap_co2 = NULL;
+GLUI_Rollout *ROLLOUT_co2color = NULL;
 GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
 GLUI_Rollout *ROLLOUT_colormap_hrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_meshvis = NULL;
@@ -239,8 +231,9 @@ int nsmokeprocinfo = 0;
 
 #define FIRECOLOR_ROLLOUT 0
 #define SMOKECOLOR_ROLLOUT 1
+#define CO2COLOR_ROLLOUT 2
 
-procdata colorprocinfo[2];
+procdata colorprocinfo[3];
 int ncolorprocinfo = 0;
 
 /* ------------------ LoadIncrementalCB ------------------------ */
@@ -488,14 +481,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   PANEL_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Color"));
 
-  RADIO_use_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_colormap,&firecolormap_type,FIRECOLORMAP_TYPE,Smoke3dCB);
-  RADIOBUTTON_direct=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap,_("Use specified color, opacity"));
-  RADIOBUTTON_constraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap with constraints"));
-  RADIOBUTTON_noconstraint=glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap without constraints"));
+  RADIO_use_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_colormap, &firecolormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use red/green/blue"));
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap"));
 
-  ROLLOUT_firesmoke_color = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("smoke/fire color"),false);
-
-  ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmoke_color, "smoke",false, SMOKECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "smoke",false, SMOKECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_smoke_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("red"), GLUI_SPINNER_INT, &smoke_red, SMOKE_RED, Smoke3dCB);
@@ -505,7 +495,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_blue = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"), GLUI_SPINNER_INT, &smoke_blue, SMOKE_BLUE, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
 
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firesmoke_color, _("fire"),true, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("fire"),true, FIRECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_fire_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("red"), GLUI_SPINNER_INT, &fire_red, FIRE_RED, Smoke3dCB);
@@ -515,53 +505,68 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_blue=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor,_("blue"),GLUI_SPINNER_INT,&fire_blue,FIRE_BLUE,Smoke3dCB);
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
 
-  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
-  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
-
-  ROLLOUT_firesmoke_colormap = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "color/opacity maps", false);
-
-  RADIO_showmap = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_firesmoke_colormap,&show_firecolormap, SHOW_FIRECOLORMAP, Smoke3dCB);
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_("Hide"));
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_("Show color map"));
-#ifdef pp_OPACITYMAP
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_showmap,_("Show opacity map"));
-#endif
-
-  if(ncolorbars>0){
-    LISTBOX_smoke_colorbar=glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firesmoke_colormap,_("color map:"),&fire_colorbar_index,SMOKE_COLORBAR_LIST,Smoke3dCB);
-
-    for(i=0;i<ncolorbars;i++){
+  if(ncolorbars > 0){
+    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firecolor, "colormap:", &fire_colorbar_index, SMOKE_COLORBAR_LIST, Smoke3dCB);
+    for(i = 0;i < ncolorbars;i++){
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      cbi->label_ptr=cbi->label;
-      LISTBOX_smoke_colorbar->add_item(i,cbi->label_ptr);
+      cbi->label_ptr = cbi->label;
+      LISTBOX_smoke_colorbar->add_item(i, cbi->label_ptr);
     }
     LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "Edit colormap", &show_firecolormap, SHOW_FIRECOLORMAP, Smoke3dCB);
   }
 
-#ifdef OPACITYMAP
-  if(ncolorbars>0){
-    LISTBOX_smoke_opacitybar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_firesmoke_colormap, _("opacity map:"), &fire_opacitybar_index, SMOKE_COLORBAR_LIST, Smoke3dCB);
+#define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
 
-    for(i = 0;i<ncolorbars;i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo+i;
-      cbi->label_ptr = cbi->label;
-      LISTBOX_smoke_opacitybar->add_item(i, cbi->label_ptr);
-    }
-    LISTBOX_smoke_opacitybar->set_int_val(fire_opacitybar_index);
+  ROLLOUT_colormap_hrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firecolor, "HRRPUV");
+  SPINNER_hrrpuv_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv, _("color as fire >"), GLUI_SPINNER_FLOAT, &global_hrrpuv_cutoff, GLOBAL_FIRE_CUTOFF, Smoke3dCB);
+  SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
+  if (nsmoke3d_temp > 0) {
+    ROLLOUT_colormap_temp = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_firecolor, "Temperature");
+    SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp, _("color as fire > "), GLUI_SPINNER_FLOAT,
+      &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
+  if (nsmoke3d_temp > 0) {
+    char smokelabel[256];
+
+#ifdef pp_SMOKETEST
+    strcpy(smokelabel, _("settings (test)"));
+#else
+    strcpy(smokelabel, _("min/max"));
 #endif
+    ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp, smokelabel, false);
+    SPINNER_temperature_min = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings, _("min"), GLUI_SPINNER_FLOAT,
+      &global_temp_min, TEMP_MIN, Smoke3dCB);
+    SPINNER_temperature_max = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings, _("max"), GLUI_SPINNER_FLOAT,
+      &global_temp_max, TEMP_MAX, Smoke3dCB);
+    Smoke3dCB(TEMP_MIN);
+    Smoke3dCB(TEMP_CUTOFF);
+    Smoke3dCB(TEMP_MAX);
+  }
 
-  SPINNER_smoke3d_fire_halfdepth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth2, UPDATE_SMOKEFIRE_COLORS2, Smoke3dCB);
-  if(nco2files>0){
-    SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("50% CO2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
+
+  if(nsmoke3d_co2 > 0){
+    ROLLOUT_co2color=glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "CO2", false, CO2COLOR_ROLLOUT, ColorRolloutCB);
+    ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_co2color, CO2COLOR_ROLLOUT);
+    SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("red"), GLUI_SPINNER_INT, global_co2color, CO2_COLOR, Smoke3dCB);
+    SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("green"), GLUI_SPINNER_INT, global_co2color + 1, CO2_COLOR, Smoke3dCB);
+    SPINNER_co2color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("blue"), GLUI_SPINNER_INT, global_co2color + 2, CO2_COLOR, Smoke3dCB);
+    SPINNER_co2color[0]->set_int_limits(0, 255);
+    SPINNER_co2color[1]->set_int_limits(0, 255);
+    SPINNER_co2color[2]->set_int_limits(0, 255);
+    if(nco2files > 0){
+      SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("50% CO2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+      SPINNER_sootfactor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor, SOOTSMOKE, Smoke3dCB);
+      SPINNER_co2factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("CO2 factor"), GLUI_SPINNER_FLOAT, &co2factor, CO2SMOKE, Smoke3dCB);
+    }
   }
 
 #ifdef pp_SMOKEALPHA
-  PANEL_alpha = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"experimental");
+  PANEL_alpha = glui_3dsmoke->add_panel_to_panel(PANEL_colormap,"experimental");
   SPINNER_smoke3d_fire_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% fire alpha"), GLUI_SPINNER_INT, &glui_fire_alpha, UPDATE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_alpha->set_int_limits(1,254);
   if(nco2files>0){
@@ -572,19 +577,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
 
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firesmoke_colormap, _("max blending"), &hrrpuv_max_blending);
-  SPINNER_co2factor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("CO2 factor"), GLUI_SPINNER_FLOAT,&co2factor,CO2SMOKE,Smoke3dCB);
-  SPINNER_co2factor->set_float_limits(0.0, 100.0);
-  SPINNER_sootfactor=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firesmoke_colormap, _("soot factor"), GLUI_SPINNER_FLOAT, &sootfactor,SOOTSMOKE,Smoke3dCB);
-  SPINNER_sootfactor->set_float_limits(0.0, 100.0);
 
-  PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firesmoke_colormap,"",GLUI_PANEL_NONE);
-
-#define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
-
-  ROLLOUT_colormap_hrrpuv = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2,"HRRPUV (kW/m3)");
-  SPINNER_hrrpuv_cutoff=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_hrrpuv,_("color as fire >"),GLUI_SPINNER_FLOAT,&global_hrrpuv_cutoff,GLOBAL_FIRE_CUTOFF,Smoke3dCB);
-  SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
+  PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(PANEL_colormap,"",GLUI_PANEL_NONE);
 
 #ifdef pp_SMOKETEST
   ROLLOUT_slicehrrpuv = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _("Opacity correction (test)"),false);
@@ -598,41 +592,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_slicehrrpuv_lower = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _("50% lower opacity (m)"), GLUI_SPINNER_FLOAT, &slicehrrpuv_lower, UPDATE_FACTOROFFSETS, Smoke3dCB);
   SPINNER_hrrpuvoffset = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicehrrpuv, _("HRRPUV offset"), GLUI_SPINNER_FLOAT, &slicehrrpuv_offset, UPDATE_FACTOROFFSETS, Smoke3dCB);
   Smoke3dCB(UPDATE_HRRPUV_CONTROLS);
+
+  ROLLOUT_voltemp = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_hrrpuv, _("Intensity (test)"),false);
+  glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltemp, _("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
+  glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltemp, _("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
 #endif
-
-  {
-    char label[256];
-
-    strcpy(label,"Temperature (");
-    strcat(label,degC);
-    strcat(label,")");
-    ROLLOUT_colormap_temp = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2,label);
-  }
-  SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_temp, _("color as fire > "), GLUI_SPINNER_FLOAT,
-    &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
-  ROLLOUT_temperature_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_colormap_temp, _("settings (test)"),false);
-  SPINNER_temperature_min=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_("min"),GLUI_SPINNER_FLOAT,
-    &global_temp_min,TEMP_MIN,Smoke3dCB);
-  SPINNER_temperature_max=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_temperature_settings,_("max"),GLUI_SPINNER_FLOAT,
-    &global_temp_max,TEMP_MAX,Smoke3dCB);
-
-  Smoke3dCB(TEMP_MIN);
-  Smoke3dCB(TEMP_CUTOFF);
-  Smoke3dCB(TEMP_MAX);
-
-  PANEL_voltemp = glui_3dsmoke->add_panel_to_panel(ROLLOUT_temperature_settings, _("Intensity (test)"),true);
-  SPINNER_tempfactor = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _("factor"), GLUI_SPINNER_FLOAT, &voltemp_factor);
-  SPINNER_tempoffset = glui_3dsmoke->add_spinner_to_panel(PANEL_voltemp, _("offset"), GLUI_SPINNER_FLOAT, &voltemp_offset);
-
-  if(nsmoke3d_co2 > 0){
-    ROLLOUT_colormap_co2 = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap2, "CO2 (kg/m3)");
-    SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _("red"),   GLUI_SPINNER_INT, global_co2color     ,CO2_COLOR, Smoke3dCB);
-    SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _("green"), GLUI_SPINNER_INT, global_co2color + 1, CO2_COLOR, Smoke3dCB);
-    SPINNER_co2color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_colormap_co2, _("blue"),  GLUI_SPINNER_INT, global_co2color + 2, CO2_COLOR, Smoke3dCB);
-    SPINNER_co2color[0]->set_int_limits(0, 255);
-    SPINNER_co2color[1]->set_int_limits(0, 255);
-    SPINNER_co2color[2]->set_int_limits(0, 255);
-  }
 
   glui_3dsmoke->add_column_to_panel(PANEL_overall,false);
 
@@ -718,6 +682,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("both"));
     CHECKBOX_smoke3d_load_incremental=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices, _("incremental data loading"), &load_incremental, SMOKE3D_LOAD_INCREMENTAL, LoadIncrementalCB);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slices, _("max blending"), &hrrpuv_max_blending);
   }
 
   // volume render dialog
@@ -907,6 +872,14 @@ extern "C" void Smoke3dCB(int var){
     break;
   case SOOTSMOKE:
   case CO2SMOKE:
+    if(co2factor < 0.0){
+      co2factor = 0.0;
+      SPINNER_co2factor->set_float_val(co2factor);
+    }
+    if(sootfactor < 0.0){
+      sootfactor = 0.0;
+      SPINNER_sootfactor->set_float_val(sootfactor);
+    }
     glutPostRedisplay();
     break;
   case UPDATE_HRRPUV_CONTROLS:
@@ -1020,9 +993,6 @@ extern "C" void Smoke3dCB(int var){
     }
     UpdateSmokeColormap(smoke_render_option);
     break;
-  case CO2_COLOR:
-     glutPostRedisplay();
-     break;
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
     temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
@@ -1051,73 +1021,25 @@ extern "C" void Smoke3dCB(int var){
         ROLLOUT_colormap_temp->disable();
         ROLLOUT_colormap_temp->close();
       }
-      if(ROLLOUT_firesmoke_color != NULL){
-        ROLLOUT_firesmoke_color->enable();
-        ROLLOUT_firesmoke_color->open();
-      }
       firecolormap_type=firecolormap_type_save;
       RADIO_use_colormap->set_int_val(firecolormap_type);
-      RADIOBUTTON_direct->enable();
     }
     else{
       if(ROLLOUT_colormap_temp!=NULL){
         ROLLOUT_colormap_temp->enable();
         ROLLOUT_colormap_temp->open();
       }
-      if(ROLLOUT_colormap_hrrpuv!=NULL){
-        ROLLOUT_colormap_hrrpuv->disable();
-        ROLLOUT_colormap_hrrpuv->close();
-      }
       if(PANEL_absorption!=NULL)PANEL_absorption->disable();
       firecolormap_type_save=firecolormap_type;
       firecolormap_type=FIRECOLORMAP_CONSTRAINT;
       RADIO_use_colormap->set_int_val(firecolormap_type);
-      RADIOBUTTON_direct->disable();
-      SPINNER_smoke3d_fire_halfdepth->disable();
     }
     Smoke3dCB(FIRECOLORMAP_TYPE);
     UpdateSmokeType();
     break;
   case FIRECOLORMAP_TYPE:
-    if(ROLLOUT_colormap_temp == NULL)break;
-    if(smoke_render_option == RENDER_SLICE){
-      if(firecolormap_type == FIRECOLORMAP_DIRECT){
-        ROLLOUT_firesmoke_color->open();
-        ROLLOUT_firesmoke_colormap->close();
-        ROLLOUT_firesmoke_colormap->disable();
-      }
-      else{
-        ROLLOUT_firesmoke_color->close();
-        ROLLOUT_firesmoke_colormap->open();
-        if(firecolormap_type == FIRECOLORMAP_NOCONSTRAINT){
-          ROLLOUT_colormap_hrrpuv->close();
-          ROLLOUT_colormap_hrrpuv->disable();
-        }
-        if(firecolormap_type == FIRECOLORMAP_CONSTRAINT){
-          ROLLOUT_colormap_hrrpuv->open();
-          ROLLOUT_colormap_hrrpuv->enable();
-        }
-      }
-    }
-    else{
-      ROLLOUT_firesmoke_color->close();
-      ROLLOUT_firesmoke_color->disable();
-      if(firecolormap_type == FIRECOLORMAP_CONSTRAINT){
-        ROLLOUT_firesmoke_colormap->open();
-        ROLLOUT_firesmoke_colormap->enable();
-        ROLLOUT_colormap_temp->open();
-        ROLLOUT_colormap_temp->enable();
-        ROLLOUT_colormap_hrrpuv->close();
-        ROLLOUT_colormap_hrrpuv->disable();
-      }
-      else{
-        ROLLOUT_firesmoke_colormap->close();
-        ROLLOUT_firesmoke_colormap->disable();
-      }
-    }
     switch(firecolormap_type){
     case FIRECOLORMAP_CONSTRAINT:
-    case FIRECOLORMAP_NOCONSTRAINT:
       LISTBOX_smoke_colorbar->enable();
       if(fire_colorbar_index_save != -1){
         SmokeColorbarMenu(fire_colorbar_index_save);
@@ -1136,7 +1058,6 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_smoke3d_smoke_red->enable();
       SPINNER_smoke3d_smoke_green->enable();
       SPINNER_smoke3d_smoke_blue->enable();
-      SPINNER_smoke3d_fire_halfdepth->enable();
 
       fire_colorbar_index_save = fire_colorbar_index;
       UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -1152,6 +1073,7 @@ extern "C" void Smoke3dCB(int var){
       LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
     }
     UpdateSmokeColormap(smoke_render_option);
+    Smoke3dCB(FIRE_RED);
     break;
   case SMOKE_COLORBAR_LIST:
     SmokeColorbarMenu(fire_colorbar_index);
@@ -1195,6 +1117,7 @@ extern "C" void Smoke3dCB(int var){
     if(SPINNER_smoke3d_co2_alpha!=NULL)SPINNER_smoke3d_co2_alpha->set_int_val(glui_co2_alpha);
     break;
   case UPDATE_SMOKEFIRE_COLORS_COMMON:
+  case CO2_COLOR:
   case FIRE_RED:
   case FIRE_GREEN:
   case FIRE_BLUE:
