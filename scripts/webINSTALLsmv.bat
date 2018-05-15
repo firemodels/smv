@@ -36,15 +36,12 @@ if "%platform%" == "windows" (
   cd %svn_root%\smv\uploads
   if "%buildtype%" == "test" (
     echo Running Smokeview installer:  %smv_revision%_win64.exe
-    pause
     call %smv_revision%_win64.exe
   )
   if "%buildtype%" == "release" (
     echo Running Smokeview installer: %smv_version%_win64.exe
-    pause
     call %smv_version%_win64.exe
   )
-  pause
   goto eof
 )
 if "%platform%" == "linux" (
