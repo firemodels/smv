@@ -73,7 +73,6 @@ int ShaderCompileStatus(GLuint obj,char *label) {
 
 int SetZoneSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
@@ -197,7 +196,6 @@ int SetZoneSmokeShaders(){
 
 int Set3DSliceShaders(void){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
@@ -212,7 +210,7 @@ int Set3DSliceShaders(void){
    "  float val,colorindex;"
 
    "  position = (fragpos-boxmin)/(boxmax-boxmin);"
-   "  val = texture3D(val_texture,position);"
+   "  val = texture3D(val_texture,position).x;"
    "  colorindex = (val-val_min)/(val_max-val_min);"
    "  colorindex = clamp(colorindex,0.0,1.0);"
    "  color_val = texture1D(colormap,colorindex).rgb;"
@@ -244,7 +242,7 @@ int Set3DSliceShaders(void){
   glAttachShader(p_3dslice,frag_shader);
 
   glLinkProgram(p_3dslice);
-  if(ShaderLinkStatus(p_3dslice) == GL_FALSE)return 0;;
+  if(ShaderLinkStatus(p_3dslice) == GL_FALSE)return 0;
 
   GPU3dslice_valtexture = glGetUniformLocation(p_3dslice,"valtexture");
   GPU3dslice_colormap = glGetUniformLocation(p_3dslice,"colormap");
@@ -261,7 +259,6 @@ int Set3DSliceShaders(void){
 
 int SetVolSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[] = {
     "#version 110\n"
@@ -394,24 +391,24 @@ int SetVolSmokeShaders(){
     "    else{"
     "      block_pos = position;"
     "      block_pos2 = (mix(fragpos,fragmaxpos,factor+dfactor)-boxmin)/(boxmax-boxmin);"
-    "      block_val = texture3D(blockage_texture,block_pos);"
-    "      block_val2 = texture3D(blockage_texture,block_pos2);"
+    "      block_val = texture3D(blockage_texture,block_pos).x;"
+    "      block_val2 = texture3D(blockage_texture,block_pos2).x;"
     "    }"
 #endif
     "    if(slicetype==1){"
-    "      soot_val = texture3D(soot_density_texture,position);"
+    "      soot_val = texture3D(soot_density_texture,position).x;"
     "    }"
     "    else{"
-    "      soot_val = texture3D(soot_density_texture,position2);"
+    "      soot_val = texture3D(soot_density_texture,position2).x;"
     "    }"
     "    if(block_val<0.5)soot_val=0.0;"
     "    opacity_factor = 1.0;"
     "    if(havefire==1){"
     "      if(slicetype==1){"
-    "        tempval = texture3D(fire_texture,position);"
+    "        tempval = texture3D(fire_texture,position).x;"
     "      }"
     "      else{"
-    "        tempval = texture3D(fire_texture,position2);"
+    "        tempval = texture3D(fire_texture,position2).x;"
     "      }"
     "      if(tempval>voltemp_factor){"
     "        opacity_factor = (273.0+tempval)/(273.0+voltemp_factor);"
@@ -465,7 +462,7 @@ int SetVolSmokeShaders(){
     "      else{"
     "        scatter_fraction=(1.0-scatter_param*scatter_param)/(pow(1.0+scatter_param*cos_angle,2.0)*fourpi);"
     "      }"
-    "      light_fraction = texture3D(light_texture,position);"
+    "      light_fraction = texture3D(light_texture,position).x;"
     "      light_factor = alphai*light_intensity*light_fraction*scatter_fraction;"
     "      color_total += alphai*taun*light_factor*light_color/255.0;"
     "    }"
@@ -578,7 +575,6 @@ int SetVolSmokeShaders(){
 
 int SetSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
