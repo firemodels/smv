@@ -73,7 +73,6 @@ int ShaderCompileStatus(GLuint obj,char *label) {
 
 int SetZoneSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
@@ -197,7 +196,6 @@ int SetZoneSmokeShaders(){
 
 int Set3DSliceShaders(void){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
@@ -261,7 +259,6 @@ int Set3DSliceShaders(void){
 
 int SetVolSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[] = {
     "#version 110\n"
@@ -578,7 +575,6 @@ int SetVolSmokeShaders(){
 
 int SetSmokeShaders(){
   GLuint vert_shader, frag_shader;
-  GLint error_code;
 
   const GLchar *FragmentShaderSource[]={
     "#version 110\n"
