@@ -1,9 +1,5 @@
-# fds-smv
-Fire Dynamics Simulator and Smokeview
+# Bundle directory
 
-
-*Bundle directory*
-
-This directory provides scripts for creating a bundle used to install Smokeview on 
-windows, Linux and OSX platforms.
+This directory provides scripts for creating bundles used to install Smokeview on 
+Windows, Linux and OSX platforms.
 
