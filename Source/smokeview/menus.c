@@ -543,8 +543,13 @@ void LabelMenu(int value){
   case MENU_LABEL_SETTINGS:
     ShowGluiDisplay(DIALOG_DISPLAY);
     break;
-  case MENU_LABEL_colorbar:
-    visColorbarVertical=1-visColorbarVertical;
+  case MENU_LABEL_colorbar_vertical:
+    visColorbarVertical   = 1 - visColorbarVertical;
+    visColorbarHorizontal = 1 - visColorbarVertical;
+    break;
+  case MENU_LABEL_colorbar_horizontal:
+    visColorbarHorizontal = 1 - visColorbarHorizontal;
+    visColorbarVertical   = 1 - visColorbarHorizontal;
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
@@ -6516,8 +6521,15 @@ updatemenu=0;
 /* --------------------------------label menu -------------------------- */
 
   CREATEMENU(labelmenu, LabelMenu);
-  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar"),MENU_LABEL_colorbar);
-  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar"),MENU_LABEL_colorbar);
+#ifdef pp_HCOLORBAR
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar(vertical)"),MENU_LABEL_colorbar_vertical);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar(vertical)"), MENU_LABEL_colorbar_vertical);
+  if(visColorbarHorizontal == 1)glutAddMenuEntry(_("*Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
+  if(visColorbarHorizontal == 0)glutAddMenuEntry(_("Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
+#else
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar"), MENU_LABEL_colorbar_vertical);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar"), MENU_LABEL_colorbar_vertical);
+#endif
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
   if(visTitle == 1)glutAddMenuEntry(_("*Title"), MENU_LABEL_title);
