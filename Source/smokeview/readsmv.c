@@ -11019,8 +11019,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "USERTICKS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i", &visUSERticks, &auto_user_tick_placement, &user_tick_sub,
-        &user_tick_show_x, &user_tick_show_y, &user_tick_show_z);
+      sscanf(buffer, "%i %i %i %i %i %i %f", &visUSERticks, &auto_user_tick_placement, &user_tick_sub,
+        &user_tick_show_x, &user_tick_show_y, &user_tick_show_z, &user_tick_direction);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", user_tick_origin, user_tick_origin + 1, user_tick_origin + 2);
       fgets(buffer, 255, stream);
@@ -12674,8 +12674,8 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "USERTICKS\n");
-  fprintf(fileout, " %i %i %i %i %i %i\n", visUSERticks, auto_user_tick_placement, user_tick_sub,
-    user_tick_show_x, user_tick_show_y, user_tick_show_z);
+  fprintf(fileout, " %i %i %i %i %i %i %f\n", visUSERticks, auto_user_tick_placement, user_tick_sub,
+    user_tick_show_x, user_tick_show_y, user_tick_show_z, user_tick_direction);
   fprintf(fileout, " %f %f %f\n", user_tick_origin[0], user_tick_origin[1], user_tick_origin[2]);
   fprintf(fileout, " %f %f %f\n", user_tick_min[0], user_tick_min[1], user_tick_min[2]);
   fprintf(fileout, " %f %f %f\n", user_tick_max[0], user_tick_max[1], user_tick_max[2]);

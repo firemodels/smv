@@ -1425,6 +1425,8 @@ SVEXTERN tickdata SVDECL(*tickinfo,NULL);
 SVEXTERN int SVDECL(ntickinfo,0),SVDECL(ntickinfo_smv,0);
 SVEXTERN int visFDSticks;
 SVEXTERN float user_tick_origin[3], user_tick_max[3], user_tick_min[3], user_tick_step[3], user_tick_length, user_tick_width;
+SVEXTERN float user_tick_direction;
+SVEXTERN int glui_tick_inside, glui_tick_outside;
 SVEXTERN int user_tick_nxyz[3], user_tick_sub, user_tick_option, visUSERticks, auto_user_tick_placement;
 SVEXTERN int user_tick_show_x, user_tick_show_y, user_tick_show_z;
 SVEXTERN int visCadTextures, visTerrainTexture;

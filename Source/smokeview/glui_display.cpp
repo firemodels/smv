@@ -115,6 +115,8 @@ GLUI_Checkbox *CHECKBOX_labels_shade=NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata=NULL;
 GLUI_Checkbox *CHECKBOX_labels_transparent_override=NULL;
 GLUI_Checkbox *CHECKBOX_shownorth = NULL;
+GLUI_Checkbox *CHECKBOX_ticks_inside = NULL;
+GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
@@ -207,6 +209,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_usertick2 29
 #define LABELS_shadedata 30
 #define LABELS_shownorth 31
+#define LABELS_tick_inside 32
+#define LABELS_tick_outside 33
 
 #define SPLIT_COLORBAR 1
 
@@ -739,11 +743,23 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   CHECKBOX_visUSERticks=glui_labels->add_checkbox_to_panel(PANEL_tick1a,_("Show user ticks"),&visUSERticks,LABELS_usertick,LabelsCB);
   glui_labels->add_column_to_panel(PANEL_tick1a,false);
-  SPINNER_subtick=glui_labels->add_spinner_to_panel(PANEL_tick1a,_("sub-intervals"),GLUI_SPINNER_INT,&user_tick_sub);
-  SPINNER_subtick->set_int_limits(1,10,GLUI_LIMIT_CLAMP);
+
+  if(user_tick_direction>0.0){
+    glui_tick_inside=0;
+    glui_tick_outside=1;
+  }
+  else{
+    glui_tick_inside=1;
+    glui_tick_outside=0;
+  }
+  CHECKBOX_ticks_inside=glui_labels->add_checkbox_to_panel(PANEL_tick1a, "inside", &glui_tick_inside, LABELS_tick_inside, LabelsCB);
+  glui_labels->add_column_to_panel(PANEL_tick1a, false);
+  CHECKBOX_ticks_outside=glui_labels->add_checkbox_to_panel(PANEL_tick1a, "outside", &glui_tick_outside, LABELS_tick_outside, LabelsCB);
+  LabelsCB(LABELS_tick_inside);
+  LabelsCB(LABELS_tick_outside);
 
   PANEL_tick1b = glui_labels->add_panel_to_panel(PANEL_tick1,"",false);
-  CHECKBOX_tick_auto=glui_labels->add_checkbox_to_panel(PANEL_tick1b,_("Auto place (2D)"),&auto_user_tick_placement,LABELS_ticks,LabelsCB);
+  CHECKBOX_tick_auto=glui_labels->add_checkbox_to_panel(PANEL_tick1b,_("Auto place"),&auto_user_tick_placement,LABELS_ticks,LabelsCB);
   glui_labels->add_column_to_panel(PANEL_tick1b,false);
   CHECKBOX_user_ticks_show_x=glui_labels->add_checkbox_to_panel(PANEL_tick1b,"x",&user_tick_show_x);
   glui_labels->add_column_to_panel(PANEL_tick1b,false);
@@ -751,6 +767,9 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_column_to_panel(PANEL_tick1b,false);
   CHECKBOX_user_ticks_show_z=glui_labels->add_checkbox_to_panel(PANEL_tick1b,"z",&user_tick_show_z);
   LabelsCB(LABELS_ticks);
+  glui_labels->add_column_to_panel(PANEL_tick1b, false);
+  SPINNER_subtick = glui_labels->add_spinner_to_panel(PANEL_tick1b, _("sub-intervals"), GLUI_SPINNER_INT, &user_tick_sub);
+  SPINNER_subtick->set_int_limits(1, 10, GLUI_LIMIT_CLAMP);
 
   PANEL_tick2 = glui_labels->add_panel_to_panel(ROLLOUT_user_tick,_("Parameters"),true);
   glui_labels->add_statictext_to_panel(PANEL_tick2,"                    x");
@@ -916,6 +935,19 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
+  case LABELS_tick_inside:
+  case LABELS_tick_outside:
+    if(var==LABELS_tick_inside){
+      glui_tick_outside = 1 - glui_tick_inside;
+      CHECKBOX_ticks_outside->set_int_val(glui_tick_outside);
+    }
+    if(var==LABELS_tick_outside){
+      glui_tick_inside = 1 - glui_tick_outside;
+      CHECKBOX_ticks_inside->set_int_val(glui_tick_inside);
+    }
+    user_tick_direction=1.0;
+    if(glui_tick_inside==1)user_tick_direction=-1.0;
+    break;
   case APPLY_VENTOFFSET:
     UpdateVentOffset();
     updatefaces=1;
