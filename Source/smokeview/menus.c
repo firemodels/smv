@@ -3820,7 +3820,9 @@ void LoadSmoke3DMenu(int value){
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
 #define MENU_SMOKE_SOOT_TEMP -7
 #define MENU_SMOKE_SOOT_TEMP_CO2 -8
+#define MENU_DUMMY_SMOKE -9
 
+  if(value == MENU_DUMMY_SMOKE)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -9572,7 +9574,7 @@ updatemenu=0;
             glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
           }
           if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-            glutAddMenuEntry("-", MENU_DUMMY);
+            glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
         }
         if(nmeshes>1){
@@ -9641,7 +9643,7 @@ updatemenu=0;
               glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
             }
             if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-              glutAddMenuEntry("-", MENU_DUMMY);
+              glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
             }
           }
           for(i=0;i<nsmoke3dinfo;i++){
