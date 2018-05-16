@@ -543,8 +543,13 @@ void LabelMenu(int value){
   case MENU_LABEL_SETTINGS:
     ShowGluiDisplay(DIALOG_DISPLAY);
     break;
-  case MENU_LABEL_colorbar:
-    visColorbar=1-visColorbar;
+  case MENU_LABEL_colorbar_vertical:
+    visColorbarVertical   = 1 - visColorbarVertical;
+    visColorbarHorizontal = 1 - visColorbarVertical;
+    break;
+  case MENU_LABEL_colorbar_horizontal:
+    visColorbarHorizontal = 1 - visColorbarHorizontal;
+    visColorbarVertical   = 1 - visColorbarHorizontal;
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
@@ -560,7 +565,7 @@ void LabelMenu(int value){
     break;
    case MENU_LABEL_ShowAll:
     visUSERticks=1;
-    visColorbar=1;
+    visColorbarVertical=1;
     visTimebar=1;
     visTitle=1;
     visFramerate=1;
@@ -583,7 +588,7 @@ void LabelMenu(int value){
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
-    visColorbar=0;
+    visColorbarVertical=0;
     visTimebar=0;
     visTitle=0;
     visFramerate=0;
@@ -3820,7 +3825,9 @@ void LoadSmoke3DMenu(int value){
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
 #define MENU_SMOKE_SOOT_TEMP -7
 #define MENU_SMOKE_SOOT_TEMP_CO2 -8
+#define MENU_DUMMY_SMOKE -9
 
+  if(value == MENU_DUMMY_SMOKE)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -6514,8 +6521,15 @@ updatemenu=0;
 /* --------------------------------label menu -------------------------- */
 
   CREATEMENU(labelmenu, LabelMenu);
-  if(visColorbar==1)glutAddMenuEntry(_("*Colorbar"),MENU_LABEL_colorbar);
-  if(visColorbar==0)glutAddMenuEntry(_("Colorbar"),MENU_LABEL_colorbar);
+#ifdef pp_HCOLORBAR
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar(vertical)"),MENU_LABEL_colorbar_vertical);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar(vertical)"), MENU_LABEL_colorbar_vertical);
+  if(visColorbarHorizontal == 1)glutAddMenuEntry(_("*Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
+  if(visColorbarHorizontal == 0)glutAddMenuEntry(_("Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
+#else
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar"), MENU_LABEL_colorbar_vertical);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar"), MENU_LABEL_colorbar_vertical);
+#endif
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
   if(visTitle == 1)glutAddMenuEntry(_("*Title"), MENU_LABEL_title);
@@ -9572,7 +9586,7 @@ updatemenu=0;
             glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
           }
           if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-            glutAddMenuEntry("-", MENU_DUMMY);
+            glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
         }
         if(nmeshes>1){
@@ -9641,7 +9655,7 @@ updatemenu=0;
               glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
             }
             if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-              glutAddMenuEntry("-", MENU_DUMMY);
+              glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
             }
           }
           for(i=0;i<nsmoke3dinfo;i++){

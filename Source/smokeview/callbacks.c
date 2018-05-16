@@ -1720,7 +1720,7 @@ void Keyboard(unsigned char key, int flag){
         else{
           histogram_show_graph = 1;
           histogram_show_numbers = 1;
-          visColorbar = 1;
+          visColorbarVertical = 1;
           update_slice_hists = 1;
         }
         UpdateHistogramType();

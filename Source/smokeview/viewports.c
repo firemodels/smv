@@ -127,6 +127,9 @@ void GetViewportInfo(void){
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
+  if(visColorbarHorizontal == 1){
+    doit = 1;
+  }
 #ifdef pp_memstatus
   if(doit==0&&visAvailmemory==1)doit=1;
 #endif
@@ -139,7 +142,8 @@ void GetViewportInfo(void){
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
-    if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height=3*(text_height+v_space);
+    if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
+    if(visColorbarHorizontal==1)VP_timebar.height += (text_height + v_space);
   }
   else{
     VP_timebar.width = 0;
@@ -157,7 +161,7 @@ void GetViewportInfo(void){
     }
   }
 
-  if(visColorbar==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
+  if(visColorbarVertical==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
   VP_colorbar.left = screenWidth-colorbar_delta - numColorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
     VP_colorbar.left -= colorbar_label_width;
