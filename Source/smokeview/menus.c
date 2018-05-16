@@ -545,11 +545,11 @@ void LabelMenu(int value){
     break;
   case MENU_LABEL_colorbar_vertical:
     visColorbarVertical   = 1 - visColorbarVertical;
-    visColorbarHorizontal = 1 - visColorbarVertical;
+    if(visColorbarVertical==1)visColorbarHorizontal=0;
     break;
   case MENU_LABEL_colorbar_horizontal:
     visColorbarHorizontal = 1 - visColorbarHorizontal;
-    visColorbarVertical   = 1 - visColorbarHorizontal;
+    if(visColorbarHorizontal==1)visColorbarVertical = 0;
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
@@ -566,6 +566,9 @@ void LabelMenu(int value){
    case MENU_LABEL_ShowAll:
     visUSERticks=1;
     visColorbarVertical=1;
+#ifdef pp_HCOLORBAR
+    visColorbarHorizontal=0;
+#endif
     visTimebar=1;
     visTitle=1;
     visFramerate=1;
@@ -589,6 +592,9 @@ void LabelMenu(int value){
    case MENU_LABEL_HideAll:
     visUSERticks=0;
     visColorbarVertical=0;
+#ifdef pp_HCOLORBAR
+    visColorbarHorizontal=0;
+#endif
     visTimebar=0;
     visTitle=0;
     visFramerate=0;
