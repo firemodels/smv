@@ -544,7 +544,7 @@ void LabelMenu(int value){
     ShowGluiDisplay(DIALOG_DISPLAY);
     break;
   case MENU_LABEL_colorbar:
-    visColorbar=1-visColorbar;
+    visColorbarVertical=1-visColorbarVertical;
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
@@ -560,7 +560,7 @@ void LabelMenu(int value){
     break;
    case MENU_LABEL_ShowAll:
     visUSERticks=1;
-    visColorbar=1;
+    visColorbarVertical=1;
     visTimebar=1;
     visTitle=1;
     visFramerate=1;
@@ -583,7 +583,7 @@ void LabelMenu(int value){
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
-    visColorbar=0;
+    visColorbarVertical=0;
     visTimebar=0;
     visTitle=0;
     visFramerate=0;
@@ -6516,8 +6516,8 @@ updatemenu=0;
 /* --------------------------------label menu -------------------------- */
 
   CREATEMENU(labelmenu, LabelMenu);
-  if(visColorbar==1)glutAddMenuEntry(_("*Colorbar"),MENU_LABEL_colorbar);
-  if(visColorbar==0)glutAddMenuEntry(_("Colorbar"),MENU_LABEL_colorbar);
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Colorbar"),MENU_LABEL_colorbar);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Colorbar"),MENU_LABEL_colorbar);
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
   if(visTitle == 1)glutAddMenuEntry(_("*Title"), MENU_LABEL_title);

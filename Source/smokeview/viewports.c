@@ -157,7 +157,7 @@ void GetViewportInfo(void){
     }
   }
 
-  if(visColorbar==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
+  if(visColorbarVertical==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
   VP_colorbar.left = screenWidth-colorbar_delta - numColorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
     VP_colorbar.left -= colorbar_label_width;
