@@ -4,7 +4,8 @@
 
 set fds_version=FDS6.7.0
 set smv_version=SMV6.6.4
-set fds_debug=1
+set fds_debug=0
+set fds_edition=FDS6
 
 :: ---- FDS and smokeview revision ----
 
