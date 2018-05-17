@@ -161,8 +161,8 @@ void GetViewportInfo(void){
     }
   }
 
-  if(visColorbarVertical==0||numColorbars==0||(showtime==0&&showplot3d==0))doit=0;
-  VP_colorbar.left = screenWidth-colorbar_delta - numColorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
+  if(visColorbarVertical==0||num_colorbars==0||(showtime==0&&showplot3d==0))doit=0;
+  VP_colorbar.left = screenWidth-colorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
     VP_colorbar.left -= colorbar_label_width;
   }
@@ -171,7 +171,7 @@ void GetViewportInfo(void){
   VP_colorbar.text_height=text_height;
   VP_colorbar.text_width = text_width;
   if(doit==1){
-    VP_colorbar.width = colorbar_delta + h_space+numColorbars*(colorbar_label_width+h_space);
+    VP_colorbar.width = colorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
     if(dohist==1){
       VP_colorbar.width += colorbar_label_width;
     }
@@ -687,25 +687,32 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
 
 /* ------------------------ ViewportTimebar ------------------------- */
 
-void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
+void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 #ifdef pp_memstatus
   unsigned int availmemory;
-  char percen[]="%";
+  char percen[] = "%";
 #endif
-  int right_label_pos,timebar_right_pos;
+  int right_label_pos, timebar_right_pos;
   int timebar_left_pos;
 
-  if(SubPortOrtho2(quad,&VP_timebar,screen_left,screen_down)==0)return;
+  if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
   timebar_left_width = GetStringWidth("Time: 1234.11");
   timebar_right_width = GetStringWidth("Frame rate: 99.99");
 
-  timebar_left_pos = VP_timebar.left+timebar_left_width;
-  timebar_right_pos= VP_timebar.right-timebar_right_width-h_space;
-  right_label_pos  = timebar_right_pos+h_space;
+  timebar_left_pos = VP_timebar.left + timebar_left_width;
+  timebar_right_pos = VP_timebar.right - timebar_right_width - h_space;
+  right_label_pos = timebar_right_pos + h_space;
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+
+#ifdef pp_HCOLORBAR
+  if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
+    //  DrawHorizontalColorbarRegLabels();
+    //  DrawHorizontalColorbars();
+  }
+#endif
 
   if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1){
     if(visTimelabel==1){
@@ -812,16 +819,16 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 #endif
 }
 
-/* --------------------- ViewportColorbar ------------------------- */
+/* --------------------- ViewportVerticalColorbar ------------------------- */
 
-void ViewportColorbar(int quad, GLint screen_left, GLint screen_down){
+void ViewportVerticalColorbar(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad,&VP_colorbar,screen_left, screen_down)==0)return;
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  DrawColorbarRegLabels();
-  DrawColorbars();
+  DrawVerticalColorbarRegLabels();
+  DrawVerticalColorbars();
 }
 
     /* -------------------------- ViewportTitle -------------------------- */

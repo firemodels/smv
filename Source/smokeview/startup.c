@@ -1415,8 +1415,6 @@ void InitVars(void){
 
   glui_active=0;
 
-  drawColorLabel=0;
-  olddrawColorLabel=0;
   vis3DSmoke3D=1;
   smokeskip=1;
   smokeskipm1=0;
@@ -1593,7 +1591,6 @@ void InitVars(void){
   nrgb2_ini=0;
   rgb_white=NRGB, rgb_yellow=NRGB+1, rgb_blue=NRGB+2, rgb_red=NRGB+3;
   rgb_green=NRGB+4, rgb_magenta=NRGB+5, rgb_cyan=NRGB+6, rgb_black=NRGB+7;
-  numColorbars=0;
   setbw=0;
   setbwSAVE=setbw;
   background_flip=1;

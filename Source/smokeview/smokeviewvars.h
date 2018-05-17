@@ -787,7 +787,7 @@ SVEXTERN float SVDECL(vecfactor,1.0),SVDECL(veclength,0.0);
 
 SVEXTERN int glui_active;
 
-SVEXTERN int drawColorLabel,olddrawColorLabel;
+SVEXTERN int SVDECL(old_draw_colorlabel,0);
 SVEXTERN int vis3DSmoke3D;
 SVEXTERN int smokeskip,smokeskipm1;
 SVEXTERN int nrooms,nzoneinfo, nfires;
@@ -1055,7 +1055,7 @@ SVEXTERN int nrgb_ini;
 SVEXTERN int nrgb2_ini;
 SVEXTERN int rgb_white, rgb_yellow, rgb_blue, rgb_red;
 SVEXTERN int rgb_green, rgb_magenta, rgb_cyan, rgb_black;
-SVEXTERN int numColorbars;
+SVEXTERN int SVDECL(num_colorbars,0);
 SVEXTERN int setbw,SVDECL(setbwdata,0);
 SVEXTERN int setbwSAVE;
 SVEXTERN int background_flip;
