@@ -143,16 +143,18 @@ void GetViewportInfo(void){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
     if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
-    if(visColorbarHorizontal==1)VP_timebar.height += (text_height + v_space);
+    if(visColorbarHorizontal==1){
+      VP_timebar.height += MAX(colorbar_delta,4*(text_height + v_space));
+    }
   }
   else{
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
-  VP_timebar.top = VP_timebar.down + VP_timebar.height;
+  VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
-  // colorbar viewport dimensions
+  // vertical colorbar viewport dimensions
 
   doit=1;
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
@@ -162,28 +164,28 @@ void GetViewportInfo(void){
   }
 
   if(visColorbarVertical==0||num_colorbars==0||(showtime==0&&showplot3d==0))doit=0;
-  VP_colorbar.left = screenWidth-colorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
+  VP_vcolorbar.left = screenWidth-colorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
-    VP_colorbar.left -= colorbar_label_width;
+    VP_vcolorbar.left -= colorbar_label_width;
   }
-  VP_colorbar.down = MAX(VP_timebar.height,VP_info.height)+titlesafe_offset;
-  VP_colorbar.doit = doit;
-  VP_colorbar.text_height=text_height;
-  VP_colorbar.text_width = text_width;
+  VP_vcolorbar.down = MAX(VP_timebar.height,VP_info.height)+titlesafe_offset;
+  VP_vcolorbar.doit = doit;
+  VP_vcolorbar.text_height=text_height;
+  VP_vcolorbar.text_width = text_width;
   if(doit==1){
-    VP_colorbar.width = colorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
+    VP_vcolorbar.width = colorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
     if(dohist==1){
-      VP_colorbar.width += colorbar_label_width;
+      VP_vcolorbar.width += colorbar_label_width;
     }
-    VP_colorbar.height = screenHeight-MAX(VP_timebar.height,VP_info.height)-2*titlesafe_offset;
+    VP_vcolorbar.height = screenHeight-MAX(VP_timebar.height,VP_info.height)-2*titlesafe_offset;
 
   }
   else{
-    VP_colorbar.width = 0;
-    VP_colorbar.height = 0;
+    VP_vcolorbar.width = 0;
+    VP_vcolorbar.height = 0;
   }
-  VP_colorbar.right = VP_colorbar.left+VP_colorbar.width;
-  VP_colorbar.top = VP_colorbar.down+VP_colorbar.height;
+  VP_vcolorbar.right = VP_vcolorbar.left+VP_vcolorbar.width;
+  VP_vcolorbar.top = VP_vcolorbar.down+VP_vcolorbar.height;
 
   // title viewport dimensions
   titleinfo.left_margin = 0;
@@ -225,7 +227,7 @@ void GetViewportInfo(void){
       VP_title.height += nlinestotal*titleinfo.text_height +
                          (nlinestotal-1)*titleinfo.line_space;
       VP_title.doit = 1;
-      VP_title.width = screenWidth-VP_colorbar.width-2*titlesafe_offset;
+      VP_title.width = screenWidth-VP_vcolorbar.width-2*titlesafe_offset;
     }
 
   } else{
@@ -247,7 +249,7 @@ void GetViewportInfo(void){
   VP_scene.text_width = text_width;
   VP_scene.left=titlesafe_offset;
   VP_scene.down=titlesafe_offset+MAX(VP_timebar.height,VP_info.height);
-  VP_scene.width=MAX(1,screenWidth-2*titlesafe_offset-VP_colorbar.width);
+  VP_scene.width=MAX(1,screenWidth-2*titlesafe_offset-VP_vcolorbar.width);
   if(dohist==1)VP_scene.width+=colorbar_label_width/2;
   VP_scene.height=MAX(1,screenHeight-MAX(VP_timebar.height,VP_info.height)-VP_title.height - 2*titlesafe_offset);
   VP_scene.right = VP_scene.left + VP_scene.width;
@@ -255,11 +257,19 @@ void GetViewportInfo(void){
 
   scene_aspect_ratio = (float)VP_scene.height/(float)VP_scene.width;
 
-  colorbar_right_pos = VP_colorbar.right-h_space;
-  colorbar_left_pos = colorbar_right_pos - colorbar_delta;
-  colorbar_top_pos = VP_colorbar.top - 4*(v_space + VP_colorbar.text_height) - colorbar_delta;
-  colorbar_down_pos = VP_colorbar.down + colorbar_delta;
+  // vertical colorbar boundaries
 
+  vcolorbar_right_pos = VP_vcolorbar.right  - h_space;
+  vcolorbar_left_pos  = vcolorbar_right_pos - colorbar_delta;
+  vcolorbar_top_pos   = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - colorbar_delta;
+  vcolorbar_down_pos  = VP_vcolorbar.down + colorbar_delta;
+
+  // horizontal colorbar boundaries
+
+  hcolorbar_right_pos = VP_timebar.right - VP_timebar.text_width;
+  hcolorbar_left_pos  = VP_timebar.left;
+  hcolorbar_down_pos  = VP_timebar.top - MAX(colorbar_delta, 4*(text_height + v_space));
+  hcolorbar_top_pos   = hcolorbar_down_pos + colorbar_delta;
 }
 
  /* ------------------------ SubPortOrtho ------------------------- */
@@ -710,7 +720,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 #ifdef pp_HCOLORBAR
   if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     //  DrawHorizontalColorbarRegLabels();
-    //  DrawHorizontalColorbars();
+    DrawHorizontalColorbars();
   }
 #endif
 
@@ -822,7 +832,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 /* --------------------- ViewportVerticalColorbar ------------------------- */
 
 void ViewportVerticalColorbar(int quad, GLint screen_left, GLint screen_down){
-  if(SubPortOrtho2(quad,&VP_colorbar,screen_left, screen_down)==0)return;
+  if(SubPortOrtho2(quad,&VP_vcolorbar,screen_left, screen_down)==0)return;
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

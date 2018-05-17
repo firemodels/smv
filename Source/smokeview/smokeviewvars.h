@@ -364,14 +364,15 @@ SVEXTERN int SVDECL(vol_startframe0,-1), SVDECL(vol_skipframe0,-1);
 SVEXTERN int SVDECL(startframe0,-1), SVDECL(skipframe0,-1);
 SVEXTERN int SVDECL(update_smokecolorbar,0);
 SVEXTERN int SVDECL(combine_meshes,1);
-SVEXTERN int colorbar_left_pos, colorbar_right_pos, colorbar_down_pos, colorbar_top_pos;
+SVEXTERN int vcolorbar_left_pos, vcolorbar_right_pos, vcolorbar_down_pos, vcolorbar_top_pos;
+SVEXTERN int hcolorbar_left_pos, hcolorbar_right_pos, hcolorbar_down_pos, hcolorbar_top_pos;
 SVEXTERN float scale_2d_x, scale_2d_y;
 SVEXTERN int SVDECL(colorbar_delta,35);
 SVEXTERN int colorbar_label_width;
 
 SVEXTERN int timebar_left_width, timebar_right_width;
 SVEXTERN int SVDECL(h_space,2), SVDECL(v_space,2);
-SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_colorbar, VP_scene, VP_info;
+SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_vcolorbar, VP_scene, VP_info;
 SVEXTERN int SVDECL(in_external,0);
 SVEXTERN int SVDECL(label_list_index,0);
 SVEXTERN labeldata LABEL_local, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
