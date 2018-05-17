@@ -1200,7 +1200,7 @@ void DrawColorbarHistLabels(int lefthist){
     int i;
 
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-lefthist*(colorbar_label_width + h_space), 0.0, 0.0);
     glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
@@ -1626,19 +1626,19 @@ void DrawHorizontalColorbarRegLabels(void) {
           0.0,
           0.0);
         sprintf(area_label, "%i%s", fed_areasi[0], percen);
-        yy = MIX2(0.15, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(0.15, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[1], percen);
-        yy = MIX2(0.65, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(0.65, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[2], percen);
-        yy = MIX2(2.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(2.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[3], percen);
-        yy = MIX2(3.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(3.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy + 10, foreground_color, area_label);
         glPopMatrix();
       }
@@ -1664,8 +1664,8 @@ void DrawHorizontalColorbarRegLabels(void) {
     if (dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
     if (parttype != 0) {
-      if (showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Part");
-      if (showevac == 1)OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Human");
+      if (showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
+      if (showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Human");
     }
     if (parttype == -1) {
       strcpy(partshortlabel2, "temp");
@@ -1690,8 +1690,8 @@ void DrawHorizontalColorbarRegLabels(void) {
           strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
         }
       }
-      OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
+      OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
       OutputBarText(0.0, 0.0, foreground_color, partscale);
     }
     glPopMatrix();
@@ -1720,9 +1720,9 @@ void DrawHorizontalColorbarRegLabels(void) {
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
     glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Slice");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Slice");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if (strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL) {
       slicefactor2[0] = *slicefactor*sb->fscale;
       slicefactor2[1] = 0.0;
@@ -1749,9 +1749,9 @@ void DrawHorizontalColorbarRegLabels(void) {
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
     glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Iso");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     glPopMatrix();
   }
@@ -1781,9 +1781,9 @@ void DrawHorizontalColorbarRegLabels(void) {
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if (dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Bndry");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, patchi->scale);
     glPopMatrix();
   }
@@ -1812,9 +1812,9 @@ void DrawHorizontalColorbarRegLabels(void) {
       colorbar_left_pos - colorbar_label_width,
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Plot3D");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, p3label);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Plot3D");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if (strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL) {
       plot3dfactor2[0] = *plot3dfactor*fscalep3[plotn - 1];
       plot3dfactor2[1] = 0.0;
@@ -1841,9 +1841,9 @@ void DrawHorizontalColorbarRegLabels(void) {
     glPushMatrix();
     glTranslatef(colorbar_left_pos - colorbar_label_width, colorbar_top_pos + v_space + colorbar_delta, 0.0);
     glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Zone");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, "Temp");
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, zonescale);
     glPopMatrix();
     SNIFF_ERRORS("After ZONE labels");
@@ -1862,7 +1862,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     isorange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
     if (global_colorbar_index != -1) {
       char isocolorlabel[256], isolabel[256];
@@ -1916,7 +1916,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     tttmax = partlevels256_ptr[255];
     partrange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftsmoke*(colorbar_label_width + h_space), 0.0, 0.0);
     if (global_colorbar_index != -1) {
       char partcolorlabel[256], *partcolorlabel_ptr = NULL, partlabel[256];
@@ -1977,7 +1977,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     slicerange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
     if (global_colorbar_index != -1) {
       char slicelabel[256], slicecolorlabel[256];
@@ -2044,7 +2044,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     tttmax = boundarylevels256[255];
     patchrange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if (dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
     if (global_colorbar_index != -1) {
@@ -2094,7 +2094,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     tttmax = zonelevels256[255];
     zonerange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
     if (global_colorbar_index != -1) {
       char zonecolorlabel[256], *zonecolorlabel_ptr = NULL, zonelabel[256];
@@ -2144,7 +2144,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     tttmax = p3lev[255];
     plot3drange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     if (global_colorbar_index != -1) {
       char plot3dcolorlabel[256], p3dlabel[256], *plot3dcolorlabel_ptr = NULL;
       float vert_position;
@@ -2329,19 +2329,19 @@ void DrawVerticalColorbarRegLabels(void){
           0.0,
           0.0);
         sprintf(area_label, "%i%s", fed_areasi[0], percen);
-        yy = MIX2(0.15, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(0.15, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[1], percen);
-        yy = MIX2(0.65, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(0.65, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[2], percen);
-        yy = MIX2(2.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(2.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy, foreground_color, area_label);
 
         sprintf(area_label, "%i%s", fed_areasi[3], percen);
-        yy = MIX2(3.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_colorbar.text_height / 2;
+        yy = MIX2(3.0, 3.0, colorbar_top_pos, colorbar_down_pos) - VP_vcolorbar.text_height / 2;
         OutputBarText(0.0, yy + 10, foreground_color, area_label);
         glPopMatrix();
       }
@@ -2367,8 +2367,8 @@ void DrawVerticalColorbarRegLabels(void){
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
     if(parttype != 0){
-      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Part");
-      if(showevac == 1)OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Human");
+      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
+      if(showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Human");
     }
     if(parttype == -1){
       strcpy(partshortlabel2, "temp");
@@ -2393,8 +2393,8 @@ void DrawVerticalColorbarRegLabels(void){
           strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
         }
       }
-      OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
+      OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
       OutputBarText(0.0, 0.0, foreground_color, partscale);
     }
     glPopMatrix();
@@ -2423,9 +2423,9 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
     glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Slice");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Slice");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
       slicefactor2[0] = *slicefactor*sb->fscale;
       slicefactor2[1] = 0.0;
@@ -2452,9 +2452,9 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
     glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Iso");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     glPopMatrix();
   }
@@ -2484,9 +2484,9 @@ void DrawVerticalColorbarRegLabels(void){
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Bndry");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, patchi->scale);
     glPopMatrix();
   }
@@ -2515,9 +2515,9 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_left_pos - colorbar_label_width,
       colorbar_top_pos + v_space + colorbar_delta,
       0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Plot3D");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, p3label);
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Plot3D");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
       plot3dfactor2[0] = *plot3dfactor*fscalep3[plotn - 1];
       plot3dfactor2[1] = 0.0;
@@ -2544,9 +2544,9 @@ void DrawVerticalColorbarRegLabels(void){
     glPushMatrix();
     glTranslatef(colorbar_left_pos - colorbar_label_width, colorbar_top_pos + v_space + colorbar_delta, 0.0);
     glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_colorbar.text_height + v_space), foreground_color, "Zone");
-    OutputBarText(0.0, 2 * (VP_colorbar.text_height + v_space), foreground_color, "Temp");
-    OutputBarText(0.0, (VP_colorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0.0, foreground_color, zonescale);
     glPopMatrix();
     SNIFF_ERRORS("After ZONE labels");
@@ -2565,7 +2565,7 @@ void DrawVerticalColorbarRegLabels(void){
     isorange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char isocolorlabel[256], isolabel[256];
@@ -2619,7 +2619,7 @@ void DrawVerticalColorbarRegLabels(void){
     tttmax = partlevels256_ptr[255];
     partrange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftsmoke*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char partcolorlabel[256], *partcolorlabel_ptr = NULL, partlabel[256];
@@ -2680,7 +2680,7 @@ void DrawVerticalColorbarRegLabels(void){
     slicerange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char slicelabel[256], slicecolorlabel[256];
@@ -2747,7 +2747,7 @@ void DrawVerticalColorbarRegLabels(void){
     tttmax = boundarylevels256[255];
     patchrange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
     if(global_colorbar_index != -1){
@@ -2797,7 +2797,7 @@ void DrawVerticalColorbarRegLabels(void){
     tttmax = zonelevels256[255];
     zonerange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char zonecolorlabel[256], *zonecolorlabel_ptr = NULL, zonelabel[256];
@@ -2847,7 +2847,7 @@ void DrawVerticalColorbarRegLabels(void){
     tttmax = p3lev[255];
     plot3drange = tttmax - tttmin;
     glPushMatrix();
-    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_colorbar.text_height / 2.0, 0.0);
+    glTranslatef(colorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     if(global_colorbar_index != -1){
       char plot3dcolorlabel[256], p3dlabel[256], *plot3dcolorlabel_ptr = NULL;
       float vert_position;
