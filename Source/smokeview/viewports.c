@@ -143,16 +143,18 @@ void GetViewportInfo(void){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
     if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
-    if(visColorbarHorizontal==1)VP_timebar.height += (text_height + v_space);
+    if(visColorbarHorizontal==1){
+      VP_timebar.height += MAX(colorbar_delta,4*(text_height + v_space));
+    }
   }
   else{
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
-  VP_timebar.top = VP_timebar.down + VP_timebar.height;
+  VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
-  // colorbar viewport dimensions
+  // vertical colorbar viewport dimensions
 
   doit=1;
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
@@ -255,11 +257,19 @@ void GetViewportInfo(void){
 
   scene_aspect_ratio = (float)VP_scene.height/(float)VP_scene.width;
 
-  colorbar_right_pos = VP_vcolorbar.right-h_space;
-  colorbar_left_pos = colorbar_right_pos - colorbar_delta;
-  colorbar_top_pos = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - colorbar_delta;
-  colorbar_down_pos = VP_vcolorbar.down + colorbar_delta;
+  // vertical colorbar boundaries
 
+  vcolorbar_right_pos = VP_vcolorbar.right  - h_space;
+  vcolorbar_left_pos  = vcolorbar_right_pos - colorbar_delta;
+  vcolorbar_top_pos   = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - colorbar_delta;
+  vcolorbar_down_pos  = VP_vcolorbar.down + colorbar_delta;
+
+  // horizontal colorbar boundaries
+
+  hcolorbar_right_pos = VP_timebar.right - VP_timebar.text_width;
+  hcolorbar_left_pos  = VP_timebar.left;
+  hcolorbar_down_pos  = VP_timebar.top - MAX(colorbar_delta, 4*(text_height + v_space));
+  hcolorbar_top_pos   = hcolorbar_down_pos + colorbar_delta;
 }
 
  /* ------------------------ SubPortOrtho ------------------------- */
@@ -710,7 +720,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 #ifdef pp_HCOLORBAR
   if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     //  DrawHorizontalColorbarRegLabels();
-    //  DrawHorizontalColorbars();
+    DrawHorizontalColorbars();
   }
 #endif
 
