@@ -2100,7 +2100,9 @@ void DrawSmoke3DGPUVol(void){
 #ifdef pp_GPUTHROTTLE
   START_TIMER(thisGPUtime);
   if(thisGPUtime>lastGPUtime+0.25){
+#ifdef _DEBUG
     PRINTF("CPU->GPU %4.1f Mbytes/s\n",4.0*GPUnframes/(thisGPUtime-lastGPUtime)/(1024.0*1024.0));
+#endif
     lastGPUtime=thisGPUtime;
     GPUnframes=0;
   }
