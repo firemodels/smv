@@ -11206,7 +11206,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWCOLORBARS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visColorbar);
+      sscanf(buffer, "%i", &visColorbarVertical);
       continue;
     }
     if(Match(buffer, "EYEVIEW") == 1){
@@ -13205,7 +13205,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWCEILING\n");
   fprintf(fileout, " %i\n", visCeiling);
   fprintf(fileout, "SHOWCOLORBARS\n");
-  fprintf(fileout, " %i\n", visColorbar);
+  fprintf(fileout, " %i\n", visColorbarVertical);
   fprintf(fileout, "SHOWCVENTS\n");
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");

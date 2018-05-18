@@ -592,24 +592,33 @@ void UpdateShow(void){
     }
   }
 
-  numColorbars=0;
-  if(ReadEvacFile==1)numColorbars++;
-  if(ReadPartFile==1)numColorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))numColorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wc_flag==0)numColorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)numColorbars++;
+  num_colorbars=0;
+  if(ReadEvacFile==1)num_colorbars++;
+  if(ReadPartFile==1)num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wc_flag==0)num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&tisoflag==1){
     showiso_colorbar=1;
-    numColorbars++;
+    num_colorbars++;
   }
-  if(ReadPlot3dFile==1&&numColorbars==0)numColorbars=1;
-  /* note: animated iso-contours do not need a colorbar,
-           so we don't test for isosurface files */
-  drawColorLabel=0;
-  if((showtime==1||showplot3d==1)&&visColorbar==1)drawColorLabel=1;
-  if(drawColorLabel==1&&olddrawColorLabel==0)updatemenu=1;
-  if(drawColorLabel==0&&olddrawColorLabel==1)updatemenu=1;
-  olddrawColorLabel=drawColorLabel;
+  if(ReadPlot3dFile==1&&num_colorbars==0)num_colorbars=1;
+  
+  // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
+
+#ifdef pp_HCOLORBAR
+  if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
+#else
+  if((showtime == 1 || showplot3d == 1) && visColorbarVertical == 1){
+#endif
+    if(old_draw_colorlabel == 0)updatemenu = 1;
+    old_draw_colorlabel = 1;
+  }
+  else {
+    if(old_draw_colorlabel == 1)updatemenu = 1;
+    old_draw_colorlabel = 0;
+  }
+
   if(showtime2==1)showtime=1;
   if(plotstate==DYNAMIC_PLOTS&&stept==1){
     glutIdleFunc(IdleCB);

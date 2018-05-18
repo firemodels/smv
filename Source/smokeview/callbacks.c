@@ -617,11 +617,11 @@ void CheckTimeBound(void){
 
 int GetColorbarIndex(int flag, int x, int y){
 
-  if(flag==0||(colorbar_left_pos<=x&&x<=colorbar_right_pos)){
+  if(flag==0||(vcolorbar_left_pos<=x&&x<=vcolorbar_right_pos)){
       y = screenHeight - y;
-      if(colorbar_down_pos<=y&&y<=colorbar_top_pos){
+      if(vcolorbar_down_pos<=y&&y<=vcolorbar_top_pos){
         int index;
-        index = CLAMP(255*(float)(y-colorbar_down_pos)/(float)(colorbar_top_pos - colorbar_down_pos),0,255);
+        index = CLAMP(255*(float)(y-vcolorbar_down_pos)/(float)(vcolorbar_top_pos - vcolorbar_down_pos),0,255);
         return index;
       }
       else{
@@ -1720,7 +1720,7 @@ void Keyboard(unsigned char key, int flag){
         else{
           histogram_show_graph = 1;
           histogram_show_numbers = 1;
-          visColorbar = 1;
+          visColorbarVertical = 1;
           update_slice_hists = 1;
         }
         UpdateHistogramType();
