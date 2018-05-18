@@ -1843,10 +1843,16 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
-#ifdef pp_GLUTGET
+#ifdef _DEBUG
     case 'n':
     case 'N':
-      alt_ctrl_key_state = KEY_ALT;
+      if(nsmoke3dinfo>0){
+        adjustalphaflag++;
+        if(adjustalphaflag>3)adjustalphaflag=0;
+        PRINTF("adjustalphaflag=%i\n",adjustalphaflag);
+        UpdateSmoke3dFlags();
+        return;
+      }
       break;
 #endif
     case 'O':
