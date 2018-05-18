@@ -140,7 +140,7 @@ void GetViewportInfo(void){
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
   VP_timebar.text_width  = text_width;
-  hbar_height = text_height + v_space+MAX(colorbar_delta, 3 * (text_height + v_space));
+  hbar_height = text_height + v_space+MAX(hcolorbar_delta, 3 * (text_height + v_space));
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
@@ -166,7 +166,7 @@ void GetViewportInfo(void){
   }
 
   if(visColorbarVertical==0||num_colorbars==0||(showtime==0&&showplot3d==0))doit=0;
-  VP_vcolorbar.left = screenWidth-colorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
+  VP_vcolorbar.left = screenWidth-vcolorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
     VP_vcolorbar.left -= colorbar_label_width;
   }
@@ -175,7 +175,7 @@ void GetViewportInfo(void){
   VP_vcolorbar.text_height = text_height;
   VP_vcolorbar.text_width  = text_width;
   if(doit==1){
-    VP_vcolorbar.width = colorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
+    VP_vcolorbar.width = vcolorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
     if(dohist==1){
       VP_vcolorbar.width += colorbar_label_width;
     }
@@ -262,16 +262,16 @@ void GetViewportInfo(void){
   // vertical colorbar boundaries
 
   vcolorbar_right_pos = VP_vcolorbar.right  - h_space;
-  vcolorbar_left_pos  = vcolorbar_right_pos - colorbar_delta;
-  vcolorbar_top_pos   = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - colorbar_delta;
-  vcolorbar_down_pos  = VP_vcolorbar.down + colorbar_delta;
+  vcolorbar_left_pos  = vcolorbar_right_pos - vcolorbar_delta;
+  vcolorbar_top_pos   = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - vcolorbar_delta;
+  vcolorbar_down_pos  = VP_vcolorbar.down + vcolorbar_delta;
 
   // horizontal colorbar boundaries
 
-  hcolorbar_right_pos = VP_timebar.right - colorbar_label_width;
+  hcolorbar_right_pos = VP_timebar.right - colorbar_label_width-hcolorbar_delta;
   hcolorbar_left_pos  = VP_timebar.left  + colorbar_label_width;
   hcolorbar_down_pos  = VP_timebar.top - hbar_height + (text_height + v_space);
-  hcolorbar_top_pos   = hcolorbar_down_pos + colorbar_delta;
+  hcolorbar_top_pos   = hcolorbar_down_pos + hcolorbar_delta;
 }
 
  /* ------------------------ SubPortOrtho ------------------------- */

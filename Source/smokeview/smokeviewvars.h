@@ -367,7 +367,8 @@ SVEXTERN int SVDECL(combine_meshes,1);
 SVEXTERN int vcolorbar_left_pos, vcolorbar_right_pos, vcolorbar_down_pos, vcolorbar_top_pos;
 SVEXTERN int hcolorbar_left_pos, hcolorbar_right_pos, hcolorbar_down_pos, hcolorbar_top_pos;
 SVEXTERN float scale_2d_x, scale_2d_y;
-SVEXTERN int SVDECL(colorbar_delta,35);
+SVEXTERN int SVDECL(vcolorbar_delta,35);
+SVEXTERN int SVDECL(hcolorbar_delta, 25);
 SVEXTERN int colorbar_label_width;
 
 SVEXTERN int timebar_left_width, timebar_right_width;
