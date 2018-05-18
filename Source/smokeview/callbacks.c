@@ -1322,11 +1322,11 @@ void MoveScene(int xm, int ym){
       viewz = eye_xyz[2] - delz;
       break;
     case KEY_SHIFT:
-      xx = xm-mouse_down_xy0[0];
-      xx = xx/(float)screenWidth;
-      if(rotation_type!=EYE_CENTERED){
+      if(rotation_type!=EYE_CENTERED&&lock_mouse_aperture==0){
         float dx;
 
+        xx = xm - mouse_down_xy0[0];
+        xx = xx / (float)screenWidth;
         dx = (xyzbox+eye_xyz0[0])*xx;
         eye_xyz[0] = eye_xyz0[0] + dx;
         eye_xyz0[0]=eye_xyz[0];
@@ -2237,6 +2237,9 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '@':
       cell_center_text = 1 - cell_center_text;
+      break;
+    case '.':
+      lock_mouse_aperture = 1 - lock_mouse_aperture;
       break;
     case ',':
       if(visColorbarHorizontal==0&&visColorbarVertical==0){

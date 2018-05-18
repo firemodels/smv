@@ -25,6 +25,7 @@
 #else
   SVEXTERN float windrose_merge_dxyzt[4];
 #endif
+SVEXTERN int SVDECL(lock_mouse_aperture, 0);
 SVEXTERN int SVDECL(windrose_merge_type,WINDROSE_POINT);
 SVEXTERN int SVDECL(windrose_first, 0), SVDECL(windrose_next, 1);
 SVEXTERN int SVDECL(windrose_xy_active, 0), SVDECL(windrose_xz_active, 0), SVDECL(windrose_yz_active, 0);
