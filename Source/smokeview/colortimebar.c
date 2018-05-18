@@ -1540,8 +1540,6 @@ void DrawVerticalColorbars(void){
 /* ------------------ DrawHorizontalColorbarRegLabels ------------------------ */
 
 void DrawHorizontalColorbarRegLabels(void) {
-  int ilabel = 0;
-
   int i;
   int iposition;
 
