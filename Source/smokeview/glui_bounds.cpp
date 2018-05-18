@@ -3094,7 +3094,7 @@ extern "C" void SliceBoundCB(int var){
   if(var == INIT_HISTOGRAM){
     if(histogram_show_graph == 1 || histogram_show_numbers == 1){
       update_slice_hists = 1;
-      visColorbar = 1;
+      visColorbarVertical = 1;
     }
     return;
   }
@@ -3209,8 +3209,8 @@ extern "C" void SliceBoundCB(int var){
       if(research_mode==1){
         axislabels_smooth_save=axislabels_smooth;
         axislabels_smooth=0;
-        visColorbar_save=visColorbar;
-        visColorbar=1;
+        visColorbarVertical_save=visColorbarVertical;
+        visColorbarVertical=1;
 
         // slice files
 
@@ -3277,7 +3277,7 @@ extern "C" void SliceBoundCB(int var){
       }
       else{
         axislabels_smooth=axislabels_smooth_save;
-        visColorbar=visColorbar_save;
+        visColorbarVertical=visColorbarVertical_save;
 
         // slice files
 

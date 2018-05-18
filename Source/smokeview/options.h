@@ -68,6 +68,7 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
+#define pp_HCOLORBAR     // used to test horizontal colorbars
 #define pp_SMOKEALPHA
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections

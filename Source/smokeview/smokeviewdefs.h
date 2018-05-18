@@ -776,7 +776,8 @@ void _Sniff_Errors(char *whereat);
 #define VOL_UNLOAD -2
 #define VOL_READNONE -3
 
-#define MENU_LABEL_colorbar 0
+#define MENU_LABEL_colorbar_vertical 0
+#define MENU_LABEL_colorbar_horizontal 24
 #define MENU_LABEL_timebar 1
 #define MENU_LABEL_title 2
 #define MENU_LABEL_framerate 3

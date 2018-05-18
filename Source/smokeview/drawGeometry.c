@@ -4132,7 +4132,7 @@ void InitUserTicks(void){
 
   user_tick_length=0.1;
   user_tick_width=2.0;
-
+  user_tick_direction = 1.0;
 }
 
 /* ------------------ GetTickDir ------------------------ */
@@ -4215,11 +4215,13 @@ void DrawUserTicks(void){
   float xyz[3],xyz2[3];
   float tick_origin[3], step[3];
   int show_tick_x, show_tick_y, show_tick_z;
+  float fds_tick_length;
 
 #define MIN_DTICK 0.0
 #define TEXT_FACTOR 1.5
 
   user_tick_option=GetTickDir(modelview_scratch);
+  fds_tick_length = user_tick_direction*SCALE2FDS(user_tick_length);
 
   if(auto_user_tick_placement==0){
     tick_origin[0]=user_tick_origin[0];
@@ -4341,13 +4343,13 @@ void DrawUserTicks(void){
       xyz[2]=tick_origin[2];
       if(user_tick_option==ZDIR){
         xyz2[0]=xyz[0];
-        xyz2[1]=xyz[1]-SCALE2FDS(user_tick_length);
+        xyz2[1]=xyz[1]-fds_tick_length;
         xyz2[2]=xyz[2];
       }
       else{
         xyz2[0]=xyz[0];
         xyz2[1]=xyz[1];
-        xyz2[2]=xyz[2]-SCALE2FDS(user_tick_length);
+        xyz2[2]=xyz[2]-fds_tick_length;
       }
       if(i==0){
         glVertex3fv(xyz);
@@ -4376,13 +4378,13 @@ void DrawUserTicks(void){
         xyz[2]=tick_origin[2];
         if(user_tick_option==ZDIR){
           xyz2[0]=xyz[0];
-          xyz2[1]=xyz[1]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[1]=xyz[1]-fds_tick_length/2.0;
           xyz2[2]=xyz[2];
         }
         else{
           xyz2[0]=xyz[0];
           xyz2[1]=xyz[1];
-          xyz2[2]=xyz[2]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[2]=xyz[2]-fds_tick_length/2.0;
         }
         glVertex3fv(xyz);
         glVertex3fv(xyz2);
@@ -4399,13 +4401,13 @@ void DrawUserTicks(void){
       xyz[2]=tick_origin[2];
       if(user_tick_option==ZDIR){
         xyz2[0]=xyz[0];
-        xyz2[1]=xyz[1]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[1]=xyz[1]-TEXT_FACTOR*fds_tick_length;
         xyz2[2]=xyz[2];
       }
       else{
         xyz2[0]=xyz[0];
         xyz2[1]=xyz[1];
-        xyz2[2]=xyz[2]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[2]=xyz[2]-TEXT_FACTOR*fds_tick_length;
       }
       sprintf(label,"%5.1f",GetUnitVal("Distance",xyz[0]));
       TrimZeros(label);
@@ -4430,14 +4432,14 @@ void DrawUserTicks(void){
         )continue;
       xyz[2]=tick_origin[2];
       if(user_tick_option==ZDIR){
-        xyz2[0]=xyz[0]-SCALE2FDS(user_tick_length);
+        xyz2[0]=xyz[0]-fds_tick_length;
         xyz2[1]=xyz[1];
         xyz2[2]=xyz[2];
       }
       else{
         xyz2[0]=xyz[0];
         xyz2[1]=xyz[1];
-        xyz2[2]=xyz[2]-SCALE2FDS(user_tick_length);
+        xyz2[2]=xyz[2]-fds_tick_length;
       }
       if(i==0){
         glVertex3fv(xyz);
@@ -4465,14 +4467,14 @@ void DrawUserTicks(void){
           )continue;
         xyz[2]=tick_origin[2];
         if(user_tick_option==ZDIR){
-          xyz2[0]=xyz[0]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[0]=xyz[0]-fds_tick_length/2.0;
           xyz2[1]=xyz[1];
           xyz2[2]=xyz[2];
         }
         else{
           xyz2[0]=xyz[0];
           xyz2[1]=xyz[1];
-          xyz2[2]=xyz[2]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[2]=xyz[2]-fds_tick_length/2.0;
         }
         glVertex3fv(xyz);
         glVertex3fv(xyz2);
@@ -4492,14 +4494,14 @@ void DrawUserTicks(void){
       xyz[2]=tick_origin[2];
       xyz2[0]=xyz[0];
       if(user_tick_option==ZDIR){
-        xyz2[0]=xyz[0]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[0]=xyz[0]-TEXT_FACTOR*fds_tick_length;
         xyz2[1]=xyz[1];
         xyz2[2]=xyz[2];
       }
       else{
         xyz2[0]=xyz[0];
         xyz2[1]=xyz[1];
-        xyz2[2]=xyz[2]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[2]=xyz[2]-TEXT_FACTOR*fds_tick_length;
       }
       sprintf(label,"%5.1f",GetUnitVal("Distance",xyz[1]));
       TrimZeros(label);
@@ -4524,10 +4526,10 @@ void DrawUserTicks(void){
         )continue;
       if(user_tick_option==YDIR){
         xyz2[0]=xyz[0];
-        xyz2[1]=xyz[1]-SCALE2FDS(user_tick_length);
+        xyz2[1]=xyz[1]-fds_tick_length;
       }
       else{
-        xyz2[0]=xyz[0]-SCALE2FDS(user_tick_length);
+        xyz2[0]=xyz[0]-fds_tick_length;
         xyz2[1]=xyz[1];
       }
       xyz2[2]=xyz[2];
@@ -4558,10 +4560,10 @@ void DrawUserTicks(void){
           )continue;
         if(user_tick_option==YDIR){
           xyz2[0]=xyz[0];
-          xyz2[1]=xyz[1]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[1]=xyz[1]-fds_tick_length/2.0;
         }
         else{
-          xyz2[0]=xyz[0]-SCALE2FDS(user_tick_length)/2.0;
+          xyz2[0]=xyz[0]-fds_tick_length/2.0;
           xyz2[1]=xyz[1];
         }
         xyz2[2]=xyz[2];
@@ -4583,10 +4585,10 @@ void DrawUserTicks(void){
         )continue;
       if(user_tick_option==YDIR){
         xyz2[0]=xyz[0];
-        xyz2[1]=xyz[1]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[1]=xyz[1]-TEXT_FACTOR*fds_tick_length;
       }
       else{
-        xyz2[0]=xyz[0]-TEXT_FACTOR*SCALE2FDS(user_tick_length);
+        xyz2[0]=xyz[0]-TEXT_FACTOR*fds_tick_length;
         xyz2[1]=xyz[1];
       }
       xyz2[2]=xyz[2];
