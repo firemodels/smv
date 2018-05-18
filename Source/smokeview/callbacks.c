@@ -988,8 +988,9 @@ void MouseCB(int button, int state, int xm, int ym){
         break;
       case GLUT_ACTIVE_SHIFT:
         key_state = KEY_SHIFT;
-        start_xyz0[0]=xm;
-        start_xyz0[1]=ym;
+        eye_xyz0[0] = eye_xyz[0];
+        eye_xyz0[1] = eye_xyz[1];
+        aperture_glui0 = aperture_glui;
         touring=0;
         break;
       default:
@@ -1321,6 +1322,23 @@ void MoveScene(int xm, int ym){
       viewz = eye_xyz[2] - delz;
       break;
     case KEY_SHIFT:
+      xx = xm-mouse_down_xy0[0];
+      xx = xx/(float)screenWidth;
+      if(rotation_type!=EYE_CENTERED){
+        float dx;
+
+        dx = (xyzbox+eye_xyz0[0])*xx;
+        eye_xyz[0] = eye_xyz0[0] + dx;
+        eye_xyz0[0]=eye_xyz[0];
+        mouse_down_xy0[0]=xm;
+      }
+      yy = ym - mouse_down_xy0[1];
+      yy = yy / (float)screenHeight;
+      aperture_glui = CLAMP(aperture_glui0 + aperture_max*yy,aperture_min,aperture_max);
+#define APERTURE 15
+#define ZOOM 12
+      SceneMotionCB(APERTURE);
+      SceneMotionCB(ZOOM);
       break;
     default:
       ASSERT(FFALSE);
@@ -2219,6 +2237,20 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '@':
       cell_center_text = 1 - cell_center_text;
+      break;
+    case ',':
+      if(visColorbarHorizontal==0&&visColorbarVertical==0){
+        visColorbarVertical=1;
+      }
+      else if(visColorbarHorizontal==0&&visColorbarVertical==1){
+        visColorbarHorizontal=1;
+        visColorbarVertical=0;
+      }
+      else{
+        visColorbarHorizontal=0;
+        visColorbarVertical=0;
+      }
+      updatemenu = 1;
       break;
     case '#':
       WriteIni(LOCAL_INI,NULL);

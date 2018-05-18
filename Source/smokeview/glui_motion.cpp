@@ -1079,8 +1079,10 @@ extern "C" void GluiMotionSetup(int main_window){
   RADIOBUTTON_1a = glui_motion->add_radiobutton_to_group(RADIO_projection, _("Perspective"));
   RADIOBUTTON_1b = glui_motion->add_radiobutton_to_group(RADIO_projection, _("Size preserving"));
   SPINNER_zoom = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("Zoom"), GLUI_SPINNER_FLOAT, &zoom, ZOOM, SceneMotionCB);
-  SPINNER_zoom->set_float_limits(0.10, 10.0, GLUI_LIMIT_CLAMP);
+  SPINNER_zoom->set_float_limits(zoom_min, zoom_max, GLUI_LIMIT_CLAMP);
   aperture_glui = Zoom2Aperture(zoom);
+  aperture_min = Zoom2Aperture(zoom_max);
+  aperture_max = Zoom2Aperture(zoom_min);
   SPINNER_aperture = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("aperture"), GLUI_SPINNER_FLOAT, &aperture_glui,
     APERTURE, SceneMotionCB);
   glui_motion->add_separator_to_panel(ROLLOUT_projection);
