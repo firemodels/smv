@@ -51,6 +51,7 @@ void GetViewportInfo(void){
   int ninfo_lines=0;
   int info_width;
   int dohist=0;
+  int hbar_height;
 
   info_width = GetStringWidth("y: 115, 11.5 m");
   colorbar_label_width = GetStringWidth("*10^-02");
@@ -137,14 +138,15 @@ void GetViewportInfo(void){
   VP_timebar.left = titlesafe_offset;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
-  VP_timebar.text_height=text_height;
-  VP_timebar.text_width = text_width;
+  VP_timebar.text_height = text_height;
+  VP_timebar.text_width  = text_width;
+  hbar_height = text_height + v_space+MAX(colorbar_delta, 3 * (text_height + v_space));
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
     if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
     if(visColorbarHorizontal==1){
-      VP_timebar.height += MAX(colorbar_delta,4*(text_height + v_space));
+      VP_timebar.height += hbar_height;
     }
   }
   else{
@@ -170,8 +172,8 @@ void GetViewportInfo(void){
   }
   VP_vcolorbar.down = MAX(VP_timebar.height,VP_info.height)+titlesafe_offset;
   VP_vcolorbar.doit = doit;
-  VP_vcolorbar.text_height=text_height;
-  VP_vcolorbar.text_width = text_width;
+  VP_vcolorbar.text_height = text_height;
+  VP_vcolorbar.text_width  = text_width;
   if(doit==1){
     VP_vcolorbar.width = colorbar_delta + h_space+num_colorbars*(colorbar_label_width+h_space);
     if(dohist==1){
@@ -236,8 +238,8 @@ void GetViewportInfo(void){
     VP_title.doit = 0;
   }
 
-  VP_title.text_height=text_height;
-  VP_title.text_width = text_width;
+  VP_title.text_height = text_height;
+  VP_title.text_width  = text_width;
   VP_title.left = titlesafe_offset;
   VP_title.down = (int)screenHeight-VP_title.height-titlesafe_offset;
   VP_title.right = VP_title.left + VP_title.width;
@@ -246,7 +248,7 @@ void GetViewportInfo(void){
   // scene viewport dimensions
 
   VP_scene.text_height = text_height;
-  VP_scene.text_width = text_width;
+  VP_scene.text_width  = text_width;
   VP_scene.left=titlesafe_offset;
   VP_scene.down=titlesafe_offset+MAX(VP_timebar.height,VP_info.height);
   VP_scene.width=MAX(1,screenWidth-2*titlesafe_offset-VP_vcolorbar.width);
@@ -266,9 +268,9 @@ void GetViewportInfo(void){
 
   // horizontal colorbar boundaries
 
-  hcolorbar_right_pos = VP_timebar.right - VP_timebar.text_width;
-  hcolorbar_left_pos  = VP_timebar.left;
-  hcolorbar_down_pos  = VP_timebar.top - MAX(colorbar_delta, 4*(text_height + v_space));
+  hcolorbar_right_pos = VP_timebar.right - colorbar_label_width;
+  hcolorbar_left_pos  = VP_timebar.left  + colorbar_label_width;
+  hcolorbar_down_pos  = VP_timebar.top - hbar_height + (text_height + v_space);
   hcolorbar_top_pos   = hcolorbar_down_pos + colorbar_delta;
 }
 
@@ -719,7 +721,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 
 #ifdef pp_HCOLORBAR
   if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
-    //  DrawHorizontalColorbarRegLabels();
+    DrawHorizontalColorbarRegLabels();
     DrawHorizontalColorbars();
   }
 #endif
