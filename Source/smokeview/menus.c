@@ -546,10 +546,34 @@ void LabelMenu(int value){
   case MENU_LABEL_colorbar_vertical:
     visColorbarVertical   = 1 - visColorbarVertical;
     if(visColorbarVertical==1)visColorbarHorizontal=0;
+
+    // toggle_colorbar   state
+    //    0              hidden
+    //    1              vertical
+    //    2->max         horizontal
+
+    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
+      toggle_colorbar = 2;
+    }
+    else{
+      toggle_colorbar = 0;
+    }
     break;
   case MENU_LABEL_colorbar_horizontal:
     visColorbarHorizontal = 1 - visColorbarHorizontal;
     if(visColorbarHorizontal==1)visColorbarVertical = 0;
+    if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+      toggle_colorbar = 1;
+    }
+    else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+      toggle_colorbar = 2;
+    }
+    else {
+      toggle_colorbar = 0;
+    }
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;

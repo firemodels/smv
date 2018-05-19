@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(toggle_colorbar, 0);
+SVEXTERN int hcolorbar_vis[6];
 #ifdef INMAIN
   SVEXTERN float windrose_merge_dxyzt[4] = { 0.0,0.0,0.0,0.0 };
 #else

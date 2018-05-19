@@ -1298,122 +1298,185 @@ void DrawVerticalColorbarReg(void){
   glEnd();
 }
 
+#define COLORBAR_PART     0
+#define COLORBAR_SLICE    1
+#define COLORBAR_ISO      2
+#define COLORBAR_BOUNDARY 3
+#define COLORBAR_PLOT3D   4
+#define COLORBAR_ZONE     5
+
+/* ------------------ CountColorbars ------------------------ */
+
+int CountColorbars(void){
+  int count = 0;
+
+  if(hcolorbar_vis!=NULL){
+    int i;
+
+    for(i=0;i<6;i++){
+      hcolorbar_vis[i]=-1;
+    }
+  }
+  if(showevac_colorbar == 1 || showsmoke == 1){
+    hcolorbar_vis[COLORBAR_PART]=count+2;
+    count++;
+  }
+  if(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)){
+    hcolorbar_vis[COLORBAR_SLICE]=count+2;
+    count++;
+  }
+  if(showiso_colorbar == 1){
+    hcolorbar_vis[COLORBAR_ISO]=count+2;
+    count++;
+  }
+  if(showpatch == 1 && wc_flag == 0){
+    hcolorbar_vis[COLORBAR_BOUNDARY]=count+2;
+    count++;
+  }
+  if(showplot3d == 1){
+    hcolorbar_vis[COLORBAR_PLOT3D]=count+2;
+    count++;
+  }
+  if(showzone == 1 && zonecolortype == ZONETEMP_COLOR){
+    hcolorbar_vis[COLORBAR_ZONE]=count+2;
+    count++;
+  }
+  return count;
+}
+
 /* ------------------ DrawHorizontalColorbars ------------------------ */
 
 void DrawHorizontalColorbars(void) {
-  int i;
+  int doit=0;
 
-  // -------------- compute columns where left labels will occur ------------
+  CountColorbars();
 
-  if (showiso_colorbar == 1 || showevac_colorbar == 1 ||
-    (showsmoke == 1 && parttype != 0) || showslice == 1 ||
-    (showvslice == 1 && vslicecolorbarflag == 1) ||
-    (showpatch == 1 && wc_flag == 0) ||
-    (showzone == 1 && zonecolortype == ZONETEMP_COLOR) ||
-    showplot3d == 1) {
-
-    SNIFF_ERRORS("before colorbar");
-    CheckMemory;
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_SLICE]){
+    if(showslice==1)doit=1;
+    if((showvslice == 1 && vslicecolorbarflag == 1))doit=1;
+  }
+  else if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]){
+    if(showpatch == 1 && wc_flag == 0)doit=1;
+  }
+  else if(toggle_colorbar==hcolorbar_vis[COLORBAR_PLOT3D]){
+    if(showplot3d==1)doit=1;
+  }
+  else if(toggle_colorbar==hcolorbar_vis[COLORBAR_ZONE]){
+    if((showzone == 1 && zonecolortype == ZONETEMP_COLOR))doit=1;
+  }
+  else if(toggle_colorbar==hcolorbar_vis[COLORBAR_PART]){
+    if(showevac_colorbar==1)doit=1;
+    if(showsmoke==1&&parttype!=0)doit=1;
+  }
+  else if(toggle_colorbar==hcolorbar_vis[COLORBAR_ISO]){
+    if(showiso_colorbar)doit=1;
+  }
+  else{
+    doit=1;
+  }
+  if(doit==0)return;
+  
+  SNIFF_ERRORS("before horizontal colorbar");
+  CheckMemory;
 
     // -------------- draw plot3d colorbars ------------
 
-    if (showplot3d == 1 && contour_type == STEPPED_CONTOURS) {
-      glBegin(GL_QUADS);
-      for (i = 0; i < nrgb - 2; i++) {
-        float *rgb_plot3d_local;
-        float xleft, xright;
+  if (showplot3d == 1 && contour_type == STEPPED_CONTOURS) {
+    int i;
 
-        rgb_plot3d_local = rgb_plot3d_contour[i];
+    glBegin(GL_QUADS);
+    for (i = 0; i < nrgb - 2; i++) {
+      float *rgb_plot3d_local;
+      float xleft, xright;
 
-        xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-        xright = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      rgb_plot3d_local = rgb_plot3d_contour[i];
 
-        if (rgb_plot3d_local[3] != 0.0) {
-          glColor4fv(rgb_plot3d_local);
-          glVertex2f(xleft, hcolorbar_down_pos);
-          glVertex2f(xright, hcolorbar_down_pos);
-          glVertex2f(xright, hcolorbar_top_pos);
-          glVertex2f(xleft, hcolorbar_top_pos);
-        }
-      }
-      glEnd();
-      if (show_extreme_mindata == 1 || show_extreme_maxdata == 1) {
-        float barmid;
-        float *rgb_plot3d_local;
-        float xleft, xright;
+      xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xright = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
 
-        rgb_plot3d_local = rgb_plot3d_contour[nrgb - 2];
-        barmid = (hcolorbar_down_pos + hcolorbar_top_pos) / 2.0;
-        i = -1;
-        xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-        xleft  = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-
-        if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glEnable(GL_POLYGON_SMOOTH);
-
-        if (show_extreme_mindata == 1 && have_extreme_mindata == 1 && rgb_plot3d_local[3] != 0.0) {
-          glBegin(GL_TRIANGLES);
-          glColor4fv(rgb_plot3d_local);
-
-          glVertex2f(xleft, hcolorbar_down_pos);
-          glVertex2f(xleft, hcolorbar_top_pos);
-          glVertex2f(xright, barmid);
-          glEnd();
-        }
-
-        i = nrgb - 2;
-        xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-        xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-
-        rgb_plot3d_local = rgb_plot3d_contour[nrgb - 1];
-        if (show_extreme_maxdata == 1 && have_extreme_maxdata == 1 && rgb_plot3d_local[3] != 0.0) {
-          glBegin(GL_TRIANGLES);
-          glColor4fv(rgb_plot3d_local);
-          glVertex2f(xleft, hcolorbar_down_pos);
-          glVertex2f(xleft, hcolorbar_top_pos);
-          glVertex2f(xright, barmid);
-          glEnd();
-        }
-        if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glDisable(GL_POLYGON_SMOOTH);
+      if (rgb_plot3d_local[3] != 0.0) {
+        glColor4fv(rgb_plot3d_local);
+        glVertex2f(xleft, hcolorbar_down_pos);
+        glVertex2f(xright, hcolorbar_down_pos);
+        glVertex2f(xright, hcolorbar_top_pos);
+        glVertex2f(xleft, hcolorbar_top_pos);
       }
     }
-    else {
-
-      // -------------- draw all other colorbars ------------
-
-      if (hists12_slice == NULL || histogram_show_graph == 0) {
-        DrawHorizontalColorbarReg();
-
-      }
-    }
+    glEnd();
     if (show_extreme_mindata == 1 || show_extreme_maxdata == 1) {
       float barmid;
+      float *rgb_plot3d_local;
+      float xleft, xright;
 
-      barmid = (hcolorbar_top_pos + hcolorbar_down_pos) / 2.0;
+      rgb_plot3d_local = rgb_plot3d_contour[nrgb - 2];
+      barmid = (hcolorbar_down_pos + hcolorbar_top_pos) / 2.0;
+      i = -1;
+      xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xleft  = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
 
       if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glEnable(GL_POLYGON_SMOOTH);
 
-      if (show_extreme_mindata == 1 && have_extreme_mindata == 1) {
+      if (show_extreme_mindata == 1 && have_extreme_mindata == 1 && rgb_plot3d_local[3] != 0.0) {
         glBegin(GL_TRIANGLES);
-        glColor4fv(rgb_full[0]);
+        glColor4fv(rgb_plot3d_local);
 
-        glVertex2f(hcolorbar_left_pos, hcolorbar_down_pos);
-        glVertex2f(hcolorbar_left_pos, hcolorbar_top_pos);
-        glVertex2f(hcolorbar_left_pos - 0.866*hcolorbar_delta,barmid);
+        glVertex2f(xleft, hcolorbar_down_pos);
+        glVertex2f(xleft, hcolorbar_top_pos);
+        glVertex2f(xright, barmid);
         glEnd();
       }
 
-      if (show_extreme_maxdata == 1 && have_extreme_maxdata == 1) {
+      i = nrgb - 2;
+      xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+
+      rgb_plot3d_local = rgb_plot3d_contour[nrgb - 1];
+      if (show_extreme_maxdata == 1 && have_extreme_maxdata == 1 && rgb_plot3d_local[3] != 0.0) {
         glBegin(GL_TRIANGLES);
-        glColor4fv(rgb_full[nrgb_full - 1]);
-        glVertex2f(hcolorbar_right_pos, hcolorbar_top_pos);
-        glVertex2f(hcolorbar_right_pos, hcolorbar_down_pos);
-        glVertex2f(hcolorbar_right_pos + 0.866*hcolorbar_delta, barmid);
+        glColor4fv(rgb_plot3d_local);
+        glVertex2f(xleft, hcolorbar_down_pos);
+        glVertex2f(xleft, hcolorbar_top_pos);
+        glVertex2f(xright, barmid);
         glEnd();
       }
       if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glDisable(GL_POLYGON_SMOOTH);
     }
   }
+  else {
 
+    // -------------- draw all other colorbars ------------
+
+    if (hists12_slice == NULL || histogram_show_graph == 0) {
+      DrawHorizontalColorbarReg();
+    }
+  }
+  if (show_extreme_mindata == 1 || show_extreme_maxdata == 1) {
+    float barmid;
+
+    barmid = (hcolorbar_top_pos + hcolorbar_down_pos) / 2.0;
+
+    if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glEnable(GL_POLYGON_SMOOTH);
+
+    if (show_extreme_mindata == 1 && have_extreme_mindata == 1) {
+      glBegin(GL_TRIANGLES);
+      glColor4fv(rgb_full[0]);
+
+      glVertex2f(hcolorbar_left_pos, hcolorbar_down_pos);
+      glVertex2f(hcolorbar_left_pos, hcolorbar_top_pos);
+      glVertex2f(hcolorbar_left_pos - 0.866*hcolorbar_delta,barmid);
+      glEnd();
+    }
+
+    if (show_extreme_maxdata == 1 && have_extreme_maxdata == 1) {
+      glBegin(GL_TRIANGLES);
+      glColor4fv(rgb_full[nrgb_full - 1]);
+      glVertex2f(hcolorbar_right_pos, hcolorbar_top_pos);
+      glVertex2f(hcolorbar_right_pos, hcolorbar_down_pos);
+      glVertex2f(hcolorbar_right_pos + 0.866*hcolorbar_delta, barmid);
+      glEnd();
+    }
+    if (have_extreme_mindata == 1 || have_extreme_maxdata == 1)glDisable(GL_POLYGON_SMOOTH);
+  }
 }
 
 /* ------------------ DrawVerticalColorbars ------------------------ */
@@ -1430,7 +1493,7 @@ void DrawVerticalColorbars(void){
     (showzone==1&&zonecolortype==ZONETEMP_COLOR)||
     showplot3d==1){
 
-    SNIFF_ERRORS("before colorbar");
+    SNIFF_ERRORS("before vertical colorbar");
     CheckMemory;
 
     // -------------- draw plot3d colorbars ------------
@@ -1534,7 +1597,6 @@ void DrawVerticalColorbars(void){
       if(have_extreme_mindata==1||have_extreme_maxdata==1)glDisable(GL_POLYGON_SMOOTH);
     }
   }
-
 }
 
 /* ------------------ DrawHorizontalColorbarRegLabels ------------------------ */
@@ -1565,7 +1627,6 @@ void DrawHorizontalColorbarRegLabels(void) {
   float *partfactor = NULL;
   float partrange = 0.0;
 
-  int draw_label = 0;
   int type_label_left, type_label_down;
   int axis_label_left, axis_label_down;
 
@@ -1607,10 +1668,9 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- particle file top labels ------------
 
-  if (showevac_colorbar == 1 || showsmoke == 1) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_PART]&&(showevac_colorbar == 1 || showsmoke == 1)) {
     char partunitlabel2[256], partshortlabel2[256];
 
-    draw_label = 1;
     strcpy(partshortlabel2, "");
     strcpy(partunitlabel2, "");
 
@@ -1652,13 +1712,11 @@ void DrawHorizontalColorbarRegLabels(void) {
   }
 
   // -------------- slice file top labels ------------
-
-  if (draw_label==0&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))) {
+ if(toggle_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))) {
     char unitlabel[256];
     int sliceunitclass, sliceunittype;
     boundsdata *sb;
 
-    draw_label = 1;
     sb = slicebounds + islicetype;
     strcpy(unitlabel, sb->label->unit);
     GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
@@ -1687,11 +1745,10 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- isosurface top labels ------------
 
-  if (draw_label==0&&showiso_colorbar == 1) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_ISO]&&showiso_colorbar == 1) {
     char unitlabel[256];
     boundsdata *sb;
 
-    draw_label = 1;
     sb = isobounds + iisottype;
     strcpy(unitlabel, sb->label->unit);
     glPushMatrix();
@@ -1705,12 +1762,11 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary file top labels ------------
 
-  if (draw_label==0&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
     char unitlabel[256];
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    draw_label = 1;
     patchi = patchinfo + boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
@@ -1733,13 +1789,12 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- plot3d top labels ------------
 
-  if(draw_label==0&&showplot3d == 1) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_PLOT3D]&&showplot3d == 1) {
     char *p3label;
     char *up3label;
     char unitlabel[256];
     int plot3dunitclass, plot3dunittype;
 
-    draw_label = 1;
     up3label = plot3dinfo[0].label[plotn - 1].unit;
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
@@ -1767,11 +1822,10 @@ void DrawHorizontalColorbarRegLabels(void) {
     glPopMatrix();
   }
 
-  if (draw_label==0&&showzone == 1 && zonecolortype == ZONETEMP_COLOR) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_ZONE]&&showzone == 1 && zonecolortype == ZONETEMP_COLOR) {
     char unitlabel[256];
     int zoneunitclass, zoneunittype;
 
-    draw_label = 1;
     strcpy(unitlabel, degC);
     GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
     if (zoneunitclass >= 0 && zoneunitclass < nunitclasses) {
@@ -1791,15 +1845,13 @@ void DrawHorizontalColorbarRegLabels(void) {
     SNIFF_ERRORS("After ZONE labels");
   }
 
-  draw_label = 0;
   // -------------- isosurface left labels ------------
 
-  if (draw_label==0&&showiso_colorbar == 1) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_ISO]&&showiso_colorbar == 1) {
     float tttval, tttmin, tttmax;
     boundsdata *sb;
     float isorange;
 
-    draw_label = 1;
     sb = isobounds + iisottype;
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
@@ -1845,11 +1897,10 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- particle left labels ------------
 
-  if (draw_label==0&&(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0))) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_PART]&&(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0))) {
     float *partlevels256_ptr;
     float tttval, tttmin, tttmax;
 
-    draw_label = 1;
     partlevels256_ptr = partlevels256;
     if (prop_index >= 0 && prop_index < npart5prop) {
       partlevels256_ptr = part5propinfo[prop_index].ppartlevels256;
@@ -1909,12 +1960,11 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- slice left labels ------------
 
-  if (draw_label==0&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))) {//xxx
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))) {//xxx
     float tttval, tttmin, tttmax;
     boundsdata *sb;
     float slicerange;
 
-    draw_label = 1;
     sb = slicebounds + islicetype;
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
@@ -1979,10 +2029,9 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary left labels ------------
 
-  if (draw_label==0&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
     float tttval, tttmin, tttmax;
 
-    draw_label = 1;
     iposition = -1;
     tttmin = boundarylevels256[0];
     tttmax = boundarylevels256[255];
@@ -2028,10 +2077,9 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- zone left labels ------------
 
-  if (draw_label==0&&showzone == 1 && zonecolortype == ZONETEMP_COLOR) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_ZONE]&&showzone == 1 && zonecolortype == ZONETEMP_COLOR) {
     float tttval, tttmin, tttmax;
 
-    draw_label = 1;
     iposition = -1;
     tttmin = zonelevels256[0];
     tttmax = zonelevels256[255];
@@ -2076,11 +2124,10 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- plot3d left labels ------------
 
-  if (draw_label==0&&showplot3d == 1) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_PLOT3D]&&showplot3d == 1) {
     float *p3lev;
     float tttval, tttmin, tttmax;
 
-    draw_label = 1;
     iposition = -1;
     p3lev = p3levels256[plotn - 1];
     tttmin = p3lev[0];
