@@ -546,10 +546,34 @@ void LabelMenu(int value){
   case MENU_LABEL_colorbar_vertical:
     visColorbarVertical   = 1 - visColorbarVertical;
     if(visColorbarVertical==1)visColorbarHorizontal=0;
+
+    // toggle_colorbar   state
+    //    0              hidden
+    //    1              vertical
+    //    2->max         horizontal
+
+    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
+      toggle_colorbar = 2;
+    }
+    else{
+      toggle_colorbar = 0;
+    }
     break;
   case MENU_LABEL_colorbar_horizontal:
     visColorbarHorizontal = 1 - visColorbarHorizontal;
     if(visColorbarHorizontal==1)visColorbarVertical = 0;
+    if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+      toggle_colorbar = 1;
+    }
+    else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+      toggle_colorbar = 2;
+    }
+    else {
+      toggle_colorbar = 0;
+    }
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
@@ -8512,6 +8536,7 @@ updatemenu=0;
       glutAddMenuEntry(_("     (also, toggles cell center display on/off)"), MENU_DUMMY);
       glutAddMenuEntry(_("  @: display FDS values in cell centered slices"), MENU_DUMMY);
     }
+    glutAddMenuEntry(_("  ,: toggle colorbar display (vertical, horizontal, hidden"), MENU_DUMMY);
     glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
     glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
     glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);

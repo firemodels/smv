@@ -953,11 +953,34 @@ extern "C" void LabelsCB(int var){
       visColorbarHorizontal=0;
       CHECKBOX_visColorbarHorizontal->set_int_val(visColorbarHorizontal);
     }
+ // toggle_colorbar   state
+ //    0              hidden
+ //    1              vertical
+ //    2->max         horizontal
+
+    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
+      toggle_colorbar = 2;
+    }
+    else{
+      toggle_colorbar = 0;
+    }
     break;
   case LABELS_hcolorbar:
     if(visColorbarHorizontal==1){
       visColorbarVertical = 0;
       CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
+    }
+    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
+      toggle_colorbar = 2;
+    }
+    else{
+      toggle_colorbar = 0;
     }
     break;
 #endif

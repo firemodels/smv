@@ -675,6 +675,7 @@ EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP int  NewMultiSlice(slicedata *sdold,slicedata *sd);
 EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
+EXTERNCPP int CountColorbars(void);
 EXTERNCPP void DrawHorizontalColorbars(void);
 EXTERNCPP void DrawVerticalColorbars(void);
 EXTERNCPP void DrawHorizontalColorbarRegLabels(void);

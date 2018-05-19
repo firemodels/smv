@@ -2241,17 +2241,29 @@ void Keyboard(unsigned char key, int flag){
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
       break;
+ // toggle_colorbar   state
+ //    0              hidden
+ //    1              vertical
+ //    2->max         horizontal
     case ',':
-      if(visColorbarHorizontal==0&&visColorbarVertical==0){
-        visColorbarVertical=1;
-      }
-      else if(visColorbarHorizontal==0&&visColorbarVertical==1){
-        visColorbarHorizontal=1;
-        visColorbarVertical=0;
-      }
-      else{
-        visColorbarHorizontal=0;
-        visColorbarVertical=0;
+      {
+        int maxtoggle;
+
+        maxtoggle = MAX(3, 2 + CountColorbars());
+        toggle_colorbar++;
+        if(toggle_colorbar >= maxtoggle)toggle_colorbar = 0;
+        if(toggle_colorbar == 0) {
+          visColorbarVertical = 0;
+          visColorbarHorizontal = 0;
+        }
+        else if(toggle_colorbar == 1) {
+          visColorbarVertical = 1;
+          visColorbarHorizontal = 0;
+        }
+        else {
+          visColorbarVertical = 0;
+          visColorbarHorizontal = 1;
+        }
       }
       updatemenu = 1;
       break;
