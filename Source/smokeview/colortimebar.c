@@ -1248,7 +1248,7 @@ void DrawHorizontalColorbarReg(void){
 
     cbd = hcolorbar_down_pos;
 
-    xx = MIX2(i, 255, hcolorbar_right_pos, hcolorbar_left_pos);
+    xx  = MIX2(i,     255, hcolorbar_right_pos, hcolorbar_left_pos);
     xx2 = MIX2(i + 1, 255, hcolorbar_right_pos, hcolorbar_left_pos);
     i3 = i + 1;
     if(i == nrgb_full - 2)i3 = i;
@@ -1383,6 +1383,9 @@ void DrawHorizontalColorbars(void) {
 
   if (showplot3d == 1 && contour_type == STEPPED_CONTOURS) {
     int i;
+    float right_hat;
+
+    right_hat = hcolorbar_right_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+hcolorbar_left_pos/(float)(nrgb-2);
 
     glBegin(GL_QUADS);
     for (i = 0; i < nrgb - 2; i++) {
@@ -1391,8 +1394,8 @@ void DrawHorizontalColorbars(void) {
 
       rgb_plot3d_local = rgb_plot3d_contour[i];
 
-      xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-      xright = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xleft = MIX2(i, nrgb - 3, right_hat, hcolorbar_left_pos);
+      xright = MIX2(i + 1, nrgb - 3, right_hat, hcolorbar_left_pos);
 
       if (rgb_plot3d_local[3] != 0.0) {
         glColor4fv(rgb_plot3d_local);
@@ -1499,15 +1502,18 @@ void DrawVerticalColorbars(void){
     // -------------- draw plot3d colorbars ------------
 
     if(showplot3d==1&&contour_type==STEPPED_CONTOURS){
+      float top_hat;
+
+      top_hat = vcolorbar_top_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+vcolorbar_down_pos/(float)(nrgb-2);
+
       glBegin(GL_QUADS);
       for(i = 0; i < nrgb-2; i++){
         float *rgb_plot3d_local;
         float ybot, ytop;
 
         rgb_plot3d_local = rgb_plot3d_contour[i];
-
-        ybot = MIX2(i,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
-        ytop = MIX2(i+1,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
+        ybot = MIX2(  i,nrgb-3,top_hat,vcolorbar_down_pos);
+        ytop = MIX2(i+1,nrgb-3,top_hat,vcolorbar_down_pos);
 
         if(rgb_plot3d_local[3]!=0.0){
           glColor4fv(rgb_plot3d_local);
@@ -2172,12 +2178,14 @@ void DrawHorizontalColorbarRegLabels(void) {
     }
     else {
       float horiz_position;
+      float right_hat;
 
+      right_hat = hcolorbar_right_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+hcolorbar_left_pos/(float)(nrgb-2);
       for (i = 0; i < nrgb - 2; i++) {
         char plot3dcolorlabel[256];
         char *plot3dcolorlabel_ptr = NULL;
 
-        horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+        horiz_position = MIX2(i, nrgb - 2, right_hat, hcolorbar_left_pos);
 
         if (iposition == i)continue;
         plot3dcolorlabel_ptr = &colorlabeliso[plotn - 1][i][0];
