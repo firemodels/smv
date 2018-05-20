@@ -378,24 +378,6 @@ extern "C" void UpdateSmoke3dFlags(void){
   glutPostRedisplay();
 }
 
-/* ------------------ UpdateSmokeType ------------------------ */
-
-void UpdateSmokeType(void){
-  switch(smoke_render_option){
-    case RENDER_SLICE:
-      if(ROLLOUT_slices!=NULL)ROLLOUT_slices->open();
-      if(ROLLOUT_volume!=NULL)ROLLOUT_volume->close();
-      break;
-    case RENDER_VOLUME:
-      if(ROLLOUT_slices!=NULL)ROLLOUT_slices->close();
-      if(ROLLOUT_volume!=NULL)ROLLOUT_volume->open();
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-  }
-}
-
 /* ------------------ UpdateAlpha ------------------------ */
 
 void UpdateAlpha(void){
@@ -495,7 +477,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_blue = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"), GLUI_SPINNER_INT, &smoke_blue, SMOKE_BLUE, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
 
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("fire"),true, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("fire"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_fire_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("red"), GLUI_SPINNER_INT, &fire_red, FIRE_RED, Smoke3dCB);
@@ -806,8 +788,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _("time"), GLUI_SPINNER_FLOAT, &time_frameval);
   }
 
-  UpdateSmokeType();
-
 #ifdef pp_BETA
   // smoke test dialog
 
@@ -1035,7 +1015,6 @@ extern "C" void Smoke3dCB(int var){
       RADIO_use_colormap->set_int_val(firecolormap_type);
     }
     Smoke3dCB(FIRECOLORMAP_TYPE);
-    UpdateSmokeType();
     break;
   case FIRECOLORMAP_TYPE:
     switch(firecolormap_type){
