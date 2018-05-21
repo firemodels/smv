@@ -26,11 +26,17 @@ echo.
 if "%whichguides%" == "from_smv_linux" (
   set fromdir=%smokebothome%/.smokebot/pubs
   set todir="%userprofile%"\.bundle\pubs
+  if NOT exist !todir! (
+    mkdir !todir!
+  )
 
   Title Copying smokeview guides from linux smokebot
   echo copying guides
   echo from directory: !fromdir!
   echo to directory: !todir!
+  if NOT exist !todir! (
+    mkdir !todir!
+  )
 
   pscp %linux_logon%:!fromdir!/SMV_User_Guide.pdf                !todir!\.
   pscp %linux_logon%:!fromdir!/SMV_Verification_Guide.pdf        !todir!\.
@@ -40,6 +46,9 @@ if "%whichguides%" == "from_smv_linux" (
 if "%whichguides%" == "from_fds_linux" (
   set fromdir=%firebothome%/.firebot/pubs
   set todir="%userprofile%"\.bundle\pubs
+  if NOT exist !todir! (
+    mkdir !todir!
+  )
 
   Title Copying FDS guides from linux firebot
   echo copying guides
@@ -56,6 +65,9 @@ if "%whichguides%" == "from_fds_linux" (
 if "%whichguides%" == "to_linux" (
   set fromdir="%userprofile%"\.bundle\pubs
   set todir=.bundle/pubs
+  if NOT exist !todir! (
+    mkdir !todir!
+  )
 
   Title uploading guides to Linux:%linux_hostname%
   echo uploading guides to %linux_hostname%
@@ -68,6 +80,9 @@ if "%whichguides%" == "to_linux" (
 if "%whichguides%" == "to_osx" (
   set fromdir="%userprofile%"\.bundle\pubs
   set todir=.bundle/pubs
+  if NOT exist !todir! (
+    mkdir !todir!
+  )
 
   Title uploading guides to OSX:%osx_hostname%
   echo uploading guides to %osx_hostname%
