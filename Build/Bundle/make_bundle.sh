@@ -93,10 +93,10 @@ HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
 PLATFORMDIR=$RELEASE$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
-uploads=$SVNROOT/smv/uploads
+uploads=$SVNROOT/smv/Bundle/Build/uploads
 hashfile=$SVNROOT/smv/Build/hashfile/intel_${platform}_64/hashfile_${platform}_64
 
-cd $SVNROOT/smv/uploads
+cd $uploads
 
 rm -rf $PLATFORMDIR
 mkdir -p $PLATFORMDIR
