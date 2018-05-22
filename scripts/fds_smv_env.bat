@@ -31,7 +31,9 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_17u4
+set INTEL_LIB_DIR=/var/local/bundle/INTEL/INTEL_18u2/LIB
+set INTEL_BIN_DIR=/var/local/bundle/INTEL/INTEL_18u2/bin64
+set OS_LIB_DIR=/var/local/bundle/OSLIBS/LINUX
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: ---- MPI library locations ----
