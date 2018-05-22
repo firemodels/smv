@@ -23,7 +23,7 @@ void Usage(char *prog, int option){
   fprintf(stderr, " convert the Linux/OSX script file file_in to an equivalent windows batch\n");
   fprintf(stderr, " file file_out by ignoring lines beginning with # and converting variables\n");
   fprintf(stderr, " such as $var to %svar%s\n", "%", "%");
-  UsageCommon(prog,HELP_SUMMARY);
+  UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL)UsageCommon(HELP_ALL);
 }
 
