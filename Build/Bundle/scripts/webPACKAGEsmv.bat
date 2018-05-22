@@ -1,8 +1,9 @@
 @echo off
+:: platform is windows, linux or osx
 set platform=%1
-set buildtype=%2
 
-:: batch file to generate Windows, Linux or OSX smokeview bundles
+:: build type is test or release
+set buildtype=%2
 
 :: setup environment variables (defining where repository resides etc) 
 
@@ -78,7 +79,7 @@ if "%platform%" == "osx" (
   echo.
   echo --- making 64 bit OSX Smokeview installer ---
   echo.
-  plink %osx_logon% %scriptdir%/scripts/make_bundle.sh %buildtype%  %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
+  plink %osx_logon% %scriptdir%/scripts/make_bundle.sh %buildtype% %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---

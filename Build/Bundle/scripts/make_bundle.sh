@@ -1,7 +1,6 @@
 #!/bin/bash
 FDSEDITION=FDS6
 
-
 edition=$1
 revision=$2
 REMOTESVNROOT=$3
@@ -24,8 +23,6 @@ if [ "`uname`" == "Darwin" ]
 then
   platform="osx"
   platform2="OSX"
-else
-  INTELLIBDIR=fire-notes/INSTALL/INTEL/INTEL_17u4/LIB
 fi
 
 SCP ()
