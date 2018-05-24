@@ -1,8 +1,9 @@
 @echo off
+:: platform is windows, linux or osx
 set platform=%1
-set buildtype=%2
 
-:: batch file to generate Windows, Linux or OSX smokeview bundles
+:: build type is test or release
+set buildtype=%2
 
 :: setup environment variables (defining where repository resides etc) 
 
@@ -46,7 +47,7 @@ if "%platform%" == "windows" (
 cd %svn_root%\smv\scripts
 
 set scriptdir=%linux_svn_root%/smv/Build/Bundle/
-set bundledir=%linux_svn_root%/smv/uploads
+set bundledir=%linux_svn_root%/smv/Build/Bundle/uploads
 
 :: linux
 
@@ -62,12 +63,12 @@ if "%platform%" == "linux" (
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\Build\Bundle\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\Build\Bundle\uploads\.
   )
   if "%buildtype%" == "test" (
-    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\uploads\.
-    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sh   ..\Build\Bundle\uploads\.
+    pscp %linux_logon%:%bundledir%/%version%_linux64.sha1 ..\Build\Bundle\uploads\.
   )
   goto eof
 )
@@ -78,19 +79,19 @@ if "%platform%" == "osx" (
   echo.
   echo --- making 64 bit OSX Smokeview installer ---
   echo.
-  plink %osx_logon% %scriptdir%/scripts/make_bundle.sh %buildtype%  %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
+  plink %osx_logon% %scriptdir%/scripts/make_bundle.sh %buildtype% %version% %linux_svn_root% %osx_hostname% %linux_svn_root%
 
   echo.
   echo --- downloading installer ---
   echo.
 
   if "%buildtype%" == "release" (
-    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\uploads\.
-    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\Build\Bundle\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\Build\Bundle\uploads\.
   )
   if "%buildtype%" == "test" (
-    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\uploads\.
-    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sh   ..\Build\Bundle\uploads\.
+    pscp %osx_logon%:%bundledir%/%version%_osx64.sha1 ..\Build\Bundle\uploads\.
   )
   goto eof
 )

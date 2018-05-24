@@ -1,7 +1,6 @@
 #!/bin/bash
 FDSEDITION=FDS6
 
-
 edition=$1
 revision=$2
 REMOTESVNROOT=$3
@@ -24,8 +23,6 @@ if [ "`uname`" == "Darwin" ]
 then
   platform="osx"
   platform2="OSX"
-else
-  INTELLIBDIR=fire-notes/INSTALL/INTEL/INTEL_17u4/LIB
 fi
 
 SCP ()
@@ -93,10 +90,10 @@ HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
 FORBUNDLE=$SVNROOT/smv/for_bundle
 PLATFORMDIR=$RELEASE$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
-uploads=$SVNROOT/smv/uploads
+uploads=$SVNROOT/smv/Build/Bundle/uploads
 hashfile=$SVNROOT/smv/Build/hashfile/intel_${platform}_64/hashfile_${platform}_64
 
-cd $SVNROOT/smv/uploads
+cd $uploads
 
 rm -rf $PLATFORMDIR
 mkdir -p $PLATFORMDIR

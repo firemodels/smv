@@ -2163,9 +2163,9 @@ void RenderCB(int var){
           render_frame[i] = 0;
         }
       }
-      if(glui_screenWidth!=glui_screenHeight){
+      if(glui_screenWidth!=2*glui_screenHeight){
         glui_screenWidth = MAX(glui_screenWidth,glui_screenHeight);
-        glui_screenHeight = MAX(glui_screenWidth,glui_screenHeight);
+        glui_screenHeight = glui_screenWidth/2;
         SceneMotionCB(WINDOW_RESIZE);
       }
       Disable360Zoom();

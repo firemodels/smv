@@ -30,8 +30,8 @@ echo Cleaning %svn_root%\fds\Build
 cd %svn_root%\fds\Build
 git clean -dxf
 
-echo Cleaning %svn_root%\fds\Utilities\uploads
-cd %svn_root%\fds\Utilities\uploads
+echo Cleaning %svn_root%\fds\Build\Bundle\uploads
+cd %svn_root%\fds\Build\Bundle\uploads
 git clean -dxf
 
 echo Cleaning %svn_root%\smv\source
@@ -42,8 +42,8 @@ echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
 
-echo Cleaning %svn_root%\smv\uploads
-cd %svn_root%\smv\uploads
+echo Cleaning %svn_root%\smv\Build\Bundle\uploads
+cd %svn_root%\smv\Build\Bundle\uploads
 git clean -dxf
 
 set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/

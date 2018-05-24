@@ -26,8 +26,8 @@ set platform=%1
 
 set version=%smv_revision%
 set zipbase=%version%_win%platform%
-set smvdir=%svn_root%\smv\uploads\%zipbase%
-set uploads=%svn_root%\smv\uploads
+set  smvdir=%svn_root%\smv\Build\Bundle\uploads\%zipbase%
+set uploads=%svn_root%\smv\Build\Bundle\uploads
 set smvscripts=%svn_root%\smv\scripts
 set forbundle=%svn_root%\smv\for_bundle
 set sh2bat=%svn_root%\smv\Build\sh2bat\intel_win_64
