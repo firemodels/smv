@@ -803,7 +803,6 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
   int i, j;
   float xmax, ymax, zmin, zmax;
   float *xgrid, *ygrid;
-  int count;
   int ibar, jbar, kbar;
   float *vals, *valsp1;
   FILE *streamout = NULL;
@@ -869,14 +868,17 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
   fprintf(streamout, "\nTerrain Geometry\n\n");
 
   if(option == FDS_GEOM){
+    int count;
+
     fprintf(streamout, "&MATL ID = '%s', DENSITY = 1000., CONDUCTIVITY = 1., SPECIFIC_HEAT = 1., RGB = 122,117,48 /\n",matl_id);
     fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 TEXTURE_MAP='%s.png' /\n", surf_id, basename);
     fprintf(streamout, "&GEOM ID='terrain', SURF_ID='%s',MATL_ID='%s',\nIJK=%i,%i,XB=%f,%f,%f,%f,\nZVALS=\n",
       surf_id,matl_id,nlong, nlat, 0.0, xmax, 0.0, ymax);
+
     count = 1;
     for(j = 0; j < jbar + 1; j++){
       for(i = 0; i < ibar + 1; i++){
-        fprintf(streamout, " %f,", vals[count - 1]);
+        fprintf(streamout, " %f,", vals[(jbar-1-j)*ibar+i]);
         if(count % 10 == 0)fprintf(streamout, "\n");
         count++;
       }
