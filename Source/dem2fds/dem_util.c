@@ -878,7 +878,7 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
     count = 1;
     for(j = 0; j < jbar + 1; j++){
       for(i = 0; i < ibar + 1; i++){
-        fprintf(streamout, " %f,", vals[(jbar-1-j)*ibar+i]);
+        fprintf(streamout, " %f,", vals[(jbar-j)*ibar+i]);
         if(count % 10 == 0)fprintf(streamout, "\n");
         count++;
       }
