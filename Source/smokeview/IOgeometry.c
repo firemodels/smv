@@ -418,7 +418,7 @@ void DrawGeom(int flag, int timestate){
             vertj = trianglei->verts[j];
             tvertj = trianglei->tverts + 2 * j;
             glNormal3fv(vertj->vert_norm);
-            glTexCoord2fv(tvertj);
+            glTexCoord2f(tvertj[0],1.0-tvertj[1]);
             glVertex3fv(vertj->xyz);
           }
         }
