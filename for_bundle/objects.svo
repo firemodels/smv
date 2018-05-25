@@ -374,9 +374,9 @@ OBJECTDEF // object for particle "egg"
 
 OBJECTDEF
  block
- :R=0 :G=0 :B=0 :DX=1.0 :DY=1.0 :DZ=1.0
+ :R=0 :G=0 :B=0 :DX=1.0 :DY=1.0 :DZ=1.0 :ZANGLE=0.0
  $R $G $B setrgb
- $DX $DY $DZ scalexyz 1.0 drawcubec
+ $ZANGLE rotatez $DX $DY $DZ scalexyz 1.0 drawcubec
 
 OBJECTDEF // object for a general ball
  ball
