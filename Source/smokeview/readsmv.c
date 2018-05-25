@@ -11201,7 +11201,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWTIMEBAR") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visTimebar);
+      sscanf(buffer, "%i %i", &visTimebar,&overlap_timebar);
       continue;
     }
     if(Match(buffer, "SHOWCOLORBARS") == 1){
@@ -13263,7 +13263,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTICKS\n");
   fprintf(fileout, " %i\n", visFDSticks);
   fprintf(fileout, "SHOWTIMEBAR\n");
-  fprintf(fileout, " %i\n", visTimebar);
+  fprintf(fileout, " %i %i\n", visTimebar,overlap_timebar);
   fprintf(fileout, "SHOWTIMELABEL\n");
   fprintf(fileout, " %i\n", visTimelabel);
   fprintf(fileout, "SHOWTITLE\n");

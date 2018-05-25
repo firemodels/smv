@@ -353,7 +353,12 @@ void ShowMultiSliceMenu(int value){
             mdisplay = 1;
           }
           else{
-            mdisplay = 1-mslicei->display;
+            if (mslicei->display == -1) {
+              mdisplay = 0;
+            }
+            else {
+              mdisplay = 1 - mslicei->display;
+            }
           }
         }
         else{
@@ -1019,8 +1024,10 @@ void ShowVSliceMenu(int value){
   if(value == MENU_DUMMY)return;
   updatemenu = 1;
   glutPostRedisplay();
-  if(value==SHOW_ALL){
-    showall_slices = 1 - showall_slices;
+  if(value==SHOW_ALL||value==GLUI_SHOWALL_VSLICE||value==GLUI_HIDEALL_VSLICE){
+    if(value == SHOW_ALL)showall_slices = 1 - showall_slices;
+    if(value == GLUI_SHOWALL_VSLICE)showall_slices = 1;
+    if(value == GLUI_HIDEALL_VSLICE)showall_slices = 0;
     for(i=0;i<nvsliceinfo;i++){
       vd = vsliceinfo+i;
       if(vd->loaded==0)continue;
@@ -1108,8 +1115,12 @@ void ShowHideSliceMenu(int value){
   glutPostRedisplay();
   if(value<0){
     switch(value){
+    case GLUI_HIDEALL:
+    case GLUI_SHOWALL:
     case SHOW_ALL:
-      showall_slices = 1-showall_slices;
+      if(value == GLUI_SHOWALL)showall_slices = 1;
+      if(value == GLUI_HIDEALL)showall_slices = 0;
+      if(value == SHOW_ALL)showall_slices = 1-showall_slices;
       for(i=0;i<nsliceinfo;i++){
         sliceinfo[i].display=showall_slices;
       }
@@ -4679,10 +4690,12 @@ void ShowBoundaryMenu(int value){
     vis_threshold = 1 - vis_threshold;
     UpdateChar();
   }
-  if(value==SHOWALL_BOUNDARY){
+  if(value==SHOWALL_BOUNDARY||value==GLUI_SHOWALL_BOUNDARY||GLUI_HIDEALL_BOUNDARY){
     int ii;
 
-    show_boundaryfiles = 1-show_boundaryfiles;
+    if(value == GLUI_SHOWALL_BOUNDARY)show_boundaryfiles = 1;
+    if(value == GLUI_HIDEALL_BOUNDARY)show_boundaryfiles = 0;
+    if(value==SHOWALL_BOUNDARY)show_boundaryfiles = 1-show_boundaryfiles;
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
       int i;

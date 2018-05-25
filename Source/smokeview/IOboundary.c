@@ -10,31 +10,54 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 
+#define FIRST_TIME 1
+
 /* ------------------ OutputBoundaryData ------------------------ */
 
-void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi){
+void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi, int first_time, float *csvtime){
   int iframe;
   float *vals;
   float *xplt, *yplt, *zplt;
   FILE *csvstream=NULL;
+  int max_frame;
 
-  csvstream=fopen(csvfile,"w");
+  if(patchout_tmin > patchout_tmax)return;
+  if(first_time== FIRST_TIME){
+    csvstream = fopen(csvfile, "w");
+  }
+  else{
+    csvstream = fopen(csvfile, "a");
+  }
   if(csvstream==NULL)return;
-  fprintf(csvstream,"%s\n",patchfile);
-  fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
-  fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
+  if(first_time==FIRST_TIME){
+    fprintf(csvstream,"%s\n",patchfile);
+    fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
+    fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
+  }
 
-  vals=meshi->patchval;
+  vals = meshi->patchval;
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
 
-  for(iframe=0;iframe<meshi->maxtimes_boundary;iframe++){
+  if(csvtime == NULL){
+    max_frame = meshi->maxtimes_boundary;
+  }
+  else{
+    max_frame = 1;
+  }
+
+  for(iframe=0;iframe<max_frame;iframe++){
     int ipatch;
     float pt;
 
-    pt = meshi->patch_times[iframe];
-    if(patchout_tmin<patchout_tmax&&(pt<patchout_tmin||pt>patchout_tmax)){
+    if(csvtime == NULL){
+      pt = meshi->patch_times[iframe];
+    }
+    else{
+      pt = *csvtime;
+    }
+    if(pt<patchout_tmin||pt>patchout_tmax){
       vals+=meshi->npatchsize;
       continue;
     }
@@ -72,7 +95,7 @@ void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi){
         if(zplt[k]<=patchout_zmax&&patchout_zmax<=zplt[k+1])kmax=k;
       }
 
-      fprintf(csvstream,"time:,%f,patch %i, of, %i\n",meshi->patch_times[iframe],ipatch+1,meshi->npatches);
+      fprintf(csvstream,"time:,%f,patch %i, of, %i\n",pt,ipatch+1,meshi->npatches);
       fprintf(csvstream,"region:,%i,%i,%i,%i,%i,%i\n",i1,i2,j1,j2,k1,k2);
       fprintf(csvstream,",%f,%f,%f,%f,%f,%f\n\n",xplt[i1],xplt[i2],yplt[j1],yplt[j2],zplt[k1],zplt[k2]);
       if(i1==i2){
@@ -1298,6 +1321,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
+  int first_time=1;
 
   int nn;
   int filenum;
@@ -2136,6 +2160,10 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       }
     }
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
+      if(output_patchdata==1){
+        OutputBoundaryData(patchcsvfile,patchi->file,meshi,first_time,meshi->patch_timesi);
+        first_time=0;
+      }
       GetBoundaryColors2(
         meshi->patchval_iframe, meshi->npatchsize, meshi->cpatchval_iframe,
                  setpatchmin,&patchmin, setpatchmax,&patchmax,
@@ -2186,7 +2214,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
     if(output_patchdata==1){
-      OutputBoundaryData(patchcsvfile,patchi->file,meshi);
+      OutputBoundaryData(patchcsvfile,patchi->file,meshi,FIRST_TIME,NULL);
     }
     npatchvals = meshi->npatch_times*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){

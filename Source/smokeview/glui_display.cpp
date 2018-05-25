@@ -574,6 +574,7 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   CHECKBOX_labels_flip = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("Flip background"), &background_flip, LABELS_flip, LabelsCB);
   CHECKBOX_labels_hms = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("hms time"), &vishmsTimelabel, LABELS_HMS, LabelsCB);
+                        glui_labels->add_checkbox_to_panel(PANEL_gen3, _("overlap time/timebar"), &overlap_timebar);
   CHECKBOX_label_1=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Fast blockage drawing"),&use_new_drawface,LABELS_drawface,LabelsCB);
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,LabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,LabelsCB);
