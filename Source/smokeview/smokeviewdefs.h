@@ -463,6 +463,8 @@ void _Sniff_Errors(char *whereat);
 #define TOGGLESHOW_PLOT3D 995
 #define SHOWALL_PLOT3D 998
 #define HIDEALL_PLOT3D 999
+#define GLUI_SHOWALL_BOUNDARY 994
+#define GLUI_HIDEALL_BOUNDARY 993
 #define SHOWALL_BOUNDARY 998
 #define HIDEALL_BOUNDARY 999
 #define SHOW_CHAR 997
@@ -649,6 +651,10 @@ void _Sniff_Errors(char *whereat);
 #define MAX_SOLID 3
 #define HIDE_ALL -1
 #define SHOW_ALL -2
+#define GLUI_HIDEALL -5
+#define GLUI_SHOWALL -6
+#define GLUI_HIDEALL_SLICE GLUI_HIDEALL
+#define GLUI_SHOWALL_SLICE GLUI_SHOWALL
 #define UNLOAD_ALL -1
 #define LOAD_ALL -2
 #define SHOWALL_SLICE SHOW_ALL
@@ -659,6 +665,8 @@ void _Sniff_Errors(char *whereat);
 #define SHOWALL_VSLICE SHOW_ALL
 #define TOGGLE_SMOKE3D  -3
 #define SET_SMOKE3D -4
+#define GLUI_SHOWALL_VSLICE GLUI_SHOWALL
+#define GLUI_HIDEALL_VSLICE GLUI_HIDEALL
 
 #define SHOW_VOLSMOKE -2
 #define HIDE_VOLSMOKE -1

@@ -740,9 +740,9 @@ extern "C" void FileShowCB(int var){
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       break;
     case HIDEALL_FILES:
       EvacShowMenu(HIDEALL_EVAC);
@@ -762,9 +762,9 @@ extern "C" void FileShowCB(int var){
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       break;
     case HIDEALL_FILES:
       ParticleShowMenu(HIDEALL_PARTICLE);
@@ -777,19 +777,19 @@ extern "C" void FileShowCB(int var){
   case  FILESHOW_slice:
     switch(showhide_option){
     case SHOWALL_FILES:
-      ShowHideSliceMenu(SHOWALL_SLICE);
+      ShowHideSliceMenu(GLUI_SHOWALL_SLICE);
       break;
     case SHOWONLY_FILE:
-      ShowHideSliceMenu(SHOWALL_SLICE);
+      ShowHideSliceMenu(GLUI_SHOWALL_SLICE);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       break;
     case HIDEALL_FILES:
-      ShowHideSliceMenu(HIDEALL_SLICE);
+      ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       break;
     default:
       ASSERT(FFALSE);
@@ -799,19 +799,19 @@ extern "C" void FileShowCB(int var){
   case  FILESHOW_vslice:
     switch(showhide_option){
     case SHOWALL_FILES:
-      ShowVSliceMenu(SHOWALL_VSLICE);
+      ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
       break;
     case SHOWONLY_FILE:
-      ShowVSliceMenu(SHOWALL_VSLICE);
+      ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       break;
     case HIDEALL_FILES:
-      ShowHideSliceMenu(HIDEALL_SLICE);
+      ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
       break;
     default:
       ASSERT(FFALSE);
@@ -821,19 +821,19 @@ extern "C" void FileShowCB(int var){
   case  FILESHOW_boundary:
     switch(showhide_option){
     case SHOWALL_FILES:
-      ShowBoundaryMenu(SHOWALL_BOUNDARY);
+      ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
       break;
     case SHOWONLY_FILE:
-      ShowBoundaryMenu(SHOWALL_BOUNDARY);
+      ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       break;
     case HIDEALL_FILES:
-      ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       break;
     default:
       ASSERT(FFALSE);
@@ -848,10 +848,10 @@ extern "C" void FileShowCB(int var){
     case SHOWONLY_FILE:
       Smoke3DShowMenu(SHOWALL_SMOKE3D);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       break;
     case HIDEALL_FILES:
@@ -871,10 +871,10 @@ extern "C" void FileShowCB(int var){
       IsoShowMenu(SHOWALL_ISO);
       if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
-      if(npatchloaded != 0)ShowBoundaryMenu(HIDEALL_BOUNDARY);
+      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(HIDEALL_VSLICE);
-      if(nsliceloaded != 0)ShowHideSliceMenu(HIDEALL_SLICE);
+      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
+      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       break;
     case HIDEALL_FILES:
       IsoShowMenu(HIDEALL_ISO);
@@ -1586,7 +1586,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     RADIO_showhide = glui_bounds->add_radiogroup_to_panel(ROLLOUT_showhide, &showhide_option);
     glui_bounds->add_radiobutton_to_group(RADIO_showhide, _("Show"));
-    glui_bounds->add_radiobutton_to_group(RADIO_showhide, _("Show Only"));
+    glui_bounds->add_radiobutton_to_group(RADIO_showhide, _("Show only"));
     glui_bounds->add_radiobutton_to_group(RADIO_showhide, _("Hide"));
 
     glui_bounds->add_column_to_panel(ROLLOUT_showhide, false);
