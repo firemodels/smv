@@ -353,7 +353,12 @@ void ShowMultiSliceMenu(int value){
             mdisplay = 1;
           }
           else{
-            mdisplay = 1-mslicei->display;
+            if (mslicei->display == -1) {
+              mdisplay = 0;
+            }
+            else {
+              mdisplay = 1 - mslicei->display;
+            }
           }
         }
         else{
