@@ -247,15 +247,21 @@ void GetViewportInfo(void){
 
   // scene viewport dimensions
 
-  VP_scene.text_height = text_height;
-  VP_scene.text_width  = text_width;
-  VP_scene.left=titlesafe_offset;
-  VP_scene.down=titlesafe_offset+MAX(VP_timebar.height,VP_info.height);
-  VP_scene.width=MAX(1,screenWidth-2*titlesafe_offset-VP_vcolorbar.width);
-  if(dohist==1)VP_scene.width+=colorbar_label_width/2;
-  VP_scene.height=MAX(1,screenHeight-MAX(VP_timebar.height,VP_info.height)-VP_title.height - 2*titlesafe_offset);
-  VP_scene.right = VP_scene.left + VP_scene.width;
-  VP_scene.top = VP_scene.down + VP_scene.height;
+  {
+    int timebar_height;
+
+    timebar_height = MAX(VP_timebar.height, VP_info.height);
+    if(overlap_timebar == 1)timebar_height = 0;
+    VP_scene.text_height = text_height;
+    VP_scene.text_width = text_width;
+    VP_scene.left = titlesafe_offset;
+    VP_scene.down = titlesafe_offset + timebar_height;
+    VP_scene.width = MAX(1, screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width);
+    if(dohist == 1)VP_scene.width += colorbar_label_width / 2;
+    VP_scene.height = MAX(1, screenHeight - timebar_height - VP_title.height - 2 * titlesafe_offset);
+    VP_scene.right = VP_scene.left + VP_scene.width;
+    VP_scene.top = VP_scene.down + VP_scene.height;
+  }
 
   scene_aspect_ratio = (float)VP_scene.height/(float)VP_scene.width;
 

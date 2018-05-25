@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(overlap_timebar, 0);
 SVEXTERN int SVDECL(toggle_colorbar, 0);
 SVEXTERN int hcolorbar_vis[6];
 #ifdef INMAIN
