@@ -7883,7 +7883,7 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   glutAddSubMenu(_("Color"), colorbarmenu);
   glutAddSubMenu(_("Geometry"),geometrymenu);
-  glutAddSubMenu(_("Labels"),labelmenu);
+  glutAddSubMenu(_("Display"),labelmenu);
   glutAddSubMenu(_("Viewpoints"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(Read3DSmoke3DFile==1&&nsmoke3dloaded>0){
