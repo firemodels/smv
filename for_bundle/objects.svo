@@ -560,26 +560,25 @@ NEWFRAME
 NEWFRAME
  0.0 0.0 0.0 translate
  
-
 OBJECTDEF // object for house
  HOUSE
- :R=0 :G=255 :B=0 :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05
+ :R=0 :G=255 :B=0 :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05 :ANGLEZ=0.0
 $R $G $B setrgb
-$LENGTH $DEPTH 1.0 scalexyz push 1.0 1.0 $HEIGHT1 scalexyz 1.0 drawcubec pop  0.0 0.0 $HEIGHT1 translate 1.0 $HEIGHT2 drawtriblock
+$ANGLEZ rotatez $LENGTH $DEPTH $HEIGHT1 scalexyz 0.0 0.0 0.5 translate 1.0 drawcubec -.5 -0.5 0.5 translate 1.0 1.0 drawtriblock
 
 OBJECTDEF // object for house
  MHOUSE
  :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05
 255 0 0 setrgb
-$LENGTH $DEPTH 1.0 scalexyz push 1.0 1.0 $HEIGHT1 scalexyz 1.0 drawcubec pop  0.0 0.0 $HEIGHT1 translate 1.0 $HEIGHT2 drawtriblock
+$LENGTH $DEPTH $HEIGHT1 scalexyz 0.0 0.0 0.5 translate 1.0 drawcubec -.5 -0.5 0.5 translate 1.0 1.0 drawtriblock
  NEWFRAME
  :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05
 0 255 0 setrgb
-$LENGTH $DEPTH 1.0 scalexyz push 1.0 1.0 $HEIGHT1 scalexyz 1.0 drawcubec pop  0.0 0.0 $HEIGHT1 translate 1.0 $HEIGHT2 drawtriblock
+$LENGTH $DEPTH $HEIGHT1 scalexyz 0.0 0.0 0.5 translate 1.0 drawcubec -.5 -0.5 0.5 translate 1.0 1.0 drawtriblock
  NEWFRAME
  :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05
 0 0 0 setrgb
-$LENGTH $DEPTH 1.0 scalexyz push 1.0 1.0 $HEIGHT1 scalexyz 1.0 drawcubec pop  0.0 0.0 $HEIGHT1 translate 1.0 $HEIGHT2 drawtriblock
+$LENGTH $DEPTH $HEIGHT1 scalexyz 0.0 0.0 0.5 translate 1.0 drawcubec -.5 -0.5 0.5 translate 1.0 1.0 drawtriblock
  NEWFRAME
  :LENGTH=0.2 :DEPTH=0.2 :HEIGHT1=0.1 :HEIGHT2=0.05
 0 0 0 setrgb
