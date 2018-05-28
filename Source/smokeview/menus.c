@@ -1692,18 +1692,15 @@ void RenderMenu(int value){
     render_size_index=value;
     break;
   case RENDER_CURRENT_SINGLE:
-    render_from_menu=1;
     Keyboard('r',FROM_SMOKEVIEW);
      break;
   case RENDER_CURRENT_360:
     LabelMenu(MENU_LABEL_HideAll);
     GetViewportInfo();
     RenderMenu(RENDER_CURRENT_SINGLE);
-    render_from_menu = 1;
-    Keyboard('R', FROM_SMOKEVIEW);
+    Keyboard('R', FROM_SMOKEVIEW_ALT);
     break;
   case RENDER_CURRENT_MULTIPLE:
-    render_from_menu = 1;
     if(resolution_multiplier==1){
       RenderMenu(RENDER_CURRENT_SINGLE);
       return;
