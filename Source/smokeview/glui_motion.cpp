@@ -81,7 +81,6 @@
 
 GLUI *glui_motion=NULL;
 
-GLUI_Panel *PANEL_image = NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
