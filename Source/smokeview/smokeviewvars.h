@@ -171,7 +171,6 @@ SVEXTERN int SVDECL(geom_force_transparent, 0);
 SVEXTERN float SVDECL(load_3dsmoke_cutoff, 0.0), SVDECL(load_hrrpuv_cutoff,200.0);
 SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;
-SVEXTERN int SVDECL(render_from_menu, 0);
 SVEXTERN int SVDECL(render_status, 0);
 SVEXTERN int SVDECL(resolution_multiplier, 1);
 SVEXTERN char render_file_base[1024];

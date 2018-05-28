@@ -79,6 +79,12 @@
 #define MOVIE_ROLLOUT 8
 #define RENDER_360CB 9
 
+#ifdef pp_DEG
+unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
+#else
+unsigned char deg360[] = { '3','6','0',0 };
+#endif
+
 GLUI *glui_motion=NULL;
 
 GLUI_Panel *PANEL_render_file = NULL;
@@ -231,6 +237,21 @@ GLUI_Listbox *LIST_render_skip=NULL;
 procdata motionprocinfo[9];
 int nmotionprocinfo = 0;
 
+/* ------------------ UpdateStartRenderButtons ------------------------ */
+
+extern "C" void UpdateStartRenderButtons(int width_low, int height_low, int width_high, int height_high){
+  char label[1024];
+
+  if(BUTTON_render_start!=NULL){
+    sprintf(label,"%ix%i",width_low,height_low);
+    BUTTON_render_start->set_name(label);
+  }
+  if(BUTTON_render_startHIGHRES!=NULL){
+    sprintf(label,"%ix%i",width_high,height_high);
+    BUTTON_render_startHIGHRES->set_name(label);
+  }
+}
+
 /* ------------------ UpdateZAxisCustom ------------------------ */
 
 extern "C" void UpdateZAxisCustom(void){
@@ -377,16 +398,8 @@ void UpdateZaxisAngles(void){
 /* ------------------ UpdateResolutionMultiplier ------------------------ */
 
 extern "C" void UpdateResolutionMultiplier(void){
-  if(SPINNER_resolution_multiplier!=NULL){
-    if(render_size_index==RenderWindow){
-      SPINNER_resolution_multiplier->enable();
-    }
-    else{
-      SPINNER_resolution_multiplier->disable();
-    }
-    if(resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
-      SPINNER_resolution_multiplier->set_int_val(resolution_multiplier);
-    }
+  if(SPINNER_resolution_multiplier!=NULL&&resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
+    SPINNER_resolution_multiplier->set_int_val(resolution_multiplier);
   }
   if(LIST_render_size!=NULL&&LIST_render_size->get_int_val()!=render_size_index){
     LIST_render_size->set_int_val(render_size_index);
@@ -874,11 +887,6 @@ extern "C" void GluiMotionSetup(int main_window){
 #define TRANSLATE_SPEED 0.005
   int *rotation_index;
   float *eye_xyz;
-#ifdef pp_DEG
-  unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
-#else
-  unsigned char deg360[] = {'3','6','0',0};
-#endif
 
   if(camera_label!=NULL){
     FREEMEMORY(camera_label);
@@ -1149,21 +1157,21 @@ extern "C" void GluiMotionSetup(int main_window){
   ROLLOUT_render = glui_motion->add_rollout(_("Render"), false,RENDER_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
 
-  PANEL_render_start = glui_motion->add_panel_to_panel(ROLLOUT_render, "Start render", true);
+  PANEL_render_start = glui_motion->add_panel_to_panel(ROLLOUT_render, "Start:", true);
   BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("normal resolution"), RENDER_START_NORMAL, RenderCB);
-  BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("high resolution"), RENDER_START_HIGHRES, RenderCB);
+  BUTTON_render_startHIGHRES = glui_motion->add_button_to_panel(PANEL_render_start, _("high resolution"), RENDER_START_HIGHRES, RenderCB);
   {
     char button_label[100];
 
     sprintf(button_label, "%s", deg360);
-    BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, button_label, RENDER_START_360, RenderCB);
+    BUTTON_render_start360 = glui_motion->add_button_to_panel(PANEL_render_start, button_label, RENDER_START_360, RenderCB);
   }
-  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop render"), RENDER_STOP, RenderCB);
+  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop"), RENDER_STOP, RenderCB);
 
   glui_motion->add_separator_to_panel(ROLLOUT_render);
 
   PANEL_render_other = glui_motion->add_panel_to_panel(ROLLOUT_render, "Image properties", true);
-  ROLLOUT_name = glui_motion->add_rollout_to_panel(PANEL_render_other, "Name", false);
+  ROLLOUT_name = glui_motion->add_rollout_to_panel(PANEL_render_other, "File name", false);
   EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_name, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);
   EDIT_render_file_base->set_w(200);
 
@@ -1192,6 +1200,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
   SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image2, "multiplier:", GLUI_SPINNER_INT, &resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
   SPINNER_resolution_multiplier->set_int_limits(1, 10);
+  RenderCB(RENDER_MULTIPLIER);
 
   {
     char panel_label[100];
@@ -1711,6 +1720,12 @@ extern "C" void SceneMotionCB(int var){
         SetScreenSize(&glui_screenWidth,&glui_screenHeight);
         ResizeWindow(screenWidth,screenHeight);
       }
+      {
+        int width_low, height_low, width_high, height_high;
+ 
+        GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+        UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
+      }
       break;
     case SNAPSCENE:
       SnapScene();
@@ -2105,6 +2120,12 @@ void RenderCB(int var){
       nwidth360 = nheight360*2;
       sprintf(widthlabel,"width: %i",nwidth360);
       STATIC_width360->set_name(widthlabel);
+      {
+        char label360[256];
+
+        sprintf(label360,"%s %ix%i",deg360,nwidth360,nheight360);
+        BUTTON_render_start360->set_name(label360);
+      }
       break;
     case MOVIE_NAME:
       EnableDisablePlayMovie();
@@ -2124,7 +2145,14 @@ void RenderCB(int var){
       break;
     case RENDER_LABEL:
     case RENDER_TYPE:
+    break;
     case RENDER_MULTIPLIER:
+      {
+        int width_low, height_low, width_high, height_high;
+ 
+        GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+        UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
+      }
       break;
     case MOVIE_FILETYPE:
       switch (movie_filetype){
@@ -2133,7 +2161,7 @@ void RenderCB(int var){
         break;
       case MP4:
         strcpy(movie_ext, ".mp4");
-        break;
+        break;\
       case WMV:
         strcpy(movie_ext, ".wmv");
         break;
@@ -2149,19 +2177,18 @@ void RenderCB(int var){
       break;
     case RENDER_RESOLUTION:
       RenderMenu(render_size_index);
+      {
+        int width_low, height_low, width_high, height_high;
+ 
+        GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+        UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
+      }
       break;
     case RENDER_START_360:
       resolution_multiplier = 1;
       render_mode=RENDER_360;
       if(render_skip == RENDER_CURRENT_SINGLE){
         UpdateFrameNumber(0);
-      }
-      if(render_frame != NULL){
-        int i;
-
-        for(i = 0; i < nglobal_times; i++){
-          render_frame[i] = 0;
-        }
       }
       if(glui_screenWidth != glui_screenHeight){
         glui_screenWidth = MAX(glui_screenWidth, glui_screenHeight);
@@ -2173,7 +2200,12 @@ void RenderCB(int var){
       if(render_skip != RENDER_CURRENT_SINGLE){
         Keyboard('0', FROM_SMOKEVIEW);
       }
-      render_mode = RENDER_360;
+      {
+        int width_low, height_low, width_high, height_high;
+ 
+        GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+        UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
+      }
       break;
     case RENDER_START_HIGHRES:
       RenderMenu(RenderStartHIGHRES);
@@ -2182,6 +2214,13 @@ void RenderCB(int var){
       RenderMenu(RenderStartORIGRES);
       break;
     case RENDER_START:
+      if (render_frame != NULL) {
+        int i;
+
+        for (i = 0; i < nglobal_times; i++) {
+          render_frame[i] = 0;
+        }
+      }
       if(render_mode==RENDER_360){
         RenderMenu(RenderStart360);
       }

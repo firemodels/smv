@@ -1490,6 +1490,9 @@ void Keyboard(unsigned char key, int flag){
   else if(flag==FROM_SCRIPT){
     keystate=script_keystate;
   }
+  else if(flag==FROM_SMOKEVIEW_ALT){
+    keystate=GLUT_ACTIVE_ALT;
+  }
   glutPostRedisplay();
   key2 = (char)key;
 
@@ -1974,10 +1977,8 @@ void Keyboard(unsigned char key, int flag){
           rflag=1;
         }
         else{
-          if(render_from_menu==0){
-            renderW=0;
-            renderH=0;
-          }
+          renderW=0;
+          renderH=0;
         }
         if(scriptoutstream!=NULL){
           if(nglobal_times>0){
@@ -2067,7 +2068,6 @@ void Keyboard(unsigned char key, int flag){
           fprintf(scriptoutstream," %s\n",script_renderfile);
         }
         RenderState(RENDER_ON);
-        render_from_menu=0;
       }
       break;
     case 's':
@@ -2904,6 +2904,12 @@ void SetScreenSize(int *width, int *height){
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
+  }
+  {
+    int width_low, height_low, width_high, height_high;
+
+    GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+    UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
   }
 }
 

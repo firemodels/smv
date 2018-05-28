@@ -296,6 +296,7 @@ void _Sniff_Errors(char *whereat);
 #define FROM_SMOKEVIEW 0
 #define FROM_CALLBACK 1
 #define FROM_SCRIPT 2
+#define FROM_SMOKEVIEW_ALT 3
 
 #define STEPS_PER_DEG 10.0
 
