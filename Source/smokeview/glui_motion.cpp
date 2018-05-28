@@ -2163,9 +2163,9 @@ void RenderCB(int var){
           render_frame[i] = 0;
         }
       }
-      if(glui_screenWidth!=2*glui_screenHeight){
-        glui_screenWidth = MAX(glui_screenWidth,glui_screenHeight);
-        glui_screenHeight = glui_screenWidth/2;
+      if(glui_screenWidth != glui_screenHeight){
+        glui_screenWidth = MAX(glui_screenWidth, glui_screenHeight);
+        glui_screenHeight = MAX(glui_screenWidth, glui_screenHeight);
         SceneMotionCB(WINDOW_RESIZE);
       }
       Disable360Zoom();
@@ -2173,6 +2173,7 @@ void RenderCB(int var){
       if(render_skip != RENDER_CURRENT_SINGLE){
         Keyboard('0', FROM_SMOKEVIEW);
       }
+      render_mode = RENDER_360;
       break;
     case RENDER_START_HIGHRES:
       RenderMenu(RenderStartHIGHRES);
