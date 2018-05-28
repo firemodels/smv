@@ -81,6 +81,7 @@
 
 GLUI *glui_motion=NULL;
 
+GLUI_Panel *PANEL_image = NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
@@ -1149,21 +1150,21 @@ extern "C" void GluiMotionSetup(int main_window){
   ROLLOUT_render = glui_motion->add_rollout(_("Render"), false,RENDER_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
 
-  PANEL_render_start = glui_motion->add_panel_to_panel(ROLLOUT_render, "", false);
-  BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("Render normal"), RENDER_START_NORMAL, RenderCB);
-  BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("Render high res"), RENDER_START_HIGHRES, RenderCB);
+  PANEL_render_start = glui_motion->add_panel_to_panel(ROLLOUT_render, "Start render", true);
+  BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("normal resolution"), RENDER_START_NORMAL, RenderCB);
+  BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, _("high resolution"), RENDER_START_HIGHRES, RenderCB);
   {
     char button_label[100];
 
-    sprintf(button_label, "Render %s", deg360);
+    sprintf(button_label, "%s", deg360);
     BUTTON_render_start = glui_motion->add_button_to_panel(PANEL_render_start, button_label, RENDER_START_360, RenderCB);
   }
   BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop render"), RENDER_STOP, RenderCB);
 
   glui_motion->add_separator_to_panel(ROLLOUT_render);
 
-  PANEL_render_other = glui_motion->add_panel_to_panel(ROLLOUT_render, "", false);
-  ROLLOUT_name = glui_motion->add_rollout_to_panel(PANEL_render_other, "Image name", false);
+  PANEL_render_other = glui_motion->add_panel_to_panel(ROLLOUT_render, "Image properties", true);
+  ROLLOUT_name = glui_motion->add_rollout_to_panel(PANEL_render_other, "Name", false);
   EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_name, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);
   EDIT_render_file_base->set_w(200);
 
@@ -1182,7 +1183,7 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
-  ROLLOUT_image2 = glui_motion->add_rollout_to_panel(PANEL_render_other, "Image size", false);
+  ROLLOUT_image2 = glui_motion->add_rollout_to_panel(PANEL_render_other, "Resolution", false);
   render_size_index = RenderWindow;
   LIST_render_size = glui_motion->add_listbox_to_panel(ROLLOUT_image2, _("base:"), &render_size_index, RENDER_RESOLUTION, RenderCB);
   LIST_render_size->add_item(Render320, "320x240");
@@ -1196,7 +1197,7 @@ extern "C" void GluiMotionSetup(int main_window){
   {
     char panel_label[100];
 
-    sprintf(panel_label, "%s image size:", deg360);
+    sprintf(panel_label, "%s resolution:", deg360);
     ROLLOUT_render360 = glui_motion->add_rollout_to_panel(PANEL_render_other, panel_label, false);
   }
   STATIC_width360 = glui_motion->add_statictext_to_panel(ROLLOUT_render360, "width");
@@ -1260,7 +1261,7 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_skip->add_item(20, _("Every 20th"));
   LIST_render_skip->set_int_val(render_skip);
 
-  ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(PANEL_render_other, "Clip rendered scene", false);
+  ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(PANEL_render_other, "Clipping region", false);
   SPINNER_clip_left = glui_motion->add_spinner_to_panel(ROLLOUT_scene_clip, "left:", GLUI_SPINNER_INT, &render_clip_left);
   SPINNER_clip_left->set_int_limits(0, screenWidth);
 
