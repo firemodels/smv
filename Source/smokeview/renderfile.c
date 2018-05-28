@@ -740,7 +740,7 @@ void SetupScreeninfo(void){
     float sina, cosa;
     float cose, sine;
     float aspect_ratio;
-    float aperture_width, aperture_height;
+    float aperture_width, aperture_height, aperture_diagonal;
 
     aperture_width = 45.0;
     screeni = screeninfo + ibuf;
@@ -750,7 +750,8 @@ void SetupScreeninfo(void){
     screeni->width=2.0*tan(DEG2RAD*aperture_width/2.0);
     screeni->height = screeni->width / aspect_ratio;
     aperture_height = 2.0*RAD2DEG*atan(screeni->height / 2.0);
-    screeni->cosmax = 1.0 / sqrt(screeni->height*screeni->height + screeni->width*screeni->width);
+    aperture_diagonal = 2.0*atan(sqrt(screeni->height*screeni->height+screeni->width*screeni->width)/2.0);
+    screeni->cosmax = cos(aperture_diagonal/2.0);
 
     if(ibuf == 0){
       azimuth = 0.0;
