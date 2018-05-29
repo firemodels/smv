@@ -1959,7 +1959,7 @@ void Keyboard(unsigned char key, int flag){
         }
 
         if(strncmp((const char *)&key2, "R", 1)==0&&keystate!=GLUT_ACTIVE_ALT){
-          resolution_multiplier = MAX(2, resolution_multiplier);
+          resolution_multiplier = glui_resolution_multiplier;
         }
         else{
           resolution_multiplier = 1;
@@ -2909,7 +2909,7 @@ void SetScreenSize(int *width, int *height){
     int width_low, height_low, width_high, height_high;
 
     GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
-    UpdateStartRenderButtons(width_low, height_low, width_high, height_high);
+    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 
