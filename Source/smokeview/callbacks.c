@@ -1976,7 +1976,7 @@ void Keyboard(unsigned char key, int flag){
         if(strncmp((const char *)&key2, "R", 1)==0||render_mode==RENDER_360){
           rflag=1;
         }
-        else{
+        else if(render_size_index==2){
           renderW=0;
           renderH=0;
         }
