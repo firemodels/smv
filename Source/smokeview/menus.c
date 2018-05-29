@@ -1607,8 +1607,9 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
+    if(render_status == RENDER_ON)return;
     EnableDisableStartButtons(DISABLE);
-    render_status = onoff;
+    render_status = RENDER_ON;
     render_firsttime = YES;
     update_screeninfo = 1;
     saveW=screenWidth;
@@ -1626,13 +1627,17 @@ void RenderState(int onoff){
     }
   }
   else{
+    int width_low, height_low, width_high, height_high;
+
     if(render_status==RENDER_OFF)return;
-    render_status = onoff;
+    render_status = RENDER_OFF;
     render_firsttime = NO;
     Enable360Zoom();
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
     EnableDisableStartButtons(ENABLE);
+    ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 
@@ -1724,7 +1729,7 @@ void RenderMenu(int value){
     break;
   case RenderStartHIGHRES:
     render_mode = RENDER_NORMAL;
-    resolution_multiplier=MAX(2,resolution_multiplier);
+    resolution_multiplier=glui_resolution_multiplier;
     RenderMenu(RenderStart);
     break;
   case RenderStart:
@@ -8192,7 +8197,7 @@ updatemenu=0;
         height = renderH;
       }
 
-      factor = MAX(2, resolution_multiplier);
+      factor = glui_resolution_multiplier;
       sprintf(sizeORIGRES, "%ix%i", width, height);
       sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);
       glutAddMenuEntry(sizeORIGRES, RenderStartORIGRES);

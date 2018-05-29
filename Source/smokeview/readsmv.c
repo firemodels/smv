@@ -4900,7 +4900,6 @@ int ReadSMV(char *file, char *file2){
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nobsts);
 
-
       meshi=meshinfo+iobst-1;
 
       if(nobsts<=0)continue;
