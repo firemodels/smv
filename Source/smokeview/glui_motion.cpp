@@ -1170,15 +1170,15 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
-  LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Frame(s):"), &render_skip, RENDER_SKIP, RenderCB);
+  LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
 //  LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _("Current"));
-  LIST_render_skip->add_item(1, _("All"));
-  LIST_render_skip->add_item(2, _("Every 2nd"));
-  LIST_render_skip->add_item(3, _("Every 3rd"));
-  LIST_render_skip->add_item(4, _("Every 4th"));
-  LIST_render_skip->add_item(5, _("Every 5th"));
-  LIST_render_skip->add_item(10, _("Every 10th"));
-  LIST_render_skip->add_item(20, _("Every 20th"));
+  LIST_render_skip->add_item(1, _("All frames"));
+  LIST_render_skip->add_item(2, _("Every 2nd frame"));
+  LIST_render_skip->add_item(3, _("Every 3rd frame"));
+  LIST_render_skip->add_item(4, _("Every 4th frame"));
+  LIST_render_skip->add_item(5, _("Every 5th frame"));
+  LIST_render_skip->add_item(10, _("Every 10th frame"));
+  LIST_render_skip->add_item(20, _("Every 20th frame"));
   LIST_render_skip->set_int_val(render_skip);
 
   PANEL_image_size = glui_motion->add_panel_to_panel(ROLLOUT_render, "image size/type", true);

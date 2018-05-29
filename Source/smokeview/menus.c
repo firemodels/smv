@@ -1607,6 +1607,7 @@ void ResetMenu(int value){
 
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
+    if(render_status == RENDER_ON)return;
     EnableDisableStartButtons(DISABLE);
     render_status = RENDER_ON;
     render_firsttime = YES;
