@@ -42,7 +42,7 @@ set gettime=%svn_root%\smv\Build\get_time\%BUILDDIR%
 set zipbase=%version%_win%platform%
 set smvdir=%zipbase%
 
-cd %svn_root%\smv\Bundle\Build\uploads
+cd %svn_root%\smv\Build\Bundle\uploads
 set uploads=%CD%
 
 echo.
