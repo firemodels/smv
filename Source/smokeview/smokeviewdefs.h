@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define INIT 0
+#define UPDATE 1
+
 #define TIMEBAR_OVERLAP_ALWAYS 0
 #define TIMEBAR_OVERLAP_NEVER 1
 #define TIMEBAR_OVERLAP_AUTO 2

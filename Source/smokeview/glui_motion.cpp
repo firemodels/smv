@@ -88,7 +88,6 @@ unsigned char deg360[] = { '3','6','0',0 };
 
 GLUI *glui_motion=NULL;
 
-GLUI_Panel *PANEL_image_size = NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
@@ -113,6 +112,7 @@ GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
 GLUI_Panel *PANEL_colors=NULL;
 
+GLUI_Rollout *ROLLOUT_image_size = NULL;
 GLUI_Rollout *ROLLOUT_name = NULL;
 GLUI_Rollout *ROLLOUT_rotation_type = NULL;
 GLUI_Rollout *ROLLOUT_orientation=NULL;
@@ -1181,8 +1181,8 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_skip->add_item(20, _("Every 20th frame"));
   LIST_render_skip->set_int_val(render_skip);
 
-  PANEL_image_size = glui_motion->add_panel_to_panel(ROLLOUT_render, "image size/type", true);
-  RADIO_render_resolution = glui_motion->add_radiogroup_to_panel(PANEL_image_size, &render_resolution);
+  ROLLOUT_image_size = glui_motion->add_rollout_to_panel(ROLLOUT_render, "size/type", false);
+  RADIO_render_resolution = glui_motion->add_radiogroup_to_panel(ROLLOUT_image_size, &render_resolution);
   glui_motion->add_radiobutton_to_group(RADIO_render_resolution, _("320x240"));
   glui_motion->add_radiobutton_to_group(RADIO_render_resolution, _("640x480"));
   {
@@ -1195,15 +1195,15 @@ extern "C" void GluiMotionSetup(int main_window){
   RenderCB(RENDER_RESOLUTION);
 
   glui_resolution_multiplier=CLAMP(resolution_multiplier,2,10);
-  SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_render, "image size multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
+  SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
   SPINNER_resolution_multiplier->set_int_limits(2, 10);
   RenderCB(RENDER_MULTIPLIER);
   {
     char label[100];
 
-    sprintf(label, "%s image height ", deg360);
+    sprintf(label, "%s height ", deg360);
 
-    SPINNER_window_height360 = glui_motion->add_spinner_to_panel(ROLLOUT_render, label, GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
+    SPINNER_window_height360 = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, label, GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
     SPINNER_window_height360->set_int_limits(100, max_screenHeight);
     RenderCB(RENDER_360CB);
   }
