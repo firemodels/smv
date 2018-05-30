@@ -23,6 +23,7 @@ GLUI_Rollout *ROLLOUT_tour = NULL;
 GLUI_Rollout *ROLLOUT_keyframe = NULL;
 GLUI_Rollout *ROLLOUT_settings = NULL;
 GLUI_Rollout *ROLLOUT_misc = NULL;
+GLUI_Rollout *ROLLOUT_circular = NULL;
 
 GLUI_Panel *PANEL_settingskeyframe=NULL;
 GLUI_Panel *PANEL_tension=NULL;
@@ -36,6 +37,9 @@ GLUI_Panel *PANEL_tourposition=NULL;
 GLUI_Panel *PANEL_tournavigate=NULL;
 GLUI_Panel *PANEL_tourview=NULL;
 GLUI_Panel *PANEL_tourpositionview=NULL;
+GLUI_Panel *PANEL_tour_circular_center;
+GLUI_Panel *PANEL_tour_circular_view;
+GLUI_Panel *PANEL_tour_circular_centerview;
 
 GLUI_Checkbox *CHECKBOX_snap=NULL,*CHECKBOX_view=NULL,*CHECKBOX_showtourroute=NULL,*CHECKBOX_constantvel=NULL;
 GLUI_Checkbox *CHECKBOX_showtour_locus=NULL,*CHECKBOX_showintermediate=NULL;
@@ -46,6 +50,10 @@ GLUI_Spinner *SPINNER_viewx=NULL, *SPINNER_viewy=NULL,*SPINNER_viewz=NULL;
 GLUI_Spinner *SPINNER_globaltourtension=NULL;
 GLUI_Spinner *SPINNER_tourtension=NULL;
 GLUI_Spinner *SPINNER_tourzoom=NULL;
+
+GLUI_Spinner *SPINNER_tour_circular_view[3];
+GLUI_Spinner *SPINNER_tour_circular_center[3];
+GLUI_Spinner *SPINNER_tour_circular_radius=NULL;
 
 GLUI_Button *BUTTON_next_tour=NULL,*BUTTON_prev_tour=NULL;
 GLUI_Button *BUTTON_delete_tour = NULL;
@@ -83,6 +91,8 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 #define TOUR_UPDATELABEL 28
 #define TOUR_USECURRENT 29
 #define TOUR_REVERSE 35
+#define TOUR_CIRCULAR_UPDATE 36
+#define RESET_CIRCULAR_SETTINGS 37
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
@@ -184,6 +194,24 @@ extern "C" void GluiTourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(ROLLOUT_tour, _("Update label"), TOUR_UPDATELABEL, TourCB);
 
+  ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false);
+
+  SPINNER_tour_circular_radius=glui_tour->add_spinner_to_panel(ROLLOUT_circular, "radius", GLUI_SPINNER_FLOAT, &tour_circular_radius,TOUR_CIRCULAR_UPDATE,TourCB);
+
+  PANEL_tour_circular_centerview = glui_tour->add_panel_to_panel(ROLLOUT_circular,"",false);
+  PANEL_tour_circular_center = glui_tour->add_panel_to_panel(PANEL_tour_circular_centerview,_("center"),true);
+  SPINNER_tour_circular_center[0]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"x",GLUI_SPINNER_FLOAT,tour_circular_center,TOUR_CIRCULAR_UPDATE,TourCB);
+  SPINNER_tour_circular_center[1]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"y",GLUI_SPINNER_FLOAT,tour_circular_center+1,TOUR_CIRCULAR_UPDATE,TourCB);
+  SPINNER_tour_circular_center[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"z",GLUI_SPINNER_FLOAT,tour_circular_center+2,TOUR_CIRCULAR_UPDATE,TourCB);
+
+  glui_tour->add_column_to_panel(PANEL_tour_circular_centerview, false);
+
+  PANEL_tour_circular_view = glui_tour->add_panel_to_panel(PANEL_tour_circular_centerview,_("Target location"),true);
+  SPINNER_tour_circular_view[0]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"x",GLUI_SPINNER_FLOAT,tour_circular_view,TOUR_CIRCULAR_UPDATE,TourCB);
+  SPINNER_tour_circular_view[1]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"y",GLUI_SPINNER_FLOAT,tour_circular_view+1,TOUR_CIRCULAR_UPDATE,TourCB);
+  SPINNER_tour_circular_view[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"z",GLUI_SPINNER_FLOAT,tour_circular_view+2,TOUR_CIRCULAR_UPDATE,TourCB);
+  glui_tour->add_button_to_panel(ROLLOUT_circular,_("Reset"),RESET_CIRCULAR_SETTINGS,TourCB);
+
   ROLLOUT_settings = glui_tour->add_rollout(_("Settings"),true,SETTINGS_TOURS_ROLLOUT, ToursRolloutCB);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_settings, SETTINGS_TOURS_ROLLOUT);
 
@@ -253,7 +281,7 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,tour_xyz+2,KEYFRAME_tXYZ,TourCB);
   glui_tour->add_column_to_panel(PANEL_tourpositionview,false);
-  PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_tourpositionview, _("View direction"));
+  PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_tourpositionview, _("Target location"));
   SPINNER_tourzoom=glui_tour->add_spinner_to_panel(PANEL_tourview,_("Zoom:"),GLUI_SPINNER_FLOAT,&tour_zoom,KEYFRAME_tXYZ,TourCB);
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,tour_view_xyz,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,tour_view_xyz+1,KEYFRAME_viewXYZ,TourCB);
@@ -479,6 +507,36 @@ void TourCB(int var){
   }
 
   switch(var){
+  case RESET_CIRCULAR_SETTINGS:
+  {
+    int  i;
+
+    for(i = 0;i < 3;i++){
+      tour_circular_view[i] = tour_circular_view_default[i];
+      SPINNER_tour_circular_center[i]->set_float_val(tour_circular_center[i]);
+      tour_circular_view[i] = tour_circular_center_default[i];
+      SPINNER_tour_circular_view[i]->set_float_val(tour_circular_view[i]);
+    }
+  }
+    tour_circular_radius = tour_circular_radius_default;
+    SPINNER_tour_circular_radius->set_float_val(tour_circular_radius);
+    TourCB(TOUR_CIRCULAR_UPDATE);
+    break;
+  case TOUR_CIRCULAR_UPDATE:
+    if(edittour==0){
+      edittour=1;
+      CHECKBOX_showtourroute->set_int_val(edittour);
+      TourCB(SHOWTOURROUTE);
+      if(tour_circular_index!=-1){
+        LISTBOX_tour->set_int_val(tour_circular_index);
+        TourCB(TOUR_LIST);
+      }
+    }
+    InitCircularTour(tourinfo,ncircletournodes,UPDATE);
+    UpdateTourMenuLabels();
+    CreateTourPaths();
+    UpdateTimes();
+    break;
   case TOUR_USECURRENT:
     break;
   case TOUR_NEXT:

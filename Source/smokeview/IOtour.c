@@ -1080,13 +1080,38 @@ void NewSelect(keyframe *newselect){
   if(newselect!=NULL)selected_frame->selected=1;
 }
 
+/* ------------------ SetupCircularTourNodes ------------------------ */
+
+void SetupCircularTourNodes(void){
+  float dx, dy, dz, max_xyz;
+  int i;
+
+  tour_circular_view[0]=(xbar0+xbarORIG)/2.0;
+  tour_circular_view[1]=(ybar0+ybarORIG)/2.0;
+  tour_circular_view[2]=(zbar0+zbarORIG)/2.0;
+  tour_circular_center[0]=tour_circular_view[0];
+  tour_circular_center[1]=tour_circular_view[1];
+  tour_circular_center[2]=tour_circular_view[2];
+
+  dx = ABS(xbarORIG - xbar0)/2.0;
+  dy = ABS(ybarORIG - ybar0)/2.0;
+  dz = ABS(zbarORIG-zbar0)/2.0;
+  max_xyz=MAX(dx,dy);
+  max_xyz=MAX(max_xyz,dz);
+  tour_circular_radius = max_xyz+max_xyz/tan(20.0*DEG2RAD);
+  for(i=0;i<3;i++){
+    tour_circular_view_default[i] = tour_circular_view[i];
+    tour_circular_center_default[i] = tour_circular_center[i];
+  }
+  tour_circular_radius_default = tour_circular_radius;
+}
+
 /* ------------------ InitCircularTour ------------------------ */
 
-void InitCircularTour(void){
-  int nkeyframes,j;
+void InitCircularTour(tourdata *touri, int nkeyframes, int option){
+  int j;
   float key_az_path, elev_path, key_bank, params[3],key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
-  tourdata *touri;
   float key_time;
   float angle_local;
   float f1;
@@ -1094,27 +1119,25 @@ void InitCircularTour(void){
   float max_xyz, dx, dy, dz;
   keyframe *thisframe,*addedframe;
 
-  touri = tourinfo;
+  if(option == UPDATE){
+    FREEMEMORY(touri->keyframe_times);
+    FREEMEMORY(touri->pathnodes);
+    FREEMEMORY(touri->path_times);
+  }
   InitTour(touri);
   touri->isDefault=1;
   touri->startup=1;
   touri->periodic=1;
+  tour_circular_index = touri - tourinfo;
   strcpy(touri->label,"Circular");
-  nkeyframes=16;
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->pathnodes,view_ntimes*sizeof(pathdata));
   NewMemory((void **)&touri->path_times,view_ntimes*sizeof(float));
-  key_view[0]=(xbar0+xbarORIG)/2.0;
-  key_view[1]=(ybar0+ybarORIG)/2.0;
-  key_view[2]=(zbar0+zbarORIG)/2.0;
-  dx = ABS(xbarORIG - xbar0)/2.0;
-  dy = ABS(ybarORIG - ybar0)/2.0;
-  dz = ABS(zbarORIG-zbar0)/2.0;
-  max_xyz=dx;
-  if(dy>max_xyz)max_xyz=dy;
-  if(dz>max_xyz)max_xyz=dz;
+  key_view[0]=tour_circular_view[0];
+  key_view[1]=tour_circular_view[1];
+  key_view[2]=tour_circular_view[2];
 
-  rad = max_xyz+max_xyz/tan(20.0*DEG2RAD);
+  rad = tour_circular_radius;
   elev_path=0.0;
 
   thisframe=&touri->first_frame;
@@ -1131,9 +1154,9 @@ void InitCircularTour(void){
     cosangle = cos(angle_local);
     sinangle = sin(angle_local);
 
-    key_xyz[0] = key_view[0] + rad*cosangle;
-    key_xyz[1] = key_view[1] + rad*sinangle;
-    key_xyz[2] = key_view[2];
+    key_xyz[0] = tour_circular_center[0] + rad*cosangle;
+    key_xyz[1] = tour_circular_center[1] + rad*sinangle;
+    key_xyz[2] = tour_circular_center[2];
     if(nkeyframes == 1){
       f1 = 0.0;
     }
@@ -1428,7 +1451,7 @@ void SetupTour(void){
     ReallocTourMemory();
     ntourinfo=1;
     NewMemory( (void **)&tourinfo, ntourinfo*sizeof(tourdata));
-    InitCircularTour();
+    InitCircularTour(tourinfo,ncircletournodes,INIT);
     UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
