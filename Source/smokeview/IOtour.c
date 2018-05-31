@@ -588,7 +588,7 @@ void CreateTourPaths(void){
       float *lasteye, *thiseye, *nexteye;
       float *xyz_view0, *xyz_view1, *xyz_view2;
       float s1, s2, d1, d2;
-      float a, b, c;
+      float a;
 
       *tourknotskeylist_copy++ = keyj;
       *tourknotstourlist_copy++ = touri;
@@ -613,13 +613,11 @@ void CreateTourPaths(void){
       else{
         a=keyj->tension;
       }
-      b=keyj->bias;
-      c=keyj->continuity;
 
-      s1=(1.0-a)*(1.0+b)*(1-c)/2.0;
-      s2=(1.0-a)*(1.0-b)*(1+c)/2.0;
-      d1=(1.0-a)*(1.0+b)*(1+c)/2.0;
-      d2=(1.0-a)*(1.0-b)*(1-c)/2.0;
+      s1=(1.0-a)/2.0;
+      s2=(1.0-a)/2.0;
+      d1=(1.0-a)/2.0;
+      d2=(1.0-a)/2.0;
 
       lasteye = lastkey->nodeval.eye;
       thiseye = thiskey->nodeval.eye;
@@ -1005,7 +1003,7 @@ keyframe *CopyFrame(keyframe *framei){
 
 /* ------------------ AddFrame ------------------------ */
 
-keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank, float params[3],
+keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank, float tension,
                     int viewtype,float zoom_local,float view[3]){
   keyframe *frame,*framen;
   float *feye, *fxyz_view;
@@ -1031,15 +1029,10 @@ keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_
   frame->bank=bank;
   NORMALIZE_XYZ(feye,eye);
   NORMALIZE_XYZ(fxyz_view,view);
-
   frame->noncon_time=time_local;
   frame->disp_time=time_local;
 
-  frame->bias=params[1];
-  frame->continuity=params[2];
-  frame->bias=0.0;               // no longer using bias
-  frame->continuity=0.0;         // no longer using continuity
-  frame->tension=params[0];
+  frame->tension=tension;
   frame->viewtype=viewtype;
   frame->nodeval.zoom=zoom_local;
   frame->keyview_xyz[0]=0.0;
@@ -1110,7 +1103,7 @@ void SetupCircularTourNodes(void){
 
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
-  float key_az_path, elev_path, key_bank, params[3],key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_bank, tension, key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
   float key_time;
   float angle_local;
@@ -1143,7 +1136,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   for(j=0;j<nkeyframes;j++){
     key_az_path = 0.0;
     key_bank=0.0;
-    VEC3EQCONS(params,0.0);
+    tension=0.0;
     if(nkeyframes == 1){
       angle_local = 0.0;
     }
@@ -1167,7 +1160,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     viewtype=1;
     zoom_local=1.0;
     addedframe=AddFrame(thisframe, key_time, key_xyz,
-      key_az_path, elev_path, key_bank, params, viewtype,zoom_local,key_view);
+      key_az_path, elev_path, key_bank, tension, viewtype,zoom_local,key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1238,7 +1231,7 @@ void ReverseTour(char *label){
 tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
-  float key_az_path, elev_path, key_bank, params[3],key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_bank, tension=0.0,key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
   float key_time;
   int i;
@@ -1284,7 +1277,7 @@ tourdata *AddTour(char *label){
     key_az_path = 0.0;
     key_bank = 0.0;
     elev_path=0.0;
-    VEC3EQCONS(params,0.0);
+    tension=0.0;
     viewtype=1;
     zoom_local=1.0;
 
@@ -1294,7 +1287,7 @@ tourdata *AddTour(char *label){
     key_time = view_tstart;
     thisframe=&touri->first_frame;
     addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-      params, viewtype,zoom_local,key_view);
+      tension, viewtype,zoom_local,key_view);
     touri->keyframe_times[0]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
@@ -1307,7 +1300,7 @@ tourdata *AddTour(char *label){
     key_time = view_tstop;
     thisframe=addedframe;
     addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-      params, viewtype,zoom_local,key_view);
+      tension, viewtype,zoom_local,key_view);
     touri->keyframe_times[1]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];

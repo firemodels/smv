@@ -832,7 +832,7 @@ typedef struct _keyframe {
   float total_distance, distance;
   float s_eye[3], s_az, s_elev, s_zoom, s_xyz_view[3];
   float d_eye[3], d_az, d_elev, d_zoom, d_xyz_view[3];
-  float bias, continuity, tension;
+  float tension;
   float bank;
   float az_path;
   float s1, s2, d1, d2;

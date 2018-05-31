@@ -12676,7 +12676,7 @@ void WriteIniLocal(FILE *fileout){
         if(framei->viewtype == REL_VIEW){
           sprintf(buffer, "%f %f %f %f %f %f %f ",
             framei->az_path, framei->nodeval.elev_path, framei->bank,
-            framei->tension, framei->bias, framei->continuity,
+            framei->tension, 0.0, 0.0,
             framei->nodeval.zoom);
         }
         else{
@@ -12684,7 +12684,7 @@ void WriteIniLocal(FILE *fileout){
             DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
             DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
             DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
-            framei->tension, framei->bias, framei->continuity,
+            framei->tension, 0.0, 0.0,
             framei->nodeval.zoom);
         }
         TrimMZeros(buffer);

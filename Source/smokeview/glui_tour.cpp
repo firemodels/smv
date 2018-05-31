@@ -373,8 +373,6 @@ extern "C" void SetGluiTourKeyframe(void){
   tour_view_xyz[0] = TrimVal(DENORMALIZE_X(xyz_view[0]));
   tour_view_xyz[1] = TrimVal(DENORMALIZE_Y(xyz_view[1]));
   tour_view_xyz[2] = TrimVal(DENORMALIZE_Z(xyz_view[2]));
-  tour_continuity=selected_frame->continuity;
-  tour_bias=selected_frame->bias;
   viewtype1=selected_frame->viewtype;
   viewtype2=1-viewtype1;
   tour_tension=selected_frame->tension;
@@ -489,7 +487,7 @@ void TourCB(int var){
   int selectedtour_index_save;
 
   float key_xyz[3];
-  float key_params[3];
+  float tension;
   float key_time_in, key_az_path, key_view[3], key_zoom;
   float key_elev_path, key_bank;
 
@@ -646,8 +644,6 @@ void TourCB(int var){
       selected_frame->nodeval.elev_path=tour_elev_path;
 
       selected_frame->tension=tour_tension;
-      selected_frame->bias=tour_bias;
-      selected_frame->continuity=tour_continuity;
       selected_frame->viewtype=viewtype1;
       selected_frame->nodeval.zoom=tour_zoom;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
@@ -734,9 +730,7 @@ void TourCB(int var){
         key_elev_path=(2*thiskey->nodeval.elev_path-lastkey->nodeval.elev_path);
         key_time_in = thiskey->noncon_time;
         thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
-        key_params[0]=(2*thiskey->bias-lastkey->bias);
-        key_params[1]=(2*thiskey->continuity-lastkey->continuity);
-        key_params[2]=(2*thiskey->tension-lastkey->tension);
+        tension=(2*thiskey->tension-lastkey->tension);
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
@@ -752,9 +746,7 @@ void TourCB(int var){
         key_az_path = (thiskey->az_path+nextkey->az_path)/2.0;
         key_elev_path=(thiskey->nodeval.elev_path+nextkey->nodeval.elev_path)/2.0;
         key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
-        key_params[0]=(thiskey->bias+nextkey->bias)/2.0;
-        key_params[1]=(thiskey->continuity+nextkey->continuity)/2.0;
-        key_params[2]=(thiskey->tension+nextkey->tension)/2.0;
+        tension=(thiskey->tension+nextkey->tension)/2.0;
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
@@ -776,7 +768,7 @@ void TourCB(int var){
         }
         viewtype2=1-viewtype1;
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,key_params,viewtype1,key_zoom,key_view);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,tension,viewtype1,key_zoom,key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();

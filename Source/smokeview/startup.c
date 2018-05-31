@@ -1803,7 +1803,6 @@ void InitVars(void){
   dirtycircletour=0;
   view_tstart=0.0, view_tstop=100.0;
   tour_constant_vel=0;
-  tour_bias=0.0,tour_continuity=0.0;
   view_ntimes=1000;
   iavatar_evac=0;
   viewtourfrompath=0,viewalltours=0,viewanytours=0,edittour=0;
