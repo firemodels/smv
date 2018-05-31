@@ -501,6 +501,7 @@ void TourCB(int var){
     UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
+    CreateTourList();
     break;
   case TOUR_USECURRENT:
     break;
@@ -559,7 +560,7 @@ void TourCB(int var){
       SPINNER_viewy->enable();
       SPINNER_viewz->enable();
       if(selected_frame!=NULL){
-        XYZView2AzElev(selected_frame,NULL,NULL);
+        XYZView2AzElev(selected_frame);
       }
     }
     else if(viewtype1==REL_VIEW&&edittour==1){
@@ -702,11 +703,11 @@ void TourCB(int var){
         else{
           viewtype1=ABS_VIEW;
           if(thiskey->viewtype==ABS_VIEW){
-            DENORMALIZE_XYZ(key_view,thiskey->nodeval.xyz_view_abs);
+            //DENORMALIZE_XYZ(key_view,thiskey->nodeval.xyz_view_abs);
             key_elev_path = thiskey->nodeval.elev_path;
           }
           if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==ABS_VIEW){
-            DENORMALIZE_XYZ(key_view,nextkey->nodeval.xyz_view_abs);
+            //DENORMALIZE_XYZ(key_view,nextkey->nodeval.xyz_view_abs);
             key_elev_path = nextkey->nodeval.elev_path;
           }
         }

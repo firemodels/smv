@@ -1406,7 +1406,6 @@ SVEXTERN int ntotal_blockages;
 SVEXTERN int updateindexcolors;
 SVEXTERN int show_path_knots;
 SVEXTERN int keyframe_snap;
-SVEXTERN int tourviewtype;
 SVEXTERN int SVDECL(show_tourlocus,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int iavatar_types, navatar_types;

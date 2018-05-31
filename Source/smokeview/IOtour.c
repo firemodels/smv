@@ -676,7 +676,7 @@ void CreateTourPaths(void){
       keyj->keyview_xyz[0]=keyj->d_eye[0];
       keyj->keyview_xyz[1]=keyj->d_eye[1];
       keyj->keyview_xyz[2]=0.0;
-      if(keyj->viewtype==ABS_VIEW)XYZView2AzElev(keyj,NULL,NULL);
+      if(keyj->viewtype==ABS_VIEW)XYZView2AzElev(keyj);
 
       ROTATE(keyj->keyview_xyz2,keyj->keyview_xyz,keyj->az_path*DEG2RAD);
       keyj->keyview_xyz2[2]=0.0;
@@ -1440,7 +1440,7 @@ void SetupTour(void){
 
 /* ------------------ XYZView2AzElev ------------------------ */
 
-void XYZView2AzElev(keyframe *kf, float *az_path, float *elev_path){
+void XYZView2AzElev(keyframe *kf){
   float dxyz[3];
   float dxy2[2];
   float distxy, distxy2;
@@ -1474,8 +1474,6 @@ void XYZView2AzElev(keyframe *kf, float *az_path, float *elev_path){
 
   kf->az_path=az;
   kf->nodeval.elev_path=elev;
-  if(az_path!=NULL)*az_path=az;
-  if(elev_path!=NULL)*elev_path = elev;
 }
 
 /* ------------------ AdjustTourTimes ------------------------ */

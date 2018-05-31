@@ -1798,7 +1798,6 @@ void InitVars(void){
   updateindexcolors=0;
   show_path_knots=0;
   keyframe_snap=0;
-  tourviewtype=0;
   tourrad_avatar=0.1;
   dirtycircletour=0;
   view_tstart=0.0, view_tstop=100.0;

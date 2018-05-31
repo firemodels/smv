@@ -602,7 +602,7 @@ EXTERNCPP void CreateTourList(void);
 EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);
 EXTERNCPP void UpdateTourControls(void);
-EXTERNCPP void XYZView2AzElev(keyframe *kf,float *azimuth, float *elevation);
+EXTERNCPP void XYZView2AzElev(keyframe *kf);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
