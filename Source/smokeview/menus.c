@@ -3087,6 +3087,20 @@ void TourMenu(int value){
 
 }
 
+/* ------------------ TourCopyMenu ------------------------ */
+
+#define TOUR_INSERT_COPY 33
+void TourCopyMenu(int value) {
+  if(value==-1){
+    TourMenu(MENU_TOUR_NEW);
+  }
+  else{
+    selectedtour_index=value;
+    TourCB(TOUR_INSERT_COPY);
+    DialogMenu(DIALOG_TOUR_SHOW);
+  }
+}
+
 /* ------------------ SetTour ------------------------ */
 
 void SetTour(tourdata *thetour){
@@ -5484,7 +5498,7 @@ static int smoke3dshowsinglemenu = 0;
 static int particlepropshowmenu=0,humanpropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
-static int tourmenu=0;
+static int tourmenu=0,tourcopymenu=0;
 static int avatartourmenu=0,avatarevacmenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0,evacshowmenu=0;
 static int showobjectsmenu=0,spheresegmentmenu=0,propmenu=0;
@@ -7695,13 +7709,24 @@ updatemenu=0;
     }
   }
 
+  CREATEMENU(tourcopymenu, TourCopyMenu);
+  glutAddMenuEntry("Path through domain", -1);
+  for (i = 0; i < ntourinfo; i++) {
+    tourdata *touri;
+    int glui_avatar_index_local;
+    char menulabel[1024];
+
+    touri = tourinfo + i;
+    glutAddMenuEntry(touri->menulabel, i);
+  }
+
     /* --------------------------------tour menu -------------------------- */
 
   CREATEMENU(tourmenu,TourMenu);
 
-  glutAddMenuEntry(_("New..."),MENU_TOUR_NEW);
+  glutAddSubMenu(_("New"),tourcopymenu);
   if(ntourinfo>0){
-    if(ntourinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
+    glutAddMenuEntry("-",MENU_DUMMY);
     for(i=0;i<ntourinfo;i++){
       tourdata *touri;
       int glui_avatar_index_local;
@@ -7711,7 +7736,7 @@ updatemenu=0;
       if(touri->display==1){
         STRCPY(menulabel,"");
         if(selectedtour_index==i){
-          STRCAT(menulabel,"@");
+          STRCAT(menulabel,"(editing)");
         }
         STRCAT(menulabel,"*");
         STRCAT(menulabel,touri->menulabel);
@@ -7733,6 +7758,7 @@ updatemenu=0;
     if(selectedtour_index>=0){
       char menulabel[1024];
 
+      glutAddMenuEntry("-", MENU_DUMMY);
       strcpy(menulabel,"");
       if(viewtourfrompath==1)strcat(menulabel,"*");
       strcat(menulabel,"View from ");
@@ -7885,7 +7911,7 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   glutAddSubMenu(_("Color"), colorbarmenu);
   glutAddSubMenu(_("Geometry"),geometrymenu);
-  glutAddSubMenu(_("Display"),labelmenu);
+  glutAddSubMenu(_("Labels"),labelmenu);
   glutAddSubMenu(_("Viewpoints"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(Read3DSmoke3DFile==1&&nsmoke3dloaded>0){
