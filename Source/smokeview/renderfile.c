@@ -131,10 +131,19 @@ void MakeMovie(void){
   update_makemovie = 0;
 }
 
+/* ------------------ ResetRenderResolution ------------------------ */
+
+void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high) {
+  *width_low = screenWidth;
+  *height_low = screenHeight;
+  *width_high = *width_low*MAX(2, resolution_multiplier);
+  *height_high = *height_low*MAX(2, resolution_multiplier);
+}
+
 /* ------------------ GetRenderResolution ------------------------ */
 
 void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high) {
-  if (renderW == 0 || renderH == 0) {
+  if (render_status==RENDER_OFF||renderW == 0 || renderH == 0) {
     *width_low = screenWidth;
     *height_low = screenHeight;
   }
@@ -142,8 +151,8 @@ void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *
     *width_low = renderW;
     *height_low = renderH;
   }
-  *width_high = *width_low*MAX(2, resolution_multiplier);
-  *height_high = *height_low*MAX(2, resolution_multiplier);
+  *width_high = *width_low*MAX(2, glui_resolution_multiplier);
+  *height_high = *height_low*MAX(2, glui_resolution_multiplier);
 }
 
 /* ------------------ Render ------------------------ */

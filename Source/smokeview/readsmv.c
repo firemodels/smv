@@ -4900,7 +4900,6 @@ int ReadSMV(char *file, char *file2){
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&nobsts);
 
-
       meshi=meshinfo+iobst-1;
 
       if(nobsts<=0)continue;
@@ -9072,6 +9071,7 @@ typedef struct {
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
   UpdateTourMenuLabels();
+  SetupCircularTourNodes();
   InitUserTicks();
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -11637,6 +11637,16 @@ int ReadIni2(char *inifile, int localfile){
         //        if(tourlocus_type!=0)tourlocus_type=1;
         continue;
       }
+      if(Match(buffer, "TOURCIRCLE") == 1){
+        float *c, *r, *v;
+
+        c = tour_circular_center;
+        v = tour_circular_view;
+        r = &tour_circular_radius;
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer,"%f %f %f %f %f %f %f",c,c+1,c+2,v,v+1,v+2,r);
+        continue;
+      }
 
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -12156,7 +12166,7 @@ int ReadIni2(char *inifile, int localfile){
             }
           }
           ReallocTourMemory();
-          InitCircularTour();
+          InitCircularTour(tourinfo,ncircletournodes,INIT);
           {
             keyframe *thisframe, *addedframe;
             tourdata *touri;
@@ -12616,6 +12626,15 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
 
+  {
+    float *c, *r, *v;
+
+    c = tour_circular_center;
+    v = tour_circular_view;
+    r = &tour_circular_radius;
+    fprintf(fileout, "TOURCIRCLE\n");
+    fprintf(fileout, "%f %f %f %f %f %f %f",c[0],c[1],c[2],v[0],v[1],v[2],*r);
+  }
   fprintf(fileout, "TOURINDEX\n");
   fprintf(fileout, " %i\n", selectedtour_index);
   startup_count = 0;

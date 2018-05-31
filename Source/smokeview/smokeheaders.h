@@ -5,7 +5,8 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void UpdateStartRenderButtons(int width_low, int height_low, int width_high, int height_high);
+EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
+EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateZAxisCustom(void);
@@ -617,7 +618,8 @@ EXTERNCPP void NewSelect(keyframe *newselect);
 EXTERNCPP void DeleteTour(int tour_index);
 EXTERNCPP tourdata *AddTour(char *label);
 EXTERNCPP void ReverseTour(char *label);
-EXTERNCPP void InitCircularTour(void);
+EXTERNCPP void SetupCircularTourNodes(void);
+EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
 EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz, float key_azimuth, float elevation, float bank,
