@@ -11525,9 +11525,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     {
       int nkeyframes;
-      float key_time, key_xyz[3], key_az_path, key_view[3], params[3], zzoom, key_elev_path;
-      float t_globaltension, key_bank;
-      int t_globaltension_flag;
+      float key_time, key_xyz[3], key_az_path, key_view[3], zzoom, key_elev_path;
+      float key_bank;
       int viewtype, uselocalspeed;
       float *col;
 
@@ -12174,6 +12173,8 @@ int ReadIni2(char *inifile, int localfile){
 
             for(i = 1; i < ntourinfo; i++){
               int j;
+              float dummy;
+              int idummy;
 
               touri = tourinfo + i;
               InitTour(touri);
@@ -12181,17 +12182,13 @@ int ReadIni2(char *inifile, int localfile){
               TrimBack(buffer);
               strcpy(touri->label, TrimFront(buffer));
 
-              t_globaltension = touri->global_tension;
-              t_globaltension_flag = touri->global_tension_flag;
               fgets(buffer, 255, stream);
               glui_avatar_index_local = 0;
               sscanf(buffer, "%i %i %f %i %i",
-                &nkeyframes, &t_globaltension_flag, &t_globaltension, &glui_avatar_index_local, &touri->display2);
+                &nkeyframes, &idummy, &dummy, &glui_avatar_index_local, &touri->display2);
               glui_avatar_index_local = CLAMP(glui_avatar_index_local, 0, navatar_types - 1);
               touri->glui_avatar_index = glui_avatar_index_local;
               if(touri->display2 != 1)touri->display2 = 0;
-              touri->global_tension_flag = t_globaltension_flag;
-              touri->global_tension = t_globaltension;
               touri->nkeyframes = nkeyframes;
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
@@ -12200,9 +12197,6 @@ int ReadIni2(char *inifile, int localfile){
 
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
-                params[0] = 0.0;
-                params[1] = 0.0;
-                params[2] = 0.0;
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
@@ -12220,25 +12214,29 @@ int ReadIni2(char *inifile, int localfile){
                   &viewtype);
 
                 if(viewtype == 0){
+                  float dummy3[3];
+
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,
                     key_xyz, key_xyz + 1, key_xyz + 2,
                     &viewtype, &key_az_path, &key_elev_path, &key_bank,
-                    params, params + 1, params + 2,
+                    dummy3, dummy3 + 1, dummy3 + 2,
                     &zzoom, &uselocalspeed);
                 }
                 else{
+                  float dummy3[3];
+
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,
                     key_xyz, key_xyz + 1, key_xyz + 2,
                     &viewtype, key_view, key_view + 1, key_view + 2,
-                    params, params + 1, params + 2,
+                    dummy3, dummy3 + 1, dummy3 + 2,
                     &zzoom, &uselocalspeed);
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
                 addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path,
-                  key_bank, params, viewtype, zzoom, key_view);
+                  key_bank, viewtype, zzoom, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -12658,7 +12656,7 @@ void WriteIniLocal(FILE *fileout){
       TrimBack(touri->label);
       fprintf(fileout, " %s\n", touri->label);
       fprintf(fileout, " %i %i %f %i %i\n",
-        touri->nkeyframes, touri->global_tension_flag, touri->global_tension, touri->glui_avatar_index, touri->display);
+        touri->nkeyframes, 1, 0.0, touri->glui_avatar_index, touri->display);
 
       framei = &touri->first_frame;
       for(j = 0; j<touri->nkeyframes; j++){
@@ -12676,7 +12674,7 @@ void WriteIniLocal(FILE *fileout){
         if(framei->viewtype == REL_VIEW){
           sprintf(buffer, "%f %f %f %f %f %f %f ",
             framei->az_path, framei->nodeval.elev_path, framei->bank,
-            framei->tension, 0.0, 0.0,
+            0.0, 0.0, 0.0,
             framei->nodeval.zoom);
         }
         else{
@@ -12684,7 +12682,7 @@ void WriteIniLocal(FILE *fileout){
             DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
             DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
             DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
-            framei->tension, 0.0, 0.0,
+            0.0, 0.0, 0.0,
             framei->nodeval.zoom);
         }
         TrimMZeros(buffer);
