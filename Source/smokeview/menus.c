@@ -7713,8 +7713,6 @@ updatemenu=0;
   glutAddMenuEntry("Path through domain", -1);
   for (i = 0; i < ntourinfo; i++) {
     tourdata *touri;
-    int glui_avatar_index_local;
-    char menulabel[1024];
 
     touri = tourinfo + i;
     glutAddMenuEntry(touri->menulabel, i);

@@ -1116,7 +1116,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   float angle_local;
   float f1;
   float rad, cosangle, sinangle;
-  float max_xyz, dx, dy, dz;
   keyframe *thisframe,*addedframe;
 
   if(option == UPDATE){
