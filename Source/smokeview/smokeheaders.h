@@ -602,7 +602,7 @@ EXTERNCPP void CreateTourList(void);
 EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);
 EXTERNCPP void UpdateTourControls(void);
-EXTERNCPP void XYZView2AzElev(keyframe *kf,float *azimuth, float *elevation);
+EXTERNCPP void XYZView2AzElev(keyframe *kf);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
@@ -623,7 +623,7 @@ EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
 EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz, float key_azimuth, float elevation, float bank,
-                    float params[3],int viewtype,float zoom,float view[3]);
+                    int viewtype,float zoom,float view[3]);
 
 EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
                    float *ymin, float *ymax,

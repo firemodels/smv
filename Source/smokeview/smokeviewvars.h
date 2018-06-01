@@ -1406,7 +1406,6 @@ SVEXTERN int ntotal_blockages;
 SVEXTERN int updateindexcolors;
 SVEXTERN int show_path_knots;
 SVEXTERN int keyframe_snap;
-SVEXTERN int tourviewtype;
 SVEXTERN int SVDECL(show_tourlocus,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int iavatar_types, navatar_types;
@@ -1426,7 +1425,6 @@ SVEXTERN int dirtycircletour;
 SVEXTERN float SVDECL(*tour_t,NULL), SVDECL(*tour_t2,NULL), SVDECL(*tour_dist,NULL), SVDECL(*tour_dist2,NULL), SVDECL(*tour_dist3,NULL);
 SVEXTERN float view_tstart, view_tstop;
 SVEXTERN int tour_constant_vel;
-SVEXTERN float tour_bias,tour_continuity;
 SVEXTERN int view_ntimes;
 
 SVEXTERN int SVDECL(ntourinfo, 0);
