@@ -11526,7 +11526,6 @@ int ReadIni2(char *inifile, int localfile){
     {
       int nkeyframes;
       float key_time, key_xyz[3], key_az_path, key_view[3], zzoom, key_elev_path;
-      float key_bank;
       int viewtype, uselocalspeed;
       float *col;
 
@@ -12200,7 +12199,6 @@ int ReadIni2(char *inifile, int localfile){
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
-                key_bank = 0.0;
                 key_az_path = 0.0;
                 key_elev_path = 0.0;
                 viewtype = 0;
@@ -12214,12 +12212,12 @@ int ReadIni2(char *inifile, int localfile){
                   &viewtype);
 
                 if(viewtype == 0){
-                  float dummy3[3];
+                  float dummy3[3],dummy;
 
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,
                     key_xyz, key_xyz + 1, key_xyz + 2,
-                    &viewtype, &key_az_path, &key_elev_path, &key_bank,
+                    &viewtype, &key_az_path, &key_elev_path, &dummy,
                     dummy3, dummy3 + 1, dummy3 + 2,
                     &zzoom, &uselocalspeed);
                 }
@@ -12235,8 +12233,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path,
-                  key_bank, viewtype, zzoom, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path, viewtype, zzoom, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -12673,7 +12670,7 @@ void WriteIniLocal(FILE *fileout){
         fprintf(fileout, " %s %i ", buffer, framei->viewtype);
         if(framei->viewtype == REL_VIEW){
           sprintf(buffer, "%f %f %f %f %f %f %f ",
-            framei->az_path, framei->nodeval.elev_path, framei->bank,
+            framei->az_path, framei->nodeval.elev_path, 0.0,
             0.0, 0.0, 0.0,
             framei->nodeval.zoom);
         }

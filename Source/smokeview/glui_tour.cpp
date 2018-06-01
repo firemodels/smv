@@ -456,7 +456,7 @@ void TourCB(int var){
 
   float key_xyz[3];
   float key_time_in, key_az_path, key_view[3], key_zoom;
-  float key_elev_path, key_bank;
+  float key_elev_path;
 
   if(ntourinfo==0&&var!=TOUR_INSERT_NEW&&var!=TOUR_INSERT_COPY&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS){
     return;
@@ -681,7 +681,6 @@ void TourCB(int var){
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
         key_zoom = (2*thiskey->nodeval.zoom - lastkey->nodeval.zoom);
-        key_bank = (2*thiskey->bank - lastkey->bank);
         viewtype1=thiskey->viewtype;
         viewtype2=1-viewtype1;
       }
@@ -696,7 +695,6 @@ void TourCB(int var){
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
         key_zoom = (thiskey->nodeval.zoom + nextkey->nodeval.zoom)/2.0;
-        key_bank = (thiskey->bank + nextkey->bank)/2.0;
         if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==REL_VIEW){
           viewtype1=REL_VIEW;
         }
@@ -713,7 +711,7 @@ void TourCB(int var){
         }
         viewtype2=1-viewtype1;
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,key_bank,viewtype1,key_zoom,key_view);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,viewtype1,key_zoom,key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();

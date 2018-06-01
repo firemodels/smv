@@ -988,8 +988,7 @@ keyframe *CopyFrame(keyframe *framei){
 
 /* ------------------ AddFrame ------------------------ */
 
-keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, float bank,
-                    int viewtype,float zoom_local,float view[3]){
+keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
   keyframe *frame,*framen;
   float *feye, *fxyz_view;
 
@@ -1011,7 +1010,6 @@ keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_
 
   frame->az_path=key_az_path;
   frame->nodeval.elev_path=elev_path;
-  frame->bank=bank;
   NORMALIZE_XYZ(feye,eye);
   NORMALIZE_XYZ(fxyz_view,view);
   frame->noncon_time=time_local;
@@ -1087,7 +1085,7 @@ void SetupCircularTourNodes(void){
 
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
-  float key_az_path, elev_path, key_bank, key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
   float key_time;
   float angle_local;
@@ -1119,7 +1117,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   thisframe=&touri->first_frame;
   for(j=0;j<nkeyframes;j++){
     key_az_path = 0.0;
-    key_bank=0.0;
     if(nkeyframes == 1){
       angle_local = 0.0;
     }
@@ -1142,8 +1139,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
 
     viewtype=1;
     zoom_local=1.0;
-    addedframe=AddFrame(thisframe, key_time, key_xyz,
-      key_az_path, elev_path, key_bank, viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1214,7 +1210,7 @@ void ReverseTour(char *label){
 tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
-  float key_az_path, elev_path, key_bank, key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_view[3], key_xyz[3], zoom_local;
   int viewtype=0;
   float key_time;
   int i;
@@ -1258,7 +1254,6 @@ tourdata *AddTour(char *label){
     float relpos[3];
 
     key_az_path = 0.0;
-    key_bank = 0.0;
     elev_path=0.0;
     viewtype=1;
     zoom_local=1.0;
@@ -1268,8 +1263,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = view_tstart;
     thisframe=&touri->first_frame;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-      viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
     touri->keyframe_times[0]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
@@ -1281,8 +1275,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = view_tstop;
     thisframe=addedframe;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, key_bank,
-      viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
     touri->keyframe_times[1]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
