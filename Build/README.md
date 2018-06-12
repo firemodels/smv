@@ -5,7 +5,8 @@ Most of these scripts assume you have an Intel C/C++ compiler installed.  Smokev
 assume you have an Intel Fortran Compiler.  Linux and OSX build directories also have scripts for building
 these applications using gnu compilers (gcc and gfortran). Smokeview, Smokediff and Smokezip require various libaries.  To build these
 libraries cd to the `Build/LIBS/<platform>` directory and type:
-```./make_LIBS.sh
+```
+./make_LIBS.sh
 ```
 
 
