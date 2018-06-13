@@ -20,9 +20,13 @@ The following steps assume that `~/Fire-Models` is the repository root where `~`
 export IFORT_COMPILER=/opt/intel/composerxe
 }}}
 
+### Building Libraries Needed by Smokeview
+
   * Smokeview requires several software libraries (such as Glut, glui etc) to implement features such as dialog boxes, rendering images or interacting with the underlying OS.  To build these libraries, 
       * cd to `smv/Build/LIBS/<platform>` 
       * type the `make_LIBS.sh or `make_LIBS.bat command that is found there.
+
+### Building Smokeview 
 
   * There is a sub-directory under `SMV/Build/smokeview` for each target in the Smokeview Makefile.  To build Smokeview on a Linux system, cd into the `intel_linux_64` directory and type
 
