@@ -94,8 +94,9 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 #define TOURS_TOURS_ROLLOUT 0
 #define SETTINGS_TOURS_ROLLOUT 1
 #define KEYFRAME_TOURS_ROLLOUT 2
+#define MODIFY_TOURS_ROLLOUT 3
 
-procdata toursprocinfo[3];
+procdata toursprocinfo[4];
 int ntoursprocinfo = 0;
 
 /* ------------------ ToursRolloutCB ------------------------ */
@@ -187,7 +188,8 @@ extern "C" void GluiTourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(ROLLOUT_tour, _("Update label"), TOUR_UPDATELABEL, TourCB);
 
-  ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false);
+  ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false, MODIFY_TOURS_ROLLOUT, ToursRolloutCB);
+  ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_circular, MODIFY_TOURS_ROLLOUT);
 
   SPINNER_tour_circular_radius=glui_tour->add_spinner_to_panel(ROLLOUT_circular, "radius", GLUI_SPINNER_FLOAT, &tour_circular_radius,TOUR_CIRCULAR_UPDATE,TourCB);
 
