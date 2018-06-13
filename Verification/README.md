@@ -21,6 +21,6 @@ The input files are located in the Verification\Visualization and Verification\W
 
 ### Run smokebot
 
-  * cd to `bot/Smokebot` and run the script `run_smokebot.sh` .  Following the directions
-  [here](https://github.com/firemodels/bot/blob/master/Smokebot/README.md). 
+  * cd to `bot/Smokebot` and run the script `run_smokebot.sh` .  Following the directions in the bot/Smokebot
+  [README.md](https://github.com/firemodels/bot/blob/master/Smokebot/README.md) file. 
 for more details.
