@@ -513,14 +513,14 @@ void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
 
 void CreateTourPaths(void){
   int i;
-
-  //  keyframe *framejm1;
-
   keyframe **tourknotskeylist_copy;
   tourdata **tourknotstourlist_copy;
 
   // construct keyframe list for selecting keyframes
 
+#ifdef _DEBUG
+  printf("updating tour path\n");
+#endif
   ntourknots=0;
   if(ntourinfo==0)return;
 
@@ -988,41 +988,63 @@ keyframe *CopyFrame(keyframe *framei){
 
 /* ------------------ AddFrame ------------------------ */
 
-keyframe *AddFrame(keyframe *framei, float time_local, float *eye, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
-  keyframe *frame,*framen;
+
+keyframe *AddFrame(keyframe *last_frame, float time_local, float *eye, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
+  keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
-  NewMemory((void **)&frame,sizeof(keyframe));
-  feye = frame->nodeval.eye;
-  fxyz_view = frame->nodeval.xyz_view_abs;
+  NewMemory((void **)&this_frame, sizeof(keyframe));
+  feye      = this_frame->nodeval.eye;
+  fxyz_view = this_frame->nodeval.xyz_view_abs;
   if(viewtype!=0)viewtype=1;
 
-  framen=framei->next;
-  if(framen==NULL){
+  next_frame=last_frame->next;
+  if(next_frame==NULL){
     return NULL;
   }
 
-  framei->next=frame;
-  frame->next=framen;
+  last_frame->next=this_frame;
+  this_frame->next=next_frame;
 
-  framen->prev=frame;
-  frame->prev=framei;
+  next_frame->prev=this_frame;
+  this_frame->prev=last_frame;
 
-  frame->az_path=key_az_path;
-  frame->nodeval.elev_path=elev_path;
+  this_frame->az_path=key_az_path;
+  this_frame->nodeval.elev_path=elev_path;
   NORMALIZE_XYZ(feye,eye);
   NORMALIZE_XYZ(fxyz_view,view);
-  frame->noncon_time=time_local;
-  frame->disp_time=time_local;
+  this_frame->noncon_time=time_local;
+  this_frame->disp_time=time_local;
 
-  frame->viewtype=viewtype;
-  frame->nodeval.zoom=zoom_local;
-  frame->keyview_xyz[0]=0.0;
-  frame->keyview_xyz[1]=0.0;
-  frame->keyview_xyz[2]=0.0;
+  this_frame->viewtype=viewtype;
+  this_frame->nodeval.zoom=zoom_local;
+  this_frame->keyview_xyz[0] = fxyz_view[0];
+  this_frame->keyview_xyz[1] = fxyz_view[1];
+  this_frame->keyview_xyz[2] = fxyz_view[2];
+
+  this_frame->eye[0] = eye[0];
+  this_frame->eye[1] = eye[1];
+  this_frame->eye[2] = eye[2];
 
   CheckMemory;
-  return frame;
+  return this_frame;
+}
+
+/* ------------------ DeleteTourFrames ------------------------ */
+
+void DeleteTourFrames(tourdata *thistour){
+  int n;
+  keyframe *frame;
+
+  for(frame = thistour->first_frame.next;frame->next != NULL;){
+    keyframe *next;
+
+    next = frame->next;
+    FREEMEMORY(frame);
+    frame = next;
+  }
+  thistour->first_frame.next = &(thistour->last_frame);
+  thistour->last_frame.prev = &(thistour->first_frame);
 }
 
 /* ------------------ DeleteFrame ------------------------ */
@@ -1139,12 +1161,14 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
 
     viewtype=1;
     zoom_local=1.0;
-    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, zoom_local, key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
+  touri->nkeyframes = nkeyframes;
   touri->last_frame.prev = thisframe;
   thisframe->next = &(touri->last_frame);
+  selected_frame = touri->first_frame.next;
 }
 
 /* ------------------ ReverseTour  ------------------------ */
