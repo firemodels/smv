@@ -162,6 +162,7 @@ int GetTagIndex(const partdata *partin, part5data **datain, int tagval){
     if(parti->loaded == 0 || parti->display == 0)continue;
 
     if(data->npoints == 0)continue;
+    ASSERT(data->npoints>0);
     ASSERT(data->sort_tags != NULL);
     returnval = bsearch(&tagval, data->sort_tags, data->npoints, 2 * sizeof(int), CompareTags);
     if(returnval == NULL)continue;
@@ -1921,6 +1922,7 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   START_TIMER(total_time);
 
+  ASSERT(data_type == PARTDATA || data_type == HISTDATA);
   ASSERT(ifile>=0&&ifile<npartinfo);
   parti=partinfo+ifile;
 
@@ -1977,12 +1979,18 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     return;
   }
 
-  if(data_type == HISTDATA)PRINTF("Updating histogram for: %s\n", file);
-  GetPartHeader(parti, partframestep, &nf_all);
+  if(data_type == HISTDATA){
+    PRINTF("Updating histogram for: %s\n", file);
+    GetPartHeader(parti, partframestep, &nf_all);
+    GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+    return;
+  }
+  else{
+    PRINTF("Loading particle data: %s\n", file);
+    GetPartHeader(parti, partframestep, &nf_all);
+    GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+  }
 
-  if(data_type == PARTDATA)PRINTF("Loading particle data: %s\n", file);
-  GetPartData(parti,partframestep, nf_all, &read_time, &file_size,data_type);
-  if(data_type==HISTDATA)return;
   UpdateGlui();
 
 #ifdef pp_MEMPRINT
