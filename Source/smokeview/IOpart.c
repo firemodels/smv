@@ -809,11 +809,15 @@ int GetHistFileStatus(partdata *parti){
   stat_histfile = STAT(parti->hist_file, &stat_histfile_buffer);
   stat_regfile = STAT(parti->reg_file, &stat_regfile_buffer);
 
-  if(stat_regfile != 0)return HIST_ERR; // particle filei does not exist
+  if(stat_regfile != 0)return HIST_ERR;                    // particle filei does not exist
 
-  // history file does not exist or is older than particle file
+  if(stat_regfile_buffer.st_size > parti->reg_file_size){  // particle file has grown
+    parti->reg_file_size = stat_regfile_buffer.st_size;
+    return HIST_OLD;
+  }
 
-  if(stat_histfile != 0 || stat_regfile_buffer.st_mtime > stat_histfile_buffer.st_mtime)return HIST_OLD;
+  if(stat_histfile != 0) return HIST_OLD;                  // history file does not exist
+  if(stat_regfile_buffer.st_mtime > stat_histfile_buffer.st_mtime)return HIST_OLD; // size file is older than particle file
   return HIST_OK;
 }
 
@@ -831,11 +835,13 @@ int GetSizeFileStatus(partdata *parti){
   stat_sizefile = STAT(parti->size_file, &stat_sizefile_buffer);
   stat_regfile = STAT(parti->reg_file, &stat_regfile_buffer);
 
-  if(stat_regfile != 0)return -1; // history file does not exist
-
-  // size file does not exist or is older than particle file
-
-  if(stat_sizefile != 0 || stat_regfile_buffer.st_mtime > stat_sizefile_buffer.st_mtime)return 1;
+  if(stat_regfile != 0)return -1;                         // particle file does not exist
+  if(stat_sizefile != 0) return 1;                        // size file does not exist
+  if(stat_regfile_buffer.st_size > parti->reg_file_size){ // particle file has grown
+    parti->reg_file_size = stat_regfile_buffer.st_size;
+    return 1;
+  }
+  if(stat_regfile_buffer.st_mtime > stat_sizefile_buffer.st_mtime)return 1; // size file is older than particle file
   return 0;
 }
 
@@ -1608,6 +1614,7 @@ int GetNPartFrames(partdata *parti){
   float time_local;
   char *reg_file, *size_file;
   int i;
+  int doit = 0;
   int stat_sizefile, stat_regfile;
   STRUCTSTAT stat_sizefile_buffer, stat_regfile_buffer;
   int nframes_all;
@@ -1625,7 +1632,11 @@ int GetNPartFrames(partdata *parti){
   //                       2) base file is newer than the size file
   // create_part5sizefile(reg_file,size_file);
 
-  if(stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
+  if(stat_regfile_buffer.st_size > parti->reg_file_size){                   // particle file has grown
+    parti->reg_file_size = stat_regfile_buffer.st_size;
+    doit = 1;
+  }
+  if(doit=1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
     int lenreg, lensize, error;
     int angle_flag=0;
 
@@ -1697,9 +1708,12 @@ int GetMinPartFrames(int flag){
   return min_frames;
 }
 
+#define FORCE 1
+#define NOT_FORCE 0
+
 /* ------------------ GetPartHeader ------------------------ */
 
-void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all){
+void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int option){
   FILE *stream;
   char buffer[256];
   float time_local;
@@ -1716,7 +1730,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all){
 
   sizefile_status = GetSizeFileStatus(parti);
   if(sizefile_status == -1)return; // particle file does not exist so cannot be sized
-  if(sizefile_status == 1){        // size file is missing or older than particle file
+  if(option==FORCE||sizefile_status == 1){        // size file is missing or older than particle file
     int lenreg, lensize, error;
     int angle_flag = 0;
 
@@ -1981,13 +1995,13 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   if(data_type == HISTDATA){
     PRINTF("Updating histogram for: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all);
+    GetPartHeader(parti, partframestep, &nf_all, FORCE);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
     return;
   }
   else{
     PRINTF("Loading particle data: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all);
+    GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
   }
 
