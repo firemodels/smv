@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3];
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];

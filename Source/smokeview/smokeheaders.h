@@ -620,6 +620,7 @@ EXTERNCPP tourdata *AddTour(char *label);
 EXTERNCPP void ReverseTour(char *label);
 EXTERNCPP void SetupCircularTourNodes(void);
 EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
+EXTERNCPP void DeleteTourFrames(tourdata *thistour);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
 EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz, float key_azimuth, float elevation, int viewtype,float zoom,float view[3]);

@@ -88,14 +88,16 @@ GLUI_Listbox *LISTBOX_avatar=NULL;
 #define TOUR_REVERSE 35
 #define TOUR_CIRCULAR_UPDATE 36
 #define RESET_CIRCULAR_SETTINGS 37
+#define KEYFRAME_UPDATE_ALL 38
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
 #define TOURS_TOURS_ROLLOUT 0
 #define SETTINGS_TOURS_ROLLOUT 1
 #define KEYFRAME_TOURS_ROLLOUT 2
+#define MODIFY_TOURS_ROLLOUT 3
 
-procdata toursprocinfo[3];
+procdata toursprocinfo[4];
 int ntoursprocinfo = 0;
 
 /* ------------------ ToursRolloutCB ------------------------ */
@@ -187,7 +189,8 @@ extern "C" void GluiTourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(ROLLOUT_tour, _("Update label"), TOUR_UPDATELABEL, TourCB);
 
-  ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false);
+  ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false, MODIFY_TOURS_ROLLOUT, ToursRolloutCB);
+  ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_circular, MODIFY_TOURS_ROLLOUT);
 
   SPINNER_tour_circular_radius=glui_tour->add_spinner_to_panel(ROLLOUT_circular, "radius", GLUI_SPINNER_FLOAT, &tour_circular_radius,TOUR_CIRCULAR_UPDATE,TourCB);
 
@@ -461,12 +464,6 @@ void TourCB(int var){
   if(ntourinfo==0&&var!=TOUR_INSERT_NEW&&var!=TOUR_INSERT_COPY&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS){
     return;
   }
-  //if(selected_frame==NULL&&tourinfo!=NULL){
-  //  selected_frame=tourinfo[0].first_frame.next;
-  //  selected_tour=tourinfo;
-  //  if(selected_frame->next==NULL)selected_frame=NULL;
-  //  SetGluiTourKeyframe();
-  //}
   if(selected_frame!=NULL){
     thistour=selected_tour;
   }
@@ -497,11 +494,42 @@ void TourCB(int var){
         TourCB(TOUR_LIST);
       }
     }
+    DeleteTourFrames(tourinfo);
     InitCircularTour(tourinfo,ncircletournodes,UPDATE);
+    TourCB(KEYFRAME_UPDATE_ALL);
     UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
     CreateTourList();
+    glutPostRedisplay();
+    break;
+  case KEYFRAME_UPDATE_ALL:
+    {
+      keyframe *frame;
+
+      if(selected_tour == NULL)return;
+      update_tour_path=0;
+      for(frame=selected_tour->first_frame.next;frame->next!=NULL;frame=frame->next){
+        tour_xyz[0] = frame->eye[0];
+        tour_xyz[1] = frame->eye[1];
+        tour_xyz[2] = frame->eye[2];
+        SPINNER_x->set_float_val(tour_xyz[0]);
+        SPINNER_y->set_float_val(tour_xyz[1]);
+        SPINNER_z->set_float_val(tour_xyz[2]);
+        TourCB(KEYFRAME_tXYZ);
+
+        tour_view_xyz[0] = tour_circular_view[0];
+        tour_view_xyz[1] = tour_circular_view[1];
+        tour_view_xyz[2] = tour_circular_view[2];
+        SPINNER_viewx->set_float_val(tour_view_xyz[0]);
+        SPINNER_viewy->set_float_val(tour_view_xyz[1]);
+        SPINNER_viewz->set_float_val(tour_view_xyz[2]);
+        TourCB(KEYFRAME_tXYZ);
+
+        TourCB(KEYFRAME_NEXT);
+      }
+      update_tour_path=1;
+    }
     break;
   case TOUR_USECURRENT:
     break;
@@ -590,7 +618,7 @@ void TourCB(int var){
       xyz_view = selected_frame->nodeval.xyz_view_abs;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
 
-      CreateTourPaths();
+      if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
     }
     break;
@@ -614,7 +642,7 @@ void TourCB(int var){
       selected_frame->viewtype=viewtype1;
       selected_frame->nodeval.zoom=tour_zoom;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
-      CreateTourPaths();
+      if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
       if(viewtype1==ABS_VIEW){
         TourCB(KEYFRAME_viewXYZ);

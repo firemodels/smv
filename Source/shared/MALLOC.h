@@ -102,7 +102,7 @@ void _memorystatus(unsigned int size,unsigned int *availmem, unsigned int *memus
 #endif
 
 #ifdef pp_MEMPRINT
-void _PrintMemoryInfo(void);
+EXTERNCPP void _PrintMemoryInfo(void);
 #define PrintMemoryInfo _PrintMemoryInfo()
 #else
 #define PrintMemoryInfo
