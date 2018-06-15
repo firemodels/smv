@@ -12164,7 +12164,6 @@ int ReadIni2(char *inifile, int localfile){
             }
           }
           ReallocTourMemory();
-          DeleteTourFrames(tourinfo);
           InitCircularTour(tourinfo,ncircletournodes,INIT);
           {
             keyframe *thisframe, *addedframe;
