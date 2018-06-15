@@ -1033,7 +1033,6 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *eye, float key
 /* ------------------ DeleteTourFrames ------------------------ */
 
 void DeleteTourFrames(tourdata *thistour){
-  int n;
   keyframe *frame;
 
   for(frame = thistour->first_frame.next;frame->next != NULL;){
