@@ -240,62 +240,6 @@ void UpdateTerrainColors(void){
   }
 }
 
-/* ------------------ Terrain2Geom ------------------------ */
-
-void Terrain2Geom(float xmin, float xmax, float ymin, float ymax, int nx, int ny, float (*comp_func)(float, float)){
-  int i, j;
-  float dx, dy;
-  float x, y, z;
-  int nverts, nfaces;
-  float *verts;
-  int *faces;
-  int ivert, iface;
-
-  if(nx<2||ny<2)return;
-  dx = (xmax-xmin)/(nx-1);
-  dy = (ymax-ymin)/(ny-1);
-
-  nverts = nx*ny;
-  nfaces = 2*(nx-1)*(ny-1);
-
-  NewMemory((void **)&verts,3*nverts*sizeof(float));
-  NewMemory((void **)&faces,3*nfaces*sizeof(int));
-
-  ivert=0;
-  for(j=0;j<ny;j++){
-    y = ymin + j*dy;
-    for(i=0;i<nx;i++){
-      x = xmin + i*dx;
-      z = comp_func(x,y);
-      verts[ivert++]=x;
-      verts[ivert++]=y;
-      verts[ivert++]=z;
-    }
-  }
-#define IJgeom(i,j) (1+(i) + (j)*nx)
-
-  iface=0;
-  for(j=0;j<ny-1;j++){
-    for(i=0;i<nx-1;i++){
-      int i11, i12, i22, i21;
-
-      i11 = IJgeom(i,j);
-      i12 = IJgeom(i,j+1);
-      i22 = IJgeom(i+1,j+1);
-      i21 = IJgeom(i+1,j);
-      faces[iface++]=i11;
-      faces[iface++]=i21;
-      faces[iface++]=i22;
-      faces[iface++]=i11;
-      faces[iface++]=i22;
-      faces[iface++]=i12;
-    }
-  }
-  FORTgeomout(verts,&nverts,faces,&nfaces);
-  FREEMEMORY(verts);
-  FREEMEMORY(faces);
-}
-
 /* ------------------ GetZTerrain ------------------------ */
 
 float GetZTerrain(float x, float y){
@@ -512,14 +456,6 @@ void InitTerrainAll(void){
     GetContours(meshi->xplt_orig,meshi->yplt_orig,terri->nx+1,terri->ny+1,
       terri->znode, NULL, terri->levels,DONT_GET_AREAS,DATA_FORTRAN,
       &meshi->terrain_contour);
-  }
-  {
-    int nx, ny;
-
-    nx = (xbarORIG-xbar0ORIG)/(meshinfo[0].xplt_orig[1]-meshinfo[0].xplt_orig[0])+1;
-    ny = (ybarORIG-ybar0ORIG)/(meshinfo[0].yplt_orig[1]-meshinfo[0].yplt_orig[0])+1;
-
-    Terrain2Geom(xbar0ORIG, xbarORIG, ybar0ORIG, ybarORIG, nx, ny, GetZTerrain);
   }
 }
 
