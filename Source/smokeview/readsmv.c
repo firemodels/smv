@@ -2022,7 +2022,9 @@ void InitTextures(void){
     floortex=NULL;
     errorcode=1;
     if(tt->file!=NULL){
-      PRINTF(": %s",tt->file);
+#ifdef _DEBUG
+      PRINTF("terrain texture file: %s",tt->file);
+#endif
       floortex=ReadPicture(tt->file,&texwid,&texht,0);
       if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
     }
