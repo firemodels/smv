@@ -7815,6 +7815,7 @@ typedef struct {
       parti->reg_file=NULL;
       if(NewMemory((void **)&parti->reg_file,(unsigned int)(len+1))==0)return 2;
       STRCPY(parti->reg_file,bufferptr);
+      parti->reg_file_size = GetFileSizeSMV(parti->reg_file);
 
       parti->size_file=NULL;
       if(NewMemory((void **)&parti->size_file,(unsigned int)(len+1+3))==0)return 2;
