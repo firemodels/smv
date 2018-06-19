@@ -57,6 +57,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
+    PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
     PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
@@ -511,6 +512,9 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-isotest", 8) == 0){
       isotest = 1;
+    }
+    else if(strncmp(argv[i], "-smoke3d", 8) == 0){
+      smoke3d_only = 1;
     }
 #ifdef _DEBUG
     else if(strncmp(argv[i], "-tempdir", 8) == 0){

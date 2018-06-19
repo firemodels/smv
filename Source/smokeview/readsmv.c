@@ -690,7 +690,7 @@ void ReadSMVDynamic(char *file){
 
     if(Match(buffer,"PL3D") == 1){
       do_pass2=1;
-      if(setup_only==1)continue;
+      if(setup_only==1||smoke3d_only==1)continue;
       nplot3dinfo++;
       continue;
 
@@ -986,7 +986,7 @@ void ReadSMVDynamic(char *file){
       int len,blocknumber,blocktemp;
       char *bufferptr;
 
-      if(setup_only==1)continue;
+      if(setup_only==1||smoke3d_only==1)continue;
       if(minmaxpl3d==1)do_pass3=1;
       nn_plot3d++;
       TrimBack(buffer);
@@ -3406,7 +3406,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmin[0] - EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[0] = 0;
       ncount++;
     }
@@ -3414,7 +3414,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmax[0] + EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[1] = 0;
       ncount++;
     }
@@ -3422,7 +3422,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[2] = 0;
       ncount++;
     }
@@ -3430,7 +3430,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[3] = 0;
       ncount++;
     }
@@ -3438,7 +3438,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[4] = 0;
       ncount++;
     }
@@ -3446,7 +3446,7 @@ void SetupMeshWalls(void){
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
-    if(GetMesh(xyz) != NULL){
+    if(GetMesh(xyz,NULL) != NULL){
       is_extface[5] = 0;
       ncount++;
     }
@@ -4255,7 +4255,7 @@ int ReadSMV(char *file, char *file2){
     }
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       npartinfo++;
       continue;
     }
@@ -4265,7 +4265,7 @@ int ReadSMV(char *file, char *file2){
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
       ){
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
       if(FGETS(buffer,255,stream)==NULL){
@@ -4303,12 +4303,12 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       npatchinfo++;
       continue;
     }
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1){
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       nisoinfo++;
       continue;
     }
@@ -7768,7 +7768,7 @@ typedef struct {
       size_t len;
       char *buffer3;
 
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       nn_part++;
 
       parti = partinfo + ipart;
@@ -8041,7 +8041,7 @@ typedef struct {
       size_t len;
       int read_slice_header=0;
 
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
 
       sliceoffsetptr = strchr(buffer, '$');
       if(sliceoffsetptr!=NULL){
@@ -8301,7 +8301,7 @@ typedef struct {
       size_t len;
       char *geom_fdsfiletype;
 
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       nn_patch++;
 
       TrimBack(buffer);
@@ -8516,7 +8516,7 @@ typedef struct {
       size_t len;
       char *buffer3;
 
-      if(setup_only == 1)continue;
+      if(setup_only == 1||smoke3d_only==1)continue;
       isoi = isoinfo + iiso;
       isoi->isof_index = nn_iso%nisos_per_mesh;
       nn_iso++;

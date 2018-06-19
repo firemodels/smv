@@ -467,15 +467,21 @@ void UpdatePlotxyzAll(void){
 
 /* ------------------ GetMesh ------------------------ */
 
-meshdata *GetMesh(float *xyz){
+meshdata *GetMesh(float *xyz, meshdata *guess){
   int i;
 
-  for(i=0;i<nmeshes;i++){
+  for(i=-1;i<nmeshes;i++){
     meshdata *meshi;
     int ibar, jbar, kbar;
     float *xplt, *yplt, *zplt;
 
-    meshi = meshinfo+i;
+    if(i == -1){
+      if(guess == NULL)continue;
+      meshi = guess;
+    }
+    else{
+      meshi = meshinfo + i;
+    }
 
     ibar = meshi->ibar;
     jbar = meshi->jbar;
