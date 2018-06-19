@@ -9200,12 +9200,12 @@ updatemenu=0;
           CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
           iloadsubpatchmenu_s++;
         }
-        if(ii==0||strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix)!=0){
-          if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
-            nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
-            have_geom_slice_menus=1;
-            glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
-          }
+        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0)continue;
+        if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
+          strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
+          nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
+          have_geom_slice_menus=1;
+          glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
         }
       }
     }
@@ -9363,7 +9363,7 @@ updatemenu=0;
 
   /* --------------------------------unload and load multislice menus -------------------------- */
 
-  if(nmultisliceinfo+nfedinfo<nsliceinfo||geom_slice_loaded>0){
+  if(nmultisliceinfo+nfedinfo<nsliceinfo||have_geom_slice_menus==1){
     CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
     nmultisliceloaded = 0;
     for(i = 0;i<nmultisliceinfo;i++){
@@ -10555,7 +10555,7 @@ updatemenu=0;
 
       // slice
 
-      if (nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo) {
+      if ((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1) {
         strcpy(loadmenulabel, _("Slice"));
         if (sliceframeskip > 0) {
           sprintf(steplabel, "/Skip %i", sliceframeskip);
