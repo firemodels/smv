@@ -1241,7 +1241,7 @@ void UpdateMeshTerrain(void){
   if(nterraininfo<=0)return;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
-    meshdata *meshj;
+    meshdata *meshj=NULL;
     int ii, jj;
     float *x, *y, *z;
     float xyz[3];
@@ -1260,7 +1260,7 @@ void UpdateMeshTerrain(void){
       xyz[0]=x[ii];
       for(jj=0;jj<meshi->jbar;jj++){
         xyz[1]=y[jj];
-        meshj = GetMesh(xyz);
+        meshj = GetMesh(xyz,meshj);
         if(meshj==NULL||meshj==meshi)continue;
         meshi->is_bottom=0;
         break;
@@ -1287,24 +1287,23 @@ void UpdateMeshTerrain(void){
     for(ii=0;ii<meshi->ibar;ii++){
       xyz[0]=x[ii];
       for(jj=0;jj<meshi->jbar;jj++){
-        int j;
+        int j, ij;
+        meshdata *mesh_above = NULL;
 
+        ij = IJCELL2(ii, jj);
         xyz[1]=y[jj];
         for(j=0;j<nmeshes;j++){
-          meshdata *meshj,*mesh_above;
+          meshdata *meshj;
 
           meshj = meshinfo + j;
           if(meshi==meshj)continue;
           xyz[2]=meshj->zplt_orig[1];
-          mesh_above= GetMesh(xyz);
+          mesh_above= GetMesh(xyz,mesh_above);
           if(mesh_above!=NULL){
             float zz;
             int valid;
-            int ij;
 
-            ij = IJCELL2(ii,jj);
             zz= GetMeshZCell(mesh_above, xyz[0],xyz[1], &valid);
-            ij=IJCELL2(ii,jj);
             if(valid==1&&zz>zcell[ij]){
               zcell[ij]=zz;
             }

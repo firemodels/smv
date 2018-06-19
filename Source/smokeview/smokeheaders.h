@@ -456,7 +456,7 @@ EXTERNCPP void UpdateWindowSizeList(void);
 EXTERNCPP void ResizeWindow(int width, int height);
 EXTERNCPP void UpdateTrainerOutline(void);
 EXTERNCPP void UpdateTrainerMoves(void);
-EXTERNCPP meshdata *GetMesh(float *xyz);
+EXTERNCPP meshdata *GetMesh(float *xyz, meshdata *guess);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
