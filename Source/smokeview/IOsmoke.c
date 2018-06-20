@@ -4969,7 +4969,7 @@ void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
   int nxyz[8];
   int nchars[2];
   int nframes_found=0;
-  int framestart;
+  int frame_start, frame_end;
 
   float time_local;
   char compstring[128];
@@ -5174,16 +5174,24 @@ void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
   // read smoke data
 
   START_TIMER(read_time);
-  if(flag==RELOAD&&smoke3di->ntimes_old>0){
-    SkipSmokeFrames(SMOKE3DFILE, smoke3di->ntimes_old, fortran_skip);
-    framestart=smoke3di->ntimes_old;
+  if (iframe == ALL_FRAMES) {
+    if (flag == RELOAD&&smoke3di->ntimes_old > 0) {
+      SkipSmokeFrames(SMOKE3DFILE, smoke3di->ntimes_old, fortran_skip);
+      frame_start = smoke3di->ntimes_old;
+    }
+    else {
+      frame_start = 0;
+    }
+    frame_end = smoke3di->ntimes_full;
   }
-  else{
-    framestart=0;
+  else {
+    SkipSmokeFrames(SMOKE3DFILE, iframe, fortran_skip);
+    frame_start = iframe;
+    frame_end = iframe+1;
   }
-  iii = framestart;
-  nframes_found = framestart;
-  for(i=framestart;i<smoke3di->ntimes_full;i++){
+  iii = frame_start;
+  nframes_found = frame_start;
+  for(i=frame_start;i<frame_end;i++){
     SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
     if(feof(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
