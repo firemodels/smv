@@ -4772,9 +4772,9 @@ int GetSmoke3dSizes(int fortran_skip, char *smokefile, int version, float **time
   nch_smoke_compressed_full =*nchars_smoke_compressed_full;
   nch_smoke_compressed_found=*nchars_smoke_compressed_found;
 
-  NewResizeMemory(use_smokeframe_full, *ntimes_full * sizeof(float));
-  NewResizeMemory(time_found, nframes_found * sizeof(float));
-  NewResizeMemory(nch_smoke_compressed_full, (*ntimes_full) * sizeof(int));
+  NewResizeMemory(       use_smokeframe_full, (*ntimes_full)  * sizeof(int));
+  NewResizeMemory(                time_found, nframes_found   * sizeof(float));
+  NewResizeMemory( nch_smoke_compressed_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
 
   *use_smokeframe = use_smokeframe_full;
