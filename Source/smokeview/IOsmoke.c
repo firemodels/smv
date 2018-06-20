@@ -4957,7 +4957,7 @@ void SetSmokeColorFlags(void){
 
 /* ------------------ ReadSmoke3D ------------------------ */
 
-void ReadSmoke3d(int ifile,int flag, int *errorcode){
+void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
   smoke3ddata *smoke3di;
   FILE *SMOKE3DFILE;
   int error;
@@ -5066,7 +5066,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
         if((smoke3di->type == TEMP&&smoke3dj->type == HRRPUV) ||
           (smoke3di->type == HRRPUV&&smoke3dj->type == TEMP)){
           printf("unloading %s\n", smoke3dj->file);
-          ReadSmoke3d(j, UNLOAD, &error2);
+          ReadSmoke3d(iframe,j, UNLOAD, &error2);
         }
       }
     }
@@ -5087,21 +5087,21 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
                  &smoke3di->maxval,
                  &smoke3di->ntimes,
                  &smoke3di->ntimes_full)==1){
-    ReadSmoke3d(ifile,UNLOAD,&error);
+    ReadSmoke3d(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
     fprintf(stderr,"*** Error: problems sizing 3d smoke data for %s\n",smoke3di->file);
     return;
   }
   if(smoke3di->maxval>=0.0){
     if(smoke3di->type == HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
-      ReadSmoke3d(ifile,UNLOAD,&error);
+      ReadSmoke3d(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF("*** HRRPUV file: %s skipped\n",smoke3di->file);
       PRINTF("    maximum HRRPUV %f<=%f in mesh %s\n", smoke3di->maxval,load_hrrpuv_cutoff,meshi->label);
       return;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
-      ReadSmoke3d(ifile,UNLOAD,&error);
+      ReadSmoke3d(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF("*** Soot file: %s skipped\n",smoke3di->file);
       PRINTF("    maximum soot opacity %f<=%f in  mesh %s\n", smoke3di->maxval,load_3dsmoke_cutoff, meshi->label);
@@ -5117,7 +5117,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
      NewResizeMemory(smoke3di->smokeframe_out,      smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(meshi->merge_color,          4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(meshi->merge_alpha,            smoke3di->nchars_uncompressed*sizeof(unsigned char))==0){
-     ReadSmoke3d(ifile,UNLOAD,&error);
+     ReadSmoke3d(iframe,ifile,UNLOAD,&error);
      *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
      return;
@@ -5135,7 +5135,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
     }
   }
   if(NewResizeMemory(smoke3di->smoke_comp_all,ncomp_smoke_total_skipped*sizeof(unsigned char))==0){
-    ReadSmoke3d(ifile,UNLOAD,&error);
+    ReadSmoke3d(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
      fprintf(stderr,"*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
     return;
@@ -5157,7 +5157,7 @@ void ReadSmoke3d(int ifile,int flag, int *errorcode){
   file_size= GetFileSizeSMV(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
-    ReadSmoke3d(ifile,UNLOAD,&error);
+    ReadSmoke3d(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
     return;
   }

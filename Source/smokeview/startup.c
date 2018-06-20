@@ -1038,8 +1038,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3d(i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3d(i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3d(ALL_FRAMES,i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3d(ALL_FRAMES,i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;

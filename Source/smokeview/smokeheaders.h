@@ -766,7 +766,7 @@ EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadVSlice(int ivslice, int flag, int *errorcode);
 
 EXTERNCPP void FreeSmoke3d(smoke3ddata *smoke3di);
-EXTERNCPP void ReadSmoke3d(int ifile,int flag, int *errorcode);
+EXTERNCPP void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
