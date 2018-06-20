@@ -1312,7 +1312,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3d(ALL_FRAMES,i,LOAD,&errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1854,7 +1854,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3d(ALL_FRAMES,i,LOAD,&errorcode);
       return;
     }
   }

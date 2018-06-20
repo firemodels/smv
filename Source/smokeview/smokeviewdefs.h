@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ALL_FRAMES -1
+
 #define INIT 0
 #define UPDATE 1
 
