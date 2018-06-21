@@ -251,7 +251,8 @@ void GetViewportInfo(void){
     int timebar_height;
 
     timebar_height = MAX(VP_timebar.height, VP_info.height);
-    if(timebar_overlap == TIMEBAR_OVERLAP_ALWAYS||(timebar_overlap==TIMEBAR_OVERLAP_AUTO&&visTimebar==0))timebar_height = 0;
+    if(timebar_overlap == TIMEBAR_OVERLAP_ALWAYS)timebar_height = 0;
+    if(timebar_overlap==TIMEBAR_OVERLAP_AUTO&&visTimebar==0&&visColorbarHorizontal==0)timebar_height = 0;
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
