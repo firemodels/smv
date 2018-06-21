@@ -2245,6 +2245,18 @@ void Keyboard(unsigned char key, int flag){
       timebar_overlap++;
       if (timebar_overlap > 2)timebar_overlap = 0;
       UpdateTimebarOverlap();
+      printf("overlap time/colorbar region: ");
+      switch(timebar_overlap){
+      case 0:
+        printf("always\n");
+        break;
+      case 1:
+        printf("never\n");
+        break;
+      case 2:
+        printf("only if time/colorbar hidden\n");
+        break;
+      }
       break;
  // toggle_colorbar   state
  //    0              hidden
