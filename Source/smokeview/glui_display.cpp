@@ -246,11 +246,18 @@ int cb_up_rgb[3],cb_down_rgb[3];
 procdata displayprocinfo[5];
 int ndisplayprocinfo = 0;
 
+/* ------------------ UpdateTimebarOverlap ------------------------ */
+
+extern "C" void UpdateTimebarOverlap(void) {
+  RADIO_timebar_overlap->set_int_val(timebar_overlap);
+}
+
 /* ------------------ DisplayRolloutCB ------------------------ */
 
 void DisplayRolloutCB(int var){
   ToggleRollout(displayprocinfo, ndisplayprocinfo, var);
 }
+
 /* ------------------ UpdateGluiLabelText ------------------------ */
 
 extern "C" void UpdateGluiLabelText(void){
