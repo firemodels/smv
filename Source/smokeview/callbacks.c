@@ -2241,6 +2241,11 @@ void Keyboard(unsigned char key, int flag){
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
       break;
+    case ':':
+      timebar_overlap++;
+      if (timebar_overlap > 2)timebar_overlap = 0;
+      UpdateTimebarOverlap();
+      break;
  // toggle_colorbar   state
  //    0              hidden
  //    1              vertical
