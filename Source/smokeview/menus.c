@@ -805,6 +805,12 @@ void ColorbarMenu(int value){
      contour_type=LINE_CONTOURS;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
      break;
+   case COLORBAR_HORIZONTAL:
+     LabelMenu(MENU_LABEL_colorbar_horizontal);
+     break;
+   case COLORBAR_VERTICAL:
+     LabelMenu(MENU_LABEL_colorbar_vertical);
+     break;
    default:
      ASSERT(FFALSE);
      break;
@@ -7324,6 +7330,11 @@ updatemenu=0;
 /* -------------------------------- colorbarmenu -------------------------- */
 
   CREATEMENU(colorbarshademenu,ColorbarMenu);
+  if(visColorbarVertical==1)glutAddMenuEntry(_("*Vertical"),COLORBAR_VERTICAL);
+  if(visColorbarVertical==0)glutAddMenuEntry(_("Vertical"),COLORBAR_VERTICAL);
+  if(visColorbarHorizontal==1)glutAddMenuEntry(_("*Horizontal"),COLORBAR_HORIZONTAL);
+  if(visColorbarHorizontal==0)glutAddMenuEntry(_("Horizontal"),COLORBAR_HORIZONTAL);
+  glutAddMenuEntry("-", MENU_DUMMY);
   if(contour_type==SHADED_CONTOURS){
     glutAddMenuEntry(_("*Continuous"),COLORBAR_CONTINUOUS);
     glutAddMenuEntry(_("Stepped"),COLORBAR_STEPPED);
