@@ -670,9 +670,7 @@ SVEXTERN unsigned char SVDECL(*hazardcolor,NULL);
 SVEXTERN float SVDECL(zone_ventfactor,1.0);
 SVEXTERN unsigned char SVDECL(*izonetu,NULL);
 SVEXTERN int SVDECL(show_zonelower, 0);
-#ifdef pp_ZONETL
 SVEXTERN unsigned char SVDECL(*izonetl, NULL);
-#endif
 SVEXTERN int nzone_times;
 SVEXTERN float barright;
 SVEXTERN float SVDECL(*tspr,NULL);
