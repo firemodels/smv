@@ -1889,7 +1889,6 @@ void UpdateShowScene(void){
   if(updatefacelists==1)UpdateFaceLists();
 }
 
-#ifdef pp_COLORBARFLIP
 /* ------------------ UpdateFlippedColorbar ------------------------ */
 
 void UpdateFlippedColorbar(void){
@@ -1911,7 +1910,6 @@ void UpdateFlippedColorbar(void){
     ColorbarMenu(COLORBAR_FLIP);
   }
 }
-#endif
 
 /* ------------------ UpdateDisplay ------------------------ */
 #define TERRAIN_FIRE_LINE_UPDATE 39
@@ -1928,12 +1926,10 @@ void UpdateDisplay(void){
     update_zaxis_custom = 0;
     UpdateZAxisCustom();
   }
-#ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){
     update_flipped_colorbar = 0;
     UpdateFlippedColorbar();
   }
-#endif
   if(update_smokecolorbar == 1){
     update_smokecolorbar = 0;
     SmokeColorbarMenu(fire_colorbar_index);

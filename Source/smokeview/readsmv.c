@@ -8180,7 +8180,6 @@ typedef struct {
       else{
         if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
-#ifdef pp_COLORBARFLIP
       if(strlen(sd->label.longlabel)>14&&
          strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
          sd->colorbar_autoflip=1;
@@ -8188,7 +8187,6 @@ typedef struct {
       else{
          sd->colorbar_autoflip=0;
       }
-#endif
 
 
       {

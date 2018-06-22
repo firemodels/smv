@@ -283,10 +283,8 @@ SVEXTERN float SVDECL(tetra_point_size, 10.0);
 SVEXTERN int SVDECL(use_data_extremes, 1);
 SVEXTERN int SVDECL(extreme_data_offset, 1), SVDECL(colorbar_offset, 0);
 SVEXTERN int SVDECL(colorbar_flip, 0);
-#ifdef pp_COLORBARFLIP
 SVEXTERN int SVDECL(colorbar_autoflip,1);
 SVEXTERN int SVDECL(update_flipped_colorbar,0);
-#endif
 
 #ifdef INMAIN
 SVEXTERN float gvecphys[3]={0.0,0.0,-9.8};
