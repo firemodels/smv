@@ -606,11 +606,7 @@ void UpdateShow(void){
   
   // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
 
-#ifdef pp_HCOLORBAR
   if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
-#else
-  if((showtime == 1 || showplot3d == 1) && visColorbarVertical == 1){
-#endif
     if(old_draw_colorlabel == 0)updatemenu = 1;
     old_draw_colorlabel = 1;
   }

@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-#define pp_HCOLORBAR     // used to test horizontal colorbars
 #define pp_ZONETL
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression

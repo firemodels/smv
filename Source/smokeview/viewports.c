@@ -726,12 +726,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-#ifdef pp_HCOLORBAR
   if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     DrawHorizontalColorbarRegLabels();
     DrawHorizontalColorbars();
   }
-#endif
 
   if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1){
     if(visTimelabel==1){

@@ -88,9 +88,7 @@ GLUI_Checkbox *CHECKBOX_LB_visLabels=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_use_foreground=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_show_always=NULL;
 GLUI_Checkbox *CHECKBOX_visColorbarVertical=NULL;
-#ifdef pp_HCOLORBAR
 GLUI_Checkbox *CHECKBOX_visColorbarHorizontal = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_labels_timebar=NULL;
 GLUI_Checkbox *CHECKBOX_labels_ticks=NULL;
 GLUI_Checkbox *CHECKBOX_labels_title=NULL;
@@ -195,10 +193,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_SHOW_TICK 13
 
 #define LABELS_label 0
-#ifdef pp_HCOLORBAR
 #define LABELS_vcolorbar 34
 #define LABELS_hcolorbar 35
-#endif
 #define FRAME_label 21
 #define HRR_label 22
 #define HRRPUVCUTOFF_label 23
@@ -506,12 +502,8 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   if(nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, LabelsCB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, LabelsCB);
-#ifdef pp_HCOLORBAR
   CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);
-#else
-  CHECKBOX_visColorbarVertical = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar"), &visColorbarVertical, LABELS_label, LabelsCB);
-#endif
   CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame label"), &visFramelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
@@ -962,7 +954,6 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
-#ifdef pp_HCOLORBAR
   case LABELS_vcolorbar:
     if(visColorbarVertical==1){
       visColorbarHorizontal=0;
@@ -998,7 +989,6 @@ extern "C" void LabelsCB(int var){
       toggle_colorbar = 0;
     }
     break;
-#endif
   case LABELS_tick_inside:
   case LABELS_tick_outside:
     if(var==LABELS_tick_inside){
