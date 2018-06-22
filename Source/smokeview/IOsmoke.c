@@ -4970,6 +4970,7 @@ void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
   int nchars[2];
   int nframes_found=0;
   int frame_start, frame_end;
+  char smoketype[100];
 
   float time_local;
   char compstring[128];
@@ -4987,6 +4988,25 @@ void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
   }
   else{
     fortran_skip=0;
+  }
+
+  switch(smoke3di->type){
+  case HRRPUV:
+    strcpy(smoketype, "hrrpuv");
+    break;
+  case TEMP:
+    strcpy(smoketype, "temperature");
+    break;
+  case CO2:
+    strcpy(smoketype, "CO2");
+    break;
+  case SOOT:
+    strcpy(smoketype, "soot");
+    break;
+  default:
+    strcpy(smoketype, "unknown");
+    ASSERT(FFALSE);
+    break;
   }
 
   if(smoke3di->loaded==1&&flag!=RELOAD){
@@ -5200,7 +5220,7 @@ void ReadSmoke3d(int iframe,int ifile,int flag, int *errorcode){
     }
     if(use_tload_begin==1&&time_local<tload_begin)smoke3di->use_smokeframe[i]=0;
     if(smoke3di->use_smokeframe[i]==1){
-      PRINTF("3D smoke/fire time=%.2f",time_local);
+      PRINTF("%s time=%.2f mesh:%s",smoketype,time_local,meshi->label);
     }
     SKIP;fread(nchars,4,2,SMOKE3DFILE);SKIP;
     if(feof(SMOKE3DFILE)!=0){
