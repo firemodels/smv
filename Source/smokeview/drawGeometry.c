@@ -992,6 +992,8 @@ void SetCVentDirs(void){
           ny = cvi->jmax - cvi->jmin;
           break;
         default:
+          nx = 0;
+          ny = 0;
           ASSERT(FFALSE);
           break;
       }

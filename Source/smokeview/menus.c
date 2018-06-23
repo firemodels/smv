@@ -4708,7 +4708,7 @@ void ShowBoundaryMenu(int value){
     vis_threshold = 1 - vis_threshold;
     UpdateChar();
   }
-  if(value==SHOWALL_BOUNDARY||value==GLUI_SHOWALL_BOUNDARY||GLUI_HIDEALL_BOUNDARY){
+  if(value==SHOWALL_BOUNDARY||value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
     int ii;
 
     if(value == GLUI_SHOWALL_BOUNDARY)show_boundaryfiles = 1;

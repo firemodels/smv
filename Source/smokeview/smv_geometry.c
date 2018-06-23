@@ -1584,6 +1584,7 @@ int MakeIBlankCarve(void){
       xplt = meshi->xplt_orig;
       yplt = meshi->yplt_orig;
       zplt = meshi->zplt_orig;
+      k2 = 0;
       for(ii=0;ii<nx;ii++){
         if(xplt[ii]<=meshj->boxmin[0]&&meshj->boxmin[0]<xplt[ii+1]){
           i1=ii;

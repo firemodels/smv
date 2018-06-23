@@ -3275,6 +3275,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
       constval = zplt[sd->ks1]+offset_slice*sd->sliceoffset;
       break;
       default:
+        constval = 0.0;
         ASSERT(FFALSE);
         break;
     }

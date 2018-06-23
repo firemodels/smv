@@ -1309,13 +1309,10 @@ void DrawVerticalColorbarReg(void){
 
 int CountColorbars(void){
   int count = 0;
+  int i;
 
-  if(hcolorbar_vis!=NULL){
-    int i;
-
-    for(i=0;i<6;i++){
-      hcolorbar_vis[i]=-1;
-    }
+  for(i=0;i<6;i++){
+    hcolorbar_vis[i]=-1;
   }
   if(showevac_colorbar == 1 || showsmoke == 1){
     hcolorbar_vis[COLORBAR_PART]=count+2;
@@ -2937,6 +2934,7 @@ void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
   if(b>=MAX(r, g))maxmode = 2;
 
   luminance = (cmin+cmax)/2.0;
+  saturation = 0.0;
   if(cmaxmcmin==0.0||luminance==0.0){
     saturation = 0.0;
     hue = 0.0;

@@ -1364,6 +1364,8 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
       nvals = meshi->kbar;
       break;
     default:
+      xyz = NULL;
+      nvals = 0;
       ASSERT(FFALSE);
       break;
   }

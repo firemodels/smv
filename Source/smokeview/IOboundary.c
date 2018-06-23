@@ -2054,6 +2054,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,maxtimes_boundary);
     meshi->npatch_times=maxtimes_boundary;
+    framestart = 0;
   }
   else{
     if(meshi->patchval == NULL){

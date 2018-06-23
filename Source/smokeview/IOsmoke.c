@@ -4638,7 +4638,7 @@ void SkipSmokeFrames(FILE *SMOKE3DFILE, int nsteps, int fortran_skip){
 
 FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   FILE *SMOKE_SIZE, *SMOKE3DFILE;
-  char smoke_sizefilename[1024], smoke_sizefilename2[1024], buffer[255];
+  char smoke_sizefilename[1024], smoke_sizefilename2[1024];
   int lentext;
   char *textptr;
   int nxyz[8];
@@ -4729,22 +4729,11 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
 /* ------------------ GetSmoke3DTimeSteps ------------------------ */
 
 void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full){
-  char smoke_sizefilename[1024], smoke_sizefilename2[1024], buffer[255];
-  char *textptr;
+  char buffer[255];
   FILE *SMOKE_SIZE = NULL;
   int nframes_found;
-  float time_local, time_max, *time_found = NULL;
-  int *use_smokeframe_full;
-  int nch_uncompressed, nch_smoke_compressed;
-  int *nch_smoke_compressed_full = NULL;
-  int *nch_smoke_compressed_found = NULL;
-  int nxyz[8];
-  int nchars[2];
-  int skip_local;
+  float time_local, time_max;
   int iframe_local;
-  int dummy;
-  int ntimes_full2;
-  size_t lentext;
   int iii;
 
   *ntimes_found = 0;
@@ -4786,8 +4775,7 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   int **nchars_smoke_compressed_full,
   float *maxval,
   int *ntimes_found, int *ntimes_full){
-  char smoke_sizefilename[1024], smoke_sizefilename2[1024], buffer[255];
-  char *textptr;
+  char buffer[255];
   FILE *SMOKE_SIZE = NULL;
   int nframes_found;
   float time_local, time_max, *time_found = NULL;
@@ -4795,13 +4783,9 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   int nch_uncompressed, nch_smoke_compressed;
   int *nch_smoke_compressed_full = NULL;
   int *nch_smoke_compressed_found = NULL;
-  int nxyz[8];
-  int nchars[2];
-  int skip_local;
   int iframe_local;
   int dummy;
   int ntimes_full2;
-  size_t lentext;
   int iii;
 
   SMOKE_SIZE = GetSmokeFileSize(smokefile,fortran_skip,version);
@@ -5387,6 +5371,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int flag, int *errorcode) {
 void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int flag, int *errorcode) {
   int i, ntimes, itime;
 
+  ntimes = 10;
   for (itime = 0; itime < ntimes; itime++) {
     for (i = 0; i < nsmoke3dinfo; i++) {
       smoke3ddata *smoke3di;
@@ -5394,16 +5379,16 @@ void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int flag, int *errorcode) {
       smoke3di = smoke3dinfo + i;
       switch (smoke3di->type){
         case SOOT:
-          if(smoketype2&SOOT_2!=0)ReadSmoke3DAllMeshes(itime, SOOT, flag, errorcode);
+          if((smoketype2&SOOT_2)!=0)ReadSmoke3DAllMeshes(itime, SOOT, flag, errorcode);
           break;
         case HRRPUV:
-          if(smoketype2&HRRPUV_2!=0)ReadSmoke3DAllMeshes(itime, HRRPUV, flag, errorcode);
+          if((smoketype2&HRRPUV_2)!=0)ReadSmoke3DAllMeshes(itime, HRRPUV, flag, errorcode);
           break;
         case TEMP:
-          if(smoketype2&TEMP_2!=0)ReadSmoke3DAllMeshes(itime, TEMP, flag, errorcode);
+          if((smoketype2&TEMP_2)!=0)ReadSmoke3DAllMeshes(itime, TEMP, flag, errorcode);
           break;
         case CO2:
-          if(smoketype2&CO2_2!=0)ReadSmoke3DAllMeshes(itime, CO2, flag, errorcode);
+          if((smoketype2&CO2_2)!=0)ReadSmoke3DAllMeshes(itime, CO2, flag, errorcode);
           break;
       }
     }

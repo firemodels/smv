@@ -1636,7 +1636,7 @@ int GetNPartFrames(partdata *parti){
     parti->reg_file_size = stat_regfile_buffer.st_size;
     doit = 1;
   }
-  if(doit=1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
+  if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
     int lenreg, lensize, error;
     int angle_flag=0;
 
