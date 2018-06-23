@@ -279,7 +279,7 @@ int main(int argc, char **argv){
   fclose(stream_in2);
 
   if(no_plot3d==0){
-    setup_plot3d(stream_out);
+    SetupPlot3D(stream_out);
     diff_plot3ds(stream_out);
   }
   if(no_slice==0){

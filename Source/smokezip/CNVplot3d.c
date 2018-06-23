@@ -15,7 +15,7 @@ STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, i
 
 /* ------------------ convert_plot3d ------------------------ */
 
-int convert_plot3d(plot3d *plot3di){
+int ConvertPlot3D(plot3d *plot3di){
 
   char plot3dfile_svz[1024];
   int fileversion, one, zero;
@@ -225,7 +225,7 @@ int convert_plot3d(plot3d *plot3di){
 
 /* ------------------ getplot3d ------------------------ */
 
-plot3d *getplot3d(char *string){
+plot3d *GetPlot3D(char *string){
   int i;
   plot3d *plot3di;
 
@@ -282,7 +282,7 @@ void *compress_plot3ds(void *arg){
     UNLOCK_PLOT3D;
 
     if(plot3di->doit==1){
-      convert_plot3d(plot3di);
+      ConvertPlot3D(plot3di);
     }
     else{
       if(GLOBcleanfiles==0){

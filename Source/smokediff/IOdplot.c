@@ -8,9 +8,9 @@
 #include "datadefs.h"
 #include "file_util.h"
 
-/* ------------------ setup_plot3d ------------------------ */
+/* ------------------ SetupPlot3D ------------------------ */
 
-void setup_plot3d(FILE *stream_out){
+void SetupPlot3D(FILE *stream_out){
   casedata *case1, *case2;
   int i;
 
@@ -21,7 +21,7 @@ void setup_plot3d(FILE *stream_out){
     plot3d *plot3di;
 
     plot3di = case1->plot3dinfo + i;
-    plot3di->plot3d2 = getplot3d(plot3di,case2);
+    plot3di->plot3d2 = GetPlot3D(plot3di,case2);
     if(plot3di->plot3d2!=NULL&&stream_out!=NULL){
       char outfile[1024];
       int j;
@@ -43,7 +43,7 @@ void setup_plot3d(FILE *stream_out){
 
 /* ------------------ getplot3d ------------------------ */
 
-plot3d *getplot3d(plot3d *plot3din, casedata *case2){
+plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   int i;
   float dx, dy, dz;
   meshdata *meshin;
