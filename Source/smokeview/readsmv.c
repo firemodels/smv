@@ -3725,7 +3725,7 @@ int ReadSMV(char *file, char *file2){
 
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        FreeSmoke3d(smoke3di);
+        FreeSmoke3D(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -9999,7 +9999,7 @@ int ReadIni2(char *inifile, int localfile){
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
-          GetStartupPlot3d(seq_id);
+          GetStartupPlot3D(seq_id);
         }
         update_load_files = 1;
         continue;
@@ -12509,7 +12509,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i\n", loadfiles_at_startup);
   fprintf(fileout, "MSCALE\n");
   fprintf(fileout, " %f %f %f\n", mscale[0], mscale[1], mscale[2]);
-  PutStartupSmoke3d(fileout);
+  PutStartupSmoke3D(fileout);
   if(npart5prop > 0){
     fprintf(fileout, "PART5PROPDISP\n");
     for(i = 0; i < npart5prop; i++){
