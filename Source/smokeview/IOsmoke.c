@@ -4634,9 +4634,9 @@ void SkipSmokeFrames(FILE *SMOKE3DFILE, int nsteps, int fortran_skip){
   }
 }
 
-/* ------------------ GetSmoke3dSizes ------------------------ */
+/* ------------------ GetSmoke3DSizes ------------------------ */
 
-int GetSmoke3dSizes(int fortran_skip, char *smokefile, int version, float **timelist_found, int **use_smokeframe,
+int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **timelist_found, int **use_smokeframe,
   int *nchars_smoke_uncompressed,
   int **nchars_smoke_compressed_found,
   int **nchars_smoke_compressed_full,
@@ -5100,7 +5100,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
-  if(GetSmoke3dSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
+  if(GetSmoke3DSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
                  &smoke3di->nchars_uncompressed,
                  &smoke3di->nchars_compressed_smoke,
                  &smoke3di->nchars_compressed_smoke_full,
@@ -5300,6 +5300,49 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   PrintMemoryInfo;
 #endif
   *errorcode = 0;
+}
+
+/* ------------------ ReadSmoke3DAllMeshes ------------------------ */
+
+void ReadSmoke3DAllMeshes(int iframe, int smoketype, int flag, int *errorcode) {
+  int i;
+
+  for (i = 0; i < nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if (smoke3di->type != smoketype)continue;
+    ReadSmoke3D(iframe, i, flag, errorcode);
+  }
+}
+
+/* ------------------ ReadSmoke3DAllMeshesAllTimes ------------------------ */
+
+void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int flag, int *errorcode) {
+  int i, ntimes, itime;
+
+  for (itime = 0; itime < ntimes; itime++) {
+    for (i = 0; i < nsmoke3dinfo; i++) {
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + i;
+      switch (smoke3di->type){
+        case SOOT:
+          if(smoketype2&SOOT_2!=0)ReadSmoke3DAllMeshes(itime, SOOT, flag, errorcode);
+          break;
+        case HRRPUV:
+          if(smoketype2&HRRPUV_2!=0)ReadSmoke3DAllMeshes(itime, HRRPUV, flag, errorcode);
+          break;
+        case TEMP:
+          if(smoketype2&TEMP_2!=0)ReadSmoke3DAllMeshes(itime, TEMP, flag, errorcode);
+          break;
+        case CO2:
+          if(smoketype2&CO2_2!=0)ReadSmoke3DAllMeshes(itime, CO2, flag, errorcode);
+          break;
+      }
+    }
+  }
+
 }
 
 /* ------------------ UpdateSmoke3d ------------------------ */

@@ -1277,7 +1277,7 @@ typedef struct _smokedata {
 } smokedata;
 
 
-/* --------------------------  smoke3ddata ------------------------------------ */
+/* --------------------------  smokestatedata ------------------------------------ */
 
 typedef struct {
   int loaded, index;
@@ -1295,7 +1295,7 @@ typedef struct _smoke3ddata {
   int is_zlib;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
-  int type;
+  int type,type2;
   int is1, is2, js1, js2, ks1, ks2;
   int compression_type;
   flowlabels label;

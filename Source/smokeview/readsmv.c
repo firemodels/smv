@@ -5598,18 +5598,22 @@ int ReadSMV(char *file, char *file2){
         }
         if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
           smoke3di->type=SOOT;
+          smoke3di->type2 = SOOT_2;
           nsmoke3d_soot++;
         }
         else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
           smoke3di->type=HRRPUV;
+          smoke3di->type2 = HRRPUV_2;
           nsmoke3d_hrrpuv++;
         }
         else if(Match(smoke3di->label.shortlabel, "temp") == 1){
           smoke3di->type = TEMP;
+          smoke3di->type2 = TEMP_2;
           nsmoke3d_temp++;
         }
         else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
           smoke3di->type = CO2;
+          smoke3di->type2 = CO2_2;
           nsmoke3d_co2++;
         }
         else{
