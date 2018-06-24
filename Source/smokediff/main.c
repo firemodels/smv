@@ -188,6 +188,7 @@ int main(int argc, char **argv){
     }
   }
 
+  smoke1=NULL;
   strcpy(smv1_out,"");
   if(smv1!=NULL){
     strcat(smv1_out,smv1);

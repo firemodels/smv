@@ -193,6 +193,7 @@ void diff_boundaryes(FILE *stream_out){
 
     len2=strlen(fullfile2);
     FORTopenboundary(fullfile2,&unit2,&boundary2->version,&error2,len2);
+    error3 = 0;
 
     if(error1==0&&error2==0){
       int ii,len3;
