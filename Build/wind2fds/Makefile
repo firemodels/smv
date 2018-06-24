@@ -87,6 +87,17 @@ gnu_osx_64 : exe       = wind2fds_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
+# ------------- gnu OSX 64 debug ----------------
+#  64 bit gnu linux
+
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : CPP       = g++
+gnu_osx_64_db : exe       = wind2fds_osx_64_db
+
+gnu_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
