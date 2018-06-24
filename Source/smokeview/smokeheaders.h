@@ -768,8 +768,8 @@ EXTERNCPP void ReadVSlice(int ivslice, int flag, int *errorcode);
 
 EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
-EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int flag, int *errorcode);
-EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int flag, int *errorcode);
+EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
+EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP void ReadSmoke3D(int iframe, int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);

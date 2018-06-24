@@ -66,6 +66,7 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
+#define pp_SMOKE3D_LOAD_TEST // load 3d smoke for all meshes for each time step 
 #define pp_SMOKEALPHA
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections

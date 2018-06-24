@@ -5618,6 +5618,7 @@ int ReadSMV(char *file, char *file2){
         }
         else{
           smoke3di->type=SOOT;
+          smoke3di->type2 = SOOT_2;
           nsmoke3d_soot++;
         }
       }
