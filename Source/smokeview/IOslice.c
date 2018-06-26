@@ -6886,7 +6886,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ_TERRAIN(v, dy);
           GET_VEC_DXYZ_TERRAIN(w, dz);
           glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, yy1 + dy, z11);
+          glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
       }
     }
