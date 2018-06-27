@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke3d_load_test, 0);
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
@@ -283,10 +284,8 @@ SVEXTERN float SVDECL(tetra_point_size, 10.0);
 SVEXTERN int SVDECL(use_data_extremes, 1);
 SVEXTERN int SVDECL(extreme_data_offset, 1), SVDECL(colorbar_offset, 0);
 SVEXTERN int SVDECL(colorbar_flip, 0);
-#ifdef pp_COLORBARFLIP
 SVEXTERN int SVDECL(colorbar_autoflip,1);
 SVEXTERN int SVDECL(update_flipped_colorbar,0);
-#endif
 
 #ifdef INMAIN
 SVEXTERN float gvecphys[3]={0.0,0.0,-9.8};
@@ -672,9 +671,7 @@ SVEXTERN unsigned char SVDECL(*hazardcolor,NULL);
 SVEXTERN float SVDECL(zone_ventfactor,1.0);
 SVEXTERN unsigned char SVDECL(*izonetu,NULL);
 SVEXTERN int SVDECL(show_zonelower, 0);
-#ifdef pp_ZONETL
 SVEXTERN unsigned char SVDECL(*izonetl, NULL);
-#endif
 SVEXTERN int nzone_times;
 SVEXTERN float barright;
 SVEXTERN float SVDECL(*tspr,NULL);

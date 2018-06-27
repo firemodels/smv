@@ -840,9 +840,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
   FREEMEMORY(zonefdiam);
   FREEMEMORY(zonefbase);
   FREEMEMORY(izonetu);
-#ifdef pp_ZONETL
   FREEMEMORY(izonetl);
-#endif
   FREEMEMORY(zoneodl);
   FREEMEMORY(zoneodu);
   FREEMEMORY(zoneslab_n);
@@ -981,13 +979,11 @@ void ReadZone(int ifile, int flag, int *errorcode){
       *errorcode=1;
       return;
     }
-#ifdef pp_ZONETL
     FREEMEMORY(izonetl);
     if(NewMemory((void **)&izonetl, ntotal * sizeof(unsigned char)) == 0){
       *errorcode = 1;
       return;
     }
-#endif
   }
   else{
     return;
@@ -1054,10 +1050,8 @@ void ReadZone(int ifile, int flag, int *errorcode){
   UpdateGluiZoneBounds();
   GetZoneColors(zonetu, ntotal, izonetu, zonemin, zonemax, nrgb, nrgb_full,
     colorlabelzone, zonescale, zonelevels256);
-#ifdef pp_ZONETL
   GetZoneColors(zonetl, ntotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
     colorlabelzone, zonescale, zonelevels256);
-#endif
 
   ReadZoneFile=1;
   visZone=1;
@@ -1971,16 +1965,12 @@ void DrawRoomData(void){
   float xroom0, yroom0, zroom0, xroom, yroom, zroom;
   float *zoneylaybase,dy;
   unsigned char *hazardcolorbase, *zonecolorbaseU;
-#ifdef pp_ZONETL
   unsigned char *zonecolorbaseL;
-#endif
   float ylay;
   float *colorvU;
   unsigned char *izonetubase;
-#ifdef pp_ZONETL
   unsigned char *izonetlbase;
   float *colorvL;
-#endif
   int i;
 
   if(zone_times[0]>global_times[itimes])return;
@@ -1989,9 +1979,7 @@ void DrawRoomData(void){
   if(use_transparency_data==1)TransparentOn();
 
   izonetubase = izonetu + izone*nrooms;
-#ifdef pp_ZONETL
   izonetlbase = izonetl + izone*nrooms;
-#endif
   hazardcolorbase = hazardcolor + izone*nrooms;
   zoneylaybase = zoneylay + izone*nrooms;
 
@@ -2000,9 +1988,7 @@ void DrawRoomData(void){
   }
   else{
     zonecolorbaseU=izonetubase;
-#ifdef pp_ZONETL
     zonecolorbaseL = izonetlbase;
-#endif
   }
 
 #ifdef pp_GPU
@@ -2013,9 +1999,7 @@ void DrawRoomData(void){
   for(i=0;i<nrooms;i++){
     roomdata *roomi;
     unsigned char colorU;
-#ifdef pp_ZONETL
     unsigned char colorL;
-#endif
 
     roomi = roominfo + i;
 
@@ -2026,10 +2010,8 @@ void DrawRoomData(void){
     }
     else{
       colorvU = rgb_full[colorU];
-#ifdef pp_ZONETL
       colorL = *(zonecolorbaseL+i);
       colorvL = rgb_full[colorL];
-#endif
     }
     xroom0 = roomi->x0;
     yroom0 = roomi->y0;

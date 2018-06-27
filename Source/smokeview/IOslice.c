@@ -3275,6 +3275,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
       constval = zplt[sd->ks1]+offset_slice*sd->sliceoffset;
       break;
       default:
+        constval = 0.0;
         ASSERT(FFALSE);
         break;
     }
@@ -3923,9 +3924,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
-#ifdef pp_COLORBARFLIP
       update_flipped_colorbar = 1;
-#endif
       sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
@@ -4318,9 +4317,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
     update_fire_line = 1;
   }
-#ifdef pp_COLORBARFLIP
   update_flipped_colorbar=1;
-#endif
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
@@ -6889,7 +6886,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ_TERRAIN(v, dy);
           GET_VEC_DXYZ_TERRAIN(w, dz);
           glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, yy1 + dy, z11);
+          glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
       }
     }

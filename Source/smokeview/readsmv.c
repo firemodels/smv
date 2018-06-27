@@ -3725,7 +3725,7 @@ int ReadSMV(char *file, char *file2){
 
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        FreeSmoke3d(smoke3di);
+        FreeSmoke3D(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -5598,22 +5598,27 @@ int ReadSMV(char *file, char *file2){
         }
         if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
           smoke3di->type=SOOT;
+          smoke3di->type2 = SOOT_2;
           nsmoke3d_soot++;
         }
         else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
           smoke3di->type=HRRPUV;
+          smoke3di->type2 = HRRPUV_2;
           nsmoke3d_hrrpuv++;
         }
         else if(Match(smoke3di->label.shortlabel, "temp") == 1){
           smoke3di->type = TEMP;
+          smoke3di->type2 = TEMP_2;
           nsmoke3d_temp++;
         }
         else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
           smoke3di->type = CO2;
+          smoke3di->type2 = CO2_2;
           nsmoke3d_co2++;
         }
         else{
           smoke3di->type=SOOT;
+          smoke3di->type2 = SOOT_2;
           nsmoke3d_soot++;
         }
       }
@@ -8180,7 +8185,6 @@ typedef struct {
       else{
         if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
       }
-#ifdef pp_COLORBARFLIP
       if(strlen(sd->label.longlabel)>14&&
          strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
          sd->colorbar_autoflip=1;
@@ -8188,7 +8192,6 @@ typedef struct {
       else{
          sd->colorbar_autoflip=0;
       }
-#endif
 
 
       {
@@ -10001,7 +10004,7 @@ int ReadIni2(char *inifile, int localfile){
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
-          GetStartupPlot3d(seq_id);
+          GetStartupPlot3D(seq_id);
         }
         update_load_files = 1;
         continue;
@@ -12511,7 +12514,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i\n", loadfiles_at_startup);
   fprintf(fileout, "MSCALE\n");
   fprintf(fileout, " %f %f %f\n", mscale[0], mscale[1], mscale[2]);
-  PutStartupSmoke3d(fileout);
+  PutStartupSmoke3D(fileout);
   if(npart5prop > 0){
     fprintf(fileout, "PART5PROPDISP\n");
     for(i = 0; i < npart5prop; i++){

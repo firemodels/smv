@@ -78,9 +78,9 @@ void RandABsdir(float xyz[3], int dir){
 
   sum=x*x+y*y+z*z;
   while(sum>1.0||sum==0.0){
-    x = rand_1d(0.0,1.0);
-    y = rand_1d(0.0,1.0);
-    z = rand_1d(0.0,1.0);
+    x = Rand1D(0.0,1.0);
+    y = Rand1D(0.0,1.0);
+    z = Rand1D(0.0,1.0);
     sum=x*x+y*y+z*z;
   }
   xyz[0]=x/sqrt(sum);
@@ -116,9 +116,9 @@ void rand_sphere_dir(float xyz[3]){
 
   sum=x*x+y*y+z*z;
   while(sum>1.0||sum==0.0){
-    x = rand_1d(-1.0,1.0);
-    y = rand_1d(-1.0,1.0);
-    z = rand_1d(-1.0,1.0);
+    x = Rand1D(-1.0,1.0);
+    y = Rand1D(-1.0,1.0);
+    z = Rand1D(-1.0,1.0);
     sum=x*x+y*y+z*z;
   }
   sqsum=sqrt(sum);
@@ -127,9 +127,9 @@ void rand_sphere_dir(float xyz[3]){
   xyz[2]=z/sqsum;
 }
 
-/* ------------------ rand_1d ------------------------ */
+/* ------------------ Rand1D ------------------------ */
 
-float rand_1d(float xmin, float xmax){
+float Rand1D(float xmin, float xmax){
   float val;
 
   if(iseed==0){
@@ -141,17 +141,17 @@ float rand_1d(float xmin, float xmax){
   return val;
 }
 
-/* ------------------ rand_2d ------------------------ */
+/* ------------------ Rand2D ------------------------ */
 
-void rand_2d(float xy[2], float xmin, float xmax, float ymin, float ymax){
-  xy[0]=rand_1d(xmin,xmax);
-  xy[1]=rand_1d(ymin,ymax);
+void Rand2D(float xy[2], float xmin, float xmax, float ymin, float ymax){
+  xy[0]=Rand1D(xmin,xmax);
+  xy[1]=Rand1D(ymin,ymax);
 }
 
 /* ------------------ rand_3d ------------------------ */
 
-void rand_3d(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
-  xyz[0]=rand_1d(xmin,xmax);
-  xyz[1]=rand_1d(ymin,ymax);
-  xyz[2]=rand_1d(zmin,zmax);
+void Rand3D(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  xyz[0]=Rand1D(xmin,xmax);
+  xyz[1]=Rand1D(ymin,ymax);
+  xyz[2]=Rand1D(zmin,zmax);
 }

@@ -168,7 +168,7 @@ void UpdateFrameNumber(int changetime){
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
-          UpdateSmoke3d(smoke3di);
+          UpdateSmoke3D(smoke3di);
         }
       }
       if(nsmoke3dinfo>0)MergeSmoke3dColors(NULL);
@@ -606,11 +606,7 @@ void UpdateShow(void){
   
   // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
 
-#ifdef pp_HCOLORBAR
   if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
-#else
-  if((showtime == 1 || showplot3d == 1) && visColorbarVertical == 1){
-#endif
     if(old_draw_colorlabel == 0)updatemenu = 1;
     old_draw_colorlabel = 1;
   }
@@ -1893,7 +1889,6 @@ void UpdateShowScene(void){
   if(updatefacelists==1)UpdateFaceLists();
 }
 
-#ifdef pp_COLORBARFLIP
 /* ------------------ UpdateFlippedColorbar ------------------------ */
 
 void UpdateFlippedColorbar(void){
@@ -1915,7 +1910,6 @@ void UpdateFlippedColorbar(void){
     ColorbarMenu(COLORBAR_FLIP);
   }
 }
-#endif
 
 /* ------------------ UpdateDisplay ------------------------ */
 #define TERRAIN_FIRE_LINE_UPDATE 39
@@ -1932,12 +1926,10 @@ void UpdateDisplay(void){
     update_zaxis_custom = 0;
     UpdateZAxisCustom();
   }
-#ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){
     update_flipped_colorbar = 0;
     UpdateFlippedColorbar();
   }
-#endif
   if(update_smokecolorbar == 1){
     update_smokecolorbar = 0;
     SmokeColorbarMenu(fire_colorbar_index);

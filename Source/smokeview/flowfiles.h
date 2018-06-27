@@ -1147,9 +1147,7 @@ typedef struct _slicedata {
   char *comp_file, *reg_file, *vol_file;
   char *slicelabel;
   int compression_type;
-#ifdef pp_COLORBARFLIP  
   int colorbar_autoflip;
-#endif
   int ncompressed;
   int slicetype;
   struct _multislicedata *mslice;
@@ -1279,7 +1277,7 @@ typedef struct _smokedata {
 } smokedata;
 
 
-/* --------------------------  smoke3ddata ------------------------------------ */
+/* --------------------------  smokestatedata ------------------------------------ */
 
 typedef struct {
   int loaded, index;
@@ -1297,7 +1295,7 @@ typedef struct _smoke3ddata {
   int is_zlib;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
-  int type;
+  int type,type2;
   int is1, is2, js1, js2, ks1, ks2;
   int compression_type;
   flowlabels label;

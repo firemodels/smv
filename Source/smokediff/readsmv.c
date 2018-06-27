@@ -356,6 +356,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       char full_file[1024];
       FILE_SIZE filesize;
 
+      time_local = 0.0;
       if(strlen(buffer)>4){
         sscanf(buffer+4,"%f %i",&time_local,&meshnumber);
       }

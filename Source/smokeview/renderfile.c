@@ -777,6 +777,8 @@ void SetupScreeninfo(void){
     aperture_diagonal = 2.0*atan(sqrt(screeni->height*screeni->height+screeni->width*screeni->width)/2.0);
     screeni->cosmax = cos(aperture_diagonal/2.0);
 
+    azimuth = 0.0;
+    elevation = 0.0;
     if(ibuf == 0){
       azimuth = 0.0;
       elevation = -90;

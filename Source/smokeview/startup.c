@@ -653,7 +653,7 @@ void InitOpenGL(void){
 
  /* ------------------ PutStartupSmoke3d ------------------------ */
 
-  void PutStartupSmoke3d(FILE *fileout){
+  void PutStartupSmoke3D(FILE *fileout){
    int i;
    int nstartup;
 
@@ -854,7 +854,7 @@ void InitOpenGL(void){
 
  /* ------------------ GetStartupPlot3d ------------------------ */
 
-  void GetStartupPlot3d(int seq_id){
+  void GetStartupPlot3D(int seq_id){
     int i;
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
@@ -959,11 +959,11 @@ void InitOpenGL(void){
 
       plot3di = plot3dinfo + i;
       if(plot3di->autoload==0&&plot3di->loaded==1){
-        ReadPlot3d(plot3di->file,i,UNLOAD,&errorcode);
+        ReadPlot3D(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
         ReadPlot3dFile=1;
-        ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
+        ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
@@ -1038,8 +1038,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3d(ALL_FRAMES,i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3d(ALL_FRAMES,i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;

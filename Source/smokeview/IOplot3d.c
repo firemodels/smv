@@ -28,7 +28,7 @@ int Plot3dCompare( const void *arg1, const void *arg2 ){
 
 /* ------------------ ReadPlot3d  ------------------------ */
 
-void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
+void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   int n, nn, ntotal, i, nnn;
   float *udata, *vdata, *wdata, *sdata;
   float sum;
@@ -172,7 +172,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
   if(p->compression_type==UNCOMPRESSED){
     if(NewMemory((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float))==0){
       *errorcode=1;
-      ReadPlot3d("",ifile,UNLOAD,&error);
+      ReadPlot3D("",ifile,UNLOAD,&error);
       return;
     }
   }
@@ -196,7 +196,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
      NewMemory((void **)&meshi->dy_yz       ,ny*nz*sizeof(float))==0||
      NewMemory((void **)&meshi->dz_yz       ,ny*nz*sizeof(float))==0){
      *errorcode=1;
-     ReadPlot3d("",ifile,UNLOAD,&error);
+     ReadPlot3D("",ifile,UNLOAD,&error);
      return;
   }
 
@@ -209,7 +209,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
   }
   if(NewMemory((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char))==0){
     *errorcode=1;
-    ReadPlot3d("",ifile,UNLOAD,&error);
+    ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
   STOP_TIMER(read_time);
@@ -248,7 +248,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
      NewMemory((void **)&fscalep3     ,mxplot3dvars*sizeof(float))==0||
      NewMemory((void **)&scalep3     ,mxplot3dvars*sizeof(char *))==0){
     *errorcode=1;
-    ReadPlot3d("",ifile,UNLOAD,&error);
+    ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
   for(nn=0;nn<mxplot3dvars;nn++){
@@ -262,7 +262,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
        NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0||
        NewMemory((void **)&scalep3[nn],30*sizeof(char))==0){
       *errorcode=1;
-      ReadPlot3d("",ifile,UNLOAD,&error);
+      ReadPlot3D("",ifile,UNLOAD,&error);
       return;
     }
   }
@@ -271,7 +271,7 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
   if(NewMemory((void **)&p3levels,mxplot3dvars*sizeof(float *))==0||
      NewMemory((void **)&p3levels256,mxplot3dvars*sizeof(float *))==0){
     *errorcode=1;
-    ReadPlot3d("",ifile,UNLOAD,&error);
+    ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
   for(nn=0;nn<mxplot3dvars;nn++){
@@ -309,19 +309,19 @@ void ReadPlot3d(char *file, int ifile, int flag, int *errorcode){
 
     if(NewMemory((void **)&p3levels[nn],(nrgb+1)*sizeof(float))==0||
        NewMemory((void **)&p3levels256[nn],256*sizeof(float))==0){
-      ReadPlot3d("",ifile,UNLOAD,&error);
+      ReadPlot3D("",ifile,UNLOAD,&error);
       *errorcode=1;
       return;
     }
     for(n=0;n<nrgb;n++){
       if(NewMemory((void **)&(*(colorlabelp3+nn))[n],11)==0){
         *errorcode=1;
-        ReadPlot3d("",ifile,UNLOAD,&error);
+        ReadPlot3D("",ifile,UNLOAD,&error);
         return;
       }
       if(NewMemory((void **)&(*(colorlabeliso+nn))[n],11)==0){
         *errorcode=1;
-        ReadPlot3d("",ifile,UNLOAD,&error);
+        ReadPlot3D("",ifile,UNLOAD,&error);
         return;
       }
     }
@@ -843,14 +843,14 @@ void DrawPlot3dFrame(void){
       DrawPlot3dTexture(meshi);
     }
     else{
-      DrawPlot3d(meshi);
+      DrawPlot3D(meshi);
     }
   }
 }
 
 /* ------------------ DrawPlot3d ------------------------ */
 
-void DrawPlot3d(meshdata *meshi){
+void DrawPlot3D(meshdata *meshi){
   int i,j,k;
   int colorindex;
   unsigned char *color1, *color2;
@@ -1364,6 +1364,8 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
       nvals = meshi->kbar;
       break;
     default:
+      xyz = NULL;
+      nvals = 0;
       ASSERT(FFALSE);
       break;
   }

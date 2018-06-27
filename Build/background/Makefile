@@ -95,6 +95,16 @@ gnu_osx_64 : exe       = background
 gnu_osx_64 : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
 
+# ------------- gnu OSX debug ----------------
+
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : exe       = background_db
+
+gnu_osx_64_db : $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
+
+
 #-------------- compile sring_util.c so revision strings are updated -----------
 
 string_util.o:  .FORCE
