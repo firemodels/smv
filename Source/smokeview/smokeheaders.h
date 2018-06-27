@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int GetTourBounds(float *ymin, float *ymax);
 EXTERNCPP void UpdateTimebarOverlap(void);
 EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);

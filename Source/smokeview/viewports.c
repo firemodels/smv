@@ -1013,6 +1013,18 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   fnear =  - eyeyINI-1.0;
   if(fnear<nearclip)fnear=nearclip;
   ffar = fnear + farclip;
+#ifdef pp_CLIP  
+  fnear = nearclip;
+  ffar = farclip;
+  if(edittour == 10){
+    float ymin, ymax;
+
+    if(GetTourBounds(&ymin, &ymax) == 1){
+      fnear = MIN(fnear, NORMALIZE_Y(ymin));
+      ffar = MAX(ffar, NORMALIZE_Y(ymax));
+    }
+  }
+#endif
 
   aperture_temp = Zoom2Aperture(zoom);
 

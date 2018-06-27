@@ -1230,6 +1230,35 @@ void ReverseTour(char *label){
 
 /* ------------------ AddTour  ------------------------ */
 
+int GetTourBounds(float *ymin, float *ymax){
+  int i,first=1, return_val=0;
+
+  for(i = 0;i < ntourinfo;i++){
+    tourdata *touri;
+    keyframe *keyj;
+
+    touri = tourinfo + i;
+    for(keyj = (touri->first_frame).next;keyj->next != NULL;keyj = keyj->next){
+      float y;
+
+      y = keyj->eye[1];
+      if(first == 1){
+        first = 0;
+        return_val = 1;
+        *ymin = y;
+        *ymax = y;
+      }
+      else{
+        *ymin = MIN(*ymin, y);
+        *ymax = MAX(*ymax, y);
+      }
+    }
+  }
+  return return_val;
+}
+
+/* ------------------ AddTour  ------------------------ */
+
 tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;

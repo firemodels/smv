@@ -1140,10 +1140,14 @@ extern "C" void GluiMotionSetup(int main_window){
   SPINNER_scalez->set_float_limits(0.01,100.0,GLUI_LIMIT_CLAMP);
 
   SPINNER_nearclip=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Near depth"),GLUI_SPINNER_FLOAT,&nearclip);
+#ifndef pp_CLIP
   SPINNER_nearclip->set_float_limits(0.001,10.0,GLUI_LIMIT_CLAMP);
+#endif
 
   SPINNER_farclip=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Far depth"),GLUI_SPINNER_FLOAT,&farclip);
+#ifndef pp_CLIP
   SPINNER_farclip->set_float_limits(0.001,10.0,GLUI_LIMIT_CLAMP);
+#endif
 
   ROLLOUT_render = glui_motion->add_rollout(_("Render"), false,RENDER_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
