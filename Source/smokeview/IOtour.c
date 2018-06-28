@@ -1265,7 +1265,7 @@ float GetDepth(float rhs[3]){
 /* ------------------ GetMaxDepth  ------------------------ */
 
 float GetMaxDepth(void){
-  int i,first=1, return_val=0.0;
+  int i,first=1;
   float max_depth=-1.0;
 
   // get distance to each tour node
