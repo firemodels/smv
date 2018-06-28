@@ -4643,7 +4643,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   char *textptr;
   int nxyz[8];
   int nchars[2];
-  float time_max, time_local;
+  float time_local;
   int skip_local;
 
   // try .sz
@@ -4689,7 +4689,6 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   if(version != 1)version = 0;
   fprintf(SMOKE_SIZE, "%i\n", version);
 
-  time_max = -1000000.0;
   for(;;){
     int nframeboth;
 
