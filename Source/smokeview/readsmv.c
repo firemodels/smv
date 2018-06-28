@@ -2408,9 +2408,43 @@ void UpdateMeshCoords(void){
   xbarORIG = xbar;
   ybarORIG = ybar;
   zbarORIG = zbar;
+
   xbar = NORMALIZE_X(xbar);
   ybar = NORMALIZE_Y(ybar);
   zbar = NORMALIZE_Z(zbar);
+
+  box_corners[0][0] = xbar0ORIG;
+  box_corners[0][1] = ybar0ORIG;
+  box_corners[0][2] = zbar0ORIG;
+  
+  box_corners[1][0] =  xbarORIG;
+  box_corners[1][1] = ybar0ORIG;
+  box_corners[1][2] = zbar0ORIG;
+  
+  box_corners[2][0] =  xbarORIG;
+  box_corners[2][1] =  ybarORIG;
+  box_corners[2][2] = zbar0ORIG;
+  
+  box_corners[3][0] = xbar0ORIG;
+  box_corners[3][1] =  ybarORIG;
+  box_corners[3][2] = zbar0ORIG;
+  
+  box_corners[4][0] = xbar0ORIG;
+  box_corners[4][1] = ybar0ORIG;
+  box_corners[4][2] =  zbarORIG;
+  
+  box_corners[5][0] =  xbarORIG;
+  box_corners[5][1] = ybar0ORIG;
+  box_corners[5][2] =  zbarORIG;
+  
+  box_corners[6][0] =  xbarORIG;
+  box_corners[6][1] =  ybarORIG;
+  box_corners[6][2] =  zbarORIG;
+  
+  box_corners[7][0] = xbar0ORIG;
+  box_corners[7][1] =  ybarORIG;
+  box_corners[7][2] =  zbarORIG;
+
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 

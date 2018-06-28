@@ -1228,34 +1228,88 @@ void ReverseTour(char *label){
   return;
 }
 
-/* ------------------ AddTour  ------------------------ */
+#ifdef pp_CLIP
 
-int GetTourBounds(float *ymin, float *ymax){
-  int i,first=1, return_val=0;
+/* ------------------ GetDepth  ------------------------ */
 
-  for(i = 0;i < ntourinfo;i++){
-    tourdata *touri;
-    keyframe *keyj;
+float GetDepth(float rhs[3]){
+  float *mm, rhshat[3], dx, dy, dz;
+  
+  
+  /*
+  ( m0 m4 m8  m12 ) (x)    (a0)
+  ( m1 m5 m9  m13 ) (y)    (a1)
+  ( m2 m6 m10 m14 ) (z)  = (a2)
+  ( m3 m7 m11 m15 ) (1)    (1)
 
-    touri = tourinfo + i;
-    for(keyj = (touri->first_frame).next;keyj->next != NULL;keyj = keyj->next){
-      float y;
+      ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+      ( m2 m6 m10 )      (m14)
 
-      y = keyj->eye[1];
-      if(first == 1){
-        first = 0;
-        return_val = 1;
-        *ymin = y;
-        *ymax = y;
-      }
-      else{
-        *ymin = MIN(*ymin, y);
-        *ymax = MAX(*ymax, y);
+  (Q   u) (x)     (a)
+  (v^T 1) (1)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   Qx+u=a => x=Q^T(a-u)
+  */
+
+  mm = modelview_scratch;
+
+  rhshat[0] = rhs[0] - mm[12];
+  rhshat[1] = rhs[1] - mm[13];
+  rhshat[2] = rhs[2] - mm[14];
+
+  dx = (mm[0] * rhshat[0] + mm[1] * rhshat[1] +  mm[2] * rhshat[2]) / mscale[0];
+  dy = (mm[4] * rhshat[0] + mm[5] * rhshat[1] +  mm[6] * rhshat[2]) / mscale[1];
+  dz = (mm[8] * rhshat[0] + mm[9] * rhshat[1] + mm[10] * rhshat[2]) / mscale[2];
+  return sqrt(dx*dx+dy*dy+dz*dz);
+}
+
+/* ------------------ GetMaxDepth  ------------------------ */
+
+float GetMaxDepth(void){
+  int i,first=1, return_val=0.0;
+  float max_depth=-1.0;
+
+  // get distance to each tour node
+
+  if(edittour==1){
+    for(i = 0;i < ntourinfo;i++){
+      tourdata *touri;
+      keyframe *keyj;
+
+      touri = tourinfo + i;
+      for(keyj = (touri->first_frame).next;keyj->next != NULL;keyj = keyj->next){
+        float depth;
+
+        depth = GetDepth(keyj->eye);
+        if(first == 1){
+          first = 0;
+          max_depth = depth;
+        }
+        else{
+          max_depth = MAX(max_depth, depth);
+        }
       }
     }
   }
-  return return_val;
+
+  // get distance to each corner of the domain
+  
+  for(i=0;i<8;i++){
+    float depth;
+
+    depth = GetDepth(box_corners[i]);
+    if(first == 1){
+      first = 0;
+      max_depth = depth;
+    }
+    else {
+      max_depth = MAX(max_depth, depth);
+    }
+  }
+  return max_depth;
 }
+#endif
 
 /* ------------------ AddTour  ------------------------ */
 
