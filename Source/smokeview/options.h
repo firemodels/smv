@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-#define pp_CLIP         // test setting of near and far clipping planes
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names

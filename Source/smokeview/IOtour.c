@@ -1228,8 +1228,6 @@ void ReverseTour(char *label){
   return;
 }
 
-#ifdef pp_CLIP
-
 /* ------------------ GetDepth  ------------------------ */
 
 float GetDepth(float rhs[3]){
@@ -1309,7 +1307,6 @@ float GetMaxDepth(void){
   }
   return max_depth;
 }
-#endif
 
 /* ------------------ AddTour  ------------------------ */
 

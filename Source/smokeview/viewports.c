@@ -1010,14 +1010,8 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   eyeyINI = camera_current->eye[1];
   eyezINI = camera_current->eye[2];
 
-#ifdef pp_CLIP  
   fnear = nearclip;
   ffar = MAX(farclip, GetMaxDepth());
-#else
-  fnear =  - eyeyINI-1.0;
-  if(fnear<nearclip)fnear=nearclip;
-  ffar = fnear + farclip;
-#endif
 
   aperture_temp = Zoom2Aperture(zoom);
 
