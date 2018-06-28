@@ -2408,9 +2408,43 @@ void UpdateMeshCoords(void){
   xbarORIG = xbar;
   ybarORIG = ybar;
   zbarORIG = zbar;
+
   xbar = NORMALIZE_X(xbar);
   ybar = NORMALIZE_Y(ybar);
   zbar = NORMALIZE_Z(zbar);
+
+  box_corners[0][0] = xbar0ORIG;
+  box_corners[0][1] = ybar0ORIG;
+  box_corners[0][2] = zbar0ORIG;
+  
+  box_corners[1][0] =  xbarORIG;
+  box_corners[1][1] = ybar0ORIG;
+  box_corners[1][2] = zbar0ORIG;
+  
+  box_corners[2][0] =  xbarORIG;
+  box_corners[2][1] =  ybarORIG;
+  box_corners[2][2] = zbar0ORIG;
+  
+  box_corners[3][0] = xbar0ORIG;
+  box_corners[3][1] =  ybarORIG;
+  box_corners[3][2] = zbar0ORIG;
+  
+  box_corners[4][0] = xbar0ORIG;
+  box_corners[4][1] = ybar0ORIG;
+  box_corners[4][2] =  zbarORIG;
+  
+  box_corners[5][0] =  xbarORIG;
+  box_corners[5][1] = ybar0ORIG;
+  box_corners[5][2] =  zbarORIG;
+  
+  box_corners[6][0] =  xbarORIG;
+  box_corners[6][1] =  ybarORIG;
+  box_corners[6][2] =  zbarORIG;
+  
+  box_corners[7][0] = xbar0ORIG;
+  box_corners[7][1] =  ybarORIG;
+  box_corners[7][2] =  zbarORIG;
+
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
@@ -11633,6 +11667,7 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "TOURCONSTANTVEL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &tour_constant_vel);
+        tour_constant_vel = 1;
         continue;
       }
       if(Match(buffer, "TOUR_AVATAR") == 1){
@@ -13559,7 +13594,7 @@ void WriteIni(int flag,char *filename){
 
   }
   fprintf(fileout, "TOURCONSTANTVEL\n");
-  fprintf(fileout, " %i\n", tour_constant_vel);
+  fprintf(fileout, " %i\n", 1);
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");

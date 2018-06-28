@@ -156,6 +156,7 @@ SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights
 SVEXTERN int SVDECL(scatter_type_glui,ISOTROPIC);
 SVEXTERN float SVDECL(scatter_param, 0.5);
 
+SVEXTERN float box_corners[8][3];
 SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];
@@ -1423,7 +1424,7 @@ SVEXTERN float tourrad_avatar;
 SVEXTERN int dirtycircletour;
 SVEXTERN float SVDECL(*tour_t,NULL), SVDECL(*tour_t2,NULL), SVDECL(*tour_dist,NULL), SVDECL(*tour_dist2,NULL), SVDECL(*tour_dist3,NULL);
 SVEXTERN float view_tstart, view_tstop;
-SVEXTERN int tour_constant_vel;
+SVEXTERN int SVDECL(tour_constant_vel,1);
 SVEXTERN int view_ntimes;
 
 SVEXTERN int SVDECL(ntourinfo, 0);
