@@ -1424,7 +1424,7 @@ SVEXTERN float tourrad_avatar;
 SVEXTERN int dirtycircletour;
 SVEXTERN float SVDECL(*tour_t,NULL), SVDECL(*tour_t2,NULL), SVDECL(*tour_dist,NULL), SVDECL(*tour_dist2,NULL), SVDECL(*tour_dist3,NULL);
 SVEXTERN float view_tstart, view_tstop;
-SVEXTERN int tour_constant_vel;
+SVEXTERN int SVDECL(tour_constant_vel,1);
 SVEXTERN int view_ntimes;
 
 SVEXTERN int SVDECL(ntourinfo, 0);

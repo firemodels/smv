@@ -11667,6 +11667,7 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "TOURCONSTANTVEL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &tour_constant_vel);
+        tour_constant_vel = 1;
         continue;
       }
       if(Match(buffer, "TOUR_AVATAR") == 1){
@@ -13593,7 +13594,7 @@ void WriteIni(int flag,char *filename){
 
   }
   fprintf(fileout, "TOURCONSTANTVEL\n");
-  fprintf(fileout, " %i\n", tour_constant_vel);
+  fprintf(fileout, " %i\n", 1);
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");
