@@ -1703,6 +1703,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
         if(i1==0||i2==ibartemp){
           mesh_boundary = YES;
+//xxx
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
             meshi->boundarytype[n] = LEFTwall;
@@ -2767,6 +2768,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
+// xxx
     if(vis_boundaries[n]==1&&patchdir[n]<0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;

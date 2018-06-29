@@ -796,7 +796,7 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
 
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
-void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
+void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option){
   char output_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
   int nlong, nlat, nz;
@@ -812,12 +812,12 @@ void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option){
   ext = strrchr(basename, '.');
   if(ext != NULL)ext[0] = 0;
 
-  strcpy(output_file, basename);
   if(elev_file==1){
+    strcpy(output_file, basename);
     strcat(output_file, ".elev");
   }
   else{
-    strcat(output_file, ".fds");
+    strcpy(output_file, casename_fds);
   }
   streamout = fopen(output_file, "w");
   if(streamout == NULL){

@@ -28,7 +28,7 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option);
+EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option);
 EXTERNCPP int GetElevations(char *elevfile, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
