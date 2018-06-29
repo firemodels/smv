@@ -6,4 +6,4 @@ dem2fds=dem2fds
 terraindir=~/terrain
 
 $dem2fds -obst -dir $terraindir/trails trails3.in 
-$dem2fds -geom -dir $terraindir/trails trails3g.in 
+$dem2fds -fds trails3g.fds -geom -dir $terraindir/trails trails3.in 
