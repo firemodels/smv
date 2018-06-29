@@ -1231,7 +1231,7 @@ void ReverseTour(char *label){
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
-  int i,first=1, return_val=0.0;
+  int i,first=1;
 
   *min_depth = -1.0;
   *max_depth = -1.0;
