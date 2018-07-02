@@ -2118,7 +2118,7 @@ void Keyboard(unsigned char key, int flag){
           }
         }
         if(stept == 1){
-          if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
+          //if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
         }
         else{
           itime_save = -1;

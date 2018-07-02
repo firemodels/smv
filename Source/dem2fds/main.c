@@ -46,8 +46,9 @@ void Usage(char *prog, int option){
 int main(int argc, char **argv){
   int i;
   int gen_fds = FDS_OBST;
-  char *casename = NULL;
-  char file_default[LEN_BUFFER], casename_fds[LEN_BUFFER];
+  char *casename = NULL, *last=NULL;
+  char file_default[LEN_BUFFER];
+  char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
 
@@ -194,9 +195,16 @@ int main(int argc, char **argv){
   if(casename == NULL)casename = file_default;
   if(strlen(casename_fds) == 0){
     strcpy(casename_fds, casename);
+    last = strrchr(casename_fds, '.');
+    if(last!=NULL)last[0]=0;
     strcat(casename_fds, ".fds");
   }
-  if(GetElevations(casename, &fds_elevs)==1) {
+  strcpy(image_file, casename_fds);
+  last = strrchr(image_file, '.');
+  if(last != NULL)last[0] = 0;
+  strcat(image_file,".png");
+
+  if(GetElevations(casename, image_file, &fds_elevs)==1) {
      GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
   }
   return 0;

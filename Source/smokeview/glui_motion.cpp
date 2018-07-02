@@ -1170,7 +1170,7 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
-//  LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _("Current"));
+  LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _("Current"));
   LIST_render_skip->add_item(1, _("All frames"));
   LIST_render_skip->add_item(2, _("Every 2nd frame"));
   LIST_render_skip->add_item(3, _("Every 3rd frame"));
@@ -2138,10 +2138,9 @@ void RenderCB(int var){
       update_makemovie = 1;
       break;
     case RENDER_SKIP:
-      break;
     case RENDER_LABEL:
     case RENDER_TYPE:
-    break;
+      break;
     case RENDER_MULTIPLIER:
       {
         int width_low, height_low, width_high, height_high;

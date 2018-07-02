@@ -224,13 +224,10 @@ int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
 
 /* ------------------ GenerateMapImage ------------------------ */
 
-void GenerateMapImage(char *elevfile, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
+void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
   int nrows, ncols, j;
   gdImagePtr RENDERimage;
   float dx, dy;
-  char imagefile[1024];
-  FILE *stream;
-  char *ext;
 
   ncols = 2000;
   nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
@@ -337,18 +334,18 @@ void GenerateMapImage(char *elevfile, elevdata *fds_elevs, elevdata *imageinfo, 
     }
   }
 
-  strcpy(imagefile, elevfile);
-  ext = strrchr(imagefile, '.');
-  if(ext != NULL)ext[0] = 0;
-  strcat(imagefile, ".png");
-  stream = fopen(imagefile, "wb");
-  if(stream != NULL)gdImagePng(RENDERimage, stream);
+  {
+    FILE *stream=NULL;
+
+    if(image_file!=NULL)stream = fopen(image_file, "wb");
+    if(stream != NULL)gdImagePng(RENDERimage, stream);
+  }
   gdImageDestroy(RENDERimage);
 }
 
 /* ------------------ GetElevations ------------------------ */
 
-int GetElevations(char *elevfile, elevdata *fds_elevs){
+int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
   int nelevinfo, nimageinfo, i, j;
   filelistdata *headerfiles, *imagefiles;
   FILE *stream_in;
@@ -446,7 +443,7 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     }
   }
   fprintf(stderr, "\nmap properties:\n");
-  fprintf(stderr, "        input file: %s\n", elevfile);
+  fprintf(stderr, "        input file: %s\n", input_file);
   fprintf(stderr, "         image dir: %s\n", image_dir);
   fprintf(stderr, "     elevation dir: %s\n", elev_dir);
   if(nimageinfo > 0){
@@ -542,9 +539,9 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
     fclose(stream_in);
   }
 
-  stream_in = fopen(elevfile, "r");
+  stream_in = fopen(input_file, "r");
   if(stream_in == NULL) {
-    fprintf(stderr, "***error: unable to open file %s for input\n", elevfile);
+    fprintf(stderr, "***error: unable to open file %s for input\n", input_file);
     return 0;
   }
 
@@ -790,7 +787,7 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
   FREEMEMORY(have_vals);
   FREEMEMORY(longlatsorig);
 
-  GenerateMapImage(elevfile, fds_elevs, imageinfo, nimageinfo);
+  GenerateMapImage(image_file, fds_elevs, imageinfo, nimageinfo);
   return 1;
 }
 
@@ -799,6 +796,8 @@ int GetElevations(char *elevfile, elevdata *fds_elevs){
 void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option){
   char output_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
+
+  char casename_fds_basename[LEN_BUFFER];
   int nlong, nlat, nz;
   int i, j;
   float xmax, ymax, zmin, zmax;
@@ -807,8 +806,13 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   int ibar, jbar, kbar;
   float *vals, *valsp1;
   FILE *streamout = NULL;
+  char *last;
 
-  strcpy(basename, casename);
+  strcpy(casename_fds_basename, casename_fds);
+  last = strrchr(casename_fds_basename, '.');
+  if(last != NULL)last[0] = 0;
+
+  strcpy(basename, casename_fds_basename);
   ext = strrchr(basename, '.');
   if(ext != NULL)ext[0] = 0;
 
