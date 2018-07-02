@@ -29,7 +29,7 @@ typedef struct {
 } excludedata;
 
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option);
-EXTERNCPP int GetElevations(char *elevfile, elevdata *fds_elevs);
+EXTERNCPP int GetElevations(char *elevfile, char *image_file, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
 #ifdef pp_CSVF
