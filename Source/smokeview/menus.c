@@ -1408,7 +1408,7 @@ void ZoomMenu(int value){
       zoom=zooms[4];
       zoomindex=4;
     }
-    if(projection_type!=0){
+    if(projection_type!= PROJECTION_PERSPECTIVE){
       camera_current->projection_type=projection_type;
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
       UpdateProjectionType();
@@ -1417,7 +1417,7 @@ void ZoomMenu(int value){
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
     UpdateProjectionType();
-    if(projection_type==0){
+    if(projection_type== PROJECTION_PERSPECTIVE){
       UpdateCameraYpos(camera_current);
     }
     else{
@@ -1429,7 +1429,7 @@ void ZoomMenu(int value){
     if(zoomindex<0)zoomindex=2;
     if(zoomindex>4)zoomindex=2;
     zoom=zooms[zoomindex];
-    if(projection_type!=0){
+    if(projection_type!= PROJECTION_PERSPECTIVE){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
       camera_current->projection_type=projection_type;
       UpdateProjectionType();
@@ -7971,8 +7971,8 @@ updatemenu=0;
         glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
       }
       glutAddSubMenu(_("Zoom"),zoommenu);
-      if(projection_type==1)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
-      if(projection_type==0)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
+      if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
+      if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
       glutAddMenuEntry("-",MENU_DUMMY);
     }
     SortCameras();

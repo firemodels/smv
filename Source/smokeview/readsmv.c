@@ -10166,6 +10166,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "PROJECTION") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
+      projection_type = CLAMP(projection_type, 0, 1);
       SceneMotionCB(PROJECTION);
       UpdateProjectionType();
       continue;

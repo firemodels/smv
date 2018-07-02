@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PROJECTION_PERSPECTIVE  0
+#define PROJECTION_ORTHOGRAPHIC 1
 #define ALL_FRAMES -1
 
 #define INIT 0

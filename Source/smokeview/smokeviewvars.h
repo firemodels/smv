@@ -1228,7 +1228,7 @@ SVEXTERN int SVDECL(show_hrrcutoff,0), SVDECL(show_hrrcutoff_active,0),SVDECL(hr
 SVEXTERN int trainerview;
 SVEXTERN int apertureindex;
 SVEXTERN int zoomindex;
-SVEXTERN int projection_type;
+SVEXTERN int SVDECL(projection_type, PROJECTION_PERSPECTIVE);
 SVEXTERN float apertures[5];
 SVEXTERN float SVDECL(zoom_min, 0.1), SVDECL(zoom_max, 10.0);
 SVEXTERN float aperture_min, aperture_max;

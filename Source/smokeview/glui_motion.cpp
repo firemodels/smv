@@ -1448,7 +1448,7 @@ extern "C" void UpdateRotationIndex(int val){
 
 extern "C" void UpdateProjectionType(void){
   if(RADIO_projection!=NULL)RADIO_projection->set_int_val(projection_type);
-  if(projection_type==1){
+  if(projection_type==PROJECTION_ORTHOGRAPHIC){
     if(SPINNER_zoom!=NULL)    SPINNER_zoom->disable();
     if(SPINNER_aperture!=NULL)SPINNER_aperture->disable();
   }

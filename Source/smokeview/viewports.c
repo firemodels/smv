@@ -460,7 +460,7 @@ int SubPortFrustum(int quad,
     glViewport(p->left,p->down,p->width,p->height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(camera_current->projection_type==0){
+    if(camera_current->projection_type==PROJECTION_PERSPECTIVE){
       glFrustum(
         (double)portx_left,(double)portx_right,
         (double)portx_down,(double)portx_top,
@@ -511,7 +511,7 @@ int SubPortFrustum(int quad,
     glViewport(subport_left,subport_down,subport_width,subport_height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(camera_current->projection_type==0){
+    if(camera_current->projection_type==PROJECTION_PERSPECTIVE){
       glFrustum(
         (double)subportx_left,(double)subportx_right,
         (double)subportx_down,(double)subportx_top,
@@ -1011,7 +1011,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   eyezINI = camera_current->eye[2];
 
 #ifdef pp_CLIP
-  {
+  if(projection_type==PROJECTION_ORTHOGRAPHIC){
+    fnear = -eyeyINI - 1.0;
+    if(fnear < nearclip)fnear = nearclip;
+    ffar = fnear + farclip;
+  }
+  else{
     float min_depth, max_depth, *eye;
 
     eye = camera_current->eye;
