@@ -1871,7 +1871,7 @@ void UpdateShowScene(void){
   }
   if(force_isometric == 1){
     force_isometric = 0;
-    projection_type = 1;
+    projection_type = PROJECTION_ORTHOGRAPHIC;
     camera_current->projection_type = projection_type;
     ZoomMenu(UPDATE_PROJECTION);
   }

@@ -1722,7 +1722,7 @@ void InitVars(void){
   right_blue=1.0;
   apertureindex=1;
   zoomindex=2;
-  projection_type=0;
+  projection_type=PROJECTION_PERSPECTIVE;
   apertures[0]=30.;
   apertures[1]=45.;
   apertures[2]=60.;

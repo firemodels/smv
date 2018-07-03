@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-//#define pp_CLIP         // test frustum near/far clip planes
+#define pp_CLIP         // test frustum near/far clip planes
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
@@ -67,13 +67,13 @@
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
-#define pp_SMOKE3D_LOAD_TEST // load 3d smoke for all meshes for each time step 
-#define pp_SMOKEALPHA
+//#define pp_SMOKE3D_LOAD_TEST // load 3d smoke for all meshes for each time step 
+//#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST      // used to test tetrahedron box intersections
 #define pp_TIMINGS
 //#define pp_GPUDEPTH
-#define pp_SMOKETEST
+//#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
 
 //*** options: for debugging

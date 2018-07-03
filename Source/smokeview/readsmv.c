@@ -5624,6 +5624,9 @@ int ReadSMV(char *file, char *file2){
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
           }
+          if (strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0) {
+            show_tempcutoff_active = 1;
+          }
           ismoke3d++;
         }
         else{
@@ -9987,8 +9990,14 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRCUTOFF") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_hrrcutoff);
-      ONEORZERO(show_hrrcutoff);
+      sscanf(buffer, "%i", &show_firecutoff);
+      ONEORZERO(show_firecutoff);
+      continue;
+    }
+    if(Match(buffer, "SHOWFIRECUTOFF") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &show_firecutoff);
+      ONEORZERO(show_firecutoff);
       continue;
     }
     if(Match(buffer, "TWOSIDEDVENTS") == 1){
@@ -10166,6 +10175,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "PROJECTION") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
+      projection_type = CLAMP(projection_type, 0, 1);
       SceneMotionCB(PROJECTION);
       UpdateProjectionType();
       continue;
@@ -13267,6 +13277,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visDummyVents);
   fprintf(fileout, "SHOWEVACSLICES\n");
   fprintf(fileout, " %i %i %i\n", show_evac_slices, constant_evac_coloring, show_evac_colorbar);
+  fprintf(fileout, "SHOWFIRECUTOFF\n");
+  fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", visFloor);
   fprintf(fileout, "SHOWFRAME\n");
@@ -13281,8 +13293,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visgridloc);
   fprintf(fileout, "SHOWHMSTIMELABEL\n");
   fprintf(fileout, " %i\n", vishmsTimelabel);
-  fprintf(fileout, "SHOWHRRCUTOFF\n");
-  fprintf(fileout, " %i\n", show_hrrcutoff);
   fprintf(fileout, "SHOWHRRLABEL\n");
   fprintf(fileout, " %i\n", visHRRlabel);
   fprintf(fileout, "SHOWISO\n");
@@ -13377,12 +13387,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", show_bothsides_int, show_bothsides_ext);
   fprintf(fileout, "VECTORSKIP\n");
   fprintf(fileout, " %i\n", vectorskip);
-  fprintf(fileout, "VOLSMOKE\n");
-  fprintf(fileout, " %i %i %i %i %i\n",
-    glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
-  fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
-    );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
@@ -13550,8 +13554,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VOLSMOKE\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
-  fprintf(fileout, " %f %f %f %f %f\n",
-    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct);
+  fprintf(fileout, " %f %f %f %f %f %f %f\n",
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 

@@ -1224,11 +1224,12 @@ SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 
-SVEXTERN int SVDECL(show_hrrcutoff,0), SVDECL(show_hrrcutoff_active,0),SVDECL(hrrpuv_loaded,0);
+SVEXTERN int SVDECL(show_firecutoff,0), SVDECL(show_hrrcutoff_active,0),SVDECL(hrrpuv_loaded,0);
+SVEXTERN int SVDECL(show_tempcutoff_active,0),SVDECL(temp_loaded,0);
 SVEXTERN int trainerview;
 SVEXTERN int apertureindex;
 SVEXTERN int zoomindex;
-SVEXTERN int projection_type;
+SVEXTERN int SVDECL(projection_type, PROJECTION_PERSPECTIVE);
 SVEXTERN float apertures[5];
 SVEXTERN float SVDECL(zoom_min, 0.1), SVDECL(zoom_max, 10.0);
 SVEXTERN float aperture_min, aperture_max;
@@ -1417,7 +1418,7 @@ SVEXTERN int SVDECL(device_sphere_segments,6);
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
-SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_cutoff,700.0),SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_cutoff,400.0),SVDECL(global_temp_max,2000.0);
 SVEXTERN float SVDECL(global_hrrpuv_min,0.0),SVDECL(global_hrrpuv_cutoff,200.0),SVDECL(global_hrrpuv_max,1200.0);
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float tourrad_avatar;

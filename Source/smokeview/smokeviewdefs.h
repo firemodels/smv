@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PROJECTION_PERSPECTIVE  0
+#define PROJECTION_ORTHOGRAPHIC 1
 #define ALL_FRAMES -1
 
 #define INIT 0
@@ -816,7 +818,7 @@ void _Sniff_Errors(char *whereat);
 #define MENU_LABEL_hmslabel 13
 #define MENU_LABEL_grid 14
 #define MENU_LABEL_sliceaverage 15
-#define MENU_LABEL_hrrcutoff 17
+#define MENU_LABEL_firecutoff 17
 #define MENU_LABEL_userticks 18
 #define MENU_LABEL_gversion 20
 #define MENU_LABEL_ShowAll 4

@@ -128,7 +128,7 @@ void SetViewPoint(int option){
     CopyCamera(camera_current,camera_external);
     camera_current->rotation_type=rotation_type_save;
     camera_current->projection_type=projection_type_save;
-    if(camera_current->projection_type==1){
+    if(camera_current->projection_type==PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
     }
     break;

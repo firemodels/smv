@@ -611,7 +611,7 @@ void LabelMenu(int value){
     if(ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     visHRRlabel=1;
-    show_hrrcutoff=1;
+    show_firecutoff=1;
     visFramelabel=1;
     if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
     gversion=1;
@@ -629,7 +629,7 @@ void LabelMenu(int value){
     visFramelabel=0;
     visMeshlabel=0;
     visHRRlabel=0;
-    show_hrrcutoff=0;
+    show_firecutoff=0;
     if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
@@ -691,8 +691,8 @@ void LabelMenu(int value){
      visHRRlabel=1-visHRRlabel;
      UpdateHrrinfo(visHRRlabel);
      break;
-   case MENU_LABEL_hrrcutoff:
-     show_hrrcutoff=1-show_hrrcutoff;
+   case MENU_LABEL_firecutoff:
+     show_firecutoff=1-show_firecutoff;
      break;
    case MENU_LABEL_userticks:
      visUSERticks = 1 - visUSERticks;
@@ -1408,7 +1408,7 @@ void ZoomMenu(int value){
       zoom=zooms[4];
       zoomindex=4;
     }
-    if(projection_type!=0){
+    if(projection_type!= PROJECTION_PERSPECTIVE){
       camera_current->projection_type=projection_type;
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
       UpdateProjectionType();
@@ -1417,7 +1417,7 @@ void ZoomMenu(int value){
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
     UpdateProjectionType();
-    if(projection_type==0){
+    if(projection_type== PROJECTION_PERSPECTIVE){
       UpdateCameraYpos(camera_current);
     }
     else{
@@ -1429,7 +1429,7 @@ void ZoomMenu(int value){
     if(zoomindex<0)zoomindex=2;
     if(zoomindex>4)zoomindex=2;
     zoom=zooms[zoomindex];
-    if(projection_type!=0){
+    if(projection_type!= PROJECTION_PERSPECTIVE){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
       camera_current->projection_type=projection_type;
       UpdateProjectionType();
@@ -5578,6 +5578,7 @@ static int luascriptlistmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadterrainmenu=0, unloadterrainmenu=0;
 static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0;
+static int loadsmoke3dtempmenu = 0, loadsmoke3dco2menu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
@@ -6704,10 +6705,20 @@ updatemenu=0;
   if(visFramerate == 0)glutAddMenuEntry(_("Frame rate"), MENU_LABEL_framerate);
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
   if(visgridloc == 0)glutAddMenuEntry(_("Grid locations"), MENU_LABEL_grid);
-  if(show_hrrcutoff_active == 1){
-    if(show_hrrcutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_hrrcutoff);
-    if(show_hrrcutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_hrrcutoff);
+
+  if(show_hrrcutoff_active == 1&&show_tempcutoff_active==1){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*Fire cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("Fire cutoff"), MENU_LABEL_firecutoff);
   }
+  else if(show_hrrcutoff_active == 1&&show_tempcutoff_active==0){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_firecutoff);
+  }
+  else if(show_hrrcutoff_active == 0&&show_tempcutoff_active==1){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*Temperature cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
+  }
+
   if(hrrinfo != NULL){
     if(visHRRlabel == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
     if(visHRRlabel == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
@@ -7971,8 +7982,8 @@ updatemenu=0;
         glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
       }
       glutAddSubMenu(_("Zoom"),zoommenu);
-      if(projection_type==1)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
-      if(projection_type==0)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
+      if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
+      if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
       glutAddMenuEntry("-",MENU_DUMMY);
     }
     SortCameras();
@@ -9723,6 +9734,7 @@ updatemenu=0;
     {
       smoke3ddata *smoke3di;
       int n_soot_menu=0, n_hrr_menu=0;
+      int n_temp_menu = 0, n_co2_menu = 0;
 
       if(nsmoke3dinfo>0){
         char menulabel[1024];
@@ -9758,6 +9770,9 @@ updatemenu=0;
             glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
         }
+
+        // 3d smoke soot menu
+
         if(nmeshes>1){
           CREATEMENU(loadsmoke3dsootmenu,LoadSmoke3DMenu);
         }
@@ -9772,6 +9787,9 @@ updatemenu=0;
           strcat(menulabel,smoke3di->menulabel);
           glutAddMenuEntry(menulabel,i);
         }
+
+        // 3d smoke hrrpuv menu
+
         if(nmeshes>1){
           CREATEMENU(loadsmoke3dhrrmenu,LoadSmoke3DMenu);
         }
@@ -9786,6 +9804,40 @@ updatemenu=0;
           strcat(menulabel,smoke3di->menulabel);
           glutAddMenuEntry(menulabel,i);
         }
+
+        // 3d smoke temperature menu
+
+        if(nmeshes > 1){
+          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
+        }
+        for(i = 0;i < nsmoke3dinfo;i++){
+          smoke3di = smoke3dinfo + i;
+          if(smoke3di->type != TEMP)continue;
+          n_temp_menu++;
+          strcpy(menulabel, "");
+          if(smoke3di->loaded == 1){
+            strcat(menulabel, "*");
+          }
+          strcat(menulabel, smoke3di->menulabel);
+          glutAddMenuEntry(menulabel, i);
+        }
+
+        // 3d smoke co2 menu
+
+        if(nmeshes > 1){
+          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
+        }
+        for(i = 0;i < nsmoke3dinfo;i++){
+          smoke3di = smoke3dinfo + i;
+          if(smoke3di->type != CO2)continue;
+          n_co2_menu++;
+          strcpy(menulabel, "");
+          if(smoke3di->loaded == 1){
+            strcat(menulabel, "*");
+          }
+          strcat(menulabel, smoke3di->menulabel);
+          glutAddMenuEntry(menulabel, i);
+        }
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
@@ -9794,6 +9846,8 @@ updatemenu=0;
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
             if(n_soot_menu>0)glutAddSubMenu(_("SOOT DENSITY"),loadsmoke3dsootmenu);
             if(n_hrr_menu>0)glutAddSubMenu(_("HRRPUV"),loadsmoke3dhrrmenu);
+            if(n_temp_menu > 0)glutAddSubMenu(_("TEMPERATURE"), loadsmoke3dtempmenu);
+            if(n_co2_menu > 0)glutAddSubMenu(_("CO2"), loadsmoke3dco2menu);
           }
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
