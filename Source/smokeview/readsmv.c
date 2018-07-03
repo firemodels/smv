@@ -13387,12 +13387,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", show_bothsides_int, show_bothsides_ext);
   fprintf(fileout, "VECTORSKIP\n");
   fprintf(fileout, " %i\n", vectorskip);
-  fprintf(fileout, "VOLSMOKE\n");
-  fprintf(fileout, " %i %i %i %i %i\n",
-    glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
-  fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor
-    );
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
@@ -13560,8 +13554,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VOLSMOKE\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
-  fprintf(fileout, " %f %f %f %f %f\n",
-    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct);
+  fprintf(fileout, " %f %f %f %f %f %f %f\n",
+    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 

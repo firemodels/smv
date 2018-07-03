@@ -5578,6 +5578,7 @@ static int luascriptlistmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadterrainmenu=0, unloadterrainmenu=0;
 static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0;
+static int loadsmoke3dtempmenu = 0, loadsmoke3dco2menu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
@@ -9733,6 +9734,7 @@ updatemenu=0;
     {
       smoke3ddata *smoke3di;
       int n_soot_menu=0, n_hrr_menu=0;
+      int n_temp_menu = 0, n_co2_menu = 0;
 
       if(nsmoke3dinfo>0){
         char menulabel[1024];
@@ -9768,6 +9770,9 @@ updatemenu=0;
             glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
         }
+
+        // 3d smoke soot menu
+
         if(nmeshes>1){
           CREATEMENU(loadsmoke3dsootmenu,LoadSmoke3DMenu);
         }
@@ -9782,6 +9787,9 @@ updatemenu=0;
           strcat(menulabel,smoke3di->menulabel);
           glutAddMenuEntry(menulabel,i);
         }
+
+        // 3d smoke hrrpuv menu
+
         if(nmeshes>1){
           CREATEMENU(loadsmoke3dhrrmenu,LoadSmoke3DMenu);
         }
@@ -9796,6 +9804,40 @@ updatemenu=0;
           strcat(menulabel,smoke3di->menulabel);
           glutAddMenuEntry(menulabel,i);
         }
+
+        // 3d smoke temperature menu
+
+        if(nmeshes > 1){
+          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
+        }
+        for(i = 0;i < nsmoke3dinfo;i++){
+          smoke3di = smoke3dinfo + i;
+          if(smoke3di->type != TEMP)continue;
+          n_temp_menu++;
+          strcpy(menulabel, "");
+          if(smoke3di->loaded == 1){
+            strcat(menulabel, "*");
+          }
+          strcat(menulabel, smoke3di->menulabel);
+          glutAddMenuEntry(menulabel, i);
+        }
+
+        // 3d smoke co2 menu
+
+        if(nmeshes > 1){
+          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
+        }
+        for(i = 0;i < nsmoke3dinfo;i++){
+          smoke3di = smoke3dinfo + i;
+          if(smoke3di->type != CO2)continue;
+          n_co2_menu++;
+          strcpy(menulabel, "");
+          if(smoke3di->loaded == 1){
+            strcat(menulabel, "*");
+          }
+          strcat(menulabel, smoke3di->menulabel);
+          glutAddMenuEntry(menulabel, i);
+        }
         if(nmeshes>1){
           int useitem;
           smoke3ddata *smoke3dj;
@@ -9804,6 +9846,8 @@ updatemenu=0;
             CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
             if(n_soot_menu>0)glutAddSubMenu(_("SOOT DENSITY"),loadsmoke3dsootmenu);
             if(n_hrr_menu>0)glutAddSubMenu(_("HRRPUV"),loadsmoke3dhrrmenu);
+            if(n_temp_menu > 0)glutAddSubMenu(_("TEMPERATURE"), loadsmoke3dtempmenu);
+            if(n_co2_menu > 0)glutAddSubMenu(_("CO2"), loadsmoke3dco2menu);
           }
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
