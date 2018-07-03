@@ -124,7 +124,9 @@ void GetViewportInfo(void){
   doit=0;
   if(showtime==1){
     if(visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1)doit=1;
-    if(doit==0&&hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)doit=1;
+    if(doit==0&&show_firecutoff==1&&current_mesh!=NULL){
+      if(hrrpuv_loaded==1||temp_loaded==1)doit=1;
+    }
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
@@ -144,7 +146,9 @@ void GetViewportInfo(void){
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
-    if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
+    if(show_firecutoff==1 && current_mesh != NULL){
+      if(hrrpuv_loaded == 1||temp_loaded == 1)VP_timebar.height += (text_height + v_space);
+    }
     if(visColorbarHorizontal==1){
       VP_timebar.height += hbar_height;
     }
@@ -752,16 +756,22 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     sprintf(frameratelabel," AVG: %4.1f",slice_average_interval);
     OutputText(right_label_pos,3*v_space+2*VP_timebar.text_height, frameratelabel); // test print
   }
-  if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL){
-    char hrrcut_label[256];
-    int ihrrcut;
+
+  if((hrrpuv_loaded == 1 || temp_loaded == 1) && show_firecutoff == 1 && current_mesh != NULL){
+    char cutoff_label[256];
+    int i_cutoff;
     float x1, x2, y1, y2;
     float f_red, f_green, f_blue;
 
-    ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
-
-    sprintf(hrrcut_label,">%i (kW/m3)",ihrrcut);
-    OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
+    if(hrrpuv_loaded == 1 && show_firecutoff == 1){
+      i_cutoff = (int)(global_hrrpuv_cutoff + 0.5);
+      sprintf(cutoff_label, ">%i kW/m3", i_cutoff);
+    }
+    else {
+      i_cutoff = (int)(global_temp_cutoff + 0.5);
+      sprintf(cutoff_label, ">%i %s", i_cutoff,degC);
+    }
+    OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);
 
     if(firecolormap_type == 0){
       f_red = (float)fire_red / 255.0;

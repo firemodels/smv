@@ -5624,6 +5624,9 @@ int ReadSMV(char *file, char *file2){
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
           }
+          if (strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0) {
+            show_tempcutoff_active = 1;
+          }
           ismoke3d++;
         }
         else{
@@ -9987,8 +9990,14 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRCUTOFF") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_hrrcutoff);
-      ONEORZERO(show_hrrcutoff);
+      sscanf(buffer, "%i", &show_firecutoff);
+      ONEORZERO(show_firecutoff);
+      continue;
+    }
+    if(Match(buffer, "SHOWFIRECUTOFF") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &show_firecutoff);
+      ONEORZERO(show_firecutoff);
       continue;
     }
     if(Match(buffer, "TWOSIDEDVENTS") == 1){
@@ -13268,6 +13277,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visDummyVents);
   fprintf(fileout, "SHOWEVACSLICES\n");
   fprintf(fileout, " %i %i %i\n", show_evac_slices, constant_evac_coloring, show_evac_colorbar);
+  fprintf(fileout, "SHOWFIRECUTOFF\n");
+  fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", visFloor);
   fprintf(fileout, "SHOWFRAME\n");
@@ -13282,8 +13293,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visgridloc);
   fprintf(fileout, "SHOWHMSTIMELABEL\n");
   fprintf(fileout, " %i\n", vishmsTimelabel);
-  fprintf(fileout, "SHOWHRRCUTOFF\n");
-  fprintf(fileout, " %i\n", show_hrrcutoff);
   fprintf(fileout, "SHOWHRRLABEL\n");
   fprintf(fileout, " %i\n", visHRRlabel);
   fprintf(fileout, "SHOWISO\n");

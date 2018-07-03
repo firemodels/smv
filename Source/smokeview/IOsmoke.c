@@ -5099,16 +5099,21 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     smoke3di->request_load = 0;
 
     hrrpuv_loaded=0;
+    temp_loaded = 0;
     for(j=0;j<nsmoke3dinfo;j++){
       smoke3ddata *smoke3dj;
 
       smoke3dj = smoke3dinfo + j;
       if(smoke3dj->loaded==1){
         Read3DSmoke3DFile=1;
-        if(strcmp(smoke3dj->label.longlabel,"HRRPUV")==0){
+        if(smoke3dj->type==HRRPUV){
           hrrpuv_loaded=1;
+          break;
         }
-        break;
+        if (smoke3dj->type == TEMP) {
+          temp_loaded = 1;
+          break;
+        }
       }
     }
     if(meshi->iblank_smoke3d != NULL){
@@ -5337,9 +5342,8 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   smoke3di->loaded=1;
   smoke3di->display=1;
   SetSmokeColorFlags();
-  if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
-    hrrpuv_loaded=1;
-  }
+  if(smoke3di->type == HRRPUV)hrrpuv_loaded=1;
+  if(smoke3di->type == TEMP)temp_loaded = 1;
 
   Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;

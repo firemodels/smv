@@ -611,7 +611,7 @@ void LabelMenu(int value){
     if(ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     visHRRlabel=1;
-    show_hrrcutoff=1;
+    show_firecutoff=1;
     visFramelabel=1;
     if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
     gversion=1;
@@ -629,7 +629,7 @@ void LabelMenu(int value){
     visFramelabel=0;
     visMeshlabel=0;
     visHRRlabel=0;
-    show_hrrcutoff=0;
+    show_firecutoff=0;
     if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
@@ -691,8 +691,8 @@ void LabelMenu(int value){
      visHRRlabel=1-visHRRlabel;
      UpdateHrrinfo(visHRRlabel);
      break;
-   case MENU_LABEL_hrrcutoff:
-     show_hrrcutoff=1-show_hrrcutoff;
+   case MENU_LABEL_firecutoff:
+     show_firecutoff=1-show_firecutoff;
      break;
    case MENU_LABEL_userticks:
      visUSERticks = 1 - visUSERticks;
@@ -6704,10 +6704,20 @@ updatemenu=0;
   if(visFramerate == 0)glutAddMenuEntry(_("Frame rate"), MENU_LABEL_framerate);
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
   if(visgridloc == 0)glutAddMenuEntry(_("Grid locations"), MENU_LABEL_grid);
-  if(show_hrrcutoff_active == 1){
-    if(show_hrrcutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_hrrcutoff);
-    if(show_hrrcutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_hrrcutoff);
+
+  if(show_hrrcutoff_active == 1&&show_tempcutoff_active==1){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*Fire cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("Fire cutoff"), MENU_LABEL_firecutoff);
   }
+  else if(show_hrrcutoff_active == 1&&show_tempcutoff_active==0){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_firecutoff);
+  }
+  else if(show_hrrcutoff_active == 0&&show_tempcutoff_active==1){
+    if(show_firecutoff == 1)glutAddMenuEntry(_("*Temperature cutoff"), MENU_LABEL_firecutoff);
+    if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
+  }
+
   if(hrrinfo != NULL){
     if(visHRRlabel == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
     if(visHRRlabel == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);

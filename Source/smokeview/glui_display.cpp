@@ -97,7 +97,7 @@ GLUI_Checkbox *CHECKBOX_labels_framerate=NULL;
 GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
-GLUI_Checkbox *CHECKBOX_labels_hrrcutoff=NULL;
+GLUI_Checkbox *CHECKBOX_labels_firecutoff=NULL;
 GLUI_Checkbox *CHECKBOX_labels_availmemory=NULL;
 GLUI_Checkbox *CHECKBOX_labels_labels=NULL;
 GLUI_Checkbox *CHECKBOX_labels_gridloc=NULL;
@@ -195,7 +195,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_hcolorbar 35
 #define FRAME_label 21
 #define HRR_label 22
-#define HRRPUVCUTOFF_label 23
+#define FIRECUTOFF_label 23
 #define LABELS_showall 1
 #define LABELS_hideall 2
 #define LABELS_close 3
@@ -506,7 +506,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &visHRRlabel, HRR_label, LabelsCB);
-  CHECKBOX_labels_hrrcutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRRPUV cutoff"), &show_hrrcutoff, HRRPUVCUTOFF_label, LabelsCB);
+  CHECKBOX_labels_firecutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Fire cutoff"), &show_firecutoff, FIRECUTOFF_label, LabelsCB);
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, LabelsCB);
 #endif
@@ -1041,7 +1041,7 @@ extern "C" void LabelsCB(int var){
   case LABELS_label:
   case LABELS_HMS:
   case LABELS_transparent:
-  case HRRPUVCUTOFF_label:
+  case FIRECUTOFF_label:
     break;
   case LABELS_usertick:
     CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
@@ -1113,7 +1113,7 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
   if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(visHRRlabel);
-  if(CHECKBOX_labels_hrrcutoff!=NULL)CHECKBOX_labels_hrrcutoff->set_int_val(show_hrrcutoff);
+  if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
   if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(visTitle);
   if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(visCHID);
   if(CHECKBOX_visColorbarVertical!=NULL)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
