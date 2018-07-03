@@ -853,7 +853,7 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
 
   NewMemory((void **)&ygrid, sizeof(float)*(jbar + 1));
   for(i = 0; i < jbar + 1; i++){
-    ygrid[i] = ymax*(float)(jbar - 1 - i) / (float)jbar;
+    ygrid[i] = ymax*(float)(jbar - i) / (float)jbar;
   }
 
   if(elev_file == 0) {
