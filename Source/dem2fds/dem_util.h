@@ -37,7 +37,7 @@ SVEXTERN char csv_file[1024];
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN int SVDECL(elev_file, 0);
-SVEXTERN char surf_id[1024], matl_id[1024];
+SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];
 SVEXTERN int SVDECL(nexcludeinfo, 0);
 SVEXTERN excludedata SVDECL(*excludeinfo, NULL);
-
+SVEXTERN float SVDECL(buff_dist, 10.0);

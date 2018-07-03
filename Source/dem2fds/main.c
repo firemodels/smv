@@ -36,7 +36,8 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
   fprintf(stdout, "  -overlap      - assume that there is a 300 pixel overlap between maps.\n");
   fprintf(stdout, "  -show         - highlight image and fds scenario boundaries\n");
-  fprintf(stdout, "  -surf surf_id - specify surf ID for use with OBSTs or geometry \n");
+  fprintf(stdout, "  -surf1 surf_id - specify surf ID for use with OBSTs or geometry (interior to domain)\n");
+  fprintf(stdout, "  -surf2 surf_id - specify surf ID for use with OBSTs or geometry (adjacent to domain)\n");
     UsageCommon(HELP_ALL);
   }
 }
@@ -64,7 +65,8 @@ int main(int argc, char **argv){
 #ifdef pp_CSVF
   strcpy(csv_file, "");
 #endif
-  strcpy(surf_id, "surf1");
+  strcpy(surf_id1, "surf1");
+  strcpy(surf_id2, "surf2");
   strcpy(matl_id, "matl1");
 
   initMALLOC();
@@ -169,9 +171,13 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-show", 5) == 0){
         show_maps = 1;
       }
-      else if(strncmp(arg, "-surf", 5) == 0){
+      else if(strncmp(arg, "-surf", 5) == 0 || strncmp(arg, "-surf1", 6) == 0){
         i++;
-        strcpy(surf_id, argv[i]);
+        strcpy(surf_id1, argv[i]);
+      }
+      else if (strncmp(arg, "-surf2", 6) == 0) {
+        i++;
+        strcpy(surf_id2, argv[i]);
       }
       else if(strncmp(arg, "-fds", 4) == 0){
         i++;
