@@ -559,6 +559,11 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
     buffer2 = TrimFrontBack(buffer);
     if(strlen(buffer2) == 0)continue;
 
+    if (Match(buffer, "BUFF_DIST") == 1) {
+      if (fgets(buffer, LEN_BUFFER, stream_in) == NULL)break;
+      sscanf(buffer, "%f", &buff_dist);
+      continue;
+    }
     if(Match(buffer, "GRID") == 1){
       nlongs = 10;
       nlats = 10;
@@ -874,9 +879,9 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
 
   if(option == FDS_GEOM){
     fprintf(streamout, "&MATL ID = '%s', DENSITY = 1000., CONDUCTIVITY = 1., SPECIFIC_HEAT = 1., RGB = 122,117,48 /\n",matl_id);
-    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 TEXTURE_MAP='%s.png' /\n", surf_id, basename);
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 TEXTURE_MAP='%s.png' /\n", surf_id1, basename);
     fprintf(streamout, "&GEOM ID='terrain', SURF_ID='%s',MATL_ID='%s',\nIJK=%i,%i,XB=%f,%f,%f,%f,\nZVALS=\n",
-      surf_id,matl_id,nlong, nlat, 0.0, xmax, 0.0, ymax);
+      surf_id1,matl_id,nlong, nlat, 0.0, xmax, 0.0, ymax);
     count = 1;
     for(j = 0; j < jbar + 1; j++){
       for(i = 0; i < ibar + 1; i++){
@@ -889,7 +894,8 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   }
 
   if(option == FDS_OBST){
-    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id);
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id2);
     count = 0;
     valsp1 = vals + nlong;
     for(j = 0; j < jbar; j++){
@@ -920,7 +926,12 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
         x2 = MAX(xgrid[i], xgrid[i+1]);
         y1 = MIN(ygrid[j], ygrid[j+1]);
         y2 = MAX(ygrid[j], ygrid[j+1]);
-        fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n",x1,x2,y1,y2,vavg,surf_id);
+        if (ABS(x1) < buff_dist || ABS(x2 - xmax) < buff_dist || ABS(y1) < buff_dist || ABS(y2 - ymax) < buff_dist) {
+          fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n", x1, x2, y1, y2, vavg, surf_id2);
+        }
+        else {
+          fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n", x1, x2, y1, y2, vavg, surf_id1);
+        }
         count++;
       }
       count++;
