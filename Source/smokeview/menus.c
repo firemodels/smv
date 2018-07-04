@@ -4446,6 +4446,7 @@ void LoadMultiSliceMenu(int value){
       char *longlabel;
 
       slicei = sliceinfo + i;
+      if (slicei->skip == 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel, submenulabel) != 0)continue;
       if(dir != 0 && dir != slicei->idir)continue;
@@ -4457,6 +4458,7 @@ void LoadMultiSliceMenu(int value){
       int set_slicecolor;
 
       slicei = sliceinfo + i;
+      if(slicei->skip == 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
