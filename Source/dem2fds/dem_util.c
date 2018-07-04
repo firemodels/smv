@@ -559,11 +559,13 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
     buffer2 = TrimFrontBack(buffer);
     if(strlen(buffer2) == 0)continue;
 
+#ifdef pp_BUFF_DIST
     if (Match(buffer, "BUFF_DIST") == 1) {
       if (fgets(buffer, LEN_BUFFER, stream_in) == NULL)break;
       sscanf(buffer, "%f", &buff_dist);
       continue;
     }
+#endif
     if(Match(buffer, "GRID") == 1){
       nlongs = 10;
       nlats = 10;
@@ -926,8 +928,11 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
         x2 = MAX(xgrid[i], xgrid[i+1]);
         y1 = MIN(ygrid[j], ygrid[j+1]);
         y2 = MAX(ygrid[j], ygrid[j+1]);
-    //    if (ABS(x1) < buff_dist || ABS(x2 - xmax) < buff_dist || ABS(y1) < buff_dist || ABS(y2 - ymax) < buff_dist) {
+#ifdef pp_BUFF_DIST
+        if (ABS(x1) < buff_dist || ABS(x2 - xmax) < buff_dist || ABS(y1) < buff_dist || ABS(y2 - ymax) < buff_dist){
+#else
         if(i==0||i==ibar-1||j==0||j==jbar-1){
+#endif
           fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n", x1, x2, y1, y2, vavg, surf_id2);
         }
         else {
