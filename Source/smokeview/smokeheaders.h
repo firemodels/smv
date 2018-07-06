@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);
 EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);

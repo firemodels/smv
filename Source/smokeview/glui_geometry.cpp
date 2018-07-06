@@ -125,6 +125,15 @@ GLUI_StaticText *STATIC_label=NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
+/* ------------------ UpdateWhereFaceVolumes ------------------------ */
+
+extern "C" void UpdateWhereFaceVolumes(void){
+  if(CHECKBOX_faces_interior != NULL)CHECKBOX_faces_interior->set_int_val(show_faces_interior);
+  if(CHECKBOX_faces_exterior != NULL)CHECKBOX_faces_exterior->set_int_val(show_faces_exterior);
+  if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
+  if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
+}
+
 /* ------------------ UpdateVisAxisLabels ------------------------ */
 
 extern "C" void UpdateVisAxisLabels(void){
@@ -379,13 +388,12 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
     CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_solid, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
+    glui_geometry->add_spinner_to_panel(PANEL_triangles, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
-    CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
-    glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
-    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "smooth", &smooth_geom_normal);
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
@@ -398,6 +406,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
     CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
+    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
     SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
