@@ -60,16 +60,6 @@ intel_win_64 : exe       = set_path64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
 
-# ------------- ms_win_64 ----------------
-
-ms_win_64 : CFLAGS    = -O2 -D WIN32 -D _CONSOLE 
-ms_win_64 : CC        = cl
-ms_win_64 : CPP       = cl
-ms_win_64 : exe       = set_path64
-
-ms_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
-
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean
