@@ -4942,6 +4942,10 @@ void VentMenu(int value){
 #define GEOMETRY_HIDEALL 8
 #define GEOMETRY_INSIDE_DOMAIN 14
 #define GEOMETRY_OUTSIDE_DOMAIN 15
+#define GEOMETRY_FACES_INTERIOR 16
+#define GEOMETRY_FACES_EXTERIOR 17
+#define GEOMETRY_VOLUMES_INTERIOR 18
+#define GEOMETRY_VOLUMES_EXTERIOR 19
 #define GEOMETRY_DUMMY -999
 
 /* ------------------ ImmersedMenu ------------------------ */
@@ -5034,9 +5038,27 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_INSIDE_DOMAIN:
       showgeom_inside_domain = 1 - showgeom_inside_domain;
+      UpdateWhereFaceVolumes();
       break;
     case GEOMETRY_OUTSIDE_DOMAIN:
       showgeom_outside_domain = 1 - showgeom_outside_domain;
+      UpdateWhereFaceVolumes();
+      break;
+    case GEOMETRY_FACES_INTERIOR:
+      show_faces_interior = 1 - show_faces_interior;
+      UpdateWhereFaceVolumes();
+      break;
+    case GEOMETRY_FACES_EXTERIOR:
+      show_faces_exterior = 1 - show_faces_exterior;
+      UpdateWhereFaceVolumes();
+      break;
+    case GEOMETRY_VOLUMES_INTERIOR:
+      show_volumes_interior = 1 - show_volumes_interior;
+      UpdateWhereFaceVolumes();
+      break;
+    case GEOMETRY_VOLUMES_EXTERIOR:
+      show_volumes_exterior = 1 - show_volumes_exterior;
+      UpdateWhereFaceVolumes();
       break;
     default:
       ASSERT(FFALSE);
@@ -5945,6 +5967,18 @@ updatemenu=0;
     glutAddMenuEntry(_("   Hide"),GEOMETRY_HIDE);
   }
   glutAddMenuEntry(_("Where"),GEOMETRY_DUMMY);
+  if(show_faces_interior == 1){
+    glutAddMenuEntry(_("   *Interior"), GEOMETRY_FACES_INTERIOR);
+  }
+  else {
+    glutAddMenuEntry(_("   Interior"), GEOMETRY_FACES_INTERIOR);
+  }
+  if(show_faces_exterior == 1){
+    glutAddMenuEntry(_("   *Exterior"), GEOMETRY_FACES_EXTERIOR);
+  }
+  else {
+    glutAddMenuEntry(_("   Exterior"), GEOMETRY_FACES_EXTERIOR);
+  }
   if(showgeom_inside_domain == 1){
     glutAddMenuEntry(_("   *Inside domain"), GEOMETRY_INSIDE_DOMAIN);
   }
@@ -5961,17 +5995,31 @@ updatemenu=0;
 /* --------------------------------interior geometry menu -------------------------- */
 
   CREATEMENU(immersedinteriormenu,ImmersedMenu);
+  glutAddMenuEntry(_("How"),GEOMETRY_DUMMY);
   if(have_volume==1){
-    if(show_volumes_solid==1)glutAddMenuEntry(_("*Solid"),GEOMETRY_INTERIOR_SOLID);
-    if(show_volumes_solid==0)glutAddMenuEntry(_("Solid"),GEOMETRY_INTERIOR_SOLID);
-    if(show_volumes_outline==1)glutAddMenuEntry(_("*Outline"),GEOMETRY_INTERIOR_OUTLINE);
-    if(show_volumes_outline==0)glutAddMenuEntry(_("Outline"),GEOMETRY_INTERIOR_OUTLINE);
+    if(show_volumes_solid==1)glutAddMenuEntry(_("  *Solid"),GEOMETRY_INTERIOR_SOLID);
+    if(show_volumes_solid==0)glutAddMenuEntry(_("  Solid"),GEOMETRY_INTERIOR_SOLID);
+    if(show_volumes_outline==1)glutAddMenuEntry(_("  *Outline"),GEOMETRY_INTERIOR_OUTLINE);
+    if(show_volumes_outline==0)glutAddMenuEntry(_("  Outline"),GEOMETRY_INTERIOR_OUTLINE);
     if(show_volumes_outline == 0 && show_volumes_solid == 0){
-      glutAddMenuEntry(_("*Hide"),GEOMETRY_TETRA_HIDE);
+      glutAddMenuEntry(_("  *Hide"),GEOMETRY_TETRA_HIDE);
     }
     else{
-      glutAddMenuEntry(_("Hide"),GEOMETRY_TETRA_HIDE);
+      glutAddMenuEntry(_("  Hide"),GEOMETRY_TETRA_HIDE);
     }
+  }
+  glutAddMenuEntry(_("Where"), GEOMETRY_DUMMY);
+  if(show_volumes_interior == 1){
+    glutAddMenuEntry(_("   *Interior"), GEOMETRY_VOLUMES_INTERIOR);
+  }
+  else {
+    glutAddMenuEntry(_("   Interior"), GEOMETRY_VOLUMES_INTERIOR);
+  }
+  if(show_volumes_exterior == 1){
+    glutAddMenuEntry(_("   *Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
+  }
+  else {
+    glutAddMenuEntry(_("   Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
   }
 
 /* --------------------------------surface geometry menu -------------------------- */
