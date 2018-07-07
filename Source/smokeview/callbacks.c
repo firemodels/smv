@@ -1937,7 +1937,7 @@ void Keyboard(unsigned char key, int flag){
                        blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
       }
-      if(showedit_dialog==1&&geomtest_option==NO_TEST){
+      if(showedit_dialog==1){
         if(blocklocation==BLOCKlocation_exact){
           blockage_as_input=1;
         }

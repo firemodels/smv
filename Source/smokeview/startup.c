@@ -1125,9 +1125,6 @@ void InitVars(void){
   else{
     strcpy(movie_ext, ".avi");
   }
-  for(i=0;i<10;i++){
-    tetrabox_vis[i]=1;
-  }
   for(i=0;i<200;i++){
     face_id[i]=1;
   }

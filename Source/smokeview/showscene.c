@@ -53,25 +53,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       DrawEvacFrame();
     }
 
-    /* ++++++++++++++++++++++++ draw test geometry +++++++++++++++++++++++++ */
-
-#ifdef pp_GEOMTEST
-    if(geomtest_option == TETRAHEDRON_TEST){
-      CLIP_GEOMETRY;
-      DrawTestClip();
-      DrawTestOutline();
-    }
-    if(show_cutcells == 1)DrawGeomCutCells();
-    if(geomtest_option == TRIANGLE_TEST){
-      CLIP_GEOMETRY;
-      DrawTestTriangle();
-    }
-    if(geomtest_option == POLYGON_TEST){
-      CLIP_GEOMETRY;
-      DrawTestPolygon();
-    }
-#endif
-
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
 
 #ifdef pp_RENDER360_DEBUG

@@ -215,7 +215,6 @@ EXTERNCPP void DrawTestClip(void);
 EXTERNCPP void DrawTestTriangle(void);
 EXTERNCPP void DrawTestPolygon(void);
 EXTERNCPP void DrawTestOutline(void);
-EXTERNCPP void DrawGeomCutCells(void);
 EXTERNCPP void VentMenu(int value);
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);

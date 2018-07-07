@@ -2813,7 +2813,7 @@ void UpdateFaceLists(void){
       if(facej->bc!=NULL&&facej->bc->prop!=NULL&&facej->bc->prop->blockvis==0)continue;
       if(ClipFace(&clipinfo,facej)==1)continue;
 
-      if(showedit_dialog == 1 && geomtest_option == NO_TEST && j<vent_offset){
+      if(showedit_dialog == 1 && j<vent_offset){
         if(facej->show_bothsides==0)meshi->face_normals_single[n_normals_single++]=facej;
         if(facej->show_bothsides==1)meshi->face_normals_double[n_normals_double++]=facej;
         continue;
@@ -3122,7 +3122,7 @@ void DrawSelectFaces(){
         showtimelist_handle = facei->showtimelist_handle;\
         showtimelist = *showtimelist_handle;\
         if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;\
-        if(showedit_dialog==0||geomtest_option!=NO_TEST){\
+        if(showedit_dialog==0){\
           new_color=facei->color;\
         }\
         else{\
@@ -3250,7 +3250,7 @@ void DrawFaces(){
         showtimelist_handle = facei->showtimelist_handle;
         showtimelist = *showtimelist_handle;
         if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        if(showedit_dialog == 0 || geomtest_option != NO_TEST){
+        if(showedit_dialog == 0){
           new_color=facei->color;
         }
         else{
@@ -3493,7 +3493,7 @@ void DrawTransparentFaces(){
       showtimelist_handle = facei->showtimelist_handle;
       showtimelist = *showtimelist_handle;
       if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-      if(showedit_dialog == 0 || geomtest_option != NO_TEST){
+      if(showedit_dialog == 0){
         new_color=facei->color;
       }
       else{
@@ -4878,7 +4878,7 @@ void DrawFacesOLD(){
         showtimelist_handle = facei->showtimelist_handle;
         showtimelist = *showtimelist_handle;
         if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        if(showedit_dialog == 0 || geomtest_option != NO_TEST){
+        if(showedit_dialog == 0){
           new_color=facei->color;
         }
         else{
@@ -4955,7 +4955,7 @@ void DrawFacesOLD(){
         showtimelist_handle = facei->showtimelist_handle;
         showtimelist = *showtimelist_handle;
         if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        if(showedit_dialog == 0 || geomtest_option != NO_TEST){
+        if(showedit_dialog == 0){
           new_color=facei->color;
         }
         else{

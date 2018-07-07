@@ -279,9 +279,6 @@ SVEXTERN int SVDECL(movie_framerate, 10), SVDECL(have_ffmpeg, 0), SVDECL(have_ff
 
 SVEXTERN int SVDECL(show_missing_objects, 1),SVDECL(have_missing_objects,0);
 SVEXTERN int SVDECL(toggle_dialogs, 1);
-SVEXTERN int SVDECL(show_tetratest_labels, 1);
-SVEXTERN float SVDECL(tetra_line_thickness, 2.0);
-SVEXTERN float SVDECL(tetra_point_size, 10.0);
 SVEXTERN int SVDECL(use_data_extremes, 1);
 SVEXTERN int SVDECL(extreme_data_offset, 1), SVDECL(colorbar_offset, 0);
 SVEXTERN int SVDECL(colorbar_flip, 0);
@@ -315,8 +312,6 @@ SVEXTERN char SVDECL(*script_labelstring,NULL);
 SVEXTERN char SVDECL(*loaded_file,NULL);
 SVEXTERN int SVDECL(clipon,0);
 SVEXTERN int SVDECL(vectortype,0);
-SVEXTERN float tetra_xyz[3];
-SVEXTERN int SVDECL(show_test_in_tetra,0);
 SVEXTERN int SVDECL(show_cutcells,0);
 SVEXTERN int b_state[7],SVDECL(*box_state,b_state+1);
 SVEXTERN int face_id[200],face_vis[10], face_vis_old[10];
@@ -335,10 +330,6 @@ SVEXTERN int SVDECL(compute_fed,0);
 SVEXTERN int SVDECL(is_fed_colorbar, 0);
 SVEXTERN int SVDECL(tour_global_tension_flag,1);
 SVEXTERN float SVDECL(tour_global_tension,0.0);
-
-SVEXTERN float box_bounds[6],box_bounds2[6],box_translate[3],tetra_vertices[12];
-SVEXTERN int tetrabox_vis[10];
-SVEXTERN int SVDECL(geomtest_option,NO_TEST);
 
 SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
 SVEXTERN int SVDECL(update_ssf,0);
