@@ -8363,6 +8363,9 @@ typedef struct {
       }
       patchi = patchinfo + ipatch;
 
+      for(i = 0; i < 6; i++){
+        patchi->ijk[i] = -1;
+      }
       patchi->version=version;
       patchi->ntimes = 0;
       patchi->ntimes_old = 0;
