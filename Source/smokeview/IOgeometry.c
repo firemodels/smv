@@ -315,8 +315,8 @@ void DrawGeom(int flag, int timestate){
       if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
       if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
       if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
-      if(trianglei->geomtype == GEOM_GEOM&&show_faces_solid == 0)continue;
-      if(trianglei->geomtype == GEOM_ISO&&show_iso_solid == 0)continue;
+      if(trianglei->geomtype == GEOM_GEOM&&show_faces_shaded == 0)continue;
+      if(trianglei->geomtype == GEOM_ISO&&show_iso_shaded == 0)continue;
 
       ti = trianglei->textureinfo;
       if(show_texture_1dimage==1)continue;
@@ -627,7 +627,7 @@ void DrawGeom(int flag, int timestate){
         xyzptr[1] = trianglei->verts[1]->xyz;
         xyzptr[2] = trianglei->verts[2]->xyz;
 
-        if(show_iso_solid==1){
+        if(show_iso_shaded==1){
           color = black;
         }
         else{
@@ -674,7 +674,7 @@ void DrawGeom(int flag, int timestate){
 
         verti = geomlisti->verts+j;
         if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
-        if(verti->geomtype == GEOM_ISO&&show_iso_verts == 0)continue;
+        if(verti->geomtype == GEOM_ISO&&show_iso_points == 0)continue;
         if(verti->ntriangles==0)continue;
         color = verti->triangles[0]->geomsurf->color;
         if(last_color!=color){
@@ -2357,10 +2357,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
   // draw surfaces
 
-  if(patchi->slice==0||
-     show_immersed_shaded[IN_CUTCELL_GLUI]==1||
-     show_immersed_shaded[IN_SOLID_GLUI]==1||
-     show_immersed_shaded[IN_GAS_GLUI] == 1){
+  if(
+    (patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
+    (patchi->slice==1&&(
+     show_slice_shaded[IN_CUTCELL_GLUI]==1||
+     show_slice_shaded[IN_SOLID_GLUI]==1||
+     show_slice_shaded[IN_GAS_GLUI] == 1))
+     ){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -2412,9 +2415,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             int insolid;
 
             insolid = trianglei->insolid & 3;
-            if(insolid == IN_CUTCELL && show_immersed_shaded[IN_CUTCELL_GLUI] == 0)continue;
-            if(insolid == IN_SOLID   && show_immersed_shaded[IN_SOLID_GLUI] == 0)continue;
-            if(insolid == IN_GAS     && show_immersed_shaded[IN_GAS_GLUI] == 0)continue;
+            if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
+            glColor4f(color[0], color[1], color[2], transparent_level);
+          }
+          else if(trianglei->geomtype == GEOM_BOUNDARY){
+            if(show_boundary_shaded == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -2451,9 +2458,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             int insolid;
 
             insolid = trianglei->insolid & 3;
-            if(insolid == IN_CUTCELL && show_immersed_shaded[IN_CUTCELL_GLUI] == 0)continue;
-            if(insolid == IN_SOLID   && show_immersed_shaded[IN_SOLID_GLUI] == 0)continue;
-            if(insolid == IN_GAS     && show_immersed_shaded[IN_GAS_GLUI] == 0)continue;
+            if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
+            glColor4f(color[0], color[1], color[2], transparent_level);
+          }
+          else if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY){
+            if(show_boundary_shaded == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
           else{
@@ -2499,9 +2510,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
   // draw lines
 
-  if(show_immersed_outlines[IN_CUTCELL_GLUI]==1||
-     show_immersed_outlines[IN_SOLID_GLUI]==1||
-     show_immersed_outlines[IN_GAS_GLUI] == 1){
+  if(
+    (patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1)||
+     (patchi->slice==1&&(
+     show_slice_outlines[IN_CUTCELL_GLUI]==1||
+     show_slice_outlines[IN_SOLID_GLUI]==1||
+     show_slice_outlines[IN_GAS_GLUI] == 1))
+       ){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -2532,16 +2547,16 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int draw_foreground=1;
 
           trianglei = geomlisti->triangles + j;
-          if(patchi->filetype==PATCH_GEOMETRY){
+          if(patchi->slice == 1){
             int insolid, insolid_glui=-1;
 
             insolid = trianglei->insolid & 3;
             if(insolid>=0&&insolid<3)insolid_glui = insolid;
-            if(insolid == IN_CUTCELL && show_immersed_outlines[IN_CUTCELL_GLUI] == 0)continue;
-            if(insolid == IN_SOLID   && show_immersed_outlines[IN_SOLID_GLUI] == 0)continue;
-            if(insolid == IN_GAS     && show_immersed_outlines[IN_GAS_GLUI] == 0)continue;
+            if(insolid == IN_CUTCELL && show_slice_outlines[IN_CUTCELL_GLUI] == 0)continue;
+            if(insolid == IN_SOLID   && show_slice_outlines[IN_SOLID_GLUI] == 0)continue;
+            if(insolid == IN_GAS     && show_slice_outlines[IN_GAS_GLUI] == 0)continue;
 
-            if(insolid_glui!=-1&&immersed_edgetypes[insolid_glui] == 0){
+            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == 0){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -2553,15 +2568,22 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
               insolid16 = trianglei->insolid&16;
               if(insolid16 == 16)show_edge3 = 0;
             }
-            if(
-              (insolid==IN_CUTCELL&&show_immersed_shaded[IN_CUTCELL_GLUI]==1)||
-              (insolid==IN_SOLID  &&show_immersed_shaded[IN_SOLID_GLUI]==1)||
-              (insolid==IN_GAS    &&show_immersed_shaded[IN_GAS_GLUI]==1)){
-                draw_foreground=1;
-              }
-              else{
-                draw_foreground=0;
-              }
+            if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
+               show_slice_shaded[IN_SOLID_GLUI]==1||
+               show_slice_shaded[IN_GAS_GLUI] == 1){
+              draw_foreground=1;
+            }
+            else{
+              draw_foreground=0;
+            }
+          }
+          if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+            if(show_boundary_shaded==1){
+              draw_foreground=1;
+            }
+            else{
+              draw_foreground=0;
+            }
           }
           if(draw_foreground == 1){
              glColor4fv(foregroundcolor);
@@ -2601,9 +2623,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
   // draw points
 
-  if(show_immersed_points[IN_CUTCELL_GLUI]==1||
-     show_immersed_points[IN_SOLID_GLUI]==1||
-     show_immersed_points[IN_GAS_GLUI] == 1){
+  if(
+    (patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1)||
+     (patchi->slice==1&&(
+     show_slice_points[IN_CUTCELL_GLUI]==1||
+     show_slice_points[IN_SOLID_GLUI]==1||
+     show_slice_points[IN_GAS_GLUI] == 1))
+       ){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
@@ -2626,10 +2652,14 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY)glPointSize(geomslice_pointsize);
+      if (patchi->slice==1)glPointSize(geomboundary_pointsize);
+      glPointSize(geomboundary_pointsize);
       glBegin(GL_POINTS);
       for(j = 0; j < ntris; j++){
         float *xyzptr[3];
         tridata *trianglei;
+        int draw_foreground;
 
         trianglei = geomlisti->triangles + j;
 
@@ -2637,16 +2667,27 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int insolid;
 
           insolid = trianglei->insolid & 3;
-          if(insolid == IN_CUTCELL && show_immersed_points[IN_CUTCELL_GLUI] == 0)continue;
-          if(insolid == IN_SOLID   && show_immersed_points[IN_SOLID_GLUI] == 0)continue;
-          if(insolid == IN_GAS     && show_immersed_points[IN_GAS_GLUI] == 0)continue;
+          if(insolid == IN_CUTCELL && show_slice_points[IN_CUTCELL_GLUI] == 0)continue;
+          if(insolid == IN_SOLID   && show_slice_points[IN_SOLID_GLUI] == 0)continue;
+          if(insolid == IN_GAS     && show_slice_points[IN_GAS_GLUI] == 0)continue;
+          if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
+             show_slice_shaded[IN_SOLID_GLUI]==1||
+             show_slice_shaded[IN_GAS_GLUI] == 1){
+            draw_foreground=1;
+          }
+          else{
+            draw_foreground=0;
+          }
         }
-        if(show_immersed_shaded[IN_CUTCELL_GLUI]==1||
-           show_immersed_shaded[IN_SOLID_GLUI]==1||
-           show_immersed_shaded[IN_GAS_GLUI] == 1||
-           show_immersed_outlines[IN_CUTCELL_GLUI]==1||
-           show_immersed_outlines[IN_SOLID_GLUI]==1||
-           show_immersed_outlines[IN_GAS_GLUI] == 1){
+        if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
+            if(show_boundary_shaded==1){
+              draw_foreground=1;
+            }
+            else{
+              draw_foreground=0;
+            }
+        }
+        if(draw_foreground==1){
           glColor4fv(foregroundcolor);
         }
         else{

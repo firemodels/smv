@@ -117,7 +117,7 @@ extern "C" void UpdateVisAxisLabels(void){
 /* ------------------ UpdateGeometryControls ------------------------ */
 
 extern "C" void UpdateGeometryControls(void){
-  if(CHECKBOX_surface_solid!=NULL)CHECKBOX_surface_solid->set_int_val(show_faces_solid);
+  if(CHECKBOX_surface_solid!=NULL)CHECKBOX_surface_solid->set_int_val(show_faces_shaded);
   if(CHECKBOX_surface_outline!=NULL)CHECKBOX_surface_outline->set_int_val(show_faces_outline);
   if(CHECKBOX_interior_solid!=NULL)CHECKBOX_interior_solid->set_int_val(show_volumes_solid);
   if(CHECKBOX_interior_outline!=NULL)CHECKBOX_interior_outline->set_int_val(show_volumes_outline);
@@ -361,7 +361,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1, "faces");
     CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
     CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_solid, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "outline width", GLUI_SPINNER_FLOAT, &geom_outline_width);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");

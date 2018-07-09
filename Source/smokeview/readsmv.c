@@ -9371,31 +9371,31 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
-        &immersed_celltype);
-      immersed_celltype = CLAMP(immersed_celltype,0,MAX_CELL_TYPES-1);
+        &slice_celltype);
+      slice_celltype = CLAMP(slice_celltype,0,MAX_CELL_TYPES-1);
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        immersed_edgetypes,immersed_edgetypes+1,immersed_edgetypes+2);
+        slice_edgetypes,slice_edgetypes+1,slice_edgetypes+2);
 
       for(i=0;i<3;i++){
-        immersed_edgetypes[i] = CLAMP(immersed_edgetypes[i],0,2);
+        slice_edgetypes[i] = CLAMP(slice_edgetypes[i],0,2);
       }
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i",
-        show_immersed_shaded,show_immersed_shaded+1,show_immersed_shaded+2);
+      sscanf(buffer, " %i %i %i %f",
+        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        show_immersed_outlines,show_immersed_outlines+1,show_immersed_outlines+2);
+        show_slice_outlines,show_slice_outlines+1,show_slice_outlines+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        show_immersed_points,show_immersed_points+1,show_immersed_points+2);
+        show_slice_points,show_slice_points+1,show_slice_points+2);
 
       for(i=0;i<MAX_CELL_TYPES;i++){
-        show_immersed_shaded[i]   = CLAMP(show_immersed_shaded[i],0,1);
-        show_immersed_outlines[i] = CLAMP(show_immersed_outlines[i],0,1);
-        show_immersed_points[i]   = CLAMP(show_immersed_points[i],0,1);
+        show_slice_shaded[i]   = CLAMP(show_slice_shaded[i],0,1);
+        show_slice_outlines[i] = CLAMP(show_slice_outlines[i],0,1);
+        show_slice_points[i]   = CLAMP(show_slice_points[i],0,1);
       }
       continue;
     }
@@ -9460,7 +9460,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "GEOMSHOW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %f %f",
-        &show_faces_interior, &show_faces_exterior, &show_faces_solid, &show_faces_outline, &smooth_geom_normal,
+        &show_faces_interior, &show_faces_exterior, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
         &geom_force_transparent, &geom_transparency,&geom_outline_width);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
@@ -9721,10 +9721,10 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_solid, &show_iso_outline, &show_iso_verts, &show_iso_normal, &dummy, &smooth_iso_normal);
-      ONEORZERO(show_iso_solid);
+      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
+      ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
-      ONEORZERO(show_iso_verts);
+      ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
 #ifdef pp_BETA
@@ -9732,7 +9732,7 @@ int ReadIni2(char *inifile, int localfile){
 #else
       show_iso_normal = 0;
 #endif
-      visAIso = show_iso_solid * 1 + show_iso_outline * 2 + show_iso_verts * 4;
+      visAIso = show_iso_shaded * 1 + show_iso_outline * 2 + show_iso_points * 4;
       continue;
     }
     if(Match(buffer, "SHOWSTREAK") == 1){
@@ -11215,9 +11215,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visAIso);
       visAIso &= 7;
-      show_iso_solid = (visAIso & 1) / 1;
+      show_iso_shaded = (visAIso & 1) / 1;
       show_iso_outline = (visAIso & 2) / 2;
-      show_iso_verts = (visAIso & 4) / 4;
+      show_iso_points = (visAIso & 4) / 4;
       continue;
     }
     if(trainer_mode == 0 && windowresized == 0){
@@ -13147,15 +13147,15 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
-    immersed_celltype);
+    slice_celltype);
   fprintf(fileout, " %i %i %i\n",
-    immersed_edgetypes[0], immersed_edgetypes[1], immersed_edgetypes[2]);
+    slice_edgetypes[0], slice_edgetypes[1], slice_edgetypes[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_shaded[0], show_immersed_shaded[1], show_immersed_shaded[2]);
+    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_outlines[0], show_immersed_outlines[1], show_immersed_outlines[2]);
+    show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_points[0], show_immersed_points[1], show_immersed_points[2]);
+    show_slice_points[0], show_slice_points[1], show_slice_points[2]);
   fprintf(fileout, "GEOMDIAGS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
@@ -13163,7 +13163,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f\n",
-     show_faces_interior, show_faces_exterior, show_faces_solid, show_faces_outline, smooth_geom_normal,
+     show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_outline_width);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
@@ -13296,7 +13296,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_solid, show_iso_outline, show_iso_verts, show_iso_normal, smooth_iso_normal);
+  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");

@@ -192,6 +192,7 @@ GLUI_Rollout *ROLLOUT_line_contour = NULL;
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
+GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 
 GLUI_Panel *PANEL_immersed_region = NULL;
 GLUI_Panel *PANEL_immersed_drawas = NULL;
@@ -275,9 +276,13 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
-GLUI_Checkbox *CHECKBOX_show_immersed_solid = NULL;
-GLUI_Checkbox *CHECKBOX_show_immersed_outline = NULL;
-GLUI_Checkbox *CHECKBOX_show_immersed_point = NULL;
+GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
+GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
+GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
+
+GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
+GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
+GLUI_Checkbox *CHECKBOX_show_iso_points=NULL;
 
 GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
@@ -290,9 +295,6 @@ GLUI_Checkbox *CHECKBOX_show_cell_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
 GLUI_Checkbox *CHECKBOX_showchar=NULL, *CHECKBOX_showonlychar;
-GLUI_Checkbox *CHECKBOX_show_iso_solid=NULL;
-GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
-GLUI_Checkbox *CHECKBOX_show_iso_verts=NULL;
 GLUI_Checkbox *CHECKBOX_defer=NULL;
 GLUI_Checkbox *CHECKBOX_script_step=NULL;
 GLUI_Checkbox *CHECKBOX_show_evac_slices=NULL;
@@ -322,8 +324,8 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
-GLUI_RadioGroup *RADIO_immersed_celltype=NULL;
-GLUI_RadioGroup *RADIO_immersed_edgetype=NULL;
+GLUI_RadioGroup *RADIO_slice_celltype=NULL;
+GLUI_RadioGroup *RADIO_slice_edgetype=NULL;
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
 GLUI_RadioGroup *RADIO_boundaryslicedup = NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
@@ -373,7 +375,6 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define EVAC_ROLLOUT 5
 #define PLOT3D_ROLLOUT 6
 #define SLICE_ROLLOUT 7
-#define BOUNDARY_BOUNDIMMERSED_ROLLOUT 8
 
 #define ISO_ROLLOUT_SETTINGS 0
 #define ISO_ROLLOUT_COLOR 1
@@ -396,7 +397,7 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define TIME_ROLLOUT 6
 #define MEMCHECK_ROLLOUT 7
 
-procdata boundprocinfo[9], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[5];
+procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[5];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
@@ -936,55 +937,55 @@ extern "C" void ImmersedBoundCB(int var){
     int i;
 
   case IMMERSED_SWITCH_CELLTYPE:
-    glui_immersed_edgetype  = immersed_edgetypes[immersed_celltype];
-    glui_show_immersed_shaded  = show_immersed_shaded[immersed_celltype];
-    glui_show_immersed_outline = show_immersed_outlines[immersed_celltype];
-    glui_show_immersed_point   = show_immersed_points[immersed_celltype];
+    glui_slice_edgetype  = slice_edgetypes[slice_celltype];
+    glui_show_slice_shaded  = show_slice_shaded[slice_celltype];
+    glui_show_slice_outlines = show_slice_outlines[slice_celltype];
+    glui_show_slice_points   = show_slice_points[slice_celltype];
     for(i=0;i<3;i++){
-      switch(immersed_edgetypes[i]){
+      switch(slice_edgetypes[i]){
         case IMMERSED_POLYGON:
         case IMMERSED_TRIANGLE:
-          show_immersed_outlines[i]=1;
+          show_slice_outlines[i]=1;
           break;
         case IMMERSED_HIDDEN:
-          show_immersed_outlines[i]=0;
+          show_slice_outlines[i]=0;
           break;
       }
     }
-    if(RADIO_immersed_edgetype!=NULL)RADIO_immersed_edgetype->set_int_val(glui_immersed_edgetype);
-    if(CHECKBOX_show_immersed_solid!=NULL)CHECKBOX_show_immersed_solid->set_int_val(glui_show_immersed_shaded);
-    if(CHECKBOX_show_immersed_outline!=NULL)CHECKBOX_show_immersed_outline->set_int_val(glui_show_immersed_outline);
-    if(CHECKBOX_show_immersed_point!=NULL)CHECKBOX_show_immersed_point->set_int_val(glui_show_immersed_point);
+    if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
+    if(CHECKBOX_show_slice_shaded!=NULL)CHECKBOX_show_slice_shaded->set_int_val(glui_show_slice_shaded);
+    if(CHECKBOX_show_slice_outlines!=NULL)CHECKBOX_show_slice_outlines->set_int_val(glui_show_slice_outlines);
+    if(CHECKBOX_show_slice_points!=NULL)CHECKBOX_show_slice_points->set_int_val(glui_show_slice_points);
 
     break;
   case IMMERSED_SET_DRAWTYPE:
-    if(glui_show_immersed_outline == 0){
-      glui_immersed_edgetype = IMMERSED_HIDDEN;
+    if(glui_show_slice_outlines == 0){
+      glui_slice_edgetype = IMMERSED_HIDDEN;
     }
     else{
-      if(glui_immersed_edgetype == IMMERSED_HIDDEN)glui_immersed_edgetype = IMMERSED_TRIANGLE;
+      if(glui_slice_edgetype == IMMERSED_HIDDEN)glui_slice_edgetype = IMMERSED_TRIANGLE;
     }
-    immersed_edgetypes[immersed_celltype]     = glui_immersed_edgetype;
-    show_immersed_shaded[immersed_celltype]   = glui_show_immersed_shaded;
-    show_immersed_outlines[immersed_celltype] = glui_show_immersed_outline;
-    show_immersed_points[immersed_celltype]   = glui_show_immersed_point;
-    if(RADIO_immersed_edgetype!=NULL)RADIO_immersed_edgetype->set_int_val(glui_immersed_edgetype);
+    slice_edgetypes[slice_celltype]     = glui_slice_edgetype;
+    show_slice_shaded[slice_celltype]   = glui_show_slice_shaded;
+    show_slice_outlines[slice_celltype] = glui_show_slice_outlines;
+    show_slice_points[slice_celltype]   = glui_show_slice_points;
+    if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
     break;
   case IMMERSED_SWITCH_EDGETYPE:
-    switch (glui_immersed_edgetype){
+    switch (glui_slice_edgetype){
     case SHOW_POLYGON_EDGES:
     case SHOW_TRIANGLE_EDGES:
-      glui_show_immersed_outline=1;
+      glui_show_slice_outlines=1;
       break;
     case HIDE_EDGES:
-      glui_show_immersed_outline=0;
+      glui_show_slice_outlines=0;
       break;
     default:
       ASSERT(FFALSE);
       break;
     }
     ImmersedBoundCB(IMMERSED_SET_DRAWTYPE);
-    if(CHECKBOX_show_immersed_outline!=NULL)CHECKBOX_show_immersed_outline->set_int_val(glui_show_immersed_outline);
+    if(CHECKBOX_show_slice_outlines!=NULL)CHECKBOX_show_slice_outlines->set_int_val(glui_show_slice_outlines);
     break;
   default:
     ASSERT(FFALSE);
@@ -1872,6 +1873,13 @@ extern "C" void GluiBoundsSetup(int main_window){
       BoundBoundCB(SHOWCHAR);
     }
 
+    ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Settings"));
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shadaed"), &show_boundary_shaded);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("points"), &show_boundary_points);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
+
+
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);
       ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_duplicates, BOUNDARY_DUPLICATE_ROLLOUT);
@@ -1898,10 +1906,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("Line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
     SPINNER_isolinewidth->set_float_limits(1.0, 10.0);
 
-    visAIso = show_iso_solid*1+show_iso_outline*2+show_iso_verts*4;
-    CHECKBOX_show_iso_solid = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Solid"), &show_iso_solid, ISO_SURFACE, IsoBoundCB);
-    CHECKBOX_show_iso_outline = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Outline"), &show_iso_outline, ISO_OUTLINE, IsoBoundCB);
-    CHECKBOX_show_iso_verts = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Points"), &show_iso_verts, ISO_POINTS, IsoBoundCB);
+    visAIso = show_iso_shaded*1+show_iso_outline*2+show_iso_points*4;
+    CHECKBOX_show_iso_shaded = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("shaded"), &show_iso_shaded, ISO_SURFACE, IsoBoundCB);
+    CHECKBOX_show_iso_outline = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("outline"), &show_iso_outline, ISO_OUTLINE, IsoBoundCB);
+    CHECKBOX_show_iso_points = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("points"), &show_iso_points, ISO_POINTS, IsoBoundCB);
 
 #ifdef pp_BETA
     CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, SliceBoundCB);
@@ -2071,9 +2079,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_pan2 = glui_bounds->add_panel_to_panel(ROLLOUT_isosurface,"",GLUI_PANEL_NONE);
     RADIO_plot3d_isotype=glui_bounds->add_radiogroup_to_panel(PANEL_pan2,&p3dsurfacetype,PLOTISOTYPE,Plot3DBoundCB);
     RADIOBUTTON_plot3d_iso_hidden=glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("Hidden"));
-    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("Solid"));
-    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("Outline"));
-    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("Points"));
+    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("shaded"));
+    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("outline"));
+    glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("points"));
     RADIOBUTTON_plot3d_iso_hidden->disable();
 
     p3min_temp=p3min[0];
@@ -2163,6 +2171,34 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     glui_bounds->add_button_to_panel(ROLLOUT_slice_average,_("Reload"),ALLFILERELOAD,SliceBoundCB);
 
+    if (ngeom_data > 0) {
+      ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, "Settings");
+
+      PANEL_immersed_region = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "region", true);
+      RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, _("gas"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, _("solid"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, _("cut cell"));
+
+      glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
+      PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "draw as", true);
+      CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("shaded"), &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("outline"), &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("points"), &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
+
+      glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
+      PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "outline type", true);
+      RADIO_slice_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_slice_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("polygon"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("triangle"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("none"));
+
+      ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+      ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
+    }
+
+
     ROLLOUT_slice_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Vector"), false, SLICE_VECTOR_ROLLOUT, SliceRolloutCB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_vector, SLICE_VECTOR_ROLLOUT);
 
@@ -2248,35 +2284,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
     SliceBoundCB(FILETYPEINDEX);
-  }
-
-  // ----------------------------------- Immersed parameters ----------------------------------------
-
-  if(ngeom_data>0){
-    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Geometry settings", false, BOUNDARY_BOUNDIMMERSED_ROLLOUT, BoundRolloutCB);
-    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_boundimmersed, BOUNDARY_BOUNDIMMERSED_ROLLOUT);
-
-    PANEL_immersed_region = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "region", true);
-    RADIO_immersed_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &immersed_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _("gas"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _("solid"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_celltype, _("cut cell"));
-
-    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
-    PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "draw as", true);
-    CHECKBOX_show_immersed_solid = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("shaded"), &glui_show_immersed_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_immersed_outline = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("outline"), &glui_show_immersed_outline, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_immersed_point = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("points"), &glui_show_immersed_point, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-
-    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
-    PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "outline type", true);
-    RADIO_immersed_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_immersed_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _("polygon"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _("triangle"));
-    glui_bounds->add_radiobutton_to_group(RADIO_immersed_edgetype, _("none"));
-
-    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
-    ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
   }
 
   // ----------------------------------- Time ----------------------------------------
@@ -2563,9 +2570,9 @@ extern "C" void UpdateTracers(void){
 /* ------------------ UpdateGluiIsotype ------------------------ */
 
 extern "C" void UpdateGluiIsotype(void){
-  CHECKBOX_show_iso_solid->set_int_val(visAIso&1);
+  CHECKBOX_show_iso_shaded->set_int_val(visAIso&1);
   CHECKBOX_show_iso_outline->set_int_val((visAIso&2)/2);
-  CHECKBOX_show_iso_verts->set_int_val((visAIso&4)/4);
+  CHECKBOX_show_iso_points->set_int_val((visAIso&4)/4);
 }
 
 
@@ -2741,7 +2748,7 @@ extern "C" void IsoBoundCB(int var){
   case ISO_SURFACE:
   case  ISO_OUTLINE:
   case ISO_POINTS:
-    visAIso= 1*show_iso_solid + 2*show_iso_outline + 4*show_iso_verts;
+    visAIso= 1*show_iso_shaded + 2*show_iso_outline + 4*show_iso_points;
     updatemenu=1;
     break;
   default:

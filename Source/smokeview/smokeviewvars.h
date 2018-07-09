@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
+SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
+
 SVEXTERN int SVDECL(smoke3d_load_test, 0);
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
@@ -62,15 +65,6 @@ SVEXTERN float SVDECL(sootfactor, 15.0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
-SVEXTERN int SVDECL(glui_show_immersed_shaded,1);
-SVEXTERN int SVDECL(glui_show_immersed_outline,0);
-SVEXTERN int SVDECL(glui_show_immersed_point,0);
-SVEXTERN int SVDECL(glui_immersed_edgetype, IMMERSED_POLYGON);
-SVEXTERN int SVDECL(immersed_celltype, 0);
-SVEXTERN int immersed_edgetypes[3];
-SVEXTERN int show_immersed_shaded[MAX_CELL_TYPES];
-SVEXTERN int show_immersed_outlines[MAX_CELL_TYPES];
-SVEXTERN int show_immersed_points[MAX_CELL_TYPES];
 
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
@@ -445,10 +439,35 @@ SVEXTERN int SVDECL(mouse_down,0);
 SVEXTERN int SVDECL(show_volsmoke_moving,0);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
 SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
-SVEXTERN int SVDECL(show_iso_solid,1),SVDECL(show_iso_outline,1),SVDECL(show_iso_verts,0);
+
+SVEXTERN int SVDECL(glui_show_slice_shaded,1);
+SVEXTERN int SVDECL(glui_show_slice_outlines,0);
+SVEXTERN int SVDECL(glui_show_slice_points,0);
+
+SVEXTERN int show_slice_shaded[MAX_CELL_TYPES];
+SVEXTERN int show_slice_outlines[MAX_CELL_TYPES];
+SVEXTERN int show_slice_points[MAX_CELL_TYPES];
+
+SVEXTERN int SVDECL(show_boundary_shaded, 1);
+SVEXTERN int SVDECL(show_boundary_outline, 0);
+SVEXTERN int SVDECL(show_boundary_points, 0);
+
+SVEXTERN int SVDECL(show_iso_shaded,1);
+SVEXTERN int SVDECL(show_iso_outline,1);
+SVEXTERN int SVDECL(show_iso_points,0);
+
+SVEXTERN int SVDECL(show_faces_shaded, 1);
+SVEXTERN int SVDECL(show_faces_outline, 1);
+SVEXTERN int SVDECL(show_geom_verts, 0);
+
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
-SVEXTERN int SVDECL(show_faces_solid, 1), SVDECL(show_faces_outline, 1), SVDECL(show_geom_verts, 0);
+
+SVEXTERN int SVDECL(glui_slice_edgetype, IMMERSED_POLYGON);
+SVEXTERN int SVDECL(slice_celltype, 0);
+SVEXTERN int slice_edgetypes[3];
+
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
+
 SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
 SVEXTERN int SVDECL(have_volcompressed,0);
 SVEXTERN int SVDECL(glui_load_volcompressed,0),SVDECL(load_volcompressed,0);
