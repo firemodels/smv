@@ -1326,7 +1326,7 @@ int CountColorbars(void){
     hcolorbar_vis[COLORBAR_ISO]=count+2;
     count++;
   }
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     hcolorbar_vis[COLORBAR_BOUNDARY]=count+2;
     count++;
   }
@@ -1353,7 +1353,7 @@ void DrawHorizontalColorbars(void) {
     if((showvslice == 1 && vslicecolorbarflag == 1))doit=1;
   }
   else if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]){
-    if(showpatch == 1 && wc_flag == 0)doit=1;
+    if(showpatch == 1 && wall_cell_color_flag == 0)doit=1;
   }
   else if(toggle_colorbar==hcolorbar_vis[COLORBAR_PLOT3D]){
     if(showplot3d==1)doit=1;
@@ -1489,7 +1489,7 @@ void DrawVerticalColorbars(void){
   if(showiso_colorbar==1||showevac_colorbar==1||
     (showsmoke==1&&parttype!=0)||showslice==1||
     (showvslice==1&&vslicecolorbarflag==1)||
-    (showpatch==1&&wc_flag==0)||
+    (showpatch==1&&wall_cell_color_flag==0)||
     (showzone==1&&zonecolortype==ZONETEMP_COLOR)||
     showplot3d==1){
 
@@ -1648,7 +1648,7 @@ void DrawHorizontalColorbarRegLabels(void) {
   if (showiso_colorbar == 1 || showevac_colorbar == 1 ||
     (showsmoke == 1 && parttype != 0) || showslice == 1 ||
     (showvslice == 1 && vslicecolorbarflag == 1) ||
-    (showpatch == 1 && wc_flag == 0) ||
+    (showpatch == 1 && wall_cell_color_flag == 0) ||
     (showzone == 1 && zonecolortype == ZONETEMP_COLOR) ||
     showplot3d == 1) {
 
@@ -1765,7 +1765,7 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary file top labels ------------
 
-  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wall_cell_color_flag == 0) {
     char unitlabel[256];
     patchdata *patchi;
     int patchunitclass, patchunittype;
@@ -2032,7 +2032,7 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary left labels ------------
 
-  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wall_cell_color_flag == 0) {
     float tttval, tttmin, tttmax;
 
     iposition = -1;
@@ -2269,7 +2269,7 @@ void DrawVerticalColorbarRegLabels(void){
       dohist = 1;
     }
   }
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     leftpatch = ileft;
   }
   leftzone = ileft;
@@ -2280,7 +2280,7 @@ void DrawVerticalColorbarRegLabels(void){
   if(showiso_colorbar == 1 || showevac_colorbar == 1 ||
     (showsmoke == 1 && parttype != 0) || showslice == 1 ||
     (showvslice == 1 && vslicecolorbarflag == 1) ||
-    (showpatch == 1 && wc_flag == 0) ||
+    (showpatch == 1 && wall_cell_color_flag == 0) ||
     (showzone == 1 && zonecolortype == ZONETEMP_COLOR) ||
     showplot3d == 1){
 
@@ -2456,7 +2456,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- boundary file top labels ------------
 
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     char unitlabel[256];
     patchdata *patchi;
     int patchunitclass, patchunittype;
@@ -2734,7 +2734,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- boundary left labels ------------
 
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     float tttval, tttmin, tttmax;
 
     iposition = -1;

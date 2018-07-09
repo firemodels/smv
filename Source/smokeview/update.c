@@ -317,6 +317,7 @@ void UpdateShow(void){
       break;
     }
   }
+
   sliceflag=0;
   slicecolorbarflag=0;
   SHOW_gslice_data=0;
@@ -381,6 +382,7 @@ void UpdateShow(void){
       }
     }
   }
+
   isoflag=0;
   tisoflag=0;
   if(visTimeIso==1){
@@ -398,6 +400,7 @@ void UpdateShow(void){
       }
     }
   }
+
   vsliceflag=0;
   vslicecolorbarflag=0;
   if(visTimeSlice==1){
@@ -430,59 +433,33 @@ void UpdateShow(void){
       break;
     }
   }
+
   patchflag=0;
   if(visTimeBoundary==1){
     int ii;
 
-    wc_flag=0;
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(strcmp(patchi->label.shortlabel,"wc")==0)wc_flag=1;
-      patchflag=1;
-      break;
-    }
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(patchi->extreme_max==1){
-        have_extreme_maxdata=1;
-        break;
-      }
-    }
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(patchi->extreme_min==1){
-        have_extreme_mindata=1;
-        break;
-      }
-    }
-    for(i = 0; i < ngeominfo; i++){
+    for (i = 0; i < ngeominfo; i++) {
       geomdata *geomi;
 
       geomi = geominfo + i;
       geomi->patchactive = 0;
     }
+    wall_cell_color_flag=0;
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->geominfo!=NULL&&patchi->display == 1 && patchi->type == iboundarytype){
-        patchi->geominfo->patchactive = 1;
+      if(patchi->display == 1 && patchi->type == iboundarytype){
+        if (strcmp(patchi->label.shortlabel, "wc") == 0)wall_cell_color_flag = 1;
+        patchflag = 1;
+        if(patchi->extreme_max == 1)have_extreme_maxdata = 1;
+        if(patchi->extreme_min == 1)have_extreme_mindata = 1;
+        if(patchi->geominfo != NULL)patchi->geominfo->patchactive = 1;
       }
     }
   }
+
   partflag=0;
   if(visParticles==1&&visTimeParticles==1){
     for(i=0;i<npartinfo;i++){
@@ -499,6 +476,7 @@ void UpdateShow(void){
       if(current_property->extreme_min==1)have_extreme_mindata=1;
     }
   }
+
   evacflag=0;
   if(visEvac==1&&visTimeEvac==1){
     for(i=0;i<npartinfo;i++){
@@ -511,6 +489,7 @@ void UpdateShow(void){
       }
     }
   }
+
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
     shooter_flag=1;
@@ -596,7 +575,7 @@ void UpdateShow(void){
   if(ReadEvacFile==1)num_colorbars++;
   if(ReadPartFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wc_flag==0)num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&tisoflag==1){
     showiso_colorbar=1;
