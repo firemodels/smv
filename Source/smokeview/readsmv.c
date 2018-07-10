@@ -9368,6 +9368,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i", &show_meshmenus);
       continue;
     }
+    if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points);
+      ONEORZERO(show_boundary_shaded);
+      ONEORZERO(show_boundary_outline);
+      ONEORZERO(show_boundary_points);
+      continue;
+    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
@@ -13145,6 +13153,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
+  fprintf(fileout, "GEOMBOUNDARYPROPS\n");
+  fprintf(fileout, " %i %i %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
