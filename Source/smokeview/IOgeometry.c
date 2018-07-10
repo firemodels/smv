@@ -605,7 +605,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glLineWidth(geom_outline_width);
+      glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
         float *xyzptr[3];
@@ -693,7 +693,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glLineWidth(geom_outline_width);
+      glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -768,7 +768,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      glLineWidth(geom_outline_width);
+      glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
       for(j = 0; j < geomlisti->ntriangles; j++){
@@ -842,7 +842,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      glLineWidth(geom_outline_width);
+      glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
       for(ii = 0; ii < geomlisti->nedges; ii++){
@@ -2538,7 +2538,15 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      glLineWidth(geom_outline_width);
+      if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY){
+        glLineWidth(geomboundary_linewidth);
+      }
+      else if(patchi->slice==1){
+        glLineWidth(geomslice_linewidth);
+      }
+      else{
+        glLineWidth(geom_linewidth);
+      }
       glBegin(GL_LINES);
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
@@ -2652,9 +2660,15 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY)glPointSize(geomslice_pointsize);
-      if (patchi->slice==1)glPointSize(geomboundary_pointsize);
-      glPointSize(geomboundary_pointsize);
+      if(patchi->geom_smvfiletype == PATCH_GEOMETRY_BOUNDARY){
+        glPointSize(geomboundary_pointsize);
+      }
+      else if(patchi->slice==1){
+        glPointSize(geomslice_pointsize);
+      }
+      else{
+        glPointSize(geom_pointsize);
+      }
       glBegin(GL_POINTS);
       for(j = 0; j < ntris; j++){
         float *xyzptr[3];

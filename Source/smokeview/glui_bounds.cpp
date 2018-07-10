@@ -1873,11 +1873,14 @@ extern "C" void GluiBoundsSetup(int main_window){
       BoundBoundCB(SHOWCHAR);
     }
 
-    ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Settings"));
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shadaed"), &show_boundary_shaded);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("points"), &show_boundary_points);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
+    if (ngeom_data > 0) {
+      ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Settings"));
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shadaed"), &show_boundary_shaded);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("points"), &show_boundary_points);
+      glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "line width", GLUI_SPINNER_FLOAT, &geomboundary_linewidth);
+      glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
+    }
 
 
     if(nboundaryslicedups > 0){
@@ -1900,11 +1903,11 @@ extern "C" void GluiBoundsSetup(int main_window){
     ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
     ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_settings, ISO_ROLLOUT_SETTINGS);
 
-    SPINNER_isopointsize = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("Point size"), GLUI_SPINNER_FLOAT, &isopointsize);
-    SPINNER_isopointsize->set_float_limits(1.0, 10.0);
-
-    SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("Line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
+    SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
     SPINNER_isolinewidth->set_float_limits(1.0, 10.0);
+
+    SPINNER_isopointsize = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("point size"), GLUI_SPINNER_FLOAT, &isopointsize);
+    SPINNER_isopointsize->set_float_limits(1.0, 10.0);
 
     visAIso = show_iso_shaded*1+show_iso_outline*2+show_iso_points*4;
     CHECKBOX_show_iso_shaded = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("shaded"), &show_iso_shaded, ISO_SURFACE, IsoBoundCB);
@@ -2185,6 +2188,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("shaded"), &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
       CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("outline"), &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
       CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, _("points"), &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
       glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
 
       glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);

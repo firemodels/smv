@@ -22,6 +22,8 @@
 
 SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
+SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
+SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
 SVEXTERN int SVDECL(smoke3d_load_test, 0);
 SVEXTERN int SVDECL(smoke3d_only, 0);
@@ -76,7 +78,8 @@ SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_colorbar_hint, 1);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
-SVEXTERN float SVDECL(geom_outline_width, 2.0);
+SVEXTERN float SVDECL(geom_linewidth, 2.0);
+SVEXTERN float SVDECL(geom_pointsize, 6.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
 SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
 SVEXTERN int SVDECL(showall_3dslices, 0);
