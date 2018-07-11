@@ -2114,7 +2114,7 @@ void GetGSliceParams(void){
     patchi = patchinfo + i;
     meshi = meshinfo + patchi->blocknumber;
     strcpy(patchi->gslicedir, "");
-    if(patchi->filetype != PATCH_GEOMETRY)continue;
+    if(patchi->fds_filetype != PATCH_GEOMETRYold)continue;
     ii1 = patchi->ijk[0];
     ii2 = patchi->ijk[1];
     jj1 = patchi->ijk[2];

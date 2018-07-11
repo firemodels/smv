@@ -1331,7 +1331,7 @@ typedef struct _patchdata {
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
-  int filetype, geom_smvfiletype, slice;
+  int fds_filetype, geom_filetype, geom_slice, geom_boundary, fileclass;
   int type;
   int inuse,inuse_getbounds;
   int unit_start;

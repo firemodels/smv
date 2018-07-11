@@ -136,11 +136,14 @@ void _Sniff_Errors(char *whereat);
 
 #define PATCH_NODE_CENTER 0
 #define PATCH_CELL_CENTER 1
-#define PATCH_GEOMETRY 2
+#define PATCH_GEOMETRYold 2
 
 #define PATCH_STRUCTURED 0
 #define PATCH_GEOMETRY_BOUNDARY 1
 #define PATCH_GEOMETRY_SLICE 2
+
+#define STRUCTURED   0
+#define UNSTRUCTURED 1
 
 #define NODATA 0
 #define HASDATA 1

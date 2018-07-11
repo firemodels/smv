@@ -8371,24 +8371,29 @@ typedef struct {
       patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
       patchi->geom_fdsfiletype=NULL;
-      patchi->filetype = PATCH_NODE_CENTER;
-      patchi->geom_smvfiletype = PATCH_STRUCTURED;
-      patchi->slice = 0;
+      patchi->fds_filetype = PATCH_NODE_CENTER;
+      patchi->geom_filetype = PATCH_STRUCTURED;
+      patchi->geom_slice = 0;
+      patchi->geom_boundary = 0;
+      patchi->fileclass = STRUCTURED;
       if(Match(buffer,"BNDC") == 1){
-        patchi->filetype = PATCH_CELL_CENTER;
+        patchi->fds_filetype = PATCH_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         ngeom_data++;
-        patchi->filetype=PATCH_GEOMETRY;
-        patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->fds_filetype=PATCH_GEOMETRYold;
+        patchi->geom_filetype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->geom_boundary = 1;
+        patchi->fileclass = UNSTRUCTURED;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
         ngeom_data++;
-        patchi->filetype = PATCH_GEOMETRY;
-        patchi->geom_smvfiletype = PATCH_GEOMETRY_SLICE;
-        patchi->slice = 1;
+        patchi->fds_filetype = PATCH_GEOMETRYold;
+        patchi->geom_filetype = PATCH_GEOMETRY_SLICE;
+        patchi->geom_slice = 1;
+        patchi->fileclass = UNSTRUCTURED;
 
         sliceparms = strchr(buffer, '&');
         if(sliceparms != NULL){
@@ -8446,7 +8451,7 @@ typedef struct {
 
       patchi->geomfile=NULL;
       patchi->geominfo=NULL;
-      if(patchi->filetype==PATCH_GEOMETRY){
+      if(patchi->fds_filetype==PATCH_GEOMETRYold){
         int igeom;
 
         if(FGETS(buffer,255,stream)==NULL){
@@ -8462,7 +8467,7 @@ typedef struct {
           geomi = geominfo + igeom;
           if(strcmp(geomi->file,patchi->geomfile)==0){
             patchi->geominfo=geomi;
-            if(patchi->slice == 0){
+            if(patchi->geom_slice == 0){
               geomi->geomtype = GEOM_BOUNDARY;
               geomi->fdsblock = FDSBLOCK;
             }
@@ -8503,13 +8508,13 @@ typedef struct {
         char geomlabel2[256], *geomptr=NULL;
 
         strcpy(geomlabel2, "");
-        if(patchi->filetype==PATCH_CELL_CENTER){
+        if(patchi->fds_filetype==PATCH_CELL_CENTER){
           if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
-        else if(patchi->filetype==PATCH_NODE_CENTER){
+        else if(patchi->fds_filetype==PATCH_NODE_CENTER){
           if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
-        else if(patchi->filetype==PATCH_GEOMETRY){
+        else if(patchi->fds_filetype==PATCH_GEOMETRYold){
           char geomlabel[256];
 
           strcpy(geomlabel, "(geometry)");
