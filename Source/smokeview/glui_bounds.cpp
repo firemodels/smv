@@ -1859,10 +1859,11 @@ extern "C" void GluiBoundsSetup(int main_window){
       BoundBoundCB(SHOWCHAR);
     }
 
-    ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Display settings"),false, BOUNDARY_SETTINGS_ROLLOUT, SubBoundRolloutCB);
+    ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Settings"),false, BOUNDARY_SETTINGS_ROLLOUT, SubBoundRolloutCB);
     ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_settings, BOUNDARY_SETTINGS_ROLLOUT);
-    if (ngeom_data > 0) {
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shadaed"), &show_boundary_shaded);
+
+    if(ngeom_data > 0){
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shaded"), &show_boundary_shaded);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("points"), &show_boundary_points);
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "line width", GLUI_SPINNER_FLOAT, &geomboundary_linewidth);
@@ -1890,7 +1891,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ROLLOUT_iso = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Isosurface", false, ISO_ROLLOUT, BoundRolloutCB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_iso, ISO_ROLLOUT);
 
-    ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Display settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
+    ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
     ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_settings, ISO_ROLLOUT_SETTINGS);
 
     visAIso = show_iso_shaded*1+show_iso_outline*2+show_iso_points*4;
@@ -2165,10 +2166,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     glui_bounds->add_button_to_panel(ROLLOUT_slice_average,_("Reload"),ALLFILERELOAD,SliceBoundCB);
 
-    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, "Display settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
+    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_boundimmersed, SLICE_SETTINGS_ROLLOUT);
-    if (ngeom_data > 0) {
 
+    if(ngeom_data > 0){
       PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "slice(geometry)", true);
       PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
       RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
