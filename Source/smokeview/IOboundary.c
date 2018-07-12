@@ -4155,7 +4155,7 @@ void DrawBoundaryFrame(int flag){
             if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryThresholdCellcenter(meshi);
             }
-            else if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
+            else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTextureThreshold(meshi);
             }
           }
@@ -4163,7 +4163,7 @@ void DrawBoundaryFrame(int flag){
             if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryCellCenter(meshi);
             }
-            else if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
+            else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTexture(meshi);
             }
           }
@@ -4172,7 +4172,7 @@ void DrawBoundaryFrame(int flag){
           if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
             DrawBoundaryCellCenter(meshi);
           }
-          else if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
+          else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
             DrawBoundary(meshi);
           }
         }
