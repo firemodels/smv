@@ -2358,8 +2358,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
   // draw surfaces
 
   if(
-    (patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
-    (patchi->geom_slice==1&&(
+    (patchi->filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
+    (patchi->filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_shaded[IN_CUTCELL_GLUI]==1||
      show_slice_shaded[IN_SOLID_GLUI]==1||
      show_slice_shaded[IN_GAS_GLUI] == 1))
@@ -2383,11 +2383,11 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       ntris = geomlisti->ntriangles;
       if(ntris == 0)continue;
 
-      if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->geom_slice == 1)TransparentOn();
+      if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->filetype == PATCH_GEOMETRY_SLICE)TransparentOn();
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      if(patchi->geom_slice == 0)glEnable(GL_LIGHTING);
+      if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY)glEnable(GL_LIGHTING);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -2411,7 +2411,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(patchi->geom_slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
             insolid = trianglei->insolid & 3;
@@ -2436,7 +2436,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           glVertex3fv(xyzptr[1]);
           glVertex3fv(xyzptr[2]);
 
-          if(patchi->geom_slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY_SLICE){
             glVertex3fv(xyzptr[0]);
             glVertex3fv(xyzptr[2]);
             glVertex3fv(xyzptr[1]);
@@ -2454,7 +2454,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
-          if(patchi->fds_filetype == PATCH_GEOMETRYold&&patchi->geom_slice==1){
+          if(patchi->fileclass == UNSTRUCTURED&&patchi->filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
             insolid = trianglei->insolid & 3;
@@ -2463,7 +2463,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
-          else if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY){
+          else if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
             glColor4f(color[0], color[1], color[2], transparent_level);
           }
@@ -2488,7 +2488,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           glNormal3fv(xyznorm[2]);
           glVertex3fv(xyzptr[2]);
 
-          if(patchi->geom_slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY_SLICE){
             glNormal3fv(xyznorm[0]);
             glVertex3fv(xyzptr[0]);
 
@@ -2503,16 +2503,16 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glEnd();
       glPopMatrix();
       glDisable(GL_COLOR_MATERIAL);
-      if(patchi->geom_slice == 0)glDisable(GL_LIGHTING);
-      if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->geom_slice == 1)TransparentOff();
+      if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY)glDisable(GL_LIGHTING);
+      if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
   }
 
   // draw lines
 
   if(
-    (patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1)||
-     (patchi->geom_slice==1&&(
+    (patchi->filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1)||
+    (patchi->filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_outlines[IN_CUTCELL_GLUI]==1||
      show_slice_outlines[IN_SOLID_GLUI]==1||
      show_slice_outlines[IN_GAS_GLUI] == 1))
@@ -2538,10 +2538,10 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY){
+      if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
         glLineWidth(geomboundary_linewidth);
       }
-      else if(patchi->geom_slice==1){
+      else if(patchi->filetype == PATCH_GEOMETRY_SLICE){
         glLineWidth(geomslice_linewidth);
       }
       else{
@@ -2555,7 +2555,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int draw_foreground=1;
 
           trianglei = geomlisti->triangles + j;
-          if(patchi->geom_slice == 1){
+          if(patchi->filetype == PATCH_GEOMETRY_SLICE){
             int insolid, insolid_glui=-1;
 
             insolid = trianglei->insolid & 3;
@@ -2585,7 +2585,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
               draw_foreground=0;
             }
           }
-          if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+          if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }
@@ -2632,8 +2632,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
   // draw points
 
   if(
-    (patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1)||
-     (patchi->geom_slice==1&&(
+    (patchi->filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1)||
+    (patchi->filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_points[IN_CUTCELL_GLUI]==1||
      show_slice_points[IN_SOLID_GLUI]==1||
      show_slice_points[IN_GAS_GLUI] == 1))
@@ -2660,10 +2660,10 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY){
+      if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
         glPointSize(geomboundary_pointsize);
       }
-      else if(patchi->geom_slice==1){
+      else if(patchi->filetype == PATCH_GEOMETRY_SLICE){
         glPointSize(geomslice_pointsize);
       }
       else{
@@ -2677,7 +2677,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
         trianglei = geomlisti->triangles + j;
 
-        if(patchi->geom_slice==1){
+        if(patchi->filetype == PATCH_GEOMETRY_SLICE){
           int insolid;
 
           insolid = trianglei->insolid & 3;
@@ -2693,7 +2693,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             draw_foreground=0;
           }
         }
-        if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
+        if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }
@@ -2751,7 +2751,7 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->geom_filetype == PATCH_GEOMETRY_BOUNDARY && patchi->loaded == 1 && patchi->display == 1){
+    if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY && patchi->loaded == 1 && patchi->display == 1){
       hide_geom = 1;
       break;
     }

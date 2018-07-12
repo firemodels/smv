@@ -2114,7 +2114,7 @@ void GetGSliceParams(void){
     patchi = patchinfo + i;
     meshi = meshinfo + patchi->blocknumber;
     strcpy(patchi->gslicedir, "");
-    if(patchi->fds_filetype != PATCH_GEOMETRYold)continue;
+    if(patchi->fileclass == STRUCTURED)continue;
     ii1 = patchi->ijk[0];
     ii2 = patchi->ijk[1];
     jj1 = patchi->ijk[2];
@@ -2143,7 +2143,7 @@ void GetGSliceParams(void){
         sprintf(patchi->gslicedir, "Z=%f", position);
       }
       TrimZeros(patchi->gslicedir);
-      if(patchi->geom_fdsfiletype != NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM") == 0){
+      if(patchi->filetype_label != NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM") == 0){
         char geomlabel[256];
 
         strcpy(geomlabel, " - ");

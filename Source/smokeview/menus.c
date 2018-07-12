@@ -3555,7 +3555,7 @@ void UnloadBoundaryMenu(int value){
       patchdata *patchi;
 
       patchi = patchinfo+i;
-      if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+      if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
         ReadBoundary(i,UNLOAD,&errorcode);
       }
     }
@@ -3713,7 +3713,7 @@ void UnloadSliceMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           UnloadBoundaryMenu(i);
         }
       }
@@ -4683,7 +4683,7 @@ void LoadBoundaryMenu(int value){
 
         i = patch_loaded_list[ii];
         patchi = patchinfo + i;
-        if(patchi->type!=boundarytypenew)ReadBoundary(i,UNLOAD,&errorcode);
+        if(patchi->shortlabel_index !=boundarytypenew)ReadBoundary(i,UNLOAD,&errorcode);
       }
     }
     if(scriptoutstream!=NULL){
@@ -4716,7 +4716,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->fds_filetype==patchj->fds_filetype){
+        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
           LOCK_COMPRESS
           ReadBoundary(i, LOAD, &errorcode);
           UNLOCK_COMPRESS
@@ -4768,7 +4768,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
@@ -4818,7 +4818,7 @@ void ShowBoundaryMenu(int value){
 
       i = patch_loaded_list[ii];
       patchi = patchinfo + i;
-      if(patchi->fds_filetype != PATCH_GEOMETRYold)patchi->display=show_boundaryfiles;
+      if(patchi->fileclass == STRUCTURED)patchi->display=show_boundaryfiles;
     }
   }
   if(value<0){
@@ -5769,7 +5769,7 @@ updatemenu=0;
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0)continue;
+    if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
     if(patchi->loaded==1)npatchloaded++;
   }
 
@@ -5823,7 +5823,7 @@ updatemenu=0;
 
     patchi = patchinfo+i;
     if(patchi->loaded==1){
-      if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
         patchgeom_slice_showhide = 1;
       }
     }
@@ -5842,7 +5842,7 @@ updatemenu=0;
       patchi = patchinfo+i;
       if(patchi->loaded==0)continue;
       STRCPY(menulabel, "");
-      if(patchi->display==1&&patchi->type==iboundarytype){
+      if(patchi->display==1&&patchi->shortlabel_index ==iboundarytype){
         STRCAT(menulabel,"*");
       }
       STRCAT(menulabel,patchi->menulabel);
@@ -5859,7 +5859,7 @@ updatemenu=0;
         i = patchorderindex[ii];
         patchi = patchinfo+i;
         if(patchi->loaded==0)continue;
-        if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0)continue;
+        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
         if(ii>0){
           if(patchim1!=NULL){
             if(strcmp(patchi->label.longlabel,patchim1->label.longlabel)==0){
@@ -5874,8 +5874,8 @@ updatemenu=0;
           strcat(menulabel,"*");
         }
         strcat(menulabel,patchi->label.longlabel);
-        if(patchi->fds_filetype == PATCH_GEOMETRYold){
-          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+        if(patchi->fileclass == UNSTRUCTURED){
+          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
             glutAddMenuEntry(menulabel, 1000+i);
           }
         }
@@ -5896,7 +5896,7 @@ updatemenu=0;
 
         patchi = patchinfo+i;
         if(patchi->loaded==0)continue;
-        if(patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0)continue;
+        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
         npatchloaded++;
       }
       for(ii=0;ii<npatchinfo;ii++){
@@ -7659,7 +7659,7 @@ updatemenu=0;
 
       i = patchorderindex[ii];
       patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
         char mlabel[250];
 
         strcpy(mlabel, "");
@@ -7767,7 +7767,7 @@ updatemenu=0;
 
       i = patchorderindex[ii];
       patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
         if(patchim1==NULL||strcmp(patchi->label.longlabel, patchim1->label.longlabel)!=0){
           char mlabel[128];
 
@@ -9360,7 +9360,7 @@ updatemenu=0;
           CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
           iloadsubpatchmenu_s++;
         }
-        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0)continue;
+        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0)continue;
         if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
           strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
           nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
@@ -9388,7 +9388,7 @@ updatemenu=0;
       patchdata *patchi;
 
       patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
         glutAddMenuEntry(patchi->label.longlabel, -3-i);
         geom_slice_loaded++;
       }
@@ -9538,7 +9538,7 @@ updatemenu=0;
       patchdata *patchi;
 
       patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->geom_fdsfiletype!=NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
         glutAddMenuEntry(patchi->label.longlabel, -3-i);
       }
     }
@@ -10166,7 +10166,7 @@ updatemenu=0;
         i = patchorderindex[ii];
         patchi = patchinfo + i;
         if(patchi->loaded==1){
-          if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")!=0){
+          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
             STRCPY(menulabel, patchi->menulabel);
             glutAddMenuEntry(menulabel, i);
             npatchloaded2++;
@@ -10201,7 +10201,7 @@ updatemenu=0;
           }
         }
 
-        if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOM")!=0){
+        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
           STRCPY(menulabel, "");
           if(patchi->loaded==1)STRCAT(menulabel,"*");
           STRCAT(menulabel,patchi->menulabel);
@@ -10303,7 +10303,7 @@ updatemenu=0;
             iloadsubpatchmenu_b++;
           }
           if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
-            if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOM")!=0){
+            if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
               nsubpatchmenus_b[iloadsubpatchmenu_b-1]++;
               glutAddMenuEntry(patchi->menulabel_suffix,-i-10);
             }

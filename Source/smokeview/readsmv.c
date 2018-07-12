@@ -8339,7 +8339,7 @@ typedef struct {
       int version;
       int blocknumber;
       size_t len;
-      char *geom_fdsfiletype;
+      char *filetype_label;
 
       if(setup_only == 1||smoke3d_only==1)continue;
       nn_patch++;
@@ -8370,30 +8370,25 @@ typedef struct {
       patchi->ntimes = 0;
       patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
-      patchi->geom_fdsfiletype=NULL;
-      patchi->fds_filetype = PATCH_NODE_CENTER;
-      patchi->geom_filetype = PATCH_STRUCTURED;
-      patchi->geom_slice = 0;
-      patchi->geom_boundary = 0;
+      patchi->filetype_label=NULL;
+      patchi->filetype = PATCH_STRUCTURED_NODE_CENTER;
       patchi->fileclass = STRUCTURED;
+      patchi->boundary = 1;
       if(Match(buffer,"BNDC") == 1){
-        patchi->fds_filetype = PATCH_CELL_CENTER;
+        patchi->filetype = PATCH_STRUCTURED_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         ngeom_data++;
-        patchi->fds_filetype=PATCH_GEOMETRYold;
-        patchi->geom_filetype=PATCH_GEOMETRY_BOUNDARY;
-        patchi->geom_boundary = 1;
+        patchi->filetype=PATCH_GEOMETRY_BOUNDARY;
         patchi->fileclass = UNSTRUCTURED;
       }
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
         ngeom_data++;
-        patchi->fds_filetype = PATCH_GEOMETRYold;
-        patchi->geom_filetype = PATCH_GEOMETRY_SLICE;
-        patchi->geom_slice = 1;
+        patchi->filetype = PATCH_GEOMETRY_SLICE;
         patchi->fileclass = UNSTRUCTURED;
+        patchi->boundary = 0;
 
         sliceparms = strchr(buffer, '&');
         if(sliceparms != NULL){
@@ -8407,17 +8402,17 @@ typedef struct {
           }
         }
 
-        geom_fdsfiletype = strchr(buffer, '#');
-        if(geom_fdsfiletype != NULL){
-          int len_geom_fdsfiletype;
+        filetype_label = strchr(buffer, '#');
+        if(filetype_label != NULL){
+          int len_filetype_label;
 
-          geom_fdsfiletype++;
-          geom_fdsfiletype[-1] = 0;
-          geom_fdsfiletype = TrimFrontBack(geom_fdsfiletype);
-          len_geom_fdsfiletype = strlen(geom_fdsfiletype);
-          if(len_geom_fdsfiletype>0){
-            NewMemory((void **)&patchi->geom_fdsfiletype,(unsigned int)(len_geom_fdsfiletype+1));
-            strcpy(patchi->geom_fdsfiletype,geom_fdsfiletype);
+          filetype_label++;
+          filetype_label[-1] = 0;
+          filetype_label = TrimFrontBack(filetype_label);
+          len_filetype_label = strlen(filetype_label);
+          if(len_filetype_label>0){
+            NewMemory((void **)&patchi->filetype_label,(unsigned int)(len_filetype_label+1));
+            strcpy(patchi->filetype_label,filetype_label);
           }
         }
       }
@@ -8451,7 +8446,7 @@ typedef struct {
 
       patchi->geomfile=NULL;
       patchi->geominfo=NULL;
-      if(patchi->fds_filetype==PATCH_GEOMETRYold){
+      if(patchi->fileclass == UNSTRUCTURED){
         int igeom;
 
         if(FGETS(buffer,255,stream)==NULL){
@@ -8467,7 +8462,7 @@ typedef struct {
           geomi = geominfo + igeom;
           if(strcmp(geomi->file,patchi->geomfile)==0){
             patchi->geominfo=geomi;
-            if(patchi->geom_slice == 0){
+            if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
               geomi->geomtype = GEOM_BOUNDARY;
               geomi->fdsblock = FDSBLOCK;
             }
@@ -8508,22 +8503,22 @@ typedef struct {
         char geomlabel2[256], *geomptr=NULL;
 
         strcpy(geomlabel2, "");
-        if(patchi->fds_filetype==PATCH_CELL_CENTER){
+        if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
           if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
-        else if(patchi->fds_filetype==PATCH_NODE_CENTER){
+        else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
           if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
-        else if(patchi->fds_filetype==PATCH_GEOMETRYold){
+        else if(patchi->fileclass == UNSTRUCTURED){
           char geomlabel[256];
 
           strcpy(geomlabel, "(geometry)");
-          if(patchi->geom_fdsfiletype != NULL){
-            if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES") == 0){
+          if(patchi->filetype_label != NULL){
+            if(strcmp(patchi->filetype_label, "EXIMBND_FACES") == 0){
               strcat(geomlabel, " - EXIM faces");
               strcpy(geomlabel2, " - EXIM faces");
             }
-            if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+            if(strcmp(patchi->filetype_label, "CUT_CELLS") == 0){
               strcat(geomlabel, " - Cut cell faces");
               strcpy(geomlabel2, " - Cut cell faces");
             }
