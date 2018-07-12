@@ -227,7 +227,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi->filetype != patchj->filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
+    if(patchi->boundary!=patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
     MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
 
@@ -242,7 +242,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi->filetype != patchj->filetype || patchi==patchj || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
+    if (patchi == patchj)continue;
+    if(patchi->boundary != patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
 
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));
