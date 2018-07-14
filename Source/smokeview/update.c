@@ -158,6 +158,17 @@ void UpdateFrameNumber(int changetime){
         sd->itime=sd->timeslist[itimes];
         slice_time = sd->itime;
       }
+      for (i = 0; i < npatchinfo; i++) {
+        patchdata *patchi;
+
+        patchi = patchinfo + i;
+        if(patchi->fileclass == STRUCTURED || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
+        patchi->geom_itime = patchi->geom_timeslist[itimes];
+        patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
+        patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
+        patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+        patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
+      }
     }
     if(show3dsmoke==1){
       for(i=0;i<nsmoke3dinfo;i++){
@@ -178,7 +189,7 @@ void UpdateFrameNumber(int changetime){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->fileclass == STRUCTURED||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
+        if(patchi->fileclass == STRUCTURED||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
         patchi->geom_itime=patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
@@ -381,6 +392,20 @@ void UpdateShow(void){
         }
       }
     }
+    for(ii=0;ii<npatch_loaded;ii++){
+      patchdata *patchi;
+
+      i = patch_loaded_list[ii];
+      patchi=patchinfo+i;
+      if(patchi->boundary == 0 && patchi->display == 1 && patchi->shortlabel_index == islicetype){
+        sliceflag = 1;
+        slicecolorbarflag = 1;
+        break;
+       // if(patchi->extreme_max == 1)have_extreme_maxdata = 1;
+       // if(patchi->extreme_min == 1)have_extreme_mindata = 1;
+       // if(patchi->geominfo != NULL)patchi->geominfo->patchactive = 1;
+      }
+    }
   }
 
   isoflag=0;
@@ -450,7 +475,7 @@ void UpdateShow(void){
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->display == 1 && patchi->shortlabel_index == iboundarytype){
+      if(patchi->boundary == 1 && patchi->display == 1 && patchi->shortlabel_index == iboundarytype){
         if (strcmp(patchi->label.shortlabel, "wc") == 0)wall_cell_color_flag = 1;
         patchflag = 1;
         if(patchi->extreme_max == 1)have_extreme_maxdata = 1;
@@ -1617,8 +1642,10 @@ int GetPlotState(int choice){
         patchdata *patchi;
 
         patchi = patchinfo + patch_loaded_list[i];
-        if(patchi->display==0||patchi->shortlabel_index !=iboundarytype)continue;
-        return DYNAMIC_PLOTS;
+        if (patchi->display == 1) {
+          if(patchi->boundary == 1 && patchi->shortlabel_index == iboundarytype)return DYNAMIC_PLOTS;
+          if(patchi->boundary == 0 && patchi->shortlabel_index == islicetype)return DYNAMIC_PLOTS;
+        }
       }
       for(i=0;i<npartinfo;i++){
         partdata *parti;

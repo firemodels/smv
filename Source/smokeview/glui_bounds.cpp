@@ -2112,7 +2112,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     index=0;
     for(i=0;i<nsliceinfo;i++){
-      if(sliceinfo[i].firstshort==1){
+      if(sliceinfo[i].firstshort_slice==1){
         GLUI_RadioButton *RADIOBUTTON_slicetype;
 
         RADIOBUTTON_slicetype=glui_bounds->add_radiobutton_to_group(RADIO_slice,sliceinfo[i].label.shortlabel);
@@ -3643,7 +3643,7 @@ extern "C" void UpdateSliceListIndex(int sfn){
   if(sfn < 0)return;
   sd = sliceinfo+sfn;
   slicefiletype = GetSliceIndex(sd);
-  if(slicefiletype>=0&&slicefiletype<nslice_type){
+  if(slicefiletype>=0&&slicefiletype<nslicebounds){
     i = slicefiletype;
     RADIO_slice->set_int_val(i);
     SetSliceBounds(i);

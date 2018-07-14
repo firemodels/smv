@@ -1602,7 +1602,7 @@ void UpdateSliceBounds(void){
   int minflag2, maxflag2;
   int jj;
 
-  for(i=0;i<nslice_type;i++){
+  for(i=0;i<nslicebounds;i++){
     minflag=0; maxflag=0;
     minflag2=0; maxflag2=0;
     for(jj=0;jj<nslice_loaded;jj++){
@@ -1663,20 +1663,22 @@ void UpdateSliceBounds(void){
 /* ------------------ SetSliceLabels ------------------------ */
 
 void SetSliceLabels(float smin, float smax,
-  slicedata *sd, int *errorcode){
+  slicedata *sd, patchdata *pd, int *errorcode){
   char *scale;
   int slicetype;
   boundsdata *sb;
 
-  slicetype = GetSliceType(sd);
+  ASSERT((sd != NULL && pd == NULL)||(sd == NULL && pd != NULL));
+  if(sd!=NULL)slicetype = GetSliceTypeFromLabel(sd->label.shortlabel);
+  if (pd != NULL)slicetype = GetSliceTypeFromLabel(pd->label.shortlabel);
   sb = slicebounds + slicetype;
-  sb->label = &(sd->label);
+  if(sd!=NULL)sb->label = &(sd->label);
+  if(pd != NULL)sb->label = &(pd->label);
 
   *errorcode = 0;
   PRINTF("setting up slice labels \n");
   scale = sb->scale;
-  GetSliceLabels(smin, smax, nrgb,
-    sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+  GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
 }
 
 /* ------------------ UpdateAllSliceLabels ------------------------ */
@@ -1709,8 +1711,9 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
-    if(sd->type!=slicetype)continue;
-    SetSliceLabels(valmin,valmax,sd,errorcode);
+    if(sd->type == slicetype){
+      SetSliceLabels(valmin, valmax, sd, NULL, errorcode);
+    }
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
@@ -3419,7 +3422,7 @@ void UpdateSliceBoundLabels(){
 /* ------------------ SetSliceBounds ------------------------ */
 
 void SetSliceBounds(int slicetype){
-  if(slicetype>=0&&slicetype<nslice_type){
+  if(slicetype>=0&&slicetype<nslicebounds){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
@@ -3433,6 +3436,8 @@ void SetSliceBounds(int slicetype){
     setslicechopmax=slicebounds[slicetype].setchopmax;
     slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
     slicemax_unit = slicemin_unit;
+
+    memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
     UpdateGluiSliceUnits();
   }
 }
@@ -6188,6 +6193,15 @@ void DrawSliceFrame(){
     }
     if(blend_mode==1){
       glBlendEquation(GL_FUNC_ADD);
+    }
+  }
+  for (ii = 0; ii < npatchinfo; ii++) {
+    patchdata *patchi;
+
+    patchi = patchinfo + ii;
+    if(patchi->boundary==0 && patchi->loaded == 1 && patchi->display == 1){
+      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_STATIC);
+      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_DYNAMIC);
     }
   }
 }

@@ -2093,41 +2093,42 @@ void UpdateBoundInfo(void){
   if(nsliceinfo>0){
     FREEMEMORY(slicebounds);
     NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
-    nslice_type=0;
+    nslicebounds=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
 
       slicei = sliceinfo + i;
-      slicei->firstshort=1;
+      slicei->firstshort_slice=1;
       slicei->valmin=1.0;
       slicei->valmax=0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
-      slicebounds[nslice_type].datalabel=slicei->label.shortlabel;
-      slicebounds[nslice_type].setvalmin=0;
-      slicebounds[nslice_type].setvalmax=0;
-      slicebounds[nslice_type].valmin=1.0;
-      slicebounds[nslice_type].valmax=0.0;
-      slicebounds[nslice_type].chopmax=0.0;
-      slicebounds[nslice_type].chopmin=1.0;
-      slicebounds[nslice_type].setchopmax=0;
-      slicebounds[nslice_type].setchopmin=0;
-      slicebounds[nslice_type].line_contour_min=0.0;
-      slicebounds[nslice_type].line_contour_max=1.0;
-      slicebounds[nslice_type].line_contour_num=1;
-      nslice_type++;
+      slicebounds[nslicebounds].datalabel=slicei->label.shortlabel;
+      slicebounds[nslicebounds].setvalmin=0;
+      slicebounds[nslicebounds].setvalmax=0;
+      slicebounds[nslicebounds].valmin=1.0;
+      slicebounds[nslicebounds].valmax=0.0;
+      slicebounds[nslicebounds].chopmax=0.0;
+      slicebounds[nslicebounds].chopmin=1.0;
+      slicebounds[nslicebounds].setchopmax=0;
+      slicebounds[nslicebounds].setchopmin=0;
+      slicebounds[nslicebounds].line_contour_min=0.0;
+      slicebounds[nslicebounds].line_contour_max=1.0;
+      slicebounds[nslicebounds].line_contour_num=1;
+      nslicebounds++;
       for(n=0;n<i;n++){
         slicedata *slicen;
 
         slicen = sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
-          slicei->firstshort=0;
-          nslice_type--;
+          slicei->firstshort_slice=0;
+          nslicebounds--;
           break;
         }
       }
     }
   }
+
   canshow_threshold=0;
   if(npatchinfo>0){
     npatch2=0;
@@ -10311,7 +10312,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
@@ -10326,7 +10327,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -10346,7 +10347,7 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
@@ -10356,7 +10357,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -12768,8 +12769,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3chopmin[i], p3chopmin[i], setp3chopmax[i], p3chopmax[i]);
     }
   }
-  if(nslice_type > 0){
-    for(i = 0; i < nslice_type; i++){
+  if(nslicebounds > 0){
+    for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "C_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         slicebounds[i].setchopmin, slicebounds[i].chopmin,
@@ -12842,8 +12843,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min[i], p3min[i], setp3max[i], p3max[i]);
     }
   }
-  if(nslice_type > 0){
-    for(i = 0; i < nslice_type; i++){
+  if(nslicebounds > 0){
+    for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
         slicebounds[i].setvalmin, slicebounds[i].valmin,
@@ -13666,11 +13667,13 @@ void UpdateLoadedLists(void){
   }
 
   npatch_loaded=0;
+  ngeomslice_loaded = 0;
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
     if(patchi->loaded==1){
       patch_loaded_list[npatch_loaded]=i;
       npatch_loaded++;
+      if(patchi->boundary == 0)ngeomslice_loaded++;
     }
   }
 

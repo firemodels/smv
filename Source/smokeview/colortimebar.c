@@ -2427,7 +2427,9 @@ void DrawVerticalColorbarRegLabels(void){
       slicefactor = slicefactor2;
     }
     else{
-      OutputBarText(0.0, 0.0, foreground_color, sb->scale);
+    // don't output scale when geometry slice files are loaded
+    // this is an interim change until the slicebounds (sb ) data structure works with geometry slice files
+      if(ngeomslice_loaded==0)OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     }
     glPopMatrix();
     ilabel++;
@@ -2726,7 +2728,9 @@ void DrawVerticalColorbarRegLabels(void){
           ScaleFloat2String(val, slicecolorlabel, slicefactor);
           slicecolorlabel_ptr = slicecolorlabel;
         }
-        OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
+    // don't output colorbar value labels when geometry slice files are loaded
+    // this is an interim change until the slicebounds (sb ) data structure works with geometry slice files
+       if(ngeomslice_loaded==0)OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
       }
     }
     glPopMatrix();

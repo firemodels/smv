@@ -2375,7 +2375,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   FREEMEMORY(patchi->geom_times);
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
-    UpdateBoundaryType();
+    if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
     return;
@@ -2445,9 +2445,14 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   FREEMEMORY(patchi->geom_vals);
   patchi->loaded = 1;
   patchi->display = 1;
-  iboundarytype = GetBoundaryType(patchinfo+ifile);
+  if(patchi->boundary == 1){
+    iboundarytype = GetBoundaryType(patchinfo + ifile);
+  }
+  else {
+    islicetype = GetSliceTypeFromLabel(patchi->label.shortlabel);
+  }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateBoundaryType();
+  if(patchi->boundary==1)UpdateBoundaryType();
   UpdateUnitDefs();
   UpdateTimes();
   force_redisplay=1;
@@ -4222,14 +4227,14 @@ void UpdateBoundaryType(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index==iboundarytype)return;
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index==iboundarytype)return;
   }
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1){
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1){
       iboundarytype = GetBoundaryIndex(patchi);
       return;
     }
