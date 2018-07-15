@@ -2409,6 +2409,20 @@ void UpdateMeshCoords(void){
   ybarORIG = ybar;
   zbarORIG = zbar;
 
+  patchout_xmin = xbar0ORIG;
+  patchout_xmax = xbarORIG;
+  patchout_ymin = ybar0ORIG;
+  patchout_ymax = ybarORIG;
+  patchout_zmin = zbar0ORIG;
+  patchout_zmax = zbarORIG;
+  patchout_tmin = 0.0;
+  if(view_tstop>0.0){
+    patchout_tmax = view_tstop;
+  }
+  else{
+    patchout_tmax = 1.0;
+  }
+
   xbar = NORMALIZE_X(xbar);
   ybar = NORMALIZE_Y(ybar);
   zbar = NORMALIZE_Z(zbar);
@@ -10475,17 +10489,6 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(output_slicedata);
       continue;
     }
-    if(Match(buffer, "PATCHDATAOUT") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %f %f %f %f %f %f %f", &output_patchdata,
-        &patchout_tmin, &patchout_tmax,
-        &patchout_xmin, &patchout_xmax,
-        &patchout_ymin, &patchout_ymax,
-        &patchout_zmin, &patchout_zmax
-        );
-      ONEORZERO(output_patchdata);
-      continue;
-    }
     if(Match(buffer, "SMOKE3DZIPSTEP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &smoke3dzipstep);
@@ -11785,7 +11788,6 @@ int ReadIni2(char *inifile, int localfile){
         continue;
       }
 
-
       if(localfile!=1)continue;
 
 // ---------------------------------------------------------------------------------------------------------
@@ -11819,6 +11821,17 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
 
+      if(Match(buffer, "PATCHDATAOUT") == 1){
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %f %f %f %f %f %f %f %f", &output_patchdata,
+          &patchout_tmin, &patchout_tmax,
+          &patchout_xmin, &patchout_xmax,
+          &patchout_ymin, &patchout_ymax,
+          &patchout_zmin, &patchout_zmax
+          );
+        ONEORZERO(output_patchdata);
+        continue;
+      }
       if(Match(buffer, "SMOKE3DCUTOFFS") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &load_hrrpuv_cutoff);
