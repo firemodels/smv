@@ -80,7 +80,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
     /* ++++++++++++++++++++++++ draw circular vents +++++++++++++++++++++++++ */
 
-    if(ncvents>0 && visCircularVents != VENT_HIDE){
+    if(ncvents>0 && visCircularVents != VENT_HIDE && showpatch==0){
       CLIP_GEOMETRY;
       DrawCircVents(visCircularVents);
     }
