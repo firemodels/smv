@@ -2090,32 +2090,54 @@ void UpdateBoundInfo(void){
     }
   }
 
-  if(nsliceinfo>0){
+#ifdef pp_SLICEBOUNDS
+  if(nsliceinfo + npatchinfo > 0){
+    FREEMEMORY(slicebounds);
+    NewMemory((void*)&slicebounds, (nsliceinfo +npatchinfo)* sizeof(boundsdata));
+#else
+  if(nsliceinfo > 0){
     FREEMEMORY(slicebounds);
     NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
+#endif
     nslicebounds=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
+      boundsdata *sbi;
 
       slicei = sliceinfo + i;
+#ifndef pp_SLICEBOUNDS
       slicei->firstshort_slice=1;
+#endif
       slicei->valmin=1.0;
       slicei->valmax=0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
-      slicebounds[nslicebounds].datalabel=slicei->label.shortlabel;
-      slicebounds[nslicebounds].setvalmin=0;
-      slicebounds[nslicebounds].setvalmax=0;
-      slicebounds[nslicebounds].valmin=1.0;
-      slicebounds[nslicebounds].valmax=0.0;
-      slicebounds[nslicebounds].chopmax=0.0;
-      slicebounds[nslicebounds].chopmin=1.0;
-      slicebounds[nslicebounds].setchopmax=0;
-      slicebounds[nslicebounds].setchopmin=0;
-      slicebounds[nslicebounds].line_contour_min=0.0;
-      slicebounds[nslicebounds].line_contour_max=1.0;
-      slicebounds[nslicebounds].line_contour_num=1;
+
+      sbi = slicebounds + nslicebounds;
+      sbi->datalabel=slicei->label.shortlabel;
+      sbi->setvalmin=0;
+      sbi->setvalmax=0;
+      sbi->valmin=1.0;
+      sbi->valmax=0.0;
+      sbi->chopmax=0.0;
+      sbi->chopmin=1.0;
+      sbi->setchopmax=0;
+      sbi->setchopmin=0;
+      sbi->line_contour_min=0.0;
+      sbi->line_contour_max=1.0;
+      sbi->line_contour_num=1;
       nslicebounds++;
+#ifdef pp_SLICEBOUNDS
+      for(n = 0; n < nslicebounds - 1; n++){
+        boundsdata *sbn;
+
+        sbn = slicebounds + n;
+        if(strcmp(sbn->datalabel, sbi->datalabel) == 0){
+          nslicebounds--;
+          break;
+        }
+      }
+#else
       for(n=0;n<i;n++){
         slicedata *slicen;
 
@@ -2126,8 +2148,46 @@ void UpdateBoundInfo(void){
           break;
         }
       }
+#endif
     }
   }
+#ifdef pp_SLICEBOUNDS
+  for (i = 0; i < npatchinfo; i++) {
+    patchdata *patchi;
+    boundsdata *sbi;
+
+    patchi = patchinfo + i;
+    if (patchi->boundary == 0)continue;
+    patchi->valmin = 1.0;
+    patchi->valmax = 0.0;
+    patchi->setvalmin = 0;
+    patchi->setvalmax = 0;
+
+    sbi = slicebounds + nslicebounds;
+    sbi->datalabel = patchi->label.shortlabel;
+    sbi->setvalmin = 0;
+    sbi->setvalmax = 0;
+    sbi->valmin = 1.0;
+    sbi->valmax = 0.0;
+    sbi->chopmax = 0.0;
+    sbi->chopmin = 1.0;
+    sbi->setchopmax = 0;
+    sbi->setchopmin = 0;
+    sbi->line_contour_min = 0.0;
+    sbi->line_contour_max = 1.0;
+    sbi->line_contour_num = 1;
+    nslicebounds++;
+    for (n = 0; n < nslicebounds - 1; n++) {
+      boundsdata *sbn;
+
+      sbn = slicebounds + n;
+      if (strcmp(sbn->datalabel, sbi->datalabel) == 0) {
+        nslicebounds--;
+        break;
+      }
+    }
+  }
+#endif
 
   canshow_threshold=0;
   if(npatchinfo>0){

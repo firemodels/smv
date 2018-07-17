@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SLICEBOUNDS  // merge slice and geometry slice when computing slice bounds
 #define pp_CLIP         // test frustum near/far clip planes
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression

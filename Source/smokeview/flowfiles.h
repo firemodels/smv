@@ -1162,7 +1162,9 @@ typedef struct _slicedata {
   int num_memblocks;
   float position_orig;
   int blocknumber;
+#ifndef pp_SLICEBOUNDS
   int firstshort_slice;
+#endif
   int vec_comp;
   int skip;
   int setvalmin, setvalmax;
