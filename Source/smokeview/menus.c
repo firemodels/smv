@@ -5773,16 +5773,31 @@ updatemenu=0;
     if(patchi->loaded==1)npatchloaded++;
   }
 
+#ifdef pp_DEBUG_SUBMENU
+
+#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
+  if(nmenus<10000){\
+    strcpy(menuinfo[nmenus].label,#Menu);\
+    menuinfo[nmenus].menuvar_ptr=&menu;\
+    menuinfo[nmenus++].menuvar = menu;\
+  }
+
+#ifdef _DEBUG
+#define GLUTADDSUBMENU(menu_label,menu_value) {ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
+#else
+#define GLUTADDSUBMENU(menu_label,menu_value) {if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
+#endif
+
+#else
+
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
   if(nmenus<10000){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus++].menuvar=menu;\
   }
 
-#ifdef pp_DEBUG_SUBMENU
-#define GLUTADDSUBMENU(menu_label,menu_value) {ASSERT(menu_value!=0);printf("add sub-menu entry %s to menu with id %i\n",menu_label,menu_value);glutAddSubMenu(menu_label,menu_value);}
-#else
 #define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
+
 #endif
 
   {
@@ -5793,6 +5808,9 @@ updatemenu=0;
 
       if(menui->menuvar>0){
         glutDestroyMenu(menui->menuvar);
+#ifdef pp_DEBUG_SUBMENU
+        *(menui->menuvar_ptr) = 0;
+#endif
       }
     }
     nmenus=0;
@@ -9881,7 +9899,7 @@ updatemenu=0;
         // 3d smoke co2 menu
 
         if(nmeshes > 1){
-          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
+          CREATEMENU(loadsmoke3dco2menu, LoadSmoke3DMenu);
         }
         for(i = 0;i < nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
