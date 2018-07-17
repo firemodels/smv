@@ -1125,6 +1125,9 @@ typedef struct _compdata {
 
 typedef struct _menudata {
   int menuvar;
+#ifdef pp_DEBUG_SUBMENU
+  int *menuvar_ptr;
+#endif
   char label[256];
 } menudata;
 
