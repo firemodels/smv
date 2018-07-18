@@ -125,8 +125,7 @@ Volume I: User's Guide\\
 %\flushright{\today \\
 \begin{flushright}
 \today \\
-Smokeview Version \smvversion \\
-\emph{Git Revision:}~\gitrevision
+Revision:~\gitrevision
 \end{flushright}
 %
 \vfill
@@ -3023,26 +3022,10 @@ Cartesian (X,Y,Z) view direction).
 Path view directions are absolute.  One selects the (x,y,z) view position by
 editing the x,y and/or z edit boxes in the View direction panel.
 
-
-Spline tension settings may also be changed, though normally this is not
-necessary except when one wishes abrupt rather than smooth path
-changes. Kochanek-Bartels~\cite{Moller:02}\ splines (piecewise cubic
-Hermite polynomials) are used to represent the tour paths.
-
 Cubic Hermite polynomials  are uniquely
 specified for each interval using function and derivative values
 at each endpoint of
-the interval ({\em i.e., 4 data values}).  These derivatives are
-computed in terms of three parameters referred to as {\em bias},
-{\em continuity}\ and {\em tension}. Each of these parameters range
-from -1 to 1 with a default value of 0. The tension value may be
-set for all key frames at once (by checking the {\em Global}\
-checkbox) or for each key frame separately.  The bias and
-continuity values are set to zero internally by Smokeview.
-A
-tension value may be specified in the Touring dialog box and is set to 0 is set by default.
-A value of 1 results in a
-linear spline.
+the interval ({\em i.e., 4 data values}).
 
 
 \section{Setting up a tour}
@@ -3052,9 +3035,8 @@ linear spline.
 \includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_start_tour}&
 \includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour1}\\
 a) Initial tour&b) First and last step set with 5 key frames\\
-\includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour2}&
-\includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour3}\\
-c) All key frame positions set (tension=0.0)&d) Tension set to 0.75
+\includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour2}\\
+c) All key frame positions set
 \end{tabular}
 \end{center}
 \caption [Tutorial examples for Tour option.] {Tutorial examples for Tour option.}
@@ -3101,41 +3083,12 @@ Figure \ref{figTutorial}b.
 (4.0,4.0,1.6), (4.4,6.8,1.6) and (5.9,6.1,2.0).  The path should
 now look like Fig. \ref{figTutorial}c.
 
-\item Click on the \frameit{Tension}\ panel. Check the
-{\em Global}\ checkbox and set the \frameit{All keyframes}\ edit
-box to 0.5. This {\em tightens}\ up the spline curve reducing the
-dip near the stairs that occurs with the tension=0.0 setting. The
-path should now look like Fig. \ref{figTutorial}d.
-
 \item Click on the \frameit{Save Settings}\ button to save the results
 of your editing changes.
 
 \item To see the results of the tour, click on the {\em View From
 Tour Path}\ checkbox.
 \end{enumerate}
-
-The point of view of the observer on this path is towards the
-direction of motion. Next the view direction will be changed to
-point to the side while the observer is on the first floor.
-
-\begin{enumerate}
-\item Uncheck the {\em View From Tour Path}\ checkbox in the
-tour dialog box and make sure that the {\em X,Y,Z View}\
-checkbox is unchecked.
-
-\item Click on the dot representing the first key frame. Then
-change {\em Azimuth}\ setting to 90 degrees.  To see the results
-of the change, go back and check the {\em View From Tour Path}\
-checkbox.
-
-\item Uncheck the {\em View From Tour Path}\ checkbox again. Now
-select the second and third key frames and change their azimuth
-settings to 90 degrees.
-\end{enumerate}
-
-With this second set of changes, the observer will look to the
-side as they pass through the kitchen and living room.  The
-observer will look straight ahead as they go up the stairs.
 
 %---------------------------------------------------------------------------------
 %-----Running Smokeview Automatically - The Scripting Option ----------------

@@ -190,7 +190,7 @@ void WriteBoundIni(void){
       patchdata *patchj;
 
       patchj = patchinfo + j;
-      if(patchi->type == patchj->type&&patchi->filetype == patchj->filetype){
+      if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->filetype == patchj->filetype){
         skipi = 1;
         break;
       }
@@ -227,7 +227,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchj->type!=patchi->type||patchj->filetype!=patchi->filetype)continue;
+    if(patchi->boundary!=patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
     MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
 
@@ -242,7 +242,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi==patchj||patchj->type!=patchi->type||patchj->filetype!=patchi->filetype)continue;
+    if (patchi == patchj)continue;
+    if(patchi->boundary != patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
 
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));

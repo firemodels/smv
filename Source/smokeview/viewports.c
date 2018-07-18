@@ -124,7 +124,9 @@ void GetViewportInfo(void){
   doit=0;
   if(showtime==1){
     if(visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1)doit=1;
-    if(doit==0&&hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)doit=1;
+    if(doit==0&&show_firecutoff==1&&current_mesh!=NULL){
+      if(hrrpuv_loaded==1||temp_loaded==1)doit=1;
+    }
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
@@ -144,7 +146,9 @@ void GetViewportInfo(void){
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);
-    if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL)VP_timebar.height+=(text_height+v_space);
+    if(show_firecutoff==1 && current_mesh != NULL){
+      if(hrrpuv_loaded == 1||temp_loaded == 1)VP_timebar.height += (text_height + v_space);
+    }
     if(visColorbarHorizontal==1){
       VP_timebar.height += hbar_height;
     }
@@ -251,7 +255,8 @@ void GetViewportInfo(void){
     int timebar_height;
 
     timebar_height = MAX(VP_timebar.height, VP_info.height);
-    if(overlap_timebar == 1)timebar_height = 0;
+    if(timebar_overlap == TIMEBAR_OVERLAP_ALWAYS)timebar_height = 0;
+    if(timebar_overlap==TIMEBAR_OVERLAP_AUTO&&visTimebar==0&&visColorbarHorizontal==0)timebar_height = 0;
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
@@ -459,7 +464,7 @@ int SubPortFrustum(int quad,
     glViewport(p->left,p->down,p->width,p->height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(camera_current->projection_type==0){
+    if(camera_current->projection_type==PROJECTION_PERSPECTIVE){
       glFrustum(
         (double)portx_left,(double)portx_right,
         (double)portx_down,(double)portx_top,
@@ -510,7 +515,7 @@ int SubPortFrustum(int quad,
     glViewport(subport_left,subport_down,subport_width,subport_height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(camera_current->projection_type==0){
+    if(camera_current->projection_type==PROJECTION_PERSPECTIVE){
       glFrustum(
         (double)subportx_left,(double)subportx_right,
         (double)subportx_down,(double)subportx_top,
@@ -725,12 +730,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-#ifdef pp_HCOLORBAR
   if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     DrawHorizontalColorbarRegLabels();
     DrawHorizontalColorbars();
   }
-#endif
 
   if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) &&showtime==1){
     if(visTimelabel==1){
@@ -753,16 +756,22 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     sprintf(frameratelabel," AVG: %4.1f",slice_average_interval);
     OutputText(right_label_pos,3*v_space+2*VP_timebar.text_height, frameratelabel); // test print
   }
-  if(hrrpuv_loaded==1&&show_hrrcutoff==1&&current_mesh!=NULL){
-    char hrrcut_label[256];
-    int ihrrcut;
+
+  if((hrrpuv_loaded == 1 || temp_loaded == 1) && show_firecutoff == 1 && current_mesh != NULL){
+    char cutoff_label[256];
+    int i_cutoff;
     float x1, x2, y1, y2;
     float f_red, f_green, f_blue;
 
-    ihrrcut = (int)(global_hrrpuv_cutoff+0.5);
-
-    sprintf(hrrcut_label,">%i (kW/m3)",ihrrcut);
-    OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,hrrcut_label);
+    if(hrrpuv_loaded == 1 && show_firecutoff == 1){
+      i_cutoff = (int)(global_hrrpuv_cutoff + 0.5);
+      sprintf(cutoff_label, ">%i kW/m3", i_cutoff);
+    }
+    else {
+      i_cutoff = (int)(global_temp_cutoff + 0.5);
+      sprintf(cutoff_label, ">%i %s", i_cutoff,degC);
+    }
+    OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);
 
     if(firecolormap_type == 0){
       f_red = (float)fire_red / 255.0;
@@ -1011,9 +1020,25 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   eyeyINI = camera_current->eye[1];
   eyezINI = camera_current->eye[2];
 
-  fnear =  - eyeyINI-1.0;
-  if(fnear<nearclip)fnear=nearclip;
+#ifdef pp_CLIP
+  if(projection_type==PROJECTION_ORTHOGRAPHIC){
+    fnear = -eyeyINI - 1.0;
+    if(fnear < nearclip)fnear = nearclip;
+    ffar = fnear + farclip;
+  }
+  else{
+    float min_depth, max_depth, *eye;
+
+    eye = camera_current->eye;
+    GetMinMaxDepth(eye, &min_depth, &max_depth);
+    fnear = MAX(min_depth-1.0, 0.001);
+    ffar  = MAX(    max_depth+1.0, farclip);
+  }
+#else
+  fnear = -eyeyINI - 1.0;
+  if(fnear < nearclip)fnear = nearclip;
   ffar = fnear + farclip;
+#endif
 
   aperture_temp = Zoom2Aperture(zoom);
 

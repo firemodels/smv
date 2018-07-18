@@ -1490,6 +1490,9 @@ void Keyboard(unsigned char key, int flag){
   else if(flag==FROM_SCRIPT){
     keystate=script_keystate;
   }
+  else if(flag==FROM_SMOKEVIEW_ALT){
+    keystate=GLUT_ACTIVE_ALT;
+  }
   glutPostRedisplay();
   key2 = (char)key;
 
@@ -1934,7 +1937,7 @@ void Keyboard(unsigned char key, int flag){
                        blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
       }
-      if(showedit_dialog==1&&geomtest_option==NO_TEST){
+      if(showedit_dialog==1){
         if(blocklocation==BLOCKlocation_exact){
           blockage_as_input=1;
         }
@@ -1956,7 +1959,7 @@ void Keyboard(unsigned char key, int flag){
         }
 
         if(strncmp((const char *)&key2, "R", 1)==0&&keystate!=GLUT_ACTIVE_ALT){
-          resolution_multiplier = MAX(2, resolution_multiplier);
+          resolution_multiplier = glui_resolution_multiplier;
         }
         else{
           resolution_multiplier = 1;
@@ -1973,11 +1976,9 @@ void Keyboard(unsigned char key, int flag){
         if(strncmp((const char *)&key2, "R", 1)==0||render_mode==RENDER_360){
           rflag=1;
         }
-        else{
-          if(render_from_menu==0){
-            renderW=0;
-            renderH=0;
-          }
+        else if(render_size_index==2){
+          renderW=0;
+          renderH=0;
         }
         if(scriptoutstream!=NULL){
           if(nglobal_times>0){
@@ -2067,7 +2068,6 @@ void Keyboard(unsigned char key, int flag){
           fprintf(scriptoutstream," %s\n",script_renderfile);
         }
         RenderState(RENDER_ON);
-        render_from_menu=0;
       }
       break;
     case 's':
@@ -2118,7 +2118,7 @@ void Keyboard(unsigned char key, int flag){
           }
         }
         if(stept == 1){
-          if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
+          //if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
         }
         else{
           itime_save = -1;
@@ -2240,6 +2240,23 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
+      break;
+    case ':':
+      timebar_overlap++;
+      if (timebar_overlap > 2)timebar_overlap = 0;
+      UpdateTimebarOverlap();
+      printf("overlap time/colorbar region: ");
+      switch(timebar_overlap){
+      case 0:
+        printf("always\n");
+        break;
+      case 1:
+        printf("never\n");
+        break;
+      case 2:
+        printf("only if time/colorbar hidden\n");
+        break;
+      }
       break;
  // toggle_colorbar   state
  //    0              hidden
@@ -2904,6 +2921,12 @@ void SetScreenSize(int *width, int *height){
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
+  }
+  {
+    int width_low, height_low, width_high, height_high;
+
+    GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 

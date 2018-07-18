@@ -1309,13 +1309,10 @@ void DrawVerticalColorbarReg(void){
 
 int CountColorbars(void){
   int count = 0;
+  int i;
 
-  if(hcolorbar_vis!=NULL){
-    int i;
-
-    for(i=0;i<6;i++){
-      hcolorbar_vis[i]=-1;
-    }
+  for(i=0;i<6;i++){
+    hcolorbar_vis[i]=-1;
   }
   if(showevac_colorbar == 1 || showsmoke == 1){
     hcolorbar_vis[COLORBAR_PART]=count+2;
@@ -1329,7 +1326,7 @@ int CountColorbars(void){
     hcolorbar_vis[COLORBAR_ISO]=count+2;
     count++;
   }
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     hcolorbar_vis[COLORBAR_BOUNDARY]=count+2;
     count++;
   }
@@ -1356,7 +1353,7 @@ void DrawHorizontalColorbars(void) {
     if((showvslice == 1 && vslicecolorbarflag == 1))doit=1;
   }
   else if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]){
-    if(showpatch == 1 && wc_flag == 0)doit=1;
+    if(showpatch == 1 && wall_cell_color_flag == 0)doit=1;
   }
   else if(toggle_colorbar==hcolorbar_vis[COLORBAR_PLOT3D]){
     if(showplot3d==1)doit=1;
@@ -1492,7 +1489,7 @@ void DrawVerticalColorbars(void){
   if(showiso_colorbar==1||showevac_colorbar==1||
     (showsmoke==1&&parttype!=0)||showslice==1||
     (showvslice==1&&vslicecolorbarflag==1)||
-    (showpatch==1&&wc_flag==0)||
+    (showpatch==1&&wall_cell_color_flag==0)||
     (showzone==1&&zonecolortype==ZONETEMP_COLOR)||
     showplot3d==1){
 
@@ -1651,7 +1648,7 @@ void DrawHorizontalColorbarRegLabels(void) {
   if (showiso_colorbar == 1 || showevac_colorbar == 1 ||
     (showsmoke == 1 && parttype != 0) || showslice == 1 ||
     (showvslice == 1 && vslicecolorbarflag == 1) ||
-    (showpatch == 1 && wc_flag == 0) ||
+    (showpatch == 1 && wall_cell_color_flag == 0) ||
     (showzone == 1 && zonecolortype == ZONETEMP_COLOR) ||
     showplot3d == 1) {
 
@@ -1768,7 +1765,7 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary file top labels ------------
 
-  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wall_cell_color_flag == 0) {
     char unitlabel[256];
     patchdata *patchi;
     int patchunitclass, patchunittype;
@@ -2035,7 +2032,7 @@ void DrawHorizontalColorbarRegLabels(void) {
 
   // -------------- boundary left labels ------------
 
-  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wc_flag == 0) {
+  if(toggle_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]&&showpatch == 1 && wall_cell_color_flag == 0) {
     float tttval, tttmin, tttmax;
 
     iposition = -1;
@@ -2272,7 +2269,7 @@ void DrawVerticalColorbarRegLabels(void){
       dohist = 1;
     }
   }
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     leftpatch = ileft;
   }
   leftzone = ileft;
@@ -2283,7 +2280,7 @@ void DrawVerticalColorbarRegLabels(void){
   if(showiso_colorbar == 1 || showevac_colorbar == 1 ||
     (showsmoke == 1 && parttype != 0) || showslice == 1 ||
     (showvslice == 1 && vslicecolorbarflag == 1) ||
-    (showpatch == 1 && wc_flag == 0) ||
+    (showpatch == 1 && wall_cell_color_flag == 0) ||
     (showzone == 1 && zonecolortype == ZONETEMP_COLOR) ||
     showplot3d == 1){
 
@@ -2430,7 +2427,9 @@ void DrawVerticalColorbarRegLabels(void){
       slicefactor = slicefactor2;
     }
     else{
-      OutputBarText(0.0, 0.0, foreground_color, sb->scale);
+    // don't output scale when geometry slice files are loaded
+    // this is an interim change until the slicebounds (sb ) data structure works with geometry slice files
+      if(ngeomslice_loaded==0)OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     }
     glPopMatrix();
     ilabel++;
@@ -2459,7 +2458,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- boundary file top labels ------------
 
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     char unitlabel[256];
     patchdata *patchi;
     int patchunitclass, patchunittype;
@@ -2729,7 +2728,9 @@ void DrawVerticalColorbarRegLabels(void){
           ScaleFloat2String(val, slicecolorlabel, slicefactor);
           slicecolorlabel_ptr = slicecolorlabel;
         }
-        OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
+    // don't output colorbar value labels when geometry slice files are loaded
+    // this is an interim change until the slicebounds (sb ) data structure works with geometry slice files
+       if(ngeomslice_loaded==0)OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
       }
     }
     glPopMatrix();
@@ -2737,7 +2738,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- boundary left labels ------------
 
-  if(showpatch == 1 && wc_flag == 0){
+  if(showpatch == 1 && wall_cell_color_flag == 0){
     float tttval, tttmin, tttmax;
 
     iposition = -1;
@@ -2937,6 +2938,7 @@ void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
   if(b>=MAX(r, g))maxmode = 2;
 
   luminance = (cmin+cmax)/2.0;
+  saturation = 0.0;
   if(cmaxmcmin==0.0||luminance==0.0){
     saturation = 0.0;
     hue = 0.0;

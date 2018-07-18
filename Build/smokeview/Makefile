@@ -140,20 +140,6 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-# ------------- ms_win_64 ----------------
-
-ms_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-ms_win_64 : FFLAGS    = -O2 /iface:stdref /fpp
-ms_win_64 : CFLAGS    = -O1 -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG)
-ms_win_64 : LFLAGS    = /F32768000
-ms_win_64 : CC        = cl
-ms_win_64 : CPP       = cl
-ms_win_64 : FC        = ifort
-ms_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
-
-ms_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
-
 # note: use /fpscomp:general option to allow smokeview to read files being currently written to by FDS
 #       (instead of the non-standard SHARED keyword in a FORTRAN OPEN statement)
 
@@ -370,7 +356,7 @@ intel_osx_64_db : $(obj)
 # ------------- gnu_osx_64_db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++

@@ -108,6 +108,19 @@ gnu_osx_64 : exe       = smokediff_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -lgfortran
 
+# ------------- gnu OSX debug ----------------
+
+gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : LFLAGS    = -m64
+gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : CPP       = g++
+gnu_osx_64_db : FC        = gfortran
+gnu_osx_64_db : exe       = smokediff_osx_64_db
+
+gnu_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -lgfortran
+
 # ------------- Linux 64 ----------------
 #  64 bit linux
 

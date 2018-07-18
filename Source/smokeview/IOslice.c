@@ -1602,7 +1602,7 @@ void UpdateSliceBounds(void){
   int minflag2, maxflag2;
   int jj;
 
-  for(i=0;i<nslice_type;i++){
+  for(i=0;i<nslicebounds;i++){
     minflag=0; maxflag=0;
     minflag2=0; maxflag2=0;
     for(jj=0;jj<nslice_loaded;jj++){
@@ -1663,20 +1663,22 @@ void UpdateSliceBounds(void){
 /* ------------------ SetSliceLabels ------------------------ */
 
 void SetSliceLabels(float smin, float smax,
-  slicedata *sd, int *errorcode){
+  slicedata *sd, patchdata *pd, int *errorcode){
   char *scale;
   int slicetype;
   boundsdata *sb;
 
-  slicetype = GetSliceType(sd);
+  ASSERT((sd != NULL && pd == NULL)||(sd == NULL && pd != NULL));
+  if(sd!=NULL)slicetype = GetSliceTypeFromLabel(sd->label.shortlabel);
+  if (pd != NULL)slicetype = GetSliceTypeFromLabel(pd->label.shortlabel);
   sb = slicebounds + slicetype;
-  sb->label = &(sd->label);
+  if(sd!=NULL)sb->label = &(sd->label);
+  if(pd != NULL)sb->label = &(pd->label);
 
   *errorcode = 0;
   PRINTF("setting up slice labels \n");
   scale = sb->scale;
-  GetSliceLabels(smin, smax, nrgb,
-    sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+  GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
 }
 
 /* ------------------ UpdateAllSliceLabels ------------------------ */
@@ -1709,8 +1711,9 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
-    if(sd->type!=slicetype)continue;
-    SetSliceLabels(valmin,valmax,sd,errorcode);
+    if(sd->type == slicetype){
+      SetSliceLabels(valmin, valmax, sd, NULL, errorcode);
+    }
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
@@ -2114,7 +2117,7 @@ void GetGSliceParams(void){
     patchi = patchinfo + i;
     meshi = meshinfo + patchi->blocknumber;
     strcpy(patchi->gslicedir, "");
-    if(patchi->filetype != PATCH_GEOMETRY)continue;
+    if(patchi->fileclass == STRUCTURED)continue;
     ii1 = patchi->ijk[0];
     ii2 = patchi->ijk[1];
     jj1 = patchi->ijk[2];
@@ -2143,7 +2146,7 @@ void GetGSliceParams(void){
         sprintf(patchi->gslicedir, "Z=%f", position);
       }
       TrimZeros(patchi->gslicedir);
-      if(patchi->geom_fdsfiletype != NULL&&strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM") == 0){
+      if(patchi->filetype_label != NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM") == 0){
         char geomlabel[256];
 
         strcpy(geomlabel, " - ");
@@ -3275,6 +3278,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
       constval = zplt[sd->ks1]+offset_slice*sd->sliceoffset;
       break;
       default:
+        constval = 0.0;
         ASSERT(FFALSE);
         break;
     }
@@ -3418,7 +3422,7 @@ void UpdateSliceBoundLabels(){
 /* ------------------ SetSliceBounds ------------------------ */
 
 void SetSliceBounds(int slicetype){
-  if(slicetype>=0&&slicetype<nslice_type){
+  if(slicetype>=0&&slicetype<nslicebounds){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
@@ -3432,6 +3436,8 @@ void SetSliceBounds(int slicetype){
     setslicechopmax=slicebounds[slicetype].setchopmax;
     slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
     slicemax_unit = slicemin_unit;
+
+    memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
     UpdateGluiSliceUnits();
   }
 }
@@ -3923,9 +3929,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
-#ifdef pp_COLORBARFLIP
       update_flipped_colorbar = 1;
-#endif
       sd->ntimes_old = 0;
       sd->ntimes = 0;
       updatemenu = 1;
@@ -4318,9 +4322,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
     update_fire_line = 1;
   }
-#ifdef pp_COLORBARFLIP
   update_flipped_colorbar=1;
-#endif
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
@@ -6193,6 +6195,15 @@ void DrawSliceFrame(){
       glBlendEquation(GL_FUNC_ADD);
     }
   }
+  for (ii = 0; ii < npatchinfo; ii++) {
+    patchdata *patchi;
+
+    patchi = patchinfo + ii;
+    if(patchi->boundary==0 && patchi->loaded == 1 && patchi->display == 1){
+      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_STATIC);
+      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_DYNAMIC);
+    }
+  }
 }
 
 /* ------------------ DrawVVolSliceCellCenter ------------------------ */
@@ -6889,7 +6900,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ_TERRAIN(v, dy);
           GET_VEC_DXYZ_TERRAIN(w, dz);
           glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, yy1 + dy, z11);
+          glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
       }
     }

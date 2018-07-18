@@ -7,6 +7,17 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PROJECTION_PERSPECTIVE  0
+#define PROJECTION_ORTHOGRAPHIC 1
+#define ALL_FRAMES -1
+
+#define INIT 0
+#define UPDATE 1
+
+#define TIMEBAR_OVERLAP_ALWAYS 0
+#define TIMEBAR_OVERLAP_NEVER 1
+#define TIMEBAR_OVERLAP_AUTO 2
+
 #define RENDER_START 3
 #define RENDER_START_NORMAL 12
 #define RENDER_START_360 10
@@ -123,13 +134,13 @@ void _Sniff_Errors(char *whereat);
 #define GEOM_SLICE    2
 #define GEOM_BOUNDARY 3
 
-#define PATCH_NODE_CENTER 0
-#define PATCH_CELL_CENTER 1
-#define PATCH_GEOMETRY 2
+#define PATCH_STRUCTURED_NODE_CENTER 0
+#define PATCH_STRUCTURED_CELL_CENTER 1
+#define PATCH_GEOMETRY_BOUNDARY 2
+#define PATCH_GEOMETRY_SLICE 3
 
-#define PATCH_STRUCTURED 0
-#define PATCH_GEOMETRY_BOUNDARY 1
-#define PATCH_GEOMETRY_SLICE 2
+#define STRUCTURED   0
+#define UNSTRUCTURED 1
 
 #define NODATA 0
 #define HASDATA 1
@@ -144,10 +155,14 @@ void _Sniff_Errors(char *whereat);
 #endif
 
 #define MAXSMOKETYPES 4
-#define SOOT 0
-#define HRRPUV 1
-#define TEMP 2
-#define CO2  3
+#define SOOT     0
+#define HRRPUV   1
+#define TEMP     2
+#define CO2      3
+#define SOOT_2   1
+#define HRRPUV_2 2
+#define TEMP_2   4
+#define CO2_2    8
 
 #define NELEV_ZONE 100
 
@@ -292,6 +307,7 @@ void _Sniff_Errors(char *whereat);
 #define FROM_SMOKEVIEW 0
 #define FROM_CALLBACK 1
 #define FROM_SCRIPT 2
+#define FROM_SMOKEVIEW_ALT 3
 
 #define STEPS_PER_DEG 10.0
 
@@ -740,6 +756,9 @@ void _Sniff_Errors(char *whereat);
 #define COLORBAR_CONTINUOUS -17
 #define COLORBAR_STEPPED -18
 #define COLORBAR_LINES -19
+#define COLORBAR_HORIZONTAL -23
+#define COLORBAR_VERTICAL -24
+#define COLORBAR_LINES -19
 #define COLORBAR_HIGHLIGHT_BELOW -7
 #define COLORBAR_HIGHLIGHT_ABOVE -20
 #define COLORBAR_TRANSPARENT -13
@@ -799,7 +818,7 @@ void _Sniff_Errors(char *whereat);
 #define MENU_LABEL_hmslabel 13
 #define MENU_LABEL_grid 14
 #define MENU_LABEL_sliceaverage 15
-#define MENU_LABEL_hrrcutoff 17
+#define MENU_LABEL_firecutoff 17
 #define MENU_LABEL_userticks 18
 #define MENU_LABEL_gversion 20
 #define MENU_LABEL_ShowAll 4

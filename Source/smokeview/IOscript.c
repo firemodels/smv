@@ -1312,7 +1312,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1854,7 +1854,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       return;
     }
   }
@@ -1873,7 +1873,7 @@ void ScriptLoadFile(scriptdata *scripti){
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,scripti->cval)==0){
       ReadPlot3dFile=1;
-      ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
+      ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return;
     }
@@ -1899,7 +1899,7 @@ void ScriptLabel(scriptdata *scripti){
 
 /* ------------------ ScriptLoadPlot3d ------------------------ */
 
-void ScriptLoadPlot3d(scriptdata *scripti){
+void ScriptLoadPlot3D(scriptdata *scripti){
   int i;
   float time_local;
   int blocknum;
@@ -2408,7 +2408,7 @@ int RunScript(void){
       ScriptLoadVSliceM(scripti,scripti->ival2);
       break;
     case SCRIPT_LOADPLOT3D:
-      ScriptLoadPlot3d(scripti);
+      ScriptLoadPlot3D(scripti);
       break;
     case SCRIPT_SETTIMEVAL:
       returnval=1;

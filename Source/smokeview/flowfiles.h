@@ -829,13 +829,11 @@ typedef struct _keyframe {
   float noncon_time, con_time, disp_time;
   pathdata nodeval;
   float keyview_xyz[3],keyview_xyz2[3];
+  float eye[3];
   float total_distance, distance;
   float s_eye[3], s_az, s_elev, s_zoom, s_xyz_view[3];
   float d_eye[3], d_az, d_elev, d_zoom, d_xyz_view[3];
-  float bias, continuity, tension;
-  float bank;
   float az_path;
-  float s1, s2, d1, d2;
   struct _keyframe *next,*prev;
 } keyframe;
 
@@ -851,10 +849,9 @@ typedef struct _tourdata {
   float global_dist, local_dist;
   int *timeslist;
   int ntimes,nkeyframes;
-  int display,periodic,global_tension_flag;
+  int display,periodic;
   int startup;
   int isDefault;
-  float global_tension;
 } tourdata;
 
 /* --------------------------  tokendata ------------------------------------ */
@@ -1107,6 +1104,7 @@ typedef struct _partdata {
 #endif
 
   float zoffset, *times;
+  FILE_SIZE reg_file_size;
 
   char menulabel[128];
 
@@ -1127,6 +1125,9 @@ typedef struct _compdata {
 
 typedef struct _menudata {
   int menuvar;
+#ifdef pp_DEBUG_SUBMENU
+  int *menuvar_ptr;
+#endif
   char label[256];
 } menudata;
 
@@ -1149,9 +1150,7 @@ typedef struct _slicedata {
   char *comp_file, *reg_file, *vol_file;
   char *slicelabel;
   int compression_type;
-#ifdef pp_COLORBARFLIP  
   int colorbar_autoflip;
-#endif
   int ncompressed;
   int slicetype;
   struct _multislicedata *mslice;
@@ -1166,7 +1165,9 @@ typedef struct _slicedata {
   int num_memblocks;
   float position_orig;
   int blocknumber;
-  int firstshort;
+#ifndef pp_SLICEBOUNDS
+  int firstshort_slice;
+#endif
   int vec_comp;
   int skip;
   int setvalmin, setvalmax;
@@ -1281,7 +1282,7 @@ typedef struct _smokedata {
 } smokedata;
 
 
-/* --------------------------  smoke3ddata ------------------------------------ */
+/* --------------------------  smokestatedata ------------------------------------ */
 
 typedef struct {
   int loaded, index;
@@ -1299,7 +1300,7 @@ typedef struct _smoke3ddata {
   int is_zlib;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
-  int type;
+  int type,type2;
   int is1, is2, js1, js2, ks1, ks2;
   int compression_type;
   flowlabels label;
@@ -1328,15 +1329,16 @@ typedef struct _patchdata {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
-  char *geomfile, *geom_fdsfiletype;
+  char *geomfile, *filetype_label;
   geomdata *geominfo;
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
-  int filetype, geom_smvfiletype, slice;
-  int type;
+  int filetype, fileclass;
+  int shortlabel_index;
+  int boundary;
   int inuse,inuse_getbounds;
   int unit_start;
   int firstshort;

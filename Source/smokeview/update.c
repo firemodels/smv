@@ -158,6 +158,17 @@ void UpdateFrameNumber(int changetime){
         sd->itime=sd->timeslist[itimes];
         slice_time = sd->itime;
       }
+      for (i = 0; i < npatchinfo; i++) {
+        patchdata *patchi;
+
+        patchi = patchinfo + i;
+        if(patchi->fileclass == STRUCTURED || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
+        patchi->geom_itime = patchi->geom_timeslist[itimes];
+        patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
+        patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
+        patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+        patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
+      }
     }
     if(show3dsmoke==1){
       for(i=0;i<nsmoke3dinfo;i++){
@@ -168,7 +179,7 @@ void UpdateFrameNumber(int changetime){
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
-          UpdateSmoke3d(smoke3di);
+          UpdateSmoke3D(smoke3di);
         }
       }
       if(nsmoke3dinfo>0)MergeSmoke3dColors(NULL);
@@ -178,7 +189,7 @@ void UpdateFrameNumber(int changetime){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->filetype!=PATCH_GEOMETRY||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
+        if(patchi->fileclass == STRUCTURED||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
         patchi->geom_itime=patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
@@ -192,7 +203,7 @@ void UpdateFrameNumber(int changetime){
         meshi = meshinfo+i;
         if(meshi->patchfilenum < 0||meshi->patchfilenum>npatchinfo-1)continue;
         patchi=patchinfo + meshi->patchfilenum;
-        if(patchi->filetype==PATCH_GEOMETRY||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
+        if(patchi->fileclass == UNSTRUCTURED||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[itimes];
         if(patchi->compression_type==UNCOMPRESSED){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
@@ -317,6 +328,7 @@ void UpdateShow(void){
       break;
     }
   }
+
   sliceflag=0;
   slicecolorbarflag=0;
   SHOW_gslice_data=0;
@@ -380,7 +392,22 @@ void UpdateShow(void){
         }
       }
     }
+    for(ii=0;ii<npatch_loaded;ii++){
+      patchdata *patchi;
+
+      i = patch_loaded_list[ii];
+      patchi=patchinfo+i;
+      if(patchi->boundary == 0 && patchi->display == 1 && patchi->shortlabel_index == islicetype){
+        sliceflag = 1;
+        slicecolorbarflag = 1;
+        break;
+       // if(patchi->extreme_max == 1)have_extreme_maxdata = 1;
+       // if(patchi->extreme_min == 1)have_extreme_mindata = 1;
+       // if(patchi->geominfo != NULL)patchi->geominfo->patchactive = 1;
+      }
+    }
   }
+
   isoflag=0;
   tisoflag=0;
   if(visTimeIso==1){
@@ -398,6 +425,7 @@ void UpdateShow(void){
       }
     }
   }
+
   vsliceflag=0;
   vslicecolorbarflag=0;
   if(visTimeSlice==1){
@@ -430,59 +458,33 @@ void UpdateShow(void){
       break;
     }
   }
+
   patchflag=0;
   if(visTimeBoundary==1){
     int ii;
 
-    wc_flag=0;
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(strcmp(patchi->label.shortlabel,"wc")==0)wc_flag=1;
-      patchflag=1;
-      break;
-    }
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(patchi->extreme_max==1){
-        have_extreme_maxdata=1;
-        break;
-      }
-    }
-    for(ii=0;ii<npatch_loaded;ii++){
-      patchdata *patchi;
-
-      i = patch_loaded_list[ii];
-      patchi=patchinfo+i;
-      if(patchi->display==0||patchi->type!=iboundarytype)continue;
-      if(patchi->extreme_min==1){
-        have_extreme_mindata=1;
-        break;
-      }
-    }
-    for(i = 0; i < ngeominfo; i++){
+    for (i = 0; i < ngeominfo; i++) {
       geomdata *geomi;
 
       geomi = geominfo + i;
       geomi->patchactive = 0;
     }
+    wall_cell_color_flag=0;
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
 
       i = patch_loaded_list[ii];
       patchi=patchinfo+i;
-      if(patchi->geominfo!=NULL&&patchi->display == 1 && patchi->type == iboundarytype){
-        patchi->geominfo->patchactive = 1;
+      if(patchi->boundary == 1 && patchi->display == 1 && patchi->shortlabel_index == iboundarytype){
+        if (strcmp(patchi->label.shortlabel, "wc") == 0)wall_cell_color_flag = 1;
+        patchflag = 1;
+        if(patchi->extreme_max == 1)have_extreme_maxdata = 1;
+        if(patchi->extreme_min == 1)have_extreme_mindata = 1;
+        if(patchi->geominfo != NULL)patchi->geominfo->patchactive = 1;
       }
     }
   }
+
   partflag=0;
   if(visParticles==1&&visTimeParticles==1){
     for(i=0;i<npartinfo;i++){
@@ -499,6 +501,7 @@ void UpdateShow(void){
       if(current_property->extreme_min==1)have_extreme_mindata=1;
     }
   }
+
   evacflag=0;
   if(visEvac==1&&visTimeEvac==1){
     for(i=0;i<npartinfo;i++){
@@ -511,6 +514,7 @@ void UpdateShow(void){
       }
     }
   }
+
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
     shooter_flag=1;
@@ -550,7 +554,7 @@ void UpdateShow(void){
         meshi=meshinfo+i;
         if(meshi->patch_times==NULL)continue;
         patchi = patchinfo+meshi->patchfilenum;
-        if(patchi->loaded==1&&patchi->display==1&&patchi->type==iboundarytype){
+        if(patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index ==iboundarytype){
           meshi->visInteriorBoundaries=1;
         }
       }
@@ -596,7 +600,7 @@ void UpdateShow(void){
   if(ReadEvacFile==1)num_colorbars++;
   if(ReadPartFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wc_flag==0)num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&tisoflag==1){
     showiso_colorbar=1;
@@ -606,11 +610,7 @@ void UpdateShow(void){
   
   // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
 
-#ifdef pp_HCOLORBAR
   if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
-#else
-  if((showtime == 1 || showplot3d == 1) && visColorbarVertical == 1){
-#endif
     if(old_draw_colorlabel == 0)updatemenu = 1;
     old_draw_colorlabel = 1;
   }
@@ -740,7 +740,7 @@ void SynchTimes(void){
 
       patchi = patchinfo + j;
       if(patchi->loaded==0)continue;
-      if(patchi->filetype != PATCH_GEOMETRY)continue;
+      if(patchi->fileclass == STRUCTURED)continue;
       patchi->geom_timeslist[n]=GetItime(n,patchi->geom_timeslist,patchi->geom_times,patchi->ngeom_times);
     }
     for(j=0;j<nmeshes;j++){
@@ -750,7 +750,7 @@ void SynchTimes(void){
       meshi=meshinfo+j;
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
-      if(patchi->filetype==PATCH_GEOMETRY)continue;
+      if(patchi->fileclass == UNSTRUCTURED)continue;
       meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,meshi->patch_times,meshi->npatch_times);
     }
 
@@ -1003,7 +1003,7 @@ void UpdateTimes(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
+    if(patchi->loaded==1&&patchi->fileclass == UNSTRUCTURED){
       nglobal_times+=patchi->ngeom_times;
     }
   }
@@ -1016,7 +1016,7 @@ void UpdateTimes(void){
     filenum =meshi->patchfilenum;
     if(filenum!=-1){
       patchi=patchinfo+filenum;
-      if(patchi->loaded==1&&patchi->filetype!=PATCH_GEOMETRY){
+      if(patchi->loaded==1&&patchi->fileclass == STRUCTURED){
         nglobal_times+=meshi->npatch_times;
       }
     }
@@ -1129,7 +1129,7 @@ void UpdateTimes(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->filetype==PATCH_GEOMETRY){
+    if(patchi->loaded==1&&patchi->fileclass == UNSTRUCTURED){
       memcpy(global_times + nglobal_times_copy, patchi->geom_times, patchi->ngeom_times * sizeof(float));
       nglobal_times_copy += patchi->ngeom_times;
     }
@@ -1143,7 +1143,7 @@ void UpdateTimes(void){
     filenum=meshi->patchfilenum;
     if(filenum!=-1){
       patchi = patchinfo + filenum;
-      if(patchi->loaded==1&&patchi->filetype!=PATCH_GEOMETRY){
+      if(patchi->loaded==1&&patchi->fileclass == STRUCTURED){
         memcpy(global_times + nglobal_times_copy, meshi->patch_times, meshi->npatch_times * sizeof(float));
         nglobal_times_copy += meshi->npatch_times;
       }
@@ -1369,7 +1369,7 @@ void UpdateTimes(void){
 
     patchi = patchinfo + i;
     FREEMEMORY(patchi->geom_timeslist);
-    if(patchi->filetype!=PATCH_GEOMETRY)continue;
+    if(patchi->fileclass == STRUCTURED)continue;
     if(patchi->geom_times==NULL)continue;
     if(nglobal_times>0)NewMemory((void **)&patchi->geom_timeslist,nglobal_times*sizeof(int));
   }
@@ -1642,8 +1642,10 @@ int GetPlotState(int choice){
         patchdata *patchi;
 
         patchi = patchinfo + patch_loaded_list[i];
-        if(patchi->display==0||patchi->type!=iboundarytype)continue;
-        return DYNAMIC_PLOTS;
+        if (patchi->display == 1) {
+          if(patchi->boundary == 1 && patchi->shortlabel_index == iboundarytype)return DYNAMIC_PLOTS;
+          if(patchi->boundary == 0 && patchi->shortlabel_index == islicetype)return DYNAMIC_PLOTS;
+        }
       }
       for(i=0;i<npartinfo;i++){
         partdata *parti;
@@ -1875,7 +1877,7 @@ void UpdateShowScene(void){
   }
   if(force_isometric == 1){
     force_isometric = 0;
-    projection_type = 1;
+    projection_type = PROJECTION_ORTHOGRAPHIC;
     camera_current->projection_type = projection_type;
     ZoomMenu(UPDATE_PROJECTION);
   }
@@ -1893,7 +1895,6 @@ void UpdateShowScene(void){
   if(updatefacelists==1)UpdateFaceLists();
 }
 
-#ifdef pp_COLORBARFLIP
 /* ------------------ UpdateFlippedColorbar ------------------------ */
 
 void UpdateFlippedColorbar(void){
@@ -1915,7 +1916,6 @@ void UpdateFlippedColorbar(void){
     ColorbarMenu(COLORBAR_FLIP);
   }
 }
-#endif
 
 /* ------------------ UpdateDisplay ------------------------ */
 #define TERRAIN_FIRE_LINE_UPDATE 39
@@ -1932,12 +1932,10 @@ void UpdateDisplay(void){
     update_zaxis_custom = 0;
     UpdateZAxisCustom();
   }
-#ifdef pp_COLORBARFLIP
   if(update_flipped_colorbar == 1){
     update_flipped_colorbar = 0;
     UpdateFlippedColorbar();
   }
-#endif
   if(update_smokecolorbar == 1){
     update_smokecolorbar = 0;
     SmokeColorbarMenu(fire_colorbar_index);

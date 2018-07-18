@@ -109,11 +109,25 @@ intel_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX)
 
 # ------------- gnu OSX 64 ----------------
+#  64 bit gnu linux
 
 gnu_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_osx_64
-gnu_osx_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
-gnu_osx_64 : exe       = dem2fds_osx_64
+gnu_osx_64 : CPP       = g++
+gnu_osx_64 : exe       = wind2fds_osx_64
 
-gnu_osx_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_OSX)
+gnu_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) -L $(LIB_DIR_PLAT) $(LIBS_OSX)
+
+# ------------- gnu OSX 64 db ----------------
+#  64 bit gnu linux
+
+gnu_osx_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_osx_64
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : CPP       = g++
+gnu_osx_64_db : exe       = wind2fds_osx_64
+
+gnu_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) -L $(LIB_DIR_PLAT) $(LIBS_OSX)

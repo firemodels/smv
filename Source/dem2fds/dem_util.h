@@ -28,8 +28,8 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP void GenerateFDSInputFile(char *casename, elevdata *fds_elevs, int option);
-EXTERNCPP int GetElevations(char *elevfile, elevdata *fds_elevs);
+EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option);
+EXTERNCPP int GetElevations(char *elevfile, char *image_file, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
 #ifdef pp_CSVF
@@ -37,7 +37,7 @@ SVEXTERN char csv_file[1024];
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN int SVDECL(elev_file, 0);
-SVEXTERN char surf_id[1024], matl_id[1024];
+SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];
 SVEXTERN int SVDECL(nexcludeinfo, 0);
 SVEXTERN excludedata SVDECL(*excludeinfo, NULL);
-
+SVEXTERN float SVDECL(buff_dist, 10.0);

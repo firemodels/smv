@@ -9,13 +9,6 @@
 
 #define FORTgetsliceheader        _F(getsliceheader)
 #define FORTgetslicefiledirection _F(getslicefiledirection)
-#define FORTfpoly2tri             _F(fpoly2tri)
-#define FORTget_in_triangle       _F(get_in_triangle)
-#define FORTget_is_angle_ge_180   _F(get_is_angle_ge_180)
-#define FORTtest_in_tetra         _F(test_in_tetra)
-#define FORTgetverts              _F(getverts2)
-#define FORTgettetravol           _F(get_tetrabox_volume_fb)
-#define FORTgeomout               _F(geomout)
 #define FORTgetembeddatasize      _F(getembeddatasize)
 #define FORTgetembeddata          _F(getembeddata)
 #define FORTfcreate_part5sizefile _F(fcreate_part5sizefile)
@@ -39,14 +32,6 @@
 #define FORTgetboundaryheader2    _F(getboundaryheader2)
 
 STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice);
-STDCALLF FORTfpoly2tri(float *verts, int *nverts, int *poly, int *npoly, int *tris, int *ntris);
-STDCALLF FORTget_in_triangle(float *vert, float *v1, float *v2, float *v3, int *flag);
-STDCALLF FORTget_is_angle_ge_180(float *v1, float *v2, float *v3, int *flag);
-STDCALLF FORTtest_in_tetra(float *xyz, int *in_tetra, int *tetra_state);
-STDCALLF FORTgettetravol(float *box_bounds,float *v0,float *v1,float *v2,float *v3,float *tetra_vol,float *areas,float *centroid);
-STDCALLF FORTgetverts(float *box_bounds, float *v0, float *v1, float *v2, float *v3, float *out_verts,
-                      int *nverts, int *faces, int *face_id, int *which_poly, int *nfaces, int *npolys, int *box_state);
-STDCALLF FORTgeomout(float *verts, int *nverts, int *faces, int *nfaces);
 STDCALLF FORTgetembeddatasize(char *filename, int *ntimes, int *nvars, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetembeddata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics,
                          float *vals, int *redirect, int *error, FILE_SIZE lenfile);

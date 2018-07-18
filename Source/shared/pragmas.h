@@ -1,12 +1,11 @@
 #ifndef PRAGMAS_H_DEFINED
 #define PRAGMAS_H_DEFINED
 
+#ifdef pp_INTEL
 #ifdef _DEBUG
 #pragma float_control( precise, on)
 #pragma float_control( except, on )
 #endif
-
-#ifdef pp_INTEL
 #pragma warning (disable:177)
 #pragma warning (disable:444)   // destructor for base class
 #pragma warning (disable:494)   // omission of "class"is nonstandard

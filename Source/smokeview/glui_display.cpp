@@ -77,9 +77,7 @@ GLUI_Checkbox *CHECKBOX_visUSERticks2=NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata=NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_flip=NULL;
-#ifdef pp_COLORBARFLIP
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
-#endif
 #ifdef pp_BETA
 GLUI_Checkbox *CHECKBOX_cullgeom=NULL;
 #endif
@@ -88,9 +86,7 @@ GLUI_Checkbox *CHECKBOX_LB_visLabels=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_use_foreground=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_show_always=NULL;
 GLUI_Checkbox *CHECKBOX_visColorbarVertical=NULL;
-#ifdef pp_HCOLORBAR
 GLUI_Checkbox *CHECKBOX_visColorbarHorizontal = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_labels_timebar=NULL;
 GLUI_Checkbox *CHECKBOX_labels_ticks=NULL;
 GLUI_Checkbox *CHECKBOX_labels_title=NULL;
@@ -101,7 +97,7 @@ GLUI_Checkbox *CHECKBOX_labels_framerate=NULL;
 GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
-GLUI_Checkbox *CHECKBOX_labels_hrrcutoff=NULL;
+GLUI_Checkbox *CHECKBOX_labels_firecutoff=NULL;
 GLUI_Checkbox *CHECKBOX_labels_availmemory=NULL;
 GLUI_Checkbox *CHECKBOX_labels_labels=NULL;
 GLUI_Checkbox *CHECKBOX_labels_gridloc=NULL;
@@ -131,6 +127,7 @@ GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
 
+GLUI_Panel *PANEL_timebar_overlap = NULL;
 GLUI_Panel *PANEL_split1L = NULL, *PANEL_split1H = NULL;
 GLUI_Panel *PANEL_split2L = NULL, *PANEL_split2H = NULL;
 GLUI_Panel *PANEL_split3 = NULL;
@@ -155,6 +152,7 @@ GLUI_Panel *PANEL_LB_tick = NULL;
 GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
 
+GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1a=NULL;
@@ -193,13 +191,11 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_SHOW_TICK 13
 
 #define LABELS_label 0
-#ifdef pp_HCOLORBAR
 #define LABELS_vcolorbar 34
 #define LABELS_hcolorbar 35
-#endif
 #define FRAME_label 21
 #define HRR_label 22
-#define HRRPUVCUTOFF_label 23
+#define FIRECUTOFF_label 23
 #define LABELS_showall 1
 #define LABELS_hideall 2
 #define LABELS_close 3
@@ -244,11 +240,18 @@ int cb_up_rgb[3],cb_down_rgb[3];
 procdata displayprocinfo[5];
 int ndisplayprocinfo = 0;
 
+/* ------------------ UpdateTimebarOverlap ------------------------ */
+
+extern "C" void UpdateTimebarOverlap(void) {
+  RADIO_timebar_overlap->set_int_val(timebar_overlap);
+}
+
 /* ------------------ DisplayRolloutCB ------------------------ */
 
 void DisplayRolloutCB(int var){
   ToggleRollout(displayprocinfo, ndisplayprocinfo, var);
 }
+
 /* ------------------ UpdateGluiLabelText ------------------------ */
 
 extern "C" void UpdateGluiLabelText(void){
@@ -497,17 +500,13 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   if(nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, LabelsCB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, LabelsCB);
-#ifdef pp_HCOLORBAR
   CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);
-#else
-  CHECKBOX_visColorbarVertical = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar"), &visColorbarVertical, LABELS_label, LabelsCB);
-#endif
   CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame label"), &visFramelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &visHRRlabel, HRR_label, LabelsCB);
-  CHECKBOX_labels_hrrcutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRRPUV cutoff"), &show_hrrcutoff, HRRPUVCUTOFF_label, LabelsCB);
+  CHECKBOX_labels_firecutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Fire cutoff"), &show_firecutoff, FIRECUTOFF_label, LabelsCB);
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, LabelsCB);
 #endif
@@ -574,7 +573,12 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   CHECKBOX_labels_flip = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("Flip background"), &background_flip, LABELS_flip, LabelsCB);
   CHECKBOX_labels_hms = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("hms time"), &vishmsTimelabel, LABELS_HMS, LabelsCB);
-                        glui_labels->add_checkbox_to_panel(PANEL_gen3, _("overlap time/timebar"), &overlap_timebar);
+  PANEL_timebar_overlap = glui_labels->add_panel_to_panel(PANEL_gen3,_("Overlap timebar region"));
+  RADIO_timebar_overlap=glui_labels->add_radiogroup_to_panel(PANEL_timebar_overlap,&timebar_overlap);
+  glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Always"));
+  glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Never"));
+  glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Only if timebar hidden"));
+
   CHECKBOX_label_1=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Fast blockage drawing"),&use_new_drawface,LABELS_drawface,LabelsCB);
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,LabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,LabelsCB);
@@ -617,9 +621,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Stepped"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Line"));
   CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("flip"), &colorbar_flip, FLIP, LabelsCB);
-#ifdef pp_COLORBARFLIP
   CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
-#endif
 
   SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,_("Selection width:"),GLUI_SPINNER_INT,&colorband,COLORBAND,SliceBoundCB);
   SPINNER_colorband->set_int_limits(1,10);
@@ -948,7 +950,6 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
-#ifdef pp_HCOLORBAR
   case LABELS_vcolorbar:
     if(visColorbarVertical==1){
       visColorbarHorizontal=0;
@@ -984,7 +985,6 @@ extern "C" void LabelsCB(int var){
       toggle_colorbar = 0;
     }
     break;
-#endif
   case LABELS_tick_inside:
   case LABELS_tick_outside:
     if(var==LABELS_tick_inside){
@@ -1041,7 +1041,7 @@ extern "C" void LabelsCB(int var){
   case LABELS_label:
   case LABELS_HMS:
   case LABELS_transparent:
-  case HRRPUVCUTOFF_label:
+  case FIRECUTOFF_label:
     break;
   case LABELS_usertick:
     CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
@@ -1113,7 +1113,7 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
   if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(visHRRlabel);
-  if(CHECKBOX_labels_hrrcutoff!=NULL)CHECKBOX_labels_hrrcutoff->set_int_val(show_hrrcutoff);
+  if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
   if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(visTitle);
   if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(visCHID);
   if(CHECKBOX_visColorbarVertical!=NULL)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
@@ -1145,9 +1145,7 @@ extern "C" void LabelsCB(int var){
 
 extern "C" void UpdateColorbarFlip(void){
   CHECKBOX_colorbar_flip->set_int_val(colorbar_flip);
-#ifdef pp_COLORBARFLIP
   CHECKBOX_colorbar_autoflip->set_int_val(colorbar_autoflip);
-#endif
 }
 
 /* ------------------ UpdateColorbarList2 ------------------------ */

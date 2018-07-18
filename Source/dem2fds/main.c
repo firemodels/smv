@@ -25,17 +25,19 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  data obtained from http://viewer.nationalmap.gov \n\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  dem2fds [options] casename.in\n");
-  fprintf(stdout, "  -dir dir  - directory containing map and elevation files\n");
-  fprintf(stdout, "  -elevdir dir - directory containing elevation files (if different than -dir directory)\n");
-  fprintf(stdout, "  -geom     - represent terrain using using &GEOM keywords (experimental)\n");
-  fprintf(stdout, "  -obst     - represent terrain using &OBST keywords \n");
+  fprintf(stdout, "  -dir dir      - directory containing map and elevation files\n");
+  fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir directory)\n");
+  fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
+  fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
+  fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
-    fprintf(stdout, "  -elevs    - output elevations, do not create an FDS input file\n");
-    fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
-    fprintf(stdout, "  -overlap - assume that there is a 300 pixel overlap between maps.\n");
-    fprintf(stdout, "  -show     - highlight image and fds scenario boundaries\n");
-    fprintf(stdout, "  -surf surf_id - specify surf ID for use with OBSTs or geometry \n");
+  fprintf(stdout, "  -elevs        - output elevations, do not create an FDS input file\n");
+  fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
+  fprintf(stdout, "  -overlap      - assume that there is a 300 pixel overlap between maps.\n");
+  fprintf(stdout, "  -show         - highlight image and fds scenario boundaries\n");
+  fprintf(stdout, "  -surf1 surf_id - specify surf ID for use with OBSTs or geometry (interior to domain)\n");
+  fprintf(stdout, "  -surf2 surf_id - specify surf ID for use with OBSTs or geometry (adjacent to domain)\n");
     UsageCommon(HELP_ALL);
   }
 }
@@ -45,8 +47,9 @@ void Usage(char *prog, int option){
 int main(int argc, char **argv){
   int i;
   int gen_fds = FDS_OBST;
-  char *casename = NULL;
+  char *casename = NULL, *last=NULL;
   char file_default[LEN_BUFFER];
+  char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
 
@@ -55,13 +58,15 @@ int main(int argc, char **argv){
     return 0;
   }
 
+  strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
   strcpy(image_dir, ".");
   strcpy(elev_dir, "");
 #ifdef pp_CSVF
   strcpy(csv_file, "");
 #endif
-  strcpy(surf_id, "surf1");
+  strcpy(surf_id1, "surf1");
+  strcpy(surf_id2, "surf2");
   strcpy(matl_id, "matl1");
 
   initMALLOC();
@@ -88,6 +93,10 @@ int main(int argc, char **argv){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
+      }
+      else if(strncmp(arg, "-fds", 4) == 0){
+        i++;
+        strcpy(casename_fds, argv[i]);
       }
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
@@ -162,9 +171,17 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-show", 5) == 0){
         show_maps = 1;
       }
-      else if(strncmp(arg, "-surf", 5) == 0){
+      else if(strncmp(arg, "-surf", 5) == 0 || strncmp(arg, "-surf1", 6) == 0){
         i++;
-        strcpy(surf_id, argv[i]);
+        strcpy(surf_id1, argv[i]);
+      }
+      else if (strncmp(arg, "-surf2", 6) == 0) {
+        i++;
+        strcpy(surf_id2, argv[i]);
+      }
+      else if(strncmp(arg, "-fds", 4) == 0){
+        i++;
+        strcpy(casename_fds, argv[i]);
       }
       else{
         Usage("dem2fds",HELP_ALL);
@@ -182,8 +199,19 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
   if(casename == NULL)casename = file_default;
-  if(GetElevations(casename, &fds_elevs)==1) {
-     GenerateFDSInputFile(casename, &fds_elevs, gen_fds);
+  if(strlen(casename_fds) == 0){
+    strcpy(casename_fds, casename);
+    last = strrchr(casename_fds, '.');
+    if(last!=NULL)last[0]=0;
+    strcat(casename_fds, ".fds");
+  }
+  strcpy(image_file, casename_fds);
+  last = strrchr(image_file, '.');
+  if(last != NULL)last[0] = 0;
+  strcat(image_file,".png");
+
+  if(GetElevations(casename, image_file, &fds_elevs)==1) {
+     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
   }
   return 0;
 }

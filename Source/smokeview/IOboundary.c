@@ -1703,6 +1703,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
         if(i1==0||i2==ibartemp){
           mesh_boundary = YES;
+//xxx
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
             meshi->boundarytype[n] = LEFTwall;
@@ -2054,6 +2055,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,maxtimes_boundary);
     meshi->npatch_times=maxtimes_boundary;
+    framestart = 0;
   }
   else{
     if(meshi->patchval == NULL){
@@ -2357,11 +2359,12 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   // vals_1, ... vals_ndyamic
 
   patchi = patchinfo+ifile;
-  if(patchi->filetype!=PATCH_GEOMETRY)return;
+  if(patchi->fileclass == STRUCTURED)return;
   file = patchi->file;
 
   patchi->loaded = 0;
   patchi->display = 0;
+  patchi->bounds.defined=0;
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
@@ -2372,7 +2375,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   FREEMEMORY(patchi->geom_times);
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
-    UpdateBoundaryType();
+    if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
     return;
@@ -2442,9 +2445,14 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   FREEMEMORY(patchi->geom_vals);
   patchi->loaded = 1;
   patchi->display = 1;
-  iboundarytype = GetBoundaryType(patchinfo+ifile);
+  if(patchi->boundary == 1){
+    iboundarytype = GetBoundaryType(patchinfo + ifile);
+  }
+  else {
+    islicetype = GetSliceTypeFromLabel(patchi->label.shortlabel);
+  }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateBoundaryType();
+  if(patchi->boundary==1)UpdateBoundaryType();
   UpdateUnitDefs();
   UpdateTimes();
   force_redisplay=1;
@@ -2457,7 +2465,7 @@ void ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
 
   patchi = patchinfo + ifile;
-  if(patchi->filetype==PATCH_GEOMETRY){
+  if(patchi->fileclass == UNSTRUCTURED){
     ASSERT(ifile>=0&&ifile<ngeominfo);
     ReadGeomData(ifile,load_flag,errorcode);
   }
@@ -2766,6 +2774,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
+// xxx
     if(vis_boundaries[n]==1&&patchdir[n]<0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;
@@ -4119,15 +4128,15 @@ void DrawBoundaryFrame(int flag){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->filetype == PATCH_GEOMETRY && patchi->loaded == 1 && patchi->display == 1){
+    if(patchi->fileclass == UNSTRUCTURED && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
-        if(patchi->slice == 0){
+        if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
           DrawGeomData(flag, patchi, GEOM_STATIC);
           DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
       else{
-        if(patchi->slice == 1){
+        if(patchi->filetype == PATCH_GEOMETRY_SLICE){
           DrawGeomData(flag, patchi, GEOM_STATIC);
           DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
@@ -4145,30 +4154,30 @@ void DrawBoundaryFrame(int flag){
         patchdata *patchi;
 
         patchi = patchinfo + filenum;
-        if(patchi->loaded==0||patchi->display==0||patchi->type!=iboundarytype)continue;
+        if(patchi->loaded==0||patchi->display==0||patchi->shortlabel_index!=iboundarytype)continue;
         if(usetexturebar!=0){
           if(vis_threshold==1&&do_threshold==1){
-            if(patchi->filetype==PATCH_CELL_CENTER){
+            if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryThresholdCellcenter(meshi);
             }
-            else if(patchi->filetype==PATCH_NODE_CENTER){
+            else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTextureThreshold(meshi);
             }
           }
           else{
-            if(patchi->filetype==PATCH_CELL_CENTER){
+            if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryCellCenter(meshi);
             }
-            else if(patchi->filetype==PATCH_NODE_CENTER){
+            else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTexture(meshi);
             }
           }
         }
         else{
-          if(patchi->filetype==PATCH_CELL_CENTER){
+          if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
             DrawBoundaryCellCenter(meshi);
           }
-          else if(patchi->filetype==PATCH_NODE_CENTER){
+          else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
             DrawBoundary(meshi);
           }
         }
@@ -4191,7 +4200,7 @@ void UpdateBoundaryTypes(void){
   }
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo+i;
-    patchi->type=GetBoundaryType(patchi);
+    patchi->shortlabel_index =GetBoundaryType(patchi);
   }
 }
 
@@ -4218,14 +4227,14 @@ void UpdateBoundaryType(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1&&patchi->type==iboundarytype)return;
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index==iboundarytype)return;
   }
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1){
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1){
       iboundarytype = GetBoundaryIndex(patchi);
       return;
     }
@@ -4274,22 +4283,22 @@ void UpdateBoundaryMenuLabels(void){
         sprintf(label,"%s",patchmesh->label);
         STRCAT(patchi->menulabel,label);
       }
-      if(patchi->filetype == PATCH_GEOMETRY){
-        if(patchi->geom_fdsfiletype==NULL||strlen(patchi->geom_fdsfiletype)==0||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->fileclass == UNSTRUCTURED){
+        if(patchi->filetype_label==NULL||strlen(patchi->filetype_label)==0||strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           if(strlen(patchi->gslicedir) != 0){
             STRCAT(patchi->menulabel, ", ");
             STRCAT(patchi->menulabel, patchi->gslicedir);
             STRCPY(patchi->menulabel_suffix, patchi->gslicedir);
           }
         }
-        if(patchi->geom_fdsfiletype!=NULL&&strlen(patchi->geom_fdsfiletype)>0){
-          if(strcmp(patchi->geom_fdsfiletype, "INBOUND_FACES")==0){
+        if(patchi->filetype_label!=NULL&&strlen(patchi->filetype_label)>0){
+          if(strcmp(patchi->filetype_label, "INBOUND_FACES")==0){
             STRCPY(patchi->menulabel_suffix, "in boundary");
           }
-          if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES")==0){
+          if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
             STRCPY(patchi->menulabel_suffix, "EXIM faces");
           }
-          if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+          if(strcmp(patchi->filetype_label, "CUT_CELLS") == 0){
             STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
@@ -4351,8 +4360,8 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
   flowlabels *labeli;
 
   if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
-  if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
-  if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
+  if(patchi->fileclass == STRUCTURED || patchi->filetype != PATCH_GEOMETRY_SLICE)return 0;
+  if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOMETRY")!=0)return 0;
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;
@@ -4369,7 +4378,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
     meshj = meshinfo + patchj->blocknumber;
 
     if(patchj==patchi||patchj->skip==1)continue;
-    if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchj->fileclass == STRUCTURED||patchj->filetype!=PATCH_GEOMETRY_SLICE)continue;
     if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
@@ -4417,7 +4426,7 @@ void UpdateBoundarySliceDups(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->filetype!=PATCH_GEOMETRY||patchi->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->fileclass == STRUCTURED||patchi->filetype!=PATCH_GEOMETRY_SLICE)continue;
     patchi->skip = IsBoundaryDuplicate(patchi, FIND_DUPLICATES);
   }
 }
@@ -4447,7 +4456,7 @@ void GetBoundaryParams(void){
     xyz_max[0] = 0.0;
     xyz_max[1] = 0.0;
     xyz_max[2] = 0.0;
-    if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->fileclass == STRUCTURED || patchi->filetype != PATCH_GEOMETRY_SLICE)continue;
 
     ijk = patchi->ijk;
     meshi = meshinfo + patchi->blocknumber;
@@ -4551,7 +4560,7 @@ int UpdateBoundaryHist(patchdata *patchj){
     time_t modtime;
 
     patchi = patchinfo + i;
-    if(patchi->type!=patchj->type||patchi->filetype!=patchj->filetype||patchi->filetype==PATCH_GEOMETRY)continue;
+    if(patchi->shortlabel_index !=patchj->shortlabel_index ||patchi->filetype!=patchj->filetype||patchi->fileclass == UNSTRUCTURED)continue;
     modtime= FileModtime(patchi->file);
     if(modtime>patchi->modtime){
       patchi->modtime=modtime;
