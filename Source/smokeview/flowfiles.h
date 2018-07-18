@@ -1152,7 +1152,7 @@ typedef struct _slicedata {
   int compression_type;
   int colorbar_autoflip;
   int ncompressed;
-  int slicetype;
+  int slicetype1;
   struct _multislicedata *mslice;
   int is_fed;
   feddata *fedptr;
@@ -1203,7 +1203,7 @@ typedef struct _slicedata {
   int nslicex, nslicey;
   int ndirxyz[4];
   int nslicetotal;
-  int type;
+  int slicetype2;
   int vloaded;
   int reload;
   float delta_orig, dplane_min, dplane_max;
@@ -1217,7 +1217,7 @@ typedef struct _slicedata {
 typedef struct _multislicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;// possible problem with 'type'
+  int loaded,display,mslicetype2;// possible problem with 'type'
   int ndirxyz[4];
   int nslices;
   int *islices;
@@ -1230,7 +1230,7 @@ typedef struct _multislicedata {
 typedef struct _multivslicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;
+  int loaded,display,mvslicetype2;
   int nvslices;
   int ndirxyz[4];
   int *ivslices;
@@ -1267,8 +1267,8 @@ typedef struct _vslicedata {
   int skip;
   int loaded,display;
   float valmin, valmax;
-  int type,vec_type;
-  int slicetype;
+  int vslicetype1;
+  int vslicetype2;
   char menulabel[128];
   char menulabel2[128];
 } vslicedata;

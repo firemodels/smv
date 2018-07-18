@@ -2450,6 +2450,9 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   }
   else {
     islicetype = GetSliceTypeFromLabel(patchi->label.shortlabel);
+#ifdef pp_SLICEBOUNDS
+    UpdateAllSliceLabels(islicetype, errorcode);
+#endif
   }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(patchi->boundary==1)UpdateBoundaryType();

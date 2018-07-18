@@ -340,8 +340,8 @@ void UpdateShow(void){
 
       i=slice_loaded_list[ii];
       sd = sliceinfo+i;
-      if(sd->display==0||sd->type!=islicetype)continue;
-      if(sd->volslice==1&&sd->slicetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->display==0||sd->slicetype2!=islicetype)continue;
+      if(sd->volslice==1&&sd->slicetype1==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       if(sd->ntimes>0){
         sliceflag=1;
         break;
@@ -358,7 +358,7 @@ void UpdateShow(void){
       i=slice_loaded_list[ii];
       sd = sliceinfo+i;
       slicemesh = meshinfo + sd->blocknumber;
-      if(sd->display==0||sd->type!=islicetype)continue;
+      if(sd->display==0||sd->slicetype2!=islicetype)continue;
       if(sd->constant_color==NULL&&show_evac_colorbar==0&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       if(sd->ntimes>0){
@@ -372,7 +372,7 @@ void UpdateShow(void){
 
         i=slice_loaded_list[ii];
         sd = sliceinfo+i;
-        if(sd->display==0||sd->type!=islicetype)continue;
+        if(sd->display==0||sd->slicetype2!=islicetype)continue;
         if(sd->extreme_max==1){
           have_extreme_maxdata=1;
           break;
@@ -385,7 +385,7 @@ void UpdateShow(void){
 
         i=slice_loaded_list[ii];
         sd = sliceinfo+i;
-        if(sd->display==0||sd->type!=islicetype)continue;
+        if(sd->display==0||sd->slicetype2!=islicetype)continue;
         if(sd->extreme_min==1){
           have_extreme_mindata=1;
           break;
@@ -437,8 +437,8 @@ void UpdateShow(void){
       if(vd->loaded==0||vd->display==0)continue;
       sd = sliceinfo + vd->ival;
 
-      if(sd->type!=islicetype)continue;
-      if(sd->volslice==1&&sd->slicetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->slicetype2!=islicetype)continue;
+      if(sd->volslice==1&&sd->slicetype1==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       vsliceflag=1;
       break;
     }
@@ -451,7 +451,7 @@ void UpdateShow(void){
       sd = sliceinfo + vd->ival;
       slicemesh = meshinfo + sd->blocknumber;
       if(vd->loaded==0||vd->display==0)continue;
-      if(sliceinfo[vd->ival].type!=islicetype)continue;
+      if(sliceinfo[vd->ival].slicetype2!=islicetype)continue;
       if(sd->constant_color==NULL&&show_evac_colorbar==0&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       vslicecolorbarflag=1;
@@ -1577,7 +1577,7 @@ void UpdateTimes(void){
       slicedata *sd;
 
       sd = sliceinfo + i;
-      if(sd->loaded==0||sd->display==0||sd->slicetype!=SLICE_TERRAIN)continue;
+      if(sd->loaded==0||sd->display==0||sd->slicetype1!=SLICE_TERRAIN)continue;
       show_slice_terrain=1;
       break;
     }
@@ -1616,7 +1616,7 @@ int GetPlotState(int choice){
         slicedata *slicei;
 
         slicei = sliceinfo + slice_loaded_list[i];
-        if(slicei->display==0||slicei->type!=islicetype)continue;
+        if(slicei->display==0||slicei->slicetype2!=islicetype)continue;
         stept = 1;
         return DYNAMIC_PLOTS;
       }
@@ -1635,7 +1635,7 @@ int GetPlotState(int choice){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo + i;
-        if(vslicei->display==0||vslicei->type!=islicetype)continue;
+        if(vslicei->display==0||vslicei->vslicetype2!=islicetype)continue;
         return DYNAMIC_PLOTS;
       }
       for(i=0;i<npatch_loaded;i++){
@@ -1904,7 +1904,7 @@ void UpdateFlippedColorbar(void){
     slicedata *slicei;
 
     slicei = sliceinfo + slice_loaded_list[i];
-    if(slicei->type!=islicetype)continue;
+    if(slicei->slicetype2!=islicetype)continue;
     if(slicei->display == 0)continue;
     if(slicei->colorbar_autoflip == 1&&colorbar_autoflip == 1){
       flip = 1;

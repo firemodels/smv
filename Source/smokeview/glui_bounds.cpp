@@ -3603,7 +3603,7 @@ extern "C" void SliceBoundCB(int var){
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type == islicetype){
+        if(sd->slicetype2 == islicetype){
           last_slice = i;
           break;
         }
@@ -3613,7 +3613,7 @@ extern "C" void SliceBoundCB(int var){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->type == islicetype){
+        if(sd->slicetype2 == islicetype){
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);

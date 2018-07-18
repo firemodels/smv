@@ -2900,7 +2900,7 @@ int IsSliceDup(slicedata *sd, int nslice){
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
-    if(slicei->slicetype!=sd->slicetype)continue;
+    if(slicei->slicetype1!=sd->slicetype1)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
     if(slicei->volslice!=sd->volslice)continue;
     if(slicei->idir!=sd->idir)continue;
@@ -8235,16 +8235,16 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
-      sd->slicetype=SLICE_NODE_CENTER;
+      sd->slicetype1=SLICE_NODE_CENTER;
       if(terrain==1){
-        sd->slicetype=SLICE_TERRAIN;
+        sd->slicetype1=SLICE_TERRAIN;
       }
-      if(fire_line==1)sd->slicetype=SLICE_FIRELINE;
+      if(fire_line==1)sd->slicetype1=SLICE_FIRELINE;
       if(cellcenter==1){
-        sd->slicetype=SLICE_CELL_CENTER;
+        sd->slicetype1=SLICE_CELL_CENTER;
       }
       if(facecenter == 1){
-        sd->slicetype = SLICE_FACE_CENTER;
+        sd->slicetype1 = SLICE_FACE_CENTER;
       }
 
       islicecount++;
@@ -8285,13 +8285,13 @@ typedef struct {
         sd->file=sd->reg_file;
       }
 
-      if(sd->slicetype==SLICE_TERRAIN){
+      if(sd->slicetype1==SLICE_TERRAIN){
         if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
-      else if(sd->slicetype==SLICE_CELL_CENTER){
+      else if(sd->slicetype1==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
-      else if(sd->slicetype == SLICE_FACE_CENTER){
+      else if(sd->slicetype1 == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
       else{
