@@ -347,7 +347,7 @@ void ShowMultiSliceMenu(int value){
         slicedata *sd;
 
         sd = sliceinfo+mslicei->islices[0];
-        if(islicetype==sd->slicetype2){
+        if(slicefile_labelindex==sd->slicefile_labelindex){
           if(plotstate!=DYNAMIC_PLOTS){
             plotstate = DYNAMIC_PLOTS;
             mdisplay = 1;
@@ -364,7 +364,7 @@ void ShowMultiSliceMenu(int value){
         else{
           plotstate = DYNAMIC_PLOTS;
           sd = sliceinfo+mslicei->islices[0];
-          islicetype = sd->slicetype2;
+          slicefile_labelindex = sd->slicefile_labelindex;
           mdisplay = 1;
         }
       }
@@ -402,7 +402,7 @@ void ShowAllSlices(char *type1, char *type2){
         (type2 != NULL&&STRCMP(slicei->label.longlabel, type2) == 0)
         ){
         sliceinfo[i].display = 1;
-        islicetype = slicei->slicetype2;
+        slicefile_labelindex = slicei->slicefile_labelindex;
       }
     }
   }
@@ -1069,7 +1069,7 @@ void ShowVSliceMenu(int value){
     return;
   }
   vd = vsliceinfo + value;
-  if(islicetype==sliceinfo[vd->ival].slicetype2){
+  if(slicefile_labelindex==sliceinfo[vd->ival].slicefile_labelindex){
     if(plotstate!=DYNAMIC_PLOTS){
       plotstate=DYNAMIC_PLOTS;
       vd->display=1;
@@ -1103,7 +1103,7 @@ void ShowVSliceMenu(int value){
     }
   }
   else{
-    islicetype = sliceinfo[vd->ival].slicetype2;
+    slicefile_labelindex = sliceinfo[vd->ival].slicefile_labelindex;
     vd->display=1;
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
@@ -1168,7 +1168,7 @@ void ShowHideSliceMenu(int value){
     slicedata *sd;
 
     sd = sliceinfo + value;
-    if(islicetype==sd->slicetype2){
+    if(slicefile_labelindex==sd->slicefile_labelindex){
       if(plotstate!=DYNAMIC_PLOTS){
         plotstate=DYNAMIC_PLOTS;
         sd->display=1;
@@ -1179,7 +1179,7 @@ void ShowHideSliceMenu(int value){
     }
     else{
       plotstate=DYNAMIC_PLOTS;
-      islicetype = sd->slicetype2;
+      slicefile_labelindex = sd->slicefile_labelindex;
       sd->display=1;
     }
     if(value < nsliceinfo - nfedinfo){
@@ -2752,7 +2752,7 @@ void ReloadAllSliceFiles(void){
   int ii;
 
   LOCK_COMPRESS
-  islicetype_save = islicetype;
+  slicefile_labelindex_save = slicefile_labelindex;
   for(ii = 0; ii < nslice_loaded; ii++){
     slicedata *slicei;
     int set_slicecolor;
@@ -2765,7 +2765,7 @@ void ReloadAllSliceFiles(void){
     if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
     ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
   }
-  islicetype = islicetype_save;
+  slicefile_labelindex = slicefile_labelindex_save;
   UNLOCK_COMPRESS;
 }
 
@@ -2833,7 +2833,7 @@ void LoadUnloadMenu(int value){
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD, &errorcode);
     }
-    islicetype_save=islicetype;
+    slicefile_labelindex_save=slicefile_labelindex;
     for(i=0;i<nsliceinfo;i++){
       sliceinfo[i].reload=1;
     }
@@ -2872,7 +2872,7 @@ void LoadUnloadMenu(int value){
         ReadSlice(slicei->file,i, load_mode,set_slicecolor,&errorcode);
       }
     }
-    islicetype=islicetype_save;
+    slicefile_labelindex=slicefile_labelindex_save;
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
         ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
@@ -4179,7 +4179,7 @@ void LoadSlicei(int set_slicecolor, int value){
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
 #ifdef pp_SLICEGEOM
-      if (slicei->slicetype1 == SLICE_GEOM) {
+      if (slicei->slicefile_type == SLICE_GEOM) {
    //     ReadGeomData(ifile, LOAD, &errorcode);
       }
       else {
@@ -7611,7 +7611,7 @@ updatemenu=0;
       if(vd->loaded==0)continue;
       sd = sliceinfo + vd->ival;
       STRCPY(menulabel,"");
-      if(plotstate==DYNAMIC_PLOTS&&sd->slicetype2==islicetype&&vd->display==1){
+      if(plotstate==DYNAMIC_PLOTS&&sd->slicefile_labelindex==slicefile_labelindex&&vd->display==1){
         vd_shown=vd;
         STRCAT(menulabel,"*");
       }
@@ -7671,11 +7671,11 @@ updatemenu=0;
 
       i = slice_loaded_list[ii];
       sd = sliceinfo + i;
-      if(sd_shown==NULL&&sd->slicetype2==islicetype){
+      if(sd_shown==NULL&&sd->slicefile_labelindex==slicefile_labelindex){
         sd_shown = sd;
       }
       STRCPY(menulabel,"");
-      if(plotstate==DYNAMIC_PLOTS&&sd->display==1&&sd->slicetype2==islicetype){
+      if(plotstate==DYNAMIC_PLOTS&&sd->display==1&&sd->slicefile_labelindex==slicefile_labelindex){
         sd_shown=sd;
         STRCAT(menulabel,"*");
       }
@@ -7779,7 +7779,7 @@ updatemenu=0;
       if(mslicei->loaded==0)continue;
       sd = sliceinfo+mslicei->islices[0];
       STRCPY(menulabel, "");
-      if(plotstate==DYNAMIC_PLOTS&&mslicei->display!=0&&sd->slicetype2==islicetype){
+      if(plotstate==DYNAMIC_PLOTS&&mslicei->display!=0&&sd->slicefile_labelindex==slicefile_labelindex){
         if(mslicei->display==1){
           STRCAT(menulabel, "*");
         }

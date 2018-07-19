@@ -1365,7 +1365,7 @@ SVEXTERN char SVDECL(*partscale,NULL);
 SVEXTERN char a_partscale[31];
 SVEXTERN char SVDECL(*zonescale,NULL);
 SVEXTERN char a_zonescale[31];
-SVEXTERN int islicetype,islicetype_save,iboundarytype;
+SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
 

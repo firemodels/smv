@@ -638,7 +638,7 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void Antialias(int flag);
-EXTERNCPP void SetSliceBounds(int islicetype);
+EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);

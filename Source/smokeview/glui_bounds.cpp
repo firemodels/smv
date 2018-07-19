@@ -3603,7 +3603,7 @@ extern "C" void SliceBoundCB(int var){
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->slicetype2 == islicetype){
+        if(sd->slicefile_labelindex == slicefile_labelindex){
           last_slice = i;
           break;
         }
@@ -3613,7 +3613,7 @@ extern "C" void SliceBoundCB(int var){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
-        if(sd->slicetype2 == islicetype){
+        if(sd->slicefile_labelindex == slicefile_labelindex){
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
@@ -3649,7 +3649,7 @@ extern "C" void UpdateSliceList(int index){
 
 extern "C" void UpdateSliceListIndex(int sfn){
   int i;
-  int slicefiletype;
+  int slicefile_type;
   slicedata *sd;
   if(sfn<0){
     UpdateSliceFilenum();
@@ -3657,9 +3657,9 @@ extern "C" void UpdateSliceListIndex(int sfn){
   }
   if(sfn < 0)return;
   sd = sliceinfo+sfn;
-  slicefiletype = GetSliceIndex(sd);
-  if(slicefiletype>=0&&slicefiletype<nslicebounds){
-    i = slicefiletype;
+  slicefile_type = GetSliceIndex(sd);
+  if(slicefile_type>=0&&slicefile_type<nslicebounds){
+    i = slicefile_type;
     RADIO_slice->set_int_val(i);
     SetSliceBounds(i);
     list_slice_index=i;

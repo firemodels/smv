@@ -1657,7 +1657,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     if (showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)) {
       boundsdata *sb;
 
-      sb = slicebounds + islicetype;
+      sb = slicebounds + slicefile_labelindex;
 
       if(strcmp(sb->label->shortlabel, "FED") ==  0&& current_colorbar != NULL){
         strcpy(default_fed_colorbar, current_colorbar->label);
@@ -1720,7 +1720,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     int sliceunitclass, sliceunittype;
     boundsdata *sb;
 
-    sb = slicebounds + islicetype;
+    sb = slicebounds + slicefile_labelindex;
     strcpy(unitlabel, sb->label->unit);
     GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
     if (sliceunitclass >= 0 && sliceunitclass < nunitclasses) {
@@ -1968,7 +1968,7 @@ void DrawHorizontalColorbarRegLabels(void) {
     boundsdata *sb;
     float slicerange;
 
-    sb = slicebounds + islicetype;
+    sb = slicebounds + slicefile_labelindex;
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;
@@ -2289,7 +2289,7 @@ void DrawVerticalColorbarRegLabels(void){
     if(showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1)){
       boundsdata *sb;
 
-      sb = slicebounds + islicetype;
+      sb = slicebounds + slicefile_labelindex;
 
       if(strcmp(sb->label->shortlabel, "FED") == 0){
         if(current_colorbar != NULL){
@@ -2402,7 +2402,7 @@ void DrawVerticalColorbarRegLabels(void){
     int sliceunitclass, sliceunittype;
     boundsdata *sb;
 
-    sb = slicebounds + islicetype;
+    sb = slicebounds + slicefile_labelindex;
     strcpy(unitlabel, sb->label->unit);
     GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
     if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
@@ -2671,7 +2671,7 @@ void DrawVerticalColorbarRegLabels(void){
     boundsdata *sb;
     float slicerange;
 
-    sb = slicebounds + islicetype;
+    sb = slicebounds + slicefile_labelindex;
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;

@@ -1784,11 +1784,11 @@ void UpdateChopColors(void){
       }
     }
   }
-  if(slicebounds!=NULL&&islicetype!=-1){
+  if(slicebounds!=NULL&&slicefile_labelindex!=-1){
     float smin, smax;
 
-    smin=slicebounds[islicetype].valmin;
-    smax=slicebounds[islicetype].valmax;
+    smin=slicebounds[slicefile_labelindex].valmin;
+    smax=slicebounds[slicefile_labelindex].valmax;
 
     if(setslicechopmin==1){
       ichopmin=nrgb_full*(slicechopmin-smin)/(smax-smin);
