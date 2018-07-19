@@ -216,6 +216,8 @@ EXTERNCPP void DrawTestTriangle(void);
 EXTERNCPP void DrawTestPolygon(void);
 EXTERNCPP void DrawTestOutline(void);
 EXTERNCPP void VentMenu(int value);
+EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
+
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
@@ -636,7 +638,7 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void Antialias(int flag);
-EXTERNCPP void SetSliceBounds(int islicetype);
+EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);

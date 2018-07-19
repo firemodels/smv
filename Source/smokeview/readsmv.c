@@ -2065,7 +2065,7 @@ void UpdateBoundInfo(void){
       isoi->valmin=1.0;
       isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
-      isobounds[niso_bounds].datalabel=isoi->color_label.shortlabel;
+      isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].setvalmin=0;
       isobounds[niso_bounds].setvalmax=0;
       isobounds[niso_bounds].valmin=1.0;
@@ -2114,7 +2114,7 @@ void UpdateBoundInfo(void){
       slicei->setvalmax=0;
 
       sbi = slicebounds + nslicebounds;
-      sbi->datalabel=slicei->label.shortlabel;
+      sbi->shortlabel=slicei->label.shortlabel;
       sbi->setvalmin=0;
       sbi->setvalmax=0;
       sbi->valmin=1.0;
@@ -2132,7 +2132,7 @@ void UpdateBoundInfo(void){
         boundsdata *sbn;
 
         sbn = slicebounds + n;
-        if(strcmp(sbn->datalabel, sbi->datalabel) == 0){
+        if(strcmp(sbn->shortlabel, sbi->shortlabel) == 0){
           nslicebounds--;
           break;
         }
@@ -2164,7 +2164,7 @@ void UpdateBoundInfo(void){
     patchi->setvalmax = 0;
 
     sbi = slicebounds + nslicebounds;
-    sbi->datalabel = patchi->label.shortlabel;
+    sbi->shortlabel = patchi->label.shortlabel;
     sbi->setvalmin = 0;
     sbi->setvalmax = 0;
     sbi->valmin = 1.0;
@@ -2181,7 +2181,7 @@ void UpdateBoundInfo(void){
       boundsdata *sbn;
 
       sbn = slicebounds + n;
-      if (strcmp(sbn->datalabel, sbi->datalabel) == 0) {
+      if (strcmp(sbn->shortlabel, sbi->shortlabel) == 0) {
         nslicebounds--;
         break;
       }
@@ -2900,7 +2900,7 @@ int IsSliceDup(slicedata *sd, int nslice){
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
-    if(slicei->slicetype!=sd->slicetype)continue;
+    if(slicei->slicefile_type!=sd->slicefile_type)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
     if(slicei->volslice!=sd->volslice)continue;
     if(slicei->idir!=sd->idir)continue;
@@ -2921,7 +2921,6 @@ int CreateNullLabel(flowlabels *flowlabel){
   len = strlen(buffer);
   if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1)) == 0)return 2;
   STRCPY(flowlabel->longlabel, buffer);
-
 
   len = strlen("Particles");
   strcpy(buffer, "Particles");
@@ -3612,7 +3611,7 @@ int ReadSMV(char *file, char *file2){
   int setGRID=0;
   int  i;
 
-  char buffer[256],buffer2[256],*bufferptr;
+  char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
 #ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
@@ -4368,15 +4367,25 @@ int ReadSMV(char *file, char *file2){
       npartinfo++;
       continue;
     }
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+#ifdef pp_SLICEGEOM
+        || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
+#ifdef pp_SLICEGEOM
+      if(Match(buffer, "BNDS") == 1){
+        if(FGETS(buffer,255,stream)==NULL){
+          BREAK;
+        }
+      }
+#endif
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
@@ -4411,7 +4420,11 @@ int ReadSMV(char *file, char *file2){
       do_pass4=1;
       continue;
     }
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+#ifndef pp_SLICEGEOM
+     || Match(buffer, "BNDS") == 1
+#endif
+      ){
       if(setup_only == 1||smoke3d_only==1)continue;
       npatchinfo++;
       continue;
@@ -8141,16 +8154,22 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+  #ifdef pp_SLICEGEOM
+      || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
       float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
+#ifdef pp_SLICEGEOM
+      int slicegeom=0;
+#endif
       int has_reg, has_comp;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
@@ -8187,6 +8206,11 @@ typedef struct {
         strcpy(slicelabel,slicelabelptr);
         slicelabelptr=slicelabel;
       }
+#ifdef pp_SLICEGEOM
+      if(Match(buffer,"BNDS") == 1){
+        slicegeom=1;
+      }
+#endif
       if(Match(buffer,"SLCT") == 1){
         terrain=1;
       }
@@ -8217,6 +8241,9 @@ typedef struct {
         sscanf(buffer3,"%i %f",&blocknumber,&above_ground_level);
         blocknumber--;
       }
+
+// read in slice file name
+
       if(FGETS(buffer,255,stream)==NULL){
         nsliceinfo--;
         BREAK;
@@ -8235,16 +8262,21 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
-      sd->slicetype=SLICE_NODE_CENTER;
-      if(terrain==1){
-        sd->slicetype=SLICE_TERRAIN;
+      sd->slicefile_type=SLICE_NODE_CENTER;
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        sd->slicefile_type=SLICE_GEOM;
       }
-      if(fire_line==1)sd->slicetype=SLICE_FIRELINE;
+#endif
+      if(terrain==1){
+        sd->slicefile_type=SLICE_TERRAIN;
+      }
+      if(fire_line==1)sd->slicefile_type=SLICE_FIRELINE;
       if(cellcenter==1){
-        sd->slicetype=SLICE_CELL_CENTER;
+        sd->slicefile_type=SLICE_CELL_CENTER;
       }
       if(facecenter == 1){
-        sd->slicetype = SLICE_FACE_CENTER;
+        sd->slicefile_type = SLICE_FACE_CENTER;
       }
 
       islicecount++;
@@ -8267,6 +8299,13 @@ typedef struct {
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
+#ifdef pp_SLICEGEOM
+        if(slicegeom==1){
+          if(FGETS(buffer,255,stream)==NULL){
+            BREAK;
+          }
+        }
+#endif
         continue;
       }
 
@@ -8285,13 +8324,39 @@ typedef struct {
         sd->file=sd->reg_file;
       }
 
-      if(sd->slicetype==SLICE_TERRAIN){
+#ifdef pp_SLICEGEOM
+
+// read in geometry file name
+
+      if(slicegeom==1){
+        int lengeom;
+
+        if(FGETS(buffer2,255,stream)==NULL){
+          nsliceinfo--;
+          BREAK;
+        }
+        bufferptr2=TrimFrontBack(buffer2);
+        lengeom=strlen(bufferptr2);
+        sd->geom_file = NULL;
+        NewMemory((void **)&sd->geom_file,(unsigned int)(lengeom+1));
+        STRCPY(sd->geom_file,bufferptr2);
+      }
+#endif
+
+// read in labels
+
+      if(sd->slicefile_type==SLICE_TERRAIN){
         if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
-      else if(sd->slicetype==SLICE_CELL_CENTER){
+      else if(sd->slicefile_type==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
-      else if(sd->slicetype == SLICE_FACE_CENTER){
+#ifdef pp_SLICEGEOM
+      else if(sd->slicefile_type==SLICE_GEOM){
+        if(ReadLabels(&sd->label,stream,"(geometry)")==2)return 2;
+      }
+#endif
+      else if(sd->slicefile_type == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
       else{
@@ -8409,7 +8474,11 @@ typedef struct {
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS")==1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+#ifndef pp_SLICEGEOM
+      || Match(buffer, "BNDS")==1
+#endif
+      ){
       patchdata *patchi;
       int version;
       int blocknumber;
@@ -8457,6 +8526,7 @@ typedef struct {
         patchi->filetype=PATCH_GEOMETRY_BOUNDARY;
         patchi->fileclass = UNSTRUCTURED;
       }
+#ifndef pp_SLICEGEOM
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
@@ -8476,7 +8546,6 @@ typedef struct {
             patchi->ijk[j]=ijk[j];
           }
         }
-
         filetype_label = strchr(buffer, '#');
         if(filetype_label != NULL){
           int len_filetype_label;
@@ -8491,6 +8560,7 @@ typedef struct {
           }
         }
       }
+#endif
 
       if(FGETS(buffer,255,stream)==NULL){
         npatchinfo--;
@@ -10387,7 +10457,7 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -10422,7 +10492,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -10449,7 +10519,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer2, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setvalmin = setvalmin;
           isobounds[i].setvalmax = setvalmax;
           isobounds[i].valmin = valmin;
@@ -10476,7 +10546,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setchopmin = setvalmin;
           isobounds[i].setchopmax = setvalmax;
           isobounds[i].chopmin = valmin;

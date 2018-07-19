@@ -371,7 +371,7 @@ void OutputSliceData(void){
   for(ii = 0; ii < nslice_loaded; ii++){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
-    if(sd->display == 0 || sd->type != islicetype)continue;
+    if(sd->display == 0 || sd->slicefile_labelindex != slicefile_labelindex)continue;
     if(sd->times[0] > global_times[itimes])continue;
 
     if(sd->qslicedata == NULL){

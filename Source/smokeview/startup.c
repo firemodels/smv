@@ -1771,7 +1771,7 @@ void InitVars(void){
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
   realtime_flag=0;
-  islicetype=-1,islicetype_save=-1,iboundarytype=-1;
+  slicefile_labelindex=-1,slicefile_labelindex_save=-1,iboundarytype=-1;
   iisotype=-1;
 
 
