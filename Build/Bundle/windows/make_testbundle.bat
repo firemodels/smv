@@ -95,18 +95,24 @@ echo --- compressing distribution directory ---
 echo.
 cd %smvdir%
 wzzip -a -r -p %zipbase%.zip *>Nul
+rename %zipbase%.zip smoketest_update.zip
+copy smoketest_update.zip ..
 
 echo.
 echo --- creating installer ---
 echo.
-wzipse32 %zipbase%.zip -runasadmin -d "c:\Program Files\firemodels\%SMVEDITION%" -c wrapup_smv_install.bat
+cd ..
+if exist smoketest_update.exe erase smoketest_update.exe
+wzipse32 smoketest_update.zip -runasadmin -d "c:\Program Files\firemodels\%SMVEDITION%" -c wrapup_smv_install.bat
+if exist %zipbase%.exe erase %zipbase%.exe
+rename smoketest_update.exe %zipbase%.exe
 
-hashfile %zipbase%.exe  >   hash\%zipbase%.exe.sha1
-cd hash
+hashfile %zipbase%.exe  >   %smvdir%\hash\%zipbase%.exe.sha1
+cd %smvdir%\hash
 cat %zipbase%.exe.sha1 >> %uploads%\%zipbase%.sha1
 
-cd ..
-CALL :COPY %zipbase%.exe ..\.
+cd ..\..
+if not exist %zipbase%.exe echo ***warning: %zipbase%.exe was not created
 
 echo.
 echo --- Smokeview win%platform% test installer built ---
