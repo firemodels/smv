@@ -4178,8 +4178,16 @@ void LoadSlicei(int set_slicecolor, int value){
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
+#ifdef pp_SLICEGEOM
+      if (slicei->slicetype1 == SLICE_GEOM) {
+   //     ReadGeomData(ifile, LOAD, &errorcode);
+      }
+      else {
+        ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+      }
+#else
       ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
-
+#endif
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
     else{

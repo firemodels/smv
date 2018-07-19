@@ -2922,7 +2922,6 @@ int CreateNullLabel(flowlabels *flowlabel){
   if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1)) == 0)return 2;
   STRCPY(flowlabel->longlabel, buffer);
 
-
   len = strlen("Particles");
   strcpy(buffer, "Particles");
   len = strlen(buffer);
@@ -3612,7 +3611,7 @@ int ReadSMV(char *file, char *file2){
   int setGRID=0;
   int  i;
 
-  char buffer[256],buffer2[256],*bufferptr;
+  char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
 #ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
@@ -4368,15 +4367,25 @@ int ReadSMV(char *file, char *file2){
       npartinfo++;
       continue;
     }
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+#ifdef pp_SLICEGEOM
+        || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
+#ifdef pp_SLICEGEOM
+      if(Match(buffer, "BNDS") == 1){
+        if(FGETS(buffer,255,stream)==NULL){
+          BREAK;
+        }
+      }
+#endif
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
@@ -4411,7 +4420,11 @@ int ReadSMV(char *file, char *file2){
       do_pass4=1;
       continue;
     }
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+#ifndef pp_SLICEGEOM
+     || Match(buffer, "BNDS") == 1
+#endif
+      ){
       if(setup_only == 1||smoke3d_only==1)continue;
       npatchinfo++;
       continue;
@@ -8141,16 +8154,22 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+  #ifdef pp_SLICEGEOM
+      || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
       float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
+#ifdef pp_SLICEGEOM
+      int slicegeom=0;
+#endif
       int has_reg, has_comp;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
@@ -8187,6 +8206,11 @@ typedef struct {
         strcpy(slicelabel,slicelabelptr);
         slicelabelptr=slicelabel;
       }
+#ifdef pp_SLICEGEOM
+      if(Match(buffer,"BNDS") == 1){
+        slicegeom=1;
+      }
+#endif
       if(Match(buffer,"SLCT") == 1){
         terrain=1;
       }
@@ -8217,6 +8241,9 @@ typedef struct {
         sscanf(buffer3,"%i %f",&blocknumber,&above_ground_level);
         blocknumber--;
       }
+
+// read in slice file name
+
       if(FGETS(buffer,255,stream)==NULL){
         nsliceinfo--;
         BREAK;
@@ -8236,6 +8263,11 @@ typedef struct {
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
       sd->slicetype1=SLICE_NODE_CENTER;
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        sd->slicetype1=SLICE_GEOM;
+      }
+#endif
       if(terrain==1){
         sd->slicetype1=SLICE_TERRAIN;
       }
@@ -8267,6 +8299,13 @@ typedef struct {
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
+#ifdef pp_SLICEGEOM
+        if(slicegeom==1){
+          if(FGETS(buffer,255,stream)==NULL){
+            BREAK;
+          }
+        }
+#endif
         continue;
       }
 
@@ -8285,12 +8324,38 @@ typedef struct {
         sd->file=sd->reg_file;
       }
 
+#ifdef pp_SLICEGEOM
+
+// read in geometry file name
+
+      if(slicegeom==1){
+        int lengeom;
+
+        if(FGETS(buffer2,255,stream)==NULL){
+          nsliceinfo--;
+          BREAK;
+        }
+        bufferptr2=TrimFrontBack(buffer2);
+        lengeom=strlen(bufferptr2);
+        sd->geom_file = NULL;
+        NewMemory((void **)&sd->geom_file,(unsigned int)(lengeom+1));
+        STRCPY(sd->geom_file,bufferptr2);
+      }
+#endif
+
+// read in labels
+
       if(sd->slicetype1==SLICE_TERRAIN){
         if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
       else if(sd->slicetype1==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
+#ifdef pp_SLICEGEOM
+      else if(sd->slicetype1==SLICE_GEOM){
+        if(ReadLabels(&sd->label,stream,"(geometry)")==2)return 2;
+      }
+#endif
       else if(sd->slicetype1 == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
@@ -8409,7 +8474,11 @@ typedef struct {
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS")==1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+#ifndef pp_SLICEGEOM
+      || Match(buffer, "BNDS")==1
+#endif
+      ){
       patchdata *patchi;
       int version;
       int blocknumber;
@@ -8457,6 +8526,7 @@ typedef struct {
         patchi->filetype=PATCH_GEOMETRY_BOUNDARY;
         patchi->fileclass = UNSTRUCTURED;
       }
+#ifndef pp_SLICEGEOM
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
@@ -8476,7 +8546,6 @@ typedef struct {
             patchi->ijk[j]=ijk[j];
           }
         }
-
         filetype_label = strchr(buffer, '#');
         if(filetype_label != NULL){
           int len_filetype_label;
@@ -8491,6 +8560,7 @@ typedef struct {
           }
         }
       }
+#endif
 
       if(FGETS(buffer,255,stream)==NULL){
         npatchinfo--;
