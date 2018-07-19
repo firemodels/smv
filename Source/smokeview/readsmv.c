@@ -2065,7 +2065,7 @@ void UpdateBoundInfo(void){
       isoi->valmin=1.0;
       isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
-      isobounds[niso_bounds].datalabel=isoi->color_label.shortlabel;
+      isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].setvalmin=0;
       isobounds[niso_bounds].setvalmax=0;
       isobounds[niso_bounds].valmin=1.0;
@@ -2114,7 +2114,7 @@ void UpdateBoundInfo(void){
       slicei->setvalmax=0;
 
       sbi = slicebounds + nslicebounds;
-      sbi->datalabel=slicei->label.shortlabel;
+      sbi->shortlabel=slicei->label.shortlabel;
       sbi->setvalmin=0;
       sbi->setvalmax=0;
       sbi->valmin=1.0;
@@ -2132,7 +2132,7 @@ void UpdateBoundInfo(void){
         boundsdata *sbn;
 
         sbn = slicebounds + n;
-        if(strcmp(sbn->datalabel, sbi->datalabel) == 0){
+        if(strcmp(sbn->shortlabel, sbi->shortlabel) == 0){
           nslicebounds--;
           break;
         }
@@ -2164,7 +2164,7 @@ void UpdateBoundInfo(void){
     patchi->setvalmax = 0;
 
     sbi = slicebounds + nslicebounds;
-    sbi->datalabel = patchi->label.shortlabel;
+    sbi->shortlabel = patchi->label.shortlabel;
     sbi->setvalmin = 0;
     sbi->setvalmax = 0;
     sbi->valmin = 1.0;
@@ -2181,7 +2181,7 @@ void UpdateBoundInfo(void){
       boundsdata *sbn;
 
       sbn = slicebounds + n;
-      if (strcmp(sbn->datalabel, sbi->datalabel) == 0) {
+      if (strcmp(sbn->shortlabel, sbi->shortlabel) == 0) {
         nslicebounds--;
         break;
       }
@@ -10457,7 +10457,7 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -10492,7 +10492,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -10519,7 +10519,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer2, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setvalmin = setvalmin;
           isobounds[i].setvalmax = setvalmax;
           isobounds[i].valmin = valmin;
@@ -10546,7 +10546,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setchopmin = setvalmin;
           isobounds[i].setchopmax = setvalmax;
           isobounds[i].chopmin = valmin;

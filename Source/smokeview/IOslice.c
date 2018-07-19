@@ -3340,7 +3340,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     }
   }
   if(contours_gen==0){
-    fprintf(stderr,"*** Error: no slice files of type %s are currently loaded\n",sb->datalabel);
+    fprintf(stderr,"*** Error: no slice files of type %s are currently loaded\n",sb->shortlabel);
   }
 }
 

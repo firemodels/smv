@@ -2117,8 +2117,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       GLUI_RadioButton *RADIOBUTTON_slicetype;
 
       sbi = slicebounds + i;
-      RADIOBUTTON_slicetype=glui_bounds->add_radiobutton_to_group(RADIO_slice,sbi->datalabel);
-      if(strcmp(sbi->datalabel,_("Fire line"))==0){
+      RADIOBUTTON_slicetype=glui_bounds->add_radiobutton_to_group(RADIO_slice,sbi->shortlabel);
+      if(strcmp(sbi->shortlabel,_("Fire line"))==0){
         RADIOBUTTON_slicetype->disable();
         fire_line_index=index;
       }
