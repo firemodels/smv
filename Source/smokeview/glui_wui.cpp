@@ -166,7 +166,7 @@ extern "C" void WuiCB(int var){
     case TERRAIN_MAX:
       break;
     case TERRAIN_FIRE_LINE_UPDATE:
-      fire_line_type=GetSliceTypeFromLabel("Fire line");
+      fire_line_type= GetSliceBoundsIndexFromLabel("Fire line");
       if(fire_line_type<0)break;
       list_slice_index=fire_line_type;
       UpdateSliceList(list_slice_index);

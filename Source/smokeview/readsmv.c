@@ -2043,7 +2043,7 @@ void InitTextures(void){
   }
 }
 
-/* ------------------ UpdateBoundInfo ------------------------ */
+  /* ------------------ UpdateBoundInfo ------------------------ */
 
 void UpdateBoundInfo(void){
   int i,n;
@@ -2157,7 +2157,7 @@ void UpdateBoundInfo(void){
     boundsdata *sbi;
 
     patchi = patchinfo + i;
-    if (patchi->boundary == 0)continue;
+    if (patchi->boundary == 1)continue;
     patchi->valmin = 1.0;
     patchi->valmax = 0.0;
     patchi->setvalmin = 0;
@@ -3945,8 +3945,6 @@ int ReadSMV(char *file, char *file2){
 
   FREEMEMORY(vsliceinfo);
   FREEMEMORY(sliceinfo);
-  FREEMEMORY(slicetypes);
-  FREEMEMORY(vslicetypes);
 
   FREEMEMORY(plot3dinfo);
   FREEMEMORY(patchinfo);
@@ -4624,23 +4622,19 @@ int ReadSMV(char *file, char *file2){
 
   FREEMEMORY(vsliceinfo);
   FREEMEMORY(sliceinfo);
-  FREEMEMORY(slicetypes);
-  FREEMEMORY(vslicetypes);
   FREEMEMORY(fedinfo);
   if(nsliceinfo>0){
-    if(NewMemory( (void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata) )==0||
-       NewMemory( (void **)&sliceinfo,  nsliceinfo*sizeof(slicedata)    )==0||
-       NewMemory( (void **)&fedinfo,  nsliceinfo*sizeof(feddata)    )==0||
-       NewMemory( (void **)&slicetypes, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&slice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&vslice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&subslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0||
+    if(NewMemory((void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata))==0 ||
+       NewMemory((void **)&sliceinfo,  nsliceinfo*sizeof(slicedata))==0    ||
+       NewMemory((void **)&fedinfo,  nsliceinfo*sizeof(feddata))==0        ||
+       NewMemory((void **)&slice_loadstack, nsliceinfo*sizeof(int))==0     ||
+       NewMemory((void **)&vslice_loadstack, nsliceinfo*sizeof(int))==0    ||
+       NewMemory((void **)&subslice_menuindex, nsliceinfo*sizeof(int))==0  ||
+       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0 ||
+       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0 ||
        NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0||
-       NewMemory( (void **)&mvslice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&vslicetypes,3*nsliceinfo*sizeof(int)    )==0){
+       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0    ||
+       NewMemory((void **)&mvslice_loadstack, nsliceinfo*sizeof(int))==0){
        return 2;
     }
     sliceinfo_copy=sliceinfo;
@@ -9230,7 +9224,7 @@ typedef struct {
 #endif
 
   UpdateSelectFaces();
-  UpdateSliceTypes();
+  UpdateSliceBoundIndexes();
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
@@ -9257,7 +9251,7 @@ typedef struct {
   UpdateTerrain(1,vertical_factor);
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
-  UpdateVSliceTypes();
+  UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
