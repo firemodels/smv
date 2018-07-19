@@ -3219,7 +3219,7 @@ extern "C" void SliceBoundCB(int var){
 
         slicei = sliceinfo + i;
         if(slicei->loaded==0||slicei->display==0)continue;
-        UpdateSliceList(GetSliceType(slicei));
+        UpdateSliceList(GetSliceBoundsIndex(slicei));
         break;
       }
       if(research_mode==1){
@@ -3657,7 +3657,7 @@ extern "C" void UpdateSliceListIndex(int sfn){
   }
   if(sfn < 0)return;
   sd = sliceinfo+sfn;
-  slicefile_type = GetSliceIndex(sd);
+  slicefile_type = GetSliceBoundsIndex(sd);
   if(slicefile_type>=0&&slicefile_type<nslicebounds){
     i = slicefile_type;
     RADIO_slice->set_int_val(i);

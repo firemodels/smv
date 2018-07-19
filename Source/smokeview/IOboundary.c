@@ -2449,7 +2449,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
     iboundarytype = GetBoundaryType(patchinfo + ifile);
   }
   else {
-    slicefile_labelindex = GetSliceTypeFromLabel(patchi->label.shortlabel);
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
 #ifdef pp_SLICEBOUNDS
     UpdateAllSliceLabels(slicefile_labelindex, errorcode);
 #endif

@@ -211,10 +211,6 @@ EXTERNCPP void UpdateEditTour(void);
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void UpdateTourParms(void);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
-EXTERNCPP void DrawTestClip(void);
-EXTERNCPP void DrawTestTriangle(void);
-EXTERNCPP void DrawTestPolygon(void);
-EXTERNCPP void DrawTestOutline(void);
 EXTERNCPP void VentMenu(int value);
 EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
 
@@ -659,11 +655,10 @@ EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
 
 EXTERNCPP void Render(int view_mode);
-EXTERNCPP void UpdateVSliceTypes(void);
-EXTERNCPP int  GetSliceType(const slicedata *sd);
-EXTERNCPP int  GetSliceTypeFromLabel(char *label);
-EXTERNCPP void UpdateSliceTypes(void);
-EXTERNCPP int  GetSliceIndex(const slicedata *sd);
+EXTERNCPP void UpdateVSliceBoundIndexes(void);
+EXTERNCPP int  GetSliceBoundsIndex(const slicedata *sd);
+EXTERNCPP int  GetSliceBoundsIndexFromLabel(char *label);
+EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);

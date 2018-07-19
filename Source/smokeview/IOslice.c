@@ -1246,7 +1246,7 @@ void ReadVSlice(int ivslice, int flag, int *errorcode){
       *errorcode=1;
       return;
     }
-    slicefile_labelindex= GetSliceType(val);
+    slicefile_labelindex= GetSliceBoundsIndex(val);
     vd->vslicefile_labelindex=val->slicefile_labelindex;
     vd->valmin=valmin;
     vd->valmax=valmax;
@@ -1675,8 +1675,8 @@ void SetSliceLabels(float smin, float smax,
   boundsdata *sb;
 
   ASSERT((sd != NULL && pd == NULL)||(sd == NULL && pd != NULL));
-  if(sd!=NULL)slicetype = GetSliceTypeFromLabel(sd->label.shortlabel);
-  if(pd != NULL)slicetype = GetSliceTypeFromLabel(pd->label.shortlabel);
+  if(sd!=NULL)slicetype = GetSliceBoundsIndexFromLabel(sd->label.shortlabel);
+  if(pd != NULL)slicetype = GetSliceBoundsIndexFromLabel(pd->label.shortlabel);
   sb = slicebounds + slicetype;
   if(sd!=NULL)sb->label = &(sd->label);
   if(pd != NULL)sb->label = &(pd->label);
@@ -1734,7 +1734,7 @@ void SetSliceColors(float smin, float smax,
   int slicetype;
   boundsdata *sb;
 
-  slicetype = GetSliceType(sd);
+  slicetype = GetSliceBoundsIndex(sd);
   sb = slicebounds + slicetype;
   sb->label = &(sd->label);
 
@@ -2375,7 +2375,6 @@ void UpdateFedinfo(void){
     ResizeMemory((void **)&vsliceinfo, 3 * nsliceinfo * sizeof(vslicedata));
     ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
     ResizeMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
-    ResizeMemory((void **)&slicetypes, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
@@ -2384,7 +2383,6 @@ void UpdateFedinfo(void){
     ResizeMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int));
     ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
     ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&vslicetypes, 3 * nsliceinfo * sizeof(int));
     if(nfediso > 0){
       nisoinfo += nfediso;
       if(nisoinfo == nfediso){
@@ -3156,48 +3154,18 @@ void UpdateVSlices(void){
   UpdateVsliceMenuLabels();
 }
 
-  /* ------------------ GetVSliceIndex ------------------------ */
+/* ------------------ UpdateVSliceBoundIndexes ------------------------ */
 
-int GetVSliceIndex(const vslicedata *vd){
-  int j;
-
-  for(j = 0; j < nvslicetypes2; j++){
-    vslicedata *vd2;
-
-    vd2 = vsliceinfo + vslicetypes[j];
-    if(strcmp(sliceinfo[vd->ival].label.shortlabel, sliceinfo[vd2->ival].label.shortlabel) == 0)return vslicetypes[j];
-  }
-  return -1;
-}
-
-/* ------------------ GetVSliceType ------------------------ */
-
-int GetVSliceType(const vslicedata *vd){
-  int j;
-
-  for(j = 0; j < nvslicetypes2; j++){
-    vslicedata *vd2;
-
-    vd2 = vsliceinfo + vslicetypes[j];
-    if(strcmp(sliceinfo[vd->ival].label.shortlabel, sliceinfo[vd2->ival].label.shortlabel) == 0)return j;
-  }
-  return -1;
-}
-
-/* ------------------ UpdateVSliceTypes ------------------------ */
-
-void UpdateVSliceTypes(void){
+void UpdateVSliceBoundIndexes(void){
   int i;
-  vslicedata *vd;
 
-  nvslicetypes2 = 0;
   for(i=0;i<nvsliceinfo;i++){
+    vslicedata *vd;
+    slicedata *val;
+
     vd = vsliceinfo+i;
-    if(GetVSliceIndex(vd)==-1)vslicetypes[nvslicetypes2++]=i;
-  }
-  for(i=0;i<nvsliceinfo;i++){
-    vd = vsliceinfo+i;
-    vd->vslicefile_labelindex= GetVSliceType(vd);
+    val = sliceinfo + vd->ival;
+    vd->vslicefile_labelindex= GetSliceBoundsIndex(val);
   }
 }
 
@@ -3228,7 +3196,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     sd = sliceinfo + j;
     if(sd->loaded==0)continue;
 
-    slice_type_j = GetSliceType(sd);
+    slice_type_j = GetSliceBoundsIndex(sd);
     if(slice_type_j!=slice_type_index)continue;
     if(sd->qslicedata==NULL){
       fprintf(stderr,"*** Error: data not available from %s to generate contours\n",sd->reg_file);
@@ -3344,64 +3312,43 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
   }
 }
 
-/* ------------------ UpdateSliceTypes ------------------------ */
+/* ------------------ UpdateSliceBoundIndexes ------------------------ */
 
-void UpdateSliceTypes(void){
+void UpdateSliceBoundIndexes(void){
   int i;
 
-  nslicetypes2 = 0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
     sd = sliceinfo+i;
-    if(GetSliceIndex(sd)==-1)slicetypes[nslicetypes2++]=i;
-  }
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo+i;
-    sd->slicefile_labelindex= GetSliceType(sd);
+    sd->slicefile_labelindex= GetSliceBoundsIndex(sd);
   }
 }
 
-/* ------------------ GetSliceIndex ------------------------ */
+/* ------------------ GetSliceBoundsIndex ------------------------ */
 
-int GetSliceIndex(const slicedata *sd){
-  int j;
+int GetSliceBoundsIndex(const slicedata *sd){
+  int i;
 
-  for(j=0;j<nslicetypes2;j++){
-    slicedata *sd2;
+  for(i=0;i<nslicebounds;i++){
+    boundsdata *boundi;
 
-    sd2 = sliceinfo+slicetypes[j];
-    if(strcmp(sd->label.shortlabel,sd2->label.shortlabel)==0)return slicetypes[j];
+    boundi = slicebounds + i;
+    if(strcmp(sd->label.shortlabel,boundi->shortlabel)==0)return i;
   }
   return -1;
 }
 
-/* ------------------ GetSliceType ------------------------ */
+/* ------------------ GetSliceBoundsIndexFromLabel ------------------------ */
 
-int GetSliceType(const slicedata *sd){
-  int j;
+int GetSliceBoundsIndexFromLabel(char *label){
+  int i;
 
-  for(j=0;j<nslicetypes2;j++){
-    slicedata *sd2;
+  for(i = 0;i < nslicebounds;i++){
+    boundsdata *boundi;
 
-    sd2 = sliceinfo+slicetypes[j];
-    if(strcmp(sd->label.shortlabel,sd2->label.shortlabel)==0)return j;
-  }
-  return -1;
-}
-
-/* ------------------ GetSliceTypeFromLabel ------------------------ */
-
-int GetSliceTypeFromLabel(char *label){
-  int j;
-
-  for(j=0;j<nslicetypes2;j++){
-    slicedata *sd2;
-
-    sd2 = sliceinfo+slicetypes[j];
-    if(strcmp(label,sd2->label.shortlabel)==0)return j;
+    boundi = slicebounds + i;
+    if(strcmp(label, boundi->shortlabel) == 0)return i;
   }
   return -1;
 }
@@ -3418,7 +3365,7 @@ void UpdateSliceBoundLabels(){
     slicedata *sd;
 
     sd = sliceinfo + i;
-    j = GetSliceType(sd);
+    j = GetSliceBoundsIndex(sd);
     sb = slicebounds + j;
     sb->label=&(sd->label);
   }
@@ -4259,7 +4206,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   }
   sd->loaded = 1;
   if(sd->vloaded == 0)sd->display = 1;
-  slicefile_labelindex = GetSliceType(sd);
+  slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateUnitDefs();
   UpdateTimes();
