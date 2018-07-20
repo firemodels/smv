@@ -6128,6 +6128,12 @@ void DrawSliceFrame(){
         DrawVolSliceTerrain(sd);
         SNIFF_ERRORS("after DrawVolSliceTerrain");
         break;
+#ifdef pp_SLICEGEOM
+      case SLICE_GEOM:
+        DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_STATIC);
+        DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_DYNAMIC);
+        break;
+#endif
       default:
         ASSERT(FFALSE);
         break;

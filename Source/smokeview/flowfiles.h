@@ -1213,6 +1213,9 @@ typedef struct _slicedata {
   int extreme_min, extreme_max;
   histogramdata *histograms;
   int nhistograms;
+#ifdef pp_SLICEGEOM
+  struct _patchdata *patchgeom;
+#endif
 } slicedata;
 
 /* --------------------------  multislicedata ------------------------------------ */

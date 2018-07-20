@@ -2340,8 +2340,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
 /* ------------------ ReadGeomData ------------------------ */
 
-void ReadGeomData(int ifile, int load_flag, int *errorcode){
-  patchdata *patchi;
+void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2358,7 +2357,6 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   // ndynamic
   // vals_1, ... vals_ndyamic
 
-  patchi = patchinfo+ifile;
   if(patchi->fileclass == STRUCTURED)return;
   file = patchi->file;
 
@@ -2425,7 +2423,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(colorlabelpatch);
   }
   if(NewMemory((void **)&colorlabelpatch, MAXRGB*sizeof(char *))==0){
-    ReadBoundary(ifile, UNLOAD, &error);
+    ReadGeomData(patchi, UNLOAD, &error);
     return;
   }
   for(n = 0;n<MAXRGB;n++){
@@ -2433,7 +2431,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   }
   for(n = 0;n<nrgb;n++){
     if(NewMemory((void **)&colorlabelpatch[n], 11)==0){
-      ReadBoundary(ifile, UNLOAD, &error);
+      ReadGeomData(patchi, UNLOAD, &error);
       return;
     }
   }
@@ -2446,7 +2444,7 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   patchi->loaded = 1;
   patchi->display = 1;
   if(patchi->boundary == 1){
-    iboundarytype = GetBoundaryType(patchinfo + ifile);
+    iboundarytype = GetBoundaryType(patchi);
   }
   else {
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
@@ -2470,7 +2468,7 @@ void ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchi = patchinfo + ifile;
   if(patchi->fileclass == UNSTRUCTURED){
     ASSERT(ifile>=0&&ifile<ngeominfo);
-    ReadGeomData(ifile,load_flag,errorcode);
+    ReadGeomData(patchi,load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);

@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);

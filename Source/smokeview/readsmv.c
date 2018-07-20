@@ -4399,28 +4399,28 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "SMOKE3D") == 1  ||
+      Match(buffer, "VSMOKE3D") == 1 ||
+      Match(buffer, "SMOKF3D") == 1  ||
+      Match(buffer, "VSMOKF3D") == 1
+      || Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
       ){
-      if(setup_only==1)continue;
+      if(setup_only == 1)continue;
       nsmoke3dinfo++;
       continue;
     }
-    if(
-      Match(buffer,"MINMAXBNDF") == 1||
-      Match(buffer,"MINMAXPL3D") == 1||
-      Match(buffer,"MINMAXSLCF") == 1
-      ){
-      do_pass4=1;
+    if (
+      Match(buffer, "MINMAXBNDF") == 1 ||
+      Match(buffer, "MINMAXPL3D") == 1 ||
+      Match(buffer, "MINMAXSLCF") == 1
+      ) {
+      do_pass4 = 1;
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
 #ifndef pp_SLICEGEOM
-     || Match(buffer, "BNDS") == 1
+      || Match(buffer, "BNDS") == 1
 #endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
@@ -8258,8 +8258,13 @@ typedef struct {
       sd->slicelabel=NULL;
       sd->slicefile_type=SLICE_NODE_CENTER;
 #ifdef pp_SLICEGEOM
+      sd->patchgeom = NULL;
       if(slicegeom==1){
+        patchdata *patchgeom;
+
         sd->slicefile_type=SLICE_GEOM;
+        NewMemory((void **)&patchgeom,sizeof(patchdata));
+        sd->patchgeom=patchgeom;
       }
 #endif
       if(terrain==1){

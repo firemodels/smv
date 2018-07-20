@@ -4180,7 +4180,7 @@ void LoadSlicei(int set_slicecolor, int value){
 
 #ifdef pp_SLICEGEOM
       if (slicei->slicefile_type == SLICE_GEOM) {
-   //     ReadGeomData(ifile, LOAD, &errorcode);
+        ReadGeomData(slicei->patchgeom, LOAD, &errorcode);
       }
       else {
         ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
