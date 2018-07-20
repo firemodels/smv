@@ -9,6 +9,7 @@
 
 #include "update.h"
 #include "smokeviewvars.h"
+#include "smokeheaders.h"
 #include "IOvolsmoke.h"
 
 #include "c_api.h"
@@ -21,7 +22,7 @@
 // function prototypes for functions drawn from other areas of smokeview
 // from startup.c
 void ReadBoundINI(void);
-void InitLang(void);
+void InitTranslate(char *bindir, char *tr_name);
 void Init(void);
 // from menus.c
 void UpdateMenu(void);
@@ -214,7 +215,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   ReadBoundINI();
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
-  InitLang();
+  InitTranslate(smokeview_bindir, tr_name);
 #endif
 
   if(ntourinfo==0)SetupTour();
@@ -312,7 +313,7 @@ int loadfile(const char *filename) {
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,filename)==0){
       PRINTF("loading smoke3d file:  %s\n", filename);
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       PRINTF("loading complete:  %d\n", errorcode);
       return errorcode;
     }
@@ -332,7 +333,7 @@ int loadfile(const char *filename) {
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,filename)==0){
       ReadPlot3dFile=1;
-      ReadPlot3d(plot3di->file,i,LOAD,&errorcode);
+      ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return errorcode;
     }
@@ -774,20 +775,48 @@ int get_slice_in_obst() {
 }
 
 // colorbar visibility
+void set_colorbar_visibility_vertical(int setting) {
+  visColorbarVertical = setting;
+  if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
+  if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+}
+
+int get_colorbar_visibility_vertical() {
+  return visColorbarVertical;
+}
+
+void toggle_colorbar_visibility_vertical() {
+  visColorbarVertical = 1 - visColorbarVertical;
+  if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
+  if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+}
+
+void set_colorbar_visibility_horizontal(int setting) {
+  visColorbarHorizontal = setting;
+  if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
+  if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+}
+
+int get_colorbar_visibility_horizontal() {
+  return visColorbarHorizontal;
+}
+
+void toggle_colorbar_visibility_hotizontal() {
+  visColorbarHorizontal = 1 - visColorbarHorizontal;
+  if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
+  if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+}
+
 void set_colorbar_visibility(int setting) {
-  visColorbar = setting;
-  if(visColorbar==0)PRINTF("Colorbar hidden\n");
-  if(visColorbar==1)PRINTF("Colorbar visible\n");
+  set_colorbar_visibility_vertical(setting);
 }
 
 int get_colorbar_visibility() {
-  return visColorbar;
+  return get_colorbar_visibility_vertical();
 }
 
 void toggle_colorbar_visibility() {
-  visColorbar = 1 - visColorbar;
-  if(visColorbar==0)PRINTF("Colorbar hidden\n");
-  if(visColorbar==1)PRINTF("Colorbar visible\n");
+  toggle_colorbar_visibility_vertical();
 }
 
 // timebar visibility
@@ -933,27 +962,27 @@ void toggle_gridloc_visibility() {
 
 // HRRPUV cutoff visibility
 void set_hrrcutoff_visibility(int setting) {
-  show_hrrcutoff = setting;
-  if(show_hrrcutoff==0)PRINTF("HRR cutoff hidden\n");
-  if(show_hrrcutoff==1)PRINTF("HRR cutoff visible\n");
+  show_hrrcutoff_active = setting;
+  if(show_hrrcutoff_active==0)PRINTF("HRR cutoff hidden\n");
+  if(show_hrrcutoff_active==1)PRINTF("HRR cutoff visible\n");
 }
 
 int get_hrrcutoff_visibility() {
-  return show_hrrcutoff;
+  return show_hrrcutoff_active;
 }
 
 void toggle_hrrcutoff_visibility() {
-  show_hrrcutoff = 1 - show_hrrcutoff;
-  if(show_hrrcutoff==0)PRINTF("HRR cutoff hidden\n");
-  if(show_hrrcutoff==1)PRINTF("HRR cutoff visible\n");
+  show_hrrcutoff_active = 1 - show_hrrcutoff_active;
+  if(show_hrrcutoff_active==0)PRINTF("HRR cutoff hidden\n");
+  if(show_hrrcutoff_active==1)PRINTF("HRR cutoff visible\n");
 }
 
 // HRR label
 void set_hrrlabel_visibility(int setting) {
   visHRRlabel = setting;
   if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
-  if(show_hrrcutoff==0)PRINTF("HRR label hidden\n");
-  if(show_hrrcutoff==1)PRINTF("HRR label visible\n");
+  if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
+  if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
 
 int get_hrrlabel_visibility() {
@@ -963,8 +992,8 @@ int get_hrrlabel_visibility() {
 void toggle_hrrlabel_visibility() {
   visHRRlabel = 1 - visHRRlabel;
   if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
-  if(show_hrrcutoff==0)PRINTF("HRR label hidden\n");
-  if(show_hrrcutoff==1)PRINTF("HRR label visible\n");
+  if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
+  if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
 
 // memory load
@@ -1313,7 +1342,7 @@ void load3dsmoke(const char *smoke_type){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,smoke_type)==1){
-      ReadSmoke3d(i,LOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       if(smoke_type!=NULL&&strlen(smoke_type)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(smoke_type)+1);
@@ -1778,7 +1807,7 @@ void unloadall() {
       ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
     }
     for(i=0;i<nplot3dinfo;i++){
-      ReadPlot3d("",i,UNLOAD,&errorcode);
+      ReadPlot3D("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       ReadBoundary(i,UNLOAD,&errorcode);
@@ -1793,7 +1822,7 @@ void unloadall() {
       ReadZone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3d(i,UNLOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -2880,7 +2909,7 @@ int set_showceiling(int v) {
 } // SHOWCEILING
 
 int set_showcolorbars(int v) {
-  visColorbar = v;
+  visColorbarVertical = v;
   return 0;
 } // SHOWCOLORBARS
 
@@ -3117,9 +3146,6 @@ int set_startuplang(const char *lang) {
 
   strncpy(startup_lang_code, lang, 2);
   startup_lang_code[2] = '\0';
-  if(strcmp(startup_lang_code, "en") != 0){
-    show_lang_menu = 1;
-  }
   if(tr_name == NULL){
     int langlen;
 
