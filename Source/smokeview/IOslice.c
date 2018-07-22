@@ -1786,7 +1786,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     if(*errorcode!=0)return;
   }
   SetSliceBounds(slicetype);
-    UpdateGlui();
+  UpdateGlui();
 }
 
 /* ------------------ SliceCompare ------------------------ */
@@ -3410,6 +3410,18 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
 
+
+  if(sd->slicefile_type == SLICE_GEOM){
+    pdata = sd->patchgeom->geom_vals;
+    ndata = sd->patchgeom->geom_nvals;
+    *pmin = pdata[0];
+    *pmax = pdata[0];
+    for (i = 0; i < ndata; i++) {
+      *pmin = MIN(*pmin, pdata[i]);
+      *pmax = MAX(*pmax, pdata[i]);
+    }
+    return;
+  }
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -3538,8 +3550,14 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     int ndata;
     float ppmin;
 
-    pdata = sd->qslicedata;
-    ndata = sd->nslicetotal;
+    if(sd->slicefile_type == SLICE_GEOM){
+      pdata = sd->patchgeom->geom_vals;
+      ndata = sd->patchgeom->geom_nvals;
+    }
+    else {
+      pdata = sd->qslicedata;
+      ndata = sd->nslicetotal;
+    }
 
 #define EPS_BUCKET 0.0001
     if(setslicemin==PERCENTILE_MIN||setslicemax==PERCENTILE_MAX){
@@ -5970,22 +5988,23 @@ void DrawSliceFrame(){
       }
     }
     if(sd->times[0]>global_times[itimes])continue;
-    if(sd->compression_type==COMPRESSED_ZLIB){
-      UncompressSliceDataFrame(sd,sd->itime);
-      sd->iqsliceframe=sd->slicecomplevel;
-    }
-    else{
-      sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nsliceijk;
-      sd->qslice       = sd->qslicedata + sd->itime*sd->nsliceijk;
-    }
-    sd->qsliceframe=NULL;
+    if(sd->slicefile_type != SLICE_GEOM){
+      if(sd->compression_type==COMPRESSED_ZLIB){
+        UncompressSliceDataFrame(sd,sd->itime);
+        sd->iqsliceframe=sd->slicecomplevel;
+      }
+      else{
+        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nsliceijk;
+        sd->qslice = sd->qslicedata + sd->itime*sd->nsliceijk;
+      }
+      sd->qsliceframe=NULL;
 #ifdef pp_MEMDEBUG
-    if(sd->compression_type==UNCOMPRESSED){
-      ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
-    }
+      if(sd->compression_type==UNCOMPRESSED){
+        ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
+      }
 #endif
-    if(sd->qslicedata!=NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
-
+      if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
+    }
     orien = 0;
     direction = 1;
     blend_mode = 0;
@@ -6128,12 +6147,10 @@ void DrawSliceFrame(){
         DrawVolSliceTerrain(sd);
         SNIFF_ERRORS("after DrawVolSliceTerrain");
         break;
-#ifdef pp_SLICEGEOM
       case SLICE_GEOM:
         DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_STATIC);
         DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_DYNAMIC);
         break;
-#endif
       default:
         ASSERT(FFALSE);
         break;

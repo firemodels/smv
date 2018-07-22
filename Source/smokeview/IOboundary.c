@@ -2340,7 +2340,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
 /* ------------------ ReadGeomData ------------------------ */
 
-void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
+void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2362,6 +2362,12 @@ void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
 
   patchi->loaded = 0;
   patchi->display = 0;
+  if(slicei != NULL){
+    slicei->loaded = 0;
+    slicei->display = 0;
+    slicei->ntimes = 0;
+    slicei->times = NULL;
+  }
   patchi->bounds.defined=0;
 
   FREEMEMORY(patchi->geom_nstatics);
@@ -2403,9 +2409,7 @@ void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
 
   ResetHistogram(patchi->histogram, NULL, NULL);
-
   UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
-
   CompleteHistogram(patchi->histogram);
 
   patchi->ngeom_times = ntimes_local;
@@ -2423,7 +2427,7 @@ void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
     FREEMEMORY(colorlabelpatch);
   }
   if(NewMemory((void **)&colorlabelpatch, MAXRGB*sizeof(char *))==0){
-    ReadGeomData(patchi, UNLOAD, &error);
+    ReadGeomData(patchi, NULL, UNLOAD, &error);
     return;
   }
   for(n = 0;n<MAXRGB;n++){
@@ -2431,26 +2435,68 @@ void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode){
   }
   for(n = 0;n<nrgb;n++){
     if(NewMemory((void **)&colorlabelpatch[n], 11)==0){
-      ReadGeomData(patchi, UNLOAD, &error);
+      ReadGeomData(patchi, NULL, UNLOAD, &error);
       return;
     }
   }
-  GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-    setpatchmin, &patchmin, setpatchmax, &patchmax,
-    &patchmin_global, &patchmax_global,
-    nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
-    &patchi->extreme_min, &patchi->extreme_max);
-  FREEMEMORY(patchi->geom_vals);
   patchi->loaded = 1;
   patchi->display = 1;
+  if(slicei == NULL){
+    GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+      setpatchmin, &patchmin, setpatchmax, &patchmax,
+      &patchmin_global, &patchmax_global,
+      nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
+      &patchi->extreme_min, &patchi->extreme_max);
+  }
+  else {
+    int slicetype;
+    boundsdata *sb;
+    char *scale;
+    float qmin, qmax;
+
+    slicetype = GetSliceBoundsIndex(slicei);
+    sb = slicebounds + slicetype;
+    sb->label = &(slicei->label);
+
+    slicei->loaded = 1;
+    slicei->display = 1;
+    slicei->ntimes = patchi->ngeom_times;
+    slicei->times = patchi->geom_times;
+
+    UpdateLoadedLists();
+    GetSliceDataBounds(slicei, &qmin, &qmax);
+    slicei->globalmin = qmin;
+    slicei->globalmax = qmax;
+    AdjustSliceBounds(slicei, &qmin, &qmax);
+    slicei->valmin = qmin;
+    slicei->valmax = qmax;
+    slicei->valmin_data = qmin;
+    slicei->valmax_data = qmax;
+    for (i = 0; i < 256; i++){
+      slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
+    }
+    void UpdateSliceBounds(void);
+    UpdateSliceBounds();
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
+    UpdateAllSliceColors(slicefile_labelindex, errorcode);
+    list_slice_index = slicefile_labelindex;
+    SetSliceBounds(slicefile_labelindex);
+
+    scale = sb->scale;
+    GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+      slicemin, slicemax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &slicei->extreme_min, &slicei->extreme_max
+    );
+  }
+  FREEMEMORY(patchi->geom_vals);
+
   if(patchi->boundary == 1){
     iboundarytype = GetBoundaryType(patchi);
   }
   else {
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
-#ifdef pp_SLICEBOUNDS
-    UpdateAllSliceLabels(slicefile_labelindex, errorcode);
-#endif
   }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(patchi->boundary==1)UpdateBoundaryType();
@@ -2468,7 +2514,7 @@ void ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchi = patchinfo + ifile;
   if(patchi->fileclass == UNSTRUCTURED){
     ASSERT(ifile>=0&&ifile<ngeominfo);
-    ReadGeomData(patchi,load_flag,errorcode);
+    ReadGeomData(patchi,NULL, load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);

@@ -154,9 +154,25 @@ void UpdateFrameNumber(int changetime){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo+i;
-        if(sd->timeslist==NULL)continue;
-        sd->itime=sd->timeslist[itimes];
-        slice_time = sd->itime;
+        if(sd->slicefile_type == SLICE_GEOM){
+          patchdata *patchi;
+
+          patchi = sd->patchgeom;
+          if(patchi->geom_timeslist == NULL)continue;
+          if(patchi->fileclass == STRUCTURED || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
+          patchi->geom_itime = patchi->geom_timeslist[itimes];
+          patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
+          patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
+          patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+          patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
+          sd->itime = patchi->geom_timeslist[itimes];
+          slice_time = sd->itime;
+        }
+        else{
+          if(sd->timeslist == NULL)continue;
+          sd->itime = sd->timeslist[itimes];
+          slice_time = sd->itime;
+        }
       }
       for (i = 0; i < npatchinfo; i++) {
         patchdata *patchi;
@@ -719,7 +735,12 @@ void SynchTimes(void){
 
       j = slice_loaded_list[jj];
       sd = sliceinfo + j;
-      sd->timeslist[n]=GetItime(n,sd->timeslist,sd->times,sd->ntimes);
+      if(sd->slicefile_type == SLICE_GEOM){
+        sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
+      }
+      else{
+        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
+      }
     }
 
   /* synchronize smoke times */
@@ -1330,8 +1351,14 @@ void UpdateTimes(void){
     slicedata *sd;
 
     sd = sliceinfo + i;
-    FREEMEMORY(sd->timeslist);
-    if(nglobal_times>0)NewMemory((void **)&sd->timeslist,nglobal_times*sizeof(int));
+    if(sd->slicefile_type == SLICE_GEOM){
+      FREEMEMORY(sd->patchgeom->geom_timeslist);
+      if(nglobal_times > 0)NewMemory((void **)&(sd->patchgeom->geom_timeslist), nglobal_times * sizeof(int));
+    }
+    else {
+      FREEMEMORY(sd->timeslist);
+      if(nglobal_times > 0)NewMemory((void **)&sd->timeslist, nglobal_times * sizeof(int));
+    }
   }
   if(nvolrenderinfo>0){
     for(i=0;i<nmeshes;i++){

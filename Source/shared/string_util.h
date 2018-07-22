@@ -63,6 +63,7 @@ EXTERNCPP unsigned int   Date2Sec2(char *tokenorig);
 EXTERNCPP unsigned int   Date2Day(char *tokenorig);
 EXTERNCPP int            SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit);
 EXTERNCPP int            SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
+EXTERNCPP int            ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bufferE, char *bufferF, char *suffix_label);
 EXTERNCPP int            ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
 EXTERNCPP int            AppendLabels(flowlabels *flow_label, char *suffix_label);
 

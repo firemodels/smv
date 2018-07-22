@@ -5,7 +5,11 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void ReadGeomData(patchdata *patchi, int load_flag, int *errorcode);
+EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
+EXTERNCPP void UpdateSliceBounds(void);
+EXTERNCPP void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);

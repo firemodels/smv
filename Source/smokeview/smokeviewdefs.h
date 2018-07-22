@@ -323,9 +323,7 @@ void _Sniff_Errors(char *whereat);
 #define SLICE_FIRELINE 3
 #define SLICE_TERRAIN 4
 #define SLICE_FACE_CENTER 5
-#ifdef pp_SLICEGEOM
 #define SLICE_GEOM 6
-#endif
 
 #define TERRAIN_3D 0
 #define TERRAIN_2D_STEPPED 1
