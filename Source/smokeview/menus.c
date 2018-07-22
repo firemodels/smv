@@ -5571,7 +5571,6 @@ void InitMenus(int unload){
   int i;
   int nsmoke3dloaded,nvolsmoke3dloaded;
   int nsliceloaded,nvsliceloaded,nmultisliceloaded;
-  int nvsliceloaded0;
   int npartloaded,npart5loaded,nevacloaded;
   int npatchloaded;
   int nplot3dloaded;
