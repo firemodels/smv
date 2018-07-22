@@ -2111,20 +2111,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     RADIO_slice = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice,&list_slice_index,FILETYPEINDEX,SliceBoundCB);
 
     index=0;
-#ifdef pp_SLICEBOUNDS
-    for(i=0;i<nslicebounds;i++){
-      boundsdata *sbi;
-      GLUI_RadioButton *RADIOBUTTON_slicetype;
-
-      sbi = slicebounds + i;
-      RADIOBUTTON_slicetype=glui_bounds->add_radiobutton_to_group(RADIO_slice,sbi->shortlabel);
-      if(strcmp(sbi->shortlabel,_("Fire line"))==0){
-        RADIOBUTTON_slicetype->disable();
-        fire_line_index=index;
-      }
-      index++;
-    }
-#else
     for(i=0;i<nsliceinfo;i++){
       if(sliceinfo[i].firstshort_slice==1){
         GLUI_RadioButton *RADIOBUTTON_slicetype;
@@ -2137,7 +2123,6 @@ extern "C" void GluiBoundsSetup(int main_window){
         index++;
       }
     }
-#endif
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
 

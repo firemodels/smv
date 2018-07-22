@@ -353,7 +353,7 @@ void ShowMultiSliceMenu(int value){
             mdisplay = 1;
           }
           else{
-            if (mslicei->display == -1) {
+            if(mslicei->display == -1){
               mdisplay = 0;
             }
             else {
@@ -573,10 +573,10 @@ void LabelMenu(int value){
   case MENU_LABEL_colorbar_horizontal:
     visColorbarHorizontal = 1 - visColorbarHorizontal;
     if(visColorbarHorizontal==1)visColorbarVertical = 0;
-    if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
       toggle_colorbar = 1;
     }
-    else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
       toggle_colorbar = 2;
     }
     else {
@@ -3095,7 +3095,7 @@ void TourMenu(int value){
 /* ------------------ TourCopyMenu ------------------------ */
 
 #define TOUR_INSERT_COPY 33
-void TourCopyMenu(int value) {
+void TourCopyMenu(int value){
   if(value==-1){
     TourMenu(MENU_TOUR_NEW);
   }
@@ -3927,9 +3927,9 @@ void LoadSmoke3DMenu(int value){
     }
     ASSERT(FFALSE); // check to see if this code segment is used
   }
-  else if (value == MENU_SMOKE_SOOT_HRRPUV) {
+  else if(value == MENU_SMOKE_SOOT_HRRPUV){
 #ifdef pp_SMOKE3D_LOAD_TEST
-    if (smoke3d_load_test == 1) {
+    if(smoke3d_load_test == 1){
       int errorcode;
       
       ReadSmoke3DAllMeshesAllTimes(SOOT|HRRPUV, &errorcode);
@@ -3945,17 +3945,17 @@ void LoadSmoke3DMenu(int value){
       }
     }
 #else
-    for (i = 0; i < nsmoke3dinfo; i++) {
+    for(i = 0; i < nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if (smoke3di->type == SOOT || smoke3di->type == HRRPUV) {
+      if(smoke3di->type == SOOT || smoke3di->type == HRRPUV){
         ReadSmoke3D(ALL_FRAMES, i, LOAD, &errorcode);
       }
     }
 #endif
   }
-  else if (value == MENU_SMOKE_SOOT_HRRPUV_CO2) {
+  else if(value == MENU_SMOKE_SOOT_HRRPUV_CO2){
 #ifdef pp_SMOKE3D_LOAD_TEST
     if(smoke3d_load_test==1){
       int errorcode;
@@ -3983,7 +3983,7 @@ void LoadSmoke3DMenu(int value){
     }
 #endif
   }
-  else if (value == MENU_SMOKE_SOOT_TEMP) {
+  else if(value == MENU_SMOKE_SOOT_TEMP){
 #ifdef pp_SMOKE3D_LOAD_TEST
     if(smoke3d_load_test==1){
       int errorcode;
@@ -4011,7 +4011,7 @@ void LoadSmoke3DMenu(int value){
     }
 #endif
   }
-  else if (value == MENU_SMOKE_SOOT_TEMP_CO2) {
+  else if(value == MENU_SMOKE_SOOT_TEMP_CO2){
 #ifdef pp_SMOKE3D_LOAD_TEST
     if(smoke3d_load_test==1){
       int errorcode;
@@ -4040,7 +4040,7 @@ void LoadSmoke3DMenu(int value){
 #endif
   }
 #ifdef pp_SMOKE3D_LOAD_TEST
-  else if (value == MENU_SMOKE3D_LOAD_TEST) {
+  else if(value == MENU_SMOKE3D_LOAD_TEST){
     smoke3d_load_test = 1 - smoke3d_load_test;
   }
 #endif
@@ -4178,16 +4178,12 @@ void LoadSlicei(int set_slicecolor, int value){
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
-#ifdef pp_SLICEGEOM
-      if (slicei->slicefile_type == SLICE_GEOM) {
-   //     ReadGeomData(ifile, LOAD, &errorcode);
+      if(slicei->slicefile_type == SLICE_GEOM){
+        ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
         ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
       }
-#else
-      ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
-#endif
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
     else{
@@ -4457,7 +4453,7 @@ void LoadMultiSliceMenu(int value){
       char *longlabel;
 
       slicei = sliceinfo + i;
-      if (slicei->skip == 1)continue;
+      if(slicei->skip == 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel, submenulabel) != 0)continue;
       if(dir != 0 && dir != slicei->idir)continue;
@@ -5231,7 +5227,7 @@ void RotateTypeMenu(int value){
     ShowGluiMotion(DIALOG_MOTION);
     return;
   }
-  else if (value == MENU_MOTION_SHOW_VECTORS){
+  else if(value == MENU_MOTION_SHOW_VECTORS){
 	showgravity_vector = 1-showgravity_vector;
 	UpdateShowGravityVector();
   }
@@ -5794,9 +5790,9 @@ updatemenu=0;
   }
 
 #ifdef _DEBUG
-#define GLUTADDSUBMENU(menu_label,menu_value) {ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
+#define GLUTADDSUBMENU(menu_label,menu_value){ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
 #else
-#define GLUTADDSUBMENU(menu_label,menu_value) {if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
+#define GLUTADDSUBMENU(menu_label,menu_value){if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
 #endif
 
 #else
@@ -6020,7 +6016,7 @@ updatemenu=0;
   else {
     glutAddMenuEntry(_("   Inside domain"), GEOMETRY_INSIDE_DOMAIN);
   }
-  if (showgeom_outside_domain == 1) {
+  if(showgeom_outside_domain == 1){
     glutAddMenuEntry(_("   *Outside domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
   else {
@@ -7903,7 +7899,7 @@ updatemenu=0;
 
   CREATEMENU(tourcopymenu, TourCopyMenu);
   glutAddMenuEntry("Path through domain", -1);
-  for (i = 0; i < ntourinfo; i++) {
+  for(i = 0; i < ntourinfo; i++){
     tourdata *touri;
 
     touri = tourinfo + i;
@@ -9804,22 +9800,22 @@ updatemenu=0;
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           strcpy(smoke3dmenulabel, "");
-          if (nsootfiles > 0 && ntempfiles > 0) {
-            if ((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
+          if(nsootfiles > 0 && ntempfiles > 0){
+            if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
             strcat(smoke3dmenulabel, "SOOT/TEMPERATURE");
             menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
-            if (nco2files > 0) {
+            if(nco2files > 0){
               strcat(smoke3dmenulabel, "/CO2");
               menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
             }
             glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
           }
           strcpy(smoke3dmenulabel, "");
-          if (nsootfiles > 0 && nhrrpuvfiles > 0) {
-            if ((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && nhrrpuvloaded > 0)strcat(smoke3dmenulabel, "*");
+          if(nsootfiles > 0 && nhrrpuvfiles > 0){
+            if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && nhrrpuvloaded > 0)strcat(smoke3dmenulabel, "*");
             strcat(smoke3dmenulabel, "SOOT/HRRPUV");
             menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV;
-            if (nco2files > 0) {
+            if(nco2files > 0){
               strcat(smoke3dmenulabel, "/CO2");
               menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV_CO2;
             }
@@ -9916,7 +9912,7 @@ updatemenu=0;
  
 #ifdef pp_SMOKE3D_LOAD_TEST
             if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
-            if (smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
+            if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
 #endif
             strcpy(smoke3dmenulabel, "");
             if(nsootfiles > 0 && ntempfiles > 0){
@@ -9966,7 +9962,7 @@ updatemenu=0;
               }
               if(nhrrpuvloaded>0&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
               if(ntemploaded>0 && strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)strcat(menulabel, "*");
-              if (nco2loaded>0 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
+              if(nco2loaded>0 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
               strcat(menulabel,smoke3di->label.longlabel);
               glutAddMenuEntry(menulabel,-useitem-10);
             }
@@ -10771,17 +10767,17 @@ updatemenu=0;
 
       // slice
 
-      if ((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1) {
+      if((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1){
         strcpy(loadmenulabel, _("Slice"));
-        if (sliceframeskip > 0) {
+        if(sliceframeskip > 0){
           sprintf(steplabel, "/Skip %i", sliceframeskip);
           strcat(loadmenulabel, steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel, loadmultislicemenu);
       }
-      else if (nsliceinfo > 0) {
+      else if(nsliceinfo > 0){
         strcpy(loadmenulabel, "Slice");
-        if (sliceframeskip > 0) {
+        if(sliceframeskip > 0){
           sprintf(steplabel, "/Skip %i", sliceframeskip);
           strcat(loadmenulabel, steplabel);
         }
@@ -10790,7 +10786,7 @@ updatemenu=0;
 
       // vector slice
 
-      if (nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo) {
+      if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo){
         strcpy(loadmenulabel,_("Vector Slice"));
         if(sliceframeskip>0){
           sprintf(steplabel,"/Skip %i",sliceframeskip);

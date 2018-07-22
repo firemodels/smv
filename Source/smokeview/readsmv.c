@@ -2090,24 +2090,16 @@ void UpdateBoundInfo(void){
     }
   }
 
-#ifdef pp_SLICEBOUNDS
-  if(nsliceinfo + npatchinfo > 0){
-    FREEMEMORY(slicebounds);
-    NewMemory((void*)&slicebounds, (nsliceinfo +npatchinfo)* sizeof(boundsdata));
-#else
   if(nsliceinfo > 0){
     FREEMEMORY(slicebounds);
     NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
-#endif
     nslicebounds=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
       boundsdata *sbi;
 
       slicei = sliceinfo + i;
-#ifndef pp_SLICEBOUNDS
       slicei->firstshort_slice=1;
-#endif
       slicei->valmin=1.0;
       slicei->valmax=0.0;
       slicei->setvalmin=0;
@@ -2127,17 +2119,6 @@ void UpdateBoundInfo(void){
       sbi->line_contour_max=1.0;
       sbi->line_contour_num=1;
       nslicebounds++;
-#ifdef pp_SLICEBOUNDS
-      for(n = 0; n < nslicebounds - 1; n++){
-        boundsdata *sbn;
-
-        sbn = slicebounds + n;
-        if(strcmp(sbn->shortlabel, sbi->shortlabel) == 0){
-          nslicebounds--;
-          break;
-        }
-      }
-#else
       for(n=0;n<i;n++){
         slicedata *slicen;
 
@@ -2148,46 +2129,8 @@ void UpdateBoundInfo(void){
           break;
         }
       }
-#endif
     }
   }
-#ifdef pp_SLICEBOUNDS
-  for (i = 0; i < npatchinfo; i++) {
-    patchdata *patchi;
-    boundsdata *sbi;
-
-    patchi = patchinfo + i;
-    if (patchi->boundary == 1)continue;
-    patchi->valmin = 1.0;
-    patchi->valmax = 0.0;
-    patchi->setvalmin = 0;
-    patchi->setvalmax = 0;
-
-    sbi = slicebounds + nslicebounds;
-    sbi->shortlabel = patchi->label.shortlabel;
-    sbi->setvalmin = 0;
-    sbi->setvalmax = 0;
-    sbi->valmin = 1.0;
-    sbi->valmax = 0.0;
-    sbi->chopmax = 0.0;
-    sbi->chopmin = 1.0;
-    sbi->setchopmax = 0;
-    sbi->setchopmin = 0;
-    sbi->line_contour_min = 0.0;
-    sbi->line_contour_max = 1.0;
-    sbi->line_contour_num = 1;
-    nslicebounds++;
-    for (n = 0; n < nslicebounds - 1; n++) {
-      boundsdata *sbn;
-
-      sbn = slicebounds + n;
-      if (strcmp(sbn->shortlabel, sbi->shortlabel) == 0) {
-        nslicebounds--;
-        break;
-      }
-    }
-  }
-#endif
 
   canshow_threshold=0;
   if(npatchinfo>0){
@@ -3612,6 +3555,10 @@ int ReadSMV(char *file, char *file2){
   int  i;
 
   char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
+  char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
+#ifdef pp_SLICEGEOM
+  patchdata *patchgeom;
+#endif
 #ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
@@ -4399,28 +4346,28 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "SMOKE3D") == 1  ||
+      Match(buffer, "VSMOKE3D") == 1 ||
+      Match(buffer, "SMOKF3D") == 1  ||
+      Match(buffer, "VSMOKF3D") == 1
+      || Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
       ){
-      if(setup_only==1)continue;
+      if(setup_only == 1)continue;
       nsmoke3dinfo++;
       continue;
     }
-    if(
-      Match(buffer,"MINMAXBNDF") == 1||
-      Match(buffer,"MINMAXPL3D") == 1||
-      Match(buffer,"MINMAXSLCF") == 1
-      ){
-      do_pass4=1;
+    if (
+      Match(buffer, "MINMAXBNDF") == 1 ||
+      Match(buffer, "MINMAXPL3D") == 1 ||
+      Match(buffer, "MINMAXSLCF") == 1
+      ) {
+      do_pass4 = 1;
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
 #ifndef pp_SLICEGEOM
-     || Match(buffer, "BNDS") == 1
+      || Match(buffer, "BNDS") == 1
 #endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
@@ -8153,7 +8100,7 @@ typedef struct {
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
-  #ifdef pp_SLICEGEOM
+#ifdef pp_SLICEGEOM
       || (Match(buffer, "BNDS") == 1)
 #endif
       ){
@@ -8170,6 +8117,7 @@ typedef struct {
       slicedata *sd;
       size_t len;
       int read_slice_header=0;
+      timedata *timeinfo;
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
@@ -8202,6 +8150,7 @@ typedef struct {
       }
 #ifdef pp_SLICEGEOM
       if(Match(buffer,"BNDS") == 1){
+        strcpy(bufferA,buffer);
         slicegeom=1;
       }
 #endif
@@ -8242,11 +8191,19 @@ typedef struct {
         nsliceinfo--;
         BREAK;
       }
+#ifdef pp_SLICEGEOM
+      if(slicegeom == 1){
+        strcpy(bufferB,buffer);
+      }
+#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
 
       sd = sliceinfo + nn_slice - 1;
+
+      NewMemory((void **)&timeinfo, sizeof(timedata));
+      sd->timeinfo = timeinfo;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
@@ -8257,9 +8214,14 @@ typedef struct {
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
       sd->slicefile_type=SLICE_NODE_CENTER;
+      sd->patchgeom = NULL;
 #ifdef pp_SLICEGEOM
       if(slicegeom==1){
+        patchdata *patchgeom;
+
         sd->slicefile_type=SLICE_GEOM;
+        NewMemory((void **)&patchgeom,sizeof(patchdata));
+        sd->patchgeom=patchgeom;
       }
 #endif
       if(terrain==1){
@@ -8329,6 +8291,7 @@ typedef struct {
           nsliceinfo--;
           BREAK;
         }
+        strcpy(bufferC,buffer2);
         bufferptr2=TrimFrontBack(buffer2);
         lengeom=strlen(bufferptr2);
         sd->geom_file = NULL;
@@ -8345,11 +8308,9 @@ typedef struct {
       else if(sd->slicefile_type==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
-#ifdef pp_SLICEGEOM
       else if(sd->slicefile_type==SLICE_GEOM){
-        if(ReadLabels(&sd->label,stream,"(geometry)")==2)return 2;
+        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==2)return 2;
       }
-#endif
       else if(sd->slicefile_type == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
@@ -8461,7 +8422,17 @@ typedef struct {
         continue;
       }
       sliceinfo_copy++;
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferA);
+        patchgeom = sd->patchgeom;
+      }
+      else{
+        continue;
+      }
+#else
       continue;
+#endif
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8469,17 +8440,25 @@ typedef struct {
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
-#ifndef pp_SLICEGEOM
       || Match(buffer, "BNDS")==1
-#endif
       ){
       patchdata *patchi;
       int version;
       int blocknumber;
       size_t len;
       char *filetype_label;
+#ifdef pp_SLICEGEOM
+      int slicegeom=0;
+#endif
+      timedata *timeinfo;
 
       if(setup_only == 1||smoke3d_only==1)continue;
+
+#ifdef pp_SLICEGEOM
+      if(Match(buffer, "BNDS")==1){
+        slicegeom=1;
+      }
+#endif
       nn_patch++;
 
       TrimBack(buffer);
@@ -8499,11 +8478,24 @@ typedef struct {
         sscanf(buffer3,"%i %i",&blocknumber,&version);
         blocknumber--;
       }
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        patchi = patchgeom;
+      }
+      else{
+        patchi = patchinfo + ipatch;
+      }
+#else
       patchi = patchinfo + ipatch;
+#endif
+
+      NewMemory((void **)&timeinfo, sizeof(timedata));
+      patchi->timeinfo = timeinfo;
 
       for(i = 0; i < 6; i++){
         patchi->ijk[i] = -1;
       }
+      patchi->skip = 0;
       patchi->version=version;
       patchi->ntimes = 0;
       patchi->ntimes_old = 0;
@@ -8520,10 +8512,11 @@ typedef struct {
         patchi->filetype=PATCH_GEOMETRY_BOUNDARY;
         patchi->fileclass = UNSTRUCTURED;
       }
-#ifndef pp_SLICEGEOM
+
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
+        CheckMemory;
         ngeom_data++;
         patchi->filetype = PATCH_GEOMETRY_SLICE;
         patchi->fileclass = UNSTRUCTURED;
@@ -8553,13 +8546,25 @@ typedef struct {
             strcpy(patchi->filetype_label,filetype_label);
           }
         }
+        CheckMemory;
       }
-#endif
 
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferB);
+      }
+      else{
+        if(FGETS(buffer,255,stream)==NULL){
+          npatchinfo--;
+          BREAK;
+        }
+      }
+#else
       if(FGETS(buffer,255,stream)==NULL){
         npatchinfo--;
         BREAK;
       }
+#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
@@ -8588,10 +8593,22 @@ typedef struct {
       if(patchi->fileclass == UNSTRUCTURED){
         int igeom;
 
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferC);
+      }
+      else{
         if(FGETS(buffer,255,stream)==NULL){
           npatchinfo--;
           BREAK;
         }
+      }
+#else
+      if(FGETS(buffer,255,stream)==NULL){
+        npatchinfo--;
+        BREAK;
+      }
+#endif
         bufferptr=TrimFrontBack(buffer);
         NewMemory((void **)&patchi->geomfile,strlen(bufferptr)+1);
         strcpy(patchi->geomfile,bufferptr);
@@ -8662,7 +8679,16 @@ typedef struct {
               strcpy(geomlabel2, " - Cut cell faces");
             }
           }
+#ifdef pp_SLICEGEOM
+          if(slicegeom==1){
+            if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
+          }
+          else{
+            if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+          }
+#else
           if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+#endif
         }
         strcpy(patchi->menulabel_base, patchi->label.longlabel);
         if(strlen(geomlabel2) > 0){
@@ -8671,7 +8697,11 @@ typedef struct {
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
+#ifdef pp_SLICEGEOM
+        if(slicegeom==0)ipatch++;
+#else
         ipatch++;
+#endif
       }
       else{
         if(trainer_mode==0){
