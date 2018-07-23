@@ -3027,18 +3027,32 @@ void UpdateVSlices(void){
         if(sdj->vec_comp==3)vd->iw=j;
       }
     }
-    else{
+    else if(vd->vslicefile_type == SLICE_GEOM){
       for(j=0;j<nsliceinfo;j++){
         slicedata *sdj;
 
         sdj = sliceinfo+j;
-        if(sdj->slicefile_type==SLICE_CELL_CENTER)continue;
+        if(sdj->slicefile_type!=SLICE_GEOM)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
         if(sdj->vec_comp==1)vd->iu=j;
         if(sdj->vec_comp==2)vd->iv=j;
         if(sdj->vec_comp==3)vd->iw=j;
+      }
+    }
+    else{
+      for (j = 0; j < nsliceinfo; j++) {
+        slicedata *sdj;
+
+        sdj = sliceinfo + j;
+        if (sdj->slicefile_type == SLICE_CELL_CENTER|| sdj->slicefile_type == SLICE_GEOM)continue;
+        if (sdi->blocknumber != sdj->blocknumber)continue;
+        if (sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
+        if (sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
+        if (sdj->vec_comp == 1)vd->iu = j;
+        if (sdj->vec_comp == 2)vd->iv = j;
+        if (sdj->vec_comp == 3)vd->iw = j;
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){
