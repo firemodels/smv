@@ -1742,13 +1742,26 @@ void SetSliceColors(float smin, float smax,
   *errorcode = 0;
   PRINTF("computing slice color levels \n");
   scale = sb->scale;
-  if(sd->qslicedata == NULL)return;
-  GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
-    smin, smax,
-    nrgb_full, nrgb,
-    sb->colorlabels, &scale, &sb->fscale, sb->levels256,
-    &sd->extreme_min, &sd->extreme_max
-  );
+  if(sd->slicefile_type == SLICE_GEOM){
+    patchdata *patchgeom;
+
+    patchgeom = sd->patchgeom;
+    GetSliceColors(patchgeom->geom_vals, patchgeom->geom_nvals, patchgeom->geom_ivals,
+      smin, smax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &sd->extreme_min, &sd->extreme_max
+    );
+  }
+  else{
+    if(sd->qslicedata == NULL)return;
+    GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
+      smin, smax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &sd->extreme_min, &sd->extreme_max
+    );
+  }
 }
 
 /* ------------------ UpdateAllSliceColors ------------------------ */
