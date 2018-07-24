@@ -2447,6 +2447,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
       &patchmin_global, &patchmax_global,
       nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
+    FREEMEMORY(patchi->geom_vals);  // slice files keep data loaded
   }
   else {
     int slicetype;
@@ -2490,7 +2491,6 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
       &slicei->extreme_min, &slicei->extreme_max
     );
   }
-  FREEMEMORY(patchi->geom_vals);
 
   if(patchi->boundary == 1){
     iboundarytype = GetBoundaryType(patchi);
@@ -2504,6 +2504,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   UpdateTimes();
   force_redisplay=1;
   UpdateFrameNumber(1);
+  updatemenu = 1;
 }
 
 /* ------------------ ReadBoundary ------------------------ */

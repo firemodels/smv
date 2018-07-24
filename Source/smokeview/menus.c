@@ -7846,10 +7846,10 @@ updatemenu=0;
         if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
-    if(show_meshmenus==1)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
+    if(show_meshmenus==1&&nslice_loaded>0)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
   }
 
-/* -------------------------------- avatartour menu -------------------------- */
+/* -------------------------------- avatar tour menu -------------------------- */
 
   CREATEMENU(avatarevacmenu,AvatarEvacMenu);
   if(navatar_types>0){
