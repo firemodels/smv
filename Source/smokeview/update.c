@@ -159,7 +159,7 @@ void UpdateFrameNumber(int changetime){
 
           patchi = sd->patchgeom;
           if(patchi->geom_timeslist == NULL)continue;
-          if(patchi->fileclass == STRUCTURED || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
+          if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
           patchi->geom_itime = patchi->geom_timeslist[itimes];
           patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
           patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
@@ -178,7 +178,7 @@ void UpdateFrameNumber(int changetime){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->fileclass == STRUCTURED || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
+        if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
         patchi->geom_itime = patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
@@ -205,7 +205,7 @@ void UpdateFrameNumber(int changetime){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->fileclass == STRUCTURED||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
+        if(patchi->structured == YES||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
         patchi->geom_itime=patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
@@ -219,7 +219,7 @@ void UpdateFrameNumber(int changetime){
         meshi = meshinfo+i;
         if(meshi->patchfilenum < 0||meshi->patchfilenum>npatchinfo-1)continue;
         patchi=patchinfo + meshi->patchfilenum;
-        if(patchi->fileclass == UNSTRUCTURED||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
+        if(patchi->structured == NO||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[itimes];
         if(patchi->compression_type==UNCOMPRESSED){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
@@ -761,7 +761,7 @@ void SynchTimes(void){
 
       patchi = patchinfo + j;
       if(patchi->loaded==0)continue;
-      if(patchi->fileclass == STRUCTURED)continue;
+      if(patchi->structured == YES)continue;
       patchi->geom_timeslist[n]=GetItime(n,patchi->geom_timeslist,patchi->geom_times,patchi->ngeom_times);
     }
     for(j=0;j<nmeshes;j++){
@@ -771,7 +771,7 @@ void SynchTimes(void){
       meshi=meshinfo+j;
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
-      if(patchi->fileclass == UNSTRUCTURED)continue;
+      if(patchi->structured == NO)continue;
       meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,meshi->patch_times,meshi->npatch_times);
     }
 
@@ -1024,7 +1024,7 @@ void UpdateTimes(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->fileclass == UNSTRUCTURED){
+    if(patchi->loaded==1&&patchi->structured == NO){
       nglobal_times+=patchi->ngeom_times;
     }
   }
@@ -1037,7 +1037,7 @@ void UpdateTimes(void){
     filenum =meshi->patchfilenum;
     if(filenum!=-1){
       patchi=patchinfo+filenum;
-      if(patchi->loaded==1&&patchi->fileclass == STRUCTURED){
+      if(patchi->loaded==1&&patchi->structured == YES){
         nglobal_times+=meshi->npatch_times;
       }
     }
@@ -1150,7 +1150,7 @@ void UpdateTimes(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->fileclass == UNSTRUCTURED){
+    if(patchi->loaded==1&&patchi->structured == NO){
       memcpy(global_times + nglobal_times_copy, patchi->geom_times, patchi->ngeom_times * sizeof(float));
       nglobal_times_copy += patchi->ngeom_times;
     }
@@ -1164,7 +1164,7 @@ void UpdateTimes(void){
     filenum=meshi->patchfilenum;
     if(filenum!=-1){
       patchi = patchinfo + filenum;
-      if(patchi->loaded==1&&patchi->fileclass == STRUCTURED){
+      if(patchi->loaded==1&&patchi->structured == YES){
         memcpy(global_times + nglobal_times_copy, meshi->patch_times, meshi->npatch_times * sizeof(float));
         nglobal_times_copy += meshi->npatch_times;
       }
@@ -1396,7 +1396,7 @@ void UpdateTimes(void){
 
     patchi = patchinfo + i;
     FREEMEMORY(patchi->geom_timeslist);
-    if(patchi->fileclass == STRUCTURED)continue;
+    if(patchi->structured == YES)continue;
     if(patchi->geom_times==NULL)continue;
     if(nglobal_times>0)NewMemory((void **)&patchi->geom_timeslist,nglobal_times*sizeof(int));
   }

@@ -190,7 +190,7 @@ void WriteBoundIni(void){
       patchdata *patchj;
 
       patchj = patchinfo + j;
-      if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->filetype == patchj->filetype){
+      if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->patch_filetype == patchj->patch_filetype){
         skipi = 1;
         break;
       }
@@ -206,7 +206,7 @@ void WriteBoundIni(void){
       }
     }
     fprintf(stream, "B_BOUNDARY\n");
-    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->filetype, patchi->label.shortlabel);
+    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
   }
   if(stream != NULL)fclose(stream);
   FREEMEMORY(fullfilename);
@@ -227,7 +227,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi->boundary!=patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
+    if(patchi->boundary!=patchj->boundary || patchi->patch_filetype != patchj->patch_filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
     MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
 
@@ -243,7 +243,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
 
     patchj=patchinfo+j;
     if (patchi == patchj)continue;
-    if(patchi->boundary != patchj->boundary || patchi->filetype != patchj->filetype || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
+    if(patchi->boundary != patchj->boundary || patchi->patch_filetype != patchj->patch_filetype || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
 
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));

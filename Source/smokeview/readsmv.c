@@ -8117,7 +8117,6 @@ typedef struct {
       slicedata *sd;
       size_t len;
       int read_slice_header=0;
-      timedata *timeinfo;
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
@@ -8202,8 +8201,6 @@ typedef struct {
 
       sd = sliceinfo + nn_slice - 1;
 
-      NewMemory((void **)&timeinfo, sizeof(timedata));
-      sd->timeinfo = timeinfo;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
@@ -8450,7 +8447,6 @@ typedef struct {
 #ifdef pp_SLICEGEOM
       int slicegeom=0;
 #endif
-      timedata *timeinfo;
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
@@ -8489,9 +8485,6 @@ typedef struct {
       patchi = patchinfo + ipatch;
 #endif
 
-      NewMemory((void **)&timeinfo, sizeof(timedata));
-      patchi->timeinfo = timeinfo;
-
       for(i = 0; i < 6; i++){
         patchi->ijk[i] = -1;
       }
@@ -8501,16 +8494,16 @@ typedef struct {
       patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
       patchi->filetype_label=NULL;
-      patchi->filetype = PATCH_STRUCTURED_NODE_CENTER;
-      patchi->fileclass = STRUCTURED;
+      patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
+      patchi->structured = YES;
       patchi->boundary = 1;
       if(Match(buffer,"BNDC") == 1){
-        patchi->filetype = PATCH_STRUCTURED_CELL_CENTER;
+        patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         ngeom_data++;
-        patchi->filetype=PATCH_GEOMETRY_BOUNDARY;
-        patchi->fileclass = UNSTRUCTURED;
+        patchi->patch_filetype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->structured = NO;
       }
 
       if(Match(buffer, "BNDS") == 1){
@@ -8518,8 +8511,8 @@ typedef struct {
 
         CheckMemory;
         ngeom_data++;
-        patchi->filetype = PATCH_GEOMETRY_SLICE;
-        patchi->fileclass = UNSTRUCTURED;
+        patchi->patch_filetype = PATCH_GEOMETRY_SLICE;
+        patchi->structured = NO;
         patchi->boundary = 0;
 
         sliceparms = strchr(buffer, '&');
@@ -8590,7 +8583,7 @@ typedef struct {
 
       patchi->geomfile=NULL;
       patchi->geominfo=NULL;
-      if(patchi->fileclass == UNSTRUCTURED){
+      if(patchi->structured == NO){
         int igeom;
 
 #ifdef pp_SLICEGEOM
@@ -8618,7 +8611,7 @@ typedef struct {
           geomi = geominfo + igeom;
           if(strcmp(geomi->file,patchi->geomfile)==0){
             patchi->geominfo=geomi;
-            if(patchi->filetype == PATCH_GEOMETRY_BOUNDARY){
+            if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
               geomi->geomtype = GEOM_BOUNDARY;
               geomi->fdsblock = FDSBLOCK;
             }
@@ -8659,13 +8652,13 @@ typedef struct {
         char geomlabel2[256], *geomptr=NULL;
 
         strcpy(geomlabel2, "");
-        if(patchi->filetype==PATCH_STRUCTURED_CELL_CENTER){
+        if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
           if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
-        else if(patchi->filetype==PATCH_STRUCTURED_NODE_CENTER){
+        else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
           if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
-        else if(patchi->fileclass == UNSTRUCTURED){
+        else if(patchi->structured == NO){
           char geomlabel[256];
 
           strcpy(geomlabel, "(geometry)");

@@ -73,13 +73,6 @@ typedef struct _tetdata {
   edgedata *edges[4];
 } tetdata;
 
-/* --------------------------  timedata ------------------------------------ */
-
-typedef struct _timedata {
-  float *times;
-  int ntimes;
-} timedata;
-
 /* --------------------------  geomlistdata ------------------------------------ */
 
 typedef struct _geomlistdata {
@@ -1158,7 +1151,6 @@ typedef struct _slicedata {
 #ifdef pp_SLICEGEOM
   char *geom_file;
 #endif
-  timedata *timeinfo;
   char *slicelabel;
   int compression_type;
   int colorbar_autoflip;
@@ -1341,13 +1333,12 @@ typedef struct _patchdata {
   char *comp_file, *reg_file;
   char *geomfile, *filetype_label;
   geomdata *geominfo;
-  timedata *timeinfo;
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
-  int filetype, fileclass;
+  int patch_filetype, structured;
   int shortlabel_index;
   int boundary;
   int inuse,inuse_getbounds;

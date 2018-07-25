@@ -4723,7 +4723,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
+        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
           LOCK_COMPRESS
           ReadBoundary(i, LOAD, &errorcode);
           UNLOCK_COMPRESS
@@ -4825,7 +4825,7 @@ void ShowBoundaryMenu(int value){
 
       i = patch_loaded_list[ii];
       patchi = patchinfo + i;
-      if(patchi->fileclass == STRUCTURED)patchi->display=show_boundaryfiles;
+      if(patchi->structured == YES)patchi->display=show_boundaryfiles;
     }
   }
   if(value<0){
@@ -5904,7 +5904,7 @@ updatemenu=0;
           strcat(menulabel,"*");
         }
         strcat(menulabel,patchi->label.longlabel);
-        if(patchi->fileclass == UNSTRUCTURED){
+        if(patchi->structured == NO){
           if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
             glutAddMenuEntry(menulabel, 1000+i);
           }
