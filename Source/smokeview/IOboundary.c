@@ -2391,7 +2391,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   endian_smv = GetEndian();
   lenfile = strlen(file);
 
-  FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
+  FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
 
   if(nvals==0){
     PRINTF("***warning: no data in %s\n", file);
@@ -2406,13 +2406,21 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
   }
-  FORTgetembeddata(file, &ntimes_local, &nvals, patchi->geom_times,
-    patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
 
-  ResetHistogram(patchi->histogram, NULL, NULL);
-  UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
-  CompleteHistogram(patchi->histogram);
-  if(load_flag == UPDATE_HIST)return;
+  if(load_flag == UPDATE_HIST){
+    int nowrite = 1;
+
+    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &nowrite, &error, lenfile);
+    ResetHistogram(patchi->histogram, NULL, NULL);
+    UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+    CompleteHistogram(patchi->histogram);
+    return;
+  }
+  else{
+    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
+  }
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;

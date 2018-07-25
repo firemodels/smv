@@ -4218,7 +4218,15 @@ void LoadSliceMenu(int value){
 
       case UNLOAD_ALL:
         for(i=0;i<nsliceinfo;i++){
-          ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          slicei = sliceinfo + i;
+          if(slicei->loaded == 1){
+            if(slicei->slicefile_type == SLICE_GEOM){
+              ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+            }
+            else{
+              ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+            }
+          }
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
