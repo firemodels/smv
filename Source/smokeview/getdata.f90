@@ -78,9 +78,9 @@ deallocate(cbuffer)
 end subroutine ffseek
 end module cio
 
-!  ------------------ getembeddatasize ------------------------
+!  ------------------ getgeomdatasize ------------------------
 
-subroutine getembeddatasize(filename,ntimes,nvars,error)
+subroutine getgeomdatasize(filename,ntimes,nvars,error)
 implicit none
 character(len=*), intent(in) :: filename
 integer, intent(out) :: ntimes, nvars, error
@@ -121,7 +121,7 @@ do
 end do
 close(lu20)
 
-end subroutine getembeddatasize
+end subroutine getgeomdatasize
 
 !  ------------------ fcreate_part5sizefile ------------------------
 
@@ -818,9 +818,9 @@ IF (N_FACE_S>0)  WRITE(LU_GEOM) (faces(3*I-2),faces(3*I-1),faces(3*I),I=1,N_FACE
 close(LU_GEOM)
 end subroutine geomout
 
-!  ------------------ getembeddata ------------------------
+!  ------------------ getgeomdata ------------------------
 
-subroutine getembeddata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,redirect_flag,error)
+subroutine getgeomdata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,redirect_flag,error)
 implicit none
 character(len=*), intent(in) :: filename
 integer, intent(in) :: ntimes, nvals, redirect_flag
@@ -899,7 +899,7 @@ end do
 if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)
 
-end subroutine getembeddata
+end subroutine getgeomdata
 
 !  ------------------ getzonedata ------------------------
 

@@ -163,7 +163,7 @@ void ReadBoundINI(void){
         patchi = patchinfo + i;
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
-          patchi->filetype == filetype&&
+          patchi->patch_filetype == filetype&&
           IfFirstLineBlank(boundinfo_filename) == 1){
           bounddata *boundi;
 
