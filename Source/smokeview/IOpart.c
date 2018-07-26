@@ -937,7 +937,7 @@ void WritePartHistogram(partdata *parti){
 int GetPart5NClasses(char *part5file){
   FILE *PART5FILE;
   int nclasses, skip, returncode;
-  int one, version, endianswitch;
+  int one, version, endianswitch=0;
 
   PART5FILE = fopen(part5file, "rb");
 
