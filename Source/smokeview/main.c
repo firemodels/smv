@@ -89,9 +89,6 @@ void Usage(char *prog,int option){
 #ifdef pp_CULL
     strcat(label, ", pp_CULL");
 #endif
-#ifdef pp_CPARTSIZE
-    strcat(label, ", pp_CPARTSIZE");
-#endif
 #ifdef pp_DEG
     strcat(label, ", pp_DEG");
 #endif
