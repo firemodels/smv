@@ -934,24 +934,9 @@ void WritePartHistogram(partdata *parti){
 
 /* ------------------ GetPart5NClasses ------------------------ */
 
-int GetPart5NClasses(char *part5file){
-  FILE *PART5FILE;
-  int nclasses, skip, returncode;
-  int one, version, endianswitch;
-
-  PART5FILE = fopen(part5file, "rb");
-
-  FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
-  if(one != 1)endianswitch = 1;
-  FORTPART5READ(&version, 1);
-
-  FORTPART5READ(&nclasses, 1);
-  fclose(PART5FILE);
-  return nclasses;
-}
+#ifdef pp_CPARTSIZE
 
  /* ------------------ CreatePart5SizeFile ------------------------ */
-#ifdef pp_CPARTSIZE
 void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int redirect_flag, int *error){
   FILE *PART5FILE, *streamout;
   int returncode;
@@ -974,7 +959,7 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
   for (i = 0; i < nclasses; i++){
     FORTPART5READ(numtypes+2*i, 2);
     numvals = numtypes[2 * i] + numtypes[2 * i + 1];
-    skip = 2*numvals*(4 + 4 + 4);
+    skip = 2*numvals*(4 + 30 + 4);
     FSEEK(PART5FILE, skip, SEEK_CUR);
   }
   while (!feof(PART5FILE)){
@@ -1028,9 +1013,13 @@ void GetPartHistogramFile(partdata *parti){
     ReadPartHistogram(parti);
     return;
   }
-  if(GetPart5NClasses(parti->reg_file) > 1){
+#ifdef pp_CPARTSIZE
+  if(npart5prop > 1){
     ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
   }
+#else
+  ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
+#endif
   datacopy = parti->data5;
   if(datacopy != NULL){
     for(i = 0; i < parti->ntimes; i++){
@@ -1490,7 +1479,7 @@ void PrintPartProp(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(strcmp(propi->label->longlabel, "uniform")==0){
+    if(STRCMP(propi->label->longlabel, "Uniform color")==0){
       PRINTF("label=%s\n", propi->label->longlabel);
     }
     else{
@@ -2087,11 +2076,17 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   }
 
   if(data_type == HISTDATA){
-    if(GetPart5NClasses(parti->reg_file) > 1){
+#ifdef pp_CPARTSIZE
+    if(npart5prop > 1){
       PRINTF("Updating histogram for: %s\n", file);
       GetPartHeader(parti, partframestep, &nf_all, FORCE);
       GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
     }
+#else
+    PRINTF("Updating histogram for: %s\n", file);
+    GetPartHeader(parti, partframestep, &nf_all, FORCE);
+    GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+#endif
     return;
   }
   else{
