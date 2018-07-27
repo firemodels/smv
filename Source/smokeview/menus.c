@@ -3502,7 +3502,7 @@ void LoadParticleMenu(int value){
         file_count++;
       }
       if(file_count>1){
-        if(total_file_size>1024.0){
+        if(total_file_size>1000.0){
           PRINTF("Total: %.1f GB\n",total_file_size/1000.0);
         }
         else{
