@@ -5,6 +5,11 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
+EXTERNCPP void UpdateSliceBounds(void);
+EXTERNCPP void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);
@@ -211,12 +216,9 @@ EXTERNCPP void UpdateEditTour(void);
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void UpdateTourParms(void);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
-EXTERNCPP void DrawTestClip(void);
-EXTERNCPP void DrawTestTriangle(void);
-EXTERNCPP void DrawTestPolygon(void);
-EXTERNCPP void DrawTestOutline(void);
-EXTERNCPP void DrawGeomCutCells(void);
 EXTERNCPP void VentMenu(int value);
+EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
+
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
@@ -637,7 +639,7 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void Antialias(int flag);
-EXTERNCPP void SetSliceBounds(int islicetype);
+EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);
@@ -658,11 +660,10 @@ EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
 
 EXTERNCPP void Render(int view_mode);
-EXTERNCPP void UpdateVSliceTypes(void);
-EXTERNCPP int  GetSliceType(const slicedata *sd);
-EXTERNCPP int  GetSliceTypeFromLabel(char *label);
-EXTERNCPP void UpdateSliceTypes(void);
-EXTERNCPP int  GetSliceIndex(const slicedata *sd);
+EXTERNCPP void UpdateVSliceBoundIndexes(void);
+EXTERNCPP int  GetSliceBoundsIndex(const slicedata *sd);
+EXTERNCPP int  GetSliceBoundsIndexFromLabel(char *label);
+EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);

@@ -1146,11 +1146,14 @@ typedef struct _slicedata {
   char *file;
   char *size_file;
   char *comp_file, *reg_file, *vol_file;
+#ifdef pp_SLICEGEOM
+  char *geom_file;
+#endif
   char *slicelabel;
   int compression_type;
   int colorbar_autoflip;
   int ncompressed;
-  int slicetype;
+  int slicefile_type;
   struct _multislicedata *mslice;
   int is_fed;
   feddata *fedptr;
@@ -1163,7 +1166,7 @@ typedef struct _slicedata {
   int num_memblocks;
   float position_orig;
   int blocknumber;
-  int firstshort;
+  int firstshort_slice;
   int vec_comp;
   int skip;
   int setvalmin, setvalmax;
@@ -1199,13 +1202,14 @@ typedef struct _slicedata {
   int nslicex, nslicey;
   int ndirxyz[4];
   int nslicetotal;
-  int type;
+  int slicefile_labelindex;
   int vloaded;
   int reload;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
   histogramdata *histograms;
   int nhistograms;
+  struct _patchdata *patchgeom;
 } slicedata;
 
 /* --------------------------  multislicedata ------------------------------------ */
@@ -1213,7 +1217,7 @@ typedef struct _slicedata {
 typedef struct _multislicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;// possible problem with 'type'
+  int loaded,display,mslicefile_labelindex;// possible problem with 'type'
   int ndirxyz[4];
   int nslices;
   int *islices;
@@ -1226,7 +1230,7 @@ typedef struct _multislicedata {
 typedef struct _multivslicedata {
   int mesh_type;
   int seq_id, autoload;
-  int loaded,display,type;
+  int loaded,display,mvslicefile_labelindex;
   int nvslices;
   int ndirxyz[4];
   int *ivslices;
@@ -1237,7 +1241,7 @@ typedef struct _multivslicedata {
 /* --------------------------  boundsdata ------------------------------------ */
 
 typedef struct _boundsdata {
-  char *datalabel;
+  char *shortlabel;
   int setvalmin, setvalmax;
   int setchopmin, setchopmax;
   float line_contour_min;
@@ -1263,8 +1267,8 @@ typedef struct _vslicedata {
   int skip;
   int loaded,display;
   float valmin, valmax;
-  int type,vec_type;
-  int slicetype;
+  int vslicefile_type;
+  int vslicefile_labelindex;
   char menulabel[128];
   char menulabel2[128];
 } vslicedata;
@@ -1325,15 +1329,16 @@ typedef struct _patchdata {
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;
-  char *geomfile, *geom_fdsfiletype;
+  char *geomfile, *filetype_label;
   geomdata *geominfo;
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
-  int filetype, geom_smvfiletype, slice;
-  int type;
+  int patch_filetype, structured;
+  int shortlabel_index;
+  int boundary;
   int inuse,inuse_getbounds;
   int unit_start;
   int firstshort;

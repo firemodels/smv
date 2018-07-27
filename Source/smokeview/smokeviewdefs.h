@@ -138,13 +138,10 @@ void _Sniff_Errors(char *whereat);
 #define GEOM_SLICE    2
 #define GEOM_BOUNDARY 3
 
-#define PATCH_NODE_CENTER 0
-#define PATCH_CELL_CENTER 1
-#define PATCH_GEOMETRY 2
-
-#define PATCH_STRUCTURED 0
-#define PATCH_GEOMETRY_BOUNDARY 1
-#define PATCH_GEOMETRY_SLICE 2
+#define PATCH_STRUCTURED_NODE_CENTER 0
+#define PATCH_STRUCTURED_CELL_CENTER 1
+#define PATCH_GEOMETRY_BOUNDARY 2
+#define PATCH_GEOMETRY_SLICE 3
 
 #define NODATA 0
 #define HASDATA 1
@@ -327,6 +324,7 @@ void _Sniff_Errors(char *whereat);
 #define SLICE_FIRELINE 3
 #define SLICE_TERRAIN 4
 #define SLICE_FACE_CENTER 5
+#define SLICE_GEOM 6
 
 #define TERRAIN_3D 0
 #define TERRAIN_2D_STEPPED 1
@@ -774,6 +772,7 @@ void _Sniff_Errors(char *whereat);
 #define UNLOAD 1
 #define RESETBOUNDS 2
 #define RELOAD 3
+#define UPDATE_HIST 4
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1

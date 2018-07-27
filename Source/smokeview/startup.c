@@ -163,7 +163,7 @@ void ReadBoundINI(void){
         patchi = patchinfo + i;
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
-          patchi->filetype == filetype&&
+          patchi->patch_filetype == filetype&&
           IfFirstLineBlank(boundinfo_filename) == 1){
           bounddata *boundi;
 
@@ -1125,9 +1125,6 @@ void InitVars(void){
   else{
     strcpy(movie_ext, ".avi");
   }
-  for(i=0;i<10;i++){
-    tetrabox_vis[i]=1;
-  }
   for(i=0;i<200;i++){
     face_id[i]=1;
   }
@@ -1774,7 +1771,7 @@ void InitVars(void){
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
   realtime_flag=0;
-  islicetype=-1,islicetype_save=-1,iboundarytype=-1;
+  slicefile_labelindex=-1,slicefile_labelindex_save=-1,iboundarytype=-1;
   iisotype=-1;
 
 

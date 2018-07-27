@@ -1175,7 +1175,7 @@ extern "C" void Smoke3dCB(int var){
       volrenderdata *vr;
 
       vr = &meshinfo->volrenderinfo;
-      if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slicetype==SLICE_CELL_CENTER){
+      if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slicefile_type==SLICE_CELL_CENTER){
         if(usegpu==1&&combine_meshes==1){
           combine_meshes=0;
           UpdateCombineMeshes();
