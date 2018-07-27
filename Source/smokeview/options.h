@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_CPARTSIZE    // use C to read in particle file to generate a size file
 #define pp_SLICEGEOM    // put geom slices in slicedata data structures 
 #define pp_CLIP         // test frustum near/far clip planes
 #define pp_DRAWISO      // turn on drawing routines
@@ -24,7 +25,7 @@
 #define pp_FILELIST     // use list of file names
 #define pp_LANG         // support other languages
 
-//#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
+#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 
 #define pp_GPU          // support the GPU

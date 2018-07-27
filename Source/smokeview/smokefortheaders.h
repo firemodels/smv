@@ -9,8 +9,8 @@
 
 #define FORTgetsliceheader        _F(getsliceheader)
 #define FORTgetslicefiledirection _F(getslicefiledirection)
-#define FORTgetembeddatasize      _F(getembeddatasize)
-#define FORTgetembeddata          _F(getembeddata)
+#define FORTgetgeomdatasize      _F(getgeomdatasize)
+#define FORTgetgeomdata          _F(getgeomdata)
 #define FORTfcreate_part5sizefile _F(fcreate_part5sizefile)
 #define FORTgetzonesize           _F(getzonesize)
 #define FORTgetzonedata           _F(getzonedata)
@@ -32,8 +32,8 @@
 #define FORTgetboundaryheader2    _F(getboundaryheader2)
 
 STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice);
-STDCALLF FORTgetembeddatasize(char *filename, int *ntimes, int *nvars, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetembeddata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics,
+STDCALLF FORTgetgeomdatasize(char *filename, int *ntimes, int *nvars, int *error, FILE_SIZE lenfile);
+STDCALLF FORTgetgeomdata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics,
                          float *vals, int *redirect, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *unit1, int *npatch, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetboundaryheader2(int *unit1, int *version, int *npatches,

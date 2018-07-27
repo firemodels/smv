@@ -1742,13 +1742,26 @@ void SetSliceColors(float smin, float smax,
   *errorcode = 0;
   PRINTF("computing slice color levels \n");
   scale = sb->scale;
-  if(sd->qslicedata == NULL)return;
-  GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
-    smin, smax,
-    nrgb_full, nrgb,
-    sb->colorlabels, &scale, &sb->fscale, sb->levels256,
-    &sd->extreme_min, &sd->extreme_max
-  );
+  if(sd->slicefile_type == SLICE_GEOM){
+    patchdata *patchgeom;
+
+    patchgeom = sd->patchgeom;
+    GetSliceColors(patchgeom->geom_vals, patchgeom->geom_nvals, patchgeom->geom_ivals,
+      smin, smax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &sd->extreme_min, &sd->extreme_max
+    );
+  }
+  else{
+    if(sd->qslicedata == NULL)return;
+    GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
+      smin, smax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &sd->extreme_min, &sd->extreme_max
+    );
+  }
 }
 
 /* ------------------ UpdateAllSliceColors ------------------------ */
@@ -2123,7 +2136,7 @@ void GetGSliceParams(void){
     patchi = patchinfo + i;
     meshi = meshinfo + patchi->blocknumber;
     strcpy(patchi->gslicedir, "");
-    if(patchi->fileclass == STRUCTURED)continue;
+    if(patchi->structured == YES)continue;
     ii1 = patchi->ijk[0];
     ii2 = patchi->ijk[1];
     jj1 = patchi->ijk[2];
@@ -3027,18 +3040,32 @@ void UpdateVSlices(void){
         if(sdj->vec_comp==3)vd->iw=j;
       }
     }
-    else{
+    else if(vd->vslicefile_type == SLICE_GEOM){
       for(j=0;j<nsliceinfo;j++){
         slicedata *sdj;
 
         sdj = sliceinfo+j;
-        if(sdj->slicefile_type==SLICE_CELL_CENTER)continue;
+        if(sdj->slicefile_type!=SLICE_GEOM)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
         if(sdj->vec_comp==1)vd->iu=j;
         if(sdj->vec_comp==2)vd->iv=j;
         if(sdj->vec_comp==3)vd->iw=j;
+      }
+    }
+    else{
+      for (j = 0; j < nsliceinfo; j++) {
+        slicedata *sdj;
+
+        sdj = sliceinfo + j;
+        if (sdj->slicefile_type == SLICE_CELL_CENTER|| sdj->slicefile_type == SLICE_GEOM)continue;
+        if (sdi->blocknumber != sdj->blocknumber)continue;
+        if (sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
+        if (sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
+        if (sdj->vec_comp == 1)vd->iu = j;
+        if (sdj->vec_comp == 2)vd->iv = j;
+        if (sdj->vec_comp == 3)vd->iw = j;
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){

@@ -932,6 +932,66 @@ void WritePartHistogram(partdata *parti){
   fclose(STREAM_HIST);
 }
 
+/* ------------------ GetPart5NClasses ------------------------ */
+
+#ifdef pp_CPARTSIZE
+
+ /* ------------------ CreatePart5SizeFile ------------------------ */
+void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int redirect_flag, int *error){
+  FILE *PART5FILE, *streamout;
+  int returncode;
+  int one, version, nclasses;
+  int i;
+  int *numtypes, *numpoints;
+  int skip, numvals;
+  int endianswitch = 0;
+
+  PART5FILE = fopen(part5file, "rb");
+  streamout = fopen(part5sizefile, "w");
+
+  FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
+  if(one != 1)endianswitch = 1;
+  FORTPART5READ(&version, 1);
+
+  FORTPART5READ(&nclasses, 1);
+  NewMemory((void **)&numtypes, 2*nclasses * sizeof(int));
+  NewMemory((void **)&numpoints, nclasses * sizeof(int));
+  for (i = 0; i < nclasses; i++){
+    FORTPART5READ(numtypes+2*i, 2);
+    numvals = numtypes[2 * i] + numtypes[2 * i + 1];
+    skip = 2*numvals*(4 + 30 + 4);
+    FSEEK(PART5FILE, skip, SEEK_CUR);
+  }
+  while (!feof(PART5FILE)){
+    float time;
+
+    FORTPART5READ(&time, 1);
+    if(returncode == 0)break;
+    for (i = 0; i < nclasses; i++){
+      FORTPART5READ(numpoints + i, 1);
+      if(angle_flag == 1){
+        skip = 4 + 4 * 7 * numpoints[i] + 4;
+      }
+      else {
+        skip = 4 + 4 * 3 * numpoints[i] + 4;
+      }
+      skip += 4 + 4 * numpoints[i] + 4;
+      if(numtypes[2 * i] > 0)    skip += 4 + 4 * numpoints[i] * numtypes[2 * i] + 4;
+      if(numtypes[2 * i + 1] > 0)skip += 4 + 4 * numpoints[i] * numtypes[2 * i + 1] + 4;
+      FSEEK(PART5FILE, skip, SEEK_CUR);
+    }
+    fprintf(streamout, "%f\n", time);
+    for (i = 0; i < nclasses; i++){
+      fprintf(streamout, " %i\n", numpoints[i]);
+    }
+  }
+  fclose(PART5FILE);
+  fclose(streamout);
+  FREEMEMORY(numtypes);
+  FREEMEMORY(numpoints);
+}
+#endif
+
 /* ------------------ GetPartHistogram ------------------------ */
 
 void GetPartHistogramFile(partdata *parti){
@@ -953,7 +1013,13 @@ void GetPartHistogramFile(partdata *parti){
     ReadPartHistogram(parti);
     return;
   }
+#ifdef pp_CPARTSIZE
+  if(npart5prop > 1){
+    ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
+  }
+#else
   ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
+#endif
   datacopy = parti->data5;
   if(datacopy != NULL){
     for(i = 0; i < parti->ntimes; i++){
@@ -1413,7 +1479,7 @@ void PrintPartProp(void){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(strcmp(propi->label->longlabel, "uniform")==0){
+    if(STRCMP(propi->label->longlabel, "Uniform color")==0){
       PRINTF("label=%s\n", propi->label->longlabel);
     }
     else{
@@ -1647,12 +1713,20 @@ int GetNPartFrames(partdata *parti){
     if(parti->evac==1){
       angle_flag=1;
       PRINTF("Sizing evac data: %s\n", reg_file);
+#ifdef pp_CPARTSIZE
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+#else
       FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
+#endif
     }
     else{
       angle_flag=0;
       PRINTF("Sizing particle data: %s\n", reg_file);
+#ifdef pp_CPARTSIZE
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+#else
       FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
+#endif
     }
   }
 
@@ -1713,7 +1787,7 @@ int GetMinPartFrames(int flag){
 
 /* ------------------ GetPartHeader ------------------------ */
 
-void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int option){
+void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int option, int print_option){
   FILE *stream;
   char buffer[256];
   float time_local;
@@ -1740,13 +1814,21 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     lensize = strlen(size_file);
     if(parti->evac == 1){
       angle_flag = 1;
-      PRINTF("Sizing evac data: %s\n", reg_file);
+      if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
+#ifdef pp_CPARTSIZE
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+#else
       FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
-    }
+#endif
+      }
     else{
       angle_flag = 0;
-      PRINTF("Sizing particle data: %s\n", reg_file);
+      if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
+#ifdef pp_CPARTSIZE
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+#else
       FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
+#endif
     }
   }
 
@@ -1895,7 +1977,14 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 void UpdatePartColorBounds(partdata *parti){
   int j;
 
-  AdjustPart5Bounds(parti);
+  for (j = 0; j < npartinfo; j++) {
+    partdata *partj;
+
+    partj = partinfo + j;
+    if(partj == parti || (parti->compute_bounds_color==SET_ALLPARTCOLORS&&partj->loaded==1)){
+      AdjustPart5Bounds(partj);
+    }
+  }
   if(colorlabelpart!=NULL){
     NewMemory((void **)&colorlabelpart, MAXRGB*sizeof(char *));
     {
@@ -1975,14 +2064,16 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   FREEMEMORY(parti->times);
 
   if(loadflag==UNLOAD){
-    UpdatePartColorBounds(parti);
-    UpdateTimes();
-    updatemenu=1;
-    UpdatePart5Extremes();
+    if(parti->compute_bounds_color != DEFER_PARTCOLOR){
+      UpdatePartColorBounds(parti);
+      UpdateTimes();
+      updatemenu = 1;
+      UpdatePart5Extremes();
 #ifdef pp_MEMPRINT
-    if(data_type==PARTDATA)PRINTF("After particle file unload: \n");
-    PrintMemoryInfo;
+      if(data_type == PARTDATA)PRINTF("After particle file unload: \n");
+      PrintMemoryInfo;
 #endif
+    }
     return;
   }
 
@@ -1994,14 +2085,22 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   }
 
   if(data_type == HISTDATA){
+#ifdef pp_CPARTSIZE
+    if(npart5prop > 1){
+      PRINTF("Updating histogram for: %s\n", file);
+      GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
+      GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+    }
+#else
     PRINTF("Updating histogram for: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all, FORCE);
+    GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+#endif
     return;
   }
   else{
     PRINTF("Loading particle data: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE);
+    GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
   }
 
@@ -2025,14 +2124,13 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   }
   /* convert particle temperatures into integers pointing to an rgb color table */
 
-  if(data_type==PARTDATA)PRINTF("computing particle color levels \n");
-
   parti->loaded = 1;
   parti->display = 1;
-#ifdef pp_PARTDEFER
-  if(parti->compute_bounds_color == 1){
-#endif
-    if(data_type == PARTDATA)UpdatePartColorBounds(parti);
+  if(parti->compute_bounds_color != DEFER_PARTCOLOR){
+    if(data_type == PARTDATA){
+      PRINTF("computing particle color levels \n");
+      UpdatePartColorBounds(parti);
+    }
     UpdateGlui();
 #ifdef pp_MEMPRINT
     if(data_type == PARTDATA)PRINTF("After particle file load: \n");
@@ -2055,9 +2153,7 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     UpdatePart5Extremes();
     updatemenu = 1;
     IdleCB();
-#ifdef pp_PARTDEFER
   }
-#endif
 
   STOP_TIMER(total_time);
 

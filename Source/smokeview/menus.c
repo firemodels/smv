@@ -3412,9 +3412,7 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
-#ifdef pp_PARTDEFER
-    parti->compute_bounds_color = 1;
-#endif
+    parti->compute_bounds_color = SET_PARTCOLOR;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3450,39 +3448,51 @@ void LoadParticleMenu(int value){
       else{
         npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
       }
-      if(value==PARTFILE_LOADALL){
-        for(i = 0; i<npartinfo; i++){
-          partdata *parti;
 
-          parti = partinfo+i;
-          if(parti->evac==1)continue;
-          ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+      // wait until last particle file is loaded before coloring
+      
+#ifdef pp_PARTDEFER
+      lasti = npartinfo - 1;
+      for(i = npartinfo - 1;i >= 0;i--){
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->evac == 1)continue;
+        if(value==PARTFILE_LOADALL){
+          lasti = i;
+          break;
+        }
+        if(parti->loaded == 1&&value==PARTFILE_RELOADALL){
+          lasti = i;
+          break;
         }
       }
-#ifdef pp_PARTDEFER
-      lasti = 0;
+#endif
+
+     // unload particle files
+
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+
+        parti = partinfo+i;
+        if(parti->evac==1||parti->loaded==0)continue;
+        parti->compute_bounds_color = DEFER_PARTCOLOR;
+        ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+      }
+
+      // load particle files unless we are reloading and the were not loaded before
+
       for(i = 0;i < npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
         if(parti->evac == 1)continue;
         if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
-        lasti = i;
-      }
-#endif
-      for(i=0;i<npartinfo;i++){
-        partdata *parti;
-
-        parti = partinfo + i;
-        if(parti->evac==1)continue;
-        if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
 #ifdef pp_PARTDEFER
-        if(lasti == i){
-          parti->compute_bounds_color = 1;
-        }
-        else{
-          parti->compute_bounds_color = 0;
-        }
+        parti->compute_bounds_color = DEFER_PARTCOLOR;
+        if(lasti == i)parti->compute_bounds_color = SET_ALLPARTCOLORS;
+#else
+        parti->compute_bounds_color = SET_PARTCOLOR;
 #endif
         ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
@@ -4218,7 +4228,15 @@ void LoadSliceMenu(int value){
 
       case UNLOAD_ALL:
         for(i=0;i<nsliceinfo;i++){
-          ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          slicei = sliceinfo + i;
+          if(slicei->loaded == 1){
+            if(slicei->slicefile_type == SLICE_GEOM){
+              ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+            }
+            else{
+              ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+            }
+          }
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
@@ -4723,7 +4741,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->filetype==patchj->filetype){
+        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
           LOCK_COMPRESS
           ReadBoundary(i, LOAD, &errorcode);
           UNLOCK_COMPRESS
@@ -4825,7 +4843,7 @@ void ShowBoundaryMenu(int value){
 
       i = patch_loaded_list[ii];
       patchi = patchinfo + i;
-      if(patchi->fileclass == STRUCTURED)patchi->display=show_boundaryfiles;
+      if(patchi->structured == YES)patchi->display=show_boundaryfiles;
     }
   }
   if(value<0){
@@ -5571,7 +5589,6 @@ void InitMenus(int unload){
   int i;
   int nsmoke3dloaded,nvolsmoke3dloaded;
   int nsliceloaded,nvsliceloaded,nmultisliceloaded;
-  int nvsliceloaded0;
   int npartloaded,npart5loaded,nevacloaded;
   int npatchloaded;
   int nplot3dloaded;
@@ -5905,7 +5922,7 @@ updatemenu=0;
           strcat(menulabel,"*");
         }
         strcat(menulabel,patchi->label.longlabel);
-        if(patchi->fileclass == UNSTRUCTURED){
+        if(patchi->structured == NO){
           if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
             glutAddMenuEntry(menulabel, 1000+i);
           }
@@ -7847,10 +7864,10 @@ updatemenu=0;
         if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
-    if(show_meshmenus==1)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
+    if(show_meshmenus==1&&nslice_loaded>0)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
   }
 
-/* -------------------------------- avatartour menu -------------------------- */
+/* -------------------------------- avatar tour menu -------------------------- */
 
   CREATEMENU(avatarevacmenu,AvatarEvacMenu);
   if(navatar_types>0){

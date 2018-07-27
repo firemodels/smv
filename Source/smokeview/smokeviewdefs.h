@@ -80,8 +80,12 @@ void _Sniff_Errors(char *whereat);
 #define FIRST_TIME 1
 #define NOT_FIRST_TIME 2
 
-#define SET_SLICECOLOR 0
+#define SET_SLICECOLOR   0
 #define DEFER_SLICECOLOR 1
+
+#define DEFER_PARTCOLOR   0
+#define SET_PARTCOLOR     1
+#define SET_ALLPARTCOLORS 2
 
 #define PARTDATA 0
 #define HISTDATA 1
@@ -138,9 +142,6 @@ void _Sniff_Errors(char *whereat);
 #define PATCH_STRUCTURED_CELL_CENTER 1
 #define PATCH_GEOMETRY_BOUNDARY 2
 #define PATCH_GEOMETRY_SLICE 3
-
-#define STRUCTURED   0
-#define UNSTRUCTURED 1
 
 #define NODATA 0
 #define HASDATA 1
@@ -771,6 +772,7 @@ void _Sniff_Errors(char *whereat);
 #define UNLOAD 1
 #define RESETBOUNDS 2
 #define RELOAD 3
+#define UPDATE_HIST 4
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1

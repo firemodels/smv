@@ -89,6 +89,9 @@ void Usage(char *prog,int option){
 #ifdef pp_CULL
     strcat(label, ", pp_CULL");
 #endif
+#ifdef pp_CPARTSIZE
+    strcat(label, ", pp_CPARTSIZE");
+#endif
 #ifdef pp_DEG
     strcat(label, ", pp_DEG");
 #endif
@@ -154,6 +157,9 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_OSXGLUT32
     strcat(label, ", pp_OSXGLUT32");
+#endif
+#ifdef pp_PARTDEFER
+    strcat(label, ", pp_PARTDEFER");
 #endif
 #ifdef pp_PARTTEST
     strcat(label, ", pp_PARTTEST");
