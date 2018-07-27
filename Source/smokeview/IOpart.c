@@ -1787,7 +1787,7 @@ int GetMinPartFrames(int flag){
 
 /* ------------------ GetPartHeader ------------------------ */
 
-void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int option){
+void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int option, int print_option){
   FILE *stream;
   char buffer[256];
   float time_local;
@@ -1814,7 +1814,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     lensize = strlen(size_file);
     if(parti->evac == 1){
       angle_flag = 1;
-      PRINTF("Sizing evac data: %s\n", reg_file);
+      if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
       CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
 #else
@@ -1823,7 +1823,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
       }
     else{
       angle_flag = 0;
-      PRINTF("Sizing particle data: %s\n", reg_file);
+      if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
       CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
 #else
@@ -1977,7 +1977,14 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 void UpdatePartColorBounds(partdata *parti){
   int j;
 
-  AdjustPart5Bounds(parti);
+  for (j = 0; j < npartinfo; j++) {
+    partdata *partj;
+
+    partj = partinfo + j;
+    if(partj == parti || (parti->compute_bounds_color==SET_ALLPARTCOLORS&&partj->loaded==1)){
+      AdjustPart5Bounds(partj);
+    }
+  }
   if(colorlabelpart!=NULL){
     NewMemory((void **)&colorlabelpart, MAXRGB*sizeof(char *));
     {
@@ -2057,14 +2064,16 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   FREEMEMORY(parti->times);
 
   if(loadflag==UNLOAD){
-    UpdatePartColorBounds(parti);
-    UpdateTimes();
-    updatemenu=1;
-    UpdatePart5Extremes();
+    if(parti->compute_bounds_color != DEFER_PARTCOLOR){
+      UpdatePartColorBounds(parti);
+      UpdateTimes();
+      updatemenu = 1;
+      UpdatePart5Extremes();
 #ifdef pp_MEMPRINT
-    if(data_type==PARTDATA)PRINTF("After particle file unload: \n");
-    PrintMemoryInfo;
+      if(data_type == PARTDATA)PRINTF("After particle file unload: \n");
+      PrintMemoryInfo;
 #endif
+    }
     return;
   }
 
@@ -2079,19 +2088,19 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 #ifdef pp_CPARTSIZE
     if(npart5prop > 1){
       PRINTF("Updating histogram for: %s\n", file);
-      GetPartHeader(parti, partframestep, &nf_all, FORCE);
+      GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
       GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
     }
 #else
     PRINTF("Updating histogram for: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all, FORCE);
+    GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
 #endif
     return;
   }
   else{
     PRINTF("Loading particle data: %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE);
+    GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
   }
 
@@ -2115,14 +2124,13 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   }
   /* convert particle temperatures into integers pointing to an rgb color table */
 
-  if(data_type==PARTDATA)PRINTF("computing particle color levels \n");
-
   parti->loaded = 1;
   parti->display = 1;
-#ifdef pp_PARTDEFER
-  if(parti->compute_bounds_color == 1){
-#endif
-    if(data_type == PARTDATA)UpdatePartColorBounds(parti);
+  if(parti->compute_bounds_color != DEFER_PARTCOLOR){
+    if(data_type == PARTDATA){
+      PRINTF("computing particle color levels \n");
+      UpdatePartColorBounds(parti);
+    }
     UpdateGlui();
 #ifdef pp_MEMPRINT
     if(data_type == PARTDATA)PRINTF("After particle file load: \n");
@@ -2145,9 +2153,7 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     UpdatePart5Extremes();
     updatemenu = 1;
     IdleCB();
-#ifdef pp_PARTDEFER
   }
-#endif
 
   STOP_TIMER(total_time);
 
