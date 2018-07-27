@@ -1099,9 +1099,7 @@ typedef struct _partdata {
   int blocknumber, num_memblocks;
   int *timeslist, ntimes, itime;
   int data_type;
-#ifdef pp_PARTDEFER
   int compute_bounds_color;
-#endif
 
   float zoffset, *times;
   FILE_SIZE reg_file_size;

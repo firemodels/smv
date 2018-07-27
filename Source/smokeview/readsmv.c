@@ -7860,9 +7860,7 @@ typedef struct {
       parti->blocknumber=blocknumber;
       parti->seq_id=nn_part;
       parti->autoload=0;
-#ifdef pp_PARTDEFER
-      parti->compute_bounds_color = 1;
-#endif
+      parti->compute_bounds_color = SET_PARTCOLOR;
       if(FGETS(buffer,255,stream)==NULL){
         npartinfo--;
         BREAK;
