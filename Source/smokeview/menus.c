@@ -3412,9 +3412,7 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
-#ifdef pp_PARTDEFER
-    parti->compute_bounds_color = 1;
-#endif
+    parti->compute_bounds_color = SET_PARTCOLOR;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3450,39 +3448,51 @@ void LoadParticleMenu(int value){
       else{
         npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
       }
-      if(value==PARTFILE_LOADALL){
-        for(i = 0; i<npartinfo; i++){
-          partdata *parti;
 
-          parti = partinfo+i;
-          if(parti->evac==1)continue;
-          ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+      // wait until last particle file is loaded before coloring
+      
+#ifdef pp_PARTDEFER
+      lasti = npartinfo - 1;
+      for(i = npartinfo - 1;i >= 0;i--){
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->evac == 1)continue;
+        if(value==PARTFILE_LOADALL){
+          lasti = i;
+          break;
+        }
+        if(parti->loaded == 1&&value==PARTFILE_RELOADALL){
+          lasti = i;
+          break;
         }
       }
-#ifdef pp_PARTDEFER
-      lasti = 0;
+#endif
+
+     // unload particle files
+
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+
+        parti = partinfo+i;
+        if(parti->evac==1||parti->loaded==0)continue;
+        parti->compute_bounds_color = DEFER_PARTCOLOR;
+        ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+      }
+
+      // load particle files unless we are reloading and the were not loaded before
+
       for(i = 0;i < npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
         if(parti->evac == 1)continue;
         if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
-        lasti = i;
-      }
-#endif
-      for(i=0;i<npartinfo;i++){
-        partdata *parti;
-
-        parti = partinfo + i;
-        if(parti->evac==1)continue;
-        if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
 #ifdef pp_PARTDEFER
-        if(lasti == i){
-          parti->compute_bounds_color = 1;
-        }
-        else{
-          parti->compute_bounds_color = 0;
-        }
+        parti->compute_bounds_color = DEFER_PARTCOLOR;
+        if(lasti == i)parti->compute_bounds_color = SET_ALLPARTCOLORS;
+#else
+        parti->compute_bounds_color = SET_PARTCOLOR;
 #endif
         ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
       }
