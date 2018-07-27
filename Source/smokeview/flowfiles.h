@@ -1094,7 +1094,7 @@ typedef struct _part5data {
 
 typedef struct _partdata {
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
-  int seq_id, autoload, loaded, display, reload;
+  int seq_id, autoload, loaded, display, reload, loaded_defer;
   int sort_tags_loaded, compression_type, evac;
   int blocknumber, num_memblocks;
   int *timeslist, ntimes, itime;

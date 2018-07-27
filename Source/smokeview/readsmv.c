@@ -7946,6 +7946,7 @@ typedef struct {
       parti->compression_type=UNCOMPRESSED;
       parti->sort_tags_loaded=0;
       parti->loaded=0;
+      parti->loaded_defer = 0;
       parti->display=0;
       parti->times=NULL;
       parti->timeslist=NULL;

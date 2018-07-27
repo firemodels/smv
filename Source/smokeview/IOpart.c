@@ -1193,7 +1193,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *re
     count++;
 
     if(doit==1){
-      if(data_type==PARTDATA)PRINTF("particle time=%.2f", time_local);
       parti->times[count2]=time_local;
     }
     for(i=0;i<nclasses;i++){
@@ -1319,8 +1318,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *re
     }
     CheckMemory;
     if(first_frame==1)first_frame=0;
-    if(doit==1&&data_type==PARTDATA)PRINTF(" completed\n");
-
   }
 wrapup:
   if(read_time != NULL){
@@ -1878,7 +1875,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   }
 
   // pass 2 - allocate memory for x, y, z frame data
-  //
+
   {
     part5data *datacopy;
     int fail;
@@ -2070,7 +2067,6 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
       updatemenu = 1;
       UpdatePart5Extremes();
 #ifdef pp_MEMPRINT
-      if(data_type == PARTDATA)PRINTF("After particle file unload: \n");
       PrintMemoryInfo;
 #endif
     }
@@ -2087,55 +2083,46 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
   if(data_type == HISTDATA){
 #ifdef pp_CPARTSIZE
     if(npart5prop > 1){
-      PRINTF("Updating histogram for: %s\n", file);
+      PRINTF("Updating histogram for %s\n", file);
       GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
       GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
     }
 #else
-    PRINTF("Updating histogram for: %s\n", file);
+    PRINTF("Updating histogram for %s\n", file);
     GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
 #endif
     return;
   }
   else{
-    PRINTF("Loading particle data: %s\n", file);
+    PRINTF("Loading %s ", file);
     GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
     GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
   }
 
-  UpdateGlui();
-
 #ifdef pp_MEMPRINT
-  if(data_type==PARTDATA)PRINTF("After particle file load: \n");
   PrintMemoryInfo;
 #endif
-  if(parti->evac==0){
-    ReadPartFile=1;
-  }
-  else{
-    ReadEvacFile=1;
-  }
-  if(parti->evac==0){
-    visParticles=1;
-  }
-  else{
-    visEvac=1;
-  }
-  /* convert particle temperatures into integers pointing to an rgb color table */
 
-  parti->loaded = 1;
-  parti->display = 1;
+  // convert particle temperatures into integers pointing to an rgb color table
+
+  parti->loaded_defer = 1;
   if(parti->compute_bounds_color != DEFER_PARTCOLOR){
+    for(j = 0;j < npartinfo;j++){
+      partdata *partj;
+
+      partj = partinfo + j;
+      if(partj->loaded_defer == 1){
+        partj->loaded_defer = 0;
+        partj->loaded = 1;
+        partj->display = 1;
+      }
+    }
     if(data_type == PARTDATA){
-      PRINTF("computing particle color levels \n");
+      PRINTF("\ncomputing color levels \n");
       UpdatePartColorBounds(parti);
     }
     UpdateGlui();
-#ifdef pp_MEMPRINT
-    if(data_type == PARTDATA)PRINTF("After particle file load: \n");
-    PrintMemoryInfo;
-#endif
     if(parti->evac == 0){
       visParticles = 1;
       ReadPartFile = 1;
@@ -2157,20 +2144,13 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   STOP_TIMER(total_time);
 
-  if(file_size!=0&&read_time>0.0){
-    float loadrate;
-
-    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
-    if(data_type==PARTDATA)PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s",
-    (float)file_size/1000000.,read_time,loadrate);
+  if(data_type==PARTDATA){
+    PRINTF(" - %.1f MB\n",(float)file_size/1000000.);
   }
   else{
-    if(data_type==PARTDATA)PRINTF(" %.1f MB downloaded in %.2f s",
-    (float)file_size/1000000.,read_time);
+    PRINTF("\n");
   }
-  if(data_type==PARTDATA)PRINTF(" (overhead: %.2f s)\n", total_time-read_time);
-
-  glutPostRedisplay();
+  if(parti->compute_bounds_color != DEFER_PARTCOLOR)glutPostRedisplay();
 }
 
 /* ----------------------- DrawSelectAvatars ----------------------------- */
