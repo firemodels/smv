@@ -1122,7 +1122,7 @@ void GetPartHistogram(int flag){
 
 /* ------------------ GetPartData ------------------------ */
 
-void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *read_time, FILE_SIZE *file_size, int data_type){
+void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE *file_size, int data_type){
   FILE *PART5FILE;
   int one;
   int endianswitch=0;
@@ -1172,9 +1172,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *re
   datacopy = parti->data5;
   count=0;
   count2=-1;
-  if(read_time != NULL){
-    START_TIMER(*read_time);
-  }
   for(;;){
     int doit;
 
@@ -1320,9 +1317,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, float *re
     if(first_frame==1)first_frame=0;
   }
 wrapup:
-  if(read_time != NULL){
-    STOP_TIMER(*read_time);
-  }
   UpdateAllPartVis(parti);
   CheckMemory;
   FREEMEMORY(numtypes);
@@ -2011,16 +2005,13 @@ void UpdatePartColorBounds(partdata *parti){
 
     /* -----  ------------- ReadPart ------------------------ */
 
-void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode){
+float ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode){
   size_t lenfile;
   int error=0;
   partdata *parti;
   int nf_all;
-  float total_time,read_time;
   FILE_SIZE file_size;
   int j;
-
-  START_TIMER(total_time);
 
   ASSERT(data_type == PARTDATA || data_type == HISTDATA);
   ASSERT(ifile>=0&&ifile<npartinfo);
@@ -2028,7 +2019,7 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
 
   FreeAllPart5Data(parti);
 
-  if(parti->loaded==0&&loadflag==UNLOAD)return;
+  if(parti->loaded==0&&loadflag==UNLOAD)return 0.0;
 
   *errorcode=0;
   partfilenum=ifile;
@@ -2070,14 +2061,14 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
       PrintMemoryInfo;
 #endif
     }
-    return;
+    return 0.0;
   }
 
   lenfile = strlen(file);
   if(lenfile==0){
     ReadPart("",ifile,UNLOAD,PARTDATA,&error);
     UpdateTimes();
-    return;
+    return 0.0;
   }
 
   if(data_type == HISTDATA){
@@ -2085,24 +2076,31 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     if(npart5prop > 1){
       PRINTF("Updating histogram for %s\n", file);
       GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
-      GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+      GetPartData(parti, partframestep, nf_all, &file_size, data_type);
     }
 #else
     PRINTF("Updating histogram for %s\n", file);
     GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
-    GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+    GetPartData(parti, partframestep, nf_all, &file_size, data_type);
 #endif
-    return;
+    return 0.0;
   }
   else{
     PRINTF("Loading %s ", file);
     GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
-    GetPartData(parti, partframestep, nf_all, &read_time, &file_size, data_type);
+    GetPartData(parti, partframestep, nf_all, &file_size, data_type);
   }
 
 #ifdef pp_MEMPRINT
   PrintMemoryInfo;
 #endif
+
+  if(data_type==PARTDATA){
+    PRINTF(" - %.1f MB\n",(float)file_size/1000000.0);
+  }
+  else{
+    PRINTF("\n");
+  }
 
   // convert particle temperatures into integers pointing to an rgb color table
 
@@ -2119,7 +2117,7 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
       }
     }
     if(data_type == PARTDATA){
-      PRINTF("\ncomputing color levels \n");
+      PRINTF("computing color levels \n");
       UpdatePartColorBounds(parti);
     }
     UpdateGlui();
@@ -2141,16 +2139,8 @@ void ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcode
     updatemenu = 1;
     IdleCB();
   }
-
-  STOP_TIMER(total_time);
-
-  if(data_type==PARTDATA){
-    PRINTF(" - %.1f MB\n",(float)file_size/1000000.);
-  }
-  else{
-    PRINTF("\n");
-  }
   if(parti->compute_bounds_color != DEFER_PARTCOLOR)glutPostRedisplay();
+  return (float)file_size/1000000.;
 }
 
 /* ----------------------- DrawSelectAvatars ----------------------------- */
