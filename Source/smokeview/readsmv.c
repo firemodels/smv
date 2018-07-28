@@ -9270,7 +9270,7 @@ typedef struct {
       }
     }
   }
-  UpdateTerrain(1,vertical_factor);
+  UpdateTerrain(1,vertical_factor); // xxslow
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
@@ -9313,7 +9313,7 @@ typedef struct {
 
   if(cullactive==1)InitCull(cullsmoke);
 #endif
-  UpdateMeshTerrain();
+  UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
   ngeominfoptrs=0;

@@ -1146,7 +1146,7 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       InitTerrainZNode(meshi, terri, xmin, xmax, nx, ymin, ymax, ny, allocate_memory);
       InitContour(&meshi->terrain_contour,rgbptr,nrgb);
     }
-    InitTerrainAll();
+    InitTerrainAll(); // xxslow
   }
   if(nterraininfo>0){
     int imesh;
@@ -1271,7 +1271,7 @@ void UpdateMeshTerrain(void){
 
   // compute z level above bottom mesh
 
-  for(i=0;i<nmeshes;i++){
+  for(i=0;i<nmeshes;i++){ // xxslow
     meshdata *meshi;
     int ii, jj;
     float xyz[3], *x, *y;
