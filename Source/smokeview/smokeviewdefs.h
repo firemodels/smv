@@ -7,6 +7,12 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifdef pp_DPRINT
+#define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
+#else
+#define DPRINT
+#endif
+
 #define PROJECTION_PERSPECTIVE  0
 #define PROJECTION_ORTHOGRAPHIC 1
 #define ALL_FRAMES -1

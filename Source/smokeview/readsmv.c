@@ -7946,6 +7946,7 @@ typedef struct {
       parti->compression_type=UNCOMPRESSED;
       parti->sort_tags_loaded=0;
       parti->loaded=0;
+      parti->loaded_defer = 0;
       parti->display=0;
       parti->times=NULL;
       parti->timeslist=NULL;
@@ -9269,7 +9270,7 @@ typedef struct {
       }
     }
   }
-  UpdateTerrain(1,vertical_factor);
+  UpdateTerrain(1,vertical_factor); // xxslow
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
@@ -9312,7 +9313,7 @@ typedef struct {
 
   if(cullactive==1)InitCull(cullsmoke);
 #endif
-  UpdateMeshTerrain();
+  UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
   ngeominfoptrs=0;

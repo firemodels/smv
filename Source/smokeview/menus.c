@@ -3400,6 +3400,8 @@ void ParticlePropShowMenu(int value){
 
 void LoadParticleMenu(int value){
   int errorcode,i;
+  float total_file_size;
+  int file_count;
 
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0||value == PARTFILE_LOADALL){
@@ -3482,6 +3484,8 @@ void LoadParticleMenu(int value){
 
       // load particle files unless we are reloading and the were not loaded before
 
+      total_file_size = 0.0;
+      file_count=0;
       for(i = 0;i < npartinfo;i++){
         partdata *parti;
 
@@ -3494,8 +3498,18 @@ void LoadParticleMenu(int value){
 #else
         parti->compute_bounds_color = SET_PARTCOLOR;
 #endif
-        ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+        total_file_size+=ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+        file_count++;
       }
+      if(file_count>1){
+        if(total_file_size>1000.0){
+          PRINTF("Total: %.1f GB\n",total_file_size/1000.0);
+        }
+        else{
+          PRINTF("Total: %.1f MB\n",total_file_size);
+        }
+      }
+
       force_redisplay=1;
       UpdateFrameNumber(0);
     }
