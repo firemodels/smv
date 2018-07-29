@@ -123,6 +123,92 @@ close(lu20)
 
 end subroutine getgeomdatasize
 
+!   FORTelev2geom(output_elev_file, xgrid, ibar, yrid, jbar, vals, ibar*jbar, strlen(output_elev_file));
+
+!  ------------------ elev2geom ------------------------
+
+subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
+implicit none
+character(len=*), intent(in) :: output_elev_file
+integer, intent(in) :: ibar, jbar, nvals
+real, intent(in), dimension(:) :: xgrid(ibar), ygrid(jbar), vals(ibar*jbar)
+
+integer :: lu_geom
+integer :: i, j
+integer :: one=1, version=1, n_floats=0, n_ints=0, first_frame_static=1
+integer :: n_vert, n_face, n_vol
+integer :: ivert, iface
+real :: stime=0.0
+real, dimension(:),allocatable :: xvert, yvert
+integer, dimension(:),allocatable :: face
+real, dimension(:),allocatable :: xtext, ytext
+
+n_vert = ibar*jbar
+n_face = 2*(ibar-1)*(jbar-1)
+n_vol = 0
+
+allocate(xvert(n_vert))
+allocate(yvert(n_vert))
+allocate(face(3*n_face))
+allocate(xtext(3*n_face))
+allocate(ytext(3*n_face))
+
+open(newunit=lu_geom,file=trim(output_elev_file),form="unformatted",action="write")
+
+ivert=1
+do i = 1, ibar
+   do j = 1, jbar
+      xvert(ivert) = xgrid(i)
+      yvert(ivert) = ygrid(j)
+      xtext(ivert) = real(i-1)/real(ibar-1)
+      ytext(ivert) = real(j-1)/real(jbar-1)
+      ivert = ivert + 1
+   end do
+end do
+
+!        j*ibar + 1,     j*ibar+ i,     j*ibar+ i+1,...    j*ibar+ibar
+!    (j-1)*ibar + 1, (j-1)*ibar+ i, (j-1)*ibar+ i+1,... (j-1)ibar+ibar
+
+iface = 1
+do j = 1, jbar-1
+   do i = 1, ibar-1
+     face(iface)   = (j-1)*ibar+i
+     face(iface+1) = (j-1)*ibar+i+1
+     face(iface+2) = j*ibar+i+1
+     iface = iface + 3
+
+     face(iface)   = (j-1)*ibar+i
+     face(iface+1) = j*ibar+i+1
+     face(iface+2) = j*ibar+i
+     iface = iface + 3
+   end do
+end do
+
+write(lu_geom) one
+write(lu_geom) version
+write(lu_geom) n_floats, n_ints, first_frame_static
+!if (n_floats>0) write(lu_geom) (float_header(i),i=1,n_floats)
+!if (n_ints>0) write(lu_geom) (int_header(i),i=1,n_ints)
+! geometry frame
+! stime ignored if first frame is static ( first_frame_static set to 1)
+
+write(lu_geom) stime
+write(lu_geom) n_vert, n_face, n_vol
+if (n_vert>0) write(lu_geom)(xvert(i),yvert(i),vals(i),i=1,n_vert)
+if (n_face>0) then
+   write(lu_geom) (face(i),i=1,3*n_face)
+   write(lu_geom) (1,i=1,n_face)
+   write(lu_geom) (xtext(i),ytext(i),i=1,3*n_face)
+endif
+!if (n_vol>0) then
+!   write(lu_geom) (vol1(i),vol2(i),vol3(i),vol4(i),i=1,n_vol)
+!   write(lu_geom) (matl(i),i=1,n_vol)
+!endif
+close(lu_geom)
+deallocate(xvert,yvert,face,xtext,ytext)
+
+end subroutine elev2geom
+
 !  ------------------ fcreate_part5sizefile ------------------------
 
 subroutine fcreate_part5sizefile(part5file, part5sizefile, angle_flag, redirect_flag, error)
