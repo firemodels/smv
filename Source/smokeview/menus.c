@@ -3473,13 +3473,15 @@ void LoadParticleMenu(int value){
 
      // unload particle files
 
-      for(i = 0; i<npartinfo; i++){
-        partdata *parti;
+      if(value!=PARTFILE_RELOADALL){
+        for(i = 0; i<npartinfo; i++){
+          partdata *parti;
 
-        parti = partinfo+i;
-        if(parti->evac==1||parti->loaded==0)continue;
-        parti->compute_bounds_color = DEFER_PARTCOLOR;
-        ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+          parti = partinfo+i;
+          if(parti->evac==1||parti->loaded==0)continue;
+          parti->compute_bounds_color = DEFER_PARTCOLOR;
+          ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+        }
       }
 
       // load particle files unless we are reloading and the were not loaded before
