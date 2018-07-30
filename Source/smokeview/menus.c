@@ -3917,6 +3917,7 @@ void LoadSmoke3DMenu(int value){
 #ifdef pp_SMOKE3D_LOAD_TEST
 #define MENU_SMOKE3D_LOAD_TEST -3
 #endif
+  int last_smoke;
 
   if(value == MENU_DUMMY_SMOKE)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
@@ -4093,8 +4094,17 @@ void LoadSmoke3DMenu(int value){
         }
       }
 #else
+      for(i = nsmoke3dinfo-1;i >=0;i--){
+        smoke3di = smoke3dinfo + i;
+        if(strcmp(smoke3di->label.shortlabel, smoke3dj->label.shortlabel) == 0){
+          last_smoke = i;
+          break;
+        }
+      }
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
+        smoke3di->loaded_defer = 0;
+        if(last_smoke == i)smoke3di->loaded_defer = 1;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
           ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
