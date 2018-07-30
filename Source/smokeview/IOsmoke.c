@@ -5171,6 +5171,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     UpdateSmoke3dMenuLabels();
   }
 
+  //PRINTF("loading %s/%s for %s \n", smoketype, meshi->label, smoke3di->reg_file);
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;

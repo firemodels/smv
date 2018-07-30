@@ -920,7 +920,6 @@ SVEXTERN int p3dsurfacesmooth;
 SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int parttype;
-SVEXTERN int allexterior,showexterior;
 SVEXTERN int allinterior;
 SVEXTERN int SVDECL(showedit_dialog,0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
