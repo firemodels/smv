@@ -1475,7 +1475,6 @@ void InitVars(void){
   numplot3dvars=0;
   p3dsurfacesmooth=1;
   parttype=0;
-  allexterior=1,showexterior=1;
   allinterior=1;
   hrrpuv_iso_color[0]=1.0;
   hrrpuv_iso_color[1]=0.5;

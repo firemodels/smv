@@ -1993,12 +1993,8 @@ void UpdatePartColorBounds(partdata *parti){
     partdata *partj;
 
     partj = partinfo+j;
-    if(partj->loaded==0||partj->display==0)continue;
-    if(partj==parti){
-      GetPart5Colors(partj, nrgb, PARTFILE_MAP);
-    }
-    else{
-      GetPart5Colors(partj, nrgb, PARTFILE_REMAP);
+    if(partj->loaded==1&&partj->display==1){
+      GetPart5Colors(partj, nrgb, PARTFILE_MAP); // make sure there is data
     }
   }
 }
