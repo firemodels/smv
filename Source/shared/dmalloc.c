@@ -54,7 +54,6 @@ void _memorystatus(unsigned int size,unsigned int *availmem,unsigned int *physme
       int memsize;
 
       memsize = stat.dwAvailPhys/(1024*1024);
-      fprintf(stderr,"*** Available Memory: %i M \n",memsize);
     }
 #endif
     if(size!=0&&size>stat.dwAvailPhys-0.1*stat.dwTotalPhys){
