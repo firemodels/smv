@@ -5343,8 +5343,8 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  if(smoke3di->loaded_defer == 1){
-    smoke3di->loaded_defer = 0;
+  if(smoke3di->finalize == 1){
+    smoke3di->finalize = 0;
     UpdateSmoke3dFileParms();
     UpdateTimes();
 #ifdef pp_CULL
