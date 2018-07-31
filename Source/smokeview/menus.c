@@ -3936,6 +3936,7 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
+      smoke3di->loaded_defer = 1;
       ReadSmoke3D(ALL_FRAMES,value,LOAD,&errorcode);
     }
   }
@@ -4132,13 +4133,13 @@ void LoadSmoke3DMenu(int value){
   STOP_TIMER(smoke3d_load_time);
   if(file_count>0){
     if(smoke3d_load_size>1000000000){
-      PRINTF(" Total: size=%.1f GB time=%.1f s\n",(float)smoke3d_load_size/1000000000.,smoke3d_load_time);
+      PRINTF("Total: loaded %.1f GB in %.1f s\n",(float)smoke3d_load_size/1000000000.,smoke3d_load_time);
     }
     else if(smoke3d_load_size>1000000){
-      PRINTF(" Total: size=%.1f MB time=%.1f s\n",(float)smoke3d_load_size/1000000.,smoke3d_load_time);
+      PRINTF("Total: loaded %.1f MB in %.1f s\n",(float)smoke3d_load_size/1000000.,smoke3d_load_time);
     }
     else{
-      PRINTF(" Total: size=%.0f kB time=%.1f s\n",(float)smoke3d_load_size/1000.,smoke3d_load_time);
+      PRINTF("Total: loaded %.0f kB in %.1f s\n",(float)smoke3d_load_size/1000.,smoke3d_load_time);
     }
   }
   updatemenu=1;
