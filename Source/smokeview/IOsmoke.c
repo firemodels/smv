@@ -5031,7 +5031,7 @@ void SetSmokeColorFlags(void){
 
 /* ------------------ ReadSmoke3D ------------------------ */
 
-void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
+FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   smoke3ddata *smoke3di;
   FILE *SMOKE3DFILE;
   int error;
@@ -5142,7 +5142,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     if(cullactive==1)update_initcull=1;
 #endif
     UpdateSmoke3dFileParms();
-    return;
+    return 0;
   }
   if(smoke3di->type == HRRPUV||smoke3di->type==TEMP){
     // if we are loading an HRRPUV then unload all TEMP's
@@ -5185,20 +5185,20 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     ReadSmoke3D(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
     fprintf(stderr,"\n*** Error: problems sizing 3d smoke data for %s\n",smoke3di->file);
-    return;
+    return 0;
   }
   if(smoke3di->maxval>=0.0){
     if(smoke3di->type == HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF(" - skipped (max hrrpuv<%0.f)\n",load_hrrpuv_cutoff);
-      return;
+      return 0;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF(" - skipped (max soot opacity<%0.f)\n", load_3dsmoke_cutoff);
-      return;
+      return 0;
     }
   }
   CheckMemory;
@@ -5213,7 +5213,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
      ReadSmoke3D(iframe,ifile,UNLOAD,&error);
      *errorcode=1;
      fprintf(stderr,"\n*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
-     return;
+     return 0;
   }
   for(i=0;i<smoke3di->ntimes_full;i++){
     smoke3di->frame_all_zeros[i]=2;
@@ -5231,7 +5231,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     ReadSmoke3D(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
      fprintf(stderr,"\n*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
-    return;
+    return 0;
   }
   smoke3di->ncomp_smoke_total=ncomp_smoke_total_skipped;
 
@@ -5252,7 +5252,7 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(SMOKE3DFILE==NULL){
     ReadSmoke3D(iframe,ifile,UNLOAD,&error);
     *errorcode=1;
-    return;
+    return 0;
   }
 
   SKIP;fread(nxyz,4,8,SMOKE3DFILE);SKIP;
@@ -5361,11 +5361,11 @@ void ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   else{
   PRINTF(" - %.0f kB/%.1f s\n",(float)file_size/1000.,total_time);
   }
-
 #ifdef pp_MEMPRINT
   PrintMemoryInfo;
 #endif
   *errorcode = 0;
+  return file_size;
 }
 
 /* ------------------ ReadSmoke3DAllMeshes ------------------------ */
