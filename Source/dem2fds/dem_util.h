@@ -6,6 +6,17 @@
 #define DONT_INTERPOLATE 0
 #define INTERPOLATE 1
 
+
+#ifdef WIN32
+#define STDCALLF extern void _stdcall
+#else
+#define STDCALLF extern void
+#endif
+
+//subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
+#define FORTelev2geom _F(elev2geom)
+STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *ygrid, int *jbar, float *vals, int *nvals, FILE_SIZE filelen);
+
 /* --------------------------  elevdata ------------------------------------ */
 
 typedef struct {
@@ -36,7 +47,6 @@ SVEXTERN char image_dir[1024], elev_dir[1024];
 SVEXTERN char csv_file[1024];
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
-SVEXTERN int SVDECL(elev_file, 0);
 SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];
 SVEXTERN int SVDECL(nexcludeinfo, 0);
 SVEXTERN excludedata SVDECL(*excludeinfo, NULL);
