@@ -3908,7 +3908,6 @@ void UnLoadSmoke3DMenu(int value){
 
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
-  smoke3ddata *smoke3di, *smoke3dj;
   int file_count;
   float smoke3d_load_time, smoke3d_load_size;
   int last_smoke;
@@ -3936,7 +3935,10 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||defer_file_loading==0){
-      smoke3di->loaded_defer = 1;
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + value;
+      smoke3di->finalize = 1;
       ReadSmoke3D(ALL_FRAMES,value,LOAD,&errorcode);
     }
   }
@@ -3954,6 +3956,8 @@ void LoadSmoke3DMenu(int value){
   else if(value==-9){
     if(scriptoutstream==NULL||defer_file_loading==0){
       for(i=0;i<nsmoke3dinfo;i++){
+        smoke3ddata *smoke3di;
+
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
         file_count++;
@@ -4088,6 +4092,8 @@ void LoadSmoke3DMenu(int value){
   }
 #endif
   else if(value<=-10){
+    smoke3ddata *smoke3dj;
+
     value = -(value + 10);
     smoke3dj = smoke3dinfo + value;
     if(scriptoutstream!=NULL){
@@ -4112,6 +4118,8 @@ void LoadSmoke3DMenu(int value){
       }
 #else
       for(i = nsmoke3dinfo-1;i >=0;i--){
+        smoke3ddata *smoke3di;
+
         smoke3di = smoke3dinfo + i;
         if(strcmp(smoke3di->label.shortlabel, smoke3dj->label.shortlabel) == 0){
           last_smoke = i;
@@ -4119,9 +4127,11 @@ void LoadSmoke3DMenu(int value){
         }
       }
       for(i=0;i<nsmoke3dinfo;i++){
+        smoke3ddata *smoke3di;
+
         smoke3di = smoke3dinfo + i;
-        smoke3di->loaded_defer = 0;
-        if(last_smoke == i)smoke3di->loaded_defer = 1;
+        smoke3di->finalize = 0;
+        if(last_smoke == i)smoke3di->finalize = 1;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
           file_count++;
           smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
