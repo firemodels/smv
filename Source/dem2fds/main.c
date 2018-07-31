@@ -32,7 +32,6 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
-  fprintf(stdout, "  -elevs        - output elevations, do not create an FDS input file\n");
   fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
   fprintf(stdout, "  -overlap      - assume that there is a 300 pixel overlap between maps.\n");
   fprintf(stdout, "  -show         - highlight image and fds scenario boundaries\n");
@@ -151,9 +150,6 @@ int main(int argc, char **argv){
           fprintf(stderr, "***error: directory %s does not exist or cannot be accessed\n", argv[i]);
           fatal_error = 1;
         }
-      }
-      else if(strncmp(arg, "-elevs", 6) == 0 ) {
-        elev_file = 1;
       }
       else if(strncmp(arg, "-geom", 5) == 0 ){
         gen_fds = FDS_GEOM;

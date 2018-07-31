@@ -799,7 +799,7 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
 void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option){
-  char output_file[LEN_BUFFER], *ext;
+  char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
 
   char casename_fds_basename[LEN_BUFFER];
@@ -821,21 +821,17 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   ext = strrchr(basename, '.');
   if(ext != NULL)ext[0] = 0;
 
-  if(elev_file==1){
-    strcpy(output_file, basename);
-    strcat(output_file, ".elev");
-  }
-  else{
-    strcpy(output_file, casename_fds);
-  }
+  strcpy(output_file, casename_fds);
   streamout = fopen(output_file, "w");
   if(streamout == NULL){
     fprintf(stderr, "***error: unable to open %s for output\n", output_file);
     return;
   }
 
-  nlong = fds_elevs->ncols;
+  strcpy(output_elev_file, basename);
+  strcat(output_elev_file, ".elev");
 
+  nlong = fds_elevs->ncols;
   nlat = fds_elevs->nrows;
 
   zmin = fds_elevs->zmin;
@@ -861,19 +857,24 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
     ygrid[i] = ymax*(float)(jbar - i) / (float)jbar;
   }
 
-  if(elev_file == 0) {
-    fprintf(streamout, "&HEAD CHID='%s', TITLE='created from %s' /\n", basename,casename);
-    fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = 0.0, %f, 0.0, %f, %f, %f /\n", ibar, jbar, kbar, xmax, ymax, zmin, zmax);
-    if(option == FDS_OBST) {
-      fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
-    }
-    fprintf(streamout, "&TIME T_END = 0.0 /\n");
-    fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
-    fprintf(streamout, "&VENT MB = 'XMAX', SURF_ID = 'OPEN' /\n");
-    fprintf(streamout, "&VENT MB = 'YMIN', SURF_ID = 'OPEN' /\n");
-    fprintf(streamout, "&VENT MB = 'YMAX', SURF_ID = 'OPEN' /\n");
-    fprintf(streamout, "&VENT MB = 'ZMAX', SURF_ID = 'OPEN' /\n");
+  if(option==FDS_OBST){
+    int nvals = ibar*jbar, len;
+
+    len = strlen(output_elev_file);
+    FORTelev2geom(output_elev_file, xgrid, &ibar, ygrid, &jbar, vals, &nvals, len);
   }
+
+  fprintf(streamout, "&HEAD CHID='%s', TITLE='created from %s' /\n", basename,casename);
+  fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = 0.0, %f, 0.0, %f, %f, %f /\n", ibar, jbar, kbar, xmax, ymax, zmin, zmax);
+  if(option == FDS_OBST) {
+    fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
+  }
+  fprintf(streamout, "&TIME T_END = 0.0 /\n");
+  fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'XMAX', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'YMIN', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'YMAX', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'ZMAX', SURF_ID = 'OPEN' /\n");
 
   fprintf(streamout, "\nTerrain Geometry\n\n");
 
@@ -937,9 +938,7 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
       count++;
     }
   }
-  if(elev_file == 0) {
-    fprintf(streamout, "\n&TAIL /\n");
-  }
+  fprintf(streamout, "\n&TAIL /\n");
 
   fprintf(stderr, "\n");
   fprintf(stderr, "FDS input file properties:\n");
