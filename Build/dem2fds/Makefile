@@ -85,17 +85,31 @@ intel_win_64 : exe       = dem2fds_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
 
+# ------------- gnu Linux 64 db ----------------
+
+gnu_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
+gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_64_db : LFLAGS    = -lgfortran
+gnu_linux_64_db : CC        = gcc
+gnu_linux_64_db : FC        = gfortran
+gnu_linux_64_db : exe       = dem2fds_linux_64_db
+
+gnu_linux_64_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+
 # ------------- gnu Linux 64 ----------------
 
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_linux_64 : LFLAGS    = -lgfortran
 gnu_linux_64 : CC        = gcc
-gnu_win_64   : FC        = gfortran
+gnu_linux_64 : FC        = gfortran
 gnu_linux_64 : exe       = dem2fds_linux_64
 
 gnu_linux_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 
 # ------------- Linux 64 ----------------
