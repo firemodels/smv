@@ -1094,7 +1094,7 @@ typedef struct _part5data {
 
 typedef struct _partdata {
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
-  int seq_id, autoload, loaded, display, reload, loaded_defer;
+  int seq_id, autoload, loaded, display, reload, finalize;
   int sort_tags_loaded, compression_type, evac;
   int blocknumber, num_memblocks;
   int *timeslist, ntimes, itime;
@@ -1296,7 +1296,7 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   int filetype;
-  int loaded, loaded_defer, display, request_load, primary_file;
+  int loaded, finalize, display, request_load, primary_file;
   int is_zlib;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;

@@ -5624,7 +5624,7 @@ int ReadSMV(char *file, char *file2){
 
         smoke3di->display=0;
         smoke3di->loaded=0;
-        smoke3di->loaded_defer = 0;
+        smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
         smoke3di->blocknumber=blocknumber;
@@ -7947,7 +7947,7 @@ typedef struct {
       parti->compression_type=UNCOMPRESSED;
       parti->sort_tags_loaded=0;
       parti->loaded=0;
-      parti->loaded_defer = 0;
+      parti->finalize = 0;
       parti->display=0;
       parti->times=NULL;
       parti->timeslist=NULL;

@@ -2100,14 +2100,14 @@ float ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcod
 
   // convert particle temperatures into integers pointing to an rgb color table
 
-  parti->loaded_defer = 1;
+  parti->finalize = 1;
   if(parti->compute_bounds_color != DEFER_PARTCOLOR){
     for(j = 0;j < npartinfo;j++){
       partdata *partj;
 
       partj = partinfo + j;
-      if(partj->loaded_defer == 1){
-        partj->loaded_defer = 0;
+      if(partj->finalize == 1){
+        partj->finalize = 0;
         partj->loaded = 1;
         partj->display = 1;
       }
