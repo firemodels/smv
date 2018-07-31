@@ -723,7 +723,8 @@ void _Sniff_Errors(char *whereat);
 #define RenderLABELtime 979
 #define MENU_RENDER_SETTINGS 900
 
-#define EXTERIORwallmenu -1
+#define ShowEXTERIORwallmenu -1
+#define HideEXTERIORwallmenu -19
 #define INTERIORwallmenu -2
 #define FRONTwallmenu -3
 #define BACKwallmenu -4

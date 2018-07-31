@@ -2308,9 +2308,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->loaded=1;
   patchi->display=1;
   iboundarytype=GetBoundaryType(patchi);
-  showexterior=1-showexterior;
-  allexterior = 1-allexterior;
-  ShowBoundaryMenu(EXTERIORwallmenu);
+  ShowBoundaryMenu(ShowEXTERIORwallmenu);
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();

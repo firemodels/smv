@@ -460,7 +460,7 @@ SVEXTERN int SVDECL(show_iso_outline,1);
 SVEXTERN int SVDECL(show_iso_points,0);
 
 SVEXTERN int SVDECL(show_faces_shaded, 1);
-SVEXTERN int SVDECL(show_faces_outline, 1);
+SVEXTERN int SVDECL(show_faces_outline, 0);
 SVEXTERN int SVDECL(show_geom_verts, 0);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
@@ -920,7 +920,6 @@ SVEXTERN int p3dsurfacesmooth;
 SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int parttype;
-SVEXTERN int allexterior,showexterior;
 SVEXTERN int allinterior;
 SVEXTERN int SVDECL(showedit_dialog,0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);

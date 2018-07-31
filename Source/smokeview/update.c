@@ -1989,9 +1989,11 @@ void UpdateDisplay(void){
     updatezoommenu = 0;
     ZoomMenu(zoomindex);
   }
+#ifdef pp_MAKE_SMOKEIBLANK
   if(update_makeiblank_smoke3d == 1){
     MakeIBlankSmoke3D();
   }
+#endif
 #ifdef pp_CULL
   if(update_initcull == 1)InitCull(cullsmoke);
 #endif
