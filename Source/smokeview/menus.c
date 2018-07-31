@@ -3909,6 +3909,10 @@ void UnLoadSmoke3DMenu(int value){
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
   smoke3ddata *smoke3di, *smoke3dj;
+  int file_count;
+  float smoke3d_load_time, smoke3d_load_size;
+  int last_smoke;
+
 #define MENU_SMOKE_SOOT_HRRPUV -5
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
 #define MENU_SMOKE_SOOT_TEMP -7
@@ -3919,6 +3923,9 @@ void LoadSmoke3DMenu(int value){
 #endif
 
   if(value == MENU_DUMMY_SMOKE)return;
+  START_TIMER(smoke3d_load_time);
+  smoke3d_load_size = 0.0;
+  file_count=0;
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -3948,7 +3955,8 @@ void LoadSmoke3DMenu(int value){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==1)continue;
-        ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+        file_count++;
+        smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       }
     }
     ASSERT(FFALSE); // check to see if this code segment is used
@@ -3966,7 +3974,8 @@ void LoadSmoke3DMenu(int value){
 
         smoke3di = smoke3dinfo + i;
         if(smoke3di->type==SOOT||smoke3di->type==HRRPUV){
-          ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+          file_count++;
+          smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
       }
     }
@@ -3976,7 +3985,8 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->type == SOOT || smoke3di->type == HRRPUV){
-        ReadSmoke3D(ALL_FRAMES, i, LOAD, &errorcode);
+        file_count++;
+        smoke3d_load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, &errorcode);
       }
     }
 #endif
@@ -3994,7 +4004,8 @@ void LoadSmoke3DMenu(int value){
 
         smoke3di = smoke3dinfo + i;
         if(smoke3di->type==SOOT||smoke3di->type==HRRPUV||smoke3di->type==CO2){
-          ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+          file_count++;
+          smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
       }
     }
@@ -4004,7 +4015,8 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->type==SOOT||smoke3di->type==HRRPUV||smoke3di->type==CO2){
-        ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+        file_count++;
+        smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       }
     }
 #endif
@@ -4022,7 +4034,8 @@ void LoadSmoke3DMenu(int value){
 
         smoke3di = smoke3dinfo + i;
         if(smoke3di->type==SOOT||smoke3di->type==TEMP){
-          ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+          file_count++;
+          smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
       }
     }
@@ -4032,7 +4045,8 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->type==SOOT||smoke3di->type==TEMP){
-        ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+        file_count++;
+        smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       }
     }
 #endif
@@ -4050,7 +4064,8 @@ void LoadSmoke3DMenu(int value){
 
         smoke3di = smoke3dinfo + i;
         if(smoke3di->type==SOOT||smoke3di->type==TEMP||smoke3di->type==CO2){
-          ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+          file_count++;
+          smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
       }
     }
@@ -4060,7 +4075,8 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->type==SOOT||smoke3di->type==TEMP||smoke3di->type==CO2){
-        ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+        file_count++;
+        smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       }
     }
 #endif
@@ -4088,18 +4104,41 @@ void LoadSmoke3DMenu(int value){
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
           if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
-            ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+            file_count++;
+            smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
           }
         }
       }
 #else
+      for(i = nsmoke3dinfo-1;i >=0;i--){
+        smoke3di = smoke3dinfo + i;
+        if(strcmp(smoke3di->label.shortlabel, smoke3dj->label.shortlabel) == 0){
+          last_smoke = i;
+          break;
+        }
+      }
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
+        smoke3di->loaded_defer = 0;
+        if(last_smoke == i)smoke3di->loaded_defer = 1;
         if(strcmp(smoke3di->label.shortlabel,smoke3dj->label.shortlabel)==0){
-          ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+          file_count++;
+          smoke3d_load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
         }
       }
 #endif
+    }
+  }
+  STOP_TIMER(smoke3d_load_time);
+  if(file_count>0){
+    if(smoke3d_load_size>1000000000){
+      PRINTF(" Total: size=%.1f GB time=%.1f s\n",(float)smoke3d_load_size/1000000000.,smoke3d_load_time);
+    }
+    else if(smoke3d_load_size>1000000){
+      PRINTF(" Total: size=%.1f MB time=%.1f s\n",(float)smoke3d_load_size/1000000.,smoke3d_load_time);
+    }
+    else{
+      PRINTF(" Total: size=%.0f kB time=%.1f s\n",(float)smoke3d_load_size/1000.,smoke3d_load_time);
     }
   }
   updatemenu=1;
@@ -4863,15 +4902,27 @@ void ShowBoundaryMenu(int value){
     }
   }
   if(value<0){
-    if(value==EXTERIORwallmenu){
-      int i,n,val;
+    if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
+      int i,ii,val;
 
-      allexterior = 1-allexterior;
-      showexterior=1-showexterior;
-      val = allexterior;
-      for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->boundarytype[n]!=INTERIORwall){
-          current_mesh->vis_boundaries[n]=val;
+      if(value==ShowEXTERIORwallmenu){
+        val = 1;
+      }
+      else{
+        val = 0;
+      }
+      for(ii = 0;ii < npatch_loaded;ii++){
+        int n;
+
+        patchdata *patchi;
+        meshdata *meshi;
+
+        patchi = patchinfo + patch_loaded_list[ii];
+        meshi = meshinfo + patchi->blocknumber;
+        for(n = 0;n < meshi->npatches;n++){
+          if(meshi->boundarytype[n] != INTERIORwall){
+            meshi->vis_boundaries[n] = val;
+          }
         }
       }
       for(i=1;i<7;i++){
@@ -4879,25 +4930,41 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value==INTERIORwallmenu){
-      int n,val;
+      int ii,val;
 
       allinterior = 1 - allinterior;
       val = allinterior;
       vis_boundary_type[INTERIORwall]=val;
-      for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->boundarytype[n]==INTERIORwall){
-          current_mesh->vis_boundaries[n]=val;
+      for(ii = 0;ii < npatch_loaded;ii++){
+        patchdata *patchi;
+        meshdata *meshi;
+        int n;
+
+        patchi = patchinfo + patch_loaded_list[ii];
+        meshi = meshinfo + patchi->blocknumber;
+        for(n = 0;n < meshi->npatches;n++){
+          if(meshi->boundarytype[n] == INTERIORwall){
+            meshi->vis_boundaries[n] = val;
+          }
         }
       }
     }
     else if(value != DUMMYwallmenu){
-      int n;
+      int ii;
 
-      value = -(value+2); /* map xxxwallmenu to xxxwall */
-      for(n=0;n<current_mesh->npatches;n++){
-        if(current_mesh->boundarytype[n]==value){
-          current_mesh->vis_boundaries[n] = 1 - current_mesh->vis_boundaries[n];
-          vis_boundary_type[value]=current_mesh->vis_boundaries[n];
+      value = -(value + 2); /* map xxxwallmenu to xxxwall */
+      for(ii = 0;ii < npatch_loaded;ii++){
+        patchdata *patchi;
+        meshdata *meshi;
+        int n;
+
+        patchi = patchinfo + patch_loaded_list[ii];
+        meshi = meshinfo + patchi->blocknumber;
+        for(n = 0;n < meshi->npatches;n++){
+          if(meshi->boundarytype[n] == value){
+            meshi->vis_boundaries[n] = 1 - meshi->vis_boundaries[n];
+            vis_boundary_type[value] = meshi->vis_boundaries[n];
+          }
         }
       }
     }
@@ -5631,7 +5698,7 @@ static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
-static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0;
+static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
 static int scriptmenu=0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
@@ -5897,6 +5964,7 @@ updatemenu=0;
   if(npatchinfo>0){
     int ii;
     char menulabel[1024];
+    int next_total=0;
 
     CREATEMENU(showpatchsinglemenu,ShowBoundaryMenu);
     for(ii=0;ii<npatchinfo;ii++){
@@ -5912,6 +5980,35 @@ updatemenu=0;
       STRCAT(menulabel,patchi->menulabel);
       glutAddMenuEntry(menulabel,1000+i);
     }
+
+    CREATEMENU(showpatchextmenu, ShowBoundaryMenu);
+      for(i=1;i<7;i++){
+        next_total+=vis_boundary_type[i];
+      }
+    if(next_total == 6){
+      glutAddMenuEntry(_("*Show all"),  ShowEXTERIORwallmenu);
+      glutAddMenuEntry(_("Hide all"),   HideEXTERIORwallmenu);
+    }
+    else if(next_total == 0){
+      glutAddMenuEntry(_("Show all"),  ShowEXTERIORwallmenu);
+      glutAddMenuEntry(_("*Hide all"), HideEXTERIORwallmenu);
+    }
+    else{
+      glutAddMenuEntry(_("#Show all"),  ShowEXTERIORwallmenu);
+      glutAddMenuEntry(_("#Hide all"),  HideEXTERIORwallmenu);
+    }
+    if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 1)glutAddMenuEntry(_("*Front"), FRONTwallmenu);
+    if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 0)glutAddMenuEntry(_("Front"), FRONTwallmenu);
+    if(IsBoundaryType(BACKwall) == 1 && vis_boundary_type[BACKwall] == 1)glutAddMenuEntry(_("*Back"), BACKwallmenu);
+    if(IsBoundaryType(BACKwall) == 1 && vis_boundary_type[BACKwall] == 0)glutAddMenuEntry(_("Back"), BACKwallmenu);
+    if(IsBoundaryType(LEFTwall) == 1 && vis_boundary_type[LEFTwall] == 1)glutAddMenuEntry(_("*Left"), LEFTwallmenu);
+    if(IsBoundaryType(LEFTwall) == 1 && vis_boundary_type[LEFTwall] == 0)glutAddMenuEntry(_("Left"), LEFTwallmenu);
+    if(IsBoundaryType(RIGHTwall) == 1 && vis_boundary_type[RIGHTwall] == 1)glutAddMenuEntry(_("*Right"), RIGHTwallmenu);
+    if(IsBoundaryType(RIGHTwall) == 1 && vis_boundary_type[RIGHTwall] == 0)glutAddMenuEntry(_("Right"), RIGHTwallmenu);
+    if(IsBoundaryType(UPwall) == 1 && vis_boundary_type[UPwall] == 1)glutAddMenuEntry(_("*Up"), UPwallmenu);
+    if(IsBoundaryType(UPwall) == 1 && vis_boundary_type[UPwall] == 0)glutAddMenuEntry(_("Up"), UPwallmenu);
+    if(IsBoundaryType(DOWNwall) == 1 && vis_boundary_type[DOWNwall] == 1)glutAddMenuEntry(_("*Down"), DOWNwallmenu);
+    if(IsBoundaryType(DOWNwall) == 1 && vis_boundary_type[DOWNwall] == 0)glutAddMenuEntry(_("Down"), DOWNwallmenu);
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
@@ -5984,22 +6081,9 @@ updatemenu=0;
         if(vis_threshold==0)glutAddMenuEntry("char",SHOW_CHAR);
       }
     }
-    if(showexterior==1)glutAddMenuEntry(_("*Exterior"),EXTERIORwallmenu);
-    if(showexterior==0)glutAddMenuEntry(_("Exterior"),EXTERIORwallmenu);
+    GLUTADDSUBMENU(_("Exterior"), showpatchextmenu);
     if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
     if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
-    if(IsBoundaryType(FRONTwall)==1&&vis_boundary_type[FRONTwall]==1)glutAddMenuEntry(_("*Front"),FRONTwallmenu);
-    if(IsBoundaryType(FRONTwall)==1&&vis_boundary_type[FRONTwall]==0)glutAddMenuEntry(_("Front"),FRONTwallmenu);
-    if(IsBoundaryType(BACKwall)==1&& vis_boundary_type[BACKwall]==1)glutAddMenuEntry(_("*Back"),BACKwallmenu);
-    if(IsBoundaryType(BACKwall)==1&& vis_boundary_type[BACKwall]==0)glutAddMenuEntry(_("Back"),BACKwallmenu);
-    if(IsBoundaryType(LEFTwall)==1&& vis_boundary_type[LEFTwall]==1)glutAddMenuEntry(_("*Left"),LEFTwallmenu);
-    if(IsBoundaryType(LEFTwall)==1&& vis_boundary_type[LEFTwall]==0)glutAddMenuEntry(_("Left"),LEFTwallmenu);
-    if(IsBoundaryType(RIGHTwall)==1&&vis_boundary_type[RIGHTwall]==1)glutAddMenuEntry(_("*Right"),RIGHTwallmenu);
-    if(IsBoundaryType(RIGHTwall)==1&&vis_boundary_type[RIGHTwall]==0)glutAddMenuEntry(_("Right"),RIGHTwallmenu);
-    if(IsBoundaryType(UPwall)==1&&   vis_boundary_type[UPwall]==1)glutAddMenuEntry(_("*Up"),UPwallmenu);
-    if(IsBoundaryType(UPwall)==1&&   vis_boundary_type[UPwall]==0)glutAddMenuEntry(_("Up"),UPwallmenu);
-    if(IsBoundaryType(DOWNwall)==1&& vis_boundary_type[DOWNwall]==1)glutAddMenuEntry(_("*Down"),DOWNwallmenu);
-    if(IsBoundaryType(DOWNwall)==1&& vis_boundary_type[DOWNwall]==0)glutAddMenuEntry(_("Down"),DOWNwallmenu);
   }
 
 /* --------------------------------surface menu -------------------------- */

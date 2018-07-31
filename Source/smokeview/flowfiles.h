@@ -1296,7 +1296,7 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   int filetype;
-  int loaded, display, request_load, primary_file;
+  int loaded, loaded_defer, display, request_load, primary_file;
   int is_zlib;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
