@@ -131,7 +131,7 @@ subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
 implicit none
 character(len=*), intent(in) :: output_elev_file
 integer, intent(in) :: ibar, jbar, nvals
-real, intent(in), dimension(:) :: xgrid(ibar), ygrid(jbar), vals(ibar*jbar)
+real, intent(in), dimension(:) :: xgrid(ibar), ygrid(jbar), vals(nvals)
 
 integer :: lu_geom
 integer :: i, j
