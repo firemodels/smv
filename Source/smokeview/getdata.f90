@@ -1427,8 +1427,6 @@ do
   if(.not.load)cycle
   nsteps = nsteps + 1
   times(nsteps) = timeval
-  if(redirect_flag.eq.0)write(6,10)timeval
-10 format(" slice time=",f9.2)
 
   if(idir.eq.3)then
     istart = (nsteps-1)*nxsp*nysp

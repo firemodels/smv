@@ -1740,7 +1740,6 @@ void SetSliceColors(float smin, float smax,
 
 
   *errorcode = 0;
-  PRINTF("computing slice color levels \n");
   scale = sb->scale;
   if(sd->slicefile_type == SLICE_GEOM){
     patchdata *patchgeom;
@@ -3561,8 +3560,8 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
     strcpy(slicelabel, "node");
     if(sd->slicefile_type == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
-    PRINTF(" global min (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmin, slicelabel, iimin, jjmin, kkmin, sd->times[imintime]);
-    PRINTF(" global max (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmax, slicelabel, iimax, jjmax, kkmax, sd->times[imaxtime]);
+//    PRINTF(" global min (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmin, slicelabel, iimin, jjmin, kkmin, sd->times[imintime]);
+//    PRINTF(" global max (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmax, slicelabel, iimax, jjmax, kkmax, sd->times[imaxtime]);
   }
   FREEMEMORY(slice_mask0);
 }
@@ -3779,7 +3778,6 @@ int GetSlicecZlibData(char *file,
     compindex[ns].offset = compindex[ns - 1].offset + nncomp;
     compindex[ns - 1].size = nncomp;
 
-    PRINTF("slice time=%.2f\n", ttime);
     fread(cd, 1, nncomp, stream);
     cd += nncomp;
     if(ns >= nsliceframes || cd - compressed_data >= ncompressed)break;
@@ -4001,13 +3999,8 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       UpdateGlui();
       UpdateUnitDefs();
       UpdateTimes();
-#ifdef pp_MEMPRINT
-      PRINTF("After slice unload: \n");
-      PrintMemoryInfo;
-#endif
 #ifdef pp_MEMDEBUG
       CountMemoryBlocks(num_memblocks_unload, num_memblocks_load);
-      PRINTF("blocks unloaded=%i\n", num_memblocks_unload);
 #endif
       RemoveSliceLoadstack(slicefilenumber);
       return;
@@ -4059,7 +4052,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
       *errorcode = 1;
       return;
     }
-    PRINTF("Loading slice data: %s\n", file);
+    PRINTF("Loading %s(%s)", file,sd->label.shortlabel);
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
     if(sd->compression_type == COMPRESSED_ZLIB){
@@ -4283,15 +4276,8 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
     ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
   }
   CheckMemory;
-  PRINTF("After slice file load: \n");
 
   CountMemoryBlocks(sd->num_memblocks, num_memblocks_load);
-#endif
-#ifdef pp_MEMPRINT
-#ifndef pp_MEMDEBUG
-  PRINTF("After slice file load: \n");
-#endif
-  PrintMemoryInfo;
 #endif
   IdleCB();
 
@@ -4303,17 +4289,7 @@ void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorco
   STOP_TIMER(total_time);
 
   if(flag != RESETBOUNDS){
-    if(file_size != 0 && read_time>0.0){
-      float loadrate;
-
-      loadrate = ((float)file_size*8.0 / 1000000.0) / read_time;
-      PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-        (float)file_size / 1000000., read_time, loadrate, total_time - read_time);
-    }
-    else{
-      PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-        (float)file_size / 1000000., read_time, total_time - read_time);
-    }
+    PRINTF(" - %.1f MB/%.1f s\n", (float)file_size / 1000000., total_time);
   }
 
   if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
