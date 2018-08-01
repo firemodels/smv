@@ -4602,6 +4602,7 @@ void LoadMultiSliceMenu(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel, submenulabel) != 0)continue;
       if(dir != 0 && dir != slicei->idir)continue;
+      if(dir !=0 && slicei->volslice == 1)continue;
       last_slice = i;
       break;
     }
@@ -4615,6 +4616,7 @@ void LoadMultiSliceMenu(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
+      if(dir!=0&&slicei->volslice==1)continue;
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
       load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
