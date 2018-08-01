@@ -1311,8 +1311,7 @@ end subroutine writeslicedata2
 
 subroutine getslicedata(slicefilename,&
             is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
-            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
-            redirect_flag)
+            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,file_size,redirect_flag)
 use cio
 implicit none
 
@@ -1323,7 +1322,7 @@ integer, intent(in) :: redirect_flag, ntimes_old, settmin_s, settmax_s, slicefra
 real, intent(inout) :: qmin, qmax
 real, intent(out), dimension(*) :: qdata, times
 
-integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2
+integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2, file_size
 integer, intent(inout) :: ntimes
 real, intent(in) :: tmin_s, tmax_s
 
@@ -1348,6 +1347,7 @@ integer :: nsizes
 
 joff = 0
 koff = 0
+file_size = 0
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
@@ -1374,6 +1374,7 @@ call ffseek(lu11,sizes,nsizes,seek_set,error)
 deallocate(sizes)
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+file_size = 6*4
 is1 = ip1
 is2 = ip2
 js1 = jp1
@@ -1407,6 +1408,7 @@ if(ntimes/=ntimes_old.and.ntimes_old>0)then
 endif
 do
   read(lu11,iostat=error)timeval
+  file_size = file_size + 4
   if(error.ne.0)exit
   if((settmin_s.ne.0.and.timeval<tmin_s).or.timeval.le.time_max)then
     load = .false.
@@ -1427,6 +1429,7 @@ do
   if(.not.load)cycle
   nsteps = nsteps + 1
   times(nsteps) = timeval
+  file_size = file_size + 4*nxsp*nysp*nzsp
 
   if(idir.eq.3)then
     istart = (nsteps-1)*nxsp*nysp
