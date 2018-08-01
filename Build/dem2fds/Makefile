@@ -87,7 +87,6 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu Linux 64 db ----------------
 
-gnu_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
 gnu_linux_64_db : LFLAGS    = -lgfortran
@@ -96,7 +95,7 @@ gnu_linux_64_db : FC        = gfortran
 gnu_linux_64_db : exe       = dem2fds_linux_64_db
 
 gnu_linux_64_db: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
 
 # ------------- gnu Linux 64 ----------------
 
@@ -132,37 +131,39 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 # ------------- OSX 64 ----------------
 #  64 bit OSX
 
-intel_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
+intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
 intel_osx_64 : CC        = icc
 intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = dem2fds_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX) $(OSXFORTLIBS)
+	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR)/intel_osx_64  $(LIBS_OSX) $(OSXFORTLIBS)
 
-# ------------- gnu OSX 64 ----------------
-#  64 bit gnu linux
+# ------------- OSX gnu ----------------
+#  gnu osx
 
-gnu_osx_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_osx_64
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
-gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
+gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
+gnu_osx_64 : LFLAGS    = -m64 -L $(GLIBDIR) -lgfortran -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
 gnu_osx_64 : CC        = gcc
+gnu_osx_64 : CPP       = g++
 gnu_osx_64 : FC        = gfortran
-gnu_osx_64 : exe       = wind2fds_osx_64
+gnu_osx_64 : exe       = dem2fds_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) -L $(LIB_DIR_PLAT) $(LIBS_OSX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu OSX 64 db ----------------
 #  64 bit gnu linux
 
-gnu_osx_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_osx_64
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D  pp_OSX $(GITINFO)
+gnu_osx_64_db : LFLAGS    = -m64 -L $(GLIBDIR) -lgfortran -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
 gnu_osx_64_db : CC        = gcc
+gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : FC        = gfortran
-gnu_osx_64_db : exe       = wind2fds_osx_64
+gnu_osx_64_db : exe       = dem2fds_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) -L $(LIB_DIR_PLAT) $(LIBS_OSX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
