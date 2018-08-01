@@ -640,7 +640,6 @@ void _Sniff_Errors(char *whereat);
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING -2
 #define SCRIPT_STOP_RECORDING -3
-#define SCRIPT_FILE_LOADING -4
 #define SCRIPT_STEP -5
 #define SCRIPT_CONTINUE -7
 #define SCRIPT_CANCEL -8

@@ -297,7 +297,6 @@ GLUI_Checkbox *CHECKBOX_show_cell_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
 GLUI_Checkbox *CHECKBOX_showchar=NULL, *CHECKBOX_showonlychar;
-GLUI_Checkbox *CHECKBOX_defer=NULL;
 GLUI_Checkbox *CHECKBOX_script_step=NULL;
 GLUI_Checkbox *CHECKBOX_show_evac_slices=NULL;
 GLUI_Checkbox *CHECKBOX_constant_coloring=NULL;
@@ -623,12 +622,6 @@ extern "C" void UpdateScriptStart(void){
   if(BUTTON_script_stop!=NULL)BUTTON_script_stop->enable();
   if(BUTTON_script_runscript!=NULL)BUTTON_script_runscript->disable();
   if(EDIT_renderdir!=NULL)EDIT_renderdir->disable();
-}
-
-/* ------------------ UpdateDefer ------------------------ */
-
-extern "C" void UpdateDefer(void){
-  CHECKBOX_defer->set_int_val(defer_file_loading);
 }
 
 /* ------------------ UpdateScriptStep ------------------------ */
@@ -1423,9 +1416,6 @@ void ScriptCB(int var){
     UpdateScriptStep();
     updatemenu = 1;
     break;
-  case SCRIPT_FILE_LOADING:
-    updatemenu = 1;
-    break;
   case SCRIPT_EDIT_INI:
     strcpy(label, _("Save"));
     strcat(label, fdsprefix);
@@ -1655,9 +1645,6 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_column_to_panel(PANEL_script1a, false);
   BUTTON_script_stop = glui_bounds->add_button_to_panel(PANEL_script1a, _("Stop"), SCRIPT_STOP, ScriptCB);
   BUTTON_script_stop->disable();
-
-  CHECKBOX_defer = glui_bounds->add_checkbox_to_panel(PANEL_record, _("Turn off file loading while recording"), &defer_file_loading,
-    SCRIPT_FILE_LOADING, ScriptCB);
 
   PANEL_run = glui_bounds->add_panel_to_panel(PANEL_script1, _("Run"), true);
   PANEL_script1b = glui_bounds->add_panel_to_panel(PANEL_run, "", false);
