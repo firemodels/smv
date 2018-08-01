@@ -114,17 +114,20 @@ gnu_linux_64: $(obj)
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
+LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -D pp_INTEL  -fpp
+intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64)
 intel_linux_64 : CC        = icc
 intel_linux_64 : FC        = ifort
 intel_linux_64 : exe       = dem2fds_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX) $(LFLAGS)
 
+OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 	
 # ------------- OSX 64 ----------------
 #  64 bit OSX
@@ -137,7 +140,7 @@ intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = dem2fds_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX)
+	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR_PLAT)  $(LIBS_OSX) $(OSXFORTLIBS)
 
 # ------------- gnu OSX 64 ----------------
 #  64 bit gnu linux
