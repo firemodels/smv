@@ -3434,7 +3434,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int ndata;
   int n, i;
   int first=1;
-  int imintime, imaxtime;
 
   int istep;
   int nx, ny, nxy, ibar, jbar;
@@ -3503,13 +3502,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
       ii = sd->is1+i;
       for(j=0;j<sd->nslicej;j++){
-        int jj,k;
+        int k;
 
-        jj = sd->js1+j;
         for(k=0;k<sd->nslicek;k++){
-          int kk;
-
-          kk = sd->ks1+k;
           n++;
           n0++;
           // 0 blocked
@@ -3519,18 +3514,14 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
           if(first==1){
             *pmin=pdata[n];
             *pmax=pdata[n];
-            imintime = 0;
-            imaxtime = 0;
             first=0;
           }
           else{
             if(pdata[n]<*pmin){
               *pmin=pdata[n];
-              imintime = istep;
             }
             if(pdata[n]>*pmax){
               *pmax=pdata[n];
-              imaxtime = istep;
             }
           }
         }
@@ -3539,8 +3530,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     if(first==1){
       *pmin=0.0;
       *pmax=1.0;
-      imintime = 0;
-      imaxtime = 0;
     }
   }
   FREEMEMORY(slice_mask0);
