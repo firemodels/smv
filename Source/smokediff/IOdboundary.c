@@ -100,6 +100,7 @@ int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout){
 
 void diff_boundaryes(FILE *stream_out){
   int j;
+  int file_size;
 
   for(j=0;j<caseinfo->nboundary_files;j++){
     char *file1, *file2;

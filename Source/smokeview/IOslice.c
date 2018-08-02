@@ -3434,12 +3434,11 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int ndata;
   int n, i;
   int first=1;
-  int imintime, imaxtime;
 
   int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
-  int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
+  //int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
 
@@ -3499,17 +3498,12 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     n0 = -1;
 
     for(i=0;i<sd->nslicei;i++){
-      int ii,j;
+      int j;
 
-      ii = sd->is1+i;
       for(j=0;j<sd->nslicej;j++){
-        int jj,k;
+        int k;
 
-        jj = sd->js1+j;
         for(k=0;k<sd->nslicek;k++){
-          int kk;
-
-          kk = sd->ks1+k;
           n++;
           n0++;
           // 0 blocked
@@ -3519,30 +3513,14 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
           if(first==1){
             *pmin=pdata[n];
             *pmax=pdata[n];
-            iimin=ii;
-            jjmin=jj;
-            kkmin=kk;
-            iimax=ii;
-            jjmax=jj;
-            kkmax=kk;
-            imintime = 0;
-            imaxtime = 0;
             first=0;
           }
           else{
             if(pdata[n]<*pmin){
               *pmin=pdata[n];
-              iimin=ii;
-              jjmin=jj;
-              kkmin=kk;
-              imintime = istep;
             }
             if(pdata[n]>*pmax){
               *pmax=pdata[n];
-              iimax=ii;
-              jjmax=jj;
-              kkmax=kk;
-              imaxtime = istep;
             }
           }
         }
@@ -3551,24 +3529,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     if(first==1){
       *pmin=0.0;
       *pmax=1.0;
-      iimin=0;
-      jjmin=0;
-      kkmin=0;
-      iimax=0;
-      jjmax=0;
-      kkmax=0;
-      imintime = 0;
-      imaxtime = 0;
     }
-  }
-
-  {
-    char slicelabel[10];
-
-    strcpy(slicelabel, "node");
-    if(sd->slicefile_type == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
-//    PRINTF(" global min (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmin, slicelabel, iimin, jjmin, kkmin, sd->times[imintime]);
-//    PRINTF(" global max (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmax, slicelabel, iimax, jjmax, kkmax, sd->times[imaxtime]);
   }
   FREEMEMORY(slice_mask0);
 }
@@ -3872,9 +3833,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
   FILE_SIZE return_filesize=0;
   int file_size;
-#ifdef pp_MEMDEBUG
-  int num_memblocks_load, num_memblocks_unload;
-#endif
 #ifdef pp_memstatus
   unsigned int availmemory;
 #endif
@@ -3896,7 +3854,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
   ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
   sd = sliceinfo + slicefilenumber;
-  CountMemoryBlocks(num_memblocks_load, 0);
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
     sd->display = 0;
@@ -4007,17 +3964,12 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
       UpdateGlui();
       UpdateUnitDefs();
       UpdateTimes();
-#ifdef pp_MEMDEBUG
-      CountMemoryBlocks(num_memblocks_unload, num_memblocks_load);
-#endif
       RemoveSliceLoadstack(slicefilenumber);
       return 0;
     }
 
 // load entire slice file (flag=LOAD) or
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
-
-    CountMemoryBlocks(num_memblocks_load, 0);
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
@@ -4110,7 +4062,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         FORTgetslicedata(file,
           &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
           &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
-          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, &redirect, strlen(file));
+          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
           return_filesize = (FILE_SIZE)file_size;
       }
 #ifdef pp_MEMDEBUG
@@ -4283,8 +4235,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
   }
   CheckMemory;
-
-  CountMemoryBlocks(sd->num_memblocks, num_memblocks_load);
 #endif
   IdleCB();
 

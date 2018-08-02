@@ -885,10 +885,8 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
   FILE_SIZE return_filesize=0;
 
   if(ifile>=0&&ifile<nisoinfo){
-    meshdata *meshi;
 
     isoi = isoinfo+ifile;
-    meshi = meshinfo+isoi->blocknumber;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
     if(isoi->is_fed==1){
       ReadFed(ifile, flag, FED_ISO, errorcode);

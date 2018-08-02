@@ -11,7 +11,6 @@
 #define FORTgetslicefiledirection _F(getslicefiledirection)
 #define FORTgetgeomdatasize      _F(getgeomdatasize)
 #define FORTgetgeomdata          _F(getgeomdata)
-#define FORTfcreate_part5sizefile _F(fcreate_part5sizefile)
 #define FORTgetzonesize           _F(getzonesize)
 #define FORTgetzonedata           _F(getzonedata)
 #define FORTgetxyzdata            _F(getxyzdata)
@@ -39,9 +38,6 @@ STDCALLF FORTgetboundaryheader2(int *unit1, int *version, int *npatches,
                                int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir);
 STDCALLF FORTclosefortranfile(int *lunit);
 STDCALLF FORTcolor2rgb(int *rgb, char *color, FILE_SIZE colorsize);
-
-STDCALLF FORTfcreate_part5sizefile(char *part5file, char *part5sizefile, int *angle_flag, int *redirect_flag, int *error,
-                                  FILE_SIZE lenpart5file, FILE_SIZE lenpart5sizefile);
 
 STDCALLF FORTgetsliceparms(char *file,
                           int *is1,int *is2,int *js1,int *js2,int *ks1, int *ks2,int *ni, int *nj, int *nk, int *slice3d, int *error,FILE_SIZE lenfile);
@@ -75,7 +71,7 @@ STDCALLF FORTgetslicedata(char *slicefilename,
                           int *is1,int *is2,int *js1,int *js2, int *ks1,int *ks2,
                           int *idir, float *qslicemin,float *qslicemax,
                           float *qslicedata,float *times, int *ntimes_old, int *ntimes, int *sliceframestep,
-                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p, int *file_size, int *redirect,
+                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p, int *file_size,
                           FILE_SIZE slicefilelen);
 STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
 #endif

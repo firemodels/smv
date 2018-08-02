@@ -932,12 +932,8 @@ void WritePartHistogram(partdata *parti){
   fclose(STREAM_HIST);
 }
 
-/* ------------------ GetPart5NClasses ------------------------ */
-
-#ifdef pp_CPARTSIZE
-
  /* ------------------ CreatePart5SizeFile ------------------------ */
-void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int redirect_flag, int *error){
+void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int *error){
   FILE *PART5FILE, *streamout;
   int returncode;
   int one, version, nclasses;
@@ -990,7 +986,6 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
   FREEMEMORY(numtypes);
   FREEMEMORY(numpoints);
 }
-#endif
 
 /* ------------------ GetPartHistogram ------------------------ */
 
@@ -1013,13 +1008,9 @@ void GetPartHistogramFile(partdata *parti){
     ReadPartHistogram(parti);
     return;
   }
-#ifdef pp_CPARTSIZE
   if(npart5prop > 1){
     ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
   }
-#else
-  ReadPart(parti->reg_file, parti - partinfo, LOAD, HISTDATA, &errorcode);
-#endif
   datacopy = parti->data5;
   if(datacopy != NULL){
     for(i = 0; i < parti->ntimes; i++){
@@ -1694,30 +1685,20 @@ int GetNPartFrames(partdata *parti){
     doit = 1;
   }
   if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
-    int lenreg, lensize, error;
+    int error;
     int angle_flag=0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    lenreg=strlen(reg_file);
-    lensize=strlen(size_file);
     if(parti->evac==1){
       angle_flag=1;
       PRINTF("Sizing evac data: %s\n", reg_file);
-#ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
-#else
-      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
-#endif
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
     }
     else{
       angle_flag=0;
       PRINTF("Sizing particle data: %s\n", reg_file);
-#ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
-#else
-      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
-#endif
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
     }
   }
 
@@ -1796,30 +1777,20 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   sizefile_status = GetSizeFileStatus(parti);
   if(sizefile_status == -1)return; // particle file does not exist so cannot be sized
   if(option==FORCE||sizefile_status == 1){        // size file is missing or older than particle file
-    int lenreg, lensize, error;
+    int error;
     int angle_flag = 0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    lenreg = strlen(reg_file);
-    lensize = strlen(size_file);
     if(parti->evac == 1){
       angle_flag = 1;
       if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
-#ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
-#else
-      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
-#endif
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
       }
     else{
       angle_flag = 0;
       if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
-#ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
-#else
-      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
-#endif
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
     }
   }
 
@@ -2066,17 +2037,11 @@ float ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcod
   }
 
   if(data_type == HISTDATA){
-#ifdef pp_CPARTSIZE
     if(npart5prop > 1){
       PRINTF("Updating histogram for %s\n", file);
       GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
       GetPartData(parti, partframestep, nf_all, &file_size, data_type);
     }
-#else
-    PRINTF("Updating histogram for %s\n", file);
-    GetPartHeader(parti, partframestep, &nf_all, FORCE, 0);
-    GetPartData(parti, partframestep, nf_all, &file_size, data_type);
-#endif
     return 0.0;
   }
   else{

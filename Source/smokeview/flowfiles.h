@@ -544,7 +544,6 @@ typedef struct _isodata {
   int is_fed;
   feddata *fedptr;
   int type;
-  int num_memblocks;
   int setvalmin, setvalmax;
   float valmin, valmax;
   int firstshort;
@@ -1096,7 +1095,7 @@ typedef struct _partdata {
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
   int seq_id, autoload, loaded, display, reload, finalize;
   int sort_tags_loaded, compression_type, evac;
-  int blocknumber, num_memblocks;
+  int blocknumber;
   int *timeslist, ntimes, itime;
   int data_type;
   int compute_bounds_color;
@@ -1163,7 +1162,6 @@ typedef struct _slicedata {
   char slicedir[50];
   int loaded, loading, display;
   int loaded_save, display_save;
-  int num_memblocks;
   float position_orig;
   int blocknumber;
   int firstshort_slice;
@@ -1343,7 +1341,6 @@ typedef struct _patchdata {
   int unit_start;
   int firstshort;
   int compression_type;
-  int num_memblocks;
   int setvalmin, setvalmax;
   float valmin, valmax;
   int setchopmin, setchopmax;
@@ -1375,7 +1372,6 @@ typedef struct _plot3ddata {
   char *file,*reg_file,*comp_file;
   int compression_type;
   float time;
-  int num_memblocks;
   int u, v, w, nvars;
   float diff_valmin[5], diff_valmax[5];
   int extreme_min[6], extreme_max[6];
