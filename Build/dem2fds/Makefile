@@ -132,7 +132,7 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 #  64 bit OSX
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
+intel_osx_64 : FFLAGS    = -O0 -m64 -fpp -traceback -static-intel -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
 intel_osx_64 : CC        = icc
 intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = dem2fds_osx_64
