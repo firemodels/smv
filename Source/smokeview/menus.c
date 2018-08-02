@@ -3982,7 +3982,6 @@ void LoadSmoke3DMenu(int value){
   int i,errorcode;
   int file_count;
   float load_time, load_size;
-  int last_smoke;
 
 #define MENU_SMOKE_SOOT_HRRPUV -5
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
