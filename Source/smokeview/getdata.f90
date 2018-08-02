@@ -1238,13 +1238,13 @@ end subroutine writeslicedata2
 
 subroutine getslicedata(slicefilename,&
             is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
-            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,file_size,redirect_flag)
+            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,file_size)
 use cio
 implicit none
 
 character(len=*), intent(in) :: slicefilename
 
-integer, intent(in) :: redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
+integer, intent(in) :: ntimes_old, settmin_s, settmax_s, sliceframestep
 
 real, intent(inout) :: qmin, qmax
 real, intent(out), dimension(*) :: qdata, times

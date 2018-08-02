@@ -71,7 +71,7 @@ STDCALLF FORTgetslicedata(char *slicefilename,
                           int *is1,int *is2,int *js1,int *js2, int *ks1,int *ks2,
                           int *idir, float *qslicemin,float *qslicemax,
                           float *qslicedata,float *times, int *ntimes_old, int *ntimes, int *sliceframestep,
-                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p, int *file_size, int *redirect,
+                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p, int *file_size,
                           FILE_SIZE slicefilelen);
 STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
 #endif
