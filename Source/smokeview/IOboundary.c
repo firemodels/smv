@@ -1085,7 +1085,6 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     if(skip_frame==1||local_count%boundframestep!=0)continue;
     i++;
     if(i>=ntimes_local)break;
-    PRINTF("boundary time=%.2f\n", local_time);
     ASSERT(i<ntimes_local);
     local_times[i] = local_time;
     zipoffset[i] = offset;
@@ -1297,7 +1296,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
-void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
+FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int error;
   FILE_SIZE lenfile;
   int patchfilenum;
@@ -1328,12 +1327,12 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   char *patchscale;
   int ncompressed_buffer;
   char *file;
-  FILE_SIZE file_size=0;
   float read_time, total_time;
   int file_unit, wallcenter=0;
+  FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
-  if(patchi->loaded==0&&flag==UNLOAD)return;
+  if(patchi->loaded==0&&flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
 
   if(output_patchdata==1){
@@ -1440,11 +1439,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     patchi->ntimes_old=0;
     patchi->ntimes=0;
     updatemenu=1;
-#ifdef pp_MEMPRINT
-    PRINTF("After boundary file unload: \n");
     PrintMemoryInfo;
-#endif
-    return;
+    return 0;
   }
   if(ifile>=0&&ifile<npatchinfo){
     Global2LocalBoundaryBounds(patchi->label.shortlabel);
@@ -1481,9 +1477,9 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(patchi->compression_type==UNCOMPRESSED){
     FORTgetpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error,lenfile);
     if(error!=0){
-      ReadBoundary(ifile,UNLOAD,&error);
+      ReadBoundary(file,UNLOAD,&error);
       *errorcode=1;
-      return;
+      return 0;
     }
   }
   else{
@@ -1513,8 +1509,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       if(patchi->compression_type==UNCOMPRESSED){
         FORTclosefortranfile(&file_unit);
       }
-      ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      ReadBoundary(file,UNLOAD,&error);
+      return 0;
     }
   }
 
@@ -1591,8 +1587,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       if(patchi->compression_type==UNCOMPRESSED){
         FORTclosefortranfile(&file_unit);
       }
-      ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      ReadBoundary(file,UNLOAD,&error);
+      return 0;
     }
   }
   for(n=0;n<meshi->npatchsize;n++){
@@ -2028,8 +2024,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
-      ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      ReadBoundary(file,UNLOAD,&error);
+      return 0;
     }
     break;
   case COMPRESSED_ALLFRAMES:
@@ -2048,8 +2044,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(meshi->patch_times==NULL){
     *errorcode=1;
     FORTclosefortranfile(&file_unit);
-    ReadBoundary(ifile,UNLOAD,&error);
-    return;
+    ReadBoundary(file,UNLOAD,&error);
+    return 0;
   }
   if(loadpatchbysteps==COMPRESSED_ALLFRAMES){
     GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
@@ -2062,7 +2058,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       *errorcode = 1;
       FORTclosefortranfile(&file_unit);
       ReadBoundary(ifile, UNLOAD, &error);
-      return;
+      return 0;
     }
     if(flag == RELOAD&&patchi->ntimes_old > 0){
       framestart = patchi->ntimes_old;
@@ -2072,7 +2068,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       framestart = 0;
     }
   }
-  file_size= GetFileSizeSMV(file);
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
@@ -2096,12 +2091,12 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       for(n=0;n<boundframestep;n++){
         if(error==0){
           int npatchval_iframe;
+          int filesize;
 
           FORTgetpatchdata(&file_unit,&meshi->npatches,
-          meshi->pi1,meshi->pi2,
-          meshi->pj1,meshi->pj2,
-          meshi->pk1,meshi->pk2,
-          meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&error);
+          meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,
+          meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&filesize, &error);
+          return_filesize += filesize;
         }
       }
     }
@@ -2181,9 +2176,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       case UNCOMPRESSED_ALLFRAMES:
       case UNCOMPRESSED_BYFRAME:
         if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
-          PRINTF("boundary time=%.2f\n",*meshi->patch_timesi);
-
-          meshi->npatch_times++;
+           meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
           if(meshi->npatch_times + 1 > maxtimes_boundary){
             PRINTF("reallocating memory\n");
@@ -2194,9 +2187,9 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
               ResizeMemory((void **)&meshi->patch_times,maxtimes_boundary*sizeof(float))==0
              ){
               *errorcode=1;
-              ReadBoundary(ifile,UNLOAD,&error);
+              ReadBoundary(file,UNLOAD,&error);
               FORTclosefortranfile(&file_unit);
-              return;
+              return 0;
             }
           }
           ii++;
@@ -2222,19 +2215,17 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
-      ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      ReadBoundary(file,UNLOAD,&error);
+      return 0;
     }
   }
-
-  PRINTF("computing boundary color levels \n");
   if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
       FORTclosefortranfile(&file_unit);
     }
-    ReadBoundary(ifile,UNLOAD,&error);
-    return;
+    ReadBoundary(file,UNLOAD,&error);
+    return 0;
   }
   for(n=0;n<MAXRGB;n++){
     colorlabelpatch[n]=NULL;
@@ -2245,8 +2236,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
         FORTclosefortranfile(&file_unit);
       }
-      ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      ReadBoundary(file,UNLOAD,&error);
+      return 0;
     }
   }
   patchscale = patchi->scale;
@@ -2314,31 +2305,18 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
-#ifdef pp_MEMPRINT
-  PRINTF("After boundary file load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
 
   STOP_TIMER(total_time);
-  if(file_size!=0&&read_time>0.0){
-    float loadrate;
-
-    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
-    PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
-  }
-  else{
-    PRINTF(" %.1f MB downloaded in %.2f s",
-    (float)file_size/1000000.,read_time);
-  }
-
+  PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
   glutPostRedisplay();
+  return return_filesize;
 }
 
 /* ------------------ ReadGeomData ------------------------ */
 
-void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2347,6 +2325,8 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   int n;
   int error;
   FILE_SIZE lenfile;
+  FILE_SIZE return_filesize = 0;
+  float total_time;
 
   // 1
   // time
@@ -2355,8 +2335,9 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   // ndynamic
   // vals_1, ... vals_ndyamic
 
-  if(patchi->structured == YES)return;
+  if(patchi->structured == YES)return 0;
 
+  START_TIMER(total_time);
   file = patchi->file;
 
   patchi->loaded = 0;
@@ -2381,9 +2362,9 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
     if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
-    return;
+    return 0;
   }
-  if(patchi->skip == 1)return;
+  if(patchi->skip == 1)return 0;
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
   endian_smv = GetEndian();
@@ -2393,7 +2374,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
 
   if(nvals==0){
     PRINTF("***warning: no data in %s\n", file);
-    return;
+    return 0;
   }
   if(nvals>0&&ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
@@ -2406,18 +2387,21 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   }
 
   if(load_flag == UPDATE_HIST){
-    int nowrite = 1;
+    int filesize;
 
     FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &nowrite, &error, lenfile);
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
     ResetHistogram(patchi->histogram, NULL, NULL);
     UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
     CompleteHistogram(patchi->histogram);
-    return;
+    return 0;
   }
   else{
+    int filesize;
+
     FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    return_filesize += filesize;
   }
 
   patchi->ngeom_times = ntimes_local;
@@ -2441,7 +2425,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
     }
     if (NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0) {
       ReadGeomData(patchi, NULL, UNLOAD, &error);
-      return;
+      return 0;
     }
     for (n = 0; n < MAXRGB; n++) {
       colorlabelpatch[n] = NULL;
@@ -2449,7 +2433,7 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
     for (n = 0; n < nrgb; n++) {
       if (NewMemory((void **)&colorlabelpatch[n], 11) == 0) {
         ReadGeomData(patchi, NULL, UNLOAD, &error);
-        return;
+        return 0;
       }
     }
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
@@ -2515,12 +2499,16 @@ void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *erro
   force_redisplay=1;
   UpdateFrameNumber(1);
   updatemenu = 1;
+  STOP_TIMER(total_time);
+  PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+  return return_filesize;
 }
 
 /* ------------------ ReadBoundary ------------------------ */
 
-void ReadBoundary(int ifile, int load_flag, int *errorcode){
+FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
+  FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){
@@ -2528,12 +2516,16 @@ void ReadBoundary(int ifile, int load_flag, int *errorcode){
     if(load_flag == LOAD){
       UpdateBoundaryHist(patchi);
     }
-    ReadGeomData(patchi,NULL, load_flag,errorcode);
+    return_filesize=ReadGeomData(patchi,NULL, load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);
-    ReadBoundaryBndf(ifile,load_flag,errorcode);
+    return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
+  if(load_flag==LOAD){
+
+  }
+  return return_filesize;
 }
 
 /* ------------------ Local2GlobalBoundaryBounds ------------------------ */
@@ -4637,10 +4629,8 @@ int UpdateBoundaryHist(patchdata *patchj){
     patchi->inuse_getbounds=1;
 
     if(first==1){
-      PRINTF("Determining %s percentile and global data bounds\n",patchi->label.longlabel);
       first=0;
     }
-    PRINTF("  Examining %s\n",patchi->file);
     sum++;
     lenfile=strlen(patchi->file);
 
@@ -4676,10 +4666,10 @@ int UpdateBoundaryHist(patchdata *patchj){
       ResetHistogram(patchi->histogram, NULL, NULL);
       error1 = 0;
       while (error1 == 0) {
-        int ndummy;
+        int ndummy, filesize;
 
         FORTgetpatchdata(&unit1, &npatches,
-          pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy, &error1);
+          pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy, &filesize, &error1);
         UpdateHistogram(patchframe, NULL, patchframesize, patchi->histogram);
       }
       FORTclosefortranfile(&unit1);

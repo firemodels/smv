@@ -222,22 +222,6 @@ void FreeAllMemory(int memory_id){
   UNLOCK_MEM;
 }
 
-#ifdef pp_MEMPRINT
-/* ------------------ _PrintMemoryInfo ------------------------ */
-
-void _PrintMemoryInfo(void){
-  MMdata *thisptr;
-  int n = 0;
-  LINT size = 0;
-
-  for(thisptr = MMfirstptr->next;thisptr->next!=NULL;thisptr=thisptr->next){
-    size += thisptr->size;
-    n++;
-  }
-  PRINTF("nblocks=%i sizeblocks=%llu\n", n, size);
-}
-#endif
-
 /* ------------------ FreeMemory ------------------------ */
 
 void FreeMemory(void *pv){

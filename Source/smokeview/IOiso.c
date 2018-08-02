@@ -311,10 +311,7 @@ void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_ind
 
   if(update_readiso_geom_wrapup==UPDATE_ISO_OFF)update_readiso_geom_wrapup=UPDATE_ISO_ONE_NOW;
   if(update_readiso_geom_wrapup==UPDATE_ISO_START_ALL)update_readiso_geom_wrapup=UPDATE_ISO_ALL_NOW;
-#ifdef pp_MEMPRINT
-  PRINTF("After iso load: \n");
   PrintMemoryInfo;
-#endif
   show_isofiles = 1;
 
   glutPostRedisplay();
@@ -859,10 +856,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   }
 
   UpdateTimes();
-#ifdef pp_MEMPRINT
-  PRINTF("After iso load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
 
   STOP_TIMER(total_time);

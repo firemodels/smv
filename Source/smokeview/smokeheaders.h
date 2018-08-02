@@ -9,7 +9,7 @@ EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateSliceBounds(void);
-EXTERNCPP void ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);
@@ -764,7 +764,7 @@ EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntime
 EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
-EXTERNCPP void ReadBoundary(int ifile, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP float ReadPart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);

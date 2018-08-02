@@ -906,11 +906,11 @@ end subroutine geomout
 
 !  ------------------ getgeomdata ------------------------
 
-subroutine getgeomdata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,redirect_flag,error)
+subroutine getgeomdata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,file_size,error)
 implicit none
 character(len=*), intent(in) :: filename
-integer, intent(in) :: ntimes, nvals, redirect_flag
-integer, intent(out) :: error
+integer, intent(in) :: ntimes, nvals
+integer, intent(out) :: file_size, error
 real, intent(out), dimension(:) :: times(ntimes), vals(nvals)
 integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
@@ -922,6 +922,7 @@ integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
 integer :: version
 
+file_size = 0
 inquire(file=trim(filename),exist=exists)
 if(exists)then
   open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
@@ -934,34 +935,47 @@ endif
 error = 0
 read(lu20)one
 read(lu20)version
+file_size = 2*(4+4+4)
 nvars=0
 do itime=1, ntimes
   read(lu20,iostat=finish)times(itime)
-  if(redirect_flag.eq.0)write(6,10)times(itime)
-10 format(" boundary element time=",f9.2)
+  file_size = file_size + (4+4+4)
   if(finish.eq.0)then
     read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
+    file_size = file_size + (4+4*4+4)
     nstatics(itime)=nvert_s+ntri_s
   endif
 
   if(finish.eq.0)then
-    if(nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+    if(nvert_s.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+      file_size = file_size + (4+4*nvert_s+4)
+    endif
     nvars = nvars + nvert_s
   endif
 
   if(finish.eq.0)then
-    if(ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+    if(ntri_s.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+      file_size = file_size + (4+4*ntri_s+4)
+    endif
     nvars = nvars + ntri_s
   endif
 
   ndynamics(itime)=nvert_d+ntri_d
   if(finish.eq.0)then
-    if(nvert_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+    if(nvert_d.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+      file_size = file_size + (4+4*nvert_d+4)
+    endif
     nvars = nvars + nvert_d
   endif
 
   if(finish.eq.0)then
-    if(ntri_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+    if(ntri_d.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+      file_size = file_size + (4+4*ntri_d+4)
+    endif
     nvars = nvars + ntri_d
   endif
 
@@ -982,7 +996,6 @@ do i = 2, nvars
   if(vals(i).lt.valmin)valmin=vals(i)
   if(vals(i).gt.valmax)valmax=vals(i)
 end do
-if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)
 
 end subroutine getgeomdata
@@ -1064,19 +1077,21 @@ end subroutine skipdata
 
 !  ------------------ getpatchdata ------------------------
 
-subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
+subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,file_size,error)
 implicit none
 
 integer, intent(in) :: npatch,file_unit
 integer, intent(in), dimension(*) :: pi1, pi2, pj1, pj2, pk1, pk2
 real, intent(out), dimension(*) :: pqq
-integer, intent(out) :: error,npqq
+integer, intent(out) :: error,npqq,file_size
 real, intent(out) :: patchtime
 
 integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, ii
 
+file_size=0;
 error=0
 read(file_unit,iostat=error)patchtime
+file_size = file_size + 4;
 if(error.ne.0)then
   close(file_unit)
   return
@@ -1094,6 +1109,7 @@ do i = 1, npatch
   npqq=npqq+size
   iend = ibeg + size - 1
   read(file_unit,iostat=error)(pqq(ii),ii=ibeg,iend)
+  file_size = file_size + 4*(iend+1-ibeg)
   if(error.ne.0)then
     close(file_unit)
     exit

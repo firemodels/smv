@@ -1108,10 +1108,7 @@ void ReadTerrain(char *file, int ifile, int flag, int *errorcode){
   visTerrainType=TERRAIN_3D;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
-#ifdef pp_MEMPRINT
-  PRINTF("After terrain file load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
   glutPostRedisplay();
 }

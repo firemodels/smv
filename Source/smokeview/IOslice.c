@@ -1301,10 +1301,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
   velocity_range = valmax - valmin;
   PushVSliceLoadstack(ivslice);
 
-#ifdef pp_MEMPRINT
-  PRINTF("After vslice load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
   return return_filesize;
 }

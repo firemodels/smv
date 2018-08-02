@@ -583,9 +583,10 @@ void update_patch_hist(void){
     ResetHistogram(patchi->histogram,NULL,NULL);
     while(error1==0){
       int ndummy;
+      int file_size;
 
       FORTgetpatchdata(&unit1, &patchi->npatches,
-        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&error1);
+        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&file_size, &error1);
       UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
     }
     LOCK_COMPRESS;

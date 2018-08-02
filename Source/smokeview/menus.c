@@ -17,7 +17,7 @@
 #endif
 
 #define PRINT_LOADTIMES \
-  if(file_count>0){\
+  if(file_count>1){\
     if(load_size>1000000000){\
       PRINTF("Loaded %.1f GB in %.1f s\n",(float)load_size/1000000000.,load_time);\
     }\
@@ -4196,8 +4196,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
       if(slicei->slicefile_type == SLICE_GEOM){
-        ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
-        return_filesize = 0;
+        return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
         return_filesize=ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
@@ -4783,16 +4782,24 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
     if(scriptoutstream==NULL){
+      int file_count=0;
+      float load_time=0.0, load_size=0.0;
+
+      START_TIMER(load_time);
       for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
 
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
-          LOCK_COMPRESS
-          ReadBoundary(i, LOAD, &errorcode);
-          UNLOCK_COMPRESS
+          LOCK_COMPRESS;
+          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+          load_size+=ReadBoundary(i, LOAD, &errorcode);
+          file_count++;
+          UNLOCK_COMPRESS;
         }
       }
+      STOP_TIMER(load_time);
+      PRINT_LOADTIMES;
     }
     force_redisplay=1;
     UpdateFrameNumber(0);

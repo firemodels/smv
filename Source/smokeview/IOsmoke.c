@@ -5361,9 +5361,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   else{
   PRINTF(" - %.0f kB/%.1f s\n",(float)file_size/1000.,total_time);
   }
-#ifdef pp_MEMPRINT
   PrintMemoryInfo;
-#endif
   *errorcode = 0;
   return file_size;
 }
