@@ -33,8 +33,7 @@
 
 STDCALLF FORTgetslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1, int *js2, int *ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice);
 STDCALLF FORTgetgeomdatasize(char *filename, int *ntimes, int *nvars, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetgeomdata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics,
-                         float *vals, int *redirect, int *error, FILE_SIZE lenfile);
+STDCALLF FORTgetgeomdata(char *filename, int *ntimes, int *nvals, float *times, int *nstatics, int *ndynamics, float *vals, int *file_size, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *unit1, int *npatch, int *error, FILE_SIZE lenfile);
 STDCALLF FORTgetboundaryheader2(int *unit1, int *version, int *npatches,
                                int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir);
@@ -57,7 +56,7 @@ STDCALLF FORTgetpatchsizes2(int *file_unit,int *version, int *npatch,int *npatch
                            int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2, int *patchdir,
                            int *headersize, int *framesize);
 STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2,
-                         float *patch_times,float *pqq, int *npqq, int *error);
+                         float *patch_times,float *pqq, int *npqq, int *file_size, int *error);
 STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 

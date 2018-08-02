@@ -172,12 +172,14 @@ void GetFaceInfo(void){
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
+#ifdef pp_GEOMPRINT
       PRINTF("Face/Vertex Summary\n");
       PRINTF("      Faces: %i\n",geomlisti->ntriangles);
       PRINTF(" slim faces: %i\n",nskinny);
       PRINTF("   Vertices: %i\n",geomlisti->nverts);
       PRINTF("     unused: %i\n",geomlisti->nverts-nused);
       PRINTF(" duplicates: %i\n\n",ndups);
+#endif
       FREEMEMORY(verts);
     }
   }
@@ -1487,7 +1489,7 @@ void ReadAllGeom(void){
 
 /* ------------------ ReadGeom0 ------------------------ */
 
-void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int one=1, endianswitch=0;
   int returncode;
@@ -1496,6 +1498,7 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
   int nvertfacesvolumes[3];
   int nfloat_vals, nint_vals;
   int iframe, icount;
+  FILE_SIZE return_filesize;
 
   FreeAllMemory(geomi->memory_id);
   geomi->geomlistinfo = NULL;
@@ -1506,22 +1509,35 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
   if(load_flag==UNLOAD){
     geomi->loaded=0;
     geomi->display=0;
-    return;
+    return 0;
   }
 
   ReadGeomHeader(geomi,geom_frame_index,&ntimes_local);
-  if(ntimes_local<0)return;
+  if(ntimes_local<0)return 0;
   stream = fopen(geomi->file,"rb");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
+
   FORTREAD(&version,1,stream);
+  return_filesize = 2*(4+4+4);
 
   FORTREAD(&nfloat_vals,1,stream);
-  if(nfloat_vals>0)FSEEK(stream,4+nfloat_vals*4+4,SEEK_CUR);
+  return_filesize += (4+4+4);
+
+  if(nfloat_vals>0){
+    FSEEK(stream, 4+nfloat_vals*4+4, SEEK_CUR);
+    return_filesize += 4+nfloat_vals*4+4;
+  }
+
   FORTREAD(&nint_vals,1,stream);
-  if(nint_vals>0)FSEEK(stream,4+nint_vals*4+4,SEEK_CUR);
+  return_filesize += (4+4+4);
+
+  if(nint_vals>0){
+    FSEEK(stream, 4+nint_vals*4+4, SEEK_CUR);
+    return_filesize += 4+nint_vals*4+4;
+  }
 
   geomi->ntimes=ntimes_local;
   geomi->itime=0;
@@ -1548,7 +1564,10 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
     skipframe = 0;
 
     if(iframe>=0){
+
       FORTREADBR(times_local,2,stream);
+      return_filesize += 4+4+4;
+
       icount++;
       if(geom_frame_index == NULL){
         if(use_tload_begin == 1 && times_local[0] < tload_begin)skipframe = 1;
@@ -1562,12 +1581,12 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
         if(skipframe == 0)geomi->currentframe = geomlisti;
       }
     }
+
     FORTREADBR(nvertfacesvolumes,2,stream);
+    return_filesize += (4+8+4);
+
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
-    if(skipframe==0&&iframe>=0&&ntris>0){
-      PRINTF("time=%.2f triangles: %i\n",times_local[0],ntris);
-    }
     if(skipframe==1){
       int file_offset = 0;
       if(nverts>0)file_offset += 4+3*nverts*4+4;
@@ -1585,7 +1604,10 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
       geomlisti->zORIG = zORIG;
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
+
       FORTREADBR(xyz,3*nverts,stream);
+      return_filesize += 4+3*nverts*4+4;
+
       for(ii=0;ii<nverts;ii++){
         verts[ii].xyz[0]=xyz[3*ii];
         verts[ii].xyz[1]=xyz[3*ii+1];
@@ -1605,8 +1627,13 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
       NewMemory((void **)&surf_ind,ntris*sizeof(int));
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
+
       FORTREADBR(ijk,3*ntris,stream);
+      return_filesize += 4+3*ntris*4+4;
+
       FORTREADBR(surf_ind,ntris,stream);
+      return_filesize += 4+ntris*4+4;
+
       if(type==GEOM_ISO)offset=nsurfinfo;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
@@ -1632,6 +1659,7 @@ void ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, 
   geomi->loaded = 1;
   geomi->display=1;
   fclose(stream);
+  return return_filesize;
 }
 
 /* ------------------ InMesh ------------------------ */
@@ -1665,7 +1693,7 @@ int OutSideDomain(vertdata **verts){
 
 /* ------------------ ReadGeom2 ------------------------ */
 
-void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
+FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   FILE *stream;
   int one=1, endianswitch=0;
   int returncode;
@@ -1677,6 +1705,7 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   int version;
   int nvertfacesvolumes[3];
   int nheaders[3], nfloat_vals, nint_vals, first_frame_static;
+  FILE_SIZE return_filesize = 0;
 
   FreeAllMemory(geomi->memory_id);
   geomi->geomlistinfo=NULL;
@@ -1687,19 +1716,23 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   if(load_flag==UNLOAD){
     geomi->loaded=0;
     geomi->display=0;
-    return;
+    return 0;
   }
 
   ReadGeomHeader(geomi,NULL,&ntimes_local);
-  if(ntimes_local<0)return;
+  if(ntimes_local<0)return 0;
   stream = fopen(geomi->file,"rb");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
+
   FORTREAD(&version,1,stream);
+  return_filesize += 2*(4+4+4);
 
   FORTREAD(nheaders,3,stream);
+  return_filesize += 4+3*4+4;
+
   nfloat_vals=nheaders[0];
   nint_vals=nheaders[1];
   first_frame_static=nheaders[2];
@@ -1730,17 +1763,18 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     if(first_frame_static==0&&i==-1)continue;
 
     FORTREADBR(&time_local,1,stream);
+    return_filesize += 4+4+4;
+
     if(i>=0)geomi->times[i]=time_local;
 
     FORTREADBR(nvertfacesvolumes,3,stream);
+    return_filesize += 4+3*4+4;
+
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
     if(nvolumes>0)have_volume=1;
 
-    if(i>=0&&ntris>0){
-      PRINTF("time=%.2f triangles: %i\n",time_local,ntris);
-    }
     if(nverts>0){
       int ii;
       float *xyz=NULL;
@@ -1752,7 +1786,10 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       geomlisti->verts=verts;
       geomlisti->zORIG=zORIG;
       geomlisti->nverts=nverts;
+
       FORTREADBR(xyz,3*nverts,stream);
+      return_filesize += 4+3*nverts*4+4;
+
       for(ii=0;ii<nverts;ii++){
         verts[ii].xyz[0]=xyz[3*ii];
         verts[ii].xyz[1]=xyz[3*ii+1];
@@ -1772,9 +1809,16 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
+
       FORTREADBR(ijk,3*ntris,stream);
+      return_filesize += 4+3*ntris*4+4;
+
       FORTREADBR(surf_ind,ntris,stream);
+      return_filesize += 4+ntris*4+4;
+
       FORTREADBR(texture_coords,6*ntris,stream);
+      return_filesize += 4+6*ntris*4+4;
+
       CheckMemory;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
@@ -1818,7 +1862,10 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       NewMemoryMemID((void **)&volumes,nvolumes*sizeof(tetdata),geomi->memory_id);
       geomlisti->volumes=volumes;
       NewMemory((void **)&ijk,4*nvolumes*sizeof(int));
+
       FORTREADBR(ijk,4*nvolumes,stream);
+      return_filesize += 4+4*nvolumes*4+4;
+
       for(ii=0;ii<nvolumes;ii++){
         int k;
 
@@ -1828,7 +1875,10 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       }
       FREEMEMORY(ijk);
       NewMemory((void **)&matl_ind,nvolumes*sizeof(int));
+
       FORTREADBR(matl_ind,nvolumes,stream);
+      return_filesize += 4+nvolumes*4+4;
+
       for(ii=0;ii<nvolumes;ii++){
         matldata *matli;
         int index;
@@ -1844,6 +1894,7 @@ void ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   geomi->loaded=1;
   geomi->display=1;
   fclose(stream);
+  return return_filesize;
 }
 
 /* ------------------ ReorderFace ------------------------ */
@@ -2319,27 +2370,31 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 
 /* ------------------ ReadGeom ------------------------ */
 
-void ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int version;
   int returncode;
   int one=0,endianswitch=0;
+  FILE_SIZE return_filesize=0;
 
-  if(geomi->file==NULL)return;
+  if(geomi->file==NULL)return 0;
   stream = fopen(geomi->file,"rb");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
   fclose(stream);
+  return_filesize = 2*(4+4+4);
+
 
   if(version<=1){
-    ReadGeom0(geomi,load_flag,type,geom_frame_index,errorcode);
+    return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index,errorcode);
   }
   else{
-    ReadGeom2(geomi,load_flag,type,errorcode);
+    return_filesize += ReadGeom2(geomi,load_flag,type,errorcode);
   }
   if(load_flag==LOAD)ClassifyGeom(geomi,geom_frame_index);
+  return return_filesize;
 }
 
 /* ------------------ DrawGeomData ------------------------ */

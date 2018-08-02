@@ -2053,9 +2053,7 @@ float ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcod
       UpdateTimes();
       updatemenu = 1;
       UpdatePart5Extremes();
-#ifdef pp_MEMPRINT
       PrintMemoryInfo;
-#endif
     }
     return 0.0;
   }
@@ -2087,9 +2085,7 @@ float ReadPart(char *file, int ifile, int loadflag, int data_type, int *errorcod
     GetPartData(parti, partframestep, nf_all, &file_size, data_type);
   }
 
-#ifdef pp_MEMPRINT
   PrintMemoryInfo;
-#endif
 
   if(data_type==PARTDATA){
     PRINTF(" - %.1f MB\n",(float)file_size/1000000.0);
