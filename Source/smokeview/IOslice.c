@@ -1689,7 +1689,6 @@ void SetSliceLabels(float smin, float smax,
   if(pd != NULL)sb->label = &(pd->label);
 
   *errorcode = 0;
-  PRINTF("setting up slice labels \n");
   scale = sb->scale;
   GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
 }
@@ -3832,7 +3831,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   meshdata *meshi;
 
   FILE_SIZE return_filesize=0;
-  int file_size;
+  int file_size=0;
 #ifdef pp_memstatus
   unsigned int availmemory;
 #endif
@@ -4025,13 +4024,16 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         *errorcode = 1;
         return 0;
       }
-      if(GetSliceCompressedData(sd->comp_file,
+      return_code=GetSliceCompressedData(sd->comp_file,
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
-        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax) == 0){
+        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax);
+      if(return_code == 0){
         ReadSlice("", ifile, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }
+      file_size = sd->ncompressed;
+      return_filesize = (FILE_SIZE)file_size;
     }
     else{
       int return_val;

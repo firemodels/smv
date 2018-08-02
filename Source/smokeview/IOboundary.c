@@ -2052,6 +2052,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,maxtimes_boundary);
     meshi->npatch_times=maxtimes_boundary;
     framestart = 0;
+    return_filesize += ncompressed_buffer;
   }
   else{
     if(meshi->patchval == NULL){
@@ -2309,7 +2310,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   IdleCB();
 
   STOP_TIMER(total_time);
-  PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
+
+  if(return_filesize > 1000000000){
+    PRINTF(" - %.1f GB in %.1f s\n", (float)return_filesize / 1000000000., total_time);
+  }
+  else if(return_filesize > 1000000){
+    PRINTF(" - %.1f MB in %.1f s\n", (float)return_filesize / 1000000., total_time);
+  }
+ else{
+   PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
+  }
   glutPostRedisplay();
   return return_filesize;
 }
