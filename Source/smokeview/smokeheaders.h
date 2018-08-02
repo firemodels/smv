@@ -762,7 +762,7 @@ EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void ReadAllGeom(void);
-EXTERNCPP void ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP float ReadPart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);
@@ -776,7 +776,7 @@ EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);

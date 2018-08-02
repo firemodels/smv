@@ -49,7 +49,7 @@
 //*** options: debug options
 
 #ifdef _DEBUG
-#define pp_MEMPRINT     // output memory allocation info
+//#define pp_MEMPRINT     // output memory allocation info
 #define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
 

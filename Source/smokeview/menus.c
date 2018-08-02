@@ -4656,11 +4656,14 @@ void LoadPlot3dMenu(int value){
 
 /* ------------------ LoadIsoi ------------------------ */
 
-void LoadIsoi(int value){
+FILE_SIZE LoadIsoI(int value){
   char *file;
   isodata *isoi;
   int errorcode;
+  FILE_SIZE return_filesize = 0;
+  float total_time;
 
+  START_TIMER(total_time);
   ReadIsoFile=1;
   isoi = isoinfo + value;
   file=isoi->file;
@@ -4670,24 +4673,38 @@ void LoadIsoi(int value){
     fprintf(scriptoutstream, " %s\n", isoi->surface_label.longlabel);
     fprintf(scriptoutstream, " %i\n", isoi->blocknumber+1);
   }
+
   if(scriptoutstream==NULL){
-    ReadIso(file,value,LOAD,NULL,&errorcode);
+    return_filesize=ReadIso(file,value,LOAD,NULL,&errorcode);
     if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
   }
   isoi->loading=0;
+  STOP_TIMER(total_time);
+  PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
+
+
+  return return_filesize;
 }
 
   /* ------------------ LoadAllIsos ------------------------ */
 
 void LoadAllIsos(int iso_type){
   int i;
+  int file_count=0;
+  float load_time=0.0, load_size=0.0;
 
+  START_TIMER(load_time);
   for(i = 0; i < nisoinfo; i++){
     isodata *isoi;
 
     isoi = isoinfo + i;
-    if(iso_type == isoi->type)LoadIsoi(i);
+    if(iso_type==isoi->type){
+      load_size+=LoadIsoI(i);
+      file_count++;
+    }
   }
+  STOP_TIMER(load_time);
+  PRINT_LOADTIMES;
 }
 
 /* ------------------ LoadIsoMenu ------------------------ */
@@ -4700,7 +4717,7 @@ void LoadIsoMenu(int value){
   if(value==MENU_DUMMY3)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
   if(value>=0){
-    LoadIsoi(value);
+    LoadIsoI(value);
   }
   if(value==-1){
     for(i=0;i<nisoinfo;i++){

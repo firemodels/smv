@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_GEOMPRINT  // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
 //#define pp_DPRINT       // debug print, printf line number and source file
 #define pp_CPARTSIZE    // use C to read in particle file to generate a size file
