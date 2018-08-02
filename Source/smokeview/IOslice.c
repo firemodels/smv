@@ -3439,7 +3439,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
-  int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
+  //int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
 
@@ -3519,12 +3519,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
           if(first==1){
             *pmin=pdata[n];
             *pmax=pdata[n];
-            iimin=ii;
-            jjmin=jj;
-            kkmin=kk;
-            iimax=ii;
-            jjmax=jj;
-            kkmax=kk;
             imintime = 0;
             imaxtime = 0;
             first=0;
@@ -3532,16 +3526,10 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
           else{
             if(pdata[n]<*pmin){
               *pmin=pdata[n];
-              iimin=ii;
-              jjmin=jj;
-              kkmin=kk;
               imintime = istep;
             }
             if(pdata[n]>*pmax){
               *pmax=pdata[n];
-              iimax=ii;
-              jjmax=jj;
-              kkmax=kk;
               imaxtime = istep;
             }
           }
@@ -3551,24 +3539,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     if(first==1){
       *pmin=0.0;
       *pmax=1.0;
-      iimin=0;
-      jjmin=0;
-      kkmin=0;
-      iimax=0;
-      jjmax=0;
-      kkmax=0;
       imintime = 0;
       imaxtime = 0;
     }
-  }
-
-  {
-    char slicelabel[10];
-
-    strcpy(slicelabel, "node");
-    if(sd->slicefile_type == SLICE_CELL_CENTER) strcpy(slicelabel, "cell");
-//    PRINTF(" global min (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmin, slicelabel, iimin, jjmin, kkmin, sd->times[imintime]);
-//    PRINTF(" global max (slice file): %f %s=(%i,%i,%i) time=%f\n", *pmax, slicelabel, iimax, jjmax, kkmax, sd->times[imaxtime]);
   }
   FREEMEMORY(slice_mask0);
 }
