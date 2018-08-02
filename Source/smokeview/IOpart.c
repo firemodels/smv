@@ -937,7 +937,7 @@ void WritePartHistogram(partdata *parti){
 #ifdef pp_CPARTSIZE
 
  /* ------------------ CreatePart5SizeFile ------------------------ */
-void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int redirect_flag, int *error){
+void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int *error){
   FILE *PART5FILE, *streamout;
   int returncode;
   int one, version, nclasses;
@@ -1694,29 +1694,32 @@ int GetNPartFrames(partdata *parti){
     doit = 1;
   }
   if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
-    int lenreg, lensize, error;
+    int error;
     int angle_flag=0;
+#ifndef pp_CPARTSIZE
+    int lenreg, lensize;
+#endif
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    lenreg=strlen(reg_file);
-    lensize=strlen(size_file);
     if(parti->evac==1){
       angle_flag=1;
       PRINTF("Sizing evac data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
 #else
-      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
+      lenreg = strlen(reg_file);
+      lensize = strlen(size_file);
+      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &error, lenreg,lensize);
 #endif
     }
     else{
       angle_flag=0;
       PRINTF("Sizing particle data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
 #else
-      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &redirect, &error, lenreg,lensize);
+      FORTfcreate_part5sizefile(reg_file,size_file, &angle_flag, &error, lenreg,lensize);
 #endif
     }
   }
@@ -1807,18 +1810,18 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
       angle_flag = 1;
       if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
 #else
-      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
+      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &error, lenreg, lensize);
 #endif
       }
     else{
       angle_flag = 0;
       if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
 #ifdef pp_CPARTSIZE
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, redirect, &error);
+      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
 #else
-      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &redirect, &error, lenreg, lensize);
+      FORTfcreate_part5sizefile(reg_file, size_file, &angle_flag, &error, lenreg, lensize);
 #endif
     }
   }

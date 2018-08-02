@@ -3498,9 +3498,8 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     n0 = -1;
 
     for(i=0;i<sd->nslicei;i++){
-      int ii,j;
+      int j;
 
-      ii = sd->is1+i;
       for(j=0;j<sd->nslicej;j++){
         int k;
 
@@ -3834,9 +3833,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
   FILE_SIZE return_filesize=0;
   int file_size;
-#ifdef pp_MEMDEBUG
-  int num_memblocks_load, num_memblocks_unload;
-#endif
 #ifdef pp_memstatus
   unsigned int availmemory;
 #endif
@@ -3858,7 +3854,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
   ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
   sd = sliceinfo + slicefilenumber;
-  CountMemoryBlocks(num_memblocks_load, 0);
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
     sd->display = 0;
@@ -3969,17 +3964,12 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
       UpdateGlui();
       UpdateUnitDefs();
       UpdateTimes();
-#ifdef pp_MEMDEBUG
-      CountMemoryBlocks(num_memblocks_unload, num_memblocks_load);
-#endif
       RemoveSliceLoadstack(slicefilenumber);
       return 0;
     }
 
 // load entire slice file (flag=LOAD) or
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
-
-    CountMemoryBlocks(num_memblocks_load, 0);
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
@@ -4245,8 +4235,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
   }
   CheckMemory;
-
-  CountMemoryBlocks(sd->num_memblocks, num_memblocks_load);
 #endif
   IdleCB();
 
