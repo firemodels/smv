@@ -86,7 +86,6 @@ EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void UpdateShowSliceInObst(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
@@ -765,7 +764,7 @@ EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
-EXTERNCPP float ReadPart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);
+EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);
 

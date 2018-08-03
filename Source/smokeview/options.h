@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SMOKEDIAG    // output smoke3d diagnostics (number of meshes, total trianles, triangles drawn)
 //#define pp_GEOMPRINT  // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
 //#define pp_DPRINT       // debug print, printf line number and source file
@@ -27,7 +28,6 @@
 #define pp_FILELIST     // use list of file names
 #define pp_LANG         // support other languages
 
-#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 
 #define pp_GPU          // support the GPU

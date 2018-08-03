@@ -2640,6 +2640,7 @@ void LuaScriptMenu(int value){
 void ReloadMenu(int value){
   int msecs;
 
+  if(value == MENU_DUMMY)return;
   updatemenu=1;
   periodic_value=value;
   switch(value){
@@ -2816,7 +2817,7 @@ void LoadUnloadMenu(int value){
       ReadBoundary(i,UNLOAD,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
-      ReadPart("",i,UNLOAD,PARTDATA,&errorcode);
+      ReadPart("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<nisoinfo;i++){
       ReadIso("",i,UNLOAD,NULL,&errorcode);
@@ -2904,7 +2905,7 @@ void LoadUnloadMenu(int value){
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].loaded==1){
         partinfo[i].reload=1;
-        ReadPart(partinfo[i].file,i,UNLOAD,PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file,i,UNLOAD,&errorcode);
       }
       else{
         partinfo[i].reload=0;
@@ -2913,12 +2914,12 @@ void LoadUnloadMenu(int value){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].reload==1){
-        ReadPart(partinfo[i].file, i, UNLOAD, PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file, i, UNLOAD, &errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].reload==1){
-        ReadPart(partinfo[i].file, i, LOAD, PARTDATA,&errorcode);
+        ReadPart(partinfo[i].file, i, LOAD, &errorcode);
       }
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
@@ -3137,9 +3138,6 @@ void LoadEvacMenu(int value){
 
   if(value==MENU_EVAC_DUMMY)return;
   glutSetCursor(GLUT_CURSOR_WAIT);
-  if(value >= 0 || value == PARTFILE_LOADALL){
-    GetPartHistogram(value);
-  }
   if(value==EVACFILE_LOADALL){
     int i;
 
@@ -3148,7 +3146,7 @@ void LoadEvacMenu(int value){
 
       parti=partinfo + i;
       if(parti->evac==0)continue;
-      ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart(parti->file, i, UNLOAD, &errorcode);
     }
     npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
     for(i=0;i<npartinfo;i++){
@@ -3157,7 +3155,7 @@ void LoadEvacMenu(int value){
       parti=partinfo + i;
       if(parti->evac==0)continue;
       ReadEvacFile=1;
-      ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+      ReadPart(parti->file, i, LOAD, &errorcode);
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADFILE\n");
         fprintf(scriptoutstream," %s\n",parti->file);
@@ -3169,7 +3167,7 @@ void LoadEvacMenu(int value){
   if(value>=0){
     ReadEvacFile=1;
     npartframes_max=GetMinPartFrames(value);
-    ReadPart(partinfo[value].file, value, LOAD, PARTDATA,&errorcode);
+    ReadPart(partinfo[value].file, value, LOAD, &errorcode);
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partinfo[value].file);
@@ -3180,7 +3178,7 @@ void LoadEvacMenu(int value){
 
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==0)continue;
-      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, &errorcode);
     }
   }
   updatemenu=1;
@@ -3414,13 +3412,9 @@ void ParticlePropShowMenu(int value){
 
 void LoadParticleMenu(int value){
   int errorcode,i;
-  float total_file_size;
   int file_count;
 
   glutSetCursor(GLUT_CURSOR_WAIT);
-  if(value>=0||value == PARTFILE_LOADALL){
-    GetPartHistogram(value);
-  }
   if(value>=0){
     char  *partfile;
     partdata *parti;
@@ -3428,14 +3422,14 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
-    parti->compute_bounds_color = SET_PARTCOLOR;
+    parti->finalize = 1;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
-    ReadPart(partfile, value, LOAD, PARTDATA,&errorcode);
+    ReadPart(partfile, value, LOAD, &errorcode);
   }
   else{
     if(value==-1){
@@ -3444,16 +3438,16 @@ void LoadParticleMenu(int value){
 
         parti = partinfo + i;
         if(parti->evac==1)continue;
-        ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
+        ReadPart("", i, UNLOAD, &errorcode);
       }
     }
     else if(value==MENU_PART_SETTINGS){
       ShowBoundsDialog(DLG_PART);
     }
     else{
-#ifdef pp_PARTDEFER
       int lasti = 0;
-#endif
+      float load_time;
+      FILE_SIZE load_size;
 
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
@@ -3467,7 +3461,6 @@ void LoadParticleMenu(int value){
 
       // wait until last particle file is loaded before coloring
       
-#ifdef pp_PARTDEFER
       lasti = npartinfo - 1;
       for(i = npartinfo - 1;i >= 0;i--){
         partdata *parti;
@@ -3483,7 +3476,6 @@ void LoadParticleMenu(int value){
           break;
         }
       }
-#endif
 
      // unload particle files
 
@@ -3493,38 +3485,29 @@ void LoadParticleMenu(int value){
 
           parti = partinfo+i;
           if(parti->evac==1||parti->loaded==0)continue;
-          parti->compute_bounds_color = DEFER_PARTCOLOR;
-          ReadPart(parti->file, i, UNLOAD, PARTDATA, &errorcode);
+          parti->finalize = 1;
+          ReadPart(parti->file, i, UNLOAD,  &errorcode);
         }
       }
 
       // load particle files unless we are reloading and the were not loaded before
 
-      total_file_size = 0.0;
+      load_size = 0;
       file_count=0;
+      START_TIMER(load_time);
       for(i = 0;i < npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
         if(parti->evac == 1)continue;
         if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
-#ifdef pp_PARTDEFER
-        parti->compute_bounds_color = DEFER_PARTCOLOR;
-        if(lasti == i)parti->compute_bounds_color = SET_ALLPARTCOLORS;
-#else
-        parti->compute_bounds_color = SET_PARTCOLOR;
-#endif
-        total_file_size+=ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+        parti->finalize = 0;
+        if(lasti == i)parti->finalize = 1;
+        load_size+=ReadPart(parti->file, i, LOAD, &errorcode);
         file_count++;
       }
-      if(file_count>1){
-        if(total_file_size>1000.0){
-          PRINTF("Total: %.1f GB\n",total_file_size/1000.0);
-        }
-        else{
-          PRINTF("Total: %.1f MB\n",total_file_size);
-        }
-      }
+      STOP_TIMER(load_time);
+      PRINT_LOADTIMES;
 
       force_redisplay=1;
       UpdateFrameNumber(0);
@@ -3647,12 +3630,12 @@ void UnloadEvacMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    ReadPart("", value, UNLOAD, PARTDATA,&errorcode);
+    ReadPart("", value, UNLOAD, &errorcode);
   }
   else{
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==0)continue;
-      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, &errorcode);
     }
   }
 }
@@ -3665,12 +3648,12 @@ void UnloadPartMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    ReadPart("", value, UNLOAD, PARTDATA,&errorcode);
+    ReadPart("", value, UNLOAD, &errorcode);
   }
   else{
     for(i=0;i<npartinfo;i++){
       if(partinfo[i].evac==1)continue;
-      ReadPart("", i, UNLOAD, PARTDATA,&errorcode);
+      ReadPart("", i, UNLOAD, &errorcode);
     }
   }
 }
@@ -10730,8 +10713,8 @@ updatemenu=0;
       glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
-    glutAddMenuEntry("-", -999);
-    glutAddMenuEntry(_("When:"), -999);
+    glutAddMenuEntry("-", MENU_DUMMY);
+    glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
     if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);

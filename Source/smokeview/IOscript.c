@@ -1208,7 +1208,7 @@ void ScriptLoadParticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    ReadPart(parti->file,i,UNLOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
   for(i=0;i<npartinfo;i++){
@@ -1216,7 +1216,7 @@ void ScriptLoadParticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    ReadPart(parti->file,i,LOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,LOAD,&errorcode);
     if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
       FREEMEMORY(loaded_file);
       NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);

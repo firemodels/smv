@@ -1093,12 +1093,10 @@ typedef struct _part5data {
 
 typedef struct _partdata {
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
-  int seq_id, autoload, loaded, display, reload, finalize;
+  int seq_id, autoload, loaded, request_load, display, reload, finalize;
   int sort_tags_loaded, compression_type, evac;
   int blocknumber;
   int *timeslist, ntimes, itime;
-  int data_type;
-  int compute_bounds_color;
 
   float zoffset, *times;
   FILE_SIZE reg_file_size;

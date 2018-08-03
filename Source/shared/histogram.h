@@ -18,7 +18,7 @@
 
 /* --------------------------  flowlabels ------------------------------------ */
 
-#define NHIST_BUCKETS 100000
+#define NHIST_BUCKETS 10000
 typedef struct {
   unsigned int *buckets_polar;
   float *buckets, bucket_maxval, bucket_maxr, bucket_maxtheta;
