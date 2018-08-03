@@ -1023,7 +1023,6 @@ extern "C" void Smoke3dCB(int var){
         ROLLOUT_colormap_temp->open();
       }
 #endif
-      if(PANEL_absorption!=NULL)PANEL_absorption->disable();
       firecolormap_type_save=firecolormap_type;
       firecolormap_type=FIRECOLORMAP_CONSTRAINT;
       RADIO_use_colormap->set_int_val(firecolormap_type);
