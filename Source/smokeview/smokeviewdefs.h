@@ -89,13 +89,6 @@ void _Sniff_Errors(char *whereat);
 #define SET_SLICECOLOR   0
 #define DEFER_SLICECOLOR 1
 
-#define DEFER_PARTCOLOR   0
-#define SET_PARTCOLOR     1
-#define SET_ALLPARTCOLORS 2
-
-#define PARTDATA 0
-#define HISTDATA 1
-
 #define SLICEDUP_KEEPALL 0
 #define SLICEDUP_KEEPFINE 1
 #define SLICEDUP_KEEPCOARSE 2

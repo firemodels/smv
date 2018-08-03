@@ -7876,7 +7876,7 @@ typedef struct {
       parti->blocknumber=blocknumber;
       parti->seq_id=nn_part;
       parti->autoload=0;
-      parti->compute_bounds_color = SET_PARTCOLOR;
+      parti->finalize = 1;
       if(FGETS(buffer,255,stream)==NULL){
         npartinfo--;
         BREAK;
@@ -7947,6 +7947,7 @@ typedef struct {
       parti->compression_type=UNCOMPRESSED;
       parti->sort_tags_loaded=0;
       parti->loaded=0;
+      parti->request_load = 0;
       parti->finalize = 0;
       parti->display=0;
       parti->times=NULL;

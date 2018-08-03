@@ -971,15 +971,15 @@ void InitOpenGL(void){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
     }
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     for(i = 0; i<nisoinfo; i++){
