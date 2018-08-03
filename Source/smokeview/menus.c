@@ -3421,7 +3421,7 @@ void LoadParticleMenu(int value){
     ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
-    parti->finalize2 = 1;
+    parti->finalize = 1;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",partfile);
@@ -3484,7 +3484,7 @@ void LoadParticleMenu(int value){
 
           parti = partinfo+i;
           if(parti->evac==1||parti->loaded==0)continue;
-          parti->finalize2 = 1;
+          parti->finalize = 1;
           ReadPart(parti->file, i, UNLOAD,  &errorcode);
         }
       }
@@ -3500,8 +3500,8 @@ void LoadParticleMenu(int value){
         parti = partinfo + i;
         if(parti->evac == 1)continue;
         if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
-        parti->finalize2 = 0;
-        if(lasti == i)parti->finalize2 = 1;
+        parti->finalize = 0;
+        if(lasti == i)parti->finalize = 1;
         load_size+=ReadPart(parti->file, i, LOAD, &errorcode);
         file_count++;
       }
