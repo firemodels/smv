@@ -137,6 +137,16 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
               alphaf_out[n]=AdjustAlpha(ALPHAIN, ASPECTRATIO);\
             }
 
+#ifdef pp_SMOKEDIAG
+#define SMOKESKIP \
+  total_triangles++;\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
+  total_drawn_triangles++
+#else
+#define SMOKESKIP \
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
+#endif
+
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
 if(show_smoketest==0){\
@@ -144,7 +154,7 @@ if(show_smoketest==0){\
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
+  SMOKESKIP;\
   ivalue[0]=n11<<2;  \
   ivalue[1]=n12<<2;  \
   ivalue[2]=n22<<2;  \
@@ -194,7 +204,7 @@ if(show_smoketest==0){\
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
+  SMOKESKIP;\
   z_offset[XXX]=znode_offset[m11];\
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
@@ -4556,12 +4566,19 @@ void DrawSmokeFrame(void){
 
     if(showvolrender==0){
       int blend_mode;
+#ifdef pp_SMOKEDIAG
+      int nm=0;
+#endif
 
       blend_mode = 0;
       if(usegpu==0&&hrrpuv_max_blending==1){
         blend_mode = 1;
         glBlendEquation(GL_MAX);
       }
+#ifdef pp_SMOKEDIAG
+      total_triangles=0;
+      total_drawn_triangles=0;
+#endif
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3ddata *smoke3di;
 
@@ -4569,7 +4586,9 @@ void DrawSmokeFrame(void){
         if(smoke3di->loaded==0||smoke3di->display==0)continue;
         if(smoke3di->primary_file==0)continue;
         if(IsSmokeComponentPresent(smoke3di)==0)continue;
-
+#ifdef pp_SMOKEDIAG
+        nm++;
+#endif
 #ifdef pp_GPU
         if(usegpu==1){
           DrawSmoke3DGPU(smoke3di);
@@ -4581,6 +4600,10 @@ void DrawSmokeFrame(void){
         DrawSmoke3D(smoke3di);
 #endif
       }
+#ifdef pp_SMOKEDIAG
+      printf("meshes: %i triangles: total=%u drawn=%u fraction skipped=%f\n",
+        nm,total_triangles,total_drawn_triangles,(float)(total_triangles-total_drawn_triangles)/(float)total_triangles);
+#endif
       if(blend_mode==1){
         glBlendEquation(GL_FUNC_ADD);
       }
