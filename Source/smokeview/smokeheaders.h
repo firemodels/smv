@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);

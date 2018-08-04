@@ -728,7 +728,7 @@ SVEXTERN float rgb_full2[MAXRGB][4];
 SVEXTERN float rgb_terrain2[4 * MAXRGB];
 SVEXTERN float rgb_slice[4 * MAXRGB];
 SVEXTERN float rgb_volsmokecolormap[4*MAXSMOKERGB];
-SVEXTERN float rgb_slicesmokecolormap[4*MAXSMOKERGB];
+SVEXTERN float rgb_slicesmokecolormap_01[4*MAXSMOKERGB];
 SVEXTERN float rgb_iso[4*MAXRGB];
 SVEXTERN float rgb_patch[4*MAXRGB];
 SVEXTERN float rgb_plot3d[4*MAXRGB];

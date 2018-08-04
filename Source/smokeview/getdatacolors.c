@@ -1238,8 +1238,8 @@ void UpdateTexturebar(void){
   SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_iso) ");
 
   glBindTexture(GL_TEXTURE_1D,slicesmoke_colormap_id);
-  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap);
-  SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_slicesmokecolormap) ");
+  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
+  SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_slicesmokecolormap_01) ");
 
   glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
@@ -1334,14 +1334,14 @@ void UpdateSmokeColormap(int option){
     valmin=global_hrrpuv_min;
     valcut=global_hrrpuv_cutoff;
     valmax=global_hrrpuv_max;
-    rgb_colormap = rgb_slicesmokecolormap;
+    rgb_colormap = rgb_slicesmokecolormap_01;
   }
   else{
     valmin = global_temp_min;
     valcut = global_temp_cutoff;
     valmax = global_temp_max;
     rgb_colormap = rgb_volsmokecolormap;
-    if(have_fire == TEMP)rgb_colormap=rgb_slicesmokecolormap;
+    if(have_fire == TEMP)rgb_colormap=rgb_slicesmokecolormap_01;
   }
   icut = (MAXSMOKERGB-1)*((valcut-valmin)/(valmax-valmin));
   icut = CLAMP(icut,2,(MAXSMOKERGB-3));
