@@ -2793,10 +2793,15 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
       }
 
       constval = xplt[i]+0.001;
-      for(k = ks1; k<ks2; k++){
+      for(k = ks1; k<ks2; k+=smoke3d_skip){
+        int k2, koffset;
+
+        k2 = MIN(k+smoke3d_skip,ks2);
+        koffset = k2 - k;
+
         kterm = (k-ks1)*nxy;
         z1 = zplt[k];
-        z3 = zplt[k+1];
+        z3 = zplt[k2];
         znode[0] = z1;
         znode[1] = z1;
         znode[2] = z3;
@@ -2805,15 +2810,20 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         if(smokecullflag==1&&k!=ks2){
           x11[2] = zplt[k];
           x12[2] = zplt[k];
-          x22[2] = zplt[k+1];
-          x21[2] = zplt[k+1];
+          x22[2] = zplt[k2];
+          x21[2] = zplt[k2];
 
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
-        for(j = js1; j<js2; j++){
+        for(j = js1; j<js2; j+=smoke3d_skip){
+          int j2, joffset;
+
+          j2 = MIN(j+smoke3d_skip,js2);
+          joffset = j2 - j;
+          
           jterm = (j-js1)*nx;
           yy1 = yplt[j];
-          y3 = yplt[j+1];
+          y3 = yplt[j2];
           ynode[0] = yy1;
           ynode[1] = y3;
           ynode[2] = y3;
@@ -2821,23 +2831,23 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
 
-          n11 = n;            //n
-          n12 = n11+nx;       //n+nx
-          n22 = n12+nxy;      //n+nx+nxy
-          n21 = n22-nx;       //n+nxy
+          n11 = n;                    //n
+          n12 = n11+joffset*nx;       //n+nx
+          n22 = n12+koffset*nxy;      //n+nx+nxy
+          n21 = n22-joffset*nx;       //n+nxy
 
-                              //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n12 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
+                              //        n11 = (i-is1)   + (j  -js1)*nx + (k  -ks1)*nx*ny;
+                              //        n12 = (i-is1)   + (j+1-js1)*nx + (k  -ks1)*nx*ny;
                               //        n22 = (i-is1)   + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-                              //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+                              //        n21 = (i-is1)   + (j  -js1)*nx + (k+1-ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
 
             m11 = iterm+jterm;
-            m12 = m11+nx;
+            m12 = m11+joffset*nx;
             m22 = m12;
-            m21 = m22-nx;
+            m21 = m22-joffset*nx;
             DRAWVERTEXTERRAIN(constval, ynode[mm], znode[mm])
           }
           else{
@@ -2952,11 +2962,14 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
         if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
       }
+      for(k = ks1; k<ks2; k+=smoke3d_skip){
+        int k2, koffset;
 
-      for(k = ks1; k<ks2; k++){
+        k2 = MIN(k+smoke3d_skip,ks2);
+        koffset = k2 - k;
         kterm = (k-ks1)*nxy;
         z1 = zplt[k];
-        z3 = zplt[k+1];
+        z3 = zplt[k2];
 
         znode[0] = z1;
         znode[1] = z1;
@@ -2966,15 +2979,19 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         if(smokecullflag==1){
           x11[2] = zplt[k];
           x12[2] = zplt[k];
-          x22[2] = zplt[k+1];
-          x21[2] = zplt[k+1];
+          x22[2] = zplt[k2];
+          x21[2] = zplt[k2];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(i = is1; i<is2; i++){
+        for(i = is1; i<is2; i+=smoke3d_skip){
+          int i2,ioffset;
+
+          i2 = MIN(i+smoke3d_skip,is2);
+          ioffset = i2 - i;
           iterm = (i-is1);
           x1 = xplt[i];
-          x3 = xplt[i+1];
+          x3 = xplt[i2];
 
           xnode[0] = x1;
           xnode[1] = x3;
@@ -2982,10 +2999,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           xnode[3] = x1;
 
           n = iterm+jterm+kterm;
-          n11 = n;            //n
-          n12 = n11+1;;       //n+1
-          n22 = n12+nxy;      //n+1+nxy
-          n21 = n22-1;        //n+nxy
+          n11 = n;                //n
+          n12 = n11+ioffset;      //n+1
+          n22 = n12+koffset*nxy;  //n+1+nxy
+          n21 = n22-ioffset;      //n+nxy
 
                               //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
                               //        n12 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
@@ -2996,9 +3013,9 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
             int m11, m12, m22, m21;
 
             m11 = iterm+jterm;
-            m12 = m11+1;
+            m12 = m11+ioffset;
             m22 = m12;
-            m21 = m22-1;
+            m21 = m22-ioffset;
             DRAWVERTEXTERRAIN(xnode[mm], constval, znode[mm])
           }
           else{
@@ -3108,11 +3125,15 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
       }
 
-      for(j = js1; j<js2; j++){
+      for(j = js1; j<js2; j+=smoke3d_skip){
+        int j2,joffset;
+
+        j2 = MIN(j+smoke3d_skip,js2);
+        joffset = j2 - j;
         jterm = (j-js1)*nx;
 
         yy1 = yplt[j];
-        y3 = yplt[j+1];
+        y3 = yplt[j2];
 
         ynode[0] = yy1;
         ynode[1] = yy1;
@@ -3122,15 +3143,19 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         if(smokecullflag==1){
           x11[1] = yplt[j];
           x12[1] = yplt[j];
-          x22[1] = yplt[j+1];
-          x21[1] = yplt[j+1];
+          x22[1] = yplt[j2];
+          x21[1] = yplt[j2];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(i = is1; i<is2; i++){
+        for(i = is1; i<is2; i+=smoke3d_skip){
+        int i2,ioffset;
+
+        i2 = MIN(i+smoke3d_skip,is2);
+        ioffset = i2 - i;
           iterm = (i-is1);
           x1 = xplt[i];
-          x3 = xplt[i+1];
+          x3 = xplt[i2];
 
           xnode[0] = x1;
           xnode[1] = x3;
@@ -3139,17 +3164,17 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           n11 = n;
-          n12 = n11+1;;
-          n22 = n12+nx;
-          n21 = n22-1;
+          n12 = n11+ioffset;
+          n22 = n12+joffset*nx;
+          n21 = n22-ioffset;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
 
             m11 = iterm+jterm;
-            m12 = m11+1;
-            m22 = m12+nx;
-            m21 = m22-1;
+            m12 = m11+ioffset;
+            m22 = m12+joffset*nx;
+            m21 = m22-ioffset;
             DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], constval)
           }
           else{
