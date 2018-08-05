@@ -199,7 +199,7 @@ void UpdateFrameNumber(int changetime){
           UpdateSmoke3D(smoke3di);
         }
       }
-      if(nsmoke3dinfo>0)MergeSmoke3dColors(NULL);
+      if(nsmoke3dinfo>0)MergeSmoke3D(NULL);
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){

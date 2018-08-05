@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1);
 #ifdef pp_SMOKEDIAG
 SVEXTERN unsigned int total_triangles, total_drawn_triangles;

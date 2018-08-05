@@ -504,7 +504,7 @@ EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
 EXTERNCPP void UpdateSmoke3dFlags(void);
-EXTERNCPP void MergeSmoke3dColors(smoke3ddata *smoke3dset);
+EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
 EXTERNCPP void GetSmokeDir(float *mm);

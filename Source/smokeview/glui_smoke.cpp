@@ -71,6 +71,7 @@ extern GLUI *glui_bounds;
 #define UPDATE_FIRE_ALPHA 72
 #define UPDATE_CO2_ALPHA 73
 #define SMOKE_SKIP 74
+#define SMOKE_BLACK 75
 
 // two defines below are also defined elsewhere
 
@@ -667,6 +668,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_smoke3d_thick->set_int_limits(0,7);
 #endif
     SPINNER_smoke3d_skip=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Skip"), GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, Smoke3dCB);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
 
     PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_display,_("Absorption adjustments"));
     PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
@@ -854,6 +856,8 @@ extern "C" void Smoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case SMOKE_BLACK:
+    break;
   case SMOKE_SKIP:
     if(smoke3d_skip<1||smoke3d_skip>10){
       smoke3d_skip=CLAMP(smoke3d_skip,1,10);
