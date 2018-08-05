@@ -379,6 +379,8 @@ void InitMesh(meshdata *meshi){
   meshi->smokedir = 1;
   meshi->merge_alpha = NULL;
   meshi->merge_color = NULL;
+  meshi->smokecolor_ptr = NULL;
+  meshi->smokealpha_ptr = NULL;
   meshi->dx = 1.0;
   meshi->dy = 1.0;
   meshi->dz = 1.0;

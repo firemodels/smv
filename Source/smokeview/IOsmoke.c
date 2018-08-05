@@ -181,7 +181,7 @@ if(show_smoketest==0){\
       alphaval = alphaval*(3.0-alphaval*(3.0-alphaval));\
       alphabyte = 255*alphaval; \
     }\
-    colorptr=mergecolorptr+ivalue[mm];\
+    colorptr=smokecolor_ptr+ivalue[mm];\
     colorptr[3]=alphabyte;                                   \
     glColor4ubv(colorptr);                                \
     glVertex3f(XX,YY,ZZ);                                \
@@ -235,7 +235,7 @@ if(show_smoketest==0){\
       alphaval = alphaval*(3.0-alphaval*(3.0-alphaval));\
       alphabyte = 255*alphaval; \
     }\
-    colorptr=mergecolorptr+ivalue[mm];\
+    colorptr=smokecolor_ptr+ivalue[mm];\
     colorptr[3]=alphabyte;                                   \
     glColor4ubv(colorptr);                                \
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
@@ -2584,7 +2584,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   float *znode_offset, z_offset[4];
 
   float *xplt, *yplt, *zplt;
-  unsigned char mergealpha, *mergealphaptr, *mergecolorptr;
+  unsigned char smokealpha, *smokealpha_ptr, *smokecolor_ptr;
   int nx, ny, nz;
   unsigned char *alphaf_in, *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
@@ -2624,8 +2624,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   smoketime_merge += merge_time;
   START_TIMER(draw_time);
 #endif
-  mergealphaptr = meshi->merge_alpha;
-  mergecolorptr = meshi->merge_color;
+  smokealpha_ptr = meshi->smokealpha_ptr;
+  smokecolor_ptr = meshi->smokecolor_ptr;
   value[0] = 255;
   value[1] = 255;
   value[2] = 255;
@@ -2740,8 +2740,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
             //  jterm = (j-js1)*nx;
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, NULL, 1);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, NULL, 1);
           }
         }
       }
@@ -2910,8 +2910,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
             iterm = (i-is1);
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, NULL, 2);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, NULL, 2);
           }
         }
       }
@@ -3072,8 +3072,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
             iterm = (i-is1);
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, NULL, 3);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, NULL, 3);
           }
         }
       }
@@ -3254,8 +3254,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -3453,8 +3453,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -3658,8 +3658,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -3855,8 +3855,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -4061,8 +4061,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -4258,8 +4258,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
             n = iterm+jterm+kterm;
             ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            mergealpha = mergealphaptr[n];
-            ADJUSTALPHA(mergealpha, aspectratio, norm, 4);
+            smokealpha = smokealpha_ptr[n];
+            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
           }
         }
       }
@@ -5653,6 +5653,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
     mergecolor=meshi->merge_color;
     mergealpha=meshi->merge_alpha;
+    meshi->smokecolor_ptr = mergecolor;
+    meshi->smokealpha_ptr = mergealpha;
     firesmokeval[0] = smoke_red;
     firesmokeval[1] = smoke_green;
     firesmokeval[2] = smoke_blue;
@@ -5855,83 +5857,12 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 #ifdef pp_GPU
     if(usegpu==1)continue;
 #endif
-    if(meshi->merge_color==NULL){
-      NewMemory((void **)&meshi->merge_color, 4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
-    }
-    if(meshi->merge_alpha==NULL){
-      NewMemory((void **)&meshi->merge_alpha, smoke3di->nchars_uncompressed*sizeof(unsigned char));
-    }
-
-    mergecolor = meshi->merge_color;
-    mergealpha = meshi->merge_alpha;
     firesmokeval[0] = smoke_red;
     firesmokeval[1] = smoke_green;
     firesmokeval[2] = smoke_blue;
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
-    for(j = 0; j<smoke3di->nchars_uncompressed; j++){
-      unsigned char *firesmoke_color;
-      float soot_val, f1, f2;
-
-      // set color
-
-      f1 = 1.0;
-      f2 = 0.0;
-      if(firecolor!=NULL){
-        int fire_index;
-
-        fire_index = CLAMP(firecolor[j]+i_hrrpuv_offset, 0, 254);
-        firesmoke_color = rgb_slicesmokecolormap_0255+4*fire_index;
-      }
-      else{
-        firesmoke_color = firesmokeval;
-      }
-      if(co2color!=NULL&&firecolor!=NULL&&sootcolor!=NULL){
-        float denom;
-
-        f1 = ABS(sootfactor)*sootcolor[j];
-        f2 = ABS(co2factor)*co2color[j];
-        denom = f1+f2;
-        if(denom>0.0){
-          f1 /= denom;
-          f2 /= denom;
-        }
-        else{
-          f1 = 1.0;
-          f2 = 0.0;
-        }
-        *mergecolor++ = f2*(float)global_co2color[0]+f1*firesmoke_color[0];
-        *mergecolor++ = f2*(float)global_co2color[1]+f1*firesmoke_color[1];
-        *mergecolor++ = f2*(float)global_co2color[2]+f1*firesmoke_color[2];
-      }
-      else{
-        *mergecolor++ = firesmoke_color[0];
-        *mergecolor++ = firesmoke_color[1];
-        *mergecolor++ = firesmoke_color[2];
-      }
-      mergecolor++;
-
-      // set opacity
-
-      if(firecolor!=NULL&&firecolor[j]>i_smoke3d_cutoff){
-        if(smoke3d_testsmoke==0){
-          *mergealpha++ = f1*fire_alpha+f2*co2_alpha;
-        }
-        else{
-          *mergealpha++ = CLAMP(opacity_map[firecolor[j]], 0, 255);
-        }
-      }
-      else if(sootcolor!=NULL){
-        if(smoke3d_thick==0){
-          *mergealpha++ = sootcolor[j];
-        }
-        else{
-          *mergealpha++ = (sootcolor[j]>>smoke3d_thick);
-        }
-      }
-      else{
-        *mergealpha++ = 0;
-      }
-    }
+    meshi->smokecolor_ptr = firecolor;
+    meshi->smokealpha_ptr = sootcolor;
   }
 }
 
@@ -5939,10 +5870,10 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
   if(smoke3d_black==1){
-    MergeSmoke3DColors(smoke3dset);
+    MergeSmoke3DBlack(smoke3dset);
     }
   else{
-    MergeSmoke3DBlack(smoke3dset);
+    MergeSmoke3DColors(smoke3dset);
   }
 }
 

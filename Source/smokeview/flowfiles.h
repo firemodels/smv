@@ -741,6 +741,7 @@ typedef struct _meshdata {
   clipdata box_clipinfo;
 
   unsigned char *merge_color,*merge_alpha;
+  unsigned char *smokecolor_ptr, *smokealpha_ptr;
   float *light_fraction;
   unsigned char *uc_light_fraction;
 
