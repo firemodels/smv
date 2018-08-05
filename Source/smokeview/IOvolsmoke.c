@@ -2458,7 +2458,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   LINT skip_local;
   float time_local, *smokeframe_data, *fireframe_data, *lightframe_data;
   int endianswitch=0;
-  char *meshlabel;
 #ifdef pp_VOLCO2
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;
@@ -2473,7 +2472,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   int print = 0;
 
   if(framenum<0||framenum>=vr->ntimes)return;
-  meshlabel  = vr->rendermeshlabel;
 
   smokeslice = vr->smokeslice;
   fireslice  = vr->fireslice;

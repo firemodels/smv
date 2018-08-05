@@ -992,7 +992,6 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
 void GetPartHistogramFile(partdata *parti){
   int i;
   part5data *datacopy;
-  int errorcode;
 
   if(parti->histograms == NULL){
     NewMemory((void **)&parti->histograms, npart5prop*sizeof(histogramdata *));
@@ -1970,8 +1969,6 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
   // convert particle temperatures into integers pointing to an rgb color table
   parti->request_load = 1;
   if(parti->finalize == 1){
-    float time_histogram, time_color;
-
     for(j = 0;j<npartinfo;j++){
       partdata *partj;
 
