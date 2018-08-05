@@ -592,6 +592,13 @@ typedef struct _volrenderdata {
   int loaded, display;
 } volrenderdata;
 
+/* --------------------------  meshplanedata ------------------------------------ */
+
+typedef struct _meshplanedata {
+  float verts[6*3];
+  int triangles[4*3], nverts, ntriangles;
+} meshplanedata;
+
 /* --------------------------  mesh ------------------------------------ */
 
 typedef struct _meshdata {
@@ -760,12 +767,14 @@ typedef struct _meshdata {
 
   volrenderdata volrenderinfo;
 
-  float gslice_verts[6*3];
-  int gslice_nverts,gslice_triangles[4*3],gslice_ntriangles;
+  meshplanedata gsliceinfo;
+  meshplanedata *smokeplaneinfo;
+  int nsmokeplaneinfo;
+
   int s_offset[3];
 } meshdata;
 
-/* --------------------------  supermeshdata ------------------------------------ */
+  /* --------------------------  supermeshdata ------------------------------------ */
 
 typedef struct _supermeshdata {
 #ifdef pp_GPU

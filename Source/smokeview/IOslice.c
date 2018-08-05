@@ -4366,11 +4366,16 @@ void DrawGSliceDataGpu(slicedata *slicei){
   boundsdata *sb;
   float valmin, valmax;
   float *boxmin, *boxmax;
+  float *verts;
+  int *triangles;
 
   if(slicei->loaded == 0 || slicei->display == 0 || slicei->volslice == 0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts == 0 || meshi->gslice_ntriangles == 0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts == 0 || meshi->gsliceinfo.ntriangles == 0)return;
 
   UpdateSlice3DTexture(meshi, slicei, slicei->qsliceframe);
   glPushMatrix();
@@ -4396,12 +4401,12 @@ void DrawGSliceDataGpu(slicedata *slicei){
   glUniform3f(GPU3dslice_boxmax, boxmax[0], boxmax[1], boxmax[2]);
   glBegin(GL_TRIANGLES);
 
-  for(j = 0; j < meshi->gslice_ntriangles; j++){
+  for(j = 0; j < meshi->gsliceinfo.ntriangles; j++){
     float *xyz1, *xyz2, *xyz3;
 
-    xyz1 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j];
-    xyz2 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j + 1];
-    xyz3 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j + 2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j + 1];
+    xyz3 = verts + 3*triangles[3*j + 2];
     glVertex3fv(xyz1);
     glVertex3fv(xyz2);
     glVertex3fv(xyz3);
@@ -7301,9 +7306,8 @@ void UpdateGslicePlanes(void){
       vals[j] = PlaneDist(norm,xyz0,xyz);
     }
     level=0.0;
-    GetIsoBox(xx,yy,zz,vals,level,
-      meshi->gslice_verts,&meshi->gslice_nverts,meshi->gslice_triangles,&meshi->gslice_ntriangles);
-      meshi->gslice_ntriangles/=3;
+    GetIsoBox(xx,yy,zz,vals,level,meshi->gsliceinfo.verts,&meshi->gsliceinfo.nverts,meshi->gsliceinfo.triangles,&meshi->gsliceinfo.ntriangles);
+    meshi->gsliceinfo.ntriangles/=3;
   }
 }
 
@@ -7324,15 +7328,20 @@ void DrawGSliceOutline(void){
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       int j;
+      int *triangles;
+      float *verts;
 
       meshi = meshinfo + i;
-      if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)continue;
-      for(j=0;j<meshi->gslice_ntriangles;j++){
+      verts = meshi->gsliceinfo.verts;
+      triangles = meshi->gsliceinfo.triangles;
+
+      if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)continue;
+      for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
         float *xyz1, *xyz2, *xyz3;
 
-        xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-        xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-        xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+        xyz1 = verts + 3*triangles[3*j];
+        xyz2 = verts + 3*triangles[3*j+1];
+        xyz3 = verts + 3*triangles[3*j+2];
 
         glVertex3fv(xyz1);
         glVertex3fv(xyz2);
@@ -7350,18 +7359,23 @@ void DrawGSliceOutline(void){
       meshdata *meshi;
       int j;
       float del;
+      int *triangles;
+      float *verts;
 
       meshi = meshinfo + i;
+      verts = meshi->gsliceinfo.verts;
+      triangles = meshi->gsliceinfo.triangles;
+
       del = meshi->cellsize;
       del *= del;
       del /= 4.0;
-      if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)continue;
-      for(j=0;j<meshi->gslice_ntriangles;j++){
+      if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)continue;
+      for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
         float *xyz1, *xyz2, *xyz3;
 
-        xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-        xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-        xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+        xyz1 = verts + 3*triangles[3*j];
+        xyz2 = verts + 3*triangles[3*j+1];
+        xyz3 = verts + 3*triangles[3*j+2];
         DrawTriangleOutline(xyz1,xyz2,xyz3,del,0);
       }
     }
@@ -7395,11 +7409,16 @@ void DrawGSliceData(slicedata *slicei){
   boundsdata *sb;
   float valmin, valmax;
   float del;
+  int *triangles;
+  float *verts;
 
   if(slicei->loaded==0||slicei->display==0||slicei->volslice==0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)return;
   del = meshi->cellsize;
   del *= del;
   del /= 4.0;
@@ -7421,13 +7440,13 @@ void DrawGSliceData(slicedata *slicei){
   gslice_valmesh=meshi;
   gslice=slicei;
 
-  for(j=0;j<meshi->gslice_ntriangles;j++){
+  for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
     float *xyz1, *xyz2, *xyz3;
     float t1, t2, t3;
 
-    xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-    xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-    xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j+1];
+    xyz3 = verts + 3*triangles[3*j+2];
     t1 = GetTextureIndex(xyz1);
     t2 = GetTextureIndex(xyz2);
     t3 = GetTextureIndex(xyz3);
@@ -7448,13 +7467,18 @@ void DrawVGSliceData(vslicedata *vslicei){
   float valmin, valmax;
   float del;
   slicedata *slicei;
+  float *verts;
+  int *triangles;
 
   slicei = sliceinfo + vslicei->ival;
 
   if(slicei->loaded==0/*||slicei->display==0*/||slicei->volslice==0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)return;
   del = meshi->cellsize;
   del *= del;
   del /= 4.0;
@@ -7480,12 +7504,12 @@ void DrawVGSliceData(vslicedata *vslicei){
   gslice_v=vslicei->v;
   gslice_w=vslicei->w;
 
-  for(j=0;j<meshi->gslice_ntriangles;j++){
+  for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
     float *xyz1, *xyz2, *xyz3;
 
-    xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-    xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-    xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j+1];
+    xyz3 = verts + 3*triangles[3*j+2];
 
     DrawTriangleVector(xyz1,xyz2,xyz3,del,0);
   }
