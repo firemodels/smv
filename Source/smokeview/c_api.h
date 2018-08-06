@@ -125,6 +125,14 @@ int parse_smv_filepath(const char *smv_filepath, char *fdsprefix,
 // --------- show/hide label options--------
 
 // colorbar
+void set_colorbar_visibility_vertical(int setting);
+int get_colorbar_visibility_vertical();
+void toggle_colorbar_visibility_vertical();
+
+void set_colorbar_visibility_horizontal(int setting);
+int get_colorbar_visibility_horizontal();
+void toggle_colorbar_visibility_horizontal();
+
 void set_colorbar_visibility(int setting);
 int get_colorbar_visibility();
 void toggle_colorbar_visibility();

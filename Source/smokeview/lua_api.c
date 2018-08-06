@@ -1403,6 +1403,40 @@ int lua_toggle_colorbar_visibility(lua_State *L) {
   return 0;
 }
 
+int lua_set_colorbar_visibility_horizontal(lua_State *L) {
+  int setting = lua_toboolean(L, 1);
+  set_colorbar_visibility_horizontal(setting);
+  return 0;
+}
+
+int lua_get_colorbar_visibility_horizontal(lua_State *L) {
+  int setting = get_colorbar_visibility_horizontal();
+  lua_pushboolean(L, setting);
+  return 1;
+}
+
+int lua_toggle_colorbar_visibility_horizontal(lua_State *L) {
+  toggle_colorbar_visibility_horizontal();
+  return 0;
+}
+
+int lua_set_colorbar_visibility_vertical(lua_State *L) {
+  int setting = lua_toboolean(L, 1);
+  set_colorbar_visibility_vertical(setting);
+  return 0;
+}
+
+int lua_get_colorbar_visibility_vertical(lua_State *L) {
+  int setting = get_colorbar_visibility_vertical();
+  lua_pushboolean(L, setting);
+  return 1;
+}
+
+int lua_toggle_colorbar_visibility_vertical(lua_State *L) {
+  toggle_colorbar_visibility_vertical();
+  return 0;
+}
+
 int lua_set_timebar_visibility(lua_State *L) {
   int setting = lua_toboolean(L, 1);
   set_timebar_visibility(setting);
@@ -3478,13 +3512,13 @@ int lua_set_units(lua_State *L) {
   fprintf(stderr, "set_units\n");
   const char *unitclassname = lua_tostring(L, 1);
   const char *unitname = lua_tostring(L, 2);
-  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
-  // fprintf(stderr, "set_units (unitname): %s\n", unitname);
+  fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
+  fprintf(stderr, "set_units (unitname): %s\n", unitname);
 
   int unitclass_index;
   int unit_index;
   for (int i=0; i < nunitclasses_default; i++) {
-    // fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
+    fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
     if (strcmp(unitclasses[i].unitclass,unitclassname)==0) {
       unitclass_index = i;
       break;
@@ -3497,8 +3531,8 @@ int lua_set_units(lua_State *L) {
     }
   }
 
-  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
-  // fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
+  fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
+  fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
   set_units(unitclass_index, unit_index);
   return 0;
 }
@@ -4509,6 +4543,14 @@ lua_State* initLua() {
   lua_register(L, "set_colorbar_visibility", lua_set_colorbar_visibility);
   lua_register(L, "get_colorbar_visibility", lua_get_colorbar_visibility);
   lua_register(L, "toggle_colorbar_visibility", lua_toggle_colorbar_visibility);
+
+  lua_register(L, "set_colorbar_visibility_horizontal", lua_set_colorbar_visibility_horizontal);
+  lua_register(L, "get_colorbar_visibility_horizontal", lua_get_colorbar_visibility_horizontal);
+  lua_register(L, "toggle_colorbar_visibility_horizontal", lua_toggle_colorbar_visibility_horizontal);
+
+  lua_register(L, "set_colorbar_visibility_vertical", lua_set_colorbar_visibility_vertical);
+  lua_register(L, "get_colorbar_visibility_vertical", lua_get_colorbar_visibility_vertical);
+  lua_register(L, "toggle_colorbar_visibility_vertical", lua_toggle_colorbar_visibility_vertical);
 
   // timebar
   lua_register(L, "set_timebar_visibility", lua_set_timebar_visibility);

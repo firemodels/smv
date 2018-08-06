@@ -801,7 +801,7 @@ int get_colorbar_visibility_horizontal() {
   return visColorbarHorizontal;
 }
 
-void toggle_colorbar_visibility_hotizontal() {
+void toggle_colorbar_visibility_horizontal() {
   visColorbarHorizontal = 1 - visColorbarHorizontal;
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
