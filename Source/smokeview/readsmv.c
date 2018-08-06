@@ -9489,7 +9489,14 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
-   if(Match(buffer, "GEOMDOMAIN") == 1){
+    if(Match(buffer, "RESEARCHMODE") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i ", &research_mode);
+      ONEORZERO(research_mode);
+      update_research_mode=1;
+      continue;
+    }
+    if(Match(buffer, "GEOMDOMAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
       showgeom_inside_domain = CLAMP(showgeom_inside_domain, 0, 1);
@@ -13248,6 +13255,9 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
+
+  fprintf(fileout, "RESEARCHMODE\n");
+  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);
   fprintf(fileout, "FED\n");
