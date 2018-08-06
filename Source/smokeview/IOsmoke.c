@@ -5588,11 +5588,11 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
-    if(IsSmokeComponentPresent(smoke3di)==0)continue;
-    meshi=meshinfo+smoke3di->blocknumber;
+    meshi = meshinfo+smoke3di->blocknumber;
 #ifdef pp_CULL
-    meshi->cull_smoke3d=smoke3di;
+    meshi->cull_smoke3d = smoke3di;
 #endif
+    if(IsSmokeComponentPresent(smoke3di)==0)continue;
     if(smoke3d_testsmoke==1)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
     if(fire_halfdepth<=0.0){
