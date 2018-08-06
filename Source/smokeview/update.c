@@ -2032,4 +2032,8 @@ void UpdateDisplay(void){
   if(update_windrose_showhide==1){
     UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }
+  if(update_research_mode == 1){
+    update_research_mode = 0;
+    UpdateResearchMode();
+  }
 }

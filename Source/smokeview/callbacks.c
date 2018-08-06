@@ -1954,7 +1954,7 @@ void Keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode=1-research_mode;
-          UpdateResearchMode();
+          update_research_mode=1;
           return;
         }
 

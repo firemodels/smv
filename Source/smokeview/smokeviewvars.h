@@ -22,6 +22,10 @@
 
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1);
+
+SVEXTERN int SVDECL(update_research_mode, 1);
+SVEXTERN int SVDECL(research_mode, 1);
+
 #ifdef pp_SMOKEDIAG
 SVEXTERN unsigned int total_triangles, total_drawn_triangles;
 #endif
@@ -807,7 +811,6 @@ SVEXTERN int SVDECL(ntourknots,0);
 SVEXTERN int SVDECL(itourknots,-1);
 SVEXTERN int stretch_var_black, stretch_var_white, move_var;
 
-SVEXTERN int SVDECL(research_mode,0);
 SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
 SVEXTERN int snifferrornumber;
 SVEXTERN int xyz_dir;
