@@ -1187,7 +1187,7 @@ SVEXTERN int SVDECL(use_new_drawface,0);
   SVEXTERN unsigned char rgb_below_min[3], rgb_above_max[3];
 #endif
 SVEXTERN int SVDECL(colorbar_select_index,-1),SVDECL(update_colorbar_select_index,0);
-SVEXTERN float world_eyepos[3],scaled_eyepos[3];
+SVEXTERN float fds_eyepos[3],smv_eyepos[3];
 SVEXTERN int tour_usecurrent;
 SVEXTERN int isZoneFireModel;
 SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);

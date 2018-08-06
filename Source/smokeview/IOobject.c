@@ -38,31 +38,6 @@ float Dist(float p1[3], float p2[3]){
   return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
-/* ------------------ GetWorldEyePos ------------------------ */
-
-void GetWorldEyePos(float *mm, float user_eyepos[3],float scaled_eyepos_local[3]){
-    /*
-      ( m0 m4 m8  m12 ) (x)    (0)
-      ( m1 m5 m9  m13 ) (y)    (0)
-      ( m2 m6 m10 m14 ) (z)  = (0)
-      ( m3 m7 m11 m15 ) (1)    (1)
-
-       ( m0 m4  m8 )      (m12)
-   Q=  ( m1 m5  m9 )  u = (m13)
-       ( m2 m6 m10 )      (m14)
-
-      (Q   u) (x)     (0)
-      (v^T 1) (y)   = (1)
-
-      m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
-    */
-
-  scaled_eyepos_local[0] = -(mm[0]*mm[12]+mm[1]*mm[13]+ mm[2]*mm[14])/mscale[0];
-  scaled_eyepos_local[1] = -(mm[4]*mm[12]+mm[5]*mm[13]+ mm[6]*mm[14])/mscale[1];
-  scaled_eyepos_local[2] = -(mm[8]*mm[12]+mm[9]*mm[13]+mm[10]*mm[14])/mscale[2];
-  DENORMALIZE_XYZ(user_eyepos,scaled_eyepos);
-}
-
 /* ----------------------- GetSmokeSensors ----------------------------- */
 
 void GetSmokeSensors(void){
@@ -289,7 +264,7 @@ void GetDeviceScreenCoords(void){
     if(STRCMP(label,"smokesensor")!=0)continue;
     xyz = devicei->xyz;
     device_mesh = devicei->device_mesh;
-    devicei->eyedist = GetPoint2BoxDist(device_mesh->boxmin,device_mesh->boxmax,xyz,world_eyepos);
+    devicei->eyedist = GetPoint2BoxDist(device_mesh->boxmin,device_mesh->boxmax,xyz,fds_eyepos);
     ijk = devicei->screenijk;
     gluProject(xyz[0],xyz[1],xyz[2],mv_setup,projection_setup,viewport_setup,d_ijk,d_ijk+1,d_ijk+2);
     ijk[0] = d_ijk[0];
@@ -3678,9 +3653,9 @@ void DrawDevices(void){
       float *xyznorm;
 
       xyznorm = devicei->xyznorm;
-      xyznorm[0] = world_eyepos[0] - devicei->xyz[0];
-      xyznorm[1] = world_eyepos[1] - devicei->xyz[1];
-      xyznorm[2] = world_eyepos[2] - devicei->xyz[2];
+      xyznorm[0] = fds_eyepos[0] - devicei->xyz[0];
+      xyznorm[1] = fds_eyepos[1] - devicei->xyz[1];
+      xyznorm[2] = fds_eyepos[2] - devicei->xyz[2];
 
       GetElevAz(xyznorm, &devicei->dtheta, devicei->rotate_axis, &dpsi);
     }

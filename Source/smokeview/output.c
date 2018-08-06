@@ -45,9 +45,9 @@ void OutputSText3(float x, float y, float z, char *string){
   scale_y = SCALE2FDS((float)scaled_font3d_height/(float)152.38)/(float)port_pixel_height;
   glPushMatrix();
   glTranslatef(x,y,z);
-  v[0]=world_eyepos[0]-x;
-  v[1]=world_eyepos[1]-y;
-  v[2]=world_eyepos[2]-z;
+  v[0]=fds_eyepos[0]-x;
+  v[1]=fds_eyepos[1]-y;
+  v[2]=fds_eyepos[2]-z;
   RotateU2V(u,v,axis,&angle);
   theta=atan2(v[0],-v[1])*RAD2DEG;
   AngleAxis2Quat(theta*DEG2RAD,u,quatz);

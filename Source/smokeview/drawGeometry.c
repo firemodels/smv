@@ -3174,7 +3174,7 @@ void DrawFaces(){
       glNormal3f(-1.0,0.0,0.0);
       face_START=meshi->face_normals_single_DOWN_X;
       for(i=0;i<meshi->nface_normals_single_DOWN_X;i++){
-        DRAWFACE(scaled_eyepos[0]>facepos[0],down_color)
+        DRAWFACE(smv_eyepos[0]>facepos[0],down_color)
       }
 
       // UP_X faces
@@ -3182,7 +3182,7 @@ void DrawFaces(){
       glNormal3f(1.0,0.0,0.0);
       face_START=meshi->face_normals_single_UP_X;
       for(i=0;i<meshi->nface_normals_single_UP_X;i++){
-        DRAWFACE(scaled_eyepos[0]<facepos[0],up_color)
+        DRAWFACE(smv_eyepos[0]<facepos[0],up_color)
       }
 
       // DOWN_Y faces
@@ -3190,7 +3190,7 @@ void DrawFaces(){
       glNormal3f(0.0,-1.0,0.0);
       face_START=meshi->face_normals_single_DOWN_Y;
       for(i=0;i<meshi->nface_normals_single_DOWN_Y;i++){
-        DRAWFACE(scaled_eyepos[1]>facepos[1],down_color)
+        DRAWFACE(smv_eyepos[1]>facepos[1],down_color)
       }
 
       // UP_Y faces
@@ -3198,7 +3198,7 @@ void DrawFaces(){
       glNormal3f(0.0,1.0,0.0);
       face_START=meshi->face_normals_single_UP_Y;
       for(i=0;i<meshi->nface_normals_single_UP_Y;i++){
-        DRAWFACE(scaled_eyepos[1]<facepos[1],up_color)
+        DRAWFACE(smv_eyepos[1]<facepos[1],up_color)
       }
 
       // DOWN_Z faces
@@ -3206,7 +3206,7 @@ void DrawFaces(){
       glNormal3f(0.0,0.0,-1.0);
       face_START=meshi->face_normals_single_DOWN_Z;
       for(i=0;i<meshi->nface_normals_single_DOWN_Z;i++){
-        DRAWFACE(scaled_eyepos[2]>facepos[2],down_color)
+        DRAWFACE(smv_eyepos[2]>facepos[2],down_color)
       }
 
       // UP_Z faces
@@ -3214,7 +3214,7 @@ void DrawFaces(){
       glNormal3f(0.0,0.0,1.0);
       face_START=meshi->face_normals_single_UP_Z;
       for(i=0;i<meshi->nface_normals_single_UP_Z;i++){
-        DRAWFACE(scaled_eyepos[2]<facepos[2],up_color)
+        DRAWFACE(smv_eyepos[2]<facepos[2],up_color)
       }
     }
     glEnd();
