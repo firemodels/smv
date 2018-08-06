@@ -779,6 +779,15 @@ void set_colorbar_visibility_vertical(int setting) {
   visColorbarVertical = setting;
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 int get_colorbar_visibility_vertical() {
@@ -789,12 +798,30 @@ void toggle_colorbar_visibility_vertical() {
   visColorbarVertical = 1 - visColorbarVertical;
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 void set_colorbar_visibility_horizontal(int setting) {
   visColorbarHorizontal = setting;
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 int get_colorbar_visibility_horizontal() {
@@ -805,6 +832,15 @@ void toggle_colorbar_visibility_horizontal() {
   visColorbarHorizontal = 1 - visColorbarHorizontal;
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 void set_colorbar_visibility(int setting) {
