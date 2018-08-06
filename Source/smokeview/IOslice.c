@@ -7311,6 +7311,143 @@ void UpdateGslicePlanes(void){
   }
 }
 
+/* ------------------ UpdateSmoke3DPlanes ------------------------ */
+
+void UpdateSmoke3DPlanes(float *xyz0, float *norm, float delta){
+  int i;
+  float d, distmin, distmax;
+  int firstdist = 1;
+  float xx[2], yy[2], zz[2];
+
+  /* stuff min and max grid data into a more convenient form
+  assuming the following grid numbering scheme
+
+       5-------6
+     / |      /|
+   /   |     / |
+  4 -------7   |
+  |    |   |   |
+  Z    1---|---2
+  |  Y     |  /
+  |/       |/
+  0--X-----3
+
+  */
+  int ix[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+  int iy[8] = {0, 1, 1, 0, 0, 1, 1, 0};
+  int iz[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+
+  // plane equation: (x-xyz0) .dot. norm = 0
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float *verts, *dist, d;
+    float *boxmin, *boxmax;
+    int j;
+
+    meshi = meshinfo+i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+    verts = meshi->verts;
+    dist = meshi->vert_dists;
+    xx[0] = boxmin[0];
+    yy[0] = boxmin[1];
+    zz[0] = boxmin[2];
+    xx[1] = boxmax[0];
+    yy[1] = boxmax[1];
+    zz[1] = boxmax[2];
+    if(meshi->nverts==0){
+      int j;
+
+      meshi->nverts = 8;
+      for(j = 0; j<8; j++){
+        verts[3*j+0] = xx[ix[j]];
+        verts[3*j+1] = yy[iy[j]];
+        verts[3*j+2] = zz[iz[j]];
+      }
+    }
+    meshi->vert_distmin = -1.0;
+    meshi->vert_distmax = -1.0;
+    for(j = 0; j<8; j++){
+      float *xyz;
+
+      xyz = meshi->verts+3*j;
+      dist[j] = PlaneDist(norm, xyz0, xyz);
+      if(dist[j]>=0.0){
+        if(meshi->vert_distmin>=0.0){
+          meshi->vert_distmin = MIN(meshi->vert_distmin, dist[j]);
+        }
+        else{
+          meshi->vert_distmin = dist[j];
+        }
+        meshi->vert_distmax = MAX(meshi->vert_distmax, dist[j]);
+        if(firstdist==1){
+          firstdist = 0;
+          distmin = dist[j];
+          distmax = dist[j];
+        }
+        else{
+          distmin = MIN(dist[j], distmin);
+          distmax = MAX(dist[j], distmax);
+        }
+      }
+    }
+  }
+  if(firstdist==0)return;
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    FREEMEMORY(meshi->smokeplaneinfo);
+    meshi->nsmokeplaneinfo = 0;
+  }
+  for(d = distmin+delta/2.0; d<distmax; d += delta){
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+
+      meshi = meshinfo+i;
+      if(d>meshi->vert_distmin&&d<meshi->vert_distmax)meshi->nsmokeplaneinfo++;
+    }
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    if(meshi->nsmokeplaneinfo>0){
+      NewMemory((void **)&meshi->smokeplaneinfo, meshi->nsmokeplaneinfo*sizeof(meshplanedata));
+    }
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float xx[2], yy[2], zz[2];
+    float *boxmin, *boxmax;
+    int jj;
+
+    meshi = meshinfo+i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+
+    xx[0] = boxmin[0];
+    yy[0] = boxmin[1];
+    zz[0] = boxmin[2];
+    xx[1] = boxmax[0];
+    yy[1] = boxmax[1];
+    zz[1] = boxmax[2];
+    jj = 0;
+    for(d = distmin+delta/2.0; d<distmax; d += delta){
+      if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
+        meshplanedata *spi;
+
+        if(jj>=meshi->nsmokeplaneinfo)break;
+        spi = meshi->smokeplaneinfo+jj;
+        GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles));
+        spi->ntriangles /= 3;
+        jj++;
+      }
+    }
+  }
+}
+
 /* ------------------ DrawGSliceOutline ------------------------ */
 
 void DrawGSliceOutline(void){

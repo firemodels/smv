@@ -770,6 +770,9 @@ typedef struct _meshdata {
   meshplanedata gsliceinfo;
   meshplanedata *smokeplaneinfo;
   int nsmokeplaneinfo;
+  float verts[24];
+  float vert_dists[8], vert_distmin, vert_distmax;
+  int nverts;
 
   int s_offset[3];
 } meshdata;
