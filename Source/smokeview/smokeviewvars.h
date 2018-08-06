@@ -20,6 +20,15 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(show_smoke3d_planes, 1);
+SVEXTERN int SVDECL(compute_smoke3d_planes, 1);
+SVEXTERN float SVDECL(smoke3d_delta,0.5);
+#else
+SVEXTERN int SVDECL(show_smoke3d_planes, 0);
+SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
+SVEXTERN float SVDECL(smoke3d_delta,0.5);
+#endif
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1);
 
@@ -1187,7 +1196,7 @@ SVEXTERN int SVDECL(use_new_drawface,0);
   SVEXTERN unsigned char rgb_below_min[3], rgb_above_max[3];
 #endif
 SVEXTERN int SVDECL(colorbar_select_index,-1),SVDECL(update_colorbar_select_index,0);
-SVEXTERN float fds_eyepos[3],smv_eyepos[3];
+SVEXTERN float fds_eyepos[3],smv_eyepos[3],fds_viewdir[3],smv_viewpos[3];
 SVEXTERN int tour_usecurrent;
 SVEXTERN int isZoneFireModel;
 SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);

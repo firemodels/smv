@@ -72,6 +72,7 @@ extern GLUI *glui_bounds;
 #define UPDATE_CO2_ALPHA 73
 #define SMOKE_SKIP 74
 #define SMOKE_BLACK 75
+#define SMOKE_DELTA 76
 
 // two defines below are also defined elsewhere
 
@@ -119,6 +120,9 @@ GLUI_Spinner *SPINNER_cvis=NULL;
 GLUI_Spinner *SPINNER_smokedrawtest_nummin=NULL;
 GLUI_Spinner *SPINNER_smokedrawtest_nummax=NULL;
 GLUI_Spinner *SPINNER_smoke3d_skip = NULL;
+#ifdef pp_GPUSMOKE
+GLUI_Spinner *SPINNER_smoke3d_delta = NULL;
+#endif
 #ifdef pp_GPU
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 #else
@@ -669,7 +673,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
     SPINNER_smoke3d_skip=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Skip"), GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
-
+#ifdef pp_GPUSMOKE
+    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Show planes"), &show_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Compute planes"), &compute_smoke3d_planes);
+#endif
     PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_display,_("Absorption adjustments"));
     PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
     RADIO_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_absorption,&adjustalphaflag);
@@ -855,7 +863,15 @@ extern "C" void Smoke3dCB(int var){
   updatemenu=1;
   switch(var){
   float temp_min, temp_max;
-
+  
+#ifdef pp_GPUSMOKE
+  case SMOKE_DELTA:
+    if(smoke3d_delta<=0.0){
+      smoke3d_delta = 0.1;
+      SPINNER_smoke3d_delta->set_float_val(smoke3d_delta);
+    }
+    break;
+#endif
   case SMOKE_BLACK:
     break;
   case SMOKE_SKIP:

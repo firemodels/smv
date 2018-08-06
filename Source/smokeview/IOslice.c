@@ -7313,8 +7313,9 @@ void UpdateGslicePlanes(void){
 
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
-void UpdateSmoke3DPlanes(float *xyz0, float *norm, float delta){
+void UpdateSmoke3DPlanes(float delta){
   int i;
+  float *xyz0, *norm;
   float d, distmin, distmax;
   int firstdist = 1;
   float xx[2], yy[2], zz[2];
@@ -7338,6 +7339,9 @@ void UpdateSmoke3DPlanes(float *xyz0, float *norm, float delta){
   int iz[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 
   // plane equation: (x-xyz0) .dot. norm = 0
+
+  xyz0 = fds_eyepos;
+  norm = fds_viewdir;
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -7393,7 +7397,19 @@ void UpdateSmoke3DPlanes(float *xyz0, float *norm, float delta){
       }
     }
   }
-  if(firstdist==0)return;
+  if(firstdist==1)return;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    float *dist,*verts;
+    int j;
+
+    meshi = meshinfo + i;
+    dist = meshi->vert_dists;
+    verts = meshi->verts;
+    for(j = 0;j < 8;j++){
+      Output3Val(NORMALIZE_X(verts[3 * j]), NORMALIZE_Y(verts[3 * j + 1]), NORMALIZE_Z(verts[3 * j + 2]), dist[j]);
+    }
+  }
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
 
@@ -7437,11 +7453,15 @@ void UpdateSmoke3DPlanes(float *xyz0, float *norm, float delta){
     for(d = distmin+delta/2.0; d<distmax; d += delta){
       if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
         meshplanedata *spi;
+        int k;
 
         if(jj>=meshi->nsmokeplaneinfo)break;
         spi = meshi->smokeplaneinfo+jj;
         GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles));
         spi->ntriangles /= 3;
+        for(k = 0; k<spi->nverts; k++){
+          NORMALIZE_XYZ(spi->verts_smv+3*k, spi->verts+3*k);
+        }
         jj++;
       }
     }

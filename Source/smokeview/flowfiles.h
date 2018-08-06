@@ -595,7 +595,7 @@ typedef struct _volrenderdata {
 /* --------------------------  meshplanedata ------------------------------------ */
 
 typedef struct _meshplanedata {
-  float verts[6*3];
+  float verts[6*3],verts_smv[6*3];
   int triangles[4*3], nverts, ntriangles;
 } meshplanedata;
 
