@@ -1045,8 +1045,8 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushstring(L, sliceinfo[i].file);
     lua_setfield(L, -2, "file");
 
-    lua_pushnumber(L, sliceinfo[i].slicetype);
-    lua_setfield(L, -2, "slicetype");
+    lua_pushnumber(L, sliceinfo[i].slicefile_type);
+    lua_setfield(L, -2, "slicefile_type");
 
     lua_pushnumber(L, sliceinfo[i].idir);
     lua_setfield(L, -2, "idir");
@@ -3918,60 +3918,6 @@ float *lua_get_float_array(lua_State *L, int snumber) {
   return vals;
 }
 
-
-int lua_set_geometrytest(lua_State *L) {
-  int a = lua_tonumber(L, 1);
-  int b = lua_tonumber(L, 2);
-  float c = lua_tonumber(L, 3);
-  float d = lua_tonumber(L, 4);
-  // count the length of vals
-  int *vals;
-  float *b1Vals;
-  float *b2Vals;
-  float *b3Vals;
-  // these arrays must be freed
-  vals = lua_get_int_array(L, 5);
-  b1Vals = lua_get_float_array(L, 6);
-  b2Vals = lua_get_float_array(L, 7);
-  b3Vals = lua_get_float_array(L, 8);
-
-  int return_code = set_geometrytest(a, b, c, d, vals, b1Vals, b2Vals, b3Vals);
-  free(vals);
-  free(b1Vals);
-  free(b2Vals);
-  free(b3Vals);
-  // int set_geometrytest(int a, int b, int c, int d, int vals[],
-  //                    float b1Vals[], float b2Vals[], float b3Vals[]); // GEOMETRYTEST
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-// int set_geometrytest(int a, int b, int c, int d, int vals[],
-//                      float b1Vals[], float b2Vals[], float b3Vals[]) {
-//   int *v;
-//   int ii;
-//   geomtest_option = a;
-//   show_tetratest_labels = b;
-//   tetra_line_thickness = c;
-//   tetra_point_size = d;
-//   v = tetrabox_vis;
-//   ONEORZERO(show_tetratest_labels);
-//   for(ii = 0; ii<10; ii++){
-//     v[ii] = vals[ii];
-//     ONEORZERO(v[ii]);
-//   }
-//   for(ii = 0; ii<6; ii++){
-//     box_bounds2[ii] = b1Vals[ii];
-//   }
-//   for(ii = 0; ii<12; ii++){
-//      tetra_vertices[ii] = b2Vals[ii];
-//   }
-//   for(ii = 0; ii<3; ii++){
-//     box_translate[ii] = b3Vals[ii];
-//   }
-//   return 0;
-// } //  GEOMETRYTEST
-
 int lua_set_devicevectordimensions(lua_State *L) {
   float baselength = lua_tonumber(L, 1);
   float basediameter = lua_tonumber(L, 2);
@@ -4919,7 +4865,6 @@ lua_State* initLua() {
   lua_register(L, "set_viewtimes", lua_set_viewtimes);
   lua_register(L, "set_viewtourfrompath", lua_set_viewtourfrompath);
   lua_register(L, "set_avatarevac", lua_set_avatarevac);
-  lua_register(L, "set_geometrytest", lua_set_geometrytest);
   lua_register(L, "set_devicevectordimensions",
                lua_set_devicevectordimensions);
   lua_register(L, "set_devicebounds", lua_set_devicebounds);

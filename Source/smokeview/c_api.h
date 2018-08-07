@@ -479,8 +479,6 @@ int set_viewtourfrompath(int v); // VIEWTOURFROMPATH
 // --  ------------ local ini settings ------------
 
 int set_avatarevac(int v); // AVATAREVAC
-int set_geometrytest(int a, int b, float c, float d, int vals[],
-                     float b1Vals[], float b2Vals[], float b3Vals[]); // GEOMETRYTEST
 int set_devicevectordimensions(float baselength, float basediameter,
                                float headlength, float headdiameter); // DEVICEVECTORDIMENSIONS
 int set_devicebounds(float a, float b); // DEVICEBOUNDS
