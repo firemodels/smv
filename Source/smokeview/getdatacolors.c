@@ -190,7 +190,7 @@ void WriteBoundIni(void){
       patchdata *patchj;
 
       patchj = patchinfo + j;
-      if(patchi->type == patchj->type&&patchi->filetype == patchj->filetype){
+      if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->patch_filetype == patchj->patch_filetype){
         skipi = 1;
         break;
       }
@@ -206,7 +206,7 @@ void WriteBoundIni(void){
       }
     }
     fprintf(stream, "B_BOUNDARY\n");
-    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->filetype, patchi->label.shortlabel);
+    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
   }
   if(stream != NULL)fclose(stream);
   FREEMEMORY(fullfilename);
@@ -227,7 +227,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchj->type!=patchi->type||patchj->filetype!=patchi->filetype)continue;
+    if(patchi->boundary!=patchj->boundary || patchi->patch_filetype != patchj->patch_filetype || patchj->shortlabel_index != patchi->shortlabel_index)continue;
     MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
 
@@ -242,7 +242,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi==patchj||patchj->type!=patchi->type||patchj->filetype!=patchi->filetype)continue;
+    if (patchi == patchj)continue;
+    if(patchi->boundary != patchj->boundary || patchi->patch_filetype != patchj->patch_filetype || patchj->shortlabel_index !=patchi->shortlabel_index)continue;
 
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));
@@ -668,14 +669,12 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
   }
 // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
   datacopy = parti->data5;
-  if(parti->data_type == PARTDATA){
-    for(i = 0; i < parti->ntimes; i++){
-      int j;
+  for(i = 0; i < parti->ntimes; i++){
+    int j;
 
-      for(j = 0; j < parti->nclasses; j++){
-        FREEMEMORY(datacopy->rvals);
-        datacopy++;
-      }
+    for(j = 0; j < parti->nclasses; j++){
+      FREEMEMORY(datacopy->rvals);
+      datacopy++;
     }
   }
   for(i=0;i<npart5prop;i++){
@@ -1783,11 +1782,11 @@ void UpdateChopColors(void){
       }
     }
   }
-  if(slicebounds!=NULL&&islicetype!=-1){
+  if(slicebounds!=NULL&&slicefile_labelindex!=-1){
     float smin, smax;
 
-    smin=slicebounds[islicetype].valmin;
-    smax=slicebounds[islicetype].valmax;
+    smin=slicebounds[slicefile_labelindex].valmin;
+    smax=slicebounds[slicefile_labelindex].valmax;
 
     if(setslicechopmin==1){
       ichopmin=nrgb_full*(slicechopmin-smin)/(smax-smin);

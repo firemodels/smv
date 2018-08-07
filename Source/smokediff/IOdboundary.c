@@ -100,6 +100,7 @@ int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout){
 
 void diff_boundaryes(FILE *stream_out){
   int j;
+  int file_size;
 
   for(j=0;j<caseinfo->nboundary_files;j++){
     char *file1, *file2;
@@ -206,6 +207,7 @@ void diff_boundaryes(FILE *stream_out){
       ii=0;
       for(i=0;i<boundary1->npatches;i++){
         int jj;
+        int file_size;
 
         jj = boundary1->patch2index[i];
         if(jj==-1)continue;
@@ -233,14 +235,15 @@ void diff_boundaryes(FILE *stream_out){
       ResetHistogram(boundary1->histogram,NULL,NULL);
 
       FORTgetpatchdata(&unit1, &boundary1->npatches,
-        p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &error1);
+        p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size, &error1);
       FORTgetpatchdata(&unit2, &boundary2->npatches,
-        p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2a, pqq2a, &npqq2a, &error2);
+        p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2a, pqq2a, &npqq2a, &file_size, &error2);
       if(error2==0)FORTgetpatchdata(&unit2, &boundary2->npatches,
-        p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &error2);
+        p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size, &error2);
       for(;;){
         int iq;
         float f1, f2, dt;
+        int file_size;
 
         if(error1!=0||error2!=0)break;
 
@@ -250,7 +253,7 @@ void diff_boundaryes(FILE *stream_out){
           }
           patchtime2a=patchtime2b;
           FORTgetpatchdata(&unit2, &boundary2->npatches,
-            p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &error2);
+            p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size, &error2);
           if(error2!=0)break;
         }
         if(error2!=0)break;
@@ -294,7 +297,7 @@ void diff_boundaryes(FILE *stream_out){
         }
 
         FORTgetpatchdata(&unit1, &boundary1->npatches,
-          p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &error1);
+          p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size, &error1);
       }
       PRINTF("\n");
       FFLUSH();

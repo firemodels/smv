@@ -1023,7 +1023,6 @@ extern "C" void Smoke3dCB(int var){
         ROLLOUT_colormap_temp->open();
       }
 #endif
-      if(PANEL_absorption!=NULL)PANEL_absorption->disable();
       firecolormap_type_save=firecolormap_type;
       firecolormap_type=FIRECOLORMAP_CONSTRAINT;
       RADIO_use_colormap->set_int_val(firecolormap_type);
@@ -1175,7 +1174,7 @@ extern "C" void Smoke3dCB(int var){
       volrenderdata *vr;
 
       vr = &meshinfo->volrenderinfo;
-      if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slicetype==SLICE_CELL_CENTER){
+      if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slicefile_type==SLICE_CELL_CENTER){
         if(usegpu==1&&combine_meshes==1){
           combine_meshes=0;
           UpdateCombineMeshes();

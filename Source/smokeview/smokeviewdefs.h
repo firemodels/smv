@@ -7,6 +7,12 @@ void _Sniff_Errors(char *whereat);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifdef pp_DPRINT
+#define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
+#else
+#define DPRINT
+#endif
+
 #define PROJECTION_PERSPECTIVE  0
 #define PROJECTION_ORTHOGRAPHIC 1
 #define ALL_FRAMES -1
@@ -80,11 +86,8 @@ void _Sniff_Errors(char *whereat);
 #define FIRST_TIME 1
 #define NOT_FIRST_TIME 2
 
-#define SET_SLICECOLOR 0
+#define SET_SLICECOLOR   0
 #define DEFER_SLICECOLOR 1
-
-#define PARTDATA 0
-#define HISTDATA 1
 
 #define SLICEDUP_KEEPALL 0
 #define SLICEDUP_KEEPFINE 1
@@ -134,13 +137,10 @@ void _Sniff_Errors(char *whereat);
 #define GEOM_SLICE    2
 #define GEOM_BOUNDARY 3
 
-#define PATCH_NODE_CENTER 0
-#define PATCH_CELL_CENTER 1
-#define PATCH_GEOMETRY 2
-
-#define PATCH_STRUCTURED 0
-#define PATCH_GEOMETRY_BOUNDARY 1
-#define PATCH_GEOMETRY_SLICE 2
+#define PATCH_STRUCTURED_NODE_CENTER 0
+#define PATCH_STRUCTURED_CELL_CENTER 1
+#define PATCH_GEOMETRY_BOUNDARY 2
+#define PATCH_GEOMETRY_SLICE 3
 
 #define NODATA 0
 #define HASDATA 1
@@ -323,6 +323,7 @@ void _Sniff_Errors(char *whereat);
 #define SLICE_FIRELINE 3
 #define SLICE_TERRAIN 4
 #define SLICE_FACE_CENTER 5
+#define SLICE_GEOM 6
 
 #define TERRAIN_3D 0
 #define TERRAIN_2D_STEPPED 1
@@ -632,7 +633,6 @@ void _Sniff_Errors(char *whereat);
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING -2
 #define SCRIPT_STOP_RECORDING -3
-#define SCRIPT_FILE_LOADING -4
 #define SCRIPT_STEP -5
 #define SCRIPT_CONTINUE -7
 #define SCRIPT_CANCEL -8
@@ -715,7 +715,8 @@ void _Sniff_Errors(char *whereat);
 #define RenderLABELtime 979
 #define MENU_RENDER_SETTINGS 900
 
-#define EXTERIORwallmenu -1
+#define ShowEXTERIORwallmenu -1
+#define HideEXTERIORwallmenu -19
 #define INTERIORwallmenu -2
 #define FRONTwallmenu -3
 #define BACKwallmenu -4
@@ -770,6 +771,7 @@ void _Sniff_Errors(char *whereat);
 #define UNLOAD 1
 #define RESETBOUNDS 2
 #define RELOAD 3
+#define UPDATE_HIST 4
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1

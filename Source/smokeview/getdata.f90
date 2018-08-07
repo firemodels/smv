@@ -78,9 +78,9 @@ deallocate(cbuffer)
 end subroutine ffseek
 end module cio
 
-!  ------------------ getembeddatasize ------------------------
+!  ------------------ getgeomdatasize ------------------------
 
-subroutine getembeddatasize(filename,ntimes,nvars,error)
+subroutine getgeomdatasize(filename,ntimes,nvars,error)
 implicit none
 character(len=*), intent(in) :: filename
 integer, intent(out) :: ntimes, nvars, error
@@ -121,96 +121,93 @@ do
 end do
 close(lu20)
 
-end subroutine getembeddatasize
+end subroutine getgeomdatasize
 
-!  ------------------ fcreate_part5sizefile ------------------------
+!   FORTelev2geom(output_elev_file, xgrid, ibar, yrid, jbar, vals, ibar*jbar, strlen(output_elev_file));
 
-subroutine fcreate_part5sizefile(part5file, part5sizefile, angle_flag, redirect_flag, error)
+!  ------------------ elev2geom ------------------------
+
+subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
 implicit none
-character(len=*), intent(in) :: part5file, part5sizefile
-integer, intent(in) :: angle_flag, redirect_flag
-integer, intent(out) :: error
+character(len=*), intent(in) :: output_elev_file
+integer, intent(in) :: ibar, jbar, nvals
+real, intent(in), dimension(:) :: xgrid(ibar), ygrid(jbar), vals(nvals)
 
-integer :: lu20, lu21, version, nclasses
-integer, allocatable, dimension(:) :: numtypes, numpoints
-character(len=30) :: dummy
-integer :: i, j,one,idummy
-real :: rdummy,time
+integer :: lu_geom
+integer :: i, j
+integer :: one=1, version=1, n_floats=0, n_ints=0, first_frame_static=1
+integer :: n_vert, n_face, n_vol
+integer :: ivert, iface
+real :: stime=0.0
+real, dimension(:),allocatable :: xvert, yvert
+integer, dimension(:),allocatable :: face
+real, dimension(:),allocatable :: xtext, ytext
 
-open(newunit=lu20,file=trim(part5file),form="unformatted",action="read")
-open(newunit=lu21,file=trim(part5sizefile),form="formatted",action="write")
+n_vert = ibar*jbar
+n_face = 2*(ibar-1)*(jbar-1)
+n_vol = 0
 
-error=0
-read(lu20,iostat=error)one
-if(error.ne.0)go to 998
-read(lu20,iostat=error)version
-if(error.ne.0)go to 998
-read(lu20,iostat=error)nclasses
-if(error.ne.0)go to 998
-allocate(numtypes(2*nclasses))
-allocate(numpoints(nclasses))
-do i = 1, nclasses
-  read(lu20,iostat=error)numtypes(2*i-1),numtypes(2*i)
-  if(error.ne.0)go to 999
-  do j = 1, (numtypes(2*i-1)+numtypes(2*i))
-    read(lu20,iostat=error)dummy
-    if(error.ne.0)go to 999
-    read(lu20,iostat=error)dummy
-    if(error.ne.0)go to 999
-  end do
+allocate(xvert(n_vert))
+allocate(yvert(n_vert))
+allocate(face(3*n_face))
+allocate(xtext(3*n_face))
+allocate(ytext(3*n_face))
+
+open(newunit=lu_geom,file=trim(output_elev_file),form="unformatted",action="write")
+
+ivert=1
+do i = 1, ibar
+   do j = 1, jbar
+      xvert(ivert) = xgrid(i)
+      yvert(ivert) = ygrid(j)
+      xtext(ivert) = real(i-1)/real(ibar-1)
+      ytext(ivert) = real(j-1)/real(jbar-1)
+      ivert = ivert + 1
+   end do
 end do
-do
-  read(lu20,iostat=error)time
-  if(redirect_flag.eq.0)write(6,10)time
-10 format(" sizing particle time=",f9.2)
-  if(error.ne.0)go to 999
-  do i = 1, nclasses
-    read(lu20,iostat=error)numpoints(i)
-    if(error.ne.0)go to 999
-    if(angle_flag.eq.1)then
-      read(lu20,iostat=error)(rdummy,j=1,7*numpoints(i))
-     else
-      read(lu20,iostat=error)(rdummy,j=1,3*numpoints(i))
-    endif
-    if(error.ne.0)go to 999
-    read(lu20,iostat=error)(rdummy,j=1,numpoints(i))
-    if(error.ne.0)go to 999
-    if(numtypes(2*i-1)>0)then
-      read(lu20,iostat=error)(rdummy,j=1,numpoints(i)*numtypes(2*i-1))
-      if(error.ne.0)go to 999
-    endif
-    if(numtypes(2*i)>0)then
-      read(lu20,iostat=error)(idummy,j=1,numpoints(i)*numtypes(2*i))
-      if(error.ne.0)go to 999
-    endif
-  end do
-  write(lu21,"(e15.8)")time
-  do i = 1, nclasses
-    write(lu21,"(1x,i9)")numpoints(i)
-  end do
+
+!        j*ibar + 1,     j*ibar+ i,     j*ibar+ i+1,...    j*ibar+ibar
+!    (j-1)*ibar + 1, (j-1)*ibar+ i, (j-1)*ibar+ i+1,... (j-1)ibar+ibar
+
+iface = 1
+do j = 1, jbar-1
+   do i = 1, ibar-1
+     face(iface)   = (j-1)*ibar+i
+     face(iface+1) = (j-1)*ibar+i+1
+     face(iface+2) = j*ibar+i+1
+     iface = iface + 3
+
+     face(iface)   = (j-1)*ibar+i
+     face(iface+1) = j*ibar+i+1
+     face(iface+2) = j*ibar+i
+     iface = iface + 3
+   end do
 end do
-!     for(i=0;i<nclasses;i++){
-!      FORTPART5READ(&nparts,1);
-!      if(returncode==0)goto wrapup;
-!      numpoints[i]=nparts;
-!      skip = 4 + 4*nparts*3 + 4;
-!      skip += 4 + 4*nparts + 4;
-!      if(numtypes[2*i]>0)skip += 4 + 4*nparts*numtypes[2*i] + 4;
-!      if(numtypes[2*i+1]>0)skip += 4 + 4*nparts*numtypes[2*i+1] + 4;
-!
-!      returncode=fseek(PART5FILE,skip,SEEK_CUR);
-!      if(returncode!=0)goto wrapup;
-!    }
 
+write(lu_geom) one
+write(lu_geom) version
+write(lu_geom) n_floats, n_ints, first_frame_static
+!if (n_floats>0) write(lu_geom) (float_header(i),i=1,n_floats)
+!if (n_ints>0) write(lu_geom) (int_header(i),i=1,n_ints)
+! geometry frame
+! stime ignored if first frame is static ( first_frame_static set to 1)
 
-999 continue
-deallocate(numpoints,numtypes)
-998 continue
-close(lu20)
-close(lu21)
+write(lu_geom) stime
+write(lu_geom) n_vert, n_face, n_vol
+if (n_vert>0) write(lu_geom)(xvert(i),yvert(i),vals(i),i=1,n_vert)
+if (n_face>0) then
+   write(lu_geom) (face(i),i=1,3*n_face)
+   write(lu_geom) (1,i=1,n_face)
+   write(lu_geom) (xtext(i),ytext(i),i=1,3*n_face)
+endif
+!if (n_vol>0) then
+!   write(lu_geom) (vol1(i),vol2(i),vol3(i),vol4(i),i=1,n_vol)
+!   write(lu_geom) (matl(i),i=1,n_vol)
+!endif
+close(lu_geom)
+deallocate(xvert,yvert,face,xtext,ytext)
 
-return
-end subroutine fcreate_part5sizefile
+end subroutine elev2geom
 
 !  ------------------ getzonesize ------------------------
 
@@ -818,13 +815,13 @@ IF (N_FACE_S>0)  WRITE(LU_GEOM) (faces(3*I-2),faces(3*I-1),faces(3*I),I=1,N_FACE
 close(LU_GEOM)
 end subroutine geomout
 
-!  ------------------ getembeddata ------------------------
+!  ------------------ getgeomdata ------------------------
 
-subroutine getembeddata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,redirect_flag,error)
+subroutine getgeomdata(filename,ntimes,nvals,times,nstatics,ndynamics,vals,file_size,error)
 implicit none
 character(len=*), intent(in) :: filename
-integer, intent(in) :: ntimes, nvals, redirect_flag
-integer, intent(out) :: error
+integer, intent(in) :: ntimes, nvals
+integer, intent(out) :: file_size, error
 real, intent(out), dimension(:) :: times(ntimes), vals(nvals)
 integer, intent(out), dimension(:) :: nstatics(ntimes), ndynamics(ntimes)
 
@@ -836,6 +833,7 @@ integer :: nvert_s, ntri_s, nvert_d, ntri_d
 real :: valmin, valmax
 integer :: version
 
+file_size = 0
 inquire(file=trim(filename),exist=exists)
 if(exists)then
   open(newunit=lu20,file=trim(filename),form="unformatted",action="read")
@@ -848,34 +846,47 @@ endif
 error = 0
 read(lu20)one
 read(lu20)version
+file_size = 2*(4+4+4)
 nvars=0
 do itime=1, ntimes
   read(lu20,iostat=finish)times(itime)
-  if(redirect_flag.eq.0)write(6,10)times(itime)
-10 format(" boundary element time=",f9.2)
+  file_size = file_size + (4+4+4)
   if(finish.eq.0)then
     read(lu20,iostat=finish)nvert_s, ntri_s, nvert_d, ntri_d
+    file_size = file_size + (4+4*4+4)
     nstatics(itime)=nvert_s+ntri_s
   endif
 
   if(finish.eq.0)then
-    if(nvert_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+    if(nvert_s.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_s)
+      file_size = file_size + (4+4*nvert_s+4)
+    endif
     nvars = nvars + nvert_s
   endif
 
   if(finish.eq.0)then
-    if(ntri_s.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+    if(ntri_s.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_s)
+      file_size = file_size + (4+4*ntri_s+4)
+    endif
     nvars = nvars + ntri_s
   endif
 
   ndynamics(itime)=nvert_d+ntri_d
   if(finish.eq.0)then
-    if(nvert_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+    if(nvert_d.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,nvert_d)
+      file_size = file_size + (4+4*nvert_d+4)
+    endif
     nvars = nvars + nvert_d
   endif
 
   if(finish.eq.0)then
-    if(ntri_d.gt.0)read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+    if(ntri_d.gt.0)then
+      read(lu20,iostat=finish)(vals(nvars+i),i=1,ntri_d)
+      file_size = file_size + (4+4*ntri_d+4)
+    endif
     nvars = nvars + ntri_d
   endif
 
@@ -896,10 +907,9 @@ do i = 2, nvars
   if(vals(i).lt.valmin)valmin=vals(i)
   if(vals(i).gt.valmax)valmax=vals(i)
 end do
-if(redirect_flag.eq.0)write(6,*)" nvars=",nvars,"valmin=",valmin," valmax=",valmax
 close(lu20)
 
-end subroutine getembeddata
+end subroutine getgeomdata
 
 !  ------------------ getzonedata ------------------------
 
@@ -978,19 +988,21 @@ end subroutine skipdata
 
 !  ------------------ getpatchdata ------------------------
 
-subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,error)
+subroutine getpatchdata(file_unit,npatch,pi1,pi2,pj1,pj2,pk1,pk2,patchtime,pqq,npqq,file_size,error)
 implicit none
 
 integer, intent(in) :: npatch,file_unit
 integer, intent(in), dimension(*) :: pi1, pi2, pj1, pj2, pk1, pk2
 real, intent(out), dimension(*) :: pqq
-integer, intent(out) :: error,npqq
+integer, intent(out) :: error,npqq,file_size
 real, intent(out) :: patchtime
 
 integer :: i, i1, i2, j1, j2, k1, k2, size, ibeg, iend, ii
 
+file_size=0;
 error=0
 read(file_unit,iostat=error)patchtime
+file_size = file_size + 4;
 if(error.ne.0)then
   close(file_unit)
   return
@@ -1008,6 +1020,7 @@ do i = 1, npatch
   npqq=npqq+size
   iend = ibeg + size - 1
   read(file_unit,iostat=error)(pqq(ii),ii=ibeg,iend)
+  file_size = file_size + 4*(iend+1-ibeg)
   if(error.ne.0)then
     close(file_unit)
     exit
@@ -1225,19 +1238,18 @@ end subroutine writeslicedata2
 
 subroutine getslicedata(slicefilename,&
             is1,is2,js1,js2,ks1,ks2,idir,qmin,qmax,qdata,times,ntimes_old,ntimes,&
-            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,&
-            redirect_flag)
+            sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,file_size)
 use cio
 implicit none
 
 character(len=*), intent(in) :: slicefilename
 
-integer, intent(in) :: redirect_flag, ntimes_old, settmin_s, settmax_s, sliceframestep
+integer, intent(in) :: ntimes_old, settmin_s, settmax_s, sliceframestep
 
 real, intent(inout) :: qmin, qmax
 real, intent(out), dimension(*) :: qdata, times
 
-integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2
+integer, intent(out) :: idir, is1, is2, js1, js2, ks1, ks2, file_size
 integer, intent(inout) :: ntimes
 real, intent(in) :: tmin_s, tmax_s
 
@@ -1262,6 +1274,7 @@ integer :: nsizes
 
 joff = 0
 koff = 0
+file_size = 0
 
 inquire(file=trim(slicefilename),exist=exists)
 if(exists)then
@@ -1288,6 +1301,7 @@ call ffseek(lu11,sizes,nsizes,seek_set,error)
 deallocate(sizes)
 
 read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+file_size = 6*4
 is1 = ip1
 is2 = ip2
 js1 = jp1
@@ -1321,6 +1335,7 @@ if(ntimes/=ntimes_old.and.ntimes_old>0)then
 endif
 do
   read(lu11,iostat=error)timeval
+  file_size = file_size + 4
   if(error.ne.0)exit
   if((settmin_s.ne.0.and.timeval<tmin_s).or.timeval.le.time_max)then
     load = .false.
@@ -1341,8 +1356,7 @@ do
   if(.not.load)cycle
   nsteps = nsteps + 1
   times(nsteps) = timeval
-  if(redirect_flag.eq.0)write(6,10)timeval
-10 format(" slice time=",f9.2)
+  file_size = file_size + 4*nxsp*nysp*nzsp
 
   if(idir.eq.3)then
     istart = (nsteps-1)*nxsp*nysp

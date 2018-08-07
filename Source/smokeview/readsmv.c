@@ -2043,7 +2043,7 @@ void InitTextures(void){
   }
 }
 
-/* ------------------ UpdateBoundInfo ------------------------ */
+  /* ------------------ UpdateBoundInfo ------------------------ */
 
 void UpdateBoundInfo(void){
   int i,n;
@@ -2065,7 +2065,7 @@ void UpdateBoundInfo(void){
       isoi->valmin=1.0;
       isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
-      isobounds[niso_bounds].datalabel=isoi->color_label.shortlabel;
+      isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].setvalmin=0;
       isobounds[niso_bounds].setvalmax=0;
       isobounds[niso_bounds].valmin=1.0;
@@ -2090,44 +2090,48 @@ void UpdateBoundInfo(void){
     }
   }
 
-  if(nsliceinfo>0){
+  if(nsliceinfo > 0){
     FREEMEMORY(slicebounds);
     NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
-    nslice_type=0;
+    nslicebounds=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
+      boundsdata *sbi;
 
       slicei = sliceinfo + i;
-      slicei->firstshort=1;
+      slicei->firstshort_slice=1;
       slicei->valmin=1.0;
       slicei->valmax=0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
-      slicebounds[nslice_type].datalabel=slicei->label.shortlabel;
-      slicebounds[nslice_type].setvalmin=0;
-      slicebounds[nslice_type].setvalmax=0;
-      slicebounds[nslice_type].valmin=1.0;
-      slicebounds[nslice_type].valmax=0.0;
-      slicebounds[nslice_type].chopmax=0.0;
-      slicebounds[nslice_type].chopmin=1.0;
-      slicebounds[nslice_type].setchopmax=0;
-      slicebounds[nslice_type].setchopmin=0;
-      slicebounds[nslice_type].line_contour_min=0.0;
-      slicebounds[nslice_type].line_contour_max=1.0;
-      slicebounds[nslice_type].line_contour_num=1;
-      nslice_type++;
+
+      sbi = slicebounds + nslicebounds;
+      sbi->shortlabel=slicei->label.shortlabel;
+      sbi->setvalmin=0;
+      sbi->setvalmax=0;
+      sbi->valmin=1.0;
+      sbi->valmax=0.0;
+      sbi->chopmax=0.0;
+      sbi->chopmin=1.0;
+      sbi->setchopmax=0;
+      sbi->setchopmin=0;
+      sbi->line_contour_min=0.0;
+      sbi->line_contour_max=1.0;
+      sbi->line_contour_num=1;
+      nslicebounds++;
       for(n=0;n<i;n++){
         slicedata *slicen;
 
         slicen = sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
-          slicei->firstshort=0;
-          nslice_type--;
+          slicei->firstshort_slice=0;
+          nslicebounds--;
           break;
         }
       }
     }
   }
+
   canshow_threshold=0;
   if(npatchinfo>0){
     npatch2=0;
@@ -2839,7 +2843,7 @@ int IsSliceDup(slicedata *sd, int nslice){
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
-    if(slicei->slicetype!=sd->slicetype)continue;
+    if(slicei->slicefile_type!=sd->slicefile_type)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
     if(slicei->volslice!=sd->volslice)continue;
     if(slicei->idir!=sd->idir)continue;
@@ -2860,7 +2864,6 @@ int CreateNullLabel(flowlabels *flowlabel){
   len = strlen(buffer);
   if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1)) == 0)return 2;
   STRCPY(flowlabel->longlabel, buffer);
-
 
   len = strlen("Particles");
   strcpy(buffer, "Particles");
@@ -3551,7 +3554,11 @@ int ReadSMV(char *file, char *file2){
   int setGRID=0;
   int  i;
 
-  char buffer[256],buffer2[256],*bufferptr;
+  char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
+  char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
+#ifdef pp_SLICEGEOM
+  patchdata *patchgeom;
+#endif
 #ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
@@ -3885,8 +3892,6 @@ int ReadSMV(char *file, char *file2){
 
   FREEMEMORY(vsliceinfo);
   FREEMEMORY(sliceinfo);
-  FREEMEMORY(slicetypes);
-  FREEMEMORY(vslicetypes);
 
   FREEMEMORY(plot3dinfo);
   FREEMEMORY(patchinfo);
@@ -4307,15 +4312,25 @@ int ReadSMV(char *file, char *file2){
       npartinfo++;
       continue;
     }
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+#ifdef pp_SLICEGEOM
+        || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
+#ifdef pp_SLICEGEOM
+      if(Match(buffer, "BNDS") == 1){
+        if(FGETS(buffer,255,stream)==NULL){
+          BREAK;
+        }
+      }
+#endif
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
@@ -4331,26 +4346,30 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "SMOKE3D") == 1  ||
+      Match(buffer, "VSMOKE3D") == 1 ||
+      Match(buffer, "SMOKF3D") == 1  ||
+      Match(buffer, "VSMOKF3D") == 1
+      || Match(buffer, "SMOKG3D") == 1 ||
       Match(buffer, "VSMOKG3D") == 1
       ){
-      if(setup_only==1)continue;
+      if(setup_only == 1)continue;
       nsmoke3dinfo++;
       continue;
     }
-    if(
-      Match(buffer,"MINMAXBNDF") == 1||
-      Match(buffer,"MINMAXPL3D") == 1||
-      Match(buffer,"MINMAXSLCF") == 1
-      ){
-      do_pass4=1;
+    if (
+      Match(buffer, "MINMAXBNDF") == 1 ||
+      Match(buffer, "MINMAXPL3D") == 1 ||
+      Match(buffer, "MINMAXSLCF") == 1
+      ) {
+      do_pass4 = 1;
       continue;
     }
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+#ifndef pp_SLICEGEOM
+      || Match(buffer, "BNDS") == 1
+#endif
+      ){
       if(setup_only == 1||smoke3d_only==1)continue;
       npatchinfo++;
       continue;
@@ -4550,23 +4569,19 @@ int ReadSMV(char *file, char *file2){
 
   FREEMEMORY(vsliceinfo);
   FREEMEMORY(sliceinfo);
-  FREEMEMORY(slicetypes);
-  FREEMEMORY(vslicetypes);
   FREEMEMORY(fedinfo);
   if(nsliceinfo>0){
-    if(NewMemory( (void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata) )==0||
-       NewMemory( (void **)&sliceinfo,  nsliceinfo*sizeof(slicedata)    )==0||
-       NewMemory( (void **)&fedinfo,  nsliceinfo*sizeof(feddata)    )==0||
-       NewMemory( (void **)&slicetypes, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&slice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&vslice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&subslice_menuindex, nsliceinfo*sizeof(int)      )==0||
-       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0||
+    if(NewMemory((void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata))==0 ||
+       NewMemory((void **)&sliceinfo,  nsliceinfo*sizeof(slicedata))==0    ||
+       NewMemory((void **)&fedinfo,  nsliceinfo*sizeof(feddata))==0        ||
+       NewMemory((void **)&slice_loadstack, nsliceinfo*sizeof(int))==0     ||
+       NewMemory((void **)&vslice_loadstack, nsliceinfo*sizeof(int))==0    ||
+       NewMemory((void **)&subslice_menuindex, nsliceinfo*sizeof(int))==0  ||
+       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0 ||
+       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0 ||
        NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0||
-       NewMemory( (void **)&mvslice_loadstack, nsliceinfo*sizeof(int)      )==0||
-       NewMemory( (void **)&vslicetypes,3*nsliceinfo*sizeof(int)    )==0){
+       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0    ||
+       NewMemory((void **)&mvslice_loadstack, nsliceinfo*sizeof(int))==0){
        return 2;
     }
     sliceinfo_copy=sliceinfo;
@@ -5609,6 +5624,7 @@ int ReadSMV(char *file, char *file2){
 
         smoke3di->display=0;
         smoke3di->loaded=0;
+        smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
         smoke3di->blocknumber=blocknumber;
@@ -7860,9 +7876,7 @@ typedef struct {
       parti->blocknumber=blocknumber;
       parti->seq_id=nn_part;
       parti->autoload=0;
-#ifdef pp_PARTDEFER
-      parti->compute_bounds_color = 1;
-#endif
+      parti->finalize = 1;
       if(FGETS(buffer,255,stream)==NULL){
         npartinfo--;
         BREAK;
@@ -7933,6 +7947,8 @@ typedef struct {
       parti->compression_type=UNCOMPRESSED;
       parti->sort_tags_loaded=0;
       parti->loaded=0;
+      parti->request_load = 0;
+      parti->finalize = 0;
       parti->display=0;
       parti->times=NULL;
       parti->timeslist=NULL;
@@ -8080,16 +8096,22 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (Match(buffer,"SLCF") == 1)||
-        (Match(buffer,"SLCC") == 1)||
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
+#ifdef pp_SLICEGEOM
+      || (Match(buffer, "BNDS") == 1)
+#endif
       ){
       char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
       float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
+#ifdef pp_SLICEGEOM
+      int slicegeom=0;
+#endif
       int has_reg, has_comp;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
@@ -8126,6 +8148,12 @@ typedef struct {
         strcpy(slicelabel,slicelabelptr);
         slicelabelptr=slicelabel;
       }
+#ifdef pp_SLICEGEOM
+      if(Match(buffer,"BNDS") == 1){
+        strcpy(bufferA,buffer);
+        slicegeom=1;
+      }
+#endif
       if(Match(buffer,"SLCT") == 1){
         terrain=1;
       }
@@ -8156,15 +8184,24 @@ typedef struct {
         sscanf(buffer3,"%i %f",&blocknumber,&above_ground_level);
         blocknumber--;
       }
+
+// read in slice file name
+
       if(FGETS(buffer,255,stream)==NULL){
         nsliceinfo--;
         BREAK;
       }
+#ifdef pp_SLICEGEOM
+      if(slicegeom == 1){
+        strcpy(bufferB,buffer);
+      }
+#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
 
       sd = sliceinfo + nn_slice - 1;
+
       sd->ntimes = 0;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
@@ -8174,16 +8211,26 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
-      sd->slicetype=SLICE_NODE_CENTER;
-      if(terrain==1){
-        sd->slicetype=SLICE_TERRAIN;
+      sd->slicefile_type=SLICE_NODE_CENTER;
+      sd->patchgeom = NULL;
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        patchdata *patchgeom;
+
+        sd->slicefile_type=SLICE_GEOM;
+        NewMemory((void **)&patchgeom,sizeof(patchdata));
+        sd->patchgeom=patchgeom;
       }
-      if(fire_line==1)sd->slicetype=SLICE_FIRELINE;
+#endif
+      if(terrain==1){
+        sd->slicefile_type=SLICE_TERRAIN;
+      }
+      if(fire_line==1)sd->slicefile_type=SLICE_FIRELINE;
       if(cellcenter==1){
-        sd->slicetype=SLICE_CELL_CENTER;
+        sd->slicefile_type=SLICE_CELL_CENTER;
       }
       if(facecenter == 1){
-        sd->slicetype = SLICE_FACE_CENTER;
+        sd->slicefile_type = SLICE_FACE_CENTER;
       }
 
       islicecount++;
@@ -8206,6 +8253,13 @@ typedef struct {
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
+#ifdef pp_SLICEGEOM
+        if(slicegeom==1){
+          if(FGETS(buffer,255,stream)==NULL){
+            BREAK;
+          }
+        }
+#endif
         continue;
       }
 
@@ -8224,13 +8278,38 @@ typedef struct {
         sd->file=sd->reg_file;
       }
 
-      if(sd->slicetype==SLICE_TERRAIN){
+#ifdef pp_SLICEGEOM
+
+// read in geometry file name
+
+      if(slicegeom==1){
+        int lengeom;
+
+        if(FGETS(buffer2,255,stream)==NULL){
+          nsliceinfo--;
+          BREAK;
+        }
+        strcpy(bufferC,buffer2);
+        bufferptr2=TrimFrontBack(buffer2);
+        lengeom=strlen(bufferptr2);
+        sd->geom_file = NULL;
+        NewMemory((void **)&sd->geom_file,(unsigned int)(lengeom+1));
+        STRCPY(sd->geom_file,bufferptr2);
+      }
+#endif
+
+// read in labels
+
+      if(sd->slicefile_type==SLICE_TERRAIN){
         if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
-      else if(sd->slicetype==SLICE_CELL_CENTER){
+      else if(sd->slicefile_type==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
-      else if(sd->slicetype == SLICE_FACE_CENTER){
+      else if(sd->slicefile_type==SLICE_GEOM){
+        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==2)return 2;
+      }
+      else if(sd->slicefile_type == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
       else{
@@ -8341,21 +8420,42 @@ typedef struct {
         continue;
       }
       sliceinfo_copy++;
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferA);
+        patchgeom = sd->patchgeom;
+      }
+      else{
+        continue;
+      }
+#else
       continue;
+#endif
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS")==1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
+      || Match(buffer, "BNDS")==1
+      ){
       patchdata *patchi;
       int version;
       int blocknumber;
       size_t len;
-      char *geom_fdsfiletype;
+      char *filetype_label;
+#ifdef pp_SLICEGEOM
+      int slicegeom=0;
+#endif
 
       if(setup_only == 1||smoke3d_only==1)continue;
+
+#ifdef pp_SLICEGEOM
+      if(Match(buffer, "BNDS")==1){
+        slicegeom=1;
+      }
+#endif
       nn_patch++;
 
       TrimBack(buffer);
@@ -8375,31 +8475,46 @@ typedef struct {
         sscanf(buffer3,"%i %i",&blocknumber,&version);
         blocknumber--;
       }
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        patchi = patchgeom;
+      }
+      else{
+        patchi = patchinfo + ipatch;
+      }
+#else
       patchi = patchinfo + ipatch;
+#endif
 
+      for(i = 0; i < 6; i++){
+        patchi->ijk[i] = -1;
+      }
+      patchi->skip = 0;
       patchi->version=version;
       patchi->ntimes = 0;
       patchi->ntimes_old = 0;
       strcpy(patchi->scale, "");
-      patchi->geom_fdsfiletype=NULL;
-      patchi->filetype = PATCH_NODE_CENTER;
-      patchi->geom_smvfiletype = PATCH_STRUCTURED;
-      patchi->slice = 0;
+      patchi->filetype_label=NULL;
+      patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
+      patchi->structured = YES;
+      patchi->boundary = 1;
       if(Match(buffer,"BNDC") == 1){
-        patchi->filetype = PATCH_CELL_CENTER;
+        patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
       }
       if(Match(buffer,"BNDE") == 1){
         ngeom_data++;
-        patchi->filetype=PATCH_GEOMETRY;
-        patchi->geom_smvfiletype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->patch_filetype=PATCH_GEOMETRY_BOUNDARY;
+        patchi->structured = NO;
       }
+
       if(Match(buffer, "BNDS") == 1){
         char *sliceparms;
 
+        CheckMemory;
         ngeom_data++;
-        patchi->filetype = PATCH_GEOMETRY;
-        patchi->geom_smvfiletype = PATCH_GEOMETRY_SLICE;
-        patchi->slice = 1;
+        patchi->patch_filetype = PATCH_GEOMETRY_SLICE;
+        patchi->structured = NO;
+        patchi->boundary = 0;
 
         sliceparms = strchr(buffer, '&');
         if(sliceparms != NULL){
@@ -8412,26 +8527,38 @@ typedef struct {
             patchi->ijk[j]=ijk[j];
           }
         }
+        filetype_label = strchr(buffer, '#');
+        if(filetype_label != NULL){
+          int len_filetype_label;
 
-        geom_fdsfiletype = strchr(buffer, '#');
-        if(geom_fdsfiletype != NULL){
-          int len_geom_fdsfiletype;
-
-          geom_fdsfiletype++;
-          geom_fdsfiletype[-1] = 0;
-          geom_fdsfiletype = TrimFrontBack(geom_fdsfiletype);
-          len_geom_fdsfiletype = strlen(geom_fdsfiletype);
-          if(len_geom_fdsfiletype>0){
-            NewMemory((void **)&patchi->geom_fdsfiletype,(unsigned int)(len_geom_fdsfiletype+1));
-            strcpy(patchi->geom_fdsfiletype,geom_fdsfiletype);
+          filetype_label++;
+          filetype_label[-1] = 0;
+          filetype_label = TrimFrontBack(filetype_label);
+          len_filetype_label = strlen(filetype_label);
+          if(len_filetype_label>0){
+            NewMemory((void **)&patchi->filetype_label,(unsigned int)(len_filetype_label+1));
+            strcpy(patchi->filetype_label,filetype_label);
           }
         }
+        CheckMemory;
       }
 
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferB);
+      }
+      else{
+        if(FGETS(buffer,255,stream)==NULL){
+          npatchinfo--;
+          BREAK;
+        }
+      }
+#else
       if(FGETS(buffer,255,stream)==NULL){
         npatchinfo--;
         BREAK;
       }
+#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
@@ -8457,13 +8584,25 @@ typedef struct {
 
       patchi->geomfile=NULL;
       patchi->geominfo=NULL;
-      if(patchi->filetype==PATCH_GEOMETRY){
+      if(patchi->structured == NO){
         int igeom;
 
+#ifdef pp_SLICEGEOM
+      if(slicegeom==1){
+        strcpy(buffer,bufferC);
+      }
+      else{
         if(FGETS(buffer,255,stream)==NULL){
           npatchinfo--;
           BREAK;
         }
+      }
+#else
+      if(FGETS(buffer,255,stream)==NULL){
+        npatchinfo--;
+        BREAK;
+      }
+#endif
         bufferptr=TrimFrontBack(buffer);
         NewMemory((void **)&patchi->geomfile,strlen(bufferptr)+1);
         strcpy(patchi->geomfile,bufferptr);
@@ -8473,7 +8612,7 @@ typedef struct {
           geomi = geominfo + igeom;
           if(strcmp(geomi->file,patchi->geomfile)==0){
             patchi->geominfo=geomi;
-            if(patchi->slice == 0){
+            if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
               geomi->geomtype = GEOM_BOUNDARY;
               geomi->fdsblock = FDSBLOCK;
             }
@@ -8514,27 +8653,36 @@ typedef struct {
         char geomlabel2[256], *geomptr=NULL;
 
         strcpy(geomlabel2, "");
-        if(patchi->filetype==PATCH_CELL_CENTER){
+        if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
           if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
         }
-        else if(patchi->filetype==PATCH_NODE_CENTER){
+        else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
           if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         }
-        else if(patchi->filetype==PATCH_GEOMETRY){
+        else if(patchi->structured == NO){
           char geomlabel[256];
 
           strcpy(geomlabel, "(geometry)");
-          if(patchi->geom_fdsfiletype != NULL){
-            if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES") == 0){
+          if(patchi->filetype_label != NULL){
+            if(strcmp(patchi->filetype_label, "EXIMBND_FACES") == 0){
               strcat(geomlabel, " - EXIM faces");
               strcpy(geomlabel2, " - EXIM faces");
             }
-            if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+            if(strcmp(patchi->filetype_label, "CUT_CELLS") == 0){
               strcat(geomlabel, " - Cut cell faces");
               strcpy(geomlabel2, " - Cut cell faces");
             }
           }
+#ifdef pp_SLICEGEOM
+          if(slicegeom==1){
+            if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
+          }
+          else{
+            if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+          }
+#else
           if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+#endif
         }
         strcpy(patchi->menulabel_base, patchi->label.longlabel);
         if(strlen(geomlabel2) > 0){
@@ -8543,7 +8691,11 @@ typedef struct {
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
+#ifdef pp_SLICEGEOM
+        if(slicegeom==0)ipatch++;
+#else
         ipatch++;
+#endif
       }
       else{
         if(trainer_mode==0){
@@ -9096,7 +9248,7 @@ typedef struct {
 #endif
 
   UpdateSelectFaces();
-  UpdateSliceTypes();
+  UpdateSliceBoundIndexes();
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
@@ -9120,10 +9272,10 @@ typedef struct {
       }
     }
   }
-  UpdateTerrain(1,vertical_factor);
+  UpdateTerrain(1,vertical_factor); // xxslow
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
-  UpdateVSliceTypes();
+  UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
@@ -9163,7 +9315,7 @@ typedef struct {
 
   if(cullactive==1)InitCull(cullsmoke);
 #endif
-  UpdateMeshTerrain();
+  UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
   ngeominfoptrs=0;
@@ -9337,7 +9489,14 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
-   if(Match(buffer, "GEOMDOMAIN") == 1){
+    if(Match(buffer, "RESEARCHMODE") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i ", &research_mode);
+      ONEORZERO(research_mode);
+      update_research_mode=1;
+      continue;
+    }
+    if(Match(buffer, "GEOMDOMAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
       showgeom_inside_domain = CLAMP(showgeom_inside_domain, 0, 1);
@@ -9379,34 +9538,42 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i", &show_meshmenus);
       continue;
     }
+    if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %f %F", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
+      ONEORZERO(show_boundary_shaded);
+      ONEORZERO(show_boundary_outline);
+      ONEORZERO(show_boundary_points);
+      continue;
+    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
-        &immersed_celltype);
-      immersed_celltype = CLAMP(immersed_celltype,0,MAX_CELL_TYPES-1);
+        &slice_celltype);
+      slice_celltype = CLAMP(slice_celltype,0,MAX_CELL_TYPES-1);
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        immersed_edgetypes,immersed_edgetypes+1,immersed_edgetypes+2);
+        slice_edgetypes,slice_edgetypes+1,slice_edgetypes+2);
 
       for(i=0;i<3;i++){
-        immersed_edgetypes[i] = CLAMP(immersed_edgetypes[i],0,2);
+        slice_edgetypes[i] = CLAMP(slice_edgetypes[i],0,2);
       }
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i",
-        show_immersed_shaded,show_immersed_shaded+1,show_immersed_shaded+2);
+      sscanf(buffer, " %i %i %i %f",
+        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        show_immersed_outlines,show_immersed_outlines+1,show_immersed_outlines+2);
+        show_slice_outlines,show_slice_outlines+1,show_slice_outlines+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
-        show_immersed_points,show_immersed_points+1,show_immersed_points+2);
+        show_slice_points,show_slice_points+1,show_slice_points+2);
 
       for(i=0;i<MAX_CELL_TYPES;i++){
-        show_immersed_shaded[i]   = CLAMP(show_immersed_shaded[i],0,1);
-        show_immersed_outlines[i] = CLAMP(show_immersed_outlines[i],0,1);
-        show_immersed_points[i]   = CLAMP(show_immersed_points[i],0,1);
+        show_slice_shaded[i]   = CLAMP(show_slice_shaded[i],0,1);
+        show_slice_outlines[i] = CLAMP(show_slice_outlines[i],0,1);
+        show_slice_points[i]   = CLAMP(show_slice_points[i],0,1);
       }
       continue;
     }
@@ -9471,8 +9638,8 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "GEOMSHOW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %f %f",
-        &show_faces_interior, &show_faces_exterior, &show_faces_solid, &show_faces_outline, &smooth_geom_normal,
-        &geom_force_transparent, &geom_transparency,&geom_outline_width);
+        &show_faces_interior, &show_faces_exterior, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
+        &geom_force_transparent, &geom_transparency,&geom_linewidth);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
@@ -9732,10 +9899,10 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_solid, &show_iso_outline, &show_iso_verts, &show_iso_normal, &dummy, &smooth_iso_normal);
-      ONEORZERO(show_iso_solid);
+      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
+      ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
-      ONEORZERO(show_iso_verts);
+      ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
 #ifdef pp_BETA
@@ -9743,7 +9910,7 @@ int ReadIni2(char *inifile, int localfile){
 #else
       show_iso_normal = 0;
 #endif
-      visAIso = show_iso_solid * 1 + show_iso_outline * 2 + show_iso_verts * 4;
+      visAIso = show_iso_shaded * 1 + show_iso_outline * 2 + show_iso_points * 4;
       continue;
     }
     if(Match(buffer, "SHOWSTREAK") == 1){
@@ -10314,8 +10481,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
-        for(i = 0; i<nslice_type; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+        for(i = 0; i<nslicebounds; i++){
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -10329,7 +10496,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
           slicebounds[i].valmin = valmin;
@@ -10349,8 +10516,8 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
-        for(i = 0; i<nslice_type; i++){
-          if(strcmp(slicebounds[i].datalabel, buffer2) != 0)continue;
+        for(i = 0; i<nslicebounds; i++){
+          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -10359,7 +10526,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       else{
-        for(i = 0; i<nslice_type; i++){
+        for(i = 0; i<nslicebounds; i++){
           slicebounds[i].setchopmin = setvalmin;
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
@@ -10377,7 +10544,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer2, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setvalmin = setvalmin;
           isobounds[i].setvalmax = setvalmax;
           isobounds[i].valmin = valmin;
@@ -10404,7 +10571,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].datalabel, buffer2) != 0)continue;
+          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setchopmin = setvalmin;
           isobounds[i].setchopmax = setvalmax;
           isobounds[i].chopmin = valmin;
@@ -11215,9 +11382,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visAIso);
       visAIso &= 7;
-      show_iso_solid = (visAIso & 1) / 1;
+      show_iso_shaded = (visAIso & 1) / 1;
       show_iso_outline = (visAIso & 2) / 2;
-      show_iso_verts = (visAIso & 4) / 4;
+      show_iso_points = (visAIso & 4) / 4;
       continue;
     }
     if(trainer_mode == 0 && windowresized == 0){
@@ -12159,34 +12326,6 @@ int ReadIni2(char *inifile, int localfile){
         update_gslice = 1;
         continue;
       }
-      if(Match(buffer, "GEOMETRYTEST") == 1){
-        int *v, ii;
-        float *b1, *b2, *b3;
-
-        v = tetrabox_vis;
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %f %f", &geomtest_option, &show_tetratest_labels, &tetra_line_thickness, &tetra_point_size);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i ", v, v + 1, v + 2, v + 3, v + 4);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i ", v + 5, v + 6, v + 7, v + 8, v + 9);
-        ONEORZERO(show_tetratest_labels);
-        for(ii = 0; ii<10; ii++){
-          ONEORZERO(v[ii]);
-        }
-        b1 = box_bounds2;
-        b2 = tetra_vertices;
-        b3 = box_translate;
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b1, b1 + 1, b1 + 2, b1 + 3, b1 + 4, b1 + 5);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b2, b2 + 1, b2 + 2, b2 + 3, b2 + 4, b2 + 5);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %f %f %f", b2 + 6, b2 + 7, b2 + 8, b2 + 9, b2 + 10, b2 + 11);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f", b3, b3 + 1, b3 + 2);
-        continue;
-      }
       if(Match(buffer, "GRIDPARMS") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %i %i", &visx_all, &visy_all, &visz_all);
@@ -12508,23 +12647,6 @@ void WriteIniLocal(FILE *fileout){
 
   fprintf(fileout, "AVATAREVAC\n");
   fprintf(fileout, " %i\n", iavatar_evac);
-  {
-    int *v;
-    float *b1, *b2, *b3;
-
-    fprintf(fileout, "GEOMETRYTEST\n");
-    v = tetrabox_vis;
-    fprintf(fileout, " %i %i %f %f\n", geomtest_option, show_tetratest_labels, tetra_line_thickness, tetra_point_size);
-    fprintf(fileout, " %i %i %i %i %i\n", v[0], v[1], v[2], v[3], v[4]);
-    fprintf(fileout, " %i %i %i %i %i\n", v[5], v[6], v[7], v[8], v[9]);
-    b1 = box_bounds2;
-    b2 = tetra_vertices;
-    b3 = box_translate;
-    fprintf(fileout, " %f %f %f %f %f %f\n", b1[0], b1[1], b1[2], b1[3], b1[4], b1[5]);
-    fprintf(fileout, " %f %f %f %f %f %f\n", b2[0], b2[1], b2[2], b2[3], b2[4], b2[5]);
-    fprintf(fileout, " %f %f %f %f %f %f\n", b2[6], b2[7], b2[8], b2[9], b2[10], b2[11]);
-    fprintf(fileout, " %f %f %f\n", b3[0], b3[1], b3[2]);
-  }
   fprintf(fileout, "DEVICEVECTORDIMENSIONS\n");
   fprintf(fileout, " %f %f %f %f\n", vector_baselength, vector_basediameter, vector_headlength, vector_headdiameter);
   fprintf(fileout, "DEVICEBOUNDS\n");
@@ -12815,8 +12937,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3chopmin[i], p3chopmin[i], setp3chopmax[i], p3chopmax[i]);
     }
   }
-  if(nslice_type > 0){
-    for(i = 0; i < nslice_type; i++){
+  if(nslicebounds > 0){
+    for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "C_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         slicebounds[i].setchopmin, slicebounds[i].chopmin,
@@ -12889,8 +13011,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min[i], p3min[i], setp3max[i], p3max[i]);
     }
   }
-  if(nslice_type > 0){
-    for(i = 0; i < nslice_type; i++){
+  if(nslicebounds > 0){
+    for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
         slicebounds[i].setvalmin, slicebounds[i].valmin,
@@ -13133,6 +13255,9 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
+
+  fprintf(fileout, "RESEARCHMODE\n");
+  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);
   fprintf(fileout, "FED\n");
@@ -13200,17 +13325,19 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
+  fprintf(fileout, "GEOMBOUNDARYPROPS\n");
+  fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
-    immersed_celltype);
+    slice_celltype);
   fprintf(fileout, " %i %i %i\n",
-    immersed_edgetypes[0], immersed_edgetypes[1], immersed_edgetypes[2]);
+    slice_edgetypes[0], slice_edgetypes[1], slice_edgetypes[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_shaded[0], show_immersed_shaded[1], show_immersed_shaded[2]);
+    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_outlines[0], show_immersed_outlines[1], show_immersed_outlines[2]);
+    show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
   fprintf(fileout, " %i %i %i\n",
-    show_immersed_points[0], show_immersed_points[1], show_immersed_points[2]);
+    show_slice_points[0], show_slice_points[1], show_slice_points[2]);
   fprintf(fileout, "GEOMDIAGS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
@@ -13218,8 +13345,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f\n",
-     show_faces_interior, show_faces_exterior, show_faces_solid, show_faces_outline, smooth_geom_normal,
-     geom_force_transparent, geom_transparency, geom_outline_width);
+     show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+     geom_force_transparent, geom_transparency, geom_linewidth);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
 
@@ -13351,7 +13478,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_solid, show_iso_outline, show_iso_verts, show_iso_normal, smooth_iso_normal);
+  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");
@@ -13711,11 +13838,13 @@ void UpdateLoadedLists(void){
   }
 
   npatch_loaded=0;
+  ngeomslice_loaded = 0;
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
     if(patchi->loaded==1){
       patch_loaded_list[npatch_loaded]=i;
       npatch_loaded++;
+      if(patchi->boundary == 0)ngeomslice_loaded++;
     }
   }
 

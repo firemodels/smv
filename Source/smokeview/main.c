@@ -104,9 +104,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GCC
     strcat(label, ", pp_GCC");
 #endif
-#ifdef pp_GEOMTEST
-    strcat(label, ", pp_GEOMTEST");
-#endif
 #ifdef pp_GLUTGET
     strcat(label, ", pp_GLUTGET");
 #endif

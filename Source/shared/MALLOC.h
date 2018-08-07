@@ -102,11 +102,16 @@ void _memorystatus(unsigned int size,unsigned int *availmem, unsigned int *memus
 #endif
 
 #ifdef pp_MEMPRINT
-EXTERNCPP void _PrintMemoryInfo(void);
-#define PrintMemoryInfo _PrintMemoryInfo()
+#define PrintMemoryInfo \
+{\
+  MMdata *thisptr;int n;LINT size;\
+  for(n=0,size=0,thisptr = MMfirstptr->next; thisptr->next!=NULL; thisptr = thisptr->next,size+=thisptr->size,n++){}\
+  PRINTF("file=%s line=%i \n nblocks=%i size=%llu\n", __FILE__, __LINE__, n, size);\
+}
 #else
 #define PrintMemoryInfo
 #endif
+
 #ifdef pp_MEMDEBUG
 void getMemusage(MMsize totalmemory,char *MEMlabel);
 void _CheckMemory(void);

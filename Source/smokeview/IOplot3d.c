@@ -143,10 +143,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       numplot3dvars=0;
     }
     updatemenu=1;
-#ifdef pp_MEMPRINT
-    PRINTF("After plot3d unload: \n");
     PrintMemoryInfo;
-#endif
     UpdateTimes();
     UpdateUnitDefs();
     UpdateGluiPlot3D();
@@ -361,10 +358,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   UpdatePlot3dListIndex();
-#ifdef pp_MEMPRINT
-  PRINTF("After plot3d load: \n");
   PrintMemoryInfo;
-#endif
   UpdateTimes();
   UpdateUnitDefs();
   IdleCB();

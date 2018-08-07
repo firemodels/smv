@@ -29,13 +29,17 @@ set type=
 if "%buildtype%" == "test" (
    set type=-t
 )
+if "%buildtype%" == "testinc" (
+   set type=-t
+   set inc=inc
+)
 if "%buildtype%" == "release" (
    set type=-r
 )
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
-  call make_smokeview %type%
+  call make_smokeview %type% web %inc%
   goto eof
 )
 if "%platform%" == "linux" (

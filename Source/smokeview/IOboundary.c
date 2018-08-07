@@ -1085,7 +1085,6 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     if(skip_frame==1||local_count%boundframestep!=0)continue;
     i++;
     if(i>=ntimes_local)break;
-    PRINTF("boundary time=%.2f\n", local_time);
     ASSERT(i<ntimes_local);
     local_times[i] = local_time;
     zipoffset[i] = offset;
@@ -1297,7 +1296,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
-void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
+FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int error;
   FILE_SIZE lenfile;
   int patchfilenum;
@@ -1328,12 +1327,12 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   char *patchscale;
   int ncompressed_buffer;
   char *file;
-  FILE_SIZE file_size=0;
   float read_time, total_time;
   int file_unit, wallcenter=0;
+  FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
-  if(patchi->loaded==0&&flag==UNLOAD)return;
+  if(patchi->loaded==0&&flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
 
   if(output_patchdata==1){
@@ -1440,11 +1439,8 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     patchi->ntimes_old=0;
     patchi->ntimes=0;
     updatemenu=1;
-#ifdef pp_MEMPRINT
-    PRINTF("After boundary file unload: \n");
     PrintMemoryInfo;
-#endif
-    return;
+    return 0;
   }
   if(ifile>=0&&ifile<npatchinfo){
     Global2LocalBoundaryBounds(patchi->label.shortlabel);
@@ -1483,7 +1479,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
-      return;
+      return 0;
     }
   }
   else{
@@ -1514,7 +1510,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTclosefortranfile(&file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      return 0;
     }
   }
 
@@ -1592,7 +1588,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTclosefortranfile(&file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      return 0;
     }
   }
   for(n=0;n<meshi->npatchsize;n++){
@@ -2029,7 +2025,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
       ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      return 0;
     }
     break;
   case COMPRESSED_ALLFRAMES:
@@ -2049,20 +2045,21 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     *errorcode=1;
     FORTclosefortranfile(&file_unit);
     ReadBoundary(ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
   if(loadpatchbysteps==COMPRESSED_ALLFRAMES){
     GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,maxtimes_boundary);
     meshi->npatch_times=maxtimes_boundary;
     framestart = 0;
+    return_filesize += ncompressed_buffer;
   }
   else{
     if(meshi->patchval == NULL){
       *errorcode = 1;
       FORTclosefortranfile(&file_unit);
       ReadBoundary(ifile, UNLOAD, &error);
-      return;
+      return 0;
     }
     if(flag == RELOAD&&patchi->ntimes_old > 0){
       framestart = patchi->ntimes_old;
@@ -2072,7 +2069,6 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       framestart = 0;
     }
   }
-  file_size= GetFileSizeSMV(file);
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
@@ -2096,12 +2092,12 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       for(n=0;n<boundframestep;n++){
         if(error==0){
           int npatchval_iframe;
+          int filesize;
 
           FORTgetpatchdata(&file_unit,&meshi->npatches,
-          meshi->pi1,meshi->pi2,
-          meshi->pj1,meshi->pj2,
-          meshi->pk1,meshi->pk2,
-          meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&error);
+          meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,
+          meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&filesize, &error);
+          return_filesize += filesize;
         }
       }
     }
@@ -2181,9 +2177,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       case UNCOMPRESSED_ALLFRAMES:
       case UNCOMPRESSED_BYFRAME:
         if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
-          PRINTF("boundary time=%.2f\n",*meshi->patch_timesi);
-
-          meshi->npatch_times++;
+           meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
           if(meshi->npatch_times + 1 > maxtimes_boundary){
             PRINTF("reallocating memory\n");
@@ -2196,7 +2190,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
               *errorcode=1;
               ReadBoundary(ifile,UNLOAD,&error);
               FORTclosefortranfile(&file_unit);
-              return;
+              return 0;
             }
           }
           ii++;
@@ -2223,18 +2217,16 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       *errorcode=1;
       FORTclosefortranfile(&file_unit);
       ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      return 0;
     }
   }
-
-  PRINTF("computing boundary color levels \n");
   if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
       FORTclosefortranfile(&file_unit);
     }
     ReadBoundary(ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
   for(n=0;n<MAXRGB;n++){
     colorlabelpatch[n]=NULL;
@@ -2246,7 +2238,7 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTclosefortranfile(&file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
-      return;
+      return 0;
     }
   }
   patchscale = patchi->scale;
@@ -2308,40 +2300,33 @@ void ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->loaded=1;
   patchi->display=1;
   iboundarytype=GetBoundaryType(patchi);
-  showexterior=1-showexterior;
-  allexterior = 1-allexterior;
-  ShowBoundaryMenu(EXTERIORwallmenu);
+  ShowBoundaryMenu(ShowEXTERIORwallmenu);
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
-#ifdef pp_MEMPRINT
-  PRINTF("After boundary file load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
 
   STOP_TIMER(total_time);
-  if(file_size!=0&&read_time>0.0){
-    float loadrate;
 
-    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
-    PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
+  if(return_filesize > 1000000000){
+    PRINTF(" - %.1f GB in %.1f s\n", (float)return_filesize / 1000000000., total_time);
   }
-  else{
-    PRINTF(" %.1f MB downloaded in %.2f s",
-    (float)file_size/1000000.,read_time);
+  else if(return_filesize > 1000000){
+    PRINTF(" - %.1f MB in %.1f s\n", (float)return_filesize / 1000000., total_time);
   }
-
+ else{
+   PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
+  }
   glutPostRedisplay();
+  return return_filesize;
 }
 
 /* ------------------ ReadGeomData ------------------------ */
 
-void ReadGeomData(int ifile, int load_flag, int *errorcode){
-  patchdata *patchi;
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2350,6 +2335,8 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   int n;
   int error;
   FILE_SIZE lenfile;
+  FILE_SIZE return_filesize = 0;
+  float total_time;
 
   // 1
   // time
@@ -2358,12 +2345,20 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   // ndynamic
   // vals_1, ... vals_ndyamic
 
-  patchi = patchinfo+ifile;
-  if(patchi->filetype!=PATCH_GEOMETRY)return;
+  if(patchi->structured == YES)return 0;
+
+  START_TIMER(total_time);
   file = patchi->file;
 
   patchi->loaded = 0;
   patchi->display = 0;
+  if(slicei != NULL){
+    slicei->loaded = 0;
+    slicei->display = 0;
+    slicei->ntimes = 0;
+    slicei->times = NULL;
+  }
+  patchi->bounds.defined=0;
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
@@ -2374,22 +2369,22 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
   FREEMEMORY(patchi->geom_times);
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
-    UpdateBoundaryType();
+    if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
-    return;
+    return 0;
   }
-  if(patchi->skip == 1)return;
+  if(patchi->skip == 1)return 0;
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
   endian_smv = GetEndian();
   lenfile = strlen(file);
 
-  FORTgetembeddatasize(file, &ntimes_local, &nvals, &error, lenfile);
+  FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
 
   if(nvals==0){
     PRINTF("***warning: no data in %s\n", file);
-    return;
+    return 0;
   }
   if(nvals>0&&ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
@@ -2400,14 +2395,24 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
   }
-  FORTgetembeddata(file, &ntimes_local, &nvals, patchi->geom_times,
-    patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &redirect, &error, lenfile);
 
-  ResetHistogram(patchi->histogram, NULL, NULL);
+  if(load_flag == UPDATE_HIST){
+    int filesize;
 
-  UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    ResetHistogram(patchi->histogram, NULL, NULL);
+    UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+    CompleteHistogram(patchi->histogram);
+    return 0;
+  }
+  else{
+    int filesize;
 
-  CompleteHistogram(patchi->histogram);
+    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    return_filesize += filesize;
+  }
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
@@ -2417,56 +2422,120 @@ void ReadGeomData(int ifile, int load_flag, int *errorcode){
     patchi->geom_ivals_static[i] = patchi->geom_ivals_dynamic[i-1]+patchi->geom_ndynamics[i-1];
     patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]+patchi->geom_nstatics[i];
   }
-  if(colorlabelpatch!=NULL){
-    for(n = 0;n<MAXRGB;n++){
-      FREEMEMORY(colorlabelpatch[n]);
-    }
-    FREEMEMORY(colorlabelpatch);
-  }
-  if(NewMemory((void **)&colorlabelpatch, MAXRGB*sizeof(char *))==0){
-    ReadBoundary(ifile, UNLOAD, &error);
-    return;
-  }
-  for(n = 0;n<MAXRGB;n++){
-    colorlabelpatch[n] = NULL;
-  }
-  for(n = 0;n<nrgb;n++){
-    if(NewMemory((void **)&colorlabelpatch[n], 11)==0){
-      ReadBoundary(ifile, UNLOAD, &error);
-      return;
-    }
-  }
-  GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-    setpatchmin, &patchmin, setpatchmax, &patchmax,
-    &patchmin_global, &patchmax_global,
-    nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
-    &patchi->extreme_min, &patchi->extreme_max);
-  FREEMEMORY(patchi->geom_vals);
+
   patchi->loaded = 1;
   patchi->display = 1;
-  iboundarytype = GetBoundaryType(patchinfo+ifile);
+
+  if(slicei == NULL){
+    if (colorlabelpatch != NULL) {
+      for (n = 0; n < MAXRGB; n++) {
+        FREEMEMORY(colorlabelpatch[n]);
+      }
+      FREEMEMORY(colorlabelpatch);
+    }
+    if (NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0) {
+      ReadGeomData(patchi, NULL, UNLOAD, &error);
+      return 0;
+    }
+    for (n = 0; n < MAXRGB; n++) {
+      colorlabelpatch[n] = NULL;
+    }
+    for (n = 0; n < nrgb; n++) {
+      if (NewMemory((void **)&colorlabelpatch[n], 11) == 0) {
+        ReadGeomData(patchi, NULL, UNLOAD, &error);
+        return 0;
+      }
+    }
+    GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+      setpatchmin, &patchmin, setpatchmax, &patchmax,
+      &patchmin_global, &patchmax_global,
+      nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
+      &patchi->extreme_min, &patchi->extreme_max);
+    FREEMEMORY(patchi->geom_vals);  // slice files keep data loaded
+  }
+  else {
+    int slicetype;
+    boundsdata *sb;
+    char *scale;
+    float qmin, qmax;
+
+    slicetype = GetSliceBoundsIndex(slicei);
+    sb = slicebounds + slicetype;
+    sb->label = &(slicei->label);
+
+    slicei->loaded = 1;
+    slicei->display = 1;
+    slicei->ntimes = patchi->ngeom_times;
+    slicei->times = patchi->geom_times;
+
+    UpdateLoadedLists();
+    GetSliceDataBounds(slicei, &qmin, &qmax);
+    slicei->globalmin = qmin;
+    slicei->globalmax = qmax;
+    AdjustSliceBounds(slicei, &qmin, &qmax);
+    slicei->valmin = qmin;
+    slicei->valmax = qmax;
+    slicei->valmin_data = qmin;
+    slicei->valmax_data = qmax;
+    for (i = 0; i < 256; i++){
+      slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
+    }
+    void UpdateSliceBounds(void);
+    UpdateSliceBounds();
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
+    UpdateAllSliceColors(slicefile_labelindex, errorcode);
+    list_slice_index = slicefile_labelindex;
+    SetSliceBounds(slicefile_labelindex);
+
+    scale = sb->scale;
+    GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+      slicemin, slicemax,
+      nrgb_full, nrgb,
+      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      &slicei->extreme_min, &slicei->extreme_max
+    );
+  }
+
+  if(patchi->boundary == 1){
+    iboundarytype = GetBoundaryType(patchi);
+  }
+  else {
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
+  }
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateBoundaryType();
+  if(patchi->boundary==1)UpdateBoundaryType();
   UpdateUnitDefs();
   UpdateTimes();
   force_redisplay=1;
   UpdateFrameNumber(1);
+  updatemenu = 1;
+  STOP_TIMER(total_time);
+  PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+  return return_filesize;
 }
 
 /* ------------------ ReadBoundary ------------------------ */
 
-void ReadBoundary(int ifile, int load_flag, int *errorcode){
+FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
+  FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
-  if(patchi->filetype==PATCH_GEOMETRY){
+  if(patchi->structured == NO){
     ASSERT(ifile>=0&&ifile<ngeominfo);
-    ReadGeomData(ifile,load_flag,errorcode);
+    if(load_flag == LOAD){
+      UpdateBoundaryHist(patchi);
+    }
+    return_filesize=ReadGeomData(patchi,NULL, load_flag,errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);
-    ReadBoundaryBndf(ifile,load_flag,errorcode);
+    return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
+  if(load_flag==LOAD){
+
+  }
+  return return_filesize;
 }
 
 /* ------------------ Local2GlobalBoundaryBounds ------------------------ */
@@ -4122,15 +4191,15 @@ void DrawBoundaryFrame(int flag){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->filetype == PATCH_GEOMETRY && patchi->loaded == 1 && patchi->display == 1){
+    if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
-        if(patchi->slice == 0){
+        if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
           DrawGeomData(flag, patchi, GEOM_STATIC);
           DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
       }
       else{
-        if(patchi->slice == 1){
+        if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
           DrawGeomData(flag, patchi, GEOM_STATIC);
           DrawGeomData(flag, patchi, GEOM_DYNAMIC);
         }
@@ -4148,30 +4217,30 @@ void DrawBoundaryFrame(int flag){
         patchdata *patchi;
 
         patchi = patchinfo + filenum;
-        if(patchi->loaded==0||patchi->display==0||patchi->type!=iboundarytype)continue;
+        if(patchi->loaded==0||patchi->display==0||patchi->shortlabel_index!=iboundarytype)continue;
         if(usetexturebar!=0){
           if(vis_threshold==1&&do_threshold==1){
-            if(patchi->filetype==PATCH_CELL_CENTER){
+            if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryThresholdCellcenter(meshi);
             }
-            else if(patchi->filetype==PATCH_NODE_CENTER){
+            else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTextureThreshold(meshi);
             }
           }
           else{
-            if(patchi->filetype==PATCH_CELL_CENTER){
+            if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
               DrawBoundaryCellCenter(meshi);
             }
-            else if(patchi->filetype==PATCH_NODE_CENTER){
+            else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
               DrawBoundaryTexture(meshi);
             }
           }
         }
         else{
-          if(patchi->filetype==PATCH_CELL_CENTER){
+          if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
             DrawBoundaryCellCenter(meshi);
           }
-          else if(patchi->filetype==PATCH_NODE_CENTER){
+          else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
             DrawBoundary(meshi);
           }
         }
@@ -4194,7 +4263,7 @@ void UpdateBoundaryTypes(void){
   }
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo+i;
-    patchi->type=GetBoundaryType(patchi);
+    patchi->shortlabel_index =GetBoundaryType(patchi);
   }
 }
 
@@ -4221,14 +4290,14 @@ void UpdateBoundaryType(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1&&patchi->type==iboundarytype)return;
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index==iboundarytype)return;
   }
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->display==1){
+    if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1){
       iboundarytype = GetBoundaryIndex(patchi);
       return;
     }
@@ -4277,22 +4346,22 @@ void UpdateBoundaryMenuLabels(void){
         sprintf(label,"%s",patchmesh->label);
         STRCAT(patchi->menulabel,label);
       }
-      if(patchi->filetype == PATCH_GEOMETRY){
-        if(patchi->geom_fdsfiletype==NULL||strlen(patchi->geom_fdsfiletype)==0||strcmp(patchi->geom_fdsfiletype, "INCLUDE_GEOM")==0){
+      if(patchi->structured == NO){
+        if(patchi->filetype_label==NULL||strlen(patchi->filetype_label)==0||strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           if(strlen(patchi->gslicedir) != 0){
             STRCAT(patchi->menulabel, ", ");
             STRCAT(patchi->menulabel, patchi->gslicedir);
             STRCPY(patchi->menulabel_suffix, patchi->gslicedir);
           }
         }
-        if(patchi->geom_fdsfiletype!=NULL&&strlen(patchi->geom_fdsfiletype)>0){
-          if(strcmp(patchi->geom_fdsfiletype, "INBOUND_FACES")==0){
+        if(patchi->filetype_label!=NULL&&strlen(patchi->filetype_label)>0){
+          if(strcmp(patchi->filetype_label, "INBOUND_FACES")==0){
             STRCPY(patchi->menulabel_suffix, "in boundary");
           }
-          if(strcmp(patchi->geom_fdsfiletype, "EXIMBND_FACES")==0){
+          if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
             STRCPY(patchi->menulabel_suffix, "EXIM faces");
           }
-          if(strcmp(patchi->geom_fdsfiletype, "CUT_CELLS") == 0){
+          if(strcmp(patchi->filetype_label, "CUT_CELLS") == 0){
             STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
@@ -4354,8 +4423,8 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
   flowlabels *labeli;
 
   if(flag==FIND_DUPLICATES&&boundaryslicedup_option ==SLICEDUP_KEEPALL)return 0;
-  if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)return 0;
-  if(patchi->geom_fdsfiletype==NULL||strcmp(patchi->geom_fdsfiletype,"INCLUDE_GEOMETRY")!=0)return 0;
+  if(patchi->structured == YES || patchi->patch_filetype != PATCH_GEOMETRY_SLICE)return 0;
+  if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOMETRY")!=0)return 0;
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;
@@ -4372,7 +4441,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
     meshj = meshinfo + patchj->blocknumber;
 
     if(patchj==patchi||patchj->skip==1)continue;
-    if(patchj->filetype!=PATCH_GEOMETRY||patchj->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchj->structured == YES||patchj->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
     if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
@@ -4420,7 +4489,7 @@ void UpdateBoundarySliceDups(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->filetype!=PATCH_GEOMETRY||patchi->geom_smvfiletype!=PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->structured == YES||patchi->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
     patchi->skip = IsBoundaryDuplicate(patchi, FIND_DUPLICATES);
   }
 }
@@ -4450,7 +4519,7 @@ void GetBoundaryParams(void){
     xyz_max[0] = 0.0;
     xyz_max[1] = 0.0;
     xyz_max[2] = 0.0;
-    if(patchi->filetype != PATCH_GEOMETRY || patchi->geom_smvfiletype != PATCH_GEOMETRY_SLICE)continue;
+    if(patchi->structured == YES || patchi->patch_filetype != PATCH_GEOMETRY_SLICE)continue;
 
     ijk = patchi->ijk;
     meshi = meshinfo + patchi->blocknumber;
@@ -4554,7 +4623,10 @@ int UpdateBoundaryHist(patchdata *patchj){
     time_t modtime;
 
     patchi = patchinfo + i;
-    if(patchi->type!=patchj->type||patchi->filetype!=patchj->filetype||patchi->filetype==PATCH_GEOMETRY)continue;
+    if(patchi->shortlabel_index != patchj->shortlabel_index)continue;
+    if(patchi->patch_filetype != patchj->patch_filetype)continue;
+    if(patchi->structured != patchj->structured)continue;
+
     modtime= FileModtime(patchi->file);
     if(modtime>patchi->modtime){
       patchi->modtime=modtime;
@@ -4567,61 +4639,67 @@ int UpdateBoundaryHist(patchdata *patchj){
     patchi->inuse_getbounds=1;
 
     if(first==1){
-      PRINTF("Determining %s percentile and global data bounds\n",patchi->label.longlabel);
       first=0;
     }
-    PRINTF("  Examining %s\n",patchi->file);
     sum++;
     lenfile=strlen(patchi->file);
 
-    FORTgetboundaryheader1(patchi->file,&unit1, &npatches, &error, lenfile);
-    if(npatches==0){
+    if (patchj->structured == YES) {
+      FORTgetboundaryheader1(patchi->file, &unit1, &npatches, &error, lenfile);
+      if (npatches == 0) {
+        FORTclosefortranfile(&unit1);
+        continue;
+      }
+
+      NewMemory((void **)&pi1, npatches * sizeof(int));
+      NewMemory((void **)&pi2, npatches * sizeof(int));
+      NewMemory((void **)&pj1, npatches * sizeof(int));
+      NewMemory((void **)&pj2, npatches * sizeof(int));
+      NewMemory((void **)&pk1, npatches * sizeof(int));
+      NewMemory((void **)&pk2, npatches * sizeof(int));
+      NewMemory((void **)&patchdir, npatches * sizeof(int));
+      NewMemory((void **)&patchsize, npatches * sizeof(int));
+
+      FORTgetboundaryheader2(&unit1, &patchi->version, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
+
+      patchframesize = 0;
+      for (j = 0; j < npatches; j++) {
+        int npatchsize;
+
+        npatchsize = (pi2[j] + 1 - pi1[j]);
+        npatchsize *= (pj2[j] + 1 - pj1[j]);
+        npatchsize *= (pk2[j] + 1 - pk1[j]);
+        patchframesize += npatchsize;
+      }
+
+      NewMemory((void **)&patchframe, patchframesize * sizeof(float));
+      ResetHistogram(patchi->histogram, NULL, NULL);
+      error1 = 0;
+      while (error1 == 0) {
+        int ndummy, filesize;
+
+        FORTgetpatchdata(&unit1, &npatches,
+          pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy, &filesize, &error1);
+        UpdateHistogram(patchframe, NULL, patchframesize, patchi->histogram);
+      }
       FORTclosefortranfile(&unit1);
-      continue;
+      FREEMEMORY(patchframe);
+      FREEMEMORY(pi1);
+      FREEMEMORY(pi2);
+      FREEMEMORY(pj1);
+      FREEMEMORY(pj2);
+      FREEMEMORY(pk1);
+      FREEMEMORY(pk2);
+      FREEMEMORY(patchdir);
+      FREEMEMORY(patchsize);
+      CompleteHistogram(patchi->histogram);
     }
+    else{
+      int error_code;
 
-    NewMemory((void **)&pi1,npatches*sizeof(int));
-    NewMemory((void **)&pi2,npatches*sizeof(int));
-    NewMemory((void **)&pj1,npatches*sizeof(int));
-    NewMemory((void **)&pj2,npatches*sizeof(int));
-    NewMemory((void **)&pk1,npatches*sizeof(int));
-    NewMemory((void **)&pk2,npatches*sizeof(int));
-    NewMemory((void **)&patchdir,npatches*sizeof(int));
-    NewMemory((void **)&patchsize,npatches*sizeof(int));
-
-    FORTgetboundaryheader2(&unit1, &patchi->version, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
-
-    patchframesize=0;
-    for(j=0;j<npatches;j++){
-      int npatchsize;
-
-      npatchsize = (pi2[j]+1-pi1[j]);
-      npatchsize *= (pj2[j]+1-pj1[j]);
-      npatchsize *= (pk2[j]+1-pk1[j]);
-      patchframesize+=npatchsize;
+      ReadGeomData(patchi, NULL, UPDATE_HIST, &error_code);
+      ReadGeomData(patchi, NULL, UNLOAD, &error_code);
     }
-
-    NewMemory((void **)&patchframe,patchframesize*sizeof(float));
-    ResetHistogram(patchi->histogram,NULL,NULL);
-    error1=0;
-    while(error1==0){
-      int ndummy;
-
-      FORTgetpatchdata(&unit1, &npatches,
-        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&error1);
-      UpdateHistogram(patchframe,NULL,patchframesize,patchi->histogram);
-    }
-    FORTclosefortranfile(&unit1);
-    FREEMEMORY(patchframe);
-    FREEMEMORY(pi1);
-    FREEMEMORY(pi2);
-    FREEMEMORY(pj1);
-    FREEMEMORY(pj2);
-    FREEMEMORY(pk1);
-    FREEMEMORY(pk2);
-    FREEMEMORY(patchdir);
-    FREEMEMORY(patchsize);
-    CompleteHistogram(patchi->histogram);
   }
   return sum;
 }

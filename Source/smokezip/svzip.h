@@ -359,7 +359,7 @@ STDCALLF FORTgetpartdataframe(int *unit, int *nclasses, int *nquantities, int *n
 STDCALLF FORTclosefortranfile(int *lunit);
 
 STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2,
-                         float *patch_times,float *pqq, int *ndummy, int *error);
+                         float *patch_times,float *pqq, int *ndummy, int *file_size, int *error);
 STDCALLF FORTopenboundary(char *boundaryfilename, int *boundaryunitnumber,
                          int *version, int *error, FILE_SIZE len);
 STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *boundaryunitnumber,

@@ -163,7 +163,7 @@ void ReadBoundINI(void){
         patchi = patchinfo + i;
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
-          patchi->filetype == filetype&&
+          patchi->patch_filetype == filetype&&
           IfFirstLineBlank(boundinfo_filename) == 1){
           bounddata *boundi;
 
@@ -971,15 +971,15 @@ void InitOpenGL(void){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
     }
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 
       parti = partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, PARTDATA,&errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, PARTDATA,&errorcode);
+      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     for(i = 0; i<nisoinfo; i++){
@@ -1124,9 +1124,6 @@ void InitVars(void){
   }
   else{
     strcpy(movie_ext, ".avi");
-  }
-  for(i=0;i<10;i++){
-    tetrabox_vis[i]=1;
   }
   for(i=0;i<200;i++){
     face_id[i]=1;
@@ -1478,7 +1475,6 @@ void InitVars(void){
   numplot3dvars=0;
   p3dsurfacesmooth=1;
   parttype=0;
-  allexterior=1,showexterior=1;
   allinterior=1;
   hrrpuv_iso_color[0]=1.0;
   hrrpuv_iso_color[1]=0.5;
@@ -1774,7 +1770,7 @@ void InitVars(void){
   desired_view_height=1.5;
   resetclock=1,initialtime=0;
   realtime_flag=0;
-  islicetype=-1,islicetype_save=-1,iboundarytype=-1;
+  slicefile_labelindex=-1,slicefile_labelindex_save=-1,iboundarytype=-1;
   iisotype=-1;
 
 

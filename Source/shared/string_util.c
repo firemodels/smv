@@ -852,6 +852,82 @@ int AppendLabels(flowlabels *flowlabel, char *suffix_label){
   return LABEL_OK;
 }
 
+/* ------------------ ReadLabelsBNDS ------------------------ */
+
+int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bufferE, char *bufferF, char *suffix_label){
+  char buffer2[255], *buffer;
+  size_t len;
+  int len_suffix_label = 0;
+
+  if(stream != NULL){
+    if(FGETS(buffer2, 255, stream) == NULL){
+      strcpy(buffer2, "*");
+    }
+    strcpy(bufferD, buffer2);
+  }
+  else{
+    strcpy(buffer2, bufferD);
+  }
+
+  len = strlen(buffer2);
+  buffer = TrimFront(buffer2);
+  TrimBack(buffer);
+  len = strlen(buffer);
+  if(suffix_label != NULL)len_suffix_label = strlen(suffix_label);
+  if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + len_suffix_label + 1)) == 0)return LABEL_ERR;
+  STRCPY(flowlabel->longlabel, buffer);
+  if(suffix_label != NULL&&strlen(suffix_label) > 0)STRCAT(flowlabel->longlabel, suffix_label);
+
+  if(stream != NULL){
+    if(FGETS(buffer2, 255, stream) == NULL){
+      strcpy(buffer2, "**");
+    }
+    strcpy(bufferE, buffer2);
+  }
+  else{
+    strcpy(buffer2, bufferE);
+  }
+
+  len = strlen(buffer2);
+  buffer = TrimFront(buffer2);
+  TrimBack(buffer);
+  len = strlen(buffer);
+  if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
+  STRCPY(flowlabel->shortlabel, buffer);
+
+  if(stream != NULL){
+    if(FGETS(buffer2, 255, stream) == NULL){
+      strcpy(buffer2, "***");
+    }
+    strcpy(bufferF, buffer2);
+  }
+  else{
+    strcpy(buffer2, bufferF);
+  }
+
+  len = strlen(buffer2);
+  buffer = TrimFront(buffer2);
+  TrimBack(buffer);
+  len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
+  if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
+#ifdef pp_DEG
+  if(strlen(buffer) == 1 && strcmp(buffer, "C") == 0){
+    unsigned char *unit;
+
+    unit = (unsigned char *)flowlabel->unit;
+    unit[0] = DEG_SYMBOL;
+    unit[1] = 'C';
+    unit[2] = '\0';
+  }
+  else{
+    STRCPY(flowlabel->unit, buffer);
+  }
+#else
+  STRCPY(flowlabel->unit, buffer);
+#endif
+  return LABEL_OK;
+}
+
 /* ------------------ ReadLabels ------------------------ */
 
 int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){

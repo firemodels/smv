@@ -247,13 +247,14 @@ int GetIsoType(const isodata *isoi){
 
 /* ------------------ ReadIsoGeom ------------------------ */
 
-void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
   isodata *isoi;
   geomdata *geomi;
   int ilevel,error;
   meshdata *meshi;
   int i;
   surfdata *surfi;
+  FILE_SIZE return_filesize=0;
 
   isoi = isoinfo + ifile;
   meshi = meshinfo + isoi->blocknumber;
@@ -263,11 +264,11 @@ void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_ind
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 
-  ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
+  return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
   FREEMEMORY(geominfoptrs);
   if(load_flag == UNLOAD){
     meshi->isofilenum = -1;
-    return;
+    return 0;
   }
 
   surfi = surfinfo + nsurfinfo+1;
@@ -281,7 +282,7 @@ void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_ind
   if(NewMemoryMemID((void **)&meshi->iso_times, sizeof(float)*meshi->niso_times, isoi->memory_id) == 0){
     ReadIso("",ifile,UNLOAD,geom_frame_index,&error);
     *errorcode=1;
-    return;
+    return 0;
   }
   for(i=0;i<geomi->ntimes;i++){
     meshi->iso_times[i]=geomi->times[i];
@@ -294,7 +295,7 @@ void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_ind
     ){
     *errorcode=1;
     ReadIso("",ifile,UNLOAD,geom_frame_index,&error);
-    return;
+    return 0;
   }
   for(ilevel=0;ilevel<meshi->nisolevels;ilevel++){
     meshi->showlevels[ilevel]=1;
@@ -311,15 +312,12 @@ void ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_ind
 
   if(update_readiso_geom_wrapup==UPDATE_ISO_OFF)update_readiso_geom_wrapup=UPDATE_ISO_ONE_NOW;
   if(update_readiso_geom_wrapup==UPDATE_ISO_START_ALL)update_readiso_geom_wrapup=UPDATE_ISO_ALL_NOW;
-#ifdef pp_MEMPRINT
-  PRINTF("After iso load: \n");
   PrintMemoryInfo;
-#endif
   show_isofiles = 1;
 
   glutPostRedisplay();
   CheckMemory;
-
+  return return_filesize;
 }
 
 /* ------------------ GetIsoTType ------------------------ */
@@ -859,10 +857,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   }
 
   UpdateTimes();
-#ifdef pp_MEMPRINT
-  PRINTF("After iso load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
 
   STOP_TIMER(total_time);
@@ -885,31 +880,27 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
 /* ------------------ ReadIso ------------------------ */
 
-void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode){
   isodata *isoi;
+  FILE_SIZE return_filesize=0;
 
   if(ifile>=0&&ifile<nisoinfo){
-    meshdata *meshi;
 
     isoi = isoinfo+ifile;
-    meshi = meshinfo+isoi->blocknumber;
-    if(flag==LOAD)PRINTF("\nloading isosurface for mesh: %s\n", meshi->label);
-    if(isoi->loaded==1){
-      if(flag==UNLOAD)PRINTF("\nunloading isosurface for mesh: %s\n", meshi->label);
-    }
-
+    if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
     if(isoi->is_fed==1){
       ReadFed(ifile, flag, FED_ISO, errorcode);
     }
     else{
       if(isoi->geomflag==1){
-        ReadIsoGeom(file,ifile,flag,geom_frame_index,errorcode);
+        return_filesize=ReadIsoGeom(file,ifile,flag,geom_frame_index,errorcode);
       }
       else{
         ReadIsoOrig(file,ifile,flag,errorcode);
       }
     }
   }
+  return return_filesize;
 }
 
 /* ------------------ DrawIsoOrig ------------------------ */

@@ -5,6 +5,11 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
+EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
+EXTERNCPP void UpdateSliceBounds(void);
+EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth);
 EXTERNCPP void UpdateTimebarOverlap(void);
@@ -81,7 +86,6 @@ EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void UpdateShowSliceInObst(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void GetPartHistogram(int flag);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
@@ -211,12 +215,9 @@ EXTERNCPP void UpdateEditTour(void);
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void UpdateTourParms(void);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
-EXTERNCPP void DrawTestClip(void);
-EXTERNCPP void DrawTestTriangle(void);
-EXTERNCPP void DrawTestPolygon(void);
-EXTERNCPP void DrawTestOutline(void);
-EXTERNCPP void DrawGeomCutCells(void);
 EXTERNCPP void VentMenu(int value);
+EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
+
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
@@ -637,7 +638,7 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void Antialias(int flag);
-EXTERNCPP void SetSliceBounds(int islicetype);
+EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);
@@ -658,11 +659,10 @@ EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
 
 EXTERNCPP void Render(int view_mode);
-EXTERNCPP void UpdateVSliceTypes(void);
-EXTERNCPP int  GetSliceType(const slicedata *sd);
-EXTERNCPP int  GetSliceTypeFromLabel(char *label);
-EXTERNCPP void UpdateSliceTypes(void);
-EXTERNCPP int  GetSliceIndex(const slicedata *sd);
+EXTERNCPP void UpdateVSliceBoundIndexes(void);
+EXTERNCPP int  GetSliceBoundsIndex(const slicedata *sd);
+EXTERNCPP int  GetSliceBoundsIndexFromLabel(char *label);
+EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);
@@ -761,21 +761,21 @@ EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void ReadAllGeom(void);
-EXTERNCPP void ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
-EXTERNCPP void ReadBoundary(int ifile, int flag, int *errorcode);
-EXTERNCPP void ReadPart(char *file, int ifile, int loadflag, int set_colorbound, int *errorcode);
+EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
-EXTERNCPP void ReadVSlice(int ivslice, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);
 
 EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
-EXTERNCPP void ReadSmoke3D(int iframe, int ifile, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
-EXTERNCPP void ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP void ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);

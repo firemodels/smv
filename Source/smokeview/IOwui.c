@@ -1108,10 +1108,7 @@ void ReadTerrain(char *file, int ifile, int flag, int *errorcode){
   visTerrainType=TERRAIN_3D;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
-#ifdef pp_MEMPRINT
-  PRINTF("After terrain file load: \n");
   PrintMemoryInfo;
-#endif
   IdleCB();
   glutPostRedisplay();
 }
@@ -1146,7 +1143,7 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       InitTerrainZNode(meshi, terri, xmin, xmax, nx, ymin, ymax, ny, allocate_memory);
       InitContour(&meshi->terrain_contour,rgbptr,nrgb);
     }
-    InitTerrainAll();
+    InitTerrainAll(); // xxslow
   }
   if(nterraininfo>0){
     int imesh;
@@ -1185,7 +1182,7 @@ int HaveTerrainSlice(void){
 
     slicei = sliceinfo + i;
 
-    if(slicei->loaded==1&&slicei->slicetype==SLICE_TERRAIN)return 1;
+    if(slicei->loaded==1&&slicei->slicefile_type==SLICE_TERRAIN)return 1;
 
   }
   return 0;
@@ -1271,7 +1268,7 @@ void UpdateMeshTerrain(void){
 
   // compute z level above bottom mesh
 
-  for(i=0;i<nmeshes;i++){
+  for(i=0;i<nmeshes;i++){ // xxslow
     meshdata *meshi;
     int ii, jj;
     float xyz[3], *x, *y;

@@ -1208,7 +1208,7 @@ void ScriptLoadParticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    ReadPart(parti->file,i,UNLOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
   for(i=0;i<npartinfo;i++){
@@ -1216,7 +1216,7 @@ void ScriptLoadParticles(scriptdata *scripti){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    ReadPart(parti->file,i,LOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,LOAD,&errorcode);
     if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
       FREEMEMORY(loaded_file);
       NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -1303,15 +1303,28 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
   int i;
   int errorcode;
   int count=0;
+  int lastsmoke;
 
   FREEMEMORY(loaded_file);
   PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
+
+  for(i = nsmoke3dinfo-1;i >=0;i--){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(MatchUpper(smoke3di->label.longlabel, scripti->cval) == MATCH){
+      lastsmoke = i;
+      break;
+    }
+  }
 
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
+      smoke3di->finalize = 0;
+      if(lastsmoke == i)smoke3di->finalize = 1;
       ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);

@@ -1657,10 +1657,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
   int i;
   FILE *isostream=NULL;
 
-#ifdef pp_MEMPRINT
-  PRINTF("isosurface2file before\n");
   PrintMemoryInfo;
-#endif
   isostream = fopen(isofile, "ab");
   *error=-1;
   if(isostream==NULL)return;
@@ -1705,10 +1702,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
     FreeSurface(&surface);
   }
   fclose(isostream);
-#ifdef pp_MEMPRINT
-  PRINTF("isosurface2file after\n");
   PrintMemoryInfo;
-#endif
 }
 
 /* ------------------ CCIsoSurfaceT2File ------------------------ */
@@ -1732,10 +1726,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
   }
 
 
-#ifdef pp_MEMPRINT
-  PRINTF("isosurfacet2file before\n");
   PrintMemoryInfo;
-#endif
   isostream = fopen(isofile, "ab");
   *error=-1;
   if(isostream==NULL)return;
@@ -1782,8 +1773,5 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
     FreeSurface(&surface);
   }
   fclose(isostream);
-#ifdef pp_MEMPRINT
-  PRINTF("isosurfacet2file after\n");
   PrintMemoryInfo;
-#endif
 }

@@ -17,13 +17,17 @@
 
 //*** options: all platforms
 
+//#define pp_SMOKEDIAG    // output smoke3d diagnostics (number of meshes, total trianles, triangles drawn)
+//#define pp_GEOMPRINT  // output geometry info
+//#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
+//#define pp_DPRINT       // debug print, printf line number and source file
+#define pp_SLICEGEOM    // put geom slices in slicedata data structures 
 #define pp_CLIP         // test frustum near/far clip planes
 #define pp_DRAWISO      // turn on drawing routines
 #define pp_ffmpeg       // support compression
 #define pp_FILELIST     // use list of file names
 #define pp_LANG         // support other languages
 
-//#define pp_PARTDEFER    // defer particle bound and coloring until last particle file is loaded
 //#define pp_SPECTRAL
 
 #define pp_GPU          // support the GPU
@@ -68,7 +72,7 @@
 
 #ifdef pp_BETA   
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKE3D_LOAD_TEST // load 3d smoke for all meshes for each time step 
+//#define pp_SMOKE3D_LOADTEST // load 3d smoke for all meshes for each time step 
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_SHOWTERRAIN
 #define pp_GEOMTEST            // used to test tetrahedron box intersections

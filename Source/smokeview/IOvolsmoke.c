@@ -126,7 +126,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
   smokedata_local = meshi->volrenderinfo.smokedataptr;
   firedata_local  = meshi->volrenderinfo.firedataptr;
   lightdata_local = meshi->volrenderinfo.lightdataptr;
-  slicetype = meshi->volrenderinfo.smokeslice->slicetype;
+  slicetype = meshi->volrenderinfo.smokeslice->slicefile_type;
 
   if(slicetype==SLICE_NODE_CENTER){
     xplt = meshi->xplt_cen;
@@ -2226,7 +2226,7 @@ void DrawSmoke3DGPUVol(void){
       else{
         glUniform1i(GPUvol_havefire,0);
       }
-      glUniform1i(GPUvol_slicetype,vr->smokeslice->slicetype);
+      glUniform1i(GPUvol_slicetype,vr->smokeslice->slicefile_type);
       glUniform3f(GPUvol_dcell3,meshi->dcell3[0],meshi->dcell3[1],meshi->dcell3[2]);
       glUniform1i(GPUvol_soot_density, 0);  // smokedata_local
       glUniform1i(GPUvol_fire,         1);  // firedata_local
@@ -2458,7 +2458,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   LINT skip_local;
   float time_local, *smokeframe_data, *fireframe_data, *lightframe_data;
   int endianswitch=0;
-  char *meshlabel;
 #ifdef pp_VOLCO2
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;
@@ -2470,9 +2469,9 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 #endif
   unsigned int size_before=0, size_after=0;
   FILE *volstream=NULL;
+  int print = 0;
 
   if(framenum<0||framenum>=vr->ntimes)return;
-  meshlabel  = vr->rendermeshlabel;
 
   smokeslice = vr->smokeslice;
   fireslice  = vr->fireslice;
@@ -2564,13 +2563,8 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
     if(global_times!=NULL&&global_times[itimes]>time_local)restart_time=1;
     if(*first==1){
       *first=0;
-      PRINTF("time=%.2f %s: ",time_local,meshlabel);
-    }
-    else{
-      if(time_local>=10.0)PRINTF(" ");
-      if(time_local>=100.0)PRINTF(" ");
-      if(time_local>=1000.0)PRINTF(" ");
-      PRINTF("          %s: ",meshlabel);
+      print=1;
+      PRINTF("time=%.2f ",time_local);
     }
 
     vr->times[framenum]=time_local;
@@ -2591,7 +2585,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
     }
     vr->smokedataptr = vr->smokedataptrs[framenum];
     CheckMemory;
-    PRINTF("smoke");
+    if(print==1)PRINTF("smoke");
     fclose(SLICEFILE);
   }
   else{
@@ -2611,13 +2605,8 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 
     if(*first==1){
       *first=0;
-      PRINTF("time=%.2f %s: ",time_local,meshlabel);
-    }
-    else{
-      if(time_local>=10.0)PRINTF(" ");
-      if(time_local>=100.0)PRINTF(" ");
-      if(time_local>=1000.0)PRINTF(" ");
-      PRINTF("          %s: ",meshlabel);
+      print=1;
+      PRINTF("time=%.2f ",time_local);
     }
 
     vr->times[framenum]=time_local;
@@ -2652,7 +2641,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
           vr->firedataptrs[framenum]=fireframe_data;
         }
         vr->firedataptr = vr->firedataptrs[framenum];
-        PRINTF(", fire");
+        if(print==1)PRINTF(", fire");
         fclose(SLICEFILE);
       }
     }
@@ -2673,7 +2662,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       vr->firedataptr = vr->firedataptrs[framenum];
 
       vr->times[framenum]=time_local;
-      PRINTF(", fire");
+      if(print==1)PRINTF(", fire");
       fclose(volstream);
       volstream=NULL;
     }
@@ -2705,7 +2694,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
           vr->lightdataptrs[framenum] = lightframe_data;
         }
         vr->lightdataptr = vr->lightdataptrs[framenum];
-        PRINTF(", light");
+        if(print==1)PRINTF(", light");
         fclose(SLICEFILE);
       }
     }
@@ -2726,7 +2715,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       vr->lightdataptr = vr->lightdataptrs[framenum];
 
       vr->times[framenum] = time_local;
-      PRINTF(", light");
+      if(print==1)PRINTF(", light");
       fclose(volstream);
       volstream = NULL;
     }
@@ -2759,7 +2748,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
           vr->co2dataptrs[framenum] = co2frame_data;
         }
         vr->co2dataptr = vr->co2dataptrs[framenum];
-        PRINTF(", co2");
+        if(print==1)PRINTF(", co2");
         fclose(SLICEFILE);
       }
     }
@@ -2780,7 +2769,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       vr->co2dataptr = vr->co2dataptrs[framenum];
 
       vr->times[framenum] = time_local;
-      PRINTF(", co2");
+      if(print==1)PRINTF(", co2");
       fclose(volstream);
       volstream = NULL;
     }
@@ -2791,7 +2780,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   if(vr->is_compressed==1&&load_volcompressed==0){
     PRINTF(" (%4.1f%s)",(float)size_before/(float)size_after,"X");
   }
-  PRINTF("\n");
+  if(print==1)PRINTF("\n");
 }
 
 /* ------------------ UnloadVolsmokeFrameAllMeshes ------------------------ */
