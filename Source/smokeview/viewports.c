@@ -1487,9 +1487,6 @@ void GetSmokeDir(float *mm){
     if(meshj->smokedir != meshj->smokedir_old){
       meshj->smokedir_old = meshj->smokedir;
       update_initcullplane = 1;
-#ifdef _DEBUG
-      PRINTF("mesh dir has changed\n");
-#endif
     }
 #endif
     if(demo_mode != 0){
