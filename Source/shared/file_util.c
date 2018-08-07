@@ -808,6 +808,48 @@ void GetFileSizeLabel(int size, char *sizelabel){
   }
 }
 
+/* ------------------ GetFloatFileSizeLabel ------------------------ */
+
+char *GetFloatFileSizeLabel(float size, char *sizelabel){
+  int leftsize, rightsize;
+
+  if(size>=sizeGB){
+    size /= size10MB;
+    leftsize = size/100;
+    rightsize = size-100*leftsize;
+    sprintf(sizelabel, "%i.%02i GB", leftsize, rightsize);
+  }
+  else if(size>=size100MB&&size<sizeGB){
+    size /= sizeMB;
+    leftsize = size;
+    sprintf(sizelabel, "%i MB", leftsize);
+  }
+  else if(size>=size10MB&&size<size100MB){
+    size /= size100KB;
+    leftsize = size/10;
+    rightsize = size-10*leftsize;
+    sprintf(sizelabel, "%i.%i MB", leftsize, rightsize);
+  }
+  else if(size>=sizeMB&&size<size10MB){
+    size /= size10KB;
+    leftsize = size/100;
+    rightsize = size-100*leftsize;
+    sprintf(sizelabel, "%i.%02i MB", leftsize, rightsize);
+  }
+  else if(size>=size100KB&&size<sizeMB){
+    size /= 1000;
+    leftsize = size;
+    sprintf(sizelabel, "%i KB", leftsize);
+  }
+  else{
+    size /= 10;
+    leftsize = size/100;
+    rightsize = size-100*leftsize;
+    sprintf(sizelabel, "%i.%02i KB", leftsize, rightsize);
+  }
+  return sizelabel;
+}
+
 /* ------------------ GetProgDir ------------------------ */
 
 char *GetProgDir(char *progname, char **svpath){

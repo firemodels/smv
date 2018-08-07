@@ -1105,6 +1105,7 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
+  FILE_SIZE file_size;
   char *file, *comp_file, *size_file, *reg_file, *hist_file;
   int seq_id, autoload, loaded, request_load, display, reload, finalize;
   int sort_tags_loaded, compression_type, evac;
@@ -1151,6 +1152,7 @@ typedef struct _hrrdata {
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
+  FILE_SIZE file_size;
   int mesh_type;
   int seq_id, autoload;
   char *file;
@@ -1302,6 +1304,7 @@ typedef struct {
   /* --------------------------  smoke3ddata ------------------------------------ */
 
 typedef struct _smoke3ddata {
+  FILE_SIZE file_size;
   int seq_id,autoload;
   char *file;
   char *comp_file, *reg_file;
@@ -1336,6 +1339,7 @@ typedef struct _smoke3ddata {
 /* --------------------------  patchdata ------------------------------------ */
 
 typedef struct _patchdata {
+  FILE_SIZE file_size;
   int seq_id, autoload;
   char *file,*size_file;
   char *comp_file, *reg_file;

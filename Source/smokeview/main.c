@@ -56,6 +56,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
+    PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
@@ -438,6 +439,10 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-demo", 5) == 0){
       demo_option = 1;
+    }
+    else if(strncmp(argv[1], "-sizes", 6)==0){
+      update_filesizes = 1;
+      use_graphics = 0;
     }
     else if(strncmp(argv[i], "-stereo", 7) == 0){
       stereoactive = 1;

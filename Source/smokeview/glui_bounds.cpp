@@ -134,8 +134,9 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define FILESHOW_boundary    13
 #define FILESHOW_3dsmoke     14
 #define FILESHOW_isosurface  15
-#define FILESHOW_evac 19
-#define FILESHOW_plot3d 16
+#define FILESHOW_evac        19
+#define FILESHOW_plot3d      16
+#define FILESHOW_sizes       20
 #define BOUNDARY_LOAD_INCREMENTAL 16
 #define SLICE_LOAD_INCREMENTAL 17
 
@@ -713,6 +714,9 @@ extern "C" void UpdateColorTableList(int ncolortableinfo_old){
 extern "C" void FileShowCB(int var){
   updatemenu = 1;
   switch(var){
+  case FILESHOW_sizes:
+    GetFileSizes();
+    break;
   case  FILESHOW_plot3d:
     switch(showhide_option){
     case SHOWALL_FILES:
@@ -1594,6 +1598,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(npatchinfo > 0)BUTTON_BOUNDARY = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Boundary", FILESHOW_boundary, FileShowCB);
     if(nsmoke3dinfo > 0)BUTTON_3DSMOKE = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "3D smoke/fire", FILESHOW_3dsmoke, FileShowCB);
     if(nplot3dinfo > 0)BUTTON_PLOT3D = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Plot3D", FILESHOW_plot3d, FileShowCB);
+    glui_bounds->add_button_to_panel(ROLLOUT_showhide, "File Sizes", FILESHOW_sizes, FileShowCB);
+
 
     UpdateShowHideButtons();
   }

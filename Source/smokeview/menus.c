@@ -265,6 +265,99 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
 }
 #endif
 
+/* ----------------------- ComparePatchLabels ----------------------------- */
+
+int ComparePatchLabels(const void *arg1, const void *arg2){
+  patchdata *patchi, *patchj;
+  char *labeli, *labelj;
+
+  patchi = *(patchdata **)arg1;
+  patchj = *(patchdata **)arg2;
+  labeli = patchi->label.longlabel;
+  labelj = patchj->label.longlabel;
+
+  return strcmp(labeli, labelj);
+}
+
+/* ------------------ GetFileSizes ------------------------ */
+
+void GetFileSizes(void){
+  int i;
+  float hrrpuv = 0.0, soot = 0.0, temp = 0.0, co2 = 0.0;
+  float part = 0.0;
+  char label[100];
+
+  printf("\n");
+  if(nsmoke3dinfo>0){
+    for(i = 0; i<nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo+i;
+      smoke3di->file_size = GetFileSizeSMV(smoke3di->file);
+      if(smoke3di->type==SOOT)soot += smoke3di->file_size;
+      if(smoke3di->type==HRRPUV)hrrpuv += smoke3di->file_size;
+      if(smoke3di->type==TEMP)temp += smoke3di->file_size;
+      if(smoke3di->type==CO2)co2 += smoke3di->file_size;
+    }
+    printf("3d smoke file sizes:\n");
+    if(soot>0.0) printf("    soot: %s\n", GetFloatFileSizeLabel(soot, label));
+    if(hrrpuv>0.)printf("  hrrpuv: %s\n", GetFloatFileSizeLabel(hrrpuv, label));
+    if(temp>0.)  printf("    temp: %s\n", GetFloatFileSizeLabel(temp, label));
+    if(co2>0.)   printf("     co2: %s\n", GetFloatFileSizeLabel(co2, label));
+  }
+  else{
+    printf("3d smoke file sizes: no files found\n");
+  }
+
+
+  if(npartinfo>0){
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+
+      parti = partinfo+i;
+      parti->file_size = GetFileSizeSMV(parti->file);
+      part += parti->file_size;
+    }
+    printf("particle files: %s\n", GetFloatFileSizeLabel(part, label));
+  }
+  else{
+    printf("particle files: no files found\n");
+  }
+
+  if(npatchinfo>0){
+    patchdata **patchlist;
+    float sum = 0.0;
+
+    printf("boundary files sizes: \n");
+    NewMemory((void **)&patchlist, npatchinfo*sizeof(patchdata *));
+    for(i = 0; i<npatchinfo; i++){
+      patchlist[i] = patchinfo+i;
+    }
+    qsort((patchdata **)patchlist, (size_t)npatchinfo, sizeof(patchdata *), ComparePatchLabels);
+    for(i = 0; i<npatchinfo; i++){
+      patchdata *patchi, *patchim1;
+
+      patchi = patchlist[i];
+      patchi->file_size = GetFileSizeSMV(patchi->file);
+      if(i>0)patchim1 = patchlist[i-1];
+      if(i==0||strcmp(patchim1->label.longlabel, patchi->label.longlabel)==0){
+        sum += patchi->file_size;
+      }
+      else{
+        printf("  %s: %s\n", patchim1->label.longlabel, GetFloatFileSizeLabel(sum, label));
+        sum = patchi->file_size;
+      }
+      if(i==npatchinfo-1){
+        printf("  %s: %s\n", patchi->label.longlabel, GetFloatFileSizeLabel(sum, label));
+      }
+    }
+  }
+  else{
+    printf("boundary files sizes: no files found\n");
+  }
+
+}
+
 /* ------------------ HideAllSmoke ------------------------ */
 
 void HideAllSmoke(void){
