@@ -2439,6 +2439,7 @@ void UpdateFedinfo(void){
     sd->js2 = co2->js2;
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
+    sd->finalized = 1;
 
     nn_slice = nsliceinfo + i;
 
