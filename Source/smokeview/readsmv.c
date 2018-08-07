@@ -9085,6 +9085,11 @@ typedef struct {
    ************************************************************************
  */
 
+  if(update_filesizes==1){
+    GetFileSizes();
+    exit(0);
+  }
+
   STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
 

@@ -150,6 +150,7 @@ EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
 EXTERNCPP void SetStdOut(FILE *stream);
 EXTERNCPP void GetFileSizeLabel(int size, char *sizelabel);
+EXTERNCPP char *GetFloatFileSizeLabel(float size, char *sizelabel);
 EXTERNCPP void CopyFILE(char *destdir, char *filein, char *fileout, int mode);
 EXTERNCPP char *GetSmokeZipPath(char *progdir);
 EXTERNCPP int IfFirstLineBlank(char *file);

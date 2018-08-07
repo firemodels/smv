@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_filesizes, 0);
 #ifdef pp_GPUSMOKE
 SVEXTERN int SVDECL(show_smoke3d_planes, 1);
 SVEXTERN int SVDECL(compute_smoke3d_planes, 1);
