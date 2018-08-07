@@ -125,6 +125,14 @@ int parse_smv_filepath(const char *smv_filepath, char *fdsprefix,
 // --------- show/hide label options--------
 
 // colorbar
+void set_colorbar_visibility_vertical(int setting);
+int get_colorbar_visibility_vertical();
+void toggle_colorbar_visibility_vertical();
+
+void set_colorbar_visibility_horizontal(int setting);
+int get_colorbar_visibility_horizontal();
+void toggle_colorbar_visibility_horizontal();
+
 void set_colorbar_visibility(int setting);
 int get_colorbar_visibility();
 void toggle_colorbar_visibility();
@@ -471,8 +479,6 @@ int set_viewtourfrompath(int v); // VIEWTOURFROMPATH
 // --  ------------ local ini settings ------------
 
 int set_avatarevac(int v); // AVATAREVAC
-int set_geometrytest(int a, int b, float c, float d, int vals[],
-                     float b1Vals[], float b2Vals[], float b3Vals[]); // GEOMETRYTEST
 int set_devicevectordimensions(float baselength, float basediameter,
                                float headlength, float headdiameter); // DEVICEVECTORDIMENSIONS
 int set_devicebounds(float a, float b); // DEVICEBOUNDS

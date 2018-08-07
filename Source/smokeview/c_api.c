@@ -34,11 +34,11 @@ void OutputSliceData(void);
 
 int set_slice_bound_min(const char *slice_type, int set, float value) {
 	int i;
-  for(i = 0; i < nslice_type; i++) {
+  for(i = 0; i < nslicebounds; i++) {
       printf("setting %s min bound ", slice_type);
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
-      if(!strcmp(slice_type, slicebounds[i].datalabel)) {
+      if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           slicebounds[i].setvalmin=set;
           slicebounds[i].valmin=value;
       }
@@ -50,8 +50,8 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
 float get_slice_bound_min(const char *slice_type) {
   int i;
   float min, max;
-  for(i = 0; i < nslice_type; i++) {
-      if(!strcmp(slice_type, slicebounds[i].datalabel)) {
+  for(i = 0; i < nslicebounds; i++) {
+      if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           min=slicebounds[i].valmin;
           // max=slicebounds[i].valmax;
       }
@@ -62,8 +62,8 @@ float get_slice_bound_min(const char *slice_type) {
 float get_slice_bound_max(const char *slice_type) {
   int i;
   float min, max;
-  for(i = 0; i < nslice_type; i++) {
-      if(!strcmp(slice_type, slicebounds[i].datalabel)) {
+  for(i = 0; i < nslicebounds; i++) {
+      if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           // min=slicebounds[i].valmin;
           max=slicebounds[i].valmax;
       }
@@ -73,11 +73,11 @@ float get_slice_bound_max(const char *slice_type) {
 
 int set_slice_bound_max(const char *slice_type, int set, float value) {
 	int i;
-  for(i = 0; i < nslice_type; i++) {
+  for(i = 0; i < nslicebounds; i++) {
       printf("setting %s max bound ", slice_type);
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
-      if(!strcmp(slice_type, slicebounds[i].datalabel)) {
+      if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           slicebounds[i].setvalmax=set;
           slicebounds[i].valmax=value;
       }
@@ -294,7 +294,7 @@ int loadfile(const char *filename) {
 
     parti = partinfo + i;
     if(strcmp(parti->file,filename)==0){
-      ReadPart(parti->file,i,LOAD,PARTDATA,&errorcode);
+      ReadPart(parti->file,i,LOAD,&errorcode);
       return errorcode;
     }
   }
@@ -779,6 +779,15 @@ void set_colorbar_visibility_vertical(int setting) {
   visColorbarVertical = setting;
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 int get_colorbar_visibility_vertical() {
@@ -789,22 +798,49 @@ void toggle_colorbar_visibility_vertical() {
   visColorbarVertical = 1 - visColorbarVertical;
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 void set_colorbar_visibility_horizontal(int setting) {
   visColorbarHorizontal = setting;
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 int get_colorbar_visibility_horizontal() {
   return visColorbarHorizontal;
 }
 
-void toggle_colorbar_visibility_hotizontal() {
+void toggle_colorbar_visibility_horizontal() {
   visColorbarHorizontal = 1 - visColorbarHorizontal;
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
+  if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
+    toggle_colorbar = 1;
+  }
+  else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
+    toggle_colorbar = 2;
+  }
+  else {
+    toggle_colorbar = 0;
+  }
 }
 
 void set_colorbar_visibility(int setting) {
@@ -1442,7 +1478,7 @@ void loadparticles(const char *name){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-    ReadPart(parti->file,i,UNLOAD,PARTDATA,&errorcode);
+    ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
   for(i=0;i<npartinfo;i++){
@@ -1450,7 +1486,7 @@ void loadparticles(const char *name){
 
     parti = partinfo + i;
     if(parti->evac==1)continue;
-      ReadPart(parti->file,i,LOAD,PARTDATA,&errorcode);
+      ReadPart(parti->file,i,LOAD,&errorcode);
       if(name!=NULL&&strlen(name)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(name)+1);
@@ -1813,7 +1849,7 @@ void unloadall() {
       ReadBoundary(i,UNLOAD,&errorcode);
     }
     for(i=0;i<npartinfo;i++){
-      ReadPart("",i,UNLOAD,PARTDATA,&errorcode);
+      ReadPart("",i,UNLOAD,&errorcode);
     }
     for(i=0;i<nisoinfo;i++){
       ReadIso("",i,UNLOAD,NULL,&errorcode);
@@ -3078,9 +3114,9 @@ int set_showtracersalways(int v){
 } // SHOWTRACERSALWAYS
 
 int set_showtriangles(int a, int b, int c, int d, int e, int f){
-  show_iso_solid = a;
+  show_iso_shaded = a;
   show_iso_outline = b;
-  show_iso_verts = c;
+  show_iso_points = c;
   show_iso_normal = d;
   smooth_iso_normal = e;
   return 0;
@@ -3603,32 +3639,6 @@ int set_avatarevac(int v) {
   return 0;
 } // AVATAREVAC
 
-int set_geometrytest(int a, int b, float c, float d, int vals[],
-                     float b1Vals[], float b2Vals[], float b3Vals[]) {
-  int *v;
-  int ii;
-  geomtest_option = a;
-  show_tetratest_labels = b;
-  tetra_line_thickness = c;
-  tetra_point_size = d;
-  v = tetrabox_vis;
-  ONEORZERO(show_tetratest_labels);
-  for(ii = 0; ii<10; ii++){
-    v[ii] = vals[ii];
-    ONEORZERO(v[ii]);
-  }
-  for(ii = 0; ii<6; ii++){
-    box_bounds2[ii] = b1Vals[ii];
-  }
-  for(ii = 0; ii<12; ii++){
-     tetra_vertices[ii] = b2Vals[ii];
-  }
-  for(ii = 0; ii<3; ii++){
-    box_translate[ii] = b3Vals[ii];
-  }
-  return 0;
-} //  GEOMETRYTEST
-
 int set_devicevectordimensions(float baselength, float basediameter,
                                float headlength, float headdiameter) {
   vector_baselength = baselength;
@@ -3950,8 +3960,8 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   int i;
   // if there is a label, use it
   if(strcmp(label, "") != 0){
-    for(i = 0; i<nslice_type; i++){
-      if(strcmp(slicebounds[i].datalabel, label) != 0)continue;
+    for(i = 0; i<nslicebounds; i++){
+      if(strcmp(slicebounds[i].shortlabel, label) != 0)continue;
       slicebounds[i].setchopmin = minFlag;
       slicebounds[i].setchopmax = maxFlag;
       slicebounds[i].chopmin = minValue;
@@ -3960,7 +3970,7 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
     }
   // if there is no label apply values to all slice types
   } else{
-    for(i = 0; i<nslice_type; i++){
+    for(i = 0; i<nslicebounds; i++){
       slicebounds[i].setchopmin = minFlag;
       slicebounds[i].setchopmax = maxFlag;
       slicebounds[i].chopmin = minValue;
@@ -4121,8 +4131,8 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   int i;
   // if there is a label to apply, use it
   if(strcmp(label, "") != 0){
-    for(i = 0; i<nslice_type; i++){
-      if(strcmp(slicebounds[i].datalabel, label) != 0)continue;
+    for(i = 0; i<nslicebounds; i++){
+      if(strcmp(slicebounds[i].shortlabel, label) != 0)continue;
       slicebounds[i].setvalmin = minFlag;
       slicebounds[i].setvalmax = maxFlag;
       slicebounds[i].valmin = minValue;
@@ -4135,7 +4145,7 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
     }
   // if there is no label apply values to all slice types
   } else{
-    for(i = 0; i<nslice_type; i++){
+    for(i = 0; i<nslicebounds; i++){
       slicebounds[i].setvalmin = minFlag;
       slicebounds[i].setvalmax = maxFlag;
       slicebounds[i].valmin = minValue;

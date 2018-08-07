@@ -1045,8 +1045,8 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushstring(L, sliceinfo[i].file);
     lua_setfield(L, -2, "file");
 
-    lua_pushnumber(L, sliceinfo[i].slicetype);
-    lua_setfield(L, -2, "slicetype");
+    lua_pushnumber(L, sliceinfo[i].slicefile_type);
+    lua_setfield(L, -2, "slicefile_type");
 
     lua_pushnumber(L, sliceinfo[i].idir);
     lua_setfield(L, -2, "idir");
@@ -1400,6 +1400,40 @@ int lua_get_colorbar_visibility(lua_State *L) {
 
 int lua_toggle_colorbar_visibility(lua_State *L) {
   toggle_colorbar_visibility();
+  return 0;
+}
+
+int lua_set_colorbar_visibility_horizontal(lua_State *L) {
+  int setting = lua_toboolean(L, 1);
+  set_colorbar_visibility_horizontal(setting);
+  return 0;
+}
+
+int lua_get_colorbar_visibility_horizontal(lua_State *L) {
+  int setting = get_colorbar_visibility_horizontal();
+  lua_pushboolean(L, setting);
+  return 1;
+}
+
+int lua_toggle_colorbar_visibility_horizontal(lua_State *L) {
+  toggle_colorbar_visibility_horizontal();
+  return 0;
+}
+
+int lua_set_colorbar_visibility_vertical(lua_State *L) {
+  int setting = lua_toboolean(L, 1);
+  set_colorbar_visibility_vertical(setting);
+  return 0;
+}
+
+int lua_get_colorbar_visibility_vertical(lua_State *L) {
+  int setting = get_colorbar_visibility_vertical();
+  lua_pushboolean(L, setting);
+  return 1;
+}
+
+int lua_toggle_colorbar_visibility_vertical(lua_State *L) {
+  toggle_colorbar_visibility_vertical();
   return 0;
 }
 
@@ -3478,13 +3512,13 @@ int lua_set_units(lua_State *L) {
   fprintf(stderr, "set_units\n");
   const char *unitclassname = lua_tostring(L, 1);
   const char *unitname = lua_tostring(L, 2);
-  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
-  // fprintf(stderr, "set_units (unitname): %s\n", unitname);
+  fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
+  fprintf(stderr, "set_units (unitname): %s\n", unitname);
 
   int unitclass_index;
   int unit_index;
   for (int i=0; i < nunitclasses_default; i++) {
-    // fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
+    fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
     if (strcmp(unitclasses[i].unitclass,unitclassname)==0) {
       unitclass_index = i;
       break;
@@ -3497,8 +3531,8 @@ int lua_set_units(lua_State *L) {
     }
   }
 
-  // fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
-  // fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
+  fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
+  fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
   set_units(unitclass_index, unit_index);
   return 0;
 }
@@ -3883,60 +3917,6 @@ float *lua_get_float_array(lua_State *L, int snumber) {
   }
   return vals;
 }
-
-
-int lua_set_geometrytest(lua_State *L) {
-  int a = lua_tonumber(L, 1);
-  int b = lua_tonumber(L, 2);
-  float c = lua_tonumber(L, 3);
-  float d = lua_tonumber(L, 4);
-  // count the length of vals
-  int *vals;
-  float *b1Vals;
-  float *b2Vals;
-  float *b3Vals;
-  // these arrays must be freed
-  vals = lua_get_int_array(L, 5);
-  b1Vals = lua_get_float_array(L, 6);
-  b2Vals = lua_get_float_array(L, 7);
-  b3Vals = lua_get_float_array(L, 8);
-
-  int return_code = set_geometrytest(a, b, c, d, vals, b1Vals, b2Vals, b3Vals);
-  free(vals);
-  free(b1Vals);
-  free(b2Vals);
-  free(b3Vals);
-  // int set_geometrytest(int a, int b, int c, int d, int vals[],
-  //                    float b1Vals[], float b2Vals[], float b3Vals[]); // GEOMETRYTEST
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-// int set_geometrytest(int a, int b, int c, int d, int vals[],
-//                      float b1Vals[], float b2Vals[], float b3Vals[]) {
-//   int *v;
-//   int ii;
-//   geomtest_option = a;
-//   show_tetratest_labels = b;
-//   tetra_line_thickness = c;
-//   tetra_point_size = d;
-//   v = tetrabox_vis;
-//   ONEORZERO(show_tetratest_labels);
-//   for(ii = 0; ii<10; ii++){
-//     v[ii] = vals[ii];
-//     ONEORZERO(v[ii]);
-//   }
-//   for(ii = 0; ii<6; ii++){
-//     box_bounds2[ii] = b1Vals[ii];
-//   }
-//   for(ii = 0; ii<12; ii++){
-//      tetra_vertices[ii] = b2Vals[ii];
-//   }
-//   for(ii = 0; ii<3; ii++){
-//     box_translate[ii] = b3Vals[ii];
-//   }
-//   return 0;
-// } //  GEOMETRYTEST
 
 int lua_set_devicevectordimensions(lua_State *L) {
   float baselength = lua_tonumber(L, 1);
@@ -4510,6 +4490,14 @@ lua_State* initLua() {
   lua_register(L, "get_colorbar_visibility", lua_get_colorbar_visibility);
   lua_register(L, "toggle_colorbar_visibility", lua_toggle_colorbar_visibility);
 
+  lua_register(L, "set_colorbar_visibility_horizontal", lua_set_colorbar_visibility_horizontal);
+  lua_register(L, "get_colorbar_visibility_horizontal", lua_get_colorbar_visibility_horizontal);
+  lua_register(L, "toggle_colorbar_visibility_horizontal", lua_toggle_colorbar_visibility_horizontal);
+
+  lua_register(L, "set_colorbar_visibility_vertical", lua_set_colorbar_visibility_vertical);
+  lua_register(L, "get_colorbar_visibility_vertical", lua_get_colorbar_visibility_vertical);
+  lua_register(L, "toggle_colorbar_visibility_vertical", lua_toggle_colorbar_visibility_vertical);
+
   // timebar
   lua_register(L, "set_timebar_visibility", lua_set_timebar_visibility);
   lua_register(L, "get_timebar_visibility", lua_get_timebar_visibility);
@@ -4877,7 +4865,6 @@ lua_State* initLua() {
   lua_register(L, "set_viewtimes", lua_set_viewtimes);
   lua_register(L, "set_viewtourfrompath", lua_set_viewtourfrompath);
   lua_register(L, "set_avatarevac", lua_set_avatarevac);
-  lua_register(L, "set_geometrytest", lua_set_geometrytest);
   lua_register(L, "set_devicevectordimensions",
                lua_set_devicevectordimensions);
   lua_register(L, "set_devicebounds", lua_set_devicebounds);
