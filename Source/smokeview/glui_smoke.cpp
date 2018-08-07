@@ -672,7 +672,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_smoke3d_thick->set_int_limits(0,7);
 #endif
     SPINNER_smoke3d_skip=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Skip"), GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, Smoke3dCB);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
+    //glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
 #ifdef pp_GPUSMOKE
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Show planes"), &show_smoke3d_planes);
