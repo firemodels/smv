@@ -8207,6 +8207,7 @@ typedef struct {
 
       sd = sliceinfo + nn_slice - 1;
 
+      sd->finalized = 1;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;

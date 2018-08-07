@@ -1159,6 +1159,7 @@ typedef struct _slicedata {
 #ifdef pp_SLICEGEOM
   char *geom_file;
 #endif
+  int finalized;
   char *slicelabel;
   int compression_type;
   int colorbar_autoflip;

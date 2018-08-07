@@ -4207,38 +4207,40 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   if(sd->vloaded == 0)sd->display = 1;
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateUnitDefs();
-  UpdateTimes();
-  CheckMemory;
+  if(sd->finalized==1){
+    UpdateUnitDefs();
+    UpdateTimes();
+    CheckMemory;
 
-  if(use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR){
-    if(sd->compression_type == UNCOMPRESSED){
-      UpdateSliceBounds();
-      UpdateAllSliceColors(slicefile_labelindex, errorcode);
-      list_slice_index = slicefile_labelindex;
-      SetSliceBounds(slicefile_labelindex);
+    if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
+      if(sd->compression_type==UNCOMPRESSED){
+        UpdateSliceBounds();
+        UpdateAllSliceColors(slicefile_labelindex, errorcode);
+        list_slice_index = slicefile_labelindex;
+        SetSliceBounds(slicefile_labelindex);
+      }
+      else{
+        slicebounds[slicefile_labelindex].valmin_data = qmin;
+        slicebounds[slicefile_labelindex].valmax_data = qmax;
+        UpdateAllSliceLabels(slicefile_labelindex, errorcode);
+      }
     }
-    else{
-      slicebounds[slicefile_labelindex].valmin_data = qmin;
-      slicebounds[slicefile_labelindex].valmax_data = qmax;
-      UpdateAllSliceLabels(slicefile_labelindex, errorcode);
-    }
-  }
-  CheckMemory;
+    CheckMemory;
 
-  UpdateSliceList(list_slice_index);
-  CheckMemory;
-  UpdateSliceListIndex(slicefilenum);
-  CheckMemory;
-  UpdateGlui();
-  CheckMemory;
+    UpdateSliceList(list_slice_index);
+    CheckMemory;
+    UpdateSliceListIndex(slicefilenum);
+    CheckMemory;
+    UpdateGlui();
+    CheckMemory;
 #ifdef pp_MEMDEBUG
-  if(sd->compression_type == UNCOMPRESSED){
-    ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
-  }
-  CheckMemory;
+    if(sd->compression_type==UNCOMPRESSED){
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
+    }
+    CheckMemory;
 #endif
-  IdleCB();
+    IdleCB();
+  }
 
   exportdata = 1;
   if(exportdata == 0){

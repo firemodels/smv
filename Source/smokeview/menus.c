@@ -4418,7 +4418,12 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
 
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
-    if(last_slice == i)set_slicecolor = SET_SLICECOLOR;
+
+    slicei->finalized = 0;
+    if(last_slice==i){
+      slicei->finalized = 1;
+      set_slicecolor = SET_SLICECOLOR;
+    }
     if(slicei->skip == 0 && slicei->loaded == 0){
       float load_sizei;
 
