@@ -5706,7 +5706,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       unsigned char *firesmoke_color;
-      float soot_val, f1, f2;
+      float f1, f2;
 
 // set color
 
@@ -5774,7 +5774,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3DBlack ------------------------ */
 
 void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
-  int i, j;
+  int i;
   int i_smoke3d_cutoff;
   int fire_index = HRRPUV;
   unsigned char rgb_slicesmokecolormap_0255[4*MAXSMOKERGB];
@@ -5839,7 +5839,6 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     meshdata *meshi;
     float fire_alpha, co2_alpha;
     unsigned char *firecolor, *sootcolor, *co2color;
-    unsigned char *mergecolor, *mergealpha;
     unsigned char firesmokeval[3];
     int i_hrrpuv_offset = 0;
 
