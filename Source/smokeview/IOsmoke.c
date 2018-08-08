@@ -6078,13 +6078,6 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
         if(smoke3dref->display==0)sootcolor = NULL;
       }
     }
-    if(smoke3di->smokestate[CO2].color!=NULL){
-      if(smoke3di->smokestate[CO2].index!=-1){
-        smoke3ddata *smoke3dref;
-
-        smoke3dref = smoke3dinfo+smoke3di->smokestate[CO2].index;
-      }
-    }
 #ifdef pp_GPU
     if(usegpu==1)continue;
 #endif
