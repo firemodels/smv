@@ -725,7 +725,6 @@ void InitAllLightFractions(float *xyz_light, int light_type){
   }
 }
 
-
 /* ------------------ IsSmokeComponentPresent ------------------------ */
 
 int IsSmokeComponentPresent(smoke3ddata *smoke3di){
@@ -742,6 +741,27 @@ int IsSmokeComponentPresent(smoke3ddata *smoke3di){
   }
   return 0;
 }
+
+#ifdef pp_GPUSMOKE
+/* ------------------ IsSmokeInMesh ------------------------ */
+
+int IsSmokeInMesh(meshdata *meshi){
+  int i;
+
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+    meshdata *meshj;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+    meshj = meshinfo + smoke3di->blocknumber;
+    if(meshj != meshi)continue;
+    if(IsSmokeComponentPresent(smoke3di) == 1)return 1;
+  }
+  return 0;
+}
+#endif
+
 #ifdef pp_CULL
 
 /* ------------------ DrawSmoke3dCull ------------------------ */
@@ -2574,8 +2594,174 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 #endif
 
-/* ------------------ DrawSmokePlanes ------------------------ */
 #ifdef pp_GPUSMOKE
+/* ------------------ UpdateSmoke3DPlanes ------------------------ */
+
+void UpdateSmoke3DPlanes(float delta){
+  int i;
+  float *xyz0, *norm;
+  float d, distmin, distmax;
+  int firstdist = 1;
+  float xx[2], yy[2], zz[2];
+
+  /* stuff min and max grid data into a more convenient form
+  assuming the following grid numbering scheme
+
+      5-------6
+     / |      /|
+   /   |     / |
+  4 -------7   |
+  |    |   |   |
+  Z    1---|---2
+  |  Y     |  /
+  |/       |/
+  0--X-----3
+
+  */
+  int ix[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+  int iy[8] = {0, 1, 1, 0, 0, 1, 1, 0};
+  int iz[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+
+  // plane equation: (x-xyz0) .dot. norm = 0
+
+  xyz0 = fds_eyepos;
+  norm = fds_viewdir;
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float *verts, *dist;
+    float *boxmin, *boxmax;
+    int j;
+
+    meshi = meshinfo + i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+    verts = meshi->verts;
+    dist = meshi->vert_dists;
+    xx[0] = boxmin[0];
+    yy[0] = boxmin[1];
+    zz[0] = boxmin[2];
+    xx[1] = boxmax[0];
+    yy[1] = boxmax[1];
+    zz[1] = boxmax[2];
+    if(meshi->nverts == 0){
+      int j;
+
+      meshi->nverts = 8;
+      for(j = 0; j<8; j++){
+        verts[3 * j + 0] = xx[ix[j]];
+        verts[3 * j + 1] = yy[iy[j]];
+        verts[3 * j + 2] = zz[iz[j]];
+      }
+    }
+    meshi->vert_distmin = -1.0;
+    meshi->vert_distmax = -1.0;
+    for(j = 0; j<8; j++){
+      float *xyz;
+
+      xyz = meshi->verts + 3 * j;
+      dist[j] = PLANEDIST(norm, xyz0, xyz);
+      if(dist[j] >= 0.0){
+        if(meshi->vert_distmin >= 0.0){
+          meshi->vert_distmin = MIN(meshi->vert_distmin, dist[j]);
+        }
+        else{
+          meshi->vert_distmin = dist[j];
+        }
+        meshi->vert_distmax = MAX(meshi->vert_distmax, dist[j]);
+        if(firstdist == 1){
+          firstdist = 0;
+          distmin = dist[j];
+          distmax = dist[j];
+        }
+        else{
+          distmin = MIN(dist[j], distmin);
+          distmax = MAX(dist[j], distmax);
+        }
+      }
+    }
+  }
+  if(firstdist == 1)return;
+  UpdateGluiPlanes(distmin, distmax);
+  if(plane_labels==1){
+    for(i = 0;i < nmeshes;i++){
+      meshdata *meshi;
+      float *dist, *verts;
+      int j;
+
+      meshi = meshinfo + i;
+      if(IsSmokeInMesh(meshi)==0)continue;
+
+      dist = meshi->vert_dists;
+      verts = meshi->verts;
+      for(j = 0;j < 8;j++){
+        Output3Val(NORMALIZE_X(verts[3 * j]), NORMALIZE_Y(verts[3 * j + 1]), NORMALIZE_Z(verts[3 * j + 2]), dist[j]);
+      }
+    }
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    FREEMEMORY(meshi->smokeplaneinfo);
+    meshi->nsmokeplaneinfo = 0;
+  }
+  for(d = distmin + delta / 2.0; d<distmax; d += delta){
+    if(plane_single == 1)d = plane_distance;
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      if(d>meshi->vert_distmin&&d<meshi->vert_distmax)meshi->nsmokeplaneinfo++;
+    }
+    if(plane_single == 1)break;
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    if(meshi->nsmokeplaneinfo>0){
+      NewMemory((void **)&meshi->smokeplaneinfo, meshi->nsmokeplaneinfo * sizeof(meshplanedata));
+    }
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float xx[2], yy[2], zz[2];
+    float *boxmin, *boxmax;
+    int jj;
+
+    meshi = meshinfo + i;
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+
+    xx[0] = boxmin[0];
+    yy[0] = boxmin[1];
+    zz[0] = boxmin[2];
+    xx[1] = boxmax[0];
+    yy[1] = boxmax[1];
+    zz[1] = boxmax[2];
+    jj = 0;
+    for(d = distmin + delta / 2.0; d<distmax; d += delta){
+      if(plane_single == 1)d = plane_distance;
+      if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
+        meshplanedata *spi;
+        int k;
+
+        if(jj >= meshi->nsmokeplaneinfo)break;
+        spi = meshi->smokeplaneinfo + jj;
+        GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles));
+        spi->ntriangles /= 3;
+        for(k = 0; k<spi->nverts; k++){
+          NORMALIZE_XYZ(spi->verts_smv + 3 * k, spi->verts + 3 * k);
+        }
+        jj++;
+      }
+      if(plane_single == 1)break;
+    }
+  }
+}
+
+/* ------------------ DrawSmokePlanes ------------------------ */
 void DrawSmokePlanes(meshdata *meshi){
   int i;
 

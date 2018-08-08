@@ -635,13 +635,15 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, "GPU", false);
 #endif
 #ifdef pp_GPUSMOKE
-    PANEL_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slicegpu,_("GPU planes"));
+    PANEL_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slicegpu,_("GPU smoke planes"));
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Show"), &show_smoke3d_planes);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Compute"), &compute_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Update"), &compute_smoke3d_planes);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("outline"), &plane_outline);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("solid"), &plane_solid);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Single plane"), &plane_single);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("labels"), &plane_labels);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("show all mesh outlines"), &plane_all_mesh_outlines);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
 #endif
 #ifdef pp_CULL
