@@ -412,9 +412,9 @@ void DrawPart(const partdata *parti){
                 CopyDepVals(partclassi, datacopy, colorptr, prop, j);
                 glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
 
-                partfacedir[0] = xbar0 + SCALE2SMV(world_eyepos[0]) - xplts[sx[j]];
-                partfacedir[1] = ybar0 + SCALE2SMV(world_eyepos[1]) - yplts[sy[j]];
-                partfacedir[2] = zbar0 + SCALE2SMV(world_eyepos[2]) - zplts[sz[j]];
+                partfacedir[0] = xbar0 + SCALE2SMV(fds_eyepos[0]) - xplts[sx[j]];
+                partfacedir[1] = ybar0 + SCALE2SMV(fds_eyepos[1]) - yplts[sy[j]];
+                partfacedir[2] = zbar0 + SCALE2SMV(fds_eyepos[2]) - zplts[sz[j]];
 
                 DrawSmvObject(prop->smv_object, 0, prop, 0, NULL, 0);
                 glPopMatrix();

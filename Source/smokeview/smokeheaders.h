@@ -5,6 +5,13 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_GPUSMOKE
+EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
+EXTERNCPP void UpdateSmoke3DPlanes(float delta);
+EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
+#endif
+EXTERNCPP void GetFileSizes(void);
+EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
@@ -503,14 +510,10 @@ EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
 EXTERNCPP void UpdateSmoke3dFlags(void);
-EXTERNCPP void MergeSmoke3dColors(smoke3ddata *smoke3dset);
+EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
-EXTERNCPP void GetSmokeDir(float *mm);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
-EXTERNCPP void GetVolSmokeDir(float *mm);
-EXTERNCPP void GetZoneSmokeDir(float *mm);
-EXTERNCPP void GetWorldEyePos(float *mm, float user_eyepos[3], float scaled_eyepos[3]);
 EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void SetCullVis(void);
 EXTERNCPP void ExtractFrustum(void);

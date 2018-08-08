@@ -193,12 +193,13 @@ void UpdateFrameNumber(int changetime){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0||smoke3di->display==0)continue;
         smoke3di->ismoke3d_time=smoke3di->timeslist[itimes];
+        if(IsSmokeComponentPresent(smoke3di)==0)continue;
         if(smoke3di->ismoke3d_time!=smoke3di->lastiframe){
           smoke3di->lastiframe=smoke3di->ismoke3d_time;
           UpdateSmoke3D(smoke3di);
         }
       }
-      if(nsmoke3dinfo>0)MergeSmoke3dColors(NULL);
+      if(nsmoke3dinfo>0)MergeSmoke3D(NULL);
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){

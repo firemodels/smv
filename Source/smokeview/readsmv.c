@@ -313,6 +313,9 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  meshi->smokeplaneinfo = NULL;
+  meshi->nsmokeplaneinfo = 0;
+  meshi->nverts = 0;
   meshi->opacity_adjustments = NULL;
   meshi->light_fraction = NULL;
   meshi->uc_light_fraction = NULL;
@@ -379,6 +382,8 @@ void InitMesh(meshdata *meshi){
   meshi->smokedir = 1;
   meshi->merge_alpha = NULL;
   meshi->merge_color = NULL;
+  meshi->smokecolor_ptr = NULL;
+  meshi->smokealpha_ptr = NULL;
   meshi->dx = 1.0;
   meshi->dy = 1.0;
   meshi->dz = 1.0;
@@ -1994,7 +1999,7 @@ void InitTextures(void){
 #else
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 #endif
-  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap);
+  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
   CheckMemory;
 
@@ -8202,6 +8207,7 @@ typedef struct {
 
       sd = sliceinfo + nn_slice - 1;
 
+      sd->finalized = 1;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
@@ -9078,6 +9084,11 @@ typedef struct {
    ************************ wrap up ***************************************
    ************************************************************************
  */
+
+  if(update_filesizes==1){
+    GetFileSizes();
+    exit(0);
+  }
 
   STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
@@ -11771,7 +11782,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "SMOKESKIP") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &smokeskipm1);
+        sscanf(buffer, "%i %i", &smokeskipm1, &smoke3d_skip);
+        smoke3d_skip = CLAMP(smoke3d_skip,1,10);
         continue;
       }
       if(Match(buffer, "SMOKEALBEDO") == 1){
@@ -13679,7 +13691,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %f\n", smoke_albedo);
   }
   fprintf(fileout, "SMOKESKIP\n");
-  fprintf(fileout," %i\n",smokeskipm1);
+  fprintf(fileout," %i %i\n",smokeskipm1,smoke3d_skip);
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);

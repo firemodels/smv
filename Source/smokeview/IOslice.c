@@ -2439,6 +2439,7 @@ void UpdateFedinfo(void){
     sd->js2 = co2->js2;
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
+    sd->finalized = 1;
 
     nn_slice = nsliceinfo + i;
 
@@ -4207,38 +4208,40 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   if(sd->vloaded == 0)sd->display = 1;
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateUnitDefs();
-  UpdateTimes();
-  CheckMemory;
+  if(sd->finalized==1){
+    UpdateUnitDefs();
+    UpdateTimes();
+    CheckMemory;
 
-  if(use_set_slicecolor == 0 || set_slicecolor == SET_SLICECOLOR){
-    if(sd->compression_type == UNCOMPRESSED){
-      UpdateSliceBounds();
-      UpdateAllSliceColors(slicefile_labelindex, errorcode);
-      list_slice_index = slicefile_labelindex;
-      SetSliceBounds(slicefile_labelindex);
+    if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
+      if(sd->compression_type==UNCOMPRESSED){
+        UpdateSliceBounds();
+        UpdateAllSliceColors(slicefile_labelindex, errorcode);
+        list_slice_index = slicefile_labelindex;
+        SetSliceBounds(slicefile_labelindex);
+      }
+      else{
+        slicebounds[slicefile_labelindex].valmin_data = qmin;
+        slicebounds[slicefile_labelindex].valmax_data = qmax;
+        UpdateAllSliceLabels(slicefile_labelindex, errorcode);
+      }
     }
-    else{
-      slicebounds[slicefile_labelindex].valmin_data = qmin;
-      slicebounds[slicefile_labelindex].valmax_data = qmax;
-      UpdateAllSliceLabels(slicefile_labelindex, errorcode);
-    }
-  }
-  CheckMemory;
+    CheckMemory;
 
-  UpdateSliceList(list_slice_index);
-  CheckMemory;
-  UpdateSliceListIndex(slicefilenum);
-  CheckMemory;
-  UpdateGlui();
-  CheckMemory;
+    UpdateSliceList(list_slice_index);
+    CheckMemory;
+    UpdateSliceListIndex(slicefilenum);
+    CheckMemory;
+    UpdateGlui();
+    CheckMemory;
 #ifdef pp_MEMDEBUG
-  if(sd->compression_type == UNCOMPRESSED){
-    ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
-  }
-  CheckMemory;
+    if(sd->compression_type==UNCOMPRESSED){
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
+    }
+    CheckMemory;
 #endif
-  IdleCB();
+    IdleCB();
+  }
 
   exportdata = 1;
   if(exportdata == 0){
@@ -4366,11 +4369,16 @@ void DrawGSliceDataGpu(slicedata *slicei){
   boundsdata *sb;
   float valmin, valmax;
   float *boxmin, *boxmax;
+  float *verts;
+  int *triangles;
 
   if(slicei->loaded == 0 || slicei->display == 0 || slicei->volslice == 0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts == 0 || meshi->gslice_ntriangles == 0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts == 0 || meshi->gsliceinfo.ntriangles == 0)return;
 
   UpdateSlice3DTexture(meshi, slicei, slicei->qsliceframe);
   glPushMatrix();
@@ -4396,12 +4404,12 @@ void DrawGSliceDataGpu(slicedata *slicei){
   glUniform3f(GPU3dslice_boxmax, boxmax[0], boxmax[1], boxmax[2]);
   glBegin(GL_TRIANGLES);
 
-  for(j = 0; j < meshi->gslice_ntriangles; j++){
+  for(j = 0; j < meshi->gsliceinfo.ntriangles; j++){
     float *xyz1, *xyz2, *xyz3;
 
-    xyz1 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j];
-    xyz2 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j + 1];
-    xyz3 = meshi->gslice_verts + 3 * meshi->gslice_triangles[3 * j + 2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j + 1];
+    xyz3 = verts + 3*triangles[3*j + 2];
     glVertex3fv(xyz1);
     glVertex3fv(xyz2);
     glVertex3fv(xyz3);
@@ -7230,20 +7238,6 @@ void DrawVSliceFrame(void){
   }
 }
 
-/* ------------------ PlaneDist ------------------------ */
-
-float PlaneDist(float *norm, float *xyz0, float *xyz){
-  float dist=0.0;
-  float dx;
-  int i;
-
-  for(i=0;i<3;i++){
-    dx = xyz[i]-xyz0[i];
-    dist += dx*norm[i];
-  }
-  return dist;
-}
-
 /* ------------------ UpdateGslicePlanes ------------------------ */
 
 void UpdateGslicePlanes(void){
@@ -7298,12 +7292,11 @@ void UpdateGslicePlanes(void){
       xyz[0] = xx[ix[j]];
       xyz[1] = yy[iy[j]];
       xyz[2] = zz[iz[j]];
-      vals[j] = PlaneDist(norm,xyz0,xyz);
+      vals[j] = PLANEDIST(norm,xyz0,xyz);
     }
     level=0.0;
-    GetIsoBox(xx,yy,zz,vals,level,
-      meshi->gslice_verts,&meshi->gslice_nverts,meshi->gslice_triangles,&meshi->gslice_ntriangles);
-      meshi->gslice_ntriangles/=3;
+    GetIsoBox(xx,yy,zz,vals,level,meshi->gsliceinfo.verts,&meshi->gsliceinfo.nverts,meshi->gsliceinfo.triangles,&meshi->gsliceinfo.ntriangles);
+    meshi->gsliceinfo.ntriangles/=3;
   }
 }
 
@@ -7324,15 +7317,20 @@ void DrawGSliceOutline(void){
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       int j;
+      int *triangles;
+      float *verts;
 
       meshi = meshinfo + i;
-      if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)continue;
-      for(j=0;j<meshi->gslice_ntriangles;j++){
+      verts = meshi->gsliceinfo.verts;
+      triangles = meshi->gsliceinfo.triangles;
+
+      if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)continue;
+      for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
         float *xyz1, *xyz2, *xyz3;
 
-        xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-        xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-        xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+        xyz1 = verts + 3*triangles[3*j];
+        xyz2 = verts + 3*triangles[3*j+1];
+        xyz3 = verts + 3*triangles[3*j+2];
 
         glVertex3fv(xyz1);
         glVertex3fv(xyz2);
@@ -7350,18 +7348,23 @@ void DrawGSliceOutline(void){
       meshdata *meshi;
       int j;
       float del;
+      int *triangles;
+      float *verts;
 
       meshi = meshinfo + i;
+      verts = meshi->gsliceinfo.verts;
+      triangles = meshi->gsliceinfo.triangles;
+
       del = meshi->cellsize;
       del *= del;
       del /= 4.0;
-      if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)continue;
-      for(j=0;j<meshi->gslice_ntriangles;j++){
+      if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)continue;
+      for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
         float *xyz1, *xyz2, *xyz3;
 
-        xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-        xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-        xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+        xyz1 = verts + 3*triangles[3*j];
+        xyz2 = verts + 3*triangles[3*j+1];
+        xyz3 = verts + 3*triangles[3*j+2];
         DrawTriangleOutline(xyz1,xyz2,xyz3,del,0);
       }
     }
@@ -7395,11 +7398,16 @@ void DrawGSliceData(slicedata *slicei){
   boundsdata *sb;
   float valmin, valmax;
   float del;
+  int *triangles;
+  float *verts;
 
   if(slicei->loaded==0||slicei->display==0||slicei->volslice==0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)return;
   del = meshi->cellsize;
   del *= del;
   del /= 4.0;
@@ -7421,13 +7429,13 @@ void DrawGSliceData(slicedata *slicei){
   gslice_valmesh=meshi;
   gslice=slicei;
 
-  for(j=0;j<meshi->gslice_ntriangles;j++){
+  for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
     float *xyz1, *xyz2, *xyz3;
     float t1, t2, t3;
 
-    xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-    xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-    xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j+1];
+    xyz3 = verts + 3*triangles[3*j+2];
     t1 = GetTextureIndex(xyz1);
     t2 = GetTextureIndex(xyz2);
     t3 = GetTextureIndex(xyz3);
@@ -7448,13 +7456,18 @@ void DrawVGSliceData(vslicedata *vslicei){
   float valmin, valmax;
   float del;
   slicedata *slicei;
+  float *verts;
+  int *triangles;
 
   slicei = sliceinfo + vslicei->ival;
 
   if(slicei->loaded==0/*||slicei->display==0*/||slicei->volslice==0)return;
 
   meshi = meshinfo + slicei->blocknumber;
-  if(meshi->gslice_nverts==0||meshi->gslice_ntriangles==0)return;
+  verts = meshi->gsliceinfo.verts;
+  triangles = meshi->gsliceinfo.triangles;
+
+  if(meshi->gsliceinfo.nverts==0||meshi->gsliceinfo.ntriangles==0)return;
   del = meshi->cellsize;
   del *= del;
   del /= 4.0;
@@ -7480,12 +7493,12 @@ void DrawVGSliceData(vslicedata *vslicei){
   gslice_v=vslicei->v;
   gslice_w=vslicei->w;
 
-  for(j=0;j<meshi->gslice_ntriangles;j++){
+  for(j=0;j<meshi->gsliceinfo.ntriangles;j++){
     float *xyz1, *xyz2, *xyz3;
 
-    xyz1 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j];
-    xyz2 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+1];
-    xyz3 = meshi->gslice_verts + 3*meshi->gslice_triangles[3*j+2];
+    xyz1 = verts + 3*triangles[3*j];
+    xyz2 = verts + 3*triangles[3*j+1];
+    xyz3 = verts + 3*triangles[3*j+2];
 
     DrawTriangleVector(xyz1,xyz2,xyz3,del,0);
   }

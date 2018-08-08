@@ -909,7 +909,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     returnval = 0;
     break;
   case XDIR:
-    if(world_eyepos[0] < xyzmaxi[0]){
+    if(fds_eyepos[0] < xyzmaxi[0]){
       returnval = 1;
     }
     else{
@@ -917,7 +917,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   case XDIRNEG:
-    if(world_eyepos[0] < xyzmaxj[0]){
+    if(fds_eyepos[0] < xyzmaxj[0]){
       returnval = -1;
     }
     else{
@@ -925,7 +925,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   case YDIR:
-    if(world_eyepos[1] < xyzmaxi[1]){
+    if(fds_eyepos[1] < xyzmaxi[1]){
       returnval = 1;
     }
     else{
@@ -933,7 +933,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   case YDIRNEG:
-    if(world_eyepos[1] < xyzmaxj[1]){
+    if(fds_eyepos[1] < xyzmaxj[1]){
       returnval = -1;
     }
     else{
@@ -941,7 +941,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   case ZDIR:
-    if(world_eyepos[2] < xyzmaxi[2]){
+    if(fds_eyepos[2] < xyzmaxi[2]){
       returnval = 1;
     }
     else{
@@ -949,7 +949,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   case ZDIRNEG:
-    if(world_eyepos[2] < xyzmaxj[2]){
+    if(fds_eyepos[2] < xyzmaxj[2]){
       returnval = -1;
     }
     else{
@@ -968,6 +968,647 @@ int CompareMeshes(const void *arg1, const void *arg2){
 void SortSmoke3dinfo(void){
   if(nsmoke3dinfo > 1){
     qsort((meshdata **)smoke3dinfo_sorted, (size_t)nsmoke3dinfo, sizeof(smoke3ddata *), CompareMeshes);
+  }
+}
+
+/* ------------------ GetEyePos ------------------------ */
+
+void GetEyePos(float *mm){
+  int i;
+  float scene_center[3] = {0.0, 0.0, 0.0};
+
+  /*
+  ( m0 m4 m8  m12 ) (x)    (0)
+  ( m1 m5 m9  m13 ) (y)    (0)
+  ( m2 m6 m10 m14 ) (z)  = (0)
+  ( m3 m7 m11 m15 ) (1)    (1)
+
+      ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+      ( m2 m6 m10 )      (m14)
+
+  (Q   u) (x)     (0)
+  (v^T 1) (y)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
+  */
+
+  smv_eyepos[0] = -(mm[0] * mm[12] + mm[1] * mm[13] +  mm[2] * mm[14]) / mscale[0];
+  smv_eyepos[1] = -(mm[4] * mm[12] + mm[5] * mm[13] +  mm[6] * mm[14]) / mscale[1];
+  smv_eyepos[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+  DENORMALIZE_XYZ(fds_eyepos, smv_eyepos);
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    scene_center[0] += meshi->boxmiddle[0];
+    scene_center[1] += meshi->boxmiddle[1];
+    scene_center[2] += meshi->boxmiddle[2];
+  }
+  scene_center[0] /= nmeshes;
+  scene_center[1] /= nmeshes;
+  scene_center[2] /= nmeshes;
+  fds_viewdir[0] = scene_center[0] - fds_eyepos[0];
+  fds_viewdir[1] = scene_center[1] - fds_eyepos[1];
+  fds_viewdir[2] = scene_center[2] - fds_eyepos[2];
+  NORMALIZE3(fds_viewdir);
+}
+
+/* ------------------ CompareVolFaceListData ------------------------ */
+
+int CompareVolFaceListData(const void *arg1, const void *arg2){
+  volfacelistdata *vi, *vj;
+
+  vi = *(volfacelistdata **)arg1;
+  vj = *(volfacelistdata **)arg2;
+
+  if(vi->dist2 < vj->dist2)return 1;
+  if(vi->dist2 > vj->dist2)return -1;
+  return 0;
+}
+
+/* ------------------ GetVolSmokeDir ------------------------ */
+
+void GetVolSmokeDir(float *mm){
+  /*
+  ( m0 m4 m8  m12 ) (x)    (0)
+  ( m1 m5 m9  m13 ) (y)    (0)
+  ( m2 m6 m10 m14 ) (z)  = (0)
+  ( m3 m7 m11 m15 ) (1)    (1)
+
+  ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+  ( m2 m6 m10 )      (m14)
+
+  ( m0 m1  m2 )
+  Q^T=  ( m4 m5  m6 )
+  ( m8 m9 m10 )
+
+  ( M_x  0    0  )
+  M = ( 0   M_y   0  )
+  ( 0    0   M_z )
+
+  (Q   u) (M) (x)     (0)
+  (v^T 1) (1) (y)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   QMx+u=0 => x=-inv(M)Q^Tu
+
+  ( m0 m1  m2 ) (m12)   ( m0*m12 + m1*m13 +  m2*m14 )/M_x
+  x = -( m4 m5  m6 ) (m13) = ( m4*m12 + m5*m13 +  m6*m14 )/M_y
+  ( m8 m9 m10 ) (m14)   ( m8*m12 + m9*m13 + m10*m14 )/M_z
+
+  */
+  int i, ii, j;
+  float norm[3];
+  float eyedir[3];
+  float cosdir;
+  float angles[7];
+
+  volfacelistdata *vi;
+
+  if(freeze_volsmoke == 1)return;
+
+  eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
+  eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
+  eye_position_fds[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+
+  for(j = 0;j<nmeshes;j++){
+    meshdata *meshj;
+    int *inside;
+    int *drawsides;
+    float x0, x1, yy0, yy1, z0, z1;
+    float xcen, ycen, zcen;
+
+    meshj = meshinfo + j;
+
+    inside = &meshj->inside;
+    drawsides = meshj->drawsides;
+
+    x0 = meshj->x0;
+    x1 = meshj->x1;
+    yy0 = meshj->y0;
+    yy1 = meshj->y1;
+    z0 = meshj->z0;
+    z1 = meshj->z1;
+    xcen = meshj->xcen;
+    ycen = meshj->ycen;
+    zcen = meshj->zcen;
+
+    *inside = 0;
+    if(
+      eye_position_fds[0]>x0&&eye_position_fds[0]<x1&&
+      eye_position_fds[1]>yy0&&eye_position_fds[1]<yy1&&
+      eye_position_fds[2]>z0&&eye_position_fds[2]<z1
+      ){
+      for(i = -3;i <= 3;i++){
+        if(i == 0)continue;
+        drawsides[i + 3] = 1;
+      }
+      *inside = 1;
+      continue;
+    }
+
+    for(i = -3;i <= 3;i++){
+      if(i == 0)continue;
+      ii = ABS(i);
+      norm[0] = 0.0;
+      norm[1] = 0.0;
+      norm[2] = 0.0;
+      switch(ii){
+      case XDIR:
+        if(i<0){
+          norm[0] = -1.0;
+          eyedir[0] = x0;
+        }
+        else{
+          norm[0] = 1.0;
+          eyedir[0] = x1;
+        }
+        eyedir[1] = ycen;
+        eyedir[2] = zcen;
+        break;
+      case YDIR:
+        eyedir[0] = xcen;
+        if(i<0){
+          norm[1] = -1.0;
+          eyedir[1] = yy0;
+        }
+        else{
+          norm[1] = 1.0;
+          eyedir[1] = yy1;
+        }
+        eyedir[2] = zcen;
+        break;
+      case ZDIR:
+        eyedir[0] = xcen;
+        eyedir[1] = ycen;
+        if(i<0){
+          norm[2] = -1.0;
+          eyedir[2] = z0;
+        }
+        else{
+          norm[2] = 1.0;
+          eyedir[2] = z1;
+        }
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      VEC3DIFF(eyedir, eye_position_fds, eyedir);
+      Normalize(eyedir, 3);
+      cosdir = CLAMP(DOT3(eyedir, norm), -1.0, 1.0);
+      cosdir = acos(cosdir)*RAD2DEG;
+      if(cosdir<0.0)cosdir = -cosdir;
+      angles[3 + i] = cosdir;
+    }
+    for(i = -3;i <= 3;i++){
+      if(i == 0)continue;
+      if(angles[i + 3]<90.0){
+        drawsides[i + 3] = 1;
+      }
+      else{
+        drawsides[i + 3] = 0;
+      }
+    }
+  }
+
+  // turn off drawing for mesh sides that are on the inside of a supermesh
+  if(combine_meshes == 1){
+    for(i = 0;i<nmeshes;i++){
+      meshdata *meshi;
+      int *drawsides, *extsides;
+      int jj;
+
+      meshi = meshinfo + i;
+      drawsides = meshi->drawsides;
+      extsides = meshi->extsides;
+      for(jj = 0;jj<7;jj++){
+        if(extsides[jj] == 0){
+          drawsides[jj] = 0;
+        }
+      }
+    }
+    for(i = 0;i<nsupermeshinfo;i++){
+      supermeshdata *smesh;
+
+      smesh = supermeshinfo + i;
+      for(j = 0;j<7;j++){
+        smesh->drawsides[j] = 0;
+      }
+      for(j = 0;j<smesh->nmeshes;j++){
+        meshdata *meshj;
+        int k;
+
+        meshj = smesh->meshes[j];
+        for(k = 0;k<7;k++){
+          if(meshj->extsides[k] == 1 && meshj->drawsides[k] == 1)smesh->drawsides[k] = 1;
+        }
+      }
+    }
+  }
+
+  vi = volfacelistinfo;
+  nvolfacelistinfo = 0;
+  for(i = 0;i<nmeshes;i++){
+    meshdata *meshi;
+    int facemap[7] = {12,6,0,0,3,9,15};
+    volrenderdata *vr;
+    int *drawsides;
+
+    meshi = meshinfo + i;
+
+    drawsides = meshi->drawsides;
+
+    vr = &(meshi->volrenderinfo);
+    if(vr->firedataptr == NULL&&vr->smokedataptr == NULL)continue;
+    if(vr->loaded == 0 || vr->display == 0)continue;
+    for(j = -3;j <= 3;j++){
+      float dx, dy, dz;
+      float *xyz;
+
+      if(j == 0)continue;
+      if(drawsides[j + 3] == 0)continue;
+      vi->facemesh = meshi;
+      vi->iwall = j;
+      xyz = meshi->face_centers + facemap[j + 3];
+
+      dx = xyz[0] - eye_position_fds[0];
+      dy = xyz[1] - eye_position_fds[1];
+      dz = xyz[2] - eye_position_fds[2];
+      vi->dist2 = dx*dx + dy*dy + dz*dz;
+      vi->xyz = xyz;
+      vi++;
+      nvolfacelistinfo++;
+    }
+  }
+  if(nvolfacelistinfo>0){
+    for(i = 0;i<nvolfacelistinfo;i++){
+      volfacelistinfoptrs[i] = volfacelistinfo + i;
+    }
+    qsort((volfacelistdata *)volfacelistinfoptrs, nvolfacelistinfo, sizeof(volfacelistdata *), CompareVolFaceListData);
+  }
+}
+
+/* ------------------ GetSmokeDir ------------------------ */
+
+void GetSmokeDir(float *mm){
+  /*
+  ( m0 m4 m8  m12 ) (x)    (0)
+  ( m1 m5 m9  m13 ) (y)    (0)
+  ( m2 m6 m10 m14 ) (z)  = (0)
+  ( m3 m7 m11 m15 ) (1)    (1)
+
+  ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+  ( m2 m6 m10 )      (m14)
+
+  (Q   u) (x)     (0)
+  (v^T 1) (y)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
+  */
+  int i, ii, j;
+  meshdata *meshj;
+  float norm[3], scalednorm[3];
+  float normdir[3];
+  float absangle, cosangle, minangle;
+  int iminangle;
+  float dx, dy, dz;
+  float factor;
+
+  eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
+  eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
+  eye_position_fds[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+
+  for(j = 0;j<nmeshes;j++){
+    meshdata  *meshi;
+
+    meshi = meshinfo + j;
+    dx = meshi->boxmiddle_scaled[0] - eye_position_fds[0];
+    dy = meshi->boxmiddle_scaled[1] - eye_position_fds[1];
+    dz = meshi->boxmiddle_scaled[2] - eye_position_fds[2];
+    meshi->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
+  }
+
+  for(j = 0;j<nmeshes;j++){
+    meshj = meshinfo + j;
+
+    minangle = 1000.0;
+    iminangle = -10;
+    meshj->dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+    meshj->dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+    meshj->dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+    meshj->dxyz[0] = meshj->dx;
+    meshj->dxyz[1] = meshj->dy;
+    meshj->dxyz[2] = meshj->dz;
+    meshj->dxy = meshj->dx*meshj->dx + meshj->dy*meshj->dy;
+    meshj->dxy = sqrt(meshj->dxy) / 2.0;
+    meshj->dxz = meshj->dx*meshj->dx + meshj->dz*meshj->dz;
+    meshj->dxz = sqrt(meshj->dxz) / 2.0;
+    meshj->dyz = meshj->dy*meshj->dy + meshj->dz*meshj->dz;
+    meshj->dyz = sqrt(meshj->dyz) / 2.0;
+
+    meshj->dy /= meshj->dx;
+    meshj->dz /= meshj->dx;
+    meshj->dxy /= meshj->dx;
+    meshj->dxz /= meshj->dx;
+    meshj->dyz /= meshj->dx;
+    meshj->dx = 1.0;
+
+    if(smokedrawtest2 == 1){
+      meshj->norm[0] = 1.0;
+      meshj->norm[1] = 0.0;
+      meshj->norm[2] = 0.0;
+      meshj->smokedir = 1;
+      continue;
+    }
+
+    for(i = -9;i <= 9;i++){
+      if(i == 0)continue;
+      ii = ABS(i);
+      norm[0] = 0.0;
+      norm[1] = 0.0;
+      norm[2] = 0.0;
+      switch(ii){
+      case XDIR:
+        if(i<0)norm[0] = -1.0;
+        if(i>0)norm[0] = 1.0;
+        break;
+      case YDIR:
+        if(i<0)norm[1] = -1.0;
+        if(i>0)norm[1] = 1.0;
+        break;
+      case ZDIR:
+        if(i<0)norm[2] = -1.0;
+        if(i>0)norm[2] = 1.0;
+        break;
+      case 4:
+        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        factor = dx*dx + dy*dy;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[0] = -dy*factor;
+          norm[1] = -dx*factor;
+        }
+        else{
+          norm[0] = dy*factor;
+          norm[1] = dx*factor;
+        }
+        break;
+      case 5:
+        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        factor = dx*dx + dy*dy;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[0] = dy*factor;
+          norm[1] = -dx*factor;
+        }
+        else{
+          norm[0] = -dy*factor;
+          norm[1] = dx*factor;
+        }
+        break;
+      case 6:
+        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        factor = dz*dz + dy*dy;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[1] = -dz*factor;
+          norm[2] = -dy*factor;
+        }
+        else{
+          norm[1] = dz*factor;
+          norm[2] = dy*factor;
+        }
+        break;
+      case 7:
+        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        factor = dz*dz + dy*dy;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[1] = dz*factor;
+          norm[2] = -dy*factor;
+        }
+        else{
+          norm[1] = -dz*factor;
+          norm[2] = dy*factor;
+        }
+        break;
+      case 8:
+        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        factor = dz*dz + dx*dx;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[0] = -dz*factor;
+          norm[2] = -dx*factor;
+        }
+        else{
+          norm[0] = dz*factor;
+          norm[2] = dx*factor;
+        }
+        break;
+      case 9:
+        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        factor = dx*dx + dz*dz;
+        if(factor == 0.0){
+          factor = 1.0;
+        }
+        else{
+          factor = 1.0 / sqrt(factor);
+        }
+        if(i<0){
+          norm[0] = dz*factor;
+          norm[2] = -dx*factor;
+        }
+        else{
+          norm[0] = -dz*factor;
+          norm[2] = dx*factor;
+        }
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      scalednorm[0] = norm[0] * mscale[0];
+      scalednorm[1] = norm[1] * mscale[1];
+      scalednorm[2] = norm[2] * mscale[2];
+
+      normdir[0] = DOT3SKIP(mm, 4, scalednorm, 1);
+      normdir[1] = DOT3SKIP(mm + 1, 4, scalednorm, 1);
+      normdir[2] = DOT3SKIP(mm + 2, 4, scalednorm, 1);
+
+      cosangle = normdir[2] / NORM3(normdir);
+      cosangle = CLAMP(cosangle, -1.0, 1.0);
+      absangle = acos(cosangle)*RAD2DEG;
+      if(absangle<0.0)absangle = -absangle;
+      if(absangle<minangle){
+        iminangle = i;
+        minangle = absangle;
+        meshj->norm[0] = norm[0];
+        meshj->norm[1] = norm[1];
+        meshj->norm[2] = norm[2];
+      }
+    }
+    meshj->smokedir = iminangle;
+#ifdef pp_CULL
+    if(meshj->smokedir != meshj->smokedir_old){
+      meshj->smokedir_old = meshj->smokedir;
+      update_initcullplane = 1;
+    }
+#endif
+    if(demo_mode != 0){
+      meshj->smokedir = 1;
+    }
+  }
+}
+
+/* ------------------ GetZoneSmokeDir ------------------------ */
+
+void GetZoneSmokeDir(float *mm){
+  /*
+  ( m0 m4 m8  m12 ) (x)    (0)
+  ( m1 m5 m9  m13 ) (y)    (0)
+  ( m2 m6 m10 m14 ) (z)  = (0)
+  ( m3 m7 m11 m15 ) (1)    (1)
+
+  ( m0 m4  m8 )      (m12)
+  Q=  ( m1 m5  m9 )  u = (m13)
+  ( m2 m6 m10 )      (m14)
+
+  (Q   u) (x)     (0)
+  (v^T 1) (y)   = (1)
+
+  m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
+  */
+  int i, ii, j;
+  float norm[3];
+  float eyedir[3];
+  float cosdir;
+  float angles[7];
+
+  eye_position_fds[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
+  eye_position_fds[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
+  eye_position_fds[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+
+  for(j = 0;j<nrooms;j++){
+    roomdata *roomj;
+
+    roomj = roominfo + j;
+
+    roomj->zoneinside = 0;
+    if(
+      eye_position_fds[0]>roomj->x0&&eye_position_fds[0]<roomj->x1&&
+      eye_position_fds[1]>roomj->y0&&eye_position_fds[1]<roomj->y1&&
+      eye_position_fds[2]>roomj->z0&&eye_position_fds[2]<roomj->z1
+      ){
+      for(i = -3;i <= 3;i++){
+        if(i == 0)continue;
+        roomj->drawsides[i + 3] = 1;
+      }
+      roomj->zoneinside = 1;
+      continue;
+    }
+
+    for(i = -3;i <= 3;i++){
+      if(i == 0)continue;
+      ii = ABS(i);
+      norm[0] = 0.0;
+      norm[1] = 0.0;
+      norm[2] = 0.0;
+      switch(ii){
+      case XRIGHT:
+        if(i<0){
+          norm[0] = -1.0;
+          eyedir[0] = roomj->x0;
+        }
+        else{
+          norm[0] = 1.0;
+          eyedir[0] = roomj->x0 + roomj->dx;
+        }
+        eyedir[1] = roomj->y0 + roomj->dy / 2.0;
+        eyedir[2] = roomj->z0 + roomj->dz / 2.0;
+        break;
+      case YBACK:
+        eyedir[0] = roomj->x0 + roomj->dx / 2.0;
+        if(i<0){
+          norm[1] = -1.0;
+          eyedir[1] = roomj->y0;
+        }
+        else{
+          norm[1] = 1.0;
+          eyedir[1] = roomj->y0 + roomj->dy;
+        }
+        eyedir[2] = roomj->z0 + roomj->dz / 2.0;
+        break;
+      case ZTOP:
+        eyedir[0] = roomj->x0 + roomj->dx / 2.0;
+        eyedir[1] = roomj->y0 + roomj->dy / 2.0;
+        if(i<0){
+          norm[2] = -1.0;
+          eyedir[2] = roomj->z0;
+        }
+        else{
+          norm[2] = 1.0;
+          eyedir[2] = roomj->z0 + roomj->dz;
+        }
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      eyedir[0] = eye_position_fds[0] - eyedir[0];
+      eyedir[1] = eye_position_fds[1] - eyedir[1];
+      eyedir[2] = eye_position_fds[2] - eyedir[2];
+      Normalize(eyedir, 3);
+      cosdir = (eyedir[0] * norm[0] + eyedir[1] * norm[1] + eyedir[2] * norm[2]);
+      if(cosdir>1.0)cosdir = 1.0;
+      if(cosdir<-1.0)cosdir = -1.0;
+      cosdir = acos(cosdir)*RAD2DEG;
+      if(cosdir<0.0)cosdir = -cosdir;
+      angles[3 + i] = cosdir;
+    }
+    for(i = -3;i <= 3;i++){
+      if(i == 0)continue;
+      if(angles[i + 3]<90.0){
+        roomj->drawsides[i + 3] = 1;
+      }
+      else{
+        roomj->drawsides[i + 3] = 0;
+      }
+    }
   }
 }
 
@@ -1165,6 +1806,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         (double)viewx,  (double)viewy,  (double)viewz,
         (double)uup[0], (double)uup[1], (double)uup[2]
       );
+      smv_viewpos[0] = viewx;
+      smv_viewpos[1] = viewy;
+      smv_viewpos[2] = viewz;
     }
     else{
       float *view, *uup, *right;
@@ -1187,6 +1831,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         (double)vview[0],(double)vview[1],(double)vview[2],
           (double)uup[0],  (double)uup[1],  (double)uup[2]
       );
+      smv_viewpos[0] = vview[0];
+      smv_viewpos[1] = vview[1];
+      smv_viewpos[2] = vview[2];
     }
 
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_setup);
@@ -1228,7 +1875,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_scratch);
     MatMultMat(inverse_modelview_setup,modelview_scratch,modelview_current);
 
-    GetWorldEyePos(modelview_scratch, world_eyepos,scaled_eyepos);
+    GetEyePos(modelview_scratch);
 
     if(show_gslice_triangles==1||SHOW_gslice_data==1){
       UpdateGslicePlanes();
@@ -1252,6 +1899,11 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
       GetSmokeDir(modelview_scratch);
+#ifdef pp_GPUSMOKE
+      if(compute_smoke3d_planes==1){
+        UpdateSmoke3DPlanes(smoke3d_delta);
+      }
+#endif
       SNIFF_ERRORS("after GetSmokeDir");
 #ifdef pp_CULL
       if(stereotype==STEREO_NONE){

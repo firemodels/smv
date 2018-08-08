@@ -20,6 +20,25 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_filesizes, 0);
+#ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(plane_labels, 0);
+SVEXTERN int SVDECL(plane_single, 1);
+SVEXTERN int SVDECL(plane_outline, 1);
+SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
+SVEXTERN int SVDECL(plane_solid, 1);
+SVEXTERN float SVDECL(plane_distance, 0.0);
+SVEXTERN int SVDECL(show_smoke3d_planes, 0);
+SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
+SVEXTERN float SVDECL(smoke3d_delta,0.5);
+#else
+SVEXTERN int SVDECL(show_smoke3d_planes, 0);
+SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
+SVEXTERN float SVDECL(smoke3d_delta,0.5);
+#endif
+SVEXTERN int SVDECL(smoke3d_black, 0);
+SVEXTERN int SVDECL(smoke3d_skip, 1);
+
 SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
 
@@ -731,7 +750,7 @@ SVEXTERN float rgb_full2[MAXRGB][4];
 SVEXTERN float rgb_terrain2[4 * MAXRGB];
 SVEXTERN float rgb_slice[4 * MAXRGB];
 SVEXTERN float rgb_volsmokecolormap[4*MAXSMOKERGB];
-SVEXTERN float rgb_slicesmokecolormap[4*MAXSMOKERGB];
+SVEXTERN float rgb_slicesmokecolormap_01[4*MAXSMOKERGB];
 SVEXTERN float rgb_iso[4*MAXRGB];
 SVEXTERN float rgb_patch[4*MAXRGB];
 SVEXTERN float rgb_plot3d[4*MAXRGB];
@@ -1184,7 +1203,7 @@ SVEXTERN int SVDECL(use_new_drawface,0);
   SVEXTERN unsigned char rgb_below_min[3], rgb_above_max[3];
 #endif
 SVEXTERN int SVDECL(colorbar_select_index,-1),SVDECL(update_colorbar_select_index,0);
-SVEXTERN float world_eyepos[3],scaled_eyepos[3];
+SVEXTERN float fds_eyepos[3],smv_eyepos[3],fds_viewdir[3],smv_viewpos[3];
 SVEXTERN int tour_usecurrent;
 SVEXTERN int isZoneFireModel;
 SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);

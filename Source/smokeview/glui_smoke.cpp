@@ -70,7 +70,9 @@ extern GLUI *glui_bounds;
 #define CO2_COLOR 71
 #define UPDATE_FIRE_ALPHA 72
 #define UPDATE_CO2_ALPHA 73
-
+#define SMOKE_SKIP 74
+#define SMOKE_BLACK 75
+#define SMOKE_DELTA 76
 
 // two defines below are also defined elsewhere
 
@@ -117,6 +119,10 @@ GLUI_Spinner *SPINNER_mass_extinct=NULL;
 GLUI_Spinner *SPINNER_cvis=NULL;
 GLUI_Spinner *SPINNER_smokedrawtest_nummin=NULL;
 GLUI_Spinner *SPINNER_smokedrawtest_nummax=NULL;
+GLUI_Spinner *SPINNER_smoke3d_skip = NULL;
+#ifdef pp_GPUSMOKE
+GLUI_Spinner *SPINNER_smoke3d_delta = NULL;
+#endif
 #ifdef pp_GPU
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 #else
@@ -155,6 +161,9 @@ GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
+#ifdef pp_GPUSMOKE
+GLUI_Spinner *SPINNER_plane_distance=NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
@@ -175,6 +184,7 @@ GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 
+GLUI_Panel *PANEL_planes = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
@@ -241,6 +251,18 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[3];
 int ncolorprocinfo = 0;
+
+#ifdef pp_GPUSMOKE
+/* ------------------ UpdateGLuiPlanes ------------------------ */
+
+extern "C" void UpdateGluiPlanes(float dmin, float dmax){
+  SPINNER_plane_distance->set_float_limits(dmin,dmax);
+  if(plane_distance<dmin||plane_distance>dmax){
+    plane_distance = CLAMP(plane_distance,dmin,dmax);
+    SPINNER_plane_distance->set_float_val(plane_distance);
+  }
+}
+#endif
 
 /* ------------------ LoadIncrementalCB ------------------------ */
 
@@ -612,6 +634,18 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
     ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, "GPU", false);
 #endif
+#ifdef pp_GPUSMOKE
+    PANEL_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slicegpu,_("GPU smoke planes"));
+    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Show"), &show_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Update"), &compute_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("outline"), &plane_outline);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("solid"), &plane_solid);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("labels"), &plane_labels);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("show all mesh outlines"), &plane_all_mesh_outlines);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("single plane"), &plane_single);
+    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
+#endif
 #ifdef pp_CULL
     CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3dCB);
     if(cullactive==0){
@@ -665,7 +699,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     GLUI_SPINNER_INT,&smoke3d_thick,SMOKE_THICK,Smoke3dCB);
     SPINNER_smoke3d_thick->set_int_limits(0,7);
 #endif
-
+    SPINNER_smoke3d_skip=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Skip"), GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, Smoke3dCB);
+    //glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
     PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_display,_("Absorption adjustments"));
     PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
     RADIO_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_absorption,&adjustalphaflag);
@@ -851,7 +886,23 @@ extern "C" void Smoke3dCB(int var){
   updatemenu=1;
   switch(var){
   float temp_min, temp_max;
-
+  
+#ifdef pp_GPUSMOKE
+  case SMOKE_DELTA:
+    if(smoke3d_delta<=0.0){
+      smoke3d_delta = 0.1;
+      SPINNER_smoke3d_delta->set_float_val(smoke3d_delta);
+    }
+    break;
+#endif
+  case SMOKE_BLACK:
+    break;
+  case SMOKE_SKIP:
+    if(smoke3d_skip<1||smoke3d_skip>10){
+      smoke3d_skip=CLAMP(smoke3d_skip,1,10);
+      SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
+    }
+    break;
   case UPDATE_FIRE_ALPHA:
     fire_halfdepth2 = meshinfo->dx*log(0.5)/log(1.0-glui_fire_alpha/255.0);
     SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth2);

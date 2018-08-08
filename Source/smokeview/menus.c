@@ -265,6 +265,145 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
 }
 #endif
 
+/* ----------------------- ComparePatchLabels ----------------------------- */
+
+int ComparePatchLabels(const void *arg1, const void *arg2){
+  patchdata *patchi, *patchj;
+  char *labeli, *labelj;
+
+  patchi = *(patchdata **)arg1;
+  patchj = *(patchdata **)arg2;
+  labeli = patchi->label.longlabel;
+  labelj = patchj->label.longlabel;
+
+  return strcmp(labeli, labelj);
+}
+
+/* ----------------------- PrintFileSizes ----------------------------- */
+
+void PrintFileSizes(char *type, float val, float val2){
+  char label[100], label2[100], *labelptr, *labelptr2;
+
+  if(val>0.0)labelptr=GetFloatFileSizeLabel(val, label);
+  if(val2>0.0)labelptr2=GetFloatFileSizeLabel(val2, label2);
+  if(val>0.0){
+    if(val2>0.0){
+      printf("  %s/compressed: %s/%s\n", type,labelptr,labelptr2);
+    }
+    else{
+      printf("  %s: %s\n", type,labelptr);
+    }
+  }
+}
+/* ------------------ GetFileSizes ------------------------ */
+
+void GetFileSizes(void){
+  int i;
+
+  printf("\n");
+  if(nsmoke3dinfo>0){
+    float hrrpuv = 0.0, soot = 0.0, temp = 0.0, co2 = 0.0;
+    float hrrpuv2 = 0.0, soot2 = 0.0, temp2 = 0.0, co22 = 0.0;
+
+    for(i = 0; i<nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+      FILE_SIZE file_size, compressed_file_size;
+
+      smoke3di = smoke3dinfo+i;
+
+      file_size = GetFileSizeSMV(smoke3di->reg_file);
+      compressed_file_size = GetFileSizeSMV(smoke3di->comp_file);
+
+      switch(smoke3di->type){
+      case SOOT:
+        soot  += file_size;
+        soot2 += compressed_file_size;
+        break;
+      case HRRPUV:
+        hrrpuv  += file_size;
+        hrrpuv2 += compressed_file_size;
+        break;
+      case TEMP:
+        temp  += file_size;
+        temp2 += compressed_file_size;
+        break;
+      case CO2:
+        co2  += file_size;
+        co22 += compressed_file_size;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+    }
+    printf("3d smoke file sizes:\n");
+    PrintFileSizes("soot",soot,soot2);
+    PrintFileSizes("hrrpuv",hrrpuv,hrrpuv2);
+    PrintFileSizes("temp",temp,temp2);
+    PrintFileSizes("co2",co2,co22);
+  }
+  else{
+    printf("3d smoke file sizes: no files found\n");
+  }
+
+  printf("\n");
+  if(npartinfo>0){
+    float part = 0.0;
+    char label[100];
+
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+      FILE_SIZE file_size;
+
+      parti = partinfo+i;
+      file_size = GetFileSizeSMV(parti->file);
+      part += file_size;
+    }
+    printf("particle files: %s\n", GetFloatFileSizeLabel(part, label));
+  }
+  else{
+    printf("particle files: no files found\n");
+  }
+
+  printf("\n");
+  if(npatchinfo>0){
+    patchdata **patchlist;
+    float sum = 0.0, compressed_sum=0;
+
+    printf("boundary files sizes: \n");
+    NewMemory((void **)&patchlist, npatchinfo*sizeof(patchdata *));
+    for(i = 0; i<npatchinfo; i++){
+      patchlist[i] = patchinfo+i;
+    }
+    qsort((patchdata **)patchlist, (size_t)npatchinfo, sizeof(patchdata *), ComparePatchLabels);
+    for(i = 0; i<npatchinfo; i++){
+      patchdata *patchi, *patchim1;
+      FILE_SIZE file_size, compressed_file_size;
+
+      patchi = patchlist[i];
+      file_size = GetFileSizeSMV(patchi->reg_file);
+      compressed_file_size = GetFileSizeSMV(patchi->comp_file);
+
+      if(i>0)patchim1 = patchlist[i-1];
+      if(i==0||strcmp(patchim1->label.longlabel, patchi->label.longlabel)==0){
+        sum += file_size;
+        compressed_sum += compressed_file_size;
+      }
+      else{
+        PrintFileSizes(patchim1->label.longlabel,sum,compressed_sum);
+        sum = file_size;
+        compressed_sum = compressed_file_size;
+      }
+      if(i==npatchinfo-1){
+        PrintFileSizes(patchi->label.longlabel,sum,compressed_sum);
+      }
+    }
+  }
+  else{
+    printf("boundary files sizes: no files found\n");
+  }
+}
+
 /* ------------------ HideAllSmoke ------------------------ */
 
 void HideAllSmoke(void){
@@ -4418,7 +4557,12 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
 
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
-    if(last_slice == i)set_slicecolor = SET_SLICECOLOR;
+
+    slicei->finalized = 0;
+    if(last_slice==i){
+      slicei->finalized = 1;
+      set_slicecolor = SET_SLICECOLOR;
+    }
     if(slicei->skip == 0 && slicei->loaded == 0){
       float load_sizei;
 

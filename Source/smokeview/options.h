@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_GPUSMOKE     // code to speed up 3d smoke using the gpu
 //#define pp_SMOKEDIAG    // output smoke3d diagnostics (number of meshes, total trianles, triangles drawn)
 //#define pp_GEOMPRINT  // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
@@ -33,7 +34,8 @@
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU
 #ifndef pp_OSX
-#define pp_CULL         // pp_GPU directive must also be set
+// turn off smoke culling for now
+//#define pp_CULL         // pp_GPU directive must also be set
 #endif
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
