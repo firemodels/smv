@@ -348,7 +348,7 @@ void GetFileSizes(void){
 
   printf("\n");
   if(npartinfo>0){
-    float part = 0.0, part2 = 0.0;
+    float part = 0.0;
     char label[100];
 
     for(i = 0; i<npartinfo; i++){
