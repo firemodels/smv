@@ -2575,40 +2575,65 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 #endif
 
 /* ------------------ DrawSmokePlanes ------------------------ */
-
+#ifdef pp_GPUSMOKE
 void DrawSmokePlanes(meshdata *meshi){
   int i;
 
-  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
-    meshplanedata *spi;
-    int j;
+  if(plane_outline==1){
+    for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+      meshplanedata *spi;
+      int j;
 
-    if(i<3||i>4)continue;
-    spi = meshi->smokeplaneinfo+i;
-    if(i==3)glColor3f(1.0, 0.0, 0.0);
-    if(i==4)glColor3f(0.0, 0.0, 1.0);
-    glBegin(GL_LINES);
-    for(j = 0; j<spi->ntriangles; j++){
-      float *xx1, *xx2, *xx3;
-      int i1, i2, i3;
+      spi = meshi->smokeplaneinfo+i;
+      glColor3f(0.0, 0.0, 0.0);
+      glBegin(GL_LINES);
+      for(j = 0; j<spi->ntriangles; j++){
+        float *xx1, *xx2, *xx3;
+        int i1, i2, i3;
 
-      i1 = spi->triangles[3*j];
-      i2 = spi->triangles[3*j+1];
-      i3 = spi->triangles[3*j+2];
-      xx1 = spi->verts_smv+3*i1;
-      xx2 = spi->verts_smv+3*i2;
-      xx3 = spi->verts_smv+3*i3;
-      glVertex3fv(xx1);
-      glVertex3fv(xx2);
-      glVertex3fv(xx2);
-      glVertex3fv(xx3);
-      glVertex3fv(xx3);
-      glVertex3fv(xx1);
+        i1 = spi->triangles[3*j];
+        i2 = spi->triangles[3*j+1];
+        i3 = spi->triangles[3*j+2];
+        xx1 = spi->verts_smv+3*i1;
+        xx2 = spi->verts_smv+3*i2;
+        xx3 = spi->verts_smv+3*i3;
+        glVertex3fv(xx1);
+        glVertex3fv(xx2);
+        glVertex3fv(xx2);
+        glVertex3fv(xx3);
+        glVertex3fv(xx3);
+        glVertex3fv(xx1);
+      }
+      glEnd();
     }
-    glEnd();
+  }
+  if(plane_solid==1){
+    for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+      meshplanedata *spi;
+      int j;
 
+      spi = meshi->smokeplaneinfo+i;
+      glColor4f(0.0, 0.0, 1.0,0.6);
+      glBegin(GL_TRIANGLES);
+      for(j = 0; j<spi->ntriangles; j++){
+        float *xx1, *xx2, *xx3;
+        int i1, i2, i3;
+
+        i1 = spi->triangles[3*j];
+        i2 = spi->triangles[3*j+1];
+        i3 = spi->triangles[3*j+2];
+        xx1 = spi->verts_smv+3*i1;
+        xx2 = spi->verts_smv+3*i2;
+        xx3 = spi->verts_smv+3*i3;
+        glVertex3fv(xx1);
+        glVertex3fv(xx2);
+        glVertex3fv(xx3);
+      }
+      glEnd();
+    }
   }
 }
+#endif
 
 /* ------------------ DrawSmoke3d ------------------------ */
 
@@ -2649,9 +2674,11 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
+#ifdef pp_GPUSMOKE
   if(show_smoke3d_planes==1){
     DrawSmokePlanes(meshi);
   }
+#endif
 
 #ifdef pp_SMOKEDIAG
   START_TIMER(merge_time);

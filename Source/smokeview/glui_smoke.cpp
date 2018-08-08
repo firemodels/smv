@@ -161,6 +161,9 @@ GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
+#ifdef pp_GPUSMOKE
+GLUI_Spinner *SPINNER_plane_distance=NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
@@ -181,6 +184,7 @@ GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 
+GLUI_Panel *PANEL_planes = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
@@ -247,6 +251,18 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[3];
 int ncolorprocinfo = 0;
+
+#ifdef pp_GPUSMOKE
+/* ------------------ UpdateGLuiPlanes ------------------------ */
+
+extern "C" void UpdateGluiPlanes(float dmin, float dmax){
+  SPINNER_plane_distance->set_float_limits(dmin,dmax);
+  if(plane_distance<dmin||plane_distance>dmax){
+    plane_distance = CLAMP(plane_distance,dmin,dmax);
+    SPINNER_plane_distance->set_float_val(plane_distance);
+  }
+}
+#endif
 
 /* ------------------ LoadIncrementalCB ------------------------ */
 
@@ -618,6 +634,16 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
     ROLLOUT_slicegpu = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, "GPU", false);
 #endif
+#ifdef pp_GPUSMOKE
+    PANEL_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slicegpu,_("GPU planes"));
+    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Show"), &show_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Compute"), &compute_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("outline"), &plane_outline);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("solid"), &plane_solid);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Single plane"), &plane_single);
+    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
+#endif
 #ifdef pp_CULL
     CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3dCB);
     if(cullactive==0){
@@ -673,11 +699,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
     SPINNER_smoke3d_skip=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Skip"), GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, Smoke3dCB);
     //glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Smoke black"), &smoke3d_black, SMOKE_BLACK, Smoke3dCB);
-#ifdef pp_GPUSMOKE
-    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Show planes"), &show_smoke3d_planes);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_display, _("Compute planes"), &compute_smoke3d_planes);
-#endif
     PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_display,_("Absorption adjustments"));
     PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
     RADIO_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_absorption,&adjustalphaflag);

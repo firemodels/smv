@@ -5,8 +5,11 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void GetFileSizes(void);
+#ifdef pp_GPUSMOKE
+EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
 EXTERNCPP void UpdateSmoke3DPlanes(float delta);
+#endif
+EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);

@@ -7314,6 +7314,7 @@ void UpdateGslicePlanes(void){
   }
 }
 
+#ifdef pp_GPUSMOKE
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
 void UpdateSmoke3DPlanes(float delta){
@@ -7401,6 +7402,7 @@ void UpdateSmoke3DPlanes(float delta){
     }
   }
   if(firstdist==1)return;
+  UpdateGluiPlanes(distmin,distmax);
   for(i = 0;i < nmeshes;i++){
     meshdata *meshi;
     float *dist,*verts;
@@ -7421,12 +7423,14 @@ void UpdateSmoke3DPlanes(float delta){
     meshi->nsmokeplaneinfo = 0;
   }
   for(d = distmin+delta/2.0; d<distmax; d += delta){
+    if(plane_single==1)d = plane_distance;
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
 
       meshi = meshinfo+i;
       if(d>meshi->vert_distmin&&d<meshi->vert_distmax)meshi->nsmokeplaneinfo++;
     }
+    if(plane_single==1)break;
   }
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -7454,6 +7458,7 @@ void UpdateSmoke3DPlanes(float delta){
     zz[1] = boxmax[2];
     jj = 0;
     for(d = distmin+delta/2.0; d<distmax; d += delta){
+      if(plane_single==1)d = plane_distance;
       if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
         meshplanedata *spi;
         int k;
@@ -7467,9 +7472,11 @@ void UpdateSmoke3DPlanes(float delta){
         }
         jj++;
       }
+      if(plane_single==1)break;
     }
   }
 }
+#endif
 
 /* ------------------ DrawGSliceOutline ------------------------ */
 

@@ -22,6 +22,10 @@
 
 SVEXTERN int SVDECL(update_filesizes, 0);
 #ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(plane_single, 1);
+SVEXTERN int SVDECL(plane_outline, 1);
+SVEXTERN int SVDECL(plane_solid, 1);
+SVEXTERN float SVDECL(plane_distance, 0.0);
 SVEXTERN int SVDECL(show_smoke3d_planes, 1);
 SVEXTERN int SVDECL(compute_smoke3d_planes, 1);
 SVEXTERN float SVDECL(smoke3d_delta,0.5);
