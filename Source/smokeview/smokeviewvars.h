@@ -30,6 +30,9 @@ SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
 SVEXTERN int SVDECL(plane_solid, 1);
 SVEXTERN float SVDECL(plane_distance, 0.0);
 SVEXTERN int SVDECL(show_smoke3d_planes, 0);
+#ifdef pp_GPUNEWSMOKE
+SVEXTERN int SVDECL(show_newsmoke3d, 0);
+#endif
 SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
 SVEXTERN float SVDECL(smoke3d_delta,0.5);
 #else
