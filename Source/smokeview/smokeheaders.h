@@ -364,12 +364,6 @@ EXTERNCPP void DrawTerrainTexture(terraindata *terri, int only_geom);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
-#ifdef pp_CULL
-EXTERNCPP void InitCull(int cullflag);
-EXTERNCPP void InitCullPlane(int cullflag);
-EXTERNCPP void GetPixelCount(void);
-EXTERNCPP int  InitCullExts(void);
-#endif
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
 EXTERNCPP void GetDepthTexture( void );

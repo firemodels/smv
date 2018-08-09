@@ -559,13 +559,6 @@ SVEXTERN int SVDECL(usetexturebar,1);
 SVEXTERN int show_smokelighting;
 SVEXTERN int SVDECL(cullgeom_portsize,16);
 SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);
-#ifdef pp_CULL
-SVEXTERN int cullactive, SVDECL(show_cullports,0), SVDECL(cull_portsize,16);
-SVEXTERN int cullsmoke, ncullplaneinfo;
-SVEXTERN cullplanedata SVDECL(*cullplaneinfo,NULL);
-SVEXTERN cullplanedata SVDECL(**sort_cullplaneinfo,NULL);
-SVEXTERN int have_setpixelcount,update_initcullplane;
-#endif
 SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
 

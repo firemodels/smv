@@ -1483,12 +1483,6 @@ void GetSmokeDir(float *mm){
       }
     }
     meshj->smokedir = iminangle;
-#ifdef pp_CULL
-    if(meshj->smokedir != meshj->smokedir_old){
-      meshj->smokedir_old = meshj->smokedir;
-      update_initcullplane = 1;
-    }
-#endif
     if(demo_mode != 0){
       meshj->smokedir = 1;
     }
@@ -1905,18 +1899,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       }
 #endif
       SNIFF_ERRORS("after GetSmokeDir");
-#ifdef pp_CULL
-      if(stereotype==STEREO_NONE){
-        if(cullsmoke==1){
-          GetPixelCount();
-          SNIFF_ERRORS("after GetPixelCount");
-        }
-        if(cullactive==1&&update_initcullplane==1){
-          InitCullPlane(cullsmoke);
-        }
-        SNIFF_ERRORS("after InitCullPlane");
-      }
-#endif
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){
       GetSmokeDir(modelview_scratch);

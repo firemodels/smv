@@ -362,13 +362,6 @@ void InitMesh(meshdata *meshi){
   meshi->slice3d_c_buffer = NULL;
 #endif
   meshi->mesh_offset_ptr = NULL;
-#ifdef pp_CULL
-  meshi->cullinfo = NULL;
-  meshi->culldefined = 0;
-  meshi->cullQueryId = NULL;
-  meshi->cull_smoke3d = NULL;
-  meshi->smokedir_old = -100;
-#endif
   meshi->cullgeominfo = NULL;
   meshi->is_bottom = 1;
   meshi->blockvis = 1;
@@ -9320,12 +9313,6 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
-#ifdef pp_CULL
-
-  // define data structures used to speed up 3d smoke drawing (by culling non-visible smoke planes)
-
-  if(cullactive==1)InitCull(cullsmoke);
-#endif
   UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
@@ -11767,17 +11754,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-#ifdef pp_CULL
-        if(gpuactive == 1){
-          sscanf(buffer, "%i", &cullsmoke);
-          if(cullsmoke != 0)cullsmoke = 1;
-        }
-        else{
-          cullsmoke = 0;
-        }
-#else
         sscanf(buffer, "%i", &smokecullflag);
-#endif
         continue;
       }
       if(Match(buffer, "SMOKESKIP") == 1){
@@ -13681,11 +13658,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SMOKECOLOR\n");
   fprintf(fileout, " %i %i %i\n", smoke_red, smoke_green, smoke_blue);
   fprintf(fileout, "SMOKECULL\n");
-#ifdef pp_CULL
-  fprintf(fileout," %i\n",cullsmoke);
-#else
   fprintf(fileout," %i\n",smokecullflag);
-#endif
   if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);

@@ -39,10 +39,6 @@ extern GLUI *glui_bounds;
 #define SAVE_SETTINGS 9
 #define FRAMELOADING 10
 #define SMOKETEST 11
-#ifdef pp_CULL
-#define CULL_SMOKE 12
-#define CULL_PORTSIZE 14
-#endif
 #define VOL_SMOKE 13
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
@@ -104,9 +100,6 @@ GLUI_Spinner *SPINNER_sootfactor=NULL;
 GLUI_Spinner *SPINNER_co2factor=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
 GLUI_Spinner *SPINNER_skipframe=NULL;
-#ifdef pp_CULL
-GLUI_Spinner *SPINNER_cull_portsize=NULL;
-#endif
 GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
@@ -167,9 +160,6 @@ GLUI_Spinner *SPINNER_plane_distance=NULL;
 
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
-#ifdef pp_CULL
-GLUI_Checkbox *CHECKBOX_show_cullports = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_compress_volsmoke = NULL;
 GLUI_Checkbox *CHECKBOX_smokecullflag = NULL;
 GLUI_Checkbox *CHECKBOX_test_smokesensors = NULL;
@@ -391,18 +381,11 @@ extern "C" void UpdateSmoke3dFlags(void){
 #ifdef pp_GPU
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
-#ifdef pp_CULL
-  CHECKBOX_smokecullflag->set_int_val(cullsmoke);
-#else
   CHECKBOX_smokecullflag->set_int_val(smokecullflag);
-#endif
   if(CHECKBOX_smokedrawtest!=NULL)CHECKBOX_smokedrawtest->set_int_val(smokedrawtest);
   if(CHECKBOX_smokedrawtest2!=NULL)CHECKBOX_smokedrawtest2->set_int_val(smokedrawtest2);
   RADIO_skipframes->set_int_val(smokeskipm1);
   Smoke3dCB(VOL_SMOKE);
-#ifdef pp_CULL
-  Smoke3dCB(CULL_SMOKE);
-#endif
   glutPostRedisplay();
 }
 
@@ -647,29 +630,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
 #endif
-#ifdef pp_CULL
-    CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_("Cull hidden slices"),&cullsmoke,CULL_SMOKE,Smoke3dCB);
-    if(cullactive==0){
-      cullsmoke=0;
-      CHECKBOX_smokecullflag->disable();
-    }
-    CHECKBOX_show_cullports=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu,_("Show cull ports"),&show_cullports);
-    SPINNER_cull_portsize=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_slicegpu,_("Cull port size"),GLUI_SPINNER_INT,&cull_portsize,CULL_PORTSIZE,Smoke3dCB);
-    {
-      int ijk_max=0;
-      for(i=0;i<nmeshes;i++){
-        meshdata *meshi;
-
-        meshi = meshinfo + i;
-        if(ijk_max<meshi->ibar+1)ijk_max=meshi->ibar+1;
-        if(ijk_max<meshi->jbar+1)ijk_max=meshi->jbar+1;
-        if(ijk_max<meshi->kbar+1)ijk_max=meshi->kbar+1;
-      }
-      SPINNER_cull_portsize->set_int_limits(3,ijk_max);
-    }
-#else
     CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu, _("Cull hidden slices"),&smokecullflag);
-#endif
 #ifdef _DEBUG
 
     ROLLOUT_smokedebug = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Debug"),false);
@@ -1210,14 +1171,6 @@ extern "C" void Smoke3dCB(int var){
     IdleCB();
     break;
 #endif
-#ifdef pp_CULL
-  case CULL_PORTSIZE:
-    InitCull(cullsmoke);
-    break;
-  case CULL_SMOKE:
-    InitCull(cullsmoke);
-    break;
-#endif
   case VOL_NGRID:
     glutPostRedisplay();
     break;
@@ -1244,21 +1197,9 @@ extern "C" void Smoke3dCB(int var){
       if(usegpu==1){
         RADIO_skipframes->set_int_val(0);
         RADIO_skipframes->disable();
-#ifdef pp_CULL
-        if(cullactive==1){
-          CHECKBOX_smokecullflag->enable();
-        }
-        SPINNER_cull_portsize->enable();
-        CHECKBOX_show_cullports->enable();
-#endif
       }
       else{
         RADIO_skipframes->enable();
-#ifdef pp_CULL
-        CHECKBOX_smokecullflag->disable();
-        SPINNER_cull_portsize->disable();
-        CHECKBOX_show_cullports->disable();
-#endif
       }
 #else
       RADIO_skipframes->enable();

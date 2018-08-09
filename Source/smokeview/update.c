@@ -1995,9 +1995,6 @@ void UpdateDisplay(void){
     MakeIBlankSmoke3D();
   }
 #endif
-#ifdef pp_CULL
-  if(update_initcull == 1)InitCull(cullsmoke);
-#endif
   if(update_streaks == 1 && ReadPartFile == 1){
     ParticleStreakShowMenu(streak_index);
     update_streaks = 0;

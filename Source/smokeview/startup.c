@@ -517,19 +517,6 @@ void InitOpenGL(void){
     }
   }
 #endif
-#ifdef pp_CULL
-  if(err==0){
-    err= InitCullExts();
-#ifdef _DEBUG
-    if(err==0){
-      PRINTF("%s\n",_("  Culling extension initialization succeeded"));
-    }
-#endif
-    if(err!=0){
-      PRINTF("%s\n",_("  Culling extension initialization failed"));
-    }
-  }
-#endif
 
   light_position0[0]=1.0f;
   light_position0[1]=1.0f;
@@ -1390,13 +1377,6 @@ void InitVars(void){
   show_slice_average=0;
   vis_slice_average=1;
   slice_average_interval=10.0;
-#ifdef pp_CULL
-  cullsmoke=1;
-  cullplaneinfo=NULL;
-  ncullplaneinfo=0;
-  have_setpixelcount=0;
-  update_initcullplane=1;
-#endif
 
   show_transparent_vents=1;
   maxtourframes=500;

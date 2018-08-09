@@ -758,14 +758,6 @@ typedef struct _meshdata {
   int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
   struct _culldata *cullgeominfo;
 
-#ifdef pp_CULL
-  int ncullinfo;
-  struct _culldata *cullinfo;
-  GLuint *cullQueryId;
-  int culldefined;
-  struct _smoke3ddata *cull_smoke3d;
-#endif
-
   volrenderdata volrenderinfo;
 
   meshplanedata gsliceinfo;
@@ -812,20 +804,6 @@ typedef struct _culldata {
   meshdata *cull_mesh;
   int npixels,npixels_old;
 } culldata;
-
-#ifdef pp_CULL
-/* --------------------------  cullplanedata ------------------------------------ */
-
-typedef struct _cullplanedata {
-  int   ibeg, iend, jbeg, jend, kbeg, kend;
-  float xmin, xmax, ymin, ymax, zmin, zmax;
-  float norm[3];
-  int dir;
-  culldata *cull;
-  meshdata *cull_mesh;
-} cullplanedata;
-
-#endif
 
 /* --------------------------  pathdata ------------------------------------ */
 
