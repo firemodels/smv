@@ -2632,6 +2632,7 @@ void UpdateSmoke3DPlanes(float delta){
     float *verts, *dist;
     float *boxmin, *boxmax;
     int j;
+    int firstmin = 1, firstmax=1;
 
     meshi = meshinfo + i;
     boxmin = meshi->boxmin;
@@ -2649,9 +2650,9 @@ void UpdateSmoke3DPlanes(float delta){
 
       meshi->nverts = 8;
       for(j = 0; j<8; j++){
-        verts[3 * j + 0] = xx[ix[j]];
-        verts[3 * j + 1] = yy[iy[j]];
-        verts[3 * j + 2] = zz[iz[j]];
+        verts[3*j + 0] = xx[ix[j]];
+        verts[3*j + 1] = yy[iy[j]];
+        verts[3*j + 2] = zz[iz[j]];
       }
     }
     meshi->vert_distmin = -1.0;
@@ -2662,13 +2663,20 @@ void UpdateSmoke3DPlanes(float delta){
       xyz = meshi->verts + 3 * j;
       dist[j] = PLANEDIST(norm, xyz0, xyz);
       if(dist[j] >= 0.0){
-        if(meshi->vert_distmin >= 0.0){
+        if(firstmin==0){
           meshi->vert_distmin = MIN(meshi->vert_distmin, dist[j]);
         }
         else{
+          firstmin = 0;
           meshi->vert_distmin = dist[j];
         }
-        meshi->vert_distmax = MAX(meshi->vert_distmax, dist[j]);
+        if(firstmax==0){
+          meshi->vert_distmax = MAX(meshi->vert_distmax, dist[j]);
+        }
+        else{
+          firstmax = 0;
+          meshi->vert_distmax = dist[j];
+        }
         if(firstdist == 1){
           firstdist = 0;
           distmin = dist[j];
@@ -2746,6 +2754,9 @@ void UpdateSmoke3DPlanes(float delta){
       if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
         meshplanedata *spi;
         int k;
+        float *norm0, *norm1;
+        float vec1[3], vec2[3];
+        int iv1, iv2, iv3;
 
         if(jj >= meshi->nsmokeplaneinfo)break;
         spi = meshi->smokeplaneinfo + jj;
@@ -2754,6 +2765,27 @@ void UpdateSmoke3DPlanes(float delta){
         for(k = 0; k<spi->nverts; k++){
           NORMALIZE_XYZ(spi->verts_smv + 3 * k, spi->verts + 3 * k);
         }
+
+        norm0 = spi->norm0;
+        norm1 = spi->norm1;
+        norm0[0] = 0.0;
+        norm0[1] = 0.0;
+        norm0[2] = 0.0;
+        for(k = 0; k<spi->nverts; k++){
+          norm0[0] += spi->verts_smv[3*k];
+          norm0[1] += spi->verts_smv[3*k+1];
+          norm0[2] += spi->verts_smv[3*k+2];
+        }
+        norm0[0] /= spi->nverts;
+        norm0[1] /= spi->nverts;
+        norm0[2] /= spi->nverts;
+        iv1 = spi->triangles[0];
+        iv2 = spi->triangles[1];
+        iv3 = spi->triangles[2];
+        VEC3DIFF(vec1, spi->verts_smv+3*iv2, spi->verts_smv+3*iv1);
+        VEC3DIFF(vec2, spi->verts_smv+3*iv3, spi->verts_smv+3*iv1);
+        CROSS(norm1, vec1, vec2);
+        NORMALIZE3(norm1);
         jj++;
       }
       if(plane_single == 1)break;
@@ -2766,13 +2798,13 @@ void DrawSmokePlanes(meshdata *meshi){
   int i;
 
   if(plane_outline==1){
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_LINES);
     for(i = 0; i<meshi->nsmokeplaneinfo; i++){
       meshplanedata *spi;
       int j;
 
       spi = meshi->smokeplaneinfo+i;
-      glColor3f(0.0, 0.0, 0.0);
-      glBegin(GL_LINES);
       for(j = 0; j<spi->ntriangles; j++){
         float *xx1, *xx2, *xx3;
         int i1, i2, i3;
@@ -2790,17 +2822,20 @@ void DrawSmokePlanes(meshdata *meshi){
         glVertex3fv(xx3);
         glVertex3fv(xx1);
       }
-      glEnd();
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex3fv(spi->norm0);
+      glVertex3f(spi->norm0[0]+spi->norm1[0], spi->norm0[1]+spi->norm1[1], spi->norm0[2]+spi->norm1[2]);
     }
+    glEnd();
   }
   if(plane_solid==1){
+    glColor4f(0.0, 0.0, 1.0, 0.6);
+    glBegin(GL_TRIANGLES);
     for(i = 0; i<meshi->nsmokeplaneinfo; i++){
       meshplanedata *spi;
       int j;
 
       spi = meshi->smokeplaneinfo+i;
-      glColor4f(0.0, 0.0, 1.0,0.6);
-      glBegin(GL_TRIANGLES);
       for(j = 0; j<spi->ntriangles; j++){
         float *xx1, *xx2, *xx3;
         int i1, i2, i3;
@@ -2815,8 +2850,8 @@ void DrawSmokePlanes(meshdata *meshi){
         glVertex3fv(xx2);
         glVertex3fv(xx3);
       }
-      glEnd();
     }
+    glEnd();
   }
 }
 #endif
