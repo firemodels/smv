@@ -639,6 +639,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Show"), &show_smoke3d_planes);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Update"), &compute_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("normals"), &plane_normal);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("outline"), &plane_outline);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("solid"), &plane_solid);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("labels"), &plane_labels);

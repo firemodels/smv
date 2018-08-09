@@ -22,6 +22,7 @@
 
 SVEXTERN int SVDECL(update_filesizes, 0);
 #ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(plane_normal, 1);
 SVEXTERN int SVDECL(plane_labels, 0);
 SVEXTERN int SVDECL(plane_single, 1);
 SVEXTERN int SVDECL(plane_outline, 1);
