@@ -2153,6 +2153,70 @@ void DrawSmokePlanes(meshdata *meshi){
     glEnd();
   }
 }
+
+/* ------------------ DrawSmokeTriangles ------------------------ */
+ 
+int DrawSmokeTriangles(float *v1, float *v2, float *v3, float d1, float d2, float d3, float delta, int draw){
+  int count = 0;
+
+  if(d1 <= delta && d2 <= delta && d3 <= delta){
+    if(draw == 1){       // draw solid triangle
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+    }
+    else if(draw == 2){  // draw triangle outline
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+      glVertex3fv(v3);
+      glVertex3fv(v1);
+    }
+    return 1;
+  }
+  else{
+    float v[3], d, dv[3];
+
+//            v2
+//           /  \
+//          /    \
+//         /      v3
+//        /    / /
+//       V  /   /
+//      /     /
+//      /   /
+//     /  /
+//     / /
+//    v1
+
+    if(d1 > MAX(d2, d3)){
+      VEC3AVG(v, v1, v2);
+      VEC3DIFF(dv, v2, v1);
+      d = NORM3(dv);
+      d1 /= 2.0;
+      count += DrawSmokeTriangles(v, v2, v3, d1, d2,  d, delta, draw);
+      count += DrawSmokeTriangles(v, v3, v1,  d, d3, d1, delta, draw);
+    }
+    else if(d2 > MAX(d1, d3)){
+      VEC3AVG(v, v2, v3);
+      VEC3DIFF(dv, v2, v3);
+      d = NORM3(dv);
+      d2 /= 2.0;
+      count += DrawSmokeTriangles(v, v3, v1, d2, d3,  d, delta, draw);
+      count += DrawSmokeTriangles(v, v1, v2, d,  d1, d2, delta, draw);
+    }
+    else{
+      VEC3AVG(v, v3, v1);
+      VEC3DIFF(dv, v3, v1);
+      d = NORM3(dv);
+      d3 /= 2.0;
+      count += DrawSmokeTriangles(v, v1, v2, d3, d1,  d, delta, draw);
+      count += DrawSmokeTriangles(v, v2, v3,  d, d2, d3, delta, draw);
+    }
+  }
+  return count;
+}
 #endif
 
 /* ------------------ DrawSmoke3d ------------------------ */

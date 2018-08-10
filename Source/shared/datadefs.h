@@ -121,6 +121,13 @@
   (ymx)[2]=(y)[2]-(x)[2]
 #endif
 
+#ifndef VEC3AVG
+#define VEC3AVG(yavg,y,x)\
+  (yavg)[0]=((y)[0]+(x)[0])/2.0;\
+  (yavg)[1]=((y)[1]+(x)[1])/2.0;\
+  (yavg)[2]=((y)[2]+(x)[2])/2.0
+#endif
+
 #ifndef VEC4EQ
 #define VEC4EQ(y,x)\
   (y)[0] = (x)[0];\
