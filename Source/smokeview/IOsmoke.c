@@ -763,7 +763,71 @@ int IsSmokeInMesh(meshdata *meshi){
 #endif
 
 #ifdef pp_GPU
-/* ------------------ DrawSmoke3dGpu ------------------------ */
+
+/* ------------------ DrawSmoke3DGPU2 ------------------------ */
+
+void DrawSmoke3DGPU2(smoke3ddata *smoke3di){
+  int i;
+  meshdata *meshi;
+
+  meshi = meshinfo + smoke3di->blocknumber;
+  
+
+  glBegin(GL_LINES);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    glColor3f(0.0, 1.0, 0.0);
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->ntriangles; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+
+      iv1 = spi->triangles[3*j];
+      iv2 = spi->triangles[3*j+1];
+      iv3 = spi->triangles[3*j+2];
+      v1 = spi->verts_smv + 3*iv1;
+      v2 = spi->verts_smv + 3*iv2;
+      v3 = spi->verts_smv + 3*iv3;
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+      glVertex3fv(v3);
+      glVertex3fv(v1);
+    }
+  }
+  glEnd();
+
+
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    glColor3f(0.0, 0.0, 1.0);
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->ntriangles; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+
+      iv1 = spi->triangles[3*j];
+      iv2 = spi->triangles[3*j+1];
+      iv3 = spi->triangles[3*j+2];
+      v1 = spi->verts_smv + 3*iv1;
+      v2 = spi->verts_smv + 3*iv2;
+      v3 = spi->verts_smv + 3*iv3;
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+    }
+  }
+  glEnd();
+}
+
+
+/* ------------------ DrawSmoke3DGPU ------------------------ */
 
 void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int i, j, k, n;
@@ -2089,6 +2153,7 @@ void UpdateSmoke3DPlanes(float delta){
 }
 
 /* ------------------ DrawSmokePlanes ------------------------ */
+
 void DrawSmokePlanes(meshdata *meshi){
   int i;
 
@@ -4041,7 +4106,12 @@ void DrawSmokeFrame(void){
 #endif
 #ifdef pp_GPU
         if(usegpu==1){
-          DrawSmoke3DGPU(smoke3di);
+          if(use_newgpu==1){
+            DrawSmoke3DGPU2(smoke3di);
+          }
+          else{
+            DrawSmoke3DGPU(smoke3di);
+          }
         }
         else{
           DrawSmoke3D(smoke3di);
