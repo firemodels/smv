@@ -631,6 +631,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
     #ifdef pp_GPUNEWSMOKE
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("triangulate"), &plane_triangulate);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("show new gpu smoke"), &use_newgpu);
     #endif
 #endif

@@ -17,8 +17,8 @@
 
 //*** options: all platforms
 
-#define pp_GPUNEWSMOKE  // new gpu smoke algorithm
-#define pp_GPUSMOKE     // code to speed up 3d smoke using the gpu
+//#define pp_GPUNEWSMOKE  // new gpu smoke algorithm
+//#define pp_GPUSMOKE     // code to speed up 3d smoke using the gpu
 //#define pp_SMOKEDIAG    // output smoke3d diagnostics (number of meshes, total trianles, triangles drawn)
 //#define pp_GEOMPRINT  // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
