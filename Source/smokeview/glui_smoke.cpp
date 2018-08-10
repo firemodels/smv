@@ -619,6 +619,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
 #ifdef pp_GPUSMOKE
     PANEL_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slicegpu,_("GPU smoke planes"));
+    smoke3d_delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Show"), &show_smoke3d_planes);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("Update"), &compute_smoke3d_planes);
@@ -630,7 +631,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_planes, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
     #ifdef pp_GPUNEWSMOKE
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("show new gpu smoke"), &show_newsmoke3d);
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_planes, _("show new gpu smoke"), &use_newgpu);
     #endif
 #endif
     CHECKBOX_smokecullflag=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_slicegpu, _("Cull hidden slices"),&smokecullflag);
