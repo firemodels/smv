@@ -2220,6 +2220,87 @@ void DrawSmokePlanes(meshdata *meshi){
 }
 
 /* ------------------ DrawSmokeTriangles ------------------------ */
+
+int CountTriangles(float *v1, float *v2, float *v3, float d1, float d2, float d3, float delta){
+  int count = 0;
+  float v[3], d, dv[3];
+
+  if(d1<=delta && d2<=delta && d3<=delta)return 1;
+
+    //            v2
+    //           /  \
+    //          /    \
+//         /      v3
+//        /    / /
+//       V  /   /
+//      /     /
+//      /   /
+//     /  /
+//     / /
+//    v1
+
+  if(d1>MAX(d2, d3)){
+    VEC3AVG(v, v1, v2);
+    VEC3DIFF(dv, v2, v1);
+    d = NORM3(dv);
+    d1 /= 2.0;
+    count += CountTriangles(v, v2, v3, d1, d2, d, delta);
+    count += CountTriangles(v, v3, v1, d, d3, d1, delta);
+  }
+  else if(d2>MAX(d1, d3)){
+    VEC3AVG(v, v2, v3);
+    VEC3DIFF(dv, v2, v3);
+    d = NORM3(dv);
+    d2 /= 2.0;
+    count += CountTriangles(v, v3, v1, d2, d3, d, delta);
+    count += CountTriangles(v, v1, v2, d, d1, d2, delta);
+  }
+  else{
+    VEC3AVG(v, v3, v1);
+    VEC3DIFF(dv, v3, v1);
+    d = NORM3(dv);
+    d3 /= 2.0;
+    count += CountTriangles(v, v1, v2, d3, d1, d, delta);
+    count += CountTriangles(v, v2, v3, d, d2, d3, delta);
+  }
+  return count;
+}
+
+/* ------------------ Triangulate ------------------------ */
+
+void Triangulate(float *verts, int nverts, int *triangles, int ntriangles, float delta){
+  int nt = 0, nv, *adj;
+  int i;
+
+  for(i = 0; i<ntriangles; i++){
+    float *v1, *v2, *v3;
+    float dv[3], d1, d2, d3;
+
+    v1 = verts + 3*triangles[3*i+0];
+    v2 = verts + 3*triangles[3*i+1];
+    v3 = verts + 3*triangles[3*i+2];
+
+    VEC3DIFF(dv, v1, v2);
+    d1 = NORM3(dv);
+
+    VEC3DIFF(dv, v2, v3);
+    d2 = NORM3(dv);
+
+    VEC3DIFF(dv, v3, v1);
+    d3 = NORM3(dv);
+
+    nt+=CountTriangles(v1, v2, v3, d1, d2, d3, delta);
+  }
+  nv = 3*nt;
+  NewMemory((void **)&adj, nv*sizeof(int));
+  for(i = 0; i<nv; i++){
+    adj[i] = 0;
+  }
+
+  FREEMEMORY(adj);
+}
+
+/* ------------------ DrawSmokeTriangles ------------------------ */
  
 int DrawSmokeTriangles(float *v1, float *v2, float *v3, float d1, float d2, float d3, float delta, int draw){
   int count = 0;
