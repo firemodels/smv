@@ -4333,6 +4333,8 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
   int i, j, k;
   float *cbuffer;
   int *ijk_min, *ijk_max;
+  int kindex;
+  int slice_nyz;
 
 
   nx = meshi->ibar + 1;
@@ -4343,22 +4345,28 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
 
   slice_ny = ijk_max[1] - ijk_min[1] + 1;
   slice_nz = ijk_max[2] - ijk_min[2] + 1;
+  slice_nyz = slice_ny*slice_nz;
 
   nxy = nx*ny;
-  cbuffer = meshi->slice3d_c_buffer;
-  for(i = ijk_min[0]; i < ijk_max[0] + 1; i++){
-    for(j = ijk_min[1]; j < ijk_max[1] + 1; j++){
-      for(k = ijk_min[2]; k < ijk_max[2] + 1; k++){
-        cbuffer[IJKNODE(i, j, k)] = valdata[(k - ijk_min[2]) + (j - ijk_min[1])*slice_nz + (i - ijk_min[0])*slice_nz*slice_ny];
+  for(k = ijk_min[2],kindex=0; k<ijk_max[2]+1; k++,kindex++){
+    int jindex;
+    
+    for(j = ijk_min[1],jindex=0; j < ijk_max[1] + 1; j++,jindex+=slice_nz){
+      int ijk, iindex;
+      float *v;
+
+      cbuffer = meshi->slice3d_c_buffer+ IJKNODE(ijk_min[0], j, k);
+      v = valdata + jindex + kindex;
+      for(i = ijk_min[0]; i<ijk_max[0]+1; i++){
+        *cbuffer++ = *v;
+        v+=slice_nyz;
       }
     }
   }
 
+  cbuffer = meshi->slice3d_c_buffer;
   glActiveTexture(GL_TEXTURE0);
-  glTexSubImage3D(GL_TEXTURE_3D, 0,
-    xoffset, yoffset, zoffset,
-    nx, ny, nz,
-    GL_RED, GL_FLOAT, cbuffer);
+  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, cbuffer);
 }
 
 /* ------------------ DrawGSliceDataGpu ------------------------ */
