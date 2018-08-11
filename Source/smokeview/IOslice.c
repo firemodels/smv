@@ -1811,7 +1811,6 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 
 int SliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
-  float slice_eps, delta_slice;
 
   slicei = sliceinfo + *(int *)arg1;
   slicej = sliceinfo + *(int *)arg2;
@@ -1843,15 +1842,16 @@ int SliceCompare( const void *arg1, const void *arg2 ){
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
   if(slicei->volslice>slicej->volslice)return -1;
   if(slicei->volslice<slicej->volslice)return 1;
-
   if(slicei->idir<slicej->idir)return -1;
   if(slicei->idir>slicej->idir)return 1;
+  if(slicei->volslice==0){
+    float slice_eps, delta_slice;
 
-  slice_eps = MAX(slicei->delta_orig, slicej->delta_orig);
-  delta_slice = slicei->position_orig - slicej->position_orig;
-
-  if(delta_slice < -slice_eps)return -1;
-  if(delta_slice >  slice_eps)return 1;
+    slice_eps = MAX(slicei->delta_orig, slicej->delta_orig);
+    delta_slice = slicei->position_orig-slicej->position_orig;
+    if(delta_slice<-slice_eps)return -1;
+    if(delta_slice>slice_eps)return 1;
+  }
   if(slicei->blocknumber<slicej->blocknumber)return -1;
   if(slicei->blocknumber>slicej->blocknumber)return 1;
   return 0;
