@@ -2545,47 +2545,13 @@ void SetCullVis(void){
       float xx[2], yy[2], zz[2];
 
       culli = meshi->cullgeominfo+iport;
-      culli->vis=0;
-
       xx[0] = NORMALIZE_X(culli->xbeg);
       xx[1] = NORMALIZE_X(culli->xend);
       yy[0] = NORMALIZE_Y(culli->ybeg);
       yy[1] = NORMALIZE_Y(culli->yend);
       zz[0] = NORMALIZE_Z(culli->zbeg);
       zz[1] = NORMALIZE_Z(culli->zend);
-
-      if(PointInFrustum(xx[0],yy[0],zz[0])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[1],yy[0],zz[0])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[0],yy[1],zz[0])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[1],yy[1],zz[0])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[0],yy[0],zz[1])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[1],yy[0],zz[1])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[0],yy[1],zz[1])==1){
-        culli->vis=1;
-        continue;
-      }
-      if(PointInFrustum(xx[1],yy[1],zz[1])==1){
-        culli->vis=1;
-        continue;
-      }
+      culli->vis = BoxInFrustum(xx,yy,zz);
     }
   }
 }
