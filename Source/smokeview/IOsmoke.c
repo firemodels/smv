@@ -15,6 +15,7 @@
 #include "compress.h"
 
 void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level);
+void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
@@ -766,42 +767,36 @@ int IsSmokeInMesh(meshdata *meshi){
 
 #ifdef pp_GPU
 
+
 /* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
 
 void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   int i;
   meshdata *meshi;
+  float del2;
 
   meshi = meshinfo + smoke3di->blocknumber;
-  
 
-  glBegin(GL_LINES);
-  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+  del2 = smoke3d_delta*smoke3d_delta;
+  for(i = 0; i < meshi->nsmokeplaneinfo; i++){
     meshplanedata *spi;
     int j;
 
     glColor3f(0.0, 1.0, 0.0);
-    spi = meshi->smokeplaneinfo+i;
-    for(j = 0; j<spi->ntriangles; j++){
+    spi = meshi->smokeplaneinfo + i;
+    for(j = 0; j < spi->ntriangles; j++){
       float *v1, *v2, *v3;
       int iv1, iv2, iv3;
 
       iv1 = spi->triangles[3*j];
-      iv2 = spi->triangles[3*j+1];
-      iv3 = spi->triangles[3*j+2];
+      iv2 = spi->triangles[3*j + 1];
+      iv3 = spi->triangles[3*j + 2];
       v1 = spi->verts_smv + 3*iv1;
       v2 = spi->verts_smv + 3*iv2;
       v3 = spi->verts_smv + 3*iv3;
-      glVertex3fv(v1);
-      glVertex3fv(v2);
-      glVertex3fv(v2);
-      glVertex3fv(v3);
-      glVertex3fv(v3);
-      glVertex3fv(v1);
+      DrawTriangleSmokeOutline(v1, v2, v3, del2, 0);
     }
   }
-  glEnd();
-
 
   glBegin(GL_TRIANGLES);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
@@ -809,14 +804,14 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
     int j;
 
     glColor3f(0.0, 0.0, 1.0);
-    spi = meshi->smokeplaneinfo+i;
+    spi = meshi->smokeplaneinfo + i;
     for(j = 0; j<spi->ntriangles; j++){
       float *v1, *v2, *v3;
       int iv1, iv2, iv3;
 
       iv1 = spi->triangles[3*j];
-      iv2 = spi->triangles[3*j+1];
-      iv3 = spi->triangles[3*j+2];
+      iv2 = spi->triangles[3*j + 1];
+      iv3 = spi->triangles[3*j + 2];
       v1 = spi->verts_smv + 3*iv1;
       v2 = spi->verts_smv + 3*iv2;
       v3 = spi->verts_smv + 3*iv3;
@@ -2325,6 +2320,94 @@ float GetSmokeTextureIndex(float *xyz){
   return 0.0;
 }
 
+/* ------------------ DrawQuadSmokeOutline ------------------------ */
+
+void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4, float del, int level){
+  float d13, d24;
+  float dx, dy, dz;
+
+  if(level == 0){
+    glBegin(GL_LINES);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if(d13 < d24){
+    DrawTriangleSmokeOutline(v1, v2, v3, del, level + 1);
+    DrawTriangleSmokeOutline(v1, v3, v4, del, level + 1);
+  }
+  else{
+    DrawTriangleSmokeOutline(v1, v2, v4, del, level + 1);
+    DrawTriangleSmokeOutline(v2, v3, v4, del, level + 1);
+  }
+  if(level == 0){
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
+}
+
+/* ------------------ DrawTriangleSmokeOutline ------------------------ */
+
+void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level){
+
+  float d12, d13, d23;
+  float v12[3], v13[3], v23[3];
+  float dx, dy, dz;
+  int drawit=0;
+
+  if(level == 0){
+    glBegin(GL_LINES);
+  }
+  DIST3(v1, v2, d12);
+  DIST3(v1, v3, d13);
+  DIST3(v2, v3, d23);
+
+  if(d12 <= del&&d13 <= del&&d23 < del)drawit = 1;
+  if(drawit == 1 || level == 0){
+    if(level == 0){
+      glLineWidth(2.0*plane_outline_width);
+      glColor3f(1.0, 0.0, 0.0);
+    }
+    else{
+      glLineWidth(plane_outline_width);
+      glColor3f(0.0, 1.0, 0.0);
+    }
+    glVertex3fv(v1);
+    glVertex3fv(v2);
+
+    glVertex3fv(v2);
+    glVertex3fv(v3);
+
+    glVertex3fv(v3);
+    glVertex3fv(v1);
+  }
+  if(drawit==0){
+    if(d12 <= MIN(d13, d23)){
+      VERT_AVG2(v1, v3, v13);
+      VERT_AVG2(v2, v3, v23);
+
+      DrawTriangleSmokeOutline(v3, v13, v23, del, level + 1);
+      DrawQuadSmokeOutline(v13, v1, v2, v23, del, level + 1);
+    }
+    else if(d13 <= MIN(d12, d23)){
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v2, v3, v23);
+
+      DrawTriangleSmokeOutline(v12, v2, v23, del, level + 1);
+      DrawQuadSmokeOutline(v1, v12, v23, v3, del, level + 1);
+    }
+    else{ // d23<=MIN(d12,d13)
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v1, v3, v13);
+
+      DrawTriangleSmokeOutline(v1, v12, v13, del, level + 1);
+      DrawQuadSmokeOutline(v12, v2, v3, v13, del, level + 1);
+    }
+  }
+  if(level == 0){
+    glEnd();
+  }
+}
+
 /* ------------------ DrawQuadSmoke ------------------------ */
 
 void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
@@ -2332,10 +2415,14 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t
   float dx, dy, dz;
 
   if(level==0){
-  //  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  //  glEnable(GL_TEXTURE_1D);
-  //  glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
     glBegin(GL_TRIANGLES);
+    t1 = GetSmokeTextureIndex(v1);
+    t2 = GetSmokeTextureIndex(v2);
+    t3 = GetSmokeTextureIndex(v3);
+    t4 = GetSmokeTextureIndex(v4);
   }
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
@@ -2367,11 +2454,14 @@ void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, floa
     glEnable(GL_TEXTURE_1D);
     glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
     glBegin(GL_TRIANGLES);
+    t1 = GetSmokeTextureIndex(v1);
+    t2 = GetSmokeTextureIndex(v2);
+    t3 = GetSmokeTextureIndex(v3);
   }
   DIST3(v1, v2, d12);
   DIST3(v1, v3, d13);
   DIST3(v2, v3, d23);
-  if(d12<=del&&d13<=del&&d23<del){
+  if(d12<=del && d13<=del && d23<del){
     glTexCoord1f(t1);
     glVertex3fv(v1);
 

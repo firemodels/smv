@@ -676,7 +676,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
     smoke3d_delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
-    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoketest, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
+    SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_smokealg, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
 
     PANEL_smoke_diag = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest,_("diagnostics"),true);
     CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("Update"), &compute_smoke3d_planes);
