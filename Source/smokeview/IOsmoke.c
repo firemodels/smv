@@ -14,6 +14,8 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level);
+
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
 int cull_count=0;
@@ -764,9 +766,9 @@ int IsSmokeInMesh(meshdata *meshi){
 
 #ifdef pp_GPU
 
-/* ------------------ DrawSmoke3DGPU2 ------------------------ */
+/* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
 
-void DrawSmoke3DGPU2(smoke3ddata *smoke3di){
+void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   int i;
   meshdata *meshi;
 
@@ -826,8 +828,13 @@ void DrawSmoke3DGPU2(smoke3ddata *smoke3di){
   glEnd();
 }
 
+/* ------------------ DrawSmoke3D_NEW ------------------------ */
 
-/* ------------------ DrawSmoke3DGPU ------------------------ */
+void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
+  DrawSmoke3DGPU_NEW(smoke3di);
+}
+  
+  /* ------------------ DrawSmoke3DGPU ------------------------ */
 
 void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int i, j, k, n;
@@ -2367,6 +2374,7 @@ void DrawSmokePlanes(meshdata *meshi){
   int i;
 
   if(plane_outline==1){
+    glLineWidth(plane_outline_width);
     glBegin(GL_LINES);
     for(i = 0; i<meshi->nsmokeplaneinfo; i++){
       meshplanedata *spi;
@@ -2434,6 +2442,7 @@ void DrawSmokePlanes2(meshdata *meshi){
   int i;
 
   if(plane_outline == 1){
+    glLineWidth(plane_outline_width);
     glBegin(GL_LINES);
     for(i = 0; i < meshi->nsmokeplaneinfo; i++){
       meshplanedata *spi;
@@ -2486,6 +2495,99 @@ void DrawSmokePlanes2(meshdata *meshi){
     }
     glEnd();
   }
+}
+
+/* ------------------ GetSmokeTextureIndex ------------------------ */
+
+float GetSmokeTextureIndex(float *xyz){
+#ifdef xxx
+  int i, j, k;
+  float *vv;
+  float *xplt, *yplt, *zplt;
+  float dxbar, dybar, dzbar;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  int slice_ny, slice_nz;
+  float dx, dy, dz;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float val00, val10, val01, val11;
+  float val0, val1;
+  float val, val_fraction;
+  int ijk;
+  int iplus = 0, jplus = 0, kplus = 0, *ijk_min, *ijk_max;
+
+  float *slicedata0;
+  float valmin, valmax;
+  meshdata *valmesh;
+
+  slicedata0 = gslicedata;
+  valmin = gslice_valmin;
+  valmax = gslice_valmax;
+  valmesh = gslice_valmesh;
+
+  xplt = valmesh->xplt_orig;
+  yplt = valmesh->yplt_orig;
+  zplt = valmesh->zplt_orig;
+  ibar = valmesh->ibar;
+  jbar = valmesh->jbar;
+  kbar = valmesh->kbar;
+  dxbar = xplt[1]-xplt[0];
+  dybar = yplt[1]-yplt[0];
+  dzbar = zplt[1]-zplt[0];
+
+  nx = ibar+1;
+  ny = jbar+1;
+  nz = kbar+1;
+  slice_ny = gslice->ijk_max[1]-gslice->ijk_min[1]+1;
+  slice_nz = gslice->ijk_max[2]-gslice->ijk_min[2]+1;
+
+  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
+  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
+
+  // val(i,j,k) = di*nj*nk + dj*nk + dk
+  ijk_min = gslice->ijk_min;
+  ijk_max = gslice->ijk_max;
+  ijk = (i-ijk_min[0])*slice_nz*slice_ny+(j-ijk_min[1])*slice_nz+(k-ijk_min[2]);
+
+  dx = (xyz[0]-xplt[i])/dxbar;
+  dx = CLAMP(dx, 0.0, 1.0);
+  dy = (xyz[1]-yplt[j])/dybar;
+  dy = CLAMP(dy, 0.0, 1.0);
+  dz = (xyz[2]-zplt[k])/dzbar;
+  dz = CLAMP(dz, 0.0, 1.0);
+
+  vv = slicedata0+ijk;
+  if(i+1<=ijk_max[0])iplus = slice_nz*slice_ny;
+  if(j+1<=ijk_max[1])jplus = slice_nz;
+  if(k+1<=ijk_max[2])kplus = 1;
+
+  val000 = (float)vv[0]; // i,j,k
+  val001 = (float)vv[kplus]; // i,j,k+1
+
+  val010 = (float)vv[jplus]; // i,j+1,k
+  val011 = (float)vv[jplus+kplus]; // i,j+1,k+1
+
+  val100 = (float)vv[iplus]; // i+1,j,k
+  val101 = (float)vv[iplus+kplus]; // i+1,j,k+1
+
+  val110 = (float)vv[iplus+jplus]; // i+1,j+1,k
+  val111 = (float)vv[iplus+jplus+kplus]; // i+1,j+1,k+1
+
+  val00 = MIX(dx, val100, val000);
+  val10 = MIX(dx, val110, val010);
+  val01 = MIX(dx, val101, val001);
+  val11 = MIX(dx, val111, val011);
+  val0 = MIX(dy, val10, val00);
+  val1 = MIX(dy, val11, val01);
+
+  val = MIX(dz, val1, val0);
+  val_fraction = (val-valmin)/(valmax-valmin);
+  val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+  return val_fraction;
+#endif
+  return 0.0;
 }
 
 /* ------------------ DrawSmokeTriangles ------------------------ */
@@ -2550,6 +2652,97 @@ int DrawSmokeTriangles(float *v1, float *v2, float *v3, float d1, float d2, floa
     }
   }
   return count;
+}
+
+/* ------------------ DrawQuadSmoke ------------------------ */
+
+void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
+  float d13, d24;
+  float dx, dy, dz;
+
+  if(level==0){
+  //  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  //  glEnable(GL_TEXTURE_1D);
+  //  glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glBegin(GL_TRIANGLES);
+  }
+  DIST3(v1, v3, d13);
+  DIST3(v2, v4, d24);
+  if(d13<d24){
+    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del, level+1);
+    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, del, level+1);
+  }
+  else{
+    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, del, level+1);
+    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, del, level+1);
+  }
+  if(level==0){
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
+}
+
+/* ------------------ DrawTriangleSmoke ------------------------ */
+
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level){
+
+  float d12, d13, d23;
+  float v12[3], v13[3], v23[3];
+  float dx, dy, dz;
+  float t12, t13, t23;
+
+  if(level==0){
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+    glBegin(GL_TRIANGLES);
+  }
+  DIST3(v1, v2, d12);
+  DIST3(v1, v3, d13);
+  DIST3(v2, v3, d23);
+  if(d12<=del&&d13<=del&&d23<del){
+    glTexCoord1f(t1);
+    glVertex3fv(v1);
+
+    glTexCoord1f(t2);
+    glVertex3fv(v2);
+
+    glTexCoord1f(t3);
+    glVertex3fv(v3);
+  }
+  else{
+    if(d12<=MIN(d13, d23)){
+      VERT_AVG2(v1, v3, v13);
+      t13 = GetSmokeTextureIndex(v13);
+      VERT_AVG2(v2, v3, v23);
+      t23 = GetSmokeTextureIndex(v23);
+
+      DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, del, level+1);
+      DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, del, level+1);
+    }
+    else if(d13<=MIN(d12, d23)){
+      VERT_AVG2(v1, v2, v12);
+      t12 = GetSmokeTextureIndex(v12);
+      VERT_AVG2(v2, v3, v23);
+      t23 = GetSmokeTextureIndex(v23);
+
+      DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, del, level+1);
+      DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, del, level+1);
+    }
+    else{ // d23<=MIN(d12,d13)
+      VERT_AVG2(v1, v2, v12);
+      t12 = GetSmokeTextureIndex(v12);
+      VERT_AVG2(v1, v3, v13);
+      t13 = GetSmokeTextureIndex(v13);
+
+      DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, del, level+1);
+      DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, del, level+1);
+    }
+  }
+  if(level==0){
+    glEnd();
+    glDisable(GL_TEXTURE_1D);
+  }
 }
 #endif
 
@@ -4445,8 +4638,8 @@ void DrawSmokeFrame(void){
 #ifdef pp_GPU
         if(usegpu==1){
 #ifdef pp_GPUSMOKE
-          if(use_newgpu==1){
-            DrawSmoke3DGPU2(smoke3di);
+          if(use_newsmoke==1){
+            DrawSmoke3DGPU_NEW(smoke3di);
           }
           else{
             DrawSmoke3DGPU(smoke3di);
@@ -4456,7 +4649,12 @@ void DrawSmokeFrame(void){
 #endif
         }
         else{
-          DrawSmoke3D(smoke3di);
+          if(use_newsmoke==1){
+            DrawSmoke3D_NEW(smoke3di);
+          }
+          else{
+            DrawSmoke3D(smoke3di);
+          }
         }
 #else
         DrawSmoke3D(smoke3di);

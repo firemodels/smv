@@ -1894,7 +1894,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       SortSmoke3dinfo();
       GetSmokeDir(modelview_scratch);
 #ifdef pp_GPUSMOKE
-      if(compute_smoke3d_planes==1){
+      if(compute_smoke3d_planes==1||use_newsmoke==1){
         UpdateSmoke3DPlanes(smoke3d_delta);
       }
 #endif

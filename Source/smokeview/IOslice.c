@@ -14,7 +14,6 @@
 #include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
-#include "IOslice.h"
 
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
@@ -22,6 +21,11 @@
                            fread(var,4,size,SLICEFILE);\
                            if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
+
+void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
+void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, int level);
+void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
+
 // dummy change
 int endianswitch;
 float gslice_valmin, gslice_valmax, *gslicedata;
@@ -90,22 +94,6 @@ slicedata *gslice;
            }                                  \
          }                                   \
          DU *= 0.05*vecfactor/vrange
-
-#define VERT_AVG(v1,v2,vavg) \
-  vavg[0]=(v1[0]+v2[0])/2.0;\
-  vavg[1]=(v1[1]+v2[1])/2.0;\
-  vavg[2]=(v1[2]+v2[2])/2.0
-
-#define VERT_AVG3(v1,v2,v3,vavg) \
-  vavg[0]=(v1[0]+v2[0]+v3[0])/3.0;\
-  vavg[1]=(v1[1]+v2[1]+v3[1])/3.0;\
-  vavg[2]=(v1[2]+v2[2]+v3[2])/3.0
-
-#define DIST3(v1,v2,dist2) \
-  dx=v1[0]-v2[0];\
-  dy=v1[1]-v2[1];\
-  dz=v1[2]-v2[2];\
-  dist2=dx*dx+dy*dy+dz*dz
 
 /* ------------------ Get3DSliceVal ------------------------ */
 
@@ -193,9 +181,9 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
   return val;
 }
 
-/* ------------------ GetTextureIndex ------------------------ */
+/* ------------------ GetSliceTextureIndex ------------------------ */
 
-float GetTextureIndex(float *xyz){
+float GetSliceTextureIndex(float *xyz){
   int i, j, k;
   float *vv;
   float *xplt, *yplt, *zplt;
@@ -283,9 +271,9 @@ float GetTextureIndex(float *xyz){
   return val_fraction;
 }
 
-/* ------------------ DrawTriangle ------------------------ */
+/* ------------------ DrawTriangleSlice ------------------------ */
 
-void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level){
+void DrawTriangleSlice(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level){
 
   float d12, d13, d23;
   float v12[3], v13[3], v23[3];
@@ -313,31 +301,31 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
   }
   else{
     if(d12 <= MIN(d13, d23)){
-      VERT_AVG(v1, v3, v13);
-      t13 = GetTextureIndex(v13);
-      VERT_AVG(v2, v3, v23);
-      t23 = GetTextureIndex(v23);
+      VERT_AVG2(v1, v3, v13);
+      t13 = GetSliceTextureIndex(v13);
+      VERT_AVG2(v2, v3, v23);
+      t23 = GetSliceTextureIndex(v23);
 
-      DrawTriangle(v3, v13, v23, t3, t13, t23, del, level + 1);
-      DrawQuad(v13, v1, v2, v23, t13, t1, t2, t23, del, level + 1);
+      DrawTriangleSlice(v3, v13, v23, t3, t13, t23, del, level + 1);
+      DrawQuadSlice(v13, v1, v2, v23, t13, t1, t2, t23, del, level + 1);
     }
     else if(d13 <= MIN(d12, d23)){
-      VERT_AVG(v1, v2, v12);
-      t12 = GetTextureIndex(v12);
-      VERT_AVG(v2, v3, v23);
-      t23 = GetTextureIndex(v23);
+      VERT_AVG2(v1, v2, v12);
+      t12 = GetSliceTextureIndex(v12);
+      VERT_AVG2(v2, v3, v23);
+      t23 = GetSliceTextureIndex(v23);
 
-      DrawTriangle(v12, v2, v23, t12, t2, t23, del, level + 1);
-      DrawQuad(v1, v12, v23, v3, t1, t12, t23, t3, del, level + 1);
+      DrawTriangleSlice(v12, v2, v23, t12, t2, t23, del, level + 1);
+      DrawQuadSlice(v1, v12, v23, v3, t1, t12, t23, t3, del, level + 1);
     }
     else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1, v2, v12);
-      t12 = GetTextureIndex(v12);
-      VERT_AVG(v1, v3, v13);
-      t13 = GetTextureIndex(v13);
+      VERT_AVG2(v1, v2, v12);
+      t12 = GetSliceTextureIndex(v12);
+      VERT_AVG2(v1, v3, v13);
+      t13 = GetSliceTextureIndex(v13);
 
-      DrawTriangle(v1, v12, v13, t1, t12, t13, del, level + 1);
-      DrawQuad(v12, v2, v3, v13, t12, t2, t3, t13, del, level + 1);
+      DrawTriangleSlice(v1, v12, v13, t1, t12, t13, del, level + 1);
+      DrawQuadSlice(v12, v2, v3, v13, t12, t2, t3, t13, del, level + 1);
     }
   }
   if(level == 0){
@@ -348,7 +336,7 @@ void DrawTriangle(float *v1, float *v2, float *v3, float t1, float t2, float t3,
 
 /* ------------------ DrawQuad ------------------------ */
 
-void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
+void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
   float d13, d24;
   float dx, dy, dz;
 
@@ -361,12 +349,12 @@ void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, fl
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13 < d24){
-    DrawTriangle(v1, v2, v3, t1, t2, t3, del, level + 1);
-    DrawTriangle(v1, v3, v4, t1, t3, t4, del, level + 1);
+    DrawTriangleSlice(v1, v2, v3, t1, t2, t3, del, level + 1);
+    DrawTriangleSlice(v1, v3, v4, t1, t3, t4, del, level + 1);
   }
   else{
-    DrawTriangle(v1, v2, v4, t1, t2, t4, del, level + 1);
-    DrawTriangle(v2, v3, v4, t2, t3, t4, del, level + 1);
+    DrawTriangleSlice(v1, v2, v4, t1, t2, t4, del, level + 1);
+    DrawTriangleSlice(v2, v3, v4, t2, t3, t4, del, level + 1);
   }
   if(level == 0){
     glEnd();
@@ -374,9 +362,9 @@ void DrawQuad(float *v1, float *v2, float *v3, float *v4, float t1, float t2, fl
   }
 }
 
-/* ------------------ DrawQuadOutline ------------------------ */
+/* ------------------ DrawQuadOutlineSlice ------------------------ */
 
-void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int level){
+void DrawQuadOutlineSlice(float *v1, float *v2, float *v3, float *v4, float del, int level){
   float d13, d24;
   float dx, dy, dz;
 
@@ -386,12 +374,12 @@ void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int 
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13 < d24){
-    DrawTriangleOutline(v1, v2, v3, del, level + 1);
-    DrawTriangleOutline(v1, v3, v4, del, level + 1);
+    DrawTriangleOutlineSlice(v1, v2, v3, del, level + 1);
+    DrawTriangleOutlineSlice(v1, v3, v4, del, level + 1);
   }
   else{
-    DrawTriangleOutline(v1, v2, v4, del, level + 1);
-    DrawTriangleOutline(v2, v3, v4, del, level + 1);
+    DrawTriangleOutlineSlice(v1, v2, v4, del, level + 1);
+    DrawTriangleOutlineSlice(v2, v3, v4, del, level + 1);
   }
   if(level == 0){
     glEnd();
@@ -400,7 +388,7 @@ void DrawQuadOutline(float *v1, float *v2, float *v3, float *v4, float del, int 
 
 /* ------------------ DrawTriangleOutline ------------------------ */
 
-void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level){
+void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level){
   float d12, d13, d23;
   float v12[3], v13[3], v23[3];
   float dx, dy, dz;
@@ -423,25 +411,25 @@ void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level){
   }
   else{
     if(d12 <= MIN(d13, d23)){
-      VERT_AVG(v1, v3, v13);
-      VERT_AVG(v2, v3, v23);
+      VERT_AVG2(v1, v3, v13);
+      VERT_AVG2(v2, v3, v23);
 
-      DrawTriangleOutline(v3, v13, v23, del, level + 1);
-      DrawQuadOutline(v13, v1, v2, v23, del, level + 1);
+      DrawTriangleOutlineSlice(v3, v13, v23, del, level + 1);
+      DrawQuadOutlineSlice(v13, v1, v2, v23, del, level + 1);
     }
     else if(d13 <= MIN(d12, d23)){
-      VERT_AVG(v1, v2, v12);
-      VERT_AVG(v2, v3, v23);
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v2, v3, v23);
 
-      DrawTriangleOutline(v12, v2, v23, del, level + 1);
-      DrawQuadOutline(v1, v12, v23, v3, del, level + 1);
+      DrawTriangleOutlineSlice(v12, v2, v23, del, level + 1);
+      DrawQuadOutlineSlice(v1, v12, v23, v3, del, level + 1);
     }
     else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1, v2, v12);
-      VERT_AVG(v1, v3, v13);
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v1, v3, v13);
 
-      DrawTriangleOutline(v1, v12, v13, del, level + 1);
-      DrawQuadOutline(v12, v2, v3, v13, del, level + 1);
+      DrawTriangleOutlineSlice(v1, v12, v13, del, level + 1);
+      DrawQuadOutlineSlice(v12, v2, v3, v13, del, level + 1);
     }
   }
   if(level == 0){
@@ -451,7 +439,7 @@ void DrawTriangleOutline(float *v1, float *v2, float *v3, float del, int level){
 
 /* ------------------ DrawTriangleVector ------------------------ */
 
-void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
+void DrawTriangleVectorSlice(float *v1, float *v2, float *v3, float del, int level){
 
   float d12, d13, d23;
   float v12[3], v13[3], v23[3], vavg[3];
@@ -482,7 +470,7 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
       rgb_ptr = gslice->constant_color;
     }
     else{
-      tavg = GetTextureIndex(vavg);
+      tavg = GetSliceTextureIndex(vavg);
       tavg_index = CLAMP(tavg * 255, 0, 255);
       rgb_ptr = rgb_slice + 4 * tavg_index;
     }
@@ -492,33 +480,33 @@ void DrawTriangleVector(float *v1, float *v2, float *v3, float del, int level){
   }
   else{
     if(d12 <= MIN(d13, d23)){
-      VERT_AVG(v1, v3, v13);
-      VERT_AVG(v2, v3, v23);
+      VERT_AVG2(v1, v3, v13);
+      VERT_AVG2(v2, v3, v23);
 
-      DrawTriangleVector(v3, v13, v23, del, level + 1);
-      DrawQuadVector(v13, v1, v2, v23, del, level + 1);
+      DrawTriangleVectorSlice(v3, v13, v23, del, level + 1);
+      DrawQuadVectorSlice(v13, v1, v2, v23, del, level + 1);
     }
     else if(d13 <= MIN(d12, d23)){
-      VERT_AVG(v1, v2, v12);
-      VERT_AVG(v2, v3, v23);
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v2, v3, v23);
 
-      DrawTriangleVector(v12, v2, v23, del, level + 1);
-      DrawQuadVector(v1, v12, v23, v3, del, level + 1);
+      DrawTriangleVectorSlice(v12, v2, v23, del, level + 1);
+      DrawQuadVectorSlice(v1, v12, v23, v3, del, level + 1);
     }
     else{ // d23<=MIN(d12,d13)
-      VERT_AVG(v1, v2, v12);
-      VERT_AVG(v1, v3, v13);
+      VERT_AVG2(v1, v2, v12);
+      VERT_AVG2(v1, v3, v13);
 
-      DrawTriangleVector(v1, v12, v13, del, level + 1);
-      DrawQuadVector(v12, v2, v3, v13, del, level + 1);
+      DrawTriangleVectorSlice(v1, v12, v13, del, level + 1);
+      DrawQuadVectorSlice(v12, v2, v3, v13, del, level + 1);
     }
   }
   if(level == 0)glEnd();
 }
 
-/* ------------------ DrawQuadVector ------------------------ */
+/* ------------------ DrawQuadVectorSlice ------------------------ */
 
-void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int level){
+void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, int level){
   float d13, d24;
   float dx, dy, dz;
 
@@ -528,12 +516,12 @@ void DrawQuadVector(float *v1, float *v2, float *v3, float *v4, float del, int l
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13 < d24){
-    DrawTriangleVector(v1, v2, v3, del, level + 1);
-    DrawTriangleVector(v1, v3, v4, del, level + 1);
+    DrawTriangleVectorSlice(v1, v2, v3, del, level + 1);
+    DrawTriangleVectorSlice(v1, v3, v4, del, level + 1);
   }
   else{
-    DrawTriangleVector(v1, v2, v4, del, level + 1);
-    DrawTriangleVector(v2, v3, v4, del, level + 1);
+    DrawTriangleVectorSlice(v1, v2, v4, del, level + 1);
+    DrawTriangleVectorSlice(v2, v3, v4, del, level + 1);
   }
   if(level == 0){
     glEnd();
@@ -638,6 +626,74 @@ void OutSlicefile(slicedata *sd){
     sd->qslicedata,sd->times,&sd->ntimes, &redirect, strlen(sd->file));
 }
 
+
+//*** header
+// endian
+// completion (0/1)
+// fileversion (compressed format)
+// version  (slicef version)
+// global min max (used to perform conversion)
+// i1,i2,j1,j2,k1,k2
+
+
+//*** frame
+// time, compressed frame size                        for each frame
+// compressed buffer
+
+/* ------------------ MakeSliceSizefile ------------------------ */
+
+int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
+  int endian_fromfile;
+  float minmax[2];
+  int ijkbar[6];
+  FILE *stream, *sizestream;
+  float time_local;
+  int ncompressed;
+  int count;
+
+  stream = FOPEN(file, "rb");
+  if(stream==NULL)return 0;
+
+  sizestream = fopen(sizefile, "w");
+  if(sizestream==NULL){
+    fclose(stream);
+    return 0;
+  }
+  count = 0;
+  if(compression_type==COMPRESSED_ZLIB){
+    fread(&endian_fromfile, 4, 1, stream);
+    FSEEK(stream, 12, SEEK_CUR);
+    fread(minmax, 4, 2, stream);
+    fread(ijkbar, 4, 6, stream);
+
+    fprintf(sizestream, "%i %i %i %i %i %i\n", ijkbar[0], ijkbar[1], ijkbar[2], ijkbar[3], ijkbar[4], ijkbar[5]);
+    fprintf(sizestream, "%f %f\n", minmax[0], minmax[1]);
+    count = 2;
+
+    while(!feof(stream)){
+      fread(&time_local, 4, 1, stream);
+      fread(&ncompressed, 4, 1, stream);
+      fprintf(sizestream, "%f %i\n", time_local, ncompressed);
+      count++;
+      FSEEK(stream, ncompressed, SEEK_CUR);
+    }
+  }
+  //  endian
+  //  fileversion, slice version
+  //  global min max (used to perform conversion)
+  //  i1,i2,j1,j2,k1,k2
+
+
+  //  *** frame
+  // time
+  //  compressed frame size                        for each frame
+  // compressed buffer
+
+  fclose(stream);
+  fclose(sizestream);
+  return count;
+
+}
 
 /* ------------------ GetSliceHeader0 ------------------------ */
 
@@ -7373,7 +7429,7 @@ void DrawGSliceOutline(void){
         xyz1 = verts + 3*triangles[3*j];
         xyz2 = verts + 3*triangles[3*j+1];
         xyz3 = verts + 3*triangles[3*j+2];
-        DrawTriangleOutline(xyz1,xyz2,xyz3,del,0);
+        DrawTriangleOutlineSlice(xyz1,xyz2,xyz3,del,0);
       }
     }
   }
@@ -7444,11 +7500,11 @@ void DrawGSliceData(slicedata *slicei){
     xyz1 = verts + 3*triangles[3*j];
     xyz2 = verts + 3*triangles[3*j+1];
     xyz3 = verts + 3*triangles[3*j+2];
-    t1 = GetTextureIndex(xyz1);
-    t2 = GetTextureIndex(xyz2);
-    t3 = GetTextureIndex(xyz3);
+    t1 = GetSliceTextureIndex(xyz1);
+    t2 = GetSliceTextureIndex(xyz2);
+    t3 = GetSliceTextureIndex(xyz3);
 
-    DrawTriangle(xyz1,xyz2,xyz3,t1,t2,t3,del,0);
+    DrawTriangleSlice(xyz1,xyz2,xyz3,t1,t2,t3,del,0);
   }
   if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -7508,7 +7564,7 @@ void DrawVGSliceData(vslicedata *vslicei){
     xyz2 = verts + 3*triangles[3*j+1];
     xyz3 = verts + 3*triangles[3*j+2];
 
-    DrawTriangleVector(xyz1,xyz2,xyz3,del,0);
+    DrawTriangleVectorSlice(xyz1,xyz2,xyz3,del,0);
   }
   if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -7609,74 +7665,6 @@ void InitSliceData(void){
     fileout = NULL;
 
   }
-}
-
-  //*** header
-  // endian
-  // completion (0/1)
-  // fileversion (compressed format)
-  // version  (slicef version)
-  // global min max (used to perform conversion)
-  // i1,i2,j1,j2,k1,k2
-
-
-  //*** frame
-  // time, compressed frame size                        for each frame
-  // compressed buffer
-
-/* ------------------ MakeSliceSizefile ------------------------ */
-
-int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
-  int endian_fromfile;
-  float minmax[2];
-  int ijkbar[6];
-  FILE *stream, *sizestream;
-  float time_local;
-  int ncompressed;
-  int count;
-
-  stream=FOPEN(file,"rb");
-  if(stream==NULL)return 0;
-
-  sizestream=fopen(sizefile,"w");
-  if(sizestream==NULL){
-    fclose(stream);
-    return 0;
-  }
-  count=0;
-  if(compression_type==COMPRESSED_ZLIB){
-    fread(&endian_fromfile,4,1,stream);
-    FSEEK(stream,12,SEEK_CUR);
-    fread(minmax,4,2,stream);
-    fread(ijkbar,4,6,stream);
-
-    fprintf(sizestream,"%i %i %i %i %i %i\n",ijkbar[0],ijkbar[1],ijkbar[2],ijkbar[3],ijkbar[4],ijkbar[5]);
-    fprintf(sizestream,"%f %f\n",minmax[0],minmax[1]);
-    count=2;
-
-    while(!feof(stream)){
-      fread(&time_local,4,1,stream);
-      fread(&ncompressed,4,1,stream);
-      fprintf(sizestream,"%f %i\n",time_local,ncompressed);
-      count++;
-      FSEEK(stream,ncompressed,SEEK_CUR);
-    }
-  }
-  //  endian
-  //  fileversion, slice version
-  //  global min max (used to perform conversion)
-  //  i1,i2,j1,j2,k1,k2
-
-
-  //  *** frame
-  // time
-  //  compressed frame size                        for each frame
-  // compressed buffer
-
-  fclose(stream);
-  fclose(sizestream);
-  return count;
-
 }
 
 /* ------------------ GetSliceVal ------------------------ */
