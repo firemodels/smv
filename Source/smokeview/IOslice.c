@@ -4408,7 +4408,6 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
     int jindex;
     
     for(j = ijk_min[1],jindex=0; j < ijk_max[1] + 1; j++,jindex+=slice_nz){
-      int ijk, iindex;
       float *v;
 
       cbuffer = meshi->slice3d_c_buffer+ IJKNODE(ijk_min[0], j, k);
