@@ -2078,7 +2078,6 @@ void UpdateSmoke3DPlanes(float delta){
   }
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
-    int j;
 
     meshi = meshinfo + i;
 
@@ -2103,11 +2102,6 @@ void UpdateSmoke3DPlanes(float delta){
       int j;
 
       NewMemory((void **)&meshi->smokeplaneinfo, meshi->nsmokeplaneinfo * sizeof(meshplanedata));
-      for(j = 0;j < meshi->nsmokeplaneinfo;j++){
-        meshplanedata *spi;
-
-        spi = meshi->smokeplaneinfo + j;
-      }
     }
   }
   for(i = 0; i<nmeshes; i++){
