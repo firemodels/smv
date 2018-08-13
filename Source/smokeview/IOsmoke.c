@@ -2099,8 +2099,6 @@ void UpdateSmoke3DPlanes(float delta){
 
     meshi = meshinfo + i;
     if(meshi->nsmokeplaneinfo>0){
-      int j;
-
       NewMemory((void **)&meshi->smokeplaneinfo, meshi->nsmokeplaneinfo * sizeof(meshplanedata));
     }
   }
