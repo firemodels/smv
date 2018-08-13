@@ -179,7 +179,6 @@ GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 
 GLUI_Panel *PANEL_smokealg = NULL;
-GLUI_Panel *PANEL_smoke_diag = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
@@ -201,6 +200,7 @@ GLUI_Panel *PANEL_alpha = NULL;
 GLUI_Rollout *ROLLOUT_voltemp = NULL;
 #endif
 #ifdef pp_GPUSMOKE
+GLUI_Rollout *ROLLOUT_smoke_diag = NULL;
 GLUI_Rollout *ROLLOUT_smoketest = NULL;
 #endif
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
@@ -678,16 +678,16 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     smoke3d_delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(PANEL_smokealg, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
 
-    PANEL_smoke_diag = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest,_("diagnostics"),true);
-    CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("Update"), &compute_smoke3d_planes);
-    CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("single plane"), &plane_single);
-    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("normals"), &plane_normal);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("outline"), &plane_outline);
-    glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("solid"), &plane_solid);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("labels"), &plane_labels);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
+    ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostics"),false);
+    CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("Update"), &compute_smoke3d_planes);
+    CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("single plane"), &plane_single);
+    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("normals"), &plane_normal);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("outline"), &plane_outline);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("solid"), &plane_solid);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("labels"), &plane_labels);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
 #endif
 
   // volume render dialog
