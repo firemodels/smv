@@ -7,7 +7,7 @@
 
 #ifdef pp_GPUSMOKE
 EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
-EXTERNCPP void UpdateSmoke3DPlanes(float delta);
+EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp);
 EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);

@@ -777,7 +777,7 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
 
   meshi = meshinfo + smoke3di->blocknumber;
 
-  del2 = smoke3d_delta*smoke3d_delta;
+  del2 = smoke3d_delta_par*smoke3d_delta_par;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1942,7 +1942,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
-void UpdateSmoke3DPlanes(float delta){
+void UpdateSmoke3DPlanes(float delta_perp){
   int i;
   float *xyz0, *norm;
   float d, distmin, distmax;
@@ -2062,7 +2062,7 @@ void UpdateSmoke3DPlanes(float delta){
     FREEMEMORY(meshi->smokeplaneinfo);
     meshi->nsmokeplaneinfo = 0;
   }
-  for(d = distmax - delta/2.0; d>distmin; d -= delta){
+  for(d = distmax - delta_perp/2.0; d>distmin; d -= delta_perp){
     if(plane_single == 1)d = plane_distance;
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
@@ -2097,7 +2097,7 @@ void UpdateSmoke3DPlanes(float delta){
     yy[1] = boxmax[1];
     zz[1] = boxmax[2];
     jj = 0;
-    for(d = distmax - delta/2.0; d > distmin; d -= delta){
+    for(d = distmax - delta_perp/2.0; d > distmin; d -= delta_perp){
       if(plane_single == 1)d = plane_distance;
       if(d>meshi->vert_distmin&&d<meshi->vert_distmax){
         meshplanedata *spi;
@@ -2210,6 +2210,64 @@ void DrawSmokePlanes(meshdata *meshi){
   }
 }
 
+/* ------------------ GetSmokeTextureIndexFast ------------------------ */
+
+float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
+  int i, j, k;
+  unsigned char *vv;
+  float *xplt, *yplt, *zplt;
+  float dxbar, dybar, dzbar;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  float dx, dy, dz;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float val00, val10, val01, val11;
+  float val0, val1;
+  float val, val_fraction;
+  int ijk;
+  int iplus = 0, jplus = 0, kplus = 0;
+
+  meshdata *valmesh;
+
+  valmesh = meshinfo + smoke3di->blocknumber;
+
+  xplt = valmesh->xplt_orig;
+  yplt = valmesh->yplt_orig;
+  zplt = valmesh->zplt_orig;
+  ibar = valmesh->ibar;
+  jbar = valmesh->jbar;
+  kbar = valmesh->kbar;
+  dxbar = xplt[1] - xplt[0];
+  dybar = yplt[1] - yplt[0];
+  dzbar = zplt[1] - zplt[0];
+
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nz = kbar + 1;
+
+  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
+  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
+
+  // val(i,j,k) = di*nj*nk + dj*nk + dk
+  //ijk = i*nz*ny+j*nz+k;
+  ijk = i + nx*(j + k*ny);
+
+  dx = (xyz[0] - xplt[i]) / dxbar;
+  dx = CLAMP(dx, 0.0, 1.0);
+  dy = (xyz[1] - yplt[j]) / dybar;
+  dy = CLAMP(dy, 0.0, 1.0);
+  dz = (xyz[2] - zplt[k]) / dzbar;
+  dz = CLAMP(dz, 0.0, 1.0);
+
+  vv = valmesh->smokealpha_ptr + ijk;
+  val_fraction = (float)vv[0] / 255.0;
+  val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+  return val_fraction;
+}
+
+
 /* ------------------ GetSmokeTextureIndex ------------------------ */
 
 float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
@@ -2229,6 +2287,10 @@ float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
   int iplus = 0, jplus = 0, kplus = 0;
 
   meshdata *valmesh;
+
+  if(smoke_interp == 1){
+    return GetSmokeTextureIndexFast(xyz, smoke3di);
+  }
 
   valmesh = meshinfo + smoke3di->blocknumber;
 
