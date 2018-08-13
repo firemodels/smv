@@ -598,9 +598,6 @@ typedef struct _meshplanedata {
   float verts[6*3],verts_smv[6*3];
   float norm0[4*3], norm1[4*3];
   int triangles[4*3], nverts, ntriangles;
-  // for triangulation
-  float *verts2;
-  int *triangles2, nverts2, ntriangles2;
 } meshplanedata;
 
 /* --------------------------  mesh ------------------------------------ */

@@ -88,6 +88,7 @@ GLUI_Button *BUTTON_cancelrender=NULL;
 
 GLUI_Listbox *LISTBOX_smoke_colorbar=NULL;
 
+GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_alpha=NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
@@ -159,6 +160,8 @@ GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_plane_distance=NULL;
 #endif
 
+GLUI_Checkbox *CHECKBOX_compute_smoke = NULL;
+GLUI_Checkbox *CHECKBOX_plane_single = NULL;
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
 GLUI_Checkbox *CHECKBOX_compress_volsmoke = NULL;
@@ -175,6 +178,7 @@ GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 
+GLUI_Panel *PANEL_smokealg = NULL;
 GLUI_Panel *PANEL_smoke_diag = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
@@ -666,22 +670,24 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   }
 #ifdef pp_GPUSMOKE
     ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Smoke test"),false);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoketest, _("show new smoke"), &use_newsmoke,SMOKE_NEW,Smoke3dCB);
+    PANEL_smokealg = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("smoke drawing algorithm"));
+    RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
     smoke3d_delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
     SPINNER_smoke3d_delta = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoketest, _("Delta"), GLUI_SPINNER_FLOAT, &smoke3d_delta, SMOKE_DELTA, Smoke3dCB);
 
     PANEL_smoke_diag = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest,_("diagnostics"),true);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("Show"), &show_smoke3d_planes);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("Update"), &compute_smoke3d_planes);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("triangulate"), &plane_triangulate);
+    CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("Update"), &compute_smoke3d_planes);
+    CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("single plane"), &plane_single);
+    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("normals"), &plane_normal);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("outline"), &plane_outline);
     glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("solid"), &plane_solid);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("labels"), &plane_labels);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_diag, _("single plane"), &plane_single);
-    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
 #endif
 
   // volume render dialog
@@ -861,6 +867,16 @@ extern "C" void Smoke3dCB(int var){
   
 #ifdef pp_GPUSMOKE
   case SMOKE_NEW:
+    if(use_newsmoke == SMOKE3D_ORIG || use_newsmoke == SMOKE3D_NEW){
+      if(compute_smoke3d_planes!=1){
+        compute_smoke3d_planes = 1;
+        CHECKBOX_compute_smoke->set_int_val(compute_smoke3d_planes);
+      }
+      if(plane_single!=0){
+        plane_single = 0;
+        CHECKBOX_plane_single->set_int_val(plane_single);
+      }
+    }
     glutPostRedisplay();
     break;
   case SMOKE_DELTA:

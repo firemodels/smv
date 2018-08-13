@@ -1962,184 +1962,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 #ifdef pp_GPUSMOKE
 
-/* ------------------ CountTriangles ------------------------ */
-
-int CountTriangles(float *v1, float *v2, float *v3, float d1, float d2, float d3, float delta){
-  int count = 0;
-  float v[3], d, dv[3];
-
-  if(d1 <= delta && d2 <= delta && d3 <= delta)return 1;
-
-//            v2
-//           /  \
-//          /    \
-//         /      v3
-//        /    / /
-//       V  /   /
-//      /     /
-//      /   /
-//     /  /
-//     / /
-//    v1
-
-  if(d1 > MAX(d2, d3)){
-    VEC3AVG(v, v1, v2);
-    VEC3DIFF(dv, v, v3);
-    d = NORM3(dv);
-    d1 /= 2.0;
-    count += CountTriangles(v, v2, v3, d1, d2, d, delta);
-    count += CountTriangles(v, v3, v1, d, d3, d1, delta);
-  }
-  else if(d2 > MAX(d1, d3)){
-    VEC3AVG(v, v2, v3);
-    VEC3DIFF(dv, v, v1);
-    d = NORM3(dv);
-    d2 /= 2.0;
-    count += CountTriangles(v, v3, v1, d2, d3, d, delta);
-    count += CountTriangles(v, v1, v2, d, d1, d2, delta);
-  }
-  else{
-    VEC3AVG(v, v3, v1);
-    VEC3DIFF(dv, v, v2);
-    d = NORM3(dv);
-    d3 /= 2.0;
-    count += CountTriangles(v, v1, v2, d3, d1, d, delta);
-    count += CountTriangles(v, v2, v3, d, d2, d3, delta);
-  }
-  return count;
-}
-
-/* ------------------ GetVertIndex ------------------------ */
-
-#define VERTEPS 0.0001
-int GetVertIndex(float *v, float *verts, int *nverts){
-  int i, n;
-  float *vert;
-
-  n = *nverts;
-  for(i = 0;i < n;i++){
-    vert = verts + 3 * i;
-    if(ABS(vert[0] - v[0]) > VERTEPS)continue;
-    if(ABS(vert[1] - v[1]) > VERTEPS)continue;
-    if(ABS(vert[2] - v[2]) > VERTEPS)continue;
-    return i;
-  }
-  vert = verts + 3 * n;
-  vert[0] = v[0];
-  vert[1] = v[1];
-  vert[2] = v[2];
-  n++;
-  *nverts = n;
-  return n - 1;
-}
-
-/* ------------------ AddTriangle ------------------------ */
-
-void AddTriangle(float *v1, float *v2, float *v3, float d1, float d2, float d3, float *v_out, int *nv_out, int *t_out, int *nt_out, float delta){
-  float dv[3], v[3], d;
-
-  if(d1 <= delta && d2 <= delta && d3 <= delta){
-    int iv1_out, iv2_out, iv3_out, nts;
-
-    iv1_out = GetVertIndex(v1, v_out, nv_out);
-    iv2_out = GetVertIndex(v2, v_out, nv_out);
-    iv3_out = GetVertIndex(v3, v_out, nv_out);
-    nts = *nt_out;
-    t_out[3 * nts] = iv1_out;
-    t_out[3 * nts + 1] = iv2_out;
-    t_out[3 * nts + 2] = iv3_out;
-    nts++;
-    *nt_out = nts;
-    return;
-  }
-  if(d1 > MAX(d2, d3)){
-    VEC3AVG(v, v1, v2);
-    d1 /= 2.0;
-    VEC3DIFF(dv, v, v3);
-    d = NORM3(dv);
-    AddTriangle(v, v2, v3, d1, d2, d, v_out, nv_out, t_out, nt_out, delta);
-    AddTriangle(v, v3, v1, d, d3, d1, v_out, nv_out, t_out, nt_out, delta);
-  }
-  else if(d2 > MAX(d1, d3)){
-    VEC3AVG(v, v2, v3);
-    d2 /= 2.0;
-    VEC3DIFF(dv, v, v1);
-    d = NORM3(dv);
-    AddTriangle(v, v3, v1, d2, d3, d, v_out, nv_out, t_out, nt_out, delta);
-    AddTriangle(v, v1, v2, d, d1, d2, v_out, nv_out, t_out, nt_out, delta);
-  }
-  else{
-    VEC3AVG(v, v3, v1);
-    d3 /= 2.0;
-    VEC3DIFF(dv, v, v2);
-    d = NORM3(dv);
-    AddTriangle(v, v1, v2, d3, d1, d, v_out, nv_out, t_out, nt_out, delta);
-    AddTriangle(v, v2, v3, d, d2, d3, v_out, nv_out, t_out, nt_out, delta);
-  }
-}
-
-/* ------------------ Triangulate ------------------------ */
-
-void Triangulate(float *verts, int nverts, int *triangles, int ntriangles, float **verts_out, int *nverts_out, int **triangles_out, int *ntriangles_out, float delta){
-  int i;
-  float *v_out;
-  int *t_out, nv_out, nt_out = 0;
-
-  for(i = 0; i < ntriangles; i++){
-    float *v1, *v2, *v3;
-    float dv[3], d1, d2, d3;
-
-    v1 = verts + 3 * triangles[3 * i + 0];
-    v2 = verts + 3 * triangles[3 * i + 1];
-    v3 = verts + 3 * triangles[3 * i + 2];
-
-    VEC3DIFF(dv, v1, v2);
-    d1 = NORM3(dv);
-
-    VEC3DIFF(dv, v2, v3);
-    d2 = NORM3(dv);
-
-    VEC3DIFF(dv, v3, v1);
-    d3 = NORM3(dv);
-
-    nt_out += CountTriangles(v1, v2, v3, d1, d2, d3, delta);
-  }
-  nv_out = 3 * nt_out;
-  NewMemory((void **)&v_out, 3 * nv_out * sizeof(float));
-  NewMemory((void **)&t_out, 3 * nt_out * sizeof(int));
-
-  nv_out = 0;
-  nt_out = 0;
-  for(i = 0;i < ntriangles;i++){
-    int iv1, iv2, iv3;
-    float *v1, *v2, *v3;
-    float d1, d2, d3, dv[3];
-
-    iv1 = triangles[3 * i + 0];
-    iv2 = triangles[3 * i + 1];
-    iv3 = triangles[3 * i + 2];
-    v1 = verts + 3 * iv1;
-    v2 = verts + 3 * iv2;
-    v3 = verts + 3 * iv3;
-    VEC3DIFF(dv, v1, v2);
-    d1 = NORM3(dv);
-
-    VEC3DIFF(dv, v2, v3);
-    d2 = NORM3(dv);
-
-    VEC3DIFF(dv, v3, v1);
-    d3 = NORM3(dv);
-    AddTriangle(v1, v2, v3, d1, d2, d3, v_out, &nv_out, t_out, &nt_out, delta);
-  }
-
-  NewResizeMemory(v_out, 3 * nv_out * sizeof(float));
-  NewResizeMemory(t_out, 3 * nt_out * sizeof(int));
-  *verts_out = v_out;
-  *triangles_out = t_out;
-  *nverts_out = nv_out;
-  *ntriangles_out = nt_out;
-}
-
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
 void UpdateSmoke3DPlanes(float delta){
@@ -2260,13 +2082,6 @@ void UpdateSmoke3DPlanes(float delta){
 
     meshi = meshinfo + i;
 
-    for(j = 0;j < meshi->nsmokeplaneinfo;j++){
-      meshplanedata *spi;
-
-      spi = meshi->smokeplaneinfo + j;
-      FREEMEMORY(spi->triangles2);
-      FREEMEMORY(spi->verts2);
-    }
     FREEMEMORY(meshi->smokeplaneinfo);
     meshi->nsmokeplaneinfo = 0;
   }
@@ -2292,8 +2107,6 @@ void UpdateSmoke3DPlanes(float delta){
         meshplanedata *spi;
 
         spi = meshi->smokeplaneinfo + j;
-        spi->triangles2 = NULL;
-        spi->verts2 = NULL;
       }
     }
   }
@@ -2352,15 +2165,6 @@ void UpdateSmoke3DPlanes(float delta){
           norm1[2]+=norm0[2];
         }
 
-        // trianglulate
-        FREEMEMORY(spi->verts2);
-        FREEMEMORY(spi->triangles2);
-        spi->nverts2=0;
-        spi->ntriangles2=0;
-        if(plane_triangulate==1){
-          Triangulate(spi->verts_smv, spi->nverts, spi->triangles, spi->ntriangles,
-            &(spi->verts2), &(spi->nverts2), &(spi->triangles2), &(spi->ntriangles2), smoke3d_delta);
-        }
         jj++;
       }
       if(plane_single == 1)break;
@@ -2427,67 +2231,6 @@ void DrawSmokePlanes(meshdata *meshi){
         xx1 = spi->verts_smv+3*i1;
         xx2 = spi->verts_smv+3*i2;
         xx3 = spi->verts_smv+3*i3;
-        glVertex3fv(xx1);
-        glVertex3fv(xx2);
-        glVertex3fv(xx3);
-      }
-    }
-    glEnd();
-  }
-}
-
-/* ------------------ DrawSmokePlanes2 ------------------------ */
-
-void DrawSmokePlanes2(meshdata *meshi){
-  int i;
-
-  if(plane_outline == 1){
-    glLineWidth(plane_outline_width);
-    glBegin(GL_LINES);
-    for(i = 0; i < meshi->nsmokeplaneinfo; i++){
-      meshplanedata *spi;
-      int j;
-
-      spi = meshi->smokeplaneinfo + i;
-      glColor3f(0.0, 0.0, 0.0);
-      for(j = 0; j < spi->ntriangles2; j++){
-        float *xx1, *xx2, *xx3;
-        int i1, i2, i3;
-
-        i1 = spi->triangles2[3 * j];
-        i2 = spi->triangles2[3 * j + 1];
-        i3 = spi->triangles2[3 * j + 2];
-        xx1 = spi->verts2 + 3 * i1;
-        xx2 = spi->verts2 + 3 * i2;
-        xx3 = spi->verts2 + 3 * i3;
-        glVertex3fv(xx1);
-        glVertex3fv(xx2);
-        glVertex3fv(xx2);
-        glVertex3fv(xx3);
-        glVertex3fv(xx3);
-        glVertex3fv(xx1);
-      }
-    }
-    glEnd();
-  }
-  if(plane_solid == 1){
-    glColor4f(0.0, 0.0, 1.0, 0.6);
-    glBegin(GL_TRIANGLES);
-    for(i = 0; i < meshi->nsmokeplaneinfo; i++){
-      meshplanedata *spi;
-      int j;
-
-      spi = meshi->smokeplaneinfo + i;
-      for(j = 0; j < spi->ntriangles2; j++){
-        float *xx1, *xx2, *xx3;
-        int i1, i2, i3;
-
-        i1 = spi->triangles2[3 * j];
-        i2 = spi->triangles2[3 * j + 1];
-        i3 = spi->triangles2[3 * j + 2];
-        xx1 = spi->verts2 + 3 * i1;
-        xx2 = spi->verts2 + 3 * i2;
-        xx3 = spi->verts2 + 3 * i3;
         glVertex3fv(xx1);
         glVertex3fv(xx2);
         glVertex3fv(xx3);
@@ -2588,70 +2331,6 @@ float GetSmokeTextureIndex(float *xyz){
   return val_fraction;
 #endif
   return 0.0;
-}
-
-/* ------------------ DrawSmokeTriangles ------------------------ */
- 
-int DrawSmokeTriangles(float *v1, float *v2, float *v3, float d1, float d2, float d3, float delta, int draw){
-  int count = 0;
-
-  if(d1 <= delta && d2 <= delta && d3 <= delta){
-    if(draw == 1){       // draw solid triangle
-      glVertex3fv(v1);
-      glVertex3fv(v2);
-      glVertex3fv(v3);
-    }
-    else if(draw == 2){  // draw triangle outline
-      glVertex3fv(v1);
-      glVertex3fv(v2);
-      glVertex3fv(v2);
-      glVertex3fv(v3);
-      glVertex3fv(v3);
-      glVertex3fv(v1);
-    }
-    return 1;
-  }
-  else{
-    float v[3], d, dv[3];
-
-//            v2
-//           /  \
-//          /    \
-//         /      v3
-//        /    / /
-//       V  /   /
-//      /     /
-//      /   /
-//     /  /
-//     / /
-//    v1
-
-    if(d1 > MAX(d2, d3)){
-      VEC3AVG(v, v1, v2);
-      VEC3DIFF(dv, v2, v1);
-      d = NORM3(dv);
-      d1 /= 2.0;
-      count += DrawSmokeTriangles(v, v2, v3, d1, d2,  d, delta, draw);
-      count += DrawSmokeTriangles(v, v3, v1,  d, d3, d1, delta, draw);
-    }
-    else if(d2 > MAX(d1, d3)){
-      VEC3AVG(v, v2, v3);
-      VEC3DIFF(dv, v2, v3);
-      d = NORM3(dv);
-      d2 /= 2.0;
-      count += DrawSmokeTriangles(v, v3, v1, d2, d3,  d, delta, draw);
-      count += DrawSmokeTriangles(v, v1, v2, d,  d1, d2, delta, draw);
-    }
-    else{
-      VEC3AVG(v, v3, v1);
-      VEC3DIFF(dv, v3, v1);
-      d = NORM3(dv);
-      d3 /= 2.0;
-      count += DrawSmokeTriangles(v, v1, v2, d3, d1,  d, delta, draw);
-      count += DrawSmokeTriangles(v, v2, v3,  d, d2, d3, delta, draw);
-    }
-  }
-  return count;
 }
 
 /* ------------------ DrawQuadSmoke ------------------------ */
@@ -2784,17 +2463,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
-
-#ifdef pp_GPUSMOKE
-  if(show_smoke3d_planes==1){
-    if(plane_triangulate == 1){
-      DrawSmokePlanes2(meshi);
-    }
-    else{
-      DrawSmokePlanes(meshi);
-    }
-  }
-#endif
 
 #ifdef pp_SMOKEDIAG
   START_TIMER(merge_time);
@@ -4638,23 +4306,37 @@ void DrawSmokeFrame(void){
 #ifdef pp_GPU
         if(usegpu==1){
 #ifdef pp_GPUSMOKE
-          if(use_newsmoke==1){
+          if(use_newsmoke==SMOKE3D_NEW){
             DrawSmoke3DGPU_NEW(smoke3di);
           }
-          else{
+          else if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3DGPU(smoke3di);
+          }
+          else{
+            meshdata *meshi;
+
+            meshi = meshinfo + smoke3di->blocknumber;
+            DrawSmokePlanes(meshi);
           }
 #else
           DrawSmoke3DGPU(smoke3di);
 #endif
         }
         else{
-          if(use_newsmoke==1){
+          if(use_newsmoke==SMOKE3D_NEW){
             DrawSmoke3D_NEW(smoke3di);
           }
-          else{
+          else if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3D(smoke3di);
           }
+#ifdef pp_GPUSMOKE
+          else{
+            meshdata *meshi;
+
+            meshi = meshinfo + smoke3di->blocknumber;
+            DrawSmokePlanes(meshi);
+          }
+#endif
         }
 #else
         DrawSmoke3D(smoke3di);

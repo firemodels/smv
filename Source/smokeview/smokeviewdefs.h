@@ -684,6 +684,10 @@ void _Sniff_Errors(char *whereat);
 #define GLUI_SHOWALL_VSLICE GLUI_SHOWALL
 #define GLUI_HIDEALL_VSLICE GLUI_HIDEALL
 
+#define SMOKE3D_ORIG 0
+#define SMOKE3D_NEW  1
+#define SMOKE3D_DIAG 2
+
 #define SHOW_VOLSMOKE -2
 #define HIDE_VOLSMOKE -1
 #define TOGGLE_VOLSMOKE -3
