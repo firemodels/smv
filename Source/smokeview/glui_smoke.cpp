@@ -683,6 +683,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostics"),false);
     CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("Update"), &compute_smoke3d_planes);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("disable frustum cull check"), &smoke_frustum);
     CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("fast interpolation"), &smoke_interp);

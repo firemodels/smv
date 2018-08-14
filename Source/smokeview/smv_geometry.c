@@ -744,7 +744,23 @@ void ExtractFrustum(void){
    }
 }
 
-/* ------------------ PointInFrustumV ------------------------ */
+/* ------------------ FDSPointInFrustum ------------------------ */
+
+int FDSPointInFrustum(float *xyz){
+  int i;
+  float xyz_smv[3];
+
+  xyz_smv[0] = NORMALIZE_X(xyz[0]);
+  xyz_smv[1] = NORMALIZE_Y(xyz[1]);
+  xyz_smv[2] = NORMALIZE_Z(xyz[2]);
+
+  for(i = 0; i<6; i++){
+    if(DOT3(frustum[i], xyz_smv)+frustum[i][3]<=0)return 0;
+  }
+  return 1;
+}
+
+/* ------------------ PointInFrustum ------------------------ */
 
 int PointInFrustum(float *xyz){
   int i;

@@ -14,7 +14,7 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level,smoke3ddata *smoke3di);
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, int f1, int f2, int f3, float del, int level,smoke3ddata *smoke3di);
 void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
@@ -792,6 +792,7 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
       float *v1, *v2, *v3;
       int iv1, iv2, iv3;
       float t1=0.0, t2 = 0.0, t3 = 0.0;
+      int f1, f2, f3;
 
       iv1 = spi->triangles[3*j];
       iv2 = spi->triangles[3*j + 1];
@@ -799,7 +800,12 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
       v1 = spi->verts + 3*iv1;
       v2 = spi->verts + 3*iv2;
       v3 = spi->verts + 3*iv3;
-      DrawTriangleSmoke(v1, v2, v3, t1,t2,t3, del2, 0,smoke3di);
+      f1 = FDSPointInFrustum(v1);
+      f2 = FDSPointInFrustum(v2);
+      f3 = FDSPointInFrustum(v3);
+      if(smoke_frustum==1||f1==1||f2==1||f3==1){
+        DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, f1, f2, f3, del2, 0, smoke3di);
+      }
     }
   }
   TransparentOff();
@@ -2230,6 +2236,7 @@ float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
 
   meshdata *valmesh;
 
+  return 5;
   valmesh = meshinfo + smoke3di->blocknumber;
 
   xplt = valmesh->xplt_orig;
@@ -2443,7 +2450,10 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
 
 /* ------------------ DrawQuadSmoke ------------------------ */
 
-void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level, smoke3ddata *smoke3di){
+void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
+                   float t1, float t2, float t3, float t4,
+                   int p1, int p2, int p3, int p4,
+                   float del, int level, smoke3ddata *smoke3di){
   float d13, d24;
   float dx, dy, dz;
 
@@ -2460,12 +2470,20 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13<d24){
-    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del, level+1, smoke3di);
-    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, del, level+1, smoke3di);
+    if(smoke_frustum==1||p1==1||p2==1||p3==1){
+      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, p1, p2, p3, del, level+1, smoke3di);
+    }
+    if(smoke_frustum==1||p1==1||p3==1||p4==1){
+      DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, p1, p3, p4, del, level+1, smoke3di);
+    }
   }
   else{
-    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, del, level+1, smoke3di);
-    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, del, level+1, smoke3di);
+    if(smoke_frustum==1||p1==1||p2==1||p4==1){
+      DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, p1, p2, p4, del, level+1, smoke3di);
+    }
+    if(smoke_frustum==1||p2==1||p3==1||p4==1){
+      DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, p2, p3, p4, del, level+1, smoke3di);
+    }
   }
   if(level==0){
     glEnd();
@@ -2475,7 +2493,7 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4, float t1, float t
 
 /* ------------------ DrawTriangleSmoke ------------------------ */
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level, smoke3ddata *smoke3di){
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, int f1, int f2, int f3, float del, int level, smoke3ddata *smoke3di){
 
   float d12, d13, d23;
   float v12[3], v13[3], v23[3];
@@ -2509,31 +2527,56 @@ void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, floa
   }
   else{
     if(d12<=MIN(d13, d23)){
+      int f13, f23;
+
       VERT_AVG2(v1, v3, v13);
       t13 = GetSmokeTextureIndex(v13,smoke3di);
       VERT_AVG2(v2, v3, v23);
       t23 = GetSmokeTextureIndex(v23,smoke3di);
+      f13 = FDSPointInFrustum(v13);
+      f23 = FDSPointInFrustum(v23);
 
-      DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, del, level+1,smoke3di);
-      DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, del, level+1, smoke3di);
+      if(smoke_frustum==1||f3==1||f13==1||f23==1){
+        DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, f3, f13, f23, del, level+1,smoke3di);
+      }
+      if(smoke_frustum==1||f13==1||f1==1||f2==1||f23==1){
+        DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, f13, f1, f2, f23, del, level+1, smoke3di);
+      }
     }
     else if(d13<=MIN(d12, d23)){
+      int f12, f23;
+      
       VERT_AVG2(v1, v2, v12);
       t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v2, v3, v23);
       t23 = GetSmokeTextureIndex(v23, smoke3di);
+      f12 = FDSPointInFrustum(v12);
+      f23 = FDSPointInFrustum(v23);
 
-      DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, del, level+1, smoke3di);
-      DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, del, level+1, smoke3di);
+      if(smoke_frustum==1||f12==1||f2==1||f23==1){
+        DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, f12, f2, f23, del, level+1, smoke3di);
+      }
+      if(smoke_frustum==1||f1==1||f12==1||f23==1||f3==1){
+        DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, f1, f12, f23, f3, del, level+1, smoke3di);
+      }
     }
     else{ // d23<=MIN(d12,d13)
+      int f12, f13;
+
       VERT_AVG2(v1, v2, v12);
       t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v1, v3, v13);
       t13 = GetSmokeTextureIndex(v13, smoke3di);
 
-      DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, del, level+1, smoke3di);
-      DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, del, level+1, smoke3di);
+      f12 = FDSPointInFrustum(v12);
+      f13 = FDSPointInFrustum(v13);
+
+      if(smoke_frustum==1||f1==1||f12==1||f13==1){
+        DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, f1, f12, f13, del, level+1, smoke3di);
+      }
+      if(smoke_frustum==1||f12==1||f2==1||f3==1||f13==1){
+        DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, f12, f2, f3, f13, del, level+1, smoke3di);
+      }
     }
   }
   if(level==0){
@@ -5621,7 +5664,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
-  if(smoke3d_black==1){
+  if(smoke3d_black==1||use_newsmoke==SMOKE3D_NEW){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{
