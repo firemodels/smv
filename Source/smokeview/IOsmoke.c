@@ -808,7 +808,6 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
 void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   int i;
   meshdata *meshi;
-  float del2;
   float *boxmin, *boxmax;
 
   meshi = meshinfo + smoke3di->blocknumber;
@@ -819,8 +818,6 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   glUniform3f(GPUnewsmoke_boxmin, boxmin[0], boxmin[1], boxmin[2]);
   glUniform3f(GPUnewsmoke_boxmax, boxmax[0], boxmax[1], boxmax[2]);
 
-
-  del2 = smoke3d_delta_par*smoke3d_delta_par;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -2306,13 +2303,8 @@ float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
   int ibar, jbar, kbar;
   int nx, ny, nz;
   float dx, dy, dz;
-  float val000, val100, val010, val110;
-  float val001, val101, val011, val111;
-  float val00, val10, val01, val11;
-  float val0, val1;
-  float val, val_fraction;
+  float val_fraction;
   int ijk;
-  int iplus = 0, jplus = 0, kplus = 0;
 
   meshdata *valmesh;
 
