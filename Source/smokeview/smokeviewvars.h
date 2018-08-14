@@ -584,6 +584,11 @@ SVEXTERN int GPUzone_boxmin, GPUzone_boxmax;
 SVEXTERN int GPUzone_zlay;
 SVEXTERN int GPUzone_odl, GPUzone_odu;
 
+#ifdef pp_GPUSMOKE
+SVEXTERN int GPUnewsmoke_boxmin, GPUnewsmoke_boxmax;
+SVEXTERN int GPUnewsmoke_valtexture;
+#endif
+
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;
 SVEXTERN int GPUvol_soot_density, GPUvol_fire, GPUvol_blockage;

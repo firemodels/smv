@@ -10,6 +10,9 @@
 #include "smokeviewvars.h"
 
 GLuint p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
+#ifdef pp_GPUSMOKE
+GLuint p_newsmoke;
+#endif
 
 #define LINK_BAD 0
 #define LINK_GOOD 1
@@ -191,6 +194,61 @@ int SetZoneSmokeShaders(){
 
   return 1;
 }
+
+#ifdef pp_GPUSMOKE
+/* ------------------ SetNewSmokeShaders ------------------------ */
+
+int SetNewSmokeShaders(void){
+  GLuint vert_shader, frag_shader;
+
+  const GLchar *FragmentShaderSource[] = {
+    "#version 120\n"
+    "  uniform sampler3D val_texture;"
+    "uniform vec3 boxmin,boxmax;"
+    "  varying vec3 fragpos;"
+    "void main(){"
+    "  vec3 position;"
+    "  float val;"
+
+    "  position = (fragpos-boxmin)/(boxmax-boxmin);"
+    "  val = texture3D(val_texture,position).x;"
+    "  gl_FragColor = vec4(0,0,0,val);"
+    "}"
+  };
+
+  const GLchar *VertexShaderSource[] = {
+    "#version 120\n"
+    "varying vec3 fragpos;"
+    "void main(){"
+    "  fragpos=vec3(gl_Vertex);"
+    "  gl_Position=ftransform();"
+    "}"
+  };
+
+  vert_shader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vert_shader, 1, VertexShaderSource, NULL);
+  glCompileShader(vert_shader);
+  if(ShaderCompileStatus(vert_shader, "3D slice vertex shader(new)") == GL_FALSE)return 0;;
+
+  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(frag_shader, 1, FragmentShaderSource, NULL);
+  glCompileShader(frag_shader);
+  if(ShaderCompileStatus(frag_shader, "3D slice fragment shader(new)") == GL_FALSE)return 0;;
+
+  p_newsmoke = glCreateProgram();
+  glAttachShader(p_newsmoke, vert_shader);
+  glAttachShader(p_newsmoke, frag_shader);
+
+  glLinkProgram(p_newsmoke);
+  if(ShaderLinkStatus(p_newsmoke) == GL_FALSE)return 0;
+
+  GPUnewsmoke_valtexture = glGetUniformLocation(p_newsmoke, "valtexture");
+  GPUnewsmoke_boxmin = glGetUniformLocation(p_newsmoke,"boxmin");
+  GPUnewsmoke_boxmax = glGetUniformLocation(p_newsmoke,"boxmax");
+
+  return 1;
+}
+#endif
 
 /* ------------------ Set3DSliceShaders ------------------------ */
 
@@ -682,6 +740,14 @@ void LoadZoneSmokeShaders(void){
   glUseProgram(p_zonesmoke);
 }
 
+/* ------------------ LoadNewSmokeShaders ------------------------ */
+
+#ifdef pp_GPUSMOKE
+void LoadNewSmokeShaders(void){
+  glUseProgram(p_newsmoke);
+}
+#endif
+
 /* ------------------ LoadSmokeShaders ------------------------ */
 
 void LoadSmokeShaders(void){
@@ -716,6 +782,15 @@ int InitShaders(void){
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
     PRINTF("  GPU shaders\n");
+#ifdef pp_GPUSMOKE
+    if(SetNewSmokeShaders() == 1){
+      PRINTF("    3D smoke(new) loaded\n");
+    }
+    else{
+      PRINTF("    3D smoke(new) failed to load\n");
+      err = 1;
+    }
+#endif
     if(SetSmokeShaders()==1){
       PRINTF("    3D smoke loaded\n");
     }

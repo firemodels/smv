@@ -375,6 +375,9 @@ void InitMesh(meshdata *meshi){
   meshi->smokedir = 1;
   meshi->merge_alpha = NULL;
   meshi->merge_color = NULL;
+#ifdef pp_GPUSMOKE
+  meshi->fbuffer = NULL;
+#endif
   meshi->smokecolor_ptr = NULL;
   meshi->smokealpha_ptr = NULL;
   meshi->dx = 1.0;
@@ -4998,7 +5001,7 @@ int ReadSMV(char *file, char *file2){
 
     if(Match(buffer,"PROP") == 1){
       propdata *propi;
-      char *fbuffer;
+      char *file_buffer;
       char proplabel[255];
       int lenbuf;
       int ntextures_local;
@@ -5011,23 +5014,23 @@ int ReadSMV(char *file, char *file2){
         BREAK;  // prop label
       }
       TrimBack(proplabel);
-      fbuffer=TrimFront(proplabel);
+      file_buffer=TrimFront(proplabel);
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;  // number of smokeview_id's
       }
       sscanf(buffer,"%i",&nsmokeview_ids);
 
-      InitProp(propi,nsmokeview_ids,fbuffer);
+      InitProp(propi,nsmokeview_ids, file_buffer);
       for(i=0;i<nsmokeview_ids;i++){
         if(FGETS(buffer,255,stream)==NULL){
           BREAK; // smokeview_id
         }
         TrimBack(buffer);
-        fbuffer=TrimFront(buffer);
-        lenbuf=strlen(fbuffer);
+        file_buffer =TrimFront(buffer);
+        lenbuf=strlen(file_buffer);
         NewMemory((void **)&smokeview_id,lenbuf+1);
-        strcpy(smokeview_id,fbuffer);
+        strcpy(smokeview_id, file_buffer);
         propi->smokeview_ids[i]=smokeview_id;
         propi->smv_objects[i]=GetSmvObjectType(propi->smokeview_ids[i],missing_device);
       }

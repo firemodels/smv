@@ -370,6 +370,9 @@ EXTERNCPP void GetDepthTexture( void );
 EXTERNCPP void CreateDepthTexture( void );
 #endif
 EXTERNCPP int  InitShaders(void);
+#ifdef pp_GPUSMOKE
+EXTERNCPP void LoadNewSmokeShaders(void);
+#endif
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);

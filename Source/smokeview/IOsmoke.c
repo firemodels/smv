@@ -767,10 +767,96 @@ int IsSmokeInMesh(meshdata *meshi){
 
 #ifdef pp_GPU
 
+/* ------------------ UpdateSmoke3DTexture ------------------------ */
+
+#ifdef pp_GPUSMOKE
+void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
+  meshdata *meshi;
+  GLsizei nx, ny, nz, nxy;
+  int i, j, k;
+
+  GLint xoffset = 0, yoffset = 0, zoffset = 0;
+  unsigned char *cbuffer;
+  float *fbuffer;
+
+  meshi = meshinfo + smoke3di->blocknumber;
+  fbuffer = meshi->fbuffer;
+  nx = meshi->ibar + 1;
+  ny = meshi->jbar + 1;
+  nz = meshi->kbar + 1;
+  nxy = nx*ny;
+
+  for(k = 0; k < nz; k++){
+    for(j = 0; j < ny; j++){
+      float *v;
+
+      cbuffer = meshi->smokealpha_ptr + IJKNODE(0, j, k);
+      v = meshi->fbuffer + IJKNODE(0, j, k);
+      for(i = 0; i < nx; i++){
+        *v++ = (float)(*cbuffer)/255.0;
+        cbuffer++;
+      }
+    }
+  }
+  
+  cbuffer = meshi->smokealpha_ptr;
+  glActiveTexture(GL_TEXTURE0);
+  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, fbuffer);
+}
 
 /* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
-
 void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
+  int i;
+  meshdata *meshi;
+  float del2;
+  float *boxmin, *boxmax;
+
+  meshi = meshinfo + smoke3di->blocknumber;
+  UpdateSmoke3DTexture(smoke3di);
+  boxmin = meshi->boxmin;
+  boxmax = meshi->boxmax;
+  glUniform1i(GPUnewsmoke_valtexture, 0);
+  glUniform3f(GPUnewsmoke_boxmin, boxmin[0], boxmin[1], boxmin[2]);
+  glUniform3f(GPUnewsmoke_boxmax, boxmax[0], boxmax[1], boxmax[2]);
+
+
+  del2 = smoke3d_delta_par*smoke3d_delta_par;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  TransparentOn();
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    spi = meshi->smokeplaneinfo + i;
+    for(j = 0; j<spi->ntriangles; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+
+      iv1 = spi->triangles[3*j];
+      iv2 = spi->triangles[3*j + 1];
+      iv3 = spi->triangles[3*j + 2];
+      v1 = spi->verts + 3*iv1;
+      v2 = spi->verts + 3*iv2;
+      v3 = spi->verts + 3*iv3;
+
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+    }
+  }
+  glEnd();
+  TransparentOff();
+  glPopMatrix();
+}
+
+/* ------------------ DrawSmoke3D_NEW ------------------------ */
+
+void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
+
   int i;
   meshdata *meshi;
   float del2;
@@ -811,13 +897,7 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   TransparentOff();
   glPopMatrix();
 }
-
-/* ------------------ DrawSmoke3D_NEW ------------------------ */
-
-void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
-  DrawSmoke3DGPU_NEW(smoke3di);
-}
-  
+#endif  
   /* ------------------ DrawSmoke3DGPU ------------------------ */
 
 void DrawSmoke3DGPU(smoke3ddata *smoke3di){
@@ -4444,7 +4524,14 @@ void DrawSmokeFrame(void){
       LoadVolsmokeShaders();
     }
     else{
-      LoadSmokeShaders();
+      if(use_newsmoke == SMOKE3D_NEW){
+#ifdef pp_GPUSMOKE
+        LoadNewSmokeShaders();
+#endif
+      }
+      else{
+        LoadSmokeShaders();
+      }
     }
   }
 #endif
@@ -4497,7 +4584,9 @@ void DrawSmokeFrame(void){
         }
         else{
           if(use_newsmoke==SMOKE3D_NEW){
+#ifdef pp_GPUSMOKE
             DrawSmoke3D_NEW(smoke3di);
+#endif
           }
           else if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3D(smoke3di);
@@ -5023,6 +5112,9 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(flag!=RELOAD){
     FREEMEMORY(meshi->merge_alpha);
     FREEMEMORY(meshi->merge_color);
+#ifdef pp_GPUSMOKE
+    FREEMEMORY(meshi->fbuffer);
+#endif
   }
 
   if(flag==UNLOAD){
@@ -5140,7 +5232,10 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
      NewResizeMemory(smoke3di->smokeview_tmp,       smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(smoke3di->smokeframe_out,      smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(meshi->merge_color,          4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
-     NewResizeMemory(meshi->merge_alpha,            smoke3di->nchars_uncompressed*sizeof(unsigned char))==0){
+#ifdef  pp_GPUSMOKE
+     NewResizeMemory(meshi->fbuffer,                smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
+#endif
+     NewResizeMemory(meshi->merge_alpha, smoke3di->nchars_uncompressed * sizeof(unsigned char)) == 0){
      ReadSmoke3D(iframe,ifile,UNLOAD,&error);
      *errorcode=1;
      fprintf(stderr,"\n*** Error: problems allocating memory for 3d smoke file: %s\n",smoke3di->file);
@@ -5500,7 +5595,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 #ifdef pp_GPU
     if(usegpu==1)continue;
 #endif
-    if(meshi->merge_color==NULL){
+#ifdef pp_GPUSMOKE
+    if(meshi->fbuffer == NULL){
+      NewMemory((void **)&meshi->fbuffer, smoke3di->nchars_uncompressed * sizeof(float));
+    }
+#endif
+    if(meshi->merge_color == NULL){
       NewMemory((void **)&meshi->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
     }
     if(meshi->merge_alpha==NULL){

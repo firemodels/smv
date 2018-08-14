@@ -750,6 +750,9 @@ typedef struct _meshdata {
 
   unsigned char *merge_color,*merge_alpha;
   unsigned char *smokecolor_ptr, *smokealpha_ptr;
+#ifdef pp_GPUSMOKE
+  float *fbuffer;
+#endif
   float *light_fraction;
   unsigned char *uc_light_fraction;
 
