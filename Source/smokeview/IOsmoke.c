@@ -2271,6 +2271,12 @@ float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
   vv = valmesh->smokealpha_ptr + ijk;
   val_fraction = (float)vv[0] / 255.0;
   val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+  {
+    float ratio;
+
+    ratio = smoke3d_delta_perp / smoke3d_delta;
+    if(ratio >= 1.1)val_fraction = 1.0 - pow(1 - val_fraction, ratio);
+  }
   return val_fraction;
 }
 
@@ -2357,6 +2363,12 @@ float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
     val = MIX(dz,   val1,   val0);
   val_fraction = val/255.0;
   val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+  {
+    float ratio;
+
+    ratio = smoke3d_delta_perp / smoke3d_delta;
+    if(ratio >= 1.1)val_fraction = 1.0 - pow(1 - val_fraction, ratio);
+  }
   return val_fraction;
 }
 

@@ -34,6 +34,8 @@ SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
 SVEXTERN int SVDECL(plane_solid, 1);
 SVEXTERN float SVDECL(plane_distance, 0.0);
 SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
+SVEXTERN float SVDECL(smoke3d_delta, 0.5);
+SVEXTERN float SVDECL(smoke3d_multiple, 1.0);
 SVEXTERN float SVDECL(smoke3d_delta_par,0.5);
 SVEXTERN float SVDECL(smoke3d_delta_perp, 0.5);
 #else
