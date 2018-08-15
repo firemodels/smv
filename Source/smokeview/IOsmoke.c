@@ -777,10 +777,8 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
 
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
   unsigned char *cbuffer;
-  float *fbuffer;
 
   meshi = meshinfo + smoke3di->blocknumber;
-  fbuffer = meshi->fbuffer;
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
   nz = meshi->kbar + 1;
@@ -799,9 +797,8 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
     }
   }
   
-  cbuffer = meshi->smokealpha_ptr;
   glActiveTexture(GL_TEXTURE0);
-  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, fbuffer);
+  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->fbuffer);
 }
 
 /* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
@@ -5667,6 +5664,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
   int i;
   int fire_index = HRRPUV;
+  int total1 = 0, total2=0;
 
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di, *smoke_soot;
@@ -5709,7 +5707,9 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     smoke3di = smoke3dinfo+i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
+    total1++;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
+    total2++;
     meshi = meshinfo+smoke3di->blocknumber;
 
     if(fire_halfdepth<=0.0){
@@ -5751,6 +5751,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     meshi->smokecolor_ptr = firecolor;
     meshi->smokealpha_ptr = sootcolor;
   }
+  printf("merging %i out of %i\n", total2, total1);
 }
 
 /* ------------------ MergeSmoke3D ------------------------ */
