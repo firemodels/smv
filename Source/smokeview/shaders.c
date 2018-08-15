@@ -203,9 +203,9 @@ int SetNewSmokeShaders(void){
 
   const GLchar *FragmentShaderSource[] = {
     "#version 120\n"
-    "  uniform sampler3D val_texture;"
+    "uniform sampler3D val_texture;"
     "uniform vec3 boxmin,boxmax;"
-    "  varying vec3 fragpos;"
+    "varying vec3 fragpos;"
     "void main(){"
     "  vec3 position;"
     "  float val;"
