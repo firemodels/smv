@@ -684,7 +684,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     smoke3d_delta_perp = smoke3d_delta_par;
     smoke3d_delta = smoke3d_delta_par;
     SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA, Smoke3dCB);
-    SPINNER_smoke3d_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpindicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_multiple, SMOKE_MULTIPLE, Smoke3dCB);
+    SPINNER_smoke3d_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_multiple, SMOKE_MULTIPLE, Smoke3dCB);
 
     ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostics"),false);
     CHECKBOX_compute_smoke=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("Update"), &compute_smoke3d_planes);
