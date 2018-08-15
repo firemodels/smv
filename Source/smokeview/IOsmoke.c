@@ -739,7 +739,7 @@ int IsSmokeComponentPresent(smoke3ddata *smoke3di){
     if(smoke3di->smokestate[i].index == -1)continue;
     smoke_component = smoke3dinfo + smoke3di->smokestate[i].index;
     if(smoke_component->loaded != 1 || smoke_component->display != 1)continue;
-    if(smoke_component->frame_all_zeros[smoke_component->ismoke3d_time] == 1)continue;
+    if(smoke_component->frame_all_zeros[smoke_component->ismoke3d_time] == SMOKE3D_ZEROS_ALL)continue;
     return 1;
   }
   return 0;
@@ -5027,7 +5027,7 @@ void SetSmokeColorFlags(void){
     smoke3di = smoke3dinfo+i;
     if(smoke3di->loaded==0||smoke3di->display==0||smoke3di->frame_all_zeros==NULL)continue;
     for(j = 0;j<smoke3di->ntimes_full;j++){
-      smoke3di->frame_all_zeros[j] = 2;
+      smoke3di->frame_all_zeros[j] = SMOKE3D_ZEROS_UNKNOWN;
     }
   }
 }
@@ -5222,7 +5222,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
      return 0;
   }
   for(i=0;i<smoke3di->ntimes_full;i++){
-    smoke3di->frame_all_zeros[i]=2;
+    smoke3di->frame_all_zeros[i]=SMOKE3D_ZEROS_UNKNOWN;
   }
 
   ncomp_smoke_total=0;
@@ -5440,15 +5440,15 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     ASSERT(FFALSE);
     break;
   }
-  if(smoke3di->frame_all_zeros[iframe_local]==2){
+  if(smoke3di->frame_all_zeros[iframe_local]== SMOKE3D_ZEROS_UNKNOWN){
     int i;
     unsigned char *smokeframe_in;
 
     smokeframe_in = smoke3di->smokeframe_in;
-    smoke3di->frame_all_zeros[iframe_local]=1;
+    smoke3di->frame_all_zeros[iframe_local]= SMOKE3D_ZEROS_ALL;
     for(i=0;i<smoke3di->nchars_uncompressed;i++){
       if(smokeframe_in[i]!=0){
-        smoke3di->frame_all_zeros[iframe_local]=0;
+        smoke3di->frame_all_zeros[iframe_local]= SMOKE3D_ZEROS_SOME;
         break;
       }
     }
