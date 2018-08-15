@@ -2296,15 +2296,13 @@ void DrawSmokePlanes(meshdata *meshi){
 /* ------------------ GetSmokeTextureIndexFast ------------------------ */
 
 float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
-  int i, j, k;
+  int i, j, k, ijk;
   unsigned char *vv;
   float *xplt, *yplt, *zplt;
   float dxbar, dybar, dzbar;
   int ibar, jbar, kbar;
   int nx, ny, nz;
-  float dx, dy, dz;
   float val_fraction;
-  int ijk;
 
   meshdata *valmesh;
 
@@ -2329,16 +2327,7 @@ float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
   j = GETINDEX(xyz[1], yplt[0], dybar, ny);
   k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
 
-  // val(i,j,k) = di*nj*nk + dj*nk + dk
-  //ijk = i*nz*ny+j*nz+k;
   ijk = i + nx*(j + k*ny);
-
-  dx = (xyz[0] - xplt[i]) / dxbar;
-  dx = CLAMP(dx, 0.0, 1.0);
-  dy = (xyz[1] - yplt[j]) / dybar;
-  dy = CLAMP(dy, 0.0, 1.0);
-  dz = (xyz[2] - zplt[k]) / dzbar;
-  dz = CLAMP(dz, 0.0, 1.0);
 
   vv = valmesh->smokealpha_ptr + ijk;
   val_fraction = (float)vv[0] / 255.0;
@@ -2373,9 +2362,7 @@ float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
 
   meshdata *valmesh;
 
-  if(smoke_interp == 1){
-    return GetSmokeTextureIndexFast(xyz, smoke3di);
-  }
+  if(smoke_interp == 1)return GetSmokeTextureIndexFast(xyz, smoke3di);
 
   valmesh = meshinfo + smoke3di->blocknumber;
 
@@ -2397,8 +2384,6 @@ float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
   j = GETINDEX(xyz[1], yplt[0], dybar, ny);
   k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
 
-  // val(i,j,k) = di*nj*nk + dj*nk + dk
-  //ijk = i*nz*ny+j*nz+k;
   ijk = i+nx*(j+k*ny);
 
   dx = (xyz[0]-xplt[i])/dxbar;
@@ -2450,9 +2435,7 @@ void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4, float del,
   float d13, d24;
   float dx, dy, dz;
 
-  if(level == 0){
-    glBegin(GL_LINES);
-  }
+  if(level == 0)glBegin(GL_LINES);
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13 < d24){
@@ -2463,10 +2446,7 @@ void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4, float del,
     DrawTriangleSmokeOutline(v1, v2, v4, del, level + 1);
     DrawTriangleSmokeOutline(v2, v3, v4, del, level + 1);
   }
-  if(level == 0){
-    glEnd();
-    glDisable(GL_TEXTURE_1D);
-  }
+  if(level == 0)glEnd();
 }
 
 /* ------------------ DrawTriangleSmokeOutline ------------------------ */
@@ -2478,9 +2458,8 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
   float dx, dy, dz;
   int drawit=0;
 
-  if(level == 0){
-    glBegin(GL_LINES);
-  }
+  if(level == 0)glBegin(GL_LINES);
+
   DIST3(v1, v2, d12);
   DIST3(v1, v3, d13);
   DIST3(v2, v3, d23);
@@ -2527,9 +2506,7 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
       DrawQuadSmokeOutline(v12, v2, v3, v13, del, level + 1);
     }
   }
-  if(level == 0){
-    glEnd();
-  }
+  if(level == 0)glEnd();
 }
 
 /* ------------------ DrawQuadSmoke ------------------------ */
@@ -2542,9 +2519,9 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
   float dx, dy, dz;
 
   if(level==0){
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glEnable(GL_TEXTURE_1D);
-    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+ //   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+ //   glEnable(GL_TEXTURE_1D);
+ //   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
     glBegin(GL_TRIANGLES);
     t1 = GetSmokeTextureIndex(v1, smoke3di);
     t2 = GetSmokeTextureIndex(v2, smoke3di);
@@ -2571,7 +2548,7 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
   }
   if(level==0){
     glEnd();
-    glDisable(GL_TEXTURE_1D);
+ //   glDisable(GL_TEXTURE_1D);
   }
 }
 
@@ -5757,7 +5734,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       }
     }
 #ifdef pp_GPU
-    if(usegpu==1)continue;
+    if(usegpu==1&&use_newsmoke==SMOKE3D_ORIG)continue;
 #endif
     ASSERT(firecolor!=NULL||sootcolor!=NULL);
     meshi->smokecolor_ptr = firecolor;
