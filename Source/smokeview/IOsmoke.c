@@ -2030,7 +2030,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
   float *xyz0, *norm;
   float d, distmin, distmax;
   int firstdist = 1;
-  float xx[2], yy[2], zz[2];
+  float xx[2], yy[2], zz[2], norm_align[3];
 
   /* stuff min and max grid data into a more convenient form
   assuming the following grid numbering scheme
@@ -2063,6 +2063,12 @@ void UpdateSmoke3DPlanes(float delta_perp){
     int firstmin = 1, firstmax=1;
 
     meshi = meshinfo + i;
+    if(smoke_mesh_aligned == 1){
+      norm_align[0] = -meshi->norm[0];
+      norm_align[1] = -meshi->norm[1];
+      norm_align[2] = -meshi->norm[2];
+      norm = norm_align;
+    }
     boxmin = meshi->boxmin;
     boxmax = meshi->boxmax;
     verts = meshi->verts;
@@ -2091,7 +2097,12 @@ void UpdateSmoke3DPlanes(float delta_perp){
       xyz = meshi->verts + 3 * j;
       VEC3DIFF(xyzrel, xyz, xyz0);
       distxyz = PLANEDIST(norm, xyz0, xyz);
-      dist[j] = SIGN(distxyz)*NORM3(xyzrel);
+      if(smoke_mesh_aligned==1){
+        dist[j] = distxyz;
+      }
+      else{
+        dist[j] = SIGN(distxyz)*NORM3(xyzrel);
+      }
       if(dist[j] >= 0.0){
         if(firstmin==0){
           meshi->vert_distmin = MIN(meshi->vert_distmin, dist[j]);

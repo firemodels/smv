@@ -27,6 +27,7 @@ SVEXTERN int SVDECL(plane_normal, 1);
 SVEXTERN int SVDECL(smoke_frustum, 0);
 SVEXTERN int SVDECL(smoke_interp, 0);
 SVEXTERN int SVDECL(plane_labels, 0);
+SVEXTERN int SVDECL(smoke_mesh_aligned, 0);
 SVEXTERN int SVDECL(plane_single, 1);
 SVEXTERN int SVDECL(plane_outline, 1);
 SVEXTERN float SVDECL(plane_outline_width, 2);
