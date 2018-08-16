@@ -21,7 +21,7 @@ void _Sniff_Errors(char *whereat, char *file, int line){
     char *glu_error;
 
     glu_error=(char *)gluErrorString((unsigned int)error);
-    fprintf(stderr,"*** Error: OpenGL error:%s, %s \n file:%s line: %i\n\n",
+    fprintf(stderr,"\n*** Error: OpenGL error:%s, %s \n file:%s line: %i\n",
       glu_error,whereat,file,line);
   }
 }
