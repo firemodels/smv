@@ -1385,7 +1385,6 @@ void InitVars(void){
   stretch_var_white=0;
   move_var=0;
 
-  snifferrornumber=0;
   xyz_dir=0;
   which_face=2;
   showfontmenu=1;

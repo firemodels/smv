@@ -833,7 +833,6 @@ SVEXTERN int SVDECL(itourknots,-1);
 SVEXTERN int stretch_var_black, stretch_var_white, move_var;
 
 SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
-SVEXTERN int snifferrornumber;
 SVEXTERN int xyz_dir;
 SVEXTERN int which_face;
 SVEXTERN int showfontmenu;

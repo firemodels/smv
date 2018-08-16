@@ -799,6 +799,7 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   
   glActiveTexture(GL_TEXTURE0);
   glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->fbuffer);
+  SNIFF_ERRORS("after  UpdateSmoke3DTexture/glTexSubImage3D");
 }
 
 /* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
@@ -845,6 +846,7 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   glEnd();
   TransparentOff();
   glPopMatrix();
+  SNIFF_ERRORS("after smoke DrawSmoke3DGPU_NEW");
 }
 
 /* ------------------ DrawSmoke3D_NEW ------------------------ */
@@ -5751,7 +5753,6 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     meshi->smokecolor_ptr = firecolor;
     meshi->smokealpha_ptr = sootcolor;
   }
-  printf("merging %i out of %i\n", total2, total1);
 }
 
 /* ------------------ MergeSmoke3D ------------------------ */
