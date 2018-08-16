@@ -22,7 +22,7 @@ void _Sniff_Errors(char *whereat, char *file, int line){
 
     glu_error=(char *)gluErrorString((unsigned int)error);
     fprintf(stderr,"*** Error: OpenGL error:%s, %s \n file:%s line: %i\n\n",
-      glu_error,whereat,__FILE__,__LINE__);
+      glu_error,whereat,file,line);
   }
 }
 
