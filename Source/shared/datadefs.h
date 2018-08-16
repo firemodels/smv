@@ -257,6 +257,10 @@
 #define IJKNODE(i,j,k) ((i)+(j)*nx+(k)*nxy)
 #endif
 
+#ifndef F_IJKNODE
+#define F_IJKNODE(i,j,k) ((i)*nyz+(j)*nz+(k))
+#endif
+
 #ifndef IJKN
 #define IJKN(i,j,k,n) (IJKNODE(i,j,k)+(n)*nxyz)
 #endif
