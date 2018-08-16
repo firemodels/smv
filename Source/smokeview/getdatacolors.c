@@ -1252,7 +1252,7 @@ void UpdateTexturebar(void){
     SNIFF_ERRORS("UpdateTexturebar - glTexSubImage1D (rgb_volsmokecolormap) ");
     glActiveTexture(GL_TEXTURE0);
   }
-  if(gpuactive==1&&SHOW_gslice_data==1){
+  if(gpuactive==1&&SHOW_gslice_data==1&& slice3d_colormap_id_defined==1){
     glActiveTexture(GL_TEXTURE4);
     glTexSubImage1D(GL_TEXTURE_1D,0,0,256,GL_RGBA,GL_FLOAT, rgb_slice);
     SNIFF_ERRORS("updatecolors after glTexSubImage1D (rgb_slice)");
