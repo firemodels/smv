@@ -3835,7 +3835,7 @@ void InitSlice3DTexture(meshdata *meshi){
 
   glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &meshi->slice3d_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->smoke_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->slice3d_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
