@@ -615,8 +615,10 @@ typedef struct _meshdata {
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint     smoke_texture_id,     fire_texture_id,     light_texture_id;
-  float *smoke_texture_buffer,*fire_texture_buffer,*light_texture_buffer;
+  GLuint smoke_texture_id;
+  float *smoke_texture_buffer;
+  GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
   GLuint slice3d_texture_id;
   float *slice3d_texture_buffer,*slice3d_c_buffer;
 #endif
@@ -778,8 +780,8 @@ typedef struct _meshdata {
 typedef struct _supermeshdata {
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint smoke_texture_id,         fire_texture_id,     light_texture_id;
-  float *smoke_texture_buffer,*fire_texture_buffer,*light_texture_buffer;
+  GLuint volsmoke_texture_id,         volfire_texture_id,     vollight_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
 #endif
   float *f_iblank_cell;
   float boxmin_scaled[3], boxmax_scaled[3];

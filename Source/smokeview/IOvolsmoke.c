@@ -304,58 +304,58 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   FFLUSH();
 
   glActiveTexture(GL_TEXTURE0);
-  if(smesh->smoke_texture_id==0)glGenTextures(1, &smesh->smoke_texture_id);
-  glBindTexture(GL_TEXTURE_3D, smesh->smoke_texture_id);
+  if(smesh->volsmoke_texture_id==0)glGenTextures(1, &smesh->volsmoke_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->volsmoke_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->smoke_texture_buffer==NULL){
-    NewMemory((void **)&smesh->smoke_texture_buffer, nx*ny*nz*sizeof(float));
+  if(smesh->volsmoke_texture_buffer==NULL){
+    NewMemory((void **)&smesh->volsmoke_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    smesh->smoke_texture_buffer[i] = 0.0;
+    smesh->volsmoke_texture_buffer[i] = 0.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->smoke_texture_buffer);
+    GL_RED, GL_FLOAT, smesh->volsmoke_texture_buffer);
 
   glActiveTexture(GL_TEXTURE1);
-  if(smesh->fire_texture_id==0)glGenTextures(1, &smesh->fire_texture_id);
-  glBindTexture(GL_TEXTURE_3D, smesh->fire_texture_id);
+  if(smesh->volfire_texture_id==0)glGenTextures(1, &smesh->volfire_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->volfire_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->fire_texture_buffer==NULL){
-    NewMemory((void **)&smesh->fire_texture_buffer, nx*ny*nz*sizeof(float));
+  if(smesh->volfire_texture_buffer==NULL){
+    NewMemory((void **)&smesh->volfire_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    smesh->fire_texture_buffer[i] = 0.0;
+    smesh->volfire_texture_buffer[i] = 0.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->fire_texture_buffer);
+    GL_RED, GL_FLOAT, smesh->volfire_texture_buffer);
 
   glActiveTexture(GL_TEXTURE5);
-  if(smesh->light_texture_id==0)glGenTextures(1, &smesh->light_texture_id);
-  glBindTexture(GL_TEXTURE_3D, smesh->light_texture_id);
+  if(smesh->vollight_texture_id==0)glGenTextures(1, &smesh->vollight_texture_id);
+  glBindTexture(GL_TEXTURE_3D, smesh->vollight_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->light_texture_buffer==NULL){
-    NewMemory((void **)&smesh->light_texture_buffer, nx*ny*nz*sizeof(float));
+  if(smesh->vollight_texture_buffer==NULL){
+    NewMemory((void **)&smesh->vollight_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    smesh->light_texture_buffer[i] = 1.0;
+    smesh->vollight_texture_buffer[i] = 1.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->light_texture_buffer);
+    GL_RED, GL_FLOAT, smesh->vollight_texture_buffer);
 
   if(volsmoke_colormap_id_defined==-1){
     volsmoke_colormap_id_defined = 1;
@@ -657,13 +657,13 @@ void InitSuperMesh(void){
       }
     }
 
-    smesh->fire_texture_buffer = NULL;
-    smesh->smoke_texture_buffer = NULL;
-    smesh->light_texture_buffer = NULL;
+    smesh->volfire_texture_buffer = NULL;
+    smesh->volsmoke_texture_buffer = NULL;
+    smesh->vollight_texture_buffer = NULL;
 
-    smesh->fire_texture_id = 0;
-    smesh->smoke_texture_id = 0;
-    smesh->light_texture_id = 0;
+    smesh->volfire_texture_id = 0;
+    smesh->volsmoke_texture_id = 0;
+    smesh->vollight_texture_id = 0;
 
     smesh->blockage_texture_id = 0;
 
@@ -2945,7 +2945,7 @@ void UnloadVolsmokeSuperTextures(void){
     supermeshdata *smesh;
 
     smesh = supermeshinfo+i;
-    if(smesh->smoke_texture_buffer!=NULL||smesh->fire_texture_buffer!=NULL){
+    if(smesh->volsmoke_texture_buffer!=NULL||smesh->volfire_texture_buffer!=NULL){
       doit = 1;
       break;
     }
@@ -2956,8 +2956,8 @@ void UnloadVolsmokeSuperTextures(void){
     supermeshdata *smesh;
 
     smesh = supermeshinfo+i;
-    FREEMEMORY(smesh->fire_texture_buffer);
-    FREEMEMORY(smesh->smoke_texture_buffer);
+    FREEMEMORY(smesh->volfire_texture_buffer);
+    FREEMEMORY(smesh->volsmoke_texture_buffer);
   }
   PRINTF("complete");
   PRINTF("\n");
@@ -2978,59 +2978,65 @@ void InitVolsmokeTexture(meshdata *meshi){
   ny = meshi->jbar+1;
   nz = meshi->kbar+1;
 
+// define smoke texture
+
   glActiveTexture(GL_TEXTURE0);
-  glGenTextures(1, &meshi->smoke_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->smoke_texture_id);
+  glGenTextures(1, &meshi->volsmoke_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->volsmoke_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->smoke_texture_buffer==NULL){
-    NewMemory((void **)&meshi->smoke_texture_buffer, nx*ny*nz*sizeof(float));
+  if(meshi->volsmoke_texture_buffer==NULL){
+    NewMemory((void **)&meshi->volsmoke_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    meshi->smoke_texture_buffer[i] = 0.0;
+    meshi->volsmoke_texture_buffer[i] = 0.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->smoke_texture_buffer);
+    GL_RED, GL_FLOAT, meshi->volsmoke_texture_buffer);
+
+// define fire texture
 
   glActiveTexture(GL_TEXTURE1);
-  glGenTextures(1, &meshi->fire_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->fire_texture_id);
+  glGenTextures(1, &meshi->volfire_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->volfire_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->fire_texture_buffer==NULL){
-    NewMemory((void **)&meshi->fire_texture_buffer, nx*ny*nz*sizeof(float));
+  if(meshi->volfire_texture_buffer==NULL){
+    NewMemory((void **)&meshi->volfire_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    meshi->fire_texture_buffer[i] = 0.0;
+    meshi->volfire_texture_buffer[i] = 0.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
+    GL_RED, GL_FLOAT, meshi->volfire_texture_buffer);
+
+// define light texture
 
   glActiveTexture(GL_TEXTURE5);
-  glGenTextures(1, &meshi->light_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->light_texture_id);
+  glGenTextures(1, &meshi->vollight_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->vollight_texture_id);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->light_texture_buffer==NULL){
-    NewMemory((void **)&meshi->light_texture_buffer, nx*ny*nz*sizeof(float));
+  if(meshi->vollight_texture_buffer==NULL){
+    NewMemory((void **)&meshi->vollight_texture_buffer, nx*ny*nz*sizeof(float));
   }
   for(i = 0;i<nx*ny*nz;i++){
-    meshi->light_texture_buffer[i] = 1.0;
+    meshi->vollight_texture_buffer[i] = 1.0;
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->light_texture_buffer);
+    GL_RED, GL_FLOAT, meshi->vollight_texture_buffer);
 
   if(volsmoke_colormap_id_defined==-1){
     volsmoke_colormap_id_defined = 1;
@@ -3042,6 +3048,8 @@ void InitVolsmokeTexture(meshdata *meshi){
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
   }
+
+// define blockage texture
 
 #ifndef pp_GPUDEPTH
   nx = meshi->ibar;
@@ -3148,8 +3156,8 @@ void UnloadVolsmokeTextures(void){
     meshdata *meshi;
 
     meshi = meshinfo + i;
-    FREEMEMORY(meshi->smoke_texture_buffer);
-    FREEMEMORY(meshi->fire_texture_buffer);
+    FREEMEMORY(meshi->volsmoke_texture_buffer);
+    FREEMEMORY(meshi->volfire_texture_buffer);
   }
 }
 
