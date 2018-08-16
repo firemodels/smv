@@ -615,8 +615,11 @@ typedef struct _meshdata {
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint smoke_texture_id;
-  float *smoke_texture_buffer;
+#ifdef pp_GPUSMOKE
+  int smoke3d_texture_defined;
+  GLuint smoke3d_texture_id;
+  float *smoke3d_texture_buffer;
+#endif
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
   GLuint slice3d_texture_id;
@@ -752,9 +755,6 @@ typedef struct _meshdata {
 
   unsigned char *merge_color,*merge_alpha;
   unsigned char *smokecolor_ptr, *smokealpha_ptr;
-#ifdef pp_GPUSMOKE
-  float *fbuffer;
-#endif
   float *light_fraction;
   unsigned char *uc_light_fraction;
 

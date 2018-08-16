@@ -766,10 +766,40 @@ int IsSmokeInMesh(meshdata *meshi){
 #endif
 
 #ifdef pp_GPU
+#ifdef pp_GPUSMOKE
+
+/* ------------------ InitSmoke3DTexture ------------------------ */
+
+void InitSmoke3DTexture(meshdata *meshi){
+  GLint border_size = 0;
+  GLsizei nx, ny, nz;
+
+  PRINTF("Defining 3d smoke textures for %s ...", meshi->label);
+  FFLUSH();
+
+  glActiveTexture(GL_TEXTURE0);
+  glGenTextures(1, &meshi->smoke3d_texture_id);
+  glBindTexture(GL_TEXTURE_3D, meshi->smoke3d_texture_id);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  nx = meshi->ibar + 1;
+  ny = meshi->jbar + 1;
+  nz = meshi->kbar + 1;
+  if(meshi->smoke3d_texture_buffer !=NULL){
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->smoke3d_texture_buffer);
+  }
+
+  glActiveTexture(GL_TEXTURE0);
+  PRINTF("completed");
+  PRINTF("\n");
+  FFLUSH();
+}
 
 /* ------------------ UpdateSmoke3DTexture ------------------------ */
 
-#ifdef pp_GPUSMOKE
 void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   meshdata *meshi;
   GLsizei nx, ny, nz, nxy;
@@ -779,6 +809,11 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   unsigned char *cbuffer;
 
   meshi = meshinfo + smoke3di->blocknumber;
+  if(meshi->smoke3d_texture_defined == -1){
+    meshi->smoke3d_texture_defined = 1;
+    InitSmoke3DTexture(meshi);
+  }
+
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
   nz = meshi->kbar + 1;
@@ -789,7 +824,7 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
       float *v;
 
       cbuffer = meshi->smokealpha_ptr + IJKNODE(0, j, k);
-      v = meshi->fbuffer + IJKNODE(0, j, k);
+      v = meshi->smoke3d_texture_buffer + IJKNODE(0, j, k);
       for(i = 0; i < nx; i++){
         *v++ = (float)(*cbuffer)/255.0;
         cbuffer++;
@@ -798,7 +833,7 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   }
   
   glActiveTexture(GL_TEXTURE0);
-  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->fbuffer);
+  glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->smoke3d_texture_buffer);
   SNIFF_ERRORS("after  UpdateSmoke3DTexture/glTexSubImage3D");
 }
 
@@ -5092,7 +5127,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     FREEMEMORY(meshi->merge_alpha);
     FREEMEMORY(meshi->merge_color);
 #ifdef pp_GPUSMOKE
-    FREEMEMORY(meshi->fbuffer);
+    FREEMEMORY(meshi->smoke3d_texture_buffer);
 #endif
   }
 
@@ -5212,7 +5247,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
      NewResizeMemory(smoke3di->smokeframe_out,      smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(meshi->merge_color,          4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
 #ifdef  pp_GPUSMOKE
-     NewResizeMemory(meshi->fbuffer,                smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
+     NewResizeMemory(meshi->smoke3d_texture_buffer, smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
 #endif
      NewResizeMemory(meshi->merge_alpha, smoke3di->nchars_uncompressed * sizeof(unsigned char)) == 0){
      ReadSmoke3D(iframe,ifile,UNLOAD,&error);
@@ -5575,8 +5610,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     if(usegpu==1)continue;
 #endif
 #ifdef pp_GPUSMOKE
-    if(meshi->fbuffer == NULL){
-      NewMemory((void **)&meshi->fbuffer, smoke3di->nchars_uncompressed * sizeof(float));
+    if(meshi->smoke3d_texture_buffer == NULL){
+      NewMemory((void **)&meshi->smoke3d_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
     }
 #endif
     if(meshi->merge_color == NULL){

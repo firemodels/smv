@@ -348,6 +348,12 @@ void InitMesh(meshdata *meshi){
   meshi->iploty_all = NULL;
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
+#ifdef pp_GPUSMOKE
+  meshi->smoke3d_texture_defined = -1;
+  meshi->smoke3d_texture_id = -1;
+  meshi->smoke3d_texture_buffer = NULL;
+#endif
+
   meshi->volsmoke_texture_buffer = NULL;
   meshi->volsmoke_texture_id = -1;
 
@@ -376,7 +382,7 @@ void InitMesh(meshdata *meshi){
   meshi->merge_alpha = NULL;
   meshi->merge_color = NULL;
 #ifdef pp_GPUSMOKE
-  meshi->fbuffer = NULL;
+  meshi->smoke3d_texture_buffer = NULL;
 #endif
   meshi->smokecolor_ptr = NULL;
   meshi->smokealpha_ptr = NULL;
