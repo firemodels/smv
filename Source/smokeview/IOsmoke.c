@@ -827,7 +827,7 @@ void InitSmoke3DTexture(meshdata *meshi){
 
 void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   meshdata *meshi;
-  GLsizei nx, ny, nz, nxy;
+  GLsizei nx, ny, nz;
   int i;
 
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
@@ -841,7 +841,6 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
   nz = meshi->kbar + 1;
-  nxy = nx*ny;
 
   // update smoke texture
 
