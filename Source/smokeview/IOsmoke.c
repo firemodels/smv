@@ -14,7 +14,7 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, int f1, int f2, int f3, float del, int level,smoke3ddata *smoke3di);
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level,smoke3ddata *smoke3di);
 void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
@@ -799,7 +799,7 @@ void InitSmoke3DTexture(meshdata *meshi){
 
   // define fire texture
 
-  if(meshi->smokecolor_ptr!=NULL){
+  if(meshi->fire_texture_buffer!=NULL){
     glActiveTexture(GL_TEXTURE1);
     glGenTextures(1, &meshi->fire_texture_id);
     glBindTexture(GL_TEXTURE_3D, meshi->fire_texture_id);
@@ -829,6 +829,8 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   meshdata *meshi;
   GLsizei nx, ny, nz, nxy;
   int i;
+  unsigned char *firecolor;
+  int fire_index = HRRPUV;
 
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
 
@@ -862,19 +864,32 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
 
   // update fire texture
 
-  if(meshi->smokecolor_ptr!=NULL){
+  firecolor = smoke3di->smokestate[fire_index].color;
+  if(firecolor!=NULL){
     unsigned char *cbuffer;
-    float *v;
-    
-    cbuffer = meshi->smokecolor_ptr;
+    float *v, factor;
+
+    factor = hrrpuv_max_smv/255.0;
+    cbuffer = firecolor;
     v = meshi->fire_texture_buffer;
     for(i = 0; i<smoke3di->nchars_uncompressed; i++){
-      *v++ = (float)(*cbuffer++)/255.0;
+      *v++ = (float)(*cbuffer++)*factor;
     }
 
     glActiveTexture(GL_TEXTURE1);
     glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
     SNIFF_ERRORS("after fire texture update");
+  }
+
+  if(volsmoke_colormap_id_defined==-1){
+    volsmoke_colormap_id_defined = 1;
+    glActiveTexture(GL_TEXTURE2);
+    glGenTextures(1, &volsmoke_colormap_id);
+    glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
   }
   glActiveTexture(GL_TEXTURE0);
 }
@@ -884,15 +899,38 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   int i;
   meshdata *meshi;
   float *boxmin, *boxmax;
+  unsigned char *firecolor;
+  int fire_index = HRRPUV;
+  float fire_alpha;
 
   meshi = meshinfo + smoke3di->blocknumber;
+  firecolor = smoke3di->smokestate[fire_index].color;
   UpdateSmoke3DTexture(smoke3di);
   boxmin = meshi->boxmin;
   boxmax = meshi->boxmax;
-  glUniform1i(GPUnewsmoke_valtexture, 0);
+  if(meshi->smokealpha_ptr!=NULL){
+    glUniform1i(GPUnewsmoke_have_smoke, 1);
+  }
+  else{
+    glUniform1i(GPUnewsmoke_have_smoke, 0);
+  }
+  if(firecolor!=NULL){
+    glUniform1i(GPUnewsmoke_have_fire, 1);
+  }
+  else{
+    glUniform1i(GPUnewsmoke_have_fire, 0);
+  }
+  glUniform1i(GPUnewsmoke_smoketexture, 0);
+  glUniform1i(GPUnewsmoke_firetexture,  1);
+  glUniform1i(GPUnewsmoke_smokecolormap,2);
   glUniform3f(GPUnewsmoke_boxmin, boxmin[0], boxmin[1], boxmin[2]);
   glUniform3f(GPUnewsmoke_boxmax, boxmax[0], boxmax[1], boxmax[2]);
 
+  fire_alpha = CLAMP((float)smoke3di->fire_alpha/255.0,0.0,1.0);
+
+  glUniform1f(GPUnewsmoke_hrrpuv_max_smv, hrrpuv_max_smv);
+  glUniform1f(GPUnewsmoke_hrrpuv_cutoff,  global_hrrpuv_cutoff);
+  glUniform1f(GPUnewsmoke_fire_alpha,     fire_alpha);
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -951,7 +989,6 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
       float *v1, *v2, *v3;
       int iv1, iv2, iv3;
       float t1=0.0, t2 = 0.0, t3 = 0.0;
-      int f1, f2, f3;
 
       iv1 = spi->triangles[3*j];
       iv2 = spi->triangles[3*j + 1];
@@ -959,12 +996,7 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
       v1 = spi->verts + 3*iv1;
       v2 = spi->verts + 3*iv2;
       v3 = spi->verts + 3*iv3;
-      f1 = FDSPointInFrustum(v1);
-      f2 = FDSPointInFrustum(v2);
-      f3 = FDSPointInFrustum(v3);
-      if(smoke_frustum==1||f1==1||f2==1||f3==1){
-        DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, f1, f2, f3, del2, 0, smoke3di);
-      }
+      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del2, 0, smoke3di);
     }
   }
   TransparentOff();
@@ -2600,7 +2632,6 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
 
 void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
                    float t1, float t2, float t3, float t4,
-                   int p1, int p2, int p3, int p4,
                    float del, int level, smoke3ddata *smoke3di){
   float d13, d24;
   float dx, dy, dz;
@@ -2618,20 +2649,12 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13<d24){
-    if(smoke_frustum==1||p1==1||p2==1||p3==1){
-      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, p1, p2, p3, del, level+1, smoke3di);
-    }
-    if(smoke_frustum==1||p1==1||p3==1||p4==1){
-      DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, p1, p3, p4, del, level+1, smoke3di);
-    }
+    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del, level+1, smoke3di);
+    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, del, level+1, smoke3di);
   }
   else{
-    if(smoke_frustum==1||p1==1||p2==1||p4==1){
-      DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, p1, p2, p4, del, level+1, smoke3di);
-    }
-    if(smoke_frustum==1||p2==1||p3==1||p4==1){
-      DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, p2, p3, p4, del, level+1, smoke3di);
-    }
+    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, del, level+1, smoke3di);
+    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, del, level+1, smoke3di);
   }
   if(level==0){
     glEnd();
@@ -2641,7 +2664,7 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
 
 /* ------------------ DrawTriangleSmoke ------------------------ */
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, int f1, int f2, int f3, float del, int level, smoke3ddata *smoke3di){
+void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level, smoke3ddata *smoke3di){
 
   float d12, d13, d23;
   float v12[3], v13[3], v23[3];
@@ -2649,9 +2672,9 @@ void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, floa
   float t12, t13, t23;
 
   if(level==0){
-//    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-//    glEnable(GL_TEXTURE_1D);
-//    glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+ //   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+ //   glEnable(GL_TEXTURE_1D);
+ //   glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
     glBegin(GL_TRIANGLES);
     t1 = GetSmokeTextureIndex(v1,smoke3di);
     t2 = GetSmokeTextureIndex(v2,smoke3di);
@@ -2675,61 +2698,33 @@ void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, floa
   }
   else{
     if(d12<=MIN(d13, d23)){
-      int f13, f23;
-
       VERT_AVG2(v1, v3, v13);
       t13 = GetSmokeTextureIndex(v13,smoke3di);
       VERT_AVG2(v2, v3, v23);
       t23 = GetSmokeTextureIndex(v23,smoke3di);
-      f13 = FDSPointInFrustum(v13);
-      f23 = FDSPointInFrustum(v23);
-
-      if(smoke_frustum==1||f3==1||f13==1||f23==1){
-        DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, f3, f13, f23, del, level+1,smoke3di);
-      }
-      if(smoke_frustum==1||f13==1||f1==1||f2==1||f23==1){
-        DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, f13, f1, f2, f23, del, level+1, smoke3di);
-      }
+      DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, del, level+1,smoke3di);
+      DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, del, level+1, smoke3di);
     }
     else if(d13<=MIN(d12, d23)){
-      int f12, f23;
-      
       VERT_AVG2(v1, v2, v12);
       t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v2, v3, v23);
       t23 = GetSmokeTextureIndex(v23, smoke3di);
-      f12 = FDSPointInFrustum(v12);
-      f23 = FDSPointInFrustum(v23);
-
-      if(smoke_frustum==1||f12==1||f2==1||f23==1){
-        DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, f12, f2, f23, del, level+1, smoke3di);
-      }
-      if(smoke_frustum==1||f1==1||f12==1||f23==1||f3==1){
-        DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, f1, f12, f23, f3, del, level+1, smoke3di);
-      }
+      DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, del, level+1, smoke3di);
+      DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, del, level+1, smoke3di);
     }
     else{ // d23<=MIN(d12,d13)
-      int f12, f13;
-
       VERT_AVG2(v1, v2, v12);
       t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v1, v3, v13);
       t13 = GetSmokeTextureIndex(v13, smoke3di);
-
-      f12 = FDSPointInFrustum(v12);
-      f13 = FDSPointInFrustum(v13);
-
-      if(smoke_frustum==1||f1==1||f12==1||f13==1){
-        DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, f1, f12, f13, del, level+1, smoke3di);
-      }
-      if(smoke_frustum==1||f12==1||f2==1||f3==1||f13==1){
-        DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, f12, f2, f3, f13, del, level+1, smoke3di);
-      }
+      DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, del, level+1, smoke3di);
+      DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, del, level+1, smoke3di);
     }
   }
   if(level==0){
     glEnd();
-//    glDisable(GL_TEXTURE_1D);
+ //   glDisable(GL_TEXTURE_1D);
   }
 }
 #endif
@@ -5170,6 +5165,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     FREEMEMORY(meshi->merge_color);
 #ifdef pp_GPUSMOKE
     FREEMEMORY(meshi->smoke_texture_buffer);
+    FREEMEMORY(meshi->fire_texture_buffer);
 #endif
   }
 
@@ -5290,6 +5286,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
      NewResizeMemory(meshi->merge_color,          4*smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
 #ifdef  pp_GPUSMOKE
      NewResizeMemory(meshi->smoke_texture_buffer, smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
+     NewResizeMemory(meshi->fire_texture_buffer,  smoke3di->nchars_uncompressed*sizeof(float))==0||
 #endif
      NewResizeMemory(meshi->merge_alpha, smoke3di->nchars_uncompressed * sizeof(unsigned char)) == 0){
      ReadSmoke3D(iframe,ifile,UNLOAD,&error);
@@ -5654,6 +5651,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 #ifdef pp_GPUSMOKE
     if(meshi->smoke_texture_buffer == NULL){
       NewMemory((void **)&meshi->smoke_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
+    }
+    if(meshi->fire_texture_buffer == NULL){
+      NewMemory((void **)&meshi->fire_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
     }
 #endif
     if(meshi->merge_color == NULL){

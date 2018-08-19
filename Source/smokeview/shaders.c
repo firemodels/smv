@@ -203,16 +203,46 @@ int SetNewSmokeShaders(void){
 
   const GLchar *FragmentShaderSource[] = {
     "#version 120\n"
-    "uniform sampler3D val_texture;"
+    "uniform sampler3D smoke_texture, fire_texture;"
+    "uniform sampler1D colormap;"
     "uniform vec3 boxmin,boxmax;"
+    "uniform int have_smoke, have_fire;"
     "varying vec3 fragpos;"
+    "uniform float hrrpuv_max_smv, global_hrrpuv_cutoff, fire_alpha;"
     "void main(){"
-    "  vec3 position;"
-    "  float val;"
+    "  vec3 position,color;"
+    "  float smoke_val, fire_val;"
+    "  float color_val, color_index;"
+    "  float alpha, alpha_factor;"
+    "  int use_smoke,output_fragment;"
 
     "  position = (fragpos-boxmin)/(boxmax-boxmin);"
-    "  val = texture3D(val_texture,position).x;"
-    "  gl_FragColor = vec4(0,0,0,val);"
+    "  use_smoke=1;"
+    "  color = vec3(0.0,0.0,0.0);"
+    "  output_fragment=0;"
+    "  if(have_fire==1){"
+    "    fire_val = texture3D(fire_texture,position).x;"
+    "    if(fire_val>global_hrrpuv_cutoff){"
+    "      alpha_factor = (fire_val-global_hrrpuv_cutoff)/(hrrpuv_max_smv-global_hrrpuv_cutoff);"
+    "      color_index = fire_val/hrrpuv_max_smv;"
+    "      color = texture1D(colormap,color_index).rgb;"
+    "      alpha = fire_alpha*alpha_factor;"
+    "      use_smoke=0;"
+    "      output_fragment=1;"
+    "    }"
+    "  }"
+    "  if(have_smoke==1&&use_smoke==1){"
+    "    smoke_val = texture3D(smoke_texture,position).x;"
+    "    color = vec3(0.0,0.0,0.0);"
+    "    alpha = smoke_val;"
+    "    output_fragment=1;"
+    "  }"
+    "  if(output_fragment==1){"
+    "    gl_FragColor = vec4(color.r,color.g,color.b,alpha);"
+    "  }"
+    "  else{"
+    "    gl_FragColor = vec4(color.r,color.g,color.b,0.0);"
+    "  }"
     "}"
   };
 
@@ -242,9 +272,17 @@ int SetNewSmokeShaders(void){
   glLinkProgram(p_newsmoke);
   if(ShaderLinkStatus(p_newsmoke) == GL_FALSE)return 0;
 
-  GPUnewsmoke_valtexture = glGetUniformLocation(p_newsmoke, "valtexture");
-  GPUnewsmoke_boxmin = glGetUniformLocation(p_newsmoke,"boxmin");
-  GPUnewsmoke_boxmax = glGetUniformLocation(p_newsmoke,"boxmax");
+   GPUnewsmoke_smoketexture = glGetUniformLocation(p_newsmoke, "smoke_texture");
+    GPUnewsmoke_firetexture = glGetUniformLocation(p_newsmoke, "fire_texture");
+     GPUnewsmoke_have_smoke = glGetUniformLocation(p_newsmoke, "have_smoke");
+      GPUnewsmoke_have_fire = glGetUniformLocation(p_newsmoke, "have_fire");
+  GPUnewsmoke_smokecolormap = glGetUniformLocation(p_newsmoke, "colormap");
+         GPUnewsmoke_boxmin = glGetUniformLocation(p_newsmoke, "boxmin");
+         GPUnewsmoke_boxmax = glGetUniformLocation(p_newsmoke, "boxmax");
+ GPUnewsmoke_hrrpuv_max_smv = glGetUniformLocation(p_newsmoke, "hrrpuv_max_smv");
+  GPUnewsmoke_hrrpuv_cutoff = glGetUniformLocation(p_newsmoke, "global_hrrpuv_cutoff");
+     GPUnewsmoke_fire_alpha = glGetUniformLocation(p_newsmoke, "fire_alpha");
+
 
   return 1;
 }

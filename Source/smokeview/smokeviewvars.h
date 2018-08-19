@@ -587,7 +587,9 @@ SVEXTERN int GPUzone_odl, GPUzone_odu;
 
 #ifdef pp_GPUSMOKE
 SVEXTERN int GPUnewsmoke_boxmin, GPUnewsmoke_boxmax;
-SVEXTERN int GPUnewsmoke_valtexture;
+SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_smokecolormap;
+SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
+SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
 #endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
