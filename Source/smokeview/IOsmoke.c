@@ -985,15 +985,14 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
   int ijk;
   int iplus = 0, jplus = 0, kplus = 0;
   unsigned char *smoke, *fire, *co2;
-  int fire_index = HRRPUV;
 
   meshdata *valmesh;
 
   valmesh = meshinfo+smoke3di->blocknumber;
 
   smoke = valmesh->smokealpha_ptr;
-  fire = smoke3di->smokestate[fire_index].color;
-  co2 = NULL;
+  fire = smoke3di->smokestate[HRRPUV].color;
+  co2 = smoke3di->smokestate[CO2].color;
 
   have_vals[0] = 0;
   have_vals[1] = 0;
@@ -1072,6 +1071,14 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
     INTERP_SMOKE3D(fireval);
     vals[1] = fireval;
     have_vals[1] = 1;
+  }
+  if(co2 != NULL){
+    float co2val;
+
+    vv = co2 + ijk;
+    INTERP_SMOKE3D(co2val);
+    vals[2] = co2val;
+    have_vals[2] = 1;
   }
 }
 
