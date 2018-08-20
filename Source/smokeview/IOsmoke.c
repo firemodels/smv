@@ -1067,7 +1067,7 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
 
     vv = fire+ijk;
     INTERP_SMOKE3D(fireval);
-    vals[1] = fireval;
+    vals[1] = fireval*hrrpuv_max_smv/255.0;
     have_vals[1] = 1;
   }
   if(co2 != NULL){
