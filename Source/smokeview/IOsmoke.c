@@ -14,8 +14,11 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level,smoke3ddata *smoke3di);
-void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
+void DrawTriangleSmoke(float *v1, float *v2, float *v3,
+                       float *t1, float *t2, float *t3,
+                       int  *hv1, int  *hv2, int  *hv3,
+                       float del, int level, smoke3ddata *smoke3di);
+  void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
@@ -963,6 +966,115 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   SNIFF_ERRORS("after smoke DrawSmoke3DGPU_NEW");
 }
 
+/* ------------------ GetSmoke3DVal ------------------------ */
+
+void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_vals){
+  int i, j, k;
+  unsigned char *vv;
+  float *xplt, *yplt, *zplt;
+  float dxbar, dybar, dzbar;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  float dx, dy, dz;
+  float val000, val100, val010, val110;
+  float val001, val101, val011, val111;
+  float val00, val10, val01, val11;
+  float val0, val1;
+  float val, val_fraction;
+  int i000, i001, i010, i011, i100, i101, i110, i111;
+  int ijk;
+  int iplus = 0, jplus = 0, kplus = 0;
+  unsigned char *smoke, *fire, *co2;
+  int fire_index = HRRPUV;
+
+  meshdata *valmesh;
+
+  valmesh = meshinfo+smoke3di->blocknumber;
+
+  smoke = valmesh->smokealpha_ptr;
+  fire = smoke3di->smokestate[fire_index].color;
+  co2 = NULL;
+
+  have_vals[0] = 0;
+  have_vals[1] = 0;
+  have_vals[2] = 0;
+
+  xplt = valmesh->xplt_orig;
+  yplt = valmesh->yplt_orig;
+  zplt = valmesh->zplt_orig;
+  ibar = valmesh->ibar;
+  jbar = valmesh->jbar;
+  kbar = valmesh->kbar;
+  dxbar = xplt[1]-xplt[0];
+  dybar = yplt[1]-yplt[0];
+  dzbar = zplt[1]-zplt[0];
+
+  nx = ibar+1;
+  ny = jbar+1;
+  nz = kbar+1;
+
+  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
+  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
+  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
+
+  ijk = i+nx*(j+k*ny);
+
+  dx = (xyz[0]-xplt[i])/dxbar;
+  dx = CLAMP(dx, 0.0, 1.0);
+  dy = (xyz[1]-yplt[j])/dybar;
+  dy = CLAMP(dy, 0.0, 1.0);
+  dz = (xyz[2]-zplt[k])/dzbar;
+  dz = CLAMP(dz, 0.0, 1.0);
+
+  vv = valmesh->smokealpha_ptr+ijk;
+  if(i+1<=ibar)iplus = 1;
+  if(j+1<=jbar)jplus = nx;
+  if(k+1<=kbar)kplus = nx*ny;
+
+  i000 = 0;                 // i,j,k
+  i001 = kplus;             // i,j,k+1
+
+  i010 = jplus;             // i,j+1,k, 
+  i011 = jplus+kplus;       // i,j+1,k+1
+
+  i100 = iplus;             // i+1,j,k
+  i101 = iplus+kplus;       // i+1,j,k+1
+
+  i110 = iplus+jplus;       // i+1,j+1,k
+  i111 = iplus+jplus+kplus; // i+1,j+1,k+1
+
+#define INTERP_SMOKE3D(val) \
+  val00 = MIX(dx, vv[i100], vv[i000]);\
+  val10 = MIX(dx, vv[i110], vv[i010]);\
+  val01 = MIX(dx, vv[i101], vv[i001]);\
+  val11 = MIX(dx, vv[i111], vv[i011]);\
+  val0  = MIX(dy,    val10,    val00);\
+  val1  = MIX(dy,    val11,    val01);\
+  val   = MIX(dz,     val1,     val0)
+
+  if(smoke!=NULL){
+    float smokeval;
+    float ratio;
+
+    vv = smoke+ijk;
+    INTERP_SMOKE3D(smokeval);
+    val_fraction = smokeval/255.0;
+    val_fraction = CLAMP(val_fraction, 0.0, 1.0);
+    ratio = smoke3d_delta_perp/smoke3d_delta;
+    if(ratio>=1.1)val_fraction = 1.0-pow(1-val_fraction, ratio);
+    vals[0] = val_fraction;
+    have_vals[0] = 1;
+  }
+  if(fire!=NULL){
+    float fireval;
+
+    vv = fire+ijk;
+    INTERP_SMOKE3D(fireval);
+    vals[1] = fireval;
+    have_vals[1] = 1;
+  }
+}
+
 /* ------------------ DrawSmoke3D_NEW ------------------------ */
 
 void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
@@ -987,7 +1099,8 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
     for(j = 0; j<spi->ntriangles; j++){
       float *v1, *v2, *v3;
       int iv1, iv2, iv3;
-      float t1=0.0, t2 = 0.0, t3 = 0.0;
+      float t1[3], t2[3], t3[3];
+      int hv1[3], hv2[3], hv3[3];
 
       iv1 = spi->triangles[3*j];
       iv2 = spi->triangles[3*j + 1];
@@ -995,7 +1108,11 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
       v1 = spi->verts + 3*iv1;
       v2 = spi->verts + 3*iv2;
       v3 = spi->verts + 3*iv3;
-      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del2, 0, smoke3di);
+      GetSmoke3DVals(v1,smoke3di,t1,hv1);
+      GetSmoke3DVals(v2,smoke3di,t2,hv2);
+      GetSmoke3DVals(v3,smoke3di,t3,hv3);
+
+      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, hv1, hv2, hv3, del2, 0, smoke3di);
     }
   }
   TransparentOff();
@@ -2411,142 +2528,6 @@ void DrawSmokePlanes(meshdata *meshi){
   }
 }
 
-/* ------------------ GetSmokeTextureIndexFast ------------------------ */
-
-float GetSmokeTextureIndexFast(float *xyz, smoke3ddata * smoke3di){
-  int i, j, k, ijk;
-  unsigned char *vv;
-  float *xplt, *yplt, *zplt;
-  float dxbar, dybar, dzbar;
-  int ibar, jbar, kbar;
-  int nx, ny, nz;
-  float val_fraction;
-
-  meshdata *valmesh;
-
-  return 5;
-  valmesh = meshinfo + smoke3di->blocknumber;
-
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
-  ibar = valmesh->ibar;
-  jbar = valmesh->jbar;
-  kbar = valmesh->kbar;
-  dxbar = xplt[1] - xplt[0];
-  dybar = yplt[1] - yplt[0];
-  dzbar = zplt[1] - zplt[0];
-
-  nx = ibar + 1;
-  ny = jbar + 1;
-  nz = kbar + 1;
-
-  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
-  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
-  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
-
-  ijk = i + nx*(j + k*ny);
-
-  vv = valmesh->smokealpha_ptr + ijk;
-  val_fraction = (float)vv[0] / 255.0;
-  val_fraction = CLAMP(val_fraction, 0.0, 1.0);
-  {
-    float ratio;
-
-    ratio = smoke3d_delta_perp / smoke3d_delta;
-    if(ratio >= 1.1)val_fraction = 1.0 - pow(1 - val_fraction, ratio);
-  }
-  return val_fraction;
-}
-
-
-/* ------------------ GetSmokeTextureIndex ------------------------ */
-
-float GetSmokeTextureIndex(float *xyz, smoke3ddata * smoke3di){
-  int i, j, k;
-  unsigned char *vv;
-  float *xplt, *yplt, *zplt;
-  float dxbar, dybar, dzbar;
-  int ibar, jbar, kbar;
-  int nx, ny, nz;
-  float dx, dy, dz;
-  float val000, val100, val010, val110;
-  float val001, val101, val011, val111;
-  float val00, val10, val01, val11;
-  float val0, val1;
-  float val, val_fraction;
-  int ijk;
-  int iplus = 0, jplus = 0, kplus = 0;
-
-  meshdata *valmesh;
-
-  if(smoke_interp == 1)return GetSmokeTextureIndexFast(xyz, smoke3di);
-
-  valmesh = meshinfo + smoke3di->blocknumber;
-
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
-  ibar = valmesh->ibar;
-  jbar = valmesh->jbar;
-  kbar = valmesh->kbar;
-  dxbar = xplt[1]-xplt[0];
-  dybar = yplt[1]-yplt[0];
-  dzbar = zplt[1]-zplt[0];
-
-  nx = ibar+1;
-  ny = jbar+1;
-  nz = kbar+1;
-
-  i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
-  j = GETINDEX(xyz[1], yplt[0], dybar, ny);
-  k = GETINDEX(xyz[2], zplt[0], dzbar, nz);
-
-  ijk = i+nx*(j+k*ny);
-
-  dx = (xyz[0]-xplt[i])/dxbar;
-  dx = CLAMP(dx, 0.0, 1.0);
-  dy = (xyz[1]-yplt[j])/dybar;
-  dy = CLAMP(dy, 0.0, 1.0);
-  dz = (xyz[2]-zplt[k])/dzbar;
-  dz = CLAMP(dz, 0.0, 1.0);
-
-  vv = valmesh->smokealpha_ptr+ijk;
-  if(i+1<=ibar)iplus = 1;
-  if(j+1<=jbar)jplus = nx;
-  if(k+1<=kbar)kplus = nx*ny;
-
-  val000 = (float)vv[0]; // i,j,k
-  val001 = (float)vv[kplus]; // i,j,k+1
-
-  val010 = (float)vv[jplus]; // i,j+1,k
-  val011 = (float)vv[jplus+kplus]; // i,j+1,k+1
-
-  val100 = (float)vv[iplus]; // i+1,j,k
-  val101 = (float)vv[iplus+kplus]; // i+1,j,k+1
-
-  val110 = (float)vv[iplus+jplus]; // i+1,j+1,k
-  val111 = (float)vv[iplus+jplus+kplus]; // i+1,j+1,k+1
-
-  val00 = MIX(dx, val100, val000);
-  val10 = MIX(dx, val110, val010);
-  val01 = MIX(dx, val101, val001);
-  val11 = MIX(dx, val111, val011);
-   val0 = MIX(dy,  val10,  val00);
-   val1 = MIX(dy,  val11,  val01);
-
-    val = MIX(dz,   val1,   val0);
-  val_fraction = val/255.0;
-  val_fraction = CLAMP(val_fraction, 0.0, 1.0);
-  {
-    float ratio;
-
-    ratio = smoke3d_delta_perp / smoke3d_delta;
-    if(ratio >= 1.1)val_fraction = 1.0 - pow(1 - val_fraction, ratio);
-  }
-  return val_fraction;
-}
-
 /* ------------------ DrawQuadSmokeOutline ------------------------ */
 
 void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4, float del, int level){
@@ -2630,7 +2611,8 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
 /* ------------------ DrawQuadSmoke ------------------------ */
 
 void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
-                   float t1, float t2, float t3, float t4,
+                   float *t1, float *t2, float *t3, float *t4,
+                   int  *hv1, int  *hv2, int  *hv3,  int *hv4,
                    float del, int level, smoke3ddata *smoke3di){
   float d13, d24;
   float dx, dy, dz;
@@ -2640,20 +2622,16 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
  //   glEnable(GL_TEXTURE_1D);
  //   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
     glBegin(GL_TRIANGLES);
-    t1 = GetSmokeTextureIndex(v1, smoke3di);
-    t2 = GetSmokeTextureIndex(v2, smoke3di);
-    t3 = GetSmokeTextureIndex(v3, smoke3di);
-    t4 = GetSmokeTextureIndex(v4, smoke3di);
   }
   DIST3(v1, v3, d13);
   DIST3(v2, v4, d24);
   if(d13<d24){
-    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, del, level+1, smoke3di);
-    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, del, level+1, smoke3di);
+    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, hv1, hv2, hv3, del, level+1, smoke3di);
+    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, hv1, hv3, hv4, del, level+1, smoke3di);
   }
   else{
-    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, del, level+1, smoke3di);
-    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, del, level+1, smoke3di);
+    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, hv1, hv2, hv4, del, level+1, smoke3di);
+    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, hv2, hv3, hv4, del, level+1, smoke3di);
   }
   if(level==0){
     glEnd();
@@ -2661,64 +2639,98 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
   }
 }
 
+
+#define DRAW_SMOKE_VERTEX(v, t, hv) \
+{\
+  int use_smoke=1;\
+  if(hv[1]==1){\
+    if(t[1]>global_hrrpuv_cutoff){\
+      float alpha_factor,*color,alpha;\
+      int color_index;\
+      alpha_factor = CLAMP((t[1]-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);\
+      color_index = CLAMP(255*t[1]/hrrpuv_max_smv,0,255);\
+      color = rgb_volsmokecolormap + 4*color_index;\
+      alpha = (float)smoke3di->fire_alpha/255.0*alpha_factor;\
+      use_smoke=0;\
+      glColor4f(color[0],color[1],color[2],alpha);\
+      glVertex3fv(v);\
+    }\
+  }\
+  if(hv[0]==1&&use_smoke==1){\
+    glColor4f(0.0,0.0,0.0,t[0]);\
+    glVertex3fv(v);\
+  }\
+}
+
 /* ------------------ DrawTriangleSmoke ------------------------ */
 
-void DrawTriangleSmoke(float *v1, float *v2, float *v3, float t1, float t2, float t3, float del, int level, smoke3ddata *smoke3di){
+void DrawTriangleSmoke(float *v1, float *v2, float *v3,
+                       float *t1, float *t2, float *t3,
+                       int  *hv1, int  *hv2, int  *hv3,
+                       float del, int level, smoke3ddata *smoke3di){
 
   float d12, d13, d23;
   float v12[3], v13[3], v23[3];
   float dx, dy, dz;
-  float t12, t13, t23;
+  float t12[3], t13[3], t23[3];
+  int hv12[3], hv13[3], hv23[3];
 
   if(level==0){
  //   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
  //   glEnable(GL_TEXTURE_1D);
  //   glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
     glBegin(GL_TRIANGLES);
-    t1 = GetSmokeTextureIndex(v1,smoke3di);
-    t2 = GetSmokeTextureIndex(v2,smoke3di);
-    t3 = GetSmokeTextureIndex(v3,smoke3di);
   }
   DIST3(v1, v2, d12);
   DIST3(v1, v3, d13);
   DIST3(v2, v3, d23);
   if(d12<=del && d13<=del && d23<del){
-//    glTexCoord1f(t1);
-    glColor4f(0.0, 0.0, 0.0, t1);
-    glVertex3fv(v1);
-
-//    glTexCoord1f(t2);
-    glColor4f(0.0, 0.0, 0.0, t2);
-    glVertex3fv(v2);
-
-//    glTexCoord1f(t3);
-    glColor4f(0.0, 0.0, 0.0, t3);
-    glVertex3fv(v3);
+    DRAW_SMOKE_VERTEX(v1, t1, hv1);
+    DRAW_SMOKE_VERTEX(v2, t2, hv2);
+    DRAW_SMOKE_VERTEX(v3, t3, hv3);
   }
   else{
     if(d12<=MIN(d13, d23)){
       VERT_AVG2(v1, v3, v13);
-      t13 = GetSmokeTextureIndex(v13,smoke3di);
       VERT_AVG2(v2, v3, v23);
-      t23 = GetSmokeTextureIndex(v23,smoke3di);
-      DrawTriangleSmoke(v3, v13, v23, t3, t13, t23, del, level+1,smoke3di);
-      DrawQuadSmoke(v13, v1, v2, v23, t13, t1, t2, t23, del, level+1, smoke3di);
+
+      GetSmoke3DVals(v13,smoke3di,t13,hv13);
+      GetSmoke3DVals(v23,smoke3di,t23,hv23);
+
+      DrawTriangleSmoke( v3,  v13,  v23,
+                         t3,  t13,  t23,
+                        hv3, hv13, hv23,
+                        del, level+1,smoke3di);
+      DrawQuadSmoke( v13,  v1,  v2,  v23,
+                     t13,  t1,  t2,  t23,
+                    hv13, hv1, hv2, hv23,
+                    del, level+1, smoke3di);
     }
     else if(d13<=MIN(d12, d23)){
       VERT_AVG2(v1, v2, v12);
-      t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v2, v3, v23);
-      t23 = GetSmokeTextureIndex(v23, smoke3di);
-      DrawTriangleSmoke(v12, v2, v23, t12, t2, t23, del, level+1, smoke3di);
-      DrawQuadSmoke(v1, v12, v23, v3, t1, t12, t23, t3, del, level+1, smoke3di);
+
+      GetSmoke3DVals(v12, smoke3di, t12, hv12);
+      GetSmoke3DVals(v23, smoke3di, t23, hv23);
+
+      DrawTriangleSmoke( v12,  v2,  v23,
+                         t12,  t2,  t23,
+                        hv12, hv2, hv23,
+                        del, level+1, smoke3di);
+      DrawQuadSmoke( v1,  v12,  v23,  v3,
+                     t1,  t12,  t23,  t3,
+                    hv1, hv12, hv23, hv3,
+                    del, level+1, smoke3di);
     }
     else{ // d23<=MIN(d12,d13)
       VERT_AVG2(v1, v2, v12);
-      t12 = GetSmokeTextureIndex(v12, smoke3di);
       VERT_AVG2(v1, v3, v13);
-      t13 = GetSmokeTextureIndex(v13, smoke3di);
-      DrawTriangleSmoke(v1, v12, v13, t1, t12, t13, del, level+1, smoke3di);
-      DrawQuadSmoke(v12, v2, v3, v13, t12, t2, t3, t13, del, level+1, smoke3di);
+
+      GetSmoke3DVals(v12, smoke3di, t12, hv12);
+      GetSmoke3DVals(v13, smoke3di, t13, hv13);
+
+      DrawTriangleSmoke(v1, v12, v13,  t1, t12, t13, hv1, hv12, hv13, del, level+1, smoke3di);
+      DrawQuadSmoke(v12, v2, v3, v13, t12,  t2,  t3, t13, hv12, hv2, hv3, hv13, del, level+1, smoke3di);
     }
   }
   if(level==0){
