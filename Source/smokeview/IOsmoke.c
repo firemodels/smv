@@ -976,11 +976,9 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
   int ibar, jbar, kbar;
   int nx, ny, nz;
   float dx, dy, dz;
-  float val000, val100, val010, val110;
-  float val001, val101, val011, val111;
   float val00, val10, val01, val11;
   float val0, val1;
-  float val, val_fraction;
+  float val_fraction;
   int i000, i001, i010, i011, i100, i101, i110, i111;
   int ijk;
   int iplus = 0, jplus = 0, kplus = 0;
