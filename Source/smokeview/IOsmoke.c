@@ -1027,6 +1027,15 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   SNIFF_ERRORS("after smoke DrawSmoke3DGPU_NEW");
 }
 
+#define INTERP_SMOKE3D(val) \
+  val00 = MIX(dx, vv[i100], vv[i000]);\
+  val10 = MIX(dx, vv[i110], vv[i010]);\
+  val01 = MIX(dx, vv[i101], vv[i001]);\
+  val11 = MIX(dx, vv[i111], vv[i011]);\
+  val0  = MIX(dy,    val10,    val00);\
+  val1  = MIX(dy,    val11,    val01);\
+  val   = MIX(dz,     val1,     val0)
+
 /* ------------------ GetSmoke3DVal ------------------------ */
 
 void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_vals){
@@ -1077,45 +1086,41 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
 
   ijk = i+nx*(j+k*ny);
 
-  dx = (xyz[0]-xplt[i])/dxbar;
-  dx = CLAMP(dx, 0.0, 1.0);
-  dy = (xyz[1]-yplt[j])/dybar;
-  dy = CLAMP(dy, 0.0, 1.0);
-  dz = (xyz[2]-zplt[k])/dzbar;
-  dz = CLAMP(dz, 0.0, 1.0);
+  if(smoke_fast_interp==0){
+    dx = (xyz[0]-xplt[i])/dxbar;
+    dx = CLAMP(dx, 0.0, 1.0);
+    dy = (xyz[1]-yplt[j])/dybar;
+    dy = CLAMP(dy, 0.0, 1.0);
+    dz = (xyz[2]-zplt[k])/dzbar;
+    dz = CLAMP(dz, 0.0, 1.0);
 
-  vv = valmesh->smokealpha_ptr+ijk;
-  if(i+1<=ibar)iplus = 1;
-  if(j+1<=jbar)jplus = nx;
-  if(k+1<=kbar)kplus = nx*ny;
+    if(i+1<=ibar)iplus = 1;
+    if(j+1<=jbar)jplus = nx;
+    if(k+1<=kbar)kplus = nx*ny;
 
-  i000 = 0;                 // i,j,k
-  i001 = kplus;             // i,j,k+1
+    i000 = 0;                 // i,j,k
+    i001 = kplus;             // i,j,k+1
 
-  i010 = jplus;             // i,j+1,k, 
-  i011 = jplus+kplus;       // i,j+1,k+1
+    i010 = jplus;             // i,j+1,k, 
+    i011 = jplus+kplus;       // i,j+1,k+1
 
-  i100 = iplus;             // i+1,j,k
-  i101 = iplus+kplus;       // i+1,j,k+1
+    i100 = iplus;             // i+1,j,k
+    i101 = iplus+kplus;       // i+1,j,k+1
 
-  i110 = iplus+jplus;       // i+1,j+1,k
-  i111 = iplus+jplus+kplus; // i+1,j+1,k+1
-
-#define INTERP_SMOKE3D(val) \
-  val00 = MIX(dx, vv[i100], vv[i000]);\
-  val10 = MIX(dx, vv[i110], vv[i010]);\
-  val01 = MIX(dx, vv[i101], vv[i001]);\
-  val11 = MIX(dx, vv[i111], vv[i011]);\
-  val0  = MIX(dy,    val10,    val00);\
-  val1  = MIX(dy,    val11,    val01);\
-  val   = MIX(dz,     val1,     val0)
+    i110 = iplus+jplus;       // i+1,j+1,k
+    i111 = iplus+jplus+kplus; // i+1,j+1,k+1
+  }
 
   if(smoke!=NULL){
-    float smokeval;
-    float ratio;
+    float smokeval, ratio;
 
     vv = smoke+ijk;
-    INTERP_SMOKE3D(smokeval);
+    if(smoke_fast_interp==1){
+      smokeval = *vv;
+    }
+    else{
+      INTERP_SMOKE3D(smokeval);
+    }
     val_fraction = smokeval/255.0;
     val_fraction = CLAMP(val_fraction, 0.0, 1.0);
     ratio = smoke3d_delta_perp/smoke3d_delta;
@@ -1127,16 +1132,25 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
     float fireval;
 
     vv = fire+ijk;
-    INTERP_SMOKE3D(fireval);
+    if(smoke_fast_interp==1){
+      fireval = *vv;
+    }
+    else{
+      INTERP_SMOKE3D(fireval);
+    }
     vals[1] = fireval*hrrpuv_max_smv/255.0;
     have_vals[1] = 1;
   }
   if(co2 != NULL){
-    float co2val;
-    float co2max = 0.1;
+    float co2val, co2max = 0.1;
 
     vv = co2 + ijk;
-    INTERP_SMOKE3D(co2val);
+    if(smoke_fast_interp==1){
+      co2val = *vv;
+    }
+    else{
+      INTERP_SMOKE3D(co2val);
+    }
     vals[2] = co2max*co2val/255.0;
     have_vals[2] = 1;
   }

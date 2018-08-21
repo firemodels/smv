@@ -25,7 +25,7 @@ SVEXTERN int SVDECL(use_newsmoke, 0);
 #ifdef pp_GPUSMOKE
 SVEXTERN int SVDECL(plane_normal, 1);
 SVEXTERN int SVDECL(smoke_frustum, 0);
-SVEXTERN int SVDECL(smoke_interp, 0);
+SVEXTERN int SVDECL(smoke_fast_interp, 0);
 SVEXTERN int SVDECL(plane_labels, 0);
 SVEXTERN int SVDECL(smoke_mesh_aligned, 0);
 SVEXTERN int SVDECL(plane_single, 1);
