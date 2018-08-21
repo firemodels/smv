@@ -2354,7 +2354,6 @@ void UpdateSmoke3DPlanes(float delta_perp){
     float *verts, *dist;
     float *boxmin, *boxmax;
     int j;
-    int firstmin = 1, firstmax=1;
 
     meshi = meshinfo + i;
     meshi->nsmokeplaneinfo = 0;
@@ -2704,10 +2703,11 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
 
     fireval = t[1];
     if(fireval>global_hrrpuv_cutoff){
-      float alpha_factor,*color,alpha,mergecolor[3];
+      float *color,alpha,mergecolor[3];
+//      float alpha_factor;
       int color_index;
 
-      alpha_factor = CLAMP((fireval-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);
+      //alpha_factor = CLAMP((fireval-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);
       color_index = CLAMP(255*fireval/hrrpuv_max_smv,0,255);
       color = rgb_slicesmokecolormap_01 + 4*color_index;
 
