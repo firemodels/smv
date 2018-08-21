@@ -784,6 +784,7 @@ void InitSmoke3DTexture(meshdata *meshi){
 
   if(meshi->smokealpha_ptr!=NULL){
     glActiveTexture(GL_TEXTURE0);
+    if(meshi->smoke_texture_id != 0)glDeleteTextures(1, &meshi->smoke_texture_id);
     glGenTextures(1, &meshi->smoke_texture_id);
     glBindTexture(GL_TEXTURE_3D, meshi->smoke_texture_id);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -794,9 +795,7 @@ void InitSmoke3DTexture(meshdata *meshi){
     nx = meshi->ibar + 1;
     ny = meshi->jbar + 1;
     nz = meshi->kbar + 1;
-    if(meshi->smoke_texture_buffer !=NULL){
-      glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->smoke_texture_buffer);
-    }
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->smoke_texture_buffer);
     SNIFF_ERRORS("after smoke texture initialization");
   }
 
@@ -804,6 +803,7 @@ void InitSmoke3DTexture(meshdata *meshi){
 
   if(meshi->fire_texture_buffer!=NULL){
     glActiveTexture(GL_TEXTURE1);
+    if(meshi->fire_texture_id != 0)glDeleteTextures(1, &meshi->fire_texture_id);
     glGenTextures(1, &meshi->fire_texture_id);
     glBindTexture(GL_TEXTURE_3D, meshi->fire_texture_id);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -814,9 +814,7 @@ void InitSmoke3DTexture(meshdata *meshi){
     nx = meshi->ibar+1;
     ny = meshi->jbar+1;
     nz = meshi->kbar+1;
-    if(meshi->fire_texture_buffer!=NULL){
-      glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
-    }
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->fire_texture_buffer);
     SNIFF_ERRORS("after fire texture initialization");
   }
 
@@ -824,6 +822,7 @@ void InitSmoke3DTexture(meshdata *meshi){
 
   if(meshi->co2_texture_buffer != NULL){
     glActiveTexture(GL_TEXTURE2);
+    if(meshi->co2_texture_id != 0)glDeleteTextures(1, &meshi->co2_texture_id);
     glGenTextures(1, &meshi->co2_texture_id);
     glBindTexture(GL_TEXTURE_3D, meshi->co2_texture_id);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -834,9 +833,7 @@ void InitSmoke3DTexture(meshdata *meshi){
     nx = meshi->ibar + 1;
     ny = meshi->jbar + 1;
     nz = meshi->kbar + 1;
-    if(meshi->co2_texture_buffer != NULL){
-      glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->co2_texture_buffer);
-    }
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->co2_texture_buffer);
     SNIFF_ERRORS("after co2 texture initialization");
   }
 
@@ -857,10 +854,7 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
 
   meshi = meshinfo + smoke3di->blocknumber;
-  if(meshi->smoke_texture_defined == -1){
-    meshi->smoke_texture_defined = 1;
-    InitSmoke3DTexture(meshi);
-  }
+  InitSmoke3DTexture(meshi);
 
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
@@ -1001,6 +995,11 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
   TransparentOn();
+  CheckMemory;
+  ASSERT(meshi->nsmokeplaneinfo>=0);
+  if(meshi->nsmokeplaneinfo<0){
+    ASSERT(0);
+  }
   glBegin(GL_TRIANGLES);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
     meshplanedata *spi;
@@ -1017,7 +1016,6 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
       v1 = spi->verts + 3*iv1;
       v2 = spi->verts + 3*iv2;
       v3 = spi->verts + 3*iv3;
-
       glVertex3fv(v1);
       glVertex3fv(v2);
       glVertex3fv(v3);
@@ -2324,7 +2322,6 @@ void UpdateSmoke3DPlanes(float delta_perp){
   int i;
   float *xyz0, *norm;
   float d, distmin, distmax;
-  int firstdist = 1;
   float xx[2], yy[2], zz[2], norm_align[3];
 
   /* stuff min and max grid data into a more convenient form
@@ -2350,6 +2347,8 @@ void UpdateSmoke3DPlanes(float delta_perp){
   xyz0 = fds_eyepos;
   norm = fds_viewdir;
 
+  distmin = -1.0;
+  distmax = -1.0;
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
     float *verts, *dist;
@@ -2358,6 +2357,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
     int firstmin = 1, firstmax=1;
 
     meshi = meshinfo + i;
+    meshi->nsmokeplaneinfo = 0;
     if(smoke_mesh_aligned == 1){
       norm_align[0] = -meshi->norm[0];
       norm_align[1] = -meshi->norm[1];
@@ -2389,7 +2389,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
     for(j = 0; j<8; j++){
       float *xyz, distxyz, xyzrel[3];
 
-      xyz = meshi->verts + 3 * j;
+      xyz = meshi->verts + 3*j;
       VEC3DIFF(xyzrel, xyz, xyz0);
       distxyz = PLANEDIST(norm, xyz0, xyz);
       if(smoke_mesh_aligned==1){
@@ -2398,34 +2398,27 @@ void UpdateSmoke3DPlanes(float delta_perp){
       else{
         dist[j] = SIGN(distxyz)*NORM3(xyzrel);
       }
-      if(dist[j] >= 0.0){
-        if(firstmin==0){
-          meshi->vert_distmin = MIN(meshi->vert_distmin, dist[j]);
+      if(dist[j]>0.0){
+        meshi->vert_distmax = MAX(meshi->vert_distmax,dist[j]);
+        if(meshi->vert_distmin>0.0){
+          meshi->vert_distmin = MIN(meshi->vert_distmin,dist[j]);
         }
         else{
-          firstmin = 0;
           meshi->vert_distmin = dist[j];
         }
-        if(firstmax==0){
-          meshi->vert_distmax = MAX(meshi->vert_distmax, dist[j]);
+        distmax = MAX(distmax,dist[j]);
+        if(distmin>0.0){
+          distmin = MIN(distmin,dist[j]);
         }
         else{
-          firstmax = 0;
-          meshi->vert_distmax = dist[j];
-        }
-        if(firstdist == 1){
-          firstdist = 0;
           distmin = dist[j];
-          distmax = dist[j];
-        }
-        else{
-          distmin = MIN(dist[j], distmin);
-          distmax = MAX(dist[j], distmax);
         }
       }
     }
   }
-  if(firstdist == 1)return;
+  if(distmin<0.0){
+    return;
+  }
   UpdateGluiPlanes(distmin, distmax);
   if(plane_labels==1){
     for(i = 0;i < nmeshes;i++){
@@ -2705,12 +2698,11 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
 
 void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
   int use_smoke=1;
-  float sootval, fireval, co2val;
 
-  if(hv[0]==1)sootval=t[0];
-  if(hv[1]==1)fireval=t[1];
-  if(hv[2]==1)co2val=t[2];
   if(hv[1]==1){
+    float fireval;
+
+    fireval = t[1];
     if(fireval>global_hrrpuv_cutoff){
       float alpha_factor,*color,alpha,mergecolor[3];
       int color_index;
@@ -2720,9 +2712,11 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
       color = rgb_slicesmokecolormap_01 + 4*color_index;
 
       alpha = (float)smoke3di->fire_alpha/255.0;
-      if(hv[1]==1&&hv[2]==1){
-        float f1 = 1.0, f2 = 0.0, denom, co2alpha;
+      if(hv[0]==1&&hv[2]==1){
+        float f1 = 1.0, f2 = 0.0, denom, co2alpha, sootval, co2val;
 
+        sootval = t[0];
+        co2val = t[2];
         f1 = ABS(sootfactor)*sootval;
         f2 = ABS(co2factor)*co2val;
         denom = f1 + f2;
@@ -2743,6 +2737,9 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
     }
   }
   if(hv[0]==1&&use_smoke==1){
+    float sootval;
+
+    sootval = t[0];
     glColor4f(0.0,0.0,0.0,sootval);
     glVertex3fv(v);
   }

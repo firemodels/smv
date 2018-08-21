@@ -349,30 +349,27 @@ void InitMesh(meshdata *meshi){
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
 #ifdef pp_GPUSMOKE
-  meshi->smoke_texture_defined = -1;
-  meshi->smoke_texture_id = -1;
+  meshi->smoke_texture_id = 0;
   meshi->smoke_texture_buffer = NULL;
 
-  meshi->fire_texture_defined = -1;
-  meshi->fire_texture_id = -1;
+  meshi->fire_texture_id = 0;
   meshi->fire_texture_buffer = NULL;
 
-  meshi->co2_texture_defined = -1;
-  meshi->co2_texture_id = -1;
+  meshi->co2_texture_id = 0;
   meshi->co2_texture_buffer = NULL;
 #endif
 
   meshi->volsmoke_texture_buffer = NULL;
-  meshi->volsmoke_texture_id = -1;
+  meshi->volsmoke_texture_id = 0;
 
   meshi->volfire_texture_buffer = NULL;
-  meshi->volfire_texture_id = -1;
+  meshi->volfire_texture_id = 0;
 
   meshi->vollight_texture_buffer = NULL;
-  meshi->vollight_texture_id = -1;
+  meshi->vollight_texture_id = 0;
 
   meshi->slice3d_texture_buffer = NULL;
-  meshi->slice3d_texture_id = -1;
+  meshi->slice3d_texture_id = 0;
   meshi->slice3d_c_buffer = NULL;
 #endif
   meshi->mesh_offset_ptr = NULL;
