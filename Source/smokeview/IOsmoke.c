@@ -820,6 +820,26 @@ void InitSmoke3DTexture(meshdata *meshi){
     SNIFF_ERRORS("after fire texture initialization");
   }
 
+  // define co2 texture
+
+  if(meshi->co2_texture_buffer != NULL){
+    glActiveTexture(GL_TEXTURE2);
+    glGenTextures(1, &meshi->co2_texture_id);
+    glBindTexture(GL_TEXTURE_3D, meshi->co2_texture_id);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    nx = meshi->ibar + 1;
+    ny = meshi->jbar + 1;
+    nz = meshi->kbar + 1;
+    if(meshi->co2_texture_buffer != NULL){
+      glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->co2_texture_buffer);
+    }
+    SNIFF_ERRORS("after co2 texture initialization");
+  }
+
   glActiveTexture(GL_TEXTURE0);
   PRINTF("completed");
   PRINTF("\n");
@@ -832,8 +852,7 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   meshdata *meshi;
   GLsizei nx, ny, nz;
   int i;
-  unsigned char *firecolor;
-  int fire_index = HRRPUV;
+  unsigned char *firecolor, *co2color;
 
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
 
@@ -852,8 +871,11 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
   if(meshi->smokealpha_ptr!=NULL){
     unsigned char *cbuffer;
     float *v;
-    
+
     cbuffer = meshi->smokealpha_ptr;
+    if(meshi->smoke_texture_buffer==NULL){
+      NewMemory((void **)&(meshi->smoke_texture_buffer), smoke3di->nchars_uncompressed * sizeof(float));
+    }
     v = meshi->smoke_texture_buffer;
     for(i = 0; i<smoke3di->nchars_uncompressed; i++){
       *v++ = (float)(*cbuffer++)/255.0;
@@ -866,13 +888,16 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
 
   // update fire texture
 
-  firecolor = smoke3di->smokestate[fire_index].color;
+  firecolor = smoke3di->smokestate[HRRPUV].color;
   if(firecolor!=NULL){
     unsigned char *cbuffer;
     float *v, factor;
 
     factor = hrrpuv_max_smv/255.0;
     cbuffer = firecolor;
+    if(meshi->fire_texture_buffer==NULL){
+      NewMemory((void **)&(meshi->fire_texture_buffer), smoke3di->nchars_uncompressed * sizeof(float));
+    }
     v = meshi->fire_texture_buffer;
     for(i = 0; i<smoke3di->nchars_uncompressed; i++){
       *v++ = (float)(*cbuffer++)*factor;
@@ -883,15 +908,42 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
     SNIFF_ERRORS("after fire texture update");
   }
 
-  if(volsmoke_colormap_id_defined==-1){
-    volsmoke_colormap_id_defined = 1;
+  // update co2 texture
+
+  co2color = smoke3di->smokestate[CO2].color;
+  if(co2color != NULL){
+    unsigned char *cbuffer;
+    float *v, factor;
+
+    factor = 0.1 / 255.0;
+    cbuffer = co2color;
+    if(meshi->co2_texture_buffer==NULL){
+      NewMemory((void **)&(meshi->co2_texture_buffer), smoke3di->nchars_uncompressed * sizeof(float));
+    }
+    v = meshi->co2_texture_buffer;
+    for(i = 0; i < smoke3di->nchars_uncompressed; i++){
+      *v++ = (float)(*cbuffer++)*factor;
+    }
+
     glActiveTexture(GL_TEXTURE2);
-    glGenTextures(1, &volsmoke_colormap_id);
-    glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
+    glTexSubImage3D(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, nx, ny, nz, GL_RED, GL_FLOAT, meshi->co2_texture_buffer);
+    SNIFF_ERRORS("after co2 texture update");
+  }
+
+  if(slicesmoke_colormap_id_defined ==-1){
+    slicesmoke_colormap_id_defined = 1;
+    glActiveTexture(GL_TEXTURE3);
+    glGenTextures(1, &slicesmoke_colormap_id);
+    glBindTexture(GL_TEXTURE_1D, slicesmoke_colormap_id);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#ifdef pp_GPU
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
+#else
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+#endif
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_slicesmokecolormap_01);
+    SNIFF_ERRORS("after smoke color bar update");
   }
   glActiveTexture(GL_TEXTURE0);
 }
@@ -901,12 +953,12 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   int i;
   meshdata *meshi;
   float *boxmin, *boxmax;
-  unsigned char *firecolor;
-  int fire_index = HRRPUV;
+  unsigned char *firecolor, *co2color;
   float fire_alpha;
 
   meshi = meshinfo + smoke3di->blocknumber;
-  firecolor = smoke3di->smokestate[fire_index].color;
+  firecolor = smoke3di->smokestate[HRRPUV].color;
+  co2color = smoke3di->smokestate[CO2].color;
   UpdateSmoke3DTexture(smoke3di);
   boxmin = meshi->boxmin;
   boxmax = meshi->boxmax;
@@ -922,11 +974,22 @@ void DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   else{
     glUniform1i(GPUnewsmoke_have_fire, 0);
   }
+  if(co2color!=NULL){
+    glUniform1i(GPUnewsmoke_have_co2, 1);
+  }
+  else{
+    glUniform1i(GPUnewsmoke_have_co2, 0);
+  }
   glUniform1i(GPUnewsmoke_smoketexture, 0);
   glUniform1i(GPUnewsmoke_firetexture,  1);
-  glUniform1i(GPUnewsmoke_smokecolormap,2);
+  glUniform1i(GPUnewsmoke_co2texture, 2);
+  glUniform1i(GPUnewsmoke_smokecolormap,3);
   glUniform3f(GPUnewsmoke_boxmin, boxmin[0], boxmin[1], boxmin[2]);
   glUniform3f(GPUnewsmoke_boxmax, boxmax[0], boxmax[1], boxmax[2]);
+  glUniform3f(GPUnewsmoke_co2_color, (float)global_co2color[0]/255.0,(float)global_co2color[1]/255.0,(float)global_co2color[2]/255.0);
+  glUniform1f(GPUnewsmoke_co2_alpha, (float)smoke3di->co2_alpha/255.0);
+  glUniform1f(GPUnewsmoke_sootfactor, sootfactor);
+  glUniform1f(GPUnewsmoke_co2factor, co2factor);
 
   fire_alpha = CLAMP((float)smoke3di->fire_alpha/255.0,0.0,1.0);
 
@@ -1072,10 +1135,11 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
   }
   if(co2 != NULL){
     float co2val;
+    float co2max = 0.1;
 
     vv = co2 + ijk;
     INTERP_SMOKE3D(co2val);
-    vals[2] = co2val;
+    vals[2] = co2max*co2val/255.0;
     have_vals[2] = 1;
   }
 }
@@ -1096,9 +1160,6 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
   TransparentOn();
-  //   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  //   glEnable(GL_TEXTURE_1D);
-  //   glBindTexture(GL_TEXTURE_1D, volsmoke_colormap_id);
   glBegin(GL_TRIANGLES);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
     meshplanedata *spi;
@@ -1125,7 +1186,6 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
     }
   }
   glEnd();
-  //   glDisable(GL_TEXTURE_1D);
   TransparentOff();
   glPopMatrix();
 }
@@ -2640,27 +2700,52 @@ void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
   }
 }
 
+/* ------------------ DrawSmokeVertex ------------------------ */
 
-#define DRAW_SMOKE_VERTEX(v, t, hv) \
-{\
-  int use_smoke=1;\
-  if(hv[1]==1){\
-    if(t[1]>global_hrrpuv_cutoff){\
-      float alpha_factor,*color,alpha;\
-      int color_index;\
-      alpha_factor = CLAMP((t[1]-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);\
-      color_index = CLAMP(255*t[1]/hrrpuv_max_smv,0,255);\
-      color = rgb_volsmokecolormap + 4*color_index;\
-      alpha = (float)smoke3di->fire_alpha/255.0*alpha_factor;\
-      use_smoke=0;\
-      glColor4f(color[0],color[1],color[2],alpha);\
-      glVertex3fv(v);\
-    }\
-  }\
-  if(hv[0]==1&&use_smoke==1){\
-    glColor4f(0.0,0.0,0.0,t[0]);\
-    glVertex3fv(v);\
-  }\
+
+void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
+  int use_smoke=1;
+  float sootval, fireval, co2val;
+
+  if(hv[0]==1)sootval=t[0];
+  if(hv[1]==1)fireval=t[1];
+  if(hv[2]==1)co2val=t[2];
+  if(hv[1]==1){
+    if(fireval>global_hrrpuv_cutoff){
+      float alpha_factor,*color,alpha,mergecolor[3];
+      int color_index;
+
+      alpha_factor = CLAMP((fireval-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);
+      color_index = CLAMP(255*fireval/hrrpuv_max_smv,0,255);
+      color = rgb_slicesmokecolormap_01 + 4*color_index;
+
+      alpha = (float)smoke3di->fire_alpha/255.0;
+      if(hv[1]==1&&hv[2]==1){
+        float f1 = 1.0, f2 = 0.0, denom, co2alpha;
+
+        f1 = ABS(sootfactor)*sootval;
+        f2 = ABS(co2factor)*co2val;
+        denom = f1 + f2;
+        if(denom > 0.0){
+          f1 /= denom;
+          f2 /= denom;
+        }
+        co2alpha = (float)smoke3di->co2_alpha/255.0;
+        mergecolor[0] = f2*global_co2color[0]/255.0 + f1*color[0];
+        mergecolor[1] = f2*global_co2color[1]/255.0 + f1*color[1];
+        mergecolor[2] = f2*global_co2color[2]/255.0 + f1*color[2];
+        alpha = f2*co2alpha + f1*alpha;
+        color = mergecolor;
+      }
+      use_smoke=0;
+      glColor4f(color[0],color[1],color[2],alpha);
+      glVertex3fv(v);
+    }
+  }
+  if(hv[0]==1&&use_smoke==1){
+    glColor4f(0.0,0.0,0.0,sootval);
+    glVertex3fv(v);
+  }
 }
 
 /* ------------------ DrawTriangleSmoke ------------------------ */
@@ -2680,9 +2765,9 @@ void DrawTriangleSmoke(float *v1, float *v2, float *v3,
   DIST3(v1, v3, d13);
   DIST3(v2, v3, d23);
   if(d12<=del && d13<=del && d23<del){
-    DRAW_SMOKE_VERTEX(v1, t1, hv1);
-    DRAW_SMOKE_VERTEX(v2, t2, hv2);
-    DRAW_SMOKE_VERTEX(v3, t3, hv3);
+    DrawSmokeVertex(smoke3di, v1, t1, hv1);
+    DrawSmokeVertex(smoke3di, v2, t2, hv2);
+    DrawSmokeVertex(smoke3di, v3, t3, hv3);
   }
   else{
     if(d12<=MIN(d13, d23)){
@@ -5168,6 +5253,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
 #ifdef pp_GPUSMOKE
     FREEMEMORY(meshi->smoke_texture_buffer);
     FREEMEMORY(meshi->fire_texture_buffer);
+    FREEMEMORY(meshi->co2_texture_buffer);
 #endif
   }
 
@@ -5289,6 +5375,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
 #ifdef  pp_GPUSMOKE
      NewResizeMemory(meshi->smoke_texture_buffer, smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
      NewResizeMemory(meshi->fire_texture_buffer,  smoke3di->nchars_uncompressed*sizeof(float))==0||
+     NewResizeMemory(meshi->co2_texture_buffer,   smoke3di->nchars_uncompressed*sizeof(float)) == 0 ||
 #endif
      NewResizeMemory(meshi->merge_alpha, smoke3di->nchars_uncompressed * sizeof(unsigned char)) == 0){
      ReadSmoke3D(iframe,ifile,UNLOAD,&error);
@@ -5694,7 +5781,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         float denom;
 
         f1 = ABS(sootfactor)*sootcolor[j];
-        f2 = ABS(co2factor)*co2color[j];
+        f2 = ABS(co2factor)*co2color[j]*0.1;
         denom = f1+f2;
         if(denom>0.0){
           f1/=denom;

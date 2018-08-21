@@ -356,6 +356,10 @@ void InitMesh(meshdata *meshi){
   meshi->fire_texture_defined = -1;
   meshi->fire_texture_id = -1;
   meshi->fire_texture_buffer = NULL;
+
+  meshi->co2_texture_defined = -1;
+  meshi->co2_texture_id = -1;
+  meshi->co2_texture_buffer = NULL;
 #endif
 
   meshi->volsmoke_texture_buffer = NULL;

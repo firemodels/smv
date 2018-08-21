@@ -616,9 +616,9 @@ typedef struct _meshdata {
 #ifdef pp_GPU
   GLuint blockage_texture_id;
 #ifdef pp_GPUSMOKE
-  int smoke_texture_defined, fire_texture_defined;
-  GLuint smoke_texture_id, fire_texture_id;
-  float *smoke_texture_buffer, *fire_texture_buffer;
+  int smoke_texture_defined, fire_texture_defined, co2_texture_defined;
+  GLuint smoke_texture_id, fire_texture_id, co2_texture_id;
+  float *smoke_texture_buffer, *fire_texture_buffer, *co2_texture_buffer;
 #endif
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;

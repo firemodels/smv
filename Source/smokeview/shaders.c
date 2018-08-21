@@ -203,18 +203,20 @@ int SetNewSmokeShaders(void){
 
   const GLchar *FragmentShaderSource[] = {
     "#version 120\n"
-    "uniform sampler3D smoke_texture, fire_texture;"
+    "uniform sampler3D smoke_texture, fire_texture, co2_texture;"
     "uniform sampler1D colormap;"
-    "uniform vec3 boxmin,boxmax;"
-    "uniform int have_smoke, have_fire;"
+    "uniform vec3 boxmin,boxmax, co2_color;"
+    "uniform float hrrpuv_max_smv, global_hrrpuv_cutoff, fire_alpha, co2_alpha;"
+    "uniform float sootfactor, co2factor;"
+    "uniform int have_smoke, have_fire, have_co2;"
     "varying vec3 fragpos;"
-    "uniform float hrrpuv_max_smv, global_hrrpuv_cutoff, fire_alpha;"
     "void main(){"
     "  vec3 position,color;"
-    "  float smoke_val, fire_val;"
+    "  float smoke_val, fire_val, co2_val;"
     "  float color_val, color_index;"
     "  float alpha, alpha_factor;"
     "  int use_smoke,output_fragment;"
+    "  float f1, f2, denom;"
 
     "  position = (fragpos-boxmin)/(boxmax-boxmin);"
     "  use_smoke=1;"
@@ -227,6 +229,23 @@ int SetNewSmokeShaders(void){
     "      color_index = fire_val/hrrpuv_max_smv;"
     "      color = texture1D(colormap,color_index).rgb;"
     "      alpha = fire_alpha*alpha_factor;"
+    "      if(have_smoke==1&&have_co2==1){"
+    "        smoke_val = texture3D(smoke_texture,position).x;"
+    "        co2_val   = texture3D(co2_texture,position).x;"
+    "        f1 = sootfactor*smoke_val;"
+    "        f2 = co2factor*co2_val;"
+    "        denom = f1 + f2;"
+    "        if(denom > 0.0){"
+    "          f1 /= denom;"
+    "          f2 /= denom;"
+    "        }"
+    "        else{"
+    "          f1 = 1.0;"
+    "          f2 = 0.0;"
+    "        }"
+    "        color = f1*color + f2*co2_color;"
+    "        alpha = f1*alpha + f2*co2_alpha;"
+    "      }"
     "      use_smoke=0;"
     "      output_fragment=1;"
     "    }"
@@ -272,9 +291,15 @@ int SetNewSmokeShaders(void){
   glLinkProgram(p_newsmoke);
   if(ShaderLinkStatus(p_newsmoke) == GL_FALSE)return 0;
 
+       GPUnewsmoke_have_co2 = glGetUniformLocation(p_newsmoke, "have_co2");
+  GPUnewsmoke_co2_color     = glGetUniformLocation(p_newsmoke, "co2_color");
+  GPUnewsmoke_co2_alpha     = glGetUniformLocation(p_newsmoke, "color_alpha");
+  GPUnewsmoke_sootfactor    = glGetUniformLocation(p_newsmoke, "sootfactor");
+    GPUnewsmoke_co2texture  = glGetUniformLocation(p_newsmoke, "co2_texture");
+   GPUnewsmoke_co2factor    = glGetUniformLocation(p_newsmoke, "co2factor");
    GPUnewsmoke_smoketexture = glGetUniformLocation(p_newsmoke, "smoke_texture");
     GPUnewsmoke_firetexture = glGetUniformLocation(p_newsmoke, "fire_texture");
-     GPUnewsmoke_have_smoke = glGetUniformLocation(p_newsmoke, "have_smoke");
+    GPUnewsmoke_have_smoke  = glGetUniformLocation(p_newsmoke, "have_smoke");
       GPUnewsmoke_have_fire = glGetUniformLocation(p_newsmoke, "have_fire");
   GPUnewsmoke_smokecolormap = glGetUniformLocation(p_newsmoke, "colormap");
          GPUnewsmoke_boxmin = glGetUniformLocation(p_newsmoke, "boxmin");

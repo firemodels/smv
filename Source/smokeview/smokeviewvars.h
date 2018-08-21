@@ -587,9 +587,11 @@ SVEXTERN int GPUzone_odl, GPUzone_odu;
 
 #ifdef pp_GPUSMOKE
 SVEXTERN int GPUnewsmoke_boxmin, GPUnewsmoke_boxmax;
-SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_smokecolormap;
+SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_co2texture, GPUnewsmoke_smokecolormap;
 SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
 SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
+SVEXTERN int GPUnewsmoke_have_co2, GPUnewsmoke_co2_color, GPUnewsmoke_co2_alpha;
+SVEXTERN int GPUnewsmoke_sootfactor, GPUnewsmoke_co2texture, GPUnewsmoke_co2factor;
 #endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
@@ -1506,6 +1508,7 @@ SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_co
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
 SVEXTERN int SVDECL(slice3d_colormap_id_defined,-1);
+SVEXTERN int SVDECL(slicesmoke_colormap_id_defined, -1);
 SVEXTERN float mscale[3];
 SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
