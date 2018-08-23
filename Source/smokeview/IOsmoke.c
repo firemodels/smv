@@ -15,10 +15,13 @@
 #include "compress.h"
 
 void DrawTriangleSmoke(float *v1, float *v2, float *v3,
+                       float  d1, float  d2, float d3,
                        float *t1, float *t2, float *t3,
                        int  *hv1, int  *hv2, int  *hv3,
                        float del, smoke3ddata *smoke3di);
-  void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level);
+void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3,
+                              float d1, float d2, float d3,
+                              float del, int level);
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
@@ -777,9 +780,6 @@ void InitSmoke3DTexture(meshdata *meshi){
   GLint border_size = 0;
   GLsizei nx, ny, nz;
 
-  PRINTF("Defining 3d smoke textures for %s ...", meshi->label);
-  FFLUSH();
-
   // define smoke texture
 
   if(meshi->smokealpha_ptr!=NULL){
@@ -838,9 +838,6 @@ void InitSmoke3DTexture(meshdata *meshi){
   }
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed");
-  PRINTF("\n");
-  FFLUSH();
 }
 
 /* ------------------ UpdateSmoke3DTexture ------------------------ */
@@ -1158,15 +1155,59 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
 
 /* ------------------ DrawSmoke3D_NEW ------------------------ */
 
+void DrawSmoke3DOutline(smoke3ddata *smoke3di){
+
+  int i;
+  meshdata *meshi;
+  float del;
+
+  meshi = meshinfo+smoke3di->blocknumber;
+
+  del = smoke3d_delta_par;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->ntriangles; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+      float d1, d2, d3;
+      float dx, dy, dz;
+
+      iv1 = spi->triangles[3*j];
+      iv2 = spi->triangles[3*j+1];
+      iv3 = spi->triangles[3*j+2];
+      v1 = spi->verts+3*iv1;
+      v2 = spi->verts+3*iv2;
+      v3 = spi->verts+3*iv3;
+      DDIST3(v1, v2, d1);
+      DDIST3(v2, v3, d2);
+      DDIST3(v3, v1, d3);
+
+      DrawTriangleSmokeOutline(v1, v2, v3, d1, d2, d3, del, 0);
+    }
+  }
+  glEnd();
+  glPopMatrix();
+}
+
+/* ------------------ DrawSmoke3D_NEW ------------------------ */
+
 void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
 
   int i;
   meshdata *meshi;
-  float del2;
+  float del;
 
   meshi = meshinfo + smoke3di->blocknumber;
 
-  del2 = smoke3d_delta_par*smoke3d_delta_par;
+  del = smoke3d_delta_par;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1180,9 +1221,11 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
     spi = meshi->smokeplaneinfo + i;
     for(j = 0; j<spi->ntriangles; j++){
       float *v1, *v2, *v3;
+      float d1, d2, d3;
       int iv1, iv2, iv3;
       float t1[3], t2[3], t3[3];
       int hv1[3], hv2[3], hv3[3];
+      float dx, dy, dz;
 
       iv1 = spi->triangles[3*j];
       iv2 = spi->triangles[3*j + 1];
@@ -1194,7 +1237,11 @@ void DrawSmoke3D_NEW(smoke3ddata *smoke3di){
       GetSmoke3DVals(v2,smoke3di,t2,hv2);
       GetSmoke3DVals(v3,smoke3di,t3,hv3);
 
-      DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, hv1, hv2, hv3, del2, smoke3di);
+      DDIST3(v1, v2, d1);
+      DDIST3(v2, v3, d2);
+      DDIST3(v3, v1, d3);
+
+      DrawTriangleSmoke(v1, v2, v3, d1, d2, d3, t1, t2, t3, hv1, hv2, hv3, del, smoke3di);
     }
   }
   glEnd();
@@ -2607,40 +2654,38 @@ void DrawSmokePlanes(meshdata *meshi){
 
 /* ------------------ DrawQuadSmokeOutline ------------------------ */
 
-void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4, float del, int level){
+void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4,
+                          float  d1, float  d2, float  d3, float  d4,
+                          float del, int level){
   float d13, d24;
   float dx, dy, dz;
 
   if(level == 0)glBegin(GL_LINES);
-  DIST3(v1, v3, d13);
-  DIST3(v2, v4, d24);
+  DDIST3(v1, v3, d13);
+  DDIST3(v2, v4, d24);
   if(d13 < d24){
-    DrawTriangleSmokeOutline(v1, v2, v3, del, level + 1);
-    DrawTriangleSmokeOutline(v1, v3, v4, del, level + 1);
+    DrawTriangleSmokeOutline(v1, v2, v3, d1, d2, d13, del, level + 1);
+    DrawTriangleSmokeOutline(v1, v3, v4, d13, d3, d4, del, level + 1);
   }
   else{
-    DrawTriangleSmokeOutline(v1, v2, v4, del, level + 1);
-    DrawTriangleSmokeOutline(v2, v3, v4, del, level + 1);
+    DrawTriangleSmokeOutline(v1, v2, v4, d1, d24, d4, del, level + 1);
+    DrawTriangleSmokeOutline(v2, v3, v4, d2, d3, d24, del, level + 1);
   }
   if(level == 0)glEnd();
 }
 
 /* ------------------ DrawTriangleSmokeOutline ------------------------ */
 
-void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int level){
+void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float d1, float d2, float d3, float del, int level){
 
-  float d12, d13, d23;
-  float v12[3], v13[3], v23[3];
+  float va[3], vb[3];
+  float dab;
   float dx, dy, dz;
   int drawit=0;
 
   if(level == 0)glBegin(GL_LINES);
 
-  DIST3(v1, v2, d12);
-  DIST3(v1, v3, d13);
-  DIST3(v2, v3, d23);
-
-  if(d12 <= del&&d13 <= del&&d23 < del)drawit = 1;
+  if(d1 <= del&&d2 <= del&&d3 < del)drawit = 1;
   if(drawit == 1 || level == 0){
     if(level == 0){
       glLineWidth(2.0*plane_outline_width);
@@ -2660,26 +2705,61 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
     glVertex3fv(v1);
   }
   if(drawit==0){
-    if(d12 <= MIN(d13, d23)){
-      VERT_AVG2(v1, v3, v13);
-      VERT_AVG2(v2, v3, v23);
+    if(d1 <= MIN(d2, d3)){
 
-      DrawTriangleSmokeOutline(v3, v13, v23, del, level + 1);
-      DrawQuadSmokeOutline(v13, v1, v2, v23, del, level + 1);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   /      vb   d2
+//                /     /  \
+//               /     /    \
+//              v1-----------v3
+//                    va
+//                    d3
+
+      VERT_AVG2(v1, v3, va);
+      VERT_AVG2(v2, v3, vb);
+      DDIST3(va, vb, dab);
+
+      DrawTriangleSmokeOutline(va, vb, v3, dab, d2/2.0, d3/2.0, del, level + 1);
+      DrawQuadSmokeOutline(v1, v2, vb, va, d1, d2/2.0, dab, d3/2.0, del, level + 1);
     }
-    else if(d13 <= MIN(d12, d23)){
-      VERT_AVG2(v1, v2, v12);
-      VERT_AVG2(v2, v3, v23);
+    else if(d2 <= MIN(d1, d3)){
 
-      DrawTriangleSmokeOutline(v12, v2, v23, del, level + 1);
-      DrawQuadSmokeOutline(v1, v12, v23, v3, del, level + 1);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   va     \    d2
+//                /  \     \
+//               /    \     \
+//              v1-----------v3
+//                    vb
+//                    d3
+
+      VERT_AVG2(v1, v2, va);
+      VERT_AVG2(v1, v3, vb);
+      DDIST3(va, vb, dab);
+
+      DrawTriangleSmokeOutline(v1, va, vb, d1/2.0, dab, d3/2.0, del, level + 1);
+      DrawQuadSmokeOutline(va, v2, v3, vb, d1/2.0, d2, d3/2.0, dab, del, level + 1);
     }
-    else{ // d23<=MIN(d12,d13)
-      VERT_AVG2(v1, v2, v12);
-      VERT_AVG2(v1, v3, v13);
+    else{ // d3<=MIN(d1,d2)
 
-      DrawTriangleSmokeOutline(v1, v12, v13, del, level + 1);
-      DrawQuadSmokeOutline(v12, v2, v3, v13, del, level + 1);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   va-----vb   d2
+//                /        \
+//               /          \
+//              v1-----------v3
+//                    d3
+
+      VERT_AVG2(v1, v2, va);
+      VERT_AVG2(v2, v3, vb);
+      DDIST3(va, vb, dab);
+
+      DrawTriangleSmokeOutline(va, v2, vb, d1/2.0, d2/2.0, dab, del, level + 1);
+      DrawQuadSmokeOutline(v1, va, vb, v3, d1/2.0, dab, d2/2.0, d3, del, level + 1);
     }
   }
   if(level == 0)glEnd();
@@ -2688,21 +2768,22 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float del, int le
 /* ------------------ DrawQuadSmoke ------------------------ */
 
 void DrawQuadSmoke(float *v1, float *v2, float *v3, float *v4,
+                   float d1, float d2, float d3, float d4,
                    float *t1, float *t2, float *t3, float *t4,
                    int  *hv1, int  *hv2, int  *hv3,  int *hv4,
                    float del, smoke3ddata *smoke3di){
   float d13, d24;
   float dx, dy, dz;
 
-  DIST3(v1, v3, d13);
-  DIST3(v2, v4, d24);
+  DDIST3(v1, v3, d13);
+  DDIST3(v2, v4, d24);
   if(d13<d24){
-    DrawTriangleSmoke(v1, v2, v3, t1, t2, t3, hv1, hv2, hv3, del, smoke3di);
-    DrawTriangleSmoke(v1, v3, v4, t1, t3, t4, hv1, hv3, hv4, del, smoke3di);
+    DrawTriangleSmoke(v1, v2, v3, d1, d2, d13, t1, t2, t3, hv1, hv2, hv3, del, smoke3di);
+    DrawTriangleSmoke(v1, v3, v4, d13, d3, d4, t1, t3, t4, hv1, hv3, hv4, del, smoke3di);
   }
   else{
-    DrawTriangleSmoke(v1, v2, v4, t1, t2, t4, hv1, hv2, hv4, del, smoke3di);
-    DrawTriangleSmoke(v2, v3, v4, t2, t3, t4, hv2, hv3, hv4, del, smoke3di);
+    DrawTriangleSmoke(v1, v2, v4, d1, d24, d4, t1, t2, t4, hv1, hv2, hv4, del, smoke3di);
+    DrawTriangleSmoke(v2, v3, v4, d2, d3, d24, t2, t3, t4, hv2, hv3, hv4, del, smoke3di);
   }
 }
 
@@ -2762,66 +2843,109 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
 /* ------------------ DrawTriangleSmoke ------------------------ */
 
 void DrawTriangleSmoke(float *v1, float *v2, float *v3,
+                       float d1, float d2, float d3,
                        float *t1, float *t2, float *t3,
                        int  *hv1, int  *hv2, int  *hv3,
                        float del, smoke3ddata *smoke3di){
 
-  float d12, d13, d23;
-  float v12[3], v13[3], v23[3];
+  float dab;
+  float va[3], vb[3];
   float dx, dy, dz;
-  float t12[3], t13[3], t23[3];
-  int hv12[3], hv13[3], hv23[3];
+  float ta[3], tb[3];
+  int hva[3], hvb[3];
 
-  DIST3(v1, v2, d12);
-  DIST3(v1, v3, d13);
-  DIST3(v2, v3, d23);
-  if(d12<=del && d13<=del && d23<del){
-    DrawSmokeVertex(smoke3di, v1, t1, hv1);
-    DrawSmokeVertex(smoke3di, v2, t2, hv2);
-    DrawSmokeVertex(smoke3di, v3, t3, hv3);
+  if(d1<=del && d2<=del && d3<del){
+    int drawit = 1;
+
+    if(hv1[0]==1&&t1[0]==0&&hv2[0]&&t2[0]==0&&hv3[0]==1&&t3[0]==0)drawit = 0;
+    if(drawit==1){
+      DrawSmokeVertex(smoke3di, v1, t1, hv1);
+      DrawSmokeVertex(smoke3di, v2, t2, hv2);
+      DrawSmokeVertex(smoke3di, v3, t3, hv3);
+    }
   }
   else{
-    if(d12<=MIN(d13, d23)){
-      VERT_AVG2(v1, v3, v13);
-      VERT_AVG2(v2, v3, v23);
+    if(d1<=MIN(d2, d3)){
 
-      GetSmoke3DVals(v13,smoke3di,t13,hv13);
-      GetSmoke3DVals(v23,smoke3di,t23,hv23);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   /      vb   d2
+//                /     /  \
+//               /     /    \
+//              v1-----------v3
+//                    va
+//                    d3
 
-      DrawTriangleSmoke( v3,  v13,  v23,
-                         t3,  t13,  t23,
-                        hv3, hv13, hv23,
+      VERT_AVG2(v1, v3, va);
+      VERT_AVG2(v2, v3, vb);
+      DDIST3(va, vb, dab);
+
+
+      GetSmoke3DVals(va,smoke3di,ta,hva);
+      GetSmoke3DVals(vb,smoke3di,tb,hvb);
+
+      DrawTriangleSmoke( v3,  va,  vb,
+                         d3/2.0,  dab,  d2/2.0,
+                         t3,  ta,  tb,
+                        hv3, hva, hvb,
                         del, smoke3di);
-      DrawQuadSmoke( v13,  v1,  v2,  v23,
-                     t13,  t1,  t2,  t23,
-                    hv13, hv1, hv2, hv23,
+      DrawQuadSmoke( va,  v1,  v2,  vb,
+                     d3/2.0,  d1,  d2/2.0,  dab,
+                     ta,  t1,  t2,  tb,
+                    hva, hv1, hv2, hvb,
                     del, smoke3di);
     }
-    else if(d13<=MIN(d12, d23)){
-      VERT_AVG2(v1, v2, v12);
-      VERT_AVG2(v2, v3, v23);
+    else if(d3<=MIN(d1, d2)){
 
-      GetSmoke3DVals(v12, smoke3di, t12, hv12);
-      GetSmoke3DVals(v23, smoke3di, t23, hv23);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   va-----vb   d2
+//                /        \
+//               /          \
+//              v1-----------v3
+//                    d3
 
-      DrawTriangleSmoke( v12,  v2,  v23,
-                         t12,  t2,  t23,
-                        hv12, hv2, hv23,
+      VERT_AVG2(v1, v2, va);
+      VERT_AVG2(v2, v3, vb);
+      DDIST3(va, vb, dab);
+
+      GetSmoke3DVals(va, smoke3di, ta, hva);
+      GetSmoke3DVals(vb, smoke3di, tb, hvb);
+
+      DrawTriangleSmoke( va,  v2,  vb,
+                         d1/2.0,  d2/2.0,  dab,
+                         ta,  t2,  tb,
+                        hva, hv2, hvb,
                         del, smoke3di);
-      DrawQuadSmoke( v1,  v12,  v23,  v3,
-                     t1,  t12,  t23,  t3,
-                    hv1, hv12, hv23, hv3,
+      DrawQuadSmoke( v1,  va,  vb,  v3,
+                     d1/2.0,  dab,  d2/2.0,  d3,
+                     t1,  ta,  tb,  t3,
+                    hv1, hva, hvb, hv3,
                     del, smoke3di);
     }
-    else{ // d23<=MIN(d12,d13)
-      VERT_AVG2(v1, v2, v12);
-      VERT_AVG2(v1, v3, v13);
+    else{ // d2<=MIN(d1,d3)
 
-      GetSmoke3DVals(v12, smoke3di, t12, hv12);
-      GetSmoke3DVals(v13, smoke3di, t13, hv13);
+//                    v2
+//                   /  \
+//                  /    \
+//            d1   va     \    d2
+//                /  \     \
+//               /    \     \
+//              v1-----------v3
+//                    vb
+//                    d3
 
-      DrawTriangleSmoke(v1, v12, v13,  t1, t12, t13, hv1, hv12, hv13, del, smoke3di);
-      DrawQuadSmoke(v12, v2, v3, v13, t12,  t2,  t3, t13, hv12, hv2, hv3, hv13, del, smoke3di);
+      VERT_AVG2(v1, v2, va);
+      VERT_AVG2(v1, v3, vb);
+      DDIST3(va, vb, dab);
+
+      GetSmoke3DVals(va, smoke3di, ta, hva);
+      GetSmoke3DVals(vb, smoke3di, tb, hvb);
+
+      DrawTriangleSmoke(v1, va, vb,  d1/2.0, dab, d3/2.0, t1, ta, tb, hv1, hva, hvb, del, smoke3di);
+      DrawQuadSmoke(va, v2, v3, vb, d1/2.0, d2, d3/2.0, dab, ta,  t2,  t3, tb, hva, hv2, hv3, hvb, del, smoke3di);
     }
   }
 }
@@ -2867,9 +2991,9 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
     GetSmoke3DVals(vb, smoke3di, tb, hvb);
     GetSmoke3DVals(vb, smoke3di, tc, hvc);
 
-    DIST3(va, vb, dab);
-    DIST3(vb, vc, dbc);
-    DIST3(vc, va, dca);
+    DDIST3(va, vb, dab);
+    DDIST3(vb, vc, dbc);
+    DDIST3(vc, va, dca);
 
     DrawTriangleSmoke(v1, va, vc, d1/2.0,    dca, d3/2.0, t1, ta, tc, hv1, hva, hvc, del, smoke3di);
     DrawTriangleSmoke(va, vb, vc,    dab,    dbc,    dca, ta, tb, tc, hva, hvb, hvc, del, smoke3di);
@@ -2898,8 +3022,8 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
       GetSmoke3DVals(vb, smoke3di, tb, hvb);
       GetSmoke3DVals(vc, smoke3di, tc, hvc);
 
-      DIST3(vb, vc, dbc);
-      DIST3(v2, vc, d2c);
+      DDIST3(vb, vc, dbc);
+      DDIST3(v2, vc, d2c);
 
       DrawTriangleSmoke(vc, vb, v3, dbc, d2/2.0,  d3/2.0, tc, tb, t3,  hvc, hvb, hv3, del, smoke3di);
       DrawTriangleSmoke(v1, v2, vc, d1, d2c, d3/2.0,      t1, t2, tc,  hv1, hv2, hvc, del, smoke3di);
@@ -2925,8 +3049,8 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
       GetSmoke3DVals(va, smoke3di, ta, hva);
       GetSmoke3DVals(vc, smoke3di, tc, hvc);
 
-      DIST3(va, vc, dac);
-      DIST3(v2, vc, d2c);
+      DDIST3(va, vc, dac);
+      DDIST3(v2, vc, d2c);
 
       DrawTriangleSmoke(v1, va, vc, d1/2.0,    dac, d3/2.0, t1, ta, tc, hv1, hva, hvc, del, smoke3di);
       DrawTriangleSmoke(vc, va, v2,    dac, d1/2.0,    d2c, tc, ta, t2, hvc, hva, hv2, del, smoke3di);
@@ -2952,8 +3076,8 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
       GetSmoke3DVals(va, smoke3di, ta, hva);
       GetSmoke3DVals(vb, smoke3di, tb, hvb);
 
-      DIST3(va, vb, dab);
-      DIST3(va, v3, da3);
+      DDIST3(va, vb, dab);
+      DDIST3(va, v3, da3);
 
       DrawTriangleSmoke(va, v2, vb, d1/2.0, d2/2.0,     dab, ta, t2, tb, hva, hv2, hvb, del, smoke3di);
       DrawTriangleSmoke(v1, va, v3, d1/2.0,    da3,      d3, t1, ta, t3, hv1, hva, hv3, del, smoke3di);
@@ -2979,7 +3103,7 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
 
       GetSmoke3DVals(va, smoke3di, ta, hva);
 
-      DIST3(va, v3, da3);
+      DDIST3(va, v3, da3);
 
       DrawTriangleSmoke(v1, va, v3, d1/2.0, da3, d3, t1, ta, t3, hv1, hva, hv3, del, smoke3di);
       DrawTriangleSmoke(va, v2, v3, d1/2.0, d2, da3, ta, t2, t3, hva, hv2, hv3, del, smoke3di);
@@ -3002,7 +3126,7 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
 
       GetSmoke3DVals(vb, smoke3di, tb, hvb);
 
-      DIST3(v1, vb, d1b);
+      DDIST3(v1, vb, d1b);
 
       DrawTriangleSmoke(v1, v2, vb, d1, d2/2.0, d1b, t1, t2, t1, hv1, hv2, hvb, del, smoke3di);
       DrawTriangleSmoke(v1, vb, v3, d1b, d2/2.0, d3, t1, tb, t1, hv1, hvb, hv3, del, smoke3di);
@@ -3025,7 +3149,7 @@ void DrawTriangleSmokeTest(float *v1, float *v2, float *v3,
 
       GetSmoke3DVals(vc, smoke3di, tc, hvc);
 
-      DIST3(v2, vc, d2c);
+      DDIST3(v2, vc, d2c);
 
       DrawTriangleSmoke(v1, v2, vc, d1, d2c, d3/2.0, t1, t2, tc, hv1, hv2, hvc, del, smoke3di);
       DrawTriangleSmoke(vc, v2, v3, d2c, d2, d3/2.0, tc, t2, t3, hvc, hv2, hv3, del, smoke3di);
@@ -4936,6 +5060,9 @@ void DrawSmokeFrame(void){
           else if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3DGPU(smoke3di);
           }
+          else if(use_newsmoke==SMOKE3D_TRI){
+            DrawSmoke3DOutline(smoke3di);
+          }
           else{
             meshdata *meshi;
 
@@ -4956,6 +5083,9 @@ void DrawSmokeFrame(void){
             DrawSmoke3D(smoke3di);
           }
 #ifdef pp_GPUSMOKE
+          else if(use_newsmoke==SMOKE3D_TRI){
+            DrawSmoke3DOutline(smoke3di);
+          }
           else{
             meshdata *meshi;
 

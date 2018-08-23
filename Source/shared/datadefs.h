@@ -51,6 +51,12 @@
   dz=v1[2]-v2[2];\
   dist2=dx*dx+dy*dy+dz*dz
 
+#define DDIST3(v1,v2,dist2) \
+  dx=v1[0]-v2[0];\
+  dy=v1[1]-v2[1];\
+  dz=v1[2]-v2[2];\
+  dist2=sqrt(dx*dx+dy*dy+dz*dz)
+
 #define DENORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
 (XYZ_OUT)[0] = DENORMALIZE_X((XYZ_IN)[0]);\
 (XYZ_OUT)[1] = DENORMALIZE_Y((XYZ_IN)[1]);\

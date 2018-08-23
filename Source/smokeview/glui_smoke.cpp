@@ -677,6 +677,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("triangulation"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
 
     PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
