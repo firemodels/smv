@@ -160,7 +160,7 @@ void GetIsoBox(float x[2], float y[2], float z[3], float *vals, float level,
                  float xvert[6], yvert[6], zvert[6];
                  int i;
 
-                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles);
+                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles,NULL,NULL);
                  for(i=0;i<*nvert;i++){
                    xyzverts[3*i]=xvert[i];
                    xyzverts[3*i+1]=yvert[i];
@@ -181,7 +181,9 @@ int GetIsoHexaHedron(const float *x,
                float *yvert,
                float *zvert,
                float *tvert, int *closestnodes, int *nvert,
-               int *triangles, int *ntriangles){
+               int *triangles, int *ntriangles,
+                 int *polys, int *npolys
+               ){
        /*
        INPUT
        -----
@@ -213,6 +215,7 @@ int GetIsoHexaHedron(const float *x,
   int izmin[4]={0,1,2,3}, izmax[4]={4,5,6,7};
   int n;
   int edge,*edges=NULL, nedges, *path=NULL, *case2=NULL, npath;
+  int *polypath=NULL, npolypath;
   int v1, v2;
   float val1, val2, denom, factor;
   float xx, yy, zz;
@@ -339,6 +342,24 @@ int pathcclist[15][13]={
   {12,0,1,5,1,4,5,1,2,4,2,3,4}
 };
 
+int polypathcclist[15][7]={
+  { 0},
+  { 3,0,1,2},
+  { 4,0,1,2,3},
+  { 0},
+  { 0},
+  { 5,0,1,2,3,4},
+  { 0},
+  { 0},
+  { 4,0,1,2,3},
+  {6,0,1,2,3,4,5},
+  {0},
+  {6,0,1,2,3,4,5},
+  {0},
+  {0},
+  {6,0,1,2,3,4,5}
+};
+
 int pathcclist2[15][19]={
   { 0},
   { 0},
@@ -357,9 +378,43 @@ int pathcclist2[15][19]={
   { 0}
 };
 
-
+  int polypathcclist2[15][1] = {
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0}
+  };
 
 int pathccwlist[15][13]={
+  { 0},
+  { 3,0,2,1},
+  { 6,0,2,1,0,3,2},
+  { 6,0,2,1,3,5,4},
+  { 6,0,2,1,3,5,4},
+  { 9,0,2,1,2,4,3,0,4,2},
+  { 9,0,2,1,0,3,2,4,6,5},
+  { 9,0,2,1,3,5,4,6,8,7},
+  { 6,0,2,1,0,3,2},
+  {12,0,5,1,1,5,4,1,4,2,2,4,3},
+  {12,0,2,1,0,3,2,4,6,5,4,7,6},
+  {12,0,5,1,1,5,4,1,4,2,2,4,3},
+  {12,0,2,1,3,5,4,3,6,5,3,7,6},
+  {12,0,2,1,3,5,4,6,8,7,9,11,10},
+  {12,0,5,1,1,5,4,1,4,2,2,4,3}
+};
+
+int polypathccwlist[15][13]={
   { 0},
   { 3,0,2,1},
   { 6,0,2,1,0,3,2},
@@ -394,6 +449,24 @@ int pathccwlist2[15][19]={
   { 12,0,2,1,3,5,4,6,8,7,9,11,10},
   { 0}
 };
+
+  int polypathccwlist2[15][1] = {
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0}
+  };
 
 int edgelist[15][13]={
   { 0                             },
@@ -517,21 +590,25 @@ int edgelist2[15][16]={
     edges = &(edgelist[type][1]);
     if(sign>0){
       path = &(pathcclist[type][1]);   /* construct triangles clock wise */
+      polypath = &(polypathcclist[type][1]);
     }
     else{
       path = &(pathccwlist[type][1]); /* construct triangles counter clockwise */
+      polypath = &(polypathccwlist[type][1]);
     }
   }
   else{
     edges = &(edgelist2[type][1]);
     if(sign>0){
       path = &(pathcclist2[type][1]);   /* construct triangles clock wise */
+      polypath = &(polypathcclist2[type][1]);
     }
     else{
-      path = &(pathccwlist2[type][1]);  /* construct triangles counter clockwise */
+      polypath = &(polypathccwlist2[type][1]);  /* construct triangles counter clockwise */
     }
   }
   npath = path[-1];
+  npolypath = polypath[-1];
   nedges = edges[-1];
 
 /* calculate where iso-surface level crosses each edge */
@@ -589,6 +666,11 @@ int edgelist2[15][16]={
   *ntriangles = npath;
   for(n=0;n<npath;n++){
     triangles[n] = path[n];
+  }
+  if(polys != NULL&&npolys != NULL){
+    for(n = 0;n < npolypath;n++){
+      polys[n] = polypath[n];
+    }
   }
   return *ntriangles;
 }
@@ -774,7 +856,7 @@ int GetIsoSurface(isosurface *surface,
           }
 
           GetIsoHexaHedron(xx, yy, zz, vals, tvalsptr, nodeindexes, level,
-                    xvert, yvert, zvert, tvertptr, closestnodes, &nvert, triangles, &ntriangles);
+                    xvert, yvert, zvert, tvertptr, closestnodes, &nvert, triangles, &ntriangles, NULL, NULL);
 
           if(nvert>0||ntriangles>0){
             if(UpdateIsosurface(surface, xvert, yvert, zvert, tvertptr,

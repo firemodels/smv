@@ -7157,7 +7157,7 @@ void InitDevicePlane(devicedata *devicei){
     zz[1]=meshi->xyz_bar[ZZZ];
 
     GetIsoHexaHedron(xx, yy, zz, vals, NULL, nodeindexes, level,
-              xvert, yvert, zvert, NULL, closestnodes, &nvert, triangles, &ntriangles);
+              xvert, yvert, zvert, NULL, closestnodes, &nvert, triangles, &ntriangles, NULL, NULL);
 
     UpdateIsosurface(devicei->plane_surface[i], xvert, yvert, zvert, NULL,
                      closestnodes, nvert, triangles, ntriangles);

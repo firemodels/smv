@@ -131,7 +131,8 @@ SV_EXTERN int GetIsoHexaHedron(const float *x,
                float *yvert,
                float *zvert,
                float *tvert, int *closestnodes, int *nvert,
-               int *triangles, int *ntriangles);
+               int *triangles, int *ntriangles,
+               int *polys, int *npolys);
 int GetIsoSurface(isosurface *surface,
                   const float *data,
                   const float *tdata,
