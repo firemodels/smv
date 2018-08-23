@@ -2664,10 +2664,24 @@ void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4,
   DDIST3(v1, v3, d13);
   DDIST3(v2, v4, d24);
   if(d13 < d24){
+
+//        2__________________3
+//        /                /  \
+//       /            /        \
+//      /        /              \
+//     /     /                   \
+//    1_/_________________________4
+
     DrawTriangleSmokeOutline(v1, v2, v3, d1, d2, d13, del, level + 1);
     DrawTriangleSmokeOutline(v1, v3, v4, d13, d3, d4, del, level + 1);
   }
   else{
+//        2__________________3
+//        /\                  \
+//       /     \               \
+//      /           \           \
+//     /                 \       \
+//    1___________________________4
     DrawTriangleSmokeOutline(v1, v2, v4, d1, d24, d4, del, level + 1);
     DrawTriangleSmokeOutline(v2, v3, v4, d2, d3, d24, del, level + 1);
   }
@@ -2688,7 +2702,7 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float d1, float d
   if(d1 <= del&&d2 <= del&&d3 < del)drawit = 1;
   if(drawit == 1 || level == 0){
     if(level == 0){
-      glLineWidth(2.0*plane_outline_width);
+      glLineWidth(5.0*plane_outline_width);
       glColor3f(1.0, 0.0, 0.0);
     }
     else{
