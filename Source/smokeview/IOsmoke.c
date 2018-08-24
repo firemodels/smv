@@ -1197,6 +1197,12 @@ void DrawSmoke3DOutline(smoke3ddata *smoke3di){
       DDIST3(v1, v2, d1);
       DDIST3(v2, v3, d2);
       DDIST3(v3, v1, d3);
+#ifdef XXXYYY
+      printf("DrawSmoke3DOutline triangle: %i\n", j);
+      printf("v1=%f %f %f\n", v1[0], v1[1], v1[0]);
+      printf("v2=%f %f %f\n", v2[0], v2[1], v2[0]);
+      printf("v3=%f %f %f\n", v3[0], v3[1], v3[0]);
+#endif
 
       DrawTriangleSmokeOutline(v1, v2, v3, d1, d2, d3, del, 0);
     }
@@ -2610,21 +2616,27 @@ void DrawSmokePlanes(meshdata *meshi){
       glColor3f(0.0, 0.0, 0.0);
       if(smoke_outline_type==SMOKE_OUTLINE_TRIANGLE){
         for(j = 0; j<spi->ntriangles; j++){
-          float *xx1, *xx2, *xx3;
+          float *v1, *v2, *v3;
           int i1, i2, i3;
 
           i1 = spi->triangles[3*j];
           i2 = spi->triangles[3*j+1];
           i3 = spi->triangles[3*j+2];
-          xx1 = spi->verts_smv+3*i1;
-          xx2 = spi->verts_smv+3*i2;
-          xx3 = spi->verts_smv+3*i3;
-          glVertex3fv(xx1);
-          glVertex3fv(xx2);
-          glVertex3fv(xx2);
-          glVertex3fv(xx3);
-          glVertex3fv(xx3);
-          glVertex3fv(xx1);
+          v1 = spi->verts_smv+3*i1;
+          v2 = spi->verts_smv+3*i2;
+          v3 = spi->verts_smv+3*i3;
+#ifdef XXXYYY
+          printf("DrawSMokePlanes triangle: %i\n", j);
+          printf("v1=%f %f %f\n", v1[0], v1[1], v1[0]);
+          printf("v2=%f %f %f\n", v2[0], v2[1], v2[0]);
+          printf("v3=%f %f %f\n", v3[0], v3[1], v3[0]);
+#endif
+          glVertex3fv(v1);
+          glVertex3fv(v2);
+          glVertex3fv(v2);
+          glVertex3fv(v3);
+          glVertex3fv(v3);
+          glVertex3fv(v1);
         }
       }
       if(plane_normal == 1){
