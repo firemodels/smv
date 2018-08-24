@@ -604,6 +604,7 @@ int edgelist2[15][16]={
       polypath = &(polypathcclist2[type][1]);
     }
     else{
+      path = &(pathccwlist2[type][1]);  /* construct triangles counter clockwise */
       polypath = &(polypathccwlist2[type][1]);  /* construct triangles counter clockwise */
     }
   }
