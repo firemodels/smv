@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_NONE);
 SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(use_newsmoke, 0);
 #ifdef pp_GPUSMOKE
@@ -30,7 +31,6 @@ SVEXTERN int SVDECL(smoke_fast_interp, 0);
 SVEXTERN int SVDECL(plane_labels, 0);
 SVEXTERN int SVDECL(smoke_mesh_aligned, 0);
 SVEXTERN int SVDECL(plane_single, 1);
-SVEXTERN int SVDECL(plane_outline, 1);
 SVEXTERN float SVDECL(plane_outline_width, 2);
 SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
 SVEXTERN int SVDECL(plane_solid, 1);

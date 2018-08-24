@@ -689,6 +689,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SMOKE3D_TRI  2
 #define SMOKE3D_DIAG 3
 
+#define SMOKE_OUTLINE_NONE     0
+#define SMOKE_OUTLINE_TRIANGLE 1
+#define SMOKE_OUTLINE_POLYGON  2
+
 #define SMOKE3D_ZEROS_SOME    0
 #define SMOKE3D_ZEROS_ALL     1
 #define SMOKE3D_ZEROS_UNKNOWN 2

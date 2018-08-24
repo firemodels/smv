@@ -119,7 +119,7 @@ SV_EXTERN void FreeSurface(isosurface *surfacedata);
 SV_EXTERN void InitIsoSurface(isosurface *surfacedata, float level, float *color, int colorindex);
 SV_EXTERN int ResizeSurface(isosurface *surfacedata, int incvert, int inctrilist, int incnorm);
 SV_EXTERN void GetIsoBox(float x[2], float y[2], float z[2], float *vals, float level,
-               float *xyzverts, int *nvert, int *triangles, int *ntriangles);
+               float *xyzverts, int *nvert, int *triangles, int *ntriangles, int *polys, int *npolys);
 SV_EXTERN int GetIsoHexaHedron(const float *x,
                const float *y,
                const float *z,

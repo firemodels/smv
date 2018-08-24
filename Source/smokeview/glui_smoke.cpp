@@ -89,6 +89,7 @@ GLUI_Button *BUTTON_cancelrender=NULL;
 
 GLUI_Listbox *LISTBOX_smoke_colorbar=NULL;
 
+GLUI_RadioGroup *RADIO_smoke_outline_type = NULL;
 GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_alpha=NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
@@ -180,13 +181,15 @@ GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 
+GLUI_Panel *PANEL_smoke_outline_type = NULL;
 GLUI_Panel *PANEL_smokealg = NULL;
 GLUI_Panel *PANEL_gridres = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
 GLUI_Panel *PANEL_colormap = NULL;
-GLUI_Panel *PANEL_absorption = NULL, *PANEL_smokesensor = NULL;
+GLUI_Panel *PANEL_absorption = NULL;
+GLUI_Panel *PANEL_smokesensor = NULL;
 GLUI_Panel *PANEL_testsmoke = NULL;
 GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
@@ -696,7 +699,13 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("mesh aligned"), &smoke_mesh_aligned);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("fast interpolation"), &smoke_fast_interp);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("normals"), &plane_normal);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("outline"), &plane_outline);
+
+    PANEL_smoke_outline_type = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("outline type"));
+    RADIO_smoke_outline_type = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smoke_outline_type,&smoke_outline_type);
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type,_("None"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type,_("triangle"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type,_("polygon"));
+
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("solid"), &plane_solid);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("labels"), &plane_labels);

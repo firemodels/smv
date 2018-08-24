@@ -155,12 +155,12 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
 /* ------------------ GetIsoBox ------------------------ */
 
 void GetIsoBox(float x[2], float y[2], float z[3], float *vals, float level,
-               float *xyzverts, int *nvert, int *triangles, int *ntriangles){
+               float *xyzverts, int *nvert, int *triangles, int *ntriangles, int *polys, int *npolys){
                  int nodeindexes[8]={0,1,2,3,4,5,6,7};
                  float xvert[6], yvert[6], zvert[6];
                  int i;
 
-                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles,NULL,NULL);
+                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles,polys,npolys);
                  for(i=0;i<*nvert;i++){
                    xyzverts[3*i]=xvert[i];
                    xyzverts[3*i+1]=yvert[i];
@@ -182,7 +182,7 @@ int GetIsoHexaHedron(const float *x,
                float *zvert,
                float *tvert, int *closestnodes, int *nvert,
                int *triangles, int *ntriangles,
-                 int *polys, int *npolys
+               int *polys, int *npolys
                ){
        /*
        INPUT
@@ -414,22 +414,22 @@ int pathccwlist[15][13]={
   {12,0,5,1,1,5,4,1,4,2,2,4,3}
 };
 
-int polypathccwlist[15][13]={
+int polypathccwlist[15][7]={
   { 0},
   { 3,0,2,1},
-  { 6,0,2,1,0,3,2},
-  { 6,0,2,1,3,5,4},
-  { 6,0,2,1,3,5,4},
-  { 9,0,2,1,2,4,3,0,4,2},
-  { 9,0,2,1,0,3,2,4,6,5},
-  { 9,0,2,1,3,5,4,6,8,7},
-  { 6,0,2,1,0,3,2},
-  {12,0,5,1,1,5,4,1,4,2,2,4,3},
-  {12,0,2,1,0,3,2,4,6,5,4,7,6},
-  {12,0,5,1,1,5,4,1,4,2,2,4,3},
-  {12,0,2,1,3,5,4,3,6,5,3,7,6},
-  {12,0,2,1,3,5,4,6,8,7,9,11,10},
-  {12,0,5,1,1,5,4,1,4,2,2,4,3}
+  { 4,0,3,2,1},
+  { 0},
+  { 0},
+  { 5,0,4,3,2,1},
+  { 0},
+  { 0},
+  { 4,0,3,2,1},
+  {6,0,5,4,3,2,1},
+  {0},
+  {5,0,4,3,2,1},
+  {0},
+  {0},
+  {6,0,5,4,3,2,1}
 };
 
 int pathccwlist2[15][19]={
@@ -668,6 +668,7 @@ int edgelist2[15][16]={
     triangles[n] = path[n];
   }
   if(polys != NULL&&npolys != NULL){
+    *npolys = npolypath;
     for(n = 0;n < npolypath;n++){
       polys[n] = polypath[n];
     }

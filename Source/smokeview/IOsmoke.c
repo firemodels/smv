@@ -2557,7 +2557,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
 
         if(jj >= meshi->nsmokeplaneinfo)break;
         spi = meshi->smokeplaneinfo + jj;
-        GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles));
+        GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles),spi->polys,&spi->npolys);
         spi->ntriangles /= 3;
         for(k = 0; k<spi->nverts; k++){
           NORMALIZE_XYZ(spi->verts_smv + 3 * k, spi->verts + 3 * k);
@@ -2599,7 +2599,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
 void DrawSmokePlanes(meshdata *meshi){
   int i;
 
-  if(plane_outline==1){
+  if(smoke_outline_type!=SMOKE_OUTLINE_NONE||plane_normal==1){
     glLineWidth(plane_outline_width);
     glBegin(GL_LINES);
     for(i = 0; i<meshi->nsmokeplaneinfo; i++){
@@ -2608,22 +2608,24 @@ void DrawSmokePlanes(meshdata *meshi){
 
       spi = meshi->smokeplaneinfo+i;
       glColor3f(0.0, 0.0, 0.0);
-      for(j = 0; j<spi->ntriangles; j++){
-        float *xx1, *xx2, *xx3;
-        int i1, i2, i3;
+      if(smoke_outline_type==SMOKE_OUTLINE_TRIANGLE){
+        for(j = 0; j<spi->ntriangles; j++){
+          float *xx1, *xx2, *xx3;
+          int i1, i2, i3;
 
-        i1 = spi->triangles[3*j];
-        i2 = spi->triangles[3*j+1];
-        i3 = spi->triangles[3*j+2];
-        xx1 = spi->verts_smv+3*i1;
-        xx2 = spi->verts_smv+3*i2;
-        xx3 = spi->verts_smv+3*i3;
-        glVertex3fv(xx1);
-        glVertex3fv(xx2);
-        glVertex3fv(xx2);
-        glVertex3fv(xx3);
-        glVertex3fv(xx3);
-        glVertex3fv(xx1);
+          i1 = spi->triangles[3*j];
+          i2 = spi->triangles[3*j+1];
+          i3 = spi->triangles[3*j+2];
+          xx1 = spi->verts_smv+3*i1;
+          xx2 = spi->verts_smv+3*i2;
+          xx3 = spi->verts_smv+3*i3;
+          glVertex3fv(xx1);
+          glVertex3fv(xx2);
+          glVertex3fv(xx2);
+          glVertex3fv(xx3);
+          glVertex3fv(xx3);
+          glVertex3fv(xx1);
+        }
       }
       if(plane_normal == 1){
         glColor3f(1.0, 0.0, 0.0);
@@ -2631,6 +2633,34 @@ void DrawSmokePlanes(meshdata *meshi){
           glVertex3fv(spi->norm0 + 3 * j);
           glVertex3fv(spi->norm1 + 3 * j);
         }
+      }
+    }
+    glEnd();
+  }
+  if(smoke_outline_type==SMOKE_OUTLINE_POLYGON){
+    glLineWidth(plane_outline_width);
+    glBegin(GL_LINES);
+    for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+      meshplanedata *spi;
+      int j;
+
+      spi = meshi->smokeplaneinfo+i;
+      glColor3f(0.0, 0.0, 0.0);
+      for(j = 0; j<spi->npolys; j++){
+        float *xx1, *xx2, *xx3;
+        int i1, i2;
+
+        i1 = spi->polys[j];
+        if(j==spi->npolys-1){
+          i2 = spi->polys[0];
+        }
+        else{
+          i2 = spi->polys[j+1];
+        }
+        xx1 = spi->verts_smv+3*i1;
+        xx2 = spi->verts_smv+3*i2;
+        glVertex3fv(xx1);
+        glVertex3fv(xx2);
       }
     }
     glEnd();
