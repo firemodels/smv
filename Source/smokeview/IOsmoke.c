@@ -2647,7 +2647,7 @@ void DrawSmokePlanes(meshdata *meshi){
       spi = meshi->smokeplaneinfo+i;
       glColor3f(0.0, 0.0, 0.0);
       for(j = 0; j<spi->npolys; j++){
-        float *xx1, *xx2, *xx3;
+        float *xx1, *xx2;
         int i1, i2;
 
         i1 = spi->polys[j];
