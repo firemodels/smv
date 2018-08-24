@@ -335,6 +335,7 @@ SVEXTERN float SVDECL(patchout_ymin,1.0), SVDECL(patchout_ymax,-1.0);
 SVEXTERN float SVDECL(patchout_zmin,1.0), SVDECL(patchout_zmax,-1.0);
 SVEXTERN int SVDECL(showpatch_both,0);
 SVEXTERN int SVDECL(show_triangle_count,0);
+SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
 SVEXTERN int SVDECL(show_device_orientation,0);
 SVEXTERN float SVDECL(orientation_scale,1.0);

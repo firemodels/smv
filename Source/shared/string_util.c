@@ -572,6 +572,36 @@ float FrExp10(float x, int *exp10){
   return mantissa;
 }
 
+/* ------------------ GetFloatLabel ------------------------ */
+
+char *GetFloatLabel(float val, char *label){
+  if(val>=1000000.0){
+    sprintf(label,"%.1fM", val/1000000.0);
+  }
+  else if(val>=1000.0&&val<1000000.0){
+    sprintf(label, "%.1fK", val/1000.0);
+  }
+  else{
+    sprintf(label, "%f", val);
+  }
+  return label;
+}
+
+/* ------------------ GetIntLabel ------------------------ */
+
+char *GetIntLabel(int val, char *label){
+  if(val>=1000000){
+    sprintf(label, "%.1fM", (float)val/1000000.0);
+  }
+  else if(val>=1000&&val<1000000){
+    sprintf(label, "%.1fK", (float)val/1000.0);
+  }
+  else{
+    sprintf(label, "%i", val);
+  }
+  return label;
+}
+
 /* ------------------ GetString ------------------------ */
 
 char *GetString(char *buffer){

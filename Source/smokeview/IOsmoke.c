@@ -26,6 +26,7 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3,
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
 int cull_count=0;
+int smoke_function_count = 0;
 
 /* ------------------ UpdateSmoke3dFileParms ------------------------ */
 
@@ -164,6 +165,7 @@ if(show_smoketest==0){\
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
   SMOKESKIP;\
+  if(smoke_timer==1)triangle_count+=2;\
   ivalue[0]=n11<<2;  \
   ivalue[1]=n12<<2;  \
   ivalue[2]=n22<<2;  \
@@ -215,6 +217,7 @@ if(show_smoketest==0){\
   value[3]=alphaf_ptr[n21]; \
   SMOKESKIP;\
   z_offset[XXX]=znode_offset[m11];\
+  if(smoke_timer==1)triangle_count+=2;\
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
@@ -271,6 +274,7 @@ else{\
   value[2]=alphaf_in[n22];\
   value[3]=alphaf_in[n21];\
   if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
+  if(smoke_timer==1)triangle_count+=2;\
   if((adjustalphaflag==2||adjustalphaflag==3)&&iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
@@ -1056,6 +1060,7 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
 
   meshdata *valmesh;
 
+  if(smoke_timer==1)smoke_function_count++;
   valmesh = meshinfo+smoke3di->blocknumber;
 
   smoke = valmesh->smokealpha_ptr;
@@ -5026,11 +5031,11 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 /* ------------------ DrawSmokeFrame ------------------------ */
 
 void DrawSmokeFrame(void){
-  int triangle_count = 0;
   float smoke_time = 0.0;
 
   triangle_count = 0;
   if(smoke_timer == 1){
+    smoke_function_count = 0;
     START_TIMER(smoke_time);
   }
   CheckMemory;
@@ -5163,10 +5168,15 @@ void DrawSmokeFrame(void){
 #endif
   if(smoke_timer == 1){
     float rate=-999.0;
+    char label1[100],label2[100],label3[100];
     
     STOP_TIMER(smoke_time);
     if(smoke_time>0.0)rate = (float)triangle_count/smoke_time;
-    printf("ntriangles=%i time=%f triangle rate=%f\n",triangle_count,smoke_time,rate);
+    printf("ntriangles=%s function calls=%s time=%f triangle rate=%s\n",
+      GetIntLabel(triangle_count,label1), 
+      GetIntLabel(smoke_function_count,label2), 
+      smoke_time,
+      GetFloatLabel(rate,label3));
   }
 
   SNIFF_ERRORS("after drawsmoke");
