@@ -1176,7 +1176,7 @@ void DrawSmoke3DOutline(smoke3ddata *smoke3di){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  glBegin(GL_TRIANGLES);
+  glBegin(GL_LINES);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
     meshplanedata *spi;
     int j;
@@ -1208,6 +1208,7 @@ void DrawSmoke3DOutline(smoke3ddata *smoke3di){
     }
   }
   glEnd();
+  SNIFF_ERRORS("after smoke DrawSmoke3DOutline");
   glPopMatrix();
 }
 
@@ -2600,12 +2601,19 @@ void UpdateSmoke3DPlanes(float delta_perp){
   }
 }
 
-/* ------------------ DrawSmokePlanes ------------------------ */
+/* ------------------ DrawSmokeDiag ------------------------ */
 
-void DrawSmokePlanes(meshdata *meshi){
+void DrawSmokeDiag(smoke3ddata *smoke3di){
   int i;
+  meshdata *meshi;
 
-  if(smoke_outline_type!=SMOKE_OUTLINE_NONE||plane_normal==1){
+  meshi = meshinfo+smoke3di->blocknumber;
+
+  if(smoke_outline_type==SMOKE_TRIANGULATION){
+    DrawSmoke3DOutline(smoke3di);
+    SNIFF_ERRORS("after DrawQuadSmokeOutline");
+  }
+  if(smoke_outline_type==SMOKE_OUTLINE_TRIANGLE){
     glLineWidth(plane_outline_width);
     glBegin(GL_LINES);
     for(i = 0; i<meshi->nsmokeplaneinfo; i++){
@@ -2648,6 +2656,31 @@ void DrawSmokePlanes(meshdata *meshi){
       }
     }
     glEnd();
+    if(plane_solid==1){
+      glColor4f(0.0, 0.0, 1.0, 0.6);
+      glBegin(GL_TRIANGLES);
+      for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+        meshplanedata *spi;
+        int j;
+
+        spi = meshi->smokeplaneinfo+i;
+        for(j = 0; j<spi->ntriangles; j++){
+          float *v1, *v2, *v3;
+          int i1, i2, i3;
+
+          i1 = spi->triangles[3*j];
+          i2 = spi->triangles[3*j+1];
+          i3 = spi->triangles[3*j+2];
+          v1 = spi->verts_smv+3*i1;
+          v2 = spi->verts_smv+3*i2;
+          v3 = spi->verts_smv+3*i3;
+          glVertex3fv(v1);
+          glVertex3fv(v2);
+          glVertex3fv(v3);
+        }
+      }
+      glEnd();
+    }
   }
   if(smoke_outline_type==SMOKE_OUTLINE_POLYGON){
     glLineWidth(plane_outline_width);
@@ -2659,7 +2692,7 @@ void DrawSmokePlanes(meshdata *meshi){
       spi = meshi->smokeplaneinfo+i;
       glColor3f(0.0, 0.0, 0.0);
       for(j = 0; j<spi->npolys; j++){
-        float *xx1, *xx2;
+        float *v1, *v2;
         int i1, i2;
 
         i1 = spi->polys[j];
@@ -2669,35 +2702,10 @@ void DrawSmokePlanes(meshdata *meshi){
         else{
           i2 = spi->polys[j+1];
         }
-        xx1 = spi->verts_smv+3*i1;
-        xx2 = spi->verts_smv+3*i2;
-        glVertex3fv(xx1);
-        glVertex3fv(xx2);
-      }
-    }
-    glEnd();
-  }
-  if(plane_solid==1){
-    glColor4f(0.0, 0.0, 1.0, 0.6);
-    glBegin(GL_TRIANGLES);
-    for(i = 0; i<meshi->nsmokeplaneinfo; i++){
-      meshplanedata *spi;
-      int j;
-
-      spi = meshi->smokeplaneinfo+i;
-      for(j = 0; j<spi->ntriangles; j++){
-        float *xx1, *xx2, *xx3;
-        int i1, i2, i3;
-
-        i1 = spi->triangles[3*j];
-        i2 = spi->triangles[3*j+1];
-        i3 = spi->triangles[3*j+2];
-        xx1 = spi->verts_smv+3*i1;
-        xx2 = spi->verts_smv+3*i2;
-        xx3 = spi->verts_smv+3*i3;
-        glVertex3fv(xx1);
-        glVertex3fv(xx2);
-        glVertex3fv(xx3);
+        v1 = spi->verts_smv+3*i1;
+        v2 = spi->verts_smv+3*i2;
+        glVertex3fv(v1);
+        glVertex3fv(v2);
       }
     }
     glEnd();
@@ -2712,7 +2720,6 @@ void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4,
   float d13, d24;
   float dx, dy, dz;
 
-  if(level == 0)glBegin(GL_LINES);
   DDIST3(v1, v3, d13);
   DDIST3(v2, v4, d24);
   if(d13 < d24){
@@ -2737,7 +2744,6 @@ void DrawQuadSmokeOutline(float *v1, float *v2, float *v3, float *v4,
     DrawTriangleSmokeOutline(v1, v2, v4, d1, d24, d4, del, level + 1);
     DrawTriangleSmokeOutline(v2, v3, v4, d2, d3, d24, del, level + 1);
   }
-  if(level == 0)glEnd();
 }
 
 /* ------------------ DrawTriangleSmokeOutline ------------------------ */
@@ -2748,8 +2754,6 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float d1, float d
   float dab;
   float dx, dy, dz;
   int drawit=0;
-
-  if(level == 0)glBegin(GL_LINES);
 
   if(d1 <= del&&d2 <= del&&d3 < del)drawit = 1;
   if(drawit == 1 || level == 0){
@@ -2828,7 +2832,7 @@ void DrawTriangleSmokeOutline(float *v1, float *v2, float *v3, float d1, float d
       DrawQuadSmokeOutline(v1, va, vb, v3, d1/2.0, dab, d2/2.0, d3, del, level + 1);
     }
   }
-  if(level == 0)glEnd();
+
 }
 
 /* ------------------ DrawQuadSmoke ------------------------ */
@@ -5074,6 +5078,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
 void DrawSmokeFrame(void){
   float smoke_time = 0.0;
+  int load_shaders = 0;
 
   triangle_count = 0;
   if(smoke_timer == 1){
@@ -5088,15 +5093,18 @@ void DrawSmokeFrame(void){
   if(usegpu==1){
     if(showvolrender==1){
       LoadVolsmokeShaders();
+      load_shaders = 1;
     }
     else{
       if(use_newsmoke == SMOKE3D_NEW){
 #ifdef pp_GPUSMOKE
         LoadNewSmokeShaders();
+        load_shaders = 1;
 #endif
       }
-      else{
+      else if(use_newsmoke==SMOKE3D_ORIG){
         LoadSmokeShaders();
+        load_shaders = 1;
       }
     }
   }
@@ -5138,14 +5146,9 @@ void DrawSmokeFrame(void){
           else if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3DGPU(smoke3di);
           }
-          else if(use_newsmoke==SMOKE3D_TRI){
-            DrawSmoke3DOutline(smoke3di);
-          }
           else{
-            meshdata *meshi;
-
-            meshi = meshinfo + smoke3di->blocknumber;
-            DrawSmokePlanes(meshi);
+            DrawSmokeDiag(smoke3di);
+ 
           }
 #else
           DrawSmoke3DGPU(smoke3di);
@@ -5161,14 +5164,8 @@ void DrawSmokeFrame(void){
             DrawSmoke3D(smoke3di);
           }
 #ifdef pp_GPUSMOKE
-          else if(use_newsmoke==SMOKE3D_TRI){
-            DrawSmoke3DOutline(smoke3di);
-          }
           else{
-            meshdata *meshi;
-
-            meshi = meshinfo + smoke3di->blocknumber;
-            DrawSmokePlanes(meshi);
+            DrawSmokeDiag(smoke3di);
           }
 #endif
         }
@@ -5204,7 +5201,7 @@ void DrawSmokeFrame(void){
     }
   }
 #ifdef pp_GPU
-  if(usegpu==1){
+  if(load_shaders==1){
     UnLoadShaders();
   }
 #endif
