@@ -2544,7 +2544,14 @@ void UpdateSmoke3DPlanes(float delta_perp){
     float xx[2], yy[2], zz[2];
     float *boxmin, *boxmax;
     int jj;
+    float *xyz_orig;
 
+    if(smoke_exact_dist==1){
+      xyz_orig = xyz0;
+    }
+    else{
+      xyz_orig = NULL;
+    }
     meshi = meshinfo + i;
     boxmin = meshi->boxmin;
     boxmax = meshi->boxmax;
@@ -2564,7 +2571,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
 
         if(jj >= meshi->nsmokeplaneinfo)break;
         spi = meshi->smokeplaneinfo + jj;
-        GetIsoBox(xx, yy, zz, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles),spi->polys,&spi->npolys);
+        GetIsoBox(xx, yy, zz, xyz_orig, meshi->vert_dists, d, spi->verts, &(spi->nverts), spi->triangles, &(spi->ntriangles),spi->polys,&spi->npolys);
         spi->ntriangles /= 3;
         for(k = 0; k<spi->nverts; k++){
           NORMALIZE_XYZ(spi->verts_smv + 3 * k, spi->verts + 3 * k);

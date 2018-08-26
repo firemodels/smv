@@ -7358,7 +7358,7 @@ void UpdateGslicePlanes(void){
       vals[j] = PLANEDIST(norm,xyz0,xyz);
     }
     level=0.0;
-    GetIsoBox(xx,yy,zz,vals,level,meshi->gsliceinfo.verts,&meshi->gsliceinfo.nverts,meshi->gsliceinfo.triangles,&meshi->gsliceinfo.ntriangles,NULL,NULL);
+    GetIsoBox(xx,yy,zz,NULL,vals,level,meshi->gsliceinfo.verts,&meshi->gsliceinfo.nverts,meshi->gsliceinfo.triangles,&meshi->gsliceinfo.ntriangles,NULL,NULL);
     meshi->gsliceinfo.ntriangles/=3;
   }
 }
