@@ -7193,7 +7193,8 @@ updatemenu=0;
         glutAddMenuEntry(_("Vent flow"), MENU_ZONE_VENTS);
       }
       if(nzhvents>0){
-        if(visVentHFlow==1){
+#ifdef pp_VENTPROFILE
+        if(visVentHFlow == 1){
           glutAddMenuEntry(_("   *Horizontal"), MENU_ZONE_HVENTS);
         }
         else{
@@ -7221,6 +7222,16 @@ updatemenu=0;
             glutAddMenuEntry(_("      velocity profile"), MENU_ZONE_VENT_PROFILE);
           }
         }
+#else
+        if(have_ventslab_flow == 1){
+          if(visVentHFlow == 1){
+            glutAddMenuEntry(_("   *Horizontal"), MENU_ZONE_HVENTS);
+          }
+          else{
+            glutAddMenuEntry(_("   Horizontal"), MENU_ZONE_HVENTS);
+          }
+        }
+#endif
       }
       if(nzvvents>0){
         if(visVentVFlow==1){
