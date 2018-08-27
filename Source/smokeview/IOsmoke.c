@@ -2462,7 +2462,6 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   maxi = 0;
   maxdist = vertpinfo->dist;
   for(i = 1;i < npoly;i++){
-    float *verti, *vertip1;
     vertpdata *vertpi;
 
     vertpi = vertpinfo + i;
