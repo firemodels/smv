@@ -2399,6 +2399,193 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 #ifdef pp_GPUSMOKE
 
+/* --------------------------  vertpdata ------------------------------------ */
+
+typedef struct _vertpdata{
+  int in_poly;
+  float *xyz, dist, distx, disty;
+  float xy2[2], norm2[2];
+} vertpdata;
+
+/* ------------------ PointInPolygon ------------------------ */
+
+#define POLY_EPS 0.0001
+
+int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
+  int i;
+
+  for(i = 0;i < nvertpinfo;i++){
+    vertpdata *vertpi;
+
+    vertpi = vertpinfo + i;
+    if(DOT2(vertpi->norm2, xy2) < -POLY_EPS)return 0;
+  }
+  return 1;
+}
+
+/* ------------------ PolyTriangulate ------------------------ */
+
+void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del, float *verts_out, int *nverts_out, int *triangles_out, int *ntriangles_out){
+
+  vertpdata *vertpinfo, *vert2pinfo;
+  float dx, dy, dz;
+  int i;
+  float maxdist, maxdistx, maxdisty;
+  int maxi, maxip1, maxip2;
+  float xvec[3], yvec[3], ycrossx[3];
+  float *xyz0, *xyzi, *xyzip1, *xyzip2;
+  int nrows, ncols;
+
+  *nverts_out = 0;
+  *ntriangles_out = 0;
+  if(nverts_in == 0 || npoly == 0)return;
+  NewMemory((void **)&vertpinfo, npoly * sizeof(vertpdata));
+
+  // determine distance of each edge
+
+  for(i = 0;i < npoly;i++){
+    float *verti, *vertip1;
+    vertpdata *vertpi;
+    int ip1;
+
+    vertpi = vertpinfo + i;
+    verti   = verts_in + 3*poly[i];
+    ip1 = i + 1;
+    if(i == npoly - 1)ip1 = 0;
+    vertip1 = verts_in + 3*poly[ip1];
+    DDIST3(verti, vertip1, vertpi->dist);
+    vertpi->xyz = verti;
+  }
+
+  // find maximum distance
+
+  maxi = 0;
+  maxdist = vertpinfo->dist;
+  for(i = 1;i < npoly;i++){
+    float *verti, *vertip1;
+    vertpdata *vertpi;
+
+    vertpi = vertpinfo + i;
+    if(vertpi->dist < maxdist){
+      maxdist = vertpi->dist;
+      maxi = i;
+    }
+  }
+
+  maxip1 = maxi+1;
+  if(maxi == npoly - 1)maxip1 = 0;
+  maxip2 = maxip1 + 1;
+  if(maxip1 == npoly - 1)maxip2 = 0;
+
+  // find x and y axis of plane containing polygon
+  xyzi   = vertpinfo[maxi].xyz;
+  xyzip1 = vertpinfo[maxip1].xyz;
+  xyz0 = xyzip1;  // origin
+  xyzip2 = vertpinfo[maxip2].xyz;
+  VEC3DIFF(xvec, xyzi, xyz0);   // xyzi - xyzip1
+  NORMALIZE3(xvec);
+  VEC3DIFF(yvec, xyzip2, xyz0); // xyzip2 - xyzip1
+  NORMALIZE3(yvec);
+  CROSS(ycrossx, yvec, xvec);     // yvec x xvec
+  CROSS(yvec, ycrossx, xvec);     // (yvec x xvec ) x xvec
+  NORMALIZE3(yvec);
+
+   // find distance from x axis to each point and y axis to each point
+
+  for(i = 0;i < npoly;i++){
+    vertpdata *vertpi;
+
+    vertpi = vertpinfo + i;
+    vertpi->distx = PLANEDIST(xvec, xyz0, vertpi->xyz);
+    vertpi->disty = PLANEDIST(yvec, xyz0, vertpi->xyz);
+    if(i == 0){
+      maxdistx = vertpi->distx;
+      maxdisty = vertpi->disty;
+    }
+    else{
+      maxdistx = MAX(maxdistx, vertpi->distx);
+      maxdisty = MAX(maxdisty, vertpi->disty);
+    }
+  }
+
+  // get 2d coordinates
+
+  for(i = 0;i < npoly;i++){
+    vertpdata *vertpi;
+    float *xy2;
+
+    vertpi = vertpinfo + i;
+    xy2 = vertpi->xy2;
+    xy2[0] = PLANEDIST(yvec, xyz0, vertpi->xyz);
+    xy2[1] = PLANEDIST(xvec, xyz0, vertpi->xyz);
+  }
+
+  // get 2d normal
+
+  for(i = 0;i < npoly;i++){
+    vertpdata *vertpi, *vertpip1;
+    float dx, dy;
+    int ip1;
+
+    ip1 = i + 1;
+    if(i == npoly - 1)ip1 = 0;
+
+    vertpi   = vertpinfo + i;
+    vertpip1 = vertpinfo + ip1;
+    dx = vertpip1->xy2[0] - vertpi->xy2[0];
+    dy = vertpip1->xy2[1] - vertpi->xy2[1];
+    vertpi->norm2[0] = dy;
+    vertpi->norm2[1] = -dx;
+  }
+
+  nrows = MIN(1,maxdisty / del);
+  ncols = MIN(1,maxdistx / del);
+
+  NewMemory((void **)&vert2pinfo, nrows*ncols*sizeof(vertpdata));
+
+  for(i = 0;i < nrows + 1;i++){
+    int j;
+    float t;
+
+    t = (float)i*del;
+    for(j = 0;j < ncols+1;j++){
+      float s,xyz[3];
+      vertpdata *vertpij;
+
+      s = (float)j*del;
+      vertpij = vert2pinfo + i*(ncols + 1) + j;
+      vertpij->xy2[0] = s;
+      vertpij->xy2[0] = t;
+      vertpij->in_poly = PointInPolygon(vertpinfo, npoly, vertpij->xy2);
+    }
+  }
+
+  for(i = 0;i < nrows;i++){
+    int j;
+    float t;
+
+    t = (float)i*del;
+    for(j = 0;j < ncols;j++){
+      float s, xyz[3];
+      vertpdata *vert11,*vert12, *vert21, *vert22;
+
+      s = (float)j*del;
+      vert11 = vert2pinfo + i*(ncols + 1) + j;
+      vert12 = vert2pinfo + i*(ncols + 1) + j+1;
+      vert21 = vert2pinfo + (i+1)*(ncols + 1) + j;
+      vert22 = vert2pinfo + (i+1)*(ncols + 1) + j+1;
+      if(vert11->in_poly == 0)continue;
+      if(vert12->in_poly == 0)continue;
+      if(vert21->in_poly == 0)continue;
+      if(vert22->in_poly == 0)continue;
+    }
+  }
+
+
+
+
+}
+
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
 void UpdateSmoke3DPlanes(float delta_perp){
