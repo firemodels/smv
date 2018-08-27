@@ -156,6 +156,11 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 #define SMOKESKIP \
   if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
 #endif
+#ifdef pp_GPUSMOKE
+#define SMOKETIMER   if(smoke_timer==1)triangle_count+=2
+#else
+#define SMOKETIMER
+#endif
 
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
@@ -165,7 +170,7 @@ if(show_smoketest==0){\
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
   SMOKESKIP;\
-  if(smoke_timer==1)triangle_count+=2;\
+  SMOKETIMER;\
   ivalue[0]=n11<<2;  \
   ivalue[1]=n12<<2;  \
   ivalue[2]=n22<<2;  \
@@ -217,7 +222,7 @@ if(show_smoketest==0){\
   value[3]=alphaf_ptr[n21]; \
   SMOKESKIP;\
   z_offset[XXX]=znode_offset[m11];\
-  if(smoke_timer==1)triangle_count+=2;\
+  SMOKETIMER;\
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
@@ -274,7 +279,7 @@ else{\
   value[2]=alphaf_in[n22];\
   value[3]=alphaf_in[n21];\
   if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  if(smoke_timer==1)triangle_count+=2;\
+  SMOKETIMER;\
   if((adjustalphaflag==2||adjustalphaflag==3)&&iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
@@ -5088,10 +5093,12 @@ void DrawSmokeFrame(void){
   int load_shaders = 0;
 
   triangle_count = 0;
+#ifdef pp_GPUSMOKE
   if(smoke_timer == 1){
     smoke_function_count = 0;
     START_TIMER(smoke_time);
   }
+#endif
   CheckMemory;
   if(showvolrender==1&&smoke3dVoldebug==1){
     DrawSmoke3dVolDebug();
@@ -5212,6 +5219,7 @@ void DrawSmokeFrame(void){
     UnLoadShaders();
   }
 #endif
+#ifdef pp_GPUSMOKE
   if(smoke_timer == 1){
     float rate=-999.0;
     char label1[100],label2[100],label3[100];
@@ -5224,6 +5232,7 @@ void DrawSmokeFrame(void){
       smoke_time,
       GetFloatLabel(rate,label3));
   }
+#endif
 
   SNIFF_ERRORS("after drawsmoke");
 }
