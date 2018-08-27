@@ -5089,7 +5089,9 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 /* ------------------ DrawSmokeFrame ------------------------ */
 
 void DrawSmokeFrame(void){
+#ifdef pp_GPUSMOKE
   float smoke_time = 0.0;
+#endif
   int load_shaders = 0;
 
   triangle_count = 0;
