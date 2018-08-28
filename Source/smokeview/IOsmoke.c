@@ -1181,6 +1181,7 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
   if(meshi->nsmokeplaneinfo<0){
     ASSERT(0);
   }
+  glLineWidth(plane_outline_width);
   glBegin(GL_LINES);
   glColor3f(0.0,0.0,0.0);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
@@ -1195,9 +1196,9 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
       iv1 = spi->tris2[3*j];
       iv2 = spi->tris2[3*j+1];
       iv3 = spi->tris2[3*j+2];
-      v1 = spi->verts+3*iv1;
-      v2 = spi->verts+3*iv2;
-      v3 = spi->verts+3*iv3;
+      v1 = spi->verts2+3*iv1;
+      v2 = spi->verts2+3*iv2;
+      v3 = spi->verts2+3*iv3;
       glVertex3fv(v1);
       glVertex3fv(v2);
       glVertex3fv(v2);
@@ -1208,7 +1209,7 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
   }
   glEnd();
 
-  glLineWidth(10.0);
+  glLineWidth(2.0*plane_outline_width+2.0);
   glBegin(GL_LINES);
   glColor3f(0.0,0.0,1.0);
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
@@ -2740,9 +2741,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     int j;
     float xyzi[3];
 
-    xyzi[0] = xyz0[0]+(float)i*xdelvec[0];
-    xyzi[1] = xyz0[1]+(float)i*xdelvec[1];
-    xyzi[2] = xyz0[2]+(float)i*xdelvec[2];
+    xyzi[0] = xyz0[0]+(float)i*ydelvec[0];
+    xyzi[1] = xyz0[1]+(float)i*ydelvec[1];
+    xyzi[2] = xyz0[2]+(float)i*ydelvec[2];
     for(j = 0; j<ncols; j++){
       vertpdata *vertpij;
 
@@ -2750,9 +2751,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       if(vertpij->in_poly==1&&vertpij->in_tri==1){
         float xyzj[3];
 
-        verts[3*nverts+0] = xyzi[0]+(float)j*ydelvec[0];
-        verts[3*nverts+1] = xyzi[1]+(float)j*ydelvec[1];
-        verts[3*nverts+2] = xyzi[2]+(float)j*ydelvec[2];
+        verts[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
+        verts[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
+        verts[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
         nverts++;
       }
     }
@@ -2802,7 +2803,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
 
-void UpdateSmoke3DPlanes(float delta_perp){
+void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
   int i;
   float *xyz0, *norm;
   float d, distmin, distmax;
@@ -3032,7 +3033,7 @@ void UpdateSmoke3DPlanes(float delta_perp){
         meshplanedata *spi;
 
         spi = meshi->smokeplaneinfo+j;
-        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_perp, &(spi->verts2), &(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
+        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_par, &(spi->verts2), &(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
       }
     }
   }

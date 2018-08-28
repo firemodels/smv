@@ -8,7 +8,7 @@
 #ifdef pp_GPUSMOKE
 EXTERNCPP void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del, float **verts_out, int *nverts_out, int **triangles_out, int *ntriangles_out);
 EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
-EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp);
+EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);
 EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);
