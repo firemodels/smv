@@ -1166,6 +1166,77 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
   }
 }
 
+/* ------------------ DrawSmoke3DGPU_NEW ------------------------ */
+void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
+  int i;
+  meshdata *meshi;
+
+  meshi = meshinfo+smoke3di->blocknumber;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  CheckMemory;
+  ASSERT(meshi->nsmokeplaneinfo>=0);
+  if(meshi->nsmokeplaneinfo<0){
+    ASSERT(0);
+  }
+  glBegin(GL_LINES);
+  glColor3f(0.0,0.0,0.0);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->ntris2; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+
+      iv1 = spi->tris2[3*j];
+      iv2 = spi->tris2[3*j+1];
+      iv3 = spi->tris2[3*j+2];
+      v1 = spi->verts+3*iv1;
+      v2 = spi->verts+3*iv2;
+      v3 = spi->verts+3*iv3;
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+      glVertex3fv(v2);
+      glVertex3fv(v3);
+      glVertex3fv(v3);
+      glVertex3fv(v1);
+    }
+  }
+  glEnd();
+
+  glLineWidth(10.0);
+  glBegin(GL_LINES);
+  glColor3f(0.0,0.0,1.0);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->npolys; j++){
+      float *v1, *v2;
+      int iv1, iv2;
+      int jp1;
+
+      iv1 = spi->polys[j];
+      jp1 = j+1;
+      if(j==spi->npolys-1)jp1 = 0;
+      iv2 = spi->polys[jp1];
+      v1 = spi->verts+3*iv1;
+      v2 = spi->verts+3*iv2;
+      glVertex3fv(v1);
+      glVertex3fv(v2);
+    }
+  }
+  glEnd();
+  glPopMatrix();
+  SNIFF_ERRORS("after smoke DrawSmoke3DOuline2");
+}
+
+
 /* ------------------ DrawSmoke3D_NEW ------------------------ */
 
 void DrawSmoke3DOutline(smoke3ddata *smoke3di){
@@ -2415,9 +2486,14 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
 
   for(i = 0;i < nvertpinfo;i++){
     vertpdata *vertpi;
+    float xy[2], *norm2, ddot2;
 
     vertpi = vertpinfo + i;
-    if(DOT2(vertpi->norm2, xy2) < -POLY_EPS)return 0;
+    xy[0] = xy2[0]-vertpi->xy2[0];
+    xy[1] = xy2[1]-vertpi->xy2[1];
+    norm2 = vertpi->norm2;
+    ddot2 = norm2[0]*xy[0]+norm2[1]*xy[1];
+    if(ddot2>POLY_EPS)return 0;
   }
   return 1;
 }
@@ -2426,7 +2502,7 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
 
 void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del, float **verts_out, int *nverts_out, int **triangles_out, int *ntriangles_out){
 
-  vertpdata *vertpinfo, *vert2pinfo;
+  vertpdata *vertpinfo=NULL, *vert2pinfo=NULL;
   float dx, dy, dz;
   int i;
   float maxdist, maxdistx, maxdisty;
@@ -2439,6 +2515,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   int nverts, ntris;
   float *verts;
   int *tris;
+  int nverts_allocated, ntris_allocated;
 
   *nverts_out = 0;
   *ntriangles_out = 0;
@@ -2450,8 +2527,6 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
   // determine distance of each edge and longest edge
 
-  maxi = 0;
-  maxdist = vertpinfo->dist;
   for(i = 0;i < npoly;i++){
     float *verti, *vertip1;
     vertpdata *vertpi;
@@ -2466,9 +2541,15 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     vertip1 = verts_in + 3*poly[ip1];
 
     DDIST3(verti, vertip1, vertpi->dist);
-    if(vertpi->dist > maxdist){
+    if(i==0){
       maxdist = vertpi->dist;
-      maxi = i;
+      maxi = 0;
+    }
+    else{
+      if(vertpi->dist>maxdist){
+        maxdist = vertpi->dist;
+        maxi = i;
+      }
     }
   }
 
@@ -2519,9 +2600,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       mindisty = MIN(disty, mindisty);
     }
   }
-  xyz0[0] -= (mindistx*xvec[0]+mindisty*yvec[0]);
-  xyz0[1] -= (mindistx*xvec[1]-mindisty*yvec[1]);
-  xyz0[2] -= (mindistx*xvec[2]-mindisty*yvec[2]);
+  xyz0[0] += (mindistx*xvec[0]+mindisty*yvec[0]);
+  xyz0[1] += (mindistx*xvec[1]+mindisty*yvec[1]);
+  xyz0[2] += (mindistx*xvec[2]+mindisty*yvec[2]);
 
   // set 2d coordinates of polygon vertices
 
@@ -2563,8 +2644,8 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     vertpi->norm2[1] = -dx;
   }
 
-  nrows = MIN(2,maxdisty / del);
-  ncols = MIN(2,maxdistx / del);
+  nrows = MAX(2,maxdisty / del+0.5);
+  ncols = MAX(2,maxdistx / del+0.5);
 
   NewMemory((void **)&vert2pinfo, nrows*ncols*sizeof(vertpdata));
 
@@ -2582,7 +2663,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       s = (float)j*del;
       vertpij = vert2pinfo + i*ncols + j;
       vertpij->xy2[0] = s;
-      vertpij->xy2[0] = t;
+      vertpij->xy2[1] = t;
       vertpij->in_poly = PointInPolygon(vertpinfo, npoly, vertpij->xy2);
       vertpij->in_tri = 0;
     }
@@ -2599,8 +2680,8 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
       vert11 = vert2pinfo + i*ncols + j;
       vert12 = vert2pinfo + i*ncols + j+1;
-      vert21 = vert2pinfo + (i+1)*(ncols + 1) + j;
-      vert22 = vert2pinfo + (i+1)*(ncols + 1) + j+1;
+      vert21 = vert2pinfo + (i+1)*ncols + j;
+      vert22 = vert2pinfo + (i+1)*ncols + j+1;
       if(vert11->in_poly == 0||vert12->in_poly == 0||vert21->in_poly == 0||vert22->in_poly == 0)continue;
       vert11->in_tri = 1;
       vert12->in_tri = 1;
@@ -2648,7 +2729,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   }
 
   NewMemory((void **)&verts, 3*nverts*sizeof(float));
+  nverts_allocated = nverts;
   NewMemory((void **)&tris,  3*ntris*sizeof(int));
+  ntris_allocated = ntris;
 
 // define output vertex array
 
@@ -2674,6 +2757,8 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       }
     }
   }
+  ASSERT(nverts==nverts_allocated);
+  CheckMemory;
   
 // define output triangle array
 
@@ -2687,8 +2772,8 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
       vert11 = vert2pinfo+i*ncols+j;
       vert12 = vert2pinfo+i*ncols+j+1;
-      vert21 = vert2pinfo+(i+1)*(ncols+1)+j;
-      vert22 = vert2pinfo+(i+1)*(ncols+1)+j+1;
+      vert21 = vert2pinfo+(i+1)*ncols+j;
+      vert22 = vert2pinfo+(i+1)*ncols+j+1;
       if(vert11->in_poly==0||vert12->in_poly==0||vert21->in_poly==0||vert22->in_poly==0)continue;
       i11 = vert11->index;
       i21 = vert21->index;
@@ -2705,6 +2790,8 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       ntris++;
     }
   }
+  ASSERT(ntris==ntris_allocated);
+  CheckMemory;
   *nverts_out = nverts;
   *verts_out = verts;
   *ntriangles_out = ntris;
@@ -2834,8 +2921,17 @@ void UpdateSmoke3DPlanes(float delta_perp){
   }
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
+    int j;
 
     meshi = meshinfo + i;
+
+    for(j = 0; j<meshi->nsmokeplaneinfo; j++){
+      meshplanedata *spi;
+
+      spi = meshi->smokeplaneinfo+j;
+      FREEMEMORY(spi->verts2);
+      FREEMEMORY(spi->tris2);
+    }
 
     FREEMEMORY(meshi->smokeplaneinfo);
     meshi->nsmokeplaneinfo = 0;
@@ -2925,6 +3021,21 @@ void UpdateSmoke3DPlanes(float delta_perp){
       if(plane_single == 1)break;
     }
   }
+  if(smoke_test_triangulate==1){
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      int j;
+
+      meshi = meshinfo+i;
+
+      for(j = 0; j<meshi->nsmokeplaneinfo; j++){
+        meshplanedata *spi;
+
+        spi = meshi->smokeplaneinfo+j;
+        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_perp, &(spi->verts2), &(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
+      }
+    }
+  }
 }
 
 /* ------------------ DrawSmokeDiag ------------------------ */
@@ -2935,6 +3046,11 @@ void DrawSmokeDiag(smoke3ddata *smoke3di){
 
   meshi = meshinfo+smoke3di->blocknumber;
 
+  if(smoke_test_triangulate==1){
+    DrawSmoke3DOutline2(smoke3di);
+    SNIFF_ERRORS("after DrawQuadSmokeOutline2");
+    return;
+  }
   if(smoke_outline_type==SMOKE_TRIANGULATION){
     DrawSmoke3DOutline(smoke3di);
     SNIFF_ERRORS("after DrawQuadSmokeOutline");

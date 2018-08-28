@@ -598,6 +598,8 @@ typedef struct _meshplanedata {
   float verts[6*3],verts_smv[6*3];
   float norm0[4*3], norm1[4*3];
   int triangles[4*3], nverts, ntriangles;
+  float *verts2;
+  int *tris2, nverts2, ntris2;
   int polys[10], npolys;
 } meshplanedata;
 
