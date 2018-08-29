@@ -1045,6 +1045,25 @@ int DrawSmoke3DGPU_NEW(smoke3ddata *smoke3di){
   val1  = MIX(dy,    val11,    val01);\
   val   = MIX(dz,     val1,     val0)
 
+/* ------------------ GetNSmokeTypes ------------------------ */
+
+int GetNSmokeTypes(smoke3ddata * smoke3di){
+  meshdata *valmesh;
+  unsigned char *smoke, *fire, *co2;
+  int returnval = 0;
+
+  valmesh = meshinfo+smoke3di->blocknumber;
+
+  smoke = valmesh->smokealpha_ptr;
+  fire = smoke3di->smokestate[HRRPUV].color;
+  co2 = smoke3di->smokestate[CO2].color;
+
+  if(smoke!=NULL)returnval++;
+  if(fire!=NULL)returnval++;
+  if(co2!=NULL)returnval++;
+  return returnval;
+}
+
 /* ------------------ GetSmoke3DVal ------------------------ */
 
 void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_vals){
@@ -1287,6 +1306,50 @@ void DrawSmoke3DOutline(smoke3ddata *smoke3di){
   glEnd();
   SNIFF_ERRORS("after smoke DrawSmoke3DOutline");
   glPopMatrix();
+}
+
+/* ------------------ DrawSmoke3D_NEW2 ------------------------ */
+
+int DrawSmoke3D_NEW2(smoke3ddata *smoke3di){
+
+  int i;
+  meshdata *meshi;
+  float del;
+  int count = 0;
+  int nsmoketypes;
+
+  meshi = meshinfo+smoke3di->blocknumber;
+  nsmoketypes = GetNSmokeTypes(smoke3di);
+
+  del = smoke3d_delta_par;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  TransparentOn();
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+    meshplanedata *spi;
+    int j;
+
+    spi = meshi->smokeplaneinfo+i;
+    for(j = 0; j<spi->ntris2; j++){
+      float *v1, *v2, *v3;
+      int iv1, iv2, iv3;
+
+      iv1 = spi->tris2[3*j];
+      iv2 = spi->tris2[3*j+1];
+      iv3 = spi->tris2[3*j+2];
+      v1 = spi->verts2+3*iv1;
+      v2 = spi->verts2+3*iv2;
+      v3 = spi->verts2+3*iv3;
+
+    }
+  }
+  glEnd();
+  TransparentOff();
+  glPopMatrix();
+  return count;
 }
 
 /* ------------------ DrawSmoke3D_NEW ------------------------ */
@@ -2480,7 +2543,7 @@ typedef struct _vertpdata{
 
 /* ------------------ PointInPolygon ------------------------ */
 
-#define POLY_EPS 0.0001
+#define POLY_EPS 0.00001
 
 int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
   int i;
@@ -2501,7 +2564,9 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
 
 /* ------------------ PolyTriangulate ------------------------ */
 
-void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del, float **verts_out, int *nverts_out, int **triangles_out, int *ntriangles_out){
+void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del, int get_vals, int *have_vals, 
+                     float **verts_out, float **vals, int *nverts_out, 
+                     int **triangles_out, int *ntriangles_out){
 
   vertpdata *vertpinfo=NULL, *vert2pinfo=NULL;
   float dx, dy, dz;
@@ -2631,7 +2696,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
   for(i = 0;i < npoly;i++){
     vertpdata *vertpi, *vertpip1;
-    float dx, dy;
+    float dx, dy, norm;
     int ip1;
 
     ip1 = i + 1;
@@ -2641,6 +2706,11 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     vertpip1 = vertpinfo + ip1;
     dx = vertpip1->xy2[0] - vertpi->xy2[0];
     dy = vertpip1->xy2[1] - vertpi->xy2[1];
+    norm = sqrt(dx*dx+dy*dy);
+    if(norm>0.0){
+      dx /= norm;
+      dy /= norm;
+    }
     vertpi->norm2[0] = dy;
     vertpi->norm2[1] = -dx;
   }
@@ -2678,17 +2748,20 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
     for(j = 0;j < ncols-1;j++){
       vertpdata *vert11,*vert12, *vert21, *vert22;
+      int npoints;
 
       vert11 = vert2pinfo + i*ncols + j;
       vert12 = vert2pinfo + i*ncols + j+1;
       vert21 = vert2pinfo + (i+1)*ncols + j;
       vert22 = vert2pinfo + (i+1)*ncols + j+1;
-      if(vert11->in_poly == 0||vert12->in_poly == 0||vert21->in_poly == 0||vert22->in_poly == 0)continue;
-      vert11->in_tri = 1;
-      vert12->in_tri = 1;
-      vert21->in_tri = 1;
-      vert22->in_tri = 1;
-      ntris+=2;
+      npoints = vert11->in_poly+vert12->in_poly+vert21->in_poly+vert22->in_poly;
+      if(npoints <3)continue;
+      if(vert11->in_poly==1)vert11->in_tri = 1;
+      if(vert12->in_poly==1)vert12->in_tri = 1;
+      if(vert21->in_poly==1)vert21->in_tri = 1;
+      if(vert22->in_poly==1)vert22->in_tri = 1;
+      ntris++;
+      if(npoints==4)ntris++;
     }
   }
 
@@ -2703,7 +2776,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     return;
   }
 
-  // count_verts
+  // count_vertsf
 
   nverts = 0;
   for(i = 0; i<nrows; i++){
@@ -2713,6 +2786,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
       vertpdata *vertpij;
 
       vertpij = vert2pinfo+i*ncols+j;
+      vertpij->index = 0;
       if(vertpij->in_poly==1&&vertpij->in_tri==1){
         vertpij->index = nverts++;
       }
@@ -2770,25 +2844,54 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     for(j = 0; j<ncols-1; j++){
       vertpdata *vert11, *vert12, *vert21, *vert22;
       int i11, i12, i21, i22;
+      int npoints;
 
       vert11 = vert2pinfo+i*ncols+j;
       vert12 = vert2pinfo+i*ncols+j+1;
       vert21 = vert2pinfo+(i+1)*ncols+j;
       vert22 = vert2pinfo+(i+1)*ncols+j+1;
-      if(vert11->in_poly==0||vert12->in_poly==0||vert21->in_poly==0||vert22->in_poly==0)continue;
+      npoints = vert11->in_poly+vert12->in_poly+vert21->in_poly+vert22->in_poly;
+      if(npoints<3)continue;
       i11 = vert11->index;
       i21 = vert21->index;
       i12 = vert12->index;
       i22 = vert22->index;
-      tris[3*ntris+0] = i11;
-      tris[3*ntris+1] = i12;
-      tris[3*ntris+2] = i22;
-      ntris++;
 
-      tris[3*ntris+0] = i11;
-      tris[3*ntris+1] = i22;
-      tris[3*ntris+2] = i21;
-      ntris++;
+      if(npoints==4){
+
+        tris[3*ntris+0] = i11;
+        tris[3*ntris+1] = i12;
+        tris[3*ntris+2] = i22;
+        ntris++;
+
+        tris[3*ntris+0] = i11;
+        tris[3*ntris+1] = i22;
+        tris[3*ntris+2] = i21;
+        ntris++;
+      }
+      else{
+        if(vert11->in_poly==0){
+          tris[3*ntris+0] = i12;
+          tris[3*ntris+1] = i22;
+          tris[3*ntris+2] = i21;
+        }
+        else if(vert12->in_poly==0){
+          tris[3*ntris+0] = i11;
+          tris[3*ntris+1] = i22;
+          tris[3*ntris+2] = i21;
+        }
+        else if(vert21->in_poly==0){
+          tris[3*ntris+0] = i11;
+          tris[3*ntris+1] = i12;
+          tris[3*ntris+2] = i22;
+        }
+        else if(vert22->in_poly==0){
+          tris[3*ntris+0] = i11;
+          tris[3*ntris+1] = i12;
+          tris[3*ntris+2] = i21;
+        }
+        ntris++;
+      }
     }
   }
   ASSERT(ntris==ntris_allocated);
@@ -3033,7 +3136,8 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
         meshplanedata *spi;
 
         spi = meshi->smokeplaneinfo+j;
-        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_par, &(spi->verts2), &(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
+        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_par, smoke_getvals, spi->have_vals, 
+                         &(spi->verts2), &(spi->vals), &(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
       }
     }
   }
