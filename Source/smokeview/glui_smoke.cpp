@@ -703,6 +703,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke timer"), &smoke_timer);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("mesh aligned"), &smoke_mesh_aligned);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("test triangulation"), &smoke_test_triangulate);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("fast interpolation"), &smoke_fast_interp);
 
     CHECKBOX_plane_normal = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("normals"), &plane_normal);
