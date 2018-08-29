@@ -2548,7 +2548,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
     t = (float)i*del;
     for(j = 0;j < ncols+1;j++){
-      float s,xyz[3];
+      float s;
       vertpdata *vertpij;
 
       s = (float)j*del;
@@ -2561,14 +2561,10 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
   for(i = 0;i < nrows;i++){
     int j;
-    float t;
 
-    t = (float)i*del;
     for(j = 0;j < ncols;j++){
-      float s, xyz[3];
       vertpdata *vert11,*vert12, *vert21, *vert22;
 
-      s = (float)j*del;
       vert11 = vert2pinfo + i*(ncols + 1) + j;
       vert12 = vert2pinfo + i*(ncols + 1) + j+1;
       vert21 = vert2pinfo + (i+1)*(ncols + 1) + j;
