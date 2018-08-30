@@ -1320,12 +1320,9 @@ int DrawSmoke3D_NEW2(smoke3ddata *smoke3di){
 
   int i, nsmoketypes, ntriangles = 0, have_vals[3];
   meshdata *meshi;
-  float del;
 
   meshi = meshinfo+smoke3di->blocknumber;
   nsmoketypes = GetNSmokeTypes(smoke3di,have_vals);
-
-  del = smoke3d_delta_par;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -2665,7 +2662,7 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
   for(i = 0; i<npoly; i++){
     vertpdata *vertpi;
-    float *xy2, distx, disty;
+    float distx, disty;
 
     vertpi = vertpinfo+i;
     distx = PLANEDIST(xvec, xyz0, vertpi->xyz);
@@ -2836,8 +2833,6 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
       vertpij = vert2pinfo+i*ncols+j;
       if(vertpij->in_poly==1&&vertpij->in_tri==1){
-        float xyzj[3];
-
         verts[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
         verts[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
         verts[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
