@@ -22,7 +22,7 @@
 
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
-SVEXTERN int SVDECL(use_newsmoke, 0);
+SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 #ifdef pp_GPUSMOKE
 SVEXTERN int SVDECL(smoke_getvals, 0);
 SVEXTERN int SVDECL(smoke_test_triangulate, 0);
@@ -42,6 +42,7 @@ SVEXTERN int SVDECL(update_smokeplanes, 0);
 SVEXTERN float SVDECL(smoke3d_delta, 0.5);
 SVEXTERN float SVDECL(smoke3d_multiple, 1.0);
 SVEXTERN float SVDECL(smoke3d_delta_par,0.5);
+SVEXTERN float SVDECL(smoke3d_delta_par_min, 0.5);
 SVEXTERN float SVDECL(smoke3d_delta_perp, 0.5);
 #else
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);

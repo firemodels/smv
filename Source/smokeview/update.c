@@ -200,7 +200,10 @@ void UpdateFrameNumber(int changetime){
             UpdateSmoke3D(smoke3di);
           }
         }
-        MergeSmoke3D(NULL);
+        if(use_newsmoke==SMOKE3D_ORIG||use_newsmoke==SMOKE3D_NEW_RECURSIVE||use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
+          MergeSmoke3D(NULL);
+          PrintMemoryInfo;
+        }
       }
     }
     if(showpatch==1){

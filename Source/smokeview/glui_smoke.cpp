@@ -163,6 +163,8 @@ GLUI_Spinner *SPINNER_plane_distance=NULL;
 GLUI_Spinner *SPINNER_smoke3d_multiple=NULL;
 #endif
 
+GLUI_Checkbox *CHECKBOX_smoke_test_triangulate=NULL;
+GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
@@ -680,13 +682,26 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     PANEL_smokealg = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("smoke vis type"));
     RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new (recursive)"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new (non-recursive)"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
 
     PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
-    smoke3d_delta_par = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+
+    smoke3d_delta_par_min = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+    for(i = 1; i<nmeshes; i++){
+      meshdata *meshi;
+      float delta;
+
+      meshi = meshinfo+i;
+      delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+      smoke3d_delta_par_min = MIN(delta, smoke3d_delta_par_min);
+    }
+
+    smoke3d_delta_par = smoke3d_delta_par_min;
     smoke3d_delta_perp = smoke3d_delta_par;
     smoke3d_delta = smoke3d_delta_par;
+
     SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA, Smoke3dCB);
     SPINNER_smoke3d_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_multiple, SMOKE_MULTIPLE, Smoke3dCB);
 
@@ -703,8 +718,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke timer"), &smoke_timer);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("mesh aligned"), &smoke_mesh_aligned);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("test triangulation"), &smoke_test_triangulate);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
+    CHECKBOX_smoke_test_triangulate = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("test triangulation"), &smoke_test_triangulate);
+    CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("fast interpolation"), &smoke_fast_interp);
 
     CHECKBOX_plane_normal = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("normals"), &plane_normal);
@@ -892,14 +907,24 @@ extern "C" void Smoke3dCB(int var){
   
 #ifdef pp_GPUSMOKE
   case SMOKE_NEW:
-    if(use_newsmoke == SMOKE3D_ORIG || use_newsmoke == SMOKE3D_NEW){
+    if(use_newsmoke != SMOKE3D_DIAG){
       if(update_smokeplanes!=1){
         update_smokeplanes = 1;
-        CHECKBOX_update_smokeplanes->set_int_val(update_smokeplanes);
+        CHECKBOX_update_smokeplanes->set_int_val(1);
       }
       if(plane_single!=0){
         plane_single = 0;
-        CHECKBOX_plane_single->set_int_val(plane_single);
+        CHECKBOX_plane_single->set_int_val(0);
+      }
+      if(use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
+        if(smoke_getvals==0){
+          smoke_getvals = 1;
+          CHECKBOX_smoke_getvals->set_int_val(1);
+        }
+        if(smoke_test_triangulate==0){
+          smoke_test_triangulate = 1;
+          CHECKBOX_smoke_test_triangulate->set_int_val(1);
+        }
       }
     }
     else{
@@ -922,8 +947,8 @@ extern "C" void Smoke3dCB(int var){
     smoke3d_delta_perp = smoke3d_delta*smoke3d_multiple;
     break;
   case SMOKE_DELTA:
-    if(smoke3d_delta_par <= 0.0){
-      smoke3d_delta_par = 0.1;
+    if(smoke3d_delta_par <= smoke3d_delta_par_min){
+      smoke3d_delta_par = smoke3d_delta_par_min;
       SPINNER_smoke3d_delta_par->set_float_val(smoke3d_delta_par);
     }
     break;

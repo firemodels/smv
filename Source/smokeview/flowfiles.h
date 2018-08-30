@@ -599,10 +599,10 @@ typedef struct _meshplanedata {
   float norm0[4*3], norm1[4*3];
   int have_vals[3];
   int triangles[4*3], nverts, ntriangles;
-  float *vals;
-  float *verts2;
+  float *vals2, *verts2;
   int *tris2, nverts2, ntris2;
   int polys[10], npolys;
+  int drawsmoke;
 } meshplanedata;
 
 /* --------------------------  mesh ------------------------------------ */
@@ -623,6 +623,9 @@ typedef struct _meshdata {
 #ifdef pp_GPUSMOKE
   GLuint smoke_texture_id, fire_texture_id, co2_texture_id;
   float *smoke_texture_buffer, *fire_texture_buffer, *co2_texture_buffer;
+  float *smoke_verts, *smoke_vals;
+  int max_tris, max_verts;
+  int *smoke_tris, smoke_ntris, smoke_nverts;
 #endif
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;

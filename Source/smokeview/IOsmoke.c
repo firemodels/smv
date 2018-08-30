@@ -1334,7 +1334,7 @@ int DrawSmoke3D_NEW2(smoke3ddata *smoke3di){
     int j;
 
     spi = meshi->smokeplaneinfo+i;
-    if(spi->vals!=NULL){
+    if(spi->drawsmoke==1){
       for(j = 0; j<spi->ntris2; j++){
         float *v1, *v2, *v3;
         float *vals1, *vals2, *vals3;
@@ -1346,9 +1346,9 @@ int DrawSmoke3D_NEW2(smoke3ddata *smoke3di){
         v1 = spi->verts2+3*iv1;
         v2 = spi->verts2+3*iv2;
         v3 = spi->verts2+3*iv3;
-        vals1 = spi->vals+nsmoketypes*iv1;
-        vals2 = spi->vals+nsmoketypes*iv2;
-        vals3 = spi->vals+nsmoketypes*iv3;
+        vals1 = spi->vals2+nsmoketypes*iv1;
+        vals2 = spi->vals2+nsmoketypes*iv2;
+        vals3 = spi->vals2+nsmoketypes*iv3;
         DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
         DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
         DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
@@ -2574,9 +2574,9 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
 
 /* ------------------ PolyTriangulate ------------------------ */
 
-void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float del,
-                     float **verts_out, int *nverts_out, 
-                     int **triangles_out, int *ntriangles_out){
+void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int npoly, float del,
+                     float *verts_out, int *nverts_out, 
+                     int *tris_out, int *ntris_out){
 
   vertpdata *vertpinfo=NULL, *vert2pinfo=NULL;
   float dx, dy, dz;
@@ -2589,14 +2589,10 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   float xyz0[3], *xyzi, *xyzip1, *xyzip2;
   int nrows, ncols;
   int nverts, ntris;
-  float *verts;
-  int *tris;
   int nverts_allocated, ntris_allocated;
 
   *nverts_out = 0;
-  *ntriangles_out = 0;
-  *verts_out = NULL;
-  *triangles_out = NULL;
+  *ntris_out = 0;
   if(nverts_in == 0 || npoly == 0)return;
 
   NewMemory((void **)&vertpinfo, npoly * sizeof(vertpdata));
@@ -2728,6 +2724,17 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   nrows = MAX(2,maxdisty / del+0.5);
   ncols = MAX(2,maxdistx / del+0.5);
 
+  if(flag==1){
+    int ncells, nnodes;
+
+    FREEMEMORY(vertpinfo);
+    ncells = nrows*ncols;
+    nnodes = (nrows+1)*(ncols+1);
+    *ntris_out = 2*ncells;
+    *nverts_out = nnodes;
+    return;
+  }
+
   NewMemory((void **)&vert2pinfo, nrows*ncols*sizeof(vertpdata));
 
   // set 2d coordinates of triangles vertices
@@ -2775,12 +2782,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
     }
   }
 
-
   if(ntris==0){
     *nverts_out = 0;
-    *verts_out = NULL;
-    *ntriangles_out = 0;
-    *triangles_out = NULL;
+    *ntris_out = 0;
     FREEMEMORY(vert2pinfo);
     FREEMEMORY(vertpinfo);
     return;
@@ -2805,17 +2809,12 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
   if(nverts==0){
     *nverts_out = 0;
-    *verts_out = NULL;
-    *ntriangles_out = 0;
-    *triangles_out = NULL;
     FREEMEMORY(vert2pinfo);
     FREEMEMORY(vertpinfo);
     return;
   }
 
-  NewMemory((void **)&verts, 3*nverts*sizeof(float));
   nverts_allocated = nverts;
-  NewMemory((void **)&tris,  3*ntris*sizeof(int));
   ntris_allocated = ntris;
 
 // define output vertex array
@@ -2833,9 +2832,9 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
       vertpij = vert2pinfo+i*ncols+j;
       if(vertpij->in_poly==1&&vertpij->in_tri==1){
-        verts[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
-        verts[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
-        verts[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
+        verts_out[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
+        verts_out[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
+        verts_out[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
         nverts++;
       }
     }
@@ -2867,36 +2866,36 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
 
       if(npoints==4){
 
-        tris[3*ntris+0] = i11;
-        tris[3*ntris+1] = i12;
-        tris[3*ntris+2] = i22;
+        tris_out[3*ntris+0] = i11;
+        tris_out[3*ntris+1] = i12;
+        tris_out[3*ntris+2] = i22;
         ntris++;
 
-        tris[3*ntris+0] = i11;
-        tris[3*ntris+1] = i22;
-        tris[3*ntris+2] = i21;
+        tris_out[3*ntris+0] = i11;
+        tris_out[3*ntris+1] = i22;
+        tris_out[3*ntris+2] = i21;
         ntris++;
       }
       else{
         if(vert11->in_poly==0){
-          tris[3*ntris+0] = i12;
-          tris[3*ntris+1] = i22;
-          tris[3*ntris+2] = i21;
+          tris_out[3*ntris+0] = i12;
+          tris_out[3*ntris+1] = i22;
+          tris_out[3*ntris+2] = i21;
         }
         else if(vert12->in_poly==0){
-          tris[3*ntris+0] = i11;
-          tris[3*ntris+1] = i22;
-          tris[3*ntris+2] = i21;
+          tris_out[3*ntris+0] = i11;
+          tris_out[3*ntris+1] = i22;
+          tris_out[3*ntris+2] = i21;
         }
         else if(vert21->in_poly==0){
-          tris[3*ntris+0] = i11;
-          tris[3*ntris+1] = i12;
-          tris[3*ntris+2] = i22;
+          tris_out[3*ntris+0] = i11;
+          tris_out[3*ntris+1] = i12;
+          tris_out[3*ntris+2] = i22;
         }
         else if(vert22->in_poly==0){
-          tris[3*ntris+0] = i11;
-          tris[3*ntris+1] = i12;
-          tris[3*ntris+2] = i21;
+          tris_out[3*ntris+0] = i11;
+          tris_out[3*ntris+1] = i12;
+          tris_out[3*ntris+2] = i21;
         }
         ntris++;
       }
@@ -2905,11 +2904,36 @@ void PolyTriangulate(float *verts_in, int nverts_in, int *poly, int npoly, float
   ASSERT(ntris==ntris_allocated);
   CheckMemory;
   *nverts_out = nverts;
-  *verts_out = verts;
-  *ntriangles_out = ntris;
-  *triangles_out = tris;
+  *ntris_out = ntris;
   FREEMEMORY(vert2pinfo);
   FREEMEMORY(vertpinfo);
+}
+
+/* ------------------ FreeSmokeMemory ------------------------ */
+
+void FreeSmokeMemory(meshdata *meshi){
+  FREEMEMORY(meshi->smoke_verts);
+  FREEMEMORY(meshi->smoke_tris);
+  FREEMEMORY(meshi->smoke_vals);
+  meshi->max_verts = 0;
+  meshi->max_tris = 0;
+}
+
+/* ------------------ AllocateSmokeMemory ------------------------ */
+
+void AllocateSmokeMemory(meshdata *meshi, int nverts, int ntris){
+  if(nverts>meshi->max_verts){
+    FREEMEMORY(meshi->smoke_verts);
+    FREEMEMORY(meshi->smoke_vals);
+    NewMemory((void **)&meshi->smoke_verts, 3*nverts*sizeof(float));
+    NewMemory((void **)&meshi->smoke_vals, nverts*sizeof(float));
+    meshi->max_verts = nverts;
+  }
+  if(ntris>meshi->max_tris){
+    FREEMEMORY(meshi->smoke_tris);
+    NewMemory((void **)&meshi->smoke_tris, 3*ntris*sizeof(int));
+    meshi->max_tris = ntris;
+  }
 }
 
 /* ------------------ UpdateSmoke3DPlanes ------------------------ */
@@ -3037,15 +3061,6 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
 
     meshi = meshinfo + i;
 
-    for(j = 0; j<meshi->nsmokeplaneinfo; j++){
-      meshplanedata *spi;
-
-      spi = meshi->smokeplaneinfo+j;
-      FREEMEMORY(spi->verts2);
-      FREEMEMORY(spi->tris2);
-      FREEMEMORY(spi->vals);
-    }
-
     FREEMEMORY(meshi->smokeplaneinfo);
     meshi->nsmokeplaneinfo = 0;
   }
@@ -3135,30 +3150,61 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
     }
   }
   if(smoke_test_triangulate==1){
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i = 0; i<nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
       meshdata *meshi;
       int j;
       int nsmoketypes;
       int have_vals[3];
+      int total_verts, total_tris;
+      float delta_pari;
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==0||smoke3di->display==0)continue;
       if(smoke3di->primary_file==0)continue;
       meshi = meshinfo + smoke3di->blocknumber;
+      delta_pari = MAX(delta_par,meshi->xplt_orig[1]-meshi->xplt_orig[0]);
       nsmoketypes = GetNSmokeTypes(smoke3di,have_vals);
+
+      total_verts = 0;
+      total_tris = 0;
+      for(j = 0; j<meshi->nsmokeplaneinfo; j++){
+        meshplanedata *spi;
+        int nverts2, ntris2;
+
+        spi = meshi->smokeplaneinfo+j;
+        PolyTriangulate(1, spi->verts, spi->nverts, spi->polys, spi->npolys, delta_pari, NULL, &nverts2, NULL, &ntris2);
+        total_verts += nverts2;
+        total_tris += ntris2;
+      }
+      if(total_verts>meshi->max_verts||total_tris>meshi->max_tris){
+        AllocateSmokeMemory(meshi, total_verts, total_tris);
+      }
+
       for(j = 0; j<meshi->nsmokeplaneinfo; j++){
         meshplanedata *spi;
 
         spi = meshi->smokeplaneinfo+j;
-        PolyTriangulate(spi->verts, spi->nverts, spi->polys, spi->npolys, delta_par,
-                         &(spi->verts2),&(spi->nverts2), &(spi->tris2), &(spi->ntris2) );
+        if(j==0){
+          spi->verts2 = meshi->smoke_verts;
+          spi->tris2 = meshi->smoke_tris;
+          spi->vals2 = meshi->smoke_vals;
+        }
+        else{
+          meshplanedata *spim1;
+
+          spim1 = meshi->smokeplaneinfo+j-1;
+          spi->verts2 = spim1->verts2+3*spim1->nverts2;
+          spi->tris2 = spim1->tris2+3*spim1->ntris2;
+          spi->vals2 = spim1->vals2+nsmoketypes*spim1->nverts2;
+        }
+        PolyTriangulate(0,spi->verts, spi->nverts, spi->polys, spi->npolys, delta_pari, spi->verts2, &spi->nverts2, spi->tris2, &spi->ntris2);
+
         if(smoke_getvals==1&&spi->nverts2>0&&nsmoketypes>0){
           int k;
           float *valsptr;
            
-          NewMemory((void **)&spi->vals, nsmoketypes*spi->nverts2*sizeof(float));
-          valsptr = spi->vals;
+          valsptr = spi->vals2;
           for(k=0;k<spi->nverts2;k++){
             float *xyz, vals[3];
 
@@ -3168,9 +3214,10 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
             if(have_vals[1]==1)*valsptr++ = vals[1];
             if(have_vals[2]==1)*valsptr++ = vals[2];
           }
+          spi->drawsmoke = 1;
         }
         else{
-          spi->vals = NULL;
+          spi->drawsmoke = 0;
         }
       }
     }
@@ -5678,16 +5725,16 @@ void DrawSmokeFrame(void){
       load_shaders = 1;
     }
     else{
-      if(use_newsmoke == SMOKE3D_NEW){
-#ifdef pp_GPUSMOKE
-        LoadNewSmokeShaders();
-        load_shaders = 1;
-#endif
-      }
-      else if(use_newsmoke==SMOKE3D_ORIG){
+      if(use_newsmoke==SMOKE3D_ORIG){
         LoadSmokeShaders();
         load_shaders = 1;
       }
+#ifdef pp_GPUSMOKE
+      else if(use_newsmoke == SMOKE3D_NEW_RECURSIVE||use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
+        LoadNewSmokeShaders();
+        load_shaders = 1;
+      }
+#endif
     }
   }
 #endif
@@ -5722,7 +5769,7 @@ void DrawSmokeFrame(void){
 #ifdef pp_GPU
         if(usegpu==1){
 #ifdef pp_GPUSMOKE
-          if(use_newsmoke==SMOKE3D_NEW){
+          if(use_newsmoke==SMOKE3D_NEW_RECURSIVE||use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
             triangle_count+=DrawSmoke3DGPU_NEW(smoke3di);
           }
           else if(use_newsmoke==SMOKE3D_ORIG){
@@ -5737,21 +5784,16 @@ void DrawSmokeFrame(void){
 #endif
         }
         else{
-          if(use_newsmoke==SMOKE3D_NEW){
-#ifdef pp_GPUSMOKE
-
-            if(smoke_test_triangulate==1){
-              triangle_count += DrawSmoke3D_NEW2(smoke3di);
-            }
-            else{
-              triangle_count += DrawSmoke3D_NEW(smoke3di);
-            }
-#endif
-          }
-          else if(use_newsmoke==SMOKE3D_ORIG){
+          if(use_newsmoke==SMOKE3D_ORIG){
             DrawSmoke3D(smoke3di);
           }
 #ifdef pp_GPUSMOKE
+          else if(use_newsmoke==SMOKE3D_NEW_RECURSIVE){
+            triangle_count += DrawSmoke3D_NEW(smoke3di);
+          }
+          else if(use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
+            triangle_count += DrawSmoke3D_NEW2(smoke3di);
+          }
           else{
             DrawSmokeDiag(smoke3di);
           }
@@ -6315,6 +6357,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
           break;
         }
       }
+      FreeSmokeMemory(meshi);
     }
     if(meshi->iblank_smoke3d != NULL){
       int free_iblank_smoke3d;
@@ -6958,7 +7001,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
-  if(smoke3d_black==1||use_newsmoke==SMOKE3D_NEW){
+  if(smoke3d_black==1||use_newsmoke==SMOKE3D_NEW_RECURSIVE||use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{
