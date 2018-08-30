@@ -3057,7 +3057,6 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
   }
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
-    int j;
 
     meshi = meshinfo + i;
 
