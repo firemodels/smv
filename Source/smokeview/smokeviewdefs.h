@@ -164,6 +164,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TEMP_2   4
 #define CO2_2    8
 
+#define VSOOT 0
+#define VFIRE 1
+#define VCO2  2
+
 #define NELEV_ZONE 100
 
 #define UPDATE_ISO_OFF 0
