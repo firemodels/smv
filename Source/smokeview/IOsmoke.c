@@ -2551,6 +2551,11 @@ typedef struct _vertpdata{
   float *xyz, dist, xy2[2], norm2[2];
 } vertpdata;
 
+#define POLY_OUTSIDE 0
+#define POLY_INSIDE  1
+#define POLY_ONEDGE  2
+#define POLY_ONNODE  3
+
 /* ------------------ PointInPolygon ------------------------ */
 
 #define POLY_EPS 0.00001
@@ -2767,16 +2772,20 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       vertpdata *vert11,*vert12, *vert21, *vert22;
       int npoints;
 
+      npoints = 0;
       vert11 = vert2pinfo + i*ncols + j;
       vert12 = vert2pinfo + i*ncols + j+1;
       vert21 = vert2pinfo + (i+1)*ncols + j;
       vert22 = vert2pinfo + (i+1)*ncols + j+1;
-      npoints = vert11->in_poly+vert12->in_poly+vert21->in_poly+vert22->in_poly;
+      if(vert11->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert12->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert21->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert22->in_poly!=POLY_OUTSIDE)npoints++;
       if(npoints <3)continue;
-      if(vert11->in_poly==1)vert11->in_tri = 1;
-      if(vert12->in_poly==1)vert12->in_tri = 1;
-      if(vert21->in_poly==1)vert21->in_tri = 1;
-      if(vert22->in_poly==1)vert22->in_tri = 1;
+      if(vert11->in_poly!=POLY_OUTSIDE)vert11->in_tri = 1;
+      if(vert12->in_poly!=POLY_OUTSIDE)vert12->in_tri = 1;
+      if(vert21->in_poly!=POLY_OUTSIDE)vert21->in_tri = 1;
+      if(vert22->in_poly!=POLY_OUTSIDE)vert22->in_tri = 1;
       ntris++;
       if(npoints==4)ntris++;
     }
@@ -2801,7 +2810,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
 
       vertpij = vert2pinfo+i*ncols+j;
       vertpij->index = 0;
-      if(vertpij->in_poly==1&&vertpij->in_tri==1){
+      if(vertpij->in_poly!=POLY_OUTSIDE&&vertpij->in_tri==1){
         vertpij->index = nverts++;
       }
     }
@@ -2831,7 +2840,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       vertpdata *vertpij;
 
       vertpij = vert2pinfo+i*ncols+j;
-      if(vertpij->in_poly==1&&vertpij->in_tri==1){
+      if(vertpij->in_poly!=POLY_OUTSIDE&&vertpij->in_tri==1){
         verts_out[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
         verts_out[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
         verts_out[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
@@ -2853,11 +2862,15 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       int i11, i12, i21, i22;
       int npoints;
 
+      npoints = 0;
       vert11 = vert2pinfo+i*ncols+j;
       vert12 = vert2pinfo+i*ncols+j+1;
       vert21 = vert2pinfo+(i+1)*ncols+j;
       vert22 = vert2pinfo+(i+1)*ncols+j+1;
-      npoints = vert11->in_poly+vert12->in_poly+vert21->in_poly+vert22->in_poly;
+      if(vert11->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert12->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert21->in_poly!=POLY_OUTSIDE)npoints++;
+      if(vert22->in_poly!=POLY_OUTSIDE)npoints++;
       if(npoints<3)continue;
       i11 = vert11->index;
       i21 = vert21->index;
@@ -2877,22 +2890,22 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
         ntris++;
       }
       else{
-        if(vert11->in_poly==0){
+        if(vert11->in_poly==POLY_OUTSIDE){
           tris_out[3*ntris+0] = i12;
           tris_out[3*ntris+1] = i22;
           tris_out[3*ntris+2] = i21;
         }
-        else if(vert12->in_poly==0){
+        else if(vert12->in_poly==POLY_OUTSIDE){
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i22;
           tris_out[3*ntris+2] = i21;
         }
-        else if(vert21->in_poly==0){
+        else if(vert21->in_poly==POLY_OUTSIDE){
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i12;
           tris_out[3*ntris+2] = i22;
         }
-        else if(vert22->in_poly==0){
+        else if(vert22->in_poly==POLY_OUTSIDE){
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i12;
           tris_out[3*ntris+2] = i21;
