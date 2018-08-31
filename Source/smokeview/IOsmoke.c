@@ -2840,22 +2840,42 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
 
   // move points next to points in the polygon to the polygon
 
-  for(i = 0;i<nrows-1;i++){
+  for(i = 0;i<nrows;i++){
     int j;
 
-    for(j = 0;j<ncols-1;j++){
-      vertpdata *p11, *p12, *p21, *p22;
+    for(j = 0;j<ncols;j++){
+      vertpdata *p11;
 
       p11 = vert2pinfo+i*ncols+j;
-      p12 = vert2pinfo+i*ncols+j+1;
-      p21 = vert2pinfo+(i+1)*ncols+j;
-      p22 = vert2pinfo+(i+1)*ncols+j+1;
+      if(p11->in_poly==POLY_OUTSIDE){
+        int ii, doit;
 
-      if(p11->in_poly==POLY_OUTSIDE&&(p12->in_poly!=POLY_OUTSIDE||p21->in_poly!=POLY_OUTSIDE||p22->in_poly!=POLY_OUTSIDE)){
-        int in_poly;
+   // examine 8 points surrounging p11, if any are inside the polygon move p11 onto the polygon
 
-        in_poly = PointOnPolygon(vertpinfo, npoly, p11->xy2);
-        if(in_poly>=0)p11->in_poly = in_poly;
+        doit = 0;
+        for(ii=i-1;ii<i+2;ii++){
+          int jj;
+
+          if(ii<0||ii>=nrows)continue;
+          for(jj=j-1;jj<j+2;jj++){
+            vertpdata *pij;
+
+            if(jj<0||jj>=ncols)continue;
+            if(ii==i&&jj==j)continue;
+            pij = vert2pinfo + ii*ncols + jj;
+            if(pij->in_poly!=POLY_OUTSIDE){
+              doit=1;
+              break;
+            }
+          }
+          if(doit==1)break;
+        }
+        if(doit==1){
+          int in_poly;
+
+          in_poly = PointOnPolygon(vertpinfo, npoly, p11->xy2);
+          if(in_poly>=0)p11->in_poly = in_poly;
+        }
       }
     }
   }
