@@ -2574,31 +2574,26 @@ int PointOnPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
     norm2 = vertpi->norm2;
     ddot2 = norm2[0]*dxy[0]+norm2[1]*dxy[1];
     if(ddot2>POLY_EPS){
-      float dp[2], t, denom;
+      float dv[2], t, denom;
       int ip1;
       vertpdata *vertpip1;
 
       ip1 = i+1;
       if(i==nvertpinfo-1)ip1 = 0;
       vertpip1 = vertpinfo+ip1;
-      dp[0] = vertpip1->xy2[0]-vertpi->xy2[0];
-      dp[1] = vertpip1->xy2[1]-vertpi->xy2[1];
-      denom = dp[0]*dp[0]+dp[1]*dp[1];
+      dv[0] = vertpip1->xy2[0]-vertpi->xy2[0];
+      dv[1] = vertpip1->xy2[1]-vertpi->xy2[1];
+      denom = dv[0]*dv[0]+dv[1]*dv[1];
       if(denom==0.0)continue;
-      t = (dxy[0]*dp[0]+dxy[1]*dp[1])/denom;
+      t = (dxy[0]*dv[0]+dxy[1]*dv[1])/denom;
       if(t<0.0||t>1.0)continue;
-      if(t==0.0){
-        xy2[0] = vertpi->xy2[0];
-        xy2[1] = vertpi->xy2[1];
-        return POLY_ONNODE;
-      }
       if(t==1.0){
         xy2[0] = vertpip1->xy2[0];
         xy2[1] = vertpip1->xy2[1];
         return POLY_ONNODE;
       }
-      xy2[0] = vertpi->xy2[0]+t*(vertpip1->xy2[0]-vertpi->xy2[0]);
-      xy2[1] = vertpi->xy2[1]+t*(vertpip1->xy2[1]-vertpi->xy2[1]);
+      xy2[0] = vertpi->xy2[0]+t*dv[0];
+      xy2[1] = vertpi->xy2[1]+t*dv[1];
       return POLY_ONEDGE;
     }
   }
@@ -2902,7 +2897,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
     return;
   }
 
-  // count_vertsf
+  // count_verts
 
   nverts = 0;
   for(i = 0; i<nrows; i++){
@@ -2934,19 +2929,18 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
   nverts = 0;
   for(i = 0; i<nrows; i++){
     int j;
-    float xyzi[3];
 
-    xyzi[0] = xyz0[0]+(float)i*ydelvec[0];
-    xyzi[1] = xyz0[1]+(float)i*ydelvec[1];
-    xyzi[2] = xyz0[2]+(float)i*ydelvec[2];
     for(j = 0; j<ncols; j++){
       vertpdata *vertpij;
+      float di, dj;
 
       vertpij = vert2pinfo+i*ncols+j;
+      di = vertpij->xy2[0]/del;
+      dj = vertpij->xy2[1]/del;
       if(vertpij->in_poly!=POLY_OUTSIDE&&vertpij->in_tri==1){
-        verts_out[3*nverts+0] = xyzi[0]+(float)j*xdelvec[0];
-        verts_out[3*nverts+1] = xyzi[1]+(float)j*xdelvec[1];
-        verts_out[3*nverts+2] = xyzi[2]+(float)j*xdelvec[2];
+        verts_out[3*nverts+0] = xyz0[0]+(float)dj*ydelvec[0]+(float)di*xdelvec[0];
+        verts_out[3*nverts+1] = xyz0[1]+(float)dj*ydelvec[1]+(float)di*xdelvec[1];
+        verts_out[3*nverts+2] = xyz0[2]+(float)dj*ydelvec[2]+(float)di*xdelvec[2];
         nverts++;
       }
     }
