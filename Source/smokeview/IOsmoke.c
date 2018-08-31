@@ -2572,9 +2572,9 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
     xy[1] = xy2[1]-vertpi->xy2[1];
     norm2 = vertpi->norm2;
     ddot2 = norm2[0]*xy[0]+norm2[1]*xy[1];
-    if(ddot2>POLY_EPS)return 0;
+    if(ddot2>POLY_EPS)return POLY_OUTSIDE;
   }
-  return 1;
+  return POLY_INSIDE;
 }
 
 /* ------------------ PolyTriangulate ------------------------ */
