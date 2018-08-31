@@ -2555,10 +2555,91 @@ typedef struct _vertpdata{
 #define POLY_INSIDE  1
 #define POLY_ONEDGE  2
 #define POLY_ONNODE  3
+#define POLY_EPS 0.00001
+
+/* ------------------ PointOnPolygon ------------------------ */
+
+int PointOnPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
+  int i;
+  float minsum;
+  int mini;
+
+  for(i = 0;i<nvertpinfo;i++){
+    vertpdata *vertpi;
+    float dxy[2], *norm2, ddot2;
+
+    vertpi = vertpinfo+i;
+    dxy[0] = xy2[0]-vertpi->xy2[0];
+    dxy[1] = xy2[1]-vertpi->xy2[1];
+    norm2 = vertpi->norm2;
+    ddot2 = norm2[0]*dxy[0]+norm2[1]*dxy[1];
+    if(ddot2>POLY_EPS){
+      float dp[2], t, denom;
+      int ip1;
+      vertpdata *vertpip1;
+
+      ip1 = i+1;
+      if(i==nvertpinfo-1)ip1 = 0;
+      vertpip1 = vertpinfo+ip1;
+      dp[0] = vertpip1->xy2[0]-vertpi->xy2[0];
+      dp[1] = vertpip1->xy2[1]-vertpi->xy2[1];
+      denom = dp[0]*dp[0]+dp[1]*dp[1];
+      if(denom==0.0)continue;
+      t = (dxy[0]*dp[0]+dxy[1]*dp[1])/denom;
+      if(t<0.0||t>1.0)continue;
+      if(t==0.0){
+        xy2[0] = vertpi->xy2[0];
+        xy2[1] = vertpi->xy2[1];
+        return POLY_ONNODE;
+      }
+      if(t==1.0){
+        xy2[0] = vertpip1->xy2[0];
+        xy2[1] = vertpip1->xy2[1];
+        return POLY_ONNODE;
+      }
+      xy2[0] = vertpi->xy2[0]+t*(vertpip1->xy2[0]-vertpi->xy2[0]);
+      xy2[1] = vertpi->xy2[1]+t*(vertpip1->xy2[1]-vertpi->xy2[1]);
+      return POLY_ONEDGE;
+    }
+  }
+  mini = -1;
+  for(i = 0;i<nvertpinfo;i++){
+    vertpdata *vertpi;
+    float dxy[2], *norm2, ddot2;
+
+    vertpi = vertpinfo+i;
+    dxy[0] = xy2[0]-vertpi->xy2[0];
+    dxy[1] = xy2[1]-vertpi->xy2[1];
+    norm2 = vertpi->norm2;
+    ddot2 = norm2[0]*dxy[0]+norm2[1]*dxy[1];
+    if(ddot2>POLY_EPS){
+      float sum;
+
+      sum = dxy[0]*dxy[0]+dxy[1]*dxy[1];
+      if(mini==-1){
+        mini = i;
+        minsum = sum;
+      }
+      else{
+        if(sum<minsum){
+          mini = i;
+          minsum = sum;
+        }
+      }
+    }
+  }
+  if(mini>=0){
+    vertpdata *vertpi;
+
+    vertpi = vertpinfo+mini;
+    xy2[0] = vertpi->xy2[0];
+    xy2[1] = vertpi->xy2[1];
+    return POLY_ONNODE;
+  }
+  return -1;
+}
 
 /* ------------------ PointInPolygon ------------------------ */
-
-#define POLY_EPS 0.00001
 
 int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
   int i;
@@ -2759,6 +2840,28 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       vertpij->xy2[1] = t;
       vertpij->in_poly = PointInPolygon(vertpinfo, npoly, vertpij->xy2);
       vertpij->in_tri = 0;
+    }
+  }
+
+  // move points next to points in the polygon to the polygon
+
+  for(i = 0;i<nrows-1;i++){
+    int j;
+
+    for(j = 0;j<ncols-1;j++){
+      vertpdata *p11, *p12, *p21, *p22;
+
+      p11 = vert2pinfo+i*ncols+j;
+      p12 = vert2pinfo+i*ncols+j+1;
+      p21 = vert2pinfo+(i+1)*ncols+j;
+      p22 = vert2pinfo+(i+1)*ncols+j+1;
+
+      if(p11->in_poly==POLY_OUTSIDE&&(p12->in_poly!=POLY_OUTSIDE||p21->in_poly!=POLY_OUTSIDE||p22->in_poly!=POLY_OUTSIDE)){
+        int in_poly;
+
+        in_poly = PointOnPolygon(vertpinfo, npoly, p11->xy2);
+        if(in_poly>=0)p11->in_poly = in_poly;
+      }
     }
   }
 
