@@ -26,7 +26,6 @@ SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 #ifdef pp_GPUSMOKE
 SVEXTERN int SVDECL(smoke_getvals, 0);
-SVEXTERN int SVDECL(smoke_test_triangulate, 1);
 SVEXTERN int SVDECL(smoke_exact_dist, 0);
 SVEXTERN int SVDECL(smoke_timer, 0);
 SVEXTERN int SVDECL(plane_normal, 1);

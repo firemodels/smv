@@ -163,7 +163,6 @@ GLUI_Spinner *SPINNER_plane_distance=NULL;
 GLUI_Spinner *SPINNER_smoke3d_multiple=NULL;
 #endif
 
-GLUI_Checkbox *CHECKBOX_smoke_test_triangulate=NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -682,8 +681,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     PANEL_smokealg = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("smoke vis type"));
     RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new (recursive)"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new (non-recursive)"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
 
     PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
@@ -718,7 +716,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke timer"), &smoke_timer);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("mesh aligned"), &smoke_mesh_aligned);
-    CHECKBOX_smoke_test_triangulate = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("test triangulation"), &smoke_test_triangulate);
     CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("fast interpolation"), &smoke_fast_interp);
 
@@ -916,14 +913,14 @@ extern "C" void Smoke3dCB(int var){
         plane_single = 0;
         CHECKBOX_plane_single->set_int_val(0);
       }
-      if(use_newsmoke==SMOKE3D_NEW_NONRECURSIVE){
+      if(use_newsmoke==SMOKE3D_NEW){
         if(smoke_getvals==0){
           smoke_getvals = 1;
           CHECKBOX_smoke_getvals->set_int_val(1);
         }
-        if(smoke_test_triangulate==0){
-          smoke_test_triangulate = 1;
-          CHECKBOX_smoke_test_triangulate->set_int_val(1);
+        if(smoke_outline_type!=SMOKE_TRIANGULATION){
+          smoke_outline_type=SMOKE_TRIANGULATION;
+          RADIO_smoke_outline_type->set_int_val(smoke_outline_type);
         }
       }
     }
