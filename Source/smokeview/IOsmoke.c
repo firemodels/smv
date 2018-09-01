@@ -2753,6 +2753,8 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       mindisty = MIN(disty, mindisty);
     }
   }
+  mindistx -= 1.5*del;
+  mindisty -= 1.5*del;
   xyz0[0] += (mindistx*xvec[0]+mindisty*yvec[0]);
   xyz0[1] += (mindistx*xvec[1]+mindisty*yvec[1]);
   xyz0[2] += (mindistx*xvec[2]+mindisty*yvec[2]);
@@ -2778,6 +2780,8 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       maxdisty = MAX(maxdisty, disty);
     }
   }
+  maxdistx += 1.5*del;
+  maxdisty += 1.5*del;
 
   // get 2d normals
 
