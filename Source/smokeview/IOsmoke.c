@@ -14,9 +14,6 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
-void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv);
-
-
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
 int cull_count=0;
@@ -1254,6 +1251,56 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
   SNIFF_ERRORS("after smoke DrawSmoke3DOuline2");
 }
 
+/* ------------------ DrawSmokeVertex ------------------------ */
+
+void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
+  int use_smoke = 1, index = 0;
+  float sootval = 0.0, fireval = 0.0, co2val = 0.0;
+
+  if(hv[VSOOT]==1)sootval = t[index++];
+  if(hv[VFIRE]==1)fireval = t[index++];
+  if(hv[VCO2]==1)co2val = t[index++];
+
+  if(hv[VFIRE]==1){
+    if(fireval>global_hrrpuv_cutoff){
+      float *color, alpha, mergecolor[3];
+
+      //      float alpha_factor;
+      int color_index;
+
+      //alpha_factor = CLAMP((fireval-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);
+      color_index = CLAMP(255*fireval/hrrpuv_max_smv, 0, 255);
+      color = rgb_slicesmokecolormap_01+4*color_index;
+
+      alpha = (float)smoke3di->fire_alpha/255.0;
+      if(hv[VSOOT]==1&&hv[VCO2]==1){
+        float f1 = 1.0, f2 = 0.0, denom, co2alpha;
+
+        f1 = ABS(sootfactor)*sootval;
+        f2 = ABS(co2factor)*co2val;
+        denom = f1+f2;
+        if(denom>0.0){
+          f1 /= denom;
+          f2 /= denom;
+        }
+        co2alpha = (float)smoke3di->co2_alpha/255.0;
+        mergecolor[0] = f2*global_co2color[0]/255.0+f1*color[0];
+        mergecolor[1] = f2*global_co2color[1]/255.0+f1*color[1];
+        mergecolor[2] = f2*global_co2color[2]/255.0+f1*color[2];
+        alpha = f2*co2alpha+f1*alpha;
+        color = mergecolor;
+      }
+      use_smoke = 0;
+      glColor4f(color[0], color[1], color[2], alpha);
+      glVertex3fv(v);
+    }
+  }
+  if(hv[VSOOT]==1&&use_smoke==1){
+    glColor4f(0.0, 0.0, 0.0, sootval);
+    glVertex3fv(v);
+  }
+}
+
 /* ------------------ DrawSmoke3DNew ------------------------ */
 
 int DrawSmoke3DNew(smoke3ddata *smoke3di){
@@ -1289,9 +1336,11 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
         vals1 = spi->vals2+nsmoketypes*iv1;
         vals2 = spi->vals2+nsmoketypes*iv2;
         vals3 = spi->vals2+nsmoketypes*iv3;
-        DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
-        DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
-        DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+        if(have_vals[0]==0||vals1[0]!=0.0||vals2[0]!=0.0||vals3[0]!=0.0){
+          DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
+          DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
+          DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+        }
       }
       ntriangles += spi->ntris2;
     }
@@ -3182,6 +3231,8 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==0||smoke3di->display==0)continue;
       if(smoke3di->primary_file==0)continue;
+      if(IsSmokeComponentPresent(smoke3di)==0)continue;
+
       meshi = meshinfo + smoke3di->blocknumber;
       delta_pari = MAX(delta_par,meshi->xplt_orig[1]-meshi->xplt_orig[0]);
       nsmoketypes = GetNSmokeTypes(smoke3di,have_vals);
@@ -3356,55 +3407,6 @@ void DrawSmokeDiag(smoke3ddata *smoke3di){
   }
 }
 
-/* ------------------ DrawSmokeVertex ------------------------ */
-
-void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
-  int use_smoke=1, index=0;
-  float sootval=0.0, fireval=0.0, co2val=0.0;
-
-  if(hv[VSOOT]==1)sootval=t[index++];
-  if(hv[VFIRE]==1)fireval=t[index++];
-  if(hv[VCO2]==1)co2val =t[index++];
-
-  if(hv[VFIRE]==1){
-    if(fireval>global_hrrpuv_cutoff){
-      float *color,alpha,mergecolor[3];
-
-//      float alpha_factor;
-      int color_index;
-
-      //alpha_factor = CLAMP((fireval-global_hrrpuv_cutoff)/(global_hrrpuv_max-global_hrrpuv_cutoff),0.0,1.0);
-      color_index = CLAMP(255*fireval/hrrpuv_max_smv,0,255);
-      color = rgb_slicesmokecolormap_01 + 4*color_index;
-
-      alpha = (float)smoke3di->fire_alpha/255.0;
-      if(hv[VSOOT]==1&&hv[VCO2]==1){
-        float f1 = 1.0, f2 = 0.0, denom, co2alpha;
-
-        f1 = ABS(sootfactor)*sootval;
-        f2 = ABS(co2factor)*co2val;
-        denom = f1 + f2;
-        if(denom > 0.0){
-          f1 /= denom;
-          f2 /= denom;
-        }
-        co2alpha = (float)smoke3di->co2_alpha/255.0;
-        mergecolor[0] = f2*global_co2color[0]/255.0 + f1*color[0];
-        mergecolor[1] = f2*global_co2color[1]/255.0 + f1*color[1];
-        mergecolor[2] = f2*global_co2color[2]/255.0 + f1*color[2];
-        alpha = f2*co2alpha + f1*alpha;
-        color = mergecolor;
-      }
-      use_smoke=0;
-      glColor4f(color[0],color[1],color[2],alpha);
-      glVertex3fv(v);
-    }
-  }
-  if(hv[VSOOT]==1&&use_smoke==1){
-    glColor4f(0.0,0.0,0.0,sootval);
-    glVertex3fv(v);
-  }
-}
 
 #endif
 
