@@ -2947,7 +2947,7 @@ void AllocateSmokeMemory(meshdata *meshi, int nverts, int ntris){
     FREEMEMORY(meshi->smoke_verts);
     FREEMEMORY(meshi->smoke_vals);
     NewMemory((void **)&meshi->smoke_verts, 3*nverts*sizeof(float));
-    NewMemory((void **)&meshi->smoke_vals, nverts*sizeof(float));
+    NewMemory((void **)&meshi->smoke_vals,  3*nverts*sizeof(float));
     meshi->max_verts = nverts;
   }
   if(ntris>meshi->max_tris){
@@ -3169,7 +3169,7 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
       if(plane_single == 1)break;
     }
   }
-  if(smoke_outline_type==SMOKE_TRIANGULATION){
+  if(usegpu==0&&smoke_outline_type==SMOKE_TRIANGULATION){
     for(i = 0; i<nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
       meshdata *meshi;
