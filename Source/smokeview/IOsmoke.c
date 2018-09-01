@@ -1149,7 +1149,7 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
     }
     val_fraction = smokeval/255.0;
     val_fraction = CLAMP(val_fraction, 0.0, 1.0);
-    ratio = smoke3d_delta_perp/smoke3d_delta;
+    ratio = smoke3d_delta_perp/smoke3d_delta_par;
     if(ratio>=1.1)val_fraction = 1.0-pow(1-val_fraction, ratio);
     vals[0] = val_fraction;
     have_vals[0] = 1;

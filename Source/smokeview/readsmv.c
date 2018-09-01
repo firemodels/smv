@@ -9979,6 +9979,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i", &show_smokesensors, &test_smokesensors);
       continue;
     }
+    if(Match(buffer, "SMOKETYPE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %f %f", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple);
+      continue;
+    }
 #ifdef pp_GPU
     if(gpuactive == 1 && Match(buffer, "USEGPU") == 1){
       fgets(buffer, 255, stream);
@@ -13515,6 +13520,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", slicedup_option, vectorslicedup_option, boundaryslicedup_option);
   fprintf(fileout, "SMOKESENSORS\n");
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
+  fprintf(fileout, "SMOKETYPE\n");
+  fprintf(fileout, " %i %i %f %f\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple);
 #ifdef pp_LANG
   fprintf(fileout, "STARTUPLANG\n");
   fprintf(fileout, " %s\n", startup_lang_code);

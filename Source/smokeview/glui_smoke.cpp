@@ -160,7 +160,7 @@ GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 #ifdef pp_GPUSMOKE
 GLUI_Spinner *SPINNER_plane_distance=NULL;
-GLUI_Spinner *SPINNER_smoke3d_multiple=NULL;
+GLUI_Spinner *SPINNER_smoke3d_delta_multiple=NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
@@ -697,11 +697,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
 
     smoke3d_delta_par = smoke3d_delta_par_min;
-    smoke3d_delta_perp = smoke3d_delta_par;
-    smoke3d_delta = smoke3d_delta_par;
+    smoke3d_delta_perp = smoke3d_delta_multiple;
 
     SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA, Smoke3dCB);
-    SPINNER_smoke3d_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_multiple, SMOKE_MULTIPLE, Smoke3dCB);
+    SPINNER_smoke3d_delta_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_delta_multiple, SMOKE_MULTIPLE, Smoke3dCB);
 
     ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostics"),false);
     PANEL_smoke_outline_type = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_diag, _("outline type"));
@@ -937,17 +936,18 @@ extern "C" void Smoke3dCB(int var){
     glutPostRedisplay();
     break;
   case SMOKE_MULTIPLE:
-    if(smoke3d_multiple<1.0){
-      smoke3d_multiple=1.0;
-      SPINNER_smoke3d_multiple->set_float_val(smoke3d_multiple);
+    if(smoke3d_delta_multiple<1.0){
+      smoke3d_delta_multiple = 1.0;
+      SPINNER_smoke3d_delta_multiple->set_float_val(smoke3d_delta_multiple);
     }
-    smoke3d_delta_perp = smoke3d_delta*smoke3d_multiple;
+    smoke3d_delta_perp = smoke3d_delta_par*smoke3d_delta_multiple;
     break;
   case SMOKE_DELTA:
     if(smoke3d_delta_par <= smoke3d_delta_par_min){
       smoke3d_delta_par = smoke3d_delta_par_min;
       SPINNER_smoke3d_delta_par->set_float_val(smoke3d_delta_par);
     }
+    smoke3d_delta_perp = smoke3d_delta_par*smoke3d_delta_multiple;
     break;
 #endif
   case SMOKE_BLACK:
