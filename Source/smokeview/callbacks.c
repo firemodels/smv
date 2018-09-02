@@ -1782,10 +1782,7 @@ void Keyboard(unsigned char key, int flag){
     case 'l':
       if(nsmoke3dinfo>0){
         smokecullflag=1-smokecullflag;
-        if(smokecullflag==0){
-          smokedrawtest=1-smokedrawtest;
-        }
-        PRINTF("smokecullflag=%i\n smokedrawtest=%i\n",smokecullflag,smokedrawtest);
+        PRINTF("smokecullflag=%i\n",smokecullflag);
         UpdateSmoke3dFlags();
         return;
       }

@@ -1766,7 +1766,6 @@ void InitVars(void){
   auto_user_tick_placement=1;
 
   smoke_extinct=7.600,smoke_dens=.50,smoke_pathlength=1.0;
-  smoketest=0,show_smoketest=0;
   showall_textures=0;
 
   do_threshold=0;
@@ -1838,15 +1837,12 @@ void InitVars(void){
   showfiles=0;
 
   smokecullflag=1;
-  smokedrawtest=0,smokedrawtest2=0;
   visMAINmenus=0;
   smoke3d_thick=0;
 #ifdef pp_GPU
   smoke3d_rthick=1.0;
   usegpu=0;
 #endif
-  smokedrawtest_nummin=1;
-  smokedrawtest_nummax=1;
   ijkbarmax=5;
   blockage_as_input=0;
   blockage_snapped=1;

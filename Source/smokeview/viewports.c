@@ -1317,14 +1317,6 @@ void GetSmokeDir(float *mm){
     meshj->dyz /= meshj->dx;
     meshj->dx = 1.0;
 
-    if(smokedrawtest2 == 1){
-      meshj->norm[0] = 1.0;
-      meshj->norm[1] = 0.0;
-      meshj->norm[2] = 0.0;
-      meshj->smokedir = 1;
-      continue;
-    }
-
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;
       ii = ABS(i);

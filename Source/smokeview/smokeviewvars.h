@@ -1443,7 +1443,6 @@ SVEXTERN int SVDECL(updategetobstlabels,1);
 
 SVEXTERN float smoke_extinct,smoke_dens,smoke_pathlength;
 SVEXTERN int smoke_alpha;
-SVEXTERN int smoketest,show_smoketest;
 SVEXTERN int showall_textures;
 SVEXTERN int SVDECL(enable_texture_lighting,0);
 
@@ -1576,14 +1575,11 @@ SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(firecolormap_type, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int SVDECL(firecolormap_type_save, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int smokecullflag;
-SVEXTERN int smokedrawtest,smokedrawtest2;
 SVEXTERN int visMAINmenus;
 SVEXTERN int smoke3d_thick;
 #ifdef pp_GPU
 SVEXTERN float smoke3d_rthick;
 #endif
-SVEXTERN int smokedrawtest_nummin;
-SVEXTERN int smokedrawtest_nummax;
 SVEXTERN int ijkbarmax;
 SVEXTERN int blockage_as_input, blockage_snapped;
 SVEXTERN int show_cad_and_grid;

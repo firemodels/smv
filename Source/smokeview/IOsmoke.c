@@ -155,7 +155,6 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
-if(show_smoketest==0){\
   value[0]=alphaf_ptr[n11]; \
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
@@ -192,21 +191,11 @@ if(show_smoketest==0){\
     colorptr[3]=alphabyte;                                   \
     glColor4ubv(colorptr);                                \
     glVertex3f(XX,YY,ZZ);                                \
-  }\
-}\
-else{\
-  for(node=0;node<6;node++){                             \
-    int mm;\
-    mm = xyzindex1[node];                                 \
-    glColor4ub(0,0,0,(unsigned char)smoke_alpha);\
-    glVertex3f(XX,YY,ZZ);                                \
-  }\
-}
+  }
 
 // -------------------------- DRAWVERTEXTERRAIN ----------------------------------
 
 #define DRAWVERTEXTERRAIN(XX,YY,ZZ)        \
-if(show_smoketest==0){\
   value[0]=alphaf_ptr[n11]; \
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
@@ -247,20 +236,7 @@ if(show_smoketest==0){\
     colorptr[3]=alphabyte;                                   \
     glColor4ubv(colorptr);                                \
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
-  }\
-}\
-else{\
-  z_offset[XXX]=znode_offset[m11];\
-  z_offset[YYY]=znode_offset[m12];\
-  z_offset[ZZZ]=znode_offset[m22];\
-  z_offset[3]=znode_offset[m21];\
-  for(node=0;node<6;node++){                             \
-    int mm;\
-    mm = xyzindex1[node];                                 \
-    glColor4ub(0,0,0,(unsigned char)smoke_alpha);\
-    glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
-  }\
-}
+  }
 
 // -------------------------- DRAWVERTEXGPU ----------------------------------
 
@@ -3591,20 +3567,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>is2)slice_end = is2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<is1)slice_beg = is1;
-      if(show_smoketest==1){
-        slice_end = is2-1;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = is1;
-      slice_end = is2;
-    }
+    slice_beg = is1;
+    slice_end = is2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       i = iii;
       if(ssmokedir<0)i = is1+is2-iii-1;
@@ -3761,20 +3725,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>js2)slice_end = js2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<js1)slice_beg = js1;
-      if(show_smoketest==1){
-        slice_end = js2-1;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = js1;
-      slice_end = js2;
-    }
+    slice_beg = js1;
+    slice_end = js2;
     for(jjj = slice_beg;jjj<slice_end;jjj += skip_local){
       j = jjj;
       if(ssmokedir<0)j = js1+js2-jjj-1;
@@ -3923,20 +3875,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>ks2)slice_end = ks2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<ks1)slice_beg = ks1;
-      if(show_smoketest==1){
-        slice_end = ks2-1;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = ks1;
-      slice_end = ks2;
-    }
+    slice_beg = ks1;
+    slice_end = ks2;
     for(kkk = slice_beg;kkk<slice_end;kkk += skip_local){
       k = kkk;
       if(ssmokedir<0)k = ks1+ks2-kkk-1;
@@ -4105,20 +4045,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>nx+ny-2)slice_end = nx+ny-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = nx+ny-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = nx+ny-2;
-    }
+    slice_beg = 1;
+    slice_end = nx+ny-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       ipj = iii;
       if(ssmokedir<0)ipj = nx+ny-2-iii;
@@ -4305,20 +4233,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     glBegin(GL_TRIANGLES);
 
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>nx+ny-2)slice_end = nx+ny-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = nx+ny-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = nx+ny-2;
-    }
+    slice_beg = 1;
+    slice_end = nx+ny-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       jmi = iii;
       if(ssmokedir<0)jmi = nx+ny-2-iii;
@@ -4509,20 +4425,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>ny+nz-2)slice_end = ny+nz-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = ny+nz-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = ny+nz-2;
-    }
+    slice_beg = 1;
+    slice_end = ny+nz-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       jpk = iii;
       if(ssmokedir<0)jpk = ny+nz-2-iii;
@@ -4707,20 +4611,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     glBegin(GL_TRIANGLES);
 
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>ny+nz-2)slice_end = ny+nz-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = ny+nz-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = ny+nz-2;
-    }
+    slice_beg = 1;
+    slice_end = ny+nz-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       kmj = iii;
       if(ssmokedir<0)kmi = ny+nz-2-iii;
@@ -4912,20 +4804,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
     glBegin(GL_TRIANGLES);
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>nx+nz-2)slice_end = nx+nz-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = nx+nz-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = nx+nz-2;
-    }
+    slice_beg = 1;
+    slice_end = nx+nz-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       ipk = iii;
       if(ssmokedir<0)ipk = nx+nz-2-iii;
@@ -5110,20 +4990,8 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     glBegin(GL_TRIANGLES);
 
-    if(smokedrawtest==1||show_smoketest==1){
-      slice_end = smokedrawtest_nummax;
-      if(slice_end>nx+nz-2)slice_end = nx+nz-2;
-      slice_beg = smokedrawtest_nummin;
-      if(slice_beg<1)slice_beg = 1;
-      if(show_smoketest==1){
-        slice_end = nx+nz-2;
-        slice_beg = slice_end-1;
-      }
-    }
-    else{
-      slice_beg = 1;
-      slice_end = nx+nz-2;
-    }
+    slice_beg = 1;
+    slice_end = nx+nz-2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
       kmi = iii;
       if(ssmokedir<0)kmi = nx+nz-2-iii;
