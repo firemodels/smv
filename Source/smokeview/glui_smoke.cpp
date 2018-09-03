@@ -117,6 +117,7 @@ GLUI_Spinner *SPINNER_mass_extinct=NULL;
 GLUI_Spinner *SPINNER_cvis=NULL;
 GLUI_Spinner *SPINNER_smoke3d_skip = NULL;
 #ifdef pp_GPUSMOKE
+GLUI_Spinner *SPINNER_smokebox_buffer=NULL;
 GLUI_Spinner *SPINNER_smoke3d_delta_par = NULL;
 #endif
 #ifdef pp_GPU
@@ -657,6 +658,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke timer"), &smoke_timer);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("use smoke box"), &use_smokebox);
+    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox bufferr"), GLUI_SPINNER_INT, &smokebox_buffer);
+    SPINNER_smokebox_buffer->set_int_limits(0,5);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
 

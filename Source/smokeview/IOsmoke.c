@@ -2766,7 +2766,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       if(p11->in_poly==POLY_OUTSIDE){
         int ii, doit;
 
-   // examine 8 points surrounging p11, if any are inside the polygon move p11 onto the polygon
+   // examine 8 points surrounding p11, if any are inside the polygon move p11 onto the polygon
 
         doit = 0;
         for(ii=i-1;ii<i+2;ii++){
@@ -3015,13 +3015,24 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
 
   distmin = -1.0;
   distmax = -1.0;
-  for(i = 0; i<nmeshes; i++){
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
     meshdata *meshi;
-    float *verts, *dist;
+    float xx[2], yy[2], zz[2];
     float *boxmin, *boxmax;
+    int jj;
+    float *xyz_orig;
+    float *verts, *dist;
     int j;
 
-    meshi = meshinfo + i;
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded==0||smoke3di->display==0)continue;
+    if(smoke3di->primary_file==0)continue;
+    if(IsSmokeComponentPresent(smoke3di)==0)continue;
+
+    meshi = meshinfo + smoke3di->blocknumber;
+
+
     meshi->nsmokeplaneinfo = 0;
     if(smoke_mesh_aligned == 1){
       norm_align[0] = -meshi->norm[0];
@@ -3029,8 +3040,14 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
       norm_align[2] = -meshi->norm[2];
       norm = norm_align;
     }
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
+    if(use_smokebox==1){
+      boxmin = smoke3di->smoke_boxmin + 3*smoke3di->ismoke3d_time;
+      boxmax = smoke3di->smoke_boxmax + 3*smoke3di->ismoke3d_time;
+    }
+    else{
+      boxmin = meshi->boxmin;
+      boxmax = meshi->boxmax;
+    }
     verts = meshi->verts;
     dist = meshi->vert_dists;
     xx[0] = boxmin[0];
@@ -3127,22 +3144,35 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
       NewMemory((void **)&meshi->smokeplaneinfo, meshi->nsmokeplaneinfo * sizeof(meshplanedata));
     }
   }
-  for(i = 0; i<nmeshes; i++){
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
     meshdata *meshi;
     float xx[2], yy[2], zz[2];
     float *boxmin, *boxmax;
     int jj;
     float *xyz_orig;
 
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded==0||smoke3di->display==0)continue;
+    if(smoke3di->primary_file==0)continue;
+    if(IsSmokeComponentPresent(smoke3di)==0)continue;
+
+    meshi = meshinfo + smoke3di->blocknumber;
+    
     if(smoke_exact_dist==1){
       xyz_orig = xyz0;
     }
     else{
       xyz_orig = NULL;
     }
-    meshi = meshinfo + i;
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
+    if(use_smokebox==1){
+      boxmin = smoke3di->smoke_boxmin + 3*smoke3di->ismoke3d_time;
+      boxmax = smoke3di->smoke_boxmax + 3*smoke3di->ismoke3d_time;
+    }
+    else{
+      boxmin = meshi->boxmin;
+      boxmax = meshi->boxmax;
+    }
 
     xx[0] = boxmin[0];
     yy[0] = boxmin[1];
@@ -5559,6 +5589,8 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
   FREEMEMORY(smoke3di->nchars_compressed_smoke_full);
   FREEMEMORY(smoke3di->nchars_compressed_smoke);
   FREEMEMORY(smoke3di->frame_all_zeros);
+  FREEMEMORY(smoke3di->smoke_boxmin);
+  FREEMEMORY(smoke3di->smoke_boxmax);
   FREEMEMORY(smoke3di->smoke_comp_all);
   FREEMEMORY(smoke3di->smokeframe_comp_list);
   FREEMEMORY(smoke3di->smokeview_tmp);
@@ -5854,6 +5886,8 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(
      NewResizeMemory(smoke3di->smokeframe_comp_list,smoke3di->ntimes_full*sizeof(unsigned char *))==0||
      NewResizeMemory(smoke3di->frame_all_zeros,     smoke3di->ntimes_full*sizeof(unsigned char))==0||
+     NewResizeMemory(smoke3di->smoke_boxmin,        3*smoke3di->ntimes_full*sizeof(float))==0||
+     NewResizeMemory(smoke3di->smoke_boxmax,        3*smoke3di->ntimes_full*sizeof(float))==0||
      NewResizeMemory(smoke3di->smokeframe_in,       smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(smoke3di->smokeview_tmp,       smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
      NewResizeMemory(smoke3di->smokeframe_out,      smoke3di->nchars_uncompressed*sizeof(unsigned char))==0||
@@ -6088,17 +6122,83 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     ASSERT(FFALSE);
     break;
   }
-  if(smoke3di->frame_all_zeros[iframe_local]== SMOKE3D_ZEROS_UNKNOWN){
+  if(smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
     int i;
     unsigned char *smokeframe_in;
 
     smokeframe_in = smoke3di->smokeframe_in;
-    smoke3di->frame_all_zeros[iframe_local]= SMOKE3D_ZEROS_ALL;
+    smoke3di->frame_all_zeros[iframe_local] = SMOKE3D_ZEROS_ALL;
+
     for(i=0;i<smoke3di->nchars_uncompressed;i++){
       if(smokeframe_in[i]!=0){
         smoke3di->frame_all_zeros[iframe_local]= SMOKE3D_ZEROS_SOME;
         break;
       }
+    }
+
+    // construct a bounding box containing smoke
+    
+    if(smoke3di->frame_all_zeros[iframe_local] != SMOKE3D_ZEROS_ALL){
+      meshdata *smokemesh;
+      float *smoke_boxmin, *smoke_boxmax;
+      float *xplt, *yplt, *zplt;
+      int ibar, jbar, kbar;
+      int nx, ny, nz;
+      int k;
+      int imin=-1, imax=-1, jmin=-1, jmax=-1, kmin=-1, kmax=-1;
+      unsigned char *smokeptr;
+
+      smokemesh = meshinfo+smoke3di->blocknumber;
+      xplt = smokemesh->xplt_orig;
+      yplt = smokemesh->yplt_orig;
+      zplt = smokemesh->zplt_orig;
+      
+      ibar = smokemesh->ibar;
+      jbar = smokemesh->jbar;
+      kbar = smokemesh->kbar;
+
+      nx = ibar+1;
+      ny = jbar+1;
+      nz = kbar+1;
+      
+      smoke_boxmin = smoke3di->smoke_boxmin+3*iframe_local;
+      smoke_boxmax = smoke3di->smoke_boxmax+3*iframe_local;
+
+      smokeptr = smokeframe_in;
+      for(k=0;k<nz;k++){
+        int j;
+
+        for(j=0;j<ny;j++){
+          int i;
+
+          for(i=0;i<nx;i++){
+            int ijk;
+
+            //ijk = i+nx*(j+k*ny);
+            // if(smokeframe_in[ijk]!=0){
+            if(*smokeptr++!=0){
+              if(imin==-1){imin = i;}else{imin = MIN(i,imin);}
+              if(imax==-1){imax = i;}else{imax = MAX(i,imax);}
+              if(jmin==-1){jmin = j;}else{jmin = MIN(j,jmin);}
+              if(jmax==-1){jmax = j;}else{jmax = MAX(j,jmax);}
+              if(kmin==-1){kmin = k;}else{kmin = MIN(k,kmin);}
+              if(kmax==-1){kmax = k;}else{kmax = MAX(k,kmax);}
+            }
+          }
+        }
+      }
+      imin = MAX(imin-smokebox_buffer, 0);
+      jmin = MAX(jmin-smokebox_buffer, 0);
+      kmin = MAX(kmin-smokebox_buffer, 0);
+      imax = MIN(imax+smokebox_buffer, ibar);
+      jmax = MIN(jmax+smokebox_buffer, jbar);
+      kmax = MIN(kmax+smokebox_buffer, kbar);
+      smoke_boxmin[0] = xplt[imin];
+      smoke_boxmin[1] = yplt[jmin];
+      smoke_boxmin[2] = zplt[kmin];
+      smoke_boxmax[0] = xplt[imax];
+      smoke_boxmax[1] = yplt[jmax];
+      smoke_boxmax[2] = zplt[kmax];
     }
   }
   ASSERT(countout==smoke3di->nchars_uncompressed);

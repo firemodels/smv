@@ -5638,7 +5638,8 @@ int ReadSMV(char *file, char *file2){
         smoke3di->nchars_compressed_smoke_full=NULL;
         smoke3di->maxval = -1.0;
         smoke3di->frame_all_zeros=NULL;
-
+        smoke3di->smoke_boxmin=NULL;
+        smoke3di->smoke_boxmax=NULL;
         smoke3di->display=0;
         smoke3di->loaded=0;
         smoke3di->finalize = 0;
