@@ -2718,15 +2718,15 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
     vertpi->norm2[1] = -dx;
   }
 
-  nrows = MAX(2,maxdisty / del+0.5);
-  ncols = MAX(2,maxdistx / del+0.5);
+  nrows = MAX(1,maxdisty / del+0.5)+1;
+  ncols = MAX(1,maxdistx / del+0.5)+1;
 
   if(flag==1){
     int ncells, nnodes;
 
     FREEMEMORY(vertpinfo);
-    ncells = nrows*ncols;
-    nnodes = (nrows+1)*(ncols+1);
+    ncells = (nrows-1)*(ncols-1);
+    nnodes = nrows*ncols;
     *ntris_out = 2*ncells;
     *nverts_out = nnodes;
     return;
@@ -2843,7 +2843,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       vertpdata *vertpij;
 
       vertpij = vert2pinfo+i*ncols+j;
-      vertpij->index = 0;
+      vertpij->index = -1;
       if(vertpij->in_poly!=POLY_OUTSIDE&&vertpij->in_tri==1){
         vertpij->index = nverts++;
       }
@@ -2912,6 +2912,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
 
       if(npoints==4){
 
+        ASSERT(i11>=0&&i12>=0&&i21>=0&&i22>=0);
         tris_out[3*ntris+0] = i11;
         tris_out[3*ntris+1] = i12;
         tris_out[3*ntris+2] = i22;
@@ -2924,21 +2925,25 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       }
       else{
         if(vert11->in_poly==POLY_OUTSIDE){
+          ASSERT(i12>=0&&i21>=0&&i22>=0);
           tris_out[3*ntris+0] = i12;
           tris_out[3*ntris+1] = i22;
           tris_out[3*ntris+2] = i21;
         }
         else if(vert12->in_poly==POLY_OUTSIDE){
+          ASSERT(i11>=0&&i21>=0&&i22>=0);
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i22;
           tris_out[3*ntris+2] = i21;
         }
         else if(vert21->in_poly==POLY_OUTSIDE){
+          ASSERT(i11>=0&&i12>=0&&i22>=0);
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i12;
           tris_out[3*ntris+2] = i22;
         }
         else if(vert22->in_poly==POLY_OUTSIDE){
+          ASSERT(i11>=0&&i12>=0&&i21>=0);
           tris_out[3*ntris+0] = i11;
           tris_out[3*ntris+1] = i12;
           tris_out[3*ntris+2] = i21;
