@@ -2993,7 +2993,7 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
   int i;
   float *xyz0, *norm;
   float d, distmin, distmax;
-  float xx[2], yy[2], zz[2], norm_align[3];
+  float norm_align[3];
 
   /* stuff min and max grid data into a more convenient form
   assuming the following grid numbering scheme
@@ -3025,8 +3025,6 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
     meshdata *meshi;
     float xx[2], yy[2], zz[2];
     float *boxmin, *boxmax;
-    int jj;
-    float *xyz_orig;
     float *verts, *dist;
     int j;
 
@@ -6177,8 +6175,6 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
           int i;
 
           for(i=0;i<nx;i++){
-            int ijk;
-
             //ijk = i+nx*(j+k*ny);
             // if(smokeframe_in[ijk]!=0){
             if(*smokeptr++!=0){

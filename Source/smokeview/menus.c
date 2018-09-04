@@ -4298,7 +4298,7 @@ void DefineAllFEDs(void){
 FILE_SIZE LoadSlicei(int set_slicecolor, int value){
   slicedata *slicei;
   int errorcode;
-  FILE_SIZE return_filesize;
+  FILE_SIZE return_filesize=0;
 
   slicei = sliceinfo + value;
   slicei->loading=1;
