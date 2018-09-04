@@ -1120,9 +1120,9 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
     else{
       INTERP_SMOKE3D(smokeval);
     }
-    val_fraction = smokeval/255.0;
+    val_fraction = smokeval/254.0;
     val_fraction = CLAMP(val_fraction, 0.0, 1.0);
-    ratio = smoke3d_delta_perp/smoke3d_delta_par;
+    ratio = smoke3d_delta_perp/smoke3d_delta_par_min;
     if(ratio>=1.1)val_fraction = 1.0-pow(1-val_fraction, ratio);
     vals[0] = val_fraction;
     have_vals[0] = 1;
@@ -1199,30 +1199,32 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
   }
   glEnd();
 
-  glLineWidth(2.0*plane_outline_width+2.0);
-  glBegin(GL_LINES);
-  glColor3f(0.0,0.0,1.0);
-  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
-    meshplanedata *spi;
-    int j;
+  if(smoke_show_polygon==1){
+    glLineWidth(2.0*plane_outline_width+2.0);
+    glBegin(GL_LINES);
+    glColor3f(0.0, 0.0, 1.0);
+    for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+      meshplanedata *spi;
+      int j;
 
-    spi = meshi->smokeplaneinfo+i;
-    for(j = 0; j<spi->npolys; j++){
-      float *v1, *v2;
-      int iv1, iv2;
-      int jp1;
+      spi = meshi->smokeplaneinfo+i;
+      for(j = 0; j<spi->npolys; j++){
+        float *v1, *v2;
+        int iv1, iv2;
+        int jp1;
 
-      iv1 = spi->polys[j];
-      jp1 = j+1;
-      if(j==spi->npolys-1)jp1 = 0;
-      iv2 = spi->polys[jp1];
-      v1 = spi->verts+3*iv1;
-      v2 = spi->verts+3*iv2;
-      glVertex3fv(v1);
-      glVertex3fv(v2);
+        iv1 = spi->polys[j];
+        jp1 = j+1;
+        if(j==spi->npolys-1)jp1 = 0;
+        iv2 = spi->polys[jp1];
+        v1 = spi->verts+3*iv1;
+        v2 = spi->verts+3*iv2;
+        glVertex3fv(v1);
+        glVertex3fv(v2);
+      }
     }
+    glEnd();
   }
-  glEnd();
   glPopMatrix();
   SNIFF_ERRORS("after smoke DrawSmoke3DOuline2");
 }

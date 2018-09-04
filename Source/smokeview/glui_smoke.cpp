@@ -578,7 +578,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     PANEL_smokealg = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Visualization type"));
     RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("new"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("test"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
 #endif
 
@@ -621,7 +621,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   }
 
 #ifdef pp_GPUSMOKE
-  ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (new)"), false);
+  ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false);
   PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
 
     smoke3d_delta_par_min = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
@@ -668,6 +668,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("solid"), &plane_solid);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("polygon"), &smoke_show_polygon);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("labels"), &plane_labels);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
 #endif
