@@ -5801,7 +5801,9 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
           break;
         }
       }
+#ifdef pp_GPUSMOKE
       FreeSmokeMemory(meshi);
+#endif
     }
     if(meshi->iblank_smoke3d != NULL){
       int free_iblank_smoke3d;
@@ -6138,7 +6140,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
         break;
       }
     }
-
+#ifdef pp_GPUSMOKE
     // construct a bounding box containing smoke
     
     if(smoke3di->frame_all_zeros[iframe_local] != SMOKE3D_ZEROS_ALL){
@@ -6201,6 +6203,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
       smoke_boxmax[1] = yplt[jmax];
       smoke_boxmax[2] = zplt[kmax];
     }
+#endif
   }
   ASSERT(countout==smoke3di->nchars_uncompressed);
 }
