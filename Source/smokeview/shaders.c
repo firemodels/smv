@@ -225,7 +225,7 @@ int SetNewSmokeShaders(void){
     "  if(have_fire==1){"
     "    fire_val = texture3D(fire_texture,position).x;"
     "    if(fire_val>global_hrrpuv_cutoff){"
-    "      alpha_factor = (fire_val-global_hrrpuv_cutoff)/(hrrpuv_max_smv-global_hrrpuv_cutoff);"
+    "      alpha_factor = clamp((fire_val-global_hrrpuv_cutoff)/50.0,0.0,1.0);"
     "      color_index = fire_val/hrrpuv_max_smv;"
     "      color = texture1D(colormap,color_index).rgb;"
     "      alpha = fire_alpha*alpha_factor;"

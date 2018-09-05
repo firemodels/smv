@@ -349,6 +349,7 @@ void InitMesh(meshdata *meshi){
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
 #ifdef pp_GPUSMOKE
+  meshi->update_smokebox = 0;
   meshi->smoke_verts  = NULL;
   meshi->smoke_vals   = NULL;
   meshi->smoke_tris   = NULL;

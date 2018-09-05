@@ -71,6 +71,7 @@ extern GLUI *glui_bounds;
 #define SMOKE_DELTA_PAR 76
 #define SMOKE_NEW 77
 #define SMOKE_DELTA_MULTIPLE 78
+#define SMOKEBOX_BUFFER 79
 
 // two defines below are also defined elsewhere
 
@@ -660,7 +661,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("performance info"), &smoke_timer);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke outline"), &smoke_outline);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke box"), &use_smokebox);
-    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox buffer"), GLUI_SPINNER_INT, &smokebox_buffer);
+    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox buffer"), GLUI_SPINNER_INT, &smokebox_buffer, SMOKEBOX_BUFFER, Smoke3dCB);
     SPINNER_smokebox_buffer->set_int_limits(0,5);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
@@ -842,6 +843,14 @@ extern "C" void Smoke3dCB(int var){
   float temp_min, temp_max;
   
 #ifdef pp_GPUSMOKE
+  case SMOKEBOX_BUFFER:
+    for(i = 0;i<nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo+i;
+      meshi->update_smokebox = 1;
+    }
+    break;
   case SMOKE_NEW:
     if(use_newsmoke==SMOKE3D_ORIG){
       for(i = 0;i<nmeshes;i++){
