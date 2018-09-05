@@ -68,9 +68,9 @@ extern GLUI *glui_bounds;
 #define UPDATE_CO2_ALPHA 73
 #define SMOKE_SKIP 74
 #define SMOKE_BLACK 75
-#define SMOKE_DELTA 76
+#define SMOKE_DELTA_PAR 76
 #define SMOKE_NEW 77
-#define SMOKE_MULTIPLE 78
+#define SMOKE_DELTA_MULTIPLE 78
 
 // two defines below are also defined elsewhere
 
@@ -579,7 +579,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("test"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostics"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostic"));
 #endif
 
 
@@ -637,17 +637,17 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     smoke3d_delta_par = smoke3d_delta_par_min;
     smoke3d_delta_perp = smoke3d_delta_multiple*smoke3d_delta_par;
 
-    SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA, Smoke3dCB);
-    SPINNER_smoke3d_delta_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular(multiple)"), GLUI_SPINNER_FLOAT, &smoke3d_delta_multiple, SMOKE_MULTIPLE, Smoke3dCB);
+    SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel (m)"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA_PAR, Smoke3dCB);
+    SPINNER_smoke3d_delta_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular/parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_multiple, SMOKE_DELTA_MULTIPLE, Smoke3dCB);
 
-    PANEL_slice_alignment = glui_3dsmoke->add_panel_to_panel(PANEL_gridres, _("smoke slice alignment"));;
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoketest, _("fast interpolation"), &smoke_fast_interp);
+
+    ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostic"),false);
+    PANEL_slice_alignment = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_diag, _("smoke slice alignment"));;
     RADIO_smokealign = glui_3dsmoke->add_radiogroup_to_panel(PANEL_slice_alignment, &smoke_mesh_aligned);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_smokealign, _("perpendicular to line of sight"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_smokealign, _("mesh aligned"));
 
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoketest, _("fast interpolation"), &smoke_fast_interp);
-
-    ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostics"),false);
     PANEL_smoke_outline_type = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_diag, _("outline type"));
     RADIO_smoke_outline_type = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smoke_outline_type, &smoke_outline_type);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type, _("triangle"));
@@ -657,9 +657,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("disable frustum cull check"), &smoke_frustum);
     CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("single plane"), &plane_single);
     SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke timer"), &smoke_timer);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("use smoke box"), &use_smokebox);
-    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox bufferr"), GLUI_SPINNER_INT, &smokebox_buffer);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("performance info"), &smoke_timer);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke outline"), &smoke_outline);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke box"), &use_smokebox);
+    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox buffer"), GLUI_SPINNER_INT, &smokebox_buffer);
     SPINNER_smokebox_buffer->set_int_limits(0,5);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
     CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
@@ -669,7 +670,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("solid"), &plane_solid);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("polygon"), &smoke_show_polygon);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("labels"), &plane_labels);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("distance labels"), &plane_labels);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
 #endif
 
@@ -842,6 +843,14 @@ extern "C" void Smoke3dCB(int var){
   
 #ifdef pp_GPUSMOKE
   case SMOKE_NEW:
+    if(use_newsmoke==SMOKE3D_ORIG){
+      for(i = 0;i<nmeshes;i++){
+        meshdata *meshi;
+
+        meshi = meshinfo+i;
+        meshi->update_smoke3dcolors=1;
+      }
+    }
     if(use_newsmoke != SMOKE3D_DIAG){
       if(update_smokeplanes!=1){
         update_smokeplanes = 1;
@@ -874,14 +883,14 @@ extern "C" void Smoke3dCB(int var){
     }
     glutPostRedisplay();
     break;
-  case SMOKE_MULTIPLE:
+  case SMOKE_DELTA_MULTIPLE:
     if(smoke3d_delta_multiple<1.0){
       smoke3d_delta_multiple = 1.0;
       SPINNER_smoke3d_delta_multiple->set_float_val(smoke3d_delta_multiple);
     }
     smoke3d_delta_perp = smoke3d_delta_par*smoke3d_delta_multiple;
     break;
-  case SMOKE_DELTA:
+  case SMOKE_DELTA_PAR:
     if(smoke3d_delta_par <= smoke3d_delta_par_min){
       smoke3d_delta_par = smoke3d_delta_par_min;
       SPINNER_smoke3d_delta_par->set_float_val(smoke3d_delta_par);

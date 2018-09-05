@@ -17,7 +17,7 @@
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
 int cull_count=0;
-int smoke_function_count = 0;
+int smoke_function_count;
 
 /* ------------------ UpdateSmoke3dFileParms ------------------------ */
 
@@ -1293,7 +1293,13 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
   TransparentOn();
-  glBegin(GL_TRIANGLES);
+
+  if(smoke_outline==1){
+    glBegin(GL_LINES);
+  }
+  else{
+    glBegin(GL_TRIANGLES);
+  }
   for(i = 0; i<meshi->nsmokeplaneinfo; i++){
     meshplanedata *spi;
     int j;
@@ -1314,10 +1320,21 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
         vals1 = spi->vals2+nsmoketypes*iv1;
         vals2 = spi->vals2+nsmoketypes*iv2;
         vals3 = spi->vals2+nsmoketypes*iv3;
+        // don't draw the triangle if there is smoke and the smoke is all zero
         if(have_vals[0]==0||vals1[0]!=0.0||vals2[0]!=0.0||vals3[0]!=0.0){
-          DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
-          DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
-          DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+          if(smoke_outline==1){
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
+          }
+          else{
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
+          }
         }
       }
       ntriangles += spi->ntris2;
@@ -3229,6 +3246,7 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
       if(plane_single == 1)break;
     }
   }
+  smoke_function_count = 0;
   if(usegpu==0&&smoke_outline_type==SMOKE_TRIANGULATION){
     for(i = 0; i<nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
@@ -3463,7 +3481,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 #ifdef pp_SMOKEDIAG
   START_TIMER(merge_time);
 #endif
-  if(meshi->merge_alpha==NULL||meshi->update_smoke3dcolors==1){
+  if(meshi->smokealpha_ptr==NULL||meshi->merge_alpha==NULL||meshi->update_smoke3dcolors==1){
     meshi->update_smoke3dcolors = 0;
     MergeSmoke3D(smoke3di);
   }
@@ -5157,7 +5175,6 @@ void DrawSmokeFrame(void){
   triangle_count = 0;
 #ifdef pp_GPUSMOKE
   if(smoke_timer == 1){
-    smoke_function_count = 0;
     START_TIMER(smoke_time);
   }
 #endif
@@ -5285,12 +5302,24 @@ void DrawSmokeFrame(void){
     char label1[100],label2[100],label3[100];
     
     STOP_TIMER(smoke_time);
-    if(smoke_time>0.0)rate = (float)triangle_count/smoke_time;
-    printf("ntriangles=%s function calls=%s time=%f triangle rate=%s\n",
-      GetIntLabel(triangle_count,label1), 
-      GetIntLabel(smoke_function_count,label2), 
-      smoke_time,
-      GetFloatLabel(rate,label3));
+    if(smoke_time>0.0){
+      rate = (float)triangle_count/smoke_time;
+    }
+#ifdef pp_GPUSMOKE
+    if(use_newsmoke==SMOKE3D_NEW){
+      printf("triangles=%s verts=%s time=%f triangle rate=%s/s\n",
+        GetIntLabel(triangle_count, label1),
+        GetIntLabel(smoke_function_count, label2),
+        smoke_time,
+        GetFloatLabel(rate, label3));
+    }
+    else{
+      printf("triangles=%s time=%f triangle rate=%s/s\n",
+        GetIntLabel(triangle_count, label1),
+        smoke_time,
+        GetFloatLabel(rate, label3));
+    }
+#endif
   }
 #endif
 
