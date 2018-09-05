@@ -1272,8 +1272,15 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
       glColor4f(color[0], color[1], color[2], alpha);
       glVertex3fv(v);
     }
+    else{
+      if(hv[VSOOT]==0){
+        use_smoke = 0;
+        glColor4f(0.0, 0.0, 0.0, 0.0);
+        glVertex3fv(v);
+      }
+    }
   }
-  if(hv[VSOOT]==1&&use_smoke==1){
+  if(use_smoke==1){
     glColor4f(0.0, 0.0, 0.0, sootval);
     glVertex3fv(v);
   }
@@ -5741,6 +5748,21 @@ void SetSmokeColorFlags(void){
   }
 }
 
+/* ------------------ SmokeWrapup ------------------------ */
+
+#define SMOKE_OPTIONS 19
+void SmokeWrapup(smoke3ddata *smoke3di){
+  if(smoke3di->finalize==1){
+    smoke3di->finalize = 0;
+    UpdateSmoke3dFileParms();
+    UpdateTimes();
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+    smoke_render_option = RENDER_SLICE;
+    Smoke3dCB(SMOKE_OPTIONS);
+    IdleCB();
+  }
+}
+
 /* ------------------ ReadSmoke3D ------------------------ */
 
 FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
@@ -5905,18 +5927,24 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     return 0;
   }
   if(smoke3di->maxval>=0.0){
+    int return_flag = 0;
+
     if(smoke3di->type == HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF(" - skipped (max hrrpuv<%0.f)\n",load_hrrpuv_cutoff);
-      return 0;
+      return_flag=1;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
       PRINTF(" - skipped (max soot opacity<%0.f)\n", load_3dsmoke_cutoff);
-      return 0;
+      return_flag = 1;
     }
+    if(smoke3di->finalize==1){
+      SmokeWrapup(smoke3di);
+    }
+    if(return_flag==1)return 0;
   }
   CheckMemory;
   if(
@@ -6072,11 +6100,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   update_makeiblank_smoke3d=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(smoke3di->finalize == 1){
-    smoke3di->finalize = 0;
-    UpdateSmoke3dFileParms();
-    UpdateTimes();
-    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-    IdleCB();
+    SmokeWrapup(smoke3di);
   }
   STOP_TIMER(total_time);
 
@@ -6141,6 +6165,9 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
   int iframe_local;
   int countin;
   uLongf countout;
+#ifdef pp_GPUSMOKE
+  meshdata *smokemesh;
+#endif
 
   iframe_local = smoke3di->ismoke3d_time;
   countin = smoke3di->nchars_compressed_smoke[iframe_local];
@@ -6158,7 +6185,16 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     ASSERT(FFALSE);
     break;
   }
-  if(smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
+
+#ifdef pp_GPUSMOKE
+  smokemesh = meshinfo+smoke3di->blocknumber;
+#endif
+
+  if(
+#ifdef pp_GPUSMOKE
+    smokemesh->update_smokebox==1||
+#endif
+    smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
     int i;
     unsigned char *smokeframe_in;
 
@@ -6173,9 +6209,8 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     }
 #ifdef pp_GPUSMOKE
     // construct a bounding box containing smoke
-    
-    if(smoke3di->frame_all_zeros[iframe_local] != SMOKE3D_ZEROS_ALL){
-      meshdata *smokemesh;
+
+    if(smokemesh->update_smokebox==1||smoke3di->frame_all_zeros[iframe_local] != SMOKE3D_ZEROS_ALL){
       float *smoke_boxmin, *smoke_boxmax;
       float *xplt, *yplt, *zplt;
       int ibar, jbar, kbar;
@@ -6184,11 +6219,10 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
       int imin=-1, imax=-1, jmin=-1, jmax=-1, kmin=-1, kmax=-1;
       unsigned char *smokeptr;
 
-      smokemesh = meshinfo+smoke3di->blocknumber;
       xplt = smokemesh->xplt_orig;
       yplt = smokemesh->yplt_orig;
       zplt = smokemesh->zplt_orig;
-      
+
       ibar = smokemesh->ibar;
       jbar = smokemesh->jbar;
       kbar = smokemesh->kbar;
@@ -6196,7 +6230,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
       nx = ibar+1;
       ny = jbar+1;
       nz = kbar+1;
-      
+
       smoke_boxmin = smoke3di->smoke_boxmin+3*iframe_local;
       smoke_boxmax = smoke3di->smoke_boxmax+3*iframe_local;
 
@@ -6234,6 +6268,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
       smoke_boxmax[1] = yplt[jmax];
       smoke_boxmax[2] = zplt[kmax];
     }
+    smokemesh->update_smokebox = 0;
 #endif
   }
   ASSERT(countout==smoke3di->nchars_uncompressed);

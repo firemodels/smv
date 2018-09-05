@@ -626,6 +626,7 @@ typedef struct _meshdata {
   float *smoke_verts, *smoke_vals;
   int max_tris, max_verts;
   int *smoke_tris, smoke_ntris, smoke_nverts;
+  int update_smokebox;
 #endif
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
