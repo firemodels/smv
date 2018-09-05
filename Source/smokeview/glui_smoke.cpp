@@ -630,7 +630,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       float delta;
 
       meshi = meshinfo+i;
-      delta = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+      delta = meshi->xplt_orig[1]-meshi->xplt_orig[0];
       smoke3d_delta_par_min = MIN(delta, smoke3d_delta_par_min);
     }
 
