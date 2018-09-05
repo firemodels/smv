@@ -18,11 +18,6 @@
 #ifdef pp_GPU
 #define pp_GPU_CULL_STATE
 #endif
-#ifdef pp_CULL
-#ifndef pp_GPU_CULL_STATE
-#define pp_GPU_CULL_STATE
-#endif
-#endif
 
 /* ------------------ GetGridIndex ------------------------ */
 
@@ -1422,24 +1417,6 @@ void KeyboardUpCB(unsigned char key, int x, int y){
 
 void PrintGPUCullState(void){
   char gpu_label[128];
-#ifdef pp_CULL
-  char cull_label[128];
-
-  if(cullactive==1){
-    if(cullsmoke==1&&usegpu==1){
-      strcpy(cull_label,"Smoke culling in use.");
-    }
-    else if(cullsmoke==1&&usegpu==0){
-      strcpy(cull_label,"Smoke culling not in use (available if GPU activates).");
-    }
-    else{
-      strcpy(cull_label,"Smoke culling not in use.");
-    }
-  }
-  else{
-    strcpy(cull_label,"Smoke culling not available.");
-  }
-#endif
 #ifdef pp_GPU
   if(gpuactive==1){
     if(usegpu==1){
@@ -1453,9 +1430,6 @@ void PrintGPUCullState(void){
     strcpy(gpu_label,"GPU not available.");
   }
   PRINTF("%s ",gpu_label);
-#endif
-#ifdef pp_CULL
-  PRINTF("%s",cull_label);
 #endif
   PRINTF("\n");
 }
@@ -1606,17 +1580,6 @@ void Keyboard(unsigned char key, int flag){
               PRINTF("room %i\n",zone_highlight_room+1);
             }
           }
-#ifdef pp_CULL
-          else{
-            if(nsmoke3dinfo>0&&cullactive==1&&gpuactive==1){
-              cullsmoke=1-cullsmoke;
-              UpdateSmoke3dFlags();
-              InitCull(cullsmoke);
-              PrintGPUCullState();
-            }
-            if(cullactive==0||gpuactive==0)cullsmoke=0;
-          }
-#endif
       }
       break;
     case 'd':
@@ -1819,10 +1782,7 @@ void Keyboard(unsigned char key, int flag){
     case 'l':
       if(nsmoke3dinfo>0){
         smokecullflag=1-smokecullflag;
-        if(smokecullflag==0){
-          smokedrawtest=1-smokedrawtest;
-        }
-        PRINTF("smokecullflag=%i\n smokedrawtest=%i\n",smokecullflag,smokedrawtest);
+        PRINTF("smokecullflag=%i\n",smokecullflag);
         UpdateSmoke3dFlags();
         return;
       }

@@ -20,21 +20,36 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(iso_skip_wrapup, 0);
+SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
+SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 #ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(smoke_outline, 0);
+SVEXTERN int SVDECL(smoke_show_polygon, 1);
+SVEXTERN int SVDECL(smokebox_buffer,0);
+SVEXTERN int SVDECL(use_smokebox, 1);
+SVEXTERN int SVDECL(smoke_getvals, 0);
+SVEXTERN int SVDECL(smoke_exact_dist, 0);
+SVEXTERN int SVDECL(smoke_timer, 0);
+SVEXTERN int SVDECL(plane_normal, 1);
+SVEXTERN int SVDECL(smoke_frustum, 0);
+SVEXTERN int SVDECL(smoke_fast_interp, 0);
 SVEXTERN int SVDECL(plane_labels, 0);
+SVEXTERN int SVDECL(smoke_mesh_aligned, 1);
 SVEXTERN int SVDECL(plane_single, 1);
-SVEXTERN int SVDECL(plane_outline, 1);
+SVEXTERN float SVDECL(plane_outline_width, 2);
 SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
 SVEXTERN int SVDECL(plane_solid, 1);
 SVEXTERN float SVDECL(plane_distance, 0.0);
-SVEXTERN int SVDECL(show_smoke3d_planes, 0);
-SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
-SVEXTERN float SVDECL(smoke3d_delta,0.5);
+SVEXTERN int SVDECL(update_smokeplanes, 0);
+SVEXTERN float SVDECL(smoke3d_delta_multiple, 1.0);
+SVEXTERN float SVDECL(smoke3d_delta_par,0.5);
+SVEXTERN float SVDECL(smoke3d_delta_par_min, 0.5);
+SVEXTERN float SVDECL(smoke3d_delta_perp, 0.5);
 #else
-SVEXTERN int SVDECL(show_smoke3d_planes, 0);
-SVEXTERN int SVDECL(compute_smoke3d_planes, 0);
-SVEXTERN float SVDECL(smoke3d_delta,0.5);
+SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
+SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
 #endif
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1);
@@ -331,6 +346,7 @@ SVEXTERN float SVDECL(patchout_ymin,1.0), SVDECL(patchout_ymax,-1.0);
 SVEXTERN float SVDECL(patchout_zmin,1.0), SVDECL(patchout_zmax,-1.0);
 SVEXTERN int SVDECL(showpatch_both,0);
 SVEXTERN int SVDECL(show_triangle_count,0);
+SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
 SVEXTERN int SVDECL(show_device_orientation,0);
 SVEXTERN float SVDECL(orientation_scale,1.0);
@@ -562,13 +578,6 @@ SVEXTERN int SVDECL(usetexturebar,1);
 SVEXTERN int show_smokelighting;
 SVEXTERN int SVDECL(cullgeom_portsize,16);
 SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);
-#ifdef pp_CULL
-SVEXTERN int cullactive, SVDECL(show_cullports,0), SVDECL(cull_portsize,16);
-SVEXTERN int cullsmoke, ncullplaneinfo;
-SVEXTERN cullplanedata SVDECL(*cullplaneinfo,NULL);
-SVEXTERN cullplanedata SVDECL(**sort_cullplaneinfo,NULL);
-SVEXTERN int have_setpixelcount,update_initcullplane;
-#endif
 SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
 
@@ -588,6 +597,15 @@ SVEXTERN int GPUzone_xyzmaxdiff;
 SVEXTERN int GPUzone_boxmin, GPUzone_boxmax;
 SVEXTERN int GPUzone_zlay;
 SVEXTERN int GPUzone_odl, GPUzone_odu;
+
+#ifdef pp_GPUSMOKE
+SVEXTERN int GPUnewsmoke_boxmin, GPUnewsmoke_boxmax;
+SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_co2texture, GPUnewsmoke_smokecolormap;
+SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
+SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
+SVEXTERN int GPUnewsmoke_have_co2, GPUnewsmoke_co2_color, GPUnewsmoke_co2_alpha;
+SVEXTERN int GPUnewsmoke_sootfactor, GPUnewsmoke_co2texture, GPUnewsmoke_co2factor;
+#endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;
@@ -832,7 +850,6 @@ SVEXTERN int SVDECL(itourknots,-1);
 SVEXTERN int stretch_var_black, stretch_var_white, move_var;
 
 SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
-SVEXTERN int snifferrornumber;
 SVEXTERN int xyz_dir;
 SVEXTERN int which_face;
 SVEXTERN int showfontmenu;
@@ -1022,7 +1039,7 @@ SVEXTERN float min_gridcell_size;
 
 SVEXTERN volfacelistdata SVDECL(*volfacelistinfo,NULL),SVDECL(**volfacelistinfoptrs,NULL);
 SVEXTERN int SVDECL(nvolfacelistinfo,0);
-SVEXTERN int SVDECL(update_makeiblank_smoke3d,0), SVDECL(update_initcull,0);
+SVEXTERN int SVDECL(update_makeiblank_smoke3d,0);
 SVEXTERN int setPDIM;
 SVEXTERN int menustatus;
 SVEXTERN int SVDECL(visTimeZone,1), SVDECL(visTimeParticles,1), SVDECL(visTimeSlice,1), SVDECL(visTimeBoundary,1);
@@ -1430,7 +1447,6 @@ SVEXTERN int SVDECL(updategetobstlabels,1);
 
 SVEXTERN float smoke_extinct,smoke_dens,smoke_pathlength;
 SVEXTERN int smoke_alpha;
-SVEXTERN int smoketest,show_smoketest;
 SVEXTERN int showall_textures;
 SVEXTERN int SVDECL(enable_texture_lighting,0);
 
@@ -1504,6 +1520,7 @@ SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_co
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
 SVEXTERN int SVDECL(slice3d_colormap_id_defined,-1);
+SVEXTERN int SVDECL(slicesmoke_colormap_id_defined, -1);
 SVEXTERN float mscale[3];
 SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
@@ -1562,14 +1579,11 @@ SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(firecolormap_type, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int SVDECL(firecolormap_type_save, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int smokecullflag;
-SVEXTERN int smokedrawtest,smokedrawtest2;
 SVEXTERN int visMAINmenus;
 SVEXTERN int smoke3d_thick;
 #ifdef pp_GPU
 SVEXTERN float smoke3d_rthick;
 #endif
-SVEXTERN int smokedrawtest_nummin;
-SVEXTERN int smokedrawtest_nummax;
 SVEXTERN int ijkbarmax;
 SVEXTERN int blockage_as_input, blockage_snapped;
 SVEXTERN int show_cad_and_grid;

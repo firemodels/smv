@@ -1,8 +1,8 @@
 #ifndef SMOKEVIEWDEFS_H_DEFINED
 #define SMOKEVIEWDEFS_H_DEFINED
 #ifdef _DEBUG
-void _Sniff_Errors(char *whereat);
-#define SNIFF_ERRORS(f) _Sniff_Errors(f)
+void _Sniff_Errors(char *whereat, char *file, int line);
+#define SNIFF_ERRORS(f) _Sniff_Errors(f,__FILE__,__LINE__)
 #else
 #define SNIFF_ERRORS(f)
 #endif
@@ -163,6 +163,10 @@ void _Sniff_Errors(char *whereat);
 #define HRRPUV_2 2
 #define TEMP_2   4
 #define CO2_2    8
+
+#define VSOOT 0
+#define VFIRE 1
+#define VCO2  2
 
 #define NELEV_ZONE 100
 
@@ -683,6 +687,18 @@ void _Sniff_Errors(char *whereat);
 #define SET_SMOKE3D -4
 #define GLUI_SHOWALL_VSLICE GLUI_SHOWALL
 #define GLUI_HIDEALL_VSLICE GLUI_HIDEALL
+
+#define SMOKE3D_ORIG  0
+#define SMOKE3D_NEW   1
+#define SMOKE3D_DIAG  2
+
+#define SMOKE_OUTLINE_TRIANGLE 0
+#define SMOKE_TRIANGULATION    1
+#define SMOKE_OUTLINE_POLYGON  2
+
+#define SMOKE3D_ZEROS_SOME    0
+#define SMOKE3D_ZEROS_ALL     1
+#define SMOKE3D_ZEROS_UNKNOWN 2
 
 #define SHOW_VOLSMOKE -2
 #define HIDE_VOLSMOKE -1

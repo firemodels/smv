@@ -154,13 +154,13 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
 
 /* ------------------ GetIsoBox ------------------------ */
 
-void GetIsoBox(float x[2], float y[2], float z[3], float *vals, float level,
-               float *xyzverts, int *nvert, int *triangles, int *ntriangles){
+void GetIsoBox(float x[2], float y[2], float z[3], float *xyz0, float *vals, float level,
+               float *xyzverts, int *nvert, int *triangles, int *ntriangles, int *polys, int *npolys){
                  int nodeindexes[8]={0,1,2,3,4,5,6,7};
                  float xvert[6], yvert[6], zvert[6];
                  int i;
 
-                 GetIsoHexaHedron(x,y,z,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles);
+                 GetIsoHexaHedron(x,y,z,xyz0,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles,polys,npolys);
                  for(i=0;i<*nvert;i++){
                    xyzverts[3*i]=xvert[i];
                    xyzverts[3*i+1]=yvert[i];
@@ -170,18 +170,13 @@ void GetIsoBox(float x[2], float y[2], float z[3], float *vals, float level,
 
 /* ------------------ GetIsoHexaHedron ------------------------ */
 
-int GetIsoHexaHedron(const float *x,
-               const float *y,
-               const float *z,
-               const float *vals,
-               const float *tvals,
-               const int *nodeindexes,
-               float level,
-               float *xvert,
-               float *yvert,
-               float *zvert,
+int GetIsoHexaHedron(float *x, float *y, float *z, float *xyz0,
+               float *vals_in, float *tvals, int *nodeindexes, float level,
+               float *xvert, float *yvert, float *zvert,
                float *tvert, int *closestnodes, int *nvert,
-               int *triangles, int *ntriangles){
+               int *triangles, int *ntriangles,
+               int *polys, int *npolys
+               ){
        /*
        INPUT
        -----
@@ -213,24 +208,23 @@ int GetIsoHexaHedron(const float *x,
   int izmin[4]={0,1,2,3}, izmax[4]={4,5,6,7};
   int n;
   int edge,*edges=NULL, nedges, *path=NULL, *case2=NULL, npath;
+  int *polypath=NULL, npolypath;
   int v1, v2;
   float val1, val2, denom, factor;
   float xx, yy, zz;
   int outofbounds;
   int prods[]={1,2,4,8,16,32,64,128};
   int thistype;
+  float *vals, vals_dist[8];
+  float xyz[3*8];
 
 int compcase[]={0,0,0,-1,0,0,-1,-1,0,0,0,0,-1,-1,0};
-
 
 int edge2vertex[12][2]={
   {0,1},{1,2},{2,3},{0,3},
   {0,4},{1,5},{2,6},{3,7},
   {4,5},{5,6},{6,7},{4,7}
 };
-
-
-
 
 int cases[256][10]={
 {0,0,0,0,0,0,0,0, 0,  0},{0,1,2,3,4,5,6,7, 1,  1},{1,2,3,0,5,6,7,4, 1,  2},
@@ -339,6 +333,24 @@ int pathcclist[15][13]={
   {12,0,1,5,1,4,5,1,2,4,2,3,4}
 };
 
+int polypathcclist[15][7]={
+  { 0},
+  { 3,0,1,2},
+  { 4,0,1,2,3},
+  { 0},
+  { 0},
+  { 5,0,1,2,3,4},
+  { 0},
+  { 0},
+  { 4,0,1,2,3},
+  {6,0,1,2,3,4,5},
+  {0},
+  {6,0,1,2,3,4,5},
+  {0},
+  {0},
+  {6,0,1,2,3,4,5}
+};
+
 int pathcclist2[15][19]={
   { 0},
   { 0},
@@ -357,7 +369,23 @@ int pathcclist2[15][19]={
   { 0}
 };
 
-
+  int polypathcclist2[15][1] = {
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0}
+  };
 
 int pathccwlist[15][13]={
   { 0},
@@ -377,6 +405,24 @@ int pathccwlist[15][13]={
   {12,0,5,1,1,5,4,1,4,2,2,4,3}
 };
 
+int polypathccwlist[15][7]={
+  { 0},
+  { 3,0,2,1},
+  { 4,0,3,2,1},
+  { 0},
+  { 0},
+  { 5,0,4,3,2,1},
+  { 0},
+  { 0},
+  { 4,0,3,2,1},
+  {6,0,5,4,3,2,1},
+  {0},
+  {5,0,4,3,2,1},
+  {0},
+  {0},
+  {6,0,5,4,3,2,1}
+};
+
 int pathccwlist2[15][19]={
   { 0},
   { 0},
@@ -394,6 +440,24 @@ int pathccwlist2[15][19]={
   { 12,0,2,1,3,5,4,6,8,7,9,11,10},
   { 0}
 };
+
+  int polypathccwlist2[15][1] = {
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0},
+    {0}
+  };
 
 int edgelist[15][13]={
   { 0                             },
@@ -430,6 +494,52 @@ int edgelist2[15][16]={
   { 12,4,11,8,0,5,1,7,3,2,9,10,6},
   { 0}
 };
+
+/* stuff min and max grid data into a more convenient form
+assuming the following grid numbering scheme
+
+     5-------6
+   / |      /|
+ /   |     / |
+4 -------7   |
+|    |   |   |
+Z    1---|---2
+|  Y     |  /
+|/       |/
+0--X-----3
+
+*/
+
+for(n = 0; n<4; n++){
+  xxval[ixmin[n]] = x[0];
+  xxval[ixmax[n]] = x[1];
+  yyval[iymin[n]] = y[0];
+  yyval[iymax[n]] = y[1];
+  zzval[izmin[n]] = z[0];
+  zzval[izmax[n]] = z[1];
+}
+if(xyz0!=NULL){
+  vals = vals_dist; 
+  for(n=0;n<8;n++){
+    float dx, dy, dz;
+    float dist;
+    float *xyzn;
+
+    xyz[3*n+0] = xxval[n];
+    xyz[3*n+1] = yyval[n];
+    xyz[3*n+2] = zzval[n];
+    xyzn = xyz+3*n;
+
+    dx = xyzn[0] - xyz0[0];
+    dy = xyzn[1] - xyz0[1];
+    dz = xyzn[2] - xyz0[2];
+    dist = sqrt(dx*dx+dy*dy+dz*dz);
+    vals[n] = dist;
+  }
+}
+else{
+  vals = vals_in;
+}
 
 /* determine min and max solution values */
 
@@ -476,30 +586,6 @@ int edgelist2[15][16]={
     }
   }
 
-/* stuff min and max grid data into a more convenient form
-  assuming the following grid numbering scheme
-
-       5-------6
-     / |      /|
-   /   |     / |
-  4 -------7   |
-  |    |   |   |
-  Z    1---|---2
-  |  Y     |  /
-  |/       |/
-  0--X-----3
-
-  */
-
-  for(n=0;n<4;n++){
-    xxval[ixmin[n]] = x[0];
-    xxval[ixmax[n]] = x[1];
-    yyval[iymin[n]] = y[0];
-    yyval[iymax[n]] = y[1];
-    zzval[izmin[n]] = z[0];
-    zzval[izmax[n]] = z[1];
-  }
-
   if(casenum<=0||casenum>=255)return 0; /* no iso-surface */
 
   case2 = &(cases[casenum][0]);
@@ -517,21 +603,26 @@ int edgelist2[15][16]={
     edges = &(edgelist[type][1]);
     if(sign>0){
       path = &(pathcclist[type][1]);   /* construct triangles clock wise */
+      polypath = &(polypathcclist[type][1]);
     }
     else{
       path = &(pathccwlist[type][1]); /* construct triangles counter clockwise */
+      polypath = &(polypathccwlist[type][1]);
     }
   }
   else{
     edges = &(edgelist2[type][1]);
     if(sign>0){
       path = &(pathcclist2[type][1]);   /* construct triangles clock wise */
+      polypath = &(polypathcclist2[type][1]);
     }
     else{
       path = &(pathccwlist2[type][1]);  /* construct triangles counter clockwise */
+      polypath = &(polypathccwlist2[type][1]);  /* construct triangles counter clockwise */
     }
   }
   npath = path[-1];
+  npolypath = polypath[-1];
   nedges = edges[-1];
 
 /* calculate where iso-surface level crosses each edge */
@@ -541,10 +632,37 @@ int edgelist2[15][16]={
     edge = edges[n];
     v1 = case2[edge2vertex[edge][0]];
     v2 = case2[edge2vertex[edge][1]];
-    val1 = vals[v1]-level; val2 = vals[v2]-level;
+    val1 = vals[v1]-level;
+    val2 = vals[v2]-level;
     denom = val2 - val1;
     factor = 0.5;
     if(denom!=0.0)factor = -val1/denom;
+    if(xyz0!=NULL){
+      float *xyz1, *xyz2;
+      float vhat0[3], vhat2[3];
+      float A, B, C;
+      float disc;
+      
+      xyz1 = xyz + 3*v1;
+      xyz2 = xyz + 3*v2;
+      VEC3DIFF(vhat0,xyz0,xyz1);
+      VEC3DIFF(vhat2,xyz2,xyz1);
+      A = DOT3(vhat2,vhat2);
+      B = -2.0*DOT3(vhat2,vhat0);
+      C = DOT3(vhat0,vhat0) - level*level;
+      disc = B*B-4.0*A*C;
+      if(A!=0.0&&disc>=0.0){
+        float factor2a, factor2b;
+
+        disc = sqrt(disc);
+
+        factor2a = (-B+disc)/(2.0*A);
+        factor2b = (-B-disc)/(2.0*A);
+        if(factor2a>=0.0&&factor2a<=1.0)factor = factor2a;
+        if(factor2b>=0.0&&factor2b<=1.0)factor = factor2b;
+      }
+
+    }
     if(closestnodes!=NULL){
       if(factor<0.5){
         closestnodes[n]=nodeindexes[v1];
@@ -589,6 +707,12 @@ int edgelist2[15][16]={
   *ntriangles = npath;
   for(n=0;n<npath;n++){
     triangles[n] = path[n];
+  }
+  if(polys != NULL&&npolys != NULL){
+    *npolys = npolypath;
+    for(n = 0;n < npolypath;n++){
+      polys[n] = polypath[n];
+    }
   }
   return *ntriangles;
 }
@@ -773,8 +897,8 @@ int GetIsoSurface(isosurface *surface,
             tvals[7]=tdata[ip1jkp1];
           }
 
-          GetIsoHexaHedron(xx, yy, zz, vals, tvalsptr, nodeindexes, level,
-                    xvert, yvert, zvert, tvertptr, closestnodes, &nvert, triangles, &ntriangles);
+          GetIsoHexaHedron(xx, yy, zz, NULL, vals, tvalsptr, nodeindexes, level,
+                    xvert, yvert, zvert, tvertptr, closestnodes, &nvert, triangles, &ntriangles, NULL, NULL);
 
           if(nvert>0||ntriangles>0){
             if(UpdateIsosurface(surface, xvert, yvert, zvert, tvertptr,

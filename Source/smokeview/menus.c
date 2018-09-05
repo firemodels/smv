@@ -4298,7 +4298,7 @@ void DefineAllFEDs(void){
 FILE_SIZE LoadSlicei(int set_slicecolor, int value){
   slicedata *slicei;
   int errorcode;
-  FILE_SIZE return_filesize;
+  FILE_SIZE return_filesize=0;
 
   slicei = sliceinfo + value;
   slicei->loading=1;
@@ -8942,24 +8942,6 @@ updatemenu=0;
     }
     else{
       strcpy(menulabel,_("  GPU not available"));
-    }
-    glutAddMenuEntry(menulabel,1);
-#endif
-#ifdef pp_CULL
-    if(cullactive==1&&gpuactive==1){
-      if(cullsmoke==1&&usegpu==1){
-        strcpy(menulabel,_("  Smoke culling activated. (Press C to deactivate)"));
-      }
-      else{
-        strcpy(menulabel,_("  Smoke culling available but not in use. ( To activate: "));
-        strcat(menulabel,_(" Press"));
-        if(usegpu==0 && cullsmoke==1)strcat(menulabel," G.)");
-        if(usegpu==1 && cullsmoke==0)strcat(menulabel," C.)");
-        if(usegpu==0 && cullsmoke==0)strcat(menulabel," G then C.)");
-      }
-    }
-    else{
-      strcpy(menulabel,_("  Smoke culling not available"));
     }
     glutAddMenuEntry(menulabel,1);
 #endif

@@ -87,9 +87,6 @@ void Usage(char *prog,int option){
 #ifdef pp_COMPRESS
     strcat(label, ", pp_COMPRESS");
 #endif
-#ifdef pp_CULL
-    strcat(label, ", pp_CULL");
-#endif
 #ifdef pp_DEG
     strcat(label, ", pp_DEG");
 #endif

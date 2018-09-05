@@ -14,16 +14,15 @@
 
 /* ------------------ _Sniff_Errors ------------------------ */
 
-void _Sniff_Errors(char *whereat){
+void _Sniff_Errors(char *whereat, char *file, int line){
   int error;
 
   while((error=glGetError())!=GL_NO_ERROR){
     char *glu_error;
 
     glu_error=(char *)gluErrorString((unsigned int)error);
-    fprintf(stderr,"*** Error: OpenGL error:%s, where:%s %i\n",
-      glu_error,whereat,snifferrornumber);
-      snifferrornumber++;
+    fprintf(stderr,"\n*** Error: OpenGL error:%s, %s \n file:%s line: %i\n",
+      glu_error,whereat,file,line);
   }
 }
 

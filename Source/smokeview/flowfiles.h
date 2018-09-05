@@ -596,7 +596,13 @@ typedef struct _volrenderdata {
 
 typedef struct _meshplanedata {
   float verts[6*3],verts_smv[6*3];
+  float norm0[4*3], norm1[4*3];
+  int have_vals[3];
   int triangles[4*3], nverts, ntriangles;
+  float *vals2, *verts2;
+  int *tris2, nverts2, ntris2;
+  int polys[10], npolys;
+  int drawsmoke;
 } meshplanedata;
 
 /* --------------------------  mesh ------------------------------------ */
@@ -614,8 +620,15 @@ typedef struct _meshdata {
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint     smoke_texture_id,     fire_texture_id,     light_texture_id;
-  float *smoke_texture_buffer,*fire_texture_buffer,*light_texture_buffer;
+#ifdef pp_GPUSMOKE
+  GLuint smoke_texture_id, fire_texture_id, co2_texture_id;
+  float *smoke_texture_buffer, *fire_texture_buffer, *co2_texture_buffer;
+  float *smoke_verts, *smoke_vals;
+  int max_tris, max_verts;
+  int *smoke_tris, smoke_ntris, smoke_nverts;
+#endif
+  GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
   GLuint slice3d_texture_id;
   float *slice3d_texture_buffer,*slice3d_c_buffer;
 #endif
@@ -757,14 +770,6 @@ typedef struct _meshdata {
   int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
   struct _culldata *cullgeominfo;
 
-#ifdef pp_CULL
-  int ncullinfo;
-  struct _culldata *cullinfo;
-  GLuint *cullQueryId;
-  int culldefined;
-  struct _smoke3ddata *cull_smoke3d;
-#endif
-
   volrenderdata volrenderinfo;
 
   meshplanedata gsliceinfo;
@@ -782,8 +787,8 @@ typedef struct _meshdata {
 typedef struct _supermeshdata {
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint smoke_texture_id,         fire_texture_id,     light_texture_id;
-  float *smoke_texture_buffer,*fire_texture_buffer,*light_texture_buffer;
+  GLuint volsmoke_texture_id,         volfire_texture_id,     vollight_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
 #endif
   float *f_iblank_cell;
   float boxmin_scaled[3], boxmax_scaled[3];
@@ -811,20 +816,6 @@ typedef struct _culldata {
   meshdata *cull_mesh;
   int npixels,npixels_old;
 } culldata;
-
-#ifdef pp_CULL
-/* --------------------------  cullplanedata ------------------------------------ */
-
-typedef struct _cullplanedata {
-  int   ibeg, iend, jbeg, jend, kbeg, kend;
-  float xmin, xmax, ymin, ymax, zmin, zmax;
-  float norm[3];
-  int dir;
-  culldata *cull;
-  meshdata *cull_mesh;
-} cullplanedata;
-
-#endif
 
 /* --------------------------  pathdata ------------------------------------ */
 
@@ -1329,6 +1320,7 @@ typedef struct _smoke3ddata {
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;
+  float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
   int dir;
 } smoke3ddata;

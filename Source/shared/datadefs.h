@@ -35,6 +35,28 @@
 #define DENORMALIZE_YY(y) (ybar0+(y)*(ybarORIG-ybar0))
 #define DENORMALIZE_ZZ(z) (zbar0+(z)*(zbarORIG-zbar0))
 
+#define VERT_AVG2(v1,v2,vavg) \
+  vavg[0]=(v1[0]+v2[0])/2.0;\
+  vavg[1]=(v1[1]+v2[1])/2.0;\
+  vavg[2]=(v1[2]+v2[2])/2.0
+
+#define VERT_AVG3(v1,v2,v3,vavg) \
+  vavg[0]=(v1[0]+v2[0]+v3[0])/3.0;\
+  vavg[1]=(v1[1]+v2[1]+v3[1])/3.0;\
+  vavg[2]=(v1[2]+v2[2]+v3[2])/3.0
+
+#define DIST3(v1,v2,dist2) \
+  dx=v1[0]-v2[0];\
+  dy=v1[1]-v2[1];\
+  dz=v1[2]-v2[2];\
+  dist2=dx*dx+dy*dy+dz*dz
+
+#define DDIST3(v1,v2,dist2) \
+  dx=v1[0]-v2[0];\
+  dy=v1[1]-v2[1];\
+  dz=v1[2]-v2[2];\
+  dist2=sqrt(dx*dx+dy*dy+dz*dz)
+
 #define DENORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
 (XYZ_OUT)[0] = DENORMALIZE_X((XYZ_IN)[0]);\
 (XYZ_OUT)[1] = DENORMALIZE_Y((XYZ_IN)[1]);\
@@ -119,6 +141,13 @@
   (ymx)[0]=(y)[0]-(x)[0];\
   (ymx)[1]=(y)[1]-(x)[1];\
   (ymx)[2]=(y)[2]-(x)[2]
+#endif
+
+#ifndef VEC3AVG
+#define VEC3AVG(yavg,y,x)\
+  (yavg)[0]=((y)[0]+(x)[0])/2.0;\
+  (yavg)[1]=((y)[1]+(x)[1])/2.0;\
+  (yavg)[2]=((y)[2]+(x)[2])/2.0
 #endif
 
 #ifndef VEC4EQ
@@ -232,6 +261,10 @@
 
 #ifndef IJKNODE
 #define IJKNODE(i,j,k) ((i)+(j)*nx+(k)*nxy)
+#endif
+
+#ifndef F_IJKNODE
+#define F_IJKNODE(i,j,k) ((i)*nyz+(j)*nz+(k))
 #endif
 
 #ifndef IJKN

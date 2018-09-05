@@ -744,18 +744,64 @@ void ExtractFrustum(void){
    }
 }
 
-/* ------------------ PointInFrustum ------------------------ */
+/* ------------------ FDSPointInFrustum ------------------------ */
 
-int PointInFrustum( float x, float y, float z){
-   if( frustum[0][0]*x + frustum[0][1]*y + frustum[0][2]*z + frustum[0][3] <= 0 )return 0;
-   if( frustum[1][0]*x + frustum[1][1]*y + frustum[1][2]*z + frustum[1][3] <= 0 )return 0;
-   if( frustum[2][0]*x + frustum[2][1]*y + frustum[2][2]*z + frustum[2][3] <= 0 )return 0;
-   if( frustum[3][0]*x + frustum[3][1]*y + frustum[3][2]*z + frustum[3][3] <= 0 )return 0;
-   if( frustum[4][0]*x + frustum[4][1]*y + frustum[4][2]*z + frustum[4][3] <= 0 )return 0;
-   if( frustum[5][0]*x + frustum[5][1]*y + frustum[5][2]*z + frustum[5][3] <= 0 )return 0;
-   return 1;
+int FDSPointInFrustum(float *xyz){
+  int i;
+  float xyz_smv[3];
+
+  xyz_smv[0] = NORMALIZE_X(xyz[0]);
+  xyz_smv[1] = NORMALIZE_Y(xyz[1]);
+  xyz_smv[2] = NORMALIZE_Z(xyz[2]);
+
+  for(i = 0; i<6; i++){
+    if(DOT3(frustum[i], xyz_smv)+frustum[i][3]<=0)return 0;
+  }
+  return 1;
 }
 
+/* ------------------ PointInFrustum ------------------------ */
+
+int PointInFrustum(float *xyz){
+  int i;
+
+  for(i = 0; i<6; i++){
+    if(DOT3(frustum[i], xyz)+frustum[i][3]<=0)return 0;
+  }
+  return 1;
+}
+
+/* ------------------ PointInTriangle ------------------------ */
+
+int PointInTriangle(float *v1, float *v2, float *v3){
+  if(PointInFrustum(v1)==1)return 1;
+  if(PointInFrustum(v2)==1)return 1;
+  if(PointInFrustum(v3)==1)return 1;
+  return 0;
+}
+
+/* ------------------ BoxInFrustum ------------------------ */
+
+int BoxInFrustum(float *xx, float *yy, float *zz){
+  int i;
+  float xyz[3];
+
+  for(i=0;i<2;i++){
+    int j;
+
+    xyz[0] = xx[i];
+    for(j=0;j<2;j++){
+      int k;
+
+      xyz[1] = yy[j];
+      for(k=0;k<2;k++){
+        xyz[2] = zz[k];
+        if(PointInFrustum(xyz)==1)return 1;
+      }
+    }
+  }
+  return 0;
+}
 /* ------------------ RectangleInFrustum ------------------------ */
 
 int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21){

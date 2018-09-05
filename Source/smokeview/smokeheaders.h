@@ -7,7 +7,7 @@
 
 #ifdef pp_GPUSMOKE
 EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
-EXTERNCPP void UpdateSmoke3DPlanes(float delta);
+EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);
 EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);
@@ -364,18 +364,15 @@ EXTERNCPP void DrawTerrainTexture(terraindata *terri, int only_geom);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
-#ifdef pp_CULL
-EXTERNCPP void InitCull(int cullflag);
-EXTERNCPP void InitCullPlane(int cullflag);
-EXTERNCPP void GetPixelCount(void);
-EXTERNCPP int  InitCullExts(void);
-#endif
 #ifdef pp_GPU
 #ifdef pp_GPUDEPTH
 EXTERNCPP void GetDepthTexture( void );
 EXTERNCPP void CreateDepthTexture( void );
 #endif
 EXTERNCPP int  InitShaders(void);
+#ifdef pp_GPUSMOKE
+EXTERNCPP void LoadNewSmokeShaders(void);
+#endif
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
@@ -517,7 +514,9 @@ EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void SetCullVis(void);
 EXTERNCPP void ExtractFrustum(void);
-EXTERNCPP int  PointInFrustum( float x, float y, float z);
+EXTERNCPP int  FDSPointInFrustum(float *xyz);
+EXTERNCPP int  PointInFrustum( float *xyz);
+EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz);
 EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);

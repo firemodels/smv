@@ -993,9 +993,9 @@ void GetEyePos(float *mm){
   m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
   */
 
-  smv_eyepos[0] = -(mm[0] * mm[12] + mm[1] * mm[13] +  mm[2] * mm[14]) / mscale[0];
-  smv_eyepos[1] = -(mm[4] * mm[12] + mm[5] * mm[13] +  mm[6] * mm[14]) / mscale[1];
-  smv_eyepos[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+  smv_eyepos[0] = -(mm[0]*mm[12] + mm[1]*mm[13] +  mm[2]*mm[14])/mscale[0];
+  smv_eyepos[1] = -(mm[4]*mm[12] + mm[5]*mm[13] +  mm[6]*mm[14])/mscale[1];
+  smv_eyepos[2] = -(mm[8]*mm[12] + mm[9]*mm[13] + mm[10]*mm[14])/mscale[2];
   DENORMALIZE_XYZ(fds_eyepos, smv_eyepos);
 
   for(i = 0; i<nmeshes; i++){
@@ -1037,26 +1037,26 @@ void GetVolSmokeDir(float *mm){
   ( m2 m6 m10 m14 ) (z)  = (0)
   ( m3 m7 m11 m15 ) (1)    (1)
 
-  ( m0 m4  m8 )      (m12)
+      ( m0 m4  m8 )      (m12)
   Q=  ( m1 m5  m9 )  u = (m13)
-  ( m2 m6 m10 )      (m14)
+      ( m2 m6 m10 )      (m14)
 
-  ( m0 m1  m2 )
+        ( m0 m1  m2 )
   Q^T=  ( m4 m5  m6 )
-  ( m8 m9 m10 )
+        ( m8 m9 m10 )
 
-  ( M_x  0    0  )
+      ( M_x  0    0  )
   M = ( 0   M_y   0  )
-  ( 0    0   M_z )
+      ( 0    0   M_z )
 
   (Q   u) (M) (x)     (0)
   (v^T 1) (1) (y)   = (1)
 
   m3=m7=m11=0, v^T=0, y=1   QMx+u=0 => x=-inv(M)Q^Tu
 
-  ( m0 m1  m2 ) (m12)   ( m0*m12 + m1*m13 +  m2*m14 )/M_x
+       ( m0 m1  m2 ) (m12)   ( m0*m12 + m1*m13 +  m2*m14 )/M_x
   x = -( m4 m5  m6 ) (m13) = ( m4*m12 + m5*m13 +  m6*m14 )/M_y
-  ( m8 m9 m10 ) (m14)   ( m8*m12 + m9*m13 + m10*m14 )/M_z
+       ( m8 m9 m10 ) (m14)   ( m8*m12 + m9*m13 + m10*m14 )/M_z
 
   */
   int i, ii, j;
@@ -1085,21 +1085,21 @@ void GetVolSmokeDir(float *mm){
     inside = &meshj->inside;
     drawsides = meshj->drawsides;
 
-    x0 = meshj->x0;
-    x1 = meshj->x1;
-    yy0 = meshj->y0;
-    yy1 = meshj->y1;
-    z0 = meshj->z0;
-    z1 = meshj->z1;
+      x0 = meshj->x0;
+      x1 = meshj->x1;
+     yy0 = meshj->y0;
+     yy1 = meshj->y1;
+      z0 = meshj->z0;
+      z1 = meshj->z1;
     xcen = meshj->xcen;
     ycen = meshj->ycen;
     zcen = meshj->zcen;
 
     *inside = 0;
     if(
-      eye_position_fds[0]>x0&&eye_position_fds[0]<x1&&
+      eye_position_fds[0]> x0&&eye_position_fds[0]<x1&&
       eye_position_fds[1]>yy0&&eye_position_fds[1]<yy1&&
-      eye_position_fds[2]>z0&&eye_position_fds[2]<z1
+      eye_position_fds[2]> z0&&eye_position_fds[2]<z1
       ){
       for(i = -3;i <= 3;i++){
         if(i == 0)continue;
@@ -1317,14 +1317,6 @@ void GetSmokeDir(float *mm){
     meshj->dyz /= meshj->dx;
     meshj->dx = 1.0;
 
-    if(smokedrawtest2 == 1){
-      meshj->norm[0] = 1.0;
-      meshj->norm[1] = 0.0;
-      meshj->norm[2] = 0.0;
-      meshj->smokedir = 1;
-      continue;
-    }
-
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;
       ii = ABS(i);
@@ -1483,12 +1475,6 @@ void GetSmokeDir(float *mm){
       }
     }
     meshj->smokedir = iminangle;
-#ifdef pp_CULL
-    if(meshj->smokedir != meshj->smokedir_old){
-      meshj->smokedir_old = meshj->smokedir;
-      update_initcullplane = 1;
-    }
-#endif
     if(demo_mode != 0){
       meshj->smokedir = 1;
     }
@@ -1898,25 +1884,15 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 #endif
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
-      GetSmokeDir(modelview_scratch);
 #ifdef pp_GPUSMOKE
-      if(compute_smoke3d_planes==1){
-        UpdateSmoke3DPlanes(smoke3d_delta);
+      if(use_newsmoke==SMOKE3D_ORIG||smoke_mesh_aligned==1)GetSmokeDir(modelview_scratch);
+      if(update_smokeplanes==1||use_newsmoke==SMOKE3D_NEW){
+        UpdateSmoke3DPlanes(smoke3d_delta_perp, smoke3d_delta_par);
       }
+#else
+      GetSmokeDir(modelview_scratch);
 #endif
       SNIFF_ERRORS("after GetSmokeDir");
-#ifdef pp_CULL
-      if(stereotype==STEREO_NONE){
-        if(cullsmoke==1){
-          GetPixelCount();
-          SNIFF_ERRORS("after GetPixelCount");
-        }
-        if(cullactive==1&&update_initcullplane==1){
-          InitCullPlane(cullsmoke);
-        }
-        SNIFF_ERRORS("after InitCullPlane");
-      }
-#endif
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){
       GetSmokeDir(modelview_scratch);

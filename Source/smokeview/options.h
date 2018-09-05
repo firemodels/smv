@@ -34,10 +34,6 @@
 
 #define pp_GPU          // support the GPU
 #ifdef pp_GPU
-#ifndef pp_OSX
-// turn off smoke culling for now
-//#define pp_CULL         // pp_GPU directive must also be set
-#endif
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 

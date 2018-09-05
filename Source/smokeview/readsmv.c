@@ -348,27 +348,39 @@ void InitMesh(meshdata *meshi){
   meshi->iploty_all = NULL;
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
+#ifdef pp_GPUSMOKE
+  meshi->smoke_verts  = NULL;
+  meshi->smoke_vals   = NULL;
+  meshi->smoke_tris   = NULL;
+  meshi->smoke_ntris  = 0;
+  meshi->smoke_nverts = 0;
+  meshi->max_verts = 0;
+  meshi->max_tris = 0;
+
+  meshi->smoke_texture_id = 0;
   meshi->smoke_texture_buffer = NULL;
-  meshi->smoke_texture_id = -1;
 
+  meshi->fire_texture_id = 0;
   meshi->fire_texture_buffer = NULL;
-  meshi->fire_texture_id = -1;
 
-  meshi->light_texture_buffer = NULL;
-  meshi->light_texture_id = -1;
+  meshi->co2_texture_id = 0;
+  meshi->co2_texture_buffer = NULL;
+#endif
+
+  meshi->volsmoke_texture_buffer = NULL;
+  meshi->volsmoke_texture_id = 0;
+
+  meshi->volfire_texture_buffer = NULL;
+  meshi->volfire_texture_id = 0;
+
+  meshi->vollight_texture_buffer = NULL;
+  meshi->vollight_texture_id = 0;
 
   meshi->slice3d_texture_buffer = NULL;
-  meshi->slice3d_texture_id = -1;
+  meshi->slice3d_texture_id = 0;
   meshi->slice3d_c_buffer = NULL;
 #endif
   meshi->mesh_offset_ptr = NULL;
-#ifdef pp_CULL
-  meshi->cullinfo = NULL;
-  meshi->culldefined = 0;
-  meshi->cullQueryId = NULL;
-  meshi->cull_smoke3d = NULL;
-  meshi->smokedir_old = -100;
-#endif
   meshi->cullgeominfo = NULL;
   meshi->is_bottom = 1;
   meshi->blockvis = 1;
@@ -5005,7 +5017,7 @@ int ReadSMV(char *file, char *file2){
 
     if(Match(buffer,"PROP") == 1){
       propdata *propi;
-      char *fbuffer;
+      char *file_buffer;
       char proplabel[255];
       int lenbuf;
       int ntextures_local;
@@ -5018,23 +5030,23 @@ int ReadSMV(char *file, char *file2){
         BREAK;  // prop label
       }
       TrimBack(proplabel);
-      fbuffer=TrimFront(proplabel);
+      file_buffer=TrimFront(proplabel);
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;  // number of smokeview_id's
       }
       sscanf(buffer,"%i",&nsmokeview_ids);
 
-      InitProp(propi,nsmokeview_ids,fbuffer);
+      InitProp(propi,nsmokeview_ids, file_buffer);
       for(i=0;i<nsmokeview_ids;i++){
         if(FGETS(buffer,255,stream)==NULL){
           BREAK; // smokeview_id
         }
         TrimBack(buffer);
-        fbuffer=TrimFront(buffer);
-        lenbuf=strlen(fbuffer);
+        file_buffer =TrimFront(buffer);
+        lenbuf=strlen(file_buffer);
         NewMemory((void **)&smokeview_id,lenbuf+1);
-        strcpy(smokeview_id,fbuffer);
+        strcpy(smokeview_id, file_buffer);
         propi->smokeview_ids[i]=smokeview_id;
         propi->smv_objects[i]=GetSmvObjectType(propi->smokeview_ids[i],missing_device);
       }
@@ -5626,7 +5638,8 @@ int ReadSMV(char *file, char *file2){
         smoke3di->nchars_compressed_smoke_full=NULL;
         smoke3di->maxval = -1.0;
         smoke3di->frame_all_zeros=NULL;
-
+        smoke3di->smoke_boxmin=NULL;
+        smoke3di->smoke_boxmax=NULL;
         smoke3di->display=0;
         smoke3di->loaded=0;
         smoke3di->finalize = 0;
@@ -9320,12 +9333,6 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
-#ifdef pp_CULL
-
-  // define data structures used to speed up 3d smoke drawing (by culling non-visible smoke planes)
-
-  if(cullactive==1)InitCull(cullsmoke);
-#endif
   UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
@@ -9910,12 +9917,13 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
+      sscanf(buffer, "%i %i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal,&iso_skip_wrapup);
       ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
       ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
+      ONEORZERO(iso_skip_wrapup);
 #ifdef pp_BETA
       ONEORZERO(show_iso_normal);
 #else
@@ -9972,6 +9980,13 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i", &show_smokesensors, &test_smokesensors);
       continue;
     }
+#ifdef pp_GPUSMOKE
+    if(Match(buffer, "SMOKETYPE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %f %f", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple);
+      continue;
+    }
+#endif
 #ifdef pp_GPU
     if(gpuactive == 1 && Match(buffer, "USEGPU") == 1){
       fgets(buffer, 255, stream);
@@ -11774,17 +11789,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-#ifdef pp_CULL
-        if(gpuactive == 1){
-          sscanf(buffer, "%i", &cullsmoke);
-          if(cullsmoke != 0)cullsmoke = 1;
-        }
-        else{
-          cullsmoke = 0;
-        }
-#else
         sscanf(buffer, "%i", &smokecullflag);
-#endif
         continue;
       }
       if(Match(buffer, "SMOKESKIP") == 1){
@@ -13497,7 +13502,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
+  fprintf(fileout, " %i %i %i %i 1 %i %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal, iso_skip_wrapup);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");
@@ -13518,6 +13523,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", slicedup_option, vectorslicedup_option, boundaryslicedup_option);
   fprintf(fileout, "SMOKESENSORS\n");
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
+#ifdef pp_GPUSMOKE
+  fprintf(fileout, "SMOKETYPE\n");
+  fprintf(fileout, " %i %i %f %f\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple);
+#endif
 #ifdef pp_LANG
   fprintf(fileout, "STARTUPLANG\n");
   fprintf(fileout, " %s\n", startup_lang_code);
@@ -13688,11 +13697,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SMOKECOLOR\n");
   fprintf(fileout, " %i %i %i\n", smoke_red, smoke_green, smoke_blue);
   fprintf(fileout, "SMOKECULL\n");
-#ifdef pp_CULL
-  fprintf(fileout," %i\n",cullsmoke);
-#else
   fprintf(fileout," %i\n",smokecullflag);
-#endif
   if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);
