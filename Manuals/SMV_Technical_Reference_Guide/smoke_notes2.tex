@@ -10,11 +10,10 @@
 This \paper\ documents the physics and associated numerical
 algorithms used by Smokeview~\cite{Smokeview_Users_Guide} to
 visualize smoke and fire.  Smoke color and opacity are visualized
-using quantitative physics based methods.  Flame color at present
+using quantitative physics based methods.  Flame color
 is visualized using an arbitrary user specified color palette
-where color is mapped to gas temperature. Future work involves
-mapping color to a blackbody temperature curve enabling a more
-quantitative choice of color for this application.
+where color is mapped to gas temperature.
+Smoke opacity is visulized using Beer's law relating smoke density and opacity.
 
 Realistic visualization of fire calculation methods are important
 for applications where one wishes to observe qualitative effects
@@ -48,64 +47,27 @@ default solution method for FDS. One other important difference is
 that Smokeview requires a solution at only one point at a time
 (any arbitrary point though), the observer's viewpoint, while FDS
 requires a radiation field, a solution at all points within the
-solution domain.  Even so, the solution of this
-integro-differential equation for visualization requires
-significant computation and memory  resources. Approximations are
+solution domain.
+Approximations are
 required in order to display smoke and fire at interactive frame
 rates.  The primary approximation is to take advantage of the low
 albedo character of smoke allowing one to either simplify or
 eliminate scattering terms in the RTE.
 
-Two techniques discussed for visualizing smoke are slice rendered
-and volume rendered methods~\cite{levoy:1988,Engel:2006}.    These
-methods both solve a form of the RTE equation.  The integrated
-quantity in both cases is radiance, the intensity of light seen by
-the observer.  They differ in how the integration path is
-partitioned.
-
-The first approach, a slice rendering method,  splits the
-integration path at grid planes within a 3D mesh. There is one
-partially transparent slice for each plane of simulated data.
-Planes are drawn through the data along the coordinate planes or
-diagonally to these  planes.   The particular plane drawn is
-chosen to be the one most perpendicular to the viewer's line of
-sight.  The resulting partially transparent slice planes are drawn
+A slice rendering method for the solving to the RTE,  splits the
+integration path at grid planes within a 3D mesh.
+A series of partially transparent slices are drawn through the data where each
+slice is approximately perpendicular to the line of sight.
+These partially transparent slice planes are then drawn
 individually and combined by the video hardware to form one image.
+The spacing of data within one plane and the spacing between planes are parameters
+specified by the user.
 
-The separation distance between slice planes becomes smaller as
-more planes are used to simulate a case.  As a result, the
+As the separation distance between slice planes becomes smaller, the
 computed opacity values are subject to increased round off error
 due to finite precision arithmetic.  In fact, if these planes are
 sufficiently close, the computed opacities truncate to zero.   In
-this situation, volume rendering methods are required.
-
-The second approach, a volume rendering method, also integrates a
-simplified form of the radiation transport equation, but over the
-entire data mesh.  The integration occurs from the front of the
-solution domain (relative to the observer) to the back, rather
-than across just one slice plane. By performing the entire
-integral at once instead of in pieces, the volume rendered method
-does not suffer from the round off errors of the slice rendered
-method.  The intermediate computational terms in the volume
-rendered method are stored using full precision arithmetic rather
-than 8 bits.  A volume rendered method then computes opacity
-across multiple grid planes.  As a result, there is only one plane
-of data displayed.  The video hardware is again exploited, but
-this time to compute a line integral for each pixel in the
-observer's view.  Opacities and color for both methods are
-computed using transfer functions using soot density and
-temperature data obtained from a fire simulation.
-
-This \paper\ is organized as follows.  A model for visualizing
-smoke and fire is discussed.  This model, the radiative transport
-equation (RTE), is simplified in several ways, one of which gives
-the Beer-Lambert law.  Two methods are then discussed for
-visualizing smoke  both using a form of the RTE.  The first
-method, slice rendering,  uses a series of partially transparent
-slices to represent smoke and fire. The second method, volume
-rendering, solves the RTE over the entire domain. Finally, several
-areas for which the visualization methods may be improved are
-given.
+this situation other techniques for visualizing smoke are required such as volume rendering methods.
 
 % -------------------  Radiation Transport Equation ------------------------
 
@@ -188,15 +150,9 @@ radiance.} \label{figRadiance}
 
 \subsection{Approximating the Radiation Transport Equation}
 
-The RTE may be simplified in several ways depending on which terms
-are included or ignored.  This section derives an approximate
-solution in which the in-scattering integral term in
-(\ref{eq:fullrte}) is neglected and the absorption and
-out-scattering coefficients are combined (both are loss terms)
-using $\sigt=\siga+\sigs$.  This simplification then only includes
-interactions between light and smoke due to absorption,
-out-scattering and emission.  Note that the Beer-Lambert law
-results if the emission term is also dropped.
+The RTE may be simplified by ignoring the in-scattering term and combining out-scattering
+and absorption coefficients.  The Beer-Lambert law results if the emission term is also
+neglected.
 
 Equation (\ref{eq:fullrte}) is then approximated by neglecting the
 integral term and using $\sigt=\siga+\sigs$ to obtain
@@ -206,44 +162,22 @@ integral term and using $\sigt=\siga+\sigs$ to obtain
  C(x_0)&=&C_0
 \end{eqnarray}
 
-This equation may be solved by rearranging terms and applying the
-integrating factor $\exp(\int_{x_0}^x \sigts \dx{s})$ obtaining
-
-\begin{eqnarray}
-\intf{x_0}{x}\left(\dLdx+\sigt C(x)\right)&=&  \intf{x_0}{x}\siga \Le\\
-\ddx\left(\intf{x_0}{x} C(x)\right)&=& \intf{x_0}{x}\siga \Le
-\end{eqnarray}
-
-Integrating both sides and substituting the integration limits
-results in
-
-\begin{eqnarray}
-\left.\intf{x_0}{x} C(x)\right|_{x_0}^{x_N}&=& \int_{x_0}^{x_N}\intf{x_0}{x}\siga \Le \dx{x} \\
-\intf{x_0}{x_N} C(x_N)-C_0&=& \int_{x_0}^{x_N}\intf{x_0}{x}\siga \Le \dx{x}
-\end{eqnarray}
-
-Solving for $C(x_N)$ after noting that
-$\intff{x_0}{x}-\intff{x_0}{x_N}=-\intff{x}{x_N}$ results in
-
-\begin{eqnarray}
-C(x_N)&=&\intmf{x_0}{x_N} C_0+ \int_{x_0}^{x_N}\intmf{x}{x_N}\siga
-\Le \dx{x}
-\end{eqnarray}
-
-\noindent which may be simplified to
+\noindent This equation has solution
 
 \begin{equation}
 \label{eq:rtesoln}
  C(x_N)=\tau(x_0,x_N)C_0 + \int_{x_0}^{x_N}\tau(x,x_N)\siga\Le \dx{x}
 \end{equation}
 
-\noindent after defining $\tau(a,b)$ as
+\noindent where $\tau(a,b)$ given by
 \begin{equation}
 \label{eq:optdepth}
 \tau(a,b)=\intmf{a}{b}
 \end{equation}
-which represents the optical depth between $a$ and $b$.  As noted earlier, if the emission term is neglected and $\sigma_t(x)=\sigma_t$ is constant over a path with length
-$L=x_N-x_0$, then (\ref{eq:rtesoln}) simplifies to
+
+\noindent represents the optical depth between $a$ and $b$.
+If the emission term is neglected and $\sigma_t(x)=\sigma_t$ is constant over a path with length
+$L=x_N-x_0$, then this equation simplifies to
 \begin{eqnarray}
  \frac{C(x_N)}{C_0}=\exp(-\sigma_tL)
 \end{eqnarray}
