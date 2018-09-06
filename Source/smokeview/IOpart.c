@@ -1065,8 +1065,12 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
   if(one!=1)endianswitch=1;
 
-  FORTPART5READ(&version,1);if(returncode==0)goto wrapup;
-  FORTPART5READ(&nclasses,1);if(returncode==0)goto wrapup;
+  FORTPART5READ(&version, 1);
+  if(returncode==0)goto wrapup;
+
+  FORTPART5READ(&nclasses,1);
+  if(returncode==0)goto wrapup;
+
   NewMemory((void **)&numtypes,2*nclasses*sizeof(int));
   NewMemory((void **)&numpoints,nclasses*sizeof(int));
   numtypescopy=numtypes;
@@ -1164,10 +1168,10 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
       }
       else{
         if(parti->evac==1){
-          skip_local += 4 + XYZ_EXTRA*4*nparts + 4;
+          skip_local += 4 + XYZ_EXTRA*nparts*sizeof(float) + 4;
         }
         else{
-          skip_local += 4 + 3*4*nparts + 4;
+          skip_local += 4 + 3*nparts*sizeof(float) + 4;
         }
       }
       CheckMemory;
@@ -1188,7 +1192,7 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
         }
       }
       else{
-        skip_local += 4 + 4*nparts + 4;  // skip over tag for now
+        skip_local += 4 + nparts*sizeof(int) + 4;  // skip over tag
       }
       CheckMemory;
       if(doit==1){
@@ -1211,13 +1215,13 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
       }
       else{
         if(numtypes[2*i]>0){
-          skip_local += 4 + 4*nparts*numtypes[2*i] + 4;  // skip over vals for now
+          skip_local += 4 + nparts*numtypes[2*i]*sizeof(float) + 4;  // skip over vals for now
         }
+        //if(numtypes[2*i+1]>0){
+        //  skip_local += 4 + nparts*numtypes[2*i+1]*sizeof(float) + 4;
+       // }
       }
       CheckMemory;
-      if(numtypes[2*i+1]>0){
-        skip_local += 4 + 4*nparts*numtypes[2*i+1] + 4;
-      }
 
 
       returncode=0;
@@ -1709,13 +1713,12 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     if(parti->evac == 1){
       angle_flag = 1;
       if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
       }
     else{
       angle_flag = 0;
       if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
     }
+    CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
   }
 
   stream=fopen(size_file,"r");
