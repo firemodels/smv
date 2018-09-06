@@ -5941,10 +5941,12 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
       PRINTF(" - skipped (max soot opacity<%0.f)\n", load_3dsmoke_cutoff);
       return_flag = 1;
     }
-    if(smoke3di->finalize==1){
-      SmokeWrapup(smoke3di);
+    if(return_flag==1){
+      if(smoke3di->finalize==1){
+        SmokeWrapup(smoke3di);
+      }
+      return 0;
     }
-    if(return_flag==1)return 0;
   }
   CheckMemory;
   if(
