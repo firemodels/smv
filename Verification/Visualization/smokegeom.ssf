@@ -1,0 +1,22 @@
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+SCENECLIP
+ 0
+LOAD3DSMOKE
+ SOOT DENSITY
+SETTIMEVAL
+ 1.000000
+RENDERONCE
+ smokegeom_smoke
+LOADINIFILE
+ smokegeom_tri1.ini
+SETTIMEVAL
+ 1.000000
+RENDERONCE
+ smokegeom_box
+LOADINIFILE
+ smokegeom_tri2.ini
+SETTIMEVAL
+ 1.000000
+RENDERONCE
+ smokegeom_full
