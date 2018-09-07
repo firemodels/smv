@@ -1,5 +1,5 @@
 RENDERDIR
- ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+ ..\..\Manuals\SMV_Technical_Reference_Guide\SCRIPT_FIGURES
 SCENECLIP
  0
 LOAD3DSMOKE
@@ -9,14 +9,14 @@ SETTIMEVAL
 RENDERONCE
  smokegeom_smoke
 LOADINIFILE
- smokegeom_tri1.ini
+ smokegeom_fullbox.ini
 SETTIMEVAL
  1.000000
 RENDERONCE
- smokegeom_box
+ smokegeom_fullbox
 LOADINIFILE
- smokegeom_tri2.ini
+ smokegeom_smokebox.ini
 SETTIMEVAL
  1.000000
 RENDERONCE
- smokegeom_full
+ smokegeom_smokebox
