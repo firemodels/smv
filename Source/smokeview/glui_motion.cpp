@@ -58,6 +58,7 @@
 #define QUICKTIME_COMPATIBILITY 40
 #define ZAXIS_UP 41
 #define NEARFARCLIP 42
+#define CUSTOM_VIEW 43
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -79,6 +80,8 @@
 #define ROTATION_ROLLOUT 6
 #define ORIENTATION_ROLLOUT 7
 #define MOVIE_ROLLOUT 8
+#define VIEW_ROLLOUT 9
+
 #define RENDER_360CB 9
 
 #ifdef pp_DEG
@@ -113,6 +116,7 @@ GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
 GLUI_Panel *PANEL_colors=NULL;
 
+GLUI_Rollout *ROLLOUT_view = NULL;
 GLUI_Rollout *ROLLOUT_image_size = NULL;
 GLUI_Rollout *ROLLOUT_name = NULL;
 GLUI_Rollout *ROLLOUT_rotation_type = NULL;
@@ -168,6 +172,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_custom_view = NULL;
 GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
 GLUI_Checkbox *CHECKBOX_render360 = NULL;
 #ifdef pp_RENDER360_DEBUG
@@ -232,7 +237,7 @@ GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
-procdata motionprocinfo[9];
+procdata motionprocinfo[10];
 int nmotionprocinfo = 0;
 
 /* ------------------ UpdateRenderRadioButtons ------------------------ */
@@ -927,6 +932,14 @@ extern "C" void GluiMotionSetup(int main_window){
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
 
+  ROLLOUT_view = glui_motion->add_rollout_to_panel(PANEL_motion, _("Specify View"), false, VIEW_ROLLOUT, MotionRolloutCB);
+  ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_view, VIEW_ROLLOUT);
+
+  glui_motion->add_checkbox_to_panel(ROLLOUT_view,_("Use custom view"),&use_customview, CUSTOM_VIEW, SceneMotionCB);
+  glui_motion->add_spinner_to_panel(ROLLOUT_view,"azimuth:",GLUI_SPINNER_FLOAT,&customview_azimuth,CUSTOM_VIEW,SceneMotionCB);
+  glui_motion->add_spinner_to_panel(ROLLOUT_view,"elevation:", GLUI_SPINNER_FLOAT, &customview_elevation, CUSTOM_VIEW, SceneMotionCB);
+  glui_motion->add_spinner_to_panel(ROLLOUT_view,"     up:", GLUI_SPINNER_FLOAT, &customview_up, CUSTOM_VIEW, SceneMotionCB);
+
   ROLLOUT_rotation_type = glui_motion->add_rollout_to_panel(PANEL_motion,_("Specify Rotation"),false,ROTATION_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_rotation_type, ROTATION_ROLLOUT);
 
@@ -1565,6 +1578,30 @@ extern "C" void SceneMotionCB(int var){
   int *rotation_index;
   int i;
 
+  if(var==CUSTOM_VIEW){
+    if(use_customview==1){
+      float *view, *up, *right;
+
+      NewMemory((void **)&screenglobal, sizeof(screendata));
+      view = screenglobal->view;
+      up = screenglobal->up;
+      right = screenglobal->right;
+
+      view[0] = -sin(DEG2RAD*customview_azimuth)*cos(DEG2RAD*customview_elevation);
+      view[1] = cos(DEG2RAD*customview_azimuth)*cos(DEG2RAD*customview_elevation);
+      view[2] = -sin(DEG2RAD*customview_elevation);
+      up[0] = cos(DEG2RAD*customview_up);
+      up[1] = 0.0;
+      up[2] = sin(DEG2RAD*customview_up);
+      right[0] = sin(DEG2RAD*customview_up);
+      right[1] = 0.0;
+      right[2] = cos(DEG2RAD*customview_up);
+    }
+    else{
+      FREEMEMORY(screenglobal);
+    }
+    return;
+  }
   if(var == NEARFARCLIP){
     if(nearclip<0.0){
       nearclip=0.001;
@@ -2204,31 +2241,31 @@ void RenderCB(int var){
       break;
     case RENDER_START_TOP:
       switch (render_resolution){
-      case 0:
+      case RENDER_RESOLUTION_320x240:
         resolution_multiplier = 1;
         render_size_index=Render320;
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_NORMAL);
         break;
-      case 1:
+      case RENDER_RESOLUTION_640x480:
         resolution_multiplier = 1;
         render_size_index=Render640;
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_NORMAL);
         break;
-      case 2:
+      case RENDER_RESOLUTION_CURRENT:
         resolution_multiplier = 1;
         render_size_index=RenderWindow;
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_NORMAL);
         break;
-      case 3:
+      case RENDER_RESOLUTION_HIGH:
         resolution_multiplier = glui_resolution_multiplier;
         render_size_index=RenderWindow;
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_HIGHRES);
         break;
-      case 4:
+      case RENDER_RESOLUTION_360:
         render_size_index=RenderWindow;
         resolution_multiplier = 1;
         RenderCB(RENDER_RESOLUTION);

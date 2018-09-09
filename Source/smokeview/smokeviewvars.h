@@ -20,6 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(customview_azimuth, 0.0);
+SVEXTERN float SVDECL(customview_elevation, 0.0);
+SVEXTERN float SVDECL(customview_up, 90.0);
+SVEXTERN int SVDECL(use_customview, 0);
+SVEXTERN screendata SVDECL(*screenglobal, NULL);
+
 SVEXTERN int SVDECL(iso_skip_wrapup, 0);
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
@@ -74,7 +80,7 @@ SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
 SVEXTERN int SVDECL(ncircletournodes, 16);
 
-SVEXTERN int SVDECL(render_resolution, 2);
+SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(toggle_colorbar, 0);
 SVEXTERN int hcolorbar_vis[6];
