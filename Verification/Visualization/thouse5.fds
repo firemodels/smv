@@ -126,7 +126,7 @@ The product of Reaction 2
 
 &SURF ID             = 'GYPSUM BOARD'
       DEFAULT        = .TRUE.
-      RGB            = 200,200,200
+      RGB            = 230,230,230
       MATL_ID        = 'GYPSUM PLASTER'
       THICKNESS      = 0.012 /
 
