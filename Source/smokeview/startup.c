@@ -256,7 +256,7 @@ int SetupCase(int argc, char **argv){
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
 
-  if(UpdateLIGHTS==1)UpdateLights(light_position0,light_position1);
+  UpdateLights(light_position0, light_position1);
 
   glutReshapeWindow(screenWidth,screenHeight);
 
@@ -1397,7 +1397,6 @@ void InitVars(void){
   nrooms=0;
   nzoneinfo=0;
   nfires=0;
-  UpdateLIGHTS=1;
 
   windowsize_pointer=0;
   fontindex=0;
@@ -1911,16 +1910,14 @@ void InitVars(void){
   light_position1[2] =  1.0f;
   light_position1[3] =  0.0f;
 
-
-  ambientlight[0] = 0.6f;
-  ambientlight[1] = 0.6f;
-  ambientlight[2] = 0.6f;
+  ambientlight[0] = 0.4f;
+  ambientlight[1] = 0.4f;
+  ambientlight[2] = 0.4f;
   ambientlight[3] = 1.0f;
 
-
-  diffuselight[0] = 0.50f;
-  diffuselight[1] = 0.50f;
-  diffuselight[2] = 0.50f;
+  diffuselight[0] = 0.40f;
+  diffuselight[1] = 0.40f;
+  diffuselight[2] = 0.40f;
   diffuselight[3] = 1.00f;
 
 
