@@ -3,7 +3,7 @@
   same as plume5a except there is a blockage in the middle of the scene to block the flow
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
-&MESH IJK=16,16,32, XB=0.0,1.6,0.0,1.6,0.0,3.2 /
+&MESH IJK=32,32,64, XB=0.0,1.6,0.0,1.6,0.0,3.2 /
 
 &MISC IBLANK_SMV=.TRUE. /
 
@@ -51,7 +51,7 @@
       BURN_AWAY      = .FALSE.
       TMP_FRONT      = 600.0
 /
-&REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
+&REAC SOOT_YIELD=0.05,FUEL='PROPANE'/
 &SURF ID='BURNER',HRRPUA=600.0,PART_ID='tracers' /  Ignition source
 
 &VENT XB=0.5,1.1,0.5,1.1,0.1,0.1,SURF_ID='BURNER' /  fire source on kitchen stove
