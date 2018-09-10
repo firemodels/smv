@@ -261,8 +261,15 @@ int cb_up_rgb[3],cb_down_rgb[3];
 #define FONTS_ROLLOUT 2
 #define TICKS_ROLLOUT 3
 #define LABELS_ROLLOUT 4
+#ifdef pp_LIGHTING
+#define LIGHT_ROLLOUT 5
+#endif
 
+#ifdef pp_LIGHTING
+procdata displayprocinfo[6];
+#else
 procdata displayprocinfo[5];
+#endif
 int ndisplayprocinfo = 0;
 
 /* ------------------ UpdateTimebarOverlap ------------------------ */
@@ -813,7 +820,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   SplitCB(SPLIT_COLORBAR);
 
 #ifdef pp_LIGHTING
-  ROLLOUT_light2 = glui_labels->add_rollout("Light",false);
+  ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
+  ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT);
+
+
   PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "ambient");
   SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_FLOAT, ambientlight,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_FLOAT, ambientlight+1,COLOR_AMB_RGB,ColorCB);
