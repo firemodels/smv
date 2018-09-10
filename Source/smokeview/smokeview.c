@@ -32,6 +32,8 @@ void UpdateLights(float *pos1, float *pos2){
   int i;
   GLfloat ambientlight2[4], diffuselight2[4];
 
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
   glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 

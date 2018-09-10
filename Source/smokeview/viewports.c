@@ -1707,6 +1707,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+  UpdateLights(light_position0, light_position1);
 
   {
     float xcen, ycen, zcen;

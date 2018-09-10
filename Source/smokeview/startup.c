@@ -257,6 +257,8 @@ int SetupCase(int argc, char **argv){
   Glui3dSmokeSetup(mainwindow_id);
 
   UpdateLights(light_position0, light_position1);
+  NORMALIZE_XYZ(light_position0, light_position0);
+  NORMALIZE_XYZ(light_position1, light_position1);
 
   glutReshapeWindow(screenWidth,screenHeight);
 
@@ -527,9 +529,6 @@ void InitOpenGL(void){
   light_position1[1]=1.0f;
   light_position1[2]=4.0f;
   light_position1[3]=0.f;
-
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
-  UpdateLights(light_position0,light_position1);
 
   {
     glGetIntegerv(GL_RED_BITS,&nredbits);
@@ -1910,14 +1909,14 @@ void InitVars(void){
   light_position1[2] =  1.0f;
   light_position1[3] =  0.0f;
 
-  ambientlight[0] = 0.4f;
-  ambientlight[1] = 0.4f;
-  ambientlight[2] = 0.4f;
+  ambientlight[0] = 0.6f;
+  ambientlight[1] = 0.6f;
+  ambientlight[2] = 0.6f;
   ambientlight[3] = 1.0f;
 
-  diffuselight[0] = 0.40f;
-  diffuselight[1] = 0.40f;
-  diffuselight[2] = 0.40f;
+  diffuselight[0] = 0.50f;
+  diffuselight[1] = 0.50f;
+  diffuselight[2] = 0.50f;
   diffuselight[3] = 1.00f;
 
 
