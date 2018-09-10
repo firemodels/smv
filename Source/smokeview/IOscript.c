@@ -290,6 +290,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;
   if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;
   if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
+  if(MatchUpper(keyword, "SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
   if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;
   if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;
   if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;
@@ -839,6 +840,13 @@ int CompileScript(char *scriptfile){
 //  time (float)
       case SCRIPT_SETTOURKEYFRAME:
         SETfval;
+        break;
+
+// SMOKEFRAMES
+//  num (int) usesubset (int)
+      case SCRIPT_SMOKEFRAMES:
+        SETbuffer;
+        sscanf(buffer,"%i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3);
         break;
 
 // GSLICEVIEW
@@ -2167,6 +2175,16 @@ void SetTimeVal(float timeval){
   }
 }
 
+/* ------------------ ScriptSmokeframes ------------------------ */
+#define SMOKE_NEW 77
+
+void ScriptSmokeframes(scriptdata *scripti){
+  smoke_num = scripti->ival;
+  smoke_subset = scripti->ival2;
+  use_newsmoke = scripti->ival3;
+  Smoke3dCB(SMOKE_NEW);
+}
+
 /* ------------------ ScriptSetViewpoint ------------------------ */
 
 void ScriptSetViewpoint(scriptdata *scripti){
@@ -2435,6 +2453,9 @@ int RunScript(void){
       break;
     case SCRIPT_SETVIEWPOINT:
       ScriptSetViewpoint(scripti);
+      break;
+    case SCRIPT_SMOKEFRAMES:
+      ScriptSmokeframes(scripti);
       break;
     case SCRIPT_GSLICEVIEW:
       ScriptGSliceView(scripti);

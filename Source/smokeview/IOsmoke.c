@@ -1292,6 +1292,7 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
 
   int i, nsmoketypes, ntriangles = 0, have_vals[3];
   meshdata *meshi;
+  int nsmokeplanes;
 
   meshi = meshinfo+smoke3di->blocknumber;
   nsmoketypes = GetNSmokeTypes(smoke3di,have_vals);
@@ -1307,7 +1308,14 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
   else{
     glBegin(GL_TRIANGLES);
   }
-  for(i = 0; i<meshi->nsmokeplaneinfo; i++){
+  if(smoke_subset==1){
+    nsmokeplanes = MIN(smoke_num, meshi->nsmokeplaneinfo);
+    nsmokeplanes = MAX(0, nsmokeplanes);
+  }
+  else{
+    nsmokeplanes = meshi->nsmokeplaneinfo;
+  }
+  for(i = 0; i<nsmokeplanes; i++){
     meshplanedata *spi;
     int j;
 
