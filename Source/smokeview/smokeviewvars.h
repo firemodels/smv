@@ -20,6 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(customview_azimuth, 0.0);
+SVEXTERN float SVDECL(customview_elevation, 0.0);
+SVEXTERN float SVDECL(customview_up, 90.0);
+SVEXTERN int SVDECL(use_customview, 0);
+SVEXTERN screendata SVDECL(*screenglobal, NULL);
+
 SVEXTERN int SVDECL(iso_skip_wrapup, 0);
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
@@ -74,7 +80,7 @@ SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
 SVEXTERN int SVDECL(ncircletournodes, 16);
 
-SVEXTERN int SVDECL(render_resolution, 2);
+SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(toggle_colorbar, 0);
 SVEXTERN int hcolorbar_vis[6];
@@ -698,15 +704,13 @@ SVEXTERN float block_specular_orig[4];
 SVEXTERN float SVDECL(*block_specular2,NULL);
 SVEXTERN GLfloat SVDECL(block_shininess,100.0);
 
-SVEXTERN int SVDECL(light_enabled0, 1);
-SVEXTERN int SVDECL(light_enabled1, 1);
 SVEXTERN GLfloat light_position0[4];
 SVEXTERN GLfloat light_position1[4];
 
-SVEXTERN int SVDECL(lightmodel_localviewer,0);
-SVEXTERN int SVDECL(lightmodel_separatespecularcolor,0);
 SVEXTERN GLfloat ambientlight[4];
+SVEXTERN float SVDECL(ambientgrey,0.4);
 SVEXTERN GLfloat diffuselight[4];
+SVEXTERN float SVDECL(diffusegrey,0.4);
 
 SVEXTERN int list_p3_index,list_slice_index,list_patch_index,list_iso_index;
 SVEXTERN int list_p3_index_old, list_slice_index_old, list_patch_index_old,list_iso_index_old;
@@ -864,7 +868,6 @@ SVEXTERN int vis3DSmoke3D;
 SVEXTERN int smokeskip,smokeskipm1;
 SVEXTERN int nrooms,nzoneinfo, nfires;
 SVEXTERN float SVDECL(window_aspect_ratio,1.0), SVDECL(scene_aspect_ratio,1.0);
-SVEXTERN int UpdateLIGHTS;
 
 SVEXTERN int SVDECL(screenWidth,640), SVDECL(screenHeight,480);
 SVEXTERN int SVDECL(screenWidthINI,640), SVDECL(screenHeightINI,480);

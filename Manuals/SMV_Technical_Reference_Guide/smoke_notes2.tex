@@ -329,7 +329,7 @@ Planes are placed perpendicular to the line of sight and are equally spaced thou
 This results in faster visualizations with the caveat that reduced data may result in less realistic visualizations.
 
 \begin{enumerate}
-\item Given spacing parameters parallel and perpendicular to the line of sight, place 
+\item Given spacing parameters parallel and perpendicular to the line of sight, place
 equally spaced planes
 through the data, each plane oriented perpendicular to the line of sight.
 This is illustrated in Figure \ref{fig:smokeplanes}. Plane locations change as
@@ -468,14 +468,13 @@ of 256 red, green, blue color triplets.  A formula giving a color index for a gi
 % -------------------  Computing Opacity ------------------------
 
 \subsection{Computing Opacity}
-Computing opacity at slice plane nodes is illustrated in Fig.
-\ref{figsmokesetup}. A ray travels from the background to the
+Consider a ray traveling from the background to the
 observer through intervening smoke. Light is absorbed or scattered
-by the smoke as the ray passes each slice plane. Emission effects
+by the smoke as the ray passes through each slice plane. Emission effects
 are accounted for by coloring the smoke.  Scattering effects
-presently are only accounted for in the value of the total mass
+are accounted for by the total mass
 extinction coefficient.  Light losses are assumed to be from both
-absorption and scattering. The obscuration is computed along each
+absorption and scattering. Obscuration or opacity is computed along each
 ray one grid plane at a time, using the Beer-Lambert law as
 follows.  The $\alpha=1-\tau$ values are pre-computed by FDS using
 the Beer-Lambert law~\cite{Siegel:2001}
@@ -485,22 +484,12 @@ the Beer-Lambert law~\cite{Siegel:2001}
 \alpha=1-\exp(-\sigma_t\Delta x)
 \end{equation}
 
-\noindent for a particular view direction (down the $x$~axis)
-where $\Delta x$ is this distance between two grid planes and as
-before $\sigma_t=\sigma_a+\sigma_s$ is the total mass extinction
+\noindent for the view direction down the $x$~axis
+where $\Delta x$ is the distance between two grid planes and
+$\sigma_t=\sigma_a+\sigma_s$ is the total mass extinction
 coefficient.  The Beer-Lambert law is an empirical relationship
 relating light absorption to the material properties of the medium
 the light is travelling through, in this case soot or smoke.
-
-\begin{figure}[bph]
-\begin{center}
-\includegraphics[width=4.0in]{\SMVfigdir/smoke_setup}
-\end{center}
-\caption[Light emitted from the background is obscured by intervening smoke.]
-{Light emitted from the background is obscured by intervening smoke.
-}
-\label{figsmokesetup}
-\end{figure}
 
 The $\alpha$ parameter in (\ref{eq:alpha}) is used by
 OpenGL~\cite{OpenGLRed} to blend smoke planes with the current
@@ -508,51 +497,9 @@ background.  The $\alpha$ parameter used here also represents an
 opacity, 0.0, for completely transparent, and 1.0 for completely
 opaque.
 
-% -------------------  Adjusting Opacity ------------------------
-
-\subsection{Adjusting Opacity}
-
-The absorption parameter, $\alpha$, needs to be adjusted for view
-directions not aligned with the axis orthogonal to the viewing
-planes (see Fig. \ref{figray}).  The absorption coefficient also
-needs to be adjusted when the distance between adjacent smoke
-planes changes, or viewing planes are skipped.
-
-\begin{figure}[bph]
-\centerline{\includegraphics[width=3.5in]{\SMVfigdir/forney_figure4}}
-\caption [Diagram illustrating the adjustment required to the
-opaqueness parameter, $\alpha$, for non-axis aligned views.] {
-Diagram illustrating the adjustment required to the opaqueness
-parameter, $\alpha$, for non axis aligned views. The adjusted
-opacity $\hat{\alpha}$ along the $\Delta\hat{x}$ segment is
-related to $\alpha$ value along the $\Delta x$ segment using
-$(1-\hat{\alpha})=(1-\alpha)^{\Delta \hat{x}/\Delta x}$}
-\label{figray}
-\end{figure}
-
-Ten million exponential operations per second are required to
-display smoke with corrected $\alpha$'s at 10 frames per second if
-the simulation has grid dimensions of $100\times 100\times 100$.
-Recent advances in CPU and video hardware makes these types of
-visualizations possible. These corrections may also be performed
-in the video card (GPU), resulting in increased display rates
-because the GPU performs the corrections simultaneously at all or
-many of the grid nodes rather than one at a time as the CPU would.
-
-The $\alpha$ obscurations are pre-computed using the distance
-$\Delta x$ between adjacent planes along the $x$~axis. The
-adjusted $\hat{\alpha}$ expressed in terms of $\Delta\hat{x}$ is
-given by
-
-\begin{equation}
-\label{eq:adjusted}
-\hat{\alpha}=1-\exp(-\sigma_t\Delta \hat{x})\\
-\end{equation}
-
-where $\Delta\hat{x}$ is the distance between planes along the
-line of site.  Equations (\ref{eq:alpha}) and (\ref{eq:adjusted})
-may be used to solve for $\hat{\alpha}$ in terms of $\alpha$ to
-obtain
+The absorption parameter, $\alpha$, needs to be adjusted when the spacing is different than $\Delta x$, 
+(the spacing FDS uses to pre-compute $\alpha$ terms).
+The adjusted $\hat{\alpha}$ for a new spacing $\Delta\hat{x}$ is given by
 
 \begin{equation}
 \label{eq:alphahat}
@@ -565,152 +512,6 @@ after noting that
 1-\hat{\alpha}=\exp(-\sigma_t\Delta\hat{x})=\exp(-\sigma_t\Delta
 x)^{\Delta\hat{x}/\Delta x}=(1-\alpha)^{\Delta\hat{x}/\Delta x}
 \end{eqnarray}
-
-The computation of (\ref{eq:alphahat}) is expensive because the
-exponential is computed at each grid node for every time step.  In
-addition, numerical cancellation may occur for small $\alpha$
-leading to loss of significant digits. Both problems may be solved
-by expanding (\ref{eq:alphahat}) in a Taylor series and keeping
-only the first few terms:
-
-\begin{eqnarray}
-\hat{\alpha}\approx \alpha r -
-\frac{\alpha^2}{2}r(r-1)+\frac{\alpha^3}{6}r(r-1)(r-2)
-\end{eqnarray}
-
-where $r=\sec(\theta)=\Delta \hat{x}/\Delta
-x=||x_p-x_e||/n\cdot(x_p-x_e)$, $n$ is the unit vector normal to
-the current plane being drawn, $\theta$ is the angle between the
-view direction and $n$, $x_e$ is the observers position and $x_p$
-is the vertex being drawn (along the view direction).  These terms
-are illustrated in Fig. \ref{figray}.
-
-When planes are skipped, (\ref{eq:alphahat}) may be simplified.
-In particular, when every 2nd plane is skipped,
-$\Delta\hat{x}/\Delta x=2$, so that (\ref{eq:alphahat}) simplifies
-to
-
-\begin{eqnarray}
-\hat{\alpha}=1-(1-\alpha)^2=2\alpha-\alpha^2
-\end{eqnarray}
-
-The video hardware uses $\alpha$ values contained in the smoke
-planes to obscure the background much like a camera uses a neutral
-density filter to darken a scene.  Extending the analogy,
-Smokeview uses one spatial/time varying {\em numerical}\ neutral
-density filter for each plane of smoke data.  On a node by node
-basis then, each smoke plane obscures the current image stored in
-the OpenGL back buffer by the amount $(1-\alpha)$ to form a new
-back buffer image.  Figure \ref{figplume} illustrates this process
-showing several snapshots of a fire plume. The final image in the
-lower right is the most realistic. A simplistic description of one
-step of this process is given by
-
-\begin{eqnarray}
-\mbox{new buffer image} = (1-\alpha)\times \mbox{old buffer image}
-\end{eqnarray}
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[height=4.0in]{\SMVfigdir/splume_20_27}&
-\includegraphics[height=4.0in]{\SMVfigdir/splume_17_27}\\
-8 slices&11 slices\\
-\includegraphics[height=4.0in]{\SMVfigdir/splume_14_27}&
-\includegraphics[height=4.0in]{\SMVfigdir/splume_11_27}\\
-14 slices&all slices
-\end{tabular}
-\end{center}
-\caption [Smoke plume visualized using several vertical parallel
-partially transparent planes.] {Smoke plume visualized using
-several vertical parallel partially transparent planes. The smoke
-plume looks more realistic as more slice planes are included to
-form the image. } \label{figplume}
-\end{figure}
-
-\noindent This process is repeated for each smoke plane.
-
-Figure \ref{figsmoke3d} illustrates this process showing smoke and
-fire in a townhouse kitchen fire. The visualization is performed
-by displaying a series of partially transparent planes. For
-illustration, these planes are made more conspicuous (in Fig.
-\ref{figsmoke3d}a) by skipping smoke planes (displaying every
-third plane) and orienting them along the $x$~axis. Figure
-\ref{figsmoke3d}b shows the visualization as it normally appears
-with all slice planes shown and oriented along a plane most
-perpendicular to the view direction.
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{l}
-\includegraphics[height=3.75in]{\SMVfigdir/thouse5c_skip}\\
-a) slices skipped and oriented along `X' directions\\
-\includegraphics[height=3.75in]{\SMVfigdir/thouse5c_full}\\
-b) all slices shown and oriented towards viewer \\
-\end{tabular}
-\end{center}
-\caption[Realistic visualization of a townhouse kitchen fire
-simulated using FDS.]{Realistic visualization of a townhouse
-kitchen fire simulated using FDS. For illustrative purposes,
-planes in the top image are oriented along the $x$~axis.  Planes
-in the bottom image are aligned along the $y$~axis, the axis most
-perpendicular to the line of sight.}
-\label{figsmoke3d}%
-\end{figure}
-
-% -------------------  Orienting smoke planes ------------------------
-
-\subsection{Orienting Slice Planes}
-
-Smoke opacity data computed as described in the previous sections
-is stored in a 3D array. This array corresponds to the solution
-domain as set up in an FDS input file (or some other model). Smoke
-planes are drawn in Smokeview through this data.  The orientation
-is chosen to be most perpendicular to the viewer's line of sight.
-A plane orientation exactly perpendicular to the view direction
-could be drawn if one is willing to pay the added CPU cost of
-interpolating opacity values between grid nodes.
-
-Figure \ref{figDIRA} illustrates this process showing three view
-directions and the corresponding smoke plane orientations that
-would be used. Off-axis viewing is minimized by selecting the view
-planes orientation that minimizes the angle between the planes
-normal direction and the view direction. This angle, $\theta$, is
-illustrated in Fig. \ref{figDIRB}, and is given by
-
-\begin{eqnarray}
-\cos(\theta)=\frac{n\cdot v_e}{||n||~||v_e||}
-\end{eqnarray}
-
-\noindent where $n$ is normal vector for the candidate smoke
-plane, and $v_e$ is the view direction vector.  In OpenGL, the
-view direction vector, $v_e$, is computed by simply obtaining the
-OpenGL modelview matrix, $M$ and multiplying it by the vector,
-$(0,0,1)^T$ or equivalently the third row of $M$.
-
-\begin{figure}
-\begin{tabular}{ccc}
-\includegraphics[width=2.25in]{\SMVfigdir/figDIR1a}&
-\includegraphics[width=2.25in]{\SMVfigdir/figDIR1b}&
-\includegraphics[width=2.25in]{\SMVfigdir/figDIR1c}\\
-a) slice planes parallel to the $y$~axis& b) slice planes parallel
-to the $y=x$ axis&
-c) slice planes parallel to the $x$~axis\\
-\end{tabular}
-\caption{Slice plane orientation chosen to be {\em most perpendicular}\ to the line of sight }
-\label{figDIRA}
-\end{figure}
-
-\begin{figure}
-\centerline{\includegraphics[width=3.0in]{\SMVfigdir/figDIR2}}
-\caption[Diagram illustrating the angle between the line of sight
-and the vector normal to the slice planes.]{Diagram illustrating
-the angle between the line of sight and the vector normal to the
-slice planes.  Slice plane orientation is chosen to minimize this
-angle.} \label{figDIRB}
-\end{figure}
-
-
 
 % -------------------  Future Work ------------------------
 

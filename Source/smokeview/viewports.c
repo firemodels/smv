@@ -1707,6 +1707,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+  UpdateLights(light_position0, light_position1);
 
   {
     float xcen, ycen, zcen;
@@ -1783,7 +1784,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       }
     }
 
-    if(screen == NULL){
+    if(screen == NULL&&screenglobal==NULL){
       float *uup;
 
       uup = camera_current->up;
@@ -1800,9 +1801,16 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       float *view, *uup, *right;
       float ppos[3], vview[3];
 
-      view = screen->view;
-      uup = screen->up;
-      right = screen->right;
+      if(screenglobal!=NULL){
+        view = screenglobal->view;
+        uup = screenglobal->up;
+        right = screenglobal->right;
+      }
+      else{
+        view = screen->view;
+        uup = screen->up;
+        right = screen->right;
+      }
       dEyeSeparation[0] = EyeSeparation*right[0] / 2.0;
       dEyeSeparation[1] = EyeSeparation*right[1] / 2.0;
       dEyeSeparation[2] = EyeSeparation*right[2] / 2.0;

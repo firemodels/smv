@@ -11479,18 +11479,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
       continue;
     }
-    if(Match(buffer, "LIGHT0") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%d", &light_enabled0);
-      UpdateLIGHTS = 1;
-      continue;
-    }
-    if(Match(buffer, "LIGHT1") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%d", &light_enabled1);
-      UpdateLIGHTS = 1;
-      continue;
-    }
     if(Match(buffer, "LIGHTFACES") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%d", &light_faces);
@@ -11500,39 +11488,21 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "LIGHTPOS0") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f", light_position0, light_position0 + 1, light_position0 + 2, light_position0 + 3);
-      UpdateLIGHTS = 1;
+      DENORMALIZE_XYZ(light_position0, light_position0);
+
       continue;
     }
     if(Match(buffer, "LIGHTPOS1") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f", light_position1, light_position1 + 1, light_position1 + 2, light_position1 + 3);
-      UpdateLIGHTS = 1;
+      DENORMALIZE_XYZ(light_position1, light_position1);
       continue;
     }
-    if(Match(buffer, "LIGHTMODELLOCALVIEWER") == 1){
-      int temp;
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%d", &temp);
-      lightmodel_localviewer = temp == 0 ? GL_FALSE : GL_TRUE;
-      UpdateLIGHTS = 1;
-      continue;
-    }
-    if(Match(buffer, "LIGHTMODELSEPARATESPECULARCOLOR") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%d", &lightmodel_separatespecularcolor);
-      UpdateLIGHTS = 1;
-      continue;
-    }
-    if(Match(buffer, "AMBIENTLIGHT") == 1){
+    if(Match(buffer, "LIGHTPROP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", ambientlight, ambientlight + 1, ambientlight + 2);
-      UpdateLIGHTS = 1;
-      continue;
-    }
-    if(Match(buffer, "DIFFUSELIGHT") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", diffuselight, diffuselight + 1, diffuselight + 2);
-      UpdateLIGHTS = 1;
       continue;
     }
     if(Match(buffer, "LABELSTARTUPVIEW") == 1){
@@ -13107,8 +13077,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"   *** COLOR/LIGHTING ***\n\n");
 
-  fprintf(fileout, "AMBIENTLIGHT\n");
-  fprintf(fileout, " %f %f %f\n", ambientlight[0], ambientlight[1], ambientlight[2]);
   fprintf(fileout, "BACKGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", backgroundbasecolor[0], backgroundbasecolor[1], backgroundbasecolor[2]);
   fprintf(fileout, "BLOCKCOLOR\n");
@@ -13142,8 +13110,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
   fprintf(fileout,"CO2COLOR\n");
   fprintf(fileout," %i %i %i", global_co2color[0],global_co2color[1],global_co2color[2]);
-  fprintf(fileout, "DIFFUSELIGHT\n");
-  fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");
   fprintf(fileout, " %f %f %f\n", direction_color[0], direction_color[1], direction_color[2]);
   fprintf(fileout, "FLIP\n");
@@ -13178,20 +13144,27 @@ void WriteIni(int flag,char *filename){
         rgbi->color[0], rgbi->color[1], rgbi->color[2], rgbi->color[3], percen, rgbi->label);
     }
   }
-  fprintf(fileout, "LIGHT0\n");
-  fprintf(fileout, " %i\n", light_enabled0);
-  fprintf(fileout, "LIGHT1\n");
-  fprintf(fileout, " %i\n", light_enabled1);
   fprintf(fileout, "LIGHTFACES\n");
   fprintf(fileout, " %i\n", light_faces);
-  fprintf(fileout, "LIGHTMODELLOCALVIEWER\n");
-  fprintf(fileout, " %i\n", lightmodel_localviewer);
-  fprintf(fileout, "LIGHTMODELSEPARATESPECULARCOLOR\n");
-  fprintf(fileout, " %i\n", lightmodel_separatespecularcolor);
-  fprintf(fileout, "LIGHTPOS0\n");
-  fprintf(fileout, " %f %f %f %f\n", light_position0[0], light_position0[1], light_position0[2], light_position0[3]);
-  fprintf(fileout, "LIGHTPOS1\n");
-  fprintf(fileout, " %f %f %f %f\n", light_position1[0], light_position1[1], light_position1[2], light_position1[3]);
+  {
+    float pos0[4];
+
+    NORMALIZE_XYZ(pos0, light_position0);
+
+    fprintf(fileout, "LIGHTPOS0\n");
+    fprintf(fileout, " %f %f %f %f\n", pos0[0], pos0[1], pos0[2], light_position0[3]);
+  }
+  {
+    float pos1[4];
+
+    NORMALIZE_XYZ(pos1, light_position1);
+
+    fprintf(fileout, "LIGHTPOS1\n");
+    fprintf(fileout, " %f %f %f %f\n", pos1[0], pos1[1], pos1[2], light_position1[3]);
+  }
+  fprintf(fileout, "LIGHTPROP\n");
+  fprintf(fileout, " %f %f %f\n", ambientlight[0], ambientlight[1], ambientlight[2]);
+  fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);
   fprintf(fileout, "SENSORCOLOR\n");
   fprintf(fileout, " %f %f %f\n", sensorcolor[0], sensorcolor[1], sensorcolor[2]);
   fprintf(fileout, "SENSORNORMCOLOR\n");

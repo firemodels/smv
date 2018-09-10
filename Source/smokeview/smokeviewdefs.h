@@ -688,6 +688,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GLUI_SHOWALL_VSLICE GLUI_SHOWALL
 #define GLUI_HIDEALL_VSLICE GLUI_HIDEALL
 
+#define RENDER_RESOLUTION_320x240 0
+#define RENDER_RESOLUTION_640x480 1
+#define RENDER_RESOLUTION_CURRENT 2
+#define RENDER_RESOLUTION_HIGH    3
+#define RENDER_RESOLUTION_360     4
+
 #define SMOKE3D_ORIG  0
 #define SMOKE3D_NEW   1
 #define SMOKE3D_DIAG  2
