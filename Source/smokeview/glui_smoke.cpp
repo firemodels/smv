@@ -814,7 +814,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke_test_color[2]->set_float_limits(0.0, 1.0);
   SPINNER_smoke_test_color[3]->set_float_limits(0.0, 1.0);
   SPINNER_smoke_test_nslices = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _("n slices"), GLUI_SPINNER_INT, &smoke_test_nslices);
-  SPINNER_smoke_test_nslices->set_int_limits(3, 100);
+  SPINNER_smoke_test_nslices->set_int_limits(3, 1000);
   SPINNER_smoke_test_range = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _("range"), GLUI_SPINNER_FLOAT, &smoke_test_range);
 #endif
 
