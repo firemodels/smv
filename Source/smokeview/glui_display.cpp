@@ -68,6 +68,7 @@ GLUI_Spinner *SPINNER_northangle_position_y = NULL;
 GLUI_Spinner *SPINNER_northangle_position_z = NULL;
 GLUI_Spinner *SPINNER_sliceoffset_factor=NULL;
 GLUI_Spinner *SPINNER_ventoffset_factor=NULL;
+#ifdef pp_LIGHTING
 GLUI_Spinner *SPINNER_amb_red=NULL;
 GLUI_Spinner *SPINNER_amb_green=NULL;
 GLUI_Spinner *SPINNER_amb_blue=NULL;
@@ -76,6 +77,7 @@ GLUI_Spinner *SPINNER_diff_red=NULL;
 GLUI_Spinner *SPINNER_diff_green=NULL;
 GLUI_Spinner *SPINNER_diff_blue=NULL;
 GLUI_Spinner *SPINNER_diff_grey=NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
@@ -134,12 +136,16 @@ GLUI_Rollout *ROLLOUT_general=NULL;
 GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
+#ifdef pp_LIGHTING
 GLUI_Rollout *ROLLOUT_light2 = NULL;
+#endif
 
+#ifdef pp_LIGHTING
 GLUI_Panel *PANEL_position0=NULL;
 GLUI_Panel *PANEL_position1 = NULL;
 GLUI_Panel *PANEL_ambient=NULL;
 GLUI_Panel *PANEL_diffuse=NULL;
+#endif
 GLUI_Panel *PANEL_timebar_overlap = NULL;
 GLUI_Panel *PANEL_split1L = NULL, *PANEL_split1H = NULL;
 GLUI_Panel *PANEL_split2L = NULL, *PANEL_split2H = NULL;
@@ -235,10 +241,12 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 #define COLORBAR_SMOOTH 113
 #define COLORBAND 115
+#ifdef pp_LIGHTING
 #define COLOR_AMB_GREY 116
 #define COLOR_DIFF_GREY 117
 #define COLOR_AMB_RGB 118
 #define COLOR_DIFF_RGB 119
+#endif
 
 #define COLORBAR_LIST2 112
 #define DATA_transparent 26
@@ -472,7 +480,7 @@ void TextLabelsCB(int var){
 }
 
 /* ------------------ ColorCB ------------------------ */
-
+#ifdef pp_LIGHTING
 extern "C" void ColorCB(int var){
   switch (var){
   case COLOR_AMB_RGB:
@@ -533,6 +541,7 @@ extern "C" void ColorCB(int var){
   break;
   }
 }
+#endif
 
 /* ------------------ SplitCB ------------------------ */
 
@@ -803,6 +812,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   }
   SplitCB(SPLIT_COLORBAR);
 
+#ifdef pp_LIGHTING
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false);
   PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "ambient");
   SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_FLOAT, ambientlight,COLOR_AMB_RGB,ColorCB);
@@ -825,6 +835,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_spinner_to_panel(PANEL_position1, _("x:"), GLUI_SPINNER_FLOAT, light_position1);
   glui_labels->add_spinner_to_panel(PANEL_position1, _("y:"), GLUI_SPINNER_FLOAT, light_position1+1);
   glui_labels->add_spinner_to_panel(PANEL_position1, _("z:"), GLUI_SPINNER_FLOAT, light_position1+2);
+#endif
 
   // -------------- Fonts -------------------
 
