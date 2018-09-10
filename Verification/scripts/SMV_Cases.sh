@@ -23,6 +23,8 @@ $QFDS -d Visualization script_test.fds
 $QFDS -d Visualization script_slice_test.fds
 $QFDS -d Visualization sillytexture.fds
 $QFDS -d Visualization slicemask.fds
+$QFDS -d Visualization smokegeom.fds
+$QFDS -d Visualization smokegeom2.fds
 $QFDS -d Visualization smoke_sensor.fds
 $QFDS -d Visualization smoke_test.fds
 $QFDS -d Visualization smoke_test2.fds
