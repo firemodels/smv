@@ -1,6 +1,8 @@
 @echo off
 set paper=SMV_User_Guide
 
+set TEXINPUTS=.;..\LaTeX_Style_Files;
+
 Title Building %paper%
 
 git describe --long --dirty > gitinfo.txt

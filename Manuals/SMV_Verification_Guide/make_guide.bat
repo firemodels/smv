@@ -3,6 +3,8 @@ set paper=SMV_Verification_Guide
 
 Title Building %paper%
 
+set TEXINPUTS=.;..\LaTeX_Style_Files;
+
 git describe --long --dirty > gitinfo.txt
 set /p gitrevision=<gitinfo.txt
 echo \newcommand^{\gitrevision^}^{%gitrevision%^} > ..\Bibliography\gitrevision.tex
