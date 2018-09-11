@@ -1,12 +1,86 @@
-% $Date$
-% $Revision$
-% $Author$
+\documentclass[11pt]{article}
 
-% !TEX root = SMV_Technical_Reference_Guide.tex
+\usepackage{graphicx}
+\usepackage{pdfsync}
+\usepackage[colorlinks=true,pagebackref]{hyperref}
+\usepackage{stfloats}
+\usepackage{lipsum}
+\usepackage{authblk}
+\usepackage{fancyhdr}
+
+\renewcommand\refname{\vskip-2.5\baselineskip\normalsize\underline{\bf REFERENCES}}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\topmargin}{-.5in}
+\setlength{\headheight}{18pt}
+\setlength{\headsep}{0.in}
+\setlength{\parindent}{0.25in}
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\evensidemargin}{0.0in}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{\baselineskip}
+\setlength{\columnsep}{0.5in}
+
+\usepackage{unicode-math}
+\usepackage{fontspec}
+\setmainfont{Cambria}
+\setmathfont{Cambria Math}
+
+\usepackage{siunitx}
+\sisetup{
+    detect-all = true,
+    input-decimal-markers = {.},
+    input-ignore = {,},
+    inter-unit-product = \ensuremath{{}\cdot{}},
+    multi-part-units = repeat,
+    number-unit-product = \text{~},
+    per-mode = fraction,
+    separate-uncertainty = true,
+}
+
+\newcommand{\paper}{note}
+\newcommand{\SMVfigdir}{../../../fig/smv/figures}
+\newcommand{\vvec}[1]{\mathbf{#1}}
+
+\title{\huge VISUALIZING SMOKE AND FIRE}
+
+\author[1,2]{Glenn Forney}
+
+\affil[1]{National Institute of Standards and Technology\\Gaithersburg, Maryland, USA}
+\affil[2]{e-mail: glenn.forney@nist.gov}
+
+\date{}
+
+\renewcommand\Authfont{\small}
+\renewcommand\Affilfont{\small}
+
+\pagestyle{plain}
+\fancyhf{}
+\lhead{\scriptsize PROCEEDINGS, Fire and Evacuation Modeling Technical Conference 2018\\
+Gaithersburg, Maryland, October 1-3, 2018}
+
+\renewcommand{\headrulewidth}{0pt}
+
+\newcommand{\ssection}[1]{\underline{\bf #1}}
+\newcommand{\ssubsection}[1]{\underline{\bf #1}}
+
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{fancy}
+
+\vskip-\baselineskip
+\ssection{ABSTRACT}
+
+This note discusses some of the physics and associated numerical algorithms used by Smokeview to visualize smoke and fire. Realistic visualization methods are important for applications where one wishes to observe qualitative effects of fire and smoke rather than quantitative characteristics such as temperature or velocity. This would be the case for a fire fighter using a computer based fire fighting simulator.  Smoke visualization methods considering interactions between light and smoke, require the solution of the radiation transport equation (RTE) also called the volume rendering equation. This equation models how light is affected by its interaction with smoke, a participating medium. Smokeview uses the RTE to account for extinction (absorption plus out-scattering) by the smoke and emission from the fire. The form of the RTE used by Smokeview to model smoke and fire appearance is identical to that used by FDS to model radiative heat transfer.  The implementation details are different however.  Smokeview uses an extinction coefficient appropriate for visible light while FDS use one appropriate for infrared. Smokeview requires a solution at only one position, the observer's viewpoint, while FDS requires a solution at many points within the solution domain. Even so, the solution of these equations for visualization requires significant computational and memory resources.  Approximations are then required to display smoke and fire at interactive frame rates. The primary approximation is to take advantage of the low albedo character of smoke allowing one to either simplify or eliminate scattering terms in the RTE.
 
 % -------------------  Introduction ------------------------
 
-\section{Introduction}
+\ssection{INTRODUCTION}
+
 This \paper\ discusses some of the physics and associated numerical
 algorithms used by Smokeview~\cite{Smokeview_Users_Guide} to
 visualize smoke and fire.  Smoke color and opacity are visualized
@@ -71,7 +145,8 @@ this situation other techniques for visualizing smoke such as volume rendering m
 
 % -------------------  Radiation Transport Equation ------------------------
 
-\section{Radiation Transport Equation}
+\ssection{RADIATION TRANSPORT EQUATION}
+
 The model used here to visualize smoke is the radiation transport
 equation (RTE)~\cite{Siegel:2001}.  This equation uses radiance to
 represent smoke appearance.  Radiance has units of Watts per
@@ -86,7 +161,7 @@ by the light source's reduced cross sectional areal.
 The radiation transport equation discussed in
 this section models the change in radiance due to these factors.
 
-\renewcommand{\dx}[1]{\,\mbox{d}#1}
+\newcommand{\dx}[1]{\,\mbox{d}#1}
 \newcommand{\siga}{ \sigma_a(x) }
 \newcommand{\sigt}{ \sigma_t(x) }
 \newcommand{\sigs}{ \sigma_s(x) }
@@ -144,7 +219,7 @@ radiance.} \label{figRadiance}
 
 % ----  Approximating the Radiation Transport Equation ------------------------
 
-\subsection{Approximating the Radiation Transport Equation}
+\ssubsection{Approximating the Radiation Transport Equation}
 
 The RTE may be simplified by ignoring the in-scattering term and combining out-scattering
 and absorption coefficients.  The Beer-Lambert law results if the emission term is also
@@ -180,7 +255,8 @@ which is the Beer-Lambert law.
 
 % -------------------  Discretizing the Radiation Transport Equation ------------------------
 
-\subsection{Discretizing the Radiation Transport Equation}
+\ssubsection{Discretizing the Radiation Transport Equation}
+
 \newcommand{\htau}[1]{\tau_{#1}^{N-1}}
 \newcommand{\halpha}[1]{\alpha_{#1}^{N-1}}
 \newcommand{\sigai}[1]{\sigma_{a,#1}}
@@ -317,7 +393,8 @@ performing volume rendering.
 
 % -------------------  A Solution using Slices ------------------------
 
-\section{Implementation}
+\ssection{IMPLEMENTATION}
+
 The algorithm described here for visualizing smoke and fire realistically consists of placing
 planes within the solution domain and determining opacity and color
 at various locations within these planes
@@ -395,7 +472,7 @@ using a  2D coordinate system in the plane of this polygon.}
 where $x_0$ is translated from $p_0$ in the polygonal plane so that all $a_i$ and $b_i$ are positive. If $\vvec{s}$ and $\vvec{t}$ are thought of as two axese, then the coordinates $a_i$ and $b_i$ may be interpreted as the distance from $\vvec{s}$ and $\vvec{t}$ respectively.
 
 \item For a spacing parameter $\Delta$, the polygon is triangulated by first
-forming vertices $v_{ij}=x_0 + i\vvec{s} + j \vvec{t}$ where $i$ and $j$ range over positive integers 
+forming vertices $v_{ij}=x_0 + i\vvec{s} + j \vvec{t}$ where $i$ and $j$ range over positive integers
 so that $v_{ij}$ covers the polygon (and the region just next to it)
 and next forming triangles $(v_{ij},v_{i+1,j},v_{i+1,j+1}), (v_{ij},v_{i+1,j+1},v_{i,j+1}) $ from these vertices.
 Triangles with all vertices outside the polygon are neglected.
@@ -442,7 +519,8 @@ a) 12 planes&15 planes\\
 
 % -------------------  Computing Opacity ------------------------
 
-\subsection{Computing Opacity}
+\ssubsection{Computing Opacity}
+
 Consider a ray traveling from the background to the
 observer through intervening smoke. Light is absorbed or scattered
 by the smoke as the ray passes through each slice plane. Emission effects
@@ -490,7 +568,7 @@ x)^{\Delta\hat{x}/\Delta x}=(1-\alpha)^{\Delta\hat{x}/\Delta x}
 
 % -------------------  Computing Color ------------------------
 
-\subsection{Computing Color}
+\ssubsection{Computing Color}
 
 Smokeview visualizes smoke and fire by drawing a series of triangles in equally spaced parallel planes.
 Color for these triangles are assigned by mapping temperature or hrrpuv (heat release per unit volume) values
@@ -532,10 +610,16 @@ of 256 red, green, blue color triplets.  A formula giving a color index for a gi
 
 % -------------------  Future Work ------------------------
 
-\section{Future Work}
+\ssection{FUTURE WORK}
+
 This \paper\ describes some of the algorithms Smokeview uses to display
 smoke and fire using physics based algorithms. These algorithms
 may be improved in several ways. The integration of the RTE equation can have problems
 due to the limited numerical precision (8 bits) used to represent smoke opacity.
 One solution to this is to choose maximum values.  A better solution is to use data with more precision to perform the integration. Flame color computations may be made more quantitative by  relating temperature to color that is physics based rather than an assumed
 color map.
+
+\bibliographystyle{unsrt}
+\bibliography{../../../fds/Manuals/Bibliography/FDS_general,../../../fds/Manuals/Bibliography/FDS_refs,../../../fds/Manuals/Bibliography/FDS_mathcomp,../Bibliography/sv_fire,../Bibliography/sv_graphics}
+
+\end{document}
