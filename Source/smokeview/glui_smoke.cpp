@@ -891,9 +891,12 @@ extern "C" void Smoke3dCB(int var){
       }
     }
     else{
-      if(update_smokeplanes==0){
+      if(update_smokeplanes==0&&config_update_smokeplanes==0){
         update_smokeplanes = 1;
         CHECKBOX_update_smokeplanes->set_int_val(1);
+      }
+      else if(config_update_smokeplanes==1){
+        config_update_smokeplanes = 0;
       }
       if(plane_normal==1){
         plane_normal=0;

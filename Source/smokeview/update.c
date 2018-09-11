@@ -1850,7 +1850,9 @@ void UpdateShowScene(void){
   if(update_smoketype_vals==1){
     update_smoketype_vals = 0;
 #define SMOKE_NEW 77
+#define SMOKE_DELTA_MULTIPLE 78
     Smoke3dCB(SMOKE_NEW);
+    Smoke3dCB(SMOKE_DELTA_MULTIPLE);
   }
   if(update_opacity_map==1){
     UpdateOpacityMap();
