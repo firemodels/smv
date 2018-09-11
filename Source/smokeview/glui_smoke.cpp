@@ -72,6 +72,7 @@ extern GLUI *glui_bounds;
 #define SMOKE_NEW 77
 #define SMOKE_DELTA_MULTIPLE 78
 #define SMOKEBOX_BUFFER 79
+#define SMOKE_NUM 80
 
 // two defines below are also defined elsewhere
 
@@ -102,6 +103,7 @@ GLUI_RadioGroup *RADIO_use_colormap=NULL;
 GLUI_RadioGroup *RADIO_light_type = NULL;
 GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
 
+GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_sootfactor=NULL;
 GLUI_Spinner *SPINNER_co2factor=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
@@ -673,6 +675,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("polygon"), &smoke_show_polygon);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("distance labels"), &plane_labels);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("display reduced number of smoke planes"), &smoke_subset);
+    SPINNER_smoke_num = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("number of smoke planes"), GLUI_SPINNER_INT, &smoke_num, SMOKE_NUM, Smoke3dCB);
 #endif
 
   // volume render dialog
@@ -810,7 +814,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke_test_color[2]->set_float_limits(0.0, 1.0);
   SPINNER_smoke_test_color[3]->set_float_limits(0.0, 1.0);
   SPINNER_smoke_test_nslices = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _("n slices"), GLUI_SPINNER_INT, &smoke_test_nslices);
-  SPINNER_smoke_test_nslices->set_int_limits(3, 100);
+  SPINNER_smoke_test_nslices->set_int_limits(3, 1000);
   SPINNER_smoke_test_range = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_test, _("range"), GLUI_SPINNER_FLOAT, &smoke_test_range);
 #endif
 
@@ -843,6 +847,12 @@ extern "C" void Smoke3dCB(int var){
   float temp_min, temp_max;
   
 #ifdef pp_GPUSMOKE
+  case SMOKE_NUM:
+    if(smoke_num<0){
+      smoke_num = 0;
+      SPINNER_smoke_num->set_int_val(0);
+    }
+    break;
   case SMOKEBOX_BUFFER:
     for(i = 0;i<nmeshes;i++){
       meshdata *meshi;

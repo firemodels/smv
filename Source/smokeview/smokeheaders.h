@@ -81,7 +81,9 @@ EXTERNCPP void UpdateGluiRender(void);
 EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void VolumeCB(int var);
+#ifdef pp_SMOKETEST
 EXTERNCPP void DrawSmokeTest(void);
+#endif
 EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);

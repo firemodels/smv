@@ -31,6 +31,7 @@ SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 #ifdef pp_GPUSMOKE
+SVEXTERN int SVDECL(smoke_num, -1), SVDECL(smoke_subset,0);
 SVEXTERN int SVDECL(update_smoketype_vals, 0);
 SVEXTERN int SVDECL(smoke_outline, 0);
 SVEXTERN int SVDECL(smoke_show_polygon, 1);
@@ -175,7 +176,9 @@ SVEXTERN int SVDECL(nvel_devices, 0);
 SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(*windrose_showhide, NULL), SVDECL(nwindrose_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
+#ifdef pp_SMOKETEST
 SVEXTERN int SVDECL(smoke_test, 0);
+#endif
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
   SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};
