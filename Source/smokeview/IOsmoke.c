@@ -924,10 +924,12 @@ int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
   unsigned char *firecolor, *co2color;
   float fire_alpha;
   int count = 0;
+  float grid_ratio;
 
   meshi = meshinfo + smoke3di->blocknumber;
   firecolor = smoke3di->smokestate[HRRPUV].color;
   co2color = smoke3di->smokestate[CO2].color;
+  grid_ratio = smoke3d_delta_perp/smoke3d_delta_par_min;
   UpdateSmoke3DTexture(smoke3di);
   boxmin = meshi->boxmin;
   boxmax = meshi->boxmax;
@@ -959,6 +961,7 @@ int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
   glUniform1f(GPUnewsmoke_co2_alpha, (float)smoke3di->co2_alpha/255.0);
   glUniform1f(GPUnewsmoke_sootfactor, sootfactor);
   glUniform1f(GPUnewsmoke_co2factor, co2factor);
+  glUniform1f(GPUnewsmoke_grid_ratio, grid_ratio);
 
   fire_alpha = CLAMP((float)smoke3di->fire_alpha/255.0,0.0,1.0);
 
