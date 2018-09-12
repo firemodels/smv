@@ -2264,8 +2264,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Research display mode"),&research_mode,RESEARCH_MODE,SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Output data to file"),&output_slicedata);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("max blending"), &slices3d_max_blending);
-#ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show all 3D slices"), &showall_3dslices);
+#ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("opacity adjustment"), &slice_opacity_adjustment);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show sorted slice labels"), &show_sort_labels);
