@@ -83,8 +83,8 @@ one wishes to observe qualitative effects of fire and smoke rather than quantita
 characteristics such as temperature or velocity.
 Approximations and simplifications are required to display smoke and fire at interactive frame rates.
 The primary approximation is to take advantage of the low albedo character of
-smoke allowing one to either simplify or eliminate scattering terms in the radiative transport equation used 
-visualize smoke and fire.
+smoke allowing one to either simplify or eliminate scattering terms in the radiative
+transport equation used to visualize smoke and fire.
 
 % -------------------  Introduction ------------------------
 
@@ -333,15 +333,15 @@ C_{N} = \htau{0}\,C_0 +
 \label{eq:discrete_rte2}
 \end{equation}
 
-\noindent What you see on the screen is $C_N$.
-If $\Leii{i}=\sigma_{a,i}C_{e,i}\Delta x$ is interpreted as
+\noindent What is seen on the screen is the term $C_N$.
+If the expression $\sigma_{a,i}C_{e,i}\Delta x$ in (\ref{eq:discrete_rte2}) is interpreted as
 the emitted color of the fire or
-heated gas at location $i$ and $C_0$ is interpreted as the color
-of the light source {\em behind}\ the smoke, then
-(\ref{eq:discrete_rte2}) restated in words gives color seen by the
-observer computed as a weighted average of source and emitted
+heated gas at a location $i$ and $C_0$ is interpreted as the color
+of the light source {\em behind}\ the smoke, then equation
+(\ref{eq:discrete_rte2}) restated in words gives the observed color
+as a weighted average of source and emitted
 colors where each weight is the optical depth from the observer to
-the corresponding color location.  These emitted colors can be
+the the corresponding emitted color location.  These emitted colors can be
 determined from a blackbody temperature curve or from a colormap
 meant to show variations in temperature in terms of color.
 
@@ -357,20 +357,20 @@ used to form a solution by combining colors and opacities in the currently drawn
 plane with those already accumulated in a screen buffer.
 The original Smokeview algorithm placed planes exactly where data was recorded by FDS,
 either parallel to the XY, XZ or YZ axes planes or diagonally to two of these planes.
-The algorithm described below places planes in more general locations. Interpolation
-within a 3D data set is used to obtain data values at locations required by the algorithm.
+The algorithm described below places planes in more general locations. Interpolation is then used
+within a 3D data set to obtain data values at locations required by the algorithm.
 This increased flexibility
 allows one to more easily reduce the amount of data accessed to draw smoke.
 Planes are placed perpendicular to the line of sight and are equally spaced though not
 necessarily at the same spacing as used by the underlying FDS grid.
 This results in faster visualizations with the caveat that reduced data may result
-in less realistic visualizations.
+in less realistic visualizations.  A brief overview of the algorithm is given below.
 
 \begin{enumerate}
 \item Given spacing parameters parallel and perpendicular to the line of sight, place
 equally spaced planes
 through the data, each plane oriented perpendicular to the line of sight.
-This is illustrated in Figureure\ref{fig:smokeplanes}. Plane locations change as
+This is illustrated in Figure~\ref{fig:smokeplanes}. Plane locations change as
 the scene is moved.  By placing planes only where smoke is located, as illustrated in
 Figure~\ref{fig:smokebox}, faster visualizations result.
 If the GPU is used to visualize smoke then data is passed to the GPU along with
@@ -382,8 +382,7 @@ the polygon needs to be triangulated (the GPU triangulates data within any trian
 \begin{center}
 \includegraphics[height=4.0in]{../SMV_USER_GUIDE/SCRIPT_FIGURES/smokegeom_fullbox}
 \end{center}
-\caption{Planes are placed equally space within the entire solution domain oriented so that they are 
-perpendicular to the line of sight.}
+\caption{Planes are placed within the entire solution domain so that they are equally spaced and are oriented perpendicular to the line of sight. The solution domain in this example is rotated to make the planes more visible. }
 \label{fig:smokeplanes}
 \end{figure}
 
@@ -395,7 +394,7 @@ perpendicular to the line of sight.}
 \includegraphics[height=3.0in]{../SMV_USER_GUIDE/SCRIPT_FIGURES/smokegeom_smokebox}
 \end{tabular}
 \end{center}
-\caption{To improve visualization performance, planes are placed only where smoke is located resulting in faster visualizations (since 
+\caption{To improve visualization performance, planes are placed only where smoke is located resulting in faster visualizations (since
 data does not need to be obtained or drawn where it would not be visible).}
 \label{fig:smokebox}
 \end{figure}
@@ -408,7 +407,8 @@ represented as a polygon, is divided into a series of equally sized triangles
     let $\vvec{u}$ be a vector corresponding to the longest
     polygonal side.  Let $\vvec{v}$ be a vector corresponding to the side clockwise
     (from the point of view of the observer) from $\vvec{u}$. Orthogonal unit vectors, $\vvec{s}$
-    and $\vvec{t}$, are formed using
+    and $\vvec{t}$,
+    in the plane of the polygon are formed using
 
       \begin{eqnarray*}
     \vvec{s}&=&\vvec{u}/||\vvec{u}||,\\
@@ -421,36 +421,24 @@ represented as a polygon, is divided into a series of equally sized triangles
 \begin{tabular}{cc}
 \includegraphics[height=3.5in]{../../../fig/smv/figures/smokegeom_5p5265poly}&
 \includegraphics[height=3.5in]{../../../fig/smv/figures/smokegeom_triangulation}\\
-a) intersection of plane and solution mesh& b) triangulated polygon
+a) intersection of a plane and a solution mesh& b) triangulated polygon
 \end{tabular}
 \end{center}
 \caption{Intersection of a plane perpendicular to the line of sight and the solution
 domain.  This results in a polygon which is triangulated
-using a  2D coordinate system represented by vectors $\vvec{s}$ and $\vvec{t}$ located in the plane of this polygon. 
+using a  2D coordinate system represented by vectors $\vvec{s}$ and $\vvec{t}$ located in the plane of this polygon.
 Similar polygons uniformly spaced and perpendicular to the line of site are also generated and triangulated whenever the scene is moved.}
 \label{fig:smoketriangulate}
 \end{figure}
 
 \item For a spacing parameter $\Delta$, the polygon is then triangulated in terms of vectors $\vvec{s}$ and $\vvec{t}$ by first
-forming vertices $v_{ij}=x_0 + i\vvec{s} + j \vvec{t}$ where $v_{ij}$ covers the polygon (and the region just next to it)
-and next forming triangles $(v_{ij},v_{i+1,j},v_{i+1,j+1}), (v_{ij},v_{i+1,j+1},v_{i,j+1}) $
+forming vertices $v_{ij}=x_0 + i\vvec{s} + j \vvec{t}$ for $i$ and $j$ so that $v_{ij}$ covers the polygon (and the region just next to it)
+and next forming triangles $(v_{ij},v_{i+1,j},v_{i+1,j+1}), (v_{ij},v_{i+1,j+1},v_{i,j+1})$
 from these vertices.
 Triangles with all vertices outside the polygon are neglected.
 If one or two vertices are outside the polygon they are moved to the closest point on the polygon.
 
 \end{enumerate}
-
-Summarizing, a slice rendering algorithm for visualizing smoke consists of
-splitting the RTE across individual slice planes within a single
-mesh.  Figure~\ref{fig:smokenum} shows an example illustrating a various number
-of slice planes used to visualize smoke and fire.
-The 3D computational domain is partitioned into a series of
-2D slices.  The RTE is then solved on each slice.  Each slice
-solution only accounts for conditions between adjacent slices.
-The individual partially transparent slice solutions are then
-combined using video hardware to form the final image.   Problems
-can occur with numerical round off error if two slices are too
-close together.
 
 The slice orientation
 is chosen to be the one most perpendicular to the viewer's line of
@@ -462,6 +450,19 @@ Opacity data is
 computed and compressed using run length encoding as a
 preprocessing step and decompressed as each frame is
 displayed.
+
+Summarizing, a slice rendering algorithm for visualizing smoke consists of
+splitting the RTE across individual slice planes within a single
+mesh.  Figure~\ref{fig:smokenum} shows an example illustrating a various number
+of slice planes used to visualize smoke and fire.
+The 3D computational domain is partitioned into a series of
+2D slices.  The RTE is then solved on each slice.  Each slice
+solution only accounts for conditions between adjacent slices.
+The individual partially transparent slice solutions are then
+combined using video hardware to form the final image.
+Slices become more transparent as the come closer together. Problems
+can then occur resulting in poor  visualizations because of numerical round off error.
+In this case, different solution techniques are required such as volume rendering which integrates the entire RTE at once rather than one slice at a time.
 
 \begin{figure}[bph]
 \begin{center}
@@ -491,7 +492,9 @@ extinction coefficient.  Light losses are assumed to be from both
 absorption and scattering. Obscuration or opacity is computed along each
 ray one grid plane at a time, using the Beer-Lambert law as
 follows.  The $\alpha=1-\tau$ values are pre-computed by FDS using
-the Beer-Lambert law~\cite{Siegel:2001}
+the Beer-Lambert law~\cite{Siegel:2001}.  The $\alpha$ parameter represents an
+opacity, 0.0, for completely transparent, and 1.0 for completely
+opaque and is given by
 
 \begin{equation}
 \label{eq:alpha}
@@ -501,11 +504,11 @@ the Beer-Lambert law~\cite{Siegel:2001}
 \noindent for the view direction down the $x$~axis
 where $\Delta x$ is the distance between two grid planes and
 $\sigma_t$ is the total mass extinction
-coefficient.  The $\alpha$ parameter in (\ref{eq:alpha}) is used by
-OpenGL~\cite{OpenGLRed} to blend currently drawn smoke planes with the 
-background.  The $\alpha$ parameter used here also represents an
-opacity, 0.0, for completely transparent, and 1.0 for completely
-opaque.
+coefficient.
+The $\alpha$ parameter in (\ref{eq:alpha}) is used by Smokeview
+to blend the smoke plane currently being drawn with the
+background. For a different plane spacing, $\Delta \hat{x}$,
+the opacity is adjusted using $\hat{\alpha}=1-(1-\alpha)^{\Delta \hat{x}/\Delta x}$.
 
 % -------------------  Computing Color ------------------------
 
@@ -520,13 +523,13 @@ the more opaque the triangle.
 
 The example color map in Figure~\ref{fig:colormaps} is split into two parts.  The left half is used
 for coloring non-burning regions, the right half is used for coloring burning regions.
-An hrrpuv cutoff value denoted ${\rm hrrpuv}_{\rm cutoff}$ is used to
+An HRRPUV cutoff value denoted ${\rm hrrpuv}_{\rm cutoff}$ is used to
 distinguish these two regions.
-If an hrrpuv value is below the cutoff,
-smoke is drawn using colors from the left half of the color map, while if an hrrpuv value is
+If an HRRPUV value is below the cutoff,
+smoke is drawn using colors from the left half of the color map, while if an HRRPUV value is
 greater than the cutoff,
 fire is drawn using colors from the right half of the color map.  The color map is defined as a table
-of 256 red, green, blue color triplets.  A formula giving a color index for a given hrrpuv value is given by
+of 256 red, green, blue color triplets.  A formula giving a color index for a given HRRPUV value is given by
 
 \newcommand{\hrr}{{\rm hrr}}
 \newcommand{\hrrcutoff}{{\rm hrr}_{\rm cutoff}}
@@ -545,9 +548,23 @@ of 256 red, green, blue color triplets.  A formula giving a color index for a gi
 \begin{center}
 \includegraphics[width=5.0in]{\SMVfigdir/colorbar_fire2}
 \end{center}
-\caption[Example colormap used for converting temperature or hrrpuv values to color.]
-{Example colormap used for converting temperature or hrrpuv values to color.}
+\caption{Example colormap used for converting temperature or HRRPUV values to color.}
 \label{fig:colormaps}
+\end{figure}
+
+A second method for coloring fire is illustrated in Figure~\ref{fig:blendedmaximages}.  
+Instead of blending colors found along the line of sight it uses the color corresponding to the maximum temperature found along that path. This is implemented in Smokeview using a feature of OpenGL that replaces the color in the background only if the currently drawn color has a greater value (in terms of the red, green or blue color components).  Though the visualizations look more realistic it is not as flexible since the background has to be black (zero red, green blue color values) in order for the maximum replacement feature to work.
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.6in]{\SMVfigdir/blended_hrrpuv_5s}&
+\includegraphics[width=3.6in]{\SMVfigdir/max_temp_5s}
+\end{tabular}
+\end{center}
+\caption{The image on the left was generated by blending colors found along each line of sight using opacities derived from smoke density.  The image on the right was generated by using the color corresponding
+to the maximum temperature found along each line of sight.}
+\label{fig:blendedmaximages}
 \end{figure}
 
 
@@ -559,7 +576,7 @@ This \paper\ describes some of the algorithms Smokeview uses to display
 smoke and fire using physics based algorithms. These algorithms
 may be improved in several ways. The integration of the RTE equation can have problems
 due to the limited numerical precision (8 bits) used to represent smoke opacity.
-One solution to this is to choose maximum values.  A better solution is to use data with
+One solution to this as illsutrated in Figure~\ref{fig:blendedmaximages} is use choose maximum values rather than blending values.  A better solution is to use data with
 more precision to perform the integration. Flame color computations may be made more quantitative by
 relating temperature to color that is physics based rather than an assumed
 color map.
