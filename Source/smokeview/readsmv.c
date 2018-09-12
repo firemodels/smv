@@ -9984,7 +9984,9 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_GPUSMOKE
     if(Match(buffer, "SMOKETYPE")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %f %f %i %i", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple, &use_smokebox, &smokebox_buffer);
+      sscanf(buffer, "%i %i %f %f %i %i %i", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple,
+                                             &use_smokebox, &smokebox_buffer, &update_smokeplanes);
+      config_update_smokeplanes=1;
       update_smoketype_vals=1;
       continue;
     }
@@ -13500,7 +13502,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
 #ifdef pp_GPUSMOKE
   fprintf(fileout, "SMOKETYPE\n");
-  fprintf(fileout, " %i %i %f %f %i %i\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple, use_smokebox, smokebox_buffer);
+  fprintf(fileout, " %i %i %f %f %i %i %i\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple,
+                                               use_smokebox, smokebox_buffer, update_smokeplanes);
 #endif
 #ifdef pp_LANG
   fprintf(fileout, "STARTUPLANG\n");

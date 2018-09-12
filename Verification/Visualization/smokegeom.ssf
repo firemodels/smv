@@ -9,14 +9,21 @@ SETTIMEVAL
 RENDERONCE
  smokegeom_smoke
 LOADINIFILE
- smokegeom_fullbox.ini
-SETTIMEVAL
- 1.000000
-RENDERONCE
- smokegeom_fullbox
-LOADINIFILE
  smokegeom_smokebox.ini
 SETTIMEVAL
  1.000000
 RENDERONCE
  smokegeom_smokebox
+LOADINIFILE
+ smokegeom_fullbox.ini
+SETTIMEVAL
+ 1.000000
+LOADINIFILE
+ smokegeom3.ini
+LOADINIFILE
+ smokegeom4.ini
+SETVIEWPOINT
+ view 3
+RENDERONCE
+ smokegeom_fullbox
+
