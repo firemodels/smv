@@ -395,8 +395,8 @@ the polygon needs to be triangulated (the GPU triangulates data within any trian
 \includegraphics[height=3.0in]{../SMV_USER_GUIDE/SCRIPT_FIGURES/smokegeom_smokebox}
 \end{tabular}
 \end{center}
-\caption{To improve visualization performance, especially at at the beginning of the 
-simulation when the fire is small, planes are placed only where smoke and fire is located resulting in faster visualizations (since
+\caption{To improve visualization performance, especially at at the beginning of the
+simulation when a fire is typically small, planes are placed only where smoke and fire is located resulting in faster visualizations (since
 data does not need to be obtained or drawn where it would not be visible).}
 \label{fig:smokebox}
 \end{figure}
@@ -554,7 +554,7 @@ of 256 red, green, blue color triplets.  A formula giving a color index for a gi
 \label{fig:colormaps}
 \end{figure}
 
-A second method for coloring fire is illustrated in Figure~\ref{fig:blendedmaximages}.  
+A second method for coloring fire is illustrated in Figure~\ref{fig:blendedmaximages}.
 Instead of blending colors found along the line of sight it uses the color corresponding to the maximum temperature found along that path. This is implemented in Smokeview using a feature of OpenGL that replaces the color in the background only if the currently drawn color has a greater value (in terms of the red, green or blue color components).  Though the visualizations look more realistic it is not as flexible since the background has to be black (zero red, green blue color values) in order for the maximum replacement feature to work.
 
 \begin{figure}[bph]
