@@ -2301,6 +2301,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->display=1;
   iboundarytype=GetBoundaryType(patchi);
   ShowBoundaryMenu(ShowEXTERIORwallmenu);
+  for(n = 0;n<meshi->npatches;n++){
+    meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
+  }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
