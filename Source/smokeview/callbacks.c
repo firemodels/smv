@@ -3275,6 +3275,10 @@ void DisplayCB(void){
     if(render_status==RENDER_OFF){
       glDrawBuffer(GL_BACK);
       ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
+      if(update_rgb_test==1){
+        update_rgb_test = 0;
+        RGBTest();
+      }
       if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
     }
     else{

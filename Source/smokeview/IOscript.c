@@ -283,6 +283,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;
   if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
+  if(MatchUpper(keyword, "RGBTEST")==MATCH)return SCRIPT_RGBTEST;
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
   if(MatchUpper(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
   if(MatchUpper(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
@@ -849,7 +850,14 @@ int CompileScript(char *scriptfile){
         sscanf(buffer,"%i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3);
         break;
 
-// GSLICEVIEW
+// RGBTEST
+//  x y z r g b delta
+      case SCRIPT_RGBTEST:
+        SETbuffer;
+        sscanf(buffer, "%f %f %f %i %i %i %i", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->ival, &scripti->ival2, &scripti->ival3, &scripti->ival4);
+        break;
+        
+        // GSLICEVIEW
 // show_gslice (int) show_triangles (int)  show_triangulation (int) show_normals (int)
       case SCRIPT_GSLICEVIEW:
         SETbuffer;
@@ -2185,6 +2193,18 @@ void ScriptSmokeframes(scriptdata *scripti){
   Smoke3dCB(SMOKE_NEW);
 }
 
+/* ------------------ ScriptRGBtest ------------------------ */
+
+void ScriptRGBtest(scriptdata *scripti){
+  update_rgb_test = 1;
+  rgb_test_xyz[0] = scripti->fval;
+  rgb_test_xyz[1] = scripti->fval2;
+  rgb_test_xyz[2] = scripti->fval3;
+  rgb_test_rgb[0] = scripti->ival;
+  rgb_test_rgb[1] = scripti->ival2;
+  rgb_test_rgb[2] = scripti->ival3;
+  rgb_test_delta  = scripti->ival4;
+}
 /* ------------------ ScriptSetViewpoint ------------------------ */
 
 void ScriptSetViewpoint(scriptdata *scripti){
@@ -2456,6 +2476,8 @@ int RunScript(void){
       break;
     case SCRIPT_SMOKEFRAMES:
       ScriptSmokeframes(scripti);
+    case SCRIPT_RGBTEST:
+      ScriptRGBtest(scripti);
       break;
     case SCRIPT_GSLICEVIEW:
       ScriptGSliceView(scripti);

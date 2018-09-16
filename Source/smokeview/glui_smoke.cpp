@@ -873,20 +873,20 @@ extern "C" void Smoke3dCB(int var){
     if(use_newsmoke != SMOKE3D_DIAG){
       if(update_smokeplanes!=1){
         update_smokeplanes = 1;
-        CHECKBOX_update_smokeplanes->set_int_val(1);
+        if(CHECKBOX_update_smokeplanes!=NULL)CHECKBOX_update_smokeplanes->set_int_val(1);
       }
       if(plane_single!=0){
         plane_single = 0;
-        CHECKBOX_plane_single->set_int_val(0);
+        if(CHECKBOX_plane_single!=NULL)CHECKBOX_plane_single->set_int_val(0);
       }
       if(use_newsmoke==SMOKE3D_NEW){
         if(smoke_getvals==0){
           smoke_getvals = 1;
-          CHECKBOX_smoke_getvals->set_int_val(1);
+          if(CHECKBOX_plane_single!=NULL)CHECKBOX_plane_single->set_int_val(1);
         }
         if(smoke_outline_type!=SMOKE_TRIANGULATION){
           smoke_outline_type=SMOKE_TRIANGULATION;
-          RADIO_smoke_outline_type->set_int_val(smoke_outline_type);
+          if(RADIO_smoke_outline_type!=NULL)RADIO_smoke_outline_type->set_int_val(smoke_outline_type);
         }
       }
     }

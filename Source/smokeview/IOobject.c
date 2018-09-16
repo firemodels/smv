@@ -225,6 +225,63 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3], float p2or
   return Dist(p1, p2);
 }
 
+/* ----------------------- GetScreenCoords ----------------------------- */
+
+void GetScreenCoords(float *xyz, int *screen){
+  double mv_setup[16], projection_setup[16];
+  GLint viewport_setup[4];
+  double dscreen[3];
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mv_setup);
+  glGetDoublev(GL_PROJECTION_MATRIX, projection_setup);
+  glGetIntegerv(GL_VIEWPORT, viewport_setup);
+  
+  gluProject(xyz[0], xyz[1], xyz[2], mv_setup, projection_setup, viewport_setup, dscreen, dscreen+1, dscreen+2);
+
+  screen[0] = dscreen[0];
+  screen[1] = dscreen[1];
+  screen[2] = dscreen[2];
+}
+
+/* ----------------------- GetScreenRGB ----------------------------- */
+
+void GetScreenRGB(float *xyz, int *rgbcolor){
+  int screen[3];
+  int width = 1, height = 1;
+  unsigned char color[3];
+
+  GetScreenCoords(xyz, screen);
+
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadPixels(screen[0], screen[1], width, height, GL_RED,   GL_UNSIGNED_BYTE, color);
+  glReadPixels(screen[0], screen[1], width, height, GL_GREEN, GL_UNSIGNED_BYTE, color+1);
+  glReadPixels(screen[0], screen[1], width, height, GL_BLUE,  GL_UNSIGNED_BYTE, color+2);
+  rgbcolor[0] = color[0];
+  rgbcolor[1] = color[1];
+  rgbcolor[2] = color[2];
+}
+
+/* ----------------------- RGBTest ----------------------------- */
+
+void RGBTest(void){
+  int rgbcolor[3];
+  int dr, dg, db;
+  int max_err;
+
+  GetScreenRGB(rgb_test_xyz, rgbcolor);
+  dr = ABS(rgbcolor[0]-rgb_test_rgb[0]);
+  dg = ABS(rgbcolor[1]-rgb_test_rgb[1]);
+  db = ABS(rgbcolor[2]-rgb_test_rgb[2]);
+  max_err = MAX(dr, dg);
+  max_err = MAX(max_err, db);
+  if(max_err>=rgb_test_delta){
+    printf("***error: at (%f,%f,%f) found color (%i,%i,%i) was expecting (%i,%i,%i)\n",
+    rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
+    rgbcolor[0], rgbcolor[0], rgbcolor[0],
+    rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
+  }
+}
+
 /* ----------------------- GetDeviceScreenCoords ----------------------------- */
 
 void GetDeviceScreenCoords(void){

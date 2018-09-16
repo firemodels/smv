@@ -20,6 +20,11 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(update_rgb_test,0);
+SVEXTERN float rgb_test_xyz[3];
+SVEXTERN int   rgb_test_rgb[3];
+SVEXTERN float SVDECL(rgb_test_delta,10);
+
 SVEXTERN float SVDECL(customview_azimuth, 0.0);
 SVEXTERN float SVDECL(customview_elevation, 0.0);
 SVEXTERN float SVDECL(customview_up, 90.0);
