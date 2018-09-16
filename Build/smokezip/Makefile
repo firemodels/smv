@@ -92,27 +92,27 @@ gnu_linux_64 : $(obj)
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
-gnu_osx_64 : LFLAGS    = -m64
+gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
 gnu_osx_64 : FC        = gfortran
 gnu_osx_64 : exe       = smokezip_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)  -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu OSX debug ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-gnu_osx_64_db : LFLAGS    = -m64
+gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : FC        = gfortran
 gnu_osx_64_db : exe       = smokezip_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
@@ -137,25 +137,27 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 
 intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = smokezip_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 #  64 bit debug OSX
 
 intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7 -stand:f08
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icc
 intel_osx_64_db : FC        = ifort
 intel_osx_64_db : exe       = smokezip_osx_64_db
 
 intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj)  -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 
 
