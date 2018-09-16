@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateUseLighting(void);
 #ifdef pp_GPUSMOKE
 EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
 EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);

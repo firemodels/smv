@@ -296,7 +296,7 @@ void DrawGeom(int flag, int timestate){
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,iso_specular);
     glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,iso_shininess);
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
@@ -435,7 +435,7 @@ void DrawGeom(int flag, int timestate){
     }
 
     glDisable(GL_COLOR_MATERIAL);
-    glDisable(GL_LIGHTING);
+    DISABLE_LIGHTING;
     glPopMatrix();
     if(flag==DRAW_TRANSPARENT){
       if(use_transparency_data==1)TransparentOff();
@@ -471,7 +471,7 @@ void DrawGeom(int flag, int timestate){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      glEnable(GL_LIGHTING);
+      ENABLE_LIGHTING;
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -537,7 +537,7 @@ void DrawGeom(int flag, int timestate){
       }
       glEnd();
       glDisable(GL_COLOR_MATERIAL);
-      glDisable(GL_LIGHTING);
+      DISABLE_LIGHTING;
       glPopMatrix();
     }
 
@@ -549,7 +549,7 @@ void DrawGeom(int flag, int timestate){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glDisable(GL_COLOR_MATERIAL);
-      glDisable(GL_LIGHTING);
+      DISABLE_LIGHTING;
       glLineWidth(20.0);
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->nvolumes;j++){
@@ -2442,7 +2442,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)glEnable(GL_LIGHTING);
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+        ENABLE_LIGHTING;
+      }
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -2558,7 +2560,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glEnd();
       glPopMatrix();
       glDisable(GL_COLOR_MATERIAL);
-      if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)glDisable(GL_LIGHTING);
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+        DISABLE_LIGHTING;
+      }
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
   }

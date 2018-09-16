@@ -939,7 +939,7 @@ void DrawIsoOrig(int tranflag){
 
     glPushAttrib(GL_LIGHTING_BIT);
     if(iso_lighting==1){
-      glEnable(GL_LIGHTING);
+      ENABLE_LIGHTING;
       glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,iso_specular);
       glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,iso_shininess);
       glEnable(GL_COLOR_MATERIAL);
@@ -1211,7 +1211,7 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
     if(asurface->cullfaces==1)glDisable(GL_CULL_FACE);
     glPushAttrib(GL_LIGHTING_BIT);
     if(surfacetype==SURFACE_SOLID){
-      glEnable(GL_LIGHTING);
+      ENABLE_LIGHTING;
       glEnable(GL_COLOR_MATERIAL);
     }
     glBegin(GL_TRIANGLES);
@@ -1265,7 +1265,7 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
     if(asurface->cullfaces==1)glEnable(GL_CULL_FACE);
     if(surfacetype==SURFACE_SOLID){
       glDisable(GL_COLOR_MATERIAL);
-      glDisable(GL_LIGHTING);
+      DISABLE_LIGHTING;
     }
 
     glPopAttrib();

@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ENABLE_LIGHTING if(use_lighting==1)glEnable(GL_LIGHTING)
+#define DISABLE_LIGHTING if(use_lighting==1)glDisable(GL_LIGHTING)
+
 #ifdef pp_DPRINT
 #define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
 #else
@@ -790,6 +793,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_RESET -4
 #define COLORBAR_TOGGLE_BW_DATA -21
 #define MENU_COLORBAR_SETTINGS -22
+#define USE_LIGHTING -25
 
 #define LOAD 0
 #define UNLOAD 1

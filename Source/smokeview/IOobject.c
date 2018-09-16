@@ -277,9 +277,10 @@ void RGBTest(void){
   if(max_err>=rgb_test_delta){
     printf("***error: at (%f,%f,%f) found color (%i,%i,%i) was expecting (%i,%i,%i)\n",
     rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
-    rgbcolor[0], rgbcolor[0], rgbcolor[0],
+    rgbcolor[0], rgbcolor[1], rgbcolor[2],
     rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
   }
+  use_lighting = 1;
 }
 
 /* ----------------------- GetDeviceScreenCoords ----------------------------- */
@@ -612,7 +613,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
   else{
     maxr = maxr_windrose;
   }
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
@@ -732,7 +733,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
     }
   }
   glPopMatrix();
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
 }
 
 /* ----------------------- DrawWindRosesDevices ----------------------------- */
@@ -3280,7 +3281,7 @@ void DrawDevices(void){
     float arrow_color_float[4];
     int j;
 
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
@@ -3619,7 +3620,7 @@ void DrawDevices(void){
       }
     }
     glPopMatrix();
-    glDisable(GL_LIGHTING);
+    DISABLE_LIGHTING;
   }
 
   glPushMatrix();
@@ -3923,7 +3924,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
   use_material = 0;
   if(select_device_color_ptr == NULL&&recurse_level == 0){
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -4579,7 +4580,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   }
   if(use_material == 1 && recurse_level == 0){
     glDisable(GL_COLOR_MATERIAL);
-    glDisable(GL_LIGHTING);
+    DISABLE_LIGHTING;
   }
 
   if(object->use_displaylist == 1 && displaylist_id != 0){
