@@ -274,11 +274,16 @@ void RGBTest(void){
   db = ABS(rgbcolor[2]-rgb_test_rgb[2]);
   max_err = MAX(dr, dg);
   max_err = MAX(max_err, db);
-  if(max_err>=rgb_test_delta){
-    printf("***error: at (%f,%f,%f) found color (%i,%i,%i) was expecting (%i,%i,%i)\n",
-    rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
-    rgbcolor[0], rgbcolor[1], rgbcolor[2],
-    rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
+  if(max_err<=rgb_test_delta){
+    printf("found color (%i,%i,%i) at (%f,%f,%f) - within error bounds\n",
+      rgbcolor[0], rgbcolor[1], rgbcolor[2],
+      rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2]);
+  }
+  else{
+    printf("***Error: found color (%i,%i,%i) at (%f,%f,%f) was expecting (%i,%i,%i)\n",
+      rgbcolor[0], rgbcolor[1], rgbcolor[2],
+      rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
+      rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
   }
   use_lighting = 1;
 }
