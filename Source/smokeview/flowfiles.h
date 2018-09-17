@@ -1151,7 +1151,7 @@ typedef struct _slicedata {
 #ifdef pp_SLICEGEOM
   char *geom_file;
 #endif
-  int finalized;
+  int finalize;
   char *slicelabel;
   int compression_type;
   int colorbar_autoflip;
@@ -1267,6 +1267,7 @@ typedef struct _vslicedata {
   int volslice;
   int iu, iv, iw, ival;
   int skip;
+  int finalize;
   int loaded,display;
   float valmin, valmax;
   int vslicefile_type;

@@ -4456,7 +4456,22 @@ void LoadMultiVSliceMenu(int value){
     }
     if(scriptoutstream==NULL){
       START_TIMER(load_time);
-      for(i=0;i<mvslicei->nvslices;i++){
+      for(i = 0; i<mvslicei->nvslices; i++){
+        vslicedata *vslicei;
+
+        vslicei = vsliceinfo+mvslicei->ivslices[i];
+        vslicei->finalize = 0;
+      }
+      for(i = mvslicei->nvslices-1; i>=0; i--){
+        vslicedata *vslicei;
+
+        vslicei = vsliceinfo+mvslicei->ivslices[i];
+        if(vslicei->skip==0&&vslicei->loaded==0){
+          vslicei->finalize = 1;
+          break;
+        }
+      }
+      for(i = 0; i<mvslicei->nvslices; i++){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo + mvslicei->ivslices[i];
@@ -4562,9 +4577,9 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
 
-    slicei->finalized = 0;
+    slicei->finalize = 0;
     if(last_slice==i){
-      slicei->finalized = 1;
+      slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skip == 0 && slicei->loaded == 0){

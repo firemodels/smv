@@ -1184,6 +1184,8 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
   vd->v=NULL;
   vd->w=NULL;
   vd->val=NULL;
+  int set_slicecolor = SET_SLICECOLOR;
+
   if(flag==UNLOAD){
     if(vd->loaded==0)return 0;
     if(vd->iu!=-1){
@@ -1238,12 +1240,14 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     return return_filesize;
   }
+  if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
   if(vd->iu!=-1){
     slicedata *u=NULL;
 
     u = sliceinfo + vd->iu;
+    u->finalize = vd->finalize;
     vd->u=u;
-    return_filesize+=ReadSlice(u->file,vd->iu,flag,SET_SLICECOLOR,errorcode);
+    return_filesize+=ReadSlice(u->file,vd->iu,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
       vd->loaded=1;
       fprintf(stderr,"*** Error: unable to load U velocity vector components in %s . Vector load aborted\n",u->file);
@@ -1261,8 +1265,9 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     slicedata *v=NULL;
 
     v = sliceinfo + vd->iv;
+    v->finalize = vd->finalize;
     vd->v=v;
-    return_filesize+=ReadSlice(v->file,vd->iv,flag,SET_SLICECOLOR,errorcode);
+    return_filesize+=ReadSlice(v->file,vd->iv,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load V velocity vector components in %s . Vector load aborted\n",v->file);
       vd->loaded=1;
@@ -1281,8 +1286,9 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     slicedata *w=NULL;
 
     w = sliceinfo + vd->iw;
+    w->finalize = vd->finalize;
     vd->w=w;
-    return_filesize+=ReadSlice(w->file,vd->iw,flag,SET_SLICECOLOR,errorcode);
+    return_filesize+=ReadSlice(w->file,vd->iw,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load W velocity vector components in %s . Vector load aborted\n",w->file);
       vd->loaded=1;
@@ -1302,8 +1308,9 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     slicedata *val=NULL;
 
     val = sliceinfo + vd->ival;
+    val->finalize = vd->finalize;
     vd->val=val;
-    return_filesize+=ReadSlice(val->file,vd->ival,flag,SET_SLICECOLOR,errorcode);
+    return_filesize+=ReadSlice(val->file,vd->ival,flag,set_slicecolor,errorcode);
     if(*errorcode!=0){
       fprintf(stderr,"*** Error: unable to load vector values in %s . Vector load aborted\n",val->file);
       vd->loaded=1;
@@ -2495,7 +2502,7 @@ void UpdateFedinfo(void){
     sd->js2 = co2->js2;
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
-    sd->finalized = 1;
+    sd->finalize = 1;
 
     nn_slice = nsliceinfo + i;
 
@@ -3131,6 +3138,7 @@ void UpdateVSlices(void){
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){
+      vd->finalize = 1;
       vd->display=0;
       vd->loaded=0;
       vd->volslice=sdi->volslice;
@@ -4264,7 +4272,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   if(sd->vloaded == 0)sd->display = 1;
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-  if(sd->finalized==1){
+  if(sd->finalize==1){
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;
