@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(use_lighting, 0);
+SVEXTERN int SVDECL(use_lighting, 1);
 SVEXTERN float SVDECL(update_rgb_test,0);
 SVEXTERN float rgb_test_xyz[3];
 SVEXTERN int   rgb_test_rgb[3];
