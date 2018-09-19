@@ -5825,7 +5825,7 @@ void SetupTreeDevices(void){
         }
       }
     }
-    if(nz>0)nztreedeviceinfo++;
+    if(nz>1)nztreedeviceinfo++;
     treei->nz = nz;
   }
 
@@ -5850,7 +5850,7 @@ void SetupTreeDevices(void){
         nz++;
       }
     }
-    if(nz>0)ztreedeviceinfo[nztreedeviceinfo++] = treei;
+    if(nz>1)ztreedeviceinfo[nztreedeviceinfo++] = treei;
   }
 }
 
@@ -6166,6 +6166,9 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       vdevicei->nwindroseinfo = 1;
       NewMemory((void **)&windrosei, vdevicei->nwindroseinfo * sizeof(windrosedata));
       vdevicei->windroseinfo=windrosei;
+    }
+    else{
+      windrosei = vdevicei->windroseinfo;
     }
     if(udev != NULL){
       ndevs++;
