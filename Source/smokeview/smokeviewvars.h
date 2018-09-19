@@ -163,7 +163,7 @@ SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
-SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
+SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(quicktime_compatibility, 1);
 #else
@@ -178,7 +178,7 @@ SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
 
 SVEXTERN int SVDECL(update_slice, 0);
-SVEXTERN int SVDECL(*windrose_showhide, NULL), SVDECL(nwindrose_showhide,0), SVDECL(update_windrose_showhide,0);
+SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
 #ifdef pp_SMOKETEST
 SVEXTERN int SVDECL(smoke_test, 0);
@@ -1253,8 +1253,12 @@ SVEXTERN int SVDECL(devicetypes_index,0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
-SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(nztreedeviceinfo, 0), SVDECL(mintreesize, 3);
-SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL), SVDECL(**ztreedeviceinfo,NULL);
+
+SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(mintreesize, 3);
+SVEXTERN int SVDECL(nztreedeviceinfo, 0);
+SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL);
+SVEXTERN treedevicedata SVDECL(**ztreedeviceinfo, NULL);
+
 SVEXTERN int SVDECL(show_smokesensors,SMOKESENSORS_0255),active_smokesensors,test_smokesensors;
 SVEXTERN float smoke3d_cvis;
 SVEXTERN sv_object SVDECL(**object_defs,NULL), SVDECL(*heat_detector_object_backup,NULL), SVDECL(*target_object_backup,NULL);

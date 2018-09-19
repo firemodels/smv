@@ -11963,23 +11963,23 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "WINDROSESHOWHIDE")==1){
         int i1, i2, *vals, nrows;
 
-        FREEMEMORY(windrose_showhide);
-        nwindrose_showhide = 0;
+        FREEMEMORY(windrosez_showhide);
+        nwindrosez_showhide = 0;
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %i", &nwindrose_showhide);
-        if(nwindrose_showhide>0){
-          nrows = ((nwindrose_showhide-1)/WINDROSE_PER_ROW+1);
-          NewMemory((void **)&windrose_showhide, nrows*WINDROSE_PER_ROW*sizeof(int));
-          for(vals=windrose_showhide,i=0;i<nrows;i++,vals+=WINDROSE_PER_ROW){
+        sscanf(buffer, " %i", &nwindrosez_showhide);
+        if(nwindrosez_showhide>0){
+          nrows = ((nwindrosez_showhide-1)/WINDROSE_PER_ROW+1);
+          NewMemory((void **)&windrosez_showhide, nrows*WINDROSE_PER_ROW*sizeof(int));
+          for(vals=windrosez_showhide,i=0;i<nrows;i++,vals+=WINDROSE_PER_ROW){
             int j;
 
             i1 = WINDROSE_PER_ROW*i;
-            i2 = MIN(i1+WINDROSE_PER_ROW,nwindrose_showhide);
+            i2 = MIN(i1+WINDROSE_PER_ROW,nwindrosez_showhide);
             fgets(buffer, 255, stream);
             sscanf(buffer, " %i %i %i %i %i %i %i %i %i %i ",
               vals,vals+1,vals+2,vals+3,vals+4,vals+5,vals+6,vals+7,vals+8,vals+9);
             for(j=i1;j<i2;j++){
-              windrose_showhide[j] = CLAMP(vals[j-i1],0,1);
+              windrosez_showhide[j] = CLAMP(vals[j-i1],0,1);
             }
           }
           update_windrose_showhide = 1;
@@ -13539,14 +13539,14 @@ void WriteIni(int flag,char *filename){
     windrose_first,windrose_next);
   fprintf(fileout, " %i %i %i %f %i %i\n", nr_windrose, ntheta_windrose, scale_windrose, radius_windrose, scale_increment_windrose, scale_max_windrose);
   {
-    if(nwindrose_showhide > 0){
+    if(nwindrosez_showhide > 0){
       int ii;
 
       UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
       fprintf(fileout, "WINDROSESHOWHIDE\n");
-      fprintf(fileout, " %i\n", nwindrose_showhide);
-      for(ii = 0; ii < nwindrose_showhide; ii++){
-        fprintf(fileout, " %i", windrose_showhide[ii]);
+      fprintf(fileout, " %i\n", nwindrosez_showhide);
+      for(ii = 0; ii < nwindrosez_showhide; ii++){
+        fprintf(fileout, " %i", windrosez_showhide[ii]);
         if((ii+1)%WINDROSE_PER_ROW==0)fprintf(fileout, "\n");
       }
       fprintf(fileout, "\n");

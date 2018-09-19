@@ -63,7 +63,7 @@ GLUI_Checkbox *CHECKBOX_vis_ytree = NULL;
 GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
-GLUI_Checkbox **CHECKBOX_show_windrose;
+GLUI_Checkbox **CHECKBOX_showz_windrose;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -97,7 +97,7 @@ GLUI_Rollout *ROLLOUT_velocityvectors = NULL;
 GLUI_Rollout *ROLLOUT_smvobjects=NULL;
 GLUI_Rollout *ROLLOUT_arrow_dimensions = NULL;
 GLUI_Rollout *ROLLOUT_windrose = NULL;
-GLUI_Rollout **ROLLOUT_show_windrose;
+GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
 GLUI_Spinner *SPINNER_windrose_merge_dxyzt[4];
@@ -151,29 +151,29 @@ extern "C" void UpdateWindRoseDevices(int option){
       if(vdevsorti->dir == ZDIR&&vd->unique != 0){
 
       // when reading ini file
-        if(option==UPDATE_WINDROSE_DEVICE&&windrose_showhide!=NULL){
-          vd->display=windrose_showhide[icheckboxes];
+        if(option==UPDATE_WINDROSE_DEVICE&&windrosez_showhide!=NULL){
+          vd->display=windrosez_showhide[icheckboxes];
         }
 
         // when updating checkboxes
-        if(option==UPDATE_WINDROSE_CHECKBOX&&CHECKBOX_show_windrose!=NULL&&
-             CHECKBOX_show_windrose[icheckboxes]!=NULL){
-          CHECKBOX_show_windrose[icheckboxes]->set_int_val(vd->display);
+        if(option==UPDATE_WINDROSE_CHECKBOX&&CHECKBOX_showz_windrose!=NULL&&
+             CHECKBOX_showz_windrose[icheckboxes]!=NULL){
+          CHECKBOX_showz_windrose[icheckboxes]->set_int_val(vd->display);
         }
 
         // when writing ini file
-        if(option==UPDATE_WINDROSE_SHOWHIDE&&windrose_showhide!=NULL){
-          windrose_showhide[icheckboxes]=vd->display;
+        if(option==UPDATE_WINDROSE_SHOWHIDE&&windrosez_showhide!=NULL){
+          windrosez_showhide[icheckboxes]=vd->display;
         }
         icheckboxes++;
       }
     }
   }
-  nwindrose_showhide=icheckboxes;
+  nwindrosez_showhide=icheckboxes;
   update_windrose_showhide = 0;
-  if(option == UPDATE_WINDROSE_SHOWHIDE&&windrose_showhide == NULL){
-    NewMemory((void **)&windrose_showhide, nwindrose_showhide * sizeof(int));
-    if(windrose_showhide!=NULL)UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
+  if(option == UPDATE_WINDROSE_SHOWHIDE&&windrosez_showhide == NULL){
+    NewMemory((void **)&windrosez_showhide, nwindrosez_showhide * sizeof(int));
+    if(windrosez_showhide!=NULL)UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
   }
 }
 
@@ -231,7 +231,7 @@ void UpdateShowWindRoses(void) {
         else {
           vd->display = 0;
         }
-        CHECKBOX_show_windrose[icheckbox]->set_int_val(vd->display);
+        CHECKBOX_showz_windrose[icheckbox]->set_int_val(vd->display);
         idev++;
         icheckbox++;
       }
@@ -478,9 +478,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       if(nztreedeviceinfo>0){
         int icheckboxes;
 
-        NewMemory((void **)&ROLLOUT_show_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
+        NewMemory((void **)&ROLLOUT_showz_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
 
-        nwindrose_checkboxes=0;
+        nwindrosez_checkboxes=0;
         for(i = 0; i<nztreedeviceinfo; i++){
           treedevicedata *treei;
           int j;
@@ -494,12 +494,12 @@ extern "C" void GluiDeviceSetup(int main_window){
             vd = vdevsorti->vdeviceinfo;
             if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
                vd->angledev == NULL&&vd->veldev == NULL)continue;
-            if(vdevsorti->dir == ZDIR&&vd->unique != 0)nwindrose_checkboxes++;
+            if(vdevsorti->dir == ZDIR&&vd->unique != 0)nwindrosez_checkboxes++;
           }
         }
-        NewMemory((void **)&CHECKBOX_show_windrose, nwindrose_checkboxes*sizeof(GLUI_Checkbox *));
-        for(i=0;i<nwindrose_checkboxes;i++){
-          CHECKBOX_show_windrose[i] = NULL;
+        NewMemory((void **)&CHECKBOX_showz_windrose, nwindrosez_checkboxes*sizeof(GLUI_Checkbox *));
+        for(i=0;i<nwindrosez_checkboxes;i++){
+          CHECKBOX_showz_windrose[i] = NULL;
         }
         UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
 
@@ -518,9 +518,9 @@ extern "C" void GluiDeviceSetup(int main_window){
           TrimZeros(xlabel);
           TrimZeros(ylabel);
           sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
-          ROLLOUT_show_windrose[i] = glui_device->add_rollout_to_panel(PANEL_show_windrose, roselabel, false);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],_("Show all"),WINDROSE_SHOWHIDEALL+i,DeviceCB);
-          glui_device->add_button_to_panel(ROLLOUT_show_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
+          ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(PANEL_show_windrose, roselabel, false);
+          glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Show all"),WINDROSE_SHOWHIDEALL+i,DeviceCB);
+          glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
 
           for(j = treei->first; j<=treei->last; j++){
             vdevicesortdata *vdevsorti;
@@ -539,7 +539,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
               sprintf(zlabel, "z=%f", xyz[2]);
               TrimZeros(zlabel);
-              CHECKBOX_show_windrose[icheckboxes++] = glui_device->add_checkbox_to_panel(ROLLOUT_show_windrose[i],zlabel,&vd->display);
+              CHECKBOX_showz_windrose[icheckboxes++] = glui_device->add_checkbox_to_panel(ROLLOUT_showz_windrose[i],zlabel,&vd->display);
             }
           }
         }
