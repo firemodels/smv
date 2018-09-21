@@ -6156,7 +6156,9 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
-    int ndevs = 0, nvals;
+#define MAXDEVS 1000000000
+    int nvals=MAXDEVS;
+    int use_uvw_dev = 0, use_angle_dev=0;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -6165,26 +6167,19 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     angledev = vdevicei->angledev;
     veldev = vdevicei->veldev;
 
-    if(udev != NULL){
-      ndevs++;
-      nvals = udev->nvals;
-    }
-    if(vdev != NULL){
-      nvals = vdev->nvals;
-      ndevs++;
-    }
-    if(wdev != NULL){
-      nvals = wdev->nvals;
-      ndevs++;
-    }
-    if(ndevs>1){
+    if(udev!=NULL||vdev!=NULL||wdev!=NULL){
+      use_uvw_dev = 1;
       if(udev!=NULL)nvals = MIN(nvals, udev->nvals);
       if(vdev!=NULL)nvals = MIN(nvals, vdev->nvals);
       if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
+      if(udev!=NULL&&vdev!=NULL)windrose_xy_active = 1;
+      if(udev!=NULL&&wdev!=NULL)windrose_xz_active = 1;
+      if(vdev!=NULL&&wdev!=NULL)windrose_yz_active = 1;
     }
-    if(angledev != NULL&&veldev != NULL){
+    if(angledev != NULL&&veldev != NULL){ // if have 'polar' devices then don't use cartesian
+      use_uvw_dev = 0;
+      use_angle_dev = 1;
       nvals = MIN(angledev->nvals, veldev->nvals);
-      ndevs=0;
     }
     if(flag == FIRST_TIME){
       windrosedata *windroseinfo;
@@ -6197,7 +6192,8 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       NewMemory((void **)&windroseinfo, vdevicei->nwindroseinfo * sizeof(windrosedata));
       vdevicei->windroseinfo= windroseinfo;
     }
-    if(ndevs>1){
+
+    if(use_uvw_dev==1){
       float rmin, rmax;
       int  k;
 
@@ -6208,12 +6204,8 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         windrosei = vdevicei->windroseinfo+k;
         windrosei->xyz = udev->xyz;
 
-        if(udev != NULL&&vdev != NULL)windrose_xy_active = 1;
-        if(udev != NULL&&wdev != NULL)windrose_xz_active = 1;
-        if(vdev != NULL&&wdev != NULL)windrose_yz_active = 1;
-
         for(j = 0; j<3; j++){
-          float *uvals, *vvals;
+          float *times, *uvals, *vvals, tmin, tmax;
           histogramdata *histogram;
 
           histogram = windrosei->histogram+j;
@@ -6237,14 +6229,27 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
             if(wdev!=NULL)vvals = wdev->vals;
             break;
           }
+          if(udev!=NULL)times = udev->times;
+          if(vdev!=NULL)times = vdev->times;
+          if(wdev!=NULL)times = wdev->times;
           if(uvals==NULL||vvals==NULL)continue;
-          Get2DBounds(uvals, vvals, nvals, &rmin, &rmax);
-          CopyUV2Histogram(uvals, vvals, nvals, rmin, rmax, histogram);
-          maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
+          if(times!=NULL&&windrose_merge_dxyzt[3]>0.1){
+            tmin = times[k]-windrose_merge_dxyzt[3];
+            tmax = times[k]+windrose_merge_dxyzt[3];
+          }
+          else{
+            tmin = 0.0;
+            tmax = 0.0;
+            times = NULL;
+          }
+          if(Get2DBounds(times, uvals, vvals, nvals, tmin, tmax, &rmin, &rmax)>0){
+            CopyUV2Histogram(times, uvals, vvals, nvals, tmin, tmax, rmin, rmax, histogram);
+            maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
+          }
         }
       }
     }
-    if(angledev != NULL&&veldev != NULL){
+    if(use_angle_dev==1){
       float rmin, rmax;
       int k;
 
