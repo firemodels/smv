@@ -89,10 +89,12 @@ SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(toggle_colorbar, 0);
 SVEXTERN int hcolorbar_vis[6];
+
+SVEXTERN int SVDECL(windrose_ttype, 2);
 #ifdef INMAIN
-  SVEXTERN float windrose_merge_dxyzt[4] = { 0.0,0.0,0.0,0.0 };
+  SVEXTERN float windrose_merge_dxyzt[6] = { 0.0,0.0,0.0,0.0,0.0,0.0 };
 #else
-  SVEXTERN float windrose_merge_dxyzt[4];
+  SVEXTERN float windrose_merge_dxyzt[6];
 #endif
 SVEXTERN int SVDECL(lock_mouse_aperture, 0);
 SVEXTERN int SVDECL(windrose_merge_type,WINDROSE_POINT);

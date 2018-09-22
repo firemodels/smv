@@ -587,6 +587,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define KMIN 4
 #define KMAX 5
 
+#define WINDROSE_USE_DT      0
+#define WINDROSE_USE_TMINMAX 1
+#define WINDROSE_USE_NEITHER 2
+
 #define WINDROSE_XY 0
 #define WINDROSE_XZ 1
 #define WINDROSE_YZ 2

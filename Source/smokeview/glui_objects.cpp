@@ -79,20 +79,20 @@ GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
 GLUI_Panel *PANEL_orientation=NULL;
 GLUI_Panel *PANEL_wr1=NULL;
-GLUI_Panel *PANEL_show_windrose = NULL;
 GLUI_Panel *PANEL_show_windrose2 = NULL;
 GLUI_Panel *PANEL_windrose_merge = NULL;
 
+GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
 GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
+GLUI_Panel *ROLLOUT_showhide_windrose = NULL;
 GLUI_Panel *ROLLOUT_properties = NULL;
 GLUI_Panel *ROLLOUT_scale_windrose = NULL;
 GLUI_Rollout *ROLLOUT_devicevalues = NULL;
-
 GLUI_Rollout *ROLLOUT_velocityvectors = NULL;
 GLUI_Rollout *ROLLOUT_smvobjects=NULL;
 GLUI_Rollout *ROLLOUT_arrow_dimensions = NULL;
@@ -100,7 +100,7 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
-GLUI_Spinner *SPINNER_windrose_merge_dxyzt[4];
+GLUI_Spinner *SPINNER_windrose_merge_dxyzt[6];
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
 GLUI_Spinner *SPINNER_beam_line_width = NULL;
@@ -268,7 +268,7 @@ void DeviceCB(int var){
   }
   if(var == WINDROSE_SHOW_NEXT){
     if(windrose_next<1){
-      windrose_first=1;
+      windrose_next=1;
       SPINNER_windrose_next->set_int_val(windrose_next);
     }
     UpdateShowWindRoses();
@@ -451,32 +451,40 @@ extern "C" void GluiDeviceSetup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT);
 
 
-      PANEL_show_windrose = glui_device->add_panel_to_panel(ROLLOUT_windrose, "show", true);
-      PANEL_show_windrose2 = glui_device->add_panel_to_panel(PANEL_show_windrose, "", true);
-      glui_device->add_checkbox_to_panel(PANEL_show_windrose2, _("show"), &viswindrose);
-      SPINNER_windrose_first = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
-      SPINNER_windrose_next = glui_device->add_spinner_to_panel(PANEL_show_windrose2, _("increment"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose);
 
+      PANEL_show_windrose2 = glui_device->add_panel_to_panel(ROLLOUT_windrose, "merge data", true);
       SPINNER_windrose_merge_dxyzt[0] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dx", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt,   WINDROSE_DXYZT, DeviceCB);
       SPINNER_windrose_merge_dxyzt[1] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dy", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+1, WINDROSE_DXYZT, DeviceCB);
       SPINNER_windrose_merge_dxyzt[2] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dz", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+2, WINDROSE_DXYZT, DeviceCB);
       SPINNER_windrose_merge_dxyzt[3] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "dt", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+3, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[4] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "tmin", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+4, WINDROSE_DXYZT, DeviceCB);
+      SPINNER_windrose_merge_dxyzt[5] = glui_device->add_spinner_to_panel(PANEL_show_windrose2, "tmax", GLUI_SPINNER_FLOAT, windrose_merge_dxyzt+5, WINDROSE_DXYZT, DeviceCB);
+      RADIO_windrose_ttype = glui_device->add_radiogroup_to_panel(PANEL_show_windrose2, &windrose_ttype, WINDROSE_DXYZT, DeviceCB);
+      glui_device->add_radiobutton_to_group(RADIO_windrose_ttype, _("use dt"));
+      glui_device->add_radiobutton_to_group(RADIO_windrose_ttype, _("use tmin/tmax"));
+      glui_device->add_radiobutton_to_group(RADIO_windrose_ttype, _("neither"));
       BUTTON_update_windrose = glui_device->add_button_to_panel(PANEL_show_windrose2, _("Update"), WINDROSE_UPDATE, DeviceCB);
 
 
-      PANEL_windrose_merge = glui_device->add_panel_to_panel(PANEL_show_windrose, "merge type", true);
+      PANEL_windrose_merge = glui_device->add_panel_to_panel(ROLLOUT_windrose, "merge type", true);
       RADIO_windrose_merge_type=glui_device->add_radiogroup_to_panel(PANEL_windrose_merge,&windrose_merge_type,WINDROSE_DXYZT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("none"));
       glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("stepped"));
       glui_device->add_radiobutton_to_group(RADIO_windrose_merge_type,_("sliding"));
 
-      PANEL_orientation = glui_device->add_panel_to_panel(PANEL_show_windrose, "orientation", true);
+      PANEL_orientation = glui_device->add_panel_to_panel(ROLLOUT_windrose, "orientation", true);
       if(windrose_xy_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "xy", &windrose_xy_vis);
       if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "xz", &windrose_xz_vis);
       if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "yz", &windrose_yz_vis);
 
       if(nztreedeviceinfo>0){
         int icheckboxes;
+
+        ROLLOUT_showhide_windrose = glui_device->add_rollout_to_panel(ROLLOUT_windrose, "trees", false);
+
+        SPINNER_windrose_first = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
+        SPINNER_windrose_next = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("skip"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
 
         NewMemory((void **)&ROLLOUT_showz_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
 
@@ -518,7 +526,7 @@ extern "C" void GluiDeviceSetup(int main_window){
           TrimZeros(xlabel);
           TrimZeros(ylabel);
           sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
-          ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(PANEL_show_windrose, roselabel, false);
+          ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(ROLLOUT_showhide_windrose, roselabel, false);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Show all"),WINDROSE_SHOWHIDEALL+i,DeviceCB);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
 

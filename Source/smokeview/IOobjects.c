@@ -6233,9 +6233,13 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
           if(vdev!=NULL)times = vdev->times;
           if(wdev!=NULL)times = wdev->times;
           if(uvals==NULL||vvals==NULL)continue;
-          if(times!=NULL&&windrose_merge_dxyzt[3]>0.1){
+          if(times!=NULL&&windrose_merge_dxyzt[3]>0.1&&windrose_ttype==WINDROSE_USE_DT){
             tmin = times[k]-windrose_merge_dxyzt[3];
             tmax = times[k]+windrose_merge_dxyzt[3];
+          }
+          else if(times!=NULL&&windrose_merge_dxyzt[5]>windrose_merge_dxyzt[4]&&windrose_ttype==WINDROSE_USE_TMINMAX){
+            tmin = windrose_merge_dxyzt[4];
+            tmax = windrose_merge_dxyzt[5];
           }
           else{
             tmin = 0.0;
