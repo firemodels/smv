@@ -91,7 +91,7 @@ transport equation used to visualize smoke and fire.
 \ssection{INTRODUCTION}
 
 This \paper\ discusses some of the physics and associated numerical
-algorithms used by Smokeview~\cite{Smokeview_Users_Guide} to
+algorithms used by Smokeview~\cite{Smokeview_Users_Guide,Smokeview_Tech_Guide} to
 visualize smoke and fire.  Smoke color and opacity are visualized
 using quantitative physics-based methods.  Flame color
 is visualized using an arbitrary user-specified color palette
@@ -573,21 +573,21 @@ to the maximum temperature found along each line of sight.}
 
 % -------------------  Future Work ------------------------
 
-\ssection{SUMMARY AND FUTURE WORK}
+\ssection{SUMMARY}
 
 This \paper\ describes how Smokeview uses a simplified form of the radiative transport equation to display
-smoke and fire. 
-This equation is solved using either the CPU or the GPU along with the video card by drawing a series of slices. 
-Each slice is triangulated and drawn using opacities derived from Beer's law a simplified form of the 
-radiative transport equation.
+smoke and fire.
+This equation is solved using either the CPU or the GPU along with the video card by drawing a series of slices.
+Each slice is triangulated and drawn using opacities derived from Beer's law a simplified form of the
+radiative transport equation. The slices are colored using color maps. 
 These algorithms
 may be improved in several ways. The integration of the radiative transport equation can have problems
 due to the limited numerical precision (8 bits) used to represent smoke opacity.
-One solution to this as illustrated in Figure~\ref{fig:blendedmaximages} is to use 
+One solution to this as illustrated in Figure~\ref{fig:blendedmaximages} is to use
 choose maximum values rather than blending values.  A better solution is to use data with
-more precision to perform the integration. Flame color computations may be made more quantitative by
-relating temperature to color that is physics based rather than an assumed
-color map.
+more precision to perform the integration. Slice coloring may be made more quantitative by
+relating temperature to color using physics based rather than an assumed
+color map. 
 
 \bibliographystyle{unsrt}
 \bibliography{../../../fds/Manuals/Bibliography/FDS_general,../../../fds/Manuals/Bibliography/FDS_refs,../../../fds/Manuals/Bibliography/FDS_mathcomp,../Bibliography/sv_fire,../Bibliography/sv_graphics}
