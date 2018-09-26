@@ -342,7 +342,7 @@ of the light source {\em behind}\ the smoke, then equation
 (\ref{eq:discrete_rte2}) restated in words gives the observed color
 as a weighted average of source and emitted
 colors where each weight is the optical depth from the observer to
-the the corresponding emitted color location.  These emitted colors can be
+the corresponding emitted color location.  These emitted colors can be
 determined from a blackbody temperature curve or from a colormap
 meant to show variations in temperature in terms of color.
 
@@ -395,7 +395,7 @@ the polygon needs to be triangulated (the GPU triangulates data within any trian
 \includegraphics[height=3.0in]{../SMV_USER_GUIDE/SCRIPT_FIGURES/smokegeom_smokebox}
 \end{tabular}
 \end{center}
-\caption{To improve visualization performance, especially at at the beginning of the
+\caption{To improve visualization performance, especially at the beginning of the
 simulation when a fire is typically small, planes are placed only where smoke and fire is located resulting in faster visualizations (since
 data does not need to be obtained or drawn where it would not be visible).}
 \label{fig:smokebox}
@@ -578,7 +578,7 @@ This \paper\ describes some of the algorithms Smokeview uses to display
 smoke and fire using physics based algorithms. These algorithms
 may be improved in several ways. The integration of the RTE equation can have problems
 due to the limited numerical precision (8 bits) used to represent smoke opacity.
-One solution to this as illsutrated in Figure~\ref{fig:blendedmaximages} is use choose maximum values rather than blending values.  A better solution is to use data with
+One solution to this as illustrated in Figure~\ref{fig:blendedmaximages} is use choose maximum values rather than blending values.  A better solution is to use data with
 more precision to perform the integration. Flame color computations may be made more quantitative by
 relating temperature to color that is physics based rather than an assumed
 color map.
