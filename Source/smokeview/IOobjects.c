@@ -225,6 +225,69 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3], float p2or
   return Dist(p1, p2);
 }
 
+/* ----------------------- GetScreenCoords ----------------------------- */
+
+void GetScreenCoords(float *xyz, int *screen){
+  double mv_setup[16], projection_setup[16];
+  GLint viewport_setup[4];
+  double dscreen[3];
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mv_setup);
+  glGetDoublev(GL_PROJECTION_MATRIX, projection_setup);
+  glGetIntegerv(GL_VIEWPORT, viewport_setup);
+  
+  gluProject(xyz[0], xyz[1], xyz[2], mv_setup, projection_setup, viewport_setup, dscreen, dscreen+1, dscreen+2);
+
+  screen[0] = dscreen[0];
+  screen[1] = dscreen[1];
+  screen[2] = dscreen[2];
+}
+
+/* ----------------------- GetScreenRGB ----------------------------- */
+
+void GetScreenRGB(float *xyz, int *rgbcolor){
+  int screen[3];
+  int width = 1, height = 1;
+  unsigned char color[3];
+
+  GetScreenCoords(xyz, screen);
+
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadPixels(screen[0], screen[1], width, height, GL_RED,   GL_UNSIGNED_BYTE, color);
+  glReadPixels(screen[0], screen[1], width, height, GL_GREEN, GL_UNSIGNED_BYTE, color+1);
+  glReadPixels(screen[0], screen[1], width, height, GL_BLUE,  GL_UNSIGNED_BYTE, color+2);
+  rgbcolor[0] = color[0];
+  rgbcolor[1] = color[1];
+  rgbcolor[2] = color[2];
+}
+
+/* ----------------------- RGBTest ----------------------------- */
+
+void RGBTest(void){
+  int rgbcolor[3];
+  int dr, dg, db;
+  int max_err;
+
+  GetScreenRGB(rgb_test_xyz, rgbcolor);
+  dr = ABS(rgbcolor[0]-rgb_test_rgb[0]);
+  dg = ABS(rgbcolor[1]-rgb_test_rgb[1]);
+  db = ABS(rgbcolor[2]-rgb_test_rgb[2]);
+  max_err = MAX(dr, dg);
+  max_err = MAX(max_err, db);
+  if(max_err<=rgb_test_delta){
+    printf("found color (%i,%i,%i) at (%f,%f,%f) - within error bounds\n",
+      rgbcolor[0], rgbcolor[1], rgbcolor[2],
+      rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2]);
+  }
+  else{
+    printf("***Error: found color (%i,%i,%i) at (%f,%f,%f) was expecting (%i,%i,%i)\n",
+      rgbcolor[0], rgbcolor[1], rgbcolor[2],
+      rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
+      rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
+  }
+  use_lighting = 1;
+}
+
 /* ----------------------- GetDeviceScreenCoords ----------------------------- */
 
 void GetDeviceScreenCoords(void){
@@ -555,7 +618,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
   else{
     maxr = maxr_windrose;
   }
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
@@ -675,7 +738,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
     }
   }
   glPopMatrix();
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
 }
 
 /* ----------------------- DrawWindRosesDevices ----------------------------- */
@@ -685,14 +748,18 @@ void DrawWindRosesDevices(void){
 
   for(i = 0;i<nvdeviceinfo;i++){
     vdevicedata *vdevi;
-    windrosedata *wr;
+    int j;
 
     vdevi = vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
-    wr = vdevi->windroseinfo;
-    if(windrose_xy_vis == 1)DrawWindRose(wr, WINDROSE_XY);
-    if(windrose_xz_vis == 1)DrawWindRose(wr, WINDROSE_XZ);
-    if(windrose_yz_vis == 1)DrawWindRose(wr, WINDROSE_YZ);
+    for(j = 0; j<vdevi->nwindroseinfo; j++){
+      windrosedata *wr;
+
+      wr = vdevi->windroseinfo+j;
+      if(windrose_xy_vis==1)DrawWindRose(wr, WINDROSE_XY);
+      if(windrose_xz_vis==1)DrawWindRose(wr, WINDROSE_XZ);
+      if(windrose_yz_vis==1)DrawWindRose(wr, WINDROSE_YZ);
+    }
   }
 }
 
@@ -3223,7 +3290,7 @@ void DrawDevices(void){
     float arrow_color_float[4];
     int j;
 
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
@@ -3562,7 +3629,7 @@ void DrawDevices(void){
       }
     }
     glPopMatrix();
-    glDisable(GL_LIGHTING);
+    DISABLE_LIGHTING;
   }
 
   glPushMatrix();
@@ -3866,7 +3933,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
   use_material = 0;
   if(select_device_color_ptr == NULL&&recurse_level == 0){
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -4522,7 +4589,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   }
   if(use_material == 1 && recurse_level == 0){
     glDisable(GL_COLOR_MATERIAL);
-    glDisable(GL_LIGHTING);
+    DISABLE_LIGHTING;
   }
 
   if(object->use_displaylist == 1 && displaylist_id != 0){
@@ -5762,7 +5829,7 @@ void SetupTreeDevices(void){
         }
       }
     }
-    if(nz>0)nztreedeviceinfo++;
+    if(nz>1)nztreedeviceinfo++;
     treei->nz = nz;
   }
 
@@ -5787,7 +5854,7 @@ void SetupTreeDevices(void){
         nz++;
       }
     }
-    if(nz>0)ztreedeviceinfo[nztreedeviceinfo++] = treei;
+    if(nz>1)ztreedeviceinfo[nztreedeviceinfo++] = treei;
   }
 }
 
@@ -6089,8 +6156,9 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     vdevicedata *vdevicei;
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
-    windrosedata *windrosei;
-    int ndevs = 0, nvals;
+#define MAXDEVS 1000000000
+    int nvals=MAXDEVS;
+    int use_uvw_dev = 0, use_angle_dev=0;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -6099,48 +6167,55 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     angledev = vdevicei->angledev;
     veldev = vdevicei->veldev;
 
+    if(udev!=NULL||vdev!=NULL||wdev!=NULL){
+      use_uvw_dev = 1;
+      if(udev!=NULL)nvals = MIN(nvals, udev->nvals);
+      if(vdev!=NULL)nvals = MIN(nvals, vdev->nvals);
+      if(wdev!=NULL)nvals = MIN(nvals, wdev->nvals);
+      if(udev!=NULL&&vdev!=NULL)windrose_xy_active = 1;
+      if(udev!=NULL&&wdev!=NULL)windrose_xz_active = 1;
+      if(vdev!=NULL&&wdev!=NULL)windrose_yz_active = 1;
+    }
+    if(angledev != NULL&&veldev != NULL){ // if have 'polar' devices then don't use cartesian
+      use_uvw_dev = 0;
+      use_angle_dev = 1;
+      nvals = MIN(angledev->nvals, veldev->nvals);
+    }
     if(flag == FIRST_TIME){
+      windrosedata *windroseinfo;
+
+#ifdef pp_WINDROSE_AVG
+      vdevicei->nwindroseinfo = nvals;
+#else
       vdevicei->nwindroseinfo = 1;
-      NewMemory((void **)&windrosei, vdevicei->nwindroseinfo * sizeof(windrosedata));
-      vdevicei->windroseinfo=windrosei;
+#endif
+      NewMemory((void **)&windroseinfo, vdevicei->nwindroseinfo * sizeof(windrosedata));
+      vdevicei->windroseinfo= windroseinfo;
     }
-    if(udev != NULL){
-      ndevs++;
-      nvals = udev->nvals;
-    }
-    if(vdev != NULL){
-      nvals = vdev->nvals;
-      ndevs++;
-    }
-    if(wdev != NULL){
-      nvals = wdev->nvals;
-      ndevs++;
-    }
-    if(ndevs>1){
+
+    if(use_uvw_dev==1){
       float rmin, rmax;
-      histogramdata *histogram;
-      int  j;
+      int  k;
 
-      if(udev != NULL)nvals = MIN(nvals, udev->nvals);
-      if(vdev != NULL)nvals = MIN(nvals, vdev->nvals);
-      if(wdev != NULL)nvals = MIN(nvals, wdev->nvals);
-      windrosei->xyz = udev->xyz;
+      for(k = 0; k<vdevicei->nwindroseinfo; k++){
+        windrosedata *windrosei;
+        int j;
 
-      if (udev != NULL&&vdev != NULL)windrose_xy_active = 1;
-      if (udev != NULL&&wdev != NULL)windrose_xz_active = 1;
-      if (vdev != NULL&&wdev != NULL)windrose_yz_active = 1;
+        windrosei = vdevicei->windroseinfo+k;
+        windrosei->xyz = udev->xyz;
 
-      for(j = 0;j < 3;j++){
-        float *uvals, *vvals;
+        for(j = 0; j<3; j++){
+          float *times, *uvals, *vvals, tmin, tmax;
+          histogramdata *histogram;
 
-        histogram = windrosei->histogram+j;
-        if(flag != FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
-        InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
-        uvals = NULL;
-        vvals = NULL;
-        switch (j){
+          histogram = windrosei->histogram+j;
+          if(flag!=FIRST_TIME){
+            FreeHistogramPolar(histogram);
+          }
+          InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
+          uvals = NULL;
+          vvals = NULL;
+          switch(j){
           case 0:
             if(udev!=NULL)uvals = udev->vals;
             if(vdev!=NULL)vvals = vdev->vals;
@@ -6153,88 +6228,111 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
             if(vdev!=NULL)uvals = vdev->vals;
             if(wdev!=NULL)vvals = wdev->vals;
             break;
+          }
+          if(udev!=NULL)times = udev->times;
+          if(vdev!=NULL)times = vdev->times;
+          if(wdev!=NULL)times = wdev->times;
+          if(uvals==NULL||vvals==NULL)continue;
+          if(times!=NULL&&windrose_merge_dxyzt[3]>0.1&&windrose_ttype==WINDROSE_USE_DT){
+            tmin = times[k]-windrose_merge_dxyzt[3];
+            tmax = times[k]+windrose_merge_dxyzt[3];
+          }
+          else if(times!=NULL&&windrose_merge_dxyzt[5]>windrose_merge_dxyzt[4]&&windrose_ttype==WINDROSE_USE_TMINMAX){
+            tmin = windrose_merge_dxyzt[4];
+            tmax = windrose_merge_dxyzt[5];
+          }
+          else{
+            tmin = 0.0;
+            tmax = 0.0;
+            times = NULL;
+          }
+          if(Get2DBounds(times, uvals, vvals, nvals, tmin, tmax, &rmin, &rmax)>0){
+            CopyUV2Histogram(times, uvals, vvals, nvals, tmin, tmax, rmin, rmax, histogram);
+            maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
+          }
         }
-        if(uvals == NULL||vvals == NULL)continue;
-        Get2DBounds(uvals, vvals, nvals, &rmin, &rmax);
-        CopyUV2Histogram(uvals, vvals, nvals, rmin, rmax, histogram);
-        maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
       }
     }
-    if(angledev != NULL&&veldev != NULL){
+    if(use_angle_dev==1){
       float rmin, rmax;
-      histogramdata *histogram;
-      int j;
+      int k;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
       windrose_xy_active = 1;
 
-      windrosei = vdevicei->windroseinfo;
-      windrosei->xyz = angledev->xyz;
-      histogram = windrosei->histogram;
-      if(flag != FIRST_TIME){
-        FreeHistogramPolar(histogram);
-      }
-      InitHistogramPolar(histogram, nr, ntheta,NULL,NULL);
-      if (windrose_merge_type == WINDROSE_POINT) {
-        GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
-        CopyPolar2Histogram(veldev->vals,angledev->vals,nvals,rmin,rmax,histogram);
-      }
-      else {
-        float *xyzi;
-        int first=1;
+      for(k = 0; k<vdevicei->nwindroseinfo; k++){
+        windrosedata *windrosei;
+        int j;
+        histogramdata *histogram;
 
-        xyzi = veldev->xyz;
-        // find min rmin and max rmax
-        for (j = 0; j < nvdeviceinfo; j++) {
-          vdevicedata *vdevicej;
-          devicedata *angledevj, *veldevj;
-          float *xyzj, rminj, rmaxj;
-
-          vdevicej = vdeviceinfo + j;
-          angledevj = vdevicej->angledev;
-          veldevj = vdevicej->veldev;
-          if (angledevj == NULL || veldevj == NULL)continue;
-          nvals = MIN(angledevj->nvals, veldevj->nvals);
-          xyzj = veldevj->xyz;
-          if(vdevicei==vdevicej||
-            (ABS(xyzi[0]-xyzj[0])<=WINDROSE_EPS+windrose_merge_dxyzt[0]&&
-             ABS(xyzi[1]-xyzj[1])<=WINDROSE_EPS+windrose_merge_dxyzt[1]&&
-             ABS(xyzi[2]-xyzj[2])<=WINDROSE_EPS+windrose_merge_dxyzt[2])){
-
-             GetPolarBounds(veldev->vals, nvals, &rminj, &rmaxj);
-             if(first==1){
-               first=0;
-               rmin=rminj;
-               rmax=rmaxj;
-             }
-             else{
-               rmin = MIN(rminj,rmin);
-               rmax = MAX(rmaxj,rmax);
-             }
-           }
+        windrosei = vdevicei->windroseinfo+k;
+        windrosei->xyz = angledev->xyz;
+        histogram = windrosei->histogram;
+        if(flag!=FIRST_TIME){
+          FreeHistogramPolar(histogram);
         }
-        // update windrose
-        for (j = 0; j < nvdeviceinfo; j++) {
-          vdevicedata *vdevicej;
-          devicedata *angledevj, *veldevj;
-          float *xyzj;
-
-          vdevicej = vdeviceinfo + j;
-          angledevj = vdevicej->angledev;
-          veldevj = vdevicej->veldev;
-          if (angledevj == NULL || veldevj == NULL)continue;
-          nvals = MIN(angledev->nvals, veldev->nvals);
-          xyzj = veldevj->xyz;
-          if(vdevicei==vdevicej||
-            (ABS(xyzi[0]-xyzj[0])<=WINDROSE_EPS+windrose_merge_dxyzt[0]&&
-             ABS(xyzi[1]-xyzj[1])<=WINDROSE_EPS+windrose_merge_dxyzt[1]&&
-             ABS(xyzi[2]-xyzj[2])<=WINDROSE_EPS+windrose_merge_dxyzt[2])){
-
-             CopyPolar2Histogram(veldevj->vals,angledevj->vals,nvals,rmin,rmax,histogram);
-           }
+        InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
+        if(windrose_merge_type==WINDROSE_POINT) {
+          GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
+          CopyPolar2Histogram(veldev->vals, angledev->vals, nvals, rmin, rmax, histogram);
         }
+        else {
+          float *xyzi;
+          int first = 1;
+
+          xyzi = veldev->xyz;
+          // find min rmin and max rmax
+          for(j = 0; j<nvdeviceinfo; j++) {
+            vdevicedata *vdevicej;
+            devicedata *angledevj, *veldevj;
+            float *xyzj, rminj, rmaxj;
+
+            vdevicej = vdeviceinfo+j;
+            angledevj = vdevicej->angledev;
+            veldevj = vdevicej->veldev;
+            if(angledevj==NULL||veldevj==NULL)continue;
+            nvals = MIN(angledevj->nvals, veldevj->nvals);
+            xyzj = veldevj->xyz;
+            if(vdevicei==vdevicej||
+              (ABS(xyzi[0]-xyzj[0])<=WINDROSE_EPS+windrose_merge_dxyzt[0]&&
+                ABS(xyzi[1]-xyzj[1])<=WINDROSE_EPS+windrose_merge_dxyzt[1]&&
+                ABS(xyzi[2]-xyzj[2])<=WINDROSE_EPS+windrose_merge_dxyzt[2])){
+
+              GetPolarBounds(veldev->vals, nvals, &rminj, &rmaxj);
+              if(first==1){
+                first = 0;
+                rmin = rminj;
+                rmax = rmaxj;
+              }
+              else{
+                rmin = MIN(rminj, rmin);
+                rmax = MAX(rmaxj, rmax);
+              }
+            }
+          }
+          // update windrose
+          for(j = 0; j<nvdeviceinfo; j++) {
+            vdevicedata *vdevicej;
+            devicedata *angledevj, *veldevj;
+            float *xyzj;
+
+            vdevicej = vdeviceinfo+j;
+            angledevj = vdevicej->angledev;
+            veldevj = vdevicej->veldev;
+            if(angledevj==NULL||veldevj==NULL)continue;
+            nvals = MIN(angledev->nvals, veldev->nvals);
+            xyzj = veldevj->xyz;
+            if(vdevicei==vdevicej||
+              (ABS(xyzi[0]-xyzj[0])<=WINDROSE_EPS+windrose_merge_dxyzt[0]&&
+                ABS(xyzi[1]-xyzj[1])<=WINDROSE_EPS+windrose_merge_dxyzt[1]&&
+                ABS(xyzi[2]-xyzj[2])<=WINDROSE_EPS+windrose_merge_dxyzt[2])){
+
+              CopyPolar2Histogram(veldevj->vals, angledevj->vals, nvals, rmin, rmax, histogram);
+            }
+          }
+        }
+        maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
       }
-      maxr_windrose = MAX(maxr_windrose, histogram->bucket_maxr);
     }
   }
 }

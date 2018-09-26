@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateUseLighting(void);
 #ifdef pp_GPUSMOKE
 EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
 EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);
@@ -502,6 +503,8 @@ EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void UncompressBoundaryDataFrame(meshdata *meshi,int frame_index);
+EXTERNCPP void GetScreenRGB(float *xyz, int *rgbcolor);
+EXTERNCPP void RGBTest(void);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void AdjustTourTimes(tourdata *touri);

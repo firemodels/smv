@@ -42,4 +42,8 @@
 #define pp_THREAD
 #endif
 
+#ifdef pp_OSX
+#define pp_THREAD
+#endif
+
 #endif
