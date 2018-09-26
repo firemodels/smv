@@ -2478,6 +2478,7 @@ int RunScript(void){
       break;
     case SCRIPT_SMOKEFRAMES:
       ScriptSmokeframes(scripti);
+      break;
     case SCRIPT_RGBTEST:
       ScriptRGBtest(scripti);
       break;
