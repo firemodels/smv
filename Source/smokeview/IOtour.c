@@ -7,7 +7,7 @@
 
 #include "update.h"
 #include "smokeviewvars.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 /* ------------------ FreeTours ------------------------ */
 

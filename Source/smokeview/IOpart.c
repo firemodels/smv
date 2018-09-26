@@ -13,7 +13,7 @@
 #include "smokeviewvars.h"
 #include "histogram.h"
 #include "compress.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 #define READPASS 1
 #define READFAIL 0

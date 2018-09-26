@@ -1769,7 +1769,6 @@ void ResetMenu(int value){
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
     if(render_status == RENDER_ON)return;
-    EnableDisableStartButtons(DISABLE);
     render_status = RENDER_ON;
     render_firsttime = YES;
     update_screeninfo = 1;
@@ -1796,7 +1795,6 @@ void RenderState(int onoff){
     Enable360Zoom();
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
-    EnableDisableStartButtons(ENABLE);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
     UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }

@@ -33,7 +33,6 @@ EXTERNCPP void UpdateImmersedControls(void);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
-EXTERNCPP void EnableDisableStartButtons(int val);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void LoadIncrementalCB(int var);
 EXTERNCPP void LoadIncrementalCB1(int var);

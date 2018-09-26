@@ -6,7 +6,7 @@
 
 #include "datadefs.h"
 #include "smokeviewvars.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
 static float specular[4] = {0.4,0.4,0.4,1.0};

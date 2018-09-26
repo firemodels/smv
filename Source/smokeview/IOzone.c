@@ -8,7 +8,7 @@
 #include "string_util.h"
 #include "update.h"
 #include "smokeviewvars.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 /* ------------------ GetZoneSizeCsv ------------------------ */
 

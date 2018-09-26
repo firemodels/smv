@@ -8,7 +8,7 @@
 #include "update.h"
 #include "smv_endian.h"
 #include "smokeviewvars.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 #define ijnode2(i,j) ((nxcell+1)*(j) + (i))
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
