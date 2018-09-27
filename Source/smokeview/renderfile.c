@@ -715,12 +715,14 @@ void DrawScreenInfo(void){
   glScalef(0.5,0.5,0.5);
   glTranslatef(1.0,1.0,1.0);
 
+  glLineWidth(10.0);
   glBegin(GL_LINES);
   for(i = 0; i < nscreeninfo; i++){
     screendata *screeni;
     float xyz[12];
     float *view, *right, *up;
 
+    if(screenvis[i]==0)continue;
     screeni = screeninfo + i;
     view = screeni->view;
     right = screeni->right;
@@ -733,6 +735,7 @@ void DrawScreenInfo(void){
       xyz[j+9] = view[j] - right[j] / 2.0 + up[j] / 2.0
         ;
     }
+    glColor3f(0.0, 0.0, 0.0);
     glVertex3fv(xyz);
     glVertex3fv(xyz+3);
     glVertex3fv(xyz+3);
@@ -742,6 +745,10 @@ void DrawScreenInfo(void){
     glVertex3fv(xyz+9);
     glVertex3fv(xyz);
   }
+  glEnd();
+  glBegin(GL_POINT);
+  glPointSize(10.0);
+  glVertex3f(0.0,0.0,0.0);
   glEnd();
   glPopMatrix();
 }
