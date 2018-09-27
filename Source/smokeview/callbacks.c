@@ -258,7 +258,7 @@ void MouseEditColorbar(int button, int state, int x, int y){
 
   glDisable(GL_BLEND);
   glShadeModel(GL_FLAT);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
   glDisable(GL_TEXTURE_1D);
@@ -286,7 +286,7 @@ void MouseEditColorbar(int button, int state, int x, int y){
     ColorbarCB(COLORBAR_SET);
   }
   glEnable(GL_BLEND);
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
   glShadeModel(GL_SMOOTH);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
@@ -307,7 +307,7 @@ void MouseEditTour(int button, int state, int x, int y){
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
   glDisable(GL_TEXTURE_1D);
   glDisable(GL_TEXTURE_2D);
   glShadeModel(GL_FLAT);
@@ -348,7 +348,7 @@ void MouseEditTour(int button, int state, int x, int y){
   }
   glShadeModel(GL_SMOOTH);
   glEnable(GL_BLEND);
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
 }
 
 /* ------------------ MouseEditBlockage ------------------------ */
@@ -362,7 +362,7 @@ void MouseEditBlockage(int button, int state, int x, int y){
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
   glDisable(GL_TEXTURE_1D);
   glDisable(GL_TEXTURE_2D);
   glShadeModel(GL_FLAT);
@@ -402,7 +402,7 @@ void MouseEditBlockage(int button, int state, int x, int y){
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
 
     switch(sd->dir){
       case DOWN_X:
@@ -451,7 +451,7 @@ void MouseSelectDevice(int button, int state, int x, int y){
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
   glDisable(GL_TEXTURE_1D);
   glDisable(GL_TEXTURE_2D);
   glShadeModel(GL_FLAT);
@@ -484,7 +484,7 @@ void MouseSelectDevice(int button, int state, int x, int y){
     }
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
   }
 }
 
@@ -499,7 +499,7 @@ void MouseSelectAvatar(int button, int state, int x, int y){
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
   glDisable(GL_TEXTURE_1D);
   glDisable(GL_TEXTURE_2D);
   glShadeModel(GL_FLAT);
@@ -520,7 +520,7 @@ void MouseSelectAvatar(int button, int state, int x, int y){
     selected_avatar_tag=val;
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
   }
 }
 
@@ -3112,7 +3112,7 @@ int DoStereo(void){
       glLoadIdentity();
 
       glEnable(GL_BLEND);
-      glDisable(GL_LIGHTING);
+      DISABLE_LIGHTING;
       glDisable(GL_COLOR_MATERIAL);
       glDisable(GL_DITHER);
 
@@ -3129,7 +3129,7 @@ int DoStereo(void){
     }
     Render(VIEW_CENTER);
     if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-    glEnable(GL_LIGHTING);
+    ENABLE_LIGHTING;
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_DITHER);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -3275,6 +3275,10 @@ void DisplayCB(void){
     if(render_status==RENDER_OFF){
       glDrawBuffer(GL_BACK);
       ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
+      if(update_rgb_test==1){
+        update_rgb_test = 0;
+        RGBTest();
+      }
       if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
     }
     else{

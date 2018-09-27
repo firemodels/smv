@@ -196,6 +196,7 @@ GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 
+GLUI_Panel *PANEL_slice_smoke = NULL;
 GLUI_Panel *PANEL_immersed = NULL;
 GLUI_Panel *PANEL_immersed_region = NULL;
 GLUI_Panel *PANEL_immersed_drawas = NULL;
@@ -2263,16 +2264,19 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     CHECKBOX_research_mode=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Research display mode"),&research_mode,RESEARCH_MODE,SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Output data to file"),&output_slicedata);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("max blending"), &slices3d_max_blending);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show all 3D slices"), &showall_3dslices);
+
+#ifdef pp_FSEEK
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("incremental data loading"), &load_incremental,SLICE_LOAD_INCREMENTAL,LoadIncrementalCB);
+    LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
+#endif
+    PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "slice fire", true);
+    glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
+    glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
+
 #ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("opacity adjustment"), &slice_opacity_adjustment);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("show sorted slice labels"), &show_sort_labels);
-#endif
-#ifdef pp_FSEEK
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("incremental data loading"), &load_incremental,SLICE_LOAD_INCREMENTAL,LoadIncrementalCB);
-    LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
     SliceBoundCB(FILETYPEINDEX);
   }

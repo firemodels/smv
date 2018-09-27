@@ -216,7 +216,6 @@ GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=
 GLUI_Button *BUTTON_startup=NULL,*BUTTON_cycle_views=NULL;
 GLUI_Button *BUTTON_snap=NULL;
 GLUI_Button *BUTTON_render_start=NULL ;
-GLUI_Button *BUTTON_render_stop = NULL;
 GLUI_Button *BUTTON_motion_1=NULL;
 GLUI_Button *BUTTON_motion_2=NULL;
 GLUI_Button *BUTTON_window_update=NULL;
@@ -270,20 +269,6 @@ extern "C" void UpdateZAxisCustom(void){
 
 extern "C" void UpdateShowRotationCenter(void){
   if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->set_int_val(show_rotation_center);
-}
-
-/* ------------------ EnableDisableStartButtons ------------------------ */
-
-extern "C" void EnableDisableStartButtons(int val){
-  if(ROLLOUT_render!=NULL){
-    if(val==ENABLE){
-      ROLLOUT_render->enable();
-    }
-    else{
-      ROLLOUT_render->disable();
-      BUTTON_render_stop->enable();
-    }
-  }
 }
 
 /* ------------------ UpdateGluiRotateAbout ------------------------ */
@@ -1162,7 +1147,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
 
   BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _("Start rendering"), RENDER_START_TOP, RenderCB);
-  BUTTON_render_stop = glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop rendering"), RENDER_STOP, RenderCB);
+  glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop rendering"), RENDER_STOP, RenderCB);
 
   ROLLOUT_name = glui_motion->add_rollout_to_panel(ROLLOUT_render, "File name/type", false);
   EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_name, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);

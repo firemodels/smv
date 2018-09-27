@@ -10,7 +10,7 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "viewports.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 /* ------------------ ShowScene2 ------------------------ */
 

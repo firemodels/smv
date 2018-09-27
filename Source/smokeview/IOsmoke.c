@@ -3364,7 +3364,7 @@ void DrawSmokeDiag(smoke3ddata *smoke3di){
       int j;
 
       spi = meshi->smokeplaneinfo+i;
-      glColor3f(0.0, 0.0, 0.0);
+      glColor3f(0.0, 0.0, 1.0);
       if(smoke_outline_type==SMOKE_OUTLINE_TRIANGLE){
         for(j = 0; j<spi->ntriangles; j++){
           float *v1, *v2, *v3;

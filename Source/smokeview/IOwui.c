@@ -8,7 +8,7 @@
 #include "update.h"
 #include "smv_endian.h"
 #include "smokeviewvars.h"
-#include "IOobject.h"
+#include "IOobjects.h"
 
 #define ijnode2(i,j) ((nxcell+1)*(j) + (i))
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
@@ -45,7 +45,7 @@ typedef struct {
 void DrawTrees(void){
   int i;
 
- glEnable(GL_LIGHTING);
+ ENABLE_LIGHTING;
 
  glEnable(GL_COLOR_MATERIAL);
 
@@ -610,7 +610,7 @@ void DrawTerrain(terraindata *terri, int only_geom){
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
 
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
   glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
@@ -671,7 +671,7 @@ void DrawTerrain(terraindata *terri, int only_geom){
   glEnd();
 
   glDisable(GL_COLOR_MATERIAL);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
 
   glPopMatrix();
 
@@ -698,7 +698,7 @@ void DrawTerrainTexture(terraindata *terri, int only_geom){
   glScalef(SCALE2SMV(mscale[0]),SCALE2SMV(mscale[1]),SCALE2SMV(mscale[2]));
   glTranslatef(-xbar0,-ybar0,-zbar0);
 
-  glEnable(GL_LIGHTING);
+  ENABLE_LIGHTING;
   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   glEnable(GL_TEXTURE_2D);
@@ -760,7 +760,7 @@ void DrawTerrainTexture(terraindata *terri, int only_geom){
   glDisable(GL_TEXTURE_2D);
 
   glDisable(GL_COLOR_MATERIAL);
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
 
   glPopMatrix();
 

@@ -938,6 +938,10 @@ void ColorbarMenu(int value){
       InitRGB();
       SetLabelControls();
       break;
+    case USE_LIGHTING:
+      use_lighting = 1 - use_lighting;
+      UpdateUseLighting();
+      break;
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -1765,7 +1769,6 @@ void ResetMenu(int value){
 void RenderState(int onoff){
   if(onoff==RENDER_ON){
     if(render_status == RENDER_ON)return;
-    EnableDisableStartButtons(DISABLE);
     render_status = RENDER_ON;
     render_firsttime = YES;
     update_screeninfo = 1;
@@ -1792,7 +1795,6 @@ void RenderState(int onoff){
     Enable360Zoom();
     SetScreenSize(&saveW,&saveH);
     ResizeWindow(screenWidth,screenHeight);
-    EnableDisableStartButtons(ENABLE);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
     UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
@@ -4452,7 +4454,22 @@ void LoadMultiVSliceMenu(int value){
     }
     if(scriptoutstream==NULL){
       START_TIMER(load_time);
-      for(i=0;i<mvslicei->nvslices;i++){
+      for(i = 0; i<mvslicei->nvslices; i++){
+        vslicedata *vslicei;
+
+        vslicei = vsliceinfo+mvslicei->ivslices[i];
+        vslicei->finalize = 0;
+      }
+      for(i = mvslicei->nvslices-1; i>=0; i--){
+        vslicedata *vslicei;
+
+        vslicei = vsliceinfo+mvslicei->ivslices[i];
+        if(vslicei->skip==0&&vslicei->loaded==0){
+          vslicei->finalize = 1;
+          break;
+        }
+      }
+      for(i = 0; i<mvslicei->nvslices; i++){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo + mvslicei->ivslices[i];
@@ -4558,9 +4575,9 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
 
-    slicei->finalized = 0;
+    slicei->finalize = 0;
     if(last_slice==i){
-      slicei->finalized = 1;
+      slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skip == 0 && slicei->loaded == 0){
@@ -7859,6 +7876,8 @@ updatemenu=0;
   if(setbw == 1)glutAddMenuEntry(_("*Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   if(setbw == 0)glutAddMenuEntry(_("Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
+  if(use_lighting==1)glutAddMenuEntry(_("*Lighting"), USE_LIGHTING);
+  if(use_lighting==0)glutAddMenuEntry(_("Lighting"), USE_LIGHTING);
   glutAddMenuEntry(_("Settings..."), MENU_COLORBAR_SETTINGS);
 
 /* --------------------------------showVslice menu -------------------------- */

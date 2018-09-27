@@ -20,9 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN float SVDECL(customview_azimuth, 0.0);
-SVEXTERN float SVDECL(customview_elevation, 0.0);
-SVEXTERN float SVDECL(customview_up, 90.0);
+SVEXTERN int SVDECL(use_lighting, 1);
+
+SVEXTERN float SVDECL(update_rgb_test,0), SVDECL(rgb_test_delta,10), rgb_test_xyz[3];
+SVEXTERN int   rgb_test_rgb[3];
+
+SVEXTERN float SVDECL(customview_azimuth, 0.0), SVDECL(customview_elevation, 0.0), SVDECL(customview_up, 90.0);
 SVEXTERN int SVDECL(use_customview, 0);
 SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
@@ -48,7 +51,7 @@ SVEXTERN int SVDECL(plane_labels, 0);
 SVEXTERN int SVDECL(smoke_mesh_aligned, 1);
 SVEXTERN int SVDECL(plane_single, 1);
 SVEXTERN float SVDECL(plane_outline_width, 2);
-SVEXTERN int SVDECL(plane_all_mesh_outlines, 0);
+SVEXTERN int SVDECL(plane_all_mesh_outlines, 1);
 SVEXTERN int SVDECL(plane_solid, 1);
 SVEXTERN float SVDECL(plane_distance, 0.0);
 SVEXTERN int SVDECL(update_smokeplanes, 0);
@@ -86,10 +89,12 @@ SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(toggle_colorbar, 0);
 SVEXTERN int hcolorbar_vis[6];
+
+SVEXTERN int SVDECL(windrose_ttype, 2);
 #ifdef INMAIN
-  SVEXTERN float windrose_merge_dxyzt[4] = { 0.0,0.0,0.0,0.0 };
+  SVEXTERN float windrose_merge_dxyzt[6] = { 0.0,0.0,0.0,0.0,0.0,0.0 };
 #else
-  SVEXTERN float windrose_merge_dxyzt[4];
+  SVEXTERN float windrose_merge_dxyzt[6];
 #endif
 SVEXTERN int SVDECL(lock_mouse_aperture, 0);
 SVEXTERN int SVDECL(windrose_merge_type,WINDROSE_POINT);
@@ -160,7 +165,7 @@ SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
-SVEXTERN int SVDECL(nwindrose_checkboxes, 0);
+SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(quicktime_compatibility, 1);
 #else
@@ -175,7 +180,7 @@ SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
 
 SVEXTERN int SVDECL(update_slice, 0);
-SVEXTERN int SVDECL(*windrose_showhide, NULL), SVDECL(nwindrose_showhide,0), SVDECL(update_windrose_showhide,0);
+SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
 #ifdef pp_SMOKETEST
 SVEXTERN int SVDECL(smoke_test, 0);
@@ -1250,8 +1255,12 @@ SVEXTERN int SVDECL(devicetypes_index,0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
-SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(nztreedeviceinfo, 0), SVDECL(mintreesize, 3);
-SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL), SVDECL(**ztreedeviceinfo,NULL);
+
+SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(mintreesize, 3);
+SVEXTERN int SVDECL(nztreedeviceinfo, 0);
+SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL);
+SVEXTERN treedevicedata SVDECL(**ztreedeviceinfo, NULL);
+
 SVEXTERN int SVDECL(show_smokesensors,SMOKESENSORS_0255),active_smokesensors,test_smokesensors;
 SVEXTERN float smoke3d_cvis;
 SVEXTERN sv_object SVDECL(**object_defs,NULL), SVDECL(*heat_detector_object_backup,NULL), SVDECL(*target_object_backup,NULL);

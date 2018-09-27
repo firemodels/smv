@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define ENABLE_LIGHTING if(use_lighting==1)glEnable(GL_LIGHTING)
+#define DISABLE_LIGHTING if(use_lighting==1)glDisable(GL_LIGHTING)
+
 #ifdef pp_DPRINT
 #define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
 #else
@@ -398,6 +401,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SCRIPT_LOADVSLICEM 222
 #define SCRIPT_SHOWSMOKESENSORS 223
 #define SCRIPT_SMOKEFRAMES    224
+#define SCRIPT_RGBTEST        225
 
 #define SCRIPT_SETTIMEVAL 301
 #define SCRIPT_SETVIEWPOINT 302
@@ -582,6 +586,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define JMAX 3
 #define KMIN 4
 #define KMAX 5
+
+#define WINDROSE_USE_DT      0
+#define WINDROSE_USE_TMINMAX 1
+#define WINDROSE_USE_NEITHER 2
 
 #define WINDROSE_XY 0
 #define WINDROSE_XZ 1
@@ -789,6 +797,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_RESET -4
 #define COLORBAR_TOGGLE_BW_DATA -21
 #define MENU_COLORBAR_SETTINGS -22
+#define USE_LIGHTING -25
 
 #define LOAD 0
 #define UNLOAD 1

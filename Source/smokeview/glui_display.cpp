@@ -79,6 +79,7 @@ GLUI_Spinner *SPINNER_diff_blue=NULL;
 GLUI_Spinner *SPINNER_diff_grey=NULL;
 #endif
 
+GLUI_Checkbox *CHECKBOX_use_lighting=NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_version=NULL;
@@ -241,6 +242,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 #define COLORBAR_SMOOTH 113
 #define COLORBAND 115
+#define CB_USE_LIGHTING 120
 #ifdef pp_LIGHTING
 #define COLOR_AMB_GREY 116
 #define COLOR_DIFF_GREY 117
@@ -271,6 +273,12 @@ procdata displayprocinfo[6];
 procdata displayprocinfo[5];
 #endif
 int ndisplayprocinfo = 0;
+
+/* ------------------ UpdateUseLighting ------------------------ */
+
+extern "C" void UpdateUseLighting(void) {
+  CHECKBOX_use_lighting->set_int_val(use_lighting);
+}
 
 /* ------------------ UpdateTimebarOverlap ------------------------ */
 
@@ -733,6 +741,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
   CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Smooth colorbar labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
+  CHECKBOX_use_lighting = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
 
 
   PANEL_extreme = glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);
@@ -1159,6 +1168,7 @@ extern "C" void LabelsCB(int var){
     break;
 #endif
 
+  case CB_USE_LIGHTING:
   case LABELS_shownorth:
   case LABELS_version:
   case LABELS_meshlabel:

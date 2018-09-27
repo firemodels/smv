@@ -69,7 +69,7 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   float xxright;
 
   if(xright<=xleft)return;
-  glDisable(GL_LIGHTING);
+  DISABLE_LIGHTING;
 
   glLineWidth(linewidth);
   glBegin(GL_LINE_LOOP);
