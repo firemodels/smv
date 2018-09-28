@@ -85,10 +85,10 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw user ticks +++++++++++++++++++++++++ */
 
     if(visUSERticks == 1){
-      Antialias(ON);
+      AntiAliasLine(ON);
       UNCLIP;
       DrawUserTicks();
-      Antialias(OFF);
+      AntiAliasLine(OFF);
       SNIFF_ERRORS("after DrawTicks");
     }
 
@@ -197,14 +197,14 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(show_parallax == 1){
     UNCLIP;
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(linewidth);
     glBegin(GL_LINES);
     glColor3fv(foregroundcolor);
     glVertex3f(0.75, 0.0, 0.25);
     glVertex3f(0.75, 1.0, 0.25);
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
   }
 
   /* ++++++++++++++++++++++++ draw blockages +++++++++++++++++++++++++ */
