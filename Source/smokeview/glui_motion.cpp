@@ -88,10 +88,10 @@
 
 #ifdef pp_DEG
 unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
-char deg90[] = {'9', '0', DEG_SYMBOL, 0};
+unsigned char deg90[] = {'9', '0', DEG_SYMBOL, 0};
 #else
 unsigned char deg360[] = { '3','6','0',0 };
-char deg90[] = {'9', '0', 0};
+unsigned char deg90[] = {'9', '0', 0};
 #endif
 
 GLUI *glui_motion=NULL;
@@ -943,8 +943,7 @@ extern "C" void GluiMotionSetup(int main_window){
   {
     char rotate_label[100];
 
-    strcpy(rotate_label, "rotate ");
-    strcat(rotate_label, deg90);
+    sprintf(rotate_label,"%s rotate",deg90);
     BUTTON_rotate90 = glui_motion->add_button_to_panel(PANEL_custom_view, rotate_label, ROTATE_90, SceneMotionCB);
   }
   glui_motion->add_button_to_panel(PANEL_custom_view, "Reset", RESET_VIEW, SceneMotionCB);
