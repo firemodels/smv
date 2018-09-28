@@ -14,12 +14,14 @@
 
 #define TRANSLATE_XY 101
 #define ROTATE_2AXIS 102
-#define GLUI_Z 2
-#define MESH_LIST 4
-#define EYE_ROTATE 5
-#define EYE_ROTATE_90 6
-#define EYELEVEL 7
-#define FLOORLEVEL 8
+#define GLUI_Z         2
+#define MESH_LIST      4
+#define EYE_ROTATE     5
+#define EYE_ROTATE_90  6
+#define EYELEVEL       7
+#define FLOORLEVEL     8
+#define ROTATE_90    103
+#define RESET_VIEW   104
 
 #define LABEL_VIEW 4
 
@@ -86,12 +88,15 @@
 
 #ifdef pp_DEG
 unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
+char deg90[] = {'9', '0', DEG_SYMBOL, 0};
 #else
 unsigned char deg360[] = { '3','6','0',0 };
+char deg90[] = {'9', '0', 0};
 #endif
 
 GLUI *glui_motion=NULL;
 
+GLUI_Panel *PANEL_custom_view=NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
@@ -138,6 +143,8 @@ GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
 
+GLUI_Spinner *SPINNER_customview_elevation=NULL;
+GLUI_Spinner *SPINNER_customview_azimuth=NULL;
 GLUI_Spinner *SPINNER_resolution_multiplier=NULL;
 GLUI_Spinner *SPINNER_clip_left=NULL;
 GLUI_Spinner *SPINNER_clip_right=NULL;
@@ -211,6 +218,7 @@ GLUI_RadioButton *RADIOBUTTON_1e=NULL;
 GLUI_RadioButton *RADIOBUTTON_1f=NULL;
 GLUI_RadioButton *RADIOBUTTON_1g=NULL;
 
+GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
 GLUI_Button *BUTTON_startup=NULL,*BUTTON_cycle_views=NULL;
@@ -917,13 +925,29 @@ extern "C" void GluiMotionSetup(int main_window){
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
 
-  ROLLOUT_view = glui_motion->add_rollout_to_panel(PANEL_motion, _("Specify View"), false, VIEW_ROLLOUT, MotionRolloutCB);
+  ROLLOUT_view = glui_motion->add_rollout_to_panel(PANEL_motion, _("Position/View"), false, VIEW_ROLLOUT, MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_view, VIEW_ROLLOUT);
 
-  glui_motion->add_checkbox_to_panel(ROLLOUT_view,_("Use custom view"),&use_customview, CUSTOM_VIEW, SceneMotionCB);
-  glui_motion->add_spinner_to_panel(ROLLOUT_view,"azimuth:",GLUI_SPINNER_FLOAT,&customview_azimuth,CUSTOM_VIEW,SceneMotionCB);
-  glui_motion->add_spinner_to_panel(ROLLOUT_view,"elevation:", GLUI_SPINNER_FLOAT, &customview_elevation, CUSTOM_VIEW, SceneMotionCB);
-  glui_motion->add_spinner_to_panel(ROLLOUT_view,"     up:", GLUI_SPINNER_FLOAT, &customview_up, CUSTOM_VIEW, SceneMotionCB);
+  PANEL_specify = glui_motion->add_panel_to_panel(ROLLOUT_view, _("Position"));
+
+  SPINNER_set_view_x = glui_motion->add_spinner_to_panel(PANEL_specify, "x:", GLUI_SPINNER_FLOAT, set_view_xyz, SET_VIEW_XYZ, SceneMotionCB);
+  SPINNER_set_view_y = glui_motion->add_spinner_to_panel(PANEL_specify, "y:", GLUI_SPINNER_FLOAT, set_view_xyz+1, SET_VIEW_XYZ, SceneMotionCB);
+  SPINNER_set_view_z = glui_motion->add_spinner_to_panel(PANEL_specify, "z:", GLUI_SPINNER_FLOAT, set_view_xyz+2, SET_VIEW_XYZ, SceneMotionCB);
+
+  PANEL_custom_view = glui_motion->add_panel_to_panel(ROLLOUT_view, _("View"));
+
+  glui_motion->add_checkbox_to_panel(PANEL_custom_view,_("Use azimuth/elevation"),&use_customview, CUSTOM_VIEW, SceneMotionCB);
+  SPINNER_customview_azimuth = glui_motion->add_spinner_to_panel(PANEL_custom_view,"azimuth:",GLUI_SPINNER_FLOAT,&customview_azimuth,CUSTOM_VIEW,SceneMotionCB);
+  SPINNER_customview_elevation = glui_motion->add_spinner_to_panel(PANEL_custom_view,"elevation:", GLUI_SPINNER_FLOAT, &customview_elevation, CUSTOM_VIEW, SceneMotionCB);
+  //glui_motion->add_spinner_to_panel(PANEL_custom_view,"     up:", GLUI_SPINNER_FLOAT, &customview_up, CUSTOM_VIEW, SceneMotionCB);
+  {
+    char rotate_label[100];
+
+    strcpy(rotate_label, "rotate ");
+    strcat(rotate_label, deg90);
+    BUTTON_rotate90 = glui_motion->add_button_to_panel(PANEL_custom_view, rotate_label, ROTATE_90, SceneMotionCB);
+  }
+  glui_motion->add_button_to_panel(PANEL_custom_view, "Reset", RESET_VIEW, SceneMotionCB);
 
   ROLLOUT_rotation_type = glui_motion->add_rollout_to_panel(PANEL_motion,_("Specify Rotation"),false,ROTATION_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_rotation_type, ROTATION_ROLLOUT);
@@ -973,14 +997,8 @@ extern "C" void GluiMotionSetup(int main_window){
 
   //glui_motion->add_column(false);
 
-  ROLLOUT_orientation=glui_motion->add_rollout_to_panel(PANEL_motion,_("Specify Orientation"),false,ORIENTATION_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_orientation=glui_motion->add_rollout_to_panel(PANEL_motion,_("Orientation"),false,ORIENTATION_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_orientation, ORIENTATION_ROLLOUT);
-
-  PANEL_specify = glui_motion->add_panel_to_panel(ROLLOUT_orientation, _("eye"));
-
-  SPINNER_set_view_x=glui_motion->add_spinner_to_panel(PANEL_specify,"x:",GLUI_SPINNER_FLOAT,set_view_xyz,SET_VIEW_XYZ,SceneMotionCB);
-  SPINNER_set_view_y=glui_motion->add_spinner_to_panel(PANEL_specify,"y:",GLUI_SPINNER_FLOAT,set_view_xyz+1,SET_VIEW_XYZ,SceneMotionCB);
-  SPINNER_set_view_z=glui_motion->add_spinner_to_panel(PANEL_specify,"z:",GLUI_SPINNER_FLOAT,set_view_xyz+2,SET_VIEW_XYZ,SceneMotionCB);
 
   PANEL_change_zaxis = glui_motion->add_panel_to_panel(ROLLOUT_orientation,_("z axis"));
 
@@ -1563,18 +1581,35 @@ extern "C" void SceneMotionCB(int var){
   int *rotation_index;
   int i;
 
+  if(var==RESET_VIEW){
+    customview_elevation = 0.0;
+    customview_azimuth = 0.0;
+    SPINNER_customview_azimuth->set_float_val(customview_azimuth);
+    SPINNER_customview_elevation->set_float_val(customview_elevation);
+    SceneMotionCB(CUSTOM_VIEW);
+    return;
+  }
+  if(var==ROTATE_90){
+    customview_azimuth=fmod(customview_azimuth+90.0,360.0);
+    SPINNER_customview_azimuth->set_float_val(customview_azimuth);
+    SceneMotionCB(CUSTOM_VIEW);
+    return;
+  }
   if(var==CUSTOM_VIEW){
     if(use_customview==1){
       float *view, *up, *right;
+      float c_az, c_elev;
 
       NewMemory((void **)&screenglobal, sizeof(screendata));
       view = screenglobal->view;
       up = screenglobal->up;
       right = screenglobal->right;
 
-      view[0] = -sin(DEG2RAD*customview_azimuth)*cos(DEG2RAD*customview_elevation);
-      view[1] = cos(DEG2RAD*customview_azimuth)*cos(DEG2RAD*customview_elevation);
-      view[2] = -sin(DEG2RAD*customview_elevation);
+      c_az = -customview_azimuth;
+      c_elev = -customview_elevation;
+      view[0] = -sin(DEG2RAD*c_az)*cos(DEG2RAD*c_elev);
+      view[1] = cos(DEG2RAD*c_az)*cos(DEG2RAD*c_elev);
+      view[2] = -sin(DEG2RAD*c_elev);
       up[0] = cos(DEG2RAD*customview_up);
       up[1] = 0.0;
       up[2] = sin(DEG2RAD*customview_up);
