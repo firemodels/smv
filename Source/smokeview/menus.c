@@ -8792,7 +8792,7 @@ updatemenu=0;
 #else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
 #endif
-  glutAddMenuEntry(_("Motion...  ALT m"),DIALOG_MOTION);
+  glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
