@@ -1221,6 +1221,7 @@ extern "C" void GluiMotionSetup(int main_window){
     SPINNER_window_height360->set_int_limits(100, max_screenHeight);
     RenderCB(RENDER_360CB);
   }
+  glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "360 margin:", GLUI_SPINNER_INT, &margin360_size);
 
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&CHECKBOX_screenvis, nscreeninfo * sizeof(GLUI_Checkbox *));
