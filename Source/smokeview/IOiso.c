@@ -1018,7 +1018,7 @@ void DrawIsoOrig(int tranflag){
     asurface = meshi->animatedsurfaces + meshi->iso_itime*meshi->nisolevels;
 
     glPushAttrib(GL_LIGHTING_BIT);
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(isolinewidth);
     glBegin(GL_LINES);
     for(i=0;i<niso_trans;i++){
@@ -1076,14 +1076,14 @@ void DrawIsoOrig(int tranflag){
       glVertex3fv(xyz1);
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
     glPopAttrib();
   }
 
   if((visAIso&4)==4){
     asurface = meshi->animatedsurfaces + meshi->iso_itime*meshi->nisolevels;
 
-    Antialias(ON);
+    AntiAliasLine(ON);
     glPointSize(isopointsize);
     asurface--;
     glBegin(GL_POINTS);
@@ -1130,7 +1130,7 @@ void DrawIsoOrig(int tranflag){
       glVertex3fv(xyz3);
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
   }
 }
 
@@ -1274,7 +1274,7 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
 
   if(surfacetype==SURFACE_OUTLINE){
     glPushMatrix();
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(line_width);
     glBegin(GL_LINES);
     glColor3fv(asurface->color);
@@ -1300,13 +1300,13 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
       glVertex3fv(vv1);
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
     glPopMatrix();
   }
 
   if(surfacetype==SURFACE_POINTS){
     glPushMatrix();
-    Antialias(ON);
+    AntiAliasLine(ON);
     glPointSize(plot3dpointsize);
     glBegin(GL_POINTS);
     glColor3fv(asurface->color);
@@ -1323,14 +1323,14 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
       glVertex3fv(vv1);
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
     glPopMatrix();
   }
 
   if(show_iso_normal==1){
 
     glPushMatrix();
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(line_width);
     glBegin(GL_LINES);
     glColor3f((float)1.,(float)1.,(float)1.);
@@ -1381,7 +1381,7 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
       }
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
     glPopMatrix();
   }
 }

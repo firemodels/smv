@@ -145,7 +145,7 @@ void DrawTours(void){
     /* path line (non-selected)*/
 
     if(showtours_whenediting==1){
-      Antialias(ON);
+      AntiAliasLine(ON);
       glColor3fv(tmp_tourcol_pathline);
       glBegin(GL_LINES);
       for(i=0;i<ntourinfo;i++){
@@ -166,7 +166,7 @@ void DrawTours(void){
         }
       }
      glEnd();
-     Antialias(OFF);
+     AntiAliasLine(OFF);
     }
 
     /* path line (selected)*/
@@ -177,7 +177,7 @@ void DrawTours(void){
       tourdata *touri;
 
       glColor3fv(tourcol_selectedpathline);
-      if(tour_antialias==1)Antialias(ON);
+      if(tour_antialias==1)AntiAliasLine(ON);
       glBegin(GL_LINES);
       touri = tourinfo + selectedtour_index;
 
@@ -191,7 +191,7 @@ void DrawTours(void){
         glVertex3fv(pj->eye);
       }
       glEnd();
-      if(tour_antialias==1)Antialias(OFF);
+      if(tour_antialias==1)AntiAliasLine(OFF);
 
     }
 
@@ -316,7 +316,7 @@ void DrawTours(void){
   if(show_tourlocus==1){
     switch(tourlocus_type){
       case 0:
-        Antialias(ON);
+        AntiAliasLine(ON);
         glBegin(GL_LINES);
         glColor3fv(tourcol_avatar);
         for(i=0;i<ntourinfo;i++){
@@ -339,7 +339,7 @@ void DrawTours(void){
           glVertex3fv(pj->tour_view);
         }
         glEnd();
-        Antialias(OFF);
+        AntiAliasLine(OFF);
         break;
       case 1:
         for(i=0;i<ntourinfo;i++){

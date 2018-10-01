@@ -634,7 +634,7 @@ void DrawOutlines(void){
   int i;
 
   if(noutlineinfo<=0)return;
-  Antialias(ON);
+  AntiAliasLine(ON);
   glLineWidth(linewidth);
   glBegin(GL_LINES);
   glColor3fv(foregroundcolor);
@@ -657,7 +657,7 @@ void DrawOutlines(void){
     }
   }
   glEnd();
-  Antialias(OFF);
+  AntiAliasLine(OFF);
 }
 /* ------------------ DrawCBox ------------------------ */
 
@@ -3263,7 +3263,7 @@ void DrawFaces(){
     int j;
 
     DISABLE_LIGHTING;
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(linewidth);
     glBegin(GL_LINES);
     for(j=0;j<nmeshes;j++){
@@ -3315,7 +3315,7 @@ void DrawFaces(){
       }
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
   }
   if(nface_textures>0){
     int j;
@@ -4823,6 +4823,7 @@ void DrawFacesOLD(){
       glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
       glEnable(GL_COLOR_MATERIAL);
     }
+    AntiAliasSurface(ON);
     glBegin(GL_TRIANGLES);
     for(j=0;j<nmeshes;j++){
       meshdata *meshi;
@@ -4885,6 +4886,7 @@ void DrawFacesOLD(){
       }
     }
     glEnd();
+    AntiAliasSurface(OFF);
     if(light_faces==1){
       glDisable(GL_COLOR_MATERIAL);
       DISABLE_LIGHTING;
@@ -4901,6 +4903,7 @@ void DrawFacesOLD(){
       glEnable(GL_COLOR_MATERIAL);
     }
     if(cullfaces==1)glDisable(GL_CULL_FACE);
+    AntiAliasLine(ON);
     glBegin(GL_QUADS);
     for(j=0;j<nmeshes;j++){
       meshdata *meshi;
@@ -4960,6 +4963,7 @@ void DrawFacesOLD(){
       }
     }
     glEnd();
+    AntiAliasLine(OFF);
     if(cullfaces==1)glEnable(GL_CULL_FACE);
     if(light_faces==1){
       glDisable(GL_COLOR_MATERIAL);
@@ -4970,7 +4974,7 @@ void DrawFacesOLD(){
     int j;
 
     DISABLE_LIGHTING;
-    Antialias(ON);
+    AntiAliasLine(ON);
     glLineWidth(linewidth);
     glBegin(GL_LINES);
     for(j=0;j<nmeshes;j++){
@@ -5029,7 +5033,7 @@ void DrawFacesOLD(){
       }
     }
     glEnd();
-    Antialias(OFF);
+    AntiAliasLine(OFF);
   }
   if(nface_textures>0){
     int j;

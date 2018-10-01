@@ -619,44 +619,56 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 /* ------------------ GetScreenMap360 ------------------------ */
 
 unsigned int GetScreenMap360(float *xyz){
+  screendata *screeni;
   int ibuff;
   float xyznorm;
+  int maxbuff;
+  float maxcos, cosangle;
+  float *view, *up, *right, t;
+  float A, B;
 
   xyznorm = sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]);
 
   for(ibuff = 0; ibuff < nscreeninfo; ibuff++){
-    screendata *screeni;
-    float *view, *up, *right, t;
-    float A, B;
-    float cosangle;
-
-    screeni = screeninfo + ibuff;
+    screeni = screeninfo+ibuff;
     view = screeni->view;
-    up = screeni->up;
-    right = screeni->right;
     cosangle = DOT3(view, xyz) / xyznorm;
-    if(cosangle <= screeni->cosmax-0.001)continue;
-
-    t = DOT3(xyz,view);
-    A = DOT3(xyz, right)/t;
-    B = DOT3(xyz, up)/t;
-
-    {
-      int ix, iy, index;
-      unsigned int return_val;
-
-      ix = screeni->nwidth*(screeni->width / 2.0 + A) / screeni->width;
-      if(ix<0||ix>screeni->nwidth-1)continue;
-
-      iy = screeni->nheight*(screeni->height / 2.0 + B) / screeni->height;
-      if(iy<0||iy>screeni->nheight - 1)continue;
-
-      index = iy*screeni->nwidth + ix;
-      return_val = ((ibuff+1) << 24) |  index;
-      return return_val;
+    if(ibuff==0){
+      maxbuff = 0;
+      maxcos = cosangle;
+    }
+    else{
+      if(cosangle>maxcos){
+        maxcos = cosangle;
+        maxbuff = ibuff;
+      }
     }
   }
-  return 0;
+
+  ibuff = maxbuff;
+  screeni = screeninfo + ibuff;
+  view = screeni->view;
+  up = screeni->up;
+  right = screeni->right;
+
+  t = DOT3(xyz,view);
+  A = DOT3(xyz, right)/t;
+  B = DOT3(xyz, up)/t;
+
+  {
+    int ix, iy, index;
+    unsigned int return_val;
+
+    ix = screeni->nwidth*(screeni->width / 2.0 + A) / screeni->width;
+    ix = CLAMP(ix,0,screeni->nwidth-1);
+
+    iy = screeni->nheight*(screeni->height / 2.0 + B) / screeni->height;
+    iy = CLAMP(iy,0,screeni->nheight - 1);
+
+    index = iy*screeni->nwidth + ix;
+    return_val = ((ibuff+1) << 24) |  index;
+    return return_val;
+  }
 }
 
 
@@ -951,6 +963,11 @@ int MergeRenderScreenBuffers360(void){
       int ibuff, ijk, rgb_local;
       screendata *screeni;
       unsigned int r, g, b;
+      int ix, iy;
+      float count;
+      int ixmin, ixmax, iymin, iymax;
+      int ii;
+      float wi, wj;
 
       ibuff = screenmap360[ijk360] >> 24;
       if(ibuff == 0)continue;
@@ -958,10 +975,37 @@ int MergeRenderScreenBuffers360(void){
       screeni = screeninfo + ibuff;
 
       ijk = screenmap360[ijk360] & 0xffffff;
-      p = screeni->screenbuffer+3*ijk;
-      r= *p++;
-      g= *p++;
-      b= *p++;
+      ix = ijk%screeni->nwidth;
+      iy = ijk/screeni->nwidth;
+
+      iymin=MAX(iy-margin360_size,0);
+      iymax=MIN(iy+margin360_size+1,screeni->nheight);
+      ixmin=MAX(ix-margin360_size,0);
+      ixmax=MIN(ix+margin360_size+1,screeni->nwidth);
+      count=0.0;
+      r = 0;
+      g = 0;
+      b = 0;
+      for(ii=ixmin;ii<ixmax;ii++){
+        int jj;
+
+        wi = 1.0/(1.0+ABS(ii-ix));
+
+        for(jj=iymin;jj<iymax;jj++){
+          wj = 1.0/(1.0+ABS(jj-iy));
+          ijk = jj*screeni->nwidth + ii;
+          p  = screeni->screenbuffer+3*ijk;
+          r += wi*wj*(*p++);
+          g += wi*wj*(*p++);
+          b += wi*wj*(*p++);
+          count+=wi*wj;
+        }
+      }
+      if(count>0.0){
+        r /= count;
+        g /= count;
+        b /= count;
+      }
       rgb_local = (r<<16)|(g<<8)|b;
       screenbuffer360[ijk360]=rgb_local;
       ijk360++;

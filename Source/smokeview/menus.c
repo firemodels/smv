@@ -5343,6 +5343,7 @@ void BlockageMenu(int value){
   if(value==visLightFaces){
     light_faces = 1 - light_faces;
     updatemenu=1;
+    glutPostRedisplay();
     return;
   }
   if(solid_state<0)solid_state=visBlocks;

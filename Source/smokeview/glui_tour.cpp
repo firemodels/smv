@@ -266,7 +266,7 @@ extern "C" void GluiTourSetup(int main_window){
   CHECKBOX_snap = glui_tour->add_checkbox_to_panel(PANEL_misc, _("View from selected keyframe"), &keyframe_snap, VIEWSNAP, TourCB);
   CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show intermediate path nodes"), &show_path_knots);
 #ifdef _DEBUG
-  glui_tour->add_checkbox_to_panel(PANEL_misc, _("Antialias tour path line"), &tour_antialias);
+  glui_tour->add_checkbox_to_panel(PANEL_misc, _("Anti-alias tour path line"), &tour_antialias);
 #endif
   if(navatar_types > 0){
     glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show avatar"), &show_tourlocus);
