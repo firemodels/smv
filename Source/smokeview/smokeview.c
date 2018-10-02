@@ -55,9 +55,25 @@ void UpdateLights(float *pos1, float *pos2){
   glEnable(GL_LIGHT1);
 }
 
-/* ------------------ antialias ------------------------ */
+/* ------------------ AntiAliasSurface ------------------------ */
 
-void Antialias(int flag){
+void AntiAliasSurface(int flag){
+  if(antialiasflag==ON&&1==0){ // disable this routine for now
+    if(flag==ON){
+//      glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE );
+      glEnable( GL_BLEND );
+      glEnable( GL_POLYGON_SMOOTH );
+    }
+    if(flag==OFF){
+      glDisable(GL_BLEND);
+      glDisable( GL_POLYGON_SMOOTH );
+    }
+  }
+}
+
+/* ------------------ AntiAliasLine ------------------------ */
+
+void AntiAliasLine(int flag){
   if(antialiasflag==1){
     if(flag==1){
       glEnable(GL_LINE_SMOOTH);
