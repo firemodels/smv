@@ -1,7 +1,4 @@
-&HEAD CHID='test360',TITLE='Plume whirl case' /
-
-  same as plume5a except there is a blockage in the middle of the scene to block the flow
-  The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
+&HEAD CHID='test360',TITLE='test 360 rendering' /
 
 &MESH IJK=20,20,20, XB=0.0,10.0,0.0,10.0,0.0,10.0 /
 
@@ -20,6 +17,11 @@
 &SURF ID             = 'FRONT',  RGB=255,  0,255 /
 &SURF ID             = 'BACK',   RGB=  0,255,255 /
 
+&SURF ID             = 'WHITE'   RGB=255,255,255 /
+&SURF ID             = 'BLACK'   RGB=  0,  0,  0 /
+&SURF ID             = 'GRAY'    RGB=128,128,128 /
+
+&OBST XB=0.0,4.0,8.0,10.0,2.0,4.0, SURF_ID6='WHITE','WHITE','BLACK','BLACK','GRAY','GRAY' /
 &VENT XB= 0.0,10.0, 0.0,10.0,10.0,10.0 SURF_ID='TOP' /
 &VENT XB= 0.0,10.0, 0.0,10.0, 0.0, 0.0 SURF_ID='BOTTOM' /
 

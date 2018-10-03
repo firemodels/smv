@@ -294,6 +294,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword, "SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
   if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;
   if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;
+  if(MatchUpper(keyword, "POSVIEW")==MATCH)return SCRIPT_POSVIEW;
   if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;
   if(MatchUpper(keyword, "ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchUpper(keyword, "XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;
@@ -755,6 +756,14 @@ int CompileScript(char *scriptfile){
             scripti->fval=-1.0;
           }
         }
+        break;
+
+// POSVIEW
+//  use_custom (int) xpos (float) ypos (float) zpos (float) az (float) elev (float)
+      case SCRIPT_POSVIEW:
+        SETbuffer;
+
+          sscanf(buffer, "%i %f %f %f %f %f", &scripti->ival, &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
         break;
 
 // SHOWPLOT3DDATA
@@ -1730,6 +1739,23 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
   fclose(stream_smokesensors);
 }
 
+/* ------------------ ScriptPosView ------------------------ */
+
+#define CUSTOM_VIEW 43
+#define SET_VIEW_XYZ 22
+
+void ScriptPosView(scriptdata *scripti){
+  set_view_xyz[0]      = scripti->fval;
+  set_view_xyz[1]      = scripti->fval2;
+  set_view_xyz[2]      = scripti->fval3;
+  customview_azimuth   = scripti->fval4;
+  customview_elevation = scripti->fval5;
+  use_customview       = scripti->ival;
+  SceneMotionCB(CUSTOM_VIEW);
+  SceneMotionCB(SET_VIEW_XYZ);
+  UpdatePosView();
+}
+
 /* ------------------ ScriptShowPlot3dData ------------------------ */
 
 void ScriptShowPlot3dData(scriptdata *scripti){
@@ -2412,8 +2438,8 @@ int RunScript(void){
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);
       break;
-    case SCRIPT_PLOT3DPROPS:
-      ScriptPlot3dProps(scripti);
+    case SCRIPT_POSVIEW:
+      ScriptPosView(scripti);
       break;
     case SCRIPT_PARTCLASSTYPE:
       ScriptPartClassType(scripti);

@@ -179,6 +179,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_customview=NULL;
 GLUI_Checkbox *CHECKBOX_custom_view = NULL;
 GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
 GLUI_Checkbox *CHECKBOX_render360 = NULL;
@@ -264,6 +265,17 @@ extern "C" void UpdateRenderRadioButtons(int width_low, int height_low, int widt
     sprintf(label, "%s %ix%i", deg360, nwidth360, nheight360);
     if(RADIOBUTTON_render_360 != NULL)RADIOBUTTON_render_360->set_name(label);
   }
+}
+
+/* ------------------ UpdatePosView ------------------------ */
+
+extern "C" void UpdatePosView(void){
+  SPINNER_set_view_x->set_float_val(set_view_xyz[0]);
+  SPINNER_set_view_y->set_float_val(set_view_xyz[1]);
+  SPINNER_set_view_z->set_float_val(set_view_xyz[2]);
+  SPINNER_customview_azimuth->set_float_val(customview_azimuth);
+  SPINNER_customview_elevation->set_float_val(customview_elevation);
+  CHECKBOX_use_customview->set_int_val(use_customview);
 }
 
 /* ------------------ UpdateZAxisCustom ------------------------ */
@@ -930,13 +942,13 @@ extern "C" void GluiMotionSetup(int main_window){
 
   PANEL_specify = glui_motion->add_panel_to_panel(ROLLOUT_view, _("Position"));
 
-  SPINNER_set_view_x = glui_motion->add_spinner_to_panel(PANEL_specify, "x:", GLUI_SPINNER_FLOAT, set_view_xyz, SET_VIEW_XYZ, SceneMotionCB);
+  SPINNER_set_view_x = glui_motion->add_spinner_to_panel(PANEL_specify, "x:", GLUI_SPINNER_FLOAT,   set_view_xyz, SET_VIEW_XYZ, SceneMotionCB);
   SPINNER_set_view_y = glui_motion->add_spinner_to_panel(PANEL_specify, "y:", GLUI_SPINNER_FLOAT, set_view_xyz+1, SET_VIEW_XYZ, SceneMotionCB);
   SPINNER_set_view_z = glui_motion->add_spinner_to_panel(PANEL_specify, "z:", GLUI_SPINNER_FLOAT, set_view_xyz+2, SET_VIEW_XYZ, SceneMotionCB);
 
   PANEL_custom_view = glui_motion->add_panel_to_panel(ROLLOUT_view, _("View"));
 
-  glui_motion->add_checkbox_to_panel(PANEL_custom_view,_("Use azimuth/elevation"),&use_customview, CUSTOM_VIEW, SceneMotionCB);
+  CHECKBOX_use_customview = glui_motion->add_checkbox_to_panel(PANEL_custom_view,_("Use azimuth/elevation"),&use_customview, CUSTOM_VIEW, SceneMotionCB);
   SPINNER_customview_azimuth = glui_motion->add_spinner_to_panel(PANEL_custom_view,"azimuth:",GLUI_SPINNER_FLOAT,&customview_azimuth,CUSTOM_VIEW,SceneMotionCB);
   SPINNER_customview_elevation = glui_motion->add_spinner_to_panel(PANEL_custom_view,"elevation:", GLUI_SPINNER_FLOAT, &customview_elevation, CUSTOM_VIEW, SceneMotionCB);
   //glui_motion->add_spinner_to_panel(PANEL_custom_view,"     up:", GLUI_SPINNER_FLOAT, &customview_up, CUSTOM_VIEW, SceneMotionCB);

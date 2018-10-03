@@ -402,6 +402,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SCRIPT_SHOWSMOKESENSORS 223
 #define SCRIPT_SMOKEFRAMES    224
 #define SCRIPT_RGBTEST        225
+#define SCRIPT_POSVIEW        226
 
 #define SCRIPT_SETTIMEVAL 301
 #define SCRIPT_SETVIEWPOINT 302
