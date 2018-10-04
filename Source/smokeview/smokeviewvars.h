@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_RENDER360_DEBUG
+SVEXTERN int SVDECL(debug_360, 0);
+#endif
 SVEXTERN char SVDECL(*ffmpeg_command_filename, NULL);
 SVEXTERN int SVDECL(output_ffmpeg_command, 0);
 SVEXTERN int SVDECL(margin360_size, 0);

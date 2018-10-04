@@ -1025,6 +1025,9 @@ int MergeRenderScreenBuffers360(void){
         b /= count;
       }
       rgb_local = (r<<16)|(g<<8)|b;
+#ifdef pp_RENDER360_DEBUG
+      if(debug_360==1&&j%2==0&&i%2==0)rgb_local = 128<<8|128;
+#endif
       screenbuffer360[ijk360]=rgb_local;
       ijk360++;
     }

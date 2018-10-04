@@ -1236,6 +1236,8 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "360 margin:", GLUI_SPINNER_INT, &margin360_size);
 
 #ifdef pp_RENDER360_DEBUG
+  glui_motion->add_checkbox_to_panel(ROLLOUT_image_size, "360 debug", &debug_360);
+
   NewMemory((void **)&CHECKBOX_screenvis, nscreeninfo * sizeof(GLUI_Checkbox *));
 
   ROLLOUT_screenvis = glui_motion->add_rollout_to_panel(ROLLOUT_render, "screenvis", false);
