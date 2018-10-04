@@ -363,7 +363,7 @@ void ParseCommandline(int argc, char **argv){
 #ifdef WIN32
     STRCAT(ffmpeg_command_filename,".bat");
 #else
-    STRCAT(ffmpeg_command_filename,".sh);
+    STRCAT(ffmpeg_command_filename,".sh");
 #endif
   }
   if(fed_filename == NULL){
