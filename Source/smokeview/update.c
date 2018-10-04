@@ -2045,4 +2045,8 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
+  if(update_visColorbarVertical==1){
+    update_visColorbarVertical = 0;
+    visColorbarVertical = visColorbarVertical_val;
+  }
 }

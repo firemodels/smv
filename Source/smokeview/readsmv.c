@@ -11463,7 +11463,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWCOLORBARS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visColorbarVertical);
+      sscanf(buffer, "%i", &visColorbarVertical_val);
+      update_visColorbarVertical=1;
       continue;
     }
     if(Match(buffer, "EYEVIEW") == 1){
