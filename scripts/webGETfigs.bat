@@ -34,9 +34,6 @@ if "%whichguides%" == "websummary" (
   pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Summary/movies/* .
   cd %svn_root%\smv\Manuals\SMV_Summary\manuals
   pscp %linux_logon%:%smokebotrepo%/../.smokebot/pubs/*.pdf .
-  cd %svn_root%\smv\Manuals\SMV_Summary
-  start explorer index.html
-
   goto eof
 )
 if "%whichguides%" == "smvug" (
