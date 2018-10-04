@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN char SVDECL(*ffmpeg_command_filename, NULL);
+SVEXTERN int SVDECL(output_ffmpeg_command, 0);
 SVEXTERN int SVDECL(margin360_size, 0);
 SVEXTERN int SVDECL(use_lighting, 1);
 

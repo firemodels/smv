@@ -356,6 +356,16 @@ void ParseCommandline(int argc, char **argv){
       FREEMEMORY(fds_filein);
     }
   }
+  if(ffmpeg_command_filename == NULL){
+    NewMemory((void **)&ffmpeg_command_filename, (unsigned int)(len_casename + 12));
+    STRCPY(ffmpeg_command_filename, fdsprefix);
+    STRCAT(ffmpeg_command_filename, "_ffmpeg");
+#ifdef WIN32
+    STRCAT(ffmpeg_command_filename,".bat");
+#else
+    STRCAT(ffmpeg_command_filename,".sh);
+#endif
+  }
   if(fed_filename == NULL){
     STRCPY(fed_filename_base, fdsprefix);
     STRCAT(fed_filename_base, ".fed_smv");

@@ -1323,6 +1323,7 @@ extern "C" void GluiMotionSetup(int main_window){
     SPINNER_framerate->set_int_limits(1, 100);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
     SPINNER_bitrate->set_int_limits(100, 20000);
+    glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
   }
 
   CHECKBOX_cursor_blockpath=glui_motion->add_checkbox(_("Map cursor keys for Plot3D use"),&cursorPlot3D,CURSOR,SceneMotionCB);
@@ -2197,6 +2198,9 @@ void RenderCB(int var){
       break;
     case PLAY_MOVIE:
       PlayMovie();
+      break;
+    case OUTPUT_FFMPEG:
+      output_ffmpeg_command=1;
       break;
     case MAKE_MOVIE:
       if(have_ffmpeg == 0){

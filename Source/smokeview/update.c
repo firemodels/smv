@@ -1862,7 +1862,7 @@ void UpdateShowScene(void){
     update_playmovie = 0;
   }
   UpdateRenderStartButton();
-  if(update_makemovie == 1)MakeMovie();
+  if(update_makemovie == 1||output_ffmpeg_command==1)MakeMovie();
   if(compute_fed == 1)DefineAllFEDs();
   if(restart_time == 1){
     restart_time = 0;
