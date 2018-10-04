@@ -1862,7 +1862,7 @@ void UpdateShowScene(void){
     update_playmovie = 0;
   }
   UpdateRenderStartButton();
-  if(update_makemovie == 1)MakeMovie();
+  if(update_makemovie == 1||output_ffmpeg_command==1)MakeMovie();
   if(compute_fed == 1)DefineAllFEDs();
   if(restart_time == 1){
     restart_time = 0;
@@ -2044,5 +2044,9 @@ void UpdateDisplay(void){
   if(update_research_mode == 1){
     update_research_mode = 0;
     UpdateResearchMode();
+  }
+  if(update_visColorbarVertical==1){
+    update_visColorbarVertical = 0;
+    visColorbarVertical = visColorbarVertical_val;
   }
 }

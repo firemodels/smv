@@ -56,6 +56,7 @@ void MakeMovie(void){
   char moviefile_path[1024],overwrite_flag[10],image_ext[10], movie_frames[1024];
   int make_movie_now=1;
 
+  if(output_ffmpeg_command==1)make_movie_now = 0;
 // wait to make movie until after images are rendered
 
   if(render_status == RENDER_ON)return;
@@ -95,7 +96,7 @@ void MakeMovie(void){
   }
 
 
-  if(make_movie_now==1){
+  if(make_movie_now==1||output_ffmpeg_command==1){
 // construct name of frames used to make movie
 
     strcpy(movie_frames, render_file_base);
@@ -119,8 +120,25 @@ void MakeMovie(void){
     strcat(command_line, moviefile_path);
 
 // make movie
+    if(output_ffmpeg_command==1){
+      if(ffmpeg_command_filename!=NULL){
+        FILE *stream_ffmpeg=NULL;
 
-    system(command_line);
+        stream_ffmpeg = fopen(ffmpeg_command_filename,"w");
+        if(stream_ffmpeg!=NULL){
+#ifdef WIN32
+          fprintf(stream_ffmpeg,"@echo off\n");
+#else
+          fprintf(stream_ffmpeg,"#!/bin/bash\n");
+#endif
+          fprintf(stream_ffmpeg,"%s\n",command_line);
+          fclose(stream_ffmpeg);
+        }
+      }
+      printf("%s\n", command_line);
+      output_ffmpeg_command=0;
+    }
+    if(make_movie_now==1)system(command_line);
   }
 
 // enable movie making button

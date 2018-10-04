@@ -189,6 +189,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MAX_MSLABS 2
 
 #define MAKE_MOVIE 28
+#define OUTPUT_FFMPEG 129
 
 #define PNG 0
 #define JPEG 1
