@@ -10993,8 +10993,10 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "MOVIEFILETYPE") == 1){
+      int quicktime_dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i", &movie_filetype,&movie_framerate,&movie_bitrate,&quicktime_compatibility);
+      sscanf(buffer, "%i %i %i %i %i", &movie_filetype,&movie_framerate,&movie_bitrate,&quicktime_dummy,&movie_crf);
       continue;
     }
     if(Match(buffer, "RENDERFILELABEL") == 1){
@@ -13583,7 +13585,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "RENDERFILETYPE\n");
   fprintf(fileout," %i %i\n",render_filetype,movie_filetype);
   fprintf(fileout, "MOVIEFILETYPE\n");
-  fprintf(fileout," %i %i %i %i\n",movie_filetype,movie_framerate,movie_bitrate,quicktime_compatibility);
+  {
+    int quicktime_dummy=1;
+
+    fprintf(fileout, "MOVIEFILETYPE\n");
+    fprintf(fileout," %i %i %i %i %i\n",movie_filetype,movie_framerate,movie_bitrate,quicktime_dummy,movie_crf);
+  }
   if(nskyboxinfo>0){
     int iskybox;
     skyboxdata *skyi;

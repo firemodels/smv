@@ -66,7 +66,7 @@ function get_figs(guide){
 
 <p><table border=on>
 <tr>
-<td rowspan=2, align=center>Linux smokebot</td>
+<td rowspan=3, align=center>Linux smokebot</td>
 <td align=center>SMV User</td>
 <td><button onclick="get_figs('smvug')">==></button></td>
 <td rowspan=5>Windows repo</td>
@@ -75,6 +75,11 @@ function get_figs(guide){
 <tr>
 <td>SMV Verification</td>
 <td><button onclick="get_figs('smvvg')">==></button></td>
+</tr>
+
+<tr>
+<td>SMV Summary</td>
+<td><button onclick="get_figs('websummary')">==></button></td>
 </tr>
 
 <tr>
@@ -133,7 +138,7 @@ function get_figs(guide){
 
 
 <h3>Other</h3>
-<p><button onclick="run_script('\\smv\\scripts\\webVIEW_localimages.bat')">View local images</button><br>
+<p><button onclick="run_script('\\smv\\scripts\\webVIEW_localimages.bat')">View Smokebot summary</button><br>
 <button onclick="run_script('\\smv\\scripts\\webEDIT_build_guides.bat')">Edit this page</button>
 
 <p><hr>

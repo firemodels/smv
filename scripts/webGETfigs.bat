@@ -23,6 +23,19 @@ echo.
 
 %svn_drive%
 
+if "%whichguides%" == "websummary" (
+  Title Download web summary images
+
+  cd %svn_root%\smv\Manuals\SMV_Summary\images
+  pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Summary/images/* .
+  cd %svn_root%\smv\Manuals\SMV_Summary\images2
+  pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Summary/images2/* .
+  cd %svn_root%\smv\Manuals\SMV_Summary\movies
+  pscp %linux_logon%:%smokebotrepo%/smv/Manuals/SMV_Summary/movies/* .
+  cd %svn_root%\smv\Manuals\SMV_Summary\manuals
+  pscp %linux_logon%:%smokebotrepo%/../.smokebot/pubs/*.pdf .
+  goto eof
+)
 if "%whichguides%" == "smvug" (
   Title Download smokeview user guide images
 
