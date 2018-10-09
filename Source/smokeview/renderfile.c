@@ -95,8 +95,8 @@ void MakeMovie(void){
     }
   }
 
-
   if(make_movie_now==1||output_ffmpeg_command==1){
+    char power_label[100];
 // construct name of frames used to make movie
 
     strcpy(movie_frames, render_file_base);
@@ -107,16 +107,17 @@ void MakeMovie(void){
 
     sprintf(command_line, "ffmpeg %s -r %i -i ", overwrite_flag,movie_framerate);
     strcat(command_line, movie_frames);
-    strcat(command_line, " ");
-    {
-      char bitrate_label[100];
 
-      sprintf(bitrate_label," -b %ik ",movie_bitrate);
-      strcat(command_line,bitrate_label);
+    if(movie_filetype==MP4||movie_filetype==MOV){ // use -crf for MP4 and MOV, use -b for AVI and WMV
+      strcat(command_line, " -vcodec libx264 ");
+      sprintf(power_label, " -crf %i ", movie_crf);
     }
-    if(quicktime_compatibility == 1){
-      strcat(command_line, " -pix_fmt yuv420p ");
+    else{
+      sprintf(power_label, " -b:v %ik ", movie_bitrate);
     }
+    strcat(command_line, power_label);
+
+    if(movie_filetype==MP4||movie_filetype==MOV)strcat(command_line, " -pix_fmt yuv420p ");
     strcat(command_line, moviefile_path);
 
 // make movie

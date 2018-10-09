@@ -57,7 +57,6 @@
 #define WINDOW_COLORS 33
 #define COLOR_FLIP 34
 #define CLIP_SHOW_ROTATE 35
-#define QUICKTIME_COMPATIBILITY 40
 #define ZAXIS_UP 41
 #define NEARFARCLIP 42
 #define CUSTOM_VIEW 43
@@ -142,7 +141,8 @@ GLUI_Rollout *ROLLOUT_upper = NULL;
 GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
-
+GLUI_Spinner *SPINNER_movie_crf = NULL;
+GLUI_Spinner *SPINNER_bitrate = NULL;
 GLUI_Spinner *SPINNER_customview_elevation=NULL;
 GLUI_Spinner *SPINNER_customview_azimuth=NULL;
 GLUI_Spinner *SPINNER_resolution_multiplier=NULL;
@@ -170,7 +170,6 @@ GLUI_Spinner *SPINNER_xcenCUSTOM=NULL;
 GLUI_Spinner *SPINNER_ycenCUSTOM=NULL;
 GLUI_Spinner *SPINNER_zcenCUSTOM=NULL;
 GLUI_Spinner *SPINNER_framerate = NULL;
-GLUI_Spinner *SPINNER_bitrate = NULL;
 GLUI_Spinner *SPINNER_window_height360=NULL;
 GLUI_Spinner *SPINNER_foreground_red=NULL;
 GLUI_Spinner *SPINNER_foreground_green=NULL;
@@ -1318,14 +1317,14 @@ extern "C" void GluiMotionSetup(int main_window){
     RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
     RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
     RADIOBUTTON_movie_type[3]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mov");
-    glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Quicktime compatibility", &quicktime_compatibility,QUICKTIME_COMPATIBILITY,RenderCB);
-    RenderCB(QUICKTIME_COMPATIBILITY);
-    RenderCB(MOVIE_FILETYPE);
     SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Frame rate", GLUI_SPINNER_INT, &movie_framerate);
     SPINNER_framerate->set_int_limits(1, 100);
+    SPINNER_movie_crf = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "quality", GLUI_SPINNER_INT, &movie_crf);
+    SPINNER_movie_crf->set_int_limits(0,51);
     SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
-    SPINNER_bitrate->set_int_limits(100, 20000);
+    SPINNER_bitrate->set_int_limits(1, 100000);
     glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
+    RenderCB(MOVIE_FILETYPE);
   }
 
   CHECKBOX_cursor_blockpath=glui_motion->add_checkbox(_("Map cursor keys for Plot3D use"),&cursorPlot3D,CURSOR,SceneMotionCB);
@@ -2154,35 +2153,6 @@ void RenderCB(int var){
 
   updatemenu=1;
   switch(var){
-    case QUICKTIME_COMPATIBILITY:
-    {
-      int call_movie_filetype=0;
-
-      if(quicktime_compatibility==1){
-        RADIOBUTTON_movie_type[AVI]->disable();
-        RADIOBUTTON_movie_type[MP4]->enable();
-        RADIOBUTTON_movie_type[WMV]->disable();
-        RADIOBUTTON_movie_type[MOV]->enable();
-        if(movie_filetype==AVI||movie_filetype==WMV){
-          call_movie_filetype = 1;
-          movie_filetype=MP4;
-          RADIO_movie_type->set_int_val(movie_filetype);
-        }
-      }
-      else{
-        RADIOBUTTON_movie_type[AVI]->enable();
-        RADIOBUTTON_movie_type[MP4]->enable();
-        RADIOBUTTON_movie_type[WMV]->enable();
-        RADIOBUTTON_movie_type[MOV]->disable();
-        if(movie_filetype==MOV){
-          call_movie_filetype = 1;
-          movie_filetype=AVI;
-          RADIO_movie_type->set_int_val(movie_filetype);
-        }
-      }
-      if(call_movie_filetype==1)RenderCB(MOVIE_FILETYPE);
-    }
-    break;
     case RENDER_360CB:
       nwidth360 = nheight360*2;
       sprintf(widthlabel,"width: %i",nwidth360);
@@ -2228,15 +2198,23 @@ void RenderCB(int var){
       switch (movie_filetype){
       case AVI:
         strcpy(movie_ext, ".avi");
+        SPINNER_movie_crf->disable();
+        SPINNER_bitrate->enable();
         break;
       case MP4:
         strcpy(movie_ext, ".mp4");
-        break;\
+        SPINNER_movie_crf->enable();
+        SPINNER_bitrate->disable();
+        break;
       case WMV:
         strcpy(movie_ext, ".wmv");
+        SPINNER_movie_crf->disable();
+        SPINNER_bitrate->enable();
         break;
       case MOV:
         strcpy(movie_ext, ".mov");
+        SPINNER_movie_crf->enable();
+        SPINNER_bitrate->disable();
         break;
       default:
         ASSERT(FFALSE);
