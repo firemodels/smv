@@ -19,7 +19,7 @@ export SMV=$GITROOT/smv/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$T
 FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size/fds_mpi_intel$PLATFORM$size
 RUNSMV="$GITROOT/fds/Utilities/Scripts/runsmv.sh"
 export SMVBINDIR="-bindir $GITROOT/smv/for_bundle"
-MAKEMOVIE=$GITROOT/fds/Utilities/Scripts/make_movie.sh
+MAKEMOVIE=$GITROOT/fds/Utilities/Scripts/make_movie.sh -f
 STARTX=$GITROOT/fds/Utilities/Scripts/startXserver.sh
 STOPX=$GITROOT/fds/Utilities/Scripts/stopXserver.sh
 QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
@@ -41,6 +41,7 @@ OUTDIR=$GITROOT/smv/Manuals/SMV_Summary/movies
 rm -f $INDIR/*.png
 rm -f $WUIINDIR/*.png
 rm -f $OUTDIR/*.m1v
+rm -f $OUTDIR/*.mp4
 rm -f $OUTDIR/*.png
 
 # make a movie
