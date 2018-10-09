@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_RENDER360_DEBUG
+SVEXTERN int SVDECL(debug_360, 0);
+#endif
 SVEXTERN char SVDECL(*ffmpeg_command_filename, NULL);
 SVEXTERN int SVDECL(output_ffmpeg_command, 0);
 SVEXTERN int SVDECL(margin360_size, 0);
@@ -169,11 +172,6 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
-#ifdef pp_OSX
-SVEXTERN int SVDECL(quicktime_compatibility, 1);
-#else
-SVEXTERN int SVDECL(quicktime_compatibility, 0);
-#endif
 SVEXTERN float startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
 #ifdef pp_GLUTGET
@@ -252,6 +250,7 @@ SVEXTERN int render_filetype;
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
 SVEXTERN int SVDECL(*render_frame, NULL);
 
+SVEXTERN int SVDECL(movie_crf, 17);
 SVEXTERN int SVDECL(movie_bitrate, 5000);
 SVEXTERN int SVDECL(disable_reshape, 0);
 

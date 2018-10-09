@@ -19,7 +19,7 @@ export SMV=$GITROOT/smv/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$T
 FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size/fds_mpi_intel$PLATFORM$size
 RUNSMV="$GITROOT/fds/Utilities/Scripts/runsmv.sh"
 export SMVBINDIR="-bindir $GITROOT/smv/for_bundle"
-MAKEMOVIE=$GITROOT/fds/Utilities/Scripts/make_movie.sh
+MAKEMOVIE="$GITROOT/fds/Utilities/Scripts/make_movie.sh"
 STARTX=$GITROOT/fds/Utilities/Scripts/startXserver.sh
 STOPX=$GITROOT/fds/Utilities/Scripts/stopXserver.sh
 QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
@@ -32,7 +32,6 @@ if ! [ -e $SMV ]; then
 fi
 
 underscore=_
-mov=.m1v
 VDIR=$GITROOT/smv/Verification
 INDIR=$GITROOT/smv/Verification/Visualization/frames
 WUIINDIR=$GITROOT/smv/Verification/WUI/frames
@@ -41,6 +40,7 @@ OUTDIR=$GITROOT/smv/Manuals/SMV_Summary/movies
 rm -f $INDIR/*.png
 rm -f $WUIINDIR/*.png
 rm -f $OUTDIR/*.m1v
+rm -f $OUTDIR/*.mp4
 rm -f $OUTDIR/*.png
 
 # make a movie
@@ -121,24 +121,10 @@ $MAKEMOVIE -o $OUTDIR  -m thouse5_tslice thouse5_tslice  > /dev/null
 echo making thouse5_smoke3d movie
 $MAKEMOVIE -o $OUTDIR  -m thouse5_smoke3d thouse5_smoke3d > /dev/null
 
-# -------- BT10m_2x2km_LS movie -------------------
-
 MKMOVIE WUI BT10m_2x2km_LS $WUIINDIR
-
-# -------- hill_structure movie -------------------
-
 MKMOVIE WUI hill_structure $WUIINDIR
-
-# -------- levelset1 movie -------------------
-
 MKMOVIE WUI levelset1 $WUIINDIR
-
-# -------- wind_test1 movie -------------------
-
 MKMOVIE WUI wind_test1 $WUIINDIR
-
-# -------- tree_test2 movie -------------------
-
 MKMOVIE WUI tree_test2 $WUIINDIR
 
 source $STOPX
