@@ -2,10 +2,9 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.0
-set smv_version=SMV6.7.1
-set fds_debug=0
-set fds_edition=FDS6
+set fds_version=FDS6.7.1test
+set smv_version=SMV6.7.2test
+set fds_debug=1
 
 :: ---- FDS and smokeview revision ----
 
@@ -20,7 +19,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="19-Jun-2018"
+set smvlogdate="22-Jun-2018"
 
 :: ---- repo locations ----
 
@@ -31,19 +30,19 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
+set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_17u4
+set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
-:: ---- MPI version ----
+:: ---- MPI library locations ----
 
 :: set to INTEL if using Intel MPI library
-
 set linux_mpi_version=INTEL
 set osx_mpi_version=3.0.0
+::set osx_mpi_version=1.8.4
 
-:: ---- lib/bin locations ----
+:: ---- INTEL compiler version ----
 
-set INTEL_LIB_DIR=/var/local/bundle/INTEL/INTEL_18u2/LIB
-set INTEL_BIN_DIR=/var/local/bundle/INTEL/INTEL_18u2/bin64
-set OS_LIB_DIR=/var/local/bundle/OSLIBS/LINUX
+set INTELVERSION=INTEL19
 
 :: ---- Guide locations ----
 
