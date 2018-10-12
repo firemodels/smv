@@ -8741,6 +8741,7 @@ typedef struct {
       int blocknumber;
       size_t len;
       char *buffer3;
+      int fds_skip = 1;
 
       if(setup_only == 1||smoke3d_only==1)continue;
       isoi = isoinfo + iiso;
@@ -8760,7 +8761,7 @@ typedef struct {
       }
       if(len>5&&dataflag==0){
         buffer3=buffer+4;
-        sscanf(buffer3,"%i",&blocknumber);
+        sscanf(buffer3,"%i %i",&blocknumber,&fds_skip);
         blocknumber--;
       }
       if(len>6&&dataflag==1){
@@ -8773,6 +8774,7 @@ typedef struct {
         BREAK;
       }
 
+      isoi->fds_skip = fds_skip;
       isoi->tfile=NULL;
       isoi->seq_id=nn_iso;
       isoi->autoload=0;
@@ -8823,6 +8825,12 @@ typedef struct {
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(isoi->fds_skip!=1){  // only append skip parameter if it is > 1
+          char skip_label[100];
+
+          sprintf(skip_label, "/%i", isoi->fds_skip);
+          strcat(isoi->surface_label.longlabel, skip_label);
+        }
         if(geomflag==1){
           int ntimes_local;
           geomdata *geomi;

@@ -964,6 +964,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   char buffer2[255], *buffer;
   size_t len;
   int len_suffix_label = 0;
+  int len_skip_label = 10;  // add extra space to label in case there is an isosurface skip parameter
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
@@ -974,7 +975,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   TrimBack(buffer);
   len=strlen(buffer);
   if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+len_suffix_label+1))==0)return LABEL_ERR;
+  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+len_suffix_label+len_skip_label+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
   if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
 
