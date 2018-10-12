@@ -538,6 +538,7 @@ typedef struct _isodata {
   char *reg_file, *size_file;
   short *normaltable;
   int memory_id;
+  int fds_skip;
   int nnormaltable;
   char *file,*tfile;
   int dataflag,geomflag;
