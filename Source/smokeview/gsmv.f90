@@ -1756,9 +1756,9 @@ INTEGER, INTENT(INOUT) :: NVERTS, NFACES
 REAL(EB), INTENT(INOUT), DIMENSION(3*NVERTS), TARGET :: VERTS
 INTEGER, INTENT(INOUT), DIMENSION(3*NFACES), TARGET :: FACES
 REAL(EB), INTENT(IN) :: EPS
+INTEGER, PARAMETER :: V_MERGED=-1, V_DISCARD=0, V_ORIGINAL=1
 
 INTEGER, DIMENSION(NVERTS) :: VERT_STATE
-INTEGER, DIMENSION(NFACES) :: FACES_STATE
 REAL(EB), POINTER, DIMENSION(:) :: V1, V2, V3, VERTFROM, VERTTO
 INTEGER, POINTER, DIMENSION(:) :: FACEI, FACEFROM, FACETO
 REAL(EB) :: D12, D13, D23
@@ -1770,8 +1770,13 @@ MAX_ITER = 10
 ITER = 0
 DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are made (or 10 times whichever comes first)
    HAVE_SMALL = .FALSE.
-   VERT_STATE(1:NVERTS) = 1
-   FACES_STATE(1:NFACES) = 1
+
+   ! VERT_STATE
+   !    V_MERGE =   -1  -  merged vertex
+   !    V_DISCARD =  0  -  discard vertex
+   !    V_ORIGINAL = 1  -  vertex kept and not changed
+   VERT_STATE(1:NVERTS) = V_ORIGINAL
+
    ITER = ITER + 1
 
 ! combine vertices that are close together
@@ -1780,33 +1785,35 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
       V1=>VERTS(3*FACEI(1)-2:3*FACEI(1))
       V2=>VERTS(3*FACEI(2)-2:3*FACEI(2))
       V3=>VERTS(3*FACEI(3)-2:3*FACEI(3))
-      IF (VERT_STATE(FACEI(1))/=1 .OR. VERT_STATE(FACEI(2))/=1 .OR. VERT_STATE(FACEI(3))/=1) CYCLE
+
+! only look at triangles that have not changed
+
+      IF (VERT_STATE(FACEI(1))/=V_ORIGINAL .OR. VERT_STATE(FACEI(2))/=V_ORIGINAL .OR. VERT_STATE(FACEI(3))/=V_ORIGINAL) CYCLE
       D12 = DISTANCE3(V1,V2)
       D13 = DISTANCE3(V1,V3)
       D23 = DISTANCE3(V2,V3)
       IF (D12>EPS .AND.D13>EPS .AND.D23>EPS) CYCLE ! do not combine verts
 
       HAVE_SMALL = .TRUE.
-      FACES_STATE(I) = 0
       IF (D12<EPS .AND.D13>EPS .AND.D23>EPS) THEN ! combine verts 1 and 2
-         VERT_STATE(FACEI(1)) = -1
-         VERT_STATE(FACEI(2)) = 0
+         VERT_STATE(FACEI(1)) = V_MERGED
+         VERT_STATE(FACEI(2)) = V_DISCARD
          V1 = (V1+V2)/2.0_EB
          FACEI(2) = FACEI(1)
       ELSE IF (D13<EPS .AND.D12>EPS .AND.D23>EPS) THEN ! combine verts 1 and 3
-         VERT_STATE(FACEI(1)) = -1
-         VERT_STATE(FACEI(3)) = 0
+         VERT_STATE(FACEI(1)) = V_MERGED
+         VERT_STATE(FACEI(3)) = V_DISCARD
          V1 = (V1+V3)/2.0_EB
          FACEI(3) = FACEI(1)
       ELSE IF (D23<EPS .AND.D12>EPS .AND.D13>EPS) THEN ! combine verts 2 and 3
-         VERT_STATE(FACEI(2)) = -1
-         VERT_STATE(FACEI(3)) = 0
+         VERT_STATE(FACEI(2)) = V_MERGED
+         VERT_STATE(FACEI(3)) = V_DISCARD
          V2 = (V2 + V3)/2.0_EB
          FACEI(3) = FACEI(2)
       ELSE  ! combine verts 1, 2 and 3
-         VERT_STATE(FACEI(1))=-1
-         VERT_STATE(FACEI(2))=0
-         VERT_STATE(FACEI(3))=0
+         VERT_STATE(FACEI(1))= V_MERGED
+         VERT_STATE(FACEI(2))=V_DISCARD
+         VERT_STATE(FACEI(3))=V_DISCARD
          V1 = (V1+V2+V3)/3.0_EB
          FACEI(2) = FACEI(1)
          FACEI(3) = FACEI(1)
@@ -1817,21 +1824,22 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
 
    ITO = 0
    DO I = 1, NVERTS
-      IF (VERT_STATE(I)==0) CYCLE
-      ITO = ITO + 1
-      VERT_STATE(I) = ITO
+      IF (VERT_STATE(I)/=V_DISCARD) THEN
+        ITO = ITO + 1
+        VERT_STATE(I) = ITO
+      ENDIF
    ENDDO
 
 ! eliminate duplicate vertices
 
    ITO = 0
    DO IFROM = 1, NVERTS
-      VERTFROM=>VERTS(3*IFROM-2:3*IFROM)
-      IF (VERT_STATE(IFROM)==0) CYCLE
-      ITO = ITO + 1
-      IF (ITO==IFROM) CYCLE
-      VERTTO=>VERTS(3*IFROM-2:3*IFROM)
-      VERTTO=VERTFROM
+      IF (VERT_STATE(IFROM)/=V_DISCARD) THEN
+        ITO = ITO + 1
+        VERTFROM=>VERTS(3*IFROM-2:3*IFROM)
+        VERTTO=>VERTS(3*ITO-2:3*ITO)
+        VERTTO=VERTFROM
+      ENDIF
    ENDDO
    NVERTS = ITO
 
@@ -1839,12 +1847,13 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
    ITO = 0
    DO IFROM = 1, NFACES
       FACEFROM=>FACES(3*IFROM-2:3*IFROM)
-      IF (FACEFROM(1)==FACEFROM(2) .OR. FACEFROM(1)==FACEFROM(3) .OR. FACEFROM(2)==FACEFROM(3)) CYCLE
-      ITO=ITO+1
-      FACETO=>FACES(3*ITO-2:3*ITO)
-      FACETO(1)=VERT_STATE(FACEFROM(1))
-      FACETO(2)=VERT_STATE(FACEFROM(2))
-      FACETO(3)=VERT_STATE(FACEFROM(3))
+      IF (FACEFROM(1)/=FACEFROM(2) .AND. FACEFROM(1)/=FACEFROM(3) .AND. FACEFROM(2)/=FACEFROM(3)) THEN
+        ITO=ITO+1
+        FACETO=>FACES(3*ITO-2:3*ITO)
+        FACETO(1)=VERT_STATE(FACEFROM(1))
+        FACETO(2)=VERT_STATE(FACEFROM(2))
+        FACETO(3)=VERT_STATE(FACEFROM(3))
+      ENDIF
    ENDDO
    NFACES = ITO
 ENDDO
