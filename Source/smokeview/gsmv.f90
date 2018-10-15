@@ -1727,38 +1727,39 @@ DZ = V1(3)-V2(3)
 DISTANCE3 = SQRT(DX*DX+DY*DY+DZ*DZ)
 END FUNCTION DISTANCE3
 
-!  ------------------ DECIMATE ------------------------
+!  ------------------ DECIMATE_FB ------------------------
 
-SUBROUTINE DECIMATE_FB(VERTS, NVERTS, FACES, NFACES, EPS)
+SUBROUTINE DECIMATE_FB(VERTS, NVERTS, FACES, NFACES, DELTA)
 INTEGER, INTENT(INOUT) :: NVERTS, NFACES
 REAL(FB), INTENT(INOUT), DIMENSION(3*NVERTS) :: VERTS
 INTEGER, INTENT(INOUT), DIMENSION(3*NFACES) :: FACES
-REAL(FB), INTENT(IN) :: EPS
+REAL(FB), INTENT(IN) :: DELTA
 
 REAL(EB), DIMENSION(3*NVERTS) :: VERTS_EB
-REAL(EB) :: EPS_EB
+REAL(EB) :: DELTA_EB
 
-EPS_EB = REAL(EPS,EB)
+DELTA_EB = REAL(DELTA,EB)
 VERTS_EB(1:3*NVERTS) = REAL(VERTS(1:3*NVERTS),EB)
-CALL DECIMATE(VERTS_EB,NVERTS,FACES,NFACES,EPS_EB)
+CALL DECIMATE(VERTS_EB,NVERTS,FACES,NFACES,DELTA_EB)
 VERTS(1:3*NVERTS) = REAL(VERTS_EB(1:3*NVERTS),FB)
 RETURN
 END SUBROUTINE DECIMATE_FB
 
 !  ------------------ DECIMATE ------------------------
 
-SUBROUTINE DECIMATE(VERTS, NVERTS, FACES, NFACES, EPS)
-! preliminary routine to reduce the size of a geometry by
+SUBROUTINE DECIMATE(VERTS, NVERTS, FACES, NFACES, DELTA)
+! This routine reduces the size of a geometry by
 !  1) merging vertices that are "close" together
 !  2) eliminating redundent vertices
-!  2) eliminating "singular" triangles
+!  3) eliminating "singular" triangles
+
 INTEGER, INTENT(INOUT) :: NVERTS, NFACES
 REAL(EB), INTENT(INOUT), DIMENSION(3*NVERTS), TARGET :: VERTS
 INTEGER, INTENT(INOUT), DIMENSION(3*NFACES), TARGET :: FACES
-REAL(EB), INTENT(IN) :: EPS
+REAL(EB), INTENT(IN) :: DELTA
 INTEGER, PARAMETER :: V_MERGED=-1, V_DISCARD=0, V_ORIGINAL=1
 
-INTEGER, DIMENSION(NVERTS) :: VERT_STATE
+INTEGER, DIMENSION(NVERTS) :: VERT_STATE, VERT_MAP
 REAL(EB), POINTER, DIMENSION(:) :: V1, V2, V3, VERTFROM, VERTTO
 INTEGER, POINTER, DIMENSION(:) :: FACEI, FACEFROM, FACETO
 REAL(EB) :: D12, D13, D23
@@ -1766,9 +1767,9 @@ INTEGER :: I, IFROM, ITO, ITER, MAX_ITER
 LOGICAL :: HAVE_SMALL
 
 HAVE_SMALL = .TRUE.
-MAX_ITER = 10
+MAX_ITER = 4
 ITER = 0
-DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are made (or 10 times whichever comes first)
+DO WHILE (HAVE_SMALL .AND. ITER<MAX_ITER) ! iterate until no further changes are made (or 10 times whichever comes first)
    HAVE_SMALL = .FALSE.
 
    ! VERT_STATE
@@ -1776,11 +1777,15 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
    !    V_DISCARD =  0  -  discard vertex
    !    V_ORIGINAL = 1  -  vertex kept and not changed
    VERT_STATE(1:NVERTS) = V_ORIGINAL
+   
+   DO I = 1, NVERTS
+     VERT_MAP(I) = I
+   END DO
 
    ITER = ITER + 1
 
 ! combine vertices that are close together
-   DO I = 1, NFACES
+   FACELOOP: DO I = 1, NFACES
       FACEI=>FACES(3*I-2:3*I)
       V1=>VERTS(3*FACEI(1)-2:3*FACEI(1))
       V2=>VERTS(3*FACEI(2)-2:3*FACEI(2))
@@ -1788,49 +1793,52 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
 
 ! only look at triangles that have not changed
 
-      IF (VERT_STATE(FACEI(1))/=V_ORIGINAL .OR. VERT_STATE(FACEI(2))/=V_ORIGINAL .OR. VERT_STATE(FACEI(3))/=V_ORIGINAL) CYCLE
+      IF (VERT_STATE(FACEI(1))/=V_ORIGINAL .OR. VERT_STATE(FACEI(2))/=V_ORIGINAL .OR. VERT_STATE(FACEI(3))/=V_ORIGINAL) CYCLE FACELOOP
       D12 = DISTANCE3(V1,V2)
       D13 = DISTANCE3(V1,V3)
       D23 = DISTANCE3(V2,V3)
-      IF (D12>EPS .AND.D13>EPS .AND.D23>EPS) CYCLE ! do not combine verts
+      IF (D12>DELTA .AND.D13>DELTA .AND.D23>DELTA) CYCLE FACELOOP ! do not combine verts
 
       HAVE_SMALL = .TRUE.
-      IF (D12<EPS .AND.D13>EPS .AND.D23>EPS) THEN ! combine verts 1 and 2
+      IF (D12<DELTA .AND.D13>DELTA .AND.D23>DELTA) THEN ! combine verts 1 and 2
          VERT_STATE(FACEI(1)) = V_MERGED
          VERT_STATE(FACEI(2)) = V_DISCARD
          V1 = (V1+V2)/2.0_EB
+         VERT_MAP(FACEI(2)) = FACEI(1)
          FACEI(2) = FACEI(1)
-      ELSE IF (D13<EPS .AND.D12>EPS .AND.D23>EPS) THEN ! combine verts 1 and 3
+      ELSE IF (D13<DELTA .AND.D12>DELTA .AND.D23>DELTA) THEN ! combine verts 1 and 3
          VERT_STATE(FACEI(1)) = V_MERGED
          VERT_STATE(FACEI(3)) = V_DISCARD
          V1 = (V1+V3)/2.0_EB
+         VERT_MAP(FACEI(3)) = FACEI(1)
          FACEI(3) = FACEI(1)
-      ELSE IF (D23<EPS .AND.D12>EPS .AND.D13>EPS) THEN ! combine verts 2 and 3
+      ELSE IF (D23<DELTA .AND.D12>DELTA .AND.D13>DELTA) THEN ! combine verts 2 and 3
          VERT_STATE(FACEI(2)) = V_MERGED
          VERT_STATE(FACEI(3)) = V_DISCARD
          V2 = (V2 + V3)/2.0_EB
+         VERT_MAP(FACEI(3)) = FACEI(2)
          FACEI(3) = FACEI(2)
       ELSE  ! combine verts 1, 2 and 3
          VERT_STATE(FACEI(1))= V_MERGED
-         VERT_STATE(FACEI(2))=V_DISCARD
-         VERT_STATE(FACEI(3))=V_DISCARD
+         VERT_STATE(FACEI(2))= V_DISCARD
+         VERT_STATE(FACEI(3))= V_DISCARD
          V1 = (V1+V2+V3)/3.0_EB
+         VERT_MAP(FACEI(2)) = FACEI(1)
+         VERT_MAP(FACEI(3)) = FACEI(1)
          FACEI(2) = FACEI(1)
          FACEI(3) = FACEI(1)
       ENDIF
-   ENDDO
+   ENDDO FACELOOP
 
-! construct new vertex mapping
+   ! remap triangle vertices
+   DO I = 1, NFACES
+      FACEI=>FACES(3*I-2:3*I)
+      FACEI(1) = VERT_MAP(FACEI(1))
+      FACEI(2) = VERT_MAP(FACEI(2))
+      FACEI(3) = VERT_MAP(FACEI(3))
+   END DO
 
-   ITO = 0
-   DO I = 1, NVERTS
-      IF (VERT_STATE(I)/=V_DISCARD) THEN
-        ITO = ITO + 1
-        VERT_STATE(I) = ITO
-      ENDIF
-   ENDDO
-
-! eliminate duplicate vertices
+   ! construct new vertex list skipping over vertices that have been removed
 
    ITO = 0
    DO IFROM = 1, NVERTS
@@ -1838,8 +1846,9 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
         ITO = ITO + 1
         VERTFROM=>VERTS(3*IFROM-2:3*IFROM)
         VERTTO=>VERTS(3*ITO-2:3*ITO)
-        VERTTO=VERTFROM
+        VERTTO(1:3)=VERTFROM(1:3)
       ENDIF
+      VERT_MAP(IFROM) = ITO
    ENDDO
    NVERTS = ITO
 
@@ -1850,9 +1859,12 @@ DO WHILE (HAVE_SMALL .OR. ITER<MAX_ITER) ! iterate until no further changes are 
       IF (FACEFROM(1)/=FACEFROM(2) .AND. FACEFROM(1)/=FACEFROM(3) .AND. FACEFROM(2)/=FACEFROM(3)) THEN
         ITO=ITO+1
         FACETO=>FACES(3*ITO-2:3*ITO)
-        FACETO(1)=VERT_STATE(FACEFROM(1))
-        FACETO(2)=VERT_STATE(FACEFROM(2))
-        FACETO(3)=VERT_STATE(FACEFROM(3))
+        FACETO(1)=VERT_MAP(FACEFROM(1))
+        FACETO(2)=VERT_MAP(FACEFROM(2))
+        FACETO(3)=VERT_MAP(FACEFROM(3))
+        IF (FACETO(1)==0 .OR. FACETO(2)==0 .OR. FACETO(3)==0) THEN  ! need to check
+          ITO=ITO-1
+        ENDIF
       ENDIF
    ENDDO
    NFACES = ITO
