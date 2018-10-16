@@ -1767,7 +1767,7 @@ INTEGER :: I, IFROM, ITO, ITER, MAX_ITER
 LOGICAL :: HAVE_SMALL
 
 HAVE_SMALL = .TRUE.
-MAX_ITER = 4
+MAX_ITER = 10
 ITER = 0
 DO WHILE (HAVE_SMALL .AND. ITER<MAX_ITER) ! iterate until no further changes are made (or 10 times whichever comes first)
    HAVE_SMALL = .FALSE.
