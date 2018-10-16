@@ -5420,9 +5420,10 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
 
   for(;;){
     int nframeboth;
+    size_t count;
 
-    SKIP; fread(&time_local, 4, 1, SMOKE3DFILE); SKIP;
-    if(feof(SMOKE3DFILE) != 0)break;
+    SKIP; count=fread(&time_local, 4, 1, SMOKE3DFILE); SKIP;
+    if(count!=1||feof(SMOKE3DFILE) != 0)break;
     SKIP; fread(nchars, 4, 2, SMOKE3DFILE); SKIP;
     if(version == 0){ // uncompressed data
       fprintf(SMOKE_SIZE, "%f %i %i\n", time_local, nchars[0], nchars[1]);
@@ -5926,7 +5927,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
-  if(GetSmoke3DSizes(skip_global,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
+  if(GetSmoke3DSizes(fortran_skip,smoke3di->file,smoke3di->compression_type,&smoke3di->times, &smoke3di->use_smokeframe,
                  &smoke3di->nchars_uncompressed,
                  &smoke3di->nchars_compressed_smoke,
                  &smoke3di->nchars_compressed_smoke_full,
