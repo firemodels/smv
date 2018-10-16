@@ -8742,6 +8742,7 @@ typedef struct {
       size_t len;
       char *buffer3;
       int fds_skip = 1;
+      float fds_delta = -1.0;
 
       if(setup_only == 1||smoke3d_only==1)continue;
       isoi = isoinfo + iiso;
@@ -8761,7 +8762,7 @@ typedef struct {
       }
       if(len>5&&dataflag==0){
         buffer3=buffer+4;
-        sscanf(buffer3,"%i %i",&blocknumber,&fds_skip);
+        sscanf(buffer3,"%i %i %f",&blocknumber,&fds_skip,&fds_delta);
         blocknumber--;
       }
       if(len>6&&dataflag==1){
@@ -8775,6 +8776,7 @@ typedef struct {
       }
 
       isoi->fds_skip = fds_skip;
+      isoi->fds_delta = fds_delta;
       isoi->tfile=NULL;
       isoi->seq_id=nn_iso;
       isoi->autoload=0;
@@ -8825,6 +8827,15 @@ typedef struct {
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
+          char delta_label[100];
+
+          sprintf(delta_label, "%f", isoi->fds_delta);
+          TrimZeros(delta_label);
+          strcat(isoi->surface_label.longlabel, "(");
+          strcat(isoi->surface_label.longlabel, delta_label);
+          strcat(isoi->surface_label.longlabel, ")");
+        }
         if(isoi->fds_skip!=1){  // only append skip parameter if it is > 1
           char skip_label[100];
 
