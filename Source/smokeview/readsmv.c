@@ -8827,7 +8827,7 @@ typedef struct {
         get_isolevels=1;
         isoi->file=isoi->reg_file;
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
-        if(isoi->fds_delta>0.0){  // only deleta parameter if it is > 0.0
+        if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
           char delta_label[100];
 
           sprintf(delta_label, "%f", isoi->fds_delta);
