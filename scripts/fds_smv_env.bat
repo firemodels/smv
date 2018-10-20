@@ -33,17 +33,16 @@ set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_17u4
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
-:: ---- MPI version ----
+:: ---- MPI library locations ----
 
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
 set osx_mpi_version=3.0.0
+::set osx_mpi_version=1.8.4
 
-:: ---- lib/bin locations ----
+:: ---- INTEL compiler version ----
 
-set INTEL_LIB_DIR=/var/local/bundle/INTEL/INTEL_18u2/LIB
-set INTEL_BIN_DIR=/var/local/bundle/INTEL/INTEL_18u2/bin64
-set OS_LIB_DIR=/var/local/bundle/OSLIBS/LINUX
+set INTELVERSION=INTEL19
 
 :: ---- Guide locations ----
 
