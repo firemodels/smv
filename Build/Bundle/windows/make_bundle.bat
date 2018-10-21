@@ -28,7 +28,7 @@ set BUILDDIR=intel_win_%platform%
 
 set version=%smv_version%
 set smvbuild=%svn_root%\smv\Build\smokeview\%BUILDDIR%
-set forbundle=%svn_root%\smv\for_bundle
+set forbundle=%svn_root%\smv\Build\Bundle\for_bundle
 set smvscripts=%svn_root%\smv\scripts
 set svzipbuild=%svn_root%\smv\Build\smokezip\%BUILDDIR%
 set dem2fdsbuild=%svn_root%\smv\Build\dem2fds\%BUILDDIR%
