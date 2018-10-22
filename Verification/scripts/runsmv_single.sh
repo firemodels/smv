@@ -115,7 +115,7 @@ SVNROOT=~/FDS-SMV
 SMOKEVIEW=$SVNROOT/smv/Build/intel_$VERSION2/smokeview_$VERSION
 
 if [ "$BINDIR" == "" ]; then
-  BINDIR="$SVNROOT/smv/for_bundle"
+  BINDIR="$SVNROOT/smv/Build/Bundle/for_bundle"
 fi
 SMVBINDIR="-bindir $BINDIR"
 
