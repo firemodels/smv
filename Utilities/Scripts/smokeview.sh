@@ -6,8 +6,9 @@ RUNSCRIPT=-runscript
 SMOKEVIEWDIR=$(dirname "$0")
 TIME=
 OUTPUT=
+SETUP_XSERVER=1
 
-while getopts 'd:e:s:t' OPTION
+while getopts 'd:e:ns:t' OPTION
 do
 case $OPTION in
   d)
@@ -15,6 +16,9 @@ case $OPTION in
    ;;
   e)
    SMOKEVIEW="$OPTARG"
+   ;;
+  n)
+  SETUP_XSERVER=
    ;;
   s)
    ssffile=$OPTARG
@@ -52,10 +56,14 @@ fi
 
 
 echo $SMOKEVIEW $RUNSCRIPT $in
-source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
-if [ "$TIME" == "time" ]; then
-$TIME $SMOKEVIEW $RUNSCRIPT $in >/dev/null
-else
-$SMOKEVIEW $RUNSCRIPT $in
+if [  "SETUP_XSERVER" == "1" ]; then
+  source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
-source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
+if [ "$TIME" == "time" ]; then
+  $TIME $SMOKEVIEW $RUNSCRIPT $in >/dev/null
+else
+  $SMOKEVIEW $RUNSCRIPT $in
+fi
+if [  "SETUP_XSERVER" == "1" ]; then
+  source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
+fi
