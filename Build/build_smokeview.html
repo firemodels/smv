@@ -207,16 +207,24 @@ function install_smv(args){
 </table>
 
 <p><table border=on>
-<tr><th>Other</th></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button></td></tr> 
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webCOPYhome2config.bat')">settings ==>> repo</button></td></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webCOPYconfig2home.bat')">settings <<== repo</button></td></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webSYNCHfds2smv.bat')">gsmv/bib fds ==>> smv</button></td></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webSYNCHsmv2fds.bat')">gsmv/bib smv ==>> fds</button></td></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button></td></tr>
+<tr><th></th><th colspan=2>Synchronize</th></tr>
+<tr><th>settings</th>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webCOPYhome2config.bat')"> settings ==>> smv </button></td>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webCOPYconfig2home.bat')"> settings <<== smv </button></td>
+</tr>
+<tr><th>gsmv/bib</th>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webSYNCHfds2smv.bat')">fds ==>> smv</button></td>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webSYNCHsmv2fds.bat')">smv ==>> fds</button></td>
+</tr>
 </table>
 
-<p><a href="getting_started.html">FDS/Smokeview build page checklist</a>
+<p><table border=on>
+<tr><th>Other</th></tr>
+<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button></td></tr> 
+<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button></td></tr>
+<tr><td align=center><a href="getting_started.html">Build checklist</a></td></tr>
+</table>
+
 
 
 <p><hr>
