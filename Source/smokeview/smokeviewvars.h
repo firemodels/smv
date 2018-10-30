@@ -21,7 +21,7 @@
 #include "threader.h"
 
 #ifdef pp_RENDER360_DEBUG
-SVEXTERN int SVDECL(debug_360, 0);
+SVEXTERN int SVDECL(debug_360, 0), SVDECL(debug_360_skip_x,25), SVDECL(debug_360_skip_y,25);
 #endif
 SVEXTERN char SVDECL(*ffmpeg_command_filename, NULL);
 SVEXTERN int SVDECL(output_ffmpeg_command, 0);

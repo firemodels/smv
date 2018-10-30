@@ -71,6 +71,7 @@
 #define MOVIE_FILETYPE 7
 #define RENDER_MODE 8
 #define RENDER_START_TOP 13
+#define RENDER_DEBUG_360 14
 
 #define SLICE_ROLLOUT 0
 #define VIEWPOINTS_ROLLOUT 1
@@ -95,6 +96,8 @@ unsigned char deg90[] = {'9', '0', 0};
 
 GLUI *glui_motion=NULL;
 
+GLUI_Panel *PANEL_360 = NULL;
+GLUI_Panel *PANEL_360_debug = NULL;
 GLUI_Panel *PANEL_custom_view=NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
@@ -141,6 +144,8 @@ GLUI_Rollout *ROLLOUT_upper = NULL;
 GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
+GLUI_Spinner *SPINNER_360_skip_x=NULL;
+GLUI_Spinner *SPINNER_360_skip_y=NULL;
 GLUI_Spinner *SPINNER_movie_crf = NULL;
 GLUI_Spinner *SPINNER_bitrate = NULL;
 GLUI_Spinner *SPINNER_customview_elevation=NULL;
@@ -1223,19 +1228,19 @@ extern "C" void GluiMotionSetup(int main_window){
   SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
   SPINNER_resolution_multiplier->set_int_limits(2, 10);
   RenderCB(RENDER_MULTIPLIER);
-  {
-    char label[100];
 
-    sprintf(label, "%s height ", deg360);
-
-    SPINNER_window_height360 = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, label, GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
-    SPINNER_window_height360->set_int_limits(100, max_screenHeight);
-    RenderCB(RENDER_360CB);
-  }
-  glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "360 margin:", GLUI_SPINNER_INT, &margin360_size);
+  PANEL_360 = glui_motion->add_panel_to_panel(ROLLOUT_image_size, (char *)deg360, true);
+  SPINNER_window_height360 = glui_motion->add_spinner_to_panel(PANEL_360, "height", GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
+  SPINNER_window_height360->set_int_limits(100, max_screenHeight);
+  RenderCB(RENDER_360CB);
+  glui_motion->add_spinner_to_panel(PANEL_360, "margin", GLUI_SPINNER_INT, &margin360_size);
 
 #ifdef pp_RENDER360_DEBUG
-  glui_motion->add_checkbox_to_panel(ROLLOUT_image_size, "360 debug", &debug_360);
+  PANEL_360_debug = glui_motion->add_panel_to_panel(PANEL_360, "grid", true);
+  glui_motion->add_checkbox_to_panel(PANEL_360_debug, "show", &debug_360);
+  SPINNER_360_skip_x = glui_motion->add_spinner_to_panel(PANEL_360_debug, "horizontal skip", GLUI_SPINNER_INT, &debug_360_skip_x, RENDER_DEBUG_360, RenderCB);
+  SPINNER_360_skip_y = glui_motion->add_spinner_to_panel(PANEL_360_debug, "vertical skip", GLUI_SPINNER_INT, &debug_360_skip_y, RENDER_DEBUG_360, RenderCB);
+  RenderCB(RENDER_DEBUG_360);
 
   NewMemory((void **)&CHECKBOX_screenvis, nscreeninfo * sizeof(GLUI_Checkbox *));
 
@@ -2185,6 +2190,16 @@ void RenderCB(int var){
     case RENDER_SKIP:
     case RENDER_LABEL:
     case RENDER_TYPE:
+      break;
+    case RENDER_DEBUG_360:
+      if(debug_360_skip_x<2){
+        debug_360_skip_x = 2;
+        SPINNER_360_skip_x->set_int_val(2);
+      }
+      if(debug_360_skip_y<2){
+        debug_360_skip_y = 2;
+        SPINNER_360_skip_y->set_int_val(2);
+      }
       break;
     case RENDER_MULTIPLIER:
       {
