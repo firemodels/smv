@@ -675,7 +675,7 @@ unsigned int GetScreenMap360(float *xyz, float *xx, float *yy){
   B = DOT3(xyz, up)/t;
 
   {
-    int ix, iy, index;
+    int index;
     unsigned int return_val;
 
     *xx = screeni->nwidth*(screeni->width / 2.0 + A) / screeni->width;
@@ -993,10 +993,6 @@ int MergeRenderScreenBuffers360(void){
       int ix, iy;
       int ix2, iy2;
       float fx, fy;
-      float count;
-      int ixmin, ixmax, iymin, iymax;
-      int ii;
-      float wi, wj;
 
       ibuff = screenmap360[ijk360] >> 24;
       if(ibuff == 0)continue;
