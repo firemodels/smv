@@ -637,7 +637,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
 /* ------------------ GetScreenMap360 ------------------------ */
 
-unsigned int GetScreenMap360(float *xyz){
+unsigned int GetScreenMap360(float *xyz, float *xx, float *yy){
   screendata *screeni;
   int ibuff;
   float xyznorm;
@@ -678,13 +678,13 @@ unsigned int GetScreenMap360(float *xyz){
     int ix, iy, index;
     unsigned int return_val;
 
-    ix = screeni->nwidth*(screeni->width / 2.0 + A) / screeni->width;
-    ix = CLAMP(ix,0,screeni->nwidth-1);
+    *xx = screeni->nwidth*(screeni->width / 2.0 + A) / screeni->width;
+    *xx = CLAMP(*xx,0,screeni->nwidth-1);
 
-    iy = screeni->nheight*(screeni->height / 2.0 + B) / screeni->height;
-    iy = CLAMP(iy,0,screeni->nheight - 1);
+    *yy = screeni->nheight*(screeni->height / 2.0 + B) / screeni->height;
+    *yy = CLAMP(*yy,0,screeni->nheight - 1);
 
-    index = iy*screeni->nwidth + ix;
+    index = (int)(*yy)*screeni->nwidth + (int)(*xx);
     return_val = ((ibuff+1) << 24) |  index;
     return return_val;
   }
@@ -886,7 +886,11 @@ void SetupScreeninfo(void){
   }
 
   FREEMEMORY(screenmap360);
+  FREEMEMORY(screenmap360IX);
+  FREEMEMORY(screenmap360IY);
   NewMemory((void **)&screenmap360, nwidth360*nheight360 * sizeof(unsigned int));
+  NewMemory((void **)&screenmap360IX, nwidth360*nheight360*sizeof(float));
+  NewMemory((void **)&screenmap360IY, nwidth360*nheight360*sizeof(float));
   {
     int i,j;
     float *cos_az, *sin_az, *cos_elev, *sin_elev;
@@ -927,7 +931,10 @@ void SetupScreeninfo(void){
           screenmap360[j*nwidth360 + nazimuth + i] = GetScreenMap360LR(RIGHT, xyz);
         }
         else{
-          screenmap360[j*nwidth360 + i] = GetScreenMap360(xyz);
+          int ij;
+
+          ij = j*nwidth360+i;
+          screenmap360[ij] = GetScreenMap360(xyz,screenmap360IX+ij, screenmap360IY+ij);
         }
       }
     }
@@ -978,11 +985,14 @@ int MergeRenderScreenBuffers360(void){
   ijk360 = 0;
   for(j=0;j<nheight360;j++){
     for(i=0;i<nwidth360;i++){
-      GLubyte *p;
-      int ibuff, ijk, rgb_local;
+      GLubyte *p00, *p01, *p10, *p11;
+      int ibuff, rgb_local;
       screendata *screeni;
       unsigned int r, g, b;
+      float xx, yy;
       int ix, iy;
+      int ix2, iy2;
+      float fx, fy;
       float count;
       int ixmin, ixmax, iymin, iymax;
       int ii;
@@ -993,38 +1003,28 @@ int MergeRenderScreenBuffers360(void){
       ibuff--;
       screeni = screeninfo + ibuff;
 
-      ijk = screenmap360[ijk360] & 0xffffff;
-      ix = ijk%screeni->nwidth;
-      iy = ijk/screeni->nwidth;
+      xx = screenmap360IX[ijk360];
+      ix = xx;
+      ix2 = CLAMP(ix+1,0,screeni->nwidth-1);
+      fx = 0.0;
+      if(ix2>ix)fx=xx-(float)ix;
 
-      iymin=MAX(iy-margin360_size,0);
-      iymax=MIN(iy+margin360_size+1,screeni->nheight);
-      ixmin=MAX(ix-margin360_size,0);
-      ixmax=MIN(ix+margin360_size+1,screeni->nwidth);
-      count=0.0;
-      r = 0;
-      g = 0;
-      b = 0;
-      for(ii=ixmin;ii<ixmax;ii++){
-        int jj;
+      yy = screenmap360IY[ijk360];
+      iy = yy;
+      iy2 = CLAMP(iy+1,0,screeni->nheight-1);
+      fy = 0.0;
+      if(iy2>iy)fy=yy-(float)yy;
 
-        wi = 1.0/(1.0+ABS(ii-ix));
+#define AVG2(f,p0,p1) ((1.0-f)*(float)(p0) + (f)*(float)(p1))
+#define AVG4(fx,fy,p00,p01,p10,p11) ((1.0-fy)*AVG2(fx,p00,p10)+(fy)*AVG2(fx,p01,p11))
 
-        for(jj=iymin;jj<iymax;jj++){
-          wj = 1.0/(1.0+ABS(jj-iy));
-          ijk = jj*screeni->nwidth + ii;
-          p  = screeni->screenbuffer+3*ijk;
-          r += wi*wj*(*p++);
-          g += wi*wj*(*p++);
-          b += wi*wj*(*p++);
-          count+=wi*wj;
-        }
-      }
-      if(count>0.0){
-        r /= count;
-        g /= count;
-        b /= count;
-      }
+      p00  = screeni->screenbuffer+3*(iy*screeni->nwidth + ix);
+      p01  = screeni->screenbuffer+3*(iy*screeni->nwidth + ix2);
+      p10  = screeni->screenbuffer+3*(iy2*screeni->nwidth + ix);
+      p11  = screeni->screenbuffer+3*(iy2*screeni->nwidth + ix2);
+      r = AVG4(fx,fy,p00[0],p01[0],p10[0],p11[0]);
+      g = AVG4(fx,fy,p00[1],p01[1],p10[1],p11[1]);
+      b = AVG4(fx,fy,p00[2],p01[2],p10[2],p11[2]);
       rgb_local = (r<<16)|(g<<8)|b;
 #ifdef pp_RENDER360_DEBUG
       if(debug_360==1&&j%2==0&&i%2==0)rgb_local = 128<<8|128;

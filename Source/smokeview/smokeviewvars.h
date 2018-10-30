@@ -263,6 +263,7 @@ SVEXTERN int SVDECL(update_screeninfo, 0);
 SVEXTERN screendata SVDECL(*screeninfo,NULL);
 SVEXTERN int SVDECL(nwidth360,1024), SVDECL(nheight360,512);
 SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
+SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
 SVEXTERN int SVDECL(highlight_vertexdup, 0);
 SVEXTERN int SVDECL(highlight_edge0, 0);
