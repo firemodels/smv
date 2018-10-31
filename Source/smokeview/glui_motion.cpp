@@ -2191,6 +2191,7 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
+#ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){
         debug_360_skip_x = 2;
@@ -2201,6 +2202,7 @@ void RenderCB(int var){
         SPINNER_360_skip_y->set_int_val(2);
       }
       break;
+#endif
     case RENDER_MULTIPLIER:
       {
         int width_low, height_low, width_high, height_high;
