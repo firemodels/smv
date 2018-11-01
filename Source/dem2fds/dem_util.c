@@ -639,7 +639,12 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
       continue;
     }
 
-    if(Match(buffer, "LONGLATMINMAX") == 1){
+    if(Match(buffer, "MESH")==1){
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%i %i", &nmeshx, &nmeshy);
+    }
+
+    if(Match(buffer, "LONGLATMINMAX")==1){
       fds_long_min = -1000.0;
       fds_long_max = -1000.0;
       fds_lat_min = -1000.0;
@@ -812,6 +817,7 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   float *vals, *valsp1;
   FILE *streamout = NULL;
   char *last;
+  float x1, x2, y1, y2;
 
   strcpy(casename_fds_basename, casename_fds);
   last = strrchr(casename_fds_basename, '.');
@@ -865,7 +871,20 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   }
 
   fprintf(streamout, "&HEAD CHID='%s', TITLE='created from %s' /\n", basename,casename);
-  fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = 0.0, %f, 0.0, %f, %f, %f /\n", ibar, jbar, kbar, xmax, ymax, zmin, zmax);
+  x1 = 0.0;
+  x2 = xmax/(float)nmeshx;
+  for(i = 0; i<nmeshx; i++){
+    y1 = 0.0;
+    y2 = ymax/(float)nmeshy;
+    for(j = 0; j<nmeshy; j++){
+      fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = %f, %f, %f, %f, %f, %f /\n", ibar, jbar, kbar, x1,x2,y1,y2, zmin, zmax);
+      y1 = y2;
+      y2 = (float)(j+2)*ymax/(float)nmeshy;
+    }
+    x1 = x2;
+    x2 = (float)(i+2)*xmax/(float)nmeshx;
+  }
+
   if(option == FDS_OBST) {
     fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
   }
