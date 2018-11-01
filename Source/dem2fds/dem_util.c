@@ -257,7 +257,7 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
   if(show_maps == 1){
     int i;
 
-    // draw outline of each terrain map (downloaded form usgs website)
+    // draw outline of each terrain map (downloaded from USGS website)
 
     for(i = 0; i < nimageinfo; i++) {
       elevdata *imagei;
@@ -642,6 +642,8 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
     if(Match(buffer, "MESH")==1){
       if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
       sscanf(buffer, "%i %i", &nmeshx, &nmeshy);
+      nmeshx = MAX(1, nmeshx);
+      nmeshy = MAX(1, nmeshy);
     }
 
     if(Match(buffer, "LONGLATMINMAX")==1){
@@ -817,7 +819,6 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   float *vals, *valsp1;
   FILE *streamout = NULL;
   char *last;
-  float x1, x2, y1, y2;
 
   strcpy(casename_fds_basename, casename_fds);
   last = strrchr(casename_fds_basename, '.');
@@ -871,18 +872,26 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   }
 
   fprintf(streamout, "&HEAD CHID='%s', TITLE='created from %s' /\n", basename,casename);
-  x1 = 0.0;
-  x2 = xmax/(float)nmeshx;
-  for(i = 0; i<nmeshx; i++){
-    y1 = 0.0;
-    y2 = ymax/(float)nmeshy;
-    for(j = 0; j<nmeshy; j++){
-      fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = %f, %f, %f, %f, %f, %f /\n", ibar, jbar, kbar, x1,x2,y1,y2, zmin, zmax);
-      y1 = y2;
-      y2 = (float)(j+2)*ymax/(float)nmeshy;
+
+  NewMemory((void **)&xplt, (nmeshx+1)*sizeof(float));
+  xplt[0] = 0.0;
+  for(i = 1;i<nmeshx-1;i++){
+    xplt[i] = xmax*(float)i/(float)nmeshx;
+  }
+  xplt[nmeshx] = xmax;
+
+  NewMemory((void **)&yplt, (nmeshy+1)*sizeof(float));
+  yplt[0] = 0.0;
+  for(i = 1;i<nmeshy-1;i++){
+    yplt[i] = ymax*(float)i/(float)nmeshy;
+  }
+  yplt[nmeshy] = ymax;
+
+  for(j = 0; j<nmeshy; j++){
+    for(i = 0; i<nmeshx; i++){
+      fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = %f, %f, %f, %f, %f, %f /\n",
+      ibar, jbar, kbar, xplt[i],xplt[i+1],yplt[j],yplt[j+1], zmin, zmax);
     }
-    x1 = x2;
-    x2 = (float)(i+2)*xmax/(float)nmeshx;
   }
 
   if(option == FDS_OBST) {
