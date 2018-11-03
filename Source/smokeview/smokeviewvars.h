@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(iso_transparency_option, 1);
+SVEXTERN int SVDECL(iso_opacity_change, 1);
+
 #ifdef pp_RENDER360_DEBUG
 SVEXTERN int SVDECL(debug_360, 0), SVDECL(debug_360_skip_x,25), SVDECL(debug_360_skip_y,25);
 #endif

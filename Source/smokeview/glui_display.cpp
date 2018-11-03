@@ -1315,7 +1315,7 @@ extern "C" void UpdateAxisLabelsSmooth(void){
 /* ------------------ UpdateTransparency ------------------------ */
 
 extern "C" void UpdateTransparency(void){
-  CHECKBOX_transparentflag->set_int_val(use_transparency_data);
+  if(CHECKBOX_transparentflag!=NULL)CHECKBOX_transparentflag->set_int_val(use_transparency_data);
 }
 
 /* ------------------ ExtremeCB ------------------------ */

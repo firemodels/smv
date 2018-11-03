@@ -311,6 +311,7 @@ void DrawGeom(int flag, int timestate){
       float transparent_level_local;
       texturedata *ti;
       int  j;
+      int smooth_triangles;
 
       trianglei = tris[i];
       if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
@@ -323,6 +324,14 @@ void DrawGeom(int flag, int timestate){
       ti = trianglei->textureinfo;
       if(show_texture_1dimage==1)continue;
       if(visGeomTextures==1&&ti!=NULL&&ti->loaded==1)continue;
+
+      if((trianglei->geomtype==GEOM_GEOM&&smooth_geom_normal==0)||
+        (trianglei->geomtype==GEOM_ISO &&smooth_iso_normal==0)){
+        smooth_triangles = 0;
+      }
+      else{
+        smooth_triangles=1;
+      }
       if(hilight_skinny==1&&trianglei->skinny==1){
         color=skinny_color;
         transparent_level_local=1.0;
@@ -332,13 +341,15 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
-      if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
-        glColor4f(color[0],color[1],color[2],transparent_level_local);
-        last_color=color;
-        last_transparent_level=transparent_level_local;
+      if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
+        if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
+          glColor4f(color[0], color[1], color[2], transparent_level_local);
+          last_color = color;
+          last_transparent_level = transparent_level_local;
+        }
       }
-      if((trianglei->geomtype == GEOM_GEOM&&smooth_geom_normal == 0) ||
-         (trianglei->geomtype == GEOM_ISO &&smooth_iso_normal == 0)){
+
+      if(smooth_triangles==0){
         glNormal3fv(trianglei->tri_norm);
         for(j=0;j<3;j++){
           vertdata *vertj;
@@ -350,8 +361,32 @@ void DrawGeom(int flag, int timestate){
       else{
         for(j=0;j<3;j++){
           vertdata *vertj;
+          float v1[3], v2[3];
+          float *vnorm, *vpos;
+          float factor;
+          float transparent_level_local_new;
 
           vertj = trianglei->verts[j];
+          if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
+          // v1 = xyz - fds_eyepos vector from eye to vertex
+          // v2 = vert_norm        normal vector from vertex
+          // v1 .dot. v2 is cos(angle) between vectors
+          // alphanew = 1.0 - (1.0-alpha)**(1.0/(v1 .dot. v2)
+            vnorm = trianglei->vert_norm+3*j;
+            vpos = vertj->xyz;
+            v1[0] = vpos[0]-fds_eyepos[0];
+            v1[1] = vpos[1]-fds_eyepos[1];
+            v1[2] = vpos[2]-fds_eyepos[2];
+            v2[0] = vnorm[0];
+            v2[1] = vnorm[1];
+            v2[2] = vnorm[2];
+            NORMALIZE3(v1);
+            NORMALIZE3(v2);
+            factor = ABS(DOT3(v1,v2));
+            transparent_level_local_new = transparent_level_local;
+            if(factor!=0.0&&transparent_level_local!=1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
+            glColor4f(color[0], color[1], color[2], transparent_level_local_new);
+          }
           glNormal3fv(trianglei->vert_norm+3*j);
           glVertex3fv(vertj->xyz);
         }
