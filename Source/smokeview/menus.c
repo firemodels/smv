@@ -10070,6 +10070,7 @@ updatemenu=0;
           int menu_callback_entry;
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
+#ifdef pp_3DSMOKE_MULTI
           strcpy(smoke3dmenulabel, "");
           if(nsootfiles > 0 && ntempfiles > 0){
             if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
@@ -10096,6 +10097,7 @@ updatemenu=0;
             glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
         }
+#endif
 
         // 3d smoke soot menu
 

@@ -69,7 +69,11 @@
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
 
-//*** options: options being tested on all platforms
+//*** options: all platforms
+
+//#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
+
+//*** options: options being test on all platforms
 
 #ifdef pp_BETA   
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
