@@ -11730,7 +11730,7 @@ int ReadIni2(char *inifile, int localfile){
       int nn, n_iso_c = 0;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f", &iso_shininess, &iso_transparency);
+      sscanf(buffer, "%f %f %i %i", &iso_shininess, &iso_transparency, &iso_transparency_option, &iso_opacity_change);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", iso_specular, iso_specular + 1, iso_specular + 2);
       fgets(buffer, 255, stream);
@@ -13145,7 +13145,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "HEATONCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoncolor[0], heatoncolor[1], heatoncolor[2]);
   fprintf(fileout, "ISOCOLORS\n");
-  fprintf(fileout," %f %f : shininess, default opaqueness\n",iso_shininess, iso_transparency);
+  fprintf(fileout," %f %f %i %i : shininess, default opaqueness\n",iso_shininess, iso_transparency, iso_transparency_option, iso_opacity_change);
   fprintf(fileout," %f %f %f : specular\n",iso_specular[0],iso_specular[1],iso_specular[2]);
   fprintf(fileout," %i : number of levels\n",MAX_ISO_COLORS);
   for(i=0;i<MAX_ISO_COLORS;i++){
@@ -13548,7 +13548,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "TRAINERVIEW\n");
   fprintf(fileout, " %i\n", trainerview);
   fprintf(fileout, "TRANSPARENT\n");
-  fprintf(fileout, " %i %f\n", use_transparency_data, transparent_level);
+  fprintf(fileout, " %i %f %i %i\n", use_transparency_data, transparent_level, iso_transparency_option, iso_opacity_change);
   fprintf(fileout, "TREEPARMS\n");
   fprintf(fileout, " %i %i %i %i\n", mintreesize,vis_xtree,vis_ytree,vis_ztree);
   fprintf(fileout, "TWOSIDEDVENTS\n");
