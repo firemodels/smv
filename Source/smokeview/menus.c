@@ -10096,8 +10096,8 @@ updatemenu=0;
           if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
             glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
           }
-        }
 #endif
+        }
 
         // 3d smoke soot menu
 
