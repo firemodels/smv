@@ -1978,7 +1978,6 @@ void InitVars(void){
   iso_colors[37] = 0.0;
   iso_colors[38] = 0.0;
 
-  iso_transparency = 0.8;
   glui_iso_transparency = CLAMP(255 * iso_transparency+0.1, 1, 255);
   for(i = 0; i < N_ISO_COLORS; i++){
     iso_colors[4 * i + 3] = iso_transparency;

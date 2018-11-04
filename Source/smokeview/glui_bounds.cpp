@@ -2737,7 +2737,7 @@ extern "C" void IsoBoundCB(int var){
     IsoBoundCB(ISO_COLORS);
     break;
   case ISO_TRANSPARENCY:
-    iso_transparency = ((float)glui_iso_transparency + 0.1) / 255.0;
+    iso_transparency = CLAMP(((float)glui_iso_transparency + 0.1) / 255.0,0.0,1.0);
     break;
   case ISO_COLORS:
     iso_color = iso_colors+4*(glui_iso_level-1);

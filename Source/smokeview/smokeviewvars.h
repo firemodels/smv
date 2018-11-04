@@ -800,7 +800,7 @@ SVEXTERN float rgb_part[4*MAXRGB];
 SVEXTERN float rgb_trans[4*MAXRGB];
 SVEXTERN float rgb_cad[MAXRGB][4];
 
-SVEXTERN float iso_transparency, SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
+SVEXTERN float SVDECL(iso_transparency,30.5/255.0), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
 SVEXTERN int glui_iso_colors[4], SVDECL(glui_iso_level,1), glui_iso_transparency;
 
 SVEXTERN float SVDECL(*rgb_ini,NULL);
