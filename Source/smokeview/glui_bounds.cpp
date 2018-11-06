@@ -74,6 +74,11 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define UPDATE_HISTOGRAM 213
 #define INIT_HISTOGRAM 214
 #define UPDATE_BOUNDARYSLICEDUPS 215
+#define ISO_TRANSPARENCY_OPTION 216
+
+#define ISO_TRANSPARENT_CONSTANT 0
+#define ISO_TRANSPARENT_VARYING  1
+#define ISO_OPAQUE               2
 
 #define SCRIPT_START 31
 #define SCRIPT_STOP 32
@@ -304,7 +309,6 @@ GLUI_Checkbox *CHECKBOX_show_evac_slices=NULL;
 GLUI_Checkbox *CHECKBOX_constant_coloring=NULL;
 GLUI_Checkbox *CHECKBOX_show_evac_color=NULL;
 GLUI_Checkbox *CHECKBOX_data_coloring=NULL;
-GLUI_Checkbox *CHECKBOX_transparentflag2=NULL;
 GLUI_Checkbox *CHECKBOX_sort2=NULL;
 GLUI_Checkbox *CHECKBOX_smooth2=NULL;
 GLUI_Checkbox *CHECKBOX_overwrite_all=NULL;
@@ -327,6 +331,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
+GLUI_RadioGroup *RADIO_transparency_option=NULL;
 GLUI_RadioGroup *RADIO_slice_celltype=NULL;
 GLUI_RadioGroup *RADIO_slice_edgetype=NULL;
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
@@ -1909,7 +1914,11 @@ extern "C" void GluiBoundsSetup(int main_window){
     ROLLOUT_iso_color = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Color/transparency", false, ISO_ROLLOUT_COLOR, IsoRolloutCB);
     ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_color, ISO_ROLLOUT_COLOR);
 
-    CHECKBOX_transparentflag2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_color, _("Use transparency"), &use_transparency_data, DATA_transparent, SliceBoundCB);
+    RADIO_transparency_option = glui_bounds->add_radiogroup_to_panel(ROLLOUT_iso_color, &iso_transparency_option,ISO_TRANSPARENCY_OPTION,IsoBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_transparency_option, _("transparent(constant)"));
+    glui_bounds->add_radiobutton_to_group(RADIO_transparency_option, _("transparent(varying)"));
+    glui_bounds->add_radiobutton_to_group(RADIO_transparency_option, _("opaque"));
+    IsoBoundCB(ISO_TRANSPARENCY_OPTION);
 
     PANEL_iso_alllevels = glui_bounds->add_panel_to_panel(ROLLOUT_iso_color, "All levels", true);
 
@@ -2670,6 +2679,23 @@ extern "C" void IsoBoundCB(int var){
   float *iso_color;
 
   switch(var){
+  case ISO_TRANSPARENCY_OPTION:
+    switch(iso_transparency_option){
+      case ISO_TRANSPARENT_CONSTANT:
+        use_transparency_data=1;
+        iso_opacity_change=0;
+        break;
+      case ISO_TRANSPARENT_VARYING:
+        use_transparency_data=1;
+        iso_opacity_change=1;
+        break;
+      case ISO_OPAQUE:
+        use_transparency_data=0;
+        iso_opacity_change=1;
+        break;
+    }
+    SliceBoundCB(DATA_transparent);
+    break;
   case COLORTABLE_LIST:
     if(i_colortable_list>=0){
       colortabledata *cti;
@@ -2711,7 +2737,7 @@ extern "C" void IsoBoundCB(int var){
     IsoBoundCB(ISO_COLORS);
     break;
   case ISO_TRANSPARENCY:
-    iso_transparency = ((float)glui_iso_transparency + 0.1) / 255.0;
+    iso_transparency = CLAMP(((float)glui_iso_transparency + 0.1) / 255.0,0.0,1.0);
     break;
   case ISO_COLORS:
     iso_color = iso_colors+4*(glui_iso_level-1);
@@ -3113,7 +3139,6 @@ extern "C" void SliceBoundCB(int var){
     return;
   }
   if(var==DATA_transparent){
-    if(CHECKBOX_transparentflag2!=NULL)CHECKBOX_transparentflag2->set_int_val(use_transparency_data);
     UpdateTransparency();
     UpdateChopColors();
     UpdateIsoControls();

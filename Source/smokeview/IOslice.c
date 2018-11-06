@@ -1176,6 +1176,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
   int display;
   int i;
   FILE_SIZE return_filesize=0;
+  int finalize = 0;
 
   valmin = 1000000000.0;
   valmax = -valmin;
@@ -1246,6 +1247,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
 
     u = sliceinfo + vd->iu;
     u->finalize = vd->finalize;
+    finalize = vd->finalize;
     vd->u=u;
     return_filesize+=ReadSlice(u->file,vd->iu,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
@@ -1266,6 +1268,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
 
     v = sliceinfo + vd->iv;
     v->finalize = vd->finalize;
+    finalize = vd->finalize;
     vd->v=v;
     return_filesize+=ReadSlice(v->file,vd->iv,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
@@ -1287,6 +1290,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
 
     w = sliceinfo + vd->iw;
     w->finalize = vd->finalize;
+    finalize = vd->finalize;
     vd->w=w;
     return_filesize+=ReadSlice(w->file,vd->iw,flag, set_slicecolor,errorcode);
     if(*errorcode!=0){
@@ -1309,6 +1313,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
 
     val = sliceinfo + vd->ival;
     val->finalize = vd->finalize;
+    finalize = vd->finalize;
     vd->val=val;
     return_filesize+=ReadSlice(val->file,vd->ival,flag,set_slicecolor,errorcode);
     if(*errorcode!=0){
@@ -1330,42 +1335,44 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
   vd->loaded=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
-  UpdateTimes();
+  if(finalize==1){
+    UpdateTimes();
 
-  valmax=-100000.0;
-  valmin=100000.0;
-  for(i=0;i<nvsliceinfo;i++){
-    vslicedata *vslicei;
+    valmax = -100000.0;
+    valmin = 100000.0;
+    for(i = 0;i<nvsliceinfo;i++){
+      vslicedata *vslicei;
 
-    vslicei = vsliceinfo + i;
-    if(vslicei->loaded==0)continue;
-    if(vslicei->iu!=-1){
-      slicedata *u=NULL;
+      vslicei = vsliceinfo+i;
+      if(vslicei->loaded==0)continue;
+      if(vslicei->iu!=-1){
+        slicedata *u = NULL;
 
-      u=sliceinfo + vslicei->iu;
-      valmin=MIN(u->valmin,valmin);
-      valmax=MAX(u->valmax,valmax);
+        u = sliceinfo+vslicei->iu;
+        valmin = MIN(u->valmin, valmin);
+        valmax = MAX(u->valmax, valmax);
+      }
+      if(vslicei->iv!=-1){
+        slicedata *v = NULL;
+
+        v = sliceinfo+vslicei->iv;
+        valmin = MIN(v->valmin, valmin);
+        valmax = MAX(v->valmax, valmax);
+      }
+      if(vslicei->iw!=-1){
+        slicedata *w = NULL;
+
+        w = sliceinfo+vslicei->iw;
+        valmin = MIN(w->valmin, valmin);
+        valmax = MAX(w->valmax, valmax);
+      }
     }
-    if(vslicei->iv!=-1){
-      slicedata *v=NULL;
-
-      v=sliceinfo + vslicei->iv;
-      valmin=MIN(v->valmin,valmin);
-      valmax=MAX(v->valmax,valmax);
-    }
-    if(vslicei->iw!=-1){
-      slicedata *w=NULL;
-
-      w=sliceinfo + vslicei->iw;
-      valmin=MIN(w->valmin,valmin);
-      valmax=MAX(w->valmax,valmax);
-    }
+    velocity_range = valmax-valmin;
   }
-  velocity_range = valmax - valmin;
   PushVSliceLoadstack(ivslice);
 
   PrintMemoryInfo;
-  IdleCB();
+  if(finalize==1)IdleCB();
   return return_filesize;
 }
 
