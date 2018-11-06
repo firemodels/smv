@@ -428,7 +428,7 @@ read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
 close(lu11)
 
 end subroutine getsliceheader
-   
+
 !  ------------------ getslicesizes ------------------------
 
 subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&

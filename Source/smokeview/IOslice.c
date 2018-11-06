@@ -15,6 +15,12 @@
 #include "interp.h"
 #include "smokeviewvars.h"
 
+#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
+                           returncode=fread(var,4,count,STREAM);\
+                           if(returncode!=count)returncode=0;\
+                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
+                           FSEEK(STREAM,4,SEEK_CUR)
+
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
@@ -3891,6 +3897,132 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
+/* ------------------ GetSliceFileDirection ------------------------ */
+
+void GetSliceFileDirection(int is1, int *is2, int *iis1, int *iis2, int js1, int *js2, int ks1, int *ks2, int *idir, int *joff, int *koff, int *volslice){
+  int nxsp, nysp, nzsp;
+  int imin;
+
+  nxsp = *is2+1-is1;
+  nysp = *js2+1-js1;
+  nzsp = *ks2+1-ks1;
+  *joff = 0;
+  *koff = 0;
+  *volslice = 0;
+  *iis1 = is1;
+  *iis2 = is2;
+  if(is1!=*is2&&js1!=*js2&&ks1!=*ks2){
+    *idir = 1;
+    *is2 = is1;
+    *volslice = 1;
+    return;
+  }
+  imin = MIN(nxsp, nysp);
+  imin = MIN(imin, nzsp);
+  if(nxsp==imin){
+    *idir = 1;
+    *is2 = is1;
+  }
+  else if(nysp==imin){
+    *idir = 2;
+    *js2 = js1;
+  }
+  else{
+    *idir = 3;
+    *ks2 = ks1;
+  }
+  if(is1==*is2&&js1==*js2){
+    *idir = 1;
+    *joff = 1;
+  }
+  else if(is1==*is2&&ks1==*ks2){
+    *idir = 1;
+    *koff = 1;
+  }
+  else if(js1==*js2&&ks1==*ks2){
+    *idir = 2;
+    *koff = 1;
+  }
+}
+/* ------------------ GetSliceSizes ------------------------ */
+
+void GetSliceSizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek, int *nsteps, int sliceframestep_arg,
+  int *error, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersize, int *framesize){
+    int ip1, ip2, jp1, jp2, kp1, kp2;
+  int iip1, iip2;
+  int nxsp, nysp, nzsp;
+
+  float timeval, time_max;
+  int idir, joff, koff, volslice;
+  int count;
+  FILE *SLICEFILE;
+  int ijk[6];
+  int loadframe;
+  int returncode;
+
+  error = 0;
+  nsteps = 0;
+
+  SLICEFILE = fopen(slicefilename, "rb");
+  if(SLICEFILE==NULL){
+    *error = 1;
+    return;
+  }
+
+  *headersize = 3*(4+30+4);
+  fseek(SLICEFILE, headersize, SEEK_CUR);
+
+
+  FORTREAD(ijk, 6,SLICEFILE);
+  ip1 = ijk[0];
+  ip2 = ijk[1];
+  jp1 = ijk[2];
+  jp2 = ijk[3];
+  kp1 = ijk[4];
+  kp2 = ijk[5];
+  headersize = headersize+4+6*4+4;
+
+  nxsp = ip2+1-ip1;
+  nysp = jp2+1-jp1;
+  nzsp = kp2+1-kp1;
+
+  //void GetSliceFileDirection(int is1, int *is2, int *iis1, int *iis2, int js1, int *js2, int ks1, int *ks2,     int *idir, int *joff, int *koff, int *volslice){
+
+  GetSliceFileDirection(ip1, &ip2, &iip1, &iip2,    jp1, &jp2,    kp1, &kp2,    &idir, &joff, &koff, &volslice);
+  *nslicei = nxsp;
+  *nslicej = nysp+joff;
+  *nslicek = nzsp+koff;
+
+  *framesize = 4*(1+nxsp*nysp*nzsp)+16;
+
+  count = -1;
+  time_max = -1000000.0;
+  // sizes(1) = 4*nxsp*nysp*nzsp
+  // nsizes = 1
+  for(;;){
+    FORTREAD(&timeval, 1,SLICEFILE);
+    if(returncode==0)break;
+    if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
+      loadframe = 0;
+    }
+    else{
+      loadframe = 1;
+      time_max = timeval;
+    }
+    if(settmax_s_arg!=0&&timeval>tmax_s_arg){
+      fclose(SLICEFILE);
+      return;
+    }
+    //call ffseek(lu11, sizes, nsizes, seek_cur, error)
+    count = count+1;
+    if(count%sliceframestep_arg!=0)loadframe = 0;
+    // if(error.ne.0)exit
+    if(loadframe==1)nsteps = nsteps+1;
+  }
+
+  *error = 0;
+  fclose(SLICEFILE);
+}
   /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
