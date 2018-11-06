@@ -395,7 +395,7 @@ call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,vo
 return
 end subroutine getsliceparms
 
-!  ------------------ getslicesizes ------------------------
+!  ------------------ getsliceheader ------------------------
 
 subroutine getsliceheader(slicefilename, ip1, ip2, jp1, jp2, kp1, kp2, error)
 use cio
@@ -1445,7 +1445,7 @@ endif
 return
 end subroutine getsliceframe
 
-!  ------------------ endian_out ------------------------
+!  ------------------ endianout ------------------------
 
 subroutine endianout(endianfilename)
 implicit none
@@ -2217,7 +2217,7 @@ END SELECT
 
 END SUBROUTINE COLOR2RGB
 
-!  ------------------ GET_TETRABOX_VOLUME ------------------------
+!  ------------------ GET_TETRABOX_VOLUME_FB ------------------------
 
 SUBROUTINE GET_TETRABOX_VOLUME_FB(BOX_BOUNDS_FB,V0_FB,V1_FB,V2_FB,V3_FB,TETRABOX_VOLUME_FB,AREAS_FB,CENTROID_FB)
 USE PRECISION_PARAMETERS
@@ -2245,7 +2245,8 @@ TETRABOX_VOLUME_FB = REAL(TETRABOX_VOLUME_EB,FB)
 AREAS_FB(1:6) = REAL(AREAS_EB(1:6),FB)
 CENTROID_FB(1:3) = REAL(CENTROID_EB(1:3),FB)
 
-END SUBROUTINE GET_TETRABOX_VOLUME_FB
+   END SUBROUTINE GET_TETRABOX_VOLUME_FB
+
 !  ------------------ GETVERTS2 ------------------------
 
 SUBROUTINE GETVERTS2(BOX_BOUNDS,V0,V1,V2,V3,VERTS,NVERTS,FACES,FACE_ID,WHICH_POLY,NFACES2,NPOLYS,BOX_STATE)
