@@ -3947,6 +3947,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
+#ifdef pp_CSLICE
 void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
@@ -4019,6 +4020,158 @@ void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int
   *errorptr = 0;
   fclose(SLICEFILE);
 }
+
+/* ------------------ GetSliceData ------------------------ */
+
+FILE_SIZE GetSliceData(char *slicefilename,
+  int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr, float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
+  int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg){
+
+//  real, dimension(:, :, :), pointer::qq
+
+  int i, j, k;
+  int lu11, nsteps;
+  int exists;
+  int ip1, ip2, jp1, jp2, kp1, kp2;
+  int nxsp, nysp, nzsp;
+  int error, istart, irowstart;
+  float timeval, time_max;
+  int loadframe;
+  int ii, kk;
+  int joff, koff, volslice;
+  int count;
+  int iis1, iis2;
+  int ijk[6];
+  int file_size;
+  FILE *stream;
+  int returncode;
+
+  joff = 0;
+  koff = 0;
+  file_size = 0;
+
+  stream = fopen(slicefilename, "rb");
+  if(stream==NULL){
+    printf(" the slice file %s does not exist\n", slicefilename);
+    nsteps = 0;
+    return 0;
+  }
+
+  nsteps = 0;
+  fseek(stream, 3*(4+30+4), SEEK_CUR);
+
+  FORTREAD(ijk, 6, stream);
+  ip1 = ijk[0];
+  ip2 = ijk[1];
+  jp1 = ijk[2];
+  jp2 = ijk[3];
+  kp1 = ijk[4];
+  kp2 = ijk[5];
+  file_size = 6*4;
+  *is1ptr = ip1;
+  *is2ptr = ip2;
+  *js1ptr = jp1;
+  *js2ptr = jp2;
+  *ks1ptr = kp1;
+  *ks2ptr = kp2;
+   // if(error.ne.0)then
+   //   close(lu11)
+   //   return
+   //   endif
+
+  nxsp = *is2ptr+1-*is1ptr;
+  nysp = *js2ptr+1-*js1ptr;
+  nzsp = *ks2ptr+1-*ks1ptr;
+  
+  GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
+
+     // allocate(qq(nxsp, nysp+joff, nzsp+koff))
+
+  count = -1;
+  time_max = -1000000.0;
+  if(*ntimesptr!=ntimes_old_arg&&ntimes_old_arg>0){
+    int size;
+
+    size = 0;
+    for(i = 0; i<ntimes_old_arg; i++){
+      size += 4+4+4;
+      size += 4+4*nxsp*nysp*nzsp+4;
+    }
+    fseek(stream, size, SEEK_CUR);
+    nsteps = ntimes_old_arg;
+  }
+  for(;;){
+    FORTREAD(&timeval, 1, stream);
+    if(returncode==0)break;
+    file_size = file_size+4;
+    if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
+      loadframe = 0;
+    }
+    else{
+      loadframe = 1;
+      time_max = timeval;
+    }
+    if(settmax_s_arg!=0&&timeval>tmax_s_arg)break;
+    //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
+    count = count+1;
+    if(count%sliceframestep_arg!=0)loadframe = 0;
+    if(koff==1){
+      //              qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
+    }
+    else if(joff==1){
+      //   qq(1:nxsp, 2, 1:nzsp) = qq(1:nxsp, 1, 1:nzsp)
+    }
+    //           if(error.ne.0.or.nsteps.ge.ntimes)go to 999
+                // if(loadframe==0)cycle
+    nsteps = nsteps+1;
+    //    times(nsteps) = timeval
+    file_size += 4*nxsp*nysp*nzsp;
+
+    if(*idirptr==3){
+      istart = (nsteps-1)*nxsp*nysp;
+      for(i = 0; i<nxsp; i++){
+        irowstart = i*nysp;
+        ii = istart+irowstart;
+        //   qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
+         //  qmax = max(qmax, maxval(qq(i, 1:nysp, 1)))
+         //  qmin = min(qmin, minval(qq(i, 1:nysp, 1)))
+      }
+    }
+    else if(*idirptr==2){
+      istart = (nsteps-1)*nxsp*(nzsp+koff);
+      for(i = 0; i<nxsp; i++){
+        irowstart = i*(nzsp+koff);
+        kk = istart+irowstart;
+        //  qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
+        //  qmax = max(qmax, maxval(qq(i, 1, 1:nzsp+koff)))
+        //  qmin = min(qmin, minval(qq(i, 1, 1:nzsp+koff)))
+      }
+    }
+    else{
+      istart = (nsteps-1)*(nysp+joff)*(nzsp+koff)*nxsp;
+      for(i = 0; i<nxsp; i++){
+        for(j = 0; j<nysp+joff; j++){
+          irowstart = i*nysp*(nzsp+koff)+j*(nzsp+koff);
+          kk = istart+irowstart;
+            //       qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
+            //       qmax = max(qmax, maxval(qq(i, j, 1:nzsp+koff)))
+            //       qmin = min(qmin, minval(qq(i, j, 1:nzsp+koff)))
+        }
+      }
+    }
+  }
+
+
+
+          //                                999 continue
+  *ks2ptr += koff;
+  *js2ptr += joff;
+  *ntimesptr = nsteps;
+  fclose(stream);
+  return file_size;
+}
+#endif
+
   /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
