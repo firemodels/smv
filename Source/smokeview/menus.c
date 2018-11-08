@@ -10066,8 +10066,10 @@ updatemenu=0;
         char menulabel[1024];
 
         if(nmeshes==1){
+#ifdef pp_3DSMOKE_MULTI
           char smoke3dmenulabel[256];
           int menu_callback_entry;
+#endif
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
 #ifdef pp_3DSMOKE_MULTI
@@ -10180,8 +10182,10 @@ updatemenu=0;
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           {
+#ifdef pp_3DSMOKE_MULTI
             char smoke3dmenulabel[256];
             int menu_callback_entry;
+#endif
  
 #ifdef pp_SMOKE3D_LOADTEST
             if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);

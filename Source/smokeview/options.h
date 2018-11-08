@@ -72,6 +72,7 @@
 //*** options: all platforms
 
 //#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
+//#define pp_CSLICE             // read slice files using C
 
 //*** options: options being test on all platforms
 
