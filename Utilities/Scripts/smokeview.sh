@@ -5,10 +5,11 @@ SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
 SMOKEVIEWDIR=$(dirname "$0")
 TIME=
+TIMEFILE=smv_time
 OUTPUT=
 SETUP_XSERVER=1
 
-while getopts 'd:e:ns:t' OPTION
+while getopts 'd:e:ns:t:' OPTION
 do
 case $OPTION in
   d)
@@ -26,6 +27,7 @@ case $OPTION in
    ;;
   t)
   TIME=time 
+  TIMEFILE="$OPTARG"
   OUTPUT=">/dev/null"
    ;;
 esac
@@ -60,7 +62,8 @@ if [  "SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
 if [ "$TIME" == "time" ]; then
-  $TIME $SMOKEVIEW $RUNSCRIPT $in >/dev/null
+  $TIME -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $in >/dev/null 
+  grep user $TIMEFILE | awk -F'u' '{print $1}'
 else
   $SMOKEVIEW $RUNSCRIPT $in
 fi
