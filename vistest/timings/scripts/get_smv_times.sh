@@ -24,6 +24,14 @@ esac
 done
 shift $(($OPTIND-1))
 
+if [ "$SMOKEVIEW" != "" ]; then
+  if [ -e $SMOKVIEW ]; then
+    SMOKEVIEW="-e $SMOKEVIEW"
+  else
+    exit
+  fi
+fi
+
 CURDIR=`pwd`
 cd ../../../
 smvrepo=`pwd`
