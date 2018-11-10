@@ -57,13 +57,13 @@ if ! [ -e $ssffile ]; then
 fi
 
 
-echo $SMOKEVIEW $RUNSCRIPT $in
 if [  "SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
 if [ "$TIME" == "time" ]; then
   $TIME -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $in >/dev/null 
   grep user $TIMEFILE | awk -F'u' '{print $1}'
+  rm -f $TIMEFILE
 else
   $SMOKEVIEW $RUNSCRIPT $in
 fi
