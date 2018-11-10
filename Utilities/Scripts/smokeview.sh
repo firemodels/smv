@@ -1,5 +1,10 @@
 #!/bin/bash
 
+PLATFORM=linux
+if [ "`uname`" == "Darwin" ]; then
+  PLATFORM="osx"
+fi
+
 ssffile=
 SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
