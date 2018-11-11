@@ -32,6 +32,9 @@ case $OPTION in
    ;;
   t)
   TIME=time 
+  if [ "$PLATFORM" == "osx" ]; then
+    TIME=gtime 
+  fi
   TIMEFILE="$OPTARG"
   OUTPUT=">/dev/null"
    ;;
@@ -65,7 +68,7 @@ fi
 if [  "SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
-if [ "$TIME" == "time" ]; then
+if [ "$TIME" != "" ]; then
   $TIME -p -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $in >/dev/null 
   grep real $TIMEFILE | awk -F' ' '{print $2}'
   rm -f $TIMEFILE

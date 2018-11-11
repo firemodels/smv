@@ -2,7 +2,18 @@
 SMOKEVIEW=
 LABEL=smokeview
 TIMEFILE=timefile.$$
+
+platform="linux"
+if [ "`uname`" == "Darwin" ]
+then
+  platform="osx"
+fi
+
 DIR=$HOME/SMVS/linux64
+if [ "$platform" == "osx" ]; then
+  DIR=$HOME/SMVS/osx64
+fi
+
 
 #---------------------------------------------
 #                   usage
@@ -45,7 +56,9 @@ cd ../../../
 smvrepo=`pwd`
 cd $CURDIR
 
-source $smvrepo/Utilities/Scripts/startXserver.sh >/dev/null 2>&1
+if [ "$platform" == "linux" ]; then
+  source $smvrepo/Utilities/Scripts/startXserver.sh >/dev/null 2>&1
+fi
 for dir in $DIR/SMV*
 do
 SMOKEVIEW=$dir/bin/smokeview
@@ -55,5 +68,7 @@ if [ -e $SMOKEVIEW ]; then
   ./get_smv_times.sh -n -e $SMOKEVIEW -l $LABEL
 fi
 done
-source $smvrepo/Utilities/Scripts/stopXserver.sh >/dev/null 2>&1
+if [ "$platform" == "linux" ]; then
+  source $smvrepo/Utilities/Scripts/stopXserver.sh >/dev/null 2>&1
+fi
 cd $CURDIR
