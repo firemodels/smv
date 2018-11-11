@@ -1,29 +1,44 @@
 #!/bin/bash
 SMOKEVIEW=
 LABEL=smokeview
-SETUP_XSERVER=1
-CASE=plume_timing 
 TIMEFILE=timefile.$$
-DIR=$HOME/SMVS
+DIR=$HOME/SMVS/linux64
 
-while getopts 'c:e:l:n' OPTION
+#---------------------------------------------
+#                   usage
+#---------------------------------------------
+
+function usage {
+echo "run smokeview to get timings"
+echo ""
+echo "Options:"
+echo "-c - case to perform timings on"
+echo "-d - directory containing smokeview versions {default: $DIR}"
+echo "-h - display usage info"
+if [ "$option" == "-H" ]; then
+usage_all
+fi
+exit
+}
+
+
+while getopts 'c:d:h' OPTION
 do
 case $OPTION in
-  c)
-   CASE="$OPTARG"
+  d)
+   DIR="$OPTARG"
    ;;
-  e)
-   SMOKEVIEW="$OPTARG"
-   ;;
-  l)
-   LABEL="$OPTARG"
-   ;;
-  n)
-  SETUP_XSERVER=
+  h)
+   usage
    ;;
 esac
 done
 shift $(($OPTIND-1))
+
+if [ ! -d $DIR ]; then
+  echo "***fatal error: the directory $DIR does not exist"
+  exit
+fi
 
 CURDIR=`pwd`
 cd ../../../
