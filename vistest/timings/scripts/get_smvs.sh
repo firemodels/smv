@@ -31,6 +31,9 @@ if [ "$EXT" == ".sh" ]; then
 else
   echo downloading $SMVFILE
 fi
+if [ -e $SMVFILE ]; then
+  rm -f $SMVFILE 
+fi
 wget -q https://github.com/firemodels/smv/releases/download/$SMVDIR/$SMVFILE
 if [ "$EXT" == ".sh" ]; then
   echo extract | bash $SMVFILE > /dev/null
@@ -52,6 +55,9 @@ if [ "$EXT" == ".sh" ]; then
   echo downloading and unpacking $SMVFILE
 else
   echo downloading $SMVFILE
+fi
+if [ -e $SMVFILE ]; then
+  rm -f $SMVFILE 
 fi
 wget -q https://github.com/firemodels/smv/releases/download/$SMVDIR/$SMVFILE
 if [ "$EXT" == ".sh" ]; then
