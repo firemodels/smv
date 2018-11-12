@@ -1,0 +1,14 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ .
+
+UNLOADALL
+LOADSLICEM
+ TEMPERATURE
+ 2 0.800000
+ 1
+SETTIMEVAL
+ 0.5
+RENDERONCE
+ plume5c_timing_slice
