@@ -1,7 +1,7 @@
 #!/bin/bash
 PLATFORM=linux64
 EXT=.sh
-BASEDIR=$HOME/SMVS
+BASEDIR=$HOME/FDSS
 
 #---------------------------------------------
 #                   usage
@@ -11,7 +11,7 @@ function usage {
 echo "Download fds-smv installers from github"
 echo ""
 echo "Options:"
-echo "-b - directory containing intsallers {default: $BASEDIR]"
+echo "-b - directory containing installers {default: $BASEDIR]"
 echo "-h - display usage information"
 echo "-l - download and unpack linux installers {default}"
 echo "-m - download and unpack mac installers"
@@ -22,24 +22,32 @@ exit
 
 GETFDS ()
 {
-SMVDIR=$1
-SMV=$2
+GITDIR=$1
+FDSDIR=$2
+FDS=$3
 UNDERSCORE=_
-SMVFILE=$SMV$UNDERSCORE$PLATFORM$EXT
-if [ "$EXT" == ".sh" ]; then
-  echo downloading and unpacking $SMVFILE
-else
-  echo downloading $SMVFILE
+FDSINSTALLER=$FDS$UNDERSCORE$PLATFORM$EXT
+FDSTAR=$FDS$UNDERSCORE$PLATFORM.tar.gz
+
+echo downloading $PLATFORM installer for $FDS
+if [ -e $FDSINSTALLER ]; then
+  rm -f $FDSINSTALLER
 fi
-if [ -e $SMVFILE ]; then
-  rm -f $SMVFILE 
-fi
-wget -q https://github.com/firemodels/fds/releases/download/$SMVDIR/$SMVFILE
+wget -q https://github.com/firemodels/fds/releases/download/$GITDIR/$FDSINSTALLER
 if [ "$EXT" == ".sh" ]; then
-  echo extract | bash $SMVFILE > /dev/null
-  mkdir $SMVDIR
-  cd $SMVDIR
-  tar xvf ../$SMV$UNDERSCORE$PLATFORM.tar.gz > /dev/null
+  echo "  extracting tar file"
+  if [ -e $FDSTAR ]; then
+    rm -f $FDSTAR
+  fi
+  echo extract | bash $FDSINSTALLER > /dev/null
+  if [ -d $FDSDIR ]; then
+    rm -rf $FDSDIR
+  fi
+  mkdir $FDSDIR
+  cd $FDSDIR
+  echo "  untarring"
+  tar xvf ../$FDSTAR > /dev/null
+  echo ""
   cd ..
 fi
 }
@@ -85,14 +93,15 @@ if [ ! -d $BASEDIR/$PLATFORM ]; then
 fi
 
 cd $BASEDIR/$PLATFORM
-GETFDS FDS6.7.0 FDS6.7.0-SMV6.7.1
-GETFDS FDS6.6.0 FDS_6.6.0-SMV_6.6.0
-GETFDS FDS6.5.3 FDS_6.5.3-SMV_6.4.4
-GETFDS FDS6.5.2 FDS_6.5.2-SMV_6.3.12
-GETFDS FDS6.5.1 FDS_6.5.1-SMV_6.3.9
-GETFDS FDS6.5.0 FDS_6.5.0-SMV_6.3.8
-GETFDS FDS6.3.2 FDS_6.3.2-SMV_6.3.2
-GETFDS FDS6.3.1 FDS_6.3.1-SMV_6.3.2
-GETFDS FDS6.3.0 FDS_6.3.0-SMV_6.3.0
+GETFDS FDS6.7.0 FDS6.7.0 FDS6.7.0-SMV6.7.1
+GETFDS FDS6.6.0 FDS6.6.0 FDS_6.6.0-SMV_6.6.0
+GETFDS FDS6.5.3 FDS6.5.3 FDS_6.5.3-SMV_6.4.4
+GETFDS Git-r21  FDS6.5.2 FDS_6.5.2-SMV_6.3.12
+GETFDS Git-r16  FDS6.5.1 FDS_6.5.1-SMV_6.3.9
+GETFDS Git-r14  FDS6.5.0 FDS_6.5.0-SMV_6.3.8
+GETFDS Git-r10  FDS6.4.0 FDS_6.4.0-SMV_6.3.6
+GETFDS Git-r5   FDS6.3.2 FDS_6.3.2-SMV_6.3.2
+GETFDS Git-r4   FDS6.3.1 FDS_6.3.1-SMV_6.3.2
+GETFDS Git-r1   FDS6.3.0 FDS_6.3.0-SMV_6.3.0
 
 cd $CURDIR
