@@ -4023,11 +4023,9 @@ void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int
 
 /* ------------------ GetSliceData ------------------------ */
 
-FILE_SIZE GetSliceData(char *slicefilename,
-  int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr, float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
+FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr, 
+  float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg){
-
-//  real, dimension(:, :, :), pointer::qq
 
   int i, j, k;
   int lu11, nsteps;
@@ -4045,6 +4043,8 @@ FILE_SIZE GetSliceData(char *slicefilename,
   int file_size;
   FILE *stream;
   int returncode;
+  float *qq;
+  int nx, ny, nz, nxy, nyz;
 
   joff = 0;
   koff = 0;
@@ -4061,6 +4061,10 @@ FILE_SIZE GetSliceData(char *slicefilename,
   fseek(stream, 3*(4+30+4), SEEK_CUR);
 
   FORTREAD(ijk, 6, stream);
+  if(returncode==0){
+    fclose(stream);
+    return file_size;
+  }
   ip1 = ijk[0];
   ip2 = ijk[1];
   jp1 = ijk[2];
@@ -4074,18 +4078,20 @@ FILE_SIZE GetSliceData(char *slicefilename,
   *js2ptr = jp2;
   *ks1ptr = kp1;
   *ks2ptr = kp2;
-   // if(error.ne.0)then
-   //   close(lu11)
-   //   return
-   //   endif
 
   nxsp = *is2ptr+1-*is1ptr;
   nysp = *js2ptr+1-*js1ptr;
   nzsp = *ks2ptr+1-*ks1ptr;
   
+  nx = nxsp;
+  ny = nysp;
+  nz = nzsp;
+  nxy = nx*ny;
+  nyz = ny*nz;
+
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
 
-     // allocate(qq(nxsp, nysp+joff, nzsp+koff))
+  NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
   count = -1;
   time_max = -1000000.0;
@@ -4113,18 +4119,29 @@ FILE_SIZE GetSliceData(char *slicefilename,
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg)break;
     //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
+    FORTREAD(qq, nxsp*nysp*nzsp, stream);
+    if(returncode==0||nsteps>=*ntimesptr)break;
     count = count+1;
     if(count%sliceframestep_arg!=0)loadframe = 0;
+    if(loadframe==0)continue;
     if(koff==1){
-      //              qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
+//  qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
+      for(j = 0;j<nysp;j++){
+        for(i = 0;i<nxsp;i++){
+          qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
+        }
+      }
     }
     else if(joff==1){
-      //   qq(1:nxsp, 2, 1:nzsp) = qq(1:nxsp, 1, 1:nzsp)
+//  qq(1:nxsp, 2, 1:nzsp) = qq(1:nxsp, 1, 1:nzsp)
+      for(k = 0;k<nzsp;k++){
+        for(i = 0;i<nxsp;i++){
+          qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
+        }
+      }
     }
-    //           if(error.ne.0.or.nsteps.ge.ntimes)go to 999
-                // if(loadframe==0)cycle
+    timesptr[nsteps] = timeval;
     nsteps = nsteps+1;
-    //    times(nsteps) = timeval
     file_size += 4*nxsp*nysp*nzsp;
 
     if(*idirptr==3){
@@ -4133,8 +4150,9 @@ FILE_SIZE GetSliceData(char *slicefilename,
         irowstart = i*nysp;
         ii = istart+irowstart;
         //   qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
-         //  qmax = max(qmax, maxval(qq(i, 1:nysp, 1)))
-         //  qmin = min(qmin, minval(qq(i, 1:nysp, 1)))
+        for(j = 0;j<nysp;j++){
+          qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
+        }
       }
     }
     else if(*idirptr==2){
@@ -4142,9 +4160,10 @@ FILE_SIZE GetSliceData(char *slicefilename,
       for(i = 0; i<nxsp; i++){
         irowstart = i*(nzsp+koff);
         kk = istart+irowstart;
-        //  qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
-        //  qmax = max(qmax, maxval(qq(i, 1, 1:nzsp+koff)))
-        //  qmin = min(qmin, minval(qq(i, 1, 1:nzsp+koff)))
+//  qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
+        for(k = 0;k<nzsp+koff;k++){
+          qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
+        }
       }
     }
     else{
@@ -4153,21 +4172,37 @@ FILE_SIZE GetSliceData(char *slicefilename,
         for(j = 0; j<nysp+joff; j++){
           irowstart = i*nysp*(nzsp+koff)+j*(nzsp+koff);
           kk = istart+irowstart;
-            //       qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
-            //       qmax = max(qmax, maxval(qq(i, j, 1:nzsp+koff)))
-            //       qmin = min(qmin, minval(qq(i, j, 1:nzsp+koff)))
+//       qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
+          for(k = 0;k<nzsp+koff;k++){
+            qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
+          }
         }
       }
     }
   }
-
-
-
-          //                                999 continue
   *ks2ptr += koff;
   *js2ptr += joff;
   *ntimesptr = nsteps;
+
+  {
+    int nvals;
+
+    if(*idirptr==3){
+      nvals = nsteps*nxsp*nysp;
+    }
+    else if(*idirptr==2){
+      nvals = nsteps*nxsp*(nzsp+koff);
+    }
+    else{
+      nvals = nsteps*(nysp+joff)*(nzsp+koff)*nxsp;
+    }
+    for(i = 0;i<nvals;i++){
+      *qminptr = MIN(*qminptr, qdataptr[i]);
+      *qmaxptr = MAX(*qmaxptr, qdataptr[i]);
+    }
+  }
   fclose(stream);
+  FREEMEMORY(qq);
   return file_size;
 }
 #endif
@@ -4419,11 +4454,19 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
+#ifdef pp_CSLICE
+        return_filesize = 
+          GetSliceData(file, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+                       &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes, 
+                       sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
+        file_size = (int)return_filesize;
+#else
         FORTgetslicedata(file,
           &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
           &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
           &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
           return_filesize = (FILE_SIZE)file_size;
+#endif
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
