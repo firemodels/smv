@@ -3509,7 +3509,7 @@ void SetSliceBounds(int slicetype){
 void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   float *pdata;
   int ndata;
-  int n, i;
+  int n, i, j, k;
   int first=1;
 
   int istep;
@@ -3546,20 +3546,19 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
   NewMemory((void **)&slice_mask0,sd->nslicei*sd->nslicej*sd->nslicek);
   n=-1;
-  for(i=0;i<sd->nslicei;i++){
-    int j;
-
+  for(k=0;k<sd->nslicek;k++){
     for(j=0;j<sd->nslicej;j++){
-      int k;
-
-      for(k=0;k<sd->nslicek;k++){
+      for(i=0;i<sd->nslicei;i++){
         n++;
         slice_mask0[n]=0;
-        if(sd->slicefile_type==SLICE_CELL_CENTER&&
-          ((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
+        if(sd->slicefile_type==SLICE_CELL_CENTER&&((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
         if(show_slice_in_obst == ONLY_IN_GAS){
-          if(sd->slicefile_type != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
-          if(sd->slicefile_type == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+          if(sd->slicefile_type!=SLICE_CELL_CENTER&& iblank_node!=NULL){
+            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
+          }
+          if(sd->slicefile_type==SLICE_CELL_CENTER&& iblank_cell!=NULL){
+            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
+          }
         }
         slice_mask0[n]=1;
       }
@@ -3574,13 +3573,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
     n0 = -1;
 
-    for(i=0;i<sd->nslicei;i++){
-      int j;
-
+    for(k=0;k<sd->nslicek;k++){
       for(j=0;j<sd->nslicej;j++){
-        int k;
-
-        for(k=0;k<sd->nslicek;k++){
+        for(i=0;i<sd->nslicei;i++){
           n++;
           n0++;
           // 0 blocked
@@ -4121,22 +4116,32 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
     //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
     FORTREAD(qq, nxsp*nysp*nzsp, stream);
     if(returncode==0||nsteps>=*ntimesptr)break;
-    count = count+1;
+    count++;
     if(count%sliceframestep_arg!=0)loadframe = 0;
     if(loadframe==0)continue;
     if(koff==1){
 //  qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
       for(j = 0;j<nysp;j++){
+        float *qqto, *qqfrom;
+
+        qqfrom = qq + IJKNODE(0,j,0);
+        qqto = qq + IJKNODE(0,j,1);
         for(i = 0;i<nxsp;i++){
-          qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
+//        qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
+          *qqto++ = *qqfrom++;
         }
       }
     }
     else if(joff==1){
 //  qq(1:nxsp, 2, 1:nzsp) = qq(1:nxsp, 1, 1:nzsp)
       for(k = 0;k<nzsp;k++){
+        float *qqto, *qqfrom;
+
+        qqfrom = qq + IJKNODE(0,0,k);
+        qqto = qq + IJKNODE(0,1,k);
         for(i = 0;i<nxsp;i++){
-          qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
+//        qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
+          *qqto++ = *qqfrom++;
         }
       }
     }
@@ -4145,36 +4150,54 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
     file_size += 4*nxsp*nysp*nzsp;
 
     if(*idirptr==3){
+      float *qqto, *qqfrom;
+
       istart = (nsteps-1)*nxsp*nysp;
       for(i = 0; i<nxsp; i++){
         irowstart = i*nysp;
         ii = istart+irowstart;
-        //   qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
+        qqto = qdataptr+ii;
+        qqfrom = qq + IJKNODE(i, 0, 0);
+//      qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
         for(j = 0;j<nysp;j++){
-          qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
+//        qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
+          *qqto++ = *qqfrom;
+          qqfrom += nx;
         }
       }
     }
     else if(*idirptr==2){
+      float *qqto, *qqfrom;
+
       istart = (nsteps-1)*nxsp*(nzsp+koff);
       for(i = 0; i<nxsp; i++){
         irowstart = i*(nzsp+koff);
         kk = istart+irowstart;
-//  qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
+//      qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
+        qqto = qdataptr+kk;
+        qqfrom = qq + IJKNODE(i, 0, 0);
         for(k = 0;k<nzsp+koff;k++){
-          qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
+//        qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
+          *qqto++ = *qqfrom;
+          qqfrom += nxy;
         }
       }
     }
     else{
+      float *qqto, *qqfrom;
+
       istart = (nsteps-1)*(nysp+joff)*(nzsp+koff)*nxsp;
       for(i = 0; i<nxsp; i++){
         for(j = 0; j<nysp+joff; j++){
           irowstart = i*nysp*(nzsp+koff)+j*(nzsp+koff);
           kk = istart+irowstart;
-//       qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
+//        qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
+          qqto = qdataptr+kk;
+          qqfrom = qq + IJKNODE(i, j, 0);
           for(k = 0;k<nzsp+koff;k++){
-            qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
+//          qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
+            *qqto++ = *qqfrom;
+            qqfrom += nxy;
           }
         }
       }
@@ -4186,6 +4209,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
 
   {
     int nvals;
+    float *qq;
 
     if(*idirptr==3){
       nvals = nsteps*nxsp*nysp;
@@ -4196,9 +4220,11 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
     else{
       nvals = nsteps*(nysp+joff)*(nzsp+koff)*nxsp;
     }
+    qq = qdataptr;
     for(i = 0;i<nvals;i++){
-      *qminptr = MIN(*qminptr, qdataptr[i]);
-      *qmaxptr = MAX(*qmaxptr, qdataptr[i]);
+      *qminptr = MIN(*qminptr, *qq);
+      *qmaxptr = MAX(*qmaxptr, *qq);
+      qq++;
     }
   }
   fclose(stream);
