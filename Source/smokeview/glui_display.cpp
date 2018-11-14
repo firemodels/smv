@@ -838,12 +838,20 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_FLOAT, ambientlight+1,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_blue = glui_labels->add_spinner_to_panel(PANEL_ambient, _("blue:"), GLUI_SPINNER_FLOAT, ambientlight+2,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_grey = glui_labels->add_spinner_to_panel(PANEL_ambient, _("grey:"), GLUI_SPINNER_FLOAT, &ambientgrey,COLOR_AMB_GREY,ColorCB);
+  SPINNER_amb_red->set_float_limits(0.0, 1.0);
+  SPINNER_amb_green->set_float_limits(0.0, 1.0);
+  SPINNER_amb_blue->set_float_limits(0.0, 1.0);
+  SPINNER_amb_grey->set_float_limits(0.0, 1.0);
 
   PANEL_diffuse = glui_labels->add_panel_to_panel(ROLLOUT_light2, "diffuse");
   SPINNER_diff_red = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("red:"), GLUI_SPINNER_FLOAT, diffuselight,COLOR_DIFF_RGB,ColorCB);
   SPINNER_diff_green = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("green:"), GLUI_SPINNER_FLOAT, diffuselight+1,COLOR_DIFF_RGB,ColorCB);
   SPINNER_diff_blue = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("blue:"), GLUI_SPINNER_FLOAT, diffuselight+2,COLOR_DIFF_RGB,ColorCB);
   SPINNER_diff_grey = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("grey:"), GLUI_SPINNER_FLOAT, &diffusegrey,COLOR_DIFF_GREY,ColorCB);
+  SPINNER_diff_red->set_float_limits(0.0, 1.0);
+  SPINNER_diff_green->set_float_limits(0.0, 1.0);
+  SPINNER_diff_blue->set_float_limits(0.0, 1.0);
+  SPINNER_diff_grey->set_float_limits(0.0, 1.0);
 
   PANEL_position0 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 1");
   glui_labels->add_spinner_to_panel(PANEL_position0, _("x:"), GLUI_SPINNER_FLOAT, light_position0);
