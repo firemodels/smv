@@ -255,10 +255,6 @@ int set_heatoffcolor(float r, float g, float b); // HEATOFFCOLOR
 int set_heatoncolor(float r, float g, float b); // HEATONCOLOR
 int set_isocolors(float shininess, float default_opaueness, float specular[3], int nlevels, float colors[][4]);
 int set_colortable(int ncolors, int colors[][4], char **names);
-int set_light0(int setting); // LIGHT0
-int set_light1(int setting); // LIGHT1
-int set_lightmodellocalviewer(int setting); // LIGHTMODELLOCALVIEWER
-int set_lightmodelseparatespecularcolor(int setting); // LIGHTMODELSEPARATESPECULARCOLOR
 int set_lightpos0(float x, float y, float z, float w); // LIGHTPOS0
 int set_lightpos1(float x, float y, float z, float w); // LIGHTPOS1
 int set_sensorcolor(float r, float g, float b); // SENSORCOLOR
