@@ -3548,16 +3548,22 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   n=-1;
   for(k=0;k<sd->nslicek;k++){
     for(j=0;j<sd->nslicej;j++){
+      char  *ib_node, *ib_cell;
+
+      ib_node = iblank_node +  IJKNODE(sd->is1,   sd->js1+j,   sd->ks1+k);
+      ib_cell = iblank_cell +  IJKCELL(sd->is1-1, sd->js1+j-1, sd->ks1+k-1);
       for(i=0;i<sd->nslicei;i++){
         n++;
         slice_mask0[n]=0;
         if(sd->slicefile_type==SLICE_CELL_CENTER&&((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
         if(show_slice_in_obst == ONLY_IN_GAS){
           if(sd->slicefile_type!=SLICE_CELL_CENTER&& iblank_node!=NULL){
-            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
+//            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
+            if(ib_node[i]==SOLID)continue;
           }
           if(sd->slicefile_type==SLICE_CELL_CENTER&& iblank_cell!=NULL){
-            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
+//            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
+            if(ib_cell[i]==EMBED_YES)continue;
           }
         }
         slice_mask0[n]=1;
@@ -3588,12 +3594,8 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
             first=0;
           }
           else{
-            if(pdata[n]<*pmin){
-              *pmin=pdata[n];
-            }
-            if(pdata[n]>*pmax){
-              *pmax=pdata[n];
-            }
+            *pmin=MIN(*pmin,pdata[n]);
+            *pmax=MAX(*pmax,pdata[n]);
           }
         }
       }
