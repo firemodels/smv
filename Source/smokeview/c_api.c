@@ -234,7 +234,9 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
 
-  if(UpdateLIGHTS==1)UpdateLights(light_position0,light_position1);
+  UpdateLights(light_position0, light_position1);
+  NORMALIZE_XYZ(light_position0, light_position0);
+  NORMALIZE_XYZ(light_position1, light_position1);
 
   glutReshapeWindow(screenWidth,screenHeight);
 
@@ -2412,18 +2414,6 @@ int set_colortable(int ncolors, int colors[][4], char **names) {
   return 0;
 } // COLORTABLE
 
-int set_light0(int setting) {
-  light_enabled0 = setting;
-  UpdateLIGHTS = 1;
-  return 0;
-} // LIGHT0
-
-int set_light1(int setting) {
-  light_enabled1 = setting;
-  UpdateLIGHTS = 1;
-  return 0;
-} // LIGHT1
-
 int set_lightpos0(float a, float b, float c, float d) {
   light_position0[0] = a;
   light_position0[1] = a;
@@ -2439,18 +2429,6 @@ int set_lightpos1(float a, float b, float c, float d) {
   light_position1[3] = a;
   return 0;
 } // LIGHTPOS1
-
-int set_lightmodellocalviewer(int setting) {
-  lightmodel_localviewer = setting == 0 ? GL_FALSE : GL_TRUE;
-  UpdateLIGHTS = 1;
-  return 0;
-} // LIGHTMODELLOCALVIEWER
-
-int set_lightmodelseparatespecularcolor(int setting) {
-  lightmodel_separatespecularcolor = setting;
-  UpdateLIGHTS = 1;
-  return 0;
-} // LIGHTMODELSEPARATESPECULARCOLOR
 
 int set_sensorcolor(float r, float g, float b) {
   sensorcolor[0] = r;
