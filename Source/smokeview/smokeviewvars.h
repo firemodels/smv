@@ -20,6 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_CSLICE
+SVEXTERN int SVDECL(use_cslice, 0);
+#endif
 SVEXTERN int SVDECL(iso_transparency_option, 1);
 SVEXTERN int SVDECL(iso_opacity_change, 1);
 
