@@ -4361,8 +4361,15 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
 #ifdef pp_CSLICE
-      GetSliceSizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
-        settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
+      if(use_cslice==1){
+        GetSliceSizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
+          settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
+      }
+      else{
+        FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
+          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
+          strlen(file));
+      }
 #else
       FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
         &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
@@ -4455,11 +4462,20 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
       }
       if(sd->ntimes > ntimes_slice_old){
 #ifdef pp_CSLICE
-        return_filesize = 
-          GetSliceData(file, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-                       &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes, 
-                       sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
-        file_size = (int)return_filesize;
+        if(use_cslice==1){
+          return_filesize =
+            GetSliceData(file, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+              &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
+              sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
+          file_size = (int)return_filesize;
+        }
+        else{
+          FORTgetslicedata(file,
+            &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+            &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
+            &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
+          return_filesize = (FILE_SIZE)file_size;
+        }
 #else
         FORTgetslicedata(file,
           &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
