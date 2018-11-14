@@ -33,26 +33,40 @@ void UpdateLights(float *pos1, float *pos2){
   GLfloat ambientlight2[4], diffuselight2[4];
 
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
   glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 
-  for(i=0;i<3;i++){
-    ambientlight2[i]=ambientlight[i]/2.0;
-    diffuselight2[i]=diffuselight[i]/2.0;
+  if(use_light0==1||use_light1==1){
+    float num_lights;
+
+    num_lights = use_light0 + use_light1;
+    for(i = 0;i<3;i++){
+      ambientlight2[i] = ambientlight[i]/num_lights;
+      diffuselight2[i] = diffuselight[i]/num_lights;
+    }
+    ambientlight2[3] = 1.0;
+    diffuselight2[3] = 1.0;
   }
-  ambientlight2[3]=1.0;
-  diffuselight2[3]=1.0;
 
-  glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuselight2);
-  glLightfv(GL_LIGHT0,GL_AMBIENT,ambientlight2);
-  glLightfv(GL_LIGHT0,GL_POSITION,pos1);
-  glEnable(GL_LIGHT0);
+  if(use_light0==1){
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuselight2);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlight2);
+    glLightfv(GL_LIGHT0, GL_POSITION, pos1);
+    glEnable(GL_LIGHT0);
+  }
+  else{
+    glDisable(GL_LIGHT0);
+  }
 
-  glLightfv(GL_LIGHT1,GL_DIFFUSE,diffuselight2);
-  glLightfv(GL_LIGHT1,GL_AMBIENT,ambientlight2);
-  glLightfv(GL_LIGHT1,GL_POSITION,pos2);
-  glEnable(GL_LIGHT1);
+  if(use_light1==1){
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuselight2);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, ambientlight2);
+    glLightfv(GL_LIGHT1, GL_POSITION, pos2);
+    glEnable(GL_LIGHT1);
+  }
+  else{
+    glDisable(GL_LIGHT1);
+  }
 }
 
 /* ------------------ AntiAliasSurface ------------------------ */

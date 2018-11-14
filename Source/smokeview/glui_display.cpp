@@ -833,7 +833,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT);
 
 
-  PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "ambient");
+  PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "background/ambient");
   SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_FLOAT, ambientlight,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_FLOAT, ambientlight+1,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_blue = glui_labels->add_spinner_to_panel(PANEL_ambient, _("blue:"), GLUI_SPINNER_FLOAT, ambientlight+2,COLOR_AMB_RGB,ColorCB);
@@ -843,7 +843,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_amb_blue->set_float_limits(0.0, 1.0);
   SPINNER_amb_grey->set_float_limits(0.0, 1.0);
 
-  PANEL_diffuse = glui_labels->add_panel_to_panel(ROLLOUT_light2, "diffuse");
+  PANEL_diffuse = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light/diffuse");
   SPINNER_diff_red = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("red:"), GLUI_SPINNER_FLOAT, diffuselight,COLOR_DIFF_RGB,ColorCB);
   SPINNER_diff_green = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("green:"), GLUI_SPINNER_FLOAT, diffuselight+1,COLOR_DIFF_RGB,ColorCB);
   SPINNER_diff_blue = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("blue:"), GLUI_SPINNER_FLOAT, diffuselight+2,COLOR_DIFF_RGB,ColorCB);
@@ -854,11 +854,13 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_diff_grey->set_float_limits(0.0, 1.0);
 
   PANEL_position0 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 1");
+  glui_labels->add_checkbox_to_panel(PANEL_position0, _("light 1"), &use_light0);
   glui_labels->add_spinner_to_panel(PANEL_position0, _("x:"), GLUI_SPINNER_FLOAT, light_position0);
   glui_labels->add_spinner_to_panel(PANEL_position0, _("y:"), GLUI_SPINNER_FLOAT, light_position0+1);
   glui_labels->add_spinner_to_panel(PANEL_position0, _("z:"), GLUI_SPINNER_FLOAT, light_position0+2);
 
   PANEL_position1 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 2");
+  glui_labels->add_checkbox_to_panel(PANEL_position1, _("light 2"), &use_light1);
   glui_labels->add_spinner_to_panel(PANEL_position1, _("x:"), GLUI_SPINNER_FLOAT, light_position1);
   glui_labels->add_spinner_to_panel(PANEL_position1, _("y:"), GLUI_SPINNER_FLOAT, light_position1+1);
   glui_labels->add_spinner_to_panel(PANEL_position1, _("z:"), GLUI_SPINNER_FLOAT, light_position1+2);

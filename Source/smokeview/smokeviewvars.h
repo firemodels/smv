@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 #ifdef pp_CSLICE
 SVEXTERN int SVDECL(use_cslice, 0);
 #endif
