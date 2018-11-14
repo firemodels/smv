@@ -4025,11 +4025,10 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg){
 
   int i, j, k;
-  int lu11, nsteps;
-  int exists;
+  int nsteps;
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int nxsp, nysp, nzsp;
-  int error, istart, irowstart;
+  int istart, irowstart;
   float timeval, time_max;
   int loadframe;
   int ii, kk;
@@ -4041,7 +4040,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
   FILE *stream;
   int returncode;
   float *qq;
-  int nx, ny, nz, nxy, nyz;
+  int nx, ny, nxy;
 
   joff = 0;
   koff = 0;
@@ -4082,9 +4081,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
   
   nx = nxsp;
   ny = nysp;
-  nz = nzsp;
   nxy = nx*ny;
-  nyz = ny*nz;
 
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
 
