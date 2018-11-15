@@ -1394,15 +1394,25 @@ void ScriptLoadSlice(scriptdata *scripti){
     }
     for(j=0;j<mslicei->nslices;j++){
       slicedata *slicej;
+      int finalize_save;
+      slicedata *slicei;
 
+      slicei = sliceinfo+mslicei->islices[j];
+      finalize_save = slicei->finalize;
+      if(j==mslicei->nslices-1){
+        slicei->finalize = 1;
+      }
+      else{
+        slicei->finalize = 0;
+      }
       LoadSliceMenu(mslicei->islices[j]);
+      slicei->finalize = finalize_save;
       FREEMEMORY(loaded_file);
       slicej = sliceinfo + mslicei->islices[j];
       if(slicej->file != NULL&&strlen(slicej->file) > 0){
         NewMemory((void **)&loaded_file, strlen(slicej->file) + 1);
         strcpy(loaded_file, slicej->file);
       }
-
       count++;
     }
     break;
@@ -1473,7 +1483,19 @@ void ScriptLoadVSlice(scriptdata *scripti){
       if(ABS(slicei->position_orig - scripti->fval) > slicei->delta_orig)continue;
     }
     for(j=0;j<mvslicei->nvslices;j++){
+      vslicedata *vslicei;
+      int finalize_save;
+
+      vslicei = vsliceinfo+mvslicei->ivslices[j];
+      finalize_save = vslicei->finalize;
+      if(j==mvslicei->nvslices-1){
+        vslicei->finalize = 1;
+      }
+      else{
+        vslicei->finalize = 0;
+      }
       LoadVSliceMenu(mvslicei->ivslices[j]);
+      vslicei->finalize = finalize_save;
       count++;
     }
     break;
