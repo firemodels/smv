@@ -8,6 +8,9 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "MALLOC.h"
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #define LEN_BUFFER 1024
 
@@ -28,18 +31,35 @@ void Usage(char *prog, int option){
 }
 
 /* ------------------ FlushCache ------------------------ */
-
+#define BUFFERSIZE 250000000
 void FlushCache(void){
+#ifdef WIN32
+  MEMORYSTATUSEX statex;
+#endif
+  int *buffer[8], i;
+
+#ifdef WIN32
+  statex.dwLength = sizeof(statex);
+  GlobalMemoryStatusEx(&statex);
+#endif
+  for(i = 0;i<8;i++){
+    int *buffptr;
+    int j;
+
+    NewMemory((void **)&buffptr, sizeof(int)*BUFFERSIZE);
+    buffer[i] = buffptr;
+    for(j = 0;j<BUFFERSIZE;j++){
+      buffptr[j] = 1;
+    }
+  }
+  for(i = 0;i<8;i++){
+    FREEMEMORY(buffer[i]);
+  }
 }
 
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  if(argc == 1){
-    Usage("flushcache",HELP_ALL);
-    return 0;
-  }
-
   initMALLOC();
   SetStdOut(stdout);
 
