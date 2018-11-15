@@ -13,6 +13,9 @@
 #endif
 
 #define LEN_BUFFER 1024
+ 
+int debug_print=0;
+int nbuffers=16;
 
 /* ------------------ Usage ------------------------ */
 
@@ -42,18 +45,21 @@ void FlushCache(void){
   statex.dwLength = sizeof(statex);
   GlobalMemoryStatusEx(&statex);
 #endif
-  for(i = 0;i<8;i++){
+  for(i = 0;i<nbuffers;i++){
     int *buffptr;
     int j;
 
+    if(debug_print=1)printf("Allocating buffer %i",i+1);
     NewMemory((void **)&buffptr, sizeof(int)*BUFFERSIZE);
     buffer[i] = buffptr;
+    if(buffptr==NULL){
+      if(debug_print==1)printf(" - failed\n");
+      continue;
+    }
     for(j = 0;j<BUFFERSIZE;j++){
       buffptr[j] = 1;
     }
-  }
-  for(i = 0;i<8;i++){
-    FREEMEMORY(buffer[i]);
+    if(debug_print==1)printf(" - complete\n");
   }
 }
 
