@@ -731,6 +731,9 @@ SVEXTERN float SVDECL(ambientgrey,0.4);
 SVEXTERN GLfloat diffuselight[4];
 SVEXTERN float SVDECL(diffusegrey,0.4);
 
+SVEXTERN int glui_ambientlight[4], glui_ambientgrey;
+SVEXTERN int glui_diffuselight[4], glui_diffusegrey;
+
 SVEXTERN int list_p3_index,list_slice_index,list_patch_index,list_iso_index;
 SVEXTERN int list_p3_index_old, list_slice_index_old, list_patch_index_old,list_iso_index_old;
 

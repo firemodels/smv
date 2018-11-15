@@ -497,62 +497,43 @@ void TextLabelsCB(int var){
 /* ------------------ ColorCB ------------------------ */
 #ifdef pp_LIGHTING
 extern "C" void ColorCB(int var){
+  int i;
+
   switch (var){
   case COLOR_AMB_RGB:
-    if(ambientlight[0]<0.0){
-      ambientlight[0]=0.0;
-      SPINNER_amb_red->set_float_val(0.0);
+    for(i = 0; i<3; i++){
+      ambientlight[i] = (float)glui_ambientlight[i]/255.0;
     }
-    if(ambientlight[1]<0.0){
-      ambientlight[1]=0.0;
-      SPINNER_amb_green->set_float_val(0.0);
-    }
-    if(ambientlight[2]<0.0){
-      ambientlight[2]=0.0;
-      SPINNER_amb_blue->set_float_val(0.0);
-    }
-    ambientgrey = TOBW(ambientlight);
-    SPINNER_amb_grey->set_float_val(ambientgrey);
+    glui_ambientgrey = CLAMP(255*TOBW(ambientlight),0,255);
+    SPINNER_amb_grey->set_int_val(glui_ambientgrey);
     break;
   case COLOR_DIFF_RGB:
-    if(diffuselight[0]<0.0){
-      diffuselight[0]=0.0;
-      SPINNER_diff_red->set_float_val(0.0);
+    for(i = 0; i<3; i++){
+      diffuselight[i] = (float)glui_diffuselight[i]/255.0;
     }
-    if(diffuselight[1]<0.0){
-      diffuselight[1]=0.0;
-      SPINNER_diff_green->set_float_val(0.0);
-    }
-    if(diffuselight[2]<0.0){
-      diffuselight[2]=0.0;
-      SPINNER_diff_blue->set_float_val(0.0);
-    }
-    diffusegrey = TOBW(diffuselight);
-    SPINNER_diff_grey->set_float_val(diffusegrey);
+    glui_diffusegrey = CLAMP(255*TOBW(diffuselight),0,255);
+    SPINNER_diff_grey->set_int_val(glui_diffusegrey);
     break;
   case COLOR_AMB_GREY:
-    if(ambientgrey<0.0){
-      ambientgrey = 0.0;
-      SPINNER_amb_grey->set_float_val(0.0);
+    for(i = 0; i<3; i++){
+      glui_ambientlight[i] = glui_ambientgrey;
+      ambientlight[i] = CLAMP((float)glui_ambientgrey/255.0,0.0,1.0);
     }
-    ambientlight[0]=ambientgrey;
-    ambientlight[1]=ambientgrey;
-    ambientlight[2]=ambientgrey;
-    SPINNER_amb_red->set_float_val(ambientgrey);
-    SPINNER_amb_green->set_float_val(ambientgrey);
-    SPINNER_amb_blue->set_float_val(ambientgrey);
+    for(i = 0; i<3; i++){
+      ambientlight[i] = CLAMP((float)glui_ambientlight[i]/255.0,0.0,1.0);
+    }
+    SPINNER_amb_red->set_int_val(glui_ambientgrey);
+    SPINNER_amb_green->set_int_val(glui_ambientgrey);
+    SPINNER_amb_blue->set_int_val(glui_ambientgrey);
   break;
   case COLOR_DIFF_GREY:
-    if(diffusegrey<0.0){
-      diffusegrey = 0.0;
-      SPINNER_diff_grey->set_float_val(0.0);
+    for(i = 0; i<3; i++){
+      glui_diffuselight[i] = glui_diffusegrey;
+      diffuselight[i] = (float)glui_diffusegrey/255.0;
     }
-    diffuselight[0]=diffusegrey;
-    diffuselight[1]=diffusegrey;
-    diffuselight[2]=diffusegrey;
-    SPINNER_diff_red->set_float_val(diffusegrey);
-    SPINNER_diff_green->set_float_val(diffusegrey);
-    SPINNER_diff_blue->set_float_val(diffusegrey);
+    SPINNER_diff_red->set_int_val(glui_diffusegrey);
+    SPINNER_diff_green->set_int_val(glui_diffusegrey);
+    SPINNER_diff_blue->set_int_val(glui_diffusegrey);
   break;
   }
 }
@@ -832,26 +813,37 @@ extern "C" void GluiLabelsSetup(int main_window){
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT);
 
+  {
+    int i;
 
+    for(i = 0; i<3;i++){
+      glui_ambientlight[i] = CLAMP(255*ambientlight[i],0,255);
+      glui_diffuselight[i] = CLAMP(255*diffuselight[i],0,255);
+    }
+  }
+  glui_ambientgrey = 255*ambientgrey;
+  glui_diffusegrey = 255*diffusegrey;
   PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "background/ambient");
-  SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_FLOAT, ambientlight,COLOR_AMB_RGB,ColorCB);
-  SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_FLOAT, ambientlight+1,COLOR_AMB_RGB,ColorCB);
-  SPINNER_amb_blue = glui_labels->add_spinner_to_panel(PANEL_ambient, _("blue:"), GLUI_SPINNER_FLOAT, ambientlight+2,COLOR_AMB_RGB,ColorCB);
-  SPINNER_amb_grey = glui_labels->add_spinner_to_panel(PANEL_ambient, _("grey:"), GLUI_SPINNER_FLOAT, &ambientgrey,COLOR_AMB_GREY,ColorCB);
-  SPINNER_amb_red->set_float_limits(0.0, 1.0);
-  SPINNER_amb_green->set_float_limits(0.0, 1.0);
-  SPINNER_amb_blue->set_float_limits(0.0, 1.0);
-  SPINNER_amb_grey->set_float_limits(0.0, 1.0);
+  SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_INT, glui_ambientlight,COLOR_AMB_RGB,ColorCB);
+  SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_INT, glui_ambientlight+1,COLOR_AMB_RGB,ColorCB);
+  SPINNER_amb_blue = glui_labels->add_spinner_to_panel(PANEL_ambient, _("blue:"), GLUI_SPINNER_INT, glui_ambientlight+2,COLOR_AMB_RGB,ColorCB);
+  SPINNER_amb_grey = glui_labels->add_spinner_to_panel(PANEL_ambient, _("grey:"), GLUI_SPINNER_INT, &glui_ambientgrey,COLOR_AMB_GREY,ColorCB);
+  SPINNER_amb_red->set_int_limits(0,255);
+  SPINNER_amb_green->set_int_limits(0, 255);
+  SPINNER_amb_blue->set_int_limits(0, 255);
+  SPINNER_amb_grey->set_int_limits(0, 255);
+  ColorCB(COLOR_AMB_RGB);
 
   PANEL_diffuse = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light/diffuse");
-  SPINNER_diff_red = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("red:"), GLUI_SPINNER_FLOAT, diffuselight,COLOR_DIFF_RGB,ColorCB);
-  SPINNER_diff_green = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("green:"), GLUI_SPINNER_FLOAT, diffuselight+1,COLOR_DIFF_RGB,ColorCB);
-  SPINNER_diff_blue = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("blue:"), GLUI_SPINNER_FLOAT, diffuselight+2,COLOR_DIFF_RGB,ColorCB);
-  SPINNER_diff_grey = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("grey:"), GLUI_SPINNER_FLOAT, &diffusegrey,COLOR_DIFF_GREY,ColorCB);
-  SPINNER_diff_red->set_float_limits(0.0, 1.0);
-  SPINNER_diff_green->set_float_limits(0.0, 1.0);
-  SPINNER_diff_blue->set_float_limits(0.0, 1.0);
-  SPINNER_diff_grey->set_float_limits(0.0, 1.0);
+  SPINNER_diff_red = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("red:"), GLUI_SPINNER_INT, glui_diffuselight,COLOR_DIFF_RGB,ColorCB);
+  SPINNER_diff_green = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("green:"), GLUI_SPINNER_INT, glui_diffuselight+1,COLOR_DIFF_RGB,ColorCB);
+  SPINNER_diff_blue = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("blue:"), GLUI_SPINNER_INT, glui_diffuselight+2,COLOR_DIFF_RGB,ColorCB);
+  SPINNER_diff_grey = glui_labels->add_spinner_to_panel(PANEL_diffuse, _("grey:"), GLUI_SPINNER_INT, &glui_diffusegrey,COLOR_DIFF_GREY,ColorCB);
+  SPINNER_diff_red->set_int_limits(0,255);
+  SPINNER_diff_green->set_int_limits(0, 255);
+  SPINNER_diff_blue->set_int_limits(0, 255);
+  SPINNER_diff_grey->set_int_limits(0, 255);
+  ColorCB(COLOR_DIFF_RGB);
 
   PANEL_position0 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 1");
   glui_labels->add_checkbox_to_panel(PANEL_position0, _("light 1"), &use_light0);
