@@ -35,8 +35,6 @@ void FlushCache(void){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  int i;
-
   if(argc == 1){
     Usage("flushcache",HELP_ALL);
     return 0;
