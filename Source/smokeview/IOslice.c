@@ -2254,6 +2254,9 @@ void GetGSliceParams(void){
         AppendLabels(&(patchi->label),geomlabel);
       }
     }
+    else{
+      strcpy(patchi->gslicedir, patchi->label.longlabel);
+    }
   }
 }
 
