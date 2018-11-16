@@ -36,22 +36,14 @@ void Usage(char *prog, int option){
 /* ------------------ FlushCache ------------------------ */
 #define BUFFERSIZE 250000000
 void FlushCache(void){
-#ifdef WIN32
-  MEMORYSTATUSEX statex;
-#endif
-  int *buffer[8], i;
+  int i;
 
-#ifdef WIN32
-  statex.dwLength = sizeof(statex);
-  GlobalMemoryStatusEx(&statex);
-#endif
   for(i = 0;i<nbuffers;i++){
     int *buffptr;
     int j;
 
     if(debug_print=1)printf("Allocating buffer %i",i+1);
     NewMemory((void **)&buffptr, sizeof(int)*BUFFERSIZE);
-    buffer[i] = buffptr;
     if(buffptr==NULL){
       if(debug_print==1)printf(" - failed\n");
       continue;
