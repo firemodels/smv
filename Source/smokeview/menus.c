@@ -10609,10 +10609,13 @@ updatemenu=0;
           }
           patchi = patchinfo + i;
           if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            if(nsubpatchmenus_b[iloadsubpatchmenu_b]>1){
+            int nsubmenus;
+
+            nsubmenus = nsubpatchmenus_b[iloadsubpatchmenu_b];
+            if(nsubmenus>1){
               GLUTADDSUBMENU(patchi->menulabel_base,loadsubpatchmenu_b[iloadsubpatchmenu_b]);
             }
-            else if(nsubpatchmenus_b[iloadsubpatchmenu_b]==1){
+            else if(nsubmenus==1){
               glutAddMenuEntry(patchi->label.longlabel,-i-10);
             }
             iloadsubpatchmenu_b++;

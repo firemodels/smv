@@ -8,8 +8,14 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "MALLOC.h"
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #define LEN_BUFFER 1024
+ 
+int debug_print=0;
+int nbuffers=16;
 
 /* ------------------ Usage ------------------------ */
 
@@ -28,20 +34,38 @@ void Usage(char *prog, int option){
 }
 
 /* ------------------ FlushCache ------------------------ */
-
+#define BUFFERSIZE 250000000
 void FlushCache(void){
+#ifdef WIN32
+  MEMORYSTATUSEX statex;
+#endif
+  int *buffer[8], i;
+
+#ifdef WIN32
+  statex.dwLength = sizeof(statex);
+  GlobalMemoryStatusEx(&statex);
+#endif
+  for(i = 0;i<nbuffers;i++){
+    int *buffptr;
+    int j;
+
+    if(debug_print=1)printf("Allocating buffer %i",i+1);
+    NewMemory((void **)&buffptr, sizeof(int)*BUFFERSIZE);
+    buffer[i] = buffptr;
+    if(buffptr==NULL){
+      if(debug_print==1)printf(" - failed\n");
+      continue;
+    }
+    for(j = 0;j<BUFFERSIZE;j++){
+      buffptr[j] = 1;
+    }
+    if(debug_print==1)printf(" - complete\n");
+  }
 }
 
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  int i;
-
-  if(argc == 1){
-    Usage("flushcache",HELP_ALL);
-    return 0;
-  }
-
   initMALLOC();
   SetStdOut(stdout);
 
