@@ -2175,7 +2175,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // sd->delta is in FDS physical units
   // sd->xmin/xmax etc are in Smokeview scaled units
   // convert from physical to scaled units using xyzmaxdiff
-    delta_orig = MAX(sdold->delta_orig,sd->delta_orig);
+    delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
     if(ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled // test whether two slices are identical
      &&ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled
