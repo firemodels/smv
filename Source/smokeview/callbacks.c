@@ -3185,27 +3185,29 @@ void DoScript(void){
       exit(0);
     }
 #endif
-    if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){\
-      if(current_script_command->exit==0){
-        RenderState(RENDER_ON);
+    if(current_script_command>=scriptinfo){
+      if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
+        if(current_script_command->exit==0){
+          RenderState(RENDER_ON);
+        }
+        else{
+          RenderState(RENDER_OFF);
+          current_script_command->first = 1;
+          current_script_command->exit = 0;
+        }
       }
-      else{
-        RenderState(RENDER_OFF);
-        current_script_command->first=1;
-        current_script_command->exit=0;
+      if(current_script_command->command==SCRIPT_ISORENDERALL){
+          if(current_script_command->exit==0){
+            RenderState(RENDER_ON);
+          }
+          else{
+            RenderState(RENDER_OFF);
+            current_script_command->first = 1;
+            current_script_command->exit = 0;
+          }
       }
     }
-    if(current_script_command->command==SCRIPT_ISORENDERALL){\
-      if(current_script_command->exit==0){
-        RenderState(RENDER_ON);
-      }
-      else{
-        RenderState(RENDER_OFF);
-        current_script_command->first=1;
-        current_script_command->exit=0;
-      }
-    }
-    if(render_status==RENDER_OFF){  // don't advance command if Smokeview is executing a RENDERALL command
+    if(render_status==RENDER_OFF){   // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
       script_render_flag= RunScript();
       if(runscript==2&&noexit==0&&current_script_command==NULL){

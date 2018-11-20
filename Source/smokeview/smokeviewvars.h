@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 #ifdef pp_CSLICE
 SVEXTERN int SVDECL(use_cslice, 0);
 #endif
@@ -114,7 +115,7 @@ SVEXTERN int SVDECL(windrose_first, 0), SVDECL(windrose_next, 1);
 SVEXTERN int SVDECL(windrose_xy_active, 0), SVDECL(windrose_xz_active, 0), SVDECL(windrose_yz_active, 0);
 
 SVEXTERN int SVDECL(showgeom_inside_domain, 1);
-SVEXTERN int SVDECL(showgeom_outside_domain, 0);
+SVEXTERN int SVDECL(showgeom_outside_domain, 1);
 SVEXTERN int glui_fire_alpha, glui_co2_alpha;
 SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
 SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
@@ -729,6 +730,9 @@ SVEXTERN GLfloat ambientlight[4];
 SVEXTERN float SVDECL(ambientgrey,0.4);
 SVEXTERN GLfloat diffuselight[4];
 SVEXTERN float SVDECL(diffusegrey,0.4);
+
+SVEXTERN int glui_ambientlight[4], glui_ambientgrey;
+SVEXTERN int glui_diffuselight[4], glui_diffusegrey;
 
 SVEXTERN int list_p3_index,list_slice_index,list_patch_index,list_iso_index;
 SVEXTERN int list_p3_index_old, list_slice_index_old, list_patch_index_old,list_iso_index_old;
