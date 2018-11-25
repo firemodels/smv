@@ -1185,14 +1185,11 @@ real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
 integer :: file_unit
-logical :: connected
 integer :: error
 character(len=30) :: longlabel30, shortlabel30, unitlabel30
 integer :: ibeg, iend, nframe
 integer :: nxsp, nysp, nzsp
 integer :: i,ii
-inquire(unit=file_unit,opened=connected)
-if(connected)close(file_unit)
 
 open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 
