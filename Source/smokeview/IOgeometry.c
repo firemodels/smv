@@ -2974,10 +2974,8 @@ void ShowHideSortGeometry(float *mm){
 
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
-#ifdef pp_TISO
         geomlistdata *geomlisti;
         int j;
-#endif
 
         if(itime == 0){
           geomlisti = geomi->geomlistinfo - 1;
