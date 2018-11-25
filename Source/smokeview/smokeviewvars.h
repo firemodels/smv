@@ -20,6 +20,13 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_TISO
+SVEXTERN float SVDECL(iso_valmin, 0.0), SVDECL(iso_valmax, 1.0);
+SVEXTERN int SVDECL(iso_colorbar_index, 0);
+SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
+SVEXTERN int SVDECL(show_iso_color, 1);
+#endif
+
 SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 #ifdef pp_CSLICE
 SVEXTERN int SVDECL(use_cslice, 0);

@@ -365,8 +365,26 @@ void DrawGeom(int flag, int timestate){
           float *vnorm, *vpos;
           float factor;
           float transparent_level_local_new;
+#ifdef pp_TISO
+          geomlistdata *geomlisti=NULL;
+          float *vertvals=NULL;
+#endif
 
           vertj = trianglei->verts[j];
+#ifdef pp_TISO
+          geomlisti = trianglei->geomlisti;
+          if(geomlisti!=NULL)vertvals=geomlisti->vertvals;
+          if(show_iso_color==1&&vertvals!=NULL){
+            int vertj_index;
+            float vertval;
+            int colorbar_index;
+
+            vertj_index = vertj - trianglei->geomlisti->verts;
+            vertval = vertvals[vertj_index];
+            colorbar_index = CLAMP((int)(255.0*(vertval-iso_valmin)/(iso_valmax-iso_valmin)),0,255);
+            color = iso_colorbar->colorbar+4*colorbar_index;
+          }
+#endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
           // v1 = xyz - fds_eyepos vector from eye to vertex
           // v2 = vert_norm        normal vector from vertex
@@ -383,8 +401,8 @@ void DrawGeom(int flag, int timestate){
             NORMALIZE3(v1);
             NORMALIZE3(v2);
             factor = ABS(DOT3(v1,v2));
-            transparent_level_local_new = transparent_level_local;
-            if(factor!=0.0&&transparent_level_local!=1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
+            transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
+            if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
             glColor4f(color[0], color[1], color[2], transparent_level_local_new);
           }
           glNormal3fv(trianglei->vert_norm+3*j);
@@ -1590,6 +1608,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
     geomlisti = geomi->geomlistinfo+iframe;
     geomlisti->verts=NULL;
+#ifdef pp_TISO
+    geomlisti->vertvals = NULL;
+#endif
     geomlisti->triangles=NULL;
     geomlisti->triangleptrs = NULL;
     geomlisti->volumes=NULL;
@@ -2920,8 +2941,6 @@ void ShowHideSortGeometry(float *mm){
     ntransparent_triangles = count_transparent;
     nopaque_triangles = count_opaque;
     for(i = 0; i < ngeominfoptrs; i++){
-      geomlistdata *geomlisti;
-      int j;
       geomdata *geomi;
 
       geomi = geominfoptrs[i];
@@ -2930,6 +2949,11 @@ void ShowHideSortGeometry(float *mm){
 
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
+#ifdef pp_TISO
+        geomlistdata *geomlisti;
+        int j;
+#endif
+
         if(itime == 0){
           geomlisti = geomi->geomlistinfo - 1;
         }
@@ -2953,6 +2977,9 @@ void ShowHideSortGeometry(float *mm){
           if(tri->geomsurf->transparent_level >= 1.0)is_opaque = 1;
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
+#ifdef pp_TISO
+          tri->geomlisti = geomlisti;
+#endif
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;
           }
