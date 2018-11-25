@@ -624,7 +624,7 @@ void UpdateShow(void){
   if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&tisoflag==1){
+  if(plotstate==DYNAMIC_PLOTS&&tisoflag==1&&1==0){ // disable isosurface colorbar label for now
     showiso_colorbar=1;
     num_colorbars++;
   }
@@ -1962,7 +1962,13 @@ void UpdateFlippedColorbar(void){
 
 void UpdateDisplay(void){
 
-  LOCK_IBLANK
+  LOCK_IBLANK;
+ #ifdef pp_TISO
+  if(update_texturebar==1){
+    update_texturebar = 0;
+    UpdateTexturebar();
+  }
+#endif
   if(update_setvents==1){
     SetVentDirs();
     update_setvents=0;

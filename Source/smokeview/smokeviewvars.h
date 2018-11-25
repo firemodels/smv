@@ -21,7 +21,8 @@
 #include "threader.h"
 
 #ifdef pp_TISO
-SVEXTERN float SVDECL(iso_valmin, 0.0), SVDECL(iso_valmax, 1.0);
+SVEXTERN int SVDECL(update_texturebar, 0);
+SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
 SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
 SVEXTERN int SVDECL(show_iso_color, 1);

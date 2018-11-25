@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_TISO
+EXTERNCPP void UpdateTexturebar(void);
+#endif
 EXTERNCPP void UpdatePosView(void);
 EXTERNCPP void UpdateUseLighting(void);
 #ifdef pp_GPUSMOKE

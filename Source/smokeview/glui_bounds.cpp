@@ -2709,6 +2709,9 @@ extern "C" void IsoBoundCB(int var){
 #ifdef pp_TISO
   case ISO_COLORBAR_LIST:
     iso_colorbar = colorbarinfo + iso_colorbar_index;
+    ColorbarMenu(iso_colorbar_index);
+    updatemenu = 1;
+    update_texturebar = 1;
     break;
 #endif
   case ISO_TRANSPARENCY_OPTION:

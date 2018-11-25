@@ -293,6 +293,15 @@ void DrawGeom(int flag, int timestate){
   // draw geometry surface
 
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
+
+#ifdef pp_TISO
+    if(usetexturebar==1){
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glEnable(GL_TEXTURE_1D);
+      glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
+    }
+#endif
+
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
@@ -368,6 +377,7 @@ void DrawGeom(int flag, int timestate){
 #ifdef pp_TISO
           geomlistdata *geomlisti=NULL;
           float *vertvals=NULL;
+          float texture_val;
 #endif
 
           vertj = trianglei->verts[j];
@@ -381,7 +391,8 @@ void DrawGeom(int flag, int timestate){
 
             vertj_index = vertj - trianglei->geomlisti->verts;
             vertval = vertvals[vertj_index];
-            colorbar_index = CLAMP((int)(255.0*(vertval-iso_valmin)/(iso_valmax-iso_valmin)),0,255);
+            texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
+            colorbar_index = CLAMP((int)texture_val,0,255);
             color = iso_colorbar->colorbar+4*colorbar_index;
           }
 #endif
@@ -403,7 +414,16 @@ void DrawGeom(int flag, int timestate){
             factor = ABS(DOT3(v1,v2));
             transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
             if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
+#ifdef pp_TISO
+            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL){
+              glTexCoord1f(texture_val);
+            }
+            else{
+              glColor4f(color[0], color[1], color[2], transparent_level_local_new);
+            }
+#else
             glColor4f(color[0], color[1], color[2], transparent_level_local_new);
+#endif
           }
           glNormal3fv(trianglei->vert_norm+3*j);
           glVertex3fv(vertj->xyz);
@@ -411,6 +431,11 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
+#ifdef pp_TISO
+    if(usetexturebar==1){
+      glDisable(GL_TEXTURE_1D);
+    }
+#endif
 
     if(visGeomTextures == 1 || show_texture_1dimage == 1){
       texturedata *lasttexture;

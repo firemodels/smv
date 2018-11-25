@@ -1287,7 +1287,7 @@ extern "C" void UpdateColorbarFlip(void){
 /* ------------------ UpdateColorbarList2 ------------------------ */
 
 extern "C" void UpdateColorbarList2(void){
-  LIST_colorbar2->set_int_val(selectedcolorbar_index2);
+  if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(selectedcolorbar_index2);
 }
 
 /* ------------------ AddColorbarList2 ------------------------ */

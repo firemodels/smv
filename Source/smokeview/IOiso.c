@@ -274,6 +274,12 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
   FREEMEMORY(geominfoptrs);
 
+  if(load_flag==UNLOAD){
+    FREEMEMORY(isoi->geom_vals);
+    meshi->isofilenum = -1;
+    return 0;
+  }
+
 #ifdef pp_TISO
   if(isoi->dataflag==1){
     int filesize;
@@ -307,10 +313,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     FREEMEMORY(isoi->geom_ndynamics);
   }
 #endif
-  if(load_flag == UNLOAD){
-    meshi->isofilenum = -1;
-    return 0;
-  }
 
   surfi = surfinfo + nsurfinfo+1;
   UpdateIsoColors();
