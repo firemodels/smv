@@ -1565,6 +1565,21 @@ void ReadAllGeom(void){
   }
 }
 
+/* ------------------ InitGeomlist ------------------------ */
+
+void InitGeomlist(geomlistdata *geomlisti){
+  geomlisti->verts = NULL;
+#ifdef pp_TISO
+  geomlisti->vertvals = NULL;
+#endif
+  geomlisti->triangles = NULL;
+  geomlisti->triangleptrs = NULL;
+  geomlisti->volumes = NULL;
+  geomlisti->nverts = 0;
+  geomlisti->ntriangles = 0;
+  geomlisti->nvolumes = 0;
+}
+
 /* ------------------ ReadGeom0 ------------------------ */
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
@@ -1632,16 +1647,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     vertdata *verts;
 
     geomlisti = geomi->geomlistinfo+iframe;
-    geomlisti->verts=NULL;
-#ifdef pp_TISO
-    geomlisti->vertvals = NULL;
-#endif
-    geomlisti->triangles=NULL;
-    geomlisti->triangleptrs = NULL;
-    geomlisti->volumes=NULL;
-    geomlisti->nverts=0;
-    geomlisti->ntriangles=0;
-    geomlisti->nvolumes=0;
+    InitGeomlist(geomlisti);
     skipframe = 0;
 
     if(iframe>=0){
@@ -1833,13 +1839,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     int nverts, ntris, nvolumes;
 
     geomlisti = geomi->geomlistinfo+i;
-    geomlisti->verts=NULL;
-    geomlisti->triangles=NULL;
-    geomlisti->triangleptrs = NULL;
-    geomlisti->volumes=NULL;
-    geomlisti->nverts=0;
-    geomlisti->ntriangles=0;
-    geomlisti->nvolumes=0;
+    InitGeomlist(geomlisti);
 
     if(first_frame_static==0&&i==-1)continue;
 
