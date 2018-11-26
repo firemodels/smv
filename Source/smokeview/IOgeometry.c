@@ -295,7 +295,7 @@ void DrawGeom(int flag, int timestate){
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
 #ifdef pp_TISO
-    if(usetexturebar==1){
+    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       glEnable(GL_TEXTURE_1D);
       glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
@@ -432,7 +432,7 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
 #ifdef pp_TISO
-    if(usetexturebar==1){
+    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
       glDisable(GL_TEXTURE_1D);
     }
 #endif
