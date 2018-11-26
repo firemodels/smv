@@ -10257,8 +10257,8 @@ updatemenu=0;
         if(use_iblank==0){
           glutAddMenuEntry("-", MENU_DUMMY3);
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
-          if(nsmoke3dloaded>=1)glutAddMenuEntry("-", MENU_DUMMY3);
         }
+        glutAddMenuEntry("-", MENU_DUMMY3);
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);
