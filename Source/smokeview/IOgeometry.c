@@ -293,6 +293,15 @@ void DrawGeom(int flag, int timestate){
   // draw geometry surface
 
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
+
+#ifdef pp_TISO
+    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glEnable(GL_TEXTURE_1D);
+      glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
+    }
+#endif
+
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
@@ -365,8 +374,28 @@ void DrawGeom(int flag, int timestate){
           float *vnorm, *vpos;
           float factor;
           float transparent_level_local_new;
+#ifdef pp_TISO
+          geomlistdata *geomlisti=NULL;
+          float *vertvals=NULL;
+          float texture_val;
+#endif
 
           vertj = trianglei->verts[j];
+#ifdef pp_TISO
+          geomlisti = trianglei->geomlisti;
+          if(geomlisti!=NULL)vertvals=geomlisti->vertvals;
+          if(show_iso_color==1&&vertvals!=NULL){
+            int vertj_index;
+            float vertval;
+            int colorbar_index;
+
+            vertj_index = vertj - trianglei->geomlisti->verts;
+            vertval = vertvals[vertj_index];
+            texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
+            colorbar_index = CLAMP((int)texture_val,0,255);
+            color = iso_colorbar->colorbar+4*colorbar_index;
+          }
+#endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
           // v1 = xyz - fds_eyepos vector from eye to vertex
           // v2 = vert_norm        normal vector from vertex
@@ -383,9 +412,18 @@ void DrawGeom(int flag, int timestate){
             NORMALIZE3(v1);
             NORMALIZE3(v2);
             factor = ABS(DOT3(v1,v2));
-            transparent_level_local_new = transparent_level_local;
-            if(factor!=0.0&&transparent_level_local!=1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
+            transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
+            if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
+#ifdef pp_TISO
+            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL){
+              glTexCoord1f(texture_val);
+            }
+            else{
+              glColor4f(color[0], color[1], color[2], transparent_level_local_new);
+            }
+#else
             glColor4f(color[0], color[1], color[2], transparent_level_local_new);
+#endif
           }
           glNormal3fv(trianglei->vert_norm+3*j);
           glVertex3fv(vertj->xyz);
@@ -393,6 +431,11 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
+#ifdef pp_TISO
+    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+      glDisable(GL_TEXTURE_1D);
+    }
+#endif
 
     if(visGeomTextures == 1 || show_texture_1dimage == 1){
       texturedata *lasttexture;
@@ -1522,6 +1565,21 @@ void ReadAllGeom(void){
   }
 }
 
+/* ------------------ InitGeomlist ------------------------ */
+
+void InitGeomlist(geomlistdata *geomlisti){
+  geomlisti->verts = NULL;
+#ifdef pp_TISO
+  geomlisti->vertvals = NULL;
+#endif
+  geomlisti->triangles = NULL;
+  geomlisti->triangleptrs = NULL;
+  geomlisti->volumes = NULL;
+  geomlisti->nverts = 0;
+  geomlisti->ntriangles = 0;
+  geomlisti->nvolumes = 0;
+}
+
 /* ------------------ ReadGeom0 ------------------------ */
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
@@ -1589,13 +1647,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     vertdata *verts;
 
     geomlisti = geomi->geomlistinfo+iframe;
-    geomlisti->verts=NULL;
-    geomlisti->triangles=NULL;
-    geomlisti->triangleptrs = NULL;
-    geomlisti->volumes=NULL;
-    geomlisti->nverts=0;
-    geomlisti->ntriangles=0;
-    geomlisti->nvolumes=0;
+    InitGeomlist(geomlisti);
     skipframe = 0;
 
     if(iframe>=0){
@@ -1787,13 +1839,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     int nverts, ntris, nvolumes;
 
     geomlisti = geomi->geomlistinfo+i;
-    geomlisti->verts=NULL;
-    geomlisti->triangles=NULL;
-    geomlisti->triangleptrs = NULL;
-    geomlisti->volumes=NULL;
-    geomlisti->nverts=0;
-    geomlisti->ntriangles=0;
-    geomlisti->nvolumes=0;
+    InitGeomlist(geomlisti);
 
     if(first_frame_static==0&&i==-1)continue;
 
@@ -2920,8 +2966,6 @@ void ShowHideSortGeometry(float *mm){
     ntransparent_triangles = count_transparent;
     nopaque_triangles = count_opaque;
     for(i = 0; i < ngeominfoptrs; i++){
-      geomlistdata *geomlisti;
-      int j;
       geomdata *geomi;
 
       geomi = geominfoptrs[i];
@@ -2930,6 +2974,9 @@ void ShowHideSortGeometry(float *mm){
 
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
+        geomlistdata *geomlisti;
+        int j;
+
         if(itime == 0){
           geomlisti = geomi->geomlistinfo - 1;
         }
@@ -2953,6 +3000,9 @@ void ShowHideSortGeometry(float *mm){
           if(tri->geomsurf->transparent_level >= 1.0)is_opaque = 1;
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
+#ifdef pp_TISO
+          tri->geomlisti = geomlisti;
+#endif
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;
           }

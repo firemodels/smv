@@ -206,6 +206,14 @@ void UnloadIso(meshdata *meshi){
     FREEMEMORY(meshi->animatedsurfaces);
     FREEMEMORY(meshi->showlevels);
   }
+#ifdef pp_TISO
+  if(ib->dataflag==1){
+    FREEMEMORY(ib->geom_nstatics);
+    FREEMEMORY(ib->geom_ndynamics);
+    FREEMEMORY(ib->geom_times);
+    FREEMEMORY(ib->geom_vals);
+  }
+#endif
   meshi->niso_times = 0;
   FREEMEMORY(ib->normaltable);
 
@@ -265,10 +273,48 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
 
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
   FREEMEMORY(geominfoptrs);
-  if(load_flag == UNLOAD){
+
+  if(load_flag==UNLOAD){
+#ifdef pp_TISO
+    FREEMEMORY(isoi->geom_vals);
+#endif
     meshi->isofilenum = -1;
     return 0;
   }
+
+#ifdef pp_TISO
+  if(isoi->dataflag==1){
+    int filesize;
+    int lenfile, ntimes_local, nvals;
+    int i;
+    float *valptr;
+
+    lenfile = strlen(isoi->tfile);
+    FORTgetgeomdatasize(isoi->tfile, &ntimes_local, &nvals, &error, lenfile);
+
+    if(nvals>0&&ntimes_local>0){
+      NewMemory((void **)&isoi->geom_nstatics, ntimes_local*sizeof(int));
+      NewMemory((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int));
+      NewMemory((void **)&isoi->geom_times, ntimes_local*sizeof(float));
+      NewMemory((void **)&isoi->geom_vals, nvals*sizeof(float));
+    }
+
+    FORTgetgeomdata(isoi->tfile, &ntimes_local, &nvals, isoi->geom_times,
+      isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals, &filesize, &error, lenfile);
+    return_filesize += filesize;
+    FREEMEMORY(isoi->geom_nstatics);
+    FREEMEMORY(isoi->geom_times);
+    valptr = isoi->geom_vals;
+    for(i = 0; i<ntimes_local; i++){
+      geomlistdata *geomlisti;
+
+      geomlisti = geomi->geomlistinfo+i;
+      geomlisti->vertvals = valptr;
+      valptr += isoi->geom_ndynamics[i];
+    }
+    FREEMEMORY(isoi->geom_ndynamics);
+  }
+#endif
 
   surfi = surfinfo + nsurfinfo+1;
   UpdateIsoColors();

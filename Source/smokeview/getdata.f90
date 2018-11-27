@@ -830,7 +830,6 @@ logical :: exists
 integer :: i;
 integer :: one, itime, nvars
 integer :: nvert_s, ntri_s, nvert_d, ntri_d
-real :: valmin, valmax
 integer :: version
 
 file_size = 0
@@ -891,21 +890,9 @@ do itime=1, ntimes
   endif
 
   if(finish.ne.0)then
-    valmin = vals(1)
-    valmax = valmin
-    do i = 2, nvars
-      if(vals(i).lt.valmin)valmin=vals(i)
-      if(vals(i).gt.valmax)valmax=vals(i)
-    end do
     close(lu20)
     return
   endif
-end do
-valmin = vals(1)
-valmax = valmin
-do i = 2, nvars
-  if(vals(i).lt.valmin)valmin=vals(i)
-  if(vals(i).gt.valmax)valmax=vals(i)
 end do
 close(lu20)
 
@@ -1198,14 +1185,11 @@ real, intent(in), dimension(*) :: times
 integer, intent(in) :: ntimes
 
 integer :: file_unit
-logical :: connected
 integer :: error
 character(len=30) :: longlabel30, shortlabel30, unitlabel30
 integer :: ibeg, iend, nframe
 integer :: nxsp, nysp, nzsp
 integer :: i,ii
-inquire(unit=file_unit,opened=connected)
-if(connected)close(file_unit)
 
 open(newunit=file_unit,file=trim(slicefilename),form="unformatted",action="write")
 

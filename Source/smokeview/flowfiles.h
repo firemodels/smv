@@ -58,6 +58,9 @@ typedef struct _tridata {
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9];
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
+#ifdef pp_TISO
+  struct _geomlistdata *geomlisti;
+#endif
   int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
@@ -79,6 +82,7 @@ typedef struct _geomlistdata {
   int nverts,nedges,ntriangles,nvolumes;
   float *zORIG;
   vertdata *verts;
+  float *vertvals;
   tridata *triangles, **triangleptrs;
   edgedata *edges;
   tetdata *volumes;
@@ -559,6 +563,11 @@ typedef struct _isodata {
   float *levels, **colorlevels;
   int nlevels;
   char menulabel[128];
+#ifdef pp_TISO
+  int *geom_nstatics, *geom_ndynamics;
+  float *geom_times;
+  float *geom_vals;
+#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */

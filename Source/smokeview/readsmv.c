@@ -4392,7 +4392,7 @@ int ReadSMV(char *file, char *file2){
       npatchinfo++;
       continue;
     }
-    if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1){
+    if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1||Match(buffer, "TISOG")==1){
       if(setup_only == 1||smoke3d_only==1)continue;
       nisoinfo++;
       continue;
@@ -8733,7 +8733,7 @@ typedef struct {
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 
-    if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1){
+    if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1||Match(buffer, "TISOG")==1){
       isodata *isoi;
       int get_isolevels;
       int dataflag=0,geomflag=0;
@@ -8749,8 +8749,8 @@ typedef struct {
       isoi->isof_index = nn_iso%nisos_per_mesh;
       nn_iso++;
 
-      if(Match(buffer, "TISOF") == 1)dataflag = 1;
-      if(Match(buffer,"ISOG")==1)geomflag=1;
+      if(Match(buffer, "TISOF") == 1||Match(buffer, "TISOG") == 1)dataflag = 1;
+      if(Match(buffer,"ISOG")==1||Match(buffer,"TISOG")==1)geomflag=1;
       TrimBack(buffer);
       len=strlen(buffer);
 
@@ -8790,6 +8790,12 @@ typedef struct {
       isoi->levels=NULL;
       isoi->is_fed=0;
       isoi->memory_id = ++nmemory_ids;
+#ifdef pp_TISO
+      isoi->geom_nstatics = NULL;
+      isoi->geom_ndynamics=NULL;
+      isoi->geom_times=NULL;
+      isoi->geom_vals=NULL;
+#endif
 
       isoi->normaltable=NULL;
       isoi->color_label.longlabel=NULL;
