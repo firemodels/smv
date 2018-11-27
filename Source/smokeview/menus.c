@@ -2949,7 +2949,14 @@ void LoadUnloadMenu(int value){
       slicedata *slicei;
 
       slicei = sliceinfo + i;
-      ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+      if(slicei->loaded == 1){
+        if(slicei->slicefile_type == SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        }
+        else{
+          ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+        }
+      }
     }
     for(i = 0; i<nplot3dinfo; i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
