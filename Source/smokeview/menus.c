@@ -3030,7 +3030,12 @@ void LoadUnloadMenu(int value){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice(slicei->file,i, load_mode,set_slicecolor,&errorcode);
+        if(slicei->slicefile_type==SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
+        }
+        else{
+          ReadSlice(slicei->file, i, load_mode, set_slicecolor, &errorcode);
+        }
       }
     }
     STOP_TIMER(load_time);
