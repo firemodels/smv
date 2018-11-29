@@ -13,7 +13,7 @@
 #include "isodefs.h"
 #include "contourdefs.h"
 #include "histogram.h"
-#include "flowfiles.h"
+#include "structures.h"
 #ifndef CPP
 #include <zlib.h>
 #endif

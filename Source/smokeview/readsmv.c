@@ -8131,6 +8131,8 @@ typedef struct {
 #ifdef pp_SLICEGEOM
       int slicegeom=0;
 #endif
+      int slcf_index = 0;
+      char *char_slcf_index;
       int has_reg, has_comp;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
@@ -8139,6 +8141,13 @@ typedef struct {
       int read_slice_header=0;
 
       if(setup_only == 1||smoke3d_only==1)continue;
+
+      char_slcf_index = strchr(buffer, '!');
+      if(char_slcf_index!=NULL){
+        *char_slcf_index = 0;
+        char_slcf_index++;
+        sscanf(char_slcf_index, "%i", &slcf_index);
+      }
 
       sliceoffsetptr = strchr(buffer, '$');
       if(sliceoffsetptr!=NULL){
@@ -8221,6 +8230,7 @@ typedef struct {
 
       sd = sliceinfo + nn_slice - 1;
 
+      sd->slcf_index = slcf_index;
       sd->finalize = 1;
       sd->ntimes = 0;
       sd->ntimes_old = 0;
