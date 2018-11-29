@@ -32,6 +32,7 @@
 #define pp_FILELIST     // use list of file names
 #define pp_LANG         // support other languages
 #define pp_TISO         // color isosurfaces with a 2nd quantity
+#define pp_SLICE_USE_ID     // use slcf index
 
 //#define pp_SPECTRAL
 

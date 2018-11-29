@@ -2169,25 +2169,38 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0){
+#ifndef pp_SLICE_USE_ID
     float delta_orig;
     float delta_scaled;
+#endif
 
-  // sd->delta is in FDS physical units
+#ifndef pp_SLICE_USE_ID
+    // sd->delta is in FDS physical units
   // sd->xmin/xmax etc are in Smokeview scaled units
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-    if(ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled // test whether two slices are identical
-     &&ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled
-     &&ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-     &&sd->blocknumber==sdold->blocknumber
+#endif
+    if(
+#ifdef pp_SLICE_USE_ID
+      sd->slcf_index==sdold->slcf_index&&
+#else
+       ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+       ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+       ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled&&
+#endif
+       sd->blocknumber==sdold->blocknumber
         ){
       return 1;
     }
 
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir
+#ifdef pp_SLICE_USE_ID
+      ||sd->slcf_index!=sdold->slcf_index
+#else
       ||ABS(sd->position_orig-sdold->position_orig)>delta_orig
+#endif
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slicefile_type!=sdold->slicefile_type
         ){
