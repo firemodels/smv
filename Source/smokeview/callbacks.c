@@ -2244,6 +2244,18 @@ void Keyboard(unsigned char key, int flag){
       }
       updatemenu = 1;
       break;
+    case '<':
+      vectorpointsize+=2;
+      if(vectorpointsize>20.0)vectorpointsize = 1.0;
+      UpdateVectorpointsize();
+      updatemenu = 1;
+      break;
+    case '>':
+      vectorpointsize-=2;
+      if(vectorpointsize<1.0)vectorpointsize = 20.0;
+      UpdateVectorpointsize();
+      updatemenu = 1;
+      break;
     case '#':
       WriteIni(LOCAL_INI,NULL);
       break;
