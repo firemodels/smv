@@ -2912,7 +2912,13 @@ void ReloadAllSliceFiles(void){
     slicei = sliceinfo + i;
     set_slicecolor = DEFER_SLICECOLOR;
     if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
-    load_size+=ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+
+    if(slicei->slicefile_type == SLICE_GEOM){
+      load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+    }
+    else{
+      load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+    }
     file_count++;
   } 
   STOP_TIMER(load_time);
@@ -3894,7 +3900,16 @@ void UnloadSliceMenu(int value){
   updatemenu=1;
   glutPostRedisplay();
   if(value>=0){
-    ReadSlice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
+    slicedata *slicei;
+
+    slicei = sliceinfo+value;
+
+    if(slicei->slicefile_type==SLICE_GEOM){
+      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+    }
+    else{
+      ReadSlice("", value, UNLOAD, SET_SLICECOLOR, &errorcode);
+    }
   }
   if(value<=-3){
     UnloadBoundaryMenu(-3-value);
@@ -3902,7 +3917,15 @@ void UnloadSliceMenu(int value){
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
-        ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        slicedata *slicei;
+
+        slicei = sliceinfo+i;
+        if(slicei->slicefile_type == SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        }
+        else{
+          ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        }
       }
       for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
@@ -3918,7 +3941,15 @@ void UnloadSliceMenu(int value){
 
       unload_index=LastSliceLoadstack();
       if(unload_index>=0&&unload_index<nsliceinfo){
-        ReadSlice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
+        slicedata *slicei;
+
+        slicei = sliceinfo+unload_index;
+        if(slicei->slicefile_type==SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        }
+        else{
+          ReadSlice("", unload_index, UNLOAD, SET_SLICECOLOR, &errorcode);
+        }
       }
     }
   }
@@ -4430,7 +4461,12 @@ void LoadSliceMenu(int value){
           if(dir!=0&&dir!=slicei->idir)continue;
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-          load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+          if(slicei->slicefile_type == SLICE_GEOM){
+            load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+          }
+          else{
+            load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+          }
           file_count++;
         }
         STOP_TIMER(load_time);
@@ -4687,7 +4723,12 @@ void LoadMultiSliceMenu(int value){
       if(dir!=0&&slicei->volslice==1)continue;
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-      load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+      if(slicei->slicefile_type == SLICE_GEOM){
+        load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+      }
+      else{
+        load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+      }
       file_count++;
     }
     STOP_TIMER(load_time);
