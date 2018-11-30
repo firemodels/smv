@@ -2285,6 +2285,17 @@ void GetGSliceParams(void){
   }
 }
 
+/* ------------------ MaxDiff3B ------------------------ */
+
+float MaxDiff3B(float *xyz1, float *xyz2, int idir){
+  float maxdiff = -1.0;
+
+  if(idir!=1)maxdiff = MAX(maxdiff, ABS(xyz1[0]-xyz2[0]));
+  if(idir!=2)maxdiff = MAX(maxdiff, ABS(xyz1[1]-xyz2[1]));
+  if(idir!=3)maxdiff = MAX(maxdiff, ABS(xyz1[2]-xyz2[2]));
+  return maxdiff;
+}
+
 /* ------------------ IsSliceDuplicate ------------------------ */
 
 #define SLICEEPS 0.001
@@ -2307,10 +2318,19 @@ int IsSliceDuplicate(multislicedata *mslicei, int ii, int flag){
     if(slicej==slicei||slicej->skip==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
-    if(MAXDIFF3(xyzmini, xyzminj) < SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj) < SLICEEPS){
-      if(flag == COUNT_DUPLICATES)return 1;
-      if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
-      if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+    if(slicei->patchgeom==NULL){
+      if(MAXDIFF3(xyzmini, xyzminj)<SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj)<SLICEEPS){
+        if(flag==COUNT_DUPLICATES)return 1;
+        if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
+        if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+      }
+    }
+    else{
+      if(MaxDiff3B(xyzmini, xyzminj,slicei->idir)<SLICEEPS&&MaxDiff3B(xyzmaxi, xyzmaxj,slicei->idir)<SLICEEPS){
+        if(flag==COUNT_DUPLICATES)return 1;
+        if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
+        if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+      }
     }
   }
   return 0;
