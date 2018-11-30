@@ -2181,7 +2181,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
 #ifdef pp_SLICE_USE_ID
-      if(sd->slcf_index==0){
+      if(use_new_slice_menus==0||sd->slcf_index==0){
         if(
         ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
         ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
@@ -2208,8 +2208,8 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir
 #ifdef pp_SLICE_USE_ID
-      ||(sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
-      ||(sd->slcf_index==0&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
+      ||(use_new_slice_menus==1&&sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
+      ||((use_new_slice_menus==0||sd->slcf_index==0)&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
 #else
       ||ABS(sd->position_orig-sdold->position_orig)>delta_orig
 #endif

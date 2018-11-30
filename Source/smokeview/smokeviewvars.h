@@ -21,6 +21,7 @@
 #include "threader.h"
 
 #ifdef pp_TISO
+SVEXTERN int SVDECL(use_new_slice_menus, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
