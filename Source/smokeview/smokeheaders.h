@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateVectorpointsize(void);
 #ifdef pp_TISO
 EXTERNCPP void UpdateTexturebar(void);
 #endif

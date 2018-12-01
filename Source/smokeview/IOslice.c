@@ -2166,6 +2166,9 @@ void UpdateVsliceMenuLabels(void){
 /* ------------------ NewMultiSlice ------------------------ */
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
+#ifdef pp_SLICE_USE_ID
+    float same=0;
+#endif
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0){
@@ -2177,17 +2180,39 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-    if(ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled // test whether two slices are identical
-     &&ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled
-     &&ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-     &&sd->blocknumber==sdold->blocknumber
+#ifdef pp_SLICE_USE_ID
+      if(use_new_slice_menus==0||sd->slcf_index==0){
+        if(
+        ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+        ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+        ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
+        )same=1;
+      }
+      else{
+        if(sd->slcf_index==sdold->slcf_index)same=1;
+      }
+#endif
+    if(
+#ifdef pp_SLICE_USE_ID
+      same==1&&
+#else
+      ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+      ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+      ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled&&
+#endif
+      sd->blocknumber==sdold->blocknumber
         ){
       return 1;
     }
 
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir
+#ifdef pp_SLICE_USE_ID
+      ||(use_new_slice_menus==1&&sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
+      ||((use_new_slice_menus==0||sd->slcf_index==0)&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
+#else
       ||ABS(sd->position_orig-sdold->position_orig)>delta_orig
+#endif
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slicefile_type!=sdold->slicefile_type
         ){
@@ -2260,6 +2285,17 @@ void GetGSliceParams(void){
   }
 }
 
+/* ------------------ MaxDiff3B ------------------------ */
+
+float MaxDiff3B(float *xyz1, float *xyz2, int idir){
+  float maxdiff = -1.0;
+
+  if(idir!=1)maxdiff = MAX(maxdiff, ABS(xyz1[0]-xyz2[0]));
+  if(idir!=2)maxdiff = MAX(maxdiff, ABS(xyz1[1]-xyz2[1]));
+  if(idir!=3)maxdiff = MAX(maxdiff, ABS(xyz1[2]-xyz2[2]));
+  return maxdiff;
+}
+
 /* ------------------ IsSliceDuplicate ------------------------ */
 
 #define SLICEEPS 0.001
@@ -2282,10 +2318,19 @@ int IsSliceDuplicate(multislicedata *mslicei, int ii, int flag){
     if(slicej==slicei||slicej->skip==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
-    if(MAXDIFF3(xyzmini, xyzminj) < SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj) < SLICEEPS){
-      if(flag == COUNT_DUPLICATES)return 1;
-      if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
-      if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+    if(slicei->patchgeom==NULL){
+      if(MAXDIFF3(xyzmini, xyzminj)<SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj)<SLICEEPS){
+        if(flag==COUNT_DUPLICATES)return 1;
+        if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
+        if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+      }
+    }
+    else{
+      if(MaxDiff3B(xyzmini, xyzminj,slicei->idir)<SLICEEPS&&MaxDiff3B(xyzmaxi, xyzmaxj,slicei->idir)<SLICEEPS){
+        if(flag==COUNT_DUPLICATES)return 1;
+        if(slicedup_option==SLICEDUP_KEEPFINE  &&slicei->dplane_min>slicej->dplane_min-SLICEEPS)return 1;
+        if(slicedup_option==SLICEDUP_KEEPCOARSE&&slicei->dplane_max<slicej->dplane_max+SLICEEPS)return 1;
+      }
     }
   }
   return 0;
