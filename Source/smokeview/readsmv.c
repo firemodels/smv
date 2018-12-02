@@ -9953,13 +9953,12 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal,&iso_skip_wrapup);
+      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
       ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
       ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
-      ONEORZERO(iso_skip_wrapup);
 #ifdef pp_BETA
       ONEORZERO(show_iso_normal);
 #else
@@ -13524,7 +13523,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal, iso_skip_wrapup);
+  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");

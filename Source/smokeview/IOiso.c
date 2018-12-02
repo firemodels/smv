@@ -147,10 +147,21 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
 /* ------------------ ReadIsoGeomWrapup ------------------------ */
 
 void ReadIsoGeomWrapup(void){
+#ifdef pp_ISOTIME
+  float wrapup_time;
+#endif
+
   update_readiso_geom_wrapup=UPDATE_ISO_OFF;
   ngeominfoptrs = 0;
   GetGeomInfoPtrs(&geominfoptrs, &ngeominfoptrs);
-  if(iso_skip_wrapup==0)UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+#ifdef pp_ISOTIME
+  START_TIMER(wrapup_time);
+#endif
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+#ifdef pp_ISOTIME
+  STOP_TIMER(wrapup_time);
+  printf("iso wrapup time=%f\n", wrapup_time);
+#endif
   UpdateTimes();
   GetFaceInfo();
   IdleCB();
