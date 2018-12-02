@@ -1046,7 +1046,7 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
       if(geomtype==GEOM_ISO){
         for(k = 0; k<vertj->ntriangles; k++){
           tridata *trianglek;
-          float *tri_normk, cosang;
+          float *tri_normk;
 
           trianglek = vertj->triangles[k];
           tri_normk = trianglek->tri_norm;
