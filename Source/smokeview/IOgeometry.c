@@ -1349,9 +1349,8 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(match_verts);
   }
 
-
   // update cache
-  
+
   if(0==1){   // don't execute this code yet
     int nverts_max=0, ntriangles_max=0;
     float *vertnormals=NULL, *trinormals = NULL;
