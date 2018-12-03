@@ -2,11 +2,9 @@
 set CURDIR=%CD%
 set SMOKEVIEW1=smv654u4
 set SMOKEVIEW2=smv671u696
-set LABEL=smokeview
-set CASE=plume_timing
-set SCRIPT=plume_timing_\ 
 set CASEDIR=%CURDIR%\..\cases
-set score=_
+set CASE=plume_timing
+::set CASE=isotest1
 
 cd ..\..\..\
 set smvrepo=%CD%
