@@ -1309,7 +1309,9 @@ void UpdateTriangles(int flag,int update){
           verti = surface_verts[iii];
           xyzi = verti->xyz;
           normi = verti->vert_norm;
-          VEC3EQ(avgnorm,normi);
+          avgnorm[0] = normi[0];
+          avgnorm[1] = normi[1];
+          avgnorm[2] = normi[2];
           match_verts[iii] = iii;
           for(jjj = iii+1; jjj<nsurface_verts; jjj++){
             vertdata *vertj;
@@ -1322,7 +1324,9 @@ void UpdateTriangles(int flag,int update){
 #define POINTEPS 0.001
             if(ABS(xyzi[0]-xyzj[0])<POINTEPS&&ABS(xyzi[1]-xyzj[1])<POINTEPS&&ABS(xyzi[2]-xyzj[2])<POINTEPS){
               match_verts[jjj] = iii;
-              VEC3ADD(avgnorm,avgnorm,normj);
+              avgnorm[0] += normj[0];
+              avgnorm[1] += normj[1];
+              avgnorm[2] += normj[2];
             }
           }
           ReduceToUnit(avgnorm);
@@ -1333,7 +1337,9 @@ void UpdateTriangles(int flag,int update){
 
               vertj = surface_verts[jjj];
               normj = vertj->vert_norm;
-              VEC3EQ(normj,avgnorm);
+              normj[0] = avgnorm[0];
+              normj[1] = avgnorm[1];
+              normj[2] = avgnorm[2];
             }
           }
         }
@@ -1343,6 +1349,89 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(match_verts);
   }
 
+
+  // update cache
+  
+  if(0==1){   // don't execute this code yet
+    int nverts_max=0, ntriangles_max=0;
+    float *vertnormals=NULL, *trinormals = NULL;
+
+    nverts_max = 0;
+    ntriangles_max = 0;
+    for(j = 0; j<ngeominfoptrs; j++){
+      geomdata *geomi;
+      int ii;
+      FILE *stream = NULL;
+
+      geomi = geominfoptrs[j];
+      if(geomi->geomtype!=GEOM_ISO||geomi->cache_defined==1)continue;
+
+      stream = fopen(geomi->topo_file, "wb");
+      if(stream==NULL)continue;
+      for(ii = 0; ii<geomi->ntimes; ii++){
+        geomlistdata *geomlisti;
+        int ntriangles, nverts;
+        int jj;
+
+        geomlisti = geomi->geomlistinfo+ii;
+        fwrite(geomi->times+ii, sizeof(float), 1, stream);
+
+        ntriangles = geomlisti->ntriangles;
+        if(ntriangles>ntriangles_max){
+          FREEMEMORY(trinormals);
+          ntriangles_max = ntriangles+100;
+          NewMemory((void **)&trinormals, 3*ntriangles_max*sizeof(float));
+        }
+
+        fwrite(&ntriangles, sizeof(int), 1, stream);
+        if(ntriangles>0){
+          float *trinormals_copy;
+
+          trinormals_copy = trinormals;
+          for(jj = 0; jj<ntriangles; jj++){
+            tridata *trianglei;
+            float *tri_norm;
+
+            trianglei = geomlisti->triangles+jj;
+            tri_norm = trianglei->tri_norm;
+            *trinormals_copy++ = *tri_norm++;
+            *trinormals_copy++ = *tri_norm++;
+            *trinormals_copy++ = *tri_norm++;
+          }
+          fwrite(trinormals, sizeof(float), 3*ntriangles, stream);
+        }
+
+        nverts = geomlisti->nverts;
+        if(nverts>nverts_max){
+          FREEMEMORY(vertnormals);
+          nverts_max = nverts+100;
+          NewMemory((void **)&vertnormals, 3*nverts_max*sizeof(float));
+        }
+        fwrite(&nverts, sizeof(int), 1, stream);
+        if(nverts>0){
+          float *vertnormals_copy;
+
+          vertnormals_copy = vertnormals;
+          for(jj = 0; jj<nverts; jj++){
+            vertdata *verti;
+            float *vert_norm;
+
+            verti = geomlisti->verts+jj;
+            vert_norm = verti->vert_norm;
+            *vertnormals_copy++ = *vert_norm++;
+            *vertnormals_copy++ = *vert_norm++;
+            *vertnormals_copy++ = *vert_norm++;
+          }
+          fwrite(vertnormals, sizeof(float), 3*nverts, stream);
+        }
+      }
+      geomi->cache_defined = 1;
+      fclose(stream);
+      stream = NULL;
+    }
+    FREEMEMORY(vertnormals);
+    FREEMEMORY(trinormals);
+  }
 }
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
@@ -3099,6 +3188,8 @@ void ShowHideSortGeometry(float *mm){
 
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->file=NULL;
+  geomi->topo_file = NULL;
+  geomi->cache_defined = 0;
   geomi->display=0;
   geomi->loaded=0;
   geomi->geomlistinfo_0=NULL;

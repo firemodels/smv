@@ -8750,7 +8750,7 @@ typedef struct {
       char tbuffer[255], *tbufferptr;
       int blocknumber;
       size_t len;
-      char *buffer3;
+      char *buffer3,*ext;
       int fds_skip = 1;
       float fds_delta = -1.0;
 
@@ -8824,6 +8824,12 @@ typedef struct {
       NewMemory((void **)&isoi->reg_file,(unsigned int)(len+1));
       STRCPY(isoi->reg_file,bufferptr);
 
+      ext = strrchr(bufferptr, '.');
+      if(ext!=NULL)*ext = 0;
+      NewMemory((void **)&isoi->topo_file, (unsigned int)(strlen(bufferptr)+5+1));
+      STRCPY(isoi->topo_file, bufferptr);
+      strcat(isoi->topo_file, ".niso");
+
       NewMemory((void **)&isoi->size_file,(unsigned int)(len+3+1));
       STRCPY(isoi->size_file,bufferptr);
       STRCAT(isoi->size_file,".sz");
@@ -8863,8 +8869,9 @@ typedef struct {
           geomdata *geomi;
           float **colorlevels,*levels;
 
-          isoi->geominfo->file=isoi->file;
           geomi = isoi->geominfo;
+          geomi->file=isoi->file;
+          geomi->topo_file = isoi->topo_file;
           geomi->file=isoi->file;
           ReadGeomHeader(geomi,NULL,&ntimes_local);
           isoi->nlevels=geomi->nfloat_vals;
