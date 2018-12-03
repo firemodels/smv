@@ -2096,17 +2096,17 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 void ReorderFace(int *faces){
   int face_temp[5];
 
+  if(faces[0]<=MIN(faces[1], faces[2]))return;
   face_temp[0]=faces[0];
   face_temp[1]=faces[1];
   face_temp[2]=faces[2];
   face_temp[3]=faces[0];
   face_temp[4]=faces[1];
-  if(faces[0]<=MIN(faces[1],faces[2]))return;
   if(faces[1]<=MIN(faces[0],faces[2])){
-    VEC3EQ(faces,face_temp);
+    VEC3EQ(faces,face_temp+1);
     return;
   }
-  VEC3EQ(faces,face_temp);
+  VEC3EQ(faces,face_temp+2);
 }
 
 /* ------------------ CompareVerts2 ------------------------ */
