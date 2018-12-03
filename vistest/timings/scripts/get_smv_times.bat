@@ -11,23 +11,26 @@ set score=_
 cd ..\..\..\
 set smvrepo=%CD%
 cd %CASEDIR%
-call :get_time %SMOKEVIEW1% plume_timing_startup.ssf plume_timing  time1
-call :get_time %SMOKEVIEW1% plume_timing_iso.ssf     plume_timing  time2
-call :get_time %SMOKEVIEW1% plume_timing_3dsmoke.ssf plume_timing  time3
-call :get_time %SMOKEVIEW1% plume_timing_slice.ssf   plume_timing  time4
-call :get_time %SMOKEVIEW1% plume_timing_vslice.ssf  plume_timing  time5
-echo %time1%,%time2%,%time3%,%time4%,%time5%
+call :run_cases %SMOKEVIEW1% %CASE%
 
-::------------
-
-call :get_time %SMOKEVIEW2% plume_timing_startup.ssf plume_timing  time1
-call :get_time %SMOKEVIEW2% plume_timing_iso.ssf     plume_timing  time2
-call :get_time %SMOKEVIEW2% plume_timing_3dsmoke.ssf plume_timing  time3
-call :get_time %SMOKEVIEW2% plume_timing_slice.ssf   plume_timing  time4
-call :get_time %SMOKEVIEW2% plume_timing_vslice.ssf  plume_timing  time5
-echo %time1%,%time2%,%time3%,%time4%,%time5%
+call :run_cases %SMOKEVIEW2% %CASE%
 
 goto eof
+
+:: -------------------------------------------------------------
+ :run_cases
+:: -------------------------------------------------------------
+set SMV=%1
+set smvcase=%2
+
+call :get_time %SMV% %smvcase%startup.ssf %smvcase%  time1
+call :get_time %SMV% %smvcase%iso.ssf     %smvcase%  time2
+call :get_time %SMV% %smvcase%3dsmoke.ssf %smvcase%  time3
+call :get_time %SMV% %smvcase%slice.ssf   %smvcase%  time4
+call :get_time %SMV% %smvcase%vslice.ssf  %smvcase%  time5
+echo %time1%,%time2%,%time3%,%time4%,%time5%
+
+exit /b 0
 
 :: -------------------------------------------------------------
  :get_time
