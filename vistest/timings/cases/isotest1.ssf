@@ -1,0 +1,14 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ .
+
+UNLOADALL
+UNLOADALL
+LOADISOM
+ TEMPERATURE: 100.0 °C
+ 1
+SETTIMEVAL
+ 0.0
+RENDERONCE
+ test1_iso
