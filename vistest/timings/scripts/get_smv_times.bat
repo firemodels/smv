@@ -8,6 +8,10 @@ set CASE=plume_timing
 
 cd ..\..\..\
 set smvrepo=%CD%
+
+set TIME=%smvrepo%\Build\cputime\intel_win_64\cputime_64.exe
+set FLUSH=%smvrepo%\Build\flush\intel_win_64\flush_win_64.exe
+
 cd %CASEDIR%
 call :run_cases %SMOKEVIEW1% %CASE%
 
@@ -39,11 +43,11 @@ set script=%2
 set case=%3
 set timevar=%4
 
-flush_mem 1> Nul 2>&1
-ptime %smv% -scriptfile %script% %case%  1> tmp.out 2>&1
-tail -1 tmp.out | gawk "{print $3}" > tmp2.out
+%FLUSH% 1> Nul 2>&1
+%TIME% %smv% -scriptfile %script% %case%  1> tmp.out 2>&1
+tail -1 tmp.out | gawk "{print $1}" > tmp2.out
 set /p %timevar%=<tmp2.out
-rm tmp.out tmp2.out
+erase tmp.out
 
 exit /b 0
 
