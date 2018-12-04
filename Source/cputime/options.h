@@ -7,7 +7,7 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define flushcache title
+//*** define cputime title
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

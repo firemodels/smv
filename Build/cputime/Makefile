@@ -1,11 +1,11 @@
 
-# flush makefile
+# cputime makefile
 
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/shared
-INC_DIR += -I $(SOURCE_DIR)/flush
+INC_DIR += -I $(SOURCE_DIR)/cputime
 
 
 WIN_LIBDIR = $(LIB_DIR)/intel_win_64
@@ -13,7 +13,7 @@ WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 FILTERC =
 FILTERF =
 
-VPATH = $(SOURCE_DIR)/flush:$(SOURCE_DIR)/shared
+VPATH = $(SOURCE_DIR)/cputime:$(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -69,7 +69,7 @@ intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_C
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
 intel_win_64 : CC        = icl
 intel_win_64 : FC        = ifort
-intel_win_64 : exe       = flush_win_64.exe
+intel_win_64 : exe       = cputime_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
@@ -81,7 +81,7 @@ gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown
 gnu_linux_64_db : LFLAGS    = -lgfortran
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : FC        = gfortran
-gnu_linux_64_db : exe       = flush_linux_64_db
+gnu_linux_64_db : exe       = cputime_linux_64_db
 
 gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
@@ -94,7 +94,7 @@ gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frec
 gnu_linux_64 : LFLAGS    = -lgfortran
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : FC        = gfortran
-gnu_linux_64 : exe       = flush_linux_64
+gnu_linux_64 : exe       = cputime_linux_64
 
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm

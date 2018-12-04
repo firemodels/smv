@@ -12,6 +12,13 @@
 #include <windows.h>
 #endif
 
+#ifndef START_TIMER
+#define START_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC;
+#endif
+#ifndef STOP_TIMER
+#define STOP_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC-a;
+#endif
+
 #define LEN_BUFFER 1024
  
 int debug_print=0;
@@ -26,51 +33,43 @@ void Usage(char *prog, int option){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "flush the cache\n");
+  fprintf(stdout, "get cputime\n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     UsageCommon(HELP_ALL);
   }
 }
 
-/* ------------------ FlushCache ------------------------ */
-#define BUFFERSIZE 250000000
-void FlushCache(void){
-  int i;
-
-  for(i = 0;i<nbuffers;i++){
-    int *buffptr;
-    int j;
-
-    if(debug_print=1)printf("Allocating buffer %i",i+1);
-    NewMemory((void **)&buffptr, sizeof(int)*BUFFERSIZE);
-    if(buffptr==NULL){
-      if(debug_print==1)printf(" - failed\n");
-      continue;
-    }
-    for(j = 0;j<BUFFERSIZE;j++){
-      buffptr[j] = 1;
-    }
-    if(debug_print==1)printf(" - complete\n");
-  }
-}
-
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
+  int i, nargs;
+  char command_line[1000];
+  float cpu_time=0.0;
+
   initMALLOC();
   SetStdOut(stdout);
 
-  ParseCommonOptions(argc, argv);
+  nargs=ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("flushcache",show_help);
+    Usage("cputime",show_help);
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("flushcache", argv[0]);
+    PRINTVERSION("cputime", argv[0]);
     return 1;
   }
+  if(nargs<argc){
+    strcpy(command_line,"");
+    for(i = nargs; i<argc; i++){
+      strcat(command_line, argv[i]);
+      strcat(command_line, " ");
+    }
+    START_TIMER(cpu_time);
+    system(command_line);
+    STOP_TIMER(cpu_time);
+  }
+  printf("%f\n", cpu_time);
 
-  FlushCache();
   return 0;
 }
