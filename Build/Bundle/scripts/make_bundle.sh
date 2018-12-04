@@ -87,11 +87,12 @@ DEM2FDSDIR=$REMOTESVNROOT/smv/Build/dem2fds/intel_${platform}_64
 SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_${platform}_64
 WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_${platform}_64
 HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
+FLUSHFILEDIR=$REMOTESVNROOT/smv/Build/flush/intel_${platform}_64
 FORBUNDLE=$SVNROOT/smv/Build/Bundle/for_bundle
 PLATFORMDIR=$RELEASE$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
 uploads=$SVNROOT/smv/Build/Bundle/uploads
-hashfile=$SVNROOT/smv/Build/hashfile/intel_${platform}_64/hashfile_${platform}_64
+flushfile=$SVNROOT/smv/Build/flulsh/intel_${platform}_64/flush_${platform}_64
 
 cd $uploads
 
@@ -120,16 +121,17 @@ SCP $PLATFORMHOST $SMDDIR        smokediff_${platform}_64        $PLATFORMDIR/bi
 SCP $PLATFORMHOST $SMZDIR        smokezip_${platform}_64         $PLATFORMDIR/bin smokezip
 SCP $PLATFORMHOST $WIND2FDSDIR   wind2fds_${platform}_64         $PLATFORMDIR/bin wind2fds
 SCP $PLATFORMHOST $HASHFILEDIR   hashfile_${platform}_64         $PLATFORMDIR/bin hashfile
+SCP $PLATFORMHOST $FLUSHFILEDIR  flush_${platform}_64            $PLATFORMDIR/bin flush
 
 CURDIR=`pwd`
 cd $PLATFORMDIR/bin
-$hashfile background > background.sha1
-$hashfile smokediff  > smokediff.sha1
-$hashfile smokeview  > smokeview.sha1
-$hashfile smokezip   > smokezip.sha1
-$hashfile dem2fds    > dem2fds.sha1
-$hashfile wind2fds   > wind2fds.sha1
-$hashfile hashfile   > hashfile.sha1
+hashfile background > background.sha1
+hashfile smokediff  > smokediff.sha1
+hashfile smokeview  > smokeview.sha1
+hashfile smokezip   > smokezip.sha1
+hashfile dem2fds    > dem2fds.sha1
+hashfile wind2fds   > wind2fds.sha1
+hashfile hashfile   > hashfile.sha1
 cat *.sha1 > $uploads/$PLATFORMDIR.sha1
 cd $CURDIR
 
@@ -142,7 +144,7 @@ tar cvf ../$PLATFORMDIR.tar .
 cd ..
 gzip $PLATFORMDIR.tar
 $UPDATER ${platform2} $revision $PLATFORMDIR.tar.gz $PLATFORMDIR.sh FDS/$FDSEDITION
-$hashfile $PLATFORMDIR.sh > $PLATFORMDIR.sh.sha1
+hashfile $PLATFORMDIR.sh > $PLATFORMDIR.sh.sha1
 cat $PLATFORMDIR.sh.sha1 >> $uploads/$PLATFORMDIR.sha1
 rm $PLATFORMDIR.sh.sha1
 
