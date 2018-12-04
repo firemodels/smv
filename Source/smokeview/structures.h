@@ -101,7 +101,8 @@ typedef struct _geomobjdata {
 /* --------------------------  geomdata ------------------------------------ */
 
 typedef struct _geomdata {
-  char *file;
+  char *file, *topo_file;
+  int cache_defined;
   int memory_id, loaded, display;
   float *float_vals;
   int *int_vals, nfloat_vals, nint_vals;
@@ -539,7 +540,7 @@ typedef struct _feddata {
 typedef struct _isodata {
   int seq_id, autoload;
   int isof_index;
-  char *reg_file, *size_file;
+  char *reg_file, *size_file, *topo_file;
   short *normaltable;
   int memory_id;
   int fds_skip;

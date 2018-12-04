@@ -8750,7 +8750,7 @@ typedef struct {
       char tbuffer[255], *tbufferptr;
       int blocknumber;
       size_t len;
-      char *buffer3;
+      char *buffer3,*ext;
       int fds_skip = 1;
       float fds_delta = -1.0;
 
@@ -8824,6 +8824,12 @@ typedef struct {
       NewMemory((void **)&isoi->reg_file,(unsigned int)(len+1));
       STRCPY(isoi->reg_file,bufferptr);
 
+      ext = strrchr(bufferptr, '.');
+      if(ext!=NULL)*ext = 0;
+      NewMemory((void **)&isoi->topo_file, (unsigned int)(strlen(bufferptr)+5+1));
+      STRCPY(isoi->topo_file, bufferptr);
+      strcat(isoi->topo_file, ".niso");
+
       NewMemory((void **)&isoi->size_file,(unsigned int)(len+3+1));
       STRCPY(isoi->size_file,bufferptr);
       STRCAT(isoi->size_file,".sz");
@@ -8863,8 +8869,9 @@ typedef struct {
           geomdata *geomi;
           float **colorlevels,*levels;
 
-          isoi->geominfo->file=isoi->file;
           geomi = isoi->geominfo;
+          geomi->file=isoi->file;
+          geomi->topo_file = isoi->topo_file;
           geomi->file=isoi->file;
           ReadGeomHeader(geomi,NULL,&ntimes_local);
           isoi->nlevels=geomi->nfloat_vals;
@@ -9953,13 +9960,12 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal,&iso_skip_wrapup);
+      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
       ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
       ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
-      ONEORZERO(iso_skip_wrapup);
 #ifdef pp_BETA
       ONEORZERO(show_iso_normal);
 #else
@@ -13524,7 +13530,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal, iso_skip_wrapup);
+  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");

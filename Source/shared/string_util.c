@@ -1425,8 +1425,8 @@ void UsageCommon(int option){
 
 /* ------------------ ParseCommonOptions ------------------------ */
 
-void ParseCommonOptions(int argc, char **argv){
-  int i, no_minus;
+int ParseCommonOptions(int argc, char **argv){
+  int i, no_minus,first_arg=0;
 
   no_minus = 0;
   for(i = 1; i<argc; i++){
@@ -1434,6 +1434,10 @@ void ParseCommonOptions(int argc, char **argv){
 
     argi = argv[i];
     if(argi==NULL||argi[0]!='-'){
+      if(first_arg==0){
+        first_arg = i;
+        return first_arg;
+      }
       no_minus = 1;
       continue;
     }
@@ -1472,6 +1476,7 @@ void ParseCommonOptions(int argc, char **argv){
     }
 #endif
   }
+  return first_arg;
 }
 
 /* ------------------ version ------------------------ */

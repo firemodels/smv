@@ -7,6 +7,9 @@
 #include "smv_endian.h"
 #include "update.h"
 #include "smokeviewvars.h"
+#ifdef pp_ISOTIME
+#include GLUT_H
+#endif
 
 vertdata *vert_list;
 edgedata *edge_list;
@@ -323,12 +326,16 @@ void DrawGeom(int flag, int timestate){
       int smooth_triangles;
 
       trianglei = tris[i];
-      if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
-      if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-      if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
-      if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
-      if(trianglei->geomtype == GEOM_GEOM&&show_faces_shaded == 0)continue;
-      if(trianglei->geomtype == GEOM_ISO&&show_iso_shaded == 0)continue;
+      if(trianglei->geomtype!=GEOM_ISO){
+        if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+        if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->geomtype == GEOM_GEOM&&show_faces_shaded == 0)continue;
+      }
+      else{
+        if(show_iso_shaded == 0)continue;
+      }
 
       ti = trianglei->textureinfo;
       if(show_texture_1dimage==1)continue;
@@ -458,11 +465,15 @@ void DrawGeom(int flag, int timestate){
         int j;
 
         trianglei = tris[i];
-        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
-        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
-        if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
-        if(trianglei->geomtype == GEOM_ISO &&show_iso_outline == 0)continue;
+        if(trianglei->geomtype!=GEOM_ISO){
+          if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+          if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        }
+        else{
+          if(show_iso_outline == 0)continue;
+        }
 
         if(show_texture_1dimage == 1){
           for(j = 0; j < 3; j++){
@@ -693,12 +704,16 @@ void DrawGeom(int flag, int timestate){
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
-        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
-        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior == 1 && show_faces_exterior == 0)continue;
-        if(trianglei->exterior == 0 && show_faces_interior == 0)continue;
-        if(trianglei->geomtype == GEOM_GEOM&&show_faces_outline == 0)continue;
-        if(trianglei->geomtype == GEOM_ISO&&show_iso_outline == 0)continue;
+        if(trianglei->geomtype!=GEOM_ISO){
+          if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+          if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->geomtype == GEOM_GEOM&&show_faces_outline == 0)continue;
+        }
+        else{
+          if(show_iso_outline == 0)continue;
+        }
 
         xyznorm=trianglei->tri_norm;
         glNormal3fv(xyznorm);
@@ -856,12 +871,16 @@ void DrawGeom(int flag, int timestate){
         int k;
 
         trianglei = geomlisti->triangles + j;
-        if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
-        if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-        if(trianglei->exterior==0)continue;
-        if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 0))continue;
-        if(trianglei->geomtype == GEOM_ISO && (show_iso_normal == 0 || smooth_iso_normal == 0))continue;
+        if(trianglei->geomtype!=GEOM_ISO){
+          if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+          if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+          if(trianglei->exterior==0)continue;
+          if(trianglei->geomtype==GEOM_GEOM&&(show_geom_normal==0||smooth_geom_normal==0))continue;
+        }
+        else{
+          if(show_iso_normal==0||smooth_iso_normal==0)continue;
+        }
 
         for(k = 0; k < 3; k++){
           float *pk;
@@ -992,8 +1011,6 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
   int i;
   float zmin, *zORIG;
 
-      // compute average normals - method 1
-
   if(geomlisti->nverts > 0){
     zORIG = geomlisti->zORIG;
     zmin = zORIG[0];
@@ -1001,29 +1018,6 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
       zmin = MIN(zmin, zORIG[i]);
     }
   }
-  for(i = 0; i < geomlisti->nverts; i++){
-    vertdata *verti;
-    int k;
-    float *norm, *xyz;
-
-    verti = geomlisti->verts + i;
-    norm = verti->vert_norm;
-    VEC3EQCONS(norm,0.0);
-    for(k = 0; k < verti->ntriangles; k++){
-      float *normk;
-      tridata *trianglei;
-
-      trianglei = verti->triangles[k];
-      normk = trianglei->tri_norm;
-      VEC3ADD(norm,norm,normk);
-    }
-    ReduceToUnit(norm);
-
-    xyz = verti->xyz;
-    xyz[2] = zmin + geom_vert_exag*(zORIG[i] - zmin);
-  }
-
-      // compute average normals - method 2
 
   for(i = 0; i < geomlisti->ntriangles; i++){
     tridata *trianglei;
@@ -1040,32 +1034,58 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
       vertj = trianglei->verts[j];
       norm = trianglei->vert_norm + 3 * j;
       if(vertj->ntriangles>0){
-        VEC3EQCONS(norm,0.0);
+        norm[0] = 0.0;
+        norm[1] = 0.0;
+        norm[2] = 0.0;
       }
       else{
         norm[0] = 0.0;
         norm[1] = 0.0;
         norm[2] = 1.0;
       }
-      for(k = 0; k<vertj->ntriangles; k++){
-        tridata *trianglek;
-        float *tri_normk, cosang;
-        float lengthi, lengthk;
+      if(geomtype==GEOM_ISO){
+        for(k = 0; k<vertj->ntriangles; k++){
+          tridata *trianglek;
+          float *tri_normk;
 
-        trianglek = vertj->triangles[k];
-        if(trianglek->exterior == 0)continue;
-        tri_normk = trianglek->tri_norm;
-        lengthk = NORM3(tri_normk);
-        lengthi = NORM3(tri_normi);
-        if(lengthk > 0.0&&lengthi > 0.0){
-          cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
-          if(use_max_angle == 0 || geomtype == GEOM_ISO || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
-            VEC3ADD(norm, norm, tri_normk);
+          trianglek = vertj->triangles[k];
+          tri_normk = trianglek->tri_norm;
+          norm[0]+=tri_normk[0];
+          norm[1]+=tri_normk[1];
+          norm[2]+=tri_normk[2];
+        }
+      }
+      else{
+        for(k = 0; k<vertj->ntriangles; k++){
+          tridata *trianglek;
+          float *tri_normk, cosang;
+          float lengthi, lengthk;
+
+          trianglek = vertj->triangles[k];
+          if(trianglek->exterior == 0)continue;
+          tri_normk = trianglek->tri_norm;
+          lengthk = NORM3(tri_normk);
+          lengthi = NORM3(tri_normi);
+          if(lengthk > 0.0&&lengthi > 0.0){
+            cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
+            if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
+              norm[0]+=tri_normk[0];
+              norm[1]+=tri_normk[1];
+              norm[2]+=tri_normk[2];
+            }
           }
         }
       }
       ReduceToUnit(norm);
     }
+  }
+  for(i = 0; i < geomlisti->nverts; i++){
+    vertdata *verti;
+    float *xyz;
+
+    verti = geomlisti->verts + i;
+    xyz = verti->xyz;
+    xyz[2] = zmin + geom_vert_exag*(zORIG[i] - zmin);
   }
 }
 
@@ -1135,12 +1155,14 @@ void UpdateTriangles(int flag,int update){
       }
       for(i=0;i<geomlisti->ntriangles;i++){
         tridata *trianglei;
+        vertdata **verts;
 
         trianglei = geomlisti->triangles+i;
+        verts = trianglei->verts;
 
-        xyzptr[0] = trianglei->verts[0]->xyz;
-        xyzptr[1] = trianglei->verts[1]->xyz;
-        xyzptr[2] = trianglei->verts[2]->xyz;
+        xyzptr[0] = verts[0]->xyz;
+        xyzptr[1] = verts[1]->xyz;
+        xyzptr[2] = verts[2]->xyz;
         xyznorm = trianglei->tri_norm;
         CalcTriNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm);
       }
@@ -1197,8 +1219,10 @@ void UpdateTriangles(int flag,int update){
         trianglei = geomlisti->triangles+i;
         verti = trianglei->verts[0];
         verti->triangles[verti->itriangle++]=trianglei;
+
         verti = trianglei->verts[1];
         verti->triangles[verti->itriangle++]=trianglei;
+
         verti = trianglei->verts[2];
         verti->triangles[verti->itriangle++]=trianglei;
       }
@@ -1285,7 +1309,9 @@ void UpdateTriangles(int flag,int update){
           verti = surface_verts[iii];
           xyzi = verti->xyz;
           normi = verti->vert_norm;
-          VEC3EQ(avgnorm,normi);
+          avgnorm[0] = normi[0];
+          avgnorm[1] = normi[1];
+          avgnorm[2] = normi[2];
           match_verts[iii] = iii;
           for(jjj = iii+1; jjj<nsurface_verts; jjj++){
             vertdata *vertj;
@@ -1298,7 +1324,9 @@ void UpdateTriangles(int flag,int update){
 #define POINTEPS 0.001
             if(ABS(xyzi[0]-xyzj[0])<POINTEPS&&ABS(xyzi[1]-xyzj[1])<POINTEPS&&ABS(xyzi[2]-xyzj[2])<POINTEPS){
               match_verts[jjj] = iii;
-              VEC3ADD(avgnorm,avgnorm,normj);
+              avgnorm[0] += normj[0];
+              avgnorm[1] += normj[1];
+              avgnorm[2] += normj[2];
             }
           }
           ReduceToUnit(avgnorm);
@@ -1309,7 +1337,9 @@ void UpdateTriangles(int flag,int update){
 
               vertj = surface_verts[jjj];
               normj = vertj->vert_norm;
-              VEC3EQ(normj,avgnorm);
+              normj[0] = avgnorm[0];
+              normj[1] = avgnorm[1];
+              normj[2] = avgnorm[2];
             }
           }
         }
@@ -1319,6 +1349,88 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(match_verts);
   }
 
+  // update cache
+
+  if(0==1){   // don't execute this code yet
+    int nverts_max=0, ntriangles_max=0;
+    float *vertnormals=NULL, *trinormals = NULL;
+
+    nverts_max = 0;
+    ntriangles_max = 0;
+    for(j = 0; j<ngeominfoptrs; j++){
+      geomdata *geomi;
+      int ii;
+      FILE *stream = NULL;
+
+      geomi = geominfoptrs[j];
+      if(geomi->geomtype!=GEOM_ISO||geomi->cache_defined==1)continue;
+
+      stream = fopen(geomi->topo_file, "wb");
+      if(stream==NULL)continue;
+      for(ii = 0; ii<geomi->ntimes; ii++){
+        geomlistdata *geomlisti;
+        int ntriangles, nverts;
+        int jj;
+
+        geomlisti = geomi->geomlistinfo+ii;
+        fwrite(geomi->times+ii, sizeof(float), 1, stream);
+
+        ntriangles = geomlisti->ntriangles;
+        if(ntriangles>ntriangles_max){
+          FREEMEMORY(trinormals);
+          ntriangles_max = ntriangles+100;
+          NewMemory((void **)&trinormals, 3*ntriangles_max*sizeof(float));
+        }
+
+        fwrite(&ntriangles, sizeof(int), 1, stream);
+        if(ntriangles>0){
+          float *trinormals_copy;
+
+          trinormals_copy = trinormals;
+          for(jj = 0; jj<ntriangles; jj++){
+            tridata *trianglei;
+            float *tri_norm;
+
+            trianglei = geomlisti->triangles+jj;
+            tri_norm = trianglei->tri_norm;
+            *trinormals_copy++ = *tri_norm++;
+            *trinormals_copy++ = *tri_norm++;
+            *trinormals_copy++ = *tri_norm++;
+          }
+          fwrite(trinormals, sizeof(float), 3*ntriangles, stream);
+        }
+
+        nverts = geomlisti->nverts;
+        if(nverts>nverts_max){
+          FREEMEMORY(vertnormals);
+          nverts_max = nverts+100;
+          NewMemory((void **)&vertnormals, 3*nverts_max*sizeof(float));
+        }
+        fwrite(&nverts, sizeof(int), 1, stream);
+        if(nverts>0){
+          float *vertnormals_copy;
+
+          vertnormals_copy = vertnormals;
+          for(jj = 0; jj<nverts; jj++){
+            vertdata *verti;
+            float *vert_norm;
+
+            verti = geomlisti->verts+jj;
+            vert_norm = verti->vert_norm;
+            *vertnormals_copy++ = *vert_norm++;
+            *vertnormals_copy++ = *vert_norm++;
+            *vertnormals_copy++ = *vert_norm++;
+          }
+          fwrite(vertnormals, sizeof(float), 3*nverts, stream);
+        }
+      }
+      geomi->cache_defined = 1;
+      fclose(stream);
+      stream = NULL;
+    }
+    FREEMEMORY(vertnormals);
+    FREEMEMORY(trinormals);
+  }
 }
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
@@ -1983,17 +2095,17 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 void ReorderFace(int *faces){
   int face_temp[5];
 
+  if(faces[0]<=MIN(faces[1], faces[2]))return;
   face_temp[0]=faces[0];
   face_temp[1]=faces[1];
   face_temp[2]=faces[2];
   face_temp[3]=faces[0];
   face_temp[4]=faces[1];
-  if(faces[0]<=MIN(faces[1],faces[2]))return;
   if(faces[1]<=MIN(faces[0],faces[2])){
-    VEC3EQ(faces,face_temp);
+    VEC3EQ(faces,face_temp+1);
     return;
   }
-  VEC3EQ(faces,face_temp);
+  VEC3EQ(faces,face_temp+2);
 }
 
 /* ------------------ CompareVerts2 ------------------------ */
@@ -2457,6 +2569,9 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   int returncode;
   int one=0,endianswitch=0;
   FILE_SIZE return_filesize=0;
+#ifdef pp_ISOTIME
+  float time1, time2;
+#endif
 
   if(geomi->file==NULL)return 0;
   stream = fopen(geomi->file,"rb");
@@ -2467,14 +2582,25 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   fclose(stream);
   return_filesize = 2*(4+4+4);
 
-
+#ifdef pp_ISOTIME
+  START_TIMER(time1);
+#endif
   if(version<=1){
     return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index,errorcode);
   }
   else{
     return_filesize += ReadGeom2(geomi,load_flag,type,errorcode);
   }
-  if(load_flag==LOAD)ClassifyGeom(geomi,geom_frame_index);
+#ifdef pp_ISOTIME
+  STOP_TIMER(time1);
+  START_TIMER(time2);
+#endif
+  if(load_flag==LOAD&&geomi->geomtype!=GEOM_ISO)ClassifyGeom(geomi,geom_frame_index);
+#ifdef pp_ISOTIME
+  STOP_TIMER(time2);
+  printf("\niso load time=%f\n",time1);
+  printf("\niso classify time=%f\n",time2);
+#endif
   return return_filesize;
 }
 
@@ -3061,6 +3187,8 @@ void ShowHideSortGeometry(float *mm){
 
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->file=NULL;
+  geomi->topo_file = NULL;
+  geomi->cache_defined = 0;
   geomi->display=0;
   geomi->loaded=0;
   geomi->geomlistinfo_0=NULL;

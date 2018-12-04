@@ -51,7 +51,6 @@ SVEXTERN float SVDECL(customview_azimuth, 0.0), SVDECL(customview_elevation, 0.0
 SVEXTERN int SVDECL(use_customview, 0);
 SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
-SVEXTERN int SVDECL(iso_skip_wrapup, 0);
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
