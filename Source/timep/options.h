@@ -7,7 +7,7 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define cputime title
+//*** define title
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

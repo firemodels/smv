@@ -33,7 +33,7 @@ void Usage(char *prog, int option){
   GetGitInfo(githash,gitdate);    // get githash
 
   fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "get cputime\n");
+  fprintf(stdout, "get timep\n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
     UsageCommon(HELP_ALL);
@@ -52,11 +52,11 @@ int main(int argc, char **argv){
 
   nargs=ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("cputime",show_help);
+    Usage("timep",show_help);
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("cputime", argv[0]);
+    PRINTVERSION("timep", argv[0]);
     return 1;
   }
   if(nargs<argc){
