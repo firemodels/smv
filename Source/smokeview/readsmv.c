@@ -9594,11 +9594,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i", &freeze_volsmoke,&autofreeze_volsmoke);
       continue;
     }
-    if(Match(buffer, "SHOWMESHMENUS")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &show_meshmenus);
-      continue;
-    }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %f %F", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
@@ -13623,8 +13618,6 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "LABELSTARTUPVIEW\n");
   fprintf(fileout, " %s\n", startup_view_label);
-  fprintf(fileout, "SHOWMESHMENUS\n");
-  fprintf(fileout, " %i\n", show_meshmenus);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);
