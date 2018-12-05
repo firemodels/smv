@@ -2666,14 +2666,16 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       if(smooth_iso_normal == 0){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
+#ifdef pp_GEOMDATANORM
           float *xyznorm;
+#endif
           tridata *trianglei;
           int color_index;
 
           trianglei = geomlisti->triangles + j;
 
-          xyznorm = trianglei->tri_norm;
 #ifdef pp_GEOMDATANORM
+          xyznorm = trianglei->tri_norm;
           glNormal3fv(xyznorm);
 #endif
 
