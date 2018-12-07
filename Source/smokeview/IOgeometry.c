@@ -20,12 +20,26 @@ tetdata *volume_list;
 
 void CalcTriNormal(float *v1, float *v2, float *v3, float *norm){
   float u[3], v[3];
+  float maxu=0.0, maxv=0.0;
   int i;
 
   for(i=0;i<3;i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
+    maxu = MAX(ABS(u[i]), maxu);
+    maxv = MAX(ABS(v[i]), maxv);
   }
+  if(maxu>0.0){
+    for(i = 0;i<3;i++){
+      u[i] /= maxu;
+    }
+  }
+  if(maxv>0.0){
+    for(i = 0;i<3;i++){
+      v[i] /= maxv;
+    }
+  }
+
   /*
      i   j  k
      ux uy uz
@@ -2718,6 +2732,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
 #ifdef pp_GEOMDATANORM
           float *xyznorm[3];
+          //float xyznorm2[3];
 #endif
           tridata *trianglei;
           int color_index;
@@ -2748,9 +2763,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[2] = trianglei->verts[2]->xyz;
 
 #ifdef pp_GEOMDATANORM
+          //CalcTriNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm2);
           xyznorm[0] = trianglei->verts[0]->vert_norm;
           xyznorm[1] = trianglei->verts[1]->vert_norm;
           xyznorm[2] = trianglei->verts[2]->vert_norm;
+         // xyznorm[0] = xyznorm2;
+         // xyznorm[1] = xyznorm2;
+         // xyznorm[2] = xyznorm2;
 #endif
 
 #ifdef pp_GEOMDATANORM
