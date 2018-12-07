@@ -34,6 +34,7 @@
 #define pp_TISO         // color isosurfaces with a 2nd quantity
 #define pp_SLICE_USE_ID     // use slcf index
 //#define pp_ISOTIME      // output iso load times
+//#define pp_GEOMDATANORM  // apply norm when drawing geometry data (shouldn't need to do this)
 
 //#define pp_SPECTRAL
 

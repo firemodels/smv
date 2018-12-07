@@ -2649,6 +2649,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
+#ifdef pp_GEOMDATANORM
       if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
         ENABLE_LIGHTING;
       }
@@ -2656,6 +2657,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
       glEnable(GL_COLOR_MATERIAL);
+#endif
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -2671,7 +2673,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           trianglei = geomlisti->triangles + j;
 
           xyznorm = trianglei->tri_norm;
+#ifdef pp_GEOMDATANORM
           glNormal3fv(xyznorm);
+#endif
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
@@ -2710,7 +2714,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       else{
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
+#ifdef pp_GEOMDATANORM
           float *xyznorm[3];
+#endif
           tridata *trianglei;
           int color_index;
 
@@ -2739,36 +2745,54 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[1] = trianglei->verts[1]->xyz;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
+#ifdef pp_GEOMDATANORM
           xyznorm[0] = trianglei->verts[0]->vert_norm;
           xyznorm[1] = trianglei->verts[1]->vert_norm;
           xyznorm[2] = trianglei->verts[2]->vert_norm;
+#endif
 
+#ifdef pp_GEOMDATANORM
           glNormal3fv(xyznorm[0]);
+#endif
           glVertex3fv(xyzptr[0]);
 
+#ifdef pp_GEOMDATANORM
           glNormal3fv(xyznorm[1]);
+#endif
           glVertex3fv(xyzptr[1]);
 
+#ifdef pp_GEOMDATANORM
           glNormal3fv(xyznorm[2]);
+#endif
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
+#ifdef pp_GEOMDATANORM
             glNormal3fv(xyznorm[0]);
+#endif
             glVertex3fv(xyzptr[0]);
 
+#ifdef pp_GEOMDATANORM
             glNormal3fv(xyznorm[1]);
+#endif
             glVertex3fv(xyzptr[2]);
 
+#ifdef pp_GEOMDATANORM
             glNormal3fv(xyznorm[2]);
+#endif
             glVertex3fv(xyzptr[1]);
           }
         }
       }
       glEnd();
       glPopMatrix();
+#ifdef pp_GEOMDATANORM
       glDisable(GL_COLOR_MATERIAL);
+#endif
       if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+#ifdef pp_GEOMDATANORM
         DISABLE_LIGHTING;
+#endif
       }
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
