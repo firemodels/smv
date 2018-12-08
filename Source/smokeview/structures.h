@@ -79,7 +79,7 @@ typedef struct _tetdata {
 /* --------------------------  geomlistdata ------------------------------------ */
 
 typedef struct _geomlistdata {
-  int nverts,nedges,ntriangles,nvolumes;
+  int nverts,nedges,ntriangles,nvolumes,norms_defined;
   float *zORIG;
   vertdata *verts;
   float *vertvals;

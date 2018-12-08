@@ -1704,6 +1704,7 @@ void InitGeomlist(geomlistdata *geomlisti){
   geomlisti->nverts = 0;
   geomlisti->ntriangles = 0;
   geomlisti->nvolumes = 0;
+  geomlisti->norms_defined = 0;
 }
 
 /* ------------------ ReadGeom0 ------------------------ */
@@ -2618,6 +2619,56 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   return return_filesize;
 }
 
+#ifdef pp_GEOMDATANORM
+/* ------------------ UpdatePatchGeomTriangles ------------------------ */
+
+void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  int ntris;
+  int j;
+
+  if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
+  geomi = patchi->geominfo;
+  if(geomi!=NULL&&geomi->display==1&&geomi->loaded==1){
+    if(geom_type==GEOM_STATIC){
+      geomlisti = geomi->geomlistinfo-1;
+    }
+    else{
+      geomlisti = geomi->geomlistinfo+geomi->itime;
+    }
+
+    ntris = geomlisti->ntriangles;
+    if(ntris>0){
+      for(j = 0; j<ntris; j++){
+        int m;
+        tridata *trianglei;
+        vertdata **verts;
+        float *xyzptr[3], *xyznorm;
+
+        trianglei = geomlisti->triangles+j;
+        verts = trianglei->verts;
+        xyznorm = trianglei->vert_norm;
+        for(m=0;m<3;m++){
+          xyzptr[m] = verts[m]->xyz;
+        }
+        GetTriangleNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm);
+        for(m=0;m<3;m++){
+          int k;
+          vertdata *vert;
+
+          vert = verts[m];
+          for(k=0;k<3;k++){
+            vert->vert_norm[k] = xyznorm[k];
+          }
+        }
+      }
+    }
+    geomlisti->norms_defined = 1;
+  }
+}
+#endif
+
 /* ------------------ DrawGeomData ------------------------ */
 
 void DrawGeomData(int flag, patchdata *patchi, int geom_type){
@@ -2655,6 +2706,11 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       else{
         geomlisti = geomi->geomlistinfo + geomi->itime;
       }
+#ifdef pp_GEOMDATANORM
+     if(geomlisti->norms_defined==0){
+        UpdatePatchGeomTriangles(patchi, geom_type);
+     }
+#endif
 
       ntris = geomlisti->ntriangles;
       if(ntris == 0)continue;
@@ -2680,10 +2736,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       if(smooth_iso_normal == 0){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
-#ifdef pp_GEOMDATANORM
-          float *xyznorm;
-          float *xyznorm2;
-#endif
           tridata *trianglei;
           int color_index;
 
@@ -2713,11 +2765,12 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[2] = trianglei->verts[2]->xyz;
 
 #ifdef pp_GEOMDATANORM
-          GetTriangleNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm2);
-          xyznorm = trianglei->tri_norm;
-          xyznorm2 = xyznorm;
-          glNormal3fv(xyznorm);
+#define GLNORMAL3F(norm) glNormal3fv(norm)
+#else
+#define GLNORMAL3F(norm)
 #endif
+
+          GLNORMAL3F(trianglei->tri_norm);
           glVertex3fv(xyzptr[0]);
           glVertex3fv(xyzptr[1]);
           glVertex3fv(xyzptr[2]);
@@ -2734,7 +2787,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
 #ifdef pp_GEOMDATANORM
           float *xyznorm[3];
-          //float xyznorm2[3];
 #endif
           tridata *trianglei;
           int color_index;
@@ -2765,44 +2817,23 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[2] = trianglei->verts[2]->xyz;
 
 #ifdef pp_GEOMDATANORM
-          //CalcTriNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm2);
           xyznorm[0] = trianglei->verts[0]->vert_norm;
           xyznorm[1] = trianglei->verts[1]->vert_norm;
           xyznorm[2] = trianglei->verts[2]->vert_norm;
-         // xyznorm[0] = xyznorm2;
-         // xyznorm[1] = xyznorm2;
-         // xyznorm[2] = xyznorm2;
 #endif
 
-#ifdef pp_GEOMDATANORM
-          glNormal3fv(xyznorm[0]);
-#endif
+          GLNORMAL3F(xyznorm[0]);
           glVertex3fv(xyzptr[0]);
 
-#ifdef pp_GEOMDATANORM
-          glNormal3fv(xyznorm[1]);
-#endif
+          GLNORMAL3F(xyznorm[1]);
           glVertex3fv(xyzptr[1]);
 
-#ifdef pp_GEOMDATANORM
-          glNormal3fv(xyznorm[2]);
-#endif
+          GLNORMAL3F(xyznorm[2]);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-#ifdef pp_GEOMDATANORM
-            glNormal3fv(xyznorm[0]);
-#endif
             glVertex3fv(xyzptr[0]);
-
-#ifdef pp_GEOMDATANORM
-            glNormal3fv(xyznorm[1]);
-#endif
             glVertex3fv(xyzptr[2]);
-
-#ifdef pp_GEOMDATANORM
-            glNormal3fv(xyznorm[2]);
-#endif
             glVertex3fv(xyzptr[1]);
           }
         }
