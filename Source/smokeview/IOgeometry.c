@@ -16,9 +16,9 @@ edgedata *edge_list;
 tridata *triangle_list;
 tetdata *volume_list;
 
-/* ------------------ CalcTriNormal ------------------------ */
+/* ------------------ GetTriangleNormal ------------------------ */
 
-void CalcTriNormal(float *v1, float *v2, float *v3, float *norm){
+void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm){
   float u[3], v[3];
   float maxu=0.0, maxv=0.0;
   int i;
@@ -1178,7 +1178,7 @@ void UpdateTriangles(int flag,int update){
         xyzptr[1] = verts[1]->xyz;
         xyzptr[2] = verts[2]->xyz;
         xyznorm = trianglei->tri_norm;
-        CalcTriNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm);
+        GetTriangleNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm);
       }
       for(i=0;i<geomlisti->nverts;i++){
         vertdata *verti;
@@ -2682,16 +2682,12 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
 #ifdef pp_GEOMDATANORM
           float *xyznorm;
+          float *xyznorm2;
 #endif
           tridata *trianglei;
           int color_index;
 
           trianglei = geomlisti->triangles + j;
-
-#ifdef pp_GEOMDATANORM
-          xyznorm = trianglei->tri_norm;
-          glNormal3fv(xyznorm);
-#endif
 
           color_index = ivals[j];
           color = rgb_patch + 4 * color_index;
@@ -2716,6 +2712,12 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[1] = trianglei->verts[1]->xyz;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
+#ifdef pp_GEOMDATANORM
+          GetTriangleNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm2);
+          xyznorm = trianglei->tri_norm;
+          xyznorm2 = xyznorm;
+          glNormal3fv(xyznorm);
+#endif
           glVertex3fv(xyzptr[0]);
           glVertex3fv(xyzptr[1]);
           glVertex3fv(xyzptr[2]);

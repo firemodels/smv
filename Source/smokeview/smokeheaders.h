@@ -858,7 +858,6 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 
 EXTERNCPP void UpdateShowHideButtons(void);
 EXTERNCPP void UpdateFileLoad(void);
-EXTERNCPP void CalcTriNormal(float *v1, float *v2, float *v3, float *norm);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 
 #ifndef CPP
