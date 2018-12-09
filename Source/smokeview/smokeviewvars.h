@@ -20,9 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-#ifdef pp_GEOMDATANORM
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
-#endif
 #ifdef pp_TISO
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
