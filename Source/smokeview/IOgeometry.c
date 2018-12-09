@@ -2680,7 +2680,6 @@ void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
   tridata **connected_triangles;
   int ntris, nverts, nconnected_triangles=0;
   int j;
-  int ndups, *vert_map=NULL;
 
   if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
   geomi = patchi->geominfo;
