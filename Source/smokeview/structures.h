@@ -56,6 +56,9 @@ typedef struct _edgedata {
 typedef struct _tridata {
   unsigned char skinny;
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9];
+#ifdef pp_GEOMDATANORM
+  float area;
+#endif
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
 #ifdef pp_TISO
