@@ -84,6 +84,9 @@ typedef struct _geomlistdata {
   vertdata *verts;
   float *vertvals;
   tridata *triangles, **triangleptrs;
+#ifdef pp_GEOMDATANORM
+  tridata **connected_triangles;
+#endif
   edgedata *edges;
   tetdata *volumes;
 } geomlistdata;

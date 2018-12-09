@@ -1208,7 +1208,9 @@ void UpdateTriangles(int flag,int update){
       }
 
       // allocate triangle pointers
-
+#ifdef pp_GEOMDATANORM
+      FREEMEMORY(geomlisti->connected_triangles);
+#endif
       FREEMEMORY(geomlisti->triangleptrs);
       if(ntriangles>0){
         NewMemoryMemID((void **)&triangles, ntriangles*sizeof(tridata *), geomi->memory_id);
@@ -1700,6 +1702,9 @@ void InitGeomlist(geomlistdata *geomlisti){
 #endif
   geomlisti->triangles = NULL;
   geomlisti->triangleptrs = NULL;
+#ifdef pp_GEOMDATANORM
+  geomlisti->connected_triangles = NULL;
+#endif
   geomlisti->volumes = NULL;
   geomlisti->nverts = 0;
   geomlisti->ntriangles = 0;
@@ -2620,52 +2625,162 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
 }
 
 #ifdef pp_GEOMDATANORM
+
+/* ------------------ RemoveDuplicateVertices ------------------------ */
+
+void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
+  int j, *vert_map;
+
+  if(nverts>0){
+    NewMemory((void **)&vert_map, nverts*sizeof(int));
+    for(j = 0; j<nverts; j++){
+      vert_map[j] = j;
+    }
+  }
+  for(j = 0; j<nverts; j++){
+    int k;
+    vertdata *vertj;
+    float *xyzj;
+
+    vertj = verts+j;
+    xyzj = vertj->xyz;
+    for(k = 0; k<j; k++){
+      vertdata *vertk;
+      float *xyzk;
+
+      vertk = verts+k;
+      xyzk = vertk->xyz;
+      if(MAXDIFF3(xyzj, xyzk)<0.0001){
+        vert_map[j] = k;
+        break;
+      }
+    }
+  }
+  for(j = 0; j<ntriangles;j++){
+    tridata *trianglei;
+    int *vert_index;
+
+    trianglei = triangles+j;
+    vert_index = trianglei->vert_index;
+    vert_index[0] = vert_map[vert_index[0]];
+    vert_index[1] = vert_map[vert_index[1]];
+    vert_index[2] = vert_map[vert_index[2]];
+    trianglei->verts[0] = verts+vert_index[0];
+    trianglei->verts[1] = verts+vert_index[1];
+    trianglei->verts[2] = verts+vert_index[2];
+  }
+  FREEMEMORY(vert_map);
+}
+
 /* ------------------ UpdatePatchGeomTriangles ------------------------ */
 
 void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
   geomdata *geomi;
   geomlistdata *geomlisti;
-  int ntris;
+  tridata **connected_triangles;
+  int ntris, nverts, nconnected_triangles=0;
   int j;
+  int ndups, *vert_map=NULL;
 
   if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
   geomi = patchi->geominfo;
-  if(geomi!=NULL&&geomi->display==1&&geomi->loaded==1){
-    if(geom_type==GEOM_STATIC){
-      geomlisti = geomi->geomlistinfo-1;
+  if(geomi==NULL||geomi->display==0||geomi->loaded==0)return;
+
+  if(geom_type==GEOM_STATIC){
+    geomlisti = geomi->geomlistinfo-1;
+  }
+  else{
+    geomlisti = geomi->geomlistinfo+geomi->itime;
+  }
+
+    // initialize
+
+  ntris = geomlisti->ntriangles;
+  nverts = geomlisti->nverts;
+
+  RemoveDuplicateVertices(geomlisti->verts, nverts, geomlisti->triangles, ntris);
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts+j;
+    vert->ntriangles=0;
+    vert->itriangle = 0;
+  }
+
+    // compute normal vector for each triangle
+
+  for(j = 0; j<ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles+j;
+    verts = trianglei->verts;
+    verts[0]->ntriangles++;
+    verts[1]->ntriangles++;
+    verts[2]->ntriangles++;
+    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm);
+  }
+
+    // allocate memory for total number of connected triangles
+
+  nconnected_triangles = 3*ntris;
+  if(nconnected_triangles>0){
+    NewMemory((void **)&connected_triangles,nconnected_triangles*sizeof(tridata *));
+    geomlisti->connected_triangles = connected_triangles;
+  }
+
+    // associate assign triangle to each vertex
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts+j;
+    vert->triangles = connected_triangles;
+    connected_triangles += vert->ntriangles;
+  }
+  for(j = 0; j<ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles+j;
+    verts = trianglei->verts;
+    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
+    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
+    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
+  }
+
+    // average normals for each vertex
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+    float *vert_norm;
+
+    vert = geomlisti->verts+j;
+    vert_norm = vert->vert_norm;
+    if(vert->ntriangles>0){
+      int k;
+
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 0.0;
+      for(k = 0; k<vert->ntriangles; k++){
+        tridata *tri;
+
+        tri = vert->triangles[k];
+        vert_norm[0] += tri->vert_norm[0];
+        vert_norm[1] += tri->vert_norm[1];
+        vert_norm[2] += tri->vert_norm[2];
+      }
+      ReduceToUnit(vert_norm);
     }
     else{
-      geomlisti = geomi->geomlistinfo+geomi->itime;
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 1.0;
     }
-
-    ntris = geomlisti->ntriangles;
-    if(ntris>0){
-      for(j = 0; j<ntris; j++){
-        int m;
-        tridata *trianglei;
-        vertdata **verts;
-        float *xyzptr[3], *xyznorm;
-
-        trianglei = geomlisti->triangles+j;
-        verts = trianglei->verts;
-        xyznorm = trianglei->vert_norm;
-        for(m=0;m<3;m++){
-          xyzptr[m] = verts[m]->xyz;
-        }
-        GetTriangleNormal(xyzptr[0], xyzptr[1], xyzptr[2], xyznorm);
-        for(m=0;m<3;m++){
-          int k;
-          vertdata *vert;
-
-          vert = verts[m];
-          for(k=0;k<3;k++){
-            vert->vert_norm[k] = xyznorm[k];
-          }
-        }
-      }
-    }
-    geomlisti->norms_defined = 1;
   }
+  geomlisti->norms_defined = 1;
 }
 #endif
 
