@@ -2890,9 +2890,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int color_index;
           float *color;
           float *color0, *color1, *color2;
-#ifdef pp_GEOMDATANORM
           int color_indices[3];
-#endif
           float t_level;
 
 
