@@ -724,7 +724,6 @@ void DrawGeom(int flag, int timestate){
       }
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
-        float *xyzptr[3];
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
@@ -738,10 +737,6 @@ void DrawGeom(int flag, int timestate){
         else{
           if(show_iso_outline == 0)continue;
         }
-
-        xyzptr[0] = trianglei->verts[0]->xyz;
-        xyzptr[1] = trianglei->verts[1]->xyz;
-        xyzptr[2] = trianglei->verts[2]->xyz;
 
         if(show_iso_shaded==1){
           color = black;
