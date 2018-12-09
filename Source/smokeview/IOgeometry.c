@@ -1184,8 +1184,7 @@ void UpdateTriangles(int flag,int update){
         xyzptr[1] = verts[1]->xyz;
         xyzptr[2] = verts[2]->xyz;
         xyznorm = trianglei->tri_norm;
-        GetTriangleNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm,&trianglei->area
-        );
+        GetTriangleNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm,&trianglei->area);
       }
       for(i=0;i<geomlisti->nverts;i++){
         vertdata *verti;
@@ -2872,6 +2871,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
         ENABLE_LIGHTING;
       }
+      else{
+        DISABLE_LIGHTING;
+      }
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -2882,7 +2884,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glBegin(GL_TRIANGLES);
       if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
-        ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
+       ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
         ){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
@@ -2932,9 +2934,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyzptr[1] = trianglei->verts[1]->xyz;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
-#define GLNORMAL3F(norm) glNormal3fv(norm)
-
-          GLNORMAL3F(trianglei->tri_norm);
+          if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
           glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
 
@@ -3008,15 +3008,15 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyznorm[1] = trianglei->verts[1]->vert_norm;
           xyznorm[2] = trianglei->verts[2]->vert_norm;
 
-          GLNORMAL3F(xyznorm[0]);
+          if(lighting_on==1)glNormal3fv(xyznorm[0]);
           glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
 
-          GLNORMAL3F(xyznorm[1]);
+          if(lighting_on==1)glNormal3fv(xyznorm[1]);
           glColor4f(color1[0], color1[1], color1[2], t_level);
           glVertex3fv(xyzptr[1]);
 
-          GLNORMAL3F(xyznorm[2]);
+          if(lighting_on==1)glNormal3fv(xyznorm[2]);
           glColor4f(color2[0], color2[1], color2[2], t_level);
           glVertex3fv(xyzptr[2]);
 
