@@ -2967,6 +2967,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *color0, *color1, *color2;
           float  t_level;
 
+          trianglei = geomlisti->triangles+j;
+
           if(patchi->structured == NO&&patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
@@ -2983,8 +2985,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           else{
             t_level = 1.0;
           }
-
-          trianglei = geomlisti->triangles + j;
 
           if(geomdata_smoothcolors==1){
             AverageGeomColors(geomlisti, j, ivals, color_indices);
