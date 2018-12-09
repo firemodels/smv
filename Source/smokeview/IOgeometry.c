@@ -2629,7 +2629,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
 /* ------------------ RemoveDuplicateVertices ------------------------ */
 
 void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
-  int j, *vert_map;
+  int j, *vert_map=NULL;
 
   if(nverts>0){
     NewMemory((void **)&vert_map, nverts*sizeof(int));
@@ -2669,7 +2669,7 @@ void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, in
     trianglei->verts[1] = verts+vert_index[1];
     trianglei->verts[2] = verts+vert_index[2];
   }
-  FREEMEMORY(vert_map);
+  if(nverts>0)FREEMEMORY(vert_map);
 }
 
 /* ------------------ UpdatePatchGeomTriangles ------------------------ */
@@ -2781,6 +2781,35 @@ void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
   }
   geomlisti->norms_defined = 1;
 }
+
+/* ------------------ AverageGeomColors ------------------------ */
+
+void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *ivals, int *color_indices){
+  int i;
+  tridata *trianglei;
+
+  trianglei = geomlisti->triangles+itriangle;
+  for(i = 0; i<3; i++){
+    vertdata *verti;
+
+    verti = trianglei->verts[i];
+    if(verti->ntriangles>0){
+      int j, color_index;
+
+      color_index = 0;
+      for(j = 0; j<verti->ntriangles; j++){
+        int trij_index;
+
+        trij_index = verti->triangles[j]-geomlisti->triangles;
+        color_index += ivals[trij_index];
+      }
+      color_indices[i] = color_index/verti->ntriangles;
+    }
+    else{
+      color_indices[i] = ivals[itriangle];
+    }
+  }
+}
 #endif
 
 /* ------------------ DrawGeomData ------------------------ */
@@ -2810,7 +2839,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       geomlistdata *geomlisti;
       int ntris;
       int j;
-      float *color;
 
       geomi = patchi->geominfo;
       if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)continue;
@@ -2852,6 +2880,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
           tridata *trianglei;
           int color_index;
+          float *color;
+
 
           trianglei = geomlisti->triangles + j;
 
@@ -2901,14 +2931,14 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           float *xyzptr[3];
 #ifdef pp_GEOMDATANORM
           float *xyznorm[3];
+          int color_indices[3];
 #endif
           tridata *trianglei;
           int color_index;
+          float *color;
+          float *color0, *color1, *color2;
+          float  t_level;
 
-          trianglei = geomlisti->triangles + j;
-
-          color_index = ivals[j];
-          color = rgb_patch + 4 * color_index;
           if(patchi->structured == NO&&patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
@@ -2916,15 +2946,30 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
             if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else{
-            glColor3fv(color);
+            t_level = 1.0;
           }
+
+          trianglei = geomlisti->triangles + j;
+
+#ifdef pp_GEOMDATANORM
+          AverageGeomColors(geomlisti,j,ivals, color_indices);
+          color0 = rgb_patch+4*color_indices[0];
+          color1 = rgb_patch+4*color_indices[1];
+          color2 = rgb_patch+4*color_indices[2];
+#else
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+          color0 = color;
+          color1 = color;
+          color2 = color;
+#endif
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;
@@ -2937,17 +2982,23 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 #endif
 
           GLNORMAL3F(xyznorm[0]);
+          glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
 
           GLNORMAL3F(xyznorm[1]);
+          glColor4f(color1[0], color1[1], color1[2], t_level);
           glVertex3fv(xyzptr[1]);
 
           GLNORMAL3F(xyznorm[2]);
+          glColor4f(color2[0], color2[1], color2[2], t_level);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
+            glColor4f(color0[0], color0[1], color0[2], t_level);
             glVertex3fv(xyzptr[0]);
+            glColor4f(color2[0], color2[1], color2[2], t_level);
             glVertex3fv(xyzptr[2]);
+            glColor4f(color1[0], color1[1], color1[2], t_level);
             glVertex3fv(xyzptr[1]);
           }
         }
