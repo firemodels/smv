@@ -2932,10 +2932,11 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 #ifdef pp_GEOMDATANORM
           float *xyznorm[3];
           int color_indices[3];
-#endif
-          tridata *trianglei;
+#else
           int color_index;
           float *color;
+#endif
+          tridata *trianglei;
           float *color0, *color1, *color2;
           float  t_level;
 
