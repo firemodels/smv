@@ -1171,9 +1171,9 @@ void UpdateTriangles(int flag,int update){
       int i;
 
       geomi = geominfoptrs[j];
-      if(ii>geomi->ntimes)continue;
+      if(ii>geomi->ntimes-1)continue;
       if(geomi->loaded==0||geomi->display==0)continue;
-      if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
+      if(geomi->geomtype!=GEOM_GEOM && geomi->geomtype!=GEOM_ISO)continue;
 
       if(ii==-1||geomi->currentframe==NULL){
         geomlisti = geomi->geomlistinfo + ii;
@@ -1215,13 +1215,7 @@ void UpdateTriangles(int flag,int update){
 
       // count number of triangles
 
-      ntriangles = 0;
-      for(i = 0; i<geomlisti->nverts; i++){
-        vertdata *verti;
-
-        verti = geomlisti->verts + i;
-        ntriangles += verti->ntriangles;
-      }
+      ntriangles = 3*geomlisti->ntriangles;
 
       // allocate triangle pointers
 
@@ -1463,15 +1457,6 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(trinormals);
   }
 
-}
-
-/* ------------------ UpdateTriangles ------------------------ */
-
-
-void UpdateTrianglesMT2(int flag,int update){
-  LOCK_TRIANGLES;
-  UpdateTriangles(flag,update);
-  UNLOCK_TRIANGLES;
 }
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\

@@ -82,17 +82,19 @@ void CompressSVZip(void){
 }
 #endif
 
-/* ------------------ UpdateTriangles ------------------------ */
+/* ------------------ MtUpdateTriangles ------------------------ */
 
 #ifdef pp_THREAD
 void *MtUpdateTriangles(void *arg){
-  UpdateTrianglesMT2(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  LOCK_TRIANGLES;
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  UNLOCK_TRIANGLES;
   pthread_exit(NULL);
   return NULL;
 }
 #endif
 
-/* ------------------ CompressSVZip ------------------------ */
+/* ------------------ UpdateTrianglesMT ------------------------ */
 
 #ifdef pp_THREAD
 void UpdateTrianglesMT(void){
