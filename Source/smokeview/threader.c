@@ -48,6 +48,7 @@ void CompressSVZip2(void){
 void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
+  pthread_mutex_init(&mutexTRIANGLES,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
@@ -78,6 +79,28 @@ void CompressSVZip(void){
 #else
 void CompressSVZip(void){
   CompressSVZip2();
+}
+#endif
+
+/* ------------------ UpdateTriangles ------------------------ */
+
+#ifdef pp_THREAD
+void *MtUpdateTriangles(void *arg){
+  UpdateTrianglesMT2(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  pthread_exit(NULL);
+  return NULL;
+}
+#endif
+
+/* ------------------ CompressSVZip ------------------------ */
+
+#ifdef pp_THREAD
+void UpdateTrianglesMT(void){
+  pthread_create(&triangles_id,NULL, MtUpdateTriangles,NULL);
+}
+#else
+void UpdateTrianglesMT(void){
+  UpdateTrianglesMT2(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
 }
 #endif
 

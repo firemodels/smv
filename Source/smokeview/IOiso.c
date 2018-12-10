@@ -157,7 +157,7 @@ void ReadIsoGeomWrapup(void){
 #ifdef pp_ISOTIME
   START_TIMER(wrapup_time);
 #endif
-  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  UpdateTrianglesMT();
 #ifdef pp_ISOTIME
   STOP_TIMER(wrapup_time);
   printf("iso wrapup time=%f\n", wrapup_time);

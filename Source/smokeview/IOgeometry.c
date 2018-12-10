@@ -1143,6 +1143,7 @@ void UpdateGeomNormals(void){
 
 void UpdateTriangles(int flag,int update){
   int j, ii, ntimes;
+  int ntimes_max=0;
 
   if(update==GEOM_UPDATE_NORMALS){
     UpdateGeomNormals();
@@ -1150,22 +1151,29 @@ void UpdateTriangles(int flag,int update){
   }
   for(j=0;j<ngeominfoptrs;j++){
     geomdata *geomi;
-    float *xyzptr[3];
-    float *xyznorm;
-    int i;
-    int iend;
 
     geomi = geominfoptrs[j];
     if(geomi->loaded==0||geomi->display==0)continue;
     if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
+    ntimes_max=MAX(ntimes_max,geomi->ntimes);
+  }
 
-    iend = geomi->ntimes;
-    if(geomi->currentframe != NULL)iend = 1;
 
-    for(ii=-1;ii<iend;ii++){
-      geomlistdata *geomlisti;
-      int ntriangles;
-      tridata **triangles;
+  for(ii=-1;ii<ntimes_max;ii++){
+    geomlistdata *geomlisti;
+    int ntriangles;
+    tridata **triangles;
+
+    for(j=0;j<ngeominfoptrs;j++){
+      geomdata *geomi;
+      float *xyzptr[3];
+      float *xyznorm;
+      int i;
+
+      geomi = geominfoptrs[j];
+      if(ii>geomi->ntimes)continue;
+      if(geomi->loaded==0||geomi->display==0)continue;
+      if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
 
       if(ii==-1||geomi->currentframe==NULL){
         geomlisti = geomi->geomlistinfo + ii;
@@ -1173,6 +1181,8 @@ void UpdateTriangles(int flag,int update){
       else{
         geomlisti = geomi->currentframe;
       }
+      if(geomlisti-geomi->geomlistinfo!=ii)continue;
+
       for(i=0;i<geomlisti->ntriangles;i++){
         tridata *trianglei;
         vertdata **verts;
@@ -1214,6 +1224,7 @@ void UpdateTriangles(int flag,int update){
       }
 
       // allocate triangle pointers
+
       FREEMEMORY(geomlisti->connected_triangles);
       FREEMEMORY(geomlisti->triangleptrs);
       if(ntriangles>0){
@@ -1451,6 +1462,16 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(vertnormals);
     FREEMEMORY(trinormals);
   }
+
+}
+
+/* ------------------ UpdateTriangles ------------------------ */
+
+
+void UpdateTrianglesMT2(int flag,int update){
+  LOCK_TRIANGLES;
+  UpdateTriangles(flag,update);
+  UNLOCK_TRIANGLES;
 }
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\

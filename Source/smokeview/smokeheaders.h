@@ -859,6 +859,8 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 EXTERNCPP void UpdateShowHideButtons(void);
 EXTERNCPP void UpdateFileLoad(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
+EXTERNCPP void UpdateTrianglesMT2(int time_flag, int update);
+EXTERNCPP void UpdateTrianglesMT(void);
 
 #ifndef CPP
 #include "smokefortheaders.h"
