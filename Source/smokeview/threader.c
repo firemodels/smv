@@ -96,11 +96,16 @@ void *MtUpdateTriangles(void *arg){
 
 #ifdef pp_THREAD
 void UpdateTrianglesMT(void){
-  pthread_create(&triangles_id,NULL, MtUpdateTriangles,NULL);
+  if(iso_multithread==1){
+    pthread_create(&triangles_id, NULL, MtUpdateTriangles, NULL);
+  }
+  else{
+    UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
+  }
 }
 #else
 void UpdateTrianglesMT(void){
-  UpdateTrianglesMT2(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
 }
 #endif
 

@@ -1927,6 +1927,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, SliceBoundCB);
 #endif
     CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, SliceBoundCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &iso_multithread);
 
     ROLLOUT_iso_color = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Color/transparency", false, ISO_ROLLOUT_COLOR, IsoRolloutCB);
     ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_color, ISO_ROLLOUT_COLOR);
@@ -3428,7 +3429,6 @@ extern "C" void SliceBoundCB(int var){
       UpdateAxisLabelsSmooth();
       SliceBoundCB(FILEUPDATE);
       break;
-#ifdef pp_BETA
     case SMOOTH_SURFACES:
       CHECKBOX_smooth2->set_int_val(smooth_iso_normal);
       break;
@@ -3441,8 +3441,8 @@ extern "C" void SliceBoundCB(int var){
         surfi->transparent_level=transparent_level;
       }
       CHECKBOX_sort2->set_int_val(sort_iso_triangles);
+      IsoBoundCB(GLOBAL_ALPHA);
       break;
-#endif
     case SHOW_EVAC_SLICES:
       data_evac_coloring = 1-constant_evac_coloring;
       UpdateSliceMenuShow();
