@@ -8897,7 +8897,7 @@ typedef struct {
       else{
         get_isolevels=0;
         if(trainer_mode==0){
-          fprintf(stderr,"*** Error: the file %s does not exist\n",buffer);
+          fprintf(stderr,"*** Warning: the file %s does not exist\n",buffer);
         }
 
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
