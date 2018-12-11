@@ -281,7 +281,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   meshi->isolevels = NULL;
 
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
-  FREEMEMORY(geominfoptrs);
 
   if(load_flag==UNLOAD){
 #ifdef pp_TISO

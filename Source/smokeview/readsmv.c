@@ -9215,6 +9215,10 @@ typedef struct {
   UpdateMeshCoords();
   CheckMemory;
 
+  // allocate memory for geometry pointers (only once)
+
+  GetGeomInfoPtrs(1);
+
   /*
     Associate a surface with each block.
   */

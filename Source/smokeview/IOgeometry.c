@@ -1146,7 +1146,7 @@ void UpdateTriangles(int flag,int update){
   int ntimes_max=0;
 
   LOCK_TRIANGLES;
-  GetGeomInfoPtrs();
+  GetGeomInfoPtrs(0);
   updating_triangles = 1;
   UNLOCK_TRIANGLES;
 
@@ -3287,13 +3287,24 @@ int CompareTransparentTriangles(const void *arg1, const void *arg2){
 
 /* ------------------ GetGeomInfoPtrs ------------------------ */
 
-void GetGeomInfoPtrs(){
-  geomdata **gptr;
-  int i, count = 0, hide_geom = 0;
+void GetGeomInfoPtrs(int flag){
+  int i, hide_geom = 0;
+  geomdata **gptr = NULL;
+
+  if(flag==1){
+    int count;
+
+    count = nisoinfo+ngeominfo;
+    if(count>0){
+      NewMemory((void **)&gptr, count*sizeof(geomdata *));
+    }
+    geominfoptrs = gptr;
+    return;
+  }
 
   if(updating_triangles==1)return;
-  FREEMEMORY(geominfoptrs);
-  ngeominfoptrs = 0;
+
+  gptr = geominfoptrs;
   hide_geom = 0;
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
@@ -3305,15 +3316,15 @@ void GetGeomInfoPtrs(){
     }
   }
 
-  count=0;
+  // count size of geominfoptrs array
+
+  ngeominfoptrs=0;
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    if(geomi->loaded==0||geomi->display==0)continue;
-    if(geomi->geomtype!=GEOM_GEOM)continue;
-    if(hide_geom==1&&geomi->geomtype==GEOM_GEOM)continue;
-    count++;
+    // hide geometry if we are displaying a boundary file over top of it
+    if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom==0)ngeominfoptrs++;
   }
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
@@ -3324,26 +3335,16 @@ void GetGeomInfoPtrs(){
     geomi = isoi->geominfo;
     if(geomi==NULL)continue;
     if(geomi->loaded==0||geomi->display==0)continue;
-    count++;
+    ngeominfoptrs++;
   }
-  ngeominfoptrs=count;
 
-  if(count>0){
-    NewMemory((void **)&gptr,count*sizeof(geomdata *));
-  }
-  else{
-    geominfoptrs=NULL;
-    return;
-  }
-  geominfoptrs=gptr;
+  // put pointers into geominfoptrs array
+
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    if(geomi->loaded==0||geomi->display==0)continue;
-    if(geomi->geomtype!=GEOM_GEOM)continue;
-    if(hide_geom == 1 && geomi->geomtype == GEOM_GEOM)continue;
-    *gptr++=geomi;
+    if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom == 0)*gptr++=geomi;
   }
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
