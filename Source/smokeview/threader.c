@@ -86,9 +86,7 @@ void CompressSVZip(void){
 
 #ifdef pp_THREAD
 void *MtUpdateTriangles(void *arg){
-  LOCK_TRIANGLES;
   UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
-  UNLOCK_TRIANGLES;
   pthread_exit(NULL);
   return NULL;
 }

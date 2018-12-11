@@ -9379,8 +9379,6 @@ typedef struct {
   UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
-  ngeominfoptrs=0;
-  GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
 

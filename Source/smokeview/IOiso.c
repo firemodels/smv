@@ -152,8 +152,6 @@ void ReadIsoGeomWrapup(void){
 #endif
 
   update_readiso_geom_wrapup=UPDATE_ISO_OFF;
-  ngeominfoptrs = 0;
-  GetGeomInfoPtrs(&geominfoptrs, &ngeominfoptrs);
 #ifdef pp_ISOTIME
   START_TIMER(wrapup_time);
 #endif

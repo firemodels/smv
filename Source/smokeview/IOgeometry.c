@@ -1145,8 +1145,14 @@ void UpdateTriangles(int flag,int update){
   int j, ii, ntimes;
   int ntimes_max=0;
 
+  LOCK_TRIANGLES;
+  GetGeomInfoPtrs();
+  updating_triangles = 1;
+  UNLOCK_TRIANGLES;
+
   if(update==GEOM_UPDATE_NORMALS){
     UpdateGeomNormals();
+    updating_triangles = 0;
     return;
   }
   for(j=0;j<ngeominfoptrs;j++){
@@ -1455,7 +1461,7 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(vertnormals);
     FREEMEMORY(trinormals);
   }
-
+  updating_triangles = 0;
 }
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
@@ -3281,10 +3287,13 @@ int CompareTransparentTriangles(const void *arg1, const void *arg2){
 
 /* ------------------ GetGeomInfoPtrs ------------------------ */
 
-void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
+void GetGeomInfoPtrs(){
   geomdata **gptr;
   int i, count = 0, hide_geom = 0;
 
+  if(updating_triangles==1)return;
+  FREEMEMORY(geominfoptrs);
+  ngeominfoptrs = 0;
   hide_geom = 0;
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
@@ -3317,15 +3326,16 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     if(geomi->loaded==0||geomi->display==0)continue;
     count++;
   }
-  *ngeominfoptrs_local=count;
+  ngeominfoptrs=count;
+
   if(count>0){
     NewMemory((void **)&gptr,count*sizeof(geomdata *));
   }
   else{
-    *geominfoptrs_local=NULL;
+    geominfoptrs=NULL;
     return;
   }
-  *geominfoptrs_local=gptr;
+  geominfoptrs=gptr;
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 

@@ -296,7 +296,7 @@ EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode
 EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP void GetFaceInfo(void);
-EXTERNCPP void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local);
+EXTERNCPP void GetGeomInfoPtrs();
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
