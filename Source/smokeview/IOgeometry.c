@@ -1158,7 +1158,6 @@ void UpdateTriangles(int flag,int update){
     ntimes_max=MAX(ntimes_max,geomi->ntimes);
   }
 
-
   for(ii=-1;ii<ntimes_max;ii++){
     geomlistdata *geomlisti;
     int ntriangles;
