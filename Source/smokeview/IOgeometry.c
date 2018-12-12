@@ -1172,6 +1172,10 @@ void UpdateTriangles(int flag,int update){
   GetGeomInfoPtrs(0);
   updating_triangles = 1;
   UNLOCK_TRIANGLES;
+  if(cancel_update_triangles==1){
+    updating_triangles = 0;
+    return;
+  }
 
   if(update==GEOM_UPDATE_NORMALS){
     UpdateGeomNormals();
@@ -1186,6 +1190,10 @@ void UpdateTriangles(int flag,int update){
     if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
     ntimes_max=MAX(ntimes_max,geomi->ntimes);
   }
+  if(cancel_update_triangles==1){
+    updating_triangles = 0;
+    return;
+  }
 
   for(ii=-1;ii<ntimes_max;ii++){
     geomlistdata *geomlisti;
@@ -1198,6 +1206,10 @@ void UpdateTriangles(int flag,int update){
       float *xyznorm;
       int i;
 
+      if(cancel_update_triangles==1){
+        updating_triangles = 0;
+        return;
+      }
       geomi = geominfoptrs[j];
       if(ii>geomi->ntimes-1)continue;
       if(geomi->loaded==0||geomi->display==0)continue;
@@ -1300,6 +1312,12 @@ void UpdateTriangles(int flag,int update){
 
   // identify and count verts on mesh surfaces
 
+      if(cancel_update_triangles==1){
+        updating_triangles = 0;
+        FREEMEMORY(surface_verts);
+        FREEMEMORY(match_verts);
+        return;
+      }
       nsurface_verts = 0;
       for(j = 0; j<ngeominfoptrs; j++){
         geomlistdata *geomlisti;

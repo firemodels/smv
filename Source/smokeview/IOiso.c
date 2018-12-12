@@ -272,6 +272,9 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   surfdata *surfi;
   FILE_SIZE return_filesize=0;
 
+  if(load_flag==UNLOAD){
+    CancelUpdateTriangles();
+  }
   isoi = isoinfo + ifile;
   meshi = meshinfo + isoi->blocknumber;
   geomi = isoi->geominfo;

@@ -3083,6 +3083,7 @@ void LoadUnloadMenu(int value){
       }
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+    CancelUpdateTriangles();
     for(i = 0; i<nisoinfo; i++){
       isodata *isoi;
 
@@ -4890,6 +4891,7 @@ void LoadAllIsos(int iso_type){
   float load_time=0.0, load_size=0.0;
 
   START_TIMER(load_time);
+  CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
     isodata *isoi;
 

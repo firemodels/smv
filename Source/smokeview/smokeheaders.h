@@ -860,6 +860,7 @@ EXTERNCPP void UpdateShowHideButtons(void);
 EXTERNCPP void UpdateFileLoad(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 EXTERNCPP void UpdateTrianglesMT(void);
+EXTERNCPP void CancelUpdateTriangles(void);
 
 #ifndef CPP
 #include "smokefortheaders.h"

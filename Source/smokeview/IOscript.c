@@ -1139,6 +1139,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   if(index > nmeshes - 1)index = -1;
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+  CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
     int errorcode;
     isodata *isoi;
@@ -1268,6 +1269,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
   PRINTF("script: loading isosurface files of type: %s\n\n",scripti->cval);
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+  CancelUpdateTriangles();
   for(i = 0; i<nisoinfo; i++){
     int errorcode;
     isodata *isoi;
@@ -1916,6 +1918,7 @@ void ScriptLoadFile(scriptdata *scripti){
       return;
     }
   }
+  CancelUpdateTriangles();
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
 

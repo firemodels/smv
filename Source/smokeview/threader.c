@@ -90,11 +90,9 @@ void *MtUpdateTriangles(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-#endif
 
 /* ------------------ UpdateTrianglesMT ------------------------ */
 
-#ifdef pp_THREAD
 void UpdateTrianglesMT(void){
   if(iso_multithread==1){
     pthread_create(&triangles_id, NULL, MtUpdateTriangles, NULL);
@@ -103,9 +101,26 @@ void UpdateTrianglesMT(void){
     UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
   }
 }
+
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
+  cancel_update_triangles = 1;
+  pthread_join(triangles_id, NULL);
+  cancel_update_triangles = 0;
+}
+
 #else
+
+/* ------------------ UpdateTrianglesMT ------------------------ */
+
 void UpdateTrianglesMT(void){
   UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+}
+
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
 }
 #endif
 
