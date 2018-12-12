@@ -713,14 +713,18 @@ void DrawGeom(int flag, int timestate){
 
     last_color=NULL;
     if(geomlisti->ntriangles>0){
+      float line_offset;
+
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
       if(geomi->geomtype==GEOM_ISO){
         glLineWidth(isolinewidth);
+        line_offset = iso_outline_offset;
       }
       else{
         glLineWidth(geom_linewidth);
+        line_offset = geom_outline_offset;
       }
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -768,9 +772,9 @@ void DrawGeom(int flag, int timestate){
           norm2 = vert2->vert_norm;
 
           for(k=0;k<3;k++){
-            vert2a[k] = xyz0[k] + geom_outline_offset*norm0[k];
-            vert2b[k] = xyz1[k] + geom_outline_offset*norm1[k];
-            vert2c[k] = xyz2[k] + geom_outline_offset*norm2[k];
+            vert2a[k] = xyz0[k] + line_offset*norm0[k];
+            vert2b[k] = xyz1[k] + line_offset*norm1[k];
+            vert2c[k] = xyz2[k] + line_offset*norm2[k];
           }
 
           glVertex3fv(vert2a);

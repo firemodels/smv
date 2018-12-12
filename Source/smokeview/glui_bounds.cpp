@@ -78,6 +78,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #ifdef pp_TISO
 #define ISO_COLORBAR_LIST 217
 #endif
+#define ISO_OUTLINE_IOFFSET 218
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
@@ -243,6 +244,7 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
+GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
@@ -1918,6 +1920,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
     SPINNER_isolinewidth->set_float_limits(1.0, 10.0);
+    SPINNER_iso_outline_ioffset = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, "outline offset", GLUI_SPINNER_INT, &iso_outline_ioffset, ISO_OUTLINE_IOFFSET, IsoBoundCB);
+    SPINNER_iso_outline_ioffset->set_int_limits(0, 200);
     SPINNER_isopointsize = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("point size"), GLUI_SPINNER_FLOAT, &isopointsize);
     SPINNER_isopointsize->set_float_limits(1.0, 10.0);
 
@@ -2718,6 +2722,9 @@ extern "C" void IsoBoundCB(int var){
   float *iso_color;
 
   switch(var){
+  case ISO_OUTLINE_IOFFSET:
+    iso_outline_offset = (float)iso_outline_ioffset/1000.0;
+  break;
 #ifdef pp_TISO
   case ISO_COLORBAR_LIST:
     iso_colorbar = colorbarinfo + iso_colorbar_index;
