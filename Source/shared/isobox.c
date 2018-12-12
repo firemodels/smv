@@ -796,16 +796,19 @@ void CalcNormal(const float *xx, const float *yy, const float *zz, float *out){
 /* ------------------ ReduceToUnit ------------------------ */
 
 void ReduceToUnit(float *v){
-
   float length;
 
   length = (float)sqrt((double)(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]));
-
-  if(length==0.0f)length=1.0f;
-
-  v[0] /= length;
-  v[1] /= length;
-  v[2] /= length;
+  if(length>0.0){
+    v[0] /= length;
+    v[1] /= length;
+    v[2] /= length;
+  }
+  else{
+    v[0] = 0.0;
+    v[1] = 0.0;
+    v[2] = 1.0;
+  }
 }
 
 /* ------------------ GetIsoSurface ------------------------ */
