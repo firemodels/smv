@@ -716,11 +716,15 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glLineWidth(geom_linewidth);
+      if(geomi->geomtype==GEOM_ISO){
+        glLineWidth(isolinewidth);
+      }
+      else{
+        glLineWidth(geom_linewidth);
+      }
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
         float *xyzptr[3];
-        float *xyznorm;
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
@@ -734,9 +738,6 @@ void DrawGeom(int flag, int timestate){
         else{
           if(show_iso_outline == 0)continue;
         }
-
-        xyznorm=trianglei->tri_norm;
-        glNormal3fv(xyznorm);
 
         xyzptr[0] = trianglei->verts[0]->xyz;
         xyzptr[1] = trianglei->verts[1]->xyz;
@@ -753,22 +754,38 @@ void DrawGeom(int flag, int timestate){
           last_color=color;
         }
         {
-          int ind[6] = {0, 1, 1, 2, 2, 0};
+          float vert2a[3], vert2b[3], vert2c[3];
+          float     *xyz0,     *xyz1,     *xyz2;
+          float    *norm0,    *norm1,    *norm2;
+          vertdata *vert0,    *vert1,    *vert2;
           int k;
 
-          for(k = 0; k < 6; k++){
-            float *xyzval, *pknorm, xyzval2[3];
-            vertdata *pk;
+          vert0 = trianglei->verts[0];
+          vert1 = trianglei->verts[1];
+          vert2 = trianglei->verts[2];
 
-            pk = trianglei->verts[ind[k]];
-            pknorm = pk->vert_norm;
-            xyzval = xyzptr[ind[k]];
+          xyz0  = vert0->xyz;
+          xyz1  = vert1->xyz;
+          xyz2  = vert2->xyz;
 
-            VEC3EQ(xyzval2, pknorm);
-            VEC3MA(xyzval2, geom_outline_offset);
-            VEC3ADD(xyzval2, xyzval2, xyzval);
-            glVertex3fv(xyzval2);
+          norm0 = vert0->vert_norm;
+          norm1 = vert1->vert_norm;
+          norm2 = vert2->vert_norm;
+
+          for(k=0;k<3;k++){
+            vert2a[k] = xyz0[k] + geom_outline_offset*norm0[k];
+            vert2b[k] = xyz1[k] + geom_outline_offset*norm1[k];
+            vert2c[k] = xyz2[k] + geom_outline_offset*norm2[k];
           }
+
+          glVertex3fv(vert2a);
+          glVertex3fv(vert2b);
+
+          glVertex3fv(vert2b);
+          glVertex3fv(vert2c);
+
+          glVertex3fv(vert2c);
+          glVertex3fv(vert2a);
         }
       }
       glEnd();
@@ -1070,10 +1087,14 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
 
           trianglek = vertj->triangles[k];
           tri_normk = trianglek->tri_norm;
-          norm[0]+=tri_normk[0];
-          norm[1]+=tri_normk[1];
-          norm[2]+=tri_normk[2];
+          norm[0] += trianglek->area*tri_normk[0];
+          norm[1] += trianglek->area*tri_normk[1];
+          norm[2] += trianglek->area*tri_normk[2];
         }
+        ReduceToUnit(norm);
+        vertj->vert_norm[0] = norm[0];
+        vertj->vert_norm[1] = norm[1];
+        vertj->vert_norm[2] = norm[2];
       }
       else{
         for(k = 0; k<vertj->ntriangles; k++){
@@ -1089,14 +1110,17 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
           if(lengthk > 0.0&&lengthi > 0.0){
             cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
             if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
-              norm[0]+=tri_normk[0];
-              norm[1]+=tri_normk[1];
-              norm[2]+=tri_normk[2];
+              norm[0] += trianglek->area*tri_normk[0];
+              norm[1] += trianglek->area*tri_normk[1];
+              norm[2] += trianglek->area*tri_normk[2];
             }
           }
         }
+        ReduceToUnit(norm);
+        vertj->vert_norm[0] = norm[0];
+        vertj->vert_norm[1] = norm[1];
+        vertj->vert_norm[2] = norm[2];
       }
-      ReduceToUnit(norm);
     }
   }
   for(i = 0; i < geomlisti->nverts; i++){
