@@ -513,8 +513,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   meshdata *meshi;
   isodata *ib;
 
-  FILE_SIZE file_size=0;
-
   START_TIMER(total_time);
 
   ASSERT(ifile>=0&&ifile<nisoinfo);
@@ -553,8 +551,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   GetIsoSizes(file, ib->dataflag, &isostream, &nisopoints, &nisotriangles,
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
     &ib->tmin, &ib->tmax, endian_data);
-
-  file_size= GetFileSizeSMV(file);
 
   if(meshi->isolevels==NULL){
     ReadIso("",ifile,UNLOAD,NULL,&error);
