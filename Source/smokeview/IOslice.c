@@ -1170,8 +1170,6 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
       UpdateCurrentColorbar(cb);
     }
   }
-  PRINTF("completed");
-  PRINTF("\n");
 }
 
 /* ------------------ ReadVSlice ------------------------ */

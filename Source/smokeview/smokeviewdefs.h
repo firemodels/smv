@@ -872,6 +872,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define ON 1
 #define OFF 0
 
+#define BACKGROUND 1
+#define FOREGROUND 0
+
 #define DIALOG_3DSMOKE 20
 #define DIALOG_BOUNDS 14
 #define DIALOG_CLIP 18

@@ -3091,7 +3091,7 @@ void LoadUnloadMenu(int value){
       if(isoi->loaded==0)continue;
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
     }
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     ReadSMVDynamic(smv_filename);
     UNLOCK_COMPRESS
@@ -4870,16 +4870,14 @@ FILE_SIZE LoadIsoI(int value){
     fprintf(scriptoutstream, " %s\n", isoi->surface_label.longlabel);
     fprintf(scriptoutstream, " %i\n", isoi->blocknumber+1);
   }
-
+  CancelUpdateTriangles();
   if(scriptoutstream==NULL){
     return_filesize=ReadIso(file,value,LOAD,NULL,&errorcode);
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup(BACKGROUND);
   }
   isoi->loading=0;
   STOP_TIMER(total_time);
   PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
-
-
   return return_filesize;
 }
 
@@ -4942,7 +4940,7 @@ void LoadIsoMenu(int value){
     if(scriptoutstream==NULL){
       update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
       LoadAllIsos(isoi->type);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
       update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     }
     script_iso=0;

@@ -3394,7 +3394,7 @@ void GetGeomInfoPtrs(int flag){
     isoi = isoinfo + i;
     if(isoi->loaded==0||isoi->display==0)continue;
     geomi = isoi->geominfo;
-    if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi==NULL||geomi->loaded==0||geomi->display==0)continue;
     *gptr++=geomi;
   }
 }

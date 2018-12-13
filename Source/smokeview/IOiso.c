@@ -146,7 +146,7 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
 
 /* ------------------ ReadIsoGeomWrapup ------------------------ */
 
-void ReadIsoGeomWrapup(void){
+void ReadIsoGeomWrapup(int flag){
 #ifdef pp_ISOTIME
   float wrapup_time;
 #endif
@@ -156,6 +156,7 @@ void ReadIsoGeomWrapup(void){
   START_TIMER(wrapup_time);
 #endif
   UpdateTrianglesMT();
+  if(flag==FOREGROUND)FinishUpdateTriangles();
 #ifdef pp_ISOTIME
   STOP_TIMER(wrapup_time);
   printf("iso wrapup time=%f\n", wrapup_time);
@@ -503,6 +504,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   int skip_local;
   float *fed_colors[3];
   float read_time, total_time;
+  FILE_SIZE read_size;
 
   int blocknumber;
   int error;
@@ -618,7 +620,9 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   iitime=0;
   itime=0;
   time_max = -1000000.0;
+
   START_TIMER(read_time);
+  read_size=0;
   for(;;){
     int skip_frame;
     int ntri_total;
@@ -627,6 +631,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     iitime++;
 
     fread(&time_local,4,1,isostream);
+    read_size+=4+4+4;
     if(feof(isostream)!=0)break;
     skip_frame=1;
     if(time_local>time_max){
@@ -636,9 +641,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     meshi->iso_times[itime]=time_local;
     if(iitime%isoframestep_global!=0||(settmin_i==1&&time_local<tmin_i)||(settmax_i==1&&time_local>tmax_i)||skip_frame==1){
     }
-    else{
-      PRINTF("isosurface time=%f\n",time_local);
-    }
     ntri_total=0;
     for(ilevel=0;ilevel<meshi->nisolevels;ilevel++){
       int nvertices_i, ntriangles_i;
@@ -646,11 +648,13 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
       asurface->dataflag=ib->dataflag;
 
       fread(&nvertices_i,4,1,isostream);
+      read_size+=4+4+4;
 #ifdef _DEBUG
       ntotal_isoverts+=nvertices_i;
 #endif
       if(feof(isostream)!=0)break;
       fread(&ntriangles_i,4,1,isostream);
+      read_size+=4+4+4;
 #ifdef _DEBUG
       ntotal_isotris+=ntriangles_i;
 #endif
@@ -692,6 +696,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
         }
         verti = vertices_i;
         fread(vertices_i,2,(unsigned int)(3*nvertices_i),isostream);
+        read_size+=4+3*nvertices_i*2+4;
         for(ivert=0;ivert<nvertices_i;ivert++){
           isovert *isoverti;
           float *xyz;
@@ -721,12 +726,14 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
           fread(&asurface->tmin,4,1,isostream);
           fread(&asurface->tmax,4,1,isostream);
+          read_size+=2*(4+4+4);
           //printf("amin=%f amax=%f imin=%f imax=%f\n",asurface->tmin,asurface->tmax,ib->tmin,ib->tmax);;
           if(NewMemory((void **)&tvertices_i,nvertices_i*sizeof(unsigned short))==0){
             break_frame=1;
             break;
           }
           fread(tvertices_i,2,(unsigned int)nvertices_i,isostream);
+          read_size+=4+2*nvertices_i+4;
           tcolorfactor = (asurface->tmax-asurface->tmin)/65535.;
           if(ib->tmax>ib->tmin){
             tcolorfactor2 = 255.0/(ib->tmax-ib->tmin);
@@ -765,6 +772,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
             break;
           }
           fread(triangles1_i,1,(unsigned int)ntriangles_i,isostream);
+          read_size+=4+ntriangles_i+4;
           for(itri=0;itri<ntriangles_i;itri++){
             triangles_i[itri]=triangles1_i[itri];
           }
@@ -776,6 +784,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
             break;
           }
           fread(triangles2_i,2,(unsigned int)ntriangles_i,isostream);
+          read_size+=4+2*ntriangles_i+4;
           for(itri=0;itri<ntriangles_i;itri++){
             triangles_i[itri]=triangles2_i[itri];
           }
@@ -783,6 +792,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
         }
         else{
           fread(triangles_i,4,(unsigned int)ntriangles_i,isostream);
+          read_size+=4+4*ntriangles_i+4;
         }
         if(NewMemory((void **)&asurface->iso_triangles,(ntriangles_i/3)*sizeof(isotri))==0){
           break_frame=1;
@@ -885,8 +895,9 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   PRINTF("nverts=%i ntris=%i\n",ntotal_isoverts,ntotal_isotris);
   PRINTF("size verts=%i tris=%i\n",(int)(ntotal_isoverts*sizeof(isovert)),(int)(ntotal_isotris*sizeof(isotri)/3));
 #endif
-
   STOP_TIMER(read_time);
+  PRINTF(" - %.1f MB/%.1f s\n",(float)read_size/1000000.,read_time);
+
   fclose(isostream);
   if(*errorcode!=0){
     UnloadIso(meshi);
@@ -918,17 +929,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
   STOP_TIMER(total_time);
 
-  if(file_size!=0&&read_time>0.0){
-    float loadrate;
-
-    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
-    PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,read_time,loadrate,total_time - read_time);
-  }
-  else{
-    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
-    (float)file_size/1000000.,read_time,total_time-read_time);
-  }
   show_isofiles = 1;
   glutPostRedisplay();
   CheckMemory;

@@ -1150,7 +1150,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
       count++;
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -1294,7 +1294,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
       }
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(count == 0){
     fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
@@ -1925,7 +1925,7 @@ void ScriptLoadFile(scriptdata *scripti){
     isoi = isoinfo + i;
     if(strcmp(isoi->file,scripti->cval)==0){
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup(FOREGROUND);
       return;
     }
   }

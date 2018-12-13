@@ -102,11 +102,17 @@ void UpdateTrianglesMT(void){
   }
 }
 
+/* ------------------ FinishUpdateTriangles ------------------------ */
+
+void FinishUpdateTriangles(void){
+  pthread_join(triangles_id, NULL);
+}
+
 /* ------------------ CancelUpdateTriangles ------------------------ */
 
 void CancelUpdateTriangles(void){
   cancel_update_triangles = 1;
-  pthread_join(triangles_id, NULL);
+  FinishUpdateTriangles();
   cancel_update_triangles = 0;
 }
 
@@ -121,6 +127,11 @@ void UpdateTrianglesMT(void){
 /* ------------------ CancelUpdateTriangles ------------------------ */
 
 void CancelUpdateTriangles(void){
+}
+
+/* ------------------ FinishUpdateTriangles ------------------------ */
+
+void FinishUpdateTriangles(void){
 }
 #endif
 

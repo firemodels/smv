@@ -111,7 +111,7 @@ EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *GetColorTable(char *label);
 EXTERNCPP void UpdateIsoColorlevel(void);
-EXTERNCPP void ReadIsoGeomWrapup(void);
+EXTERNCPP void ReadIsoGeomWrapup(int flag);
 EXTERNCPP void PSystem(char *commandline);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
@@ -861,6 +861,7 @@ EXTERNCPP void UpdateFileLoad(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 EXTERNCPP void UpdateTrianglesMT(void);
 EXTERNCPP void CancelUpdateTriangles(void);
+EXTERNCPP void FinishUpdateTriangles(void);
 
 #ifndef CPP
 #include "smokefortheaders.h"
