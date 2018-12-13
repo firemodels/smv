@@ -570,6 +570,8 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-runscript", 10) == 0){
       from_commandline = 1;
+
+
 #ifdef pp_LUA
       strcpy(script_filename, "");
 #endif

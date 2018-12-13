@@ -184,6 +184,8 @@ void StartScript(void){
   }
   GluiScriptDisable();
   current_script_command=scriptinfo-1;
+  iso_multithread_save = iso_multithread;
+  iso_multithread = 0;
 }
 
 /* ------------------ GetPointer ------------------------ */

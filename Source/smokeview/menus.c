@@ -2657,6 +2657,7 @@ void ScriptMenu(int value){
       script_step=1-script_step;
       break;
     case SCRIPT_CANCEL:
+      iso_multithread = iso_multithread_save;
       current_script_command=NULL;
       runscript=0;
       first_frame_index=0;
