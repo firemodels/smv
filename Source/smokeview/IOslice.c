@@ -1451,27 +1451,30 @@ void GetSliceHists(slicedata *sd){
   for(i = 0; i < sd->nslicei; i++){
     int j;
     float dx;
-    int i1;
+    int i1, i1p1;
 
-    i1 = sd->is1 + i;
-    dx = xplt[i1+1] - xplt[i1];
+    i1 = MIN(sd->is1+i,sd->is2-2);
+    i1p1 = i1+1;
+    dx = xplt[i1p1] - xplt[i1];
     if(dx <= 0.0)dx = 1.0;
 
     for(j = 0; j < sd->nslicej; j++){
       int k;
       float dy;
-      int j1;
+      int j1, j1p1;
 
-      j1 = sd->js1 + j;
-      dy = yplt[j1+1] - yplt[j1];
+      j1 = MIN(sd->js1+j,sd->js2-2);
+      j1p1 = j1+1;
+      dy = yplt[j1p1] - yplt[j1];
       if(dy <= 0.0)dy = 1.0;
 
       for(k = 0; k < sd->nslicek; k++){
         float dz;
-        int k1;
+        int k1, k1p1;
 
-        k1 = sd->ks1 + k;
-        dz = zplt[k1+1] - zplt[k1];
+        k1 = MIN(sd->ks1+k,sd->ks2-2);
+        k1p1 = k1+1;
+        dz = zplt[k1p1] - zplt[k1];
         if(dz <= 0.0)dz = 1.0;
 
         n++;
@@ -1632,7 +1635,7 @@ void UpdateSliceHist(void){
 
         hist256j = hists256_slice + j;
         hist256j->time_defined = 1;
-        hist256j->time = slicei->times[j];
+        hist256j->time = slicei->times[MIN(j,slicei->ntimes-1)];
       }
       break;
     }
