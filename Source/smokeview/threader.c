@@ -48,7 +48,9 @@ void CompressSVZip2(void){
 void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
+#ifdef pp_ISOTHREAD
   pthread_mutex_init(&mutexTRIANGLES,NULL);
+#endif
   pthread_mutex_init(&mutexVOLLOAD,NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
