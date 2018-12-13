@@ -2465,6 +2465,9 @@ int RunScript(void){
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);
       break;
+    case SCRIPT_PLOT3DPROPS:
+      ScriptPlot3dProps(scripti);
+      break;
     case SCRIPT_POSVIEW:
       ScriptPosView(scripti);
       break;
