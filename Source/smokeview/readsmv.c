@@ -5528,7 +5528,8 @@ int ReadSMV(char *file, char *file2){
         // Allocate space for the values
         NewMemory((void **)&rampi->values,2*(rampi->nentries)*sizeof(float));
         // Next we want to read in all the entries
-        for (int j = 0; j < rampi->nentries; j++) {
+        int j;
+        for (j = 0; j < rampi->nentries; j++) {
           if(FGETS(buffer,255,stream)==NULL){
             BREAK;
           }
