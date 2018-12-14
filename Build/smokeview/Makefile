@@ -345,7 +345,7 @@ intel_osx_64q : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 intel_osx_64_db : LIB_DIR_PLAT = $(LIB_DIR)/intel_osx_64
 intel_osx_64_db : LIBS_PLAT =
 intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64_db : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64_db : CFLAGS    += -D pp_LUA
@@ -353,7 +353,7 @@ intel_osx_64_db : LIBS_PLAT += $(LIB_DIR_PLAT)/lua53.a
 intel_osx_64_db : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_osx_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_osx_64_db : LFLAGS    = -m64 -traceback -static-intel -framework OpenGL -framework GLUT -mmacosx-version-min=10.7
+intel_osx_64_db : LFLAGS    = -g -m64 -traceback -static-intel -framework OpenGL -framework GLUT -mmacosx-version-min=10.7
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
