@@ -2338,7 +2338,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
 
   float time;
-  int i, one, version;
+  int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *stream=NULL;
   int returncode;
@@ -2467,7 +2467,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   float patchmin_global, patchmax_global;
   int n;
   int error;
-  FILE_SIZE lenfile;
   FILE_SIZE return_filesize = 0;
   float total_time;
 
@@ -2511,12 +2510,16 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
   endian_smv = GetEndian();
-  lenfile = strlen(file);
 
 #ifdef pp_GEOMC
   GetGeomDataSize(file, &ntimes_local, &nvals, &error);
 #else
-  FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
+  {
+    int lenfile;
+
+    lenfile=strlen(file);
+    FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
+  }
 #endif
 
   if(nvals==0){
@@ -2534,14 +2537,17 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
 
   if(load_flag == UPDATE_HIST){
-    int filesize;
-
 #ifdef pp_GEOMC
-    filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
+    GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
 #else
+    {
+    int filesize,lenfile;
+
+    lenfile=strlen(file);
     FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    }
 #endif
     ResetHistogram(patchi->histogram, NULL, NULL);
     UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
@@ -2555,8 +2561,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
 #else
-    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    {
+      int lenfile;
+
+      lenfile=strlen(file);
+      FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+        patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    }
 #endif
     return_filesize += filesize;
   }
