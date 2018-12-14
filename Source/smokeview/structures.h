@@ -265,6 +265,15 @@ typedef struct _outlinedata {
   float *x2, *y2, *z2;
 } outlinedata;
 
+/* --------------------------  rampdata ------------------------------------- */
+
+typedef struct _rampdata {
+  char *name;
+  /* values a striped in the form t-f-t-f... */
+  int nentries;
+  float *values;
+} rampdata;
+
 /* --------------------------  labeldata ------------------------------------ */
 
 typedef struct _labeldata {

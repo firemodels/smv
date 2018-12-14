@@ -746,6 +746,10 @@ int lua_initsmvdata(lua_State *L) {
   lua_get_sliceinfo(L);
   lua_setglobal(L, "sliceinfo");
 
+  lua_get_rampinfo(L);
+  lua_setglobal(L, "rampinfo");
+
+
   lua_get_csvinfo(L);
   // csvinfo is currently on the stack
   // add a metatable to it.
@@ -1086,6 +1090,43 @@ int lua_get_sliceinfo(lua_State *L) {
 
     lua_pushstring(L, sliceinfo[i].slicedir);
     lua_setfield(L, -2, "slicedir");
+
+    lua_settable(L, -3);
+  }
+  return 1;
+}
+
+/*
+  Build a Lua table with information on the ramps of the model.
+*/
+// TODO: change this to use userdata instead
+int lua_get_rampinfo(lua_State *L) {
+  PRINTF("lua: initialising ramp table\n");
+  lua_createtable(L, 0, nrampinfo);
+  int i;
+  for (i = 0; i < nrampinfo; i++) {
+    lua_pushnumber(L, i+1);
+    lua_createtable(L, 0, 3);
+
+    if(rampinfo[i].name != NULL) {
+      lua_pushstring(L, rampinfo[i].name);
+      lua_setfield(L, -2, "name");
+    }
+
+    lua_createtable(L, 0, rampinfo[i].nentries);
+    int j;
+    for (j = 0; j < rampinfo[i].nentries; j++) {
+      lua_createtable(L, 0, 2);
+
+      lua_pushnumber(L, rampinfo[i].values[2*j]);
+      lua_setfield(L, -2, "t");
+
+      lua_pushnumber(L, rampinfo[i].values[2*j+1]);
+      lua_setfield(L, -2, "f");
+
+      lua_seti(L, -2, j+1);
+    }
+    lua_setfield(L, -2, "entries");
 
     lua_settable(L, -3);
   }
