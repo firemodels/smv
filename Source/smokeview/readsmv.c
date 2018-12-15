@@ -8773,7 +8773,7 @@ typedef struct {
       }
       else{
         if(trainer_mode==0){
-          fprintf(stderr,"*** Error: The file %s does not exist\n",buffer);
+          fprintf(stderr,"*** Warning: The file %s does not exist\n",buffer);
         }
         if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         npatchinfo--;
