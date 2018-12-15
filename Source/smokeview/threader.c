@@ -107,7 +107,7 @@ void UpdateTrianglesMT(void){
 /* ------------------ FinishUpdateTriangles ------------------------ */
 
 void FinishUpdateTriangles(void){
-  pthread_join(triangles_id, NULL);
+  if(iso_multithread==1)pthread_join(triangles_id, NULL);
 }
 
 /* ------------------ CancelUpdateTriangles ------------------------ */

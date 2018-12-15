@@ -15,19 +15,6 @@
 #include "interp.h"
 #include "smokeviewvars.h"
 
-#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
-                           FSEEK(STREAM,4,SEEK_CUR)
-
-#define HEADER_SIZE 4
-#define TRAILER_SIZE 4
-#define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
-                           fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
-                           FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
-
 void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
 void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, int level);
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
@@ -797,6 +784,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   FILE *SLICEFILE;
   float *time_local,*slicevals;
   int error;
+  int returncode;
 
   sd = sliceinfo + sd_index;
   if(sd->loaded==1)ReadSlice(sd->file,sd_index,UNLOAD,SET_SLICECOLOR,&error);
@@ -851,8 +839,8 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   }
   time_local=sd->times;
 
-  FORTSLICEREAD(time_local,1);
-  FORTSLICEREAD(slicevals,frame_size);
+  FORTREAD(time_local,1,SLICEFILE);
+  FORTREAD(slicevals,frame_size,SLICEFILE);
   fclose(SLICEFILE);
   return 0;
 }

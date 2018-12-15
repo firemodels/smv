@@ -8,7 +8,8 @@ BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
 # Set the C standard we are using. Currently this is just the appropriate flag
-# for gcc and is not applied to other compilers.
+# for gcc and is not applied to other compilers. Note the gnu89 option is
+# not available for windows Intel makefile entries
 C_STANDARD = -std=gnu89
 
 SMV_TESTFLAG =
@@ -73,7 +74,8 @@ else
 INC = -I $(SOURCE_DIR)/glut-3.7.6
 endif
 
-INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
+INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview \
+       -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 WININC = -I $(SOURCE_DIR)/GLINC -I $(SOURCE_DIR)/pthreads
 
 ifeq ($(LUA_SCRIPTING),true)
@@ -100,7 +102,8 @@ smvluacore: $(SMVLUACORE_FILES)
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\glut32.lib $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\glut32.lib $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib \
+               $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
 #--- OSX
 
@@ -150,9 +153,11 @@ no_target:
 # ------------- intel_win_64_db ----------------
 
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 -D pp_INTEL /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
+intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 -D pp_INTEL /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces \
+                              /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
 intel_win_64_db : CPPFLAGS  = /Od /W4 /debug:full /Zi -D _DEBUG -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CFLAGS    = $(CPPFLAGS)
+                              $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
 intel_win_64_db : CC        = icl
 intel_win_64_db : CPP       = icl
@@ -366,10 +371,10 @@ intel_osx_64_db : LFLAGS    = -m64 -traceback -static-intel -framework OpenGL -f
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
-intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
+intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64
 
-intel_osx_64_db : $(obj)
-	icpc -o $(bin)/$(exe) $(LFLAGS) $(obj)  -L $(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) $(INTEL_LIBS_OSX)
+intel_osx_64_db : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
+	icpc -o $(bin)/$(exe) $(LFLAGS) $(obj)  -L $(LIB_DIR_PLAT) $(SMV_LIBS_OSX) $(INTEL_LIBS_OSX) $(LIBLUA)
 
 # ------------- gnu_osx_64_db ----------------
 

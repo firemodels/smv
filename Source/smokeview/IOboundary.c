@@ -2327,11 +2327,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   return return_filesize;
 }
 
-#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           FSEEK(STREAM,4,SEEK_CUR)
-
 #ifdef pp_GEOMC
 /* ------------------ ReadGeomDataSize ------------------------ */
 

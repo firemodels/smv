@@ -1505,13 +1505,9 @@ void UpdateTriangles(int flag,int update){
   updating_triangles = 0;
 }
 
-#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
-                           FSEEK(STREAM,4,SEEK_CUR)
-
-#define FORTREADBR(var,count,STREAM) FORTREAD(var,(count),STREAM);if(returncode==0)break;
+#define FORTREADBR(var,count,STREAM) \
+                       FORTREAD(var,(count),STREAM);\
+                       if(returncode==0)break;
 
 /* ------------------ ReadGeomHeader0 ------------------------ */
 
