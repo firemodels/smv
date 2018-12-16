@@ -318,7 +318,7 @@ void DrawGeom(int flag, int timestate){
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+    if(usetexturebar==1){
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       glEnable(GL_TEXTURE_1D);
       glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
@@ -419,7 +419,7 @@ void DrawGeom(int flag, int timestate){
             vertj_index = vertj - trianglei->geomlisti->verts;
             vertval = vertvals[vertj_index];
             texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
-            colorbar_index = CLAMP((int)texture_val,0,255);
+            colorbar_index = CLAMP((int)(255.0*texture_val),0,255);
             color = iso_colorbar->colorbar+4*colorbar_index;
           }
 #endif
@@ -459,7 +459,7 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+    if(usetexturebar==1){
       glDisable(GL_TEXTURE_1D);
     }
 #endif
@@ -2943,9 +2943,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int color_indices[3];
           float t_level;
 
-
           trianglei = geomlisti->triangles + j;
-
           if(geomdata_smoothcolors==1){
             AverageGeomColors(geomlisti, j, ivals, color_indices);
             color0 = rgb_patch+4*color_indices[0];

@@ -950,6 +950,8 @@ SVEXTERN int rotation_type,eyeview_level;
 SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax, SVDECL(endian_smv,0);
+SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
+SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setslicemin,PERCENTILE_MIN), SVDECL(setslicemax,PERCENTILE_MAX);
 SVEXTERN int SVDECL(setslicemin_save,PERCENTILE_MIN), SVDECL(setslicemax_save,PERCENTILE_MAX);
 SVEXTERN int SVDECL(setpatchmin_save, PERCENTILE_MIN), SVDECL(setpatchmax_save, PERCENTILE_MAX);
