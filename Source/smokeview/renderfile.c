@@ -631,6 +631,9 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   if(render_frame != NULL&&itimes >= 0 && itimes < nglobal_times){
     render_frame[itimes]++;
   }
+  if(RenderTime==1&&output_slicedata==1){
+    OutputSliceData();
+  }
   PRINTF(" Completed\n");
   return 0;
 }

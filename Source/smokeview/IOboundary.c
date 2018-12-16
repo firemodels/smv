@@ -2327,6 +2327,131 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   return return_filesize;
 }
 
+#ifdef pp_GEOMC
+/* ------------------ ReadGeomDataSize ------------------------ */
+
+void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
+
+  float time;
+  int one, version;
+  int nvert_s, nvert_d, nface_s, nface_d;
+  FILE *stream=NULL;
+  int returncode;
+  int nvars_local, ntimes_local;
+
+  *error=1;
+  if(filename==NULL)return;
+  stream = fopen(filename,"rb");
+  if(stream==NULL)printf(" The boundary element file name, %s, does not exist",filename);
+
+  *error = 0;
+
+  FORTREAD(&one, 1, stream);
+  FORTREAD(&version, 1, stream);
+  ntimes_local = 0;
+  nvars_local = 0;
+  for(;;){
+    int nvals[4], nskip;
+
+    FORTREAD(&time, 1, stream);
+    if(returncode==0)break;
+    FORTREAD(nvals, 4, stream);
+    if(returncode==0)break;
+    nvert_s = nvals[0];
+    nface_s = nvals[1];
+    nvert_d = nvals[2];
+    nface_d = nvals[3];
+    nskip = 0;
+    if(nvert_s>0)nskip += 4 + 4*nvert_s + 4;
+    if(nface_s>0)nskip += 4 + 4*nface_s + 4;
+    if(nvert_d>0)nskip += 4 + 4*nvert_d + 4;
+    if(nface_d>0)nskip += 4 + 4*nface_d + 4;
+    if(fseek(stream, nskip, SEEK_CUR)!=0)break;
+    nvars_local += nvert_s+nvert_d+nface_s+nface_d;
+    ntimes_local++;
+  }
+  *nvars = nvars_local;
+  *ntimes = ntimes_local;
+  fclose(stream);
+}
+
+/* ------------------ ReadGeomData ------------------------ */
+
+FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals, int *error){
+  FILE_SIZE file_size;
+
+  int i, one, nvars;
+  int nvert_s, ntri_s, nvert_d, ntri_d;
+  int version;
+  int returncode;
+  float time;
+
+  FILE *stream;
+
+  file_size = 0;
+  *error = 1;
+  if(filename==NULL)return 0;
+  stream = fopen(filename, "rb");
+  if(stream==NULL){
+    printf(" The boundary file name %s does not exist\n",filename);
+    return 0;
+  }
+
+  *error = 0;
+  FORTREAD(&one, 1, stream);
+  FORTREAD(&version, 1, stream);
+  file_size = 2*(4+4+4);
+  nvars = 0;
+  for(i = 0; i<ntimes; i++){
+    int nvals[4];
+
+    FORTREAD(&time, 1, stream);
+    times[i] = time;
+    if(returncode==0)break;
+    file_size += (4+4+4);
+    FORTREAD(nvals, 4, stream);
+    nvert_s = nvals[0];
+    ntri_s = nvals[1];
+    nvert_d = nvals[2];
+    ntri_d = nvals[3];
+    file_size += (4+4*4+4);
+    nstatics[i] = nvert_s+ntri_s;
+
+    if(nvert_s>0){
+      FORTREAD(vals+nvars, nvert_s, stream);
+      if(returncode==0)break;
+      file_size += (4+4*nvert_s+4);
+    }
+    nvars += nvert_s;
+
+    if(ntri_s>0){
+      FORTREAD(vals+nvars, ntri_s, stream);
+      if(returncode==0)break;
+      file_size += (4+4*ntri_s+4);
+    }
+    nvars += ntri_s;
+
+    ndynamics[i] = nvert_d+ntri_d;
+    if(nvert_d>0){
+      FORTREAD(vals+nvars, nvert_d, stream);
+      if(returncode==0)break;
+      file_size += (4+4*nvert_d+4);
+    }
+    nvars += nvert_d;
+
+    if(ntri_d>0){
+      FORTREAD(vals+nvars, ntri_d, stream);
+      if(returncode==0)break;
+      file_size += (4+4*ntri_d+4);
+    }
+    nvars += ntri_d;
+  }
+  fclose(stream);
+  return file_size;
+}
+
+#endif
+
 /* ------------------ ReadGeomData ------------------------ */
 
 FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
@@ -2337,7 +2462,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   float patchmin_global, patchmax_global;
   int n;
   int error;
-  FILE_SIZE lenfile;
   FILE_SIZE return_filesize = 0;
   float total_time;
 
@@ -2381,12 +2505,20 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
   endian_smv = GetEndian();
-  lenfile = strlen(file);
 
-  FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
+#ifdef pp_GEOMC
+  GetGeomDataSize(file, &ntimes_local, &nvals, &error);
+#else
+  {
+    int lenfile;
+
+    lenfile=strlen(file);
+    FORTgetgeomdatasize(file, &ntimes_local, &nvals, &error, lenfile);
+  }
+#endif
 
   if(nvals==0){
-    PRINTF("***warning: no data in %s\n", file);
+    if(load_flag!=UPDATE_HIST)PRINTF(" - no data\n");
     return 0;
   }
   if(nvals>0&&ntimes_local>0){
@@ -2400,10 +2532,18 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
 
   if(load_flag == UPDATE_HIST){
-    int filesize;
+#ifdef pp_GEOMC
+    GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
+#else
+    {
+    int filesize,lenfile;
 
+    lenfile=strlen(file);
     FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    }
+#endif
     ResetHistogram(patchi->histogram, NULL, NULL);
     UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
     CompleteHistogram(patchi->histogram);
@@ -2412,8 +2552,18 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else{
     int filesize;
 
-    FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+#ifdef pp_GEOMC
+    filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
+#else
+    {
+      int lenfile;
+
+      lenfile=strlen(file);
+      FORTgetgeomdata(file, &ntimes_local, &nvals, patchi->geom_times,
+        patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &filesize, &error, lenfile);
+    }
+#endif
     return_filesize += filesize;
   }
 

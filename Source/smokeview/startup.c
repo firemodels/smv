@@ -968,6 +968,7 @@ void InitOpenGL(void){
       if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
     }
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+    CancelUpdateTriangles();
     for(i = 0; i<nisoinfo; i++){
       isodata *isoi;
 
@@ -977,7 +978,7 @@ void InitOpenGL(void){
         ReadIso(isoi->file, i, LOAD,NULL, &errorcode);
       }
     }
-    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+    if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     for(i = 0; i<nvsliceinfo; i++){
       vslicedata *vslicei;

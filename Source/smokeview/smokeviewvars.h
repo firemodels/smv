@@ -20,6 +20,11 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(cancel_update_triangles, 0);
+SVEXTERN int SVDECL(updating_triangles, 0);
+SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
+SVEXTERN int SVDECL(lighting_on,0);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
 #ifdef pp_TISO
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
@@ -31,7 +36,7 @@ SVEXTERN int SVDECL(show_iso_color, 1);
 
 SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 #ifdef pp_CSLICE
-SVEXTERN int SVDECL(use_cslice, 0);
+SVEXTERN int SVDECL(use_cslice, 1);
 #endif
 SVEXTERN int SVDECL(iso_transparency_option, 1);
 SVEXTERN int SVDECL(iso_opacity_change, 1);
@@ -306,8 +311,10 @@ SVEXTERN int SVDECL(force_UpdateHistograms, 1);
 SVEXTERN float SVDECL(geom_vert_exag, 1.0);
 SVEXTERN float SVDECL(geom_vecfactor, .030);
 SVEXTERN int SVDECL(geom_ivecfactor, 30);
-SVEXTERN int SVDECL(geom_outline_ioffset, 5);
-SVEXTERN float SVDECL(geom_outline_offset,0.005);
+SVEXTERN int SVDECL(geom_outline_ioffset, 1);
+SVEXTERN float SVDECL(geom_outline_offset,0.001);
+SVEXTERN int SVDECL(iso_outline_ioffset, 1);
+SVEXTERN float SVDECL(iso_outline_offset, 0.001);
 SVEXTERN float SVDECL(geom_max_angle, 30.0), cos_geom_max_angle;
 SVEXTERN int SVDECL(use_max_angle, 1);
 SVEXTERN int SVDECL(update_setvents, 0);

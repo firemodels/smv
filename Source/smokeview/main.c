@@ -570,6 +570,7 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-runscript", 10) == 0){
       from_commandline = 1;
+      iso_multithread=0;
 #ifdef pp_LUA
       strcpy(script_filename, "");
 #endif
@@ -578,6 +579,7 @@ void ParseCommandline(int argc, char **argv){
 #ifdef pp_LUA
     else if(strncmp(argv[i], "-runluascript", 13) == 0){
       from_commandline = 1;
+      iso_multithread=0;
       strcpy(luascript_filename, "");
       strncpy(luascript_filename, fdsprefix, 1020);
       strcat(luascript_filename, ".lua");
@@ -608,6 +610,7 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-script", 7) == 0){
       from_commandline = 1;
+      iso_multithread=0;
       ++i;
       if(i < argc){
         char scriptbuffer[256];
@@ -622,6 +625,7 @@ void ParseCommandline(int argc, char **argv){
 #ifdef pp_LUA
     else if(strncmp(argv[i], "-luascript", 10) == 0){
       from_commandline = 1;
+      iso_multithread=0;
       ++i;
       if(i < argc){
         strncpy(luascript_filename, argv[i], 1024);

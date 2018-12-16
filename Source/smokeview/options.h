@@ -34,6 +34,8 @@
 #define pp_TISO         // color isosurfaces with a 2nd quantity
 #define pp_SLICE_USE_ID     // use slcf index
 //#define pp_ISOTIME      // output iso load times
+#define pp_ISOTHREAD    // use multithreading for isosufraces
+#define pp_GEOMC        // use C to read in boundary geometry files
 
 //#define pp_SPECTRAL
 

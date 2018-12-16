@@ -184,6 +184,8 @@ void StartScript(void){
   }
   GluiScriptDisable();
   current_script_command=scriptinfo-1;
+  iso_multithread_save = iso_multithread;
+  iso_multithread = 0;
 }
 
 /* ------------------ GetPointer ------------------------ */
@@ -1139,6 +1141,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   if(index > nmeshes - 1)index = -1;
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+  CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
     int errorcode;
     isodata *isoi;
@@ -1149,7 +1152,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
       count++;
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -1268,6 +1271,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
   PRINTF("script: loading isosurface files of type: %s\n\n",scripti->cval);
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
+  CancelUpdateTriangles();
   for(i = 0; i<nisoinfo; i++){
     int errorcode;
     isodata *isoi;
@@ -1292,7 +1296,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
       }
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(count == 0){
     fprintf(stderr, "*** Error: Isosurface files of type %s failed to load\n", scripti->cval);
@@ -1916,13 +1920,14 @@ void ScriptLoadFile(scriptdata *scripti){
       return;
     }
   }
+  CancelUpdateTriangles();
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
 
     isoi = isoinfo + i;
     if(strcmp(isoi->file,scripti->cval)==0){
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
-      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup();
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup(FOREGROUND);
       return;
     }
   }
@@ -2459,6 +2464,9 @@ int RunScript(void){
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);
+      break;
+    case SCRIPT_PLOT3DPROPS:
+      ScriptPlot3dProps(scripti);
       break;
     case SCRIPT_POSVIEW:
       ScriptPosView(scripti);

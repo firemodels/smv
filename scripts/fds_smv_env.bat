@@ -19,7 +19,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="26-Sep-2018"
+set smvlogdate="14-Dec-2018"
 
 :: ---- repo locations ----
 
@@ -72,7 +72,7 @@ set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-set osx_hostname=floga.el.nist.gov
+set osx_hostname=ignis.el.nist.gov
 ::set osx_hostname=192.168.1.13
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
