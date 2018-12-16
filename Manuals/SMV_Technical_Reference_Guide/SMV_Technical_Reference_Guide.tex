@@ -1532,6 +1532,53 @@ $N_1$ and $N_2$ as
 N=\frac{1}{1/N_1+1/N_2}
 \end{eqnarray}
 
+\paragraph{Isosurface opacity}Consider a portion of an isosurface oriented at an angle $\theta$ from
+the observer,as illustrated in Figure \ref{fig:isosetup}.  The vector $\vec{n}$ represents the direction
+perpendicular from the surface and the vector $\vec{v}$ represents the direction from the surface to the observer.
+The distance $\Delta\hat{x}$ through the surface from the point of view
+of the observer is then given by
+\begin{equation}
+\frac{\Delta \hat{x}}{\Delta x}=\frac{1}{\cos\theta}=
+\frac{||\vec{n}||~||v||}{\vec{n}\cdot\vec{v}}
+\end{equation}
+\noindent where $\theta$ is the angle between $\vec{n}$ and $\vec{v}$.
+Let $\alpha=1-\exp(A\Delta x)$ represent the opacity corresponding to
+a surface thicness $\Delta x$.  Then the opacity when the surface is
+oriented an angle $\theta$ with resepect to the observer is given by
+\begin{eqnarray*}
+\hat{\alpha}&=&1-e^{A\Delta\hat{x}}\\
+&=&1-(e^{A\Delta x})^\frac{\Delta \hat{x}}{\Delta x}\\
+&=&1-(1-\alpha)^\frac{\Delta\hat{x}}{\Delta x}\\
+&=&1-(1-\alpha)^\frac{||\vec{n}||~||\vec{v}||}{\vec{n}\cdot\vec{v}}
+\end{eqnarray*}
+
+
+\begin{figure}[bph]
+\begin{center}
+\includegraphics[width=5.0in]{\SMVfigdir/iso_setup}
+\end{center}
+\caption[Setup for determining isosurface opacity as a function of orientation.]
+{Setup for determining isosurface opacity as a function of orientation.
+The vectors $\vec{n}$ and $\vec{v}$ represent the direction perpendicular to the surface
+and the direction from the surface to the observer.}
+
+\label{fig:isosetup}%
+\end{figure}
+
+Figure \ref{fig:isoexample} shows an example of an isosurface using this equation for modeling opacity.
+
+\begin{figure}[bph]
+\begin{center}
+\includegraphics[width=5.0in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_iso_solid_30}
+\end{center}
+\caption
+{Isosurface with variable opacity. The isosurface opacity changes as a function of orienttion 
+with repsect to the observer.}
+
+\label{fig:isoexample}%
+\end{figure}
+
+
 \section{Particle Systems}
 \subsection{Massless Particles}
 FDS uses particles as tracer elements to allow one to visualize

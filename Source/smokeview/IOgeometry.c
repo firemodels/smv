@@ -16,16 +16,30 @@ edgedata *edge_list;
 tridata *triangle_list;
 tetdata *volume_list;
 
-/* ------------------ CalcTriNormal ------------------------ */
+/* ------------------ GetTriangleNormal ------------------------ */
 
-void CalcTriNormal(float *v1, float *v2, float *v3, float *norm){
+void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area){
   float u[3], v[3];
+  float maxu=0.0, maxv=0.0;
   int i;
 
   for(i=0;i<3;i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
+    maxu = MAX(ABS(u[i]), maxu);
+    maxv = MAX(ABS(v[i]), maxv);
   }
+  if(maxu>0.0){
+    for(i = 0;i<3;i++){
+      u[i] /= maxu;
+    }
+  }
+  if(maxv>0.0){
+    for(i = 0;i<3;i++){
+      v[i] /= maxv;
+    }
+  }
+
   /*
      i   j  k
      ux uy uz
@@ -34,6 +48,12 @@ void CalcTriNormal(float *v1, float *v2, float *v3, float *norm){
   norm[0]=u[1]*v[2]-u[2]*v[1];
   norm[1]=u[2]*v[0]-u[0]*v[2];
   norm[2]=u[0]*v[1]-u[1]*v[0];
+  if(maxu>0.0&&maxv>0.0){
+    *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]))/(maxu*maxv);
+  }
+  else{
+    *area = 0.0;
+  }
   ReduceToUnit(norm);
 }
 
@@ -693,14 +713,21 @@ void DrawGeom(int flag, int timestate){
 
     last_color=NULL;
     if(geomlisti->ntriangles>0){
+      float line_offset;
+
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glLineWidth(geom_linewidth);
+      if(geomi->geomtype==GEOM_ISO){
+        glLineWidth(isolinewidth);
+        line_offset = iso_outline_offset;
+      }
+      else{
+        glLineWidth(geom_linewidth);
+        line_offset = geom_outline_offset;
+      }
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
-        float *xyzptr[3];
-        float *xyznorm;
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
@@ -715,13 +742,6 @@ void DrawGeom(int flag, int timestate){
           if(show_iso_outline == 0)continue;
         }
 
-        xyznorm=trianglei->tri_norm;
-        glNormal3fv(xyznorm);
-
-        xyzptr[0] = trianglei->verts[0]->xyz;
-        xyzptr[1] = trianglei->verts[1]->xyz;
-        xyzptr[2] = trianglei->verts[2]->xyz;
-
         if(show_iso_shaded==1){
           color = black;
         }
@@ -733,22 +753,38 @@ void DrawGeom(int flag, int timestate){
           last_color=color;
         }
         {
-          int ind[6] = {0, 1, 1, 2, 2, 0};
+          float vert2a[3], vert2b[3], vert2c[3];
+          float     *xyz0,     *xyz1,     *xyz2;
+          float    *norm0,    *norm1,    *norm2;
+          vertdata *vert0,    *vert1,    *vert2;
           int k;
 
-          for(k = 0; k < 6; k++){
-            float *xyzval, *pknorm, xyzval2[3];
-            vertdata *pk;
+          vert0 = trianglei->verts[0];
+          vert1 = trianglei->verts[1];
+          vert2 = trianglei->verts[2];
 
-            pk = trianglei->verts[ind[k]];
-            pknorm = pk->vert_norm;
-            xyzval = xyzptr[ind[k]];
+          xyz0  = vert0->xyz;
+          xyz1  = vert1->xyz;
+          xyz2  = vert2->xyz;
 
-            VEC3EQ(xyzval2, pknorm);
-            VEC3MA(xyzval2, geom_outline_offset);
-            VEC3ADD(xyzval2, xyzval2, xyzval);
-            glVertex3fv(xyzval2);
+          norm0 = vert0->vert_norm;
+          norm1 = vert1->vert_norm;
+          norm2 = vert2->vert_norm;
+
+          for(k=0;k<3;k++){
+            vert2a[k] = xyz0[k] + line_offset*norm0[k];
+            vert2b[k] = xyz1[k] + line_offset*norm1[k];
+            vert2c[k] = xyz2[k] + line_offset*norm2[k];
           }
+
+          glVertex3fv(vert2a);
+          glVertex3fv(vert2b);
+
+          glVertex3fv(vert2b);
+          glVertex3fv(vert2c);
+
+          glVertex3fv(vert2c);
+          glVertex3fv(vert2a);
         }
       }
       glEnd();
@@ -1050,10 +1086,14 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
 
           trianglek = vertj->triangles[k];
           tri_normk = trianglek->tri_norm;
-          norm[0]+=tri_normk[0];
-          norm[1]+=tri_normk[1];
-          norm[2]+=tri_normk[2];
+          norm[0] += trianglek->area*tri_normk[0];
+          norm[1] += trianglek->area*tri_normk[1];
+          norm[2] += trianglek->area*tri_normk[2];
         }
+        ReduceToUnit(norm);
+        vertj->vert_norm[0] = norm[0];
+        vertj->vert_norm[1] = norm[1];
+        vertj->vert_norm[2] = norm[2];
       }
       else{
         for(k = 0; k<vertj->ntriangles; k++){
@@ -1069,14 +1109,17 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
           if(lengthk > 0.0&&lengthi > 0.0){
             cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
             if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
-              norm[0]+=tri_normk[0];
-              norm[1]+=tri_normk[1];
-              norm[2]+=tri_normk[2];
+              norm[0] += trianglek->area*tri_normk[0];
+              norm[1] += trianglek->area*tri_normk[1];
+              norm[2] += trianglek->area*tri_normk[2];
             }
           }
         }
+        ReduceToUnit(norm);
+        vertj->vert_norm[0] = norm[0];
+        vertj->vert_norm[1] = norm[1];
+        vertj->vert_norm[2] = norm[2];
       }
-      ReduceToUnit(norm);
     }
   }
   for(i = 0; i < geomlisti->nverts; i++){
@@ -1123,29 +1166,54 @@ void UpdateGeomNormals(void){
 
 void UpdateTriangles(int flag,int update){
   int j, ii, ntimes;
+  int ntimes_max=0;
+
+  LOCK_TRIANGLES;
+  GetGeomInfoPtrs(0);
+  updating_triangles = 1;
+  UNLOCK_TRIANGLES;
+  if(cancel_update_triangles==1){
+    updating_triangles = 0;
+    return;
+  }
 
   if(update==GEOM_UPDATE_NORMALS){
     UpdateGeomNormals();
+    updating_triangles = 0;
     return;
   }
   for(j=0;j<ngeominfoptrs;j++){
     geomdata *geomi;
-    float *xyzptr[3];
-    float *xyznorm;
-    int i;
-    int iend;
 
     geomi = geominfoptrs[j];
     if(geomi->loaded==0||geomi->display==0)continue;
     if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
+    ntimes_max=MAX(ntimes_max,geomi->ntimes);
+  }
+  if(cancel_update_triangles==1){
+    updating_triangles = 0;
+    return;
+  }
 
-    iend = geomi->ntimes;
-    if(geomi->currentframe != NULL)iend = 1;
+  for(ii=-1;ii<ntimes_max;ii++){
+    geomlistdata *geomlisti;
+    int ntriangles;
+    tridata **triangles;
 
-    for(ii=-1;ii<iend;ii++){
-      geomlistdata *geomlisti;
-      int ntriangles;
-      tridata **triangles;
+    for(j=0;j<ngeominfoptrs;j++){
+      geomdata *geomi;
+      float *xyzptr[3];
+      float *xyznorm;
+      int i;
+
+      if(cancel_update_triangles==1){
+        updating_triangles = 0;
+        return;
+      }
+      geomi = geominfoptrs[j];
+      if(ii>geomi->ntimes-1)continue;
+      if(geomi->loaded==0||geomi->display==0)continue;
+      if(geomi->geomtype!=GEOM_GEOM && geomi->geomtype!=GEOM_ISO)continue;
 
       if(ii==-1||geomi->currentframe==NULL){
         geomlisti = geomi->geomlistinfo + ii;
@@ -1153,6 +1221,8 @@ void UpdateTriangles(int flag,int update){
       else{
         geomlisti = geomi->currentframe;
       }
+      if(geomlisti-geomi->geomlistinfo!=ii)continue;
+
       for(i=0;i<geomlisti->ntriangles;i++){
         tridata *trianglei;
         vertdata **verts;
@@ -1164,7 +1234,7 @@ void UpdateTriangles(int flag,int update){
         xyzptr[1] = verts[1]->xyz;
         xyzptr[2] = verts[2]->xyz;
         xyznorm = trianglei->tri_norm;
-        CalcTriNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm);
+        GetTriangleNormal(xyzptr[0],xyzptr[1],xyzptr[2],xyznorm,&trianglei->area);
       }
       for(i=0;i<geomlisti->nverts;i++){
         vertdata *verti;
@@ -1185,16 +1255,11 @@ void UpdateTriangles(int flag,int update){
 
       // count number of triangles
 
-      ntriangles = 0;
-      for(i = 0; i<geomlisti->nverts; i++){
-        vertdata *verti;
-
-        verti = geomlisti->verts + i;
-        ntriangles += verti->ntriangles;
-      }
+      ntriangles = 3*geomlisti->ntriangles;
 
       // allocate triangle pointers
 
+      FREEMEMORY(geomlisti->connected_triangles);
       FREEMEMORY(geomlisti->triangleptrs);
       if(ntriangles>0){
         NewMemoryMemID((void **)&triangles, ntriangles*sizeof(tridata *), geomi->memory_id);
@@ -1247,6 +1312,12 @@ void UpdateTriangles(int flag,int update){
 
   // identify and count verts on mesh surfaces
 
+      if(cancel_update_triangles==1){
+        updating_triangles = 0;
+        FREEMEMORY(surface_verts);
+        FREEMEMORY(match_verts);
+        return;
+      }
       nsurface_verts = 0;
       for(j = 0; j<ngeominfoptrs; j++){
         geomlistdata *geomlisti;
@@ -1431,15 +1502,12 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(vertnormals);
     FREEMEMORY(trinormals);
   }
+  updating_triangles = 0;
 }
 
-#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
-                           FSEEK(STREAM,4,SEEK_CUR)
-
-#define FORTREADBR(var,count,STREAM) FORTREAD(var,(count),STREAM);if(returncode==0)break;
+#define FORTREADBR(var,count,STREAM) \
+                       FORTREAD(var,(count),STREAM);\
+                       if(returncode==0)break;
 
 /* ------------------ ReadGeomHeader0 ------------------------ */
 
@@ -1686,10 +1754,12 @@ void InitGeomlist(geomlistdata *geomlisti){
 #endif
   geomlisti->triangles = NULL;
   geomlisti->triangleptrs = NULL;
+  geomlisti->connected_triangles = NULL;
   geomlisti->volumes = NULL;
   geomlisti->nverts = 0;
   geomlisti->ntriangles = 0;
   geomlisti->nvolumes = 0;
+  geomlisti->norms_defined = 0;
 }
 
 /* ------------------ ReadGeom0 ------------------------ */
@@ -2604,6 +2674,201 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   return return_filesize;
 }
 
+/* ------------------ RemoveDuplicateVertices ------------------------ */
+
+void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
+  int j, *vert_map=NULL;
+
+  if(nverts>0){
+    NewMemory((void **)&vert_map, nverts*sizeof(int));
+    for(j = 0; j<nverts; j++){
+      vert_map[j] = j;
+    }
+  }
+  for(j = 0; j<nverts; j++){
+    int k;
+    vertdata *vertj;
+    float *xyzj;
+
+    vertj = verts+j;
+    xyzj = vertj->xyz;
+    for(k = 0; k<j; k++){
+      vertdata *vertk;
+      float *xyzk;
+
+      vertk = verts+k;
+      xyzk = vertk->xyz;
+      if(MAXDIFF3(xyzj, xyzk)<0.0001){
+        vert_map[j] = k;
+        break;
+      }
+    }
+  }
+  for(j = 0; j<ntriangles;j++){
+    tridata *trianglei;
+    int *vert_index;
+
+    trianglei = triangles+j;
+    vert_index = trianglei->vert_index;
+    vert_index[0] = vert_map[vert_index[0]];
+    vert_index[1] = vert_map[vert_index[1]];
+    vert_index[2] = vert_map[vert_index[2]];
+    trianglei->verts[0] = verts+vert_index[0];
+    trianglei->verts[1] = verts+vert_index[1];
+    trianglei->verts[2] = verts+vert_index[2];
+  }
+  if(nverts>0)FREEMEMORY(vert_map);
+}
+
+/* ------------------ UpdatePatchGeomTriangles ------------------------ */
+
+void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  tridata **connected_triangles;
+  int ntris, nverts, nconnected_triangles=0;
+  int j;
+
+  if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
+  geomi = patchi->geominfo;
+  if(geomi==NULL||geomi->display==0||geomi->loaded==0)return;
+
+  if(geom_type==GEOM_STATIC){
+    geomlisti = geomi->geomlistinfo-1;
+  }
+  else{
+    geomlisti = geomi->geomlistinfo+geomi->itime;
+  }
+
+    // initialize
+
+  ntris = geomlisti->ntriangles;
+  nverts = geomlisti->nverts;
+
+  RemoveDuplicateVertices(geomlisti->verts, nverts, geomlisti->triangles, ntris);
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts+j;
+    vert->ntriangles=0;
+    vert->itriangle = 0;
+  }
+
+    // compute normal vector for each triangle
+
+  for(j = 0; j<ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles+j;
+    verts = trianglei->verts;
+    verts[0]->ntriangles++;
+    verts[1]->ntriangles++;
+    verts[2]->ntriangles++;
+    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm, &trianglei->area);
+  }
+
+    // allocate memory for total number of connected triangles
+
+  nconnected_triangles = 3*ntris;
+  if(nconnected_triangles>0){
+    NewMemory((void **)&connected_triangles,nconnected_triangles*sizeof(tridata *));
+    geomlisti->connected_triangles = connected_triangles;
+  }
+
+    // associate assign triangle to each vertex
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts+j;
+    vert->triangles = connected_triangles;
+    connected_triangles += vert->ntriangles;
+  }
+  for(j = 0; j<ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles+j;
+    verts = trianglei->verts;
+    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
+    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
+    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
+  }
+
+    // average normals for each vertex
+
+  for(j = 0; j<nverts; j++){
+    vertdata *vert;
+    float *vert_norm;
+
+    vert = geomlisti->verts+j;
+    vert_norm = vert->vert_norm;
+    if(vert->ntriangles>0){
+      int k;
+
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 0.0;
+      for(k = 0; k<vert->ntriangles; k++){
+        tridata *tri;
+
+        tri = vert->triangles[k];
+        vert_norm[0] += tri->area*tri->vert_norm[0];
+        vert_norm[1] += tri->area*tri->vert_norm[1];
+        vert_norm[2] += tri->area*tri->vert_norm[2];
+      }
+      ReduceToUnit(vert_norm);
+    }
+    else{
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 1.0;
+    }
+  }
+  geomlisti->norms_defined = 1;
+}
+
+/* ------------------ AverageGeomColors ------------------------ */
+
+void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *ivals, int *color_indices){
+  int i;
+  tridata *trianglei;
+
+  trianglei = geomlisti->triangles+itriangle;
+  for(i = 0; i<3; i++){
+    vertdata *verti;
+
+    verti = trianglei->verts[i];
+    if(verti->ntriangles>0){
+      int j, color_index;
+      float total_area;
+
+      color_index = 0;
+      total_area = 0.0;
+      for(j = 0; j<verti->ntriangles; j++){
+        int trij_index;
+        tridata *trianglei;
+
+        trianglei = verti->triangles[j];
+        trij_index = trianglei-geomlisti->triangles;
+        color_index += trianglei->area*ivals[trij_index];
+        total_area += trianglei->area;
+      }
+      if(total_area>0.0){
+        color_indices[i] = color_index/total_area;
+      }
+      else{
+        color_indices[i] = ivals[itriangle];
+      }
+    }
+    else{
+      color_indices[i] = ivals[itriangle];
+    }
+  }
+}
+
 /* ------------------ DrawGeomData ------------------------ */
 
 void DrawGeomData(int flag, patchdata *patchi, int geom_type){
@@ -2631,7 +2896,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       geomlistdata *geomlisti;
       int ntris;
       int j;
-      float *color;
 
       geomi = patchi->geominfo;
       if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)continue;
@@ -2641,6 +2905,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       else{
         geomlisti = geomi->geomlistinfo + geomi->itime;
       }
+     if(geomlisti->norms_defined==0){
+        UpdatePatchGeomTriangles(patchi, geom_type);
+     }
 
       ntris = geomlisti->ntriangles;
       if(ntris == 0)continue;
@@ -2649,8 +2916,11 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
         ENABLE_LIGHTING;
+      }
+      else{
+        DISABLE_LIGHTING;
       }
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
@@ -2661,20 +2931,35 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glBegin(GL_TRIANGLES);
-      if(smooth_iso_normal == 0){
+      if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
+       ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
+        ){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
-          float *xyznorm;
           tridata *trianglei;
           int color_index;
+          float *color;
+          float *color0, *color1, *color2;
+          int color_indices[3];
+          float t_level;
+
 
           trianglei = geomlisti->triangles + j;
 
-          xyznorm = trianglei->tri_norm;
-          glNormal3fv(xyznorm);
+          if(geomdata_smoothcolors==1){
+            AverageGeomColors(geomlisti, j, ivals, color_indices);
+            color0 = rgb_patch+4*color_indices[0];
+            color1 = rgb_patch+4*color_indices[1];
+            color2 = rgb_patch+4*color_indices[2];
+          }
+          else{
+            color_index = ivals[j];
+            color = rgb_patch+4*color_index;
+            color0 = color;
+            color1 = color;
+            color2 = color;
+          }
 
-          color_index = ivals[j];
-          color = rgb_patch + 4 * color_index;
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
@@ -2682,27 +2967,39 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
             if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else if(trianglei->geomtype == GEOM_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else{
-            glColor3fv(color);
+            t_level = 1.0;
           }
+          glColor4f(color0[0], color0[1], color0[2], t_level);
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
+          if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
+          glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
+
+          glColor4f(color1[0], color1[1], color1[2], t_level);
           glVertex3fv(xyzptr[1]);
+
+          glColor4f(color2[0], color2[1], color2[2], t_level);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
+            glColor4f(color0[0], color0[1], color0[2], t_level);
             glVertex3fv(xyzptr[0]);
+
+            glColor4f(color2[0], color2[1], color2[2], t_level);
             glVertex3fv(xyzptr[2]);
+
+            glColor4f(color1[0], color1[1], color1[2], t_level);
             glVertex3fv(xyzptr[1]);
           }
         }
@@ -2711,13 +3008,15 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
           float *xyznorm[3];
-          tridata *trianglei;
+          int color_indices[3];
           int color_index;
+          float *color;
+          tridata *trianglei;
+          float *color0, *color1, *color2;
+          float  t_level;
 
-          trianglei = geomlisti->triangles + j;
+          trianglei = geomlisti->triangles+j;
 
-          color_index = ivals[j];
-          color = rgb_patch + 4 * color_index;
           if(patchi->structured == NO&&patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
@@ -2725,14 +3024,28 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
             if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
-            glColor4f(color[0], color[1], color[2], transparent_level);
+            t_level = transparent_level;
           }
           else{
-            glColor3fv(color);
+            t_level = 1.0;
+          }
+
+          if(geomdata_smoothcolors==1){
+            AverageGeomColors(geomlisti, j, ivals, color_indices);
+            color0 = rgb_patch+4*color_indices[0];
+            color1 = rgb_patch+4*color_indices[1];
+            color2 = rgb_patch+4*color_indices[2];
+          }
+          else{
+            color_index = ivals[j];
+            color = rgb_patch+4*color_index;
+            color0 = color;
+            color1 = color;
+            color2 = color;
           }
 
           xyzptr[0] = trianglei->verts[0]->xyz;
@@ -2743,23 +3056,24 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           xyznorm[1] = trianglei->verts[1]->vert_norm;
           xyznorm[2] = trianglei->verts[2]->vert_norm;
 
-          glNormal3fv(xyznorm[0]);
+          if(lighting_on==1)glNormal3fv(xyznorm[0]);
+          glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
 
-          glNormal3fv(xyznorm[1]);
+          if(lighting_on==1)glNormal3fv(xyznorm[1]);
+          glColor4f(color1[0], color1[1], color1[2], t_level);
           glVertex3fv(xyzptr[1]);
 
-          glNormal3fv(xyznorm[2]);
+          if(lighting_on==1)glNormal3fv(xyznorm[2]);
+          glColor4f(color2[0], color2[1], color2[2], t_level);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-            glNormal3fv(xyznorm[0]);
+            glColor4f(color0[0], color0[1], color0[2], t_level);
             glVertex3fv(xyzptr[0]);
-
-            glNormal3fv(xyznorm[1]);
+            glColor4f(color2[0], color2[1], color2[2], t_level);
             glVertex3fv(xyzptr[2]);
-
-            glNormal3fv(xyznorm[2]);
+            glColor4f(color1[0], color1[1], color1[2], t_level);
             glVertex3fv(xyzptr[1]);
           }
         }
@@ -2768,7 +3082,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPopMatrix();
       glDisable(GL_COLOR_MATERIAL);
       if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-        DISABLE_LIGHTING;
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
+          DISABLE_LIGHTING;
+        }
       }
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
@@ -3008,10 +3324,24 @@ int CompareTransparentTriangles(const void *arg1, const void *arg2){
 
 /* ------------------ GetGeomInfoPtrs ------------------------ */
 
-void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
-  geomdata **gptr;
-  int i, count = 0, hide_geom = 0;
+void GetGeomInfoPtrs(int flag){
+  int i, hide_geom = 0;
+  geomdata **gptr = NULL;
 
+  if(flag==1){
+    int count;
+
+    count = nisoinfo+ngeominfo;
+    if(count>0){
+      NewMemory((void **)&gptr, count*sizeof(geomdata *));
+    }
+    geominfoptrs = gptr;
+    return;
+  }
+
+  if(updating_triangles==1)return;
+
+  gptr = geominfoptrs;
   hide_geom = 0;
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
@@ -3023,15 +3353,15 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     }
   }
 
-  count=0;
+  // count size of geominfoptrs array
+
+  ngeominfoptrs=0;
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    if(geomi->loaded==0||geomi->display==0)continue;
-    if(geomi->geomtype!=GEOM_GEOM)continue;
-    if(hide_geom==1&&geomi->geomtype==GEOM_GEOM)continue;
-    count++;
+    // hide geometry if we are displaying a boundary file over top of it
+    if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom==0)ngeominfoptrs++;
   }
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
@@ -3042,25 +3372,16 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     geomi = isoi->geominfo;
     if(geomi==NULL)continue;
     if(geomi->loaded==0||geomi->display==0)continue;
-    count++;
+    ngeominfoptrs++;
   }
-  *ngeominfoptrs_local=count;
-  if(count>0){
-    NewMemory((void **)&gptr,count*sizeof(geomdata *));
-  }
-  else{
-    *geominfoptrs_local=NULL;
-    return;
-  }
-  *geominfoptrs_local=gptr;
+
+  // put pointers into geominfoptrs array
+
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    if(geomi->loaded==0||geomi->display==0)continue;
-    if(geomi->geomtype!=GEOM_GEOM)continue;
-    if(hide_geom == 1 && geomi->geomtype == GEOM_GEOM)continue;
-    *gptr++=geomi;
+    if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom == 0)*gptr++=geomi;
   }
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
@@ -3069,7 +3390,7 @@ void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local){
     isoi = isoinfo + i;
     if(isoi->loaded==0||isoi->display==0)continue;
     geomi = isoi->geominfo;
-    if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi==NULL||geomi->loaded==0||geomi->display==0)continue;
     *gptr++=geomi;
   }
 }

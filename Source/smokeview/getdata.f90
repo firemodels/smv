@@ -1157,10 +1157,9 @@ nxsp = is2 + 1 - is1
 nysp = js2 + 1 - js1
 nzsp = ks2 + 1 - ks1
 nframe=nxsp*nysp*nzsp
+if(redirect_flag.eq.0)write(6,*)"outputt slice data to ",trim(slicefilename)
 do i = 1, ntimes
   write(file_unit)times(i)
-  if(redirect_flag.eq.0)write(6,10)times(i)
-10 format(" outputting slice time=",f10.2)
   ibeg=1+(i-1)*nframe
   iend=i*nframe
   write(file_unit)(qdata(ii),ii=ibeg,iend)

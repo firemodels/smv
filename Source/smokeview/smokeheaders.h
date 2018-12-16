@@ -111,7 +111,7 @@ EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *GetColorTable(char *label);
 EXTERNCPP void UpdateIsoColorlevel(void);
-EXTERNCPP void ReadIsoGeomWrapup(void);
+EXTERNCPP void ReadIsoGeomWrapup(int flag);
 EXTERNCPP void PSystem(char *commandline);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
@@ -296,7 +296,7 @@ EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode
 EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP void GetFaceInfo(void);
-EXTERNCPP void GetGeomInfoPtrs(geomdata ***geominfoptrs_local,int *ngeominfoptrs_local);
+EXTERNCPP void GetGeomInfoPtrs(int flag);
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
@@ -858,8 +858,10 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 
 EXTERNCPP void UpdateShowHideButtons(void);
 EXTERNCPP void UpdateFileLoad(void);
-EXTERNCPP void CalcTriNormal(float *v1, float *v2, float *v3, float *norm);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
+EXTERNCPP void UpdateTrianglesMT(void);
+EXTERNCPP void CancelUpdateTriangles(void);
+EXTERNCPP void FinishUpdateTriangles(void);
 
 #ifndef CPP
 #include "smokefortheaders.h"

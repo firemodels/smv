@@ -7,8 +7,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
-#define ENABLE_LIGHTING if(use_lighting==1)glEnable(GL_LIGHTING)
-#define DISABLE_LIGHTING if(use_lighting==1)glDisable(GL_LIGHTING)
+#define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
+#define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}
 
 #ifdef pp_DPRINT
 #define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
@@ -871,6 +871,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ON 1
 #define OFF 0
+
+#define BACKGROUND 1
+#define FOREGROUND 0
 
 #define DIALOG_3DSMOKE 20
 #define DIALOG_BOUNDS 14

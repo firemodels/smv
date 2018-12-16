@@ -48,6 +48,9 @@ void CompressSVZip2(void){
 void InitMultiThreading(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
+#ifdef pp_ISOTHREAD
+  pthread_mutex_init(&mutexTRIANGLES,NULL);
+#endif
   pthread_mutex_init(&mutexVOLLOAD,NULL);
 #ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
@@ -78,6 +81,59 @@ void CompressSVZip(void){
 #else
 void CompressSVZip(void){
   CompressSVZip2();
+}
+#endif
+
+/* ------------------ MtUpdateTriangles ------------------------ */
+
+#ifdef pp_THREAD
+void *MtUpdateTriangles(void *arg){
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ UpdateTrianglesMT ------------------------ */
+
+void UpdateTrianglesMT(void){
+  if(iso_multithread==1){
+    pthread_create(&triangles_id, NULL, MtUpdateTriangles, NULL);
+  }
+  else{
+    UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
+  }
+}
+
+/* ------------------ FinishUpdateTriangles ------------------------ */
+
+void FinishUpdateTriangles(void){
+  if(iso_multithread==1)pthread_join(triangles_id, NULL);
+}
+
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
+  cancel_update_triangles = 1;
+  FinishUpdateTriangles();
+  cancel_update_triangles = 0;
+}
+
+#else
+
+/* ------------------ UpdateTrianglesMT ------------------------ */
+
+void UpdateTrianglesMT(void){
+  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+}
+
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
+}
+
+/* ------------------ FinishUpdateTriangles ------------------------ */
+
+void FinishUpdateTriangles(void){
 }
 #endif
 

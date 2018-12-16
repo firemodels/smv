@@ -976,9 +976,9 @@ void UpdateTimes(void){
   int nglobal_times_copy;
   float *global_times_copy = NULL;
 
-  FREEMEMORY(geominfoptrs);
-  ngeominfoptrs=0;
-  GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
+  LOCK_TRIANGLES;
+  GetGeomInfoPtrs(0);
+  UNLOCK_TRIANGLES;
 
   // pass 1 - determine ntimes
 

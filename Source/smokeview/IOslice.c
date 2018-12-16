@@ -15,19 +15,6 @@
 #include "interp.h"
 #include "smokeviewvars.h"
 
-#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           if(endianswitch==1&&returncode!=0)EndianSwitch(var,count);\
-                           FSEEK(STREAM,4,SEEK_CUR)
-
-#define HEADER_SIZE 4
-#define TRAILER_SIZE 4
-#define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
-                           fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
-                           FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
-
 void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
 void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, int level);
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
@@ -797,6 +784,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   FILE *SLICEFILE;
   float *time_local,*slicevals;
   int error;
+  int returncode;
 
   sd = sliceinfo + sd_index;
   if(sd->loaded==1)ReadSlice(sd->file,sd_index,UNLOAD,SET_SLICECOLOR,&error);
@@ -851,8 +839,8 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   }
   time_local=sd->times;
 
-  FORTSLICEREAD(time_local,1);
-  FORTSLICEREAD(slicevals,frame_size);
+  FORTREAD(time_local,1,SLICEFILE);
+  FORTREAD(slicevals,frame_size,SLICEFILE);
   fclose(SLICEFILE);
   return 0;
 }
@@ -1170,8 +1158,6 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
       UpdateCurrentColorbar(cb);
     }
   }
-  PRINTF("completed");
-  PRINTF("\n");
 }
 
 /* ------------------ ReadVSlice ------------------------ */
@@ -1453,27 +1439,30 @@ void GetSliceHists(slicedata *sd){
   for(i = 0; i < sd->nslicei; i++){
     int j;
     float dx;
-    int i1;
+    int i1, i1p1;
 
-    i1 = sd->is1 + i;
-    dx = xplt[i1+1] - xplt[i1];
+    i1 = MIN(sd->is1+i,sd->is2-2);
+    i1p1 = i1+1;
+    dx = xplt[i1p1] - xplt[i1];
     if(dx <= 0.0)dx = 1.0;
 
     for(j = 0; j < sd->nslicej; j++){
       int k;
       float dy;
-      int j1;
+      int j1, j1p1;
 
-      j1 = sd->js1 + j;
-      dy = yplt[j1+1] - yplt[j1];
+      j1 = MIN(sd->js1+j,sd->js2-2);
+      j1p1 = j1+1;
+      dy = yplt[j1p1] - yplt[j1];
       if(dy <= 0.0)dy = 1.0;
 
       for(k = 0; k < sd->nslicek; k++){
         float dz;
-        int k1;
+        int k1, k1p1;
 
-        k1 = sd->ks1 + k;
-        dz = zplt[k1+1] - zplt[k1];
+        k1 = MIN(sd->ks1+k,sd->ks2-2);
+        k1p1 = k1+1;
+        dz = zplt[k1p1] - zplt[k1];
         if(dz <= 0.0)dz = 1.0;
 
         n++;
@@ -1634,7 +1623,7 @@ void UpdateSliceHist(void){
 
         hist256j = hists256_slice + j;
         hist256j->time_defined = 1;
-        hist256j->time = slicei->times[j];
+        hist256j->time = slicei->times[MIN(j,slicei->ntimes-1)];
       }
       break;
     }

@@ -8773,7 +8773,7 @@ typedef struct {
       }
       else{
         if(trainer_mode==0){
-          fprintf(stderr,"*** Error: The file %s does not exist\n",buffer);
+          fprintf(stderr,"*** Warning: The file %s does not exist\n",buffer);
         }
         if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         npatchinfo--;
@@ -8941,7 +8941,7 @@ typedef struct {
       else{
         get_isolevels=0;
         if(trainer_mode==0){
-          fprintf(stderr,"*** Error: the file %s does not exist\n",buffer);
+          fprintf(stderr,"*** Warning: the file %s does not exist\n",buffer);
         }
 
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
@@ -9259,6 +9259,10 @@ typedef struct {
   UpdateMeshCoords();
   CheckMemory;
 
+  // allocate memory for geometry pointers (only once)
+
+  GetGeomInfoPtrs(1);
+
   /*
     Associate a surface with each block.
   */
@@ -9423,8 +9427,6 @@ typedef struct {
   UpdateMeshTerrain(); // xxslow
 
   ReadAllGeom();
-  ngeominfoptrs=0;
-  GetGeomInfoPtrs(&geominfoptrs,&ngeominfoptrs);
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
 
