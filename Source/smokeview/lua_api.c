@@ -858,7 +858,8 @@ int lua_slice_get_times(lua_State *L) {
   // Push a lightuserdata (a pointer) onto the lua stack that points to the
   // qslicedata.
   lua_createtable(L, slice->ntimes, 0);
-  for (int i = 0; i < slice->ntimes; i++) {
+  int i;
+  for (i = 0; i < slice->ntimes; i++) {
     lua_pushnumber(L, i+1);
     lua_pushnumber(L, slice->times[i]);
     lua_settable(L, -3);
@@ -879,7 +880,8 @@ int lua_slice_data_map_frames(lua_State *L) {
   // The second argument is the function to be called on each frame.
   lua_createtable(L, slice->ntimes, 0);
   // framenumber is the index of the frame (0-based).
-  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  int framenumber;
+  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     // duplicate the function so that we can use it and keep it
     lua_pushvalue (L, 2);
     // Push the first frame onto the stack by first putting them into a lua
@@ -892,7 +894,8 @@ int lua_slice_data_map_frames(lua_State *L) {
     // this table method is more flexible but slower
     lua_createtable(L, framepoints, 0);
     // pointnumber is the index of the data point in the frame (0-based).
-    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    int pointnumber;
+    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       // adjust the index to start from 1
       lua_pushnumber(L, pointnumber+1);
       lua_pushnumber(L, qslicedata[framenumber*framepoints+pointnumber]);
@@ -922,9 +925,11 @@ int lua_slice_data_map_frames_count_less(lua_State *L) {
   // Pointer to the first frame.
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
-  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  int framenumber;
+  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
-    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    int pointnumber;
+    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       if (*qslicedata < threshold) {
         count++;
       }
@@ -948,9 +953,11 @@ int lua_slice_data_map_frames_count_less_eq(lua_State *L) {
   // Pointer to the first frame.
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
-  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  int framenumber;
+  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
-    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    int pointnumber;
+    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       if (*qslicedata <= threshold) {
         count++;
       }
@@ -974,9 +981,11 @@ int lua_slice_data_map_frames_count_greater(lua_State *L) {
   // Pointer to the first frame.
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
-  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  int framenumber;
+  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
-    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    int pointnumber;
+    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       if (*qslicedata > threshold) {
         count++;
       }
@@ -1000,9 +1009,11 @@ int lua_slice_data_map_frames_count_greater_eq(lua_State *L) {
   // Pointer to the first frame.
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
-  for (int framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  int framenumber;
+  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
-    for (int pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    int pointnumber;
+    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       if (*qslicedata >= threshold) {
         count++;
       }
@@ -3522,6 +3533,7 @@ int lua_get_units(lua_State *L) {
 }
 
 int lua_set_units(lua_State *L) {
+  int i; // loop counter
   fprintf(stderr, "set_units\n");
   const char *unitclassname = lua_tostring(L, 1);
   const char *unitname = lua_tostring(L, 2);
@@ -3530,14 +3542,14 @@ int lua_set_units(lua_State *L) {
 
   int unitclass_index;
   int unit_index;
-  for (int i=0; i < nunitclasses_default; i++) {
+  for (i=0; i < nunitclasses_default; i++) {
     fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
     if (strcmp(unitclasses[i].unitclass,unitclassname)==0) {
       unitclass_index = i;
       break;
     }
   }
-  for (int i=0; i < unitclasses[unitclass_index].nunits; i++) {
+  for (i=0; i < unitclasses[unitclass_index].nunits; i++) {
     if (strcmp(unitclasses[unitclass_index].units[i].unit,unitname)==0) {
       unit_index = i;
       break;
