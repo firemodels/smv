@@ -37,6 +37,8 @@ SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
 SVEXTERN int SVDECL(show_iso_color, 1);
 #endif
 
+SVEXTERN int SVDECL(script_defer_loading, 0);
+
 SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 #ifdef pp_CSLICE
 SVEXTERN int SVDECL(use_cslice, 1);
