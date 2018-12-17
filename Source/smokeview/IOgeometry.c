@@ -420,7 +420,7 @@ void DrawGeom(int flag, int timestate){
             vertval = vertvals[vertj_index];
             texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
             colorbar_index = CLAMP((int)(255.0*texture_val),0,255);
-            color = iso_colorbar->colorbar+4*colorbar_index;
+            color = rgb_iso+4*colorbar_index;
           }
 #endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){

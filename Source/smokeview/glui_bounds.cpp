@@ -420,6 +420,14 @@ int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, 
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
 
+#ifdef pp_TISO
+extern "C" void UpdateListIsoColorobar(void){
+  if(LIST_iso_colorbar!=NULL)LIST_iso_colorbar->set_int_val(iso_colorbar_index);
+}
+#endif
+
+/* ------------------ LoadIncrementalCB1 ------------------------ */
+
 extern "C" void LoadIncrementalCB1(int var){
   if(CHECKBOX_boundary_load_incremental!=NULL)CHECKBOX_boundary_load_incremental->set_int_val(load_incremental);
   if(CHECKBOX_slice_load_incremental!=NULL)CHECKBOX_slice_load_incremental->set_int_val(load_incremental);

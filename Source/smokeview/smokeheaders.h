@@ -7,6 +7,7 @@
 
 EXTERNCPP void UpdateVectorpointsize(void);
 #ifdef pp_TISO
+EXTERNCPP void UpdateListIsoColorobar(void);
 EXTERNCPP void UpdateTexturebar(void);
 #endif
 EXTERNCPP void UpdatePosView(void);
