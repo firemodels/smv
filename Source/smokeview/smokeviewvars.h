@@ -29,6 +29,9 @@ SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0)
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
+SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
+SVEXTERN float SVDECL(iso_percentile_min,0.0), SVDECL(iso_percentile_max,1.0);
+SVEXTERN float SVDECL(iso_global_min,0.0), SVDECL(iso_global_max,1.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
 SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
 SVEXTERN int SVDECL(show_iso_color, 1);
