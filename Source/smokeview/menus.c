@@ -974,6 +974,12 @@ void ColorbarMenu(int value){
   }
   if(value>=0){
     colorbartype=value;
+#ifdef pp_TISO
+    iso_colorbar_index=value;
+    iso_colorbar = colorbarinfo + iso_colorbar_index;
+    update_texturebar=1;
+    UpdateListIsoColorobar();
+#endif
     selectedcolorbar_index2=colorbartype;
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
     UpdateColorbarType();
@@ -2657,6 +2663,7 @@ void ScriptMenu(int value){
       script_step=1-script_step;
       break;
     case SCRIPT_CANCEL:
+      script_defer_loading = 0;
       iso_multithread = iso_multithread_save;
       current_script_command=NULL;
       runscript=0;
@@ -2671,8 +2678,10 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_START_RECORDING2:
       ScriptMenu(SCRIPT_START_RECORDING);
+      script_defer_loading = 1;
       break;
     case SCRIPT_START_RECORDING:
+      script_defer_loading = 0;
       UpdateScriptStart();
       GetNewScriptFileName(newscriptfilename);
       script_recording = InsertScriptFile(newscriptfilename);
@@ -2840,13 +2849,15 @@ void LoadVolsmoke3DMenu(int value){
         fprintf(scriptoutstream, "LOADVOLSMOKE\n");
         fprintf(scriptoutstream, " %i\n", value);
       }
-      if(read_vol_mesh == VOL_READNONE){
-        read_vol_mesh = value;
-        ReadVolsmokeAllFramesAllMeshes();
-      }
-      else{
-        fprintf(stderr, "*** Warning: 3D smoke is currently being loaded\n");
-        fprintf(stderr, "   Load data when this is complete.\n");
+      if(scriptoutstream==NULL||script_defer_loading==0){
+        if(read_vol_mesh==VOL_READNONE){
+          read_vol_mesh = value;
+          ReadVolsmokeAllFramesAllMeshes();
+        }
+        else{
+          fprintf(stderr, "*** Warning: 3D smoke is currently being loaded\n");
+          fprintf(stderr, "   Load data when this is complete.\n");
+        }
       }
     }
   }
@@ -2872,7 +2883,9 @@ void LoadVolsmoke3DMenu(int value){
     }
     if(read_vol_mesh == VOL_READNONE){
       read_vol_mesh = VOL_READALL;
-      ReadVolsmokeAllFramesAllMeshes();
+      if(scriptoutstream==NULL||script_defer_loading==0){
+        ReadVolsmokeAllFramesAllMeshes();
+      }
     }
     else{
       if(read_vol_mesh == VOL_UNLOAD){
@@ -3586,7 +3599,9 @@ void LoadParticleMenu(int value){
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
-    ReadPart(partfile, value, LOAD, &errorcode);
+    if(scriptoutstream==NULL||script_defer_loading==0){
+      ReadPart(partfile, value, LOAD, &errorcode);
+    }
   }
   else{
     if(value==-1){
@@ -3616,58 +3631,62 @@ void LoadParticleMenu(int value){
         npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
       }
 
-      // wait until last particle file is loaded before coloring
-      
-      lasti = npartinfo - 1;
-      for(i = npartinfo - 1;i >= 0;i--){
-        partdata *parti;
+      if(scriptoutstream==NULL||script_defer_loading==0){
 
-        parti = partinfo + i;
-        if(parti->evac == 1)continue;
-        if(value==PARTFILE_LOADALL){
-          lasti = i;
-          break;
-        }
-        if(parti->loaded == 1&&value==PARTFILE_RELOADALL){
-          lasti = i;
-          break;
-        }
-      }
 
-     // unload particle files
+        // wait until last particle file is loaded before coloring
 
-      if(value!=PARTFILE_RELOADALL){
-        for(i = 0; i<npartinfo; i++){
+        lasti = npartinfo-1;
+        for(i = npartinfo-1;i>=0;i--){
           partdata *parti;
 
           parti = partinfo+i;
-          if(parti->evac==1||parti->loaded==0)continue;
-          parti->finalize = 1;
-          ReadPart(parti->file, i, UNLOAD,  &errorcode);
+          if(parti->evac==1)continue;
+          if(value==PARTFILE_LOADALL){
+            lasti = i;
+            break;
+          }
+          if(parti->loaded==1&&value==PARTFILE_RELOADALL){
+            lasti = i;
+            break;
+          }
         }
+
+        // unload particle files
+
+        if(value!=PARTFILE_RELOADALL){
+          for(i = 0; i<npartinfo; i++){
+            partdata *parti;
+
+            parti = partinfo+i;
+            if(parti->evac==1||parti->loaded==0)continue;
+            parti->finalize = 1;
+            ReadPart(parti->file, i, UNLOAD, &errorcode);
+          }
+        }
+
+        // load particle files unless we are reloading and the were not loaded before
+
+        load_size = 0;
+        file_count = 0;
+        START_TIMER(load_time);
+        for(i = 0;i<npartinfo;i++){
+          partdata *parti;
+
+          parti = partinfo+i;
+          if(parti->evac==1)continue;
+          if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
+          parti->finalize = 0;
+          if(lasti==i)parti->finalize = 1;
+          load_size += ReadPart(parti->file, i, LOAD, &errorcode);
+          file_count++;
+        }
+        STOP_TIMER(load_time);
+        PRINT_LOADTIMES;
+
+        force_redisplay = 1;
+        UpdateFrameNumber(0);
       }
-
-      // load particle files unless we are reloading and the were not loaded before
-
-      load_size = 0;
-      file_count=0;
-      START_TIMER(load_time);
-      for(i = 0;i < npartinfo;i++){
-        partdata *parti;
-
-        parti = partinfo + i;
-        if(parti->evac == 1)continue;
-        if(parti->loaded == 0 && value == PARTFILE_RELOADALL)continue;
-        parti->finalize = 0;
-        if(lasti == i)parti->finalize = 1;
-        load_size+=ReadPart(parti->file, i, LOAD, &errorcode);
-        file_count++;
-      }
-      STOP_TIMER(load_time);
-      PRINT_LOADTIMES;
-
-      force_redisplay=1;
-      UpdateFrameNumber(0);
     }
   }
   updatemenu=1;
@@ -3837,7 +3856,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    return_filesize=ReadVSlice(value, LOAD, &errorcode);
+    return_filesize = ReadVSlice(value, LOAD, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -4170,7 +4189,7 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",file);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + value;
@@ -4243,7 +4262,7 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream,"LOAD3DSMOKE\n");
       fprintf(scriptoutstream," %s\n",smoke3dj->label.longlabel);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       if(smoke3d_load_test==1){
         int errorcode;
 
@@ -4351,7 +4370,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
     fprintf(scriptoutstream, " %i %f\n", slicei->idir, slicei->position_orig);
     fprintf(scriptoutstream, " %i\n", slicei->blocknumber + 1);
   }
-  if(scriptoutstream == NULL){
+  if(scriptoutstream==NULL||script_defer_loading==0){
     if(value < nsliceinfo - nfedinfo){
       colorbardata *fed_colorbar;
       int reset_colorbar = 0;
@@ -4498,7 +4517,7 @@ void LoadMultiVSliceMenu(int value){
         script_multivslice=1;
       }
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       START_TIMER(load_time);
       for(i = 0; i<mvslicei->nvslices; i++){
         vslicedata *vslicei;
@@ -4658,7 +4677,7 @@ void LoadMultiSliceMenu(int value){
         script_multislice=1;
       }
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
 
       last_slice = mslicei->nslices - 1;
@@ -4829,7 +4848,7 @@ void LoadPlot3dMenu(int value){
       fprintf(scriptoutstream," %i %f\n",
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
@@ -4872,7 +4891,7 @@ FILE_SIZE LoadIsoI(int value){
     fprintf(scriptoutstream, " %i\n", isoi->blocknumber+1);
   }
   CancelUpdateTriangles();
-  if(scriptoutstream==NULL){
+  if(scriptoutstream==NULL||script_defer_loading==0){
     return_filesize=ReadIso(file,value,LOAD,NULL,&errorcode);
     if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup(BACKGROUND);
   }
@@ -4938,7 +4957,7 @@ void LoadIsoMenu(int value){
       fprintf(scriptoutstream,"LOADISO\n");
       fprintf(scriptoutstream," %s\n",isoi->surface_label.longlabel);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
       LoadAllIsos(isoi->type);
       if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
@@ -4980,7 +4999,7 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %s\n", patchi->label.longlabel);
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       LOCK_COMPRESS
       ReadBoundary(value,LOAD,&errorcode);
       UNLOCK_COMPRESS
@@ -4995,7 +5014,7 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream,"LOADBOUNDARY\n");
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
-    if(scriptoutstream==NULL){
+    if(scriptoutstream==NULL||script_defer_loading==0){
       int file_count=0;
       float load_time=0.0, load_size=0.0;
 
@@ -8493,10 +8512,7 @@ updatemenu=0;
       if(isoi->loaded==1)niso_loaded++;
     }
 
-    if(niso_loaded>1){
-     GLUTADDSUBMENU(_("Isosurfaces"),isoshowmenu);
-    }
-    else{
+    if(niso_loaded>0){
      GLUTADDSUBMENU(_("Isosurfaces"),isoshowmenu);
     }
     showhide_data = 1;

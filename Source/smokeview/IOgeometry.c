@@ -318,7 +318,7 @@ void DrawGeom(int flag, int timestate){
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+    if(usetexturebar==1){
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       glEnable(GL_TEXTURE_1D);
       glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
@@ -419,8 +419,8 @@ void DrawGeom(int flag, int timestate){
             vertj_index = vertj - trianglei->geomlisti->verts;
             vertval = vertvals[vertj_index];
             texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
-            colorbar_index = CLAMP((int)texture_val,0,255);
-            color = iso_colorbar->colorbar+4*colorbar_index;
+            colorbar_index = CLAMP((int)(255.0*texture_val),0,255);
+            color = rgb_iso+4*colorbar_index;
           }
 #endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
@@ -459,7 +459,7 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
+    if(usetexturebar==1){
       glDisable(GL_TEXTURE_1D);
     }
 #endif
@@ -1513,7 +1513,7 @@ void UpdateTriangles(int flag,int update){
 
 void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
-  int one=0,endianswitch=0;
+  int one=0;
   int nvertfaces[2];
   float times_local[2];
   int nt;
@@ -1531,7 +1531,6 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
 
 // floating point header
@@ -1610,7 +1609,7 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
 
 void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   FILE *stream;
-  int one=0,endianswitch=0;
+  int one=0;
   int nvertfacesvolumes[3];
   int nt;
   int returncode;
@@ -1626,7 +1625,6 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
 
   FORTREAD(header,3,stream);
@@ -1673,7 +1671,7 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
   int version;
   int returncode;
-  int one=0,endianswitch=0;
+  int one=0;
 
   stream = fopen(geomi->file,"rb");
   if(stream==NULL){
@@ -1681,7 +1679,6 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
   fclose(stream);
 
@@ -1697,7 +1694,7 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
 
 void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   FILE *stream;
-  int one=1,endianswitch=0;
+  int one=1;
   int nface_static,nface_dynamic;
   float time_local;
   int nt,nv;
@@ -1709,7 +1706,6 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   nt=-1;
   nv=0;
   for(;;){
@@ -1766,7 +1762,7 @@ void InitGeomlist(geomlistdata *geomlisti){
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
-  int one=1, endianswitch=0;
+  int one=1;
   int returncode;
   int ntimes_local;
   int version;
@@ -1793,7 +1789,6 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
 
   FORTREAD(&version,1,stream);
   return_filesize = 2*(4+4+4);
@@ -1964,7 +1959,7 @@ int OutSideDomain(vertdata **verts){
 
 FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   FILE *stream;
-  int one=1, endianswitch=0;
+  int one=1;
   int returncode;
   int ntimes_local;
   int i;
@@ -1994,7 +1989,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
 
   FORTREAD(&version,1,stream);
   return_filesize += 2*(4+4+4);
@@ -2637,7 +2631,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   FILE *stream;
   int version;
   int returncode;
-  int one=0,endianswitch=0;
+  int one=0;
   FILE_SIZE return_filesize=0;
 #ifdef pp_ISOTIME
   float time1, time2;
@@ -2647,7 +2641,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   stream = fopen(geomi->file,"rb");
   if(stream==NULL)return 0;
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
   fclose(stream);
   return_filesize = 2*(4+4+4);
@@ -2943,9 +2936,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int color_indices[3];
           float t_level;
 
-
           trianglei = geomlisti->triangles + j;
-
           if(geomdata_smoothcolors==1){
             AverageGeomColors(geomlisti, j, ivals, color_indices);
             color0 = rgb_patch+4*color_indices[0];
