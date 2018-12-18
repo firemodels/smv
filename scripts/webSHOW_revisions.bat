@@ -56,6 +56,22 @@ plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_
 echo.
 
 echo.
+echo ---------------------------*** bot ***--------------------------------
+echo.
+cd %svn_root%\bot
+echo | set /p=Windows: 
+git describe --dirty
+
+echo.
+echo | set /p=Linux:   
+plink %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/bot %linux_hostname%
+
+echo.
+echo | set /p=OSX:     
+plink %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/bot %osx_hostname%
+echo.
+
+echo.
 echo ---------------------------*** web ***--------------------------------
 echo.
 cd %svn_root%\webpages
