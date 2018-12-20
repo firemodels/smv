@@ -1,5 +1,5 @@
 #!/bin/bash
-FDSEDITION=FDS6
+FDSEDITION=
 
 edition=$1
 revision=$2
