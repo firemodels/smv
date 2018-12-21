@@ -1,5 +1,5 @@
 #!/bin/bash
-FDSEDITION=FDS6
+FDSEDITION=
 
 edition=$1
 revision=$2
@@ -88,11 +88,11 @@ SMDDIR=$REMOTESVNROOT/smv/Build/smokediff/intel_${platform}_64
 WIND2FDSDIR=$REMOTESVNROOT/smv/Build/wind2fds/intel_${platform}_64
 HASHFILEDIR=$REMOTESVNROOT/smv/Build/hashfile/intel_${platform}_64
 FLUSHFILEDIR=$REMOTESVNROOT/smv/Build/flush/intel_${platform}_64
-FORBUNDLE=$SVNROOT/smv/Build/Bundle/for_bundle
+FORBUNDLE=$SVNROOT/bot/Bundle/smv/for_bundle
 PLATFORMDIR=$RELEASE$revision\_${platform}64
 UPDATER=$SVNROOT/fds/Utilities/Scripts/make_updater.sh
-uploads=$SVNROOT/smv/Build/Bundle/uploads
-flushfile=$SVNROOT/smv/Build/flulsh/intel_${platform}_64/flush_${platform}_64
+uploads=$SVNROOT/bot/Bundle/smv/uploads
+flushfile=$SVNROOT/smv/Build/flush/intel_${platform}_64/flush_${platform}_64
 
 cd $uploads
 
