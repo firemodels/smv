@@ -274,6 +274,12 @@ procdata displayprocinfo[5];
 #endif
 int ndisplayprocinfo = 0;
 
+/* ------------------ UpdateBackgroundFlip ------------------------ */
+
+extern "C" void UpdateBackgroundFlip(int flip) {
+  CHECKBOX_labels_flip->set_int_val(flip);
+}
+
 /* ------------------ UpdateUseLighting ------------------------ */
 
 extern "C" void UpdateUseLighting(void) {

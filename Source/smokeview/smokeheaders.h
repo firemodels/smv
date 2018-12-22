@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateBackgroundFlip(int flip);
+EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
 #ifdef pp_TISO
 EXTERNCPP void UpdateGluiIsoBounds(void);

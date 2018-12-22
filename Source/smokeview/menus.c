@@ -1389,6 +1389,8 @@ void ShowHideMenu(int value){
    UpdateRGBColors(COLORBAR_INDEX_NONE);
    SetLabelControls();
    SetColorControls();
+   UpdateBackgroundFlip(background_flip);
+   UpdateBackgroundFlip2(background_flip);
    break;
   case MENU_SHOWHIDE_EVAC:
     if(plotstate==DYNAMIC_PLOTS){

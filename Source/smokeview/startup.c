@@ -1567,7 +1567,6 @@ void InitVars(void){
   rgb_green=NRGB+4, rgb_magenta=NRGB+5, rgb_cyan=NRGB+6, rgb_black=NRGB+7;
   setbw=0;
   setbwSAVE=setbw;
-  background_flip=1;
   antialiasflag=1;
   nrgb_full=256;
   nrgb_cad=256;
