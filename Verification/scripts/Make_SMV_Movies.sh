@@ -18,7 +18,7 @@ cd $CURDIR
 export SMV=$GITROOT/smv/Build/smokeview/intel$PLATFORM$size/smokeview$PLATFORM$TEST$size
 FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size/fds_mpi_intel$PLATFORM$size
 RUNSMV="$GITROOT/fds/Utilities/Scripts/runsmv.sh"
-export SMVBINDIR="-bindir $GITROOT/smv/Build/Bundle/for_bundle"
+export SMVBINDIR="-bindir $GITROOT/bot/Bundle/smv/for_bundle"
 MAKEMOVIE="$GITROOT/fds/Utilities/Scripts/make_movie.sh"
 STARTX=$GITROOT/fds/Utilities/Scripts/startXserver.sh
 STOPX=$GITROOT/fds/Utilities/Scripts/stopXserver.sh

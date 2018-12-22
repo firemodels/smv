@@ -285,8 +285,29 @@ void GetGeomZBounds(float *zmin, float *zmax){
     }
   }
 }
+#ifdef pp_TISO
 
-  /* ------------------ DrawGeom ------------------------ */
+/* ------------------ TextureOff ------------------------ */
+
+int TextureOff(void){
+  glDisable(GL_TEXTURE_1D);
+  return 0;
+}
+
+/* ------------------ TextureOn ------------------------ */
+
+int TextureOn(GLuint texture_id,int *texture_first){
+  if(*texture_first==1){
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    *texture_first=0;
+  }
+  glEnable(GL_TEXTURE_1D);
+  glBindTexture(GL_TEXTURE_1D, texture_id);
+  return 1;
+}
+#endif
+
+/* ------------------ DrawGeom ------------------------ */
 
 void DrawGeom(int flag, int timestate){
   int i;
@@ -300,6 +321,9 @@ void DrawGeom(int flag, int timestate){
   float last_transparent_level=-1.0;
   int ntris;
   tridata **tris;
+#ifdef pp_TISO
+  int texture_state = OFF, texture_first=1;
+#endif
 
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
@@ -318,10 +342,8 @@ void DrawGeom(int flag, int timestate){
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
 #ifdef pp_TISO
-    if(usetexturebar==1){
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      glEnable(GL_TEXTURE_1D);
-      glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
+    if(usetexturebar==1&&texture_state==OFF){
+      texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 #endif
 
@@ -379,6 +401,13 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
         if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
+#ifdef pp_TISO
+          if(texture_state==ON){
+            glEnd();
+            texture_state = TextureOff();
+            glBegin(GL_TRIANGLES);
+          }
+#endif
           glColor4f(color[0], color[1], color[2], transparent_level_local);
           last_color = color;
           last_transparent_level = transparent_level_local;
@@ -442,10 +471,20 @@ void DrawGeom(int flag, int timestate){
             transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
             if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
 #ifdef pp_TISO
-            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL){
+            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
+              if(texture_state==OFF){
+                glEnd();
+                texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
+                glBegin(GL_TRIANGLES);
+              }
               glTexCoord1f(texture_val);
             }
             else{
+              if(texture_state==ON){
+                glEnd();
+                texture_state=TextureOff();
+                glBegin(GL_TRIANGLES);
+              }
               glColor4f(color[0], color[1], color[2], transparent_level_local_new);
             }
 #else
@@ -459,8 +498,8 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
 #ifdef pp_TISO
-    if(usetexturebar==1){
-      glDisable(GL_TEXTURE_1D);
+    if(usetexturebar==1&&texture_state==ON){
+      texture_state=TextureOff();
     }
 #endif
 
