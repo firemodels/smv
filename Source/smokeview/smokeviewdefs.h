@@ -125,6 +125,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DISABLE 0
 #define ENABLE 1
 
+#define SMOKE3D_FIRE_ONLY      0
+#define SMOKE3D_SMOKE_ONLY     1
+#define SMOKE3D_SMOKE_AND_FIRE 2
+
 #define XWALLMIN -1
 #define XWALLMAX 1
 #define YWALLMIN -2

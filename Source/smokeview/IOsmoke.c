@@ -5190,6 +5190,11 @@ void DrawSmokeFrame(void){
   float smoke_time = 0.0;
 #endif
   int load_shaders = 0;
+  int i;
+  int blend_mode;
+#ifdef pp_SMOKEDIAG
+  int nm=0;
+#endif
 
   triangle_count = 0;
 #ifdef pp_GPUSMOKE
@@ -5197,118 +5202,80 @@ void DrawSmokeFrame(void){
     START_TIMER(smoke_time);
   }
 #endif
-  CheckMemory;
-  if(showvolrender==1&&smoke3dVoldebug==1){
-    DrawSmoke3dVolDebug();
-  }
 #ifdef pp_GPU
   if(usegpu==1){
-    if(showvolrender==1){
-      LoadVolsmokeShaders();
+    if(use_newsmoke==SMOKE3D_ORIG){
+      LoadSmokeShaders();
       load_shaders = 1;
+    }
+#ifdef pp_GPUSMOKE
+    else if(use_newsmoke == SMOKE3D_NEW){
+      LoadNewSmokeShaders();
+      load_shaders = 1;
+    }
+#endif
+  }
+#endif
+
+  blend_mode = 0;
+  if(usegpu==0&&hrrpuv_max_blending==1){
+    blend_mode = 1;
+    glBlendEquation(GL_MAX);
+  }
+#ifdef pp_SMOKEDIAG
+  total_triangles=0;
+  total_drawn_triangles=0;
+#endif
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo_sorted[i];
+    if(smoke3di->loaded==0||smoke3di->display==0)continue;
+    if(smoke3di->primary_file==0)continue;
+    if(IsSmokeComponentPresent(smoke3di)==0)continue;
+#ifdef pp_SMOKEDIAG
+    nm++;
+#endif
+#ifdef pp_GPU
+    if(usegpu==1){
+#ifdef pp_GPUSMOKE
+      if(use_newsmoke==SMOKE3D_NEW){
+        triangle_count += DrawSmoke3DGPUNew(smoke3di);
+      }
+      else if(use_newsmoke==SMOKE3D_ORIG){
+        DrawSmoke3DGPU(smoke3di);
+      }
+      else{
+        DrawSmokeDiag(smoke3di);
+      }
+#else
+      DrawSmoke3DGPU(smoke3di);
+#endif
     }
     else{
       if(use_newsmoke==SMOKE3D_ORIG){
-        LoadSmokeShaders();
-        load_shaders = 1;
-      }
-#ifdef pp_GPUSMOKE
-      else if(use_newsmoke == SMOKE3D_NEW){
-        LoadNewSmokeShaders();
-        load_shaders = 1;
-      }
-#endif
-    }
-  }
-#endif
-  {
-    int i;
-
-    if(showvolrender==0){
-      int blend_mode;
-#ifdef pp_SMOKEDIAG
-      int nm=0;
-#endif
-
-      blend_mode = 0;
-      if(usegpu==0&&hrrpuv_max_blending==1){
-        blend_mode = 1;
-        glBlendEquation(GL_MAX);
-      }
-#ifdef pp_SMOKEDIAG
-      total_triangles=0;
-      total_drawn_triangles=0;
-#endif
-      for(i=0;i<nsmoke3dinfo;i++){
-        smoke3ddata *smoke3di;
-
-        smoke3di = smoke3dinfo_sorted[i];
-        if(smoke3di->loaded==0||smoke3di->display==0)continue;
-        if(smoke3di->primary_file==0)continue;
-        if(IsSmokeComponentPresent(smoke3di)==0)continue;
-#ifdef pp_SMOKEDIAG
-        nm++;
-#endif
-#ifdef pp_GPU
-        if(usegpu==1){
-#ifdef pp_GPUSMOKE
-          if(use_newsmoke==SMOKE3D_NEW){
-            triangle_count += DrawSmoke3DGPUNew(smoke3di);
-          }
-          else if(use_newsmoke==SMOKE3D_ORIG){
-            DrawSmoke3DGPU(smoke3di);
-          }
-          else{
-            DrawSmokeDiag(smoke3di);
- 
-          }
-#else
-          DrawSmoke3DGPU(smoke3di);
-#endif
-        }
-        else{
-          if(use_newsmoke==SMOKE3D_ORIG){
-            DrawSmoke3D(smoke3di);
-          }
-#ifdef pp_GPUSMOKE
-          else if(use_newsmoke==SMOKE3D_NEW){
-            triangle_count += DrawSmoke3DNew(smoke3di);
-          }
-          else{
-            DrawSmokeDiag(smoke3di);
-          }
-#endif
-        }
-#else
         DrawSmoke3D(smoke3di);
-#endif
       }
-#ifdef pp_SMOKEDIAG
-      printf("meshes: %i triangles: total=%u drawn=%u fraction skipped=%f\n",
-        nm,total_triangles,total_drawn_triangles,(float)(total_triangles-total_drawn_triangles)/(float)total_triangles);
-      printf("times: merge=%f draw=%f\n", smoketime_merge, smoketime_draw);
-#endif
-      if(blend_mode==1){
-        glBlendEquation(GL_FUNC_ADD);
-      }
-    }
-    if(showvolrender==1){
-#ifdef pp_GPU
-      if(usegpu==1){
-      //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-        SNIFF_ERRORS("before DrawSmoke3dGpuVol");
-        DrawSmoke3DGPUVol();
-        SNIFF_ERRORS("after DrawSmoke3dGpuVol");
-      //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+#ifdef pp_GPUSMOKE
+      else if(use_newsmoke==SMOKE3D_NEW){
+        triangle_count += DrawSmoke3DNew(smoke3di);
       }
       else{
-        DrawSmoke3DVol();
-        SNIFF_ERRORS("after DrawSmoke3dVol");
+        DrawSmokeDiag(smoke3di);
       }
-#else
-      DrawSmoke3DVol();
 #endif
     }
+#else
+    DrawSmoke3D(smoke3di);
+#endif
+  }
+#ifdef pp_SMOKEDIAG
+  printf("meshes: %i triangles: total=%u drawn=%u fraction skipped=%f\n",
+    nm,total_triangles,total_drawn_triangles,(float)(total_triangles-total_drawn_triangles)/(float)total_triangles);
+  printf("times: merge=%f draw=%f\n", smoketime_merge, smoketime_draw);
+#endif
+  if(blend_mode==1){
+    glBlendEquation(GL_FUNC_ADD);
   }
 #ifdef pp_GPU
   if(load_shaders==1){
@@ -5320,6 +5287,80 @@ void DrawSmokeFrame(void){
     float rate=-999.0;
     char label1[100],label2[100],label3[100];
     
+    STOP_TIMER(smoke_time);
+    if(smoke_time>0.0){
+      rate = (float)triangle_count/smoke_time;
+    }
+#ifdef pp_GPUSMOKE
+    if(use_newsmoke==SMOKE3D_NEW){
+      printf("triangles=%s verts=%s time=%f triangle rate=%s/s\n",
+        GetIntLabel(triangle_count, label1),
+        GetIntLabel(smoke_function_count, label2),
+        smoke_time,
+        GetFloatLabel(rate, label3));
+    }
+    else{
+      printf("triangles=%s time=%f triangle rate=%s/s\n",
+        GetIntLabel(triangle_count, label1),
+        smoke_time,
+        GetFloatLabel(rate, label3));
+    }
+#endif
+  }
+#endif
+
+  SNIFF_ERRORS("after drawsmoke");
+}
+
+/* ------------------ DrawSmokeVolFrame ------------------------ */
+
+void DrawVolSmokeFrame(void){
+#ifdef pp_GPUSMOKE
+  float smoke_time = 0.0;
+#endif
+  int load_shaders = 0;
+
+  triangle_count = 0;
+#ifdef pp_GPUSMOKE
+  if(smoke_timer==1){
+    START_TIMER(smoke_time);
+  }
+#endif
+  CheckMemory;
+  if(smoke3dVoldebug==1){
+    DrawSmoke3dVolDebug();
+  }
+#ifdef pp_GPU
+  if(usegpu==1){
+    LoadVolsmokeShaders();
+    load_shaders = 1;
+  }
+#endif
+#ifdef pp_GPU
+  if(usegpu==1){
+    //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    SNIFF_ERRORS("before DrawSmoke3dGpuVol");
+    DrawSmoke3DGPUVol();
+    SNIFF_ERRORS("after DrawSmoke3dGpuVol");
+    //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+  }
+  else{
+    DrawSmoke3DVol();
+    SNIFF_ERRORS("after DrawSmoke3dVol");
+  }
+#else
+  DrawSmoke3DVol();
+#endif
+#ifdef pp_GPU
+  if(load_shaders==1){
+    UnLoadShaders();
+  }
+#endif
+#ifdef pp_GPUSMOKE
+  if(smoke_timer==1){
+    float rate = -999.0;
+    char label1[100], label2[100], label3[100];
+
     STOP_TIMER(smoke_time);
     if(smoke_time>0.0){
       rate = (float)triangle_count/smoke_time;

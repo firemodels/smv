@@ -377,10 +377,18 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw 3D smoke +++++++++++++++++++++++++ */
 
-  if(show3dsmoke == 1 || showvolrender == 1){
+  if(show3dsmoke == 1){
     CLIP_VALS;
     DrawSmokeFrame();
   }
+
+  /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
+
+  if(showvolrender == 1&&show3dsmoke==0){
+    CLIP_VALS;
+    DrawVolSmokeFrame();
+  }
+
   if(show_light_position_direction == 1)DrawLightDirections();
 #ifdef pp_SMOKETEST
   if(smoke_test == 1)DrawSmokeTest();
