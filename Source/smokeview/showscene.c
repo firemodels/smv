@@ -386,7 +386,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(show3dsmoke == 1){
     CLIP_VALS;
 #ifdef pp_SMOKETEST
-    if(show3dsmoke==1&&usegpu==0&&hrrpuv_max_blending==1)){
+    if(show3dsmoke==1&&usegpu==0&&hrrpuv_max_blending==1){
       DrawSmokeFrame(SMOKE3D_SMOKE_ONLY);
     }
     else{

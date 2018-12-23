@@ -5229,7 +5229,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ DrawSmokeFrame ------------------------ */
 
-#ifdef SMOKETEST
+#ifdef pp_SMOKETEST
 void DrawSmokeFrame(int option){
 #else
 void DrawSmokeFrame(void){
