@@ -917,7 +917,11 @@ void UpdateSmoke3DTexture(smoke3ddata *smoke3di){
 }
 
 /* ------------------ DrawSmoke3DGPUNew ------------------------ */
+#ifdef pp_SMOKETEST
+int DrawSmoke3DGPUNew(smoke3ddata *smoke3di, int option){
+#else
 int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
+#endif
   int i;
   meshdata *meshi;
   float *boxmin, *boxmax;
@@ -1235,7 +1239,14 @@ void DrawSmoke3DOutline2(smoke3ddata *smoke3di){
 
 /* ------------------ DrawSmokeVertex ------------------------ */
 
+#ifdef pp_SMOKETEST
+void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv,int option){
+#else
 void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
+#endif
+  // SMOKE3D_FIRE_ONLY      0
+  // SMOKE3D_SMOKE_ONLY     1
+  // SMOKE3D_SMOKE_AND_FIRE 2
   int use_smoke = 1, index = 0;
   float sootval = 0.0, fireval = 0.0, co2val = 0.0;
 
@@ -1244,7 +1255,11 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
   if(hv[VCO2]==1)co2val = t[index++];
 
   if(hv[VFIRE]==1){
+#ifdef pp_SMOKETEST
+    if(option!=SMOKE3D_SMOKE_ONLY&&fireval>global_hrrpuv_cutoff){
+#else
     if(fireval>global_hrrpuv_cutoff){
+#endif
       float *color, alpha, mergecolor[3];
 
       //      float alpha_factor;
@@ -1285,14 +1300,27 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
     }
   }
   if(use_smoke==1){
+#ifdef pp_SMOKETEST
+    if(option==SMOKE3D_FIRE_ONLY){
+      glColor4f(0.0, 0.0, 0.0, 0.0);
+    }
+    else{
+      glColor4f(0.0, 0.0, 0.0, sootval);
+    }
+#else
     glColor4f(0.0, 0.0, 0.0, sootval);
+#endif
     glVertex3fv(v);
   }
 }
 
 /* ------------------ DrawSmoke3DNew ------------------------ */
 
+#ifdef pp_SMOKETEST
+int DrawSmoke3DNew(smoke3ddata *smoke3di, int option){
+#else
 int DrawSmoke3DNew(smoke3ddata *smoke3di){
+#endif
 
   int i, nsmoketypes, ntriangles = 0, have_vals[3];
   meshdata *meshi;
@@ -1341,6 +1369,21 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
         vals3 = spi->vals2+nsmoketypes*iv3;
         // don't draw the triangle if there is smoke and the smoke is all zero
         if(have_vals[0]==0||vals1[0]!=0.0||vals2[0]!=0.0||vals3[0]!=0.0){
+#ifdef pp_SMOKETEST
+          if(smoke_outline==1){
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals, option);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals, option);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals, option);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals, option);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals, option);
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals, option);
+          }
+          else{
+            DrawSmokeVertex(smoke3di, v1, vals1, have_vals, option);
+            DrawSmokeVertex(smoke3di, v2, vals2, have_vals, option);
+            DrawSmokeVertex(smoke3di, v3, vals3, have_vals, option);
+          }
+#else
           if(smoke_outline==1){
             DrawSmokeVertex(smoke3di, v1, vals1, have_vals);
             DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
@@ -1354,6 +1397,7 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
             DrawSmokeVertex(smoke3di, v2, vals2, have_vals);
             DrawSmokeVertex(smoke3di, v3, vals3, have_vals);
           }
+#endif
         }
       }
       ntriangles += spi->ntris2;
@@ -5185,7 +5229,16 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ DrawSmokeFrame ------------------------ */
 
+#ifdef SMOKETEST
+void DrawSmokeFrame(int option){
+#else
 void DrawSmokeFrame(void){
+#endif
+  // options:
+  // SMOKE3D_FIRE_ONLY      0
+  // SMOKE3D_SMOKE_ONLY     1
+  // SMOKE3D_SMOKE_AND_FIRE 2
+
 #ifdef pp_GPUSMOKE
   float smoke_time = 0.0;
 #endif
@@ -5218,7 +5271,11 @@ void DrawSmokeFrame(void){
 #endif
 
   blend_mode = 0;
+#ifdef pp_SMOKETEST
+  if(option==SMOKE3D_FIRE_ONLY){
+#else
   if(usegpu==0&&hrrpuv_max_blending==1){
+#endif
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }
@@ -5231,8 +5288,24 @@ void DrawSmokeFrame(void){
 
     smoke3di = smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
+#ifdef pp_SMOKETEST
+    switch(option){
+    case SMOKE3D_FIRE_ONLY:
+      if(smoke3di->type!=HRRPUV&&smoke3di->type!=TEMP)continue;
+      break;
+    case SMOKE3D_SMOKE_AND_FIRE:
+      if(smoke3di->primary_file==0)continue;
+      if(IsSmokeComponentPresent(smoke3di)==0)continue;
+      break;
+    case SMOKE3D_SMOKE_ONLY:
+      if(smoke3di->type!=SOOT)continue;
+      printf("smoke only\n");
+      break;
+    }
+#else
     if(smoke3di->primary_file==0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
+#endif
 #ifdef pp_SMOKEDIAG
     nm++;
 #endif
@@ -5240,7 +5313,11 @@ void DrawSmokeFrame(void){
     if(usegpu==1){
 #ifdef pp_GPUSMOKE
       if(use_newsmoke==SMOKE3D_NEW){
+#ifdef pp_SMOKETEST
+        triangle_count += DrawSmoke3DGPUNew(smoke3di,option);
+#else
         triangle_count += DrawSmoke3DGPUNew(smoke3di);
+#endif
       }
       else if(use_newsmoke==SMOKE3D_ORIG){
         DrawSmoke3DGPU(smoke3di);
@@ -5258,7 +5335,11 @@ void DrawSmokeFrame(void){
       }
 #ifdef pp_GPUSMOKE
       else if(use_newsmoke==SMOKE3D_NEW){
+#ifdef pp_SMOKETEST
+        triangle_count += DrawSmoke3DNew(smoke3di,option);
+#else
         triangle_count += DrawSmoke3DNew(smoke3di);
+#endif
       }
       else{
         DrawSmokeDiag(smoke3di);
