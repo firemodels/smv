@@ -51,3 +51,7 @@ intel_osx_64q: $(GLUI_OBJS)
 intel_win_64: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
 intel_win_64 : $(GLUI_OBJSWIN)
 	lib $(GLUI_OBJSWIN) -OUT:libglui.lib 
+
+gnu_win_64: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
+gnu_win_64: $(GLUI_OBJS)
+	ar rcs libglui.a $(GLUI_OBJS)
