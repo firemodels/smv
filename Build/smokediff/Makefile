@@ -79,6 +79,17 @@ intel_win_64 : exe       = smokediff_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 	
+gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = -m64
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : FC        = gfortran
+gnu_win_64 : exe       = smokediff_win_64.exe
+
+gnu_win_64 : $(obj) 
+	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+
 LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
 # ------------- 64 bit Linux gnu ----------------
