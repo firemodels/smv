@@ -58,7 +58,14 @@ intel_win_64 : CC        = icl
 intel_win_64 : exe       = env2mod_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin)
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = Gcc
+gnu_win_64 : exe       = env2mod_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu_linux_64 ----------------
 
