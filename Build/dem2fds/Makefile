@@ -11,6 +11,10 @@ INC_DIR += -I $(SOURCE_DIR)/dem2fds -I $(SOURCE_DIR)/smokeview
 WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 LIBS_WIN = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib $(WIN_LIBDIR)\png.lib $(WIN_LIBDIR)\zlib.lib
 
+
+GNU_LIBDIR = $(LIB_DIR)/gnu_win_64
+LIBS_GNU = $(GNU_LIBDIR)\gd.a $(GNU_LIBDIR)\jpeg.a $(GNU_LIBDIR)\png.a $(GNU_LIBDIR)\zlib.a
+
 #--- OSX
 
 LIBS_OSX = -lgd -ljpeg -lpng -lz
@@ -84,6 +88,15 @@ intel_win_64 : exe       = dem2fds_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+
+gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = gcc
+gnu_win_64 : FC        = gfortran
+gnu_win_64 : exe       = dem2fds_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(FC) -o $(bin)/$(exe) $(obj) $(LIBS_GNU)
 
 # ------------- gnu Linux 64 db ----------------
 
