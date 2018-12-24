@@ -185,6 +185,20 @@ intel_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN) $(LIBLUA)
 
+# ------------- gnu_win_64 ----------------
+
+gnu_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = 
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : FC        = gfortran
+gnu_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
+
+gnu_win_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(obj) 
+
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
