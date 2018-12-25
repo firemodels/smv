@@ -12,7 +12,7 @@ set SMV_TESTFLAG=
 set SMV_TESTSTRING=
 set OPT=
 
-erase *.obj *.mod
-make SHELL="%ComSpec%" -f ..\Makefile gnu_win_64
+erase *.o *.mod
+make SHELL="%ComSpec%" gnu_win_64 -f ..\Makefile
 pause
 
