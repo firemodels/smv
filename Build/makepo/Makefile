@@ -69,6 +69,15 @@ intel_win_64 : exe       = makepo_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
 
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = 
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : exe       = makepo_win_64.exe 
+
+gnu_win_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
