@@ -58,6 +58,13 @@ intel_win_64 : exe       = background.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) 
 
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = gcc
+gnu_win_64 : exe       = background.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) 
+
 # ------------- Linux 64 ----------------
 #  64 bit linux
 
