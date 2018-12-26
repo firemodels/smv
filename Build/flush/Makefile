@@ -66,13 +66,21 @@ no_target:
 # ------------- Windows 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
 intel_win_64 : CC        = icl
 intel_win_64 : FC        = ifort
 intel_win_64 : exe       = flush_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = gcc
+gnu_win_64 : FC        = gfortran
+gnu_win_64 : exe       = flush_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LIBS_WIN)
+
 
 # ------------- gnu Linux 64 db ----------------
 
