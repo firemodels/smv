@@ -5,12 +5,12 @@ SOURCE_DIR = ../../../Source/
 FILTERC =
 FILTERF =
 
-VPATH = $(SOURCE_DIR)/getdate $(SOURCE_DIR)/shared  
+VPATH = $(SOURCE_DIR)/getdate  
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  GIT_HASH := $(shell ..\..\Utilities\Scripts\githash)
-  GIT_DATE := $(shell ..\..\Utilities\Scripts\gitlog)
+  GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
 else
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
@@ -55,6 +55,13 @@ intel_win_64 : exe       = getdate_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = gcc
+gnu_win_64 : exe       = getdate_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- Linux 64 ----------------
 #  64 bit linux
