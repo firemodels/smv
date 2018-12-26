@@ -49,12 +49,16 @@ no_target:
 
 # ********  rules for each platform supported *************
 
+# ------------- intel win 64 ----------------
+
 intel_win_64 : CFLAGS    = -Od /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = getdate_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
+
+# ------------- gnu win 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
@@ -63,8 +67,7 @@ gnu_win_64 : exe       = getdate_win_64.exe
 gnu_win_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
@@ -73,9 +76,7 @@ intel_linux_64 : exe       = getdate_linux_64
 intel_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) 
 
-	
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+# ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc

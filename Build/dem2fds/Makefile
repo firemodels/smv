@@ -78,7 +78,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Windows 64 ----------------
+# ------------- intel Windows 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
@@ -88,6 +88,8 @@ intel_win_64 : exe       = dem2fds_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+
+# ------------- gnu Windows 64 ----------------
 
 gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
 gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
