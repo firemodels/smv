@@ -72,7 +72,15 @@ intel_win_64 : FC        = ifort
 intel_win_64 : exe       = timep_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin)
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
+gnu_win_64 : CC        = gcc
+gnu_win_64 : exe       = timep_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu Linux 64 db ----------------
 
