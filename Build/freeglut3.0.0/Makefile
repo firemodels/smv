@@ -57,14 +57,12 @@ intel_linux_64 : CC=icc
 intel_linux_64 : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
-# gnu win 64
+# gnu linux 64
 
-gnu_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
-gnu_win_64 : FILTERC+=-D __MINGW32__
-gnu_win_64 : CFLAGS=-Wno-shift-count-overflow
-gnu_win_64 : CC=gcc
-gnu_win_64 : $(OBJSWINS)
-	ar rcs libglutwin.a $(OBJSWINS) 
+gnu_linux_64 : INC+=-I $(SOURCE_DIR)/x11 
+gnu_linux_64 : CC=gcc
+gnu_linux_64 : $(OBJS)
+	ar rcs libglut.a $(OBJS)
 
 # intel win 64
 
@@ -73,6 +71,15 @@ intel_win_64 : SIZE=
 intel_win_64 : CC=icl
 intel_win_64 : $(OBJSWINS_WIN)
 	lib  $(OBJSWINS_WIN) -OUT:libglutwin.lib
+
+# gnu win 64
+
+gnu_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
+gnu_win_64 : FILTERC+=-D __MINGW32__
+gnu_win_64 : CFLAGS=-Wno-shift-count-overflow
+gnu_win_64 : CC=gcc
+gnu_win_64 : $(OBJSWINS)
+	ar rcs libglutwin.a $(OBJSWINS) 
 
 #-------------- Clean Target to remove Object and Module files -----------
 
