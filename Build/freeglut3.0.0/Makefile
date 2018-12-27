@@ -1,5 +1,6 @@
 
-SIZE=-m32
+PLATFORM=
+SIZE=
 COMPILER=icc
 CC=$(COMPILER) $(SIZE)
 
@@ -7,11 +8,17 @@ FILTERC=
 # FILTERC= -D WIN32 -D _LIB
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(SIZE) $(CFLAGS) $(INC) $(FILTERC) $<
 .c.o:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(SIZE) $(CFLAGS) $(INC) $(FILTERC) $<
 
-VPATH=.:mswin:util
+SOURCE_DIR=../../../Source/freeglut3.0.0
+
+ifeq ($(PLATFORM),win)
+  VPATH=$(SOURCE_DIR):$(SOURCE_DIR)/mswin:$(SOURCE_DIR)/util
+else
+  VPATH=$(SOURCE_DIR):$(SOURCE_DIR)/x11:$(SOURCE_DIR)/util
+endif
 
 RANLIB=ranlib
 # gles_stubs.o
@@ -38,22 +45,22 @@ OBJSWINS_WIN = $(OBJSWINS:.o=.obj)
 .SUFFIXES:      .c .o .obj .pic.o
 
 # libglut.a
-intel_linux_64 : VPATH=.:./x11
-intel_linux_64 : INC=-I . -I x11
+intel_linux_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/x11 -I $(SOURCE_DIR)/include 
+intel_linux_64 : FILTERC=-D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
 intel_linux_64 : CC=icc
 intel_linux_64 : $(OBJS)
 	ar rcs $@ $(OBJS)
 
 # libglutwin.a
-gnu_win_64 : INC=-I . -I mswin -I include 
+gnu_win_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/mswin -I $(SOURCE_DIR)/include 
 gnu_win_64 : FILTERC=-D __MINGW32__ -D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
 gnu_win_64 : CC=gcc
 gnu_win_64 : $(OBJSWINS)
 	ar rcs libglutwin.a $(OBJSWINS) 
 
 # libglutwin.lib
-intel_win_64 : VPATH=.:./mswin
-intel_win_64 : INC=-I . -I ./mswin -I include
-intel_win_64 : CC=icc
+intel_win_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/mswin -I $(SOURCE_DIR)/include 
+intel_win_64 : FILTERC= -D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
+intel_win_64 : CC=icl
 intel_win_64 : $(OBJSWINS_WIN)
-	lib  $(OBJSWINS_WIN) -OUT:$@
+	lib  $(OBJSWINS_WIN) -OUT:libglutwin.lib

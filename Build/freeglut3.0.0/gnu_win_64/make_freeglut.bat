@@ -2,7 +2,6 @@
 setlocal
 title Building freeglut library
 
-::erase *.o *.obj libglutwin.a libglutwin.lib
-make -f ./makefile gnu_win_64
-if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
+erase *.o *.obj libglutwin.a libglutwin.lib
+make PLATFORM="win" -f ../Makefile gnu_win_64
 endlocal
