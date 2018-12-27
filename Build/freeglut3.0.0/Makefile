@@ -1,11 +1,11 @@
 
 PLATFORM=
-SIZE=
+SIZE=-m64
 COMPILER=icc
 CC=$(COMPILER) $(SIZE)
 
-FILTERC=
-# FILTERC= -D WIN32 -D _LIB
+FILTERC=-D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
+INC=-I $(SOURCE_DIR) -I $(SOURCE_DIR)/include 
 
 .c.obj:
 	$(CC) -c $(SIZE) $(CFLAGS) $(INC) $(FILTERC) $<
@@ -13,6 +13,12 @@ FILTERC=
 	$(CC) -c $(SIZE) $(CFLAGS) $(INC) $(FILTERC) $<
 
 SOURCE_DIR=../../../Source/freeglut3.0.0
+
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  RM=erase
+else
+  RM=rm -f
+endif
 
 ifeq ($(PLATFORM),win)
   VPATH=$(SOURCE_DIR):$(SOURCE_DIR)/mswin:$(SOURCE_DIR)/util
@@ -44,23 +50,32 @@ OBJSWINS_WIN = $(OBJSWINS:.o=.obj)
 
 .SUFFIXES:      .c .o .obj .pic.o
 
-# libglut.a
-intel_linux_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/x11 -I $(SOURCE_DIR)/include 
-intel_linux_64 : FILTERC=-D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
+# intel linux 64
+
+intel_linux_64 : INC+=-I $(SOURCE_DIR)/x11 
 intel_linux_64 : CC=icc
 intel_linux_64 : $(OBJS)
-	ar rcs $@ $(OBJS)
+	ar rcs libglut.a $(OBJS)
 
-# libglutwin.a
-gnu_win_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/mswin -I $(SOURCE_DIR)/include 
-gnu_win_64 : FILTERC=-D __MINGW32__ -D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
+# gnu win 64
+
+gnu_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
+gnu_win_64 : FILTERC+=-D __MINGW32__
+gnu_win_64 : CFLAGS=-Wno-shift-count-overflow
 gnu_win_64 : CC=gcc
 gnu_win_64 : $(OBJSWINS)
 	ar rcs libglutwin.a $(OBJSWINS) 
 
-# libglutwin.lib
-intel_win_64 : INC=-I $(SOURCE_DIR)/. -I $(SOURCE_DIR)/mswin -I $(SOURCE_DIR)/include 
-intel_win_64 : FILTERC= -D FREEGLUT_STATIC -D NEED_XPARSEGEOMETRY_IMPL -D GLUT_DISABLE_ATEXIT_HACK
+# intel win 64
+
+intel_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
+intel_win_64 : SIZE= 
 intel_win_64 : CC=icl
 intel_win_64 : $(OBJSWINS_WIN)
 	lib  $(OBJSWINS_WIN) -OUT:libglutwin.lib
+
+#-------------- Clean Target to remove Object and Module files -----------
+
+.PHONY : clean
+clean:
+	$(RM) *.o *.obj *.a  *.lib
