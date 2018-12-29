@@ -9,8 +9,13 @@ if "%arg1%"=="bot" (
 )
 
 set LIBDIR=%CD%
-set SRCDIR=%LIBDIR%\..\..\..\Source
 erase *.lib
+
+cd ..\..\..\Source
+set SRCDIR=%CD%
+
+cd ..\Build
+set BUILDDIR=%CD%
 
 :: ZLIB
 cd %SRCDIR%\zlib128
@@ -31,6 +36,10 @@ start %WAIT% call makelib %OPTS% -copy libgd.lib %LIBDIR%\gd.lib
 :: GLUT
 cd %SRCDIR%\glut-3.7.6
 start %WAIT% makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
+
+:: FREEGLUT
+cd %BUILDDIR%\freeglut3.0.0\intel_win_64
+start %WAIT% make_freeglut %OPTS% -copy libglutwin.lib %LIBDIR%\freeglut32.lib
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
