@@ -74,7 +74,13 @@ INC = -I $(SOURCE_DIR)/glut-3.7.6
 endif
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
-WININC = -I $(SOURCE_DIR)/GLINC -I $(SOURCE_DIR)/pthreads
+
+ifeq ($(GLUT),freeglut)
+  WININC = -I $(SOURCE_DIR)/freeglut3.0.0/include
+else
+  WININC = -I $(SOURCE_DIR)/GLINC
+endif
+WININC += -I $(SOURCE_DIR)/pthreads
 
 ifeq ($(LUA_SCRIPTING),true)
 INC += -I $(SOURCE_DIR)/lua-5.3.1/src
@@ -100,7 +106,13 @@ smvluacore: $(SMVLUACORE_FILES)
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\glut32.lib $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib
+ifeq ($(GLUT),freeglut)
+  SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+else
+  SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\glut32.lib
+endif
+SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
 #--- OSX
 
@@ -168,7 +180,7 @@ ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
-intel_win_64 : CFLAGS    = -O1 -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D FREEGLUT_STATIC -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : CFLAGS    += -D pp_LUA
@@ -176,7 +188,7 @@ intel_win_64 : SMV_LIBS_WIN += $(WIN_LIBDIR)\liblua.lib
 intel_win_64 : SMV_LIBS_WIN += $(WIN_LIBDIR)\lpeg.lib
 intel_win_64 : SMVLUACORE_FILES += $(WIN_LIBDIR)/lpeg.dll
 endif
-intel_win_64 : LFLAGS    = /F32768000
+intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort

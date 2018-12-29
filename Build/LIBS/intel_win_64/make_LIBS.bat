@@ -2,6 +2,7 @@
 set OPTS=i
 set arg1=%1
 set arg2=%2
+set arg3=%3
 
 set WAIT=
 if "%arg1%"=="bot" (
@@ -34,12 +35,10 @@ cd %SRCDIR%\gd-2.0.15
 start %WAIT% call makelib %OPTS% -copy libgd.lib %LIBDIR%\gd.lib
 
 :: GLUT
+if x%arg3% == xfreeglut goto skip_glut
 cd %SRCDIR%\glut-3.7.6
 start %WAIT% makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
-
-:: FREEGLUT
-cd %BUILDDIR%\freeglut3.0.0\intel_win_64
-start %WAIT% make_freeglut %OPTS% -copy libglutwin.lib %LIBDIR%\freeglut32.lib
+:skip_glut
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
@@ -60,6 +59,15 @@ cd %SRCDIR%\lpeg-1.0.0
 call makelib.bat
 copy lpeg.lib %LIBDIR%\lpeg.lib
 :skip_lua
+
+:: FREEGLUT
+if NOT x%arg3% == xfreeglut goto skip_freeglut
+cd %BUILDDIR%\freeglut3.0.0\intel_win_64
+call make_freeglut %OPTS% 
+dir *.lib
+copy freeglut_staticd.lib %LIBDIR%\freeglut_staticd.lib
+copy freeglut_staticd.lib %LIBDIR%\glut32.lib
+:skip_freeglut
 
 cd %LIBDIR%
 
