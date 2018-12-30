@@ -31,6 +31,9 @@ GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
             arcball.o algebra3.o quaternion.o
 GLUI_OBJSWIN = $(GLUI_OBJS:.o=.obj)
 
+default: CFLAGS=-m64 $(PLATFORM) $(NOCLOSE) $(CFLAGOPT)
+default: $(GLUI_OBJS)
+	ar rcs libglui.a $(GLUI_OBJS)
 
 intel_linux_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
 intel_linux_64: $(GLUI_OBJS)

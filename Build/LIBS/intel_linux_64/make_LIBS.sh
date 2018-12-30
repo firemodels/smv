@@ -6,7 +6,7 @@ rm *.a
 LUA=$1
 
 # build using 64 bit intel compilers
-OPTS="-i -6"
+OPTS="-i"
 
 LIBDIR=`pwd`
 SRCDIR=$LIBDIR/../../../Source

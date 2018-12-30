@@ -4,7 +4,7 @@ cd $DIR
 
 LUA=$1
 
-OPTS="-i -6"
+OPTS="-i"
 LIBDIR=`pwd`
 rm *.a
 SRCDIR=$LIBDIR/../../../Source
@@ -24,7 +24,7 @@ echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS -c "-mmacosx-version-min=10.4"
+./makelib.sh $OPTS 
 cp libglui.a $LIBDIR/.
 
 # GLUT
