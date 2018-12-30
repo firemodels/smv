@@ -7,6 +7,6 @@ erase *.o *.obj libglui.a libglui.lib
 set target=intel_win_64
 if %COMPILER% == gcc set target=gnu_win_64
 
-make COMPILER=%COMPILER% COMPILER2=%COMPILER2% SIZE=%SIZE% RM=erase %target% -f ./makefile 
+make GLUT="glut" COMPILER=%COMPILER% COMPILER2=%COMPILER2% -f ./makefile %target%
 if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
 endlocal

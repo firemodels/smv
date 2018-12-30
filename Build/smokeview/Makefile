@@ -69,8 +69,8 @@ objwin = $(obj:.o=.obj)
 
 ifeq ($(QUARTZ),true)
 INC = -I /usr/X11/include
-else
-INC = -I $(SOURCE_DIR)/glut-3.7.6
+#else
+#INC = -I $(SOURCE_DIR)/glut-3.7.6
 endif
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
@@ -104,15 +104,23 @@ smvluacore: $(SMVLUACORE_FILES)
 
 #--- windows
 
-WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib
 ifeq ($(GLUT),freeglut)
-  SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
 else
-  SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif
-SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64
+ifeq ($(GLUT),freeglut)
+  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\freeglut_staticd.a
+  D_FREEGLUT = -D FREEGLUT_STATIC
+else
+  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\glut32.a
+  D_FREEGLUT =
+endif
+SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a $(SMV_GNU_LIBDIR)\pthreads.a
 
 #--- OSX
 
@@ -155,6 +163,8 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # note: use /fpscomp:general option to allow smokeview to read files being currently written to by FDS
 #       (instead of the non-standard SHARED keyword in a FORTRAN OPEN statement)
@@ -199,14 +209,10 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu_win_64 ----------------
 
-SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64
-SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(SMV_GNU_LIBDIR)\glut32.a $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a \
-               $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a   $(SMV_GNU_LIBDIR)\pthreads.a
-
-gnu_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+gnu_win_64 : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings
-gnu_win_64 : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid
+gnu_win_64 : CFLAGS    = -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings
+gnu_win_64 : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
 gnu_win_64 : FC        = gfortran

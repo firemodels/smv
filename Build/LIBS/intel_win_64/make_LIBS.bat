@@ -2,6 +2,7 @@
 set OPTS=i
 set arg1=%1
 set arg2=%2
+:: if arg3 is freeglut then freeglut not glut library will be built
 set arg3=%3
 
 set WAIT=
@@ -42,7 +43,13 @@ start %WAIT% makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
-start %WAIT% makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+if x%arg3% == xfreeglut goto skip_glui1
+  start %WAIT% makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+:skip_glui1
+
+if NOT x%arg3% == xfreeglut goto skip_glui2
+  start %WAIT% makelib_freeglut %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+:skip_glui2
 
 :: pthreads
 cd %SRCDIR%\pthreads

@@ -80,7 +80,7 @@ gnu_win_64 : FILTERC+=-D __MINGW32__
 gnu_win_64 : CFLAGS=-Wno-shift-count-overflow
 gnu_win_64 : CC=gcc
 gnu_win_64 : $(OBJSWINS)
-	ar rcs libglutwin.a $(OBJSWINS) 
+	ar rcs freeglut_staticd.a $(OBJSWINS) 
 
 #-------------- Clean Target to remove Object and Module files -----------
 
