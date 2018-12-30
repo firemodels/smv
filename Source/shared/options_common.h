@@ -52,6 +52,7 @@
 #define pp_append // append underscore to Fortran file names
 #endif
 #endif
+#endif
 
 //*** options: debug options
 
