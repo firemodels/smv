@@ -60,9 +60,16 @@ intel_linux_64 : $(OBJS)
 
 # gnu linux 64
 
-gnu_linux_64 : INC+=-I $(SOURCE_DIR)/x11 
+gnu_linux_64 : INC+=-I $(SOURCE_DIR)/x11
 gnu_linux_64 : CC=gcc
 gnu_linux_64 : $(OBJS)
+	ar rcs libglut.a $(OBJS)
+
+# gnu osx 64
+
+gnu_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /usr/X11/include
+gnu_osx_64 : CC=gcc
+gnu_osx_64 : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
 # intel win 64
