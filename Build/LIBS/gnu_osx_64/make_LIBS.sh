@@ -1,7 +1,17 @@
 #!/bin/bash
+# build freeglut if arg1==freeglut
+arg1=$1
+
 OPTS="-g"
+
 LIBDIR=`pwd`
-SRCDIR=$LIBDIR/../../../Source
+
+cd $LIBDIR/../../../Source
+SRCDIR=`pwd`
+
+cd ../Build
+BUILDDIR=`pwd`
+
 rm *.a
 cd $SRCDIR
 SRCDIR=`pwd`
@@ -13,13 +23,19 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
+if [ "$arg1" == "freeglut" ]; then
+./makelib.sh $OPTS -f
+else
 ./makelib.sh $OPTS
+fi
 cp libglui.a $LIBDIR/.
 
-# GLUT
-#cd $SRCDIR/glut-3.7.6
-#./makelib.sh $OPTS
-#cp libglut.a $LIBDIR/.
+# FREEGLUT
+if [ "$arg1" == "freeglut" ]; then
+  cd $BUILDDIR/freeglut3.0.0/gnu_osx_64
+  ./make_freeglut.sh $OPTS
+  cp libglut.a $LIBDIR/.
+fi
 
 # JPEG
 cd $SRCDIR/jpeg-9b

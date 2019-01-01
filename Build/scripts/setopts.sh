@@ -1,9 +1,13 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
 TEST=
-while getopts 'hprt' OPTION
+GLUT=glut
+while getopts 'fhprt' OPTION
 do
 case $OPTION in
+  f)
+   GLUT=freeglut
+  ;;
   h)
   echo "options:"
   echo "-p - build a profiling version of smokeview"
@@ -24,3 +28,5 @@ case $OPTION in
 esac
 done
 export SMV_MAKE_OPTS
+export GLUT
+export TEST

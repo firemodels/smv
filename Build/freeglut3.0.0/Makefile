@@ -67,14 +67,15 @@ gnu_linux_64 : $(OBJS)
 
 # intel osx 64
 
-intel_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /usr/X11/include
+intel_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /opt/X11/include
+intel_osx_64 : CFLAGS=-Wno-unknown-pragmas
 intel_osx_64 : CC=icc
 intel_osx_64 : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
 # gnu osx 64
 
-gnu_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /usr/X11/include
+gnu_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /opt/X11/include
 gnu_osx_64 : CC=gcc
 gnu_osx_64 : $(OBJS)
 	ar rcs libglut.a $(OBJS)

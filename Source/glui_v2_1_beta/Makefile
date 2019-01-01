@@ -43,8 +43,8 @@ intel_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive
 intel_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64q: CFLAGS=-m64 -I /usr/X11/include -I /usr/X11/include/GL $(NOCLOSE) -D pp_QUARTZ -fpermissive 
-intel_osx_64q: $(GLUI_OBJS)
+gnu_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
+gnu_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
 intel_win_64: CFLAGS= $(NOCLOSE) 

@@ -1,4 +1,11 @@
 #!/bin/bash
+# build freeglut if arg1==freeglut
+arg1=$1
+FREEGLUT=
+if [ "$arg1" == "freeglut" ]; then
+  FREEGLUT=-f
+fi
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
@@ -7,9 +14,13 @@ LUA=$1
 OPTS="-i"
 LIBDIR=`pwd`
 rm *.a
+
 SRCDIR=$LIBDIR/../../../Source
 cd $SRCDIR
 SRCDIR=`pwd`
+
+cd ../Build
+BUILDDIR=`pwd`
 
 # GD
 echo
@@ -24,14 +35,16 @@ echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS 
+./makelib.sh $OPTS  $FREEGLUT
 cp libglui.a $LIBDIR/.
 
-# GLUT
-# use OSX provided glut library for now
-#cd $SRCDIR/glut-3.7.6
-#./makelib.sh $OPTS
-#cp libglut.a $LIBDIR/.
+# FREEGLUT
+if [ "$arg1" == "freeglut" ]; then
+  cd $BUILDDIR/freeglut3.0.0/intel_osx_64
+  ./make_freeglut.sh $OPTS 
+  cp libglut.a $LIBDIR/.
+fi
+
 
 # JPEG
 echo
