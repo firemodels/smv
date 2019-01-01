@@ -126,7 +126,7 @@ INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libif
 #--- Linux
 
 SMV_LIBS_LINUX= -lglui -lglut -lgd -ljpeg -lpng -lz
-SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm
+SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifport.a
 
 #*** General Purpose Rules ***
