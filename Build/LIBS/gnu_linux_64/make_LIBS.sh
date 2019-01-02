@@ -1,11 +1,7 @@
 #!/bin/bash
-# build freeglut if arg1==freeglut
-arg1=$1
-OPTS="-g"
-FREEGLUT=
-if [ "$arg1" == "freeglut" ]; then
-  FREEGLUT=-f
-fi
+# use -G to force use of the gnu compiler
+OPTS="-G $*"
+source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
 
@@ -24,11 +20,11 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS $FREEGLUT
+./makelib.sh $OPTS 
 cp libglui.a $LIBDIR/.
 
 # GLUT
-if [ "$arg1" == "freeglut" ]; then
+if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/gnu_linux_64
   ./make_freeglut.sh $OPTS 
 else

@@ -1,17 +1,11 @@
 #!/bin/bash
-# build freeglut if arg1==freeglut
-arg1=$1
-FREEGLUT=
-if [ "$arg1" == "freeglut" ]; then
-  FREEGLUT=-f
-fi
+# use -I to force use of the Intel compiler
+OPTS="-I $*"
+source ../../../Source/scripts/setopts.sh $OPTS
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-LUA=$1
-
-OPTS="-i"
 LIBDIR=`pwd`
 rm *.a
 
@@ -35,16 +29,21 @@ echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS  $FREEGLUT
+./makelib.sh $OPTS
 cp libglui.a $LIBDIR/.
 
-# FREEGLUT
-if [ "$arg1" == "freeglut" ]; then
+# GLUT
+if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/intel_osx_64
   ./make_freeglut.sh $OPTS 
   cp libglut.a $LIBDIR/.
+else
+  if [ "$QUARTZ" != "framework" ]; then
+    cd $SRCDIR/glut-3.7.6
+    ./makelib.sh $OPTS
+    cp libglut.a $LIBDIR/.
+  fi
 fi
-
 
 # JPEG
 echo

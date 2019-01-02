@@ -1,8 +1,7 @@
 #!/bin/bash
-# build freeglut if arg1==freeglut
-arg1=$1
-
-OPTS="-g"
+# use -G to force use of the gnu compiler
+OPTS="-G $*"
+source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
 
@@ -23,18 +22,23 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-if [ "$arg1" == "freeglut" ]; then
-./makelib.sh $OPTS -f
+if [ "$GLUT" == "freeglut" ]; then
+  ./makelib.sh $OPTS -f
 else
-./makelib.sh $OPTS
+  ./makelib.sh $OPTS
 fi
 cp libglui.a $LIBDIR/.
 
 # FREEGLUT
-if [ "$arg1" == "freeglut" ]; then
+if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/gnu_osx_64
   ./make_freeglut.sh $OPTS
   cp libglut.a $LIBDIR/.
+else
+  if [ "$QUARTZ" != "framework" ]; then
+    cd $SRCDIR/glut-3.7.6
+    ./makelib.sh $OPTS -q
+  fi
 fi
 
 # JPEG

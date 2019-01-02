@@ -5,4 +5,4 @@ LIBDIR=../../LIBS/gnu_osx_64
 source ../../scripts/test_libs.sh $GLUT
 
 make -f ../Makefile clean
-eval make GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64
+eval make QUARTZ="$QUARTZ" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64

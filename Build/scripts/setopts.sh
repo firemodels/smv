@@ -2,7 +2,8 @@
 SMV_MAKE_OPTS=
 TEST=
 GLUT=glut
-while getopts 'fhprt' OPTION
+QUARTZ=framework
+while getopts 'fhpqrt' OPTION
 do
 case $OPTION in
   f)
@@ -18,6 +19,9 @@ case $OPTION in
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-p\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"profile\" "
   ;;
+  q)
+   QUARTZ=use_quartz
+  ;;
   r)
   ;;
   t)
@@ -30,3 +34,4 @@ done
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
+export QUARTZ

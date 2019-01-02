@@ -67,6 +67,8 @@ objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 
+# windows include directories
+
 ifeq ($(GLUT),freeglut)
   WININC = -I $(SOURCE_DIR)/freeglut3.0.0/include
 else
@@ -117,9 +119,13 @@ SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $
 #--- OSX
 
 ifeq ($(GLUT),freeglut)
-SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
+  SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
 else
-SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
+  ifeq ($(QUARTZ),framework)
+    SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
+  else
+    SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
+  endif
 endif
 INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
@@ -340,7 +346,11 @@ intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -L $(G
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
+ifeq ($(QUARTZ),framework)
 intel_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT 
+else
+intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+endif
 endif
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icpc
@@ -379,11 +389,17 @@ gnu_osx_64_db : $(obj)
 # ------------- gnu_osx_64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D FREEGLUT_STATIC -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
+gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) -L $(GLIBDIR) -lgfortran 
 ifeq ($(GLUT),freeglut)
-gnu_osx_64 : LFLAGS    = -m64 -shared -fPIC -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) -L $(GLIBDIR) -lgfortran -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+gnu_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
 else
-gnu_osx_64 : LFLAGS    = -m64 -framework OpenGL -framework GLUT
+ifeq ($(QUARTZ),framework)
+gnu_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT
+else
+gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+endif
 endif
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
