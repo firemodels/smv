@@ -34,4 +34,9 @@ done
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
+# this parameter is only for the mac
+if [ "`uname`" == "Darwin" ]; then
 export QUARTZ
+else
+QUARTZ=
+fi

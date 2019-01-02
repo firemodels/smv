@@ -53,11 +53,15 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+
+# the parameter QUARTZ is only for the mac
 if [ "`uname`" == "Darwin" ]; then
   PLATFORM="-D pp_OSX"
+  export QUARTZ
+else
+  QUARTZ=
 fi
 export COMPILER
 export PLATFORM
 export GLUT
 export LUA
-export QUARTZ
