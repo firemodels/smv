@@ -2552,6 +2552,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else{
     int filesize;
 
+    PRINTF("Loading %s(%s)", file,patchi->label.shortlabel);
 #ifdef pp_GEOMC
     filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
