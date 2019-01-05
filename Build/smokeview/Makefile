@@ -94,47 +94,6 @@ smvluacore: $(SMVLUACORE_FILES)
 	cp $(SMVLUACORE_FILES) .
 # cannot use $^ here
 
-# ------------- libraries used by smokeview -------------------
-
-#--- windows
-
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
-else
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
-endif
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
-
-SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64
-ifeq ($(GLUT),freeglut)
-  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\freeglut_staticd.a
-  D_FREEGLUT = -D FREEGLUT_STATIC
-else
-  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\glut32.a
-  D_FREEGLUT =
-endif
-SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a $(SMV_GNU_LIBDIR)\pthreads.a
-
-#--- OSX
-
-ifeq ($(GLUT),freeglut)
-  SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
-else
-  ifeq ($(QUARTZ),framework)
-    SMV_LIBS_OSX = -lglui -lgd -ljpeg -lpng -lz
-  else
-    SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
-  endif
-endif
-INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
-
-#--- Linux
-
-SMV_LIBS_LINUX= -lglui -lglut -lgd -ljpeg -lpng -lz
-SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
-INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifport.a
-
 #*** General Purpose Rules ***
 
 no_target:
@@ -166,6 +125,28 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+#--- Intel
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+ifeq ($(GLUT),freeglut)
+  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+else
+  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
+endif
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+
+#--- gnu
+
+SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64
+ifeq ($(GLUT),freeglut)
+  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\freeglut_staticd.a
+  D_FREEGLUT = -D FREEGLUT_STATIC
+else
+  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\glut32.a
+  D_FREEGLUT =
+endif
+SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a $(SMV_GNU_LIBDIR)\pthreads.a
+
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # note: use /fpscomp:general option to allow smokeview to read files being currently written to by FDS
@@ -176,6 +157,9 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 -D pp_INTEL /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
 intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D _DEBUG -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(GLUT),freeglut)
+intel_win_64_db : CFLAGS   += -D FREEGLUT_STATIC
+endif
 intel_win_64_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
 intel_win_64_db : CC        = icl
 intel_win_64_db : CPP       = icl
@@ -192,7 +176,10 @@ ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
-intel_win_64 : CFLAGS    = -O1 -D FREEGLUT_STATIC -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D WIN32 -D pp_INTEL -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(GLUT),freeglut)
+intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
+endif
 intel_win_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : CFLAGS    += -D pp_LUA
@@ -226,6 +213,10 @@ gnu_win_64 : $(obj)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+SMV_LIBS_LINUX= -lglui -lglut -lgd -ljpeg -lpng -lz
+SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
+INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # to profile smokeview on linux
 # 1.  build  using ./make_smv.sh -p
@@ -331,6 +322,17 @@ mingw_win_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+ifeq ($(GLUT),freeglut)
+  SMV_LIBS_OSX =  -lglui  -lglut -lgd -ljpeg -lpng -lz
+else
+  ifeq ($(QUARTZ),framework)
+    SMV_LIBS_OSX = -lglui        -lgd -ljpeg -lpng -lz
+  else
+    SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
+  endif
+endif
+INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # ------------- intel_osx_64 ----------------
 

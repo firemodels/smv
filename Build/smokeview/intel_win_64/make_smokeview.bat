@@ -1,7 +1,8 @@
 @echo off
 set release=%1
 set from=%2
-set GLUT=%3
+set inc=%3
+set GLUT=%4
 
 :: setup compiler environment
 if x%from% == xbot goto skip1
@@ -28,6 +29,10 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
 :endif2
 
 if NOT x%GLUT% == xfreeglut set GLUT=glut
+
+if x%inc% == xinc goto skip_inc
+erase *.obj *.mod *.exe
+:skip_inc
 
 make -j 4 GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 if x%from% == xbot goto skip2
