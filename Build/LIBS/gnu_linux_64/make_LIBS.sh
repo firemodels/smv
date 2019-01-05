@@ -4,14 +4,13 @@ OPTS="-G $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
+rm $LIBDIR/*.a
 
 cd $LIBDIR/../../../Source
 SRCDIR=`pwd`
 
 cd ../Build
 BUILDDIR=`pwd`
-
-rm $LIBDIR/*.a
 
 # GD
 cd $SRCDIR/gd-2.0.15

@@ -4,6 +4,7 @@ OPTS="-G $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
+rm *.a
 
 cd $LIBDIR/../../../Source
 SRCDIR=`pwd`
@@ -11,7 +12,6 @@ SRCDIR=`pwd`
 cd ../Build
 BUILDDIR=`pwd`
 
-rm *.a
 cd $SRCDIR
 SRCDIR=`pwd`
 
