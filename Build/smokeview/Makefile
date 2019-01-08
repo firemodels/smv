@@ -273,7 +273,7 @@ mingw_win_64 : LIBS_PLAT = $(LIB_DIR_PLAT)/libglui.a \
 	$(LIB_DIR_PLAT)/libgd.a $(LIB_DIR_PLAT)/libjpeg.a \
 	$(LIB_DIR_PLAT)/libpng.a $(LIB_DIR_PLAT)/libz.a \
 	$(LIB_DIR_PLAT)/libglutwin.a
-mingw_win_64 : INC += -I $(SOURCE_DIR)/GLINC-mingw -I $(SOURCE_DIR)/pthreads
+mingw_win_64 : INC += -I $(SOURCE_DIR)/GLINC-mingw -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/GLUTINC/glut
 mingw_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC \
 						       -ffree-form -frecord-marker=4
 mingw_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
@@ -292,7 +292,7 @@ mingw_win_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
 		$(($(LUA_SCRIPTING),true),-I $(SOURCE_DIR)/lua-5.3.1/src) \
 		$(LIBS_PLAT) -lgfortran -lm -lopengl32 -lglu32 \
-		-lgdi32 -lwinmm -lcomdlg32 -lpthread
+		-lgdi32 -lwinmm -lcomdlg32 -lpthread -lquadmath
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -381,7 +381,7 @@ gnu_osx_64 : FC        = gfortran
 gnu_osx_64 : exe       = smokeview_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) -L $(GLIBDIR) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX)  -lgfortran
 
 #-------------- Clean Target to remove Object and Module files -----------
 
