@@ -25,7 +25,5 @@ if [ "$gcc_installed" == "0" ]; then
   exit
 fi
 
-gcc -v > gcc_version 2>&1 
-GCCVERSION=`cat gcc_version | awk '{print $3}' `
-rm gcc_version
-echo "\"Gnu C/C++ $GCCVERSION\""
+GCC_VERSION=`gcc --version | head -1`
+echo "\"$GCC_VERSION\""
