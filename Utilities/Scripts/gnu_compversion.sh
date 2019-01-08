@@ -25,5 +25,10 @@ if [ "$gcc_installed" == "0" ]; then
   exit
 fi
 
-GCC_VERSION=`gcc --version | head -1`
+if [ "`uname`" == "Darwin" ] ; then
+  XCODE_VERSION=`xcodebuild -version | head -1`
+  GCC_VERSION="gcc ($XCODE_VERSION) `gcc -dumpversion`"
+else 
+  GCC_VERSION=`gcc --version | head -1`
+fi
 echo "\"$GCC_VERSION\""
