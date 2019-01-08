@@ -148,13 +148,6 @@ void SetViewPoint(int option){
     camera_current->rotation_type=rotation_type_save;
     camera_current->projection_type=projection_type_save;
     break;
-  case RESTORE_SAVED_VIEW:
-    CopyCamera(camera_current,camera_save);
-    break;
-  case 3:
-  case 4:
-    ASSERT(FFALSE);
-    break;
   default:
     ASSERT(FFALSE);
     break;

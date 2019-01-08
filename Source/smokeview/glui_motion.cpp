@@ -628,7 +628,6 @@ void ViewpointCB(int var){
 #endif
   case RESTORE_EXTERIOR_VIEW:
   case RESTORE_INTERIOR_VIEW:
-  case RESTORE_SAVED_VIEW:
     SetViewPoint(var);
     break;
   case SAVE_VIEW:
