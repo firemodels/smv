@@ -33,6 +33,10 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define ISO_COLORS 4
 #define ISO_LEVEL 5
 #define ISO_TRANSPARENCY 6
+#define ISO_SETVALMIN 10
+#define ISO_SETVALMAX 11
+#define ISO_VALMIN 12
+#define ISO_VALMAX 13
 #define GLOBAL_ALPHA 7
 #define COLORTABLE_LIST 8
 #define SETVALMIN 1
@@ -185,7 +189,8 @@ GLUI_Rollout *ROLLOUT_memcheck=NULL;
 GLUI_Rollout *ROLLOUT_boundary_temp_threshold;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
-GLUI_Rollout *ROLLOUT_iso_color;
+GLUI_Rollout *ROLLOUT_iso_bounds;
+GLUI_Rollout *ROLLOUT_iso_color; 
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_boundary = NULL;
@@ -208,6 +213,8 @@ GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 
+GLUI_Panel *PANEL_iso1 = NULL; 
+GLUI_Panel *PANEL_iso2 = NULL;
 GLUI_Panel *PANEL_geomexp = NULL;
 GLUI_Panel *PANEL_slice_smoke = NULL;
 GLUI_Panel *PANEL_immersed = NULL;
@@ -281,6 +288,8 @@ GLUI_Spinner *SPINNER_plot3dvectorskip=NULL;
 GLUI_Listbox *LIST_scriptlist=NULL;
 GLUI_Listbox *LIST_ini_list=NULL;
 
+GLUI_EditText *EDIT_iso_valmin=NULL;
+GLUI_EditText *EDIT_iso_valmax=NULL;
 GLUI_EditText *EDIT_zone_min=NULL, *EDIT_zone_max=NULL;
 GLUI_EditText *EDIT_ini=NULL;
 GLUI_EditText *EDIT_renderdir=NULL;
@@ -340,6 +349,8 @@ GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 
+GLUI_RadioGroup *RADIO_iso_setmin=NULL;
+GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
 GLUI_RadioGroup *RADIO_slice_celltype=NULL;
 GLUI_RadioGroup *RADIO_slice_edgetype=NULL;
@@ -393,8 +404,9 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define PLOT3D_ROLLOUT 6
 #define SLICE_ROLLOUT 7
 
-#define ISO_ROLLOUT_SETTINGS 0
-#define ISO_ROLLOUT_COLOR 1
+#define ISO_ROLLOUT_BOUNDS 0
+#define ISO_ROLLOUT_SETTINGS 1
+#define ISO_ROLLOUT_COLOR 2
 
 #define SLICE_AVERAGE_ROLLOUT 0
 #define SLICE_VECTOR_ROLLOUT 1
@@ -415,8 +427,33 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define TIME_ROLLOUT 6
 #define MEMCHECK_ROLLOUT 7
 
-procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[2], subboundprocinfo[4], sliceprocinfo[6];
+procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[3], subboundprocinfo[4], sliceprocinfo[6];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
+
+#ifdef pp_TISO
+
+/* ------------------ UpdateListIsoColorobar ------------------------ */
+
+extern "C" void UpdateListIsoColorobar(void){
+  if(LIST_iso_colorbar!=NULL)LIST_iso_colorbar->set_int_val(iso_colorbar_index);
+}
+
+
+/* ------------------ UpdateGluiIsoBounds ------------------------ */
+
+extern "C" void UpdateGluiIsoBounds(void){
+  if(setisomin==PERCENTILE_MIN||setisomin==GLOBAL_MIN){
+    if(setisomin==PERCENTILE_MIN)glui_iso_valmin=iso_percentile_min;
+    if(setisomin==GLOBAL_MIN)glui_iso_valmin=iso_global_min;
+    if(EDIT_iso_valmin!=NULL)EDIT_iso_valmin->set_float_val(glui_iso_valmin);
+  }
+  if(setisomax==PERCENTILE_MAX||setisomax==GLOBAL_MAX){
+    if(setisomax==PERCENTILE_MAX)glui_iso_valmax=iso_percentile_max;
+    if(setisomax==GLOBAL_MAX)glui_iso_valmax=iso_global_max;
+    if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
+  }
+}
+#endif
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
 
@@ -1910,6 +1947,29 @@ extern "C" void GluiBoundsSetup(int main_window){
     ROLLOUT_iso = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Isosurface", false, ISO_ROLLOUT, BoundRolloutCB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_iso, ISO_ROLLOUT);
 
+    if(niso_bounds>0){
+      ROLLOUT_iso_bounds = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Bound data", true, ISO_ROLLOUT_BOUNDS, IsoRolloutCB);
+      ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_bounds, ISO_ROLLOUT_BOUNDS);
+
+      PANEL_iso1 = glui_bounds->add_panel_to_panel(ROLLOUT_iso_bounds, "", GLUI_PANEL_NONE);
+      EDIT_iso_valmin = glui_bounds->add_edittext_to_panel(PANEL_iso1, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmin, ISO_VALMIN, IsoBoundCB);
+      glui_bounds->add_column_to_panel(PANEL_iso1, false);
+      RADIO_iso_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_iso1, &setisomin, ISO_SETVALMIN, IsoBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("percentile min"));
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("set min"));
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("global min"));
+      IsoBoundCB(ISO_SETVALMIN);
+
+      PANEL_iso2 = glui_bounds->add_panel_to_panel(ROLLOUT_iso_bounds, "", GLUI_PANEL_NONE);
+      EDIT_iso_valmax = glui_bounds->add_edittext_to_panel(PANEL_iso2, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmax, ISO_VALMAX, IsoBoundCB);
+      glui_bounds->add_column_to_panel(PANEL_iso2, false);
+      RADIO_iso_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_iso2, &setisomax, ISO_SETVALMAX, IsoBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("percentile max"));
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("set max"));
+      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("global max"));
+      IsoBoundCB(ISO_SETVALMAX);
+    }
+
     ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
     ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_settings, ISO_ROLLOUT_SETTINGS);
 
@@ -2825,6 +2885,58 @@ extern "C" void IsoBoundCB(int var){
   case ISO_POINTS:
     visAIso= 1*show_iso_shaded + 2*show_iso_outline + 4*show_iso_points;
     updatemenu=1;
+    break;
+  case ISO_SETVALMIN:
+    switch (setisomin){
+      case SET_MIN:
+        iso_valmin=glui_iso_valmin;
+        EDIT_iso_valmin->enable();
+        break;
+      case PERCENTILE_MIN:
+        iso_valmin = iso_percentile_min;
+        EDIT_iso_valmin->disable();
+        break;
+      case GLOBAL_MIN:
+        iso_valmin = iso_global_min;
+        EDIT_iso_valmin->disable();
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
+    glui_iso_valmin=iso_valmin;
+    EDIT_iso_valmin->set_float_val(glui_iso_valmin);
+    glutPostRedisplay();
+    break;
+  case ISO_SETVALMAX:
+    switch (setisomax){
+      case SET_MAX:
+        iso_valmax=glui_iso_valmax;
+        EDIT_iso_valmax->enable();
+        break;
+      case PERCENTILE_MAX:
+        iso_valmax = iso_percentile_max;
+        EDIT_iso_valmax->disable();
+        break;
+      case GLOBAL_MAX:
+        iso_valmax = iso_global_max;
+        EDIT_iso_valmax->disable();
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
+    glui_iso_valmax = iso_valmax;
+    EDIT_iso_valmax->set_float_val(glui_iso_valmax);
+    glutPostRedisplay();
+    break;
+  case ISO_VALMIN:
+    iso_valmin=glui_iso_valmin;
+    glutPostRedisplay();
+    break;
+  case ISO_VALMAX:
+    iso_valmax=glui_iso_valmax;
+    glutPostRedisplay();
     break;
   default:
     ASSERT(FFALSE);

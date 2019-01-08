@@ -575,8 +575,11 @@ typedef struct _isodata {
   char menulabel[128];
 #ifdef pp_TISO
   int *geom_nstatics, *geom_ndynamics;
-  float *geom_times;
-  float *geom_vals;
+  float *geom_times, *geom_vals;
+  float geom_globalmin, geom_globalmax;
+  float geom_percentilemin, geom_percentilemax;
+  int geom_nvals;
+  histogramdata *histogram;
 #endif
 } isodata;
 

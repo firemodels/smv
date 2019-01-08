@@ -1099,7 +1099,9 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
     FORTPART5READ(&time_local,1);
     if(returncode == 0)break;
 
-    if(count%partframestep_local!=0||(settmin_p==1&&time_local<tmin_p-TEPS)||(settmax_p==1&&time_local>tmax_p+TEPS)){
+    if(count%partframestep_local!=0||
+      (settmin_p==1&&time_local<tmin_p-TEPS)||
+      (settmax_p==1&&time_local>tmax_p+TEPS)){
       doit=0;
     }
     else{
@@ -1229,8 +1231,10 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
         returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
         if(returncode!=0)goto wrapup;
       }
+      else{
+        datacopy++;
+      }
       CheckMemory;
-      datacopy++;
     }
     CheckMemory;
     if(first_frame==1)first_frame=0;

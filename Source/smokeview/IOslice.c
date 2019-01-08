@@ -1241,19 +1241,21 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     u->finalize = vd->finalize;
     finalize = vd->finalize;
     vd->u=u;
-    return_filesize+=ReadSlice(u->file,vd->iu,flag, set_slicecolor,errorcode);
-    if(*errorcode!=0){
-      vd->loaded=1;
-      fprintf(stderr,"*** Error: unable to load U velocity vector components in %s . Vector load aborted\n",u->file);
-      ReadVSlice(ivslice,UNLOAD,errorcode);
-      *errorcode=1;
-      return 0;
+    if(scriptoutstream==NULL||script_defer_loading==0){
+      return_filesize += ReadSlice(u->file, vd->iu, flag, set_slicecolor, errorcode);
+      if(*errorcode!=0){
+        vd->loaded = 1;
+        fprintf(stderr, "*** Error: unable to load U velocity vector components in %s . Vector load aborted\n", u->file);
+        ReadVSlice(ivslice, UNLOAD, errorcode);
+        *errorcode = 1;
+        return 0;
+      }
+      if(u->valmin<valmin)valmin = u->valmin;
+      if(u->valmax>valmax)valmax = u->valmax;
+      u->display = 0;
+      u->reload = 0;
+      u->vloaded = 1;
     }
-    if(u->valmin<valmin)valmin=u->valmin;
-    if(u->valmax>valmax)valmax=u->valmax;
-    u->display=0;
-    u->reload=0;
-    u->vloaded=1;
   }
   if(vd->iv!=-1){
     slicedata *v=NULL;
@@ -1262,20 +1264,22 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     v->finalize = vd->finalize;
     finalize = vd->finalize;
     vd->v=v;
-    return_filesize+=ReadSlice(v->file,vd->iv,flag, set_slicecolor,errorcode);
-    if(*errorcode!=0){
-      fprintf(stderr,"*** Error: unable to load V velocity vector components in %s . Vector load aborted\n",v->file);
-      vd->loaded=1;
-      ReadVSlice(ivslice,UNLOAD,errorcode);
-      *errorcode=1;
-      return 0;
-    }
+    if(scriptoutstream==NULL||script_defer_loading==0){
+      return_filesize += ReadSlice(v->file, vd->iv, flag, set_slicecolor, errorcode);
+      if(*errorcode!=0){
+        fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
+        vd->loaded = 1;
+        ReadVSlice(ivslice, UNLOAD, errorcode);
+        *errorcode = 1;
+        return 0;
+      }
 
-    if(v->valmin<valmin)valmin=v->valmin;
-    if(v->valmax>valmax)valmax=v->valmax;
-    v->display=0;
-    v->reload=0;
-    v->vloaded=1;
+      if(v->valmin<valmin)valmin = v->valmin;
+      if(v->valmax>valmax)valmax = v->valmax;
+      v->display = 0;
+      v->reload = 0;
+      v->vloaded = 1;
+    }
   }
   if(vd->iw!=-1){
     slicedata *w=NULL;
@@ -1284,20 +1288,22 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     w->finalize = vd->finalize;
     finalize = vd->finalize;
     vd->w=w;
-    return_filesize+=ReadSlice(w->file,vd->iw,flag, set_slicecolor,errorcode);
-    if(*errorcode!=0){
-      fprintf(stderr,"*** Error: unable to load W velocity vector components in %s . Vector load aborted\n",w->file);
-      vd->loaded=1;
-      ReadVSlice(ivslice,UNLOAD,errorcode);
-      *errorcode=1;
-      return 0;
-    }
+    if(scriptoutstream==NULL||script_defer_loading==0){
+      return_filesize += ReadSlice(w->file, vd->iw, flag, set_slicecolor, errorcode);
+      if(*errorcode!=0){
+        fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
+        vd->loaded = 1;
+        ReadVSlice(ivslice, UNLOAD, errorcode);
+        *errorcode = 1;
+        return 0;
+      }
 
-    if(w->valmin<valmin)valmin=w->valmin;
-    if(w->valmax>valmax)valmax=w->valmax;
-    w->display=0;
-    w->reload=0;
-    w->vloaded=1;
+      if(w->valmin<valmin)valmin = w->valmin;
+      if(w->valmax>valmax)valmax = w->valmax;
+      w->display = 0;
+      w->reload = 0;
+      w->vloaded = 1;
+    }
   }
   vd->vslicefile_labelindex=-1;
   if(vd->ival!=-1){
@@ -1307,21 +1313,23 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     val->finalize = vd->finalize;
     finalize = vd->finalize;
     vd->val=val;
-    return_filesize+=ReadSlice(val->file,vd->ival,flag,set_slicecolor,errorcode);
-    if(*errorcode!=0){
-      fprintf(stderr,"*** Error: unable to load vector values in %s . Vector load aborted\n",val->file);
-      vd->loaded=1;
-      ReadVSlice(ivslice,UNLOAD,errorcode);
-      *errorcode=1;
-      return 0;
+    if(scriptoutstream==NULL||script_defer_loading==0){
+      return_filesize += ReadSlice(val->file, vd->ival, flag, set_slicecolor, errorcode);
+      if(*errorcode!=0){
+        fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
+        vd->loaded = 1;
+        ReadVSlice(ivslice, UNLOAD, errorcode);
+        *errorcode = 1;
+        return 0;
+      }
+      slicefile_labelindex = GetSliceBoundsIndex(val);
+      vd->vslicefile_labelindex = val->slicefile_labelindex;
+      vd->valmin = valmin;
+      vd->valmax = valmax;
+      val->display = 0;
+      val->vloaded = 1;
+      val->reload = 0;
     }
-    slicefile_labelindex= GetSliceBoundsIndex(val);
-    vd->vslicefile_labelindex=val->slicefile_labelindex;
-    vd->valmin=valmin;
-    vd->valmax=valmax;
-    val->display=0;
-    val->vloaded=1;
-    val->reload=0;
   }
   vd->display=1;
   vd->loaded=1;
@@ -3645,86 +3653,90 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   FREEMEMORY(slice_mask0);
 }
 
+/* ------------------ AdjustBounds ------------------------ */
+
+void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax){
+  int nsmall, nbig, *buckets = NULL, n, level, total, alpha05;
+  float dp;
+  float ppmin;
+
+#define EPS_BUCKET 0.0001
+  if(setmin==PERCENTILE_MIN||setmax==PERCENTILE_MAX){
+    float abs_diff, denom;
+
+    abs_diff = ABS(*pmax-*pmin);
+    denom = MAX(ABS(*pmax), ABS(*pmin));
+    if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
+    dp = abs_diff/NBUCKETS;
+    nsmall=0;
+    nbig = NBUCKETS;
+    if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0){
+      fprintf(stderr, "*** Error: Unable to allocate memory in getdatabounds\n");
+      return;
+    }
+
+    for(n = 0; n<NBUCKETS; n++){
+      buckets[n] = 0;
+    }
+    for(n = 0; n<ndata; n++){
+      level = 0;
+      if(dp!=0.0f){
+        level = (int)((pdata[n]-*pmin)/dp);
+      }
+      if(level<0){
+        level = 0;
+      }
+      if(level>NBUCKETS-1){
+        level = NBUCKETS-1;
+      }
+      buckets[level]++;
+    }
+    alpha05 = (int)(.01f*ndata);
+    total = 0;
+    for(n = 0; n<NBUCKETS; n++){
+      total += buckets[n];
+      if(total>alpha05){
+        nsmall = n;
+        break;
+      }
+    }
+    total = 0;
+    for(n = NBUCKETS; n>0; n--){
+      total += buckets[n-1];
+      if(total>alpha05){
+        nbig = n;
+        break;
+      }
+    }
+    FreeMemory(buckets);
+    ppmin = *pmin;
+    if(setmin==PERCENTILE_MIN)*pmin = ppmin+nsmall*dp;
+    if(setmax==PERCENTILE_MAX)*pmax = ppmin+(nbig+1)*dp;
+
+  }
+  if(axislabels_smooth==1){
+    SmoothLabel(pmin, pmax, nrgb);
+  }
+}
+
 /* ------------------ AdjustSliceBounds ------------------------ */
 
 void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
+  float *pdata;
+  int ndata;
 
-    int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
-    float dp;
-    float *pdata;
-    int ndata;
-    float ppmin;
-
-    if(sd->slicefile_type == SLICE_GEOM){
-      pdata = sd->patchgeom->geom_vals;
-      ndata = sd->patchgeom->geom_nvals;
-    }
-    else {
-      pdata = sd->qslicedata;
-      ndata = sd->nslicetotal;
-    }
-
-#define EPS_BUCKET 0.0001
-    if(setslicemin==PERCENTILE_MIN||setslicemax==PERCENTILE_MAX){
-      float abs_diff, denom;
-
-      abs_diff = ABS(*pmax-*pmin);
-      denom = MAX(ABS(*pmax), ABS(*pmin));
-      if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
-      dp = abs_diff/NBUCKETS;
-      nsmall=0;
-      nbig=NBUCKETS;
-      if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
-        fprintf(stderr,"*** Error: Unable to allocate memory in getdatabounds\n");
-        return;
-      }
-
-      for(n=0;n<NBUCKETS;n++){
-        buckets[n]=0;
-      }
-      for(n=0;n<ndata;n++){
-        level=0;
-        if(dp!=0.0f){
-          level = (int)((pdata[n] - *pmin)/dp);
-        }
-        if(level<0){
-          level=0;
-        }
-        if(level>NBUCKETS-1){
-          level=NBUCKETS-1;
-        }
-        buckets[level]++;
-      }
-      alpha05 = (int)(.01f*ndata);
-      total = 0;
-      for(n=0;n<NBUCKETS;n++){
-        total += buckets[n];
-        if(total>alpha05){
-          nsmall=n;
-          break;
-        }
-      }
-      total = 0;
-      for(n=NBUCKETS;n>0;n--){
-        total += buckets[n-1];
-        if(total>alpha05){
-          nbig=n;
-          break;
-        }
-      }
-      FreeMemory(buckets);
-      ppmin = *pmin;
-      if(setslicemin==PERCENTILE_MIN)*pmin = ppmin + nsmall*dp;
-      if(setslicemax==PERCENTILE_MAX)*pmax = ppmin + (nbig+1)*dp;
-
-    }
-    if(axislabels_smooth==1){
-      SmoothLabel(pmin,pmax,nrgb);
-    }
-
+  if(sd->slicefile_type==SLICE_GEOM){
+    pdata = sd->patchgeom->geom_vals;
+    ndata = sd->patchgeom->geom_nvals;
+  }
+  else {
+    pdata = sd->qslicedata;
+    ndata = sd->nslicetotal;
+  }
+  AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
 }
-
-/* ------------------ AverageSliceData ------------------------ */
+  
+  /* ------------------ AverageSliceData ------------------------ */
 
 int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
 

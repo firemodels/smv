@@ -146,7 +146,7 @@ SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
 
-export SMVBINDIR="-bindir $SVNROOT/smv/Build/Bundle/for_bundle"
+export SMVBINDIR="-bindir $SVNROOT/bot/Bundle/smv/for_bundle"
 
 export STARTX=$SVNROOT/fds/Utilities/Scripts/startXserver.sh
 export STOPX=$SVNROOT/fds/Utilities/Scripts/stopXserver.sh

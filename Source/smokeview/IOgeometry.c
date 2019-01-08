@@ -285,8 +285,29 @@ void GetGeomZBounds(float *zmin, float *zmax){
     }
   }
 }
+#ifdef pp_TISO
 
-  /* ------------------ DrawGeom ------------------------ */
+/* ------------------ TextureOff ------------------------ */
+
+int TextureOff(void){
+  glDisable(GL_TEXTURE_1D);
+  return 0;
+}
+
+/* ------------------ TextureOn ------------------------ */
+
+int TextureOn(GLuint texture_id,int *texture_first){
+  if(*texture_first==1){
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    *texture_first=0;
+  }
+  glEnable(GL_TEXTURE_1D);
+  glBindTexture(GL_TEXTURE_1D, texture_id);
+  return 1;
+}
+#endif
+
+/* ------------------ DrawGeom ------------------------ */
 
 void DrawGeom(int flag, int timestate){
   int i;
@@ -300,6 +321,9 @@ void DrawGeom(int flag, int timestate){
   float last_transparent_level=-1.0;
   int ntris;
   tridata **tris;
+#ifdef pp_TISO
+  int texture_state = OFF, texture_first=1;
+#endif
 
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
@@ -318,10 +342,8 @@ void DrawGeom(int flag, int timestate){
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      glEnable(GL_TEXTURE_1D);
-      glBindTexture(GL_TEXTURE_1D, texture_iso_colorbar_id);
+    if(usetexturebar==1&&texture_state==OFF){
+      texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 #endif
 
@@ -379,6 +401,13 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
         if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
+#ifdef pp_TISO
+          if(texture_state==ON){
+            glEnd();
+            texture_state = TextureOff();
+            glBegin(GL_TRIANGLES);
+          }
+#endif
           glColor4f(color[0], color[1], color[2], transparent_level_local);
           last_color = color;
           last_transparent_level = transparent_level_local;
@@ -419,8 +448,8 @@ void DrawGeom(int flag, int timestate){
             vertj_index = vertj - trianglei->geomlisti->verts;
             vertval = vertvals[vertj_index];
             texture_val = CLAMP((vertval-iso_valmin)/(iso_valmax-iso_valmin),0.0,1.0);
-            colorbar_index = CLAMP((int)texture_val,0,255);
-            color = iso_colorbar->colorbar+4*colorbar_index;
+            colorbar_index = CLAMP((int)(255.0*texture_val),0,255);
+            color = rgb_iso+4*colorbar_index;
           }
 #endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
@@ -442,10 +471,20 @@ void DrawGeom(int flag, int timestate){
             transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
             if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
 #ifdef pp_TISO
-            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL){
+            if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
+              if(texture_state==OFF){
+                glEnd();
+                texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
+                glBegin(GL_TRIANGLES);
+              }
               glTexCoord1f(texture_val);
             }
             else{
+              if(texture_state==ON){
+                glEnd();
+                texture_state=TextureOff();
+                glBegin(GL_TRIANGLES);
+              }
               glColor4f(color[0], color[1], color[2], transparent_level_local_new);
             }
 #else
@@ -459,8 +498,8 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
 #ifdef pp_TISO
-    if(usetexturebar==1&&timestate==GEOM_DYNAMIC){
-      glDisable(GL_TEXTURE_1D);
+    if(usetexturebar==1&&texture_state==ON){
+      texture_state=TextureOff();
     }
 #endif
 
@@ -1513,7 +1552,7 @@ void UpdateTriangles(int flag,int update){
 
 void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
-  int one=0,endianswitch=0;
+  int one=0;
   int nvertfaces[2];
   float times_local[2];
   int nt;
@@ -1531,7 +1570,6 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
 
 // floating point header
@@ -1610,7 +1648,7 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
 
 void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   FILE *stream;
-  int one=0,endianswitch=0;
+  int one=0;
   int nvertfacesvolumes[3];
   int nt;
   int returncode;
@@ -1626,7 +1664,6 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
 
   FORTREAD(header,3,stream);
@@ -1673,7 +1710,7 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
   int version;
   int returncode;
-  int one=0,endianswitch=0;
+  int one=0;
 
   stream = fopen(geomi->file,"rb");
   if(stream==NULL){
@@ -1681,7 +1718,6 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
   fclose(stream);
 
@@ -1697,7 +1733,7 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
 
 void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   FILE *stream;
-  int one=1,endianswitch=0;
+  int one=1;
   int nface_static,nface_dynamic;
   float time_local;
   int nt,nv;
@@ -1709,7 +1745,6 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   nt=-1;
   nv=0;
   for(;;){
@@ -1766,7 +1801,7 @@ void InitGeomlist(geomlistdata *geomlisti){
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
-  int one=1, endianswitch=0;
+  int one=1;
   int returncode;
   int ntimes_local;
   int version;
@@ -1793,7 +1828,6 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
 
   FORTREAD(&version,1,stream);
   return_filesize = 2*(4+4+4);
@@ -1964,7 +1998,7 @@ int OutSideDomain(vertdata **verts){
 
 FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   FILE *stream;
-  int one=1, endianswitch=0;
+  int one=1;
   int returncode;
   int ntimes_local;
   int i;
@@ -1994,7 +2028,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
 
   FORTREAD(&version,1,stream);
   return_filesize += 2*(4+4+4);
@@ -2637,7 +2670,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   FILE *stream;
   int version;
   int returncode;
-  int one=0,endianswitch=0;
+  int one=0;
   FILE_SIZE return_filesize=0;
 #ifdef pp_ISOTIME
   float time1, time2;
@@ -2647,7 +2680,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   stream = fopen(geomi->file,"rb");
   if(stream==NULL)return 0;
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
   FORTREAD(&version,1,stream);
   fclose(stream);
   return_filesize = 2*(4+4+4);
@@ -2943,9 +2975,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           int color_indices[3];
           float t_level;
 
-
           trianglei = geomlisti->triangles + j;
-
           if(geomdata_smoothcolors==1){
             AverageGeomColors(geomlisti, j, ivals, color_indices);
             color0 = rgb_patch+4*color_indices[0];

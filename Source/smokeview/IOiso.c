@@ -262,6 +262,25 @@ int GetIsoType(const isodata *isoi){
   return -1;
 }
 
+#ifdef pp_TISO
+/* ------------------ GetIsoDataBounds ------------------------ */
+
+void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
+  float *pdata;
+  int ndata;
+  int i;
+
+  pdata = isod->geom_vals;
+  ndata = isod->geom_nvals;
+  *pmin = pdata[0];
+  *pmax = pdata[0];
+  for(i = 1; i<ndata; i++) {
+    *pmin = MIN(*pmin, pdata[i]);
+    *pmax = MAX(*pmax, pdata[i]);
+  }
+}
+#endif
+
 /* ------------------ ReadIsoGeom ------------------------ */
 
 FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
@@ -297,21 +316,21 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
 #ifdef pp_TISO
   if(isoi->dataflag==1){
     int filesize;
-    int lenfile, ntimes_local, nvals;
+    int lenfile, ntimes_local;
     int i;
     float *valptr;
 
     lenfile = strlen(isoi->tfile);
-    FORTgetgeomdatasize(isoi->tfile, &ntimes_local, &nvals, &error, lenfile);
+    FORTgetgeomdatasize(isoi->tfile, &ntimes_local, &isoi->geom_nvals, &error, lenfile);
 
-    if(nvals>0&&ntimes_local>0){
+    if(isoi->geom_nvals>0&&ntimes_local>0){
       NewMemory((void **)&isoi->geom_nstatics, ntimes_local*sizeof(int));
       NewMemory((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int));
       NewMemory((void **)&isoi->geom_times, ntimes_local*sizeof(float));
-      NewMemory((void **)&isoi->geom_vals, nvals*sizeof(float));
+      NewMemory((void **)&isoi->geom_vals, isoi->geom_nvals*sizeof(float));
     }
 
-    FORTgetgeomdata(isoi->tfile, &ntimes_local, &nvals, isoi->geom_times,
+    FORTgetgeomdata(isoi->tfile, &ntimes_local, &isoi->geom_nvals, isoi->geom_times,
       isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals, &filesize, &error, lenfile);
     return_filesize += filesize;
     FREEMEMORY(isoi->geom_nstatics);
@@ -369,6 +388,24 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
 
   if(update_readiso_geom_wrapup==UPDATE_ISO_OFF)update_readiso_geom_wrapup=UPDATE_ISO_ONE_NOW;
   if(update_readiso_geom_wrapup==UPDATE_ISO_START_ALL)update_readiso_geom_wrapup=UPDATE_ISO_ALL_NOW;
+
+#ifdef pp_TISO
+  if(isoi->dataflag==1){
+    GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
+    isoi->geom_globalmin = iso_valmin;
+    isoi->geom_globalmax = iso_valmax;
+    AdjustBounds(PERCENTILE_MIN, PERCENTILE_MAX, isoi->geom_vals, isoi->geom_nvals, &iso_valmin, &iso_valmax);
+    isoi->geom_percentilemin = iso_valmin;
+    isoi->geom_percentilemax = iso_valmax;
+    if(setisomin == GLOBAL_MIN)iso_valmin = isoi->geom_globalmin;
+    if(setisomax == GLOBAL_MAX)iso_valmax = isoi->geom_globalmax;
+    iso_percentile_min = isoi->geom_percentilemin; 
+    iso_percentile_max = isoi->geom_percentilemax;
+    iso_global_min = isoi->geom_globalmin;
+    iso_global_max = isoi->geom_globalmax;
+    UpdateGluiIsoBounds();
+  }
+#endif
   PrintMemoryInfo;
   show_isofiles = 1;
 
