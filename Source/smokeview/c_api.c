@@ -1710,7 +1710,7 @@ void loadiso(const char *type) {
       count++;
     }
   }
-  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup();
+  if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(count == 0)fprintf(stderr, "*** Error: Isosurface files of type %s failed "
                                 "to load\n", type);
