@@ -38,6 +38,7 @@ else
   if [ "$QUARTZ" != "framework" ]; then
     cd $SRCDIR/glut-3.7.6
     ./makelib.sh $OPTS -q
+    cp libglut.a $LIBDIR/.
   fi
 fi
 
