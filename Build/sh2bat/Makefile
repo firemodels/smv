@@ -48,8 +48,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Win 64 ----------------
-#  64 bit windows
+# ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -D WIN32 -O2 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
@@ -58,6 +57,17 @@ intel_win_64 : exe       = sh2bat_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
+
+# ------------- gnu win 64 ----------------
+
+gnu_win_64 : CFLAGS    = -D WIN32 -O2  $(GITINFO)
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : exe       = sh2bat_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
 
 #-------------- Clean Target to remove Object and Module files -----------
 

@@ -1,9 +1,14 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
 TEST=
-while getopts 'hprt' OPTION
+GLUT=glut
+QUARTZ=framework
+while getopts 'fhpqrt' OPTION
 do
 case $OPTION in
+  f)
+   GLUT=freeglut
+  ;;
   h)
   echo "options:"
   echo "-p - build a profiling version of smokeview"
@@ -13,6 +18,9 @@ case $OPTION in
   p)
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-p\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"profile\" "
+  ;;
+  q)
+   QUARTZ=use_quartz
   ;;
   r)
   ;;
@@ -24,3 +32,11 @@ case $OPTION in
 esac
 done
 export SMV_MAKE_OPTS
+export GLUT
+export TEST
+# this parameter is only for the mac
+if [ "`uname`" == "Darwin" ]; then
+export QUARTZ
+else
+QUARTZ=
+fi

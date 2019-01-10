@@ -1,5 +1,5 @@
 #!/bin/bash
-OPTS="-g -6"
+OPTS="-g"
 LIBDIR=`pwd`
 SRCDIR=$LIBDIR/../../../Source
 rm *.a

@@ -1,26 +1,26 @@
 .SUFFIXES: .c .cpp .o .obj
 
-SIZE=-m64
-PLATFORM=
-CFLAGOPT=
-GLUT_INC_LOCATION=../GLUTINC
-
-RM=/bin/rm
 COMPILER=icc
 COMPILER2=icc
 CC=${COMPILER}
 CPP=${COMPILER2}
-LPATH=${GLUTPATH} 
-INCS= 
+
+ifeq ($(GLUT),freeglut)
+  INCS = -I ../freeglut3.0.0/include
+  NOCLOSE=-D FREEGLUT_STATIC
+else
+  INCS = -I ../GLUTINC/glut
+  NOCLOSE=-D pp_NOCLOSE
+endif
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $(INCS) $(FILTERC) $<
+	$(CC)  $(CFLAGS) $(INCS) $(FILTERC) -c $<
 .c.o:
-	$(CC) -c $(CFLAGS) $(INCS) $(FILTERC) $<
+	$(CC)  $(CFLAGS) $(INCS) $(FILTERC) -c $<
 .cpp.obj:
-	$(CPP) -c $(CFLAGS) $(INCS) $(FILTERC) $<
+	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
 .cpp.o:
-	$(CPP) -c $(CFLAGS) $(INCS) $(FILTERC) $<
+	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
 
 
 GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
@@ -31,23 +31,26 @@ GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
             arcball.o algebra3.o quaternion.o
 GLUI_OBJSWIN = $(GLUI_OBJS:.o=.obj)
 
-
-default: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
+default: CFLAGS=-m64 $(PLATFORM) $(NOCLOSE) $(CFLAGOPT)
 default: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_linux_64: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
+intel_linux_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
 intel_linux_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I ${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
+intel_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
 intel_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64q: CFLAGS=-I /usr/X11/include -I /usr/X11/include/GL $(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -D pp_QUARTZ -fpermissive ${SIZE} 
-intel_osx_64q: $(GLUI_OBJS)
+gnu_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
+gnu_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_win_64: CFLAGS=$(PLATFORM) ${CFLAGOPT} -D pp_NOCLOSE -fpermissive -I${GLUT_INC_LOCATION} -I ../GLUTINC/glut ${SIZE} 
+intel_win_64: CFLAGS= $(NOCLOSE) 
 intel_win_64 : $(GLUI_OBJSWIN)
 	lib $(GLUI_OBJSWIN) -OUT:libglui.lib 
+
+gnu_win_64: CFLAGS=$(NOCLOSE) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast 
+gnu_win_64: $(GLUI_OBJS)
+	ar rcs libglui.a $(GLUI_OBJS)

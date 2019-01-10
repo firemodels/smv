@@ -2,6 +2,8 @@
 set OPTS=i
 set arg1=%1
 set arg2=%2
+:: if arg3 is freeglut then freeglut not glut library will be built
+set arg3=%3
 
 set WAIT=
 if "%arg1%"=="bot" (
@@ -9,8 +11,13 @@ if "%arg1%"=="bot" (
 )
 
 set LIBDIR=%CD%
-set SRCDIR=%LIBDIR%\..\..\..\Source
 erase *.lib
+
+cd ..\..\..\Source
+set SRCDIR=%CD%
+
+cd ..\Build
+set BUILDDIR=%CD%
 
 :: ZLIB
 cd %SRCDIR%\zlib128
@@ -29,12 +36,20 @@ cd %SRCDIR%\gd-2.0.15
 start %WAIT% call makelib %OPTS% -copy libgd.lib %LIBDIR%\gd.lib
 
 :: GLUT
+if x%arg3% == xfreeglut goto skip_glut
 cd %SRCDIR%\glut-3.7.6
 start %WAIT% makelib %OPTS% -copy libglutwin.lib %LIBDIR%\glut32.lib
+:skip_glut
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
-start %WAIT% makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+if x%arg3% == xfreeglut goto skip_glui1
+  start %WAIT% makelib %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+:skip_glui1
+
+if NOT x%arg3% == xfreeglut goto skip_glui2
+  start %WAIT% makelib_freeglut %OPTS% -copy libglui.lib %LIBDIR%\glui.lib
+:skip_glui2
 
 :: pthreads
 cd %SRCDIR%\pthreads
@@ -51,6 +66,14 @@ cd %SRCDIR%\lpeg-1.0.0
 call makelib.bat
 copy lpeg.lib %LIBDIR%\lpeg.lib
 :skip_lua
+
+:: FREEGLUT
+if NOT x%arg3% == xfreeglut goto skip_freeglut
+cd %BUILDDIR%\freeglut3.0.0\intel_win_64
+call make_freeglut %OPTS% 
+copy freeglut_staticd.lib %LIBDIR%\freeglut_staticd.lib
+copy freeglut_staticd.lib %LIBDIR%\glut32.lib
+:skip_freeglut
 
 cd %LIBDIR%
 

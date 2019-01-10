@@ -24,8 +24,7 @@ no_target:
 .f90.o:
 	$(FC) -c $(FFLAGS) $(FILTERF) $<
 
-# ------------- Win 64 ----------------
-#  64 bit windows
+# ------------- intel win 64 ----------------
 
 intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f08
 intel_win_64 : FC        = ifort
@@ -34,8 +33,7 @@ intel_win_64 : exe       = hashfort_win_64.exe
 intel_win_64 : $(objwin)
 	$(FC) -o $(bin)/$(exe) $(objwin)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- intel linux 64 ----------------
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f08
 intel_linux_64 : FC        = ifort
@@ -44,8 +42,7 @@ intel_linux_64 : exe       = hashfort_linux_64
 intel_linux_64 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(obj)
 
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+# ------------- intel oxx 64 ----------------
 
 intel_osx_64 : FFLAGS    = -O2 -m64 -stand:f08
 intel_osx_64 : FC        = ifort

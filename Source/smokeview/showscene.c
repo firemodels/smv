@@ -347,6 +347,12 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     }
   }
 
+#ifdef pp_SMOKETEST
+  if(show3dsmoke==1&&usegpu==0&&hrrpuv_max_blending==1){
+    CLIP_VALS;
+    DrawSmokeFrame(SMOKE3D_FIRE_ONLY);
+  }
+#endif
 
   //**********************************************************************************
   //**********************************************************************************
@@ -377,10 +383,27 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw 3D smoke +++++++++++++++++++++++++ */
 
-  if(show3dsmoke == 1 || showvolrender == 1){
+  if(show3dsmoke == 1){
     CLIP_VALS;
+#ifdef pp_SMOKETEST
+    if(usegpu==0&&hrrpuv_max_blending==1){
+      DrawSmokeFrame(SMOKE3D_SMOKE_ONLY);
+    }
+    else{
+      DrawSmokeFrame(SMOKE3D_SMOKE_AND_FIRE);
+    }
+#else
     DrawSmokeFrame();
+#endif
   }
+
+  /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
+
+  if(showvolrender == 1&&show3dsmoke==0){
+    CLIP_VALS;
+    DrawVolSmokeFrame();
+  }
+
   if(show_light_position_direction == 1)DrawLightDirections();
 #ifdef pp_SMOKETEST
   if(smoke_test == 1)DrawSmokeTest();

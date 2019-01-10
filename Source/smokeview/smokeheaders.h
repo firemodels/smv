@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateBackgroundFlip(int flip);
+EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
 #ifdef pp_TISO
 EXTERNCPP void UpdateGluiIsoBounds(void);
@@ -531,7 +533,12 @@ EXTERNCPP int  PointInFrustum( float *xyz);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz);
 EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
+#ifdef pp_SMOKETEST
+EXTERNCPP void DrawSmokeFrame(int option);
+#else
 EXTERNCPP void DrawSmokeFrame(void);
+#endif
+EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void DrawPartFrame(void);
 EXTERNCPP void DrawEvacFrame(void);

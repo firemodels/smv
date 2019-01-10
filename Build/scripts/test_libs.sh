@@ -13,8 +13,12 @@ makelibs()
 
 makelibs libgd.a 
 makelibs libglui.a 
-if [ "`uname`" != "Darwin" ]; then
-makelibs libglut.a 
+if [ "`uname`" == "Darwin" ]; then
+  if [ "$GLUT" == "freeglut" ]; then
+    makelibs libglut.a
+  fi
+else
+  makelibs libglut.a 
 fi
 makelibs libjpeg.a 
 makelibs libpng.a 

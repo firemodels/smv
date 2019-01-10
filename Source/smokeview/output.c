@@ -1,4 +1,10 @@
 #include "options.h"
+#ifdef WIN32
+#ifdef __MINGW32__
+#include <stddef.h>
+#endif
+#endif
+
 #include GLUT_H
 #include <stdio.h>
 #include <string.h>

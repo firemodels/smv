@@ -60,10 +60,7 @@ no_target:
 .f90.o:
 	$(FC) -c $(FFLAGS) $<
 
-
-# ********  rules for each platform supported *************
-
-# ------------- Windows 64 ----------------
+# ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
@@ -72,9 +69,19 @@ intel_win_64 : FC        = ifort
 intel_win_64 : exe       = timep_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin)
 
-# ------------- gnu Linux 64 db ----------------
+# ------------- gnu win 64 ----------------
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 -D pp_INTEL  /fpscomp:general
+gnu_win_64 : CC        = gcc
+gnu_win_64 : exe       = timep_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
+
+# ------------- gnu linux 64 db ----------------
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
@@ -86,7 +93,7 @@ gnu_linux_64_db : exe       = timep_linux_64_db
 gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
 
-# ------------- gnu Linux 64 ----------------
+# ------------- gnu linux 64----------------
 
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
@@ -99,9 +106,8 @@ gnu_linux_64 : exe       = timep_linux_64
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
+# ------------- intel linux 64 ----------------
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
@@ -116,9 +122,8 @@ intel_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX) $(LFLAGS)
 
 OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
-	
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+
+# ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : FFLAGS    = -O0 -m64 -fpp -traceback -static-intel -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
@@ -129,8 +134,7 @@ intel_osx_64 : exe       = timep_osx_64
 intel_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR)/intel_osx_64  $(LIBS_OSX) $(OSXFORTLIBS)
 
-# ------------- OSX gnu ----------------
-#  gnu osx
+# ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
@@ -143,8 +147,7 @@ gnu_osx_64 : exe       = timep_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gnu OSX 64 db ----------------
-#  64 bit gnu linux
+# ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D  pp_OSX $(GITINFO)

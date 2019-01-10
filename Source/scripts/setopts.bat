@@ -1,4 +1,13 @@
 @echo off
+
+set CURDIR=%CD%
+
+set scriptdir=%~dp0
+cd %scriptdir%\..\..\..\fds
+set fdsrepo=%CD%
+
+cd %CURDIR%
+
 set COMPILER=gcc
 set COMPILER2=g++
 
@@ -34,5 +43,5 @@ GOTO Ienvexist
 :MSenvexist
 
 IF "%COMPILER%" NEQ "icl" GOTO Ienvexist
-call ..\..\..\fds\Utilities\Scripts\setup_intel_compilers.bat
+call %fdsrepo%\Utilities\Scripts\setup_intel_compilers.bat
 :Ienvexist

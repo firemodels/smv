@@ -5,6 +5,9 @@
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 #include GLUT_H
 
 #include "string_util.h"
@@ -1389,6 +1392,8 @@ void ShowHideMenu(int value){
    UpdateRGBColors(COLORBAR_INDEX_NONE);
    SetLabelControls();
    SetColorControls();
+   UpdateBackgroundFlip(background_flip);
+   UpdateBackgroundFlip2(background_flip);
    break;
   case MENU_SHOWHIDE_EVAC:
     if(plotstate==DYNAMIC_PLOTS){

@@ -3,22 +3,34 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 rm *.a
 
-LUA=$1
-
-# build using 64 bit intel compilers
-OPTS="-i -6"
+# use -I to force use of the gnu compiler
+OPTS="-I $*"
+source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
+
 SRCDIR=$LIBDIR/../../../Source
 cd $SRCDIR
 SRCDIR=`pwd`
 
+cd ../Build
+BUILDDIR=`pwd`
+
 # GLUT
-echo
-echo "********** building glut"
-echo
-cd $SRCDIR/glut-3.7.6
-./makelib.sh $OPTS
+
+if [ "$GLUT" == "freeglut" ]; then
+  echo
+  echo "********** building freeglut"
+  echo
+  cd $BUILDDIR/freeglut3.0.0/gnu_linux_64
+  ./make_freeglut.sh $OPTS
+else
+  echo
+  echo "********** building glut"
+  echo
+  cd $SRCDIR/glut-3.7.6
+  ./makelib.sh $OPTS
+fi
 cp libglut.a $LIBDIR/.
 
 # GLUI
@@ -61,6 +73,7 @@ cd $SRCDIR/gd-2.0.15
 ./makelib.sh $OPTS
 cp libgd.a $LIBDIR/.
 
+# LUA variable is set by passing -l to this script (lower case L)
 if [ "$LUA" == "lua" ]; then
 
 # Lua # Lua interpreter
