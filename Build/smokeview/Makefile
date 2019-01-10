@@ -291,8 +291,9 @@ mingw_win_64 : exe       = smokeview_mingw_$(SMV_TESTSTRING)64
 mingw_win_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
 		$(($(LUA_SCRIPTING),true),-I $(SOURCE_DIR)/lua-5.3.1/src) \
-		$(LIBS_PLAT) -lgfortran -lm -lopengl32 -lglu32 \
-		-lgdi32 -lwinmm -lcomdlg32 -lpthread
+		$(LIBS_PLAT) -lm -lopengl32 -lglu32 \
+		-Wl,-Bstatic  -lgfortran -lquadmath  \
+		-Wl,-Bdynamic -lgdi32 -lwinmm -lcomdlg32
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
