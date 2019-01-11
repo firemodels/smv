@@ -1,9 +1,29 @@
+language: c
 script:
-  - sudo ln -fs /usr/bin/gfortran-5 /usr/bin/gfortran && gfortran --version
-  - sudo ln -fs /usr/bin/gcc-5 /usr/bin/gcc && gcc --version
-  - sudo ln -fs /usr/bin/g++-5 /usr/bin/g++ && g++ --version
-  - cd Build/smokeview/gnu_linux_64 && ./make_smokeview_lua.sh
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+      curl -OL http://prdownloads.sourceforge.net/hpc/gfortran-8.1-bin.tar.gz -o gfortran-8.1-bin.tar.gz
+      mkdir gfortran-8.1-bin
+      tar -xzvf gfortran-8.1-bin.tar.gz -C gfortran-8.1-bin
+      cp gfortran-8.1-bin/usr/local/lib/libgfortran* Build/LIBS/gnu_osx_64
+      cd Build/smokeview/gnu_osx_64 && ./make_smokeview.sh
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+      sudo ln -fs /usr/bin/gfortran-5 /usr/bin/gfortran && gfortran --version
+      sudo ln -fs /usr/bin/gcc-5 /usr/bin/gcc && gcc --version
+      sudo ln -fs /usr/bin/g++-5 /usr/bin/g++ && g++ --version
+      cd Build/smokeview/gnu_linux_64 && ./make_smokeview_lua.sh
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+      choco install make
+      cd Build/smokeview/mingw_win_64 && ./make_smokeview_lua.sh
+    fi
 addons:
+  homebrew:
+    packages:
+      - gcc
   apt:
     sources:
       - ubuntu-toolchain-r-test
@@ -20,8 +40,19 @@ env:
   global:
     - OMP_NUM_THREADS=4
     - BUILD_PLATFORM=gnu_linux_64
-  matrix:
+matrix:
+  include:
+    - name: "OSX"
+      env: LUA_SCRIPTING= DEBUG_SUFFIX=
+      os: osx
+    - name: "Windows"
+      env: LUA_SCRIPTING= DEBUG_SUFFIX=
+      os: windows
+    - name: "Linux (Lua Scripting)"
+      env: LUA_SCRIPTING=true DEBUG_SUFFIX=
+      os: linux
+      
     # - LUA_SCRIPTING=true DEBUG_SUFFIX=_db
     # - LUA_SCRIPTING= DEBUG_SUFFIX=_db
-    - LUA_SCRIPTING=true DEBUG_SUFFIX=
+    # - LUA_SCRIPTING=true DEBUG_SUFFIX=
     # - LUA_SCRIPTING= DEBUG_SUFFIX=
