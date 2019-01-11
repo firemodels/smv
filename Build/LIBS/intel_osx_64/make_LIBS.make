@@ -1,8 +1,9 @@
-OPTS="-g"
+OPTS="-I $*"
 LIBDIR=$(shell pwd)
 SRCDIR=$(LIBDIR)/../../../Source
 
 all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a liblua.a lpeg.so
+all_nolua: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
 
 # GD
 libgd.a:
@@ -58,4 +59,4 @@ lpeg.so: liblua.a
 		./makelib.sh $(OPTS); \
 		cp lpeg.so $(LIBDIR)/.
 
-.PHONY: all
+.PHONY: all, all_nolua
