@@ -14,6 +14,7 @@ libgd.a:
 # GLUI
 libglui.a:
 	cd $(SRCDIR)/glui_v2_1_beta; \
+		export TARGET=gnu_win_64; \
 		./makelib.sh $(OPTS); \
 		cp libglui.a $(LIBDIR)/.
 
