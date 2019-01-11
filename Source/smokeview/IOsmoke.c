@@ -5299,7 +5299,6 @@ void DrawSmokeFrame(void){
       break;
     case SMOKE3D_SMOKE_ONLY:
       if(smoke3di->type!=SOOT)continue;
-      printf("smoke only\n");
       break;
     }
 #else
