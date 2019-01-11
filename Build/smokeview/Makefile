@@ -381,7 +381,7 @@ intel_osx_64_db : $(obj)
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 # If GLIBDIR is defined, include it as a library directory option else nothing
-ifdef $(GLIBDIR)
+ifneq ($(GLIBDIR),)
 gnu_osx_64 : GLIBDIROPT = -L$(GLIBDIR)
 else
 gnu_osx_64 : GLIBDIROPT = 
@@ -400,7 +400,7 @@ gnu_osx_64_db : $(obj)
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
 # If GLIBDIR is defined, include it as a library directory option else nothing
-ifdef $(GLIBDIR)
+ifneq ($(GLIBDIR),)
 gnu_osx_64 : GLIBDIROPT = -L$(GLIBDIR)
 else
 gnu_osx_64 : GLIBDIROPT = 
