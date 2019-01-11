@@ -1,15 +1,20 @@
 #!/bin/bash
+# use -I to force use of the Intel compiler
+OPTS="-I $*"
+source ../../../Source/scripts/setopts.sh $OPTS
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-LUA=$1
-
-OPTS="-i -6"
 LIBDIR=`pwd`
 rm *.a
+
 SRCDIR=$LIBDIR/../../../Source
 cd $SRCDIR
 SRCDIR=`pwd`
+
+cd ../Build
+BUILDDIR=`pwd`
 
 # GD
 echo
@@ -24,14 +29,21 @@ echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS -c "-mmacosx-version-min=10.4"
+./makelib.sh $OPTS
 cp libglui.a $LIBDIR/.
 
 # GLUT
-# use OSX provided glut library for now
-#cd $SRCDIR/glut-3.7.6
-#./makelib.sh $OPTS
-#cp libglut.a $LIBDIR/.
+if [ "$GLUT" == "freeglut" ]; then
+  cd $BUILDDIR/freeglut3.0.0/intel_osx_64
+  ./make_freeglut.sh $OPTS 
+  cp libglut.a $LIBDIR/.
+else
+  if [ "$QUARTZ" != "framework" ]; then
+    cd $SRCDIR/glut-3.7.6
+    ./makelib.sh $OPTS
+    cp libglut.a $LIBDIR/.
+  fi
+fi
 
 # JPEG
 echo

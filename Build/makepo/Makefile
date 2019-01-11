@@ -57,8 +57,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Win 64 ----------------
-#  64 bit windows
+# ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D pp_INTEL -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
@@ -69,8 +68,18 @@ intel_win_64 : exe       = makepo_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- gnu win 64 ----------------
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = 
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : exe       = makepo_win_64.exe 
+
+gnu_win_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lpthread
@@ -81,8 +90,7 @@ intel_linux_64 : exe       = makepo_linux_64
 intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- gcc Linux 64 ----------------
-#  64 bit linux
+# ------------- gnu linux 64 ----------------
 
 gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gcc_linux_64 : CC        = gcc
@@ -93,8 +101,7 @@ gcc_linux_64 : exe       = makepo_linux_64
 gcc_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) 
 
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+# ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : LFLAGS    = -lpthread
@@ -105,8 +112,7 @@ intel_osx_64 : exe       = makepo_osx_64
 intel_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- gcc OSX 64 ----------------
-#  64 bit OSX
+# ------------- gcc osx 64 ----------------
 
 gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = gcc

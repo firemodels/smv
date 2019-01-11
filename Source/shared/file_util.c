@@ -10,6 +10,14 @@
 #endif
 #include <math.h>
 #ifdef WIN32
+#ifdef __MINGW32__
+#undef S_IFBLK
+#undef S_ISBLK
+#undef S_ISFIFO
+#undef S_ISDIR
+#undef S_ISCHR
+#undef S_ISREG
+#endif
 #include <io.h>
 #include <direct.h>
 #include <dirent_win.h>

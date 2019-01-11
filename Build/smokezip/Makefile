@@ -60,9 +60,7 @@ no_target:
 .f90.o:
 	$(FC) -c $(FFLAGS) $(FILTERF) $<
 
-
-
-# ********  rules for each platform supported *************
+# ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
 intel_win_64 : CFLAGS    = -Od /nologo -D pp_INTEL -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO)
@@ -75,7 +73,21 @@ intel_win_64 : exe       = smokezip_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)/intel_win_64/pthreads.lib $(LIB_DIR)/intel_win_64/zlib.lib
 
-# ------------- 64 bit gnu Linux ----------------
+# ------------- gnu win 64 ----------------
+
+gnu_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
+gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = -m64
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = g++
+gnu_win_64 : FC        = gfortran
+gnu_win_64 : exe       = smokezip_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(FC) -o $(bin)/$(exe) $(obj) $(LIB_DIR)/gnu_win_64/pthreads.a $(LIB_DIR)/gnu_win_64/zlib.a
+
+# ------------- gnu linux 64 ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4
 gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
@@ -88,7 +100,7 @@ gnu_linux_64 : exe       = smokezip_linux_64
 gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran -L $(LIB_DIR)/gnu_linux_64 -lz -lpthread
 
-# ------------- gnu OSX ----------------
+# ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
@@ -101,7 +113,7 @@ gnu_osx_64 : exe       = smokezip_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gnu OSX debug ----------------
+# ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
@@ -114,8 +126,8 @@ gnu_osx_64_db : exe       = smokezip_osx_64_db
 gnu_osx_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- intel linux 64 ----------------
+
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_LINUX
@@ -132,8 +144,7 @@ intel_linux_64 : $(obj)
 	
 OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
-# ------------- OSX 64 ----------------
-#  64 bit OSX
+# ------------- intel osx 64 ----------------
 
 intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
@@ -146,7 +157,7 @@ intel_osx_64 : exe       = smokezip_osx_64
 intel_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-#  64 bit debug OSX
+# ------------- intel osx 64 db ----------------
 
 intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7 -stand:f08
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
@@ -158,8 +169,6 @@ intel_osx_64_db : exe       = smokezip_osx_64_db
 
 intel_osx_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
-
-
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 

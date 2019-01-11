@@ -46,6 +46,14 @@
 #define pp_append // append underscore to Fortran file names
 #endif
 
+#ifdef __MINGW32__
+#ifdef WIN32
+#ifndef pp_append
+#define pp_append // append underscore to Fortran file names
+#endif
+#endif
+#endif
+
 //*** options: debug options
 
 #ifdef _DEBUG

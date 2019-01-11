@@ -1,4 +1,4 @@
-OPTS="-g -6"
+OPTS="-g"
 LIBDIR=$(shell pwd)
 SRCDIR=$(LIBDIR)/../../../Source
 

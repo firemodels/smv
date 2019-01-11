@@ -1,8 +1,17 @@
 #!/bin/bash
-OPTS="-g -6"
+# use -G to force use of the gnu compiler
+OPTS="-G $*"
+source ../../../Source/scripts/setopts.sh $OPTS
+
 LIBDIR=`pwd`
-SRCDIR=$LIBDIR/../../../Source
 rm *.a
+
+cd $LIBDIR/../../../Source
+SRCDIR=`pwd`
+
+cd ../Build
+BUILDDIR=`pwd`
+
 cd $SRCDIR
 SRCDIR=`pwd`
 
@@ -13,13 +22,25 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS
+if [ "$GLUT" == "freeglut" ]; then
+  ./makelib.sh $OPTS -f
+else
+  ./makelib.sh $OPTS
+fi
 cp libglui.a $LIBDIR/.
 
-# GLUT
-#cd $SRCDIR/glut-3.7.6
-#./makelib.sh $OPTS
-#cp libglut.a $LIBDIR/.
+# FREEGLUT
+if [ "$GLUT" == "freeglut" ]; then
+  cd $BUILDDIR/freeglut3.0.0/gnu_osx_64
+  ./make_freeglut.sh $OPTS
+  cp libglut.a $LIBDIR/.
+else
+  if [ "$QUARTZ" != "framework" ]; then
+    cd $SRCDIR/glut-3.7.6
+    ./makelib.sh $OPTS -q
+    cp libglut.a $LIBDIR/.
+  fi
+fi
 
 # JPEG
 cd $SRCDIR/jpeg-9b

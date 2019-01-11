@@ -866,6 +866,14 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
+  {
+    float delta_time;
+
+  
+    delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
+    if(delta_time<1.0)return;
+  }
+
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
     if(state==GLUT_DOWN)UpdateFreeze(ON);
     if(state==GLUT_UP)UpdateFreeze(OFF);
@@ -1361,6 +1369,14 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
+
+  {
+    float delta_time;
+
+  
+    delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
+    if(delta_time<1.0)return;
+  }
 
   in_external=0;
 #ifdef pp_GPUTHROTTLE
@@ -2905,15 +2921,22 @@ void SetScreenSize(int *width, int *height){
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
+  START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
   updatemenu=1;
   window_aspect_ratio = MAX((float)width,1.0)/MAX((float)height,1.0);
   if(window_aspect_ratio<1.0)window_aspect_ratio=1.0/window_aspect_ratio;
+  if(strcmp(camera_current->name,"external")!=0||in_external==0){
+    CopyCamera(camera_save,camera_current);
+  }
   SetScreenSize(&width,&height);
   windowresized=1;
   UpdateCameraYpos(camera_external);
   if(strcmp(camera_current->name,"external")==0&&in_external==1){
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
+  }
+  else{
+    CopyCamera(camera_current,camera_save);
   }
   UpdateWindowSizeList();
 #ifdef pp_GPU

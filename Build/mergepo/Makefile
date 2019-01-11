@@ -58,8 +58,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Win 64 ----------------
-#  64 bit windows
+# ------------- win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D pp_INTEL -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
@@ -70,8 +69,18 @@ intel_win_64 : exe       = mergepo_win_64.exe
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- gnu 64 ----------------
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : LFLAGS    = 
+gnu_win_64 : CC        = gcc
+gnu_win_64 : CPP       = gcc
+gnu_win_64 : exe       = mergepo_win_64.exe
+
+gnu_win_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+
+# ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
@@ -81,8 +90,7 @@ intel_linux_64 : exe       = mergepo_linux_64
 intel_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- gcc Linux 64 ----------------
-#  #  64 bit linux
+# ------------- gnu linux 64 ----------------
 
 gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gcc_linux_64 : CC        = gcc
@@ -92,8 +100,7 @@ gcc_linux_64 : exe       = mergepo_linux_64
 gcc_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- OSX 64 ----------------
-#  64 bit linux
+# ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
@@ -103,8 +110,7 @@ intel_osx_64 : exe       = mergepo_osx_64
 intel_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
-# ------------- gcc Linux 64 ----------------
-#  #  64 bit linux
+# ------------- gnu osx 64 ----------------
 
 gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = gcc

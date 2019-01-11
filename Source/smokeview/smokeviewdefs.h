@@ -125,6 +125,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DISABLE 0
 #define ENABLE 1
 
+#define SMOKE3D_FIRE_ONLY      0
+#define SMOKE3D_SMOKE_ONLY     1
+#define SMOKE3D_SMOKE_AND_FIRE 2
+
 #define XWALLMIN -1
 #define XWALLMAX 1
 #define YWALLMIN -2
@@ -435,11 +439,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define LOCAL_INI  2
 #define SCRIPT_INI 3
 
-#define RESTORE_SAVED_VIEW 2
 #define RESTORE_EXTERIOR_VIEW 0
 #define RESTORE_INTERIOR_VIEW 1
 #define SAVE_VIEW 3
-#define RESTORE_LAST_VIEW 4
 #define TOGGLE_TITLE_SAFE 5
 #define RESTORE_EXTERIOR_VIEW_ZOOM 6
 

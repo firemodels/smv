@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN float SVDECL(timer_reshape, 0.0);
+
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
@@ -1177,7 +1179,7 @@ SVEXTERN int rgb_green, rgb_magenta, rgb_cyan, rgb_black;
 SVEXTERN int SVDECL(num_colorbars,0);
 SVEXTERN int setbw,SVDECL(setbwdata,0);
 SVEXTERN int setbwSAVE;
-SVEXTERN int background_flip;
+SVEXTERN int SVDECL(background_flip,1);
 SVEXTERN float SVDECL(transparent_level,0.8);
 SVEXTERN int SVDECL(use_transparency_data,1);
 SVEXTERN int antialiasflag;

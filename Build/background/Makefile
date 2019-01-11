@@ -48,8 +48,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- Win 64 ----------------
-#  64 bit windows
+# ------------- intel Win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -D pp_INTEL -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
@@ -58,8 +57,16 @@ intel_win_64 : exe       = background.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) 
 
-# ------------- Linux 64 ----------------
-#  64 bit linux
+# ------------- gnu Win 64 ----------------
+
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CC        = gcc
+gnu_win_64 : exe       = background.exe
+
+gnu_win_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) 
+
+# ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc

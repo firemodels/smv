@@ -73,6 +73,7 @@ extern GLUI *glui_bounds;
 #define SMOKE_DELTA_MULTIPLE 78
 #define SMOKEBOX_BUFFER 79
 #define SMOKE_NUM 80
+#define BACKGROUND_FLIP 81
 
 // two defines below are also defined elsewhere
 
@@ -163,6 +164,7 @@ GLUI_Spinner *SPINNER_plane_distance=NULL;
 GLUI_Spinner *SPINNER_smoke3d_delta_multiple=NULL;
 #endif
 
+GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -252,6 +254,12 @@ int nsmokeprocinfo = 0;
 
 procdata colorprocinfo[3];
 int ncolorprocinfo = 0;
+
+/* ------------------ UpdateBackgroundFlip2 ------------------------ */
+
+extern "C" void UpdateBackgroundFlip2(int flip) {
+  CHECKBOX_smoke_flip->set_int_val(flip);
+}
 
 #ifdef pp_GPUSMOKE
 /* ------------------ UpdateGLuiPlanes ------------------------ */
@@ -416,7 +424,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   CHECKBOX_smokeGPU=glui_3dsmoke->add_checkbox_to_panel(PANEL_overall,_("Use GPU"),&usegpu,VOL_SMOKE,Smoke3dCB);
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("max blending"), &hrrpuv_max_blending);
-
+  CHECKBOX_smoke_flip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("flip background"), &background_flip,BACKGROUND_FLIP, Smoke3dCB);
 
   if(active_smokesensors==1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Visibility"));
@@ -847,6 +855,11 @@ extern "C" void Smoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
   
+  case BACKGROUND_FLIP:
+    background_flip = 1-background_flip;
+    ShowHideMenu(MENU_SHOWHIDE_FLIP);
+    updatemenu = 1;
+    break;
 #ifdef pp_GPUSMOKE
   case SMOKE_NUM:
     if(smoke_num<0){
