@@ -2,8 +2,10 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.1test
-set smv_version=SMV6.7.2test
+set fds_version=FDS6.7.1_011418
+set smv_version=SMV6.7.2
+set fds_versionbase=6.7.1
+set smv_versionbase=6.7.2
 set fds_debug=0
 
 :: ---- FDS and smokeview revision ----
@@ -37,12 +39,12 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
-set osx_mpi_version=3.0.0
+set osx_mpi_version=3.1.2
 ::set osx_mpi_version=1.8.4
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTEL19
+set INTELVERSION=INTEL19U1
 
 :: ---- Guide locations ----
 
@@ -67,12 +69,13 @@ set smokebothome=/home2/smokevis2/smokebot
 :: ---- hostnames ----
 
 ::*** linux
-set linux_hostname=burn.el.nist.gov
+::set linux_hostname=burn.el.nist.gov
+set linux_hostname=192.168.1.14
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-set osx_hostname=ignis.el.nist.gov
-::set osx_hostname=192.168.1.13
+::set osx_hostname=floga.el.nist.gov
+set osx_hostname=192.168.1.12
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
