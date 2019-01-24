@@ -16,8 +16,8 @@ set FLUSH=%smvrepo%\Build\flush\intel_win_64\flush_win_64.exe -g 16 -w
 
 call :does_file_exist %TIME%  || exit /b 1
 call :does_file_exist %FLUSH% || exit /b 1
-call :is_file_installed gawk|| exit /b 1
-call :is_file_installed tail|| exit /b 1
+call :is_file_installed gawk  || exit /b 1
+call :is_file_installed tail  || exit /b 1
 
 cd %CASEDIR%
 call :run_cases %SMOKEVIEW1% %CASE%
