@@ -6,7 +6,7 @@ set whichguides=%1
 
 :: setup environment variables (defining where repository resides etc) 
 
-set envfile="%userprofile%"\fds_smv_env.bat
+set "envfile=%userprofile%\fds_smv_env.bat"
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
 echo Create a file named %envfile% and use smv/scripts/fds_smv_env_template.bat
@@ -24,8 +24,8 @@ echo.
 %svn_drive%
 
 if "%whichguides%" == "from_smv_linux" (
-  set fromdir=%smokebothome%/.smokebot/pubs
-  set todir="%userprofile%"\.bundle\pubs
+  set "fromdir=%smokebothome%/.smokebot/pubs"
+  set "todir=%userprofile%\.bundle\pubs"
   if NOT exist !todir! (
     mkdir !todir!
   )
@@ -33,7 +33,7 @@ if "%whichguides%" == "from_smv_linux" (
   Title Copying smokeview guides from linux smokebot
   echo copying guides
   echo from directory: !fromdir!
-  echo to directory: !todir!
+  echo   to directory: !todir!
   if NOT exist !todir! (
     mkdir !todir!
   )
@@ -44,8 +44,8 @@ if "%whichguides%" == "from_smv_linux" (
   goto eof
 )
 if "%whichguides%" == "from_fds_linux" (
-  set fromdir=%firebothome%/.firebot/pubs
-  set todir="%userprofile%"\.bundle\pubs
+  set "fromdir=%firebothome%/.firebot/pubs"
+  set "todir=%userprofile%\.bundle\pubs"
   if NOT exist !todir! (
     mkdir !todir!
   )
@@ -53,7 +53,7 @@ if "%whichguides%" == "from_fds_linux" (
   Title Copying FDS guides from linux firebot
   echo copying guides
   echo from directory: !fromdir!
-  echo to directory: !todir!
+  echo   to directory: !todir!
 
   pscp %linux_logon%:!fromdir!/FDS_Config_Management_Plan.pdf    !todir!\.
   pscp %linux_logon%:!fromdir!/FDS_Technical_Reference_Guide.pdf !todir!\.
@@ -63,31 +63,25 @@ if "%whichguides%" == "from_fds_linux" (
   goto eof
 )
 if "%whichguides%" == "to_linux" (
-  set fromdir="%userprofile%"\.bundle\pubs
+  set "fromdir=%userprofile%\.bundle\pubs"
   set todir=.bundle/pubs
-  if NOT exist !todir! (
-    mkdir !todir!
-  )
 
   Title uploading guides to Linux:%linux_hostname%
   echo uploading guides to %linux_hostname%
   echo from directory: !fromdir!
-  echo to directory: !todir!
+  echo   to directory: !todir!
 
   pscp !fromdir!\*.pdf %linux_logon%:!todir!/.
   goto eof
 )
 if "%whichguides%" == "to_osx" (
-  set fromdir="%userprofile%"\.bundle\pubs
+  set "fromdir=%userprofile%\.bundle\pubs"
   set todir=.bundle/pubs
-  if NOT exist !todir! (
-    mkdir !todir!
-  )
 
   Title uploading guides to OSX:%osx_hostname%
   echo uploading guides to %osx_hostname%
   echo from directory: !fromdir!
-  echo to directory: !todir!
+  echo   to directory: !todir!
 
   pscp !fromdir!\*.pdf %osx_logon%:!todir!/.
   goto eof
