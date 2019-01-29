@@ -32,7 +32,7 @@ set svn_drive=c:
 
 ::*** Linux/OSX
 set linux_svn_root=FireModels_fork
-set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_17u4
+set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_19u1
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: ---- MPI library locations ----
@@ -69,13 +69,13 @@ set smokebothome=/home2/smokevis2/smokebot
 :: ---- hostnames ----
 
 ::*** linux
-::set linux_hostname=burn.el.nist.gov
-set linux_hostname=192.168.1.14
+set linux_hostname=burn.el.nist.gov
+::set linux_hostname=192.168.1.14
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-::set osx_hostname=floga.el.nist.gov
-set osx_hostname=192.168.1.12
+set osx_hostname=floga.el.nist.gov
+::set osx_hostname=192.168.1.13
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%

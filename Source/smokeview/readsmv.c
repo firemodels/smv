@@ -8772,9 +8772,6 @@ typedef struct {
 #endif
       }
       else{
-        if(trainer_mode==0){
-          fprintf(stderr,"*** Warning: The file %s does not exist\n",buffer);
-        }
         if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
         npatchinfo--;
       }
@@ -8941,10 +8938,6 @@ typedef struct {
       }
       else{
         get_isolevels=0;
-        if(trainer_mode==0){
-          fprintf(stderr,"*** Warning: the file %s does not exist\n",buffer);
-        }
-
         if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
         if(dataflag==1){
           if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
