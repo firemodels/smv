@@ -36,6 +36,11 @@ endif
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
+.rc.obj:
+	windres $^ -o $@
+%.obj : %.rc
+	windres $^ -o $@
+
 #----------------------------------------------------------------------------
 # Should not need to edit lines below except to add or 'debug' target entries
 
@@ -58,6 +63,10 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o glui_w
       shaders.o unit.o threader.o histogram.o translate.o update.o viewports.o\
       smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
       fdsmodules.o gsmv.o getdata.o
+
+ifeq ($(ICON),icon)
+obj += resource.o
+endif
 
 ifeq ($(LUA_SCRIPTING),true)
 obj += c_api.o lua_api.o

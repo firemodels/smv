@@ -3,6 +3,7 @@ set release=%1
 set from=%2
 set inc=%3
 set GLUT=%4
+set ICON=%5
 
 :: setup compiler environment
 if x%from% == xbot goto skip1
@@ -34,7 +35,7 @@ if x%inc% == xinc goto skip_inc
 erase *.obj *.mod *.exe
 :skip_inc
 
-make -j 4 GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
+make -j 4 ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 if x%from% == xbot goto skip2
 pause
 :skip2

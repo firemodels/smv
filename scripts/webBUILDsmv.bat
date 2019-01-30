@@ -1,6 +1,7 @@
 @echo off
 set platform=%1
 set buildtype=%2
+set inc=full
 
 :: batch file to build test or release smokeview on Windows, Linux or OSX platforms
 
@@ -39,7 +40,7 @@ if "%buildtype%" == "release" (
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
-  call make_smokeview %type% web %inc%
+  call make_smokeview %type% web %inc% glut icon
   goto eof
 )
 if "%platform%" == "linux" (
