@@ -4,6 +4,7 @@ SRCDIR=$(LIBDIR)/../../../Source
 
 all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a liblua.a lpeg.so
 all_nolua: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
+all_nolua_noglut: libgd.a libglui.a libjpeg.a libpng.a libz.a
 
 # GD
 libgd.a:

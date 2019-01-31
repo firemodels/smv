@@ -2,7 +2,7 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.1_011418
+set fds_version=FDS6.7.1_012919
 set smv_version=SMV6.7.2
 set fds_versionbase=6.7.1
 set smv_versionbase=6.7.2

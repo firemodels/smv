@@ -1,7 +1,11 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
 TEST=
-GLUT=glut
+if [ "`uname`" == "Darwin" ]; then
+  GLUT=
+else
+  GLUT=glut
+fi
 QUARTZ=framework
 while getopts 'fhpqrt' OPTION
 do
@@ -36,7 +40,7 @@ export GLUT
 export TEST
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
-export QUARTZ
+  export QUARTZ
 else
-QUARTZ=
+  QUARTZ=
 fi
