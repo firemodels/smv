@@ -20,4 +20,4 @@ call %envfile%
 %svn_drive%
 cd %svn_root%\smv\Manuals\%guide%
 
-start acrobat %guide%.pdf
+start sumatrapdf %guide%.pdf
