@@ -863,15 +863,16 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 
 /* ------------------ MouseCB ------------------------ */
 
+#define DELTA_TIME 0.25
+
 void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
   {
     float delta_time;
 
-  
     delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
-    if(delta_time<1.0)return;
+    if(delta_time<DELTA_TIME)return;
   }
 
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
@@ -1373,9 +1374,8 @@ void MouseDragCB(int xm, int ym){
   {
     float delta_time;
 
-  
     delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
-    if(delta_time<1.0)return;
+    if(delta_time<DELTA_TIME)return;
   }
 
   in_external=0;
