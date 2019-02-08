@@ -6,6 +6,7 @@ set fds_version=FDS6.7.1
 set smv_version=SMV6.7.4
 set fds_versionbase=6.7.1
 set smv_versionbase=6.7.4
+set fds_edition=FDS6
 set fds_debug=0
 
 :: ---- FDS and smokeview revision ----
@@ -60,7 +61,7 @@ set BUNDLE_DIR=.bundle/BUNDLE
 
 :: ---- bot locations ----
 
-set firebotrepo=/home2/smokevis2/firebot/FireModels_central
+set firebotrepo=/home2/smokevis2/firebot/FireModels_clone
 set firebothome=/home2/smokevis2/firebot
 
 set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
