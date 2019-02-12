@@ -66,15 +66,15 @@ echo ---------------------- linux: %linux_hostname% ----------------------------
 echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
 
 echo.
 echo *** smv ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
 
 echo.
 echo *** bot ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
 
 echo.
 echo *** webpages ***
