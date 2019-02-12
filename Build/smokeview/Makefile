@@ -354,7 +354,9 @@ intel_osx_64 : CFLAGS    += -D pp_LUA
 intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_64/lpeg.so
 intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_64/liblua.a -ldl
 endif
-intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -L $(GLIBDIR) -lgfortran -traceback -static-intel -mmacosx-version-min=10.7
+# remove following from LFLAGS line
+# -L $(GLIBDIR) -lgfortran
+intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.7
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
