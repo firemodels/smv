@@ -35,7 +35,6 @@ echo.
 
 echo OSX
 plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
-echo.
 
 
 echo.
@@ -51,8 +50,6 @@ plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
 echo.
 echo OSX
 plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
-echo.
-echo.
 
 echo.
 echo ---------------------------*** bot ***--------------------------------
@@ -67,7 +64,6 @@ plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
 echo.
 echo OSX
 plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
-echo.
-echo.
 
+echo.
 pause

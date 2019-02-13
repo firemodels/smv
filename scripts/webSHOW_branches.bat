@@ -35,7 +35,6 @@ echo.
 
 echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds
-echo.
 
 
 echo.
@@ -51,7 +50,6 @@ plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
 echo.
 echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
-echo.
 
 echo.
 echo ---------------------------*** bot ***--------------------------------
@@ -66,20 +64,6 @@ plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
 echo.
 echo OSX: %osx_hostname%
 plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
-echo.
 
-echo.
-echo ---------------------------*** web ***--------------------------------
-cd %svn_root%\webpages
-echo Windows
-git branch
-
-echo.
-echo Linux: %linux_hostname%
-plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/webpages
-echo.
-
-echo OSX: %osx_hostname%
-plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/webpages
 echo.
 pause
