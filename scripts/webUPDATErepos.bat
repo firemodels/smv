@@ -29,7 +29,6 @@ git remote update
 git checkout master
 git merge firemodels/master
 git merge origin/master
-git push origin master
 git describe --dirty
 
 cd %svn_root%\smv
@@ -39,7 +38,6 @@ git remote update
 git checkout master
 git merge firemodels/master
 git merge origin/master
-git push origin master
 git describe --dirty
 
 cd %svn_root%\bot
@@ -49,7 +47,6 @@ git remote update
 git checkout master
 git merge firemodels/master
 git merge origin/master
-git push origin master
 git describe --dirty
 
 cd %svn_root%\webpages
