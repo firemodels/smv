@@ -3879,20 +3879,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       }
     }
 
-    // copy time dependent data using variables from the class_of_... lines
-
-    if(prop->nvars_dep > 0){
-      for(i = 0;i < prop->nvars_dep;i++){
-        tokendata *toki;
-        int index;
-
-        index = prop->vars_dep_index[i];
-        if(index<0 || index>framei->ntokens - 1)continue;
-        toki = framei->tokens + index;
-        toki->var = prop->fvars_dep[i];
-      }
-    }
-
     // copy static data from PROP line
 
     for(i = 0;i < prop->nvars_indep;i++){
@@ -3905,6 +3891,20 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       toki->var = prop->fvals[i];
       if(prop->svals != NULL&&prop->svals[i] != NULL&&strlen(prop->svals[i]) > 0){
         strcpy(toki->string, prop->svals[i]);
+      }
+    }
+
+    // copy time dependent data using variables from the class_of_... lines (only if non-uniform coloring is set)
+
+    if(partshortlabel==NULL||strcmp(partshortlabel, "Uniform")!=0){
+      for(i = 0; i<prop->nvars_dep; i++){
+        tokendata *toki;
+        int index;
+
+        index = prop->vars_dep_index[i];
+        if(index<0||index>framei->ntokens-1)continue;
+        toki = framei->tokens+index;
+        toki->var = prop->fvars_dep[i];
       }
     }
 
