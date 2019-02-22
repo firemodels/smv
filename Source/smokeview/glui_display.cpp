@@ -27,6 +27,11 @@ GLUI_Spinner *SPINNER_LB_tick_xdir=NULL;
 GLUI_Spinner *SPINNER_LB_tick_ydir=NULL;
 GLUI_Spinner *SPINNER_LB_tick_zdir=NULL;
 
+GLUI_Spinner *SPINNER_light_az0=NULL;
+GLUI_Spinner *SPINNER_light_az1=NULL;
+GLUI_Spinner *SPINNER_light_elev0=NULL;
+GLUI_Spinner *SPINNER_light_elev1=NULL;
+
 GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
 GLUI_Spinner *SPINNER_up_red=NULL,*SPINNER_up_green=NULL,*SPINNER_up_blue=NULL;
 GLUI_Spinner *SPINNER_colorsplit[12];
@@ -77,6 +82,10 @@ GLUI_Spinner *SPINNER_diff_red=NULL;
 GLUI_Spinner *SPINNER_diff_green=NULL;
 GLUI_Spinner *SPINNER_diff_blue=NULL;
 GLUI_Spinner *SPINNER_diff_grey=NULL;
+GLUI_Spinner *SPINNER_spec_red = NULL;
+GLUI_Spinner *SPINNER_spec_green = NULL;
+GLUI_Spinner *SPINNER_spec_blue = NULL;
+GLUI_Spinner *SPINNER_spec_grey = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_use_lighting=NULL;
@@ -146,6 +155,8 @@ GLUI_Panel *PANEL_position0=NULL;
 GLUI_Panel *PANEL_position1 = NULL;
 GLUI_Panel *PANEL_ambient=NULL;
 GLUI_Panel *PANEL_diffuse=NULL;
+GLUI_Panel *PANEL_specular = NULL;
+GLUI_Panel *PANEL_positional = NULL;
 #endif
 GLUI_Panel *PANEL_timebar_overlap = NULL;
 GLUI_Panel *PANEL_split1L = NULL, *PANEL_split1H = NULL;
@@ -248,6 +259,9 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define COLOR_DIFF_GREY 117
 #define COLOR_AMB_RGB 118
 #define COLOR_DIFF_RGB 119
+#define COLOR_SPEC_RGB 120
+#define COLOR_SPEC_GREY 121
+#define LIGHT_POSITION 122
 #endif
 
 #define COLORBAR_LIST2 112
@@ -506,6 +520,21 @@ extern "C" void ColorCB(int var){
   int i;
 
   switch (var){
+  case LIGHT_POSITION:
+    light_position0[0] = (xyzmaxdiff/2.0)*cos(DEG2RAD*glui_light_az0)*cos(DEG2RAD*glui_light_elev0);
+    light_position0[1] = (xyzmaxdiff/2.0)*sin(DEG2RAD*glui_light_az0)*cos(DEG2RAD*glui_light_elev0);
+    light_position0[2] = (xyzmaxdiff/2.0)*sin(DEG2RAD*glui_light_elev0);
+    light_position1[0] = (xyzmaxdiff/2.0)*cos(DEG2RAD*glui_light_az1)*cos(DEG2RAD*glui_light_elev1);
+    light_position1[1] = (xyzmaxdiff/2.0)*sin(DEG2RAD*glui_light_az1)*cos(DEG2RAD*glui_light_elev1);
+    light_position1[2] = (xyzmaxdiff/2.0)*sin(DEG2RAD*glui_light_elev1);
+    break;
+  case COLOR_SPEC_RGB:
+    for(i = 0; i<3; i++){
+      specularlight[i] = (float)glui_specularlight[i]/255.0;
+    }
+    glui_speculargrey = CLAMP(255*TOBW(specularlight), 0, 255);
+    SPINNER_spec_grey->set_int_val(glui_speculargrey);
+    break;
   case COLOR_AMB_RGB:
     for(i = 0; i<3; i++){
       ambientlight[i] = (float)glui_ambientlight[i]/255.0;
@@ -519,6 +548,18 @@ extern "C" void ColorCB(int var){
     }
     glui_diffusegrey = CLAMP(255*TOBW(diffuselight),0,255);
     SPINNER_diff_grey->set_int_val(glui_diffusegrey);
+    break;
+  case COLOR_SPEC_GREY:
+    for(i = 0; i<3; i++){
+      glui_specularlight[i] = glui_speculargrey;
+      specularlight[i] = CLAMP((float)glui_speculargrey/255.0, 0.0, 1.0);
+    }
+    for(i = 0; i<3; i++){
+      ambientlight[i] = CLAMP((float)glui_ambientlight[i]/255.0, 0.0, 1.0);
+    }
+    SPINNER_spec_red->set_int_val(glui_speculargrey);
+    SPINNER_spec_green->set_int_val(glui_speculargrey);
+    SPINNER_spec_blue->set_int_val(glui_speculargrey);
     break;
   case COLOR_AMB_GREY:
     for(i = 0; i<3; i++){
@@ -829,6 +870,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   }
   glui_ambientgrey = 255*ambientgrey;
   glui_diffusegrey = 255*diffusegrey;
+  glui_speculargrey = 255*speculargrey;
+
+  glui_labels->add_checkbox_to_panel(ROLLOUT_light2, "draw lights", &drawlights);
+
   PANEL_ambient = glui_labels->add_panel_to_panel(ROLLOUT_light2, "background/ambient");
   SPINNER_amb_red = glui_labels->add_spinner_to_panel(PANEL_ambient, _("red:"), GLUI_SPINNER_INT, glui_ambientlight,COLOR_AMB_RGB,ColorCB);
   SPINNER_amb_green = glui_labels->add_spinner_to_panel(PANEL_ambient, _("green:"), GLUI_SPINNER_INT, glui_ambientlight+1,COLOR_AMB_RGB,ColorCB);
@@ -851,17 +896,34 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_diff_grey->set_int_limits(0, 255);
   ColorCB(COLOR_DIFF_RGB);
 
-  PANEL_position0 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 1");
-  glui_labels->add_checkbox_to_panel(PANEL_position0, _("light 1"), &use_light0);
-  glui_labels->add_spinner_to_panel(PANEL_position0, _("x:"), GLUI_SPINNER_FLOAT, light_position0);
-  glui_labels->add_spinner_to_panel(PANEL_position0, _("y:"), GLUI_SPINNER_FLOAT, light_position0+1);
-  glui_labels->add_spinner_to_panel(PANEL_position0, _("z:"), GLUI_SPINNER_FLOAT, light_position0+2);
+  PANEL_specular = glui_labels->add_panel_to_panel(ROLLOUT_light2, "specular");
+  SPINNER_spec_red = glui_labels->add_spinner_to_panel(PANEL_specular, _("red:"), GLUI_SPINNER_INT, glui_specularlight, COLOR_SPEC_RGB, ColorCB);
+  SPINNER_spec_green = glui_labels->add_spinner_to_panel(PANEL_specular, _("green:"), GLUI_SPINNER_INT, glui_specularlight+1, COLOR_SPEC_RGB, ColorCB);
+  SPINNER_spec_blue = glui_labels->add_spinner_to_panel(PANEL_specular, _("blue:"), GLUI_SPINNER_INT, glui_specularlight+2, COLOR_SPEC_RGB, ColorCB);
+  SPINNER_spec_grey = glui_labels->add_spinner_to_panel(PANEL_specular, _("grey:"), GLUI_SPINNER_INT, &glui_speculargrey, COLOR_SPEC_GREY, ColorCB);
+  SPINNER_spec_red->set_int_limits(0, 255);
+  SPINNER_spec_green->set_int_limits(0, 255);
+  SPINNER_spec_blue->set_int_limits(0, 255);
+  SPINNER_spec_grey->set_int_limits(0, 255);
 
-  PANEL_position1 = glui_labels->add_panel_to_panel(ROLLOUT_light2, "light 2");
-  glui_labels->add_checkbox_to_panel(PANEL_position1, _("light 2"), &use_light1);
-  glui_labels->add_spinner_to_panel(PANEL_position1, _("x:"), GLUI_SPINNER_FLOAT, light_position1);
-  glui_labels->add_spinner_to_panel(PANEL_position1, _("y:"), GLUI_SPINNER_FLOAT, light_position1+1);
-  glui_labels->add_spinner_to_panel(PANEL_position1, _("z:"), GLUI_SPINNER_FLOAT, light_position1+2);
+  PANEL_positional = glui_labels->add_panel_to_panel(ROLLOUT_light2, "position/direction");
+
+  PANEL_position0 = glui_labels->add_panel_to_panel(PANEL_positional, "light 1");
+  glui_labels->add_checkbox_to_panel(PANEL_position0, _("show"), &use_light0);
+  SPINNER_light_az0 = glui_labels->add_spinner_to_panel(PANEL_position0,   "azimuth:", GLUI_SPINNER_FLOAT, &glui_light_az0,LIGHT_POSITION,ColorCB);
+  SPINNER_light_elev0 = glui_labels->add_spinner_to_panel(PANEL_position0, "elevation:", GLUI_SPINNER_FLOAT, &glui_light_elev0,LIGHT_POSITION,ColorCB);
+  SPINNER_light_az0->set_float_limits(-360.0,360.0);
+  SPINNER_light_elev0->set_float_limits(-90.0,90.0);
+
+  glui_labels->add_column_to_panel(PANEL_positional,false);
+
+  PANEL_position1 = glui_labels->add_panel_to_panel(PANEL_positional, "light 2");
+  glui_labels->add_checkbox_to_panel(PANEL_position1, "show", &use_light1);
+  SPINNER_light_az1 = glui_labels->add_spinner_to_panel(PANEL_position1,   "azimuth:", GLUI_SPINNER_FLOAT, &glui_light_az1,LIGHT_POSITION,ColorCB);
+  SPINNER_light_elev1 = glui_labels->add_spinner_to_panel(PANEL_position1, "elevation:", GLUI_SPINNER_FLOAT, &glui_light_elev1,LIGHT_POSITION,ColorCB);
+  SPINNER_light_az1->set_float_limits(-360.0,360.0);
+  SPINNER_light_elev1->set_float_limits(-90.0,90.0);
+  ColorCB(LIGHT_POSITION);
 #endif
 
   // -------------- Fonts -------------------

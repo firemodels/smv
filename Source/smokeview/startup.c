@@ -257,8 +257,6 @@ int SetupCase(int argc, char **argv){
   Glui3dSmokeSetup(mainwindow_id);
 
   UpdateLights(light_position0, light_position1);
-  NORMALIZE_XYZ(light_position0, light_position0);
-  NORMALIZE_XYZ(light_position1, light_position1);
 
   glutReshapeWindow(screenWidth,screenHeight);
 

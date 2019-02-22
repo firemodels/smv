@@ -747,11 +747,20 @@ SVEXTERN GLfloat SVDECL(block_shininess,100.0);
 SVEXTERN GLfloat light_position0[4];
 SVEXTERN GLfloat light_position1[4];
 
+SVEXTERN int SVDECL(drawlights,0);
+SVEXTERN GLfloat specularlight[4];
+SVEXTERN float SVDECL(speculargrey, 0.4);
 SVEXTERN GLfloat ambientlight[4];
 SVEXTERN float SVDECL(ambientgrey,0.4);
 SVEXTERN GLfloat diffuselight[4];
 SVEXTERN float SVDECL(diffusegrey,0.4);
 
+SVEXTERN float SVDECL(glui_light_az0,45.0);
+SVEXTERN float SVDECL(glui_light_elev0,30.0);
+SVEXTERN float SVDECL(glui_light_az1,135.0);
+SVEXTERN float SVDECL(glui_light_elev1,30.0);
+
+SVEXTERN int glui_specularlight[4], glui_speculargrey;
 SVEXTERN int glui_ambientlight[4], glui_ambientgrey;
 SVEXTERN int glui_diffuselight[4], glui_diffusegrey;
 
