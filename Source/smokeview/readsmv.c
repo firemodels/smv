@@ -5501,15 +5501,15 @@ int ReadSMV(char *file, char *file2){
   */
 
     if(Match(buffer,"RAMP") == 1){
-      rampdata *rampi;
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%i",&nrampinfo);
-      NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
-      rampi = rampinfo;
+      if(nrampinfo>0)NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
       for (i = 0; i < nrampinfo; i++) {
-        rampi = &rampinfo[i];
+        rampdata *rampi;
+
+        rampi = rampinfo+i;
         // Allocate space for the ramp name
         NewMemory((void **)&rampi->name,256*sizeof(char));
         // First get a new line, which should be in the format:
