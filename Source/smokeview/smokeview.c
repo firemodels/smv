@@ -30,7 +30,7 @@ void _Sniff_Errors(char *whereat, char *file, int line){
 
 void UpdateLights(float *pos1, float *pos2){
   int i;
-  GLfloat ambientlight2[4], diffuselight2[4];
+  GLfloat ambientlight2[4], diffuselight2[4], specularlight2[4];
 
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
@@ -41,8 +41,9 @@ void UpdateLights(float *pos1, float *pos2){
 
     num_lights = use_light0 + use_light1;
     for(i = 0;i<3;i++){
-      ambientlight2[i] = ambientlight[i]/num_lights;
-      diffuselight2[i] = diffuselight[i]/num_lights;
+      ambientlight2[i] = ambientlight[i]/(float)num_lights;
+      diffuselight2[i] = diffuselight[i]/(float)num_lights;
+      specularlight2[i] = specularlight[i]/(float)num_lights;
     }
     ambientlight2[3] = 1.0;
     diffuselight2[3] = 1.0;
@@ -51,6 +52,7 @@ void UpdateLights(float *pos1, float *pos2){
   if(use_light0==1){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuselight2);
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlight2);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularlight2);
     glLightfv(GL_LIGHT0, GL_POSITION, pos1);
     glEnable(GL_LIGHT0);
   }
@@ -61,6 +63,7 @@ void UpdateLights(float *pos1, float *pos2){
   if(use_light1==1){
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuselight2);
     glLightfv(GL_LIGHT1, GL_AMBIENT, ambientlight2);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, specularlight2);
     glLightfv(GL_LIGHT1, GL_POSITION, pos2);
     glEnable(GL_LIGHT1);
   }
