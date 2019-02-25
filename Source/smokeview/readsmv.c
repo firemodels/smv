@@ -11564,7 +11564,13 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
       continue;
     }
-    if(Match(buffer, "LIGHTFACES") == 1){
+    if(Match(buffer, "LIGHTING")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &use_lighting_ini);
+      update_use_lighting=1;
+      continue;
+    }
+    if(Match(buffer, "LIGHTFACES")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%d", &light_faces);
       ONEORZERO(light_faces);
@@ -13226,6 +13232,8 @@ void WriteIni(int flag,char *filename){
         rgbi->color[0], rgbi->color[1], rgbi->color[2], rgbi->color[3], percen, rgbi->label);
     }
   }
+  fprintf(fileout, "LIGHTING\n");
+  fprintf(fileout, " %i\n", use_lighting);
   fprintf(fileout, "LIGHTFACES\n");
   fprintf(fileout, " %i\n", light_faces);
   fprintf(fileout, "LIGHTANGLES0\n");

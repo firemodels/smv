@@ -1854,6 +1854,11 @@ void UpdateShowScene(void){
     Smoke3dCB(SMOKE_NEW);
     Smoke3dCB(SMOKE_DELTA_MULTIPLE);
   }
+  if(update_use_lighting==1){
+    use_lighting = 1-use_lighting_ini;
+    ColorbarMenu(USE_LIGHTING);
+    update_use_lighting = 0;
+  }
   if(update_opacity_map==1){
     UpdateOpacityMap();
   }
