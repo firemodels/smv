@@ -512,7 +512,6 @@ EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void UncompressBoundaryDataFrame(meshdata *meshi,int frame_index);
-EXTERNCPP void GetScreenRGB(float *xyz, int *rgbcolor);
 EXTERNCPP void RGBTest(void);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);

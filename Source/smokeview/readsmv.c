@@ -5501,15 +5501,15 @@ int ReadSMV(char *file, char *file2){
   */
 
     if(Match(buffer,"RAMP") == 1){
-      rampdata *rampi;
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       sscanf(buffer,"%i",&nrampinfo);
-      NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
-      rampi = rampinfo;
+      if(nrampinfo>0)NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
       for (i = 0; i < nrampinfo; i++) {
-        rampi = &rampinfo[i];
+        rampdata *rampi;
+
+        rampi = rampinfo+i;
         // Allocate space for the ramp name
         NewMemory((void **)&rampi->name,256*sizeof(char));
         // First get a new line, which should be in the format:
@@ -11564,22 +11564,26 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
       continue;
     }
-    if(Match(buffer, "LIGHTFACES") == 1){
+    if(Match(buffer, "LIGHTING")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &use_lighting_ini);
+      update_use_lighting=1;
+      continue;
+    }
+    if(Match(buffer, "LIGHTFACES")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%d", &light_faces);
       ONEORZERO(light_faces);
       continue;
     }
-    if(Match(buffer, "LIGHTPOS0") == 1){
+    if(Match(buffer, "LIGHTANGLES0")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f %f %f %i", light_position0, light_position0 + 1, light_position0 + 2, light_position0 + 3, &use_light0);
-      DENORMALIZE_XYZ(light_position0, light_position0);
+      sscanf(buffer, "%f %f %i", &glui_light_az0, &glui_light_elev0, &use_light0);
       continue;
     }
-    if(Match(buffer, "LIGHTPOS1") == 1){
+    if(Match(buffer, "LIGHTANGLES1")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f %f %f %i", light_position1, light_position1 + 1, light_position1 + 2, light_position1 + 3, &use_light1);
-      DENORMALIZE_XYZ(light_position1, light_position1);
+      sscanf(buffer, "%f %f %i", &glui_light_az1, &glui_light_elev1, &use_light1);
       continue;
     }
     if(Match(buffer, "LIGHTPROP") == 1){
@@ -13228,24 +13232,14 @@ void WriteIni(int flag,char *filename){
         rgbi->color[0], rgbi->color[1], rgbi->color[2], rgbi->color[3], percen, rgbi->label);
     }
   }
+  fprintf(fileout, "LIGHTING\n");
+  fprintf(fileout, " %i\n", use_lighting);
   fprintf(fileout, "LIGHTFACES\n");
   fprintf(fileout, " %i\n", light_faces);
-  {
-    float pos0[4];
-
-    NORMALIZE_XYZ(pos0, light_position0);
-
-    fprintf(fileout, "LIGHTPOS0\n");
-    fprintf(fileout, " %f %f %f %f %i\n", pos0[0], pos0[1], pos0[2], light_position0[3],use_light0);
-  }
-  {
-    float pos1[4];
-
-    NORMALIZE_XYZ(pos1, light_position1);
-
-    fprintf(fileout, "LIGHTPOS1\n");
-    fprintf(fileout, " %f %f %f %f %i\n", pos1[0], pos1[1], pos1[2], light_position1[3], use_light1);
-  }
+  fprintf(fileout, "LIGHTANGLES0\n");
+  fprintf(fileout, " %f %f %i\n", glui_light_az0, glui_light_elev0, use_light0);
+  fprintf(fileout, "LIGHTANGLES1\n");
+  fprintf(fileout, " %f %f %i\n", glui_light_az1, glui_light_elev1, use_light1);
   fprintf(fileout, "LIGHTPROP\n");
   fprintf(fileout, " %f %f %f\n", ambientlight[0], ambientlight[1], ambientlight[2]);
   fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);

@@ -12,14 +12,55 @@
 #include "viewports.h"
 #include "IOobjects.h"
 
+/* ----------------------- DrawLights ----------------------------- */
+
+void DrawLights(float *position0, float *position1){
+  float xyz0[3];
+
+  xyz0[0] = (    xbar0ORIG + xbarORIG)/2.0;
+  xyz0[1] = (    ybar0ORIG + ybarORIG)/2.0;
+  xyz0[2] = (3.0*zbar0ORIG + zbarORIG)/4.0;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glLineWidth(10.0);
+  glBegin(GL_LINES);
+  glColor3f(0.0, 0.0, 0.0);
+  if(use_light0==1){
+    float xyz1[3];
+
+    glVertex3fv(xyz0);
+    xyz1[0] = xyz0[0]+position0[0];
+    xyz1[1] = xyz0[1]+position0[1];
+    xyz1[2] = xyz0[2]+position0[2];
+    glVertex3fv(xyz1);
+  }
+
+  if(use_light1==1){
+    float xyz1[3];
+
+    glVertex3fv(xyz0);
+    xyz1[0] = xyz0[0]+position1[0];
+    xyz1[1] = xyz0[1]+position1[1];
+    xyz1[2] = xyz0[2]+position1[2];
+    glVertex3fv(xyz1);
+  }
+  glEnd();
+  glPopMatrix();
+}
+
 /* ------------------ ShowScene2 ------------------------ */
 
 void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
+  UpdateLights(light_position0, light_position1);
+  if(drawlights==1)DrawLights(light_position0, light_position1);
 
-  if(render_status==RENDER_ON&&render_mode==RENDER_360){
-    UpdateLights(light_position0, light_position1);
-  }
+
+ // if(render_status==RENDER_ON&&render_mode==RENDER_360){
+ //   UpdateLights(light_position0, light_position1);
+ // }
 
   if(mode == DRAWSCENE){
     glPointSize((float)1.0);
