@@ -27,8 +27,8 @@ echo.
 echo *** fds ***
 git remote update
 git checkout master
-git merge origin/master
 git merge firemodels/master
+git merge origin/master
 git describe --dirty
 
 cd %svn_root%\smv
@@ -36,8 +36,8 @@ echo.
 echo *** smv ***
 git remote update
 git checkout master
-git merge origin/master
 git merge firemodels/master
+git merge origin/master
 git describe --dirty
 
 cd %svn_root%\bot
@@ -45,8 +45,8 @@ echo.
 echo *** bot ***
 git remote update
 git checkout master
-git merge origin/master
 git merge firemodels/master
+git merge origin/master
 git describe --dirty
 
 cd %svn_root%\webpages
@@ -78,24 +78,24 @@ plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
 
 echo.
 echo *** webpages ***
-plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
 
 echo.
 echo ---------------------- osx: %osx_hostname% ------------------------------
 echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
-plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/fds %osx_hostname%
+plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
 
 echo.
 echo *** smv ***
-plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
 
 echo.
 echo *** bot ***
-plink %osx_logon% %scriptdir%/UPDATE_latest_fds_onhost.sh  %linux_svn_root%/bot %osx_hostname%
+plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
 
 echo.
 echo *** webpages ***
-plink %osx_logon% %scriptdir%/UPDATE_webpages_onhost.sh  %linux_svn_root%/webpages %osx_hostname%
+plink %osx_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
 pause

@@ -19,8 +19,7 @@ goto:eof
 call %envfile%
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** fds ***
+echo ---------------------------*** fds ***--------------------------------
 %svn_drive%
 cd %svn_root%\fds
 echo Windows
@@ -31,28 +30,40 @@ set linux_fdsdir=%linux_svn_root%
 
 echo.
 echo Linux
-plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds %linux_hostname%
+plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
 echo.
 
 echo OSX
-plink %osx_logon% %scriptdir%/setbranch_onhost.sh  %linux_svn_root%/fds %osx_hostname%
-echo.
+plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
 
 
 echo.
-echo ------------------------------------------------------------------------
-echo *** smv ***
+echo ---------------------------*** smv ***--------------------------------
 cd %svn_root%\smv
 echo Windows
 git checkout master
 
 echo.
 echo Linux
-plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv %linux_hostname%
+plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
 
 echo.
 echo OSX
-plink %osx_logon% %scriptdir%/setbranch_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
+
 echo.
+echo ---------------------------*** bot ***--------------------------------
+cd %svn_root%\bot
+echo Windows
+git checkout master
+
+echo.
+echo Linux
+plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
+
+echo.
+echo OSX
+plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
+
 echo.
 pause
