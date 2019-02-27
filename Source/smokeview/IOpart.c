@@ -1117,6 +1117,24 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
 #endif
 
           FORTPART5READ(datacopy->rvals, nparts*numtypes[2 * i]);
+#ifdef pp_PARTDEBUG
+          {
+            int have_inf=0, ii;
+            float *val;
+
+            val = datacopy->rvals;
+            for(ii = 0;ii<nparts*numtypes[2*i];ii++){
+              if(isinf(val[ii]))have_inf = 1;
+            }
+            if(have_inf==1){
+              printf(" time=%f class=%i inf indices: ",time_local,i);
+              for(ii = 0;ii<nparts*numtypes[2*i];ii++){
+                if(isinf(val[ii]))printf(" %i",ii);
+              }
+              printf("\n\n");
+            }
+          }
+#endif
 
 #ifdef pp_PARTTEST
           for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
