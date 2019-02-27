@@ -5415,12 +5415,6 @@ char *ParseDeviceFrame(char *buffer, FILE *stream, int *eof, sv_object_frame *fr
     toki = frame->tokens + i;
     c = toki->token[0];
     if(c != ':')continue;
-#ifdef _DEBUG
-    if(toki->reads == 0){
-      fprintf(stderr, "*** Warning: token %s in device %s was not used\n",
-        toki->token, frame->device->label);
-    }
-#endif
   }
 
   // define data structures for conditional tokens
