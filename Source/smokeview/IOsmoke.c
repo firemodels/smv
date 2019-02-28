@@ -6066,13 +6066,13 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     if(smoke3di->type == HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
-      PRINTF(" - skipped (max hrrpuv<%0.f)\n",load_hrrpuv_cutoff);
+      PRINTF(" - skipped (hrrpuv<%0.f)\n",load_hrrpuv_cutoff);
       return_flag=1;
     }
     if(smoke3di->type == SOOT&&smoke3di->maxval<=load_3dsmoke_cutoff){
       ReadSmoke3D(iframe,ifile,UNLOAD,&error);
       *errorcode=0;
-      PRINTF(" - skipped (max soot opacity<%0.f)\n", load_3dsmoke_cutoff);
+      PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
       return_flag = 1;
     }
     if(return_flag==1){
