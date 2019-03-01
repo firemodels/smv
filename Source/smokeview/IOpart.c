@@ -1957,8 +1957,8 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
     updatemenu = 1;
     IdleCB();
     glutPostRedisplay();
-    STOP_TIMER(load_time);
   }
+  STOP_TIMER(load_time);
   if(file_size>1000000000){
     PRINTF(" - %.1f GB/%.1f s\n", (float)file_size/1000000000., load_time);
   }

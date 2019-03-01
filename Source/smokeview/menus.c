@@ -3665,7 +3665,21 @@ void LoadParticleMenu(int value){
 
             parti = partinfo+i;
             if(parti->evac==1||parti->loaded==0)continue;
+            parti->finalize = 0;
+          }
+          for(i = npartinfo-1; i>=0; i--){
+            partdata *parti;
+
+            parti = partinfo+i;
+            if(parti->evac==1||parti->loaded==0)continue;
             parti->finalize = 1;
+            break;
+          }
+          for(i = 0; i<npartinfo; i++){
+            partdata *parti;
+
+            parti = partinfo+i;
+            if(parti->evac==1||parti->loaded==0)continue;
             ReadPart(parti->file, i, UNLOAD, &errorcode);
           }
         }
