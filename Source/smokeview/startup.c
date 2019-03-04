@@ -249,7 +249,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
-    int i, nfaces;
 
     meshi = meshinfo+j;
     for(j=0;j<meshi->nbptrs;j++){
@@ -271,7 +270,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
     int i;
-    int nfaces;
 
     meshi = meshinfo+j;
     for(i = 0; i<meshi->nbptrs; i++){
