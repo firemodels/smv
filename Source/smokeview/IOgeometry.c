@@ -3427,7 +3427,7 @@ void GetGeomInfoPtrs(int flag){
 
 /* ------------------ ShowHideSortGeometry ------------------------ */
 
-void ShowHideSortGeometry(float *mm){
+void ShowHideSortGeometry(int sort_geom, float *mm){
   int i;
   int count_transparent,count_opaque;
   int itime;
@@ -3498,7 +3498,7 @@ void ShowHideSortGeometry(float *mm){
             if(iter==1)transparent_triangles[count_transparent] = tri;
             count_transparent++;
           }
-          if(iter==0&&sort_geometry == 1){
+          if(iter==0&&sort_geom == 1){
             xyz1 = tri->verts[0]->xyz;
             xyz2 = tri->verts[1]->xyz;
             xyz3 = tri->verts[2]->xyz;
@@ -3529,7 +3529,7 @@ void ShowHideSortGeometry(float *mm){
   }
   ntransparent_triangles = count_transparent;
   nopaque_triangles = count_opaque;
-  if(sort_geometry==1&&ntransparent_triangles>0){
+  if(sort_geom==1&&ntransparent_triangles>0){
     qsort((isotri **)transparent_triangles, (size_t)ntransparent_triangles, sizeof(tridata **), CompareTransparentTriangles);
   }
 }

@@ -184,7 +184,58 @@ void ReadBoundINI(void){
 
 #ifdef pp_HTML
 
-/* ------------------ ObstOrVent2Faces ------------------------ */
+/* ------------------ GetGeometryNodes ------------------------ */
+
+void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int *nverts, int *tris, int *ntris){
+  int i, nv=0, nt=0;
+
+  for(i = 0; i<ngeominfoptrs; i++){
+    geomdata *geomi;
+    geomlistdata *geomlisti;
+    int j;
+
+    geomi = geominfoptrs[i];
+
+    // reject unwanted geometry
+
+    if((geomi->fdsblock==NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)||geomi->patchactive==1)continue;
+    geomlisti = geomi->geomlistinfo-1;
+
+    nv += geomlisti->nverts;
+    nt += geomlisti->ntriangles;
+
+    if(option==1){
+      for(j = 0; j<geomlisti->nverts; j++){
+        float col2[3] = {0.0,0.0,1.0};
+        float *col;
+
+        if(geomlisti->verts[j].ntriangles>0){
+          col = geomlisti->verts[j].triangles[0]->geomsurf->color;
+        }
+        else{
+          col = col2;
+        }
+        *verts++ = geomlisti->verts[j].xyz[0];
+        *verts++ = geomlisti->verts[j].xyz[1];
+        *verts++ = geomlisti->verts[j].xyz[2];
+        *colors++ = col[0];
+        *colors++ = col[1];
+        *colors++ = col[2];
+      }
+      for(j = 0; j<geomlisti->ntriangles; j++){
+        *tris++ = *offset + geomlisti->triangles[j].verts[0] - geomlisti->verts;
+        *tris++ = *offset + geomlisti->triangles[j].verts[1] - geomlisti->verts;
+        *tris++ = *offset + geomlisti->triangles[j].verts[2] - geomlisti->verts;
+      }
+      *offset += geomlisti->nverts;
+    }
+  }
+  *nverts = nv;
+  *ntris = nt;
+}
+
+
+/* ------------------ GetBlockNodes ------------------------ */
 
 void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tris){
   /*
@@ -247,6 +298,8 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
   float *verts, *verts_save, *colors, *colors_save;
   int *triangles, *triangles_save;
 
+  // count triangle vertices and indices for blockes
+
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
 
@@ -256,17 +309,45 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
       bc = meshi->blockageinfoptrs[j];
       if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
-      nverts     += 8*3;
-      ntriangles += 6*2*3;
+      nverts     += 8*3;     // 8 vertices per blockages * 3 coordinates per vertex
+      ntriangles += 6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
     }
   }
+
+  // count triangle vertices and indices for immersed geometry objects
+
+  if(ngeominfoptrs>0){
+    int ngeom_verts, ngeom_tris;
+
+    LOCK_TRIANGLES;
+    GetGeomInfoPtrs(0);
+    UNLOCK_TRIANGLES;
+    ShowHideSortGeometry(0, NULL);
+    GetGeometryNodes(0, NULL, NULL, NULL, &ngeom_verts, NULL, &ngeom_tris);
+
+    nverts     += 3*ngeom_verts; // 3 coordinates per vertex
+    ntriangles += 3*ngeom_tris;  // 3 indices per triangles
+    //tris = opaque_triangles;
+  }
+
+  if(nverts==0||ntriangles==0){
+    *n_verts = 0;
+    *n_triangles = 0;
+    *vertsptr = NULL;
+    *colorsptr = NULL;
+    *trianglesptr = NULL;
+    return;
+  }
+
   NewMemory((void **)&verts_save,         nverts*sizeof(float));
   NewMemory((void **)&colors_save,        nverts*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
-
   verts = verts_save;
   colors = colors_save;
   triangles = triangles_save;
+
+  // load blockage info into data structures
+
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
     int i;
@@ -297,7 +378,16 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
       offset += 8;
     }
   }
-  *n_verts      = nverts;
+
+  // load immersed geometry info into data structures
+
+  if(ngeominfoptrs>0){
+    int ngeom_verts, ngeom_tris;
+
+    GetGeometryNodes(1, &offset, verts, colors, &ngeom_verts, triangles, &ngeom_tris);
+  }
+
+  *n_verts = nverts;
   *n_triangles  = ntriangles;
   *vertsptr     = verts_save;
   *colorsptr    = colors_save;

@@ -521,7 +521,7 @@ EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
 EXTERNCPP void UpdateSmoke3dFlags(void);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
-EXTERNCPP void ShowHideSortGeometry(float *mm);
+EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
