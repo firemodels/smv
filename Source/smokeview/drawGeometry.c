@@ -1986,60 +1986,6 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
   }
 }
 
-/* ------------------ UpdateFaces ------------------------ */
-
-void UpdateFaces(void){
-  int i;
-
-  AllocateFaces();
-  updatefaces=0;
-  have_vents_int=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    facedata *faceptr;
-    int j;
-
-    meshi = meshinfo + i;
-    faceptr = meshi->faceinfo;
-    for(j=0;j<meshi->nbptrs;j++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[j];
-      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
-      ObstOrVent2Faces(meshi,bc,NULL,faceptr,BLOCK_face);
-      faceptr += 6;
-    }
-    for(j=0;j<meshi->nvents;j++){
-      ventdata *vi;
-
-      vi = meshi->ventinfo+j;
-      ObstOrVent2Faces(meshi,NULL,vi,faceptr,VENT_face);
-      faceptr++;
-    }
-    for(j=meshi->nvents;j<meshi->nvents+6;j++){
-      ventdata *vi;
-
-      vi = meshi->ventinfo+j;
-      ObstOrVent2Faces(meshi,NULL,vi,faceptr,OUTLINE_FRAME_face);
-      ASSERT(faceptr->color!=NULL);
-      faceptr++;
-    }
-    for(j=meshi->nvents+6;j<meshi->nvents+12;j++){
-      ventdata *vi;
-
-      vi = meshi->ventinfo+j;
-      ObstOrVent2Faces(meshi,NULL,vi,faceptr,SHADED_FRAME_face);
-      ASSERT(faceptr->color!=NULL);
-      faceptr++;
-    }
-    meshi->nfaces=faceptr-meshi->faceinfo;
-  }
-  UpdateHiddenFaces();
-  UpdateFaceLists();
-  UpdateSelectFaces();
-  UpdateSelectBlocks();
-}
-
 /* ------------------ ObstOrVent2Faces ------------------------ */
 
 void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
@@ -2511,6 +2457,60 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     }
     faceptr++;
   }
+}
+
+/* ------------------ UpdateFaces ------------------------ */
+
+void UpdateFaces(void){
+  int i;
+
+  AllocateFaces();
+  updatefaces=0;
+  have_vents_int=0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+    facedata *faceptr;
+    int j;
+
+    meshi = meshinfo + i;
+    faceptr = meshi->faceinfo;
+    for(j=0;j<meshi->nbptrs;j++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
+      ObstOrVent2Faces(meshi,bc,NULL,faceptr,BLOCK_face);
+      faceptr += 6;
+    }
+    for(j=0;j<meshi->nvents;j++){
+      ventdata *vi;
+
+      vi = meshi->ventinfo+j;
+      ObstOrVent2Faces(meshi,NULL,vi,faceptr,VENT_face);
+      faceptr++;
+    }
+    for(j=meshi->nvents;j<meshi->nvents+6;j++){
+      ventdata *vi;
+
+      vi = meshi->ventinfo+j;
+      ObstOrVent2Faces(meshi,NULL,vi,faceptr,OUTLINE_FRAME_face);
+      ASSERT(faceptr->color!=NULL);
+      faceptr++;
+    }
+    for(j=meshi->nvents+6;j<meshi->nvents+12;j++){
+      ventdata *vi;
+
+      vi = meshi->ventinfo+j;
+      ObstOrVent2Faces(meshi,NULL,vi,faceptr,SHADED_FRAME_face);
+      ASSERT(faceptr->color!=NULL);
+      faceptr++;
+    }
+    meshi->nfaces=faceptr-meshi->faceinfo;
+  }
+  UpdateHiddenFaces();
+  UpdateFaceLists();
+  UpdateSelectFaces();
+  UpdateSelectBlocks();
 }
 
 /* ------------------ ClipFace ------------------------ */

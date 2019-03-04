@@ -42,6 +42,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+#ifdef pp_HTML
+    PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
+#endif
 #ifdef pp_LANG
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
 #endif
@@ -211,7 +214,7 @@ void ParseCommandline(int argc, char **argv){
   if(argc == 1){
     exit(1);
   }
-  if(strncmp(argv[1], "-ini", 3) == 0){
+  if(strncmp(argv[1], "-ini", 4) == 0){
     InitCameraList();
     InitOpenGL();
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -219,7 +222,7 @@ void ParseCommandline(int argc, char **argv){
     exit(0);
   }
 
-  if(strncmp(argv[1], "-ng_ini", 6) == 0){
+  if(strncmp(argv[1], "-ng_ini", 7) == 0){
     InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -249,7 +252,7 @@ void ParseCommandline(int argc, char **argv){
         iarg++;
       }
       if(strncmp(argi, "-convert_ini", 12) == 0 ||
-        strncmp(argi, "-convert_ssf", 12) == 0){
+         strncmp(argi, "-convert_ssf", 12) == 0){
         iarg += 2;
       }
 
@@ -268,7 +271,7 @@ void ParseCommandline(int argc, char **argv){
   len_casename = (int)strlen(argi);
   CheckMemory;
   FREEMEMORY(fdsprefix);
-  len_memory = len_casename + strlen(part_ext) + 100;
+  len_memory = len_casename + strlen(".part") + 100;
   NewMemory((void **)&fdsprefix, (unsigned int)len_memory);
   STRCPY(fdsprefix, argi);
   strcpy(movie_name, fdsprefix);
@@ -313,9 +316,16 @@ void ParseCommandline(int argc, char **argv){
   STRCAT(log_filename, ".smvlog");
 
   FREEMEMORY(caseini_filename);
-  NewMemory((void **)&caseini_filename, len_casename + strlen(ini_ext) + 1);
+  NewMemory((void **)&caseini_filename, len_casename + strlen(".ini") + 1);
   STRCPY(caseini_filename, fdsprefix);
-  STRCAT(caseini_filename, ini_ext);
+  STRCAT(caseini_filename, ".ini");
+
+#ifdef pp_HTML
+  FREEMEMORY(html_filename);
+  NewMemory((void **)&html_filename, len_casename+strlen(".html")+1);
+  STRCPY(html_filename, fdsprefix);
+  STRCAT(html_filename, ".html");
+#endif
 
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
@@ -527,7 +537,12 @@ void ParseCommandline(int argc, char **argv){
       tempdir_flag = 1;
     }
 #endif
-    else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0){
+#ifdef pp_HTML
+    else if(strncmp(argv[1], "-html", 5)==0){
+      output_html = 1;
+    }
+#endif
+    else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
       Usage(argv[0],HELP_SUMMARY);
       exit(0);
     }
