@@ -538,8 +538,9 @@ void ParseCommandline(int argc, char **argv){
     }
 #endif
 #ifdef pp_HTML
-    else if(strncmp(argv[1], "-html", 5)==0){
+    else if(strncmp(argv[i], "-html", 5)==0){
       output_html = 1;
+      use_graphics = 0;
     }
 #endif
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
@@ -772,6 +773,7 @@ int main(int argc, char **argv){
 
   STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);
+  if(output_html==1)return 0;
   glutMainLoop();
   return 0;
 }
