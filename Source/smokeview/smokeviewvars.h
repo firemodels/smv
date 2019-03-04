@@ -1423,6 +1423,11 @@ SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN char SVDECL(*smokeviewini,NULL);
+#ifdef pp_HTML
+SVEXTERN char SVDECL(*html_filename, NULL);
+SVEXTERN char SVDECL(*html_template, NULL);
+SVEXTERN int SVDECL(output_html,0);
+#endif
 SVEXTERN int overwrite_all,erase_all;
 SVEXTERN int compress_autoloaded;
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);
@@ -1434,8 +1439,6 @@ SVEXTERN   int openfileflag;
 SVEXTERN float xyzmaxdiff;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
-SVEXTERN char part_ext[6];
-SVEXTERN char ini_ext[5];
 
 SVEXTERN int SVDECL(updatehiddenfaces,1),SVDECL(hide_overlaps,0);
 SVEXTERN int SVDECL(nsurfids,0);

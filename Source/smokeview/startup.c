@@ -182,6 +182,195 @@ void ReadBoundINI(void){
   return;
 }
 
+#ifdef pp_HTML
+
+/* ------------------ ObstOrVent2Faces ------------------------ */
+
+void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tris){
+  /*
+
+  7---------6
+  /         /
+  /         /
+  4--------5
+
+  3 ------  2
+  /         /
+  /         /
+  0 ------ 1
+
+  */
+  int n;
+  float xminmax[2] = {0.0, 1.0};
+  float yminmax[2] = {0.0, 1.0};
+  float zminmax[2] = {0.0, 1.0};
+  float *xplt, *yplt, *zplt;
+  int ii[8] = {0, 1, 1, 0, 0, 1, 1, 0};
+  int jj[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+  int kk[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+
+  int inds[36] = {
+    0, 1, 5, 0, 5, 4,
+    1, 2, 6, 1, 6, 5,
+    2, 3, 7, 2, 7, 6,
+    3, 0, 4, 3, 4, 7,
+    4, 5, 6, 4, 6, 7,
+    0, 2, 1, 0, 3, 2
+  };
+
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+
+  xminmax[0] = xplt[bc->ijk[IMIN]];
+  xminmax[1] = xplt[bc->ijk[IMAX]];
+  yminmax[0] = yplt[bc->ijk[JMIN]];
+  yminmax[1] = yplt[bc->ijk[JMAX]];
+  zminmax[0] = zplt[bc->ijk[KMIN]];
+  zminmax[1] = zplt[bc->ijk[KMAX]];
+
+  for(n = 0; n<8; n++){
+    *xyz++ = xminmax[ii[n]];
+    *xyz++ = yminmax[jj[n]];
+    *xyz++ = zminmax[kk[n]];
+  }
+  for(n = 0; n<36; n++){
+    *tris++ = inds[n];
+  }
+}
+
+/* ------------------ Faces2Geom ------------------------ */
+
+void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
+  int j;
+  int nverts = 0, ntriangles = 0, offset = 0;
+  float *verts, *verts_save, *colors, *colors_save;
+  int *triangles, *triangles_save;
+
+  for(j = 0; j<nmeshes; j++){
+    meshdata *meshi;
+    int i, nfaces;
+
+    meshi = meshinfo+j;
+    for(j=0;j<meshi->nbptrs;j++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
+      nverts     += 8*3;
+      ntriangles += 6*2*3;
+    }
+  }
+  NewMemory((void **)&verts_save,         nverts*sizeof(float));
+  NewMemory((void **)&colors_save,        nverts*sizeof(float));
+  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+
+  verts = verts_save;
+  colors = colors_save;
+  triangles = triangles_save;
+  for(j = 0; j<nmeshes; j++){
+    meshdata *meshi;
+    int i;
+    int nfaces;
+
+    meshi = meshinfo+j;
+    for(i = 0; i<meshi->nbptrs; i++){
+      blockagedata *bc;
+      float xyz[24];
+      int tris[36];
+      int k;
+
+      bc = meshi->blockageinfoptrs[i];
+      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
+      GetBlockNodes(meshi, bc, xyz, tris);
+      for(k = 0; k<8; k++){
+        *verts++ = xyz[3*k+0];
+        *verts++ = xyz[3*k+1];
+        *verts++ = xyz[3*k+2];
+        *colors++ = bc->color[0];
+        *colors++ = bc->color[1];
+        *colors++ = bc->color[2];
+      }
+      for(k = 0; k<12; k++){
+        *triangles++ = offset+tris[3*k+0];
+        *triangles++ = offset+tris[3*k+1];
+        *triangles++ = offset+tris[3*k+2];
+      }
+      offset += 8;
+    }
+  }
+  *n_verts      = nverts;
+  *n_triangles  = ntriangles;
+  *vertsptr     = verts_save;
+  *colorsptr    = colors_save;
+  *trianglesptr = triangles_save;
+}
+
+/* ------------------ Smv2Html ------------------------ */
+
+int Smv2Html(char *html_in, char *html_out){
+  FILE *stream_in = NULL, *stream_out;
+  float *verts, *colors;
+  int nverts, *faces, nfaces;
+
+  stream_in = fopen(html_in, "r");
+  if(stream_in==NULL)return 1;
+  stream_out = fopen(html_out, "w");
+  if(stream_out==NULL){
+    fclose(stream_in);
+    return 1;
+  }
+
+  rewind(stream_in);
+
+  Faces2Geom(&verts, &colors, &nverts, &faces, &nfaces);
+
+  for(;;){
+    char buffer[255];
+
+    if(feof(stream_in)!=0)break;
+
+    if(fgets(buffer, 255, stream_in)==NULL)break;
+    TrimBack(buffer);
+    if(strcmp(buffer, "***VERTS")==0){
+      int i;
+
+      fprintf(stream_out,"         var vertices = [\n");
+#define PER_ROW 12
+      for(i=0;i<nverts;i++){
+        fprintf(stream_out, " %f, ", verts[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nverts-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      fprintf(stream_out,"         var colors = [\n");
+      for(i = 0; i<nverts; i++){
+        fprintf(stream_out, " %f, ", colors[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nverts-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      fprintf(stream_out,"         var indices = [\n");
+      for(i = 0; i<nfaces; i++){
+        fprintf(stream_out, " %i, ", faces[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nfaces-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+    }
+    else{
+      fprintf(stream_out, "%s\n", buffer);
+    }
+  }
+
+
+  fclose(stream_in);
+  fclose(stream_out);
+  return 0;
+}
+#endif
+
+
 /* ------------------ SetupCase ------------------------ */
 
 int SetupCase(int argc, char **argv){
@@ -236,6 +425,14 @@ int SetupCase(int argc, char **argv){
   CheckMemory;
   ReadIni(NULL);
   ReadBoundINI();
+
+#ifdef pp_HTML
+  if(output_html==1){
+    Smv2Html(html_template, html_filename);
+    return 0;
+  }
+#endif
+
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
   InitTranslate(smokeview_bindir, tr_name);
@@ -290,9 +487,19 @@ void SetupGlut(int argc, char **argv){
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
+  // create full path for smokeview.ini file
+
   NewMemory((void **)&smokeviewini,    (unsigned int)(strlen(smokeview_bindir)+14));
   STRCPY(smokeviewini,smokeview_bindir);
   STRCAT(smokeviewini,"smokeview.ini");
+
+  // create full path for html template file
+
+#ifdef pp_HTML
+  NewMemory((void **)&html_template, (unsigned int)(strlen(smokeview_bindir)+strlen("html_template.html")+1));
+  STRCPY(html_template, smokeview_bindir);
+  STRCAT(html_template, "html_template.html");
+#endif
 
   startup_pass=2;
 
@@ -1733,8 +1940,6 @@ void InitVars(void){
   strcpy(ext_png,".png");
   strcpy(ext_jpg,".jpg");
   render_filetype=PNG;
-  strcpy(part_ext,".part");
-  strcpy(ini_ext,".ini");
 
   start_xyz0[0]=0.0;
   start_xyz0[1]=0.0;
