@@ -222,12 +222,12 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tri
   yplt = meshi->yplt;
   zplt = meshi->zplt;
 
-  xminmax[0] = xplt[bc->ijk[IMIN]];
-  xminmax[1] = xplt[bc->ijk[IMAX]];
-  yminmax[0] = yplt[bc->ijk[JMIN]];
-  yminmax[1] = yplt[bc->ijk[JMAX]];
-  zminmax[0] = zplt[bc->ijk[KMIN]];
-  zminmax[1] = zplt[bc->ijk[KMAX]];
+  xminmax[0] = 1.5*xplt[bc->ijk[IMIN]]-0.75;
+  xminmax[1] = 1.5*xplt[bc->ijk[IMAX]]-0.75;
+  yminmax[0] = 1.5*yplt[bc->ijk[JMIN]]-0.75;
+  yminmax[1] = 1.5*yplt[bc->ijk[JMAX]]-0.75;
+  zminmax[0] = 1.5*zplt[bc->ijk[KMIN]]-0.75;
+  zminmax[1] = 1.5*zplt[bc->ijk[KMAX]]-0.75;
 
   for(n = 0; n<8; n++){
     *xyz++ = xminmax[ii[n]];
