@@ -184,6 +184,117 @@ void ReadBoundINI(void){
 
 #ifdef pp_HTML
 
+/* ------------------ GetSliceFileNodes ------------------------ */
+
+void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int *nverts, int *tris, int *ntris){
+  int i, nv = 0, nt = 0;
+
+  for(i = 0;i<nsliceinfo;i++){
+    slicedata *slicei;
+    int nrows, ncols;
+
+    slicei = sliceinfo+i;
+
+    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+    switch(slicei->idir){
+    case XDIR:
+      ncols = slicei->nslicej;
+      nrows = slicei->nslicek;
+      break;
+    case YDIR:
+      ncols = slicei->nslicei;
+      nrows = slicei->nslicek;
+      break;
+    case ZDIR:
+      ncols = slicei->nslicei;
+      nrows = slicei->nslicej;
+      break;
+    }
+    if(nrows>1&&ncols>1){
+      nv += nrows*ncols;
+      nt += 2*(nrows-1)*(ncols-1);
+      if(option==1){
+        meshdata *meshi;
+        float *xplt, *yplt, *zplt;
+        int plotx, ploty, plotz, iimin;
+        float x1, x3;
+        float z1, z3;
+        float  constval;
+        int n, n2;
+        int i11, i31, i13, i33;
+        int ni, nj, nk;
+
+        meshi = meshinfo+slicei->blocknumber;
+
+        xplt = meshi->xplt;
+        yplt = meshi->yplt;
+        zplt = meshi->zplt;
+        plotx = slicei->is1;
+        ploty = slicei->js1;
+        plotz = slicei->ks1;
+
+        switch(slicei->idir){
+        case XDIR:
+          break;
+        case YDIR:
+          // vertices
+          constval = yplt[ploty];
+          for(i = slicei->is1;i<=slicei->is2;i++){
+            int k;
+
+            for(k = slicei->ks1; k<slicei->ks2; k++){
+              *verts++ = xplt[i];
+              *verts++ = constval;
+              *verts++ = zplt[k];
+            }
+          }
+          // triangle indices
+          nk = slicei->ks2+1-slicei->ks1;
+          for(i = slicei->is1;i<slicei->is2;i++){
+            int k;
+            int ii;
+
+            ii = i-slicei->is1;
+            for(k = slicei->ks1; k<slicei->ks2; k++){
+              int kk;
+
+              kk = k-slicei->ks1;
+              *tris++ = offset+nk*ii+kk;
+              *tris++ = offset+nk*ii+kk+1;
+              *tris++ = offset+nk*(ii+1)+kk+1;
+
+              *tris++ = offset+nk*ii+kk;
+              *tris++ = offset+nk*(ii+1)+kk+1;
+              *tris++ = offset+nk*(ii+1)+kk;
+            }
+          }
+          // colors
+          for(i = slicei->is1; i<=slicei->is2; i++){
+            int k;
+
+            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+            n += (ploty-slicei->js1)*slicei->nslicek;
+
+            for(k = slicei->ks1; k<=slicei->ks2; k++){
+              n++;
+              i11 = 4*slicei->iqsliceframe[n];
+              float *color;
+
+              color = rgb_slice+i11;
+              *colors++ = color[0];
+              *colors++ = color[1];
+              *colors++ = color[2];
+            }
+          }
+          break;
+        case ZDIR:
+          break;
+        }
+      }
+    }
+  }
+}
+
 /* ------------------ GetGeometryNodes ------------------------ */
 
 void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int *nverts, int *tris, int *ntris){
@@ -331,7 +442,15 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
     nverts     += 3*ngeom_verts; // 3 coordinates per vertex
     ntriangles += 3*ngeom_tris;  // 3 indices per triangles
-    //tris = opaque_triangles;
+  }
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceFileNodes(0, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris);
+
+    nverts += 3*nslice_verts;     // 3 coordinates per vertex
+    ntriangles += 3*nslice_tris;  // 3 indices per triangles
   }
 
   if(nverts==0||ntriangles==0){
@@ -388,6 +507,20 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
     int ngeom_verts, ngeom_tris;
 
     GetGeometryNodes(1, &offset, verts, colors, &ngeom_verts, triangles, &ngeom_tris);
+    offset    += ngeom_verts;
+    verts     += 3*ngeom_verts;
+    triangles += 3*ngeom_tris;
+  }
+
+  // load slice file data into data structures
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceFileNodes(1, &offset, verts, colors, &nslice_verts, triangles, &nslice_tris);
+    offset    += nslice_verts;
+    verts     += 3*nslice_verts;
+    triangles += 3*nslice_tris;
   }
 
   *n_verts = nverts;
