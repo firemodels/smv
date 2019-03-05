@@ -205,6 +205,7 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int 
 
     if(option==1){
       int j;
+      float *xyz_in, xyz_out[3];
 
       for(j = 0; j<geomlisti->nverts; j++){
         float col2[3] = {0.0,0.0,1.0};
@@ -216,9 +217,11 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int 
         else{
           col = col2;
         }
-        *verts++ = geomlisti->verts[j].xyz[0];
-        *verts++ = geomlisti->verts[j].xyz[1];
-        *verts++ = geomlisti->verts[j].xyz[2];
+        xyz_in = geomlisti->verts[j].xyz;
+        NORMALIZE_XYZ(xyz_out, xyz_in);
+        *verts++ = 1.5*xyz_out[0]-0.75;
+        *verts++ = 1.5*xyz_out[1]-0.75;
+        *verts++ = 1.5*xyz_out[2]-0.75;
         *colors++ = col[0];
         *colors++ = col[1];
         *colors++ = col[2];
@@ -310,7 +313,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
       blockagedata *bc;
 
       bc = meshi->blockageinfoptrs[i];
-      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
       nverts     += 8*3;     // 8 vertices per blockages * 3 coordinates per vertex
       ntriangles += 6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
     }
@@ -362,7 +364,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
       int k;
 
       bc = meshi->blockageinfoptrs[i];
-      if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
       GetBlockNodes(meshi, bc, xyz, tris);
       for(k = 0; k<8; k++){
         *verts++ = xyz[3*k+0];
