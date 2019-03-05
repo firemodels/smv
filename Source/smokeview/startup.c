@@ -293,6 +293,8 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
       }
     }
   }
+  *nverts = nv;
+  *ntris = nt;
 }
 
 /* ------------------ GetGeometryNodes ------------------------ */
