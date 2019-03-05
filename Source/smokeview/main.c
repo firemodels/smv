@@ -773,7 +773,9 @@ int main(int argc, char **argv){
 
   STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);
+#ifdef pp_HTML
   if(output_html==1)return 0;
+#endif
   glutMainLoop();
   return 0;
 }
