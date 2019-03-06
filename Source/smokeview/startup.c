@@ -187,15 +187,17 @@ void ReadBoundINI(void){
 /* ------------------ GetSliceFileNodes ------------------------ */
 
 void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int *nverts, int *tris, int *ntris){
-  int i, nv = 0, nt = 0;
+  int islice, nv = 0, nt = 0;
 
-  for(i = 0;i<nsliceinfo;i++){
+  for(islice = 0;islice<nsliceinfo;islice++){
     slicedata *slicei;
     int nrows, ncols;
 
-    slicei = sliceinfo+i;
+    slicei = sliceinfo+islice;
 
     if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+    if(slicei->idir!=YDIR)continue; // only supporting y slice files for now
+
     switch(slicei->idir){
     case XDIR:
       ncols = slicei->nslicej;
@@ -218,9 +220,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
         float *xplt, *yplt, *zplt;
         int ploty;
         float  constval;
-        int n;
-        int i11;
-        int nk;
+        int n, i, i11, nk;
 
         meshi = meshinfo+slicei->blocknumber;
 
@@ -238,10 +238,10 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
           for(i = slicei->is1;i<=slicei->is2;i++){
             int k;
 
-            for(k = slicei->ks1; k<slicei->ks2; k++){
-              *verts++ = xplt[i];
-              *verts++ = constval;
-              *verts++ = zplt[k];
+            for(k = slicei->ks1; k<=slicei->ks2; k++){
+              *verts++ = 1.5*xplt[i]  - 0.75;
+              *verts++ = 1.5*constval - 0.75;
+              *verts++ = 1.5*zplt[k]  - 0.75;
             }
           }
           // triangle indices
@@ -255,11 +255,11 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
               int kk;
 
               kk = k-slicei->ks1;
-              *tris++ = *offset+nk*ii+kk;
-              *tris++ = *offset+nk*ii+kk+1;
+              *tris++ = *offset+nk*(ii+0)+kk;
+              *tris++ = *offset+nk*(ii+0)+kk+1;
               *tris++ = *offset+nk*(ii+1)+kk+1;
 
-              *tris++ = *offset+nk*ii+kk;
+              *tris++ = *offset+nk*(ii+0)+kk;
               *tris++ = *offset+nk*(ii+1)+kk+1;
               *tris++ = *offset+nk*(ii+1)+kk;
             }
@@ -416,13 +416,10 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
-    int i;
 
     meshi = meshinfo+j;
-    for(i=0;i<meshi->nbptrs;i++){
-      nverts     += 8*3;     // 8 vertices per blockages * 3 coordinates per vertex
-      ntriangles += 6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
-    }
+    nverts     += meshi->nbptrs*8*3;     // 8 vertices per blockages * 3 coordinates per vertex
+    ntriangles += meshi->nbptrs*6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
   }
 
   // count triangle vertices and indices for immersed geometry objects
@@ -532,13 +529,18 @@ int Smv2Html(char *html_in, char *html_out){
   int nverts, *faces, nfaces;
 
   stream_in = fopen(html_in, "r");
-  if(stream_in==NULL)return 1;
+  if(stream_in==NULL){
+    printf("***error: html template file %s failed to open\n",html_in);
+    return 1;
+  }
   stream_out = fopen(html_out, "w");
   if(stream_out==NULL){
+    printf("***error: html output file %s failed to open for output\n",html_out);
     fclose(stream_in);
     return 1;
   }
 
+  printf("rendering html to %s", html_out);
   rewind(stream_in);
 
   Faces2Geom(&verts, &colors, &nverts, &faces, &nfaces);
@@ -581,9 +583,9 @@ int Smv2Html(char *html_in, char *html_out){
     }
   }
 
-
   fclose(stream_in);
   fclose(stream_out);
+  printf(" - complete\n");
   return 0;
 }
 #endif

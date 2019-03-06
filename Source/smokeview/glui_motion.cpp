@@ -1203,7 +1203,7 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
 #ifdef pp_HTML
-  glui_motion->add_checkbox_to_panel(PANEL_render_file, "html", &output_html, RENDER_HTML, RenderCB);
+  glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
 #endif
 
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
@@ -2199,10 +2199,7 @@ void RenderCB(int var){
       break;
 #ifdef pp_HTML
     case RENDER_HTML:
-      if(output_html==1){
-        Smv2Html(html_template, html_filename);
-
-      }
+      Smv2Html(html_template, html_filename);
       break;
 #endif
 #ifdef pp_RENDER360_DEBUG
