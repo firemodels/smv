@@ -216,22 +216,18 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
       if(option==1){
         meshdata *meshi;
         float *xplt, *yplt, *zplt;
-        int plotx, ploty, plotz, iimin;
-        float x1, x3;
-        float z1, z3;
+        int ploty;
         float  constval;
-        int n, n2;
-        int i11, i31, i13, i33;
-        int ni, nj, nk;
+        int n;
+        int i11;
+        int nk;
 
         meshi = meshinfo+slicei->blocknumber;
 
         xplt = meshi->xplt;
         yplt = meshi->yplt;
         zplt = meshi->zplt;
-        plotx = slicei->is1;
         ploty = slicei->js1;
-        plotz = slicei->ks1;
 
         switch(slicei->idir){
         case XDIR:
@@ -259,13 +255,13 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
               int kk;
 
               kk = k-slicei->ks1;
-              *tris++ = offset+nk*ii+kk;
-              *tris++ = offset+nk*ii+kk+1;
-              *tris++ = offset+nk*(ii+1)+kk+1;
+              *tris++ = *offset+nk*ii+kk;
+              *tris++ = *offset+nk*ii+kk+1;
+              *tris++ = *offset+nk*(ii+1)+kk+1;
 
-              *tris++ = offset+nk*ii+kk;
-              *tris++ = offset+nk*(ii+1)+kk+1;
-              *tris++ = offset+nk*(ii+1)+kk;
+              *tris++ = *offset+nk*ii+kk;
+              *tris++ = *offset+nk*(ii+1)+kk+1;
+              *tris++ = *offset+nk*(ii+1)+kk;
             }
           }
           // colors
@@ -286,6 +282,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
               *colors++ = color[2];
             }
           }
+          *offset +=  nrows*ncols;
           break;
         case ZDIR:
           break;
@@ -423,9 +420,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
     meshi = meshinfo+j;
     for(i=0;i<meshi->nbptrs;i++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[i];
       nverts     += 8*3;     // 8 vertices per blockages * 3 coordinates per vertex
       ntriangles += 6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
     }
@@ -509,7 +503,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
     int ngeom_verts, ngeom_tris;
 
     GetGeometryNodes(1, &offset, verts, colors, &ngeom_verts, triangles, &ngeom_tris);
-    offset    += ngeom_verts;
     verts     += 3*ngeom_verts;
     triangles += 3*ngeom_tris;
   }
@@ -520,7 +513,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
     int nslice_verts, nslice_tris;
 
     GetSliceFileNodes(1, &offset, verts, colors, &nslice_verts, triangles, &nslice_tris);
-    offset    += nslice_verts;
     verts     += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
