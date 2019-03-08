@@ -127,7 +127,7 @@ void ReadBoundINI(void){
   char *fullfilename = NULL;
 
   if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, tempdir_flag);
+  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, NOT_FORCE_IN_DIR);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
   if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
@@ -523,7 +523,7 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_in, char *html_out){
+int Smv2Html(char *html_in, char *html_file){
   FILE *stream_in = NULL, *stream_out;
   float *verts, *colors;
   int nverts, *faces, nfaces;
@@ -533,14 +533,14 @@ int Smv2Html(char *html_in, char *html_out){
     printf("***error: html template file %s failed to open\n",html_in);
     return 1;
   }
-  stream_out = fopen(html_out, "w");
+  stream_out = fopen(html_file, "w");
   if(stream_out==NULL){
-    printf("***error: html output file %s failed to open for output\n",html_out);
+    printf("***error: html output file %s failed to open for output\n",html_file);
     fclose(stream_in);
     return 1;
   }
 
-  printf("rendering html to %s", html_out);
+  printf("rendering html to %s", html_file);
   rewind(stream_in);
 
   Faces2Geom(&verts, &colors, &nverts, &faces, &nfaces);

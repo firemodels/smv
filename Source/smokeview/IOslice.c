@@ -2609,7 +2609,7 @@ void UpdateFedinfo(void){
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
-    filename = GetFileName(smokeviewtempdir, filename_base, tempdir_flag);
+    filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
     strcpy(sd->reg_file, filename);
     FREEMEMORY(filename);
@@ -2663,7 +2663,7 @@ void UpdateFedinfo(void){
       ext = strrchr(filename_base, '.');
       *ext = 0;
       strcat(filename_base, "_fed.iso");
-      filename = GetFileName(smokeviewtempdir, filename_base, tempdir_flag);
+      filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
       NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
       strcpy(isoi->reg_file, filename);
       FREEMEMORY(filename);

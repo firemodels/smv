@@ -182,14 +182,14 @@ char *GetBaseFileName(char *buffer,char *file){
 
 /* ------------------ GetFileName ------------------------ */
 
-char *GetFileName(char *temp_dir, char *file, int flag){
+char *GetFileName(char *temp_dir, char *file, int force_in_temp_dir){
   char *file2;
   char *file_out=NULL;
   FILE *stream=NULL;
 
   TrimBack(file);
   file2=TrimFront(file);
-  if(flag==0){
+  if(force_in_temp_dir==NOT_FORCE_IN_DIR){
     stream=fopen(file2,"r");
     if(Writable(".")==YES||stream!=NULL){
       NewMemory((void **)&file_out,strlen(file2)+1);
