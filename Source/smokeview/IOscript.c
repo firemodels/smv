@@ -1239,6 +1239,20 @@ void ScriptLoadParticles(scriptdata *scripti){
     ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
+  for(i = 0;i<npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    parti->finalize = 0;
+  }
+  for(i = npartinfo-1;i>=0;i--){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->evac==1)continue;
+    parti->finalize = 1;
+    break;
+  }
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
