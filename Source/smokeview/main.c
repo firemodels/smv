@@ -275,6 +275,7 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(fdsprefix, argi);
   strcpy(movie_name, fdsprefix);
   strcpy(render_file_base, fdsprefix);
+  strcpy(html_file_base, fdsprefix);
   FREEMEMORY(trainer_filename);
   FREEMEMORY(test_filename);
 

@@ -521,26 +521,82 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
   *trianglesptr = triangles_save;
 }
 
+/* ------------------ GetHtmlFileName ------------------------ */
+
+int GetHtmlFileName(char *htmlfile_full){
+  char htmlfile_dir[1024], htmlfile_suffix[1024];
+  int image_num;
+  char suffix[20];
+
+  // construct html filename
+
+  strcpy(htmlfile_dir, ".");
+  strcpy(htmlfile_suffix, "");
+
+  // directory - put files in '.' or smokevewtempdir
+
+  if(Writable(htmlfile_dir)==NO){
+    if(Writable(smokeviewtempdir)==YES){
+      strcpy(htmlfile_dir, smokeviewtempdir);
+    }
+    else{
+      if(smokeviewtempdir!=NULL&&strlen(smokeviewtempdir)>0){
+        fprintf(stderr, "*** Error: unable to output html file to either directories %s or %s\n",
+          htmlfile_dir, smokeviewtempdir);
+      }
+      else{
+        fprintf(stderr, "*** Error: unable to output html file to directory %s \n", htmlfile_dir);
+      }
+      return 1;
+    }
+  }
+
+  // filename suffix
+
+    if(RenderTime==0){
+      image_num = seqnum;
+    }
+    else{
+      image_num = itimes;
+    }
+    sprintf(htmlfile_suffix, "_%04i", image_num);
+
+  // form full filename from parts
+
+  strcpy(htmlfile_full, html_file_base);
+  strcat(htmlfile_full, htmlfile_suffix);
+  strcat(htmlfile_full, ".html");
+  return 0;
+}
+
 /* ------------------ Smv2Html ------------------------ */
 
 int Smv2Html(char *html_in, char *html_file){
   FILE *stream_in = NULL, *stream_out;
   float *verts, *colors;
   int nverts, *faces, nfaces;
+  char html_full_file[1024];
+  int return_val;
 
   stream_in = fopen(html_in, "r");
   if(stream_in==NULL){
     printf("***error: html template file %s failed to open\n",html_in);
     return 1;
   }
-  stream_out = fopen(html_file, "w");
+
+  return_val=GetHtmlFileName(html_full_file);
+  if(return_val==1){
+    fclose(stream_in);
+    return 1;
+  }
+  stream_out = fopen(html_full_file, "w");
   if(stream_out==NULL){
-    printf("***error: html output file %s failed to open for output\n",html_file);
+    printf("***error: html output file %s failed to open for output\n",html_full_file);
     fclose(stream_in);
     return 1;
   }
 
-  printf("rendering html to %s", html_file);
+  printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
   Faces2Geom(&verts, &colors, &nverts, &faces, &nfaces);
