@@ -607,7 +607,10 @@ int Smv2Html(char *html_in, char *html_file){
 
     if(fgets(buffer, 255, stream_in)==NULL)break;
     TrimBack(buffer);
-    if(strcmp(buffer, "***VERTS")==0){
+    if(strcmp(buffer, "***CANVAS")==0){
+      fprintf(stream_out, "<canvas width = \"%i\" height = \"%i\" id = \"my_Canvas\"></canvas>",screenWidth,screenHeight);
+    }
+    else if(strcmp(buffer, "***VERTS")==0){
       int i;
 
       fprintf(stream_out,"         var vertices = [\n");
