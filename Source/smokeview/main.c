@@ -64,7 +64,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
-    PRINTF("%s\n", _(" -tempdir       - forces output files to be written to the temporary directory"));
     PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.binfo"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
@@ -276,6 +275,7 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(fdsprefix, argi);
   strcpy(movie_name, fdsprefix);
   strcpy(render_file_base, fdsprefix);
+  strcpy(html_file_base, fdsprefix);
   FREEMEMORY(trainer_filename);
   FREEMEMORY(test_filename);
 
@@ -379,7 +379,7 @@ void ParseCommandline(int argc, char **argv){
   if(fed_filename == NULL){
     STRCPY(fed_filename_base, fdsprefix);
     STRCAT(fed_filename_base, ".fed_smv");
-    fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, tempdir_flag);
+    fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, NOT_FORCE_IN_DIR);
   }
   if(stop_filename == NULL){
     NewMemory((void **)&stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
@@ -532,14 +532,10 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-smoke3d", 8) == 0){
       smoke3d_only = 1;
     }
-#ifdef _DEBUG
-    else if(strncmp(argv[i], "-tempdir", 8) == 0){
-      tempdir_flag = 1;
-    }
-#endif
 #ifdef pp_HTML
-    else if(strncmp(argv[1], "-html", 5)==0){
+    else if(strncmp(argv[i], "-html", 5)==0){
       output_html = 1;
+      use_graphics = 0;
     }
 #endif
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
@@ -772,6 +768,9 @@ int main(int argc, char **argv){
 
   STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);
+#ifdef pp_HTML
+  if(output_html==1)return 0;
+#endif
   glutMainLoop();
   return 0;
 }

@@ -1142,10 +1142,10 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   height2 = height_end-height_beg;
 
   if(directory==NULL){
-    renderfile= GetFileName(smokeviewtempdir,RENDERfilename,tempdir_flag);
+    renderfile= GetFileName(smokeviewtempdir,RENDERfilename,NOT_FORCE_IN_DIR);
   }
   else{
-    renderfile= GetFileName(directory,RENDERfilename,1);
+    renderfile= GetFileName(directory,RENDERfilename,FORCE_IN_DIR); //force
   }
   if(renderfile == NULL){
     fprintf(stderr,"*** Error: unable to render screen image to %s", RENDERfilename);

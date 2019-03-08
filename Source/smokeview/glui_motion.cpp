@@ -85,6 +85,9 @@
 #define VIEW_ROLLOUT 9
 
 #define RENDER_360CB 9
+#ifdef pp_HTML
+#define RENDER_HTML 15
+#endif
 
 #ifdef pp_DEG
 unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
@@ -1199,6 +1202,10 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
+#ifdef pp_HTML
+  glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
+#endif
+
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
   LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _("Current"));
   LIST_render_skip->add_item(1, _("All frames"));
@@ -2190,6 +2197,11 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
+#ifdef pp_HTML
+    case RENDER_HTML:
+      Smv2Html(html_template, html_filename);
+      break;
+#endif
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){

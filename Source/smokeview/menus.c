@@ -1883,6 +1883,11 @@ void RenderMenu(int value){
     }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
+#ifdef pp_HTML
+  case RenderHTML:
+    Smv2Html(html_template, html_filename);
+    break;
+#endif
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -8788,6 +8793,9 @@ updatemenu=0;
     CREATEMENU(rendermenu,RenderMenu);
     GLUTADDSUBMENU(_("Start rendering"), render_startmenu);
     glutAddMenuEntry(_("Stop rendering"), RenderCancel);
+#ifdef pp_HTML
+    glutAddMenuEntry(_("Render html"), RenderHTML);
+#endif
 
     glutAddMenuEntry("-", MENU_DUMMY);
 

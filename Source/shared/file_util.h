@@ -64,6 +64,9 @@ typedef struct bufferstreamdata{
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
+#define NOT_FORCE_IN_DIR 0
+#define FORCE_IN_DIR 1
+
 #ifdef pp_READBUFFER
 #define READFILE 0
 #define READBUFFER 1
@@ -160,7 +163,7 @@ EXTERNCPP unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag);
 EXTERNCPP void FileCopy(char *file_in, char *file_out);
 EXTERNCPP void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext);
 EXTERNCPP void FullFile(char *fileout, char *dir, char *file);
-EXTERNCPP char *GetFileName(char *temp_dir, char *file, int flag);
+EXTERNCPP char *GetFileName(char *temp_dir, char *file, int force_in_temp_dir);
 EXTERNCPP char *GetBaseFileName(char *buffer, char *file);
 
 EXTERNCPP char *SetDir(char *argdir);

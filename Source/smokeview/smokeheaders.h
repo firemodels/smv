@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_HTML
+EXTERNCPP int Smv2Html(char *html_in, char *html_out);
+#endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
@@ -521,7 +524,7 @@ EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
 EXTERNCPP void UpdateSmoke3dFlags(void);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
-EXTERNCPP void ShowHideSortGeometry(float *mm);
+EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
