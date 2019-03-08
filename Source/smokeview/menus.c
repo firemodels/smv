@@ -1885,7 +1885,7 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderHTML:
-    Smv2Html(html_template, html_filename);
+    Smv2Html(html_filename);
     break;
 #endif
   case RenderCancel:

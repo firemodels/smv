@@ -6,7 +6,7 @@
 #endif
 
 #ifdef pp_HTML
-EXTERNCPP int Smv2Html(char *html_in, char *html_out);
+EXTERNCPP int Smv2Html(char *html_out);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);

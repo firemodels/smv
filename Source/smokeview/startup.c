@@ -570,16 +570,16 @@ int GetHtmlFileName(char *htmlfile_full){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_in, char *html_file){
+int Smv2Html(char *html_file){
   FILE *stream_in = NULL, *stream_out;
   float *verts, *colors;
   int nverts, *faces, nfaces;
   char html_full_file[1024];
   int return_val;
 
-  stream_in = fopen(html_in, "r");
+  stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
-    printf("***error: html template file %s failed to open\n",html_in);
+    printf("***error: smokeview html template file %s failed to open\n",smokeview_html);
     return 1;
   }
 
@@ -706,7 +706,7 @@ int SetupCase(int argc, char **argv){
 
 #ifdef pp_HTML
   if(output_html==1){
-    Smv2Html(html_template, html_filename);
+    Smv2Html(html_filename);
     return 0;
   }
 #endif
@@ -774,9 +774,9 @@ void SetupGlut(int argc, char **argv){
   // create full path for html template file
 
 #ifdef pp_HTML
-  NewMemory((void **)&html_template, (unsigned int)(strlen(smokeview_bindir)+strlen("html_template.html")+1));
-  STRCPY(html_template, smokeview_bindir);
-  STRCAT(html_template, "html_template.html");
+  NewMemory((void **)&smokeview_html, (unsigned int)(strlen(smokeview_bindir)+strlen("smokeview.html")+1));
+  STRCPY(smokeview_html, smokeview_bindir);
+  STRCAT(smokeview_html, "smokeview.html");
 #endif
 
   startup_pass=2;
