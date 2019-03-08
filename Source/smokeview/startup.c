@@ -526,7 +526,6 @@ void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **triangl
 int GetHtmlFileName(char *htmlfile_full){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
-  char suffix[20];
 
   // construct html filename
 
