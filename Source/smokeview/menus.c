@@ -3329,6 +3329,20 @@ void LoadEvacMenu(int value){
       ReadPart(parti->file, i, UNLOAD, &errorcode);
     }
     npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
+    for(i = 0;i<npartinfo;i++){
+      partdata *parti;
+
+      parti = partinfo+i;
+      parti->finalize = 0;
+    }
+    for(i = npartinfo-1;i>=0;i--){
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->evac==0)continue;
+      parti->finalize = 1;
+      break;
+    }
     for(i=0;i<npartinfo;i++){
       partdata *parti;
 
@@ -3345,12 +3359,16 @@ void LoadEvacMenu(int value){
     UpdateFrameNumber(0);
   }
   if(value>=0){
+    partdata *parti;
+
     ReadEvacFile=1;
     npartframes_max=GetMinPartFrames(value);
-    ReadPart(partinfo[value].file, value, LOAD, &errorcode);
+    parti = partinfo+value;
+    parti->finalize = 1;
+    ReadPart(parti->file, value, LOAD, &errorcode);
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOADFILE\n");
-      fprintf(scriptoutstream," %s\n",partinfo[value].file);
+      fprintf(scriptoutstream," %s\n",parti->file);
     }
   }
   else if(value==MENU_EVAC_UNLOADALL){
