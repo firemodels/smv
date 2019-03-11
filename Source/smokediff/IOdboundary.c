@@ -207,7 +207,6 @@ void diff_boundaryes(FILE *stream_out){
       ii=0;
       for(i=0;i<boundary1->npatches;i++){
         int jj;
-        int file_size;
 
         jj = boundary1->patch2index[i];
         if(jj==-1)continue;
