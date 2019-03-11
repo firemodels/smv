@@ -1169,8 +1169,7 @@ typedef struct _hrrdata {
 typedef struct _slicedata {
   int mesh_type;
   int seq_id, autoload;
-  char *file;
-  char *size_file;
+  char *file, *size_file, *bound_file;
   char *comp_file, *reg_file, *vol_file;
 #ifdef pp_SLICEGEOM
   char *geom_file;

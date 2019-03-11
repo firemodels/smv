@@ -8415,6 +8415,10 @@ typedef struct {
       STRCPY(sd->size_file,bufferptr);
       STRCAT(sd->size_file,".sz");
 
+      NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
+      STRCPY(sd->bound_file, bufferptr);
+      STRCAT(sd->bound_file, ".bnd");
+
       sd->slicelabel=NULL;
       if(slicelabelptr!=NULL){
         int lenslicelabel;
