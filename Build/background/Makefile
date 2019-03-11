@@ -30,7 +30,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = main.o string_util.o dmalloc.o file_util.o md5.o sha1.o sha256.o
+obj = main.o string_util.o dmalloc.o assert.o file_util.o md5.o sha1.o sha256.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -82,6 +82,15 @@ gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = background
 
 gnu_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
+
+# ------------- gnu Linux 64 db ----------------
+
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CC        = gcc
+gnu_linux_64_db : exe       = background
+
+gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- OSX 64 ----------------
