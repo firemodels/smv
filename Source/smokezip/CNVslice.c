@@ -761,6 +761,65 @@ void *compress_volslices(void *arg){
   return NULL;
 }
 
+/* ------------------ GetSliceBounds ------------------------ */
+
+void GetSliceBounds(void){
+  int i;
+
+  int endiandata;
+
+  endiandata = GetEndian();
+  if(endianswitch==1)endiandata = 1-endiandata;
+
+  PRINTF("Determining slice file bounds\n");
+  for(i = 0;i<nsliceinfo;i++){
+    slice *slicei;
+
+    slicei = sliceinfo+i;
+    slicei->inuse_getbounds = 0;
+  }
+#ifdef pp_THREAD
+  mt_update_slice_hist();
+#else
+  update_slice_hist();
+#endif
+  for(i = 0;i<nsliceinfo;i++){
+    slice *slicei;
+    int j;
+
+    slicei = sliceinfo+i;
+    if(slicei->dup==1)continue;
+    for(j = i+1;j<nsliceinfo;j++){
+      slice *slicej;
+
+      slicej = sliceinfo+j;
+      if(strcmp(slicei->label.shortlabel, slicej->label.shortlabel)!=0)continue;
+      MergeHistogram(slicei->histogram, slicej->histogram, MERGE_BOUNDS);
+    }
+    slicei->valmax = GetHistogramVal(slicei->histogram, 0.99);
+    slicei->valmin = GetHistogramVal(slicei->histogram, 0.01);
+    slicei->setvalmax = 1;
+    slicei->setvalmin = 1;
+    for(j = i+1;j<nsliceinfo;j++){
+      slice *slicej;
+
+      slicej = sliceinfo+j;
+      if(strcmp(slicei->label.shortlabel, slicej->label.shortlabel)!=0)continue;
+      slicej->valmax = slicei->valmax;
+      slicej->valmin = slicei->valmin;
+      slicej->setvalmax = 1;
+      slicej->setvalmin = 1;
+    }
+  }
+  for(i = 0;i<nsliceinfo;i++){
+    slice *slicei;
+
+    slicei = sliceinfo+i;
+    FREEMEMORY(slicei->histogram);
+  }
+
+}
+
 /* ------------------ compress_slices ------------------------ */
 
 void *compress_slices(void *arg){
@@ -789,7 +848,7 @@ void *compress_slices(void *arg){
       slicei->count=0;
     }
     if(GLOBget_slice_bounds==1){
-      Get_Slice_Bounds();
+      GetSliceBounds();
     }
     for(i=0;i<nsliceinfo;i++){
       char *label;
@@ -943,65 +1002,6 @@ void mt_update_slice_hist(void){
   FREEMEMORY(thread_ids);
 }
 #endif
-
-/* ------------------ Get_Slice_Bounds ------------------------ */
-
-void Get_Slice_Bounds(void){
-  int i;
-
-  int endiandata;
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
-
-  PRINTF("Determining slice file bounds\n");
-  for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
-
-    slicei = sliceinfo + i;
-    slicei->inuse_getbounds=0;
-  }
-#ifdef pp_THREAD
-  mt_update_slice_hist();
-#else
-  update_slice_hist();
-#endif
-  for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
-    int j;
-
-    slicei = sliceinfo + i;
-    if(slicei->dup==1)continue;
-    for(j=i+1;j<nsliceinfo;j++){
-      slice *slicej;
-
-      slicej = sliceinfo + j;
-      if(strcmp(slicei->label.shortlabel,slicej->label.shortlabel)!=0)continue;
-      MergeHistogram(slicei->histogram,slicej->histogram,MERGE_BOUNDS);
-    }
-    slicei->valmax=GetHistogramVal(slicei->histogram,0.99);
-    slicei->valmin=GetHistogramVal(slicei->histogram,0.01);
-    slicei->setvalmax=1;
-    slicei->setvalmin=1;
-    for(j=i+1;j<nsliceinfo;j++){
-      slice *slicej;
-
-      slicej = sliceinfo + j;
-      if(strcmp(slicei->label.shortlabel,slicej->label.shortlabel)!=0)continue;
-      slicej->valmax=slicei->valmax;
-      slicej->valmin=slicei->valmin;
-      slicej->setvalmax=1;
-      slicej->setvalmin=1;
-    }
-  }
-  for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
-
-    slicei = sliceinfo + i;
-    FREEMEMORY(slicei->histogram);
-  }
-
-}
 
 /* ------------------ getsliceparms_c ------------------------ */
 

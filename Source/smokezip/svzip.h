@@ -162,7 +162,7 @@ typedef struct _slice {
 typedef struct {
   int setvalmin, setvalmax;
   float valmin, valmax;
-} bound;
+} bounddata;
 
 /* --------------------------  plot3d ------------------------------------ */
 
@@ -178,7 +178,7 @@ typedef struct {
   int filesize;
   int seq_id,autozip;
   int doit, done, count;
-  bound bounds[5];
+  bounddata bounds[5];
   int version;
   flowlabels labels[5];
   int dup;
@@ -321,7 +321,6 @@ int patchdup(patch *patchj, int ipatch);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
 void Get_Boundary_Bounds(void);
-void Get_Slice_Bounds(void);
 #ifdef pp_PART
 void Get_Part_Bounds(void);
 #endif
