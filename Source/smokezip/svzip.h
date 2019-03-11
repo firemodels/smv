@@ -97,7 +97,7 @@
 
 typedef struct {
   struct _meshdata *rendermesh;
-  struct _slice *smoke, *fire;
+  struct _slicedata *smoke, *fire;
 } volrenderdata;
 
 /* --------------------------  mesh ------------------------------------ */
@@ -135,7 +135,7 @@ typedef struct {
 
 /* --------------------------  slice ------------------------------------ */
 
-typedef struct _slice {
+typedef struct _slicedata {
   char *file,*filebase,*boundfile;
   int isvolslice,voltype;
   int unit_start;
@@ -155,7 +155,7 @@ typedef struct _slice {
   histogramdata *histogram;
   flowlabels label;
   int dup;
-} slice;
+} slicedata;
 
 /* --------------------------  bound ------------------------------------ */
 
@@ -294,12 +294,11 @@ void GetStartupBoundary(int seq_id);
 unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
 int GetEndian(void);
-int convert_slice(slice *slicei, int *thread_index);
-slice *getslice(char *string);
-void *compress_slices(void *arg);
-void *compress_volslices(void *arg);
+slicedata *GetSlice(char *string);
+void *CompressSlices(void *arg);
+void *CompressVolSlices(void *arg);
 int plot3ddup(plot3d *plot3dj, int iplot3d);
-int slicedup(slice *slicej, int islice);
+int SliceDup(slicedata *slicej, int islice);
 void *compress_plot3ds(void *arg);
 void initpdf(pdfdata *pdf);
 void makesvd(char *destdir, char *smvfile);
@@ -329,7 +328,7 @@ void *compress_smoke3ds(void *arg);
 void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area);
 float atan3(float y, float x);
 void initvolrender(void);
-void getsliceparms_c(char *file, int *ni, int *nj, int *nk);
+void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
 
 #define FORTgetpartheader1     _F(getpartheader1)
@@ -395,7 +394,7 @@ EXTERN int GLOBno_chop;
 EXTERN patch *patchinfo;
 EXTERN meshdata *meshinfo;
 EXTERN smoke3d *smoke3dinfo;
-EXTERN slice *sliceinfo;
+EXTERN slicedata *sliceinfo;
 EXTERN plot3d *plot3dinfo;
 EXTERN part *partinfo;
 EXTERN partclassdata *partclassinfo;

@@ -1274,6 +1274,7 @@ typedef struct _boundsdata {
   float line_contour_max;
   int line_contour_num;
   float valmin, valmax;
+  float global_valmin, global_valmax;
   float chopmin, chopmax;
   float valmin_data,valmax_data;
   char colorlabels[12][11];
