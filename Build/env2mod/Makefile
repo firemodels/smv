@@ -78,6 +78,18 @@ gnu_linux_64 : exe       = env2mod_linux_64
 gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+
+# ------------- gnu linux 64 ----------------
+
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : LFLAGS    = -m64
+gnu_linux_64_db : CC        = gcc
+gnu_linux_64_db : CPP       = g++
+gnu_linux_64_db : exe       = env2mod_linux_64_db
+
+gnu_linux_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
