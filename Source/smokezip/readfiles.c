@@ -751,14 +751,18 @@ int ReadSMV(char *smvfile){
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
         NewMemory((void **)&slicei->file,(unsigned int)(strlen(buffer2)+lendir+1));
         NewMemory((void **)&slicei->filebase,(unsigned int)(strlen(buffer2)+1));
+        NewMemory((void **)&slicei->boundfile,(unsigned int)(strlen(buffer2)+lendir+4+1));
+
         STRCPY(slicei->filebase,buffer2);
+        STRCPY(slicei->file,"");
         if(GLOBsourcedir!=NULL){
-          STRCPY(slicei->file,GLOBsourcedir);
-          STRCAT(slicei->file,buffer2);
+          STRCAT(slicei->file,GLOBsourcedir);
         }
-        else{
-          STRCPY(slicei->file,buffer2);
-        }
+        STRCAT(slicei->file,buffer2);
+
+        STRCPY(slicei->boundfile,slicei->file);
+        STRCAT(slicei->boundfile,".bnd");
+
         if(ReadLabels(&slicei->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading SLCF entry\n");
           break;

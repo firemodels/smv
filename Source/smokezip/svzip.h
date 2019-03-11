@@ -136,7 +136,7 @@ typedef struct {
 /* --------------------------  slice ------------------------------------ */
 
 typedef struct _slice {
-  char *file,*filebase;
+  char *file,*filebase,*boundfile;
   int isvolslice,voltype;
   int unit_start;
   int blocknumber;
