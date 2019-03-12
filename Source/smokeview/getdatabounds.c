@@ -6,6 +6,68 @@
 
 #include "smokeviewvars.h"
 
+/* ------------------ GetGlobalSliceBounds ------------------------ */
+
+void GetGlobalSliceBounds(void){
+  int j;
+
+  for(j = 0;j<nslicebounds;j++){
+    boundsdata *boundi;
+
+    boundi = slicebounds+j;
+    boundi->global_valmin = 1.0;
+    boundi->global_valmax = 0.0;
+  }
+  for(j = 0;j<nsliceinfo;j++){
+    slicedata *slicej;
+    int i, count;
+    float valmin, valmax;
+
+    slicej = sliceinfo+j;
+    if(slicej->firstshort_slice!=1)continue;
+    count = 0;
+    for(i = 0;i<nsliceinfo;i++){
+      slicedata *slicei;
+      FILE *stream;
+
+      slicei = sliceinfo+i;
+      if(strcmp(slicei->label.shortlabel, slicej->label.shortlabel)!=0)continue;
+      stream = fopen(slicei->bound_file, "r");
+      if(stream==NULL)continue;
+      while(!feof(stream)){
+        char buffer[255];
+        float t, vmin, vmax;
+
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, " %f %f %f", &t, &vmin, &vmax);
+        if(count==0){
+          valmin = vmin;
+          valmax = vmax;
+        }
+        else{
+          valmin = MIN(valmin, vmin);
+          valmax = MAX(valmax, vmax);
+        }
+        count++;
+      }
+      fclose(stream);
+    }
+    if(count>0){
+      int bound_index;
+
+      bound_index = GetSliceBoundsIndex(slicej);
+      if(bound_index>=0){
+        boundsdata *boundi;
+
+        boundi = slicebounds+bound_index;
+        boundi->global_valmin = valmin;
+        boundi->global_valmax = valmax;
+
+      }
+    }
+  }
+}
+
 /* ------------------ AdjustDataBounds ------------------------ */
 
 void AdjustDataBounds(const float *pdata, int local_skip, int ndata,

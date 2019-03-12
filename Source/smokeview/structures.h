@@ -747,7 +747,7 @@ typedef struct _meshdata {
   contour **patch_contours;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
-  struct _meshdata *nabors[6];
+  struct _meshdata *nabors[6], *above;
   struct _supermeshdata *super;
   int *ptype;
   int *boundary_row, *boundary_col, *blockstart;
@@ -1169,8 +1169,7 @@ typedef struct _hrrdata {
 typedef struct _slicedata {
   int mesh_type;
   int seq_id, autoload;
-  char *file;
-  char *size_file;
+  char *file, *size_file, *bound_file;
   char *comp_file, *reg_file, *vol_file;
 #ifdef pp_SLICEGEOM
   char *geom_file;
@@ -1275,6 +1274,7 @@ typedef struct _boundsdata {
   float line_contour_max;
   int line_contour_num;
   float valmin, valmax;
+  float global_valmin, global_valmax;
   float chopmin, chopmax;
   float valmin_data,valmax_data;
   char colorlabels[12][11];

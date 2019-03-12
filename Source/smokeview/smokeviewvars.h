@@ -1426,7 +1426,7 @@ SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDEC
 SVEXTERN char SVDECL(*smokeviewini,NULL);
 #ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
-SVEXTERN char SVDECL(*html_template, NULL);
+SVEXTERN char SVDECL(*smokeview_html, NULL);
 SVEXTERN int SVDECL(output_html,0);
 #endif
 SVEXTERN int overwrite_all,erase_all;

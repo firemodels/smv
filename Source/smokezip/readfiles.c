@@ -200,10 +200,10 @@ int ReadSMV(char *smvfile){
   // allocate memory for slice file info
 
   if(nsliceinfo>0){
-    slice *slicei;
+    slicedata *slicei;
     int i;
 
-    NewMemory((void **)&sliceinfo,nsliceinfo*sizeof(slice));
+    NewMemory((void **)&sliceinfo,nsliceinfo*sizeof(slicedata));
     for(i=0;i<nsliceinfo;i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
@@ -702,7 +702,7 @@ int ReadSMV(char *smvfile){
       char *buffer2;
       int len;
       FILE_SIZE filesize;
-      slice *slicei;
+      slicedata *slicei;
       int blocknumber;
 
       len=strlen(buffer);
@@ -751,14 +751,18 @@ int ReadSMV(char *smvfile){
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
         NewMemory((void **)&slicei->file,(unsigned int)(strlen(buffer2)+lendir+1));
         NewMemory((void **)&slicei->filebase,(unsigned int)(strlen(buffer2)+1));
+        NewMemory((void **)&slicei->boundfile,(unsigned int)(strlen(buffer2)+lendir+4+1));
+
         STRCPY(slicei->filebase,buffer2);
+        STRCPY(slicei->file,"");
         if(GLOBsourcedir!=NULL){
-          STRCPY(slicei->file,GLOBsourcedir);
-          STRCAT(slicei->file,buffer2);
+          STRCAT(slicei->file,GLOBsourcedir);
         }
-        else{
-          STRCPY(slicei->file,buffer2);
-        }
+        STRCAT(slicei->file,buffer2);
+
+        STRCPY(slicei->boundfile,slicei->file);
+        STRCAT(slicei->boundfile,".bnd");
+
         if(ReadLabels(&slicei->label,streamsmv,NULL)==2){
           fprintf(stderr,"*** Warning: problem reading SLCF entry\n");
           break;
@@ -971,14 +975,14 @@ void ReadINI2(char *inifile){
     if(Match(buffer,"V_SLICE")==1){
       int setslicemin, setslicemax;
       float slicemin, slicemax;
-      slice *slicei;
+      slicedata *slicei;
 
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");
       sscanf(buffer,"%i %f %i %f %s",&setslicemin,&slicemin,&setslicemax,&slicemax,buffer2);
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      slicei=getslice(type_buffer);
+      slicei= GetSlice(type_buffer);
       if(slicei!=NULL){
         slicei->setvalmax=setslicemax;
         slicei->setvalmin=setslicemin;
@@ -1021,14 +1025,14 @@ void ReadINI2(char *inifile){
     if(Match(buffer,"C_SLICE")==1){
       int setchopslicemin, setchopslicemax;
       float chopslicemin, chopslicemax;
-      slice *slicei;
+      slicedata *slicei;
 
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");
       sscanf(buffer,"%i %f %i %f %s",&setchopslicemin,&chopslicemin,&setchopslicemax,&chopslicemax,buffer2);
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      slicei=getslice(type_buffer);
+      slicei= GetSlice(type_buffer);
       if(slicei!=NULL){
         slicei->setchopvalmax=setchopslicemax;
         slicei->setchopvalmin=setchopslicemin;
@@ -1179,7 +1183,7 @@ void ReadINI2(char *inifile){
   void GetStartupSlice(int seq_id){
     int i;
     for(i=0;i<nsliceinfo;i++){
-      slice *slicei;
+      slicedata *slicei;
 
       slicei = sliceinfo + i;
 
@@ -1208,7 +1212,7 @@ void InitVolRender(void){
     vr->smoke=NULL;
   }
   for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
+    slicedata *slicei;
     char *shortlabel;
     int blocknumber;
     meshdata *meshi;
@@ -1221,7 +1225,7 @@ void InitVolRender(void){
     blocknumber = slicei->blocknumber;
     if(blocknumber<0||blocknumber>=nmeshes)continue;
     meshi = meshinfo + blocknumber;
-    getsliceparms_c(slicei->file,&ni,&nj,&nk);
+    GetSliceParmsC(slicei->file,&ni,&nj,&nk);
 
     if(ni!=meshi->ibar+1||nj!=meshi->jbar+1||nk!=meshi->kbar+1)continue;
     vr = &(meshi->volrenderinfo);

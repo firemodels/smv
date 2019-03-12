@@ -313,6 +313,7 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  meshi->above = NULL;
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
   meshi->nverts = 0;
@@ -8414,6 +8415,10 @@ typedef struct {
       NewMemory((void **)&sd->size_file,(unsigned int)(len+3+1));
       STRCPY(sd->size_file,bufferptr);
       STRCAT(sd->size_file,".sz");
+
+      NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
+      STRCPY(sd->bound_file, bufferptr);
+      STRCAT(sd->bound_file, ".bnd");
 
       sd->slicelabel=NULL;
       if(slicelabelptr!=NULL){

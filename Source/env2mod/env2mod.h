@@ -8,5 +8,6 @@
 
 
 EXTERNCPP int CreateModule(char *left_file, char* right_file, char *module_file);
+EXTERNCPP int CreateScript(char *left_file, char* right_file, char *module_file);
 
 #endif

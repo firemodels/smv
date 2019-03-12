@@ -1209,12 +1209,13 @@ float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
   float zval;
   int nxcell;
 
+  *valid = 0;
+  if(meshi==NULL)return 0.0;
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   nxcell = ibar;
-  *valid = 0;
   if(xval<xplt[0]||xval>xplt[ibar])return 0.0;
   if(yval<yplt[0]||yval>yplt[jbar])return 0.0;
 
@@ -1236,6 +1237,25 @@ void UpdateMeshTerrain(void){
   int i;
 
   if(nterraininfo<=0)return;
+  for(i = 0; i<nmeshes; i++){
+    int j;
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+
+    for(j = 0; j<nmeshes; j++){
+      meshdata *meshj;
+
+      meshj = meshinfo+j;
+      if(meshi==meshj||meshj->above!=NULL)continue;
+
+#define MUP 5
+      if(MeshConnect(meshi, MUP, meshj)==1){
+        meshi->above = meshj;
+        break;
+      }
+    }
+  }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     meshdata *meshj=NULL;
@@ -1270,7 +1290,7 @@ void UpdateMeshTerrain(void){
 
   for(i=0;i<nmeshes;i++){ // xxslow
     meshdata *meshi;
-    int ii, jj;
+    int ii;
     float xyz[3], *x, *y;
     float *zcell;
     int nxcell;
@@ -1282,30 +1302,17 @@ void UpdateMeshTerrain(void){
     nxcell = meshi->ibar;
     zcell = meshi->zcell;
     for(ii=0;ii<meshi->ibar;ii++){
+      int jj;
+
       xyz[0]=x[ii];
       for(jj=0;jj<meshi->jbar;jj++){
-        int j, ij;
-        meshdata *mesh_above = NULL;
+        int ij, valid;
+        float zz;
 
         ij = IJCELL2(ii, jj);
         xyz[1]=y[jj];
-        for(j=0;j<nmeshes;j++){
-          meshdata *meshj;
-
-          meshj = meshinfo + j;
-          if(meshi==meshj)continue;
-          xyz[2]=meshj->zplt_orig[1];
-          mesh_above= GetMesh(xyz,mesh_above);
-          if(mesh_above!=NULL){
-            float zz;
-            int valid;
-
-            zz= GetMeshZCell(mesh_above, xyz[0],xyz[1], &valid);
-            if(valid==1&&zz>zcell[ij]){
-              zcell[ij]=zz;
-            }
-          }
-        }
+        zz= GetMeshZCell(meshi->above, xyz[0],xyz[1], &valid);
+        if(valid==1&&zz>zcell[ij])zcell[ij]=zz;
       }
     }
   }

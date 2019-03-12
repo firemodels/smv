@@ -108,6 +108,20 @@ gnu_linux_64 : exe       = smokediff_linux_64
 gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
 
+# ------------- gnu linux 64 db ----------------
+
+gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : LFLAGS    = -m64
+gnu_linux_64_db : CC        = gcc
+gnu_linux_64_db : CPP       = g++
+gnu_linux_64_db : FC        = gfortran
+gnu_linux_64_db : exe       = smokediff_linux_64_db
+
+gnu_linux_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
+
+
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)

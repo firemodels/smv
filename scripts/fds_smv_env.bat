@@ -3,9 +3,9 @@
 :: ---- FDS and smokeview version ----
 
 set fds_version=FDS6.7.1
-set smv_version=SMV6.7.4
+set smv_version=SMV6.7.6
 set fds_versionbase=6.7.1
-set smv_versionbase=6.7.4
+set smv_versionbase=6.7.6
 set fds_edition=FDS6
 set fds_debug=0
 
@@ -22,7 +22,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="31-Jan-2019"
+set smvlogdate="12-Feb-2019"
 
 :: ---- repo locations ----
 
@@ -32,6 +32,7 @@ set fdswikirepo=%svn_root%\wikis
 set svn_drive=c:
 
 ::*** Linux/OSX
+set bot_home=/home4/gforney
 set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_19u1
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
@@ -57,7 +58,7 @@ set OPENMPI_DIR=.bundle/OPENMPI
 
 :: ---- bundle locations ----
 
-set BUNDLE_DIR=.bundle/BUNDLE
+::set BUNDLE_DIR=.bundle/BUNDLE
 
 :: ---- bot locations ----
 

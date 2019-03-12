@@ -90,6 +90,18 @@ gnu_linux_64 : exe       = wind2fds_linux_64
 gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
+
+# ------------- gnu linux 64 db ----------------
+
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CC        = gcc
+gnu_linux_64_db : CPP       = g++
+gnu_linux_64_db : exe       = wind2fds_linux_64_db
+
+gnu_linux_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj)
+
 # ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)

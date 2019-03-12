@@ -600,14 +600,14 @@ void update_patch_hist(void){
 }
 
 #ifdef pp_THREAD
-/* ------------------ MT_update_slice_hist ------------------------ */
+/* ------------------ MT_update_patch_hist ------------------------ */
 
 void *MT_update_patch_hist(void *arg){
   update_patch_hist();
   return NULL;
 }
 
-/* ------------------ mt_update_slice_hist ------------------------ */
+/* ------------------ mt_update_patch_hist ------------------------ */
 
 void mt_update_patch_hist(void){
   pthread_t *thread_ids;

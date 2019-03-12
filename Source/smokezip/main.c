@@ -499,12 +499,12 @@ int main(int argc, char **argv){
   if(nsliceinfo>0){
     sliceinfo[0].dup=0;
     for(i=1;i<nsliceinfo;i++){
-      slice *slicei;
+      slicedata *slicei;
 
       slicei = sliceinfo + i;
 
       slicei->dup=0;
-      slicedup(slicei,i);
+      SliceDup(slicei,i);
     }
   }
 
@@ -569,8 +569,8 @@ void *compress_all(void *arg){
 
   thread_index=(int *)(arg);
   if(GLOBdoit_boundary==1)compress_patches(thread_index);
-  if(GLOBdoit_slice==1)compress_slices(thread_index);
-  if(GLOBdoit_volslice==1)compress_volslices(thread_index);
+  if(GLOBdoit_slice==1)CompressSlices(thread_index);
+  if(GLOBdoit_volslice==1)CompressVolSlices(thread_index);
   if(GLOBdoit_smoke3d==1)compress_smoke3ds(thread_index);
 #ifdef pp_PLOT3D
   if(GLOBdoit_plot3d==1)compress_plot3ds(thread_index);
@@ -613,14 +613,14 @@ void print_summary(void){
   PRINTF("\n");
   nsum=0;
   for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
+    slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->compressed==1)nsum++;
   }
   if(nsum>0){
     for(i=0;i<nsliceinfo;i++){
-      slice *slicei;
+      slicedata *slicei;
       flowlabels *label;
 
       slicei = sliceinfo + i;
@@ -633,14 +633,14 @@ void print_summary(void){
 
   nsum=0;
   for(i=0;i<nsliceinfo;i++){
-    slice *slicei;
+    slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->vol_compressed==1)nsum++;
   }
   if(nsum>0){
     for(i=0;i<nsliceinfo;i++){
-      slice *slicei;
+      slicedata *slicei;
       flowlabels *label;
 
       slicei = sliceinfo + i;
