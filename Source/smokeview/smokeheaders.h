@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 #ifdef pp_HTML
 EXTERNCPP int Smv2Html(char *html_out);
 #endif

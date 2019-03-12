@@ -747,7 +747,7 @@ typedef struct _meshdata {
   contour **patch_contours;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
-  struct _meshdata *nabors[6];
+  struct _meshdata *nabors[6], *above;
   struct _supermeshdata *super;
   int *ptype;
   int *boundary_row, *boundary_col, *blockstart;

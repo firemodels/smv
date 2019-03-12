@@ -313,6 +313,7 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  meshi->above = NULL;
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
   meshi->nverts = 0;
