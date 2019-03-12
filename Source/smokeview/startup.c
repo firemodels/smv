@@ -613,7 +613,7 @@ int Smv2Html(char *html_file){
     else if(strcmp(buffer, "***VERTS")==0){
       int i;
 
-      fprintf(stream_out,"         var vertices = [\n");
+      fprintf(stream_out,"         var vertices_solid = [\n");
 #define PER_ROW 12
       for(i=0;i<nverts;i++){
         fprintf(stream_out, " %f, ", verts[i]);
@@ -621,14 +621,14 @@ int Smv2Html(char *html_file){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out,"         var colors = [\n");
+      fprintf(stream_out,"         var colors_solid = [\n");
       for(i = 0; i<nverts; i++){
         fprintf(stream_out, " %f, ", colors[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==nverts-1)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out,"         var indices = [\n");
+      fprintf(stream_out,"         var indices_solid = [\n");
       for(i = 0; i<nfaces; i++){
         fprintf(stream_out, " %i, ", faces[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==nfaces-1)fprintf(stream_out, "\n");
