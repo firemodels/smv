@@ -28,7 +28,6 @@ void GetGlobalSliceBounds(void){
     count = 0;
     for(i = 0;i<nsliceinfo;i++){
       slicedata *slicei;
-      char *boundfile;
       FILE *stream;
 
       slicei = sliceinfo+i;
