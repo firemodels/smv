@@ -404,6 +404,104 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tri
   }
 }
 
+/* ------------------ Lines2Geom ------------------------ */
+
+void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linesptr, int *n_lines){
+  int nverts = 0, nlines = 0, offset = 0;
+  float *verts, *verts_save, *colors, *colors_save;
+  int *lines, *lines_save;
+  int i;
+
+  nverts = 8*3;
+  nlines = 12*2;
+
+  if(nverts==0||nlines==0){
+    *n_verts = 0;
+    *n_lines = 0;
+    *vertsptr = NULL;
+    *colorsptr = NULL;
+    *linesptr = NULL;
+    return;
+  }
+
+  NewMemory((void **)&verts_save, nverts*sizeof(float));
+  NewMemory((void **)&colors_save, nverts*sizeof(float));
+  NewMemory((void **)&lines_save, nlines*sizeof(int));
+  verts = verts_save;
+  colors = colors_save;
+  lines = lines_save;
+
+  *verts++ = 0.0;
+  *verts++ = 0.0;
+  *verts++ = 0.0;
+
+  *verts++ = xbar;
+  *verts++ = 0.0;
+  *verts++ = 0.0;
+
+  *verts++ = xbar;
+  *verts++ = ybar;
+  *verts++ = 0.0;
+
+  *verts++ = 0.0;
+  *verts++ = ybar;
+  *verts++ = 0.0;
+
+  *verts++ = 0.0;
+  *verts++ = 0.0;
+  *verts++ = zbar;
+
+  *verts++ = xbar;
+  *verts++ = 0.0;
+  *verts++ = zbar;
+
+  *verts++ = xbar;
+  *verts++ = ybar;
+  *verts++ = zbar;
+
+  *verts++ = 0.0;
+  *verts++ = ybar;
+  *verts++ = zbar;
+
+  for(i = 0; i<24; i++){
+    *colors++ = 0.0;
+    verts_save[i] = 1.5*verts_save[i]-0.75;
+  }
+
+  *lines++ = 0;
+  *lines++ = 4;
+  *lines++ = 1;
+  *lines++ = 5;
+  *lines++ = 2;
+  *lines++ = 6;
+  *lines++ = 3;
+  *lines++ = 7;
+
+  *lines++ = 0;
+  *lines++ = 1;
+  *lines++ = 3;
+  *lines++ = 2;
+  *lines++ = 4;
+  *lines++ = 5;
+  *lines++ = 7;
+  *lines++ = 6;
+
+  *lines++ = 0;
+  *lines++ = 3;
+  *lines++ = 1;
+  *lines++ = 2;
+  *lines++ = 5;
+  *lines++ = 6;
+  *lines++ = 4;
+  *lines++ = 7;
+
+  *n_verts = nverts;
+  *n_lines = nlines;
+  *vertsptr = verts_save;
+  *colorsptr = colors_save;
+  *linesptr = lines_save;
+}
+
 /* ------------------ Faces2Geom ------------------------ */
 
 void Faces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
@@ -572,8 +670,10 @@ int GetHtmlFileName(char *htmlfile_full){
 
 int Smv2Html(char *html_file){
   FILE *stream_in = NULL, *stream_out;
-  float *verts, *colors;
-  int nverts, *faces, nfaces;
+  float *vertsSolid, *colorsSolid;
+  int nvertsSolid, *facesSolid, nfacesSolid;
+  float *vertsLine, *colorsLine;
+  int nvertsLine, *facesLine, nfacesLine;
   char html_full_file[1024];
   int return_val;
 
@@ -598,7 +698,8 @@ int Smv2Html(char *html_file){
   printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
-  Faces2Geom(&verts, &colors, &nverts, &faces, &nfaces);
+  Faces2Geom(&vertsSolid, &colorsSolid, &nvertsSolid, &facesSolid, &nfacesSolid);
+  Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
   for(;;){
     char buffer[255];
@@ -613,25 +714,48 @@ int Smv2Html(char *html_file){
     else if(strcmp(buffer, "***VERTS")==0){
       int i;
 
+      // add unlit triangles
       fprintf(stream_out,"         var vertices_solid = [\n");
 #define PER_ROW 12
-      for(i=0;i<nverts;i++){
-        fprintf(stream_out, " %f, ", verts[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==nverts-1)fprintf(stream_out, "\n");
+      for(i=0;i<nvertsSolid;i++){
+        fprintf(stream_out, " %f, ", vertsSolid[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nvertsSolid-1)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out,"         var colors_solid = [\n");
-      for(i = 0; i<nverts; i++){
-        fprintf(stream_out, " %f, ", colors[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==nverts-1)fprintf(stream_out, "\n");
+      for(i = 0; i<nvertsSolid; i++){
+        fprintf(stream_out, " %f, ", colorsSolid[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nvertsSolid-1)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out,"         var indices_solid = [\n");
-      for(i = 0; i<nfaces; i++){
-        fprintf(stream_out, " %i, ", faces[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==nfaces-1)fprintf(stream_out, "\n");
+      for(i = 0; i<nfacesSolid; i++){
+        fprintf(stream_out, " %i, ", facesSolid[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nfacesSolid-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      // add lines
+      fprintf(stream_out, "         var vertices_line = [\n");
+      for(i = 0; i<nvertsLine; i++){
+        fprintf(stream_out, " %f, ", vertsLine[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nvertsLine-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      fprintf(stream_out, "         var colors_line = [\n");
+      for(i = 0; i<nvertsLine; i++){
+        fprintf(stream_out, " %f, ", colorsLine[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nvertsLine-1)fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      fprintf(stream_out, "         var indices_line = [\n");
+      for(i = 0; i<nfacesLine; i++){
+        fprintf(stream_out, " %i, ", facesLine[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==nfacesLine-1)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
