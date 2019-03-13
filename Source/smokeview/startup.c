@@ -709,6 +709,7 @@ int Smv2Html(char *html_file){
   int nvertsLine, *facesLine, nfacesLine;
   char html_full_file[1024];
   int return_val;
+  int copy_html;
 
   stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
@@ -736,6 +737,7 @@ int Smv2Html(char *html_file){
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
 #define PER_ROW 12
+  copy_html = 1;
   for(;;){
     char buffer[255];
 
@@ -743,10 +745,11 @@ int Smv2Html(char *html_file){
 
     if(fgets(buffer, 255, stream_in)==NULL)break;
     TrimBack(buffer);
-    if(strcmp(buffer, "***CANVAS")==0){
+    if(Match(buffer, "<!--***CANVAS")==1){
       fprintf(stream_out, "<canvas width = \"%i\" height = \"%i\" id = \"my_Canvas\"></canvas>",screenWidth,screenHeight);
+      continue;
     }
-    else if(strcmp(buffer, "***VERTS")==0){
+    else if(Match(buffer, "//***VERTS")==1){
       int i;
 
       // add unlit triangles
@@ -816,11 +819,17 @@ int Smv2Html(char *html_file){
         if(i%PER_ROW==(PER_ROW-1)||i==nfacesLine-1)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
-
+      continue;
     }
-    else{
-      fprintf(stream_out, "%s\n", buffer);
+    else if(Match(buffer,"//HIDE_ON")==1){
+      copy_html = 0;
+      continue;
     }
+    else if(Match(buffer, "//HIDE_OFF")==1){
+      copy_html = 1;
+      continue;
+    }
+    else if(copy_html==1)fprintf(stream_out, "%s\n", buffer);
   }
 
   fclose(stream_in);
