@@ -196,7 +196,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
     slicei = sliceinfo+islice;
 
     if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
-    if(slicei->idir!=YDIR)continue; // only supporting y slice files for now
+    if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
     switch(slicei->idir){
     case XDIR:
@@ -218,26 +218,68 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
       if(option==1){
         meshdata *meshi;
         float *xplt, *yplt, *zplt;
-        int ploty;
+        int plotx, ploty, plotz;
         float  constval;
-        int n, i, i11, nk;
+        int n, i, j, k, i11, nj, nk;
+        int ii, jj, kk;
 
         meshi = meshinfo+slicei->blocknumber;
 
         xplt = meshi->xplt;
         yplt = meshi->yplt;
         zplt = meshi->zplt;
+        plotx = slicei->is1;
         ploty = slicei->js1;
+        plotz = slicei->ks1;
 
         switch(slicei->idir){
         case XDIR:
+          // vertices
+          constval = xplt[plotx];
+          for(j = slicei->js1;j<=slicei->js2;j++){
+            for(k = slicei->ks1; k<=slicei->ks2; k++){
+              *verts++ = 1.5*constval - 0.75;
+              *verts++ = 1.5*yplt[j]  - 0.75;
+              *verts++ = 1.5*zplt[k]  - 0.75;
+            }
+          }
+          // triangle indices
+          nk = slicei->ks2+1-slicei->ks1;
+          for(j = slicei->js1;j<slicei->js2;j++){
+            jj = j-slicei->js1;
+            for(k = slicei->ks1; k<slicei->ks2; k++){
+              kk = k-slicei->ks1;
+              *tris++ = *offset+nk*(jj+0)+kk;
+              *tris++ = *offset+nk*(jj+0)+kk+1;
+              *tris++ = *offset+nk*(jj+1)+kk+1;
+
+              *tris++ = *offset+nk*(jj+0)+kk;
+              *tris++ = *offset+nk*(jj+1)+kk+1;
+              *tris++ = *offset+nk*(jj+1)+kk;
+            }
+          }
+          // colors
+          for(j = slicei->js1; j<=slicei->js2; j++){
+            n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
+            n += (plotx-slicei->is1)*slicei->nslicek;
+
+            for(k = slicei->ks1; k<=slicei->ks2; k++){
+              n++;
+              i11 = 4*slicei->iqsliceframe[n];
+              float *color;
+
+              color = rgb_slice+i11;
+              *colors++ = color[0];
+              *colors++ = color[1];
+              *colors++ = color[2];
+            }
+          }
+          *offset +=  nrows*ncols;
           break;
         case YDIR:
           // vertices
           constval = yplt[ploty];
           for(i = slicei->is1;i<=slicei->is2;i++){
-            int k;
-
             for(k = slicei->ks1; k<=slicei->ks2; k++){
               *verts++ = 1.5*xplt[i]  - 0.75;
               *verts++ = 1.5*constval - 0.75;
@@ -247,13 +289,8 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
           // triangle indices
           nk = slicei->ks2+1-slicei->ks1;
           for(i = slicei->is1;i<slicei->is2;i++){
-            int k;
-            int ii;
-
             ii = i-slicei->is1;
             for(k = slicei->ks1; k<slicei->ks2; k++){
-              int kk;
-
               kk = k-slicei->ks1;
               *tris++ = *offset+nk*(ii+0)+kk;
               *tris++ = *offset+nk*(ii+0)+kk+1;
@@ -266,8 +303,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
           }
           // colors
           for(i = slicei->is1; i<=slicei->is2; i++){
-            int k;
-
             n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
             n += (ploty-slicei->js1)*slicei->nslicek;
 
@@ -285,6 +320,47 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, int
           *offset +=  nrows*ncols;
           break;
         case ZDIR:
+          // vertices
+          constval = zplt[plotz];
+          for(i = slicei->is1;i<=slicei->is2;i++){
+            for(j = slicei->js1; j<=slicei->js2; j++){
+              *verts++ = 1.5*xplt[i]  - 0.75;
+              *verts++ = 1.5*yplt[j]  - 0.75;
+              *verts++ = 1.5*constval - 0.75;
+            }
+          }
+          // triangle indices
+          nj = slicei->js2+1-slicei->js1;
+          for(i = slicei->is1;i<slicei->is2;i++){
+            ii = i-slicei->is1;
+            for(j = slicei->js1; j<slicei->js2; j++){
+              jj = j-slicei->js1;
+              *tris++ = *offset+nj*(ii+0)+jj;
+              *tris++ = *offset+nj*(ii+0)+jj+1;
+              *tris++ = *offset+nj*(ii+1)+jj+1;
+
+              *tris++ = *offset+nj*(ii+0)+jj;
+              *tris++ = *offset+nj*(ii+1)+jj+1;
+              *tris++ = *offset+nj*(ii+1)+jj;
+            }
+          }
+          // colors
+          for(i = slicei->is1; i<=slicei->is2; i++){
+            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+            n += (plotz-slicei->ks1)*slicei->nslicey;
+
+            for(j = slicei->js1; j<=slicei->js2; j++){
+              n++;
+              i11 = 4*slicei->iqsliceframe[n];
+              float *color;
+
+              color = rgb_slice+i11;
+              *colors++ = color[0];
+              *colors++ = color[1];
+              *colors++ = color[2];
+            }
+          }
+          *offset +=  nrows*ncols;
           break;
         }
       }
@@ -366,9 +442,7 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tri
 
   */
   int n;
-  float xminmax[2] = {0.0, 1.0};
-  float yminmax[2] = {0.0, 1.0};
-  float zminmax[2] = {0.0, 1.0};
+  float xminmax[2], yminmax[2], zminmax[2];
   float *xplt, *yplt, *zplt;
   int ii[8] = {0, 1, 1, 0, 0, 1, 1, 0};
   int jj[8] = {0, 0, 1, 1, 0, 0, 1, 1};
