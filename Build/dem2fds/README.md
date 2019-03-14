@@ -6,7 +6,7 @@ Notes on creating FDS input files from digital elevation map (dem) files using t
 
 * Download and install Smokeview from <https://pages.nist.gov/fds-smv/downloads.html>.  This download provides the utility dem2fds used for creating the FDS input files.
 
-* Download and install Imagemagick from <http://www.imagemagick.org/script/binary-releases.php>.  This program is used to convert terrain image files from jpeg 2000 to jpeg format.
+* Download and install Imagemagick from <https://imagemagick.org/script/download.php>.  This program is used to convert terrain image files from jpeg 2000 to jpeg format.
 
 * Go to the USGS National Map website at <https://viewer.nationalmap.gov/basic> 
 to obtain elevation and terrain image data files.
