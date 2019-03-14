@@ -60,7 +60,7 @@ dem2fds using the -dir command line keyword when creating a FDS input file.
 ```
 GRID
  ibar jbar kbar
- LONGLATMINMAX
+LONGLATMINMAX
  longmin longmax latmin latmax
 ```
 
@@ -78,7 +78,7 @@ Two other methods for specifying a terrain region are to use the
 ```
 GRID
   ibar jbar kbar dx dy
-  LONGLATCENTER
+LONGLATCENTER
   longcen  latcen
 ```
 
@@ -87,7 +87,7 @@ or
 ```
 GRID
   ibar jbar kbar dx dy
-  LONGLATORIG
+LONGLATORIG
   longorig  latorig
 ```
 
