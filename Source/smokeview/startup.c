@@ -281,7 +281,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
 
             for(k = slicei->ks1; k<=slicei->ks2; k++){
               n++;
-              i11 = 4*slicei->iqsliceframe[n];
+              i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
             }
           }
@@ -335,7 +335,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
 
             for(k = slicei->ks1; k<=slicei->ks2; k++){
               n++;
-              i11 = 4*slicei->iqsliceframe[n];
+              i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
             }
           }
@@ -389,7 +389,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
 
             for(j = slicei->js1; j<=slicei->js2; j++){
               n++;
-              i11 = 4*slicei->iqsliceframe[n];
+              i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
             }
           }
@@ -894,7 +894,7 @@ int Smv2Html(char *html_file){
         ii[0] = CLAMP(255*rgb_slice[4*i+0], 0, 255);
         ii[1] = CLAMP(255*rgb_slice[4*i+1], 0, 255);
         ii[2] = CLAMP(255*rgb_slice[4*i+2], 0, 255);
-        fprintf(stream_out, " %i, %i, %i, ", ii[0],ii[1],ii[2]);
+        fprintf(stream_out, " %i, %i, %i, 255, ", ii[0],ii[1],ii[2]);
         if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1)||i==255)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ]);\n");
