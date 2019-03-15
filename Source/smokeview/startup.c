@@ -220,8 +220,9 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
         float *xplt, *yplt, *zplt;
         int plotx, ploty, plotz;
         float  constval;
-        int n, i, j, k, i11, nj, nk;
+        int n, i, j, k, nj, nk;
         int ii, jj, kk;
+        unsigned char *iq;
 
         meshi = meshinfo+slicei->blocknumber;
 
@@ -231,6 +232,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
         plotx = slicei->is1;
         ploty = slicei->js1;
         plotz = slicei->ks1;
+        iq = slicei->iqsliceframe;
 
         switch(slicei->idir){
         case XDIR:
@@ -248,14 +250,32 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           for(j = slicei->js1;j<slicei->js2;j++){
             jj = j-slicei->js1;
             for(k = slicei->ks1; k<slicei->ks2; k++){
-              kk = k-slicei->ks1;
-              *tris++ = *offset+nk*(jj+0)+kk;
-              *tris++ = *offset+nk*(jj+0)+kk+1;
-              *tris++ = *offset+nk*(jj+1)+kk+1;
+              int i00, i01, i11, i10;
 
-              *tris++ = *offset+nk*(jj+0)+kk;
-              *tris++ = *offset+nk*(jj+1)+kk+1;
-              *tris++ = *offset+nk*(jj+1)+kk;
+              kk = k-slicei->ks1;
+              i00 = nk*(jj+0)+kk+0;
+              i01 = nk*(jj+0)+kk+1;
+              i10 = nk*(jj+1)+kk+0;
+              i11 = nk*(jj+1)+kk+1;
+
+              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
+              else{
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i01;
+
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
             }
           }
           // textures
@@ -264,6 +284,8 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
             n += (plotx-slicei->is1)*slicei->nslicek;
 
             for(k = slicei->ks1; k<=slicei->ks2; k++){
+              int i11;
+
               n++;
               i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
@@ -286,14 +308,32 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           for(i = slicei->is1;i<slicei->is2;i++){
             ii = i-slicei->is1;
             for(k = slicei->ks1; k<slicei->ks2; k++){
-              kk = k-slicei->ks1;
-              *tris++ = *offset+nk*(ii+0)+kk;
-              *tris++ = *offset+nk*(ii+0)+kk+1;
-              *tris++ = *offset+nk*(ii+1)+kk+1;
+              int i00, i01, i11, i10;
 
-              *tris++ = *offset+nk*(ii+0)+kk;
-              *tris++ = *offset+nk*(ii+1)+kk+1;
-              *tris++ = *offset+nk*(ii+1)+kk;
+              kk = k-slicei->ks1;
+              i00 = nk*(ii+0)+kk+0;
+              i01 = nk*(ii+0)+kk+1;
+              i10 = nk*(ii+1)+kk+0;
+              i11 = nk*(ii+1)+kk+1;
+
+              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
+              else{
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i01;
+
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
             }
           }
           // textures
@@ -302,6 +342,8 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
             n += (ploty-slicei->js1)*slicei->nslicek;
 
             for(k = slicei->ks1; k<=slicei->ks2; k++){
+              int i11;
+
               n++;
               i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
@@ -324,14 +366,32 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           for(i = slicei->is1;i<slicei->is2;i++){
             ii = i-slicei->is1;
             for(j = slicei->js1; j<slicei->js2; j++){
-              jj = j-slicei->js1;
-              *tris++ = *offset+nj*(ii+0)+jj;
-              *tris++ = *offset+nj*(ii+0)+jj+1;
-              *tris++ = *offset+nj*(ii+1)+jj+1;
+              int i00, i01, i11, i10;
 
-              *tris++ = *offset+nj*(ii+0)+jj;
-              *tris++ = *offset+nj*(ii+1)+jj+1;
-              *tris++ = *offset+nj*(ii+1)+jj;
+              jj = j-slicei->js1;
+              i00 = nj*(ii+0)+jj+0;
+              i01 = nj*(ii+0)+jj+1;
+              i10 = nj*(ii+1)+jj+0;
+              i11 = nj*(ii+1)+jj+1;
+
+              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
+              else{
+                *tris++ = *offset+i00;
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i01;
+
+                *tris++ = *offset+i10;
+                *tris++ = *offset+i11;
+                *tris++ = *offset+i01;
+              }
             }
           }
           // textures
@@ -340,6 +400,8 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
             n += (plotz-slicei->ks1)*slicei->nslicey;
 
             for(j = slicei->js1; j<=slicei->js2; j++){
+              int i11;
+
               n++;
               i11 = slicei->iqsliceframe[n];
               *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
