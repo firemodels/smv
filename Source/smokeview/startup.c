@@ -186,7 +186,7 @@ void ReadBoundINI(void){
 
 /* ------------------ GetSliceFileNodes ------------------------ */
 
-void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, float *textures, int *nverts, int *tris, int *ntris){
+void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris){
   int islice, nv = 0, nt = 0;
 
   for(islice = 0;islice<nsliceinfo;islice++){
@@ -258,22 +258,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
               *tris++ = *offset+nk*(jj+1)+kk;
             }
           }
-          // colors
-          for(j = slicei->js1; j<=slicei->js2; j++){
-            n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
-            n += (plotx-slicei->is1)*slicei->nslicek;
-
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              n++;
-              i11 = 4*slicei->iqsliceframe[n];
-              float *color;
-
-              color = rgb_slice+i11;
-              *colors++ = color[0];
-              *colors++ = color[1];
-              *colors++ = color[2];
-            }
-          }
           // textures
           for(j = slicei->js1; j<=slicei->js2; j++){
             n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
@@ -312,22 +296,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
               *tris++ = *offset+nk*(ii+1)+kk;
             }
           }
-          // colors
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-            n += (ploty-slicei->js1)*slicei->nslicek;
-
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              n++;
-              i11 = 4*slicei->iqsliceframe[n];
-              float *color;
-
-              color = rgb_slice+i11;
-              *colors++ = color[0];
-              *colors++ = color[1];
-              *colors++ = color[2];
-            }
-          }
           // textures
           for(i = slicei->is1; i<=slicei->is2; i++){
             n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
@@ -364,22 +332,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *colors, flo
               *tris++ = *offset+nj*(ii+0)+jj;
               *tris++ = *offset+nj*(ii+1)+jj+1;
               *tris++ = *offset+nj*(ii+1)+jj;
-            }
-          }
-          // colors
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-            n += (plotz-slicei->ks1)*slicei->nslicey;
-
-            for(j = slicei->js1; j<=slicei->js2; j++){
-              n++;
-              i11 = 4*slicei->iqsliceframe[n];
-              float *color;
-
-              color = rgb_slice+i11;
-              *colors++ = color[0];
-              *colors++ = color[1];
-              *colors++ = color[2];
             }
           }
           // textures
@@ -611,16 +563,16 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ UnlitFaces2Geom ------------------------ */
 
-void UnlitFaces2Geom(float **vertsptr, float **colorsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles){
+void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
-  float *verts, *verts_save, *colors, *colors_save, *textures, *textures_save;
+  float *verts, *verts_save, *textures, *textures_save;
   int *triangles, *triangles_save;
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(0, NULL, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris);
+    GetSliceFileNodes(0, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris);
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
     ntriangles += 3*nslice_tris;  // 3 indices per triangles
@@ -630,18 +582,15 @@ void UnlitFaces2Geom(float **vertsptr, float **colorsptr, float **texturesptr, i
     *n_verts = 0;
     *n_triangles = 0;
     *vertsptr = NULL;
-    *colorsptr = NULL;
     *texturesptr = NULL;
     *trianglesptr = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save,         nverts*sizeof(float));
-  NewMemory((void **)&colors_save,        nverts*sizeof(float));
   NewMemory((void **)&textures_save,      (nverts/3)*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
-  colors = colors_save;
   textures = textures_save;
   triangles = triangles_save;
 
@@ -650,7 +599,7 @@ void UnlitFaces2Geom(float **vertsptr, float **colorsptr, float **texturesptr, i
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(1, &offset, verts, colors, textures, &nslice_verts, triangles, &nslice_tris);
+    GetSliceFileNodes(1, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris);
     verts     += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
@@ -658,7 +607,6 @@ void UnlitFaces2Geom(float **vertsptr, float **colorsptr, float **texturesptr, i
   *n_verts      = nverts;
   *n_triangles  = ntriangles;
   *vertsptr     = verts_save;
-  *colorsptr    = colors_save;
   *texturesptr  = textures_save;
   *trianglesptr = triangles_save;
 }
@@ -814,7 +762,7 @@ int Smv2Html(char *html_file){
   FILE *stream_in = NULL, *stream_out;
   float *vertsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
-  float *vertsUnlitSolid, *colorsUnlitSolid, *texturesUnlitSolid;
+  float *vertsUnlitSolid, *texturesUnlitSolid;
   int nvertsUnlitSolid, *facesUnlitSolid, nfacesUnlitSolid;
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
@@ -843,7 +791,7 @@ int Smv2Html(char *html_file){
   printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
-  UnlitFaces2Geom(&vertsUnlitSolid, &colorsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid);
+  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid);
   LitFaces2Geom(&vertsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
@@ -869,13 +817,6 @@ int Smv2Html(char *html_file){
 
       for(i = 0;i<nvertsUnlitSolid;i++){
         fprintf(stream_out, " %f, ", vertsUnlitSolid[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsUnlitSolid-1))fprintf(stream_out, "\n");
-      }
-      fprintf(stream_out, "         ];\n");
-
-      fprintf(stream_out, "         var colors_solid_unlit = [\n");
-      for(i = 0; i<nvertsUnlitSolid; i++){
-        fprintf(stream_out, " %f, ", colorsUnlitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsUnlitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
