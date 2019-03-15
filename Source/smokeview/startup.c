@@ -887,7 +887,7 @@ int Smv2Html(char *html_file){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         const texture_colorbar = new Uint8Array([\n");
+      fprintf(stream_out, "         const texture_colorbar_data = new Uint8Array([\n");
       for(i = 0; i<256; i++){
         int ii[3];
 
@@ -898,7 +898,7 @@ int Smv2Html(char *html_file){
         if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1)||i==255)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ]);\n");
-      fprintf(stream_out, "         const texture_colorbar_height = 256;\n");
+      fprintf(stream_out, "         const texture_colorbar_data_height = 256;\n");
 
       fprintf(stream_out, "         var indices_solid_unlit = [\n");
       for(i = 0; i<nfacesUnlitSolid; i++){
