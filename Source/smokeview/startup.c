@@ -419,7 +419,7 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
 
 /* ------------------ GetGeometryNodes ------------------------ */
 
-void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int *nverts, int *tris, int *ntris){
+void GetGeometryNodes(int option, int *offset, float *verts, float *norms, float *colors, int *nverts, int *tris, int *ntris){
   int i, nv=0, nt=0;
 
   for(i = 0; i<ngeominfoptrs; i++){
@@ -439,6 +439,7 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int 
     if(option==1){
       int j;
       float *xyz_in, xyz_out[3];
+      float *norm_in;
 
       for(j = 0; j<geomlisti->nverts; j++){
         float col2[3] = {0.0,0.0,1.0};
@@ -451,10 +452,14 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int 
           col = col2;
         }
         xyz_in = geomlisti->verts[j].xyz;
+        norm_in = geomlisti->verts[j].vert_norm;
         NORMALIZE_XYZ(xyz_out, xyz_in);
         *verts++ = 1.5*xyz_out[0]-0.75;
         *verts++ = 1.5*xyz_out[1]-0.75;
         *verts++ = 1.5*xyz_out[2]-0.75;
+        *norms++ = norm_in[0];
+        *norms++ = norm_in[1];
+        *norms++ = norm_in[2];
         *colors++ = col[0];
         *colors++ = col[1];
         *colors++ = col[2];
@@ -756,7 +761,7 @@ void LitFaces2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int 
     GetGeomInfoPtrs(0);
     UNLOCK_TRIANGLES;
     ShowHideSortGeometry(0, NULL);
-    GetGeometryNodes(0, NULL, NULL, NULL, &ngeom_verts, NULL, &ngeom_tris);
+    GetGeometryNodes(0, NULL, NULL, NULL, NULL, &ngeom_verts, NULL, &ngeom_tris);
 
     nverts     += 3*ngeom_verts; // 3 coordinates per vertex
     ntriangles += 3*ngeom_tris;  // 3 indices per triangles
@@ -822,8 +827,9 @@ void LitFaces2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int 
   if(ngeominfoptrs>0){
     int ngeom_verts, ngeom_tris;
 
-    GetGeometryNodes(1, &offset, verts, colors, &ngeom_verts, triangles, &ngeom_tris);
+    GetGeometryNodes(1, &offset, verts, normals, colors, &ngeom_verts, triangles, &ngeom_tris);
     verts     += 3*ngeom_verts;
+    normals   += 3*ngeom_verts;
     triangles += 3*ngeom_tris;
   }
 
