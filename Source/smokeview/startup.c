@@ -474,20 +474,40 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *colors, int 
 
 /* ------------------ GetBlockNodes ------------------------ */
 
-void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tris){
+void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *norms, int *tris){
   /*
 
-  7---------6
+ 23---------22
+  /         /
+  /         /
+ 20--------21
+                    z direction
+ 19 ------  18
+  /         /
+  /         /
+ 16 ------ 17
+
+
+  15--------14
+  /         /
+  /         /
+ 12--------13
+                    x direction
+  11------  10
+  /         /
+  /         /
+  8 ------ 9
+
+   7---------6
   /         /
   /         /
   4--------5
-
+                    y direction
   3 ------  2
   /         /
   /         /
   0 ------ 1
-
-  */
+*/
   int n;
   float xminmax[2], yminmax[2], zminmax[2];
   float *xplt, *yplt, *zplt;
@@ -520,8 +540,44 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, int *tri
     *xyz++ = yminmax[jj[n]];
     *xyz++ = zminmax[kk[n]];
   }
+  for(n = 8; n<16; n++){
+    *xyz++ = xminmax[ii[n-8]];
+    *xyz++ = yminmax[jj[n-8]];
+    *xyz++ = zminmax[kk[n-8]];
+  }
+  for(n = 16; n<24; n++){
+    *xyz++ = xminmax[ii[n-16]];
+    *xyz++ = yminmax[jj[n-16]];
+    *xyz++ = zminmax[kk[n-16]];
+  }
   for(n = 0; n<36; n++){
-    *tris++ = inds[n];
+    int offset;
+
+    offset=0;
+    if(n>=12)offset=8;
+    if(n>=24)offset=16;
+    *tris++ = offset+inds[n];
+  }
+  for(n=0;n<72;n++){
+    norms[n]=0.0;
+  }
+  for(n=0;n<4;n++){
+    norms[3*n+1]=-1.0;
+  }
+  for(n=4;n<8;n++){
+    norms[3*n+1]=1.0;
+  }
+  for(n=8;n<12;n++){
+    norms[3*n+0]=1.0;
+  }
+  for(n=12;n<16;n++){
+    norms[3*n+0]=-1.0;
+  }
+  for(n=16;n<16;n++){
+    norms[3*n+2]=1.0;
+  }
+  for(n=20;n<24;n++){
+    norms[3*n+2]=-1.0;
   }
 }
 
@@ -675,10 +731,10 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
 
 /* ------------------ LitFaces2Geom ------------------------ */
 
-void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
+void LitFaces2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
-  float *verts, *verts_save, *colors, *colors_save;
+  float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
   int *triangles, *triangles_save;
 
   // count triangle vertices and indices for blockes
@@ -687,7 +743,7 @@ void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **tria
     meshdata *meshi;
 
     meshi = meshinfo+j;
-    nverts     += meshi->nbptrs*8*3;     // 8 vertices per blockages * 3 coordinates per vertex
+    nverts     += meshi->nbptrs*24*3;     // 24 vertices per blockages * 3 coordinates per vertex
     ntriangles += meshi->nbptrs*6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
   }
 
@@ -710,15 +766,18 @@ void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **tria
     *n_verts = 0;
     *n_triangles = 0;
     *vertsptr = NULL;
+    *normalsptr = NULL;
     *colorsptr = NULL;
     *trianglesptr = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save,         nverts*sizeof(float));
+  NewMemory((void **)&normals_save,       nverts*sizeof(float));
   NewMemory((void **)&colors_save,        nverts*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
+  normals = normals_save;
   colors = colors_save;
   triangles = triangles_save;
 
@@ -731,16 +790,20 @@ void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **tria
     meshi = meshinfo+j;
     for(i = 0; i<meshi->nbptrs; i++){
       blockagedata *bc;
-      float xyz[24];
+      float xyz[72];
       int tris[36];
+      float norms[72];
       int k;
 
       bc = meshi->blockageinfoptrs[i];
-      GetBlockNodes(meshi, bc, xyz, tris);
-      for(k = 0; k<8; k++){
+      GetBlockNodes(meshi, bc, xyz, norms, tris);
+      for(k = 0; k<24; k++){
         *verts++ = xyz[3*k+0];
         *verts++ = xyz[3*k+1];
         *verts++ = xyz[3*k+2];
+        *normals++ = norms[3*k+0];
+        *normals++ = norms[3*k+1];
+        *normals++ = norms[3*k+2];
         *colors++ = bc->color[0];
         *colors++ = bc->color[1];
         *colors++ = bc->color[2];
@@ -750,7 +813,7 @@ void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **tria
         *triangles++ = offset+tris[3*k+1];
         *triangles++ = offset+tris[3*k+2];
       }
-      offset += 8;
+      offset += 24;
     }
   }
 
@@ -767,6 +830,7 @@ void LitFaces2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **tria
   *n_verts = nverts;
   *n_triangles  = ntriangles;
   *vertsptr     = verts_save;
+  *normalsptr = normals_save;
   *colorsptr    = colors_save;
   *trianglesptr = triangles_save;
 }
@@ -822,7 +886,7 @@ int GetHtmlFileName(char *htmlfile_full){
 
 int Smv2Html(char *html_file){
   FILE *stream_in = NULL, *stream_out;
-  float *vertsLitSolid, *colorsLitSolid;
+  float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
   float *vertsUnlitSolid, *texturesUnlitSolid;
   int nvertsUnlitSolid, *facesUnlitSolid, nfacesUnlitSolid;
@@ -854,7 +918,7 @@ int Smv2Html(char *html_file){
   rewind(stream_in);
 
   UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid);
-  LitFaces2Geom(&vertsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
+  LitFaces2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
 #define PER_ROW 12
@@ -912,9 +976,15 @@ int Smv2Html(char *html_file){
 
       // add lit triangles
       fprintf(stream_out,"         var vertices_solid_lit = [\n");
-
       for(i=0;i<nvertsLitSolid;i++){
         fprintf(stream_out, " %f, ", vertsLitSolid[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+
+      fprintf(stream_out,"         var normals_solid_lit = [\n");
+      for(i=0;i<nvertsLitSolid;i++){
+        fprintf(stream_out, " %f, ", normalsLitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
