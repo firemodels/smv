@@ -522,8 +522,8 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
 
   int inds[36] = {
     0, 1, 5, 0, 5, 4,
-    1, 2, 6, 1, 6, 5,
     2, 3, 7, 2, 7, 6,
+    1, 2, 6, 1, 6, 5,
     3, 0, 4, 3, 4, 7,
     4, 5, 6, 4, 6, 7,
     0, 2, 1, 0, 3, 2
@@ -566,24 +566,33 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
   for(n=0;n<72;n++){
     norms[n]=0.0;
   }
-  for(n=0;n<4;n++){
-    norms[3*n+1]=-1.0;
-  }
-  for(n=4;n<8;n++){
-    norms[3*n+1]=1.0;
-  }
-  for(n=8;n<12;n++){
-    norms[3*n+0]=1.0;
-  }
-  for(n=12;n<16;n++){
-    norms[3*n+0]=-1.0;
-  }
-  for(n=16;n<20;n++){
-    norms[3*n+2]=1.0;
-  }
-  for(n=20;n<24;n++){
-    norms[3*n+2]=-1.0;
-  }
+
+  norms[ 1] =-1.0;
+  norms[ 4] =-1.0;
+  norms[ 7] = 1.0;
+  norms[10] = 1.0;
+  norms[13] =-1.0;
+  norms[16] =-1.0;
+  norms[19] = 1.0;
+  norms[22] = 1.0;
+  
+  norms[24] =-1.0;
+  norms[27] = 1.0;
+  norms[30] = 1.0;
+  norms[33] =-1.0;
+  norms[36] =-1.0;
+  norms[39] = 1.0;
+  norms[42] = 1.0;
+  norms[45] =-1.0;
+
+  norms[50]=-1.0;
+  norms[53]=-1.0;
+  norms[56]=-1.0;
+  norms[59]=-1.0;
+  norms[62]= 1.0;
+  norms[65]= 1.0;
+  norms[68]= 1.0;
+  norms[71]= 1.0;
 }
 
 /* ------------------ Lines2Geom ------------------------ */
