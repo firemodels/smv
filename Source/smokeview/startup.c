@@ -578,7 +578,7 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
   for(n=12;n<16;n++){
     norms[3*n+0]=-1.0;
   }
-  for(n=16;n<16;n++){
+  for(n=16;n<20;n++){
     norms[3*n+2]=1.0;
   }
   for(n=20;n<24;n++){
