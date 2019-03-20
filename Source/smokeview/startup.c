@@ -240,9 +240,9 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           constval = xplt[plotx];
           for(j = slicei->js1;j<=slicei->js2;j++){
             for(k = slicei->ks1; k<=slicei->ks2; k++){
-              *verts++ = 1.5*constval - 0.75;
-              *verts++ = 1.5*yplt[j]  - 0.75;
-              *verts++ = 1.5*zplt[k]  - 0.75;
+              *verts++ = constval;
+              *verts++ = yplt[j];
+              *verts++ = zplt[k];
             }
           }
           // triangle indices
@@ -298,9 +298,9 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           constval = yplt[ploty];
           for(i = slicei->is1;i<=slicei->is2;i++){
             for(k = slicei->ks1; k<=slicei->ks2; k++){
-              *verts++ = 1.5*xplt[i]  - 0.75;
-              *verts++ = 1.5*constval - 0.75;
-              *verts++ = 1.5*zplt[k]  - 0.75;
+              *verts++ = xplt[i];
+              *verts++ = constval;
+              *verts++ = zplt[k];
             }
           }
           // triangle indices
@@ -356,9 +356,9 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
           constval = zplt[plotz];
           for(i = slicei->is1;i<=slicei->is2;i++){
             for(j = slicei->js1; j<=slicei->js2; j++){
-              *verts++ = 1.5*xplt[i]  - 0.75;
-              *verts++ = 1.5*yplt[j]  - 0.75;
-              *verts++ = 1.5*constval - 0.75;
+              *verts++ = xplt[i];
+              *verts++ = yplt[j];
+              *verts++ = constval;
             }
           }
           // triangle indices
@@ -454,9 +454,9 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *norms, float
         xyz_in = geomlisti->verts[j].xyz;
         norm_in = geomlisti->verts[j].vert_norm;
         NORMALIZE_XYZ(xyz_out, xyz_in);
-        *verts++ = 1.5*xyz_out[0]-0.75;
-        *verts++ = 1.5*xyz_out[1]-0.75;
-        *verts++ = 1.5*xyz_out[2]-0.75;
+        *verts++ = xyz_out[0];
+        *verts++ = xyz_out[1];
+        *verts++ = xyz_out[2];
         *norms++ = norm_in[0];
         *norms++ = norm_in[1];
         *norms++ = norm_in[2];
@@ -533,12 +533,12 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
   yplt = meshi->yplt;
   zplt = meshi->zplt;
 
-  xminmax[0] = 1.5*xplt[bc->ijk[IMIN]]-0.75;
-  xminmax[1] = 1.5*xplt[bc->ijk[IMAX]]-0.75;
-  yminmax[0] = 1.5*yplt[bc->ijk[JMIN]]-0.75;
-  yminmax[1] = 1.5*yplt[bc->ijk[JMAX]]-0.75;
-  zminmax[0] = 1.5*zplt[bc->ijk[KMIN]]-0.75;
-  zminmax[1] = 1.5*zplt[bc->ijk[KMAX]]-0.75;
+  xminmax[0] = xplt[bc->ijk[IMIN]];
+  xminmax[1] = xplt[bc->ijk[IMAX]];
+  yminmax[0] = yplt[bc->ijk[JMIN]];
+  yminmax[1] = yplt[bc->ijk[JMAX]];
+  zminmax[0] = zplt[bc->ijk[KMIN]];
+  zminmax[1] = zplt[bc->ijk[KMAX]];
 
   for(n = 0; n<8; n++){
     *xyz++ = xminmax[ii[n]];
@@ -656,7 +656,7 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
   for(i = 0; i<24; i++){
     *colors++ = 0.0;
-    verts_save[i] = 1.5*verts_save[i]-0.75;
+    verts_save[i] = verts_save[i];
   }
 
   *lines++ = 0;
@@ -952,6 +952,11 @@ int Smv2Html(char *html_file){
     }
     else if(Match(buffer, "//***VERTS")==1){
       int i;
+
+      // center of scene
+      fprintf(stream_out, "         var xcen=%f;\n",xbar/2.0);
+      fprintf(stream_out, "         var ycen=%f;\n",ybar/2.0);
+      fprintf(stream_out, "         var zcen=%f;\n",zbar/2.0);
 
       // add unlit triangles
       fprintf(stream_out, "         var vertices_solid_unlit = [\n");
