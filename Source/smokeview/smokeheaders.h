@@ -7,7 +7,7 @@
 
 int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 #ifdef pp_HTML
-EXTERNCPP int Smv2Html(char *html_out);
+EXTERNCPP int Smv2Html(char *html_out, int option);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);

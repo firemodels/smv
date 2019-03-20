@@ -1885,7 +1885,10 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderHTML:
-    Smv2Html(html_filename);
+    Smv2Html(html_filename,CURRENT_TIME);
+    break;
+  case RenderHTMLALL:
+    Smv2Html(html_filename,ALL_TIMES);
     break;
 #endif
   case RenderCancel:
@@ -8812,7 +8815,8 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Start rendering"), render_startmenu);
     glutAddMenuEntry(_("Stop rendering"), RenderCancel);
 #ifdef pp_HTML
-    glutAddMenuEntry(_("Render html"), RenderHTML);
+    glutAddMenuEntry(_("Render html(current)"), RenderHTML);
+  //  glutAddMenuEntry(_("Render html(all)"), RenderHTMLALL);
 #endif
 
     glutAddMenuEntry("-", MENU_DUMMY);

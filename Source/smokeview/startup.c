@@ -186,17 +186,20 @@ void ReadBoundINI(void){
 
 /* ------------------ GetSliceFileNodes ------------------------ */
 
-void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris){
-  int islice, nv = 0, nt = 0;
+void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris, int *nframe_size, int *nframes){
+  int islice, nv = 0, nt = 0, count=0;
 
   for(islice = 0;islice<nsliceinfo;islice++){
     slicedata *slicei;
     int nrows, ncols;
+    int ibeg, iend, itime;
 
     slicei = sliceinfo+islice;
 
     if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+    if(option2==ALL_TIMES&&count>1)break;
+    count++;
 
     switch(slicei->idir){
     case XDIR:
@@ -212,6 +215,17 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
       nrows = slicei->nslicej;
       break;
     }
+    if(option2==ALL_TIMES){
+      ibeg = 0;
+      iend = slicei->ntimes;
+      *nframes = iend;
+    }
+    else{
+      ibeg = slicei->itime;
+      iend = slicei->itime+1;
+      *nframes = 1;
+    }
+    *nframe_size = nrows*ncols;
     if(nrows>1&&ncols>1){
       nv += nrows*ncols;
       nt += 2*(nrows-1)*(ncols-1);
@@ -222,7 +236,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
         float  constval;
         int n, i, j, k, nj, nk;
         int ii, jj, kk;
-        unsigned char *iq;
 
         meshi = meshinfo+slicei->blocknumber;
 
@@ -232,7 +245,6 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
         plotx = slicei->is1;
         ploty = slicei->js1;
         plotz = slicei->ks1;
-        iq = slicei->iqsliceframe;
 
         switch(slicei->idir){
         case XDIR:
@@ -258,37 +270,31 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
               i10 = nk*(jj+1)+kk+0;
               i11 = nk*(jj+1)+kk+1;
 
-              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
+             *tris++ = *offset+i00;
+             *tris++ = *offset+i10;
+             *tris++ = *offset+i11;
 
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
-              else{
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i01;
-
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
+             *tris++ = *offset+i00;
+             *tris++ = *offset+i11;
+             *tris++ = *offset+i01;
             }
           }
           // textures
-          for(j = slicei->js1; j<=slicei->js2; j++){
-            n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
-            n += (plotx-slicei->is1)*slicei->nslicek;
+          for(itime=ibeg;itime<iend;itime++){
+            unsigned char *iq;
 
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              int i11;
+            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            for(j = slicei->js1; j<=slicei->js2; j++){
+              n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
+              n += (plotx-slicei->is1)*slicei->nslicek;
 
-              n++;
-              i11 = slicei->iqsliceframe[n];
-              *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              for(k = slicei->ks1; k<=slicei->ks2; k++){
+                int i11;
+
+                n++;
+                i11 = slicei->iqsliceframe[n];
+                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              }
             }
           }
           *offset +=  nrows*ncols;
@@ -316,37 +322,31 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
               i10 = nk*(ii+1)+kk+0;
               i11 = nk*(ii+1)+kk+1;
 
-              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
+             *tris++ = *offset+i00;
+             *tris++ = *offset+i10;
+             *tris++ = *offset+i11;
 
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
-              else{
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i01;
-
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
+             *tris++ = *offset+i00;
+             *tris++ = *offset+i11;
+             *tris++ = *offset+i01;
             }
           }
           // textures
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-            n += (ploty-slicei->js1)*slicei->nslicek;
+          for(itime=ibeg;itime<iend;itime++){
+            unsigned char *iq;
 
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              int i11;
+            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            for(i = slicei->is1; i<=slicei->is2; i++){
+              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (ploty-slicei->js1)*slicei->nslicek;
 
-              n++;
-              i11 = slicei->iqsliceframe[n];
-              *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              for(k = slicei->ks1; k<=slicei->ks2; k++){
+                int i11;
+
+                n++;
+                i11 = slicei->iqsliceframe[n];
+                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              }
             }
           }
           *offset +=  nrows*ncols;
@@ -374,37 +374,31 @@ void GetSliceFileNodes(int option, int *offset, float *verts, float *textures, i
               i10 = nj*(ii+1)+jj+0;
               i11 = nj*(ii+1)+jj+1;
 
-              if( ABS(iq[i00]-iq[11]) < ABS(iq[i01]-iq[10]) ){
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
+              *tris++ = *offset+i00;
+              *tris++ = *offset+i10;
+              *tris++ = *offset+i11;
 
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
-              else{
-                *tris++ = *offset+i00;
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i01;
-
-                *tris++ = *offset+i10;
-                *tris++ = *offset+i11;
-                *tris++ = *offset+i01;
-              }
+              *tris++ = *offset+i00;
+              *tris++ = *offset+i11;
+              *tris++ = *offset+i01;
             }
           }
           // textures
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-            n += (plotz-slicei->ks1)*slicei->nslicey;
+          for(itime=ibeg;itime<iend;itime++){
+            unsigned char *iq;
 
-            for(j = slicei->js1; j<=slicei->js2; j++){
-              int i11;
+            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            for(i = slicei->is1; i<=slicei->is2; i++){
+              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (plotz-slicei->ks1)*slicei->nslicey;
 
-              n++;
-              i11 = slicei->iqsliceframe[n];
-              *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              for(j = slicei->js1; j<=slicei->js2; j++){
+                int i11;
+
+                n++;
+                i11 = slicei->iqsliceframe[n];
+                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+              }
             }
           }
           *offset +=  nrows*ncols;
@@ -695,16 +689,17 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ UnlitFaces2Geom ------------------------ */
 
-void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles){
+void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *nframe_size, int *nframes){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
-  float *verts, *verts_save, *textures, *textures_save;
+  float *verts, *verts_save;
+  float *textures, *textures_save;
   int *triangles, *triangles_save;
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(0, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris);
+    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, nframe_size, nframes);
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
     ntriangles += 3*nslice_tris;  // 3 indices per triangles
@@ -720,7 +715,7 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   }
 
   NewMemory((void **)&verts_save,         nverts*sizeof(float));
-  NewMemory((void **)&textures_save,      (nverts/3)*sizeof(float));
+  NewMemory((void **)&textures_save,      (*nframe_size*(*nframes))*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
   textures = textures_save;
@@ -731,7 +726,7 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(1, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris);
+    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, nframe_size, nframes);
     verts     += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
@@ -899,17 +894,19 @@ int GetHtmlFileName(char *htmlfile_full){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_file){
+int Smv2Html(char *html_file, int option){
   FILE *stream_in = NULL, *stream_out;
   float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
-  float *vertsUnlitSolid, *texturesUnlitSolid;
+  float *vertsUnlitSolid;
+  float *texturesUnlitSolid;
   int nvertsUnlitSolid, *facesUnlitSolid, nfacesUnlitSolid;
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
   char html_full_file[1024];
   int return_val;
   int copy_html;
+  int nframe_size, nframes;
 
   stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
@@ -932,7 +929,7 @@ int Smv2Html(char *html_file){
   printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
-  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid);
+  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid, option, &nframe_size, &nframes);
   LitFaces2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
@@ -1122,7 +1119,7 @@ int SetupCase(int argc, char **argv){
 
 #ifdef pp_HTML
   if(output_html==1){
-    Smv2Html(html_filename);
+    Smv2Html(html_filename,CURRENT_TIME);
     return 0;
   }
 #endif

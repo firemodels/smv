@@ -751,6 +751,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_RENDER_SETTINGS 900
 #ifdef pp_HTML
 #define RenderHTML 985
+#define RenderHTMLALL 984
+#define CURRENT_TIME 0
+#define ALL_TIMES 1
 #endif
 
 #define ShowEXTERIORwallmenu -1
