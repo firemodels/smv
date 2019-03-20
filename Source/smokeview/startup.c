@@ -956,7 +956,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var zcen=%f;\n",zbar/2.0);
 
       // add unlit triangles
-      fprintf(stream_out, "         var vertices_solid_unlit = [\n");
+      fprintf(stream_out, "         var vertices_unlit = [\n");
 
       for(i = 0;i<nvertsUnlitSolid;i++){
         fprintf(stream_out, " %f, ", vertsUnlitSolid[i]);
@@ -964,7 +964,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         var textures_solid_unlit = [\n");
+      fprintf(stream_out, "         var textures_unlit = [\n");
       for(i = 0; i<nvertsUnlitSolid/3; i++){
         fprintf(stream_out, " %f, ", texturesUnlitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==((nvertsUnlitSolid/3)-1))fprintf(stream_out, "\n");
@@ -984,7 +984,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_data_height = 256;\n");
 
-      fprintf(stream_out, "         var indices_solid_unlit = [\n");
+      fprintf(stream_out, "         var indices_unlit = [\n");
       for(i = 0; i<nfacesUnlitSolid; i++){
         fprintf(stream_out, " %i, ", facesUnlitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nfacesUnlitSolid-1))fprintf(stream_out, "\n");
@@ -992,28 +992,28 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ];\n");
 
       // add lit triangles
-      fprintf(stream_out,"         var vertices_solid_lit = [\n");
+      fprintf(stream_out,"         var vertices_lit = [\n");
       for(i=0;i<nvertsLitSolid;i++){
         fprintf(stream_out, " %f, ", vertsLitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out,"         var normals_solid_lit = [\n");
+      fprintf(stream_out,"         var normals_lit = [\n");
       for(i=0;i<nvertsLitSolid;i++){
         fprintf(stream_out, " %f, ", normalsLitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out,"         var colors_solid_lit = [\n");
+      fprintf(stream_out,"         var colors_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
         fprintf(stream_out, " %f, ", colorsLitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out,"         var indices_solid_lit = [\n");
+      fprintf(stream_out,"         var indices_lit = [\n");
       for(i = 0; i<nfacesLitSolid; i++){
         fprintf(stream_out, " %i, ", facesLitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(nfacesLitSolid-1))fprintf(stream_out, "\n");
