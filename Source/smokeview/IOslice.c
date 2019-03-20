@@ -37,16 +37,6 @@ slicedata *gslice;
                            if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
-#define GET_SLICE_COLOR(color,index) \
-     if(sd->constant_color==NULL){\
-       int i11;\
-       i11 = sd->iqsliceframe[(index)];\
-       color = rgb_slice + 4*i11;\
-     }\
-     else{\
-       color = sd->constant_color;\
-     }
-
 #define GET_VAL(U,VAL,n) \
          VAL=0.0;           \
          if(U!=NULL){       \
