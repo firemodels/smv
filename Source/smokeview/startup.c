@@ -292,7 +292,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 int i11;
 
                 n++;
-                i11 = slicei->iqsliceframe[n];
+                i11 = iq[n];
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
@@ -344,7 +344,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 int i11;
 
                 n++;
-                i11 = slicei->iqsliceframe[n];
+                i11 = iq[n];
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
@@ -396,7 +396,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 int i11;
 
                 n++;
-                i11 = slicei->iqsliceframe[n];
+                i11 = iq[n];
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
@@ -974,13 +974,13 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
       fprintf(stream_out, "         var textures_unlit_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
-        fprintf(stream_out, " %f, ", texturesUnlitSolid[i]);
+        fprintf(stream_out, " %.3f, ", texturesUnlitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
       fprintf(stream_out, "         var textures_unlit = [\n");
       for(i = 0; i<frame_size; i++){
-        fprintf(stream_out, " %f, ", texturesUnlitSolid[i]);
+        fprintf(stream_out, " %.3f, ", texturesUnlitSolid[i]);
         if(i%PER_ROW==(PER_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
