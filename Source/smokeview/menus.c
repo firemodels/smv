@@ -8816,7 +8816,7 @@ updatemenu=0;
     glutAddMenuEntry(_("Stop rendering"), RenderCancel);
 #ifdef pp_HTML
     glutAddMenuEntry(_("Render html(current)"), RenderHTML);
-  //  glutAddMenuEntry(_("Render html(all)"), RenderHTMLALL);
+    glutAddMenuEntry(_("Render html(all)"), RenderHTMLALL);
 #endif
 
     glutAddMenuEntry("-", MENU_DUMMY);

@@ -186,7 +186,7 @@ void ReadBoundINI(void){
 
 /* ------------------ GetSliceFileNodes ------------------------ */
 
-void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris, int *nframe_size, int *nframes){
+void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count=0;
 
   for(islice = 0;islice<nsliceinfo;islice++){
@@ -225,7 +225,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
       iend = slicei->itime+1;
       *nframes = 1;
     }
-    *nframe_size = nrows*ncols;
+    *frame_size = nrows*ncols;
     if(nrows>1&&ncols>1){
       nv += nrows*ncols;
       nt += 2*(nrows-1)*(ncols-1);
@@ -689,7 +689,7 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ UnlitFaces2Geom ------------------------ */
 
-void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *nframe_size, int *nframes){
+void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -699,7 +699,7 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, nframe_size, nframes);
+    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, frame_size, nframes);
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
     ntriangles += 3*nslice_tris;  // 3 indices per triangles
@@ -715,7 +715,7 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   }
 
   NewMemory((void **)&verts_save,         nverts*sizeof(float));
-  NewMemory((void **)&textures_save,      (*nframe_size*(*nframes))*sizeof(float));
+  NewMemory((void **)&textures_save,      (*frame_size*(*nframes))*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
   textures = textures_save;
@@ -726,7 +726,7 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, nframe_size, nframes);
+    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, frame_size, nframes);
     verts     += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
@@ -847,7 +847,7 @@ void LitFaces2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int 
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full){
+int GetHtmlFileName(char *htmlfile_full, int option){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -876,6 +876,7 @@ int GetHtmlFileName(char *htmlfile_full){
 
   // filename suffix
 
+  if(option==CURRENT_TIME){
     if(RenderTime==0){
       image_num = seqnum;
     }
@@ -883,6 +884,10 @@ int GetHtmlFileName(char *htmlfile_full){
       image_num = itimes;
     }
     sprintf(htmlfile_suffix, "_%04i", image_num);
+  }
+  else{
+    strcpy(htmlfile_suffix, "_all");
+  }
 
   // form full filename from parts
 
@@ -906,7 +911,7 @@ int Smv2Html(char *html_file, int option){
   char html_full_file[1024];
   int return_val;
   int copy_html;
-  int nframe_size, nframes;
+  int frame_size, nframes;
 
   stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
@@ -914,7 +919,7 @@ int Smv2Html(char *html_file, int option){
     return 1;
   }
 
-  return_val=GetHtmlFileName(html_full_file);
+  return_val=GetHtmlFileName(html_full_file, option);
   if(return_val==1){
     fclose(stream_in);
     return 1;
@@ -929,7 +934,8 @@ int Smv2Html(char *html_file, int option){
   printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
-  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid, option, &nframe_size, &nframes);
+  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid, option,
+                  &frame_size, &nframes);
   LitFaces2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
@@ -964,10 +970,18 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         var textures_unlit = [\n");
-      for(i = 0; i<nvertsUnlitSolid/3; i++){
+      fprintf(stream_out, "         var nframes = %i;\n", nframes);
+      fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
+      fprintf(stream_out, "         var textures_unlit_data = [\n");
+      for(i = 0; i<frame_size*nframes; i++){
         fprintf(stream_out, " %f, ", texturesUnlitSolid[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==((nvertsUnlitSolid/3)-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "         ];\n");
+      fprintf(stream_out, "         var textures_unlit = [\n");
+      for(i = 0; i<frame_size; i++){
+        fprintf(stream_out, " %f, ", texturesUnlitSolid[i]);
+        if(i%PER_ROW==(PER_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
