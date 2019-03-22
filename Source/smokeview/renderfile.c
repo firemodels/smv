@@ -1449,7 +1449,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
 
 /* ------------------ GetSliceFileNodes ------------------------ */
 
-void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
+void GetSliceFileNodes(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count = 0;
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
@@ -1585,11 +1585,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
               n += (plotx-slicei->is1)*slicei->nslicek;
 
               for(k = slicei->ks1; k<=slicei->ks2; k++){
-                int i11;
-
-                n++;
-                i11 = iq[n];
-                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+                *textures++ = iq[++n];
               }
             }
             break;
@@ -1634,11 +1630,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
               n += (ploty-slicei->js1)*slicei->nslicek;
 
               for(k = slicei->ks1; k<=slicei->ks2; k++){
-                int i11;
-
-                n++;
-                i11 = iq[n];
-                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+                *textures++ = iq[++n];
               }
             }
             break;
@@ -1683,11 +1675,7 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
               n += (plotz-slicei->ks1)*slicei->nslicey;
 
               for(j = slicei->js1; j<=slicei->js2; j++){
-                int i11;
-
-                n++;
-                i11 = iq[n];
-                *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
+                *textures++ = iq[++n];
               }
             }
             break;
@@ -1978,11 +1966,11 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ UnlitTriangles2Geom ------------------------ */
 
-void UnlitTriangles2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
+void UnlitTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
-  float *textures, *textures_save;
+  unsigned char *textures, *textures_save;
   int *triangles, *triangles_save;
 
   if(nsliceinfo>0){
@@ -2136,7 +2124,7 @@ void LitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, 
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full, int option){
+int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlslicefile_base, int option){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -2182,7 +2170,13 @@ int GetHtmlFileName(char *htmlfile_full, int option){
 
   strcpy(htmlfile_full, html_file_base);
   strcat(htmlfile_full, htmlfile_suffix);
+  strcpy(htmlslicefile_full, htmlfile_full);
   strcat(htmlfile_full, ".html");
+  strcat(htmlslicefile_full, ".htmld");
+
+  strcpy(htmlslicefile_base, html_file_base);
+  strcat(htmlslicefile_base, htmlfile_suffix);
+  strcat(htmlslicefile_base, ".htmld");
   return 0;
 }
 
@@ -2193,11 +2187,11 @@ int Smv2Html(char *html_file, int option){
   float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
   float *vertsUnlitSolid;
-  float *texturesUnlitSolid;
+  unsigned char *texturesUnlitSolid;
   int nvertsUnlitSolid, *facesUnlitSolid, nfacesUnlitSolid;
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
-  char html_full_file[1024];
+  char html_fullfile[1024], html_slicefile[1024], html_slicefile_base[1024];
   int return_val;
   int copy_html;
   int frame_size, nframes;
@@ -2208,19 +2202,19 @@ int Smv2Html(char *html_file, int option){
     return 1;
   }
 
-  return_val = GetHtmlFileName(html_full_file, option);
+  return_val = GetHtmlFileName(html_fullfile, html_slicefile, html_slicefile_base, option);
   if(return_val==1){
     fclose(stream_in);
     return 1;
   }
-  stream_out = fopen(html_full_file, "w");
+  stream_out = fopen(html_fullfile, "w");
   if(stream_out==NULL){
-    printf("***error: html output file %s failed to open for output\n", html_full_file);
+    printf("***error: html output file %s failed to open for output\n", html_fullfile);
     fclose(stream_in);
     return 1;
   }
 
-  printf("outputting html to %s", html_full_file);
+  printf("outputting html to %s", html_fullfile);
   rewind(stream_in);
 
   // obtain vertices, triangles and lines
@@ -2231,7 +2225,8 @@ int Smv2Html(char *html_file, int option){
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
 #define PER_ROW 12
-#define PERCOLOR_ROW 4
+#define PERCOLOR_ROW 8
+#define PERBIN_ROW 24
   copy_html = 1;
   for(;;){
     char buffer[255];
@@ -2260,31 +2255,38 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", vertsUnlitSolid[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsUnlitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var nframes = %i;\n", nframes);
       fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
+      if(frame_size*nframes>0){
+        FILE *slicestream_out =NULL;
+
+        slicestream_out = fopen(html_slicefile,"wb");
+        if(slicestream_out!=NULL){
+          fwrite(texturesUnlitSolid, sizeof(unsigned char), frame_size*nframes, slicestream_out);
+          fclose(slicestream_out);
+        }
+      }
       fprintf(stream_out, "         var textures_unlit_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
         char label[100];
 
-        sprintf(label, "%.3f", texturesUnlitSolid[i]);
-        TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
+        sprintf(label, "%i", CLAMP((int)texturesUnlitSolid[i],0,255) );
+        fprintf(stream_out, "%s,", label);
+        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
       fprintf(stream_out, "         var textures_unlit = [\n");
       for(i = 0; i<frame_size; i++){
         char label[100];
 
-        sprintf(label, "%.3f", texturesUnlitSolid[i]);
-        TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
+        sprintf(label, "%i", CLAMP((int)texturesUnlitSolid[i], 0, 255));
+        fprintf(stream_out, "%s,", label);
+        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
@@ -2295,7 +2297,7 @@ int Smv2Html(char *html_file, int option){
         ii[0] = CLAMP(255*rgb_slice[4*i+0], 0, 255);
         ii[1] = CLAMP(255*rgb_slice[4*i+1], 0, 255);
         ii[2] = CLAMP(255*rgb_slice[4*i+2], 0, 255);
-        fprintf(stream_out, " %i, %i, %i, 255, ", ii[0], ii[1], ii[2]);
+        fprintf(stream_out, "%i,%i,%i,255,", ii[0], ii[1], ii[2]);
         if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1)||i==255)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ]);\n");
@@ -2303,8 +2305,8 @@ int Smv2Html(char *html_file, int option){
 
       fprintf(stream_out, "         var indices_unlit = [\n");
       for(i = 0; i<nfacesUnlitSolid; i++){
-        fprintf(stream_out, " %i, ", facesUnlitSolid[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nfacesUnlitSolid-1))fprintf(stream_out, "\n");
+        fprintf(stream_out, "%i,", facesUnlitSolid[i]);
+        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesUnlitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
@@ -2315,7 +2317,7 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", vertsLitSolid[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2326,7 +2328,7 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", normalsLitSolid[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2337,15 +2339,15 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", colorsLitSolid[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var indices_lit = [\n");
       for(i = 0; i<nfacesLitSolid; i++){
-        fprintf(stream_out, " %i, ", facesLitSolid[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nfacesLitSolid-1))fprintf(stream_out, "\n");
+        fprintf(stream_out, "%i,", facesLitSolid[i]);
+        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
@@ -2356,7 +2358,7 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", vertsLine[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2367,15 +2369,15 @@ int Smv2Html(char *html_file, int option){
 
         sprintf(label, "%f", colorsLine[i]);
         TrimZeros(label);
-        fprintf(stream_out, " %s,", label);
+        fprintf(stream_out, "%s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var indices_line = [\n");
       for(i = 0; i<nfacesLine; i++){
-        fprintf(stream_out, " %i, ", facesLine[i]);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nfacesLine-1))fprintf(stream_out, "\n");
+        fprintf(stream_out, "%i,", facesLine[i]);
+        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesLine-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
       continue;
