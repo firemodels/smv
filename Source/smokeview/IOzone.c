@@ -1412,70 +1412,76 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
 
   alpha_ylay = (ylay - xyz[2])/dz;
   if(roomi->zoneinside==0){
-  if(dir!=-1){
-    alpha =  (x0 - xyz[0])/dx;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
+    if(dx!=0.0){
+      if(dir!=-1){
+        alpha = (x0-xyz[0])/dx;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
+      if(dir!=1){
+        alpha = (x1-xyz[0])/dx;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
     }
-  }
-  if(dir!=1){
-    alpha =  (x1 - xyz[0])/dx;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
+    if(dy!=0.0){
+      if(dir!=-2){
+        alpha = (yy0-xyz[1])/dy;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
+      if(dir!=2){
+        alpha = (yy1-xyz[1])/dy;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
     }
-  }
-  if(dir!=-2){
-    alpha =  (yy0 - xyz[1])/dy;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
+    if(dz!=0.0){
+      if(dir!=-3){
+        alpha = (z0-xyz[2])/dz;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
+      if(dir!=3){
+        alpha = (z1-xyz[2])/dz;
+        if(alpha>0.0&&alpha<alpha_min){
+          alpha_min = alpha;
+        }
+      }
     }
-  }
-  if(dir!=2){
-    alpha =  (yy1 - xyz[1])/dy;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
+    if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
+      if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
+        factor_U=alpha_ylay/odu;
+        factor_L=(alpha_min-alpha_ylay)/odl;
+      }
+      else{
+        factor_U=alpha_min/odu;
+        factor_L=0.0;
+      }
     }
-  }
-  if(dir!=-3){
-    alpha =  (z0 - xyz[2])/dz;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
-    }
-  }
-  if(dir!=3){
-    alpha =  (z1 - xyz[2])/dz;
-    if(alpha>0.0&&alpha<alpha_min){
-      alpha_min=alpha;
-    }
-  }
-  if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
-    if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
-      factor_U=alpha_ylay/odu;
-      factor_L=(alpha_min-alpha_ylay)/odl;
-    }
-    else{
-      factor_U=alpha_min/odu;
-      factor_L=0.0;
-    }
-  }
-  if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
-    factor_U=0.0;
-    factor_L=alpha_min/odl;
-  }
-  if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
-    factor_U=alpha_min/odu;
-    factor_L=0.0;
-  }
-  if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
-    if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
-      factor_U=(alpha_min-alpha_ylay)/odu;
-      factor_L=alpha_ylay/odl;
-    }
-    else{
+    if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
       factor_U=0.0;
       factor_L=alpha_min/odl;
     }
-  }
+    if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
+      factor_U=alpha_min/odu;
+      factor_L=0.0;
+    }
+    if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
+      if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
+        factor_U=(alpha_min-alpha_ylay)/odu;
+        factor_L=alpha_ylay/odl;
+      }
+      else{
+        factor_U=0.0;
+        factor_L=alpha_min/odl;
+      }
+    }
   }
   else{
     if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
