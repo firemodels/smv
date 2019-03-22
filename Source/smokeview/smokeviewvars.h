@@ -1069,7 +1069,7 @@ SVEXTERN int ntrnx, ntrny, ntrnz,npdim,nmeshes,clip_mesh;
 SVEXTERN int SVDECL(nOBST,0),SVDECL(nVENT,0),SVDECL(nCVENT,0),SVDECL(ncvents,0),noffset;
 SVEXTERN int visLabels;
 SVEXTERN float framerate;
-SVEXTERN int nglobal_times, SVDECL(ntimes_old,0), itimes, itime_save, itimeold, seqnum,RenderTime,RenderTimeOld;
+SVEXTERN int nglobal_times, itimes, itime_save, itimeold, seqnum,RenderTime,RenderTimeOld;
 SVEXTERN int SVDECL(fed_seqnum, 0);
 SVEXTERN int nopart;
 SVEXTERN int uindex, vindex, windex;

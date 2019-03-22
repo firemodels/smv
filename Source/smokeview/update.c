@@ -969,71 +969,63 @@ void ConvertSsf(void){
   }
 }
 
-/* ------------------ UpdateGlobalTimes ------------------------ */
-
-void UpdateGlobalTimes(float tbeg, float tend, float ntimes){
-  FREEMEMORY(global_times);
-  nglobal_times = ntimes;
-  if(ntimes>0){
-    int i;
-    NewMemory((void **)&global_times, ntimes*sizeof(float));
-    for(i = 0; i<ntimes; i++){
-      float tval;
-
-      global_times[i] = ((float)i*tend+(float)(ntimes-1-i)*tbeg)/(float)(ntimes-1);
-    }
-  }
-}
-
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
   int i;
-  int nglobal_times_copy;
-  float *global_times_copy = NULL;
-  int include_tours=0;
+  float global_timemin=1000000000.0, global_timemax=-1000000000.0;
 
   LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
   UNLOCK_TRIANGLES;
 
-  // pass 1 - determine ntimes
-
   UpdateShow();
   CheckMemory;
   nglobal_times = 0;
+
+  // determine min time, max time and number of times
 
   for(i=0;i<ngeominfoptrs;i++){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
-    nglobal_times+=geomi->ntimes;
+    nglobal_times = MAX(nglobal_times,geomi->ntimes);
+    global_timemin = MIN(global_timemin, geomi->times[0]);
+    global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
   }
   if(visTerrainType!=TERRAIN_HIDDEN){
     for(i=0;i<nterraininfo;i++){
       terraindata *terri;
 
       terri = terraininfo + i;
-      if(terri->loaded==1)nglobal_times+=terri->ntimes;
+      if(terri->loaded==1){
+        nglobal_times = MAX(nglobal_times,terri->ntimes);
+        global_timemin = MIN(global_timemin, terri->times[0]);
+        global_timemax = MAX(global_timemax, terri->times[terri->ntimes-1]);
+      }
     }
   }
   if(visShooter!=0&&shooter_active==1){
-    nglobal_times+=nshooter_frames;
+    nglobal_times = MAX(nglobal_times,nshooter_frames);
   }
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    nglobal_times+= parti->ntimes;
+    nglobal_times = MAX(nglobal_times, parti->ntimes);
+    global_timemin = MIN(global_timemin, parti->times[0]);
+    global_timemax = MAX(global_timemax, parti->times[parti->ntimes-1]);
   }
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
     sd=sliceinfo+i;
     if(sd->loaded==1||sd->vloaded==1){
-      nglobal_times+=sd->ntimes;
+      nglobal_times = MAX(nglobal_times,sd->ntimes);
+      global_timemin = MIN(global_timemin, sd->times[0]);
+      global_timemax = MAX(global_timemax, sd->times[sd->ntimes-1]);
     }
   }
   for(i=0;i<npatchinfo;i++){
@@ -1041,7 +1033,9 @@ void UpdateTimes(void){
 
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->structured == NO){
-      nglobal_times+=patchi->ngeom_times;
+      nglobal_times = MAX(nglobal_times, patchi->ngeom_times);
+      global_timemin = MIN(global_timemin, patchi->geom_times[0]);
+      global_timemax = MAX(global_timemax, patchi->geom_times[patchi->ntimes-1]);
     }
   }
   for(i=0;i<nmeshes;i++){
@@ -1054,12 +1048,14 @@ void UpdateTimes(void){
     if(filenum!=-1){
       patchi=patchinfo+filenum;
       if(patchi->loaded==1&&patchi->structured == YES){
-        nglobal_times+=meshi->npatch_times;
+        nglobal_times = MAX(nglobal_times, meshi->npatch_times);
+        global_timemin = MIN(global_timemin, meshi->patch_times[0]);
+        global_timemax = MAX(global_timemax, meshi->patch_times[meshi->npatch_times-1]);
       }
     }
   }
   if(ReadZoneFile==1&&visZone==1){
-    nglobal_times+=nzone_times;
+    nglobal_times = MAX(nglobal_times, nzone_times);
   }
   if(ReadIsoFile==1&&visAIso!=0){
     for(i=0;i<nisoinfo;i++){
@@ -1069,7 +1065,9 @@ void UpdateTimes(void){
       ib = isoinfo+i;
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
-      nglobal_times+=meshi->niso_times;
+      nglobal_times = MAX(nglobal_times, meshi->niso_times);
+      global_timemin = MIN(global_timemin, meshi->iso_times[0]);
+      global_timemax = MAX(global_timemax, meshi->iso_times[meshi->niso_times-1]);
     }
   }
   if(nvolrenderinfo>0){
@@ -1081,7 +1079,9 @@ void UpdateTimes(void){
       vr = &meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
-      nglobal_times+=vr->ntimes;
+      nglobal_times = MAX(nglobal_times, vr->ntimes);
+      global_timemin = MIN(global_timemin, vr->times[0]);
+      global_timemax = MAX(global_timemax, vr->times[vr->ntimes-1]);
     }
   }
   {
@@ -1091,213 +1091,44 @@ void UpdateTimes(void){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
-        nglobal_times+= smoke3di->ntimes;
+        nglobal_times = MAX(nglobal_times, smoke3di->ntimes);
+        global_timemin = MIN(global_timemin, smoke3di->times[0]);
+        global_timemax = MAX(global_timemax, smoke3di->times[smoke3di->ntimes-1]);
       }
     }
   }
-  // only include tour times if there are no other types of time info
-  if(nglobal_times==0){
-    include_tours=1;
-    for(i=0;i<ntourinfo;i++){
-      tourdata *touri;
 
-      touri = tourinfo + i;
-      if(touri->display==0)continue;
-      nglobal_times+= touri->ntimes;
-    }
+  for(i=0;i<ntourinfo;i++){
+    tourdata *touri;
+
+    touri = tourinfo + i;
+    if(touri->display==0)continue;
+    nglobal_times = MAX(nglobal_times, touri->ntimes);
+    global_timemin = MIN(global_timemin, touri->path_times[0]);
+    global_timemax = MAX(global_timemax, touri->path_times[touri->ntimes-1]);
   }
   CheckMemory;
 
-  // end pass 1
+  // setup global_times array
 
   FREEMEMORY(global_times);
-  if(nglobal_times > 0){
-    NewMemory((void **)&global_times, nglobal_times * sizeof(float));
-    NewMemory((void **)&global_times_copy, nglobal_times * sizeof(float));
-  }
-
-  // pass 2 - merge times arrays
-
-  nglobal_times_copy = 0;
-  for(i=0;i<ngeominfoptrs;i++){
-    geomdata *geomi;
-
-    geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0)continue;
-    memcpy(global_times + nglobal_times_copy, geomi->times, geomi->ntimes * sizeof(float));
-    nglobal_times_copy += geomi->ntimes;
-  }
-  if(visTerrainType!=TERRAIN_HIDDEN){
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->loaded==0)continue;
-      memcpy(global_times + nglobal_times_copy, terri->times, terri->ntimes * sizeof(float));
-      nglobal_times_copy += terri->ntimes;
-    }
-  }
-  if(visShooter!=0&&shooter_active==1){
-    for(i=0;i<nshooter_frames;i++){
-      global_times[nglobal_times_copy++]=shoottimeinfo[i].time;
-    }
-  }
-
-  if(include_tours==1){
-    for(i=0;i<ntourinfo;i++){
-      tourdata *touri;
-
-      touri = tourinfo + i;
-      if(touri->display==0)continue;
-      memcpy(global_times + nglobal_times_copy, touri->path_times, touri->ntimes * sizeof(float));
-      nglobal_times_copy += touri->ntimes;
-    }
-  }
-
-  tmax_part=0.0;
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    if(parti->loaded==0)continue;
-    memcpy(global_times + nglobal_times_copy, parti->times, parti->ntimes * sizeof(float));
-    nglobal_times_copy += parti->ntimes;
-    tmax_part=MAX(parti->times[parti->ntimes-1],tmax_part);
-  }
-
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo + i;
-    if(sd->loaded==1||sd->vloaded==1){
-      memcpy(global_times + nglobal_times_copy, sd->times, sd->ntimes * sizeof(float));
-      nglobal_times_copy += sd->ntimes;
-    }
-  }
-
-  for(i=0;i<npatchinfo;i++){
-    patchdata *patchi;
-
-    patchi = patchinfo + i;
-    if(patchi->loaded==1&&patchi->structured == NO){
-      memcpy(global_times + nglobal_times_copy, patchi->geom_times, patchi->ngeom_times * sizeof(float));
-      nglobal_times_copy += patchi->ngeom_times;
-    }
-  }
-  for(i=0;i<nmeshes;i++){
-    patchdata *patchi;
-    meshdata *meshi;
-    int filenum;
-
-    meshi=meshinfo + i;
-    filenum=meshi->patchfilenum;
-    if(filenum!=-1){
-      patchi = patchinfo + filenum;
-      if(patchi->loaded==1&&patchi->structured == YES){
-        memcpy(global_times + nglobal_times_copy, meshi->patch_times, meshi->npatch_times * sizeof(float));
-        nglobal_times_copy += meshi->npatch_times;
-      }
-    }
-  }
-  if(nvolrenderinfo>0){
-    for(i=0;i<nmeshes;i++){
-      volrenderdata *vr;
-      meshdata *meshi;
-
-      meshi=meshinfo + i;
-      vr = &meshi->volrenderinfo;
-      if(vr->smokeslice==NULL)continue;
-      if(vr->loaded==0||vr->display==0)continue;
-      memcpy(global_times + nglobal_times_copy, vr->times, vr->ntimes * sizeof(float));
-      nglobal_times_copy += vr->ntimes;
-    }
-  }
-  if(ReadZoneFile==1&&visZone==1){
-    memcpy(global_times + nglobal_times_copy, zone_times, nzone_times * sizeof(float));
-    nglobal_times_copy += nzone_times;
-  }
-  if(ReadIsoFile==1&&visAIso!=0){
-    for(i=0;i<nisoinfo;i++){
-      meshdata *meshi;
-      isodata *ib;
-
-      ib = isoinfo+i;
-      if(ib->geomflag==1||ib->loaded==0)continue;
-      meshi=meshinfo + ib->blocknumber;
-      memcpy(global_times + nglobal_times_copy, meshi->iso_times, meshi->niso_times * sizeof(float));
-      nglobal_times_copy += meshi->niso_times;
-    }
-  }
-  if(Read3DSmoke3DFile==1&&vis3DSmoke3D==1){
-    for(i=0;i<nsmoke3dinfo;i++){
-      smoke3ddata *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-      if(smoke3di->loaded==0)continue;
-      memcpy(global_times + nglobal_times_copy, smoke3di->times, smoke3di->ntimes * sizeof(float));
-      nglobal_times_copy += smoke3di->ntimes;
-    }
-  }
-  CheckMemory;
-
-  ASSERT(nglobal_times==nglobal_times_copy);
-
-  // end pass 2
-
-  // sort and remove duplicates
-
   if(nglobal_times>0){
-    int n,to,from;
+    int i;
+    NewMemory((void **)&global_times, nglobal_times*sizeof(float));
+    for(i = 0; i<nglobal_times; i++){
+      float f1;
 
-    memcpy(global_times_copy, global_times, nglobal_times * sizeof(float));
-
-    qsort((float *)global_times_copy, (size_t)nglobal_times, sizeof(float), CompareFloat);
-    CheckMemory;
-
-#define DT_EPS 0.00001
-
-    to = 1;
-    global_times[0]=global_times_copy[0];
-    for(from=1;from<nglobal_times;from++){
-      if(ABS(global_times_copy[from]-global_times_copy[from-1])>DT_EPS){
-        global_times[to]=global_times_copy[from];
-        to++;
-      }
-    }
-    nglobal_times = to;
-    FREEMEMORY(global_times_copy);
-
-    for(n = 0; n < nglobal_times-1; n++){
-      int it;
-
-      if(global_times[n] < global_times[n+1])continue;
-      timearray_test++;
-      fprintf(stderr, "*** Error: time array out of order at position %i, nglobal_times=%i times=", n+1,nglobal_times);
-      if(timearray_test == 1){
-        for(it = 0; it < nglobal_times; it++){
-          fprintf(stderr," %f", global_times[it]);
-        }
-        fprintf(stderr, "\n");
-      }
-      else if(timearray_test > 1){
-        for(it = 0; it < MIN(nglobal_times, 10); it++){
-          fprintf(stderr, " %f", global_times[it]);
-        }
-        fprintf(stderr, "......\n");
-      }
-      break;
+      f1 = (float)i/(float)(nglobal_times-1);
+      global_times[i] = (1.0-f1)*global_timemin + f1*global_timemax;
     }
   }
+
   CheckMemory;
 
+  // allocate memory for individual timelist arrays
 
-  // pass 3 - allocate memory for individual times array
-
-  if(nglobal_times>ntimes_old){
-    ntimes_old=nglobal_times;
-    FREEMEMORY(render_frame);
-    if(nglobal_times>0)NewMemory((void **)&render_frame,nglobal_times*sizeof(int));
-  }
+  FREEMEMORY(render_frame);
+  if(nglobal_times>0)NewMemory((void **)&render_frame,nglobal_times*sizeof(int));
 
   for(i=0;i<ngeominfoptrs;i++){
     geomdata *geomi;
@@ -1314,7 +1145,7 @@ void UpdateTimes(void){
     FREEMEMORY(parti->timeslist);
     if(nglobal_times>0)NewMemory((void **)&parti->timeslist,nglobal_times*sizeof(int));
   }
-  for(i=0;i<ntourinfo;i++){// ok to include tour times list
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
     touri=tourinfo + i;
@@ -1444,8 +1275,6 @@ void UpdateTimes(void){
   if(nglobal_times>0)NewMemory((void **)&targtimeslist,  nglobal_times*sizeof(int));
   CheckMemory;
 
-  // end pass 3
-
   // reset render_frame array
 
   if(current_script_command!=NULL&&
@@ -1468,14 +1297,7 @@ void UpdateTimes(void){
     }
   }
 
-  // reallocate times array
-
-  if(nglobal_times==0){
-    FREEMEMORY(global_times);
-  }
-  if(nglobal_times>0)ResizeMemory((void **)&global_times,nglobal_times*sizeof(float));
-
-  // pass 4 - initialize individual time pointers
+  // initialize individual time pointers
 
   izone=0;
   ResetItimes0();
