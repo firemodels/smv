@@ -1451,102 +1451,123 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
 
 void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count = 0;
+  int ibeg, iend, itime, first=1, minsteps;
+  slicedata *slicetime=NULL;
 
   for(islice = 0; islice<nsliceinfo; islice++){
     slicedata *slicei;
-    int nrows, ncols;
-    int ibeg, iend, itime;
 
     slicei = sliceinfo+islice;
-
     if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
-    if(option2==ALL_TIMES&&count>1)break;
-    count++;
-
-    switch(slicei->idir){
-    case XDIR:
-      ncols = slicei->nslicej;
-      nrows = slicei->nslicek;
-      break;
-    case YDIR:
-      ncols = slicei->nslicei;
-      nrows = slicei->nslicek;
-      break;
-    case ZDIR:
-      ncols = slicei->nslicei;
-      nrows = slicei->nslicej;
-      break;
-    }
-    if(option2==ALL_TIMES){
-      ibeg = 0;
-      iend = slicei->ntimes;
-      *nframes = iend;
+    slicetime = slicei;
+    if(first==1){
+      minsteps=slicei->ntimes;
+      first = 0;
     }
     else{
-      ibeg = slicei->itime;
-      iend = slicei->itime+1;
-      *nframes = 1;
+      minsteps = MIN(minsteps, slicei->ntimes);
     }
-    *frame_size = nrows*ncols;
-    if(nrows>1&&ncols>1){
-      nv += nrows*ncols;
-      nt += 2*(nrows-1)*(ncols-1);
-      if(option==1){
-        meshdata *meshi;
-        float *xplt, *yplt, *zplt;
-        int plotx, ploty, plotz;
-        float  constval;
-        int n, i, j, k, nj, nk;
-        int ii, jj, kk;
+    if(option2==CURRENT_TIME)break;
+  }
+  if(option2==ALL_TIMES){
+    ibeg = 0;
+    iend = minsteps;
+    *nframes = iend;
+  }
+  else{
+    ibeg = slicetime->itime;
+    iend = slicetime->itime+1;
+    *nframes = 1;
+  }
+  *frame_size = 0;
+  for(itime = ibeg; itime<iend; itime++){
 
-        meshi = meshinfo+slicei->blocknumber;
+    for(islice = 0; islice<nsliceinfo; islice++){
+      slicedata *slicei;
+      int nrows, ncols;
+      unsigned char *iq;
 
-        xplt = meshi->xplt;
-        yplt = meshi->yplt;
-        zplt = meshi->zplt;
-        plotx = slicei->is1;
-        ploty = slicei->js1;
-        plotz = slicei->ks1;
+      slicei = sliceinfo+islice;
 
-        switch(slicei->idir){
-        case XDIR:
-          // vertices
-          constval = xplt[plotx];
-          for(j = slicei->js1; j<=slicei->js2; j++){
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              *verts++ = constval;
-              *verts++ = yplt[j];
-              *verts++ = zplt[k];
+      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+      if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+      iq = slicei->slicelevel+itime*slicei->nsliceijk;
+
+      switch(slicei->idir){
+      case XDIR:
+        ncols = slicei->nslicej;
+        nrows = slicei->nslicek;
+        break;
+      case YDIR:
+        ncols = slicei->nslicei;
+        nrows = slicei->nslicek;
+        break;
+      case ZDIR:
+        ncols = slicei->nslicei;
+        nrows = slicei->nslicej;
+        break;
+      }
+      if(nrows>1&&ncols>1){
+        if(itime==ibeg){
+          *frame_size += nrows*ncols;
+          nv += nrows*ncols;
+          nt += 2*(nrows-1)*(ncols-1);
+        }
+        if(option==1){
+          meshdata *meshi;
+          float *xplt, *yplt, *zplt;
+          int plotx, ploty, plotz;
+          float  constval;
+          int n, i, j, k, nj, nk;
+          int ii, jj, kk;
+
+          meshi = meshinfo+slicei->blocknumber;
+
+          xplt = meshi->xplt;
+          yplt = meshi->yplt;
+          zplt = meshi->zplt;
+          plotx = slicei->is1;
+          ploty = slicei->js1;
+          plotz = slicei->ks1;
+
+          switch(slicei->idir){
+          case XDIR:
+            if(itime==ibeg){
+              // vertices
+              constval = xplt[plotx];
+              for(j = slicei->js1; j<=slicei->js2; j++){
+                for(k = slicei->ks1; k<=slicei->ks2; k++){
+                  *verts++ = constval;
+                  *verts++ = yplt[j];
+                  *verts++ = zplt[k];
+                }
+              }
+              // triangle indices
+              nk = slicei->ks2+1-slicei->ks1;
+              for(j = slicei->js1; j<slicei->js2; j++){
+                jj = j-slicei->js1;
+                for(k = slicei->ks1; k<slicei->ks2; k++){
+                  int i00, i01, i11, i10;
+
+                  kk = k-slicei->ks1;
+                  i00 = nk*(jj+0)+kk+0;
+                  i01 = nk*(jj+0)+kk+1;
+                  i10 = nk*(jj+1)+kk+0;
+                  i11 = nk*(jj+1)+kk+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
             }
-          }
-          // triangle indices
-          nk = slicei->ks2+1-slicei->ks1;
-          for(j = slicei->js1; j<slicei->js2; j++){
-            jj = j-slicei->js1;
-            for(k = slicei->ks1; k<slicei->ks2; k++){
-              int i00, i01, i11, i10;
-
-              kk = k-slicei->ks1;
-              i00 = nk*(jj+0)+kk+0;
-              i01 = nk*(jj+0)+kk+1;
-              i10 = nk*(jj+1)+kk+0;
-              i11 = nk*(jj+1)+kk+1;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i10;
-              *tris++ = *offset+i11;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i11;
-              *tris++ = *offset+i01;
-            }
-          }
-          // textures
-          for(itime = ibeg; itime<iend; itime++){
-            unsigned char *iq;
-
-            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            // textures
             for(j = slicei->js1; j<=slicei->js2; j++){
               n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
               n += (plotx-slicei->is1)*slicei->nslicek;
@@ -1559,46 +1580,43 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
-          }
-          *offset += nrows*ncols;
-          break;
-        case YDIR:
-          // vertices
-          constval = yplt[ploty];
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            for(k = slicei->ks1; k<=slicei->ks2; k++){
-              *verts++ = xplt[i];
-              *verts++ = constval;
-              *verts++ = zplt[k];
+            break;
+          case YDIR:
+            // vertices
+            if(itime==ibeg){
+              constval = yplt[ploty];
+              for(i = slicei->is1; i<=slicei->is2; i++){
+                for(k = slicei->ks1; k<=slicei->ks2; k++){
+                  *verts++ = xplt[i];
+                  *verts++ = constval;
+                  *verts++ = zplt[k];
+                }
+              }
+              // triangle indices
+              nk = slicei->ks2+1-slicei->ks1;
+              for(i = slicei->is1; i<slicei->is2; i++){
+                ii = i-slicei->is1;
+                for(k = slicei->ks1; k<slicei->ks2; k++){
+                  int i00, i01, i11, i10;
+
+                  kk = k-slicei->ks1;
+                  i00 = nk*(ii+0)+kk+0;
+                  i01 = nk*(ii+0)+kk+1;
+                  i10 = nk*(ii+1)+kk+0;
+                  i11 = nk*(ii+1)+kk+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
             }
-          }
-          // triangle indices
-          nk = slicei->ks2+1-slicei->ks1;
-          for(i = slicei->is1; i<slicei->is2; i++){
-            ii = i-slicei->is1;
-            for(k = slicei->ks1; k<slicei->ks2; k++){
-              int i00, i01, i11, i10;
-
-              kk = k-slicei->ks1;
-              i00 = nk*(ii+0)+kk+0;
-              i01 = nk*(ii+0)+kk+1;
-              i10 = nk*(ii+1)+kk+0;
-              i11 = nk*(ii+1)+kk+1;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i10;
-              *tris++ = *offset+i11;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i11;
-              *tris++ = *offset+i01;
-            }
-          }
-          // textures
-          for(itime = ibeg; itime<iend; itime++){
-            unsigned char *iq;
-
-            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            // textures
             for(i = slicei->is1; i<=slicei->is2; i++){
               n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
               n += (ploty-slicei->js1)*slicei->nslicek;
@@ -1611,46 +1629,43 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
-          }
-          *offset += nrows*ncols;
-          break;
-        case ZDIR:
-          // vertices
-          constval = zplt[plotz];
-          for(i = slicei->is1; i<=slicei->is2; i++){
-            for(j = slicei->js1; j<=slicei->js2; j++){
-              *verts++ = xplt[i];
-              *verts++ = yplt[j];
-              *verts++ = constval;
+            break;
+          case ZDIR:
+            if(itime==ibeg){
+              // vertices
+              constval = zplt[plotz];
+              for(i = slicei->is1; i<=slicei->is2; i++){
+                for(j = slicei->js1; j<=slicei->js2; j++){
+                  *verts++ = xplt[i];
+                  *verts++ = yplt[j];
+                  *verts++ = constval;
+                }
+              }
+              // triangle indices
+              nj = slicei->js2+1-slicei->js1;
+              for(i = slicei->is1; i<slicei->is2; i++){
+                ii = i-slicei->is1;
+                for(j = slicei->js1; j<slicei->js2; j++){
+                  int i00, i01, i11, i10;
+
+                  jj = j-slicei->js1;
+                  i00 = nj*(ii+0)+jj+0;
+                  i01 = nj*(ii+0)+jj+1;
+                  i10 = nj*(ii+1)+jj+0;
+                  i11 = nj*(ii+1)+jj+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
             }
-          }
-          // triangle indices
-          nj = slicei->js2+1-slicei->js1;
-          for(i = slicei->is1; i<slicei->is2; i++){
-            ii = i-slicei->is1;
-            for(j = slicei->js1; j<slicei->js2; j++){
-              int i00, i01, i11, i10;
-
-              jj = j-slicei->js1;
-              i00 = nj*(ii+0)+jj+0;
-              i01 = nj*(ii+0)+jj+1;
-              i10 = nj*(ii+1)+jj+0;
-              i11 = nj*(ii+1)+jj+1;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i10;
-              *tris++ = *offset+i11;
-
-              *tris++ = *offset+i00;
-              *tris++ = *offset+i11;
-              *tris++ = *offset+i01;
-            }
-          }
-          // textures
-          for(itime = ibeg; itime<iend; itime++){
-            unsigned char *iq;
-
-            iq = slicei->slicelevel+itime*slicei->nsliceijk;
+            // textures
             for(i = slicei->is1; i<=slicei->is2; i++){
               n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
               n += (plotz-slicei->ks1)*slicei->nslicey;
@@ -1663,9 +1678,8 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
                 *textures++ = CLAMP((float)i11/255.0, 0.0, 1.0);;
               }
             }
+            break;
           }
-          *offset += nrows*ncols;
-          break;
         }
       }
     }
