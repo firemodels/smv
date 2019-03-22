@@ -975,6 +975,7 @@ void UpdateTimes(void){
   int i;
   int nglobal_times_copy;
   float *global_times_copy = NULL;
+  int include_tours=0;
 
   LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
@@ -1003,13 +1004,6 @@ void UpdateTimes(void){
   }
   if(visShooter!=0&&shooter_active==1){
     nglobal_times+=nshooter_frames;
-  }
-  for(i=0;i<ntourinfo;i++){
-    tourdata *touri;
-
-    touri = tourinfo + i;
-    if(touri->display==0)continue;
-    nglobal_times+= touri->ntimes;
   }
   for(i=0;i<npartinfo;i++){
     partdata *parti;
@@ -1085,6 +1079,17 @@ void UpdateTimes(void){
       }
     }
   }
+  // only include tour times if there are no other types of time info
+  if(nglobal_times==0){
+    include_tours=1;
+    for(i=0;i<ntourinfo;i++){
+      tourdata *touri;
+
+      touri = tourinfo + i;
+      if(touri->display==0)continue;
+      nglobal_times+= touri->ntimes;
+    }
+  }
   CheckMemory;
 
   // end pass 1
@@ -1122,13 +1127,15 @@ void UpdateTimes(void){
     }
   }
 
-  for(i=0;i<ntourinfo;i++){
-    tourdata *touri;
+  if(include_tours==1){
+    for(i=0;i<ntourinfo;i++){
+      tourdata *touri;
 
-    touri = tourinfo + i;
-    if(touri->display==0)continue;
-    memcpy(global_times + nglobal_times_copy, touri->path_times, touri->ntimes * sizeof(float));
-    nglobal_times_copy += touri->ntimes;
+      touri = tourinfo + i;
+      if(touri->display==0)continue;
+      memcpy(global_times + nglobal_times_copy, touri->path_times, touri->ntimes * sizeof(float));
+      nglobal_times_copy += touri->ntimes;
+    }
   }
 
   tmax_part=0.0;
@@ -1291,7 +1298,7 @@ void UpdateTimes(void){
     FREEMEMORY(parti->timeslist);
     if(nglobal_times>0)NewMemory((void **)&parti->timeslist,nglobal_times*sizeof(int));
   }
-  for(i=0;i<ntourinfo;i++){
+  for(i=0;i<ntourinfo;i++){// ok to include tour times list
     tourdata *touri;
 
     touri=tourinfo + i;
