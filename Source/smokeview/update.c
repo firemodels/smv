@@ -1056,6 +1056,8 @@ void UpdateTimes(void){
   }
   if(ReadZoneFile==1&&visZone==1){
     nglobal_times = MAX(nglobal_times, nzone_times);
+    global_timemin = MIN(global_timemin, zone_times[0]);
+    global_timemax = MAX(global_timemax, zone_times[nzone_times-1]);
   }
   if(ReadIsoFile==1&&visAIso!=0){
     for(i=0;i<nisoinfo;i++){
