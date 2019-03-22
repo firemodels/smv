@@ -1492,8 +1492,20 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, float
 
       if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
-      iq = slicei->slicelevel+itime*slicei->nsliceijk;
 
+      // preliminary code for obtaining geometry vertices and triangles
+      if(1==0){
+        geomdata *geomi;
+        geomlistdata *geomlisti;
+
+        geomi = slicei->patchgeom->geominfo;
+        geomlisti = geomi->geomlistinfo - 1;
+        if(geomlisti->norms_defined==0){
+        //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
+        }
+      }
+
+      iq = slicei->slicelevel+itime*slicei->nsliceijk;
       switch(slicei->idir){
       case XDIR:
         ncols = slicei->nslicej;
@@ -1964,9 +1976,9 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
   *linesptr = lines_save;
 }
 
-/* ------------------ UnlitFaces2Geom ------------------------ */
+/* ------------------ UnlitTriangles2Geom ------------------------ */
 
-void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
+void UnlitTriangles2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -2015,9 +2027,9 @@ void UnlitFaces2Geom(float **vertsptr, float **texturesptr, int *n_verts, int **
   *trianglesptr = triangles_save;
 }
 
-/* ------------------ LitFaces2Geom ------------------------ */
+/* ------------------ LitTriangles2Geom ------------------------ */
 
-void LitFaces2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
+void LitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
@@ -2211,9 +2223,11 @@ int Smv2Html(char *html_file, int option){
   printf("outputting html to %s", html_full_file);
   rewind(stream_in);
 
-  UnlitFaces2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid, option,
+  // obtain vertices, triangles and lines
+
+  UnlitTriangles2Geom(&vertsUnlitSolid, &texturesUnlitSolid, &nvertsUnlitSolid, &facesUnlitSolid, &nfacesUnlitSolid, option,
     &frame_size, &nframes);
-  LitFaces2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
+  LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
 #define PER_ROW 12
@@ -2242,7 +2256,11 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var vertices_unlit = [\n");
 
       for(i = 0; i<nvertsUnlitSolid; i++){
-        fprintf(stream_out, " %f, ", vertsUnlitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%f", vertsUnlitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsUnlitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2251,13 +2269,21 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
       fprintf(stream_out, "         var textures_unlit_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
-        fprintf(stream_out, " %.3f, ", texturesUnlitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%.3f", texturesUnlitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
       fprintf(stream_out, "         var textures_unlit = [\n");
       for(i = 0; i<frame_size; i++){
-        fprintf(stream_out, " %.3f, ", texturesUnlitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%.3f", texturesUnlitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2285,21 +2311,33 @@ int Smv2Html(char *html_file, int option){
       // add lit triangles
       fprintf(stream_out, "         var vertices_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
-        fprintf(stream_out, " %f, ", vertsLitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%f", vertsLitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var normals_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
-        fprintf(stream_out, " %f, ", normalsLitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%f", normalsLitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var colors_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
-        fprintf(stream_out, " %f, ", colorsLitSolid[i]);
+        char label[100];
+
+        sprintf(label, "%f", colorsLitSolid[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLitSolid-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
@@ -2314,14 +2352,22 @@ int Smv2Html(char *html_file, int option){
       // add lines
       fprintf(stream_out, "         var vertices_line = [\n");
       for(i = 0; i<nvertsLine; i++){
-        fprintf(stream_out, " %f, ", vertsLine[i]);
+        char label[100];
+
+        sprintf(label, "%f", vertsLine[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var colors_line = [\n");
       for(i = 0; i<nvertsLine; i++){
-        fprintf(stream_out, " %f, ", colorsLine[i]);
+        char label[100];
+
+        sprintf(label, "%f", colorsLine[i]);
+        TrimZeros(label);
+        fprintf(stream_out, " %s,", label);
         if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
