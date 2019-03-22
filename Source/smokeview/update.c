@@ -969,6 +969,22 @@ void ConvertSsf(void){
   }
 }
 
+/* ------------------ UpdateGlobalTimes ------------------------ */
+
+void UpdateGlobalTimes(float tbeg, float tend, float ntimes){
+  FREEMEMORY(global_times);
+  nglobal_times = ntimes;
+  if(ntimes>0){
+    int i;
+    NewMemory((void **)&global_times, ntimes*sizeof(float));
+    for(i = 0; i<ntimes; i++){
+      float tval;
+
+      global_times[i] = ((float)i*tend+(float)(ntimes-1-i)*tbeg)/(float)(ntimes-1);
+    }
+  }
+}
+
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
