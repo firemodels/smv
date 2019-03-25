@@ -2273,7 +2273,7 @@ int Smv2Html(char *html_file, int option){
           fclose(slicestream_out);
         }
       }
-#ifdef HTML_FILE
+#ifdef pp_HTML_FILE
       fprintf(stream_out, "         var slice_file_ready = 0;\n");
       fprintf(stream_out, "         var textures_unlit_data = new Uint8Array(nframes*frame_size);\n");
 #else

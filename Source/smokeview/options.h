@@ -85,6 +85,7 @@
 
 #ifdef pp_BETA   
 #define pp_HTML                // output html version of smokeview scene
+//#define pp_HTML_FILE         // read in slice file data into html file
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 //#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step 
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
