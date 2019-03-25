@@ -2262,6 +2262,8 @@ int Smv2Html(char *html_file, int option){
 
       fprintf(stream_out, "         var nframes = %i;\n", nframes);
       fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
+      fprintf(stream_out, "         var slice_file = \"%s\";\n", html_slicefile_base);
+
       if(frame_size*nframes>0){
         FILE *slicestream_out =NULL;
 
@@ -2271,6 +2273,11 @@ int Smv2Html(char *html_file, int option){
           fclose(slicestream_out);
         }
       }
+#ifdef HTML_FILE
+      fprintf(stream_out, "         var slice_file_ready = 0;\n");
+      fprintf(stream_out, "         var textures_unlit_data = new Uint8Array(nframes*frame_size);\n");
+#else
+      fprintf(stream_out, "         var slice_file_ready = 1;\n");
       fprintf(stream_out, "         var textures_unlit_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
         char label[100];
@@ -2280,15 +2287,16 @@ int Smv2Html(char *html_file, int option){
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(frame_size*nframes-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
-      fprintf(stream_out, "         var textures_unlit = [\n");
+#endif
+      fprintf(stream_out, "         var textures_unlit = new Float32Array([\n");
       for(i = 0; i<frame_size; i++){
         char label[100];
 
-        sprintf(label, "%i", CLAMP((int)texturesUnlitSolid[i], 0, 255));
+        sprintf(label, "%f", CLAMP((float)texturesUnlitSolid[i]/255.0, 0.0, 1.0));
         fprintf(stream_out, "%s,", label);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(frame_size-1))fprintf(stream_out, "\n");
       }
-      fprintf(stream_out, "         ];\n");
+      fprintf(stream_out, "         ]);\n");
 
       fprintf(stream_out, "         const texture_colorbar_data = new Uint8Array([\n");
       for(i = 0; i<256; i++){
