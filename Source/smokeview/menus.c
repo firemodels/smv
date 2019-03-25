@@ -5070,7 +5070,9 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo + i;
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
           LOCK_COMPRESS;
-          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+          if(patchi->structured == YES){
+            PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+          }
           load_size+=ReadBoundary(i, LOAD, &errorcode);
           file_count++;
           UNLOCK_COMPRESS;
