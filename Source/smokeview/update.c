@@ -1035,7 +1035,7 @@ void UpdateTimes(void){
     if(patchi->loaded==1&&patchi->structured == NO){
       nglobal_times = MAX(nglobal_times, patchi->ngeom_times);
       global_timemin = MIN(global_timemin, patchi->geom_times[0]);
-      global_timemax = MAX(global_timemax, patchi->geom_times[patchi->ntimes-1]);
+      global_timemax = MAX(global_timemax, patchi->geom_times[patchi->ngeom_times-1]);
     }
   }
   for(i=0;i<nmeshes;i++){
