@@ -572,14 +572,10 @@ void SetSuperIndex(meshdata *meshi, int dir){
   meshi->s_offset[dir] = index;
 }
 
-/* ------------------ InitSuperMesh ------------------------ */
+/* ------------------ InitNabors ------------------------ */
 
-void InitSuperMesh(void){
+void InitNabors(void){
   int i;
-  meshdata *thismesh;
-  supermeshdata *smesh;
-
-  // determine mesh connectivity
 
   for(i = 0;i<nmeshes;i++){
     meshdata *meshi;
@@ -621,6 +617,18 @@ void InitSuperMesh(void){
       }
     }
   }
+}
+
+/* ------------------ InitSuperMesh ------------------------ */
+
+void InitSuperMesh(void){
+  int i;
+  meshdata *thismesh;
+  supermeshdata *smesh;
+
+  // determine mesh connectivity
+
+  InitNabors();
 
   // merge connected meshes to form supermeshes
 

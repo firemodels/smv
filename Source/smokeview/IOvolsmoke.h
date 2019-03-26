@@ -1,13 +1,6 @@
 #ifndef IOVOLSMOKE_H_DEFINED
 #define IOVOLSMOKE_H_DEFINED
 #define GPU_VOLframemax 1.5
-#define MLEFT 0
-#define MFRONT 1
-#define MDOWN 2
-#define MRIGHT 3
-#define MBACK 4
-#define MUP 5
-#define MEPS 0.1
 
 EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
 EXTERNCPP void ComputeAllSmokecolors(void);

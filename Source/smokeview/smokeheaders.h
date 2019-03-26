@@ -5,7 +5,8 @@
 #include "gd.h"
 #endif
 
-int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
+EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
+EXTERNCPP void InitNabors(void);
 #ifdef pp_HTML
 EXTERNCPP int Smv2Html(char *html_out, int option);
 #endif
