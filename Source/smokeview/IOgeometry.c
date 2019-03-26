@@ -2926,8 +2926,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
     for(i = 0; i < 1; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
-      int ntris;
-      int j;
+      int ntris, j, enable_lighting;
 
       geomi = patchi->geominfo;
       if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)continue;
@@ -2937,9 +2936,15 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       else{
         geomlisti = geomi->geomlistinfo + geomi->itime;
       }
-     if(geomlisti->norms_defined==0){
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
+        enable_lighting = 1;
+      }
+      else{
+        enable_lighting = 0;
+      }
+      if(geomlisti->norms_defined==0&&enable_lighting==1){
         UpdatePatchGeomTriangles(patchi, geom_type);
-     }
+      }
 
       ntris = geomlisti->ntriangles;
       if(ntris == 0)continue;
@@ -2948,7 +2953,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
+      if(enable_lighting==1){
         ENABLE_LIGHTING;
       }
       else{
@@ -3111,10 +3116,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glEnd();
       glPopMatrix();
       glDisable(GL_COLOR_MATERIAL);
-      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
-          DISABLE_LIGHTING;
-        }
+      if(enable_lighting==1){
+        DISABLE_LIGHTING;
       }
       if(flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
