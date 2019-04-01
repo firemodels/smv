@@ -6437,7 +6437,7 @@ void DrawSliceFrame(){
 
   SortLoadedSliceList();
 
-#ifdef XXX
+#ifdef pp_SLICE_DEBUG
 // debug output
   printf("DrawSliceFrame ntimes: ");
   for(ii = 0; ii<nsliceinfo; ii++){
