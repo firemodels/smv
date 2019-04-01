@@ -670,6 +670,18 @@ void SynchTimes(void){
 
   /* synchronize smooth blockage times */
 
+#ifdef XXX
+// debug output
+  printf("SynchTimes ntimes: ");
+  for(i=0;i<nslice_loaded;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + slice_loaded_list[i];
+    printf("%i ", slicei->ntimes);
+  }
+  printf("\n");
+#endif
+
   for(n=0;n<nglobal_times;n++){
     int j,jj;
 
@@ -739,8 +751,7 @@ void SynchTimes(void){
     for(jj=0;jj<nslice_loaded;jj++){
       slicedata *sd;
 
-      j = slice_loaded_list[jj];
-      sd = sliceinfo + j;
+      sd = sliceinfo + slice_loaded_list[jj];
       if(sd->slicefile_type == SLICE_GEOM){
         sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
       }

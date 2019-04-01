@@ -6437,7 +6437,19 @@ void DrawSliceFrame(){
 
   SortLoadedSliceList();
 
-  for(ii=0;ii<nslice_loaded;ii++){
+#ifdef XXX
+// debug output
+  printf("DrawSliceFrame ntimes: ");
+  for(ii = 0; ii<nsliceinfo; ii++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+ii;
+    if(slicei->loaded==0||slicei->display==0)continue;
+    printf("%i ", slicei->ntimes);
+  }
+  printf("\n");
+#endif
+  for(ii = 0; ii<nslice_loaded; ii++){
     slicedata *sd;
     int i;
     meshdata *slicemesh;
