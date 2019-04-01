@@ -4994,6 +4994,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
+// possible fix
+//        index_cell = ((plotx-1)+1-incx-iimin)*sd->nslicej*sd->nslicek+(j+1-sd->js1)*sd->nslicek+k+1-sd->ks1;
         index_cell = (plotx + 1 - incx - iimin)*sd->nslicej*sd->nslicek + (j + 1 - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
 
         i33 = 4 * sd->iqsliceframe[index_cell];
