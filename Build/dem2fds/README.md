@@ -6,7 +6,7 @@ Notes on creating FDS input files from digital elevation map (dem) files using t
 
 * Download and install Smokeview from <https://pages.nist.gov/fds-smv/downloads.html>.  This download provides the utility dem2fds used for creating the FDS input files.
 
-* Download and install Imagemagick from <http://www.imagemagick.org/script/binary-releases.php>.  This program is used to convert terrain image files from jpeg 2000 to jpeg format.
+* Download and install Imagemagick from <https://imagemagick.org/script/download.php>.  This program is used to convert terrain image files from jpeg 2000 to jpeg format.
 
 * Go to the USGS National Map website at <https://viewer.nationalmap.gov/basic> 
 to obtain elevation and terrain image data files.
@@ -59,8 +59,8 @@ dem2fds using the -dir command line keyword when creating a FDS input file.
 
 ```
 GRID
- ibar jbar kbar
- LONGLATMINMAX
+ ibar+1 jbar+1 kbar
+LONGLATMINMAX
  longmin longmax latmin latmax
 ```
 
@@ -77,8 +77,8 @@ Two other methods for specifying a terrain region are to use the
 
 ```
 GRID
-  ibar jbar kbar dx dy
-  LONGLATCENTER
+  ibar+1 jbar+1 kbar dx dy
+LONGLATCENTER
   longcen  latcen
 ```
 
@@ -86,11 +86,10 @@ or
 
 ```
 GRID
-  ibar jbar kbar dx dy
-  LONGLATORIG
+  ibar+1 jbar+1 kbar dx dy
+LONGLATORIG
   longorig  latorig
 ```
-
 where `dx` and `dy` are the scenario width and length in meters
 ( `ibar`, `jbar` and `kbar` are defined as before),
 `longcen` and `latcen` are the longitude and
@@ -122,7 +121,7 @@ smokeview casename
 
 ```
 GRID
- ibar jbar kbar dx dy zmin zmax
+ ibar+1 jbar+1 kbar dx dy zmin zmax
 ```
 
 ibar, jbar, bar - number of divisions along the x, y and z directions
@@ -213,7 +212,7 @@ is consistent at the tower location.
 * dem2fds input file:
 ```
 GRID
- 100 100 30
+ 101 101 30
 LONGLATMINMAX
  -104.7256 -104.7096 44.5850 44.5945
 ```
@@ -221,7 +220,7 @@ LONGLATMINMAX
 The `IJK` portion of the `&MESH` line in the FDS input file is
 
 ```
-&GRID IJK=100,100,30, XB=...
+&MESH IJK=100,100,30, XB=...
 ```
 
 * create an fds input file using:
@@ -232,13 +231,10 @@ where terrain\tower is a directory containing elevation data and terrain images 
 
 * The image below was created by running FDS on the input file generated using dem2fds then viewing with smokeview
 using:
-
-
 ```
 fds tower.fds
 smokeview tower.fds
 ```
-
 ![devils tower](https://github.com/firemodels/fds/wiki/images/tower1.png)
 
 2. Devils Tower II
@@ -255,7 +251,7 @@ of the data files that were downloaded rather than the region being modeled.
 
 ```
 GRID
- 100 100 30
+ 101 101 30
 LONGLATMINMAX
  -104.7256 -104.7096 44.5850 44.5945
 ```
