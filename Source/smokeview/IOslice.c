@@ -4994,8 +4994,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
-        index_cell = (plotx-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
-
+        index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
         i33 = 4 * sd->iqsliceframe[index_cell];
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -5037,7 +5036,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           n+1 (y1,z3) n2+1 (y3,z3)
           n (y1,z1)     n2 (y3,z1)
           */
-          index_cell = (plotx-incx-iimin)*sd->nslicej*sd->nslicek+(j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+          index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
 
           GET_VAL(sd, val, index_cell);
           Output3Val(constval, (yy1 + y3) / 2.0, (z1 + z3) / 2.0, val);
@@ -5083,7 +5082,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] == GAS)continue;
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
-        index_cell = (i + 1 +incx - sd->is1)*sd->nslicej*sd->nslicek + (ploty - incy - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+
+        index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
         i33 = 4 * sd->iqsliceframe[index_cell];
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -5120,7 +5120,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)continue;
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
-          index_cell = (i + 1 + incx - sd->is1)*sd->nslicej*sd->nslicek + (ploty - incy - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
           z1 = zplt[k];
           z3 = zplt[k + 1];
           /*
@@ -5174,7 +5174,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
-        index_cell = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (j + 1  + incy - sd->js1)*sd->nslicek + plotz - incz - sd->ks1;
+        index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
         i33 = 4 * sd->iqsliceframe[index_cell];
         yy1 = yplt[j];
         y3 = yplt[j + 1];
@@ -5211,7 +5211,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)continue;
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
-          index_cell = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (j + 1 + incy - sd->js1)*sd->nslicek + plotz - incz - sd->ks1;
+          index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
           yy1 = yplt[j];
           y3 = yplt[j + 1];
           /*
