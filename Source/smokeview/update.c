@@ -670,7 +670,7 @@ void SynchTimes(void){
 
   /* synchronize smooth blockage times */
 
-#ifdef XXX
+#ifdef pp_SLICE_DEBUG
 // debug output
   printf("SynchTimes ntimes: ");
   for(i=0;i<nslice_loaded;i++){
