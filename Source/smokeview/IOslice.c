@@ -4941,7 +4941,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     plotx = sd->is1;
     ploty = sd->js1;
     plotz = sd->ks1;
-    iimin = plotx;
+    //tentative fix (was iimin = plotx) to FDS issue 7266
+    iimin = plotx+1;
   }
 
   ibar = meshi->ibar;
