@@ -2604,7 +2604,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           break;
         }
       }
-#ifdef XXX
+#ifdef XXXXXXX
 //      printf("\n\nedges\n");
 //      printf("                       total: %i\n", nedges);
 //      printf("        0 connected triangle: %i\n", ntri0);
@@ -2653,7 +2653,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         vi = verts + ii;
         if(vi->isdup == 1)ndups++;
       }
-#ifdef XXX
+#ifdef XXXXXX
 //      printf("\nvertices\n");
 //      printf("\n   total: %i\n", nverts);
 //      printf("duplicates: %i\n", ndups);
