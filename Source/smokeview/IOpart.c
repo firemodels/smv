@@ -214,7 +214,6 @@ void DrawPart(const partdata *parti){
         vistype = current_property->class_present[partclass_index];
         class_vis = current_property->class_vis[partclass_index];
 
-
         if(vistype == 0 || datacopy->npoints <= 0 || (vistype == 1 && class_vis == 0)){
           if(show_tracers_always == 0 || partclassi->ntypes > 2){
             datacopy++;
