@@ -2286,7 +2286,7 @@ int Smv2Html(char *html_file, int option){
     if(fgets(buffer, 255, stream_in)==NULL)break;
     TrimBack(buffer);
     if(Match(buffer, "<!--***CANVAS")==1){
-      fprintf(stream_out, "<canvas width = \"%i\" height = \"%i\" id = \"my_Canvas\"></canvas>", screenWidth, screenHeight);
+      fprintf(stream_out, "<canvas width = \"%i\" height = \"%i\" id = \"webSmokeview\"></canvas>", screenWidth, screenHeight);
       continue;
     }
     else if(Match(buffer, "//***VERTS")==1){
@@ -2311,7 +2311,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var nframes = %i;\n", nframes);
-      fprintf(stream_out, "         var frame_size = %i;\n", frame_size);
+      fprintf(stream_out, "         var frame_size_slice = %i;\n", frame_size);
       fprintf(stream_out, "         var slice_file = \"%s\";\n", html_slicefile_base);
 
       if(frame_size*nframes>0){
@@ -2327,6 +2327,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var slice_file_ready    = 0;\n");
       fprintf(stream_out, "         var textures_slice_data = new Uint8Array(nframes*frame_size);\n");
 #else
+      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var slice_file_ready    = 1;\n");
       fprintf(stream_out, "         var textures_slice_data = [\n");
@@ -2360,7 +2361,7 @@ int Smv2Html(char *html_file, int option){
         if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1)||i==255)fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ]);\n");
-      fprintf(stream_out, "         const texture_colorbar_data_height = 256;\n");
+      fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
 
       fprintf(stream_out, "         var indices_slice = [\n");
       for(i = 0; i<nfacesUnlitSolid; i++){
