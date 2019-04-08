@@ -2327,7 +2327,8 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var slice_file_ready = 0;\n");
       fprintf(stream_out, "         var textures_unlit_data = new Uint8Array(nframes*frame_size);\n");
 #else
-      fprintf(stream_out, "         var slice_file_ready = 1;\n");
+      fprintf(stream_out, "         var part_file_ready     = 0;\n");
+      fprintf(stream_out, "         var slice_file_ready    = 1;\n");
       fprintf(stream_out, "         var textures_unlit_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
         char label[100];
