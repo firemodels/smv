@@ -2199,7 +2199,7 @@ void RenderCB(int var){
       break;
 #ifdef pp_HTML
     case RENDER_HTML:
-      Smv2Html(html_filename);
+      Smv2Html(html_filename,CURRENT_TIME);
       break;
 #endif
 #ifdef pp_RENDER360_DEBUG

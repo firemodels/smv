@@ -630,7 +630,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("adjust off-center"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("both"));
-  }
 
 #ifdef pp_GPUSMOKE
   ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false);
@@ -687,6 +686,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("display reduced number of smoke planes"), &smoke_subset);
     SPINNER_smoke_num = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("number of smoke planes"), GLUI_SPINNER_INT, &smoke_num, SMOKE_NUM, Smoke3dCB);
 #endif
+  }
 
   // volume render dialog
 

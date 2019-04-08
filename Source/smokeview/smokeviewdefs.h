@@ -7,6 +7,14 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define MLEFT 0
+#define MFRONT 1
+#define MDOWN 2
+#define MRIGHT 3
+#define MBACK 4
+#define MUP 5
+#define MEPS 0.1
+
 #define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
 #define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}
 
@@ -751,6 +759,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_RENDER_SETTINGS 900
 #ifdef pp_HTML
 #define RenderHTML 985
+#define RenderHTMLALL 984
+#define CURRENT_TIME 0
+#define ALL_TIMES 1
 #endif
 
 #define ShowEXTERIORwallmenu -1

@@ -202,7 +202,7 @@ void ParseCommandline(int argc, char **argv){
   int i, len_casename;
   int iarg;
   size_t len_memory;
-  char *argi;
+  char *argi, *smv_ext;
   char SMVFILENAME[1024];
   int smv_parse;
 
@@ -276,6 +276,8 @@ void ParseCommandline(int argc, char **argv){
   strcpy(movie_name, fdsprefix);
   strcpy(render_file_base, fdsprefix);
   strcpy(html_file_base, fdsprefix);
+  smv_ext = strstr(html_file_base, ".smv");
+  if(smv_ext!=NULL)*smv_ext = 0;
   FREEMEMORY(trainer_filename);
   FREEMEMORY(test_filename);
 

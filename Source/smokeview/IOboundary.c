@@ -1697,9 +1697,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
-        if(i1==0||i2==ibartemp){
+        if((i1==0       &&meshi->nabors[MLEFT]==NULL)||
+           (i2==ibartemp&&meshi->nabors[MRIGHT]==NULL)
+           ){
           mesh_boundary = YES;
-//xxx
           if(is_extface[0]==1&&i1 == 0){
             ext_wall = 1;
             meshi->boundarytype[n] = LEFTwall;
@@ -1796,7 +1797,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
-        if(j1==0||j2==jbartemp){
+        if((j1==0       &&meshi->nabors[MFRONT]==NULL)||
+           (j2==jbartemp&&meshi->nabors[MBACK]==NULL)
+           ){
           mesh_boundary = YES;
           if(is_extface[2]==1&&j1 == 0){
             ext_wall = 1;
@@ -1893,7 +1896,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
-        if(k1==0||k2==kbartemp){
+        if((k1==0       &&meshi->nabors[MDOWN]==NULL)||
+           (k2==kbartemp&&meshi->nabors[MUP]==NULL)
+           ){
           mesh_boundary = YES;
           if(is_extface[4]==1&&k1 == 0){
             ext_wall = 1;
@@ -2991,7 +2996,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
-// xxx
     if(vis_boundaries[n]==1&&patchdir[n]<0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;

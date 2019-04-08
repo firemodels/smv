@@ -9419,6 +9419,7 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
+  InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
