@@ -2323,12 +2323,12 @@ int Smv2Html(char *html_file, int option){
           fclose(slicestream_out);
         }
       }
+      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
+      fprintf(stream_out, "         var part_file_ready     = 0;\n");
 #ifdef pp_HTML_FILE
       fprintf(stream_out, "         var slice_file_ready    = 0;\n");
       fprintf(stream_out, "         var textures_slice_data = new Uint8Array(nframes*frame_size);\n");
 #else
-      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
-      fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var slice_file_ready    = 1;\n");
       fprintf(stream_out, "         var textures_slice_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
