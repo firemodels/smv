@@ -2298,7 +2298,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var zcen=%f;\n", zbar/2.0);
 
       // add unlit triangles
-      fprintf(stream_out, "         var vertices_unlit = [\n");
+      fprintf(stream_out, "         var vertices_slice = [\n");
 
       for(i = 0; i<nvertsUnlitSolid; i++){
         char label[100];
@@ -2324,12 +2324,12 @@ int Smv2Html(char *html_file, int option){
         }
       }
 #ifdef pp_HTML_FILE
-      fprintf(stream_out, "         var slice_file_ready = 0;\n");
-      fprintf(stream_out, "         var textures_unlit_data = new Uint8Array(nframes*frame_size);\n");
+      fprintf(stream_out, "         var slice_file_ready    = 0;\n");
+      fprintf(stream_out, "         var textures_slice_data = new Uint8Array(nframes*frame_size);\n");
 #else
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var slice_file_ready    = 1;\n");
-      fprintf(stream_out, "         var textures_unlit_data = [\n");
+      fprintf(stream_out, "         var textures_slice_data = [\n");
       for(i = 0; i<frame_size*nframes; i++){
         char label[100];
 
@@ -2339,7 +2339,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 #endif
-      fprintf(stream_out, "         var textures_unlit = new Float32Array([\n");
+      fprintf(stream_out, "         var textures_slice = new Float32Array([\n");
       for(i = 0; i<frame_size; i++){
         char label[100];
 
@@ -2362,7 +2362,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_data_height = 256;\n");
 
-      fprintf(stream_out, "         var indices_unlit = [\n");
+      fprintf(stream_out, "         var indices_slice = [\n");
       for(i = 0; i<nfacesUnlitSolid; i++){
         fprintf(stream_out, "%i,", facesUnlitSolid[i]);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesUnlitSolid-1))fprintf(stream_out, "\n");
