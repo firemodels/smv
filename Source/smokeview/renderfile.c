@@ -1447,7 +1447,57 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
 
 #ifdef pp_HTML
 
-/* ------------------ GetSliceFileNodes ------------------------ */
+/* ------------------ GetPartFileNodes ------------------------ */
+
+void GetPartFileNodes(int option, int option2, float *verts, float *colors, int *nverts, int *frame_sizes, int *nframes){
+  int i, ntimes=0, first = 1;
+  int ibeg, iend;
+  partdata *parttime=NULL;
+  int itime, ipart;
+
+  if(option2==ALL_TIMES){
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->loaded==0||parti->display==0)continue;
+      parttime = parti;
+      if(first==1){
+        *nframes = parti->ntimes;
+        first = 0;
+      }
+      else{
+        *nframes = MIN(parti->ntimes, *nframes);
+      }
+    }
+    ibeg = 0;
+    iend = *nframes;
+  }
+  else{
+    *nframes = 1;
+    ibeg = parttime->itime;
+    iend = parttime->itime+1;
+  }
+  if(option==0)return;
+  for(itime = ibeg; itime<iend; itime++){
+
+    frame_sizes[itime-ibeg] = 0;
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+      int nclasses;
+      part5data *datacopy;
+
+      parti = partinfo+i;
+      if(parti->loaded==0||parti->display==0)continue;
+      nclasses = parti->nclasses;
+      datacopy = parti->data5+nclasses*itime;
+
+    }
+  }
+
+}
+
+  /* ------------------ GetSliceFileNodes ------------------------ */
 
 void GetSliceFileNodes(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count = 0;
