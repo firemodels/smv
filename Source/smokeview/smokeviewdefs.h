@@ -613,7 +613,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define WINDROSE_POINT 0
 #define WINDROSE_STEPPED 1
-#define WINDROSE SLIDING 2
+#define WINDROSE_SLIDING 2
 
 #define CLOSE_WINDOW -2
 #define UPDATE_WINDOW -3
