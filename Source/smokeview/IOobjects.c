@@ -6185,7 +6185,6 @@ void DeviceData2WindRose(int nr, int ntheta){
 
     for(k = 0; k<vdevicei->nwindroseinfo; k++){
       windrosedata *windrosei;
-      int j, jend=1;
       histogramdata *histogram;
 
       windrosei = vdevicei->windroseinfo+k;
