@@ -1918,4 +1918,8 @@ void UpdateDisplay(void){
     update_visColorbarVertical = 0;
     visColorbarVertical = visColorbarVertical_val;
   }
+  if(update_windrose==1){
+    update_windrose = 0;
+    DeviceData2WindRose(nr_windrose, ntheta_windrose);
+  }
 }

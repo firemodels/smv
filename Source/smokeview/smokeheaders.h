@@ -232,7 +232,7 @@ EXTERNCPP void GetBoundaryParams(void);
 EXTERNCPP void GetSliceParams2(void);
 
 EXTERNCPP void DrawWindRosesDevices(void);
-EXTERNCPP void DeviceData2WindRose(int nr, int ntheta, int flag);
+EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
 EXTERNCPP void DefineAllFEDs(void);
 EXTERNCPP void UpdateTourState(void);
 EXTERNCPP void UpdateEditTour(void);

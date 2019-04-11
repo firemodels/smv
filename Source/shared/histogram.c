@@ -391,12 +391,6 @@ void InitHistogramPolar(histogramdata *histogram, int nr, int ntheta, float *rmi
   ResetHistogramPolar(histogram,rmin,rmax);
 }
 
-/* ------------------ FreeHistogramPolar ------------------------ */
-
-void FreeHistogramPolar(histogramdata *histogram){
-  FREEMEMORY(histogram->buckets_polar);
-}
-
 /* ------------------ Get2DBounds ------------------------ */
 
 int Get2DBounds(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float *rmin, float *rmax){

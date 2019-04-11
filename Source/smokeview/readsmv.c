@@ -9431,6 +9431,7 @@ typedef struct {
   GetFaceInfo();
 
   SetupMeshWalls();
+  update_windrose = 1;
 
   PRINTF("%s",_("complete"));
   PRINTF("\n\n");

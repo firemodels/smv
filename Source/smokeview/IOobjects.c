@@ -746,20 +746,23 @@ void DrawWindRose(windrosedata *wr,int orientation){
 void DrawWindRosesDevices(void){
   int i;
 
+  if(windrose_xy_vis==0&&windrose_xz_vis==0&&windrose_yz_vis==0)return;
   for(i = 0;i<nvdeviceinfo;i++){
     vdevicedata *vdevi;
-    int j;
+    windrosedata *wr;
+    int itime;
+
 
     vdevi = vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
-    for(j = 0; j<vdevi->nwindroseinfo; j++){
-      windrosedata *wr;
-
-      wr = vdevi->windroseinfo+j;
-      if(windrose_xy_vis==1)DrawWindRose(wr, WINDROSE_XY);
-      if(windrose_xz_vis==1)DrawWindRose(wr, WINDROSE_XZ);
-      if(windrose_yz_vis==1)DrawWindRose(wr, WINDROSE_YZ);
-    }
+    itime = 0;
+#ifdef pp_WINDROSE_AVG
+    if(global_times!=NULL)itime = CLAMP(itimes, 0, vdevi->nwindroseinfo-1);
+#endif
+    wr = vdevi->windroseinfo+itime;
+    if(windrose_xy_vis==1)DrawWindRose(wr, WINDROSE_XY);
+    if(windrose_xz_vis==1)DrawWindRose(wr, WINDROSE_XZ);
+    if(windrose_yz_vis==1)DrawWindRose(wr, WINDROSE_YZ);
   }
 }
 
@@ -6142,17 +6145,19 @@ int IsDupDeviceLabel(int index, int direction){
 
 #define WINDROSE_EPS 0.001
 
-void DeviceData2WindRose(int nr, int ntheta, int flag){
+void DeviceData2WindRose(int nr, int ntheta){
   int i;
 
   maxr_windrose = 0.0;
   for(i = 0; i < nvdeviceinfo; i++){
     vdevicedata *vdevicei;
+    windrosedata *windroseinfo;
     devicedata *udev, *vdev, *wdev;
     devicedata *angledev, *veldev;
 #define MAXDEVS 1000000000
     int nvals=MAXDEVS;
     int use_uvw_dev = 0, use_angle_dev=0;
+    int k;
 
     vdevicei = vdeviceinfo + i;
     udev = vdevicei->udev;
@@ -6175,21 +6180,39 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
       use_angle_dev = 1;
       nvals = MIN(angledev->nvals, veldev->nvals);
     }
-    if(flag == FIRST_TIME){
-      windrosedata *windroseinfo;
+
+// free windrose data
+
+    for(k = 0; k<vdevicei->nwindroseinfo; k++){
+      windrosedata *windrosei;
+      int j, jend=1;
+      histogramdata *histogram;
+
+      windrosei = vdevicei->windroseinfo+k;
+
+      histogram = windrosei->histogram+0;
+      FREEMEMORY(histogram->buckets_polar);
+      if(use_uvw_dev==1){
+        histogram = windrosei->histogram+1;
+        FREEMEMORY(histogram->buckets_polar);
+        histogram = windrosei->histogram+2;
+        FREEMEMORY(histogram->buckets_polar);
+      }
+    }
+    FREEMEMORY(vdevicei->windroseinfo);
+
+// allocate windrose data
 
 #ifdef pp_WINDROSE_AVG
-      vdevicei->nwindroseinfo = nvals;
+    vdevicei->nwindroseinfo = MAX(1,nglobal_times);
 #else
-      vdevicei->nwindroseinfo = 1;
+    vdevicei->nwindroseinfo = 1;
 #endif
-      NewMemory((void **)&windroseinfo, vdevicei->nwindroseinfo * sizeof(windrosedata));
-      vdevicei->windroseinfo= windroseinfo;
-    }
+    NewMemory((void **)&windroseinfo, vdevicei->nwindroseinfo * sizeof(windrosedata));
+    vdevicei->windroseinfo= windroseinfo;
 
     if(use_uvw_dev==1){
       float rmin, rmax;
-      int  k;
 
       for(k = 0; k<vdevicei->nwindroseinfo; k++){
         windrosedata *windrosei;
@@ -6203,9 +6226,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
           histogramdata *histogram;
 
           histogram = windrosei->histogram+j;
-          if(flag!=FIRST_TIME){
-            FreeHistogramPolar(histogram);
-          }
           InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
           uvals = NULL;
           vvals = NULL;
@@ -6249,7 +6269,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
     }
     if(use_angle_dev==1){
       float rmin, rmax;
-      int k;
 
       nvals = MIN(angledev->nvals, veldev->nvals);
       windrose_xy_active = 1;
@@ -6262,9 +6281,6 @@ void DeviceData2WindRose(int nr, int ntheta, int flag){
         windrosei = vdevicei->windroseinfo+k;
         windrosei->xyz = angledev->xyz;
         histogram = windrosei->histogram;
-        if(flag!=FIRST_TIME){
-          FreeHistogramPolar(histogram);
-        }
         InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
         if(windrose_merge_type==WINDROSE_POINT) {
           GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
@@ -6572,11 +6588,18 @@ void SetupDeviceData(void){
     vdevsorti->vdeviceinfo = vdeviceinfo + i;
     vdevsorti->dir = ZDIR;
   }
+  for(i = 0; i<nvdeviceinfo; i++){
+    vdevicedata *vdevicei;
+
+    vdevicei = vdeviceinfo+i;
+    vdevicei->nwindroseinfo = 0;
+    vdevicei->windroseinfo = NULL;
+  }
 
   SetupTreeDevices();
   UpdateColorDevices();
 
-  DeviceData2WindRose(nr_windrose,ntheta_windrose,FIRST_TIME);
+  DeviceData2WindRose(nr_windrose,ntheta_windrose);
 
   FREEMEMORY(vals);
   FREEMEMORY(valids);

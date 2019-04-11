@@ -246,7 +246,7 @@ void DeviceCB(int var){
 
   updatemenu = 1;
   if(var == WINDROSE_UPDATE){
-    DeviceData2WindRose(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    DeviceData2WindRose(nr_windrose, ntheta_windrose);
     return;
   }
   if(var == WINDROSE_DXYZT){
@@ -326,7 +326,7 @@ void DeviceCB(int var){
     }
     break;
   case DEVICE_NBUCKETS:
-    DeviceData2WindRose(nr_windrose, ntheta_windrose, NOT_FIRST_TIME);
+    DeviceData2WindRose(nr_windrose, ntheta_windrose);
     break;
   case DEVICE_show_orientation:
     updatemenu = 1;
