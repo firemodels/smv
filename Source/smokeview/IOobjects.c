@@ -6246,19 +6246,19 @@ void DeviceData2WindRose(int nr, int ntheta){
           if(vdev!=NULL)times = vdev->times;
           if(wdev!=NULL)times = wdev->times;
           if(uvals==NULL||vvals==NULL)continue;
-          if(times!=NULL&&windrose_merge_dxyzt[3]>0.1&&windrose_ttype==WINDROSE_USE_DT){
+          if(global_times!=NULL&&windrose_merge_dxyzt[3]>0.1&&windrose_ttype==WINDROSE_USE_DT){
             if(windrose_merge_type==WINDROSE_STEPPED){
               float dtime;
               int itime;
 
               dtime = MAX(windrose_merge_dxyzt[3],1.0);
-              itime = (int)(times[k]/dtime);
+              itime = (int)(global_times[k]/dtime);
               tmin = (float)itime*dtime;
               tmax = (float)(itime+1)*dtime;
             }
             else if(windrose_merge_type==WINDROSE_SLIDING){
-              tmin = times[k]-windrose_merge_dxyzt[3];
-              tmax = times[k]+windrose_merge_dxyzt[3];
+              tmin = global_times[k]-windrose_merge_dxyzt[3];
+              tmax = global_times[k]+windrose_merge_dxyzt[3];
             }
             else{ // WINDROSE_POINT
               tmin = 0.0;
