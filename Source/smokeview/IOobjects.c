@@ -6254,7 +6254,11 @@ void DeviceData2WindRose(int nr, int ntheta){
               dtime = MAX(windrose_merge_dxyzt[3],1.0);
               itime = (int)(global_times[k]/dtime);
               tmin = (float)itime*dtime;
-              tmax = (float)(itime+1)*dtime;
+              tmax = MIN((float)(itime+1)*dtime, global_times[vdevicei->nwindroseinfo-1]);
+              if(ABS(tmax-tmin)<dtime){
+                tmin = (float)(itime-1)*dtime;
+                tmax = global_times[vdevicei->nwindroseinfo-1];
+              }
             }
             else if(windrose_merge_type==WINDROSE_SLIDING){
               tmin = global_times[k]-windrose_merge_dxyzt[3];
