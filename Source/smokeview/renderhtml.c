@@ -915,6 +915,29 @@ int Smv2Html(char *html_file, int option){
     if(fgets(buffer, 255, stream_in)==NULL)break;
     TrimBack(buffer);
     if(Match(buffer, "<!--***CANVAS")==1){
+      fprintf(stream_out, "<p>\n");
+
+      // reset buttons
+      if(option==ALL_TIMES){
+        fprintf(stream_out,"<button onclick = \"Reset(0)\">Reset Time </button>\n");
+      }
+      fprintf(stream_out, "<button onclick = \"Reset(1)\">Reset View </button><br>\n");
+
+      //show/hide scene elements
+      if(nverts_slice>0){
+        fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
+      }
+      fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
+      fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
+
+      //pause
+      if(option==ALL_TIMES){
+        fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><<</button>\n");
+        fprintf(stream_out, "<button type = \"button\" id = \"buttonPauseResume\" onclick = \"SetTime(0)\">Pause</button>\n");
+        fprintf(stream_out, "<button onclick = \"SetTime(1)\">>></button><br>\n");
+      }
+
+
       fprintf(stream_out, "<canvas width = \"%i\" height = \"%i\" id = \"webSmokeview\"></canvas>", screenWidth, screenHeight);
       continue;
     }
@@ -925,9 +948,12 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var xcen=%f;\n", xbar/2.0);
       fprintf(stream_out, "         var ycen=%f;\n", ybar/2.0);
       fprintf(stream_out, "         var zcen=%f;\n", zbar/2.0);
+      if(option==ALL_TIMES){
+        fprintf(stream_out, "         document.getElementById(\"buttonPauseResume\").style.width = \"75px\";\n");
+      }
 
       // add unlit triangles
-      fprintf(stream_out, "         var vertices_slice = [\n");
+      fprintf(stream_out, "         var vertices_slice_node = [\n");
 
       for(i = 0; i<nverts_slice; i++){
         char label[100];
@@ -940,8 +966,9 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var nframes = %i;\n", nslice_frames);
-      fprintf(stream_out, "         var frame_size_slice = %i;\n", slice_framesize);
-      fprintf(stream_out, "         var slice_file = \"%s\";\n", html_slicefile_base);
+      fprintf(stream_out, "\n");
+      fprintf(stream_out, "         var frame_size_slice_node = %i;\n", slice_framesize);
+      fprintf(stream_out, "         var slice_node_file = \"%s\";\n", html_slicefile_base);
 
       if(slice_framesize*nslice_frames>0){
         FILE *slicestream_out =NULL;
@@ -952,14 +979,14 @@ int Smv2Html(char *html_file, int option){
           fclose(slicestream_out);
         }
       }
-      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
-      fprintf(stream_out, "         var part_file_ready     = 0;\n");
+
+      fprintf(stream_out, "         var show_slice_node          = 1;\n");
 #ifdef pp_HTML_FILE
-      fprintf(stream_out, "         var slice_file_ready    = 0;\n");
-      fprintf(stream_out, "         var textures_slice_data = new Uint8Array(nframes*frame_size);\n");
+      fprintf(stream_out, "         var slice_node_file_ready    = 0;\n");
+      fprintf(stream_out, "         var textures_slice_node_data = new Uint8Array(nframes*frame_size);\n");
 #else
-      fprintf(stream_out, "         var slice_file_ready    = 1;\n");
-      fprintf(stream_out, "         var textures_slice_data = [\n");
+      fprintf(stream_out, "         var slice_node_file_ready    = 1;\n");
+      fprintf(stream_out, "         var textures_slice_node_data = [\n");
       for(i = 0; i<slice_framesize*nslice_frames; i++){
         char label[100];
 
@@ -969,7 +996,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 #endif
-      fprintf(stream_out, "         var textures_slice = new Float32Array([\n");
+      fprintf(stream_out, "         var textures_slice_node = new Float32Array([\n");
       for(i = 0; i<slice_framesize; i++){
         char label[100];
 
@@ -978,6 +1005,17 @@ int Smv2Html(char *html_file, int option){
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(slice_framesize-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ]);\n");
+
+      fprintf(stream_out, "         var part_file_ready     = 0;\n");
+      fprintf(stream_out, "         var show_part           = 0;\n");
+      fprintf(stream_out, "\n");
+      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
+      fprintf(stream_out, "         var show_bndf           = 0;\n");
+      fprintf(stream_out, "\n");
+      fprintf(stream_out, "         var show_outlines       = 1;\n");
+      fprintf(stream_out, "         var show_blockages      = 1;\n");
+      fprintf(stream_out, "         var slice_cell_file_ready = 0;\n");
+      fprintf(stream_out, "         var show_slice_cell     = 0;\n");
 
       fprintf(stream_out, "         const texture_colorbar_data = new Uint8Array([\n");
       for(i = 0; i<256; i++){
@@ -992,12 +1030,21 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
 
-      fprintf(stream_out, "         var indices_slice = [\n");
-      for(i = 0; i<nfaces_slice; i++){
+      fprintf(stream_out, "         var indices_slice_node = [\n");
+        for(i = 0; i<nfaces_slice; i++){
         fprintf(stream_out, "%i,", faces_slice[i]);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfaces_slice-1))fprintf(stream_out, "\n");
       }
       fprintf(stream_out, "         ];\n");
+
+      // cell centered slicefiles
+      fprintf(stream_out, "         var vertices_slice_cell = [\n");
+      fprintf(stream_out, "         ];\n");
+      fprintf(stream_out, "         var textures_slice_cell = new Float32Array([\n");
+      fprintf(stream_out, "         ]);\n");
+      fprintf(stream_out, "         var indices_slice_cell = [\n");
+      fprintf(stream_out, "         ];\n");
+
 
       // add lit triangles
       fprintf(stream_out, "         var vertices_lit = [\n");
