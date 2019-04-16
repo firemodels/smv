@@ -32,7 +32,6 @@
 #define pp_SLICE_USE_ID       // use slcf index
 //#define pp_ISOTIME          // output iso load times
 #define pp_ISOTHREAD          // use multithreading for isosurfaces
-#define pp_GEOMC              // use C to read in boundary geometry files
 //#define pp_SMOKETEST        // max blending for fire, regular blending for smoke
 
 //#define pp_SPECTRAL
