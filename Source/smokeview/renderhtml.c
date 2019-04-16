@@ -63,6 +63,8 @@ void GetPartFileNodes(int option, int option2, float *verts, float *colors, int 
   /* ------------------ GetBndfFileNodes ------------------------ */
 
 void GetBndfFileNodes(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
+  *ntris = 0;
+  *nverts = 0;
 }
 
   /* ------------------ GetSliceFileNodes ------------------------ */
