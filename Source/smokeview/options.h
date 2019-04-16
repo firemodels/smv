@@ -25,7 +25,6 @@
 //#define pp_GEOMPRINT        // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
 //#define pp_DPRINT           // debug print, printf line number and source file
-#define pp_SLICEGEOM          // put geom slices in slicedata data structures 
 #define pp_CLIP               // test frustum near/far clip planes
 #define pp_DRAWISO            // turn on drawing routines
 #define pp_ffmpeg             // support compression

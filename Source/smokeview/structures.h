@@ -1167,9 +1167,7 @@ typedef struct _slicedata {
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   char *comp_file, *reg_file, *vol_file;
-#ifdef pp_SLICEGEOM
   char *geom_file;
-#endif
   int finalize;
   int slcf_index;
   char *slicelabel;
