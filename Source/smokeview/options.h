@@ -18,7 +18,6 @@
 //*** options: all platforms
 
 //#define pp_PARTDEBUG        // debug output for particles file I/O
-#define pp_WINDROSE_AVG       // average windrose data
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_VENTPROFILE      // show original zonefire vent flow profile (calculated in smokeview)
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu

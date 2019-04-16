@@ -756,9 +756,7 @@ void DrawWindRosesDevices(void){
     vdevi = vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
     itime = 0;
-#ifdef pp_WINDROSE_AVG
     if(global_times!=NULL)itime = CLAMP(itimes, 0, vdevi->nwindroseinfo-1);
-#endif
     wr = vdevi->windroseinfo+itime;
     if(windrose_xy_vis==1)DrawWindRose(wr, WINDROSE_XY);
     if(windrose_xz_vis==1)DrawWindRose(wr, WINDROSE_XZ);
@@ -6202,11 +6200,7 @@ void DeviceData2WindRose(int nr, int ntheta){
 
 // allocate windrose data
 
-#ifdef pp_WINDROSE_AVG
     vdevicei->nwindroseinfo = MAX(1,nglobal_times);
-#else
-    vdevicei->nwindroseinfo = 1;
-#endif
     NewMemory((void **)&windroseinfo, vdevicei->nwindroseinfo * sizeof(windrosedata));
     vdevicei->windroseinfo= windroseinfo;
 
