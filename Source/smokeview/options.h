@@ -34,7 +34,6 @@
 #define pp_ISOTHREAD          // use multithreading for isosurfaces
 #define pp_GEOMC              // use C to read in boundary geometry files
 //#define pp_SMOKETEST        // max blending for fire, regular blending for smoke
-//#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
 #define pp_CSLICE             // read slice files using C
 
 //#define pp_SPECTRAL
