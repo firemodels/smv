@@ -29,7 +29,6 @@ SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
-#ifdef pp_TISO
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
@@ -39,7 +38,6 @@ SVEXTERN float SVDECL(iso_global_min,0.0), SVDECL(iso_global_max,1.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
 SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
 SVEXTERN int SVDECL(show_iso_color, 1);
-#endif
 
 SVEXTERN int SVDECL(script_defer_loading, 0);
 

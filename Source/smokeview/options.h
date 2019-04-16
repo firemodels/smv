@@ -17,31 +17,30 @@
 
 //*** options: all platforms
 
-//#define pp_PARTDEBUG    // debug output for particles file I/O
-#define pp_WINDROSE_AVG // average windrose data
-//#define pp_SPECULAR     // add widgets for specular lighting parameters to the lighting dialog box
-//#define pp_VENTPROFILE  // show original zonefire vent flow profile (calculated in smokeview)
-#define pp_GPUSMOKE     // code to speed up 3d smoke using the gpu
-//#define pp_SMOKEDIAG    // output smoke3d diagnostics (number of meshes, total trianles, triangles drawn)
-//#define pp_GEOMPRINT  // output geometry info
+//#define pp_PARTDEBUG        // debug output for particles file I/O
+#define pp_WINDROSE_AVG       // average windrose data
+//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
+//#define pp_VENTPROFILE      // show original zonefire vent flow profile (calculated in smokeview)
+#define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
+//#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
+//#define pp_GEOMPRINT        // output geometry info
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
-//#define pp_DPRINT       // debug print, printf line number and source file
-#define pp_SLICEGEOM    // put geom slices in slicedata data structures 
-#define pp_CLIP         // test frustum near/far clip planes
-#define pp_DRAWISO      // turn on drawing routines
-#define pp_ffmpeg       // support compression
-#define pp_FILELIST     // use list of file names
-#define pp_LANG         // support other languages
-#define pp_TISO         // color isosurfaces with a 2nd quantity
-#define pp_SLICE_USE_ID     // use slcf index
-//#define pp_ISOTIME      // output iso load times
-#define pp_ISOTHREAD    // use multithreading for isosufraces
-#define pp_GEOMC        // use C to read in boundary geometry files
-//#define pp_SMOKETEST    // max blending for fire, regular blending for smoke
+//#define pp_DPRINT           // debug print, printf line number and source file
+#define pp_SLICEGEOM          // put geom slices in slicedata data structures 
+#define pp_CLIP               // test frustum near/far clip planes
+#define pp_DRAWISO            // turn on drawing routines
+#define pp_ffmpeg             // support compression
+#define pp_FILELIST           // use list of file names
+#define pp_LANG               // support other languages
+#define pp_SLICE_USE_ID       // use slcf index
+//#define pp_ISOTIME          // output iso load times
+#define pp_ISOTHREAD          // use multithreading for isosurfaces
+#define pp_GEOMC              // use C to read in boundary geometry files
+//#define pp_SMOKETEST        // max blending for fire, regular blending for smoke
 
 //#define pp_SPECTRAL
 
-#define pp_GPU          // support the GPU
+#define pp_GPU                // support the GPU
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
@@ -81,7 +80,7 @@
 //#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
 #define pp_CSLICE             // read slice files using C
 
-//*** options: options being test on all platforms
+//*** options: options being tested on all platforms
 
 #ifdef pp_BETA
 //#define pp_SLICE_DEBUG         // slice debug output

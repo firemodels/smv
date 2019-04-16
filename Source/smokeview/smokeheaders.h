@@ -13,11 +13,9 @@ EXTERNCPP int Smv2Html(char *html_out, int option);
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
-#ifdef pp_TISO
 EXTERNCPP void UpdateGluiIsoBounds(void);
 EXTERNCPP void UpdateListIsoColorobar(void);
 EXTERNCPP void UpdateTexturebar(void);
-#endif
 EXTERNCPP void UpdatePosView(void);
 EXTERNCPP void UpdateUseLighting(void);
 #ifdef pp_GPUSMOKE

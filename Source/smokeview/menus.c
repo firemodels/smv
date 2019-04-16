@@ -977,12 +977,10 @@ void ColorbarMenu(int value){
   }
   if(value>=0){
     colorbartype=value;
-#ifdef pp_TISO
     iso_colorbar_index=value;
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     update_texturebar=1;
     UpdateListIsoColorobar();
-#endif
     selectedcolorbar_index2=colorbartype;
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
     UpdateColorbarType();

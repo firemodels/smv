@@ -1826,12 +1826,10 @@ void UpdateFlippedColorbar(void){
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
- #ifdef pp_TISO
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();
   }
-#endif
   if(update_setvents==1){
     SetVentDirs();
     update_setvents=0;

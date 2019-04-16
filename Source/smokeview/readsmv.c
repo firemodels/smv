@@ -8846,13 +8846,11 @@ typedef struct {
       isoi->levels=NULL;
       isoi->is_fed=0;
       isoi->memory_id = ++nmemory_ids;
-#ifdef pp_TISO
       isoi->geom_nstatics = NULL;
       isoi->geom_ndynamics=NULL;
       isoi->geom_times=NULL;
       isoi->geom_vals=NULL;
       isoi->histogram = NULL;
-#endif
 
       isoi->normaltable=NULL;
       isoi->color_label.longlabel=NULL;
