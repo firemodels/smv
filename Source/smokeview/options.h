@@ -27,7 +27,6 @@
 //#define pp_DPRINT           // debug print, printf line number and source file
 #define pp_CLIP               // test frustum near/far clip planes
 #define pp_DRAWISO            // turn on drawing routines
-#define pp_ffmpeg             // support compression
 #define pp_FILELIST           // use list of file names
 #define pp_LANG               // support other languages
 #define pp_SLICE_USE_ID       // use slcf index
