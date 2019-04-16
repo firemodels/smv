@@ -10740,11 +10740,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
-#ifdef pp_CSLICE
       sscanf(buffer, "%i %i", &load_incremental,&use_cslice);
-#else
-      sscanf(buffer, "%i", &load_incremental);
-#endif
       continue;
     }
     if(Match(buffer, "MSCALE") == 1){
@@ -13294,11 +13290,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
   fprintf(fileout, "LOADINC\n");
-#ifdef pp_CSLICE
   fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
-#else
-  fprintf(fileout, " %i\n", load_incremental);
-#endif
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "SHOWFEDAREA\n");
