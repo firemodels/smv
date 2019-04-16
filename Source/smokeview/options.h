@@ -34,6 +34,8 @@
 #define pp_ISOTHREAD          // use multithreading for isosurfaces
 #define pp_GEOMC              // use C to read in boundary geometry files
 //#define pp_SMOKETEST        // max blending for fire, regular blending for smoke
+//#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
+#define pp_CSLICE             // read slice files using C
 
 //#define pp_SPECTRAL
 
@@ -72,11 +74,6 @@
 // #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
 
-//*** options: all platforms
-
-//#define pp_3DSMOKE_MULTI    // show menus that load more than one 3d smoke type (example soot/hrrpuv/co2 )
-#define pp_CSLICE             // read slice files using C
-
 //*** options: options being tested on all platforms
 
 #ifdef pp_BETA
@@ -87,7 +84,6 @@
 //#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step 
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_SHOWTERRAIN
-#define pp_GEOMTEST            // used to test tetrahedron box intersections
 #define pp_TIMINGS
 //#define pp_GPUDEPTH
 //#define pp_SMOKETEST         // experimental smoke dialog box entries
