@@ -920,10 +920,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "<p>\n");
 
       // reset buttons
-      if(option==ALL_TIMES){
-        fprintf(stream_out,"<button onclick = \"Reset(0)\">Reset Time </button>\n");
-      }
-      fprintf(stream_out, "<button onclick = \"Reset(1)\">Reset View </button><br>\n");
+      fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button><br>\n");
 
       //show/hide scene elements
       if(nverts_slice>0){
@@ -934,9 +931,11 @@ int Smv2Html(char *html_file, int option){
 
       //pause
       if(option==ALL_TIMES){
-        fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><<</button>\n");
+        fprintf(stream_out, "<button onclick = \"SetTime(-2)\"><<</button>\n");
+        fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><</button>\n");
         fprintf(stream_out, "<button type = \"button\" id = \"buttonPauseResume\" onclick = \"SetTime(0)\">Pause</button>\n");
-        fprintf(stream_out, "<button onclick = \"SetTime(1)\">>></button><br>\n");
+        fprintf(stream_out, "<button onclick = \"SetTime(1)\">></button>\n");
+        fprintf(stream_out, "<button onclick = \"SetTime(2)\">>></button><br>\n");
       }
 
 
