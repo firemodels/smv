@@ -628,15 +628,15 @@ void DrawWindRose(windrosedata *wr,int orientation){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(xyz[0]-xbar0ORIG, xyz[1]-ybar0ORIG, xyz[2]-zbar0ORIG);
 
-  dtheta = DEG2RAD*360.0/(float)(hist->ntheta+1);
+  dtheta = DEG2RAD*360.0/(float)hist->ntheta;
   glBegin(GL_TRIANGLES);
   for(itheta = 0;itheta<hist->ntheta;itheta++){
     int ir;
     float theta, theta2;
     float rval, rval2;
 
-    theta  = (float)itheta*dtheta;
-    theta2 = (float)(itheta+1)*dtheta;
+    theta  = ((float)itheta-0.5)*dtheta;
+    theta2 = ((float)itheta+0.5)*dtheta;
     rval = 0.0;
     for(ir = 0;ir<hist->nr;ir++){
       int color_index;

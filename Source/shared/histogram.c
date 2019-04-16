@@ -454,7 +454,7 @@ void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float
     r = sqrt(u*u + v*v);
     histogram->val_min = MIN(histogram->val_min, r);
     histogram->val_max = MAX(histogram->val_max, r);
-    theta = FMOD360(RAD2DEG*atan2(v, u));
+    theta = fmod(RAD2DEG*atan2(v, u)+180.0/(float)histogram->ntheta,360.0);
 
     ir = 0;
     if(rmax>rmin)ir = CLAMP(histogram->nr*(r - rmin) / (rmax - rmin),0,histogram->nr-1);
