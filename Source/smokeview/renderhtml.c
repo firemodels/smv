@@ -874,6 +874,19 @@ int Smv2Html(char *html_file, int option){
   char html_fullfile[1024], html_slicefile[1024], html_slicefile_base[1024];
   int return_val;
   int copy_html;
+  int have_slice_geom = 0;
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||slicei->display==0)continue;
+    if(slicei->slicefile_type==SLICE_GEOM){
+      have_slice_geom = 1;
+      break;
+    }
+  }
 
   stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
@@ -925,6 +938,10 @@ int Smv2Html(char *html_file, int option){
       //show/hide scene elements
       if(nverts_slice>0){
         fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
+      }
+      //fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
+      if(have_slice_geom==1){
+        fprintf(stream_out, "<button onclick = \"show_slice_geom=ShowHide(show_slice_geom)\">slice(geom)</button>\n");
       }
       fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
       fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
