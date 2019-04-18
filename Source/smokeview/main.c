@@ -95,9 +95,6 @@ void Usage(char *prog,int option){
 #ifdef pp_DRAWISO
     strcat(label, ", pp_DRAWISO");
 #endif
-#ifdef pp_ffmpeg
-    strcat(label, ", pp_ffmpeg");
-#endif
 #ifdef pp_FILELIST
     strcat(label, ", pp_FILELIST");
 #endif
@@ -747,14 +744,12 @@ int main(int argc, char **argv){
   InitTextureDir();
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
-#ifdef pp_ffmpeg
 #ifdef WIN32
   have_ffmpeg = HaveProg("ffmpeg -version> Nul 2>Nul");
   have_ffplay = HaveProg("ffplay -version> Nul 2>Nul");
 #else
   have_ffmpeg = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
   have_ffplay = HaveProg("ffplay -version >/dev/null 2>/dev/null");
-#endif
 #endif
   DisplayVersionInfo("Smokeview ");
   SetupGlut(argc,argv_sv);

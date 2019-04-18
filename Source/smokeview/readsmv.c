@@ -3575,9 +3575,7 @@ int ReadSMV(char *file, char *file2){
 
   char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
   char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
-#ifdef pp_SLICEGEOM
   patchdata *patchgeom;
-#endif
 #ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
 #else
@@ -4336,20 +4334,16 @@ int ReadSMV(char *file, char *file2){
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
-#ifdef pp_SLICEGEOM
         || (Match(buffer, "BNDS") == 1)
-#endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
       nsliceinfo++;
       nslicefiles=nsliceinfo;
-#ifdef pp_SLICEGEOM
       if(Match(buffer, "BNDS") == 1){
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
       }
-#endif
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
@@ -4385,9 +4379,7 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
-#ifndef pp_SLICEGEOM
       || Match(buffer, "BNDS") == 1
-#endif
       ){
       if(setup_only == 1||smoke3d_only==1)continue;
       npatchinfo++;
@@ -8165,17 +8157,13 @@ typedef struct {
         (Match(buffer, "SLCD") == 1) ||
         (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
-#ifdef pp_SLICEGEOM
       || (Match(buffer, "BNDS") == 1)
-#endif
       ){
       char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
       float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
-#ifdef pp_SLICEGEOM
       int slicegeom=0;
-#endif
       int slcf_index = 0;
       char *char_slcf_index;
       int has_reg, has_comp;
@@ -8221,12 +8209,10 @@ typedef struct {
         strcpy(slicelabel,slicelabelptr);
         slicelabelptr=slicelabel;
       }
-#ifdef pp_SLICEGEOM
       if(Match(buffer,"BNDS") == 1){
         strcpy(bufferA,buffer);
         slicegeom=1;
       }
-#endif
       if(Match(buffer,"SLCT") == 1){
         terrain=1;
       }
@@ -8264,11 +8250,9 @@ typedef struct {
         nsliceinfo--;
         BREAK;
       }
-#ifdef pp_SLICEGEOM
       if(slicegeom == 1){
         strcpy(bufferB,buffer);
       }
-#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
@@ -8288,7 +8272,6 @@ typedef struct {
       sd->slicelabel=NULL;
       sd->slicefile_type=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
-#ifdef pp_SLICEGEOM
       if(slicegeom==1){
         patchdata *patchgeom;
 
@@ -8296,7 +8279,6 @@ typedef struct {
         NewMemory((void **)&patchgeom,sizeof(patchdata));
         sd->patchgeom=patchgeom;
       }
-#endif
       if(terrain==1){
         sd->slicefile_type=SLICE_TERRAIN;
       }
@@ -8328,13 +8310,11 @@ typedef struct {
         if(FGETS(buffer,255,stream)==NULL){
           BREAK;
         }
-#ifdef pp_SLICEGEOM
         if(slicegeom==1){
           if(FGETS(buffer,255,stream)==NULL){
             BREAK;
           }
         }
-#endif
         continue;
       }
 
@@ -8353,8 +8333,6 @@ typedef struct {
         sd->file=sd->reg_file;
       }
 
-#ifdef pp_SLICEGEOM
-
 // read in geometry file name
 
       if(slicegeom==1){
@@ -8371,7 +8349,6 @@ typedef struct {
         NewMemory((void **)&sd->geom_file,(unsigned int)(lengeom+1));
         STRCPY(sd->geom_file,bufferptr2);
       }
-#endif
 
 // read in labels
 
@@ -8499,7 +8476,6 @@ typedef struct {
         continue;
       }
       sliceinfo_copy++;
-#ifdef pp_SLICEGEOM
       if(slicegeom==1){
         strcpy(buffer,bufferA);
         patchgeom = sd->patchgeom;
@@ -8507,9 +8483,6 @@ typedef struct {
       else{
         continue;
       }
-#else
-      continue;
-#endif
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8524,17 +8497,13 @@ typedef struct {
       int blocknumber;
       size_t len;
       char *filetype_label;
-#ifdef pp_SLICEGEOM
       int slicegeom=0;
-#endif
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
-#ifdef pp_SLICEGEOM
       if(Match(buffer, "BNDS")==1){
         slicegeom=1;
       }
-#endif
       nn_patch++;
 
       TrimBack(buffer);
@@ -8554,16 +8523,12 @@ typedef struct {
         sscanf(buffer3,"%i %i",&blocknumber,&version);
         blocknumber--;
       }
-#ifdef pp_SLICEGEOM
       if(slicegeom==1){
         patchi = patchgeom;
       }
       else{
         patchi = patchinfo + ipatch;
       }
-#else
-      patchi = patchinfo + ipatch;
-#endif
 
       for(i = 0; i < 6; i++){
         patchi->ijk[i] = -1;
@@ -8622,7 +8587,6 @@ typedef struct {
         CheckMemory;
       }
 
-#ifdef pp_SLICEGEOM
       if(slicegeom==1){
         strcpy(buffer,bufferB);
       }
@@ -8632,12 +8596,6 @@ typedef struct {
           BREAK;
         }
       }
-#else
-      if(FGETS(buffer,255,stream)==NULL){
-        npatchinfo--;
-        BREAK;
-      }
-#endif
 
       bufferptr=TrimFrontBack(buffer);
       len=strlen(bufferptr);
@@ -8666,7 +8624,6 @@ typedef struct {
       if(patchi->structured == NO){
         int igeom;
 
-#ifdef pp_SLICEGEOM
       if(slicegeom==1){
         strcpy(buffer,bufferC);
       }
@@ -8676,12 +8633,6 @@ typedef struct {
           BREAK;
         }
       }
-#else
-      if(FGETS(buffer,255,stream)==NULL){
-        npatchinfo--;
-        BREAK;
-      }
-#endif
         bufferptr=TrimFrontBack(buffer);
         NewMemory((void **)&patchi->geomfile,strlen(bufferptr)+1);
         strcpy(patchi->geomfile,bufferptr);
@@ -8752,16 +8703,12 @@ typedef struct {
               strcpy(geomlabel2, " - Cut cell faces");
             }
           }
-#ifdef pp_SLICEGEOM
           if(slicegeom==1){
             if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
           }
           else{
             if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
           }
-#else
-          if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
-#endif
         }
         strcpy(patchi->menulabel_base, patchi->label.longlabel);
         if(strlen(geomlabel2) > 0){
@@ -8770,11 +8717,7 @@ typedef struct {
         }
         NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
         InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
-#ifdef pp_SLICEGEOM
         if(slicegeom==0)ipatch++;
-#else
-        ipatch++;
-#endif
       }
       else{
         if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
@@ -8846,13 +8789,11 @@ typedef struct {
       isoi->levels=NULL;
       isoi->is_fed=0;
       isoi->memory_id = ++nmemory_ids;
-#ifdef pp_TISO
       isoi->geom_nstatics = NULL;
       isoi->geom_ndynamics=NULL;
       isoi->geom_times=NULL;
       isoi->geom_vals=NULL;
       isoi->histogram = NULL;
-#endif
 
       isoi->normaltable=NULL;
       isoi->color_label.longlabel=NULL;
@@ -9431,6 +9372,7 @@ typedef struct {
   GetFaceInfo();
 
   SetupMeshWalls();
+  update_windrose = 1;
 
   PRINTF("%s",_("complete"));
   PRINTF("\n\n");
@@ -10798,11 +10740,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
-#ifdef pp_CSLICE
       sscanf(buffer, "%i %i", &load_incremental,&use_cslice);
-#else
-      sscanf(buffer, "%i", &load_incremental);
-#endif
       continue;
     }
     if(Match(buffer, "MSCALE") == 1){
@@ -13352,11 +13290,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
   fprintf(fileout, "LOADINC\n");
-#ifdef pp_CSLICE
   fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
-#else
-  fprintf(fileout, " %i\n", load_incremental);
-#endif
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "SHOWFEDAREA\n");

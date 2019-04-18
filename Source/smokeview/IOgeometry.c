@@ -285,7 +285,6 @@ void GetGeomZBounds(float *zmin, float *zmax){
     }
   }
 }
-#ifdef pp_TISO
 
 /* ------------------ TextureOff ------------------------ */
 
@@ -305,7 +304,6 @@ int TextureOn(GLuint texture_id,int *texture_first){
   glBindTexture(GL_TEXTURE_1D, texture_id);
   return 1;
 }
-#endif
 
 /* ------------------ DrawGeom ------------------------ */
 
@@ -321,9 +319,7 @@ void DrawGeom(int flag, int timestate){
   float last_transparent_level=-1.0;
   int ntris;
   tridata **tris;
-#ifdef pp_TISO
   int texture_state = OFF, texture_first=1;
-#endif
 
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
@@ -341,11 +337,9 @@ void DrawGeom(int flag, int timestate){
 
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
-#ifdef pp_TISO
     if(usetexturebar==1&&texture_state==OFF){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
-#endif
 
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
@@ -401,13 +395,11 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
       if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
         if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
-#ifdef pp_TISO
           if(texture_state==ON){
             glEnd();
             texture_state = TextureOff();
             glBegin(GL_TRIANGLES);
           }
-#endif
           glColor4f(color[0], color[1], color[2], transparent_level_local);
           last_color = color;
           last_transparent_level = transparent_level_local;
@@ -430,14 +422,11 @@ void DrawGeom(int flag, int timestate){
           float *vnorm, *vpos;
           float factor;
           float transparent_level_local_new;
-#ifdef pp_TISO
           geomlistdata *geomlisti=NULL;
           float *vertvals=NULL;
           float texture_val;
-#endif
 
           vertj = trianglei->verts[j];
-#ifdef pp_TISO
           geomlisti = trianglei->geomlisti;
           if(geomlisti!=NULL)vertvals=geomlisti->vertvals;
           if(show_iso_color==1&&vertvals!=NULL){
@@ -451,7 +440,6 @@ void DrawGeom(int flag, int timestate){
             colorbar_index = CLAMP((int)(255.0*texture_val),0,255);
             color = rgb_iso+4*colorbar_index;
           }
-#endif
           if(iso_opacity_change==1&&trianglei->geomtype==GEOM_ISO){
           // v1 = xyz - fds_eyepos vector from eye to vertex
           // v2 = vert_norm        normal vector from vertex
@@ -470,7 +458,6 @@ void DrawGeom(int flag, int timestate){
             factor = ABS(DOT3(v1,v2));
             transparent_level_local_new = CLAMP(transparent_level_local,0.0,1.0);
             if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0 - pow(1.0-transparent_level_local,1.0/factor);
-#ifdef pp_TISO
             if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
               if(texture_state==OFF){
                 glEnd();
@@ -487,9 +474,6 @@ void DrawGeom(int flag, int timestate){
               }
               glColor4f(color[0], color[1], color[2], transparent_level_local_new);
             }
-#else
-            glColor4f(color[0], color[1], color[2], transparent_level_local_new);
-#endif
           }
           glNormal3fv(trianglei->vert_norm+3*j);
           glVertex3fv(vertj->xyz);
@@ -497,11 +481,9 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
-#ifdef pp_TISO
     if(usetexturebar==1&&texture_state==ON){
       texture_state=TextureOff();
     }
-#endif
 
     if(visGeomTextures == 1 || show_texture_1dimage == 1){
       texturedata *lasttexture;
@@ -1784,9 +1766,7 @@ void ReadAllGeom(void){
 
 void InitGeomlist(geomlistdata *geomlisti){
   geomlisti->verts = NULL;
-#ifdef pp_TISO
   geomlisti->vertvals = NULL;
-#endif
   geomlisti->triangles = NULL;
   geomlisti->triangleptrs = NULL;
   geomlisti->connected_triangles = NULL;
@@ -3480,9 +3460,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           if(tri->geomsurf->transparent_level >= 1.0)is_opaque = 1;
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
-#ifdef pp_TISO
           tri->geomlisti = geomlisti;
-#endif
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;
           }

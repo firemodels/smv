@@ -840,6 +840,7 @@ void TourCB(int var){
     UpdateTourControls();
     selected_tour->display=0;
     TOURMENU(selectedtour_index);
+    if(PANEL_node!=NULL)PANEL_node->enable();
     updatemenu=1;
     break;
   case TOUR_LABEL:

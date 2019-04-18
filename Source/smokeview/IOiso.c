@@ -216,14 +216,12 @@ void UnloadIso(meshdata *meshi){
     FREEMEMORY(meshi->animatedsurfaces);
     FREEMEMORY(meshi->showlevels);
   }
-#ifdef pp_TISO
   if(ib->dataflag==1){
     FREEMEMORY(ib->geom_nstatics);
     FREEMEMORY(ib->geom_ndynamics);
     FREEMEMORY(ib->geom_times);
     FREEMEMORY(ib->geom_vals);
   }
-#endif
   meshi->niso_times = 0;
   FREEMEMORY(ib->normaltable);
 
@@ -262,7 +260,6 @@ int GetIsoType(const isodata *isoi){
   return -1;
 }
 
-#ifdef pp_TISO
 /* ------------------ GetIsoDataBounds ------------------------ */
 
 void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
@@ -279,7 +276,6 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
     *pmax = MAX(*pmax, pdata[i]);
   }
 }
-#endif
 
 /* ------------------ ReadIsoGeom ------------------------ */
 
@@ -306,14 +302,11 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
 
   if(load_flag==UNLOAD){
-#ifdef pp_TISO
     FREEMEMORY(isoi->geom_vals);
-#endif
     meshi->isofilenum = -1;
     return 0;
   }
 
-#ifdef pp_TISO
   if(isoi->dataflag==1){
     int filesize;
     int lenfile, ntimes_local;
@@ -345,7 +338,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     }
     FREEMEMORY(isoi->geom_ndynamics);
   }
-#endif
 
   surfi = surfinfo + nsurfinfo+1;
   UpdateIsoColors();
@@ -389,7 +381,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   if(update_readiso_geom_wrapup==UPDATE_ISO_OFF)update_readiso_geom_wrapup=UPDATE_ISO_ONE_NOW;
   if(update_readiso_geom_wrapup==UPDATE_ISO_START_ALL)update_readiso_geom_wrapup=UPDATE_ISO_ALL_NOW;
 
-#ifdef pp_TISO
   if(isoi->dataflag==1){
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
     isoi->geom_globalmin = iso_valmin;
@@ -405,7 +396,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     iso_global_max = isoi->geom_globalmax;
     UpdateGluiIsoBounds();
   }
-#endif
   PrintMemoryInfo;
   show_isofiles = 1;
 

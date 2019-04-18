@@ -79,9 +79,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define INIT_HISTOGRAM 214
 #define UPDATE_BOUNDARYSLICEDUPS 215
 #define ISO_TRANSPARENCY_OPTION 216
-#ifdef pp_TISO
 #define ISO_COLORBAR_LIST 217
-#endif
 #define ISO_OUTLINE_IOFFSET 218
 
 #define ISO_TRANSPARENT_CONSTANT 0
@@ -179,9 +177,7 @@ GLUI_Button *BUTTON_BOUNDARY = NULL;
 GLUI_Button *BUTTON_ISO = NULL;
 
 GLUI_Listbox *LIST_colortable = NULL;
-#ifdef pp_TISO
 GLUI_Listbox *LIST_iso_colorbar = NULL;
-#endif
 
 #ifdef pp_MEMDEBUG
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
@@ -430,8 +426,6 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 procdata boundprocinfo[8], fileprocinfo[8], plot3dprocinfo[2], isoprocinfo[3], subboundprocinfo[4], sliceprocinfo[6];
 int nboundprocinfo = 0, nfileprocinfo = 0, nsliceprocinfo=0, nplot3dprocinfo=0, nisoprocinfo=0, nsubboundprocinfo=0;
 
-#ifdef pp_TISO
-
 /* ------------------ UpdateListIsoColorobar ------------------------ */
 
 extern "C" void UpdateListIsoColorobar(void){
@@ -453,7 +447,6 @@ extern "C" void UpdateGluiIsoBounds(void){
     if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
   }
 }
-#endif
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
 
@@ -2025,7 +2018,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     IsoBoundCB(ISO_LEVEL);
     IsoBoundCB(ISO_COLORS);
 
-#ifdef pp_TISO
     if(ncolorbars>0){
       LIST_iso_colorbar = glui_bounds->add_listbox_to_panel(ROLLOUT_iso_color, "colormap:", &iso_colorbar_index, ISO_COLORBAR_LIST, IsoBoundCB);
       for(i = 0; i<ncolorbars; i++){
@@ -2041,7 +2033,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_spinner_to_panel(ROLLOUT_iso_color, "min:", GLUI_SPINNER_FLOAT, &iso_valmin);
     glui_bounds->add_spinner_to_panel(ROLLOUT_iso_color, "max:", GLUI_SPINNER_FLOAT, &iso_valmax);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_color,_("Show"),&show_iso_color);
-#endif
   }
 
   /* Particle File Bounds  */
@@ -2378,9 +2369,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("incremental data loading"), &load_incremental,SLICE_LOAD_INCREMENTAL,LoadIncrementalCB);
     LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
-#ifdef pp_CSLICE
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice, _("Use C for slice input"), &use_cslice);
-#endif
     PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "slice fire", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
@@ -2785,14 +2774,12 @@ extern "C" void IsoBoundCB(int var){
   case ISO_OUTLINE_IOFFSET:
     iso_outline_offset = (float)iso_outline_ioffset/1000.0;
   break;
-#ifdef pp_TISO
   case ISO_COLORBAR_LIST:
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     ColorbarMenu(iso_colorbar_index);
     updatemenu = 1;
     update_texturebar = 1;
     break;
-#endif
   case ISO_TRANSPARENCY_OPTION:
     switch(iso_transparency_option){
       case ISO_TRANSPARENT_CONSTANT:

@@ -58,9 +58,7 @@ typedef struct _tridata {
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9], area;
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
-#ifdef pp_TISO
   struct _geomlistdata *geomlisti;
-#endif
   int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
@@ -573,14 +571,12 @@ typedef struct _isodata {
   float *levels, **colorlevels;
   int nlevels;
   char menulabel[128];
-#ifdef pp_TISO
   int *geom_nstatics, *geom_ndynamics;
   float *geom_times, *geom_vals;
   float geom_globalmin, geom_globalmax;
   float geom_percentilemin, geom_percentilemax;
   int geom_nvals;
   histogramdata *histogram;
-#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */
@@ -1171,9 +1167,7 @@ typedef struct _slicedata {
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   char *comp_file, *reg_file, *vol_file;
-#ifdef pp_SLICEGEOM
   char *geom_file;
-#endif
   int finalize;
   int slcf_index;
   char *slicelabel;

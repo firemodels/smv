@@ -42,7 +42,6 @@ void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, floa
 void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
-void FreeHistogramPolar(histogramdata *histogram);
 int Get2DBounds(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float *rmin, float *rmax);
 void GetHistogramStats(histogramdata *histogram);
 float GetHistogramCDF(histogramdata *histogram, float val);

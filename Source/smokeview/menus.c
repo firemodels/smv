@@ -977,12 +977,10 @@ void ColorbarMenu(int value){
   }
   if(value>=0){
     colorbartype=value;
-#ifdef pp_TISO
     iso_colorbar_index=value;
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     update_texturebar=1;
     UpdateListIsoColorobar();
-#endif
     selectedcolorbar_index2=colorbartype;
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
     UpdateColorbarType();
@@ -10189,39 +10187,7 @@ updatemenu=0;
         char menulabel[1024];
 
         if(nmeshes==1){
-#ifdef pp_3DSMOKE_MULTI
-          char smoke3dmenulabel[256];
-          int menu_callback_entry;
-#endif
-
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
-#ifdef pp_3DSMOKE_MULTI
-          strcpy(smoke3dmenulabel, "");
-          if(nsootfiles > 0 && ntempfiles > 0){
-            if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
-            strcat(smoke3dmenulabel, "SOOT/TEMPERATURE");
-            menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
-            if(nco2files > 0){
-              strcat(smoke3dmenulabel, "/CO2");
-              menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
-            }
-            glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
-          }
-          strcpy(smoke3dmenulabel, "");
-          if(nsootfiles > 0 && nhrrpuvfiles > 0){
-            if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && nhrrpuvloaded > 0)strcat(smoke3dmenulabel, "*");
-            strcat(smoke3dmenulabel, "SOOT/HRRPUV");
-            menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV;
-            if(nco2files > 0){
-              strcat(smoke3dmenulabel, "/CO2");
-              menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV_CO2;
-            }
-            glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
-          }
-          if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-            glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
-          }
-#endif
         }
 
         // 3d smoke soot menu
@@ -10305,41 +10271,9 @@ updatemenu=0;
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           {
-#ifdef pp_3DSMOKE_MULTI
-            char smoke3dmenulabel[256];
-            int menu_callback_entry;
-#endif
- 
 #ifdef pp_SMOKE3D_LOADTEST
             if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
             if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
-#endif
-#ifdef pp_3DSMOKE_MULTI
-            strcpy(smoke3dmenulabel, "");
-            if(nsootfiles > 0 && ntempfiles > 0){
-              if((nco2files == 0 || nco2loaded > 0) && nsootloaded > 0 && ntemploaded > 0)strcat(smoke3dmenulabel, "*");
-              strcat(smoke3dmenulabel, "SOOT/TEMPERATURE");
-              menu_callback_entry = MENU_SMOKE_SOOT_TEMP;
-              if(nco2files > 0){
-                strcat(smoke3dmenulabel, "/CO2");
-                menu_callback_entry = MENU_SMOKE_SOOT_TEMP_CO2;
-              }
-              glutAddMenuEntry(smoke3dmenulabel, menu_callback_entry);
-            }
-            strcpy(smoke3dmenulabel,"");
-            if(nsootfiles>0&&nhrrpuvfiles>0){
-              if((nco2files==0||nco2loaded>0)&&nsootloaded>0&&nhrrpuvloaded>0)strcat(smoke3dmenulabel,"*");
-              strcat(smoke3dmenulabel,"SOOT/HRRPUV");
-              menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV;
-              if(nco2files>0){
-                strcat(smoke3dmenulabel,"/CO2");
-                menu_callback_entry = MENU_SMOKE_SOOT_HRRPUV_CO2;
-              }
-              glutAddMenuEntry(smoke3dmenulabel,menu_callback_entry);
-            }
-            if(nsootfiles > 0 && (ntempfiles > 0 || nhrrpuvfiles > 0)){
-              glutAddMenuEntry("-", MENU_DUMMY_SMOKE);
-            }
 #endif
           }
           for(i=0;i<nsmoke3dinfo;i++){

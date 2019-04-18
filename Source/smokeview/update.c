@@ -1826,12 +1826,10 @@ void UpdateFlippedColorbar(void){
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
- #ifdef pp_TISO
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();
   }
-#endif
   if(update_setvents==1){
     SetVentDirs();
     update_setvents=0;
@@ -1917,5 +1915,9 @@ void UpdateDisplay(void){
   if(update_visColorbarVertical==1){
     update_visColorbarVertical = 0;
     visColorbarVertical = visColorbarVertical_val;
+  }
+  if(update_windrose==1){
+    update_windrose = 0;
+    DeviceData2WindRose(nr_windrose, ntheta_windrose);
   }
 }

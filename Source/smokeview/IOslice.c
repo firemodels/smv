@@ -3983,7 +3983,6 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-#ifdef pp_CSLICE
 void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
@@ -4269,7 +4268,6 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
   FREEMEMORY(qq);
   return file_size;
 }
-#endif
 
   /* ------------------ ReadSlice ------------------------ */
 
@@ -4424,7 +4422,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-#ifdef pp_CSLICE
       if(use_cslice==1){
         GetSliceSizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
@@ -4434,11 +4431,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
           &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
           strlen(file));
       }
-#else
-      FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-        strlen(file));
-#endif
     }
     else if(sd->compression_type == COMPRESSED_ZLIB){
       if(
@@ -4525,7 +4517,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-#ifdef pp_CSLICE
         if(use_cslice==1){
           return_filesize =
             GetSliceData(file, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
@@ -4540,13 +4531,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
             &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
           return_filesize = (FILE_SIZE)file_size;
         }
-#else
-        FORTgetslicedata(file,
-          &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-          &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
-          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
-          return_filesize = (FILE_SIZE)file_size;
-#endif
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
