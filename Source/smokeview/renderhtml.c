@@ -642,9 +642,9 @@ void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_ve
   *trianglesptr = triangles_save;
 }
 
-/* ------------------ SliceTriangles2Geom ------------------------ */
+/* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
-void SliceTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
+void SliceNodeTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -858,6 +858,64 @@ int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlsli
   return 0;
 }
 
+#define PER_ROW 12
+#define PERCOLOR_ROW 8
+#define PERBIN_ROW 24
+
+/* ------------------ OutputFixedFrame ------------------------ */
+
+void OutputFixedFrame(FILE *stream_out, char *type, float *verts, int nverts, int *faces, int nfaces, int framesize, int nframes, unsigned char *textures){
+  int i;
+
+  fprintf(stream_out, "         var vertices_%s = [\n", type);
+
+  for(i = 0; i<nverts; i++){
+    char label[100];
+
+    sprintf(label, "%f", verts[i]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s,", label);
+    if(i%PER_ROW==(PER_ROW-1)||i==(nverts-1))fprintf(stream_out, "\n");
+  }
+  fprintf(stream_out, "         ];\n");
+
+  fprintf(stream_out, "         var nframes = %i;\n", nframes);
+  fprintf(stream_out, "\n");
+  fprintf(stream_out, "         var frame_size_%s = %i;\n", type, framesize);
+
+  fprintf(stream_out, "         var show_%s          = 1;\n", type);
+#ifdef pp_HTML_FILE
+  fprintf(stream_out, "         var %s_file_ready    = 0;\n", type);
+  fprintf(stream_out, "         var textures_%s_data = new Uint8Array(nframes*frame_size);\n", type);
+#else
+  fprintf(stream_out, "         var %s_file_ready    = 1;\n", type);
+  fprintf(stream_out, "         var textures_%s_data = [\n", type);
+  for(i = 0; i<framesize*nframes; i++){
+    char label[100];
+
+    sprintf(label, "%i", CLAMP((int)textures[i], 0, 255));
+    fprintf(stream_out, "%s,", label);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(framesize*nframes-1))fprintf(stream_out, "\n");
+  }
+  fprintf(stream_out, "         ];\n");
+#endif
+  fprintf(stream_out, "         var textures_%s = new Float32Array([\n", type);
+  for(i = 0; i<framesize; i++){
+    char label[100];
+
+    sprintf(label, "%f", CLAMP((float)textures[i]/255.0, 0.0, 1.0));
+    fprintf(stream_out, "%s,", label);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(framesize-1))fprintf(stream_out, "\n");
+  }
+  fprintf(stream_out, "         ]);\n");
+  fprintf(stream_out, "         var indices_%s = [\n", type);
+  for(i = 0; i<nfaces; i++){
+    fprintf(stream_out, "%i,", faces[i]);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfaces-1))fprintf(stream_out, "\n");
+  }
+  fprintf(stream_out, "         ];\n");
+}
+
 /* ------------------ Smv2Html ------------------------ */
 
 int Smv2Html(char *html_file, int option){
@@ -920,14 +978,11 @@ int Smv2Html(char *html_file, int option){
 
   BndfTriangles2Geom(&verts_bndf, &textures_bndf, &nverts_bndf, &faces_bndf, &nfaces_bndf, option,
     &bndf_framesize, &nbndf_frames);
-  SliceTriangles2Geom(&verts_slice_node, &textures_slice_node, &nverts_slice_node, &faces_slice_node, &nfaces_slice_node, option,
+  SliceNodeTriangles2Geom(&verts_slice_node, &textures_slice_node, &nverts_slice_node, &faces_slice_node, &nfaces_slice_node, option,
     &slice_node_framesize, &nslice_node_frames);
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
-#define PER_ROW 12
-#define PERCOLOR_ROW 8
-#define PERBIN_ROW 24
   copy_html = 1;
   for(;;){
     char buffer[255];
@@ -981,59 +1036,10 @@ int Smv2Html(char *html_file, int option){
         fprintf(stream_out, "         document.getElementById(\"buttonPauseResume\").style.width = \"75px\";\n");
       }
 
-      // add unlit triangles
-      fprintf(stream_out, "         var vertices_slice_node = [\n");
-
-      for(i = 0; i<nverts_slice_node; i++){
-        char label[100];
-
-        sprintf(label, "%f", verts_slice_node[i]);
-        TrimZeros(label);
-        fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nverts_slice_node-1))fprintf(stream_out, "\n");
-      }
-      fprintf(stream_out, "         ];\n");
-
-      fprintf(stream_out, "         var nframes = %i;\n", nslice_node_frames);
-      fprintf(stream_out, "\n");
-      fprintf(stream_out, "         var frame_size_slice_node = %i;\n", slice_node_framesize);
-      fprintf(stream_out, "         var slice_node_file = \"%s\";\n", html_slicefile_base);
-
-      if(slice_node_framesize*nslice_node_frames>0){
-        FILE *slicestream_out =NULL;
-
-        slicestream_out = fopen(html_slicefile,"wb");
-        if(slicestream_out!=NULL){
-          fwrite(textures_slice_node, sizeof(unsigned char), slice_node_framesize*nslice_node_frames, slicestream_out);
-          fclose(slicestream_out);
-        }
-      }
-
-      fprintf(stream_out, "         var show_slice_node          = 1;\n");
-#ifdef pp_HTML_FILE
-      fprintf(stream_out, "         var slice_node_file_ready    = 0;\n");
-      fprintf(stream_out, "         var textures_slice_node_data = new Uint8Array(nframes*frame_size);\n");
-#else
-      fprintf(stream_out, "         var slice_node_file_ready    = 1;\n");
-      fprintf(stream_out, "         var textures_slice_node_data = [\n");
-      for(i = 0; i<slice_node_framesize*nslice_node_frames; i++){
-        char label[100];
-
-        sprintf(label, "%i", CLAMP((int)textures_slice_node[i],0,255) );
-        fprintf(stream_out, "%s,", label);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(slice_node_framesize*nslice_node_frames-1))fprintf(stream_out, "\n");
-      }
-      fprintf(stream_out, "         ];\n");
-#endif
-      fprintf(stream_out, "         var textures_slice_node = new Float32Array([\n");
-      for(i = 0; i<slice_node_framesize; i++){
-        char label[100];
-
-        sprintf(label, "%f", CLAMP((float)textures_slice_node[i]/255.0, 0.0, 1.0));
-        fprintf(stream_out, "%s,", label);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(slice_node_framesize-1))fprintf(stream_out, "\n");
-      }
-      fprintf(stream_out, "         ]);\n");
+      OutputFixedFrame(stream_out, "slice_node",
+        verts_slice_node, nverts_slice_node,
+        faces_slice_node, nfaces_slice_node,
+        slice_node_framesize, nslice_node_frames, textures_slice_node);
 
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var show_part           = 0;\n");
@@ -1058,13 +1064,6 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
-
-      fprintf(stream_out, "         var indices_slice_node = [\n");
-        for(i = 0; i<nfaces_slice_node; i++){
-        fprintf(stream_out, "%i,", faces_slice_node[i]);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfaces_slice_node-1))fprintf(stream_out, "\n");
-      }
-      fprintf(stream_out, "         ];\n");
 
       // cell centered slicefiles
       fprintf(stream_out, "         var vertices_slice_cell = [\n");
