@@ -75,9 +75,9 @@ void GetBndfFileNodes(int option, int option2, int *offset, float *verts, unsign
   *nverts = 0;
 }
 
-  /* ------------------ GetSliceFileNodes ------------------------ */
+  /* ------------------ GetSliceNodeVerts ------------------------ */
 
-void GetSliceFileNodes(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
+void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count = 0;
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
@@ -662,7 +662,7 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
+    GetSliceNodeVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
     ntriangles += 3*nslice_tris;  // 3 indices per triangles
@@ -689,7 +689,7 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
+    GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
     verts += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
