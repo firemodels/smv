@@ -323,7 +323,70 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
   *ntris = nt;
 }
 
-  /* ------------------ GetSliceNodeVerts ------------------------ */
+/* ------------------ GetSliceGeomVerts ------------------------ */
+
+void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
+  int islice, nv = 0, nt = 0, count = 0;
+  int ibeg, iend, itime, first = 1, minsteps;
+  slicedata *slicetime = NULL;
+
+  for(islice = 0; islice<nsliceinfo; islice++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+islice;
+    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_GEOM||slicei->volslice==1)continue;
+    if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+    slicetime = slicei;
+    if(option2==CURRENT_TIME)break;
+  }
+  if(first==1){
+    *frame_size = 0;
+    *nframes = 0;
+    *nverts = 0;
+    *ntris = 0;
+    return;
+  }
+  if(option2==ALL_TIMES){
+    ibeg = 0;
+    iend = minsteps;
+    *nframes = iend;
+  }
+  else{
+    ibeg = slicetime->itime;
+    iend = slicetime->itime+1;
+    *nframes = 1;
+  }
+  *frame_size = 0;
+  for(itime = ibeg; itime<iend; itime++){
+
+    for(islice = 0; islice<nsliceinfo; islice++){
+      slicedata *slicei;
+      int nrows, ncols;
+      unsigned char *iq;
+
+      slicei = sliceinfo+islice;
+
+      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_GEOM||slicei->volslice==1)continue;
+      if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+
+      // preliminary code for obtaining geometry vertices and triangles
+      if(1==0){
+        geomdata *geomi;
+        geomlistdata *geomlisti;
+
+        geomi = slicei->patchgeom->geominfo;
+        geomlisti = geomi->geomlistinfo-1;
+        if(geomlisti->norms_defined==0){
+          //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
+        }
+      }
+    }
+  }
+  *nverts = nv;
+  *ntris = nt;
+}
+
+/* ------------------ GetSliceNodeVerts ------------------------ */
 
 void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
   int islice, nv = 0, nt = 0, count = 0;
@@ -1001,6 +1064,57 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   slice_node_web->faces = triangles_save;
 }
 
+/* ------------------ SliceGeomTriangles2Geom ------------------------ */
+
+void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
+  int j;
+  int nverts = 0, ntriangles = 0, offset = 0;
+  float *verts, *verts_save;
+  unsigned char *textures, *textures_save;
+  int *triangles, *triangles_save;
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceGeomVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
+
+    nverts += 3*nslice_verts;     // 3 coordinates per vertex
+    ntriangles += 3*nslice_tris;  // 3 indices per triangles
+  }
+
+  if(nverts==0||ntriangles==0){
+    slice_geom_web->nverts = 0;
+    slice_geom_web->nfaces = 0;
+    slice_geom_web->verts = NULL;
+    slice_geom_web->textures = NULL;
+    slice_geom_web->faces = NULL;
+    return;
+  }
+
+  NewMemory((void **)&verts_save, nverts*sizeof(float));
+  NewMemory((void **)&textures_save, (slice_geom_web->framesize*slice_geom_web->nframes)*sizeof(float));
+  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  verts = verts_save;
+  textures = textures_save;
+  triangles = triangles_save;
+
+  // load slice file data into data structures
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceGeomVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
+    verts += 3*nslice_verts;
+    triangles += 3*nslice_tris;
+  }
+
+  slice_geom_web->nverts = nverts;
+  slice_geom_web->nfaces = ntriangles;
+  slice_geom_web->verts = verts_save;
+  slice_geom_web->textures = textures_save;
+  slice_geom_web->faces = triangles_save;
+}
+
 /* ------------------ LitTriangles2Geom ------------------------ */
 
 void LitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
@@ -1185,20 +1299,10 @@ void InitWebgeom(webgeomdata *webgeominfo, char *label){
 
 /* ------------------ OutputFixedFrame ------------------------ */
 
-void OutputFixedFrame(FILE *stream_out, webgeomdata *webgi){
+void OutputFixedFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   int i;
 
-  fprintf(stream_out, "         var vertices_%s = [\n", webgi->type);
-
-  for(i = 0; i<webgi->nverts; i++){
-    char label[100];
-
-    sprintf(label, "%f", webgi->verts[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts-1))fprintf(stream_out, "\n");
-  }
-  fprintf(stream_out, "         ];\n");
+  fprintf(stream_out, "\n\n// %s\n\n", label);
 
   if(webgi->nframes>0){
     fprintf(stream_out, "         var nframes = %i;\n", webgi->nframes);
@@ -1209,9 +1313,19 @@ void OutputFixedFrame(FILE *stream_out, webgeomdata *webgi){
     fprintf(stream_out, "         var show_%s          = 0;\n", webgi->type);
     fprintf(stream_out, "         var %s_file_ready    = 0;\n", webgi->type);
   }
-  fprintf(stream_out, "\n");
-
   fprintf(stream_out, "         var frame_size_%s = %i;\n", webgi->type, webgi->framesize);
+  fprintf(stream_out, "         var vertices_%s = [\n", webgi->type);
+  for(i = 0; i<webgi->nverts; i++){
+    char label[100];
+
+    sprintf(label, "%f", webgi->verts[i]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s,", label);
+    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts-1))fprintf(stream_out, "\n");
+  }
+  fprintf(stream_out, "         ];\n");
+
+  fprintf(stream_out, "\n");
 
   fprintf(stream_out, "         var textures_%s_data = [\n", webgi->type);
   for(i = 0; i<webgi->framesize*webgi->nframes; i++){
@@ -1260,7 +1374,7 @@ int Smv2Html(char *html_file, int option){
   int copy_html;
   int have_slice_geom = 0;
   int i;
-  webgeomdata slice_node_web, slice_cell_web, bndf_web;
+  webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_web;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -1304,6 +1418,9 @@ int Smv2Html(char *html_file, int option){
 
   InitWebgeom(&slice_cell_web, "slice_cell");
   SliceCellTriangles2Geom(&slice_cell_web, option);
+
+  InitWebgeom(&slice_geom_web, "slice_geom");
+  BndfTriangles2Geom(&slice_geom_web, option);
 
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
@@ -1380,11 +1497,13 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
 
-      OutputFixedFrame(stream_out, &slice_node_web); // node centered slice files
-      OutputFixedFrame(stream_out, &slice_cell_web); // cell centered slice files
-      OutputFixedFrame(stream_out, &bndf_web);       // boundary files
+      OutputFixedFrame(stream_out, "node centered slice files", &slice_node_web);
+      OutputFixedFrame(stream_out, "cell centered slice files", &slice_cell_web);
+      OutputFixedFrame(stream_out, "geometry slice files", &slice_geom_web);
+      OutputFixedFrame(stream_out, "boundary files", &bndf_web);
 
       // add lit triangles
+      fprintf(stream_out, "\n\n//  blockages and/or geometry \n\n");
       fprintf(stream_out, "         var vertices_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
         char label[100];
@@ -1426,6 +1545,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ];\n");
 
       // add lines
+      fprintf(stream_out, "\n\n//  lines \n\n");
       fprintf(stream_out, "         var vertices_line = [\n");
       for(i = 0; i<nvertsLine; i++){
         char label[100];
