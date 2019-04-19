@@ -931,6 +931,7 @@ int Smv2Html(char *html_file, int option){
   copy_html = 1;
   for(;;){
     char buffer[255];
+    int have_data = 0;
 
     if(feof(stream_in)!=0)break;
 
@@ -943,15 +944,18 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button><br>\n");
 
       //show/hide scene elements
+      fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
+      fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
       if(nverts_slice>0){
+        have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
       }
       //fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
       if(have_slice_geom==1){
+        have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_geom=ShowHide(show_slice_geom)\">slice(geom)</button>\n");
       }
-      fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
-      fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
+      if(have_data==1)fprintf(stream_out, "<br>\n");
 
       //pause
       if(option==ALL_TIMES){
