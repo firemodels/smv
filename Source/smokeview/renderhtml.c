@@ -849,7 +849,7 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ BndfTriangles2Geom ------------------------ */
 
-void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
+void BndfTriangles2Geom(webgeomdata *bndf_web, int option){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -859,23 +859,23 @@ void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_ve
   if(npatchinfo>0){
     int nbndf_verts, nbndf_tris;
 
-    GetBndfFileNodes(0, option, NULL, NULL, NULL, &nbndf_verts, NULL, &nbndf_tris, frame_size, nframes);
+    GetBndfFileNodes(0, option, NULL, NULL, NULL, &nbndf_verts, NULL, &nbndf_tris, &(bndf_web->framesize), &(bndf_web->nframes));
 
     nverts += 3*nbndf_verts;     // 3 coordinates per vertex
     ntriangles += 3*nbndf_tris;  // 3 indices per triangles
   }
 
   if(nverts==0||ntriangles==0){
-    *n_verts = 0;
-    *n_triangles = 0;
-    *vertsptr = NULL;
-    *texturesptr = NULL;
-    *trianglesptr = NULL;
+    bndf_web->nverts = 0;
+    bndf_web->nfaces = 0;
+    bndf_web->verts = NULL;
+    bndf_web->textures = NULL;
+    bndf_web->faces = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
-  NewMemory((void **)&textures_save, (*frame_size*(*nframes))*sizeof(float));
+  NewMemory((void **)&textures_save, (bndf_web->framesize*bndf_web->nframes)*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
   textures = textures_save;
@@ -886,16 +886,16 @@ void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_ve
   if(npatchinfo>0){
     int nbndf_verts, nbndf_tris;
 
-    GetBndfFileNodes(1, option, &offset, verts, textures, &nbndf_verts, triangles, &nbndf_tris, frame_size, nframes);
+    GetBndfFileNodes(1, option, &offset, verts, textures, &nbndf_verts, triangles, &nbndf_tris, &(bndf_web->framesize), &(bndf_web->nframes));
     verts += 3*nbndf_verts;
     triangles += 3*nbndf_tris;
   }
 
-  *n_verts = nverts;
-  *n_triangles = ntriangles;
-  *vertsptr = verts_save;
-  *texturesptr = textures_save;
-  *trianglesptr = triangles_save;
+  bndf_web->nverts = 0;
+  bndf_web->nfaces = 0;
+  bndf_web->verts = NULL;
+  bndf_web->textures = NULL;
+  bndf_web->faces = NULL;
 }
 
 
@@ -1260,7 +1260,7 @@ int Smv2Html(char *html_file, int option){
   int copy_html;
   int have_slice_geom = 0;
   int i;
-  webgeomdata slice_node_web, slice_cell_web;
+  webgeomdata slice_node_web, slice_cell_web, bndf_web;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -1296,8 +1296,8 @@ int Smv2Html(char *html_file, int option){
 
   // obtain vertices, triangles and lines
 
-  BndfTriangles2Geom(&verts_bndf, &textures_bndf, &nverts_bndf, &faces_bndf, &nfaces_bndf, option,
-    &bndf_framesize, &nbndf_frames);
+  InitWebgeom(&bndf_web, "bndf");
+  BndfTriangles2Geom(&bndf_web, option);
 
   InitWebgeom(&slice_node_web, "slice_node");
   SliceNodeTriangles2Geom(&slice_node_web, option);
@@ -1364,9 +1364,6 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var show_part           = 0;\n");
       fprintf(stream_out, "\n");
-      fprintf(stream_out, "         var bndf_file_ready     = 0;\n");
-      fprintf(stream_out, "         var show_bndf           = 0;\n");
-      fprintf(stream_out, "\n");
       fprintf(stream_out, "         var show_outlines       = 1;\n");
       fprintf(stream_out, "         var show_blockages      = 1;\n");
 
@@ -1385,6 +1382,7 @@ int Smv2Html(char *html_file, int option){
 
       OutputFixedFrame(stream_out, &slice_node_web); // node centered slice files
       OutputFixedFrame(stream_out, &slice_cell_web); // cell centered slice files
+      OutputFixedFrame(stream_out, &bndf_web);       // boundary files
 
       // add lit triangles
       fprintf(stream_out, "         var vertices_lit = [\n");
