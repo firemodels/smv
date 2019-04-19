@@ -75,6 +75,254 @@ void GetBndfFileNodes(int option, int option2, int *offset, float *verts, unsign
   *nverts = 0;
 }
 
+/* ------------------ GetSliceCellVerts ------------------------ */
+
+void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
+  int islice, nv = 0, nt = 0, count = 0;
+  int ibeg, iend, itime, first=1, minsteps;
+  slicedata *slicetime=NULL;
+
+  for(islice = 0; islice<nsliceinfo; islice++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+islice;
+    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
+    if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+    slicetime = slicei;
+    if(first==1){
+      minsteps=slicei->ntimes;
+      first = 0;
+    }
+    else{
+      minsteps = MIN(minsteps, slicei->ntimes);
+    }
+    if(option2==CURRENT_TIME)break;
+  }
+  if(first==1){
+    *frame_size=0;
+    *nframes=0;
+    *nverts = 0;
+    *ntris = 0;
+    return;
+  }
+  if(option2==ALL_TIMES){
+    ibeg = 0;
+    iend = minsteps;
+    *nframes = iend;
+  }
+  else{
+    ibeg = slicetime->itime;
+    iend = slicetime->itime+1;
+    *nframes = 1;
+  }
+  *frame_size = 0;
+  for(itime = ibeg; itime<iend; itime++){
+
+    for(islice = 0; islice<nsliceinfo; islice++){
+      slicedata *slicei;
+      int nrows, ncols;
+      unsigned char *iq;
+
+      slicei = sliceinfo+islice;
+
+      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
+      if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
+
+      // preliminary code for obtaining geometry vertices and triangles
+      if(1==0){
+        geomdata *geomi;
+        geomlistdata *geomlisti;
+
+        geomi = slicei->patchgeom->geominfo;
+        geomlisti = geomi->geomlistinfo - 1;
+        if(geomlisti->norms_defined==0){
+        //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
+        }
+      }
+
+      iq = slicei->slicelevel+itime*slicei->nsliceijk;
+      switch(slicei->idir){
+      case XDIR:
+        ncols = slicei->nslicej;
+        nrows = slicei->nslicek;
+        break;
+      case YDIR:
+        ncols = slicei->nslicei;
+        nrows = slicei->nslicek;
+        break;
+      case ZDIR:
+        ncols = slicei->nslicei;
+        nrows = slicei->nslicej;
+        break;
+      }
+      if(nrows>1&&ncols>1){
+        if(itime==ibeg){
+          *frame_size += nrows*ncols;
+          nv += nrows*ncols;
+          nt += 2*(nrows-1)*(ncols-1);
+        }
+        if(option==1){
+          meshdata *meshi;
+          float *xplt, *yplt, *zplt;
+          int plotx, ploty, plotz;
+          float  constval;
+          int n, i, j, k, nj, nk;
+          int ii, jj, kk;
+
+          meshi = meshinfo+slicei->blocknumber;
+
+          xplt = meshi->xplt;
+          yplt = meshi->yplt;
+          zplt = meshi->zplt;
+          plotx = slicei->is1;
+          ploty = slicei->js1;
+          plotz = slicei->ks1;
+
+          switch(slicei->idir){
+          case XDIR:
+            if(itime==ibeg){
+              // vertices
+              constval = xplt[plotx];
+              for(j = slicei->js1; j<=slicei->js2; j++){
+                for(k = slicei->ks1; k<=slicei->ks2; k++){
+                  *verts++ = constval;
+                  *verts++ = yplt[j];
+                  *verts++ = zplt[k];
+                }
+              }
+              // triangle indices
+              nk = slicei->ks2+1-slicei->ks1;
+              for(j = slicei->js1; j<slicei->js2; j++){
+                jj = j-slicei->js1;
+                for(k = slicei->ks1; k<slicei->ks2; k++){
+                  int i00, i01, i11, i10;
+
+                  kk = k-slicei->ks1;
+                  i00 = nk*(jj+0)+kk+0;
+                  i01 = nk*(jj+0)+kk+1;
+                  i10 = nk*(jj+1)+kk+0;
+                  i11 = nk*(jj+1)+kk+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
+            }
+            // textures
+            for(j = slicei->js1; j<=slicei->js2; j++){
+              n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
+              n += (plotx-slicei->is1)*slicei->nslicek;
+
+              for(k = slicei->ks1; k<=slicei->ks2; k++){
+                *textures++ = iq[++n];
+              }
+            }
+            break;
+          case YDIR:
+            // vertices
+            if(itime==ibeg){
+              constval = yplt[ploty];
+              for(i = slicei->is1; i<=slicei->is2; i++){
+                for(k = slicei->ks1; k<=slicei->ks2; k++){
+                  *verts++ = xplt[i];
+                  *verts++ = constval;
+                  *verts++ = zplt[k];
+                }
+              }
+              // triangle indices
+              nk = slicei->ks2+1-slicei->ks1;
+              for(i = slicei->is1; i<slicei->is2; i++){
+                ii = i-slicei->is1;
+                for(k = slicei->ks1; k<slicei->ks2; k++){
+                  int i00, i01, i11, i10;
+
+                  kk = k-slicei->ks1;
+                  i00 = nk*(ii+0)+kk+0;
+                  i01 = nk*(ii+0)+kk+1;
+                  i10 = nk*(ii+1)+kk+0;
+                  i11 = nk*(ii+1)+kk+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
+            }
+            // textures
+            for(i = slicei->is1; i<=slicei->is2; i++){
+              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (ploty-slicei->js1)*slicei->nslicek;
+
+              for(k = slicei->ks1; k<=slicei->ks2; k++){
+                *textures++ = iq[++n];
+              }
+            }
+            break;
+          case ZDIR:
+            if(itime==ibeg){
+              // vertices
+              constval = zplt[plotz];
+              for(i = slicei->is1; i<=slicei->is2; i++){
+                for(j = slicei->js1; j<=slicei->js2; j++){
+                  *verts++ = xplt[i];
+                  *verts++ = yplt[j];
+                  *verts++ = constval;
+                }
+              }
+              // triangle indices
+              nj = slicei->js2+1-slicei->js1;
+              for(i = slicei->is1; i<slicei->is2; i++){
+                ii = i-slicei->is1;
+                for(j = slicei->js1; j<slicei->js2; j++){
+                  int i00, i01, i11, i10;
+
+                  jj = j-slicei->js1;
+                  i00 = nj*(ii+0)+jj+0;
+                  i01 = nj*(ii+0)+jj+1;
+                  i10 = nj*(ii+1)+jj+0;
+                  i11 = nj*(ii+1)+jj+1;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i10;
+                  *tris++ = *offset+i11;
+
+                  *tris++ = *offset+i00;
+                  *tris++ = *offset+i11;
+                  *tris++ = *offset+i01;
+                }
+              }
+              *offset += nrows*ncols;
+            }
+            // textures
+            for(i = slicei->is1; i<=slicei->is2; i++){
+              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (plotz-slicei->ks1)*slicei->nslicey;
+
+              for(j = slicei->js1; j<=slicei->js2; j++){
+                *textures++ = iq[++n];
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+  *nverts = nv;
+  *ntris = nt;
+}
+
   /* ------------------ GetSliceNodeVerts ------------------------ */
 
 void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
@@ -650,6 +898,58 @@ void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_ve
   *trianglesptr = triangles_save;
 }
 
+
+/* ------------------ SliceCellTriangles2Geom ------------------------ */
+
+void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
+  int j;
+  int nverts = 0, ntriangles = 0, offset = 0;
+  float *verts, *verts_save;
+  unsigned char *textures, *textures_save;
+  int *triangles, *triangles_save;
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceCellVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
+
+    nverts += 3*nslice_verts;     // 3 coordinates per vertex
+    ntriangles += 3*nslice_tris;  // 3 indices per triangles
+  }
+
+  if(nverts==0||ntriangles==0){
+    slice_cell_web->nverts = 0;
+    slice_cell_web->nfaces = 0;
+    slice_cell_web->verts = NULL;
+    slice_cell_web->textures = NULL;
+    slice_cell_web->faces = NULL;
+    return;
+  }
+
+  NewMemory((void **)&verts_save, nverts*sizeof(float));
+  NewMemory((void **)&textures_save, (slice_cell_web->framesize*slice_cell_web->nframes)*sizeof(float));
+  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  verts = verts_save;
+  textures = textures_save;
+  triangles = triangles_save;
+
+  // load slice file data into data structures
+
+  if(nsliceinfo>0){
+    int nslice_verts, nslice_tris;
+
+    GetSliceCellVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
+    verts += 3*nslice_verts;
+    triangles += 3*nslice_tris;
+  }
+
+  slice_cell_web->nverts = nverts;
+  slice_cell_web->nfaces = ntriangles;
+  slice_cell_web->verts = verts_save;
+  slice_cell_web->textures = textures_save;
+  slice_cell_web->faces = triangles_save;
+}
+
 /* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
 void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
@@ -900,16 +1200,19 @@ void OutputFixedFrame(FILE *stream_out, webgeomdata *webgi){
   }
   fprintf(stream_out, "         ];\n");
 
-  fprintf(stream_out, "         var nframes = %i;\n", webgi->nframes);
+  if(webgi->nframes>0){
+    fprintf(stream_out, "         var nframes = %i;\n", webgi->nframes);
+    fprintf(stream_out, "         var show_%s          = 1;\n", webgi->type);
+    fprintf(stream_out, "         var %s_file_ready    = 1;\n", webgi->type);
+  }
+  else{
+    fprintf(stream_out, "         var show_%s          = 0;\n", webgi->type);
+    fprintf(stream_out, "         var %s_file_ready    = 0;\n", webgi->type);
+  }
   fprintf(stream_out, "\n");
+
   fprintf(stream_out, "         var frame_size_%s = %i;\n", webgi->type, webgi->framesize);
 
-  fprintf(stream_out, "         var show_%s          = 1;\n", webgi->type);
-#ifdef pp_HTML_FILE
-  fprintf(stream_out, "         var %s_file_ready    = 0;\n", webgi->type);
-  fprintf(stream_out, "         var textures_%s_data = new Uint8Array(nframes*frame_size);\n", webgi->type);
-#else
-  fprintf(stream_out, "         var %s_file_ready    = 1;\n", webgi->type);
   fprintf(stream_out, "         var textures_%s_data = [\n", webgi->type);
   for(i = 0; i<webgi->framesize*webgi->nframes; i++){
     char label[100];
@@ -919,7 +1222,7 @@ void OutputFixedFrame(FILE *stream_out, webgeomdata *webgi){
     if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->framesize*webgi->nframes-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ];\n");
-#endif
+
   fprintf(stream_out, "         var textures_%s = new Float32Array([\n", webgi->type);
   for(i = 0; i<webgi->framesize; i++){
     char label[100];
@@ -957,7 +1260,7 @@ int Smv2Html(char *html_file, int option){
   int copy_html;
   int have_slice_geom = 0;
   int i;
-  webgeomdata slice_node_web;
+  webgeomdata slice_node_web, slice_cell_web;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -998,6 +1301,9 @@ int Smv2Html(char *html_file, int option){
 
   InitWebgeom(&slice_node_web, "slice_node");
   SliceNodeTriangles2Geom(&slice_node_web, option);
+
+  InitWebgeom(&slice_cell_web, "slice_cell");
+  SliceCellTriangles2Geom(&slice_cell_web, option);
 
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
@@ -1055,8 +1361,6 @@ int Smv2Html(char *html_file, int option){
         fprintf(stream_out, "         document.getElementById(\"buttonPauseResume\").style.width = \"75px\";\n");
       }
 
-      OutputFixedFrame(stream_out, &slice_node_web);
-
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var show_part           = 0;\n");
       fprintf(stream_out, "\n");
@@ -1065,8 +1369,6 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "\n");
       fprintf(stream_out, "         var show_outlines       = 1;\n");
       fprintf(stream_out, "         var show_blockages      = 1;\n");
-      fprintf(stream_out, "         var slice_cell_file_ready = 0;\n");
-      fprintf(stream_out, "         var show_slice_cell     = 0;\n");
 
       fprintf(stream_out, "         const texture_colorbar_data = new Uint8Array([\n");
       for(i = 0; i<256; i++){
@@ -1081,14 +1383,8 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
 
-      // cell centered slicefiles
-      fprintf(stream_out, "         var vertices_slice_cell = [\n");
-      fprintf(stream_out, "         ];\n");
-      fprintf(stream_out, "         var textures_slice_cell = new Float32Array([\n");
-      fprintf(stream_out, "         ]);\n");
-      fprintf(stream_out, "         var indices_slice_cell = [\n");
-      fprintf(stream_out, "         ];\n");
-
+      OutputFixedFrame(stream_out, &slice_node_web); // node centered slice files
+      OutputFixedFrame(stream_out, &slice_cell_web); // cell centered slice files
 
       // add lit triangles
       fprintf(stream_out, "         var vertices_lit = [\n");
