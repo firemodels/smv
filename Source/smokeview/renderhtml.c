@@ -10,6 +10,16 @@
 
 #ifdef pp_HTML
 
+/* --------------------------  webgeomdata ------------------------------------ */
+
+typedef struct _webgeomdata {
+  char type[10];
+  unsigned char *textures;
+  float *verts;
+  int *faces;
+  int nverts, nfaces, framesize, nframes;
+} webgeomdata;
+
 /* ------------------ GetPartFileNodes ------------------------ */
 
 void GetPartFileNodes(int option, int option2, float *verts, float *colors, int *nverts, int *frame_sizes, int *nframes){
@@ -54,10 +64,8 @@ void GetPartFileNodes(int option, int option2, float *verts, float *colors, int 
       if(parti->loaded==0||parti->display==0)continue;
       nclasses = parti->nclasses;
       datacopy = parti->data5+nclasses*itime;
-
     }
   }
-
 }
 
   /* ------------------ GetBndfFileNodes ------------------------ */
@@ -644,7 +652,7 @@ void BndfTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_ve
 
 /* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
-void SliceNodeTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int *n_verts, int **trianglesptr, int *n_triangles, int option, int *frame_size, int *nframes){
+void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -654,23 +662,23 @@ void SliceNodeTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, frame_size, nframes);
+    GetSliceFileNodes(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
     ntriangles += 3*nslice_tris;  // 3 indices per triangles
   }
 
   if(nverts==0||ntriangles==0){
-    *n_verts = 0;
-    *n_triangles = 0;
-    *vertsptr = NULL;
-    *texturesptr = NULL;
-    *trianglesptr = NULL;
+    slice_node_web->nverts = 0;
+    slice_node_web->nfaces = 0;
+    slice_node_web->verts = NULL;
+    slice_node_web->textures = NULL;
+    slice_node_web->faces = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
-  NewMemory((void **)&textures_save, (*frame_size*(*nframes))*sizeof(float));
+  NewMemory((void **)&textures_save, (slice_node_web->framesize*slice_node_web->nframes)*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
   textures = textures_save;
@@ -681,16 +689,16 @@ void SliceNodeTriangles2Geom(float **vertsptr, unsigned char **texturesptr, int 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, frame_size, nframes);
+    GetSliceFileNodes(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
     verts += 3*nslice_verts;
     triangles += 3*nslice_tris;
   }
 
-  *n_verts = nverts;
-  *n_triangles = ntriangles;
-  *vertsptr = verts_save;
-  *texturesptr = textures_save;
-  *trianglesptr = triangles_save;
+  slice_node_web->nverts = nverts;
+  slice_node_web->nfaces = ntriangles;
+  slice_node_web->verts = verts_save;
+  slice_node_web->textures = textures_save;
+  slice_node_web->faces = triangles_save;
 }
 
 /* ------------------ LitTriangles2Geom ------------------------ */
@@ -862,56 +870,69 @@ int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlsli
 #define PERCOLOR_ROW 8
 #define PERBIN_ROW 24
 
+/* --------------------------  InitWebgeom ------------------------------------ */
+
+void InitWebgeom(webgeomdata *webgeominfo, char *label){
+  strcpy(webgeominfo->type, label);
+  webgeominfo->textures = NULL;
+  webgeominfo->verts = NULL;
+  webgeominfo->faces = NULL;
+  webgeominfo->nverts = 0;
+  webgeominfo->nfaces = 0;
+  webgeominfo->framesize = 0;
+  webgeominfo->nframes = 0;
+}
+
 /* ------------------ OutputFixedFrame ------------------------ */
 
-void OutputFixedFrame(FILE *stream_out, char *type, float *verts, int nverts, int *faces, int nfaces, int framesize, int nframes, unsigned char *textures){
+void OutputFixedFrame(FILE *stream_out, webgeomdata *webgi){
   int i;
 
-  fprintf(stream_out, "         var vertices_%s = [\n", type);
+  fprintf(stream_out, "         var vertices_%s = [\n", webgi->type);
 
-  for(i = 0; i<nverts; i++){
+  for(i = 0; i<webgi->nverts; i++){
     char label[100];
 
-    sprintf(label, "%f", verts[i]);
+    sprintf(label, "%f", webgi->verts[i]);
     TrimZeros(label);
     fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW==(PER_ROW-1)||i==(nverts-1))fprintf(stream_out, "\n");
+    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ];\n");
 
-  fprintf(stream_out, "         var nframes = %i;\n", nframes);
+  fprintf(stream_out, "         var nframes = %i;\n", webgi->nframes);
   fprintf(stream_out, "\n");
-  fprintf(stream_out, "         var frame_size_%s = %i;\n", type, framesize);
+  fprintf(stream_out, "         var frame_size_%s = %i;\n", webgi->type, webgi->framesize);
 
-  fprintf(stream_out, "         var show_%s          = 1;\n", type);
+  fprintf(stream_out, "         var show_%s          = 1;\n", webgi->type);
 #ifdef pp_HTML_FILE
-  fprintf(stream_out, "         var %s_file_ready    = 0;\n", type);
-  fprintf(stream_out, "         var textures_%s_data = new Uint8Array(nframes*frame_size);\n", type);
+  fprintf(stream_out, "         var %s_file_ready    = 0;\n", webgi->type);
+  fprintf(stream_out, "         var textures_%s_data = new Uint8Array(nframes*frame_size);\n", webgi->type);
 #else
-  fprintf(stream_out, "         var %s_file_ready    = 1;\n", type);
-  fprintf(stream_out, "         var textures_%s_data = [\n", type);
-  for(i = 0; i<framesize*nframes; i++){
+  fprintf(stream_out, "         var %s_file_ready    = 1;\n", webgi->type);
+  fprintf(stream_out, "         var textures_%s_data = [\n", webgi->type);
+  for(i = 0; i<webgi->framesize*webgi->nframes; i++){
     char label[100];
 
-    sprintf(label, "%i", CLAMP((int)textures[i], 0, 255));
+    sprintf(label, "%i", CLAMP((int)webgi->textures[i], 0, 255));
     fprintf(stream_out, "%s,", label);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(framesize*nframes-1))fprintf(stream_out, "\n");
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->framesize*webgi->nframes-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ];\n");
 #endif
-  fprintf(stream_out, "         var textures_%s = new Float32Array([\n", type);
-  for(i = 0; i<framesize; i++){
+  fprintf(stream_out, "         var textures_%s = new Float32Array([\n", webgi->type);
+  for(i = 0; i<webgi->framesize; i++){
     char label[100];
 
-    sprintf(label, "%f", CLAMP((float)textures[i]/255.0, 0.0, 1.0));
+    sprintf(label, "%f", CLAMP((float)webgi->textures[i]/255.0, 0.0, 1.0));
     fprintf(stream_out, "%s,", label);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(framesize-1))fprintf(stream_out, "\n");
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->framesize-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ]);\n");
-  fprintf(stream_out, "         var indices_%s = [\n", type);
-  for(i = 0; i<nfaces; i++){
-    fprintf(stream_out, "%i,", faces[i]);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfaces-1))fprintf(stream_out, "\n");
+  fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
+  for(i = 0; i<webgi->nfaces; i++){
+    fprintf(stream_out, "%i,", webgi->faces[i]);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->nfaces-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ];\n");
 }
@@ -922,11 +943,6 @@ int Smv2Html(char *html_file, int option){
   FILE *stream_in = NULL, *stream_out;
   float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
-
-  float *verts_slice_node;
-  unsigned char *textures_slice_node;
-  int nverts_slice_node, *faces_slice_node, nfaces_slice_node;
-  int slice_node_framesize, nslice_node_frames;
 
   float *verts_bndf;
   unsigned char *textures_bndf;
@@ -941,6 +957,7 @@ int Smv2Html(char *html_file, int option){
   int copy_html;
   int have_slice_geom = 0;
   int i;
+  webgeomdata slice_node_web;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -978,8 +995,10 @@ int Smv2Html(char *html_file, int option){
 
   BndfTriangles2Geom(&verts_bndf, &textures_bndf, &nverts_bndf, &faces_bndf, &nfaces_bndf, option,
     &bndf_framesize, &nbndf_frames);
-  SliceNodeTriangles2Geom(&verts_slice_node, &textures_slice_node, &nverts_slice_node, &faces_slice_node, &nfaces_slice_node, option,
-    &slice_node_framesize, &nslice_node_frames);
+
+  InitWebgeom(&slice_node_web, "slice_node");
+  SliceNodeTriangles2Geom(&slice_node_web, option);
+
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
@@ -1001,7 +1020,7 @@ int Smv2Html(char *html_file, int option){
       //show/hide scene elements
       fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
       fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
-      if(nverts_slice_node>0){
+      if(slice_node_web.nverts>0){
         have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
       }
@@ -1036,10 +1055,7 @@ int Smv2Html(char *html_file, int option){
         fprintf(stream_out, "         document.getElementById(\"buttonPauseResume\").style.width = \"75px\";\n");
       }
 
-      OutputFixedFrame(stream_out, "slice_node",
-        verts_slice_node, nverts_slice_node,
-        faces_slice_node, nfaces_slice_node,
-        slice_node_framesize, nslice_node_frames, textures_slice_node);
+      OutputFixedFrame(stream_out, &slice_node_web);
 
       fprintf(stream_out, "         var part_file_ready     = 0;\n");
       fprintf(stream_out, "         var show_part           = 0;\n");
