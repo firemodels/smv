@@ -90,6 +90,13 @@ void GetSliceFileNodes(int option, int option2, int *offset, float *verts, unsig
     }
     if(option2==CURRENT_TIME)break;
   }
+  if(first==1){
+    *frame_size=0;
+    *nframes=0;
+    *nverts = 0;
+    *ntris = 0;
+    return;
+  }
   if(option2==ALL_TIMES){
     ibeg = 0;
     iend = minsteps;
