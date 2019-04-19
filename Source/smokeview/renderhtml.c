@@ -866,7 +866,7 @@ int Smv2Html(char *html_file, int option){
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
 
   float *verts_slice_node;
-  unsigned char *textures_slice;
+  unsigned char *textures_slice_node;
   int nverts_slice_node, *faces_slice_node, nfaces_slice_node;
   int slice_node_framesize, nslice_node_frames;
 
@@ -920,7 +920,7 @@ int Smv2Html(char *html_file, int option){
 
   BndfTriangles2Geom(&verts_bndf, &textures_bndf, &nverts_bndf, &faces_bndf, &nfaces_bndf, option,
     &bndf_framesize, &nbndf_frames);
-  SliceTriangles2Geom(&verts_slice_node, &textures_slice, &nverts_slice_node, &faces_slice_node, &nfaces_slice_node, option,
+  SliceTriangles2Geom(&verts_slice_node, &textures_slice_node, &nverts_slice_node, &faces_slice_node, &nfaces_slice_node, option,
     &slice_node_framesize, &nslice_node_frames);
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
@@ -1004,7 +1004,7 @@ int Smv2Html(char *html_file, int option){
 
         slicestream_out = fopen(html_slicefile,"wb");
         if(slicestream_out!=NULL){
-          fwrite(textures_slice, sizeof(unsigned char), slice_node_framesize*nslice_node_frames, slicestream_out);
+          fwrite(textures_slice_node, sizeof(unsigned char), slice_node_framesize*nslice_node_frames, slicestream_out);
           fclose(slicestream_out);
         }
       }
@@ -1019,7 +1019,7 @@ int Smv2Html(char *html_file, int option){
       for(i = 0; i<slice_node_framesize*nslice_node_frames; i++){
         char label[100];
 
-        sprintf(label, "%i", CLAMP((int)textures_slice[i],0,255) );
+        sprintf(label, "%i", CLAMP((int)textures_slice_node[i],0,255) );
         fprintf(stream_out, "%s,", label);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(slice_node_framesize*nslice_node_frames-1))fprintf(stream_out, "\n");
       }
@@ -1029,7 +1029,7 @@ int Smv2Html(char *html_file, int option){
       for(i = 0; i<slice_node_framesize; i++){
         char label[100];
 
-        sprintf(label, "%f", CLAMP((float)textures_slice[i]/255.0, 0.0, 1.0));
+        sprintf(label, "%f", CLAMP((float)textures_slice_node[i]/255.0, 0.0, 1.0));
         fprintf(stream_out, "%s,", label);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(slice_node_framesize-1))fprintf(stream_out, "\n");
       }
