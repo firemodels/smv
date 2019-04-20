@@ -13,7 +13,7 @@
 /* --------------------------  webgeomdata ------------------------------------ */
 
 typedef struct _webgeomdata {
-  char type[10];
+  char type[32];
   unsigned char *textures;
   float *verts;
   int *faces;
@@ -128,18 +128,6 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
       if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
-      // preliminary code for obtaining geometry vertices and triangles
-      if(1==0){
-        geomdata *geomi;
-        geomlistdata *geomlisti;
-
-        geomi = slicei->patchgeom->geominfo;
-        geomlisti = geomi->geomlistinfo - 1;
-        if(geomlisti->norms_defined==0){
-        //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
-        }
-      }
-
       iq = slicei->slicelevel+itime*slicei->nsliceijk;
       switch(slicei->idir){
       case XDIR:
@@ -157,9 +145,13 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
       }
       if(nrows>1&&ncols>1){
         if(itime==ibeg){
-          *frame_size += nrows*ncols;
-          nv += nrows*ncols;
-          nt += 2*(nrows-1)*(ncols-1);
+          int ntris, nverts;
+
+          ntris = 2*(nrows-1)*(ncols-1);
+          nverts = 3*ntris;
+          *frame_size += nverts;
+          nv += nverts;
+          nt += ntris;
         }
         if(option==1){
           meshdata *meshi;
@@ -181,136 +173,127 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
           switch(slicei->idir){
           case XDIR:
             if(itime==ibeg){
-              // vertices
+              int index = 0;
+
               constval = xplt[plotx];
-              for(j = slicei->js1; j<=slicei->js2; j++){
-                for(k = slicei->ks1; k<=slicei->ks2; k++){
-                  *verts++ = constval;
-                  *verts++ = yplt[j];
-                  *verts++ = zplt[k];
-                }
-              }
-              // triangle indices
-              nk = slicei->ks2+1-slicei->ks1;
               for(j = slicei->js1; j<slicei->js2; j++){
-                jj = j-slicei->js1;
                 for(k = slicei->ks1; k<slicei->ks2; k++){
-                  int i00, i01, i11, i10;
+                  *tris++ = *offset+index+0;
+                  *tris++ = *offset+index+1;
+                  *tris++ = *offset+index+2;
 
-                  kk = k-slicei->ks1;
-                  i00 = nk*(jj+0)+kk+0;
-                  i01 = nk*(jj+0)+kk+1;
-                  i10 = nk*(jj+1)+kk+0;
-                  i11 = nk*(jj+1)+kk+1;
+                  *tris++ = *offset+index+3;
+                  *tris++ = *offset+index+4;
+                  *tris++ = *offset+index+5;
+                  index += 6;
 
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i10;
-                  *tris++ = *offset+i11;
-
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i11;
-                  *tris++ = *offset+i01;
+                  verts[0] = constval; verts[1] = yplt[j  ]; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = constval; verts[1] = yplt[j+1]; verts[2] = zplt[k+1]; verts += 3;
+                  verts[0] = constval; verts[1] = yplt[j  ]; verts[2] = zplt[k+1]; verts += 3;
+                  verts[0] = constval; verts[1] = yplt[j  ]; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = constval; verts[1] = yplt[j+1]; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = constval; verts[1] = yplt[j+1]; verts[2] = zplt[k+1]; verts += 3;
                 }
               }
-              *offset += nrows*ncols;
+              *offset += 6*(nrows-1)*(ncols-1);
             }
             // textures
-            for(j = slicei->js1; j<=slicei->js2; j++){
-              n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
-              n += (plotx-slicei->is1)*slicei->nslicek;
+            for(j = slicei->js1; j<slicei->js2; j++){
+              n = (j+1-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
+              n += (plotx-slicei->is1)*slicei->nslicek+1;
 
-              for(k = slicei->ks1; k<=slicei->ks2; k++){
-                *textures++ = iq[++n];
+              for(k = slicei->ks1; k<slicei->ks2; k++){
+                n++;
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
               }
             }
             break;
           case YDIR:
-            // vertices
             if(itime==ibeg){
+              int index = 0;
+
               constval = yplt[ploty];
-              for(i = slicei->is1; i<=slicei->is2; i++){
-                for(k = slicei->ks1; k<=slicei->ks2; k++){
-                  *verts++ = xplt[i];
-                  *verts++ = constval;
-                  *verts++ = zplt[k];
-                }
-              }
-              // triangle indices
-              nk = slicei->ks2+1-slicei->ks1;
               for(i = slicei->is1; i<slicei->is2; i++){
-                ii = i-slicei->is1;
                 for(k = slicei->ks1; k<slicei->ks2; k++){
-                  int i00, i01, i11, i10;
+                  *tris++ = *offset+index+0;
+                  *tris++ = *offset+index+1;
+                  *tris++ = *offset+index+2;
 
-                  kk = k-slicei->ks1;
-                  i00 = nk*(ii+0)+kk+0;
-                  i01 = nk*(ii+0)+kk+1;
-                  i10 = nk*(ii+1)+kk+0;
-                  i11 = nk*(ii+1)+kk+1;
+                  *tris++ = *offset+index+3;
+                  *tris++ = *offset+index+4;
+                  *tris++ = *offset+index+5;
+                  index += 6;
 
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i10;
-                  *tris++ = *offset+i11;
-
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i11;
-                  *tris++ = *offset+i01;
+                  verts[0] = xplt[i  ]; verts[1] = constval; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = constval; verts[2] = zplt[k+1]; verts += 3;
+                  verts[0] = xplt[i  ]; verts[1] = constval; verts[2] = zplt[k+1]; verts += 3;
+                  verts[0] = xplt[i  ]; verts[1] = constval; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = constval; verts[2] = zplt[k  ]; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = constval; verts[2] = zplt[k+1]; verts += 3;
                 }
               }
-              *offset += nrows*ncols;
+              *offset += 6*(nrows-1)*(ncols-1);
             }
             // textures
-            for(i = slicei->is1; i<=slicei->is2; i++){
-              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-              n += (ploty-slicei->js1)*slicei->nslicek;
+            for(i = slicei->is1; i<slicei->is2; i++){
+              n = (i+1-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (ploty-slicei->js1)*slicei->nslicek+1;
 
-              for(k = slicei->ks1; k<=slicei->ks2; k++){
-                *textures++ = iq[++n];
+              for(k = slicei->ks1; k<slicei->ks2; k++){
+                n++;
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
               }
             }
             break;
           case ZDIR:
             if(itime==ibeg){
-              // vertices
+              int index = 0;
+
               constval = zplt[plotz];
-              for(i = slicei->is1; i<=slicei->is2; i++){
-                for(j = slicei->js1; j<=slicei->js2; j++){
-                  *verts++ = xplt[i];
-                  *verts++ = yplt[j];
-                  *verts++ = constval;
-                }
-              }
-              // triangle indices
-              nj = slicei->js2+1-slicei->js1;
               for(i = slicei->is1; i<slicei->is2; i++){
-                ii = i-slicei->is1;
                 for(j = slicei->js1; j<slicei->js2; j++){
-                  int i00, i01, i11, i10;
+                  *tris++ = *offset+index+0;
+                  *tris++ = *offset+index+1;
+                  *tris++ = *offset+index+2;
 
-                  jj = j-slicei->js1;
-                  i00 = nj*(ii+0)+jj+0;
-                  i01 = nj*(ii+0)+jj+1;
-                  i10 = nj*(ii+1)+jj+0;
-                  i11 = nj*(ii+1)+jj+1;
+                  *tris++ = *offset+index+3;
+                  *tris++ = *offset+index+4;
+                  *tris++ = *offset+index+5;
+                  index += 6;
 
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i10;
-                  *tris++ = *offset+i11;
-
-                  *tris++ = *offset+i00;
-                  *tris++ = *offset+i11;
-                  *tris++ = *offset+i01;
+                  verts[0] = xplt[i  ]; verts[1] = yplt[j  ]; verts[2] = constval; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = yplt[j+1]; verts[2] = constval; verts += 3;
+                  verts[0] = xplt[i  ]; verts[1] = yplt[j+1]; verts[2] = constval; verts += 3;
+                  verts[0] = xplt[i  ]; verts[1] = yplt[j  ]; verts[2] = constval; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = yplt[j  ]; verts[2] = constval; verts += 3;
+                  verts[0] = xplt[i+1]; verts[1] = yplt[j+1]; verts[2] = constval; verts += 3;
                 }
               }
-              *offset += nrows*ncols;
+              *offset += 6*(nrows-1)*(ncols-1);
             }
             // textures
-            for(i = slicei->is1; i<=slicei->is2; i++){
-              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-              n += (plotz-slicei->ks1)*slicei->nslicey;
+            for(i = slicei->is1; i<slicei->is2; i++){
+              n = (i+1-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n += (plotz-slicei->ks1)*slicei->nslicey+1;
 
-              for(j = slicei->js1; j<=slicei->js2; j++){
-                *textures++ = iq[++n];
+              for(j = slicei->js1; j<slicei->js2; j++){
+                n++;
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
+                *textures++ = iq[n];
               }
             }
             break;
@@ -1447,7 +1430,9 @@ int Smv2Html(char *html_file, int option){
         have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
       }
-      //fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
+      if(slice_cell_web.nverts>0){
+        fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
+      }
       if(have_slice_geom==1){
         have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_geom=ShowHide(show_slice_geom)\">slice(geom)</button>\n");
