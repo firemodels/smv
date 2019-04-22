@@ -68,11 +68,157 @@ void GetPartFileNodes(int option, int option2, float *verts, float *colors, int 
   }
 }
 
-  /* ------------------ GetBndfFileNodes ------------------------ */
+  /* ------------------ GetBndfNodeVerts ------------------------ */
 
-void GetBndfFileNodes(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
-  *ntris = 0;
+void GetBndfNodeVerts(int option, int option2, int *offset,
+  float *verts, unsigned char *textures, int *nverts,
+  int *tris, int *ntris,
+  int *frame_size, int *nframes){
+  int i, first = 1, minsteps;
+  int itime, ibeg, iend;
+  patchdata *patchtime = NULL;
+  meshdata *meshpatch;
+  int nv, nt;
+
+  nv = 0;
+  nt = 0;
+  *frame_size = 0;
+  *nframes = 0;
   *nverts = 0;
+  *ntris = 0;
+  for(i = 0;i<npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0||patchi->display==0||patchi->structured==NO)continue;
+    if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
+    patchtime = patchi;
+    meshpatch = meshinfo+patchi->blocknumber;
+    if(first==1){
+      first = 0;
+      minsteps = patchi->ntimes;
+    }
+    else{
+      minsteps = MIN(minsteps, patchi->ntimes);
+    }
+    if(option2==CURRENT_TIME)break;
+  }
+  if(first==1){
+    return;
+  }
+  if(option2==ALL_TIMES){
+    ibeg = 0;
+    iend = minsteps;
+    *nframes = iend;
+  }
+  else{
+    ibeg = meshpatch->patch_itime;
+    iend = meshpatch->patch_itime+1;
+    *nframes = 1;
+  }
+  *frame_size = 0;
+  for(itime = ibeg; itime<iend; itime++){
+    int j;
+
+    for(j = 0;j<npatchinfo;j++){
+      patchdata *patchi;
+      meshdata *meshpatch;
+      int n, *vis_boundaries, *patchdir, *boundarytype, *boundary_row, *boundary_col, *blockstart;
+      unsigned char *cpatch_time;
+
+      patchi = patchinfo+j;
+      if(patchi->loaded==0||patchi->display==0||patchi->structured==NO)continue;
+      if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
+
+      meshpatch = meshinfo+patchi->blocknumber;
+      patchdir = meshpatch->patchdir;
+      vis_boundaries = meshpatch->vis_boundaries;
+      boundarytype = meshpatch->boundarytype;
+      boundary_row = meshpatch->boundary_row;
+      boundary_col = meshpatch->boundary_col;
+      blockstart = meshpatch->blockstart;
+
+      cpatch_time = meshpatch->cpatchval+itime*meshpatch->npatchsize;
+      if(itime==ibeg){
+        for(n = 0;n<meshpatch->npatches;n++){
+          int drawit;
+
+          drawit = 0;
+          if(vis_boundaries[n]==1&&patchdir[n]>0){
+            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+              drawit = 1;
+            }
+          }
+          if(drawit==1){
+            int nrow, ncol;
+            int nverts, ntris;
+
+            nrow = boundary_row[n];
+            ncol = boundary_col[n];
+            nv += nrow*ncol;
+            nt += 2*(nrow-1)*(ncol-1);
+          }
+        }
+        *nverts     += nv;
+        *ntris      += nt;
+        *frame_size += nv;
+      }
+      if(option==1){
+        for(n = 0;n<meshpatch->npatches;n++){
+          int drawit, irow, nrow, ncol;
+
+          drawit = 0;
+          if(vis_boundaries[n]==1&&patchdir[n]>0){
+            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+              drawit = 1;
+            }
+          }
+          if(drawit==0)continue;
+          nrow = boundary_row[n];
+          ncol = boundary_col[n];
+          if(itime==ibeg){
+            float *xyzpatchcopy;
+
+            xyzpatchcopy = meshpatch->xyzpatch+3*blockstart[n];
+            for(irow = 0;irow<nrow;irow++){
+              int icol;
+              float *xyz;
+
+              xyz = xyzpatchcopy+3*irow*ncol;
+              for(icol = 0;icol<ncol;icol++){
+                *verts++ = *xyz++;
+                *verts++ = *xyz++;
+                *verts++ = *xyz++;
+              }
+            }
+            for(irow = 0;irow<nrow-1;irow++){
+              int icol;
+
+              for(icol = 0;icol<ncol-1;icol++){
+                *tris++ = *offset+(icol+0)+(irow+0)*ncol;
+                *tris++ = *offset+(icol+1)+(irow+0)*ncol;
+                *tris++ = *offset+(icol+1)+(irow+1)*ncol;
+
+                *tris++ = *offset+(icol+0)+(irow+0)*ncol;
+                *tris++ = *offset+(icol+1)+(irow+1)*ncol;
+                *tris++ = *offset+(icol+0)+(irow+1)*ncol;
+              }
+            }
+            *offset += ncol*nrow;
+          }
+          for(irow = 0;irow<nrow;irow++){
+            int icol;
+            unsigned char *cpatchval1;
+
+            cpatchval1 = cpatch_time + blockstart[n] + irow*ncol;
+            for(icol = 0;icol<ncol;icol++){
+              *textures++ = *cpatchval1++;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 /* ------------------ GetSliceCellVerts ------------------------ */
@@ -944,7 +1090,9 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
   if(npatchinfo>0){
     int nbndf_node_verts, nbndf_node_tris;
 
-    GetBndfFileNodes(0, option, NULL, NULL, NULL, &nbndf_node_verts, NULL, &nbndf_node_tris, &(bndf_node_web->framesize), &(bndf_node_web->nframes));
+    GetBndfNodeVerts(0, option, NULL, NULL, NULL, &nbndf_node_verts,
+      NULL, &nbndf_node_tris,
+      &(bndf_node_web->framesize), &(bndf_node_web->nframes));
 
     nverts += 3*nbndf_node_verts;     // 3 coordinates per vertex
     ntriangles += 3*nbndf_node_tris;  // 3 indices per triangles
@@ -971,16 +1119,18 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
   if(npatchinfo>0){
     int nbndf_node_verts, nbndf_node_tris;
 
-    GetBndfFileNodes(1, option, &offset, verts, textures, &nbndf_node_verts, triangles, &nbndf_node_tris, &(bndf_node_web->framesize), &(bndf_node_web->nframes));
-    verts += 3*nbndf_node_verts;
+    GetBndfNodeVerts(1, option, &offset, verts, textures, &nbndf_node_verts,
+      triangles, &nbndf_node_tris,
+      &(bndf_node_web->framesize), &(bndf_node_web->nframes));
+    verts     += 3*nbndf_node_verts;
     triangles += 3*nbndf_node_tris;
   }
 
-  bndf_node_web->nverts = 0;
-  bndf_node_web->nfaces = 0;
-  bndf_node_web->verts = NULL;
-  bndf_node_web->textures = NULL;
-  bndf_node_web->faces = NULL;
+  bndf_node_web->nverts = nverts;
+  bndf_node_web->nfaces = ntriangles;
+  bndf_node_web->verts = verts_save;
+  bndf_node_web->textures = textures_save;
+  bndf_node_web->faces = triangles_save;
 }
 
 
@@ -1442,6 +1592,7 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button><br>\n");
 
       //show/hide scene elements
+
       fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
       fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
       if(slice_node_web.nverts>0){
@@ -1449,15 +1600,21 @@ int Smv2Html(char *html_file, int option){
         fprintf(stream_out, "<button onclick = \"show_slice_node=ShowHide(show_slice_node)\">slice(node centered)</button>\n");
       }
       if(slice_cell_web.nverts>0){
+        have_data = 1;
         fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
       }
       if(slice_geom_web.nverts>0){
         have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_geom=ShowHide(show_slice_geom)\">slice(geom)</button>\n");
       }
+      if(bndf_node_web.nverts>0){
+        have_data = 1;
+        fprintf(stream_out, "<button onclick = \"show_bndf_node=ShowHide(show_bndf_node)\">boundary(node centered)</button>\n");
+      }
       if(have_data==1)fprintf(stream_out, "<br>\n");
 
-      //pause
+      //time stepping controls
+
       if(option==ALL_TIMES){
         fprintf(stream_out, "<button onclick = \"SetTime(-2)\"><<</button>\n");
         fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><</button>\n");
