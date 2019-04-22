@@ -1532,6 +1532,7 @@ int Smv2Html(char *html_file, int option){
   FILE *stream_in = NULL, *stream_out;
   float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
+  int have_blockages = 0, have_geometry = 0;
 
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
@@ -1576,6 +1577,19 @@ int Smv2Html(char *html_file, int option){
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
+  for(i = 0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    if(meshi->nbptrs>0){
+      have_blockages = 1;
+      break;
+    }
+  }
+  if(nopaque_triangles>0||ntransparent_triangles>0){
+    have_geometry = 1;
+  }
+
   copy_html = 1;
   for(;;){
     char buffer[255];
@@ -1593,7 +1607,8 @@ int Smv2Html(char *html_file, int option){
 
       //show/hide scene elements
 
-      fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
+      if(have_blockages==1)fprintf(stream_out, "<button onclick = \"show_blockages=ShowHide(show_blockages)\">blockages</button>\n");
+      if(have_geometry==1)fprintf(stream_out, "<button onclick = \"show_geometry=ShowHide(show_geometry)\">geometry</button>\n");
       fprintf(stream_out, "<button onclick = \"show_outlines=ShowHide(show_outlines)\">outlines</button><br>\n");
       if(slice_node_web.nverts>0){
         have_data = 1;
@@ -1663,8 +1678,8 @@ int Smv2Html(char *html_file, int option){
       OutputFixedFrame(stream_out, "boundary files",            &bndf_node_web);
 
       // add lit triangles
-      fprintf(stream_out, "\n\n//  blockages and/or geometry \n\n");
-      fprintf(stream_out, "         var vertices_lit = [\n");
+      fprintf(stream_out, "\n\n//  blockages\n\n");
+      fprintf(stream_out, "         var vertices_obst_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
         char label[100];
 
@@ -1675,7 +1690,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         var normals_lit = [\n");
+      fprintf(stream_out, "         var normals_obst_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
         char label[100];
 
@@ -1686,7 +1701,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         var colors_lit = [\n");
+      fprintf(stream_out, "         var colors_obst_lit = [\n");
       for(i = 0; i<nvertsLitSolid; i++){
         char label[100];
 
@@ -1697,7 +1712,7 @@ int Smv2Html(char *html_file, int option){
       }
       fprintf(stream_out, "         ];\n");
 
-      fprintf(stream_out, "         var indices_lit = [\n");
+      fprintf(stream_out, "         var indices_obst_lit = [\n");
       for(i = 0; i<nfacesLitSolid; i++){
         fprintf(stream_out, "%i,", facesLitSolid[i]);
         if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesLitSolid-1))fprintf(stream_out, "\n");
