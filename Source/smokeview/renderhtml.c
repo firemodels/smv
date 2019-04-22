@@ -934,7 +934,7 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 
 /* ------------------ BndfTriangles2Geom ------------------------ */
 
-void BndfTriangles2Geom(webgeomdata *bndf_web, int option){
+void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
   int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
@@ -942,25 +942,25 @@ void BndfTriangles2Geom(webgeomdata *bndf_web, int option){
   int *triangles, *triangles_save;
 
   if(npatchinfo>0){
-    int nbndf_verts, nbndf_tris;
+    int nbndf_node_verts, nbndf_node_tris;
 
-    GetBndfFileNodes(0, option, NULL, NULL, NULL, &nbndf_verts, NULL, &nbndf_tris, &(bndf_web->framesize), &(bndf_web->nframes));
+    GetBndfFileNodes(0, option, NULL, NULL, NULL, &nbndf_node_verts, NULL, &nbndf_node_tris, &(bndf_node_web->framesize), &(bndf_node_web->nframes));
 
-    nverts += 3*nbndf_verts;     // 3 coordinates per vertex
-    ntriangles += 3*nbndf_tris;  // 3 indices per triangles
+    nverts += 3*nbndf_node_verts;     // 3 coordinates per vertex
+    ntriangles += 3*nbndf_node_tris;  // 3 indices per triangles
   }
 
   if(nverts==0||ntriangles==0){
-    bndf_web->nverts = 0;
-    bndf_web->nfaces = 0;
-    bndf_web->verts = NULL;
-    bndf_web->textures = NULL;
-    bndf_web->faces = NULL;
+    bndf_node_web->nverts = 0;
+    bndf_node_web->nfaces = 0;
+    bndf_node_web->verts = NULL;
+    bndf_node_web->textures = NULL;
+    bndf_node_web->faces = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
-  NewMemory((void **)&textures_save, (bndf_web->framesize*bndf_web->nframes)*sizeof(float));
+  NewMemory((void **)&textures_save, (bndf_node_web->framesize*bndf_node_web->nframes)*sizeof(float));
   NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
   verts = verts_save;
   textures = textures_save;
@@ -969,18 +969,18 @@ void BndfTriangles2Geom(webgeomdata *bndf_web, int option){
   // load slice file data into data structures
 
   if(npatchinfo>0){
-    int nbndf_verts, nbndf_tris;
+    int nbndf_node_verts, nbndf_node_tris;
 
-    GetBndfFileNodes(1, option, &offset, verts, textures, &nbndf_verts, triangles, &nbndf_tris, &(bndf_web->framesize), &(bndf_web->nframes));
-    verts += 3*nbndf_verts;
-    triangles += 3*nbndf_tris;
+    GetBndfFileNodes(1, option, &offset, verts, textures, &nbndf_node_verts, triangles, &nbndf_node_tris, &(bndf_node_web->framesize), &(bndf_node_web->nframes));
+    verts += 3*nbndf_node_verts;
+    triangles += 3*nbndf_node_tris;
   }
 
-  bndf_web->nverts = 0;
-  bndf_web->nfaces = 0;
-  bndf_web->verts = NULL;
-  bndf_web->textures = NULL;
-  bndf_web->faces = NULL;
+  bndf_node_web->nverts = 0;
+  bndf_node_web->nfaces = 0;
+  bndf_node_web->verts = NULL;
+  bndf_node_web->textures = NULL;
+  bndf_node_web->faces = NULL;
 }
 
 
@@ -1383,31 +1383,12 @@ int Smv2Html(char *html_file, int option){
   float *vertsLitSolid, *normalsLitSolid, *colorsLitSolid;
   int nvertsLitSolid, *facesLitSolid, nfacesLitSolid;
 
-  float *verts_bndf;
-  unsigned char *textures_bndf;
-  int nverts_bndf, *faces_bndf, nfaces_bndf;
-  int bndf_framesize, nbndf_frames;
-
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
 
   char html_fullfile[1024], html_slicefile[1024], html_slicefile_base[1024];
-  int return_val;
-  int copy_html;
-  int have_slice_geom = 0;
-  int i;
-  webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_web;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->loaded==0||slicei->display==0)continue;
-    if(slicei->slicefile_type==SLICE_GEOM){
-      have_slice_geom = 1;
-      break;
-    }
-  }
+  int return_val, copy_html, i;
+  webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web;
 
   stream_in = fopen(smokeview_html, "r");
   if(stream_in==NULL){
@@ -1435,12 +1416,12 @@ int Smv2Html(char *html_file, int option){
   InitWebgeom(&slice_node_web, "slice_node");
   InitWebgeom(&slice_cell_web, "slice_cell");
   InitWebgeom(&slice_geom_web, "slice_geom");
-  InitWebgeom(&bndf_web, "bndf");
+  InitWebgeom(&bndf_node_web, "bndf_node");
 
   SliceNodeTriangles2Geom(&slice_node_web, option);
   SliceCellTriangles2Geom(&slice_cell_web, option);
   SliceGeomTriangles2Geom(&slice_geom_web, option);
-  BndfTriangles2Geom(&bndf_web,            option);
+  BndfNodeTriangles2Geom(&bndf_node_web,   option);
 
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
@@ -1522,7 +1503,7 @@ int Smv2Html(char *html_file, int option){
       OutputFixedFrame(stream_out, "node centered slice files", &slice_node_web);
       OutputFixedFrame(stream_out, "cell centered slice files", &slice_cell_web);
       OutputFixedFrame(stream_out, "geometry slice files",      &slice_geom_web);
-      OutputFixedFrame(stream_out, "boundary files",            &bndf_web);
+      OutputFixedFrame(stream_out, "boundary files",            &bndf_node_web);
 
       // add lit triangles
       fprintf(stream_out, "\n\n//  blockages and/or geometry \n\n");
