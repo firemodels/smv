@@ -320,6 +320,13 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
     if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_GEOM||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
+    if(first==1){
+      minsteps = slicei->ntimes;
+      first = 0;
+    }
+    else{
+      minsteps = MIN(minsteps, slicei->ntimes);
+    }
     if(option2==CURRENT_TIME)break;
   }
   if(first==1){
@@ -346,6 +353,10 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
       slicedata *slicei;
       int nrows, ncols;
       unsigned char *iq;
+      geomdata *geomi;
+      geomlistdata *geomlisti;
+      patchdata *patchi;
+      unsigned char *ivals;
 
       slicei = sliceinfo+islice;
 
@@ -353,14 +364,54 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
       // preliminary code for obtaining geometry vertices and triangles
-      if(1==0){
-        geomdata *geomi;
-        geomlistdata *geomlisti;
 
-        geomi = slicei->patchgeom->geominfo;
-        geomlisti = geomi->geomlistinfo-1;
-        if(geomlisti->norms_defined==0){
-          //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
+      patchi = slicei->patchgeom;
+      ivals = patchi->geom_ivals_dynamic[itime];
+      geomi = slicei->patchgeom->geominfo;
+      geomlisti = geomi->geomlistinfo-1;
+      if(itime==ibeg){
+        int nt_geom, nv_geom;
+
+        nt_geom = geomlisti->ntriangles;
+        nv_geom = 3*nt_geom;
+        nt += nt_geom;
+        nv += nv_geom;
+        *frame_size += nv_geom;
+      }
+      if(option==1){
+        int i;
+
+        if(itime==ibeg){
+          int index=0;
+
+          for(i = 0; i<geomlisti->ntriangles; i++){
+            tridata *trii;
+            vertdata *v1, *v2, *v3;
+
+            *tris++ = *offset+index+0;
+            *tris++ = *offset+index+1;
+            *tris++ = *offset+index+2;
+            index += 3;
+            trii = geomlisti->triangles+i;
+            v1 = trii->verts[0];
+            v2 = trii->verts[1];
+            v3 = trii->verts[2];
+            *verts++ = NORMALIZE_X(v1->xyz[0]);
+            *verts++ = NORMALIZE_Y(v1->xyz[1]);
+            *verts++ = NORMALIZE_Z(v1->xyz[2]);
+            *verts++ = NORMALIZE_X(v2->xyz[0]);
+            *verts++ = NORMALIZE_Y(v2->xyz[1]);
+            *verts++ = NORMALIZE_Z(v2->xyz[2]);
+            *verts++ = NORMALIZE_X(v3->xyz[0]);
+            *verts++ = NORMALIZE_Y(v3->xyz[1]);
+            *verts++ = NORMALIZE_Z(v3->xyz[2]);
+          }
+          *offset += 3*geomlisti->ntriangles;
+        }
+        for(i = 0; i<geomlisti->ntriangles; i++){
+          *textures++ = ivals[i];
+          *textures++ = ivals[i];
+          *textures++ = ivals[i];
         }
       }
     }
@@ -421,18 +472,6 @@ void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsig
 
       if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
-
-      // preliminary code for obtaining geometry vertices and triangles
-      if(1==0){
-        geomdata *geomi;
-        geomlistdata *geomlisti;
-
-        geomi = slicei->patchgeom->geominfo;
-        geomlisti = geomi->geomlistinfo - 1;
-        if(geomlisti->norms_defined==0){
-        //  UpdatePatchGeomTriangles(slicei->patchgeom, geom_type);
-        }
-      }
 
       iq = slicei->slicelevel+itime*slicei->nsliceijk;
       switch(slicei->idir){
@@ -1269,15 +1308,15 @@ int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlsli
 
 /* --------------------------  InitWebgeom ------------------------------------ */
 
-void InitWebgeom(webgeomdata *webgeominfo, char *label){
-  strcpy(webgeominfo->type, label);
-  webgeominfo->textures = NULL;
-  webgeominfo->verts = NULL;
-  webgeominfo->faces = NULL;
-  webgeominfo->nverts = 0;
-  webgeominfo->nfaces = 0;
-  webgeominfo->framesize = 0;
-  webgeominfo->nframes = 0;
+void InitWebgeom(webgeomdata *wi, char *label){
+  strcpy(wi->type, label);
+  wi->textures  = NULL;
+  wi->verts     = NULL;
+  wi->faces     = NULL;
+  wi->nverts    = 0;
+  wi->nfaces    = 0;
+  wi->framesize = 0;
+  wi->nframes   = 0;
 }
 
 /* ------------------ OutputFixedFrame ------------------------ */
@@ -1393,17 +1432,15 @@ int Smv2Html(char *html_file, int option){
 
   // obtain vertices, triangles and lines
 
-  InitWebgeom(&bndf_web, "bndf");
-  BndfTriangles2Geom(&bndf_web, option);
-
   InitWebgeom(&slice_node_web, "slice_node");
-  SliceNodeTriangles2Geom(&slice_node_web, option);
-
   InitWebgeom(&slice_cell_web, "slice_cell");
-  SliceCellTriangles2Geom(&slice_cell_web, option);
-
   InitWebgeom(&slice_geom_web, "slice_geom");
-  BndfTriangles2Geom(&slice_geom_web, option);
+  InitWebgeom(&bndf_web, "bndf");
+
+  SliceNodeTriangles2Geom(&slice_node_web, option);
+  SliceCellTriangles2Geom(&slice_cell_web, option);
+  SliceGeomTriangles2Geom(&slice_geom_web, option);
+  BndfTriangles2Geom(&bndf_web,            option);
 
   LitTriangles2Geom(&vertsLitSolid, &normalsLitSolid, &colorsLitSolid, &nvertsLitSolid, &facesLitSolid, &nfacesLitSolid);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
@@ -1433,7 +1470,7 @@ int Smv2Html(char *html_file, int option){
       if(slice_cell_web.nverts>0){
         fprintf(stream_out, "<button onclick=\"show_slice_cell=ShowHide(show_slice_cell)\">slice(cell centered)</button>\n");
       }
-      if(have_slice_geom==1){
+      if(slice_geom_web.nverts>0){
         have_data = 1;
         fprintf(stream_out, "<button onclick = \"show_slice_geom=ShowHide(show_slice_geom)\">slice(geom)</button>\n");
       }
@@ -1484,8 +1521,8 @@ int Smv2Html(char *html_file, int option){
 
       OutputFixedFrame(stream_out, "node centered slice files", &slice_node_web);
       OutputFixedFrame(stream_out, "cell centered slice files", &slice_cell_web);
-      OutputFixedFrame(stream_out, "geometry slice files", &slice_geom_web);
-      OutputFixedFrame(stream_out, "boundary files", &bndf_web);
+      OutputFixedFrame(stream_out, "geometry slice files",      &slice_geom_web);
+      OutputFixedFrame(stream_out, "boundary files",            &bndf_web);
 
       // add lit triangles
       fprintf(stream_out, "\n\n//  blockages and/or geometry \n\n");
