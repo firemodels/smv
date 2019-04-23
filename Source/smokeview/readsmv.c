@@ -11890,13 +11890,11 @@ int ReadIni2(char *inifile, int localfile){
         continue;
       }
       if(Match(buffer, "TOURCIRCLE") == 1){
-        float *c, *r, *v;
-
-        c = tour_circular_center;
-        v = tour_circular_view;
-        r = &tour_circular_radius;
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer,"%f %f %f %f %f %f %f",c,c+1,c+2,v,v+1,v+2,r);
+        sscanf(buffer,"%f %f %f %f %f %f %f %f", 
+          tour_circular_center+0, tour_circular_center+1, tour_circular_center+2,
+          tour_circular_view+0, tour_circular_view+1, tour_circular_view+2,
+          &tour_circular_radius, &tour_circular_angle0);
         continue;
       }
 
@@ -12842,15 +12840,12 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
 
-  {
-    float *c, *r, *v;
-
-    c = tour_circular_center;
-    v = tour_circular_view;
-    r = &tour_circular_radius;
-    fprintf(fileout, "TOURCIRCLE\n");
-    fprintf(fileout, "%f %f %f %f %f %f %f",c[0],c[1],c[2],v[0],v[1],v[2],*r);
-  }
+  fprintf(fileout, "TOURCIRCLE\n");
+  fprintf(fileout, "%f %f %f %f %f %f %f %f", 
+    tour_circular_center[0], 
+    tour_circular_center[1], tour_circular_center[2],
+    tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
+    tour_circular_radius, tour_circular_angle0);
   fprintf(fileout, "TOURINDEX\n");
   fprintf(fileout, " %i\n", selectedtour_index);
   startup_count = 0;

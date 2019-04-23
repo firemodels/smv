@@ -1142,8 +1142,12 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
       angle_local = 0.0;
     }
     else{
-      angle_local = 2.0*PI*(float)j / (float)(nkeyframes - 1);
+      float angle_deg;
+
+      angle_deg = 360.0*(float)j/(float)(nkeyframes - 1);
+      angle_local = DEG2RAD*angle_deg;
     }
+    angle_local += DEG2RAD*tour_circular_angle0;
     cosangle = cos(angle_local);
     sinangle = sin(angle_local);
 
