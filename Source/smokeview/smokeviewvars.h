@@ -1548,9 +1548,8 @@ SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float tourrad_avatar;
 SVEXTERN int dirtycircletour;
 SVEXTERN float SVDECL(*tour_t,NULL), SVDECL(*tour_t2,NULL), SVDECL(*tour_dist,NULL), SVDECL(*tour_dist2,NULL), SVDECL(*tour_dist3,NULL);
-SVEXTERN float view_tstart, view_tstop;
-SVEXTERN int SVDECL(tour_constant_vel,1);
-SVEXTERN int view_ntimes;
+SVEXTERN float SVDECL(tour_tstart, 0.0), SVDECL(tour_tstop, 100.0);
+SVEXTERN int SVDECL(tour_ntimes,1000);
 
 SVEXTERN int SVDECL(ntourinfo, 0);
 SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_index_old, TOURINDEX_MANUAL), SVDECL(selectedtour_index_ini, TOURINDEX_MANUAL);

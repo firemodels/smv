@@ -2439,8 +2439,8 @@ void UpdateMeshCoords(void){
   patchout_zmin = zbar0ORIG;
   patchout_zmax = zbarORIG;
   patchout_tmin = 0.0;
-  if(view_tstop>0.0){
-    patchout_tmax = view_tstop;
+  if(tour_tstop>0.0){
+    patchout_tmax = tour_tstop;
   }
   else{
     patchout_tmax = 1.0;
@@ -4257,8 +4257,8 @@ int ReadSMV(char *file, char *file2){
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
-      sscanf(buffer,"%f %f %i",&view_tstart,&view_tstop,&view_ntimes);
-      if(view_ntimes<2)view_ntimes=2;
+      sscanf(buffer,"%f %f %i",&tour_tstart,&tour_tstop,&tour_ntimes);
+      if(tour_ntimes<2)tour_ntimes=2;
       ReallocTourMemory();
       continue;
     }
@@ -11877,12 +11877,6 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i %f", &vis_threshold, &vis_onlythreshold, &temp_threshold);
         continue;
       }
-      if(Match(buffer, "TOURCONSTANTVEL") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &tour_constant_vel);
-        tour_constant_vel = 1;
-        continue;
-      }
       if(Match(buffer, "TOUR_AVATAR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         //        sscanf(buffer,"%i %f %f %f %f",&tourlocus_type,tourcol_avatar,tourcol_avatar+1,tourcol_avatar+2,&tourrad_avatar);
@@ -12125,8 +12119,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "VIEWTIMES") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f %f %i", &view_tstart, &view_tstop, &view_ntimes);
-        if(view_ntimes<2)view_ntimes = 2;
+        sscanf(buffer, "%f %f %i", &tour_tstart, &tour_tstop, &tour_ntimes);
+        if(tour_ntimes<2)tour_ntimes = 2;
         ReallocTourMemory();
         continue;
       }
@@ -12425,8 +12419,8 @@ int ReadIni2(char *inifile, int localfile){
               touri->nkeyframes = nkeyframes;
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
-              if(NewMemory((void **)&touri->pathnodes, view_ntimes*sizeof(pathdata)) == 0)return 2;
-              if(NewMemory((void **)&touri->path_times, view_ntimes*sizeof(float)) == 0)return 2;
+              if(NewMemory((void **)&touri->pathnodes,  tour_ntimes*sizeof(pathdata)) == 0)return 2;
+              if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
 
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
@@ -13771,7 +13765,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");
-  fprintf(fileout, " %f %f %i\n", view_tstart, view_tstop, view_ntimes);
+  fprintf(fileout, " %f %f %i\n", tour_tstart, tour_tstop, tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
   fprintf(fileout," %i\n",viewtourfrompath);
 
