@@ -29,6 +29,7 @@
 #define TERRAIN_ZLEVEL 44
 #define SHOW_ZLEVEL 45
 #define GEOM_VERT_EXAG 46
+#define RESET_GEOM_OFFSET 47
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL;
@@ -62,6 +63,9 @@ GLUI_Spinner *SPINNER_geom_outline_ioffset=NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
+GLUI_Spinner *SPINNER_geom_delx = NULL;
+GLUI_Spinner *SPINNER_geom_dely = NULL;
+GLUI_Spinner *SPINNER_geom_delz = NULL;
 
 
 GLUI_Checkbox *CHECKBOX_visaxislabels;
@@ -73,6 +77,7 @@ GLUI *glui_geometry=NULL;
 
 GLUI_Button *BUTTON_blockage_1=NULL;
 GLUI_Button *BUTTON_reset_zbounds = NULL;
+GLUI_Button *BUTTON_reset_offset = NULL;
 
 GLUI_Checkbox *CHECKBOX_blockage=NULL;
 
@@ -85,6 +90,7 @@ GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
+GLUI_Panel *PANEL_geom_offset=NULL;
 
 GLUI_Rollout *ROLLOUT_geomcheck=NULL;
 GLUI_Rollout *ROLLOUT_structured=NULL;
@@ -420,6 +426,12 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
     SPINNER_face_factor->set_float_limits(0.0, 0.5);
 
+    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset");
+    SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
+    SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
+    SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
+    BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
+
     ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
     PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
     CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
@@ -428,7 +440,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_highlight_edgeother = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "3 or more", &highlight_edgeother);
 
     CHECKBOX_highlight_vertexdup = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomcheck, "duplicate vertices", &highlight_vertexdup);
-
   }
 
   glui_geometry->add_separator();
@@ -443,6 +454,14 @@ extern "C" void GluiGeometrySetup(int main_window){
 extern "C" void VolumeCB(int var){
   int i;
   switch(var){
+  case RESET_GEOM_OFFSET:
+    geom_delx = 0.0;
+    geom_dely = 0.0;
+    geom_delz = 0.0;
+    SPINNER_geom_delx->set_float_val(geom_delx);
+    SPINNER_geom_dely->set_float_val(geom_dely);
+    SPINNER_geom_delz->set_float_val(geom_delz);
+    break;
   case GEOM_VERT_EXAG:
     UpdateGeomNormals();
     break;
