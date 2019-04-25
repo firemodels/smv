@@ -530,7 +530,11 @@ void CheckTimeBound(void){
   int i;
 
   if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
-    izone=0;
+    if(timebar_drag==0){
+      if(itimes>nglobal_times-1)itime_cycle++;
+      if(itimes<0)itime_cycle--;
+    }
+    izone = 0;
     itimes=first_frame_index;
     if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
