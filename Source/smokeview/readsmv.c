@@ -9584,7 +9584,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMOFFSET")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f", &geom_delx, &geom_dely, &geom_delz);
+      sscanf(buffer, " %f %f %f %i", &geom_delx, &geom_dely, &geom_delz, &show_geom_bndf);
       continue;
     }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
@@ -13345,7 +13345,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
   fprintf(fileout, "GEOMOFFSET\n");
-  fprintf(fileout, " %f %f %f\n", geom_delx, geom_dely, geom_delz);
+  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);

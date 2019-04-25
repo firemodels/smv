@@ -3374,6 +3374,7 @@ void GetGeomInfoPtrs(int flag){
       break;
     }
   }
+  if(show_geom_bndf==1)hide_geom = 0;
 
   // count size of geominfoptrs array
 

@@ -1705,6 +1705,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(update_times==1){
+    update_times = 0;
+    UpdateTimes();
+  }
   if(update_smoketype_vals==1){
     update_smoketype_vals = 0;
 #define SMOKE_NEW 77

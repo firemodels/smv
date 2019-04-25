@@ -30,6 +30,7 @@
 #define SHOW_ZLEVEL 45
 #define GEOM_VERT_EXAG 46
 #define RESET_GEOM_OFFSET 47
+#define UPDATE_GEOM 48
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL;
@@ -430,6 +431,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
     SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
     SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
+    glui_geometry->add_checkbox_to_panel(PANEL_geom_offset, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
 
     ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
@@ -454,6 +456,12 @@ extern "C" void GluiGeometrySetup(int main_window){
 extern "C" void VolumeCB(int var){
   int i;
   switch(var){
+  case UPDATE_GEOM:
+    LOCK_TRIANGLES;
+    show_geom_bndf = glui_show_geom_bndf;
+    UNLOCK_TRIANGLES;
+    update_times = 1;
+    break;
   case RESET_GEOM_OFFSET:
     geom_delx = 0.0;
     geom_dely = 0.0;

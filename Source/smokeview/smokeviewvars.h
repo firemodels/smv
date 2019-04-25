@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_times,0);
+SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
 SVEXTERN float SVDECL(geom_delx, 0.0), SVDECL(geom_dely, 0.0), SVDECL(geom_delz, 0.0);
 SVEXTERN int SVDECL(update_windrose, 0);
 SVEXTERN int SVDECL(update_use_lighting, 0), use_lighting_ini;
