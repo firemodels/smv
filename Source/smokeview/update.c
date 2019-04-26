@@ -1128,11 +1128,12 @@ void UpdateTimes(void){
   if(nglobal_times>0){
     int i;
     NewMemory((void **)&global_times, nglobal_times*sizeof(float));
-    for(i = 0; i<nglobal_times; i++){
+    global_times[0] = global_timemin;
+    for(i = 1; i<nglobal_times; i++){
       float f1;
 
       f1 = (float)i/(float)(nglobal_times-1);
-      global_times[i] = (1.0-f1)*global_timemin + f1*global_timemax;
+      global_times[i] = (1.0-f1)*global_timemin+f1*global_timemax;
     }
   }
 
