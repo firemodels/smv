@@ -8602,6 +8602,10 @@ typedef struct {
       NewMemory((void **)&patchi->reg_file,(unsigned int)(len+1));
       STRCPY(patchi->reg_file,bufferptr);
 
+      NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
+      STRCPY(patchi->bound_file, bufferptr);
+      strcat(patchi->bound_file, ".bnd");
+
       NewMemory((void **)&patchi->comp_file,(unsigned int)(len+4+1));
       STRCPY(patchi->comp_file,bufferptr);
       STRCAT(patchi->comp_file,".svz");

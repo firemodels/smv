@@ -1350,7 +1350,7 @@ typedef struct _smoke3ddata {
 
 typedef struct _patchdata {
   int seq_id, autoload;
-  char *file,*size_file;
+  char *file,*size_file,*bound_file;
   char *comp_file, *reg_file;
   char *geomfile, *filetype_label;
   geomdata *geominfo;
