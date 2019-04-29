@@ -1174,7 +1174,7 @@ typedef struct _slicedata {
   int compression_type;
   int colorbar_autoflip;
   int ncompressed;
-  int slicefile_type;
+  int slice_filetype;
   struct _multislicedata *mslice;
   int is_fed;
   feddata *fedptr;
@@ -1289,7 +1289,7 @@ typedef struct _vslicedata {
   int finalize;
   int loaded,display;
   float valmin, valmax;
-  int vslicefile_type;
+  int vslice_filetype;
   int vslicefile_labelindex;
   char menulabel[128];
   char menulabel2[128];

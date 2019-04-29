@@ -126,7 +126,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
   smokedata_local = meshi->volrenderinfo.smokedataptr;
   firedata_local  = meshi->volrenderinfo.firedataptr;
   lightdata_local = meshi->volrenderinfo.lightdataptr;
-  slicetype = meshi->volrenderinfo.smokeslice->slicefile_type;
+  slicetype = meshi->volrenderinfo.smokeslice->slice_filetype;
 
   if(slicetype==SLICE_NODE_CENTER){
     xplt = meshi->xplt_cen;
@@ -2234,7 +2234,7 @@ void DrawSmoke3DGPUVol(void){
       else{
         glUniform1i(GPUvol_havefire,0);
       }
-      glUniform1i(GPUvol_slicetype,vr->smokeslice->slicefile_type);
+      glUniform1i(GPUvol_slicetype,vr->smokeslice->slice_filetype);
       glUniform3f(GPUvol_dcell3,meshi->dcell3[0],meshi->dcell3[1],meshi->dcell3[2]);
       glUniform1i(GPUvol_soot_density, 0);  // smokedata_local
       glUniform1i(GPUvol_fire,         1);  // firedata_local

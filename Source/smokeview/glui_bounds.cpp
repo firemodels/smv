@@ -3804,7 +3804,7 @@ extern "C" void UpdateSliceList(int index){
 
 extern "C" void UpdateSliceListIndex(int sfn){
   int i;
-  int slicefile_type;
+  int slice_filetype;
   slicedata *sd;
   if(sfn<0){
     UpdateSliceFilenum();
@@ -3812,9 +3812,9 @@ extern "C" void UpdateSliceListIndex(int sfn){
   }
   if(sfn < 0)return;
   sd = sliceinfo+sfn;
-  slicefile_type = GetSliceBoundsIndex(sd);
-  if(slicefile_type>=0&&slicefile_type<nslicebounds){
-    i = slicefile_type;
+  slice_filetype = GetSliceBoundsIndex(sd);
+  if(slice_filetype>=0&&slice_filetype<nslicebounds){
+    i = slice_filetype;
     RADIO_slice->set_int_val(i);
     SetSliceBounds(i);
     list_slice_index=i;

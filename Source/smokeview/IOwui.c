@@ -1182,7 +1182,7 @@ int HaveTerrainSlice(void){
 
     slicei = sliceinfo + i;
 
-    if(slicei->loaded==1&&slicei->slicefile_type==SLICE_TERRAIN)return 1;
+    if(slicei->loaded==1&&slicei->slice_filetype==SLICE_TERRAIN)return 1;
 
   }
   return 0;

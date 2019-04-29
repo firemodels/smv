@@ -232,7 +232,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
     slicedata *slicei;
 
     slicei = sliceinfo+islice;
-    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
+    if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
     if(first==1){
@@ -271,7 +271,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
 
       slicei = sliceinfo+islice;
 
-      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
+      if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
       iq = slicei->slicelevel+itime*slicei->nsliceijk;
@@ -463,7 +463,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
     slicedata *slicei;
 
     slicei = sliceinfo+islice;
-    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_GEOM||slicei->volslice==1)continue;
+    if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_GEOM||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
     if(first==1){
@@ -506,7 +506,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
 
       slicei = sliceinfo+islice;
 
-      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_GEOM||slicei->volslice==1)continue;
+      if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_GEOM||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
       // preliminary code for obtaining geometry vertices and triangles
@@ -577,7 +577,7 @@ void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsig
     slicedata *slicei;
 
     slicei = sliceinfo+islice;
-    if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+    if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
     if(first==1){
@@ -616,7 +616,7 @@ void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsig
 
       slicei = sliceinfo+islice;
 
-      if(slicei->loaded==0||slicei->display==0||slicei->slicefile_type!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+      if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
       iq = slicei->slicelevel+itime*slicei->nsliceijk;

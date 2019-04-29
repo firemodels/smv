@@ -2938,7 +2938,7 @@ void ReloadAllSliceFiles(void){
     set_slicecolor = DEFER_SLICECOLOR;
     if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
 
-    if(slicei->slicefile_type == SLICE_GEOM){
+    if(slicei->slice_filetype == SLICE_GEOM){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
@@ -2982,7 +2982,7 @@ void LoadUnloadMenu(int value){
 
       slicei = sliceinfo + i;
       if(slicei->loaded == 1){
-        if(slicei->slicefile_type == SLICE_GEOM){
+        if(slicei->slice_filetype == SLICE_GEOM){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
@@ -3062,7 +3062,7 @@ void LoadUnloadMenu(int value){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->slicefile_type==SLICE_GEOM){
+        if(slicei->slice_filetype==SLICE_GEOM){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
@@ -3963,7 +3963,7 @@ void UnloadSliceMenu(int value){
 
     slicei = sliceinfo+value;
 
-    if(slicei->slicefile_type==SLICE_GEOM){
+    if(slicei->slice_filetype==SLICE_GEOM){
       ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
     }
     else{
@@ -3979,7 +3979,7 @@ void UnloadSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo+i;
-        if(slicei->slicefile_type == SLICE_GEOM){
+        if(slicei->slice_filetype == SLICE_GEOM){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
@@ -4003,7 +4003,7 @@ void UnloadSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo+unload_index;
-        if(slicei->slicefile_type==SLICE_GEOM){
+        if(slicei->slice_filetype==SLICE_GEOM){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
@@ -4421,7 +4421,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
-      if(slicei->slicefile_type == SLICE_GEOM){
+      if(slicei->slice_filetype == SLICE_GEOM){
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
@@ -4467,7 +4467,7 @@ void LoadSliceMenu(int value){
         for(i=0;i<nsliceinfo;i++){
           slicei = sliceinfo + i;
           if(slicei->loaded == 1){
-            if(slicei->slicefile_type == SLICE_GEOM){
+            if(slicei->slice_filetype == SLICE_GEOM){
               ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
             }
             else{
@@ -4520,7 +4520,7 @@ void LoadSliceMenu(int value){
           if(dir!=0&&dir!=slicei->idir)continue;
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-          if(slicei->slicefile_type == SLICE_GEOM){
+          if(slicei->slice_filetype == SLICE_GEOM){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
@@ -4782,7 +4782,7 @@ void LoadMultiSliceMenu(int value){
       if(dir!=0&&slicei->volslice==1)continue;
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-      if(slicei->slicefile_type == SLICE_GEOM){
+      if(slicei->slice_filetype == SLICE_GEOM){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
