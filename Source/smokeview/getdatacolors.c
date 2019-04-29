@@ -227,8 +227,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-    if(patchi->boundary!=patchj->boundary)continue;
-    //if(patchi->patch_filetype != patchj->patch_filetype)continue;
+    if(patchi->boundary != patchj->boundary)continue;
+    if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
     if(patchj->shortlabel_index != patchi->shortlabel_index)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)
     MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
   }
@@ -246,8 +246,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchj=patchinfo+j;
     if (patchi == patchj)continue;
     if(patchi->boundary != patchj->boundary)continue;
-    //if(patchi->patch_filetype != patchj->patch_filetype)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)
-    if(patchj->shortlabel_index !=patchi->shortlabel_index)continue;
+    if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
+    if(patchj->shortlabel_index != patchi->shortlabel_index)continue;
 
     boundj = &patchj->bounds;
     memcpy(boundj,boundi,sizeof(bounddata));
