@@ -2203,8 +2203,8 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
+        itime_cycle = 0;
         UpdateTimes();
-        reset_time_flag=1;
         return;
       }
       break;
