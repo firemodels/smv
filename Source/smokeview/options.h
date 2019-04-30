@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_HTML                // output html version of smokeview scene
 //#define pp_PARTDEBUG        // debug output for particles file I/O
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_VENTPROFILE      // show original zonefire vent flow profile (calculated in smokeview)
@@ -75,7 +76,6 @@
 
 #ifdef pp_BETA
 //#define pp_SLICE_DEBUG         // slice debug output
-#define pp_HTML                // output html version of smokeview scene
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 //#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step 
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
