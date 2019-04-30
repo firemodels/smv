@@ -2253,12 +2253,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     CHECKBOX_average_slice=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_average,_("Average slice data"),&slice_average_flag);
     SPINNER_sliceaverage=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_average,_("Time interval"),GLUI_SPINNER_FLOAT,&slice_average_interval);
-    {
-      float tttmax=120.0;
-
-      if(view_tstop>tttmax)tttmax=view_tstop;
-      SPINNER_sliceaverage->set_float_limits(0.0,tttmax);
-    }
+    SPINNER_sliceaverage->set_float_limits(0.0,MAX(120.0,tour_tstop));
     glui_bounds->add_button_to_panel(ROLLOUT_slice_average,_("Reload"),ALLFILERELOAD,SliceBoundCB);
 
     ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
@@ -3809,7 +3804,7 @@ extern "C" void UpdateSliceList(int index){
 
 extern "C" void UpdateSliceListIndex(int sfn){
   int i;
-  int slicefile_type;
+  int slice_filetype;
   slicedata *sd;
   if(sfn<0){
     UpdateSliceFilenum();
@@ -3817,9 +3812,9 @@ extern "C" void UpdateSliceListIndex(int sfn){
   }
   if(sfn < 0)return;
   sd = sliceinfo+sfn;
-  slicefile_type = GetSliceBoundsIndex(sd);
-  if(slicefile_type>=0&&slicefile_type<nslicebounds){
-    i = slicefile_type;
+  slice_filetype = GetSliceBoundsIndex(sd);
+  if(slice_filetype>=0&&slice_filetype<nslicebounds){
+    i = slice_filetype;
     RADIO_slice->set_int_val(i);
     SetSliceBounds(i);
     list_slice_index=i;

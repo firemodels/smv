@@ -353,6 +353,7 @@ void DrawGeom(int flag, int timestate){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(geom_delx, geom_dely, geom_delz);
     glBegin(GL_TRIANGLES);
     for(i=0;i<ntris;i++){
       tridata *trianglei;
@@ -598,6 +599,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
@@ -678,6 +680,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glDisable(GL_COLOR_MATERIAL);
       DISABLE_LIGHTING;
       glLineWidth(20.0);
@@ -739,6 +742,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       if(geomi->geomtype==GEOM_ISO){
         glLineWidth(isolinewidth);
         line_offset = iso_outline_offset;
@@ -819,6 +823,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glPointSize(6.0);
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
@@ -845,6 +850,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
@@ -920,6 +926,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
@@ -998,6 +1005,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
@@ -1039,6 +1047,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glPointSize(5.0);
       glBegin(GL_POINTS);
 
@@ -3365,6 +3374,7 @@ void GetGeomInfoPtrs(int flag){
       break;
     }
   }
+  if(show_geom_bndf==1)hide_geom = 0;
 
   // count size of geominfoptrs array
 

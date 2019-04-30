@@ -2439,8 +2439,8 @@ void UpdateMeshCoords(void){
   patchout_zmin = zbar0ORIG;
   patchout_zmax = zbarORIG;
   patchout_tmin = 0.0;
-  if(view_tstop>0.0){
-    patchout_tmax = view_tstop;
+  if(tour_tstop>0.0){
+    patchout_tmax = tour_tstop;
   }
   else{
     patchout_tmax = 1.0;
@@ -2862,7 +2862,7 @@ int IsSliceDup(slicedata *sd, int nslice){
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
-    if(slicei->slicefile_type!=sd->slicefile_type)continue;
+    if(slicei->slice_filetype!=sd->slice_filetype)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
     if(slicei->volslice!=sd->volslice)continue;
     if(slicei->idir!=sd->idir)continue;
@@ -4257,8 +4257,8 @@ int ReadSMV(char *file, char *file2){
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
-      sscanf(buffer,"%f %f %i",&view_tstart,&view_tstop,&view_ntimes);
-      if(view_ntimes<2)view_ntimes=2;
+      sscanf(buffer,"%f %f %i",&tour_tstart,&tour_tstop,&tour_ntimes);
+      if(tour_ntimes<2)tour_ntimes=2;
       ReallocTourMemory();
       continue;
     }
@@ -8270,24 +8270,24 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
-      sd->slicefile_type=SLICE_NODE_CENTER;
+      sd->slice_filetype=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
       if(slicegeom==1){
         patchdata *patchgeom;
 
-        sd->slicefile_type=SLICE_GEOM;
+        sd->slice_filetype=SLICE_GEOM;
         NewMemory((void **)&patchgeom,sizeof(patchdata));
         sd->patchgeom=patchgeom;
       }
       if(terrain==1){
-        sd->slicefile_type=SLICE_TERRAIN;
+        sd->slice_filetype=SLICE_TERRAIN;
       }
-      if(fire_line==1)sd->slicefile_type=SLICE_FIRELINE;
+      if(fire_line==1)sd->slice_filetype=SLICE_FIRELINE;
       if(cellcenter==1){
-        sd->slicefile_type=SLICE_CELL_CENTER;
+        sd->slice_filetype=SLICE_CELL_CENTER;
       }
       if(facecenter == 1){
-        sd->slicefile_type = SLICE_FACE_CENTER;
+        sd->slice_filetype = SLICE_FACE_CENTER;
       }
 
       islicecount++;
@@ -8352,16 +8352,16 @@ typedef struct {
 
 // read in labels
 
-      if(sd->slicefile_type==SLICE_TERRAIN){
+      if(sd->slice_filetype==SLICE_TERRAIN){
         if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
       }
-      else if(sd->slicefile_type==SLICE_CELL_CENTER){
+      else if(sd->slice_filetype==SLICE_CELL_CENTER){
         if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
       }
-      else if(sd->slicefile_type==SLICE_GEOM){
+      else if(sd->slice_filetype==SLICE_GEOM){
         if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==2)return 2;
       }
-      else if(sd->slicefile_type == SLICE_FACE_CENTER){
+      else if(sd->slice_filetype == SLICE_FACE_CENTER){
         if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
       }
       else{
@@ -8601,6 +8601,10 @@ typedef struct {
       len=strlen(bufferptr);
       NewMemory((void **)&patchi->reg_file,(unsigned int)(len+1));
       STRCPY(patchi->reg_file,bufferptr);
+
+      NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
+      STRCPY(patchi->bound_file, bufferptr);
+      strcat(patchi->bound_file, ".bnd");
 
       NewMemory((void **)&patchi->comp_file,(unsigned int)(len+4+1));
       STRCPY(patchi->comp_file,bufferptr);
@@ -9582,9 +9586,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i", &freeze_volsmoke,&autofreeze_volsmoke);
       continue;
     }
+    if(Match(buffer, "GEOMOFFSET")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f %f %i", &geom_delx, &geom_dely, &geom_delz, &show_geom_bndf);
+      continue;
+    }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %f %F", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
+      sscanf(buffer, " %i %i %i %f %f", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
       ONEORZERO(show_boundary_shaded);
       ONEORZERO(show_boundary_outline);
       ONEORZERO(show_boundary_points);
@@ -11872,12 +11881,6 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i %f", &vis_threshold, &vis_onlythreshold, &temp_threshold);
         continue;
       }
-      if(Match(buffer, "TOURCONSTANTVEL") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &tour_constant_vel);
-        tour_constant_vel = 1;
-        continue;
-      }
       if(Match(buffer, "TOUR_AVATAR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         //        sscanf(buffer,"%i %f %f %f %f",&tourlocus_type,tourcol_avatar,tourcol_avatar+1,tourcol_avatar+2,&tourrad_avatar);
@@ -11885,13 +11888,11 @@ int ReadIni2(char *inifile, int localfile){
         continue;
       }
       if(Match(buffer, "TOURCIRCLE") == 1){
-        float *c, *r, *v;
-
-        c = tour_circular_center;
-        v = tour_circular_view;
-        r = &tour_circular_radius;
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer,"%f %f %f %f %f %f %f",c,c+1,c+2,v,v+1,v+2,r);
+        sscanf(buffer,"%f %f %f %f %f %f %f %f", 
+          tour_circular_center+0, tour_circular_center+1, tour_circular_center+2,
+          tour_circular_view+0, tour_circular_view+1, tour_circular_view+2,
+          &tour_circular_radius, &tour_circular_angle0);
         continue;
       }
 
@@ -12122,8 +12123,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "VIEWTIMES") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f %f %i", &view_tstart, &view_tstop, &view_ntimes);
-        if(view_ntimes<2)view_ntimes = 2;
+        sscanf(buffer, "%f %f %i", &tour_tstart, &tour_tstop, &tour_ntimes);
+        if(tour_ntimes<2)tour_ntimes = 2;
         ReallocTourMemory();
         continue;
       }
@@ -12422,8 +12423,8 @@ int ReadIni2(char *inifile, int localfile){
               touri->nkeyframes = nkeyframes;
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
-              if(NewMemory((void **)&touri->pathnodes, view_ntimes*sizeof(pathdata)) == 0)return 2;
-              if(NewMemory((void **)&touri->path_times, view_ntimes*sizeof(float)) == 0)return 2;
+              if(NewMemory((void **)&touri->pathnodes,  tour_ntimes*sizeof(pathdata)) == 0)return 2;
+              if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
 
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
@@ -12837,15 +12838,12 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
 
-  {
-    float *c, *r, *v;
-
-    c = tour_circular_center;
-    v = tour_circular_view;
-    r = &tour_circular_radius;
-    fprintf(fileout, "TOURCIRCLE\n");
-    fprintf(fileout, "%f %f %f %f %f %f %f",c[0],c[1],c[2],v[0],v[1],v[2],*r);
-  }
+  fprintf(fileout, "TOURCIRCLE\n");
+  fprintf(fileout, "%f %f %f %f %f %f %f %f", 
+    tour_circular_center[0], 
+    tour_circular_center[1], tour_circular_center[2],
+    tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
+    tour_circular_radius, tour_circular_angle0);
   fprintf(fileout, "TOURINDEX\n");
   fprintf(fileout, " %i\n", selectedtour_index);
   startup_count = 0;
@@ -13350,6 +13348,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
+  fprintf(fileout, "GEOMOFFSET\n");
+  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
@@ -13769,7 +13769,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");
-  fprintf(fileout, " %f %f %i\n", view_tstart, view_tstop, view_ntimes);
+  fprintf(fileout, " %f %f %i\n", tour_tstart, tour_tstop, tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
   fprintf(fileout," %i\n",viewtourfrompath);
 

@@ -154,7 +154,7 @@ void UpdateFrameNumber(int changetime){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo+i;
-        if(sd->slicefile_type == SLICE_GEOM){
+        if(sd->slice_filetype == SLICE_GEOM){
           patchdata *patchi;
 
           patchi = sd->patchgeom;
@@ -363,7 +363,7 @@ void UpdateShow(void){
       i=slice_loaded_list[ii];
       sd = sliceinfo+i;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slicefile_type==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       if(sd->ntimes>0){
         sliceflag=1;
         break;
@@ -460,7 +460,7 @@ void UpdateShow(void){
       sd = sliceinfo + vd->ival;
 
       if(sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slicefile_type==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       vsliceflag=1;
       break;
     }
@@ -752,7 +752,7 @@ void SynchTimes(void){
       slicedata *sd;
 
       sd = sliceinfo + slice_loaded_list[jj];
-      if(sd->slicefile_type == SLICE_GEOM){
+      if(sd->slice_filetype == SLICE_GEOM){
         sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
@@ -1128,11 +1128,12 @@ void UpdateTimes(void){
   if(nglobal_times>0){
     int i;
     NewMemory((void **)&global_times, nglobal_times*sizeof(float));
-    for(i = 0; i<nglobal_times; i++){
+    global_times[0] = global_timemin;
+    for(i = 1; i<nglobal_times; i++){
       float f1;
 
       f1 = (float)i/(float)(nglobal_times-1);
-      global_times[i] = (1.0-f1)*global_timemin + f1*global_timemax;
+      global_times[i] = (1.0-f1)*global_timemin+f1*global_timemax;
     }
   }
 
@@ -1224,7 +1225,7 @@ void UpdateTimes(void){
     slicedata *sd;
 
     sd = sliceinfo + i;
-    if(sd->slicefile_type == SLICE_GEOM){
+    if(sd->slice_filetype == SLICE_GEOM){
       FREEMEMORY(sd->patchgeom->geom_timeslist);
       if(nglobal_times > 0)NewMemory((void **)&(sd->patchgeom->geom_timeslist), nglobal_times * sizeof(int));
     }
@@ -1468,7 +1469,7 @@ void UpdateTimes(void){
       slicedata *sd;
 
       sd = sliceinfo + i;
-      if(sd->loaded==0||sd->display==0||sd->slicefile_type!=SLICE_TERRAIN)continue;
+      if(sd->loaded==0||sd->display==0||sd->slice_filetype!=SLICE_TERRAIN)continue;
       show_slice_terrain=1;
       break;
     }
@@ -1705,6 +1706,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(update_times==1){
+    update_times = 0;
+    UpdateTimes();
+  }
   if(update_smoketype_vals==1){
     update_smoketype_vals = 0;
 #define SMOKE_NEW 77

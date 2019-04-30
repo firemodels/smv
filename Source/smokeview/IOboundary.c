@@ -2707,8 +2707,10 @@ void Global2LocalBoundaryBounds(const char *key){
       patchchopmax=patchi->chopmax;
       setpatchchopmin=patchi->setchopmin;
       setpatchchopmax=patchi->setchopmax;
+
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
+
       UpdateGluiBoundaryUnits();
       UpdateHideBoundarySurface();
 
