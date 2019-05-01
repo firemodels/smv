@@ -180,7 +180,7 @@ extern "C" void GluiTourSetup(int main_window){
 
   SPINNER_tour_circular_radius = glui_tour->add_spinner_to_panel(ROLLOUT_circular, "radius", GLUI_SPINNER_FLOAT, &tour_circular_radius,TOUR_CIRCULAR_UPDATE,TourCB);
   SPINNER_tour_circular_angle0 = glui_tour->add_spinner_to_panel(ROLLOUT_circular, "initial angle", GLUI_SPINNER_FLOAT, &tour_circular_angle0, TOUR_CIRCULAR_UPDATE, TourCB);
-  glui_tour->add_spinner_to_panel(ROLLOUT_circular, "time factor", GLUI_SPINNER_FLOAT, &tour_time_factor, TOUR_CIRCULAR_UPDATE, TourCB);
+  glui_tour->add_spinner_to_panel(ROLLOUT_circular, "speedup factor", GLUI_SPINNER_FLOAT, &tour_speedup_factor, TOUR_CIRCULAR_UPDATE, TourCB);
 
   PANEL_tour_circular_center = glui_tour->add_panel_to_panel(ROLLOUT_circular,_("center"),true);
   SPINNER_tour_circular_center[0]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"x",GLUI_SPINNER_FLOAT,tour_circular_center,TOUR_CIRCULAR_UPDATE,TourCB);

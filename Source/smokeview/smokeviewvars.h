@@ -117,7 +117,7 @@ SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3], SVDECL(tour_circular_angle0,0.0);
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
-SVEXTERN float SVDECL(tour_time_factor, 1.0);
+SVEXTERN float SVDECL(tour_speedup_factor, 1.0);
 SVEXTERN int SVDECL(ncircletournodes, 16);
 
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);

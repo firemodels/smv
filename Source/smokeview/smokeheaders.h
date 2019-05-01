@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP void InitNabors(void);
 #ifdef pp_HTML

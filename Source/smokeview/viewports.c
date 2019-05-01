@@ -1618,7 +1618,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = touri->timeslist[itimes];
+      frame_index = GetTourFrame(touri,itimes);
       if(keyframe_snap==1&&selected_frame!=NULL){
         pj=&selected_frame->nodeval;
       }
@@ -1675,7 +1675,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = touri->timeslist[itimes];
+      frame_index = GetTourFrame(touri,itimes);
       if(keyframe_snap==1&&selected_frame!=NULL){
         pj=&selected_frame->nodeval;
       }
@@ -1768,7 +1768,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
           touri = tourinfo + selectedtour_index;
-          frame_index = touri->timeslist[itimes];
+          frame_index = GetTourFrame(touri,itimes);
           if(keyframe_snap==1&&selected_frame!=NULL){
             pj=&selected_frame->nodeval;
           }
