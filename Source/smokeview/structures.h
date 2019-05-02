@@ -648,6 +648,7 @@ typedef struct _meshdata {
   int *smoke_tris, smoke_ntris, smoke_nverts;
   int update_smokebox;
 #endif
+  struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
   GLuint slice3d_texture_id;
