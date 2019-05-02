@@ -101,6 +101,7 @@ GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_loadvol=NULL;
 GLUI_RadioGroup *RADIO_use_colormap=NULL;
+GLUI_RadioGroup *RADIO_use_colormap2 = NULL;
 GLUI_RadioGroup *RADIO_light_type = NULL;
 GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
 
@@ -443,11 +444,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   PANEL_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Color/opacity"));
 
-  RADIO_use_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_colormap, &firecolormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
+  ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "smoke",false, SMOKECOLOR_ROLLOUT, ColorRolloutCB);
+  RADIO_use_colormap = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_smokecolor, &firecolormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use red/green/blue"));
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap, _("Use colormap"));
-
-  ROLLOUT_smokecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "smoke",false, SMOKECOLOR_ROLLOUT, ColorRolloutCB);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_smoke_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("red"), GLUI_SPINNER_INT, &smoke_red, SMOKE_RED, Smoke3dCB);
@@ -457,7 +457,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_blue = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"), GLUI_SPINNER_INT, &smoke_blue, SMOKE_BLUE, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
 
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("fire"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("HRRPUV/temperature"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  RADIO_use_colormap2 = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_firecolor, &firecolormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap2, _("Use red/green/blue"));
+  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_colormap2, _("Use colormap"));
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
 
   SPINNER_smoke3d_fire_red = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("red"), GLUI_SPINNER_INT, &fire_red, FIRE_RED, Smoke3dCB);
@@ -1105,6 +1108,7 @@ extern "C" void Smoke3dCB(int var){
 #endif
       firecolormap_type=firecolormap_type_save;
       RADIO_use_colormap->set_int_val(firecolormap_type);
+      RADIO_use_colormap2->set_int_val(firecolormap_type);
     }
     else{
 #ifdef pp_SMOKETEST
@@ -1116,10 +1120,13 @@ extern "C" void Smoke3dCB(int var){
       firecolormap_type_save=firecolormap_type;
       firecolormap_type=FIRECOLORMAP_CONSTRAINT;
       RADIO_use_colormap->set_int_val(firecolormap_type);
+      RADIO_use_colormap2->set_int_val(firecolormap_type);
     }
     Smoke3dCB(FIRECOLORMAP_TYPE);
     break;
   case FIRECOLORMAP_TYPE:
+    RADIO_use_colormap->set_int_val(firecolormap_type);
+    RADIO_use_colormap2->set_int_val(firecolormap_type);
     switch(firecolormap_type){
     case FIRECOLORMAP_CONSTRAINT:
       LISTBOX_smoke_colorbar->enable();
@@ -1132,6 +1139,9 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_smoke3d_fire_red->disable();
       SPINNER_smoke3d_fire_green->disable();
       SPINNER_smoke3d_fire_blue->disable();
+      SPINNER_smoke3d_smoke_red->disable();
+      SPINNER_smoke3d_smoke_green->disable();
+      SPINNER_smoke3d_smoke_blue->disable();
       CHECKBOX_edit_colormap->enable();
       LISTBOX_smoke_colorbar->enable();
       break;
