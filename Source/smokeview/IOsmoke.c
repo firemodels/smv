@@ -6612,7 +6612,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     co2val_uc[2] = (unsigned char)co2_color_int255[2];
 
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
-      unsigned char *firecolor_ptr, *smokecolor_ptr, *co2color_ptr, smoke3d_color[3];
+      unsigned char *firecolor_ptr, *smokecolor_ptr, *co2color_ptr;
       float f_fire, f_smoke, f_co2, denom;
       float alpha_fire_local, alpha_smoke_local, alpha_co2_local;
 
