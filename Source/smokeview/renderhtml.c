@@ -23,10 +23,10 @@ typedef struct _webgeomdata {
 /* ------------------ GetPartFileNodes ------------------------ */
 
 void GetPartFileNodes(int option, int option2, float *verts, float *colors, int *nverts, int *frame_sizes, int *nframes){
-  int i, ntimes=0, first = 1;
+  int i, first = 1;
   int ibeg, iend;
   partdata *parttime=NULL;
-  int itime, ipart;
+  int itime;
 
   if(option2==ALL_TIMES){
     for(i = 0; i<npartinfo; i++){
@@ -57,13 +57,9 @@ void GetPartFileNodes(int option, int option2, float *verts, float *colors, int 
     frame_sizes[itime-ibeg] = 0;
     for(i = 0; i<npartinfo; i++){
       partdata *parti;
-      int nclasses;
-      part5data *datacopy;
 
       parti = partinfo+i;
       if(parti->loaded==0||parti->display==0)continue;
-      nclasses = parti->nclasses;
-      datacopy = parti->data5+nclasses*itime;
     }
   }
 }
@@ -76,7 +72,6 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
   int *frame_size, int *nframes){
   int i, first = 1, minsteps;
   int itime, ibeg, iend;
-  patchdata *patchtime = NULL;
   meshdata *meshpatch;
   int nv, nt;
 
@@ -92,7 +87,6 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     patchi = patchinfo+i;
     if(patchi->loaded==0||patchi->display==0||patchi->structured==NO)continue;
     if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
-    patchtime = patchi;
     meshpatch = meshinfo+patchi->blocknumber;
     if(first==1){
       first = 0;
@@ -151,7 +145,6 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           }
           if(drawit==1){
             int nrow, ncol;
-            int nverts, ntris;
 
             nrow = boundary_row[n];
             ncol = boundary_col[n];
@@ -224,7 +217,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
 /* ------------------ GetSliceCellVerts ------------------------ */
 
 void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
-  int islice, nv = 0, nt = 0, count = 0;
+  int islice, nv = 0, nt = 0;
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
 
@@ -304,8 +297,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
           float *xplt, *yplt, *zplt;
           int plotx, ploty, plotz;
           float  constval;
-          int n, i, j, k, nj, nk;
-          int ii, jj, kk;
+          int n, i, j, k;
 
           meshi = meshinfo+slicei->blocknumber;
 
@@ -455,7 +447,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
 /* ------------------ GetSliceGeomVerts ------------------------ */
 
 void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
-  int islice, nv = 0, nt = 0, count = 0;
+  int islice, nv = 0, nt = 0;
   int ibeg, iend, itime, first = 1, minsteps;
   slicedata *slicetime = NULL;
 
@@ -497,8 +489,6 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
 
     for(islice = 0; islice<nsliceinfo; islice++){
       slicedata *slicei;
-      int nrows, ncols;
-      unsigned char *iq;
       geomdata *geomi;
       geomlistdata *geomlisti;
       patchdata *patchi;
@@ -569,7 +559,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
 /* ------------------ GetSliceNodeVerts ------------------------ */
 
 void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsigned char *textures, int *nverts, int *tris, int *ntris, int *frame_size, int *nframes){
-  int islice, nv = 0, nt = 0, count = 0;
+  int islice, nv = 0, nt = 0;
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
 
@@ -983,7 +973,7 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
 /* ------------------ Lines2Geom ------------------------ */
 
 void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linesptr, int *n_lines){
-  int nverts = 0, nlines = 0, offset = 0;
+  int nverts = 0, nlines = 0;
   float *verts, *verts_save, *colors, *colors_save;
   int *lines, *lines_save;
   int i;
@@ -1081,7 +1071,6 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 /* ------------------ BndfTriangles2Geom ------------------------ */
 
 void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
-  int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1137,7 +1126,6 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
 /* ------------------ SliceCellTriangles2Geom ------------------------ */
 
 void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
-  int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1188,7 +1176,6 @@ void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
 /* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
 void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
-  int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1239,7 +1226,6 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
 /* ------------------ SliceGeomTriangles2Geom ------------------------ */
 
 void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
-  int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1371,7 +1357,6 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
 /* ------------------ GeomLitTriangles2Geom ------------------------ */
 
 void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
-  int j;
   int nverts = 0, ntriangles = 0, offset = 0;
   float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
   int *triangles, *triangles_save;
