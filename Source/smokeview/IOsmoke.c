@@ -6503,7 +6503,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
     meshdata *meshi;
-    float fire_alpha, co2_alpha;
     unsigned char *firecolor_data,*sootcolor_data,*co2color_data;
     unsigned char *mergecolor,*mergealpha;
     unsigned char firesmokeval[3];
@@ -6522,7 +6521,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     else{
       smoke3di->fire_alpha=255*(1.0-pow(0.5,meshi->dx/fire_halfdepth));
     }
-    fire_alpha=smoke3di->fire_alpha;
 
     if(co2_halfdepth <= 0.0){
       smoke3di->co2_alpha = 255;
@@ -6530,11 +6528,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     else {
       smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, meshi->dx / co2_halfdepth));
     }
-    co2_alpha = smoke3di->co2_alpha;
 
     firecolor_data=NULL;
-    sootcolor_data=NULL;
-    co2color_data = NULL;
     if(smoke3di->smokestate[fire_index].color!=NULL){
       firecolor_data=smoke3di->smokestate[fire_index].color;
       if(smoke3di->smokestate[fire_index].index !=-1){
@@ -6544,6 +6539,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         if(smoke3dref->display==0)firecolor_data=NULL;
       }
     }
+
+    sootcolor_data=NULL;
     if(smoke3di->smokestate[SOOT].color !=NULL){
       sootcolor_data=smoke3di->smokestate[SOOT].color;
       if(smoke3di->smokestate[SOOT].index !=-1){
@@ -6553,6 +6550,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         if(smoke3dref->display==0)sootcolor_data=NULL;
       }
     }
+
+    co2color_data = NULL;
     if(smoke3di->smokestate[CO2].color != NULL){
       co2color_data = smoke3di->smokestate[CO2].color;
       if(smoke3di->smokestate[CO2].index != -1){
@@ -6562,6 +6561,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         if(smoke3dref->display == 0)co2color_data = NULL;
       }
     }
+    ASSERT(firecolor_data!=NULL||sootcolor_data!=NULL||co2color_data!=NULL);
+
 #ifdef pp_GPU
     if(usegpu==1)continue;
 #endif
@@ -6584,13 +6585,16 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     mergealpha=meshi->merge_alpha;
     meshi->smokecolor_ptr = mergecolor;
     meshi->smokealpha_ptr = mergealpha;
+
     firesmokeval[0] = (unsigned char)smoke_color256[0];
     firesmokeval[1] = (unsigned char)smoke_color256[1];
     firesmokeval[2] = (unsigned char)smoke_color256[2];
-    ASSERT(firecolor_data!=NULL||sootcolor_data!=NULL||co2color_data!=NULL);
+
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       unsigned char *firesmoke_color, smoke3d_color[3];
       float f1, f2;
+      float f_fire, f_soot, f_co2;
+      float alpha_fire_local, alpha_soot_local, alpha_co2_local;
 
 // set color
 
@@ -6679,7 +6683,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       }
       if(firecolor_data!=NULL&&firecolor_data[j]>i_smoke3d_cutoff){
         if(smoke3d_testsmoke==0){
-          *mergealpha++ = f1*fire_alpha+f2*co2_alpha;
+          *mergealpha++ = f1*smoke3di->fire_alpha+f2*smoke3di->co2_alpha;
         }
         else{
           *mergealpha++ = CLAMP(opacity_map[firecolor_data[j]],0,255);
@@ -6687,16 +6691,16 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       }
       else if(sootcolor_data!=NULL){
         if(smoke3d_thick==0){
-          *mergealpha++ = f1*sootcolor_data[j]+f2*co2_alpha;
+          *mergealpha++ = f1*sootcolor_data[j]+f2*smoke3di->co2_alpha;
         }
         else{
-          *mergealpha++ = f1*(sootcolor_data[j]>>smoke3d_thick)+f2*co2_alpha;
+          *mergealpha++ = f1*(sootcolor_data[j]>>smoke3d_thick)+f2*smoke3di->co2_alpha;
         }
       }
       else if(co2color_data!=NULL){
         unsigned char cval;
 
-        f2 = (float)co2color_data[j]*(float)co2_alpha/255.0;
+        f2 = (float)co2color_data[j]*(float)smoke3di->co2_alpha/255.0;
         cval = CLAMP((unsigned char)f2,0,255);
         *mergealpha++ = cval;
       }
