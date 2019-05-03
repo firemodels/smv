@@ -9560,14 +9560,6 @@ int ReadIni2(char *inifile, int localfile){
       showgeom_outside_domain = CLAMP(showgeom_outside_domain, 0, 1);
       continue;
    }
-   if(Match(buffer, "CO2COLOR") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i", global_co2color,global_co2color+1,global_co2color+2);
-      global_co2color[0] = CLAMP(global_co2color[0], 0, 2550);
-      global_co2color[1] = CLAMP(global_co2color[1], 0, 2550);
-      global_co2color[2] = CLAMP(global_co2color[2], 0, 2550);
-        continue;
-    }
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
@@ -11837,14 +11829,28 @@ int ReadIni2(char *inifile, int localfile){
 #endif
       if(Match(buffer, "FIRECOLOR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %i", &fire_red, &fire_green, &fire_blue);
+        sscanf(buffer, "%i %i %i", fire_color256, fire_color256+1, fire_color256+2);
+        fire_color256[0] = CLAMP(fire_color256[0], 0, 255);
+        fire_color256[1] = CLAMP(fire_color256[1], 0, 255);
+        fire_color256[2] = CLAMP(fire_color256[2], 0, 255);
         continue;
       }
       if(Match(buffer, "SMOKECOLOR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %i", &smoke_red, &smoke_green, &smoke_blue);
+        sscanf(buffer, "%i %i %i", smoke_color256, smoke_color256+1, smoke_color256+2);
+        smoke_color256[0] = CLAMP(smoke_color256[0], 0, 255);
+        smoke_color256[1] = CLAMP(smoke_color256[1], 0, 255);
+        smoke_color256[2] = CLAMP(smoke_color256[2], 0, 255);
         continue;
       }
+      if(Match(buffer, "CO2COLOR") == 1){
+         fgets(buffer, 255, stream);
+         sscanf(buffer, " %i %i %i", co2_color256,co2_color256+1,co2_color256+2);
+         co2_color256[0] = CLAMP(co2_color256[0], 0, 255);
+         co2_color256[1] = CLAMP(co2_color256[1], 0, 255);
+         co2_color256[2] = CLAMP(co2_color256[2], 0, 255);
+         continue;
+       }
       if(Match(buffer, "FIREDEPTH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f %f", &fire_halfdepth,&co2_halfdepth);
@@ -13145,7 +13151,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
   fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
   fprintf(fileout,"CO2COLOR\n");
-  fprintf(fileout," %i %i %i", global_co2color[0],global_co2color[1],global_co2color[2]);
+  fprintf(fileout," %i %i %i", co2_color256[0],co2_color256[1],co2_color256[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");
   fprintf(fileout, " %f %f %f\n", direction_color[0], direction_color[1], direction_color[2]);
   fprintf(fileout, "FLIP\n");
@@ -13672,7 +13678,7 @@ void WriteIni(int flag,char *filename){
       mmax[0], mmax[1], mmax[2]);
   }
   fprintf(fileout, "FIRECOLOR\n");
-  fprintf(fileout, " %i %i %i\n", fire_red, fire_green, fire_blue);
+  fprintf(fileout, " %i %i %i\n", fire_color256[0], fire_color256[1], fire_color256[2]);
   fprintf(fileout, "FIRECOLORMAP\n");
   fprintf(fileout, " %i %i\n", firecolormap_type, fire_colorbar_index);
   fprintf(fileout, "FIREDEPTH\n");
@@ -13702,7 +13708,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i %i %i\n", show_extremedata, show_extreme_mindata, show_extreme_maxdata);
   }
   fprintf(fileout, "SMOKECOLOR\n");
-  fprintf(fileout, " %i %i %i\n", smoke_red, smoke_green, smoke_blue);
+  fprintf(fileout, " %i %i %i\n", smoke_color256[0], smoke_color256[1], smoke_color256[2]);
   fprintf(fileout, "SMOKECULL\n");
   fprintf(fileout," %i\n",smokecullflag);
   if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){

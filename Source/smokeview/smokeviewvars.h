@@ -146,11 +146,6 @@ SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
 SVEXTERN int SVDECL(nsmoke3d_soot, 0);
-#ifdef INMAIN
-  SVEXTERN int global_co2color[3]={64,156,215};
-#else
-  SVEXTERN int global_co2color[3];
-#endif
 SVEXTERN float SVDECL(co2factor, 1.0);
 SVEXTERN float SVDECL(sootfactor, 15.0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
@@ -1639,9 +1634,16 @@ SVEXTERN float p3chopmin_temp, p3chopmax_temp;
 SVEXTERN float p3min_temp, p3max_temp;
 
 SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
-SVEXTERN int SVDECL(fire_red,255), SVDECL(fire_green,128), SVDECL(fire_blue,0);
 
-SVEXTERN int SVDECL(smoke_red, 0), SVDECL(smoke_green, 0), SVDECL(smoke_blue, 0);
+#ifdef INMAIN
+int fire_color256[3]  = { 255, 128,0 };
+int smoke_color256[3] = { 0,0,0 };
+int co2_color256[3]   = {64,156,215};
+#else
+SVEXTERN int fire_color256[3];
+SVEXTERN int smoke_color256[3];
+SVEXTERN int co2_color256[3];
+#endif
 SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(fire_halfdepth2, 2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
 SVEXTERN float SVDECL(co2_halfdepth, 2.0);
 
