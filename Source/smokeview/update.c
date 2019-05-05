@@ -1898,6 +1898,10 @@ void UpdateDisplay(void){
     SmokeColorbarMenu(fire_colorbar_index_ini);
     update_fire_colorbar_index = 0;
   }
+  if(update_co2_colorbar_index==1){
+    UpdateCO2ColorbarList(co2_colorbar_index_ini);
+    update_co2_colorbar_index = 0;
+  }
   if(update_colorbar_select_index == 1 && colorbar_select_index >= 0 && colorbar_select_index <= 255){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);

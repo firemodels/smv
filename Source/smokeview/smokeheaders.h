@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateCO2ColorbarList(int value);
 EXTERNCPP void UpdateCo2Blending(void);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
@@ -260,6 +261,7 @@ EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgb
 EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
 EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
+EXTERNCPP void UpdateCO2Colormap(void);
 EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void SetColorbarListIndex(int val);
 EXTERNCPP int  GetColorbarListIndex(void);

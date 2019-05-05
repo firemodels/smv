@@ -1323,6 +1323,44 @@ int HaveFire(void) {
   return 0;
 }
 
+/* ------------------ UpdateCO2Colormap ------------------------ */
+
+void UpdateCO2Colormap(void){
+  int n;
+  float transparent_level_local=1.0;
+  unsigned char *alpha;
+  float *co2_cb;
+  float *rgb_colormap=NULL;
+
+  if(use_transparency_data==1)transparent_level_local=transparent_level;
+
+  alpha = colorbarinfo[co2_colorbar_index].alpha;
+  co2_cb = colorbarinfo[co2_colorbar_index].colorbar;
+  rgb_colormap = rgb_sliceco2colormap_01;
+
+  switch(co2_colormap_type){
+    case CO2_RGB:
+      for(n=0;n<MAXSMOKERGB;n++){
+        rgb_colormap[4*n+0] = (float)co2_color_int255[0] / 255.0;
+        rgb_colormap[4*n+1] = (float)co2_color_int255[1] / 255.0;
+        rgb_colormap[4*n+2] = (float)co2_color_int255[2] / 255.0;
+        rgb_colormap[4*n+3] = transparent_level_local;
+      }
+      break;
+    case CO2_COLORBAR:
+      for(n=0;n<MAXSMOKERGB;n++){
+        rgb_colormap[4*n+0] = co2_cb[3*n+0];
+        rgb_colormap[4*n+1] = co2_cb[3*n+1];
+        rgb_colormap[4*n+2] = co2_cb[3*n+2];
+        rgb_colormap[4*n+3] = transparent_level_local;
+      }
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+}
+
 /* ------------------ UpdateSmokeColormap ------------------------ */
 
 void UpdateSmokeColormap(int option){
@@ -1356,7 +1394,7 @@ void UpdateSmokeColormap(int option){
   alpha = colorbarinfo[colorbartype].alpha;
   fire_cb = colorbarinfo[fire_colorbar_index].colorbar;
 
-  switch(firecolormap_type){
+  switch(fire_colormap_type){
     case FIRECOLORMAP_DIRECT:
       for(n=0;n<MAXSMOKERGB;n++){
         if(n<icut||have_fire==0){
@@ -1385,7 +1423,7 @@ void UpdateSmokeColormap(int option){
         float smoke_color1[3], smoke_color2[3];
 
         val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
-        if(firecolormap_type==FIRECOLORMAP_CONSTRAINT){
+        if(fire_colormap_type==FIRECOLORMAP_CONSTRAINT){
           if(val<=valcut){
             if(valcut>valmin){
               n2 = 1+127*(val-valmin)/(valcut-valmin);
@@ -1412,7 +1450,7 @@ void UpdateSmokeColormap(int option){
         factor = CLAMP(factor,0.0,1.0);
         fire1 = fire_cb + 3 * nn2;
         fire2 = fire1 + 3;
-        if(firecolormap_type == FIRECOLORMAP_CONSTRAINT&&val <= valcut){
+        if(fire_colormap_type == FIRECOLORMAP_CONSTRAINT&&val <= valcut){
           smoke_color1[0] = fire1[0];
           smoke_color1[1] = fire1[1];
           smoke_color1[2] = fire1[2];

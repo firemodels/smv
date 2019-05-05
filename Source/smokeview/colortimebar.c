@@ -566,8 +566,11 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
     case 14:
       strcpy(cb_newname, "Methanol");
       break;
+    case 15:
+      strcpy(cb_newname, "CO2");
+      break;
     default:
-#define NCOLORBARS_PREV 15
+#define NCOLORBARS_PREV 16
       if(cb_oldtype>=NCOLORBARS_PREV){
         cb_oldtype -= (NCOLORBARS_PREV-ndefaultcolorbars);
       }
@@ -590,18 +593,16 @@ void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
-  ndefaultcolorbars=15;
+  ndefaultcolorbars=16;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
   NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
-
   // rainbow colorbar
 
   cbi=colorbarinfo;
-
 
   strcpy(cbi->label,"Rainbow");
   cbi->label_ptr=cbi->label;
@@ -1055,6 +1056,32 @@ void InitDefaultColorbars(int nini){
   // Methanol
 
   strcpy(cbi->label, "Methanol");
+  cbi->label_ptr = cbi->label;
+
+  cbi->nnodes = 3;
+  cbi->nodehilight = 0;
+
+  cbi->index_node[0] = 0;
+  cbi->rgb_node[0] = 0;
+  cbi->rgb_node[1] = 0;
+  cbi->rgb_node[2] = 255;
+
+  cbi->index_node[1] = 192;
+  cbi->rgb_node[3] = 0;
+  cbi->rgb_node[4] = 0;
+  cbi->rgb_node[5] = 255;
+
+  cbi->index_node[2] = 255;
+  cbi->rgb_node[6] = 255;
+  cbi->rgb_node[7] = 255;
+  cbi->rgb_node[8] = 255;
+
+  cbi++;
+
+  // CO2
+
+  co2_colorbar_index = cbi - colorbarinfo;
+  strcpy(cbi->label, "CO2");
   cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 3;

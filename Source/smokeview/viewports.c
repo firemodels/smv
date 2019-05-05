@@ -773,7 +773,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     }
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);
 
-    if(firecolormap_type == 0){
+    if(fire_colormap_type == 0){
       f_red   = (float)fire_color_int255[0] / 255.0;
       f_green = (float)fire_color_int255[1] / 255.0;
       f_blue  = (float)fire_color_int255[2] / 255.0;

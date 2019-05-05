@@ -817,6 +817,10 @@ SVEXTERN int showiso_colorbar;
 SVEXTERN int SVDECL(visgridloc,0);
 SVEXTERN int valindex;
 
+SVEXTERN int co2_colorbar_index, SVDECL(co2_colorbar_index_save, -1);
+SVEXTERN int SVDECL(update_co2_colorbar_index, 0);
+SVEXTERN int SVDECL(co2_colorbar_index_ini, 0);
+
 SVEXTERN int fire_colorbar_index,SVDECL(fire_colorbar_index_save,-1);
 SVEXTERN int SVDECL(update_fire_colorbar_index,0);
 SVEXTERN int SVDECL(fire_colorbar_index_ini,0);
@@ -827,6 +831,7 @@ SVEXTERN float rgb_terrain2[4 * MAXRGB];
 SVEXTERN float rgb_slice[4 * MAXRGB];
 SVEXTERN float rgb_volsmokecolormap[4*MAXSMOKERGB];
 SVEXTERN float rgb_slicesmokecolormap_01[4*MAXSMOKERGB];
+SVEXTERN float rgb_sliceco2colormap_01[4*MAXSMOKERGB];
 SVEXTERN float rgb_iso[4*MAXRGB];
 SVEXTERN float rgb_patch[4*MAXRGB];
 SVEXTERN float rgb_plot3d[4*MAXRGB];
@@ -1646,9 +1651,11 @@ SVEXTERN int co2_color_int255[3];
 SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(fire_halfdepth2, 2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
 SVEXTERN float SVDECL(co2_halfdepth, 2.0);
 
+SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
+
 SVEXTERN int SVDECL(show_firecolormap,0);
-SVEXTERN int SVDECL(firecolormap_type, FIRECOLORMAP_CONSTRAINT);
-SVEXTERN int SVDECL(firecolormap_type_save, FIRECOLORMAP_CONSTRAINT);
+SVEXTERN int SVDECL(fire_colormap_type, FIRECOLORMAP_CONSTRAINT);
+SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int smokecullflag;
 SVEXTERN int visMAINmenus;
 SVEXTERN int smoke3d_thick;
