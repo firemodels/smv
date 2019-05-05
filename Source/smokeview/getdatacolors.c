@@ -1328,13 +1328,11 @@ int HaveFire(void) {
 void UpdateCO2Colormap(void){
   int n;
   float transparent_level_local=1.0;
-  unsigned char *alpha;
   float *co2_cb;
   float *rgb_colormap=NULL;
 
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
-  alpha = colorbarinfo[co2_colorbar_index].alpha;
   co2_cb = colorbarinfo[co2_colorbar_index].colorbar;
   rgb_colormap = rgb_sliceco2colormap_01;
 
