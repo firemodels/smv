@@ -258,14 +258,41 @@ int nsmokeprocinfo = 0;
 procdata colorprocinfo[3];
 int ncolorprocinfo = 0;
 
+/* ------------------ UpdateFireCutoffs ------------------------ */
+
+extern "C" void UpdateFireCutoffs(void){
+  int i;
+  int have_temp=0, have_hrrpuv = 0;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==0)continue;
+    if(smoke3di->type==HRRPUV)have_hrrpuv=1;
+    if(smoke3di->type==TEMP)have_temp = 1;
+  }
+  if(have_temp==0){
+    SPINNER_temperature_cutoff->disable();
+  }
+  else{
+    SPINNER_temperature_cutoff->enable();
+  }
+  if(have_hrrpuv==0){
+    SPINNER_hrrpuv_cutoff->disable();
+  }
+  else{
+    SPINNER_hrrpuv_cutoff->enable();
+  }
+}
+
 /* ------------------ UpdateCO2ColorbarList ------------------------ */
 
-void UpdateCO2ColorbarList(int value){
+extern "C" void UpdateCO2ColorbarList(int value){
   co2_colorbar_index = CLAMP(value, 0, ncolorbars-1);
   if(LISTBOX_co2_colorbar!=NULL)LISTBOX_co2_colorbar->set_int_val(co2_colorbar_index);
   Smoke3dCB(CO2_COLORBAR_LIST);
 }
-
 
 /* ------------------ UpdateCo2Blending ------------------------ */
 
@@ -535,6 +562,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
+  UpdateFireCutoffs();
 
 #ifdef pp_SMOKETEST
   if (nsmoke3d_temp > 0) {

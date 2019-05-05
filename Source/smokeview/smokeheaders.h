@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
 EXTERNCPP void UpdateCo2Blending(void);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);

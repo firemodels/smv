@@ -6040,6 +6040,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     update_makeiblank_smoke3d=1;
     UpdateSmoke3dFileParms();
     UpdateCo2Blending();
+    UpdateFireCutoffs();
     return 0;
   }
   if(smoke3di->type == HRRPUV||smoke3di->type==TEMP){
@@ -6257,6 +6258,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(smoke3di->type == HRRPUV)hrrpuv_loaded=1;
   if(smoke3di->type == TEMP)temp_loaded = 1;
   UpdateCo2Blending();
+  UpdateFireCutoffs();
 
   Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;
