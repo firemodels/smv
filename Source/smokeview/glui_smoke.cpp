@@ -1284,8 +1284,11 @@ extern "C" void Smoke3dCB(int var){
     glui_co2_alpha = CLAMP(glui_co2_alpha,1,254);
     if(SPINNER_smoke3d_co2_alpha!=NULL)SPINNER_smoke3d_co2_alpha->set_int_val(glui_co2_alpha);
     break;
-  case UPDATE_SMOKEFIRE_COLORS_COMMON:
   case CO2_COLOR:
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+    UpdateCO2Colormap();
+    break;
+  case UPDATE_SMOKEFIRE_COLORS_COMMON:
   case FIRE_RED:
   case FIRE_GREEN:
   case FIRE_BLUE:
