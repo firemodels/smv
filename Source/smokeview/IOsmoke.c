@@ -966,7 +966,7 @@ int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
     (float)co2_color_int255[1]/255.0,
     (float)co2_color_int255[2]/255.0);
   glUniform1f(GPUnewsmoke_co2_alpha, (float)smoke3di->co2_alpha/255.0);
-  glUniform1f(GPUnewsmoke_co2factor, co2factor);
+  glUniform1f(GPUnewsmoke_co2_fraction, co2_fraction);
   glUniform1f(GPUnewsmoke_grid_ratio, grid_ratio);
 
   fire_alpha = CLAMP((float)smoke3di->fire_alpha/255.0,0.0,1.0);
@@ -1275,8 +1275,8 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
       if(hv[VSOOT]==1&&hv[VCO2]==1){
         float f1 = 1.0, f2 = 0.0, denom, co2alpha;
 
-        f1 = ABS(1.0-co2factor)*sootval;
-        f2 = ABS(co2factor)*co2val;
+        f1 = ABS(1.0-co2_fraction)*sootval;
+        f2 = ABS(co2_fraction)*co2val;
         denom = f1+f2;
         if(denom>0.0){
           f1 /= denom;
@@ -6039,6 +6039,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     }
     update_makeiblank_smoke3d=1;
     UpdateSmoke3dFileParms();
+    UpdateCo2Blending();
     return 0;
   }
   if(smoke3di->type == HRRPUV||smoke3di->type==TEMP){
@@ -6255,6 +6256,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   SetSmokeColorFlags();
   if(smoke3di->type == HRRPUV)hrrpuv_loaded=1;
   if(smoke3di->type == TEMP)temp_loaded = 1;
+  UpdateCo2Blending();
 
   Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;
@@ -6485,7 +6487,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         smoke3ddata *smoke3d_hrrpuv, *smoke3d_temp;
 
         smoke3d_hrrpuv = mesh_smoke3d->smoke3d_hrrpuv;
-        smoke3d_temp = mesh_smoke3d->smoke3d_temp;
+        smoke3d_temp   = mesh_smoke3d->smoke3d_temp;
         if(smoke3d_hrrpuv==NULL||smoke3d_hrrpuv->loaded==0||smoke3d_hrrpuv->display==0){
           if(smoke3d_temp==NULL||smoke3d_temp->loaded==0||smoke3d_temp->display==0){
             smoke3di->primary_file = 1;
@@ -6501,7 +6503,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
-    meshdata *meshi;
+    meshdata *mesh_smoke3d;
     unsigned char *firecolor_data,*smokecolor_data,*co2color_data;
     unsigned char *mergecolor,*mergealpha;
     unsigned char smokeval_uc[3], co2val_uc[3];
@@ -6510,7 +6512,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
-    meshi = meshinfo+smoke3di->blocknumber;
+    mesh_smoke3d = meshinfo+smoke3di->blocknumber;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
     if(smoke3d_testsmoke==1)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
@@ -6518,52 +6520,50 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smoke3di->fire_alpha=255;
     }
     else{
-      smoke3di->fire_alpha=255*(1.0-pow(0.5,meshi->dx/fire_halfdepth));
+      smoke3di->fire_alpha=255*(1.0-pow(0.5,mesh_smoke3d->dx/fire_halfdepth));
     }
 
     if(co2_halfdepth <= 0.0){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, meshi->dx / co2_halfdepth));
+      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dx / co2_halfdepth));
     }
+
+
+//  both temp and hrrpuv cannot be loaded
+
+    ASSERT(mesh_smoke3d->smoke3d_temp==NULL||mesh_smoke3d->smoke3d_hrrpuv==NULL);
 
 // set up fire data
 
     firecolor_data=NULL;
-    if(smoke3di->smokestate[fire_index].color!=NULL){
-      firecolor_data=smoke3di->smokestate[fire_index].color;
-      if(smoke3di->smokestate[fire_index].index !=-1){
-        smoke3ddata *smoke3dref;
-
-        smoke3dref=smoke3dinfo + smoke3di->smokestate[fire_index].index;
-        if(smoke3dref->display==0)firecolor_data=NULL;
+    if(mesh_smoke3d->smoke3d_temp!=NULL){
+      if(mesh_smoke3d->smoke3d_temp->loaded==1&&mesh_smoke3d->smoke3d_temp->display==1){
+        firecolor_data = mesh_smoke3d->smoke3d_temp->smokeframe_in;
+      }
+    }
+    if(mesh_smoke3d->smoke3d_hrrpuv!=NULL){
+      if(mesh_smoke3d->smoke3d_hrrpuv->loaded==1&&mesh_smoke3d->smoke3d_hrrpuv->display==1){
+        firecolor_data = mesh_smoke3d->smoke3d_hrrpuv->smokeframe_in;
       }
     }
 
 // set up smoke data
 
-    smokecolor_data=NULL;
-    if(smoke3di->smokestate[SOOT].color !=NULL){
-      smokecolor_data=smoke3di->smokestate[SOOT].color;
-      if(smoke3di->smokestate[SOOT].index !=-1){
-        smoke3ddata *smoke3dref;
-
-        smoke3dref=smoke3dinfo + smoke3di->smokestate[SOOT].index;
-        if(smoke3dref->display==0)smokecolor_data=NULL;
+    smokecolor_data = NULL;
+    if(mesh_smoke3d->smoke3d_soot!=NULL){
+      if(mesh_smoke3d->smoke3d_soot->loaded==1&&mesh_smoke3d->smoke3d_soot->display==1){
+        smokecolor_data = mesh_smoke3d->smoke3d_soot->smokeframe_in;
       }
     }
 
 // set up co2 data
 
     co2color_data = NULL;
-    if(smoke3di->smokestate[CO2].color != NULL){
-      co2color_data = smoke3di->smokestate[CO2].color;
-      if(smoke3di->smokestate[CO2].index != -1){
-        smoke3ddata *smoke3dref;
-
-        smoke3dref = smoke3dinfo + smoke3di->smokestate[CO2].index;
-        if(smoke3dref->display == 0)co2color_data = NULL;
+    if(mesh_smoke3d->smoke3d_co2!=NULL){
+      if(mesh_smoke3d->smoke3d_co2->loaded==1&&mesh_smoke3d->smoke3d_co2->display==1){
+        co2color_data = mesh_smoke3d->smoke3d_co2->smokeframe_in;
       }
     }
     ASSERT(firecolor_data!=NULL||smokecolor_data!=NULL||co2color_data!=NULL);
@@ -6572,24 +6572,24 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     if(usegpu==1)continue;
 #endif
 #ifdef pp_GPUSMOKE
-    if(meshi->smoke_texture_buffer == NULL){
-      NewMemory((void **)&meshi->smoke_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
+    if(mesh_smoke3d->smoke_texture_buffer == NULL){
+      NewMemory((void **)&mesh_smoke3d->smoke_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
     }
-    if(meshi->fire_texture_buffer == NULL){
-      NewMemory((void **)&meshi->fire_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
+    if(mesh_smoke3d->fire_texture_buffer == NULL){
+      NewMemory((void **)&mesh_smoke3d->fire_texture_buffer, smoke3di->nchars_uncompressed * sizeof(float));
     }
 #endif
-    if(meshi->merge_color == NULL){
-      NewMemory((void **)&meshi->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
+    if(mesh_smoke3d->merge_color == NULL){
+      NewMemory((void **)&mesh_smoke3d->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
     }
-    if(meshi->merge_alpha==NULL){
-      NewMemory((void **)&meshi->merge_alpha,smoke3di->nchars_uncompressed*sizeof(unsigned char));
+    if(mesh_smoke3d->merge_alpha==NULL){
+      NewMemory((void **)&mesh_smoke3d->merge_alpha,smoke3di->nchars_uncompressed*sizeof(unsigned char));
     }
 
-    mergecolor=meshi->merge_color;
-    mergealpha=meshi->merge_alpha;
-    meshi->smokecolor_ptr = mergecolor;
-    meshi->smokealpha_ptr = mergealpha;
+    mergecolor= mesh_smoke3d->merge_color;
+    mergealpha= mesh_smoke3d->merge_alpha;
+    mesh_smoke3d->smokecolor_ptr = mergecolor;
+    mesh_smoke3d->smokealpha_ptr = mergealpha;
 
     smokeval_uc[0] = (unsigned char)smoke_color_int255[0];
     smokeval_uc[1] = (unsigned char)smoke_color_int255[1];
@@ -6627,14 +6627,14 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smokecolor_ptr = smokeval_uc;
       if(smokecolor_data!=NULL){
         if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
-          f_smoke = (1.0-co2factor);
+          f_smoke = (1.0-co2_fraction);
           fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
           smokecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
           alpha_smoke_local = smoke3di->fire_alpha;
         }
         else{
           f_smoke = 1.0;
-          if(firecolor_data==NULL && co2color_data!=NULL)f_smoke=(1.0-co2factor);
+          if(firecolor_data==NULL && co2color_data!=NULL)f_smoke=(1.0-co2_fraction);
           smokecolor_ptr = smokeval_uc;
           alpha_smoke_local = smokecolor_data[j];
         }
@@ -6647,12 +6647,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       co2color_ptr = co2val_uc;
       if(co2color_data!=NULL){
         if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
-          f_co2 = co2factor;
+          f_co2 = co2_fraction;
           if(smokecolor_data==NULL)f_co2 = 1.0;
           alpha_co2_local = smoke3di->co2_alpha;
         }
         if(firecolor_data==NULL){
-          f_co2 = co2factor;
+          f_co2 = co2_fraction;
           if(smokecolor_data==NULL)f_co2 = 1.0;
           alpha_co2_local = co2color_data[j];
         }
