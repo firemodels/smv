@@ -797,6 +797,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define FIRECOLORMAP_DIRECT 0
 #define FIRECOLORMAP_CONSTRAINT 1
 
+#define CO2_RGB      0
+#define CO2_COLORBAR 1
+
 #define RENDER_SLICE 0
 #define RENDER_VOLUME 1
 

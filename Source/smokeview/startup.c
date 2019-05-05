@@ -1742,8 +1742,6 @@ void InitVars(void){
   titlesafe_offsetBASE=45;
   reset_frame=0;
   reset_time=0.0,start_frametime=0.0,stop_frametime=0.0;
-  reset_time_flag=0;
-
   nsorted_surfidlist=0;
 
   overwrite_all=0,erase_all=0;

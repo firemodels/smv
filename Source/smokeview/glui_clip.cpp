@@ -63,6 +63,8 @@ GLUI_Button *BUTTON_clip_2=NULL;
 #define SAVE_SETTINGS 98
 #define CLIP_MESH 80
 
+/* ------------------ UpdateShowRotationCenter2 ------------------------ */
+
 extern "C" void UpdateShowRotationCenter2(void){
   if(CHECKBOX_clip_show_rotation_center2!=NULL)CHECKBOX_clip_show_rotation_center2->set_int_val(show_rotation_center);
 }
@@ -189,6 +191,35 @@ void ClipCB(int var){
     break;
   default:
     ASSERT(FFALSE);
+    break;
+  }
+  switch(var){
+  case SPINNER_xlower:
+  case SPINNER_xupper:
+  case SPINNER_ylower:
+  case SPINNER_yupper:
+  case SPINNER_zlower:
+  case SPINNER_zupper:
+  case CLIP_xlower:
+  case CLIP_ylower:
+  case CLIP_zlower:
+  case CLIP_xupper:
+  case CLIP_yupper:
+  case CLIP_zupper:
+  case CLIP_all:
+    camera_current->clip_mode = clip_mode;
+    camera_current->clip_xmin = clipinfo.clip_xmin;
+    camera_current->clip_xmax = clipinfo.clip_xmax;
+    camera_current->clip_ymin = clipinfo.clip_ymin;
+    camera_current->clip_ymax = clipinfo.clip_ymax;
+    camera_current->clip_zmin = clipinfo.clip_zmin;
+    camera_current->clip_zmax = clipinfo.clip_zmax;
+    camera_current->xmin = clipinfo.xmin;
+    camera_current->xmax = clipinfo.xmax;
+    camera_current->ymin = clipinfo.ymin;
+    camera_current->ymax = clipinfo.ymax;
+    camera_current->zmin = clipinfo.zmin;
+    camera_current->zmax = clipinfo.zmax;
     break;
   }
   if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);

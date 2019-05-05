@@ -773,10 +773,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     }
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);
 
-    if(firecolormap_type == 0){
-      f_red = (float)fire_red / 255.0;
-      f_green = (float)fire_green / 255.0;
-      f_blue = (float)fire_blue / 255.0;
+    if(fire_colormap_type == 0){
+      f_red   = (float)fire_color_int255[0] / 255.0;
+      f_green = (float)fire_color_int255[1] / 255.0;
+      f_blue  = (float)fire_color_int255[2] / 255.0;
       glColor3f(f_red, f_green, f_blue);
     }
     else{
@@ -1618,7 +1618,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = touri->timeslist[itimes];
+      frame_index = GetTourFrame(touri,itimes);
       if(keyframe_snap==1&&selected_frame!=NULL){
         pj=&selected_frame->nodeval;
       }
@@ -1675,7 +1675,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = touri->timeslist[itimes];
+      frame_index = GetTourFrame(touri,itimes);
       if(keyframe_snap==1&&selected_frame!=NULL){
         pj=&selected_frame->nodeval;
       }
@@ -1768,7 +1768,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
           touri = tourinfo + selectedtour_index;
-          frame_index = touri->timeslist[itimes];
+          frame_index = GetTourFrame(touri,itimes);
           if(keyframe_snap==1&&selected_frame!=NULL){
             pj=&selected_frame->nodeval;
           }

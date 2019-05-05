@@ -207,7 +207,7 @@ int SetNewSmokeShaders(void){
     "uniform sampler1D colormap;"
     "uniform vec3 boxmin,boxmax, co2_color;"
     "uniform float hrrpuv_max_smv, global_hrrpuv_cutoff, fire_alpha, co2_alpha;"
-    "uniform float sootfactor, co2factor;"
+    "uniform float co2_fraction;"
     "uniform float grid_ratio;"
     "uniform int have_smoke, have_fire, have_co2;"
     "varying vec3 fragpos;"
@@ -241,8 +241,8 @@ int SetNewSmokeShaders(void){
     "          smoke_val = 1.0 - pow(1.0-smoke_val,grid_ratio);"
     "        }"
     "        co2_val   = texture3D(co2_texture,texture_position).x;"
-    "        f1 = sootfactor*smoke_val;"
-    "        f2 = co2factor*co2_val;"
+    "        f1 = (1.0-co2_fraction)*smoke_val;"
+    "        f2 = co2_fraction*co2_val;"
     "        denom = f1 + f2;"
     "        if(denom > 0.0){"
     "          f1 /= denom;"
@@ -306,9 +306,8 @@ int SetNewSmokeShaders(void){
        GPUnewsmoke_have_co2 = glGetUniformLocation(p_newsmoke, "have_co2");
   GPUnewsmoke_co2_color     = glGetUniformLocation(p_newsmoke, "co2_color");
   GPUnewsmoke_co2_alpha     = glGetUniformLocation(p_newsmoke, "color_alpha");
-  GPUnewsmoke_sootfactor    = glGetUniformLocation(p_newsmoke, "sootfactor");
     GPUnewsmoke_co2texture  = glGetUniformLocation(p_newsmoke, "co2_texture");
-   GPUnewsmoke_co2factor    = glGetUniformLocation(p_newsmoke, "co2factor");
+   GPUnewsmoke_co2_fraction    = glGetUniformLocation(p_newsmoke, "co2_fraction");
      GPUnewsmoke_grid_ratio = glGetUniformLocation(p_newsmoke, "grid_ratio");
    GPUnewsmoke_smoketexture = glGetUniformLocation(p_newsmoke, "smoke_texture");
     GPUnewsmoke_firetexture = glGetUniformLocation(p_newsmoke, "fire_texture");

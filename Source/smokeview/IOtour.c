@@ -120,6 +120,24 @@ void DrawCir(float *center, float rad, float *color){
   glEnd();
 }
 
+/* ------------------ GetTourFrame ------------------------ */
+
+int GetTourFrame(tourdata *touri, int itime){
+  int iframe, itime_tour;
+
+  if(tour_speedup_factor!=1.0){
+    itime_tour = tour_speedup_factor*(float)(itime+itime_cycle*nglobal_times);
+    itime_tour = itime_tour%nglobal_times;
+    if(itime_tour<0)itime_tour += nglobal_times;
+    itime_tour = CLAMP(itime_tour, 0, nglobal_times-1);
+  }
+  else{
+    itime_tour = itime;
+  }
+  iframe = touri->timeslist[itime_tour];
+  return iframe;
+}
+
 /* ------------------ DrawTours ------------------------ */
 
 void DrawTours(void){
@@ -328,7 +346,7 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          iframe_local = touri->timeslist[itimes];
+          iframe_local = GetTourFrame(touri,itimes);
           pj = touri->pathnodes + iframe_local;
           if(keyframe_snap==1)pj = pj->keysnap;
 
@@ -351,7 +369,7 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          iframe_local = touri->timeslist[itimes];
+          iframe_local = GetTourFrame(touri, itimes);
           pj = touri->pathnodes + iframe_local;
           if(keyframe_snap==1)pj = pj->keysnap;
 
@@ -372,7 +390,7 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          iframe_local = touri->timeslist[itimes];
+          iframe_local = GetTourFrame(touri, itimes);
           pj = touri->pathnodes + iframe_local;
           if(keyframe_snap==1)pj = pj->keysnap;
           eye = pj->eye;
