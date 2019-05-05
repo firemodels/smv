@@ -898,7 +898,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
   Smoke3dCB(SMOKE_OPTIONS);
   Smoke3dCB(FIRECOLORMAP_TYPE);
-  Smoke3dCB(CO2COLORMAP_TYPE);
+  if(nsmoke3d_co2>0)Smoke3dCB(CO2COLORMAP_TYPE);
 }
 
 /* ------------------ Smoke3dCB ------------------------ */
