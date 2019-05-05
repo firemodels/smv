@@ -146,8 +146,7 @@ SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
 SVEXTERN int SVDECL(nsmoke3d_soot, 0);
-SVEXTERN float SVDECL(co2factor, 1.0);
-SVEXTERN float SVDECL(sootfactor, 15.0);
+SVEXTERN float SVDECL(co2factor, 0.5);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
@@ -649,7 +648,7 @@ SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_co2t
 SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
 SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
 SVEXTERN int GPUnewsmoke_have_co2, GPUnewsmoke_co2_color, GPUnewsmoke_co2_alpha;
-SVEXTERN int GPUnewsmoke_sootfactor, GPUnewsmoke_co2texture, GPUnewsmoke_co2factor, GPUnewsmoke_grid_ratio;
+SVEXTERN int GPUnewsmoke_co2texture, GPUnewsmoke_co2factor, GPUnewsmoke_grid_ratio;
 #endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;

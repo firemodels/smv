@@ -966,7 +966,6 @@ int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
     (float)co2_color_int255[1]/255.0,
     (float)co2_color_int255[2]/255.0);
   glUniform1f(GPUnewsmoke_co2_alpha, (float)smoke3di->co2_alpha/255.0);
-  glUniform1f(GPUnewsmoke_sootfactor, sootfactor);
   glUniform1f(GPUnewsmoke_co2factor, co2factor);
   glUniform1f(GPUnewsmoke_grid_ratio, grid_ratio);
 
@@ -1276,7 +1275,7 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
       if(hv[VSOOT]==1&&hv[VCO2]==1){
         float f1 = 1.0, f2 = 0.0, denom, co2alpha;
 
-        f1 = ABS(sootfactor)*sootval;
+        f1 = ABS(1.0-co2factor)*sootval;
         f2 = ABS(co2factor)*co2val;
         denom = f1+f2;
         if(denom>0.0){
@@ -6444,7 +6443,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
   unsigned char rgb_slicesmokecolormap_0255[4*MAXSMOKERGB];
 
   if(have_fire==HRRPUV){
-    i_smoke3d_cutoff = 254 * global_hrrpuv_cutoff/hrrpuv_max_smv;
+    i_smoke3d_cutoff = 254*global_hrrpuv_cutoff/hrrpuv_max_smv;
   }
   else if(have_fire==TEMP){
     i_smoke3d_cutoff = 254*((global_temp_cutoff - global_temp_min)/(global_temp_max- global_temp_min));
@@ -6507,7 +6506,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     unsigned char *mergecolor,*mergealpha;
     unsigned char smokeval_uc[3], co2val_uc[3];
     int i_hrrpuv_offset=0;
-    float denom2, co2factor2, sootfactor2;
 
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
@@ -6528,16 +6526,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     }
     else {
       smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, meshi->dx / co2_halfdepth));
-    }
-
-    denom2 = sootfactor + co2factor;
-    if(denom2>0.0){
-      sootfactor2 = sootfactor/denom2;
-      co2factor2  = co2factor/denom2;
-    }
-    else{
-      sootfactor2 = 0.0;
-      co2factor2  = 0.0;
     }
 
 // set up fire data
@@ -6613,25 +6601,23 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       unsigned char *firecolor_ptr, *smokecolor_ptr, *co2color_ptr;
-      float f_fire, f_smoke, f_co2, denom;
+      float f_smoke, f_co2, denom;
       float alpha_fire_local, alpha_smoke_local, alpha_co2_local;
+      int only_fire;
 
 // set fire color and opacity
 
+      only_fire = 0;
       alpha_fire_local = 0.0;
-      f_fire = 0.0;
-      if(firecolor_data!=NULL){
+      if(firecolor_data!=NULL && smokecolor_data==NULL && co2color_data==NULL){
         int fire_index;
 
+        only_fire = 1;
         fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
         firecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
         if(firecolor_data[j]>=i_smoke3d_cutoff){
           alpha_fire_local = smoke3di->fire_alpha;
-          f_fire = sootfactor2;
         }
-      }
-      else{
-        firecolor_ptr =  smokeval_uc;
       }
 
 // set smoke color and opacity
@@ -6640,8 +6626,16 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       alpha_smoke_local = 0.0;
       smokecolor_ptr = smokeval_uc;
       if(smokecolor_data!=NULL){
-        if(firecolor_data==NULL || firecolor_data[j]<i_smoke3d_cutoff){
+        if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
+          f_smoke = (1.0-co2factor);
+          fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
+          smokecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
+          alpha_smoke_local = smoke3di->fire_alpha;
+        }
+        else{
           f_smoke = 1.0;
+          if(firecolor_data==NULL && co2color_data!=NULL)f_smoke=(1.0-co2factor);
+          smokecolor_ptr = smokeval_uc;
           alpha_smoke_local = smokecolor_data[j];
         }
       }
@@ -6653,36 +6647,40 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       co2color_ptr = co2val_uc;
       if(co2color_data!=NULL){
         if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
+          f_co2 = co2factor;
+          if(smokecolor_data==NULL)f_co2 = 1.0;
           alpha_co2_local = smoke3di->co2_alpha;
-          f_co2 = 1.0;
         }
         if(firecolor_data==NULL){
+          f_co2 = co2factor;
+          if(smokecolor_data==NULL)f_co2 = 1.0;
           alpha_co2_local = co2color_data[j];
-          f_co2 = 1.0;
         }
       }
-      f_co2 *= co2factor2;
 
-      denom = f_fire + f_smoke + f_co2;
+      denom = f_smoke + f_co2;
       if(denom>0.0){
-        f_fire  /= denom;
         f_smoke /= denom;
         f_co2   /= denom;
       }
 
-// merge color
+// merge color and opacity
 
-      *mergecolor++ = f_fire*firecolor_ptr[0] + f_smoke*smokecolor_ptr[0] + f_co2*co2color_ptr[0];
-      *mergecolor++ = f_fire*firecolor_ptr[1] + f_smoke*smokecolor_ptr[1] + f_co2*co2color_ptr[1];
-      *mergecolor++ = f_fire*firecolor_ptr[2] + f_smoke*smokecolor_ptr[2] + f_co2*co2color_ptr[2];
-       mergecolor++;
-
-// merge opacity
-
-      *mergealpha++ = f_fire*alpha_fire_local + f_smoke*alpha_smoke_local + f_co2*alpha_co2_local;
+      if(only_fire == 1){
+        mergecolor[0] = firecolor_ptr[0];
+        mergecolor[1] = firecolor_ptr[1];
+        mergecolor[2] = firecolor_ptr[2];
+        *mergealpha++ = alpha_fire_local;
+      }
+      else{
+        mergecolor[0] = f_smoke*smokecolor_ptr[0] + f_co2*co2color_ptr[0];
+        mergecolor[1] = f_smoke*smokecolor_ptr[1] + f_co2*co2color_ptr[1];
+        mergecolor[2] = f_smoke*smokecolor_ptr[2] + f_co2*co2color_ptr[2];
+        *mergealpha++ = f_smoke*alpha_smoke_local + f_co2*alpha_co2_local;
+      }
+      mergecolor+=4;
     }
   }
-
 }
 
 /* ------------------ MergeSmoke3DBlack ------------------------ */
