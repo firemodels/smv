@@ -1402,8 +1402,8 @@ void UpdateSmokeColormap(int option){
         }
         else{
           rgb_colormap[4*n+0]=(float)fire_color_int255[0] /255.0;
-          rgb_colormap[4*n+1]=(float)fire_color_int255[0] /255.0;
-          rgb_colormap[4*n+2]=(float)fire_color_int255[0] /255.0;
+          rgb_colormap[4*n+1]=(float)fire_color_int255[1] /255.0;
+          rgb_colormap[4*n+2]=(float)fire_color_int255[2] /255.0;
         }
         if(alpha[n]==0){
           rgb_colormap[4*n+3]=0.0;
