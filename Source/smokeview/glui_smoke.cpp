@@ -1038,6 +1038,7 @@ extern "C" void Smoke3dCB(int var){
   case CO2SMOKE:
     UpdateCO2Colormap();
     Smoke3dCB(CO2COLORMAP_TYPE);
+    Smoke3dCB(UPDATE_SMOKECOLORS);
     glutPostRedisplay();
     break;
   case UPDATE_HRRPUV_CONTROLS:
@@ -1220,6 +1221,7 @@ extern "C" void Smoke3dCB(int var){
       break;
     }
     UpdateCO2Colormap();
+    Smoke3dCB(UPDATE_SMOKECOLORS);
     break;
   case FIRECOLORMAP_TYPE:
     RADIO_use_fire_colormap->set_int_val(fire_colormap_type);
@@ -1270,6 +1272,7 @@ extern "C" void Smoke3dCB(int var){
     }
     UpdateSmokeColormap(smoke_render_option);
     Smoke3dCB(FIRE_RED);
+    UpdateFireCutoffs();
     break;
   case SMOKE_COLORBAR_LIST:
     SmokeColorbarMenu(fire_colorbar_index);
@@ -1278,6 +1281,7 @@ extern "C" void Smoke3dCB(int var){
     break;
   case CO2_COLORBAR_LIST:
     UpdateCO2Colormap();
+    Smoke3dCB(UPDATE_SMOKECOLORS);
     break;
   case FRAMELOADING:
     smoke3dframestep = smoke3dframeskip+1;
@@ -1328,6 +1332,7 @@ extern "C" void Smoke3dCB(int var){
     force_redisplay=1;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     UpdateSmokeColormap(smoke_render_option);
+    Smoke3dCB(UPDATE_SMOKECOLORS);
     IdleCB();
     break;
   case UPDATE_SMOKECOLORS:
