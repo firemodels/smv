@@ -16,8 +16,8 @@ typedef struct _webgeomdata {
   char type[32];
   unsigned char *textures;
   float *verts;
-  int *faces, *framesizes;
-  int nverts, nfaces, framesize, nframes;
+  int *indices, *framesizes;
+  int nverts, nindices, framesize, nframes;
 } webgeomdata;
 
 /* ------------------ GetPartFileNodes ------------------------ */
@@ -1078,10 +1078,10 @@ void Lines2Geom(float **vertsptr, float **colorsptr, int *n_verts, int **linespt
 /* ------------------ BndfTriangles2Geom ------------------------ */
 
 void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   if(npatchinfo>0){
     int nbndf_node_verts, nbndf_node_tris;
@@ -1090,25 +1090,25 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
       NULL, &nbndf_node_tris,
       &(bndf_node_web->framesize), &(bndf_node_web->nframes));
 
-    nverts += 3*nbndf_node_verts;     // 3 coordinates per vertex
-    ntriangles += 3*nbndf_node_tris;  // 3 indices per triangles
+    nverts   += 3*nbndf_node_verts;     // 3 coordinates per vertex
+    nindices += 3*nbndf_node_tris;  // 3 indices per triangles
   }
 
-  if(nverts==0||ntriangles==0){
-    bndf_node_web->nverts = 0;
-    bndf_node_web->nfaces = 0;
-    bndf_node_web->verts = NULL;
+  if(nverts==0||nindices==0){
+    bndf_node_web->nverts   = 0;
+    bndf_node_web->nindices = 0;
+    bndf_node_web->verts    = NULL;
     bndf_node_web->textures = NULL;
-    bndf_node_web->faces = NULL;
+    bndf_node_web->indices  = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&textures_save, (bndf_node_web->framesize*bndf_node_web->nframes)*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
   verts = verts_save;
   textures = textures_save;
-  triangles = triangles_save;
+  indices = indices_save;
 
   // load slice file data into data structures
 
@@ -1116,178 +1116,178 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
     int nbndf_node_verts, nbndf_node_tris;
 
     GetBndfNodeVerts(1, option, &offset, verts, textures, &nbndf_node_verts,
-      triangles, &nbndf_node_tris,
+      indices, &nbndf_node_tris,
       &(bndf_node_web->framesize), &(bndf_node_web->nframes));
     verts     += 3*nbndf_node_verts;
-    triangles += 3*nbndf_node_tris;
+    indices += 3*nbndf_node_tris;
   }
 
-  bndf_node_web->nverts = nverts;
-  bndf_node_web->nfaces = ntriangles;
-  bndf_node_web->verts = verts_save;
+  bndf_node_web->nverts   = nverts;
+  bndf_node_web->nindices = nindices;
+  bndf_node_web->verts    = verts_save;
   bndf_node_web->textures = textures_save;
-  bndf_node_web->faces = triangles_save;
+  bndf_node_web->indices  = indices_save;
 }
 
 
 /* ------------------ PartNodeVerts2Geom ------------------------ */
 
 void PartNodeVerts2Geom(webgeomdata *part_node_web, int option){
-  int nverts = 0, ntriangles=0, offset = 0;
+  int nverts = 0, nindices=0, offset = 0;
   float *verts, *verts_save;
-  int *triangles, *triangles_save, *framesizes;
+  int *indices, *indices_save, *framesizes;
 
   if(npartinfo>0){
     int npart_verts, npart_tris;
 
     GetPartVerts(0, option, NULL, NULL, &npart_verts, NULL, &npart_tris, NULL, &(part_node_web->nframes));
 
-    nverts     += 3*npart_verts;     // 3 coordinates per vertex
-    ntriangles += npart_verts;       // 3 indice per vertex
+    nverts   += 3*npart_verts;     // 3 coordinates per vertex
+    nindices += npart_verts;       // 3 indice per vertex
   }
 
   if(nverts==0){
     part_node_web->nverts     = 0;
-    part_node_web->nfaces     = 0;
+    part_node_web->nindices   = 0;
     part_node_web->framesize  = 0;
     part_node_web->verts      = NULL;
     part_node_web->textures   = NULL;
     part_node_web->framesizes = NULL;
-    part_node_web->faces      = NULL;
+    part_node_web->indices    = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
   NewMemory((void **)&framesizes,part_node_web->nframes*sizeof(int));
   verts = verts_save;
-  triangles = triangles_save;
+  indices = indices_save;
 
   // load particle file data into data structures
 
   if(npartinfo>0){
     int npart_verts, npart_tris;
 
-    GetPartVerts(1, option, &offset, verts, &npart_verts, triangles, &npart_tris, framesizes, &(part_node_web->nframes));
-    verts     += 3*npart_verts;
-    triangles += npart_tris;
+    GetPartVerts(1, option, &offset, verts, &npart_verts, indices, &npart_tris, framesizes, &(part_node_web->nframes));
+    verts   += 3*npart_verts;
+    indices += npart_tris;
   }
 
   part_node_web->nverts     = nverts;
-  part_node_web->nfaces     = ntriangles;
+  part_node_web->nindices   = nindices;
   part_node_web->verts      = verts_save;
   part_node_web->textures   = NULL;
   part_node_web->framesizes = framesizes;
-  part_node_web->faces      = triangles_save;
+  part_node_web->indices    = indices_save;
 }
 
 /* ------------------ SliceCellTriangles2Geom ------------------------ */
 
 void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceCellVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
 
-    nverts += 3*nslice_verts;     // 3 coordinates per vertex
-    ntriangles += 3*nslice_tris;  // 3 indices per triangles
+    nverts   += 3*nslice_verts;     // 3 coordinates per vertex
+    nindices += 3*nslice_tris;  // 3 indices per triangles
   }
 
-  if(nverts==0||ntriangles==0){
-    slice_cell_web->nverts = 0;
-    slice_cell_web->nfaces = 0;
-    slice_cell_web->verts = NULL;
+  if(nverts==0||nindices==0){
+    slice_cell_web->nverts   = 0;
+    slice_cell_web->nindices = 0;
+    slice_cell_web->verts    = NULL;
     slice_cell_web->textures = NULL;
-    slice_cell_web->faces = NULL;
+    slice_cell_web->indices  = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&textures_save, (slice_cell_web->framesize*slice_cell_web->nframes)*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
-  verts = verts_save;
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
+  verts    = verts_save;
   textures = textures_save;
-  triangles = triangles_save;
+  indices  = indices_save;
 
   // load slice file data into data structures
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceCellVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
-    verts += 3*nslice_verts;
-    triangles += 3*nslice_tris;
+    GetSliceCellVerts(1, option, &offset, verts, textures, &nslice_verts, indices, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
+    verts   += 3*nslice_verts;
+    indices += 3*nslice_tris;
   }
 
-  slice_cell_web->nverts = nverts;
-  slice_cell_web->nfaces = ntriangles;
-  slice_cell_web->verts = verts_save;
+  slice_cell_web->nverts   = nverts;
+  slice_cell_web->nindices = nindices;
+  slice_cell_web->verts    = verts_save;
   slice_cell_web->textures = textures_save;
-  slice_cell_web->faces = triangles_save;
+  slice_cell_web->indices  = indices_save;
 }
 
 /* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
 void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceNodeVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
 
-    nverts += 3*nslice_verts;     // 3 coordinates per vertex
-    ntriangles += 3*nslice_tris;  // 3 indices per triangles
+    nverts   += 3*nslice_verts;     // 3 coordinates per vertex
+    nindices += 3*nslice_tris;  // 3 indices per triangles
   }
 
-  if(nverts==0||ntriangles==0){
-    slice_node_web->nverts = 0;
-    slice_node_web->nfaces = 0;
-    slice_node_web->verts = NULL;
+  if(nverts==0||nindices==0){
+    slice_node_web->nverts   = 0;
+    slice_node_web->nindices = 0;
+    slice_node_web->verts    = NULL;
     slice_node_web->textures = NULL;
-    slice_node_web->faces = NULL;
+    slice_node_web->indices  = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&textures_save, (slice_node_web->framesize*slice_node_web->nframes)*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
   verts = verts_save;
   textures = textures_save;
-  triangles = triangles_save;
+  indices = indices_save;
 
   // load slice file data into data structures
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
-    verts += 3*nslice_verts;
-    triangles += 3*nslice_tris;
+    GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, indices, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
+    verts   += 3*nslice_verts;
+    indices += 3*nslice_tris;
   }
 
-  slice_node_web->nverts = nverts;
-  slice_node_web->nfaces = ntriangles;
-  slice_node_web->verts = verts_save;
+  slice_node_web->nverts   = nverts;
+  slice_node_web->nindices = nindices;
+  slice_node_web->verts    = verts_save;
   slice_node_web->textures = textures_save;
-  slice_node_web->faces = triangles_save;
+  slice_node_web->indices  = indices_save;
 }
 
 /* ------------------ SliceGeomTriangles2Geom ------------------------ */
 
 void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
@@ -1295,66 +1295,66 @@ void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
     GetSliceGeomVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
 
     nverts += 3*nslice_verts;     // 3 coordinates per vertex
-    ntriangles += 3*nslice_tris;  // 3 indices per triangles
+    nindices += 3*nslice_tris;  // 3 indices per triangles
   }
 
-  if(nverts==0||ntriangles==0){
-    slice_geom_web->nverts = 0;
-    slice_geom_web->nfaces = 0;
-    slice_geom_web->verts = NULL;
+  if(nverts==0||nindices==0){
+    slice_geom_web->nverts   = 0;
+    slice_geom_web->nindices = 0;
+    slice_geom_web->verts    = NULL;
     slice_geom_web->textures = NULL;
-    slice_geom_web->faces = NULL;
+    slice_geom_web->indices  = NULL;
     return;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&textures_save, (slice_geom_web->framesize*slice_geom_web->nframes)*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
   verts = verts_save;
   textures = textures_save;
-  triangles = triangles_save;
+  indices = indices_save;
 
   // load slice file data into data structures
 
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceGeomVerts(1, option, &offset, verts, textures, &nslice_verts, triangles, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
-    verts += 3*nslice_verts;
-    triangles += 3*nslice_tris;
+    GetSliceGeomVerts(1, option, &offset, verts, textures, &nslice_verts, indices, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
+    verts   += 3*nslice_verts;
+    indices += 3*nslice_tris;
   }
 
-  slice_geom_web->nverts = nverts;
-  slice_geom_web->nfaces = ntriangles;
-  slice_geom_web->verts = verts_save;
+  slice_geom_web->nverts   = nverts;
+  slice_geom_web->nindices = nindices;
+  slice_geom_web->verts    = verts_save;
   slice_geom_web->textures = textures_save;
-  slice_geom_web->faces = triangles_save;
+  slice_geom_web->indices  = indices_save;
 }
 
 /* ------------------ ObstLitTriangles2Geom ------------------------ */
 
 void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
   int j;
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   // count triangle vertices and indices for blockes
 
   for(j = 0; j<nmeshes; j++){
     meshdata *meshi;
 
-    meshi = meshinfo+j;
-    nverts += meshi->nbptrs*24*3;     // 24 vertices per blockages * 3 coordinates per vertex
-    ntriangles += meshi->nbptrs*6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
+    meshi     = meshinfo+j;
+    nverts   += meshi->nbptrs*24*3;     // 24 vertices per blockages * 3 coordinates per vertex
+    nindices += meshi->nbptrs*6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
   }
 
-  if(nverts==0||ntriangles==0){
+  if(nverts==0||nindices==0){
     *n_verts = 0;
-    *n_triangles = 0;
-    *vertsptr = NULL;
-    *normalsptr = NULL;
-    *colorsptr = NULL;
+    *n_triangles  = 0;
+    *vertsptr     = NULL;
+    *normalsptr   = NULL;
+    *colorsptr    = NULL;
     *trianglesptr = NULL;
     return;
   }
@@ -1362,11 +1362,11 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&normals_save, nverts*sizeof(float));
   NewMemory((void **)&colors_save, nverts*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
   verts = verts_save;
   normals = normals_save;
   colors = colors_save;
-  triangles = triangles_save;
+  indices = indices_save;
 
   // load blockage info into data structures
 
@@ -1396,28 +1396,28 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
         *colors++ = bc->color[2];
       }
       for(k = 0; k<12; k++){
-        *triangles++ = offset+tris[3*k+0];
-        *triangles++ = offset+tris[3*k+1];
-        *triangles++ = offset+tris[3*k+2];
+        *indices++ = offset+tris[3*k+0];
+        *indices++ = offset+tris[3*k+1];
+        *indices++ = offset+tris[3*k+2];
       }
       offset += 24;
     }
   }
 
   *n_verts = nverts;
-  *n_triangles = ntriangles;
+  *n_triangles = nindices;
   *vertsptr = verts_save;
   *normalsptr = normals_save;
   *colorsptr = colors_save;
-  *trianglesptr = triangles_save;
+  *trianglesptr = indices_save;
 }
 
 /* ------------------ GeomLitTriangles2Geom ------------------------ */
 
 void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
-  int nverts = 0, ntriangles = 0, offset = 0;
+  int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
-  int *triangles, *triangles_save;
+  int *indices, *indices_save;
 
   // count triangle vertices and indices for immersed geometry objects
 
@@ -1431,15 +1431,15 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
     GetGeometryNodes(0, NULL, NULL, NULL, NULL, &ngeom_verts, NULL, &ngeom_tris);
 
     nverts += 3*ngeom_verts; // 3 coordinates per vertex
-    ntriangles += 3*ngeom_tris;  // 3 indices per triangles
+    nindices += 3*ngeom_tris;  // 3 indices per triangles
   }
 
-  if(nverts==0||ntriangles==0){
-    *n_verts = 0;
-    *n_triangles = 0;
-    *vertsptr = NULL;
-    *normalsptr = NULL;
-    *colorsptr = NULL;
+  if(nverts==0||nindices==0){
+    *n_verts      = 0;
+    *n_triangles  = 0;
+    *vertsptr     = NULL;
+    *normalsptr   = NULL;
+    *colorsptr    = NULL;
     *trianglesptr = NULL;
     return;
   }
@@ -1447,29 +1447,29 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
   NewMemory((void **)&verts_save, nverts*sizeof(float));
   NewMemory((void **)&normals_save, nverts*sizeof(float));
   NewMemory((void **)&colors_save, nverts*sizeof(float));
-  NewMemory((void **)&triangles_save, ntriangles*sizeof(int));
-  verts = verts_save;
+  NewMemory((void **)&indices_save, nindices*sizeof(int));
+  verts   = verts_save;
   normals = normals_save;
-  colors = colors_save;
-  triangles = triangles_save;
+  colors  = colors_save;
+  indices = indices_save;
 
   // load immersed geometry info into data structures
 
   if(ngeominfoptrs>0){
     int ngeom_verts, ngeom_tris;
 
-    GetGeometryNodes(1, &offset, verts, normals, colors, &ngeom_verts, triangles, &ngeom_tris);
-    verts += 3*ngeom_verts;
+    GetGeometryNodes(1, &offset, verts, normals, colors, &ngeom_verts, indices, &ngeom_tris);
+    verts   += 3*ngeom_verts;
     normals += 3*ngeom_verts;
-    triangles += 3*ngeom_tris;
+    indices += 3*ngeom_tris;
   }
 
-  *n_verts = nverts;
-  *n_triangles = ntriangles;
-  *vertsptr = verts_save;
-  *normalsptr = normals_save;
-  *colorsptr = colors_save;
-  *trianglesptr = triangles_save;
+  *n_verts     = nverts;
+  *n_triangles = nindices;
+  *vertsptr     = verts_save;
+  *normalsptr   = normals_save;
+  *colorsptr    = colors_save;
+  *trianglesptr = indices_save;
 }
 
 /* ------------------ GetHtmlFileName ------------------------ */
@@ -1540,9 +1540,9 @@ void InitWebgeom(webgeomdata *wi, char *label){
   strcpy(wi->type, label);
   wi->textures  = NULL;
   wi->verts     = NULL;
-  wi->faces     = NULL;
+  wi->indices   = NULL;
   wi->nverts    = 0;
-  wi->nfaces    = 0;
+  wi->nindices  = 0;
   wi->framesize = 0;
   wi->nframes   = 0;
 }
@@ -1599,9 +1599,9 @@ void OutputFixedFrame(FILE *stream_out, char *label, webgeomdata *webgi, int hav
     fprintf(stream_out, "         ]);\n");
   }
   fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
-  for(i = 0; i<webgi->nfaces; i++){
-    fprintf(stream_out, "%i,", webgi->faces[i]);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->nfaces-1))fprintf(stream_out, "\n");
+  for(i = 0; i<webgi->nindices; i++){
+    fprintf(stream_out, "%i,", webgi->indices[i]);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->nindices-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "         ];\n");
 }
