@@ -1604,11 +1604,11 @@ SVEXTERN zonedata SVDECL(*zoneinfo,NULL);
 SVEXTERN zonedata SVDECL(*activezone,NULL);
 SVEXTERN partdata SVDECL(*partinfo,NULL);
 SVEXTERN int SVDECL(update_screensize,0);
-SVEXTERN int part5show;
-SVEXTERN int streak5show,streak5value, streak5step, showstreakhead;
+SVEXTERN int SVDECL(part5show,1);
+SVEXTERN int SVDECL(streak5show,0),streak5value, streak5step, SVDECL(showstreakhead,1);
 SVEXTERN int nstreak_rvalue; // 5
 SVEXTERN float streak_rvalue[8]; // 1.0, 2.0 4.0, 8.0, 16.0 twfin
-SVEXTERN int streak_index, update_streaks;       // 0
+SVEXTERN int streak_index, SVDECL(update_streaks,0);       // 0
 SVEXTERN float float_streak5value;// 1.0
 SVEXTERN partclassdata SVDECL(*partclassinfo,NULL);
 SVEXTERN int npartclassinfo;
