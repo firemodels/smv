@@ -1807,9 +1807,6 @@ void InitVars(void){
   updateUpdateFrameRateMenu=0;
   ntextures=0;
   nskyboxinfo=0;
-  part5show=1;
-  streak5show=0;
-  update_streaks=0;
 
   streak_rvalue[0]=0.25;
   streak_rvalue[1]=0.5;
@@ -1825,7 +1822,6 @@ void InitVars(void){
   if(streak_index>=0)float_streak5value=streak_rvalue[streak_index];
 
   streak5step=0;
-  showstreakhead=1;
   npartclassinfo=0;
   noutlineinfo=0;
   nmultisliceinfo=0;
