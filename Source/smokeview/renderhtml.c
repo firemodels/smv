@@ -33,21 +33,22 @@ void GetPartVerts(int option, int option2, int *offset,
 
   *nverts = 0;
   *nindices  = 0;
-  if(option2==ALL_TIMES){
-    for(i = 0; i<npartinfo; i++){
-      partdata *parti;
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
 
-      parti = partinfo+i;
-      if(parti->loaded==0||parti->display==0)continue;
-      parttime = parti;
-      if(first==1){
-        *nframes = parti->ntimes;
-        first = 0;
-      }
-      else{
-        *nframes = MIN(parti->ntimes, *nframes);
-      }
+    parti = partinfo+i;
+    if(parti->loaded==0||parti->display==0)continue;
+    parttime = parti;
+    if(first==1){
+      *nframes = parti->ntimes;
+      first = 0;
     }
+    else{
+      *nframes = MIN(parti->ntimes, *nframes);
+    }
+  }
+  if(first==1)return;
+  if(option2==ALL_TIMES){
     ibeg = 0;
     iend = *nframes;
   }
@@ -1609,42 +1610,64 @@ void OutputFixedFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   }
   fprintf(stream_out, "         var frame_size_%s = %i;\n", webgi->type, webgi->framesize);
   fprintf(stream_out, "         var vertices_%s = [\n", webgi->type);
-  for(i = 0; i<webgi->nverts; i++){
-    char label[100];
+  for(i = 0; i<webgi->nverts-1; i++){
+    char varlabel[100];
 
-    sprintf(label, "%.3f", webgi->verts[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts-1))fprintf(stream_out, "\n");
+    sprintf(varlabel, "%.3f", webgi->verts[i]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(webgi->nverts>0){
+    char varlabel[100];
+
+    sprintf(varlabel, "%.3f", webgi->verts[webgi->nverts-1]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s\n", varlabel);
   }
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "\n");
 
   fprintf(stream_out, "         var textures_%s_data = [\n", webgi->type);
-  for(i = 0; i<webgi->framesize*webgi->nframes; i++){
-    char label[100];
+  for(i = 0; i<webgi->framesize*webgi->nframes-1; i++){
+    char varlabel[100];
 
-    sprintf(label, "%i", CLAMP((int)webgi->textures[i], 0, 255));
-    fprintf(stream_out, "%s,", label);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->framesize*webgi->nframes-1))fprintf(stream_out, "\n");
+    sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(webgi->framesize*webgi->nframes>0){
+    char varlabel[100];
+
+    sprintf(varlabel, "%i", CLAMP((int)webgi->textures[webgi->framesize*webgi->nframes-1], 0, 255));
+    fprintf(stream_out, "%s\n", varlabel);
   }
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var textures_%s = new Float32Array([\n", webgi->type);
-  for(i = 0; i<webgi->framesize; i++){
-    char label[100];
+  for(i = 0; i<webgi->framesize-1; i++){
+    char varlabel[100];
 
-    sprintf(label, "%.3f", CLAMP((float)webgi->textures[i]/255.0, 0.0, 1.0));
-    fprintf(stream_out, "%s,", label);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->framesize-1))fprintf(stream_out, "\n");
+    sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[i]/255.0, 0.0, 1.0));
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(webgi->framesize>0){
+    char varlabel[100];
+
+    sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[webgi->framesize-1]/255.0, 0.0, 1.0));
+    fprintf(stream_out, "%s\n", varlabel);
   }
   fprintf(stream_out, "         ]);\n");
 
   fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
-  for(i = 0; i<webgi->nindices; i++){
+  for(i = 0; i<webgi->nindices-1; i++){
     fprintf(stream_out, "%i,", webgi->indices[i]);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(webgi->nindices-1))fprintf(stream_out, "\n");
+    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(webgi->nindices>0){
+    fprintf(stream_out, "%i\n", webgi->indices[webgi->nindices-1]);
   }
   fprintf(stream_out, "         ];\n");
 }
@@ -1672,61 +1695,80 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   }
 
   fprintf(stream_out, "         var %s_sizes = [\n", webgi->type);
-  for(i = 0;i<webgi->nframes;i++){
+  for(i = 0;i<webgi->nframes-1;i++){
     fprintf(stream_out, "%i,", webgi->framesizes[i]);
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nframes-1))fprintf(stream_out, "\n");
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
+  if(webgi->nframes>0)fprintf(stream_out, "%i\n", webgi->framesizes[webgi->nframes-1]);
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var %s_offsets = [\n", webgi->type);
-  for(i = 0;i<webgi->nframes;i++){
+  for(i = 0;i<webgi->nframes-1;i++){
     fprintf(stream_out, "%i,", offset);
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nframes-1))fprintf(stream_out, "\n");
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
     offset += webgi->framesizes[i];
   }
+  if(webgi->nframes>0)fprintf(stream_out, "%i\n", offset);
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var vertices_%s = [\n", webgi->type);
-  for(i = 0; i<nverts_max; i++){
-    char label[100];
+  for(i = 0; i<nverts_max-1; i++){
+    char varlabel[100];
 
-    sprintf(label, "%.3f", webgi->verts[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW==(PER_ROW-1)||i==(nverts_max-1))fprintf(stream_out, "\n");
+    sprintf(varlabel, "%.3f", webgi->verts[i]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(nverts_max>0){
+    char varlabel[100];
+
+    sprintf(varlabel, "%.3f", webgi->verts[nverts_max-1]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s\n", varlabel);
   }
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s = [\n", webgi->type);
-  for(i = 0;i<nverts_max;i++){
+  for(i = 0;i<nverts_max-1;i++){
     fprintf(stream_out, "0,0,0,");
-    if(i%PER_ROW==(PER_ROW-1)||i==(nverts_max-1))fprintf(stream_out, "\n");
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
+  if(nverts_max>0)fprintf(stream_out, "0,0,0\n");
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var vertices_%s_data = [\n", webgi->type);
-  for(i = 0; i<webgi->nverts; i++){
-    char label[100];
+  for(i = 0; i<webgi->nverts-1; i++){
+    char varlabel[100];
 
-    sprintf(label, "%.3f", webgi->verts[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts-1))fprintf(stream_out, "\n");
+    sprintf(varlabel, "%.3f", webgi->verts[i]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+  }
+  if(webgi->nverts>0){
+    char varlabel[100];
+
+    sprintf(varlabel, "%.3f", webgi->verts[webgi->nverts-1]);
+    TrimZeros(varlabel);
+    fprintf(stream_out, "%s\n", varlabel);
   }
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s_data = [\n", webgi->type);
-  for(i = 0; i<webgi->nverts/3; i++){
+  for(i = 0; i<webgi->nverts/3-1; i++){
     fprintf(stream_out, "0,0,0,");
-    if(i%PER_ROW==(PER_ROW-1)||i==(webgi->nverts/3-1))fprintf(stream_out, "\n");
+    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
+  if(webgi->nverts>0)fprintf(stream_out, "0,0,0\n");
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
-  for(i = 0; i<nverts_max; i++){
+  for(i = 0; i<nverts_max-1; i++){
     fprintf(stream_out, "%i,", i);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nverts_max-1))fprintf(stream_out, "\n");
+    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
   }
+  if(nverts_max>0)fprintf(stream_out, "%i\n", nverts_max-1);
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "\n");
@@ -1839,12 +1881,13 @@ int Smv2Html(char *html_file, int option){
       }
       if(part_node_web.nverts>0){
         have_data = 1;
-        fprintf(stream_out, "<button onclick = \"show_part_node=ShowHide(show_part_node)\">particle</button>\n");
+        fprintf(stream_out, "<button onclick = \"show_part=ShowHide(show_part)\">particle</button>\n");
       }
       if(have_data==1)fprintf(stream_out, "<br>\n");
 
       //time stepping controls
 
+// buttons need to be defined for all cases for now
       if(option==ALL_TIMES){
         fprintf(stream_out, "<button onclick = \"SetTime(-2)\"><<</button>\n");
         fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><</button>\n");
@@ -1876,14 +1919,23 @@ int Smv2Html(char *html_file, int option){
       fprintf(stream_out, "         var show_geom           = 1;\n\n");
 
       fprintf(stream_out, "         const texture_colorbar_data = new Uint8Array([\n");
-      for(i = 0; i<256; i++){
+      for(i = 0; i<255; i++){
         int ii[3];
 
         ii[0] = CLAMP(255*rgb_slice[4*i+0], 0, 255);
         ii[1] = CLAMP(255*rgb_slice[4*i+1], 0, 255);
         ii[2] = CLAMP(255*rgb_slice[4*i+2], 0, 255);
         fprintf(stream_out, "%i,%i,%i,255,", ii[0], ii[1], ii[2]);
-        if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1)||i==255)fprintf(stream_out, "\n");
+        if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1))fprintf(stream_out, "\n");
+      }
+      {
+        int ii[3];
+
+        i=255;
+        ii[0] = CLAMP(255*rgb_slice[4*i+0], 0, 255);
+        ii[1] = CLAMP(255*rgb_slice[4*i+1], 0, 255);
+        ii[2] = CLAMP(255*rgb_slice[4*i+2], 0, 255);
+        fprintf(stream_out, "%i,%i,%i,255\n", ii[0], ii[1], ii[2]);
       }
       fprintf(stream_out, "         ]);\n");
       fprintf(stream_out, "         const texture_colorbar_numcolors = 256;\n");
@@ -1897,115 +1949,180 @@ int Smv2Html(char *html_file, int option){
       // add obst triangles
       fprintf(stream_out, "\n\n//  blockages\n\n");
       fprintf(stream_out, "         var vertices_obst_lit = [\n");
-      for(i = 0; i<nvertsObstLit; i++){
+      for(i = 0; i<nvertsObstLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", vertsObstLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsObstLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsObstLit>0){
+        char label[100];
+
+        sprintf(label, "%f", vertsObstLit[nvertsObstLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var normals_obst_lit = [\n");
-      for(i = 0; i<nvertsObstLit; i++){
+      for(i = 0; i<nvertsObstLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", normalsObstLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsObstLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsObstLit>0){
+        char label[100];
+
+        sprintf(label, "%f", normalsObstLit[nvertsObstLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var colors_obst_lit = [\n");
-      for(i = 0; i<nvertsObstLit; i++){
+      for(i = 0; i<nvertsObstLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", colorsObstLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsObstLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsObstLit>0){
+        char label[100];
+
+        sprintf(label, "%f", colorsObstLit[nvertsObstLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var indices_obst_lit = [\n");
-      for(i = 0; i<nfacesObstLit; i++){
+      for(i = 0; i<nfacesObstLit-1; i++){
         fprintf(stream_out, "%i,", facesObstLit[i]);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesObstLit-1))fprintf(stream_out, "\n");
+        if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nfacesObstLit>0){
+        fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit-1]);
       }
       fprintf(stream_out, "         ];\n");
 
       // add geom triangles
       fprintf(stream_out, "\n\n//  geometry\n\n");
       fprintf(stream_out, "         var vertices_geom_lit = [\n");
-      for(i = 0; i<nvertsGeomLit; i++){
+      for(i = 0; i<nvertsGeomLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", vertsGeomLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsGeomLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsGeomLit>0){
+        char label[100];
+
+        sprintf(label, "%f", vertsGeomLit[nvertsGeomLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var normals_geom_lit = [\n");
-      for(i = 0; i<nvertsGeomLit; i++){
+      for(i = 0; i<nvertsGeomLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", normalsGeomLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsGeomLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsGeomLit>0){
+        char label[100];
+
+        sprintf(label, "%f", normalsGeomLit[nvertsGeomLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var colors_geom_lit = [\n");
-      for(i = 0; i<nvertsGeomLit; i++){
+      for(i = 0; i<nvertsGeomLit-1; i++){
         char label[100];
 
         sprintf(label, "%f", colorsGeomLit[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsGeomLit-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsGeomLit>0){
+        char label[100];
+
+        sprintf(label, "%f", colorsGeomLit[nvertsGeomLit-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var indices_geom_lit = [\n");
-      for(i = 0; i<nfacesGeomLit; i++){
+      for(i = 0; i<nfacesGeomLit-1; i++){
         fprintf(stream_out, "%i,", facesGeomLit[i]);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesGeomLit-1))fprintf(stream_out, "\n");
+        if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nfacesGeomLit>0){
+        fprintf(stream_out, "%i\n", facesGeomLit[nfacesGeomLit-1]);
       }
       fprintf(stream_out, "         ];\n");
 
       // add lines
       fprintf(stream_out, "\n\n//  lines \n\n");
       fprintf(stream_out, "         var vertices_line = [\n");
-      for(i = 0; i<nvertsLine; i++){
+      for(i = 0; i<nvertsLine-1; i++){
         char label[100];
 
         sprintf(label, "%f", vertsLine[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsLine>0){
+        char label[100];
+
+        sprintf(label, "%f", vertsLine[nvertsLine-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var colors_line = [\n");
-      for(i = 0; i<nvertsLine; i++){
+      for(i = 0; i<nvertsLine-1; i++){
         char label[100];
 
         sprintf(label, "%f", colorsLine[i]);
         TrimZeros(label);
         fprintf(stream_out, "%s,", label);
-        if(i%PER_ROW==(PER_ROW-1)||i==(nvertsLine-1))fprintf(stream_out, "\n");
+        if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nvertsLine>0){
+        char label[100];
+
+        sprintf(label, "%f", colorsLine[nvertsLine-1]);
+        TrimZeros(label);
+        fprintf(stream_out, "%s\n", label);
       }
       fprintf(stream_out, "         ];\n");
 
       fprintf(stream_out, "         var indices_line = [\n");
-      for(i = 0; i<nfacesLine; i++){
+      for(i = 0; i<nfacesLine-1; i++){
         fprintf(stream_out, "%i,", facesLine[i]);
-        if(i%PERBIN_ROW==(PERBIN_ROW-1)||i==(nfacesLine-1))fprintf(stream_out, "\n");
+        if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+      }
+      if(nfacesLine>0){
+        fprintf(stream_out, "%i\n", facesLine[nfacesLine-1]);
       }
       fprintf(stream_out, "         ];\n");
       continue;
