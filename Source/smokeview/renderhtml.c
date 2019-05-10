@@ -84,19 +84,38 @@ void GetPartVerts(int option, int option2, int *offset,
       if(streak5show==0||(streak5show==1&&showstreakhead==1)){
         part5data *datacopy;
         short *sx, *sy, *sz;
+        partclassdata *partclassi;
+        int partclass_index, itype;
 
         datacopy = parti->data5+parti->nclasses*itime;
         frame_sizes[itime-ibeg] += datacopy->npoints;
         sx = datacopy->sx;
         sy = datacopy->sy;
         sz = datacopy->sz;
+
+        partclassi = parti->partclassptr[i];
+        partclass_index = partclassi - partclassinfo;
+        itype = current_property->class_types[partclass_index];
+
         for(j=0;j<datacopy->npoints;j++){
           *verts++   = xplts[sx[j]];
           *verts++   = yplts[sy[j]];
           *verts++   = zplts[sz[j]];
-          *colors++   = 0.0;
-          *colors++   = 0.0;
-          *colors++   = 0.0;
+          if(itype==-1){
+            *colors++   = 0.0;
+            *colors++   = 0.0;
+            *colors++   = 0.0;
+          }
+          else{
+            unsigned char *color_index;
+            float *color;
+
+            color_index = datacopy->irvals + itype*datacopy->npoints + j;
+            color = rgb_full[*color_index];
+            *colors++   = color[0];
+            *colors++   = color[1];
+            *colors++   = color[2];
+          }
           *indices++ = *offset + j;
         }
         *offset += datacopy->npoints;
@@ -1730,11 +1749,6 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s = [\n", webgi->type);
-  for(i = 0;i<nverts_max-1;i++){
-    fprintf(stream_out, "0,0,0,");
-    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
-  }
-  if(nverts_max>0)fprintf(stream_out, "0,0,0\n");
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var vertices_%s_data = [\n", webgi->type);
@@ -1756,11 +1770,11 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s_data = [\n", webgi->type);
-  for(i = 0; i<webgi->nverts/3-1; i++){
-    fprintf(stream_out, "0,0,0,");
+  for(i = 0; i<webgi->nverts-1; i++){
+    fprintf(stream_out, "%.3f,",webgi->colors[i]);
     if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
-  if(webgi->nverts>0)fprintf(stream_out, "0,0,0\n");
+  if(webgi->nverts>0)fprintf(stream_out, "%.3f\n",webgi->colors[webgi->nverts-1]);
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
