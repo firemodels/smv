@@ -371,14 +371,16 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SINGLE_BUFFER 1
 
 #define SCRIPT_RENDERONCE        101
+#ifdef pp_HTML
 #define SCRIPT_RENDERHTMLONCE    102
+#define SCRIPT_RENDERHTMLALL     105
+#define SCRIPT_RENDERHTMLDIR     109
+#endif
 #define SCRIPT_RENDERDOUBLEONCE  103
 #define SCRIPT_RENDERALL         104
-#define SCRIPT_RENDERHTMLALL     105
 #define SCRIPT_RENDER360ALL      106
 #define SCRIPT_VOLSMOKERENDERALL 107
 #define SCRIPT_RENDERDIR         108
-#define SCRIPT_RENDERHTMLDIR     109
 #define SCRIPT_RENDERCLIP        110
 #define SCRIPT_SCENECLIP         111
 #define SCRIPT_XSCENECLIP        112

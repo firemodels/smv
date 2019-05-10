@@ -276,17 +276,19 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
+#ifdef pp_HTML
   if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
+  if(MatchUpper(keyword, "RENDERHTMLDIR")==MATCH)return SCRIPT_RENDERHTMLDIR;
+  if(MatchUpper(keyword, "RENDERHTMLONCE")==MATCH)return SCRIPT_RENDERHTMLONCE;
+#endif
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
   if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;
-  if(MatchUpper(keyword,"RENDERHTMLDIR")==MATCH)return SCRIPT_RENDERHTMLDIR;
   if(MatchUpper(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
   if(MatchUpper(keyword,"MOVIETYPE") == MATCH)return SCRIPT_MOVIETYPE;
   if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
   if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;
   if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;
-  if(MatchUpper(keyword,"RENDERHTMLONCE")==MATCH)return SCRIPT_RENDERHTMLONCE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
   if(MatchUpper(keyword, "RGBTEST")==MATCH)return SCRIPT_RGBTEST;
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
@@ -531,7 +533,9 @@ int CompileScript(char *scriptfile){
 // RENDERHTMLDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
+#ifdef pp_HTML
       case SCRIPT_RENDERHTMLDIR:
+#endif
       {
         int len;
         int i;
@@ -594,10 +598,12 @@ int CompileScript(char *scriptfile){
 // RENDERHTMLONCE
 // RENDERHTMLALL
 // file name base (char) (or blank to use smokeview default)
+#ifdef pp_HTML
       case SCRIPT_RENDERHTMLONCE:
       case SCRIPT_RENDERHTMLALL:
         SETcval2;
         break;
+#endif
 
 // RENDERSTART
 //  start_frame (int) skip_frame (int)
@@ -909,6 +915,7 @@ int CompileScript(char *scriptfile){
   return return_val;
 }
 
+#ifdef pp_HTML
 /* ------------------ ScriptRenderHtml ------------------------ */
 
 void ScriptRenderHtml(scriptdata *scripti, int option){
@@ -925,8 +932,9 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
   }
   strcat(web_filename,scripti->cval2);
   strcat(web_filename,".html");
-  Smv2Html(web_filename, option);
+  Smv2Html(web_filename, option, FROM_SCRIPT);
 }
+#endif
 
 /* ------------------ ScriptRenderStart ------------------------ */
 
@@ -2411,6 +2419,7 @@ int RunScript(void){
         script_dir_path=NULL;
       }
       break;
+#ifdef pp_HTML
     case SCRIPT_RENDERHTMLDIR:
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         script_htmldir_path = scripti->cval;
@@ -2424,6 +2433,7 @@ int RunScript(void){
         script_htmldir_path = NULL;
       }
       break;
+#endif
     case SCRIPT_KEYBOARD:
       {
         char *key;
@@ -2475,6 +2485,7 @@ int RunScript(void){
       Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
+#ifdef pp_HTML
     case SCRIPT_RENDERHTMLONCE:
     case SCRIPT_RENDERHTMLALL:
       if(scripti->command==SCRIPT_RENDERHTMLONCE){
@@ -2485,6 +2496,7 @@ int RunScript(void){
       }
       returnval = 1;
       break;
+#endif
     case SCRIPT_RENDERDOUBLEONCE:
       Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;

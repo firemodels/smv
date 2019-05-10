@@ -1883,10 +1883,10 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderHTML:
-    Smv2Html(html_filename,CURRENT_TIME);
+    Smv2Html(html_filename,CURRENT_TIME, FROM_SMOKEVIEW);
     break;
   case RenderHTMLALL:
-    Smv2Html(html_filename,ALL_TIMES);
+    Smv2Html(html_filename,ALL_TIMES, FROM_SMOKEVIEW);
     break;
 #endif
   case RenderCancel:

@@ -1538,7 +1538,7 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlslicefile_base, int option){
+int GetHtmlFileName(char *htmlfile_full, int option){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -1584,13 +1584,7 @@ int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlsli
 
   strcpy(htmlfile_full, html_file_base);
   strcat(htmlfile_full, htmlfile_suffix);
-  strcpy(htmlslicefile_full, htmlfile_full);
   strcat(htmlfile_full, ".html");
-  strcat(htmlslicefile_full, ".htmld");
-
-  strcpy(htmlslicefile_base, html_file_base);
-  strcat(htmlslicefile_base, htmlfile_suffix);
-  strcat(htmlslicefile_base, ".htmld");
   return 0;
 }
 
@@ -1790,7 +1784,7 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_file, int option){
+int Smv2Html(char *html_file, int option, int from_where){
   FILE *stream_in = NULL, *stream_out;
   float *vertsObstLit, *normalsObstLit, *colorsObstLit;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
@@ -1801,8 +1795,8 @@ int Smv2Html(char *html_file, int option){
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
 
-  char html_fullfile[1024], html_slicefile[1024], html_slicefile_base[1024];
-  int return_val, copy_html, i;
+  char html_fullfile[1024];
+  int copy_html, i;
   webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web, part_node_web;
 
   stream_in = fopen(smokeview_html, "r");
@@ -1811,10 +1805,17 @@ int Smv2Html(char *html_file, int option){
     return 1;
   }
 
-  return_val = GetHtmlFileName(html_fullfile, html_slicefile, html_slicefile_base, option);
-  if(return_val==1){
-    fclose(stream_in);
-    return 1;
+  if(from_where==FROM_SCRIPT){
+    strcpy(html_fullfile, html_file);
+  }
+  else{
+    int return_val;
+
+    return_val = GetHtmlFileName(html_fullfile, option);
+    if(return_val==1){
+      fclose(stream_in);
+      return 1;
+    }
   }
   stream_out = fopen(html_fullfile, "w");
   if(stream_out==NULL){
