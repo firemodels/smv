@@ -237,13 +237,6 @@ int SetupCase(int argc, char **argv){
   ReadIni(NULL);
   ReadBoundINI();
 
-#ifdef pp_HTML
-  if(output_html==1){
-    Smv2Html(html_filename,CURRENT_TIME);
-    return 0;
-  }
-#endif
-
   if(use_graphics==0)return 0;
 #ifdef pp_LANG
   InitTranslate(smokeview_bindir, tr_name);
@@ -280,7 +273,7 @@ int SetupCase(int argc, char **argv){
     ShowGluiTrainer();
     ShowGluiAlert();
   }
-  // intialise info header
+  // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
                        chidfilebase);
   return 0;
