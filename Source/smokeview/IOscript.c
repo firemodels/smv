@@ -276,14 +276,17 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
-  if(MatchUpper(keyword, "RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
+  if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
+  if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
   if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;
+  if(MatchUpper(keyword,"RENDERHTMLDIR")==MATCH)return SCRIPT_RENDERHTMLDIR;
   if(MatchUpper(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
   if(MatchUpper(keyword,"MOVIETYPE") == MATCH)return SCRIPT_MOVIETYPE;
-  if(MatchUpper(keyword, "RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
+  if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
   if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;
   if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;
+  if(MatchUpper(keyword,"RENDERHTMLONCE")==MATCH)return SCRIPT_RENDERHTMLONCE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
   if(MatchUpper(keyword, "RGBTEST")==MATCH)return SCRIPT_RGBTEST;
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
@@ -525,9 +528,11 @@ int CompileScript(char *scriptfile){
         break;
 
 // RENDERDIR
+// RENDERHTMLDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
-        {
+      case SCRIPT_RENDERHTMLDIR:
+      {
         int len;
         int i;
 
@@ -583,6 +588,14 @@ int CompileScript(char *scriptfile){
 // RENDERDOUBLEONCE
 // file name base (char) (or blank to use smokeview default)
       case SCRIPT_RENDERDOUBLEONCE:
+        SETcval2;
+        break;
+
+// RENDERHTMLONCE
+// RENDERHTMLALL
+// file name base (char) (or blank to use smokeview default)
+      case SCRIPT_RENDERHTMLONCE:
+      case SCRIPT_RENDERHTMLALL:
         SETcval2;
         break;
 
@@ -894,6 +907,25 @@ int CompileScript(char *scriptfile){
   }
   fclose(stream);
   return return_val;
+}
+
+/* ------------------ ScriptRenderHtml ------------------------ */
+
+void ScriptRenderHtml(scriptdata *scripti, int option){
+  char web_filename[1024];
+
+  strcpy(web_filename,"");
+  if(script_htmldir_path!=NULL){
+    if(strlen(script_htmldir_path) != 2 ||
+       script_htmldir_path[0] != '.' ||
+       script_htmldir_path[1] != dirseparator[0]){
+      strcat(web_filename,script_htmldir_path);
+      strcat(web_filename,dirseparator);
+    }
+  }
+  strcat(web_filename,scripti->cval2);
+  strcat(web_filename,".html");
+  Smv2Html(web_filename, option);
 }
 
 /* ------------------ ScriptRenderStart ------------------------ */
@@ -2379,6 +2411,19 @@ int RunScript(void){
         script_dir_path=NULL;
       }
       break;
+    case SCRIPT_RENDERHTMLDIR:
+      if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
+        script_htmldir_path = scripti->cval;
+        if(Writable(script_htmldir_path)==NO){
+          fprintf(stderr, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
+          if(stderr2!=NULL)fprintf(stderr2, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
+        }
+        PRINTF("script: setting html render path to %s\n", script_htmldir_path);
+      }
+      else{
+        script_htmldir_path = NULL;
+      }
+      break;
     case SCRIPT_KEYBOARD:
       {
         char *key;
@@ -2429,6 +2474,16 @@ int RunScript(void){
     case SCRIPT_RENDERONCE:
       Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
+      break;
+    case SCRIPT_RENDERHTMLONCE:
+    case SCRIPT_RENDERHTMLALL:
+      if(scripti->command==SCRIPT_RENDERHTMLONCE){
+        ScriptRenderHtml(scripti,CURRENT_TIME);
+      }
+      else{
+        ScriptRenderHtml(scripti,ALL_TIMES);
+      }
+      returnval = 1;
       break;
     case SCRIPT_RENDERDOUBLEONCE:
       Keyboard('R',FROM_SMOKEVIEW);

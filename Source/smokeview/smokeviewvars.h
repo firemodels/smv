@@ -1403,7 +1403,7 @@ SVEXTERN luascriptfiledata first_luascriptfile, last_luascriptfile, SVDECL(*defa
 SVEXTERN int SVDECL(luascript_loaded,0);
 #endif
 SVEXTERN scriptdata SVDECL(*scriptinfo,NULL), SVDECL(*current_script_command,NULL);
-SVEXTERN char SVDECL(*script_dir_path,NULL);
+SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
