@@ -217,11 +217,6 @@ void ParseCommandline(int argc, char **argv){
     WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
-
-  if(strncmp(argv[1], "-no_graphics", 12)==0){
-    use_graphics = 0;
-  }
-
   if(strncmp(argv[1], "-ng_ini", 7) == 0){
     InitCameraList();
     use_graphics = 0;
@@ -434,6 +429,9 @@ void ParseCommandline(int argc, char **argv){
     if(strncmp(argv[i], "-update_bounds", 14) == 0){
       use_graphics = 0;
       update_bounds = 1;
+    }
+    else if(strncmp(argv[1], "-no_graphics", 12)==0){
+      use_graphics = 0;
     }
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
