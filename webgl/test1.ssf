@@ -1,0 +1,25 @@
+// put rendered files in specified directory
+
+RENDERHTMLDIR
+ .
+
+UNLOADALL
+
+// render slice files
+
+UNLOADALL
+LOADINIFILE
+ plume5c_slice.ini
+// LOADFILE
+//  plume5c_06.sf
+LOADSLICEM
+ TEMPERATURE
+ 2 0.800000
+ 1
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ plume5c_slice_10
+RENDERHTMLALL
+ plume5c_slice_all
+
