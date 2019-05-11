@@ -239,6 +239,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   scripti->ival3=0;
   scripti->ival4=0;
   scripti->ival5=0;
+  scripti->need_graphics = 1;
 }
 
 /* ------------------ GetScriptKeywordIndex ------------------------ */
@@ -484,6 +485,10 @@ int CompileScript(char *scriptfile){
 
 // LOADPARTICLES
       case SCRIPT_LOADPARTICLES:
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
+        break;
 
 // CBARFLIP:
       case SCRIPT_CBARFLIP:
@@ -540,6 +545,10 @@ int CompileScript(char *scriptfile){
         int len;
         int i;
 
+        scripti->need_graphics = 1;
+#ifdef pp_HTML
+        if(keyword_index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
+#endif
         SETbuffer;
         len = strlen(buffer);
         if(len>0){
@@ -566,6 +575,9 @@ int CompileScript(char *scriptfile){
 // LOADVOLSMOKE
 //  mesh number (-1 for all meshes) (int)
       case SCRIPT_LOADVOLSMOKE:
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         SETival;
         break;
 
@@ -601,6 +613,7 @@ int CompileScript(char *scriptfile){
 #ifdef pp_HTML
       case SCRIPT_RENDERHTMLONCE:
       case SCRIPT_RENDERHTMLALL:
+        scripti->need_graphics = 0;
         SETcval2;
         break;
 #endif
@@ -669,6 +682,9 @@ int CompileScript(char *scriptfile){
 #endif
         scripti->ival = 1;
         SETival;
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // ISORENDERALL
@@ -706,7 +722,17 @@ int CompileScript(char *scriptfile){
         scripti->cval=NULL;
         break;
 
+// SETVIEWPOINT
+//  viewpoint (char)
+      case SCRIPT_SETVIEWPOINT:
+
+// LABEL
+//   text
+      case SCRIPT_LABEL:
+
       case SCRIPT_KEYBOARD:
+        SETcval;
+        break;
 
 // LOADINIFILE
 //  file (char)
@@ -740,14 +766,6 @@ int CompileScript(char *scriptfile){
 //  type (char)
       case SCRIPT_LOADISO:
 
-// SETVIEWPOINT
-//  viewpoint (char)
-      case SCRIPT_SETVIEWPOINT:
-
-// LABEL
-//   text
-      case SCRIPT_LABEL:
-
 // LOADBOUNDARY
 //   type (char)
       case SCRIPT_LOADBOUNDARY:
@@ -760,6 +778,9 @@ int CompileScript(char *scriptfile){
       case SCRIPT_LOADBOUNDARYM:
         SETcval;
         SETival;
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // PLOT3DPROPS
@@ -818,6 +839,9 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // LOADVSLICEM
@@ -831,6 +855,9 @@ int CompileScript(char *scriptfile){
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // LOADSLICEM
@@ -844,6 +871,9 @@ int CompileScript(char *scriptfile){
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // LOADPLOT3D
@@ -851,6 +881,9 @@ int CompileScript(char *scriptfile){
       case SCRIPT_LOADPLOT3D:
         SETbuffer;
         sscanf(buffer," %i %f",&scripti->ival,&scripti->fval);
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // SETTIMEVAL
@@ -858,6 +891,9 @@ int CompileScript(char *scriptfile){
       case SCRIPT_SETTIMEVAL:
         SETfval;
         if(scripti->fval<0.0)scripti->fval=0.0;
+#ifdef pp_HTML
+        scripti->need_graphics = 0;
+#endif
         break;
 
 // SETTOURVIEW
