@@ -59,6 +59,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
+#ifdef pp_HTML
+    PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using graphics"));
+#endif
     PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
@@ -582,6 +585,13 @@ void ParseCommandline(int argc, char **argv){
 #endif
       runscript = 1;
     }
+#ifdef pp_HTML
+    else if(strncmp(argv[i], "-runhtmlscript", 14)==0){
+      from_commandline = 1;
+     // use_graphics = 0;
+      runhtmlscript = 1;
+    }
+#endif
 #ifdef pp_LUA
     else if(strncmp(argv[i], "-runluascript", 13) == 0){
       from_commandline = 1;
@@ -758,9 +768,20 @@ int main(int argc, char **argv){
   if(convert_ini==1){
     ReadIni(ini_from);
   }
+#ifdef pp_HTML
+  if(runhtmlscript==1){
+    DoScriptHtml();
+  }
+#endif
 
   STOP_TIMER(startup_time);
   PRINTF("\nStartup time: %.1f s\n", startup_time);
+#ifdef pp_HTML
+  if(runhtmlscript==1){
+    return 0;
+  }
+#endif
+
   glutMainLoop();
   return 0;
 }

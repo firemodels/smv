@@ -355,7 +355,10 @@ EXTERNCPP void DrawDevicesVal(void);
 EXTERNCPP void GetSmokeSensors(void);
 EXTERNCPP void AddNewTour(void);
 EXTERNCPP void StartScript(void);
-EXTERNCPP int  RunScript(void);
+EXTERNCPP int RunScriptCommand(scriptdata *script_command);
+#ifdef pp_HTML
+EXTERNCPP void DoScriptHtml(void);
+#endif
 EXTERNCPP int  CompileScript(char *scriptfile);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
 #ifdef pp_LUA

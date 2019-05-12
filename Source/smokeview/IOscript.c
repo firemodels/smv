@@ -2374,9 +2374,9 @@ void ScriptSetViewpoint(scriptdata *scripti){
   }
 }
 
-/* ------------------ RunScript ------------------------ */
+/* ------------------ RunScriptCommand ------------------------ */
 
-int RunScript(void){
+int RunScriptCommand(scriptdata *script_command){
 
 // This procedure should return 1 if the smokeview frame should not be advanced.
 // (to ensure images are rendered at the right time step)
@@ -2387,7 +2387,7 @@ int RunScript(void){
   if(stderr2 == NULL){
     stderr2 = tmpfile();
   }
-  if(current_script_command>scriptinfo+nscriptinfo-1){
+  if(script_command>scriptinfo+nscriptinfo-1){
     current_script_command=NULL;
     if(stderr2 != NULL){
       unsigned int nchars;
@@ -2404,7 +2404,7 @@ int RunScript(void){
     }
     return returnval;
   }
-  scripti = current_script_command;
+  scripti = script_command;
   PRINTF("\n");
   PRINTF("script: %s\n",scripti->command_label);
   if(scripti->cval!=NULL){

@@ -3248,7 +3248,7 @@ void DoScript(void){
     }
     if(render_status==RENDER_OFF){   // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
-      script_render_flag= RunScript();
+      script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         exit(0);
       }
@@ -3285,6 +3285,24 @@ void DoScript(void){
   }
 }
 #endif
+
+/* ------------------ DoScriptHtml ------------------------ */
+
+#ifdef pp_HTML
+void DoScriptHtml(void){
+  int i;
+
+  CompileScript(default_script->file);
+  for(i=0;i<nscriptinfo;i++){
+    scriptdata *scripti;
+
+    scripti = scriptinfo + i;
+    if(scripti->need_graphics==1)continue;
+    RunScriptCommand(scripti);
+  }
+}
+#endif
+
 
 /* ------------------ IdleDisplay ------------------------ */
 
