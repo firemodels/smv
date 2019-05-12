@@ -391,7 +391,7 @@ endif
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
-intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64
+intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
 
 intel_osx_64_db : $(obj)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX)
