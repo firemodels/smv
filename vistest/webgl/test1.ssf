@@ -3,9 +3,7 @@
 RENDERHTMLDIR
  .
 
-UNLOADALL
-
-// render slice files
+// render node ceneted slice file
 
 UNLOADALL
 LOADSLICEM
@@ -19,6 +17,7 @@ RENDERHTMLONCE
 RENDERHTMLALL
  test1_slice_node_all
 
+// render cell ceneted slice file
 
 UNLOADALL
 LOADSLICEM
@@ -32,6 +31,8 @@ RENDERHTMLONCE
 RENDERHTMLALL
  test1_slice_cell_all
 
+// render particle file
+
 UNLOADALL
 LOADFILE
  test1.prt5
@@ -43,7 +44,3 @@ RENDERHTMLONCE
  test1_part_10
 RENDERHTMLALL
  test1_part_all
-
-
-
-
