@@ -2882,7 +2882,7 @@ void IdleCB(void){
 
   if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
-  glutSetWindow(mainwindow_id);
+  if(use_graphics==1)glutSetWindow(mainwindow_id);
   UpdateShow();
   START_TICKS(thistime);
   thisinterval = thistime - lasttime;
