@@ -399,7 +399,7 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   PrintMemoryInfo;
   show_isofiles = 1;
 
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   CheckMemory;
   return return_filesize;
 }
@@ -953,7 +953,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   STOP_TIMER(total_time);
 
   show_isofiles = 1;
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   CheckMemory;
 }
 

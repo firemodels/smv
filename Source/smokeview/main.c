@@ -589,6 +589,7 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-runhtmlscript", 14)==0){
       from_commandline = 1;
       use_graphics = 0;
+      iso_multithread = 0;
       runhtmlscript = 1;
     }
 #endif
