@@ -4784,7 +4784,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     histogram_show_numbers=0;
   }
   showall_slices=1;
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   return return_filesize;
 }
 

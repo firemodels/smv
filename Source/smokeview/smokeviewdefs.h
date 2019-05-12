@@ -15,6 +15,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MUP 5
 #define MEPS 0.1
 
+#define GLUTPOSTREDISPLAY if(use_graphics==1)glutPostRedisplay()
+
 #define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
 #define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}
 

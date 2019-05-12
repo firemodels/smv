@@ -2899,7 +2899,7 @@ void IdleCB(void){
   }
   UpdateFrameNumber(changetime);
   if(redisplay==1){
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
 }
 

@@ -3797,6 +3797,7 @@ extern "C" void SliceBoundCB(int var){
 /* ------------------ UpdateSliceList ------------------------ */
 
 extern "C" void UpdateSliceList(int index){
+  if(glui_defined==0)return;
   RADIO_slice->set_int_val(index);
 }
 
@@ -3806,6 +3807,8 @@ extern "C" void UpdateSliceListIndex(int sfn){
   int i;
   int slice_filetype;
   slicedata *sd;
+
+  if(glui_defined==0)return;
   if(sfn<0){
     UpdateSliceFilenum();
     sfn=slicefilenum;

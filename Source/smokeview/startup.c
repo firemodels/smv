@@ -15,7 +15,7 @@
 
 /* ------------------ Init ------------------------ */
 
-void Init(void){
+void InitMisc(void){
   int i;
 
   FREEMEMORY(plotiso);
@@ -106,10 +106,6 @@ void Init(void){
 
   thistime=0;
   lasttime=0;
-
-  /* define colorbar */
-
-  UpdateRGBColors(COLORBAR_INDEX_NONE);
 
   block_ambient2[3] = 1.0;
   block_specular2[3] = 1.0;
@@ -237,7 +233,10 @@ int SetupCase(int argc, char **argv){
   ReadIni(NULL);
   ReadBoundINI();
 
+  UpdateRGBColors(COLORBAR_INDEX_NONE);
+
   if(use_graphics==0)return 0;
+  glui_defined = 1;
 #ifdef pp_LANG
   InitTranslate(smokeview_bindir, tr_name);
 #endif
@@ -264,7 +263,7 @@ int SetupCase(int argc, char **argv){
   glutSetWindow(mainwindow_id);
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
-  Init();
+  InitMisc();
   GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);

@@ -12625,9 +12625,9 @@ int ReadIni(char *inifile){
   if(use_graphics==1){
     UpdateGlui();
     if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
-    if(ncolorbars<=ndefaultcolorbars){
-      InitDefaultColorbars(0);
-    }
+  }
+  if(ncolorbars<=ndefaultcolorbars){
+    InitDefaultColorbars(0);
   }
   updatezoommenu=1;
   GetSliceParams2();

@@ -264,6 +264,7 @@ extern "C" void UpdateFireCutoffs(void){
   int i;
   int have_temp=0, have_hrrpuv = 0;
 
+  if(glui_defined==0)return;
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 

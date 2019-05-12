@@ -2676,6 +2676,6 @@ int RunScriptCommand(scriptdata *script_command){
       ASSERT(FFALSE);
       break;
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   return returnval;
 }
