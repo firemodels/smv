@@ -44,3 +44,17 @@ RENDERHTMLONCE
  test1_part_10
 RENDERHTMLALL
  test1_part_all
+
+// render boundary files
+
+UNLOADALL
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ test1_bound_30
+RENDERHTMLALL
+ test1_bound_all
+
