@@ -52,7 +52,7 @@ void Usage(char *prog,int option){
 #ifdef pp_READBUFFER
     PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
 #endif
-    PRINTF("%s\n", _(" -renderdir dir - directory containing script rendered images"));
+    PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
@@ -609,16 +609,18 @@ void ParseCommandline(int argc, char **argv){
       exit_on_script_crash = 1;
     }
 #endif
-    else if(strncmp(argv[i], "-renderdir", 7)==0){
+    else if(strncmp(argv[i], "-scriptrenderdir", 16)==0){
       int nrenderdir;
       char *renderdir;
 
       i++;
-      renderdir = argv[i];
-      nrenderdir = strlen(renderdir);
-      if(nrenderdir>0){
-        NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
-        strcpy(script_renderdir_cmd, renderdir);
+      if(i<argc){
+        renderdir = argv[i];
+        nrenderdir = strlen(renderdir);
+        if(nrenderdir>0){
+          NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
+          strcpy(script_renderdir_cmd, renderdir);
+        }
       }
     }
     else if(strncmp(argv[i], "-skipframe", 10) == 0){
