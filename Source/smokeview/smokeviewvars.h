@@ -20,7 +20,6 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(use_currentdir, 0);
 SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);
 SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
@@ -1509,6 +1508,7 @@ SVEXTERN int SVDECL(use_iblank,1),SVDECL(iblank_set_on_commandline,0);
 SVEXTERN int script_index, ini_index;
 SVEXTERN char script_inifile_suffix[1024], vol_prefix[1024];
 SVEXTERN char script_renderdir[1024], script_renderfilesuffix[1024], script_renderfile[1024];
+SVEXTERN char SVDECL(*script_renderdir_cmd, NULL);
 SVEXTERN inifiledata first_inifile, last_inifile;
 SVEXTERN char script_filename[1024];
 #ifdef pp_LUA

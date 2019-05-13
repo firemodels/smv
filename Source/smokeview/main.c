@@ -39,7 +39,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
-    PRINTF("%s\n", _(" -currentdir    - ignore RENDERDIR script keyword, render images in current directory"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
@@ -53,6 +52,8 @@ void Usage(char *prog,int option){
 #ifdef pp_READBUFFER
     PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
 #endif
+    PRINTF("%s\n", _(" -renderdir dir - directory containing script rendered images"));
+    PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
@@ -437,9 +438,6 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-no_graphics", 12)==0){
       use_graphics = 0;
     }
-    else if(strncmp(argv[i], "-currentdir", 11)==0){
-      use_currentdir = 1;
-    }
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
       update_slice = 1;
@@ -611,6 +609,18 @@ void ParseCommandline(int argc, char **argv){
       exit_on_script_crash = 1;
     }
 #endif
+    else if(strncmp(argv[i], "-renderdir", 7)==0){
+      int nrenderdir;
+      char *renderdir;
+
+      i++;
+      renderdir = argv[i];
+      nrenderdir = strlen(renderdir);
+      if(nrenderdir>0){
+        NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
+        strcpy(script_renderdir_cmd, renderdir);
+      }
+    }
     else if(strncmp(argv[i], "-skipframe", 10) == 0){
       from_commandline = 1;
       ++i;
