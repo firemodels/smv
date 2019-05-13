@@ -1,7 +1,7 @@
 // put rendered files in specified directory
 
 RENDERHTMLDIR
- .
+ ../../Manuals/webgl
 
 // render node ceneted slice file
 
