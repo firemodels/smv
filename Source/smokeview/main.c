@@ -39,6 +39,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
+    PRINTF("%s\n", _(" -currentdir    - ignore RENDERDIR script keyword, render images in current directory"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
@@ -435,6 +436,9 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[1], "-no_graphics", 12)==0){
       use_graphics = 0;
+    }
+    else if(strncmp(argv[1], "-currentdir", 12)==0){
+      use_currentdir = 0;
     }
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;

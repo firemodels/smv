@@ -550,6 +550,7 @@ int CompileScript(char *scriptfile){
         if(keyword_index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
 #endif
         SETbuffer;
+        if(use_currentdir==1)strcpy(buffer, ".");
         len = strlen(buffer);
         if(len>0){
 #ifdef WIN32
