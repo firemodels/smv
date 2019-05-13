@@ -434,11 +434,11 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_bounds = 1;
     }
-    else if(strncmp(argv[1], "-no_graphics", 12)==0){
+    else if(strncmp(argv[i], "-no_graphics", 12)==0){
       use_graphics = 0;
     }
-    else if(strncmp(argv[1], "-currentdir", 12)==0){
-      use_currentdir = 0;
+    else if(strncmp(argv[i], "-currentdir", 11)==0){
+      use_currentdir = 1;
     }
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
