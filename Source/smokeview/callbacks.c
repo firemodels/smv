@@ -920,7 +920,7 @@ void MouseCB(int button, int state, int xm, int ym){
     timebar_drag=0;
     colorbar_drag=0;
     colorbar_splitdrag=0;
-    glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     UpdateTrainerMoves();
     return;
   }
@@ -943,7 +943,7 @@ void MouseCB(int button, int state, int xm, int ym){
     last_mouse_time=this_mouse_time;
   }
   if(button==GLUT_LEFT_BUTTON||button==GLUT_MIDDLE_BUTTON||button==GLUT_RIGHT_BUTTON){
-    glutSetCursor(GLUT_CURSOR_INFO);
+    GLUTSETCURSOR(GLUT_CURSOR_INFO);
 
     /* edit blockages */
 

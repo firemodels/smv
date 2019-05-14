@@ -19,8 +19,6 @@
 #include <direct.h>
 #endif
 
-#define GLUTSETCURSOR(val) if(use_graphics==1)glutSetCursor(val)
-
 #define PRINT_LOADTIMES \
   if(file_count>1){\
     if(load_size>1000000000){\
@@ -433,7 +431,7 @@ void HideAllSmoke(void){
 void HideAllSlices(void){
   int i;
 
-  glutSetCursor(GLUT_CURSOR_WAIT);
+  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   for(i = 0; i < nsliceinfo; i++){
     sliceinfo[i].display = 0;
   }
