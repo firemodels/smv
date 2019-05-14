@@ -792,12 +792,13 @@ int main(int argc, char **argv){
 #endif
 
   STOP_TIMER(startup_time);
-  PRINTF("\nStartup time: %.1f s\n", startup_time);
 #ifdef pp_HTML
   if(runhtmlscript==1){
+    PRINTF("\nTime: %.1f s\n", startup_time);
     return 0;
   }
 #endif
+  PRINTF("\nStartup time: %.1f s\n", startup_time);
 
   glutMainLoop();
   return 0;
