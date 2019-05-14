@@ -6616,7 +6616,7 @@ int ReadSMV(char *file, char *file2){
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list)*sizeof(texturedata))==0)return 2;
   }
-  InitTextures();
+  if(use_graphics==1)InitTextures();
 
 /*
     Initialize blockage labels and blockage surface labels
