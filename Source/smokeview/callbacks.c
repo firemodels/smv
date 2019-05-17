@@ -920,7 +920,7 @@ void MouseCB(int button, int state, int xm, int ym){
     timebar_drag=0;
     colorbar_drag=0;
     colorbar_splitdrag=0;
-    glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     UpdateTrainerMoves();
     return;
   }
@@ -943,7 +943,7 @@ void MouseCB(int button, int state, int xm, int ym){
     last_mouse_time=this_mouse_time;
   }
   if(button==GLUT_LEFT_BUTTON||button==GLUT_MIDDLE_BUTTON||button==GLUT_RIGHT_BUTTON){
-    glutSetCursor(GLUT_CURSOR_INFO);
+    GLUTSETCURSOR(GLUT_CURSOR_INFO);
 
     /* edit blockages */
 
@@ -2882,7 +2882,7 @@ void IdleCB(void){
 
   if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
-  glutSetWindow(mainwindow_id);
+  if(use_graphics==1)glutSetWindow(mainwindow_id);
   UpdateShow();
   START_TICKS(thistime);
   thisinterval = thistime - lasttime;
@@ -2899,7 +2899,7 @@ void IdleCB(void){
   }
   UpdateFrameNumber(changetime);
   if(redisplay==1){
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
 }
 
@@ -3248,7 +3248,7 @@ void DoScript(void){
     }
     if(render_status==RENDER_OFF){   // don't advance command if Smokeview is executing a RENDERALL command
       current_script_command++;
-      script_render_flag= RunScript();
+      script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         exit(0);
       }
@@ -3285,6 +3285,24 @@ void DoScript(void){
   }
 }
 #endif
+
+/* ------------------ DoScriptHtml ------------------------ */
+
+#ifdef pp_HTML
+void DoScriptHtml(void){
+  int i;
+
+  CompileScript(default_script->file);
+  for(i=0;i<nscriptinfo;i++){
+    scriptdata *scripti;
+
+    scripti = scriptinfo + i;
+    if(scripti->need_graphics==1)continue;
+    RunScriptCommand(scripti);
+  }
+}
+#endif
+
 
 /* ------------------ IdleDisplay ------------------------ */
 

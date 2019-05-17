@@ -12,7 +12,7 @@ EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP void InitNabors(void);
 #ifdef pp_HTML
-EXTERNCPP int Smv2Html(char *html_out, int option);
+EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);
@@ -129,6 +129,7 @@ EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
 #ifdef CPP
 EXTERNCPP void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
+EXTERNCPP void CloseRollout(procdata *procinfo, int nprocinfo);
 #endif
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void UpdateRenderStartButton(void);
@@ -355,7 +356,10 @@ EXTERNCPP void DrawDevicesVal(void);
 EXTERNCPP void GetSmokeSensors(void);
 EXTERNCPP void AddNewTour(void);
 EXTERNCPP void StartScript(void);
-EXTERNCPP int  RunScript(void);
+EXTERNCPP int RunScriptCommand(scriptdata *script_command);
+#ifdef pp_HTML
+EXTERNCPP void DoScriptHtml(void);
+#endif
 EXTERNCPP int  CompileScript(char *scriptfile);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
 #ifdef pp_LUA

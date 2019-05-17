@@ -1,0 +1,13 @@
+RENDERHTMLDIR
+ ../../Manuals/webgl
+ 
+UNLOADALL
+LOADSLICE
+ TEMPERATURE(geometry)
+ 2 0.0
+SETTIMEVAL
+ 5.0
+RENDERHTMLONCE
+ test2_slice_geom_5
+RENDERHTMLALL
+ test2_slice_geom_all

@@ -1110,7 +1110,10 @@ extern "C" void GluiLabelsSetup(int main_window){
 /* ------------------ HideGluiDisplay ------------------------ */
 
 extern "C" void HideGluiDisplay(void){
-  if(glui_labels!=NULL)glui_labels->hide();
+  if(glui_labels!=NULL){
+    CloseRollout(displayprocinfo, ndisplayprocinfo);
+    glui_labels->hide();
+  }
   updatemenu=1;
 }
 

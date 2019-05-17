@@ -1,0 +1,60 @@
+// put rendered files in specified directory
+
+RENDERHTMLDIR
+ ../../Manuals/webgl
+
+// render node ceneted slice file
+
+UNLOADALL
+LOADSLICEM
+ TEMPERATURE
+ 2 0.800000
+ 1
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ test1_slice_node_10
+RENDERHTMLALL
+ test1_slice_node_all
+
+// render cell ceneted slice file
+
+UNLOADALL
+LOADSLICEM
+ TEMPERATURE(cell centered)
+ 2 0.850000
+ 1
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ test1_slice_cell_10
+RENDERHTMLALL
+ test1_slice_cell_all
+
+// render particle file
+
+UNLOADALL
+LOADFILE
+ test1.prt5
+PARTCLASSCOLOR
+ Uniform color
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ test1_part_10
+RENDERHTMLALL
+ test1_part_all
+
+// render boundary files
+
+UNLOADALL
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 30.0
+RENDERHTMLONCE
+ test1_bound_30
+RENDERHTMLALL
+ test1_bound_all
+

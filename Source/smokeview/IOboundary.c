@@ -2328,7 +2328,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   return return_filesize;
 }
 

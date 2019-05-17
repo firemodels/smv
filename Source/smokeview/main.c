@@ -52,12 +52,17 @@ void Usage(char *prog,int option){
 #ifdef pp_READBUFFER
     PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
 #endif
+    PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
+    PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
     PRINTF("%s\n", " -runluascript  - run the lua script file casename.lua");
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
+#endif
+#ifdef pp_HTML
+    PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using graphics"));
 #endif
     PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
@@ -217,7 +222,6 @@ void ParseCommandline(int argc, char **argv){
     WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
-
   if(strncmp(argv[1], "-ng_ini", 7) == 0){
     InitCameraList();
     use_graphics = 0;
@@ -431,6 +435,9 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_bounds = 1;
     }
+    else if(strncmp(argv[i], "-no_graphics", 12)==0){
+      use_graphics = 0;
+    }
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
       update_slice = 1;
@@ -531,12 +538,6 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-smoke3d", 8) == 0){
       smoke3d_only = 1;
     }
-#ifdef pp_HTML
-    else if(strncmp(argv[i], "-html", 5)==0){
-      output_html = 1;
-      use_graphics = 0;
-    }
-#endif
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
       Usage(argv[0],HELP_SUMMARY);
       exit(0);
@@ -586,6 +587,14 @@ void ParseCommandline(int argc, char **argv){
 #endif
       runscript = 1;
     }
+#ifdef pp_HTML
+    else if(strncmp(argv[i], "-runhtmlscript", 14)==0){
+      from_commandline = 1;
+      use_graphics = 0;
+      iso_multithread = 0;
+      runhtmlscript = 1;
+    }
+#endif
 #ifdef pp_LUA
     else if(strncmp(argv[i], "-runluascript", 13) == 0){
       from_commandline = 1;
@@ -600,6 +609,20 @@ void ParseCommandline(int argc, char **argv){
       exit_on_script_crash = 1;
     }
 #endif
+    else if(strncmp(argv[i], "-scriptrenderdir", 16)==0){
+      int nrenderdir;
+      char *renderdir;
+
+      i++;
+      if(i<argc){
+        renderdir = argv[i];
+        nrenderdir = strlen(renderdir);
+        if(nrenderdir>0){
+          NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
+          strcpy(script_renderdir_cmd, renderdir);
+        }
+      }
+    }
     else if(strncmp(argv[i], "-skipframe", 10) == 0){
       from_commandline = 1;
       ++i;
@@ -762,12 +785,21 @@ int main(int argc, char **argv){
   if(convert_ini==1){
     ReadIni(ini_from);
   }
+#ifdef pp_HTML
+  if(runhtmlscript==1){
+    DoScriptHtml();
+  }
+#endif
 
   STOP_TIMER(startup_time);
-  PRINTF("\nStartup time: %.1f s\n", startup_time);
 #ifdef pp_HTML
-  if(output_html==1)return 0;
+  if(runhtmlscript==1){
+    PRINTF("\nTime: %.1f s\n", startup_time);
+    return 0;
+  }
 #endif
+  PRINTF("\nStartup time: %.1f s\n", startup_time);
+
   glutMainLoop();
   return 0;
 }

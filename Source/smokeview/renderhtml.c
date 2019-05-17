@@ -84,19 +84,38 @@ void GetPartVerts(int option, int option2, int *offset,
       if(streak5show==0||(streak5show==1&&showstreakhead==1)){
         part5data *datacopy;
         short *sx, *sy, *sz;
+        partclassdata *partclassi;
+        int partclass_index, itype;
 
         datacopy = parti->data5+parti->nclasses*itime;
         frame_sizes[itime-ibeg] += datacopy->npoints;
         sx = datacopy->sx;
         sy = datacopy->sy;
         sz = datacopy->sz;
+
+        partclassi = parti->partclassptr[i];
+        partclass_index = partclassi - partclassinfo;
+        itype = current_property->class_types[partclass_index];
+
         for(j=0;j<datacopy->npoints;j++){
           *verts++   = xplts[sx[j]];
           *verts++   = yplts[sy[j]];
           *verts++   = zplts[sz[j]];
-          *colors++   = 0.0;
-          *colors++   = 0.0;
-          *colors++   = 0.0;
+          if(itype==-1){
+            *colors++   = 0.0;
+            *colors++   = 0.0;
+            *colors++   = 0.0;
+          }
+          else{
+            unsigned char *color_index;
+            float *color;
+
+            color_index = datacopy->irvals + itype*datacopy->npoints + j;
+            color = rgb_full[*color_index];
+            *colors++   = color[0];
+            *colors++   = color[1];
+            *colors++   = color[2];
+          }
           *indices++ = *offset + j;
         }
         *offset += datacopy->npoints;
@@ -1519,7 +1538,7 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlslicefile_base, int option){
+int GetHtmlFileName(char *htmlfile_full, int option){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -1565,13 +1584,7 @@ int GetHtmlFileName(char *htmlfile_full, char *htmlslicefile_full, char *htmlsli
 
   strcpy(htmlfile_full, html_file_base);
   strcat(htmlfile_full, htmlfile_suffix);
-  strcpy(htmlslicefile_full, htmlfile_full);
   strcat(htmlfile_full, ".html");
-  strcat(htmlslicefile_full, ".htmld");
-
-  strcpy(htmlslicefile_base, html_file_base);
-  strcat(htmlslicefile_base, htmlfile_suffix);
-  strcat(htmlslicefile_base, ".htmld");
   return 0;
 }
 
@@ -1730,11 +1743,6 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s = [\n", webgi->type);
-  for(i = 0;i<nverts_max-1;i++){
-    fprintf(stream_out, "0,0,0,");
-    if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
-  }
-  if(nverts_max>0)fprintf(stream_out, "0,0,0\n");
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var vertices_%s_data = [\n", webgi->type);
@@ -1756,11 +1764,11 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var colors_%s_data = [\n", webgi->type);
-  for(i = 0; i<webgi->nverts/3-1; i++){
-    fprintf(stream_out, "0,0,0,");
+  for(i = 0; i<webgi->nverts-1; i++){
+    fprintf(stream_out, "%.3f,",webgi->colors[i]);
     if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
-  if(webgi->nverts>0)fprintf(stream_out, "0,0,0\n");
+  if(webgi->nverts>0)fprintf(stream_out, "%.3f\n",webgi->colors[webgi->nverts-1]);
   fprintf(stream_out, "         ];\n");
 
   fprintf(stream_out, "         var indices_%s = [\n", webgi->type);
@@ -1776,7 +1784,7 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_file, int option){
+int Smv2Html(char *html_file, int option, int from_where){
   FILE *stream_in = NULL, *stream_out;
   float *vertsObstLit, *normalsObstLit, *colorsObstLit;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
@@ -1787,8 +1795,8 @@ int Smv2Html(char *html_file, int option){
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
 
-  char html_fullfile[1024], html_slicefile[1024], html_slicefile_base[1024];
-  int return_val, copy_html, i;
+  char html_fullfile[1024];
+  int copy_html, i;
   webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web, part_node_web;
 
   stream_in = fopen(smokeview_html, "r");
@@ -1797,10 +1805,17 @@ int Smv2Html(char *html_file, int option){
     return 1;
   }
 
-  return_val = GetHtmlFileName(html_fullfile, html_slicefile, html_slicefile_base, option);
-  if(return_val==1){
-    fclose(stream_in);
-    return 1;
+  if(from_where==FROM_SCRIPT){
+    strcpy(html_fullfile, html_file);
+  }
+  else{
+    int return_val;
+
+    return_val = GetHtmlFileName(html_fullfile, option);
+    if(return_val==1){
+      fclose(stream_in);
+      return 1;
+    }
   }
   stream_out = fopen(html_fullfile, "w");
   if(stream_out==NULL){

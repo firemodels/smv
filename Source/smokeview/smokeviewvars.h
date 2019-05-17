@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);
 SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
 SVEXTERN float SVDECL(geom_delx, 0.0), SVDECL(geom_dely, 0.0), SVDECL(geom_delz, 0.0);
@@ -1403,10 +1404,13 @@ SVEXTERN luascriptfiledata first_luascriptfile, last_luascriptfile, SVDECL(*defa
 SVEXTERN int SVDECL(luascript_loaded,0);
 #endif
 SVEXTERN scriptdata SVDECL(*scriptinfo,NULL), SVDECL(*current_script_command,NULL);
-SVEXTERN char SVDECL(*script_dir_path,NULL);
+SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
+#ifdef pp_HTML
+SVEXTERN int SVDECL(runhtmlscript, 0);
+#endif
 #ifdef pp_LUA
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
@@ -1426,7 +1430,6 @@ SVEXTERN char SVDECL(*smokeviewini,NULL);
 #ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
-SVEXTERN int SVDECL(output_html,0);
 #endif
 SVEXTERN int overwrite_all,erase_all;
 SVEXTERN int compress_autoloaded;
@@ -1505,6 +1508,7 @@ SVEXTERN int SVDECL(use_iblank,1),SVDECL(iblank_set_on_commandline,0);
 SVEXTERN int script_index, ini_index;
 SVEXTERN char script_inifile_suffix[1024], vol_prefix[1024];
 SVEXTERN char script_renderdir[1024], script_renderfilesuffix[1024], script_renderfile[1024];
+SVEXTERN char SVDECL(*script_renderdir_cmd, NULL);
 SVEXTERN inifiledata first_inifile, last_inifile;
 SVEXTERN char script_filename[1024];
 #ifdef pp_LUA

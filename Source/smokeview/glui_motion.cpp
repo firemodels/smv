@@ -1578,6 +1578,19 @@ extern "C" void ShowHideTranslate(int var){
 
 }
 
+/* ------------------ CloseRollout ------------------------ */
+
+extern "C" void CloseRollout(procdata *procinfo, int nprocinfo){
+  int i;
+
+  for(i = 0;i<nprocinfo;i++){
+    procdata *mi;
+
+    mi = procinfo+i;
+    mi->rollout->close();
+  }
+}
+
 /* ------------------ ToggleRollout ------------------------ */
 
 extern "C" void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id){
@@ -2054,7 +2067,10 @@ extern "C" void UpdateMeshList1(int val){
 /* ------------------ HideGluiMotion ------------------------ */
 
 extern "C" void HideGluiMotion(void){
-  if(glui_motion!=NULL)glui_motion->hide();
+  if(glui_motion!=NULL){
+    CloseRollout(motionprocinfo, nmotionprocinfo);
+    glui_motion->hide();
+  }
 }
 
 /* ------------------ ShowGluiMotion ------------------------ */
@@ -2199,7 +2215,7 @@ void RenderCB(int var){
       break;
 #ifdef pp_HTML
     case RENDER_HTML:
-      Smv2Html(html_filename,CURRENT_TIME);
+      Smv2Html(html_filename,CURRENT_TIME, FROM_SMOKEVIEW);
       break;
 #endif
 #ifdef pp_RENDER360_DEBUG
