@@ -98,6 +98,7 @@ void ShooterRolloutCB(int var){
 
 extern "C" void HideGluiShooter(void){
   if(glui_shooter!=NULL){
+    CloseRollout(shooterprocinfo, nshooterprocinfo);
     glui_shooter->hide();
     updatemenu=1;
   }

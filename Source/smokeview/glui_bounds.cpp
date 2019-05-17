@@ -3999,7 +3999,16 @@ extern "C" void UpdateOverwrite(void){
 /* ------------------ HideGluiBounds ------------------------ */
 
 extern "C" void HideGluiBounds(void){
-  if(glui_bounds!=NULL)glui_bounds->hide();
+  if(glui_bounds!=NULL){
+    CloseRollout(boundprocinfo,    nboundprocinfo);
+    CloseRollout(fileprocinfo,     nfileprocinfo);
+    CloseRollout(plot3dprocinfo,   nplot3dprocinfo);
+    CloseRollout(isoprocinfo,      nisoprocinfo);
+    CloseRollout(subboundprocinfo, nsubboundprocinfo);
+    CloseRollout(sliceprocinfo,    nsliceprocinfo);
+    CloseRollout(particleprocinfo, nparticleprocinfo);
+    glui_bounds->hide();
+  }
 }
 
 /* ------------------ UpdateVectorWidgets ------------------------ */

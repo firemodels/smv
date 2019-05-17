@@ -129,6 +129,7 @@ EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
 #ifdef CPP
 EXTERNCPP void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
+EXTERNCPP void CloseRollout(procdata *procinfo, int nprocinfo);
 #endif
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void UpdateRenderStartButton(void);
