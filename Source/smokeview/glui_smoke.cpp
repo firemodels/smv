@@ -206,7 +206,7 @@ GLUI_Panel *PANEL_voldisplay = NULL;
 GLUI_Panel *PANEL_volsmoke_move = NULL;
 GLUI_Panel *PANEL_alpha = NULL;
 
-GLUI_Panel *ROLLOUT_load_options = NULL;
+GLUI_Rollout *ROLLOUT_load_options = NULL;
 #ifdef pp_SMOKETEST
 GLUI_Rollout *ROLLOUT_voltemp = NULL;
 #endif
@@ -248,15 +248,22 @@ GLUI_StaticText *STATIC_timelimit_max = NULL;
 #define VOLRENDER_ROLLOUT 0
 #define SLICERENDER_ROLLOUT 1
 
-procdata smokeprocinfo[2];
-int nsmokeprocinfo = 0;
+procdata smokeprocinfo[2], slicesmokeprocinfo[3], volsmokeprocinfo[5], colorprocinfo[3];
+int nsmokeprocinfo = 0, nslicesmokeprocinfo=0, nvolsmokeprocinfo=0, ncolorprocinfo = 0;
 
-#define FIRECOLOR_ROLLOUT 0
+#define FIRECOLOR_ROLLOUT  0
 #define SMOKECOLOR_ROLLOUT 1
-#define CO2COLOR_ROLLOUT 2
+#define CO2COLOR_ROLLOUT   2
 
-procdata colorprocinfo[3];
-int ncolorprocinfo = 0;
+#define VOLSMOKE_COMPUTE_ROLLOUT   0
+#define VOLSMOKE_LOAD_ROLLOUT      1
+#define VOLSMOKE_LIGHT_ROLLOUT     2
+#define VOLSMOKE_IMAGES_ROLLOUT    3
+#define VOLSMOKE_LOADFRAME_ROLLOUT 4
+
+#define SLICESMOKE_LOAD_ROLLOUT 0
+#define SLICESMOKE_ORIG_ROLLOUT 1
+#define SLICESMOKE_TEST_ROLLOUT 2
 
 /* ------------------ UpdateFireCutoffs ------------------------ */
 
@@ -399,6 +406,18 @@ extern "C" void UpdateTimeFrameBounds(float time_min, float time_max){
     SPINNER_timeloadframe->set_float_val(time_min);
   }
   SPINNER_timeloadframe->set_float_limits(time_min,time_max);
+}
+
+/* ------------------ VolSmokeRolloutCB ------------------------ */
+
+void VolSmokeRolloutCB(int var){
+  ToggleRollout(volsmokeprocinfo, nvolsmokeprocinfo, var);
+}
+
+/* ------------------ SliceSmokeRolloutCB ------------------------ */
+
+void SliceSmokeRolloutCB(int var){
+  ToggleRollout(slicesmokeprocinfo, nslicesmokeprocinfo, var);
 }
 
 /* ------------------ ColorRolloutCB ------------------------ */
@@ -664,7 +683,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT);
     ROLLOUT_slices->set_alignment(GLUI_ALIGN_LEFT);
 
-    ROLLOUT_load_options = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Load options"),false);
+    ROLLOUT_load_options = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Load options"),false, SLICESMOKE_LOAD_ROLLOUT, SliceSmokeRolloutCB);
+    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_load_options, SLICESMOKE_LOAD_ROLLOUT);
     CHECKBOX_smoke3d_load_incremental = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_load_options, _("incrementally"), &load_incremental, SMOKE3D_LOAD_INCREMENTAL, LoadIncrementalCB);
     SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_load_options, _("soot alpha >"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
     SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
@@ -688,7 +708,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
 #endif
 
-    ROLLOUT_display=glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Visualization options (original)"),false);
+    ROLLOUT_display=glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Visualization options (original)"),false,SLICESMOKE_ORIG_ROLLOUT, SliceSmokeRolloutCB);
+    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_display, SLICESMOKE_ORIG_ROLLOUT);
     RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_display,&smokeskipm1);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Display all"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("   ... Every 2nd"));
@@ -717,7 +738,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("both"));
 
 #ifdef pp_GPUSMOKE
-  ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false);
+  ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false, SLICESMOKE_TEST_ROLLOUT, SliceSmokeRolloutCB);
+  ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_smoketest, SLICESMOKE_TEST_ROLLOUT);
   PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
 
     smoke3d_delta_par_min = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
