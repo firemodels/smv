@@ -5,7 +5,7 @@
 #define ADDPROCINFO(procinfo,nprocinfo,proc,proc_id) \
   procinfo[nprocinfo].rollout = proc; \
   procinfo[nprocinfo].rollout_id = proc_id; \
-  nprocinfo++
+  (nprocinfo)++
 #endif
 
 #define ONEORZERO(val) if(val!=0)val=1
