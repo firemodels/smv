@@ -1139,7 +1139,7 @@ SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
 SVEXTERN int ncadgeom;
 SVEXTERN int visFloor, visFrame;
 SVEXTERN int visNormalEditColors;
-SVEXTERN int visWalls, visGrid, visCeiling, cursorPlot3D;
+SVEXTERN int visWalls, visGrid, visCeiling;
 SVEXTERN int SVDECL(visVZone,1), SVDECL(visHZone,0), SVDECL(viszonefire,1), SVDECL(visSZone,0);
 SVEXTERN int visSensor, visSensorNorm, hasSensorNorm;
 SVEXTERN int SVDECL(visVents, 1), SVDECL(visVentFlow, 1),SVDECL(visVentHFlow, 1),SVDECL(visVentVFlow, 1),SVDECL(visVentMFlow, 1);

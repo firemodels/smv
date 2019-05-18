@@ -619,12 +619,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     sprintf(buff_label,"%f",plotval);
     TrimZeros(buff_label);
     strcat(buff_label," m");
-    if(cursorPlot3D==1){
-      sprintf(slicelabel,"*x: %i, ",iplotval);
-    }
-    else{
-      sprintf(slicelabel,"x: %i, ",iplotval);
-    }
+    sprintf(slicelabel,"x: %i, ",iplotval);
     strcat(slicelabel,buff_label);
     if(visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space, slicelabel);
@@ -649,12 +644,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     sprintf(buff_label,"%f",plotval);
     TrimZeros(buff_label);
     strcat(buff_label," m");
-    if(cursorPlot3D==1){
-      sprintf(slicelabel,"*y: %i, ",iplotval);
-    }
-    else{
-      sprintf(slicelabel,"y: %i, ",iplotval);
-    }
+    sprintf(slicelabel,"y: %i, ",iplotval);
     strcat(slicelabel,buff_label);
     if(visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space+info_lines*(v_space+VP_info.text_height), slicelabel);
@@ -679,12 +669,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     sprintf(buff_label,"%f",plotval);
     TrimZeros(buff_label);
     strcat(buff_label," m");
-    if(cursorPlot3D==1){
-      sprintf(slicelabel,"*z: %i, ",iplotval);
-    }
-    else{
-      sprintf(slicelabel,"z: %i, ",iplotval);
-    }
+    sprintf(slicelabel,"z: %i, ",iplotval);
     strcat(slicelabel,buff_label);
     if(visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space+info_lines*(v_space+VP_info.text_height), slicelabel);

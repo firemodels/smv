@@ -581,7 +581,6 @@ EXTERNCPP void InitCamera(cameradata *camera_data,char *name);
 EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
 EXTERNCPP void UpdateCamera(cameradata *ca);
 EXTERNCPP void UpdateProjectionType(void);
-EXTERNCPP void UpdateCursorCheckbox(void);
 EXTERNCPP void UpdateClipAll(void);
 EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);

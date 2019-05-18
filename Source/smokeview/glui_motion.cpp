@@ -23,6 +23,10 @@
 #define ROTATE_90    103
 #define RESET_VIEW   104
 
+#define MOTION_ROLLOUT 0
+#define VIEW_ROLLOUT   1
+#define RENDER_ROLLOUT 2
+
 #define LABEL_VIEW 4
 
 #define CUSTOM_ROTATION_X 9
@@ -73,16 +77,20 @@
 #define RENDER_START_TOP 13
 #define RENDER_DEBUG_360 14
 
-#define SLICE_ROLLOUT 0
-#define VIEWPOINTS_ROLLOUT 1
-#define WINDOW_ROLLOUT 2
-#define SCALING_ROLLOUT 3
-#define RENDER_ROLLOUT 4
-#define TRANSLATEROTATE_ROLLOUT 5
-#define ROTATION_ROLLOUT 6
-#define ORIENTATION_ROLLOUT 7
-#define MOVIE_ROLLOUT 8
-#define VIEW_ROLLOUT 9
+#define SLICE_ROLLOUT           0
+#define VIEWPOINTS_ROLLOUT      1
+#define WINDOW_ROLLOUT          2
+#define SCALING_ROLLOUT         3
+#define TRANSLATEROTATE_ROLLOUT 4
+#define ROTATION_ROLLOUT        5
+#define ORIENTATION_ROLLOUT     6
+#define POSITION_VIEW_ROLLOUT   7
+
+#define RENDER_FILE_ROLLOUT   0
+#define RENDER_SIZE_ROLLOUT   1
+#define RENDER_SCREEN_ROLLOUT 2
+#define RENDER_CLIP_ROLLOUT   3
+#define RENDER_MOVIE_ROLLOUT  4
 
 #define RENDER_360CB 9
 #ifdef pp_HTML
@@ -105,8 +113,6 @@ GLUI_Panel *PANEL_custom_view=NULL;
 GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
-GLUI_Panel *PANEL_motion = NULL;
-GLUI_Panel *PANEL_viewA = NULL;
 GLUI_Panel *PANEL_user_center = NULL;
 GLUI_Panel *PANEL_rotate=NULL, *PANEL_translate=NULL,*PANEL_close=NULL;
 GLUI_Panel *PANEL_file_suffix=NULL, *PANEL_file_type=NULL;
@@ -120,12 +126,14 @@ GLUI_Panel *PANEL_translate2=NULL,*PANEL_translate3=NULL;
 GLUI_Panel *PANEL_anglebuttons=NULL;
 GLUI_Panel *PANEL_reset1=NULL;
 GLUI_Panel *PANEL_reset2=NULL;
-GLUI_Rollout *ROLLOUT_scale=NULL;
 GLUI_Panel *PANEL_reset=NULL;
 GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
 GLUI_Panel *PANEL_colors=NULL;
 
+GLUI_Rollout *ROLLOUT_scale = NULL;
+GLUI_Rollout *ROLLOUT_viewA = NULL;
+GLUI_Rollout *ROLLOUT_motion = NULL;
 GLUI_Rollout *ROLLOUT_view = NULL;
 GLUI_Rollout *ROLLOUT_image_size = NULL;
 GLUI_Rollout *ROLLOUT_name = NULL;
@@ -196,7 +204,7 @@ GLUI_Checkbox *CHECKBOX_screenview = NULL;
 GLUI_Checkbox *CHECKBOX_show_rotation_center=NULL;
 GLUI_Checkbox *CHECKBOX_clip_rendered_scene=NULL;
 GLUI_Checkbox *CHECKBOX_general_rotation=NULL;
-GLUI_Checkbox *CHECKBOX_blockpath=NULL,*CHECKBOX_cursor_blockpath=NULL;
+GLUI_Checkbox *CHECKBOX_blockpath=NULL;
 GLUI_Checkbox *CHECKBOX_gslice_data=NULL;
 GLUI_Checkbox *CHECKBOX_showgravity_vector=NULL;
 GLUI_Checkbox *CHECKBOX_overwrite_movie = NULL;
@@ -252,8 +260,8 @@ GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
-procdata motionprocinfo[10];
-int nmotionprocinfo = 0;
+procdata motionprocinfo[9], mvrprocinfo[3], subrenderprocinfo[5];
+int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 /* ------------------ UpdateRenderRadioButtons ------------------------ */
 
@@ -336,6 +344,18 @@ extern "C" void SetColorControls(void){
   if(SPINNER_background_red  !=NULL)  SPINNER_background_red->set_int_val(glui_backgroundbasecolor[0]);
   if(SPINNER_background_green!=NULL)SPINNER_background_green->set_int_val(glui_backgroundbasecolor[1]);
   if(SPINNER_background_blue !=NULL) SPINNER_background_blue->set_int_val(glui_backgroundbasecolor[2]);
+}
+
+/* ------------------ SubRenderRolloutCB ------------------------ */
+
+void SubRenderRolloutCB(int var){
+  ToggleRollout(subrenderprocinfo, nsubrenderprocinfo, var);
+}
+
+/* ------------------ MVRRolloutCB ------------------------ */
+
+void MVRRolloutCB(int var){
+  ToggleRollout(mvrprocinfo, nmvrprocinfo, var);
 }
 
 /* ------------------ MotionRolloutCB ------------------------ */
@@ -843,12 +863,6 @@ extern "C" void UpdateCameraLabel(void){
   EDIT_view_label->set_text(camera_label);
 }
 
-/* ------------------ UpdateCursorCheckbox ------------------------ */
-
-extern "C" void UpdateCursorCheckbox(void){
-  CHECKBOX_cursor_blockpath->set_int_val(cursorPlot3D);
-}
-
 /* ------------------ UpdateGluiCameraViewList ------------------------ */
 
 extern "C" void UpdateGluiCameraViewList(void){
@@ -913,9 +927,10 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion = GLUI_Master.create_glui(_("Motion/View/Render"),0,0,0);
   glui_motion->hide();
 
-  PANEL_motion = glui_motion->add_panel("Motion",true);
+  ROLLOUT_motion = glui_motion->add_rollout("Motion",false, MOTION_ROLLOUT, MVRRolloutCB);
+  ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_motion, MOTION_ROLLOUT);
 
-  ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(PANEL_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
+  ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_translaterotate, TRANSLATEROTATE_ROLLOUT);
 
   PANEL_translate2 = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,_("Translate"));
@@ -943,8 +958,8 @@ extern "C" void GluiMotionSetup(int main_window){
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
 
-  ROLLOUT_view = glui_motion->add_rollout_to_panel(PANEL_motion, _("Position/View"), false, VIEW_ROLLOUT, MotionRolloutCB);
-  ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_view, VIEW_ROLLOUT);
+  ROLLOUT_view = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Position/View"), false, POSITION_VIEW_ROLLOUT, MotionRolloutCB);
+  ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_view, POSITION_VIEW_ROLLOUT);
 
   PANEL_specify = glui_motion->add_panel_to_panel(ROLLOUT_view, _("Position"));
 
@@ -966,7 +981,7 @@ extern "C" void GluiMotionSetup(int main_window){
   }
   glui_motion->add_button_to_panel(PANEL_custom_view, "Reset", RESET_VIEW, SceneMotionCB);
 
-  ROLLOUT_rotation_type = glui_motion->add_rollout_to_panel(PANEL_motion,_("Specify Rotation"),false,ROTATION_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_rotation_type = glui_motion->add_rollout_to_panel(ROLLOUT_motion,_("Specify Rotation"),false,ROTATION_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_rotation_type, ROTATION_ROLLOUT);
 
   PANEL_radiorotate = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "Rotation type:");
@@ -1014,7 +1029,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
   //glui_motion->add_column(false);
 
-  ROLLOUT_orientation=glui_motion->add_rollout_to_panel(PANEL_motion,_("Orientation"),false,ORIENTATION_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_orientation=glui_motion->add_rollout_to_panel(ROLLOUT_motion,_("Orientation"),false,ORIENTATION_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_orientation, ORIENTATION_ROLLOUT);
 
   PANEL_change_zaxis = glui_motion->add_panel_to_panel(ROLLOUT_orientation,_("z axis"));
@@ -1053,7 +1068,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ROLLOUT_orientation->close();
   zaxis_custom=0;
 
-  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(PANEL_motion, _("Slice motion"),false,SLICE_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Slice motion"),false,SLICE_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT);
 
   if(gslice_xyz[0]<-1000000.0&&gslice_xyz[1]<-1000000.0&&gslice_xyz[2]<-1000000.0){
@@ -1082,8 +1097,10 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"triangulation",&show_gslice_triangulation);
   glui_motion->add_checkbox_to_panel(PANEL_gslice_show,"plane normal",&show_gslice_normal);
 
-  PANEL_viewA = glui_motion->add_panel(_("View"), true);
-  ROLLOUT_viewpoints = glui_motion->add_rollout_to_panel(PANEL_viewA,_("Viewpoints"), false,VIEWPOINTS_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_viewA = glui_motion->add_rollout(_("View"), false, VIEW_ROLLOUT, MVRRolloutCB);
+  ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_viewA, VIEW_ROLLOUT);
+
+  ROLLOUT_viewpoints = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Viewpoints"), false,VIEWPOINTS_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_viewpoints,VIEWPOINTS_ROLLOUT);
 
   LIST_viewpoints = glui_motion->add_listbox_to_panel(ROLLOUT_viewpoints, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
@@ -1105,7 +1122,7 @@ extern "C" void GluiMotionSetup(int main_window){
   BUTTON_add_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Add"), ADD_VIEW, ViewpointCB);
   EDIT_view_label = glui_motion->add_edittext_to_panel(PANEL_reset2, _("Edit:"), GLUI_EDITTEXT_TEXT, camera_label, LABEL_VIEW, ViewpointCB);
 
-  ROLLOUT_projection = glui_motion->add_rollout_to_panel(PANEL_viewA,_("Window properties"), false,WINDOW_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_projection = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Window properties"), false,WINDOW_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_projection,WINDOW_ROLLOUT);
 
   RADIO_projection = glui_motion->add_radiogroup_to_panel(ROLLOUT_projection, &projection_type, PROJECTION, SceneMotionCB);
@@ -1161,7 +1178,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
   BUTTON_window_update = glui_motion->add_button_to_panel(ROLLOUT_projection, _("Apply"), WINDOW_RESIZE, SceneMotionCB);
 
-  ROLLOUT_scale = glui_motion->add_rollout_to_panel(PANEL_viewA,_("Scaling"),false,SCALING_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_scale = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Scaling"),false,SCALING_ROLLOUT,MotionRolloutCB);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_scale,SCALING_ROLLOUT);
 
   SPINNER_scalex=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_A(_("Scale")," x"),GLUI_SPINNER_FLOAT,mscale);
@@ -1177,14 +1194,15 @@ extern "C" void GluiMotionSetup(int main_window){
 
   SPINNER_farclip=glui_motion->add_spinner_to_panel(ROLLOUT_scale,_("Far depth"),GLUI_SPINNER_FLOAT,&farclip, NEARFARCLIP, SceneMotionCB);
 
-  ROLLOUT_render = glui_motion->add_rollout(_("Render"), false,RENDER_ROLLOUT,MotionRolloutCB);
-  ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_render,RENDER_ROLLOUT);
-
+  ROLLOUT_render = glui_motion->add_rollout(_("Render"), false, RENDER_ROLLOUT, MVRRolloutCB);
+  ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_render, RENDER_ROLLOUT);
 
   BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, _("Start rendering"), RENDER_START_TOP, RenderCB);
   glui_motion->add_button_to_panel(ROLLOUT_render, _("Stop rendering"), RENDER_STOP, RenderCB);
 
-  ROLLOUT_name = glui_motion->add_rollout_to_panel(ROLLOUT_render, "File name/type", false);
+  ROLLOUT_name = glui_motion->add_rollout_to_panel(ROLLOUT_render, "File name/type", false, RENDER_FILE_ROLLOUT, SubRenderRolloutCB);
+  ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_name,RENDER_FILE_ROLLOUT);
+
   EDIT_render_file_base = glui_motion->add_edittext_to_panel(ROLLOUT_name, "prefix:", GLUI_EDITTEXT_TEXT, render_file_base);
   EDIT_render_file_base->set_w(200);
 
@@ -1217,7 +1235,9 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_render_skip->add_item(20, _("Every 20th frame"));
   LIST_render_skip->set_int_val(render_skip);
 
-  ROLLOUT_image_size = glui_motion->add_rollout_to_panel(ROLLOUT_render, "size/type", false);
+  ROLLOUT_image_size = glui_motion->add_rollout_to_panel(ROLLOUT_render, "size/type", false, RENDER_SIZE_ROLLOUT, SubRenderRolloutCB);
+  ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_image_size,RENDER_SIZE_ROLLOUT);
+
   RADIO_render_resolution = glui_motion->add_radiogroup_to_panel(ROLLOUT_image_size, &render_resolution);
   glui_motion->add_radiobutton_to_group(RADIO_render_resolution, _("320x240"));
   glui_motion->add_radiobutton_to_group(RADIO_render_resolution, _("640x480"));
@@ -1250,7 +1270,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
   NewMemory((void **)&CHECKBOX_screenvis, nscreeninfo * sizeof(GLUI_Checkbox *));
 
-  ROLLOUT_screenvis = glui_motion->add_rollout_to_panel(ROLLOUT_render, "screenvis", false);
+  ROLLOUT_screenvis = glui_motion->add_rollout_to_panel(ROLLOUT_render, "screenvis", false, RENDER_SCREEN_ROLLOUT, SubRenderRolloutCB);
+  ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_screenvis,RENDER_SCREEN_ROLLOUT);
+
   CHECKBOX_screenview = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "view screens", &screenview);
   CHECKBOX_screenvis[0] = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "bottom", screenvis);
 
@@ -1292,7 +1314,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
   UpdateGluiFileLabel(render_label_type);
 
-  ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(ROLLOUT_render, "Clipping region", false);
+  ROLLOUT_scene_clip = glui_motion->add_rollout_to_panel(ROLLOUT_render, "Clipping region", false, RENDER_CLIP_ROLLOUT, SubRenderRolloutCB);
+  ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_scene_clip,RENDER_CLIP_ROLLOUT);
+
   SPINNER_clip_left = glui_motion->add_spinner_to_panel(ROLLOUT_scene_clip, "left:", GLUI_SPINNER_INT, &render_clip_left);
   SPINNER_clip_left->set_int_limits(0, screenWidth);
 
@@ -1308,8 +1332,8 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
   if(have_ffmpeg == 1){
-    ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT,MotionRolloutCB);
-    ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_make_movie, MOVIE_ROLLOUT);
+    ROLLOUT_make_movie = glui_motion->add_rollout_to_panel(ROLLOUT_render,"Movie", false, RENDER_MOVIE_ROLLOUT, SubRenderRolloutCB);
+    ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_make_movie,RENDER_MOVIE_ROLLOUT);
 
     CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
     glui_motion->add_button_to_panel(ROLLOUT_make_movie, _("Render normal"), RENDER_START_NORMAL, RenderCB);
@@ -1338,7 +1362,6 @@ extern "C" void GluiMotionSetup(int main_window){
     RenderCB(MOVIE_FILETYPE);
   }
 
-  CHECKBOX_cursor_blockpath=glui_motion->add_checkbox(_("Map cursor keys for Plot3D use"),&cursorPlot3D,CURSOR,SceneMotionCB);
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
 
   BUTTON_motion_1=glui_motion->add_button_to_panel(PANEL_close,_("Save settings"),SAVE_SETTINGS, MotionDlgCB);
@@ -2089,7 +2112,7 @@ extern "C" void ShowGluiMotion(int menu_id){
       MotionRolloutCB(RENDER_ROLLOUT);
       break;
     case DIALOG_MOVIE:
-      MotionRolloutCB(MOVIE_ROLLOUT);
+      SubRenderRolloutCB(RENDER_MOVIE_ROLLOUT);
       break;
     case DIALOG_WINDOW:
       MotionRolloutCB(WINDOW_ROLLOUT);
