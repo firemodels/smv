@@ -23,10 +23,6 @@
 #define ROTATE_90    103
 #define RESET_VIEW   104
 
-#define MOTION_ROLLOUT 0
-#define VIEW_ROLLOUT   1
-#define RENDER_ROLLOUT 2
-
 #define LABEL_VIEW 4
 
 #define CUSTOM_ROTATION_X 9
@@ -86,11 +82,15 @@
 #define ORIENTATION_ROLLOUT     6
 #define POSITION_VIEW_ROLLOUT   7
 
+#define MOTION_ROLLOUT 0
+#define VIEW_ROLLOUT   1
+#define RENDER_ROLLOUT 2
+#define MOVIE_ROLLOUT  3
+
 #define RENDER_FILE_ROLLOUT   0
 #define RENDER_SIZE_ROLLOUT   1
 #define RENDER_SCREEN_ROLLOUT 2
 #define RENDER_CLIP_ROLLOUT   3
-#define RENDER_MOVIE_ROLLOUT  4
 
 #define RENDER_360CB 9
 #ifdef pp_HTML
@@ -260,7 +260,7 @@ GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
-procdata motionprocinfo[9], mvrprocinfo[3], subrenderprocinfo[5];
+procdata motionprocinfo[9], mvrprocinfo[4], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 /* ------------------ UpdateRenderRadioButtons ------------------------ */
@@ -1332,8 +1332,8 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
   if(have_ffmpeg == 1){
-    ROLLOUT_make_movie = glui_motion->add_rollout_to_panel(ROLLOUT_render,"Movie", false, RENDER_MOVIE_ROLLOUT, SubRenderRolloutCB);
-    ADDPROCINFO(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_make_movie,RENDER_MOVIE_ROLLOUT);
+    ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT);
 
     CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
     glui_motion->add_button_to_panel(ROLLOUT_make_movie, _("Render normal"), RENDER_START_NORMAL, RenderCB);
@@ -2103,21 +2103,25 @@ extern "C" void ShowGluiMotion(int menu_id){
   if(glui_motion != NULL){
     switch(menu_id){
     case DIALOG_VIEW:
+      MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(VIEWPOINTS_ROLLOUT);
       break;
     case DIALOG_MOTION:
+      MVRRolloutCB(RENDER_ROLLOUT);
       MotionRolloutCB(TRANSLATEROTATE_ROLLOUT);
       break;
     case DIALOG_RENDER:
-      MotionRolloutCB(RENDER_ROLLOUT);
+      MVRRolloutCB(RENDER_ROLLOUT);
       break;
     case DIALOG_MOVIE:
-      SubRenderRolloutCB(RENDER_MOVIE_ROLLOUT);
+      MVRRolloutCB(MOVIE_ROLLOUT);
       break;
     case DIALOG_WINDOW:
+      MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(WINDOW_ROLLOUT);
       break;
     case DIALOG_SCALING:
+      MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(SCALING_ROLLOUT);
       break;
     default:
