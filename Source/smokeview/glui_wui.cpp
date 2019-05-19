@@ -146,8 +146,11 @@ extern "C" void GluiWuiSetup(int main_window){
 /* ------------------ HideGluiWui ------------------------ */
 
 extern "C" void HideGluiWui(void){
-  if(glui_wui!=NULL)glui_wui->hide();
-  updatemenu=1;
+  if(glui_wui!=NULL){
+    CloseRollouts(glui_wui);
+    glui_wui->hide();
+  }
+  updatemenu = 1;
 }
 
 /* ------------------ ShowGluiWui ------------------------ */

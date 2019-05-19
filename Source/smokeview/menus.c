@@ -1535,7 +1535,9 @@ void DialogMenu(int value){
       visBlocks=visBlocksSave;
     }
     UpdateTrainerOutline();
-
+    break;
+  case DIALOG_SHRINKALL:
+    ShrinkDialogs();
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
@@ -8923,6 +8925,7 @@ updatemenu=0;
 
   glutAddMenuEntry("-",MENU_DUMMY2);
   glutAddMenuEntry(_("Close all dialogs  ALT x"),DIALOG_HIDEALL);
+  glutAddMenuEntry(_("Shrink all dialogs ALT X"), DIALOG_SHRINKALL);
 
   /* -------------------------------- font menu -------------------------- */
 

@@ -88,6 +88,7 @@ extern "C" void UpdateColorbarType(void){
 /* ------------------ HideGluiColorbar ------------------------ */
 
 extern "C" void HideGluiColorbar(void){
+  CloseRollouts(glui_colorbar);
   viscolorbarpath=0;
   showcolorbar_dialog=0;
   if(show_extreme_mindata_save==1){

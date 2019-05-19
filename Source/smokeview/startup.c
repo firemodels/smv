@@ -242,6 +242,7 @@ int SetupCase(int argc, char **argv){
 #endif
 
   if(ntourinfo==0)SetupTour();
+  InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
   GluiMotionSetup(mainwindow_id);
   GluiBoundsSetup(mainwindow_id);

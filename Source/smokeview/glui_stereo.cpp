@@ -146,8 +146,11 @@ extern "C" void GluiStereoSetup(int main_window){
 /* ------------------ HideGluiStereo ------------------------ */
 
 extern "C" void HideGluiStereo(void){
-  if(glui_stereo!=NULL)glui_stereo->hide();
-  updatemenu=1;
+  if(glui_stereo!=NULL){
+    CloseRollouts(glui_stereo);
+    glui_stereo->hide();
+  }
+  updatemenu = 1;
 }
 
 /* ------------------ ShowGluiStereo ------------------------ */

@@ -5,6 +5,13 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ShrinkDialogs(void);
+#ifdef CPP
+EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
+EXTERNCPP void CloseRollouts(GLUI *dialog);
+#endif
+
+EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
 EXTERNCPP void UpdateCo2Blending(void);
@@ -129,7 +136,6 @@ EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
   EXTERNCPP int GetNumActiveDevices(void);
 #ifdef CPP
 EXTERNCPP void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
-EXTERNCPP void CloseRollout(procdata *procinfo, int nprocinfo);
 #endif
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void UpdateRenderStartButton(void);

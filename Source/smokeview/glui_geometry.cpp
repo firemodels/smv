@@ -227,6 +227,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   if(showedit_dialog==0)glui_geometry->hide();
 
   ROLLOUT_structured = glui_geometry->add_rollout("Obstacles",false);
+  INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
   if(structured_isopen==1)ROLLOUT_structured->open();
   PANEL_obj_select = glui_geometry->add_panel_to_panel(ROLLOUT_structured,"SURFs");
 
@@ -351,6 +352,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
   if(ngeominfo > 0){
     ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
+    INSERT_ROLLOUT(ROLLOUT_unstructured, glui_geometry);
     if(unstructured_isopen == 1)ROLLOUT_unstructured->open();
 
     for(i = 0;i < nmeshes;i++){
@@ -393,6 +395,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
     ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
+    INSERT_ROLLOUT(ROLLOUT_geomtest2, glui_geometry);
     SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
     CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
@@ -435,6 +438,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
 
     ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
+    INSERT_ROLLOUT(ROLLOUT_geomcheck, glui_geometry);
     PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
     CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
     CHECKBOX_highlight_edge1 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "1", &highlight_edge1);
@@ -543,6 +547,7 @@ extern "C" void VolumeCB(int var){
 
 extern "C" void HideGluiGeometry(void){
   blockageSelect=0;
+  CloseRollouts(glui_geometry);
   if(glui_geometry!=NULL)glui_geometry->hide();
   showedit_dialog=0;
   updatemenu=1;

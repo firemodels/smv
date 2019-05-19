@@ -26,8 +26,9 @@ GLUI_Panel *PANEL_clip_lower=NULL, *PANEL_clip_upper=NULL, *PANEL_clip=NULL,*pan
 GLUI_Panel *PANEL_clipx=NULL, *PANEL_clipX=NULL;
 GLUI_Panel *PANEL_clipy=NULL, *PANEL_clipY=NULL;
 GLUI_Panel *PANEL_clipz=NULL, *PANEL_clipZ=NULL;
-GLUI_Panel *PANEL_blockageview=NULL;
 GLUI_Panel *PANEL_rotation_center = NULL;
+
+GLUI_Rollout *PANEL_blockageview = NULL;
 
 GLUI_Listbox *LIST_mesh=NULL;
 
@@ -354,6 +355,7 @@ extern "C" void GluiClipSetup(int main_window){
 #define MAXCLIPROWS 40
 
       PANEL_blockageview = glui_clip->add_rollout_to_panel(PANEL_clip, "Hide blockages", false);
+      INSERT_ROLLOUT(PANEL_blockageview, glui_clip);
       ncolumns = nblocks / MAXCLIPROWS + 1;
 
       for(i = 0;i < nmeshes;i++){
@@ -397,8 +399,9 @@ extern "C" void GluiClipSetup(int main_window){
 /* ------------------ HideGluiClip ------------------------ */
 
 extern "C" void HideGluiClip(void){
-  if(glui_clip!=NULL)glui_clip->hide();
-  updatemenu=1;
+  CloseRollouts(glui_clip);
+  glui_clip->hide();
+  updatemenu = 1;
 }
 
 /* ------------------ ShowGluiClip ------------------------ */
