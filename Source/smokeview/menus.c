@@ -8924,8 +8924,8 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Window"), windowdialogmenu);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
-  glutAddMenuEntry(_("Close all dialogs  ALT x"),DIALOG_HIDEALL);
   glutAddMenuEntry(_("Shrink all dialogs ALT X"), DIALOG_SHRINKALL);
+  glutAddMenuEntry(_("Close all dialogs  ALT x"), DIALOG_HIDEALL);
 
   /* -------------------------------- font menu -------------------------- */
 
