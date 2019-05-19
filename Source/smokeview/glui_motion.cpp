@@ -2155,7 +2155,6 @@ extern "C" void UpdateMeshList1(int val){
 
 extern "C" void HideGluiMotion(void){
   CloseRollouts(glui_motion);
-  updatemenu = 1;
 }
 
 /* ------------------ ShowGluiMotion ------------------------ */
