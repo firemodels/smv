@@ -179,6 +179,16 @@ typedef struct _inifiledata {
   char *file;
 } inifiledata;
 
+/* --------------------------  rolloutlistdata ------------------------------------ */
+
+#ifdef CPP
+typedef struct _rolloutlistdata {
+  struct _rolloutlistdata *prev, *next;
+  GLUI_Rollout *rollout;
+  GLUI *dialog;
+} rolloutlistdata;
+#endif
+
 /* --------------------------  scriptfiledata ------------------------------------ */
 
 typedef struct _scriptfiledata {

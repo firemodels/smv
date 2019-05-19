@@ -242,6 +242,7 @@ int SetupCase(int argc, char **argv){
 #endif
 
   if(ntourinfo==0)SetupTour();
+  InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
   GluiMotionSetup(mainwindow_id);
   GluiBoundsSetup(mainwindow_id);
@@ -1544,7 +1545,7 @@ void InitVars(void){
   ncadgeom=0;
   visFloor=0, visFrame=1;
   visNormalEditColors=1;
-  visWalls=0, visGrid=0, visCeiling=0, cursorPlot3D=0;
+  visWalls=0, visGrid=0, visCeiling=0;
   visSensor=1, visSensorNorm=1, hasSensorNorm=0;
   partframestep=1, sliceframestep=1, boundframestep=1;
   partframeskip=0, sliceframeskip=0, boundframeskip=0;

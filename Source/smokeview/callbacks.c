@@ -1906,10 +1906,6 @@ void Keyboard(unsigned char key, int flag){
       if(visiso==1&&cache_qdata==1)UpdateSurface();
       UpdatePlot3dListIndex();
       break;
-    case 'P':
-      cursorPlot3D=1-cursorPlot3D;
-      UpdateCursorCheckbox();
-      break;
     case 'q':
     case 'Q':
       blocklocation++;
@@ -2176,7 +2172,8 @@ void Keyboard(unsigned char key, int flag){
     case 'x':
     case 'X':
       if(keystate==GLUT_ACTIVE_ALT){
-        DialogMenu(DIALOG_HIDEALL); // close all dialogs
+        if(key2=='x')DialogMenu(DIALOG_HIDEALL);
+        if(key2=='X')DialogMenu(DIALOG_SHRINKALL);
       }
       else{
         visx_all=1-visx_all;
@@ -2501,26 +2498,11 @@ void SpecialKeyboardCB(int key, int x, int y){
 
   glutPostRedisplay();
 
-  switch(cursorPlot3D){
-    case 0:
-      if(rotation_type==EYE_CENTERED){
-        keymode=EYE_MODE;
-      }
-      else{
-        keymode=P3_MODE;
-      }
-      break;
-    case 1:
-      if(visGrid!=noGridnoProbe||plotstate==STATIC_PLOTS||ReadVolSlice==1){
-        keymode=P3_MODE;
-      }
-      else{
-        keymode=EYE_MODE;
-      }
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
+  if(rotation_type==EYE_CENTERED){
+    keymode=EYE_MODE;
+  }
+  else{
+    keymode=P3_MODE;
   }
 
   switch(keymode){

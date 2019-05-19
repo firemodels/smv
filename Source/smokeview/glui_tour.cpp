@@ -173,6 +173,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->hide();
 
   ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false, MODIFY_TOURS_ROLLOUT, ToursRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_circular, glui_tour);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_circular, MODIFY_TOURS_ROLLOUT);
 
   CHECKBOX_showtourroute2 = glui_tour->add_checkbox_to_panel(ROLLOUT_circular, _("Show path/nodes"), &edittour, SHOWTOURROUTE2, TourCB);
@@ -193,6 +194,7 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_tour_circular_view[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"z",GLUI_SPINNER_FLOAT,tour_circular_view+2,TOUR_CIRCULAR_UPDATE,TourCB);
 
   ROLLOUT_keyframe = glui_tour->add_rollout("Modify general tour",true,KEYFRAME_TOURS_ROLLOUT, ToursRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_keyframe, glui_tour);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_keyframe, KEYFRAME_TOURS_ROLLOUT);
 
   PANEL_tour = glui_tour->add_panel_to_panel(ROLLOUT_keyframe,"Tour", true);
@@ -257,6 +259,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_button_to_panel(PANEL_tournavigate, _("Insert after"), KEYFRAME_INSERT, TourCB);
 
   ROLLOUT_settings = glui_tour->add_rollout(_("Settings"), true, SETTINGS_TOURS_ROLLOUT, ToursRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_settings, glui_tour);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_settings, SETTINGS_TOURS_ROLLOUT);
 
   PANEL_path = glui_tour->add_panel_to_panel(ROLLOUT_settings, _("Duration"), true);
@@ -316,12 +319,8 @@ extern "C" void UpdateTourList(void){
 /* ------------------ HideGluiTour ------------------------ */
 
 extern "C" void HideGluiTour(void){
-  if(glui_tour!=NULL){
-    CloseRollout(toursprocinfo, ntoursprocinfo);
-    glui_tour->hide();
-  }
-  showtour_dialog=0;
-  updatemenu=1;
+  CloseRollouts(glui_tour);
+  showtour_dialog = 0;
 }
 
 /* ------------------ ShowGluiTour ------------------------ */
