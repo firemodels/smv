@@ -2172,7 +2172,8 @@ void Keyboard(unsigned char key, int flag){
     case 'x':
     case 'X':
       if(keystate==GLUT_ACTIVE_ALT){
-        DialogMenu(DIALOG_HIDEALL); // close all dialogs
+        if(key2=='x')DialogMenu(DIALOG_HIDEALL);
+        if(key2=='X')DialogMenu(DIALOG_SHRINKALL);
       }
       else{
         visx_all=1-visx_all;
