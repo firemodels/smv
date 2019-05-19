@@ -548,9 +548,7 @@ extern "C" void VolumeCB(int var){
 extern "C" void HideGluiGeometry(void){
   blockageSelect=0;
   CloseRollouts(glui_geometry);
-  if(glui_geometry!=NULL)glui_geometry->hide();
   showedit_dialog=0;
-  updatemenu=1;
   editwindow_status=CLOSE_WINDOW;
 }
 

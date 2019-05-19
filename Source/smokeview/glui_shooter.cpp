@@ -97,11 +97,7 @@ void ShooterRolloutCB(int var){
 /* ------------------ HideGluiShooter ------------------------ */
 
 extern "C" void HideGluiShooter(void){
-  if(glui_shooter!=NULL){
-    CloseRollouts(glui_shooter);
-    glui_shooter->hide();
-  }
-  updatemenu=1;
+  CloseRollouts(glui_shooter);
 }
 
 /* ------------------ ShowGluiShooter ------------------------ */

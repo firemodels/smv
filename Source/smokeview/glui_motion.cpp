@@ -271,9 +271,11 @@ extern "C" void CloseRollouts(GLUI *dialog){
   rolloutlistdata *this_rollout;
 
   for(this_rollout = first_rollout.next; this_rollout->next!=NULL; this_rollout = this_rollout->next){
-    if(dialog==NULL||this_rollout->dialog==dialog){
-      this_rollout->rollout->close();
-    }
+    if(dialog==NULL||this_rollout->dialog==dialog)this_rollout->rollout->close();
+  }
+  if(dialog!=NULL){
+    dialog->hide();
+    updatemenu = 1;
   }
 }
 
@@ -2152,10 +2154,7 @@ extern "C" void UpdateMeshList1(int val){
 /* ------------------ HideGluiMotion ------------------------ */
 
 extern "C" void HideGluiMotion(void){
-  if(glui_motion!=NULL){
-    CloseRollouts(glui_motion);
-    glui_motion->hide();
-  }
+  CloseRollouts(glui_motion);
   updatemenu = 1;
 }
 

@@ -319,12 +319,8 @@ extern "C" void UpdateTourList(void){
 /* ------------------ HideGluiTour ------------------------ */
 
 extern "C" void HideGluiTour(void){
-  if(glui_tour!=NULL){
-    CloseRollouts(glui_tour);
-    glui_tour->hide();
-    showtour_dialog = 0;
-  }
-  updatemenu=1;
+  CloseRollouts(glui_tour);
+  showtour_dialog = 0;
 }
 
 /* ------------------ ShowGluiTour ------------------------ */

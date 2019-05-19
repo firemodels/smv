@@ -400,8 +400,6 @@ extern "C" void GluiClipSetup(int main_window){
 
 extern "C" void HideGluiClip(void){
   CloseRollouts(glui_clip);
-  glui_clip->hide();
-  updatemenu = 1;
 }
 
 /* ------------------ ShowGluiClip ------------------------ */

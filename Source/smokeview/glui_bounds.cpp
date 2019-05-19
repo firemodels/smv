@@ -4030,11 +4030,7 @@ extern "C" void UpdateOverwrite(void){
 /* ------------------ HideGluiBounds ------------------------ */
 
 extern "C" void HideGluiBounds(void){
-  if(glui_bounds!=NULL){
-    CloseRollouts(glui_bounds);
-    glui_bounds->hide();
-  }
-  updatemenu = 1;
+  CloseRollouts(glui_bounds);
 }
 
 /* ------------------ UpdateVectorWidgets ------------------------ */

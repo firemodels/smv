@@ -658,11 +658,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 /* ------------------ HideGluiDevice ------------------------ */
 
 extern "C" void HideGluiDevice(void){
-  if(glui_device!=NULL){
-    CloseRollouts(glui_device);
-    glui_device->hide();
-  }
-  updatemenu=1;
+  CloseRollouts(glui_device);
 }
 
 /* ------------------ ShowGluiDevice ------------------------ */
