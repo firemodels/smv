@@ -1702,7 +1702,10 @@ extern "C" void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id){
       mi->rollout->open();
 #ifdef pp_OSX
       h = mi->dialog->h;
-      if(monitor_screen_height!=-1&&h>monitor_screen_height)mi->rollout->close();
+      if(monitor_screen_height!=-1&&h>monitor_screen_height){
+        mi->rollout->close();
+        printf("*** warning: screen not large enough to expand this dialog\n");
+      }
 #endif
     }
   }
