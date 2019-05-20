@@ -285,7 +285,7 @@ extern "C" void GluiShooterSetup(int main_window){
 
   ROLLOUT_shooter_frame = glui_shooter->add_rollout(_("Starting locations/velocities"), true, START_SHOOTER_ROLLOUT, ShooterRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_shooter_frame, glui_shooter);
-  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_frame, START_SHOOTER_ROLLOUT);
+  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_frame, START_SHOOTER_ROLLOUT, glui_shooter);
 
   PANEL_shooter_frameE=glui_shooter->add_panel_to_panel(ROLLOUT_shooter_frame,_("Positions"),false);
 
@@ -318,7 +318,7 @@ extern "C" void GluiShooterSetup(int main_window){
 
   ROLLOUT_shooter_velocity = glui_shooter->add_rollout(_("Background velocity field"), false, BACKGROUND_SHOOTER_ROLLOUT, ShooterRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_shooter_velocity, glui_shooter);
-  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_velocity,BACKGROUND_SHOOTER_ROLLOUT);
+  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_velocity,BACKGROUND_SHOOTER_ROLLOUT, glui_shooter);
 
   RADIO_shooter_vel_type=glui_shooter->add_radiogroup_to_panel(ROLLOUT_shooter_velocity,&shooter_vel_type,SHOOTER_VEL_TYPE,ShooterCB);
   RADIOBUTTON_plot3dtype=glui_shooter->add_radiobutton_to_group(RADIO_shooter_vel_type,"PLOT3D");
@@ -355,7 +355,7 @@ extern "C" void GluiShooterSetup(int main_window){
 
   ROLLOUT_shooter_misc = glui_shooter->add_rollout("Misc", false, MISC_SHOOTER_ROLLOUT, ShooterRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_shooter_misc, glui_shooter);
-  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_misc, MISC_SHOOTER_ROLLOUT);
+  ADDPROCINFO(shooterprocinfo, nshooterprocinfo, ROLLOUT_shooter_misc, MISC_SHOOTER_ROLLOUT, glui_shooter);
 
   PANEL_shooter_frameG = glui_shooter->add_panel_to_panel(ROLLOUT_shooter_misc, "", false);
   glui_shooter->add_column_to_panel(ROLLOUT_shooter_misc,false);

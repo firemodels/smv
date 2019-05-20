@@ -2,9 +2,10 @@
 #define DATADEFS_H_DEFINED
 
 #ifndef ADDPROCINFO
-#define ADDPROCINFO(procinfo,nprocinfo,proc,proc_id) \
+#define ADDPROCINFO(procinfo,nprocinfo,proc,proc_id,dialog_id) \
   procinfo[nprocinfo].rollout = proc; \
   procinfo[nprocinfo].rollout_id = proc_id; \
+  procinfo[nprocinfo].dialog = dialog_id; \
   (nprocinfo)++
 #endif
 

@@ -20,6 +20,7 @@ typedef struct _lanlistdata {
 #ifdef CPP
 typedef struct _procdata {
   GLUI_Rollout *rollout;
+  GLUI *dialog;
   int rollout_id;
 } procdata;
 #endif
