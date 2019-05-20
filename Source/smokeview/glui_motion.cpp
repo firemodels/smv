@@ -1701,8 +1701,8 @@ extern "C" void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id){
 
       mi->rollout->open();
 #ifdef pp_OSX
-      // h = mi->dialog->h;
-      // if(h>screen_height)mi->rolout->close();
+      h = mi->dialog->h;
+      if(monitor_screen_height!=-1&&h>monitor_screen_height)mi->rollout->close();
 #endif
     }
   }
