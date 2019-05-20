@@ -1696,8 +1696,9 @@ extern "C" void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id){
 
     mi = procinfo + i;
     if(mi->rollout_id==motion_id){
-      GLUI *dialog;
+#ifdef pp_OSX
       int h;
+#endif
 
       mi->rollout->open();
 #ifdef pp_OSX
