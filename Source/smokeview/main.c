@@ -26,14 +26,14 @@ int GetScreenHeight(void){
   strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
-  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR)
+  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR);
   strcat(command,full_height_file);
   system(command);
   stream = fopen(full_height_file,"r");
   if(stream!=NULL){
     fgets(buffer, 255, stream);
     sscanf(buffer, "%i", &screen_height);
-    fclose(full_height_file);
+    fclose(stream);
   }
   FREEMEMORY(full_height_file);
   return screen_height;
@@ -304,6 +304,10 @@ void ParseCommandline(int argc, char **argv){
   if(smv_ext!=NULL)*smv_ext = 0;
   FREEMEMORY(trainer_filename);
   FREEMEMORY(test_filename);
+
+#ifdef pp_OSX
+  monitor_screen_height = GetScreenHeight();
+#endif
 
   strcpy(input_filename_ext, "");
 
@@ -768,10 +772,6 @@ int main(int argc, char **argv){
   if(argc==0||argc==1)return 0;
 
   progname=argv_sv[0];
-
-#ifdef pp_OSX
-  monitor_screen_height = GetScreenHeight();
-#endif
 
   ParseCommonOptions(argc, argv_sv);
   if(show_help==1){
