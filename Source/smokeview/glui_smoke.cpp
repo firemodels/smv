@@ -545,7 +545,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   RADIO_use_fire_colormap = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_smokecolor, &fire_colormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, _("Use red/green/blue"));
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, _("Use colormap"));
-  ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT);
+  ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_smokecolor, SMOKECOLOR_ROLLOUT, glui_3dsmoke);
 
   SPINNER_smoke3d_smoke_red   = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("red"),   GLUI_SPINNER_INT, smoke_color_int255,   SMOKE_RED,   Smoke3dCB);
   SPINNER_smoke3d_smoke_green = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("green"), GLUI_SPINNER_INT, smoke_color_int255+1, SMOKE_GREEN, Smoke3dCB);
@@ -559,7 +559,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   RADIO_use_fire_colormap2 = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_firecolor, &fire_colormap_type, FIRECOLORMAP_TYPE, Smoke3dCB);
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap2, _("Use red/green/blue"));
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap2, _("Use colormap"));
-  ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT);
+  ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
 
   SPINNER_smoke3d_fire_red  =glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("red"), GLUI_SPINNER_INT, fire_color_int255,  FIRE_RED,  Smoke3dCB);
   SPINNER_smoke3d_fire_green=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor,_("green"),GLUI_SPINNER_INT, fire_color_int255+1,FIRE_GREEN,Smoke3dCB);
@@ -621,7 +621,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   if(nsmoke3d_co2 > 0){
     ROLLOUT_co2color=glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, "CO2", false, CO2COLOR_ROLLOUT, ColorRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_co2color,glui_3dsmoke);
-    ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_co2color, CO2COLOR_ROLLOUT);
+    ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_co2color, CO2COLOR_ROLLOUT, glui_3dsmoke);
     RADIO_use_co2_colormap = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_co2color, &co2_colormap_type, CO2COLORMAP_TYPE, Smoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_use_co2_colormap, _("Use red/green/blue"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_use_co2_colormap, _("Use colormap"));
@@ -701,12 +701,12 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   if(nsmoke3dinfo>0){
     ROLLOUT_slices = glui_3dsmoke->add_rollout_to_panel(PANEL_overall,_("Slice rendered"),false, SLICERENDER_ROLLOUT, SmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slices, glui_3dsmoke);
-    ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT);
+    ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT, glui_3dsmoke);
     ROLLOUT_slices->set_alignment(GLUI_ALIGN_LEFT);
 
     ROLLOUT_load_options = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Load options"),false, SLICESMOKE_LOAD_ROLLOUT, SliceSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_load_options, glui_3dsmoke);
-    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_load_options, SLICESMOKE_LOAD_ROLLOUT);
+    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_load_options, SLICESMOKE_LOAD_ROLLOUT, glui_3dsmoke);
     CHECKBOX_smoke3d_load_incremental = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_load_options, _("incrementally"), &load_incremental, SMOKE3D_LOAD_INCREMENTAL, LoadIncrementalCB);
     SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_load_options, _("soot alpha >"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
     SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
@@ -732,7 +732,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_display=glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices,_("Visualization options (original)"),false,SLICESMOKE_ORIG_ROLLOUT, SliceSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_display, glui_3dsmoke);
-    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_display, SLICESMOKE_ORIG_ROLLOUT);
+    ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_display, SLICESMOKE_ORIG_ROLLOUT, glui_3dsmoke);
     RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_display,&smokeskipm1);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Display all"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("   ... Every 2nd"));
@@ -763,7 +763,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #ifdef pp_GPUSMOKE
   ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false, SLICESMOKE_TEST_ROLLOUT, SliceSmokeRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_smoketest, glui_3dsmoke);
-  ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_smoketest, SLICESMOKE_TEST_ROLLOUT);
+  ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_smoketest, SLICESMOKE_TEST_ROLLOUT, glui_3dsmoke);
   PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
 
     smoke3d_delta_par_min = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
@@ -825,7 +825,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   if(nvolrenderinfo > 0){
     ROLLOUT_volume = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _("Volume rendered"), false, VOLRENDER_ROLLOUT, SmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_volume, glui_3dsmoke);
-    ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT);
+    ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
 
     if(have_volcompressed == 1){
       RADIO_loadvol = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_volume, &glui_load_volcompressed, LOAD_COMPRESSED_DATA, Smoke3dCB);
@@ -837,7 +837,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_voldisplay = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume,_("Display"),false, VOLSMOKE_DISPLAY, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_voldisplay, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_voldisplay, VOLSMOKE_DISPLAY);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_voldisplay, VOLSMOKE_DISPLAY, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, _("Show"), &usevolrender, VOL_SMOKE, Smoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, _("black/white"), &volbw);
@@ -850,7 +850,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_volsmoke_move = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Scene movement"), false, VOLSMOKE_MOVEMENT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_volsmoke_move, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_move, VOLSMOKE_MOVEMENT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_move, VOLSMOKE_MOVEMENT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Auto freeze"), &autofreeze_volsmoke);
     CHECKBOX_freeze = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Freeze"), &freeze_volsmoke);
@@ -860,7 +860,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_volsmoke_compute = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Compute"), false, VOLSMOKE_COMPUTE_ROLLOUT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_volsmoke_compute, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_compute, VOLSMOKE_COMPUTE_ROLLOUT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_compute, VOLSMOKE_COMPUTE_ROLLOUT, glui_3dsmoke);
 
     SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
@@ -877,7 +877,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_volsmoke_load = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Load"), false, VOLSMOKE_LOAD_ROLLOUT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_volsmoke_load, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_load, VOLSMOKE_LOAD_ROLLOUT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_load, VOLSMOKE_LOAD_ROLLOUT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data in background"), &use_multi_threading);
     CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Compress data while loading"), &glui_compress_volsmoke);
@@ -890,11 +890,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_light = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Light"), false, VOLSMOKE_LIGHT_ROLLOUT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_light, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_light, VOLSMOKE_LIGHT_ROLLOUT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_light, VOLSMOKE_LIGHT_ROLLOUT, glui_3dsmoke);
 
     ROLLOUT_light_position = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, "position",false, LIGHT_POSITION_ROLLOUT, SublightRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_light_position, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_position, LIGHT_POSITION_ROLLOUT);
+    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_position, LIGHT_POSITION_ROLLOUT, glui_3dsmoke);
 
     RADIO_light_type = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_light_position,&light_type_glui);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_("position"));
@@ -908,7 +908,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_light_color = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, _("color/intensity"),false, LIGHT_COLOR_ROLLOUT, SublightRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_light_color, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_color, LIGHT_COLOR_ROLLOUT);
+    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_color, LIGHT_COLOR_ROLLOUT, glui_3dsmoke);
 
     SPINNER_light_color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color,   _("red:"), GLUI_SPINNER_INT, light_color);
     SPINNER_light_color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color, _("green:"), GLUI_SPINNER_INT, light_color+1);
@@ -921,7 +921,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_scatter = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, _("scatter"),false, LIGHT_SCATTER_ROLLOUT, SublightRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_scatter, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_scatter, LIGHT_SCATTER_ROLLOUT);
+    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_scatter, LIGHT_SCATTER_ROLLOUT, glui_3dsmoke);
 
     RADIO_scatter_type_glui = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_scatter,&scatter_type_glui);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_("isotropic"));
@@ -933,7 +933,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     //*** generate images
 
     ROLLOUT_generate_images = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Generate images"), false, VOLSMOKE_IMAGES_ROLLOUT, VolSmokeRolloutCB);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_generate_images, VOLSMOKE_IMAGES_ROLLOUT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_generate_images, VOLSMOKE_IMAGES_ROLLOUT, glui_3dsmoke);
 
     SPINNER_startframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_generate_images, _("start frame"), GLUI_SPINNER_INT, &vol_startframe0, START_FRAME, Smoke3dCB);
     SPINNER_skipframe = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_generate_images, _("skip frame"), GLUI_SPINNER_INT, &vol_skipframe0, SKIP_FRAME, Smoke3dCB);
@@ -967,7 +967,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Load frame"), false, VOLSMOKE_LOADFRAME_ROLLOUT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_loadframe, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_loadframe, VOLSMOKE_LOADFRAME_ROLLOUT);
+    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_loadframe, VOLSMOKE_LOADFRAME_ROLLOUT, glui_3dsmoke);
     PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
 
     glui_3dsmoke->add_button_to_panel(PANEL_loadframe, _("Load"), LOAD_SMOKEFRAME, Smoke3dCB);

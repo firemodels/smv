@@ -431,7 +431,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
     ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,_("Objects"),false, OBJECTS_ROLLOUT, Device_Rollout_CB);
     INSERT_ROLLOUT(ROLLOUT_smvobjects, glui_device);
-    ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT);
+    ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT, glui_device);
 
     SPINNER_sensorrelsize=glui_device->add_spinner_to_panel(ROLLOUT_smvobjects,_("Scale"),GLUI_SPINNER_FLOAT,&sensorrelsize,DEVICE_sensorsize,DeviceCB);
     CHECKBOX_device_3=glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects,_("Outline"),&object_outlines);
@@ -455,7 +455,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     if(GetNumActiveDevices()>0||isZoneFireModel==1){
       ROLLOUT_velocityvectors = glui_device->add_rollout_to_panel(PANEL_objects, "Flow vectors", false, FLOWVECTORS_ROLLOUT, Device_Rollout_CB);
       INSERT_ROLLOUT(ROLLOUT_velocityvectors, glui_device);
-      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT, glui_device);
 
       if(nvdeviceinfo==0)ROLLOUT_velocityvectors->disable();
       CHECKBOX_device_1=glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors,_("Show"),&showvdevice_val);
@@ -486,7 +486,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
       INSERT_ROLLOUT(ROLLOUT_windrose, glui_device);
-      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT, glui_device);
 
 
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose);
@@ -623,7 +623,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       ROLLOUT_devicevalues = glui_device->add_rollout_to_panel(PANEL_objects,_("Device values"),false, DEVICE_ROLLOUT, Device_Rollout_CB);
       INSERT_ROLLOUT(ROLLOUT_devicevalues, glui_device);
-      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT, glui_device);
 
 
       CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
