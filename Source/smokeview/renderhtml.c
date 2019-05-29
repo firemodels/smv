@@ -1871,7 +1871,9 @@ int Smv2Html(char *html_file, int option, int from_where){
       fprintf(stream_out, "<p>\n");
 
       // reset buttons
-      fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button><br>\n");
+      fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button>\n");
+	  fprintf(stream_out, "<button onclick = \"EnterVR()\">Enter VR </button>\n");
+	  fprintf(stream_out, "<br>\n");
 
       //show/hide scene elements
 
