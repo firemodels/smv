@@ -30,11 +30,11 @@ set linux_fdsdir=%linux_svn_root%
 
 echo.
 echo Linux
-plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
+plink %plink_options% %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
 echo.
 
 echo OSX
-plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
+plink %plink_options% %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/fds
 
 
 echo.
@@ -45,11 +45,11 @@ git checkout master
 
 echo.
 echo Linux
-plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
+plink %plink_options% %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
 
 echo.
 echo OSX
-plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
+plink %plink_options% %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/smv
 
 echo.
 echo ---------------------------*** bot ***--------------------------------
@@ -59,11 +59,11 @@ git checkout master
 
 echo.
 echo Linux
-plink %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
+plink %plink_options% %linux_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
 
 echo.
 echo OSX
-plink %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
+plink %plink_options% %osx_logon% %scriptdir%/setbranch.sh  %linux_svn_root%/bot
 
 echo.
 pause

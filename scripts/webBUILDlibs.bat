@@ -34,7 +34,7 @@ if "%platform%" == "windows" (
 
 if "%platform%" == "osx" (
   title building libraries for osx
-  plink %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh
+  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh
   goto eof
 )
 
@@ -42,7 +42,7 @@ if "%platform%" == "osx" (
 
 if "%platform%" == "linux" (
   title building libraries for linux
-  plink %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh
+  plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh
   goto eof
 )
 
