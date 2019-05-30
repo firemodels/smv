@@ -68,6 +68,9 @@ set firebothome=/home2/smokevis2/firebot
 set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
 set smokebothome=/home2/smokevis2/smokebot
 
+:: plink options
+set plink_options=-no-antispoof
+
 :: ---- hostnames ----
 
 ::*** linux

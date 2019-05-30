@@ -30,11 +30,11 @@ set linux_fdsdir=%linux_svn_root%
 
 echo.
 echo Linux: %linux_hostname%
-plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds
+plink %plink_options% %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds
 echo.
 
 echo OSX: %osx_hostname%
-plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds
+plink %plink_options% %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/fds
 
 
 echo.
@@ -45,11 +45,11 @@ git branch
 
 echo.
 echo Linux: %linux_hostname%
-plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
+plink %plink_options% %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
 
 echo.
 echo OSX: %osx_hostname%
-plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
+plink %plink_options% %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/smv
 
 echo.
 echo ---------------------------*** bot ***--------------------------------
@@ -59,11 +59,11 @@ git branch
 
 echo.
 echo Linux: %linux_hostname%
-plink %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
+plink %plink_options% %linux_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
 
 echo.
 echo OSX: %osx_hostname%
-plink %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
+plink %plink_options% %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/bot
 
 echo.
 pause

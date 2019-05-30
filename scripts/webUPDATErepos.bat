@@ -66,36 +66,36 @@ echo ---------------------- linux: %linux_hostname% ----------------------------
 echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
+plink %plink_options% %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
 
 echo.
 echo *** smv ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
+plink %plink_options% %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
 
 echo.
 echo *** bot ***
-plink %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
+plink %plink_options% %linux_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
 
 echo.
 echo *** webpages ***
-plink %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
+plink %plink_options% %linux_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
 
 echo.
 echo ---------------------- osx: %osx_hostname% ------------------------------
 echo repo: %linux_svn_root%
 echo.
 echo *** fds ***
-plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
+plink %plink_options% %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/fds
 
 echo.
 echo *** smv ***
-plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
+plink %plink_options% %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/smv
 
 echo.
 echo *** bot ***
-plink %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
+plink %plink_options% %osx_logon% %scriptdir%/UPDATE_thishost.sh  %linux_svn_root%/bot
 
 echo.
 echo *** webpages ***
-plink %osx_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
+plink %plink_options% %osx_logon% %scriptdir%/UPDATE_webpages.sh  %linux_svn_root%/webpages
 pause
