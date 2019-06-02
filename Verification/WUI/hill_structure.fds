@@ -22,19 +22,71 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 &SPEC ID='WATER VAPOR' /
 
 - Australian grass based on experimental case F19 (Mell et al., 2007 IJWF)
-&SURF ID        = 'GRASS'
-      VEGETATION = .TRUE.
-      VEGETATION_CDRAG    = 0.375
-      VEGETATION_LOAD     = 0.313
-      VEGETATION_HEIGHT   = 0.51
-      VEGETATION_MOISTURE = 0.06
-      VEGETATION_SVRATIO  = 12240
-      VEGETATION_CHAR_FRACTION  = 0.2
-      VEGETATION_ELEMENT_DENSITY= 512
-      EMISSIVITY = 0.99 
-      VEGETATION_ARRHENIUS_DEGRAD=.FALSE.
-      FIRELINE_MLR_MAX = 0.05
-      RGB        = 122,117,48 /
+
+&SURF ID = 'GRASS'
+      MATL_ID(1,1) = 'Dry Grass'
+      MATL_ID(2,1) = 'Soil'
+      PACKING_RATIO = 0.0012
+      THICKNESS(1:2) = 0.51,0.1
+      MOISTURE_FRACTION(1) = 0.06
+      SURFACE_VOLUME_RATIO(1)  = 12240
+      EMISSIVITY = 0.99
+      RGB = 122,117,48 /
+
+&MATL ID                 = 'AIR'
+      DENSITY            = 1.2
+      CONDUCTIVITY       = 0.026
+      SPECIFIC_HEAT      = 1.01 /
+
+&MATL ID                 = 'MOISTURE'
+      DENSITY            = 997.
+      CONDUCTIVITY       = 0.62
+      SPECIFIC_HEAT      = 4.184
+      A                  = 600000.
+      E                  = 48200.
+      N_T                = -0.5
+      SPEC_ID            = 'WATER VAPOR'
+      NU_SPEC            = 1.0
+      HEAT_OF_REACTION   = 2259. /
+
+&MATL ID                 = 'Dry Grass'
+      DENSITY            = 512.
+      CONDUCTIVITY       = 0.11
+      SPECIFIC_HEAT      = 1.5
+      A                  = 36300.
+      E                  = 60300.
+      MATL_ID            = 'Char'
+      NU_MATL            = 0.2
+      SPEC_ID            = 'WOOD'
+      NU_SPEC            = 0.8
+      HEAT_OF_REACTION   = 711. /
+
+&MATL ID                 = 'Char'
+      DENSITY            = 300.
+      CONDUCTIVITY       = 0.052
+      SPECIFIC_HEAT      = 1.        /
+      VEGETATION         = .TRUE.
+      N_S                = 0.
+      NU_O2              = 1.65
+      BETA_CHAR          = 0.2
+      A                  = 430.
+      E                  = 74800.
+      MATL_ID            = 'Ash'
+      NU_MATL            = 0.0227273
+      SPEC_ID            = 'PRODUCTS'
+      NU_SPEC            = 0.9965
+      HEAT_OF_REACTION   = -32370. /
+
+&MATL ID            = 'Ash'
+      VEGETATION    = .TRUE.
+      DENSITY       = 67.
+      CONDUCTIVITY  = 0.1
+      SPECIFIC_HEAT = 2.0 /
+
+&MATL ID='Soil'
+      CONDUCTIVITY = 0.25
+      SPECIFIC_HEAT = 2.
+      DENSITY = 1300. /
 
 - Ignitor fire
 &SURF ID='LINEFIRE',HRRPUA=1000,RAMP_Q='RAMPIGN',RGB=255,0,0 /

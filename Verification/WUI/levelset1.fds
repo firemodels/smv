@@ -43,7 +43,6 @@
 
 &SURF ID = 'NO BURN GRASS'
             VEG_LEVEL_SET_SPREAD = .TRUE.
-            VEGETATION_NO_BURN  = .TRUE.
             VEG_LSET_ROS_HEAD  = 0
             VEG_LSET_ROS_FLANK = 0
             VEG_LSET_ROS_BACK  = 0
