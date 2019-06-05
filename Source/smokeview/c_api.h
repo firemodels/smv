@@ -467,7 +467,6 @@ int set_tourcolors_pathknots(float r, float g, float b);
 int set_tourcolors_text(float r, float g, float b);
 int set_tourcolors_avatar(float r, float g, float b);
 
-int set_tourconstantvel(int v); // TOURCONSTANTVEL
 int set_viewalltours(int v); // VIEWALLTOURS
 int set_viewtimes(float a, float b, int c); // VIEWTIMES
 int set_viewtourfrompath(int v); // VIEWTOURFROMPATH
