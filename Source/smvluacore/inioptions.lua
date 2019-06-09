@@ -1060,10 +1060,6 @@ options =
             set_tourcolors_avatar(gr,gb,gc)
             end
         end
-    , TOURCONSTANTVEL = function(opt)
-        local a = opt.argLines[1][1]
-        return function () set_tourconstantvel(a) end
-        end
     , VIEWALLTOURS = function(opt)
         local a = opt.argLines[1][1]
         return function () set_viewalltours(a) end

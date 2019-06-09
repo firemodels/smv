@@ -1060,7 +1060,7 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushstring(L, sliceinfo[i].file);
     lua_setfield(L, -2, "file");
 
-    lua_pushnumber(L, sliceinfo[i].slicefile_type);
+    lua_pushnumber(L, sliceinfo[i].slice_filetype);
     lua_setfield(L, -2, "slicefile_type");
 
     lua_pushnumber(L, sliceinfo[i].idir);
@@ -3864,13 +3864,6 @@ int lua_set_tourcolors_avatar(lua_State *L) {
   return 1;
 }
 
-int lua_set_tourconstantvel(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_tourconstantvel(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_viewalltours(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_viewalltours(v);
@@ -4880,7 +4873,6 @@ lua_State* initLua() {
                lua_set_tourcolors_text);
   lua_register(L, "set_tourcolors_avatar",
                lua_set_tourcolors_avatar);
-  lua_register(L, "set_tourconstantvel", lua_set_tourconstantvel);
   lua_register(L, "set_viewalltours", lua_set_viewalltours);
   lua_register(L, "set_viewtimes", lua_set_viewtimes);
   lua_register(L, "set_viewtourfrompath", lua_set_viewtourfrompath);

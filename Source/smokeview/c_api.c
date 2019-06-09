@@ -23,7 +23,7 @@
 // from startup.c
 void ReadBoundINI(void);
 void InitTranslate(char *bindir, char *tr_name);
-void Init(void);
+void InitMisc(void);
 // from menus.c
 void UpdateMenu(void);
 void LoadVolsmoke3DMenu(int value);
@@ -243,7 +243,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   glutSetWindow(mainwindow_id);
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
-  Init();
+  InitMisc();
   GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
@@ -3370,14 +3370,14 @@ int set_extremecolors(int rmin, int gmin, int bmin,
 } // EXTREMECOLORS
 
 int set_firecolor(int r, int g, int b) {
-  fire_red = r;
-  fire_green = g;
-  fire_blue = b;
+  fire_color_int255[0] = r;
+  fire_color_int255[1] = g;
+  fire_color_int255[2] = b;
   return 0;
 } // FIRECOLOR
 
 int set_firecolormap(int type, int index) {
-  firecolormap_type = type;
+  fire_colormap_type = type;
   fire_colorbar_index = index;
   return 0;
 } // FIRECOLORMAP
@@ -3457,9 +3457,9 @@ int set_showextremedata(int show_extremedata, int below, int above) {
 } // SHOWEXTREMEDATA
 
 int set_smokecolor(int r, int g, int b) {
-  smoke_red = r;
-  smoke_green = g;
-  smoke_blue = b;
+  smoke_color_int255[0] = r;
+  smoke_color_int255[1] = g;
+  smoke_color_int255[2] = b;
   return 0;
 } // SMOKECOLOR
 
@@ -3590,20 +3590,15 @@ int set_tourcolors_avatar(float r, float g, float b) {
   return 0;
 }
 
-int set_tourconstantvel(int v) {
-  tour_constant_vel = v;
-  return 0;
-} // TOURCONSTANTVEL
-
 int set_viewalltours(int v) {
   viewalltours = v;
   return 0;
 } // VIEWALLTOURS
 
 int set_viewtimes(float start, float stop, int ntimes) {
-  view_tstart = start;
-  view_tstop = stop;
-  view_ntimes = ntimes;
+  tour_tstart = start;
+  tour_tstop = stop;
+  tour_ntimes = ntimes;
   return 0;
 } // VIEWTIMES
 
