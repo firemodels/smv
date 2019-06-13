@@ -279,6 +279,31 @@ int SetupCase(int argc, char **argv){
   return 0;
 }
 
+#ifdef pp_OSX
+/* ------------------ GetScreenHeight ------------------------ */
+
+int GetScreenHeight(void){
+  FILE *stream;
+  char command[1000], height_file[1000], *full_height_file, buffer[255];
+  int screen_height=-1;
+
+  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
+  strcpy(height_file, fdsprefix);
+  strcat(height_file, ".hgt");
+  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR);
+  strcat(command,full_height_file);
+  system(command);
+  stream = fopen(full_height_file,"r");
+  if(stream!=NULL){
+    fgets(buffer, 255, stream);
+    sscanf(buffer, "%i", &screen_height);
+    fclose(stream);
+  }
+  FREEMEMORY(full_height_file);
+  return screen_height;
+}
+#endif
+
 /* ------------------ SetupGlut ------------------------ */
 
 void SetupGlut(int argc, char **argv){
@@ -350,6 +375,11 @@ void SetupGlut(int argc, char **argv){
       PRINTF(" %s\n",smokeviewtempdir);
     }
   }
+
+#ifdef pp_OSX
+  monitor_screen_height = GetScreenHeight();
+#endif
+
 #ifdef pp_BETA
   fprintf(stderr,"%s\n","\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
