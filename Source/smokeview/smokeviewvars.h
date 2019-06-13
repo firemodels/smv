@@ -1434,7 +1434,9 @@ SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDEC
 SVEXTERN char SVDECL(*smokeviewini,NULL);
 #ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
+SVEXTERN char SVDECL(*htmlvr_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
+SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
 #endif
 SVEXTERN int overwrite_all,erase_all;
 SVEXTERN int compress_autoloaded;
