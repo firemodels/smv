@@ -167,6 +167,7 @@ GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_plane_distance=NULL;
 GLUI_Spinner *SPINNER_smoke3d_delta_multiple=NULL;
 #endif
+GLUI_Spinner *SPINNER_emission_factor=NULL;
 
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
@@ -595,10 +596,14 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
 
+#ifdef pp_BETA
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "use fire opacity", &use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
+#endif
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
 #ifdef pp_BETA
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "use fire opacity", &use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
+  SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, "emission factor", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
+  Smoke3dCB(USE_FIRE_ALPHA);
 #endif
 
   UpdateFireCutoffs();
@@ -1034,6 +1039,18 @@ extern "C" void Smoke3dCB(int var){
   float temp_min, temp_max;
 
   case USE_FIRE_ALPHA:
+    if(use_fire_alpha==1){
+      SPINNER_smoke3d_fire_halfdepth->enable();
+      SPINNER_emission_factor->disable();
+    }
+    else{
+      SPINNER_smoke3d_fire_halfdepth->disable();
+      SPINNER_emission_factor->enable();
+    }
+    if(emission_factor < 1.0){
+      emission_factor = 1.0;
+      SPINNER_emission_factor->set_float_val(emission_factor);
+    }
     glutPostRedisplay();
     break;
   case BACKGROUND_FLIP:

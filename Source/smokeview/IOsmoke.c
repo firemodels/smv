@@ -1514,6 +1514,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
+  glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_adjustalphaflag, adjustalphaflag);
   glUniform1i(GPU_have_smoke, have_smoke);
@@ -6638,11 +6639,15 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
             alpha_smoke_local = smoke3di->fire_alpha;
           }
           else{
-            alpha_smoke_local = smokecolor_data[j];
+            float opacity_multiplier, fcolor;
+
+            fcolor = (float)firecolor_data[j]/255.0;
+            opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor;
+//            opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor*fcolor*fcolor*fcolor;
+            alpha_smoke_local = CLAMP(smokecolor_data[j] * opacity_multiplier, 0, 255);
           }
         }
         else{
-          if(firecolor_data==NULL && co2color_data!=NULL)f_smoke=(1.0-co2_fraction);
           smokecolor_ptr = smokeval_uc;
           alpha_smoke_local = smokecolor_data[j];
         }
@@ -6657,7 +6662,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
           f_co2 = co2_fraction;
           if(smokecolor_data==NULL)f_co2 = 1.0;
-          co2color_ptr = rgb_sliceco2colormap_0255+4*firecolor_data[j];
+          co2color_ptr = rgb_sliceco2colormap_0255+4*co2color_data[j];
           alpha_co2_local = smoke3di->co2_alpha;
         }
         if(firecolor_data==NULL){
@@ -6668,6 +6673,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         }
       }
 
+      if(smokecolor_data!=NULL)f_smoke *= smokecolor_data[j];
+      if(co2color_data!=NULL)f_co2 *= co2color_data[j]/100.0;
       denom = f_smoke + f_co2;
       if(denom>0.0){
         f_smoke /= denom;

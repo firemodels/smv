@@ -21,6 +21,7 @@
 #include "threader.h"
 
 SVEXTERN int SVDECL(use_fire_alpha, 0);
+SVEXTERN float SVDECL(emission_factor, 1.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
@@ -639,7 +640,7 @@ SVEXTERN int GPU_aspectratio;
 SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
-SVEXTERN int GPU_adjustalphaflag, GPU_use_fire_alpha;
+SVEXTERN int GPU_adjustalphaflag, GPU_use_fire_alpha, GPU_emission_factor;
 
 SVEXTERN int GPUzone_zonedir;
 SVEXTERN int GPUzone_zoneinside;
