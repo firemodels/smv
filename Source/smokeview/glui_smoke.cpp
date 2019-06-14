@@ -75,6 +75,7 @@ extern GLUI *glui_bounds;
 #define SMOKEBOX_BUFFER 79
 #define SMOKE_NUM 80
 #define BACKGROUND_FLIP 81
+#define USE_FIRE_ALPHA 84
 
 // two defines below are also defined elsewhere
 
@@ -596,6 +597,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
+#ifdef pp_BETA
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "use fire opacity", &use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
+#endif
+
   UpdateFireCutoffs();
 
 #ifdef pp_SMOKETEST
@@ -1027,7 +1032,10 @@ extern "C" void Smoke3dCB(int var){
   updatemenu=1;
   switch(var){
   float temp_min, temp_max;
-  
+
+  case USE_FIRE_ALPHA:
+    glutPostRedisplay();
+    break;
   case BACKGROUND_FLIP:
     background_flip = 1-background_flip;
     ShowHideMenu(MENU_SHOWHIDE_FLIP);

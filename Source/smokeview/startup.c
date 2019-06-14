@@ -519,11 +519,6 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing callbacks - "));
 #endif
-  {
-    GLint m[4];
-    glGetIntegerv(GL_VIEWPORT, m);
-    printf("%i %i %i %i\n", m[0], m[1], m[2], m[3]);
-  }
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
   glutKeyboardFunc(KeyboardCB);

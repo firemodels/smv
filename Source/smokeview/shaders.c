@@ -722,7 +722,7 @@ int SetSmokeShaders(){
     "uniform sampler1D smokecolormap;"
     "uniform float hrrpuv_max_smv, hrrpuv_cutoff;"
     "uniform float aspectratio, smoke3d_rthick, fire_alpha;"
-    "uniform int have_smoke, adjustalphaflag;"
+    "uniform int have_smoke, adjustalphaflag, use_fire_alpha;"
 
     "attribute float hrr, smoke_alpha;"
 
@@ -757,7 +757,9 @@ int SetSmokeShaders(){
     "  if(hrrlocal>hrrpuv_cutoff){"
     "    colorindex=0.51+((hrrlocal-hrrpuv_cutoff)/(hrrpuv_max_smv-hrrpuv_cutoff))/2.0;"
     "    colorindex=clamp(colorindex,0.5,1.0);"
-    "    alpha=fire_alpha/255.0;"
+    "    if(use_fire_alpha==1||have_smoke==0){"
+    "      alpha=fire_alpha/255.0;"
+    "    }"
     "    hrrcolor = texture1D(smokecolormap,colorindex);"
     "    newcolor=vec4(vec3(hrrcolor),alpha);"
     "  }"
@@ -796,12 +798,12 @@ int SetSmokeShaders(){
   GPU_have_smoke =     glGetUniformLocation(p_smoke,"have_smoke");
   GPU_aspectratio =    glGetUniformLocation(p_smoke,"aspectratio");
   GPU_adjustalphaflag =glGetUniformLocation(p_smoke,"adjustalphaflag");
+  GPU_use_fire_alpha = glGetUniformLocation(p_smoke, "use_fire_alpha");
 
   GPU_hrr =            glGetAttribLocation(p_smoke,"hrr");
   GPU_smokealpha =     glGetAttribLocation(p_smoke,"smoke_alpha");
   return 1;
 }
-
 
 /* ------------------ Load3DSliceShaders ------------------------ */
 
