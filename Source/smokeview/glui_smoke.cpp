@@ -314,7 +314,6 @@ extern "C" void UpdateCO2ColorbarList(int value){
 
 extern "C" void UpdateCo2Blending(void){
   int i;
-  int enable_co2_blending = 0;
   int have_co2=0;
   int have_soot=0;
 
@@ -326,13 +325,6 @@ extern "C" void UpdateCo2Blending(void){
     if(smoke3di->loaded==0)continue;
     if(smoke3di->type == CO2)have_co2 = 1;
     if(smoke3di->type == SOOT)have_soot = 1;
-  }
-  if(have_co2 && have_soot)enable_co2_blending = 1;
-  if(enable_co2_blending==1){
-    SPINNER_co2_fraction->enable();
-  }
-  else{
-    SPINNER_co2_fraction->disable();
   }
 }
 
@@ -657,6 +649,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("50% CO2 opacity (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
       SPINNER_co2_fraction = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("CO2/smoke blending fraction"), GLUI_SPINNER_FLOAT, &co2_fraction, CO2SMOKE, Smoke3dCB);
       SPINNER_co2_fraction->set_float_limits(0.0, 1.0);
+      SPINNER_co2_fraction->disable();
       UpdateCo2Blending();
     }
   }
