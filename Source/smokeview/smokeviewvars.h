@@ -21,7 +21,7 @@
 #include "threader.h"
 
 SVEXTERN int SVDECL(use_fire_alpha, 0);
-SVEXTERN float SVDECL(emission_factor, 1.0);
+SVEXTERN float SVDECL(emission_factor, 5.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
@@ -154,7 +154,6 @@ SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
 SVEXTERN int SVDECL(nsmoke3d_soot, 0);
-SVEXTERN float SVDECL(co2_fraction, 0.5);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
@@ -656,7 +655,7 @@ SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_co2t
 SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
 SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
 SVEXTERN int GPUnewsmoke_have_co2, GPUnewsmoke_co2_color, GPUnewsmoke_co2_alpha;
-SVEXTERN int GPUnewsmoke_co2texture, GPUnewsmoke_co2_fraction, GPUnewsmoke_grid_ratio;
+SVEXTERN int GPUnewsmoke_co2texture, GPUnewsmoke_grid_ratio;
 #endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
@@ -1662,7 +1661,7 @@ SVEXTERN int smoke_color_int255[3];
 SVEXTERN int co2_color_int255[3];
 #endif
 SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(fire_halfdepth2, 2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
-SVEXTERN float SVDECL(co2_halfdepth, 2.0);
+SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
 

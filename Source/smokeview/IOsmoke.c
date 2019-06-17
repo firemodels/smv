@@ -966,7 +966,6 @@ int DrawSmoke3DGPUNew(smoke3ddata *smoke3di){
     (float)co2_color_int255[1]/255.0,
     (float)co2_color_int255[2]/255.0);
   glUniform1f(GPUnewsmoke_co2_alpha, (float)smoke3di->co2_alpha/255.0);
-  glUniform1f(GPUnewsmoke_co2_fraction, co2_fraction);
   glUniform1f(GPUnewsmoke_grid_ratio, grid_ratio);
 
   fire_alpha = CLAMP((float)smoke3di->fire_alpha/255.0,0.0,1.0);
@@ -1275,8 +1274,8 @@ void DrawSmokeVertex(smoke3ddata *smoke3di, float *v, float *t, int *hv){
       if(hv[VSOOT]==1&&hv[VCO2]==1){
         float f1 = 1.0, f2 = 0.0, denom, co2alpha;
 
-        f1 = ABS(1.0-co2_fraction)*sootval;
-        f2 = ABS(co2_fraction)*co2val;
+        f1 = sootval;
+        f2 = 0.0*co2val;
         denom = f1+f2;
         if(denom>0.0){
           f1 /= denom;
@@ -6041,7 +6040,6 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     }
     update_makeiblank_smoke3d=1;
     UpdateSmoke3dFileParms();
-    UpdateCo2Blending();
     UpdateFireCutoffs();
     return 0;
   }
@@ -6259,7 +6257,6 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   SetSmokeColorFlags();
   if(smoke3di->type == HRRPUV)hrrpuv_loaded=1;
   if(smoke3di->type == TEMP)temp_loaded = 1;
-  UpdateCo2Blending();
   UpdateFireCutoffs();
 
   Read3DSmoke3DFile=1;
