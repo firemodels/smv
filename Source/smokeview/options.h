@@ -54,6 +54,7 @@
 //*** options: windows
 
 #ifdef WIN32
+//#define pp_OPENVR       // implement virtual reality using openvr library
 #define pp_DEG          // output degree symbol
 #define pp_memstatus
 #define pp_COMPRESS     // support for smokezip
