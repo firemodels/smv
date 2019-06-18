@@ -400,12 +400,6 @@ intel_osx_64_db : $(obj)
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-# If GLIBDIR is defined, include it as a library directory option else nothing
-ifneq ($(GLIBDIR),)
-gnu_osx_64 : GLIBDIROPT = -L$(GLIBDIR)
-else
-gnu_osx_64 : GLIBDIROPT = 
-endif
 gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
@@ -419,12 +413,6 @@ gnu_osx_64_db : $(obj)
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
-# If GLIBDIR is defined, include it as a library directory option else nothing
-ifneq ($(GLIBDIR),)
-gnu_osx_64 : GLIBDIROPT = -L$(GLIBDIR)
-else
-gnu_osx_64 : GLIBDIROPT = 
-endif
 gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran 
 ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL

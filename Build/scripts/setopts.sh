@@ -3,6 +3,10 @@ SMV_MAKE_OPTS=
 TEST=
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
+  GLIBDIROPT=
+  if [ "$GLIBDIR" != "" ]; then
+    GLIBDIROPT=-L$GLIBDIR
+  fi
 else
   GLUT=glut
 fi
@@ -41,6 +45,7 @@ export TEST
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
   export QUARTZ
+  export GLIBDIROPT
 else
   QUARTZ=
 fi
