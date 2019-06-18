@@ -11859,7 +11859,7 @@ int ReadIni2(char *inifile, int localfile){
        }
       if(Match(buffer, "FIREDEPTH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f %f", &fire_halfdepth,&co2_halfdepth);
+        sscanf(buffer, "%f %f %f %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha);
         continue;
       }
       if(Match(buffer, "VIEWTOURFROMPATH") == 1){
@@ -13690,7 +13690,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "FIRECOLORMAP\n");
   fprintf(fileout, " %i %i\n", fire_colormap_type, fire_colorbar_index);
   fprintf(fileout, "FIREDEPTH\n");
-  fprintf(fileout, " %f %f\n", fire_halfdepth, co2_halfdepth);
+  fprintf(fileout, " %f %f %f %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha);
   if(ncolorbars > ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;

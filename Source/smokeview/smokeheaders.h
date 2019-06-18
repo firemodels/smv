@@ -14,12 +14,11 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
-EXTERNCPP void UpdateCo2Blending(void);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP void InitNabors(void);
 #ifdef pp_HTML
-EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
+EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);

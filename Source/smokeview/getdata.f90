@@ -668,7 +668,7 @@ if(exists)then
   return
 endif
 
-if(error.eq.0)read(boundaryunitnumber,iostat=error)patchlonglabel
+read(boundaryunitnumber,iostat=error)patchlonglabel
 if(error.eq.0)read(boundaryunitnumber,iostat=error)patchshortlabel
 if(error.eq.0)read(boundaryunitnumber,iostat=error)patchunit
 if(error.eq.0)read(boundaryunitnumber,iostat=error)npatch

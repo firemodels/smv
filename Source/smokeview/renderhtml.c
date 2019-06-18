@@ -1538,7 +1538,7 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full, int option){
+int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -1584,7 +1584,12 @@ int GetHtmlFileName(char *htmlfile_full, int option){
 
   strcpy(htmlfile_full, html_file_base);
   strcat(htmlfile_full, htmlfile_suffix);
-  strcat(htmlfile_full, ".html");
+  if(vr_flag==VR_NO){
+    strcat(htmlfile_full, ".html");
+  }
+  else{
+    strcat(htmlfile_full, "_vr.html");
+  }
   return 0;
 }
 
@@ -1784,13 +1789,14 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_file, int option, int from_where){
-  FILE *stream_in = NULL, *stream_out;
+int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
+  FILE *stream_in = NULL, *stream_out = NULL;
   float *vertsObstLit, *normalsObstLit, *colorsObstLit;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
   float *vertsGeomLit, *normalsGeomLit, *colorsGeomLit;
   int nvertsGeomLit, *facesGeomLit, nfacesGeomLit;
   int have_blockages = 0, have_geometry = 0;
+  char *template_file;
 
   float *vertsLine, *colorsLine;
   int nvertsLine, *facesLine, nfacesLine;
@@ -1799,9 +1805,15 @@ int Smv2Html(char *html_file, int option, int from_where){
   int copy_html, i;
   webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web, part_node_web;
 
-  stream_in = fopen(smokeview_html, "r");
+  if(vr_flag==VR_NO){
+    template_file = smokeview_html;
+  }
+  else{
+    template_file = smokeviewvr_html;
+  }
+  stream_in = fopen(template_file, "r");
   if(stream_in==NULL){
-    printf("***error: smokeview html template file %s failed to open\n", smokeview_html);
+    printf("***error: smokeview html template file %s failed to open\n", template_file);
     return 1;
   }
 
@@ -1811,7 +1823,7 @@ int Smv2Html(char *html_file, int option, int from_where){
   else{
     int return_val;
 
-    return_val = GetHtmlFileName(html_fullfile, option);
+    return_val = GetHtmlFileName(html_fullfile, option, vr_flag);
     if(return_val==1){
       fclose(stream_in);
       return 1;
@@ -1872,8 +1884,8 @@ int Smv2Html(char *html_file, int option, int from_where){
 
       // reset buttons
       fprintf(stream_out, "<button onclick = \"Reset()\">Reset View </button>\n");
-	  fprintf(stream_out, "<button onclick = \"EnterVR()\">Enter VR </button>\n");
-	  fprintf(stream_out, "<br>\n");
+      fprintf(stream_out, "<button onclick = \"EnterVR()\">Enter VR </button>\n");
+      fprintf(stream_out, "<br>\n");
 
       //show/hide scene elements
 

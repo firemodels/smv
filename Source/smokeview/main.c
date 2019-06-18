@@ -15,31 +15,6 @@
 #include "lua_api.h"
 #endif
 
-#ifdef pp_OSX
-/* ------------------ GetScreenHeight ------------------------ */
-
-int GetScreenHeight(void){
-  FILE *stream;
-  char command[1000], height_file[1000], *full_height_file, buffer[255];
-  int screen_height=-1;
-
-  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
-  strcpy(height_file, fdsprefix);
-  strcat(height_file, ".hgt");
-  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR);
-  strcat(command,full_height_file);
-  system(command);
-  stream = fopen(full_height_file,"r");
-  if(stream!=NULL){
-    fgets(buffer, 255, stream);
-    sscanf(buffer, "%i", &screen_height);
-    fclose(stream);
-  }
-  FREEMEMORY(full_height_file);
-  return screen_height;
-}
-#endif
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
@@ -305,10 +280,6 @@ void ParseCommandline(int argc, char **argv){
   FREEMEMORY(trainer_filename);
   FREEMEMORY(test_filename);
 
-#ifdef pp_OSX
-  monitor_screen_height = GetScreenHeight();
-#endif
-
   strcpy(input_filename_ext, "");
 
   if(len_casename > 4){
@@ -355,6 +326,11 @@ void ParseCommandline(int argc, char **argv){
   NewMemory((void **)&html_filename, len_casename+strlen(".html")+1);
   STRCPY(html_filename, fdsprefix);
   STRCAT(html_filename, ".html");
+
+  FREEMEMORY(htmlvr_filename);
+  NewMemory((void **)&htmlvr_filename, len_casename+strlen("_vr.html")+1);
+  STRCPY(htmlvr_filename, fdsprefix);
+  STRCAT(htmlvr_filename, "_vr.html");
 #endif
 
   FREEMEMORY(boundinfo_filename);

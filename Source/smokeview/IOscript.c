@@ -959,6 +959,7 @@ int CompileScript(char *scriptfile){
 
 void ScriptRenderHtml(scriptdata *scripti, int option){
   char web_filename[1024];
+  char webvr_filename[1024];
 
   strcpy(web_filename,"");
   if(script_htmldir_path!=NULL){
@@ -971,7 +972,20 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
   }
   strcat(web_filename,scripti->cval2);
   strcat(web_filename,".html");
-  Smv2Html(web_filename, option, FROM_SCRIPT);
+  Smv2Html(web_filename, option, FROM_SCRIPT, VR_NO);
+
+  strcpy(webvr_filename,"");
+  if(script_htmldir_path!=NULL){
+    if(strlen(script_htmldir_path) != 2 ||
+       script_htmldir_path[0] != '.' ||
+       script_htmldir_path[1] != dirseparator[0]){
+      strcat(webvr_filename,script_htmldir_path);
+      strcat(webvr_filename,dirseparator);
+    }
+  }
+  strcat(webvr_filename,scripti->cval2);
+  strcat(webvr_filename,"_vr.html");
+  Smv2Html(webvr_filename, option, FROM_SCRIPT, VR_YES);
 }
 #endif
 
