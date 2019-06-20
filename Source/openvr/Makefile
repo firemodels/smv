@@ -9,11 +9,12 @@ INC=-I headers -I vrcommon
 
 # You may need to adjust these cc options:
 CFLAGS= -O2  -I$(srcdir) -D _WIN64 -D WIN32
+WINOPTS= -D _WIN64 -D WIN32
 
 .cpp.obj:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(CFLAGS) $(WINOPTS) $(INC) $(FILTERC) $<
 .c.obj:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(CFLAGS) $(WINOPTS) $(INC) $(FILTERC) $<
 .cpp.o:
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 .c.o:
