@@ -143,8 +143,9 @@ ifeq ($(GLUT),freeglut)
 else
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif
-SMV_LIBS_WIN = $(SOURCE_DIR)\openvr\win_64\openvr_api.lib $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
-
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+#SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\openvr.lib  
+SMV_LIBS_WIN += $(SOURCE_DIR)\openvr\win_64\openvr_api.lib
 #--- gnu
 
 SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64

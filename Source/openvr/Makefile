@@ -3,13 +3,13 @@ srcdir = .
 
 # The name of your C compiler:
 COMPILER=icc
-SIZE=-m32
+SIZE=-m64
 CC=$(COMPILER) $(SIZE)
 INC=-I headers -I vrcommon
 
 # You may need to adjust these cc options:
-CFLAGS= -O2  -I$(srcdir) -D _WIN64 -D WIN32
-WINOPTS= -D _WIN64 -D WIN32
+CFLAGS= -O2  -I$(srcdir) 
+WINOPTS= -D _WIN64 -D WIN32 -D _WIN32 -D OPENVR_BUILD_STATIC
 
 .cpp.obj:
 	$(CC) -c $(CFLAGS) $(WINOPTS) $(INC) $(FILTERC) $<

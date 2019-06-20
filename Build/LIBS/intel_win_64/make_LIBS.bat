@@ -19,6 +19,10 @@ set SRCDIR=%CD%
 cd ..\Build
 set BUILDDIR=%CD%
 
+:: openvr
+cd %SRCDIR%\openvr
+start %WAIT% makelib %OPTS% -copy libopenvr.lib %LIBDIR%\openvr.lib
+
 :: ZLIB
 cd %SRCDIR%\zlib128
 start %WAIT% makelib %OPTS% -copy libz.lib %LIBDIR%\zlib.lib
