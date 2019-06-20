@@ -41,12 +41,13 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
+set linux_intel_mpi_version=19u4
 set osx_mpi_version=3.1.2
 ::set osx_mpi_version=1.8.4
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTEL19U3
+set INTELVERSION=INTEL19U4
 
 :: ---- Guide locations ----
 
