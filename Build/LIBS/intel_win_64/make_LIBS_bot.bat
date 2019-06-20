@@ -11,9 +11,9 @@ cd ..\Build
 set BUILDDIR=%CD%
 
 :: openvr
-cd %SRCDIR%\openvr
-call makelib %OPTS% 
-copy libopenvr.lib %LIBDIR%\openvr.lib
+::cd %SRCDIR%\openvr
+::call makelib %OPTS% 
+::copy libopenvr.lib %LIBDIR%\openvr.lib
 
 :: ZLIB
 cd %SRCDIR%\zlib128
