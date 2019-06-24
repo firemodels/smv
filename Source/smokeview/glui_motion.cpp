@@ -2319,8 +2319,8 @@ void RenderCB(int var){
       break;
 #ifdef pp_HTML
     case RENDER_HTML:
-      Smv2Html(html_filename,CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-      Smv2Html(htmlvr_filename, CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
+      Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
+      Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
       break;
 #endif
 #ifdef pp_RENDER360_DEBUG

@@ -1885,12 +1885,12 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderHTML:
-    Smv2Html(html_filename,CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-    Smv2Html(htmlvr_filename, CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
+    Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
+    Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
     break;
   case RenderHTMLALL:
-    Smv2Html(html_filename,ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
-    Smv2Html(htmlvr_filename, ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
+    Smv2Html(html_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
+    Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
     break;
 #endif
   case RenderCancel:

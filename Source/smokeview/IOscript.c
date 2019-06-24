@@ -278,8 +278,10 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
 #ifdef pp_HTML
-  if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
-  if(MatchUpper(keyword, "RENDERHTMLDIR")==MATCH)return SCRIPT_RENDERHTMLDIR;
+  if(MatchUpper(keyword,"RENDERHTMLOBST") == MATCH)return SCRIPT_RENDERHTMLOBST;
+  if(MatchUpper(keyword,"RENDERHTMLGEOM") == MATCH)return SCRIPT_RENDERHTMLGEOM;
+  if(MatchUpper(keyword,"RENDERHTMLALL") == MATCH)return SCRIPT_RENDERHTMLALL;
+  if(MatchUpper(keyword,"RENDERHTMLDIR") == MATCH)return SCRIPT_RENDERHTMLDIR;
   if(MatchUpper(keyword, "RENDERHTMLONCE")==MATCH)return SCRIPT_RENDERHTMLONCE;
 #endif
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
@@ -616,6 +618,8 @@ int CompileScript(char *scriptfile){
 #ifdef pp_HTML
       case SCRIPT_RENDERHTMLONCE:
       case SCRIPT_RENDERHTMLALL:
+      case SCRIPT_RENDERHTMLGEOM:
+      case SCRIPT_RENDERHTMLOBST:
         scripti->need_graphics = 0;
         SETcval2;
         break;
@@ -955,6 +959,44 @@ int CompileScript(char *scriptfile){
 }
 
 #ifdef pp_HTML
+/* ------------------ ScriptRenderObst ------------------------ */
+
+void ScriptRenderObst(scriptdata *scripti) {
+  char web_filename[1024];
+  char webvr_filename[1024];
+
+  strcpy(web_filename, "");
+  if (script_htmldir_path != NULL) {
+    if (strlen(script_htmldir_path) != 2 ||
+      script_htmldir_path[0] != '.' ||
+      script_htmldir_path[1] != dirseparator[0]) {
+      strcat(web_filename, script_htmldir_path);
+      strcat(web_filename, dirseparator);
+    }
+  }
+  strcat(web_filename, scripti->cval2);
+  Smv2Obst(web_filename);
+}
+
+/* ------------------ ScriptRenderGeom ------------------------ */
+
+void ScriptRenderGeom(scriptdata *scripti){
+  char web_filename[1024];
+  char webvr_filename[1024];
+
+  strcpy(web_filename,"");
+  if(script_htmldir_path!=NULL){
+    if(strlen(script_htmldir_path) != 2 ||
+       script_htmldir_path[0] != '.' ||
+       script_htmldir_path[1] != dirseparator[0]){
+      strcat(web_filename,script_htmldir_path);
+      strcat(web_filename,dirseparator);
+    }
+  }
+  strcat(web_filename,scripti->cval2);
+  Smv2Geom(web_filename);
+}
+
 /* ------------------ ScriptRenderHtml ------------------------ */
 
 void ScriptRenderHtml(scriptdata *scripti, int option){
@@ -2539,14 +2581,20 @@ int RunScriptCommand(scriptdata *script_command){
       returnval=1;
       break;
 #ifdef pp_HTML
-    case SCRIPT_RENDERHTMLONCE:
     case SCRIPT_RENDERHTMLALL:
-      if(scripti->command==SCRIPT_RENDERHTMLONCE){
-        ScriptRenderHtml(scripti,CURRENT_TIME);
-      }
-      else{
-        ScriptRenderHtml(scripti,ALL_TIMES);
-      }
+      ScriptRenderHtml(scripti, HTML_ALL_TIMES);
+      returnval = 1;
+      break;
+    case SCRIPT_RENDERHTMLONCE:
+      ScriptRenderHtml(scripti, HTML_CURRENT_TIME);
+      returnval = 1;
+      break;
+    case SCRIPT_RENDERHTMLGEOM:
+      ScriptRenderGeom(scripti);
+      returnval = 1;
+      break;
+    case SCRIPT_RENDERHTMLOBST:
+      ScriptRenderObst(scripti);
       returnval = 1;
       break;
 #endif

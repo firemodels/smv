@@ -48,7 +48,7 @@ void GetPartVerts(int option, int option2, int *offset,
     }
   }
   if(first==1)return;
-  if(option2==ALL_TIMES){
+  if(option2==HTML_ALL_TIMES){
     ibeg = 0;
     iend = *nframes;
   }
@@ -155,12 +155,12 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     else{
       minsteps = MIN(minsteps, patchi->ntimes);
     }
-    if(option2==CURRENT_TIME)break;
+    if(option2==HTML_CURRENT_TIME)break;
   }
   if(first==1){
     return;
   }
-  if(option2==ALL_TIMES){
+  if(option2==HTML_ALL_TIMES){
     ibeg = 0;
     iend = minsteps;
     *nframes = iend;
@@ -295,7 +295,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
     else{
       minsteps = MIN(minsteps, slicei->ntimes);
     }
-    if(option2==CURRENT_TIME)break;
+    if(option2==HTML_CURRENT_TIME)break;
   }
   if(first==1){
     *frame_size=0;
@@ -304,7 +304,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
     *ntris = 0;
     return;
   }
-  if(option2==ALL_TIMES){
+  if(option2==HTML_ALL_TIMES){
     ibeg = 0;
     iend = minsteps;
     *nframes = iend;
@@ -525,7 +525,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
     else{
       minsteps = MIN(minsteps, slicei->ntimes);
     }
-    if(option2==CURRENT_TIME)break;
+    if(option2==HTML_CURRENT_TIME)break;
   }
   if(first==1){
     *frame_size = 0;
@@ -534,7 +534,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
     *ntris = 0;
     return;
   }
-  if(option2==ALL_TIMES){
+  if(option2==HTML_ALL_TIMES){
     ibeg = 0;
     iend = minsteps;
     *nframes = iend;
@@ -637,7 +637,7 @@ void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsig
     else{
       minsteps = MIN(minsteps, slicei->ntimes);
     }
-    if(option2==CURRENT_TIME)break;
+    if(option2==HTML_CURRENT_TIME)break;
   }
   if(first==1){
     *frame_size=0;
@@ -646,7 +646,7 @@ void GetSliceNodeVerts(int option, int option2, int *offset, float *verts, unsig
     *ntris = 0;
     return;
   }
-  if(option2==ALL_TIMES){
+  if(option2==HTML_ALL_TIMES){
     ibeg = 0;
     iend = minsteps;
     *nframes = iend;
@@ -1567,7 +1567,7 @@ int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
 
   // filename suffix
 
-  if(option==CURRENT_TIME){
+  if(option==HTML_CURRENT_TIME){
     if(RenderTime==0){
       image_num = seqnum;
     }
@@ -1787,6 +1787,167 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "\n");
 }
 
+/* ------------------ Smv2Obst ------------------------ */
+
+int Smv2Obst(char *html_file){
+  float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
+  int nvertsObstLit, *facesObstLit, nfacesObstLit;
+  FILE *stream_out;
+  int i;
+
+  stream_out = fopen(html_file, "w");
+  if (stream_out != NULL) {
+    ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
+
+    if (nvertsObstLit>0)fprintf(stream_out, "vertices: %i\n", nvertsObstLit);
+    for (i = 0; i < nvertsObstLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", vertsObstLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsObstLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", vertsObstLit[nvertsObstLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if (nvertsObstLit>0)fprintf(stream_out, "normals: %i\n", nvertsObstLit);
+    for (i = 0; i < nvertsObstLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", normalsObstLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsObstLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if(nvertsObstLit>0)fprintf(stream_out, "colors: %i\n", nvertsObstLit);
+    for (i = 0; i < nvertsObstLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", colorsObstLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsObstLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if(nfacesObstLit>0)fprintf(stream_out, "indices: %i\n",nfacesObstLit);
+    for (i = 0; i < nfacesObstLit - 1; i++) {
+      fprintf(stream_out, "%i,", facesObstLit[i]);
+      if (i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nfacesObstLit > 0) {
+      fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit - 1]);
+    }
+
+    FREEMEMORY(vertsObstLit);
+    FREEMEMORY(colorsObstLit);
+    FREEMEMORY(facesObstLit);
+    fclose(stream_out);
+  }
+
+  return 1;
+}
+  
+/* ------------------ Smv2Geom ------------------------ */
+
+int Smv2Geom(char *html_file) {
+  float *vertsGeomLit = NULL, *normalsGeomLit = NULL, *colorsGeomLit = NULL;
+  int nvertsGeomLit, *facesGeomLit, nfacesGeomLit;
+  FILE *stream_out;
+  int i;
+
+  stream_out = fopen(html_file, "w");
+  if (stream_out != NULL) {
+    GeomLitTriangles2Geom(&vertsGeomLit, &normalsGeomLit, &colorsGeomLit, &nvertsGeomLit, &facesGeomLit, &nfacesGeomLit);
+
+    if (nvertsGeomLit > 0)fprintf(stream_out, "geometry: %i\n", nvertsGeomLit);
+    for (i = 0; i < nvertsGeomLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", vertsGeomLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsGeomLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", vertsGeomLit[nvertsGeomLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if (nvertsGeomLit > 0)fprintf(stream_out, "normals: %i\n", nvertsGeomLit);
+    for (i = 0; i < nvertsGeomLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", normalsGeomLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsGeomLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", normalsGeomLit[nvertsGeomLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if (nvertsGeomLit > 0)fprintf(stream_out, "colors: %i\n", nvertsGeomLit);
+    for (i = 0; i < nvertsGeomLit - 1; i++) {
+      char label[100];
+
+      sprintf(label, "%f", colorsGeomLit[i]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s,", label);
+      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nvertsGeomLit > 0) {
+      char label[100];
+
+      sprintf(label, "%f", colorsGeomLit[nvertsGeomLit - 1]);
+      TrimZeros(label);
+      fprintf(stream_out, "%s\n", label);
+    }
+
+    if (nfacesGeomLit > 0)fprintf(stream_out, "indices: %i\n", nfacesGeomLit);
+    for (i = 0; i < nfacesGeomLit - 1; i++) {
+      fprintf(stream_out, "%i,", facesGeomLit[i]);
+      if (i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
+    }
+    if (nfacesGeomLit > 0) {
+      fprintf(stream_out, "%i\n", facesGeomLit[nfacesGeomLit - 1]);
+    }
+
+    FREEMEMORY(vertsGeomLit);
+    FREEMEMORY(colorsGeomLit);
+    FREEMEMORY(facesGeomLit);
+    fclose(stream_out);
+  }
+  return 1;
+}
+
 /* ------------------ Smv2Html ------------------------ */
 
 int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
@@ -1917,7 +2078,7 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
       //time stepping controls
 
 // buttons need to be defined for all cases for now
-      if(option==ALL_TIMES){
+      if(option==HTML_ALL_TIMES){
         fprintf(stream_out, "<button onclick = \"SetTime(-2)\"><<</button>\n");
         fprintf(stream_out, "<button onclick = \"SetTime(-1)\"><</button>\n");
         fprintf(stream_out, "<button type = \"button\" id = \"buttonPauseResume\" onclick = \"SetTime(0)\">Pause</button>\n");
@@ -1936,7 +2097,7 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
       fprintf(stream_out, "         var xcen=%f;\n", xbar/2.0);
       fprintf(stream_out, "         var ycen=%f;\n", ybar/2.0);
       fprintf(stream_out, "         var zcen=%f;\n", zbar/2.0);
-      if(option==ALL_TIMES){
+      if(option==HTML_ALL_TIMES){
         fprintf(stream_out, "         document.getElementById(\"buttonPauseResume\").style.width = \"75px\";\n");
       }
 
