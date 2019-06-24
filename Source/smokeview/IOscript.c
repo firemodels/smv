@@ -963,7 +963,6 @@ int CompileScript(char *scriptfile){
 
 void ScriptRenderObst(scriptdata *scripti) {
   char web_filename[1024];
-  char webvr_filename[1024];
 
   strcpy(web_filename, "");
   if (script_htmldir_path != NULL) {
@@ -982,7 +981,6 @@ void ScriptRenderObst(scriptdata *scripti) {
 
 void ScriptRenderGeom(scriptdata *scripti){
   char web_filename[1024];
-  char webvr_filename[1024];
 
   strcpy(web_filename,"");
   if(script_htmldir_path!=NULL){
