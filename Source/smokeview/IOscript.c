@@ -9,7 +9,7 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#include "smokeviewdefs.h" 
+#include "smokeviewdefs.h"
 
 /* ------------------ GetNewScriptFileName ------------------------ */
 
@@ -940,7 +940,7 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(buffer, "%f %f %f %i %i %i %i", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->ival, &scripti->ival2, &scripti->ival3, &scripti->ival4);
         break;
-        
+
         // GSLICEVIEW
 // show_gslice (int) show_triangles (int)  show_triangulation (int) show_normals (int)
       case SCRIPT_GSLICEVIEW:
@@ -975,10 +975,10 @@ int CompileScript(char *scriptfile){
 
 void GetWebFileName(char *web_filename, scriptdata *scripti){
   strcpy(web_filename, "");
-  if(script_htmldir_path!=NULL) {
+  if(script_htmldir_path!=NULL){
     if(strlen(script_htmldir_path)!=2||
       script_htmldir_path[0]!='.'||
-      script_htmldir_path[1]!=dirseparator[0]) {
+      script_htmldir_path[1]!=dirseparator[0]){
       strcat(web_filename, script_htmldir_path);
       strcat(web_filename, dirseparator);
     }
@@ -988,7 +988,7 @@ void GetWebFileName(char *web_filename, scriptdata *scripti){
 
 /* ------------------ ScriptRenderSlice ------------------------ */
 
-void ScriptRenderSlice(scriptdata *scripti) {
+void ScriptRenderSlice(scriptdata *scripti){
   char web_filename[1024];
 
   GetWebFileName(web_filename, scripti);
@@ -1002,7 +1002,7 @@ void ScriptRenderSlice(scriptdata *scripti) {
 
 /* ------------------ ScriptRenderObst ------------------------ */
 
-void ScriptRenderObst(scriptdata *scripti) {
+void ScriptRenderObst(scriptdata *scripti){
   char web_filename[1024];
 
   GetWebFileName(web_filename, scripti);

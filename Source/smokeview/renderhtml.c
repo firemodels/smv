@@ -22,8 +22,8 @@ typedef struct _webgeomdata {
 
 /* ------------------ GetPartFileNodes ------------------------ */
 
-void GetPartVerts(int option, int option2, int *offset, 
-  float *verts, float *colors, int *nverts, 
+void GetPartVerts(int option, int option2, int *offset,
+  float *verts, float *colors, int *nverts,
   int *indices, int *nindices,
   int *frame_sizes, int *nframes){
   int i, first = 1;
@@ -1225,8 +1225,8 @@ void PartNodeVerts2Geom(webgeomdata *part_node_web, int option){
     int npart_verts, npart_indices;
 
 
-    GetPartVerts(1, option, &offset, 
-      verts, colors, &npart_verts, 
+    GetPartVerts(1, option, &offset,
+      verts, colors, &npart_verts,
       indices, &npart_indices,
       framesizes, &(part_node_web->nframes));
     verts   += 3*npart_verts;
@@ -1280,9 +1280,9 @@ void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
   if(nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
-    GetSliceCellVerts(1, option, &offset, 
-      verts, textures, &nslice_verts, 
-      indices, &nslice_tris, 
+    GetSliceCellVerts(1, option, &offset,
+      verts, textures, &nslice_verts,
+      indices, &nslice_tris,
       &(slice_cell_web->framesize), &(slice_cell_web->nframes));
     verts   += 3*nslice_verts;
     indices += 3*nslice_tris;
