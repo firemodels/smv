@@ -11,13 +11,17 @@ if "%arg1%"=="bot" (
 )
 
 set LIBDIR=%CD%
-erase *.lib
+git clean -dxf
 
 cd ..\..\..\Source
 set SRCDIR=%CD%
 
 cd ..\Build
 set BUILDDIR=%CD%
+
+:: openvr
+::cd %SRCDIR%\openvr
+::start %WAIT% makelib %OPTS% -copy libopenvr.lib %LIBDIR%\openvr.lib
 
 :: ZLIB
 cd %SRCDIR%\zlib128

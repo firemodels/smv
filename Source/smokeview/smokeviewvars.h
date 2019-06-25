@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(have_vr, 0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(emission_factor, 5.0);
 #ifdef pp_OSX

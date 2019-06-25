@@ -6,9 +6,11 @@
 #include "glew.h"
 #include GLUT_H
 
-#include "smokeviewvars.h"
 #include "infoheader.h"
 #include "update.h"
+#ifdef pp_OPENVR
+#include "vr.h"
+#endif
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
@@ -17,6 +19,10 @@
 
 void InitMisc(void){
   int i;
+
+#ifdef pp_OPENVR
+  have_vr = HaveVR();
+#endif
 
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));

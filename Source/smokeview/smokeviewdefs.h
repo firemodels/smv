@@ -381,6 +381,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SCRIPT_RENDERHTMLONCE    102
 #define SCRIPT_RENDERHTMLALL     105
 #define SCRIPT_RENDERHTMLDIR     109
+#define SCRIPT_RENDERHTMLGEOM    123
+#define SCRIPT_RENDERHTMLOBST    124
+#define SCRIPT_RENDERHTMLSLICE   125
 #endif
 #define SCRIPT_RENDERDOUBLEONCE  103
 #define SCRIPT_RENDERALL         104
@@ -771,8 +774,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #ifdef pp_HTML
 #define RenderHTML 985
 #define RenderHTMLALL 984
-#define CURRENT_TIME 0
-#define ALL_TIMES 1
+#define HTML_CURRENT_TIME 0
+#define HTML_ALL_TIMES 1
 #endif
 
 #define ShowEXTERIORwallmenu -1

@@ -32,7 +32,6 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 
 if x%inc% == xinc goto skip_inc
-erase *.obj *.mod *.exe
 :skip_inc
 
 make -j 4 ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
