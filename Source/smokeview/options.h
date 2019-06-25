@@ -54,7 +54,7 @@
 //*** options: windows
 
 #ifdef WIN32
-#define pp_OPENVR       // implement virtual reality using openvr library
+//#define pp_OPENVR       // implement virtual reality using openvr library
 #define pp_DEG          // output degree symbol
 #define pp_memstatus
 #define pp_COMPRESS     // support for smokezip
@@ -78,7 +78,7 @@
 #ifdef pp_BETA
 //#define pp_SLICE_DEBUG         // slice debug output
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step 
+//#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_SHOWTERRAIN
 #define pp_TIMINGS

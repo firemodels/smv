@@ -105,6 +105,8 @@ void StereoCB(int var){
     if(use_vr==1){
       PANEL_stereo_method->disable();
       PANEL_stereo_options->disable();
+      stereotype = 0;
+      RADIO_stereotype->set_int_val(stereotype);
     }
     else{
       PANEL_stereo_method->enable();

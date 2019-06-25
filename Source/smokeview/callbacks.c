@@ -2988,9 +2988,7 @@ void ClearBuffers(int mode){
 
 /* ------------------ DoStereo ------------------------ */
 
-int DoStereo(void){
-  int return_code=0;
-
+void DoStereo(void){
   if(stereotype==STEREO_TIME&&videoSTEREO==1){  // temporal stereo (shuttered glasses)
     glDrawBuffer(GL_BACK_LEFT);
     if(stereotype_frame==LEFT_EYE||stereotype_frame==BOTH_EYES){
@@ -3003,7 +3001,6 @@ int DoStereo(void){
     }
     Render(VIEW_RIGHT);
     if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-    return_code=1;
   }
   else if(stereotype==STEREO_LR){             // left/right stereo
     int i;
@@ -3059,7 +3056,6 @@ int DoStereo(void){
         Render(VIEW_CENTER);
       }
     }
-    return_code=2;
   }
   else if(stereotype==STEREO_RB){             // red/blue stereo
     glDrawBuffer(GL_BACK);
@@ -3083,7 +3079,6 @@ int DoStereo(void){
     }
     Render(VIEW_CENTER);
     if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-    return_code=3;
   }
   else if(stereotype==STEREO_RC){             // red/cyan stereo
     glDrawBuffer(GL_BACK);
@@ -3107,7 +3102,6 @@ int DoStereo(void){
     }
     Render(VIEW_CENTER);
     if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-    return_code=4;
   }
   else if(stereotype==STEREO_CUSTOM){             // custom red/blue stereo
     glDrawBuffer(GL_BACK);
@@ -3154,9 +3148,7 @@ int DoStereo(void){
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_DITHER);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    return_code=5;
   }
-  return return_code;
 }
 
 #ifdef pp_LUA
@@ -3285,7 +3277,6 @@ void DoScriptHtml(void){
 }
 #endif
 
-
 /* ------------------ IdleDisplay ------------------------ */
 
 void IdleDisplay(void){
@@ -3295,11 +3286,96 @@ void IdleDisplay(void){
   from_DisplayCB=0;
 }
 
+/* ------------------ DoNonStereo ------------------------ */
+
+void DoNonStereo(void){
+  if(render_status==RENDER_OFF){
+    glDrawBuffer(GL_BACK);
+    ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, NULL);
+    if(update_rgb_test==1){
+      update_rgb_test = 0;
+      RGBTest();
+    }
+    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+  }
+  else{
+    int stop_rendering;
+
+    IdleDisplay();
+
+    stop_rendering = 1;
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
+      if(itimes>=0&&itimes<nglobal_times&&
+        ((render_frame[itimes]==0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
+        ){
+        render_frame[itimes]++;
+        stop_rendering = 0;
+      }
+    }
+    if(render_mode==RENDER_NORMAL){
+      int i, ibuffer = 0;
+      GLubyte **screenbuffers;
+
+      NewMemory((void **)&screenbuffers, resolution_multiplier*resolution_multiplier*sizeof(GLubyte *));
+
+      glDrawBuffer(GL_BACK);
+
+      for(i = 0; i<resolution_multiplier; i++){
+        int j;
+
+        for(j = 0; j<resolution_multiplier; j++){
+          ShowScene(DRAWSCENE, VIEW_CENTER, 1, j*screenWidth, i*screenHeight, NULL);
+          screenbuffers[ibuffer++] = GetScreenBuffer();
+          if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+        }
+      }
+
+      MergeRenderScreenBuffers(resolution_multiplier, screenbuffers);
+
+      for(i = 0; i<resolution_multiplier*resolution_multiplier; i++){
+        FREEMEMORY(screenbuffers[i]);
+      }
+      FREEMEMORY(screenbuffers);
+    }
+    if(render_mode==RENDER_360){
+      int i;
+
+      glDrawBuffer(GL_BACK);
+
+      if(screeninfo==NULL||update_screeninfo==1)SetupScreeninfo();
+
+      for(i = 0; i<nscreeninfo; i++){
+        screendata *screeni;
+
+        screeni = screeninfo+i;
+        ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, screeni);
+        screeni->screenbuffer = GetScreenBuffer();
+        if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+      }
+      MergeRenderScreenBuffers360();
+
+      for(i = 0; i<nscreeninfo; i++){
+        screendata *screeni;
+
+        screeni = screeninfo+i;
+        FREEMEMORY(screeni->screenbuffer);
+      }
+    }
+    if(stop_rendering==1){
+      ASSERT(render_skip>0);
+      RenderState(RENDER_OFF);
+    }
+  }
+}
+
+#ifdef pp_OPENVR
+void DoVR(void){
+}
+#endif
+
 /* ------------------ DisplayCB ------------------------ */
 
 void DisplayCB(void){
-  int dostereo;
-
   DoScript();
 #ifdef pp_LUA
   DoScriptLua();
@@ -3307,89 +3383,17 @@ void DisplayCB(void){
   UpdateDisplay();
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
-    dostereo=0;
+    if(use_vr==0){
+      DoNonStereo();
+    }
+#ifdef pp_OPENVR
+    else{
+      DoVR();
+    }
+#endif
   }
   else{
-    dostereo=DoStereo();
-  }
-  if(dostereo==0){
-    if(render_status==RENDER_OFF){
-      glDrawBuffer(GL_BACK);
-      ShowScene(DRAWSCENE,VIEW_CENTER,0,0,0,NULL);
-      if(update_rgb_test==1){
-        update_rgb_test = 0;
-        RGBTest();
-      }
-      if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-    }
-    else{
-      int stop_rendering;
-
-      IdleDisplay();
-
-      stop_rendering = 1;
-      if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
-        if(itimes>=0&&itimes<nglobal_times&&
-          ((render_frame[itimes] == 0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
-          ){
-          render_frame[itimes]++;
-          stop_rendering = 0;
-        }
-      }
-      if(render_mode==RENDER_NORMAL){
-        int i,ibuffer=0;
-        GLubyte **screenbuffers;
-
-        NewMemory((void **)&screenbuffers,resolution_multiplier*resolution_multiplier*sizeof(GLubyte *));
-
-        glDrawBuffer(GL_BACK);
-
-        for(i=0;i<resolution_multiplier;i++){
-          int j;
-
-          for(j=0;j<resolution_multiplier;j++){
-            ShowScene(DRAWSCENE,VIEW_CENTER,1,j*screenWidth,i*screenHeight,NULL);
-            screenbuffers[ibuffer++]=GetScreenBuffer();
-            if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
-          }
-        }
-
-        MergeRenderScreenBuffers(resolution_multiplier,screenbuffers);
-
-        for(i=0;i<resolution_multiplier*resolution_multiplier;i++){
-          FREEMEMORY(screenbuffers[i]);
-        }
-        FREEMEMORY(screenbuffers);
-      }
-      if(render_mode == RENDER_360){
-        int i;
-
-        glDrawBuffer(GL_BACK);
-
-        if(screeninfo == NULL||update_screeninfo==1)SetupScreeninfo();
-
-        for(i = 0; i < nscreeninfo; i++){
-          screendata *screeni;
-
-          screeni = screeninfo + i;
-          ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, screeni);
-          screeni->screenbuffer = GetScreenBuffer();
-          if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
-        }
-        MergeRenderScreenBuffers360();
-
-        for(i = 0; i < nscreeninfo; i++){
-          screendata *screeni;
-
-          screeni = screeninfo + i;
-          FREEMEMORY(screeni->screenbuffer);
-        }
-      }
-      if(stop_rendering==1){
-        ASSERT(render_skip>0);
-        RenderState(RENDER_OFF);
-      }
-    }
+    DoStereo();
   }
 }
 
