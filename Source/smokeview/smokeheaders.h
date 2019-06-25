@@ -21,6 +21,7 @@ EXTERNCPP void InitNabors(void);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
 EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Smv2Obst(char *html_file);
+EXTERNCPP int Smv2Slice(char *html_file, int option);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);

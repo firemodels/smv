@@ -383,6 +383,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SCRIPT_RENDERHTMLDIR     109
 #define SCRIPT_RENDERHTMLGEOM    123
 #define SCRIPT_RENDERHTMLOBST    124
+#define SCRIPT_RENDERHTMLSLICE   125
 #endif
 #define SCRIPT_RENDERDOUBLEONCE  103
 #define SCRIPT_RENDERALL         104

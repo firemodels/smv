@@ -278,6 +278,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
 #ifdef pp_HTML
+  if(MatchUpper(keyword,"RENDERHTMLSLICE")==MATCH)return SCRIPT_RENDERHTMLSLICE;
   if(MatchUpper(keyword,"RENDERHTMLOBST") == MATCH)return SCRIPT_RENDERHTMLOBST;
   if(MatchUpper(keyword,"RENDERHTMLGEOM") == MATCH)return SCRIPT_RENDERHTMLGEOM;
   if(MatchUpper(keyword,"RENDERHTMLALL") == MATCH)return SCRIPT_RENDERHTMLALL;
@@ -623,6 +624,16 @@ int CompileScript(char *scriptfile){
         scripti->need_graphics = 0;
         SETcval2;
         break;
+      case SCRIPT_RENDERHTMLSLICE:
+        //  0 current frame, 1 all frames
+        // file name base (char) (or blank to use smokeview default)
+        SETbuffer;
+        scripti->ival = 1;   // skip
+        sscanf(buffer, "%i", &scripti->ival);
+
+        SETcval2;
+        scripti->need_graphics = 0;
+        break;
 #endif
 
 // RENDERSTART
@@ -959,21 +970,42 @@ int CompileScript(char *scriptfile){
 }
 
 #ifdef pp_HTML
-/* ------------------ ScriptRenderObst ------------------------ */
 
-void ScriptRenderObst(scriptdata *scripti) {
-  char web_filename[1024];
+/* ------------------ GetWebFileName ------------------------ */
 
+void GetWebFileName(char *web_filename, scriptdata *scripti){
   strcpy(web_filename, "");
-  if (script_htmldir_path != NULL) {
-    if (strlen(script_htmldir_path) != 2 ||
-      script_htmldir_path[0] != '.' ||
-      script_htmldir_path[1] != dirseparator[0]) {
+  if(script_htmldir_path!=NULL) {
+    if(strlen(script_htmldir_path)!=2||
+      script_htmldir_path[0]!='.'||
+      script_htmldir_path[1]!=dirseparator[0]) {
       strcat(web_filename, script_htmldir_path);
       strcat(web_filename, dirseparator);
     }
   }
   strcat(web_filename, scripti->cval2);
+}
+
+/* ------------------ ScriptRenderSlice ------------------------ */
+
+void ScriptRenderSlice(scriptdata *scripti) {
+  char web_filename[1024];
+
+  GetWebFileName(web_filename, scripti);
+  if(scripti->ival==0){
+    Smv2Slice(web_filename, HTML_CURRENT_TIME);
+  }
+  else{
+    Smv2Slice(web_filename, HTML_ALL_TIMES);
+  }
+}
+
+/* ------------------ ScriptRenderObst ------------------------ */
+
+void ScriptRenderObst(scriptdata *scripti) {
+  char web_filename[1024];
+
+  GetWebFileName(web_filename, scripti);
   Smv2Obst(web_filename);
 }
 
@@ -982,16 +1014,7 @@ void ScriptRenderObst(scriptdata *scripti) {
 void ScriptRenderGeom(scriptdata *scripti){
   char web_filename[1024];
 
-  strcpy(web_filename,"");
-  if(script_htmldir_path!=NULL){
-    if(strlen(script_htmldir_path) != 2 ||
-       script_htmldir_path[0] != '.' ||
-       script_htmldir_path[1] != dirseparator[0]){
-      strcat(web_filename,script_htmldir_path);
-      strcat(web_filename,dirseparator);
-    }
-  }
-  strcat(web_filename,scripti->cval2);
+  GetWebFileName(web_filename, scripti);
   Smv2Geom(web_filename);
 }
 
@@ -1001,29 +1024,11 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
   char web_filename[1024];
   char webvr_filename[1024];
 
-  strcpy(web_filename,"");
-  if(script_htmldir_path!=NULL){
-    if(strlen(script_htmldir_path) != 2 ||
-       script_htmldir_path[0] != '.' ||
-       script_htmldir_path[1] != dirseparator[0]){
-      strcat(web_filename,script_htmldir_path);
-      strcat(web_filename,dirseparator);
-    }
-  }
-  strcat(web_filename,scripti->cval2);
+  GetWebFileName(web_filename, scripti);
   strcat(web_filename,".html");
   Smv2Html(web_filename, option, FROM_SCRIPT, VR_NO);
 
-  strcpy(webvr_filename,"");
-  if(script_htmldir_path!=NULL){
-    if(strlen(script_htmldir_path) != 2 ||
-       script_htmldir_path[0] != '.' ||
-       script_htmldir_path[1] != dirseparator[0]){
-      strcat(webvr_filename,script_htmldir_path);
-      strcat(webvr_filename,dirseparator);
-    }
-  }
-  strcat(webvr_filename,scripti->cval2);
+  GetWebFileName(webvr_filename, scripti);
   strcat(webvr_filename,"_vr.html");
   Smv2Html(webvr_filename, option, FROM_SCRIPT, VR_YES);
 }
@@ -2593,6 +2598,10 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_RENDERHTMLOBST:
       ScriptRenderObst(scripti);
+      returnval = 1;
+      break;
+    case SCRIPT_RENDERHTMLSLICE:
+      ScriptRenderSlice(scripti);
       returnval = 1;
       break;
 #endif
