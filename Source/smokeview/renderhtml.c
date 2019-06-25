@@ -1597,9 +1597,21 @@ int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
 #define PERCOLOR_ROW 8
 #define PERBIN_ROW 24
 
+/* --------------------------  FreeWebGeom ------------------------------------ */
+
+void FreeWebGeom(webgeomdata *wi){
+  FREEMEMORY(wi->textures);
+  FREEMEMORY(wi->verts);
+  FREEMEMORY(wi->indices);
+  wi->nverts = 0;
+  wi->nindices = 0;
+  wi->framesize = 0;
+  wi->nframes = 0;
+}
+
 /* --------------------------  InitWebgeom ------------------------------------ */
 
-void InitWebgeom(webgeomdata *wi, char *label){
+void InitWebGeom(webgeomdata *wi, char *label){
   strcpy(wi->type, label);
   wi->textures  = NULL;
   wi->verts     = NULL;
@@ -1612,13 +1624,16 @@ void InitWebgeom(webgeomdata *wi, char *label){
 
 /* ------------------ OutputFixedFrameData ------------------------ */
 
-void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi){
+void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label){
   int i;
   char varlabel[100];
 
   if(webgi->nframes<=0||webgi->nverts<=0||webgi->framesize<=0||webgi->nindices<=0)return;
+  fprintf(stream_out, "// %s\n", label);
+  fprintf(stream_out, "// nframes,framesize,nverts,nindices\n");
   fprintf(stream_out, "%i %i %i %i\n", webgi->nframes,webgi->framesize,webgi->nverts,webgi->nindices);
-  for(i = 0; i<webgi->nverts-1; i++){
+  fprintf(stream_out, "// vertices:\n");
+    for(i = 0; i < webgi->nverts - 1; i++){
     sprintf(varlabel, "%.3f", webgi->verts[i]);
     TrimZeros(varlabel);
     fprintf(stream_out, "%s,", varlabel);
@@ -1630,7 +1645,8 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi){
   fprintf(stream_out, "%s\n", varlabel);
   fprintf(stream_out, "\n");
 
-  for(i = 0; i<webgi->framesize*webgi->nframes-1; i++){
+  fprintf(stream_out, "// colorbar colors:\n");
+    for(i = 0; i < webgi->framesize*webgi->nframes - 1; i++){
     sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
     fprintf(stream_out, "%s,", varlabel);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
@@ -1639,7 +1655,8 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi){
   sprintf(varlabel, "%i", CLAMP((int)webgi->textures[webgi->framesize*webgi->nframes-1], 0, 255));
   fprintf(stream_out, "%s\n", varlabel);
 
-  for(i = 0; i<webgi->framesize-1; i++){
+  fprintf(stream_out, "// color indices:\n");
+    for(i = 0; i < webgi->framesize - 1; i++){
     sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[i]/255.0, 0.0, 1.0));
     fprintf(stream_out, "%s,", varlabel);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
@@ -1647,7 +1664,8 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi){
   sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[webgi->framesize-1]/255.0, 0.0, 1.0));
   fprintf(stream_out, "%s\n", varlabel);
 
-  for(i = 0; i<webgi->nindices-1; i++){
+  fprintf(stream_out, "// vertex indices:\n");
+    for(i = 0; i < webgi->nindices - 1; i++){
     fprintf(stream_out, "%i,", webgi->indices[i]);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
   }
@@ -1840,9 +1858,10 @@ int Smv2Slice(char *html_file, int option){
   stream_out = fopen(html_file,"w");
   if(stream_out==NULL)return 0;
 
-  InitWebgeom(&slice_node_web, "slice_node");
+  InitWebGeom(&slice_node_web, "slice_node");
   SliceNodeTriangles2Geom(&slice_node_web, option);
-  OutputFixedFrameData(stream_out, &slice_node_web);
+  OutputFixedFrameData(stream_out, &slice_node_web, "slice_node");
+  FreeWebGeom(&slice_node_web);
 
   return 1;
 }
@@ -1853,103 +1872,95 @@ int Smv2Obst(char *html_file){
   float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
   FILE *stream_out;
+  char label[100];
   int i;
 
   stream_out = fopen(html_file, "w");
-  if (stream_out != NULL) {
-    ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
+  if(stream_out==NULL)return 0;
 
-    if (nvertsObstLit>0)fprintf(stream_out, "vertices: %i\n", nvertsObstLit);
-    for (i = 0; i < nvertsObstLit - 1; i++) {
-      char label[100];
+  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
 
-      sprintf(label, "%f", vertsObstLit[i]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-    }
-    if (nvertsObstLit > 0) {
-      char label[100];
+  fprintf(stream_out," // nvertices, nindices\n");
+  fprintf(stream_out," %i %i\n",nvertsObstLit,nfacesObstLit);
 
-      sprintf(label, "%f", vertsObstLit[nvertsObstLit - 1]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s\n", label);
-    }
-
-    if (nvertsObstLit>0)fprintf(stream_out, "normals: %i\n", nvertsObstLit);
-    for (i = 0; i < nvertsObstLit - 1; i++) {
-      char label[100];
-
-      sprintf(label, "%f", normalsObstLit[i]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-    }
-    if (nvertsObstLit > 0) {
-      char label[100];
-
-      sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s\n", label);
-    }
-
-    if(nvertsObstLit>0)fprintf(stream_out, "colors: %i\n", nvertsObstLit);
-    for (i = 0; i < nvertsObstLit - 1; i++) {
-      char label[100];
-
-      sprintf(label, "%f", colorsObstLit[i]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-    }
-    if (nvertsObstLit > 0) {
-      char label[100];
-
-      sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
-      TrimZeros(label);
-      fprintf(stream_out, "%s\n", label);
-    }
-
-    if(nfacesObstLit>0)fprintf(stream_out, "indices: %i\n",nfacesObstLit);
-    for (i = 0; i < nfacesObstLit - 1; i++) {
-      fprintf(stream_out, "%i,", facesObstLit[i]);
-      if (i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
-    }
-    if (nfacesObstLit > 0) {
-      fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit - 1]);
-    }
-
-    FREEMEMORY(vertsObstLit);
-    FREEMEMORY(colorsObstLit);
-    FREEMEMORY(facesObstLit);
-    fclose(stream_out);
+  if(nvertsObstLit>0)fprintf(stream_out, "vertices:\n");
+  for(i = 0; i < nvertsObstLit - 1; i++){
+    sprintf(label, "%f", vertsObstLit[i]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s,", label);
+    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
   }
+  if(nvertsObstLit > 0){
+    sprintf(label, "%f", vertsObstLit[nvertsObstLit - 1]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s\n", label);
+  }
+
+  if(nvertsObstLit>0)fprintf(stream_out, "normals:\n");
+  for(i = 0; i < nvertsObstLit - 1; i++){
+    sprintf(label, "%f", normalsObstLit[i]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s,", label);
+    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+  }
+  if(nvertsObstLit > 0){
+    sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s\n", label);
+  }
+
+  if(nvertsObstLit>0)fprintf(stream_out, "colors:\n");
+  for(i = 0; i < nvertsObstLit - 1; i++){
+    sprintf(label, "%f", colorsObstLit[i]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s,", label);
+    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+  }
+  if(nvertsObstLit > 0){
+    sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
+    TrimZeros(label);
+    fprintf(stream_out, "%s\n", label);
+  }
+
+  if(nfacesObstLit>0)fprintf(stream_out, "indices:\n");
+  for(i = 0; i < nfacesObstLit - 1; i++){
+    fprintf(stream_out, "%i,", facesObstLit[i]);
+    if(i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
+  }
+  if(nfacesObstLit > 0){
+    fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit - 1]);
+  }
+
+  FREEMEMORY(vertsObstLit);
+  FREEMEMORY(colorsObstLit);
+  FREEMEMORY(facesObstLit);
+  fclose(stream_out);
 
   return 1;
 }
-  
+
 /* ------------------ Smv2Geom ------------------------ */
 
-int Smv2Geom(char *html_file) {
+int Smv2Geom(char *html_file){
   float *vertsGeomLit = NULL, *normalsGeomLit = NULL, *colorsGeomLit = NULL;
   int nvertsGeomLit, *facesGeomLit, nfacesGeomLit;
   FILE *stream_out;
   int i;
 
   stream_out = fopen(html_file, "w");
-  if (stream_out != NULL) {
+  if(stream_out != NULL){
     GeomLitTriangles2Geom(&vertsGeomLit, &normalsGeomLit, &colorsGeomLit, &nvertsGeomLit, &facesGeomLit, &nfacesGeomLit);
 
-    if (nvertsGeomLit > 0)fprintf(stream_out, "geometry: %i\n", nvertsGeomLit);
-    for (i = 0; i < nvertsGeomLit - 1; i++) {
+    if(nvertsGeomLit > 0)fprintf(stream_out, "geometry: %i\n", nvertsGeomLit);
+    for(i = 0; i < nvertsGeomLit - 1; i++){
       char label[100];
 
       sprintf(label, "%f", vertsGeomLit[i]);
       TrimZeros(label);
       fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+      if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
     }
-    if (nvertsGeomLit > 0) {
+    if(nvertsGeomLit > 0){
       char label[100];
 
       sprintf(label, "%f", vertsGeomLit[nvertsGeomLit - 1]);
@@ -1957,16 +1968,16 @@ int Smv2Geom(char *html_file) {
       fprintf(stream_out, "%s\n", label);
     }
 
-    if (nvertsGeomLit > 0)fprintf(stream_out, "normals: %i\n", nvertsGeomLit);
-    for (i = 0; i < nvertsGeomLit - 1; i++) {
+    if(nvertsGeomLit > 0)fprintf(stream_out, "normals: %i\n", nvertsGeomLit);
+    for(i = 0; i < nvertsGeomLit - 1; i++){
       char label[100];
 
       sprintf(label, "%f", normalsGeomLit[i]);
       TrimZeros(label);
       fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+      if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
     }
-    if (nvertsGeomLit > 0) {
+    if(nvertsGeomLit > 0){
       char label[100];
 
       sprintf(label, "%f", normalsGeomLit[nvertsGeomLit - 1]);
@@ -1974,16 +1985,16 @@ int Smv2Geom(char *html_file) {
       fprintf(stream_out, "%s\n", label);
     }
 
-    if (nvertsGeomLit > 0)fprintf(stream_out, "colors: %i\n", nvertsGeomLit);
-    for (i = 0; i < nvertsGeomLit - 1; i++) {
+    if(nvertsGeomLit > 0)fprintf(stream_out, "colors: %i\n", nvertsGeomLit);
+    for(i = 0; i < nvertsGeomLit - 1; i++){
       char label[100];
 
       sprintf(label, "%f", colorsGeomLit[i]);
       TrimZeros(label);
       fprintf(stream_out, "%s,", label);
-      if (i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
+      if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
     }
-    if (nvertsGeomLit > 0) {
+    if(nvertsGeomLit > 0){
       char label[100];
 
       sprintf(label, "%f", colorsGeomLit[nvertsGeomLit - 1]);
@@ -1991,12 +2002,12 @@ int Smv2Geom(char *html_file) {
       fprintf(stream_out, "%s\n", label);
     }
 
-    if (nfacesGeomLit > 0)fprintf(stream_out, "indices: %i\n", nfacesGeomLit);
-    for (i = 0; i < nfacesGeomLit - 1; i++) {
+    if(nfacesGeomLit > 0)fprintf(stream_out, "indices: %i\n", nfacesGeomLit);
+    for(i = 0; i < nfacesGeomLit - 1; i++){
       fprintf(stream_out, "%i,", facesGeomLit[i]);
-      if (i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
+      if(i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
     }
-    if (nfacesGeomLit > 0) {
+    if(nfacesGeomLit > 0){
       fprintf(stream_out, "%i\n", facesGeomLit[nfacesGeomLit - 1]);
     }
 
@@ -2062,11 +2073,11 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
 
   // obtain vertices, triangles and lines
 
-  InitWebgeom(&slice_node_web, "slice_node");
-  InitWebgeom(&slice_cell_web, "slice_cell");
-  InitWebgeom(&slice_geom_web, "slice_geom");
-  InitWebgeom(&bndf_node_web,  "bndf_node");
-  InitWebgeom(&part_node_web,  "part");
+  InitWebGeom(&slice_node_web, "slice_node");
+  InitWebGeom(&slice_cell_web, "slice_cell");
+  InitWebGeom(&slice_geom_web, "slice_geom");
+  InitWebGeom(&bndf_node_web,  "bndf_node");
+  InitWebGeom(&part_node_web,  "part");
 
   SliceNodeTriangles2Geom(&slice_node_web, option);
   SliceCellTriangles2Geom(&slice_cell_web, option);
@@ -2390,6 +2401,11 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
 
   fclose(stream_in);
   fclose(stream_out);
+  FreeWebGeom(&slice_node_web);
+  FreeWebGeom(&slice_cell_web);
+  FreeWebGeom(&slice_geom_web);
+  FreeWebGeom(&bndf_node_web);
+  FreeWebGeom(&part_node_web);
   printf(" - complete\n");
   return 0;
 }
