@@ -2949,7 +2949,7 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
     }
     file_count++;
-  } 
+  }
   STOP_TIMER(load_time);
   PRINT_LOADTIMES;
   slicefile_labelindex = slicefile_labelindex_save;
@@ -4257,7 +4257,7 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SOOT_HRRPUV){
     if(smoke3d_load_test == 1){
       int errorcode;
-      
+
       ReadSmoke3DAllMeshesAllTimes(SOOT|HRRPUV, &errorcode);
     }
     else{
@@ -4277,7 +4277,7 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SOOT_TEMP){
     if(smoke3d_load_test==1){
       int errorcode;
- 
+
       ReadSmoke3DAllMeshesAllTimes(SOOT|TEMP, &errorcode);
     }
     else{
@@ -8876,7 +8876,12 @@ updatemenu=0;
   if(isZoneFireModel==0){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
   }
-  glutAddMenuEntry(_("Stereo settings..."), DIALOG_STEREO);
+  if(have_vr==1){
+    glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
+  }
+  else{
+    glutAddMenuEntry(_("Stereo settings..."), DIALOG_STEREO);
+  }
   if(trainer_active==1){
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }
