@@ -18,6 +18,11 @@ extern "C" int InitVR(void){
  // }
   vr::EVRInitError eError = vr::VRInitError_None;
   m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Scene);
+  if(eError!=vr::VRInitError_None){
+    m_pHMD = NULL;
+    printf("Unable to initialize VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
+    return 0;
+  }
   return 1;
 }
 

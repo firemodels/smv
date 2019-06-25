@@ -43,6 +43,8 @@ GLUI_Button *BUTTON_stereo_3=NULL;
 #endif
 #define SAVE_SETTINGS 999
 
+extern "C" int InitVR(void);
+
 /* ------------------ UpdateGluiStereo ------------------------ */
 
 extern "C" void UpdateGluiStereo(void){
@@ -103,6 +105,15 @@ void StereoCB(int var){
 #ifdef pp_OPENVR
   case USE_VR:
     if(use_vr==1){
+      int return_code;
+
+      return_code = InitVR();
+      if(return_code==0){
+        use_vr = 0;
+        CHECKBOX_use_vr->set_int_val(use_vr);
+        PANEL_stereo_method->enable();
+        PANEL_stereo_options->enable();
+      }
       PANEL_stereo_method->disable();
       PANEL_stereo_options->disable();
       stereotype = 0;
