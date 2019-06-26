@@ -44,6 +44,7 @@ GLUI_Button *BUTTON_stereo_3=NULL;
 #define SAVE_SETTINGS 999
 
 extern "C" int InitVR(void);
+extern "C" void ShutdownVR(void);
 
 /* ------------------ UpdateGluiStereo ------------------------ */
 
@@ -120,6 +121,7 @@ void StereoCB(int var){
       RADIO_stereotype->set_int_val(stereotype);
     }
     else{
+      ShutdownVR();
       PANEL_stereo_method->enable();
       PANEL_stereo_options->enable();
     }
