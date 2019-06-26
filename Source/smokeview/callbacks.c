@@ -9,6 +9,9 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#ifdef pp_OPENVR
+#include "vr.h"
+#endif
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -3369,7 +3372,28 @@ void DoNonStereo(void){
 }
 
 #ifdef pp_OPENVR
+#define LEFT_EYE 0
+#define RIGHT_EYE 1
+
+/* ------------------ DoVR ------------------------ */
+
 void DoVR(void){
+  float projection[16];
+  int i;
+
+  GetProjectionMatrix(LEFT_EYE, projection);
+  printf("left: ");
+  for(i = 0; i<16; i++){
+    printf("%f ", projection[i]);
+  }
+  printf("\n\n");
+
+  GetProjectionMatrix(RIGHT_EYE, projection);
+  printf("right: ");
+    for(i = 0; i<16; i++){
+      printf("%f ", projection[i]);
+    }
+  printf("\n\n");
 }
 #endif
 
