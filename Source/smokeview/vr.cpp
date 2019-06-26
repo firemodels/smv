@@ -7,6 +7,7 @@
 //#include <SDL_opengl.h>
 #include <openvr.h>
 vr::IVRSystem *m_pHMD=NULL;
+vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
 
 #define IJ(i,j) (4*(i)+(j))
 #define IJ2(i,j) (4*(i)+(j)+4)
@@ -217,5 +218,17 @@ void GetEyePosMatrix(int which_eye, float *eyepos_inv){
   }
   eyepos[4*3+3] = 1.0;
   GetMat4Inv(eyepos, eyepos_inv);
+}
+
+/* ----------------------- UpdateHMDMatrixPose ----------------------------- */
+
+void UpdateHMDMatrixPose(void){
+  vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+
+  if(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)  {
+//    m_mat4HMDPose = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd];
+//    m_mat4HMDPose.invert();
+  }
+
 }
 #endif
