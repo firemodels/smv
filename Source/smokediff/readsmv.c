@@ -383,11 +383,11 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         CheckMemory;
         strcpy(plot3di->file,TrimFront(buffer));
         CheckMemory;
-        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==LABEL_ERR)break;
 
         CheckMemory;
 
@@ -396,11 +396,11 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       else{
         if(display_warnings==1)fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",full_file);
         CheckMemory;
-        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==2)break;
-        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==2)break;
+        if(ReadLabels(plot3di->labels+0,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+1,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+2,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+3,streamsmv,NULL)==LABEL_ERR)break;
+        if(ReadLabels(plot3di->labels+4,streamsmv,NULL)==LABEL_ERR)break;
         nplot3dinfo--;
         smvcase->nplot3dinfo=nplot3dinfo;
       }
@@ -469,7 +469,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
         InitHistogram(slicei->histogram,NHIST_BUCKETS, NULL, NULL);
         STRCPY(slicei->file, TrimFront(buffer));
-        if(ReadLabels(&slicei->label,streamsmv,NULL)==2){
+        if(ReadLabels(&slicei->label,streamsmv,NULL)==LABEL_ERR){
           fprintf(stderr,"*** Warning: problem reading SLCF entry\n");
           break;
         }
@@ -497,7 +497,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       }
       else{
         if(display_warnings==1)fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==2)break;
+        if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==LABEL_ERR)break;
         nsliceinfo--;
         smvcase->nsliceinfo=nsliceinfo;
       }
@@ -552,7 +552,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
         NewMemory((void **)&boundaryi->histogram,sizeof(histogramdata));
         InitHistogram(boundaryi->histogram,NHIST_BUCKETS, NULL, NULL);
         STRCPY(boundaryi->file, TrimFront(buffer));
-        if(ReadLabels(&boundaryi->label,streamsmv,NULL)==2){
+        if(ReadLabels(&boundaryi->label,streamsmv,NULL)==LABEL_ERR){
           fprintf(stderr,"*** Warning: problem reading BNDF entry\n");
           break;
         }
@@ -604,7 +604,7 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       }
       else{
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&boundaryinfo[iboundary].label,streamsmv,NULL)==2)break;
+        if(ReadLabels(&boundaryinfo[iboundary].label,streamsmv,NULL)==LABEL_ERR)break;
         nboundary_files--;
         smvcase->nboundary_files=nboundary_files;
       }
