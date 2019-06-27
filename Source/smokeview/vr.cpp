@@ -220,15 +220,46 @@ void GetEyePosMatrix(int which_eye, float *eyepos_inv){
   GetMat4Inv(eyepos, eyepos_inv);
 }
 
+class Matrix4
+{
+public:
+  float m[16];
+};
+
 /* ----------------------- UpdateHMDMatrixPose ----------------------------- */
 
-void UpdateHMDMatrixPose(void){
+void GetTranspose(float *m_out, float *m_in){
+  m_out[0]  =  m_in[0];
+  m_out[1]  =  m_in[4];
+  m_out[2]  =  m_in[8];
+  m_out[3]  = m_in[12];
+  m_out[4]  =  m_in[1];
+  m_out[5]  =  m_in[5];
+  m_out[6]  =  m_in[9];
+  m_out[7]  = m_in[13];
+  m_out[8]  =  m_in[2];
+  m_out[9]  =  m_in[6];
+  m_out[10] = m_in[10];
+  m_out[11] = m_in[14];
+  m_out[12] =  m_in[3];
+  m_out[13] =  m_in[7];
+  m_out[14] = m_in[11];
+  m_out[15] = m_in[15];
+}
+
+Matrix4 m_rmat4DevicePose[vr::k_unMaxTrackedDeviceCount];
+
+/* ----------------------- UpdateHMDMatrixPose ----------------------------- */
+
+void GetPoseMatrix(float *pose){
+  float mm_opengl[16], *m;
+
   vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
 
-  if(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)  {
-//    m_mat4HMDPose = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd];
-//    m_mat4HMDPose.invert();
+  if(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid){
+    m = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd].m;
+    GetTranspose(mm_opengl, m);
+    GetMat4Inv(pose, mm_opengl);
   }
-
 }
 #endif
