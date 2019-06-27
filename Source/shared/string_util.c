@@ -973,9 +973,11 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   size_t len;
   int len_suffix_label = 0;
   int len_skip_label = 10;  // add extra space to label in case there is an isosurface skip parameter
+  int return_val = LABEL_OK;
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"*");
+    return_val =  LABEL_ERR;
   }
 
   len=strlen(buffer2);
@@ -989,6 +991,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
+    return_val = LABEL_ERR;
   }
 
   len=strlen(buffer2);
@@ -1000,6 +1003,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"***");
+    return_val = LABEL_ERR;
   }
 
   len=strlen(buffer2);
@@ -1022,7 +1026,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
 #else
   STRCPY(flowlabel->unit,buffer);
 #endif
-  return LABEL_OK;
+  return return_val;
 }
 
 /* ------------------ Date2Day ------------------------ */

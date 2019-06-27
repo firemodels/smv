@@ -1066,12 +1066,16 @@ void ReadSMVDynamic(char *file){
 
       if(fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
         int n;
+        int read_ok = YES;
 
         plot3di->u = -1;
         plot3di->v = -1;
         plot3di->w = -1;
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)!=LABEL_OK){
+            read_ok=NO;
+            break;
+          }
           if(STRCMP(plot3di->label[n].shortlabel, "U-VEL")==0){
             plot3di->u = n;
           }
@@ -1081,6 +1085,10 @@ void ReadSMVDynamic(char *file){
           if(STRCMP(plot3di->label[n].shortlabel, "W-VEL")==0){
             plot3di->w = n;
           }
+        }
+        if(read_ok==NO){
+          nplot3dinfo--;
+          continue;
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
           plot3di->nvars = mxplot3dvars;
@@ -1108,7 +1116,7 @@ void ReadSMVDynamic(char *file){
         int n;
 
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)==LABEL_ERR)break;
         }
         nplot3dinfo--;
       }
@@ -5710,7 +5718,7 @@ int ReadSMV(char *file, char *file2){
           smoke3di->file=smoke3di->reg_file;
         }
         if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
-          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
           }
@@ -5720,7 +5728,7 @@ int ReadSMV(char *file, char *file2){
           ismoke3d++;
         }
         else{
-          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
           nsmoke3dinfo--;
         }
         if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
@@ -6018,7 +6026,7 @@ int ReadSMV(char *file, char *file2){
         int nn;
 
         for(nn=0;nn<4;nn++){
-          if(ReadLabels(&zonei->label[nn],stream,NULL)==2){
+          if(ReadLabels(&zonei->label[nn],stream,NULL)==LABEL_ERR){
             return 2;
           }
         }
@@ -6029,7 +6037,7 @@ int ReadSMV(char *file, char *file2){
         NewMemory((void **)&zonei->file,(unsigned int)(len+1));
         STRCPY(zonei->file,filename);
         for(n=0;n<4;n++){
-          if(ReadLabels(&zonei->label[n],stream,NULL)==2){
+          if(ReadLabels(&zonei->label[n],stream,NULL)==LABEL_ERR){
             return 2;
           }
         }
@@ -8357,19 +8365,19 @@ typedef struct {
 // read in labels
 
       if(sd->slice_filetype==SLICE_TERRAIN){
-        if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(terrain)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype==SLICE_CELL_CENTER){
-        if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(cell centered)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype==SLICE_GEOM){
-        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==2)return 2;
+        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype == SLICE_FACE_CENTER){
-        if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
+        if(ReadLabels(&sd->label, stream,"(face centered)") == LABEL_ERR)return 2;
       }
       else{
-        if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
+        if(ReadLabels(&sd->label,stream,NULL)==LABEL_ERR)return 2;
       }
       if(strlen(sd->label.longlabel)>14&&
          strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
@@ -8692,10 +8700,10 @@ typedef struct {
 
         strcpy(geomlabel2, "");
         if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-          if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
+          if(ReadLabels(&patchi->label,stream,"(cell centered)")==LABEL_ERR)return 2;
         }
         else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-          if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
         }
         else if(patchi->structured == NO){
           char geomlabel[256];
@@ -8715,7 +8723,7 @@ typedef struct {
             if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
           }
           else{
-            if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+            if(ReadLabels(&patchi->label,stream,geomlabel)==LABEL_ERR)return 2;
           }
         }
         strcpy(patchi->menulabel_base, patchi->label.longlabel);
@@ -8728,7 +8736,7 @@ typedef struct {
         if(slicegeom==0)ipatch++;
       }
       else{
-        if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
+        if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
         npatchinfo--;
       }
       continue;
@@ -8844,7 +8852,7 @@ typedef struct {
       if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
         if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
           char delta_label[100];
 
@@ -8886,15 +8894,15 @@ typedef struct {
           GetIsoLevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
         }
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
         }
         iiso++;
       }
       else{
         get_isolevels=0;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
         }
         nisoinfo--;
       }
