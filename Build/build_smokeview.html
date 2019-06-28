@@ -46,12 +46,14 @@ function install_smv(args){
 <p><table border=on>
 <tr><th colspan=2>Preliminaries</th></tr>
 <tr><th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td></tr>
-<tr><th >Repos</th>
+<tr><th>Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
-<button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">Update</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button>
-</td></tr>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
+Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
+<button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
+</td>
+</tr>
 <tr><th>Revision</th><td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td></tr>
@@ -186,13 +188,8 @@ function install_smv(args){
 <tr><th>Windows</th><th>Linux</th><th>OSX</th><th>Windows</th><th>Linux</th><th>OSX</th></tr>
 
 <tr>
-<td align=center>
-<button onclick="build_smv('windows test')">Build</button>
-<button onclick="build_smv('windows testinc')">Inc Build</button>
-</td>
-<td align=center>
-<button onclick="build_smv('linux test')">Build</button>
-<button onclick="build_smv('gnulinux debug')">GNU debug</button></td>
+<td align=center><button onclick="build_smv('windows test')">Build</button></td>
+<td align=center><button onclick="build_smv('linux test')">Build</button></td>
 <td align=center><button onclick="build_smv('osx test')">Build</button></td>
 <td align=center><button onclick="build_smv('windows release')">Build</button></td>
 <td align=center><button onclick="build_smv('linux release')">Build</button></td>
@@ -227,6 +224,15 @@ function install_smv(args){
 </table>
 
 <p><table border=on>
+<tr><th colspan=2>Misc Test Builds</th></tr>
+<tr><th>Windows</th><th>Linux</th></tr>
+<tr>
+<td><button onclick="build_smv('windows testinc')">incremental</button></td>
+<td><button onclick="build_smv('gnulinux debug')">GNU debug</button></td>
+</tr>
+</table>
+
+<p><table border=on>
 <tr><th colspan=3>Synchronize</th></tr>
 <tr><th>settings</th>
 <td align=center><button onclick="run_script('\\smv\\scripts\\webCOPYhome2config.bat')"> settings ==>> smv </button></td>
@@ -240,9 +246,16 @@ function install_smv(args){
 
 <p><table border=on>
 <tr><th>Other</th></tr>
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button></td></tr> 
-<tr><td align=center><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button></td></tr>
-<tr><td align=center><a href="getting_started.html">Build checklist</a></td></tr>
+<tr>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button></td>
+</tr>
+<tr>
+<td align=center><a href="getting_started.html">Build checklist</a></td>
+</tr>
 </table>
 
 
