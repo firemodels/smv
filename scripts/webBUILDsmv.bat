@@ -37,6 +37,9 @@ if "%buildtype%" == "testinc" (
 if "%buildtype%" == "release" (
    set type=-r
 )
+if "%buildtype%" == "debug" (
+   set type=
+)
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
@@ -45,6 +48,10 @@ if "%platform%" == "windows" (
 )
 if "%platform%" == "linux" (
   plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_linux_64 make_smokeview.sh %type%
+  goto eof
+)
+if "%platform%" == "gnulinux" (
+  plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_linux_64 make_test_smokeview_db.sh %type%
   goto eof
 )
 if "%platform%" == "osx" (
