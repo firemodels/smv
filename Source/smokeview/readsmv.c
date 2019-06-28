@@ -712,8 +712,13 @@ void ReadSMVDynamic(char *file){
   */
 
     if(Match(buffer,"PL3D") == 1){
+      int n;
+
       do_pass2=1;
       if(setup_only==1||smoke3d_only==1)continue;
+      for(n = 0; n<5; n++){
+        if(ReadLabels(NULL, stream, NULL)==LABEL_ERR)break;
+      }
       nplot3dinfo++;
       continue;
 
@@ -2465,31 +2470,31 @@ void UpdateMeshCoords(void){
   box_corners[0][0] = 0.0;
   box_corners[0][1] = 0.0;
   box_corners[0][2] = 0.0;
-  
+
   box_corners[1][0] = xbar;
   box_corners[1][1] = 0.0;
   box_corners[1][2] = 0.0;
-  
+
   box_corners[2][0] = xbar;
   box_corners[2][1] = ybar;
   box_corners[2][2] = 0.0;
-  
+
   box_corners[3][0] = 0.0;
   box_corners[3][1] = ybar;
   box_corners[3][2] = 0.0;
-  
+
   box_corners[4][0] = 0.0;
   box_corners[4][1] = 0.0;
   box_corners[4][2] = zbar;
-  
+
   box_corners[5][0] = xbar;
   box_corners[5][1] = 0.0;
   box_corners[5][2] = zbar;
-  
+
   box_corners[6][0] = xbar;
   box_corners[6][1] = ybar;
   box_corners[6][2] = zbar;
-  
+
   box_corners[7][0] = 0.0;
   box_corners[7][1] = ybar;
   box_corners[7][2] = zbar;
@@ -11913,7 +11918,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "TOURCIRCLE") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer,"%f %f %f %f %f %f %f %f", 
+        sscanf(buffer,"%f %f %f %f %f %f %f %f",
           tour_circular_center+0, tour_circular_center+1, tour_circular_center+2,
           tour_circular_view+0, tour_circular_view+1, tour_circular_view+2,
           &tour_circular_radius, &tour_circular_angle0);
@@ -12863,8 +12868,8 @@ void WriteIniLocal(FILE *fileout){
   }
 
   fprintf(fileout, "TOURCIRCLE\n");
-  fprintf(fileout, "%f %f %f %f %f %f %f %f", 
-    tour_circular_center[0], 
+  fprintf(fileout, "%f %f %f %f %f %f %f %f",
+    tour_circular_center[0],
     tour_circular_center[1], tour_circular_center[2],
     tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
     tour_circular_radius, tour_circular_angle0);

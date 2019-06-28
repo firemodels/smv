@@ -985,9 +985,11 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   TrimBack(buffer);
   len=strlen(buffer);
   if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+len_suffix_label+len_skip_label+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->longlabel,buffer);
-  if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
+  if(flowlabel!=NULL){
+    if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len+len_suffix_label+len_skip_label+1))==0)return LABEL_ERR;
+    STRCPY(flowlabel->longlabel, buffer);
+    if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
+  }
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"**");
@@ -998,8 +1000,10 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
-  STRCPY(flowlabel->shortlabel,buffer);
+  if(flowlabel!=NULL){
+    if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len+1))==0)return LABEL_ERR;
+    STRCPY(flowlabel->shortlabel, buffer);
+  }
 
   if(FGETS(buffer2,255,stream)==NULL){
     strcpy(buffer2,"***");
@@ -1010,22 +1014,24 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   buffer=TrimFront(buffer2);
   TrimBack(buffer);
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(NewMemory((void *)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(flowlabel!=NULL){
+    if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len+1))==0)return LABEL_ERR;
 #ifdef pp_DEG
-  if(strlen(buffer)==1&&strcmp(buffer,"C")==0){
-    unsigned char *unit;
+    if(strlen(buffer)==1&&strcmp(buffer, "C")==0){
+      unsigned char *unit;
 
-    unit=(unsigned char *)flowlabel->unit;
-    unit[0]=DEG_SYMBOL;
-    unit[1]='C';
-    unit[2]='\0';
-  }
-  else{
-    STRCPY(flowlabel->unit,buffer);
-  }
+      unit = (unsigned char *)flowlabel->unit;
+      unit[0] = DEG_SYMBOL;
+      unit[1] = 'C';
+      unit[2] = '\0';
+    }
+    else{
+      STRCPY(flowlabel->unit, buffer);
+    }
 #else
-  STRCPY(flowlabel->unit,buffer);
+    STRCPY(flowlabel->unit, buffer);
 #endif
+  }
   return return_val;
 }
 
