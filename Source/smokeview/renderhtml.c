@@ -1624,7 +1624,7 @@ void InitWebGeom(webgeomdata *wi, char *label){
 
 /* ------------------ OutputFixedFrameData ------------------------ */
 
-void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label){
+void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, float *colorbar){
   int i;
   char varlabel[100];
 
@@ -1632,7 +1632,7 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label){
   fprintf(stream_out, "// %s\n", label);
   fprintf(stream_out, "// nframes,framesize,nverts,nindices\n");
   fprintf(stream_out, "%i %i %i %i\n", webgi->nframes,webgi->framesize,webgi->nverts,webgi->nindices);
-  fprintf(stream_out, "// vertices:\n");
+  fprintf(stream_out, "// %s vertices:\n",label);
     for(i = 0; i < webgi->nverts - 1; i++){
     sprintf(varlabel, "%.3f", webgi->verts[i]);
     TrimZeros(varlabel);
@@ -1645,31 +1645,46 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label){
   fprintf(stream_out, "%s\n", varlabel);
   fprintf(stream_out, "\n");
 
-  fprintf(stream_out, "// colorbar colors:\n");
-    for(i = 0; i < webgi->framesize*webgi->nframes - 1; i++){
-    sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
-    fprintf(stream_out, "%s,", varlabel);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
-  }
 
-  sprintf(varlabel, "%i", CLAMP((int)webgi->textures[webgi->framesize*webgi->nframes-1], 0, 255));
-  fprintf(stream_out, "%s\n", varlabel);
-
-  fprintf(stream_out, "// color indices:\n");
-    for(i = 0; i < webgi->framesize - 1; i++){
-    sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[i]/255.0, 0.0, 1.0));
-    fprintf(stream_out, "%s,", varlabel);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
-  }
-  sprintf(varlabel, "%.3f", CLAMP((float)webgi->textures[webgi->framesize-1]/255.0, 0.0, 1.0));
-  fprintf(stream_out, "%s\n", varlabel);
-
-  fprintf(stream_out, "// vertex indices:\n");
+  fprintf(stream_out, "// %s vertex indices:\n",label);
     for(i = 0; i < webgi->nindices - 1; i++){
     fprintf(stream_out, "%i,", webgi->indices[i]);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "%i\n", webgi->indices[webgi->nindices-1]);
+  fprintf(stream_out, "\n");
+
+  if(colorbar!=NULL){
+    fprintf(stream_out, "// colorbar values (r g b): 256\n",label);
+    for(i = 0; i<255; i++){
+      int ii[3];
+
+      ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
+      ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
+      ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
+      fprintf(stream_out, "%i,%i,%i,255,", ii[0], ii[1], ii[2]);
+      if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1))fprintf(stream_out, "\n");
+    }
+    {
+      int ii[3];
+
+      i = 255;
+      ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
+      ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
+      ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
+      fprintf(stream_out, "%i,%i,%i,255\n", ii[0], ii[1], ii[2]);
+    }
+    fprintf(stream_out, "\n");
+  }
+
+  fprintf(stream_out, "// %s color indices:\n",label);
+  for(i = 0; i<webgi->framesize*webgi->nframes-1; i++){
+    sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
+    fprintf(stream_out, "%s,", varlabel);
+    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+  }
+  sprintf(varlabel, "%i", CLAMP((int)webgi->textures[webgi->framesize*webgi->nframes-1], 0, 255));
+  fprintf(stream_out, "%s\n", varlabel);
 }
 
 /* ------------------ OutputFixedFrame ------------------------ */
@@ -1860,7 +1875,7 @@ int Smv2Slice(char *html_file, int option){
 
   InitWebGeom(&slice_node_web, "slice_node");
   SliceNodeTriangles2Geom(&slice_node_web, option);
-  OutputFixedFrameData(stream_out, &slice_node_web, "slice_node");
+  OutputFixedFrameData(stream_out, &slice_node_web, "slice_node", rgb_slice);
   FreeWebGeom(&slice_node_web);
 
   return 1;
