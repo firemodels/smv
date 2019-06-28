@@ -1655,7 +1655,7 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, flo
   fprintf(stream_out, "\n");
 
   if(colorbar!=NULL){
-    fprintf(stream_out, "// colorbar values (r g b): 256\n",label);
+    fprintf(stream_out, "// colorbar values (r g b): 256\n");
     for(i = 0; i<255; i++){
       int ii[3];
 
@@ -1864,9 +1864,9 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "\n");
 }
 
-/* ------------------ Smv2Slice ------------------------ */
+/* ------------------ Slice2Data ------------------------ */
 
-int Smv2Slice(char *html_file, int option){
+int Slice2Data(char *html_file, int option){
   webgeomdata slice_node_web;
   FILE *stream_out=NULL;
 
@@ -1881,9 +1881,9 @@ int Smv2Slice(char *html_file, int option){
   return 1;
 }
 
-  /* ------------------ Smv2Obst ------------------------ */
+  /* ------------------ Obst2Data ------------------------ */
 
-int Smv2Obst(char *html_file){
+int Obst2Data(char *html_file){
   float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
   FILE *stream_out;

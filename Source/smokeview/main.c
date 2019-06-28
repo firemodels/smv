@@ -331,6 +331,16 @@ void ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlvr_filename, len_casename+strlen("_vr.html")+1);
   STRCPY(htmlvr_filename, fdsprefix);
   STRCAT(htmlvr_filename, "_vr.html");
+
+  FREEMEMORY(htmlobstdata_filename);
+  NewMemory((void **)&htmlobstdata_filename, len_casename+strlen("_obstdata.txt")+1);
+  STRCPY(htmlobstdata_filename, fdsprefix);
+  STRCAT(htmlobstdata_filename, "_obstdata.txt");
+
+  FREEMEMORY(htmlslicedata_filename);
+  NewMemory((void **)&htmlslicedata_filename, len_casename+strlen("_slicedata.txt")+1);
+  STRCPY(htmlslicedata_filename, fdsprefix);
+  STRCAT(htmlslicedata_filename, "_slicedata.txt");
 #endif
 
   FREEMEMORY(boundinfo_filename);

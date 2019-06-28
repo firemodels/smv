@@ -993,10 +993,10 @@ void ScriptRenderSlice(scriptdata *scripti){
 
   GetWebFileName(web_filename, scripti);
   if(scripti->ival==0){
-    Smv2Slice(web_filename, HTML_CURRENT_TIME);
+    Slice2Data(web_filename, HTML_CURRENT_TIME);
   }
   else{
-    Smv2Slice(web_filename, HTML_ALL_TIMES);
+    Slice2Data(web_filename, HTML_ALL_TIMES);
   }
 }
 
@@ -1006,7 +1006,7 @@ void ScriptRenderObst(scriptdata *scripti){
   char web_filename[1024];
 
   GetWebFileName(web_filename, scripti);
-  Smv2Obst(web_filename);
+  Obst2Data(web_filename);
 }
 
 /* ------------------ ScriptRenderGeom ------------------------ */
