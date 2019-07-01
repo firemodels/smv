@@ -3372,42 +3372,29 @@ void DoNonStereo(void){
 }
 
 #ifdef pp_OPENVR
-#define LEFT_EYE 0
-#define RIGHT_EYE 1
 
 /* ------------------ DoVR ------------------------ */
 
 void DoVR(void){
-  float projection[16];
-  //float pose[16];
+  float view_projection[16];
   int i;
 
-  GetProjectionMatrix(LEFT_EYE, projection);
-  //GetPoseMatrix(pose);
-
-  printf("left: ");
+  printf("left view_projection:\n");
+  GetCurrentViewProjectionMatrix(LEFT_EYE, view_projection);
   for(i = 0; i<16; i++){
-    printf("%f ", projection[i]);
+    printf("%f ", view_projection[i]);
     if(i%4==3)printf("\n");
   }
   printf("\n\n");
 
-  GetProjectionMatrix(RIGHT_EYE, projection);
-  printf("right: ");
-    for(i = 0; i<16; i++){
-      printf("%f ", projection[i]);
-      if(i%4==3)printf("\n");
-    }
-  printf("\n\n");
-
-  /*
-  printf("pose: ");
+  printf("right view_projection:\n");
+  GetCurrentViewProjectionMatrix(RIGHT_EYE, view_projection);
   for(i = 0; i<16; i++){
-    printf("%f ", pose[i]);
+    printf("%f ", view_projection[i]);
     if(i%4==3)printf("\n");
   }
   printf("\n\n");
-  */
+
 }
 #endif
 
