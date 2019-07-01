@@ -7,7 +7,7 @@
 #include "svzip.h"
 #include "lightsmoke.h"
 #include "file_util.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "compress.h"
 
 /* ------------------ convert_3dsmoke ------------------------ */

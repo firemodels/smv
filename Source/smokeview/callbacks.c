@@ -3378,11 +3378,12 @@ void DoNonStereo(void){
 /* ------------------ DoVR ------------------------ */
 
 void DoVR(void){
-  float projection[16], pose[16];
+  float projection[16];
+  //float pose[16];
   int i;
 
   GetProjectionMatrix(LEFT_EYE, projection);
-  GetPoseMatrix(pose);
+  //GetPoseMatrix(pose);
 
   printf("left: ");
   for(i = 0; i<16; i++){
@@ -3399,12 +3400,14 @@ void DoVR(void){
     }
   printf("\n\n");
 
+  /*
   printf("pose: ");
   for(i = 0; i<16; i++){
     printf("%f ", pose[i]);
     if(i%4==3)printf("\n");
   }
   printf("\n\n");
+  */
 }
 #endif
 

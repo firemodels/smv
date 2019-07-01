@@ -7,7 +7,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 
 int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 
