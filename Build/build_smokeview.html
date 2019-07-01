@@ -1,4 +1,5 @@
 <html>
+
 <head>
 <TITLE>Smokeview</TITLE>
 <script type="text/javascript">
@@ -71,18 +72,67 @@ Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</
 
 <p id="demo"></p>
 
-<p><table border=on>
-<tr><th colspan=3>Libraries</th></tr>
+<table border=on>
 <tr>
-<th>Windows</th>
-<th>Linux</th>
-<th>OSX</th>
+<th colspan=3>Libraries</th>
+<th colspan=2>Misc Test Builds</th>
+</tr>
+<tr>
+<th>Windows</th><th>Linux</th><th>OSX</th>
+<th>Windows</th><th>Linux</th>
 </tr>
 
 <tr>
 <td align=center><button onclick="build_libs('windows')">Build</button></td>
 <td align=center><button onclick="build_libs('linux')">Build</button></td>
 <td align=center><button onclick="build_libs('osx')">Build</button></td>
+<td><button onclick="build_smv('windows testinc')">incremental</button></td>
+<td><button onclick="build_smv('gnulinux debug')">GNU debug</button></td>
+</tr>
+</table>
+
+<p><table border=on>
+<tr><th colspan=6>Smokeview</th></tr>
+
+<tr>
+<th colspan=3>Test</th>
+<th colspan=3>Release</th>
+</tr>
+
+<tr><th>Windows</th><th>Linux</th><th>OSX</th><th>Windows</th><th>Linux</th><th>OSX</th></tr>
+
+<tr>
+<td align=center><button onclick="build_smv('windows test')">Build</button></td>
+<td align=center><button onclick="build_smv('linux test')">Build</button></td>
+<td align=center><button onclick="build_smv('osx test')">Build</button></td>
+<td align=center><button onclick="build_smv('windows release')">Build</button></td>
+<td align=center><button onclick="build_smv('linux release')">Build</button></td>
+<td align=center><button onclick="build_smv('osx release')">Build</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('windows release')">Bundle</button></td>
+<td align=center><button onclick="package_smv('linux release')">Bundle</button></td>
+<td align=center><button onclick="package_smv('osx release')">Bundle</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="install_smv('windows test')">Install</button></td>
+<td align=center><button onclick="install_smv('linux test')">Install</button></td>
+<td align=center><button onclick="install_smv('osx test')">Install</button></td>
+<td align=center><button onclick="install_smv('windows release')">Install</button></td>
+<td align=center><button onclick="install_smv('linux release')">Install</button></td>
+<td align=center><button onclick="install_smv('osx release')">Install</button></td>
+</tr>
+
+<tr>
+<td align=center COLSPAN=6>
+<button onclick="run_script('\\bot\\Bundle\\smv\\scripts\\webCLEAN.bat')">Clean</button>
+<button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
+</td>
 </tr>
 </table>
 
@@ -175,61 +225,6 @@ Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</
 
 
 
-</table>
-
-<p><table border=on>
-<tr><th colspan=6>Smokeview</th></tr>
-
-<tr>
-<th colspan=3>Test</th>
-<th colspan=3>Release</th>
-</tr>
-
-<tr><th>Windows</th><th>Linux</th><th>OSX</th><th>Windows</th><th>Linux</th><th>OSX</th></tr>
-
-<tr>
-<td align=center><button onclick="build_smv('windows test')">Build</button></td>
-<td align=center><button onclick="build_smv('linux test')">Build</button></td>
-<td align=center><button onclick="build_smv('osx test')">Build</button></td>
-<td align=center><button onclick="build_smv('windows release')">Build</button></td>
-<td align=center><button onclick="build_smv('linux release')">Build</button></td>
-<td align=center><button onclick="build_smv('osx release')">Build</button></td>
-</tr>
-
-<tr>
-<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('windows release')">Bundle</button></td>
-<td align=center><button onclick="package_smv('linux release')">Bundle</button></td>
-<td align=center><button onclick="package_smv('osx release')">Bundle</button></td>
-</tr>
-
-<tr>
-<td align=center><button onclick="install_smv('windows test')">Install</button></td>
-<td align=center><button onclick="install_smv('linux test')">Install</button></td>
-<td align=center><button onclick="install_smv('osx test')">Install</button></td>
-<td align=center><button onclick="install_smv('windows release')">Install</button></td>
-<td align=center><button onclick="install_smv('linux release')">Install</button></td>
-<td align=center><button onclick="install_smv('osx release')">Install</button></td>
-</tr>
-
-<tr>
-<td align=center COLSPAN=6>
-<button onclick="run_script('\\bot\\Bundle\\smv\\scripts\\webCLEAN.bat')">Clean</button>
-<button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
-</td>
-</tr>
-
-</table>
-
-<p><table border=on>
-<tr><th colspan=2>Misc Test Builds</th></tr>
-<tr><th>Windows</th><th>Linux</th></tr>
-<tr>
-<td><button onclick="build_smv('windows testinc')">incremental</button></td>
-<td><button onclick="build_smv('gnulinux debug')">GNU debug</button></td>
-</tr>
 </table>
 
 <p><table border=on>
