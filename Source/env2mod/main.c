@@ -9,7 +9,7 @@
 #include "env2mod.h"
 #include "datadefs.h"
 #include "string_util.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 
 /* ------------------ Usage ------------------------ */
 

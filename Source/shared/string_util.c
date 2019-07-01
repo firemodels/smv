@@ -22,7 +22,7 @@
 #else
 #include <dirent.h>
 #endif
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
 #ifdef pp_HASH

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include "svzip.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 
 int ReadSMV(char *smvfile){
 

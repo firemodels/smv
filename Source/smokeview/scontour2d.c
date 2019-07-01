@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include GLUT_H
 #include "contourdefs.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 
 #define SOLID 0
 #define GAS 1

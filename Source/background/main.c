@@ -13,7 +13,7 @@
 #include "string_util.h"
 #include "background.h"
 #include "datadefs.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "file_util.h"
 
 #ifdef WIN32
