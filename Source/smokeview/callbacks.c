@@ -3387,6 +3387,10 @@ void DoVR(void){
   }
   printf("\n\n");
 
+  glMatrixMode(GL_MODELVIEW);
+  glLoadMatrixf(view_projection);
+  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
+
   printf("right view_projection:\n");
   GetCurrentViewProjectionMatrix(RIGHT_EYE, view_projection);
   for(i = 0; i<16; i++){
@@ -3395,6 +3399,9 @@ void DoVR(void){
   }
   printf("\n\n");
 
+  glMatrixMode(GL_MODELVIEW);
+  glLoadMatrixf(view_projection);
+  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
 }
 #endif
 
