@@ -316,8 +316,6 @@ Matrix4 GetCurrentViewProjectionMatrix( vr::Hmd_Eye nEye ){
 /* ----------------------- GetPoseMatrix ----------------------------- */
 
 void UpdateHMDMatrixPose(void){
-  float mm_opengl[16], *m;
-
   vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0 );
 
   m_iValidPoseCount = 0;
