@@ -1145,6 +1145,7 @@ typedef struct _partdata {
   partclassdata **partclassptr;
   part5data *data5;
   histogramdata **histograms;
+  int bounds_set;
   float *valmin, *valmax;
 } partdata;
 

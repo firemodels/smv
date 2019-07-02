@@ -8030,6 +8030,7 @@ typedef struct {
       parti->times=NULL;
       parti->timeslist=NULL;
       parti->histograms = NULL;
+      parti->bounds_set = 0;
       parti->valmin = NULL;
       parti->valmax = NULL;
 
@@ -11531,6 +11532,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
+    if(Match(buffer, "PARTFAST")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &partfast);
+      continue;
+    }
     if(Match(buffer, "WINDOWOFFSET") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
@@ -13310,8 +13316,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
 
-  fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);
   fprintf(fileout, "FED\n");
@@ -13324,6 +13328,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
+  fprintf(fileout, "PARTFAST\n");
+  fprintf(fileout, " %i\n", partfast);
+  fprintf(fileout, "RESEARCHMODE\n");
+  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

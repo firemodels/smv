@@ -3610,7 +3610,6 @@ void ParticlePropShowMenu(int value){
       partclassj->vis_type=vistype;
       PropMenu(propvalue);
     }
-
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -3621,6 +3620,8 @@ void ParticlePropShowMenu(int value){
 void LoadParticleMenu(int value){
   int errorcode,i;
   int file_count;
+
+  update_part_bounds = 1;
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -9308,6 +9309,7 @@ updatemenu=0;
       else{
         STRCPY(menulabel,partinfo[i].menulabel);
       }
+//      if(partfast==1)strcat(menulabel, "(global bounds)");
       glutAddMenuEntry(menulabel,i);
     }
     if(nmeshes>1){
@@ -9316,6 +9318,7 @@ updatemenu=0;
       CREATEMENU(particlemenu,LoadParticleMenu);
       if(npartinfo > 0){
         strcpy(menulabel, _("Particles"));
+//        if(partfast==1)strcat(menulabel, "(global bounds)");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);

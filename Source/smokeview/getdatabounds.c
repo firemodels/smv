@@ -150,6 +150,121 @@ void AdjustPart5Chops(partdata *parti){
   }
 }
 
+/* -----  ------------- ReadPartBounds ------------------------ */
+
+void ReadPartBounds(partdata *parti, int nprops){
+  FILE *stream=NULL;
+  int first=1, j, eof=0;
+  float *valmin, *valmax;
+
+  parti->bounds_set = 0;
+  stream = fopen(parti->bound_file, "r");
+  if(stream==NULL)return;
+  parti->bounds_set = 1;
+  valmin = parti->valmin;
+  valmax = parti->valmax;
+  for(;;){
+    float time;
+    int nbounds;
+    char buffer[255];
+
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%f %i", &time, &nbounds);
+
+    for(j = 1; j<nprops;j++){
+      float vmin, vmax;
+
+      if(fgets(buffer, 255, stream)==NULL){
+        eof = 1;
+        break;
+      }
+      sscanf(buffer, "%f %f", &vmin, &vmax);
+      if(first==1){
+        valmin[j] = vmin;
+        valmax[j] = vmax;
+      }
+      else{
+        valmin[j] = MIN(valmin[j],vmin);
+        valmax[j] = MAX(valmax[j],vmax);
+      }
+    }
+    if(eof==1)break;
+    first = 0;
+  }
+  fclose(stream);
+}
+
+/* ------------------ ReadAllPartBounds ------------------------ */
+
+void ReadAllPartBounds(void){
+  int i, first = 1;
+
+  // find min/max for each particle file
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    ReadPartBounds(parti, npart5prop);
+  }
+
+  // find min/max over all particle files
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int j;
+
+    parti = partinfo+i;
+    if(parti->bounds_set==0)continue;
+    for(j = 0; j<npart5prop; j++){
+      partpropdata *propj;
+
+      propj = part5propinfo+j;
+      if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
+      if(first==1){
+        propj->valmin = parti->valmin[j];
+        propj->valmax = parti->valmax[j];
+      }
+      else{
+        propj->valmin = MIN(propj->valmin,parti->valmin[j]);
+        propj->valmax = MAX(propj->valmax,parti->valmax[j]);
+      }
+    }
+    first = 0;
+  }
+
+  // set min/max for each particle file
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int j;
+
+    parti = partinfo+i;
+    for(j = 0; j<npart5prop; j++){
+      partpropdata *propj;
+
+      propj = part5propinfo+j;
+      if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
+      parti->valmin[j] = propj->valmin;
+      parti->valmax[j] = propj->valmax;
+    }
+  }
+
+  // set properties
+
+  for(i = 0; i<npart5prop; i++){
+    partpropdata *propi;
+
+    propi = part5propinfo+i;
+    if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
+
+    propi->global_min = propi->valmin;
+    propi->global_max = propi->valmax;
+    propi->setvalmax = GLOBAL_MAX;
+    propi->setvalmin = GLOBAL_MIN;
+  }
+}
+
 /* ------------------ AdjustPart5Bounds ------------------------ */
 
 void AdjustPart5Bounds(partdata *parti){
@@ -161,55 +276,59 @@ void AdjustPart5Bounds(partdata *parti){
   if(parti->valmax==NULL){
     NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
   }
-#ifdef pp_FASTPART
-  ReadPartBounds(parti,npart5prop);
-#endif
-
-  for(i=0;i<npart5prop;i++){
-    partpropdata *propi;
-    histogramdata *histi;
-
-    propi = part5propinfo + i;
-    if(strcmp(propi->label->shortlabel, "Uniform") == 0)continue;
-
-    histi = &propi->histogram;
-
-    propi->global_min = histi->val_min;
-    propi->global_max = histi->val_max;
-
-    propi->percentile_min = GetHistogramVal(histi, percentile_level);
-    propi->percentile_max = GetHistogramVal(histi, 1.0 - percentile_level);
-
-    switch(propi->setvalmin){
-    case PERCENTILE_MIN:
-      propi->valmin=propi->percentile_min;
-      break;
-    case GLOBAL_MIN:
-      propi->valmin=propi->global_min;
-      break;
-    case SET_MIN:
-      propi->valmin=propi->user_min;
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
+  if(partfast==YES){
+    if(update_part_bounds==1){
+      ReadAllPartBounds();
+      update_part_bounds = 0;
     }
-    switch(propi->setvalmax){
-    case PERCENTILE_MAX:
-      propi->valmax=propi->percentile_max;
-      break;
-    case GLOBAL_MAX:
-      propi->valmax=propi->global_max;
-      break;
-    case SET_MAX:
-      propi->valmax=propi->user_max;
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
+  }
+  else{
+    for(i=0;i<npart5prop;i++){
+      partpropdata *propi;
+      histogramdata *histi;
+
+      propi = part5propinfo+i;
+      if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
+
+      histi = &propi->histogram;
+
+      propi->global_min = histi->val_min;
+      propi->global_max = histi->val_max;
+
+      propi->percentile_min = GetHistogramVal(histi, percentile_level);
+      propi->percentile_max = GetHistogramVal(histi, 1.0-percentile_level);
+
+      switch(propi->setvalmin){
+      case PERCENTILE_MIN:
+        propi->valmin = propi->percentile_min;
+        break;
+      case GLOBAL_MIN:
+        propi->valmin = propi->global_min;
+        break;
+      case SET_MIN:
+        propi->valmin = propi->user_min;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      switch(propi->setvalmax){
+      case PERCENTILE_MAX:
+        propi->valmax = propi->percentile_max;
+        break;
+      case GLOBAL_MAX:
+        propi->valmax = propi->global_max;
+        break;
+      case SET_MAX:
+        propi->valmax = propi->user_max;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      parti->valmin[i] = propi->valmin;
+      parti->valmax[i] = propi->valmax;
     }
-    parti->valmin[i] = propi->valmin;
-    parti->valmax[i] = propi->valmax;
   }
   AdjustPart5Chops(parti);
 #ifdef _DEBUG
