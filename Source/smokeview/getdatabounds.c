@@ -161,6 +161,9 @@ void AdjustPart5Bounds(partdata *parti){
   if(parti->valmax==NULL){
     NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
   }
+#ifdef pp_FASTPART
+  ReadPartBounds(parti,npart5prop);
+#endif
 
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;

@@ -1831,6 +1831,47 @@ void UpdatePartColorBounds(partdata *parti){
   }
 }
 
+/* -----  ------------- ReadPartBounds ------------------------ */
+
+void ReadPartBounds(partdata *parti, int nprops){
+  FILE *stream=NULL;
+  int first = 1, j, eof=0;
+  float *valmin, *valmax;
+
+  stream = fopen(parti->bound_file, "r");
+  if(stream==NULL)return;
+  valmin = parti->valmin;
+  valmax = parti->valmax;
+  for(;;){
+    float time;
+    int nbounds;
+    char buffer[255];
+
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%f %i", &time, &nbounds);
+
+    for(j = 1; j<nprops;j++){
+      float vmin, vmax;
+
+      if(fgets(buffer, 255, stream)==NULL){
+        eof = 1;
+        break;
+      }
+      sscanf(buffer, "%f %f", &vmin, &vmax);
+      if(first==1){
+        valmin[j] = vmin;
+        valmax[j] = vmax;
+      }
+      else{
+        valmin[j] = MIN(valmin[j],vmin);
+        valmax[j] = MAX(valmax[j],vmax);
+      }
+    }
+    if(eof==1)break;
+    first = 0;
+  }
+}
+
     /* -----  ------------- ReadPart ------------------------ */
 
 FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
