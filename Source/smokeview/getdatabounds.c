@@ -152,14 +152,12 @@ void AdjustPart5Chops(partdata *parti){
 
 /* -----  ------------- ReadPartBounds ------------------------ */
 
-void ReadPartBounds(partdata *parti, int nprops){
+int ReadPartBounds(partdata *parti, int nprops){
   FILE *stream=NULL;
   int j, eof=0;
   float *valmin, *valmax;
 
   parti->bounds_set = 0;
-  stream = fopen(parti->bound_file, "r");
-  if(stream==NULL)return;
   if(parti->valmin==NULL)NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
   if(parti->valmax==NULL)NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
   valmin = parti->valmin;
@@ -168,6 +166,9 @@ void ReadPartBounds(partdata *parti, int nprops){
     valmin[j] = 1000000000.0;
     valmax[j] = -1000000000.0;
   }
+
+  stream = fopen(parti->bound_file, "r");
+  if(stream==NULL)return 0;
   for(;;){
     float time;
     int nbounds;
@@ -193,12 +194,13 @@ void ReadPartBounds(partdata *parti, int nprops){
     if(eof==1)break;
   }
   fclose(stream);
+  return 1;
 }
 
 /* ------------------ ReadAllPartBounds ------------------------ */
 
-void ReadAllPartBounds(void){
-  int i;
+int ReadAllPartBounds(void){
+  int i, have_bound_file=0;
 
   // find min/max for each particle file
 
@@ -206,7 +208,7 @@ void ReadAllPartBounds(void){
     partdata *parti;
 
     parti = partinfo+i;
-    ReadPartBounds(parti, npart5prop);
+    if(ReadPartBounds(parti, npart5prop)==1)have_bound_file=1;
   }
 
   for(i = 0; i<npart5prop; i++){
@@ -266,6 +268,7 @@ void ReadAllPartBounds(void){
     propi->setvalmax = GLOBAL_MAX;
     propi->setvalmin = GLOBAL_MIN;
   }
+  return have_bound_file;
 }
 
 /* ------------------ AdjustPart5Bounds ------------------------ */
@@ -281,8 +284,17 @@ void AdjustPart5Bounds(partdata *parti){
   }
   if(partfast==YES){
     if(update_part_bounds==1){
-      ReadAllPartBounds();
+      int have_bound_file = 0;
+
+      have_bound_file = ReadAllPartBounds();
       update_part_bounds = 0;
+      if(have_bound_file==0){
+        printf("***warning: The file %s does not exist, reverting to normal particle loading\n",parti->bound_file);
+        partfast = NO;
+        updatemenu = 1;
+        UpdateGluiPartfast();
+        AdjustPart5Bounds(parti);
+      }
     }
   }
   else{
