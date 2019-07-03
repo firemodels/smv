@@ -154,21 +154,20 @@ void AdjustPart5Chops(partdata *parti){
 
 void ReadPartBounds(partdata *parti, int nprops){
   FILE *stream=NULL;
-  int first=1, j, eof=0;
+  int j, eof=0;
   float *valmin, *valmax;
 
   parti->bounds_set = 0;
   stream = fopen(parti->bound_file, "r");
   if(stream==NULL)return;
-  parti->bounds_set = 1;
-  if(parti->valmin==NULL){
-    NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
-  }
-  if(parti->valmax==NULL){
-    NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
-  }
+  if(parti->valmin==NULL)NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
+  if(parti->valmax==NULL)NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
   valmin = parti->valmin;
   valmax = parti->valmax;
+  for(j=0;j<nprops;j++){
+    valmin[j] = 1000000000.0;
+    valmax[j] = -1000000000.0;
+  }
   for(;;){
     float time;
     int nbounds;
@@ -185,17 +184,13 @@ void ReadPartBounds(partdata *parti, int nprops){
         break;
       }
       sscanf(buffer, "%f %f", &vmin, &vmax);
-      if(first==1){
-        valmin[j] = vmin;
-        valmax[j] = vmax;
-      }
-      else{
+      if(vmax>vmin){
+        parti->bounds_set = 1;
         valmin[j] = MIN(valmin[j],vmin);
         valmax[j] = MAX(valmax[j],vmax);
       }
     }
     if(eof==1)break;
-    first = 0;
   }
   fclose(stream);
 }
@@ -203,7 +198,7 @@ void ReadPartBounds(partdata *parti, int nprops){
 /* ------------------ ReadAllPartBounds ------------------------ */
 
 void ReadAllPartBounds(void){
-  int i, first = 1;
+  int i;
 
   // find min/max for each particle file
 
@@ -212,6 +207,15 @@ void ReadAllPartBounds(void){
 
     parti = partinfo+i;
     ReadPartBounds(parti, npart5prop);
+  }
+
+  for(i = 0; i<npart5prop; i++){
+    partpropdata *propi;
+
+    propi = part5propinfo+i;
+    if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
+    propi->valmin =  1000000000.0;
+    propi->valmax = -1000000000.0;
   }
 
   // find min/max over all particle files
@@ -225,18 +229,11 @@ void ReadAllPartBounds(void){
     for(j = 0; j<npart5prop; j++){
       partpropdata *propj;
 
-      propj = part5propinfo+j;
+      propj = part5propinfo + j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      if(first==1){
-        propj->valmin = parti->valmin[j];
-        propj->valmax = parti->valmax[j];
-      }
-      else{
-        propj->valmin = MIN(propj->valmin,parti->valmin[j]);
-        propj->valmax = MAX(propj->valmax,parti->valmax[j]);
-      }
+      propj->valmin = MIN(propj->valmin,parti->valmin[j]);
+      propj->valmax = MAX(propj->valmax,parti->valmax[j]);
     }
-    first = 0;
   }
 
   // set min/max for each particle file
