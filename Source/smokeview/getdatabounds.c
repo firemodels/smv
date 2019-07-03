@@ -161,6 +161,12 @@ void ReadPartBounds(partdata *parti, int nprops){
   stream = fopen(parti->bound_file, "r");
   if(stream==NULL)return;
   parti->bounds_set = 1;
+  if(parti->valmin==NULL){
+    NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
+  }
+  if(parti->valmax==NULL){
+    NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
+  }
   valmin = parti->valmin;
   valmax = parti->valmax;
   for(;;){
@@ -240,12 +246,6 @@ void ReadAllPartBounds(void){
     int j;
 
     parti = partinfo+i;
-    if(parti->valmin==NULL){
-      NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
-    }
-    if(parti->valmax==NULL){
-      NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
-    }
     for(j = 0; j<npart5prop; j++){
       partpropdata *propj;
 
