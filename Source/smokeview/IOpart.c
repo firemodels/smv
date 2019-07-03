@@ -839,8 +839,6 @@ int GetSizeFileStatus(partdata *parti){
 
   if(stat_regfile != 0)return -1;                         // particle file does not exist
 
-  if(1==0&&stat_boundfile==0)return 0;                         // bound file exists (with sizes)
-
   if(stat_sizefile != 0) return 1;                        // size file does not exist
   if(stat_regfile_buffer.st_size > parti->reg_file_size){ // particle file has grown
     parti->reg_file_size = stat_regfile_buffer.st_size;
@@ -850,8 +848,49 @@ int GetSizeFileStatus(partdata *parti){
   return 0;
 }
 
- /* ------------------ CreatePart5SizeFile ------------------------ */
-void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int *error){
+/* ------------------ CreatePartSizeFileFromBound ------------------------ */
+
+void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile){
+  FILE *streamin, *streamout;
+  float time;
+  char buffer[255];
+
+  streamin = fopen(part5boundfile, "r");
+  streamout = fopen(part5sizefile, "w");
+
+  for(;;){
+    int nclasses,j,eof;
+
+    eof = 0;
+    if(fgets(buffer,255,streamin)==NULL)break;
+    sscanf(buffer, "%f %i", &time, &nclasses);
+    fprintf(streamout, " %f\n", time);
+    for(j = 0; j<nclasses; j++){
+      int k, npoints, ntypes;
+
+      if(fgets(buffer, 255, streamin)==NULL){
+        eof = 1;
+        break;
+      }
+      sscanf(buffer, "%i %i", &ntypes, &npoints);
+      fprintf(streamout, " %i\n", npoints);
+      for(k = 0; k<ntypes; k++){
+        if(fgets(buffer, 255, streamin)==NULL){
+          eof = 1;
+          break;
+        }
+      }
+      if(eof==1)break;
+    }
+    if(eof==1)break;
+  }
+  fclose(streamin);
+  fclose(streamout);
+}
+
+/* ------------------ CreatePartSizeFileFromPart ------------------------ */
+
+void CreatePartSizeFileFromPart(char *part5file, char *part5sizefile, int angle_flag){
   FILE *PART5FILE, *streamout;
   int returncode;
   int one, version, nclasses;
@@ -905,7 +944,25 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
   FREEMEMORY(numpoints);
 }
 
-/* ------------------ GetPartHistogramFile ------------------------ */
+/* ------------------ CreatePartSizeFile ------------------------ */
+
+void CreatePartSizeFile(char *part5file, char *part5boundfile, char *part5sizefile, int angle_flag){
+  FILE *stream;
+
+  if(partfast==YES){
+    stream = fopen(part5boundfile, "r");
+    if(stream!=NULL){
+      fclose(stream);
+      CreatePartSizeFileFromBound(part5boundfile, part5sizefile);
+      return;
+    }
+    printf("***warning: particle bound/size file %s could not be opened\n",part5boundfile);
+    printf("            particle sizing proceeding using the full particle file: %s\n",part5file);
+  }
+  CreatePartSizeFileFromPart(part5file, part5sizefile, angle_flag);
+}
+
+  /* ------------------ GetPartHistogramFile ------------------------ */
 
 void GetPartHistogramFile(partdata *parti){
   int i;
@@ -1359,9 +1416,22 @@ int GetPartPropIndexS(char *shortlabel){
 
 /* ------------------ GetPartPropIndex ------------------------ */
 
-int GetPartPropIndex(char *label){
+int GetPartPropIndex(int class_i, int class_i_j){
   int i;
+  char *label;
+  partclassdata *partclassi;
+  flowlabels *labels, *labelj;
 
+  ASSERT(class_i>=0&&class_i<npartclassinfo);
+  class_i = CLAMP(class_i,0, npartclassinfo-1);
+  partclassi = partclassinfo+class_i;
+
+  labels = partclassi->labels;
+  ASSERT(class_i_j>=0&&class_i_j<partclassi->ntypes);
+  class_i_j = CLAMP(class_i_j,0, partclassi->ntypes-1);
+  labelj = labels+class_i_j;
+
+  label = labelj->longlabel;
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
 
@@ -1528,7 +1598,7 @@ int GetNPartFrames(partdata *parti){
   FILE *stream;
   char buffer[256];
   float time_local;
-  char *reg_file, *size_file;
+  char *reg_file, *size_file, *bound_file;
   int i;
   int doit = 0;
   int stat_sizefile, stat_regfile;
@@ -1537,6 +1607,7 @@ int GetNPartFrames(partdata *parti){
 
   reg_file=parti->reg_file;
   size_file=parti->size_file;
+  bound_file = parti->bound_file;
 
   // if size file doesn't exist then generate it
 
@@ -1553,21 +1624,13 @@ int GetNPartFrames(partdata *parti){
     doit = 1;
   }
   if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
-    int error;
     int angle_flag=0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    if(parti->evac==1){
-      angle_flag=1;
-      PRINTF("Sizing evac data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
-    }
-    else{
-      angle_flag=0;
-      PRINTF("Sizing particle data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
-    }
+    TrimBack(bound_file);
+    if(parti->evac==1)angle_flag=1;
+    CreatePartSizeFile(reg_file, bound_file, size_file, angle_flag);
   }
 
   stream=fopen(size_file,"r");
@@ -1632,7 +1695,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   char buffer[256];
   float time_local;
   int count;
-  char *reg_file, *size_file;
+  char *reg_file, *size_file, *bound_file;
   int i;
   int nframes_all;
   int sizefile_status;
@@ -1641,24 +1704,17 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
   reg_file = parti->reg_file;
   size_file = parti->size_file;
+  bound_file = parti->bound_file;
 
   sizefile_status = GetSizeFileStatus(parti);
   if(sizefile_status == -1)return; // particle file does not exist so cannot be sized
   if(option==FORCE||sizefile_status == 1){        // size file is missing or older than particle file
-    int error;
     int angle_flag = 0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    if(parti->evac == 1){
-      angle_flag = 1;
-      if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
-      }
-    else{
-      angle_flag = 0;
-      if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
-    }
-    CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
+    if(parti->evac == 1)angle_flag = 1;
+    CreatePartSizeFile(reg_file, bound_file, size_file, angle_flag);
   }
 
   stream=fopen(size_file,"r");

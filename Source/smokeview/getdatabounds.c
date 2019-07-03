@@ -171,25 +171,39 @@ int ReadPartBounds(partdata *parti, int nprops){
   if(stream==NULL)return 0;
   for(;;){
     float time;
-    int nbounds;
+    int nclasses, k;
     char buffer[255];
 
     if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%f %i", &time, &nbounds);
+    sscanf(buffer, "%f %i", &time, &nclasses);
 
-    for(j = 1; j<nprops;j++){
-      float vmin, vmax;
+    for(k = 0; k<nclasses; k++){
+      int nbounds, npoints;
 
       if(fgets(buffer, 255, stream)==NULL){
         eof = 1;
         break;
       }
-      sscanf(buffer, "%f %f", &vmin, &vmax);
-      if(vmax>vmin){
-        parti->bounds_set = 1;
-        valmin[j] = MIN(valmin[j],vmin);
-        valmax[j] = MAX(valmax[j],vmax);
+      sscanf(buffer, "%i %i", &nbounds, &npoints);
+      for(j = 0; j<nbounds; j++){
+        float vmin, vmax;
+        int prop_index;
+
+        if(fgets(buffer, 255, stream)==NULL){
+          eof = 1;
+          break;
+        }
+        sscanf(buffer, "%f %f", &vmin, &vmax);
+        if(vmax>vmin){
+          parti->bounds_set = 1;
+
+          prop_index = GetPartPropIndex(k,j+2);
+
+          valmin[prop_index] = MIN(valmin[prop_index], vmin);
+          valmax[prop_index] = MAX(valmax[prop_index], vmax);
+        }
       }
+      if(eof==1)break;
     }
     if(eof==1)break;
   }

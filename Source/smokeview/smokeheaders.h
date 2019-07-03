@@ -480,6 +480,8 @@ EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void Smoke3DShowMenu(int value);
 EXTERNCPP void ShowVSliceMenu(int value);
 EXTERNCPP int  GetPartPropIndexS(char *shortlabel);
+EXTERNCPP int GetPartPropIndex(int class_i, int class_i_j);
+
 #ifdef _DEBUG
 EXTERNCPP void PrintPartProp(void);
 #endif
