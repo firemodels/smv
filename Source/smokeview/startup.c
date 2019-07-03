@@ -20,10 +20,6 @@
 void InitMisc(void){
   int i;
 
-#ifdef pp_OPENVR
-  have_vr = HaveVR();
-#endif
-
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
 
@@ -247,6 +243,9 @@ int SetupCase(int argc, char **argv){
   InitTranslate(smokeview_bindir, tr_name);
 #endif
 
+#ifdef pp_OPENVR
+  have_vr = HaveVR();
+#endif
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);

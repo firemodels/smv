@@ -32,7 +32,8 @@ typedef struct {
 #define MATCH 1
 #define NOTMATCH 0
 
-#define LABEL_OK 0
+#define LABEL_OK  0
+#define LABEL_EOF 1
 #define LABEL_ERR 2
 
 #define DEG_SYMBOL 176

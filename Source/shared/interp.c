@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "interp.h"
 #include "datadefs.h"
 

@@ -10,7 +10,7 @@
 #endif
 #include <math.h>
 #include <stdio.h>
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #define IN_ISOBOX
 #include "isodefs.h"
 #include "datadefs.h"

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "translate.h"
 
 /* ------------------ CompareTrdata ------------------------ */

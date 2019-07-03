@@ -1130,7 +1130,7 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
-  char *file, *comp_file, *size_file, *reg_file, *hist_file;
+  char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
   int seq_id, autoload, loaded, request_load, display, reload, finalize;
   int sort_tags_loaded, compression_type, evac;
   int blocknumber;
@@ -1145,6 +1145,7 @@ typedef struct _partdata {
   partclassdata **partclassptr;
   part5data *data5;
   histogramdata **histograms;
+  int bounds_set;
   float *valmin, *valmax;
 } partdata;
 

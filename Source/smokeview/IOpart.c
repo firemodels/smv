@@ -146,6 +146,8 @@ int GetTagIndex(const partdata *partin, part5data **datain, int tagval){
   part5data *data;
   int i;
 
+  if(partfast==YES)return -1;
+
   for(i = -1; i < npartinfo; i++){
     const partdata *parti;
 
@@ -1916,24 +1918,35 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
         partj->display = 1;
       }
     }
-    for(j = 0; j<npart5prop; j++){
-      partpropdata *propj;
-
-      propj = part5propinfo + j;
-      ResetHistogram(&propj->histogram,NULL,NULL);
+#define SETVALMIN 1
+#define SETVALMAX 2
+    if(partfast==YES){
+      setpartmin = GLOBAL_MIN;
+      PartBoundCB(SETVALMIN);
+      setpartmax = GLOBAL_MAX;
+      PartBoundCB(SETVALMAX);
+      UpdateGluiPartSetBounds(GLOBAL_MIN,GLOBAL_MAX);
     }
-    for(j = 0; j < npartinfo; j++){
-      partdata *partj;
-      int i;
+    else{
+      for(j = 0; j<npart5prop; j++){
+        partpropdata *propj;
 
-      partj = partinfo + j;
-      if(partj->loaded == 0)continue;
-      GetPartHistogramFile(partj);
-      for(i = 0; i < npart5prop; i++){
-        partpropdata *propi;
+        propj = part5propinfo+j;
+        ResetHistogram(&propj->histogram, NULL, NULL);
+      }
+      for(j = 0; j<npartinfo; j++){
+        partdata *partj;
+        int i;
 
-        propi = part5propinfo + i;
-        MergeHistogram(&propi->histogram, partj->histograms[i], MERGE_BOUNDS);
+        partj = partinfo+j;
+        if(partj->loaded==0)continue;
+        GetPartHistogramFile(partj);
+        for(i = 0; i<npart5prop; i++){
+          partpropdata *propi;
+
+          propi = part5propinfo+i;
+          MergeHistogram(&propi->histogram, partj->histograms[i], MERGE_BOUNDS);
+        }
       }
     }
     UpdatePartColorBounds(parti);

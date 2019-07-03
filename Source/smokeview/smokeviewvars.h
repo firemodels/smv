@@ -2,7 +2,7 @@
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
 
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #ifdef CPP
 #include "glui.h"
 #endif
@@ -20,7 +20,13 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(have_vr, 0);
+SVEXTERN int SVDECL(update_part_bounds, 0);
+#ifdef pp_PARTFAST
+SVEXTERN int SVDECL(partfast, YES);
+#else
+SVEXTERN int SVDECL(partfast, NO);
+#endif
+SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(emission_factor, 5.0);
 #ifdef pp_OSX
@@ -1437,6 +1443,8 @@ SVEXTERN char SVDECL(*smokeviewini,NULL);
 #ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*htmlvr_filename, NULL);
+SVEXTERN char SVDECL(*htmlslicedata_filename, NULL);
+SVEXTERN char SVDECL(*htmlobstdata_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
 SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
 #endif

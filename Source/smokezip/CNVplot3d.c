@@ -6,7 +6,7 @@
 #include <math.h>
 #include <zlib.h>
 #include "svzip.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "compress.h"
 
 #define FORTgetplot3dq _F(getplot3dq)

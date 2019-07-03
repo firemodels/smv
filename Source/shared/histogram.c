@@ -7,7 +7,7 @@
 #include <math.h>
 #include "histogram.h"
 #include "pragmas.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "datadefs.h"
 
 /* ------------------ GetHistogramCDF ------------------------ */

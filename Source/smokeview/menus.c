@@ -1887,10 +1887,16 @@ void RenderMenu(int value){
   case RenderHTML:
     Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
     Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
+
+    Obst2Data(htmlobstdata_filename);
+    Slice2Data(htmlslicedata_filename, HTML_CURRENT_TIME);
     break;
   case RenderHTMLALL:
     Smv2Html(html_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
     Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
+
+    Obst2Data(htmlobstdata_filename);
+    Slice2Data(htmlslicedata_filename, HTML_ALL_TIMES);
     break;
 #endif
   case RenderCancel:
@@ -2949,7 +2955,7 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
     }
     file_count++;
-  } 
+  }
   STOP_TIMER(load_time);
   PRINT_LOADTIMES;
   slicefile_labelindex = slicefile_labelindex_save;
@@ -3604,7 +3610,6 @@ void ParticlePropShowMenu(int value){
       partclassj->vis_type=vistype;
       PropMenu(propvalue);
     }
-
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -3615,6 +3620,8 @@ void ParticlePropShowMenu(int value){
 void LoadParticleMenu(int value){
   int errorcode,i;
   int file_count;
+
+  update_part_bounds = 1;
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -4257,7 +4264,7 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SOOT_HRRPUV){
     if(smoke3d_load_test == 1){
       int errorcode;
-      
+
       ReadSmoke3DAllMeshesAllTimes(SOOT|HRRPUV, &errorcode);
     }
     else{
@@ -4277,7 +4284,7 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SOOT_TEMP){
     if(smoke3d_load_test==1){
       int errorcode;
- 
+
       ReadSmoke3DAllMeshesAllTimes(SOOT|TEMP, &errorcode);
     }
     else{
@@ -8876,7 +8883,12 @@ updatemenu=0;
   if(isZoneFireModel==0){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
   }
-  glutAddMenuEntry(_("Stereo settings..."), DIALOG_STEREO);
+  if(have_vr==1){
+    glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
+  }
+  else{
+    glutAddMenuEntry(_("Stereo settings..."), DIALOG_STEREO);
+  }
   if(trainer_active==1){
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }
@@ -9297,6 +9309,7 @@ updatemenu=0;
       else{
         STRCPY(menulabel,partinfo[i].menulabel);
       }
+//      if(partfast==1)strcat(menulabel, "(global bounds)");
       glutAddMenuEntry(menulabel,i);
     }
     if(nmeshes>1){
@@ -9305,6 +9318,7 @@ updatemenu=0;
       CREATEMENU(particlemenu,LoadParticleMenu);
       if(npartinfo > 0){
         strcpy(menulabel, _("Particles"));
+//        if(partfast==1)strcat(menulabel, "(global bounds)");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);

@@ -1,7 +1,7 @@
 #include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include <math.h>
 #include "csphere.h"
 

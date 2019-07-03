@@ -8,7 +8,7 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "datadefs.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "gd.h"
 #include "dem_util.h"
 

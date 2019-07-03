@@ -712,8 +712,13 @@ void ReadSMVDynamic(char *file){
   */
 
     if(Match(buffer,"PL3D") == 1){
+      int n;
+
       do_pass2=1;
       if(setup_only==1||smoke3d_only==1)continue;
+      for(n = 0; n<5; n++){
+        if(ReadLabels(NULL, stream, NULL)==LABEL_ERR)break;
+      }
       nplot3dinfo++;
       continue;
 
@@ -1066,12 +1071,16 @@ void ReadSMVDynamic(char *file){
 
       if(fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
         int n;
+        int read_ok = YES;
 
         plot3di->u = -1;
         plot3di->v = -1;
         plot3di->w = -1;
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)!=LABEL_OK){
+            read_ok=NO;
+            break;
+          }
           if(STRCMP(plot3di->label[n].shortlabel, "U-VEL")==0){
             plot3di->u = n;
           }
@@ -1081,6 +1090,10 @@ void ReadSMVDynamic(char *file){
           if(STRCMP(plot3di->label[n].shortlabel, "W-VEL")==0){
             plot3di->w = n;
           }
+        }
+        if(read_ok==NO){
+          nplot3dinfo--;
+          continue;
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
           plot3di->nvars = mxplot3dvars;
@@ -1108,7 +1121,7 @@ void ReadSMVDynamic(char *file){
         int n;
 
         for(n = 0;n<5;n++){
-          if(ReadLabels(&plot3di->label[n], stream, NULL)==2)return;
+          if(ReadLabels(&plot3di->label[n], stream, NULL)==LABEL_ERR)break;
         }
         nplot3dinfo--;
       }
@@ -2457,31 +2470,31 @@ void UpdateMeshCoords(void){
   box_corners[0][0] = 0.0;
   box_corners[0][1] = 0.0;
   box_corners[0][2] = 0.0;
-  
+
   box_corners[1][0] = xbar;
   box_corners[1][1] = 0.0;
   box_corners[1][2] = 0.0;
-  
+
   box_corners[2][0] = xbar;
   box_corners[2][1] = ybar;
   box_corners[2][2] = 0.0;
-  
+
   box_corners[3][0] = 0.0;
   box_corners[3][1] = ybar;
   box_corners[3][2] = 0.0;
-  
+
   box_corners[4][0] = 0.0;
   box_corners[4][1] = 0.0;
   box_corners[4][2] = zbar;
-  
+
   box_corners[5][0] = xbar;
   box_corners[5][1] = 0.0;
   box_corners[5][2] = zbar;
-  
+
   box_corners[6][0] = xbar;
   box_corners[6][1] = ybar;
   box_corners[6][2] = zbar;
-  
+
   box_corners[7][0] = 0.0;
   box_corners[7][1] = ybar;
   box_corners[7][2] = zbar;
@@ -5710,7 +5723,7 @@ int ReadSMV(char *file, char *file2){
           smoke3di->file=smoke3di->reg_file;
         }
         if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
-          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
           if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
             show_hrrcutoff_active=1;
           }
@@ -5720,7 +5733,7 @@ int ReadSMV(char *file, char *file2){
           ismoke3d++;
         }
         else{
-          if(ReadLabels(&smoke3di->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
           nsmoke3dinfo--;
         }
         if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
@@ -6018,7 +6031,7 @@ int ReadSMV(char *file, char *file2){
         int nn;
 
         for(nn=0;nn<4;nn++){
-          if(ReadLabels(&zonei->label[nn],stream,NULL)==2){
+          if(ReadLabels(&zonei->label[nn],stream,NULL)==LABEL_ERR){
             return 2;
           }
         }
@@ -6029,7 +6042,7 @@ int ReadSMV(char *file, char *file2){
         NewMemory((void **)&zonei->file,(unsigned int)(len+1));
         STRCPY(zonei->file,filename);
         for(n=0;n<4;n++){
-          if(ReadLabels(&zonei->label[n],stream,NULL)==2){
+          if(ReadLabels(&zonei->label[n],stream,NULL)==LABEL_ERR){
             return 2;
           }
         }
@@ -7949,6 +7962,10 @@ typedef struct {
       STRCPY(parti->reg_file,bufferptr);
       parti->reg_file_size = GetFileSizeSMV(parti->reg_file);
 
+      if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return 2;
+      STRCPY(parti->bound_file, bufferptr);
+      STRCAT(parti->bound_file, ".bnd");
+
       parti->size_file=NULL;
       if(NewMemory((void **)&parti->size_file,(unsigned int)(len+1+3))==0)return 2;
       STRCPY(parti->size_file,bufferptr);
@@ -8013,6 +8030,7 @@ typedef struct {
       parti->times=NULL;
       parti->timeslist=NULL;
       parti->histograms = NULL;
+      parti->bounds_set = 0;
       parti->valmin = NULL;
       parti->valmax = NULL;
 
@@ -8357,19 +8375,19 @@ typedef struct {
 // read in labels
 
       if(sd->slice_filetype==SLICE_TERRAIN){
-        if(ReadLabels(&sd->label,stream,"(terrain)")==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(terrain)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype==SLICE_CELL_CENTER){
-        if(ReadLabels(&sd->label,stream,"(cell centered)")==2)return 2;
+        if(ReadLabels(&sd->label,stream,"(cell centered)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype==SLICE_GEOM){
-        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==2)return 2;
+        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==LABEL_ERR)return 2;
       }
       else if(sd->slice_filetype == SLICE_FACE_CENTER){
-        if(ReadLabels(&sd->label, stream,"(face centered)") == 2)return 2;
+        if(ReadLabels(&sd->label, stream,"(face centered)") == LABEL_ERR)return 2;
       }
       else{
-        if(ReadLabels(&sd->label,stream,NULL)==2)return 2;
+        if(ReadLabels(&sd->label,stream,NULL)==LABEL_ERR)return 2;
       }
       if(strlen(sd->label.longlabel)>14&&
          strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
@@ -8692,10 +8710,10 @@ typedef struct {
 
         strcpy(geomlabel2, "");
         if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-          if(ReadLabels(&patchi->label,stream,"(cell centered)")==2)return 2;
+          if(ReadLabels(&patchi->label,stream,"(cell centered)")==LABEL_ERR)return 2;
         }
         else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-          if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
+          if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
         }
         else if(patchi->structured == NO){
           char geomlabel[256];
@@ -8715,7 +8733,7 @@ typedef struct {
             if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
           }
           else{
-            if(ReadLabels(&patchi->label,stream,geomlabel)==2)return 2;
+            if(ReadLabels(&patchi->label,stream,geomlabel)==LABEL_ERR)return 2;
           }
         }
         strcpy(patchi->menulabel_base, patchi->label.longlabel);
@@ -8728,7 +8746,7 @@ typedef struct {
         if(slicegeom==0)ipatch++;
       }
       else{
-        if(ReadLabels(&patchi->label,stream,NULL)==2)return 2;
+        if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
         npatchinfo--;
       }
       continue;
@@ -8844,7 +8862,7 @@ typedef struct {
       if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
         get_isolevels=1;
         isoi->file=isoi->reg_file;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
         if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
           char delta_label[100];
 
@@ -8886,15 +8904,15 @@ typedef struct {
           GetIsoLevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
         }
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
         }
         iiso++;
       }
       else{
         get_isolevels=0;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==2)return 2;
+        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
         if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==2)return 2;
+          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
         }
         nisoinfo--;
       }
@@ -11514,6 +11532,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
+    if(Match(buffer, "PARTFAST")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &partfast);
+      continue;
+    }
     if(Match(buffer, "WINDOWOFFSET") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
@@ -11905,7 +11928,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "TOURCIRCLE") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer,"%f %f %f %f %f %f %f %f", 
+        sscanf(buffer,"%f %f %f %f %f %f %f %f",
           tour_circular_center+0, tour_circular_center+1, tour_circular_center+2,
           tour_circular_view+0, tour_circular_view+1, tour_circular_view+2,
           &tour_circular_radius, &tour_circular_angle0);
@@ -12855,8 +12878,8 @@ void WriteIniLocal(FILE *fileout){
   }
 
   fprintf(fileout, "TOURCIRCLE\n");
-  fprintf(fileout, "%f %f %f %f %f %f %f %f", 
-    tour_circular_center[0], 
+  fprintf(fileout, "%f %f %f %f %f %f %f %f",
+    tour_circular_center[0],
     tour_circular_center[1], tour_circular_center[2],
     tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
     tour_circular_radius, tour_circular_angle0);
@@ -13293,8 +13316,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
 
-  fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);
   fprintf(fileout, "FED\n");
@@ -13307,6 +13328,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
+  fprintf(fileout, "PARTFAST\n");
+  fprintf(fileout, " %i\n", partfast);
+  fprintf(fileout, "RESEARCHMODE\n");
+  fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

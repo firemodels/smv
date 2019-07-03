@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "MALLOC.h"
+#include "MALLOCC.h"
 #include "compress.h"
 
 #define MARK 255

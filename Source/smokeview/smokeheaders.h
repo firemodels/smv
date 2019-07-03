@@ -11,6 +11,8 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
+EXTERNCPP void UpdateGluiPartfast(void);
+EXTERNCPP void UpdateGluiPartSetBounds(int minbound_type, int max_boundtype);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
@@ -20,8 +22,8 @@ EXTERNCPP void InitNabors(void);
 #ifdef pp_HTML
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
 EXTERNCPP int Smv2Geom(char *html_file);
-EXTERNCPP int Smv2Obst(char *html_file);
-EXTERNCPP int Smv2Slice(char *html_file, int option);
+EXTERNCPP int Obst2Data(char *html_file);
+EXTERNCPP int Slice2Data(char *html_file, int option);
 #endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);
@@ -804,6 +806,7 @@ EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
+
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);
 

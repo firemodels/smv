@@ -4,7 +4,7 @@
 #include "zlib.h"
 #include "svzip.h"
 #include "lightsmoke.h"
-#include "MALLOC.h"
+#include "MALLOCC.h"
 
 #define IJKRAD(i,j,k) ((i) + nx*(j) + nxy*(k))
 #define IJKRAD2(i,j,k) (((i)+1) + (nx+2)*((j)+1) + (nx+2)*(ny+2)*((k)+1))
