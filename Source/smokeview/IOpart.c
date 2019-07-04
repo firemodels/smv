@@ -830,12 +830,11 @@ int GetSizeFileStatus(partdata *parti){
   // return  0 if size file does not need to be created
   // return  1 if size file needs to be created (doesn't exist or is older than corresponding particle file)
 
-  STRUCTSTAT stat_sizefile_buffer, stat_regfile_buffer, stat_boundfile_buffer;
-  int stat_sizefile, stat_regfile, stat_boundfile;
+  STRUCTSTAT stat_sizefile_buffer, stat_regfile_buffer;
+  int stat_sizefile, stat_regfile;
 
   stat_sizefile = STAT(parti->size_file, &stat_sizefile_buffer);
   stat_regfile = STAT(parti->reg_file, &stat_regfile_buffer);
-  stat_boundfile = STAT(parti->bound_file, &stat_boundfile_buffer);
 
   if(stat_regfile != 0)return -1;                         // particle file does not exist
 
