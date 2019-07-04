@@ -156,6 +156,7 @@ int ReadPartBounds(partdata *parti){
   FILE *stream=NULL;
   int j, eof=0;
   float *valmin, *valmax;
+  int part_boundfile_version = 1;
 
   parti->bounds_set = 0;
   if(parti->valmin==NULL)NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
@@ -176,7 +177,7 @@ int ReadPartBounds(partdata *parti){
 
     if(fgets(buffer, 255, stream)==NULL)break;
     sscanf(buffer, "%f %i %i", &time, &nclasses, &version);
-    if(version!=1){
+    if(version!=part_boundfile_version){
       fclose(stream);
       return 0;
     }
