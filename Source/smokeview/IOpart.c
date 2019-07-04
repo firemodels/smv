@@ -1472,7 +1472,7 @@ void InitPartProp(void){
     partclassdata *partclassi;
 
     partclassi = partclassinfo + i;
-    npart5prop+=(partclassi->ntypes-1);
+    npart5prop+=(partclassi->ntypes-1);  // don't include first type which is hidden
   }
 
   // 2. now count the exact amount and put labels into array just allocated
@@ -1486,7 +1486,7 @@ void InitPartProp(void){
       partclassdata *partclassi;
 
       partclassi = partclassinfo + i;
-      for(j=1;j<partclassi->ntypes;j++){
+      for(j=1;j<partclassi->ntypes;j++){ // skip over first type which is hidden
         flowlabels *flowlabel;
         int define_it;
 

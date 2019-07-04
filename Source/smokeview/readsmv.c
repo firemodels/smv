@@ -5167,6 +5167,25 @@ int ReadSMV(char *file, char *file2){
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
+    // CLASS_OF_PARTICLES
+    //  name
+    //  r g b (color)
+    // ntypes
+    // long label
+    // short label
+    // unit
+    // ....
+    // ...
+    // ...
+    // long label 
+    // short label
+    // unit
+
+    // 1'st type  hidden
+    // 2'nd type  default (uniform)
+    // 3'rd type first type read in
+    // 2+ntypes  ntypes type read in
+
     if(Match(buffer,"CLASS_OF_PARTICLES") == 1||
        Match(buffer,"CLASS_OF_HUMANS") == 1){
       float rgb_class[4];

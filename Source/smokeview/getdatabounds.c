@@ -152,7 +152,7 @@ void AdjustPart5Chops(partdata *parti){
 
 /* -----  ------------- ReadPartBounds ------------------------ */
 
-int ReadPartBounds(partdata *parti, int nprops){
+int ReadPartBounds(partdata *parti){
   FILE *stream=NULL;
   int j, eof=0;
   float *valmin, *valmax;
@@ -162,7 +162,7 @@ int ReadPartBounds(partdata *parti, int nprops){
   if(parti->valmax==NULL)NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
   valmin = parti->valmin;
   valmax = parti->valmax;
-  for(j=0;j<nprops;j++){
+  for(j=0;j<npart5prop;j++){
     valmin[j] = 1000000000.0;
     valmax[j] = -1000000000.0;
   }
@@ -171,11 +171,15 @@ int ReadPartBounds(partdata *parti, int nprops){
   if(stream==NULL)return 0;
   for(;;){
     float time;
-    int nclasses, k;
+    int nclasses, k, version=-1;
     char buffer[255];
 
     if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%f %i", &time, &nclasses);
+    sscanf(buffer, "%f %i %i", &time, &nclasses, &version);
+    if(version!=1){
+      fclose(stream);
+      return 0;
+    }
 
     for(k = 0; k<nclasses; k++){
       int nbounds, npoints;
@@ -194,7 +198,7 @@ int ReadPartBounds(partdata *parti, int nprops){
           break;
         }
         sscanf(buffer, "%f %f", &vmin, &vmax);
-        if(vmax>vmin){
+        if(vmax>=vmin){
           parti->bounds_set = 1;
 
           prop_index = GetPartPropIndex(k,j+2);
@@ -222,7 +226,7 @@ int ReadAllPartBounds(void){
     partdata *parti;
 
     parti = partinfo+i;
-    if(ReadPartBounds(parti, npart5prop)==1)have_bound_file=1;
+    if(ReadPartBounds(parti)==1)have_bound_file=1;
   }
 
   for(i = 0; i<npart5prop; i++){
