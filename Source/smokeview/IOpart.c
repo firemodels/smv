@@ -850,7 +850,7 @@ int GetSizeFileStatus(partdata *parti){
 
 /* ------------------ CreatePartSizeFileFromBound ------------------------ */
 
-void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile, int angle_flag, LINT file_offset){
+void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile, int angle_flag, LINT filepos){
   FILE *streamin, *streamout;
   float time;
   char buffer[255];
@@ -866,7 +866,7 @@ void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile, int 
     frame_size=0;
     if(fgets(buffer,255,streamin)==NULL)break;
     sscanf(buffer, "%f %i", &time, &nclasses);
-    fprintf(streamout, " %f %i\n", time, file_offset);
+    fprintf(streamout, " %f %li\n", time, filepos);
     frame_size += 12;
     for(j = 0; j<nclasses; j++){
       int k, npoints, ntypes;
@@ -897,7 +897,7 @@ void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile, int 
       if(eof==1)break;
     }
     if(eof==1)break;
-    file_offset += frame_size;
+    filepos += frame_size;
   }
   fclose(streamin);
   fclose(streamout);
@@ -1862,7 +1862,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         break;
       }
       filepos = -1;
-      sscanf(buffer,"%f %i",&time_local,&filepos);
+      sscanf(buffer,"%f %li",&time_local,&filepos);
       parti->filepos[count] = filepos;               // record file position for every frame
       if(count%partframestep_local!=0||
          (settmin_p!=0&&time_local<tmin_p-TEPS)||
