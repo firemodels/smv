@@ -1,4 +1,5 @@
-#define XYZ_EXTRA 7
+#define NXYZ_COMP_EVAC 7
+#define NXYZ_COMP_PART 3
 
 #include "options.h"
 #include <stdio.h>
@@ -837,6 +838,7 @@ int GetSizeFileStatus(partdata *parti){
   stat_regfile = STAT(parti->reg_file, &stat_regfile_buffer);
 
   if(stat_regfile != 0)return -1;                         // particle file does not exist
+
   if(stat_sizefile != 0) return 1;                        // size file does not exist
   if(stat_regfile_buffer.st_size > parti->reg_file_size){ // particle file has grown
     parti->reg_file_size = stat_regfile_buffer.st_size;
@@ -846,8 +848,64 @@ int GetSizeFileStatus(partdata *parti){
   return 0;
 }
 
- /* ------------------ CreatePart5SizeFile ------------------------ */
-void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, int *error){
+/* ------------------ CreatePartSizeFileFromBound ------------------------ */
+
+void CreatePartSizeFileFromBound(char *part5boundfile, char *part5sizefile, int angle_flag, LINT filepos){
+  FILE *streamin, *streamout;
+  float time;
+  char buffer[255];
+
+  streamin = fopen(part5boundfile, "r");
+  streamout = fopen(part5sizefile, "w");
+
+  for(;;){
+    int nclasses,j,eof;
+    LINT frame_size;
+
+    eof = 0;
+    frame_size=0;
+    if(fgets(buffer,255,streamin)==NULL)break;
+    sscanf(buffer, "%f %i", &time, &nclasses);
+    fprintf(streamout, " %f %li\n", time, filepos);
+    frame_size += 12;
+    for(j = 0; j<nclasses; j++){
+      int k, npoints, ntypes;
+
+      frame_size += 12;
+      if(fgets(buffer, 255, streamin)==NULL){
+        eof = 1;
+        break;
+      }
+      sscanf(buffer, "%i %i", &ntypes, &npoints);
+      if(angle_flag == 1){
+        frame_size += 4 + 4*NXYZ_COMP_EVAC*npoints + 4;
+      }
+      else {
+        frame_size += 4 + 4*NXYZ_COMP_PART*npoints + 4;
+      }
+      frame_size += 4 + 4*npoints + 4;
+      if(ntypes>0){
+        frame_size += 4 + 4*npoints*ntypes + 4;
+      }
+      fprintf(streamout, " %i\n", npoints);
+      for(k = 0; k<ntypes; k++){
+        if(fgets(buffer, 255, streamin)==NULL){
+          eof = 1;
+          break;
+        }
+      }
+      if(eof==1)break;
+    }
+    if(eof==1)break;
+    filepos += frame_size;
+  }
+  fclose(streamin);
+  fclose(streamout);
+}
+
+/* ------------------ CreatePartSizeFileFromPart ------------------------ */
+
+void CreatePartSizeFileFromPart(char *part5file, char *part5sizefile, int angle_flag, LINT file_offset){
   FILE *PART5FILE, *streamout;
   int returncode;
   int one, version, nclasses;
@@ -874,23 +932,30 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
   }
   while (!feof(PART5FILE)){
     float time;
+    LINT frame_size;
+
+    frame_size=0;
 
     FORTPART5READ(&time, 1);
+    frame_size += 12;
     if(returncode == 0)break;
     for (i = 0; i < nclasses; i++){
       FORTPART5READ(numpoints + i, 1);
+      frame_size += 12;
       if(angle_flag == 1){
-        skip = 4 + 4 * 7 * numpoints[i] + 4;
+        skip = 4 + 4*NXYZ_COMP_EVAC*numpoints[i] + 4;
       }
       else {
-        skip = 4 + 4 * 3 * numpoints[i] + 4;
+        skip = 4 + 4*NXYZ_COMP_PART*numpoints[i] + 4;
       }
       skip += 4 + 4 * numpoints[i] + 4;
       if(numtypes[2 * i] > 0)    skip += 4 + 4 * numpoints[i] * numtypes[2 * i] + 4;
       if(numtypes[2 * i + 1] > 0)skip += 4 + 4 * numpoints[i] * numtypes[2 * i + 1] + 4;
       FSEEK(PART5FILE, skip, SEEK_CUR);
+      frame_size+=skip;
     }
-    fprintf(streamout, "%f\n", time);
+    fprintf(streamout, "%f %li\n", time, file_offset);
+    file_offset += frame_size;
     for (i = 0; i < nclasses; i++){
       fprintf(streamout, " %i\n", numpoints[i]);
     }
@@ -901,7 +966,82 @@ void CreatePart5SizeFile(char *part5file, char *part5sizefile, int angle_flag, i
   FREEMEMORY(numpoints);
 }
 
-/* ------------------ GetPartHistogramFile ------------------------ */
+/* ------------------ GetPartHeaderOffset ------------------------ */
+
+LINT GetPartHeaderOffset(partdata *parti){
+  LINT file_offset=0;
+  int nclasses, one;
+  FILE *PART5FILE=NULL;
+  int version;
+  int returncode;
+  int skip_local;
+  int endianswitch=0;
+  int i;
+  int *numtypes = NULL, *numtypescopy, *numpoints = NULL;
+  int numtypes_temp[2];
+
+  PART5FILE = fopen(parti->reg_file,"rb");
+  if(PART5FILE==NULL)return 0;
+
+  FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
+  file_offset += 12;
+
+  FORTPART5READ(&version, 1);
+  if(returncode==0)goto wrapup;
+  file_offset += 12;
+
+  FORTPART5READ(&nclasses,1);
+  if(returncode==0)goto wrapup;
+  file_offset += 12;
+
+  NewMemory((void **)&numtypes,2*nclasses*sizeof(int));
+  NewMemory((void **)&numpoints,nclasses*sizeof(int));
+  numtypescopy=numtypes;
+  numtypes_temp[0]=0;
+  numtypes_temp[1]=0;
+  CheckMemory;
+  for(i=0;i<nclasses;i++){
+    FORTPART5READ(numtypes_temp,2);
+    file_offset += 16;
+    if(returncode==0)goto wrapup;
+    *numtypescopy++=numtypes_temp[0];
+    *numtypescopy++=numtypes_temp[1];
+    skip_local = 2*(numtypes_temp[0]+numtypes_temp[1])*(8 + 30);
+    file_offset+=skip_local;
+    returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
+    if(returncode!=0)goto wrapup;
+  }
+  CheckMemory;
+
+  wrapup:
+  FREEMEMORY(numtypes);
+  FREEMEMORY(numpoints);
+  fclose(PART5FILE);
+  return file_offset;
+}
+
+/* ------------------ CreatePartSizeFile ------------------------ */
+
+void CreatePartSizeFile(partdata *parti, int angle_flag){
+  FILE *stream;
+  LINT header_offset;
+
+  header_offset=GetPartHeaderOffset(parti);
+
+  if(partfast==YES){
+    stream = fopen(parti->bound_file, "r");
+    if(stream!=NULL){
+      fclose(stream);
+      CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, angle_flag, header_offset);
+      return;
+    }
+    printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
+    printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
+  }
+  CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, angle_flag, header_offset);
+}
+
+  /* ------------------ GetPartHistogramFile ------------------------ */
 
 void GetPartHistogramFile(partdata *parti){
   int i;
@@ -1044,10 +1184,10 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
         int j;
 
         if(parti->evac==1){
-          FORTPART5READ(partclassi->xyz,XYZ_EXTRA*nparts);
+          FORTPART5READ(partclassi->xyz, NXYZ_COMP_EVAC*nparts);
         }
         else{
-          FORTPART5READ(partclassi->xyz,3*nparts);
+          FORTPART5READ(partclassi->xyz, NXYZ_COMP_PART*nparts);
         }
         CheckMemory;
         if(nparts>0){
@@ -1084,10 +1224,10 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
       }
       else{
         if(parti->evac==1){
-          skip_local += 4 + XYZ_EXTRA*nparts*sizeof(float) + 4;
+          skip_local += 4 + NXYZ_COMP_EVAC*nparts*sizeof(float) + 4;
         }
         else{
-          skip_local += 4 + 3*nparts*sizeof(float) + 4;
+          skip_local += 4 + NXYZ_COMP_PART*nparts*sizeof(float) + 4;
         }
       }
       CheckMemory;
@@ -1253,10 +1393,10 @@ void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
       skip_local = 0;
       CheckMemory;
       if(parti->evac == 1){
-        skip_local += 4 + XYZ_EXTRA * 4 * nparts + 4;
+        skip_local += 4 + NXYZ_COMP_EVAC*4*nparts + 4;
       }
       else{
-        skip_local += 4 + 3 * 4 * nparts + 4;
+        skip_local += 4 + NXYZ_COMP_PART*4*nparts + 4;
       }
       skip_local += 4 + 4 * nparts + 4;  // skip over tag for now
       if(skip_local > 0){
@@ -1355,9 +1495,22 @@ int GetPartPropIndexS(char *shortlabel){
 
 /* ------------------ GetPartPropIndex ------------------------ */
 
-int GetPartPropIndex(char *label){
+int GetPartPropIndex(int class_i, int class_i_j){
   int i;
+  char *label;
+  partclassdata *partclassi;
+  flowlabels *labels, *labelj;
 
+  ASSERT(class_i>=0&&class_i<npartclassinfo);
+  class_i = CLAMP(class_i,0, npartclassinfo-1);
+  partclassi = partclassinfo+class_i;
+
+  labels = partclassi->labels;
+  ASSERT(class_i_j>=0&&class_i_j<partclassi->ntypes);
+  class_i_j = CLAMP(class_i_j,0, partclassi->ntypes-1);
+  labelj = labels+class_i_j;
+
+  label = labelj->longlabel;
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
 
@@ -1398,7 +1551,7 @@ void InitPartProp(void){
     partclassdata *partclassi;
 
     partclassi = partclassinfo + i;
-    npart5prop+=(partclassi->ntypes-1);
+    npart5prop+=(partclassi->ntypes-1);  // don't include first type which is hidden
   }
 
   // 2. now count the exact amount and put labels into array just allocated
@@ -1412,7 +1565,7 @@ void InitPartProp(void){
       partclassdata *partclassi;
 
       partclassi = partclassinfo + i;
-      for(j=1;j<partclassi->ntypes;j++){
+      for(j=1;j<partclassi->ntypes;j++){ // skip over first type which is hidden
         flowlabels *flowlabel;
         int define_it;
 
@@ -1524,7 +1677,7 @@ int GetNPartFrames(partdata *parti){
   FILE *stream;
   char buffer[256];
   float time_local;
-  char *reg_file, *size_file;
+  char *reg_file, *size_file, *bound_file;
   int i;
   int doit = 0;
   int stat_sizefile, stat_regfile;
@@ -1533,6 +1686,7 @@ int GetNPartFrames(partdata *parti){
 
   reg_file=parti->reg_file;
   size_file=parti->size_file;
+  bound_file = parti->bound_file;
 
   // if size file doesn't exist then generate it
 
@@ -1549,21 +1703,13 @@ int GetNPartFrames(partdata *parti){
     doit = 1;
   }
   if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
-    int error;
     int angle_flag=0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    if(parti->evac==1){
-      angle_flag=1;
-      PRINTF("Sizing evac data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
-    }
-    else{
-      angle_flag=0;
-      PRINTF("Sizing particle data: %s\n", reg_file);
-      CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
-    }
+    TrimBack(bound_file);
+    if(parti->evac==1)angle_flag=1;
+    CreatePartSizeFile(parti, angle_flag);
   }
 
   stream=fopen(size_file,"r");
@@ -1641,20 +1787,12 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   sizefile_status = GetSizeFileStatus(parti);
   if(sizefile_status == -1)return; // particle file does not exist so cannot be sized
   if(option==FORCE||sizefile_status == 1){        // size file is missing or older than particle file
-    int error;
     int angle_flag = 0;
 
     TrimBack(reg_file);
     TrimBack(size_file);
-    if(parti->evac == 1){
-      angle_flag = 1;
-      if(print_option==1)PRINTF("Sizing evac data: %s\n", reg_file);
-      }
-    else{
-      angle_flag = 0;
-      if(print_option==1)PRINTF("Sizing particle data: %s\n", reg_file);
-    }
-    CreatePart5SizeFile(reg_file, size_file, angle_flag, &error);
+    if(parti->evac == 1)angle_flag = 1;
+    CreatePartSizeFile(parti, angle_flag);
   }
 
   stream=fopen(size_file,"r");
@@ -1691,6 +1829,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
   NewMemory((void **)&parti->data5,parti->nclasses*parti->ntimes*sizeof(part5data));
   NewMemory((void **)&parti->times,parti->ntimes*sizeof(float));
+  NewMemory((void **)&parti->filepos, nframes_all*sizeof(LINT));
 
   // free memory for x, y, z frame data
 
@@ -1707,6 +1846,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   {
     part5data *datacopy;
     int fail;
+    LINT filepos;
 
     fail=0;
     count=-1;
@@ -1720,7 +1860,9 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         fail=1;
         break;
       }
-      sscanf(buffer,"%f",&time_local);
+      filepos = -1;
+      sscanf(buffer,"%f %li",&time_local,&filepos);
+      parti->filepos[count] = filepos;               // record file position for every frame
       if(count%partframestep_local!=0||
          (settmin_p!=0&&time_local<tmin_p-TEPS)||
          (settmax_p!=0&&time_local>tmax_p+TEPS)){
@@ -1787,10 +1929,10 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     partclassi = parti->partclassptr[i];
     if(partclassi->maxpoints>0){
       if(parti->evac==1){
-        NewMemory((void **)&partclassi->xyz,XYZ_EXTRA*partclassi->maxpoints*sizeof(float));
+        NewMemory((void **)&partclassi->xyz, NXYZ_COMP_EVAC*partclassi->maxpoints*sizeof(float));
       }
       else{
-        NewMemory((void **)&partclassi->xyz,3*partclassi->maxpoints*sizeof(float));
+        NewMemory((void **)&partclassi->xyz, NXYZ_COMP_PART*partclassi->maxpoints*sizeof(float));
       }
     }
   }
@@ -1880,6 +2022,7 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
   updatemenu=1;
 
   FREEMEMORY(parti->times);
+  FREEMEMORY(parti->filepos);
 
   if(loadflag==UNLOAD){
     if(parti->finalize == 1){
