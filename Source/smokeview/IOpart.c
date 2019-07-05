@@ -954,8 +954,8 @@ void CreatePartSizeFileFromPart(char *part5file, char *part5sizefile, int angle_
       FSEEK(PART5FILE, skip, SEEK_CUR);
       frame_size+=skip;
     }
-    fprintf(streamout, "%f %i\n", time, file_offset);
-    file_offset+=frame_size;
+    fprintf(streamout, "%f %li\n", time, file_offset);
+    file_offset += frame_size;
     for (i = 0; i < nclasses; i++){
       fprintf(streamout, " %i\n", numpoints[i]);
     }
@@ -1774,7 +1774,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   char buffer[256];
   float time_local;
   int count;
-  char *reg_file, *size_file, *bound_file;
+  char *reg_file, *size_file;
   int i;
   int nframes_all;
   int sizefile_status;
@@ -1783,7 +1783,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
   reg_file = parti->reg_file;
   size_file = parti->size_file;
-  bound_file = parti->bound_file;
 
   sizefile_status = GetSizeFileStatus(parti);
   if(sizefile_status == -1)return; // particle file does not exist so cannot be sized
