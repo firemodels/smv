@@ -1138,6 +1138,7 @@ typedef struct _partdata {
 
   float zoffset, *times;
   FILE_SIZE reg_file_size;
+  LINT *filepos;
 
   char menulabel[128];
 

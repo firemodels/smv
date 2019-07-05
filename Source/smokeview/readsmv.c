@@ -8052,6 +8052,7 @@ typedef struct {
       parti->bounds_set = 0;
       parti->valmin = NULL;
       parti->valmax = NULL;
+      parti->filepos = NULL;
 
       parti->data5=NULL;
       parti->partclassptr=NULL;
