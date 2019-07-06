@@ -497,17 +497,17 @@ void _PrintAllMemoryInfo(void){
   blockinfo *pbi;
   int n=0,size=0;
 
-  PRINTF("\n\n");
-  PRINTF("********************************************\n");
-  PRINTF("********************************************\n");
-  PRINTF("********************************************\n");
+  printf("\n\n");
+  printf("********************************************\n");
+  printf("********************************************\n");
+  printf("********************************************\n");
   for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext)
   {
     n++;
     size += pbi->size;
-    PRINTF("%s allocated in %s at line %i\n",pbi->varname,pbi->filename,pbi->linenumber);
+    printf("%s allocated in %s at line %i\n",pbi->varname,pbi->filename,pbi->linenumber);
   }
-  PRINTF("nblocks=%i sizeblocks=%i\n",n,size);
+  printf("nblocks=%i sizeblocks=%i\n",n,size);
 }
 
 /* ------------------ GetBlockInfo_nofail ------------------------ */
