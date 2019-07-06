@@ -20,16 +20,25 @@
 #define READFAIL 0
 
 #define FORTPART5READ(var,size) \
-returncode=READPASS;\
-FSEEK(PART5FILE,4,SEEK_CUR);if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
-if(returncode==READPASS){\
-  fread(var,4,size,PART5FILE);\
-  if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
+returncode = READPASS; \
+if(file_buffer==NULL){\
+  returncode=READPASS;\
+  FSEEK(PART5FILE,4,SEEK_CUR);if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
+  if(returncode==READPASS){\
+    fread(var,4,size,PART5FILE);\
+    if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
+  }\
+  if(returncode==READPASS){\
+    if(endianswitch==1)EndianSwitch(var,size);\
+    FSEEK(PART5FILE,4,SEEK_CUR);\
+    if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
+  }\
 }\
-if(returncode==READPASS){\
-  if(endianswitch==1)EndianSwitch(var,size);\
-  FSEEK(PART5FILE,4,SEEK_CUR);\
-  if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=READFAIL;\
+else{\
+  file_buffer += 4;\
+  memcpy(var, file_buffer, 4*size);\
+  file_buffer += 4*size+4;\
+  if(file_buffer-file_buffer_base>=nfile_buffer)returncode = READFAIL;\
 }
 
 /* ------------------ GetEvacPartColor ------------------------ */
@@ -913,6 +922,9 @@ void CreatePartSizeFileFromPart(char *part5file, char *part5sizefile, int angle_
   int *numtypes, *numpoints;
   int skip, numvals;
   int endianswitch = 0;
+  char *file_buffer=NULL;
+  char *file_buffer_base = NULL;
+  int nfile_buffer = 0;
 
   PART5FILE = fopen(part5file, "rb");
   streamout = fopen(part5sizefile, "w");
@@ -979,6 +991,9 @@ LINT GetPartHeaderOffset(partdata *parti){
   int i;
   int *numtypes = NULL, *numtypescopy, *numpoints = NULL;
   int numtypes_temp[2];
+  char *file_buffer = NULL;
+  char *file_buffer_base = NULL;
+  int nfile_buffer = 0;
 
   PART5FILE = fopen(parti->reg_file,"rb");
   if(PART5FILE==NULL)return 0;
@@ -1109,15 +1124,64 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   int count;
   int count2;
   int first_frame=1;
+  char *file_buffer = NULL;
+  char *file_buffer_base = NULL;
+  unsigned int nfile_buffer = 0;
+#ifdef pp_PART_TIMER
+  float part_time, overhead_time;
+#endif
 
   reg_file=parti->reg_file;
 
-  PART5FILE=fopen(reg_file,"rb");
-  if(PART5FILE==NULL)return;
+#ifdef pp_PARTBUFFER
+  if(partfast==YES){
+    PART5FILE = fopen(reg_file, "rb");
+    fseek(PART5FILE, 0L, SEEK_END);
+    nfile_buffer = ftell(PART5FILE);
+    fclose(PART5FILE);
+    PART5FILE = NULL;
+    if(nfile_buffer>0){
+      if(NewMemory((void **)&file_buffer, nfile_buffer)!=0){
+        PART5FILE = fopen(reg_file, "rb");
+        if(PART5FILE==NULL){
+          FREEMEMORY(file_buffer);
+          PART5FILE = NULL;
+        }
+        else{
+#ifdef pp_PART_TIMER
+          START_TIMER(part_time);
+#endif
+          fread(file_buffer, nfile_buffer, 1, PART5FILE);
+#ifdef pp_PART_TIMER
+          STOP_TIMER(part_time);
+          printf(" size=%f rate=%f ",(float)nfile_buffer/1000000.0, ((float)nfile_buffer/1000000.0)/part_time);
+#endif
+
+          file_buffer_base = file_buffer;
+          fclose(PART5FILE);
+          PART5FILE = NULL;
+        }
+      }
+    }
+  }
+#endif
+
+#ifdef pp_PART_TIMER
+  START_TIMER(overhead_time);
+#endif
+  if(file_buffer==NULL){
+    PART5FILE = fopen(reg_file, "rb");
+    if(PART5FILE==NULL)return;
+  }
 
   if(file_size!=NULL)*file_size= GetFileSizeSMV(reg_file);
-  FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
+  if(file_buffer==NULL){
+    FSEEK(PART5FILE,4,SEEK_CUR);fread(&one,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
+    if(one!=1)endianswitch=1;
+  }
+  else{
+    file_buffer+=12;
+  }
 
   FORTPART5READ(&version, 1);
   if(returncode==0)goto wrapup;
@@ -1137,7 +1201,14 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
     *numtypescopy++=numtypes_temp[0];
     *numtypescopy++=numtypes_temp[1];
     skip_local = 2*(numtypes_temp[0]+numtypes_temp[1])*(8 + 30);
-    returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
+    if(file_buffer==NULL){
+      returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
+    }
+    else{
+      file_buffer += skip_local;
+      if(file_buffer-file_buffer_base>=nfile_buffer)goto wrapup;
+      returncode = 0;
+    }
     if(returncode!=0)goto wrapup;
   }
   CheckMemory;
@@ -1300,7 +1371,14 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
 
       returncode=0;
       if(skip_local>0){
-        returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
+        if(file_buffer==NULL){
+          returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
+        }
+        else{
+          file_buffer += skip_local;
+          if(file_buffer-file_buffer_base>=nfile_buffer)goto wrapup;
+          returncode = 0;
+        }
         if(returncode!=0)goto wrapup;
       }
       else{
@@ -1316,7 +1394,15 @@ wrapup:
   CheckMemory;
   FREEMEMORY(numtypes);
   FREEMEMORY(numpoints);
-  fclose(PART5FILE);
+  FREEMEMORY(file_buffer_base);
+  if(PART5FILE!=NULL){
+    fclose(PART5FILE);
+  }
+#ifdef pp_PART_TIMER
+  STOP_TIMER(overhead_time);
+  printf("(%f/%f)",part_time,overhead_time);
+#endif
+
 }
 
   /* ------------------ GetHistFileData ------------------------ */
@@ -1338,6 +1424,9 @@ void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
   int count;
   float *rvals;
   int nrvals;
+  char *file_buffer = NULL;
+  char *file_buffer_base = NULL;
+  int nfile_buffer = 0;
 
   reg_file = parti->reg_file;
 

@@ -18,6 +18,8 @@
 //*** options: all platforms
 
 //#define pp_PARTFAST           // fast particle file reading
+//#define pp_PARTBUFFER         // read in particles from a memory buffer
+//#define pp_PART_TIMER         // output particle debug timing info
 #define pp_HTML                // output html version of smokeview scene
 //#define pp_PARTDEBUG        // debug output for particles file I/O
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
