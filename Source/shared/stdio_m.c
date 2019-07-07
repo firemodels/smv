@@ -15,18 +15,17 @@ FILE_m *fopen_m(char *file, char *mode){
 
   if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
   if(strcmp(mode, "rb")!=0&&strcmp(mode, "rbm")!=0)return NULL;
-  if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0)return NULL;
-
   stream = fopen(file, "rb");
   if(stream==NULL){                                   // open of file failed so abort
-    FREEMEMORY(stream_m);
     return NULL;
   }
+
   if(NewMemory((void **)&m_file, strlen(file)+1)==0){ // memory allocation failed so abort
     fclose(stream);
-    FREEMEMORY(stream_m);
     return NULL;
   }
+
+  if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0)return NULL;
   stream_m->buffer = NULL;
   stream_m->buffer_base = NULL;
   stream_m->nbuffer = 0;
@@ -125,7 +124,7 @@ int fseek_m(FILE_m *stream_m, long int offset, int whence){
   return return_val;
 }
 
-/* ------------------ fseek_m ------------------------ */
+/* ------------------ ftell_m ------------------------ */
 
 long int ftell_m(FILE_m *stream_m){
   long int return_val;
