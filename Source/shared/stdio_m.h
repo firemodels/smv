@@ -1,7 +1,8 @@
 
 typedef struct {
   FILE *stream;
-  unsigned char *file, *buffer, *buffer_base;
+  unsigned char *buffer, *buffer_base;
+  char *file;
   unsigned int nbuffer;
 } FILE_m;
 

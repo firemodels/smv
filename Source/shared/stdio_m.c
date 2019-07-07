@@ -9,7 +9,8 @@
 FILE_m *fopen_m(char *file, char *mode){
   FILE_m *stream_m = NULL;
   FILE *stream;
-  char *buffer, *m_file;
+  unsigned char *buffer;
+  char *m_file;
   int nbuffer;
 
   if(file==NULL||strlen(file)==0)return NULL;
