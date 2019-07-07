@@ -13,36 +13,43 @@ FILE_m *fopen_m(char *file, char *mode){
   char *m_file;
   int nbuffer;
 
-  if(file==NULL||strlen(file)==0)return NULL;
+  if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
+  if(strcmp(mode, "rb")!=0&&strcmp(mode, "rbm")!=0)return NULL;
   if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0)return NULL;
+
   stream = fopen(file, "rb");
-  if(stream==NULL||NewMemory((void **)&m_file, strlen(file)+1)==0){
+  if(stream==NULL){                                   // open of file failed so abort
     FREEMEMORY(stream_m);
     return NULL;
   }
-  strcpy(m_file, file);
+  if(NewMemory((void **)&m_file, strlen(file)+1)==0){ // memory allocation failed so abort
+    fclose(stream);
+    FREEMEMORY(stream_m);
+    return NULL;
+  }
   stream_m->buffer = NULL;
   stream_m->buffer_base = NULL;
   stream_m->nbuffer = 0;
+  strcpy(m_file, file);
   stream_m->file = m_file;
   stream_m->stream = NULL;
 
+  if(strcmp(mode, "rb")==0){    // not mode rbm so use regular IO
+    stream_m->stream = stream;
+    return stream_m;
+  }
+
   fseek(stream, 0L, SEEK_END);
   nbuffer = ftell(stream);
-  if(nbuffer<=0){
+  if(nbuffer<=0){            // file is empty so abort
     fclose(stream);
     FREEMEMORY(stream_m);
     FREEMEMORY(m_file);
     return NULL;
   }
 
-  if(NewMemory((void **)&buffer, nbuffer)==0){
-    stream_m->stream = fopen(file, "rb");
-    if(stream_m->stream==NULL){
-      FREEMEMORY(stream_m);
-      FREEMEMORY(m_file);
-      return NULL;
-    }
+  if(NewMemory((void **)&buffer, nbuffer)==0){ // allocation of memory buffer failed so revert to regular IO
+    stream_m->stream = stream;
     return stream_m;
   }
 
@@ -131,5 +138,16 @@ long int ftell_m(FILE_m *stream_m){
     return_val = ftell(stream_m->stream);
   }
   return return_val;
+}
+
+/* ------------------ rewind_m ------------------------ */
+
+void rewind_m(FILE_m *stream_m){
+  if(stream_m->stream==NULL){
+    stream_m->buffer = stream_m->buffer_base;
+  }
+  else{
+    rewind(stream_m->stream);
+  }
 }
 
