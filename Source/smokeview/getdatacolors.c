@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#ifdef pp_PART_TIMER
+#include GLUT_H
+#endif
 
 #include "smokeviewvars.h"
 
@@ -482,15 +485,29 @@ void UpdatePart5Extremes(void){
   }
 }
 
+/* ------------------ FreePart2 ------------------------ */
+
+#ifdef pp_FREEPART
+void FreePart2(void){
+}
+#endif
+
 /* ------------------ GetPart5Colors ------------------------ */
 
+#ifdef pp_PART_TIMER
+void GetPart5Colors(partdata *parti, int nlevel, int convert_flag, float *time1){
+#else
 void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
+#endif
   int i;
   part5data *datacopy;
   // float *diameter_data;
   float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
+#ifdef pp_PART_TIMER
+  START_TIMER(*time1);
+#endif
   datacopy = parti->data5;
   for(i=0;i<parti->ntimes;i++){
     int j;
@@ -591,87 +608,94 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
       v_vel_data=NULL;
       w_vel_data=NULL;
 
-      if(partclassi->col_azimuth>=0){
-        azimuth_data=datacopy->rvals+partclassi->col_azimuth*datacopy->npoints;
-      }
-      if(partclassi->col_diameter>=0){
-       // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints;
-      }
-      if(partclassi->col_elevation>=0){
-        elevation_data=datacopy->rvals+partclassi->col_elevation*datacopy->npoints;
-      }
-      if(partclassi->col_length>=0){
-        length_data=datacopy->rvals+partclassi->col_length*datacopy->npoints;
-      }
-      if(partclassi->col_u_vel>=0){
-        u_vel_data=datacopy->rvals+partclassi->col_u_vel*datacopy->npoints;
-      }
-      if(partclassi->col_v_vel>=0){
-        v_vel_data=datacopy->rvals+partclassi->col_v_vel*datacopy->npoints;
-      }
-      if(partclassi->col_w_vel>=0){
-        w_vel_data=datacopy->rvals+partclassi->col_w_vel*datacopy->npoints;
-      }
-      flag=0;
-      if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
-        int m;
-
-        flag=1;
-        dsx = datacopy->dsx;
-        dsy = datacopy->dsy;
-        dsz = datacopy->dsz;
-        for(m=0;m<datacopy->npoints;m++){
-          float az, elev, length;
-
-          az= azimuth_data[m]*DEG2RAD;
-          elev = elevation_data[m]*DEG2RAD;
-          length=SCALE2SMV(length_data[m]);
-          dsx[m] = cos(az)*cos(elev)*length/2.0;
-          dsy[m] = sin(az)*cos(elev)*length/2.0;
-          dsz[m] =         sin(elev)*length/2.0;
+      if(partfast==0){
+        if(partclassi->col_azimuth>=0){
+          azimuth_data = datacopy->rvals+partclassi->col_azimuth*datacopy->npoints;
         }
-      }
-      if(u_vel_data!=NULL&&v_vel_data!=NULL&&w_vel_data!=NULL){
-        float denom;
-        int m;
-        partpropdata *prop_U, *prop_V, *prop_W;
-
-        prop_U = GetPartProp(partclassi->labels[partclassi->col_u_vel+2].longlabel);
-        prop_V = GetPartProp(partclassi->labels[partclassi->col_v_vel+2].longlabel);
-        prop_W = GetPartProp(partclassi->labels[partclassi->col_w_vel+2].longlabel);
-        if(prop_U!=NULL&&prop_V!=NULL&&prop_W!=NULL){
-          float umax, vmax, wmax;
-
-          umax = MAX(ABS(prop_U->valmin),ABS(prop_U->valmax));
-          vmax = MAX(ABS(prop_V->valmin),ABS(prop_V->valmax));
-          wmax = MAX(ABS(prop_W->valmin),ABS(prop_W->valmax));
-
-          denom = sqrt(umax*umax+vmax*vmax+wmax*wmax);
-          if(denom==0.0)denom=1.0;
+        if(partclassi->col_diameter>=0){
+          // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints;
         }
-        else{
-          denom=1.0;
+        if(partclassi->col_elevation>=0){
+          elevation_data = datacopy->rvals+partclassi->col_elevation*datacopy->npoints;
         }
+        if(partclassi->col_length>=0){
+          length_data = datacopy->rvals+partclassi->col_length*datacopy->npoints;
+        }
+        if(partclassi->col_u_vel>=0){
+          u_vel_data = datacopy->rvals+partclassi->col_u_vel*datacopy->npoints;
+        }
+        if(partclassi->col_v_vel>=0){
+          v_vel_data = datacopy->rvals+partclassi->col_v_vel*datacopy->npoints;
+        }
+        if(partclassi->col_w_vel>=0){
+          w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints;
+        }
+        flag = 0;
+        if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
+          int m;
 
-        flag=1;
-        dsx = datacopy->dsx;
-        dsy = datacopy->dsy;
-        dsz = datacopy->dsz;
-        for(m=0;m<datacopy->npoints;m++){
-          dsx[m] = 0.05*u_vel_data[m]/denom;
-          dsy[m] = 0.05*v_vel_data[m]/denom;
-          dsz[m] = 0.05*w_vel_data[m]/denom;
+          flag = 1;
+          dsx = datacopy->dsx;
+          dsy = datacopy->dsy;
+          dsz = datacopy->dsz;
+          for(m = 0; m<datacopy->npoints; m++){
+            float az, elev, length;
+
+            az = azimuth_data[m]*DEG2RAD;
+            elev = elevation_data[m]*DEG2RAD;
+            length = SCALE2SMV(length_data[m]);
+            dsx[m] = cos(az)*cos(elev)*length/2.0;
+            dsy[m] = sin(az)*cos(elev)*length/2.0;
+            dsz[m] = sin(elev)*length/2.0;
+          }
         }
-      }
-      if(flag==0){
-        FREEMEMORY(datacopy->dsx);
-        FREEMEMORY(datacopy->dsy);
-        FREEMEMORY(datacopy->dsz);
+        if(u_vel_data!=NULL&&v_vel_data!=NULL&&w_vel_data!=NULL){
+          float denom;
+          int m;
+          partpropdata *prop_U, *prop_V, *prop_W;
+
+          prop_U = GetPartProp(partclassi->labels[partclassi->col_u_vel+2].longlabel);
+          prop_V = GetPartProp(partclassi->labels[partclassi->col_v_vel+2].longlabel);
+          prop_W = GetPartProp(partclassi->labels[partclassi->col_w_vel+2].longlabel);
+          if(prop_U!=NULL&&prop_V!=NULL&&prop_W!=NULL){
+            float umax, vmax, wmax;
+
+            umax = MAX(ABS(prop_U->valmin), ABS(prop_U->valmax));
+            vmax = MAX(ABS(prop_V->valmin), ABS(prop_V->valmax));
+            wmax = MAX(ABS(prop_W->valmin), ABS(prop_W->valmax));
+
+            denom = sqrt(umax*umax+vmax*vmax+wmax*wmax);
+            if(denom==0.0)denom = 1.0;
+          }
+          else{
+            denom = 1.0;
+          }
+
+          flag = 1;
+          dsx = datacopy->dsx;
+          dsy = datacopy->dsy;
+          dsz = datacopy->dsz;
+          for(m = 0; m<datacopy->npoints; m++){
+            dsx[m] = 0.05*u_vel_data[m]/denom;
+            dsy[m] = 0.05*v_vel_data[m]/denom;
+            dsz[m] = 0.05*w_vel_data[m]/denom;
+          }
+        }
+        if(flag==0){
+          FREEMEMORY(datacopy->dsx);
+          FREEMEMORY(datacopy->dsy);
+          FREEMEMORY(datacopy->dsz);
+        }
       }
       datacopy++;
     }
   }
-// erase data memory in a separate loop (so all "columns" are available when doing any conversions)
+#ifdef pp_PART_TIMER
+  STOP_TIMER(*time1);
+#endif
+  // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
+
+#ifndef pp_FREEPART
   datacopy = parti->data5;
   for(i = 0; i < parti->ntimes; i++){
     int j;
@@ -681,6 +705,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
       datacopy++;
     }
   }
+#endif
   for(i=0;i<npart5prop;i++){
     int n;
     partpropdata *propi;
@@ -733,7 +758,6 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
     Num2String(&labels[nlevel-1][0],tval);
     CheckMemory;
   }
-
 }
 
 /* ------------------ GetZoneColor ------------------------ */

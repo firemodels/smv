@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_FREEPART           // free particle memory in the background
 //#define pp_PARTFAST           // fast particle file reading
 //#define pp_PARTBUFFER         // read in particles from a memory buffer
 //#define pp_PART_TIMER         // output particle debug timing info

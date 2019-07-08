@@ -2032,6 +2032,9 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
 void UpdatePartColorBounds(partdata *parti){
   int j;
+#ifdef pp_PART_TIMER
+  float sum_time1=0.0;
+#endif
 
   for (j = 0; j < npartinfo; j++) {
     partdata *partj;
@@ -2054,14 +2057,30 @@ void UpdatePartColorBounds(partdata *parti){
       }
     }
   }
+#ifdef pp_PART_TIMER
+  START_TIMER(color_time);
+  sum_time1 = 0.0;
+#endif
   for(j = 0; j<npartinfo; j++){
     partdata *partj;
+#ifdef pp_PART_TIMER
+    float time1;
+#endif
 
     partj = partinfo+j;
     if(partj->loaded==1&&partj->display==1){
+#ifdef pp_PART_TIMER
+      GetPart5Colors(partj, nrgb, PARTFILE_MAP, &time1); // make sure there is data
+      sum_time1 += time1;
+#else
       GetPart5Colors(partj, nrgb, PARTFILE_MAP); // make sure there is data
+#endif
     }
   }
+#ifdef pp_PART_TIMER
+  STOP_TIMER(color_time);
+  printf("ddd %f %f\n",sum_time1, color_time);
+#endif
 }
 
     /* -----  ------------- ReadPart ------------------------ */

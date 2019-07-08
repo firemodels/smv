@@ -74,6 +74,7 @@ void *MtCompressSVZip(void *arg){
 #endif
 
 /* ------------------ CompressSVZip ------------------------ */
+
 #ifdef pp_THREAD
 void CompressSVZip(void){
   pthread_create(&compress_thread_id,NULL, MtCompressSVZip,NULL);
@@ -82,6 +83,24 @@ void CompressSVZip(void){
 void CompressSVZip(void){
   CompressSVZip2();
 }
+#endif
+
+/* ------------------ FreePartMemory ------------------------ */
+
+#ifdef pp_FREEPART
+#ifdef pp_THREAD
+void *MtFreePart(void *arg){
+  LOCK_FREEPART;
+  FreePart2();
+  UNLOCK_FREEPART;
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void FreePart(void){
+  pthread_create(&freepart_thread_id, NULL, MtFreePart, NULL);
+}
+#endif
 #endif
 
 /* ------------------ MtUpdateTriangles ------------------------ */

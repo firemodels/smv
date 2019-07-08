@@ -392,6 +392,10 @@ EXTERNCPP void ObjectCB(int flag);
 EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
+#ifdef pp_FREEPART
+EXTERNCPP void FreePart(void);
+EXTERNCPP void FreePart2(void);
+#endif
 EXTERNCPP void UpdateTerrainColors(void);
 EXTERNCPP void DrawTerrain(terraindata *terri, int only_geom);
 EXTERNCPP void DrawTerrainTexture(terraindata *terri, int only_geom);
@@ -837,7 +841,11 @@ EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 
+#ifdef pp_PART_TIMER
+EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag, float *time1);
+#else
 EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag);
+#endif
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
