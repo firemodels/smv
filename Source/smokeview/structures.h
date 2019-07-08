@@ -1148,6 +1148,9 @@ typedef struct _partdata {
   histogramdata **histograms;
   int bounds_set;
   float *valmin, *valmax;
+#ifdef pp_PART_FAST2
+  float *rvals;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */

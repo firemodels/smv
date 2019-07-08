@@ -182,7 +182,7 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
   float dbucket;
   int first=1;
   float nnvals=0.0;
-#ifdef pp_PARTDEBUG  
+#ifdef pp_PART_DEBUG  
   int have_inf = 0;
 #endif
 
@@ -205,7 +205,7 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     else{
       nnvals++;
     }
-#ifdef pp_PARTDEBUG
+#ifdef pp_PART_DEBUG
     if(isinf(vals[i])){
       vals[i] = 0.0;
       have_inf = 1;
@@ -221,7 +221,7 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     valmin=MIN(vals[i],valmin);
     valmax=MAX(vals[i],valmax);
   }
-#ifdef pp_PARTDEBUG
+#ifdef pp_PART_DEBUG
   if(have_inf==1)printf("\n\n");
 #endif
 

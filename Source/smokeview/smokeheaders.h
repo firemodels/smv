@@ -392,10 +392,6 @@ EXTERNCPP void ObjectCB(int flag);
 EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
-#ifdef pp_FREEPART
-EXTERNCPP void FreePart(void);
-EXTERNCPP void FreePart2(void);
-#endif
 EXTERNCPP void UpdateTerrainColors(void);
 EXTERNCPP void DrawTerrain(terraindata *terri, int only_geom);
 EXTERNCPP void DrawTerrainTexture(terraindata *terri, int only_geom);

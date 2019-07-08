@@ -8053,6 +8053,9 @@ typedef struct {
       parti->valmin = NULL;
       parti->valmax = NULL;
       parti->filepos = NULL;
+#ifdef pp_PART_FAST2
+      parti->rvals = NULL;
+#endif
 
       parti->data5=NULL;
       parti->partclassptr=NULL;

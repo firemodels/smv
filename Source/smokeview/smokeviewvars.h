@@ -21,7 +21,7 @@
 #include "threader.h"
 
 SVEXTERN int SVDECL(update_part_bounds, 0);
-#ifdef pp_PARTFAST
+#ifdef pp_PART_FAST
 SVEXTERN int SVDECL(partfast, YES);
 #else
 SVEXTERN int SVDECL(partfast, NO);

@@ -485,13 +485,6 @@ void UpdatePart5Extremes(void){
   }
 }
 
-/* ------------------ FreePart2 ------------------------ */
-
-#ifdef pp_FREEPART
-void FreePart2(void){
-}
-#endif
-
 /* ------------------ GetPart5Colors ------------------------ */
 
 #ifdef pp_PART_TIMER
@@ -695,7 +688,9 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
 #endif
   // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
 
-#ifndef pp_FREEPART
+#ifdef pp_PART_FAST2
+  FREEMEMORY(parti->rvals);
+#else
   datacopy = parti->data5;
   for(i = 0; i < parti->ntimes; i++){
     int j;

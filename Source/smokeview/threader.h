@@ -22,10 +22,6 @@
 #define LOCK_TRIANGLES
 #define UNLOCK_TRIANGLES
 #endif
-#ifdef pp_FREEPART
-  #define LOCK_FREEPART     pthread_mutex_lock(&mutexFREEPART);
-  #define UNLOCK_FREEPART   pthread_mutex_unlock(&mutexFREEPART);
-#endif
   #define LOCK_COMPRESS     pthread_mutex_lock(&mutexCOMPRESS);
   #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
@@ -63,17 +59,11 @@ MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-#ifdef pp_FREEPART
-MT_EXTERN pthread_mutex_t mutexFREEPART;
-#endif
 #ifdef pp_ISOTHREAD
 MT_EXTERN pthread_mutex_t mutexTRIANGLES;
 #endif
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
-#ifdef pp_FREEPART
-MT_EXTERN pthread_t freepart_thread_id;
-#endif
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
