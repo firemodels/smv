@@ -74,6 +74,7 @@ void *MtCompressSVZip(void *arg){
 #endif
 
 /* ------------------ CompressSVZip ------------------------ */
+
 #ifdef pp_THREAD
 void CompressSVZip(void){
   pthread_create(&compress_thread_id,NULL, MtCompressSVZip,NULL);

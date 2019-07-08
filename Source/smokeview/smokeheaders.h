@@ -837,7 +837,11 @@ EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 
+#ifdef pp_PART_TIMER
+EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag, float *time1);
+#else
 EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag);
+#endif
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
