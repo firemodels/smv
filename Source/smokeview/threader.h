@@ -73,8 +73,8 @@ MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 #ifdef pp_FREEPART
 MT_EXTERN pthread_t freepart_thread_id;
-MT_EXTERN pthread_t update_all_patch_bounds_id;
 #endif
+MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
 #endif
