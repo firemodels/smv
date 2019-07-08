@@ -99,6 +99,25 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   return return_val;
 }
 
+/* ------------------ freadptr_m ------------------------ */
+
+size_t freadptr_m(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
+  unsigned char *buffer, *buffer_end;
+  size_t return_val;
+
+  if(stream_m->stream==NULL){
+    buffer_end = stream_m->buffer+4+size*nmemb+4;
+    if(buffer_end-stream_m->buffer_base>stream_m->nbuffer)return 0;
+    buffer = stream_m->buffer;
+    buffer += 4;
+    *ptr= buffer;
+    buffer += size*nmemb+4;
+    stream_m->buffer = buffer;
+    return_val = size*nmemb;
+  }
+  return return_val;
+}
+
 /* ------------------ fseek_m ------------------------ */
 
 int fseek_m(FILE_m *stream_m, long int offset, int whence){

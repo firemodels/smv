@@ -1122,7 +1122,7 @@ typedef struct _part5data {
   int humancolor_varindex;
   int *tags,*sort_tags;
   unsigned char *vis_part;
-  float *rvals;
+  float *rvals,**rvalsptr;
   unsigned char *irvals;
   unsigned char **cvals;
 } part5data;
