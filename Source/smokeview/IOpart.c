@@ -1169,6 +1169,7 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
 #endif
 
   reg_file = parti->reg_file;
+  *file_size = GetFileSizeSMV(reg_file);
 
 #ifdef pp_PART_BUFFER
 #ifdef pp_PART_TIMER
@@ -1972,14 +1973,16 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
           NewMemory((void **)&datacopy->sx,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sy,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sz,npoints*sizeof(short));
-          NewMemory((void **)&datacopy->dsx,npoints*sizeof(float));
-          NewMemory((void **)&datacopy->dsy,npoints*sizeof(float));
-          NewMemory((void **)&datacopy->dsz,npoints*sizeof(float));
-          if(parti->evac==1){
-            NewMemory((void **)&datacopy->avatar_angle,npoints*sizeof(float));
-            NewMemory((void **)&datacopy->avatar_width,npoints*sizeof(float));
-            NewMemory((void **)&datacopy->avatar_depth,npoints*sizeof(float));
-            NewMemory((void **)&datacopy->avatar_height,npoints*sizeof(float));
+          if(partfast==NO){
+            NewMemory((void **)&datacopy->dsx, npoints*sizeof(float));
+            NewMemory((void **)&datacopy->dsy, npoints*sizeof(float));
+            NewMemory((void **)&datacopy->dsz, npoints*sizeof(float));
+            if(parti->evac==1){
+              NewMemory((void **)&datacopy->avatar_angle,npoints*sizeof(float));
+              NewMemory((void **)&datacopy->avatar_width,npoints*sizeof(float));
+              NewMemory((void **)&datacopy->avatar_depth,npoints*sizeof(float));
+              NewMemory((void **)&datacopy->avatar_height,npoints*sizeof(float));
+            }
           }
           ntypes = datacopy->partclassbase->ntypes;
           if(ntypes>0){
@@ -2095,10 +2098,10 @@ void UpdatePartColorBounds(partdata *parti){
     partj = partinfo+j;
     if(partj->loaded==1&&partj->display==1){
 #ifdef pp_PART_TIMER
-      GetPart5Colors(partj, nrgb, PARTFILE_MAP, &time1); // make sure there is data
+      GetPartColors(partj, nrgb, PARTFILE_MAP, &time1); // make sure there is data
       sum_time1 += time1;
 #else
-      GetPart5Colors(partj, nrgb, PARTFILE_MAP); // make sure there is data
+      GetPartColors(partj, nrgb, PARTFILE_MAP); // make sure there is data
 #endif
     }
   }
