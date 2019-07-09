@@ -21,7 +21,6 @@
 //#define pp_PART_FAST2          // allocate particles globally
 //#define pp_PART_BUFFER         // read in particles from a memory buffer
 //#define pp_PART_TIMER         // output particle debug timing info
-//#define pp_PART_DEBUG        // debug output for particles file I/O
 //#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_HTML                // output html version of smokeview scene
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
