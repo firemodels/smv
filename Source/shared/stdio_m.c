@@ -9,9 +9,8 @@
 FILE_m *fopen_m(char *file, char *mode){
   FILE_m *stream_m = NULL;
   FILE *stream;
-  unsigned char *buffer;
-  char *m_file;
-  int nbuffer;
+  char *buffer, *m_file;
+  size_t nbuffer;
 
   if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
   if(strcmp(mode, "rb")!=0&&strcmp(mode, "rbm")!=0)return NULL;
@@ -52,7 +51,8 @@ FILE_m *fopen_m(char *file, char *mode){
     return stream_m;
   }
 
-  fread(buffer, 1, nbuffer, stream);
+  fseek(stream, 0, SEEK_SET);
+  fread(buffer, (size_t)1, (size_t)nbuffer, stream);
   stream_m->buffer = buffer;
   stream_m->buffer_base = buffer;
   stream_m->file = m_file;
@@ -66,7 +66,7 @@ FILE_m *fopen_m(char *file, char *mode){
 void fclose_m(FILE_m *stream_m){
   if(stream_m==NULL)return;
   if(stream_m->stream==NULL){
-    FREEMEMORY(stream_m->buffer);
+    FREEMEMORY(stream_m->buffer_base);
     FREEMEMORY(stream_m->file);
     FREEMEMORY(stream_m);
   }
@@ -78,23 +78,18 @@ void fclose_m(FILE_m *stream_m){
 /* ------------------ fread_m ------------------------ */
 
 size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
-  unsigned char *buffer, *buffer_end;
+  unsigned char *buffer_end;
   size_t return_val;
 
   if(stream_m->stream==NULL){
-    buffer_end = stream_m->buffer+4+size*nmemb+4;
-    if(buffer_end-stream_m->buffer_base>stream_m->nbuffer)return 0;
-    buffer = stream_m->buffer;
-    buffer += 4;
-    memcpy(ptr, buffer, size*nmemb);
-    buffer += size*nmemb+4;
-    stream_m->buffer = buffer;
+    buffer_end = stream_m->buffer + size*nmemb;
+    if(buffer_end - stream_m->buffer_base > stream_m->nbuffer)return 0;
+    memcpy(ptr, stream_m->buffer, size*nmemb);
+    stream_m->buffer += size*nmemb;
     return_val = size*nmemb;
   }
   else{
-    fseek(stream_m->stream, 4, SEEK_CUR);
     return_val =  fread(ptr, size, nmemb, stream_m->stream);
-    fseek(stream_m->stream, 4, SEEK_CUR);
   }
   return return_val;
 }

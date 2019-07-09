@@ -1949,7 +1949,8 @@ void UpdateChopColors(void){
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    AdjustPart5Chops(parti);
+    AdjustPart5Chops(); // only needs to be called once
+    break;
   }
   UpdateTexturebar();
 }

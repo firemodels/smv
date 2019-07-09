@@ -781,7 +781,7 @@ EXTERNCPP void DrawFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void AdjustDataBounds(const float *pdata, int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void AdjustPartBounds(const float *pdata, int particle_type, int droplet_type, const unsigned char *isprink,
                       int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
-EXTERNCPP void AdjustPart5Chops(partdata *parti);
+EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void AdjustPart5Bounds(partdata *parti);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);

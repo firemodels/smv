@@ -124,7 +124,7 @@ void AdjustDataBounds(const float *pdata, int local_skip, int ndata,
 
 /* ------------------ AdjustPart5Chops ------------------------ */
 
-void AdjustPart5Chops(partdata *parti){
+void AdjustPart5Chops(void){
   int i;
 
   for(i=0;i<npart5prop;i++){
@@ -364,7 +364,7 @@ void AdjustPart5Bounds(partdata *parti){
       parti->valmax[i] = propi->valmax;
     }
   }
-  AdjustPart5Chops(parti);
+  AdjustPart5Chops();
 #ifdef _DEBUG
   PrintPartProp();
 #endif
