@@ -716,8 +716,8 @@ void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->vis_part);
 #ifndef pp_PART_FAST2
   FREEMEMORY(datacopy->rvals);
-#endif
   FREEMEMORY(datacopy->irvals);
+#endif
 }
 
 /* ------------------ FreeAllPart5Data ------------------------ */
@@ -1977,8 +1977,8 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
           if(ntypes>0){
 #ifndef pp_PART_FAST2
             NewMemory((void **)&datacopy->rvals, ntypes*npoints*sizeof(float));
+            NewMemory((void **)&datacopy->irvals, ntypes*npoints*sizeof(unsigned char));
 #endif
-            NewMemory((void **)&datacopy->irvals,ntypes*npoints*sizeof(unsigned char));
           }
         }
         datacopy++;
@@ -2006,6 +2006,8 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     if(nrvals>0){
       FREEMEMORY(parti->rvals);
       NewMemory((void **)&parti->rvals, nrvals*sizeof(float));
+      FREEMEMORY(parti->irvals);
+      NewMemory((void **)&parti->irvals, nrvals);
     }
     datacopy=parti->data5;
     nrvals = 0;
@@ -2018,6 +2020,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         npoints=datacopy->npoints;
         ntypes = datacopy->partclassbase->ntypes;
         datacopy->rvals = parti->rvals + nrvals;
+        datacopy->irvals = parti->irvals+nrvals;
         nrvals += npoints*ntypes;
         datacopy++;
       }

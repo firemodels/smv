@@ -8055,6 +8055,7 @@ typedef struct {
       parti->filepos = NULL;
 #ifdef pp_PART_FAST2
       parti->rvals = NULL;
+      parti->irvals = NULL;
 #endif
 
       parti->data5=NULL;

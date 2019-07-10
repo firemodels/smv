@@ -1150,6 +1150,7 @@ typedef struct _partdata {
   float *valmin, *valmax;
 #ifdef pp_PART_FAST2
   float *rvals;
+  unsigned char *irvals;
 #endif
 } partdata;
 
