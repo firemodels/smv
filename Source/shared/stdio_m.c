@@ -9,7 +9,8 @@
 FILE_m *fopen_m(char *file, char *mode){
   FILE_m *stream_m = NULL;
   FILE *stream;
-  char *buffer, *m_file;
+  unsigned char *buffer;
+  char  *m_file;
   size_t nbuffer;
 
   if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
@@ -130,7 +131,7 @@ int fseek_m(FILE_m *stream_m, long int offset, int whence){
       stream_m->buffer = stream_m->buffer_base+stream_m->nbuffer+offset;
       break;
     }
-    if(stream_m->buffer<stream_m->buffer||stream_m->buffer-stream_m->buffer_base>stream_m->nbuffer)return_val = 1;
+    if(stream_m->buffer-stream_m->buffer_base<0||stream_m->buffer-stream_m->buffer_base>stream_m->nbuffer)return_val = 1;
   }
   else{
     return_val = fseek(stream_m->stream, offset, whence);

@@ -955,9 +955,6 @@ void CreatePartSizeFileFromPart(char *part5file, char *part5sizefile, int angle_
   int *numtypes, *numpoints;
   int skip, numvals;
   int endianswitch = 0;
-  char *file_buffer=NULL;
-  char *file_buffer_base = NULL;
-  int nfile_buffer = 0;
 
   PART5FILE = fopen(part5file, "rb");
   streamout = fopen(part5sizefile, "w");
@@ -1024,9 +1021,6 @@ LINT GetPartHeaderOffset(partdata *parti){
   int i;
   int *numtypes = NULL, *numtypescopy, *numpoints = NULL;
   int numtypes_temp[2];
-  char *file_buffer = NULL;
-  char *file_buffer_base = NULL;
-  int nfile_buffer = 0;
 
   PART5FILE = fopen(parti->reg_file,"rb");
   if(PART5FILE==NULL)return 0;
@@ -1146,7 +1140,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   FILE *PART5FILE;
 #endif
   int one;
-  int endianswitch = 0;
   int version;
   int nclasses;
   int i;
@@ -1196,7 +1189,6 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   FSEEK_m(PART5FILE,4,SEEK_CUR);
   FREAD_m(&one,4,1,PART5FILE);
   FSEEK_m(PART5FILE,4,SEEK_CUR);
-  if(one!=1)endianswitch=1;
 
   FORTPART5READ_m(&version, 1);
   if(returncode==0)goto wrapup;
@@ -1408,9 +1400,6 @@ void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
   int count;
   float *rvals;
   int nrvals;
-  char *file_buffer = NULL;
-  char *file_buffer_base = NULL;
-  int nfile_buffer = 0;
 
   reg_file = parti->reg_file;
 
