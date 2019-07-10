@@ -743,7 +743,7 @@ int main(int argc, char **argv){
   printf("before crash\n");
 {
   int *x=NULL;
-  printf("%f\n",x[0]);
+  printf("%i\n",x[0]);
 }
   printf("after crash\n");
 #endif
