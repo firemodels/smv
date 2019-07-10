@@ -2056,22 +2056,14 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
 }
 
-/* ------------------ UpdatePartColorBounds ------------------------ */
+/* ------------------ UpdatePartColors ------------------------ */
 
-void UpdatePartColorBounds(partdata *parti){
+void UpdatePartColors(partdata *parti){
   int j;
 #ifdef pp_PART_TIMER
   float sum_time1=0.0, color_time;
 #endif
 
-  for (j = 0; j < npartinfo; j++) {
-    partdata *partj;
-
-    partj = partinfo + j;
-    if(partj == parti || (parti->finalize==1&&partj->loaded==1)){
-      AdjustPart5Bounds(partj);
-    }
-  }
   if(colorlabelpart==NULL){
     NewMemory((void **)&colorlabelpart, MAXRGB*sizeof(char *));
     {
@@ -2096,7 +2088,7 @@ void UpdatePartColorBounds(partdata *parti){
 #endif
 
     partj = partinfo+j;
-    if(partj->loaded==1&&partj->display==1){
+    if((parti==NULL||parti==partj)&&partj->loaded==1&&partj->display==1){
 #ifdef pp_PART_TIMER
       GetPartColors(partj, nrgb, PARTFILE_MAP, &time1); // make sure there is data
       sum_time1 += time1;
@@ -2162,7 +2154,8 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
 
   if(loadflag==UNLOAD){
     if(parti->finalize == 1){
-      UpdatePartColorBounds(parti);
+      GetPartBounds();
+      UpdatePartColors(parti);
       UpdateTimes();
       updatemenu = 1;
       UpdatePart5Extremes();
@@ -2181,6 +2174,12 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
   PRINTF("Loading %s", file);
   GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
   GetPartData(parti, partframestep, nf_all, &file_size);
+  if(partfast==YES){
+    parti->loaded = 1;
+    parti->display = 1;
+    GetPartBounds();
+    UpdatePartColors(parti);
+  }
 
   PrintMemoryInfo;
 
@@ -2228,7 +2227,10 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
         }
       }
     }
-    UpdatePartColorBounds(parti);
+    if(partfast==NO){
+      GetPartBounds();
+      UpdatePartColors(NULL);
+    }
     UpdateGlui();
     if(parti->evac == 0){
       visParticles = 1;

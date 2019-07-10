@@ -219,7 +219,7 @@ int ReadPartBounds(partdata *parti){
 /* ------------------ ReadAllPartBounds ------------------------ */
 
 int ReadAllPartBounds(void){
-  int i, have_bound_file=0;
+  int i, have_bound_file=1;
 
   // find min/max for each particle file
 
@@ -227,7 +227,7 @@ int ReadAllPartBounds(void){
     partdata *parti;
 
     parti = partinfo+i;
-    if(ReadPartBounds(parti)==1)have_bound_file=1;
+    if(ReadPartBounds(parti)==0)have_bound_file=0;
   }
 
   for(i = 0; i<npart5prop; i++){
@@ -290,16 +290,21 @@ int ReadAllPartBounds(void){
   return have_bound_file;
 }
 
-/* ------------------ AdjustPart5Bounds ------------------------ */
+/* ------------------ GetPartBounds ------------------------ */
 
-void AdjustPart5Bounds(partdata *parti){
+void GetPartBounds(void){
   int i;
 
-  if(parti->valmin==NULL){
-    NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
-  }
-  if(parti->valmax==NULL){
-    NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->valmin==NULL){
+      NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
+    }
+    if(parti->valmax==NULL){
+      NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
+    }
   }
   if(partfast==YES){
     if(update_part_bounds==1){
@@ -308,11 +313,11 @@ void AdjustPart5Bounds(partdata *parti){
       have_bound_file = ReadAllPartBounds();
       update_part_bounds = 0;
       if(have_bound_file==0){
-        printf("***warning: The file %s does not exist, reverting to normal particle loading\n",parti->bound_file);
+        printf("***warning: Unable to read one or more particle bound files. Reverting to normal particle loading\n");
         partfast = NO;
         updatemenu = 1;
         UpdateGluiPartfast();
-        AdjustPart5Bounds(parti);
+        GetPartBounds();
       }
     }
   }
@@ -320,6 +325,7 @@ void AdjustPart5Bounds(partdata *parti){
     for(i=0;i<npart5prop;i++){
       partpropdata *propi;
       histogramdata *histi;
+      int j;
 
       propi = part5propinfo+i;
       if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
@@ -360,76 +366,19 @@ void AdjustPart5Bounds(partdata *parti){
         ASSERT(FFALSE);
         break;
       }
-      parti->valmin[i] = propi->valmin;
-      parti->valmax[i] = propi->valmax;
+      for(j = 0; j<npartinfo; j++){
+        partdata *partj;
+
+        partj = partinfo+j;
+        partj->valmin[i] = propi->valmin;
+        partj->valmax[i] = propi->valmax;
+      }
     }
   }
   AdjustPart5Chops();
 #ifdef _DEBUG
   PrintPartProp();
 #endif
-}
-
-/* ------------------ AdjustPartBounds ------------------------ */
-
-void AdjustPartBounds(const float *pdata, int particle_type, int droplet_type, const unsigned char *isprink,
-                      int local_skip, int ndataloop, int setpmin, float *pmin, int setpmax, float *pmax)
-{
-    int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
-    float dp, pmin2, pmax2;
-    int ndata;
-
-    if(setpmin==PERCENTILE_MIN||setpmax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
-      nsmall=0;
-      nbig=NBUCKETS;
-      if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
-        fprintf(stderr,"*** Error: Unable to allocate memory in getdatabounds\n");
-        return;
-      }
-
-      for(n=0;n<NBUCKETS;n++){
-        buckets[n]=0;
-      }
-      ndata=0;
-      for(n=local_skip;n<ndataloop;n++){
-        level=0;
-        if(isprink[n]==1){
-          if(droplet_type==0)continue;
-        }
-        else{
-          if(particle_type==0)continue;
-        }
-        if(dp!=0.0f)level = CLAMP((int)((pdata[n] - *pmin)/dp),0,NBUCKETS-1);
-        ndata++;
-        buckets[level]++;
-      }
-      alpha05 = (int)(percentile_level*ndata);
-      total = 0;
-      for(n=0;n<NBUCKETS;n++){
-        total += buckets[n];
-        if(total>alpha05){
-          nsmall=n;
-          break;
-        }
-      }
-      total = 0;
-      for(n=NBUCKETS;n>0;n--){
-        total += buckets[n-1];
-        if(total>alpha05){
-          nbig=n;
-          break;
-        }
-      }
-      pmin2 = *pmin + (nsmall-1)*dp;
-      pmax2 = *pmin + (nbig+1)*dp;
-      if(setpmin==PERCENTILE_MIN)*pmin = pmin2;
-      if(setpmax==PERCENTILE_MAX)*pmax = pmax2;
-      FreeMemory(buckets);
-    }
-    if(axislabels_smooth==1){
-      SmoothLabel(pmin,pmax,nrgb);
-    }
 }
 
 /* ------------------ AdjustPlot3DBounds ------------------------ */
