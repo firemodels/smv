@@ -446,6 +446,7 @@ void UpdatePart5Extremes(void){
     propi->extreme_max=0;
     propi->extreme_min=0;
   }
+  if(partfast==YES)return;
 
 
   for(ii=0;ii<npartinfo;ii++){
@@ -485,12 +486,12 @@ void UpdatePart5Extremes(void){
   }
 }
 
-/* ------------------ GetPart5Colors ------------------------ */
+/* ------------------ GetPartColors ------------------------ */
 
 #ifdef pp_PART_TIMER
-void GetPart5Colors(partdata *parti, int nlevel, int convert_flag, float *time1){
+void GetPartColors(partdata *parti, int nlevel, int convert_flag, float *time1){
 #else
-void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
+void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 #endif
   int i;
   part5data *datacopy;
@@ -519,6 +520,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
       for(k=2;k<partclassi->ntypes;k++){
         partpropdata *prop_id;
 
+        if(datacopy->npoints==0)continue;
         prop_id = GetPartProp(partclassi->labels[k].longlabel);
         if(prop_id==NULL)continue;
 
@@ -554,15 +556,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
               int irval;
 
               val = *rvals++;
-              if(val<valmin){
-                irval = 0;
-              }
-              else if(val>valmax){
-                irval = 255;
-              }
-              else{
-                irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
-              }
+              irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
               *irvals++ = CLAMP(irval, 0, 255);
             }
           }
@@ -575,15 +569,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
 
               irval = *irvals;
               val = partimin+(float)(irval-extreme_data_offset)*(partimax-partimin)/(255.0-2.0*extreme_data_offset);
-              if(val<valmin){
-                irval = 0;
-              }
-              else if(val>valmax){
-                irval = 255;
-              }
-              else{
-                irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
-              }
+              irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
               *irvals++ = CLAMP(irval, 0, 255);
             }
           }
@@ -601,7 +587,7 @@ void GetPart5Colors(partdata *parti, int nlevel, int convert_flag){
       v_vel_data=NULL;
       w_vel_data=NULL;
 
-      if(partfast==0){
+      if(partfast==NO){
         if(partclassi->col_azimuth>=0){
           azimuth_data = datacopy->rvals+partclassi->col_azimuth*datacopy->npoints;
         }
@@ -1949,7 +1935,8 @@ void UpdateChopColors(void){
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    AdjustPart5Chops(parti);
+    AdjustPart5Chops(); // only needs to be called once
+    break;
   }
   UpdateTexturebar();
 }
