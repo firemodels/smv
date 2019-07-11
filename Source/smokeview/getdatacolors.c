@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef pp_PART_TIMER
-#include GLUT_H
-#endif
 
 #include "smokeviewvars.h"
 
@@ -488,20 +485,13 @@ void UpdatePart5Extremes(void){
 
 /* ------------------ GetPartColors ------------------------ */
 
-#ifdef pp_PART_TIMER
-void GetPartColors(partdata *parti, int nlevel, int convert_flag, float *time1){
-#else
 void GetPartColors(partdata *parti, int nlevel, int convert_flag){
-#endif
   int i;
   part5data *datacopy;
   // float *diameter_data;
   float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
-#ifdef pp_PART_TIMER
-  START_TIMER(*time1);
-#endif
   datacopy = parti->data5;
   for(i=0;i<parti->ntimes;i++){
     int j;
@@ -669,9 +659,6 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
       datacopy++;
     }
   }
-#ifdef pp_PART_TIMER
-  STOP_TIMER(*time1);
-#endif
   // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
 
 #ifndef pp_PART_FAST

@@ -15,14 +15,14 @@
 #include "histogram.h"
 #include "compress.h"
 #include "IOobjects.h"
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
 #include "stdio_m.h"
 #endif
 
 #define READPASS 1
 #define READFAIL 0
 
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
 
 #define FORTPART5READ_mv(var,size) \
 returncode=READPASS;\
@@ -1149,7 +1149,7 @@ void GetPartHistogramFile(partdata *parti){
 /* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE *file_size){
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
   FILE_m *PART5FILE;
 #else
   FILE *PART5FILE;
@@ -1169,40 +1169,22 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   int count;
   int count2;
   int first_frame = 1;
-#ifdef pp_PART_TIMER
-#ifdef pp_PART_BUFFER
-  float part_time;
-#endif
-  float overhead_time;
-#endif
 
   reg_file = parti->reg_file;
   *file_size = GetFileSizeSMV(reg_file);
 
-#ifdef pp_PART_BUFFER
-#ifdef pp_PART_TIMER
-  START_TIMER(part_time);
-#endif
+#ifdef pp_PART_FAST
   if(partfast==YES){
     PART5FILE = fopen_m(reg_file, "rbm");
   }
   else{
     PART5FILE = fopen_m(reg_file, "rb");
   }
-#ifdef pp_PART_BUFFER
   parti->stream = PART5FILE;
-#endif
-#ifdef pp_PART_TIMER
-  STOP_TIMER(part_time);
-#endif
 #else
   PART5FILE = fopen(reg_file, "rb");
 #endif
   if(PART5FILE==NULL)return;
-
-#ifdef pp_PART_TIMER
-  START_TIMER(overhead_time);
-#endif
 
   FSEEK_m(PART5FILE,4,SEEK_CUR);
   FREAD_m(&one,4,1,PART5FILE);
@@ -1272,7 +1254,7 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
         float *angle, *width, *depth, *height;
         int j;
 
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
         if(parti->evac==1){
           FORTPART5READ_mv((void **)&(partclassi->xyz), NXYZ_COMP_EVAC*nparts);
         }
@@ -1355,7 +1337,7 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
           int iii, jjj;
 #endif
 
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
           FORTPART5READ_mv((void **)&(datacopy->rvals), nparts*numtypes[2 * i]);
 #else
           FORTPART5READ_m(datacopy->rvals, nparts*numtypes[2 * i]);
@@ -1400,18 +1382,9 @@ wrapup:
   CheckMemory;
   FREEMEMORY(numtypes);
   FREEMEMORY(numpoints);
-#ifndef pp_PART_BUFFER
+#ifndef pp_PART_FAST
   FCLOSE_m(PART5FILE);
 #endif
-#ifdef pp_PART_TIMER
-  STOP_TIMER(overhead_time);
-#ifdef pp_PART_BUFFER
-  printf("(%f/%f)",part_time,overhead_time);
-#else
-  printf("(%f)", overhead_time);
-#endif
-#endif
-
 }
 
   /* ------------------ GetHistFileData ------------------------ */
@@ -1932,7 +1905,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     partclassdata *partclassi;
 
     partclassi = parti->partclassptr[i];
-#ifndef pp_PART_BUFFER
+#ifndef pp_PART_FAST
     FREEMEMORY(partclassi->xyz);
 #endif
     partclassi->maxpoints=0;
@@ -2093,7 +2066,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   // allocate memory for x, y, z and tag for the maximum frame size
   //           don't need to allocate memory for all frames
 
-#ifndef pp_PART_BUFFER
+#ifndef pp_PART_FAST
   for(i=0;i<parti->nclasses;i++){
     partclassdata *partclassi;
 
@@ -2115,9 +2088,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 
 void UpdatePartColors(partdata *parti){
   int j;
-#ifdef pp_PART_TIMER
-  float sum_time1=0.0, color_time;
-#endif
 
   if(colorlabelpart==NULL){
     NewMemory((void **)&colorlabelpart, MAXRGB*sizeof(char *));
@@ -2132,30 +2102,14 @@ void UpdatePartColors(partdata *parti){
       }
     }
   }
-#ifdef pp_PART_TIMER
-  START_TIMER(color_time);
-  sum_time1 = 0.0;
-#endif
   for(j = 0; j<npartinfo; j++){
     partdata *partj;
-#ifdef pp_PART_TIMER
-    float time1;
-#endif
 
     partj = partinfo+j;
     if((parti==NULL||parti==partj)&&partj->loaded==1&&partj->display==1){
-#ifdef pp_PART_TIMER
-      GetPartColors(partj, nrgb, PARTFILE_MAP, &time1); // make sure there is data
-      sum_time1 += time1;
-#else
       GetPartColors(partj, nrgb, PARTFILE_MAP); // make sure there is data
-#endif
     }
   }
-#ifdef pp_PART_TIMER
-  STOP_TIMER(color_time);
-  printf("%f %f\n",sum_time1, color_time);
-#endif
 }
 
     /* -----  ------------- ReadPart ------------------------ */
@@ -2236,7 +2190,7 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
     parti->display = 1;
     GetPartBounds();
     UpdatePartColors(parti);
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
     FCLOSE_m(parti->stream);
 #endif
 
