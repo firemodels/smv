@@ -1923,7 +1923,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         continue;
       }
       for(j=0;j<parti->nclasses;j++){
-        int npoints, ntypes;
+        int npoints;
 
         partclassdata *partclassj;
 
@@ -1949,7 +1949,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
               NewMemory((void **)&datacopy->avatar_height,npoints*sizeof(float));
             }
           }
-          ntypes = datacopy->partclassbase->ntypes;
         }
         datacopy++;
       }

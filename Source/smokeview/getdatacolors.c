@@ -434,7 +434,6 @@ void GetBoundaryLabels(
 
 void UpdatePart5Extremes(void){
   int i;
-  part5data *datacopy;
 
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
