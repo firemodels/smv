@@ -4,6 +4,14 @@
 #define ASSERT_H_DEFINED
 
 #ifdef _DEBUG
+#define ASSERT_DEBUG
+#endif
+#ifdef pp_MEMDEBUG
+#undef ASSERT_DEBUG
+#define ASSERT_DEBUG
+#endif
+
+#ifdef ASSERT_DEBUG
 
 #ifdef CPP
 #define ASSERT_EXTERN extern "C"
