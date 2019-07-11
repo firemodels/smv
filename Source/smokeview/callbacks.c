@@ -2278,7 +2278,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '/':
       partfast = 1 - partfast;
-      if(partfast==1){
+      if(partfast==YES){
         printf("fast particle loading: on\n");
       }
       else{

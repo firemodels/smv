@@ -9309,7 +9309,6 @@ updatemenu=0;
       else{
         STRCPY(menulabel,partinfo[i].menulabel);
       }
-//      if(partfast==1)strcat(menulabel, "(global bounds)");
       glutAddMenuEntry(menulabel,i);
     }
     if(nmeshes>1){
@@ -9318,7 +9317,6 @@ updatemenu=0;
       CREATEMENU(particlemenu,LoadParticleMenu);
       if(npartinfo > 0){
         strcpy(menulabel, _("Particles"));
-//        if(partfast==1)strcat(menulabel, "(global bounds)");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);
