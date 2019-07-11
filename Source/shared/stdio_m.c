@@ -120,8 +120,6 @@ size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
 /* ------------------ feof_m ------------------------ */
 
 int feof_m(FILE_m *stream_m){
-  unsigned char *buffer_end;
-
   if(stream_m->stream!=NULL){
     int return_code;
 

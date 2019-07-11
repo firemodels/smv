@@ -1102,7 +1102,7 @@ void CreatePartBoundFile(partdata *parti){
   CheckMemory;
 
   for(;;){
-    int j, return_val;
+    int j;
 
     CheckMemory;
     FORTPART5READ_m(&time_local, 1);
