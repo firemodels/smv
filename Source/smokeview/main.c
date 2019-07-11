@@ -738,6 +738,15 @@ int main(int argc, char **argv){
   char **argv_sv;
   int return_code;
   char *progname;
+
+#ifdef pp_CRASH_TEST
+  printf("before crash\n");
+{
+  int *x=NULL;
+  printf("%f\n",x[0]);
+}
+  printf("after crash\n");
+#endif
 #ifdef pp_LUA
   // If we are using lua, let lua take control here.
   // Initialise the lua interpreter, it does not take control at this point
