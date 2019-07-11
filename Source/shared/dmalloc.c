@@ -185,7 +185,7 @@ void FreeAllMemory(int memory_id){
   infoblocksize=(sizeof(MMdata)+3)/4;
   infoblocksize*=4;
 
-#ifdef _DEBUG
+#ifdef pp_MEMDEBUG
   thisptr = MMfirstptr->next;
   for(;;){
     // if the 'thisptr' memory block is freed then thisptr is no longer valid.

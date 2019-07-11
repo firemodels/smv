@@ -59,6 +59,7 @@ FILE_m *fopen_m(char *file, char *mode){
   stream_m->file = m_file;
   stream_m->nbuffer = nbuffer;
   stream_m->stream = NULL;
+  fclose(stream);
   return stream_m;
 }
 

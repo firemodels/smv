@@ -8041,7 +8041,6 @@ typedef struct {
         }
       }
       parti->compression_type=UNCOMPRESSED;
-      parti->sort_tags_loaded=0;
       parti->loaded=0;
       parti->request_load = 0;
       parti->finalize = 0;
@@ -8054,6 +8053,12 @@ typedef struct {
       parti->valmax = NULL;
       parti->filepos = NULL;
 #ifdef pp_PART_FAST2
+      parti->tags = NULL;
+      parti->sort_tags = NULL;
+      parti->vis_part = NULL;
+      parti->sx = NULL;
+      parti->sy = NULL;
+      parti->sz = NULL;
       parti->rvals = NULL;
       parti->irvals = NULL;
 #endif

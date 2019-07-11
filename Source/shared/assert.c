@@ -1,4 +1,5 @@
 #include "options.h"
+#include "ASSERT.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,14 +10,14 @@ void _Assert(char *filename, unsigned linenumber){
       \brief displays the filename and line number if an assert is thrown
   */
   int dummy;
-#ifdef _DEBUG
+#ifdef ASSERT_DEBUG
   float x=0.0, y;
 #endif
 
   fflush(NULL);
   fprintf(stderr, "\n*** Error: Assertion failed: %s, line %u\n",filename, linenumber);
   fflush(stderr);
-#ifdef _DEBUG
+#ifdef ASSERT_DEBUG
    y=1.0/x;
    fprintf(stderr,"y=%f\n",y);
 #endif
