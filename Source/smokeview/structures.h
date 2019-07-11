@@ -1149,6 +1149,10 @@ typedef struct _partdata {
   int bounds_set;
   float *valmin, *valmax;
 #ifdef pp_PART_FAST2
+  unsigned char *vis_part;
+  int *tags;
+  int *sort_tags;
+  short *sx, *sy, *sz;
   float *rvals;
   unsigned char *irvals;
 #endif

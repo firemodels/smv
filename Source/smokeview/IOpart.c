@@ -701,9 +701,6 @@ void DrawEvacFrame(void){
 
 void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->cvals);
-  FREEMEMORY(datacopy->sx);
-  FREEMEMORY(datacopy->sy);
-  FREEMEMORY(datacopy->sz);
   FREEMEMORY(datacopy->dsx);
   FREEMEMORY(datacopy->dsy);
   FREEMEMORY(datacopy->dsz);
@@ -711,10 +708,13 @@ void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->avatar_width);
   FREEMEMORY(datacopy->avatar_height);
   FREEMEMORY(datacopy->avatar_depth);
+#ifndef pp_PART_FAST2
+  FREEMEMORY(datacopy->sx);
+  FREEMEMORY(datacopy->sy);
+  FREEMEMORY(datacopy->sz);
   FREEMEMORY(datacopy->tags);
   FREEMEMORY(datacopy->sort_tags);
   FREEMEMORY(datacopy->vis_part);
-#ifndef pp_PART_FAST2
   FREEMEMORY(datacopy->rvals);
   FREEMEMORY(datacopy->irvals);
 #endif
@@ -733,6 +733,16 @@ void FreeAllPart5Data(partdata *parti){
     datacopy++;
   }
   FREEMEMORY(parti->data5);
+#ifdef pp_PART_FAST2
+  FREEMEMORY(parti->vis_part);
+  FREEMEMORY(parti->tags);
+  FREEMEMORY(parti->sort_tags);
+  FREEMEMORY(parti->sx);
+  FREEMEMORY(parti->sy);
+  FREEMEMORY(parti->sz);
+  FREEMEMORY(parti->rvals);
+  FREEMEMORY(parti->irvals);
+#endif
 }
 
 /* ------------------ InitPart5Data ------------------------ */
@@ -1956,12 +1966,14 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         npoints=datacopy->npoints;
         if(npoints>partclassj->maxpoints)partclassj->maxpoints=npoints;
         if(npoints>0){
+#ifndef pp_PART_FAST2
           NewMemory((void **)&datacopy->tags,npoints*sizeof(int));
           NewMemory((void **)&datacopy->sort_tags,2*npoints*sizeof(int));
           NewMemory((void **)&datacopy->vis_part,npoints*sizeof(unsigned char));
           NewMemory((void **)&datacopy->sx,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sy,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sz,npoints*sizeof(short));
+#endif
           if(partfast==NO){
             NewMemory((void **)&datacopy->dsx, npoints*sizeof(float));
             NewMemory((void **)&datacopy->dsy, npoints*sizeof(float));
@@ -1998,35 +2010,58 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
       for(j=0;j<parti->nclasses;j++){
         int npoints, ntypes;
 
-        npoints=datacopy->npoints;
-        ntypes = datacopy->partclassbase->ntypes;
+        npoints            = datacopy->npoints;
+        ntypes             = datacopy->partclassbase->ntypes;
         nall_points_types += npoints*ntypes;
-        if(j==parti->nclasses-1)nall_points += npoints;
+        nall_points       += npoints;
         datacopy++;
       }
     }
+    if(nall_points>0){
+      FREEMEMORY(parti->vis_part);
+      FREEMEMORY(parti->tags);
+      FREEMEMORY(parti->sort_tags);
+      FREEMEMORY(parti->sx);
+      FREEMEMORY(parti->sy);
+      FREEMEMORY(parti->sz);
+
+      NewMemory((void **)&parti->vis_part,    nall_points*sizeof(unsigned char));
+      NewMemory((void **)&parti->tags,        nall_points*sizeof(int));
+      NewMemory((void **)&parti->sort_tags, 2*nall_points*sizeof(int));
+      NewMemory((void **)&parti->sx,          nall_points*sizeof(short));
+      NewMemory((void **)&parti->sy,          nall_points*sizeof(short));
+      NewMemory((void **)&parti->sz,          nall_points*sizeof(short));
+    }
     if(nall_points_types>0){
       FREEMEMORY(parti->rvals);
-      NewMemory((void **)&parti->rvals, nall_points_types*sizeof(float));
       FREEMEMORY(parti->irvals);
+
+      NewMemory((void **)&parti->rvals,  nall_points_types*sizeof(float));
       NewMemory((void **)&parti->irvals, nall_points_types*sizeof(unsigned char));
     }
+
     datacopy=parti->data5;
     nall_points_types = 0;
-    nall_points = 0;
+    nall_points       = 0;
     for(i=0;i<nframes_all;i++){
       int j;
 
       for(j=0;j<parti->nclasses;j++){
         int npoints, ntypes;
 
-        datacopy->rvals     = parti->rvals     +   nall_points_types;
-        datacopy->irvals    = parti->irvals    +   nall_points_types;
+        datacopy->rvals     = parti->rvals     +     nall_points_types;
+        datacopy->irvals    = parti->irvals    +     nall_points_types;
+        datacopy->vis_part  = parti->vis_part  +     nall_points;
+        datacopy->tags      = parti->tags      +     nall_points;
+        datacopy->sort_tags = parti->sort_tags +   2*nall_points;
+        datacopy->sx        = parti->sx        +     nall_points;
+        datacopy->sy        = parti->sy        +     nall_points;
+        datacopy->sz        = parti->sz        +     nall_points;
 
-        npoints = datacopy->npoints;
-        ntypes  = datacopy->partclassbase->ntypes;
+        npoints             = datacopy->npoints;
+        ntypes              = datacopy->partclassbase->ntypes;
         nall_points_types  += npoints*ntypes;
-        if(j==parti->nclasses-1)nall_points += npoints;
+        nall_points        += npoints;
         datacopy++;
       }
     }
