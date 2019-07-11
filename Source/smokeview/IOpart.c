@@ -24,6 +24,12 @@
 
 #ifdef pp_PART_BUFFER
 
+#define FORTPART5READ_mv(var,size) \
+returncode=READPASS;\
+fseek_m(PART5FILE,4,SEEK_CUR);\
+fread_mv(var,4,size,PART5FILE);\
+fseek_m(PART5FILE,4,SEEK_CUR)
+
 #define FORTPART5READ_m(var,size) \
 returncode=READPASS;\
 fseek_m(PART5FILE,4,SEEK_CUR);\
@@ -701,9 +707,6 @@ void DrawEvacFrame(void){
 
 void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->cvals);
-  FREEMEMORY(datacopy->sx);
-  FREEMEMORY(datacopy->sy);
-  FREEMEMORY(datacopy->sz);
   FREEMEMORY(datacopy->dsx);
   FREEMEMORY(datacopy->dsy);
   FREEMEMORY(datacopy->dsz);
@@ -711,13 +714,16 @@ void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->avatar_width);
   FREEMEMORY(datacopy->avatar_height);
   FREEMEMORY(datacopy->avatar_depth);
+#ifndef pp_PART_FAST
+  FREEMEMORY(datacopy->sx);
+  FREEMEMORY(datacopy->sy);
+  FREEMEMORY(datacopy->sz);
   FREEMEMORY(datacopy->tags);
   FREEMEMORY(datacopy->sort_tags);
   FREEMEMORY(datacopy->vis_part);
-#ifndef pp_PART_FAST2
   FREEMEMORY(datacopy->rvals);
-#endif
   FREEMEMORY(datacopy->irvals);
+#endif
 }
 
 /* ------------------ FreeAllPart5Data ------------------------ */
@@ -733,6 +739,15 @@ void FreeAllPart5Data(partdata *parti){
     datacopy++;
   }
   FREEMEMORY(parti->data5);
+#ifdef pp_PART_FAST
+  FREEMEMORY(parti->vis_part);
+  FREEMEMORY(parti->tags);
+  FREEMEMORY(parti->sort_tags);
+  FREEMEMORY(parti->sx);
+  FREEMEMORY(parti->sy);
+  FREEMEMORY(parti->sz);
+  FREEMEMORY(parti->irvals);
+#endif
 }
 
 /* ------------------ InitPart5Data ------------------------ */
@@ -1174,6 +1189,9 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   else{
     PART5FILE = fopen_m(reg_file, "rb");
   }
+#ifdef pp_PART_BUFFER
+  parti->stream = PART5FILE;
+#endif
 #ifdef pp_PART_TIMER
   STOP_TIMER(part_time);
 #endif
@@ -1254,12 +1272,21 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
         float *angle, *width, *depth, *height;
         int j;
 
+#ifdef pp_PART_BUFFER
+        if(parti->evac==1){
+          FORTPART5READ_mv((void **)&(partclassi->xyz), NXYZ_COMP_EVAC*nparts);
+        }
+        else{
+          FORTPART5READ_mv((void **)&(partclassi->xyz), NXYZ_COMP_PART*nparts);
+        }
+#else
         if(parti->evac==1){
           FORTPART5READ_m(partclassi->xyz, NXYZ_COMP_EVAC*nparts);
         }
         else{
           FORTPART5READ_m(partclassi->xyz, NXYZ_COMP_PART*nparts);
         }
+#endif
         CheckMemory;
         if(nparts>0){
           if(returncode==0)goto wrapup;
@@ -1328,7 +1355,11 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
           int iii, jjj;
 #endif
 
+#ifdef pp_PART_BUFFER
+          FORTPART5READ_mv((void **)&(datacopy->rvals), nparts*numtypes[2 * i]);
+#else
           FORTPART5READ_m(datacopy->rvals, nparts*numtypes[2 * i]);
+#endif
 
 #ifdef pp_PART_TEST
           for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
@@ -1369,7 +1400,9 @@ wrapup:
   CheckMemory;
   FREEMEMORY(numtypes);
   FREEMEMORY(numpoints);
+#ifndef pp_PART_BUFFER
   FCLOSE_m(PART5FILE);
+#endif
 #ifdef pp_PART_TIMER
   STOP_TIMER(overhead_time);
 #ifdef pp_PART_BUFFER
@@ -1899,7 +1932,9 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     partclassdata *partclassi;
 
     partclassi = parti->partclassptr[i];
+#ifndef pp_PART_BUFFER
     FREEMEMORY(partclassi->xyz);
+#endif
     partclassi->maxpoints=0;
   }
 
@@ -1909,8 +1944,8 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     part5data *datacopy;
     int fail;
     LINT filepos;
-#ifdef pp_PART_FAST2
-    int nrvals;
+#ifdef pp_PART_FAST
+    int nall_points_types, nall_points;
 #endif
 
     fail=0;
@@ -1956,12 +1991,14 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         npoints=datacopy->npoints;
         if(npoints>partclassj->maxpoints)partclassj->maxpoints=npoints;
         if(npoints>0){
+#ifndef pp_PART_FAST
           NewMemory((void **)&datacopy->tags,npoints*sizeof(int));
           NewMemory((void **)&datacopy->sort_tags,2*npoints*sizeof(int));
           NewMemory((void **)&datacopy->vis_part,npoints*sizeof(unsigned char));
           NewMemory((void **)&datacopy->sx,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sy,npoints*sizeof(short));
           NewMemory((void **)&datacopy->sz,npoints*sizeof(short));
+#endif
           if(partfast==NO){
             NewMemory((void **)&datacopy->dsx, npoints*sizeof(float));
             NewMemory((void **)&datacopy->dsy, npoints*sizeof(float));
@@ -1975,10 +2012,10 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
           }
           ntypes = datacopy->partclassbase->ntypes;
           if(ntypes>0){
-#ifndef pp_PART_FAST2
+#ifndef pp_PART_FAST
             NewMemory((void **)&datacopy->rvals, ntypes*npoints*sizeof(float));
+            NewMemory((void **)&datacopy->irvals, ntypes*npoints*sizeof(unsigned char));
 #endif
-            NewMemory((void **)&datacopy->irvals,ntypes*npoints*sizeof(unsigned char));
           }
         }
         datacopy++;
@@ -1988,8 +2025,9 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     if(fail==1)parti->ntimes=i;
     fclose(stream);
 
-#ifdef pp_PART_FAST2
-    nrvals = 0;
+#ifdef pp_PART_FAST
+    nall_points_types = 0;
+    nall_points = 0;
     datacopy=parti->data5;
     for(i=0;i<nframes_all;i++){
       int j;
@@ -1997,28 +2035,54 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
       for(j=0;j<parti->nclasses;j++){
         int npoints, ntypes;
 
-        npoints=datacopy->npoints;
-        ntypes = datacopy->partclassbase->ntypes;
-        nrvals += npoints*ntypes;
+        npoints            = datacopy->npoints;
+        ntypes             = datacopy->partclassbase->ntypes;
+        nall_points_types += npoints*ntypes;
+        nall_points       += npoints;
         datacopy++;
       }
     }
-    if(nrvals>0){
-      FREEMEMORY(parti->rvals);
-      NewMemory((void **)&parti->rvals, nrvals*sizeof(float));
+    if(nall_points>0){
+      FREEMEMORY(parti->vis_part);
+      FREEMEMORY(parti->tags);
+      FREEMEMORY(parti->sort_tags);
+      FREEMEMORY(parti->sx);
+      FREEMEMORY(parti->sy);
+      FREEMEMORY(parti->sz);
+
+      NewMemory((void **)&parti->vis_part,    nall_points*sizeof(unsigned char));
+      NewMemory((void **)&parti->tags,        nall_points*sizeof(int));
+      NewMemory((void **)&parti->sort_tags, 2*nall_points*sizeof(int));
+      NewMemory((void **)&parti->sx,          nall_points*sizeof(short));
+      NewMemory((void **)&parti->sy,          nall_points*sizeof(short));
+      NewMemory((void **)&parti->sz,          nall_points*sizeof(short));
     }
+    if(nall_points_types>0){
+      FREEMEMORY(parti->irvals);
+      NewMemory((void **)&parti->irvals, nall_points_types*sizeof(unsigned char));
+    }
+
     datacopy=parti->data5;
-    nrvals = 0;
+    nall_points_types = 0;
+    nall_points       = 0;
     for(i=0;i<nframes_all;i++){
       int j;
 
       for(j=0;j<parti->nclasses;j++){
         int npoints, ntypes;
 
-        npoints=datacopy->npoints;
-        ntypes = datacopy->partclassbase->ntypes;
-        datacopy->rvals = parti->rvals + nrvals;
-        nrvals += npoints*ntypes;
+        datacopy->irvals    = parti->irvals    +     nall_points_types;
+        datacopy->vis_part  = parti->vis_part  +     nall_points;
+        datacopy->tags      = parti->tags      +     nall_points;
+        datacopy->sort_tags = parti->sort_tags +   2*nall_points;
+        datacopy->sx        = parti->sx        +     nall_points;
+        datacopy->sy        = parti->sy        +     nall_points;
+        datacopy->sz        = parti->sz        +     nall_points;
+
+        npoints             = datacopy->npoints;
+        ntypes              = datacopy->partclassbase->ntypes;
+        nall_points_types  += npoints*ntypes;
+        nall_points        += npoints;
         datacopy++;
       }
     }
@@ -2029,6 +2093,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
   // allocate memory for x, y, z and tag for the maximum frame size
   //           don't need to allocate memory for all frames
 
+#ifndef pp_PART_BUFFER
   for(i=0;i<parti->nclasses;i++){
     partclassdata *partclassi;
 
@@ -2042,6 +2107,7 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
       }
     }
   }
+#endif
 
 }
 
@@ -2162,12 +2228,18 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
 
   PRINTF("Loading %s", file);
   GetPartHeader(parti, partframestep, &nf_all, NOT_FORCE, 1);
+  CheckMemory;
   GetPartData(parti, partframestep, nf_all, &file_size);
+  CheckMemory;
   if(partfast==YES){
     parti->loaded = 1;
     parti->display = 1;
     GetPartBounds();
     UpdatePartColors(parti);
+#ifdef pp_PART_BUFFER
+    FCLOSE_m(parti->stream);
+#endif
+
   }
 
   PrintMemoryInfo;

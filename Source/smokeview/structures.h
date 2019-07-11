@@ -1,6 +1,8 @@
 #ifndef FLOWFILES_H_DEFINED
 #define FLOWFILES_H_DEFINED
 
+#include "stdio_m.h"
+
 /* --------------------------  circdata ------------------------------------ */
 
 typedef struct _circdata {
@@ -1130,9 +1132,13 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
+#ifdef pp_PART_BUFFER
+  FILE_m *stream;
+#endif
+
   char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
   int seq_id, autoload, loaded, request_load, display, reload, finalize;
-  int sort_tags_loaded, compression_type, evac;
+  int compression_type, evac;
   int blocknumber;
   int *timeslist, ntimes, itime;
 
@@ -1148,8 +1154,12 @@ typedef struct _partdata {
   histogramdata **histograms;
   int bounds_set;
   float *valmin, *valmax;
-#ifdef pp_PART_FAST2
-  float *rvals;
+#ifdef pp_PART_FAST
+  unsigned char *vis_part;
+  int *tags;
+  int *sort_tags;
+  short *sx, *sy, *sz;
+  unsigned char *irvals;
 #endif
 } partdata;
 

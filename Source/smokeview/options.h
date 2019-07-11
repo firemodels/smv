@@ -18,7 +18,6 @@
 //*** options: all platforms
 
 #define pp_PART_FAST           // fast particle file reading
-#define pp_PART_FAST2          // allocate particles globally
 #define pp_PART_BUFFER         // read in particles from a memory buffer
 //#define pp_PART_TIMER         // output particle debug timing info
 //#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
