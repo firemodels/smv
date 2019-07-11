@@ -81,7 +81,7 @@ void fclose_m(FILE_m *stream_m){
 
 size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   unsigned char *buffer_end;
-  size_t return_val;
+  size_t return_val=0;
 
   if(stream_m->stream==NULL){
     buffer_end = stream_m->buffer + size*nmemb;
@@ -98,17 +98,16 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
 
 /* ------------------ freadptr_m ------------------------ */
 
-size_t freadptr_m(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
+size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   unsigned char *buffer, *buffer_end;
-  size_t return_val;
+  size_t return_val=0;
 
   if(stream_m->stream==NULL){
-    buffer_end = stream_m->buffer+4+size*nmemb+4;
+    buffer_end = stream_m->buffer+size*nmemb;
     if(buffer_end-stream_m->buffer_base>stream_m->nbuffer)return 0;
     buffer = stream_m->buffer;
-    buffer += 4;
     *ptr= buffer;
-    buffer += size*nmemb+4;
+    buffer += size*nmemb;
     stream_m->buffer = buffer;
     return_val = size*nmemb;
   }

@@ -8052,14 +8052,13 @@ typedef struct {
       parti->valmin = NULL;
       parti->valmax = NULL;
       parti->filepos = NULL;
-#ifdef pp_PART_FAST2
+#ifdef pp_PART_FAST
       parti->tags = NULL;
       parti->sort_tags = NULL;
       parti->vis_part = NULL;
       parti->sx = NULL;
       parti->sy = NULL;
       parti->sz = NULL;
-      parti->rvals = NULL;
       parti->irvals = NULL;
 #endif
 

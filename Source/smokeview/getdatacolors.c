@@ -674,9 +674,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 #endif
   // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
 
-#ifdef pp_PART_FAST2
-  FREEMEMORY(parti->rvals);
-#else
+#ifndef pp_PART_FAST
   datacopy = parti->data5;
   for(i = 0; i < parti->ntimes; i++){
     int j;
