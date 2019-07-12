@@ -11560,6 +11560,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
+    if(Match(buffer, "PARTFAST")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &partfast);
+      continue;
+    }
     if(Match(buffer, "WINDOWOFFSET") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &titlesafe_offsetBASE);
@@ -13351,6 +13356,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
+  fprintf(fileout, "PARTFAST\n");
+  fprintf(fileout, " %i\n", partfast);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");

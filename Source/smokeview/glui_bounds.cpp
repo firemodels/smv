@@ -58,6 +58,7 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define FRAMELOADING 18
 #define STREAKLENGTH 19
 #define TRACERS 21
+#define PARTFAST 22
 #define PLOTISOTYPE 22
 #define CACHE_BOUNDARYDATA 23
 #define SHOWPATCH_BOTH 24
@@ -308,6 +309,7 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
@@ -440,6 +442,12 @@ procdata  boundprocinfo[8],   fileprocinfo[8],   plot3dprocinfo[4];
 int      nboundprocinfo = 0, nfileprocinfo = 0, nplot3dprocinfo=0;
 procdata  isoprocinfo[3], subboundprocinfo[6], sliceprocinfo[8], particleprocinfo[3];
 int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
+
+/* ------------------ UpdateGluiPartFast ------------------------ */
+
+extern "C" void UpdateGluiPartFast(void){
+  if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
+}
 
 /* ------------------ UpdateListIsoColorobar ------------------------ */
 
@@ -2174,6 +2182,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
       SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
+      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
       CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
     }
   }
@@ -3200,6 +3209,7 @@ void PartBoundCB(int var){
     updatemenu=1;
     break;
   case TRACERS:
+  case PARTFAST:
     updatemenu=1;
     break;
   case FRAMELOADING:
