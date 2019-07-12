@@ -27,8 +27,7 @@ FILE_m *fopen_m(char *file, char *mode){
 
   if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0)return NULL;
   stream_m->buffer = NULL;
-  stream_m->buffer_base = NULL;
-  stream_m->nbuffer = 0;
+  stream_m->buffer_beg = NULL;
   strcpy(m_file, file);
   stream_m->file = m_file;
   stream_m->stream = NULL;
@@ -55,9 +54,10 @@ FILE_m *fopen_m(char *file, char *mode){
   fseek(stream, 0, SEEK_SET);
   fread(buffer, (size_t)1, (size_t)nbuffer, stream);
   stream_m->buffer = buffer;
-  stream_m->buffer_base = buffer;
+  stream_m->buffer_beg = buffer;
+  stream_m->buffer_end = buffer+nbuffer;
   stream_m->file = m_file;
-  stream_m->nbuffer = nbuffer;
+  //stream_m->nbuffer = nbuffer;
   stream_m->stream = NULL;
   fclose(stream);
   return stream_m;
@@ -68,7 +68,7 @@ FILE_m *fopen_m(char *file, char *mode){
 void fclose_m(FILE_m *stream_m){
   if(stream_m==NULL)return;
   if(stream_m->stream==NULL){
-    FREEMEMORY(stream_m->buffer_base);
+    FREEMEMORY(stream_m->buffer_beg);
     FREEMEMORY(stream_m->file);
     FREEMEMORY(stream_m);
   }
@@ -80,14 +80,18 @@ void fclose_m(FILE_m *stream_m){
 /* ------------------ fread_m ------------------------ */
 
 size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
-  unsigned char *buffer_end;
   size_t return_val=0;
 
   if(stream_m->stream==NULL){
+    unsigned char *buffer_end;
+
     buffer_end = stream_m->buffer + size*nmemb;
-    if(buffer_end - stream_m->buffer_base > stream_m->nbuffer)return 0;
+    if(buffer_end-stream_m->buffer_end>=0){
+      stream_m->buffer = buffer_end;
+      return 0;
+    }
     memcpy(ptr, stream_m->buffer, size*nmemb);
-    stream_m->buffer += size*nmemb;
+    stream_m->buffer = buffer_end;
     return_val = size*nmemb;
   }
   else{
@@ -99,39 +103,54 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
 /* ------------------ freadptr_m ------------------------ */
 
 size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
-  unsigned char *buffer, *buffer_end;
-  size_t return_val=0;
+  unsigned char *buffer_end;
 
-  if(stream_m->stream==NULL){
-    buffer_end = stream_m->buffer+size*nmemb;
-    if(buffer_end-stream_m->buffer_base>stream_m->nbuffer)return 0;
-    buffer = stream_m->buffer;
-    *ptr= buffer;
-    buffer += size*nmemb;
-    stream_m->buffer = buffer;
-    return_val = size*nmemb;
+  if(stream_m->stream!=NULL)return 0;
+  buffer_end = stream_m->buffer+size*nmemb;
+  if(buffer_end-stream_m->buffer_end>=0){
+    *ptr = NULL;
+    stream_m->buffer = buffer_end;
+    return 0;
   }
-  return return_val;
+  *ptr= stream_m->buffer;
+  stream_m->buffer = buffer_end;
+  return size*nmemb;
 }
 
-/* ------------------ fseek_m ------------------------ */
+/* ------------------ feof_m ------------------------ */
+
+int feof_m(FILE_m *stream_m){
+  unsigned char *buffer_end;
+
+  if(stream_m->stream!=NULL){
+    int return_code;
+
+    return_code = feof(stream_m->stream);
+    if(return_code!=PASS_m)return_code = FAIL_m;
+    return return_code;
+  }
+  if(stream_m->buffer-stream_m->buffer_end>=0)return FAIL_m;
+  return PASS_m;
+}
+
+  /* ------------------ fseek_m ------------------------ */
 
 int fseek_m(FILE_m *stream_m, long int offset, int whence){
-  int return_val = 0;
+  int return_val = PASS_m;
 
   if(stream_m->stream==NULL){
     switch(whence){
     case SEEK_SET:
-      stream_m->buffer = stream_m->buffer_base+offset;
+      stream_m->buffer = stream_m->buffer_beg+offset;
       break;
     case SEEK_CUR:
       stream_m->buffer += offset;
       break;
     case SEEK_END:
-      stream_m->buffer = stream_m->buffer_base+stream_m->nbuffer+offset;
+      stream_m->buffer = stream_m->buffer_end + offset;
       break;
     }
-    if(stream_m->buffer-stream_m->buffer_base<0||stream_m->buffer-stream_m->buffer_base>stream_m->nbuffer)return_val = 1;
+    if(stream_m->buffer-stream_m->buffer_beg<0||stream_m->buffer-stream_m->buffer_end>=0)return_val = FAIL_m;
   }
   else{
     return_val = fseek(stream_m->stream, offset, whence);
@@ -145,8 +164,8 @@ long int ftell_m(FILE_m *stream_m){
   long int return_val;
 
   if(stream_m->stream==NULL){
-    return_val = stream_m->buffer-stream_m->buffer_base;
-    if(return_val<0||return_val>stream_m->nbuffer)return_val = -1L;
+    return_val = stream_m->buffer-stream_m->buffer_beg;
+    if(return_val<0||return_val>stream_m->buffer_end-stream_m->buffer_beg)return_val = -1L;
   }
   else{
     return_val = ftell(stream_m->stream);
@@ -158,7 +177,7 @@ long int ftell_m(FILE_m *stream_m){
 
 void rewind_m(FILE_m *stream_m){
   if(stream_m->stream==NULL){
-    stream_m->buffer = stream_m->buffer_base;
+    stream_m->buffer = stream_m->buffer_beg;
   }
   else{
     rewind(stream_m->stream);
