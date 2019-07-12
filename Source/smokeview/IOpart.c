@@ -714,16 +714,6 @@ void FreePart5Data(part5data *datacopy){
   FREEMEMORY(datacopy->avatar_width);
   FREEMEMORY(datacopy->avatar_height);
   FREEMEMORY(datacopy->avatar_depth);
-#ifndef pp_PART_FAST
-  FREEMEMORY(datacopy->sx);
-  FREEMEMORY(datacopy->sy);
-  FREEMEMORY(datacopy->sz);
-  FREEMEMORY(datacopy->tags);
-  FREEMEMORY(datacopy->sort_tags);
-  FREEMEMORY(datacopy->vis_part);
-  FREEMEMORY(datacopy->rvals);
-  FREEMEMORY(datacopy->irvals);
-#endif
 }
 
 /* ------------------ FreeAllPart5Data ------------------------ */
@@ -1084,17 +1074,14 @@ void CreatePartSizeFile(partdata *parti, int angle_flag){
   LINT header_offset;
 
   header_offset=GetPartHeaderOffset(parti);
-
-  if(partfast==YES){
-    stream = fopen(parti->bound_file, "r");
-    if(stream!=NULL){
-      fclose(stream);
-      CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, angle_flag, header_offset);
-      return;
-    }
-    printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
-    printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
+  stream = fopen(parti->bound_file, "r");
+  if(stream!=NULL){
+    fclose(stream);
+    CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, angle_flag, header_offset);
+    return;
   }
+  printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
+  printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, angle_flag, header_offset);
 }
 
@@ -1174,15 +1161,8 @@ void GetPartData(partdata *parti, int partframestep_local, int nf_all, FILE_SIZE
   *file_size = GetFileSizeSMV(reg_file);
 
 #ifdef pp_PART_FAST
-  if(partfast==YES){
-    PART5FILE = fopen_m(reg_file, "rbm");
-  }
-  else{
-    PART5FILE = fopen_m(reg_file, "rb");
-  }
+  PART5FILE = fopen_m(reg_file, "rbm");
   parti->stream = PART5FILE;
-#else
-  PART5FILE = fopen(reg_file, "rb");
 #endif
   if(PART5FILE==NULL)return;
 
@@ -1382,9 +1362,6 @@ wrapup:
   CheckMemory;
   FREEMEMORY(numtypes);
   FREEMEMORY(numpoints);
-#ifndef pp_PART_FAST
-  FCLOSE_m(PART5FILE);
-#endif
 }
 
   /* ------------------ GetHistFileData ------------------------ */
@@ -1905,9 +1882,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
     partclassdata *partclassi;
 
     partclassi = parti->partclassptr[i];
-#ifndef pp_PART_FAST
-    FREEMEMORY(partclassi->xyz);
-#endif
     partclassi->maxpoints=0;
   }
 
@@ -1964,14 +1938,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
         npoints=datacopy->npoints;
         if(npoints>partclassj->maxpoints)partclassj->maxpoints=npoints;
         if(npoints>0){
-#ifndef pp_PART_FAST
-          NewMemory((void **)&datacopy->tags,npoints*sizeof(int));
-          NewMemory((void **)&datacopy->sort_tags,2*npoints*sizeof(int));
-          NewMemory((void **)&datacopy->vis_part,npoints*sizeof(unsigned char));
-          NewMemory((void **)&datacopy->sx,npoints*sizeof(short));
-          NewMemory((void **)&datacopy->sy,npoints*sizeof(short));
-          NewMemory((void **)&datacopy->sz,npoints*sizeof(short));
-#endif
           if(partfast==NO){
             NewMemory((void **)&datacopy->dsx, npoints*sizeof(float));
             NewMemory((void **)&datacopy->dsy, npoints*sizeof(float));
@@ -1984,12 +1950,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
             }
           }
           ntypes = datacopy->partclassbase->ntypes;
-          if(ntypes>0){
-#ifndef pp_PART_FAST
-            NewMemory((void **)&datacopy->rvals, ntypes*npoints*sizeof(float));
-            NewMemory((void **)&datacopy->irvals, ntypes*npoints*sizeof(unsigned char));
-#endif
-          }
         }
         datacopy++;
       }
@@ -2062,26 +2022,6 @@ void GetPartHeader(partdata *parti, int partframestep_local, int *nf_all, int op
 #endif
 
   }
-
-  // allocate memory for x, y, z and tag for the maximum frame size
-  //           don't need to allocate memory for all frames
-
-#ifndef pp_PART_FAST
-  for(i=0;i<parti->nclasses;i++){
-    partclassdata *partclassi;
-
-    partclassi = parti->partclassptr[i];
-    if(partclassi->maxpoints>0){
-      if(parti->evac==1){
-        NewMemory((void **)&partclassi->xyz, NXYZ_COMP_EVAC*partclassi->maxpoints*sizeof(float));
-      }
-      else{
-        NewMemory((void **)&partclassi->xyz, NXYZ_COMP_PART*partclassi->maxpoints*sizeof(float));
-      }
-    }
-  }
-#endif
-
 }
 
 /* ------------------ UpdatePartColors ------------------------ */
@@ -2185,16 +2125,13 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
   CheckMemory;
   GetPartData(parti, partframestep, nf_all, &file_size);
   CheckMemory;
-  if(partfast==YES){
-    parti->loaded = 1;
-    parti->display = 1;
-    GetPartBounds();
-    UpdatePartColors(parti);
+  parti->loaded = 1;
+  parti->display = 1;
+  GetPartBounds();
+  UpdatePartColors(parti);
 #ifdef pp_PART_FAST
-    FCLOSE_m(parti->stream);
+  FCLOSE_m(parti->stream);
 #endif
-
-  }
 
   PrintMemoryInfo;
 
@@ -2213,39 +2150,11 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
     }
 #define SETVALMIN 1
 #define SETVALMAX 2
-    if(partfast==YES){
-      setpartmin = GLOBAL_MIN;
-      PartBoundCB(SETVALMIN);
-      setpartmax = GLOBAL_MAX;
-      PartBoundCB(SETVALMAX);
-      UpdateGluiPartSetBounds(GLOBAL_MIN,GLOBAL_MAX);
-    }
-    else{
-      for(j = 0; j<npart5prop; j++){
-        partpropdata *propj;
-
-        propj = part5propinfo+j;
-        ResetHistogram(&propj->histogram, NULL, NULL);
-      }
-      for(j = 0; j<npartinfo; j++){
-        partdata *partj;
-        int i;
-
-        partj = partinfo+j;
-        if(partj->loaded==0)continue;
-        GetPartHistogramFile(partj);
-        for(i = 0; i<npart5prop; i++){
-          partpropdata *propi;
-
-          propi = part5propinfo+i;
-          MergeHistogram(&propi->histogram, partj->histograms[i], MERGE_BOUNDS);
-        }
-      }
-    }
-    if(partfast==NO){
-      GetPartBounds();
-      UpdatePartColors(NULL);
-    }
+    setpartmin = GLOBAL_MIN;
+    PartBoundCB(SETVALMIN);
+    setpartmax = GLOBAL_MAX;
+    PartBoundCB(SETVALMAX);
+    UpdateGluiPartSetBounds(GLOBAL_MIN,GLOBAL_MAX);
     UpdateGlui();
     if(parti->evac == 0){
       visParticles = 1;

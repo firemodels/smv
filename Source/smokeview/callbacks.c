@@ -2276,17 +2276,6 @@ void Keyboard(unsigned char key, int flag){
       UpdateVectorpointsize();
       updatemenu = 1;
       break;
-    case '/':
-      partfast = 1 - partfast;
-      if(partfast==YES){
-        printf("fast particle loading: on\n");
-      }
-      else{
-        printf("fast particle loading: off\n");
-      }
-      updatemenu = 1;
-      UpdateGluiPartfast();
-      break;
     case '#':
       WriteIni(LOCAL_INI,NULL);
       break;
