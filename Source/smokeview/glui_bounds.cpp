@@ -384,6 +384,8 @@ GLUI_RadioGroup *RADIO_p3_setmin=NULL, *RADIO_p3_setmax=NULL;
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
+GLUI_RadioButton *RADIO_part_setmin_percentile=NULL;
+GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
@@ -1532,6 +1534,7 @@ void ScriptCB(int var){
 void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
   GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
   GLUI_RadioGroup **RADIO_con_setmin, GLUI_RadioGroup **RADIO_con_setmax,
+  GLUI_RadioButton **RADIO_CON_setmin_percentile, GLUI_RadioButton **RADIO_CON_setmax_percentile,
   GLUI_Checkbox **CHECKBOX_con_setchopmin, GLUI_Checkbox **CHECKBOX_con_setchopmax,
   GLUI_EditText **EDIT_con_chopmin, GLUI_EditText **EDIT_con_chopmax,
   GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
@@ -1548,6 +1551,7 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
 
   GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
 
+  GLUI_RadioButton *percentile_min, *percentile_max;
   GLUI_Panel *PANEL_a, *PANEL_b, *PANEL_c;
   GLUI_Rollout *PANEL_e = NULL, *PANEL_g = NULL;
   GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
@@ -1574,7 +1578,8 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   }
 
   *RADIO_con_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_a, setminval, SETVALMIN, FILE_CB);
-  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("percentile min"));
+  percentile_min = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("percentile min"));
+  if(RADIO_CON_setmin_percentile!=NULL)*RADIO_CON_setmin_percentile = percentile_min;
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("set min"));
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("global min"));
 
@@ -1593,7 +1598,8 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   }
 
   *RADIO_con_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_b, setmaxval, SETVALMAX, FILE_CB);
-  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("percentile max"));
+  percentile_max = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("percentile max"));
+  if(RADIO_CON_setmax_percentile!=NULL)*RADIO_CON_setmax_percentile = percentile_max;
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("set max"));
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("global max"));
 
@@ -1907,7 +1913,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     BoundMenu(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
-      &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,
+      &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
@@ -2157,6 +2163,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       if(npartinfo > 1)strcat(boundmenulabel, "s");
       BoundMenu(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
+        &RADIO_part_setmin_percentile,&RADIO_part_setmax_percentile,
         &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
         &EDIT_part_chopmin, &EDIT_part_chopmax,
         &STATIC_part_min_unit,&STATIC_part_max_unit,
@@ -2168,6 +2175,8 @@ extern "C" void GluiBoundsSetup(int main_window){
         PartBoundCB,
         ParticleRolloutCB,particleprocinfo,&nparticleprocinfo
       );
+      RADIO_part_setmin_percentile->disable();
+      RADIO_part_setmax_percentile->disable();
       PartBoundCB(FILETYPEINDEX);
       ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,
         PARTICLE_SETTINGS, ParticleRolloutCB);
@@ -2216,7 +2225,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 
     BoundMenu(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
-      &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax,
+      &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
@@ -2305,7 +2314,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
 
     BoundMenu(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
-      &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,
+      &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &STATIC_slice_min_unit,&STATIC_slice_max_unit,
@@ -3168,7 +3177,11 @@ void PartBoundCB(int var){
     // copy data to controls
 
     setpartmin=prop_new->setvalmin;
-    setpartmax=prop_new->setvalmax;
+    if(setpartmin==PERCENTILE_MIN)setpartmin = GLOBAL_MIN;
+
+    setpartmax = prop_new->setvalmax;
+    if(setpartmax==PERCENTILE_MAX)setpartmax = GLOBAL_MAX;
+
     PartBoundCB(SETVALMIN);
     PartBoundCB(SETVALMAX);
 

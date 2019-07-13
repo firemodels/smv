@@ -10475,6 +10475,12 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "V_PARTICLES") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f", &setpartmin, &partmin, &setpartmax, &partmax);
+      if(setpartmin==PERCENTILE_MIN){
+        setpartmin = GLOBAL_MIN;
+      }
+      if(setpartmax==PERCENTILE_MAX){
+        setpartmax = GLOBAL_MAX;
+      }
       continue;
     }
     if(Match(buffer, "V5_PARTICLES") == 1){
