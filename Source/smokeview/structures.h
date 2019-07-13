@@ -1132,7 +1132,7 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
-#ifdef pp_PART_BUFFER
+#ifdef pp_PART_FAST
   FILE_m *stream;
 #endif
 

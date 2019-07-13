@@ -20,12 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(have_particle_bound_files, 0);
 SVEXTERN int SVDECL(update_part_bounds, 0);
-#ifdef pp_PART_FAST
 SVEXTERN int SVDECL(partfast, YES);
-#else
-SVEXTERN int SVDECL(partfast, NO);
-#endif
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(emission_factor, 5.0);

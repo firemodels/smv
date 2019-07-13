@@ -306,73 +306,12 @@ void GetPartBounds(void){
       NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
     }
   }
-  if(partfast==YES){
-    if(update_part_bounds==1){
-      int have_bound_file = 0;
-
-      have_bound_file = ReadAllPartBounds();
-      update_part_bounds = 0;
-      if(have_bound_file==0){
-        printf("***warning: Unable to read one or more particle bound files. Reverting to normal particle loading\n");
-        partfast = NO;
-        updatemenu = 1;
-        UpdateGluiPartfast();
-        GetPartBounds();
-      }
-    }
-  }
-  else{
-    for(i=0;i<npart5prop;i++){
-      partpropdata *propi;
-      histogramdata *histi;
-      int j;
-
-      propi = part5propinfo+i;
-      if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-
-      histi = &propi->histogram;
-
-      propi->global_min = histi->val_min;
-      propi->global_max = histi->val_max;
-
-      propi->percentile_min = GetHistogramVal(histi, percentile_level);
-      propi->percentile_max = GetHistogramVal(histi, 1.0-percentile_level);
-
-      switch(propi->setvalmin){
-      case PERCENTILE_MIN:
-        propi->valmin = propi->percentile_min;
-        break;
-      case GLOBAL_MIN:
-        propi->valmin = propi->global_min;
-        break;
-      case SET_MIN:
-        propi->valmin = propi->user_min;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
-      }
-      switch(propi->setvalmax){
-      case PERCENTILE_MAX:
-        propi->valmax = propi->percentile_max;
-        break;
-      case GLOBAL_MAX:
-        propi->valmax = propi->global_max;
-        break;
-      case SET_MAX:
-        propi->valmax = propi->user_max;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
-      }
-      for(j = 0; j<npartinfo; j++){
-        partdata *partj;
-
-        partj = partinfo+j;
-        partj->valmin[i] = propi->valmin;
-        partj->valmax[i] = propi->valmax;
-      }
+  if(update_part_bounds==1){
+    have_particle_bound_files = ReadAllPartBounds();
+    update_part_bounds = 0;
+    if(have_particle_bound_files==0){
+      printf("***warning: Unable to read one or more particle bound files. Obtaining bounds from particle data.\n");
+      // compute bounds from data
     }
   }
   AdjustPart5Chops();

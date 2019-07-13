@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef pp_PART_TIMER
-#include GLUT_H
-#endif
 
 #include "smokeviewvars.h"
 
@@ -436,8 +433,7 @@ void GetBoundaryLabels(
 /* ------------------ UpdatePart5Extremes ------------------------ */
 
 void UpdatePart5Extremes(void){
-  int ii,i,j,k,m;
-  part5data *datacopy;
+  int i;
 
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
@@ -446,62 +442,17 @@ void UpdatePart5Extremes(void){
     propi->extreme_max=0;
     propi->extreme_min=0;
   }
-  if(partfast==YES)return;
-
-
-  for(ii=0;ii<npartinfo;ii++){
-    partdata *parti;
-
-    parti = partinfo + ii;
-    if(parti->loaded==0||parti->display==0)continue;
-    datacopy = parti->data5;
-    for(i=0;i<parti->ntimes;i++){
-      for(j=0;j<parti->nclasses;j++){
-        partclassdata *partclassi;
-        unsigned char *irvals;
-
-        partclassi = parti->partclassptr[j];
-        irvals = datacopy->irvals;
-        for(k=2;k<partclassi->ntypes;k++){
-          partpropdata *prop_id;
-
-          prop_id = GetPartProp(partclassi->labels[k].longlabel);
-          if(prop_id==NULL)continue;
-
-          if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
-          }
-          else{
-            for(m=0;m<datacopy->npoints;m++){
-              int irval;
-
-              irval=*irvals++;
-              if(irval==0)prop_id->extreme_min=1;
-              if(irval==255)prop_id->extreme_max=1;
-            }
-          }
-        }
-        datacopy++;
-      }
-    }
-  }
 }
 
 /* ------------------ GetPartColors ------------------------ */
 
-#ifdef pp_PART_TIMER
-void GetPartColors(partdata *parti, int nlevel, int convert_flag, float *time1){
-#else
 void GetPartColors(partdata *parti, int nlevel, int convert_flag){
-#endif
   int i;
   part5data *datacopy;
   // float *diameter_data;
   float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
-#ifdef pp_PART_TIMER
-  START_TIMER(*time1);
-#endif
   datacopy = parti->data5;
   for(i=0;i<parti->ntimes;i++){
     int j;
@@ -669,22 +620,8 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
       datacopy++;
     }
   }
-#ifdef pp_PART_TIMER
-  STOP_TIMER(*time1);
-#endif
   // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
 
-#ifndef pp_PART_FAST
-  datacopy = parti->data5;
-  for(i = 0; i < parti->ntimes; i++){
-    int j;
-
-    for(j = 0; j < parti->nclasses; j++){
-      FREEMEMORY(datacopy->rvals);
-      datacopy++;
-    }
-  }
-#endif
   for(i=0;i<npart5prop;i++){
     int n;
     partpropdata *propi;

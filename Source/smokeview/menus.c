@@ -97,6 +97,7 @@
 #define MENU_VOLSMOKE_SETTINGS -4
 #define MENU_SMOKE_SETTINGS -4
 #define MENU_SLICE_SETTINGS -6
+#define MENU_PART_PARTFAST -7
 
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
@@ -3654,6 +3655,13 @@ void LoadParticleMenu(int value){
     }
     else if(value==MENU_PART_SETTINGS){
       ShowBoundsDialog(DLG_PART);
+    }
+    else if(value==MENU_PART_PARTFAST){
+      updatemenu = 1;
+      partfast = 1-partfast;
+      if(partfast==0)printf("fast particle loading: off\n");
+      if(partfast==1)printf("fast particle loading: on\n");
+      UpdateGluiPartFast();
     }
     else{
       int lasti = 0;
@@ -9309,7 +9317,6 @@ updatemenu=0;
       else{
         STRCPY(menulabel,partinfo[i].menulabel);
       }
-//      if(partfast==1)strcat(menulabel, "(global bounds)");
       glutAddMenuEntry(menulabel,i);
     }
     if(nmeshes>1){
@@ -9318,12 +9325,13 @@ updatemenu=0;
       CREATEMENU(particlemenu,LoadParticleMenu);
       if(npartinfo > 0){
         strcpy(menulabel, _("Particles"));
-//        if(partfast==1)strcat(menulabel, "(global bounds)");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);
       }
     }
+    if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
+    if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
     glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
     if(npartloaded<=1){
       glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);

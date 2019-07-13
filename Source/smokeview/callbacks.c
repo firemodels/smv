@@ -2276,19 +2276,15 @@ void Keyboard(unsigned char key, int flag){
       UpdateVectorpointsize();
       updatemenu = 1;
       break;
-    case '/':
-      partfast = 1 - partfast;
-      if(partfast==1){
-        printf("fast particle loading: on\n");
-      }
-      else{
-        printf("fast particle loading: off\n");
-      }
-      updatemenu = 1;
-      UpdateGluiPartfast();
-      break;
     case '#':
       WriteIni(LOCAL_INI,NULL);
+      break;
+    case '/':
+      updatemenu=1;
+      partfast = 1-partfast;
+      if(partfast==0)printf("fast particle loading: off\n");
+      if(partfast==1)printf("fast particle loading: on\n");
+      UpdateGluiPartFast();
       break;
     case '$':
       trainer_active=1-trainer_active;
