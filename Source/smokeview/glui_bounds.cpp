@@ -3152,10 +3152,10 @@ void PartBoundCB(int var){
   prop_old = part5propinfo + ipart5prop_old;
   switch(var){
   case VALMIN:
-    if(setpartmax==SET_MAX)prop_new->user_max=partmax;
+    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
     break;
   case VALMAX:
-    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
+    if(setpartmax==SET_MAX)prop_new->user_max = partmax;
     break;
   case FILETYPEINDEX:
 
@@ -3283,6 +3283,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_min=partmin;
     }
     setpartmin_old=setpartmin;
+    if(prop_new!=NULL)prop_new->setvalmin = setpartmin;
     switch(setpartmin){
     case PERCENTILE_MIN:
       if(prop_new!=NULL)partmin=prop_new->percentile_min;
@@ -3308,6 +3309,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_max=partmax;
     }
     setpartmax_old=setpartmax;
+    if(prop_new!=NULL)prop_new->setvalmax = setpartmax;
     switch(setpartmax){
     case PERCENTILE_MAX:
       if(prop_new!=NULL)partmax=prop_new->percentile_max;

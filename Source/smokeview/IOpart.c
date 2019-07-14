@@ -2230,13 +2230,6 @@ FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode){
         partj->display = 1;
       }
     }
-#define SETVALMIN 1
-#define SETVALMAX 2
-    setpartmin = GLOBAL_MIN;
-    PartBoundCB(SETVALMIN);
-    setpartmax = GLOBAL_MAX;
-    PartBoundCB(SETVALMAX);
-    UpdateGluiPartSetBounds(GLOBAL_MIN,GLOBAL_MAX);
     UpdateGlui();
     if(parti->evac == 0){
       visParticles = 1;
