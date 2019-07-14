@@ -1137,7 +1137,7 @@ typedef struct _partdata {
 #endif
 
   char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
-  int seq_id, autoload, loaded, request_load, display, reload, finalize;
+  int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int compression_type, evac;
   int blocknumber;
   int *timeslist, ntimes, itime;

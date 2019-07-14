@@ -169,7 +169,11 @@ int ReadPartBounds(partdata *parti){
   }
 
   stream = fopen(parti->bound_file, "r");
-  if(stream==NULL)return 0;
+  if(stream==NULL){
+    CreatePartBoundFile(parti);
+    stream = fopen(parti->bound_file, "r");
+    if(stream==NULL)return 0;
+  }
   for(;;){
     float time;
     int nclasses, k, version=-1;
@@ -302,11 +306,11 @@ void GetPartBounds(void){
       printf("***warning: Unable to read one or more particle bound files. Obtaining bounds from particle data.\n");
       // compute bounds from data
     }
-  }
-  AdjustPart5Chops();
+    AdjustPart5Chops();
 #ifdef _DEBUG
-  PrintPartProp();
+    PrintPartProp();
 #endif
+  }
 }
 
 /* ------------------ AdjustPlot3DBounds ------------------------ */

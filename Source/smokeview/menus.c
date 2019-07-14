@@ -15,11 +15,16 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
+int       part_file_count;
+FILE_SIZE part_load_size;
+float     part_load_time;
+
+
 #ifdef WIN32
 #include <direct.h>
 #endif
 
-#define PRINT_LOADTIMES \
+#define PRINT_LOADTIMES(file_count,load_size,load_time) \
   if(file_count>1){\
     if(load_size>1000000000){\
       PRINTF("Loaded %.1f GB in %.1f s\n",(float)load_size/1000000000.,load_time);\
@@ -2958,7 +2963,7 @@ void ReloadAllSliceFiles(void){
     file_count++;
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES;
+  PRINT_LOADTIMES(file_count,load_size,load_time);
   slicefile_labelindex = slicefile_labelindex_save;
   UNLOCK_COMPRESS;
 }
@@ -3082,7 +3087,7 @@ void LoadUnloadMenu(int value){
       }
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES;
+    PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
@@ -3616,6 +3621,37 @@ void ParticlePropShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ UnloadAllPartFiles ------------------------ */
+
+void UnloadAllPartFiles(void){
+  int i;
+  
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int errorcode;
+
+    parti = partinfo+i;
+    if(parti->evac==1||parti->loaded==0)continue;
+    ReadPart(parti->file, i, UNLOAD, &errorcode);
+  }
+}
+
+/* ------------------ LoadAllPartFiles ------------------------ */
+
+void LoadAllPartFiles(void){
+  int i;
+
+  for(i = 0;i<npartinfo;i++){
+    partdata *parti;
+    int errorcode;
+
+    parti = partinfo+i;
+    if(parti->skipload==1)continue;
+    part_load_size += ReadPart(parti->file, i, LOAD, &errorcode);
+    part_file_count++;
+  }
+}
+
 /* ------------------ LoadParticleMenu ------------------------ */
 
 void LoadParticleMenu(int value){
@@ -3664,10 +3700,6 @@ void LoadParticleMenu(int value){
       UpdateGluiPartFast();
     }
     else{
-      int lasti = 0;
-      float load_time;
-      FILE_SIZE load_size;
-
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
@@ -3683,67 +3715,39 @@ void LoadParticleMenu(int value){
 
         // wait until last particle file is loaded before coloring
 
-        lasti = npartinfo-1;
+        for(i = 0; i<npartinfo; i++){
+          partdata *parti;
+
+          parti = partinfo+i;
+          parti->finalize = 0;
+          parti->skipload = 1;
+          if(parti->evac==1)continue;                               // don't load an evac file
+          if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+          parti->skipload = 0;
+        }
+
         for(i = npartinfo-1;i>=0;i--){
           partdata *parti;
 
           parti = partinfo+i;
-          if(parti->evac==1)continue;
-          if(value==PARTFILE_LOADALL){
-            lasti = i;
-            break;
-          }
-          if(parti->loaded==1&&value==PARTFILE_RELOADALL){
-            lasti = i;
-            break;
-          }
+          if(parti->skipload==1)continue;
+          parti->finalize = 1;
         }
 
         // unload particle files
 
         if(value!=PARTFILE_RELOADALL){
-          for(i = 0; i<npartinfo; i++){
-            partdata *parti;
-
-            parti = partinfo+i;
-            if(parti->evac==1||parti->loaded==0)continue;
-            parti->finalize = 0;
-          }
-          for(i = npartinfo-1; i>=0; i--){
-            partdata *parti;
-
-            parti = partinfo+i;
-            if(parti->evac==1||parti->loaded==0)continue;
-            parti->finalize = 1;
-            break;
-          }
-          for(i = 0; i<npartinfo; i++){
-            partdata *parti;
-
-            parti = partinfo+i;
-            if(parti->evac==1||parti->loaded==0)continue;
-            ReadPart(parti->file, i, UNLOAD, &errorcode);
-          }
+          UnloadAllPartFiles();
         }
 
         // load particle files unless we are reloading and the were not loaded before
 
-        load_size = 0;
-        file_count = 0;
-        START_TIMER(load_time);
-        for(i = 0;i<npartinfo;i++){
-          partdata *parti;
-
-          parti = partinfo+i;
-          if(parti->evac==1)continue;
-          if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;
-          parti->finalize = 0;
-          if(lasti==i)parti->finalize = 1;
-          load_size += ReadPart(parti->file, i, LOAD, &errorcode);
-          file_count++;
-        }
-        STOP_TIMER(load_time);
-        PRINT_LOADTIMES;
+        part_load_size = 0;
+        part_file_count = 0;
+        START_TIMER(part_load_time);
+        LoadAllPartFiles();
+        STOP_TIMER(part_load_time);
+        PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
 
         force_redisplay = 1;
         UpdateFrameNumber(0);
@@ -3956,7 +3960,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       load_size+=ReadVSlice(i,LOAD,&errorcode);
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES;
+    PRINT_LOADTIMES(file_count,load_size,load_time);
   }
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   return return_filesize;
@@ -4335,7 +4339,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES;
+  PRINT_LOADTIMES(file_count,load_size,load_time);
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -4547,7 +4551,7 @@ void LoadSliceMenu(int value){
           file_count++;
         }
         STOP_TIMER(load_time);
-        PRINT_LOADTIMES;
+        PRINT_LOADTIMES(file_count,load_size,load_time);
       }
   }
   updatemenu=1;
@@ -4606,7 +4610,7 @@ void LoadMultiVSliceMenu(int value){
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
       STOP_TIMER(load_time);
-      PRINT_LOADTIMES;
+      PRINT_LOADTIMES(file_count,load_size,load_time);
     }
     script_multivslice=0;
   }
@@ -4639,7 +4643,7 @@ void LoadMultiVSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES;
+    PRINT_LOADTIMES(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -4715,7 +4719,7 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES;
+  PRINT_LOADTIMES(file_count,load_size,load_time);
 }
 
 /* ------------------ LoadMultiSliceMenu ------------------------ */
@@ -4809,7 +4813,7 @@ void LoadMultiSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES;
+    PRINT_LOADTIMES(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -4981,7 +4985,7 @@ void LoadAllIsos(int iso_type){
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES;
+  PRINT_LOADTIMES(file_count,load_size,load_time);
 }
 
 /* ------------------ LoadIsoMenu ------------------------ */
@@ -5095,7 +5099,7 @@ void LoadBoundaryMenu(int value){
         }
       }
       STOP_TIMER(load_time);
-      PRINT_LOADTIMES;
+      PRINT_LOADTIMES(file_count,load_size,load_time);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);

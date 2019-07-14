@@ -11,6 +11,7 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
+EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void UpdateGluiPartFast(void);
 EXTERNCPP void UpdateGluiPartSetBounds(int minbound_type, int max_boundtype);
 EXTERNCPP void InitRolloutList(void);
