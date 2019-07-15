@@ -3656,7 +3656,6 @@ void LoadAllPartFiles(void){
 
 void LoadParticleMenu(int value){
   int errorcode,i;
-  int file_count;
 
   update_part_bounds = 1;
 
