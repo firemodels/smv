@@ -103,25 +103,15 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
 /* ------------------ freadptr_m ------------------------ */
 
 size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
-  unsigned char *buffer_end;
-
   if(stream_m->stream!=NULL)return 0;
-  buffer_end = stream_m->buffer+size*nmemb;
-  if(buffer_end-stream_m->buffer_end>=0){
-    *ptr = NULL;
-    stream_m->buffer = buffer_end;
-    return 0;
-  }
   *ptr= stream_m->buffer;
-  stream_m->buffer = buffer_end;
+  stream_m->buffer += size*nmemb;
   return size*nmemb;
 }
 
 /* ------------------ feof_m ------------------------ */
 
 int feof_m(FILE_m *stream_m){
-  unsigned char *buffer_end;
-
   if(stream_m->stream!=NULL){
     int return_code;
 

@@ -523,6 +523,7 @@ void UpdateShow(void){
       if(current_property->extreme_min==1)have_extreme_mindata=1;
     }
   }
+  ReadPartFile = partflag;
 
   evacflag=0;
   if(visEvac==1&&visTimeEvac==1){
@@ -536,6 +537,7 @@ void UpdateShow(void){
       }
     }
   }
+  ReadEvacFile = evacflag;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){

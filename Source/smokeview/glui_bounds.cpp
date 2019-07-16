@@ -193,7 +193,7 @@ GLUI_Rollout *ROLLOUT_boundary_temp_threshold;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
 GLUI_Rollout *ROLLOUT_iso_bounds;
-GLUI_Rollout *ROLLOUT_iso_color; 
+GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_boundary_bound = NULL;
@@ -220,7 +220,10 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
-GLUI_Panel *PANEL_iso1 = NULL; 
+#ifdef pp_PART_MT
+GLUI_Panel *PANEL_partread = NULL;
+#endif
+GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
 GLUI_Panel *PANEL_geomexp = NULL;
 GLUI_Panel *PANEL_slice_smoke = NULL;
@@ -257,6 +260,9 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
+#ifdef pp_PART_MT
+GLUI_Spinner *SPINNER_npartthread_ids = NULL;
+#endif
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
@@ -309,6 +315,7 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_part_multithread = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
@@ -2113,12 +2120,12 @@ extern "C" void GluiBoundsSetup(int main_window){
   if(npartinfo > 0 && nevac != npartinfo)have_part = 1;
   if(nevac > 0)have_evac = 1;
   if(have_part==1||have_evac==1){
-  char label[100];
+    char label[100];
 
-  strcpy(label, "");
-  if(have_part == 1)strcat(label, "Particle");
-  if(have_part == 1 && have_evac == 1)strcat(label, "/");
-  if(have_evac == 1)strcat(label, "Evac");
+    strcpy(label, "");
+    if(have_part == 1)strcat(label, "Particle");
+    if(have_part == 1 && have_evac == 1)strcat(label, "/");
+    if(have_evac == 1)strcat(label, "Evac");
 
     glui_active=1;
     ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,label,false,PART_ROLLOUT,BoundRolloutCB);
@@ -2191,9 +2198,20 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
       SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
-      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
       CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
+
+      PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
+#ifdef pp_PART_MT
+      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading(streaks disabled)"), &partfast, PARTFAST, PartBoundCB);
+#endif
+      CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
+#ifdef pp_PART_MT
+      SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
+      SPINNER_npartthread_ids->set_int_limits(1,MAX_PART_THREADS);
+      PartBoundCB(PARTFAST);
+#endif
     }
+    PartBoundCB(FILETYPEINDEX);
   }
 
   if(have_evac==1){
@@ -3152,10 +3170,10 @@ void PartBoundCB(int var){
   prop_old = part5propinfo + ipart5prop_old;
   switch(var){
   case VALMIN:
-    if(setpartmax==SET_MAX)prop_new->user_max=partmax;
+    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
     break;
   case VALMAX:
-    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
+    if(setpartmax==SET_MAX)prop_new->user_max = partmax;
     break;
   case FILETYPEINDEX:
 
@@ -3223,6 +3241,17 @@ void PartBoundCB(int var){
     break;
   case TRACERS:
   case PARTFAST:
+    if(partfast==0){
+      part_multithread_save = part_multithread;
+      part_multithread = 0;
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_part_multithread->disable();
+    }
+    else{
+      part_multithread = part_multithread_save;
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_part_multithread->enable();
+    }
     updatemenu=1;
     break;
   case FRAMELOADING:
@@ -3283,6 +3312,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_min=partmin;
     }
     setpartmin_old=setpartmin;
+    if(prop_new!=NULL)prop_new->setvalmin = setpartmin;
     switch(setpartmin){
     case PERCENTILE_MIN:
       if(prop_new!=NULL)partmin=prop_new->percentile_min;
@@ -3308,6 +3338,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_max=partmax;
     }
     setpartmax_old=setpartmax;
+    if(prop_new!=NULL)prop_new->setvalmax = setpartmax;
     switch(setpartmax){
     case PERCENTILE_MAX:
       if(prop_new!=NULL)partmax=prop_new->percentile_max;

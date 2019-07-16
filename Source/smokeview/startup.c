@@ -1457,7 +1457,7 @@ void InitVars(void){
 
   ReadVolSlice=0;
   Read3DSmoke3DFile=0;
-  ReadZoneFile=0, ReadPartFile=0, ReadEvacFile=0;;
+  ReadZoneFile=0;
 
   editwindow_status=-1;
   startup_pass=1;
@@ -1559,7 +1559,7 @@ void InitVars(void){
   periodic_value=-2;
 
   slicefilenum=-1;
-  partfilenum=-1,zonefilenum=-1;
+  zonefilenum=-1;
   targfilenum=-1;
 
   setPDIM=0;

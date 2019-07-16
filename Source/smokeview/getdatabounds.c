@@ -169,7 +169,11 @@ int ReadPartBounds(partdata *parti){
   }
 
   stream = fopen(parti->bound_file, "r");
-  if(stream==NULL)return 0;
+  if(stream==NULL){
+    CreatePartBoundFile(parti);
+    stream = fopen(parti->bound_file, "r");
+    if(stream==NULL)return 0;
+  }
   for(;;){
     float time;
     int nclasses, k, version=-1;
@@ -235,8 +239,8 @@ int ReadAllPartBounds(void){
 
     propi = part5propinfo+i;
     if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-    propi->valmin =  1000000000.0;
-    propi->valmax = -1000000000.0;
+    propi->global_min =  1000000000.0;
+    propi->global_max = -1000000000.0;
   }
 
   // find min/max over all particle files
@@ -252,8 +256,8 @@ int ReadAllPartBounds(void){
 
       propj = part5propinfo + j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      propj->valmin = MIN(propj->valmin,parti->valmin[j]);
-      propj->valmax = MAX(propj->valmax,parti->valmax[j]);
+      propj->global_min = MIN(propj->global_min,parti->valmin[j]);
+      propj->global_max = MAX(propj->global_max,parti->valmax[j]);
     }
   }
 
@@ -269,24 +273,13 @@ int ReadAllPartBounds(void){
 
       propj = part5propinfo+j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      parti->valmin[j] = propj->valmin;
-      parti->valmax[j] = propj->valmax;
+      parti->valmin[j] = propj->global_min;
+      parti->valmax[j] = propj->global_max;
     }
   }
 
   // set properties
 
-  for(i = 0; i<npart5prop; i++){
-    partpropdata *propi;
-
-    propi = part5propinfo+i;
-    if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-
-    propi->global_min = propi->valmin;
-    propi->global_max = propi->valmax;
-    propi->setvalmax = GLOBAL_MAX;
-    propi->setvalmin = GLOBAL_MIN;
-  }
   return have_bound_file;
 }
 
@@ -307,17 +300,16 @@ void GetPartBounds(void){
     }
   }
   if(update_part_bounds==1){
-    have_particle_bound_files = ReadAllPartBounds();
     update_part_bounds = 0;
-    if(have_particle_bound_files==0){
+    if(ReadAllPartBounds()==0){
       printf("***warning: Unable to read one or more particle bound files. Obtaining bounds from particle data.\n");
       // compute bounds from data
     }
-  }
-  AdjustPart5Chops();
+    AdjustPart5Chops();
 #ifdef _DEBUG
-  PrintPartProp();
+    PrintPartProp();
 #endif
+  }
 }
 
 /* ------------------ AdjustPlot3DBounds ------------------------ */

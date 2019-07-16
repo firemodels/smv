@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(have_particle_bound_files, 0);
+SVEXTERN int SVDECL(npartthread_ids, 0);
 SVEXTERN int SVDECL(update_part_bounds, 0);
 SVEXTERN int SVDECL(partfast, YES);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
@@ -42,6 +42,7 @@ SVEXTERN float SVDECL(timer_reshape, 0.0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
+SVEXTERN int SVDECL(part_multithread, 0), SVDECL(part_multithread_save,0);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
@@ -958,8 +959,7 @@ SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
 SVEXTERN int Read3DSmoke3DFile;
-SVEXTERN int ReadZoneFile, ReadPartFile, ReadEvacFile;
-
+SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0), SVDECL(ReadEvacFile,0);
 SVEXTERN int SVDECL(cache_qdata,1);
 
 SVEXTERN int editwindow_status;
@@ -1103,7 +1103,7 @@ SVEXTERN int periodic_reloads;
 SVEXTERN int periodic_value;
 
 SVEXTERN int slicefilenum;
-SVEXTERN int partfilenum,zonefilenum;
+SVEXTERN int zonefilenum;
 SVEXTERN int targfilenum;
 
 SVEXTERN float min_gridcell_size;

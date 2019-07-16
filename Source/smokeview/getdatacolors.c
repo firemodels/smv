@@ -491,8 +491,24 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           int prop_id_index;
           float partimin, partimax;
 
-          valmin = prop_id->valmin;
-          valmax = prop_id->valmax;
+          if(prop_id->setvalmin==PERCENTILE_MIN){
+            valmin = prop_id->percentile_min;
+          }
+          else if(prop_id->setvalmin==SET_MIN){
+            valmin = prop_id->user_min;
+          }
+          else{
+            valmin = prop_id->global_min;
+          }
+          if(prop_id->setvalmax==PERCENTILE_MAX){
+            valmax = prop_id->percentile_max;
+          }
+          else if(prop_id->setvalmax==SET_MAX){
+            valmax = prop_id->user_max;
+          }
+          else{
+            valmax = prop_id->global_max;
+          }
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
           prop_id_index = prop_id-part5propinfo;
@@ -633,8 +649,24 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 
     propi = part5propinfo + i;
 
-    local_tmin = propi->valmin;
-    local_tmax = propi->valmax;
+    if(propi->setvalmin==PERCENTILE_MIN){
+      local_tmin = propi->percentile_min;
+    }
+    else if(propi->setvalmin==SET_MIN){
+      local_tmin = propi->user_min;
+    }
+    else{
+      local_tmin = propi->global_min;
+    }
+    if(propi->setvalmax==PERCENTILE_MAX){
+      local_tmax = propi->percentile_max;
+    }
+    else if(propi->setvalmax==SET_MAX){
+      local_tmax = propi->user_max;
+    }
+    else{
+      local_tmax = propi->global_max;
+    }
     scale = propi->scale;
     labels=propi->partlabels;
     ppartlevels256=propi->ppartlevels256;

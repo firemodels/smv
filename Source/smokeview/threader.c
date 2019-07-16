@@ -47,6 +47,8 @@ void CompressSVZip2(void){
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
+  npartthread_ids = 1;
+  pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
 #ifdef pp_ISOTHREAD
   pthread_mutex_init(&mutexTRIANGLES,NULL);
@@ -82,6 +84,59 @@ void CompressSVZip(void){
 #else
 void CompressSVZip(void){
   CompressSVZip2();
+}
+#endif
+
+/* ------------------ MtLoadAllPartFiles ------------------------ */
+
+#ifdef pp_THREAD
+
+void *MtLoadAllPartFiles(void *arg){
+  LoadAllPartFiles();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ LoadAllPartFilesMT ------------------------ */
+
+void LoadAllPartFilesMT(void){
+  int i;
+
+  for(i=0;i<npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    parti->loadstatus=0;
+  }
+  if(part_multithread==1){
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_create(partthread_ids+i, NULL, MtLoadAllPartFiles, NULL);
+    }
+    for(i=0;i<npartthread_ids;i++){
+      pthread_join(partthread_ids[i],NULL);
+    }
+    for(i=0;i<npartinfo;i++){
+      partdata *parti;
+
+      parti = partinfo + i;
+      if(parti->finalize==1)FinalizePartLoad(parti);
+    }
+  }
+  else{
+    LoadAllPartFiles();
+  }
+}
+#else
+void LoadAllPartFilesMT(void){
+  int i;
+
+  for(i=0;i<npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    parti->loadstatus=0;
+  }
+  LoadAllPartFiles();
 }
 #endif
 
