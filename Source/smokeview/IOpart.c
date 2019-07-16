@@ -1710,8 +1710,8 @@ void InitPartProp(void){
           propi->particle_property=0;
           propi->label=flowlabel;
 
-          propi->setvalmin=0;
-          propi->setvalmax=0;
+          propi->setvalmin=GLOBAL_MIN;
+          propi->setvalmax=GLOBAL_MAX;
           propi->set_global_bounds=1;
           propi->global_min=100000000.0;
           propi->global_max=-propi->global_min;
@@ -2263,9 +2263,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   // convert particle temperatures into integers pointing to an rgb color table
   parti->request_load = 1;
   if(part_multithread==0){
-    if(parti->finalize==1){
-      FinalizePartLoad(parti);
-    }
+    if(parti->finalize==1)FinalizePartLoad(parti);
     STOP_TIMER(load_time_local);
     if(file_size_local>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size_local/1000000000., load_time_local);

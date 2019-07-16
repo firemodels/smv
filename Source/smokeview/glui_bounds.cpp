@@ -2120,12 +2120,12 @@ extern "C" void GluiBoundsSetup(int main_window){
   if(npartinfo > 0 && nevac != npartinfo)have_part = 1;
   if(nevac > 0)have_evac = 1;
   if(have_part==1||have_evac==1){
-  char label[100];
+    char label[100];
 
-  strcpy(label, "");
-  if(have_part == 1)strcat(label, "Particle");
-  if(have_part == 1 && have_evac == 1)strcat(label, "/");
-  if(have_evac == 1)strcat(label, "Evac");
+    strcpy(label, "");
+    if(have_part == 1)strcat(label, "Particle");
+    if(have_part == 1 && have_evac == 1)strcat(label, "/");
+    if(have_evac == 1)strcat(label, "Evac");
 
     glui_active=1;
     ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,label,false,PART_ROLLOUT,BoundRolloutCB);
@@ -2211,6 +2211,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       PartBoundCB(PARTFAST);
 #endif
     }
+    PartBoundCB(FILETYPEINDEX);
   }
 
   if(have_evac==1){
