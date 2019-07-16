@@ -9217,7 +9217,9 @@ typedef struct {
   SetupDeviceData();
   if(nzoneinfo>0)SetupZoneDevs();
 
+#ifdef pp_THREAD
   InitMultiThreading();
+#endif
 
   InitPartProp();
 

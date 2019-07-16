@@ -300,9 +300,8 @@ void GetPartBounds(void){
     }
   }
   if(update_part_bounds==1){
-    have_particle_bound_files = ReadAllPartBounds();
     update_part_bounds = 0;
-    if(have_particle_bound_files==0){
+    if(ReadAllPartBounds()==0){
       printf("***warning: Unable to read one or more particle bound files. Obtaining bounds from particle data.\n");
       // compute bounds from data
     }

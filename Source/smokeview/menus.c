@@ -3625,7 +3625,7 @@ void ParticlePropShowMenu(int value){
 
 void UnloadAllPartFiles(void){
   int i;
-  
+
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
     int errorcode;
@@ -3639,16 +3639,26 @@ void UnloadAllPartFiles(void){
 /* ------------------ LoadAllPartFiles ------------------------ */
 
 void LoadAllPartFiles(void){
-  int i;
+  int i, final;
 
   for(i = 0;i<npartinfo;i++){
     partdata *parti;
     int errorcode;
+    FILE_SIZE file_size;
 
     parti = partinfo+i;
     if(parti->skipload==1)continue;
-    part_load_size += ReadPart(parti->file, i, LOAD, &errorcode);
-    part_file_count++;
+    LOCK_PART_LOAD;
+    if(parti->loadstatus==0){
+      parti->loadstatus = 1;
+      UNLOCK_PART_LOAD;
+      file_size = ReadPart(parti->file, i, LOAD, &errorcode);
+      LOCK_PART_LOAD;
+      parti->loadstatus = 2;
+      part_load_size += file_size;
+      part_file_count++;
+    }
+    UNLOCK_PART_LOAD;
   }
 }
 
@@ -3664,7 +3674,6 @@ void LoadParticleMenu(int value){
     char  *partfile;
     partdata *parti;
 
-    ReadPartFile=1;
     parti = partinfo + value;
     partfile = parti->file;
     parti->finalize = 1;
@@ -3744,7 +3753,7 @@ void LoadParticleMenu(int value){
         part_load_size = 0;
         part_file_count = 0;
         START_TIMER(part_load_time);
-        LoadAllPartFiles();
+        LoadAllPartFilesMT();
         STOP_TIMER(part_load_time);
         PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
 
