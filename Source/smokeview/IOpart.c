@@ -891,8 +891,8 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
     eof_local = 0;
     frame_size_local =0;
     if(fgets(buffer_local,255,streamin_local)==NULL)break;
-    sscanf(buffer_local, "%f %i", &time, &nclasses_local);
-    fprintf(streamout_local, " %f %li\n", time, filepos_arg);
+    sscanf(buffer_local, "%f %i", &time_local, &nclasses_local);
+    fprintf(streamout_local, " %f %li\n", time_local, filepos_arg);
     frame_size_local += 12;
     for(j = 0; j<nclasses_local; j++){
       int k, npoints_local, ntypes_local;
@@ -980,7 +980,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, in
       FSEEK(PART5FILE, skip_local, SEEK_CUR);
       frame_size_local +=skip_local;
     }
-    fprintf(streamout_local, "%f %li\n", time, file_offset_arg);
+    fprintf(streamout_local, "%f %li\n", time_local, file_offset_arg);
     file_offset_arg += frame_size_local;
     for (i = 0; i < nclasses_local; i++){
       fprintf(streamout_local, " %i\n", numpoints_local[i]);

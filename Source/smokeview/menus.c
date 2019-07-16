@@ -3639,7 +3639,7 @@ void UnloadAllPartFiles(void){
 /* ------------------ LoadAllPartFiles ------------------------ */
 
 void LoadAllPartFiles(void){
-  int i, final;
+  int i;
 
   for(i = 0;i<npartinfo;i++){
     partdata *parti;
