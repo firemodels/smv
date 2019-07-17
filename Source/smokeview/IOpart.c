@@ -2202,7 +2202,6 @@ void PrintLoadFiles(int option){
 
 FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorcode_arg){
   size_t lenfile_local;
-  int j;
   int error_local=0, nf_all_local;
   partdata *parti;
   FILE_SIZE file_size_local;
