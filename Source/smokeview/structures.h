@@ -1153,7 +1153,7 @@ typedef struct _partdata {
   part5data *data5;
   histogramdata **histograms;
   int bounds_set;
-  float *valmin, *valmax;
+  float *global_min, *global_max;
 #ifdef pp_PART_FAST
   unsigned char *vis_part;
   int *tags;

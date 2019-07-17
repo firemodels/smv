@@ -8049,8 +8049,8 @@ typedef struct {
       parti->timeslist=NULL;
       parti->histograms = NULL;
       parti->bounds_set = 0;
-      parti->valmin = NULL;
-      parti->valmax = NULL;
+      parti->global_min = NULL;
+      parti->global_max = NULL;
       parti->filepos = NULL;
 #ifdef pp_PART_FAST
       parti->tags = NULL;

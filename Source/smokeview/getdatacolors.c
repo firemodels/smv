@@ -512,8 +512,8 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
           prop_id_index = prop_id-part5propinfo;
-          partimin = parti->valmin[prop_id_index];
-          partimax = parti->valmax[prop_id_index];
+          partimin = parti->global_min[prop_id_index];
+          partimax = parti->global_max[prop_id_index];
 
           if(convert_flag==PARTFILE_MAP){
             int m;
