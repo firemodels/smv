@@ -2160,6 +2160,44 @@ void FinalizePartLoad(partdata *parti){
   glutPostRedisplay();
 }
 
+#define BEFORE 0
+#define AFTER  1
+
+/* -----  ------------- PrintLoadFiles ------------------------ */
+
+void PrintLoadFiles(int option){
+  int j;
+  int nfiles_loading_local, nfiles_toload_local, ifile_local;
+
+  nfiles_loading_local = 0;
+  nfiles_toload_local = 0;
+  for(j = 0; j<npartinfo; j++){
+    partdata *partj;
+
+    partj = partinfo+j;
+    if(partj->loadstatus==1)nfiles_loading_local++;
+    if(partj->loadstatus==0)nfiles_toload_local++;
+  }
+  if(nfiles_toload_local>0&&option==AFTER)return;
+  PRINTF("Loading: ");
+  ifile_local = 0;
+  for(j = 0; j<npartinfo; j++){
+    partdata *partj;
+
+    partj = partinfo+j;
+    if(partj->loadstatus==1){
+      ifile_local++;
+      if(ifile_local==nfiles_loading_local){
+        PRINTF("%s", partj->reg_file);
+      }
+      else{
+        PRINTF("%s, ", partj->reg_file);
+      }
+    }
+  }
+  PRINTF("\n");
+}
+
 /* -----  ------------- ReadPart ------------------------ */
 
 FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorcode_arg){
@@ -2211,34 +2249,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   if(part_multithread==1){
     LOCK_PART_LOAD;
-    {
-      int nfiles_local,ifile_local;
-
-      PRINTF("Loading particle files: ");
-      nfiles_local = 0;
-      for(j = 0; j<npartinfo; j++){
-        partdata *partj;
-
-        partj = partinfo+j;
-        if(partj->loadstatus==1)nfiles_local++;
-      }
-      ifile_local = 0;
-      for(j = 0; j<npartinfo; j++){
-        partdata *partj;
-
-        partj = partinfo+j;
-        if(partj->loadstatus==1){
-          ifile_local++;
-          if(ifile_local==nfiles_local){
-            PRINTF("%s", partj->reg_file);
-          }
-          else{
-            PRINTF("%s, ", partj->reg_file);
-          }
-        }
-      }
-      PRINTF("\n");
-    }
+    PrintLoadFiles(BEFORE);
     UNLOCK_PART_LOAD;
   }
   else{
@@ -2260,9 +2271,13 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   PrintMemoryInfo;
 
-  // convert particle temperatures into integers pointing to an rgb color table
   parti->request_load = 1;
-  if(part_multithread==0){
+  if(part_multithread==1){
+    LOCK_PART_LOAD;
+    PrintLoadFiles(AFTER);
+    UNLOCK_PART_LOAD;
+  }
+  else{
     if(parti->finalize==1)FinalizePartLoad(parti);
     STOP_TIMER(load_time_local);
     if(file_size_local>1000000000){
