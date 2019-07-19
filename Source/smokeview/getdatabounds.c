@@ -342,7 +342,6 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 void GetAllPartBounds(void){
   int i;
   FILE *stream = NULL;
-  FILE_SIZE file_size;
 
   LOCK_PART_LOAD;
   for(i = 0; i<npartinfo; i++){
@@ -383,7 +382,7 @@ void GetAllPartBounds(void){
       fclose(stream);
       for(i = 0; i<npartinfo; i++){
         partdata *parti;
-        int j, nsize;
+        int j;
 
         parti = partinfo+i;
         parti->boundstatus = 2;
@@ -408,7 +407,6 @@ void GetAllPartBounds(void){
 
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
-    int j, nsize;
 
     parti = partinfo+i;
     LOCK_PART_LOAD;
