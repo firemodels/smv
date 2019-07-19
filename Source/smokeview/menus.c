@@ -3669,6 +3669,33 @@ void SetPartGlobals(void){
   global_have_global_bound_file = 0;
 }
 
+/* ------------------ SetupPart ------------------------ */
+
+void SetupPart(int value){
+  int i;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    parti->finalize = 0;
+    parti->skipload = 1;
+    parti->loadstatus = 0;
+    parti->boundstatus = 0;
+    if(parti->evac==1)continue;                               // don't load an evac file
+    if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    parti->skipload = 0;
+  }
+
+  for(i = npartinfo-1; i>=0; i--){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->skipload==1)continue;
+    parti->finalize = 1;
+  }
+}
+
 /* ------------------ LoadParticleMenu ------------------------ */
 
 void LoadParticleMenu(int value){
@@ -3692,6 +3719,9 @@ void LoadParticleMenu(int value){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     if(scriptoutstream==NULL||script_defer_loading==0){
+      SetupPart(value);
+      GetAllPartBounds();
+      MergeAllPartBounds();
       ReadPart(partfile, value, LOAD, &errorcode);
     }
   }
@@ -3728,28 +3758,7 @@ void LoadParticleMenu(int value){
 
       if(scriptoutstream==NULL||script_defer_loading==0){
 
-        // wait until last particle file is loaded before coloring
-
-        for(i = 0; i<npartinfo; i++){
-          partdata *parti;
-
-          parti = partinfo+i;
-          parti->finalize = 0;
-          parti->skipload = 1;
-          parti->loadstatus=0;
-          parti->boundstatus = 0;
-          if(parti->evac==1)continue;                               // don't load an evac file
-          if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
-          parti->skipload = 0;
-        }
-
-        for(i = npartinfo-1;i>=0;i--){
-          partdata *parti;
-
-          parti = partinfo+i;
-          if(parti->skipload==1)continue;
-          parti->finalize = 1;
-        }
+        SetupPart(value);
 
         // unload particle files
 

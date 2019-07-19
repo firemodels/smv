@@ -2281,9 +2281,25 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '/':
       updatemenu=1;
-      partfast = 1-partfast;
-      if(partfast==0)printf("fast particle loading: off\n");
-      if(partfast==1)printf("fast particle loading: on\n");
+      if(partfast==1&&part_multithread==1){
+        partfast=1;
+        part_multithread=0;
+      }
+      else if(partfast==1&&part_multithread==0){
+        partfast=0;
+        part_multithread=0;
+      }
+      else{
+        partfast=1;
+        part_multithread=1;
+      }
+      if(partfast==1)printf("    fast loading: on(streaks disabled)\n");
+      if(partfast==0)printf("    fast loading: off\n");
+      if(part_multithread==1){
+        if(npartthread_ids>1)printf("parallel loading: on(%i threads)\n",npartthread_ids);
+        if(npartthread_ids==1)printf("parallel loading: on(1 thread)\n");
+      }
+      if(part_multithread==0)printf("parallel loading: off\n");
       UpdateGluiPartFast();
       break;
     case '$':

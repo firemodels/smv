@@ -329,7 +329,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
       if(type_arg==PART_LOADING&&partj->loadstatus==1)doit = 1;
       if(doit==1){
         printf("%s", partj->reg_file);
-        if(isize_local!=nsize_local-1)printf(",");
+        if(isize_local!=nsize_local-1)printf(", ");
         isize_local++;
       }
     }

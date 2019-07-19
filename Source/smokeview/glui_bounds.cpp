@@ -220,9 +220,7 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
-#ifdef pp_PART_MT
 GLUI_Panel *PANEL_partread = NULL;
-#endif
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
 GLUI_Panel *PANEL_geomexp = NULL;
@@ -260,9 +258,7 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
-#ifdef pp_PART_MT
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
-#endif
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
@@ -456,6 +452,8 @@ int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinf
 
 extern "C" void UpdateGluiPartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
+  if(CHECKBOX_part_multithread!=NULL)CHECKBOX_part_multithread->set_int_val(part_multithread);
+  PartBoundCB(PARTFAST);
 }
 
 /* ------------------ UpdateListIsoColorobar ------------------------ */
@@ -2201,15 +2199,11 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
 
       PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
-#ifdef pp_PART_MT
       CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading(streaks disabled)"), &partfast, PARTFAST, PartBoundCB);
-#endif
       CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
-#ifdef pp_PART_MT
       SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
       SPINNER_npartthread_ids->set_int_limits(1,MAX_PART_THREADS);
       PartBoundCB(PARTFAST);
-#endif
     }
     PartBoundCB(FILETYPEINDEX);
   }
@@ -3242,15 +3236,14 @@ void PartBoundCB(int var){
   case TRACERS:
   case PARTFAST:
     if(partfast==0){
-      part_multithread_save = part_multithread;
-      part_multithread = 0;
       CHECKBOX_part_multithread->set_int_val(part_multithread);
       CHECKBOX_part_multithread->disable();
+      SPINNER_npartthread_ids->disable();
     }
     else{
-      part_multithread = part_multithread_save;
       CHECKBOX_part_multithread->set_int_val(part_multithread);
       CHECKBOX_part_multithread->enable();
+      SPINNER_npartthread_ids->enable();
     }
     updatemenu=1;
     break;

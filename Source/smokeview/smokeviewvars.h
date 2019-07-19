@@ -22,8 +22,8 @@
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
-SVEXTERN int SVDECL(npartthread_ids, 0);
-SVEXTERN int SVDECL(partfast, YES);
+SVEXTERN int SVDECL(npartthread_ids, 4);
+SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(emission_factor, 5.0);

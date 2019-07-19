@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-#define pp_PART_MT             // multi threading for reading particle files
 #define pp_PART_FAST           // fast particle file reading
 //#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_HTML                // output html version of smokeview scene
