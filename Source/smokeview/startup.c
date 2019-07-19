@@ -188,11 +188,11 @@ int SetupCase(int argc, char **argv){
 
   return_code=-1;
 
-  FREEMEMORY(part_bound_filename);
-  NewMemory((void **)&part_bound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
-  STRCPY(part_bound_filename, fdsprefix);
-  STRCAT(part_bound_filename, ".prt5.gbnd");
-  part_bound_filename = GetFileName(smokeviewtempdir, part_bound_filename, NOT_FORCE_IN_DIR);
+  FREEMEMORY(part_globalbound_filename);
+  NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
+  STRCPY(part_globalbound_filename, fdsprefix);
+  STRCAT(part_globalbound_filename, ".prt5.gbnd");
+  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;

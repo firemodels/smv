@@ -87,9 +87,9 @@ void CompressSVZip(void){
 }
 #endif
 
-/* ------------------ MtLoadAllPartFiles ------------------------ */
-
 #ifdef pp_THREAD
+
+/* ------------------ MtLoadAllPartFiles ------------------------ */
 
 void *MtLoadAllPartFiles(void *arg){
   LoadAllPartFiles();
@@ -97,18 +97,27 @@ void *MtLoadAllPartFiles(void *arg){
   return NULL;
 }
 
+/* ------------------ MtGetAllPartBounds ------------------------ */
+
+void *MtGetAllPartBounds(void *arg){
+  GetAllPartBounds();
+  pthread_exit(NULL);
+  return NULL;
+}
+
 /* ------------------ LoadAllPartFilesMT ------------------------ */
 
 void LoadAllPartFilesMT(void){
-  int i;
-
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    parti->loadstatus=0;
-  }
   if(part_multithread==1){
+    int i;
+
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_create(partthread_ids+i, NULL, MtGetAllPartBounds, NULL);
+    }
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_join(partthread_ids[i], NULL);
+    }
+    MergeAllPartBounds();
     for(i = 0; i<npartthread_ids; i++){
       pthread_create(partthread_ids+i, NULL, MtLoadAllPartFiles, NULL);
     }
@@ -123,19 +132,15 @@ void LoadAllPartFilesMT(void){
     }
   }
   else{
+    GetAllPartBounds();
+    MergeAllPartBounds();
     LoadAllPartFiles();
   }
 }
 #else
 void LoadAllPartFilesMT(void){
-  int i;
-
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    parti->loadstatus=0;
-  }
+  GetAllPartBounds();
+  MergeAllPartBounds();
   LoadAllPartFiles();
 }
 #endif

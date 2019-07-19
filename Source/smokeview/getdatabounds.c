@@ -152,21 +152,34 @@ void AdjustPart5Chops(void){
 
 /* -----  ------------- ReadPartBounds ------------------------ */
 
-int ReadPartBounds(partdata *parti){
+int ReadPartBounds(partdata *parti,int read_bounds_arg){
   FILE *stream=NULL;
-  int j, eof=0;
-  float *valmin, *valmax;
-  int part_boundfile_version = 1;
+  int j, eof_local=0;
+  int part_boundfile_version_local = 1;
+  float *valmin_local, *valmax_local;
 
   parti->bounds_set = 0;
   if(parti->global_min==NULL)NewMemory((void **)&parti->global_min, npart5prop*sizeof(float));
   if(parti->global_max==NULL)NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
-  valmin = parti->global_min;
-  valmax = parti->global_max;
-  for(j=0;j<npart5prop;j++){
-    valmin[j] = 1000000000.0;
-    valmax[j] = -1000000000.0;
+
+  valmin_local = parti->global_min;
+  valmax_local = parti->global_max;
+  for(j = 0; j<npart5prop; j++){
+    valmin_local[j] =  1000000000.0;
+    valmax_local[j] = -1000000000.0;
   }
+
+  // make sure a size file exists
+
+  stream = fopen(parti->size_file, "r");
+  if(stream==NULL){
+    CreatePartSizeFile(parti, parti->evac==1);
+    stream = fopen(parti->size_file, "r");
+    if(stream==NULL)return 0;
+    fclose(stream);
+  }
+
+  // make sure a bound file exists
 
   stream = fopen(parti->bound_file, "r");
   if(stream==NULL){
@@ -174,166 +187,164 @@ int ReadPartBounds(partdata *parti){
     stream = fopen(parti->bound_file, "r");
     if(stream==NULL)return 0;
   }
-  for(;;){
-    float time;
-    int nclasses, k, version=-1;
-    char buffer[255];
 
-    if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%f %i %i", &time, &nclasses, &version);
-    if(version!=part_boundfile_version){
+// if valid global particle bounds file so we can return now and not read individual bound files
+
+  if(read_bounds_arg==1){
+    parti->bounds_set = 1;
+    fclose(stream);
+    return 0;
+  }
+
+  for(;;){
+    float time_local;
+    int nclasses_local, k, version_local =-1;
+    char buffer_local[255];
+
+    if(fgets(buffer_local, 255, stream)==NULL)break;
+    sscanf(buffer_local, "%f %i %i", &time_local, &nclasses_local, &version_local);
+    if(version_local!=part_boundfile_version_local){
       fclose(stream);
       return 0;
     }
 
-    for(k = 0; k<nclasses; k++){
-      int nbounds, npoints;
+    for(k = 0; k<nclasses_local; k++){
+      int nbounds_local, npoints_local;
 
-      if(fgets(buffer, 255, stream)==NULL){
-        eof = 1;
+      if(fgets(buffer_local, 255, stream)==NULL){
+        eof_local = 1;
         break;
       }
-      sscanf(buffer, "%i %i", &nbounds, &npoints);
-      for(j = 0; j<nbounds; j++){
-        float vmin, vmax;
-        int prop_index;
+      sscanf(buffer_local, "%i %i", &nbounds_local, &npoints_local);
+      for(j = 0; j<nbounds_local; j++){
+        float vmin_local, vmax_local;
+        int prop_index_local;
 
-        if(fgets(buffer, 255, stream)==NULL){
-          eof = 1;
+        if(fgets(buffer_local, 255, stream)==NULL){
+          eof_local = 1;
           break;
         }
-        sscanf(buffer, "%f %f", &vmin, &vmax);
-        if(vmax>=vmin){
+        sscanf(buffer_local, "%f %f", &vmin_local, &vmax_local);
+        if(vmax_local>=vmin_local){
           parti->bounds_set = 1;
 
-          prop_index = GetPartPropIndex(k,j+2);
+          prop_index_local = GetPartPropIndex(k,j+2);
 
-          valmin[prop_index] = MIN(valmin[prop_index], vmin);
-          valmax[prop_index] = MAX(valmax[prop_index], vmax);
+          valmin_local[prop_index_local] = MIN(valmin_local[prop_index_local], vmin_local);
+          valmax_local[prop_index_local] = MAX(valmax_local[prop_index_local], vmax_local);
         }
       }
-      if(eof==1)break;
+      if(eof_local==1)break;
     }
-    if(eof==1)break;
+    if(eof_local==1)break;
   }
   fclose(stream);
   return 1;
 }
 
-/* ------------------ ReadAllPartBounds ------------------------ */
+/* ------------------ MergeAllPartBounds ------------------------ */
 
-int ReadAllPartBounds(void){
-  int i, have_bound_file=1;
-  FILE *stream=NULL;
-  int have_global_bound_file = 0;
-  FILE_SIZE bound_new;
+void MergeAllPartBounds(void){
+  int i;
 
-  // find min/max for each particle file
+  for(i = 0; i<npart5prop; i++){
+    partpropdata *propi;
 
-  bound_new = GetFileSizeSMV(partinfo->bound_file);
-
-  stream = fopen(part_bound_filename,"r");
-  if(stream!=NULL){
-    int n;
-    int bound_old;
-
-    fscanf(stream,"%i %i", &n, &bound_old);
-    if((int)bound_new==bound_old){      // only use global particle bound file if the size of the first particle .bnd file has not changed
-      have_global_bound_file = 1;  // (assume if any .bnd file has changed then the first .bnd file has changed)
-      printf("reading global particle bound file: %s\n",part_bound_filename);
-      n = MIN(npart5prop, n);
-      for(i = 0; i<n; i++){
-        partpropdata *propi;
-        float valmin, valmax;
-
-        propi = part5propinfo+i;
-        fscanf(stream, "%f %f", &valmin, &valmax);
-        propi->global_min = valmin;
-        propi->global_max = valmax;
-      }
-    }
-    else{
-      printf("***warning: particle bound files have changed - re-generating global particle bound file\n");
-    }
-    fclose(stream);
+    propi = part5propinfo+i;
+    if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
+    propi->global_min =  1000000000.0;
+    propi->global_max = -1000000000.0;
   }
 
-  if(have_global_bound_file==0){
-    for(i = 0; i<npartinfo; i++){
-      partdata *parti;
-
-      parti = partinfo+i;
-      if(ReadPartBounds(parti)==0)have_bound_file = 0;
-    }
-    for(i = 0; i<npart5prop; i++){
-      partpropdata *propi;
-
-      propi = part5propinfo+i;
-      if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-      propi->global_min = 1000000000.0;
-      propi->global_max = -1000000000.0;
-    }
-
-    // find min/max over all particle files
-
-    for(i = 0; i<npartinfo; i++){
-      partdata *parti;
-      int j;
-
-      parti = partinfo+i;
-      if(parti->bounds_set==0)continue;
-      for(j = 0; j<npart5prop; j++){
-        partpropdata *propj;
-
-        propj = part5propinfo+j;
-        if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-        propj->global_min = MIN(propj->global_min, parti->global_min[j]);
-        propj->global_max = MAX(propj->global_max, parti->global_max[j]);
-      }
-    }
-  }
-
-  // set min/max for each particle file
+  // find min/max over all particle files
 
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
     int j;
 
     parti = partinfo+i;
+    if(parti->bounds_set==0)continue;
     for(j = 0; j<npart5prop; j++){
       partpropdata *propj;
 
       propj = part5propinfo+j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      parti->global_min[j] = propj->global_min;
-      parti->global_max[j] = propj->global_max;
+      propj->global_min = MIN(propj->global_min, parti->global_min[j]);
+      propj->global_max = MAX(propj->global_max, parti->global_max[j]);
     }
   }
+  if(global_have_global_bound_file==0){
+    FILE *stream;
 
-  if(have_global_bound_file==0){
-    stream = fopen(part_bound_filename, "w");
+    stream = fopen(part_globalbound_filename, "w");
     if(stream!=NULL){
-      int  j;
+      global_have_global_bound_file = 1;
+      global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
+      fprintf(stream,"%i %i\n",npart5prop,(int)global_part_boundsize);
+      for(i=0;i<npart5prop;i++){
+        partpropdata *propi;
+        float valmin, valmax;
 
-      fprintf(stream,"%i %i\n", npart5prop,(int)bound_new);
-      for(j = 0; j<npart5prop; j++){
-        partpropdata *propj;
-
-        propj = part5propinfo+j;
-        fprintf(stream, "%f %f\n", propj->global_min, propj->global_max);
+        propi = part5propinfo+i;
+        valmin = propi->global_min;
+        valmax = propi->global_max;
+        fprintf(stream, "%f %f\n", valmin, valmax);
       }
       fclose(stream);
     }
   }
+  AdjustPart5Chops();
+#ifdef _DEBUG
+  //    PrintPartProp();
+#endif
+}
 
-  return have_bound_file;
+/* ------------------ PrintPartLoadSummary ------------------------ */
+
+void PrintPartLoadSummary(int option_arg,int type_arg){
+  int nsize_local;
+  int j;
+
+  nsize_local = 0;
+  for(j = 0; j<npartinfo; j++){
+    partdata *partj;
+
+    partj = partinfo+j;
+    if(type_arg==PART_SIZING&&partj->boundstatus==1)nsize_local++;
+    if(type_arg==PART_LOADING&&partj->loadstatus==1)nsize_local++;
+  }
+  if(option_arg==1||(nsize_local<npartthread_ids&&nsize_local>0)){
+    int isize_local;
+
+    if(type_arg==PART_SIZING)printf("sizing: ");
+    if(type_arg==PART_LOADING)printf("loading: ");
+    isize_local = 0;
+    for(j = 0; j<npartinfo; j++){
+      partdata *partj;
+      int doit;
+
+      partj = partinfo+j;
+      doit = 0;
+      if(type_arg==PART_SIZING&&partj->boundstatus==1)doit = 1;
+      if(type_arg==PART_LOADING&&partj->loadstatus==1)doit = 1;
+      if(doit==1){
+        printf("%s", partj->reg_file);
+        if(isize_local!=nsize_local-1)printf(",");
+        isize_local++;
+      }
+    }
+    printf("\n");
+  }
 }
 
 /* ------------------ GetPartBounds ------------------------ */
 
-void GetPartBounds(void){
+void GetAllPartBounds(void){
   int i;
+  FILE *stream = NULL;
+  FILE_SIZE file_size;
 
+  LOCK_PART_LOAD;
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
@@ -345,16 +356,74 @@ void GetPartBounds(void){
       NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
     }
   }
-  if(update_part_bounds==1){
-    update_part_bounds = 0;
-    if(ReadAllPartBounds()==0){
-      printf("***warning: Unable to read one or more particle bound files. Obtaining bounds from particle data.\n");
-      // compute bounds from data
+
+  // find min/max for each particle file
+
+  if(global_part_boundsize==0)global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
+
+  stream = fopen(part_globalbound_filename, "r");
+  if(stream!=NULL){
+    int n;
+    int part_boundsize_old_local;
+
+    fscanf(stream, "%i %i", &n, &part_boundsize_old_local);
+    if((int)global_part_boundsize==part_boundsize_old_local){      // only use global particle bound file if the size of the first particle .bnd file has not changed
+      global_have_global_bound_file = 1;                           // (assume if any .bnd file has changed then the first .bnd file has changed)
+    //  printf("reading global particle bound file: %s\n", part_globalbound_filename);
+      n = MIN(npart5prop, n);
+      for(i = 0; i<n; i++){
+        partpropdata *propi;
+        float valmin, valmax;
+
+        propi = part5propinfo+i;
+        fscanf(stream, "%f %f", &valmin, &valmax);
+        propi->global_min = valmin;
+        propi->global_max = valmax;
+      }
+      fclose(stream);
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+        int j, nsize;
+
+        parti = partinfo+i;
+        parti->boundstatus = 2;
+        parti->bounds_set = 1;
+        for(j = 0; j<npart5prop; j++){
+          partpropdata *propj;
+
+          propj = part5propinfo+j;
+          parti->global_min[j] = propj->global_min;
+          parti->global_max[j] = propj->global_max;
+        }
+      }
+      UNLOCK_PART_LOAD;
+      return;
     }
-    AdjustPart5Chops();
-#ifdef _DEBUG
-    PrintPartProp();
-#endif
+    else{
+      printf("***warning: particle bound files have changed - re-generating global particle bound file\n");
+    }
+    fclose(stream);
+  }
+  UNLOCK_PART_LOAD;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int j, nsize;
+
+    parti = partinfo+i;
+    LOCK_PART_LOAD;
+    if(parti->boundstatus!=0){
+      UNLOCK_PART_LOAD;
+      continue;
+    }
+    parti->boundstatus = 1;
+    PrintPartLoadSummary(PART_BEFORE, PART_SIZING);
+    UNLOCK_PART_LOAD;
+    ReadPartBounds(parti,global_have_global_bound_file);
+    LOCK_PART_LOAD;
+    PrintPartLoadSummary(PART_AFTER, PART_SIZING);
+    parti->boundstatus = 2;
+    UNLOCK_PART_LOAD;
   }
 }
 

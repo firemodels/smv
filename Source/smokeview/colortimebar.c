@@ -1932,8 +1932,8 @@ void DrawHorizontalColorbarRegLabels(void) {
     float tttval, tttmin, tttmax;
 
     partlevels256_ptr = partlevels256;
-    if (prop_index >= 0 && prop_index < npart5prop) {
-      partlevels256_ptr = part5propinfo[prop_index].ppartlevels256;
+    if (global_prop_index>= 0 &&global_prop_index < npart5prop) {
+      partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
     }
 
     iposition = -1;
@@ -1964,8 +1964,8 @@ void DrawHorizontalColorbarRegLabels(void) {
 
       horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if (iposition == i)continue;
-      if (prop_index >= 0 && prop_index < npart5prop) {
-        partcolorlabel_ptr = &part5propinfo[prop_index].partlabels[i + 1][0];
+      if (global_prop_index>= 0 &&global_prop_index < npart5prop) {
+        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
       }
       else {
         if (colorlabelpart != NULL) {
@@ -2632,8 +2632,8 @@ void DrawVerticalColorbarRegLabels(void){
     float tttval, tttmin, tttmax;
 
     partlevels256_ptr = partlevels256;
-    if(prop_index >= 0 && prop_index < npart5prop){
-      partlevels256_ptr = part5propinfo[prop_index].ppartlevels256;
+    if(global_prop_index>= 0 &&global_prop_index < npart5prop){
+      partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
     }
 
     iposition = -1;
@@ -2665,8 +2665,8 @@ void DrawVerticalColorbarRegLabels(void){
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
-      if(prop_index >= 0 && prop_index < npart5prop){
-        partcolorlabel_ptr = &part5propinfo[prop_index].partlabels[i + 1][0];
+      if(global_prop_index>= 0 &&global_prop_index < npart5prop){
+        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
       }
       else{
         if(colorlabelpart != NULL){

@@ -5,6 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void PrintPartLoadSummary(int option, int type);
+EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
+EXTERNCPP void GetAllPartBounds(void);
+EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void ShrinkDialogs(void);
 #ifdef CPP
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
@@ -784,7 +788,6 @@ EXTERNCPP void WriteIni(int flag,char *file);
 EXTERNCPP void DrawFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void AdjustDataBounds(const float *pdata, int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void AdjustPart5Chops(void);
-EXTERNCPP void GetPartBounds(void);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);

@@ -20,8 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(global_have_global_bound_file, 0);
+SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 0);
-SVEXTERN int SVDECL(update_part_bounds, 0);
 SVEXTERN int SVDECL(partfast, YES);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -1401,7 +1402,8 @@ SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN time_t smv_modtime;
 SVEXTERN float temp_threshold;
-SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL),SVDECL(*part_bound_filename,NULL);
+SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
+SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
@@ -1632,7 +1634,7 @@ SVEXTERN partclassdata SVDECL(*partclassinfo,NULL);
 SVEXTERN int npartclassinfo;
 SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL);
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
-SVEXTERN int SVDECL(prop_index,-1);
+SVEXTERN int SVDECL(global_prop_index,-1);
 SVEXTERN slicedata SVDECL(*sliceinfo,NULL),SVDECL(*slicexyzinfo,NULL);
 SVEXTERN feddata SVDECL(*fedinfo,NULL);
 SVEXTERN camdata SVDECL(*caminfo,NULL);

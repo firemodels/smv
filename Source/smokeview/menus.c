@@ -3530,7 +3530,7 @@ void ParticlePropShowMenu(int value){
     if(iprop!=0){
       parttype=1;
     }
-    prop_index = iprop;
+    global_prop_index = iprop;
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
     partscale=propi->scale;
@@ -3662,13 +3662,21 @@ void LoadAllPartFiles(void){
   }
 }
 
+/* ------------------ SetPartGlobals ------------------------ */
+
+void SetPartGlobals(void){
+  global_part_boundsize = 0;
+  global_have_global_bound_file = 0;
+}
+
 /* ------------------ LoadParticleMenu ------------------------ */
 
 void LoadParticleMenu(int value){
   int errorcode,i;
 
-  update_part_bounds = 1;
-
+  part_load_size = 0;
+  part_file_count = 0;
+  SetPartGlobals();
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     char  *partfile;
@@ -3720,7 +3728,6 @@ void LoadParticleMenu(int value){
 
       if(scriptoutstream==NULL||script_defer_loading==0){
 
-
         // wait until last particle file is loaded before coloring
 
         for(i = 0; i<npartinfo; i++){
@@ -3729,6 +3736,8 @@ void LoadParticleMenu(int value){
           parti = partinfo+i;
           parti->finalize = 0;
           parti->skipload = 1;
+          parti->loadstatus=0;
+          parti->boundstatus = 0;
           if(parti->evac==1)continue;                               // don't load an evac file
           if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
           parti->skipload = 0;
@@ -3750,8 +3759,6 @@ void LoadParticleMenu(int value){
 
         // load particle files unless we are reloading and the were not loaded before
 
-        part_load_size = 0;
-        part_file_count = 0;
         START_TIMER(part_load_time);
         LoadAllPartFilesMT();
         STOP_TIMER(part_load_time);

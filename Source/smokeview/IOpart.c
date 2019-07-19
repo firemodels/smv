@@ -1088,8 +1088,8 @@ void CreatePartBoundFile(partdata *parti){
 
     FORTPART5READ_m(numtypes_temp_local, 2);
     if(returncode == FAIL_m)goto wrapup;
-    numtypes_local[0] = numtypes_temp_local[0];
-    numtypes_local[1] = numtypes_temp_local[1];
+    numtypes_local[2*i+0] = numtypes_temp_local[0];
+    numtypes_local[2*i+1] = numtypes_temp_local[1];
     skip_local = 2*(numtypes_temp_local[0]+numtypes_temp_local[1])*(8+30);
     FSEEK_m(PART5FILE, skip_local, SEEK_CUR);
     if(returncode == FAIL_m){
@@ -1099,21 +1099,21 @@ void CreatePartBoundFile(partdata *parti){
   CheckMemory;
 
   for(;;){
-    int j;
+    int jj;
 
     CheckMemory;
     FORTPART5READ_m(&time_local, 1);
     if(returncode == FAIL_m)goto wrapup;
     fprintf(stream_out_local, "%f %i 1\n", time_local, nclasses_local);
 
-    for(j = 0; j<nclasses_local; j++){
-      int skip_local, k;
+    for(jj = 0; jj<nclasses_local; jj++){
+      int skip_local, kk;
       float *rvals_local;
 
       FORTPART5READ_m(&nparts_local, 1);
       if(returncode == FAIL_m)goto wrapup;
 
-      fprintf(stream_out_local, "%i %i\n", numtypes_local[2*j], nparts_local);
+      fprintf(stream_out_local, "%i %i\n", numtypes_local[2*jj], nparts_local);
       CheckMemory;
 
       if(parti->evac==1){
@@ -1122,21 +1122,21 @@ void CreatePartBoundFile(partdata *parti){
       else{
         skip_local = 4+NXYZ_COMP_PART*nparts_local*sizeof(float)+4; // skip over particle xyz coords
       }
-      skip_local += 4+nparts_local*sizeof(int)+4; // skip over tags
+      skip_local += 4+nparts_local*sizeof(int)+4;                   // skip over tags
       FSEEK_m(PART5FILE, skip_local, SEEK_CUR);
       if(returncode == FAIL_m)goto wrapup;
       CheckMemory;
-      if(numtypes_local[2*j]>0){
-        FORTPART5READ_mv((void **)&rvals_local, nparts_local*numtypes_local[2*j]);
+      if(numtypes_local[2*jj]>0){
+        FORTPART5READ_mv((void **)&rvals_local, nparts_local*numtypes_local[2*jj]);
         if(returncode == FAIL_m)goto wrapup;
       }
       CheckMemory;
-      for(k = 0; k<numtypes_local[2*j]; k++){
+      for(kk = 0; kk<numtypes_local[2*jj]; kk++){
         if(nparts_local>0){
           float valmin_local, valmax_local;
           int ii;
 
-          valmin_local = 1000000000.0;
+          valmin_local =  1000000000.0;
           valmax_local = -1000000000.0;
           for(ii = 0; ii<nparts_local; ii++){
             valmin_local = MIN(valmin_local, rvals_local[ii]);
@@ -2160,44 +2160,6 @@ void FinalizePartLoad(partdata *parti){
   glutPostRedisplay();
 }
 
-#define BEFORE 0
-#define AFTER  1
-
-/* -----  ------------- PrintLoadFiles ------------------------ */
-
-void PrintLoadFiles(int option){
-  int j;
-  int nfiles_loading_local, nfiles_toload_local, ifile_local;
-
-  nfiles_loading_local = 0;
-  nfiles_toload_local = 0;
-  for(j = 0; j<npartinfo; j++){
-    partdata *partj;
-
-    partj = partinfo+j;
-    if(partj->loadstatus==1)nfiles_loading_local++;
-    if(partj->loadstatus==0)nfiles_toload_local++;
-  }
-  if(nfiles_toload_local>0&&option==AFTER)return;
-  PRINTF("Loading: ");
-  ifile_local = 0;
-  for(j = 0; j<npartinfo; j++){
-    partdata *partj;
-
-    partj = partinfo+j;
-    if(partj->loadstatus==1){
-      ifile_local++;
-      if(ifile_local==nfiles_loading_local){
-        PRINTF("%s", partj->reg_file);
-      }
-      else{
-        PRINTF("%s, ", partj->reg_file);
-      }
-    }
-  }
-  PRINTF("\n");
-}
-
 /* -----  ------------- ReadPart ------------------------ */
 
 FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorcode_arg){
@@ -2229,7 +2191,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   if(loadflag_arg==UNLOAD){
     if(parti->finalize == 1){
-      GetPartBounds();
       UpdatePartColors(parti);
       UpdateTimes();
       updatemenu = 1;
@@ -2248,7 +2209,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   if(part_multithread==1){
     LOCK_PART_LOAD;
-    PrintLoadFiles(BEFORE);
+    PrintPartLoadSummary(PART_BEFORE, PART_LOADING);
     UNLOCK_PART_LOAD;
   }
   else{
@@ -2261,7 +2222,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   LOCK_PART_LOAD;
   parti->loaded = 1;
   parti->display = 1;
-  GetPartBounds();
   UpdatePartColors(parti);
   UNLOCK_PART_LOAD;
 #ifdef pp_PART_FAST
@@ -2273,7 +2233,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   parti->request_load = 1;
   if(part_multithread==1){
     LOCK_PART_LOAD;
-    PrintLoadFiles(AFTER);
+    PrintPartLoadSummary(PART_AFTER, PART_LOADING);
     UNLOCK_PART_LOAD;
   }
   else{

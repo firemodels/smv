@@ -3363,7 +3363,7 @@ void PartBoundCB(int var){
     {
       int prop_index_SAVE;
 
-     prop_index_SAVE=prop_index;
+     prop_index_SAVE= global_prop_index;
      PartBoundCB(FILETYPEINDEX);
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)PartBoundCB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)PartBoundCB(SETVALMAX);
