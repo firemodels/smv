@@ -1923,9 +1923,20 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
-  if(update_visColorbarVertical==1){
-    update_visColorbarVertical = 0;
+  if(update_visColorbars==1){
+    update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
+    visColorbarHorizontal = visColorbarHorizontal_val;
+    if(visColorbarVertical==1&&visColorbarHorizontal==0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical==0&&visColorbarHorizontal==1){
+      toggle_colorbar = 2;
+    }
+    else {
+      toggle_colorbar = 0;
+    }
+    updatemenu = 1;
   }
   if(update_windrose==1){
     update_windrose = 0;

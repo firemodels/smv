@@ -1,4 +1,4 @@
-&HEAD CHID='parttest4', TITLE='Hold droplets at a constant temperature' / 
+&HEAD CHID='part_color', TITLE='Hold droplets at a constant temperature' / 
 
 &MESH IJK=10,10,10, XB=0.0,1.0,0.0,1.0,0.0,1.0 / 
 &MESH IJK=10,10,10, XB=1.0,2.0,0.0,1.0,0.0,1.0 / 
