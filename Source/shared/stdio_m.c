@@ -174,3 +174,38 @@ void rewind_m(FILE_m *stream_m){
   }
 }
 
+/* ------------------ fgets_m ------------------------ */
+
+char *fgets_m(char *str, int num, FILE_m *stream_m){
+  char *str_base=str;
+  int i;
+
+  if(stream_m->stream!=NULL)return fgets(str, num, stream_m->stream);  // use regular io routine
+  if(stream_m->buffer-stream_m->buffer_end>=0)return NULL;             // past eof
+
+  for(i = 0; i<num; i++){
+    char c;
+    int nl = 10;
+
+    if(i==num-1||stream_m->buffer-stream_m->buffer_end>=0){
+      *str = 0;
+      if(i==num-1)break;        // filled up buffer, advance past next nl
+      return str_base;          // past eof, exit
+    }
+
+    c = *(stream_m->buffer)++;
+    *str++ = c;                 // copy character
+    if(c==nl||c==0){            // terminate string and advance past next nl
+      *str = 0;
+      break;
+    }
+  }
+  for(;;){                      // advance past next nl or to eof
+    char c;
+    int nl = 10;
+
+    c = *(stream_m->buffer)++;
+    if(c==nl||stream_m->buffer-stream_m->buffer_end>=0)break;
+  }
+  return str_base;
+}

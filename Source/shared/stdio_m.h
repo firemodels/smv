@@ -11,6 +11,7 @@ typedef struct {
 #define FAIL_m 1
 
 void   fclose_m(FILE_m *stream_m);
+char   *fgets_m(char * str, int num, FILE_m *stream_m);
 int    feof_m(FILE_m *stream_m);
 FILE_m *fopen_m(char *file, char *mode);
 size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m);
