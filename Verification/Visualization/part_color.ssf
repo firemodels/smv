@@ -1,5 +1,5 @@
 RENDERDIR
- .
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
 
 XSCENECLIP
  0 -0.004000 0 4.004000
@@ -22,5 +22,5 @@ PARTCLASSCOLOR
 SETTIMEVAL
  1.000000
 RENDERONCE
- part_color_0010
+ part_color_1
  
