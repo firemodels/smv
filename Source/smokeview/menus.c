@@ -9260,6 +9260,7 @@ updatemenu=0;
   glutAddMenuEntry(_("  !: snap scene to closest 45 degree orientation"), MENU_DUMMY);
   glutAddMenuEntry(_("  ~: level the scene"),2);
   glutAddMenuEntry(_("  &&: toggle line anti-aliasing (draw lines smoothly)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  /: toggle parallel particle loading"), MENU_DUMMY);
 
   /* --------------------------------mouse help menu -------------------------- */
 
