@@ -16,8 +16,9 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
 EXTERNCPP void FinalizePartLoad(partdata *parti);
-EXTERNCPP void LoadAllPartFilesMT(void);
-EXTERNCPP void LoadAllPartFiles(void);
+EXTERNCPP void LoadAllPartFilesMT(int val);
+EXTERNCPP void GetAllPartBoundsMT(void);
+EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void UpdateGluiPartFast(void);
 EXTERNCPP void UpdateGluiPartSetBounds(int minbound_type, int max_boundtype);

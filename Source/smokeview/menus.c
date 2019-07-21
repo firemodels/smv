@@ -3638,7 +3638,7 @@ void UnloadAllPartFiles(void){
 
 /* ------------------ LoadAllPartFiles ------------------------ */
 
-void LoadAllPartFiles(void){
+void LoadAllPartFiles(int partnum){
   int i;
 
   for(i = 0;i<npartinfo;i++){
@@ -3648,7 +3648,8 @@ void LoadAllPartFiles(void){
 
     parti = partinfo+i;
     if(parti->skipload==1)continue;
-    LOCK_PART_LOAD;
+    if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
+    LOCK_PART_LOAD;                      //  or load all particle files
     if(parti->loadstatus==0){
       parti->loadstatus = 1;
       UNLOCK_PART_LOAD;
@@ -3660,13 +3661,6 @@ void LoadAllPartFiles(void){
     }
     UNLOCK_PART_LOAD;
   }
-}
-
-/* ------------------ SetPartGlobals ------------------------ */
-
-void SetPartGlobals(void){
-  global_part_boundsize = 0;
-  global_have_global_bound_file = 0;
 }
 
 /* ------------------ SetupPart ------------------------ */
@@ -3687,12 +3681,22 @@ void SetupPart(int value){
     parti->skipload = 0;
   }
 
-  for(i = npartinfo-1; i>=0; i--){
+  if(value>=0){
     partdata *parti;
 
-    parti = partinfo+i;
-    if(parti->skipload==1)continue;
+    parti = partinfo+value;
+    ASSERT(value>=0&&value<npartinfo);
+    value = CLAMP(value, 0, npartinfo-1);
     parti->finalize = 1;
+  }
+  else{
+    for(i = npartinfo-1; i>=0; i--){
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->skipload==1)continue;
+      parti->finalize = 1;
+    }
   }
 }
 
@@ -3703,7 +3707,8 @@ void LoadParticleMenu(int value){
 
   part_load_size = 0;
   part_file_count = 0;
-  SetPartGlobals();
+  global_part_boundsize = 0;
+  global_have_global_bound_file = 0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     char  *partfile;
@@ -3719,10 +3724,9 @@ void LoadParticleMenu(int value){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     if(scriptoutstream==NULL||script_defer_loading==0){
-      SetupPart(value);
-      GetAllPartBounds();
-      MergeAllPartBounds();
-      ReadPart(partfile, value, LOAD, &errorcode);
+      SetupPart(value);                                                // load only particle file with index value
+      GetAllPartBoundsMT();
+      LoadAllPartFilesMT(value);
     }
   }
   else{
@@ -3750,6 +3754,8 @@ void LoadParticleMenu(int value){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
       if(value==PARTFILE_LOADALL){
+        SetupPart(value);
+        GetAllPartBoundsMT();
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
       }
       else{
@@ -3768,8 +3774,10 @@ void LoadParticleMenu(int value){
 
         // load particle files unless we are reloading and the were not loaded before
 
+#define ALL_PART_FILES -1
         START_TIMER(part_load_time);
-        LoadAllPartFilesMT();
+        GetAllPartBoundsMT();
+        LoadAllPartFilesMT(ALL_PART_FILES);
         STOP_TIMER(part_load_time);
         PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
 
