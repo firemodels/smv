@@ -5177,7 +5177,7 @@ int ReadSMV(char *file, char *file2){
     // ....
     // ...
     // ...
-    // long label 
+    // long label
     // short label
     // unit
 
@@ -11572,7 +11572,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &partfast);
+      sscanf(buffer, "%i %i", &partfast, &part_multithread);
       continue;
     }
     if(Match(buffer, "WINDOWOFFSET") == 1){
@@ -13367,7 +13367,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i\n", partfast);
+  fprintf(fileout, " %i %i\n", partfast, part_multithread);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");
