@@ -9286,6 +9286,7 @@ typedef struct {
         partclassi->dz =              sin(elevation)*length/2.0;
     }
   }
+  if(npartinfo>64)part_multithread = 1;
 
   shooter_xyz[0]=xbar/2.0;
   shooter_xyz[1] = 0.0;
