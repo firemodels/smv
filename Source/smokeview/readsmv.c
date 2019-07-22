@@ -11573,7 +11573,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &partfast, &part_multithread);
+      sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
       continue;
     }
     if(Match(buffer, "WINDOWOFFSET") == 1){
@@ -13368,7 +13368,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i %i\n", partfast, part_multithread);
+  fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");
