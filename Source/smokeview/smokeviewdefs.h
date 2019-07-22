@@ -7,6 +7,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PART_SIZING  0
+#define PART_LOADING 1
+#define PART_BEFORE  0
+#define PART_AFTER   1
+
 #define VR_NO  0
 #define VR_YES 1
 

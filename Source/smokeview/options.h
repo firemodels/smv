@@ -17,9 +17,9 @@
 
 //*** options: all platforms
 
-//#define pp_PARTFAST           // fast particle file reading
+#define pp_PART_FAST           // fast particle file reading
+//#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_HTML                // output html version of smokeview scene
-//#define pp_PARTDEBUG        // debug output for particles file I/O
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 #define pp_VENTPROFILE      // show original zonefire vent flow profile (calculated in smokeview)
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
@@ -33,7 +33,6 @@
 #define pp_LANG               // support other languages
 #define pp_SLICE_USE_ID       // use slcf index
 //#define pp_ISOTIME          // output iso load times
-#define pp_ISOTHREAD          // use multithreading for isosurfaces
 //#define pp_SMOKETEST        // max blending for fire, regular blending for smoke
 
 //#define pp_SPECTRAL
@@ -43,7 +42,6 @@
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
-//#define pp_PARTTEST   // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_READBUFFER   // read .smv file from a memory buffer
 
 #define pp_THREAD       // turn on multi-threading

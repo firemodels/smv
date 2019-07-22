@@ -182,9 +182,6 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
   float dbucket;
   int first=1;
   float nnvals=0.0;
-#ifdef pp_PARTDEBUG  
-  int have_inf = 0;
-#endif
 
 // initialize
 
@@ -205,13 +202,6 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     else{
       nnvals++;
     }
-#ifdef pp_PARTDEBUG
-    if(isinf(vals[i])){
-      vals[i] = 0.0;
-      have_inf = 1;
-      printf("%i ", i);
-    }
-#endif
     if(first==1){
       valmin=vals[i];
       valmax=vals[i];
@@ -221,9 +211,6 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     valmin=MIN(vals[i],valmin);
     valmax=MAX(vals[i],valmax);
   }
-#ifdef pp_PARTDEBUG
-  if(have_inf==1)printf("\n\n");
-#endif
 
 // record unmasked data in histogram
 

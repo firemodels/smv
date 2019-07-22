@@ -2276,19 +2276,24 @@ void Keyboard(unsigned char key, int flag){
       UpdateVectorpointsize();
       updatemenu = 1;
       break;
-    case '/':
-      partfast = 1 - partfast;
-      if(partfast==1){
-        printf("fast particle loading: on\n");
-      }
-      else{
-        printf("fast particle loading: off\n");
-      }
-      updatemenu = 1;
-      UpdateGluiPartfast();
-      break;
     case '#':
       WriteIni(LOCAL_INI,NULL);
+      break;
+    case '/':
+      updatemenu=1;
+      partfast = 1 - partfast;
+      if(npartinfo>1){
+        part_multithread = partfast;
+      }
+      else{
+        part_multithread = 0;
+      }
+      if(part_multithread==1){
+        if(npartthread_ids>1)printf("parallel particle loading: on(%i threads,streaks disabled)\n",npartthread_ids);
+        if(npartthread_ids==1)printf("parallel particle loading: on(1 thread, streaks disabled)\n");
+      }
+      if(part_multithread==0)printf("parallel particle loading: off\n");
+      UpdateGluiPartFast();
       break;
     case '$':
       trainer_active=1-trainer_active;

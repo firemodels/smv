@@ -124,7 +124,7 @@ void AdjustDataBounds(const float *pdata, int local_skip, int ndata,
 
 /* ------------------ AdjustPart5Chops ------------------------ */
 
-void AdjustPart5Chops(partdata *parti){
+void AdjustPart5Chops(void){
   int i;
 
   for(i=0;i<npart5prop;i++){
@@ -152,72 +152,108 @@ void AdjustPart5Chops(partdata *parti){
 
 /* -----  ------------- ReadPartBounds ------------------------ */
 
-int ReadPartBounds(partdata *parti, int nprops){
+int ReadPartBounds(partdata *parti,int read_bounds_arg){
   FILE *stream=NULL;
-  int j, eof=0;
-  float *valmin, *valmax;
+  int j, eof_local=0;
+  int part_boundfile_version_local = 1;
+  float *valmin_local, *valmax_local;
 
   parti->bounds_set = 0;
-  if(parti->valmin==NULL)NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
-  if(parti->valmax==NULL)NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
-  valmin = parti->valmin;
-  valmax = parti->valmax;
-  for(j=0;j<nprops;j++){
-    valmin[j] = 1000000000.0;
-    valmax[j] = -1000000000.0;
+  if(parti->global_min==NULL)NewMemory((void **)&parti->global_min, npart5prop*sizeof(float));
+  if(parti->global_max==NULL)NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
+
+  valmin_local = parti->global_min;
+  valmax_local = parti->global_max;
+  for(j = 0; j<npart5prop; j++){
+    valmin_local[j] =  1000000000.0;
+    valmax_local[j] = -1000000000.0;
   }
 
+  // make sure a size file exists
+
+  stream = fopen(parti->size_file, "r");
+  if(stream==NULL){
+    CreatePartSizeFile(parti, parti->evac==1);
+    stream = fopen(parti->size_file, "r");
+    if(stream==NULL)return 0;
+    fclose(stream);
+  }
+
+  // make sure a bound file exists
+
   stream = fopen(parti->bound_file, "r");
-  if(stream==NULL)return 0;
+  if(stream==NULL){
+    CreatePartBoundFile(parti);
+    stream = fopen(parti->bound_file, "r");
+    if(stream==NULL)return 0;
+  }
+
+// if valid global particle bounds file so we can return now and not read individual bound files
+
+  if(read_bounds_arg==1){
+    parti->bounds_set = 1;
+    fclose(stream);
+    return 0;
+  }
+
   for(;;){
-    float time;
-    int nbounds;
-    char buffer[255];
+    float time_local;
+    int nclasses_local, k, version_local =-1;
+    char buffer_local[255];
 
-    if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%f %i", &time, &nbounds);
+    if(fgets(buffer_local, 255, stream)==NULL)break;
+    sscanf(buffer_local, "%f %i %i", &time_local, &nclasses_local, &version_local);
+    if(version_local!=part_boundfile_version_local){
+      fclose(stream);
+      return 0;
+    }
 
-    for(j = 1; j<nprops;j++){
-      float vmin, vmax;
+    for(k = 0; k<nclasses_local; k++){
+      int nbounds_local, npoints_local;
 
-      if(fgets(buffer, 255, stream)==NULL){
-        eof = 1;
+      if(fgets(buffer_local, 255, stream)==NULL){
+        eof_local = 1;
         break;
       }
-      sscanf(buffer, "%f %f", &vmin, &vmax);
-      if(vmax>vmin){
-        parti->bounds_set = 1;
-        valmin[j] = MIN(valmin[j],vmin);
-        valmax[j] = MAX(valmax[j],vmax);
+      sscanf(buffer_local, "%i %i", &nbounds_local, &npoints_local);
+      for(j = 0; j<nbounds_local; j++){
+        float vmin_local, vmax_local;
+        int prop_index_local;
+
+        if(fgets(buffer_local, 255, stream)==NULL){
+          eof_local = 1;
+          break;
+        }
+        sscanf(buffer_local, "%f %f", &vmin_local, &vmax_local);
+        if(vmax_local>=vmin_local){
+          parti->bounds_set = 1;
+
+          prop_index_local = GetPartPropIndex(k,j+2);
+
+          valmin_local[prop_index_local] = MIN(valmin_local[prop_index_local], vmin_local);
+          valmax_local[prop_index_local] = MAX(valmax_local[prop_index_local], vmax_local);
+        }
       }
+      if(eof_local==1)break;
     }
-    if(eof==1)break;
+    if(eof_local==1)break;
   }
   fclose(stream);
   return 1;
 }
 
-/* ------------------ ReadAllPartBounds ------------------------ */
+/* ------------------ MergeAllPartBounds ------------------------ */
 
-int ReadAllPartBounds(void){
-  int i, have_bound_file=0;
-
-  // find min/max for each particle file
-
-  for(i = 0; i<npartinfo; i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    if(ReadPartBounds(parti, npart5prop)==1)have_bound_file=1;
-  }
+void MergeAllPartBounds(void){
+  int i;
 
   for(i = 0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo+i;
     if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-    propi->valmin =  1000000000.0;
-    propi->valmax = -1000000000.0;
+    propi->global_min =  1000000000.0;
+    propi->global_max = -1000000000.0;
   }
 
   // find min/max over all particle files
@@ -231,186 +267,162 @@ int ReadAllPartBounds(void){
     for(j = 0; j<npart5prop; j++){
       partpropdata *propj;
 
-      propj = part5propinfo + j;
-      if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      propj->valmin = MIN(propj->valmin,parti->valmin[j]);
-      propj->valmax = MAX(propj->valmax,parti->valmax[j]);
-    }
-  }
-
-  // set min/max for each particle file
-
-  for(i = 0; i<npartinfo; i++){
-    partdata *parti;
-    int j;
-
-    parti = partinfo+i;
-    for(j = 0; j<npart5prop; j++){
-      partpropdata *propj;
-
       propj = part5propinfo+j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      parti->valmin[j] = propj->valmin;
-      parti->valmax[j] = propj->valmax;
+      propj->global_min = MIN(propj->global_min, parti->global_min[j]);
+      propj->global_max = MAX(propj->global_max, parti->global_max[j]);
     }
   }
+  if(global_have_global_bound_file==0){
+    FILE *stream;
 
-  // set properties
+    stream = fopen(part_globalbound_filename, "w");
+    if(stream!=NULL){
+      global_have_global_bound_file = 1;
+      global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
+      fprintf(stream,"%i %i\n",npart5prop,(int)global_part_boundsize);
+      for(i=0;i<npart5prop;i++){
+        partpropdata *propi;
+        float valmin, valmax;
 
-  for(i = 0; i<npart5prop; i++){
-    partpropdata *propi;
-
-    propi = part5propinfo+i;
-    if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-
-    propi->global_min = propi->valmin;
-    propi->global_max = propi->valmax;
-    propi->setvalmax = GLOBAL_MAX;
-    propi->setvalmin = GLOBAL_MIN;
-  }
-  return have_bound_file;
-}
-
-/* ------------------ AdjustPart5Bounds ------------------------ */
-
-void AdjustPart5Bounds(partdata *parti){
-  int i;
-
-  if(parti->valmin==NULL){
-    NewMemory((void **)&parti->valmin, npart5prop*sizeof(float));
-  }
-  if(parti->valmax==NULL){
-    NewMemory((void **)&parti->valmax, npart5prop*sizeof(float));
-  }
-  if(partfast==YES){
-    if(update_part_bounds==1){
-      int have_bound_file = 0;
-
-      have_bound_file = ReadAllPartBounds();
-      update_part_bounds = 0;
-      if(have_bound_file==0){
-        printf("***warning: The file %s does not exist, reverting to normal particle loading\n",parti->bound_file);
-        partfast = NO;
-        updatemenu = 1;
-        UpdateGluiPartfast();
-        AdjustPart5Bounds(parti);
+        propi = part5propinfo+i;
+        valmin = propi->global_min;
+        valmax = propi->global_max;
+        fprintf(stream, "%f %f\n", valmin, valmax);
       }
+      fclose(stream);
     }
   }
-  else{
-    for(i=0;i<npart5prop;i++){
-      partpropdata *propi;
-      histogramdata *histi;
-
-      propi = part5propinfo+i;
-      if(strcmp(propi->label->shortlabel, "Uniform")==0)continue;
-
-      histi = &propi->histogram;
-
-      propi->global_min = histi->val_min;
-      propi->global_max = histi->val_max;
-
-      propi->percentile_min = GetHistogramVal(histi, percentile_level);
-      propi->percentile_max = GetHistogramVal(histi, 1.0-percentile_level);
-
-      switch(propi->setvalmin){
-      case PERCENTILE_MIN:
-        propi->valmin = propi->percentile_min;
-        break;
-      case GLOBAL_MIN:
-        propi->valmin = propi->global_min;
-        break;
-      case SET_MIN:
-        propi->valmin = propi->user_min;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
-      }
-      switch(propi->setvalmax){
-      case PERCENTILE_MAX:
-        propi->valmax = propi->percentile_max;
-        break;
-      case GLOBAL_MAX:
-        propi->valmax = propi->global_max;
-        break;
-      case SET_MAX:
-        propi->valmax = propi->user_max;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
-      }
-      parti->valmin[i] = propi->valmin;
-      parti->valmax[i] = propi->valmax;
-    }
-  }
-  AdjustPart5Chops(parti);
+  AdjustPart5Chops();
 #ifdef _DEBUG
-  PrintPartProp();
+  //    PrintPartProp();
 #endif
 }
 
-/* ------------------ AdjustPartBounds ------------------------ */
+/* ------------------ PrintPartLoadSummary ------------------------ */
 
-void AdjustPartBounds(const float *pdata, int particle_type, int droplet_type, const unsigned char *isprink,
-                      int local_skip, int ndataloop, int setpmin, float *pmin, int setpmax, float *pmax)
-{
-    int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
-    float dp, pmin2, pmax2;
-    int ndata;
+void PrintPartLoadSummary(int option_arg,int type_arg){
+  int nsize_local;
+  int j;
 
-    if(setpmin==PERCENTILE_MIN||setpmax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
-      nsmall=0;
-      nbig=NBUCKETS;
-      if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
-        fprintf(stderr,"*** Error: Unable to allocate memory in getdatabounds\n");
-        return;
-      }
+  nsize_local = 0;
+  for(j = 0; j<npartinfo; j++){
+    partdata *partj;
 
-      for(n=0;n<NBUCKETS;n++){
-        buckets[n]=0;
+    partj = partinfo+j;
+    if(type_arg==PART_SIZING&&partj->boundstatus==1)nsize_local++;
+    if(type_arg==PART_LOADING&&partj->loadstatus==1)nsize_local++;
+  }
+  if(option_arg==1||(nsize_local<npartthread_ids&&nsize_local>0)){
+    int isize_local;
+
+    if(type_arg==PART_SIZING)printf("sizing: ");
+    if(type_arg==PART_LOADING)printf("loading: ");
+    isize_local = 0;
+    for(j = 0; j<npartinfo; j++){
+      partdata *partj;
+      int doit;
+
+      partj = partinfo+j;
+      doit = 0;
+      if(type_arg==PART_SIZING&&partj->boundstatus==1)doit = 1;
+      if(type_arg==PART_LOADING&&partj->loadstatus==1)doit = 1;
+      if(doit==1){
+        printf("%s", partj->reg_file);
+        if(isize_local!=nsize_local-1)printf(", ");
+        isize_local++;
       }
-      ndata=0;
-      for(n=local_skip;n<ndataloop;n++){
-        level=0;
-        if(isprink[n]==1){
-          if(droplet_type==0)continue;
-        }
-        else{
-          if(particle_type==0)continue;
-        }
-        if(dp!=0.0f)level = CLAMP((int)((pdata[n] - *pmin)/dp),0,NBUCKETS-1);
-        ndata++;
-        buckets[level]++;
-      }
-      alpha05 = (int)(percentile_level*ndata);
-      total = 0;
-      for(n=0;n<NBUCKETS;n++){
-        total += buckets[n];
-        if(total>alpha05){
-          nsmall=n;
-          break;
-        }
-      }
-      total = 0;
-      for(n=NBUCKETS;n>0;n--){
-        total += buckets[n-1];
-        if(total>alpha05){
-          nbig=n;
-          break;
-        }
-      }
-      pmin2 = *pmin + (nsmall-1)*dp;
-      pmax2 = *pmin + (nbig+1)*dp;
-      if(setpmin==PERCENTILE_MIN)*pmin = pmin2;
-      if(setpmax==PERCENTILE_MAX)*pmax = pmax2;
-      FreeMemory(buckets);
     }
-    if(axislabels_smooth==1){
-      SmoothLabel(pmin,pmax,nrgb);
+    printf("\n");
+  }
+}
+
+/* ------------------ GetPartBounds ------------------------ */
+
+void GetAllPartBounds(void){
+  int i;
+  FILE *stream = NULL;
+
+  LOCK_PART_LOAD;
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->global_min==NULL){
+      NewMemory((void **)&parti->global_min, npart5prop*sizeof(float));
     }
+    if(parti->global_max==NULL){
+      NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
+    }
+  }
+
+  // find min/max for each particle file
+
+  if(global_part_boundsize==0)global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
+
+  stream = fopen(part_globalbound_filename, "r");
+  if(stream!=NULL){
+    int n;
+    int part_boundsize_old_local;
+
+    fscanf(stream, "%i %i", &n, &part_boundsize_old_local);
+    if((int)global_part_boundsize==part_boundsize_old_local){      // only use global particle bound file if the size of the first particle .bnd file has not changed
+      global_have_global_bound_file = 1;                           // (assume if any .bnd file has changed then the first .bnd file has changed)
+    //  printf("reading global particle bound file: %s\n", part_globalbound_filename);
+      n = MIN(npart5prop, n);
+      for(i = 0; i<n; i++){
+        partpropdata *propi;
+        float valmin, valmax;
+
+        propi = part5propinfo+i;
+        fscanf(stream, "%f %f", &valmin, &valmax);
+        propi->global_min = valmin;
+        propi->global_max = valmax;
+      }
+      fclose(stream);
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+        int j;
+
+        parti = partinfo+i;
+        parti->boundstatus = 2;
+        parti->bounds_set = 1;
+        for(j = 0; j<npart5prop; j++){
+          partpropdata *propj;
+
+          propj = part5propinfo+j;
+          parti->global_min[j] = propj->global_min;
+          parti->global_max[j] = propj->global_max;
+        }
+      }
+      UNLOCK_PART_LOAD;
+      return;
+    }
+    else{
+      printf("***warning: particle bound files have changed - re-generating global particle bound file\n");
+    }
+    fclose(stream);
+  }
+  UNLOCK_PART_LOAD;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    LOCK_PART_LOAD;
+    if(parti->boundstatus!=0){
+      UNLOCK_PART_LOAD;
+      continue;
+    }
+    parti->boundstatus = 1;
+    PrintPartLoadSummary(PART_BEFORE, PART_SIZING);
+    UNLOCK_PART_LOAD;
+    ReadPartBounds(parti,global_have_global_bound_file);
+    LOCK_PART_LOAD;
+    if(npartinfo>1)PrintPartLoadSummary(PART_AFTER, PART_SIZING);
+    parti->boundstatus = 2;
+    UNLOCK_PART_LOAD;
+  }
 }
 
 /* ------------------ AdjustPlot3DBounds ------------------------ */

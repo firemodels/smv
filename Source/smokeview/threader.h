@@ -12,6 +12,8 @@
 #define MT_EXTERN extern CCC
 #endif
 
+#define MAX_PART_THREADS 16
+
 // setup LOCKS
 
 #ifdef pp_THREAD
@@ -22,6 +24,8 @@
 #define LOCK_TRIANGLES
 #define UNLOCK_TRIANGLES
 #endif
+  #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
+  #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
   #define LOCK_COMPRESS     pthread_mutex_lock(&mutexCOMPRESS);
   #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
@@ -36,6 +40,8 @@
   #define JOIN_IBLANK
 #endif
 #else
+  #define LOCK_PART_LOAD
+  #define UNLOCK_PART_LOAD
   #define LOCK_TRIANGLES
   #define UNLOCK_TRIANGLES
   #define LOCK_COMPRESS
@@ -56,6 +62,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifndef CPP
 #ifdef pp_THREAD
 MT_EXTERN pthread_t makeiblank_thread_id;
+MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
@@ -67,6 +74,7 @@ MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
+MT_EXTERN pthread_t partthread_ids[MAX_PART_THREADS];
 #endif
 #endif
 #endif

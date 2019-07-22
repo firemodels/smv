@@ -20,12 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(update_part_bounds, 0);
-#ifdef pp_PARTFAST
-SVEXTERN int SVDECL(partfast, YES);
-#else
+SVEXTERN int SVDECL(global_have_global_bound_file, 0);
+SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
+SVEXTERN int SVDECL(npartthread_ids, 4);
 SVEXTERN int SVDECL(partfast, NO);
-#endif
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(emission_factor, 5.0);
@@ -45,6 +43,7 @@ SVEXTERN float SVDECL(timer_reshape, 0.0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
+SVEXTERN int SVDECL(part_multithread, 0), SVDECL(part_multithread_save,0);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
@@ -961,8 +960,7 @@ SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
 SVEXTERN int Read3DSmoke3DFile;
-SVEXTERN int ReadZoneFile, ReadPartFile, ReadEvacFile;
-
+SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0), SVDECL(ReadEvacFile,0);
 SVEXTERN int SVDECL(cache_qdata,1);
 
 SVEXTERN int editwindow_status;
@@ -1106,7 +1104,7 @@ SVEXTERN int periodic_reloads;
 SVEXTERN int periodic_value;
 
 SVEXTERN int slicefilenum;
-SVEXTERN int partfilenum,zonefilenum;
+SVEXTERN int zonefilenum;
 SVEXTERN int targfilenum;
 
 SVEXTERN float min_gridcell_size;
@@ -1120,7 +1118,7 @@ SVEXTERN int SVDECL(visTimeZone,1), SVDECL(visTimeParticles,1), SVDECL(visTimeSl
 SVEXTERN int SVDECL(visTimeIso,1), SVDECL(visTimeEvac,1);
 SVEXTERN int SVDECL(vishmsTimelabel,0), SVDECL(visTimebar,1);
 SVEXTERN int SVDECL(visColorbarVertical,1), SVDECL(visColorbarVertical_save,1);
-SVEXTERN int SVDECL(update_visColorbarVertical,0), visColorbarVertical_val;
+SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbarHorizontal_val;
 
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
 SVEXTERN int SVDECL(visTitle,1), SVDECL(visFullTitle,1), SVDECL(visFramerate,0);
@@ -1405,6 +1403,7 @@ SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN time_t smv_modtime;
 SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
+SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
@@ -1635,7 +1634,7 @@ SVEXTERN partclassdata SVDECL(*partclassinfo,NULL);
 SVEXTERN int npartclassinfo;
 SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL);
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
-SVEXTERN int SVDECL(prop_index,-1);
+SVEXTERN int SVDECL(global_prop_index,-1);
 SVEXTERN slicedata SVDECL(*sliceinfo,NULL),SVDECL(*slicexyzinfo,NULL);
 SVEXTERN feddata SVDECL(*fedinfo,NULL);
 SVEXTERN camdata SVDECL(*caminfo,NULL);

@@ -187,6 +187,13 @@ int SetupCase(int argc, char **argv){
   char *input_file;
 
   return_code=-1;
+
+  FREEMEMORY(part_globalbound_filename);
+  NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
+  STRCPY(part_globalbound_filename, fdsprefix);
+  STRCAT(part_globalbound_filename, ".prt5.gbnd");
+  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -1457,7 +1464,7 @@ void InitVars(void){
 
   ReadVolSlice=0;
   Read3DSmoke3DFile=0;
-  ReadZoneFile=0, ReadPartFile=0, ReadEvacFile=0;;
+  ReadZoneFile=0;
 
   editwindow_status=-1;
   startup_pass=1;
@@ -1559,7 +1566,7 @@ void InitVars(void){
   periodic_value=-2;
 
   slicefilenum=-1;
-  partfilenum=-1,zonefilenum=-1;
+  zonefilenum=-1;
   targfilenum=-1;
 
   setPDIM=0;

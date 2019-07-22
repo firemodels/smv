@@ -58,13 +58,13 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define FRAMELOADING 18
 #define STREAKLENGTH 19
 #define TRACERS 21
+#define PARTFAST 22
 #define PLOTISOTYPE 22
 #define CACHE_BOUNDARYDATA 23
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
 #define ALLFILERELOAD 27
-#define PARTFAST 28
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
@@ -193,7 +193,7 @@ GLUI_Rollout *ROLLOUT_boundary_temp_threshold;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
 GLUI_Rollout *ROLLOUT_iso_bounds;
-GLUI_Rollout *ROLLOUT_iso_color; 
+GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_boundary_bound = NULL;
@@ -220,7 +220,8 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
-GLUI_Panel *PANEL_iso1 = NULL; 
+GLUI_Panel *PANEL_partread = NULL;
+GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
 GLUI_Panel *PANEL_geomexp = NULL;
 GLUI_Panel *PANEL_slice_smoke = NULL;
@@ -257,6 +258,7 @@ GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
 GLUI_Panel *PANEL_outputpatchdata=NULL;
 
+GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
@@ -309,6 +311,7 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_part_multithread = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
@@ -384,6 +387,8 @@ GLUI_RadioGroup *RADIO_p3_setmin=NULL, *RADIO_p3_setmax=NULL;
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
+GLUI_RadioButton *RADIO_part_setmin_percentile=NULL;
+GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
@@ -443,10 +448,12 @@ int      nboundprocinfo = 0, nfileprocinfo = 0, nplot3dprocinfo=0;
 procdata  isoprocinfo[3], subboundprocinfo[6], sliceprocinfo[8], particleprocinfo[3];
 int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
 
-/* ------------------ UpdateGluiPartfast ------------------------ */
+/* ------------------ UpdateGluiPartFast ------------------------ */
 
-extern "C" void UpdateGluiPartfast(void){
+extern "C" void UpdateGluiPartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
+  if(CHECKBOX_part_multithread!=NULL)CHECKBOX_part_multithread->set_int_val(part_multithread);
+  PartBoundCB(PARTFAST);
 }
 
 /* ------------------ UpdateListIsoColorobar ------------------------ */
@@ -596,10 +603,8 @@ extern "C" void UpdateGluiVecFactor(void){
 /* ------------------ UpdateGluiPartSetBounds ------------------------ */
 
 extern "C" void UpdateGluiPartSetBounds(int minbound_type, int maxbound_type){
-  if(partfast==YES){
-    if(RADIO_part_setmin!=NULL)RADIO_part_setmin->set_int_val(minbound_type);
-    if(RADIO_part_setmax!=NULL)RADIO_part_setmax->set_int_val(maxbound_type);
-  }
+  if(RADIO_part_setmin!=NULL)RADIO_part_setmin->set_int_val(minbound_type);
+  if(RADIO_part_setmax!=NULL)RADIO_part_setmax->set_int_val(maxbound_type);
   PartBoundCB(FILETYPEINDEX);
 }
 
@@ -1534,6 +1539,7 @@ void ScriptCB(int var){
 void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
   GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
   GLUI_RadioGroup **RADIO_con_setmin, GLUI_RadioGroup **RADIO_con_setmax,
+  GLUI_RadioButton **RADIO_CON_setmin_percentile, GLUI_RadioButton **RADIO_CON_setmax_percentile,
   GLUI_Checkbox **CHECKBOX_con_setchopmin, GLUI_Checkbox **CHECKBOX_con_setchopmax,
   GLUI_EditText **EDIT_con_chopmin, GLUI_EditText **EDIT_con_chopmax,
   GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
@@ -1550,6 +1556,7 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
 
   GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
 
+  GLUI_RadioButton *percentile_min, *percentile_max;
   GLUI_Panel *PANEL_a, *PANEL_b, *PANEL_c;
   GLUI_Rollout *PANEL_e = NULL, *PANEL_g = NULL;
   GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
@@ -1576,7 +1583,8 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   }
 
   *RADIO_con_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_a, setminval, SETVALMIN, FILE_CB);
-  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("percentile min"));
+  percentile_min = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("percentile min"));
+  if(RADIO_CON_setmin_percentile!=NULL)*RADIO_CON_setmin_percentile = percentile_min;
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("set min"));
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("global min"));
 
@@ -1595,7 +1603,8 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   }
 
   *RADIO_con_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_b, setmaxval, SETVALMAX, FILE_CB);
-  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("percentile max"));
+  percentile_max = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("percentile max"));
+  if(RADIO_CON_setmax_percentile!=NULL)*RADIO_CON_setmax_percentile = percentile_max;
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("set max"));
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("global max"));
 
@@ -1909,7 +1918,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     BoundMenu(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
-      &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,
+      &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
@@ -2109,12 +2118,12 @@ extern "C" void GluiBoundsSetup(int main_window){
   if(npartinfo > 0 && nevac != npartinfo)have_part = 1;
   if(nevac > 0)have_evac = 1;
   if(have_part==1||have_evac==1){
-  char label[100];
+    char label[100];
 
-  strcpy(label, "");
-  if(have_part == 1)strcat(label, "Particle");
-  if(have_part == 1 && have_evac == 1)strcat(label, "/");
-  if(have_evac == 1)strcat(label, "Evac");
+    strcpy(label, "");
+    if(have_part == 1)strcat(label, "Particle");
+    if(have_part == 1 && have_evac == 1)strcat(label, "/");
+    if(have_evac == 1)strcat(label, "Evac");
 
     glui_active=1;
     ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,label,false,PART_ROLLOUT,BoundRolloutCB);
@@ -2159,6 +2168,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       if(npartinfo > 1)strcat(boundmenulabel, "s");
       BoundMenu(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
+        &RADIO_part_setmin_percentile,&RADIO_part_setmax_percentile,
         &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
         &EDIT_part_chopmin, &EDIT_part_chopmax,
         &STATIC_part_min_unit,&STATIC_part_max_unit,
@@ -2170,6 +2180,8 @@ extern "C" void GluiBoundsSetup(int main_window){
         PartBoundCB,
         ParticleRolloutCB,particleprocinfo,&nparticleprocinfo
       );
+      RADIO_part_setmin_percentile->disable();
+      RADIO_part_setmax_percentile->disable();
       PartBoundCB(FILETYPEINDEX);
       ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,
         PARTICLE_SETTINGS, ParticleRolloutCB);
@@ -2184,10 +2196,21 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
       SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
-      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings, _("fast particle loading"), &partfast, PARTFAST, PartBoundCB);
-      PartBoundCB(PARTFAST);
       CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
+
+      PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
+      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading(streaks disabled)"), &partfast, PARTFAST, PartBoundCB);
+      CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
+      SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
+      if(npartinfo>1){
+        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_PART_THREADS));
+      }
+      else{
+        SPINNER_npartthread_ids->set_int_limits(1,1);
+      }
+      PartBoundCB(PARTFAST);
     }
+    PartBoundCB(FILETYPEINDEX);
   }
 
   if(have_evac==1){
@@ -2219,7 +2242,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 
     BoundMenu(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
-      &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax,
+      &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
@@ -2308,7 +2331,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
 
     BoundMenu(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
-      &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,
+      &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &STATIC_slice_min_unit,&STATIC_slice_max_unit,
@@ -3146,10 +3169,10 @@ void PartBoundCB(int var){
   prop_old = part5propinfo + ipart5prop_old;
   switch(var){
   case VALMIN:
-    if(setpartmax==SET_MAX)prop_new->user_max=partmax;
+    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
     break;
   case VALMAX:
-    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
+    if(setpartmax==SET_MAX)prop_new->user_max = partmax;
     break;
   case FILETYPEINDEX:
 
@@ -3171,7 +3194,11 @@ void PartBoundCB(int var){
     // copy data to controls
 
     setpartmin=prop_new->setvalmin;
-    setpartmax=prop_new->setvalmax;
+    if(setpartmin==PERCENTILE_MIN)setpartmin = GLOBAL_MIN;
+
+    setpartmax = prop_new->setvalmax;
+    if(setpartmax==PERCENTILE_MAX)setpartmax = GLOBAL_MAX;
+
     PartBoundCB(SETVALMIN);
     PartBoundCB(SETVALMAX);
 
@@ -3212,17 +3239,18 @@ void PartBoundCB(int var){
     updatemenu=1;
     break;
   case TRACERS:
-    updatemenu=1;
-    break;
   case PARTFAST:
-    if(partfast==YES){
-      if(RADIO_part_setmin!=NULL)RADIO_part_setmin->disable();
-      if(RADIO_part_setmax!=NULL)RADIO_part_setmax->disable();
+    if(partfast==0||npartinfo<=1){
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_part_multithread->disable();
+      SPINNER_npartthread_ids->disable();
     }
     else{
-      if(RADIO_part_setmin!=NULL)RADIO_part_setmin->enable();
-      if(RADIO_part_setmax!=NULL)RADIO_part_setmax->enable();
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_part_multithread->enable();
+      SPINNER_npartthread_ids->enable();
     }
+    updatemenu=1;
     break;
   case FRAMELOADING:
     partframestep=partframeskip+1;
@@ -3282,6 +3310,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_min=partmin;
     }
     setpartmin_old=setpartmin;
+    if(prop_new!=NULL)prop_new->setvalmin = setpartmin;
     switch(setpartmin){
     case PERCENTILE_MIN:
       if(prop_new!=NULL)partmin=prop_new->percentile_min;
@@ -3307,6 +3336,7 @@ void PartBoundCB(int var){
       if(prop_old!=NULL)prop_old->user_max=partmax;
     }
     setpartmax_old=setpartmax;
+    if(prop_new!=NULL)prop_new->setvalmax = setpartmax;
     switch(setpartmax){
     case PERCENTILE_MAX:
       if(prop_new!=NULL)partmax=prop_new->percentile_max;
@@ -3331,7 +3361,7 @@ void PartBoundCB(int var){
     {
       int prop_index_SAVE;
 
-     prop_index_SAVE=prop_index;
+     prop_index_SAVE= global_prop_index;
      PartBoundCB(FILETYPEINDEX);
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)PartBoundCB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)PartBoundCB(SETVALMAX);

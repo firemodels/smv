@@ -155,8 +155,8 @@ void Usage(char *prog,int option){
 #ifdef pp_OSXGLUT32
     strcat(label, ", pp_OSXGLUT32");
 #endif
-#ifdef pp_PARTTEST
-    strcat(label, ", pp_PARTTEST");
+#ifdef pp_PART_TEST
+    strcat(label, ", pp_PART_TEST");
 #endif
 #ifdef pp_READBUFFER
     strcat(label, ", pp_READBUFFER");
@@ -743,7 +743,7 @@ int main(int argc, char **argv){
   printf("before crash\n");
 {
   int *x=NULL;
-  printf("%f\n",x[0]);
+  printf("%i\n",x[0]);
 }
   printf("after crash\n");
 #endif

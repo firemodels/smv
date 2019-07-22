@@ -5,13 +5,22 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void PrintPartLoadSummary(int option, int type);
+EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
+EXTERNCPP void GetAllPartBounds(void);
+EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void ShrinkDialogs(void);
 #ifdef CPP
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
-EXTERNCPP void UpdateGluiPartfast(void);
+EXTERNCPP void FinalizePartLoad(partdata *parti);
+EXTERNCPP void LoadAllPartFilesMT(int val);
+EXTERNCPP void GetAllPartBoundsMT(void);
+EXTERNCPP void LoadAllPartFiles(int partnum);
+EXTERNCPP void CreatePartBoundFile(partdata *parti);
+EXTERNCPP void UpdateGluiPartFast(void);
 EXTERNCPP void UpdateGluiPartSetBounds(int minbound_type, int max_boundtype);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
@@ -480,6 +489,8 @@ EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void Smoke3DShowMenu(int value);
 EXTERNCPP void ShowVSliceMenu(int value);
 EXTERNCPP int  GetPartPropIndexS(char *shortlabel);
+EXTERNCPP int GetPartPropIndex(int class_i, int class_i_j);
+
 #ifdef _DEBUG
 EXTERNCPP void PrintPartProp(void);
 #endif
@@ -777,10 +788,7 @@ EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP void WriteIni(int flag,char *file);
 EXTERNCPP void DrawFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void AdjustDataBounds(const float *pdata, int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
-EXTERNCPP void AdjustPartBounds(const float *pdata, int particle_type, int droplet_type, const unsigned char *isprink,
-                      int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
-EXTERNCPP void AdjustPart5Chops(partdata *parti);
-EXTERNCPP void AdjustPart5Bounds(partdata *parti);
+EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
@@ -835,7 +843,7 @@ EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 
-EXTERNCPP void GetPart5Colors(partdata *parti, int nlevels, int convert_flag);
+EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int convert_flag);
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,

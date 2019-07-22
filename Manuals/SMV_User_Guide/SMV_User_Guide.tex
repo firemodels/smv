@@ -1849,15 +1849,31 @@ the new bounds to take effect.}\ \label{figBOUNDSplot3d}
 
 The {\tt Plot3D}\ portion of the File/Bounds dialog box as illustrated in Figure \ref{figBOUNDSplot3d} has controls for specifying how Plot3D vectors and isosurfaces appear.
 
+The bounds dialog for Plot3D display allows one to select between
+three different types of contour plots:  shaded, stepped and line
+contours.
 
-The {\em Boundary File}\ portion of the File/Bounds dialog
+The {\tt Boundary File}\ portion of the File/Bounds dialog
 box has an {\em Ignition}\ checkbox which allows one to visualize
 when and where the blockage temperature exceeds its ignition
 temperature.
 
-The bounds dialog for Plot3D display allows one to select between
-three different types of contour plots:  shaded, stepped and line
-contours.
+The {\tt Particle file}\ portion of the File/bounds dialog box
+as illustrated in Figure \ref{figBOUNDSpart}\
+has controls for specifying whether particle files are loaded in parallel.
+The user may also specify the number files that are loaded simultaneously
+
+\begin{figure}[bph]
+\centerline{
+\includegraphics[width=2.583333in]{\SMVfigdir/figBOUNDSpart}
+}\ \caption[Dialog box for setting Particle file
+options.] {Dialog box for setting Particle file
+options. Select a variable and bound type. Enter a lower
+and/or upper bound if set bound type was selected. Particle files may be loaded in parallel by 
+selecting the Parallel loading checkbox and setting the number of files to load in parallel.
+ }\ \label{figBOUNDSpart}
+\end{figure}
+
 
 \section{3D Smoke Options}
 \begin{figure}[bph]
@@ -4872,6 +4888,10 @@ and general slice planes).
 \kitem{>}Decrease vector point size
 
 \kitem{;}Flip colorbar
+
+\kitem{/}Toggle parallel loading of particle files.  The number of threads used to load
+particles files in parallel may be specified using the Settings portion of the particle bounds
+dialog box.
 
 \hitem{Left/Right Cursor}When the {\em eyeview}\ mode is {\em eye
 centered}\ then these keys rotate the scene to the left or right

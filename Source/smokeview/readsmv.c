@@ -5167,6 +5167,25 @@ int ReadSMV(char *file, char *file2){
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
+    // CLASS_OF_PARTICLES
+    //  name
+    //  r g b (color)
+    // ntypes
+    // long label
+    // short label
+    // unit
+    // ....
+    // ...
+    // ...
+    // long label
+    // short label
+    // unit
+
+    // 1'st type  hidden
+    // 2'nd type  default (uniform)
+    // 3'rd type first type read in
+    // 2+ntypes  ntypes type read in
+
     if(Match(buffer,"CLASS_OF_PARTICLES") == 1||
        Match(buffer,"CLASS_OF_HUMANS") == 1){
       float rgb_class[4];
@@ -8022,7 +8041,6 @@ typedef struct {
         }
       }
       parti->compression_type=UNCOMPRESSED;
-      parti->sort_tags_loaded=0;
       parti->loaded=0;
       parti->request_load = 0;
       parti->finalize = 0;
@@ -8031,8 +8049,18 @@ typedef struct {
       parti->timeslist=NULL;
       parti->histograms = NULL;
       parti->bounds_set = 0;
-      parti->valmin = NULL;
-      parti->valmax = NULL;
+      parti->global_min = NULL;
+      parti->global_max = NULL;
+      parti->filepos = NULL;
+#ifdef pp_PART_FAST
+      parti->tags = NULL;
+      parti->sort_tags = NULL;
+      parti->vis_part = NULL;
+      parti->sx = NULL;
+      parti->sy = NULL;
+      parti->sz = NULL;
+      parti->irvals = NULL;
+#endif
 
       parti->data5=NULL;
       parti->partclassptr=NULL;
@@ -9189,7 +9217,9 @@ typedef struct {
   SetupDeviceData();
   if(nzoneinfo>0)SetupZoneDevs();
 
+#ifdef pp_THREAD
   InitMultiThreading();
+#endif
 
   InitPartProp();
 
@@ -9255,6 +9285,10 @@ typedef struct {
         partclassi->dy = sin(azimuth)*cos(elevation)*length/2.0;
         partclassi->dz =              sin(elevation)*length/2.0;
     }
+  }
+  if(npartinfo>=64){
+    part_multithread = 1;
+    partfast = 1;
   }
 
   shooter_xyz[0]=xbar/2.0;
@@ -10447,6 +10481,12 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "V_PARTICLES") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f", &setpartmin, &partmin, &setpartmax, &partmax);
+      if(setpartmin==PERCENTILE_MIN){
+        setpartmin = GLOBAL_MIN;
+      }
+      if(setpartmax==PERCENTILE_MAX){
+        setpartmax = GLOBAL_MAX;
+      }
       continue;
     }
     if(Match(buffer, "V5_PARTICLES") == 1){
@@ -11518,8 +11558,10 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWCOLORBARS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visColorbarVertical_val);
-      update_visColorbarVertical=1;
+      sscanf(buffer, "%i %i", &visColorbarVertical_val, &visColorbarHorizontal_val);
+      if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
+      if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
+      update_visColorbars=1;
       continue;
     }
     if(Match(buffer, "EYEVIEW") == 1){
@@ -11534,7 +11576,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &partfast);
+      sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
       continue;
     }
     if(Match(buffer, "WINDOWOFFSET") == 1){
@@ -13329,7 +13371,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i\n", partfast);
+  fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i\n", research_mode);
   fprintf(fileout, "SHOWFEDAREA\n");
@@ -13474,7 +13516,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWCEILING\n");
   fprintf(fileout, " %i\n", visCeiling);
   fprintf(fileout, "SHOWCOLORBARS\n");
-  fprintf(fileout, " %i\n", visColorbarVertical);
+  fprintf(fileout, " %i %i\n", visColorbarVertical,visColorbarHorizontal);
   fprintf(fileout, "SHOWCVENTS\n");
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");

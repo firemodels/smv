@@ -7,6 +7,24 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
+/* ------------------ InitMultiThreading ------------------------ */
+
+void InitMultiThreading(void){
+#ifdef pp_THREAD
+  pthread_mutex_init(&mutexPART_LOAD, NULL);
+  pthread_mutex_init(&mutexCOMPRESS,NULL);
+#ifdef pp_ISOTHREAD
+  pthread_mutex_init(&mutexTRIANGLES,NULL);
+#endif
+  pthread_mutex_init(&mutexVOLLOAD,NULL);
+#ifdef pp_THREADIBLANK
+  pthread_mutex_init(&mutexIBLANK, NULL);
+#endif
+#endif
+}
+
+//***************************** multi-threaded compression ***********************************
+
 /* ------------------ CompressSVZip2 ------------------------ */
 
 void CompressSVZip2(void){
@@ -43,23 +61,6 @@ void CompressSVZip2(void){
   PRINTF("Compression completed\n");
 }
 
-/* ------------------ InitMultiThreading ------------------------ */
-
-void InitMultiThreading(void){
-#ifdef pp_THREAD
-  pthread_mutex_init(&mutexCOMPRESS,NULL);
-#ifdef pp_ISOTHREAD
-  pthread_mutex_init(&mutexTRIANGLES,NULL);
-#endif
-  pthread_mutex_init(&mutexVOLLOAD,NULL);
-#ifdef pp_THREADIBLANK
-  pthread_mutex_init(&mutexIBLANK, NULL);
-#endif
-#endif
-}
-
-// *************** multi-threaded compression ****************
-
 #ifdef pp_THREAD
  /* ------------------ MtCompressSVZip ------------------------ */
 
@@ -74,6 +75,7 @@ void *MtCompressSVZip(void *arg){
 #endif
 
 /* ------------------ CompressSVZip ------------------------ */
+
 #ifdef pp_THREAD
 void CompressSVZip(void){
   pthread_create(&compress_thread_id,NULL, MtCompressSVZip,NULL);
@@ -83,6 +85,90 @@ void CompressSVZip(void){
   CompressSVZip2();
 }
 #endif
+
+//***************************** multi threading particle loading routines ***********************************
+
+#ifdef pp_THREAD
+/* ------------------ MtLoadAllPartFiles ------------------------ */
+
+void *MtLoadAllPartFiles(void *arg){
+  int *valptr;
+
+  valptr = (int *)(arg);
+  LoadAllPartFiles(*valptr);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ LoadAllPartFilesMT ------------------------ */
+
+void LoadAllPartFilesMT(int partnum){
+  int i;
+
+  if(part_multithread==0){
+    LoadAllPartFiles(partnum);
+    return;
+  }
+
+  for(i = 0; i<npartthread_ids; i++){
+    pthread_create(partthread_ids+i, NULL, MtLoadAllPartFiles, &partnum);
+  }
+  for(i=0;i<npartthread_ids;i++){
+    pthread_join(partthread_ids[i],NULL);
+  }
+  if(partnum<0){
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+
+     parti = partinfo+i;
+      if(parti->finalize==1)FinalizePartLoad(parti);
+    }
+  }
+  else{
+    FinalizePartLoad(partinfo+partnum);
+  }
+}
+#else
+void LoadAllPartFilesMT(int partnum){
+  LoadAllPartFiles(partnum);
+}
+#endif
+
+#ifdef pp_THREAD
+/* ------------------ MtGetAllPartBounds ------------------------ */
+
+void *MtGetAllPartBounds(void *arg){
+  GetAllPartBounds();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ GetAllPartBoundsMT ------------------------ */
+
+void GetAllPartBoundsMT(void){
+  if(part_multithread==1){
+    int i;
+
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_create(partthread_ids+i, NULL, MtGetAllPartBounds, NULL);
+    }
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_join(partthread_ids[i], NULL);
+    }
+  }
+  else{
+    GetAllPartBounds();
+  }
+  MergeAllPartBounds();
+}
+#else
+void GetAllPartBoundsMT(void){
+    GetAllPartBounds();
+    MergeAllPartBounds();
+}
+#endif
+
+//***************************** multi threading triangle update ***********************************
 
 /* ------------------ MtUpdateTriangles ------------------------ */
 
@@ -137,7 +223,7 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-// ************** multi threaded blank creation **********************
+//***************************** multi threaded blank creation ***********************************
 
 /* ------------------ MtMakeIBlank ------------------------ */
 #ifdef pp_THREAD
@@ -154,6 +240,30 @@ void *MtMakeIBlank(void *arg){
 }
 #endif
 #endif
+
+/* ------------------ makeiblank_all ------------------------ */
+
+#ifdef pp_THREAD
+#ifdef pp_THREADIBLANK
+void MakeIBlankAll(void){
+  pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
+}
+#else
+void MakeIBlankAll(void){
+  MakeIBlank();
+  SetCVentDirs();
+  update_setvents=1;
+}
+#endif
+#else
+void MakeIBlankAll(void){
+  MakeIBlank();
+  SetCVentDirs();
+  update_set_vents=1;
+}
+#endif
+
+//***************************** multi threaded system call ***********************************
 
 /* ------------------ MtPSystem ------------------------ */
 
@@ -187,28 +297,6 @@ void PSystem(char *commandline){
 #else
 void PSystem(char *commandline){
   system(commandline)
-}
-#endif
-
-/* ------------------ makeiblank_all ------------------------ */
-
-#ifdef pp_THREAD
-#ifdef pp_THREADIBLANK
-void MakeIBlankAll(void){
-  pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
-}
-#else
-void MakeIBlankAll(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_setvents=1;
-}
-#endif
-#else
-void MakeIBlankAll(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_set_vents=1;
 }
 #endif
 

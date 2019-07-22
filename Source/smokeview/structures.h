@@ -1,6 +1,8 @@
 #ifndef FLOWFILES_H_DEFINED
 #define FLOWFILES_H_DEFINED
 
+#include "stdio_m.h"
+
 /* --------------------------  circdata ------------------------------------ */
 
 typedef struct _circdata {
@@ -1122,7 +1124,7 @@ typedef struct _part5data {
   int humancolor_varindex;
   int *tags,*sort_tags;
   unsigned char *vis_part;
-  float *rvals;
+  float *rvals,**rvalsptr;
   unsigned char *irvals;
   unsigned char **cvals;
 } part5data;
@@ -1130,14 +1132,21 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
+#ifdef pp_PART_FAST
+  FILE_m *stream;
+#endif
+
   char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
-  int seq_id, autoload, loaded, request_load, display, reload, finalize;
-  int sort_tags_loaded, compression_type, evac;
+  int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
+  int loadstatus, boundstatus;
+  int compression_type, evac;
   int blocknumber;
   int *timeslist, ntimes, itime;
+  FILE_SIZE bound_file_size;
 
   float zoffset, *times;
   FILE_SIZE reg_file_size;
+  LINT *filepos;
 
   char menulabel[128];
 
@@ -1146,7 +1155,14 @@ typedef struct _partdata {
   part5data *data5;
   histogramdata **histograms;
   int bounds_set;
-  float *valmin, *valmax;
+  float *global_min, *global_max;
+#ifdef pp_PART_FAST
+  unsigned char *vis_part;
+  int *tags;
+  int *sort_tags;
+  short *sx, *sy, *sz;
+  unsigned char *irvals;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */

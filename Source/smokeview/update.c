@@ -523,6 +523,7 @@ void UpdateShow(void){
       if(current_property->extreme_min==1)have_extreme_mindata=1;
     }
   }
+  ReadPartFile = partflag;
 
   evacflag=0;
   if(visEvac==1&&visTimeEvac==1){
@@ -536,6 +537,7 @@ void UpdateShow(void){
       }
     }
   }
+  ReadEvacFile = evacflag;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
@@ -1921,9 +1923,20 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
-  if(update_visColorbarVertical==1){
-    update_visColorbarVertical = 0;
+  if(update_visColorbars==1){
+    update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
+    visColorbarHorizontal = visColorbarHorizontal_val;
+    if(visColorbarVertical==1&&visColorbarHorizontal==0){
+      toggle_colorbar = 1;
+    }
+    else if(visColorbarVertical==0&&visColorbarHorizontal==1){
+      toggle_colorbar = 2;
+    }
+    else {
+      toggle_colorbar = 0;
+    }
+    updatemenu = 1;
   }
   if(update_windrose==1){
     update_windrose = 0;
