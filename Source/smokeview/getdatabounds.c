@@ -419,7 +419,7 @@ void GetAllPartBounds(void){
     UNLOCK_PART_LOAD;
     ReadPartBounds(parti,global_have_global_bound_file);
     LOCK_PART_LOAD;
-    PrintPartLoadSummary(PART_AFTER, PART_SIZING);
+    if(npartinfo>1)PrintPartLoadSummary(PART_AFTER, PART_SIZING);
     parti->boundstatus = 2;
     UNLOCK_PART_LOAD;
   }

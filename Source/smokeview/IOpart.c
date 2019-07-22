@@ -2232,9 +2232,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   parti->request_load = 1;
   if(part_multithread==1){
-    LOCK_PART_LOAD;
-    PrintPartLoadSummary(PART_AFTER, PART_LOADING);
-    UNLOCK_PART_LOAD;
+    if(npartinfo>1){
+      LOCK_PART_LOAD;
+      PrintPartLoadSummary(PART_AFTER, PART_LOADING);
+      UNLOCK_PART_LOAD;
+    }
   }
   else{
     if(parti->finalize==1)FinalizePartLoad(parti);
