@@ -125,7 +125,11 @@ SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
+#ifdef pp_SMOKE3D_LOADTEST
+SVEXTERN int SVDECL(smoke3d_load_test, 1);
+#else
 SVEXTERN int SVDECL(smoke3d_load_test, 0);
+#endif
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);

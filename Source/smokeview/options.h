@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_HTML                // output html version of smokeview scene
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
@@ -76,7 +77,9 @@
 #ifdef pp_BETA
 //#define pp_SLICE_DEBUG         // slice debug output
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step
+#ifdef pp_SMOKE_FAST
+#define pp_SMOKE3D_LOADTEST  // load 3d smoke for all meshes for each time step
+#endif
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_SHOWTERRAIN
 #define pp_TIMINGS
