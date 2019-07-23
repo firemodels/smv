@@ -1,4 +1,4 @@
-# Smokeview (smv)
+#  Smokeview (smv)
 
 Smokeview is a visualization program that displays output of [FDS](https://github.com/firemodels/fds) and [CFAST](https://github.com/firemodels/cfast) simulations.
 
