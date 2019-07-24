@@ -6177,7 +6177,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   int fortran_skip=0;
 
 #ifndef pp_FSEEK
-  if(flag==RELOAD)flag = LOAD;
+  if(flag_arg==RELOAD)flag_arg = LOAD;
 #endif
   START_TIMER(total_time_local);
   ASSERT(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
