@@ -5910,7 +5910,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag, int *errorcode){
   char smoketype[32];
   int i,j,ii;
   int fortran_skip = 0;
-  int error_code, error;
+  int error;
   int ncomp_smoke_total;
   int ncomp_smoke_total_skipped;
 
@@ -6153,7 +6153,7 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   int error;
   FILE_SIZE file_size=0;
   float read_time, total_time;
-  int iii,ii,i,j;
+  int iii,i;
   int nxyz[8];
   int nchars[2];
   int nframes_found=0;
