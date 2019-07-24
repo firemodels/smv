@@ -6157,9 +6157,8 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
     }
   }
 
-// read in data
+//*** read in data
 
-  GetFileSizeSMV(smoke3di->file);
   SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     ReadSmoke3D(iframe,ifile,UNLOAD,&error);
