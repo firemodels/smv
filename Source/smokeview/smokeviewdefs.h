@@ -839,11 +839,14 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_COLORBAR_SETTINGS -22
 #define USE_LIGHTING -25
 
-#define LOAD 0
-#define UNLOAD 1
+#define LOAD        0
+#define UNLOAD      1
 #define RESETBOUNDS 2
-#define RELOAD 3
+#define RELOAD      3
 #define UPDATE_HIST 4
+
+#define FIRST_TIME  1
+#define LATER_TIMES 0
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA 1
