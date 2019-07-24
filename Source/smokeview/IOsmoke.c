@@ -5974,7 +5974,6 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(flag==UNLOAD){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
-    Read3DSmoke3DFile=0;
     SetSmokeColorFlags();
     smoke3di->request_load = 0;
 
@@ -6003,7 +6002,6 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
 
       smoke3dj = smoke3dinfo + j;
       if(smoke3dj->loaded==1){
-        Read3DSmoke3DFile=1;
         if(smoke3dj->type==HRRPUV){
           hrrpuv_loaded=1;
           break;
@@ -6259,7 +6257,6 @@ FILE_SIZE ReadSmoke3D(int iframe,int ifile,int flag, int *errorcode){
   if(smoke3di->type == TEMP)temp_loaded = 1;
   UpdateFireCutoffs();
 
-  Read3DSmoke3DFile=1;
   update_makeiblank_smoke3d=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(smoke3di->finalize == 1){

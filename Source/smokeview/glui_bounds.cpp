@@ -9,8 +9,6 @@
 #include "smokeviewvars.h"
 #include "MALLOCC.h"
 
-int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
-
 GLUI_Rollout *ROLLOUT_slice_bound=NULL;
 GLUI_Rollout *ROLLOUT_slice_chop=NULL;
 GLUI_Rollout *ROLLOUT_part_bound=NULL;
@@ -4166,84 +4164,10 @@ extern "C" void UpdateTBounds(void){
   SliceBoundCB(FRAMELOADING);
 }
 
-/* ------------------ UpdateFileLoad  ------------------------ */
-
-extern "C" void UpdateFileLoad(void){
-  int i;
-  partdata *parti;
-  slicedata *slicei;
-  isodata *isoi;
-  patchdata *patchi;
-  smoke3ddata *smoke3di;
-  plot3ddata *plot3di;
-  vslicedata *vslicei;
-
-  npartloaded = 0;
-  nevacloaded = 0;
-  for(i = 0; i < npartinfo; i++){
-    parti = partinfo + i;
-    if(parti->loaded == 1 && parti->evac == 0){
-      npartloaded++;
-    }
-    if(parti->loaded == 1 && parti->evac == 1){
-      nevacloaded++;
-    }
-  }
-
-  nsliceloaded = 0;
-  for(i = 0; i < nsliceinfo; i++){
-    slicei = sliceinfo + i;
-    if(slicei->loaded == 1){
-      nsliceloaded++;
-    }
-  }
-
-  nvsliceloaded = 0;
-  for(i = 0; i < nvsliceinfo; i++){
-    vslicei = vsliceinfo + i;
-    if(vslicei->loaded == 1){
-      nvsliceloaded++;
-    }
-  }
-
-  nisoloaded = 0;
-  for(i = 0; i < nisoinfo; i++){
-    isoi = isoinfo + i;
-    if(isoi->loaded == 1){
-      nisoloaded++;
-    }
-  }
-
-  npatchloaded = 0;
-  for(i = 0; i < npatchinfo; i++){
-    patchi = patchinfo + i;
-    if(patchi->loaded == 1){
-      npatchloaded++;
-    }
-  }
-
-  nsmoke3dloaded = 0;
-  for(i = 0; i < nsmoke3dinfo; i++){
-    smoke3di = smoke3dinfo + i;
-    if(smoke3di->loaded == 1){
-      nsmoke3dloaded++;
-    }
-  }
-
-  nplot3dloaded = 0;
-  for(i = 0; i < nplot3dinfo; i++){
-    plot3di = plot3dinfo + i;
-    if(plot3di->loaded == 1){
-      nplot3dloaded++;
-    }
-  }
-}
-
 /* ------------------ UpdateShowHideButtons ------------------------ */
 
 extern "C" void UpdateShowHideButtons(void){
 
-  UpdateFileLoad();
 //  if(CHECKBOX_label_3 != NULL){
 //    CHECKBOX_label_3->set_int_val(hide_overlaps);
 //  }

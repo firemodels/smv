@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
+SVEXTERN int nvolsmoke3dloaded;
+SVEXTERN int npart5loaded, npartloaded, nevacloaded;
+
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
@@ -961,7 +965,6 @@ SVEXTERN float xbarORIG, ybarORIG, zbarORIG;
 SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
-SVEXTERN int Read3DSmoke3DFile;
 SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0), SVDECL(ReadEvacFile,0);
 SVEXTERN int SVDECL(cache_qdata,1);
 

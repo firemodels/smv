@@ -1463,7 +1463,6 @@ void InitVars(void){
   ReadPlot3dFile=0, ReadIsoFile=0;
 
   ReadVolSlice=0;
-  Read3DSmoke3DFile=0;
   ReadZoneFile=0;
 
   editwindow_status=-1;

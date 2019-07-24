@@ -253,6 +253,93 @@ void UpdateFrameNumber(int changetime){
   }
 }
 
+/* ------------------ UpdateFileLoad  ------------------------ */
+
+void UpdateFileLoad(void){
+  int i;
+
+  npartloaded = 0;
+  nevacloaded = 0;
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->loaded==1&&parti->evac==0)npartloaded++;
+    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
+  }
+
+  nsliceloaded = 0;
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==1)nsliceloaded++;
+  }
+
+  nvsliceloaded = 0;
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->loaded==1)nvsliceloaded++;
+  }
+
+  nisoloaded = 0;
+  for(i = 0; i<nisoinfo; i++){
+    isodata *isoi;
+
+    isoi = isoinfo+i;
+    if(isoi->loaded==1)nisoloaded++;
+  }
+
+  npatchloaded = 0;
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==1)npatchloaded++;
+  }
+
+  nsmoke3dloaded = 0;
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1)nsmoke3dloaded++;
+  }
+
+  nplot3dloaded = 0;
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==1)nplot3dloaded++;
+  }
+
+  nvolsmoke3dloaded = 0;
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    meshi = meshinfo+i;
+    vr = &(meshi->volrenderinfo);
+    if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
+    if(vr->loaded==1)nvolsmoke3dloaded++;
+  }
+
+  npart5loaded = 0;
+  npartloaded = 0;
+  nevacloaded = 0;
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->loaded==1&&parti->evac==0)npartloaded++;
+    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
+    if(parti->loaded==1)npart5loaded++;
+  }
+}
+
 /* ------------------ UpdateShow ------------------------ */
 
 void UpdateShow(void){
@@ -260,6 +347,7 @@ void UpdateShow(void){
   int slicecolorbarflag;
   int shooter_flag;
 
+  UpdateFileLoad();
   have_fire = HaveFire();
   showtime=0;
   showtime2=0;
@@ -326,13 +414,14 @@ void UpdateShow(void){
     }
   }
   {
-    smoke3ddata *smoke3di;
     int ii;
 
     for(ii=0;ii<nsmoke3dinfo;ii++){
+      smoke3ddata *smoke3di;
+
       smoke3di = smoke3dinfo + ii;
       if(smoke3di->loaded==1&&smoke3di->display==1){
-        smoke3dflag=1;
+        smoke3dflag = 1;
         break;
       }
     }
@@ -1102,7 +1191,7 @@ void UpdateTimes(void){
   {
     smoke3ddata *smoke3di;
 
-    if(Read3DSmoke3DFile==1&&vis3DSmoke3D==1){
+    if(nsmoke3dloaded>0&&vis3DSmoke3D==1){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;

@@ -6005,12 +6005,7 @@ int IsBoundaryType(int type){
 
 void InitMenus(int unload){
   int i;
-  int nsmoke3dloaded,nvolsmoke3dloaded;
-  int nsliceloaded,nvsliceloaded,nmultisliceloaded;
-  int npartloaded,npart5loaded,nevacloaded;
-  int npatchloaded;
-  int nplot3dloaded;
-  int nisoloaded;
+  int nmultisliceloaded;
   int showhide_data = 0;
   int patchgeom_slice_showhide;
 
@@ -6083,43 +6078,6 @@ updatemenu=0;
   UpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
 
-  nsliceloaded=0;
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo + i;
-    if(sd->loaded==1)nsliceloaded++;
-  }
-
-  nsmoke3dloaded=0;
-  for(i=0;i<nsmoke3dinfo;i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di=smoke3dinfo+i;
-    if(smoke3di->loaded==1)nsmoke3dloaded++;
-  }
-
-  nvolsmoke3dloaded=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-    if(vr->loaded==1){
-      nvolsmoke3dloaded++;
-    }
-  }
-
-  nvsliceloaded=0;
-  for(i=0;i<nvsliceinfo;i++){
-    vslicedata *vd;
-
-    vd = vsliceinfo + i;
-    if(vd->loaded==1)nvsliceloaded++;
-  }
-
   for(i=0;i<nmultisliceinfo;i++){
     multislicedata *mslicei;
     int j;
@@ -6173,46 +6131,6 @@ updatemenu=0;
     else if(mvslicei->display==mvslicei->nvslices){
       mvslicei->display=1;
     }
-  }
-
-
-  npart5loaded=0;
-  npartloaded=0;
-  nevacloaded=0;
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    if(parti->loaded==1&&parti->evac==0)npartloaded++;
-    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
-    if(parti->loaded==1){
-      npart5loaded++;
-    }
-  }
-
-  nplot3dloaded=0;
-  for(i=0;i<nplot3dinfo;i++){
-    plot3ddata *plot3di;
-
-    plot3di = plot3dinfo + i;
-    if(plot3di->loaded==1)nplot3dloaded++;
-  }
-
-  nisoloaded=0;
-  for(i=0;i<nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded==1)nisoloaded++;
-  }
-
-  npatchloaded=0;
-  for(i=0;i<npatchinfo;i++){
-    patchdata *patchi;
-
-    patchi = patchinfo + i;
-    if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
-    if(patchi->loaded==1)npatchloaded++;
   }
 
 #ifdef pp_DEBUG_SUBMENU
@@ -7812,7 +7730,7 @@ updatemenu=0;
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
-  if((nsmoke3dinfo>0&&Read3DSmoke3DFile==1)||nvolrenderinfo>0){
+  if(nsmoke3dloaded>0||nvolrenderinfo>0){
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
@@ -7835,7 +7753,8 @@ updatemenu=0;
 
 
   /* --------------------------------smoke3d showmenu -------------------------- */
-  if(nsmoke3dinfo>0&&Read3DSmoke3DFile==1){
+
+  if(nsmoke3dloaded>0){
     {
       if(nsmoke3dloaded>0){
         CREATEMENU(smoke3dshowsinglemenu, Smoke3DShowMenu);
@@ -8565,7 +8484,7 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Labels"),labelmenu);
   GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
-  if(Read3DSmoke3DFile==1&&nsmoke3dloaded>0){
+  if(nsmoke3dloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU(_("3D smoke"), smoke3dshowmenu);
   }
