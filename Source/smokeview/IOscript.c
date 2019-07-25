@@ -1064,12 +1064,12 @@ void ScriptRenderAll(scriptdata *scripti){
   int skip_local;
 
   if(script_startframe>0)scripti->ival3=script_startframe;
-  if(startframe0>=0)scripti->ival3=startframe0;
+  if(render_startframe0>=0)scripti->ival3=render_startframe0;
   first_frame_index=scripti->ival3;
   itimes=first_frame_index;
 
   if(script_skipframe>0)scripti->ival=script_skipframe;
-  if(skipframe0>0)scripti->ival=skipframe0;
+  if(render_skipframe0>0)scripti->ival=render_skipframe0;
   skip_local=MAX(1,scripti->ival);
 
   PrintRenderMessage(skip_local,first_frame_index);
@@ -1084,12 +1084,12 @@ void ScriptRender360All(scriptdata *scripti){
 
 
   if(script_startframe>0)scripti->ival3 = script_startframe;
-  if(startframe0 >= 0)scripti->ival3 = startframe0;
+  if(render_startframe0 >= 0)scripti->ival3 = render_startframe0;
   first_frame_index = scripti->ival3;
   itimes = first_frame_index;
 
   if(script_skipframe>0)scripti->ival = script_skipframe;
-  if(skipframe0>0)scripti->ival = skipframe0;
+  if(render_skipframe0>0)scripti->ival = render_skipframe0;
   skip_local = MAX(1, scripti->ival);
 
   PrintRenderMessage(skip_local,first_frame_index);
@@ -1334,13 +1334,13 @@ void ScriptIsoRenderAll(scriptdata *scripti){
   ScriptLoadIsoFrame2(scripti);
 
   if(script_startframe>0)scripti->ival3 = script_startframe;
-  if(startframe0>0)scripti->ival3 = startframe0;
+  if(render_startframe0>0)scripti->ival3 = render_startframe0;
   // check first_frame_index
   first_frame_index = scripti->ival3;
   itimes = first_frame_index;
 
   if(script_skipframe>0)scripti->ival = script_skipframe;
-  if(skipframe0>0)scripti->ival = skipframe0;
+  if(render_skipframe0>0)scripti->ival = render_skipframe0;
   skip_local = MAX(1, scripti->ival);
 
   PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n", skip_local, scripti->ival3);
