@@ -23,7 +23,6 @@ function usage {
   echo " -f repository root - name and location of repository where FDS is located"
   echo "    [default: $REPOROOT]"
   echo " -i use installed fds"
-  echo " -m m - reserve m processes per node [default: 1]"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
   echo ""
@@ -66,8 +65,12 @@ fi
 #*** determine platform
 
 platform="linux"
+ncores=1
 if [ "`uname`" == "Darwin" ] ; then
   platform="osx"
+fi
+if [ "$platform" == "linux" ]; then
+  ncores=`grep processor /proc/cpuinfo | wc -l`
 fi
 
 #*** determine default queue
@@ -96,7 +99,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:f:hHim:q:s:S:v' OPTION
+while getopts 'c:d:e:f:hHiq:s:S:v' OPTION
 do
 case $OPTION  in
   c)
@@ -122,9 +125,6 @@ case $OPTION  in
    ;;
   i)
    use_installed=1
-   ;;
-  m)
-   max_processes_per_node="$OPTARG"
    ;;
   q)
    queue="$OPTARG"
@@ -203,7 +203,7 @@ else
   fi
 fi
 
-let ppn=1
+let ppn=$ncores
 let nodes=1
 
 TITLE="$infile"
