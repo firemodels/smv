@@ -213,10 +213,10 @@ fulldir=`pwd`
 
 #*** define files
 
-outerr=$fulldir/$infile.err
-outlog=$fulldir/$infile.log
-stopfile=$fulldir/$infile.stop
-scriptlog=$fulldir/$infile.slog
+basefile=${infile}_f${first}_s${skip}
+outerr=$fulldir/$basefile.err
+outlog=$fulldir/$basefile.log
+scriptlog=$fulldir/$basefile.slog
 in_full_file=$fulldir/$in
 in_full_smvfile=$fulldir/${in}.smv
 
@@ -276,7 +276,7 @@ EOF
 
   else
     cat << EOF >> $scriptfile
-#PBS -N $JOBPREFIX$TITLE
+#PBS -N $JOBPREFIX${TITLE}/f${first}s$skip
 #PBS -W umask=0022
 #PBS -e $outerr
 #PBS -o $outlog
@@ -296,7 +296,7 @@ echo
 echo \`date\`
 echo "       Executable:$exe"
 echo "        Directory: \`pwd\`"
-echo "   smokeview file: $in"
+echo "   smokeview file: ${in}.smv"
 echo " smokeview script: $smokeview_script_file"
 echo "      start frame: $first"
 echo "       frame skip: $skip"
