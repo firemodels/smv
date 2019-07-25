@@ -82,7 +82,7 @@ fi
 
 HELP=
 use_installed=
-arg2=
+render_opts=
 dir=.
 showinput=0
 exe=
@@ -96,10 +96,10 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:hHim:q:s:S:' OPTION
+while getopts 'c:d:e:f:hHim:q:s:S:v' OPTION
 do
 case $OPTION  in
-  d)
+  c)
    smv_script="$OPTARG"
    ;;
   d)
@@ -131,11 +131,11 @@ case $OPTION  in
    ;;
   s)
    first="$OPTARG"
-   arg2=1
+   render_opts=1
    ;;
   S)
    skip="$OPTARG"
-   arg2=1
+   render_opts=1
    ;;
   v)
    showinput=1
@@ -149,15 +149,19 @@ shift $(($OPTIND-1))
 in=$1
 infile=${in%.*}
 
-if [ "$arg2" != "" ]; then
-  if [ "$first" == "" ]; then
-    first=1
-  fi
-  if [ "$skip" == "" ]; then
-    skip=1
-  fi
-  arg2="-F $first -S $skip"
+# determine frame start and frame skip
+
+if [ "$first" == "" ]; then
+  first=1
 fi
+if [ "$skip" == "" ]; then
+  skip=1
+fi
+if [ "$render_opts" != "" ]; then
+  render_opts="-startframe $first -skipframe $skip"
+fi
+
+# determine smokeview script file parameters
 
 if [ "$smv_script" != "" ]; then
   smokeview_script_file=$smv_script
@@ -167,7 +171,7 @@ else
   smv_script=-runscript
 fi
 
-#*** parse options
+#*** parse walltime parameter
 
 if [ "$walltime" == "" ]; then
     if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
@@ -195,13 +199,12 @@ if [ "$use_installed" == "1" ]; then
   fi
 else
   if [ "$exe" == "" ]; then
-    exe=$REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_intel_${platform}_64
+    exe=$REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_${platform}_64
   fi
 fi
 
 let ppn=1
 let nodes=1
-
 
 TITLE="$infile"
 
@@ -217,7 +220,7 @@ scriptlog=$fulldir/$infile.slog
 in_full_file=$fulldir/$in
 in_full_smvfile=$fulldir/${in}.smv
 
-#*** make sure various files exist before running the case
+#*** make sure smokeview file exists
 
 if ! [ -e $in_full_smvfile ]; then
   if [ "$showinput" == "0" ]; then
@@ -291,12 +294,17 @@ cat << EOF >> $scriptfile
 cd $fulldir
 echo
 echo \`date\`
-echo "    Input file: $in"
-echo "     Directory: \`pwd\`"
-echo "          Host: \`hostname\`"
+echo "       Executable:$exe"
+echo "        Directory: \`pwd\`"
+echo "   smokeview file: $in"
+echo " smokeview script: $smokeview_script_file"
+echo "      start frame: $first"
+echo "       frame skip: $skip"
+echo "             Host: \`hostname\`"
+echo "            Queue: $queue"
 
 source $XSTART
-$exe $script_file $arg2 $in
+$exe $script_file $smv_script $render_opts $in
 source $XSTOP
 
 EOF
