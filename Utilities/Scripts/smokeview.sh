@@ -6,6 +6,7 @@ if [ "`uname`" == "Darwin" ]; then
 fi
 
 ssffile=
+module load SMV6
 SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
 SMOKEVIEWDIR=$(dirname "$0")
@@ -64,8 +65,7 @@ if ! [ -e $ssffile ]; then
   exit
 fi
 
-
-if [  "SETUP_XSERVER" == "1" ]; then
+if [  "$SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
 if [ "$TIME" != "" ]; then
@@ -75,6 +75,6 @@ if [ "$TIME" != "" ]; then
 else
   $SMOKEVIEW $RUNSCRIPT $in
 fi
-if [  "SETUP_XSERVER" == "1" ]; then
+if [  "$SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
 fi
