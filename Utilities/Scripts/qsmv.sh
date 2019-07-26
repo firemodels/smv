@@ -201,7 +201,7 @@ fi
 if [ "$use_installed" == "1" ]; then
   notfound=`echo | smokeview 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
   if [ $notfound -eq 1 ]; then
-    echo "smokeview is not installed. Run aborted."
+    echo "smokeview is not installed."
     ABORTRUN=y
     exe=
   else
