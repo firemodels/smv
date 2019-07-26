@@ -77,6 +77,7 @@ dir=.
 showinput=0
 exe=
 smv_script=
+nprocs=1
 
 if [ $# -lt 1 ]; then
   usage
@@ -86,7 +87,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:hHiq:s:S:v' OPTION
+while getopts 'c:d:e:hHip:q:s:S:v' OPTION
 do
 case $OPTION  in
   c)
@@ -110,6 +111,9 @@ case $OPTION  in
   i)
    use_installed=1
    ;;
+  p)
+   nprocs="$OPTARG"
+   ;;
   q)
    queue="$OPTARG"
    ;;
@@ -132,6 +136,18 @@ shift $(($OPTIND-1))
 
 in=$1
 infile=${in%.*}
+
+re='^[0-9]+$'
+if ! [[ $nproc =~ $re ]] ; then
+   nproc=1;
+fi
+if [ $nproc != 1 ]; then
+  for i in {1..$nproc};do
+    echo $i in $nproc
+  done
+fi
+exit
+
 
 # determine frame start and frame skip
 
