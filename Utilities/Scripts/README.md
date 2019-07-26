@@ -19,6 +19,15 @@ To use qsmv.sh type
 
 Typically, a smokeview script contains keywords for generating images.  Multiple instances of qsmv.sh may be run, where each instance uses the `-s` and `-S` keywords to specify the first frame and frame offset respectivly, reducing the time required to generate all the images in a case.
 
+qsmv.sh uses smokeview that was built in the repo containing qsmv.sh or smokeview that is installed from a NIST supplied bundle.  To build smokeview 
+
+1. cd smv/Build/LIBS/intel_linux_64
+2. type: 
+ ./make_LIBS.sh
+3. cd smv/Build/smokeview/intel_linux_64 
+4.type:
+ ./make_smokeview.sh
+
 More detailed usage information follows.
 
 ```Usage: qsmv.sh [-e smv_command] [-q queue] casename
