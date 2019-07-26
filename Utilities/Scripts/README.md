@@ -4,13 +4,18 @@ This directory contains scripts used by other scripts in the smv repo.
 
 ## qsmv.sh
 
-The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system to generate images for creating an animation. qsmv.sh speeds up this rendering by parallelizing in time not space. Each instance of qsmv.sh generates a subset of the time frames in a simulation. By running multiple instacnes of qsmv.sh, the total time required to render all images of a simulation are reduced.
+The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system to generate images for creating an animation. qsmv.sh speeds up this rendering by parallelizing in time not space. (it is not practical to parallelize in space by rendering a portion of the scene on multiple nodes since it would be difficult if not impossible to combine these image subsets one image).   Each instance of qsmv.sh generates a subset of the time frames in a simulation. By running multiple instances of qsmv.sh, the total time required to render simulation images is reduced.
+
+To get started, add the following line to your startup file, typically .bashrc 
+(change the first part to match where your repo is located):
+
+```alias qsmv.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh"```
 
 To use qsmv.sh type
 
 ```qsmv.sh casename```
 
-on a command line (the .smv file extension is not required).  
+(the .smv file extension is not required).  
 This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . 
 Type `qstat -a` to see this job in the queue and `qstat -n` to see which node it is running on.
 
@@ -18,11 +23,6 @@ Typically, a smokeview script contains keywords for generating images.
 Multiple instances of qsmv.sh may be run, where each instance uses the `-s` and `-S` keywords
 to specify the first frame and frame offset respectivly,
 reducing the time required to generate all the images in a case.
-
-To get started, add the following line to your startup file, typically .bashrc 
-(change the first part to match where your repo is located):
-
-```alias qsmv.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh"```
 
 More detailed usage information follows.
 
