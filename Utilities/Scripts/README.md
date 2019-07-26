@@ -4,11 +4,7 @@ This directory contains scripts used by other scripts in the smv repo.
 
 ## qsmv.sh
 
-The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm 
-queuing system to generate images for creating an animation.  
-qsmv.sh speeds up this rendering by parallelizing in time not space.
-Each instance of qsmv.sh generates a subset of the time frames in a simulation.  
-By running multiple instacnes of qsmv.sh, the total time required to render all images of a simulation are reduced.
+The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system to generate images for creating an animation. qsmv.sh speeds up this rendering by parallelizing in time not space. Each instance of qsmv.sh generates a subset of the time frames in a simulation. By running multiple instacnes of qsmv.sh, the total time required to render all images of a simulation are reduced.
 
 To use qsmv.sh type
 
