@@ -7,7 +7,7 @@ function usage {
   echo ""
   echo "qsmv.sh runs smokeview and a smokeview script in batch mode"
   echo ""
-  echo " -e exe - full path of FDS used to run case "
+  echo " -e exe - full path of smokeview used to run case "
   echo "    [default: $REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_intel_${platform}_64]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
@@ -18,13 +18,13 @@ function usage {
     exit
   fi
   echo "Other options:"
-  echo " -c   - smokeview script command file [default: casename.ssf]"
+  echo " -c     - smokeview script command file [default: casename.ssf]"
   echo " -d dir - specify directory where the case is found [default: .]"
-  echo " -f repository root - name and location of repository where FDS is located"
+  echo " -f repository root - name and location of repository where smokeview is located"
   echo "    [default: $REPOROOT]"
-  echo " -i use installed fds"
-  echo " -s     - first frame rendered [default: 1]"
-  echo " -S     - interval between frames [default: 1]"
+  echo " -i    - use installed smokeview"
+  echo " -s    - first frame rendered [default: 1]"
+  echo " -S    - interval between frames [default: 1]"
   echo ""
   exit
 }
@@ -226,6 +226,12 @@ if ! [ -e $in_full_smvfile ]; then
   if [ "$showinput" == "0" ]; then
     echo "The smokeview file, $in_full_smvfile, does not exist. Run aborted."
     ABORTRUN=y
+  fi
+fi
+
+if [ "$ABORTRUN" == "y" ]; then
+  if [ "$showinput" == "0" ]; then
+    exit
   fi
 fi
 
