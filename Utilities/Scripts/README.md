@@ -11,15 +11,16 @@ To get started, add the following line to your startup file, typically .bashrc
 
 ```alias qsmv.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh"```
 
-To use qsmv.sh type
+To use qsmv.sh type:
 
 ```qsmv.sh casename```
 
-(the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . Type `qstat -a` to see this job in the queue and `qstat -n` to see which node it is running on.
+(the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . To run with a different script say `casename2.ssf` type:
+```qsmv.sh -c casename2.ssf casename```
 
-Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of smokeview may run by using -p n where n is the number of smokeview instances run.  Each smokeview instance creates 1/n'th of the total number time frames, reducing the time required to generate all the images in a case.
+Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of smokeview may run by using -p n where n is the number of instances.  Each instance creates 1/n'th of the total number time frames, reducing the time required to generate all the images in a case.
 
-qsmv.sh uses smokeview that was built in the repo containing qsmv.sh or smokeview that is installed from a NIST supplied bundle.  To build smokeview 
+qsmv.sh uses either a smokeview that was built in the repo containing qsmv.sh or a smokeview found in your path.  To build smokeview perform the following steps:
 
 1. cd smv/Build/LIBS/intel_linux_64
 2. type: 
@@ -28,9 +29,9 @@ qsmv.sh uses smokeview that was built in the repo containing qsmv.sh or smokevie
 4. type:
  ./make_smokeview.sh
  
-More details on building smokeview may be found [here.](https://github.com/firemodels/smv/tree/master/Build/README.md)  To use the installed smokeview, use the `-i` qsmv.sh option.
+More details on building smokeview may be found [here.](https://github.com/firemodels/smv/tree/master/Build/README.md)  To use the installed smokeview, use the `-i` option.
 
-More detailed usage information follows.
+More usage information follows.
 
 ```
 Usage: qsmv.sh [-e smv_command] [-q queue] casename
