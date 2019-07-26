@@ -6,6 +6,7 @@ if [ "`uname`" == "Darwin" ]; then
 fi
 
 ssffile=
+module load SMV6
 SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
 SMOKEVIEWDIR=$(dirname "$0")
@@ -13,8 +14,11 @@ TIME=
 TIMEFILE=smv_time
 OUTPUT=
 SETUP_XSERVER=1
+first=
+skip=
+ARG2=
 
-while getopts 'd:e:ns:t:' OPTION
+while getopts 'd:e:F:ns:S:t:' OPTION
 do
 case $OPTION in
   d)
@@ -23,12 +27,20 @@ case $OPTION in
   e)
    SMOKEVIEW="$OPTARG"
    ;;
+  F)
+   first="$OPTARG"
+   ARG2=1
+   ;;
   n)
   SETUP_XSERVER=
    ;;
   s)
    ssffile=$OPTARG
    RUNSCRIPT="-scriptfile $OPTARG"
+   ;;
+  S)
+   skip="$OPTARG"
+   ARG2=1
    ;;
   t)
   TIME=time 
@@ -44,6 +56,16 @@ shift $(($OPTIND-1))
 
 in=$1
 in=${in%*.*}
+
+if [ "$ARG2" != "" ]; then
+  if [ "$first" == "" ]; then
+    first=1
+  fi
+  if [ "$skip" == "" ]; then
+    skip=1
+  fi
+  ARG2="-startframe $start -skipframe $skip"
+fi
 
 if [ "$ssffile" == "" ]; then
   ssffile=$in.ssf
@@ -64,17 +86,16 @@ if ! [ -e $ssffile ]; then
   exit
 fi
 
-
-if [  "SETUP_XSERVER" == "1" ]; then
+if [  "$SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
 fi
 if [ "$TIME" != "" ]; then
-  $TIME -p -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $in >/dev/null 
+  $TIME -p -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $ARG2 $in >/dev/null 
   grep real $TIMEFILE | awk -F' ' '{print $2}'
   rm -f $TIMEFILE
 else
-  $SMOKEVIEW $RUNSCRIPT $in
+  $SMOKEVIEW $RUNSCRIPT $ARG2 $in
 fi
-if [  "SETUP_XSERVER" == "1" ]; then
+if [  "$SETUP_XSERVER" == "1" ]; then
   source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
 fi

@@ -3022,7 +3022,7 @@ void LoadUnloadMenu(int value){
       ReadZone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -3100,7 +3100,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3D(ALL_FRAMES,i, load_mode,&errorcode);
+        ReadSmoke3D(ALL_FRAMES, i, load_mode, FIRST_TIME, &errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
@@ -4205,12 +4205,12 @@ void UnLoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
-        ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
+        ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
       }
     }
   }
   else{
-    ReadSmoke3D(ALL_FRAMES,value,UNLOAD,&errorcode);
+    ReadSmoke3D(ALL_FRAMES, value, UNLOAD, FIRST_TIME, &errorcode);
   }
 }
 
@@ -4250,7 +4250,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
-      load_size += ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+      load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
     }
   }
   *count = file_count;
@@ -4264,14 +4264,14 @@ void LoadSmoke3DMenu(int value){
   int file_count;
   float load_time, load_size;
 
+#ifdef pp_SMOKE_FAST
 #define MENU_SMOKE_SOOT_HRRPUV -5
+#define MENU_SMOKE3D_LOAD_TEST -3
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
 #define MENU_SMOKE_SOOT_TEMP -7
 #define MENU_SMOKE_SOOT_TEMP_CO2 -8
-#define MENU_DUMMY_SMOKE -9
-#ifdef pp_SMOKE3D_LOADTEST
-#define MENU_SMOKE3D_LOAD_TEST -3
 #endif
+#define MENU_DUMMY_SMOKE -9
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -4291,12 +4291,12 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + value;
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_FRAMES,value,LOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES, value, LOAD, FIRST_TIME, &errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
+      ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
   }
   else if(value==MENU_SMOKE3D_IBLANK){
@@ -4305,11 +4305,12 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SETTINGS)     {
     ShowBoundsDialog(DLG_3DSMOKE);
   }
+#ifdef pp_SMOKE_FAST
   else if(value == MENU_SMOKE_SOOT_HRRPUV){
     if(smoke3d_load_test == 1){
       int errorcode;
 
-      ReadSmoke3DAllMeshesAllTimes(SOOT|HRRPUV, &errorcode);
+      ReadSmoke3DAllMeshesAllTimes(SOOT_2|HRRPUV_2, &errorcode);
     }
     else{
       load_size=LoadSmoke3D(SOOT_2|HRRPUV_2, &file_count);
@@ -4345,7 +4346,8 @@ void LoadSmoke3DMenu(int value){
       load_size=LoadSmoke3D(SOOT_2|TEMP_2|CO2_2, &file_count);
     }
   }
-#ifdef pp_SMOKE3D_LOADTEST
+#endif
+#ifdef pp_SMOKE_FAST
   else if(value == MENU_SMOKE3D_LOAD_TEST){
     smoke3d_load_test = 1 - smoke3d_load_test;
   }
@@ -4360,6 +4362,7 @@ void LoadSmoke3DMenu(int value){
       fprintf(scriptoutstream," %s\n",smoke3dj->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+#ifdef pp_SMOKE_FAST
       if(smoke3d_load_test==1){
         int errorcode;
 
@@ -4368,6 +4371,7 @@ void LoadSmoke3DMenu(int value){
       else{
         load_size=LoadSmoke3D(smoke3dj->type2, &file_count);
       }
+#endif
     }
   }
   STOP_TIMER(load_time);
@@ -6001,12 +6005,7 @@ int IsBoundaryType(int type){
 
 void InitMenus(int unload){
   int i;
-  int nsmoke3dloaded,nvolsmoke3dloaded;
-  int nsliceloaded,nvsliceloaded,nmultisliceloaded;
-  int npartloaded,npart5loaded,nevacloaded;
-  int npatchloaded;
-  int nplot3dloaded;
-  int nisoloaded;
+  int nmultisliceloaded;
   int showhide_data = 0;
   int patchgeom_slice_showhide;
 
@@ -6079,43 +6078,6 @@ updatemenu=0;
   UpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
 
-  nsliceloaded=0;
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo + i;
-    if(sd->loaded==1)nsliceloaded++;
-  }
-
-  nsmoke3dloaded=0;
-  for(i=0;i<nsmoke3dinfo;i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di=smoke3dinfo+i;
-    if(smoke3di->loaded==1)nsmoke3dloaded++;
-  }
-
-  nvolsmoke3dloaded=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-    if(vr->loaded==1){
-      nvolsmoke3dloaded++;
-    }
-  }
-
-  nvsliceloaded=0;
-  for(i=0;i<nvsliceinfo;i++){
-    vslicedata *vd;
-
-    vd = vsliceinfo + i;
-    if(vd->loaded==1)nvsliceloaded++;
-  }
-
   for(i=0;i<nmultisliceinfo;i++){
     multislicedata *mslicei;
     int j;
@@ -6169,46 +6131,6 @@ updatemenu=0;
     else if(mvslicei->display==mvslicei->nvslices){
       mvslicei->display=1;
     }
-  }
-
-
-  npart5loaded=0;
-  npartloaded=0;
-  nevacloaded=0;
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    if(parti->loaded==1&&parti->evac==0)npartloaded++;
-    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
-    if(parti->loaded==1){
-      npart5loaded++;
-    }
-  }
-
-  nplot3dloaded=0;
-  for(i=0;i<nplot3dinfo;i++){
-    plot3ddata *plot3di;
-
-    plot3di = plot3dinfo + i;
-    if(plot3di->loaded==1)nplot3dloaded++;
-  }
-
-  nisoloaded=0;
-  for(i=0;i<nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded==1)nisoloaded++;
-  }
-
-  npatchloaded=0;
-  for(i=0;i<npatchinfo;i++){
-    patchdata *patchi;
-
-    patchi = patchinfo + i;
-    if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
-    if(patchi->loaded==1)npatchloaded++;
   }
 
 #ifdef pp_DEBUG_SUBMENU
@@ -7808,7 +7730,7 @@ updatemenu=0;
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
-  if((nsmoke3dinfo>0&&Read3DSmoke3DFile==1)||nvolrenderinfo>0){
+  if(nsmoke3dloaded>0||nvolrenderinfo>0){
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
@@ -7831,7 +7753,8 @@ updatemenu=0;
 
 
   /* --------------------------------smoke3d showmenu -------------------------- */
-  if(nsmoke3dinfo>0&&Read3DSmoke3DFile==1){
+
+  if(nsmoke3dloaded>0){
     {
       if(nsmoke3dloaded>0){
         CREATEMENU(smoke3dshowsinglemenu, Smoke3DShowMenu);
@@ -8561,7 +8484,7 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Labels"),labelmenu);
   GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
-  if(Read3DSmoke3DFile==1&&nsmoke3dloaded>0){
+  if(nsmoke3dloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU(_("3D smoke"), smoke3dshowmenu);
   }
@@ -10334,11 +10257,12 @@ updatemenu=0;
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           {
-#ifdef pp_SMOKE3D_LOADTEST
+#ifdef pp_SMOKE_FAST
             if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
             if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
 #endif
           }
+          // multi mesh smoke menus items
           for(i=0;i<nsmoke3dinfo;i++){
             int j;
 
@@ -10366,6 +10290,11 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
+#ifdef pp_SMOKE_FAST
+          if(n_soot_menu>0&&n_hrr_menu>0){
+            glutAddMenuEntry("SOOT/HRRPUV(experimental loading)",MENU_SMOKE_SOOT_HRRPUV);
+          }
+#endif
           if(n_soot_menu>0||n_hrr_menu>0){
             glutAddMenuEntry("-", MENU_DUMMY3);
             GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);

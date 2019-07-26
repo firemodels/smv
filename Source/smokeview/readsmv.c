@@ -8052,7 +8052,6 @@ typedef struct {
       parti->global_min = NULL;
       parti->global_max = NULL;
       parti->filepos = NULL;
-#ifdef pp_PART_FAST
       parti->tags = NULL;
       parti->sort_tags = NULL;
       parti->vis_part = NULL;
@@ -8060,7 +8059,6 @@ typedef struct {
       parti->sy = NULL;
       parti->sz = NULL;
       parti->irvals = NULL;
-#endif
 
       parti->data5=NULL;
       parti->partclassptr=NULL;

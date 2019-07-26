@@ -1,4 +1,4 @@
-## Smokeview Verification
+##  Smokeview Verification
 
 The smv/Verification/Visualization and smv/Verification/WUI directories contain FDS input files that are run by smokebot 
 to verify fds results from a visualization perspective

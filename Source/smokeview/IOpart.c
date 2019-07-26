@@ -15,11 +15,7 @@
 #include "histogram.h"
 #include "compress.h"
 #include "IOobjects.h"
-#ifdef pp_PART_FAST
 #include "stdio_m.h"
-#endif
-
-#ifdef pp_PART_FAST
 
 #define FORTPART5READ_mv(var,size) \
 fseek_m(PART5FILE,4,SEEK_CUR);\
@@ -40,8 +36,6 @@ returncode = feof_m(PART5FILE)
   returncode = feof_m(PART5FILE)
 
 #define FREAD_m(a,b,c,d) fread_m((a),(b),(c),(d))
-
-#endif
 
 #define FORTPART5READ(var,size) \
 returncode=PASS_m;\
@@ -707,7 +701,6 @@ void FreeAllPart5Data(partdata *parti){
     datacopy_local++;
   }
   FREEMEMORY(parti->data5);
-#ifdef pp_PART_FAST
   FREEMEMORY(parti->vis_part);
   FREEMEMORY(parti->tags);
   FREEMEMORY(parti->sort_tags);
@@ -715,7 +708,6 @@ void FreeAllPart5Data(partdata *parti){
   FREEMEMORY(parti->sy);
   FREEMEMORY(parti->sz);
   FREEMEMORY(parti->irvals);
-#endif
 }
 
 /* ------------------ InitPart5Data ------------------------ */
@@ -1049,9 +1041,7 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
 /* ------------------ CreatePartBoundFile ------------------------ */
 
 void CreatePartBoundFile(partdata *parti){
-#ifdef pp_PART_FAST
   FILE_m *PART5FILE;
-#endif
   int one_local, version_local, nclasses_local;
   int i;
   size_t returncode;
@@ -1059,9 +1049,7 @@ void CreatePartBoundFile(partdata *parti){
   int nparts_local, *numtypes_local = NULL, numtypes_temp_local[2];
   FILE *stream_out_local;
 
-#ifdef pp_PART_FAST
   PART5FILE = fopen_m(parti->reg_file, "rbm");
-#endif
   if(PART5FILE==NULL)return;
   stream_out_local = fopen(parti->bound_file, "w");
   if(stream_out_local==NULL){
@@ -1232,9 +1220,7 @@ void GetPartHistogramFile(partdata *parti){
 /* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SIZE *file_size_arg){
-#ifdef pp_PART_FAST
   FILE_m *PART5FILE;
-#endif
   int i;
   int one_local, version_local, nclasses_local;
   int skip_local, nparts_local;
@@ -1247,10 +1233,8 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
 
   *file_size_arg = GetFileSizeSMV(parti->reg_file);
 
-#ifdef pp_PART_FAST
   PART5FILE = fopen_m(parti->reg_file, "rbm");
   parti->stream = PART5FILE;
-#endif
   if(PART5FILE==NULL)return;
 
   FSEEK_m(PART5FILE,4,SEEK_CUR);
@@ -1315,14 +1299,12 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
         float *xyz;
         int j;
 
-#ifdef pp_PART_FAST
         if(parti->evac==1){
           FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_EVAC*nparts_local);
         }
         else{
           FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_PART*nparts_local);
         }
-#endif
         if(returncode==FAIL_m)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
@@ -1398,9 +1380,7 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
           int iii, jjj;
 #endif
 
-#ifdef pp_PART_FAST
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2 * i]);
-#endif
 
 #ifdef pp_PART_TEST
           for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
@@ -1959,9 +1939,7 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
     part5data *datacopy_local;
     int fail_local;
     LINT filepos_local;
-#ifdef pp_PART_FAST
     int nall_points_types_local, nall_points_local;
-#endif
 
     fail_local =0;
     count_local =-1;
@@ -2025,7 +2003,6 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
     if(fail_local==1)parti->ntimes=i;
     fclose(stream);
 
-#ifdef pp_PART_FAST
     nall_points_types_local = 0;
     nall_points_local = 0;
     datacopy_local =parti->data5;
@@ -2086,8 +2063,6 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
         datacopy_local++;
       }
     }
-#endif
-
   }
 }
 
@@ -2224,9 +2199,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   parti->display = 1;
   UpdatePartColors(parti);
   UNLOCK_PART_LOAD;
-#ifdef pp_PART_FAST
   FCLOSE_m(parti->stream);
-#endif
 
   PrintMemoryInfo;
 

@@ -1132,9 +1132,7 @@ typedef struct _part5data {
 /* --------------------------  partdata ------------------------------------ */
 
 typedef struct _partdata {
-#ifdef pp_PART_FAST
   FILE_m *stream;
-#endif
 
   char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
@@ -1156,13 +1154,11 @@ typedef struct _partdata {
   histogramdata **histograms;
   int bounds_set;
   float *global_min, *global_max;
-#ifdef pp_PART_FAST
   unsigned char *vis_part;
   int *tags;
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
-#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */

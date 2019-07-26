@@ -6,7 +6,7 @@
 
 /* ------------------ fopen_m ------------------------ */
 
-FILE_m *fopen_m(char *file, char *mode){
+FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
   FILE_m *stream_m = NULL;
   FILE *stream;
   unsigned char *buffer;
@@ -37,8 +37,15 @@ FILE_m *fopen_m(char *file, char *mode){
     return stream_m;
   }
 
-  fseek(stream, 0L, SEEK_END);
-  nbuffer = ftell(stream);
+  if(size>0){
+    nbuffer = size;
+  }
+  else{
+    fseek(stream, 0L, SEEK_END);
+    nbuffer = ftell(stream);
+    offset = 0;
+  }
+
   if(nbuffer<=0){            // file is empty so abort
     fclose(stream);
     FREEMEMORY(stream_m);
@@ -51,7 +58,7 @@ FILE_m *fopen_m(char *file, char *mode){
     return stream_m;
   }
 
-  fseek(stream, 0, SEEK_SET);
+  fseek(stream, offset, SEEK_SET);
   fread(buffer, (size_t)1, (size_t)nbuffer, stream);
   stream_m->buffer = buffer;
   stream_m->buffer_beg = buffer;
@@ -61,6 +68,12 @@ FILE_m *fopen_m(char *file, char *mode){
   stream_m->stream = NULL;
   fclose(stream);
   return stream_m;
+}
+
+/* ------------------ fopen_m ------------------------ */
+
+FILE_m *fopen_m(char *file, char *mode){
+  return fopen_mo(file, 0, 0, mode);
 }
 
 /* ------------------ fclose_m ------------------------ */

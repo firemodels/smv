@@ -11,7 +11,8 @@ else
   GLUT=glut
 fi
 QUARTZ=framework
-while getopts 'fhpqrt' OPTION
+inc=
+while getopts 'fhipqrt' OPTION
 do
 case $OPTION in
   f)
@@ -22,6 +23,9 @@ case $OPTION in
   echo "-p - build a profiling version of smokeview"
   echo "-t - build a test version of smokeview"
   exit
+  ;;
+  i)
+   inc=1
   ;;
   p)
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-p\" "

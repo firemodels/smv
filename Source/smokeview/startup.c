@@ -1080,8 +1080,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
@@ -1463,7 +1463,6 @@ void InitVars(void){
   ReadPlot3dFile=0, ReadIsoFile=0;
 
   ReadVolSlice=0;
-  Read3DSmoke3DFile=0;
   ReadZoneFile=0;
 
   editwindow_status=-1;

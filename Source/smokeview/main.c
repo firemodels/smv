@@ -640,14 +640,14 @@ void ParseCommandline(int argc, char **argv){
       from_commandline = 1;
       ++i;
       if(i < argc){
-        sscanf(argv[i], "%i", &skipframe0);
+        sscanf(argv[i], "%i", &render_skipframe0);
       }
     }
     else if(strncmp(argv[i], "-startframe", 11) == 0){
       from_commandline = 1;
       ++i;
       if(i < argc){
-        sscanf(argv[i], "%i", &startframe0);
+        sscanf(argv[i], "%i", &render_startframe0);
       }
     }
     else if(strncmp(argv[i], "-volrender", 10) == 0){

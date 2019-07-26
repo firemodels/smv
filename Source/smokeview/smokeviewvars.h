@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
+SVEXTERN int nvolsmoke3dloaded;
+SVEXTERN int npart5loaded, npartloaded, nevacloaded;
+
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
@@ -125,7 +129,9 @@ SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
+#ifdef pp_SMOKE_FAST
 SVEXTERN int SVDECL(smoke3d_load_test, 0);
+#endif
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
@@ -465,7 +471,7 @@ SVEXTERN float SVDECL(gpu_vol_factor,1.0);
 SVEXTERN int SVDECL(disable_gpu,0);
 SVEXTERN int SVDECL(script_startframe,-1), SVDECL(script_skipframe,-1);
 SVEXTERN int SVDECL(vol_startframe0,-1), SVDECL(vol_skipframe0,-1);
-SVEXTERN int SVDECL(startframe0,-1), SVDECL(skipframe0,-1);
+SVEXTERN int SVDECL(render_startframe0,-1), SVDECL(render_skipframe0,-1);
 SVEXTERN int SVDECL(update_smokecolorbar,0);
 SVEXTERN int SVDECL(combine_meshes,1);
 SVEXTERN int vcolorbar_left_pos, vcolorbar_right_pos, vcolorbar_down_pos, vcolorbar_top_pos;
@@ -959,7 +965,6 @@ SVEXTERN float xbarORIG, ybarORIG, zbarORIG;
 SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
-SVEXTERN int Read3DSmoke3DFile;
 SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0), SVDECL(ReadEvacFile,0);
 SVEXTERN int SVDECL(cache_qdata,1);
 
