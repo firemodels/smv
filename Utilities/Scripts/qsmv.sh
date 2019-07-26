@@ -24,6 +24,7 @@ function usage {
   echo " -c     - smokeview script file [default: casename.ssf]"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -i     - use installed smokeview"
+  echo " -r     - redirect output"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
   echo ""
@@ -81,11 +82,16 @@ showinput=0
 exe=
 smv_script=
 nprocs=1
+redirect=
+FED=
+dummy=
 c_arg=
 d_arg=
 e_arg=
+f_arg=
 i_arg=
 q_arg=
+r_arg=
 v_arg=
 
 if [ $# -lt 1 ]; then
@@ -96,9 +102,12 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:hHip:q:s:S:v' OPTION
+while getopts 'Ac:d:e:fhHip:q:rs:S:tv' OPTION
 do
 case $OPTION  in
+  A)
+   dummy=1
+   ;;
   c)
    smv_script="$OPTARG"
    c_arg="-c $smv_script"
@@ -110,6 +119,10 @@ case $OPTION  in
   e)
    exe="$OPTARG"
    e_arg="-e $exe"
+   ;;
+  f)
+   f_arg="-f"
+   FED="-fed"
    ;;
   h)
    usage
@@ -131,6 +144,10 @@ case $OPTION  in
    queue="$OPTARG"
    q_arg="-q $queue"
    ;;
+  r)
+   redirect="-redirect"
+   r_arg="-r"
+   ;;
   s)
    first="$OPTARG"
    render_opts=1
@@ -138,6 +155,9 @@ case $OPTION  in
   S)
    skip="$OPTARG"
    render_opts=1
+   ;;
+  t)
+   dummy=1
    ;;
   v)
    showinput=1
@@ -158,7 +178,7 @@ if ! [[ $nprocs =~ $re ]] ; then
 fi
 if [ $nprocs != 1 ]; then
   for i in $(seq 1 $nprocs); do
-    $QSMV $c_arg $d_arg $e_arg $i_arg $q_arg $v_arg -s $i -S $nprocs $in
+    $QSMV $c_arg $d_arg $e_arg $f_arg $i_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
   done
   exit
 fi
@@ -232,9 +252,9 @@ basefile=${infile}_f${first}_s${skip}
 outerr=$fulldir/$basefile.err
 outlog=$fulldir/$basefile.log
 scriptlog=$fulldir/$basefile.slog
-in_full_file=$fulldir/$in
-smvfile=${in}.smv
-in_full_smvfile=$fulldir/${in}.smv
+in_full_file=$fulldir/$infile
+smvfile=${infile}.smv
+in_full_smvfile=$fulldir/$smvfile
 
 #*** make sure files needed by qsmv.sh exist
 
@@ -249,9 +269,11 @@ if [ "$showinput" == "0" ]; then
     ABORTRUN=y
   fi
 
-  if ! [ -e $smokeview_script_file ]; then
-    echo "The smokeview script file, $smokeview_script_file, does not exist."
-    ABORTRUN=y
+  if [ "$FED" == "" ]; then
+    if ! [ -e $smokeview_script_file ]; then
+      echo "The smokeview script file, $smokeview_script_file, does not exist."
+      ABORTRUN=y
+    fi
   fi
 
   if [ "$ABORTRUN" == "y" ]; then
@@ -335,7 +357,7 @@ echo "             Host: \`hostname\`"
 echo "            Queue: $queue"
 
 source $XSTART
-$exe $script_file $smv_script $render_opts $in
+$exe $script_file $smv_script $FED $redirect $render_opts $in
 source $XSTOP
 
 EOF
