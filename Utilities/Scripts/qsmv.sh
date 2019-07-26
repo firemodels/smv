@@ -27,17 +27,17 @@ function usage {
   exit
 }
 
-#*** get directory containing qsmv.sh
-
-QSMV_PATH=$(dirname `which $0`)
 CURDIR=`pwd`
-cd $QSMV_PATH
-QSMV_DIR=`pwd`
 
-#*** define toplevel of the repos
+#*** define repo root
 
-cd ../../..
-REPOROOT=`pwd`
+if [ "$FIREMODELS" == "" ]; then
+  QSMV_PATH=$(dirname `which $0`)
+  cd $QSMV_PATH/../../..
+  REPOROOT=`pwd`
+else
+  REPOROOT=$FIREMODELS
+fi
 
 cd $CURDIR
 
