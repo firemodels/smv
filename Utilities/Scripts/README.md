@@ -22,7 +22,7 @@ Typically, a smokeview script contains keywords such as RENDER or RENDERALL for 
 
 ```qsmv.sh -p 5 casename```
 
-will run 5 instances of smokeview with each instance of smokeview generating 200 images.
+will run 5 instances of smokeview with each instance generating 200 images.
 
 qsmv.sh uses either a smokeview that was built in the repo containing qsmv.sh or a smokeview found in your path.  To build smokeview perform the following steps:
 
