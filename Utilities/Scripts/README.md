@@ -25,8 +25,10 @@ qsmv.sh uses smokeview that was built in the repo containing qsmv.sh or smokevie
 2. type: 
  ./make_LIBS.sh
 3. cd smv/Build/smokeview/intel_linux_64 
-4.type:
+4. type:
  ./make_smokeview.sh
+ 
+More details on building smokeview may be found [here.](https://github.com/firemodels/smv/tree/master/Build/README.md)  To use the installed smokeview, use the `-i` qsmv.sh option.
 
 More detailed usage information follows.
 
