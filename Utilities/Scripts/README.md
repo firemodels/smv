@@ -18,7 +18,11 @@ To use qsmv.sh type:
 (the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . To run with a different script say `casename2.ssf` type:
 ```qsmv.sh -c casename2.ssf casename```
 
-Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of smokeview may run by using -p n where n is the number of instances.  Each instance creates 1/n'th of the total number time frames, reducing the time required to generate all the images in a case.
+Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of smokeview may run by using -p n where n is the number of instances.  For example if casename.smv has 1000 time steps, the command
+
+```qsmv.sh -p 5 casename```
+
+will run 5 instances of smokeview with each instance of smokeview generating 200 images.
 
 qsmv.sh uses either a smokeview that was built in the repo containing qsmv.sh or a smokeview found in your path.  To build smokeview perform the following steps:
 
