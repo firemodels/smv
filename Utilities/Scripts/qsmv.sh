@@ -9,7 +9,7 @@ function usage {
   echo ""
   echo "options:"
   echo " -e exe - full path of smokeview used to run case "
-  echo "    [default: $REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_intel_${platform}_64]"
+  echo "    [default: $REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
   echo " -q q - name of queue. [default: batch]"
@@ -60,24 +60,13 @@ else
   RESOURCE_MANAGER="TORQUE"
 fi
 
-#*** determine platform
+#*** determine number of cores
 
-platform="linux"
-ncores=1
-if [ "`uname`" == "Darwin" ] ; then
-  platform="osx"
-fi
-if [ "$platform" == "linux" ]; then
-  ncores=`grep processor /proc/cpuinfo | wc -l`
-fi
+ncores=`grep processor /proc/cpuinfo | wc -l`
 
 #*** determine default queue
 
-if [ "$platform" == "osx" ]; then
-  queue=none
-else
-  queue=batch
-fi
+queue=batch
 
 #*** set default parameter values
 
@@ -194,7 +183,7 @@ if [ "$use_installed" == "1" ]; then
   fi
 else
   if [ "$exe" == "" ]; then
-    exe=$REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_${platform}_64
+    exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
   fi
 fi
 
@@ -213,19 +202,29 @@ outerr=$fulldir/$basefile.err
 outlog=$fulldir/$basefile.log
 scriptlog=$fulldir/$basefile.slog
 in_full_file=$fulldir/$in
+smvfile=${in}.smv
 in_full_smvfile=$fulldir/${in}.smv
 
-#*** make sure smokeview file exists
+#*** make sure files needed by qsmv.sh exist
 
-if ! [ -e $in_full_smvfile ]; then
-  if [ "$showinput" == "0" ]; then
-    echo "The smokeview file, $in_full_smvfile, does not exist. Run aborted."
+if [ "$showinput" == "0" ]; then
+  if ! [ -e $exe ]; then
+    echo "The smokeview executable, $exe, does not exist."
     ABORTRUN=y
   fi
-fi
 
-if [ "$ABORTRUN" == "y" ]; then
-  if [ "$showinput" == "0" ]; then
+  if ! [ -e $smvfile ]; then
+    echo "The smokeview file, $smvfile, does not exist."
+    ABORTRUN=y
+  fi
+
+  if ! [ -e $smokeview_script_file ]; then
+    echo "The smokeview script file, $smokeview_script_file, does not exist."
+    ABORTRUN=y
+  fi
+
+  if [ "$ABORTRUN" == "y" ]; then
+    echo "Run aborted."
     exit
   fi
 fi
@@ -297,7 +296,7 @@ echo
 echo \`date\`
 echo "       Executable:$exe"
 echo "        Directory: \`pwd\`"
-echo "   smokeview file: ${in}.smv"
+echo "   smokeview file: $smvfile"
 echo " smokeview script: $smokeview_script_file"
 echo "      start frame: $first"
 echo "       frame skip: $skip"
@@ -321,8 +320,8 @@ fi
 
 #*** output info to screen
 
-echo "     smokeview file: $in"
-echo "          smokeview: $exe"
+echo "     smokeview file: $smvfile"
+echo "      smokeview exe: $exe"
 echo "             script: $smokeview_script_file"
 echo "        start frame: $first"
 echo "         frame skip: $skip"
