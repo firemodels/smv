@@ -15,14 +15,9 @@ To use qsmv.sh type
 
 ```qsmv.sh casename```
 
-(the .smv file extension is not required).  
-This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . 
-Type `qstat -a` to see this job in the queue and `qstat -n` to see which node it is running on.
+(the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . Type `qstat -a` to see this job in the queue and `qstat -n` to see which node it is running on.
 
-Typically, a smokeview script contains keywords for generating images.  
-Multiple instances of qsmv.sh may be run, where each instance uses the `-s` and `-S` keywords
-to specify the first frame and frame offset respectivly,
-reducing the time required to generate all the images in a case.
+Typically, a smokeview script contains keywords for generating images.  Multiple instances of qsmv.sh may be run, where each instance uses the `-s` and `-S` keywords to specify the first frame and frame offset respectivly, reducing the time required to generate all the images in a case.
 
 More detailed usage information follows.
 
