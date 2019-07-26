@@ -3,28 +3,28 @@
 # ---------------------------- usage ----------------------------------
 
 function usage {
-  echo "Usage: qsmv.sh [-e smv_command] [-q queue]  casename"
+  echo "Usage: qsmv.sh [-e smv_command] [-q queue] casename"
   echo ""
-  echo "qsmv.sh runs smokeview and a smokeview script in batch mode"
+  echo "runs smokeview on the case casename.smv using the script casename.ssf"
   echo ""
+  echo "options:"
   echo " -e exe - full path of smokeview used to run case "
   echo "    [default: $REPOROOT/smv/Build/smokeview/intel_${platform}_64/smokeview_intel_${platform}_64]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
   echo " -q q - name of queue. [default: batch]"
-  echo " -v   - output generated script to standard output"
-  echo "input_file - input file"
+  echo " -v   - output generated script"
   if [ "$HELP" == "" ]; then
     exit
   fi
   echo "Other options:"
-  echo " -c     - smokeview script command file [default: casename.ssf]"
+  echo " -c     - smokeview script file [default: casename.ssf]"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -f repository root - name and location of repository where smokeview is located"
   echo "    [default: $REPOROOT]"
-  echo " -i    - use installed smokeview"
-  echo " -s    - first frame rendered [default: 1]"
-  echo " -S    - interval between frames [default: 1]"
+  echo " -i     - use installed smokeview"
+  echo " -s     - first frame rendered [default: 1]"
+  echo " -S     - interval between frames [default: 1]"
   echo ""
   exit
 }
@@ -44,12 +44,13 @@ if [ "$FIREMODELS" != "" ]; then
   REPOROOT=$FIREMODELS
 fi
 
-#*** define xstart and xstop scripts
+#*** define xstart and xstop scripts used to start and stop X11 environment
 
 XSTART=$REPOROOT/smv/Utilities/Scripts/startXserver.sh
 XSTOP=$REPOROOT/smv/Utilities/Scripts/stopXserver.sh
 
 #*** define resource manager that is used
+#    (not tested with slurm yet)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
   if [ "$SLURM_MEM" != "" ]; then
