@@ -17,7 +17,7 @@ To use qsmv.sh type
 
 (the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . Type `qstat -a` to see this job in the queue and `qstat -n` to see which node it is running on.
 
-Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of qsmv.sh may be run, where each instance uses the `-s` and `-S` keywords to specify the first frame and frame offset respectivly, reducing the time required to generate all the images in a case.
+Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of qsmv.sh by using -p n where n is the number of smokeview instances run.  Each smokeview instance creates 1/n'th of the total number time frames, reducing the time required to generate all the images in a case.
 
 qsmv.sh uses smokeview that was built in the repo containing qsmv.sh or smokeview that is installed from a NIST supplied bundle.  To build smokeview 
 
@@ -32,15 +32,18 @@ More details on building smokeview may be found [here.](https://github.com/firem
 
 More detailed usage information follows.
 
-```Usage: qsmv.sh [-e smv_command] [-q queue] casename
+```
+Usage: qsmv.sh [-e smv_command] [-q queue] casename
 
 runs smokeview on the case casename.smv using the script casename.ssf
 
 options:
  -e exe - full path of smokeview used to run case
-    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/s                                                    mokeview_intel_linux_64]
+    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
  -h   - show commonly used options
  -H   - show all options
+ -p n - run n instances of smokeview each instance rendering 1/n'th of the total images
+        only use this option if you have a RENDERALL keyword in your .ssf smokeview script
  -q q - name of queue. [default: batch]
  -v   - output generated script
 Other options:
