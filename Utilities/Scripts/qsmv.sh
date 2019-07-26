@@ -20,8 +20,6 @@ function usage {
   echo "Other options:"
   echo " -c     - smokeview script file [default: casename.ssf]"
   echo " -d dir - specify directory where the case is found [default: .]"
-  echo " -f repository root - name and location of repository where smokeview is located"
-  echo "    [default: $REPOROOT]"
   echo " -i     - use installed smokeview"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
@@ -35,14 +33,13 @@ QSMV_PATH=$(dirname `which $0`)
 CURDIR=`pwd`
 cd $QSMV_PATH
 QSMV_DIR=`pwd`
-cd $CURDIR
 
 #*** define toplevel of the repos
 
-REPOROOT=~/FDS-SMV
-if [ "$FIREMODELS" != "" ]; then
-  REPOROOT=$FIREMODELS
-fi
+cd ../../..
+REPOROOT=`pwd`
+
+cd $CURDIR
 
 #*** define xstart and xstop scripts used to start and stop X11 environment
 
@@ -100,7 +97,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:f:hHiq:s:S:v' OPTION
+while getopts 'c:d:e:hHiq:s:S:v' OPTION
 do
 case $OPTION  in
   c)
@@ -111,9 +108,6 @@ case $OPTION  in
    ;;
   e)
    exe="$OPTARG"
-   ;;
-  f)
-   REPOROOT="$OPTARG"
    ;;
   h)
    usage
@@ -327,12 +321,12 @@ fi
 
 #*** output info to screen
 
-echo "         Input file:$in"
-echo "         Executable:$exe"
-echo "   smokeview script:$smokeview_script_file"
-echo "        start frame:$first"
-echo "         frame skip:$skip"
-echo "              Queue:$queue"
+echo "     smokeview file: $in"
+echo "          smokeview: $exe"
+echo "             script: $smokeview_script_file"
+echo "        start frame: $first"
+echo "         frame skip: $skip"
+echo "              Queue: $queue"
 
 #*** run script
 
