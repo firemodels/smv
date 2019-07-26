@@ -1,4 +1,5 @@
 #!/bin/bash
+QSMV=$0
 
 # ---------------------------- usage ----------------------------------
 
@@ -12,6 +13,8 @@ function usage {
   echo "    [default: $REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
+  echo " -p n - run n instances of smokeview each instance rendering 1/n'th of the total images"
+  echo "        only use this option if you have a RENDERALL keyword in your .ssf smokeview script"
   echo " -q q - name of queue. [default: batch]"
   echo " -v   - output generated script"
   if [ "$HELP" == "" ]; then
@@ -78,6 +81,12 @@ showinput=0
 exe=
 smv_script=
 nprocs=1
+c_arg=
+d_arg=
+e_arg=
+i_arg=
+q_arg=
+v_arg=
 
 if [ $# -lt 1 ]; then
   usage
@@ -92,12 +101,15 @@ do
 case $OPTION  in
   c)
    smv_script="$OPTARG"
+   c_arg="-c $smv_script"
    ;;
   d)
    dir="$OPTARG"
+   d_arg="-d $dir"
    ;;
   e)
    exe="$OPTARG"
+   e_arg="-e $exe"
    ;;
   h)
    usage
@@ -110,12 +122,14 @@ case $OPTION  in
    ;;
   i)
    use_installed=1
+   i_arg="-i"
    ;;
   p)
    nprocs="$OPTARG"
    ;;
   q)
    queue="$OPTARG"
+   q_arg="-q $queue"
    ;;
   s)
    first="$OPTARG"
@@ -127,6 +141,7 @@ case $OPTION  in
    ;;
   v)
    showinput=1
+   v_arg="-v"
    ;;
 esac
 done
@@ -138,15 +153,15 @@ in=$1
 infile=${in%.*}
 
 re='^[0-9]+$'
-if ! [[ $nproc =~ $re ]] ; then
-   nproc=1;
+if ! [[ $nprocs =~ $re ]] ; then
+   nprocs=1;
 fi
-if [ $nproc != 1 ]; then
-  for i in {1..$nproc};do
-    echo $i in $nproc
+if [ $nprocs != 1 ]; then
+  for i in $(seq 1 $nprocs); do
+    $QSMV $c_arg $d_arg $e_arg $i_arg $q_arg $v_arg -s $i -S $nprocs $in
   done
+  exit
 fi
-exit
 
 
 # determine frame start and frame skip
