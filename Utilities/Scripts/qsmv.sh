@@ -23,6 +23,7 @@ function usage {
   echo "Other options:"
   echo " -b     - bin directory"
   echo " -c     - smokeview script file [default: casename.ssf]"
+  echo " -C com - execute the command com"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -i     - use installed smokeview"
   echo " -r     - redirect output"
@@ -86,6 +87,7 @@ nprocs=1
 redirect=
 FED=
 dummy=
+COMMAND=
 BINDIR=
 c_arg=
 d_arg=
@@ -104,7 +106,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:d:e:fhHip:q:rs:S:tv' OPTION
+while getopts 'Ab:c:C:d:e:fhHip:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -116,6 +118,9 @@ case $OPTION  in
   c)
    smv_script="$OPTARG"
    c_arg="-c $smv_script"
+   ;;
+  C)
+   COMMAND="$OPTARG"
    ;;
   d)
    dir="$OPTARG"
@@ -352,6 +357,7 @@ EOF
   fi
 fi
 
+if [ "$COMMAND" == "" ]; then
 cat << EOF >> $scriptfile
 cd $fulldir
 echo
@@ -371,6 +377,21 @@ $exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile
 source $XSTOP
 
 EOF
+else
+cat << EOF >> $scriptfile
+cd $fulldir
+echo
+echo \`date\`
+echo "       command:$COMMAND"
+echo "     directory: \`pwd\`"
+echo "          Host: \`hostname\`"
+echo "         Queue: $queue"
+echo ""
+
+$COMMAND
+
+EOF
+fi
 
 #*** output script file to screen if -v option was selected
 
@@ -383,6 +404,7 @@ fi
 
 #*** output info to screen
 
+if [ "$COMMAND" == "" ]; then
 echo "     smokeview file: $smvfile"
 echo "      smokeview exe: $exe"
 echo "             script: $smokeview_script_file"
@@ -390,6 +412,11 @@ echo "        start frame: $first"
 echo "         frame skip: $skip"
 echo "              Queue: $queue"
 echo ""
+else
+echo "     command: $COMMAND"
+echo "       Queue: $queue"
+echo ""
+fi
 
 #*** run script
 
