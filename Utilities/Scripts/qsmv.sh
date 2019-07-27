@@ -21,6 +21,7 @@ function usage {
     exit
   fi
   echo "Other options:"
+  echo " -b     - bin directory"
   echo " -c     - smokeview script file [default: casename.ssf]"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -i     - use installed smokeview"
@@ -85,6 +86,7 @@ nprocs=1
 redirect=
 FED=
 dummy=
+BINDIR=
 c_arg=
 d_arg=
 e_arg=
@@ -102,11 +104,14 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ac:d:e:fhHip:q:rs:S:tv' OPTION
+while getopts 'Ab:c:d:e:fhHip:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
    dummy=1
+   ;;
+  b)
+   BINDIR="-bindir $OPTARG"
    ;;
   c)
    smv_script="$OPTARG"
@@ -204,6 +209,10 @@ if [ "$smv_script" != "" ]; then
 else
   smokeview_script_file=${infile}.ssf
   smv_script=-runscript
+fi
+if [ "$FED" != "" ]; then
+  smv_script=
+  script_file=
 fi
 
 #*** parse walltime parameter
@@ -355,9 +364,10 @@ echo "      start frame: $first"
 echo "       frame skip: $skip"
 echo "             Host: \`hostname\`"
 echo "            Queue: $queue"
+echo ""
 
 source $XSTART
-$exe $script_file $smv_script $FED $redirect $render_opts $in
+$exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile
 source $XSTOP
 
 EOF
