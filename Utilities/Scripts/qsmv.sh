@@ -389,6 +389,7 @@ echo "             script: $smokeview_script_file"
 echo "        start frame: $first"
 echo "         frame skip: $skip"
 echo "              Queue: $queue"
+echo ""
 
 #*** run script
 
