@@ -242,7 +242,7 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Differencing cases plume5c and plume5cdelta
-  $QFDS -C "SMOKEDIFF -w -r plume5c plume5cdelta"
+  $QFDS -C "$SMOKEDIFF -w -r plume5c plume5cdelta"
   echo Differencing cases thouse5 and thouse5delta
   $QFDS -C "$SMOKEDIFF -w -r thouse5 thouse5delta"
 
