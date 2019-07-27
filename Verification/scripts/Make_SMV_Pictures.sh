@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# --------------------- wait_cases_end -----------------------------
+
+wait_cases_end()
+{
+  while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
+     JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX | wc -l`
+     echo "Waiting for ${JOBS_REMAINING} cases to complete."
+     sleep 15
+  done
+}
+
+# --------------------- usage -----------------------------
+
 function usage {
 echo "Make_SMV_Pictures.sh [-d -h -r -s size ]"
 echo "Generates figures for Smokeview verification suite"
@@ -9,12 +22,15 @@ echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
 echo "-I - compiler (intel or gnu)"
+echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-s size - use 32 or 64 bit (default) version of smokeview"
 echo "-W - only generate WUI case images"
 echo "-Y - generate SMV and WUI case images"
 exit
 }
+
+# --------------------- is_file_installed -----------------------------
 
 is_file_installed()
 {
@@ -25,6 +41,8 @@ is_file_installed()
     exit
   fi
 }
+
+# --------------------- make_helpinfo_files ----------------------------
 
 make_helpinfo_files()
 {
@@ -67,6 +85,10 @@ make_helpinfo_files()
   $WIND2FDS            > wind2fds.version
 }
 
+# ---------------------------------------------------------------------------
+# --------------------- beginning of script ---------------------------------
+# ---------------------------------------------------------------------------
+
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx
@@ -74,6 +96,9 @@ else
   PLATFORM=linux
 fi
 
+if [ "$JOBPREFIX" == "" ]; then
+  export JOBPREFIX=SMV_
+fi
 COMPILER=intel
 SIZE=_64
 DEBUG=
@@ -81,8 +106,9 @@ TEST=
 use_installed="0"
 RUN_SMV=1
 RUN_WUI=1
+QUEUE=batch
 
-while getopts 'dghiI:s:tWY' OPTION
+while getopts 'dghiI:q:s:tWY' OPTION
 do
 case $OPTION  in
   d)
@@ -96,6 +122,9 @@ case $OPTION  in
    ;;
   I)
    COMPILER="$OPTARG" 
+   ;;
+  q)
+   QUEUE="$OPTARG" 
    ;;
   t)
    TEST=_test
@@ -146,10 +175,8 @@ SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
 
-export SMVBINDIR="-bindir $SVNROOT/bot/Bundle/smv/for_bundle"
-
-export STARTX=$SVNROOT/fds/Utilities/Scripts/startXserver.sh
-export STOPX=$SVNROOT/fds/Utilities/Scripts/stopXserver.sh
+BINDIR="$SVNROOT/bot/Bundle/smv/for_bundle"
+export SMVBINDIR="-bindir $BINDIR"
 
 echo Generating smokeview images using:
 echo background: $BACKGROUND
@@ -159,7 +186,7 @@ echo smokeview : $SMV $SMVBINDIR
 echo smokezip  : $SMOKEZIP
 echo
 
-RUNSMV=$SVNROOT/fds/Utilities/Scripts/runsmv.sh
+RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -b $BINDIR -q $QUEUE"
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 export BASEDIR=`pwd`
@@ -187,7 +214,7 @@ rm -f *.version
 rm -f *.png
 $SMV -version > smokeview.version
 
-if [ "$RUN_SMV" == "1" ] ; then
+if [ "$RUN_SMV" == "1" ]; then
   cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
   $SMOKEZIP -r -part2iso plumeiso
@@ -200,12 +227,13 @@ if [ "$RUN_SMV" == "1" ] ; then
 
 # precompute FED slices
 
-  source $STARTX 2>/dev/null
+  cd $SVNROOT/smv/Verification
   $QFDS -f -d Visualization plume5c
   $QFDS -f -d Visualization plume5cdelta
   $QFDS -f -d Visualization thouse5
   $QFDS -f -d Visualization thouse5delta
-  source $STOPX 2>/dev/null
+
+  wait_cases_end
 
 # difference plume5c and thouse5
 
@@ -217,24 +245,21 @@ if [ "$RUN_SMV" == "1" ] ; then
 
   echo Generating images
 
-  source $STARTX
   cd $SVNROOT/smv/Verification
   scripts/SMV_Cases.sh
   cd $SVNROOT/smv/Verification
   scripts/SMV_DIFF_Cases.sh
   cd $CURDIDR
-  source $STOPX
 
 fi
 
 # generate geometry images
 
 if [ "$RUN_WUI" == "1" ] ; then
-  source $STARTX
   cd $SVNROOT/smv/Verification
   scripts/WUI_Cases.sh
-  source $STOPX
 fi
+wait_cases_end
 
 # copy generated images to web summary directory
 
