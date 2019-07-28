@@ -255,7 +255,11 @@ fi
 let ppn=$ncores
 let nodes=1
 
-TITLE="$infile"
+if [ "$COMMAND" == "" ]; then
+  TITLE="$infile"
+else
+  TITLE=$COMMAND
+fi
 
 cd $dir
 fulldir=`pwd`
@@ -272,7 +276,7 @@ in_full_smvfile=$fulldir/$smvfile
 
 #*** make sure files needed by qsmv.sh exist
 
-if [ "$showinput" == "0" ]; then
+if [[ "$showinput" == "0" ]] && [[ "$COMMAND" == "" ]] ; then
   if ! [ -e $exe ]; then
     echo "The smokeview executable, $exe, does not exist."
     ABORTRUN=y
