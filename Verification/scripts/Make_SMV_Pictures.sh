@@ -97,7 +97,7 @@ else
 fi
 
 if [ "$JOBPREFIX" == "" ]; then
-  export JOBPREFIX=SMV_
+  JOBPREFIX=SMV_
 fi
 COMPILER=intel
 SIZE=_64
@@ -186,10 +186,9 @@ echo smokeview : $SMV $SMVBINDIR
 echo smokezip  : $SMOKEZIP
 echo
 
-RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -b $BINDIR -q $QUEUE"
+RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX -b $BINDIR -q $QUEUE"
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
-export BASEDIR=`pwd`
 
 export FDSUG=$SVNROOT/fds/Manuals/FDS_User_Guide
 export SMVUG=$SVNROOT/smv/Manuals/SMV_User_Guide

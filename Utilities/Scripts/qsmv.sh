@@ -26,6 +26,7 @@ function usage {
   echo " -C com - execute the command com"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -i     - use installed smokeview"
+  echo " -j p   - job prefix"
   echo " -r     - redirect output"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
@@ -89,6 +90,7 @@ FED=
 dummy=
 COMMAND=
 BINDIR=
+SMV_JOBPREFIX=
 c_arg=
 d_arg=
 e_arg=
@@ -106,7 +108,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fhHip:q:rs:S:tv' OPTION
+while getopts 'Ab:c:C:d:e:fhHij:p:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -146,6 +148,9 @@ case $OPTION  in
   i)
    use_installed=1
    i_arg="-i"
+   ;;
+  j)
+   SMV_JOBPREFIX="${OPTARG}_"
    ;;
   p)
    nprocs="$OPTARG"
@@ -193,6 +198,9 @@ if [ $nprocs != 1 ]; then
   exit
 fi
 
+if [ "$SMV_JOBPREFIX" == "" ]; then
+  SMV_JOBPREFIX=SMV_
+fi
 
 # determine frame start and frame skip
 
@@ -330,7 +338,7 @@ EOF
 if [ "$queue" != "none" ]; then
   if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
     cat << EOF >> $scriptfile
-#SBATCH -J $JOBPREFIX$infile
+#SBATCH -J ${SMV_JOBPREFIX}$infile
 #SBATCH -e $outerr
 #SBATCH -o $outlog
 #SBATCH -p $queue
@@ -347,7 +355,7 @@ EOF
 
   else
     cat << EOF >> $scriptfile
-#PBS -N $JOBPREFIX${TITLE}/f${first}s$skip
+#PBS -N ${SMV_JOBPREFIX}${TITLE}/f${first}s$skip
 #PBS -W umask=0022
 #PBS -e $outerr
 #PBS -o $outlog
