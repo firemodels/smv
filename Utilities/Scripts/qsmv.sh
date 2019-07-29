@@ -268,7 +268,7 @@ let nodes=1
 if [ "$COMMAND" == "" ]; then
   TITLE="$infile"
 else
-  TITLE=$COMMAND
+  TITLE=command
 fi
 
 cd $dir
