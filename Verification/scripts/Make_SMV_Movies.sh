@@ -11,7 +11,7 @@ wait_cases_end()
   done
 }
 
-MOV_JOBPREFIX=MOV_
+MOV_JOBPREFIX=MOV
 
 TEST=$1
 
@@ -29,7 +29,7 @@ cd ../..
 GITROOT=`pwd`
 cd $CURDIR
 
-FDSEXE=$GITROOT/fds/Build/mpi_intel$PLATFORM$size/fds_mpi_intel$PLATFORM$size
+FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM$size/fds_impi_intel$PLATFORM$size
 MAKEMOVIE="$GITROOT/fds/Utilities/Scripts/make_movie.sh"
 QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
 QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX}"
@@ -55,12 +55,12 @@ $QSMV            -d Visualization             version2
 
 cd $VDIR
 
-$QSMV -p 8 -c plume5c_movie        -d Visualization plume5c
-$QSMV -p 8 -c thouse_movie         -d Visualization thouse5
-$QSMV -p 8 -c BT10m_2x2km_LS_movie -d WUI           BT10m_2x2km_LS
-$QSMV -p 8 -c levelset1            -d WUI           levelset1
-$QSMV -p 8 -c wind_test1           -d WUI           wind_test1
-$QSMV -p 8 -c tree_test2           -d WUI           tree_test2
+$QSMV -p 8 -c plume5c_movies.ssf        -d Visualization plume5c
+$QSMV -p 8 -c thouse5_movies.ssf        -d Visualization thouse5
+$QSMV -p 8 -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
+$QSMV -p 8 -c levelset1_movies.ssf      -d WUI           levelset1
+$QSMV -p 8 -c wind_test1_movies.ssf     -d WUI           wind_test1
+$QSMV -p 8 -c tree_test2_movies.ssf     -d WUI           tree_test2
 wait_cases_end
 
 # -------- make movies -------------------

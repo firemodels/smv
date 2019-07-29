@@ -90,12 +90,13 @@ FED=
 dummy=
 COMMAND=
 BINDIR=
-SMV_JOBPREFIX=
+SMVJOBPREFIX=
 c_arg=
 d_arg=
 e_arg=
 f_arg=
 i_arg=
+j_arg=
 q_arg=
 r_arg=
 v_arg=
@@ -150,7 +151,8 @@ case $OPTION  in
    i_arg="-i"
    ;;
   j)
-   SMV_JOBPREFIX="${OPTARG}_"
+   SMVJOBPREFIX="${OPTARG}_"
+   j_arg="-j ${OPTARG}"
    ;;
   p)
    nprocs="$OPTARG"
@@ -193,13 +195,13 @@ if ! [[ $nprocs =~ $re ]] ; then
 fi
 if [ $nprocs != 1 ]; then
   for i in $(seq 1 $nprocs); do
-    $QSMV $c_arg $d_arg $e_arg $f_arg $i_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
+    $QSMV $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
   done
   exit
 fi
 
-if [ "$SMV_JOBPREFIX" == "" ]; then
-  SMV_JOBPREFIX=SMV_
+if [ "$SMVJOBPREFIX" == "" ]; then
+  SMVJOBPREFIX=SMV_
 fi
 
 # determine frame start and frame skip
@@ -338,7 +340,7 @@ EOF
 if [ "$queue" != "none" ]; then
   if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
     cat << EOF >> $scriptfile
-#SBATCH -J ${SMV_JOBPREFIX}$infile
+#SBATCH -J ${SMVJOBPREFIX}$infile
 #SBATCH -e $outerr
 #SBATCH -o $outlog
 #SBATCH -p $queue
@@ -355,7 +357,7 @@ EOF
 
   else
     cat << EOF >> $scriptfile
-#PBS -N ${SMV_JOBPREFIX}${TITLE}/f${first}s$skip
+#PBS -N ${SMVJOBPREFIX}${TITLE}/f${first}s$skip
 #PBS -W umask=0022
 #PBS -e $outerr
 #PBS -o $outlog
