@@ -11,6 +11,18 @@ wait_cases_end()
   done
 }
 
+QUEUE=
+
+while getopts 'q:' OPTION
+do
+case $OPTION  in
+  q)
+   QUEUE="-q $OPTARG"
+   ;;
+esac
+done
+shift $(($OPTIND-1))
+
 MOV_JOBPREFIX=MOV
 
 TEST=$1
@@ -30,9 +42,9 @@ GITROOT=`pwd`
 cd $CURDIR
 
 FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM$size/fds_impi_intel$PLATFORM$size
-MAKEMOVIE="$GITROOT/fds/Utilities/Scripts/make_movie.sh"
+MAKEMOVIE="$GITROOT/smv/Utilities/Scripts/make_movie.sh"
 QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
-QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX}"
+QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX} $QUEUE"
 
 VDIR=$GITROOT/smv/Verification
 INDIR=$GITROOT/smv/Verification/Visualization/frames
@@ -65,21 +77,22 @@ wait_cases_end
 
 # -------- make movies -------------------
 
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_tslice  plume5c_tslice"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_3dsmoke plume5c_3dsmoke"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_vtslice plume5c_vtslice"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_iso     plume5c_iso"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_tbound  plume5c_tbound"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m plume5c_part    plume5c_part"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m thouse5_tslice  thouse5_tslice"
-$QSMV -d $INDIR    -C "$MAKEMOVIE -o $OUTDIR -m thouse5_smoke3d thouse5_smoke3d"
+cd $INDIR
+$MAKEMOVIE -o $OUTDIR -m plume5c_tslice  plume5c_tslice
+$MAKEMOVIE -o $OUTDIR -m plume5c_3dsmoke plume5c_3dsmoke
+$MAKEMOVIE -o $OUTDIR -m plume5c_vtslice plume5c_vtslice
+$MAKEMOVIE -o $OUTDIR -m plume5c_iso     plume5c_iso
+$MAKEMOVIE -o $OUTDIR -m plume5c_tbound  plume5c_tbound
+$MAKEMOVIE -o $OUTDIR -m plume5c_part    plume5c_part
+$MAKEMOVIE -o $OUTDIR -m thouse5_tslice  thouse5_tslice
+$MAKEMOVIE -o $OUTDIR -m thouse5_smoke3d thouse5_smoke3d
 
-$QSMV -d $WUIINDIR -C "$MAKEMOVIE -o $OUTDIR BT10m_2x2km_LS"
-$QSMV -d $WUIINDIR -C "$MAKEMOVIE -o $OUTDIR hill_structure"
-$QSMV -d $WUIINDIR -C "$MAKEMOVIE -o $OUTDIR levelset1"
-$QSMV -d $WUIINDIR -C "$MAKEMOVIE -o $OUTDIR wind_test1"
-$QSMV -d $WUIINDIR -C "$MAKEMOVIE -o $OUTDIR tree_test2"
-wait_cases_end
+cd $WUIINDIR
+$MAKEMOVIE -o $OUTDIR BT10m_2x2km_LS
+$MAKEMOVIE -o $OUTDIR hill_structure
+$MAKEMOVIE -o $OUTDIR levelset1
+$MAKEMOVIE -o $OUTDIR wind_test1
+$MAKEMOVIE -o $OUTDIR tree_test2
 
 echo movies generated
 
