@@ -805,7 +805,7 @@ SVEXTERN float zone_maxventflow;
 SVEXTERN unsigned char SVDECL(*hazardcolor,NULL);
 SVEXTERN float SVDECL(zone_ventfactor,1.0);
 SVEXTERN unsigned char SVDECL(*izonetu,NULL);
-SVEXTERN int SVDECL(show_zonelower, 0);
+SVEXTERN int SVDECL(show_zonelower, 1);
 SVEXTERN unsigned char SVDECL(*izonetl, NULL);
 SVEXTERN int nzone_times;
 SVEXTERN float barright;
