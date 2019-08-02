@@ -21,9 +21,13 @@ function usage {
     exit
   fi
   echo "Other options:"
+  echo " -b     - bin directory"
   echo " -c     - smokeview script file [default: casename.ssf]"
+  echo " -C com - execute the command com"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -i     - use installed smokeview"
+  echo " -j p   - job prefix"
+  echo " -r     - redirect output"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
   echo ""
@@ -81,11 +85,20 @@ showinput=0
 exe=
 smv_script=
 nprocs=1
+redirect=
+FED=
+dummy=
+COMMAND=
+BINDIR=
+SMVJOBPREFIX=
 c_arg=
 d_arg=
 e_arg=
+f_arg=
 i_arg=
+j_arg=
 q_arg=
+r_arg=
 v_arg=
 
 if [ $# -lt 1 ]; then
@@ -96,12 +109,21 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'c:d:e:hHip:q:s:S:v' OPTION
+while getopts 'Ab:c:C:d:e:fhHij:p:q:rs:S:tv' OPTION
 do
 case $OPTION  in
+  A)
+   dummy=1
+   ;;
+  b)
+   BINDIR="-bindir $OPTARG"
+   ;;
   c)
    smv_script="$OPTARG"
    c_arg="-c $smv_script"
+   ;;
+  C)
+   COMMAND="$OPTARG"
    ;;
   d)
    dir="$OPTARG"
@@ -110,6 +132,10 @@ case $OPTION  in
   e)
    exe="$OPTARG"
    e_arg="-e $exe"
+   ;;
+  f)
+   f_arg="-f"
+   FED="-fed"
    ;;
   h)
    usage
@@ -124,12 +150,20 @@ case $OPTION  in
    use_installed=1
    i_arg="-i"
    ;;
+  j)
+   SMVJOBPREFIX="${OPTARG}_"
+   j_arg="-j ${OPTARG}"
+   ;;
   p)
    nprocs="$OPTARG"
    ;;
   q)
    queue="$OPTARG"
    q_arg="-q $queue"
+   ;;
+  r)
+   redirect="-redirect"
+   r_arg="-r"
    ;;
   s)
    first="$OPTARG"
@@ -138,6 +172,9 @@ case $OPTION  in
   S)
    skip="$OPTARG"
    render_opts=1
+   ;;
+  t)
+   dummy=1
    ;;
   v)
    showinput=1
@@ -158,11 +195,14 @@ if ! [[ $nprocs =~ $re ]] ; then
 fi
 if [ $nprocs != 1 ]; then
   for i in $(seq 1 $nprocs); do
-    $QSMV $c_arg $d_arg $e_arg $i_arg $q_arg $v_arg -s $i -S $nprocs $in
+    $QSMV $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
   done
   exit
 fi
 
+if [ "$SMVJOBPREFIX" == "" ]; then
+  SMVJOBPREFIX=SMV_
+fi
 
 # determine frame start and frame skip
 
@@ -185,6 +225,10 @@ else
   smokeview_script_file=${infile}.ssf
   smv_script=-runscript
 fi
+if [ "$FED" != "" ]; then
+  smv_script=
+  script_file=
+fi
 
 #*** parse walltime parameter
 
@@ -201,7 +245,7 @@ fi
 if [ "$use_installed" == "1" ]; then
   notfound=`echo | smokeview 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
   if [ $notfound -eq 1 ]; then
-    echo "smokeview is not installed. Run aborted."
+    echo "smokeview is not installed."
     ABORTRUN=y
     exe=
   else
@@ -221,7 +265,11 @@ fi
 let ppn=$ncores
 let nodes=1
 
-TITLE="$infile"
+if [ "$COMMAND" == "" ]; then
+  TITLE="$infile"
+else
+  TITLE=command
+fi
 
 cd $dir
 fulldir=`pwd`
@@ -232,13 +280,13 @@ basefile=${infile}_f${first}_s${skip}
 outerr=$fulldir/$basefile.err
 outlog=$fulldir/$basefile.log
 scriptlog=$fulldir/$basefile.slog
-in_full_file=$fulldir/$in
-smvfile=${in}.smv
-in_full_smvfile=$fulldir/${in}.smv
+in_full_file=$fulldir/$infile
+smvfile=${infile}.smv
+in_full_smvfile=$fulldir/$smvfile
 
 #*** make sure files needed by qsmv.sh exist
 
-if [ "$showinput" == "0" ]; then
+if [[ "$showinput" == "0" ]] && [[ "$COMMAND" == "" ]] ; then
   if ! [ -e $exe ]; then
     echo "The smokeview executable, $exe, does not exist."
     ABORTRUN=y
@@ -249,9 +297,11 @@ if [ "$showinput" == "0" ]; then
     ABORTRUN=y
   fi
 
-  if ! [ -e $smokeview_script_file ]; then
-    echo "The smokeview script file, $smokeview_script_file, does not exist."
-    ABORTRUN=y
+  if [ "$FED" == "" ]; then
+    if ! [ -e $smokeview_script_file ]; then
+      echo "The smokeview script file, $smokeview_script_file, does not exist."
+      ABORTRUN=y
+    fi
   fi
 
   if [ "$ABORTRUN" == "y" ]; then
@@ -290,7 +340,7 @@ EOF
 if [ "$queue" != "none" ]; then
   if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
     cat << EOF >> $scriptfile
-#SBATCH -J $JOBPREFIX$infile
+#SBATCH -J ${SMVJOBPREFIX}$infile
 #SBATCH -e $outerr
 #SBATCH -o $outlog
 #SBATCH -p $queue
@@ -307,7 +357,7 @@ EOF
 
   else
     cat << EOF >> $scriptfile
-#PBS -N $JOBPREFIX${TITLE}/f${first}s$skip
+#PBS -N ${SMVJOBPREFIX}${TITLE}/f${first}s$skip
 #PBS -W umask=0022
 #PBS -e $outerr
 #PBS -o $outlog
@@ -321,6 +371,7 @@ EOF
   fi
 fi
 
+if [ "$COMMAND" == "" ]; then
 cat << EOF >> $scriptfile
 cd $fulldir
 echo
@@ -333,12 +384,28 @@ echo "      start frame: $first"
 echo "       frame skip: $skip"
 echo "             Host: \`hostname\`"
 echo "            Queue: $queue"
+echo ""
 
 source $XSTART
-$exe $script_file $smv_script $render_opts $in
+$exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile
 source $XSTOP
 
 EOF
+else
+cat << EOF >> $scriptfile
+cd $fulldir
+echo
+echo \`date\`
+echo "       command:$COMMAND"
+echo "     directory: \`pwd\`"
+echo "          Host: \`hostname\`"
+echo "         Queue: $queue"
+echo ""
+
+$COMMAND
+
+EOF
+fi
 
 #*** output script file to screen if -v option was selected
 
@@ -351,12 +418,19 @@ fi
 
 #*** output info to screen
 
+if [ "$COMMAND" == "" ]; then
 echo "     smokeview file: $smvfile"
 echo "      smokeview exe: $exe"
 echo "             script: $smokeview_script_file"
 echo "        start frame: $first"
 echo "         frame skip: $skip"
 echo "              Queue: $queue"
+echo ""
+else
+echo "     command: $COMMAND"
+echo "       Queue: $queue"
+echo ""
+fi
 
 #*** run script
 
