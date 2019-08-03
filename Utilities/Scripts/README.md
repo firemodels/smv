@@ -4,7 +4,7 @@ This directory contains scripts used by other scripts in the smv repo.
 
 ## qsmv.sh
 
-The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system to generate images for creating an animation. qsmv.sh speeds up this rendering by parallelizing in time not space. (it is not practical to parallelize in space by rendering a portion of the scene on multiple nodes since it would be difficult if not impossible to combine these image subsets to form one image).   Each instance of qsmv.sh generates a subset of the time frames in a simulation. By running multiple instances of qsmv.sh, the total time required to render simulation images is reduced.
+The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system in order to generate images for creating an animation. qsmv.sh speeds up this rendering by parallelizing in time not space. (it is not practical to parallelize in space by rendering a portion of the scene on multiple nodes since it would be difficult if not impossible to combine these image subsets to form one image).   Each instance of qsmv.sh generates a subset of the time frames in a simulation. By running multiple instances of qsmv.sh, the total time required to render simulation images is reduced.
 
 To get started, add the following line to your startup file, typically .bashrc 
 (change the first part of the following alias command to match where your repo is located):
@@ -18,7 +18,7 @@ To use qsmv.sh type:
 (the .smv file extension is not required). This runs smokeview on the case `casename.smv` using the smokeview script `casename.ssf` . To run with a different script say `casename2.ssf` type:
 ```qsmv.sh -c casename2.ssf casename```
 
-Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  When RENDERALL is used, multiple instances of smokeview may run by using -p n where n is the number of instances.  For example if casename.smv has 1000 time steps, the command
+Typically, a smokeview script contains keywords such as RENDER or RENDERALL for generating images.  The keyword RENDER generates one image at one point in time.  The keyword RENDERALL generates images for all time steps in the simulation.  When RENDERALL is used, multiple instances of smokeview may be run by using -p n where n is the number of instances of smokeview where each instance generates a subset of the total images. For example if casename.smv has 1000 time steps, the command
 
 ```qsmv.sh -p 5 casename```
 
@@ -35,7 +35,7 @@ qsmv.sh uses either a smokeview that was built in the repo containing qsmv.sh or
  
 More details on building smokeview may be found [here.](https://github.com/firemodels/smv/tree/master/Build/README.md)  To use the installed smokeview, use the `-i` option.
 
-More usage information follows.
+Details on using qsmv.sh are found below.
 
 ```
 Usage: qsmv.sh [-e smv_command] [-q queue] casename
@@ -52,9 +52,13 @@ options:
  -q q - name of queue. [default: batch]
  -v   - output generated script
 Other options:
+ -b     - bin directory
  -c     - smokeview script file [default: casename.ssf]
+ -C com - execute the command com
  -d dir - specify directory where the case is found [default: .]
  -i     - use installed smokeview
+ -j p   - job prefix
+ -r     - redirect output
  -s     - first frame rendered [default: 1]
  -S     - interval between frames [default: 1]
 ```
