@@ -1,5 +1,4 @@
 #!/bin/bash
-QSMV=$0
 
 # ---------------------------- usage ----------------------------------
 
@@ -38,6 +37,7 @@ CURDIR=`pwd`
 
 #*** define repo root
 
+QSMV=$0
 QSMV_PATH=$(dirname `which $0`)
 cd $QSMV_PATH/../../..
 REPOROOT=`pwd`
