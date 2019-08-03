@@ -38,13 +38,9 @@ CURDIR=`pwd`
 
 #*** define repo root
 
-if [ "$FIREMODELS" == "" ]; then
-  QSMV_PATH=$(dirname `which $0`)
-  cd $QSMV_PATH/../../..
-  REPOROOT=`pwd`
-else
-  REPOROOT=$FIREMODELS
-fi
+QSMV_PATH=$(dirname `which $0`)
+cd $QSMV_PATH/../../..
+REPOROOT=`pwd`
 
 cd $CURDIR
 
