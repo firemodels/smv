@@ -965,7 +965,7 @@ SVEXTERN float xbarORIG, ybarORIG, zbarORIG;
 SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
-SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0), SVDECL(ReadEvacFile,0);
+SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
 SVEXTERN int SVDECL(cache_qdata,1);
 
 SVEXTERN int editwindow_status;
