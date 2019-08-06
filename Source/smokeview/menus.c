@@ -107,13 +107,11 @@ float     part_load_time;
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
 
-#define MENU_PARTICLE_UNLOAD -1
+#define MENU_PARTICLE_UNLOAD_ALL -1
 #define MENU_PARTICLE_DUMMY -2
 #define MENU_PARTICLE_ALLMESHES -11
 
 #define MENU_UNLOADEVAC_UNLOADALL -1
-
-#define MENU_UNLOADPARTICLE_UNLOADALL -1
 
 #define MENU_AVATAR_DEFINED -1
 
@@ -3730,7 +3728,7 @@ void LoadParticleMenu(int value){
     }
   }
   else{
-    if(value==-1){
+    if(value==MENU_PARTICLE_UNLOAD_ALL){
       for(i=0;i<npartinfo;i++){
         partdata *parti;
 
@@ -9257,8 +9255,6 @@ updatemenu=0;
       }
     }
 
-    glutAddMenuEntry(_("Unload all"),MENU_UNLOADPARTICLE_UNLOADALL);
-
     if(nmeshes==1){
       CREATEMENU(particlemenu,LoadParticleMenu);
     }
@@ -9293,12 +9289,10 @@ updatemenu=0;
     if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
     if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
     glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
-    if(npartloaded<=1){
-      glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
+    if(npartloaded>=1){
+      if(npartloaded>1)GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
+      glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
     }
-     else{
-       GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
-     }
   }
 
   if(nevac>0){
