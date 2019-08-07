@@ -626,7 +626,6 @@ void UpdateShow(void){
       }
     }
   }
-  ReadEvacFile = evacflag;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
@@ -710,7 +709,7 @@ void UpdateShow(void){
   }
 
   num_colorbars=0;
-  if(ReadEvacFile==1)num_colorbars++;
+  if(evacflag==1)num_colorbars++;
   if(ReadPartFile==1)num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
   if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wall_cell_color_flag==0)num_colorbars++;

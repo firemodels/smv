@@ -107,13 +107,11 @@ float     part_load_time;
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
 
-#define MENU_PARTICLE_UNLOAD -1
+#define MENU_PARTICLE_UNLOAD_ALL -1
 #define MENU_PARTICLE_DUMMY -2
 #define MENU_PARTICLE_ALLMESHES -11
 
 #define MENU_UNLOADEVAC_UNLOADALL -1
-
-#define MENU_UNLOADPARTICLE_UNLOADALL -1
 
 #define MENU_AVATAR_DEFINED -1
 
@@ -3328,79 +3326,6 @@ void SetTour(tourdata *thetour){
   TourMenu(tournumber);
 }
 
-/* ------------------ LoadEvacMenu ------------------------ */
-
-void LoadEvacMenu(int value){
-  int errorcode;
-
-  if(value==MENU_EVAC_DUMMY)return;
-  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-  if(value==EVACFILE_LOADALL){
-    int i;
-
-    for(i=0;i<npartinfo;i++){
-      partdata *parti;
-
-      parti=partinfo + i;
-      if(parti->evac==0)continue;
-      ReadPart(parti->file, i, UNLOAD, &errorcode);
-    }
-    npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
-    for(i = 0;i<npartinfo;i++){
-      partdata *parti;
-
-      parti = partinfo+i;
-      parti->finalize = 0;
-    }
-    for(i = npartinfo-1;i>=0;i--){
-      partdata *parti;
-
-      parti = partinfo+i;
-      if(parti->evac==0)continue;
-      parti->finalize = 1;
-      break;
-    }
-    for(i=0;i<npartinfo;i++){
-      partdata *parti;
-
-      parti=partinfo + i;
-      if(parti->evac==0)continue;
-      ReadEvacFile=1;
-      ReadPart(parti->file, i, LOAD, &errorcode);
-      if(scriptoutstream!=NULL){
-        fprintf(scriptoutstream,"LOADFILE\n");
-        fprintf(scriptoutstream," %s\n",parti->file);
-      }
-    }
-    force_redisplay=1;
-    UpdateFrameNumber(0);
-  }
-  if(value>=0){
-    partdata *parti;
-
-    ReadEvacFile=1;
-    npartframes_max=GetMinPartFrames(value);
-    parti = partinfo+value;
-    parti->finalize = 1;
-    ReadPart(parti->file, value, LOAD, &errorcode);
-    if(scriptoutstream!=NULL){
-      fprintf(scriptoutstream,"LOADFILE\n");
-      fprintf(scriptoutstream," %s\n",parti->file);
-    }
-  }
-  else if(value==MENU_EVAC_UNLOADALL){
-    int i;
-
-    for(i=0;i<npartinfo;i++){
-      if(partinfo[i].evac==0)continue;
-      ReadPart("", i, UNLOAD, &errorcode);
-    }
-  }
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
-}
-
 /* ------------------ UpdateStreakValue ------------------------ */
 
 void UpdateStreakValue(float value){
@@ -3663,9 +3588,12 @@ void LoadAllPartFiles(int partnum){
   }
 }
 
+#define PART 0
+#define EVAC 1
+
 /* ------------------ SetupPart ------------------------ */
 
-void SetupPart(int value){
+void SetupPart(int value, int option){
   int i;
 
   for(i = 0; i<npartinfo; i++){
@@ -3676,7 +3604,8 @@ void SetupPart(int value){
     parti->skipload = 1;
     parti->loadstatus = 0;
     parti->boundstatus = 0;
-    if(parti->evac==1)continue;                               // don't load an evac file
+    if(option==PART&&parti->evac==1)continue;                               // don't load an evac file if part files are loaded
+    if(option==EVAC&&parti->evac==0)continue;                               // don't load a part file if evac files are loaded
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     parti->skipload = 0;
   }
@@ -3700,9 +3629,9 @@ void SetupPart(int value){
   }
 }
 
-/* ------------------ LoadParticleMenu ------------------------ */
+/* ------------------ LoadParticleEvacMenu ------------------------ */
 
-void LoadParticleMenu(int value){
+void LoadParticleEvacMenu(int value, int option){
   int errorcode,i;
 
   part_load_size = 0;
@@ -3724,18 +3653,19 @@ void LoadParticleMenu(int value){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     if(scriptoutstream==NULL||script_defer_loading==0){
-      SetupPart(value);                                                // load only particle file with index value
+      SetupPart(value,option);                                                // load only particle file with index value
       GetAllPartBoundsMT();
       LoadAllPartFilesMT(value);
     }
   }
   else{
-    if(value==-1){
+    if(value==MENU_PARTICLE_UNLOAD_ALL){
       for(i=0;i<npartinfo;i++){
         partdata *parti;
 
         parti = partinfo + i;
-        if(parti->evac==1)continue;
+        if(option==PART&&parti->evac==1)continue;
+        if(option==EVAC&&parti->evac==0)continue;
         ReadPart("", i, UNLOAD, &errorcode);
       }
     }
@@ -3745,8 +3675,8 @@ void LoadParticleMenu(int value){
     else if(value==MENU_PART_PARTFAST){
       updatemenu = 1;
       partfast = 1-partfast;
-      if(partfast==0)printf("fast particle loading: off\n");
-      if(partfast==1)printf("fast particle loading: on\n");
+      if(partfast==0)printf("fast loading: off\n");
+      if(partfast==1)printf("fast loading: on\n");
       UpdateGluiPartFast();
     }
     else{
@@ -3754,7 +3684,7 @@ void LoadParticleMenu(int value){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
       if(value==PARTFILE_LOADALL){
-        SetupPart(value);
+        SetupPart(value,option);
         GetAllPartBoundsMT();
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
       }
@@ -3764,7 +3694,7 @@ void LoadParticleMenu(int value){
 
       if(scriptoutstream==NULL||script_defer_loading==0){
 
-        SetupPart(value);
+        SetupPart(value,option);
 
         // unload particle files
 
@@ -3789,6 +3719,18 @@ void LoadParticleMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
+}
+
+/* ------------------ LoadParticleMenu ------------------------ */
+
+void LoadParticleMenu(int value){
+  LoadParticleEvacMenu(value,PART);
+}
+
+/* ------------------ LoadEvacMenu ------------------------ */
+
+void LoadEvacMenu(int value){
+  LoadParticleEvacMenu(value,EVAC);
 }
 
 /* ------------------ ZoneMenu ------------------------ */
@@ -9257,8 +9199,6 @@ updatemenu=0;
       }
     }
 
-    glutAddMenuEntry(_("Unload all"),MENU_UNLOADPARTICLE_UNLOADALL);
-
     if(nmeshes==1){
       CREATEMENU(particlemenu,LoadParticleMenu);
     }
@@ -9293,12 +9233,10 @@ updatemenu=0;
     if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
     if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
     glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
-    if(npartloaded<=1){
-      glutAddMenuEntry(_("Unload"),MENU_PARTICLE_UNLOAD);
+    if(npartloaded>=1){
+      if(npartloaded>1)GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
+      glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
     }
-     else{
-       GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
-     }
   }
 
   if(nevac>0){
