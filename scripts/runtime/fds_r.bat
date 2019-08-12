@@ -1,2 +1,3 @@
 @echo off
-%USERPROFILE%\FDS-SMV\FDS_Compilation\intel_win_64\fds_win_64.exe %*
+call %userprofile%\bin\fds_setup
+%reporoot%\fds\Build\FDS_Compilation\impi_intel_win_64\fds_impi_win_64 %*
