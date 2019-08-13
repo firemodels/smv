@@ -147,7 +147,7 @@ case $OPTION  in
    i_arg="-i"
    ;;
   j)
-   SMVJOBPREFIX="${OPTARG}_"
+   SMVJOBPREFIX="${OPTARG}"
    j_arg="-j ${OPTARG}"
    ;;
   p)
