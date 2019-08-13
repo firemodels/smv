@@ -658,13 +658,14 @@ void GetZoneVentVel(float *yy, int n, roomdata *r1, roomdata *r2, float *vdata, 
 
 void GetZoneVentBounds(void){
   int i;
-
+#define VEL_MAX  100000000.0
+#define VEL_MIN -100000000.0
   for(i = 0;i < nzvents;i++){
     zventdata *zvi;
 
     zvi = zventinfo + i;
-    zvi->g_vmax = -1000000000.0;
-    zvi->g_vmin = 1000000000.0;
+    zvi->g_vmax = VEL_MIN;
+    zvi->g_vmin = VEL_MAX;
   }
   for(izone = 0;izone < nzone_times;izone++){
     FillZoneData(izone);
@@ -674,6 +675,7 @@ void GetZoneVentBounds(void){
       float zelev[NELEV_ZONE];
 
       zvi = zventinfo + i;
+      if(zvi->area_fraction < 0.0001)continue;
       if(zvi->vent_type == VFLOW_VENT || zvi->vent_type == MFLOW_VENT)continue;
       for(j = 0;j < NELEV_ZONE;j++){
         zelev[j] = (zvi->z0*(NELEV_ZONE - 1 - j) + zvi->z1*j) / (float)(NELEV_ZONE - 1);
@@ -689,8 +691,8 @@ void GetZoneVentBounds(void){
 
     zvi = zventinfo + i;
     if(zvi->vent_type == VFLOW_VENT || zvi->vent_type == MFLOW_VENT)continue;
-    zone_maxventflow = MAX(ABS(zvi->g_vmin), zone_maxventflow);
-    zone_maxventflow = MAX(ABS(zvi->g_vmax), zone_maxventflow);
+    if(ABS(zvi->g_vmin)<VEL_MAX-1.0)zone_maxventflow = MAX(ABS(zvi->g_vmin), zone_maxventflow);
+    if(ABS(zvi->g_vmax)<VEL_MAX-1.0)zone_maxventflow = MAX(ABS(zvi->g_vmax), zone_maxventflow);
   }
 }
 
