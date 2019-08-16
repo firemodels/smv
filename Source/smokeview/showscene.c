@@ -379,10 +379,16 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     if(showzone == 1){
       CLIP_VALS;
       DrawFireData();
-      SNIFF_ERRORS("after DrawRoomData");
-      if(ReadZoneFile == 1 && nzvents>0){
-        DrawVentData();
-        SNIFF_ERRORS("after DrawVentData");
+      SNIFF_ERRORS("after DrawFireData");
+      if(ReadZoneFile == 1){
+        if(nzvents>0){
+          DrawVentData();
+          SNIFF_ERRORS("after DrawVentData");
+        }
+        if(have_wall_data==1&&vis_wall_data==1){
+          DrawWallData();
+          SNIFF_ERRORS("after DrawWallData");
+        }
       }
     }
   }

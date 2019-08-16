@@ -11160,7 +11160,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWWALLS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visWalls);
+      sscanf(buffer, "%i %i", &visWalls,&vis_wall_data);
       continue;
     }
     if(Match(buffer, "SHOWCEILING") == 1){
@@ -13596,7 +13596,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWVENTS\n");
   fprintf(fileout, " %i\n", visVents);
   fprintf(fileout, "SHOWWALLS\n");
-  fprintf(fileout, " %i\n", visWalls);
+  fprintf(fileout, " %i %i\n", visWalls,vis_wall_data);
   fprintf(fileout, "SKIPEMBEDSLICE\n");
   fprintf(fileout, " %i\n", skip_slice_in_embedded_mesh);
   fprintf(fileout, "SLICEDUP\n");
