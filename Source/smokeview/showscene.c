@@ -373,21 +373,21 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(nrooms>0){
     CLIP_GEOMETRY;
-    DrawRoomGeom();
-    SNIFF_ERRORS("after DrawRoomGeom");
+    DrawZoneRoomGeom();
+    SNIFF_ERRORS("after DrawZoneRoomGeom");
 
     if(showzone == 1){
       CLIP_VALS;
-      DrawFireData();
-      SNIFF_ERRORS("after DrawFireData");
+      DrawZoneFireData();
+      SNIFF_ERRORS("after DrawZoneFireData");
       if(ReadZoneFile == 1){
         if(nzvents>0){
-          DrawVentData();
-          SNIFF_ERRORS("after DrawVentData");
+          DrawZoneVentData();
+          SNIFF_ERRORS("after DrawZoneVentData");
         }
         if(have_wall_data==1&&vis_wall_data==1){
-          DrawWallData();
-          SNIFF_ERRORS("after DrawWallData");
+          DrawZoneWallData();
+          SNIFF_ERRORS("after DrawZoneWallData");
         }
       }
     }
@@ -465,8 +465,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(nrooms>0 && showzone == 1){
     CLIP_VALS;
-    DrawRoomData();
-    SNIFF_ERRORS("after DrawRoomData");
+    DrawZoneRoomData();
+    SNIFF_ERRORS("after DrawZoneRoomData");
   }
 
   /* ++++++++++++++++++++++++ draw boundary files +++++++++++++++++++++++++ */

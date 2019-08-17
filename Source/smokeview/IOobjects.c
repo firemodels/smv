@@ -3652,7 +3652,7 @@ void DrawDevices(void){
     if(devicei->object->visible == 0 || (devicei->prop != NULL&&devicei->prop->smv_object->visible == 0))continue;
     if(devicei->plane_surface != NULL)continue;
     if(isZoneFireModel == 1 && STRCMP(devicei->object->label, "target") == 0 && visSensor == 0)continue;
-    if(devicei->in_zone_csv == 1)continue;
+    if(devicei->in_zone_csv == 1&&strcmp(devicei->label,"TARGET")!=0)continue;
     if(isZoneFireModel == 1 && STRCMP(devicei->label, "TIME") == 0)continue;
     save_use_displaylist = devicei->object->use_displaylist;
     tagval = ii + 1;
@@ -3785,6 +3785,22 @@ void DrawDevices(void){
           if(vistype == 1)DrawSmvObject(devicei->object, state, prop, 0, NULL, 0);
         }
         else{
+          int target_index;
+
+          target_index = devicei->target_index;
+          if(target_index>=0&&izonetargets!=NULL&&have_target_data==1&&vis_target_data==1){
+            unsigned char color_index, target_color[4];
+
+            color_index = izonetargets[itimes*nzone_targets+target_index]; 
+            target_color[0] = (float)rgb_full[color_index][0]*255.0;
+            target_color[1] = (float)rgb_full[color_index][1]*255.0;
+            target_color[2] = (float)rgb_full[color_index][2]*255.0;
+            target_color[3] = (float)rgb_full[color_index][3]*255.0;
+            select_device_color_ptr = target_color;
+          }
+          else{
+            select_device_color_ptr = NULL;
+          }
           DrawSmvObject(devicei->object, state, prop, 0, NULL, 0);
         }
       }
@@ -5568,6 +5584,23 @@ tokendata *GetTokenPtr(char *var,sv_object_frame *frame){
   return NULL;
 }
 
+/* ----------------------- GetCSVDeviceFromLabel ----------------------------- */
+
+devicedata *GetCSVDeviceFromLabel(char *label, int index){
+  int i;
+
+  if(strlen(label)>=4&&strncmp(label, "null", 4)==0&&index>=0&&index<ndeviceinfo){
+    return deviceinfo+index;
+  }
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo+i;
+    if(STRCMP(devicei->csvlabel, label)==0)return devicei;
+  }
+  return NULL;
+}
+
 /* ----------------------- GetDeviceFromLabel ----------------------------- */
 
 devicedata *GetDeviceFromLabel(char *label,int index){
@@ -5989,7 +6022,7 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
   for(i=1;i<ntokens;i++){
     devicedata *devicei;
 
-    devicei = GetDeviceFromLabel(devclabels[i],i-1);
+    devicei = GetCSVDeviceFromLabel(devclabels[i],i-1);
     devices[i]=devicei;
 #ifdef _DEBUG
     if(devicei==NULL){

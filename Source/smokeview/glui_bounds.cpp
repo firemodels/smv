@@ -3458,6 +3458,7 @@ extern "C" void SliceBoundCB(int var){
       if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
+      if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       zoneusermin=zonemin;
       break;
     case ZONEVALMAX:
@@ -3467,6 +3468,7 @@ extern "C" void SliceBoundCB(int var){
       if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
+      if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       zoneusermax=zonemax;
       break;
     case SETZONEVALMIN:

@@ -166,6 +166,7 @@ float     part_load_time;
 #define MENU_ZONE_VENT_SLAB 19
 #define MENU_ZONE_VENT_PROFILE 20
 #define MENU_ZONE_WALLS 22
+#define MENU_ZONE_TARGETS 23
 
 #define MENU_SHOWSLICE_IN_GAS -16
 #define MENU_SHOWSLICE_IN_GASANDSOLID -17
@@ -5746,6 +5747,9 @@ void ZoneShowMenu(int value){
   case MENU_ZONE_WALLS:
     vis_wall_data = 1-vis_wall_data;
     break;
+  case MENU_ZONE_TARGETS:
+    vis_target_data = 1-vis_target_data;
+    break;
   case MENU_ZONE_VENTS:
     visVentFlow=1-visVentFlow;
     if(visVentFlow==1){
@@ -7249,6 +7253,14 @@ updatemenu=0;
       }
       else{
         glutAddMenuEntry(_("Walls"), MENU_ZONE_WALLS);
+      }
+    }
+    if(have_target_data==1){
+      if(vis_target_data==1){
+        glutAddMenuEntry(_("*Target"), MENU_ZONE_TARGETS);
+      }
+      else{
+        glutAddMenuEntry(_("Targets"), MENU_ZONE_TARGETS);
       }
     }
     if(nzvents>0){
