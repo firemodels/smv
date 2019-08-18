@@ -8,6 +8,9 @@
 !! Material Properties 
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
       CONDUCTIVITY = 0.16 DENSITY = 790 SPECIFIC_HEAT = 0.9, THICKNESS = 0.016 EMISSIVITY = 0.9 /
+
+&MATL ID = 'FLANGE' MATERIAL = 'Steel Flange', 
+      CONDUCTIVITY = 40 DENSITY = 7850 SPECIFIC_HEAT = 0.6, THICKNESS = 0.01275 EMISSIVITY = 0.9 /
  
 !! Compartments 
 &COMP ID = 'Compartment 1'
@@ -40,6 +43,9 @@
 &TABL ID = 'bunkbed_Fire', DATA = 702, 28.5, 0.5, 1.8, 0.04951722, 0.131, 0.1158509, 0, 0 /
 &TABL ID = 'bunkbed_Fire', DATA = 803, 21.9, 0.5, 1.8, 0.04951722, 0.131, 0.1158509, 0, 0 /
 &TABL ID = 'bunkbed_Fire', DATA = 883, 23.5, 0.5, 1.8, 0.04951722, 0.131, 0.1158509, 0, 0 /
- 
+
+&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 0.5, 0.5, 2 TYPE = 'PLATE' MATL_ID = 'FLANGE'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 2' LOCATION = 0.5, 0.5, 2 TYPE = 'PLATE' MATL_ID = 'FLANGE'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
+
 !! Visualizations
 &SLCF DOMAIN = '2-D'  POSITION = 1.2, PLANE = 'Y' / 
