@@ -181,9 +181,9 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
   have_zoneuw = 1;
   have_zonecl = 1;
   have_wall_data = 1;
-  have_target_data = 1;
 
   if(ntargets_local>0){
+    have_target_data = 1;
     NewMemory((void **)&zonetarget_devs, ntargets_local*sizeof(devicedata *));
     for(i = 0; i<ntargets_local; i++){
       char label[100];
