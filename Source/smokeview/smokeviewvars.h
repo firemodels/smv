@@ -797,7 +797,7 @@ SVEXTERN float SVDECL(*zonefl, NULL), SVDECL(*zonelw, NULL), SVDECL(*zoneuw, NUL
 SVEXTERN float SVDECL(*zonetargets, NULL);
 SVEXTERN int SVDECL(have_zonefl, 0), SVDECL(have_zonelw, 0), SVDECL(have_zoneuw, 0), SVDECL(have_zonecl, 0);
 SVEXTERN int SVDECL(have_wall_data,0), SVDECL(vis_wall_data,0);
-SVEXTERN int SVDECL(have_target_data, 0), SVDECL(vis_target_data, 0);
+SVEXTERN int SVDECL(have_target_data, 0), SVDECL(vis_target_data, 1);
 SVEXTERN int SVDECL(nzonetotal_targets, 0), SVDECL(nzone_targets,0);
 
 SVEXTERN float SVDECL(*zonerhol, NULL), SVDECL(*zonerhou, NULL);
