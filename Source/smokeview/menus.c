@@ -7060,9 +7060,7 @@ updatemenu=0;
       glutAddMenuEntry(_("Vents"), GEOM_Vents);
     }
   }
-  if(ntotal_blockages>0 || isZoneFireModel == 1){
-    GLUTADDSUBMENU(_("Grid"),gridslicemenu);
-  }
+  GLUTADDSUBMENU(_("Grid"),gridslicemenu);
   if(isZoneFireModel==0){
     if(visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
     if(visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
