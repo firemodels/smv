@@ -829,6 +829,54 @@ void GetZoneGlobalBounds(const float *pdata, int ndata, float *pglobalmin, float
   *pglobalmax = pmax2;
 }
 
+ /* ------------------ LoadTempSlices ------------------------ */
+
+void GetSliceTempBounds(void){
+  int i;
+
+  for(i=0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    int framesize, headersize, return_val, error;
+    int ntimes_slice_old=0, file_size;
+    float qmin, qmax;
+
+    slicei = sliceinfo + i;
+    if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
+    if(use_cslice==1){
+      GetSliceSizes(slicei->file, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
+        settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
+    }
+    else{
+      FORTgetslicesizes(slicei->file, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, &sliceframestep, &error,
+        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
+        strlen(slicei->file));
+    }
+    return_val = NewResizeMemory(slicei->qslicedata, sizeof(float)*(slicei->nslicei+1)*(slicei->nslicej+1)*(slicei->nslicek+1)*slicei->ntimes);
+    if(return_val!=0)return_val = NewResizeMemory(slicei->times, sizeof(float)*slicei->ntimes);
+    qmin = 1.0e30;
+    qmax = -1.0e30;
+    if(use_cslice==1){
+      GetSliceData(slicei->file, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+        &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
+        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
+    }
+    else{
+      FORTgetslicedata(slicei->file,
+        &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+        &qmin, &qmax, slicei->qslicedata, slicei->times, &ntimes_slice_old, &slicei->ntimes, &sliceframestep,
+        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(slicei->file));
+    }
+    slicei->globalmin = qmin;
+    slicei->globalmax = qmax;
+    slicei->valmin = qmin;
+    slicei->valmax = qmax;
+    slicei->valmin_data = qmin;
+    slicei->valmax_data = qmax;
+    FREEMEMORY(slicei->qslicedata);
+    FREEMEMORY(slicei->times);
+  }
+}
+
 /* ------------------ ReadZone ------------------------ */
 
 void ReadZone(int ifile, int flag, int *errorcode){
@@ -1126,7 +1174,16 @@ void ReadZone(int ifile, int flag, int *errorcode){
   if(have_zoneuw==1)GetZoneGlobalBounds(zoneuw, ntotal_rooms,&zoneglobalmin,&zoneglobalmax,NOT_FIRST_TIME);
   if(have_zonecl==1)GetZoneGlobalBounds(zonecl, ntotal_rooms,&zoneglobalmin,&zoneglobalmax,NOT_FIRST_TIME);
   if(have_target_data==1)GetZoneGlobalBounds(zonetargets, ntotal_targets, &zoneglobalmin, &zoneglobalmax, NOT_FIRST_TIME);
+  GetSliceTempBounds();
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
 
+    slicei = sliceinfo+i;
+    if(strcmp(slicei->label.shortlabel, "TEMP")==0){
+      zoneglobalmin = MIN(slicei->valmin, zoneglobalmin);
+      zoneglobalmax = MAX(slicei->valmax, zoneglobalmax);
+    }
+  }
   if(setzonemin==GLOBAL_MIN)zonemin = zoneglobalmin;
   if(setzonemax==GLOBAL_MAX)zonemax = zoneglobalmax;
   if(setzonemin==SET_MIN)zonemin = zoneusermin;

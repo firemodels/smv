@@ -3550,10 +3550,8 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
-  //int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
-
 
   if(sd->slice_filetype == SLICE_GEOM){
     pdata = sd->patchgeom->geom_vals;
