@@ -373,7 +373,7 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
   }
 
   for(i = 0; i < nzhvents+nzvvents+nzmvents; i++){
-    char label[100],vent_type[100];
+    char label[100],vent_type[10];
     int vent_index;
 
     if(i<nzhvents){
@@ -401,7 +401,7 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
 //  setup devices that describe VENTS
   have_ventslab_flow = 0;
   for(i = 0; i < nzhvents+nzvvents+nzmvents; i++){
-    char label[100], vent_type[100];
+    char label[100], vent_type[10];
     int islab, vent_index, max_slabs;
 
     if(i<nzhvents){
@@ -449,7 +449,7 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
   }
   if(have_ventslab_flow == 1){
     for(i = 0; i < nzhvents+nzvvents+nzmvents; i++){
-      char label[100], vent_type[100];
+      char label[100], vent_type[10];
       int islab, vent_index, max_slabs;
 
       if(i<nzhvents){
