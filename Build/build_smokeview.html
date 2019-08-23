@@ -45,8 +45,11 @@ function install_smv(args){
 <hr size="1">
 
 <p><table border=on>
-<tr><th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td></tr>
-<tr><th>Repos</th>
+<tr>
+<th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
+</tr>
+<tr>
+<th>Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
@@ -54,18 +57,23 @@ function install_smv(args){
 <button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Update Windows</button>
 </td>
 </tr>
-<tr><th>Revision</th><td align=center>
+<tr>
+<th>Revision</th><td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td></tr>
-<tr><th>Branch</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td></tr>
-<tr><th align=center>Release<br>notes</th>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td>
+</tr>
+<tr>
+<th align=center>Notes</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>
 <button onclick="run_script('\\smv\\scripts\\webEDIT_release_notes.bat')">Edit</button>
-<button onclick="run_script('\\smv\\scripts\\webVIEW_release_notes.bat')">View</button><br>
-<button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Set smvlogdate</button></td>
+<button onclick="run_script('\\smv\\scripts\\webVIEW_release_notes.bat')">View</button>
+</td>
+</tr>
+<tr>
+<th>Branch</th><td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
 </tr>
 </table>
 
