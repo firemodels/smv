@@ -6,5 +6,5 @@ set dem2fds=..\intel_win_64\dem2fds_win_64.exe
 set dem2fds=dem2fds
 set "terrain=%userprofile%\Google Drive\documents\terrain"
 
-::%dem2fds% %option% -show -dir "%terrain%\campfire" cfire.in 
-%dem2fds% %option% -dir "%terrain%\campfire" cfire.in 
+%dem2fds% %option%       -dir "%terrain%\campfire" cfire.in 
+%dem2fds% %option% -show -dir "%terrain%\campfire" cfire2.in 
