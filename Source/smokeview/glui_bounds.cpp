@@ -2322,6 +2322,12 @@ extern "C" void GluiBoundsSetup(int main_window){
           RADIOBUTTON_slicetype->disable();
           fire_line_index=index;
         }
+        if(nzoneinfo>0&&strcmp(sliceinfo[i].label.shortlabel, _("TEMP"))==0){
+          slicebounds[index].valmin = zonemin;
+          slicebounds[index].valmax = zonemax;
+          slicebounds[index].setvalmin = setzonemin;
+          slicebounds[index].setvalmax = setzonemax;
+        }
         index++;
       }
     }
@@ -3375,6 +3381,44 @@ void PartBoundCB(int var){
   }
 }
 
+/* ------------------ UpdateZoneTempBounds ------------------------ */
+
+void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
+  int i;
+  int slice_index;
+
+  if(nzoneinfo>0&&RADIO_slice!=NULL){
+    slice_index = RADIO_slice->get_int_val();
+    if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+      setzonemin = setvalmin;
+      setzonemax = setvalmax;
+      zonemin = valmin;
+      zonemax = valmax;
+      if(EDIT_zone_min!=NULL)EDIT_zone_min->set_float_val(valmin);
+      if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(valmax);
+      if(RADIO_zone_setmin!=NULL)RADIO_zone_setmin->set_int_val(setvalmin);
+      if(RADIO_zone_setmax!=NULL)RADIO_zone_setmax->set_int_val(setvalmax);
+    }
+  }
+}
+
+/* ------------------ UpdateSliceTempBounds ------------------------ */
+
+void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
+  int i;
+  int slice_index;
+
+  if(RADIO_slice!=NULL){
+    slice_index = RADIO_slice->get_int_val();
+    if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+      EDIT_slice_min->set_float_val(valmin);
+      EDIT_slice_max->set_float_val(valmax);
+      RADIO_slice_setmin->set_int_val(setvalmin);
+      RADIO_slice_setmax->set_int_val(setvalmax);
+    }
+  }
+}
+
 /* ------------------ SetSliceMin ------------------------ */
 
 void SetSliceMin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
@@ -3459,6 +3503,7 @@ extern "C" void SliceBoundCB(int var){
       if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
+      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       zoneusermin=zonemin;
       break;
     case ZONEVALMAX:
@@ -3469,6 +3514,7 @@ extern "C" void SliceBoundCB(int var){
       if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
+      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       zoneusermax=zonemax;
       break;
     case SETZONEVALMIN:
@@ -3485,6 +3531,7 @@ extern "C" void SliceBoundCB(int var){
         colorlabelzone, zonescale, zonelevels256);
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
         colorlabelzone, zonescale, zonelevels256);
+      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       break;
     case SETZONEVALMAX:
       if(setzonemax==SET_MAX){
@@ -3500,6 +3547,7 @@ extern "C" void SliceBoundCB(int var){
         colorlabelzone, zonescale, zonelevels256);
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
         colorlabelzone, zonescale, zonelevels256);
+      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       break;
     case COLORBAR_LIST2:
       if(selectedcolorbar_index2 == bw_colorbar_index){
@@ -3799,6 +3847,7 @@ extern "C" void SliceBoundCB(int var){
     }
     if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
     SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case SETVALMAX:
     switch(setslicemax){
@@ -3815,14 +3864,17 @@ extern "C" void SliceBoundCB(int var){
     }
     if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
     SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case VALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
     SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+    UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case VALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
     SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+    UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case FILETYPEINDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){

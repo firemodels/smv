@@ -10610,20 +10610,22 @@ int ReadIni2(char *inifile, int localfile){
           }
         }
       }
+      if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
-          slicebounds[i].setvalmin = setvalmin;
-          slicebounds[i].setvalmax = setvalmax;
-          slicebounds[i].valmin = valmin;
-          slicebounds[i].valmax = valmax;
-          if(level_val != NULL){
-            slicebounds[i].line_contour_min = slice_line_contour_min;
-            slicebounds[i].line_contour_max = slice_line_contour_max;
-            slicebounds[i].line_contour_num = slice_line_contour_num;
+          if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
+            slicebounds[i].setvalmin = setvalmin;
+            slicebounds[i].setvalmax = setvalmax;
+            slicebounds[i].valmin = valmin;
+            slicebounds[i].valmax = valmax;
+            if(level_val!=NULL){
+              slicebounds[i].line_contour_min = slice_line_contour_min;
+              slicebounds[i].line_contour_max = slice_line_contour_max;
+              slicebounds[i].line_contour_num = slice_line_contour_num;
+            }
+            break;
           }
-          break;
         }
       }
       else{
