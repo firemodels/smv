@@ -3384,7 +3384,6 @@ void PartBoundCB(int var){
 /* ------------------ UpdateZoneTempBounds ------------------------ */
 
 void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-  int i;
   int slice_index;
 
   if(nzoneinfo>0&&RADIO_slice!=NULL){
@@ -3405,7 +3404,6 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
 /* ------------------ UpdateSliceTempBounds ------------------------ */
 
 void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-  int i;
   int slice_index;
 
   if(RADIO_slice!=NULL){
