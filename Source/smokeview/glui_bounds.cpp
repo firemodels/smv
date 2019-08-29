@@ -110,10 +110,8 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #define BOUNDARY_DUPLICATE_ROLLOUT 4
 #define BOUNDARY_SETTINGS_ROLLOUT  5
 
-#define ZONEVALMIN 50
-#define ZONEVALMAX 51
-#define SETZONEVALMIN 52
-#define SETZONEVALMAX 53
+#define ZONEVALMINMAX    50
+#define SETZONEVALMINMAX 52
 
 #define SAVE_SETTINGS 99
 #define CLOSE_BOUNDS 98
@@ -1841,39 +1839,48 @@ extern "C" void GluiBoundsSetup(int main_window){
   /*  zone (cfast) */
 
   if(nzoneinfo>0){
-    ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Upper layer temperature"),false,ZONE_ROLLOUT,BoundRolloutCB);
+    ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Layer temperatures"),false,ZONE_ROLLOUT,BoundRolloutCB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_zone_bound, ZONE_ROLLOUT, glui_bounds);
 
     PANEL_zone_a = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
 
-    EDIT_zone_min = glui_bounds->add_edittext_to_panel(PANEL_zone_a,"",GLUI_EDITTEXT_FLOAT,&zonemin,ZONEVALMIN,SliceBoundCB);
+    EDIT_zone_min = glui_bounds->add_edittext_to_panel(PANEL_zone_a,"",GLUI_EDITTEXT_FLOAT,&zonemin,ZONEVALMINMAX,SliceBoundCB);
     if(setzonemin==0){
       EDIT_zone_min->disable();
+      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
+    }
+    else{
+      EDIT_zone_min->enable();
+      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
     }
     glui_bounds->add_column_to_panel(PANEL_zone_a,false);
 
-    RADIO_zone_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_zone_a,&setzonemin,SETZONEVALMIN,SliceBoundCB);
+    RADIO_zone_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_zone_a,&setzonemin,SETZONEVALMINMAX,SliceBoundCB);
     RADIOBUTTON_zone_permin=glui_bounds->add_radiobutton_to_group(RADIO_zone_setmin,_("percentile min"));
     glui_bounds->add_radiobutton_to_group(RADIO_zone_setmin,_("set min"));
     glui_bounds->add_radiobutton_to_group(RADIO_zone_setmin,_("global min"));
 
     PANEL_zone_b = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
 
-    EDIT_zone_max = glui_bounds->add_edittext_to_panel(PANEL_zone_b,"",GLUI_EDITTEXT_FLOAT,&zonemax,ZONEVALMAX,SliceBoundCB);
+    EDIT_zone_max = glui_bounds->add_edittext_to_panel(PANEL_zone_b,"",GLUI_EDITTEXT_FLOAT,&zonemax,ZONEVALMINMAX,SliceBoundCB);
     if(setzonemax==0){
       EDIT_zone_max->disable();
+      if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
+    }
+    else{
+      EDIT_zone_max->enable();
+      if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
     }
     glui_bounds->add_column_to_panel(PANEL_zone_b,false);
 
-    RADIO_zone_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_zone_b,&setzonemax,SETZONEVALMAX,SliceBoundCB);
+    RADIO_zone_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_zone_b,&setzonemax,SETZONEVALMINMAX,SliceBoundCB);
     RADIOBUTTON_zone_permax=glui_bounds->add_radiobutton_to_group(RADIO_zone_setmax,_("percentile max"));
     glui_bounds->add_radiobutton_to_group(RADIO_zone_setmax,_("set max"));
     glui_bounds->add_radiobutton_to_group(RADIO_zone_setmax,_("global max"));
 
     RADIOBUTTON_zone_permin->disable();
     RADIOBUTTON_zone_permax->disable();
-    SliceBoundCB(SETZONEVALMIN);
-    SliceBoundCB(SETZONEVALMAX);
+    SliceBoundCB(SETZONEVALMINMAX);
   }
 
   // ----------------------------------- 3D smoke ----------------------------------------
@@ -3398,6 +3405,7 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
       if(RADIO_zone_setmin!=NULL)RADIO_zone_setmin->set_int_val(setvalmin);
       if(RADIO_zone_setmax!=NULL)RADIO_zone_setmax->set_int_val(setvalmax);
     }
+    SliceBoundCB(FILEUPDATE);
   }
 }
 
@@ -3493,7 +3501,7 @@ extern "C" void SliceBoundCB(int var){
     case SLICE_VECTORSKIP:
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
       break;
-    case ZONEVALMIN:
+    case ZONEVALMINMAX:
       GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       if(have_zonefl==1)GetZoneColors(zonefl, nzonetotal, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
@@ -3503,42 +3511,29 @@ extern "C" void SliceBoundCB(int var){
       if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
       UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       zoneusermin=zonemin;
-      break;
-    case ZONEVALMAX:
-      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonefl==1)GetZoneColors(zonefl, nzonetotal, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       zoneusermax=zonemax;
       break;
-    case SETZONEVALMIN:
+    case SETZONEVALMINMAX:
       if(setzonemin==SET_MIN){
         EDIT_zone_min->enable();
+        if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
         zonemin=zoneusermin;
         EDIT_zone_min->set_float_val(zonemin);
       }
       else{
         EDIT_zone_min->disable();
+        if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
         EDIT_zone_min->set_float_val(zoneglobalmin);
       }
-      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full,
-        colorlabelzone, zonescale, zonelevels256);
-      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
-        colorlabelzone, zonescale, zonelevels256);
-      UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
-      break;
-    case SETZONEVALMAX:
       if(setzonemax==SET_MAX){
         EDIT_zone_max->enable();
-        zonemax=zoneusermax;
+        if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
+        zonemax = zoneusermax;
         EDIT_zone_max->set_float_val(zonemax);
       }
       else{
         EDIT_zone_max->disable();
+        if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
         EDIT_zone_max->set_float_val(zoneglobalmax);
       }
       GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full,
@@ -3835,9 +3830,11 @@ extern "C" void SliceBoundCB(int var){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
       if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
+      if(EDIT_zone_min!=NULL)EDIT_zone_min->disable();
       break;
     case SET_MIN:
       if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
+      if(EDIT_zone_min!=NULL)EDIT_zone_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -3852,9 +3849,11 @@ extern "C" void SliceBoundCB(int var){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:
         if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
+        if(EDIT_zone_max!=NULL)EDIT_zone_max->disable();
         break;
       case SET_MAX:
         if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
+        if(EDIT_zone_max!=NULL)EDIT_zone_max->enable();
         break;
       default:
         ASSERT(FFALSE);
@@ -3948,25 +3947,31 @@ extern "C" void SliceBoundCB(int var){
     SPINNER_line_contour_num->set_int_val(slice_line_contour_num);
     break;
   case FILEUPDATE:
-      for(ii = nslice_loaded - 1; ii >= 0; ii--){
-        i = slice_loaded_list[ii];
-        sd = sliceinfo + i;
-        if(sd->slicefile_labelindex == slicefile_labelindex){
-          last_slice = i;
-          break;
-        }
+    slice_fileupdate++;
+    if(slice_fileupdate>1){
+      slice_fileupdate--;
+      break;
+    }
+    for(ii = nslice_loaded - 1; ii >= 0; ii--){
+      i = slice_loaded_list[ii];
+      sd = sliceinfo + i;
+      if(sd->slicefile_labelindex == slicefile_labelindex){
+        last_slice = i;
+        break;
       }
-      for(ii = 0; ii < nslice_loaded; ii++){
+    }
+    for(ii = 0; ii < nslice_loaded; ii++){
+      i = slice_loaded_list[ii];
+      sd = sliceinfo + i;
+      if(sd->slicefile_labelindex == slicefile_labelindex){
         int set_slicecolor;
 
-        i = slice_loaded_list[ii];
-        sd = sliceinfo + i;
-        if(sd->slicefile_labelindex == slicefile_labelindex){
-          set_slicecolor = DEFER_SLICECOLOR;
-          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-          ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
-        }
+        set_slicecolor = DEFER_SLICECOLOR;
+        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+        ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
       }
+    }
+    slice_fileupdate--;
     break;
   case FILERELOAD:
     SliceBoundCB(FILEUPDATE);
