@@ -10769,11 +10769,9 @@ updatemenu=0;
         int n;
 
         zonei = zoneinfo + i;
-        if(zonefilenum==i){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,zonei->file);
-        }
-        else{STRCPY(menulabel,zonei->file);}
+        STRCPY(menulabel, "");
+        if(zonei->loaded==1)STRCAT(menulabel,"*");
+        STRCAT(menulabel,zonei->file);
         STRCAT(menulabel,", ");
         for(n=0;n<3;n++){
           STRCAT(menulabel,zonei->label[n].shortlabel);
@@ -10783,8 +10781,8 @@ updatemenu=0;
         glutAddMenuEntry(menulabel,i);
       }
       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-
     }
+
 /* -------------------------------- compress menu -------------------------- */
 
 #ifdef pp_COMPRESS
