@@ -216,6 +216,7 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
+GLUI_Panel *PANEL_slice_bound = NULL;
 GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
@@ -1541,6 +1542,7 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
   GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
   GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_reload,
+  GLUI_Panel **PANEL_bound,
 
   int *setminval, int *setmaxval,
   float *minval, float *maxval,
@@ -1558,6 +1560,7 @@ void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_P
   GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
 
   PANEL_g = glui_bounds->add_rollout_to_panel(PANEL_panel, _("Bound data"), false, 0, PROC_CB);
+  if(PANEL_bound!=NULL)*PANEL_bound = PANEL_g;
   INSERT_ROLLOUT(PANEL_g, glui_bounds);
   if(bound_rollout!=NULL){
     *bound_rollout = PANEL_g;
@@ -1839,7 +1842,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   /*  zone (cfast) */
 
   if(nzoneinfo>0){
-    ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Layer temperatures"),false,ZONE_ROLLOUT,BoundRolloutCB);
+    ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Zone/slice temperatures"),false,ZONE_ROLLOUT,BoundRolloutCB);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_zone_bound, ZONE_ROLLOUT, glui_bounds);
 
     PANEL_zone_a = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
@@ -1929,6 +1932,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit,&STATIC_bound_cmax_unit,
       &BUTTON_updatebound, &BUTTON_reloadbound,
+      NULL,
       &setpatchmin,&setpatchmax,&patchmin,&patchmax,
       &setpatchchopmin, &setpatchchopmax,
       &patchchopmin, &patchchopmax,
@@ -2179,6 +2183,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         &STATIC_part_min_unit,&STATIC_part_max_unit,
         NULL,NULL,
         NULL,NULL,
+        NULL,
         &setpartmin,&setpartmax,&partmin,&partmax,
         &setpartchopmin,&setpartchopmax,&partchopmin,&partchopmax,
         RELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
@@ -2253,6 +2258,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
       &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       NULL, NULL,
+      NULL,
       &setp3min_temp, &setp3max_temp, &p3min_temp, &p3max_temp,
       &setp3chopmin_temp, &setp3chopmax_temp, &p3chopmin_temp, &p3chopmax_temp,
       RELOAD_BOUNDS, TRUNCATE_BOUNDS,
@@ -2348,6 +2354,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_slice_min_unit,&STATIC_slice_max_unit,
       &STATIC_slice_cmin_unit,&STATIC_slice_cmax_unit,
       NULL,NULL,
+      &PANEL_slice_bound,
       &setslicemin,&setslicemax,&slicemin,&slicemax,
       &setslicechopmin, &setslicechopmax,
       &slicechopmin, &slicechopmax,
@@ -3412,16 +3419,18 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
 /* ------------------ UpdateSliceTempBounds ------------------------ */
 
 void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-  int slice_index;
+  int i;
 
-  if(RADIO_slice!=NULL){
-    slice_index = RADIO_slice->get_int_val();
-    if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
-      EDIT_slice_min->set_float_val(valmin);
-      EDIT_slice_max->set_float_val(valmax);
-      RADIO_slice_setmin->set_int_val(setvalmin);
-      RADIO_slice_setmax->set_int_val(setvalmax);
-    }
+  if(RADIO_slice==NULL)return;
+  for(i = 0; i<nslicebounds; i++){
+    if(strcmp(slicebounds[i].shortlabel, "TEMP")!=0)continue;
+    RADIO_slice->set_int_val(i);
+    EDIT_slice_min->set_float_val(valmin);
+    EDIT_slice_max->set_float_val(valmax);
+    RADIO_slice_setmin->set_int_val(setvalmin);
+    RADIO_slice_setmax->set_int_val(setvalmax);
+    SetSliceBounds(i);
+    break;
   }
 }
 
@@ -3945,6 +3954,18 @@ extern "C" void SliceBoundCB(int var){
     SPINNER_line_contour_min->set_float_val(slice_line_contour_min);
     SPINNER_line_contour_max->set_float_val(slice_line_contour_max);
     SPINNER_line_contour_num->set_int_val(slice_line_contour_num);
+    if(ROLLOUT_zone_bound!=NULL){
+      int slice_index;
+
+      slice_index = RADIO_slice->get_int_val();
+      if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+        BoundRolloutCB(ZONE_ROLLOUT);
+        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->disable();
+      }
+      else{
+        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
+      }
+    }
     break;
   case FILEUPDATE:
     slice_fileupdate++;

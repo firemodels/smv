@@ -3723,7 +3723,7 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
   }
   AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
 }
-  
+
   /* ------------------ AverageSliceData ------------------------ */
 
 int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
