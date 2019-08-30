@@ -46,15 +46,21 @@ function install_smv(args){
 
 <p><table border=on>
 <tr>
-<th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
+<th>Settings</th>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
 </tr>
 <tr>
 <th>Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
-<button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">Update All</button>
-<button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Update Windows</button>
+</td>
+</tr>
+<tr>
+<th align=center>Update</th>
+<td align=center>
+<button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
+<button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
 </td>
 </tr>
 <tr>
@@ -82,7 +88,7 @@ function install_smv(args){
 <table border=on>
 <tr>
 <th colspan=3>Libraries</th>
-<th colspan=2>Misc Test Builds</th>
+<th colspan=2>Test Builds</th>
 </tr>
 <tr>
 <th>Windows</th><th>Linux</th><th>OSX</th>
