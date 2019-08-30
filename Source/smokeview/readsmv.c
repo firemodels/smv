@@ -2153,6 +2153,7 @@ void UpdateBoundInfo(void){
 
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
+      if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
       sbi->setvalmin=0;
       sbi->setvalmax=0;
       sbi->valmin=1.0;
