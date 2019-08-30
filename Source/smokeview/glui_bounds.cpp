@@ -3419,19 +3419,33 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
 /* ------------------ UpdateSliceTempBounds ------------------------ */
 
 void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-  int i;
+  int temp_index;
+
+  if(slicebounds_temp==NULL||RADIO_slice==NULL)return;
+  temp_index = slicebounds_temp-slicebounds;
+  if(setvalmin==SET_MIN){
+    slicebounds_temp->valmin = valmin;
+  }
+  else{
+    slicebounds_temp->global_valmin = valmin;
+  }
+  if(setvalmax==SET_MAX){
+    slicebounds_temp->valmax = valmax;
+  }
+  else{
+    slicebounds_temp->global_valmax = valmax;
+  }
+  slicebounds_temp->setvalmin = setvalmin;
+  slicebounds_temp->setvalmax = setvalmax;
 
   if(RADIO_slice==NULL)return;
-  for(i = 0; i<nslicebounds; i++){
-    if(strcmp(slicebounds[i].shortlabel, "TEMP")!=0)continue;
-    RADIO_slice->set_int_val(i);
-    EDIT_slice_min->set_float_val(valmin);
-    EDIT_slice_max->set_float_val(valmax);
-    RADIO_slice_setmin->set_int_val(setvalmin);
-    RADIO_slice_setmax->set_int_val(setvalmax);
-    SetSliceBounds(i);
-    break;
-  }
+  RADIO_slice->set_int_val(temp_index);
+  EDIT_slice_min->set_float_val(valmin);
+  EDIT_slice_max->set_float_val(valmax);
+  RADIO_slice_setmin->set_int_val(setvalmin);
+  RADIO_slice_setmax->set_int_val(setvalmax);
+  SetSliceBounds(temp_index);
+  SliceBoundCB(FILEUPDATE);
 }
 
 /* ------------------ SetSliceMin ------------------------ */
