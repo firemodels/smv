@@ -5,7 +5,9 @@ if [ "$arg" == "" ]; then
 fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+if [[ "$arg" == "all" ]] || [[ "$arg" == "clean" ]]; then
 rm *.a
+fi
 
 # use -I to force use of the gnu compiler
 OPTS="-I $*"

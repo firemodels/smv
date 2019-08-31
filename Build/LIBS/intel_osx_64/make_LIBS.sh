@@ -11,7 +11,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
 LIBDIR=`pwd`
-rm *.a
+if [[ "$arg" == "all" ]] || [[ "$arg" == "clean" ]]; then
+  rm *.a
+fi
 
 SRCDIR=$LIBDIR/../../../Source
 cd $SRCDIR
@@ -41,6 +43,7 @@ cp libglui.a $LIBDIR/.
 fi
 
 # GLUT
+if [[ "$arg" == "all" ]] || [[ "$arg" == "freeglut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/intel_osx_64
   ./make_freeglut.sh $OPTS 
@@ -51,6 +54,7 @@ else
     ./makelib.sh $OPTS
     cp libglut.a $LIBDIR/.
   fi
+fi
 fi
 
 if [[ "$arg" == "all" ]] || [[ "$arg" == "jpeg" ]]; then
