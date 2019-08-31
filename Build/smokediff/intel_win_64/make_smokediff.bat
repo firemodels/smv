@@ -8,7 +8,7 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
 Title Building smokediff for 64 bit Windows
 
-erase *.obj *.mod
+erase *.obj *.mod *.exe
 make SHELL="%ComSpec%" -f ..\Makefile intel_win_64
 if x%arg1% == xbot goto skip2
 pause

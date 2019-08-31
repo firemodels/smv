@@ -24,7 +24,7 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
   set OPT=-DHAVE_SNPRINTF -DHAVE_STRUCT_TIMESPEC
 :endif2
 
-erase *.obj *.mod
+erase *.obj *.mod *.exe
 make -j 4 SHELL="%ComSpec%" LUA_SCRIPTING="true" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 if x%from% == xbot goto skip2
 pause

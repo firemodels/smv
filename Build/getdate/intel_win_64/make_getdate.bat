@@ -4,7 +4,7 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
 Title Building getdate for 64 bit Windows
 
-erase *.obj
+erase *.obj *.exe
 make SHELL="%ComSpec%" -f ..\Makefile intel_win_64
 pause
 

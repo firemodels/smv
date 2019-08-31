@@ -16,7 +16,7 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
 
 Title Building smokezip for 64 bit Windows
 
-erase *.obj *.mod
+erase *.obj *.mod *.exe
 make SHELL="%ComSpec%" OPT="%OPT%" -f ..\Makefile intel_win_64
 if x%arg1% == xbot goto skip2
 pause

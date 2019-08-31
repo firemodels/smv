@@ -52,7 +52,7 @@ no_target:
 
 intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -D pp_INTEL -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
-intel_win_64 : exe       = background.exe
+intel_win_64 : exe       = background_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) 
@@ -61,7 +61,7 @@ intel_win_64 : $(objwin)
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
-gnu_win_64 : exe       = background.exe
+gnu_win_64 : exe       = background_win_64.exe
 
 gnu_win_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) 
@@ -70,7 +70,7 @@ gnu_win_64 : $(obj)
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
-intel_linux_64 : exe       = background
+intel_linux_64 : exe       = background_linux_64
 
 intel_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) 
@@ -79,7 +79,7 @@ intel_linux_64 : $(obj)
 
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = background
+gnu_linux_64 : exe       = background_linux_64
 
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
@@ -88,7 +88,7 @@ gnu_linux_64: $(obj)
 
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CC        = gcc
-gnu_linux_64_db : exe       = background
+gnu_linux_64_db : exe       = background_linux_64
 
 gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
@@ -98,7 +98,7 @@ gnu_linux_64_db: $(obj)
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = background
+intel_osx_64 : exe       = background_osx_64
 
 intel_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) -m64 $(obj) 
@@ -106,7 +106,7 @@ intel_osx_64 : $(obj)
 # ------------- gcc OSX 64 ----------------
 gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
-gnu_osx_64 : exe       = background
+gnu_osx_64 : exe       = background_osx_64
 
 gnu_osx_64 : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
@@ -115,7 +115,7 @@ gnu_osx_64 : $(obj)
 
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 gnu_osx_64_db : CC        = gcc
-gnu_osx_64_db : exe       = background_db
+gnu_osx_64_db : exe       = background_osx_64_db
 
 gnu_osx_64_db : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
