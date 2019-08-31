@@ -15,4 +15,7 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
 
 make CFLAGS=%CFLAGS% COMPILER=%COMPILER% SIZE=%SIZE% OPT=%OPT% RM=erase -f ./makefile %target%
 if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
+if "x%EXIT_SCRIPT%" == "x" goto skip1
+exit
+:skip1
 endlocal
