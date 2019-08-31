@@ -1,4 +1,4 @@
-@echo
+@echo off
 set platform=%1
 
 set CURDIR=%CD%
@@ -64,25 +64,6 @@ if NOT "%platform%" == "osx" goto endif3
   goto eof
 :endif3
 goto eof
-
-:: -------------------------------------------------------------------------------
-:not_built
-:: -------------------------------------------------------------------------------
-set count=0
-  for %%x in ( %progs% ) do (
-    cd %svn_root%\smv\Build\%%x\intel_win_64
-    if not exist %%x_win_64.exe set count=%count%+1
-  ) 
-  for %%x in ( %smvprogs% ) do (
-    cd %svn_root%\smv\Build\%%x\intel_win_64
-    if not exist %%x_win_64.exe set count=%count%+1
-  ) 
-  for %%x in ( %fdsprogs% ) do (
-    cd %svn_root%\fds\Utilities\%%x\intel_win_64
-    if not exist %%x_win_64.exe set count=%count%+1
-  ) 
-  echo count=%count%
-exit /b 0
 
 :eof
 echo.

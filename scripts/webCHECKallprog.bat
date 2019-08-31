@@ -1,4 +1,4 @@
-@echo
+@echo off
 set platform=%1
 
 set CURDIR=%CD%
@@ -21,28 +21,33 @@ goto:eof
 
 call %envfile%
 echo.
-echo  Building smokeview utilities for 64 bit %platform%
-Title Building smokeview utilities for 64 bit %platform%
+echo %platform% smokeview utilities build check
+echo.
+Title %platform% smokeview utilities build check
 
 %svn_drive%
 
 set progs=background dem2fds flush hashfile smokediff smokezip wind2fds
 set smvprogs=get_time set_path sh2bat timep
 
+set status=none
 if NOT "%platform%" == "windows" goto endif1
-  echo after if1
   for %%x in ( %progs% ) do (
     cd %svn_root%\smv\Build\%%x\intel_win_64
-    start make_%%x
+    if not exist %%x_win_64.exe echo %%x_win_64.exe not built
+    if not exist %%x_win_64.exe set status=some
   ) 
   for %%x in ( %smvprogs% ) do (
     cd %svn_root%\smv\Build\%%x\intel_win_64
-    start make_%%x
+    if not exist %%x_win_64.exe echo %%x_win_64.exe not built
+    if not exist %%x_win_64.exe set status=some
+  )
+  for %%x in ( %fdsprogs% ) do (
+    cd %svn_root%\fds\Utilities\%%x\intel_win_64
+    if not exist %%x_win_64.exe echo %%x_win_64.exe not built
+    if not exist %%x_win_64.exe set status=some
   ) 
-    cd %svn_root%\fds\Utilities\fds2ascii\intel_win_64
-    start make_fds2ascii
-  ) 
-::  call :not_built
+  if "%status%" == "none" echo programs not built: %status%
   goto eof
 :endif1
 
@@ -65,39 +70,7 @@ if NOT "%platform%" == "osx" goto endif3
 :endif3
 goto eof
 
-:: -------------------------------------------------------------------------------
-:not_built
-:: -------------------------------------------------------------------------------
-set count=0
-  for %%x in ( %progs% ) do (
-    cd %svn_root%\smv\Build\%%x\intel_win_64
-    if not exist %%x_win_64.exe set /a count=%count%+1
-  ) 
-  for %%x in ( %smvprogs% ) do (
-    cd %svn_root%\smv\Build\%%x\intel_win_64
-    if not exist %%x_win_64.exe set /a count=%count%+1
-  )
-  for %%x in ( %fdsprogs% ) do (
-    cd %svn_root%\fds\Utilities\%%x\intel_win_64
-    if not exist %%x_win_64.exe set /a count=%count%+1
-  ) 
-  echo count=%count%
-exit /b 0
-
-:: -------------------------------------------------------------
-:wait_until_finished
-:: -------------------------------------------------------------
-Timeout /t 30 >nul 
-:loop1
-:: FDSBASE defined in Run_SMV_Cases and Run_FDS_Cases (the same in each)
-tasklist | grep -ic %FDSBASE% > %WAIT_FILE%
-set /p numexe=<%WAIT_FILE%
-echo Number of cases running - %numexe%
-if %numexe% == 0 goto finished
-Timeout /t 30 >nul 
-goto loop1
-:finished
-
 :eof
 echo.
 cd %CURDIR%
+pause

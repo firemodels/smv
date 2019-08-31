@@ -28,6 +28,9 @@ function build_prog(args){
 function build_allprog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDallprog.bat ",args));
 }
+function check_allprog(args){
+  MyObject.Run(get_fullpath("../scripts/webCHECKallprog.bat ",args));
+}
 function build_utilprog(args){
   MyObject.Run(get_fullpath("../../fds/Utilities/Scripts/webBUILDutilprog.bat ",args));
 }
@@ -239,10 +242,13 @@ function install_smv(args){
 <td align=center><button onclick="build_prog('timep windows')">Build</button></td>
 </tr>
 <tr>
-<th>All</th>
+<th rowspan=2>All</th>
 <td align=center><button onclick="build_allprog('windows')">Build</button></td>
 <td align=center><button onclick="build_allprog('linux')">Build</button></td>
 <td align=center><button onclick="build_allprog('osx')">Build</button></td>
+</tr>
+<tr>
+<td align=center><button onclick="check_allprog('windows')">Check</button></td>
 </tr>
 
 
