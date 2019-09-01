@@ -18,6 +18,9 @@ Title Building smokezip for 64 bit Windows
 
 erase *.obj *.mod *.exe
 make SHELL="%ComSpec%" OPT="%OPT%" -f ..\Makefile intel_win_64
+if "x%EXIT_SCRIPT%" == "x" goto skip1
+exit
+:skip1
 if x%arg1% == xbot goto skip2
 pause
 :skip2

@@ -9,7 +9,9 @@ Title Building filehash for 64 bit Windows
 
 erase *.obj *.exe
 make SHELL="%ComSpec%" -f ..\Makefile intel_win_64
-
+if "x%EXIT_SCRIPT%" == "x" goto skip1
+exit
+:skip1
 if x%from% == xbot goto skip
 pause
 :skip
