@@ -3550,10 +3550,8 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   int istep;
   int nx, ny, nxy, ibar, jbar;
   int ntimes;
-  //int iimin, iimax, jjmin, jjmax, kkmin, kkmax;
   char *iblank_node, *iblank_cell, *slice_mask0;
   meshdata *meshi;
-
 
   if(sd->slice_filetype == SLICE_GEOM){
     pdata = sd->patchgeom->geom_vals;
@@ -3725,7 +3723,7 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
   }
   AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
 }
-  
+
   /* ------------------ AverageSliceData ------------------------ */
 
 int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
@@ -4646,6 +4644,14 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
   if(sd->compression_type == UNCOMPRESSED){
     GetSliceDataBounds(sd, &qmin, &qmax);
+    if(nzoneinfo>0&&strcmp(sd->label.shortlabel, "TEMP")==0){
+      slice_temp_bounds_defined = 1;
+      if(zone_temp_bounds_defined==0){
+        GetZoneTempBounds();
+      }
+      qmin = MIN(qmin,zoneglobalmin);
+      qmax = MAX(qmax,zoneglobalmax);
+    }
   }
   else{
     qmin = sd->valmin;
@@ -4654,7 +4660,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   sd->globalmin = qmin;
   sd->globalmax = qmax;
   if(sd->compression_type == UNCOMPRESSED){
-    AdjustSliceBounds(sd, &qmin, &qmax);
+    if(nzoneinfo==0||strcmp(sd->label.shortlabel, "TEMP")!=0){
+      AdjustSliceBounds(sd, &qmin, &qmax);
+    }
   }
   sd->valmin = qmin;
   sd->valmax = qmax;

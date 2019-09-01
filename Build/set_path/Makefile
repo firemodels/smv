@@ -54,7 +54,7 @@ intel_win_64 : CFLAGS    = -D WIN32 -D pp_INTEL -O2 /nologo $(GITINFO) $(INTEL_C
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort
-intel_win_64 : exe       = set_path64.exe
+intel_win_64 : exe       = set_path_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
@@ -64,7 +64,7 @@ intel_win_64 : $(objwin)
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
-gnu_win_64 : exe       = set_path64.exe
+gnu_win_64 : exe       = set_path_win_64.exe
 
 gnu_win_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) 

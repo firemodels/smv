@@ -29,6 +29,7 @@ git remote update
 git checkout master
 git merge firemodels/master
 git merge origin/master
+git push origin master
 git describe --dirty
 
 cd %svn_root%\smv
@@ -38,6 +39,7 @@ git remote update
 git checkout master
 git merge firemodels/master
 git merge origin/master
+git push origin master
 git describe --dirty
 
 cd %svn_root%\bot
@@ -58,7 +60,7 @@ git merge origin/nist-pages
 git describe --dirty
 
 
-set scriptdir=%linux_svn_root%/fds/Utilities/Scripts/
+set scriptdir=%linux_svn_root%/bot/Scripts/
 set linux_fdsdir=%linux_svn_root%
 
 echo.

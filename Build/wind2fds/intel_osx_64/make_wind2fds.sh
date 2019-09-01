@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -f *.o
+rm -f *.o wind2fds_osx_64
 make -f ../Makefile intel_osx_64

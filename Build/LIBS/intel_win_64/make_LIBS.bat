@@ -5,6 +5,8 @@ set arg2=%2
 :: if arg3 is freeglut then freeglut not glut library will be built
 set arg3=%3
 
+set EXIT_SCRIPT=1
+
 set WAIT=
 if "%arg1%"=="bot" (
   set WAIT=/WAIT
@@ -81,7 +83,8 @@ copy freeglut_staticd.lib %LIBDIR%\glut32.lib
 
 cd %LIBDIR%
 
-echo library builds complete
 if x%arg1% == xbot goto skip1
+pause
+dir *.lib
 pause
 :skip1

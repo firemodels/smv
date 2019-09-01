@@ -1503,7 +1503,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   char prop_buffer[255];
   char buffer[255],*buffer3;
   int i;
-  char *tok1, *tok2, *tok3;
+  char *tok1, *tok2, *tok3, *tok4;
   int is_beam=0;
 
   devicei->type=DEVICE_DEVICE;
@@ -1519,11 +1519,20 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   tok3=strtok(NULL,"%");
   tok3=TrimFrontBack(tok3);
 
+  tok4=strtok(NULL,"%");
+  tok4=TrimFrontBack(tok4);
+
   strcpy(devicei->quantity,"");
   if(tok2!=NULL){
     strcpy(devicei->quantity,tok2);
   }
 
+  if(tok4==NULL){
+    strcpy(devicei->csvlabel,tok1);
+  }
+  else{
+    strcpy(devicei->csvlabel,tok4);
+  }
   if(strlen(tok1)>=4&&strncmp(tok1, "null",4)==0){
     strcpy(devicei->label, "null");
   }
@@ -1538,6 +1547,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
+  devicei->target_index = -1;
   FGETS(buffer,255,stream);
   TrimCommas(buffer);
 
@@ -2143,6 +2153,7 @@ void UpdateBoundInfo(void){
 
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
+      if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
       sbi->setvalmin=0;
       sbi->setvalmax=0;
       sbi->valmin=1.0;
@@ -10600,20 +10611,22 @@ int ReadIni2(char *inifile, int localfile){
           }
         }
       }
+      if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].shortlabel, buffer2) != 0)continue;
-          slicebounds[i].setvalmin = setvalmin;
-          slicebounds[i].setvalmax = setvalmax;
-          slicebounds[i].valmin = valmin;
-          slicebounds[i].valmax = valmax;
-          if(level_val != NULL){
-            slicebounds[i].line_contour_min = slice_line_contour_min;
-            slicebounds[i].line_contour_max = slice_line_contour_max;
-            slicebounds[i].line_contour_num = slice_line_contour_num;
+          if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
+            slicebounds[i].setvalmin = setvalmin;
+            slicebounds[i].setvalmax = setvalmax;
+            slicebounds[i].valmin = valmin;
+            slicebounds[i].valmax = valmax;
+            if(level_val!=NULL){
+              slicebounds[i].line_contour_min = slice_line_contour_min;
+              slicebounds[i].line_contour_max = slice_line_contour_max;
+              slicebounds[i].line_contour_num = slice_line_contour_num;
+            }
+            break;
           }
-          break;
         }
       }
       else{
@@ -11158,9 +11171,14 @@ int ReadIni2(char *inifile, int localfile){
       ApertureMenu(apertureindex);
       continue;
     }
+    if(Match(buffer, "SHOWTARGETS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &vis_target_data);
+      continue;
+    }
     if(Match(buffer, "SHOWWALLS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visWalls);
+      sscanf(buffer, "%i %i", &visWalls,&vis_wall_data);
       continue;
     }
     if(Match(buffer, "SHOWCEILING") == 1){
@@ -13593,10 +13611,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n", visVentHFlow, visventslab, visventprofile, visVentVFlow, visVentMFlow);
   fprintf(fileout, "SHOWROOMS\n");
   fprintf(fileout, " %i\n", visCompartments);
+  fprintf(fileout, "SHOWTARGETS\n");
+  fprintf(fileout, " %i \n", vis_target_data);
   fprintf(fileout, "SHOWVENTS\n");
   fprintf(fileout, " %i\n", visVents);
   fprintf(fileout, "SHOWWALLS\n");
-  fprintf(fileout, " %i\n", visWalls);
+  fprintf(fileout, " %i %i\n", visWalls,vis_wall_data);
   fprintf(fileout, "SKIPEMBEDSLICE\n");
   fprintf(fileout, " %i\n", skip_slice_in_embedded_mesh);
   fprintf(fileout, "SLICEDUP\n");

@@ -17,6 +17,7 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
   set OPT=-DHAVE_SNPRINTF -DHAVE_STRUCT_TIMESPEC
 :endif2
 
+erase *.exe
 make SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 pause
 

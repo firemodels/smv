@@ -165,6 +165,8 @@ float     part_load_time;
 #define MENU_ZONE_FIRES 18
 #define MENU_ZONE_VENT_SLAB 19
 #define MENU_ZONE_VENT_PROFILE 20
+#define MENU_ZONE_WALLS 22
+#define MENU_ZONE_TARGETS 23
 
 #define MENU_SHOWSLICE_IN_GAS -16
 #define MENU_SHOWSLICE_IN_GASANDSOLID -17
@@ -5742,6 +5744,12 @@ void ZoneShowMenu(int value){
     visSZone=1;
     visZone=1;
     break;
+  case MENU_ZONE_WALLS:
+    vis_wall_data = 1-vis_wall_data;
+    break;
+  case MENU_ZONE_TARGETS:
+    vis_target_data = 1-vis_target_data;
+    break;
   case MENU_ZONE_VENTS:
     visVentFlow=1-visVentFlow;
     if(visVentFlow==1){
@@ -7052,9 +7060,7 @@ updatemenu=0;
       glutAddMenuEntry(_("Vents"), GEOM_Vents);
     }
   }
-  if(ntotal_blockages>0 || isZoneFireModel == 1){
-    GLUTADDSUBMENU(_("Grid"),gridslicemenu);
-  }
+  GLUTADDSUBMENU(_("Grid"),gridslicemenu);
   if(isZoneFireModel==0){
     if(visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
     if(visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
@@ -7238,6 +7244,22 @@ updatemenu=0;
     }
     else{
       glutAddMenuEntry(_("   Hide"), MENU_ZONE_LAYERHIDE);
+    }
+    if(have_wall_data==1){
+      if(vis_wall_data==1){
+        glutAddMenuEntry(_("*Walls"), MENU_ZONE_WALLS);
+      }
+      else{
+        glutAddMenuEntry(_("Walls"), MENU_ZONE_WALLS);
+      }
+    }
+    if(have_target_data==1){
+      if(vis_target_data==1){
+        glutAddMenuEntry(_("*Target"), MENU_ZONE_TARGETS);
+      }
+      else{
+        glutAddMenuEntry(_("Targets"), MENU_ZONE_TARGETS);
+      }
     }
     if(nzvents>0){
       if(visVentFlow==1){
@@ -10747,11 +10769,9 @@ updatemenu=0;
         int n;
 
         zonei = zoneinfo + i;
-        if(zonefilenum==i){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,zonei->file);
-        }
-        else{STRCPY(menulabel,zonei->file);}
+        STRCPY(menulabel, "");
+        if(zonei->loaded==1)STRCAT(menulabel,"*");
+        STRCAT(menulabel,zonei->file);
         STRCAT(menulabel,", ");
         for(n=0;n<3;n++){
           STRCAT(menulabel,zonei->label[n].shortlabel);
@@ -10761,8 +10781,8 @@ updatemenu=0;
         glutAddMenuEntry(menulabel,i);
       }
       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-
     }
+
 /* -------------------------------- compress menu -------------------------- */
 
 #ifdef pp_COMPRESS

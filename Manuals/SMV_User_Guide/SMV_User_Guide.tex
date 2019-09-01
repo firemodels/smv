@@ -1706,7 +1706,8 @@ flow speed and direction.  Plumes are represented as inverted
 cones with heights calculated in Smokeview using the same
 correlation as CFAST and heat release rate data computed by CFAST.
 A Smokeview view of the one room sample case that comes with the
-CFAST installation is illustrated in Figs. \ref{figcfast}, \ref{figcfast2}\ and \ref{figcfastsmoke}.
+CFAST installation is illustrated in Figs. \ref{figcfast}, \ref{figcfast2}\,  \ref{figcfastsmoke}
+and \ref{figcfastboundary}.
 
 \begin{figure}[bph]
 \begin{center}
@@ -1760,6 +1761,25 @@ Layers are visualized realistically and vent flow
 is visualized using color.}
 \label{figcfastsmoke}%
 \end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_boundary_100}&
+\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_boundary_200}\\
+100.0 s&200.0 s\\
+\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_boundary_300}&
+\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_boundary_400}\\
+300.0 s&400.0 s
+&\raisebox{0.0ex}[0pt]{\includegraphics[height=5.0in]{\SMVfigdir/colorbar_20_620}}\\
+\\
+\end{tabular}
+\end{center}
+\caption{CFAST test showing wall temperatures 
+visualized using color.}
+\label{figcfastboundary}%
+\end{figure}
+
 %---------------------------------------------------------------------------------
 %------------------------ Controlling and Customizing Smokeview --------------------
 %---------------------------------------------------------------------------------
@@ -1869,7 +1889,7 @@ The user may also specify the number files that are loaded simultaneously
 }\ \caption[Dialog box for setting Particle file
 options.] {Dialog box for setting Particle file
 options. Select a variable and bound type. Enter a lower
-and/or upper bound if set bound type was selected. Particle files may be loaded in parallel by 
+and/or upper bound if set bound type was selected. Particle files may be loaded in parallel by
 selecting the Parallel loading checkbox and setting the number of files to load in parallel.
  }\ \label{figBOUNDSpart}
 \end{figure}

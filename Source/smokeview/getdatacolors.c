@@ -737,6 +737,7 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
   float range;
   float tval;
 
+  if(t==NULL||it==NULL)return;
   local_tmin = ttmin;
   local_tmax = ttmax;
 

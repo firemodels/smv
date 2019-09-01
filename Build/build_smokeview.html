@@ -1,4 +1,4 @@
-<html>
+ <html>
 
 <head>
 <TITLE>Smokeview</TITLE>
@@ -25,6 +25,12 @@ function build_smv(args){
 function build_prog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDprog.bat ",args));
 }
+function build_allprog(args){
+  MyObject.Run(get_fullpath("../scripts/webBUILDallprog.bat ",args));
+}
+function check_allprog(args){
+  MyObject.Run(get_fullpath("../scripts/webCHECKallprog.bat ",args));
+}
 function build_utilprog(args){
   MyObject.Run(get_fullpath("../../fds/Utilities/Scripts/webBUILDutilprog.bat ",args));
 }
@@ -45,28 +51,41 @@ function install_smv(args){
 <hr size="1">
 
 <p><table border=on>
-<tr><th colspan=2>Preliminaries</th></tr>
-<tr><th>Settings</th><td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td></tr>
-<tr><th>Repos</th>
+<tr>
+<th>Settings</th>
+<td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
+</tr>
+<tr>
+<th>Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
-Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
-<button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
 </td>
 </tr>
-<tr><th>Revision</th><td align=center>
+<tr>
+<th align=center>Update</th>
+<td align=center>
+<button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
+<button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
+</td>
+</tr>
+<tr>
+<th>Revision</th><td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td></tr>
-<tr><th>Branch</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td></tr>
-<tr><th align=center>Release<br>notes</th>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td>
+</tr>
+<tr>
+<th align=center>Notes</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>
 <button onclick="run_script('\\smv\\scripts\\webEDIT_release_notes.bat')">Edit</button>
-<button onclick="run_script('\\smv\\scripts\\webVIEW_release_notes.bat')">View</button><br>
-<button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Set smvlogdate</button></td>
+<button onclick="run_script('\\smv\\scripts\\webVIEW_release_notes.bat')">View</button>
+</td>
+</tr>
+<tr>
+<th>Branch</th><td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
 </tr>
 </table>
 
@@ -75,7 +94,7 @@ Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</
 <table border=on>
 <tr>
 <th colspan=3>Libraries</th>
-<th colspan=2>Misc Test Builds</th>
+<th colspan=2>Test Builds</th>
 </tr>
 <tr>
 <th>Windows</th><th>Linux</th><th>OSX</th>
@@ -221,6 +240,15 @@ Update: <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</
 <tr>
 <th>timep</th>
 <td align=center><button onclick="build_prog('timep windows')">Build</button></td>
+</tr>
+<tr>
+<th rowspan=2>All</th>
+<td align=center><button onclick="build_allprog('windows')">Build</button></td>
+<td align=center><button onclick="build_allprog('linux')">Build</button></td>
+<td align=center><button onclick="build_allprog('osx')">Build</button></td>
+</tr>
+<tr>
+<td align=center><button onclick="check_allprog('windows')">Check</button></td>
 </tr>
 
 

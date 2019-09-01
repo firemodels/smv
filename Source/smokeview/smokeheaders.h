@@ -5,6 +5,12 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void GetZoneTempBounds(void);
+EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+  float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
+  int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg);
+EXTERNCPP void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+  int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
 EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
 EXTERNCPP void GetAllPartBounds(void);
@@ -331,6 +337,7 @@ EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP void GetFaceInfo(void);
 EXTERNCPP void GetGeomInfoPtrs(int flag);
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
+EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
 EXTERNCPP void ReadHRR(int flag, int *errorcode);
@@ -742,11 +749,13 @@ EXTERNCPP void DrawHorizontalColorbarRegLabels(void);
 EXTERNCPP void DrawVerticalColorbarRegLabels(void);
 EXTERNCPP void DrawEvac(const partdata *parti);
 EXTERNCPP void DrawGrid(const meshdata *gb);
-EXTERNCPP void DrawRoomGeom(void);
-EXTERNCPP void DrawFireData(void);
-EXTERNCPP void DrawRoomData(void);
-EXTERNCPP void DrawVentData(void);
-EXTERNCPP void DrawVentDataProfile(void);
+EXTERNCPP void DrawZoneRoomGeom(void);
+EXTERNCPP void DrawZoneFireData(void);
+EXTERNCPP void DrawZoneRoomData(void);
+EXTERNCPP void DrawZoneVentData(void);
+EXTERNCPP void DrawZoneWallData(void);
+EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
+EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
@@ -786,7 +795,6 @@ EXTERNCPP void InitRGB(void);
 EXTERNCPP void UpdateChopColors(void);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP void WriteIni(int flag,char *file);
-EXTERNCPP void DrawFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void AdjustDataBounds(const float *pdata, int skip, int ndata, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
@@ -838,7 +846,6 @@ EXTERNCPP void OutputText(float x, float y, char *string);
 EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP void GetZoneGlobalBounds(const float *pdata, int ndata, float *pglobalmin, float *pglobalmax);
 EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);

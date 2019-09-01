@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(slice_fileupdate, 0);
+SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);
+SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
+
 SVEXTERN int nevacloaded, nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded, nevacloaded;
@@ -793,6 +797,13 @@ SVEXTERN float zonelevels256[256];
 SVEXTERN float boundarylevels256[256];
 SVEXTERN float partlevels256[256];
 SVEXTERN float SVDECL(*zone_times,NULL), SVDECL(*zoneylay,NULL), SVDECL(*zonetl,NULL), SVDECL(*zonetu,NULL), SVDECL(*zonepr,NULL);
+SVEXTERN float SVDECL(*zonefl, NULL), SVDECL(*zonelw, NULL), SVDECL(*zoneuw, NULL), SVDECL(*zonecl, NULL);
+SVEXTERN float SVDECL(*zonetargets, NULL);
+SVEXTERN int SVDECL(have_zonefl, 0), SVDECL(have_zonelw, 0), SVDECL(have_zoneuw, 0), SVDECL(have_zonecl, 0);
+SVEXTERN int SVDECL(have_wall_data,0), SVDECL(vis_wall_data,0);
+SVEXTERN int SVDECL(have_target_data, 0), SVDECL(vis_target_data, 1);
+SVEXTERN int SVDECL(nzonetotal_targets, 0), SVDECL(nzone_targets,0);
+
 SVEXTERN float SVDECL(*zonerhol, NULL), SVDECL(*zonerhou, NULL);
 SVEXTERN float SVDECL(*zoneqfire,NULL), SVDECL(*zonefheight,NULL), SVDECL(*zonefbase,NULL), SVDECL(*zonefdiam,NULL);
 SVEXTERN float SVDECL(*zoneodl,NULL), SVDECL(*zoneodu,NULL), SVDECL(*zonevents,NULL);
@@ -807,6 +818,11 @@ SVEXTERN float SVDECL(zone_ventfactor,1.0);
 SVEXTERN unsigned char SVDECL(*izonetu,NULL);
 SVEXTERN int SVDECL(show_zonelower, 1);
 SVEXTERN unsigned char SVDECL(*izonetl, NULL);
+SVEXTERN unsigned char SVDECL(*izonefl, NULL);
+SVEXTERN unsigned char SVDECL(*izonelw, NULL);
+SVEXTERN unsigned char SVDECL(*izoneuw, NULL);
+SVEXTERN unsigned char SVDECL(*izonecl, NULL);
+SVEXTERN unsigned char SVDECL(*izonetargets, NULL);
 SVEXTERN int nzone_times;
 SVEXTERN float barright;
 SVEXTERN float SVDECL(*tspr,NULL);
@@ -1655,6 +1671,7 @@ SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int showfiles;
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), glui_slicebounds;
+SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
 SVEXTERN int setp3min_temp, setp3max_temp;

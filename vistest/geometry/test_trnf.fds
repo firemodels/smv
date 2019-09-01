@@ -1,0 +1,53 @@
+&HEAD CHID='test_trnf', TITLE='Test AGL slice defined on top of box (offset in z of 0.5 m).' /
+
+
+&MESH IJK=32,32,32, XB=-1.4,1.4,-1.4,1.4,-1.4,1.4, ID='mesh1' /
+MESH IJK=16,32,32, XB= 0.0,1.4,-1.4,1.4,-1.4,1.4, ID='mesh2' /
+
+&TIME T_END=0.5 /
+&RADI RADIATION=.FALSE. /
+
+! We leave the top of domain OPEN:
+&VENT MB='ZMAX', SURF_ID='OPEN' /
+
+! Define Species:
+&SPEC ID='AIR', BACKGROUND=T /
+&SPEC ID='PROPANE', LUMPED_COMPONENT_ONLY=T /
+&SPEC ID='TRACER', SPEC_ID(1)='PROPANE', MASS_FRACTION(1)=1.0 /
+
+! Define Surface BCs:
+&SURF ID='WALLS', COLOR='GRAY', ADIABATIC=T, DEFAULT=T /
+! Sphere : Total mass = 10 kg/m2/s * 12.6 m2 * 1 s = 125.6 kg
+&SURF ID='terrain', COLOR='RED', MASS_FLUX(1)=10, SPEC_ID(1)='TRACER', TAU_MF(1)=0 /
+
+! Define output:
+! Slices:
+&SLCF PBY=0, QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBY=0, QUANTITY='TEMPERATURE' /
+&SLCF PBY=0, QUANTITY='MASS FRACTION', SPEC_ID='TRACER' /
+&SLCF PBY=0, QUANTITY='BACKGROUND PRESSURE' /
+! Boundary slices:
+&BNDF QUANTITY='MASS FLUX WALL', SPEC_ID='TRACER' /
+&BNDF QUANTITY='NORMAL VELOCITY' /
+
+
+! AGL Slice of TRACER MASS FRACTION:
+! We would like a slice of tracer mass fraction defined with an offset DZ=0.5 from the top of 
+! the box, that is at Z=0.1 (only triangles whose Z component of their normal vector is > EPS)
+! Glenn, maybe as first step we can set the new GEOM_AGL geometry data structure (of same derived type as GEOMETRY_TYPE?) with the
+! corresponding triangles and vertices for the "AGL geom". Then I can go in and split those GEOM triangles into smaller SLICE triangles of the size of the 
+! finest grid. The location of these finer triangles will define which mesh (and MPI process) owns them and will write them with the desired QUANTITY
+! to the AGL slice. 
+
+
+# Geometries:
+&GEOM ID='terrain', SURF_ID='terrain', XB=-1.4,1.4,-1.4,1.4,-1.4,-0.4 /
+
+&TRNF ID='terrain_0p5', GEOM_ID='terrain', Z_OFFSET=0.5 /
+
+&SLCF TRNF_ID='terrain_0p5', QUANTITY='TEMPERATURE' /
+&SLCF TRNF_ID='terrain_0p5', QUANTITY='VELOCITY', VECTOR=T /
+&SLCF TRNF_ID='terrain_0p5', QUANTITY='MASS FRACTION', SPEC_ID='TRACER' /
+&SLCF TRNF_ID='terrain_0p5', QUANTITY='BACKGROUND PRESSURE' /
+
+&TAIL /
