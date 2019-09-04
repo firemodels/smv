@@ -4,7 +4,6 @@
 # Linux machine with a batch queuing system
 
 QUEUE=batch
-size=64
 DEBUG=
 OPENMP_OPTS=
 FDS_DEBUG=0
@@ -54,9 +53,6 @@ echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
-echo "-p size - platform size"
-echo "     default: 64"
-echo "     other options: 32"
 echo "-q queue - run cases using the queue named queue"
 echo "     default: batch"
 echo "     other options: vis"
@@ -90,7 +86,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:Jm:o:p:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -116,9 +112,6 @@ case $OPTION in
   o)
    nthreads="$OPTARG"
    OPENMP_OPTS="-n $nthreads"
-   ;;
-  p)
-   size="$OPTARG"
    ;;
   q)
    QUEUE="$OPTARG"
@@ -149,13 +142,11 @@ done
 
 export FDS_DEBUG
 
-size=_$size
-
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx$size
+  PLATFORM=osx_64
 else
-  PLATFORM=linux$size
+  PLATFORM=linux_64
 fi
 
 if [ "$use_installed" == "1" ] ; then
