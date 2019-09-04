@@ -19,7 +19,6 @@ RUNOPTION=
 CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
-NOPT=
 INTEL=
 INTEL2=
 QFDS_COUNT=/tmp/qfds_count_`whoami`
@@ -91,7 +90,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:Jm:No:p:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:Jm:o:p:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -113,9 +112,6 @@ case $OPTION in
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
-   ;;
-  N)
-   NOPT=-N
    ;;
   o)
    nthreads="$OPTARG"
@@ -173,7 +169,7 @@ export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${I
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
 
 # Set queue to submit cases to
 
