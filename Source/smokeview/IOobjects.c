@@ -235,7 +235,7 @@ void GetScreenCoords(float *xyz, int *screen){
   glGetDoublev(GL_MODELVIEW_MATRIX, mv_setup);
   glGetDoublev(GL_PROJECTION_MATRIX, projection_setup);
   glGetIntegerv(GL_VIEWPORT, viewport_setup);
-  
+
   gluProject(xyz[0], xyz[1], xyz[2], mv_setup, projection_setup, viewport_setup, dscreen, dscreen+1, dscreen+2);
 
   screen[0] = dscreen[0];
@@ -3791,7 +3791,7 @@ void DrawDevices(void){
           if(target_index>=0&&izonetargets!=NULL&&have_target_data==1&&vis_target_data==1){
             unsigned char color_index, target_color[4];
 
-            color_index = izonetargets[itimes*nzone_targets+target_index]; 
+            color_index = izonetargets[itimes*nzone_targets+target_index];
             target_color[0] = (float)rgb_full[color_index][0]*255.0;
             target_color[1] = (float)rgb_full[color_index][1]*255.0;
             target_color[2] = (float)rgb_full[color_index][2]*255.0;
@@ -5596,7 +5596,7 @@ devicedata *GetCSVDeviceFromLabel(char *label, int index){
     devicedata *devicei;
 
     devicei = deviceinfo+i;
-    if(STRCMP(devicei->csvlabel, label)==0)return devicei;
+    if(STRCMP(devicei->labelptr, label)==0)return devicei;
   }
   return NULL;
 }
