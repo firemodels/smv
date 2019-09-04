@@ -14,7 +14,7 @@ wait_cases_end()
 # --------------------- usage -----------------------------
 
 function usage {
-echo "Make_SMV_Pictures.sh [-d -h -r -s size ]"
+echo "Make_SMV_Pictures.sh [-d -h -r]"
 echo "Generates figures for Smokeview verification suite"
 echo ""
 echo "Options"
@@ -24,7 +24,6 @@ echo "-i - use installed version of smokeview"
 echo "-I - compiler (intel or gnu)"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
-echo "-s size - use 32 or 64 bit (default) version of smokeview"
 echo "-W - only generate WUI case images"
 echo "-Y - generate SMV and WUI case images"
 exit
@@ -100,7 +99,6 @@ if [ "$JOBPREFIX" == "" ]; then
   JOBPREFIX=SMV_
 fi
 COMPILER=intel
-SIZE=_64
 DEBUG=
 TEST=
 use_installed="0"
@@ -108,7 +106,7 @@ RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
 
-while getopts 'dghiI:q:s:tWY' OPTION
+while getopts 'dghiI:q:tWY' OPTION
 do
 case $OPTION  in
   d)
@@ -129,14 +127,6 @@ case $OPTION  in
   t)
    TEST=_test
   ;;
-  s)
-   SIZE="$OPTARG"
-   if [ $SIZE -eq 64 ] ; then
-     SIZE=_64
-   else
-     SIZE=_32
-   fi
-  ;;
   W)
    RUN_SMV=0
    RUN_WUI=1
@@ -149,8 +139,8 @@ esac
 done
 shift $(($OPTIND-1))
 
-VERSION=$PLATFORM$TEST$SIZE$DEBUG
-VERSION2=$PLATFORM$SIZE
+VERSION=$PLATFORM${TEST}_64$DEBUG
+VERSION2=${PLATFORM}_64
 CURDIR=`pwd`
 cd ../../..
 export SVNROOT=`pwd`
