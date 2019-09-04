@@ -4,7 +4,6 @@
 # Linux machine with a batch queuing system
 
 QUEUE=batch
-size=64
 DEBUG=
 OPENMP_OPTS=
 FDS_DEBUG=0
@@ -19,7 +18,6 @@ RUNOPTION=
 CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
-NOPT=
 INTEL=
 INTEL2=
 QFDS_COUNT=/tmp/qfds_count_`whoami`
@@ -55,9 +53,6 @@ echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
-echo "-p size - platform size"
-echo "     default: 64"
-echo "     other options: 32"
 echo "-q queue - run cases using the queue named queue"
 echo "     default: batch"
 echo "     other options: vis"
@@ -91,7 +86,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:Jm:No:p:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -114,15 +109,9 @@ case $OPTION in
   m)
    export STOPFDSMAXITER="$OPTARG"
    ;;
-  N)
-   NOPT=-N
-   ;;
   o)
    nthreads="$OPTARG"
    OPENMP_OPTS="-n $nthreads"
-   ;;
-  p)
-   size="$OPTARG"
    ;;
   q)
    QUEUE="$OPTARG"
@@ -153,13 +142,11 @@ done
 
 export FDS_DEBUG
 
-size=_$size
-
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx$size
+  PLATFORM=osx_64
 else
-  PLATFORM=linux$size
+  PLATFORM=linux_64
 fi
 
 if [ "$use_installed" == "1" ] ; then
@@ -167,13 +154,13 @@ if [ "$use_installed" == "1" ] ; then
   export BACKGROUND_PROG=background
 else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background
+  export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
 fi
 export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION $NOPT"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
 
 # Set queue to submit cases to
 
