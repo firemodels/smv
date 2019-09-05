@@ -570,6 +570,9 @@ void IsoRolloutCB(int var){
 
 void BoundRolloutCB(int var){
   ToggleRollout(boundprocinfo, nboundprocinfo, var);
+  if(var==zone_proc_id){
+    SliceBoundCB(SETZONEVALMINMAX);
+  }
 }
 
 /* ------------------ SubBoundRolloutCB ------------------------ */
@@ -1843,6 +1846,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   if(nzoneinfo>0){
     ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Zone/slice temperatures"),false,ZONE_ROLLOUT,BoundRolloutCB);
+    zone_proc_id = nboundprocinfo;
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_zone_bound, ZONE_ROLLOUT, glui_bounds);
 
     PANEL_zone_a = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
@@ -3411,8 +3415,8 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
       if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(valmax);
       if(RADIO_zone_setmin!=NULL)RADIO_zone_setmin->set_int_val(setvalmin);
       if(RADIO_zone_setmax!=NULL)RADIO_zone_setmax->set_int_val(setvalmax);
+      SliceBoundCB(FILEUPDATE);
     }
-    SliceBoundCB(FILEUPDATE);
   }
 }
 
@@ -3445,7 +3449,6 @@ void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float val
   RADIO_slice_setmin->set_int_val(setvalmin);
   RADIO_slice_setmax->set_int_val(setvalmax);
   SetSliceBounds(temp_index);
-  SliceBoundCB(FILEUPDATE);
 }
 
 /* ------------------ SetSliceMin ------------------------ */
@@ -4062,6 +4065,15 @@ extern "C" void UpdateSliceListIndex(int sfn){
     SliceBoundCB(SETCHOPMAXVAL);
     SliceBoundCB(CHOPVALMIN);
     SliceBoundCB(CHOPVALMAX);
+    if(nzoneinfo>0){
+      if(strcmp(slicebounds[i].shortlabel, "TEMP")==0){
+        BoundRolloutCB(ZONE_ROLLOUT);
+        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->disable();
+      }
+      else{
+        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
+      }
+    }
   }
 }
 
