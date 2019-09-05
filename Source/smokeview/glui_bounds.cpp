@@ -570,8 +570,15 @@ void IsoRolloutCB(int var){
 
 void BoundRolloutCB(int var){
   ToggleRollout(boundprocinfo, nboundprocinfo, var);
-  if(var==zone_proc_id){
-    SliceBoundCB(SETZONEVALMINMAX);
+  if(nzoneinfo>0){
+    if(var==ZONE_ROLLOUT){
+      SliceBoundCB(SETZONEVALMINMAX);
+    }
+    if(var==SLICE_ROLLOUT){
+      list_slice_index = CLAMP(list_slice_index,0,nlist_slice_index-1);
+      RADIO_slice->set_int_val(list_slice_index);
+      SliceBoundCB(FILETYPEINDEX);
+    }
   }
 }
 
@@ -1846,7 +1853,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   if(nzoneinfo>0){
     ROLLOUT_zone_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Zone/slice temperatures"),false,ZONE_ROLLOUT,BoundRolloutCB);
-    zone_proc_id = nboundprocinfo;
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_zone_bound, ZONE_ROLLOUT, glui_bounds);
 
     PANEL_zone_a = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
@@ -2348,6 +2354,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         index++;
       }
     }
+    nlist_slice_index = index;
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
 
@@ -3922,31 +3929,7 @@ extern "C" void SliceBoundCB(int var){
     }
     SetSliceBounds(list_slice_index);
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    switch(setslicemin){
-    case PERCENTILE_MIN:
-    case GLOBAL_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
-      break;
-    case SET_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
-    switch(setslicemax){
-    case PERCENTILE_MIN:
-    case GLOBAL_MAX:
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
-      break;
-    case SET_MAX:
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
 
     RADIO_slice_setmin->set_int_val(setslicemin);
     RADIO_slice_setmax->set_int_val(setslicemax);
@@ -3982,6 +3965,30 @@ extern "C" void SliceBoundCB(int var){
       else{
         if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
       }
+    }
+    switch(setslicemin){
+    case PERCENTILE_MIN:
+    case GLOBAL_MIN:
+      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
+      break;
+    case SET_MIN:
+      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+    }
+    switch(setslicemax){
+    case PERCENTILE_MIN:
+    case GLOBAL_MAX:
+      if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
+      break;
+    case SET_MAX:
+      if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
     break;
   case FILEUPDATE:
