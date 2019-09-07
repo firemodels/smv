@@ -59,9 +59,9 @@ if NOT "%platform%" == "linux" goto endif2
 
 if NOT "%platform%" == "osx" goto endif3
   for %%x in ( %progs% ) do (
-    start plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_osx_64 make_%%x.sh
+    start plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_osx_64 make_%%x.sh
   )
-  start plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_osx_64 make_fds2ascii.sh
+  start plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_osx_64 make_fds2ascii.sh
   pause
   goto eof
 :endif3
