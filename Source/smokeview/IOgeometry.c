@@ -824,7 +824,7 @@ void DrawGeom(int flag, int timestate){
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
       glTranslatef(geom_delx, geom_dely, geom_delz);
-      glPointSize(6.0);
+      glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
@@ -887,7 +887,7 @@ void DrawGeom(int flag, int timestate){
       }
       glEnd();
 
-      glPointSize(6.0);  // draw verts at end of vector
+      glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
       glColor3fv(black);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -963,7 +963,7 @@ void DrawGeom(int flag, int timestate){
         }
       }
       glEnd();
-      glPointSize(6.0);  // draw verts at end of vector
+      glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
       glColor3fv(black);
       for(j = 0; j < geomlisti->ntriangles; j++){
@@ -1048,7 +1048,7 @@ void DrawGeom(int flag, int timestate){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glTranslatef(geom_delx, geom_dely, geom_delz);
-      glPointSize(5.0);
+      glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
       glColor3fv(magenta);

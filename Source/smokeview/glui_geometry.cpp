@@ -33,7 +33,7 @@
 #define UPDATE_GEOM 48
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
-GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL;
+GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
 GLUI_Checkbox *CHECKBOX_interior_solid=NULL, *CHECKBOX_interior_outline=NULL;
 GLUI_Checkbox *CHECKBOX_geomtest=NULL, *CHECKBOX_triangletest=NULL;
@@ -372,6 +372,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
