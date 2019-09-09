@@ -50,7 +50,7 @@ if NOT "%platform%" == "windows" goto endif1
 
 if NOT "%platform%" == "linux" goto endif2
   for %%x in ( %progs% ) do (
-    start "building ilnux version of %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_linux_64 make_%%x.sh
+    start "building linux version of %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_linux_64 make_%%x.sh
   )
   start "building linux version of %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_linux_64 make_fds2ascii.sh
   pause
