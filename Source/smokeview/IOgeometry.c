@@ -873,14 +873,19 @@ void DrawGeom(int flag, int timestate){
         verti = geomlisti->verts+j;
 #ifdef pp_SELECT_GEOM
         use_select_color=0;
-        if(select_geom==0){
+        if(select_geom==GEOM_PROP_NONE){
           if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
           if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
           if(verti->ntriangles==0)continue;
         }
-        else{
+        else if(select_geom==GEOM_PROP_VERTEX){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
           if(selected_vertex_index==j)use_select_color=1;
+        }
+        else{ // placeholder until GEOM_PROP_TRIANGLE is implemented
+          if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
+          if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
+          if(verti->ntriangles==0)continue;
         }
         if(use_select_color==1){
           glColor3f(1.0,0.0,0.0);

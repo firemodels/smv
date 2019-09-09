@@ -1010,7 +1010,9 @@ void MouseCB(int button, int state, int xm, int ym){
       if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
-      if(select_geom==1)MouseSelectGeom(button, state, xm, ym);
+#ifdef pp_SELECT_GEOM
+      if(select_geom==GEOM_PROP_VERTEX)MouseSelectGeom(button, state, xm, ym);
+#endif
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){

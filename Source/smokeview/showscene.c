@@ -217,7 +217,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
 #ifdef pp_SELECT_GEOM
   if(mode==SELECTOBJECT){
-    if(select_geom==1){
+    if(select_geom==GEOM_PROP_VERTEX){
       CLIP_GEOMETRY;
       DrawSelectGeom();
       SNIFF_ERRORS("after DrawSelectGeom");

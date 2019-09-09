@@ -45,8 +45,9 @@ GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
+
 #ifdef pp_SELECT_GEOM
-GLUI_Checkbox *CHECKBOX_select_geom = NULL;
+GLUI_RadioGroup *RADIO_select_geom = NULL;
 #endif
 
 #ifdef pp_SELECT_GEOM
@@ -417,7 +418,11 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 #ifdef pp_SELECT_GEOM
     PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
-    CHECKBOX_select_geom = glui_geometry->add_checkbox_to_panel(PANEL_properties, "show", &select_geom);
+    RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom);
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
+
     STATIC_vertx = glui_geometry->add_statictext_to_panel(PANEL_properties, "x:");
     STATIC_verty = glui_geometry->add_statictext_to_panel(PANEL_properties, "y:");
     STATIC_vertz = glui_geometry->add_statictext_to_panel(PANEL_properties, "z:");
