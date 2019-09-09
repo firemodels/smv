@@ -305,6 +305,44 @@ int TextureOn(GLuint texture_id,int *texture_first){
   return 1;
 }
 
+/* ------------------ DrawSelectGeom ------------------------ */
+#ifdef pp_SELECT_GEOM
+void DrawSelectGeom(void){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  int color_index=1;
+
+  geomi = geominfoptrs[0];
+  geomlisti = geomi->geomlistinfo-1;
+
+  if(geomlisti->nverts>0){
+    int j;
+
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(geom_delx, geom_dely, geom_delz);
+    glPointSize(20);
+    color_index = 0;
+    glBegin(GL_POINTS);
+    for(j=0;j<geomlisti->nverts;j++){
+      vertdata *verti;
+      unsigned char r, g, b;
+
+      verti = geomlisti->verts+j;
+      if(verti->geomtype == GEOM_ISO||verti->ntriangles==0)continue;
+      GetRGB(color_index+1,&r,&g,&b);
+      color_index++;
+      glColor3ub(r,g,b);
+      glVertex3fv(verti->xyz);
+
+    }
+    glEnd();
+    glPopMatrix();
+  }
+}
+#endif
+
 /* ------------------ DrawGeom ------------------------ */
 
 void DrawGeom(int flag, int timestate){
@@ -828,8 +866,34 @@ void DrawGeom(int flag, int timestate){
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
+#ifdef pp_SELECT_GEOM
+        int use_select_color;
+#endif
 
         verti = geomlisti->verts+j;
+#ifdef pp_SELECT_GEOM
+        use_select_color=0;
+        if(select_geom==0){
+          if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
+          if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
+          if(verti->ntriangles==0)continue;
+        }
+        else{
+          if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
+          if(selected_vertex_index==j)use_select_color=1;
+        }
+        if(use_select_color==1){
+          glColor3f(1.0,0.0,0.0);
+          last_color=NULL;
+        }
+        else{
+          color = verti->triangles[0]->geomsurf->color;
+          if(last_color!=color){
+            glColor3fv(color);
+            last_color=color;
+          }
+        }
+#else
         if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
         if(verti->geomtype == GEOM_ISO&&show_iso_points == 0)continue;
         if(verti->ntriangles==0)continue;
@@ -838,6 +902,7 @@ void DrawGeom(int flag, int timestate){
           glColor3fv(color);
           last_color=color;
         }
+#endif
         glVertex3fv(verti->xyz);
       }
       glEnd();

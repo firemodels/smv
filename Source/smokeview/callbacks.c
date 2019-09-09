@@ -527,6 +527,57 @@ void MouseSelectAvatar(int button, int state, int x, int y){
   }
 }
 
+#ifdef pp_SELECT_GEOM
+/* ------------------ MouseSelectGeom ------------------------ */
+
+void MouseSelectGeom(int button, int state, int x, int y){
+  int val;
+  int mouse_x, mouse_y;
+  GLubyte r, g, b;
+
+  mouse_x = x; mouse_y = screenHeight-y;
+  glDisable(GL_BLEND);
+  glDisable(GL_DITHER);
+  glDisable(GL_FOG);
+  DISABLE_LIGHTING;
+  glDisable(GL_TEXTURE_1D);
+  glDisable(GL_TEXTURE_2D);
+  glShadeModel(GL_FLAT);
+
+  ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
+  glReadBuffer(GL_BACK);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE, GL_UNSIGNED_BYTE, &b);
+
+  r = r>>nredshift;
+  g = g>>ngreenshift;
+  b = b>>nblueshift;
+
+  val = (r<<(nbluebits+ngreenbits))|(g<<nbluebits)|b;
+
+  if(val>0){
+    geomdata *geomi;
+    geomlistdata *geomlisti;
+    vertdata *verti;
+    float *xyz;
+
+
+    geomi = geominfoptrs[0];
+    geomlisti = geomi->geomlistinfo-1;
+    selected_vertex_index = val-1;
+
+    verti = geomlisti->verts + selected_vertex_index;
+    xyz = verti->xyz;
+    UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
+
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_BLEND);
+    ENABLE_LIGHTING;
+  }
+}
+#endif
+
 /* ------------------ CheckTimeBound ------------------------ */
 
 void CheckTimeBound(void){
@@ -959,6 +1010,7 @@ void MouseCB(int button, int state, int xm, int ym){
       if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
+      if(select_geom==1)MouseSelectGeom(button, state, xm, ym);
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){

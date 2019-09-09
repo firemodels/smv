@@ -20,6 +20,10 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_SELECT_GEOM
+SVEXTERN int SVDECL(select_geom, 0);
+SVEXTERN int SVDECL(selected_vertex_index,-1);
+#endif
 SVEXTERN int SVDECL(nlist_slice_index, 0);
 SVEXTERN int SVDECL(slice_fileupdate, 0);
 SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);

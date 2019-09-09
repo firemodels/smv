@@ -45,6 +45,15 @@ GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
+#ifdef pp_SELECT_GEOM
+GLUI_Checkbox *CHECKBOX_select_geom = NULL;
+#endif
+
+#ifdef pp_SELECT_GEOM
+GLUI_StaticText *STATIC_vertx=NULL;
+GLUI_StaticText *STATIC_verty=NULL;
+GLUI_StaticText *STATIC_vertz=NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
@@ -88,6 +97,9 @@ GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 GLUI_Listbox *LIST_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
+#ifdef pp_SELECT_GEOM
+GLUI_Panel *PANEL_properties=NULL;
+#endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
@@ -201,6 +213,20 @@ void BlockeditDlgCB(int var){
   }
 
 }
+
+/* ------------------ UpdateVertexLoc ------------------------ */
+#ifdef pp_SELECT_GEOM
+extern "C" void UpdateVertexLoc(float x, float y, float z){
+  char label[100];
+
+  sprintf(label, "x: %f", x);
+  STATIC_vertx->set_name(label);
+  sprintf(label, "y: %f", y);
+  STATIC_verty->set_name(label);
+  sprintf(label, "z: %f", z);
+  STATIC_vertz->set_name(label);
+}
+#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -388,6 +414,15 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
     CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "solid", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
+
+#ifdef pp_SELECT_GEOM
+    PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
+    CHECKBOX_select_geom = glui_geometry->add_checkbox_to_panel(PANEL_properties, "show", &select_geom);
+    STATIC_vertx = glui_geometry->add_statictext_to_panel(PANEL_properties, "x:");
+    STATIC_verty = glui_geometry->add_statictext_to_panel(PANEL_properties, "y:");
+    STATIC_vertz = glui_geometry->add_statictext_to_panel(PANEL_properties, "z:");
+    UpdateVertexLoc(0.0, 0.0, 0.0);
+#endif
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
     CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
