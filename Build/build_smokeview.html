@@ -2,7 +2,7 @@
 
 <head>
 <TITLE>Smokeview</TITLE>
-<script type="text/javascript">
+<script type="text/javascript">f
 // for debugging:
 //document.getElementById("demo").innerHTML = fullcommand;
 
@@ -56,10 +56,10 @@ function install_smv(args){
 <td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
 </tr>
 <tr>
-<th>Repos</th>
+<th>Clean</th>
 <td align=center>
-<button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
+<button onclick="run_script('\\smv\\scripts\\webclean_win.bat')">Windows</button>
+<button onclick="run_script('\\smv\\scripts\\webclean_all.bat')">All</button>
 </td>
 </tr>
 <tr>
@@ -67,6 +67,7 @@ function install_smv(args){
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
 <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button>
 </td>
 </tr>
 <tr>
