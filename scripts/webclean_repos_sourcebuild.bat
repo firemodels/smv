@@ -30,12 +30,8 @@ echo Cleaning %svn_root%\fds\Build
 cd %svn_root%\fds\Build
 git clean -dxf
 
-echo Cleaning %svn_root%\bot\Bundle\fds\uploads
-cd %svn_root%\bot\Bundle\fds\uploads
-git clean -dxf
-
-echo Cleaning %svn_root%\smv\source
-cd %svn_root%\smv\source
+echo Cleaning %svn_root%\smv\Source
+cd %svn_root%\smv\Source
 git clean -dxf
 
 echo Cleaning %svn_root%\smv\Build
