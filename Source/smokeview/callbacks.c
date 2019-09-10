@@ -565,11 +565,15 @@ void MouseSelectGeom(int button, int state, int x, int y){
 
     geomi = geominfoptrs[0];
     geomlisti = geomi->geomlistinfo-1;
-    selected_vertex_index = val-1;
+    selected_geom_index = val-1;
 
-    verti = geomlisti->verts + selected_vertex_index;
-    xyz = verti->xyz;
-    UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
+    if(select_geom==GEOM_PROP_VERTEX){
+      verti = geomlisti->verts+selected_geom_index;
+      xyz = verti->xyz;
+      UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
+    }
+    else{
+    }
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
@@ -1011,7 +1015,7 @@ void MouseCB(int button, int state, int xm, int ym){
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
 #ifdef pp_SELECT_GEOM
-      if(select_geom==GEOM_PROP_VERTEX)MouseSelectGeom(button, state, xm, ym);
+      if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(button, state, xm, ym);
 #endif
     }
     glutPostRedisplay();

@@ -364,6 +364,9 @@ typedef struct _surfdata {
   int location;
   int transparent;
   int used_by_obst,used_by_vent;
+#ifdef pp_SELECT_GEOM
+  int used_by_geom;
+#endif
 } surfdata;
 
 /* --------------------------  facedata ------------------------------------ */
