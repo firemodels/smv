@@ -48,12 +48,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
   norm[0]=u[1]*v[2]-u[2]*v[1];
   norm[1]=u[2]*v[0]-u[0]*v[2];
   norm[2]=u[0]*v[1]-u[1]*v[0];
-  if(maxu>0.0&&maxv>0.0){
-    *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]))/(maxu*maxv);
-  }
-  else{
-    *area = 0.0;
-  }
+  *area = 0.5*maxu*maxv*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
   ReduceToUnit(norm);
 }
 
