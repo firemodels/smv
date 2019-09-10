@@ -20,24 +20,11 @@ tetdata *volume_list;
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area){
   float u[3], v[3];
-  float maxu=0.0, maxv=0.0;
   int i;
 
   for(i=0;i<3;i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
-    maxu = MAX(ABS(u[i]), maxu);
-    maxv = MAX(ABS(v[i]), maxv);
-  }
-  if(maxu>0.0){
-    for(i = 0;i<3;i++){
-      u[i] /= maxu;
-    }
-  }
-  if(maxv>0.0){
-    for(i = 0;i<3;i++){
-      v[i] /= maxv;
-    }
   }
 
   /*
@@ -48,7 +35,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
   norm[0]=u[1]*v[2]-u[2]*v[1];
   norm[1]=u[2]*v[0]-u[0]*v[2];
   norm[2]=u[0]*v[1]-u[1]*v[0];
-  *area = 0.5*maxu*maxv*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
+  *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
   ReduceToUnit(norm);
 }
 
