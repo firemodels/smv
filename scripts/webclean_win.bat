@@ -41,7 +41,7 @@ cd %svn_root%\smv\Build
 git clean -dxf
 
 echo Cleaning %userprofile%\.bundle\uploads
-cd %userprofile%\.bundle\uploads
+cd %userprofile%\.bundle
 rmdir /S /Q uploads
 mkdir uploads
  

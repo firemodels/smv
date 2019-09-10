@@ -22,6 +22,7 @@ echo.
 echo ------------------------------------------------------------------------
 %svn_drive%
 
+echo Cleaning source and build directories in the Windows repository FireModels_fork
 echo Cleaning %svn_root%\fds\Source
 cd %svn_root%\fds\Source
 git clean -dxf
@@ -38,9 +39,10 @@ echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
 
-echo Cleaning %svn_root%\bot\Bundle\smv\uploads
-cd %svn_root%\bot\Bundle\smv\uploads
-git clean -dxf
+echo Cleaning %userprofile%\.bundle\uploads
+cd %userprofile%\.bundle
+rmdir /s /q uploads
+mkdir uploads
 
 set scriptdir=%linux_svn_root%/bot/Bundle/fds/scripts/
 
