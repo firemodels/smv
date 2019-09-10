@@ -573,8 +573,19 @@ void MouseSelectGeom(int button, int state, int x, int y){
       UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
     }
     else{
-    }
+      int ntris;
+      tridata **tris;
 
+      ntris = geomlisti->ntriangles;
+      tris = geomlisti->triangleptrs;
+      if(ntris>0){
+        surfdata *tri_surf;
+
+        tri_surf = tris[selected_geom_index]->geomsurf;
+        geom_surf_index = tri_surf-surfinfo;
+        UpdateTriangleLoc();
+      }
+    }
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
     ENABLE_LIGHTING;

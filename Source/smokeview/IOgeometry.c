@@ -288,8 +288,51 @@ int TextureOn(GLuint texture_id,int *texture_first){
   return 1;
 }
 
-/* ------------------ DrawSelectGeom ------------------------ */
 #ifdef pp_SELECT_GEOM
+/* ------------------ UpdateGeomAreas ------------------------ */
+
+void UpdateGeomAreas(void){
+  int ntris;
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+
+  if(ngeominfoptrs==0)return;
+  geomi = geominfoptrs[0];
+  geomlisti = geomi->geomlistinfo-1;
+  ntris = geomlisti->ntriangles;
+  if(ntris>0){
+    int i;
+
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+i;
+      surfi->geom_area = 0.0;
+    }
+    for(i = 0; i<ntris; i++){
+      int j;
+      tridata *trianglei;
+      unsigned char r, g, b;
+      surfdata *tri_surf;
+
+      trianglei = geomlisti->triangles + i;
+      if(trianglei->geomtype!=GEOM_ISO){
+        if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+        if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
+      }
+      tri_surf = trianglei->geomsurf;
+      if(tri_surf!=NULL){
+        tri_surf->geom_area += trianglei->area;
+      }
+    }
+  }
+}
+
+/* ------------------ DrawSelectGeom ------------------------ */
+
 void DrawSelectGeom(void){
   geomdata *geomi;
   geomlistdata *geomlisti;
@@ -325,10 +368,12 @@ void DrawSelectGeom(void){
   }
   if(select_geom==GEOM_PROP_TRIANGLE&&geomlisti->ntriangles>0){
     int ntris;
-    tridata **tris;
+    geomdata *geomi;
+    geomlistdata *geomlisti;
 
-    ntris=nopaque_triangles;
-    tris=opaque_triangles;
+    geomi = geominfoptrs[0];
+    geomlisti = geomi->geomlistinfo-1;
+    ntris = geomlisti->ntriangles;
     if(ntris>0){
       int i;
 
@@ -343,7 +388,7 @@ void DrawSelectGeom(void){
         tridata *trianglei;
         unsigned char r, g, b;
 
-        trianglei = tris[i];
+        trianglei = geomlisti->triangles + i;
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -427,9 +472,9 @@ void DrawGeom(int flag, int timestate){
       int use_select_color;
 #endif
 
-      use_select_color = 0;
       trianglei = tris[i];
 #ifdef pp_SELECT_GEOM
+      use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE){
         if(trianglei->geomtype==GEOM_ISO)continue;
         if(selected_geom_index==i){
@@ -2255,10 +2300,10 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].insolid = 0;
           break;
         }
-        triangles[ii].geomsurf=surfi;
 #ifdef pp_SELECT_GEOM
-        surfi->used_by_geom = 1;
+        if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
 #endif
+        triangles[ii].geomsurf=surfi;
         triangles[ii].textureinfo=surfi->textureinfo;
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }

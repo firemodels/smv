@@ -366,6 +366,7 @@ typedef struct _surfdata {
   int used_by_obst,used_by_vent;
 #ifdef pp_SELECT_GEOM
   int used_by_geom;
+  float geom_area;
 #endif
 } surfdata;
 
