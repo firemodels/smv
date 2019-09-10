@@ -64,9 +64,8 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
       DENSITY            = 300.
       CONDUCTIVITY       = 0.052
       SPECIFIC_HEAT      = 1.        /
-      VEGETATION         = .TRUE.
       N_S                = 0.
-      NU_O2              = 1.65
+      NU_O2_CHAR         = 1.65
       BETA_CHAR          = 0.2
       A                  = 430.
       E                  = 74800.
@@ -77,7 +76,6 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
       HEAT_OF_REACTION   = -32370. /
 
 &MATL ID            = 'Ash'
-      VEGETATION    = .TRUE.
       DENSITY       = 67.
       CONDUCTIVITY  = 0.1
       SPECIFIC_HEAT = 2.0 /
