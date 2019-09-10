@@ -27,6 +27,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
     v[i]=v3[i]-v1[i];
   }
 
+  // triangle area = 1/2 * | u x v |
   /*
      i   j  k
      ux uy uz
