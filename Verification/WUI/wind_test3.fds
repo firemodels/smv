@@ -23,7 +23,6 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 
 - Australian grass based on experimental case F19 (Mell et al., 2007 IJWF)
 &SURF ID        = 'GRASS'
-      VEGETATION = .TRUE.
       VEGETATION_CDRAG    = 0.375
       VEGETATION_LOAD     = 0.313
       VEGETATION_HEIGHT   = 0.51
