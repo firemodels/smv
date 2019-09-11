@@ -1,7 +1,7 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building png library
+title Building windows png library
 erase *.o *.obj libpng.a libpng.lib
 set target=libpng.lib
 if %COMPILER% == gcc set target=libpng.a

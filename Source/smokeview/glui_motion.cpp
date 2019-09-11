@@ -289,9 +289,9 @@ extern "C" void ShrinkDialogs(void){
 
 void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog){
   rolloutlistdata *thisrollout, *prev, *next;
-  
+
   NewMemory((void **)&thisrollout,sizeof(rolloutlistdata));
-  
+
   prev = &first_rollout;
   next = prev->next;
 
@@ -1915,7 +1915,7 @@ extern "C" void SceneMotionCB(int var){
       }
       {
         int width_low, height_low, width_high, height_high;
- 
+
         GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
         UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
       }
@@ -2338,7 +2338,7 @@ void RenderCB(int var){
     case RENDER_MULTIPLIER:
       {
         int width_low, height_low, width_high, height_high;
- 
+
         GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
         UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
       }
@@ -2376,7 +2376,7 @@ void RenderCB(int var){
       RenderMenu(render_size_index);
       {
         int width_low, height_low, width_high, height_high;
- 
+
         GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
         UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
       }
@@ -2399,7 +2399,7 @@ void RenderCB(int var){
       }
       {
         int width_low, height_low, width_high, height_high;
- 
+
         GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
         UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
       }

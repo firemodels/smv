@@ -1,7 +1,7 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building zlib library
+title Building windows zlib library
 erase *.o *.obj libz.a libz.lib
 set target=libz.lib
 if %COMPILER% == gcc set target=libz.a

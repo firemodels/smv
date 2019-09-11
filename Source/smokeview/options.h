@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_SELECT_GEOM       //  select and show geometry properties
 #define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_PART_TEST           // for debugging, set particle values to 100*parti->seq_id + small random number
 #define pp_HTML                // output html version of smokeview scene

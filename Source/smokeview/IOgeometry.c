@@ -20,26 +20,14 @@ tetdata *volume_list;
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area){
   float u[3], v[3];
-  float maxu=0.0, maxv=0.0;
   int i;
 
   for(i=0;i<3;i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
-    maxu = MAX(ABS(u[i]), maxu);
-    maxv = MAX(ABS(v[i]), maxv);
-  }
-  if(maxu>0.0){
-    for(i = 0;i<3;i++){
-      u[i] /= maxu;
-    }
-  }
-  if(maxv>0.0){
-    for(i = 0;i<3;i++){
-      v[i] /= maxv;
-    }
   }
 
+  // triangle area = 1/2 * | u x v |
   /*
      i   j  k
      ux uy uz
@@ -48,12 +36,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
   norm[0]=u[1]*v[2]-u[2]*v[1];
   norm[1]=u[2]*v[0]-u[0]*v[2];
   norm[2]=u[0]*v[1]-u[1]*v[0];
-  if(maxu>0.0&&maxv>0.0){
-    *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]))/(maxu*maxv);
-  }
-  else{
-    *area = 0.0;
-  }
+  *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
   ReduceToUnit(norm);
 }
 
@@ -305,6 +288,128 @@ int TextureOn(GLuint texture_id,int *texture_first){
   return 1;
 }
 
+#ifdef pp_SELECT_GEOM
+/* ------------------ UpdateGeomAreas ------------------------ */
+
+void UpdateGeomAreas(void){
+  int ntris;
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+
+  if(ngeominfoptrs==0)return;
+  geomi = geominfoptrs[0];
+  geomlisti = geomi->geomlistinfo-1;
+  ntris = geomlisti->ntriangles;
+  if(ntris>0){
+    int i;
+
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+i;
+      surfi->geom_area = 0.0;
+    }
+    for(i = 0; i<ntris; i++){
+      tridata *trianglei;
+      surfdata *tri_surf;
+
+      trianglei = geomlisti->triangles + i;
+      if(trianglei->geomtype!=GEOM_ISO){
+        if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+        if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
+      }
+      tri_surf = trianglei->geomsurf;
+      if(tri_surf!=NULL){
+        tri_surf->geom_area += trianglei->area;
+      }
+    }
+  }
+}
+
+/* ------------------ DrawSelectGeom ------------------------ */
+
+void DrawSelectGeom(void){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  int color_index=1;
+
+  geomi = geominfoptrs[0];
+  geomlisti = geomi->geomlistinfo-1;
+
+  if(select_geom==GEOM_PROP_VERTEX&&geomlisti->nverts>0){
+    int j;
+
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(geom_delx, geom_dely, geom_delz);
+    glPointSize(20);
+    color_index = 0;
+    glBegin(GL_POINTS);
+    for(j=0;j<geomlisti->nverts;j++){
+      vertdata *verti;
+      unsigned char r, g, b;
+
+      verti = geomlisti->verts+j;
+      if(verti->geomtype == GEOM_ISO||verti->ntriangles==0)continue;
+      GetRGB(color_index+1,&r,&g,&b);
+      color_index++;
+      glColor3ub(r,g,b);
+      glVertex3fv(verti->xyz);
+
+    }
+    glEnd();
+    glPopMatrix();
+  }
+  if(select_geom==GEOM_PROP_TRIANGLE&&geomlisti->ntriangles>0){
+    int ntris;
+    geomdata *geomi;
+    geomlistdata *geomlisti;
+
+    geomi = geominfoptrs[0];
+    geomlisti = geomi->geomlistinfo-1;
+    ntris = geomlisti->ntriangles;
+    if(ntris>0){
+      int i;
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+      glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
+      color_index = 0;
+      glBegin(GL_TRIANGLES);
+      for(i=0;i<ntris;i++){
+        int j;
+        tridata *trianglei;
+        unsigned char r, g, b;
+
+        trianglei = geomlisti->triangles + i;
+        if(trianglei->geomtype!=GEOM_ISO){
+          if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+          if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->geomtype == GEOM_GEOM&&show_faces_shaded == 0)continue;
+        }
+        GetRGB(color_index+1,&r,&g,&b);
+        color_index++;
+        glColor3ub(r,g,b);
+        for(j=0;j<3;j++){
+          vertdata *vertj;
+
+          vertj = trianglei->verts[j];
+          glVertex3fv(vertj->xyz);
+        }
+      }
+      glEnd();
+    }
+  }
+}
+#endif
+
 /* ------------------ DrawGeom ------------------------ */
 
 void DrawGeom(int flag, int timestate){
@@ -361,8 +466,20 @@ void DrawGeom(int flag, int timestate){
       texturedata *ti;
       int  j;
       int smooth_triangles;
+#ifdef pp_SELECT_GEOM
+      int use_select_color;
+#endif
 
       trianglei = tris[i];
+#ifdef pp_SELECT_GEOM
+      use_select_color = 0;
+      if(select_geom==GEOM_PROP_TRIANGLE){
+        if(trianglei->geomtype==GEOM_ISO)continue;
+        if(selected_geom_index==i){
+          use_select_color=1;
+        }
+      }
+#endif
       if(trianglei->geomtype!=GEOM_ISO){
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -394,6 +511,26 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
+#ifdef pp_SELECT_GEOM
+      if(use_select_color==1){
+        glColor3f(1.0,0.0,0.0);
+        last_color = NULL;
+        last_transparent_level = -1.0;
+      }
+      else{
+        if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
+          if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
+            if(texture_state==ON){
+              glEnd();
+              texture_state = TextureOff();
+              glBegin(GL_TRIANGLES);
+            }
+            glColor4f(color[0], color[1], color[2], transparent_level_local);
+            last_color = color;
+            last_transparent_level = transparent_level_local;
+          }
+        }
+#else
       if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
         if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
           if(texture_state==ON){
@@ -405,6 +542,7 @@ void DrawGeom(int flag, int timestate){
           last_color = color;
           last_transparent_level = transparent_level_local;
         }
+#endif
       }
 
       if(smooth_triangles==0){
@@ -824,12 +962,38 @@ void DrawGeom(int flag, int timestate){
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
       glTranslatef(geom_delx, geom_dely, geom_delz);
-      glPointSize(6.0);
+      glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
+#ifdef pp_SELECT_GEOM
+        int use_select_color;
+#endif
 
         verti = geomlisti->verts+j;
+#ifdef pp_SELECT_GEOM
+        use_select_color=0;
+        if(select_geom==GEOM_PROP_VERTEX){
+          if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
+          if(selected_geom_index==j)use_select_color=1;
+        }
+        else{ // draw verices normally if vertices are not being selected
+          if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
+          if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
+          if(verti->ntriangles==0)continue;
+        }
+        if(use_select_color==1){
+          glColor3f(1.0,0.0,0.0);
+          last_color=NULL;
+        }
+        else{
+          color = verti->triangles[0]->geomsurf->color;
+          if(last_color!=color){
+            glColor3fv(color);
+            last_color=color;
+          }
+        }
+#else
         if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
         if(verti->geomtype == GEOM_ISO&&show_iso_points == 0)continue;
         if(verti->ntriangles==0)continue;
@@ -838,6 +1002,7 @@ void DrawGeom(int flag, int timestate){
           glColor3fv(color);
           last_color=color;
         }
+#endif
         glVertex3fv(verti->xyz);
       }
       glEnd();
@@ -887,7 +1052,7 @@ void DrawGeom(int flag, int timestate){
       }
       glEnd();
 
-      glPointSize(6.0);  // draw verts at end of vector
+      glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
       glColor3fv(black);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -963,7 +1128,7 @@ void DrawGeom(int flag, int timestate){
         }
       }
       glEnd();
-      glPointSize(6.0);  // draw verts at end of vector
+      glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
       glColor3fv(black);
       for(j = 0; j < geomlisti->ntriangles; j++){
@@ -1048,7 +1213,7 @@ void DrawGeom(int flag, int timestate){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glTranslatef(geom_delx, geom_dely, geom_delz);
-      glPointSize(5.0);
+      glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
       glColor3fv(magenta);
@@ -1936,6 +2101,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
         surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
         triangles[ii].geomsurf=surfi;
+#ifdef pp_SELECT_GEOM
+        surfi->used_by_geom = 1;
+#endif
         triangles[ii].textureinfo=NULL;
       }
       FREEMEMORY(ijk);
@@ -2130,6 +2298,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].insolid = 0;
           break;
         }
+#ifdef pp_SELECT_GEOM
+        if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
+#endif
         triangles[ii].geomsurf=surfi;
         triangles[ii].textureinfo=surfi->textureinfo;
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);

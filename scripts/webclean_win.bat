@@ -22,6 +22,8 @@ echo.
 echo ------------------------------------------------------------------------
 %svn_drive%
 
+set CURDIR=%CD%
+
 echo Cleaning %svn_root%\fds\Source
 cd %svn_root%\fds\Source
 git clean -dxf
@@ -38,20 +40,11 @@ echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
 
-echo Cleaning %svn_root%\bot\Bundle\smv\uploads
-cd %svn_root%\bot\Bundle\smv\uploads
-git clean -dxf
-
-set scriptdir=%linux_svn_root%/bot/Bundle/fds/scripts/
-
-echo.
-echo ------------------------------------------------------------------------
-echo Cleaning source and build directories in the Linux repository %linux_svn_root%, on %linux_hostname%
-plink %plink_options% %linux_logon% %scriptdir%/clean_repo_sourcebuild.sh  %linux_svn_root%/fds %linux_hostname%
-
-echo.
-echo ------------------------------------------------------------------------
-echo Cleaning source and build directories in the OSX repository %linux_svn_root%/fds, on %osx_hostname%
-plink %plink_options% %osx_logon% %scriptdir%/clean_repo_sourcebuild.sh
+echo Cleaning %userprofile%\.bundle\uploads
+cd %userprofile%\.bundle
+rmdir /S /Q uploads
+mkdir uploads
+ 
+cd %CURDIR%
 
 pause

@@ -28,9 +28,6 @@ function build_prog(args){
 function build_allprog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDallprog.bat ",args));
 }
-function check_allprog(args){
-  MyObject.Run(get_fullpath("../scripts/webCHECKallprog.bat ",args));
-}
 function build_utilprog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDutilprog.bat ",args));
 }
@@ -56,10 +53,10 @@ function install_smv(args){
 <td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
 </tr>
 <tr>
-<th>Repos</th>
+<th align=center>Clean</th>
 <td align=center>
-<button onclick="run_script('\\smv\\scripts\\webclean_repos_sourcebuild.bat')">Clean</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button><br>
+<button onclick="run_script('\\smv\\scripts\\webclean_win.bat')">Windows</button>
+<button onclick="run_script('\\smv\\scripts\\webclean_all.bat')">All</button>
 </td>
 </tr>
 <tr>
@@ -70,9 +67,11 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
-<th>Revision</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td>
+<th align=center>Revision</th>
+<td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Bundle</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Repos</button>
+</td>
 </tr>
 <tr>
 <th align=center>Notes</th>
@@ -83,8 +82,8 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
-<th>Branch</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
+<th align=center>Branch</th><td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set master</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
 </tr>
 </table>
@@ -149,7 +148,8 @@ function install_smv(args){
 
 <tr>
 <td align=center COLSPAN=6>
-<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANupload.bat')">Clean</button>
+<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadwin.bat')">Clean Windows</button>
+<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadall.bat')">Clean All</button>
 <button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
 </td>
 </tr>
@@ -162,6 +162,13 @@ function install_smv(args){
 <th>Windows</th>
 <th>Linux</th>
 <th>OSX</th>
+</tr>
+
+<tr>
+<th>All</th>
+<td align=center><button onclick="build_allprog('windows')">Build</button></td>
+<td align=center><button onclick="build_allprog('linux')">Build</button></td>
+<td align=center><button onclick="build_allprog('osx')">Build</button></td>
 </tr>
 
 <tr>
@@ -241,17 +248,6 @@ function install_smv(args){
 <th>timep</th>
 <td align=center><button onclick="build_prog('timep windows')">Build</button></td>
 </tr>
-<tr>
-<th rowspan=2>All</th>
-<td align=center><button onclick="build_allprog('windows')">Build</button></td>
-<td align=center><button onclick="build_allprog('linux')">Build</button></td>
-<td align=center><button onclick="build_allprog('osx')">Build</button></td>
-</tr>
-<tr>
-<td align=center><button onclick="check_allprog('windows')">Check</button></td>
-</tr>
-
-
 
 </table>
 

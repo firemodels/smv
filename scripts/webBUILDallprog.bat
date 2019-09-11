@@ -35,14 +35,14 @@ if NOT "%platform%" == "windows" goto endif1
   echo after if1
   for %%x in ( %progs% ) do (
     cd %svn_root%\smv\Build\%%x\intel_win_64
-    start "building windows version of %%x" make_%%x
+    start "building windows %%x" make_%%x
   ) 
   for %%x in ( %smvprogs% ) do (
     cd %svn_root%\smv\Build\%%x\intel_win_64
-    start "building windows version of %%x" make_%%x
+    start "building windows %%x" make_%%x
   ) 
     cd %svn_root%\fds\Utilities\fds2ascii\intel_win_64
-    start "building windows version of fds2ascii" make_fds2ascii
+    start "building windows fds2ascii" make_fds2ascii
   ) 
 ::  call :not_built
   goto eof
@@ -50,18 +50,18 @@ if NOT "%platform%" == "windows" goto endif1
 
 if NOT "%platform%" == "linux" goto endif2
   for %%x in ( %progs% ) do (
-    start "building linux version of %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_linux_64 make_%%x.sh
+    start "building linux %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_linux_64 make_%%x.sh
   )
-  start "building linux version of %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_linux_64 make_fds2ascii.sh
+  start "building linux %%x" plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_linux_64 make_fds2ascii.sh
   pause
   goto eof
 :endif2
 
 if NOT "%platform%" == "osx" goto endif3
   for %%x in ( %progs% ) do (
-    start "building osx version of %%x" plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_osx_64 make_%%x.sh
+    start "building osx %%x" plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/%%x/intel_osx_64 make_%%x.sh
   )
-  start "building osx version of fds2ascii" plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_osx_64 make_fds2ascii.sh
+  start "building osx fds2ascii" plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh fds/Utilities/fds2ascii/intel_osx_64 make_fds2ascii.sh
   pause
   goto eof
 :endif3

@@ -288,6 +288,9 @@ int SetupCase(int argc, char **argv){
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
                        chidfilebase);
+#ifdef pp_SELECT_GEOM
+  UpdateGeomAreas();
+#endif
   return 0;
 }
 

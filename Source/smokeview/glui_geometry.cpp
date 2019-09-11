@@ -33,7 +33,7 @@
 #define UPDATE_GEOM 48
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
-GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL;
+GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
 GLUI_Checkbox *CHECKBOX_interior_solid=NULL, *CHECKBOX_interior_outline=NULL;
 GLUI_Checkbox *CHECKBOX_geomtest=NULL, *CHECKBOX_triangletest=NULL;
@@ -45,6 +45,18 @@ GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
+
+#ifdef pp_SELECT_GEOM
+GLUI_RadioGroup *RADIO_select_geom = NULL;
+#endif
+
+#ifdef pp_SELECT_GEOM
+GLUI_StaticText *STATIC_vertx=NULL;
+GLUI_StaticText *STATIC_verty=NULL;
+GLUI_StaticText *STATIC_vertz=NULL;
+GLUI_StaticText *STATIC_tri_area = NULL;
+GLUI_StaticText *STATIC_surf_area = NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
@@ -85,9 +97,15 @@ GLUI_Checkbox *CHECKBOX_blockage=NULL;
 GLUI_EditText *EDIT_xmin=NULL, *EDIT_ymin=NULL, *EDIT_zmin=NULL;
 GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 
-GLUI_Listbox *LIST_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+#ifdef pp_SELECT_GEOM
+GLUI_Listbox *LIST_geom_surface=NULL;
+#endif
 
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
+#ifdef pp_SELECT_GEOM
+GLUI_Panel *PANEL_properties=NULL;
+#endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
@@ -202,6 +220,36 @@ void BlockeditDlgCB(int var){
 
 }
 
+#ifdef pp_SELECT_GEOM
+/* ------------------ UpdateTriangleInfo ------------------------ */
+
+
+extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
+  char label[100];
+
+  LIST_geom_surface->set_int_val(tri_surf->in_geom_list);
+
+  sprintf(label, "surf area: %f m2", tri_surf->geom_area);
+  STATIC_surf_area->set_name(label);
+
+  sprintf(label, "triangle area: %f m2", tri_area);
+  STATIC_tri_area->set_name(label);
+}
+
+  /* ------------------ UpdateVertexLoc ------------------------ */
+
+extern "C" void UpdateVertexLoc(float x, float y, float z){
+  char label[100];
+
+  sprintf(label, "x: %f", x);
+  STATIC_vertx->set_name(label);
+  sprintf(label, "y: %f", y);
+  STATIC_verty->set_name(label);
+  sprintf(label, "z: %f", z);
+  STATIC_vertz->set_name(label);
+}
+#endif
+
 /* ------------------ GluiGeometrySetup ------------------------ */
 
 extern "C" void GluiGeometrySetup(int main_window){
@@ -238,69 +286,69 @@ extern "C" void GluiGeometrySetup(int main_window){
   if(nsurfinfo>0){
     glui_geometry->add_statictext_to_panel(PANEL_faces,"");
 
-    LIST_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Left"),surface_indices+DOWN_X,UPDATE_LIST,ObjectCB);
-    LIST_surface[DOWN_X]->set_w(260);
+    LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Left"),surface_indices+DOWN_X,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[DOWN_X]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[DOWN_X]->add_item(i,surfacelabel);
+      LIST_obst_surface[DOWN_X]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Right"),surface_indices+UP_X,UPDATE_LIST,ObjectCB);
-    LIST_surface[UP_X]->set_w(260);
+    LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Right"),surface_indices+UP_X,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[UP_X]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[UP_X]->add_item(i,surfacelabel);
+      LIST_obst_surface[UP_X]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Front"),surface_indices+DOWN_Y,UPDATE_LIST,ObjectCB);
-    LIST_surface[DOWN_Y]->set_w(260);
+    LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Front"),surface_indices+DOWN_Y,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[DOWN_Y]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[DOWN_Y]->add_item(i,surfacelabel);
+      LIST_obst_surface[DOWN_Y]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Back"),surface_indices+UP_Y,UPDATE_LIST,ObjectCB);
-    LIST_surface[UP_Y]->set_w(260);
+    LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Back"),surface_indices+UP_Y,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[UP_Y]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[UP_Y]->add_item(i,surfacelabel);
+      LIST_obst_surface[UP_Y]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Down"),surface_indices+DOWN_Z,UPDATE_LIST,ObjectCB);
-    LIST_surface[DOWN_Z]->set_w(260);
+    LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Down"),surface_indices+DOWN_Z,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[DOWN_Z]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[DOWN_Z]->add_item(i,surfacelabel);
+      LIST_obst_surface[DOWN_Z]->add_item(i,surfacelabel);
     }
 
-    LIST_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Up"),surface_indices+UP_Z,UPDATE_LIST,ObjectCB);
-    LIST_surface[UP_Z]->set_w(260);
+    LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Up"),surface_indices+UP_Z,UPDATE_LIST,ObjectCB);
+    LIST_obst_surface[UP_Z]->set_w(260);
     for(i=0;i<nsurfinfo;i++){
       surfi = surfinfo + sorted_surfidlist[i];
       if(surfi->used_by_obst!=1)continue;
       if(surfi->obst_surface==0)continue;
       surfacelabel = surfi->surfacelabel;
-      LIST_surface[UP_Z]->add_item(i,surfacelabel);
+      LIST_obst_surface[UP_Z]->add_item(i,surfacelabel);
     }
 
     ObjectCB(RADIO_WALL);
     for(i=0;i<6;i++){
-      LIST_surface[i]->disable();
+      LIST_obst_surface[i]->disable();
     }
   }
 
@@ -372,6 +420,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
@@ -387,6 +436,37 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
     CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "solid", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
+
+#ifdef pp_SELECT_GEOM
+    PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
+    RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom);
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
+
+    STATIC_vertx = glui_geometry->add_statictext_to_panel(PANEL_properties, "x:");
+    STATIC_verty = glui_geometry->add_statictext_to_panel(PANEL_properties, "y:");
+    STATIC_vertz = glui_geometry->add_statictext_to_panel(PANEL_properties, "z:");
+    UpdateVertexLoc(0.0, 0.0, 0.0);
+
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties, _("SURF:"), &geom_surf_index);
+    {
+      int ii;
+
+      ii = 0;
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_geom!=1)continue;
+        surfi->in_geom_list = ii;
+        ii++;
+        LIST_geom_surface->add_item(i, surfi->surfacelabel);
+      }
+    }
+    STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "SURF area:");
+    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "triangle area:");
+#endif
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
     CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
@@ -638,7 +718,7 @@ extern "C" void UpdateBlockVals(int flag){
         for(i=0;i<6;i++){
           surface_indices[i] = inv_sorted_surfidlist[bchighlight->surf_index[i]];
           surface_indices_bak[i] = inv_sorted_surfidlist[bchighlight->surf_index[i]];
-          LIST_surface[i]->set_int_val(surface_indices[i]);
+          LIST_obst_surface[i]->set_int_val(surface_indices[i]);
         }
       }
     }
@@ -647,7 +727,7 @@ extern "C" void UpdateBlockVals(int flag){
         for(i=0;i<6;i++){
           surface_indices[i]=inv_sorted_surfidlist[0];
           surface_indices_bak[i]=inv_sorted_surfidlist[0];
-          LIST_surface[i]->set_int_val(surface_indices[i]);
+          LIST_obst_surface[i]->set_int_val(surface_indices[i]);
         }
       }
     }
@@ -669,7 +749,7 @@ extern "C" void ObjectCB(int var){
         if(nsurfinfo>0){
           for(i=0;i<6;i++){
             surface_indices[i]=temp;
-            LIST_surface[i]->set_int_val(temp);
+            LIST_obst_surface[i]->set_int_val(temp);
           }
         }
         break;
@@ -678,7 +758,7 @@ extern "C" void ObjectCB(int var){
           for(i=0;i<6;i++){
             temp=surface_indices_bak[i];
             surface_indices[i]=temp;
-            LIST_surface[i]->set_int_val(temp);
+            LIST_obst_surface[i]->set_int_val(temp);
           }
         }
         break;
@@ -687,7 +767,7 @@ extern "C" void ObjectCB(int var){
           for(i=0;i<6;i++){
             temp=surface_indices_bak[i];
             surface_indices[i]=temp;
-            LIST_surface[i]->set_int_val(temp);
+            LIST_obst_surface[i]->set_int_val(temp);
           }
         }
         break;
@@ -718,43 +798,43 @@ extern "C" void ObjectCB(int var){
       switch(wall_case){
       case WALL_6:
         for(i=0;i<6;i++){
-          LIST_surface[i]->enable();
+          LIST_obst_surface[i]->enable();
         }
-        LIST_surface[DOWN_Z]->set_name("z lower face");
-        LIST_surface[UP_Z]->set_name("z upper face");
-        LIST_surface[DOWN_Y]->set_name("y lower face");
-        LIST_surface[UP_Y]->set_name("y upper face");
-        LIST_surface[DOWN_X]->set_name("x lower face");
-        LIST_surface[UP_X]->set_name("x upper face");
+        LIST_obst_surface[DOWN_Z]->set_name("z lower face");
+        LIST_obst_surface[UP_Z]->set_name("z upper face");
+        LIST_obst_surface[DOWN_Y]->set_name("y lower face");
+        LIST_obst_surface[UP_Y]->set_name("y upper face");
+        LIST_obst_surface[DOWN_X]->set_name("x lower face");
+        LIST_obst_surface[UP_X]->set_name("x upper face");
         break;
       case WALL_3:
         for(i=0;i<6;i++){
-          LIST_surface[i]->disable();
+          LIST_obst_surface[i]->disable();
         }
-        LIST_surface[DOWN_Z]->enable();
-        LIST_surface[UP_Z]->enable();
-        LIST_surface[UP_Y]->enable();
+        LIST_obst_surface[DOWN_Z]->enable();
+        LIST_obst_surface[UP_Z]->enable();
+        LIST_obst_surface[UP_Y]->enable();
 
-        LIST_surface[DOWN_Z]->set_name("z lower face");
-        LIST_surface[UP_Z]->set_name("z upper face");
-        LIST_surface[UP_Y]->set_name("side faces");
-        LIST_surface[DOWN_Y]->set_name("");
-        LIST_surface[DOWN_X]->set_name("");
-        LIST_surface[UP_X]->set_name("");
+        LIST_obst_surface[DOWN_Z]->set_name("z lower face");
+        LIST_obst_surface[UP_Z]->set_name("z upper face");
+        LIST_obst_surface[UP_Y]->set_name("side faces");
+        LIST_obst_surface[DOWN_Y]->set_name("");
+        LIST_obst_surface[DOWN_X]->set_name("");
+        LIST_obst_surface[UP_X]->set_name("");
 
         break;
       case WALL_1:
         for(i=0;i<6;i++){
-          LIST_surface[i]->disable();
+          LIST_obst_surface[i]->disable();
         }
-        LIST_surface[UP_Z]->enable();
-        LIST_surface[UP_Z]->set_name("All faces");
+        LIST_obst_surface[UP_Z]->enable();
+        LIST_obst_surface[UP_Z]->set_name("All faces");
 
-        LIST_surface[DOWN_Z]->set_name("");
-        LIST_surface[DOWN_Y]->set_name("");
-        LIST_surface[UP_Y]->set_name("");
-        LIST_surface[DOWN_X]->set_name("");
-        LIST_surface[UP_X]->set_name("");
+        LIST_obst_surface[DOWN_Z]->set_name("");
+        LIST_obst_surface[DOWN_Y]->set_name("");
+        LIST_obst_surface[UP_Y]->set_name("");
+        LIST_obst_surface[DOWN_X]->set_name("");
+        LIST_obst_surface[UP_X]->set_name("");
         break;
       default:
         ASSERT(FFALSE);

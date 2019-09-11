@@ -533,6 +533,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define HIDEALL_EVAC 4
 #define SHOWALL_EVAC 3
 
+#ifdef pp_SELECT_GEOM
+#define GEOM_PROP_NONE     0
+#define GEOM_PROP_VERTEX   1
+#define GEOM_PROP_TRIANGLE 2
+#endif
 
 #define TEMP_IGNITION_MAX 100000.
 #define SURFACE_TEMPMIN  -100000.

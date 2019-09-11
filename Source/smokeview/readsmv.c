@@ -3057,6 +3057,11 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 void InitSurface(surfdata *surf){
   surf->iso_level = -1;
   surf->used_by_obst = 0;
+#ifdef pp_SELECT_GEOM
+  surf->used_by_geom = 0;
+  surf->in_geom_list = -1;
+  surf->geom_area = -1.0;
+#endif
   surf->used_by_vent = 0;
   surf->emis = 1.0;
   surf->temp_ignition = TEMP_IGNITION_MAX;
