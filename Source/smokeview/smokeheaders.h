@@ -7,7 +7,7 @@
 
 #ifdef pp_SELECT_GEOM
 EXTERNCPP void UpdateVertexLoc(float x, float y, float z);
-EXTERNCPP void UpdateTriangleLoc(void);
+EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void UpdateGeomAreas(void);
 #endif

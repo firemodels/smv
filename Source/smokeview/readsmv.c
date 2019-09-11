@@ -3059,6 +3059,7 @@ void InitSurface(surfdata *surf){
   surf->used_by_obst = 0;
 #ifdef pp_SELECT_GEOM
   surf->used_by_geom = 0;
+  surf->in_geom_list = -1;
   surf->geom_area = -1.0;
 #endif
   surf->used_by_vent = 0;

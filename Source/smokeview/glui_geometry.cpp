@@ -55,6 +55,7 @@ GLUI_StaticText *STATIC_vertx=NULL;
 GLUI_StaticText *STATIC_verty=NULL;
 GLUI_StaticText *STATIC_vertz=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
+GLUI_StaticText *STATIC_surf_area = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
@@ -220,13 +221,18 @@ void BlockeditDlgCB(int var){
 }
 
 #ifdef pp_SELECT_GEOM
-/* ------------------ UpdateTriangleLoc ------------------------ */
+/* ------------------ UpdateTriangleInfo ------------------------ */
 
-extern "C" void UpdateTriangleLoc(void){
+
+extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];
 
-  LIST_geom_surface->set_int_val(geom_surf_index);
-  sprintf(label, "area: %f m2", surfinfo[geom_surf_index].geom_area);
+  LIST_geom_surface->set_int_val(tri_surf->in_geom_list);
+
+  sprintf(label, "surf area: %f m2", tri_surf->geom_area);
+  STATIC_surf_area->set_name(label);
+
+  sprintf(label, "triangle area: %f m2", tri_area);
   STATIC_tri_area->set_name(label);
 }
 
@@ -443,16 +449,23 @@ extern "C" void GluiGeometrySetup(int main_window){
     STATIC_vertz = glui_geometry->add_statictext_to_panel(PANEL_properties, "z:");
     UpdateVertexLoc(0.0, 0.0, 0.0);
 
-    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties, _("SURF"), &geom_surf_index);
-    for(i = 0; i<nsurfinfo; i++){
-      surfdata *surfi;
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties, _("SURF:"), &geom_surf_index);
+    {
+      int ii;
 
-    // surfi = surfinfo+sorted_surfidlist[i];
-    // if(surfi->used_by_geom!=1)continue;
-      surfi = surfinfo + i;
-      LIST_geom_surface->add_item(i, surfi->surfacelabel);
+      ii = 0;
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_geom!=1)continue;
+        surfi->in_geom_list = ii;
+        ii++;
+        LIST_geom_surface->add_item(i, surfi->surfacelabel);
+      }
     }
-    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "area:");
+    STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "SURF area:");
+    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "triangle area:");
 #endif
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
