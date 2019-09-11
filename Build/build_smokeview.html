@@ -28,9 +28,6 @@ function build_prog(args){
 function build_allprog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDallprog.bat ",args));
 }
-function check_allprog(args){
-  MyObject.Run(get_fullpath("../scripts/webCHECKallprog.bat ",args));
-}
 function build_utilprog(args){
   MyObject.Run(get_fullpath("../scripts/webBUILDutilprog.bat ",args));
 }
@@ -56,7 +53,7 @@ function install_smv(args){
 <td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
 </tr>
 <tr>
-<th>Clean</th>
+<th align=center>Clean</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_win.bat')">Windows</button>
 <button onclick="run_script('\\smv\\scripts\\webclean_all.bat')">All</button>
@@ -67,13 +64,14 @@ function install_smv(args){
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
 <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Show</button>
 </td>
 </tr>
 <tr>
-<th>Revision</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Set</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_bundle_revision.bat')">Show</button></td>
+<th align=center>Revisions</th>
+<td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Bundle</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Repos</button>
+</td>
 </tr>
 <tr>
 <th align=center>Notes</th>
@@ -84,7 +82,7 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
-<th>Branch</th><td align=center>
+<th align=center>Branch</th><td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set to master</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
 </tr>
@@ -167,13 +165,10 @@ function install_smv(args){
 </tr>
 
 <tr>
-<th rowspan=2>All</th>
+<th>All</th>
 <td align=center><button onclick="build_allprog('windows')">Build</button></td>
 <td align=center><button onclick="build_allprog('linux')">Build</button></td>
 <td align=center><button onclick="build_allprog('osx')">Build</button></td>
-</tr>
-<tr>
-<td align=center><button onclick="check_allprog('windows')">Check</button></td>
 </tr>
 
 <tr>
