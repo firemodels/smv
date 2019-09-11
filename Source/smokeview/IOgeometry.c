@@ -310,9 +310,7 @@ void UpdateGeomAreas(void){
       surfi->geom_area = 0.0;
     }
     for(i = 0; i<ntris; i++){
-      int j;
       tridata *trianglei;
-      unsigned char r, g, b;
       surfdata *tri_surf;
 
       trianglei = geomlisti->triangles + i;
