@@ -5,10 +5,10 @@ if [ "$arg" == "" ]; then
 fi
 # use -I to force use of the gnu compiler
 OPTS="-I $*"
-source ../../../Source/scripts/setopts.sh $OPTS
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
 if [[ "$arg" == "all" ]] || [[ "$arg" == "clean" ]]; then
