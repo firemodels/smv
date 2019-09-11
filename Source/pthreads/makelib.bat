@@ -1,7 +1,7 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building pthread library
+title Building windows pthread library
 erase *.o *.obj libpthread.a libpthreads.lib
 set target=libpthreads.lib
 set CFLAGS=-o2

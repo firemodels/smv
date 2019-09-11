@@ -1,7 +1,7 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building glut library
+title Building windows glut library
 erase *.o *.obj libglutwin.a libglutwin.lib
 
 set target=libglutwin.lib

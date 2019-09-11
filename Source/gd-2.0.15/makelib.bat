@@ -1,7 +1,7 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building gd library
+title Building windows gd library
 erase *.o *.obj libgd.a libgd.lib
 set target=libgd.lib
 if %COMPILER% == gcc set target=libgd.a
