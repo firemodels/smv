@@ -397,11 +397,18 @@ void DrawSelectGeom(void){
         GetRGB(color_index+1,&r,&g,&b);
         color_index++;
         glColor3ub(r,g,b);
-        for(j=0;j<3;j++){
-          vertdata *vertj;
+        {
+          vertdata *vert0, *vert1, *vert2;
 
-          vertj = trianglei->verts[j];
-          glVertex3fv(vertj->xyz);
+          vert0 = trianglei->verts[0];
+          vert1 = trianglei->verts[1];
+          vert2 = trianglei->verts[2];
+          glVertex3fv(vert0->xyz);
+          glVertex3fv(vert1->xyz);
+          glVertex3fv(vert2->xyz);
+          glVertex3fv(vert0->xyz);
+          glVertex3fv(vert2->xyz);
+          glVertex3fv(vert1->xyz);
         }
       }
       glEnd();
