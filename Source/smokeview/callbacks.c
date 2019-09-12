@@ -575,11 +575,11 @@ void MouseSelectGeom(int button, int state, int x, int y){
     else{
       if(geomlisti->ntriangles>0){
         surfdata *tri_surf;
-        tridata **tris;
+        tridata *trii;
 
-        tris = geomlisti->triangleptrs;
-        tri_surf = tris[selected_geom_index]->geomsurf;
-        UpdateTriangleInfo(tri_surf, tris[selected_geom_index]->area);
+        trii = geomlisti->triangles+selected_geom_index;
+        tri_surf = trii->geomsurf;
+        UpdateTriangleInfo(tri_surf, trii->area);
       }
     }
     glShadeModel(GL_SMOOTH);

@@ -460,8 +460,8 @@ extern "C" void GluiGeometrySetup(int main_window){
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_geom!=1)continue;
         surfi->in_geom_list = ii;
+        LIST_geom_surface->add_item(ii, surfi->surfacelabel);
         ii++;
-        LIST_geom_surface->add_item(i, surfi->surfacelabel);
       }
     }
     STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "SURF area:");
