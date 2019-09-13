@@ -382,7 +382,6 @@ void DrawSelectGeom(void){
       color_index = 0;
       glBegin(GL_TRIANGLES);
       for(i=0;i<ntris;i++){
-        int j;
         tridata *trianglei;
         unsigned char r, g, b;
 
