@@ -59,7 +59,6 @@ GLUI_StaticText *STATIC_verty2 = NULL;
 GLUI_StaticText *STATIC_vertz2 = NULL;
 GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
-GLUI_StaticText *STATIC_surf_area = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
@@ -236,9 +235,6 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];
 
   LIST_geom_surface->set_int_val(tri_surf->in_geom_list);
-
-  sprintf(label, "surf area: %f m2", tri_surf->geom_area);
-  STATIC_surf_area->set_name(label);
 
   sprintf(label, "triangle area: %f m2", tri_area);
   STATIC_tri_area->set_name(label);
@@ -480,6 +476,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
 
 #ifdef pp_SELECT_GEOM
+    UpdateGeomAreas();
     PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom, SELECT_GEOM,VolumeCB);
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
@@ -509,13 +506,16 @@ extern "C" void GluiGeometrySetup(int main_window){
         surfdata *surfi;
 
         surfi = surfinfo+sorted_surfidlist[i];
-        if(surfi->used_by_geom!=1)continue;
-        surfi->in_geom_list = ii;
-        LIST_geom_surface->add_item(ii, surfi->surfacelabel);
-        ii++;
+        if(surfi->used_by_geom==1){
+          char label[100];
+
+          surfi->in_geom_list = ii;
+          sprintf(label, "%s/%f m2", surfi->surfacelabel, surfi->geom_area);
+          LIST_geom_surface->add_item(ii, label);
+          ii++;
+        }
       }
     }
-    STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "SURF area:");
     STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "triangle area:");
 #endif
 
