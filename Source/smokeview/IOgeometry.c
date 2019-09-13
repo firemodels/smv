@@ -347,19 +347,19 @@ void DrawSelectGeom(void){
     glTranslatef(-xbar0,-ybar0,-zbar0);
     glTranslatef(geom_delx, geom_dely, geom_delz);
     glPointSize(20);
-    color_index = 0;
+    color_index = 1;
     glBegin(GL_POINTS);
     for(j=0;j<geomlisti->nverts;j++){
       vertdata *verti;
       unsigned char r, g, b;
 
       verti = geomlisti->verts+j;
-      if(verti->geomtype == GEOM_ISO||verti->ntriangles==0)continue;
-      GetRGB(color_index+1,&r,&g,&b);
+      if(verti->geomtype!=GEOM_ISO && verti->ntriangles!=0){
+        GetRGB(color_index, &r, &g, &b);
+        glColor3ub(r,g,b);
+        glVertex3fv(verti->xyz);
+      }
       color_index++;
-      glColor3ub(r,g,b);
-      glVertex3fv(verti->xyz);
-
     }
     glEnd();
     glPopMatrix();
@@ -984,7 +984,7 @@ void DrawGeom(int flag, int timestate){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
           if(selected_geom_index==j)use_select_color=1;
         }
-        else{ // draw verices normally if vertices are not being selected
+        else{ // draw vertices normally if vertices are not being selected
           if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
           if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
           if(verti->ntriangles==0)continue;

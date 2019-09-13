@@ -535,7 +535,9 @@ void MouseSelectGeom(int button, int state, int x, int y){
   int mouse_x, mouse_y;
   GLubyte r, g, b;
 
-  mouse_x = x; mouse_y = screenHeight-y;
+  mouse_x = x; 
+  mouse_y = screenHeight-y;
+
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
