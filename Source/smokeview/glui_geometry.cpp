@@ -84,7 +84,9 @@ GLUI_Spinner *SPINNER_geom_delz = NULL;
 GLUI_Checkbox *CHECKBOX_visaxislabels;
 
 #define VOL_SHOWHIDE 3
-
+#ifdef pp_SELECT_GEOM
+#define SELECT_GEOM  4
+#endif
 
 GLUI *glui_geometry=NULL;
 
@@ -439,7 +441,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 #ifdef pp_SELECT_GEOM
     PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
-    RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom);
+    RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom, SELECT_GEOM,VolumeCB);
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
@@ -540,6 +542,11 @@ extern "C" void GluiGeometrySetup(int main_window){
 extern "C" void VolumeCB(int var){
   int i;
   switch(var){
+#ifdef pp_SELECT_GEOM
+  case SELECT_GEOM:
+    selected_geom_index = -1;
+    break;
+#endif
   case UPDATE_GEOM:
     LOCK_TRIANGLES;
     show_geom_bndf = glui_show_geom_bndf;
