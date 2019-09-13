@@ -7,6 +7,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifdef pp_SELECT_GEOM
+#define VERTEX1 1
+#define VERTEX2 2
+#endif
+
 #define PART_SIZING  0
 #define PART_LOADING 1
 #define PART_BEFORE  0

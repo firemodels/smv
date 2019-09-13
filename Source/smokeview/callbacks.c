@@ -548,9 +548,9 @@ void MouseSelectGeom(int button, int state, int x, int y){
 
   ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
   glReadBuffer(GL_BACK);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED,   GL_UNSIGNED_BYTE, &r);
   glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE, GL_UNSIGNED_BYTE, &b);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE,  GL_UNSIGNED_BYTE, &b);
 
   r = r>>nredshift;
   g = g>>ngreenshift;
@@ -561,25 +561,42 @@ void MouseSelectGeom(int button, int state, int x, int y){
   if(val>0){
     geomdata *geomi;
     geomlistdata *geomlisti;
-    vertdata *verti;
-    float *xyz;
 
 
     geomi = geominfoptrs[0];
     geomlisti = geomi->geomlistinfo-1;
-    selected_geom_index = val-1;
 
+    if(select_geom_vertex==VERTEX2&&select_geom==GEOM_PROP_VERTEX){
+      selected_geom_index2 = val-1;
+    }
+    else{
+      selected_geom_index1 = val-1;
+    }
     if(select_geom==GEOM_PROP_VERTEX){
-      verti = geomlisti->verts+selected_geom_index;
-      xyz = verti->xyz;
-      UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
+      float *xyz1, *xyz2;
+
+      xyz1 = NULL;
+      if(selected_geom_index1>=0){
+        vertdata *verti;
+
+        verti = geomlisti->verts+selected_geom_index1;
+        xyz1 = verti->xyz;
+      }
+      xyz2 = NULL;
+      if(selected_geom_index2>=0){
+        vertdata *verti;
+
+        verti = geomlisti->verts+selected_geom_index2;
+        xyz2 = verti->xyz;
+      }
+      UpdateVertexInfo(xyz1, xyz2);
     }
     else{
       if(geomlisti->ntriangles>0){
         surfdata *tri_surf;
         tridata *trii;
 
-        trii = geomlisti->triangles+selected_geom_index;
+        trii = geomlisti->triangles+selected_geom_index1;
         tri_surf = trii->geomsurf;
         UpdateTriangleInfo(tri_surf, trii->area);
       }
@@ -2279,6 +2296,16 @@ void Keyboard(unsigned char key, int flag){
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
       break;
+#ifdef pp_SELECT_GEOM
+    case '=':
+      if(select_geom_vertex==VERTEX1){
+        select_geom_vertex = VERTEX2;
+      }
+      else{
+        select_geom_vertex = VERTEX1;
+      }
+      break;
+#endif
     case '!':
       SnapScene();
       break;

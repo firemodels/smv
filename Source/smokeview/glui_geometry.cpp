@@ -51,9 +51,13 @@ GLUI_RadioGroup *RADIO_select_geom = NULL;
 #endif
 
 #ifdef pp_SELECT_GEOM
-GLUI_StaticText *STATIC_vertx=NULL;
-GLUI_StaticText *STATIC_verty=NULL;
-GLUI_StaticText *STATIC_vertz=NULL;
+GLUI_StaticText *STATIC_vertx1=NULL;
+GLUI_StaticText *STATIC_verty1=NULL;
+GLUI_StaticText *STATIC_vertz1=NULL;
+GLUI_StaticText *STATIC_vertx2 = NULL;
+GLUI_StaticText *STATIC_verty2 = NULL;
+GLUI_StaticText *STATIC_vertz2 = NULL;
+GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
 GLUI_StaticText *STATIC_surf_area = NULL;
 #endif
@@ -107,6 +111,8 @@ GLUI_Listbox *LIST_geom_surface=NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
 #ifdef pp_SELECT_GEOM
 GLUI_Panel *PANEL_properties=NULL;
+GLUI_Panel *PANEL_properties_triangle = NULL;
+GLUI_Panel *PANEL_properties_vertex = NULL;
 #endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
@@ -238,17 +244,51 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   STATIC_tri_area->set_name(label);
 }
 
-  /* ------------------ UpdateVertexLoc ------------------------ */
+  /* ------------------ UpdateVertexInfo ------------------------ */
 
-extern "C" void UpdateVertexLoc(float x, float y, float z){
+extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
   char label[100];
 
-  sprintf(label, "x: %f", x);
-  STATIC_vertx->set_name(label);
-  sprintf(label, "y: %f", y);
-  STATIC_verty->set_name(label);
-  sprintf(label, "z: %f", z);
-  STATIC_vertz->set_name(label);
+  if(xyz1!=NULL){
+    sprintf(label, "x1: %f", xyz1[0]);
+    STATIC_vertx1->set_name(label);
+    sprintf(label, "y1: %f", xyz1[1]);
+    STATIC_verty1->set_name(label);
+    sprintf(label, "z1: %f", xyz1[2]);
+    STATIC_vertz1->set_name(label);
+  }
+  else{
+    STATIC_vertx1->set_name("x1:");
+    STATIC_verty1->set_name("y1:");
+    STATIC_vertz1->set_name("z1:");
+  }
+  if(xyz2!=NULL){
+    sprintf(label, "x2: %f", xyz2[0]);
+    STATIC_vertx2->set_name(label);
+    sprintf(label, "y2: %f", xyz2[1]);
+    STATIC_verty2->set_name(label);
+    sprintf(label, "z2: %f", xyz2[2]);
+    STATIC_vertz2->set_name(label);
+  }
+  else{
+    STATIC_vertx2->set_name("x2:");
+    STATIC_verty2->set_name("y2:");
+    STATIC_vertz2->set_name("z2:");
+  }
+  if(xyz1!=NULL&&xyz2!=NULL){
+    float dx, dy, dz, dist;
+    char label[100];
+
+    dx = xyz1[0]-xyz2[0];
+    dy = xyz1[1]-xyz2[1];
+    dz = xyz1[2]-xyz2[2];
+    dist = sqrt(dx*dx+dy*dy+dz*dz);
+    sprintf(label, "dist: %f", dist);
+    STATIC_dist->set_name(label);
+  }
+  else{
+    STATIC_dist->set_name("dist:");
+  }
 }
 #endif
 
@@ -446,12 +486,21 @@ extern "C" void GluiGeometrySetup(int main_window){
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
 
-    STATIC_vertx = glui_geometry->add_statictext_to_panel(PANEL_properties, "x:");
-    STATIC_verty = glui_geometry->add_statictext_to_panel(PANEL_properties, "y:");
-    STATIC_vertz = glui_geometry->add_statictext_to_panel(PANEL_properties, "z:");
-    UpdateVertexLoc(0.0, 0.0, 0.0);
+    PANEL_properties_vertex = glui_geometry->add_panel_to_panel(PANEL_properties, "vertex");
+    STATIC_vertx1 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "x1:");
+    STATIC_verty1 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "y1:");
+    STATIC_vertz1 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "z1:");
+    STATIC_dist   = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "dist:");
 
-    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties, _("SURF:"), &geom_surf_index);
+    glui_geometry->add_column_to_panel(PANEL_properties_vertex,false);
+
+    STATIC_vertx2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "x2:");
+    STATIC_verty2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "y2:");
+    STATIC_vertz2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "z2:");
+    UpdateVertexInfo(NULL, NULL);
+
+    PANEL_properties_triangle = glui_geometry->add_panel_to_panel(PANEL_properties, "triangle");
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_triangle, _("SURF:"), &geom_surf_index);
     {
       int ii;
 
@@ -466,8 +515,8 @@ extern "C" void GluiGeometrySetup(int main_window){
         ii++;
       }
     }
-    STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "SURF area:");
-    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties, "triangle area:");
+    STATIC_surf_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "SURF area:");
+    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "triangle area:");
 #endif
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
@@ -544,7 +593,8 @@ extern "C" void VolumeCB(int var){
   switch(var){
 #ifdef pp_SELECT_GEOM
   case SELECT_GEOM:
-    selected_geom_index = -1;
+    selected_geom_index1 = -1;
+    selected_geom_index2 = -1;
     break;
 #endif
   case UPDATE_GEOM:

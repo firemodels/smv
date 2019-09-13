@@ -481,7 +481,7 @@ void DrawGeom(int flag, int timestate){
       use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE){
         if(trianglei->geomtype==GEOM_ISO)continue;
-        if(selected_geom_index==i){
+        if(selected_geom_index1==i){
           use_select_color=1;
         }
       }
@@ -981,7 +981,8 @@ void DrawGeom(int flag, int timestate){
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
-          if(selected_geom_index==j)use_select_color=1;
+          if(selected_geom_index1==j)use_select_color = 1;
+          if(selected_geom_index2==j)use_select_color = 2;
         }
         else{ // draw vertices normally if vertices are not being selected
           if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
@@ -989,8 +990,12 @@ void DrawGeom(int flag, int timestate){
           if(verti->ntriangles==0)continue;
         }
         if(use_select_color==1){
-          glColor3f(1.0,0.0,0.0);
+          glColor3f(0.8,0.2,0.0);
           last_color=NULL;
+        }
+        else if(use_select_color == 2){
+          glColor3f(0.2, 0.0, 0.8);
+          last_color = NULL;
         }
         else{
           color = verti->triangles[0]->geomsurf->color;
