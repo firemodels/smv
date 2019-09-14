@@ -535,7 +535,9 @@ void MouseSelectGeom(int button, int state, int x, int y){
   int mouse_x, mouse_y;
   GLubyte r, g, b;
 
-  mouse_x = x; mouse_y = screenHeight-y;
+  mouse_x = x; 
+  mouse_y = screenHeight-y;
+
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glDisable(GL_FOG);
@@ -546,9 +548,9 @@ void MouseSelectGeom(int button, int state, int x, int y){
 
   ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
   glReadBuffer(GL_BACK);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED,   GL_UNSIGNED_BYTE, &r);
   glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE, GL_UNSIGNED_BYTE, &b);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE,  GL_UNSIGNED_BYTE, &b);
 
   r = r>>nredshift;
   g = g>>ngreenshift;
@@ -559,28 +561,46 @@ void MouseSelectGeom(int button, int state, int x, int y){
   if(val>0){
     geomdata *geomi;
     geomlistdata *geomlisti;
-    vertdata *verti;
-    float *xyz;
-
 
     geomi = geominfoptrs[0];
     geomlisti = geomi->geomlistinfo-1;
-    selected_geom_index = val-1;
 
-    if(select_geom==GEOM_PROP_VERTEX){
-      verti = geomlisti->verts+selected_geom_index;
-      xyz = verti->xyz;
-      UpdateVertexLoc(xyz[0], xyz[1], xyz[2]);
+    if(select_geom==GEOM_PROP_VERTEX1)selected_geom_vertex1 = val-1;
+    if(select_geom==GEOM_PROP_VERTEX2)selected_geom_vertex2 = val-1;
+    if(select_geom==GEOM_PROP_TRIANGLE)selected_geom_triangle = val-1;
+    switch(select_geom){
+    case GEOM_PROP_VERTEX1:
+    case GEOM_PROP_VERTEX2:
+    {
+      float *xyz1, *xyz2;
+
+      xyz1 = NULL;
+      if(selected_geom_vertex1>=0){
+        vertdata *verti;
+
+        verti = geomlisti->verts+selected_geom_vertex1;
+        xyz1 = verti->xyz;
+      }
+      xyz2 = NULL;
+      if(selected_geom_vertex2>=0){
+        vertdata *verti;
+
+        verti = geomlisti->verts+selected_geom_vertex2;
+        xyz2 = verti->xyz;
+      }
+      UpdateVertexInfo(xyz1, xyz2);
     }
-    else{
+      break;
+    case GEOM_PROP_TRIANGLE:
       if(geomlisti->ntriangles>0){
         surfdata *tri_surf;
-        tridata **tris;
+        tridata *trii;
 
-        tris = geomlisti->triangleptrs;
-        tri_surf = tris[selected_geom_index]->geomsurf;
-        UpdateTriangleInfo(tri_surf, tris[selected_geom_index]->area);
+        trii = geomlisti->triangles+selected_geom_triangle;
+        tri_surf = trii->geomsurf;
+        UpdateTriangleInfo(tri_surf, trii->area);
       }
+      break;
     }
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
@@ -2277,6 +2297,18 @@ void Keyboard(unsigned char key, int flag){
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
       break;
+#ifdef pp_SELECT_GEOM
+    case '=':
+      if(ngeominfo>0){
+        select_geom++;
+        if(select_geom==4)select_geom=0;
+        if(select_geom==GEOM_PROP_VERTEX1)printf("select vertex 1\n");
+        if(select_geom==GEOM_PROP_VERTEX2)printf("select vertex 2\n");
+        if(select_geom==GEOM_PROP_TRIANGLE)printf("select triangle\n");
+        UpdateSelectGeom();
+      }
+      break;
+#endif
     case '!':
       SnapScene();
       break;

@@ -9152,6 +9152,9 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  #: save settings (create casename.ini file)"), MENU_DUMMY);
   }
+  if(ngeominfo){
+    glutAddMenuEntry(_("  =: toggle vertex selected in examine geometry dialog"), MENU_DUMMY);
+  }
   glutAddMenuEntry(_("  !: snap scene to closest 45 degree orientation"), MENU_DUMMY);
   glutAddMenuEntry(_("  ~: level the scene"),2);
   glutAddMenuEntry(_("  &&: toggle line anti-aliasing (draw lines smoothly)"), MENU_DUMMY);

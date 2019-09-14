@@ -1,0 +1,27 @@
+&HEAD CHID='tri_test1' /
+
+&TIME T_END=0.0 /
+&MESH IJK=30,10,10,XB=0.0,3.0,0.0,1.0,0.0,1.0 /
+&MISC PROCESS_CUTCELLS=.FALSE. /
+&SURF ID='surf1',COLOR='YELLOW' /
+&SURF ID='surf2',COLOR='GREEN' /
+&SURF ID='surf3',COLOR='BLUE' /
+
+&GEOM ID='geom1',
+        VERTS=0.0,0.0,0.0,
+              1.0,0.5,0.0,
+              1.0,1.0,1.0,
+        FACES=1,2,3,1,
+        SURF_ID='surf1'/
+&GEOM ID='geom1',
+        VERTS=1.0,0.0,0.0,
+              2.0,0.5,0.0,
+              2.0,1.0,1.0,
+        FACES=1,2,3,1,
+        SURF_ID='surf2'/
+&GEOM ID='geom1',
+        VERTS=2.0,0.0,0.0,
+              3.0,0.5,0.0,
+              3.0,1.0,1.0,
+        FACES=1,2,3,1,
+        SURF_ID='surf3'/

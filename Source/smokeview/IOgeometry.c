@@ -339,7 +339,7 @@ void DrawSelectGeom(void){
   geomi = geominfoptrs[0];
   geomlisti = geomi->geomlistinfo-1;
 
-  if(select_geom==GEOM_PROP_VERTEX&&geomlisti->nverts>0){
+  if((select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2)&&geomlisti->nverts>0){
     int j;
 
     glPushMatrix();
@@ -347,19 +347,19 @@ void DrawSelectGeom(void){
     glTranslatef(-xbar0,-ybar0,-zbar0);
     glTranslatef(geom_delx, geom_dely, geom_delz);
     glPointSize(20);
-    color_index = 0;
+    color_index = 1;
     glBegin(GL_POINTS);
     for(j=0;j<geomlisti->nverts;j++){
       vertdata *verti;
       unsigned char r, g, b;
 
       verti = geomlisti->verts+j;
-      if(verti->geomtype == GEOM_ISO||verti->ntriangles==0)continue;
-      GetRGB(color_index+1,&r,&g,&b);
+      if(verti->geomtype!=GEOM_ISO && verti->ntriangles!=0){
+        GetRGB(color_index, &r, &g, &b);
+        glColor3ub(r,g,b);
+        glVertex3fv(verti->xyz);
+      }
       color_index++;
-      glColor3ub(r,g,b);
-      glVertex3fv(verti->xyz);
-
     }
     glEnd();
     glPopMatrix();
@@ -382,7 +382,6 @@ void DrawSelectGeom(void){
       color_index = 0;
       glBegin(GL_TRIANGLES);
       for(i=0;i<ntris;i++){
-        int j;
         tridata *trianglei;
         unsigned char r, g, b;
 
@@ -397,11 +396,18 @@ void DrawSelectGeom(void){
         GetRGB(color_index+1,&r,&g,&b);
         color_index++;
         glColor3ub(r,g,b);
-        for(j=0;j<3;j++){
-          vertdata *vertj;
+        {
+          vertdata *vert0, *vert1, *vert2;
 
-          vertj = trianglei->verts[j];
-          glVertex3fv(vertj->xyz);
+          vert0 = trianglei->verts[0];
+          vert1 = trianglei->verts[1];
+          vert2 = trianglei->verts[2];
+          glVertex3fv(vert0->xyz);
+          glVertex3fv(vert1->xyz);
+          glVertex3fv(vert2->xyz);
+          glVertex3fv(vert0->xyz);
+          glVertex3fv(vert2->xyz);
+          glVertex3fv(vert1->xyz);
         }
       }
       glEnd();
@@ -475,7 +481,7 @@ void DrawGeom(int flag, int timestate){
       use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE){
         if(trianglei->geomtype==GEOM_ISO)continue;
-        if(selected_geom_index==i){
+        if(selected_geom_triangle==i){
           use_select_color=1;
         }
       }
@@ -513,7 +519,12 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
 #ifdef pp_SELECT_GEOM
       if(use_select_color==1){
-        glColor3f(1.0,0.0,0.0);
+        unsigned char geom_triangle_rgb_uc[3];
+
+        geom_triangle_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
+        geom_triangle_rgb_uc[1] = (unsigned char)geom_triangle_rgb[1];
+        geom_triangle_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
+        glColor3ubv(geom_triangle_rgb_uc);
         last_color = NULL;
         last_transparent_level = -1.0;
       }
@@ -973,18 +984,33 @@ void DrawGeom(int flag, int timestate){
         verti = geomlisti->verts+j;
 #ifdef pp_SELECT_GEOM
         use_select_color=0;
-        if(select_geom==GEOM_PROP_VERTEX){
+        if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
-          if(selected_geom_index==j)use_select_color=1;
+          if(selected_geom_vertex1==j)use_select_color = 1;
+          if(selected_geom_vertex2==j)use_select_color = 2;
         }
-        else{ // draw verices normally if vertices are not being selected
+        else{ // draw vertices normally if vertices are not being selected
           if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
           if(verti->geomtype==GEOM_ISO&&show_iso_points == 0)continue;
           if(verti->ntriangles==0)continue;
         }
         if(use_select_color==1){
-          glColor3f(1.0,0.0,0.0);
+          unsigned char geom_vertex1_rgb_uc[3];
+
+          geom_vertex1_rgb_uc[0] = (unsigned char)geom_vertex1_rgb[0];
+          geom_vertex1_rgb_uc[1] = (unsigned char)geom_vertex1_rgb[1];
+          geom_vertex1_rgb_uc[2] = (unsigned char)geom_vertex1_rgb[2];
+          glColor3ubv(geom_vertex1_rgb_uc);
           last_color=NULL;
+        }
+        else if(use_select_color == 2){
+          unsigned char geom_vertex2_rgb_uc[3];
+
+          geom_vertex2_rgb_uc[0] = (unsigned char)geom_vertex2_rgb[0];
+          geom_vertex2_rgb_uc[1] = (unsigned char)geom_vertex2_rgb[1];
+          geom_vertex2_rgb_uc[2] = (unsigned char)geom_vertex2_rgb[2];
+          glColor3ubv(geom_vertex2_rgb_uc);
+          last_color = NULL;
         }
         else{
           color = verti->triangles[0]->geomsurf->color;
