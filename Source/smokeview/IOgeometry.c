@@ -339,7 +339,7 @@ void DrawSelectGeom(void){
   geomi = geominfoptrs[0];
   geomlisti = geomi->geomlistinfo-1;
 
-  if(select_geom==GEOM_PROP_VERTEX&&geomlisti->nverts>0){
+  if((select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2)&&geomlisti->nverts>0){
     int j;
 
     glPushMatrix();
@@ -979,7 +979,7 @@ void DrawGeom(int flag, int timestate){
         verti = geomlisti->verts+j;
 #ifdef pp_SELECT_GEOM
         use_select_color=0;
-        if(select_geom==GEOM_PROP_VERTEX){
+        if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
           if(selected_geom_index1==j)use_select_color = 1;
           if(selected_geom_index2==j)use_select_color = 2;

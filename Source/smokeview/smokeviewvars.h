@@ -25,7 +25,6 @@ SVEXTERN int SVDECL(geom_surf_index, 0);
 SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);
 SVEXTERN int SVDECL(selected_geom_index1,-1);
 SVEXTERN int SVDECL(selected_geom_index2,-1);
-SVEXTERN int SVDECL(select_geom_vertex, VERTEX1);
 #endif
 SVEXTERN int SVDECL(nlist_slice_index, 0);
 SVEXTERN int SVDECL(slice_fileupdate, 0);

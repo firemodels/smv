@@ -131,6 +131,14 @@ GLUI_StaticText *STATIC_label=NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
+/* ------------------ UpdateSelectGeom ------------------------ */
+
+#ifdef pp_SELECT_GEOM
+extern "C" void UpdateSelectGeom(void){
+  RADIO_select_geom->set_int_val(select_geom);
+}
+#endif
+
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
 
 extern "C" void UpdateWhereFaceVolumes(void){
@@ -480,7 +488,8 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_properties = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "properties");
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties, &select_geom, SELECT_GEOM,VolumeCB);
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
-    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex 1");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex 2");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
 
     PANEL_properties_vertex = glui_geometry->add_panel_to_panel(PANEL_properties, "vertex");
@@ -593,8 +602,10 @@ extern "C" void VolumeCB(int var){
   switch(var){
 #ifdef pp_SELECT_GEOM
   case SELECT_GEOM:
-    selected_geom_index1 = -1;
-    selected_geom_index2 = -1;
+    if(select_geom==GEOM_PROP_NONE||select_geom==GEOM_PROP_TRIANGLE){
+      selected_geom_index1 = -1;
+      selected_geom_index2 = -1;
+    }
     break;
 #endif
   case UPDATE_GEOM:
