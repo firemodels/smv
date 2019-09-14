@@ -481,7 +481,7 @@ void DrawGeom(int flag, int timestate){
       use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE){
         if(trianglei->geomtype==GEOM_ISO)continue;
-        if(selected_geom_index1==i){
+        if(selected_geom_triangle==i){
           use_select_color=1;
         }
       }
@@ -519,7 +519,12 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
 #ifdef pp_SELECT_GEOM
       if(use_select_color==1){
-        glColor3f(1.0,0.0,0.0);
+        unsigned char geom_triangle_rgb_uc[3];
+
+        geom_triangle_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
+        geom_triangle_rgb_uc[1] = (unsigned char)geom_triangle_rgb[1];
+        geom_triangle_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
+        glColor3ubv(geom_triangle_rgb_uc);
         last_color = NULL;
         last_transparent_level = -1.0;
       }
@@ -981,8 +986,8 @@ void DrawGeom(int flag, int timestate){
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
-          if(selected_geom_index1==j)use_select_color = 1;
-          if(selected_geom_index2==j)use_select_color = 2;
+          if(selected_geom_vertex1==j)use_select_color = 1;
+          if(selected_geom_vertex2==j)use_select_color = 2;
         }
         else{ // draw vertices normally if vertices are not being selected
           if(verti->geomtype==GEOM_GEOM&&show_geom_verts == 0)continue;
@@ -990,11 +995,21 @@ void DrawGeom(int flag, int timestate){
           if(verti->ntriangles==0)continue;
         }
         if(use_select_color==1){
-          glColor3f(0.8,0.2,0.0);
+          unsigned char geom_vertex1_rgb_uc[3];
+
+          geom_vertex1_rgb_uc[0] = (unsigned char)geom_vertex1_rgb[0];
+          geom_vertex1_rgb_uc[1] = (unsigned char)geom_vertex1_rgb[1];
+          geom_vertex1_rgb_uc[2] = (unsigned char)geom_vertex1_rgb[2];
+          glColor3ubv(geom_vertex1_rgb_uc);
           last_color=NULL;
         }
         else if(use_select_color == 2){
-          glColor3f(0.2, 0.0, 0.8);
+          unsigned char geom_vertex2_rgb_uc[3];
+
+          geom_vertex2_rgb_uc[0] = (unsigned char)geom_vertex2_rgb[0];
+          geom_vertex2_rgb_uc[1] = (unsigned char)geom_vertex2_rgb[1];
+          geom_vertex2_rgb_uc[2] = (unsigned char)geom_vertex2_rgb[2];
+          glColor3ubv(geom_vertex2_rgb_uc);
           last_color = NULL;
         }
         else{

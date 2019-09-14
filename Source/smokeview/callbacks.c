@@ -565,8 +565,9 @@ void MouseSelectGeom(int button, int state, int x, int y){
     geomi = geominfoptrs[0];
     geomlisti = geomi->geomlistinfo-1;
 
-    if(select_geom==GEOM_PROP_VERTEX1)selected_geom_index1 = val-1;
-    if(select_geom==GEOM_PROP_VERTEX2)selected_geom_index2 = val-1;
+    if(select_geom==GEOM_PROP_VERTEX1)selected_geom_vertex1 = val-1;
+    if(select_geom==GEOM_PROP_VERTEX2)selected_geom_vertex2 = val-1;
+    if(select_geom==GEOM_PROP_TRIANGLE)selected_geom_triangle = val-1;
     switch(select_geom){
     case GEOM_PROP_VERTEX1:
     case GEOM_PROP_VERTEX2:
@@ -574,17 +575,17 @@ void MouseSelectGeom(int button, int state, int x, int y){
       float *xyz1, *xyz2;
 
       xyz1 = NULL;
-      if(selected_geom_index1>=0){
+      if(selected_geom_vertex1>=0){
         vertdata *verti;
 
-        verti = geomlisti->verts+selected_geom_index1;
+        verti = geomlisti->verts+selected_geom_vertex1;
         xyz1 = verti->xyz;
       }
       xyz2 = NULL;
-      if(selected_geom_index2>=0){
+      if(selected_geom_vertex2>=0){
         vertdata *verti;
 
-        verti = geomlisti->verts+selected_geom_index2;
+        verti = geomlisti->verts+selected_geom_vertex2;
         xyz2 = verti->xyz;
       }
       UpdateVertexInfo(xyz1, xyz2);
@@ -595,7 +596,7 @@ void MouseSelectGeom(int button, int state, int x, int y){
         surfdata *tri_surf;
         tridata *trii;
 
-        trii = geomlisti->triangles+selected_geom_index1;
+        trii = geomlisti->triangles+selected_geom_triangle;
         tri_surf = trii->geomsurf;
         UpdateTriangleInfo(tri_surf, trii->area);
       }

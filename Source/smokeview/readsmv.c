@@ -11310,6 +11310,15 @@ int ReadIni2(char *inifile, int localfile){
       SetColorControls();
       continue;
     }
+    if(Match(buffer, "GEOMSELECTCOLOR") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i",  geom_vertex2_rgb,  geom_vertex2_rgb+1,  geom_vertex2_rgb+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i", geom_triangle_rgb, geom_triangle_rgb+1, geom_triangle_rgb+2);
+      continue;
+    }
     if(Match(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
@@ -13250,6 +13259,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", background_flip);
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
+  fprintf(fileout, "GEOMSELECTCOLOR\n") ;
+  fprintf(fileout, " %i %i %i\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
+  fprintf(fileout, " %i %i %i\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
+  fprintf(fileout, " %i %i %i\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
   fprintf(fileout, "HEATOFFCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoffcolor[0], heatoffcolor[1], heatoffcolor[2]);
   fprintf(fileout, "HEATONCOLOR\n");
