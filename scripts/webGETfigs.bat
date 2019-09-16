@@ -57,7 +57,7 @@ if "%whichguides%" == "fdsug" (
   Title Download FDS user guide images
 
   cd %svn_root%\fds\Manuals\FDS_User_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%firebotrepo%/fds/Manuals/FDS_User_Guide/SCRIPT_FIGURES/* .
+  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_User_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "fdsvalg" (
@@ -69,7 +69,7 @@ if "%whichguides%" == "fdsvalg" (
 
       Title Download FDS validation guide %%d images
 
-      pscp %linux_logon%:%firebotrepo%/fds/Manuals/FDS_Validation_Guide/SCRIPT_FIGURES/%%d/* .
+      pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Validation_Guide/SCRIPT_FIGURES/%%d/* .
       cd ..
   )
   goto eof
@@ -78,12 +78,12 @@ if "%whichguides%" == "fdsverg" (
   Title Download FDS verification guide images
 
   cd %svn_root%\fds\Manuals\FDS_Verification_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%firebotrepo%/fds/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/* .
+  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/* .
 
   Title Download FDS verification guide scatterplot images
 
   cd %svn_root%\fds\Manuals\fds/FDS_Verification_Guide\SCRIPT_FIGURES\Scatterplots
-  pscp %linux_logon%:%firebotrepo%/fds/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/Scatterplots/* .
+  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/Scatterplots/* .
   goto eof
 )
 
