@@ -483,7 +483,6 @@ void DrawGeom(int flag, int timestate){
     for(i=0;i<ntris;i++){
       tridata *trianglei;
       float transparent_level_local;
-      float color_rgb[4];
       texturedata *ti;
       int  j;
       int smooth_triangles;
