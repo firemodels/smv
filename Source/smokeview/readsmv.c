@@ -11319,7 +11319,7 @@ int ReadIni2(char *inifile, int localfile){
       int ncolors;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &ncolors);
+      sscanf(buffer, "%i %i", &ncolors, &use_surf_color);
       for(i = 0; i<ncolors; i++){
         surfdata *surfi;
         int *ini_surf_color;
@@ -13360,7 +13360,7 @@ void WriteIni(int flag,char *filename){
     }
     if(scount>0){
       fprintf(fileout, "SURFCOLORS\n");
-      fprintf(fileout, " %i \n", scount);
+      fprintf(fileout, " %i %i\n", scount, use_surf_color);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
 
