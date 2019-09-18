@@ -66,6 +66,7 @@ GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edgeother=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
+GLUI_Checkbox *CHECKBOX_visaxislabels=NULL;
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
@@ -90,9 +91,9 @@ GLUI_Spinner *SPINNER_geom_delz = NULL;
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
+GLUI_Spinner *SPINNER_geom_surf_rgb[3] = {NULL, NULL, NULL};
+GLUI_Spinner *SPINNER_geom_geometry_rgb[3] = {NULL, NULL, NULL};
 #endif
-
-GLUI_Checkbox *CHECKBOX_visaxislabels;
 
 #define VOL_SHOWHIDE 3
 #ifdef pp_SELECT_GEOM
@@ -122,6 +123,8 @@ GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
+GLUI_Panel *PANEL_surf_rgb = NULL;
+GLUI_Panel *PANEL_geometry_rgb = NULL;
 GLUI_Panel *PANEL_properties2 = NULL;
 #endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
@@ -504,7 +507,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     UpdateGeomAreas();
     ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);
     PANEL_properties2 = glui_geometry->add_panel_to_panel(ROLLOUT_geom_properties,"",GLUI_PANEL_NONE);
-    
+
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties2, &select_geom, SELECT_GEOM,VolumeCB);
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "none");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex 1");
@@ -556,7 +559,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_vertex1_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_vertex1_rgb, "red",   GLUI_SPINNER_INT, geom_vertex1_rgb+0);
     SPINNER_geom_vertex1_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_vertex1_rgb, "green", GLUI_SPINNER_INT, geom_vertex1_rgb+1);
     SPINNER_geom_vertex1_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_vertex1_rgb, "blue",  GLUI_SPINNER_INT, geom_vertex1_rgb+2);
-    glui_geometry->add_column_to_panel(ROLLOUT_geom_rgbs, false);
 
     PANEL_vertex2_rgb = glui_geometry->add_panel_to_panel(ROLLOUT_geom_rgbs, "vertex 2");
     SPINNER_geom_vertex2_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_vertex2_rgb, "red",   GLUI_SPINNER_INT, geom_vertex2_rgb+0);
@@ -568,6 +570,24 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_triangle_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_triangle_rgb, "red",   GLUI_SPINNER_INT, geom_triangle_rgb+0);
     SPINNER_geom_triangle_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_triangle_rgb, "green", GLUI_SPINNER_INT, geom_triangle_rgb+1);
     SPINNER_geom_triangle_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_triangle_rgb, "blue",  GLUI_SPINNER_INT, geom_triangle_rgb+2);
+
+    PANEL_surf_rgb = glui_geometry->add_panel_to_panel(ROLLOUT_geom_rgbs, "surf");
+    SPINNER_geom_surf_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_surf_rgb, "red", GLUI_SPINNER_INT, geom_surf_rgb+0);
+    SPINNER_geom_surf_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_surf_rgb, "green", GLUI_SPINNER_INT, geom_surf_rgb+1);
+    SPINNER_geom_surf_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_surf_rgb, "blue", GLUI_SPINNER_INT, geom_surf_rgb+2);
+    glui_geometry->add_column_to_panel(ROLLOUT_geom_rgbs, false);
+
+    PANEL_geometry_rgb = glui_geometry->add_panel_to_panel(ROLLOUT_geom_rgbs, "geometry");
+    SPINNER_geom_geometry_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_geometry_rgb, "red", GLUI_SPINNER_INT, geom_geometry_rgb+0);
+    SPINNER_geom_geometry_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_geometry_rgb, "green", GLUI_SPINNER_INT, geom_geometry_rgb+1);
+    SPINNER_geom_geometry_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_geometry_rgb, "blue", GLUI_SPINNER_INT, geom_geometry_rgb+2);
+    for(i = 0; i<3; i++){
+      SPINNER_geom_vertex1_rgb[i]->set_int_limits(0, 255);
+      SPINNER_geom_vertex2_rgb[i]->set_int_limits(0, 255);
+      SPINNER_geom_triangle_rgb[i]->set_int_limits(0, 255);
+      SPINNER_geom_surf_rgb[i]->set_int_limits(0, 255);
+      SPINNER_geom_geometry_rgb[i]->set_int_limits(0, 255);
+    }
 #endif
 
     ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
