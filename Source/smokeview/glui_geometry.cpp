@@ -8,29 +8,31 @@
 
 #include "smokeviewvars.h"
 
-#define XMIN_SPIN 20
-#define YMIN_SPIN 21
-#define ZMIN_SPIN 22
-#define XMAX_SPIN 23
-#define YMAX_SPIN 24
-#define ZMAX_SPIN 25
-#define UPDATE_LIST 31
-#define RADIO_WALL 32
-#define SAVE_SETTINGS 33
-#define VISAXISLABELS 34
-#define GEOM_MAX_ANGLE 36
-#define GEOM_OUTLINE_IOFFSET 37
-#define GEOM_IVECFACTOR 38
+#define XMIN_SPIN             20
+#define YMIN_SPIN             21
+#define ZMIN_SPIN             22
+#define XMAX_SPIN             23
+#define YMAX_SPIN             24
+#define ZMAX_SPIN             25
+#define UPDATE_LIST           31
+#define RADIO_WALL            32
+#define SAVE_SETTINGS         33
+#define VISAXISLABELS         34
+#define GEOM_MAX_ANGLE        36
+#define GEOM_OUTLINE_IOFFSET  37
+#define GEOM_IVECFACTOR       38
 #define SHOW_TEXTURE_2D_IMAGE 39
 #define SHOW_TEXTURE_1D_IMAGE 40
-#define TERRAIN_ZMIN 41
-#define TERRAIN_ZMAX 42
-#define RESET_ZBOUNDS 43
-#define TERRAIN_ZLEVEL 44
-#define SHOW_ZLEVEL 45
-#define GEOM_VERT_EXAG 46
-#define RESET_GEOM_OFFSET 47
-#define UPDATE_GEOM 48
+#define TERRAIN_ZMIN          41
+#define TERRAIN_ZMAX          42
+#define RESET_ZBOUNDS         43
+#define TERRAIN_ZLEVEL        44
+#define SHOW_ZLEVEL           45
+#define GEOM_VERT_EXAG        46
+#define RESET_GEOM_OFFSET     47
+#define UPDATE_GEOM           48
+#define SURF_COLOR_SET        49
+#define SURF_COLOR_GET        50
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
@@ -61,6 +63,9 @@ GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
 #endif
 
+#ifdef pp_SELECT_GEOM
+GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
@@ -92,6 +97,7 @@ GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_surf_rgb[3] = {NULL, NULL, NULL};
+GLUI_Spinner *SPINNER_surf_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_geometry_rgb[3] = {NULL, NULL, NULL};
 #endif
 
@@ -118,8 +124,9 @@ GLUI_Listbox *LIST_geom_surface=NULL;
 
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
 #ifdef pp_SELECT_GEOM
-GLUI_Panel *PANEL_properties_triangle = NULL;
+GLUI_Panel *PANEL_properties_surf = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
+GLUI_Panel *PANEL_properties_triangle = NULL;
 GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
@@ -260,6 +267,7 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
 
   sprintf(label, "triangle area: %f m2", tri_area);
   STATIC_tri_area->set_name(label);
+  VolumeCB(SURF_COLOR_GET);
 }
 
   /* ------------------ UpdateVertexInfo ------------------------ */
@@ -528,10 +536,14 @@ extern "C" void GluiGeometrySetup(int main_window){
     STATIC_verty2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "y2:");
     STATIC_vertz2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "z2:");
     UpdateVertexInfo(NULL, NULL);
-    glui_geometry->add_column_to_panel(PANEL_properties2, false);
 
     PANEL_properties_triangle = glui_geometry->add_panel_to_panel(PANEL_properties2, "triangle");
-    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_triangle, _("SURF:"), &geom_surf_index);
+    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "area:");
+
+    glui_geometry->add_column_to_panel(PANEL_properties2, false);
+
+    PANEL_properties_surf = glui_geometry->add_panel_to_panel(PANEL_properties2, "SURF");
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_surf, _("id:"), &geom_surf_index, SURF_COLOR_GET, VolumeCB);
     {
       int ii;
 
@@ -550,8 +562,11 @@ extern "C" void GluiGeometrySetup(int main_window){
         }
       }
     }
-    STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "triangle area:");
-
+    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(PANEL_properties_surf, "use color", &use_surf_color);
+    SPINNER_surf_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "red",   GLUI_SPINNER_INT, glui_surf_rgb+0, SURF_COLOR_SET, VolumeCB);
+    SPINNER_surf_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "green", GLUI_SPINNER_INT, glui_surf_rgb+1, SURF_COLOR_SET, VolumeCB);
+    SPINNER_surf_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "blue",  GLUI_SPINNER_INT, glui_surf_rgb+2, SURF_COLOR_SET, VolumeCB);
+    VolumeCB(SURF_COLOR_GET);
 
     ROLLOUT_geom_rgbs = glui_geometry->add_rollout_to_panel(ROLLOUT_geom_properties, "Selection colors",false);
 
@@ -657,6 +672,41 @@ extern "C" void VolumeCB(int var){
   int i;
   switch(var){
 #ifdef pp_SELECT_GEOM
+  case SURF_COLOR_GET:
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->in_geom_list==geom_surf_index){
+        int *rgb;
+
+        rgb = surfi->glui_color;
+        glui_surf_rgb[0] = CLAMP(rgb[0],0,255);
+        glui_surf_rgb[1] = CLAMP(rgb[1],0,255);
+        glui_surf_rgb[2] = CLAMP(rgb[2],0,255);
+        SPINNER_surf_rgb[0]->set_int_val(glui_surf_rgb[0]);
+        SPINNER_surf_rgb[1]->set_int_val(glui_surf_rgb[1]);
+        SPINNER_surf_rgb[2]->set_int_val(glui_surf_rgb[2]);
+        break;
+      }
+    }
+    break;
+  case SURF_COLOR_SET:
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->in_geom_list==geom_surf_index){
+        int *rgb;
+
+        rgb = surfi->glui_color;
+        rgb[0] = glui_surf_rgb[0];
+        rgb[1] = glui_surf_rgb[1];
+        rgb[2] = glui_surf_rgb[2];
+        break;
+      }
+    }
+    break;
   case SELECT_GEOM:
     switch(select_geom){
     case GEOM_PROP_NONE:

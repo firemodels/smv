@@ -531,18 +531,28 @@ void DrawGeom(int flag, int timestate){
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
 #ifdef pp_SELECT_GEOM
-      if(use_select_color==1){
+      if(use_select_color==1||use_surf_color==1){
         unsigned char geom_rgb_uc[3];
 
-        if(select_geom==GEOM_PROP_TRIANGLE){
-          geom_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
-          geom_rgb_uc[1] = (unsigned char)geom_triangle_rgb[1];
-          geom_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
+        if(use_surf_color==1){
+          int *gcolor;
+
+          gcolor = trianglei->geomsurf->glui_color;
+          geom_rgb_uc[0] = (unsigned char)gcolor[0];
+          geom_rgb_uc[1] = (unsigned char)gcolor[1];
+          geom_rgb_uc[2] = (unsigned char)gcolor[2];
         }
-        else if(select_geom==GEOM_PROP_SURF){
-          geom_rgb_uc[0] = (unsigned char)geom_surf_rgb[0];
-          geom_rgb_uc[1] = (unsigned char)geom_surf_rgb[1];
-          geom_rgb_uc[2] = (unsigned char)geom_surf_rgb[2];
+        if(use_select_color==1){
+          if(select_geom==GEOM_PROP_TRIANGLE){
+            geom_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
+            geom_rgb_uc[1] = (unsigned char)geom_triangle_rgb[1];
+            geom_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
+          }
+          else if(select_geom==GEOM_PROP_SURF){
+            geom_rgb_uc[0] = (unsigned char)geom_surf_rgb[0];
+            geom_rgb_uc[1] = (unsigned char)geom_surf_rgb[1];
+            geom_rgb_uc[2] = (unsigned char)geom_surf_rgb[2];
+          }
         }
         if(texture_state==ON){
           glEnd();

@@ -5858,6 +5858,11 @@ int ReadSMV(char *file, char *file2){
       if(s_color[3]<0.99){
         surfi->transparent=1;
       }
+#ifdef pp_SELECT_GEOM
+      surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
+      surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
+      surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
+#endif
       surfi->transparent_level=1.0;
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
@@ -11310,6 +11315,31 @@ int ReadIni2(char *inifile, int localfile){
       SetColorControls();
       continue;
     }
+    if(Match(buffer, "SURFCOLORS")==1){
+      int ncolors;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &ncolors);
+      for(i = 0; i<ncolors; i++){
+        surfdata *surfi;
+        int *ini_surf_color;
+        char *surflabel;
+        int surf_index;
+
+        fgets(buffer, 255, stream);
+        surflabel = strchr(buffer, ':');
+        if(surflabel==NULL)continue;
+        surflabel = TrimFrontBack(surflabel+1);
+        surfi = GetSurface(surflabel);
+        if(surfi==NULL)continue;
+        ini_surf_color = surfi->glui_color;
+        sscanf(buffer, "%i %i %i", ini_surf_color, ini_surf_color+1, ini_surf_color+2);
+        ini_surf_color[0] = CLAMP(ini_surf_color[0], 0, 255);
+        ini_surf_color[1] = CLAMP(ini_surf_color[1], 0, 255);
+        ini_surf_color[2] = CLAMP(ini_surf_color[2], 0, 255);
+      }
+      continue;
+    }
     if(Match(buffer, "GEOMSELECTCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
@@ -13327,6 +13357,32 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f\n", sprinkoncolor[0], sprinkoncolor[1], sprinkoncolor[2]);
   fprintf(fileout, "STATICPARTCOLOR\n");
   fprintf(fileout, " %f %f %f\n", static_color[0], static_color[1], static_color[2]);
+  {
+    int scount;
+
+    scount = 0;
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->used_by_geom==1)scount++;
+    }
+    if(scount>0){
+      fprintf(fileout, "SURFCOLORS\n");
+      fprintf(fileout, " %i \n", scount);
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_geom==1){
+          int *ini_surf_color;
+
+          ini_surf_color = surfi->glui_color;
+          fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
+        }
+      }
+    }
+  }
   fprintf(fileout, "TIMEBARCOLOR\n");
   fprintf(fileout, " %f %f %f\n", timebarcolor[0], timebarcolor[1], timebarcolor[2]);
   fprintf(fileout, "VENTCOLOR\n");
