@@ -543,6 +543,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GEOM_PROP_VERTEX1  1
 #define GEOM_PROP_VERTEX2  2
 #define GEOM_PROP_TRIANGLE 3
+#define GEOM_PROP_SURF     4
 #endif
 
 #define TEMP_IGNITION_MAX 100000.
