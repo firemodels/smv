@@ -502,7 +502,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 #ifdef pp_SELECT_GEOM
     UpdateGeomAreas();
-    ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "triangle/vertex properties",false);
+    ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);
     PANEL_properties2 = glui_geometry->add_panel_to_panel(ROLLOUT_geom_properties,"",GLUI_PANEL_NONE);
     
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties2, &select_geom, SELECT_GEOM,VolumeCB);
@@ -510,6 +510,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex 1");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "vertex 2");
     glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "triangle");
+    glui_geometry->add_radiobutton_to_group(RADIO_select_geom, "surf");
     glui_geometry->add_column_to_panel(PANEL_properties2, false);
 
     PANEL_properties_vertex = glui_geometry->add_panel_to_panel(PANEL_properties2, "vertex");
@@ -637,11 +638,21 @@ extern "C" void VolumeCB(int var){
   switch(var){
 #ifdef pp_SELECT_GEOM
   case SELECT_GEOM:
-    if(select_geom==GEOM_PROP_NONE||select_geom==GEOM_PROP_TRIANGLE){
+    switch(select_geom){
+    case GEOM_PROP_NONE:
       selected_geom_vertex1 = -1;
       selected_geom_vertex2 = -1;
+      selected_geom_triangle = -1;
+      break;
+    case GEOM_PROP_TRIANGLE:
+    case GEOM_PROP_SURF:
+      selected_geom_vertex1 = -1;
+      selected_geom_vertex2 = -1;
+      break;
+    case GEOM_PROP_VERTEX1:
+    case GEOM_PROP_VERTEX2:
+      selected_geom_triangle = -1;
     }
-    if(SELECT_GEOM!=GEOM_PROP_TRIANGLE)selected_geom_triangle = -1;
     break;
 #endif
   case UPDATE_GEOM:

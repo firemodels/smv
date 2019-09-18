@@ -22,11 +22,12 @@
 
 #ifdef pp_SELECT_GEOM
 #ifdef INMAIN
-SVEXTERN unsigned int geom_vertex1_rgb[3] =  {255, 255, 255};
-SVEXTERN unsigned int geom_vertex2_rgb[3] =  {  0,   0,   0};
+SVEXTERN unsigned int geom_vertex1_rgb[3]  = {255, 255, 255};
+SVEXTERN unsigned int geom_vertex2_rgb[3]  = {  0,   0,   0};
 SVEXTERN unsigned int geom_triangle_rgb[3] = {255, 128,   0};
+SVEXTERN unsigned int geom_surf_rgb[3]     = {128, 128, 128};
 #else
-SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3];
+SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3], geom_surf_rgb[3];
 #endif
 
 SVEXTERN int SVDECL(geom_surf_index, 0);
