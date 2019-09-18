@@ -543,15 +543,10 @@ void DrawGeom(int flag, int timestate){
           geom_rgb_uc[2] = (unsigned char)gcolor[2];
         }
         if(use_select_color==1){
-          if(select_geom==GEOM_PROP_TRIANGLE){
+          if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
             geom_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
             geom_rgb_uc[1] = (unsigned char)geom_triangle_rgb[1];
             geom_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
-          }
-          else if(select_geom==GEOM_PROP_SURF){
-            geom_rgb_uc[0] = (unsigned char)geom_surf_rgb[0];
-            geom_rgb_uc[1] = (unsigned char)geom_surf_rgb[1];
-            geom_rgb_uc[2] = (unsigned char)geom_surf_rgb[2];
           }
         }
         if(texture_state==ON){

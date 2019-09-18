@@ -11324,7 +11324,6 @@ int ReadIni2(char *inifile, int localfile){
         surfdata *surfi;
         int *ini_surf_color;
         char *surflabel;
-        int surf_index;
 
         fgets(buffer, 255, stream);
         surflabel = strchr(buffer, ':');
@@ -11347,16 +11346,10 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i %i",  geom_vertex2_rgb,  geom_vertex2_rgb+1,  geom_vertex2_rgb+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", geom_triangle_rgb, geom_triangle_rgb+1, geom_triangle_rgb+2);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", geom_surf_rgb, geom_surf_rgb+1, geom_surf_rgb+2);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", geom_geometry_rgb, geom_geometry_rgb+1, geom_geometry_rgb+2);
       for(i = 0; i<3; i++){
         geom_vertex1_rgb[i]  = CLAMP(geom_vertex1_rgb[i], 0, 255);
         geom_vertex2_rgb[i]  = CLAMP(geom_vertex2_rgb[i], 0, 255);
         geom_triangle_rgb[i] = CLAMP(geom_triangle_rgb[i], 0, 255);
-        geom_surf_rgb[i]     = CLAMP(geom_surf_rgb[i], 0, 255);
-        geom_geometry_rgb[i] = CLAMP(geom_geometry_rgb[i], 0, 255);
       }
       continue;
     }
@@ -13304,8 +13297,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
   fprintf(fileout, " %i %i %i\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
   fprintf(fileout, " %i %i %i\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
-  fprintf(fileout, " %i %i %i\n", geom_surf_rgb[0], geom_surf_rgb[1], geom_surf_rgb[2]);
-  fprintf(fileout, " %i %i %i\n", geom_geometry_rgb[0], geom_geometry_rgb[1], geom_geometry_rgb[2]);
   fprintf(fileout, "HEATOFFCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoffcolor[0], heatoffcolor[1], heatoffcolor[2]);
   fprintf(fileout, "HEATONCOLOR\n");
