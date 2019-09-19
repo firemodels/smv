@@ -54,7 +54,9 @@
 //*** options: windows
 
 #ifdef WIN32
-//#define pp_MPI               //  add mpi to smokeview
+#ifdef pp_INTEL
+#define pp_MPI               //  add mpi to smokeview
+#endif
 //#define pp_OPENVR       // implement virtual reality using openvr library
 #define pp_DEG          // output degree symbol
 #define pp_memstatus
