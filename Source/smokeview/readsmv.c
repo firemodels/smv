@@ -12325,7 +12325,7 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "XYZCLIP") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &clip_mode);
-        clip_mode = CLAMP(clip_mode, 0, 2);
+        clip_mode = CLAMP(clip_mode, 0, CLIP_MAX);
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %f %i %f", &clipinfo.clip_xmin, &clipinfo.xmin, &clipinfo.clip_xmax, &clipinfo.xmax);
         fgets(buffer, 255, stream);

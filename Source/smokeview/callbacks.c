@@ -2265,7 +2265,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'W':
       clip_mode++;
-      if(clip_mode>3)clip_mode=0;
+      if(clip_mode>CLIP_MAX)clip_mode=0;
       UpdateClipAll();
       break;
     case 'x':
