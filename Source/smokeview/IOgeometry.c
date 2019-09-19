@@ -532,7 +532,7 @@ void DrawGeom(int flag, int timestate){
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
 #ifdef pp_SELECT_GEOM
       if(use_select_color==1||use_surf_color==1){
-        unsigned char geom_rgb_uc[3];
+        unsigned char geom_rgb_uc[4];
 
         if(use_surf_color==1){
           int *gcolor;
@@ -554,7 +554,13 @@ void DrawGeom(int flag, int timestate){
           texture_state = TextureOff();
           glBegin(GL_TRIANGLES);
         }
-        glColor3ubv(geom_rgb_uc);
+        if(geom_force_transparent==1){
+          geom_rgb_uc[3] = CLAMP(255*geom_transparency,0,255);
+        }
+        else{
+          geom_rgb_uc[3] = 255;
+        }
+        glColor4ubv(geom_rgb_uc);
         last_transparent_level = -1.0;
       }
       else{
