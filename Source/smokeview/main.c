@@ -260,6 +260,12 @@ void ParseCommandline(int argc, char **argv){
     WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
+#ifdef pp_MPI
+  if(strncmp(argv[1], "-mpitest", 4)==0){
+    MPITest();
+    exit(0);
+  }
+#endif
   strcpy(SMVFILENAME, "");
   smv_parse = 0;
   for(iarg = 1; iarg < argc; iarg++){
