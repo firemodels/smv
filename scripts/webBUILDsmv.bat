@@ -1,7 +1,7 @@
 @echo off
 set platform=%1
 set buildtype=%2
-set inc=full
+set inc=
 
 :: batch file to build test or release smokeview on Windows, Linux or OSX platforms
 
@@ -28,14 +28,14 @@ Title Building %buildtype% Smokeview for %platform%
 
 set type=
 if "%buildtype%" == "test" (
-   set type=-t
+   set type=-test
 )
 if "%buildtype%" == "testinc" (
-   set type=-t
-   set inc=inc
+   set type=-test
+   set inc=-inc
 )
 if "%buildtype%" == "release" (
-   set type=-r
+   set type=-release
 )
 if "%buildtype%" == "debug" (
    set type=
@@ -43,7 +43,7 @@ if "%buildtype%" == "debug" (
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
-  call make_smokeview %type% web %inc% glut icon
+  call make_smokeview %type% %inc% -glut -icon
   goto eof
 )
 if "%platform%" == "linux" (

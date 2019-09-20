@@ -48,8 +48,7 @@ goto eof
  )
  if /I "%1" EQU "-icon" (
    set valid=1
-   set ICON=%2
-   shift
+   set ICON=icon
  )
  shift
  if %valid% == 0 (
