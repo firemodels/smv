@@ -272,9 +272,9 @@ intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
 intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -D pp_INTEL  -WB -fpp -stand:f08 $(SMV_PROFILEFLAG)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icpc
-intel_linux_64_db : FC        = ifort
+intel_linux_64_db : CC        = ${mpi}icc
+intel_linux_64_db : CPP       = ${mpi}icpc
+intel_linux_64_db : FC        = ${mpi}ifort
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 intel_linux_64_db : $(obj)
