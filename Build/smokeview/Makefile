@@ -75,13 +75,24 @@ endif
 objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/matrix -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
-ifeq ($(INTEL_MPI),true)
-INC += -I $(I_MPI_ROOT)/intel64/include
-mpi=mpi
-else
-mpi=
-endif
 
+ifeq ($(INTEL_MPI),true)
+  INC += -I $(I_MPI_ROOT)/intel64/include
+  mpi=mpi
+else
+  mpi=
+  ifeq ($(OPEN_MPI),true)
+    INC += -I $(OPEN_MPI_ROOT)/include
+    mpicc=mpicc
+    mpicpc=mpic++
+    mpifort=mpifort
+  else
+    mpicc=icc
+    mpicpc=icpc
+    mpifort=ifort
+    mpi=
+  endif
+endif
 
 # windows include directories
 
@@ -379,13 +390,13 @@ else
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 endif
 endif
-intel_osx_64 : CC        = icc
-intel_osx_64 : CPP       = icpc
-intel_osx_64 : FC        = ifort
+intel_osx_64 : CC        = ${mpicc}
+intel_osx_64 : CPP       = ${mpicpc}
+intel_osx_64 : FC        = ${mpifort}
 intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64
 
 intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
+	${mpicpc} -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
 
 # ------------- intel_osx_64_db ----------------
 
