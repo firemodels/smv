@@ -77,6 +77,9 @@ objwin = $(obj:.o=.obj)
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/matrix -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 ifeq ($(INTEL_MPI),true)
 INC += -I $(I_MPI_ROOT)/intel64/include
+mpi=mpi
+else
+mpi=
 endif
 
 
@@ -254,9 +257,9 @@ intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icpc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : CC        = ${mpi}icc
+intel_linux_64 : CPP       = ${mpi}icpc
+intel_linux_64 : FC        = ${mpi}ifort
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
