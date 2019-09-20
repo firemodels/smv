@@ -31,8 +31,8 @@
 #define GEOM_VERT_EXAG        46
 #define RESET_GEOM_OFFSET     47
 #define UPDATE_GEOM           48
-#define SURF_COLOR_SET        49
-#define SURF_COLOR_GET        50
+#define SURF_SET              49
+#define SURF_GET              50
 
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
@@ -78,6 +78,9 @@ GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
 #ifdef pp_SELECT_GEOM
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
+GLUI_Panel *PANEL_surf_color = NULL;
+GLUI_Panel *PANEL_surf_axis = NULL;
+GLUI_Panel *PANEL_surf_coloraxis = NULL;
 #endif
 
 GLUI_Panel *PANEL_geom_transparency = NULL;
@@ -96,7 +99,8 @@ GLUI_Spinner *SPINNER_geom_delz = NULL;
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
-GLUI_Spinner *SPINNER_surf_rgb[3] = {NULL, NULL, NULL};
+GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
+GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
 #endif
 
 #define VOL_SHOWHIDE 3
@@ -263,7 +267,7 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
 
   sprintf(label, "triangle area: %f m2", tri_area);
   STATIC_tri_area->set_name(label);
-  VolumeCB(SURF_COLOR_GET);
+  VolumeCB(SURF_GET);
 }
 
   /* ------------------ UpdateVertexInfo ------------------------ */
@@ -539,7 +543,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     glui_geometry->add_column_to_panel(PANEL_properties2, false);
 
     PANEL_properties_surf = glui_geometry->add_panel_to_panel(PANEL_properties2, "SURF");
-    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_surf, _("id:"), &geom_surf_index, SURF_COLOR_GET, VolumeCB);
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_surf, _("id:"), &geom_surf_index, SURF_GET, VolumeCB);
     {
       int ii;
 
@@ -558,11 +562,26 @@ extern "C" void GluiGeometrySetup(int main_window){
         }
       }
     }
-    glui_geometry->add_checkbox_to_panel(PANEL_properties_surf, "use color", &use_surf_color);
-    SPINNER_surf_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "red",   GLUI_SPINNER_INT, glui_surf_rgb+0, SURF_COLOR_SET, VolumeCB);
-    SPINNER_surf_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "green", GLUI_SPINNER_INT, glui_surf_rgb+1, SURF_COLOR_SET, VolumeCB);
-    SPINNER_surf_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_properties_surf, "blue",  GLUI_SPINNER_INT, glui_surf_rgb+2, SURF_COLOR_SET, VolumeCB);
-    VolumeCB(SURF_COLOR_GET);
+    PANEL_surf_coloraxis = glui_geometry->add_panel_to_panel(PANEL_properties_surf, "", GLUI_PANEL_NONE);
+    PANEL_surf_color = glui_geometry->add_panel_to_panel(PANEL_surf_coloraxis, "color");
+    glui_geometry->add_checkbox_to_panel(PANEL_surf_color, "use", &use_surf_color);
+    SPINNER_surf_rgb[0] = glui_geometry->add_spinner_to_panel(PANEL_surf_color, "red",   GLUI_SPINNER_INT, glui_surf_rgb+0, SURF_SET, VolumeCB);
+    SPINNER_surf_rgb[1] = glui_geometry->add_spinner_to_panel(PANEL_surf_color, "green", GLUI_SPINNER_INT, glui_surf_rgb+1, SURF_SET, VolumeCB);
+    SPINNER_surf_rgb[2] = glui_geometry->add_spinner_to_panel(PANEL_surf_color, "blue",  GLUI_SPINNER_INT, glui_surf_rgb+2, SURF_SET, VolumeCB);
+
+    glui_geometry->add_column_to_panel(PANEL_surf_coloraxis, false);
+    PANEL_surf_axis = glui_geometry->add_panel_to_panel(PANEL_surf_coloraxis, "axis");
+    glui_surf_axis[0] = 0.0;
+    glui_surf_axis[1] = 0.0;
+    glui_surf_axis[2] = 0.0;
+    glui_geometry->add_checkbox_to_panel(PANEL_surf_axis, "show", &show_surf_axis);
+    SPINNER_surf_axis[0] = glui_geometry->add_spinner_to_panel(PANEL_surf_axis, "x", GLUI_SPINNER_FLOAT, glui_surf_axis+0, SURF_SET, VolumeCB);
+    SPINNER_surf_axis[1] = glui_geometry->add_spinner_to_panel(PANEL_surf_axis, "y", GLUI_SPINNER_FLOAT, glui_surf_axis+1, SURF_SET, VolumeCB);
+    SPINNER_surf_axis[2] = glui_geometry->add_spinner_to_panel(PANEL_surf_axis, "z", GLUI_SPINNER_FLOAT, glui_surf_axis+2, SURF_SET, VolumeCB);
+    glui_geometry->add_spinner_to_panel(PANEL_surf_axis, "length", GLUI_SPINNER_FLOAT, &glui_surf_axis_length);
+    glui_geometry->add_spinner_to_panel(PANEL_surf_axis, "width",  GLUI_SPINNER_FLOAT, &glui_surf_axis_width);
+
+    VolumeCB(SURF_GET);
 
     ROLLOUT_geom_rgbs = glui_geometry->add_rollout_to_panel(ROLLOUT_geom_properties, "Selection colors",false);
 
@@ -657,13 +676,14 @@ extern "C" void VolumeCB(int var){
   int i;
   switch(var){
 #ifdef pp_SELECT_GEOM
-  case SURF_COLOR_GET:
+  case SURF_GET:
     for(i = 0; i<nsurfinfo; i++){
       surfdata *surfi;
 
       surfi = surfinfo+sorted_surfidlist[i];
       if(surfi->in_geom_list==geom_surf_index){
         int *rgb;
+        float *axis;
 
         rgb = surfi->glui_color;
         glui_surf_rgb[0] = CLAMP(rgb[0],0,255);
@@ -672,22 +692,37 @@ extern "C" void VolumeCB(int var){
         SPINNER_surf_rgb[0]->set_int_val(glui_surf_rgb[0]);
         SPINNER_surf_rgb[1]->set_int_val(glui_surf_rgb[1]);
         SPINNER_surf_rgb[2]->set_int_val(glui_surf_rgb[2]);
+
+        axis = surfi->axis;
+        glui_surf_axis[0] = axis[0];
+        glui_surf_axis[1] = axis[1];
+        glui_surf_axis[2] = axis[2];
+        SPINNER_surf_axis[0]->set_int_val(glui_surf_axis[0]);
+        SPINNER_surf_axis[1]->set_int_val(glui_surf_axis[1]);
+        SPINNER_surf_axis[2]->set_int_val(glui_surf_axis[2]);
+
         break;
       }
     }
     break;
-  case SURF_COLOR_SET:
+  case SURF_SET:
     for(i = 0; i<nsurfinfo; i++){
       surfdata *surfi;
 
       surfi = surfinfo+sorted_surfidlist[i];
       if(surfi->in_geom_list==geom_surf_index){
         int *rgb;
+        float *axis;
 
         rgb = surfi->glui_color;
         rgb[0] = glui_surf_rgb[0];
         rgb[1] = glui_surf_rgb[1];
         rgb[2] = glui_surf_rgb[2];
+
+        axis = surfi->axis;
+        axis[0] = glui_surf_axis[0];
+        axis[1] = glui_surf_axis[1];
+        axis[2] = glui_surf_axis[2];
         break;
       }
     }

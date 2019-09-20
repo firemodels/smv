@@ -30,6 +30,10 @@ SVEXTERN unsigned int glui_surf_rgb[3]     = {128, 128, 128};
 SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3], glui_surf_rgb[3];
 #endif
 
+SVEXTERN int SVDECL(show_surf_axis, 0);
+SVEXTERN float SVDECL(glui_surf_axis_length, 1.0);
+SVEXTERN float SVDECL(glui_surf_axis_width, 1.0);
+SVEXTERN float glui_surf_axis[3];
 SVEXTERN int SVDECL(use_surf_color, 0);
 SVEXTERN int SVDECL(geom_surf_index, 0);
 SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);

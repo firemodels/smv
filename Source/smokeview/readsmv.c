@@ -11315,6 +11315,7 @@ int ReadIni2(char *inifile, int localfile){
       SetColorControls();
       continue;
     }
+#ifdef pp_SELECT_GEOM
     if(Match(buffer, "SURFCOLORS")==1){
       int ncolors;
 
@@ -11353,6 +11354,12 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+    if(Match(buffer, "GEOMAXIS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &glui_surf_axis_length, &glui_surf_axis_width);
+      continue;
+    }
+#endif
     if(Match(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
@@ -13293,10 +13300,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", background_flip);
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
+#ifdef pp_SELECT_GEOM
   fprintf(fileout, "GEOMSELECTCOLOR\n") ;
   fprintf(fileout, " %i %i %i\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
   fprintf(fileout, " %i %i %i\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
   fprintf(fileout, " %i %i %i\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
+#endif
   fprintf(fileout, "HEATOFFCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoffcolor[0], heatoffcolor[1], heatoffcolor[2]);
   fprintf(fileout, "HEATONCOLOR\n");
@@ -13348,6 +13357,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f\n", sprinkoncolor[0], sprinkoncolor[1], sprinkoncolor[2]);
   fprintf(fileout, "STATICPARTCOLOR\n");
   fprintf(fileout, " %f %f %f\n", static_color[0], static_color[1], static_color[2]);
+#ifdef pp_SELECT_GEOM
   {
     int scount;
 
@@ -13374,6 +13384,7 @@ void WriteIni(int flag,char *filename){
       }
     }
   }
+#endif
   fprintf(fileout, "TIMEBARCOLOR\n");
   fprintf(fileout, " %f %f %f\n", timebarcolor[0], timebarcolor[1], timebarcolor[2]);
   fprintf(fileout, "VENTCOLOR\n");
@@ -13386,6 +13397,10 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n   *** SIZES/OFFSETS ***\n\n");
 
+#ifdef pp_SELECT_GEOM
+  fprintf(fileout, "GEOMSAXIS\n") ;
+  fprintf(fileout, " %f\n",  glui_surf_axis_length, glui_surf_axis_width);
+#endif
   fprintf(fileout, "GRIDLINEWIDTH\n");
   fprintf(fileout, " %f\n", gridlinewidth);
   fprintf(fileout, "ISOLINEWIDTH\n");

@@ -367,7 +367,9 @@ typedef struct _surfdata {
 #ifdef pp_SELECT_GEOM
   int used_by_geom;
   int glui_color[3];
+  float axis[3];
   int in_geom_list;
+  int ntris;
   float geom_area;
 #endif
 } surfdata;
