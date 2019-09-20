@@ -9666,6 +9666,11 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_boundary_points);
       continue;
     }
+    if(Match(buffer, "GEOMSLICEPROPS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f", &geomslice_linewidth, &geomslice_pointsize);
+      continue;
+    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
@@ -13540,8 +13545,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
-  fprintf(fileout, "GEOMOFFSET\n");
-  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
@@ -13558,12 +13561,16 @@ void WriteIni(int flag,char *filename){
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
+  fprintf(fileout, "GEOMOFFSET\n");
+  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f\n",
      show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
+  fprintf(fileout, "GEOMSLICEPROPS\n");
+  fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", gversion);
