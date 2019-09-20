@@ -13395,16 +13395,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VENTCOLOR\n");
   fprintf(fileout," %f %f %f\n",ventcolor[0],ventcolor[1],ventcolor[2]);
 
-
-/*  extern GLfloat iso_ambient[4], iso_specular[4], iso_shininess;*/
-
-
-
   fprintf(fileout, "\n   *** SIZES/OFFSETS ***\n\n");
 
 #ifdef pp_SELECT_GEOM
   fprintf(fileout, "GEOMSAXIS\n") ;
-  fprintf(fileout, " %f\n",  glui_surf_axis_length, glui_surf_axis_width);
+  fprintf(fileout, " %f %f\n",  glui_surf_axis_length, glui_surf_axis_width);
 #endif
   fprintf(fileout, "GRIDLINEWIDTH\n");
   fprintf(fileout, " %f\n", gridlinewidth);
