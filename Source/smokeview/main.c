@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef pp_MPI
+#include <mpi.h>
+#endif
 #include GLUT_H
 
 #include "string_util.h"
@@ -13,6 +16,36 @@
 #ifdef pp_LUA
 #include "c_api.h"
 #include "lua_api.h"
+#endif
+
+#ifdef pp_MPI
+
+/* ------------------ MPITest ------------------------ */
+
+void MPITest(void){
+  MPI_Init(NULL, NULL);
+
+  // Get the number of processes
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+  // Get the rank of the process
+  int world_rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+  // Get the name of the processor
+  char processor_name[MPI_MAX_PROCESSOR_NAME];
+  int name_len;
+  MPI_Get_processor_name(processor_name, &name_len);
+
+  // Print off a hello world message
+  printf("Hello world from processor %s, rank %d out of %d processors\n",
+    processor_name, world_rank, world_size);
+
+  // Finalize the MPI environment.
+  MPI_Finalize();
+
+}
 #endif
 
 /* ------------------ Usage ------------------------ */
@@ -227,6 +260,12 @@ void ParseCommandline(int argc, char **argv){
     WriteIni(GLOBAL_INI, NULL);
     exit(0);
   }
+#ifdef pp_MPI
+  if(strncmp(argv[1], "-mpitest", 4)==0){
+    MPITest();
+    exit(0);
+  }
+#endif
   strcpy(SMVFILENAME, "");
   smv_parse = 0;
   for(iarg = 1; iarg < argc; iarg++){

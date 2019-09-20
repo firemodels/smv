@@ -75,6 +75,10 @@ endif
 objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/matrix -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
+ifeq ($(INTEL_MPI),true)
+INC += -I $(I_MPI_ROOT)/intel64/include
+endif
+
 
 # windows include directories
 
@@ -146,6 +150,10 @@ endif
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 #SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\openvr.lib  
 SMV_LIBS_WIN += $(SOURCE_DIR)\openvr\win_64\openvr_api.lib
+ifeq ($(INTEL_MPI),true)
+SMV_LIBS_WIN += "$(I_MPI_ROOT)\intel64\lib\release\impi.lib"
+endif
+
 #--- gnu
 
 SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64

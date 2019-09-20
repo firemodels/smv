@@ -280,10 +280,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TYPE_INI 1
 #endif
 
-#define CLIP_OFF 0
+#define CLIP_OFF            0
 #define CLIP_BLOCKAGES_DATA 1
-#define CLIP_BLOCKAGES 2
-#define CLIP_DATA 3
+#define CLIP_BLOCKAGES      2
+#define CLIP_DATA           3
+#define CLIP_MAX            3
 
 #define UNCLIP SetClipPlanes(NULL,CLIP_OFF)
 #define CLIP SetClipPlanes(&clipinfo,CLIP_ON)

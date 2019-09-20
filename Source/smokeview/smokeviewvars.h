@@ -25,17 +25,23 @@
 SVEXTERN unsigned int geom_vertex1_rgb[3]  = {255, 255, 255};
 SVEXTERN unsigned int geom_vertex2_rgb[3]  = {  0,   0,   0};
 SVEXTERN unsigned int geom_triangle_rgb[3] = {255, 128,   0};
-SVEXTERN unsigned int geom_surf_rgb[3]     = {128, 128, 128};
+SVEXTERN unsigned int glui_surf_rgb[3]     = {128, 128, 128};
 #else
-SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3], geom_surf_rgb[3];
+SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3], glui_surf_rgb[3];
 #endif
 
+SVEXTERN int SVDECL(show_surf_axis, 0);
+SVEXTERN float SVDECL(glui_surf_axis_length, 1.0);
+SVEXTERN float SVDECL(glui_surf_axis_width, 1.0);
+SVEXTERN float glui_surf_axis[3];
+SVEXTERN int SVDECL(use_surf_color, 0);
 SVEXTERN int SVDECL(geom_surf_index, 0);
 SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);
 SVEXTERN int SVDECL(selected_geom_vertex1,  -1);
 SVEXTERN int SVDECL(selected_geom_vertex2,  -1);
 SVEXTERN int SVDECL(selected_geom_triangle, -1);
 #endif
+
 SVEXTERN int SVDECL(nlist_slice_index, 0);
 SVEXTERN int SVDECL(slice_fileupdate, 0);
 SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);

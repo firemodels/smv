@@ -5858,6 +5858,11 @@ int ReadSMV(char *file, char *file2){
       if(s_color[3]<0.99){
         surfi->transparent=1;
       }
+#ifdef pp_SELECT_GEOM
+      surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
+      surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
+      surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
+#endif
       surfi->transparent_level=1.0;
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
@@ -9661,6 +9666,11 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_boundary_points);
       continue;
     }
+    if(Match(buffer, "GEOMSLICEPROPS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f", &geomslice_linewidth, &geomslice_pointsize);
+      continue;
+    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
@@ -11310,6 +11320,31 @@ int ReadIni2(char *inifile, int localfile){
       SetColorControls();
       continue;
     }
+#ifdef pp_SELECT_GEOM
+    if(Match(buffer, "SURFCOLORS")==1){
+      int ncolors;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i", &ncolors, &use_surf_color);
+      for(i = 0; i<ncolors; i++){
+        surfdata *surfi;
+        int *ini_surf_color;
+        char *surflabel;
+
+        fgets(buffer, 255, stream);
+        surflabel = strchr(buffer, ':');
+        if(surflabel==NULL)continue;
+        surflabel = TrimFrontBack(surflabel+1);
+        surfi = GetSurface(surflabel);
+        if(surfi==NULL)continue;
+        ini_surf_color = surfi->glui_color;
+        sscanf(buffer, "%i %i %i", ini_surf_color, ini_surf_color+1, ini_surf_color+2);
+        ini_surf_color[0] = CLAMP(ini_surf_color[0], 0, 255);
+        ini_surf_color[1] = CLAMP(ini_surf_color[1], 0, 255);
+        ini_surf_color[2] = CLAMP(ini_surf_color[2], 0, 255);
+      }
+      continue;
+    }
     if(Match(buffer, "GEOMSELECTCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
@@ -11317,8 +11352,19 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i %i",  geom_vertex2_rgb,  geom_vertex2_rgb+1,  geom_vertex2_rgb+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", geom_triangle_rgb, geom_triangle_rgb+1, geom_triangle_rgb+2);
+      for(i = 0; i<3; i++){
+        geom_vertex1_rgb[i]  = CLAMP(geom_vertex1_rgb[i], 0, 255);
+        geom_vertex2_rgb[i]  = CLAMP(geom_vertex2_rgb[i], 0, 255);
+        geom_triangle_rgb[i] = CLAMP(geom_triangle_rgb[i], 0, 255);
+      }
       continue;
     }
+    if(Match(buffer, "GEOMAXIS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &glui_surf_axis_length, &glui_surf_axis_width);
+      continue;
+    }
+#endif
     if(Match(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
@@ -12291,7 +12337,7 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "XYZCLIP") == 1){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &clip_mode);
-        clip_mode = CLAMP(clip_mode, 0, 2);
+        clip_mode = CLAMP(clip_mode, 0, CLIP_MAX);
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %f %i %f", &clipinfo.clip_xmin, &clipinfo.xmin, &clipinfo.clip_xmax, &clipinfo.xmax);
         fgets(buffer, 255, stream);
@@ -13259,10 +13305,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", background_flip);
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
+#ifdef pp_SELECT_GEOM
   fprintf(fileout, "GEOMSELECTCOLOR\n") ;
   fprintf(fileout, " %i %i %i\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
   fprintf(fileout, " %i %i %i\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
   fprintf(fileout, " %i %i %i\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
+#endif
   fprintf(fileout, "HEATOFFCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoffcolor[0], heatoffcolor[1], heatoffcolor[2]);
   fprintf(fileout, "HEATONCOLOR\n");
@@ -13314,18 +13362,45 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f\n", sprinkoncolor[0], sprinkoncolor[1], sprinkoncolor[2]);
   fprintf(fileout, "STATICPARTCOLOR\n");
   fprintf(fileout, " %f %f %f\n", static_color[0], static_color[1], static_color[2]);
+#ifdef pp_SELECT_GEOM
+  {
+    int scount;
+
+    scount = 0;
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->used_by_geom==1)scount++;
+    }
+    if(scount>0){
+      fprintf(fileout, "SURFCOLORS\n");
+      fprintf(fileout, " %i %i\n", scount, use_surf_color);
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_geom==1){
+          int *ini_surf_color;
+
+          ini_surf_color = surfi->glui_color;
+          fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
+        }
+      }
+    }
+  }
+#endif
   fprintf(fileout, "TIMEBARCOLOR\n");
   fprintf(fileout, " %f %f %f\n", timebarcolor[0], timebarcolor[1], timebarcolor[2]);
   fprintf(fileout, "VENTCOLOR\n");
   fprintf(fileout," %f %f %f\n",ventcolor[0],ventcolor[1],ventcolor[2]);
 
-
-/*  extern GLfloat iso_ambient[4], iso_specular[4], iso_shininess;*/
-
-
-
   fprintf(fileout, "\n   *** SIZES/OFFSETS ***\n\n");
 
+#ifdef pp_SELECT_GEOM
+  fprintf(fileout, "GEOMSAXIS\n") ;
+  fprintf(fileout, " %f %f\n",  glui_surf_axis_length, glui_surf_axis_width);
+#endif
   fprintf(fileout, "GRIDLINEWIDTH\n");
   fprintf(fileout, " %f\n", gridlinewidth);
   fprintf(fileout, "ISOLINEWIDTH\n");
@@ -13465,8 +13540,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
-  fprintf(fileout, "GEOMOFFSET\n");
-  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
@@ -13483,12 +13556,16 @@ void WriteIni(int flag,char *filename){
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
+  fprintf(fileout, "GEOMOFFSET\n");
+  fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f\n",
      show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
+  fprintf(fileout, "GEOMSLICEPROPS\n");
+  fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", gversion);
