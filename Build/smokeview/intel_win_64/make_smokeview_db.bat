@@ -1,9 +1,4 @@
 @echo off
-:: set release=%1
-:: set from=%2
-:: set inc=%3
-:: set GLUT=%4
-:: set ICON=%5
 
 call ..\scripts\set_smv_opts %*
 
