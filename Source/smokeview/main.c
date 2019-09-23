@@ -261,7 +261,7 @@ void ParseCommandline(int argc, char **argv){
     exit(0);
   }
 #ifdef pp_MPI
-  if(strncmp(argv[1], "-mpitest", 4)==0){
+  if(strncmp(argv[1], "-mpitest", 8)==0){
     MPITest();
     exit(0);
   }
