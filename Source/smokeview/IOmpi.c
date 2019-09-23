@@ -3,9 +3,14 @@
 #include <stdio.h>
 #include "IOmpi.h"
 
+/* ------------------ MPIMessages ------------------------ */
+
+void HandleMPIMessages(void){
+}
+
 /* ------------------ MPITest ------------------------ */
 
-void MPITest(void){
+void TestMPI(void){
   MPI_Init(NULL, NULL);
 
   // Get the number of processes
@@ -29,4 +34,5 @@ void MPITest(void){
   MPI_Finalize();
 
 }
+
 #endif

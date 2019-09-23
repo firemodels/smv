@@ -1,3 +1,4 @@
+#ifdef pp_MPI
 #ifndef IOMPI_H_DEFINED
 #define IOMPI_H_DEFINED
 #include <mpi.h>
@@ -10,6 +11,8 @@
 #define MPIDECL(var,val)  var
 #endif
 
-MPIEXTERN void MPITest(void);
+MPIEXTERN void TestMPI(void);
+MPIEXTERN void HandleMPIMessages(void);
 
+#endif
 #endif
