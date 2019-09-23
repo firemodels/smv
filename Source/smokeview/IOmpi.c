@@ -1,5 +1,5 @@
 #ifdef pp_MPI
-#define IN_IOMPIC
+#define IN_IOMPI_C
 #include <stdio.h>
 #include "IOmpi.h"
 

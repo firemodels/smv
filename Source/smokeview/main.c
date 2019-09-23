@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef pp_MPI
 #include "IOmpi.h"
+#endif
 #include GLUT_H
 
 #include "string_util.h"
