@@ -1,11 +1,18 @@
 #ifdef pp_MPI
 #define IN_IOMPI_C
 #include <stdio.h>
+#include <stdlib.h>
 #include "IOmpi.h"
 
 /* ------------------ MPIMessages ------------------------ */
 
-void HandleMPIMessages(void){
+void HandleMPIMessages(int rank){
+  MPI_Status Stat;
+  int code;
+
+  MPI_Recv(&code, 1, MPI_INT, 0, SMV_MPI_QUIT, MPI_COMM_WORLD, &Stat);
+  MPI_Finalize();
+  exit(code);
 }
 
 /* ------------------ MPITest ------------------------ */

@@ -235,9 +235,6 @@ void ParseCommandline(int argc, char **argv){
     TestMPI();
     SMV_EXIT(0);
   }
-  if(strncmp(argv[1], "-mpi", 4)==0&&strncmp(argv[1], "-mpitest", 8)!=0){
-    mpi_mode = 1;
-  }
 #endif
   strcpy(SMVFILENAME, "");
   smv_parse = 0;
@@ -463,6 +460,15 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-no_graphics", 12)==0){
       use_graphics = 0;
     }
+#ifdef pp_MPI
+    else if(strncmp(argv[i], "-mpi", 4)==0&&strncmp(argv[i], "-mpitest", 8)!=0){
+      mpi_mode = 1;
+      MPI_Init(NULL, NULL);
+      MPI_Comm_size(MPI_COMM_WORLD, &mpi_nprocesses);
+      MPI_Comm_rank(MPI_COMM_WORLD, &mpi_iprocess);
+      if(mpi_iprocess!=0)HandleMPIMessages(mpi_iprocess);
+    }
+#endif
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
       update_slice = 1;
@@ -785,16 +791,18 @@ int main(int argc, char **argv){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("smokeview", argv_sv[0]);
-    return 1;
-  }
 
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
 #endif
   ParseCommandline(argc, argv_sv);
+
+  if(show_version==1){
+    PRINTVERSION("smokeview", argv_sv[0]);
+    return 1;
+  }
+
   if(smokeview_bindir==NULL){
     smokeview_bindir= GetProgDir(progname,&smokeviewpath);
   }
@@ -842,14 +850,25 @@ int main(int argc, char **argv){
 
 void SMV_EXIT(int code){
 #ifdef pp_MPI
+  int nprocs, rank;
   int initial_flag, final_flag;
 
   MPI_Initialized(&initial_flag);
   MPI_Finalized(&final_flag);
   if(initial_flag==TRUE&&final_flag!=TRUE){
-    MPI_Finalize();
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if(rank==0){
+      int i;
+
+      for(i = 1; i<nprocs;i++){
+        char outmsg = 'q';
+
+        MPI_Send(&code, 1, MPI_INT, i, SMV_MPI_QUIT, MPI_COMM_WORLD);
+      }
+      MPI_Finalize();
+    }
   }
 #endif
   exit(code);
 }
-

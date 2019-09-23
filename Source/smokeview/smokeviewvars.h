@@ -21,6 +21,9 @@
 #include "threader.h"
 
 SVEXTERN int SVDECL(mpi_mode, 0);
+#ifdef pp_MPI
+SVEXTERN int SVDECL(mpi_nprocesses, 0), SVDECL(mpi_iprocess,0);
+#endif
 
 #ifdef pp_SELECT_GEOM
 #ifdef INMAIN

@@ -11,6 +11,7 @@
 #endif
 
 MPIEXTERN void TestMPI(void);
-MPIEXTERN void HandleMPIMessages(void);
+MPIEXTERN void HandleMPIMessages(int rank);
 
+#define SMV_MPI_QUIT 0
 #endif
