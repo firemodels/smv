@@ -21,8 +21,8 @@ goto:eof
 
 call %envfile%
 echo.
-echo  Building %buildtype% Smokeview for %platform%
-Title Building %buildtype% Smokeview for %platform%
+echo  Building %buildtype% MPI Smokeview for %platform%
+Title Building %buildtype% MPI Smokeview for %platform%
 
 %svn_drive%
 
