@@ -639,7 +639,7 @@ void MainMenu(int value){
     if(scriptoutstream!=NULL){
       ScriptMenu(SCRIPT_STOP_RECORDING);
     }
-    exit(0);
+    SMV_EXIT(0);
   }
   if(value==MENU_MAIN_TRAINERTOGGLE){
     trainer_mode=1-trainer_mode;
@@ -2774,7 +2774,7 @@ void ScriptMenu(int value){
           fprintf(stderr,"*** Error (fatal): unable to open script file");
           if(file!=NULL)fprintf(stderr,": %s",file);
           fprintf(stderr,"\n");
-          if(from_commandline==1)exit(1);
+          if(from_commandline==1)SMV_EXIT(1);
         }
         break;
       }
@@ -4397,7 +4397,7 @@ void DefineAllFEDs(void){
     LoadSliceMenu(i);
     UnloadSliceMenu(i);
   }
-  exit(0);
+  SMV_EXIT(0);
 }
 
 /* ------------------ LoadSlicei ------------------------ */

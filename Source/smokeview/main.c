@@ -214,26 +214,29 @@ void ParseCommandline(int argc, char **argv){
   zonescale = a_zonescale;
 
   if(argc == 1){
-    exit(1);
+    SMV_EXIT(1);
   }
   if(strncmp(argv[1], "-ini", 4) == 0){
     InitCameraList();
     InitOpenGL();
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteIni(GLOBAL_INI, NULL);
-    exit(0);
+    SMV_EXIT(0);
   }
   if(strncmp(argv[1], "-ng_ini", 7) == 0){
     InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteIni(GLOBAL_INI, NULL);
-    exit(0);
+    SMV_EXIT(0);
   }
 #ifdef pp_MPI
   if(strncmp(argv[1], "-mpitest", 8)==0){
     TestMPI();
-    exit(0);
+    SMV_EXIT(0);
+  }
+  if(strncmp(argv[1], "-mpi", 4)==0&&strncmp(argv[1], "-mpitest", 8)!=0){
+    mpi_mode = 1;
   }
 #endif
   strcpy(SMVFILENAME, "");
@@ -562,11 +565,11 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
       Usage(argv[0],HELP_SUMMARY);
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(strncmp(argv[i], "-help_all", 9)==0){
       Usage(argv[0],HELP_ALL);
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(strncmp(argv[i], "-noblank", 8) == 0){
       iblank_set_on_commandline = 1;
@@ -590,7 +593,7 @@ void ParseCommandline(int argc, char **argv){
       strncmp(argv[i], "-volrender", 10) != 0 && (strncmp(argv[i], "-version", 8) == 0 || strncmp(argv[i], "-v", 2) == 0)
       ){
       DisplayVersionInfo("Smokeview ");
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(
       strncmp(argv[i], "-redirect", 9) == 0
@@ -708,12 +711,12 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-build", 6) == 0){
       showbuild = 1;
       Usage(argv[0],HELP_ALL);
-      exit(0);
+      SMV_EXIT(0);
     }
     else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
       Usage(argv[0],HELP_ALL);
-      exit(1);
+      SMV_EXIT(1);
     }
   }
   if(update_ssf == 1){
@@ -834,3 +837,19 @@ int main(int argc, char **argv){
   glutMainLoop();
   return 0;
 }
+
+/* ------------------ SMV_EXIT ------------------------ */
+
+void SMV_EXIT(int code){
+#ifdef pp_MPI
+  int initial_flag, final_flag;
+
+  MPI_Initialized(&initial_flag);
+  MPI_Finalized(&final_flag);
+  if(initial_flag==TRUE&&final_flag!=TRUE){
+    MPI_Finalize();
+  }
+#endif
+  exit(code);
+}
+

@@ -20,6 +20,8 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(mpi_mode, 0);
+
 #ifdef pp_SELECT_GEOM
 #ifdef INMAIN
 SVEXTERN unsigned int geom_vertex1_rgb[3]  = {255, 255, 255};

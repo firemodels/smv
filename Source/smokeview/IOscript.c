@@ -2672,7 +2672,7 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_EXIT:
 #ifndef _DEBUG
-      exit(0);
+      SMV_EXIT(0);
 #endif
       break;
     case SCRIPT_LOADISO:

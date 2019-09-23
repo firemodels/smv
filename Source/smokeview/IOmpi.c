@@ -34,5 +34,4 @@ void TestMPI(void){
   MPI_Finalize();
 
 }
-
 #endif
