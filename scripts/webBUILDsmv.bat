@@ -26,24 +26,32 @@ Title Building %buildtype% Smokeview for %platform%
 
 %svn_drive%
 
+set wintype=
 set type=
+set wininc=
+set inc=
 if "%buildtype%" == "test" (
-   set type=-test
+   set wintype=-test
+   set type=-t
 )
 if "%buildtype%" == "testinc" (
-   set type=-test
-   set inc=-inc
+   set wintype=-test
+   set wininc=-inc
+   set type=-t
+   set inc=-i
 )
 if "%buildtype%" == "release" (
-   set type=-release
+   set wintype=-release
+   set type=-r
 )
 if "%buildtype%" == "debug" (
+   set wintype=
    set type=
 )
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
-  call make_smokeview %type% %inc% -glut -icon
+  call make_smokeview %wintype% %wininc% -glut -icon
   goto eof
 )
 if "%platform%" == "linux" (
