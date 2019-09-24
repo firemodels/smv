@@ -466,7 +466,7 @@ void ParseCommandline(int argc, char **argv){
       MPI_Init(NULL, NULL);
       MPI_Comm_size(MPI_COMM_WORLD, &mpi_nprocesses);
       MPI_Comm_rank(MPI_COMM_WORLD, &mpi_iprocess);
-      if(mpi_iprocess!=0)HandleMPIMessages(mpi_iprocess);
+      if(mpi_iprocess!=0)HandleMPIMessages(mpi_iprocess, mpi_nprocesses);
     }
 #endif
     else if(strncmp(argv[i], "-update_slice", 13)==0){
@@ -862,9 +862,11 @@ void SMV_EXIT(int code){
       int i;
 
       for(i = 1; i<nprocs;i++){
-        char outmsg = 'q';
+        int command[2];
 
-        MPI_Send(&code, 1, MPI_INT, i, SMV_MPI_QUIT, MPI_COMM_WORLD);
+        command[0] = SMV_MPI_QUIT;
+        command[1] = code;
+        MPI_Send(&command, 2, MPI_INT, i, SMV_MPI_COMMAND, MPI_COMM_WORLD);
       }
       MPI_Finalize();
     }

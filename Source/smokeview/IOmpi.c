@@ -3,16 +3,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "IOmpi.h"
+#include "ASSERT.h"
+#include "smokeviewdefs.h"
 
 /* ------------------ MPIMessages ------------------------ */
 
-void HandleMPIMessages(int rank){
-  MPI_Status Stat;
-  int code;
+void HandleMPIMessages(int rank, int nprocs){
+  for(;;){
+    MPI_Status Stat;
+    int command[2];
+//    int i;
 
-  MPI_Recv(&code, 1, MPI_INT, 0, SMV_MPI_QUIT, MPI_COMM_WORLD, &Stat);
-  MPI_Finalize();
-  exit(code);
+    MPI_Recv(command, 2, MPI_INT, 0, SMV_MPI_COMMAND, MPI_COMM_WORLD, &Stat);
+    switch(command[0]){
+    case SMV_MPI_QUIT:
+      MPI_Finalize();
+      exit(command[1]);
+      break;
+    case SMV_MPI_LOAD_SLICE:
+      break;
+    case SMV_MPI_LOAD_3DSMOKE:
+      break;
+    case SMV_MPI_LOAD_BNDF:
+      break;
+    case SMV_MPI_LOAD_PART:
+      break;
+    case SMV_MPI_LOAD_PLOT3D:
+      break;
+    case SMV_MPI_LOAD_ISO:
+      break;
+    default:
+      ASSERT(FFALSE);
+    }
+  }
 }
 
 /* ------------------ MPITest ------------------------ */
