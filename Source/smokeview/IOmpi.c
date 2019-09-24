@@ -1,10 +1,13 @@
 #ifdef pp_MPI
 #define IN_IOMPI_C
+#include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "IOmpi.h"
 #include "ASSERT.h"
 #include "smokeviewdefs.h"
+#include "smokeviewvars.h"
+#include "smokeheaders.h"
 
 /* ------------------ MPIMessages ------------------------ */
 
@@ -12,7 +15,6 @@ void HandleMPIMessages(int rank, int nprocs){
   for(;;){
     MPI_Status Stat;
     int command[2];
-//    int i;
 
     MPI_Recv(command, 2, MPI_INT, 0, SMV_MPI_COMMAND, MPI_COMM_WORLD, &Stat);
     switch(command[0]){
@@ -21,6 +23,7 @@ void HandleMPIMessages(int rank, int nprocs){
       exit(command[1]);
       break;
     case SMV_MPI_LOAD_SLICE:
+      LoadSliceMenu(command[1]);
       break;
     case SMV_MPI_LOAD_3DSMOKE:
       break;

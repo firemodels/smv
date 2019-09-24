@@ -14,6 +14,9 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#ifdef pp_MPI
+#include "IOmpi.h"
+#endif
 
 int       part_file_count;
 FILE_SIZE part_load_size;
@@ -4464,6 +4467,9 @@ void LoadSliceMenu(int value){
       slicedata *slicei;
       int dir;
       int last_slice;
+#ifdef pp_MPI
+      int islice_count, nslice_count;
+#endif
 
       case UNLOAD_ALL:
         for(i=0;i<nsliceinfo;i++){
@@ -4494,6 +4500,22 @@ void LoadSliceMenu(int value){
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
+#ifdef pp_MPI
+        if(mpi_nprocesses>0&&mpi_iprocess==0){
+          int i;
+
+          for(i = 1; i<mpi_nprocesses; i++){
+            int command[2];
+
+            command[0] = SMV_MPI_LOAD_SLICE;
+            command[1] = value;
+            MPI_Send(&command, 2, MPI_INT, i, SMV_MPI_COMMAND, MPI_COMM_WORLD);
+          }
+          STOP_TIMER(load_time);
+          PRINT_LOADTIMES(file_count,load_size,load_time);
+          break;
+        }
+#endif
         value = -(1000 + value);
         submenutype=value/4;
         dir=value%4;
@@ -4501,6 +4523,18 @@ void LoadSliceMenu(int value){
         slicei = sliceinfo + submenutype;
         submenulabel = slicei->label.longlabel;
         last_slice = nsliceinfo - 1;
+#ifdef pp_MPI
+        nslice_count = 0;
+        for(i = 0; i<nsliceinfo; i++){
+          char *longlabel;
+
+          slicei = sliceinfo+i;
+          longlabel = slicei->label.longlabel;
+          if(strcmp(longlabel, submenulabel)!=0)continue;
+          if(dir!=0&&dir!=slicei->idir)continue;
+          nslice_count++;
+        }
+#endif
         for(i = nsliceinfo-1; i>=0; i--){
           char *longlabel;
 
@@ -4512,6 +4546,9 @@ void LoadSliceMenu(int value){
           break;
         }
         START_TIMER(load_time);
+#ifdef pp_MPI
+        islice_count = 0;
+#endif
         for(i = 0; i<nsliceinfo; i++){
           char *longlabel;
           int set_slicecolor;
@@ -4520,6 +4557,10 @@ void LoadSliceMenu(int value){
           longlabel = slicei->label.longlabel;
           if(strcmp(longlabel,submenulabel)!=0)continue;
           if(dir!=0&&dir!=slicei->idir)continue;
+#ifdef pp_MPI
+          if(mpi_nprocesses>0&&islice_count%(mpi_nprocesses-1)!=mpi_iprocess-1)continue;  //  process 1->mpi_nnprocces-1
+          islice_count++;
+#endif
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           if(slicei->slice_filetype == SLICE_GEOM){

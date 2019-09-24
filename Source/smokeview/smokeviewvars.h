@@ -20,10 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(mpi_mode, 0);
-#ifdef pp_MPI
-SVEXTERN int SVDECL(mpi_nprocesses, 0), SVDECL(mpi_iprocess,0);
-#endif
+SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
 #ifdef pp_SELECT_GEOM
 #ifdef INMAIN

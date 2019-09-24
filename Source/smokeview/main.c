@@ -462,7 +462,6 @@ void ParseCommandline(int argc, char **argv){
     }
 #ifdef pp_MPI
     else if(strncmp(argv[i], "-mpi", 4)==0&&strncmp(argv[i], "-mpitest", 8)!=0){
-      mpi_mode = 1;
       MPI_Init(NULL, NULL);
       MPI_Comm_size(MPI_COMM_WORLD, &mpi_nprocesses);
       MPI_Comm_rank(MPI_COMM_WORLD, &mpi_iprocess);
