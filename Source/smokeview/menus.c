@@ -5874,6 +5874,7 @@ void GeometryMenu(int value){
     visWalls=1;
     visCeiling=1;
     */
+    show_faces_shaded=1;
     visVents=1;
     BlockageMenu(visBLOCKAsInput);
     break;
@@ -5885,6 +5886,7 @@ void GeometryMenu(int value){
     visVents=0;
     visGrid=0;
     BlockageMenu(visBLOCKHide);
+    ImmersedMenu(GEOMETRY_HIDEALL);
     break;
   case GEOM_Vents:
     visVents=1-visVents;
