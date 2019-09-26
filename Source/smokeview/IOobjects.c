@@ -5596,7 +5596,12 @@ devicedata *GetCSVDeviceFromLabel(char *label, int index){
     devicedata *devicei;
 
     devicei = deviceinfo+i;
-    if(STRCMP(devicei->labelptr, label)==0)return devicei;
+    if(nzoneinfo==0){
+      if(STRCMP(devicei->labelptr, label)==0)return devicei;
+    }
+    else{
+      if(STRCMP(devicei->csvlabel, label)==0)return devicei;
+    }
   }
   return NULL;
 }

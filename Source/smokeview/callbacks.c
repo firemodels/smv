@@ -3292,7 +3292,7 @@ void DoScriptLua(void){
     fflush(stdout);
     script_return_code = runLuaScript();
     if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash){
-        exit(1);
+        SMV_EXIT(1);
     }
   }
 }
@@ -3308,7 +3308,7 @@ void DoScript(void){
       fflush(stdout);
       script_return_code = runSSFScript();
       if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash){
-          exit(1);
+          SM_EXIT(1);
       }
     }
 }
@@ -3324,7 +3324,7 @@ void DoScript(void){
 #ifndef WIN32
     if(FILE_EXISTS(stop_filename)==YES){
       fprintf(stderr,"*** Warning: stop file found.  Remove before running smokeview script\n");
-      exit(0);
+      SMV_EXIT(0);
     }
 #endif
     if(current_script_command>=scriptinfo){
@@ -3353,7 +3353,7 @@ void DoScript(void){
       current_script_command++;
       script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
-        exit(0);
+        SMV_EXIT(0);
       }
       if(current_script_command==NULL){
         GluiScriptEnable();

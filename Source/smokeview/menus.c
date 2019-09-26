@@ -14,6 +14,9 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#ifdef pp_MPI
+#include "IOmpi.h"
+#endif
 
 int       part_file_count;
 FILE_SIZE part_load_size;
@@ -639,7 +642,7 @@ void MainMenu(int value){
     if(scriptoutstream!=NULL){
       ScriptMenu(SCRIPT_STOP_RECORDING);
     }
-    exit(0);
+    SMV_EXIT(0);
   }
   if(value==MENU_MAIN_TRAINERTOGGLE){
     trainer_mode=1-trainer_mode;
@@ -2774,7 +2777,7 @@ void ScriptMenu(int value){
           fprintf(stderr,"*** Error (fatal): unable to open script file");
           if(file!=NULL)fprintf(stderr,": %s",file);
           fprintf(stderr,"\n");
-          if(from_commandline==1)exit(1);
+          if(from_commandline==1)SMV_EXIT(1);
         }
         break;
       }
@@ -4397,7 +4400,7 @@ void DefineAllFEDs(void){
     LoadSliceMenu(i);
     UnloadSliceMenu(i);
   }
-  exit(0);
+  SMV_EXIT(0);
 }
 
 /* ------------------ LoadSlicei ------------------------ */
@@ -4464,6 +4467,9 @@ void LoadSliceMenu(int value){
       slicedata *slicei;
       int dir;
       int last_slice;
+#ifdef pp_MPI
+      int islice_count, nslice_count;
+#endif
 
       case UNLOAD_ALL:
         for(i=0;i<nsliceinfo;i++){
@@ -4494,6 +4500,22 @@ void LoadSliceMenu(int value){
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
+#ifdef pp_MPI
+        if(mpi_nprocesses>0&&mpi_iprocess==0){
+          int i;
+
+          for(i = 1; i<mpi_nprocesses; i++){
+            int command[2];
+
+            command[0] = SMV_MPI_LOAD_SLICE;
+            command[1] = value;
+            MPI_Send(&command, 2, MPI_INT, i, SMV_MPI_COMMAND, MPI_COMM_WORLD);
+          }
+          STOP_TIMER(load_time);
+          PRINT_LOADTIMES(file_count,load_size,load_time);
+          break;
+        }
+#endif
         value = -(1000 + value);
         submenutype=value/4;
         dir=value%4;
@@ -4501,6 +4523,18 @@ void LoadSliceMenu(int value){
         slicei = sliceinfo + submenutype;
         submenulabel = slicei->label.longlabel;
         last_slice = nsliceinfo - 1;
+#ifdef pp_MPI
+        nslice_count = 0;
+        for(i = 0; i<nsliceinfo; i++){
+          char *longlabel;
+
+          slicei = sliceinfo+i;
+          longlabel = slicei->label.longlabel;
+          if(strcmp(longlabel, submenulabel)!=0)continue;
+          if(dir!=0&&dir!=slicei->idir)continue;
+          nslice_count++;
+        }
+#endif
         for(i = nsliceinfo-1; i>=0; i--){
           char *longlabel;
 
@@ -4512,6 +4546,9 @@ void LoadSliceMenu(int value){
           break;
         }
         START_TIMER(load_time);
+#ifdef pp_MPI
+        islice_count = 0;
+#endif
         for(i = 0; i<nsliceinfo; i++){
           char *longlabel;
           int set_slicecolor;
@@ -4520,6 +4557,10 @@ void LoadSliceMenu(int value){
           longlabel = slicei->label.longlabel;
           if(strcmp(longlabel,submenulabel)!=0)continue;
           if(dir!=0&&dir!=slicei->idir)continue;
+#ifdef pp_MPI
+          if(mpi_nprocesses>0&&islice_count%(mpi_nprocesses-1)!=mpi_iprocess-1)continue;  //  process 1->mpi_nnprocces-1
+          islice_count++;
+#endif
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           if(slicei->slice_filetype == SLICE_GEOM){
@@ -5874,6 +5915,7 @@ void GeometryMenu(int value){
     visWalls=1;
     visCeiling=1;
     */
+    show_faces_shaded=1;
     visVents=1;
     BlockageMenu(visBLOCKAsInput);
     break;
@@ -5885,6 +5927,7 @@ void GeometryMenu(int value){
     visVents=0;
     visGrid=0;
     BlockageMenu(visBLOCKHide);
+    ImmersedMenu(GEOMETRY_HIDEALL);
     break;
   case GEOM_Vents:
     visVents=1-visVents;

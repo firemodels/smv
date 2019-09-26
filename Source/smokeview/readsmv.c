@@ -9200,7 +9200,7 @@ typedef struct {
 
   if(update_filesizes==1){
     GetFileSizes();
-    exit(0);
+    SMV_EXIT(0);
   }
 
   STOP_TIMER(processing_time);
@@ -10934,7 +10934,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &nrgb2_ini);
       if(nrgb2_ini<8){
         fprintf(stderr, "*** Error: must have at lease 8 colors in COLOR2BAR\n");
-        exit(1);
+        SMV_EXIT(1);
       }
       FREEMEMORY(rgb2_ini);
       if(NewMemory((void **)&rgb2_ini, 4 * nrgb_ini*sizeof(float)) == 0)return 2;

@@ -21,41 +21,33 @@ goto:eof
 
 call %envfile%
 echo.
-echo  Building %buildtype% Smokeview for %platform%
-Title Building %buildtype% Smokeview for %platform%
+echo  Building %buildtype% MPI Smokeview for %platform%
+Title Building %buildtype% MPI Smokeview for %platform%
 
 %svn_drive%
 
-set wintype=
 set type=
-set wininc=
-set inc=
 if "%buildtype%" == "test" (
-   set wintype=-test
-   set type=-t
+   set type=-test
 )
 if "%buildtype%" == "testinc" (
-   set wintype=-test
-   set wininc=-inc
-   set type=-t
-   set inc=-i
+   set type=-test
+   set inc=-inc
 )
 if "%buildtype%" == "release" (
-   set wintype=-release
-   set type=-r
+   set type=-release
 )
 if "%buildtype%" == "debug" (
-   set wintype=
    set type=
 )
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64
-  call make_smokeview %wintype% %wininc% -glut -icon
+  call make_smokeview %type% %inc% -glut -icon -mpi
   goto eof
 )
 if "%platform%" == "linux" (
-  plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_linux_64 make_smokeview.sh %type%
+  plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_linux_64 make_smokeview.sh %type% -m
   goto eof
 )
 if "%platform%" == "gnulinux" (
@@ -63,7 +55,7 @@ if "%platform%" == "gnulinux" (
   goto eof
 )
 if "%platform%" == "osx" (
-  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_64 make_smokeview.sh %type%
+  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_64 make_smokeview.sh %type% -m
   goto eof
 )
 

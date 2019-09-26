@@ -52,7 +52,7 @@ bin = .
 # Definition of the object variables
 
 obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o glui_wui.o\
-      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o\
+      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o IOmpi.o \
       IOobjects.o IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o\
       output.o renderimage.o renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o\
       glui_smoke.o glui_clip.o glui_stereo.o glui_geometry.o glui_motion.o\
@@ -75,10 +75,24 @@ endif
 objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/matrix -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
-ifeq ($(INTEL_MPI),true)
-INC += -I $(I_MPI_ROOT)/intel64/include
-endif
 
+ifeq ($(INTEL_MPI),true)
+  INC += -I "$(I_MPI_ROOT)/intel64/include"
+  mpi=mpi
+else
+  mpi=
+  ifeq ($(OPEN_MPI),true)
+    INC += -I $(OPEN_MPI_ROOT)/include
+    mpicc=mpicc
+    mpicpc=mpic++
+    mpifort=mpifort
+  else
+    mpicc=icc
+    mpicpc=icpc
+    mpifort=ifort
+    mpi=
+  endif
+endif
 
 # windows include directories
 
@@ -254,9 +268,9 @@ intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icpc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : CC        = ${mpi}icc
+intel_linux_64 : CPP       = ${mpi}icpc
+intel_linux_64 : FC        = ${mpi}ifort
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
@@ -269,9 +283,9 @@ intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
 intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -D pp_INTEL  -WB -fpp -stand:f08 $(SMV_PROFILEFLAG)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX -D pp_INTEL $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icpc
-intel_linux_64_db : FC        = ifort
+intel_linux_64_db : CC        = ${mpi}icc
+intel_linux_64_db : CPP       = ${mpi}icpc
+intel_linux_64_db : FC        = ${mpi}ifort
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 intel_linux_64_db : $(obj)
@@ -376,13 +390,13 @@ else
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 endif
 endif
-intel_osx_64 : CC        = icc
-intel_osx_64 : CPP       = icpc
-intel_osx_64 : FC        = ifort
+intel_osx_64 : CC        = ${mpicc}
+intel_osx_64 : CPP       = ${mpicpc}
+intel_osx_64 : FC        = ${mpifort}
 intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64
 
 intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
+	${mpicpc} -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
 
 # ------------- intel_osx_64_db ----------------
 
@@ -398,13 +412,13 @@ else
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 endif
 endif
-intel_osx_64_db : CC        = icc
-intel_osx_64_db : CPP       = icpc
-intel_osx_64_db : FC        = ifort
+intel_osx_64_db : CC        = ${mpicc}
+intel_osx_64_db : CPP       = ${mpicpc}
+intel_osx_64_db : FC        = ${mpifort}
 intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
 
 intel_osx_64_db : $(obj)
-	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX)
+	${mpicpc} -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX)
 
 # ------------- gnu_osx_64_db ----------------
 

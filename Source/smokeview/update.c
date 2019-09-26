@@ -1881,11 +1881,11 @@ void UpdateShowScene(void){
   }
   if(convert_ini == 1){
     WriteIni(SCRIPT_INI, ini_to);
-    exit(0);
+    SMV_EXIT(0);
   }
   if(convert_ssf==1||update_ssf==1){
     ConvertSsf();
-    exit(0);
+    SMV_EXIT(0);
   }
   UpdateShow();
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);

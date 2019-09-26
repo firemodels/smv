@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef pp_MPI
-#include <mpi.h>
+#include "IOmpi.h"
 #endif
 #include GLUT_H
 
@@ -16,36 +16,6 @@
 #ifdef pp_LUA
 #include "c_api.h"
 #include "lua_api.h"
-#endif
-
-#ifdef pp_MPI
-
-/* ------------------ MPITest ------------------------ */
-
-void MPITest(void){
-  MPI_Init(NULL, NULL);
-
-  // Get the number of processes
-  int world_size;
-  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-  // Get the rank of the process
-  int world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-  // Get the name of the processor
-  char processor_name[MPI_MAX_PROCESSOR_NAME];
-  int name_len;
-  MPI_Get_processor_name(processor_name, &name_len);
-
-  // Print off a hello world message
-  printf("Hello world from processor %s, rank %d out of %d processors\n",
-    processor_name, world_rank, world_size);
-
-  // Finalize the MPI environment.
-  MPI_Finalize();
-
-}
 #endif
 
 /* ------------------ Usage ------------------------ */
@@ -244,26 +214,26 @@ void ParseCommandline(int argc, char **argv){
   zonescale = a_zonescale;
 
   if(argc == 1){
-    exit(1);
+    SMV_EXIT(1);
   }
   if(strncmp(argv[1], "-ini", 4) == 0){
     InitCameraList();
     InitOpenGL();
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteIni(GLOBAL_INI, NULL);
-    exit(0);
+    SMV_EXIT(0);
   }
   if(strncmp(argv[1], "-ng_ini", 7) == 0){
     InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     WriteIni(GLOBAL_INI, NULL);
-    exit(0);
+    SMV_EXIT(0);
   }
 #ifdef pp_MPI
-  if(strncmp(argv[1], "-mpitest", 4)==0){
-    MPITest();
-    exit(0);
+  if(strncmp(argv[1], "-mpitest", 8)==0){
+    TestMPI();
+    SMV_EXIT(0);
   }
 #endif
   strcpy(SMVFILENAME, "");
@@ -490,6 +460,14 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-no_graphics", 12)==0){
       use_graphics = 0;
     }
+#ifdef pp_MPI
+    else if(strncmp(argv[i], "-mpi", 4)==0&&strncmp(argv[i], "-mpitest", 8)!=0){
+      MPI_Init(NULL, NULL);
+      MPI_Comm_size(MPI_COMM_WORLD, &mpi_nprocesses);
+      MPI_Comm_rank(MPI_COMM_WORLD, &mpi_iprocess);
+      if(mpi_iprocess!=0)HandleMPIMessages(mpi_iprocess, mpi_nprocesses);
+    }
+#endif
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
       update_slice = 1;
@@ -592,11 +570,11 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
       Usage(argv[0],HELP_SUMMARY);
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(strncmp(argv[i], "-help_all", 9)==0){
       Usage(argv[0],HELP_ALL);
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(strncmp(argv[i], "-noblank", 8) == 0){
       iblank_set_on_commandline = 1;
@@ -620,7 +598,7 @@ void ParseCommandline(int argc, char **argv){
       strncmp(argv[i], "-volrender", 10) != 0 && (strncmp(argv[i], "-version", 8) == 0 || strncmp(argv[i], "-v", 2) == 0)
       ){
       DisplayVersionInfo("Smokeview ");
-      exit(0);
+      SMV_EXIT(0);
     }
     else if(
       strncmp(argv[i], "-redirect", 9) == 0
@@ -738,12 +716,12 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-build", 6) == 0){
       showbuild = 1;
       Usage(argv[0],HELP_ALL);
-      exit(0);
+      SMV_EXIT(0);
     }
     else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
       Usage(argv[0],HELP_ALL);
-      exit(1);
+      SMV_EXIT(1);
     }
   }
   if(update_ssf == 1){
@@ -812,16 +790,18 @@ int main(int argc, char **argv){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("smokeview", argv_sv[0]);
-    return 1;
-  }
 
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
 #endif
   ParseCommandline(argc, argv_sv);
+
+  if(show_version==1){
+    PRINTVERSION("smokeview", argv_sv[0]);
+    return 1;
+  }
+
   if(smokeview_bindir==NULL){
     smokeview_bindir= GetProgDir(progname,&smokeviewpath);
   }
@@ -863,4 +843,33 @@ int main(int argc, char **argv){
 
   glutMainLoop();
   return 0;
+}
+
+/* ------------------ SMV_EXIT ------------------------ */
+
+void SMV_EXIT(int code){
+#ifdef pp_MPI
+  int nprocs, rank;
+  int initial_flag, final_flag;
+
+  MPI_Initialized(&initial_flag);
+  MPI_Finalized(&final_flag);
+  if(initial_flag==TRUE&&final_flag!=TRUE){
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if(rank==0){
+      int i;
+
+      for(i = 1; i<nprocs;i++){
+        int command[2];
+
+        command[0] = SMV_MPI_QUIT;
+        command[1] = code;
+        MPI_Send(&command, 2, MPI_INT, i, SMV_MPI_COMMAND, MPI_COMM_WORLD);
+      }
+      MPI_Finalize();
+    }
+  }
+#endif
+  exit(code);
 }
