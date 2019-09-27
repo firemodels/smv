@@ -22,6 +22,12 @@ int       part_file_count;
 FILE_SIZE part_load_size;
 float     part_load_time;
 
+#ifdef pp_SLICETHREAD
+int       slice_file_count;
+FILE_SIZE slice_load_size;
+float     slice_load_time;
+#endif
+
 
 #ifdef WIN32
 #include <direct.h>
@@ -3565,6 +3571,35 @@ void UnloadAllPartFiles(void){
     ReadPart(parti->file, i, UNLOAD, &errorcode);
   }
 }
+
+#ifdef pp_SLICETHREAD
+/* ------------------ LoadAllSliceFiles ------------------------ */
+
+void LoadAllSliceFiles(int slicenum){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    int errorcode;
+    FILE_SIZE file_size;
+
+    slicei = sliceinfo+i;
+    if(slicei->skipload==1)continue;
+    if(slicenum>=0&&i!=slicenum)continue;  //  load only slice file with file index partnum
+    LOCK_SLICE_LOAD;                      //  or load all slice files
+    if(slicei->loadstatus==0){
+      slicei->loadstatus = 1;
+      UNLOCK_SLICE_LOAD;
+      file_size = ReadSlice(slicei->file, i, LOAD, SET_SLICECOLOR, &errorcode);
+      LOCK_SLICE_LOAD;
+      slicei->loadstatus = 2;
+      slice_load_size += file_size;
+      slice_file_count++;
+    }
+    UNLOCK_SLICE_LOAD;
+  }
+}
+#endif
 
 /* ------------------ LoadAllPartFiles ------------------------ */
 
@@ -8895,7 +8930,7 @@ updatemenu=0;
   CREATEMENU(dialogmenu,DialogMenu);
 
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
-  glutAddMenuEntry(_("Data bounds... ALT b"), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Data... ALT b"), DIALOG_BOUNDS);
 #ifdef pp_GLUTGET
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
 #else

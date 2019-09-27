@@ -11,6 +11,9 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
+#ifdef pp_SLICETHREAD
+  pthread_mutex_init(&mutexSLICE_LOAD, NULL);
+#endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
 #ifdef pp_ISOTHREAD
@@ -84,6 +87,61 @@ void CompressSVZip(void){
 void CompressSVZip(void){
   CompressSVZip2();
 }
+#endif
+
+//***************************** multi threading slice loading routines ***********************************
+
+#ifdef pp_THREAD
+#ifdef pp_SLICETHREAD
+
+/* ------------------ MtLoadAllSliceFiles ------------------------ */
+
+void *MtLoadAllSliceFiles(void *arg){
+  int *valptr;
+
+  valptr = (int *)(arg);
+  LoadAllSliceFiles(*valptr);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ LoadAllSlieFilesMT ------------------------ */
+
+void LoadAllSliceFilesMT(int slicenum){
+  int i;
+
+  if(slice_multithread==0){
+    LoadAllSliceFiles(slicenum);
+    return;
+  }
+
+  for(i = 0; i<nslicethread_ids; i++){
+    pthread_create(slicethread_ids+i, NULL, MtLoadAllSliceFiles, &slicenum);
+  }
+  for(i=0;i<nslicethread_ids;i++){
+    pthread_join(slicethread_ids[i],NULL);
+  }
+  if(slicenum<0){
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+     slicei = sliceinfo+i;
+      if(slicei->finalize==1)FinalizeSliceLoad(slicei);
+    }
+  }
+  else{
+    FinalizeSliceLoad(sliceinfo+slicenum);
+  }
+}
+#endif
+#endif
+
+#ifndef pp_THREAD
+#ifdef pp_SLICETHREAD
+void LoadAllSliceFilesMT(int slicenum){
+  LoadAllSliceFiles(slicenum);
+}
+#endif
 #endif
 
 //***************************** multi threading particle loading routines ***********************************

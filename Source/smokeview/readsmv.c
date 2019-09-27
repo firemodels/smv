@@ -11650,6 +11650,13 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
+#ifdef pp_SLICETHREAD
+    if(Match(buffer, "SLICEFAST")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i", &slice_multithread, &nslicethread_ids);
+      continue;
+    }
+#endif
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
@@ -13489,6 +13496,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
+#ifdef pp_SLICEFAST
+  fprintf(fileout, "SLICEFAST\n");
+  fprintf(fileout, " %i %i\n", slice_multithread, nslicethread_ids);
+#endif
   fprintf(fileout, "SLICEZIPSTEP\n");
   fprintf(fileout, " %i\n", slicezipstep);
   fprintf(fileout, "SMOKE3DZIPSTEP\n");
