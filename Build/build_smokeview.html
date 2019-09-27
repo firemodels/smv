@@ -52,10 +52,6 @@ function install_smv(args){
 
 <p><table border=on>
 <tr>
-<th>Settings</th>
-<td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Edit</button></td>
-</tr>
-<tr>
 <th align=center>Update</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
@@ -63,7 +59,7 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
-<th align=center>Show</th>
+<th align=center>Revision</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Bundle</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Repos</button>
@@ -77,6 +73,11 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
+<th align=center>Branch</th><td align=center>
+<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set master</button>
+<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
+</tr>
+<tr>
 <th align=center>Notes</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webGET_smvlog.bat')">Add</button>
@@ -85,9 +86,11 @@ function install_smv(args){
 </td>
 </tr>
 <tr>
-<th align=center>Branch</th><td align=center>
-<button onclick="run_script('\\smv\\scripts\\webSET_branches.bat')">Set master</button>
-<button onclick="run_script('\\smv\\scripts\\webSHOW_branches.bat')">Show</button></td>
+<th>Edit</th>
+<td align=center>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Page</button>
+<button onclick="run_script('\\smv\\scripts\\webEDIT_setup.bat')">Settings</button>
+</td>
 </tr>
 </table>
 
@@ -251,7 +254,7 @@ function install_smv(args){
 </table>
 
 <p><table border=on>
-<tr><th colspan=4>Smokeview</th></tr>
+<tr><th colspan=4>Smokeview - Misc</th></tr>
 <tr><th></th><th>Windows</th><th>Linux</th><th>OSX</th></tr>
 <tr>
 <th>Test MPI</th>
@@ -286,10 +289,6 @@ function install_smv(args){
 
 <p><table border=on>
 <tr><th>Other</th></tr>
-<tr>
-<td align=center><button onclick="run_script('\\smv\\scripts\\webEDIT_build_smokeview.bat')">Edit this page</button></td>
-</tr>
-
 <tr>
 <td align=center><button onclick="run_script('\\smv\\scripts\\webTEST_setup.bat')">Test web scripts</button></td>
 </tr>
