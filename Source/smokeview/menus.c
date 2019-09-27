@@ -8895,7 +8895,7 @@ updatemenu=0;
   CREATEMENU(dialogmenu,DialogMenu);
 
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
-  glutAddMenuEntry(_("Data bounds... ALT b"), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Data... ALT b"), DIALOG_BOUNDS);
 #ifdef pp_GLUTGET
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
 #else
