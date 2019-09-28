@@ -30,6 +30,11 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
+#ifdef pp_SLICETHREAD
+EXTERNCPP void LoadAllSliceFiles(int slicenum);
+EXTERNCPP void FinalizeSliceLoad(slicedata *slicei);
+#endif
+
 EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void GetAllPartBoundsMT(void);

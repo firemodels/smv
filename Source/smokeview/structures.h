@@ -1264,6 +1264,9 @@ typedef struct _slicedata {
   histogramdata *histograms;
   int nhistograms;
   struct _patchdata *patchgeom;
+#ifdef pp_SLICETHREAD
+  int skipload, loadstatus;
+#endif
 } slicedata;
 
 /* --------------------------  multislicedata ------------------------------------ */
