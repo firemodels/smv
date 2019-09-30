@@ -55,7 +55,7 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
-SVEXTERN int SVDECL(slice_multithread, 0), SVDECL(slice_multithread_save,0);
+SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
@@ -81,7 +81,7 @@ SVEXTERN float SVDECL(timer_reshape, 0.0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
-SVEXTERN int SVDECL(part_multithread, 0), SVDECL(part_multithread_save,0);
+SVEXTERN int SVDECL(part_multithread, 0);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
 SVEXTERN int SVDECL(use_new_slice_menus, 1);
