@@ -3291,15 +3291,14 @@ void PartBoundCB(int var){
   case TRACERS:
   case PARTFAST:
     if(partfast==0||npartinfo<=1){
-      CHECKBOX_part_multithread->set_int_val(part_multithread);
       CHECKBOX_part_multithread->disable();
       SPINNER_npartthread_ids->disable();
     }
     else{
-      CHECKBOX_part_multithread->set_int_val(part_multithread);
       CHECKBOX_part_multithread->enable();
       SPINNER_npartthread_ids->enable();
     }
+    CHECKBOX_part_multithread->set_int_val(part_multithread);
     updatemenu=1;
     break;
   case FRAMELOADING:
