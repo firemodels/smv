@@ -3585,8 +3585,8 @@ void LoadAllSliceFiles(int slicenum){
 
     slicei = sliceinfo+i;
     if(slicei->skipload==1)continue;
-    if(slicenum>=0&&i!=slicenum)continue;  //  load only slice file with file index partnum
-    LOCK_SLICE_LOAD;                      //  or load all slice files
+    if(slicenum>=0&&i!=slicenum)continue;  //  load only slice file with file index slicenum
+    LOCK_SLICE_LOAD;                       //  or load all slice files
     if(slicei->loadstatus==0){
       slicei->loadstatus = 1;
       UNLOCK_SLICE_LOAD;

@@ -52,24 +52,31 @@ function install_smv(args){
 
 <p><table border=on>
 <tr>
-<th align=center>Update</th>
+<th align=center>Update Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webUPDATEwindowsrepos.bat')">Windows</button>
 <button onclick="run_script('\\smv\\scripts\\webUPDATErepos.bat')">All</button>
 </td>
 </tr>
 <tr>
-<th align=center>Revision</th>
+<th align=center>Show Revision</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webSET_bundle_revision.bat')">Bundles</button>
 <button onclick="run_script('\\smv\\scripts\\webSHOW_revisions.bat')">Repos</button>
 </td>
 </tr>
 <tr>
-<th align=center>Clean</th>
+<th align=center>Clean Repos</th>
 <td align=center>
 <button onclick="run_script('\\smv\\scripts\\webclean_win.bat')">Windows</button>
 <button onclick="run_script('\\smv\\scripts\\webclean_all.bat')">All</button>
+</td>
+</tr>
+<tr>
+<th align=center>Clean Uploads</th>
+<td align=center>
+<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadwin.bat')">Windows</button>
+<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadall.bat')">All</button>
 </td>
 </tr>
 <tr>
@@ -150,8 +157,6 @@ function install_smv(args){
 
 <tr>
 <td align=center COLSPAN=6>
-<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadwin.bat')">Clean Windows</button>
-<button onclick="run_script('\\bot\\Bundle\\fds\\scripts\\webCLEANuploadall.bat')">Clean All</button>
 <button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
 </td>
 </tr>
