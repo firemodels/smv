@@ -118,35 +118,11 @@ function install_smv(args){
 </tr>
 </table>
 
-<p><table border=on>
-<tr><th colspan=3>Smokeview Test</th></tr>
 
-<tr><th>Windows</th><th>Linux</th><th>OSX</th></tr>
-
+<p><table border=off>
 <tr>
-<td align=center><button onclick="build_smv('windows test')">Build</button></td>
-<td align=center><button onclick="build_smv('linux test')">Build</button></td>
-<td align=center><button onclick="build_smv('osx test')">Build</button></td>
-</tr>
+<td>
 
-<tr>
-<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
-</tr>
-
-<tr>
-<td align=center><button onclick="install_smv('windows test')">Install</button></td>
-<td align=center><button onclick="install_smv('linux test')">Install</button></td>
-<td align=center><button onclick="install_smv('osx test')">Install</button></td>
-</tr>
-
-<tr>
-<td align=center COLSPAN=3>
-<button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
-</td>
-</tr>
-</table>
 
 <p><table border=on>
 <tr><th colspan=4>Utilities</th></tr>
@@ -243,7 +219,37 @@ function install_smv(args){
 </tr>
 
 </table>
+</td>
+<td>
+<p><table border=on>
+<tr><th colspan=3>Smokeview Test</th></tr>
 
+<tr><th>Windows</th><th>Linux</th><th>OSX</th></tr>
+
+<tr>
+<td align=center><button onclick="build_smv('windows test')">Build</button></td>
+<td align=center><button onclick="build_smv('linux test')">Build</button></td>
+<td align=center><button onclick="build_smv('osx test')">Build</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="install_smv('windows test')">Install</button></td>
+<td align=center><button onclick="install_smv('linux test')">Install</button></td>
+<td align=center><button onclick="install_smv('osx test')">Install</button></td>
+</tr>
+
+<tr>
+<td align=center COLSPAN=3>
+<button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
+</td>
+</tr>
+</table>
 <p><table border=on>
 <tr><th colspan=3>Smokeview Release</th></tr>
 
@@ -270,6 +276,9 @@ function install_smv(args){
 <tr>
 <td align=center COLSPAN=3>
 <button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 </table>
