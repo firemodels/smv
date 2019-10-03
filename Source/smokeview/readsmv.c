@@ -8331,6 +8331,7 @@ typedef struct {
       sd->slcf_index = slcf_index;
       sd->finalize = 1;
       sd->ntimes = 0;
+      sd->skipdup;
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
       sd->globalmin = -sd->globalmax;

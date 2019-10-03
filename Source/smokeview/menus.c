@@ -4762,11 +4762,11 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
     set_slicecolor = DEFER_SLICECOLOR;
 
     slicei->finalize = 0;
-    if(last_slice==i){
+    if(last_slice==mslicei->islices[i]){
       slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
-    if(slicei->skip == 0 && slicei->loaded == 0){
+    if(slicei->skipdup== 0 && slicei->loaded == 0){
       float load_sizei;
 
       load_sizei=LoadSlicei(set_slicecolor,mslicei->islices[i]);
@@ -4781,48 +4781,87 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
 #ifdef pp_SLICETHREAD
 /* ------------------ SetupSlice ------------------------ */
 
-void SetupSlice(int value, int option){
-  int i;
+int SetupSlice(int value){
+  int i, return_val;
 
+  return_val = 0;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo+i;
     slicei->finalize = 0;
-    slicei->skipload = 1;
     slicei->loadstatus = 0;
-//    slicei->boundstatus = 0;
-    if(slicei->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
-    slicei->skipload = 0;
+    slicei->boundstatus = 0;
+    slicei->skipload = 1;
   }
 
   if(value>=0){
+    multislicedata *mslicei;
+
+    mslicei = multisliceinfo + value;
+    for(i = 0; i<mslicei->nslices; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+mslicei->islices[i];
+      if(slicei->skipdup==0)slicei->skipload = 0;
+    }
+    for(i = mslicei->nslices-1; i >=0; i--){
+      slicedata *slicei;
+
+      slicei = sliceinfo + mslicei->islices[i];
+      if(slicei->skipdup== 0 && slicei->loaded == 0){
+        return_val = mslicei->islices[i];
+        slicei->finalize = 1;
+        break;
+      }
+    }
+  }
+  else if(value<=-1000){
+    int submenutype, dir, errorcode;
+    char *submenulabel;
     slicedata *slicei;
 
-    slicei = sliceinfo+value;
-    ASSERT(value>=0&&value<nsliceinfo);
-    value = CLAMP(value, 0, nsliceinfo-1);
-    slicei->finalize = 1;
-  }
-  else{
+    value = -(1000 + value);
+    submenutype=value/4;
+    dir=value%4;
+    submenutype=msubslice_menuindex[submenutype];
+    slicei = sliceinfo + submenutype;
+    submenulabel = slicei->label.longlabel;
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      char *longlabel;
+
+      slicei = sliceinfo + i;
+      if(slicei->skipdup==1)continue;
+      longlabel = slicei->label.longlabel;
+      if(strcmp(longlabel, submenulabel) != 0)continue;
+      if(dir != 0 && dir != slicei->idir)continue;
+      if(dir !=0 && slicei->volslice == 1)continue;
+      slicei->skipload = 0;
+    }
     for(i = nsliceinfo-1; i>=0; i--){
       slicedata *slicei;
 
-      slicei = sliceinfo+i;
-      if(slicei->skipload==1)continue;
-      slicei->finalize = 1;
+      slicei = sliceinfo + i;
+      if(slicei->skipdup==0&&slicei->skipload==0){
+        slicei->finalize = 1;
+        return_val = i;
+        break;
+      }
     }
   }
+  return return_val;
 }
 #endif
 /* ------------------ LoadMultiSliceMenu ------------------------ */
 
 void LoadMultiSliceMenu(int value){
   int i;
-  multislicedata *mslicei;
 
   if(value==MENU_DUMMY)return;
   if(value>=0){
+    multislicedata *mslicei;
+
     mslicei = multisliceinfo + value;
     if(scriptoutstream!=NULL){
       if(mslicei->nslices>0){
@@ -4838,21 +4877,25 @@ void LoadMultiSliceMenu(int value){
     if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
 
+#ifdef pp_SLICETHREAD
+      last_slice = SetupSlice(value);
+#else
       last_slice = mslicei->nslices - 1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        if(slicei->skip == 0 && slicei->loaded == 0){
-          last_slice = i;
+        if(slicei->skipdup== 0 && slicei->loaded == 0){
+          last_slice = mslicei->islices[i];
           break;
         }
       }
+#endif
       for(i = 0; i < mslicei->nslices; i++){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        if(slicei->skip == 1 && slicei->loaded == 1)UnloadSliceMenu(mslicei->islices[i]);
+        if(slicei->skipdup== 1 && slicei->loaded == 1)UnloadSliceMenu(mslicei->islices[i]);
       }
       LoadAllMSlices(last_slice,mslicei);
     }
@@ -4871,12 +4914,15 @@ void LoadMultiSliceMenu(int value){
     submenutype=msubslice_menuindex[submenutype];
     slicei = sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
+#ifdef pp_SLICETHREAD
+    last_slice = SetupSlice(value);
+#else
     last_slice = nsliceinfo - 1;
     for(i = nsliceinfo-1; i>=0; i--){
       char *longlabel;
 
       slicei = sliceinfo + i;
-      if(slicei->skip == 1)continue;
+      if(slicei->skipdup == 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel, submenulabel) != 0)continue;
       if(dir != 0 && dir != slicei->idir)continue;
@@ -4884,13 +4930,14 @@ void LoadMultiSliceMenu(int value){
       last_slice = i;
       break;
     }
+#endif
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
       char *longlabel;
       int set_slicecolor;
 
       slicei = sliceinfo + i;
-      if(slicei->skip == 1)continue;
+      if(slicei->skipdup== 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
