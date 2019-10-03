@@ -3643,9 +3643,9 @@ void SetupPart(int value, int option){
     parti->finalize = 0;
     parti->skipload = 1;
     parti->loadstatus = 0;
-    parti->boundstatus = 0;
-    if(option==PART&&parti->evac==1)continue;                               // don't load an evac file if part files are loaded
-    if(option==EVAC&&parti->evac==0)continue;                               // don't load a part file if evac files are loaded
+    parti->boundstatus = PART_BOUND_UNDEFINED;
+    if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
+    if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     parti->skipload = 0;
   }
@@ -4778,6 +4778,43 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
   PRINT_LOADTIMES(file_count,load_size,load_time);
 }
 
+#ifdef pp_SLICETHREAD
+/* ------------------ SetupSlice ------------------------ */
+
+void SetupSlice(int value, int option){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    slicei->finalize = 0;
+    slicei->skipload = 1;
+    slicei->loadstatus = 0;
+//    slicei->boundstatus = 0;
+    if(slicei->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    slicei->skipload = 0;
+  }
+
+  if(value>=0){
+    slicedata *slicei;
+
+    slicei = sliceinfo+value;
+    ASSERT(value>=0&&value<nsliceinfo);
+    value = CLAMP(value, 0, nsliceinfo-1);
+    slicei->finalize = 1;
+  }
+  else{
+    for(i = nsliceinfo-1; i>=0; i--){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(slicei->skipload==1)continue;
+      slicei->finalize = 1;
+    }
+  }
+}
+#endif
 /* ------------------ LoadMultiSliceMenu ------------------------ */
 
 void LoadMultiSliceMenu(int value){
