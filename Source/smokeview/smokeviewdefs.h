@@ -24,6 +24,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define VR_NO  0
 #define VR_YES 1
 
+#define FILE_UNLOADED 0
+#define FILE_LOADING  1
+#define FILE_LOADED   2
+
 #define MLEFT 0
 #define MFRONT 1
 #define MDOWN 2
