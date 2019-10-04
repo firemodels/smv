@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PART_BOUND_UNDEFINED 0
+#define PART_BOUND_COMPUTING 1
+#define PART_BOUND_DEFINED   2
+
 #ifdef pp_SELECT_GEOM
 #define VERTEX1 1
 #define VERTEX2 2
@@ -19,6 +23,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define VR_NO  0
 #define VR_YES 1
+
+#define FILE_UNLOADED 0
+#define FILE_LOADING  1
+#define FILE_LOADED   2
 
 #define MLEFT 0
 #define MFRONT 1

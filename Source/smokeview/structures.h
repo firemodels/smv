@@ -1222,7 +1222,7 @@ typedef struct _slicedata {
   int blocknumber;
   int firstshort_slice;
   int vec_comp;
-  int skip;
+  int skipdup;
   int setvalmin, setvalmax;
   float valmin, valmax;
   float globalmin, globalmax;
@@ -1265,7 +1265,7 @@ typedef struct _slicedata {
   int nhistograms;
   struct _patchdata *patchgeom;
 #ifdef pp_SLICETHREAD
-  int skipload, loadstatus;
+  int skipload, loadstatus, boundstatus;
 #endif
 } slicedata;
 

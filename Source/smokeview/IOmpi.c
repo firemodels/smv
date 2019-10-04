@@ -16,6 +16,7 @@ void HandleMPIMessages(int rank, int nprocs){
     MPI_Status Stat;
     int command[2];
 
+    // receive command from process 0
     MPI_Recv(command, 2, MPI_INT, 0, SMV_MPI_COMMAND, MPI_COMM_WORLD, &Stat);
     switch(command[0]){
     case SMV_MPI_QUIT:

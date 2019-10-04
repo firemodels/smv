@@ -2302,7 +2302,7 @@ int IsSliceDuplicate(multislicedata *mslicei, int ii, int flag){
     float *xyzminj, *xyzmaxj;
 
     slicej = sliceinfo + mslicei->islices[jj];
-    if(slicej==slicei||slicej->skip==1)continue;
+    if(slicej==slicei||slicej->skipdup==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(slicei->patchgeom==NULL){
@@ -2344,7 +2344,7 @@ int IsVectorSliceDuplicate(multivslicedata *mvslicei, int i){
 
     vslicej = vsliceinfo + mvslicei->ivslices[jj];
     slicej = sliceinfo + vslicej->ival;
-    if(slicej==slicei||slicej->skip==1)continue;
+    if(slicej==slicei||slicej->skipdup==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(MAXDIFF3(xyzmini, xyzminj) < SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj) < SLICEEPS){
@@ -2387,7 +2387,7 @@ void UpdateSliceDups(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
-      slicei->skip=0;
+      slicei->skipdup =0;
     }
   }
   // look for duplicate slices
@@ -2400,7 +2400,7 @@ void UpdateSliceDups(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
-      slicei->skip = IsSliceDuplicate(mslicei,ii, FIND_DUPLICATES);
+      slicei->skipdup = IsSliceDuplicate(mslicei,ii, FIND_DUPLICATES);
     }
   }
 }
@@ -3040,7 +3040,7 @@ void GetSliceParams(void){
 
     slicei = sliceinfo + i;
     slicei->mslice = NULL;
-    slicei->skip = 0;
+    slicei->skipdup = 0;
   }
   UpdateSliceDups();
   nslicedups = CountSliceDups();

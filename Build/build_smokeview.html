@@ -101,66 +101,10 @@ function install_smv(args){
 </tr>
 </table>
 
-<p id="demo"></p>
-
-<table border=on>
+<p><table border=off>
 <tr>
-<th colspan=3>Libraries</th>
-</tr>
-<tr>
-<th>Windows</th><th>Linux</th><th>OSX</th>
-</tr>
+<td>
 
-<tr>
-<td align=center><button onclick="build_libs('windows')">Build</button></td>
-<td align=center><button onclick="build_libs('linux')">Build</button></td>
-<td align=center><button onclick="build_libs('osx')">Build</button></td>
-</tr>
-</table>
-
-<p><table border=on>
-<tr><th colspan=6>Smokeview</th></tr>
-
-<tr>
-<th colspan=3>Test</th>
-<th colspan=3>Release</th>
-</tr>
-
-<tr><th>Windows</th><th>Linux</th><th>OSX</th><th>Windows</th><th>Linux</th><th>OSX</th></tr>
-
-<tr>
-<td align=center><button onclick="build_smv('windows test')">Build</button></td>
-<td align=center><button onclick="build_smv('linux test')">Build</button></td>
-<td align=center><button onclick="build_smv('osx test')">Build</button></td>
-<td align=center><button onclick="build_smv('windows release')">Build</button></td>
-<td align=center><button onclick="build_smv('linux release')">Build</button></td>
-<td align=center><button onclick="build_smv('osx release')">Build</button></td>
-</tr>
-
-<tr>
-<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
-<td align=center><button onclick="package_smv('windows release')">Bundle</button></td>
-<td align=center><button onclick="package_smv('linux release')">Bundle</button></td>
-<td align=center><button onclick="package_smv('osx release')">Bundle</button></td>
-</tr>
-
-<tr>
-<td align=center><button onclick="install_smv('windows test')">Install</button></td>
-<td align=center><button onclick="install_smv('linux test')">Install</button></td>
-<td align=center><button onclick="install_smv('osx test')">Install</button></td>
-<td align=center><button onclick="install_smv('windows release')">Install</button></td>
-<td align=center><button onclick="install_smv('linux release')">Install</button></td>
-<td align=center><button onclick="install_smv('osx release')">Install</button></td>
-</tr>
-
-<tr>
-<td align=center COLSPAN=6>
-<button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
-</td>
-</tr>
-</table>
 
 <p><table border=on>
 <tr><th colspan=4>Utilities</th></tr>
@@ -257,6 +201,79 @@ function install_smv(args){
 </tr>
 
 </table>
+</td>
+<td align=center>
+
+<p><table border=on>
+<tr>
+<th colspan=3>Libraries</th>
+</tr>
+<tr>
+<th>Windows</th><th>Linux</th><th>OSX</th>
+</tr>
+
+<tr>
+<td align=center><button onclick="build_libs('windows')">Build</button></td>
+<td align=center><button onclick="build_libs('linux')">Build</button></td>
+<td align=center><button onclick="build_libs('osx')">Build</button></td>
+</tr>
+</table>
+
+<p><table border=on>
+<tr><th colspan=3>Smokeview Test</th></tr>
+
+<tr><th>Windows</th><th>Linux</th><th>OSX</th></tr>
+
+<tr>
+<td align=center><button onclick="build_smv('windows test')">Build</button></td>
+<td align=center><button onclick="build_smv('linux test')">Build</button></td>
+<td align=center><button onclick="build_smv('osx test')">Build</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="package_smv('windows test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('linux test')">Bundle</button></td>
+<td align=center><button onclick="package_smv('osx test')">Bundle</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="install_smv('windows test')">Install</button></td>
+<td align=center><button onclick="install_smv('linux test')">Install</button></td>
+<td align=center><button onclick="install_smv('osx test')">Install</button></td>
+</tr>
+
+</tr>
+</table>
+<p><table border=on>
+<tr><th colspan=3>Smokeview Release</th></tr>
+
+<tr><th>Windows</th><th>Linux</th><th>OSX</th></tr>
+
+<tr>
+<td align=center><button onclick="build_smv('windows release')">Build</button></td>
+<td align=center><button onclick="build_smv('linux release')">Build</button></td>
+<td align=center><button onclick="build_smv('osx release')">Build</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="package_smv('windows release')">Bundle</button></td>
+<td align=center><button onclick="package_smv('linux release')">Bundle</button></td>
+<td align=center><button onclick="package_smv('osx release')">Bundle</button></td>
+</tr>
+
+<tr>
+<td align=center><button onclick="install_smv('windows release')">Install</button></td>
+<td align=center><button onclick="install_smv('linux release')">Install</button></td>
+<td align=center><button onclick="install_smv('osx release')">Install</button></td>
+</tr>
+
+</table>
+
+<p><button onclick="run_script('\\smv\\scripts\\webUPLOADsmv2git.bat')">Upload</button>
+
+</td>
+</tr>
+</table>
 
 <p><table border=on>
 <tr><th colspan=4>Smokeview - Misc</th></tr>
@@ -274,7 +291,7 @@ function install_smv(args){
 </tr>
 <tr>
 <th>Test non-MPI</th>
-<td align=center><button onclick="build_smv('windows testinc')">inc</button></td>
+<td align=center><button onclick="build_smv('windows testinc')">Inc</button></td>
 <td><button onclick="build_smv('gnulinux debug')">GNU dbg</button></td>
 </tr>
 </table>
