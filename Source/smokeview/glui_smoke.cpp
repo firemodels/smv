@@ -569,15 +569,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
 
-#ifdef pp_BETA
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "use fire opacity", &use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
-#endif
-  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% fire opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "Use HRRPUV/temperature opacity", &use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
+  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, _("50% HRRPUV/temperature opacity (m)"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.0, 100.0);
-#ifdef pp_BETA
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_firecolor, "emission factor", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   Smoke3dCB(USE_FIRE_ALPHA);
-#endif
 
   UpdateFireCutoffs();
 
