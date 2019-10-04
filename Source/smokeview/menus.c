@@ -4817,7 +4817,7 @@ int SetupSlice(int value){
     }
   }
   else if(value<=-1000){
-    int submenutype, dir, errorcode;
+    int submenutype, dir;
     char *submenulabel;
     slicedata *slicei;
 
@@ -4933,7 +4933,6 @@ void LoadMultiSliceMenu(int value){
 #endif
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
-      char *longlabel;
       int set_slicecolor;
 
       slicei = sliceinfo + i;
