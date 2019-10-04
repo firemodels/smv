@@ -13,7 +13,6 @@ pdfdata pdfmerge,pdfframe;
 
 #define FORTREAD(var,size) FSEEK(BOUNDARYFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,BOUNDARYFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(BOUNDARYFILE,4,SEEK_CUR)
 
 /* ------------------ clean_boundary ------------------------ */
@@ -538,10 +537,6 @@ void *compress_patches(void *arg){
 
 void update_patch_hist(void){
   int i;
-  int endiandata;
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   for(i=0;i<npatchinfo;i++){
     patch *patchi;
@@ -630,11 +625,6 @@ void mt_update_patch_hist(void){
 
 void Get_Boundary_Bounds(void){
   int i;
-
-  int endiandata;
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   PRINTF("Determining boundary file bounds\n");
   for(i=0;i<npatchinfo;i++){

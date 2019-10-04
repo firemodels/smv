@@ -10,7 +10,6 @@
 #include GLUT_H
 
 #include "compress.h"
-#include "smv_endian.h"
 #include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
@@ -20,7 +19,6 @@ void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, 
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
 
 // dummy change
-int endianswitch;
 float gslice_valmin, gslice_valmax, *gslicedata;
 meshdata *gslice_valmesh;
 slicedata *gslice_u, *gslice_v, *gslice_w;
@@ -34,7 +32,6 @@ slicedata *gslice;
 
 #define FORTRLESLICEREAD(var,size) FSEEK(RLESLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,RLESLICEFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
 #define GET_VAL(U,VAL,n) \
@@ -3820,26 +3817,12 @@ int GetSlicecZlibData(char *file,
   }
 
   fread(&fileversion, 4, 1, stream);
-  if(endian != 1)fileversion = IntSwitch(fileversion);
 
   fread(&version, 4, 1, stream);
-  if(endian != 1)version = IntSwitch(version);
 
   fread(minmax, 4, 2, stream);
-  if(endian != 1){
-    minmax[0] = FloatSwitch(minmax[0]);
-    minmax[1] = FloatSwitch(minmax[1]);
-  }
 
   fread(ijkbar, 4, 6, stream);
-  if(endian != 1){
-    ijkbar[0] = IntSwitch(ijkbar[0]);
-    ijkbar[1] = IntSwitch(ijkbar[1]);
-    ijkbar[2] = IntSwitch(ijkbar[2]);
-    ijkbar[3] = IntSwitch(ijkbar[3]);
-    ijkbar[4] = IntSwitch(ijkbar[4]);
-    ijkbar[5] = IntSwitch(ijkbar[5]);
-  }
 
   count = 0;
   ns = 0;

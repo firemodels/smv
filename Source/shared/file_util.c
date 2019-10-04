@@ -25,7 +25,6 @@
 #include <dirent.h>
 #endif
 #include "MALLOCC.h"
-#include "smv_endian.h"
 
 FILE *alt_stdout=NULL;
 

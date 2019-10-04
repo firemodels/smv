@@ -48,7 +48,7 @@ void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float **
 
 void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nvertices, int *ntriangles,
                  float **levelsptr, int *nisolevels, int *niso_times,
-                 float *tmin_local, float *tmax_local, int endian_local){
+                 float *tmin_local, float *tmax_local){
   int len[3],labellengths=0;
   int nlevels, n;
   int nvertices_i, ntriangles_i;
@@ -577,7 +577,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
   GetIsoSizes(file, ib->dataflag, &isostream, &nisopoints, &nisotriangles,
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,
-    &ib->tmin, &ib->tmax, endian_data);
+    &ib->tmin, &ib->tmax);
 
   if(meshi->isolevels==NULL){
     ReadIso("",ifile,UNLOAD,NULL,&error);

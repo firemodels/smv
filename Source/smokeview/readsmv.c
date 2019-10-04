@@ -2220,34 +2220,22 @@ void UpdateBoundInfo(void){
 /* ------------------ UpdateEndianInfo ------------------------ */
 
 void UpdateEndianInfo(void){
-  if(setendian==0){
-    if(Match(LESsystem,"AIX")==1||Match(LESsystem,"SGI")==1||Match(LESendian,"b")==1||Match(LESendian,"B")==1){
-      endian_data=1;
-    }
-    if(Match(LESsystem,"DVF")==1||Match(LESendian,"l")==1||Match(LESendian,"L")==1){
-      endian_data=0;
-    }
-    endian_smv = endian_data;
-  }
-
-#ifndef WIN32
-  if(endian_smv!=GetEndian()){
+  if(endian_fds!=endian_smv){
     fprintf(stderr,"*** Warning: Smokeview is running on a ");
-    if(GetEndian()==1){
+    if(endian_smv==ENDIAN_LITTLE){
       fprintf(stderr," little endian computer\n");
     }
     else{
       fprintf(stderr," big endian computer\n");
     }
     fprintf(stderr,"    but the data being visualized was generated on a ");
-    if(endian_smv==1){
+    if(endian_fds==ENDIAN_LITTLE){
       fprintf(stderr," little endian computer\n");
     }
     else{
       fprintf(stderr," big endian computer\n");
     }
   }
-#endif
 }
 
 /*
@@ -3933,10 +3921,7 @@ int ReadSMV(char *file, char *file2){
   nvents=0;
   setPDIM=0;
   endian_smv = GetEndian();
-  endian_native = GetEndian();
-  endian_data=endian_native;
-  FREEMEMORY(LESsystem);
-  FREEMEMORY(LESendian);
+  endian_fds = endian_smv;
 
   FREEMEMORY(database_filename);
 
@@ -3963,11 +3948,6 @@ int ReadSMV(char *file, char *file2){
     InitVars();
     return -1;  // finished  unloading memory from previous case
   }
-
-  if(NewMemory((void **)&LESsystem,4)==0)return 2;
-  STRCPY(LESsystem,"");
-  if(NewMemory((void **)&LESendian,4)==0)return 2;
-  STRCPY(LESendian,"");
 
 #ifdef pp_READBUFFER
   if(readfile_option==READFILE){
@@ -8129,38 +8109,6 @@ typedef struct {
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SYST ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"SYST") == 1){
-      size_t len;
-
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      len=strlen(buffer);
-      buffer[len-1]='\0';
-      STRCPY(LESsystem,buffer);
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ ENDIAN ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"ENDIAN") == 1){
-      size_t len;
-
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      len=strlen(buffer);
-      buffer[len-1]='\0';
-      strncpy(LESendian,buffer,1);
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -8178,13 +8126,16 @@ typedef struct {
       strcpy(endian_filename,bufferptr);
       ENDIANfile = fopen(endian_filename,"rb");
       if(ENDIANfile!=NULL){
-        endian_native = GetEndian();
+        endian_smv = GetEndian();
         FSEEK(ENDIANfile,4,SEEK_SET);
-        fread(&endian_data,4,1,ENDIANfile);
+        fread(&endian_fds,4,1,ENDIANfile);
         fclose(ENDIANfile);
-        endian_smv=endian_native;
-        if(endian_data!=1)endian_smv=1-endian_native;
-        setendian=1;
+        if(endian_fds==1){// fds and smokeview were run on same type of computer
+          endian_fds = endian_smv;
+        }
+        else{
+          endian_fds = 1-endian_smv;
+        }
       }
       continue;
     }

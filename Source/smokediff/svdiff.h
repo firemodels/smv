@@ -101,14 +101,12 @@ typedef struct {
   plot3d *plot3dinfo;
   boundary *boundaryinfo;
   char *dir;
-  int endian;
   int nmeshes;
   int nsliceinfo, nplot3dinfo, nboundary_files;
 } casedata;
 
 //************************** headers ****************************************
 
-int GetEndian(void);
 int mesh_Match(meshdata *mesh1, meshdata *mesh2);
 int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase);
 void setup_boundary(FILE *stream_out);

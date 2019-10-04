@@ -1639,7 +1639,6 @@ void InitVars(void){
   usetextures=0;
   canrestorelastview=0;
   ntargets=0;
-  endian_data=0, endian_native=0, setendian=0;
 
   mainwindow_id=0;
   rendertourcount=0;

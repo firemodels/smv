@@ -265,9 +265,7 @@ int main(int argc, char **argv){
   if(stream_out==NULL||stream_in1==NULL||stream_in2==NULL)return 1;
 
   caseinfo[0].dir=sourcedir1;
-  caseinfo[0].endian=0;
   caseinfo[1].dir=sourcedir2;
-  caseinfo[1].endian=0;
 
   PRINTF("reading %s\n",smoke1);
   FFLUSH();
