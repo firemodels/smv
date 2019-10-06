@@ -2534,7 +2534,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_nslicethread_ids->set_int_limits(1, MIN(nsliceinfo, MAX_SLICE_THREADS));
     }
     else{
-      SPINNER_npartthread_ids->set_int_limits(1, 1);
+      SPINNER_nslicethread_ids->set_int_limits(1, 1);
     }
 #endif
 
