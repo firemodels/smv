@@ -869,7 +869,6 @@ SVEXTERN int update_demo;
 SVEXTERN int mxplot3dvars;
 SVEXTERN int loadplot3dall;
 SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
-SVEXTERN char SVDECL(*LESsystem,NULL),SVDECL(*LESendian,NULL);
 
 SVEXTERN int show3dsmoke;
 SVEXTERN float frustum[6][4];
@@ -1030,7 +1029,7 @@ SVEXTERN int SVDECL(frame_index,0), SVDECL(first_frame_index,0), SVDECL(izone,0)
 SVEXTERN int rotation_type,eyeview_level;
 SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;
-SVEXTERN int setpartmin, setpartmax, SVDECL(endian_smv,0);
+SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setslicemin,PERCENTILE_MIN), SVDECL(setslicemax,PERCENTILE_MAX);
@@ -1271,7 +1270,7 @@ SVEXTERN int blockages_dirty;
 SVEXTERN int usetextures;
 SVEXTERN int canrestorelastview;
 SVEXTERN int ntargets;
-SVEXTERN int endian_data, endian_native, setendian;
+SVEXTERN int endian_fds, endian_smv;
 
 SVEXTERN int mainwindow_id;
 SVEXTERN int rendertourcount;

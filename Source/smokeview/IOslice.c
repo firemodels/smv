@@ -10,7 +10,6 @@
 #include GLUT_H
 
 #include "compress.h"
-#include "smv_endian.h"
 #include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
@@ -20,7 +19,6 @@ void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, 
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
 
 // dummy change
-int endianswitch;
 float gslice_valmin, gslice_valmax, *gslicedata;
 meshdata *gslice_valmesh;
 slicedata *gslice_u, *gslice_v, *gslice_w;
@@ -34,7 +32,6 @@ slicedata *gslice;
 
 #define FORTRLESLICEREAD(var,size) FSEEK(RLESLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,RLESLICEFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(RLESLICEFILE,4,SEEK_CUR)
 
 #define GET_VAL(U,VAL,n) \
@@ -2302,7 +2299,7 @@ int IsSliceDuplicate(multislicedata *mslicei, int ii, int flag){
     float *xyzminj, *xyzmaxj;
 
     slicej = sliceinfo + mslicei->islices[jj];
-    if(slicej==slicei||slicej->skip==1)continue;
+    if(slicej==slicei||slicej->skipdup==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(slicei->patchgeom==NULL){
@@ -2344,7 +2341,7 @@ int IsVectorSliceDuplicate(multivslicedata *mvslicei, int i){
 
     vslicej = vsliceinfo + mvslicei->ivslices[jj];
     slicej = sliceinfo + vslicej->ival;
-    if(slicej==slicei||slicej->skip==1)continue;
+    if(slicej==slicei||slicej->skipdup==1)continue;
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(MAXDIFF3(xyzmini, xyzminj) < SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj) < SLICEEPS){
@@ -2387,7 +2384,7 @@ void UpdateSliceDups(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
-      slicei->skip=0;
+      slicei->skipdup =0;
     }
   }
   // look for duplicate slices
@@ -2400,7 +2397,7 @@ void UpdateSliceDups(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
-      slicei->skip = IsSliceDuplicate(mslicei,ii, FIND_DUPLICATES);
+      slicei->skipdup = IsSliceDuplicate(mslicei,ii, FIND_DUPLICATES);
     }
   }
 }
@@ -3040,7 +3037,7 @@ void GetSliceParams(void){
 
     slicei = sliceinfo + i;
     slicei->mslice = NULL;
-    slicei->skip = 0;
+    slicei->skipdup = 0;
   }
   UpdateSliceDups();
   nslicedups = CountSliceDups();
@@ -3820,26 +3817,12 @@ int GetSlicecZlibData(char *file,
   }
 
   fread(&fileversion, 4, 1, stream);
-  if(endian != 1)fileversion = IntSwitch(fileversion);
 
   fread(&version, 4, 1, stream);
-  if(endian != 1)version = IntSwitch(version);
 
   fread(minmax, 4, 2, stream);
-  if(endian != 1){
-    minmax[0] = FloatSwitch(minmax[0]);
-    minmax[1] = FloatSwitch(minmax[1]);
-  }
 
   fread(ijkbar, 4, 6, stream);
-  if(endian != 1){
-    ijkbar[0] = IntSwitch(ijkbar[0]);
-    ijkbar[1] = IntSwitch(ijkbar[1]);
-    ijkbar[2] = IntSwitch(ijkbar[2]);
-    ijkbar[3] = IntSwitch(ijkbar[3]);
-    ijkbar[4] = IntSwitch(ijkbar[4]);
-    ijkbar[5] = IntSwitch(ijkbar[5]);
-  }
 
   count = 0;
   ns = 0;

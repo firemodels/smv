@@ -7,7 +7,6 @@
 #include <float.h>
 #include GLUT_H
 
-#include "smv_endian.h"
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
@@ -17,7 +16,6 @@
 #define TRAILER_SIZE 4
 #define FORTVOLSLICEREAD(var,size) FSEEK(SLICEFILE,HEADER_SIZE,SEEK_CUR);\
                            fread(var,4,size,SLICEFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(SLICEFILE,TRAILER_SIZE,SEEK_CUR)
 
 
@@ -2334,7 +2332,6 @@ float GetVolsmokeFrameTime(volrenderdata *vr, int framenum){
   FILE *SLICEFILE;
   int framesize;
   float time_local=0.0;
-  int endianswitch=0;
   LINT skip_local;
 
   if(framenum<0||framenum>=vr->ntimes)return time_local;
@@ -2465,7 +2462,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   int framesize,framesize2;
   LINT skip_local;
   float time_local, *smokeframe_data, *fireframe_data, *lightframe_data;
-  int endianswitch=0;
 #ifdef pp_VOLCO2
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;

@@ -5,7 +5,6 @@
 #include <string.h>
 #include GLUT_H
 
-#include "smv_endian.h"
 #include "update.h"
 #include "smokeviewvars.h"
 #include "compress.h"
@@ -2506,7 +2505,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(patchi->skip == 1)return 0;
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
-  endian_smv = GetEndian();
 
   GetGeomDataSize(file, &ntimes_local, &nvals, &error);
 

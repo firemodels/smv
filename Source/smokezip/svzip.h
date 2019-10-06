@@ -417,7 +417,7 @@ EXTERN int GLOBoverwrite_plot3d;
 #ifdef pp_PART
 EXTERN int GLOBoverwrite_part;
 #endif
-EXTERN int endianswitch,GLOBoverwrite_b,GLOBoverwrite_s;
+EXTERN int GLOBoverwrite_b,GLOBoverwrite_s;
 EXTERN int GLOBcleanfiles;
 EXTERN char *GLOBdestdir,*GLOBsourcedir;
 EXTERN char GLOBpp[2],GLOBx[2];

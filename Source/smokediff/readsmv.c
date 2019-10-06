@@ -314,24 +314,13 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
     }
     if(Match(buffer,"ENDF") == 1){
       char endian_filename[1024];
-      FILE *ENDIANfile;
-      int endian=0, endian_native, endian_data, len;
+      int len;
 
       if(fgets(buffer,255,streamsmv)==NULL)break;
       len=strlen(buffer);
       buffer[len-1]='\0';
       TrimBack(buffer);
       FullFile(endian_filename,smvcase->dir,buffer);
-      ENDIANfile = fopen(endian_filename,"rb");
-      if(ENDIANfile!=NULL){
-        endian_native = GetEndian();
-        FSEEK(ENDIANfile,4,SEEK_SET);
-        fread(&endian_data,4,1,ENDIANfile);
-        fclose(ENDIANfile);
-        endian=endian_native;
-        if(endian_data!=1)endian=1-endian_native;
-        smvcase->endian=endian;
-      }
       if(stream_out!=NULL){
         int lenout;
 

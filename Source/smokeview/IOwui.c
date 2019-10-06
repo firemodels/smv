@@ -6,7 +6,6 @@
 #include GLUT_H
 
 #include "update.h"
-#include "smv_endian.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
@@ -14,7 +13,6 @@
 #define ijnode3(i,j) ((nycell+1)*(i) + (j))
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
-                           if(endianswitch==1)EndianSwitch(var,size);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 /* ------------------ DrawNorth ------------------------ */
@@ -906,7 +904,6 @@ void InitTNorm(terraindata *terri){
 int GetTerrainData(char *file, terraindata *terri){
   FILE *WUIFILE;
   int one;
-  int endianswitch = 0;
   size_t returncode;
   float time_local;
   int nchanges;
@@ -921,7 +918,6 @@ int GetTerrainData(char *file, terraindata *terri){
   if(WUIFILE == NULL)return 1;
 
   FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
-  if(one != 1)endianswitch = 1;
 
   FSEEK(WUIFILE, 12, SEEK_CUR);    // skip over version
   FSEEK(WUIFILE, 8 + 4 * 4, SEEK_CUR); // skip over xmin,xmax,ymin,ymax
@@ -990,7 +986,6 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   int one;
   float xyminmax[4];
   int nxy[2];
-  int endianswitch = 0;
   size_t returncode;
   int version;
   float time_local;
@@ -1001,7 +996,6 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   if(WUIFILE == NULL)return 1;
 
   FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
-  if(one != 1)endianswitch = 1;
 
   FORTWUIREAD(&version, 1);
   FORTWUIREAD(xyminmax, 4);

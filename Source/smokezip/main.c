@@ -108,8 +108,6 @@ int main(int argc, char **argv){
   char inifile[1024];
   char inifilebase[1024];
   int i;
-  int endian_fds;
-  int endian_info;
   int redirect=0;
 
   SetStdOut(stdout);
@@ -159,7 +157,6 @@ int main(int argc, char **argv){
   GLOBendianfile=NULL;
   GLOBdestdir=NULL;
   GLOBsourcedir=NULL;
-  endianswitch=-1;
   GLOBoverwrite_b=0;
   GLOBoverwrite_s=0;
   GLOBget_bounds=0;
@@ -173,7 +170,6 @@ int main(int argc, char **argv){
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
   GLOBoverwrite_plot3d=0;
-  endian_info=0;
   GLOBcleanfiles=0;
   GLOBsmoke3dzipstep=1;
   GLOBboundzipstep=1;
@@ -320,9 +316,6 @@ int main(int argc, char **argv){
         break;
       case 'c':
         GLOBcleanfiles=1;
-        break;
-      case 'e':
-        endian_info=1;
         break;
       case 'r':
         redirect=1;
@@ -507,38 +500,6 @@ int main(int argc, char **argv){
       SliceDup(slicei,i);
     }
   }
-
-  if(GetEndian()==1){
-      PRINTF("Smokezip running on a big endian computer.\n");
-  }
-  else{
-      PRINTF("Smokezip running on a little endian computer.\n");
-  }
-  if(GLOBendf==0&&GLOBsyst==0){
-    fprintf(stderr,"Warning: casename.end file is missing.  Endianness of\n");
-    fprintf(stderr,"         FDS boundary file data is unknown.\n");
-    if(GetEndian()==1){
-      fprintf(stderr,"         Assuming FDS boundary data is big endian - \n");
-    }
-    if(GetEndian()==0){
-      fprintf(stderr,"         Assuming FDS boundary data is little endian - \n");
-    }
-    fprintf(stderr,"         or equivalently assuming FDS and Smokezip are\n");
-    fprintf(stderr,"         being run on the same type of computer\n");
-    endianswitch=0;
-  }
-  else{
-    endian_fds=GetEndian()+endianswitch;
-    if(endian_fds==2)endian_fds=0;
-    if(endian_fds==1){
-      PRINTF("FDS was run on a big endian computer. \n\n");
-    }
-    else{
-      PRINTF("FDS was run on a little endian computer.\n\n");
-    }
-  }
-  if(endian_info==1)return 0;
-
   ReadINI(inifile);
 
 #ifdef pp_THREAD

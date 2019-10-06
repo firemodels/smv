@@ -9,7 +9,6 @@
 #include GLUT_H
 #include <math.h>
 
-#include "smv_endian.h"
 #include "update.h"
 #include "smokeviewvars.h"
 #include "histogram.h"
@@ -45,7 +44,6 @@ if(returncode==PASS_m){\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
 }\
 if(returncode==PASS_m){\
-  if(endianswitch==1)EndianSwitch(var,size);\
   FSEEK(PART5FILE,4,SEEK_CUR);\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
 }
@@ -930,13 +928,11 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, in
   int i;
   int *numtypes_local, *numpoints_local;
   int skip_local, numvals_local;
-  int endianswitch = 0;
 
   PART5FILE = fopen(part5file_arg, "rb");
   streamout_local = fopen(part5sizefile_arg, "w");
 
   FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one_local, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
-  if(one_local!= 1)endianswitch = 1;
   FORTPART5READ(&version_local, 1);
 
   FORTPART5READ(&nclasses_local, 1);
@@ -993,7 +989,6 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
   int version_local;
   int returncode;
   int skip_local;
-  int endianswitch=0;
   int i;
   int *numtypes_local = NULL, *numtypescopy_local, *numpoints_local = NULL;
   int numtypes_temp_local[2];
@@ -1423,7 +1418,6 @@ wrapup:
 void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
   FILE *PART5FILE;
   int one;
-  int endianswitch = 0;
   int version;
   int nclasses;
   int i;
@@ -1447,7 +1441,6 @@ void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
   if(PART5FILE == NULL)return;
 
   FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
-  if(one != 1)endianswitch = 1;
 
   FORTPART5READ(&version, 1); if(returncode == FAIL_m)goto wrapup;
   FORTPART5READ(&nclasses, 1); if(returncode == FAIL_m)goto wrapup;

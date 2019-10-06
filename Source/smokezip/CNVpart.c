@@ -205,7 +205,6 @@ void convert_part(part *parti, int *thread_index){
   int *nquantities, *npoints;
   float time_local;
   int error;
-  int endiandata;
   int *tagdata;
   float *pdata;
   int sizebefore=0, sizeafter=0, size;
@@ -258,9 +257,6 @@ void convert_part(part *parti, int *thread_index){
     sprintf(threadinfo[*thread_index].label,"prt5 %i",fileindex);
   }
 #endif
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   partfile=parti->file;
   partmesh=parti->partmesh;
@@ -543,10 +539,6 @@ void Get_Part_Bounds(void){
   float *pdata;
   int *tagdata;
   int fdsversion;
-  int endiandata;
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   PRINTF("Determining particle file bounds\n");
 
@@ -664,8 +656,6 @@ void part2iso(part *parti, int *thread_index){
   int *tagdata;
   int fdsversion;
 
-  int endiandata;
-
   int blocknumber;
   FILE_SIZE len_partfile;
   int unit;
@@ -705,9 +695,6 @@ void part2iso(part *parti, int *thread_index){
 #else
   PRINTF("Converting %s to\n",parti->file);
 #endif
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   NewMemory((void **)&pdata,1000000*sizeof(float));
   NewMemory((void **)&tagdata,1000000*sizeof(int));
@@ -1024,8 +1011,6 @@ void part2object(part *parti, int *thread_index){
   int *tagdata;
   int fdsversion;
 
-  int endiandata;
-
   int blocknumber;
   FILE_SIZE len_partfile;
   int unit;
@@ -1065,9 +1050,6 @@ void part2object(part *parti, int *thread_index){
 #else
   PRINTF("Converting %s to\n",parti->file);
 #endif
-
-  endiandata=GetEndian();
-  if(endianswitch==1)endiandata=1-endiandata;
 
   NewMemory((void **)&pdata,1000000*sizeof(float));
   NewMemory((void **)&tagdata,1000000*sizeof(int));
