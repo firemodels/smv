@@ -4934,6 +4934,9 @@ void LoadMultiSliceMenu(int value){
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
       int set_slicecolor;
+#ifndef pp_SLICETHREAD
+      char *longlabel;
+#endif
 
       slicei = sliceinfo + i;
 #ifdef pp_SLICETHREAD
