@@ -1109,7 +1109,7 @@ void GetSmoke3DVals(float *xyz, smoke3ddata * smoke3di, float *vals, int *have_v
     i000 = 0;                 // i,j,k
     i001 = kplus;             // i,j,k+1
 
-    i010 = jplus;             // i,j+1,k, 
+    i010 = jplus;             // i,j+1,k,
     i011 = jplus+kplus;       // i,j+1,k+1
 
     i100 = iplus;             // i+1,j,k
@@ -1410,7 +1410,7 @@ int DrawSmoke3DNew(smoke3ddata *smoke3di){
   return ntriangles;
 }
 
-#endif  
+#endif
   /* ------------------ DrawSmoke3DGPU ------------------------ */
 
 void DrawSmoke3DGPU(smoke3ddata *smoke3di){
@@ -2653,7 +2653,7 @@ int PointInPolygon(vertpdata *vertpinfo, int nvertpinfo, float *xy2){
 /* ------------------ PolyTriangulate ------------------------ */
 
 void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int npoly, float del,
-                     float *verts_out, int *nverts_out, 
+                     float *verts_out, int *nverts_out,
                      int *tris_out, int *ntris_out){
 
   vertpdata *vertpinfo=NULL, *vert2pinfo=NULL;
@@ -2968,7 +2968,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
   }
   ASSERT(nverts==nverts_allocated);
   CheckMemory;
-  
+
 // define output triangle array
 
   ntris = 0;
@@ -3246,7 +3246,7 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
 
     meshi = meshinfo + smoke3di->blocknumber;
-    
+
     if(smoke_exact_dist==1){
       xyz_orig = xyz0;
     }
@@ -3369,7 +3369,7 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
         if(smoke_getvals==1&&spi->nverts2>0&&nsmoketypes>0){
           int k;
           float *valsptr;
-           
+
           valsptr = spi->vals2;
           for(k=0;k<spi->nverts2;k++){
             float *xyz, vals[3];
@@ -3740,7 +3740,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           j2 = MIN(j+smoke3d_skip,js2);
           joffset = j2 - j;
-          
+
           jterm = (j-js1)*nx;
           yy1 = yplt[j];
           y3 = yplt[j2];
@@ -5369,7 +5369,7 @@ void DrawSmokeFrame(void){
   if(smoke_timer == 1){
     float rate=-999.0;
     char label1[100],label2[100],label3[100];
-    
+
     STOP_TIMER(smoke_time);
     if(smoke_time>0.0){
       rate = (float)triangle_count/smoke_time;
@@ -5923,6 +5923,7 @@ void SmokeWrapup(void){
   UpdateTimes();
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   smoke_render_option = RENDER_SLICE;
+  update_fire_alpha = 1;
   Smoke3dCB(SMOKE_OPTIONS);
   IdleCB();
 }
@@ -5989,6 +5990,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     UpdateTimes();
     SetSmokeColorFlags();
     smoke3di->request_load = 0;
+    update_fire_alpha = 1;
 
     switch(smoke3di->type){
     case HRRPUV:

@@ -719,7 +719,7 @@ void UpdateShow(void){
     num_colorbars++;
   }
   if(ReadPlot3dFile==1&&num_colorbars==0)num_colorbars=1;
-  
+
   // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
 
   if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
@@ -1921,6 +1921,10 @@ void UpdateFlippedColorbar(void){
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
+  if(update_fire_alpha==1){
+    update_fire_alpha=0;
+    UpdateFireAlpha();
+  }
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();
