@@ -10,6 +10,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
+#include "IOscript.h"
 
 /* ------------------ GetNewScriptFileName ------------------------ */
 

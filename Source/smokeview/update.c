@@ -11,6 +11,7 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "compress.h"
+#include "IOscript.h"
 
 /* ------------------ CompareFloat ------------------------ */
 
