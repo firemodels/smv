@@ -248,43 +248,43 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
 int GetScriptKeywordIndex(char *keyword){
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
-  if(MatchUpper(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;
-  if(MatchUpper(keyword,"CBARNORMAL") == MATCH)return SCRIPT_CBARNORMAL;
-  if(MatchUpper(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;
+  if(MatchUpper(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
+  if(MatchUpper(keyword,"CBARNORMAL") == MATCH)return SCRIPT_CBARNORMAL;                 // documented
+  if(MatchUpper(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;                             // documented
   if(MatchUpper(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchUpper(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
   if(MatchUpper(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
   if(MatchUpper(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
-  if(MatchUpper(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;
+  if(MatchUpper(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
   if(MatchUpper(keyword,"LABEL")==MATCH)return SCRIPT_LABEL;
-  if(MatchUpper(keyword,"LOAD3DSMOKE") == MATCH)return SCRIPT_LOAD3DSMOKE;
-  if(MatchUpper(keyword,"LOADBOUNDARY") == MATCH)return SCRIPT_LOADBOUNDARY;
+  if(MatchUpper(keyword,"LOAD3DSMOKE") == MATCH)return SCRIPT_LOAD3DSMOKE;               // documented
+  if(MatchUpper(keyword,"LOADBOUNDARY") == MATCH)return SCRIPT_LOADBOUNDARY;             // documented
   if(MatchUpper(keyword,"LOADBOUNDARYM") == MATCH)return SCRIPT_LOADBOUNDARYM;
-  if(MatchUpper(keyword,"LOADFILE") == MATCH)return SCRIPT_LOADFILE;
-  if(MatchUpper(keyword,"LOADINIFILE") == MATCH)return SCRIPT_LOADINIFILE;
-  if(MatchUpper(keyword,"LOADISO") == MATCH)return SCRIPT_LOADISO;
-  if(MatchUpper(keyword,"LOADISOM") == MATCH)return SCRIPT_LOADISOM;
-  if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;
-  if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;
-  if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;
+  if(MatchUpper(keyword,"LOADFILE") == MATCH)return SCRIPT_LOADFILE;                     // documented
+  if(MatchUpper(keyword,"LOADINIFILE") == MATCH)return SCRIPT_LOADINIFILE;               // documented
+  if(MatchUpper(keyword,"LOADISO") == MATCH)return SCRIPT_LOADISO;                       // documented
+  if(MatchUpper(keyword,"LOADISOM") == MATCH)return SCRIPT_LOADISOM;                     // documented
+  if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
+  if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
+  if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
   if(MatchUpper(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
-  if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;
-  if(MatchUpper(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;
-  if(MatchUpper(keyword,"LOADVOLSMOKEFRAME") == MATCH)return SCRIPT_LOADVOLSMOKEFRAME;
-  if(MatchUpper(keyword,"LOADVFILE") == MATCH)return SCRIPT_LOADVFILE;
-  if(MatchUpper(keyword,"LOADVSLICE") == MATCH)return SCRIPT_LOADVSLICE;
+  if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
+  if(MatchUpper(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;             // documented
+  if(MatchUpper(keyword,"LOADVOLSMOKEFRAME") == MATCH)return SCRIPT_LOADVOLSMOKEFRAME;   // documented
+  if(MatchUpper(keyword,"LOADVFILE") == MATCH)return SCRIPT_LOADVFILE;                   // documented
+  if(MatchUpper(keyword,"LOADVSLICE") == MATCH)return SCRIPT_LOADVSLICE;                 // documented
   if(MatchUpper(keyword,"LOADVSLICEM") == MATCH)return SCRIPT_LOADVSLICEM;
   if(MatchUpper(keyword,"MAKEMOVIE") == MATCH)return SCRIPT_MAKEMOVIE;
   if(MatchUpper(keyword,"MOVIETYPE")==MATCH)return SCRIPT_MOVIETYPE;
-  if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;
-  if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
-  if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
+  if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;         // documented
+  if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;           // documented
+  if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;               // documented
   if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
-  if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
-  if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
-  if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;
-  if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;
+  if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;                   // documented
+  if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
+  if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;                   // documented
+  if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;     // documented
 #ifdef pp_HTML
   if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
   if(MatchUpper(keyword,"RENDERHTMLDIR") == MATCH)return SCRIPT_RENDERHTMLDIR;
@@ -293,25 +293,25 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERHTMLONCE") ==MATCH)return SCRIPT_RENDERHTMLONCE;
   if(MatchUpper(keyword,"RENDERHTMLSLICE") ==MATCH)return SCRIPT_RENDERHTMLSLICE;
 #endif
-  if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;
+  if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;                 // documented
   if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
   if(MatchUpper(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
   if(MatchUpper(keyword,"RGBTEST")==MATCH)return SCRIPT_RGBTEST;
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
   if(MatchUpper(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
-  if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;
+  if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;                 // documented
   if(MatchUpper(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
-  if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;
-  if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;
+  if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
+  if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
   if(MatchUpper(keyword,"SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
-  if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;
-  if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;
-  if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;
-  if(MatchUpper(keyword,"XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;
-  if(MatchUpper(keyword,"YSCENECLIP") == MATCH)return SCRIPT_YSCENECLIP;
-  if(MatchUpper(keyword,"ZSCENECLIP") == MATCH)return SCRIPT_ZSCENECLIP;
+  if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
+  if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;                 // documented
+  if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;   // documented
+  if(MatchUpper(keyword,"XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;                   // documented
+  if(MatchUpper(keyword,"YSCENECLIP") == MATCH)return SCRIPT_YSCENECLIP;                 // documented
+  if(MatchUpper(keyword,"ZSCENECLIP") == MATCH)return SCRIPT_ZSCENECLIP;                 // documented
 
   return SCRIPT_UNKNOWN;
 }
