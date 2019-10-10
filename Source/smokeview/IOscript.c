@@ -819,11 +819,13 @@ int CompileScript(char *scriptfile){
         break;
 
 // POSVIEW
-//  use_custom (int) xpos (float) ypos (float) zpos (float) az (float) elev (float)
+//  xpos (float) ypos (float) zpos (float) az (float) elev (float)
       case SCRIPT_POSVIEW:
         SETbuffer;
 
-          sscanf(buffer, "%i %f %f %f %f %f", &scripti->ival, &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
+        sscanf(buffer, "%f %f %f %f %f", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
+        if(ABS(scripti->fval5-90)<0.1)scripti->fval5=89.9;
+        if(ABS(scripti->fval5+90)<0.1)scripti->fval5=-89.9;
         break;
 
 // SHOWPLOT3DDATA
@@ -1928,7 +1930,7 @@ void ScriptPosView(scriptdata *scripti){
   set_view_xyz[2]      = scripti->fval3;
   customview_azimuth   = scripti->fval4;
   customview_elevation = scripti->fval5;
-  use_customview       = scripti->ival;
+  use_customview       = 1;
   SceneMotionCB(CUSTOM_VIEW);
   SceneMotionCB(SET_VIEW_XYZ);
   UpdatePosView();
