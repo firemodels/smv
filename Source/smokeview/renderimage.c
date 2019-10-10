@@ -10,6 +10,7 @@
 
 #include GLUT_H
 #include "gd.h"
+#include "IOscript.h"
 
 /* ------------------ PlayMovie ------------------------ */
 
