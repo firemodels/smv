@@ -278,7 +278,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
-  if(MatchUpper(keyword,"POSVIEW")==MATCH)return SCRIPT_POSVIEW;
+  if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
@@ -818,9 +818,9 @@ int CompileScript(char *scriptfile){
         }
         break;
 
-// POSVIEW
+// XYZVIEW
 //  xpos (float) ypos (float) zpos (float) az (float) elev (float)
-      case SCRIPT_POSVIEW:
+      case SCRIPT_XYZVIEW:
         SETbuffer;
 
         sscanf(buffer, "%f %f %f %f %f", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
@@ -1919,12 +1919,12 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
   fclose(stream_smokesensors);
 }
 
-/* ------------------ ScriptPosView ------------------------ */
+/* ------------------ ScriptXYZView ------------------------ */
 
 #define CUSTOM_VIEW 43
 #define SET_VIEW_XYZ 22
 
-void ScriptPosView(scriptdata *scripti){
+void ScriptXYZView(scriptdata *scripti){
   set_view_xyz[0]      = scripti->fval;
   set_view_xyz[1]      = scripti->fval2;
   set_view_xyz[2]      = scripti->fval3;
@@ -2660,8 +2660,8 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_PLOT3DPROPS:
       ScriptPlot3dProps(scripti);
       break;
-    case SCRIPT_POSVIEW:
-      ScriptPosView(scripti);
+    case SCRIPT_XYZVIEW:
+      ScriptXYZView(scripti);
       break;
     case SCRIPT_PARTCLASSTYPE:
       ScriptPartClassType(scripti);
