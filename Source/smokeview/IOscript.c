@@ -2457,7 +2457,7 @@ void ScriptSetViewpoint(scriptdata *scripti){
 
 void ScriptViewXYZMINMAX(scriptdata *scripti, int command){
   float aperture_temp1, aperture_temp2;
-  float DL, maxval;
+  float DL;
   float DL1, DL2;
   float width, height;
 
