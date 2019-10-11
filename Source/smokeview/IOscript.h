@@ -55,6 +55,12 @@
 #define SCRIPT_SMOKEFRAMES       224
 #define SCRIPT_RGBTEST           225
 #define SCRIPT_XYZVIEW           226
+#define SCRIPT_VIEWXMIN          227
+#define SCRIPT_VIEWXMAX          228
+#define SCRIPT_VIEWYMIN          229
+#define SCRIPT_VIEWYMAX          230
+#define SCRIPT_VIEWZMIN          231
+#define SCRIPT_VIEWZMAX          232
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302

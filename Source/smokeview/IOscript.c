@@ -280,6 +280,12 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;           // documented
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;               // documented
   if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;
+  if(MatchUpper(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;
+  if(MatchUpper(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;
+  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;
+  if(MatchUpper(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;
+  if(MatchUpper(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;
+  if(MatchUpper(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;                   // documented
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
@@ -817,6 +823,13 @@ int CompileScript(char *scriptfile){
             scripti->fval=-1.0;
           }
         }
+        break;
+      case SCRIPT_VIEWXMIN: // generate equivalent XYZVIEW command when script is run
+      case SCRIPT_VIEWXMAX:
+      case SCRIPT_VIEWYMIN:
+      case SCRIPT_VIEWYMAX:
+      case SCRIPT_VIEWZMIN:
+      case SCRIPT_VIEWZMAX:
         break;
 
 // XYZVIEW
@@ -2440,6 +2453,90 @@ void ScriptSetViewpoint(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptViewXYZMINMAX ------------------------ */
+
+void ScriptViewXYZMINMAX(scriptdata *scripti, int command){
+  float aperture_temp1, aperture_temp2;
+  float DL, maxval;
+  float DL1, DL2;
+  float width, height;
+
+  aperture_temp1 = Zoom2Aperture(zoom);
+  aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
+
+  switch (command){
+  case SCRIPT_VIEWXMIN:
+  case SCRIPT_VIEWXMAX:
+
+    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
+    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    width = ybarORIG-ybar0ORIG;
+    height = zbarORIG-zbar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+
+    if(scripti->command==SCRIPT_VIEWXMIN){
+      scripti->fval = xbar0ORIG-DL;
+      scripti->fval4 = 90.0;
+    }
+    if(scripti->command==SCRIPT_VIEWXMAX){
+      scripti->fval = xbarORIG+DL;
+      scripti->fval4 = -90.0;
+    }
+    scripti->fval5 = 0.0;
+    ScriptXYZView(scripti);
+    break;
+
+  case SCRIPT_VIEWYMIN:
+  case SCRIPT_VIEWYMAX:
+    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
+    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    width = xbarORIG-xbar0ORIG;
+    height = zbarORIG-zbar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+ 
+    if(scripti->command==SCRIPT_VIEWYMIN){
+      scripti->fval2 = ybar0ORIG-DL;
+      scripti->fval4 = 0.0;
+    }
+    if(scripti->command==SCRIPT_VIEWYMAX){
+      scripti->fval2 = ybarORIG+DL;
+      scripti->fval4 = 180.0;
+    }
+    scripti->fval5 = 0.0;
+    ScriptXYZView(scripti);
+    break;
+
+  case SCRIPT_VIEWZMIN:
+  case SCRIPT_VIEWZMAX:
+    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
+    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
+    width = ybarORIG-ybar0ORIG;
+    height = ybarORIG-ybar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+
+    if(scripti->command==SCRIPT_VIEWZMIN){
+      scripti->fval3 = zbar0ORIG-DL;
+      scripti->fval5 = 89.9;
+    }
+    if(scripti->command==SCRIPT_VIEWZMAX){
+      scripti->fval3 = zbarORIG+DL;
+      scripti->fval5 = -89.9;
+    }
+    scripti->fval4 = 0.0;
+    ScriptXYZView(scripti);
+    break;
+  }
+}
+
 /* ------------------ RunScriptCommand ------------------------ */
 
 int RunScriptCommand(scriptdata *script_command){
@@ -2660,6 +2757,14 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_PLOT3DPROPS:
       ScriptPlot3dProps(scripti);
+      break;
+    case SCRIPT_VIEWXMIN:
+    case SCRIPT_VIEWXMAX:
+    case SCRIPT_VIEWYMIN:
+    case SCRIPT_VIEWYMAX:
+    case SCRIPT_VIEWZMIN:
+    case SCRIPT_VIEWZMAX:
+      ScriptViewXYZMINMAX(scripti, scripti->command);
       break;
     case SCRIPT_XYZVIEW:
       ScriptXYZView(scripti);
