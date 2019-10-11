@@ -5,8 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
-
 #ifdef pp_SELECT_GEOM
 EXTERNCPP void UpdateSelectGeom(void);
 EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);

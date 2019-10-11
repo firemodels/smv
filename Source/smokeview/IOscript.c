@@ -1937,8 +1937,11 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
 
 #define CUSTOM_VIEW 43
 #define SET_VIEW_XYZ 22
-
 void ScriptXYZView(scriptdata *scripti){
+  use_customview = 0;
+  SceneMotionCB(CUSTOM_VIEW);
+#define RESTORE_VIEW 8
+  ViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = scripti->fval;
   set_view_xyz[1]      = scripti->fval2;
   set_view_xyz[2]      = scripti->fval3;
@@ -2499,7 +2502,7 @@ void ScriptViewXYZMINMAX(scriptdata *scripti, int command){
     DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
     DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
     DL = 1.05*MAX(DL1, DL2);
- 
+
     if(scripti->command==SCRIPT_VIEWYMIN){
       scripti->fval2 = ybar0ORIG-DL;
       scripti->fval4 = 0.0;

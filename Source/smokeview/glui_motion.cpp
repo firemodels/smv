@@ -679,7 +679,7 @@ void EnableDisableViews(void){
 
 /* ------------------ ViewpointCB ------------------------ */
 
-void ViewpointCB(int var){
+extern "C" void ViewpointCB(int var){
   int ival;
   int rotation_type_save;
   cameradata *cam1, *cex, *ca;
