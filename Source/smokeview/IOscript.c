@@ -2456,9 +2456,54 @@ void ScriptSetViewpoint(scriptdata *scripti){
   }
 }
 
-/* ------------------ ScriptViewXYZMINMAX ------------------------ */
+/* ------------------ ScriptViewXYZMINMAXOrtho ------------------------ */
 
-void ScriptViewXYZMINMAX(scriptdata *scripti, int command){
+void ScriptViewXYZMINMAXOrtho(int command){
+  switch(command){
+  case SCRIPT_VIEWXMIN:
+    zaxis_angles[0] = 0.0;
+    zaxis_angles[1] = 90.0;
+    zaxis_angles[2] = 90.0;
+    break;
+  case SCRIPT_VIEWXMAX:
+    zaxis_angles[0] =   0.0;
+    zaxis_angles[1] =  90.0;
+    zaxis_angles[2] = -90.0;
+    break;
+
+  case SCRIPT_VIEWYMIN:
+    zaxis_angles[0] =  0.0;
+    zaxis_angles[1] = 90.0;
+    zaxis_angles[2] =  0.0;
+    break;
+  case SCRIPT_VIEWYMAX:
+    zaxis_angles[0] =   0.0;
+    zaxis_angles[1] =  90.0;
+    zaxis_angles[2] = 180.0;
+    break;
+
+  case SCRIPT_VIEWZMIN:
+    zaxis_angles[0] = -90.0;
+    zaxis_angles[1] =   0.0;
+    zaxis_angles[2] =   0.0;
+    break;
+  case SCRIPT_VIEWZMAX:
+    zaxis_angles[0] =  90.0;
+    zaxis_angles[1] =  0.0;
+    zaxis_angles[2] =  0.0;
+    break;
+  }
+  ResetGluiView(EXTERNAL_VIEW);
+  use_customview=0;
+#define CUSTOM_VIEW 43
+  SceneMotionCB(CUSTOM_VIEW);
+#define ZAXIS_CUSTOM 25
+  SceneMotionCB(ZAXIS_CUSTOM);
+}
+
+/* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
+
+void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
   float aperture_temp1, aperture_temp2;
   float DL;
   float DL1, DL2;
@@ -2535,6 +2580,7 @@ void ScriptViewXYZMINMAX(scriptdata *scripti, int command){
       scripti->fval5 = -89.9;
     }
     scripti->fval4 = 0.0;
+    ResetGluiView(EXTERNAL_VIEW);
     ScriptXYZView(scripti);
     break;
   }
@@ -2767,7 +2813,12 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_VIEWYMAX:
     case SCRIPT_VIEWZMIN:
     case SCRIPT_VIEWZMAX:
-      ScriptViewXYZMINMAX(scripti, scripti->command);
+      if(projection_type==PROJECTION_PERSPECTIVE){
+        ScriptViewXYZMINMAXPersp(scripti, scripti->command);
+      }
+      else{
+        ScriptViewXYZMINMAXOrtho(scripti->command);
+      }
       break;
     case SCRIPT_XYZVIEW:
       ScriptXYZView(scripti);

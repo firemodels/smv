@@ -1,6 +1,8 @@
 #ifndef IOSCRIPTS_H_DEFINED
 #define IOSCRIPT_H_DEFINED
 
+#define EXTERNAL_VIEW 1
+
 #define SCRIPT_RENDERONCE        101
 #ifdef pp_HTML
 #define SCRIPT_RENDERHTMLONCE    102
