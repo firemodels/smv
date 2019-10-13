@@ -2360,7 +2360,6 @@ void ScriptProjection(scriptdata *scripti){
   else{
     projection_type = PROJECTION_ORTHOGRAPHIC;
   }
-  UpdateProjectionType();
   SceneMotionCB(PROJECTION);
 }
 
