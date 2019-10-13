@@ -254,6 +254,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchUpper(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
   if(MatchUpper(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchUpper(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchUpper(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchUpper(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
   if(MatchUpper(keyword,"LABEL")==MATCH)return SCRIPT_LABEL;
@@ -963,6 +964,15 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(buffer,"%i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4);
         break;
+
+    // PROJECTION
+        // 1/2 perspective/size preserving
+     case SCRIPT_PROJECTION:
+       SETbuffer;
+       scripti->ival = 1;
+       sscanf(buffer, "%i", &scripti->ival);
+       if(scripti->ival!=2)scripti->ival = 1;
+       break;
 
 // GSLICEPOS
 // x (float) y (float) z (float)
@@ -2341,6 +2351,19 @@ void ScriptSetTimeVal(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptProjection ------------------------ */
+
+void ScriptProjection(scriptdata *scripti){
+  if(scripti->ival==1){
+    projection_type = PROJECTION_PERSPECTIVE;
+  }
+  else{
+    projection_type = PROJECTION_ORTHOGRAPHIC;
+  }
+  UpdateProjectionType();
+  SceneMotionCB(PROJECTION);
+}
+
 //    sscanf(buffer,"%i %i %i %i",&vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
 //    sscanf(buffer,"%f %f %f",gslice_xyz,gslice_xyz+1,gslice_xyz+2);
 //    sscanf(buffer,"%f %f",gslice_normal_azelev,gslice_normal_azelev+1);
@@ -2892,6 +2915,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_GSLICEVIEW:
       ScriptGSliceView(scripti);
+      break;
+    case SCRIPT_PROJECTION:
+      ScriptProjection(scripti);
       break;
     case SCRIPT_GSLICEPOS:
       ScriptGSlicePos(scripti);
