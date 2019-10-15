@@ -61,7 +61,7 @@ GLUI_Button *BUTTON_clip_2=NULL;
 #define DEFAULT_VALS -2
 
 #define CLIP_CLOSE 99
-#define SAVE_SETTINGS 98
+#define SAVE_SETTINGS_CLIP 98
 #define CLIP_MESH 80
 
 /* ------------------ UpdateShowRotationCenter2 ------------------------ */
@@ -96,7 +96,7 @@ void ClipCB(int var){
       SetClipControls(clip_mesh);
     }
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_CLIP:
     WriteIni(LOCAL_INI, NULL);
     break;
   case CLIP_CLOSE:
@@ -376,7 +376,7 @@ extern "C" void GluiClipSetup(int main_window){
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
-  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,_("Save settings"),SAVE_SETTINGS,ClipCB);
+  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,_("Save settings"),SAVE_SETTINGS_CLIP,ClipCB);
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 

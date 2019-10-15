@@ -11,6 +11,8 @@
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
 #include "IOscript.h"
+#include "glui_motion.h"
+#include "glui_smoke.h"
 
 /* ------------------ GetNewScriptFileName ------------------------ */
 
@@ -1945,12 +1947,9 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
 
 /* ------------------ ScriptXYZView ------------------------ */
 
-#define CUSTOM_VIEW 43
-#define SET_VIEW_XYZ 22
 void ScriptXYZView(scriptdata *scripti){
   use_customview = 0;
   SceneMotionCB(CUSTOM_VIEW);
-#define RESTORE_VIEW 8
   ViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = scripti->fval;
   set_view_xyz[1]      = scripti->fval2;
@@ -2431,7 +2430,6 @@ void SetTimeVal(float timeval){
 }
 
 /* ------------------ ScriptSmokeframes ------------------------ */
-#define SMOKE_NEW 77
 
 void ScriptSmokeframes(scriptdata *scripti){
   smoke_num = scripti->ival;
@@ -2517,9 +2515,7 @@ void ScriptViewXYZMINMAXOrtho(int command){
   }
   ResetGluiView(EXTERNAL_VIEW);
   use_customview=0;
-#define CUSTOM_VIEW 43
   SceneMotionCB(CUSTOM_VIEW);
-#define ZAXIS_CUSTOM 25
   SceneMotionCB(ZAXIS_CUSTOM);
 }
 

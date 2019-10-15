@@ -12,6 +12,9 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 #include "IOscript.h"
+#include "glui_smoke.h"
+#include "glui_motion.h"
+#include "glui_wui.h"
 
 /* ------------------ CompareFloat ------------------------ */
 
@@ -1803,8 +1806,6 @@ void UpdateShowScene(void){
   }
   if(update_smoketype_vals==1){
     update_smoketype_vals = 0;
-#define SMOKE_NEW 77
-#define SMOKE_DELTA_MULTIPLE 78
     Smoke3dCB(SMOKE_NEW);
     Smoke3dCB(SMOKE_DELTA_MULTIPLE);
   }
@@ -1848,7 +1849,6 @@ void UpdateShowScene(void){
   if(update_gslice == 1){
     UpdateGsliceParms();
   }
-#define MESH_LIST 4
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
     SceneMotionCB(MESH_LIST);
@@ -1917,7 +1917,6 @@ void UpdateFlippedColorbar(void){
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
-#define TERRAIN_FIRE_LINE_UPDATE 39
 
 void UpdateDisplay(void){
 

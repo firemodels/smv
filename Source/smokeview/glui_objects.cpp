@@ -12,7 +12,7 @@
 #define SHOWDEVICEVALS 26
 #define COLORDEVICEVALS 27
 #define DEVICE_devicetypes 28
-#define SAVE_SETTINGS 99
+#define SAVE_SETTINGS_OBJECTS 99
 #define DEVICE_close 3
 #define DEVICE_show_orientation 4
 #define DEVICE_NBUCKETS 5
@@ -393,7 +393,7 @@ void DeviceCB(int var){
       }
     }
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_OBJECTS:
     WriteIni(LOCAL_INI, NULL);
     break;
   case DEVICE_close:
@@ -647,7 +647,7 @@ extern "C" void GluiDeviceSetup(int main_window){
   PANEL_label3 = glui_device->add_panel("",false);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_("Save settings"),SAVE_SETTINGS,DeviceCB);
+  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_("Save settings"),SAVE_SETTINGS_OBJECTS,DeviceCB);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
   BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_("Close"),DEVICE_close,DeviceCB);

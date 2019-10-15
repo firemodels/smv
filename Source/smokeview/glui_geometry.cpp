@@ -16,7 +16,7 @@
 #define ZMAX_SPIN             25
 #define UPDATE_LIST           31
 #define RADIO_WALL            32
-#define SAVE_SETTINGS         33
+#define SAVE_SETTINGS_GEOM    33
 #define VISAXISLABELS         34
 #define GEOM_MAX_ANGLE        36
 #define GEOM_OUTLINE_IOFFSET  37
@@ -242,7 +242,7 @@ int GetTextureShow(void){
 
 void BlockeditDlgCB(int var){
   switch(var){
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_GEOM:
     updatemenu = 1;
     WriteIni(LOCAL_INI, NULL);
     break;
@@ -664,7 +664,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   }
 
   glui_geometry->add_separator();
-  glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS, BlockeditDlgCB);
+  glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS_GEOM, BlockeditDlgCB);
   BUTTON_blockage_1=glui_geometry->add_button(_("Close"),CLOSE_WINDOW, BlockeditDlgCB);
 
   glui_geometry->set_main_gfx_window( main_window );
