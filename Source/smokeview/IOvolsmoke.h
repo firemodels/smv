@@ -2,6 +2,8 @@
 #define IOVOLSMOKE_H_DEFINED
 #define GPU_VOLframemax 1.5
 
+#define MAXABS3(x) (MAX(ABS((x)[0]),MAX(ABS((x)[1]),ABS((x)[2]))))
+
 EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
 EXTERNCPP void ComputeAllSmokecolors(void);
 EXTERNCPP void DrawSmoke3DGPUVol(void);

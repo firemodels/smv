@@ -8,6 +8,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "IOvolsmoke.h"
 
 /* ------------------ Slerp ------------------------ */
 
@@ -463,8 +464,6 @@ void UpdatePlotxyzAll(void){
   }
 }
 
-#define MESHEPS 0.001
-
 /* ------------------ GetMesh ------------------------ */
 
 meshdata *GetMesh(float *xyz, meshdata *guess){
@@ -893,8 +892,6 @@ void GetScreenMapping(float *xyz0, float *screen_perm){
     (dscreen)[i3]=0.0;\
     set=1;\
   }
-
-#define MAXABS3(x) (MAX(ABS((x)[0]),MAX(ABS((x)[1]),ABS((x)[2]))))
 
   glGetIntegerv(GL_VIEWPORT, viewport);
   glGetDoublev(GL_MODELVIEW_MATRIX, modelview);

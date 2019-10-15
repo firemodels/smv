@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define MESHEPS 0.001
+
 #define PART_BOUND_UNDEFINED 0
 #define PART_BOUND_COMPUTING 1
 #define PART_BOUND_DEFINED   2
