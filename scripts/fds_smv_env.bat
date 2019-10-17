@@ -2,10 +2,12 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.1R881
-set smv_version=SMV6.7.8R4
-set fds_versionbase=6.7.1R881
-set smv_versionbase=6.7.8R4
+set fds_version=FDS6.7.2test
+set fds_versionbase=6.7.2test
+
+set smv_version=SMV6.7.10test
+set smv_versionbase=6.7.10
+
 set fds_edition=FDS6
 set fds_debug=0
 
@@ -22,7 +24,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="18-Aug-2019"
+set smvlogdate="10-Oct-2019"
 
 :: ---- repo locations ----
 
@@ -43,14 +45,16 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 set linux_mpi_version=INTEL
 set linux_intel_mpi_version=19u4
 
+
 set osx_mpi_version=3.1.2
 ::set osx_mpi_version=1.8.4
+
+set linux_comp_version=19u4
+set osx_comp_version=19u4
 
 :: ---- INTEL compiler version ----
 
 set INTELVERSION=INTEL19U4
-set linux_comp_version=19u4
-set osx_comp_version=19u4
 
 :: ---- Guide locations ----
 
