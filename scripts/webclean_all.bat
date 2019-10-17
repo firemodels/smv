@@ -39,11 +39,6 @@ echo Cleaning %svn_root%\smv\Build
 cd %svn_root%\smv\Build
 git clean -dxf
 
-echo Cleaning %userprofile%\.bundle\uploads
-cd %userprofile%\.bundle
-rmdir /s /q uploads
-mkdir uploads
-
 set scriptdir=%linux_svn_root%/bot/Bundle/fds/scripts/
 
 echo.

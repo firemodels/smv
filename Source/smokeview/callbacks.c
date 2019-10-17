@@ -16,6 +16,7 @@
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
+#include "IOscript.h"
 
 #undef pp_GPU_CULL_STATE
 #ifdef pp_GPU

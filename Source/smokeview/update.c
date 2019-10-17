@@ -11,6 +11,10 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "compress.h"
+#include "IOscript.h"
+#include "glui_smoke.h"
+#include "glui_motion.h"
+#include "glui_wui.h"
 
 /* ------------------ CompareFloat ------------------------ */
 
@@ -719,7 +723,7 @@ void UpdateShow(void){
     num_colorbars++;
   }
   if(ReadPlot3dFile==1&&num_colorbars==0)num_colorbars=1;
-  
+
   // note: animated iso-contours do not need a colorbar, so we don't test for isosurface files
 
   if ((showtime == 1 || showplot3d == 1) && (visColorbarVertical == 1|| visColorbarHorizontal == 1)) {
@@ -1802,8 +1806,6 @@ void UpdateShowScene(void){
   }
   if(update_smoketype_vals==1){
     update_smoketype_vals = 0;
-#define SMOKE_NEW 77
-#define SMOKE_DELTA_MULTIPLE 78
     Smoke3dCB(SMOKE_NEW);
     Smoke3dCB(SMOKE_DELTA_MULTIPLE);
   }
@@ -1847,7 +1849,6 @@ void UpdateShowScene(void){
   if(update_gslice == 1){
     UpdateGsliceParms();
   }
-#define MESH_LIST 4
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
     SceneMotionCB(MESH_LIST);
@@ -1916,11 +1917,14 @@ void UpdateFlippedColorbar(void){
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
-#define TERRAIN_FIRE_LINE_UPDATE 39
 
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
+  if(update_fire_alpha==1){
+    update_fire_alpha=0;
+    UpdateFireAlpha();
+  }
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();

@@ -78,7 +78,7 @@ GLUI_Listbox *LIST_shooter_times=NULL;
 #define SHOOTER_UVW 114
 #define SHOOTER_TERMINAL_VEL 115
 
-#define SAVE_SETTINGS 900
+#define SAVE_SETTINGS_SHOOTER 900
 #define SHOOTER_CLOSE 901
 
 #define START_SHOOTER_ROLLOUT 0
@@ -259,7 +259,7 @@ void ShooterCB(int var){
       ShooterCB(SHOOTER_APPLY);
     }
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_SHOOTER:
     WriteIni(LOCAL_INI, NULL);
     break;
   case SHOOTER_CLOSE:
@@ -383,7 +383,7 @@ extern "C" void GluiShooterSetup(int main_window){
 
   PANEL_shooter_win=glui_shooter->add_panel("",GLUI_PANEL_NONE);
 
-  BUTTON_shooter_2=glui_shooter->add_button_to_panel(PANEL_shooter_win,_("Save settings"),SAVE_SETTINGS,ShooterCB);
+  BUTTON_shooter_2=glui_shooter->add_button_to_panel(PANEL_shooter_win,_("Save settings"),SAVE_SETTINGS_SHOOTER,ShooterCB);
   glui_shooter->add_column_to_panel(PANEL_shooter_win,false);
   BUTTON_shooter_3=glui_shooter->add_button_to_panel(PANEL_shooter_win,_("Close"),SHOOTER_CLOSE,ShooterCB);
 

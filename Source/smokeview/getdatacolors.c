@@ -1296,6 +1296,20 @@ int HaveFire(void) {
   return 0;
 }
 
+/* ------------------ HaveSoot ------------------------ */
+
+int HaveSoot(void) {
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1&&smoke3di->type==SOOT)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ UpdateCO2Colormap ------------------------ */
 
 void UpdateCO2Colormap(void){

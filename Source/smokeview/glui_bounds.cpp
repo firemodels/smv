@@ -7,7 +7,10 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "IOscript.h"
 #include "MALLOCC.h"
+#include "glui_smoke.h"
+#include "glui_bounds.h"
 
 GLUI_Rollout *ROLLOUT_slice_bound=NULL;
 GLUI_Rollout *ROLLOUT_slice_chop=NULL;
@@ -18,141 +21,6 @@ GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 #ifdef pp_MEMDEBUG
 #define MEMCHECK 1
 #endif
-
-#define IMMERSED_SWITCH_CELLTYPE 0
-#define IMMERSED_SET_DRAWTYPE 1
-#define IMMERSED_SWITCH_EDGETYPE 2
-
-#define SMOOTH_SURFACES 402
-#define SORT_SURFACES 401
-#define ISO_SURFACE 1
-#define ISO_OUTLINE 2
-#define ISO_POINTS 3
-#define ISO_COLORS 4
-#define ISO_LEVEL 5
-#define ISO_TRANSPARENCY 6
-#define ISO_SETVALMIN 10
-#define ISO_SETVALMAX 11
-#define ISO_VALMIN 12
-#define ISO_VALMAX 13
-#define GLOBAL_ALPHA 7
-#define COLORTABLE_LIST 8
-#define SETVALMIN 1
-#define SETVALMAX 2
-#define VALMIN 3
-#define VALMAX 4
-#define FILETYPEINDEX 5
-#define FILEUPDATE 6
-#define FILERELOAD 7
-#define FILEUPDATEDATA 8
-#define UPDATEPLOT 10
-#define PLOTISO 11
-#define SHOWCHAR 12
-#define CHOPVALMIN 13
-#define CHOPVALMAX 14
-#define SETCHOPMINVAL 15
-#define SETCHOPMAXVAL 16
-#define CHOPUPDATE 17
-#define FRAMELOADING 18
-#define STREAKLENGTH 19
-#define TRACERS 21
-#define PARTFAST 22
-#define PLOTISOTYPE 22
-#define CACHE_BOUNDARYDATA 23
-#define SHOWPATCH_BOTH 24
-#define HIDEPATCHSURFACE 25
-#define DATA_transparent 26
-#define ALLFILERELOAD 27
-#define UNLOAD_QDATA 203
-#define SET_TIME 204
-#define TBOUNDS 205
-#define TBOUNDS_USE 206
-#define RELOAD_ALL_DATA 207
-#define RELOAD_INCREMENTAL_DATA 215
-#define SHOW_EVAC_SLICES 208
-#define DATA_EVAC_COLORING 209
-#define SLICE_VECTORSKIP 210
-#define PLOT3D_VECTORSKIP 211
-#define UPDATE_SLICEDUPS 212
-#define UPDATE_HISTOGRAM 213
-#define INIT_HISTOGRAM 214
-#define UPDATE_BOUNDARYSLICEDUPS 215
-#define ISO_TRANSPARENCY_OPTION 216
-#define ISO_COLORBAR_LIST 217
-#define ISO_OUTLINE_IOFFSET 218
-
-#define ISO_TRANSPARENT_CONSTANT 0
-#define ISO_TRANSPARENT_VARYING  1
-#define ISO_OPAQUE               2
-
-#define SCRIPT_START 31
-#define SCRIPT_STOP 32
-#define SCRIPT_LIST 33
-#define SCRIPT_SAVEINI 34
-#define SCRIPT_EDIT_INI 35
-#define SCRIPT_SETSUFFIX 36
-#define SCRIPT_RUNSCRIPT 37
-#define SCRIPT_LOADINI 38
-#define SCRIPT_RENDER 41
-#define SCRIPT_RENDER_SUFFIX 42
-#define SCRIPT_RENDER_DIR 43
-#define SCRIPT_STEP_NOW 44
-#define SCRIPT_CANCEL_NOW 45
-
-#define PARTICLE_BOUND             0
-#define PARTICLE_CHOP              1
-#define PARTICLE_SETTINGS          2
-
-#define BOUNDARY_BOUND             0
-#define BOUNDARY_CHOP              1
-#define BOUNDARY_OUTPUT_ROLLOUT    2
-#define BOUNDARY_THRESHOLD_ROLLOUT 3
-#define BOUNDARY_DUPLICATE_ROLLOUT 4
-#define BOUNDARY_SETTINGS_ROLLOUT  5
-
-#define ZONEVALMINMAX    50
-#define SETZONEVALMINMAX 52
-
-#define SAVE_SETTINGS 99
-#define CLOSE_BOUNDS 98
-#define COMPRESS_FILES 97
-#define OVERWRITE 96
-#define COMPRESS_AUTOLOADED 91
-#define ERASE 95
-#define STARTUP 94
-#define SAVE_FILE_LIST 93
-#define LOAD_FILES 92
-#define COLORBAR_EXTREME2 109
-#define TRANSPARENTLEVEL 110
-#define COLORBAR_LIST2 112
-#define COLORBAR_SMOOTH 113
-#define RESEARCH_MODE 114
-#define COLORBAND 115
-#define SLICE_IN_OBST 116
-
-#define UPDATE_VECTOR 101
-#define UPDATE_VECTOR_FROM_SMV 102
-
-#define TRUNCATE_BOUNDS 1
-#define DONT_TRUNCATE_BOUNDS 0
-#define UPDATE_BOUNDS 1
-#define RELOAD_BOUNDS 0
-#define UPDATERELOAD_BOUNDS 2
-
-#define LINE_CONTOUR_VALUE 301
-#define UPDATE_LINE_CONTOUR_VALUE 302
-
-#define FILESHOW_particle    10
-#define FILESHOW_slice       11
-#define FILESHOW_vslice      12
-#define FILESHOW_boundary    13
-#define FILESHOW_3dsmoke     14
-#define FILESHOW_isosurface  15
-#define FILESHOW_evac        19
-#define FILESHOW_plot3d      16
-#define FILESHOW_sizes       20
-#define BOUNDARY_LOAD_INCREMENTAL 16
-#define SLICE_LOAD_INCREMENTAL 17
 
 GLUI *glui_bounds=NULL;
 
@@ -1025,7 +893,7 @@ void BoundsDlgCB(int var){
     glui_bounds->hide();
     updatemenu = 1;
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_BOUNDS:
     WriteIni(LOCAL_INI, NULL);
     break;
   case COMPRESS_FILES:
@@ -1305,11 +1173,11 @@ void BoundBoundCB(int var){
     updatemenu = 1;
     break;
   case STARTUP:
-    BoundsDlgCB(SAVE_SETTINGS);
+    BoundsDlgCB(SAVE_SETTINGS_BOUNDS);
     break;
   case SAVE_FILE_LIST:
     Set3DSmokeStartup();
-    BoundsDlgCB(SAVE_SETTINGS);
+    BoundsDlgCB(SAVE_SETTINGS_BOUNDS);
     break;
   case LOAD_FILES:
     LoadFiles();
@@ -2599,7 +2467,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_radiobutton_to_group(RADIO_memcheck,"8 GB");
 #endif
 
-  glui_bounds->add_button(_("Save settings"), SAVE_SETTINGS, BoundsDlgCB);
+  glui_bounds->add_button(_("Save settings"), SAVE_SETTINGS_BOUNDS, BoundsDlgCB);
   glui_bounds->add_button(_("Close"), CLOSE_BOUNDS, BoundsDlgCB);
 
   glui_bounds->set_main_gfx_window( main_window );

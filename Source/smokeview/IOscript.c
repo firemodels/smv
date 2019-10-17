@@ -10,6 +10,9 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
+#include "IOscript.h"
+#include "glui_motion.h"
+#include "glui_smoke.h"
 
 /* ------------------ GetNewScriptFileName ------------------------ */
 
@@ -247,43 +250,50 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
 int GetScriptKeywordIndex(char *keyword){
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
-  if(MatchUpper(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;
-  if(MatchUpper(keyword,"CBARNORMAL") == MATCH)return SCRIPT_CBARNORMAL;
-  if(MatchUpper(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;
+  if(MatchUpper(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
+  if(MatchUpper(keyword,"CBARNORMAL") == MATCH)return SCRIPT_CBARNORMAL;                 // documented
+  if(MatchUpper(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;                             // documented
   if(MatchUpper(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchUpper(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
   if(MatchUpper(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchUpper(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchUpper(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
-  if(MatchUpper(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;
+  if(MatchUpper(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
   if(MatchUpper(keyword,"LABEL")==MATCH)return SCRIPT_LABEL;
-  if(MatchUpper(keyword,"LOAD3DSMOKE") == MATCH)return SCRIPT_LOAD3DSMOKE;
-  if(MatchUpper(keyword,"LOADBOUNDARY") == MATCH)return SCRIPT_LOADBOUNDARY;
+  if(MatchUpper(keyword,"LOAD3DSMOKE") == MATCH)return SCRIPT_LOAD3DSMOKE;               // documented
+  if(MatchUpper(keyword,"LOADBOUNDARY") == MATCH)return SCRIPT_LOADBOUNDARY;             // documented
   if(MatchUpper(keyword,"LOADBOUNDARYM") == MATCH)return SCRIPT_LOADBOUNDARYM;
-  if(MatchUpper(keyword,"LOADFILE") == MATCH)return SCRIPT_LOADFILE;
-  if(MatchUpper(keyword,"LOADINIFILE") == MATCH)return SCRIPT_LOADINIFILE;
-  if(MatchUpper(keyword,"LOADISO") == MATCH)return SCRIPT_LOADISO;
-  if(MatchUpper(keyword,"LOADISOM") == MATCH)return SCRIPT_LOADISOM;
-  if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;
-  if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;
-  if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;
+  if(MatchUpper(keyword,"LOADFILE") == MATCH)return SCRIPT_LOADFILE;                     // documented
+  if(MatchUpper(keyword,"LOADINIFILE") == MATCH)return SCRIPT_LOADINIFILE;               // documented
+  if(MatchUpper(keyword,"LOADISO") == MATCH)return SCRIPT_LOADISO;                       // documented
+  if(MatchUpper(keyword,"LOADISOM") == MATCH)return SCRIPT_LOADISOM;                     // documented
+  if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
+  if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
+  if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
   if(MatchUpper(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
-  if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;
-  if(MatchUpper(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;
-  if(MatchUpper(keyword,"LOADVOLSMOKEFRAME") == MATCH)return SCRIPT_LOADVOLSMOKEFRAME;
-  if(MatchUpper(keyword,"LOADVFILE") == MATCH)return SCRIPT_LOADVFILE;
-  if(MatchUpper(keyword,"LOADVSLICE") == MATCH)return SCRIPT_LOADVSLICE;
+  if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
+  if(MatchUpper(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;             // documented
+  if(MatchUpper(keyword,"LOADVOLSMOKEFRAME") == MATCH)return SCRIPT_LOADVOLSMOKEFRAME;   // documented
+  if(MatchUpper(keyword,"LOADVFILE") == MATCH)return SCRIPT_LOADVFILE;                   // documented
+  if(MatchUpper(keyword,"LOADVSLICE") == MATCH)return SCRIPT_LOADVSLICE;                 // documented
   if(MatchUpper(keyword,"LOADVSLICEM") == MATCH)return SCRIPT_LOADVSLICEM;
   if(MatchUpper(keyword,"MAKEMOVIE") == MATCH)return SCRIPT_MAKEMOVIE;
   if(MatchUpper(keyword,"MOVIETYPE")==MATCH)return SCRIPT_MOVIETYPE;
-  if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;
-  if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;
-  if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;
-  if(MatchUpper(keyword,"POSVIEW")==MATCH)return SCRIPT_POSVIEW;
+  if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;         // documented
+  if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;           // documented
+  if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;               // documented
+  if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;
+  if(MatchUpper(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;
+  if(MatchUpper(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;
+  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;
+  if(MatchUpper(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;
+  if(MatchUpper(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;
+  if(MatchUpper(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
-  if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;
-  if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;
-  if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;
-  if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;
+  if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;                   // documented
+  if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
+  if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;                   // documented
+  if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;     // documented
 #ifdef pp_HTML
   if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
   if(MatchUpper(keyword,"RENDERHTMLDIR") == MATCH)return SCRIPT_RENDERHTMLDIR;
@@ -292,25 +302,25 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERHTMLONCE") ==MATCH)return SCRIPT_RENDERHTMLONCE;
   if(MatchUpper(keyword,"RENDERHTMLSLICE") ==MATCH)return SCRIPT_RENDERHTMLSLICE;
 #endif
-  if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;
+  if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;                 // documented
   if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
   if(MatchUpper(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
   if(MatchUpper(keyword,"RGBTEST")==MATCH)return SCRIPT_RGBTEST;
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
   if(MatchUpper(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
-  if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;
+  if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;                 // documented
   if(MatchUpper(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
-  if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;
-  if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;
+  if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
+  if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
   if(MatchUpper(keyword,"SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
-  if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;
-  if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;
-  if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;
-  if(MatchUpper(keyword,"XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;
-  if(MatchUpper(keyword,"YSCENECLIP") == MATCH)return SCRIPT_YSCENECLIP;
-  if(MatchUpper(keyword,"ZSCENECLIP") == MATCH)return SCRIPT_ZSCENECLIP;
+  if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
+  if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;                 // documented
+  if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;   // documented
+  if(MatchUpper(keyword,"XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;                   // documented
+  if(MatchUpper(keyword,"YSCENECLIP") == MATCH)return SCRIPT_YSCENECLIP;                 // documented
+  if(MatchUpper(keyword,"ZSCENECLIP") == MATCH)return SCRIPT_ZSCENECLIP;                 // documented
 
   return SCRIPT_UNKNOWN;
 }
@@ -817,13 +827,22 @@ int CompileScript(char *scriptfile){
           }
         }
         break;
+      case SCRIPT_VIEWXMIN: // generate equivalent XYZVIEW command when script is run
+      case SCRIPT_VIEWXMAX:
+      case SCRIPT_VIEWYMIN:
+      case SCRIPT_VIEWYMAX:
+      case SCRIPT_VIEWZMIN:
+      case SCRIPT_VIEWZMAX:
+        break;
 
-// POSVIEW
-//  use_custom (int) xpos (float) ypos (float) zpos (float) az (float) elev (float)
-      case SCRIPT_POSVIEW:
+// XYZVIEW
+//  xpos (float) ypos (float) zpos (float) az (float) elev (float)
+      case SCRIPT_XYZVIEW:
         SETbuffer;
 
-          sscanf(buffer, "%i %f %f %f %f %f", &scripti->ival, &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
+        sscanf(buffer, "%f %f %f %f %f", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
+        if(ABS(scripti->fval5-90)<0.1)scripti->fval5=89.9;
+        if(ABS(scripti->fval5+90)<0.1)scripti->fval5=-89.9;
         break;
 
 // SHOWPLOT3DDATA
@@ -947,6 +966,15 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(buffer,"%i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4);
         break;
+
+    // PROJECTION
+        // 1/2 perspective/size preserving
+     case SCRIPT_PROJECTION:
+       SETbuffer;
+       scripti->ival = 1;
+       sscanf(buffer, "%i", &scripti->ival);
+       if(scripti->ival!=2)scripti->ival = 1;
+       break;
 
 // GSLICEPOS
 // x (float) y (float) z (float)
@@ -1917,18 +1945,18 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
   fclose(stream_smokesensors);
 }
 
-/* ------------------ ScriptPosView ------------------------ */
+/* ------------------ ScriptXYZView ------------------------ */
 
-#define CUSTOM_VIEW 43
-#define SET_VIEW_XYZ 22
-
-void ScriptPosView(scriptdata *scripti){
+void ScriptXYZView(scriptdata *scripti){
+  use_customview = 0;
+  SceneMotionCB(CUSTOM_VIEW);
+  ViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = scripti->fval;
   set_view_xyz[1]      = scripti->fval2;
   set_view_xyz[2]      = scripti->fval3;
   customview_azimuth   = scripti->fval4;
   customview_elevation = scripti->fval5;
-  use_customview       = scripti->ival;
+  use_customview       = 1;
   SceneMotionCB(CUSTOM_VIEW);
   SceneMotionCB(SET_VIEW_XYZ);
   UpdatePosView();
@@ -2322,6 +2350,18 @@ void ScriptSetTimeVal(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptProjection ------------------------ */
+
+void ScriptProjection(scriptdata *scripti){
+  if(scripti->ival==1){
+    projection_type = PROJECTION_PERSPECTIVE;
+  }
+  else{
+    projection_type = PROJECTION_ORTHOGRAPHIC;
+  }
+  SceneMotionCB(PROJECTION);
+}
+
 //    sscanf(buffer,"%i %i %i %i",&vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
 //    sscanf(buffer,"%f %f %f",gslice_xyz,gslice_xyz+1,gslice_xyz+2);
 //    sscanf(buffer,"%f %f",gslice_normal_azelev,gslice_normal_azelev+1);
@@ -2390,7 +2430,6 @@ void SetTimeVal(float timeval){
 }
 
 /* ------------------ ScriptSmokeframes ------------------------ */
-#define SMOKE_NEW 77
 
 void ScriptSmokeframes(scriptdata *scripti){
   smoke_num = scripti->ival;
@@ -2434,6 +2473,134 @@ void ScriptSetViewpoint(scriptdata *scripti){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
     script_viewpoint_found = NO;
+  }
+}
+
+/* ------------------ ScriptViewXYZMINMAXOrtho ------------------------ */
+
+void ScriptViewXYZMINMAXOrtho(int command){
+  switch(command){
+  case SCRIPT_VIEWXMIN:
+    zaxis_angles[0] = 0.0;
+    zaxis_angles[1] = 90.0;
+    zaxis_angles[2] = 90.0;
+    break;
+  case SCRIPT_VIEWXMAX:
+    zaxis_angles[0] =   0.0;
+    zaxis_angles[1] =  90.0;
+    zaxis_angles[2] = -90.0;
+    break;
+
+  case SCRIPT_VIEWYMIN:
+    zaxis_angles[0] =  0.0;
+    zaxis_angles[1] = 90.0;
+    zaxis_angles[2] =  0.0;
+    break;
+  case SCRIPT_VIEWYMAX:
+    zaxis_angles[0] =   0.0;
+    zaxis_angles[1] =  90.0;
+    zaxis_angles[2] = 180.0;
+    break;
+
+  case SCRIPT_VIEWZMIN:
+    zaxis_angles[0] = -90.0;
+    zaxis_angles[1] =   0.0;
+    zaxis_angles[2] =   0.0;
+    break;
+  case SCRIPT_VIEWZMAX:
+    zaxis_angles[0] =  90.0;
+    zaxis_angles[1] =  0.0;
+    zaxis_angles[2] =  0.0;
+    break;
+  }
+  ResetGluiView(EXTERNAL_VIEW);
+  use_customview=0;
+  SceneMotionCB(CUSTOM_VIEW);
+  SceneMotionCB(ZAXIS_CUSTOM);
+}
+
+/* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
+
+void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
+  float aperture_temp1, aperture_temp2;
+  float DL;
+  float DL1, DL2;
+  float width, height;
+
+  aperture_temp1 = Zoom2Aperture(zoom);
+  aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
+
+  switch (command){
+  case SCRIPT_VIEWXMIN:
+  case SCRIPT_VIEWXMAX:
+
+    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
+    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    width = ybarORIG-ybar0ORIG;
+    height = zbarORIG-zbar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+
+    if(scripti->command==SCRIPT_VIEWXMIN){
+      scripti->fval = xbar0ORIG-DL;
+      scripti->fval4 = 90.0;
+    }
+    if(scripti->command==SCRIPT_VIEWXMAX){
+      scripti->fval = xbarORIG+DL;
+      scripti->fval4 = -90.0;
+    }
+    scripti->fval5 = 0.0;
+    ScriptXYZView(scripti);
+    break;
+
+  case SCRIPT_VIEWYMIN:
+  case SCRIPT_VIEWYMAX:
+    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
+    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    width = xbarORIG-xbar0ORIG;
+    height = zbarORIG-zbar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+
+    if(scripti->command==SCRIPT_VIEWYMIN){
+      scripti->fval2 = ybar0ORIG-DL;
+      scripti->fval4 = 0.0;
+    }
+    if(scripti->command==SCRIPT_VIEWYMAX){
+      scripti->fval2 = ybarORIG+DL;
+      scripti->fval4 = 180.0;
+    }
+    scripti->fval5 = 0.0;
+    ScriptXYZView(scripti);
+    break;
+
+  case SCRIPT_VIEWZMIN:
+  case SCRIPT_VIEWZMAX:
+    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
+    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
+    width = ybarORIG-ybar0ORIG;
+    height = ybarORIG-ybar0ORIG;
+
+    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+    DL = 1.05*MAX(DL1, DL2);
+
+    if(scripti->command==SCRIPT_VIEWZMIN){
+      scripti->fval3 = zbar0ORIG-DL;
+      scripti->fval5 = 89.9;
+    }
+    if(scripti->command==SCRIPT_VIEWZMAX){
+      scripti->fval3 = zbarORIG+DL;
+      scripti->fval5 = -89.9;
+    }
+    scripti->fval4 = 0.0;
+    ResetGluiView(EXTERNAL_VIEW);
+    ScriptXYZView(scripti);
+    break;
   }
 }
 
@@ -2658,8 +2825,21 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_PLOT3DPROPS:
       ScriptPlot3dProps(scripti);
       break;
-    case SCRIPT_POSVIEW:
-      ScriptPosView(scripti);
+    case SCRIPT_VIEWXMIN:
+    case SCRIPT_VIEWXMAX:
+    case SCRIPT_VIEWYMIN:
+    case SCRIPT_VIEWYMAX:
+    case SCRIPT_VIEWZMIN:
+    case SCRIPT_VIEWZMAX:
+      if(projection_type==PROJECTION_PERSPECTIVE){
+        ScriptViewXYZMINMAXPersp(scripti, scripti->command);
+      }
+      else{
+        ScriptViewXYZMINMAXOrtho(scripti->command);
+      }
+      break;
+    case SCRIPT_XYZVIEW:
+      ScriptXYZView(scripti);
       break;
     case SCRIPT_PARTCLASSTYPE:
       ScriptPartClassType(scripti);
@@ -2730,6 +2910,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_GSLICEVIEW:
       ScriptGSliceView(scripti);
+      break;
+    case SCRIPT_PROJECTION:
+      ScriptProjection(scripti);
       break;
     case SCRIPT_GSLICEPOS:
       ScriptGSlicePos(scripti);

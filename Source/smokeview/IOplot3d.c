@@ -1749,7 +1749,6 @@ void UpdateShowStep(int val, int slicedir){
     float xmin, xmax;
     float ymin, ymax;
     float zmin, zmax;
-#define MESHEPS 0.0001
 
     xmin = current_mesh->xplt[0];
     xmax = current_mesh->xplt[current_mesh->ibar];

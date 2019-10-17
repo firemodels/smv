@@ -5,8 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
-
 #ifdef pp_SELECT_GEOM
 EXTERNCPP void UpdateSelectGeom(void);
 EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);
@@ -158,6 +158,8 @@ EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomData(int flag, patchdata *patchi, int geom_type);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
 EXTERNCPP int  HaveFire(void);
+EXTERNCPP void UpdateFireAlpha(void);
+EXTERNCPP int  HaveSoot(void);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);

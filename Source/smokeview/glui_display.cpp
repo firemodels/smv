@@ -245,7 +245,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define SPLIT_COLORBAR 1
 
 #define LABELS_HMS 18
-#define SAVE_SETTINGS 99
+#define SAVE_SETTINGS_DISPLAY 99
 
 #define COLORBAR_SMOOTH 113
 #define COLORBAND 115
@@ -1110,7 +1110,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   PANEL_label2 = glui_labels->add_panel("",false);
   glui_labels->add_column_to_panel(PANEL_label2,false);
 
-  BUTTON_label_3=glui_labels->add_button_to_panel(PANEL_label2,_("Save settings"),SAVE_SETTINGS,LabelsCB);
+  BUTTON_label_3=glui_labels->add_button_to_panel(PANEL_label2,_("Save settings"),SAVE_SETTINGS_DISPLAY,LabelsCB);
   glui_labels->add_column_to_panel(PANEL_label2,false);
 
   BUTTON_label_4=glui_labels->add_button_to_panel(PANEL_label2,_("Close"),LABELS_close,LabelsCB);
@@ -1256,7 +1256,7 @@ extern "C" void LabelsCB(int var){
     CHECKBOX_visUSERticks->set_int_val(visUSERticks);
     if(visUSERticks==1)ROLLOUT_user_tick->open();
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_DISPLAY:
     WriteIni(LOCAL_INI,NULL);
     break;
   case LABELS_showall:

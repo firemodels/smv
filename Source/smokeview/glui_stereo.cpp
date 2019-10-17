@@ -41,7 +41,7 @@ GLUI_Button *BUTTON_stereo_3=NULL;
 #ifdef pp_OPENVR
 #define USE_VR       7
 #endif
-#define SAVE_SETTINGS 999
+#define SAVE_SETTINGS_STEREO 999
 
 extern "C" int InitVR(void);
 extern "C" void ShutdownVR(void);
@@ -100,7 +100,7 @@ void StereoCB(int var){
   case STEREO_CLOSE:
     HideGluiStereo();
     break;
-  case SAVE_SETTINGS:
+  case SAVE_SETTINGS_STEREO:
     WriteIni(LOCAL_INI, NULL);
     break;
 #ifdef pp_OPENVR
@@ -183,7 +183,7 @@ extern "C" void GluiStereoSetup(int main_window){
   UpdateGluiStereo();
 
   BUTTON_stereo_1=glui_stereo->add_button(_("Reset"),STEREO_RESET,StereoCB);
-  BUTTON_stereo_2=glui_stereo->add_button(_("Save settings"),SAVE_SETTINGS,StereoCB);
+  BUTTON_stereo_2=glui_stereo->add_button(_("Save settings"),SAVE_SETTINGS_STEREO,StereoCB);
   BUTTON_stereo_3=glui_stereo->add_button(_("Close"),STEREO_CLOSE,StereoCB);
 
   glui_stereo->set_main_gfx_window( main_window );
