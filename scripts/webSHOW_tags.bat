@@ -55,3 +55,5 @@ echo | set /p=OSX:
 plink %plink_options% %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
+pause
+

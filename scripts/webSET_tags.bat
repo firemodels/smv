@@ -24,7 +24,10 @@ echo ---------------------------*** fds ***--------------------------------
 cd %svn_root%\fds
 echo Windows
 git checkout master
+if x"%fds_tags%" == x"" goto skip_fds_tag
+if "%fds_tags%" == "latest" goto skip_fds_tag
 git checkout %fds_tag%
+:skip_fds_tag
 
 set scriptdir=%linux_svn_root%/smv/scripts/
 set linux_fdsdir=%linux_svn_root%
@@ -43,7 +46,11 @@ echo ---------------------------*** smv ***--------------------------------
 cd %svn_root%\smv
 echo Windows
 git checkout master
+
+if x"%smv_tags%" == x"" goto skip_smv_tag
+if "%smv_tags%" == "latest" goto skip_smv_tag
 git checkout %smv_tag%
+:skip_smv_tag
 
 echo.
 echo Linux
