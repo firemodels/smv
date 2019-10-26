@@ -5,7 +5,7 @@ source ../../scripts/setopts.sh $*
 set -e
 
 LIBDIR=../../LIBS/intel_linux_64/
-eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} ${LUA_SCRIPTING} -f make_LIBS.make all
+eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} -f make_LIBS.make all
 
 INTEL_MPI=
 if [ "$SMV_MPI" == "1" ]; then
