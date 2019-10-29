@@ -182,7 +182,6 @@ export RUNCFAST=$RUNSMV
 
 export FDSUG=$SVNROOT/fds/Manuals/FDS_User_Guide
 export SMVUG=$SVNROOT/smv/Manuals/SMV_User_Guide
-export SMVUTILG=$SVNROOT/smv/Manuals/SMV_Utilities_Guide
 export SMVVG=$SVNROOT/smv/Manuals/SMV_Verification_Guide
 SUMMARY=$SVNROOT/smv/Manuals/SMV_Summary
 
@@ -194,7 +193,6 @@ is_file_installed $DEM2FDS
 is_file_installed $WIND2FDS
 
 make_helpinfo_files $SMVUG/SCRIPT_FIGURES
-make_helpinfo_files $SMVUTILG/SCRIPT_FIGURES
 
 rm -f $SUMMARY/images/*.png
 
@@ -259,6 +257,3 @@ wait_cases_end
 
 cp $SMVUG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
 cp $SMVVG/SCRIPT_FIGURES/*.png $SUMMARY/images/.
-
-# copy files to utilities script directory for now
-cp $SMVUG/SCRIPT_FIGURES/*.png $SMVUTILG/SCRIPT_FIGURES/.
