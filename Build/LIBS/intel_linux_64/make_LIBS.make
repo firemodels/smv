@@ -2,7 +2,7 @@ OPTS="-I $*"
 LIBDIR=$(shell pwd)
 SRCDIR=$(LIBDIR)/../../../Source
 
-all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a liblua.a lpeg.so
+all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a 
 
 # GD
 libgd.a:
