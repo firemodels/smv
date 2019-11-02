@@ -18,8 +18,7 @@ SMV_PROFILESTRING =
 COMP_VERSION =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  G  GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
- IT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
   GIT_BRANCH := $(shell ..\..\..\Utilities\Scripts\gitbranch)
 else
