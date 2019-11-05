@@ -53,7 +53,7 @@ plink %plink_options% %osx_logon% %scriptdir%/showbranch.sh  %linux_svn_root%/sm
 
 echo.
 echo ---------------------------*** bot ***--------------------------------
-cd %svn_root%\smv
+cd %svn_root%\bot
 echo Windows
 git branch
 

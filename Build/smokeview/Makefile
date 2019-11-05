@@ -18,13 +18,15 @@ SMV_PROFILESTRING =
 COMP_VERSION =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  GIT_HASH := $(shell ..\..\..\Utilities\Scripts\githash)
-  GIT_DATE := $(shell ..\..\..\Utilities\Scripts\gitlog)
+  GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
+  GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
+  GIT_BRANCH := $(shell ..\..\..\Utilities\Scripts\gitbranch)
 else
-  GIT_HASH := $(shell git describe --long --dirty)
-  GIT_DATE := $(shell git log -1 --format=%cd)
+  GIT_HASH   := $(shell git describe --long --dirty)
+  GIT_DATE   := $(shell git log -1 --format=%cd)
+  GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 endif
-GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)

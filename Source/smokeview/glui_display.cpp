@@ -32,6 +32,7 @@ GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
+GLUI_Spinner *SPINNER_ntick_decimals=NULL;
 GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
 GLUI_Spinner *SPINNER_up_red=NULL,*SPINNER_up_green=NULL,*SPINNER_up_blue=NULL;
 GLUI_Spinner *SPINNER_colorsplit[12];
@@ -974,6 +975,9 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_ticks_inside=glui_labels->add_checkbox_to_panel(PANEL_tick1a, "inside", &glui_tick_inside, LABELS_tick_inside, LabelsCB);
   glui_labels->add_column_to_panel(PANEL_tick1a, false);
   CHECKBOX_ticks_outside=glui_labels->add_checkbox_to_panel(PANEL_tick1a, "outside", &glui_tick_outside, LABELS_tick_outside, LabelsCB);
+  glui_labels->add_column_to_panel(PANEL_tick1a, false);
+  SPINNER_ntick_decimals = glui_labels->add_spinner_to_panel(PANEL_tick1a, _("decimals"), GLUI_SPINNER_INT, &ntick_decimals);
+  SPINNER_ntick_decimals->set_int_limits(0, 6, GLUI_LIMIT_CLAMP);
   LabelsCB(LABELS_tick_inside);
   LabelsCB(LABELS_tick_outside);
 
