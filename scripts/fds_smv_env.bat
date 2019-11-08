@@ -2,10 +2,12 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.2test
-set fds_versionbase=6.7.2test
+set fds_version=FDS6.7.3
+set fds_tag=FDS6.7.3
+set fds_versionbase=6.7.3
 
-set smv_version=SMV6.7.10test
+set smv_version=SMV6.7.10
+set smv_tag=SMV6.7.10
 set smv_versionbase=6.7.10
 
 set fds_edition=FDS6
@@ -24,7 +26,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="10-Oct-2019"
+set smvlogdate="21-Oct-2019"
 
 :: ---- repo locations ----
 
@@ -89,6 +91,6 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=floga.el.nist.gov
-::set osx_hostname=192.168.1.13
+::set osx_hostname=192.168.1.180
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%

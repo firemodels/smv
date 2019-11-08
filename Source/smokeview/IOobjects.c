@@ -567,7 +567,7 @@ void OutputDeviceVal(devicedata *devicei){
       funit = unitclass->units+unitclass->unit_index;
       unit = funit->unit;
       unit_type = unitclass->unitclass;
-      val = GetUnitVal(unit_type, val);
+      val = GetUnitVal(unit_type, val, 1);
     }
     strcpy(label, "");
     sprintf(valuelabel, "%.1f",val);
