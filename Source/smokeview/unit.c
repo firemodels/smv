@@ -192,8 +192,12 @@ void UpdateUnitDefs(void){
 
 /* ------------------ GetUnitVal ------------------------ */
 
-float GetUnitVal(const char *unittype, float oldval){
+float GetUnitVal(const char *unittype, float oldval, int ndecimals){
   int i;
+  float decimals[] = {1.0,10.0,100.0,1000.0,10000.0,100000.0,1000000.0};
+
+#define NDECIMALS 6
+  ndecimals = CLAMP(ndecimals, 0, NDECIMALS);
 
   for(i=0;i<nunitclasses;i++){
     if(STRCMP(unitclasses[i].unitclass,unittype)==0){
@@ -204,7 +208,7 @@ float GetUnitVal(const char *unittype, float oldval){
       unit_index = unitclasses[i].unit_index;
       scale = unitclasses[i].units[unit_index].scale;
       val =  scale[0]*oldval + scale[1];
-      val = SIGN(val)*(float)((int)(ABS(val)*10.0 + 0.5))/10.0;
+      val = SIGN(val)*(float)((int)(ABS(val)*decimals[ndecimals] + 0.5))/decimals[ndecimals];
       return val;
     }
   }

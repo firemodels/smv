@@ -4384,9 +4384,8 @@ void DrawUserTicks(void){
         sprintf(form2,"%i",ntick_decimals);
         strcat(form,form2);
         strcat(form,"f");
-        sprintf(label,form,GetUnitVal("Distance",xyz[0]));
+        sprintf(label,form,GetUnitVal("Distance",xyz[0], ntick_decimals));
       }
-      //TrimZeros(label);
       Output3Text(foregroundcolor,xyz2[0],xyz2[1],xyz2[2], label);
     }
   }
@@ -4486,9 +4485,8 @@ void DrawUserTicks(void){
         sprintf(form2,"%i",ntick_decimals);
         strcat(form,form2);
         strcat(form,"f");
-        sprintf(label,form,GetUnitVal("Distance",xyz[1]));
+        sprintf(label,form,GetUnitVal("Distance",xyz[1], ntick_decimals));
       }
-      //TrimZeros(label);
       Output3Text(foregroundcolor,xyz2[0],xyz2[1],xyz2[2], label);
     }
   }
@@ -4583,9 +4581,8 @@ void DrawUserTicks(void){
         sprintf(form2,"%i",ntick_decimals);
         strcat(form,form2);
         strcat(form,"f");
-        sprintf(label,form,GetUnitVal("Distance",xyz[2]));
+        sprintf(label,form,GetUnitVal("Distance",xyz[2], ntick_decimals));
       }
-      //TrimZeros(label);
       Output3Text(foregroundcolor,xyz2[0],xyz2[1],xyz2[2]+step[2]/20.0, label);
     }
   }

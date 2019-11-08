@@ -643,7 +643,7 @@ EXTERNCPP int  MakeIBlank(void);
 EXTERNCPP int  MakeIBlankCarve(void);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
-EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval);
+EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
 EXTERNCPP void UpdateUnitDefs(void);
 
