@@ -20,6 +20,7 @@ float GetHistogramCDF(histogramdata *histogram, float val){
   if(histogram->val_max <= histogram->val_min)return 1.0;
 
   cutoff = (val - histogram->val_min)*(float)histogram->nbuckets / (histogram->val_max - histogram->val_min);
+  cutoff = CLAMP(cutoff, 0, histogram->nbuckets);
   for(i = 0; i < cutoff; i++){
     sum += histogram->buckets[i];
   }
