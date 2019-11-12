@@ -3785,11 +3785,21 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case VALMIN:
+    if(is_fed_colorbar==1&&setslicemin==1&&ABS(slicemin)>0.001){
+      printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
+      printf("   To use different min/max bounds, change the colorbar.\n");
+      slicemin = 0.0;
+    }
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
     SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case VALMAX:
+    if(is_fed_colorbar==1&&setslicemax==1&&ABS(slicemax-3.0)>0.001){
+      printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
+      printf("   To use different min/max bounds, change the colorbar.\n");
+      slicemax = 3.0;
+    }
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
     SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);

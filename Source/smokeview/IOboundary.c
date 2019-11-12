@@ -2605,7 +2605,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     for (i = 0; i < 256; i++){
       slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
     }
-    void UpdateSliceBounds(void);
     UpdateSliceBounds();
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
     UpdateAllSliceColors(slicefile_labelindex, errorcode);
