@@ -1013,7 +1013,8 @@ extern "C" void GluiMotionSetup(int main_window){
   PANEL_change_zaxis = glui_motion->add_panel_to_panel(ROLLOUT_orientation,_("z axis"));
 
   if(zaxis_custom==0){
-    float vv[3];
+    float vv[3], maxvv;
+
 
     if(have_gvec==1){
       vv[0] = -gvecphys[0];
@@ -1025,6 +1026,10 @@ extern "C" void GluiMotionSetup(int main_window){
       vv[1] = -gvecphys_orig[1];
       vv[2] = -gvecphys_orig[2];
     }
+    maxvv = MAXABS3(vv);
+    vv[0] /= maxvv;
+    vv[1] /= maxvv;
+    vv[2] /= maxvv;
     XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
   }
   SPINNER_zaxis_angles[0] = glui_motion->add_spinner_to_panel(PANEL_change_zaxis, _("azimuth:"),GLUI_SPINNER_FLOAT, zaxis_angles,ZAXIS_CUSTOM, SceneMotionCB);
@@ -1983,13 +1988,15 @@ extern "C" void SceneMotionCB(int var){
       {
         float vv[3];
         float *elev, *az;
+        float maxvv;
 
         gvec_down=1;
         SceneMotionCB(ZAXIS_UP);
         gvec_down=1;
-        vv[0] = -gvecphys[0];
-        vv[1] = -gvecphys[1];
-        vv[2] = -gvecphys[2];
+        maxvv = MAXABS3(gvecphys);
+        vv[0] = -gvecphys[0]/maxvv;
+        vv[1] = -gvecphys[1]/maxvv;
+        vv[2] = -gvecphys[2]/maxvv;
         XYZ2AzElev(vv, zaxis_angles, zaxis_angles+1);
         UpdateZaxisAngles();
 

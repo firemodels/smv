@@ -226,6 +226,10 @@
 #define MAX(a,b)  ((a)>(b) ? (a) : (b))
 #endif
 
+#ifndef MAXABS3
+#define MAXABS3(x) (MAX(ABS((x)[0]),MAX(ABS((x)[1]),ABS((x)[2]))))
+#endif
+
 #ifndef MAX3
 #define MAX3(a,b,c) ((a)<(b)?(MAX(b,c)):(MAX(a,c)))
 #endif
