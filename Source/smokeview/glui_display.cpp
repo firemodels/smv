@@ -1385,7 +1385,7 @@ extern "C" int GetColorbarListIndex(void){
 /* ------------------ UpdateAxisLabelsSmooth ------------------------ */
 
 extern "C" void UpdateAxisLabelsSmooth(void){
-  CHECKBOX_axislabels_smooth->set_int_val(axislabels_smooth);
+  if(CHECKBOX_axislabels_smooth!=NULL)CHECKBOX_axislabels_smooth->set_int_val(axislabels_smooth);
 }
 
 /* ------------------ UpdateTransparency ------------------------ */
