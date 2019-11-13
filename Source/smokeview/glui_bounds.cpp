@@ -3598,19 +3598,6 @@ extern "C" void SliceBoundCB(int var){
           partmax = partmax_save;
           PartBoundCB(VALMAX);
           PartBoundCB(FILERELOAD);
-
-          // particle files
-
-          setpartmin = setpartmin_save;
-          PartBoundCB(SETVALMIN);
-          partmin = partmin_save;
-          PartBoundCB(VALMIN);
-
-          setpartmax = setpartmax_save;
-          PartBoundCB(SETVALMAX);
-          partmax = partmax_save;
-          PartBoundCB(VALMAX);
-          PartBoundCB(FILERELOAD);
         }
 
         // Plot3D files
