@@ -536,7 +536,7 @@ void MouseSelectGeom(int button, int state, int x, int y){
   int mouse_x, mouse_y;
   GLubyte r, g, b;
 
-  mouse_x = x; 
+  mouse_x = x;
   mouse_y = screenHeight-y;
 
   glDisable(GL_BLEND);
@@ -578,7 +578,7 @@ void MouseSelectGeom(int button, int state, int x, int y){
       selected_geom_triangle = val-1;
       break;
     }
-    
+
     switch(select_geom){
     case GEOM_PROP_VERTEX1:
     case GEOM_PROP_VERTEX2:
