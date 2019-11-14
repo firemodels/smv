@@ -9571,7 +9571,8 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i ", &research_mode);
+      sscanf(buffer, " %i %i", &research_mode, &nslice_decimals);
+      nslice_decimals = CLAMP(nslice_decimals, 1, 3);
       ONEORZERO(research_mode);
       update_research_mode=1;
       continue;
@@ -13442,7 +13443,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i\n", research_mode);
+  fprintf(fileout, " %i %i\n", research_mode, nslice_decimals);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

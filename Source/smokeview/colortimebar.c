@@ -2740,7 +2740,7 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = sb->levels256[valindex];
-      Num2String(slicelabel, tttval);
+      SliceNum2String(slicelabel, tttval, nslice_decimals);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
         ScaleFloat2String(tttval, slicecolorlabel, slicefactor);

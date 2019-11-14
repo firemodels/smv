@@ -404,6 +404,76 @@ void ScaleFloat2String(float floatfrom, char *stringto, const float *scale){
   Num2String(stringto,val);
 }
 
+/* ------------------ GetFormat ------------------------ */
+
+char *GetFormat(int bef, int aft, char *format){
+  strcpy(format, "");
+  sprintf(format, "%s%i%s%i%s", "%",bef,".",aft,"f");
+  return format;
+}
+
+/* ------------------ SliceNum2String ------------------------ */
+
+void SliceNum2String(char *string, float tval, int ndecimals){
+  float tval2, mant10;
+  int exp10;
+  char format[20];
+
+  tval2 = ABS(tval);
+  if(0.01-.001<=tval2&&tval2<0.1){
+    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
+  }
+  else if(0.1<=tval2&&tval2<1.0){
+    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
+  }
+  else if(1.0<=tval2&&tval2<10.0){
+    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
+  }
+  else if(10.0<=tval2&&tval2<100.0){
+    sprintf(string, GetFormat(3,ndecimals,format), tval);
+  }
+  else if(100.0<=tval2&&tval2<1000.0){
+    sprintf(string, GetFormat(3,ndecimals-1,format), tval);
+  }
+  else if(1000.0<=tval2&&tval2<10000.0){
+    sprintf(string, GetFormat(4,ndecimals-1,format), tval);
+  }
+  else if(10000.0<=tval2&&tval2<100000.0){
+    sprintf(string, GetFormat(5,ndecimals-1,format), tval);
+  }
+  else if(tval2==0.0){
+    STRCPY(string, "0.00");
+  }
+  else{
+    mant10 = FrExp10(tval, &exp10);
+    mant10 = (float)((int)(10.0f*mant10+0.5f))/10.0f;
+    if(mant10>=10.0f){
+      mant10 /= 10.0f;
+      exp10++;
+    }
+    if(exp10<-99){
+      STRCPY(string, "0.00");
+    }
+    else if(exp10>=-99&&exp10<-9){
+      sprintf(string, "%2.1f%i", mant10, exp10);
+    }
+    else if(exp10>99){
+      STRCPY(string, "***");
+    }
+    else{
+      if(exp10==0){
+        sprintf(string, "%2.1f", mant10);
+      }
+      else{
+        sprintf(string, "%2.1fE%i", mant10, exp10);
+      }
+    }
+
+    /*sprintf(string,"%1.1e",tval); */
+  }
+  if(strlen(string)>9)fprintf(stderr, "***fatal error - overwriting string\n");
+}
+
 /* ------------------ Num2String ------------------------ */
 
 void Num2String(char *string, float tval){

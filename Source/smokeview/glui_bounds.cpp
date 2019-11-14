@@ -129,6 +129,7 @@ GLUI_Panel *PANEL_outputpatchdata=NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Spinner *SPINNER_nslicethread_ids = NULL;
 #endif
+GLUI_Spinner *SPINNER_nslice_decimals=NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
@@ -585,6 +586,14 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
+  if(research_mode==1){
+    RADIO_slice_setmin->disable();
+    RADIO_slice_setmax->disable();
+  }
+  else{
+    RADIO_slice_setmin->enable();
+    RADIO_slice_setmax->enable();
+  }
 }
 /* ------------------ UpdateScriptStop ------------------------ */
 
@@ -2378,6 +2387,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
 
+    SPINNER_nslice_decimals = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("max slice decimals"), GLUI_SPINNER_INT, &nslice_decimals);
+    SPINNER_nslice_decimals->set_int_limits(1, 3, GLUI_LIMIT_CLAMP);
+
     //---
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
@@ -3475,6 +3487,14 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
+      if(research_mode==1){
+        RADIO_slice_setmin->disable();
+        RADIO_slice_setmax->disable();
+      }
+      else{
+        RADIO_slice_setmin->enable();
+        RADIO_slice_setmax->enable();
+      }
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
 
@@ -3734,6 +3754,10 @@ extern "C" void SliceBoundCB(int var){
     UpdateChopColors();
     break;
   case SETVALMIN:
+    if(research_mode==1&&setslicemin!=GLOBAL_MIN){
+      setslicemin = GLOBAL_MIN;
+      if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
+    }
     switch(setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
@@ -3753,6 +3777,10 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case SETVALMAX:
+    if(research_mode==1&&setslicemax!=GLOBAL_MAX){
+      setslicemax = GLOBAL_MAX;
+      if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
+    }
     switch(setslicemax){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:

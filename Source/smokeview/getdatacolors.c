@@ -1045,13 +1045,13 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   dt = range/(float)(nlevel-2);
   for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
-    Num2String(&labels[n][0],tval);
+    SliceNum2String(&labels[n][0], tval, nslice_decimals);
   }
   for(n=0;n<256;n++){
     tlevels256[n] = (local_tmin*(255-n) + local_tmax*n)/255.;
   }
   tval = local_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
+  SliceNum2String(&labels[nlevel-1][0], tval, nslice_decimals);
 }
 
 /* ------------------ getSliceLabelels ------------------------ */
