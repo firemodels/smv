@@ -129,7 +129,6 @@ GLUI_Panel *PANEL_outputpatchdata=NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Spinner *SPINNER_nslicethread_ids = NULL;
 #endif
-GLUI_Spinner *SPINNER_nslice_decimals=NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
@@ -2389,10 +2388,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
 
-    SPINNER_nslice_decimals = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("max slice decimals"), GLUI_SPINNER_INT, &nslice_decimals);
-    SPINNER_nslice_decimals->set_int_limits(1, 3, GLUI_LIMIT_CLAMP);
-
-    //---
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
     }

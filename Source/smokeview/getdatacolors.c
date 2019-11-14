@@ -262,7 +262,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int nlevel,
-              char **labels, char *scale, float *tvals256,
+              char **patchlabels, float *patchvalues, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max
               ){
   int n;
@@ -350,15 +350,18 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){
     tval = new_tmin + (n-1)*factor;
-    Num2String(&labels[n][0],tval);
+    Num2String(&patchlabels[n][0],tval);
+    patchvalues[n] = tval;
   }
   tval = new_tmin + (nlevel-3)*factor;
   for(n=0;n<256;n++){
     tvals256[n] = (new_tmin*(255-n) + n*new_tmax)/255.;
   }
-  Num2String(&labels[nlevel-2][0],tval);
+  Num2String(&patchlabels[nlevel-2][0],tval);
+  patchvalues[nlevel-2] = tval;
   tval = new_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
+  Num2String(&patchlabels[nlevel-1][0],tval);
+  patchvalues[nlevel-1] = tval;
 }
 
 /* ------------------ UpdateAllBoundaryColors ------------------------ */
@@ -382,7 +385,7 @@ void UpdateAllBoundaryColors(void){
     GetBoundaryColors3(patchi,meshi->patchval, 0, npatchvals, meshi->cpatchval,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
-    nrgb, colorlabelpatch,patchi->scale,boundarylevels256,
+    nrgb, colorlabelpatch, colorvaluespatch, patchi->scale,boundarylevels256,
     &patchi->extreme_min,&patchi->extreme_max);
   }
 }
@@ -391,7 +394,7 @@ void UpdateAllBoundaryColors(void){
 
 void GetBoundaryLabels(
               float local_tmin, float local_tmax,
-              char **labels, char *scale, float *tvals256, int nlevel){
+              char **boundarylabels, float *boundaryvalues, char *scale, float *tvals256, int nlevel){
   int n;
   float factor, tval, range;
   int expmin, expmax;
@@ -419,15 +422,18 @@ void GetBoundaryLabels(
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){
     tval = local_tmin + (n-1)*factor;
-    Num2String(&labels[n][0],tval);
+    Num2String(&boundarylabels[n][0],tval);
+    boundaryvalues[n] = tval;
   }
   tval = local_tmin + (nlevel-3)*factor;
   for(n=0;n<256;n++){
     tvals256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
   }
-  Num2String(&labels[nlevel-2][0],tval);
+  Num2String(&boundarylabels[nlevel-2][0],tval);
+  boundaryvalues[nlevel-2] = tval;
   tval = local_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
+  Num2String(&boundarylabels[nlevel-1][0],tval);
+  boundaryvalues[nlevel-1] = tval;
 }
 
 /* ------------------ UpdatePart5Extremes ------------------------ */
@@ -1046,14 +1052,14 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
     colorvalues[n] = tval;
-    SliceNum2String(&colorlabels[n][0], tval, nslice_decimals);
+    SliceNum2String(&colorlabels[n][0], tval, ncolorlabel_decimals);
   }
   for(n=0;n<256;n++){
     tlevels256[n] = (local_tmin*(255-n) + local_tmax*n)/255.;
   }
   tval = local_tmax;
   colorvalues[nlevel-1] = tval;
-  SliceNum2String(&colorlabels[nlevel-1][0], tval, nslice_decimals);
+  SliceNum2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_decimals);
 }
 
 /* ------------------ getSliceLabelels ------------------------ */

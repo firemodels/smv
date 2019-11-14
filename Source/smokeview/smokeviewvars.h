@@ -20,7 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(nslice_decimals, 1);
+SVEXTERN int SVDECL(ncolorlabel_decimals, 1);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
@@ -1552,6 +1552,7 @@ SVEXTERN char a_zonescale[31];
 SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
+SVEXTERN float colorvaluespatch[12];
 
 SVEXTERN int SVDECL(hilight_skinny,0);
 

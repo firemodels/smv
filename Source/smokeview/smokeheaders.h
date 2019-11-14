@@ -884,11 +884,11 @@ EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int nlevel,
-              char **labels, char *scale, float *tvals256,
+              char **patchlabels, float *patchvalues, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
 EXTERNCPP void GetBoundaryLabels(
               float tmin, float tmax,
-              char **labels, char *scale, float *tvals256, int nlevel);
+              char **labels, float *boundaryvaluespatch, char *scale, float *tvals256, int nlevel);
 EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                float tmin, float tmax, int nlevel, int nlevel_full,
                char **labels, char *scale, float *tvals256

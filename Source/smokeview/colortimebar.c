@@ -2114,18 +2114,20 @@ void DrawHorizontalColorbarRegLabels(void) {
       char boundary_colorlabel[256];
       char *boundary_colorlabel_ptr = NULL;
       float horiz_position;
+      float val;
 
       horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
 
       if (iposition == i)continue;
-      boundary_colorlabel_ptr = &colorlabelpatch[i + 1][0];
       if (patchflag == 1) {
-        float val;
-
         val = tttmin + i*patchrange / (nrgb - 2);
-        ScaleFloat2String(val, boundary_colorlabel, patchfactor);
-        boundary_colorlabel_ptr = boundary_colorlabel;
       }
+      else{
+        val = colorvaluespatch[i+1];
+      }
+      val = ScaleFloat2Float(val, patchfactor);
+      SliceNum2String(boundary_colorlabel, val, ncolorlabel_decimals);
+      boundary_colorlabel_ptr = boundary_colorlabel;
       OutputBarText(horiz_position, 0.0, foreground_color, boundary_colorlabel_ptr);
     }
     glPopMatrix();
@@ -2740,7 +2742,7 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = sb->levels256[valindex];
-      SliceNum2String(slicelabel, tttval, nslice_decimals);
+      SliceNum2String(slicelabel, tttval, ncolorlabel_decimals);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
         ScaleFloat2String(tttval, slicecolorlabel, slicefactor);
@@ -2781,7 +2783,7 @@ void DrawVerticalColorbarRegLabels(void){
           val = sb->colorvalues[i+1];
         }
         val = ScaleFloat2Float(val, slicefactor);
-        SliceNum2String(slicecolorlabel, val, nslice_decimals);
+        SliceNum2String(slicecolorlabel, val, ncolorlabel_decimals);
         slicecolorlabel_ptr = slicecolorlabel;
         OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
       }
@@ -2822,18 +2824,20 @@ void DrawVerticalColorbarRegLabels(void){
       char boundary_colorlabel[256];
       char *boundary_colorlabel_ptr = NULL;
       float vert_position;
+      float val;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
       if(iposition == i)continue;
-      boundary_colorlabel_ptr = &colorlabelpatch[i + 1][0];
-      if(patchflag == 1){
-        float val;
-
-        val = tttmin + i*patchrange / (nrgb - 2);
-        ScaleFloat2String(val, boundary_colorlabel, patchfactor);
-        boundary_colorlabel_ptr = boundary_colorlabel;
+      if(patchflag==1){
+        val = tttmin+i*patchrange/(nrgb-2);
       }
+      else{
+        val = colorvaluespatch[i+1];
+      }
+      val = ScaleFloat2Float(val, patchfactor);
+      SliceNum2String(boundary_colorlabel, val, ncolorlabel_decimals);
+      boundary_colorlabel_ptr = boundary_colorlabel;
       OutputBarText(0.0, vert_position, foreground_color, boundary_colorlabel_ptr);
     }
     glPopMatrix();

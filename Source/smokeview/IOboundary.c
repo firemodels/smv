@@ -2258,19 +2258,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
       setpatchmin, &patchmin, setpatchmax, &patchmax,
       &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch, patchscale, boundarylevels256,
+      nrgb, colorlabelpatch, colorvaluespatch, patchscale, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
   }
     break;
   case UNCOMPRESSED_BYFRAME:
     GetBoundaryLabels(
       patchmin, patchmax,
-      colorlabelpatch,patchscale,boundarylevels256,nrgb);
+      colorlabelpatch,colorvaluespatch,patchscale,boundarylevels256,nrgb);
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(
       patchmin, patchmax,
-      colorlabelpatch,patchscale,boundarylevels256,nrgb);
+      colorlabelpatch,colorvaluespatch,patchscale,boundarylevels256,nrgb);
     break;
   default:
     ASSERT(FFALSE);
@@ -2574,7 +2574,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       setpatchmin, &patchmin, setpatchmax, &patchmax,
       &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch, patchi->scale, boundarylevels256,
+      nrgb, colorlabelpatch, colorvaluespatch, patchi->scale, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     FREEMEMORY(patchi->geom_vals);  // slice files keep data loaded
   }
