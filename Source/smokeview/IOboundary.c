@@ -2615,7 +2615,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
       slicemin, slicemax,
       nrgb_full, nrgb,
-      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
       &slicei->extreme_min, &slicei->extreme_max
     );
   }

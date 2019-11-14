@@ -1308,7 +1308,8 @@ typedef struct _boundsdata {
   float global_valmin, global_valmax;
   float chopmin, chopmax;
   float valmin_data,valmax_data;
-  char colorlabels[12][11];
+  char  colorlabels[12][11];
+  float colorvalues[12];
   float levels256[256];
   float fscale;
   char scale[31];

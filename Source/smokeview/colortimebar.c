@@ -2769,20 +2769,20 @@ void DrawVerticalColorbarRegLabels(void){
     }
     else{
       for(i = 0; i < nrgb - 1; i++){
-        float vert_position;
-        char slicecolorlabel[256];
-        char *slicecolorlabel_ptr = NULL;
+        float vert_position, val;
+        char slicecolorlabel[256], *slicecolorlabel_ptr = NULL;
 
         vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
-        slicecolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
-        if(sliceflag == 1){
-          float val;
-
-          val = tttmin + i*slicerange / (nrgb - 2);
-          ScaleFloat2String(val, slicecolorlabel, slicefactor);
-          slicecolorlabel_ptr = slicecolorlabel;
+        if(sliceflag==1){
+          val = tttmin+i*slicerange/(nrgb-2);
         }
+        else{
+          val = sb->colorvalues[i+1];
+        }
+        val = ScaleFloat2Float(val, slicefactor);
+        SliceNum2String(slicecolorlabel, val, nslice_decimals);
+        slicecolorlabel_ptr = slicecolorlabel;
         OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
       }
     }

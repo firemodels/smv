@@ -979,7 +979,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
 void GetSliceColors(const float *t, int nt, unsigned char *it,
               float local_tmin, float local_tmax,
               int ndatalevel, int nlevel,
-              char labels[12][11],char **scale, float *fscale, float *tlevels256,
+              char colorlabels[12][11], float colorvalues[12], char **scale, float *fscale, float *tlevels256,
               int *extreme_min, int *extreme_max
               ){
   int n;
@@ -1045,13 +1045,15 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   dt = range/(float)(nlevel-2);
   for(n=1;n<nlevel-1;n++){
     tval = local_tmin + (n-1)*dt;
-    SliceNum2String(&labels[n][0], tval, nslice_decimals);
+    colorvalues[n] = tval;
+    SliceNum2String(&colorlabels[n][0], tval, nslice_decimals);
   }
   for(n=0;n<256;n++){
     tlevels256[n] = (local_tmin*(255-n) + local_tmax*n)/255.;
   }
   tval = local_tmax;
-  SliceNum2String(&labels[nlevel-1][0], tval, nslice_decimals);
+  colorvalues[nlevel-1] = tval;
+  SliceNum2String(&colorlabels[nlevel-1][0], tval, nslice_decimals);
 }
 
 /* ------------------ getSliceLabelels ------------------------ */
