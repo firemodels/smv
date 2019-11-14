@@ -26,7 +26,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="21-Oct-2019"
+set smvlogdate="14-Nov-2019"
 
 :: ---- repo locations ----
 
