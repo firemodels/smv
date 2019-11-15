@@ -815,6 +815,7 @@ EXTERNCPP void AdjustDataBounds(const float *pdata, int skip, int ndata, int set
 EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void AdjustPlot3DBounds(int iplot3d, int setpmin, float *pmin, int setpmax, float *pmax);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
+EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(int argc, char **argv);
@@ -883,14 +884,14 @@ EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
               int nlevel,
-              char **labels, char *scale, float *tvals256,
+              char **patchlabels, float *patchvalues, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
 EXTERNCPP void GetBoundaryLabels(
               float tmin, float tmax,
-              char **labels, char *scale, float *tvals256, int nlevel);
+              char **labels, float *boundaryvaluespatch, char *scale, float *tvals256, int nlevel);
 EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                float tmin, float tmax, int nlevel, int nlevel_full,
-               char **labels, char *scale, float *tvals256
+               char **zonelabels, float zonevalues[12], char *scale, float *tvals256
                );
 
 EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
@@ -904,7 +905,7 @@ EXTERNCPP void UpdatePart5Extremes(void);
 EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               float tmin, float tmax,
               int ndatalevel, int nlevel,
-              char labels[12][11],char **scale, float *fscale, float *tlevels2,
+              char colorlabels[12][11],float colorvalues[12], char **scale, float *fscale, float *tlevels2,
               int *extreme_min, int *extreme_max
               );
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);

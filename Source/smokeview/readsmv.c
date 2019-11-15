@@ -1096,7 +1096,7 @@ void ReadSMVDynamic(char *file){
           continue;
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
-          plot3di->nvars = mxplot3dvars;
+          plot3di->nvars = MAXPLOT3DVARS;
         }
         else{
           plot3di->nvars = 5;
@@ -9571,7 +9571,8 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i ", &research_mode);
+      sscanf(buffer, " %i %i", &research_mode, &ncolorlabel_decimals);
+      ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, 1, 3);
       ONEORZERO(research_mode);
       update_research_mode=1;
       continue;
@@ -10064,7 +10065,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &tempval);
       if(tempval<0)tempval = 0;
       n3d = tempval;
-      if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+      if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
       for(i = 0; i<n3d; i++){
         int iplot3d, isetmin, isetmax;
         float p3mintemp, p3maxtemp;
@@ -10072,7 +10073,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %i %f %i %f", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp);
         iplot3d--;
-        if(iplot3d >= 0 && iplot3d<mxplot3dvars){
+        if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
           setp3min[iplot3d] = isetmin;
           setp3max[iplot3d] = isetmax;
           p3min[iplot3d] = p3mintemp;
@@ -10232,7 +10233,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &tempval);
       if(tempval<0)tempval = 0;
       n3d = tempval;
-      if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+      if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
       for(i = 0; i<n3d; i++){
         int iplot3d, isetmin, isetmax;
         float p3mintemp, p3maxtemp;
@@ -10240,7 +10241,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %i %f %i %f", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp);
         iplot3d--;
-        if(iplot3d >= 0 && iplot3d<mxplot3dvars){
+        if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
           setp3chopmin[iplot3d] = isetmin;
           setp3chopmax[iplot3d] = isetmax;
           p3chopmin[iplot3d] = p3mintemp;
@@ -13072,11 +13073,11 @@ void WriteIniLocal(FILE *fileout){
 
     n3d = 5;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
-    if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+    if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, "C_PLOT3D\n");
     n3d = 5;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
-    if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+    if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i<n3d; i++){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3chopmin[i], p3chopmin[i], setp3chopmax[i], p3chopmax[i]);
@@ -13149,7 +13150,7 @@ void WriteIniLocal(FILE *fileout){
 
     n3d = 5;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
-    if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+    if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i < n3d; i++){
@@ -13442,7 +13443,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i\n", research_mode);
+  fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

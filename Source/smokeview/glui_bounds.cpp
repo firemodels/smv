@@ -585,6 +585,16 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
+  if(RADIO_slice_setmin!=NULL&&RADIO_slice_setmax!=NULL){
+    if(research_mode==1){
+      RADIO_slice_setmin->disable();
+      RADIO_slice_setmax->disable();
+    }
+    else{
+      RADIO_slice_setmin->enable();
+      RADIO_slice_setmax->enable();
+    }
+  }
 }
 /* ------------------ UpdateScriptStop ------------------------ */
 
@@ -2131,7 +2141,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_plot3d, PLOT3D_ROLLOUT, glui_bounds);
 
     RADIO_p3 = glui_bounds->add_radiogroup_to_panel(ROLLOUT_plot3d,&list_p3_index,FILETYPEINDEX,Plot3DBoundCB);
-    for(i=0;i<mxplot3dvars;i++){
+    for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
     CHECKBOX_cache_qdata = glui_bounds->add_checkbox_to_panel(ROLLOUT_plot3d, _("Cache Plot3D data"), &cache_qdata, UNLOAD_QDATA, Plot3DBoundCB);
@@ -2378,7 +2388,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
 
-    //---
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
     }
@@ -2748,7 +2757,7 @@ extern "C" void UpdatePlot3dListIndex(void){
   i=plotn-1;
   list_p3_index_old=i;
   if(i<0)i=0;
-  if(i>mxplot3dvars-1)i=mxplot3dvars-1;
+  if(i>MAXPLOT3DVARS-1)i= MAXPLOT3DVARS-1;
   RADIO_p3->set_int_val(i);
   p3min_temp = p3min[i];
   p3max_temp = p3max[i];
@@ -3423,13 +3432,13 @@ extern "C" void SliceBoundCB(int var){
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
       break;
     case ZONEVALMINMAX:
-      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonefl==1)GetZoneColors(zonefl, nzonetotal, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
-      if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, zonescale, zonelevels256);
+      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      if(have_zonefl==1)GetZoneColors(zonefl, nzonetotal, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
       UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       zoneusermin=zonemin;
       zoneusermax=zonemax;
@@ -3457,10 +3466,8 @@ extern "C" void SliceBoundCB(int var){
         if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
         EDIT_zone_max->set_float_val(zoneglobalmax);
       }
-      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full,
-        colorlabelzone, zonescale, zonelevels256);
-      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full,
-        colorlabelzone, zonescale, zonelevels256);
+      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+      GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
       UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
       break;
     case COLORBAR_LIST2:
@@ -3475,6 +3482,16 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
+      if(RADIO_slice_setmin!=NULL&&RADIO_slice_setmax!=NULL){
+        if(research_mode==1){
+          RADIO_slice_setmin->disable();
+          RADIO_slice_setmax->disable();
+        }
+        else{
+          RADIO_slice_setmin->enable();
+          RADIO_slice_setmax->enable();
+        }
+      }
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
 
@@ -3588,19 +3605,6 @@ extern "C" void SliceBoundCB(int var){
         // particle files
 
         if(npartloaded > 0){
-          setpartmin = setpartmin_save;
-          PartBoundCB(SETVALMIN);
-          partmin = partmin_save;
-          PartBoundCB(VALMIN);
-
-          setpartmax = setpartmax_save;
-          PartBoundCB(SETVALMAX);
-          partmax = partmax_save;
-          PartBoundCB(VALMAX);
-          PartBoundCB(FILERELOAD);
-
-          // particle files
-
           setpartmin = setpartmin_save;
           PartBoundCB(SETVALMIN);
           partmin = partmin_save;
@@ -3747,6 +3751,10 @@ extern "C" void SliceBoundCB(int var){
     UpdateChopColors();
     break;
   case SETVALMIN:
+    if(research_mode==1&&setslicemin!=GLOBAL_MIN){
+      setslicemin = GLOBAL_MIN;
+      if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
+    }
     switch(setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
@@ -3766,6 +3774,10 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case SETVALMAX:
+    if(research_mode==1&&setslicemax!=GLOBAL_MAX){
+      setslicemax = GLOBAL_MAX;
+      if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
+    }
     switch(setslicemax){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:

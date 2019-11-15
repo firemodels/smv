@@ -1794,8 +1794,7 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 
 /* ------------------ SetSliceColors ------------------------ */
 
-void SetSliceColors(float smin, float smax,
-  slicedata *sd, int *errorcode){
+void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
   char *scale;
   int slicetype;
   boundsdata *sb;
@@ -1814,7 +1813,7 @@ void SetSliceColors(float smin, float smax,
     GetSliceColors(patchgeom->geom_vals, patchgeom->geom_nvals, patchgeom->geom_ivals,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -1823,7 +1822,7 @@ void SetSliceColors(float smin, float smax,
     GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -4668,6 +4667,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     UpdateTimes();
     CheckMemory;
 
+    if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         UpdateSliceBounds();

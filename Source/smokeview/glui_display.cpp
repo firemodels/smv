@@ -32,6 +32,7 @@ GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
+GLUI_Spinner *SPINNER_ncolorlabel_decimals =NULL;
 GLUI_Spinner *SPINNER_ntick_decimals=NULL;
 GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
 GLUI_Spinner *SPINNER_up_red=NULL,*SPINNER_up_green=NULL,*SPINNER_up_blue=NULL;
@@ -750,6 +751,9 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,_("Selection width:"),GLUI_SPINNER_INT,&colorband,COLORBAND,SliceBoundCB);
   SPINNER_colorband->set_int_limits(1,10);
 
+  SPINNER_ncolorlabel_decimals = glui_labels->add_spinner_to_panel(PANEL_cb11, _("max decimals"), GLUI_SPINNER_INT, &ncolorlabel_decimals);
+  SPINNER_ncolorlabel_decimals->set_int_limits(1, 3, GLUI_LIMIT_CLAMP);
+
   glui_labels->add_column_to_panel(PANEL_cb11,false);
 
   CHECKBOX_labels_shade=glui_labels->add_checkbox_to_panel(PANEL_cb11,_("Black/White (geometry)"),&setbw,LABELS_shade,LabelsCB);
@@ -1385,7 +1389,7 @@ extern "C" int GetColorbarListIndex(void){
 /* ------------------ UpdateAxisLabelsSmooth ------------------------ */
 
 extern "C" void UpdateAxisLabelsSmooth(void){
-  CHECKBOX_axislabels_smooth->set_int_val(axislabels_smooth);
+  if(CHECKBOX_axislabels_smooth!=NULL)CHECKBOX_axislabels_smooth->set_int_val(axislabels_smooth);
 }
 
 /* ------------------ UpdateTransparency ------------------------ */
