@@ -1552,7 +1552,7 @@ SVEXTERN char a_zonescale[31];
 SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
-SVEXTERN float colorvaluespatch[12];
+SVEXTERN float colorvaluespatch[12], colorvalueszone[12];
 
 SVEXTERN int SVDECL(hilight_skinny,0);
 

@@ -733,7 +733,7 @@ int GetZoneColor(float t, float local_tmin, float local_tmax, int nlevel){
 
 void GetZoneColors(const float *t, int nt, unsigned char *it,
                float ttmin, float ttmax, int nlevel, int nlevel_full,
-               char **labels, char *scale, float *tvals256
+               char **zonelabels, float zonevalues[12], char *scale, float *tvals256
                ){
   int n;
   float dt, factor;
@@ -790,15 +790,18 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){
     tval = local_tmin + (n-1)*factor;
-    Num2String(&labels[n][0],tval);
+    zonevalues[n] = tval;
+    Num2String(&zonelabels[n][0],tval);
   }
   tval = local_tmin + (nlevel-3)*factor;
   for(n=0;n<256;n++){
     tvals256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
   }
-  Num2String(&labels[nlevel-2][0],tval);
+  zonevalues[nlevel-2] = tval;
+  Num2String(&zonelabels[nlevel-2][0],tval);
   tval = local_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
+  zonevalues[nlevel-1] = tval;
+  Num2String(&zonelabels[nlevel-1][0],tval);
 
 }
 

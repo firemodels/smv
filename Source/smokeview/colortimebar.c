@@ -2874,17 +2874,19 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
       char zonecolorlabel[256];
       char *zonecolorlabel_ptr = NULL;
+      float val;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
-      zonecolorlabel_ptr = &colorlabelzone[i + 1][0];
       if(zoneflag == 1){
-        float val;
-
         val = tttmin + (i - 1)*zonerange / (nrgb - 2);
-        ScaleFloat2String(val, zonecolorlabel, zonefactor);
-        zonecolorlabel_ptr = zonecolorlabel;
       }
+      else{
+        val = colorvalueszone[i+1];
+      }
+      val = ScaleFloat2Float(val, zonefactor);
+      SliceNum2String(zonecolorlabel, val, ncolorlabel_decimals);
+      zonecolorlabel_ptr = zonecolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, zonecolorlabel_ptr);
     }
     SNIFF_ERRORS("after zone left labels");
