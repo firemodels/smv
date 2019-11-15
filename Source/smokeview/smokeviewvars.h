@@ -870,7 +870,6 @@ SVEXTERN char blank_global[2];
 SVEXTERN float SVDECL(*sphere_xyz,NULL);
 SVEXTERN int demo_mode;
 SVEXTERN int update_demo;
-SVEXTERN int mxplot3dvars;
 SVEXTERN int loadplot3dall;
 SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
 
@@ -1552,7 +1551,7 @@ SVEXTERN char a_zonescale[31];
 SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
-SVEXTERN float colorvaluespatch[12], colorvalueszone[12];
+SVEXTERN float colorvaluespatch[12], colorvalueszone[12], colorvaluesp3[MAXPLOT3DVARS][12];
 
 SVEXTERN int SVDECL(hilight_skinny,0);
 

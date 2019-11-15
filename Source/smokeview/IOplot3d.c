@@ -92,7 +92,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   if(nloaded==0){
     if(colorlabelp3 != NULL){
-      for(nn=0;nn<mxplot3dvars;nn++){
+      for(nn=0;nn<MAXPLOT3DVARS;nn++){
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabelp3+nn))[nnn]);
         }
@@ -101,7 +101,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       FREEMEMORY(colorlabelp3);
     }
     if(colorlabeliso != NULL){
-      for(nn=0;nn<mxplot3dvars;nn++){
+      for(nn=0;nn<MAXPLOT3DVARS;nn++){
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabeliso+nn))[nnn]);
         }
@@ -110,7 +110,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       FREEMEMORY(colorlabeliso);
     }
     if(scalep3 != NULL){
-      for(nn=0;nn<mxplot3dvars;nn++){
+      for(nn=0;nn<MAXPLOT3DVARS;nn++){
         FREEMEMORY(scalep3[nn]);
       }
       FREEMEMORY(scalep3);
@@ -119,13 +119,13 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       FREEMEMORY(fscalep3);
     }
     if(p3levels!=NULL){
-      for(nn=0;nn<mxplot3dvars;nn++){
+      for(nn=0;nn<MAXPLOT3DVARS;nn++){
         FREEMEMORY(p3levels[nn]);
       }
       FREEMEMORY(p3levels);
     }
     if(p3levels256!=NULL){
-      for(nn=0;nn<mxplot3dvars;nn++){
+      for(nn=0;nn<MAXPLOT3DVARS;nn++){
         FREEMEMORY(p3levels256[nn]);
       }
       FREEMEMORY(p3levels256);
@@ -221,7 +221,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(p->compression_type==UNCOMPRESSED){
     if(uindex!=-1||vindex!=-1||windex!=-1){
       vectorspresent=1;
-      p->nvars=mxplot3dvars;
+      p->nvars= MAXPLOT3DVARS;
       udata = meshi->qdata + ntotal*uindex;
       vdata = meshi->qdata + ntotal*vindex;
       wdata = meshi->qdata + ntotal*windex;
@@ -240,21 +240,21 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(windex!=-1)meshi->wdata=meshi->qdata + ntotal*windex;
   }
 
-  if(NewMemory((void **)&colorlabelp3,mxplot3dvars*sizeof(char **))==0||
-     NewMemory((void **)&colorlabeliso,mxplot3dvars*sizeof(char **))==0||
-     NewMemory((void **)&fscalep3     ,mxplot3dvars*sizeof(float))==0||
-     NewMemory((void **)&scalep3     ,mxplot3dvars*sizeof(char *))==0){
+  if(NewMemory((void **)&colorlabelp3, MAXPLOT3DVARS*sizeof(char **))==0||
+     NewMemory((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **))==0||
+     NewMemory((void **)&fscalep3     , MAXPLOT3DVARS*sizeof(float))==0||
+     NewMemory((void **)&scalep3     , MAXPLOT3DVARS*sizeof(char *))==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
-  for(nn=0;nn<mxplot3dvars;nn++){
+  for(nn=0;nn<MAXPLOT3DVARS;nn++){
     colorlabelp3[nn]=NULL;
     colorlabeliso[nn]=NULL;
     scalep3[nn]=NULL;
     fscalep3[nn]=1.0;
   }
-  for(nn=0;nn<mxplot3dvars;nn++){
+  for(nn=0;nn<MAXPLOT3DVARS;nn++){
     if(NewMemory((void **)&colorlabelp3[nn],MAXRGB*sizeof(char *))==0||
        NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0||
        NewMemory((void **)&scalep3[nn],30*sizeof(char))==0){
@@ -265,13 +265,13 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   scalep3copy = scalep3;
-  if(NewMemory((void **)&p3levels,mxplot3dvars*sizeof(float *))==0||
-     NewMemory((void **)&p3levels256,mxplot3dvars*sizeof(float *))==0){
+  if(NewMemory((void **)&p3levels, MAXPLOT3DVARS*sizeof(float *))==0||
+     NewMemory((void **)&p3levels256, MAXPLOT3DVARS*sizeof(float *))==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
-  for(nn=0;nn<mxplot3dvars;nn++){
+  for(nn=0;nn<MAXPLOT3DVARS;nn++){
     p3levels[nn]=NULL;
     p3levels256[nn]=NULL;
   }

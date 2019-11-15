@@ -2927,17 +2927,19 @@ void DrawVerticalColorbarRegLabels(void){
       for(i = 0; i < nrgb - 1; i++){
         char plot3dcolorlabel[256];
         char *plot3dcolorlabel_ptr = NULL;
+        float val;
 
         vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
-        plot3dcolorlabel_ptr = &colorlabelp3[plotn - 1][i][0];
         if(plot3dflag == 1){
-          float val;
-
           val = tttmin + i*plot3drange / (nrgb - 2);
-          ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-          plot3dcolorlabel_ptr = plot3dcolorlabel;
         }
+        else{
+          val = colorvaluesp3[plotn - 1][i];
+        }
+        plot3dcolorlabel_ptr = plot3dcolorlabel;
+        ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
+        SliceNum2String(plot3dcolorlabel, val, ncolorlabel_decimals);
         OutputBarText(0.0, vert_position, foreground_color, plot3dcolorlabel_ptr);
       }
     }

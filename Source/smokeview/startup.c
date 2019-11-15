@@ -21,7 +21,7 @@ void InitMisc(void){
   int i;
 
   FREEMEMORY(plotiso);
-  NewMemory((void **)&plotiso,mxplot3dvars*sizeof(int));
+  NewMemory((void **)&plotiso, MAXPLOT3DVARS*sizeof(int));
 
   for(i=0;i<16;i++){
     if(i%5==0){
@@ -31,7 +31,7 @@ void InitMisc(void){
       modelview_identity[i]=0.0;
     }
   }
-  for(i=0;i<mxplot3dvars;i++){
+  for(i=0;i<MAXPLOT3DVARS;i++){
     plotiso[i]=nrgb/2;
   }
 
@@ -1973,7 +1973,6 @@ void InitVars(void){
 
   demo_mode=0;
   update_demo=1;
-  mxplot3dvars=MAXPLOT3DVARS;
 
   valindex=0;
 

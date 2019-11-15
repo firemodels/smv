@@ -2141,7 +2141,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_plot3d, PLOT3D_ROLLOUT, glui_bounds);
 
     RADIO_p3 = glui_bounds->add_radiogroup_to_panel(ROLLOUT_plot3d,&list_p3_index,FILETYPEINDEX,Plot3DBoundCB);
-    for(i=0;i<mxplot3dvars;i++){
+    for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
     CHECKBOX_cache_qdata = glui_bounds->add_checkbox_to_panel(ROLLOUT_plot3d, _("Cache Plot3D data"), &cache_qdata, UNLOAD_QDATA, Plot3DBoundCB);
@@ -2757,7 +2757,7 @@ extern "C" void UpdatePlot3dListIndex(void){
   i=plotn-1;
   list_p3_index_old=i;
   if(i<0)i=0;
-  if(i>mxplot3dvars-1)i=mxplot3dvars-1;
+  if(i>MAXPLOT3DVARS-1)i= MAXPLOT3DVARS-1;
   RADIO_p3->set_int_val(i);
   p3min_temp = p3min[i];
   p3max_temp = p3max[i];

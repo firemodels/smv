@@ -948,6 +948,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   for(n=0;n<nlevel-1;n++){
     tval = local_tmin + n*dt;
     Num2String(&labels[n][0],tval);
+    colorvaluesp3[plot3dvar][n] = tval;
     Num2String(&labelsiso[n][0],tval+dt/2.0);
   }
   for(n=0;n<256;n++){
@@ -955,6 +956,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   }
   tval = local_tmax;
   Num2String(&labels[nlevel-1][0],tval);
+  colorvaluesp3[plot3dvar][nlevel-1] = tval;
   Num2String(&labelsiso[nlevel-1][0],tval);
 
   for(n=0;n<nlevel;n++){
