@@ -367,7 +367,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2
-#define SLICE_FIRELINE 3
 #define SLICE_TERRAIN 4
 #define SLICE_FACE_CENTER 5
 #define SLICE_GEOM 6

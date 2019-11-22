@@ -39,7 +39,6 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       Match(buffer,"SLCF") == 1||
       Match(buffer,"SLCC") == 1||
       Match(buffer, "SLCD") == 1 ||
-      Match(buffer, "SLFL") == 1 ||
       Match(buffer,"SLCT") == 1
       ){
       nsliceinfo++;
@@ -405,7 +404,6 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       Match(buffer,"SLCF") == 1||
       Match(buffer,"SLCC") == 1||
       Match(buffer, "SLCD") == 1 ||
-      Match(buffer, "SLFL") == 1 ||
       Match(buffer,"SLCT") == 1)
     {
       int version_local=0;
@@ -434,9 +432,6 @@ int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase){
       }
       if(Match(buffer,"SLCC") == 1||Match(buffer, "SLCD") == 1){
           slicei->slicetype = SLICE_CELL_CENTER;
-      }
-      if(Match(buffer,"SLFL") == 1){
-        slicei->slicetype= SLICE_FIRELINE;
       }
       if(Match(buffer,"SLCT") == 1){
         slicei->slicetype= SLICE_TERRAIN;

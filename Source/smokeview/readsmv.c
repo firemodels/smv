@@ -4345,7 +4345,6 @@ int ReadSMV(char *file, char *file2){
     if( (Match(buffer,"SLCF") == 1)  ||
         (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
-        (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
         || (Match(buffer, "BNDS") == 1)
       ){
@@ -8175,14 +8174,13 @@ typedef struct {
     if( (Match(buffer,"SLCF") == 1)  ||
         (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
-        (Match(buffer, "SLFL") == 1) ||
         (Match(buffer,"SLCT") == 1)
       || (Match(buffer, "BNDS") == 1)
       ){
       char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
       float above_ground_level=0.0;
       float sliceoffset_fds=0.0;
-      int terrain=0, cellcenter=0, facecenter=0, fire_line=0;
+      int terrain=0, cellcenter=0, facecenter=0;
       int slicegeom=0;
       int slcf_index = 0;
       char *char_slcf_index;
@@ -8235,10 +8233,6 @@ typedef struct {
       }
       if(Match(buffer,"SLCT") == 1){
         terrain=1;
-      }
-      if(Match(buffer,"SLFL") == 1){
-        terrain=1;
-        fire_line=1;
       }
       if(Match(buffer,"SLCC") == 1){
         cellcenter_slice_active = 1;
@@ -8303,7 +8297,6 @@ typedef struct {
       if(terrain==1){
         sd->slice_filetype=SLICE_TERRAIN;
       }
-      if(fire_line==1)sd->slice_filetype=SLICE_FIRELINE;
       if(cellcenter==1){
         sd->slice_filetype=SLICE_CELL_CENTER;
       }
