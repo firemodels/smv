@@ -1,35 +1,15 @@
-&HEAD CHID='levelset1'
-      TITLE='Level set example 900 m x 900 m level domain = FARSITE in physical fidelity' /
+&HEAD CHID='levelset1', TITLE='Level set example 900 m x 900 m level domain = FARSITE in physical fidelity' /
 
-- 1 grid
 &MESH IJK=75,75,100, XB=0,300,-150,150,0,100 /
 
 &TIME T_END=200 /
-&MISC VEG_LEVEL_SET_UNCOUPLED=.TRUE.,TERRAIN_CASE=.TRUE.,SOLID_PHASE_ONLY=.TRUE.,FREEZE_VELOCITY=.TRUE. /
+&MISC VEG_LEVEL_SET_UNCOUPLED=.TRUE., TERRAIN_CASE=.TRUE., SOLID_PHASE_ONLY=.TRUE., FREEZE_VELOCITY=.TRUE. /
 &WIND U0=5,V0=0  /
 
--- Ignitor locations and times
---- Line ignition
--SURF ID = 'IGN LINE FIRE',VEGETATION_LSET_IGNITE_TIME = 1,COLOR = 'RED' /
--VENT XB=40,50,-200,200,0,0,SURF_ID='IGN LINE FIRE' /
+&SLCF AGL_SLICE=1., QUANTITY='LEVEL SET VALUE' /
 
---- Line ignition
--SURF ID = 'LINE IGN',VEGETATION_LSET_IGNITE_TIME = 1,COLOR = 'RED' /
--VENT XB=40,50,-5,5,0,0,SURF_ID='LINE IGN' /
-
---- Spot ignition
 &SURF ID = 'SPOT IGN',VEGETATION_LSET_IGNITE_TIME = 1,COLOR = 'RED' /
-&VENT XB=48,50,-1,1,0,0,SURF_ID='SPOT IGN' /
-
-
- -- wind exp < 1 --> wider head fire; wind exp>1 --> pointier head fire
---SURF ID = 'GRASS'
-            VEG_LEVEL_SET_SPREAD = .TRUE.
-            VEG_LSET_ROS_HEAD  = 1.45
-            VEG_LSET_ROS_FLANK = 0.48
-            VEG_LSET_ROS_BACK  = 0.1
-            VEG_LSET_WIND_EXP = 1
-            RGB=122,117,48 /
+&VENT XB=48,52,-2,2,0,0,SURF_ID='SPOT IGN' /
 
 &SURF ID = 'GRASS'
             VEG_LEVEL_SET_SPREAD = .TRUE.
@@ -52,7 +32,6 @@
 &VENT XB=   50, 250,-150,-100, 0, 0,SURF_ID='NO BURN GRASS' /
 &VENT XB=   50, 250, 100, 150, 0, 0,SURF_ID='NO BURN GRASS' /
 
--- Boundary conditions
 &VENT XB=   0.0,  0.0,-150.0, 150.0,  0.0,100.0,SURF_ID='OPEN' /
 &VENT XB= 300.0,300.0,-150.0, 150.0,  0.0,100.0,SURF_ID='OPEN' /
 &VENT XB=   0.0,300.0,-150.0,-150.0,  0.0,100.0,SURF_ID='OPEN' /
