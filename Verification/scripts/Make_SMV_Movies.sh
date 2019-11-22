@@ -88,11 +88,11 @@ $MAKEMOVIE -o $OUTDIR -m thouse5_tslice  thouse5_tslice
 $MAKEMOVIE -o $OUTDIR -m thouse5_smoke3d thouse5_smoke3d
 
 cd $WUIINDIR
-$MAKEMOVIE -o $OUTDIR BT10m_2x2km_LS
-$MAKEMOVIE -o $OUTDIR hill_structure
-$MAKEMOVIE -o $OUTDIR levelset1
-$MAKEMOVIE -o $OUTDIR wind_test1
-$MAKEMOVIE -o $OUTDIR tree_test2
+$MAKEMOVIE -i frames -o $OUTDIR BT10m_2x2km_LS_movie
+$MAKEMOVIE -i frames -o $OUTDIR hill_structure_movie
+$MAKEMOVIE -i frames -o $OUTDIR levelset1_movie
+$MAKEMOVIE -i frames -o $OUTDIR wind_test1_movie
+$MAKEMOVIE -i frames -o $OUTDIR tree_test2_movie
 
 echo movies generated
 
