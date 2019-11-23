@@ -105,7 +105,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fhHij:p:q:rs:S:tv' OPTION
+while getopts 'Ab:c:C:d:e:fhHij:n:p:P:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -150,7 +150,13 @@ case $OPTION  in
    SMVJOBPREFIX="${OPTARG}"
    j_arg="-j ${OPTARG}"
    ;;
+  n)
+   dummy="${OPTARG}"
+   ;;
   p)
+   dummy="${OPTARG}"
+   ;;
+  P)
    nprocs="$OPTARG"
    ;;
   q)
