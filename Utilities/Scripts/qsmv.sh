@@ -85,8 +85,9 @@ redirect=
 FED=
 dummy=
 COMMAND=
-BINDIR=
+SMVBINDIR=
 SMVJOBPREFIX=
+b_arg=
 c_arg=
 d_arg=
 e_arg=
@@ -112,7 +113,8 @@ case $OPTION  in
    dummy=1
    ;;
   b)
-   BINDIR="-bindir $OPTARG"
+   SMVBINDIR="-bindir $OPTARG"
+   b_arg="-b $OPTARG"
    ;;
   c)
    smv_script="$OPTARG"
@@ -197,7 +199,7 @@ if ! [[ $nprocs =~ $re ]] ; then
 fi
 if [ $nprocs != 1 ]; then
   for i in $(seq 1 $nprocs); do
-    $QSMV $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
+    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
   done
   exit
 fi
@@ -254,6 +256,9 @@ if [ "$use_installed" == "1" ]; then
     smvpath=`which smokeview`
     smvdir=$(dirname "${smvpath}")
     curdir=`pwd`
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $smvdir"
+    fi
     cd $smvdir
     exe=`pwd`/smokeview
     cd $curdir
@@ -261,8 +266,13 @@ if [ "$use_installed" == "1" ]; then
 else
   if [ "$exe" == "" ]; then
     exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+    smvdir=$(dirname "${smvpath}")
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $REPOROOT/bot/Bundle/smv/for_bundle"
+    fi
   fi
 fi
+echo SMVBINDIR=$SMVBINDIR
 
 let ppn=$ncores
 let nodes=1
@@ -385,6 +395,7 @@ echo " smokeview script: $smokeview_script_file"
 echo "      start frame: $first"
 echo "       frame skip: $skip"
 echo "             Host: \`hostname\`"
+echo "      Run command: $exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile"
 echo "            Queue: $queue"
 echo ""
 
