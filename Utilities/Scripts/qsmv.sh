@@ -85,7 +85,7 @@ redirect=
 FED=
 dummy=
 COMMAND=
-BINDIR=
+SMVBINDIR=
 SMVJOBPREFIX=
 c_arg=
 d_arg=
@@ -112,7 +112,7 @@ case $OPTION  in
    dummy=1
    ;;
   b)
-   BINDIR="-bindir $OPTARG"
+   SMVBINDIR="-bindir $OPTARG"
    ;;
   c)
    smv_script="$OPTARG"
@@ -248,6 +248,9 @@ if [ "$use_installed" == "1" ]; then
     smvpath=`which smokeview`
     smvdir=$(dirname "${smvpath}")
     curdir=`pwd`
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $smvdir"
+    fi
     cd $smvdir
     exe=`pwd`/smokeview
     cd $curdir
@@ -255,6 +258,10 @@ if [ "$use_installed" == "1" ]; then
 else
   if [ "$exe" == "" ]; then
     exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+    smvdir=$(dirname "${smvpath}")
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $REPOROOT/bot/Bundle/smv/for_bundle"
+    fi
   fi
 fi
 
