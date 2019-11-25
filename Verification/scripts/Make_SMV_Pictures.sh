@@ -101,7 +101,7 @@ fi
 COMPILER=intel
 DEBUG=
 TEST=
-use_installed="0"
+use_installed=
 RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
@@ -116,7 +116,7 @@ case $OPTION  in
    usage;
    ;;
   i)
-   use_installed="1"
+   use_installed="-i"
    ;;
   I)
    COMPILER="$OPTARG" 
@@ -165,18 +165,15 @@ SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
 
-BINDIR="$SVNROOT/bot/Bundle/smv/for_bundle"
-export SMVBINDIR="-bindir $BINDIR"
-
 echo Generating smokeview images using:
 echo background: $BACKGROUND
 echo    dem2fds: $DEM2FDS
 echo smokediff : $SMOKEDIFF
-echo smokeview : $SMV $SMVBINDIR
+echo smokeview : $SMV
 echo smokezip  : $SMOKEZIP
 echo
 
-RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX -b $BINDIR -q $QUEUE"
+RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
