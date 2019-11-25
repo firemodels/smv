@@ -85,7 +85,7 @@ redirect=
 FED=
 dummy=
 COMMAND=
-BINDIR=
+SMVBINDIR=
 SMVJOBPREFIX=
 c_arg=
 d_arg=
@@ -105,14 +105,14 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fhHij:p:q:rs:S:tv' OPTION
+while getopts 'Ab:c:C:d:e:fhHij:n:p:P:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
    dummy=1
    ;;
   b)
-   BINDIR="-bindir $OPTARG"
+   SMVBINDIR="-bindir $OPTARG"
    ;;
   c)
    smv_script="$OPTARG"
@@ -150,7 +150,13 @@ case $OPTION  in
    SMVJOBPREFIX="${OPTARG}"
    j_arg="-j ${OPTARG}"
    ;;
+  n)
+   dummy="${OPTARG}"
+   ;;
   p)
+   dummy="${OPTARG}"
+   ;;
+  P)
    nprocs="$OPTARG"
    ;;
   q)
@@ -248,6 +254,9 @@ if [ "$use_installed" == "1" ]; then
     smvpath=`which smokeview`
     smvdir=$(dirname "${smvpath}")
     curdir=`pwd`
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $smvdir"
+    fi
     cd $smvdir
     exe=`pwd`/smokeview
     cd $curdir
@@ -255,6 +264,10 @@ if [ "$use_installed" == "1" ]; then
 else
   if [ "$exe" == "" ]; then
     exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+    smvdir=$(dirname "${smvpath}")
+    if [ "$SMVBINDIR" == "" ]; then
+      SMVBINDIR="-bindir $REPOROOT/bot/Bundle/smv/for_bundle"
+    fi
   fi
 fi
 
