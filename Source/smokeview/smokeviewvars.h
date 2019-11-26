@@ -180,7 +180,7 @@ SVEXTERN int SVDECL(ncircletournodes, 16);
 
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
-SVEXTERN int SVDECL(toggle_colorbar, 0);
+SVEXTERN int SVDECL(vis_colorbar, COLORBAR_HIDDEN);
 SVEXTERN int hcolorbar_vis[6];
 
 SVEXTERN int SVDECL(windrose_ttype, 2);

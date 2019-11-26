@@ -65,6 +65,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RENDER_START_NORMAL 12
 #define RENDER_START_360 10
 
+#define RESEARCH_MODE 114
+
+#define COLORBAR_HIDDEN          0
+#define COLORBAR_SHOW_VERTICAL   1
+#define COLORBAR_SHOW_HORIZONTAL 2
+
 #define COLORBAR_SET 18
 #define COLORBAR_RGB 2
 

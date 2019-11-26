@@ -1168,35 +1168,19 @@ extern "C" void LabelsCB(int var){
       visColorbarHorizontal=0;
       CHECKBOX_visColorbarHorizontal->set_int_val(visColorbarHorizontal);
     }
- // toggle_colorbar   state
- //    0              hidden
- //    1              vertical
- //    2->max         horizontal
+ // vis_colorbar      state
+ //    0/COLORBAR_HIDDEN               hidden
+ //    1/COLORBAR_SHOW_VERTICAL        vertical
+ //    2->max/COLORBAR_SHOW_HORIZONTAL horizontal
 
-    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
-      toggle_colorbar = 1;
-    }
-    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
-      toggle_colorbar = 2;
-    }
-    else{
-      toggle_colorbar = 0;
-    }
+    vis_colorbar = GetColorbarState();
     break;
   case LABELS_hcolorbar:
     if(visColorbarHorizontal==1){
       visColorbarVertical = 0;
       CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
     }
-    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
-      toggle_colorbar = 1;
-    }
-    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
-      toggle_colorbar = 2;
-    }
-    else{
-      toggle_colorbar = 0;
-    }
+    vis_colorbar = GetColorbarState();
     break;
   case LABELS_tick_inside:
   case LABELS_tick_outside:

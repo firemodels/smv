@@ -1916,6 +1916,24 @@ void UpdateFlippedColorbar(void){
   }
 }
 
+/* ------------------ GetColorbarState ------------------------ */
+
+int GetColorbarState(void){
+  if(visColorbarVertical==1&&visColorbarHorizontal==0){
+    return COLORBAR_SHOW_VERTICAL;
+  }
+  else if(visColorbarVertical==0&&visColorbarHorizontal==1){
+    return COLORBAR_SHOW_HORIZONTAL;
+  }
+  // if colorbars are hidden then research mode needs to be off
+  visColorbarVertical = 0;
+  visColorbarHorizontal = 0;
+  visColorbarVertical_save = 0;
+  visColorbarHorizontal_save = 0;
+  research_mode = 0;
+  return COLORBAR_HIDDEN;
+}
+
 /* ------------------ UpdateDisplay ------------------------ */
 
 void UpdateDisplay(void){
@@ -2019,14 +2037,10 @@ void UpdateDisplay(void){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
-    if(visColorbarVertical==1&&visColorbarHorizontal==0){
-      toggle_colorbar = 1;
-    }
-    else if(visColorbarVertical==0&&visColorbarHorizontal==1){
-      toggle_colorbar = 2;
-    }
-    else {
-      toggle_colorbar = 0;
+    vis_colorbar = GetColorbarState();
+    if(visColorbarHorizontal==0&&visColorbarVertical==0){
+      research_mode = 0;
+      SliceBoundCB(RESEARCH_MODE);
     }
     updatemenu = 1;
   }

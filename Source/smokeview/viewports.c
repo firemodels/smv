@@ -170,6 +170,7 @@ void GetViewportInfo(void){
   }
 
   if(visColorbarVertical==0||num_colorbars==0||(showtime==0&&showplot3d==0))doit=0;
+  vis_colorbar = GetColorbarState();
   VP_vcolorbar.left = screenWidth-vcolorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
     VP_vcolorbar.left -= colorbar_label_width;

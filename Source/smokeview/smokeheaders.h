@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
 #ifdef pp_SELECT_GEOM
