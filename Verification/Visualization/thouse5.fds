@@ -1,5 +1,7 @@
 &HEAD CHID='thouse5',TITLE='Town House Kitchen Fire' /
 
+MESH IJK=16,20,12, XB=0.0,3.2,0.0,4.0,0.0,2.4, MULT_ID='mesh'
+MULT ID='mesh', DX=3.2, DY=4.0, DZ=2.4, I_UPPER=1, J_UPPER=1, K_UPPER=1 /
 &MESH IJK=24,40,24, XB=0.0,6.4,0.0,8.0,0.0,4.8 /
 
 &TIME T_END=61. /
