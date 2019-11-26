@@ -726,33 +726,17 @@ void LabelMenu(int value){
     visColorbarVertical   = 1 - visColorbarVertical;
     if(visColorbarVertical==1)visColorbarHorizontal=0;
 
-    // toggle_colorbar   state
-    //    0              hidden
-    //    1              vertical
-    //    2->max         horizontal
+    // vis_colorbar                        state
+    //    0/COLORBAR_HIDDEN                hidden
+    //    1/COLORBAR_SHOW_VERTICAL         vertical
+    //    2->max/COLORBAR_SHOW_HORIZONTAL  horizontal
 
-    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
-      toggle_colorbar = 1;
-    }
-    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
-      toggle_colorbar = 2;
-    }
-    else{
-      toggle_colorbar = 0;
-    }
+    vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_colorbar_horizontal:
     visColorbarHorizontal = 1 - visColorbarHorizontal;
     if(visColorbarHorizontal==1)visColorbarVertical = 0;
-    if(visColorbarVertical == 1 && visColorbarHorizontal == 0){
-      toggle_colorbar = 1;
-    }
-    else if(visColorbarVertical == 0 && visColorbarHorizontal == 1){
-      toggle_colorbar = 2;
-    }
-    else {
-      toggle_colorbar = 0;
-    }
+    vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;

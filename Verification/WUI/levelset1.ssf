@@ -17,7 +17,7 @@ SETVIEWPOINT
 // LOADFILE
 //  levelset1_lsfs.sf
 LOADSLICEM
- phifield(terrain)
+ LEVEL SET VALUE(terrain)
  3 1.000000
  1
 SETTIMEVAL

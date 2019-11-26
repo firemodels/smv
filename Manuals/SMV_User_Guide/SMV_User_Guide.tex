@@ -1800,7 +1800,9 @@ c=255 \frac{v-v_{\rm min}}{v_{\rm max}-v_{\rm min}}
 Creating and modifying colorbars are discussed in Chapter \ref{chap:colorbar}.
 User specified min/max values may be used to ensure consistent color shading when
 displaying several data files simultaneously.
-To quickly set bounds for actual data, press {\tt ALT r}\ and reload or update data files. This puts Smokeview into {\em research mode}\ which uses actual global min/max values when mapping data to color and does not smooth colorbar labels.
+To quickly set bounds for actual data, press {\tt ALT r}\ and reload or update data files. 
+This puts Smokeview into {\em research mode}\ which uses actual global min/max bounds
+when mapping data to color and does not smooth colorbar labels.
 
 \begin{figure}[bph]
 \centerline{
@@ -4869,8 +4871,7 @@ as {\tt d}\ and {\tt f}\ are used for {\tt CTRL}\ and
 5) hidden
 
 \kitem{ALT r}Toggle research mode (research mode uses global min
-and max for coloring data and turns off axis label smoothing when
-displaying it.)
+and max bounds for coloring data and turns off smoothing when displaying axis labels.}
 
 \kitem{ALT R}Display scene in 360$^\circ$ view mode - all view directions of the scene are displayed in a $1024\times 512$ image.
 

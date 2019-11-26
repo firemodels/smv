@@ -14,8 +14,10 @@ SCENECLIP
  0
 SETVIEWPOINT
  view 1
-LOADFILE
- levelset1_lsfs.sf
+LOADSLICEM
+ LEVEL SET VALUE(terrain)
+ 3 1.000000
+ 1
 RENDERALL
  1
 levelset1_movie

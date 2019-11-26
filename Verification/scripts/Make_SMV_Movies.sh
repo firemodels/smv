@@ -70,6 +70,7 @@ cd $VDIR
 $QSMV -P 8 -c plume5c_movies.ssf        -d Visualization plume5c
 $QSMV -P 8 -c thouse5_movies.ssf        -d Visualization thouse5
 $QSMV -P 8 -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
+$QSMV -P 8 -c hill_structure_movies.ssf -d WUI           hill_structure
 $QSMV -P 8 -c levelset1_movies.ssf      -d WUI           levelset1
 $QSMV -P 8 -c wind_test1_movies.ssf     -d WUI           wind_test1
 $QSMV -P 8 -c tree_test2_movies.ssf     -d WUI           tree_test2
@@ -88,11 +89,11 @@ $MAKEMOVIE -o $OUTDIR -m thouse5_tslice  thouse5_tslice
 $MAKEMOVIE -o $OUTDIR -m thouse5_smoke3d thouse5_smoke3d
 
 cd $WUIINDIR
-$MAKEMOVIE -i frames -o $OUTDIR BT10m_2x2km_LS_movie
-$MAKEMOVIE -i frames -o $OUTDIR hill_structure_movie
-$MAKEMOVIE -i frames -o $OUTDIR levelset1_movie
-$MAKEMOVIE -i frames -o $OUTDIR wind_test1_movie
-$MAKEMOVIE -i frames -o $OUTDIR tree_test2_movie
+$MAKEMOVIE -o $OUTDIR BT10m_2x2km_LS_movie
+$MAKEMOVIE -o $OUTDIR hill_structure_movie
+$MAKEMOVIE -o $OUTDIR levelset1_movie
+$MAKEMOVIE -o $OUTDIR wind_test1_movie
+$MAKEMOVIE -o $OUTDIR tree_test2_movie
 
 echo movies generated
 

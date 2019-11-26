@@ -2349,22 +2349,22 @@ void Keyboard(unsigned char key, int flag){
         break;
       }
       break;
- // toggle_colorbar   state
- //    0              hidden
- //    1              vertical
- //    2->max         horizontal
+ //    vis_colorbar                       state
+ //    0/COLORBAR_HIDDEN                  hidden
+ //    1/COLORBAR_SHOW_VERTICAL           vertical
+ //    2->max/COLORBAR_SHOW_HORIZONTAL    horizontal
     case ',':
       {
         int maxtoggle;
 
         maxtoggle = MAX(3, 2 + CountColorbars());
-        toggle_colorbar++;
-        if(toggle_colorbar >= maxtoggle)toggle_colorbar = 0;
-        if(toggle_colorbar == 0) {
+        vis_colorbar++;
+        if(vis_colorbar>= maxtoggle)vis_colorbar = 0;
+        if(vis_colorbar== COLORBAR_HIDDEN) {
           visColorbarVertical = 0;
           visColorbarHorizontal = 0;
         }
-        else if(toggle_colorbar == 1) {
+        else if(vis_colorbar== COLORBAR_SHOW_VERTICAL) {
           visColorbarVertical = 1;
           visColorbarHorizontal = 0;
         }
