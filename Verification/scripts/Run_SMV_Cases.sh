@@ -10,9 +10,6 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
-if [ "$JOBPREFIX" == "" ]; then
-  export JOBPREFIX=SB_
-fi
 STOPFDS=
 RUNOPTION=
 CFASTREPO=~/cfastgitclean
@@ -49,6 +46,7 @@ echo "-c - cfast repo directory"
 echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
+echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
@@ -86,7 +84,7 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:j:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -101,6 +99,9 @@ case $OPTION in
    ;;
   I)
    COMPILER="$OPTARG"
+   ;;
+  j)
+   JOBPREFIX="$OPTARG"
    ;;
   J)
    INTEL=i
@@ -141,6 +142,10 @@ esac
 done
 
 export FDS_DEBUG
+
+if [ "$JOBPREFIX" == "" ]; then
+  JOBPREFIX=SB_
+fi
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
