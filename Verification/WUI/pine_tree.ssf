@@ -1,37 +1,7 @@
 RENDERDIR
  ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
 LOADFILE
- pine_tree_0001.prt5
-LOADFILE
- pine_tree_0002.prt5
-LOADFILE
- pine_tree_0003.prt5
-LOADFILE
- pine_tree_0004.prt5
-LOADFILE
- pine_tree_0005.prt5
-LOADFILE
- pine_tree_0006.prt5
-LOADFILE
- pine_tree_0007.prt5
-LOADFILE
- pine_tree_0008.prt5
-LOADFILE
- pine_tree_0009.prt5
-LOADFILE
- pine_tree_0010.prt5
-LOADFILE
- pine_tree_0011.prt5
-LOADFILE
- pine_tree_0012.prt5
-LOADFILE
- pine_tree_0013.prt5
-LOADFILE
- pine_tree_0014.prt5
-LOADFILE
- pine_tree_0015.prt5
-LOADFILE
- pine_tree_0016.prt5
+ pine_tree.prt5
 PARTCLASSCOLOR
  PARTICLE TEMPERATURE
 SETTIMEVAL
