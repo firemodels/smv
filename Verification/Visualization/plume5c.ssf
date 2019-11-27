@@ -368,7 +368,7 @@ LOADINIFILE
  plume5c_part.ini
 UNLOADALL
 LOADFILE
- plume5c.prt5
+ plume5c_0001.prt5
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -392,7 +392,7 @@ UNLOADALL
 LOADINIFILE
  plume5c_part_streak.ini
 LOADFILE
- plume5c.prt5
+ plume5c_0001.prt5
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -416,7 +416,7 @@ UNLOADALL
 LOADINIFILE
  plume5c_part_streak2.ini
 LOADFILE
- plume5c.prt5
+ plume5c_0001.prt5
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -865,7 +865,7 @@ plume5c_plot3d_l4
 
 UNLOADALL
 LOADFILE
- plume5c.prt5
+ plume5c_0001.prt5
 LOADINIFILE
  plume5c_lr_stereo.ini
 SETVIEWPOINT
