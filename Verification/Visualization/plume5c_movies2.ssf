@@ -24,9 +24,9 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_01.s3d
+ plume5c_0001_01.s3d
 LOADFILE
- plume5c_02.s3d
+ plume5c_0001_02.s3d
 RENDERTYPE
  jpg
 MOVIETYPE
