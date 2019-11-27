@@ -76,9 +76,9 @@ is_file_installed()
 CURDIR=`pwd`
 cd ..
 
-export SVNROOT=`pwd`/../..
+SVNROOT=`pwd`/../..
 cd $SVNROOT
-export SVNROOT=`pwd`
+SVNROOT=`pwd`
 
 cd $CURDIR/..
 
@@ -183,7 +183,6 @@ if [[ ! $stop_cases ]] ; then
   echo "Removing FDS/CFAST output files"
   export RUNCFAST="$SVNROOT/smv/Verification/scripts/Remove_CFAST_Files.sh"
   export QFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
-  export RUNTFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
   scripts/SMV_Cases.sh
   scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
@@ -193,7 +192,6 @@ fi
 
 export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
 export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
-export   RUNTFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
