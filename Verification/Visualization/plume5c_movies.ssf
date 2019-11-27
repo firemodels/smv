@@ -1,7 +1,7 @@
 RENDERDIR
  frames
 LOADFILE
- plume5c_06.sf
+ plume5c_0001_06.sf
 RENDERALL
  1
 plume5c_tslice
@@ -33,7 +33,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADVFILE
- plume5c_06.sf
+ plume5c_0001_06.sf
 RENDERALL
  1
  plume5c_vtslice
@@ -48,7 +48,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_02.iso
+ plume5c_0001_02.iso
 RENDERALL
  1
  plume5c_iso
@@ -63,7 +63,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_03.bf
+ plume5c_0001_03.bf
 RENDERALL
  1
  plume5c_tbound
