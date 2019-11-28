@@ -9145,7 +9145,7 @@ updatemenu=0;
     char menulabel[1024];
     char compiler_version_label[256];
 
-    sprintf(menulabel,"  Smokeview (64 bit) build: %s",smv_githash);
+    sprintf(menulabel,"  Smokeview build: %s",smv_githash);
     glutAddMenuEntry(menulabel,1);
 #ifndef pp_COMPVER
 #define pp_COMPVER "unknown"
