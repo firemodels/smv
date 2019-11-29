@@ -24,6 +24,6 @@ levelset2_movie
 RENDERDIR
  ../../Manuals/SMV_Summary/movies
 SETTIMEVAL
- 200.000000
+ 300.000000
 RENDERONCE
- levelset2_200 
+ levelset2_300 
