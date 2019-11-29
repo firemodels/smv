@@ -12,10 +12,10 @@ function usage {
   echo "    [default: $REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
-  echo " -p n - run n instances of smokeview each instance rendering 1/n'th of the total images"
+  echo " -P n - run n instances of smokeview each instance rendering 1/n'th of the total images"
   echo "        only use this option if you have a RENDERALL keyword in your .ssf smokeview script"
   echo " -q q - name of queue. [default: batch]"
-  echo " -v   - output generated script"
+  echo " -v   - output generated script (do not run)"
   if [ "$HELP" == "" ]; then
     exit
   fi
@@ -24,6 +24,7 @@ function usage {
   echo " -c     - smokeview script file [default: casename.ssf]"
   echo " -C com - execute the command com"
   echo " -d dir - specify directory where the case is found [default: .]"
+  echo " -e exe - execute the program exe"
   echo " -i     - use installed smokeview"
   echo " -j p   - job prefix"
   echo " -r     - redirect output"
@@ -280,7 +281,7 @@ let nodes=1
 if [ "$COMMAND" == "" ]; then
   TITLE="$infile"
 else
-  TITLE=command
+  TITLE=$COMMAND
 fi
 
 cd $dir
@@ -432,17 +433,17 @@ fi
 #*** output info to screen
 
 if [ "$COMMAND" == "" ]; then
-echo "     smokeview file: $smvfile"
-echo "      smokeview exe: $exe"
-echo "             script: $smokeview_script_file"
-echo "        start frame: $first"
-echo "         frame skip: $skip"
-echo "              Queue: $queue"
-echo ""
+  echo "     smokeview file: $smvfile"
+  echo "      smokeview exe: $exe"
+  echo "             script: $smokeview_script_file"
+  echo "        start frame: $first"
+  echo "         frame skip: $skip"
+  echo "              Queue: $queue"
+  echo ""
 else
-echo "     command: $COMMAND"
-echo "       Queue: $queue"
-echo ""
+  echo "     command: $COMMAND"
+  echo "       Queue: $queue"
+  echo ""
 fi
 
 #*** run script
