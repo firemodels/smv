@@ -3357,6 +3357,12 @@ void DoScript(void){
         SMV_EXIT(0);
       }
       if(current_script_command==NULL){
+        if(use_customview==1){
+//#define RESTORE_VIEW 8
+//          ViewpointCB(RESTORE_VIEW);
+           printf("***warning: you must use the Show/Hide>Viewpoints menu to set a viewpoint\n");
+           printf("            before you can manipulate the scene with the mouse\n");
+        }
         GluiScriptEnable();
       }
     }

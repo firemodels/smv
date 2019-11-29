@@ -95,9 +95,6 @@ else
   PLATFORM=linux
 fi
 
-if [ "$JOBPREFIX" == "" ]; then
-  JOBPREFIX=SMV_
-fi
 COMPILER=intel
 DEBUG=
 TEST=
@@ -106,7 +103,7 @@ RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
 
-while getopts 'dghiI:q:tWY' OPTION
+while getopts 'dghiI:j:q:tWY' OPTION
 do
 case $OPTION  in
   d)
@@ -120,6 +117,9 @@ case $OPTION  in
    ;;
   I)
    COMPILER="$OPTARG" 
+   ;;
+  j)
+   JOBPREFIX="$OPTARG" 
    ;;
   q)
    QUEUE="$OPTARG" 
@@ -138,6 +138,10 @@ case $OPTION  in
 esac
 done
 shift $(($OPTIND-1))
+
+if [ "$JOBPREFIX" == "" ]; then
+  JOBPREFIX=SMV_
+fi
 
 VERSION=$PLATFORM${TEST}_64$DEBUG
 VERSION2=${PLATFORM}_64

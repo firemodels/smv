@@ -10,11 +10,7 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
-if [ "$JOBPREFIX" == "" ]; then
-  export JOBPREFIX=SB_
-fi
 STOPFDS=
-RUNOPTION=
 CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
@@ -49,6 +45,7 @@ echo "-c - cfast repo directory"
 echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
+echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
@@ -79,14 +76,14 @@ is_file_installed()
 CURDIR=`pwd`
 cd ..
 
-export SVNROOT=`pwd`/../..
+SVNROOT=`pwd`/../..
 cd $SVNROOT
-export SVNROOT=`pwd`
+SVNROOT=`pwd`
 
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:dhI:j:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -101,6 +98,9 @@ case $OPTION in
    ;;
   I)
    COMPILER="$OPTARG"
+   ;;
+  j)
+   JOBPREFIX="$OPTARG"
    ;;
   J)
    INTEL=i
@@ -142,6 +142,10 @@ done
 
 export FDS_DEBUG
 
+if [ "$JOBPREFIX" == "" ]; then
+  JOBPREFIX=SB_
+fi
+
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx_64
@@ -160,7 +164,7 @@ export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${I
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh $RUNOPTION"
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 
 # Set queue to submit cases to
 
@@ -179,7 +183,6 @@ if [[ ! $stop_cases ]] ; then
   echo "Removing FDS/CFAST output files"
   export RUNCFAST="$SVNROOT/smv/Verification/scripts/Remove_CFAST_Files.sh"
   export QFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
-  export RUNTFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
   scripts/SMV_Cases.sh
   scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
@@ -189,7 +192,6 @@ fi
 
 export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
 export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
-export   RUNTFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 

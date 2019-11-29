@@ -3,7 +3,7 @@ RENDERDIR
 LOADINI
  thouse5_movies.ini
 LOADFILE
- thouse5_01.sf
+ thouse5_0001_01.sf
 RENDERALL
  1
 thouse5_tslice
@@ -24,9 +24,9 @@ RENDERDIR
 LOADINI
  thouse5_movies.ini
 LOADFILE
- thouse5_01.s3d
+ thouse5_0001_01.s3d
 LOADFILE
- thouse5_02.s3d
+ thouse5_0001_02.s3d
 RENDERALL
  1
 thouse5_smoke3d

@@ -1,7 +1,7 @@
 RENDERDIR
  frames
 LOADFILE
- plume5c_06.sf
+ plume5c_0001_06.sf
 RENDERTYPE
  jpg
 MOVIETYPE
@@ -24,9 +24,9 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_01.s3d
+ plume5c_0001_01.s3d
 LOADFILE
- plume5c_02.s3d
+ plume5c_0001_02.s3d
 RENDERTYPE
  jpg
 MOVIETYPE
@@ -49,7 +49,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADVFILE
- plume5c_06.sf
+ plume5c_0001_06.sf
 RENDERTYPE
  jpg
 MOVIETYPE
@@ -72,7 +72,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_02.iso
+ plume5c_0001_02.iso
 RENDERTYPE
  jpg
 MOVIETYPE
@@ -95,7 +95,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c_03.bf
+ plume5c_0001_03.bf
 RENDERTYPE
  jpg
 MOVIETYPE
@@ -118,7 +118,7 @@ UNLOADALL
 RENDERDIR
  frames
 LOADFILE
- plume5c.prt5
+ plume5c_0001.prt5
 PARTCLASSCOLOR
  Uniform color
 RENDERTYPE
