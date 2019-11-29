@@ -67,14 +67,14 @@ $QSMV            -d Visualization             version2
 
 cd $VDIR
 
-$QSMV -P 16 -c plume5c_movies.ssf        -d Visualization plume5c
-$QSMV -P 16 -c thouse5_movies.ssf        -d Visualization thouse5
-$QSMV -P 16 -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
-$QSMV -P 16 -c hill_structure_movies.ssf -d WUI           hill_structure
-$QSMV -P 16 -c levelset1_movies.ssf      -d WUI           levelset1
-$QSMV -P 16 -c levelset2_movies.ssf      -d WUI           levelset2
-$QSMV -P 16 -c wind_test1_movies.ssf     -d WUI           wind_test1
-$QSMV -P 16 -c tree_test2_movies.ssf     -d WUI           tree_test2
+$QSMV -P 8 -c plume5c_movies.ssf        -d Visualization plume5c
+$QSMV -P 8 -c thouse5_movies.ssf        -d Visualization thouse5
+$QSMV -P 8 -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
+$QSMV -P 8 -c hill_structure_movies.ssf -d WUI           hill_structure
+$QSMV -P 8 -c levelset1_movies.ssf      -d WUI           levelset1
+$QSMV -P 8 -c levelset2_movies.ssf      -d WUI           levelset2
+$QSMV -P 8 -c wind_test1_movies.ssf     -d WUI           wind_test1
+$QSMV -P 8 -c tree_test2_movies.ssf     -d WUI           tree_test2
 wait_cases_end
 
 # -------- make movies -------------------
