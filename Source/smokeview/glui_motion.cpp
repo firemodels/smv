@@ -699,6 +699,11 @@ extern "C" void ViewpointCB(int var){
     EnableDisableViews();
     break;
   case RESTORE_VIEW:
+    if(use_customview==1){
+      use_customview=0;
+      if(CHECKBOX_use_customview!=NULL)CHECKBOX_use_customview->set_int_val(use_customview);
+      SceneMotionCB(CUSTOM_VIEW);
+    }
     ival = LIST_viewpoints->get_int_val();
     selected_view = ival;
     for(ca = camera_list_first.next;ca->next != NULL;ca = ca->next){
