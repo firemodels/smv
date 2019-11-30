@@ -1222,14 +1222,9 @@ extern "C" void GluiMotionSetup(int main_window){
 #endif
 
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
-  LIST_render_skip->add_item(RENDER_CURRENT_SINGLE, _("Current"));
-  LIST_render_skip->add_item(1, _("All frames"));
-  LIST_render_skip->add_item(2, _("Every 2nd frame"));
-  LIST_render_skip->add_item(3, _("Every 3rd frame"));
-  LIST_render_skip->add_item(4, _("Every 4th frame"));
-  LIST_render_skip->add_item(5, _("Every 5th frame"));
-  LIST_render_skip->add_item(10, _("Every 10th frame"));
-  LIST_render_skip->add_item(20, _("Every 20th frame"));
+  for(i = 0; i<NRENDER_SKIPS; i++){
+    LIST_render_skip->add_item(render_skips[i], crender_skips[i]);
+  }
   LIST_render_skip->set_int_val(render_skip);
 
   ROLLOUT_image_size = glui_motion->add_rollout_to_panel(ROLLOUT_render, "size/type", false, RENDER_SIZE_ROLLOUT, SubRenderRolloutCB);
@@ -2405,7 +2400,16 @@ void RenderCB(int var){
 /* ------------------ UpdateRenderListSkip ------------------------ */
 
 void UpdateRenderListSkip(void){
-  if(LIST_render_skip!=NULL)LIST_render_skip->set_int_val(render_skip);
+  if(LIST_render_skip!=NULL){
+    int i;
+
+    for(i = 0; i<NRENDER_SKIPS; i++){
+      if(render_skip==render_skips[i]){
+        LIST_render_skip->set_int_val(render_skip);
+        break;
+      }
+    }
+  }
 }
 
 /* ------------------ UpdateGluiRender ------------------------ */
