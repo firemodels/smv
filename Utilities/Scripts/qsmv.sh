@@ -27,6 +27,7 @@ function usage {
   echo " -e exe - execute the program exe"
   echo " -i     - use installed smokeview"
   echo " -j p   - job prefix"
+  echo " -N n   - reserve n cores [default: $ncores]"
   echo " -r     - redirect output"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
@@ -67,6 +68,7 @@ fi
 #*** determine number of cores
 
 ncores=`grep processor /proc/cpuinfo | wc -l`
+NRESERVE=$ncores
 
 #*** determine default queue
 
@@ -95,6 +97,7 @@ e_arg=
 f_arg=
 i_arg=
 j_arg=
+N_ARG=
 q_arg=
 r_arg=
 v_arg=
@@ -107,7 +110,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fhHij:n:p:P:q:rs:S:tv' OPTION
+while getopts 'Ab:c:C:d:e:fhHij:n:N:p:P:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -156,6 +159,9 @@ case $OPTION  in
   n)
    dummy="${OPTARG}"
    ;;
+  N)
+   NRESERVE="${OPTARG}"
+   ;;
   p)
    dummy="${OPTARG}"
    ;;
@@ -198,9 +204,15 @@ re='^[0-9]+$'
 if ! [[ $nprocs =~ $re ]] ; then
    nprocs=1;
 fi
+
+if ! [[ $NRESERVE =~ $re ]] ; then
+   NRESERVE=$ncores;
+fi
+N_ARG="-N $NRESERVE"
+
 if [ $nprocs != 1 ]; then
   for i in $(seq 1 $nprocs); do
-    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
+    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg -s $i -S $nprocs $in
   done
   exit
 fi
@@ -275,7 +287,7 @@ else
 fi
 echo SMVBINDIR=$SMVBINDIR
 
-let ppn=$ncores
+let ppn=$NRESERVE
 let nodes=1
 
 if [ "$COMMAND" == "" ]; then
