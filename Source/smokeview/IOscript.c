@@ -2257,7 +2257,7 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
 
 void ScriptSetTourView(scriptdata *scripti){
   edittour=scripti->ival;
-  show_tourlocus=scripti->ival3;
+  show_avatar =scripti->ival3;
   tour_global_tension_flag=1;
   tour_global_tension=scripti->fval;
   switch(scripti->ival2){

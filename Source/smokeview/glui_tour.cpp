@@ -237,7 +237,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_checkbox_to_panel(PANEL_misc, _("Anti-alias tour path line"), &tour_antialias);
 #endif
   if(navatar_types > 0){
-    glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show avatar"), &show_tourlocus);
+    glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show avatar"), &show_avatar);
     LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_misc, _("Avatar:"), &glui_avatar_index, TOUR_AVATAR, TourCB);
     for(i = 0;i < navatar_types;i++){
       LISTBOX_avatar->add_item(i, avatar_types[i]->label);
