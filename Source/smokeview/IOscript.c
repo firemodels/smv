@@ -1102,6 +1102,9 @@ void ScriptRenderAll(scriptdata *scripti){
 
   PrintRenderMessage(skip_local,first_frame_index);
   SkipMenu(skip_local);
+//  render_skip = skip_local;
+//  GLUTPOSTREDISPLAY;
+//  updatemenu = 1;
   RenderMenu(RenderStartORIGRES);
 }
 

@@ -20,6 +20,19 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#define NRENDER_SKIPS 8
+#ifdef INMAIN
+SVEXTERN int render_skips[NRENDER_SKIPS] = {RENDER_CURRENT_SINGLE, 1, 2, 3, 4, 5, 10, 20};
+SVEXTERN char *crender_skips[NRENDER_SKIPS] =
+{
+  "Current", "All frames", "Every 2nd frame", "Every 3rd frame", "Every 4th frame",
+  "Every 5th frame", "Every 10th frame", "Every 20th frame"
+};
+#else
+SVEXTERN int render_skips[NRENDER_SKIPS];
+SVEXTERN char *crender_skips[NRENDER_SKIPS];
+#endif
+
 SVEXTERN int SVDECL(ncolorlabel_decimals, 1);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);

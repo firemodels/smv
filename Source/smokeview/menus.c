@@ -8804,24 +8804,13 @@ updatemenu=0;
     strcat(renderwindow3,rendertemp);
 
     CREATEMENU(render_skipmenu,SkipMenu);
-    {
-      char *skips[]={"Current","All","2nd","3rd","4th","5th","10th","20th"};
-      int iskips[] = {RENDER_CURRENT_SINGLE,1,2,3,4,5,10,20};
+    for(i = 0;i<NRENDER_SKIPS;i++){
+      char skiplabel[128];
 
-      for(i = 0;i<7;i++){
-        char skiplabel[128];
-
-        strcpy(skiplabel, "  ");
-        if(render_skip==iskips[i])strcat(skiplabel, "*");
-        if(i<=1){
-          strcat(skiplabel, skips[i]);
-        }
-        else{
-          strcat(skiplabel, "Every ");
-          strcat(skiplabel, skips[i]);
-        }
-        glutAddMenuEntry(skiplabel, iskips[i]);
-      }
+      strcpy(skiplabel, "  ");
+      if(render_skip==render_skips[i])strcat(skiplabel, "*");
+      strcat(skiplabel, crender_skips[i]);
+      glutAddMenuEntry(skiplabel, render_skips[i]);
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
