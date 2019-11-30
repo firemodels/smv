@@ -329,9 +329,9 @@ void DrawTours(void){
 
     /* keyframe avatar */
 
-  //show_tourlocus=1;
+  //show_avatar=1;
   //tourlocus_type=2;
-  if(show_tourlocus==1){
+  if(show_avatar==1){
     switch(tourlocus_type){
       case 0:
         AntiAliasLine(ON);

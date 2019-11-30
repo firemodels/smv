@@ -9655,6 +9655,12 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %f %f %f", northangle_position, northangle_position + 1, northangle_position + 2);
       continue;
     }
+    if(Match(buffer, "SHOWAVATAR")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &show_avatar);
+      ONEORZERO(show_avatar);
+      continue;
+    }
     if(Match(buffer, "TREEPARMS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i %i", &mintreesize, &vis_xtree, &vis_ytree, &vis_ztree);
@@ -13899,6 +13905,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** TOUR INFO ***\n\n");
 
+  fprintf(fileout, "SHOWAVATAR\n");
+  fprintf(fileout, " %i\n", show_avatar);
   fprintf(fileout, "SHOWPATHNODES\n");
   fprintf(fileout, " %i\n", show_path_knots);
   fprintf(fileout, "SHOWTOURROUTE\n");
