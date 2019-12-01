@@ -82,7 +82,7 @@ int renderInfoHeader(titledata *titleinfo_ptr) {
   int pen_pos = textbox_top - titleinfo_ptr->text_height;
 
   // first display hardcoded lines
-  if(visTitle==1){
+  if(visTitle==1&&showonly_buildinfo==0){
     OutputText(left, pen_pos, titleinfo_ptr->titleline);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;

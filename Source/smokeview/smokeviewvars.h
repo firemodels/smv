@@ -1187,7 +1187,7 @@ SVEXTERN int SVDECL(visColorbarVertical,1), SVDECL(visColorbarVertical_save,1);
 SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbarHorizontal_val;
 
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
-SVEXTERN int SVDECL(visTitle,1), SVDECL(visFullTitle,1), SVDECL(visFramerate,0);
+SVEXTERN int SVDECL(visTitle, 1), SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0), SVDECL(showonly_buildinfo, 0);
 SVEXTERN int SVDECL(visCHID,0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(visHRRlabel,0);

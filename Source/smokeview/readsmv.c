@@ -11144,7 +11144,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWTITLE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visTitle);
+      sscanf(buffer, "%i %i", &visTitle,&showonly_buildinfo);
       continue;
     }
     if(Match(buffer, "SHOWCHID") == 1){
@@ -13646,7 +13646,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTIMELABEL\n");
   fprintf(fileout, " %i\n", visTimelabel);
   fprintf(fileout, "SHOWTITLE\n");
-  fprintf(fileout, " %i\n", visTitle);
+  fprintf(fileout, " %i %i\n", visTitle, showonly_buildinfo);
   fprintf(fileout, "SHOWCHID\n");
   fprintf(fileout, " %i\n", visCHID);
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
