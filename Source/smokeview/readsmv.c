@@ -4211,26 +4211,15 @@ int ReadSMV(char *file, char *file2){
       lenbuffer = strlen(buffptr);
       if(lenbuffer>0){
         NewMemory((void **)&fds_version,lenbuffer+1);
+        NewMemory((void **)&fds_githash, lenbuffer+1);
         strcpy(fds_version,buffer);
+        strcpy(fds_githash, buffer);
       }
       else{
         NewMemory((void **)&fds_version,7+1);
+        NewMemory((void **)&fds_githash, 7+1);
         strcpy(fds_version,"unknown");
-      }
-
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      TrimBack(buffer);
-      buffptr = TrimFront(buffer);
-      lenbuffer = strlen(buffptr);
-      if(lenbuffer>0){
-        NewMemory((void **)&fds_githash,lenbuffer+1);
-        strcpy(fds_githash,buffer);
-      }
-      else{
-        NewMemory((void **)&fds_githash,7+1);
-        strcpy(fds_githash,"unknown");
+        strcpy(fds_githash, "unknown");
       }
       continue;
     }
