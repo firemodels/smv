@@ -313,6 +313,8 @@ void FreeLabels(flowlabels *flowlabel){
 /* ------------------ InitMesh ------------------------ */
 
 void InitMesh(meshdata *meshi){
+  int i;
+
   meshi->smoke3d_soot = NULL;
   meshi->smoke3d_hrrpuv = NULL;
   meshi->smoke3d_temp = NULL;
@@ -324,12 +326,9 @@ void InitMesh(meshdata *meshi){
   meshi->opacity_adjustments = NULL;
   meshi->light_fraction = NULL;
   meshi->uc_light_fraction = NULL;
-  meshi->is_extface[0] = 1;
-  meshi->is_extface[1] = 1;
-  meshi->is_extface[2] = 1;
-  meshi->is_extface[3] = 1;
-  meshi->is_extface[4] = 1;
-  meshi->is_extface[5] = 1;
+  for(i = 0; i<6; i++){
+    meshi->is_extface[i] = MESH_EXT;
+  }
   meshi->ncutcells = 0;
   meshi->cutcells = NULL;
   meshi->slice_min[0] = 1.0;
@@ -3498,7 +3497,7 @@ void SetupMeshWalls(void){
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
-      is_extface[0] = 0;
+      is_extface[0] = MESH_INT;
       ncount++;
     }
 
@@ -3514,7 +3513,7 @@ void SetupMeshWalls(void){
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
-      is_extface[2] = 0;
+      is_extface[2] = MESH_INT;
       ncount++;
     }
 
@@ -3522,7 +3521,7 @@ void SetupMeshWalls(void){
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
-      is_extface[3] = 0;
+      is_extface[3] = MESH_INT;
       ncount++;
     }
 
@@ -3530,7 +3529,7 @@ void SetupMeshWalls(void){
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
     if(GetMesh(xyz,NULL) != NULL){
-      is_extface[4] = 0;
+      is_extface[4] = MESH_INT;
       ncount++;
     }
 
@@ -3538,12 +3537,199 @@ void SetupMeshWalls(void){
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
     if(GetMesh(xyz,NULL) != NULL){
-      is_extface[5] = 0;
+      is_extface[5] = MESH_INT;
       ncount++;
     }
   }
 }
 
+/* ------------------ SetupMeshWalls ------------------------ */
+
+void SetupMeshWallsNew(void){
+  int i;
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float xyz[3], *bmin, *bmax;
+    int *is_extface;
+    int ii, jj, kk;
+    float dx, dy, dz;
+    int n_int, n_ext;
+
+    meshi = meshinfo+i;
+    bmin = meshi->boxmin;
+    bmax = meshi->boxmax;
+    is_extface = meshi->is_extface;
+
+    dx = (bmax[0]-bmin[0])/(float)meshi->ibar;
+    dy = (bmax[1]-bmin[1])/(float)meshi->jbar;
+    dz = (bmax[2]-bmin[2])/(float)meshi->kbar;
+
+#define EPSMESH 0.001
+
+    // face: xmin
+
+    xyz[0] = bmin[0]-EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(jj = 0; jj<meshi->jbar; jj++){
+      xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
+      for(kk = 0; kk<meshi->kbar; kk++){
+        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[0] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[0] = MESH_INT;
+    }
+    else{
+      is_extface[0] = MESH_BOTH;
+    }
+
+    // face: xmax
+
+    xyz[0] = bmax[0]+EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(jj = 0; jj<meshi->jbar; jj++){
+      xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
+      for(kk = 0; kk<meshi->kbar; kk++){
+        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[1] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[1] = MESH_INT;
+    }
+    else{
+      is_extface[1] = MESH_BOTH;
+    }
+
+    // face: ymin
+
+    xyz[1] = bmin[1]-EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(ii = 0; ii<meshi->ibar; ii++){
+      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
+      for(kk = 0; kk<meshi->kbar; kk++){
+        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[2] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[2] = MESH_INT;
+    }
+    else{
+      is_extface[2] = MESH_BOTH;
+    }
+
+    // face: ymax
+
+    xyz[1] = bmax[1]+EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(ii = 0; ii<meshi->ibar; ii++){
+      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
+      for(kk = 0; kk<meshi->kbar; kk++){
+        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[3] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[3] = MESH_INT;
+    }
+    else{
+      is_extface[3] = MESH_BOTH;
+    }
+
+    // face: zmin
+
+    xyz[2] = bmin[2]-EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(ii = 0; ii<meshi->ibar; ii++){
+      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
+      for(jj = 0; jj<meshi->jbar; jj++){
+        xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[4] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[4] = MESH_INT;
+    }
+    else{
+      is_extface[4] = MESH_BOTH;
+    }
+
+    // face: zmax
+
+    xyz[2] = bmax[2]+EPSMESH;
+    n_int = 0;
+    n_ext = 0;
+    for(ii = 0; ii<meshi->ibar; ii++){
+      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
+      for(jj = 0; jj<meshi->jbar; jj++){
+        xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
+        if(GetMesh(xyz, NULL)!=NULL){
+          n_int++;
+        }
+        else{
+          n_ext++;
+        }
+      }
+    }
+    if(n_int==0){
+      is_extface[5] = MESH_EXT;
+    }
+    else if(n_ext==0){
+      is_extface[5] = MESH_INT;
+    }
+    else{
+      is_extface[5] = MESH_BOTH;
+    }
+  }
+}
 /* ------------------ MakeFileLists ------------------------ */
 
 void MakeFileLists(void){
