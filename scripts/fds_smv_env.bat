@@ -6,9 +6,9 @@ set fds_version=FDS6.7.3
 set fds_tag=FDS6.7.3
 set fds_versionbase=6.7.3
 
-set smv_version=SMV6.7.10
-set smv_tag=SMV6.7.10
-set smv_versionbase=6.7.10
+set smv_version=SMV6.7.12
+set smv_tag=SMV6.7.12
+set smv_versionbase=6.7.12
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -26,7 +26,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="14-Nov-2019"
+set smvlogdate="3-Dec-2019"
 
 :: ---- repo locations ----
 
