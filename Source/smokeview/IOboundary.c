@@ -1696,9 +1696,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
-        if((i1==0       &&meshi->nabors[MLEFT]==NULL)||
-           (i2==ibartemp&&meshi->nabors[MRIGHT]==NULL)
-           ){
+        int doit;
+
+        doit = 0;
+        if(show_bndf_mesh_interface==1){
+          if( (i1==0&&meshi->nabors[MLEFT]==NULL)||
+              (i2==ibartemp&&meshi->nabors[MRIGHT]==NULL)
+             ){
+            doit=1;
+          }
+        }
+        else{
+          if(i1==0||i2==ibartemp){
+            doit=1;
+          }
+        }
+        if(doit==1){
           mesh_boundary = YES;
           if(is_extface[0]==MESH_EXT&&i1 == 0){
             ext_wall = 1;
@@ -1802,9 +1815,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
-        if((j1==0       &&meshi->nabors[MFRONT]==NULL)||
-           (j2==jbartemp&&meshi->nabors[MBACK]==NULL)
-           ){
+        int doit;
+
+        doit = 0;
+        if(show_bndf_mesh_interface==1){
+          if((j1==0&&meshi->nabors[MFRONT]==NULL)||
+             (j2==jbartemp&&meshi->nabors[MBACK]==NULL)
+            ){
+            doit = 1;
+          }
+        }
+        else{
+          if(j1==0||j2==jbartemp){
+            doit = 1;
+          }
+        }
+        if(doit==1){
           mesh_boundary = YES;
           if(is_extface[2]==MESH_EXT&&j1 == 0){
             ext_wall = 1;
@@ -1901,9 +1927,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ext_wall=0;
       mesh_boundary = NO;
       if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
-        if((k1==0       &&meshi->nabors[MDOWN]==NULL)||
-           (k2==kbartemp&&meshi->nabors[MUP]==NULL)
-           ){
+        int doit;
+
+        doit = 0;
+        if(show_bndf_mesh_interface==1){
+          if((k1==0&&meshi->nabors[MDOWN]==NULL)||
+             (k2==kbartemp&&meshi->nabors[MUP]==NULL)
+            ){
+            doit = 1;
+          }
+        }
+        else{
+          if(k1==0||k2==kbartemp){
+            doit = 1;
+          }
+        }
+        if(doit==1){
           mesh_boundary = YES;
           if(is_extface[4]==MESH_EXT&&k1 == 0){
             ext_wall = 1;
