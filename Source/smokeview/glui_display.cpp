@@ -110,6 +110,7 @@ GLUI_Checkbox *CHECKBOX_visColorbarHorizontal = NULL;
 GLUI_Checkbox *CHECKBOX_labels_timebar=NULL;
 GLUI_Checkbox *CHECKBOX_labels_ticks=NULL;
 GLUI_Checkbox *CHECKBOX_labels_title=NULL;
+GLUI_Checkbox *CHECKBOX_labels_showonly_buildinfo = NULL;
 GLUI_Checkbox *CHECKBOX_labels_chid=NULL;
 GLUI_Checkbox *CHECKBOX_labels_axis=NULL;
 GLUI_Checkbox *CHECKBOX_labels_hms=NULL;
@@ -643,6 +644,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_timelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time label"), &visTimelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time bar"), &visTimebar, LABELS_label, LabelsCB);
   CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Title"), &visTitle, LABELS_label, LabelsCB);
+  CHECKBOX_labels_showonly_buildinfo = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Show only build info"), &showonly_buildinfo, LABELS_label, LabelsCB);
   CHECKBOX_labels_chid = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("CHID"), &visCHID, LABELS_label, LabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Toggle dialogs"), &toggle_dialogs);
   CHECKBOX_labels_version = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Version info"), &gversion, LABELS_version, LabelsCB);
@@ -1313,6 +1315,7 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(visHRRlabel);
   if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
   if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(visTitle);
+  if(CHECKBOX_labels_showonly_buildinfo!=NULL)CHECKBOX_labels_showonly_buildinfo->set_int_val(showonly_buildinfo);
   if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(visCHID);
   if(CHECKBOX_visColorbarVertical!=NULL)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
   if(CHECKBOX_labels_timebar!=NULL)CHECKBOX_labels_timebar->set_int_val(visTimebar);
