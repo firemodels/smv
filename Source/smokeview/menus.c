@@ -57,7 +57,9 @@ float     slice_load_time;
 
 #define MENU_OPTION_TRAINERMENU 2
 
-#define MENU_UPDATEBOUNDS -6
+#define MENU_UPDATEBOUNDS             -6
+#define MENU_BNDF_SHOW_MESH_INTERFACE -8
+
 
 #define MENU_DUMMY3 -2
 
@@ -5233,6 +5235,10 @@ void LoadBoundaryMenu(int value){
   }
   else{
     switch(value){
+    case MENU_BNDF_SHOW_MESH_INTERFACE:
+      show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
+      updatemenu = 1;
+      break;
     case MENU_UPDATEBOUNDS:
       UpdateAllBoundaryBounds();
       break;
@@ -10772,6 +10778,10 @@ updatemenu=0;
       }
 
       glutAddMenuEntry("-",MENU_DUMMY3);
+      if(nmeshes>1){
+        if(show_bndf_mesh_interface==1)glutAddMenuEntry("*show on mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
+        if(show_bndf_mesh_interface==0)glutAddMenuEntry("show on mesh interface",  MENU_BNDF_SHOW_MESH_INTERFACE);
+      }
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
