@@ -392,6 +392,8 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
 int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
   float *eps;
 
+  //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
+
   eps = mesh_from->boxeps;
   switch(val){
   case MLEFT:
@@ -580,38 +582,36 @@ void InitNabors(void){
     int j;
 
     meshi = meshinfo+i;
-    for(j = i+1;j<nmeshes;j++){
+    for(j = 0;j<nmeshes;j++){
       meshdata *meshj;
+
+      if(i==j)continue;
 
       meshj = meshinfo+j;
 
       if(MeshConnect(meshi, MLEFT, meshj)==1){
         meshi->nabors[MRIGHT] = meshj;
-        meshj->nabors[MLEFT] = meshi;
         continue;
       }
       if(MeshConnect(meshi, MRIGHT, meshj)==1){
         meshi->nabors[MLEFT] = meshj;
-        meshj->nabors[MRIGHT] = meshi;
         continue;
       }
       if(MeshConnect(meshi, MFRONT, meshj)==1){
         meshi->nabors[MBACK] = meshj;
-        meshj->nabors[MFRONT] = meshi;
         continue;
       }
       if(MeshConnect(meshi, MBACK, meshj)==1){
         meshi->nabors[MFRONT] = meshj;
-        meshj->nabors[MBACK] = meshi;
         continue;
       }
       if(MeshConnect(meshi, MDOWN, meshj)==1){
         meshi->nabors[MUP] = meshj;
-        meshj->nabors[MDOWN] = meshi;
+        continue;
       }
       if(MeshConnect(meshi, MUP, meshj)==1){
         meshi->nabors[MDOWN] = meshj;
-        meshj->nabors[MUP] = meshi;
+        continue;
       }
     }
   }
