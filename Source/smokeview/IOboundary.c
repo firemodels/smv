@@ -1756,11 +1756,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k]+dz_factor;
             *patchblankcopy = NodeInInternalVent(meshi,i1,j,k,1,mesh_boundary,wallcenter);
-//xx          if(*patchblankcopy==1){
-//              if(i1==0||i2==ibartemp){
-//                *patchblankcopy=0;
-//              }
-//            }
             patchblankcopy++;
           }
         }
