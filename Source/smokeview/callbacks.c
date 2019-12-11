@@ -2452,6 +2452,16 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
+    case '{':
+      iplot3dtimelist--;
+      if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
+      Plot3DListMenu(iplot3dtimelist);
+      break;
+    case '}':
+      iplot3dtimelist++;
+      if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
+      Plot3DListMenu(iplot3dtimelist);
+      break;
   }
 
   skip2=key2-'1'+1;
@@ -3357,12 +3367,6 @@ void DoScript(void){
         SMV_EXIT(0);
       }
       if(current_script_command==NULL){
-        if(use_customview==1){
-//#define RESTORE_VIEW 8
-//          ViewpointCB(RESTORE_VIEW);
-           printf("***warning: you must use the Show/Hide>Viewpoints menu to set a viewpoint\n");
-           printf("            before you can manipulate the scene with the mouse\n");
-        }
         GluiScriptEnable();
       }
     }

@@ -5002,7 +5002,8 @@ void Plot3DListMenu(int value){
   int i;
   plot3ddata *plot3di;
 
-  if(value<0||value>=nplot3dtimelist)return;
+  value = CLAMP(value, 0, nplot3dtimelist-1);
+  iplot3dtimelist = value;
   LoadPlot3dMenu(UNLOAD_ALL);
   if(scriptoutstream!=NULL){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
@@ -9247,6 +9248,8 @@ updatemenu=0;
     glutAddMenuEntry(_("  s: change interval between adjacent vectors"), MENU_DUMMY);
     glutAddMenuEntry(_("  c: toggle between continuous and 2D stepped contours"), MENU_DUMMY);
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
+    glutAddMenuEntry(_("  {: load previous time Plot3D files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  }: load next time Plot3D files"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  r/R: render the current scene to an image file"), MENU_DUMMY);
