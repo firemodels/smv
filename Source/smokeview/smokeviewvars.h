@@ -1758,6 +1758,9 @@ SVEXTERN labeldata label_first, label_last, *label_first_ptr, *label_last_ptr;
 SVEXTERN int SVDECL(*isotypes,NULL), SVDECL(*boundarytypes,NULL);
 SVEXTERN plot3ddata SVDECL(*plot3dinfo,NULL);
 SVEXTERN int SVDECL(iplot3dtimelist, -1), SVDECL(nplot3dtimelist, 0);
+#ifdef pp_PLOT3D_STATIC
+SVEXTERN char SVDECL(*plot3dlabels, NULL);
+#endif
 SVEXTERN float SVDECL(*plot3dtimelist,NULL);
 SVEXTERN patchdata SVDECL(*patchinfo,NULL);
 SVEXTERN isodata SVDECL(*isoinfo,NULL);
