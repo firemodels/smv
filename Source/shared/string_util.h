@@ -48,6 +48,10 @@ typedef struct {
 #define HELP_SUMMARY 1
 #define HELP_ALL 2
 
+#ifdef pp_PLOT3D_STATIC
+#define MAXPLOT3DLABELSIZE 61
+#endif
+
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 EXTERNCPP char          *GetFloatLabel(float val, char *label);
@@ -68,6 +72,9 @@ EXTERNCPP int            SetLabels(flowlabels *flowlabel, char *longlabel, char 
 EXTERNCPP int            SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels);
 EXTERNCPP int            ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bufferE, char *bufferF, char *suffix_label);
 EXTERNCPP int            ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
+#ifdef pp_PLOT3D_STATIC
+EXTERNCPP int            ReadPlot3DLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label, char *labels_static);
+#endif
 EXTERNCPP int            AppendLabels(flowlabels *flow_label, char *suffix_label);
 
 #ifdef pp_HASH
