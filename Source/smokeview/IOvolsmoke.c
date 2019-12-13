@@ -828,14 +828,15 @@ void InitVolRender(void){
     slicei = sliceinfo + i;
     blocknumber = slicei->blocknumber;
     if(blocknumber<0||blocknumber>=nmeshes)continue;
+    shortlabel = slicei->label.shortlabel;
+    longlabel = slicei->label.longlabel;
+    if(STRCMP(shortlabel, "temp")!=0&&STRCMP(shortlabel, "rho_Soot")!=0&&STRCMP(shortlabel, "frac")!=0&&STRCMP(shortlabel, "X_CO2")!=0)continue;
+    if(slicei->full_mesh==NO)continue;
     if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
     meshi = meshinfo + blocknumber;
-    if(slicei->full_mesh==NO)continue;
 
     vr = &(meshi->volrenderinfo);
-    shortlabel = slicei->label.shortlabel;
-    longlabel = slicei->label.longlabel;
 
     if(STRCMP(shortlabel,"temp")==0){
       vr->fireslice=slicei;
