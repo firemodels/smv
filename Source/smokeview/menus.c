@@ -10554,6 +10554,7 @@ updatemenu=0;
           else{
             glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
           }
+          glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
           strcpy(menulabel,plot3di->longlabel);
           glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
           sprintf(menulabel,"  %f",plot3di->time);
