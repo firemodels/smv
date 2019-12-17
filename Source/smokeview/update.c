@@ -2040,6 +2040,7 @@ void UpdateDisplay(void){
     vis_colorbar = GetColorbarState();
     if(visColorbarHorizontal==0&&visColorbarVertical==0){
       research_mode = 0;
+      update_research_mode = 1;
       SliceBoundCB(RESEARCH_MODE);
     }
     updatemenu = 1;

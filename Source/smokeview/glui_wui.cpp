@@ -153,8 +153,8 @@ extern "C" void WuiCB(int var){
 
       SliceBoundCB(FILETYPEINDEX);
 
-      setslicemin=1;
-      setslicemax=1;
+      setslicemin = SET_MIN;
+      setslicemax = SET_MAX;
       slicemin=20.0;
       slicemax=fire_line_max;
       setslicechopmin=1;

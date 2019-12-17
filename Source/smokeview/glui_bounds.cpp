@@ -585,16 +585,6 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
-  if(RADIO_slice_setmin!=NULL&&RADIO_slice_setmax!=NULL){
-    if(research_mode==1){
-      RADIO_slice_setmin->disable();
-      RADIO_slice_setmax->disable();
-    }
-    else{
-      RADIO_slice_setmin->enable();
-      RADIO_slice_setmax->enable();
-    }
-  }
 }
 /* ------------------ UpdateScriptStop ------------------------ */
 
@@ -3482,16 +3472,6 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
-      if(RADIO_slice_setmin!=NULL&&RADIO_slice_setmax!=NULL){
-        if(research_mode==1){
-          RADIO_slice_setmin->disable();
-          RADIO_slice_setmax->disable();
-        }
-        else{
-          RADIO_slice_setmin->enable();
-          RADIO_slice_setmax->enable();
-        }
-      }
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
 
@@ -3751,10 +3731,6 @@ extern "C" void SliceBoundCB(int var){
     UpdateChopColors();
     break;
   case SETVALMIN:
-    if(research_mode==1&&setslicemin!=GLOBAL_MIN){
-      setslicemin = GLOBAL_MIN;
-      if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
-    }
     switch(setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
@@ -3774,10 +3750,6 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
     break;
   case SETVALMAX:
-    if(research_mode==1&&setslicemax!=GLOBAL_MAX){
-      setslicemax = GLOBAL_MAX;
-      if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
-    }
     switch(setslicemax){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:

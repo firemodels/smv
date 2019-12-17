@@ -11812,7 +11812,10 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
-      if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0)research_mode = 0;
+      if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
       update_visColorbars=1;
       continue;
     }
@@ -13666,7 +13669,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   // if colorbars are hidden then research mode needs to be off
-  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0)research_mode = 0;
+  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
+    research_mode = 0;
+    update_research_mode = 1;
+  }
   fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
