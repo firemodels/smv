@@ -1066,14 +1066,14 @@ void ReadSMVDynamic(char *file){
       STRCPY(plot3di->comp_file,bufferptr);
       STRCAT(plot3di->comp_file,".svz");
 
-      if(FILE_EXISTS_CASEDIR(plot3di->comp_file)==YES){
-        plot3di->compression_type=COMPRESSED_ZLIB;
-        plot3di->file=plot3di->comp_file;
-      }
-      else{
-        plot3di->compression_type=UNCOMPRESSED;
-        plot3di->file=plot3di->reg_file;
-      }
+   //   if(FILE_EXISTS_CASEDIR(plot3di->comp_file)==YES){
+   //     plot3di->compression_type=COMPRESSED_ZLIB;
+   //     plot3di->file=plot3di->comp_file;
+   //   }
+   //   else{
+   //     plot3di->compression_type=UNCOMPRESSED;
+   //     plot3di->file=plot3di->reg_file;
+   //   }
       //disable compression for now
       plot3di->compression_type=UNCOMPRESSED;
       plot3di->file=plot3di->reg_file;
@@ -4217,6 +4217,9 @@ int ReadSMV(char *file, char *file2){
     }
     TrimBack(buffer);
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
+    if(Match(buffer, "PL3D")==1){
+      BREAK;
+    }
 
     /*
       The keywords TRNX, TRNY, TRNZ, GRID, PDIM, OBST and VENT are not required
@@ -4958,6 +4961,10 @@ int ReadSMV(char *file, char *file2){
       TrimBack(buffer);
       if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
     }
+    if(Match(buffer, "PL3D")==1){
+      BREAK;
+    }
+
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ CSVF ++++++++++++++++++++++++++
@@ -6431,7 +6438,10 @@ int ReadSMV(char *file, char *file2){
     }
     TrimBack(buffer);
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
-  /*
+    if(Match(buffer, "PL3D")==1){
+      BREAK;
+    }
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ AMBIENT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -6926,7 +6936,10 @@ int ReadSMV(char *file, char *file2){
       }
     }
     CheckMemory;
-  /*
+    if(Match(buffer, "PL3D")==1){
+      BREAK;
+    }
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -9210,6 +9223,9 @@ typedef struct {
       BREAK;
     }
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
+    if(Match(buffer, "PL3D")==1){
+      BREAK;
+    }
 
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -11796,7 +11812,10 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
-      if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0)research_mode = 0;
+      if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
+        research_mode = 0;
+//        update_research_mode = 1;
+      }
       update_visColorbars=1;
       continue;
     }
@@ -13650,7 +13669,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   // if colorbars are hidden then research mode needs to be off
-  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0)research_mode = 0;
+  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
+    research_mode = 0;
+    update_research_mode = 1;
+  }
   fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
