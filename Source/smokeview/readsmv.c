@@ -11814,7 +11814,7 @@ int ReadIni2(char *inifile, int localfile){
   // if colorbars are hidden then research mode needs to be off
       if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
         research_mode = 0;
-        update_research_mode = 1;
+//        update_research_mode = 1;
       }
       update_visColorbars=1;
       continue;
