@@ -340,6 +340,10 @@ if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
   MPIRUN='srun'
 fi
 
+if [ "$queue" == "terminal" ]; then
+  QSUB=bash
+fi
+
 #*** Set walltime parameter only if walltime is specified as input argument
 
 walltimestring_pbs=

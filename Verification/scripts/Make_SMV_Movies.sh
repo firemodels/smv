@@ -59,9 +59,11 @@ rm -f $OUTDIR/*.png
 
 # create version strings
 
+cd $VDIR/Visualization
+$FDSEXE version2.fds
+
 cd $VDIR
-$QFDS -e $FDSEXE -d Visualization -q terminal version2.fds
-$QSMV            -d Visualization             version2
+$QSMV -d Visualization version2
 
 # -------- make movie frames -------------------
 
