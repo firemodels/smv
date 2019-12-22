@@ -43,7 +43,7 @@ cd $CURDIR
 
 FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM$size/fds_impi_intel$PLATFORM$size
 MAKEMOVIE="$GITROOT/smv/Utilities/Scripts/make_movie.sh"
-QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
+QFDS=$GITROOT/smv/Utilities/Scripts/qfds.sh
 QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX} $QUEUE"
 
 VDIR=$GITROOT/smv/Verification
@@ -59,9 +59,11 @@ rm -f $OUTDIR/*.png
 
 # create version strings
 
+cd $VDIR/Visualization
+$FDSEXE version2.fds
+
 cd $VDIR
-$QFDS -e $FDSEXE -d Visualization -q terminal version2.fds
-$QSMV            -d Visualization             version2
+$QSMV -d Visualization version2
 
 # -------- make movie frames -------------------
 

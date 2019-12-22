@@ -164,7 +164,7 @@ export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${I
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
+QFDSSH="$SVNROOT/smv/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 
 # Set queue to submit cases to
 

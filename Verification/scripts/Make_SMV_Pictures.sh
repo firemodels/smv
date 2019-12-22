@@ -162,7 +162,7 @@ else
   export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
-  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background
+  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
   export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds_$VERSION2
 fi
 SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
@@ -218,12 +218,12 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
-  $QFDS -C "$SMOKEZIP -r -part2iso plumeiso"
+  $QFDS -C "$SMOKEZIP -part2iso plumeiso"
 
   cd $SVNROOT/smv/Verification/WUI
   echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
-    $QFDS -C "$SMOKEZIP -r -part2iso pine_tree"
+    $QFDS -C "$SMOKEZIP -part2iso pine_tree"
   fi
 
 # difference plume5c and thouse5

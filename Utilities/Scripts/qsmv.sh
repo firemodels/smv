@@ -290,11 +290,7 @@ echo SMVBINDIR=$SMVBINDIR
 let ppn=$NRESERVE
 let nodes=1
 
-if [ "$COMMAND" == "" ]; then
-  TITLE="$infile"
-else
-  TITLE=$COMMAND
-fi
+TITLE="$infile"
 
 cd $dir
 fulldir=`pwd`
@@ -342,6 +338,10 @@ QSUB="qsub -q $queue"
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
   QSUB="sbatch -p $queue --ignore-pbs"
   MPIRUN='srun'
+fi
+
+if [ "$queue" == "terminal" ]; then
+  QSUB=bash
 fi
 
 #*** Set walltime parameter only if walltime is specified as input argument
