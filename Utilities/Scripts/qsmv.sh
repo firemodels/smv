@@ -290,11 +290,7 @@ echo SMVBINDIR=$SMVBINDIR
 let ppn=$NRESERVE
 let nodes=1
 
-if [ "$COMMAND" == "" ]; then
-  TITLE="$infile"
-else
-  TITLE=$COMMAND
-fi
+TITLE="$infile"
 
 cd $dir
 fulldir=`pwd`
