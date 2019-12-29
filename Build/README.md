@@ -1,15 +1,13 @@
 ## Building Smokeview and Utilities
 
-The directories under smv/Build contain scripts for building smokeview and utility programs such as smokediff and smokezip.  
-Most of these scripts assume you have an Intel C/C++ compiler installed.  Smokeview, smokediff and smokezip also
+The directories under smv/Build contain scripts for building smokeview and utilities such as smokediff and smokezip.  
+Most of these scripts assume you have an Intel C/C++ compiler.  Smokeview, smokediff and smokezip also
 assume you have an Intel Fortran Compiler.  Linux and OSX build directories also have scripts for building
-these applications using gnu compilers (gcc and gfortran). 
+using gcc and gfortran gnu compilers. 
 
 ### Preliminaries
 
   * Install the GIT repository for FDS and Smokeview using the [GIT getting started wiki](https://github.com/firemodels/fds/wiki/Git-Notes-Getting-Started).  
-
-The following steps assume that `~/Fire-Models` is the repository root where `~` is your home directory.
 
   * On a Windows PC, install the [GNU make utility - http://gnuwin32.sourceforge.net/packages/make.htm](http://gnuwin32.sourceforge.net/packages/make.htm).
 
@@ -22,7 +20,7 @@ export IFORT_COMPILER=/opt/intel/composerxe
 
 ### Building Libraries Needed by Smokeview
 
-  * Smokeview requires several software libraries (such as Glut, glui etc) to implement features such as dialog boxes, rendering images or interacting with the underlying OS.  To build these libraries, 
+  * Smokeview requires several libraries such as glut and glui used for implementing features such as dialog boxes, rendering images or interacting with the underlying OS.  To build these libraries, 
       * cd to `smv/Build/LIBS/<platform>` 
       * type the `make_LIBS.sh or `make_LIBS.bat command that is found there.
 
