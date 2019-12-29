@@ -19,10 +19,15 @@ using gcc and gfortran gnu compilers.
 
 ### Building Smokeview 
 
-  * There is a sub-directory under `SMV/Build/smokeview` for each target in the Smokeview Makefile.  To build Smokeview on a Linux or OSX system, cd into the `intel_linux_64` or `intel_osx_64` directory and type
+  * There is a sub-directory under `smv/Build/smokeview` for each target in the Smokeview Makefile.  To build Smokeview on a Linux or OSX system, cd into the `intel_linux_64` or `intel_osx_64` directory and type
 
-   ```./make_smv.sh```
+   ```./make_smokeview.sh```
 
 On a Windows system cd into the `intel_win_64` directory and type
 
-   ```.\make_smv.bat ```
+   ```.\make_smokeview.bat ```
+
+### Building Smokeview Utilities
+
+Similarly to build a smokeview utiltity such as smokezip or smokediff cd into `smv/Build/prog/intel_platform_64` and type
+`./make_prog.sh` on a linux or osx system and `make_prog` on a windows sytem where `prog` is the name of the utility (`smokediff` or `smokezip` for example) and `platform` is `linux`, `osx` or `win` .
