@@ -14,9 +14,10 @@ using gcc and gfortran gnu compilers.
   * The gnu make installer does not add an entry to the PATH variable.  When you run the installer, note where the installer places the make utility executable, then add this directory path to your PATH variable. 
 
   * On a Linux or OSX system, define the shell variable, `IFORT_COMPILER`, in your startup files to point to the location of your Intel compiler distribution.  For example if using the bash shell, add the following line to your .bashrc startup file (substituting the path to your compiler for the path given below)
-{{{
+
+```
 export IFORT_COMPILER=/opt/intel/composerxe
-}}}
+```
 
 ### Building Libraries Needed by Smokeview
 
