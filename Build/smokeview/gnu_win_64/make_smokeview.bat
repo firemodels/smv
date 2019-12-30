@@ -3,7 +3,7 @@ set release=%1
 set from=%2
 set GLUT=%3
 
-:: call ..\..\scripts\test_libs ..\..\LIBS
+call ..\..\scripts\test_gnu_libs ..\..\LIBS
 
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=
