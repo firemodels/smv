@@ -1709,8 +1709,6 @@ void PRINTversion(char *progname){
   PRINTF("Platform         : WIN64 ");
 #ifdef pp_INTEL
   PRINTF(" (Intel C/C++)");
-#else
-  PRINTF(" (MSVS C/C++)");
 #endif
   PRINTF("\n");
 #endif

@@ -5,7 +5,7 @@ call :is_file_installed gawk|| exit /b 1
 call :is_file_installed gcc || exit /b 1
 
 gcc --version > c_version.txt 2>&1
-head -1 c_version.txt | sed "s/^.*\(Version.*\).*$/\1/" | gawk "{print $3}" > vers.out
+head -1 c_version.txt |  gawk "{print $NF}" > vers.out
 set /p vers=<vers.out
 echo "gcc C/C++ %vers%"
 erase c_version.txt vers.out
