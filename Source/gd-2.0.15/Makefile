@@ -40,7 +40,6 @@ LIBOBJSWIN = $(LIBOBJS:.o=.obj)
 
 #Static library, if you really need one for some reason.
 libgd.a: ${LIBOBJS}
-	$(RM) libgd.a
 	$(AR) rc libgd.a ${LIBOBJS}
 	-ranlib libgd.a
 
