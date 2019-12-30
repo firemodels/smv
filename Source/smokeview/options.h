@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-//#define pp_JSON                // output obst data in json format
+#define pp_JSON                // output obst data in json format
 //#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_SLICETHREAD        // parallel slice file loading
