@@ -29,5 +29,5 @@ On a Windows system cd into the `intel_win_64` directory and type
 
 ### Building Smokeview Utilities
 
-Similarly to build a smokeview utiltity such as smokezip or smokediff cd into `smv/Build/prog/intel_platform_64` and type
+Similarly to build a smokeview utiltity such as smokezip or smokediff using the Intel compilers cd into `smv/Build/prog/intel_platform_64` and type
 `./make_prog.sh` on a linux or osx system and `make_prog` on a windows sytem where `prog` is the name of the utility (`smokediff` or `smokezip` for example) and `platform` is `linux`, `osx` or `win` .
