@@ -72,7 +72,6 @@ LIBOBJECTSWIN = $(LIBOBJECTS:.o=.obj)
 # the library:
 
 libjpeg.a:  $(LIBOBJECTS)
-	$(RM) libjpeg.a
 	$(AR) libjpeg.a  $(LIBOBJECTS)
 	$(AR2) libjpeg.a
 
