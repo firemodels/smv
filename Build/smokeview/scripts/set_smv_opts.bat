@@ -4,9 +4,10 @@ set stopscript=0
 set release=
 set from=
 set inc=
-set GLUT=
+set GLUT=glut
 set ICON=
 set smv_mpi=false
+set setglut=
 
 :: parse command line arguments
 
@@ -43,8 +44,13 @@ goto eof
  )
  if /I "%1" EQU "-glut" (
    set valid=1
-   set GLUT=%2
-   shift
+   set GLUT=glut
+   set setglut=1
+ )
+ if /I "%1" EQU "-freeglut" (
+   set valid=1
+   set GLUT=freeglut
+   set setglut=1
  )
  if /I "%1" EQU "-icon" (
    set valid=1

@@ -1,5 +1,6 @@
 @echo off
 set OPTS=g
+set glutopt=%1
 
 set LIBDIR=%CD%
 set SRCDIR=%LIBDIR%\..\..\..\Source
@@ -26,9 +27,18 @@ call makelib %OPTS%
 copy libgd.a %LIBDIR%\gd.a
 
 :: GLUT
+if x%glutopt% == xfreeglut goto skip_glut
 cd %SRCDIR%\glut-3.7.6
 call makelib %OPTS% 
 copy libglutwin.a %LIBDIR%\glut32.a
+:skip_glut
+
+:: FREEGLUT
+if NOT x%glutopt% == xfreeglut goto skip_freeglut
+cd %BUILDDIR%\freeglut3.0.0\gnu_win_64
+call make_freeglut %OPTS% 
+copy freeglut_staticd.a %LIBDIR%\freeglut_staticd.a
+:skip_freeglut
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta

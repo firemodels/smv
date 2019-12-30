@@ -1,7 +1,13 @@
 @echo off
 set OPTS=g
+
+:: arg1: bot
 set arg1=%1
+
+:: arg2: lua
 set arg2=%2
+
+:: arg3: glut/freeglut
 set arg3=%3
 
 set WAIT=
