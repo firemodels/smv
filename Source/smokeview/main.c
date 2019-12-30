@@ -341,17 +341,10 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(htmlvr_filename, fdsprefix);
   STRCAT(htmlvr_filename, "_vr.html");
 
-#ifdef pp_JSON
   FREEMEMORY(htmlobstdata_filename);
   NewMemory((void **)&htmlobstdata_filename, len_casename+strlen("_obstdata.json")+1);
   STRCPY(htmlobstdata_filename, fdsprefix);
   STRCAT(htmlobstdata_filename, "_obstdata.json");
-#else
-  FREEMEMORY(htmlobstdata_filename);
-  NewMemory((void **)&htmlobstdata_filename, len_casename+strlen("_obstdata.txt")+1);
-  STRCPY(htmlobstdata_filename, fdsprefix);
-  STRCAT(htmlobstdata_filename, "_obstdata.txt");
-#endif
 
   FREEMEMORY(htmlslicedata_filename);
   NewMemory((void **)&htmlslicedata_filename, len_casename+strlen("_slicedata.txt")+1);

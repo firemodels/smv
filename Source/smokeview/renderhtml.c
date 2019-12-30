@@ -1883,7 +1883,6 @@ int Slice2Data(char *html_file, int option){
 
   /* ------------------ Obst2Data ------------------------ */
 
-#ifdef pp_JSON
 int Obst2Data(char *html_file){
   float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
   int nvertsObstLit, *facesObstLit, nfacesObstLit;
@@ -1907,6 +1906,7 @@ int Obst2Data(char *html_file){
   for(i = 0; i < nvertsObstLit - 1; i++){
     sprintf(label, "%f", vertsObstLit[i]);
     TrimZeros(label);
+    if(i%PER_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%s,", label);
     if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
   }
@@ -1919,6 +1919,7 @@ int Obst2Data(char *html_file){
   for(i = 0; i < nvertsObstLit - 1; i++){
     sprintf(label, "%f", normalsObstLit[i]);
     TrimZeros(label);
+    if(i%PER_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%s,", label);
     if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
   }
@@ -1931,6 +1932,7 @@ int Obst2Data(char *html_file){
   for(i = 0; i < nvertsObstLit - 1; i++){
     sprintf(label, "%f", colorsObstLit[i]);
     TrimZeros(label);
+    if(i%PER_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%s,", label);
     if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
   }
@@ -1941,6 +1943,7 @@ int Obst2Data(char *html_file){
 
   fprintf(stream_out, "\"indices_lit\": [\n");
   for(i = 0; i < nfacesObstLit - 1; i++){
+    if(i%PERBIN_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%i,", facesObstLit[i]);
     if(i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
   }
@@ -1956,78 +1959,6 @@ int Obst2Data(char *html_file){
 
   return 1;
 }
-#else
-int Obst2Data(char *html_file){
-  float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
-  int nvertsObstLit, *facesObstLit, nfacesObstLit;
-  FILE *stream_out;
-  char label[100];
-  int i;
-
-  stream_out = fopen(html_file, "w");
-  if(stream_out==NULL)return 0;
-
-  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
-
-  fprintf(stream_out," // nvertices, nindices\n");
-  fprintf(stream_out," %i %i\n",nvertsObstLit,nfacesObstLit);
-
-  if(nvertsObstLit>0)fprintf(stream_out, "vertices:\n");
-  for(i = 0; i < nvertsObstLit - 1; i++){
-    sprintf(label, "%f", vertsObstLit[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-  }
-  if(nvertsObstLit > 0){
-    sprintf(label, "%f", vertsObstLit[nvertsObstLit - 1]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s\n", label);
-  }
-
-  if(nvertsObstLit>0)fprintf(stream_out, "normals:\n");
-  for(i = 0; i < nvertsObstLit - 1; i++){
-    sprintf(label, "%f", normalsObstLit[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-  }
-  if(nvertsObstLit > 0){
-    sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s\n", label);
-  }
-
-  if(nvertsObstLit>0)fprintf(stream_out, "colors:\n");
-  for(i = 0; i < nvertsObstLit - 1; i++){
-    sprintf(label, "%f", colorsObstLit[i]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-  }
-  if(nvertsObstLit > 0){
-    sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
-    TrimZeros(label);
-    fprintf(stream_out, "%s\n", label);
-  }
-
-  if(nfacesObstLit>0)fprintf(stream_out, "indices:\n");
-  for(i = 0; i < nfacesObstLit - 1; i++){
-    fprintf(stream_out, "%i,", facesObstLit[i]);
-    if(i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
-  }
-  if(nfacesObstLit > 0){
-    fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit - 1]);
-  }
-
-  FREEMEMORY(vertsObstLit);
-  FREEMEMORY(colorsObstLit);
-  FREEMEMORY(facesObstLit);
-  fclose(stream_out);
-
-  return 1;
-}
-#endif
 
 /* ------------------ Smv2Geom ------------------------ */
 
