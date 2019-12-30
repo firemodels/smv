@@ -1926,7 +1926,7 @@ int Obst2Data(char *html_file){
   sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "]\n");
+  fprintf(stream_out, "],\n");
 
   fprintf(stream_out, "\"colors_lit\": [\n");
   for(i = 0; i < nvertsObstLit - 1; i++){
@@ -1939,7 +1939,7 @@ int Obst2Data(char *html_file){
   sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "]\n");
+  fprintf(stream_out, "],\n");
 
   fprintf(stream_out, "\"indices_lit\": [\n");
   for(i = 0; i < nfacesObstLit - 1; i++){
