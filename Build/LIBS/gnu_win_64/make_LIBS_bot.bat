@@ -3,7 +3,13 @@ set OPTS=g
 set glutopt=%1
 
 set LIBDIR=%CD%
-set SRCDIR=%LIBDIR%\..\..\..\Source
+
+cd %LIBDIR%\..\..\..\Source
+set SRCDIR=%CD%
+
+cd %LIBDIR%\..\..\..\Build
+set BUILDDIR=%CD%
+
 erase *.a
 
 :: ZLIB
