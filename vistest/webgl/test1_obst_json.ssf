@@ -1,0 +1,7 @@
+// put rendered files in specified directory
+
+RENDERHTMLDIR
+ .
+
+RENDERHTMLOBST
+ test1_obst.json
