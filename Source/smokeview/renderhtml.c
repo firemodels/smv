@@ -1629,39 +1629,44 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, flo
   char varlabel[100];
 
   if(webgi->nframes<=0||webgi->nverts<=0||webgi->framesize<=0||webgi->nindices<=0)return;
-  fprintf(stream_out, "// %s\n", label);
-  fprintf(stream_out, "// nframes,framesize,nverts,nindices\n");
-  fprintf(stream_out, "%i %i %i %i\n", webgi->nframes,webgi->framesize,webgi->nverts,webgi->nindices);
-  fprintf(stream_out, "// %s vertices:\n",label);
-    for(i = 0; i < webgi->nverts - 1; i++){
+//  fprintf(stream_out, "// %s\n", label);
+//  fprintf(stream_out, "// nframes,framesize,nverts,nindices\n");
+//  fprintf(stream_out, "%i %i %i %i\n", webgi->nframes,webgi->framesize,webgi->nverts,webgi->nindices);
+
+  fprintf(stream_out, "{\n");
+  fprintf(stream_out, "  \"%s_vertices\": [\n",label);
+  for(i = 0; i < webgi->nverts - 1; i++){
     sprintf(varlabel, "%.3f", webgi->verts[i]);
     TrimZeros(varlabel);
+    if(i%PER_ROW==0)fprintf(stream_out, "   ");
     fprintf(stream_out, "%s,", varlabel);
     if(i%PER_ROW==(PER_ROW-1))fprintf(stream_out, "\n");
   }
 
   sprintf(varlabel, "%.3f", webgi->verts[webgi->nverts-1]);
   TrimZeros(varlabel);
-  fprintf(stream_out, "%s\n", varlabel);
-  fprintf(stream_out, "\n");
+  fprintf(stream_out, "   %s\n", varlabel);
+  fprintf(stream_out, "   ],\n");
 
 
-  fprintf(stream_out, "// %s vertex indices:\n",label);
-    for(i = 0; i < webgi->nindices - 1; i++){
+  fprintf(stream_out, "\"%s_vertex_indices\": [\n",label);
+  for(i = 0; i < webgi->nindices - 1; i++){
+    if(i%PER_ROW==0)fprintf(stream_out, "   ");
     fprintf(stream_out, "%i,", webgi->indices[i]);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
   }
-  fprintf(stream_out, "%i\n", webgi->indices[webgi->nindices-1]);
-  fprintf(stream_out, "\n");
+  fprintf(stream_out, "   %i\n", webgi->indices[webgi->nindices-1]);
+  fprintf(stream_out, "   ],\n");
 
   if(colorbar!=NULL){
-    fprintf(stream_out, "// colorbar values (r g b): 256\n");
+    fprintf(stream_out, "  \"colorbar_values\": [\n");
     for(i = 0; i<255; i++){
       int ii[3];
 
       ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
       ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
       ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
+      if(i%PER_ROW==0)fprintf(stream_out, "   ");
       fprintf(stream_out, "%i,%i,%i,255,", ii[0], ii[1], ii[2]);
       if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1))fprintf(stream_out, "\n");
     }
@@ -1672,20 +1677,25 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, flo
       ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
       ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
       ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
-      fprintf(stream_out, "%i,%i,%i,255\n", ii[0], ii[1], ii[2]);
+      fprintf(stream_out, "   %i,%i,%i,255\n", ii[0], ii[1], ii[2]);
     }
-    fprintf(stream_out, "\n");
+    fprintf(stream_out, "   ],\n");
   }
 
-  fprintf(stream_out, "// %s color indices:\n",label);
+  fprintf(stream_out, " \"%s_color_indices\": [\n",label);
   for(i = 0; i<webgi->framesize*webgi->nframes-1; i++){
     sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
+    if(i%PERBIN_ROW==0)fprintf(stream_out, "   ");
     fprintf(stream_out, "%s,", varlabel);
     if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
   }
   sprintf(varlabel, "%i", CLAMP((int)webgi->textures[webgi->framesize*webgi->nframes-1], 0, 255));
-  fprintf(stream_out, "%s\n", varlabel);
+  fprintf(stream_out, "   %s\n", varlabel);
+  fprintf(stream_out, "   ]\n");
+
+  fprintf(stream_out, "}\n");
 }
+
 
 /* ------------------ OutputFixedFrame ------------------------ */
 
@@ -1913,7 +1923,7 @@ int Obst2Data(char *html_file){
   sprintf(label, "%f", vertsObstLit[nvertsObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "],\n");
+  fprintf(stream_out, "   ],\n");
 
   fprintf(stream_out, "\"normals_lit\": [\n");
   for(i = 0; i < nvertsObstLit - 1; i++){
@@ -1926,7 +1936,7 @@ int Obst2Data(char *html_file){
   sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "],\n");
+  fprintf(stream_out, "   ],\n");
 
   fprintf(stream_out, "\"colors_lit\": [\n");
   for(i = 0; i < nvertsObstLit - 1; i++){
@@ -1939,7 +1949,7 @@ int Obst2Data(char *html_file){
   sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "],\n");
+  fprintf(stream_out, "   ],\n");
 
   fprintf(stream_out, "\"indices_lit\": [\n");
   for(i = 0; i < nfacesObstLit - 1; i++){
@@ -1948,7 +1958,7 @@ int Obst2Data(char *html_file){
     if(i%PERBIN_ROW == (PERBIN_ROW - 1))fprintf(stream_out, "\n");
   }
   fprintf(stream_out, "%i\n", facesObstLit[nfacesObstLit - 1]);
-  fprintf(stream_out, "]\n");
+  fprintf(stream_out, "   ]\n");
 
   fprintf(stream_out, "}\n");
 
