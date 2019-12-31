@@ -347,9 +347,9 @@ void ParseCommandline(int argc, char **argv){
   STRCAT(htmlobstdata_filename, "_obstdata.json");
 
   FREEMEMORY(htmlslicedata_filename);
-  NewMemory((void **)&htmlslicedata_filename, len_casename+strlen("_slicedata.txt")+1);
+  NewMemory((void **)&htmlslicedata_filename, len_casename+strlen("_slicedata.json")+1);
   STRCPY(htmlslicedata_filename, fdsprefix);
-  STRCAT(htmlslicedata_filename, "_slicedata.txt");
+  STRCAT(htmlslicedata_filename, "_slicedata.json");
 #endif
 
   FREEMEMORY(boundinfo_filename);
