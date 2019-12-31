@@ -101,7 +101,7 @@ endif
 ifeq ($(GLUT),freeglut)
   WININC = -I $(SOURCE_DIR)/freeglut3.0.0/include
 else
-  WININC = -I $(SOURCE_DIR)/GLUTINC/glut
+  WININC = -I $(SOURCE_DIR)/glui_gl
 endif
 WININC += -I $(SOURCE_DIR)/pthreads
 WININC += -I $(SOURCE_DIR)/openvr/headers
