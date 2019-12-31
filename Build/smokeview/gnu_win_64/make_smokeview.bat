@@ -2,7 +2,7 @@
 
 call ..\scripts\set_smv_opts %*
 if NOT x%setglut% == x goto skip_setglut
-  set GLUT=freeglut
+  set GLUT=glut
 :skip_setglut
 
 call ..\..\scripts\test_gnu_libs ..\..\LIBS %GLUT%
@@ -18,7 +18,7 @@ if "%release%" == "-r" goto endif
   set SMV_TESTSTRING=test_
 :endif
 
-if NOT x%GLUT% == xfreeglut set GLUT=glut
+if NOT x%GLUT% == xglut set GLUT=freeglut
 
 erase *.o *.mod *.exe
 make GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile gnu_win_64
