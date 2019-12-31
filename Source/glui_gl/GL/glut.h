@@ -40,7 +40,9 @@
 #  endif
    /* XXX This is from Win32's <ctype.h> */
 #  ifndef _WCHAR_T_DEFINED
+#ifndef __MINGW32__
 typedef unsigned short wchar_t;
+#endif
 #   define _WCHAR_T_DEFINED
 #  endif
 # endif
