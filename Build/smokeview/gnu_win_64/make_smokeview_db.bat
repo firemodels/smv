@@ -21,7 +21,7 @@ if "%release%" == "-r" goto endif
 if NOT x%GLUT% == xglut set GLUT=freeglut
 
 erase *.o *.mod *.exe
-make GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile gnu_win_64
+make GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile gnu_win_64_db
 
 if x%from% == xbot goto skip2
 pause
