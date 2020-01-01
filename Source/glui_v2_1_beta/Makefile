@@ -9,7 +9,7 @@ ifeq ($(GLUT),freeglut)
   INCS = -I ../freeglut3.0.0/include
   NOCLOSE=-D FREEGLUT_STATIC
 else
-  INCS = -I ../GLUTINC/glut
+  INCS = -I ../glui_gl
   NOCLOSE=-D pp_NOCLOSE
 endif
 
