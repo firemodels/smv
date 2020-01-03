@@ -1,13 +1,14 @@
 @echo off
 
-set stopscript=0
-set release=
+set debug=
 set from=
-set inc=
 set GLUT=glut
 set ICON=
-set smv_mpi=false
+set inc=
+set release=
 set setglut=
+set smv_mpi=false
+set stopscript=0
 
 :: parse command line arguments
 
@@ -23,47 +24,80 @@ goto eof
  if (%1)==() exit /b
  set valid=0
  set arg=%1
- if /I "%1" EQU "-release" (
-   set valid=1
-   set release=-r
- )
+
  if /I "%1" EQU "-bot" (
    set valid=1
    set from=bot
  )
- if /I "%1" EQU "-mpi" (
+ if /I "%1" EQU "-debug" (
    set valid=1
-   set smv_mpi=true
- )
- if /I "%1" EQU "-test" (
-   set valid=1
- )
- if /I "%1" EQU "-inc" (
-   set valid=1
-   set inc=inc
- )
- if /I "%1" EQU "-glut" (
-   set valid=1
-   set GLUT=glut
-   set setglut=1
+   set debug=_db
  )
  if /I "%1" EQU "-freeglut" (
    set valid=1
    set GLUT=freeglut
    set setglut=1
  )
+ if /I "%1" EQU "-glut" (
+   set valid=1
+   set GLUT=glut
+   set setglut=1
+ )
+ if /I "%1" EQU "-help" (
+   set valid=1
+   call :usage
+   set stopscript=1
+   exit /b 1
+ )
  if /I "%1" EQU "-icon" (
    set valid=1
    set ICON=icon
+ )
+ if /I "%1" EQU "-inc" (
+   set valid=1
+   set inc=inc
+ )
+ if /I "%1" EQU "-mpi" (
+   set valid=1
+   set smv_mpi=true
+ )
+ if /I "%1" EQU "-release" (
+   set valid=1
+   set release=-r
+ )
+ if /I "%1" EQU "-test" (
+   set valid=1
  )
  shift
  if %valid% == 0 (
    echo.
    echo ***Error: the input argument %arg% is invalid
    set stopscript=1
-   exit /b
+   exit /b 1
  )
 if not (%1)==() goto getopts
-exit /b
+exit /b 0
+
+::-----------------------------------------------------------------------
+:usage
+::-----------------------------------------------------------------------
+
+:usage
+echo Build smokeview
+echo.
+echo Options:
+echo -bot      - run by a bot, do not pause at end of script
+echo -debug    - build a debug version of smokeview
+echo -freeglut - build smokeview using the freeglut library
+echo -glut     - build smokeview using the glut library
+echo -help     - display this message
+echo -icon     - ceate an icon
+echo -inc      - incremental build
+echo -release  - release versino
+echo -test     - build a test version of smokeview
+exit /b 0
+
+
 
 :eof
+exit /b 0
