@@ -1381,7 +1381,7 @@ void DrawZoneRoomGeom(void){
           x45 = sqrt(2.0)/2.0;
           glLineWidth(ventlinewidth);
           glBegin(GL_LINES);
-          if(uc_color!=NULL)glColor3ubv(uc_color);
+          glColor3ubv(uc_color);
           glVertex3f(-x45*SCALE2SMV(zvi->radius), -x45*SCALE2SMV(zvi->radius), 0.0);
           glVertex3f( x45*SCALE2SMV(zvi->radius),  x45*SCALE2SMV(zvi->radius), 0.0);
           glVertex3f(-x45*SCALE2SMV(zvi->radius),  x45*SCALE2SMV(zvi->radius), 0.0);

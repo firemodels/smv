@@ -1,3 +1,5 @@
+#include "options.h"
+#ifdef pp_OPENVR
 ///////////////////////////////////////////////////////////////////////////////
 // Matrice.cpp
 // ===========
@@ -579,3 +581,4 @@ Matrix4& Matrix4::rotateZ(float angle)
 
     return *this;
 }
+#endif
