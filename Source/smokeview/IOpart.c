@@ -924,7 +924,7 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
 void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, int angle_flag_arg, LINT file_offset_arg){
   FILE *PART5FILE, *streamout_local;
   int returncode;
-  int one_local, version_local, nclasses_local;
+  int one_local, version_local, nclasses_local=0;
   int i;
   int *numtypes_local, *numpoints_local;
   int skip_local, numvals_local;
