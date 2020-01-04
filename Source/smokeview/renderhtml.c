@@ -1397,10 +1397,14 @@ void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
 
 /* ------------------ ObstLitTriangles2Geom ------------------------ */
 
-void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr, int *n_verts, int **trianglesptr, int *n_triangles){
+void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsptr,
+                           float **colors4ptr, int **trianglesptr, int *n_triangles,
+                           int *n_verts, int *n4_verts){
   int j;
-  int nverts = 0, nindices = 0, offset = 0;
-  float *verts, *verts_save, *normals, *normals_save, *colors, *colors_save;
+  int nverts = 0, n4verts = 0, nindices = 0, offset = 0;
+  float *verts, *verts_save, *normals, *normals_save;
+  float *colors, *colors_save;
+  float *colors4, *colors4_save;
   int *indices, *indices_save;
 
   // count triangle vertices and indices for blockes
@@ -1409,27 +1413,32 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
     meshdata *meshi;
 
     meshi     = meshinfo+j;
-    nverts   += meshi->nbptrs*24*3;     // 24 vertices per blockages * 3 coordinates per vertex
+    nverts   += meshi->nbptrs*24*3;    // 24 vertices per blockages * 3 coordinates per vertex
+    n4verts  += meshi->nbptrs*24*4;    // 24 vertices per blockages * 4 coordinates per vertex
     nindices += meshi->nbptrs*6*2*3;   // 6 faces per blockage * 2 triangles per face * 3 indicies per triangle
   }
 
   if(nverts==0||nindices==0){
     *n_verts = 0;
+    *n4_verts = 0;
     *n_triangles  = 0;
     *vertsptr     = NULL;
     *normalsptr   = NULL;
     *colorsptr    = NULL;
+    *colors4ptr   = NULL;
     *trianglesptr = NULL;
     return;
   }
 
-  NewMemory((void **)&verts_save, nverts*sizeof(float));
+  NewMemory((void **)&verts_save,   nverts*sizeof(float));
   NewMemory((void **)&normals_save, nverts*sizeof(float));
-  NewMemory((void **)&colors_save, nverts*sizeof(float));
+  NewMemory((void **)&colors_save,  nverts*sizeof(float));
+  NewMemory((void **)&colors4_save, n4verts*sizeof(float));
   NewMemory((void **)&indices_save, nindices*sizeof(int));
-  verts = verts_save;
+  verts   = verts_save;
   normals = normals_save;
-  colors = colors_save;
+  colors  = colors_save;
+  colors4 = colors4_save;
   indices = indices_save;
 
   // load blockage info into data structures
@@ -1449,15 +1458,19 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
       bc = meshi->blockageinfoptrs[i];
       GetBlockNodes(meshi, bc, xyz, norms, tris);
       for(k = 0; k<24; k++){
-        *verts++ = xyz[3*k+0];
-        *verts++ = xyz[3*k+1];
-        *verts++ = xyz[3*k+2];
+        *verts++   = xyz[3*k+0];
+        *verts++   = xyz[3*k+1];
+        *verts++   = xyz[3*k+2];
         *normals++ = norms[3*k+0];
         *normals++ = norms[3*k+1];
         *normals++ = norms[3*k+2];
-        *colors++ = bc->color[0];
-        *colors++ = bc->color[1];
-        *colors++ = bc->color[2];
+        *colors++  = bc->color[0];
+        *colors++  = bc->color[1];
+        *colors++  = bc->color[2];
+        *colors4++ = bc->color[0];
+        *colors4++ = bc->color[1];
+        *colors4++ = bc->color[2];
+        *colors4++ = 1.0;
       }
       for(k = 0; k<12; k++){
         *indices++ = offset+tris[3*k+0];
@@ -1469,10 +1482,12 @@ void ObstLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
   }
 
   *n_verts = nverts;
-  *n_triangles = nindices;
-  *vertsptr = verts_save;
-  *normalsptr = normals_save;
-  *colorsptr = colors_save;
+  *n4_verts = n4verts;
+  *n_triangles  = nindices;
+  *vertsptr     = verts_save;
+  *normalsptr   = normals_save;
+  *colorsptr    = colors_save;
+  *colors4ptr   = colors4_save;
   *trianglesptr = indices_save;
 }
 
@@ -1624,17 +1639,14 @@ void InitWebGeom(webgeomdata *wi, char *label){
 
 /* ------------------ OutputFixedFrameData ------------------------ */
 
-void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, float *colorbar){
+void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi){
   int i;
   char varlabel[100];
 
   if(webgi->nframes<=0||webgi->nverts<=0||webgi->framesize<=0||webgi->nindices<=0)return;
-//  fprintf(stream_out, "// %s\n", label);
-//  fprintf(stream_out, "// nframes,framesize,nverts,nindices\n");
-//  fprintf(stream_out, "%i %i %i %i\n", webgi->nframes,webgi->framesize,webgi->nverts,webgi->nindices);
 
   fprintf(stream_out, "{\n");
-  fprintf(stream_out, "  \"%s_vertices\": [\n",label);
+  fprintf(stream_out, "  \"vertices\": [\n");
   for(i = 0; i < webgi->nverts - 1; i++){
     sprintf(varlabel, "%.3f", webgi->verts[i]);
     TrimZeros(varlabel);
@@ -1649,7 +1661,7 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, flo
   fprintf(stream_out, "   ],\n");
 
 
-  fprintf(stream_out, "\"%s_vertex_indices\": [\n",label);
+  fprintf(stream_out, "\"indices\": [\n");
   for(i = 0; i < webgi->nindices - 1; i++){
     if(i%PER_ROW==0)fprintf(stream_out, "   ");
     fprintf(stream_out, "%i,", webgi->indices[i]);
@@ -1658,31 +1670,7 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi, char *label, flo
   fprintf(stream_out, "   %i\n", webgi->indices[webgi->nindices-1]);
   fprintf(stream_out, "   ],\n");
 
-  if(colorbar!=NULL){
-    fprintf(stream_out, "  \"colorbar_values\": [\n");
-    for(i = 0; i<255; i++){
-      int ii[3];
-
-      ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
-      ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
-      ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
-      if(i%PER_ROW==0)fprintf(stream_out, "   ");
-      fprintf(stream_out, "%i,%i,%i,255,", ii[0], ii[1], ii[2]);
-      if(i%PERCOLOR_ROW==(PERCOLOR_ROW-1))fprintf(stream_out, "\n");
-    }
-    {
-      int ii[3];
-
-      i = 255;
-      ii[0] = CLAMP(255*colorbar[4*i+0], 0, 255);
-      ii[1] = CLAMP(255*colorbar[4*i+1], 0, 255);
-      ii[2] = CLAMP(255*colorbar[4*i+2], 0, 255);
-      fprintf(stream_out, "   %i,%i,%i,255\n", ii[0], ii[1], ii[2]);
-    }
-    fprintf(stream_out, "   ],\n");
-  }
-
-  fprintf(stream_out, " \"%s_color_indices\": [\n",label);
+  fprintf(stream_out, " \"texData\": [\n");
   for(i = 0; i<webgi->framesize*webgi->nframes-1; i++){
     sprintf(varlabel, "%i", CLAMP((int)webgi->textures[i], 0, 255));
     if(i%PERBIN_ROW==0)fprintf(stream_out, "   ");
@@ -1885,7 +1873,7 @@ int Slice2Data(char *html_file, int option){
 
   InitWebGeom(&slice_node_web, "slice_node");
   SliceNodeTriangles2Geom(&slice_node_web, option);
-  OutputFixedFrameData(stream_out, &slice_node_web, "slice_node", rgb_slice);
+  OutputFixedFrameData(stream_out, &slice_node_web);
   FreeWebGeom(&slice_node_web);
 
   return 1;
@@ -1894,16 +1882,21 @@ int Slice2Data(char *html_file, int option){
   /* ------------------ Obst2Data ------------------------ */
 
 int Obst2Data(char *html_file){
-  float *vertsObstLit=NULL, *normalsObstLit = NULL, *colorsObstLit = NULL;
-  int nvertsObstLit, *facesObstLit, nfacesObstLit;
+  float *vertsObstLit=NULL, *normalsObstLit = NULL;
+  float *colorsObstLit = NULL, *colors4ObstLit = NULL;
+  int nvertsObstLit, nverts4ObstLit;
+  int *facesObstLit, nfacesObstLit;
   FILE *stream_out;
   char label[100];
   int i;
 
-  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
+  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit,
+                        &colorsObstLit, &colors4ObstLit, &facesObstLit,
+                        &nfacesObstLit, &nvertsObstLit, &nverts4ObstLit);
   if(nvertsObstLit<=0||nfacesObstLit<=0){
     FREEMEMORY(vertsObstLit);
     FREEMEMORY(colorsObstLit);
+    FREEMEMORY(colors4ObstLit);
     FREEMEMORY(facesObstLit);
     return 0;
   }
@@ -1912,7 +1905,7 @@ int Obst2Data(char *html_file){
 
   fprintf(stream_out,"{\n");
 
-  fprintf(stream_out, "\"vertices_lit\": [\n");
+  fprintf(stream_out, "\"vertices\": [\n");
   for(i = 0; i < nvertsObstLit - 1; i++){
     sprintf(label, "%f", vertsObstLit[i]);
     TrimZeros(label);
@@ -1925,33 +1918,20 @@ int Obst2Data(char *html_file){
   fprintf(stream_out, "%s\n", label);
   fprintf(stream_out, "   ],\n");
 
-  fprintf(stream_out, "\"normals_lit\": [\n");
-  for(i = 0; i < nvertsObstLit - 1; i++){
-    sprintf(label, "%f", normalsObstLit[i]);
+  fprintf(stream_out, "\"colors\": [\n");
+  for(i = 0; i < nverts4ObstLit - 1; i++){
+    sprintf(label, "%f", colors4ObstLit[i]);
     TrimZeros(label);
     if(i%PER_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%s,", label);
     if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
   }
-  sprintf(label, "%f", normalsObstLit[nvertsObstLit - 1]);
+  sprintf(label, "%f", colors4ObstLit[nverts4ObstLit - 1]);
   TrimZeros(label);
   fprintf(stream_out, "%s\n", label);
   fprintf(stream_out, "   ],\n");
 
-  fprintf(stream_out, "\"colors_lit\": [\n");
-  for(i = 0; i < nvertsObstLit - 1; i++){
-    sprintf(label, "%f", colorsObstLit[i]);
-    TrimZeros(label);
-    if(i%PER_ROW==0)fprintf(stream_out, "  ");
-    fprintf(stream_out, "%s,", label);
-    if(i%PER_ROW == (PER_ROW - 1))fprintf(stream_out, "\n");
-  }
-  sprintf(label, "%f", colorsObstLit[nvertsObstLit - 1]);
-  TrimZeros(label);
-  fprintf(stream_out, "%s\n", label);
-  fprintf(stream_out, "   ],\n");
-
-  fprintf(stream_out, "\"indices_lit\": [\n");
+  fprintf(stream_out, "\"indices\": [\n");
   for(i = 0; i < nfacesObstLit - 1; i++){
     if(i%PERBIN_ROW==0)fprintf(stream_out, "  ");
     fprintf(stream_out, "%i,", facesObstLit[i]);
@@ -1964,6 +1944,7 @@ int Obst2Data(char *html_file){
 
   FREEMEMORY(vertsObstLit);
   FREEMEMORY(colorsObstLit);
+  FREEMEMORY(colors4ObstLit);
   FREEMEMORY(facesObstLit);
   fclose(stream_out);
 
@@ -2054,8 +2035,8 @@ int Smv2Geom(char *html_file){
 
 int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
   FILE *stream_in = NULL, *stream_out = NULL;
-  float *vertsObstLit, *normalsObstLit, *colorsObstLit;
-  int nvertsObstLit, *facesObstLit, nfacesObstLit;
+  float *vertsObstLit, *normalsObstLit, *colorsObstLit, *colors4ObstLit;
+  int nvertsObstLit, nverts4ObstLit, *facesObstLit, nfacesObstLit;
   float *vertsGeomLit, *normalsGeomLit, *colorsGeomLit;
   int nvertsGeomLit, *facesGeomLit, nfacesGeomLit;
   int have_blockages = 0, have_geometry = 0;
@@ -2116,7 +2097,7 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
   BndfNodeTriangles2Geom( &bndf_node_web,  option);
   PartNodeVerts2Geom(     &part_node_web,  option);
 
-  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &nvertsObstLit, &facesObstLit, &nfacesObstLit);
+  ObstLitTriangles2Geom(&vertsObstLit, &normalsObstLit, &colorsObstLit, &colors4ObstLit, &facesObstLit, &nfacesObstLit, &nvertsObstLit, &nverts4ObstLit);
   GeomLitTriangles2Geom(&vertsGeomLit, &normalsGeomLit, &colorsGeomLit, &nvertsGeomLit, &facesGeomLit, &nfacesGeomLit);
   Lines2Geom(&vertsLine, &colorsLine, &nvertsLine, &facesLine, &nfacesLine);
 
