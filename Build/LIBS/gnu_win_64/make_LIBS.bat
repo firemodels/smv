@@ -10,6 +10,8 @@ set arg2=%2
 :: arg3: glut/freeglut
 set arg3=%3
 
+set EXIT_SCRIPT=1
+
 set WAIT=
 if "%arg1%"=="bot" (
   set WAIT=/WAIT

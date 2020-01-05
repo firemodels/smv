@@ -48,6 +48,11 @@ if "%buildtype%" == "debug" (
    set wintype=
    set type=
 )
+if "%buildtype%" == "gnudbg" (
+  cd %svn_root%\smv\Build\smokeview\gnu_win_64
+  call make_smokeview -debug
+  goto eof
+)
 
 if "%platform%" == "windows" (
   cd %svn_root%\smv\Build\smokeview\intel_win_64

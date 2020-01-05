@@ -24,8 +24,15 @@ call %envfile%
 :: windows
 
 if "%platform%" == "windows" (
-  title building libraries for windows
+  title building libraries for windows using the Intel compilers
   cd %svn_root%\smv\Build\LIBS\intel_win_64
+  make_LIBS
+  goto eof
+)
+
+if "%platform%" == "windowsgnu" (
+  title building libraries for windows using the gnu compilers
+  cd %svn_root%\smv\Build\LIBS\gnu_win_64
   make_LIBS
   goto eof
 )
