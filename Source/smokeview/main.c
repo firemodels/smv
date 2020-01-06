@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef pp_MPI
-#include "IOmpi.h"
-#endif
 #include GLUT_H
 
 #include "string_util.h"
@@ -230,12 +227,6 @@ void ParseCommandline(int argc, char **argv){
     WriteIni(GLOBAL_INI, NULL);
     SMV_EXIT(0);
   }
-#ifdef pp_MPI
-  if(strncmp(argv[1], "-mpitest", 8)==0){
-    TestMPI();
-    SMV_EXIT(0);
-  }
-#endif
   strcpy(SMVFILENAME, "");
   smv_parse = 0;
   for(iarg = 1; iarg < argc; iarg++){
@@ -460,14 +451,6 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-no_graphics", 12)==0){
       use_graphics = 0;
     }
-#ifdef pp_MPI
-    else if(strncmp(argv[i], "-mpi", 4)==0&&strncmp(argv[i], "-mpitest", 8)!=0){
-      MPI_Init(NULL, NULL);
-      MPI_Comm_size(MPI_COMM_WORLD, &mpi_nprocesses);
-      MPI_Comm_rank(MPI_COMM_WORLD, &mpi_iprocess);
-      if(mpi_iprocess!=0)HandleMPIMessages(mpi_iprocess, mpi_nprocesses);
-    }
-#endif
     else if(strncmp(argv[i], "-update_slice", 13)==0){
       use_graphics = 0;
       update_slice = 1;
@@ -858,28 +841,5 @@ int main(int argc, char **argv){
 /* ------------------ SMV_EXIT ------------------------ */
 
 void SMV_EXIT(int code){
-#ifdef pp_MPI
-  int nprocs, rank;
-  int initial_flag, final_flag;
-
-  MPI_Initialized(&initial_flag);
-  MPI_Finalized(&final_flag);
-  if(initial_flag==TRUE&&final_flag!=TRUE){
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    if(rank==0){
-      int i;
-
-      for(i = 1; i<nprocs;i++){
-        int command[2];
-
-        command[0] = SMV_MPI_QUIT;
-        command[1] = code;
-        MPI_Send(&command, 2, MPI_INT, i, SMV_MPI_COMMAND, MPI_COMM_WORLD);
-      }
-      MPI_Finalize();
-    }
-  }
-#endif
   exit(code);
 }
