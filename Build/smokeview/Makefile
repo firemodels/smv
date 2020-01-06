@@ -249,10 +249,17 @@ gnu_win_64 : $(obj)
 
 #-Wunused-function -Wunused-label -Wunused-value -Wunused-variable -Wunused-parameter -Wunused-but-set-parameter
 
+# to profile the windows build of smokeview
+# 1.  cd smv/Build/smokeview/gnu_win_64
+# 2.  type: make_smokeview
+# 2.  run case using smokeview_win_test_db
+# 3.  type: gprof smokeview_application_name > results.out
+
+PROFILE_FLAG=-pg
 gnu_win_64_db : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-gnu_win_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_win_64_db : CFLAGS    = -g -Wunused-label -Wunused-value -Wunused-variable -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
-gnu_win_64_db : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath
+gnu_win_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(PROFILE_FLAG) 
+gnu_win_64_db : CFLAGS    = -g -Wunused-label -Wunused-value -Wunused-variable -O0 -m64 $(D_FREEGLUT) $(PROFILE_FLAG) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
+gnu_win_64_db : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(PROFILE_FLAG)
 gnu_win_64_db : CC        = gcc
 gnu_win_64_db : CPP       = g++
 gnu_win_64_db : FC        = gfortran
@@ -270,7 +277,8 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # to profile smokeview on linux
-# 1.  build  using ./make_smv.sh -p
+# 1.  cd smv/Build/smokeview/intel_linux_64
+# 1.  type: ./make_smv.sh -p
 # 2.  run case as usual
 # 3.  type: gprof smokeview_application_name > results.out
 
