@@ -26,7 +26,6 @@ if "%smv_mpi%" == "false" goto skip_mpi
   set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_MPI
 :skip_mpi
 
-
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 
 if x%inc% == xinc goto skip_inc
