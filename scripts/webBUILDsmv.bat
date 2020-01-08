@@ -71,6 +71,10 @@ if "%platform%" == "osx" (
   plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_64 make_smokeview.sh %type%
   goto eof
 )
+if "%platform%" == "gnuosx" (
+  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_osx_64 make_smokeview_db.sh %type%
+  goto eof
+)
 
 :eof
 echo.
