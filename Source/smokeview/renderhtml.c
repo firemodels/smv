@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "interp.h"
 
 #ifdef pp_HTML
 
@@ -701,9 +702,14 @@ void GetSliceNodeVerts(int option, int option2,
           float  constval;
           int n, i, j, k, nj, nk;
           int ii, jj, kk;
+          char *iblank;
+          int nx, ny, nxy;
 
           meshi = meshinfo+slicei->blocknumber;
-
+          nx = meshi->ibar+1;
+          ny = meshi->jbar+1;
+          nxy = nx*ny;
+          iblank = meshi->c_iblank_node_html;
           xplt = meshi->xplt;
           yplt = meshi->yplt;
           zplt = meshi->zplt;
@@ -721,6 +727,15 @@ void GetSliceNodeVerts(int option, int option2,
                   *verts++ = constval;
                   *verts++ = yplt[j];
                   *verts++ = zplt[k];
+
+                // define blank array
+
+                  if(iblank[IJK(plotx, j, k)] == GAS){
+                    *blank++ = 1;
+                  }
+                  else{
+                    *blank++ = 0;
+                  }
                 }
               }
               // triangle indices
@@ -743,14 +758,6 @@ void GetSliceNodeVerts(int option, int option2,
                   *tris++ = *offset+i00;
                   *tris++ = *offset+i11;
                   *tris++ = *offset+i01;
-                  if(j%3==0){
-                    *blank++ = 0;
-                    *blank++ = 0;
-                  }
-                  else{
-                    *blank++ = 1;
-                    *blank++ = 1;
-                  }
                 }
               }
               *offset += nrows*ncols;
@@ -774,6 +781,15 @@ void GetSliceNodeVerts(int option, int option2,
                   *verts++ = xplt[i];
                   *verts++ = constval;
                   *verts++ = zplt[k];
+
+                // define blank array
+
+                  if(iblank[IJK(i, ploty, k)] == GAS){
+                    *blank++ = 1;
+                  }
+                  else{
+                    *blank++ = 0;
+                  }
                 }
               }
               // triangle indices
@@ -796,14 +812,6 @@ void GetSliceNodeVerts(int option, int option2,
                   *tris++ = *offset+i00;
                   *tris++ = *offset+i11;
                   *tris++ = *offset+i01;
-                  if(i%3==0){
-                    *blank++ = 0;
-                    *blank++ = 0;
-                  }
-                  else{
-                    *blank++ = 1;
-                    *blank++ = 1;
-                  }
                 }
               }
               *offset += nrows*ncols;
@@ -827,6 +835,15 @@ void GetSliceNodeVerts(int option, int option2,
                   *verts++ = xplt[i];
                   *verts++ = yplt[j];
                   *verts++ = constval;
+
+                // define blank array
+
+                  if(iblank[IJK(i, j, plotz)] == GAS){
+                    *blank++ = 1;
+                  }
+                  else{
+                    *blank++ = 0;
+                  }
                 }
               }
               // triangle indices
@@ -849,14 +866,6 @@ void GetSliceNodeVerts(int option, int option2,
                   *tris++ = *offset+i00;
                   *tris++ = *offset+i11;
                   *tris++ = *offset+i01;
-                  if(i%3==0){
-                    *blank++ = 0;
-                    *blank++ = 0;
-                  }
-                  else{
-                    *blank++ = 1;
-                    *blank++ = 1;
-                  }
                 }
               }
               *offset += nrows*ncols;
@@ -1353,10 +1362,10 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
     return;
   }
 
-  NewMemory((void **)&verts_save, nverts*sizeof(float));
+  NewMemory((void **)&verts_save,     nverts*sizeof(float));
   NewMemory((void **)&textures_save, (slice_node_web->framesize*slice_node_web->nframes)*sizeof(float));
-  NewMemory((void **)&indices_save, nindices*sizeof(int));
-  NewMemory((void **)&blank_save, ntriangles*sizeof(int));
+  NewMemory((void **)&indices_save,  nindices*sizeof(int));
+  NewMemory((void **)&blank_save,    (nverts/3)*sizeof(int));
   verts = verts_save;
   textures = textures_save;
   indices = indices_save;
@@ -1370,7 +1379,7 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
     GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, indices, blank, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
     verts   += 3*nslice_verts;
     indices += 3*nslice_tris;
-    blank   += nslice_tris;
+    blank   += nslice_verts/3;
   }
 
   slice_node_web->nverts     = nverts;
@@ -1711,13 +1720,14 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi ,float *colorbar)
   fprintf(stream_out, "%i\n", webgi->indices[webgi->nindices-1]);
   fprintf(stream_out, "   ],\n");
 
+#define PERBIN_ROW_TEMP 33
   fprintf(stream_out, "\"blank\": [\n");
-  for(i = 0; i<webgi->ntriangles-1; i++){
-    if(i%PERBIN_ROW==0)fprintf(stream_out, "   ");
+  for(i = 0; i<webgi->nverts/3-1; i++){
+    if(i%PERBIN_ROW_TEMP==0)fprintf(stream_out, "   ");
     fprintf(stream_out, "%i,", webgi->blank[i]);
-    if(i%PERBIN_ROW==(PERBIN_ROW-1))fprintf(stream_out, "\n");
+    if(i%PERBIN_ROW_TEMP==(PERBIN_ROW_TEMP-1))fprintf(stream_out, "\n");
   }
-  fprintf(stream_out, "%i\n", webgi->blank[webgi->ntriangles-1]);
+  fprintf(stream_out, "%i\n", webgi->blank[webgi->nverts/3-1]);
   fprintf(stream_out, "   ],\n");
 
   if(colorbar!=NULL){
