@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
 //#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_SLICETHREAD        // parallel slice file loading
@@ -56,9 +57,6 @@
 //*** options: windows
 
 #ifdef WIN32
-#ifdef pp_INTEL
-//#define pp_MPI               //  add mpi to smokeview
-#endif
 //#define pp_OPENVR       // implement virtual reality using openvr library
 #define pp_DEG          // output degree symbol
 #define pp_memstatus

@@ -873,6 +873,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 #define FEDO2(O2)  ( exp( -(8.13-0.54*(20.9-100.0*CLAMP(O2,0.0,0.2))) )/60.0 )
 #define HVCO2(CO2) (exp(0.1930*CLAMP(CO2,0.0,0.1)*100.0+2.0004)/7.1)
 
+  update_fileload = 1;
   ASSERT(fedinfo!=NULL);
   ASSERT(file_index>=0);
   if(file_type==FED_SLICE){
@@ -1157,6 +1158,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
   FILE_SIZE return_filesize=0;
   int finalize = 0;
 
+  update_fileload = 1;
   valmin = 1000000000.0;
   valmax = -valmin;
   vd = vsliceinfo + ivslice;
@@ -4269,6 +4271,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
 #endif
+  update_fileload = 1;
   CheckMemory;
   START_TIMER(total_time);
   *errorcode = 0;

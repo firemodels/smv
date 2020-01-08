@@ -1330,6 +1330,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int file_unit, wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
+  update_fileload = 1;
   patchi = patchinfo + ifile;
   if(patchi->loaded==0&&flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
@@ -2513,8 +2514,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   // ndynamic
   // vals_1, ... vals_ndyamic
 
+  update_fileload = 1;
   if(patchi->structured == YES)return 0;
 
+  update_fileload = 1;
   START_TIMER(total_time);
   file = patchi->file;
 
@@ -2684,6 +2687,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
   FILE_SIZE return_filesize = 0;
 
+  update_fileload = 1;
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){
     ASSERT(ifile>=0&&ifile<ngeominfo);

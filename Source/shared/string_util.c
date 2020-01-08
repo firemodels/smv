@@ -30,9 +30,6 @@
 #include "mbedtls/sha256.h"
 #include "mbedtls/sha1.h"
 #endif
-#ifdef pp_MPI
-#include "IOmpi.h"
-#endif
 
 
 unsigned int *random_ints, nrandom_ints;
@@ -1717,29 +1714,5 @@ void PRINTversion(char *progname){
 #endif
 #ifdef pp_LINUX
   PRINTF("Platform         : LINUX64\n");
-#endif
-#ifdef pp_MPI
-  {
-    int initial_flag, final_flag;
-
-    MPI_Initialized(&initial_flag);
-    MPI_Finalized(&final_flag);
-    if(initial_flag==TRUE&&final_flag!=TRUE){
-      int nprocesses, result_length;
-      int mpi_version, mpi_subversion;
-      char library_version[MPI_MAX_LIBRARY_VERSION_STRING];
-
-      MPI_Get_library_version(library_version, &result_length);
-      MPI_Get_version(&mpi_version, &mpi_subversion);
-      MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
-      PRINTF("\n");
-      PRINTF("MPI processes    : %i\n", nprocesses);
-      PRINTF("MPI version: %i.%i\n", mpi_version,mpi_subversion);
-      PRINTF("MPI library version: %s\n", library_version);
-    }
-    else{
-      PRINTF("MPI              : disabled\n");
-    }
-  }
 #endif
 }

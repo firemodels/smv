@@ -4,7 +4,7 @@ call ..\scripts\set_smv_opts %*
 
 :: setup compiler environment
 if x%from% == xbot goto skip1
-call ..\..\..\..\fds\Build\scripts\setup_intel_compilers.bat
+call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 :skip1
 
 set SMV_TESTFLAG=
@@ -25,7 +25,6 @@ if  "x%VS140COMNTOOLS%" == "x" goto endif2
 if "%smv_mpi%" == "false" goto skip_mpi
   set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_MPI
 :skip_mpi
-
 
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 

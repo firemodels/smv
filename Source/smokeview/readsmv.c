@@ -542,6 +542,7 @@ void InitMesh(meshdata *meshi){
   meshi->c_iblank_y0 = NULL;
   meshi->c_iblank_z0 = NULL;
   meshi->c_iblank_node0 = NULL;
+  meshi->c_iblank_node_html = NULL;
   meshi->c_iblank_embed0 = NULL;
   meshi->block_zdist0 = NULL;
 

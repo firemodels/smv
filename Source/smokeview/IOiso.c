@@ -151,6 +151,7 @@ void ReadIsoGeomWrapup(int flag){
   float wrapup_time;
 #endif
 
+  update_fileload = 1;
   update_readiso_geom_wrapup=UPDATE_ISO_OFF;
 #ifdef pp_ISOTIME
   START_TIMER(wrapup_time);
@@ -288,6 +289,7 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   surfdata *surfi;
   FILE_SIZE return_filesize=0;
 
+  update_fileload = 1;
   if(load_flag==UNLOAD){
     CancelUpdateTriangles();
   }
@@ -542,6 +544,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
   START_TIMER(total_time);
 
+  update_fileload = 1;
   ASSERT(ifile>=0&&ifile<nisoinfo);
   ib = isoinfo+ifile;
   if(ib->loaded==0&&flag==UNLOAD)return;
@@ -963,6 +966,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
   isodata *isoi;
   FILE_SIZE return_filesize=0;
 
+  update_fileload = 1;
   if(ifile>=0&&ifile<nisoinfo){
 
     isoi = isoinfo+ifile;

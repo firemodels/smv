@@ -708,6 +708,7 @@ typedef struct _meshdata {
   int plotn;
 
   char *c_iblank_node0, *c_iblank_cell0, *c_iblank_x0, *c_iblank_y0, *c_iblank_z0;
+  char *c_iblank_node_html;
   float *f_iblank_cell0;
   char *c_iblank_embed0;
   float *block_zdist0;
