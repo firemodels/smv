@@ -2667,7 +2667,6 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
   float xyz0[3], *xyzi, *xyzip1, *xyzip2;
   int nrows, ncols;
   int nverts, ntris;
-  int nverts_allocated, ntris_allocated;
 
   *nverts_out = 0;
   *ntris_out = 0;
@@ -2942,9 +2941,6 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
     return;
   }
 
-  nverts_allocated = nverts;
-  ntris_allocated = ntris;
-
 // define output vertex array
 
   nverts = 0;
@@ -2966,7 +2962,6 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       }
     }
   }
-  ASSERT(nverts==nverts_allocated);
   CheckMemory;
 
 // define output triangle array
@@ -3037,7 +3032,6 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
       }
     }
   }
-  ASSERT(ntris==ntris_allocated);
   CheckMemory;
   *nverts_out = nverts;
   *ntris_out = ntris;
