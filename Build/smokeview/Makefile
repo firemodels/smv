@@ -462,7 +462,7 @@ gnu_osx_64_db : $(obj)
 # ------------- gnu_osx_64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
+gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7
 gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran 
 ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
