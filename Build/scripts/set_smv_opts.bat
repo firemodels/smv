@@ -6,6 +6,8 @@ set GLUT=glut
 set ICON=
 set inc=
 set release=
+set SMV_PROFILEFLAG=
+set SMV_PROFILESTRING=
 set setglut=
 set smv_mpi=false
 set stopscript=0
@@ -60,6 +62,11 @@ goto eof
  if /I "%1" EQU "-mpi" (
    set valid=1
    set smv_mpi=true
+ )
+ if /I "%1" EQU "-profile" (
+   set valid=1
+   set SMV_PROFILEFLAG=-pg
+   set SMV_PROFILESTRING=p
  )
  if /I "%1" EQU "-release" (
    set valid=1

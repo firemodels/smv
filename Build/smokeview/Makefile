@@ -234,13 +234,13 @@ intel_win_64 : $(objwin)
 # ------------- gnu_win_64 ----------------
 
 gnu_win_64 : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILE_FLAG)
-gnu_win_64 : CFLAGS    = -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILE_FLAG)
-gnu_win_64 : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILE_FLAG)
+gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILEFLAG)
+gnu_win_64 : CFLAGS    = -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
+gnu_win_64 : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
 gnu_win_64 : FC        = gfortran
-gnu_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILE_STRING)
+gnu_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 gnu_win_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
@@ -256,13 +256,13 @@ gnu_win_64 : $(obj)
 # 3.  type: gprof smokeview_application_name > results.out
 
 gnu_win_64_db : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-gnu_win_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILE_FLAG) 
-gnu_win_64_db : CFLAGS    = -g -Wunused-label -Wunused-value -Wunused-variable -O0 -m64 $(D_FREEGLUT) $(SMV_PROFILE_FLAG) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
-gnu_win_64_db : LFLAGS    = -m64  $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILE_FLAG)
+gnu_win_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D _DEBUG -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILEFLAG) 
+gnu_win_64_db : CFLAGS    = -O0 -m64 -g -Wunused-label -Wunused-value -Wunused-variable $(D_FREEGLUT) $(SMV_PROFILEFLAG) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
+gnu_win_64_db : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
 gnu_win_64_db : CC        = gcc
 gnu_win_64_db : CPP       = g++
 gnu_win_64_db : FC        = gfortran
-gnu_win_64_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db$(SMV_PROFILE_STRING)
+gnu_win_64_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 gnu_win_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
@@ -298,10 +298,8 @@ intel_linux_64 : CPP       = ${mpi}icpc
 intel_linux_64 : FC        = ${mpi}ifort
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
-intel_linux_64 : $(obj)  $(if $(LUA_SCRIPTING),smvluacore)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) \
-        $(INTEL_LIBS_LINUX)\
-        $(SYSTEM_LIBS_LINUX) $(LIBLUA)
+intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
 
 # ------------- intel_linux_64_db ----------------
 
@@ -454,13 +452,13 @@ intel_osx_64_db : $(obj)
 
 # ------------- gnu_osx_64_db ----------------
 
-gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT
+gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form $(SMV_PROFILEFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT $(SMV_PROFILEFLAG)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : FC        = gfortran
-gnu_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
+gnu_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 gnu_osx_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran
@@ -469,9 +467,9 @@ gnu_osx_64_db : $(obj)
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form $(SMV_PROFILEFLAG)
 gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) -mmacosx-version-min=10.7 $(SMV_PROFILEFLAG)
-gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran 
+gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
-gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL $(SMV_PROFILEFLAG)
+gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
 else
 ifeq ($(QUARTZ),framework)

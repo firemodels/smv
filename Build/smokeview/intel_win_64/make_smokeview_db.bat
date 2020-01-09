@@ -1,6 +1,6 @@
 @echo off
 
-call ..\scripts\set_smv_opts %*
+call ..\..\scripts\set_smv_opts %*
 
 :: setup compiler environment
 if x%from% == xbot goto skip1
