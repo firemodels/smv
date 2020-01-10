@@ -174,6 +174,7 @@ SVEXTERN int SVDECL(smoke3d_skip, 1);
 
 SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
+SVEXTERN int SVDECL(research_mode_override, -1);
 
 #ifdef pp_SMOKEDIAG
 SVEXTERN unsigned int total_triangles, total_drawn_triangles;

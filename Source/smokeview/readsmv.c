@@ -9782,6 +9782,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &research_mode, &ncolorlabel_decimals);
+      if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, 1, 3);
       ONEORZERO(research_mode);
       update_research_mode=1;
@@ -10783,6 +10784,11 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+      if(setvalmin==1||setvalmax==1){
+        research_mode = 0;
+        research_mode_override = 0;
+        update_research_mode = 1;
+      }
       {
         char *colon;
 

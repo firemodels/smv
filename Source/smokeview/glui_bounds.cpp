@@ -3556,14 +3556,10 @@ extern "C" void SliceBoundCB(int var){
         // slice files
 
         if(nsliceloaded > 0){
-          setslicemin = setslicemin_save;
           SliceBoundCB(SETVALMIN);
-          slicemin = slicemin_save;
           SliceBoundCB(VALMIN);
 
-          setslicemax = setslicemax_save;
           SliceBoundCB(SETVALMAX);
-          slicemax = slicemax_save;
           SliceBoundCB(VALMAX);
         }
 
