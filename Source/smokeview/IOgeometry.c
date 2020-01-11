@@ -2011,7 +2011,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
       FSEEK(stream,4+4*nvolumes*4+4,SEEK_CUR); // skip volumes
       FSEEK(stream,4+nvolumes*4+4,SEEK_CUR);   // skip matl
     }
-    nt++;
+    if(nverts!=0||ntris!=0||nvolumes!=0)nt++;
   }
   *ntimes_local=nt;
   fclose(stream);
