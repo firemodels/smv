@@ -300,7 +300,8 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERHTMLGEOM") == MATCH)return SCRIPT_RENDERHTMLGEOM;
   if(MatchUpper(keyword,"RENDERHTMLOBST") == MATCH)return SCRIPT_RENDERHTMLOBST;
   if(MatchUpper(keyword,"RENDERHTMLONCE") ==MATCH)return SCRIPT_RENDERHTMLONCE;
-  if(MatchUpper(keyword,"RENDERHTMLSLICE") ==MATCH)return SCRIPT_RENDERHTMLSLICE;
+  if(MatchUpper(keyword,"RENDERHTMLSLICENODE")==MATCH)return SCRIPT_RENDERHTMLSLICENODE;
+  if(MatchUpper(keyword,"RENDERHTMLSLICECELL")==MATCH)return SCRIPT_RENDERHTMLSLICECELL;
 #endif
   if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;                 // documented
   if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
@@ -634,7 +635,8 @@ int CompileScript(char *scriptfile){
         scripti->need_graphics = 0;
         SETcval2;
         break;
-      case SCRIPT_RENDERHTMLSLICE:
+      case SCRIPT_RENDERHTMLSLICENODE:
+      case SCRIPT_RENDERHTMLSLICECELL:
         //  0 current frame, 1 all frames
         // file name base (char) (or blank to use smokeview default)
         SETbuffer;
@@ -1014,17 +1016,31 @@ void GetWebFileName(char *web_filename, scriptdata *scripti){
   strcat(web_filename, scripti->cval2);
 }
 
-/* ------------------ ScriptRenderSlice ------------------------ */
+/* ------------------ ScriptRenderSliceNode ------------------------ */
 
-void ScriptRenderSlice(scriptdata *scripti){
+void ScriptRenderSliceNode(scriptdata *scripti){
   char web_filename[1024];
 
   GetWebFileName(web_filename, scripti);
   if(scripti->ival==0){
-    Slice2Data(web_filename, HTML_CURRENT_TIME);
+    SliceNode2Data(web_filename, HTML_CURRENT_TIME);
   }
   else{
-    Slice2Data(web_filename, HTML_ALL_TIMES);
+    SliceNode2Data(web_filename, HTML_ALL_TIMES);
+  }
+}
+
+/* ------------------ ScriptRenderSliceCell ------------------------ */
+
+void ScriptRenderSliceCell(scriptdata *scripti){
+  char web_filename[1024];
+
+  GetWebFileName(web_filename, scripti);
+  if(scripti->ival==0){
+    SliceCell2Data(web_filename, HTML_CURRENT_TIME);
+  }
+  else{
+    SliceCell2Data(web_filename, HTML_ALL_TIMES);
   }
 }
 
@@ -2776,8 +2792,12 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptRenderObst(scripti);
       returnval = 1;
       break;
-    case SCRIPT_RENDERHTMLSLICE:
-      ScriptRenderSlice(scripti);
+    case SCRIPT_RENDERHTMLSLICENODE:
+      ScriptRenderSliceNode(scripti);
+      returnval = 1;
+      break;
+    case SCRIPT_RENDERHTMLSLICECELL:
+      ScriptRenderSliceCell(scripti);
       returnval = 1;
       break;
 #endif

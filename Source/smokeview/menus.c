@@ -1883,15 +1883,17 @@ void RenderMenu(int value){
     Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
     Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
 
-    Obst2Data(htmlobstdata_filename);
-    Slice2Data(htmlslicedata_filename, HTML_CURRENT_TIME);
+    Obst2Data(htmlobst_filename);
+    SliceNode2Data(htmlslicenode_filename, HTML_CURRENT_TIME);
+    SliceCell2Data(htmlslicecell_filename, HTML_CURRENT_TIME);
     break;
   case RenderHTMLALL:
-    Smv2Html(html_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
+    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
     Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
 
-    Obst2Data(htmlobstdata_filename);
-    Slice2Data(htmlslicedata_filename, HTML_ALL_TIMES);
+    Obst2Data(htmlobst_filename);
+    SliceNode2Data(htmlslicenode_filename, HTML_ALL_TIMES);
+    SliceCell2Data(htmlslicecell_filename, HTML_ALL_TIMES);
     break;
 #endif
   case RenderCancel:

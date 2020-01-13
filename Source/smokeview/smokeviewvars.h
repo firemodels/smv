@@ -174,6 +174,7 @@ SVEXTERN int SVDECL(smoke3d_skip, 1);
 
 SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
+SVEXTERN int SVDECL(research_mode_override, -1);
 
 #ifdef pp_SMOKEDIAG
 SVEXTERN unsigned int total_triangles, total_drawn_triangles;
@@ -1511,8 +1512,9 @@ SVEXTERN char SVDECL(*smokeviewini,NULL);
 #ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*htmlvr_filename, NULL);
-SVEXTERN char SVDECL(*htmlslicedata_filename, NULL);
-SVEXTERN char SVDECL(*htmlobstdata_filename, NULL);
+SVEXTERN char SVDECL(*htmlslicenode_filename, NULL);
+SVEXTERN char SVDECL(*htmlslicecell_filename, NULL);
+SVEXTERN char SVDECL(*htmlobst_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
 SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
 #endif

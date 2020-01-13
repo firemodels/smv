@@ -1,6 +1,6 @@
 @echo off
 
-call ..\scripts\set_smv_opts %*
+call ..\..\scripts\set_smv_opts %*
 
 :: setup compiler environment
 if x%from% == xbot goto skip1
@@ -32,7 +32,7 @@ if x%inc% == xinc goto skip_inc
 erase *.obj *.mod *.exe
 :skip_inc
 
-make -j 4 ICON="%ICON%" GLUT="%GLUT%" INTEL_MPI="%smv_mpi%" I_MPI_ROOT="%I_MPI_ROOT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
+make -j 4 ICON="%ICON%" GLUT="%GLUT%" INTEL_MPI="%smv_mpi%" I_MPI_ROOT="%I_MPI_ROOT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG% %OPT%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
 if x%from% == xbot goto skip2
 pause
 :skip2

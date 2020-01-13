@@ -1483,7 +1483,7 @@ void ReallocTourMemory(void){
       NewMemory((void **)&touri->pathnodes,tour_ntimes*sizeof(pathdata));
       NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
       touri->ntimes=tour_ntimes;
-      }
+    }
     FREEMEMORY(tour_t);
     FREEMEMORY(tour_t2);
     FREEMEMORY(tour_dist);
