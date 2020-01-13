@@ -1281,7 +1281,7 @@ void PartNodeVerts2Geom(webgeomdata *part_node_web, int option){
 
 /* ------------------ SliceCellTriangles2Geom ------------------------ */
 
-void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
+int SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
   int nverts = 0, nindices = 0, offset = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1302,7 +1302,7 @@ void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
     slice_cell_web->verts    = NULL;
     slice_cell_web->textures = NULL;
     slice_cell_web->indices  = NULL;
-    return;
+    return 0;
   }
 
   NewMemory((void **)&verts_save, nverts*sizeof(float));
@@ -1330,11 +1330,12 @@ void SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
   slice_cell_web->verts    = verts_save;
   slice_cell_web->textures = textures_save;
   slice_cell_web->indices  = indices_save;
+  return nverts;
 }
 
 /* ------------------ SliceNodeTriangles2Geom ------------------------ */
 
-void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
+int SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   int nverts = 0, nindices = 0, offset = 0, ntriangles = 0;
   float *verts, *verts_save;
   unsigned char *textures, *textures_save;
@@ -1359,7 +1360,7 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
     slice_node_web->textures   = NULL;
     slice_node_web->indices    = NULL;
     slice_node_web->blank      = NULL;
-    return;
+    return 0;
   }
 
   NewMemory((void **)&verts_save,     nverts*sizeof(float));
@@ -1389,6 +1390,7 @@ void SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   slice_node_web->textures   = textures_save;
   slice_node_web->indices    = indices_save;
   slice_node_web->blank      = blank_save;
+  return nverts;
 }
 
 /* ------------------ SliceGeomTriangles2Geom ------------------------ */
@@ -1689,11 +1691,14 @@ void InitWebGeom(webgeomdata *wi, char *label){
 
 /* ------------------ OutputFixedFrameData ------------------------ */
 
-void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi ,float *colorbar){
+void OutputFixedFrameData(char *html_file, webgeomdata *webgi ,float *colorbar){
   int i;
   char varlabel[100];
+  FILE *stream_out = NULL;
 
   if(webgi->nframes<=0||webgi->nverts<=0||webgi->framesize<=0||webgi->nindices<=0)return;
+  stream_out = fopen(html_file, "w");
+  if(stream_out==NULL)return;
 
   fprintf(stream_out, "{\n");
   fprintf(stream_out, "  \"vertices\": [\n");
@@ -1721,14 +1726,24 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi ,float *colorbar)
   fprintf(stream_out, "   ],\n");
 
 #define PERBIN_ROW_TEMP 33
-  fprintf(stream_out, "\"blank\": [\n");
-  for(i = 0; i<webgi->nverts/3-1; i++){
-    if(i%PERBIN_ROW_TEMP==0)fprintf(stream_out, "   ");
-    fprintf(stream_out, "%i,", webgi->blank[i]);
-    if(i%PERBIN_ROW_TEMP==(PERBIN_ROW_TEMP-1))fprintf(stream_out, "\n");
-  }
-  fprintf(stream_out, "%i\n", webgi->blank[webgi->nverts/3-1]);
-  fprintf(stream_out, "   ],\n");
+    fprintf(stream_out, "\"blank\": [\n");
+    if(webgi->blank!=NULL){
+      for(i = 0; i<webgi->nverts/3-1; i++){
+        if(i%PERBIN_ROW_TEMP==0)fprintf(stream_out, "   ");
+        fprintf(stream_out, "%i,", webgi->blank[i]);
+        if(i%PERBIN_ROW_TEMP==(PERBIN_ROW_TEMP-1))fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "%i\n", webgi->blank[webgi->nverts/3-1]);
+    }
+    else{
+      for(i = 0; i<webgi->nverts/3-1; i++){
+        if(i%PERBIN_ROW_TEMP==0)fprintf(stream_out, "   ");
+        fprintf(stream_out, "1,");
+        if(i%PERBIN_ROW_TEMP==(PERBIN_ROW_TEMP-1))fprintf(stream_out, "\n");
+      }
+      fprintf(stream_out, "1\n");
+    }
+    fprintf(stream_out, "   ],\n");
 
   if(colorbar!=NULL){
     fprintf(stream_out, "  \"colorbar\": [\n");
@@ -1768,6 +1783,7 @@ void OutputFixedFrameData(FILE *stream_out, webgeomdata *webgi ,float *colorbar)
   fprintf(stream_out, "   ]\n");
 
   fprintf(stream_out, "}\n");
+  fclose(stream_out);
 }
 
 
@@ -1948,24 +1964,35 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
   fprintf(stream_out, "\n");
 }
 
-/* ------------------ Slice2Data ------------------------ */
+/* ------------------ SliceNode2Data ------------------------ */
 
-int Slice2Data(char *html_file, int option){
+int SliceNode2Data(char *html_file, int option){
   webgeomdata slice_node_web;
-  FILE *stream_out=NULL;
-
-  stream_out = fopen(html_file,"w");
-  if(stream_out==NULL)return 0;
 
   InitWebGeom(&slice_node_web, "slice_node");
-  SliceNodeTriangles2Geom(&slice_node_web, option);
-  OutputFixedFrameData(stream_out, &slice_node_web, rgb_slice);
+  if(SliceNodeTriangles2Geom(&slice_node_web, option)!=0){
+    OutputFixedFrameData(html_file, &slice_node_web, rgb_slice);
+  }
   FreeWebGeom(&slice_node_web);
 
   return 1;
 }
 
-  /* ------------------ Obst2Data ------------------------ */
+/* ------------------ SliceCell2Data ------------------------ */
+
+int SliceCell2Data(char *html_file, int option){
+  webgeomdata slice_cell_web;
+
+  InitWebGeom(&slice_cell_web, "slice_cell");
+  if(SliceCellTriangles2Geom(&slice_cell_web, option)!=0){
+    OutputFixedFrameData(html_file, &slice_cell_web, rgb_slice);
+  }
+  FreeWebGeom(&slice_cell_web);
+
+  return 1;
+}
+
+/* ------------------ Obst2Data ------------------------ */
 
 int Obst2Data(char *html_file){
   float *vertsObstLit=NULL, *normalsObstLit = NULL;

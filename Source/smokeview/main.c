@@ -332,15 +332,20 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(htmlvr_filename, fdsprefix);
   STRCAT(htmlvr_filename, "_vr.html");
 
-  FREEMEMORY(htmlobstdata_filename);
-  NewMemory((void **)&htmlobstdata_filename, len_casename+strlen("_obstdata.json")+1);
-  STRCPY(htmlobstdata_filename, fdsprefix);
-  STRCAT(htmlobstdata_filename, "_obstdata.json");
+  FREEMEMORY(htmlobst_filename);
+  NewMemory((void **)&htmlobst_filename, len_casename+strlen("_obst.json")+1);
+  STRCPY(htmlobst_filename, fdsprefix);
+  STRCAT(htmlobst_filename, "_obst.json");
 
-  FREEMEMORY(htmlslicedata_filename);
-  NewMemory((void **)&htmlslicedata_filename, len_casename+strlen("_slicedata.json")+1);
-  STRCPY(htmlslicedata_filename, fdsprefix);
-  STRCAT(htmlslicedata_filename, "_slicedata.json");
+  FREEMEMORY(htmlslicenode_filename);
+  NewMemory((void **)&htmlslicenode_filename, len_casename+strlen("_slicenode.json")+1);
+  STRCPY(htmlslicenode_filename, fdsprefix);
+  STRCAT(htmlslicenode_filename, "_slicenode.json");
+
+  FREEMEMORY(htmlslicecell_filename);
+  NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
+  STRCPY(htmlslicecell_filename, fdsprefix);
+  STRCAT(htmlslicecell_filename, "_slicecell.json");
 #endif
 
   FREEMEMORY(boundinfo_filename);
