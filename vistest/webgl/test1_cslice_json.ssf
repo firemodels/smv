@@ -1,0 +1,13 @@
+// put rendered files in specified directory
+
+RENDERHTMLDIR
+ .
+
+LOADSLICEM
+ TEMPERATURE(cell centered)
+ 1 0.850000
+ 1
+
+RENDERHTMLSLICECELL
+ 1
+ test1_slicecell.json

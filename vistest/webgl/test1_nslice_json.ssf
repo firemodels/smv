@@ -1,0 +1,13 @@
+// put rendered files in specified directory
+
+RENDERHTMLDIR
+ .
+
+LOADSLICEM
+ TEMPERATURE
+ 2 0.800000
+ 1
+
+RENDERHTMLSLICENODE
+ 1
+ test1_slicenode.json
