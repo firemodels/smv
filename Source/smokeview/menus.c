@@ -8867,7 +8867,7 @@ updatemenu=0;
     glutAddMenuEntry(_("Render html(current)"), RenderHTML);
     glutAddMenuEntry(_("Render html(all)"),     RenderHTMLALL);
 #ifdef pp_HTML
-    glutAddMenuEntry(_("Render json(current"),  RenderJSON);
+    glutAddMenuEntry(_("Render json(current)"),  RenderJSON);
     glutAddMenuEntry(_("Render json(all)"),     RenderJSONALL);
 #endif
 
