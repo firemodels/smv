@@ -61,9 +61,6 @@ int main(int argc, char **argv){
   strcpy(file_default, "terrain");
   strcpy(image_dir, ".");
   strcpy(elev_dir, "");
-#ifdef pp_CSVF
-  strcpy(csv_file, "");
-#endif
   strcpy(surf_id1, "surf1");
   strcpy(surf_id2, "surf2");
   strcpy(matl_id, "matl1");

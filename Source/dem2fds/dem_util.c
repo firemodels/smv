@@ -192,6 +192,37 @@ gdImagePtr GetJPEGImage(const char *filename, int *width, int *height) {
   return image;
 }
 
+#ifdef pp_FASTCOLOR
+/* ------------------ GetColors ------------------------ */
+
+void GetColors(elevdata *imageinfo, int nimageinfo) {
+  int i;
+
+  for(i = 0; i<nimageinfo; i++) {
+    elevdata *imagei;
+    int *colors = NULL;
+    int irow;
+
+    printf(" generating colors: %i of %i\n", i+1, nimageinfo);
+    imagei = imageinfo+i;
+    imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
+
+    NewMemory((void **)&colors, imagei->ncols*imagei->nrows*sizeof(int));
+    imagei->colors = colors;
+
+    for(irow = 0; irow<imagei->nrows; irow++){
+      int icol;
+
+      for(icol = 0; icol<imagei->ncols; icol++){
+        colors[irow*imagei->ncols+icol] = gdImageGetPixel(imagei->image, icol, irow);
+      }
+    }
+    gdImageDestroy(imagei->image);
+    imagei->image = NULL;
+  }
+}
+#endif
+
 /* ------------------ GetColor ------------------------ */
 
 int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
@@ -205,7 +236,9 @@ int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
       int irow, icol;
       float latfact, longfact;
 
+#ifndef pp_FASTCOLOR
       if(imagei->image == NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
+#endif
 
       latfact = (llat - imagei->lat_min) / (imagei->lat_max - imagei->lat_min);
       longfact = (llong - imagei->long_min) / (imagei->long_max - imagei->long_min);
@@ -216,7 +249,11 @@ int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
 
       icol = overlap_size + (imagei->ncols - 1 - 2 * overlap_size)*longfact;
       icol = CLAMP(icol, 0, imagei->ncols - 1);
+#ifdef pp_FASTCOLOR
+      return imagei->colors[irow*imagei->ncols+icol];
+#else
       return gdImageGetPixel(imagei->image, icol, irow);
+#endif
     }
   }
   return       (122 << 16) | (117 << 8) | 48;
@@ -233,6 +270,10 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
   nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
   dx = (fds_elevs->long_max - fds_elevs->long_min) / (float)ncols;
   dy = (fds_elevs->lat_max - fds_elevs->lat_min) / (float)nrows;
+
+#ifdef pp_FASTCOLOR
+  GetColors(imageinfo, nimageinfo);
+#endif
 
   RENDERimage = gdImageCreateTrueColor(ncols, nrows);
   for(j = 0; j < nrows; j++) {
@@ -382,6 +423,9 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
     imagei = imageinfo + i;
     imagefilei = imagefiles + i;
     imagei->datafile = imagefilei->file;
+#ifdef pp_FASTCOLOR
+    imagei->colors = NULL;
+#endif
     strcpy(imagefilename, "");
     if(strcmp(image_dir, ".") != 0) {
       strcat(imagefilename, image_dir);

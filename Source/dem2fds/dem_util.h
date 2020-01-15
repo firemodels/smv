@@ -23,6 +23,9 @@ typedef struct {
   int ncols, nrows, nz, use_it;
   float xllcorner, yllcorner, cellsize;
   char *headerfile, *datafile;
+#ifdef pp_FASTCOLOR
+  int *colors;
+#endif
   char filelabel[13];
   float lat_min, lat_max, long_min, long_max, dlong, dlat;
   float lat_min_orig, lat_max_orig, long_min_orig, long_max_orig;
@@ -43,9 +46,6 @@ EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
-#ifdef pp_CSVF
-SVEXTERN char csv_file[1024];
-#endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];
 SVEXTERN int SVDECL(nexcludeinfo, 0);
