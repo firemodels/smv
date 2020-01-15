@@ -1974,28 +1974,32 @@ void OutputVariableFrame(FILE *stream_out, char *label, webgeomdata *webgi){
 
 int SliceNode2Data(char *html_file, int option){
   webgeomdata slice_node_web;
+  int return_val = 0;
 
   InitWebGeom(&slice_node_web, "slice_node");
   if(SliceNodeTriangles2Geom(&slice_node_web, option)!=0){
     OutputFixedFrameData(html_file, &slice_node_web, rgb_slice);
+    return_val = 1;
   }
   FreeWebGeom(&slice_node_web);
 
-  return 1;
+  return return_val;
 }
 
 /* ------------------ SliceCell2Data ------------------------ */
 
 int SliceCell2Data(char *html_file, int option){
   webgeomdata slice_cell_web;
+  int return_val = 0;
 
   InitWebGeom(&slice_cell_web, "slice_cell");
   if(SliceCellTriangles2Geom(&slice_cell_web, option)!=0){
     OutputFixedFrameData(html_file, &slice_cell_web, rgb_slice);
+    return_val = 1;
   }
   FreeWebGeom(&slice_cell_web);
 
-  return 1;
+  return return_val;
 }
 
 /* ------------------ Obst2Data ------------------------ */
