@@ -730,11 +730,13 @@ void GetSliceNodeVerts(int option, int option2,
 
                 // define blank array
 
-                  if(iblank[IJK(plotx, j, k)] == GAS){
-                    *blank++ = 1;
-                  }
-                  else{
-                    *blank++ = 0;
+                  if(iblank!=NULL&&blank!=NULL){
+                    if(iblank[IJK(plotx, j, k)] == GAS){
+                      *blank++ = 1;
+                    }
+                    else{
+                      *blank++ = 0;
+                    }
                   }
                 }
               }
@@ -784,11 +786,13 @@ void GetSliceNodeVerts(int option, int option2,
 
                 // define blank array
 
-                  if(iblank[IJK(i, ploty, k)] == GAS){
-                    *blank++ = 1;
-                  }
-                  else{
-                    *blank++ = 0;
+                  if(iblank!=NULL&&blank!=NULL){
+                    if(iblank[IJK(i, ploty, k)]==GAS){
+                      *blank++ = 1;
+                    }
+                    else{
+                      *blank++ = 0;
+                    }
                   }
                 }
               }
@@ -838,11 +842,13 @@ void GetSliceNodeVerts(int option, int option2,
 
                 // define blank array
 
-                  if(iblank[IJK(i, j, plotz)] == GAS){
-                    *blank++ = 1;
-                  }
-                  else{
-                    *blank++ = 0;
+                  if(iblank!=NULL&&blank!=NULL){
+                    if(iblank[IJK(i, j, plotz)] == GAS){
+                      *blank++ = 1;
+                    }
+                    else{
+                      *blank++ = 0;
+                    }
                   }
                 }
               }
