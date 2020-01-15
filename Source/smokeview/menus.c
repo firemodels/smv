@@ -1880,14 +1880,32 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderJSON:
-    Obst2Data(htmlobst_filename);
-    SliceNode2Data(htmlslicenode_filename, HTML_CURRENT_TIME);
-    SliceCell2Data(htmlslicecell_filename, HTML_CURRENT_TIME);
-    break;
   case RenderJSONALL:
-    Obst2Data(htmlobst_filename);
-    SliceNode2Data(htmlslicenode_filename, HTML_ALL_TIMES);
-    SliceCell2Data(htmlslicecell_filename, HTML_ALL_TIMES);
+    {
+      int json_option;
+
+      json_option = HTML_CURRENT_TIME;
+      if(value==RenderJSONALL)json_option = HTML_ALL_TIMES;
+      if(Obst2Data(htmlobst_filename)!=0){
+        printf("blockage data output to %s\n", htmlobst_filename);
+      }
+      else{
+        printf("no blockage data to output\n");
+      }
+      if(SliceNode2Data(htmlslicenode_filename, json_option)!=0){
+        printf("node centered slice file data output to %s\n", htmlslicenode_filename);
+      }
+      else{
+        printf("no node centered slice file data to output\n");
+      }
+      if(SliceCell2Data(htmlslicecell_filename, json_option)!=0){
+        printf("cell centered slice file data output to %s\n", htmlslicecell_filename);
+      }
+      else{
+        printf("no cell centered slice file data to output\n");
+      }
+      break;
+    }
     break;
   case RenderHTML:
     Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
