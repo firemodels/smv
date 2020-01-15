@@ -147,7 +147,7 @@ void UpdateFrameNumber(int changetime){
       geomdata *geomi;
 
       geomi = geominfoptrs[i];
-      if(geomi->loaded==0||geomi->timeslist==NULL||geomi->ntimes==0)continue;
+      if(geomi->loaded==0||geomi->timeslist==NULL)continue;
       geomi->itime=geomi->timeslist[itimes];
     }
     if(showslice==1||showvslice==1){
@@ -812,7 +812,7 @@ void SynchTimes(void){
       geomdata *geomi;
 
       geomi = geominfoptrs[j];
-      if(geomi->loaded==0||geomi->display==0||geomi->ntimes==0)continue;
+      if(geomi->loaded==0||geomi->display==0)continue;
       geomi->timeslist[n]=GetItime(n,geomi->timeslist,geomi->times,geomi->ntimes);
     }
 
@@ -1098,7 +1098,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0||geomi->ntimes==0)continue;
+    if(geomi->loaded==0||geomi->display==0)continue;
     nglobal_times = MAX(nglobal_times,geomi->ntimes);
     global_timemin = MIN(global_timemin, geomi->times[0]);
     global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
@@ -1246,7 +1246,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0||geomi->ntimes==0)continue;
+    if(geomi->loaded==0||geomi->display==0)continue;
     FREEMEMORY(geomi->timeslist);
     if(nglobal_times>0)NewMemory((void **)&geomi->timeslist,nglobal_times*sizeof(int));
   }
@@ -1417,7 +1417,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0||geomi->ntimes==0)continue;
+    if(geomi->loaded==0||geomi->display==0)continue;
     geomi->itime=0;
   }
   for(i=0;i<nmeshes;i++){

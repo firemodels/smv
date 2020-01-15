@@ -1879,21 +1879,23 @@ void RenderMenu(int value){
     Keyboard('R',FROM_SMOKEVIEW);
     break;
 #ifdef pp_HTML
-  case RenderHTML:
-    Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-    Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
-
+  case RenderJSON:
     Obst2Data(htmlobst_filename);
     SliceNode2Data(htmlslicenode_filename, HTML_CURRENT_TIME);
     SliceCell2Data(htmlslicecell_filename, HTML_CURRENT_TIME);
     break;
-  case RenderHTMLALL:
-    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
-    Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
-
+  case RenderJSONALL:
     Obst2Data(htmlobst_filename);
     SliceNode2Data(htmlslicenode_filename, HTML_ALL_TIMES);
     SliceCell2Data(htmlslicecell_filename, HTML_ALL_TIMES);
+    break;
+  case RenderHTML:
+    Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
+    Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
+    break;
+  case RenderHTMLALL:
+    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
+    Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
     break;
 #endif
   case RenderCancel:
@@ -8854,16 +8856,19 @@ updatemenu=0;
     }
 
     CREATEMENU(render_resolutionmenu, RenderMenu);
-    glutAddMenuEntry(renderwindow, Render320);
-    glutAddMenuEntry(renderwindow2, Render640);
-    glutAddMenuEntry(renderwindow3, RenderWindow);
+    glutAddMenuEntry(renderwindow,    Render320);
+    glutAddMenuEntry(renderwindow2,   Render640);
+    glutAddMenuEntry(renderwindow3,   RenderWindow);
 
     CREATEMENU(rendermenu,RenderMenu);
-    GLUTADDSUBMENU(_("Start rendering"), render_startmenu);
+    GLUTADDSUBMENU(_("Start rendering"),  render_startmenu);
     glutAddMenuEntry(_("Stop rendering"), RenderCancel);
-#ifdef pp_HTML
+    glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("Render html(current)"), RenderHTML);
-    glutAddMenuEntry(_("Render html(all)"), RenderHTMLALL);
+    glutAddMenuEntry(_("Render html(all)"),     RenderHTMLALL);
+#ifdef pp_HTML
+    glutAddMenuEntry(_("Render json(current)"),  RenderJSON);
+    glutAddMenuEntry(_("Render json(all)"),     RenderJSONALL);
 #endif
 
     glutAddMenuEntry("-", MENU_DUMMY);
