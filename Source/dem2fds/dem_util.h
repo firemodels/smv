@@ -50,3 +50,5 @@ SVEXTERN excludedata SVDECL(*excludeinfo, NULL);
 SVEXTERN float SVDECL(buff_dist, 10.0);
 SVEXTERN int   SVDECL(nmeshx,1), SVDECL(nmeshy,1);
 SVEXTERN float   SVDECL(*xplt, NULL), SVDECL(*yplt, NULL);
+SVEXTERN int SVDECL(terrain_image_width, 2048);
+SVEXTERN int SVDECL(terrain_image_height, 0);

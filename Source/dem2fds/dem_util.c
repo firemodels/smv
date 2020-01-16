@@ -253,8 +253,9 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
   int ii;
 #endif
 
-  ncols = 2000;
-  nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
+  ncols = terrain_image_width;
+  nrows = terrain_image_height;
+
   dx = (fds_elevs->long_max - fds_elevs->long_min) / (float)ncols;
   dy = (fds_elevs->lat_max - fds_elevs->lat_min) / (float)nrows;
 
@@ -394,6 +395,26 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
   gdImageDestroy(RENDERimage);
 }
 
+/* ------------------ SetImageSize ------------------------ */
+
+void SetImageSize(elevdata *fds_elevs){
+  int ncols, nrows;
+
+  if(terrain_image_width<=0&&terrain_image_height<=0)terrain_image_width = 2000;
+
+  if(terrain_image_width>0){
+    ncols = terrain_image_width;
+    nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
+  }
+  else{
+    if(terrain_image_height<=0)terrain_image_height=2000;
+    nrows = terrain_image_height;
+    ncols = nrows*fds_elevs->xmax / fds_elevs->ymax;
+  }
+  terrain_image_width = ncols;
+  terrain_image_height = nrows;
+}
+
 /* ------------------ GetElevations ------------------------ */
 
 int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
@@ -492,14 +513,6 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
       image_long_min = MIN(imagei->long_min, image_long_min);
       image_long_max = MAX(imagei->long_max, image_long_max);
     }
-  }
-  fprintf(stderr, "\nmap properties:\n");
-  fprintf(stderr, "        input file: %s\n", input_file);
-  fprintf(stderr, "         image dir: %s\n", image_dir);
-  fprintf(stderr, "     elevation dir: %s\n", elev_dir);
-  if(nimageinfo > 0){
-    fprintf(stderr, "  longitude bounds: %f %f\n", image_long_min, image_long_max);
-    fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
   }
 
   nelevinfo = GetFileListSize(elev_dir, "*.hdr");
@@ -849,6 +862,18 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
   }
   FREEMEMORY(have_vals);
   FREEMEMORY(longlatsorig);
+
+  SetImageSize(fds_elevs);
+
+  fprintf(stderr, "\nmap properties:\n");
+  fprintf(stderr, "        input file: %s\n", input_file);
+  fprintf(stderr, "         image dir: %s\n", image_dir);
+  fprintf(stderr, "  image dimensions: %i x %i\n", terrain_image_width,terrain_image_height);
+  fprintf(stderr, "     elevation dir: %s\n", elev_dir);
+  if(nimageinfo > 0){
+    fprintf(stderr, "  longitude bounds: %f %f\n", image_long_min, image_long_max);
+    fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
+  }
 
   GenerateMapImage(image_file, fds_elevs, imageinfo, nimageinfo);
   return 1;

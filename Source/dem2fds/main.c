@@ -30,6 +30,8 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
+  fprintf(stdout, "  -width w      - terrain image pixel width [default: 2048]\n");
+  fprintf(stdout, "  -height h     - terrain image pixel height\n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
   fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
@@ -89,6 +91,26 @@ int main(int argc, char **argv){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
+      }
+      else if(strncmp(arg, "-width", 6)==0){
+        int image_width = 0;
+
+        i++;
+        sscanf(argv[i], "%i", &image_width);
+        if(image_width>0){
+          terrain_image_width = image_width;
+          terrain_image_height = 0;
+        }
+      }
+      else if(strncmp(arg, "-height", 7)==0){
+        int image_height = 0;
+
+        i++;
+        sscanf(argv[i], "%i", &image_height);
+        if(image_height>0){
+          terrain_image_height = image_height;
+          terrain_image_width = 0;
+        }
       }
       else if(strncmp(arg, "-fds", 4) == 0){
         i++;
@@ -175,6 +197,12 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-fds", 4) == 0){
         i++;
         strcpy(casename_fds, argv[i]);
+      }
+      else if(strncmp(arg, "-width", 6)==0){
+        i++;
+      }
+      else if(strncmp(arg, "-height", 7)==0){
+        i++;
       }
       else{
         Usage("dem2fds",HELP_ALL);

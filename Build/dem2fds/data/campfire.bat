@@ -15,5 +15,5 @@ if NOT "x%terrain%" == "x" goto endif1
   exit /b
 :endif1
 
-%dem2fds% %option%       -dir "%terrain%\campfire" campfire3.in 
+%dem2fds% %option%  -width 3000     -dir "%terrain%\campfire" campfire3.in 
 %dem2fds% %option% -show -dir "%terrain%\campfire" campfire4.in 
