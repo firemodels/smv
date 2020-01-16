@@ -1934,6 +1934,7 @@ void InitTextures(void){
     }
     if(use_graphics==1){
       char *filename;
+      int max_texture_size;
 
       CheckMemory;
       filename=strrchr(texti->file,*dirseparator);
@@ -1946,6 +1947,8 @@ void InitTextures(void){
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
       printf("  reading in texture image: %s",texti->file);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
       floortex=ReadPicture(texti->file,&texwid,&texht,0);
       if(floortex==NULL){
         PRINTF("\n***Error: Texture %s failed to load\n", filename);
@@ -14216,12 +14219,14 @@ void WriteIni(int flag,char *filename){
 
     if(use_graphics==1){
       GLint nred, ngreen, nblue, ndepth, nalpha;
+      int max_texture_size;
 
       glGetIntegerv(GL_RED_BITS,&nred);
       glGetIntegerv(GL_GREEN_BITS,&ngreen);
       glGetIntegerv(GL_BLUE_BITS,&nblue);
       glGetIntegerv(GL_DEPTH_BITS,&ndepth);
       glGetIntegerv(GL_ALPHA_BITS,&nalpha);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
       fprintf(fileout, "\n\n");
       fprintf(fileout,"# Graphics Environment\n");
       fprintf(fileout,"# --------------------\n\n");
@@ -14243,11 +14248,12 @@ void WriteIni(int flag,char *filename){
           fprintf(fileout, "# %s\n", version_label);
         }
       }
-      fprintf(fileout, "#       Red bits:%i\n", nred);
+      fprintf(fileout,"#       Red bits:%i\n", nred);
       fprintf(fileout,"#     Green bits:%i\n",ngreen);
       fprintf(fileout,"#      Blue bits:%i\n",nblue);
       fprintf(fileout,"#     Alpha bits:%i\n",nalpha);
-      fprintf(fileout,"#     Depth bits:%i\n\n",ndepth);
+      fprintf(fileout,"#     Depth bits:%i\n",ndepth);
+      fprintf(fileout,"#max texture size: %i\n\n",max_texture_size);
     }
   }
 
