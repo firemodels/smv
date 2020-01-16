@@ -14248,12 +14248,12 @@ void WriteIni(int flag,char *filename){
           fprintf(fileout, "# %s\n", version_label);
         }
       }
-      fprintf(fileout,"#       Red bits:%i\n", nred);
-      fprintf(fileout,"#     Green bits:%i\n",ngreen);
-      fprintf(fileout,"#      Blue bits:%i\n",nblue);
-      fprintf(fileout,"#     Alpha bits:%i\n",nalpha);
-      fprintf(fileout,"#     Depth bits:%i\n",ndepth);
-      fprintf(fileout,"#max texture size: %i\n\n",max_texture_size);
+      fprintf(fileout,"#         Red bits:%i\n", nred);
+      fprintf(fileout,"#       Green bits:%i\n",ngreen);
+      fprintf(fileout,"#        Blue bits:%i\n",nblue);
+      fprintf(fileout,"#       Alpha bits:%i\n",nalpha);
+      fprintf(fileout,"#       Depth bits:%i\n",ndepth);
+      fprintf(fileout,"# max texture size:%i\n\n",max_texture_size);
     }
   }
 
