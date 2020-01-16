@@ -13,7 +13,7 @@
 #endif
 
 /* ------------------ _Sniff_Errors ------------------------ */
-
+#ifdef pp_SNIFF_ERRORS
 void _Sniff_Errors(char *whereat, char *file, int line){
   int error;
 
@@ -25,6 +25,7 @@ void _Sniff_Errors(char *whereat, char *file, int line){
       glu_error,whereat,file,line);
   }
 }
+#endif
 
 /* ------------------ UpdateLights ------------------------ */
 

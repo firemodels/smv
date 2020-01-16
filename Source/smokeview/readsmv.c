@@ -1954,9 +1954,11 @@ void InitTextures(void){
       printf(" - complete\n");
       printf("  installing texture: %s",texti->file);
       glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      SNIFF_ERRORS("after glTexImage2D");
       printf(" - complete\n");
       //errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
       glGenerateMipmap(GL_TEXTURE_2D);
+      SNIFF_ERRORS("after glGenerateMipmap");
       FREEMEMORY(floortex);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
