@@ -1955,11 +1955,13 @@ void InitTextures(void){
         continue;
       }
       printf(" - complete\n");
+      if(texwid>max_texture_size||texht>max_texture_size){
+        printf("***error: image size: %i x %i, is larger than the maximum allowed texture size %i x %i\n", texwid, texht, max_texture_size, max_texture_size);
+      }
       printf("  installing texture: %s",texti->file);
       glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
       SNIFF_ERRORS("after glTexImage2D");
       printf(" - complete\n");
-      //errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
       glGenerateMipmap(GL_TEXTURE_2D);
       SNIFF_ERRORS("after glGenerateMipmap");
       FREEMEMORY(floortex);
