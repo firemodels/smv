@@ -245,7 +245,7 @@ int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
 
 /* ------------------ GenerateMapImage ------------------------ */
 
-void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
+void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
   int nrows, ncols, j;
   gdImagePtr RENDERimage;
   float dx, dy;
@@ -390,9 +390,13 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
     FILE *stream=NULL;
 
     if(image_file!=NULL)stream = fopen(image_file, "wb");
-    if(stream != NULL)gdImagePng(RENDERimage, stream);
+    if(stream!=NULL){
+      if(strcmp(image_file_type,".png")==0)gdImagePng(RENDERimage, stream);
+      if(strcmp(image_file_type,".jpg")==0)gdImageJpeg(RENDERimage, stream, 100);
+    }
+    gdImageDestroy(RENDERimage);
+    if(stream!=NULL)fclose(stream);
   }
-  gdImageDestroy(RENDERimage);
 }
 
 /* ------------------ SetImageSize ------------------------ */
@@ -417,7 +421,7 @@ void SetImageSize(elevdata *fds_elevs){
 
 /* ------------------ GetElevations ------------------------ */
 
-int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
+int GetElevations(char *input_file, char *image_file, char *image_file_type, elevdata *fds_elevs){
   int nelevinfo, nimageinfo, i, j;
   filelistdata *headerfiles, *imagefiles;
   FILE *stream_in;
@@ -875,7 +879,7 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
     fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
   }
 
-  GenerateMapImage(image_file, fds_elevs, imageinfo, nimageinfo);
+  GenerateMapImage(image_file, image_file_type, fds_elevs, imageinfo, nimageinfo);
   return 1;
 }
 
