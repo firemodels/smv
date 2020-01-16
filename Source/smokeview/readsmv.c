@@ -1933,7 +1933,6 @@ void InitTextures(void){
       continue;
     }
     if(use_graphics==1){
-      int errorcode;
       char *filename;
 
       CheckMemory;
@@ -1946,17 +1945,18 @@ void InitTextures(void){
       }
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
+      printf("  reading in texture image: %s",texti->file);
       floortex=ReadPicture(texti->file,&texwid,&texht,0);
       if(floortex==NULL){
-        PRINTF("***Error: Texture %s failed to load\n", filename);
+        PRINTF("\n***Error: Texture %s failed to load\n", filename);
         continue;
       }
-      errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-      if(errorcode!=0){
-        FREEMEMORY(floortex);
-        PRINTF("***Error: Texture %s failed to load\n", filename);
-        continue;
-      }
+      printf(" - complete\n");
+      printf("  installing texture: %s",texti->file);
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      printf(" - complete\n");
+      //errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      glGenerateMipmap(GL_TEXTURE_2D);
       FREEMEMORY(floortex);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
