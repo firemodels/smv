@@ -23,9 +23,6 @@ typedef struct {
   int ncols, nrows, nz, use_it;
   float xllcorner, yllcorner, cellsize;
   char *headerfile, *datafile;
-#ifdef pp_FASTCOLOR
-  int *colors;
-#endif
   char filelabel[13];
   float lat_min, lat_max, long_min, long_max, dlong, dlat;
   float lat_min_orig, lat_max_orig, long_min_orig, long_max_orig;

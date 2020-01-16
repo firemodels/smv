@@ -3,7 +3,7 @@
 set option=-geom
 
 set dem2fds=..\intel_win_64\dem2fds_win_64.exe
-set dem2fds=dem2fds
+::set dem2fds=dem2fds
 set "terrain1=%userprofile%\terrain"
 set "terrain2=%userprofile%\Google drive\documents\terrain"
 
@@ -15,5 +15,5 @@ if NOT "x%terrain%" == "x" goto endif1
   exit /b
 :endif1
 
-%dem2fds% %option%       -dir "%terrain%\campfire" campfire1.in 
-%dem2fds% %option% -show -dir "%terrain%\campfire" campfire2.in 
+%dem2fds% %option%       -dir "%terrain%\campfire" campfire3.in 
+%dem2fds% %option% -show -dir "%terrain%\campfire" campfire4.in 
