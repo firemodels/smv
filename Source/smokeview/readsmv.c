@@ -8506,6 +8506,9 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
+#ifdef pp_SLICE_SIZES
+      sd->file_size = 0;
+#endif
       sd->slice_filetype=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
       if(slicegeom==1){

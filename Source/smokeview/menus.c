@@ -52,6 +52,10 @@ float     slice_load_time;
 #define MENU_SLICECOLORDEFER -5
 #define MENU_NEWSLICEMENUS   -7
 
+#ifdef pp_SLICE_SIZES
+#define MENU_COMPUTE_SLICE_FILE_SIZES -9
+#endif
+
 #define MENU_OPTION_TRAINERMENU 2
 
 #define MENU_UPDATEBOUNDS             -6
@@ -4840,6 +4844,9 @@ void LoadMultiSliceMenu(int value){
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
+#ifdef pp_SLICE_SIZES
+      FILE_SIZE total_size=0;
+#endif
 
 #ifdef pp_SLICETHREAD
       last_slice = SetupSlice(value);
@@ -4860,8 +4867,32 @@ void LoadMultiSliceMenu(int value){
 
         slicei = sliceinfo + mslicei->islices[i];
         if(slicei->skipdup== 1 && slicei->loaded == 1)UnloadSliceMenu(mslicei->islices[i]);
+#ifdef pp_SLICE_SIZES
+        if(compute_slice_file_sizes==1){
+          slicei->file_size = GetFileSizeSMV(slicei->reg_file);
+          total_size += slicei->file_size;
+        }
       }
-      LoadAllMSlices(last_slice,mslicei);
+      if(compute_slice_file_sizes==1){
+        printf(" slice file sizes to be loaded=");
+        if(total_size>1000000000){
+          PRINTF("%.1f GB\n", (float)total_size/1000000000.);
+        }
+        else if(total_size>1000000){
+          PRINTF("%.1f MB\n", (float)total_size/1000000.);
+        }
+        else{
+          PRINTF("%.0f kB\n", (float)total_size/1000.);
+        }
+        PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
+        PRINTF("   (assuming a gigabit network connection)\n");
+      }
+      else{
+        LoadAllMSlices(last_slice, mslicei);
+      }
+#else
+      LoadAllMSlices(last_slice, mslicei);
+#endif
     }
     script_multislice=0;
   }
@@ -4965,6 +4996,10 @@ void LoadMultiSliceMenu(int value){
         break;
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
+        updatemenu = 1;
+        break;
+      case MENU_COMPUTE_SLICE_FILE_SIZES:
+        compute_slice_file_sizes = 1-compute_slice_file_sizes;
         updatemenu = 1;
         break;
       case MENU_SLICE_SETTINGS:
@@ -10149,6 +10184,12 @@ updatemenu=0;
     }
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
+    if(compute_slice_file_sizes==1){
+      glutAddMenuEntry(_("  *compute slice file sizes to be loaded"), MENU_COMPUTE_SLICE_FILE_SIZES);
+    }
+    else{
+      glutAddMenuEntry(_("  compute slice file sizes to be loaded"), MENU_COMPUTE_SLICE_FILE_SIZES);
+    }
     if(use_set_slicecolor==1){
       glutAddMenuEntry(_("  *defer slice coloring"), MENU_SLICECOLORDEFER);
     }

@@ -33,6 +33,10 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_SLICE_SIZES
+SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
+#endif
+
 SVEXTERN int SVDECL(update_fileload, 1);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
