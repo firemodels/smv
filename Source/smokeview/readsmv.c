@@ -5929,6 +5929,9 @@ int ReadSMV(char *file, char *file2){
         smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
+#ifdef pp_FILE_SIZES
+        smoke3di->file_size = 0;
+#endif
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         for(ii = 0;ii < MAXSMOKETYPES;ii++){
@@ -8506,7 +8509,7 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
-#ifdef pp_SLICE_SIZES
+#ifdef pp_FILE_SIZES
       sd->file_size = 0;
 #endif
       sd->slice_filetype=SLICE_NODE_CENTER;

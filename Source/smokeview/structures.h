@@ -1267,7 +1267,7 @@ typedef struct _slicedata {
   histogramdata *histograms;
   int nhistograms;
   struct _patchdata *patchgeom;
-#ifdef pp_SLICE_SIZES
+#ifdef pp_FILE_SIZES
   FILE_SIZE file_size;
 #endif
 #ifdef pp_SLICETHREAD
@@ -1386,6 +1386,9 @@ typedef struct _smoke3ddata {
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;
+#ifdef pp_FILE_SIZES
+  FILE_SIZE file_size;
+#endif
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
   int dir;

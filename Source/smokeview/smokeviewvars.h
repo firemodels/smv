@@ -33,8 +33,9 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
-#ifdef pp_SLICE_SIZES
+#ifdef pp_FILE_SIZES
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
+SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
 #endif
 
 SVEXTERN int SVDECL(update_fileload, 1);
