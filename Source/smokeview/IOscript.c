@@ -2543,9 +2543,11 @@ void ScriptViewXYZMINMAXOrtho(int command){
 
 void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
   float aperture_temp1, aperture_temp2;
+  float azimuth, elevation;
   float DL;
   float DL1, DL2;
   float width, height;
+  float xcen, ycen, zcen;
 
   aperture_temp1 = Zoom2Aperture(zoom);
   aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
@@ -2553,9 +2555,8 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
   switch (command){
   case SCRIPT_VIEWXMIN:
   case SCRIPT_VIEWXMAX:
-
-    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
-    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    ycen = (ybar0ORIG+ybarORIG)/2.0;
+    zcen = (zbar0ORIG+zbarORIG)/2.0;
     width = ybarORIG-ybar0ORIG;
     height = zbarORIG-zbar0ORIG;
 
@@ -2564,21 +2565,20 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL = 1.05*MAX(DL1, DL2);
 
     if(scripti->command==SCRIPT_VIEWXMIN){
-      scripti->fval = xbar0ORIG-DL;
-      scripti->fval4 = 90.0;
+      xcen = xbar0ORIG-DL;
+      azimuth = 90.0;
     }
     if(scripti->command==SCRIPT_VIEWXMAX){
-      scripti->fval = xbarORIG+DL;
-      scripti->fval4 = -90.0;
+      xcen = xbarORIG+DL;
+      azimuth = -90.0;
     }
-    scripti->fval5 = 0.0;
-    ScriptXYZView(scripti);
+    elevation = 0.0;
     break;
 
   case SCRIPT_VIEWYMIN:
   case SCRIPT_VIEWYMAX:
-    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
-    scripti->fval3 = (zbar0ORIG+zbarORIG)/2.0;
+    xcen = (xbar0ORIG+xbarORIG)/2.0;
+    zcen = (zbar0ORIG+zbarORIG)/2.0;
     width = xbarORIG-xbar0ORIG;
     height = zbarORIG-zbar0ORIG;
 
@@ -2587,22 +2587,21 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL = 1.05*MAX(DL1, DL2);
 
     if(scripti->command==SCRIPT_VIEWYMIN){
-      scripti->fval2 = ybar0ORIG-DL;
-      scripti->fval4 = 0.0;
+      ycen = ybar0ORIG-DL;
+      azimuth = 0.0;
     }
     if(scripti->command==SCRIPT_VIEWYMAX){
-      scripti->fval2 = ybarORIG+DL;
-      scripti->fval4 = 180.0;
+      ycen = ybarORIG+DL;
+      azimuth = 180.0;
     }
-    scripti->fval5 = 0.0;
-    ScriptXYZView(scripti);
+    elevation = 0.0;
     break;
 
   case SCRIPT_VIEWZMIN:
   case SCRIPT_VIEWZMAX:
-    scripti->fval = (xbar0ORIG+xbarORIG)/2.0;
-    scripti->fval2 = (ybar0ORIG+ybarORIG)/2.0;
-    width = ybarORIG-ybar0ORIG;
+    xcen = (xbar0ORIG+xbarORIG)/2.0;
+    ycen = (ybar0ORIG+ybarORIG)/2.0;
+    width = xbarORIG-xbar0ORIG;
     height = ybarORIG-ybar0ORIG;
 
     DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
@@ -2610,18 +2609,23 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL = 1.05*MAX(DL1, DL2);
 
     if(scripti->command==SCRIPT_VIEWZMIN){
-      scripti->fval3 = zbar0ORIG-DL;
-      scripti->fval5 = 89.9;
+      zcen = zbar0ORIG-DL;
+      elevation = 89.9;
     }
     if(scripti->command==SCRIPT_VIEWZMAX){
-      scripti->fval3 = zbarORIG+DL;
-      scripti->fval5 = -89.9;
+      zcen = zbarORIG+DL;
+      elevation = -89.9;
     }
-    scripti->fval4 = 0.0;
+    azimuth = 0.0;
     ResetGluiView(EXTERNAL_VIEW);
-    ScriptXYZView(scripti);
     break;
   }
+  scripti->fval  = xcen;
+  scripti->fval2 = ycen;
+  scripti->fval3 = zcen;
+  scripti->fval5 = azimuth;
+  scripti->fval5 = elevation;
+  ScriptXYZView(scripti);
 }
 
 /* ------------------ RunScriptCommand ------------------------ */
