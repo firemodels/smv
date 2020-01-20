@@ -2623,7 +2623,7 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
   scripti->fval  = xcen;
   scripti->fval2 = ycen;
   scripti->fval3 = zcen;
-  scripti->fval5 = azimuth;
+  scripti->fval4 = azimuth;
   scripti->fval5 = elevation;
   ScriptXYZView(scripti);
 }
