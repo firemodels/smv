@@ -1012,7 +1012,7 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
               int *extreme_min, int *extreme_max
               ){
   int n;
-  float dt, factor, tval;
+  float factor, tval;
   float range;
   int expmax,expmin;
   int itt;
