@@ -274,7 +274,7 @@ SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time, read_time_elapsed;
-SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
+SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 #endif

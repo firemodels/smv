@@ -163,8 +163,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define UNCOMPRESSED_BYFRAME 1
 #define COMPRESSED_ALLFRAMES 2
 
-#define UNCOMPRESSED 0
+#define UNCOMPRESSED    0
 #define COMPRESSED_ZLIB 1
+#define COMPRESSED_RLE  2
 
 #define DISABLE 0
 #define ENABLE 1

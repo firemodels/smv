@@ -4534,6 +4534,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
     }
   }
   slicei->loading=0;
+  CheckMemory;
   return return_filesize;
 }
 
@@ -4627,6 +4628,7 @@ void LoadSliceMenu(int value){
       }
   }
   updatemenu=1;
+  CheckMemory;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }

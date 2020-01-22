@@ -8408,12 +8408,13 @@ typedef struct {
       int slicegeom=0;
       int slcf_index = 0;
       char *char_slcf_index;
-      int has_reg, has_comp;
+      int has_reg, compression_type;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
       slicedata *sd;
       size_t len;
       int read_slice_header=0;
+      char zlib_file[255], rle_file[255];
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
@@ -8532,13 +8533,20 @@ typedef struct {
       }
 
       islicecount++;
-      strcpy(buffer2,bufferptr);
-      strcat(buffer2,".svz");
+
+      strcpy(zlib_file,bufferptr);
+      strcat(zlib_file,".svz");
+      strcpy(rle_file,bufferptr);
+      strcat(rle_file,".rle");
+
       has_reg=0;
-      has_comp=0;
-      if(lookfor_zip==1&&FILE_EXISTS_CASEDIR(buffer2)==YES)has_comp=1;
-      if(has_comp==0&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg=1;
-      if(has_reg==0&&has_comp==0){
+      compression_type=UNCOMPRESSED;
+      if(lookfor_compressed_slice==1){
+        if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type  = COMPRESSED_RLE;
+        if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
+      }
+      if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg=1;
+      if(has_reg==0&&compression_type==UNCOMPRESSED){
         nsliceinfo--;
         nslicefiles--;
         nn_slice--;
@@ -8561,17 +8569,21 @@ typedef struct {
 
       NewMemory((void **)&sd->reg_file,(unsigned int)(len+1));
       STRCPY(sd->reg_file,bufferptr);
-
       NewMemory((void **)&sd->comp_file,(unsigned int)(len+4+1));
-      STRCPY(sd->comp_file,buffer2);
 
-      sd->compression_type=UNCOMPRESSED;
-      if(has_comp==1){
-        sd->compression_type=COMPRESSED_ZLIB;
-        sd->file=sd->comp_file;
-      }
-      if(sd->compression_type==UNCOMPRESSED){
-        sd->file=sd->reg_file;
+      sd->compression_type = compression_type;
+      switch (compression_type){
+        case UNCOMPRESSED:
+          sd->file=sd->reg_file;
+          break;
+        case COMPRESSED_ZLIB:
+          STRCPY(sd->comp_file,zlib_file);
+          sd->file=sd->comp_file;
+          break;
+        case COMPRESSED_RLE:
+          STRCPY(sd->comp_file,rle_file);
+          sd->file=sd->comp_file;
+          break;
       }
 
 // read in geometry file name
