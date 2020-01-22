@@ -41,6 +41,10 @@ if [[ $clean_build == 0 ]]
    then
       :
    else
-      echo "SMV Technical Reference Guide built successfully!"
+      if [ -e SMV_Technical_Reference_Guide.pdf ]; then
+         echo "SMV Technical Reference Guide built successfully!"
+      else
+         echo "***Error: SMV_Technical_Reference_Guide.pdf does not exist"
+      fi
 fi    
 rm -f ../Bibliography/gitrevision.tex
