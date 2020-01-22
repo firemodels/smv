@@ -4725,9 +4725,14 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         SetSliceBounds(slicefile_labelindex);
       }
       else{
-        slicebounds[slicefile_labelindex].valmin_data = qmin;
-        slicebounds[slicefile_labelindex].valmax_data = qmax;
+        boundsdata *sb;
+
+        sb = slicebounds + slicefile_labelindex;
+        sb->valmin_data = qmin;
+        sb->valmax_data = qmax;
+
         UpdateAllSliceLabels(slicefile_labelindex, errorcode);
+        MakeColorLabels(sb->colorlabels, sb->colorvalues, qmin, qmax, nrgb);
       }
     }
     CheckMemory;
