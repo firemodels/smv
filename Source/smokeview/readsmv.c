@@ -1933,8 +1933,8 @@ void InitTextures(void){
       continue;
     }
     if(use_graphics==1){
-      int errorcode;
       char *filename;
+      int max_texture_size;
 
       CheckMemory;
       filename=strrchr(texti->file,*dirseparator);
@@ -1946,17 +1946,24 @@ void InitTextures(void){
       }
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
+      printf("  reading in texture image: %s",texti->file);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
       floortex=ReadPicture(texti->file,&texwid,&texht,0);
       if(floortex==NULL){
-        PRINTF("***Error: Texture %s failed to load\n", filename);
+        PRINTF("\n***Error: Texture %s failed to load\n", filename);
         continue;
       }
-      errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-      if(errorcode!=0){
-        FREEMEMORY(floortex);
-        PRINTF("***Error: Texture %s failed to load\n", filename);
-        continue;
+      printf(" - complete\n");
+      if(texwid>max_texture_size||texht>max_texture_size){
+        printf("***error: image size: %i x %i, is larger than the maximum allowed texture size %i x %i\n", texwid, texht, max_texture_size, max_texture_size);
       }
+      printf("  installing texture: %s",texti->file);
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      SNIFF_ERRORS("after glTexImage2D");
+      printf(" - complete\n");
+      glGenerateMipmap(GL_TEXTURE_2D);
+      SNIFF_ERRORS("after glGenerateMipmap");
       FREEMEMORY(floortex);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -5922,6 +5929,9 @@ int ReadSMV(char *file, char *file2){
         smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
+#ifdef pp_FILE_SIZES
+        smoke3di->file_size = 0;
+#endif
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         for(ii = 0;ii < MAXSMOKETYPES;ii++){
@@ -8398,12 +8408,13 @@ typedef struct {
       int slicegeom=0;
       int slcf_index = 0;
       char *char_slcf_index;
-      int has_reg, has_comp;
+      int has_reg, compression_type;
       int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
       int blocknumber;
       slicedata *sd;
       size_t len;
       int read_slice_header=0;
+      char zlib_file[255], rle_file[255];
 
       if(setup_only == 1||smoke3d_only==1)continue;
 
@@ -8499,6 +8510,9 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
+#ifdef pp_FILE_SIZES
+      sd->file_size = 0;
+#endif
       sd->slice_filetype=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
       if(slicegeom==1){
@@ -8519,13 +8533,20 @@ typedef struct {
       }
 
       islicecount++;
-      strcpy(buffer2,bufferptr);
-      strcat(buffer2,".svz");
+
+      strcpy(zlib_file,bufferptr);
+      strcat(zlib_file,".svz");
+      strcpy(rle_file,bufferptr);
+      strcat(rle_file,".rle");
+
       has_reg=0;
-      has_comp=0;
-      if(lookfor_zip==1&&FILE_EXISTS_CASEDIR(buffer2)==YES)has_comp=1;
-      if(has_comp==0&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg=1;
-      if(has_reg==0&&has_comp==0){
+      compression_type=UNCOMPRESSED;
+      if(lookfor_compressed_slice==1){
+        if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type  = COMPRESSED_RLE;
+        if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
+      }
+      if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg=1;
+      if(has_reg==0&&compression_type==UNCOMPRESSED){
         nsliceinfo--;
         nslicefiles--;
         nn_slice--;
@@ -8548,17 +8569,21 @@ typedef struct {
 
       NewMemory((void **)&sd->reg_file,(unsigned int)(len+1));
       STRCPY(sd->reg_file,bufferptr);
-
       NewMemory((void **)&sd->comp_file,(unsigned int)(len+4+1));
-      STRCPY(sd->comp_file,buffer2);
 
-      sd->compression_type=UNCOMPRESSED;
-      if(has_comp==1){
-        sd->compression_type=COMPRESSED_ZLIB;
-        sd->file=sd->comp_file;
-      }
-      if(sd->compression_type==UNCOMPRESSED){
-        sd->file=sd->reg_file;
+      sd->compression_type = compression_type;
+      switch (compression_type){
+        case UNCOMPRESSED:
+          sd->file=sd->reg_file;
+          break;
+        case COMPRESSED_ZLIB:
+          STRCPY(sd->comp_file,zlib_file);
+          sd->file=sd->comp_file;
+          break;
+        case COMPRESSED_RLE:
+          STRCPY(sd->comp_file,rle_file);
+          sd->file=sd->comp_file;
+          break;
       }
 
 // read in geometry file name
@@ -14214,12 +14239,14 @@ void WriteIni(int flag,char *filename){
 
     if(use_graphics==1){
       GLint nred, ngreen, nblue, ndepth, nalpha;
+      int max_texture_size;
 
       glGetIntegerv(GL_RED_BITS,&nred);
       glGetIntegerv(GL_GREEN_BITS,&ngreen);
       glGetIntegerv(GL_BLUE_BITS,&nblue);
       glGetIntegerv(GL_DEPTH_BITS,&ndepth);
       glGetIntegerv(GL_ALPHA_BITS,&nalpha);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
       fprintf(fileout, "\n\n");
       fprintf(fileout,"# Graphics Environment\n");
       fprintf(fileout,"# --------------------\n\n");
@@ -14241,11 +14268,12 @@ void WriteIni(int flag,char *filename){
           fprintf(fileout, "# %s\n", version_label);
         }
       }
-      fprintf(fileout, "#       Red bits:%i\n", nred);
-      fprintf(fileout,"#     Green bits:%i\n",ngreen);
-      fprintf(fileout,"#      Blue bits:%i\n",nblue);
-      fprintf(fileout,"#     Alpha bits:%i\n",nalpha);
-      fprintf(fileout,"#     Depth bits:%i\n\n",ndepth);
+      fprintf(fileout,"#         Red bits:%i\n", nred);
+      fprintf(fileout,"#       Green bits:%i\n",ngreen);
+      fprintf(fileout,"#        Blue bits:%i\n",nblue);
+      fprintf(fileout,"#       Alpha bits:%i\n",nalpha);
+      fprintf(fileout,"#       Depth bits:%i\n",ndepth);
+      fprintf(fileout,"# max texture size:%i\n\n",max_texture_size);
     }
   }
 

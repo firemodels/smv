@@ -1,13 +1,10 @@
 #!/bin/bash
 
 #*** environment varables
-# RESOURCE_MANAGER - SLURM or TORQUE (default TORQUE)
 
 #*** environment variables used by the bots
 # BACKGROUND_PROG  - defines location of background program
 #                    ( if the 'none' queue is also specified)
-# SCRIPTFILES      - outputs the name of the script file to $SCRIPTFILES
-#                    ( used to kill jobs )
 
 # ---------------------------- stop_fds_if_requested ----------------------------------
 
@@ -120,7 +117,6 @@ function usage {
   echo " -s   - stop job"
   echo " -S   - use startup files to set the environment, do not load modules"
   echo " -r   - append trace flag to the mpiexec call generated"
-  echo " -R   - select resource manager. Currently only responds to input 'SLURM', with default TORQUE, but allows for future expansion"
   echo " -t   - used for timing studies, run a job alone on a node (reserving $NCORES_COMPUTENODE cores)"
   echo " -T type - run dv (development), db (debug), inspect, advise, or vtune version of fds"
   echo "           if -T is not specified then the release version of fds is used"
@@ -210,7 +206,28 @@ iinspectargs=
 vtuneresdir=
 vtuneargs=
 use_config=""
-RESOURCE_MANAGER="TORQUE"
+
+# determine which resource manager is running (or none)
+
+missing_slurm=`srun -V |& tail -1 | grep "not found" | wc -l`
+RESOURCE_MANAGER="NONE"
+if [ $missing_slurm -eq 0 ]; then
+  RESOURCE_MANAGER="SLURM"
+else
+  missing_torque=`echo | qmgr -n |& tail -1 | grep "not found" | wc -l`
+  if [ $missing_torque -eq 0 ]; then
+    RESOURCE_MANAGER="TORQUE"
+  fi
+fi
+if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
+  if [ "$SLURM_MEM" != "" ]; then
+   SLURM_MEM="#SBATCH --mem=$SLURM_MEM"
+  fi
+  if [ "$SLURM_MEMPERCPU" != "" ]; then
+   SLURM_MEM="#SBATCH --mem-per-cpu=$SLURM_MEMPERCPU"
+  fi
+fi
+
 # the mac doesn't have Intel MPI
 if [ "`uname`" == "Darwin" ]; then
   use_intel_mpi=
@@ -242,7 +259,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Aa:c:Cd:D:e:Ef:hHiIj:Lm:Mn:o:O:p:Pq:R:rsStT:vVw:x:' OPTION
+while getopts 'Aa:c:Cd:D:e:Ef:hHiIj:Lm:Mn:o:O:p:Pq:rsStT:vVw:x:' OPTION
 do
 case $OPTION  in
   A) # used by timing scripts to identify benchmark cases
@@ -334,17 +351,6 @@ case $OPTION  in
    ;;
   r)
    trace="-trace"
-   ;;
-  R)
-   RESOURCE_MANAGER="$OPTARG"
-   if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-     if [ "$SLURM_MEM" != "" ]; then
-      SLURM_MEM="#SBATCH --mem=$SLURM_MEM"
-     fi
-     if [ "$SLURM_MEMPERCPU" != "" ]; then
-      SLURM_MEM="#SBATCH --mem-per-cpu=$SLURM_MEMPERCPU"
-     fi
-   fi
    ;;
   s)
    stopjob=1
@@ -700,7 +706,6 @@ fi
 
 stop_fds_if_requested
 
-#QSUB="qsub -k eo -q $queue"
 QSUB="qsub -q $queue"
 
 #*** use the queue none and the program background on systems
@@ -955,6 +960,7 @@ fi
   if [[ "$MODULES" != "" ]] && [[ "$MODULES_OUT" == "" ]]; then
     echo "            Modules:$MODULES"
   fi
+  echo "   Resource Manager:$RESOURCE_MANAGER"
   echo "              Queue:$queue"
   echo "              Nodes:$nodes"
   echo "          Processes:$n_mpi_processes"
@@ -966,10 +972,6 @@ fi
 
 #*** run script
 
-chmod +x $scriptfile
-if [ "$SCRIPTFILES" != "" ]; then
-  echo $(basename "$scriptfile") >> $SCRIPTFILES
-fi
 $SLEEP
 $QSUB $scriptfile
 if [ "$queue" != "none" ]; then

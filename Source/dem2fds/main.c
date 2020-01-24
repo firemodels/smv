@@ -30,6 +30,9 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
+  fprintf(stdout, "  -width w      - terrain image pixel width [default: 2048]\n");
+  fprintf(stdout, "  -height h     - terrain image pixel height\n");
+  fprintf(stdout, "  -jpeg         - generate a jpeg terrain image file otherwise generate a png image file\n");
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
   fprintf(stdout, "  -matl matl_id - specify a MATL ID for use with the -geom option \n");
@@ -59,14 +62,12 @@ int main(int argc, char **argv){
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
-  strcpy(image_dir, ".");
-  strcpy(elev_dir, "");
-#ifdef pp_CSVF
-  strcpy(csv_file, "");
-#endif
-  strcpy(surf_id1, "surf1");
-  strcpy(surf_id2, "surf2");
-  strcpy(matl_id, "matl1");
+  strcpy(image_dir,    ".");
+  strcpy(elev_dir,     "");
+  strcpy(surf_id1,     "surf1");
+  strcpy(surf_id2,     "surf2");
+  strcpy(matl_id,      "matl1");
+  strcpy(image_type,   ".png");
 
   initMALLOC();
   SetStdOut(stdout);
@@ -93,9 +94,32 @@ int main(int argc, char **argv){
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
       }
+      else if(strncmp(arg, "-width", 6)==0){
+        int image_width = 0;
+
+        i++;
+        sscanf(argv[i], "%i", &image_width);
+        if(image_width>0){
+          terrain_image_width = image_width;
+          terrain_image_height = 0;
+        }
+      }
+      else if(strncmp(arg, "-height", 7)==0){
+        int image_height = 0;
+
+        i++;
+        sscanf(argv[i], "%i", &image_height);
+        if(image_height>0){
+          terrain_image_height = image_height;
+          terrain_image_width = 0;
+        }
+      }
       else if(strncmp(arg, "-fds", 4) == 0){
         i++;
         strcpy(casename_fds, argv[i]);
+      }
+      else if(strncmp(arg, "-jpeg", 5)==0){
+        strcpy(image_type, ".jpg");
       }
       else if(strncmp(arg, "-elevdir", 8) == 0) {
         i++;
@@ -179,6 +203,14 @@ int main(int argc, char **argv){
         i++;
         strcpy(casename_fds, argv[i]);
       }
+      else if(strncmp(arg, "-width", 6)==0){
+        i++;
+      }
+      else if(strncmp(arg, "-height", 7)==0){
+        i++;
+      }
+      else if(strncmp(arg, "-jpeg", 5)==0){
+      }
       else{
         Usage("dem2fds",HELP_ALL);
         return 1;
@@ -204,9 +236,9 @@ int main(int argc, char **argv){
   strcpy(image_file, casename_fds);
   last = strrchr(image_file, '.');
   if(last != NULL)last[0] = 0;
-  strcat(image_file,".png");
+  strcat(image_file,image_type);
 
-  if(GetElevations(casename, image_file, &fds_elevs)==1) {
+  if(GetElevations(casename, image_file, image_type, &fds_elevs)==1) {
      GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
   }
   return 0;

@@ -573,7 +573,7 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-fast", 5) == 0){
       fast_startup = 1;
-      lookfor_zip = 0;
+      lookfor_compressed_slice = 0;
     }
     else if(strncmp(argv[i], "-blank", 6) == 0){
       iblank_set_on_commandline = 1;

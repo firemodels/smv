@@ -9,12 +9,12 @@
 
 //*** define dem2fds title
 
+#define pp_FASTCOLOR    // fast color computation
+
 #ifdef pp_BETA
 #define PROGVERSION "Test"
 #else
 #define PROGVERSION "1.0.1"
 #endif
-
-//#define pp_CSVF
 
 #endif

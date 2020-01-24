@@ -43,14 +43,16 @@ float     slice_load_time;
     }\
   }
 
-#define MENU_SMOKE3D_IBLANK -2
-
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
 #define MENU_NEWSLICEMENUS   -7
+
+#ifdef pp_FILE_SIZES
+#define MENU_SLICE_FILE_SIZES -9
+#endif
 
 #define MENU_OPTION_TRAINERMENU 2
 
@@ -103,14 +105,13 @@ float     slice_load_time;
 #define MENU_LOADVSLICE_SHOWALL -20
 
 #define MENU_LOADVSLICE_SETTINGS -21
-#define MENU_ISO_SETTINGS -3
-#define MENU_BOUNDARY_SETTINGS -7
-#define MENU_PART_SETTINGS -4
-#define MENU_PLOT3D_SETTINGS -4
-#define MENU_VOLSMOKE_SETTINGS -4
-#define MENU_SMOKE_SETTINGS -4
-#define MENU_SLICE_SETTINGS -6
-#define MENU_PART_PARTFAST -7
+#define MENU_ISO_SETTINGS         -3
+#define MENU_BOUNDARY_SETTINGS    -7
+#define MENU_PART_SETTINGS        -4
+#define MENU_PLOT3D_SETTINGS      -4
+#define MENU_VOLSMOKE_SETTINGS    -4
+#define MENU_SLICE_SETTINGS       -6
+#define MENU_PART_PARTFAST        -7
 
 #define MENU_EVAC_UNLOADALL -1
 #define MENU_EVAC_DUMMY -2
@@ -1880,14 +1881,32 @@ void RenderMenu(int value){
     break;
 #ifdef pp_HTML
   case RenderJSON:
-    Obst2Data(htmlobst_filename);
-    SliceNode2Data(htmlslicenode_filename, HTML_CURRENT_TIME);
-    SliceCell2Data(htmlslicecell_filename, HTML_CURRENT_TIME);
-    break;
   case RenderJSONALL:
-    Obst2Data(htmlobst_filename);
-    SliceNode2Data(htmlslicenode_filename, HTML_ALL_TIMES);
-    SliceCell2Data(htmlslicecell_filename, HTML_ALL_TIMES);
+    {
+      int json_option;
+
+      json_option = HTML_CURRENT_TIME;
+      if(value==RenderJSONALL)json_option = HTML_ALL_TIMES;
+      if(Obst2Data(htmlobst_filename)!=0){
+        printf("blockage data output to %s\n", htmlobst_filename);
+      }
+      else{
+        printf("no blockage data to output\n");
+      }
+      if(SliceNode2Data(htmlslicenode_filename, json_option)!=0){
+        printf("node centered slice file data output to %s\n", htmlslicenode_filename);
+      }
+      else{
+        printf("no node centered slice file data to output\n");
+      }
+      if(SliceCell2Data(htmlslicecell_filename, json_option)!=0){
+        printf("cell centered slice file data output to %s\n", htmlslicecell_filename);
+      }
+      else{
+        printf("no cell centered slice file data to output\n");
+      }
+      break;
+    }
     break;
   case RenderHTML:
     Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
@@ -4186,6 +4205,9 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
   int need_soot, need_hrrpuv, need_temp, need_co2;
+#ifdef pp_FILE_SIZES
+  FILE_SIZE total_size;
+#endif
 
   need_soot   = type&SOOT_2;
   need_hrrpuv = type&HRRPUV_2;
@@ -4204,6 +4226,9 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     break;
     }
   }
+#ifdef pp_FILE_SIZES
+  total_size = 0;
+#endif
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -4216,9 +4241,35 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
+#ifdef pp_FILE_SIZES
+      if(compute_smoke3d_file_sizes==1){
+        smoke3di->file_size = GetFileSizeSMV(smoke3di->reg_file);
+        total_size += smoke3di->file_size;
+      }
+      else{
+        load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      }
+#else
       load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+#endif
     }
   }
+#ifdef pp_FILE_SIZES
+  if(compute_smoke3d_file_sizes==1){
+    PRINTF(" size of 3D smoke files to be loaded=");
+    if(total_size>1000000000){
+      PRINTF("%.1f GB\n", (float)total_size/1000000000.);
+    }
+    else if(total_size>1000000){
+      PRINTF("%.1f MB\n", (float)total_size/1000000.);
+    }
+    else{
+      PRINTF("%.0f kB\n", (float)total_size/1000.);
+    }
+    PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
+    PRINTF("   (assuming a gigabit network connection)\n");
+  }
+#endif
   *count = file_count;
   return load_size;
 }
@@ -4238,6 +4289,12 @@ void LoadSmoke3DMenu(int value){
 #define MENU_SMOKE_SOOT_TEMP_CO2 -8
 #endif
 #define MENU_DUMMY_SMOKE -9
+#define MENU_SMOKE_SETTINGS       -4
+#ifdef pp_FILE_SIZES
+#define MENU_SMOKE_FILE_SIZES     -10
+#endif
+#define MENU_SMOKE3D_IBLANK -2
+
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -4268,7 +4325,7 @@ void LoadSmoke3DMenu(int value){
   else if(value==MENU_SMOKE3D_IBLANK){
     update_makeiblank_smoke3d = 1;
   }
-  else if(value == MENU_SMOKE_SETTINGS)     {
+  else if(value == MENU_SMOKE_SETTINGS){
     ShowBoundsDialog(DLG_3DSMOKE);
   }
 #ifdef pp_SMOKE_FAST
@@ -4313,15 +4370,22 @@ void LoadSmoke3DMenu(int value){
     }
   }
 #endif
+#ifdef pp_FILE_SIZES
+    else if(value ==MENU_SMOKE_FILE_SIZES){
+      compute_smoke3d_file_sizes = 1-compute_smoke3d_file_sizes;
+      updatemenu = 1;
+    }
+#endif
+
 #ifdef pp_SMOKE_FAST
   else if(value == MENU_SMOKE3D_LOAD_TEST){
     smoke3d_load_test = 1 - smoke3d_load_test;
   }
 #endif
-  else if(value<=-10){
+  else if(value<=-100){
     smoke3ddata *smoke3dj;
 
-    value = -(value + 10);
+    value = -(value + 100);
     smoke3dj = smoke3dinfo + value;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOAD3DSMOKE\n");
@@ -4341,7 +4405,13 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
+#ifdef pp_FILE_SIZES
+  if(compute_smoke3d_file_sizes==0){
+    PRINT_LOADTIMES(file_count, load_size, load_time);
+  }
+#else
   PRINT_LOADTIMES(file_count,load_size,load_time);
+#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -4464,6 +4534,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
     }
   }
   slicei->loading=0;
+  CheckMemory;
   return return_filesize;
 }
 
@@ -4557,6 +4628,7 @@ void LoadSliceMenu(int value){
       }
   }
   updatemenu=1;
+  CheckMemory;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
@@ -4822,6 +4894,9 @@ void LoadMultiSliceMenu(int value){
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
+#ifdef pp_FILE_SIZES
+      FILE_SIZE total_size=0;
+#endif
 
 #ifdef pp_SLICETHREAD
       last_slice = SetupSlice(value);
@@ -4842,8 +4917,34 @@ void LoadMultiSliceMenu(int value){
 
         slicei = sliceinfo + mslicei->islices[i];
         if(slicei->skipdup== 1 && slicei->loaded == 1)UnloadSliceMenu(mslicei->islices[i]);
+#ifdef pp_FILE_SIZES
+        if(compute_slice_file_sizes==1){
+          slicei->file_size = GetFileSizeSMV(slicei->reg_file);
+          total_size += slicei->file_size;
+        }
+        else{
+          LoadAllMSlices(last_slice, mslicei);
+        }
+#else
+        LoadAllMSlices(last_slice, mslicei);
+#endif
       }
-      LoadAllMSlices(last_slice,mslicei);
+#ifdef pp_FILE_SIZES
+      if(compute_slice_file_sizes==1){
+        PRINTF(" size of slice files to be loaded=");
+        if(total_size>1000000000){
+          PRINTF("%.1f GB\n", (float)total_size/1000000000.);
+        }
+        else if(total_size>1000000){
+          PRINTF("%.1f MB\n", (float)total_size/1000000.);
+        }
+        else{
+          PRINTF("%.0f kB\n", (float)total_size/1000.);
+        }
+        PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
+        PRINTF("   (assuming a gigabit network connection)\n");
+      }
+#endif
     }
     script_multislice=0;
   }
@@ -4949,6 +5050,12 @@ void LoadMultiSliceMenu(int value){
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
         break;
+#ifdef pp_FILE_SIZES
+      case MENU_SLICE_FILE_SIZES:
+        compute_slice_file_sizes = 1-compute_slice_file_sizes;
+        updatemenu = 1;
+        break;
+#endif
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
         break;
@@ -10131,6 +10238,14 @@ updatemenu=0;
     }
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
+#ifdef pp_FILE_SIZES
+    if(compute_slice_file_sizes==1){
+      glutAddMenuEntry(_("  *compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
+    }
+    else{
+      glutAddMenuEntry(_("  compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
+    }
+#endif
     if(use_set_slicecolor==1){
       glutAddMenuEntry(_("  *defer slice coloring"), MENU_SLICECOLORDEFER);
     }
@@ -10363,7 +10478,7 @@ updatemenu=0;
               if(ntemploaded>0 && strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)strcat(menulabel, "*");
               if(nco2loaded>0 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
               strcat(menulabel,smoke3di->label.longlabel);
-              glutAddMenuEntry(menulabel,-useitem-10);
+              glutAddMenuEntry(menulabel,-useitem-100);
             }
           }
 #ifdef pp_SMOKE_FAST
@@ -10382,6 +10497,14 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
         }
         glutAddMenuEntry("-", MENU_DUMMY3);
+#ifdef pp_FILE_SIZES
+        if(compute_smoke3d_file_sizes==1){
+          glutAddMenuEntry(_("*compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
+        }
+        else{
+          glutAddMenuEntry(_("compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
+        }
+#endif
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);

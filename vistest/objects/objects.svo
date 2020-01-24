@@ -1,0 +1,27 @@
+   // ************ static object definitions - single frame/state ********************
+
+OBJECTDEF
+ car
+ 255 0 0 setrgb
+ push                          0.4 0.2 0.075 scalexyz 1.0 drawcube pop 
+ push  0.0 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
+
+ 0 0 0 setrgb
+ push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+
+OBJECTDEF
+ truck
+ 255 0 0 setrgb
+ push                          0.4 0.2 0.075 scalexyz 1.0 drawcube pop 
+ push  -0.05 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
+
+ 0 0 0 setrgb
+ push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+
+

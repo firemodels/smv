@@ -1,6 +1,6 @@
 #ifndef SMOKEVIEWDEFS_H_DEFINED
 #define SMOKEVIEWDEFS_H_DEFINED
-#ifdef _DEBUG
+#ifdef SNIFF_ERROR
 void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f) _Sniff_Errors(f,__FILE__,__LINE__)
 #else
@@ -163,8 +163,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define UNCOMPRESSED_BYFRAME 1
 #define COMPRESSED_ALLFRAMES 2
 
-#define UNCOMPRESSED 0
+#define UNCOMPRESSED    0
 #define COMPRESSED_ZLIB 1
+#define COMPRESSED_RLE  2
 
 #define DISABLE 0
 #define ENABLE 1

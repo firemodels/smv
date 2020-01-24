@@ -194,6 +194,26 @@ gdImagePtr GetJPEGImage(const char *filename, int *width, int *height) {
 
 /* ------------------ GetColor ------------------------ */
 
+#ifdef pp_FASTCOLOR
+int GetColor(elevdata *imagei, float llong, float llat) {
+  if(imagei->long_min<=llong&&llong<=imagei->long_max&&imagei->lat_min<=llat&&llat<=imagei->lat_max) {
+    int irow, icol;
+    float latfact, longfact;
+
+    latfact = (llat-imagei->lat_min)/(imagei->lat_max-imagei->lat_min);
+    longfact = (llong-imagei->long_min)/(imagei->long_max-imagei->long_min);
+
+    irow = overlap_size+(imagei->nrows-1-2*overlap_size)*latfact;
+    irow = imagei->nrows-1-irow;
+    irow = CLAMP(irow, 0, imagei->nrows-1);
+
+    icol = overlap_size+(imagei->ncols-1-2*overlap_size)*longfact;
+    icol = CLAMP(icol, 0, imagei->ncols-1);
+    return gdImageGetPixel(imagei->image, icol, irow);
+  }
+  return -1;
+}
+#else
 int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
   int i;
 
@@ -221,20 +241,51 @@ int GetColor(float llong, float llat, elevdata *imageinfo, int nimageinfo) {
   }
   return       (122 << 16) | (117 << 8) | 48;
 }
+#endif
 
 /* ------------------ GenerateMapImage ------------------------ */
 
-void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
+void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_elevs, elevdata *imageinfo, int nimageinfo) {
   int nrows, ncols, j;
   gdImagePtr RENDERimage;
   float dx, dy;
+#ifdef pp_FASTCOLOR
+  int ii;
+#endif
 
-  ncols = 2000;
-  nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
+  ncols = terrain_image_width;
+  nrows = terrain_image_height;
+
   dx = (fds_elevs->long_max - fds_elevs->long_min) / (float)ncols;
   dy = (fds_elevs->lat_max - fds_elevs->lat_min) / (float)nrows;
 
   RENDERimage = gdImageCreateTrueColor(ncols, nrows);
+#ifdef pp_FASTCOLOR
+  for(ii = 0; ii<nimageinfo; ii++) {
+    elevdata *imagei;
+
+    imagei = imageinfo+ii;
+    printf(" processing image file %i of %i\n",ii+1,nimageinfo);
+    if(imagei->image==NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
+
+    for(j = 0; j<nrows; j++) {
+      int i;
+      float llat;
+
+      llat = fds_elevs->lat_max-(float)j*dy;
+      for(i = 0; i<ncols; i++) {
+        float llong;
+        int rgb_local;
+
+        llong = fds_elevs->long_min+(float)i*dx;
+
+        rgb_local = GetColor(imagei, llong, llat);
+        if(rgb_local>=0)gdImageSetPixel(RENDERimage, i, j, rgb_local);
+      }
+    }
+    gdImageDestroy(imagei->image);
+  }
+#else
   for(j = 0; j < nrows; j++) {
     int i;
     float llat;
@@ -250,6 +301,7 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
       gdImageSetPixel(RENDERimage, i, j, rgb_local);
     }
   }
+#endif
 
 #define SCALE_IMAGE_I(ival) (CLAMP(ncols*((ival) - fds_elevs->long_min) / (fds_elevs->long_max - fds_elevs->long_min),0,ncols-1))
 #define SCALE_IMAGE_J(jval) (CLAMP(nrows*(fds_elevs->lat_max - (jval)) / (fds_elevs->lat_max - fds_elevs->lat_min), 0, nrows - 1))
@@ -338,14 +390,38 @@ void GenerateMapImage(char *image_file, elevdata *fds_elevs, elevdata *imageinfo
     FILE *stream=NULL;
 
     if(image_file!=NULL)stream = fopen(image_file, "wb");
-    if(stream != NULL)gdImagePng(RENDERimage, stream);
+    if(stream!=NULL){
+      if(strcmp(image_file_type,".png")==0)gdImagePng(RENDERimage, stream);
+      if(strcmp(image_file_type,".jpg")==0)gdImageJpeg(RENDERimage, stream, 100);
+    }
+    gdImageDestroy(RENDERimage);
+    if(stream!=NULL)fclose(stream);
   }
-  gdImageDestroy(RENDERimage);
+}
+
+/* ------------------ SetImageSize ------------------------ */
+
+void SetImageSize(elevdata *fds_elevs){
+  int ncols, nrows;
+
+  if(terrain_image_width<=0&&terrain_image_height<=0)terrain_image_width = 2000;
+
+  if(terrain_image_width>0){
+    ncols = terrain_image_width;
+    nrows = ncols*fds_elevs->ymax / fds_elevs->xmax;
+  }
+  else{
+    if(terrain_image_height<=0)terrain_image_height=2000;
+    nrows = terrain_image_height;
+    ncols = nrows*fds_elevs->xmax / fds_elevs->ymax;
+  }
+  terrain_image_width = ncols;
+  terrain_image_height = nrows;
 }
 
 /* ------------------ GetElevations ------------------------ */
 
-int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
+int GetElevations(char *input_file, char *image_file, char *image_file_type, elevdata *fds_elevs){
   int nelevinfo, nimageinfo, i, j;
   filelistdata *headerfiles, *imagefiles;
   FILE *stream_in;
@@ -441,14 +517,6 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
       image_long_min = MIN(imagei->long_min, image_long_min);
       image_long_max = MAX(imagei->long_max, image_long_max);
     }
-  }
-  fprintf(stderr, "\nmap properties:\n");
-  fprintf(stderr, "        input file: %s\n", input_file);
-  fprintf(stderr, "         image dir: %s\n", image_dir);
-  fprintf(stderr, "     elevation dir: %s\n", elev_dir);
-  if(nimageinfo > 0){
-    fprintf(stderr, "  longitude bounds: %f %f\n", image_long_min, image_long_max);
-    fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
   }
 
   nelevinfo = GetFileListSize(elev_dir, "*.hdr");
@@ -799,7 +867,19 @@ int GetElevations(char *input_file, char *image_file, elevdata *fds_elevs){
   FREEMEMORY(have_vals);
   FREEMEMORY(longlatsorig);
 
-  GenerateMapImage(image_file, fds_elevs, imageinfo, nimageinfo);
+  SetImageSize(fds_elevs);
+
+  fprintf(stderr, "\nmap properties:\n");
+  fprintf(stderr, "        input file: %s\n", input_file);
+  fprintf(stderr, "         image dir: %s\n", image_dir);
+  fprintf(stderr, "  image dimensions: %i x %i\n", terrain_image_width,terrain_image_height);
+  fprintf(stderr, "     elevation dir: %s\n", elev_dir);
+  if(nimageinfo > 0){
+    fprintf(stderr, "  longitude bounds: %f %f\n", image_long_min, image_long_max);
+    fprintf(stderr, "   latitude bounds: %f %f\n", image_lat_min, image_lat_max);
+  }
+
+  GenerateMapImage(image_file, image_file_type, fds_elevs, imageinfo, nimageinfo);
   return 1;
 }
 

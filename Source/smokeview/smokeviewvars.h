@@ -33,6 +33,11 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_FILE_SIZES
+SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
+SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
+#endif
+
 SVEXTERN int SVDECL(update_fileload, 1);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
@@ -269,7 +274,7 @@ SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time, read_time_elapsed;
-SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_zip,1);
+SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 #endif

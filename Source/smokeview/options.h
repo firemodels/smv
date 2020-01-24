@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_FILE_SIZES        // add option to output slice files sizes to be loaded
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
 //#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
@@ -92,6 +93,7 @@
 
 #ifdef _DEBUG
 #define pp_RENDER360_DEBUG
+#define pp_SNIFF_ERROR
 #endif
 
 #endif
