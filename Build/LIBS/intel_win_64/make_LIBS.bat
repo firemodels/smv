@@ -5,6 +5,9 @@ set arg2=%2
 :: if arg3 is freeglut then freeglut not glut library will be built
 set arg3=%3
 
+:: setup compiler environment
+call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
+
 set EXIT_SCRIPT=1
 
 set WAIT=
