@@ -1,0 +1,19 @@
+&HEAD CHID='auto',TITLE='Smokeview device drawing test' /
+
+&MESH IJK=8,8,16, XB=0.0,3.2,0.0,1.6,0.0,1.5/
+
+&TIME T_END=0.0/
+
+&VENT XB=0.0,0.0,0.0,1.6,0.0,1.5,SURF_ID='OPEN'/
+&VENT XB=3.2,3.2,0.0,1.6,0.0,1.5,SURF_ID='OPEN'/
+&VENT XB=0.0,3.2,0.0,0.0,0.0,1.5,SURF_ID='OPEN'/
+&VENT XB=0.0,3.2,1.6,1.6,0.0,1.5,SURF_ID='OPEN'/
+&VENT XB=0.0,3.2,0.0,1.6,1.5,1.5,SURF_ID='OPEN'/
+
+&PROP ID='car' SMOKEVIEW_ID='car' /
+&DEVC XYZ=0.8,0.8,0.1, QUANTITY='TEMPERATURE' PROP_ID='car' /
+
+&PROP ID='truck' SMOKEVIEW_ID='truck' /
+&DEVC XYZ=2.4,0.8,0.1, QUANTITY='TEMPERATURE' PROP_ID='truck' /
+
+&TAIL /
