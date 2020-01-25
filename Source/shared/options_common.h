@@ -16,7 +16,19 @@
 #ifdef WIN32
 #undef pp_append
 
-#ifdef VS2015                      // needed in visual studio to prevent compiler warning/errors
+#ifdef VS2015
+#ifndef pp_MSVS
+#define pp_MSVS
+#endif
+#endif
+
+#ifdef VS2019
+#ifndef pp_MSVS
+#define pp_MSVS
+#endif
+#endif
+
+#ifdef pp_MSVS                      // needed in visual studio to prevent compiler warning/errors
 #define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
 #define _CRT_SECURE_NO_WARNINGS
 #define HAVE_SNPRINTF
