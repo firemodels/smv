@@ -1755,6 +1755,262 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   glEnd();
 }
 
+/* ----------------------- DrawPrism ----------------------------- */
+
+void DrawPrism(float s1, float length, unsigned char *rgbcolor){
+  float verts[6][3] = {
+    {0.0, 0.0, 0.0}, {length, 0.0, 0.0}, {length, s1, 0.0}, {0.0, s1, 0.0},
+    {0.0, 0.0, s1}, {0.0, s1, s1}
+  };
+
+  glPushMatrix();
+  glRotatef(180.0, 0.0, 1.0, 0.0);
+
+  if(object_outlines==0){
+
+    glBegin(GL_QUADS);
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    // left face
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[3]);
+
+    // front face
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[4]);
+
+    // back face
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[2]);
+
+    // bottom face
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[1]);
+
+    // top face
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[5]);
+    glEnd();
+  }
+  else{
+    glBegin(GL_LINES);
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[5]);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[5]);
+
+    glEnd();
+    glPopMatrix();
+  }
+}
+
+/* ----------------------- DrawSlantCube ----------------------------- */
+
+void DrawSlantCube(float s1, float s2, float length, unsigned char *rgbcolor){
+  float dy = (s1-s2)/2.0;
+
+  float verts[8][3] = {
+    {0.0, 0.0, 0.0}, {length, dy, 0.0}, {length, dy+s2, 0.0}, {0.0, s1, 0.0},
+    {0.0, 0.0, s1},  {length, dy, s2},  {length, dy+s2, s2},  {0.0, s1, s1}
+  };
+
+  glPushMatrix();
+  glRotatef(180.0, 0.0, 1.0, 0.0);
+
+  if(object_outlines==0){
+
+    glBegin(GL_QUADS); 
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    // left face
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[3]);
+
+    // right face
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[5]);
+
+    // front face
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[4]);
+
+   // back face
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[6]);
+
+    // bottom face
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[1]);
+
+    // top face
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[7]);
+    glEnd();
+  }
+  else{
+    glBegin(GL_LINES);
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[7]);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[6]);
+
+    glEnd();
+    glPopMatrix();
+  }
+
+}
+
+/* ----------------------- DrawCube0 ----------------------------- */
+
+void DrawCube0(float s1, unsigned char *rgbcolor){
+  float verts[8][3] = {
+    {0.0, 0.0, 0.0}, {s1, 0.0, 0.0}, {s1, s1, 0.0}, {0.0, s1, 0.0},
+    {0.0, 0.0, s1},  {s1, 0.0, s1},  {s1, s1, s1},  {0.0, s1, s1},
+  };
+
+  if(object_outlines==0){
+    glBegin(GL_QUADS);
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    // bottom face
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[1]);
+
+    // top face
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[7]);
+
+    // front face
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[5]);
+    glVertex3fv(verts[4]);
+
+    // back face
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3fv(verts[3]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[2]);
+
+    // left face
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3fv(verts[0]);
+    glVertex3fv(verts[4]);
+    glVertex3fv(verts[7]);
+    glVertex3fv(verts[3]);
+
+    // right face
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3fv(verts[1]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[5]);
+    glEnd();
+  }
+  else{
+    glBegin(GL_LINES);
+    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
+
+    glVertex3fv(verts[0]);glVertex3fv(verts[1]);
+    glVertex3fv(verts[3]);glVertex3fv(verts[2]);
+    glVertex3fv(verts[4]);glVertex3fv(verts[5]);
+    glVertex3fv(verts[7]);glVertex3fv(verts[6]);
+
+    glVertex3fv(verts[0]); glVertex3fv(verts[3]);
+    glVertex3fv(verts[1]); glVertex3fv(verts[2]);
+    glVertex3fv(verts[4]); glVertex3fv(verts[7]);
+    glVertex3fv(verts[5]); glVertex3fv(verts[6]);
+
+    glVertex3fv(verts[0]); glVertex3fv(verts[4]);
+    glVertex3fv(verts[1]); glVertex3fv(verts[5]);
+    glVertex3fv(verts[2]); glVertex3fv(verts[6]);
+    glVertex3fv(verts[3]); glVertex3fv(verts[7]);
+    glEnd();
+  }
+}
+
 /* ----------------------- DrawCube ----------------------------- */
 
 void DrawCube(float size, unsigned char *rgbcolor){
@@ -2393,6 +2649,15 @@ void RotateEye(void){
 
 void RotateAxis(float angle, float ax, float ay, float az){
   glRotatef(angle,ax,ay,az);
+}
+
+/* ----------------------- DrawWheel ----------------------------- */
+
+void DrawWheel(float diameter, float thickness, unsigned char *rgbcolor){
+  glPushMatrix();
+  glRotatef(90.0, 1.0, 0.0, 0.0);
+  DrawDisk(diameter, thickness, rgbcolor);
+  glPopMatrix();
 }
 
 /* ----------------------- DrawDisk ----------------------------- */
@@ -4407,12 +4672,24 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     case SV_SCALE:
       glScalef(arg[0], arg[1], arg[2]);
       break;
+    case SV_DRAWCUBE0:
+      DrawCube0(arg[0], rgbptr_local);
+      rgbptr_local = NULL;
+      break;
     case SV_DRAWCUBE:
       DrawCube(arg[0], rgbptr_local);
       rgbptr_local = NULL;
       break;
     case SV_DRAWCUBEC:
       DrawCubeC(arg[0], rgbptr_local);
+      rgbptr_local = NULL;
+      break;
+    case SV_DRAWSLANTCUBE:
+      DrawSlantCube(arg[0], arg[1], arg[2], rgbptr_local);
+      rgbptr_local = NULL;
+      break;
+    case SV_DRAWPRISM:
+      DrawPrism(arg[0], arg[1], rgbptr_local);
       rgbptr_local = NULL;
       break;
     case SV_DRAWSQUARE:
@@ -4425,6 +4702,10 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       break;
     case SV_DRAWDISK:
       DrawDisk(arg[0], arg[1], rgbptr_local);
+      rgbptr_local = NULL;
+      break;
+    case SV_DRAWWHEEL:
+      DrawWheel(arg[0], arg[1], rgbptr_local);
       rgbptr_local = NULL;
       break;
     case SV_DRAWARCDISK:
@@ -4761,10 +5042,25 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr, int *
     num_op = SV_DRAWCUBE_NUMARGS;
     num_outop = SV_DRAWCUBE_NUMOUTARGS;
   }
+  else if(STRCMP(token, "drawcube0")==0){
+    op = SV_DRAWCUBE0;
+    num_op = SV_DRAWCUBE0_NUMARGS;
+    num_outop = SV_DRAWCUBE0_NUMOUTARGS;
+  }
   else if(STRCMP(token, "drawcubec") == 0){
     op = SV_DRAWCUBEC;
     num_op = SV_DRAWCUBEC_NUMARGS;
     num_outop = SV_DRAWCUBEC_NUMOUTARGS;
+  }
+  else if(STRCMP(token, "drawslantcube")==0){
+    op = SV_DRAWSLANTCUBE;
+    num_op = SV_DRAWSLANTCUBE_NUMARGS;
+    num_outop = SV_DRAWSLANTCUBE_NUMOUTARGS;
+  }
+  else if(STRCMP(token, "drawprism")==0){
+    op = SV_DRAWPRISM;
+    num_op = SV_DRAWPRISM_NUMARGS;
+    num_outop = SV_DRAWPRISM_NUMOUTARGS;
   }
   else if(STRCMP(token, "drawvent") == 0){
     op = SV_DRAWVENT;
@@ -4780,6 +5076,11 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr, int *
     op = SV_DRAWDISK;
     num_op = SV_DRAWDISK_NUMARGS;
     num_outop = SV_DRAWDISK_NUMOUTARGS;
+  }
+  else if(STRCMP(token, "drawwheel")==0){
+    op = SV_DRAWWHEEL;
+    num_op = SV_DRAWWHEEL_NUMARGS;
+    num_outop = SV_DRAWWHEEL_NUMOUTARGS;
   }
   else if(STRCMP(token, "drawcdisk") == 0){
     op = SV_DRAWCDISK;

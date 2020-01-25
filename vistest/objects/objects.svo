@@ -1,27 +1,34 @@
    // ************ static object definitions - single frame/state ********************
 
 OBJECTDEF
- car
- 255 0 0 setrgb
- push                          0.4 0.2 0.075 scalexyz 1.0 drawcube pop 
- push  0.0 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
-
+truck
+ push
+ push
+ 139 69 19 setrgb
+ push                          0.4 0.2 0.075 scalexyz 1.0      drawcube  pop 
+ push  -0.025 0.0  -0.0875 translate 0.1 0.2 0.1 scalexyz 1.0     drawcube  pop
+ push  -0.075 -0.1 -0.0375 translate 0.075 0.2 0.1 scalexyz 1.0 1.0 drawprism pop
+ pop
+ 
  0 0 0 setrgb
- push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ 0.0 0.0125 0.05 translate 
+ push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ pop
 
 OBJECTDEF
- truck
- 255 0 0 setrgb
+ car
+ 65 105 225 setrgb
  push                          0.4 0.2 0.075 scalexyz 1.0 drawcube pop 
  push  -0.05 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
 
  0 0 0 setrgb
- push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ 0.0 0.0125 0.05 translate 
+ push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
 
 
