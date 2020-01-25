@@ -7,10 +7,11 @@ OBJECTDEF
  push  0.0 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
 
  0 0 0 setrgb
- push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ 0.0 0.0125 0.05 translate 
+ push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
 
 OBJECTDEF
  truck
@@ -19,9 +20,10 @@ OBJECTDEF
  push  -0.05 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
 
  0 0 0 setrgb
- push  0.025 0.0 0.05 translate  0.15 -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate  0.15  0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2   0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
- push  0.025 0.0 0.05 translate -0.2  -0.1 0.0 translate -90.0 rotatex  0.1 0.05 drawcdisk pop
+ 0.0 0.0125 0.05 translate 
+ push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
 
 
