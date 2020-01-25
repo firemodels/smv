@@ -183,6 +183,7 @@
 #define SV_DRAWWHEEL        222
 #define SV_DRAWSLANTCUBE    223
 #define SV_DRAWPRISM        224
+#define SV_DRAWCUBE0        225
 
 #define SV_DRAWCUBE_NUMARGS      1
 #define SV_DRAWSPHERE_NUMARGS    1
@@ -209,6 +210,7 @@
 #define SV_DRAWWHEEL_NUMARGS      2
 #define SV_DRAWSLANTCUBE_NUMARGS  3
 #define SV_DRAWPRISM_NUMARGS      2
+#define SV_DRAWCUBE0_NUMARGS      1
 
 #define SV_DRAWCUBE_NUMOUTARGS      0
 #define SV_DRAWSPHERE_NUMOUTARGS    0
@@ -235,6 +237,7 @@
 #define SV_DRAWWHEEL_NUMOUTARGS      0
 #define SV_DRAWSLANTCUBE_NUMOUTARGS  0
 #define SV_DRAWPRISM_NUMOUTARGS      0
+#define SV_DRAWCUBE0_NUMOUTARGS      0
 
 #define SV_PUSH       300
 #define SV_POP        301
