@@ -158,28 +158,29 @@
 #define SV_CLIPZ_NUMOUTARGS 0
 #define SV_CLIPOFF_NUMOUTARGS 0
 
-#define SV_DRAWCUBE      200
-#define SV_DRAWSPHERE    201
-#define SV_DRAWDISK      202
-#define SV_DRAWLINE      203
-#define SV_DRAWCIRCLE    204
-#define SV_DRAWTRUNCCONE 205
-#define SV_DRAWNOTCHPLATE 206
-#define SV_DRAWRING      207
-#define SV_DRAWCONE      208
-#define SV_DRAWHEXDISK   209
-#define SV_DRAWPOLYDISK  210
-#define SV_DRAWPOINT     211
-#define SV_DRAWARC       212
-#define SV_DRAWCDISK     213
-#define SV_DRAWTSPHERE   214
-#define SV_DRAWARCDISK   215
-#define SV_DRAWSQUARE    216
-#define SV_DRAWVENT      217
-#define SV_DRAWCUBEC     218
-#define SV_DRAWHSPHERE   219
-#define SV_DRAWTRIBLOCK   220
-#define SV_DRAWFILLEDCIRCLE    221
+#define SV_DRAWCUBE         200
+#define SV_DRAWSPHERE       201
+#define SV_DRAWDISK         202
+#define SV_DRAWLINE         203
+#define SV_DRAWCIRCLE       204
+#define SV_DRAWTRUNCCONE    205
+#define SV_DRAWNOTCHPLATE   206
+#define SV_DRAWRING         207
+#define SV_DRAWCONE         208
+#define SV_DRAWHEXDISK      209
+#define SV_DRAWPOLYDISK     210
+#define SV_DRAWPOINT        211
+#define SV_DRAWARC          212
+#define SV_DRAWCDISK        213
+#define SV_DRAWTSPHERE      214
+#define SV_DRAWARCDISK      215
+#define SV_DRAWSQUARE       216
+#define SV_DRAWVENT         217
+#define SV_DRAWCUBEC        218
+#define SV_DRAWHSPHERE      219
+#define SV_DRAWTRIBLOCK     220
+#define SV_DRAWFILLEDCIRCLE 221
+#define SV_DRAWWHEEL        222
 
 #define SV_DRAWCUBE_NUMARGS      1
 #define SV_DRAWSPHERE_NUMARGS    1
@@ -203,6 +204,7 @@
 #define SV_DRAWCUBEC_NUMARGS      1
 #define SV_DRAWHSPHERE_NUMARGS    1
 #define SV_DRAWTRIBLOCK_NUMARGS    2
+#define SV_DRAWWHEEL_NUMARGS      2
 
 #define SV_DRAWCUBE_NUMOUTARGS      0
 #define SV_DRAWSPHERE_NUMOUTARGS    0
@@ -226,6 +228,7 @@
 #define SV_DRAWCUBEC_NUMOUTARGS      0
 #define SV_DRAWHSPHERE_NUMOUTARGS    0
 #define SV_DRAWTRIBLOCK_NUMOUTARGS    0
+#define SV_DRAWWHEEL_NUMOUTARGS      0
 
 #define SV_PUSH       300
 #define SV_POP        301
@@ -277,5 +280,6 @@ void DrawCone(float d1, float height, unsigned char *rgbcolor);
 void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor);
 void DrawSphere(float diameter, unsigned char *rgbcolor);
 void DrawDisk(float diameter, float height, unsigned char *rgbcolor);
+void DrawWheel(float diameter, float thickness, unsigned char *rgbcolor);
 void DrawSmvObject(sv_object *object, int frame_index_local, propdata *prop, int recurse_level, float *valrgb, int vis_override);
 #endif

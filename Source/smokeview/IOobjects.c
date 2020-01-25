@@ -2395,6 +2395,15 @@ void RotateAxis(float angle, float ax, float ay, float az){
   glRotatef(angle,ax,ay,az);
 }
 
+/* ----------------------- DrawWheel ----------------------------- */
+
+void DrawWheel(float diameter, float thickness, unsigned char *rgbcolor){
+  glPushMatrix();
+  glRotatef(90.0, 1.0, 0.0, 0.0);
+  DrawDisk(diameter, thickness, rgbcolor);
+  glPopMatrix();
+}
+
 /* ----------------------- DrawDisk ----------------------------- */
 
 void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
@@ -4427,6 +4436,10 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       DrawDisk(arg[0], arg[1], rgbptr_local);
       rgbptr_local = NULL;
       break;
+    case SV_DRAWWHEEL:
+      DrawWheel(arg[0], arg[1], rgbptr_local);
+      rgbptr_local = NULL;
+      break;
     case SV_DRAWARCDISK:
       DrawArcDisk(arg[0], arg[1], arg[2], rgbptr_local);
       rgbptr_local = NULL;
@@ -4780,6 +4793,11 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr, int *
     op = SV_DRAWDISK;
     num_op = SV_DRAWDISK_NUMARGS;
     num_outop = SV_DRAWDISK_NUMOUTARGS;
+  }
+  else if(STRCMP(token, "drawwheel")==0){
+    op = SV_DRAWWHEEL;
+    num_op = SV_DRAWWHEEL_NUMARGS;
+    num_outop = SV_DRAWWHEEL_NUMOUTARGS;
   }
   else if(STRCMP(token, "drawcdisk") == 0){
     op = SV_DRAWCDISK;
