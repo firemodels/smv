@@ -32,7 +32,6 @@
 
 #if !defined( PTHREAD_H )
 #define PTHREAD_H
-#define HAVE_STRUCT_TIMESPEC
 
 /*
  * See the README file for an explanation of the pthreads-win32 version
