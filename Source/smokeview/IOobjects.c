@@ -1939,7 +1939,7 @@ void DrawSlantCube(float s1, float s2, float length, unsigned char *rgbcolor){
 void DrawCube0(float s1, unsigned char *rgbcolor){
   float verts[8][3] = {
     {0.0, 0.0, 0.0}, {s1, 0.0, 0.0}, {s1, s1, 0.0}, {0.0, s1, 0.0},
-    {0.0, 0.0, s1}, {s1, 0.0, s1}, {s1, s1, s1}, {0.0, s1, s1},
+    {0.0, 0.0, s1},  {s1, 0.0, s1},  {s1, s1, s1},  {0.0, s1, s1},
   };
 
   if(object_outlines==0){
@@ -1949,16 +1949,16 @@ void DrawCube0(float s1, unsigned char *rgbcolor){
     // bottom face
     glNormal3f(0.0, 0.0, -1.0);
     glVertex3fv(verts[0]);
-    glVertex3fv(verts[1]);
-    glVertex3fv(verts[2]);
     glVertex3fv(verts[3]);
+    glVertex3fv(verts[2]);
+    glVertex3fv(verts[1]);
 
     // top face
     glNormal3f(0.0, 0.0, 1.0);
     glVertex3fv(verts[4]);
-    glVertex3fv(verts[7]);
-    glVertex3fv(verts[6]);
     glVertex3fv(verts[5]);
+    glVertex3fv(verts[6]);
+    glVertex3fv(verts[7]);
 
     // front face
     glNormal3f(0.0, -1.0, 0.0);
