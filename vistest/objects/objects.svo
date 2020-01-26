@@ -1,34 +1,48 @@
-   // ************ static object definitions - single frame/state ********************
-
 OBJECTDEF
 truck
  push
  push
- 139 69 19 setrgb
- push                          0.4 0.2 0.075 scalexyz 1.0      drawcube  pop 
- push  -0.025 0.0  -0.0875 translate 0.1 0.2 0.1 scalexyz 1.0     drawcube  pop
- push  -0.075 -0.1 -0.0375 translate 0.075 0.2 0.1 scalexyz 1.0 1.0 drawprism pop
- pop
- 
+ 255 26 0 setrgb
+ 0.25 0.25 0.25 scalexyz
+ 180.0 rotatey
+ 0.0 0.0 -0.35 translate
+ 180.0 rotatez
+ 0.0   0.0 0.125 3.0 1.4 0.5     drawboxxyz 
+ 0.625 0.0 0.625 0.5 1.4 0.0 0.5 drawprismxyz
+ 1.125 0.0 0.625 0.5 1.4 0.5     drawboxxyz 
+  
  0 0 0 setrgb
- 0.0 0.0125 0.05 translate 
- push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
- push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
- push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
- push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push .375 0.075 0.2 translate 0.5 0.15 drawwheel pop
+ push .375 1.485 0.2 translate 0.5 0.15 drawwheel pop
+ push  2.5 0.075 0.2 translate 0.5 0.15 drawwheel pop
+ push  2.5 1.485 0.2 translate 0.5 0.15 drawwheel pop
+
+ pop
  pop
 
 OBJECTDEF
- car
- 65 105 225 setrgb
- push                          0.4 0.2 0.075 scalexyz 1.0 drawcube pop 
- push  -0.05 0.0 -0.05 translate 0.2 0.2 0.05   scalexyz 1.0 drawcube pop 
+car
+ push
+ push
+ 0 144 255 setrgb
+ 0.25 0.25 0.25 scalexyz
+ 180.0 rotatey
+ 0.0 0.0 -0.35 translate
+ 180.0 rotatez
+
+ 0.0   0.0 0.125 0.875 1.4 0.375 0.5   drawprismxyz
+ 0.875 0.0 0.125 0.375 1.4 0.5   0.625 drawprismxyz
+ 1.25  0.0 0.125 0.75  1.4 0.625 0.625 drawprismxyz
+ 2.0   0.0 0.125 0.375 1.4 0.625 0.5   drawprismxyz
+ 2.375 0.0 0.125 0.5   1.4 0.5   0.375 drawprismxyz
 
  0 0 0 setrgb
- 0.0 0.0125 0.05 translate 
- push -0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
- push  0.2 -0.1 0.0 translate 0.1 0.025 drawwheel pop
- push -0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
- push  0.2  0.1 0.0 translate 0.1 0.025 drawwheel pop
+ push .375 0.075 0.2 translate 0.5 0.15 drawwheel pop
+ push .375 1.485 0.2 translate 0.5 0.15 drawwheel pop
+ push  2.5 0.075 0.2 translate 0.5 0.15 drawwheel pop
+ push  2.5 1.485 0.2 translate 0.5 0.15 drawwheel pop
+
+ pop
+ pop
 
 
