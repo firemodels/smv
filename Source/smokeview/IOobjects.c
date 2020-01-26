@@ -1765,7 +1765,6 @@ void DrawCubeC(float size, unsigned char *rgbcolor){
 /* ----------------------- DrawPrismXyz ----------------------------- */
 
 void DrawPrismXyz(float *args, unsigned char *rgbcolor){
-  int both_sides = 0;
 // 0,1,2 - origin
 // 3,4,5 - size1
 // 6       size2
