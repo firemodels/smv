@@ -300,8 +300,6 @@ EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
    unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
 EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
 EXTERNCPP void DrawFilledCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawCubeCOutline(float size, unsigned char *rgbcolor);
-EXTERNCPP void DrawBoxOutline(float x1, float x2, float y1, float y2, float z1, float z2, float *rgbcolor);
 EXTERNCPP void DrawCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
 EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgbcolor);
 EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
