@@ -1056,89 +1056,6 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
   }
 }
 
-/* ----------------------- DrawCubeC ----------------------------- */
-
-void DrawCubeC(float size, unsigned char *rgbcolor){
-  float s1, s2;
-
-  s2 = size/2.0;
-  s1 = -size/2.0;
-
-  if(object_outlines == 0){
-    glBegin(GL_QUADS);
-    if(rgbcolor != NULL)glColor3ubv(rgbcolor);
-
-    glNormal3f(0.0, 0.0, -1.0);
-    glVertex3f(s1, s1, s1);  // 1
-    glVertex3f(s1, s2, s1);  // 4
-    glVertex3f(s2, s2, s1);  // 3
-    glVertex3f(s2, s1, s1);  // 2
-
-    glNormal3f(0.0, 0.0, 1.0);
-    glVertex3f(s1, s1, s2);  // 5
-    glVertex3f(s2, s1, s2);  // 6
-    glVertex3f(s2, s2, s2);  // 7
-    glVertex3f(s1, s2, s2);  // 8
-
-    glNormal3f(0.0, -1.0, 0.0);
-    glVertex3f(s1, s1, s1);  // 1
-    glVertex3f(s2, s1, s1);  // 2
-    glVertex3f(s2, s1, s2);  // 6
-    glVertex3f(s1, s1, s2);  // 5
-
-    glNormal3f(0.0, 1.0, 0.0);
-    glVertex3f(s2, s2, s1);  // 3
-    glVertex3f(s1, s2, s1);  // 4
-    glVertex3f(s1, s2, s2);  // 8
-    glVertex3f(s2, s2, s2);  // 7
-
-    glNormal3f(-1.0, 0.0, 0.0);
-    glVertex3f(s1, s1, s1);  // 1
-    glVertex3f(s1, s1, s2);  // 5
-    glVertex3f(s1, s2, s2);  // 8
-    glVertex3f(s1, s2, s1);  // 4
-
-    glNormal3f(1.0, 0.0, 0.0);
-    glVertex3f(s2, s1, s1);  // 2
-    glVertex3f(s2, s2, s1);  // 3
-    glVertex3f(s2, s2, s2);  // 7
-    glVertex3f(s2, s1, s2);  // 6
-    glEnd();
-  }
-  else{
-    glBegin(GL_LINES);
-    if(rgbcolor != NULL)glColor3ubv(rgbcolor);
-
-    glVertex3f(s1, s1, s1);
-    glVertex3f(s1, s1, s2);
-    glVertex3f(s1, s2, s1);
-    glVertex3f(s1, s2, s2);
-    glVertex3f(s2, s1, s1);
-    glVertex3f(s2, s1, s2);
-    glVertex3f(s2, s2, s1);
-    glVertex3f(s2, s2, s2);
-
-    glVertex3f(s1, s1, s1);
-    glVertex3f(s1, s2, s1);
-    glVertex3f(s1, s1, s2);
-    glVertex3f(s1, s2, s2);
-    glVertex3f(s2, s1, s1);
-    glVertex3f(s2, s2, s1);
-    glVertex3f(s2, s1, s2);
-    glVertex3f(s2, s2, s2);
-
-    glVertex3f(s1, s1, s1);
-    glVertex3f(s2, s1, s1);
-    glVertex3f(s1, s1, s2);
-    glVertex3f(s2, s1, s2);
-    glVertex3f(s1, s2, s1);
-    glVertex3f(s2, s2, s1);
-    glVertex3f(s1, s2, s2);
-    glVertex3f(s2, s2, s2);
-    glEnd();
-  }
-}
-
 /* ----------------------- DrawTSphere ----------------------------- */
 
 void DrawTSphere(int texture_index,float diameter, unsigned char *rgbcolor){
@@ -1755,21 +1672,14 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   glEnd();
 }
 
-/* ----------------------- DrawPrismXyz ----------------------------- */
+/* ----------------------- DrawCuboid ----------------------------- */
 
-void DrawPrismXyz(float *args, unsigned char *rgbcolor){
-  int both_sides = 0;
-
-  float verts[8][3] = {
-    {0.0, 0.0, 0.0},     {args[3], 0.0, 0.0},     {args[3], args[4], 0.0},     {0.0, args[4], 0.0},
-    {0.0, 0.0, args[5]}, {args[3], 0.0, args[6]}, {args[3], args[4], args[6]}, {0.0, args[4], args[5]}
-  };
-
-  if(args[3]<0.0||args[4]<0.0||args[5]<0.0)both_sides = 1;
-
-  glPushMatrix();
-  glTranslatef(args[0],args[1],args[2]);
-  if(object_outlines==0){
+void DrawCuboid(float *origin, float verts[8][3], unsigned char *rgbcolor, int draw_outline){
+  if(origin!=NULL){
+    glPushMatrix();
+    glTranslatef(origin[0], origin[1], origin[2]);
+  }
+  if(draw_outline==0){
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
@@ -1779,12 +1689,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[3]);
     glVertex3fv(verts[2]);
     glVertex3fv(verts[1]);
-    if(both_sides==1){
-      glVertex3fv(verts[1]);
-      glVertex3fv(verts[2]);
-      glVertex3fv(verts[3]);
-      glVertex3fv(verts[0]);
-    }
 
     // top face
     glNormal3f(0.0, 0.0, 1.0);
@@ -1792,12 +1696,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[5]);
     glVertex3fv(verts[6]);
     glVertex3fv(verts[7]);
-    if(both_sides==1){
-      glVertex3fv(verts[7]);
-      glVertex3fv(verts[6]);
-      glVertex3fv(verts[5]);
-      glVertex3fv(verts[4]);
-    }
 
     // front face
     glNormal3f(0.0, -1.0, 0.0);
@@ -1805,12 +1703,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[1]);
     glVertex3fv(verts[5]);
     glVertex3fv(verts[4]);
-    if(both_sides==1){
-      glVertex3fv(verts[4]);
-      glVertex3fv(verts[5]);
-      glVertex3fv(verts[1]);
-      glVertex3fv(verts[0]);
-    }
 
     // back face
     glNormal3f(0.0, 1.0, 0.0);
@@ -1818,12 +1710,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[7]);
     glVertex3fv(verts[6]);
     glVertex3fv(verts[2]);
-    if(both_sides==1){
-      glVertex3fv(verts[2]);
-      glVertex3fv(verts[6]);
-      glVertex3fv(verts[7]);
-      glVertex3fv(verts[3]);
-    }
 
     // left face
     glNormal3f(-1.0, 0.0, 0.0);
@@ -1831,12 +1717,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[4]);
     glVertex3fv(verts[7]);
     glVertex3fv(verts[3]);
-    if(both_sides==1){
-      glVertex3fv(verts[3]);
-      glVertex3fv(verts[7]);
-      glVertex3fv(verts[4]);
-      glVertex3fv(verts[0]);
-    }
 
     // right face
     glNormal3f(1.0, 0.0, 0.0);
@@ -1844,12 +1724,6 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[2]);
     glVertex3fv(verts[6]);
     glVertex3fv(verts[5]);
-    if(both_sides==1){
-      glVertex3fv(verts[5]);
-      glVertex3fv(verts[6]);
-      glVertex3fv(verts[2]);
-      glVertex3fv(verts[1]);
-    }
     glEnd();
   }
   else{
@@ -1872,245 +1746,58 @@ void DrawPrismXyz(float *args, unsigned char *rgbcolor){
     glVertex3fv(verts[3]); glVertex3fv(verts[7]);
     glEnd();
   }
-  glPopMatrix();
+  if(origin!=NULL)glPopMatrix();
+}
+
+/* ----------------------- DrawCubeC ----------------------------- */
+
+void DrawCubeC(float size, unsigned char *rgbcolor){
+  float s1=size/2.0;
+  float verts[8][3]={
+    {-s1,-s1,-s1},{s1,-s1,-s1},{s1,s1,-s1},{-s1,s1,-s1},
+    {-s1,-s1,-s1},{s1,-s1,-s1},{s1,s1,-s1},{-s1,s1,-s1}
+  };
+
+  DrawCuboid(NULL,verts,rgbcolor,object_outlines);
+}
+
+
+/* ----------------------- DrawPrismXyz ----------------------------- */
+
+void DrawPrismXyz(float *args, unsigned char *rgbcolor){
+  int both_sides = 0;
+// 0,1,2 - origin
+// 3,4,5 - size1
+// 6       size2
+  float verts[8][3] = {
+    {0.0, 0.0, 0.0},     {args[3], 0.0, 0.0},     {args[3], args[4], 0.0},     {0.0, args[4], 0.0},
+    {0.0, 0.0, args[5]}, {args[3], 0.0, args[6]}, {args[3], args[4], args[6]}, {0.0, args[4], args[5]}
+  };
+
+  DrawCuboid(args, verts, rgbcolor, object_outlines);
 }
 
 /* ----------------------- DrawBoxXyz ----------------------------- */
 
 void DrawBoxXyz(float *args, unsigned char *rgbcolor){
   float verts[8][3] = {
-    {args[0], args[1], args[2]}, {args[3], args[1], args[2]}, {args[3], args[4], args[2]}, {args[0], args[4], args[2]},
-    {args[0], args[1], args[5]}, {args[3], args[1], args[5]}, {args[3], args[4], args[5]}, {args[0], args[4], args[5]}
+    {0.0, 0.0, 0.0},     {args[3], 0.0, 0.0},     {args[3], args[4], 0.0},     {0.0, args[4], 0.0},
+    {0.0, 0.0, args[5]}, {args[3], 0.0, args[5]}, {args[3], args[4], args[5]}, {0.0, args[4], args[5]}
   };
-
-  if(object_outlines==0){
-    glBegin(GL_QUADS);
-    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-    // bottom face
-    glNormal3f(0.0, 0.0, -1.0);
-    glVertex3fv(verts[0]);
-    glVertex3fv(verts[3]);
-    glVertex3fv(verts[2]);
-    glVertex3fv(verts[1]);
-
-    // top face
-    glNormal3f(0.0, 0.0, 1.0);
-    glVertex3fv(verts[4]);
-    glVertex3fv(verts[5]);
-    glVertex3fv(verts[6]);
-    glVertex3fv(verts[7]);
-
-    // front face
-    glNormal3f(0.0, -1.0, 0.0);
-    glVertex3fv(verts[0]);
-    glVertex3fv(verts[1]);
-    glVertex3fv(verts[5]);
-    glVertex3fv(verts[4]);
-
-    // back face
-    glNormal3f(0.0, 1.0, 0.0);
-    glVertex3fv(verts[3]);
-    glVertex3fv(verts[7]);
-    glVertex3fv(verts[6]);
-    glVertex3fv(verts[2]);
-
-    // left face
-    glNormal3f(-1.0, 0.0, 0.0);
-    glVertex3fv(verts[0]);
-    glVertex3fv(verts[4]);
-    glVertex3fv(verts[7]);
-    glVertex3fv(verts[3]);
-
-    // right face
-    glNormal3f(1.0, 0.0, 0.0);
-    glVertex3fv(verts[1]);
-    glVertex3fv(verts[2]);
-    glVertex3fv(verts[6]);
-    glVertex3fv(verts[5]);
-    glEnd();
-  }
-  else{
-    glBegin(GL_LINES);
-    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-    glVertex3fv(verts[0]); glVertex3fv(verts[1]);
-    glVertex3fv(verts[3]); glVertex3fv(verts[2]);
-    glVertex3fv(verts[4]); glVertex3fv(verts[5]);
-    glVertex3fv(verts[7]); glVertex3fv(verts[6]);
-
-    glVertex3fv(verts[0]); glVertex3fv(verts[3]);
-    glVertex3fv(verts[1]); glVertex3fv(verts[2]);
-    glVertex3fv(verts[4]); glVertex3fv(verts[7]);
-    glVertex3fv(verts[5]); glVertex3fv(verts[6]);
-
-    glVertex3fv(verts[0]); glVertex3fv(verts[4]);
-    glVertex3fv(verts[1]); glVertex3fv(verts[5]);
-    glVertex3fv(verts[2]); glVertex3fv(verts[6]);
-    glVertex3fv(verts[3]); glVertex3fv(verts[7]);
-    glEnd();
-  }
+  DrawCuboid(args, verts, rgbcolor, object_outlines);
 }
 
 /* ----------------------- DrawCube ----------------------------- */
 
 void DrawCube(float size, unsigned char *rgbcolor){
-  float s2;
+  float s2 = size/2.0;
 
-  s2 = size/2.0;
+  float verts[8][3] = {
+    {-s2, -s2, -s2}, {s2, -s2, -s2}, {s2, s2, -s2}, {-s2, s2, -s2},
+    {-s2, -s2,  s2}, {s2, -s2,  s2}, {s2, s2,  s2}, {-s2, s2,  s2},
+  };
 
-  if(object_outlines==0){
-    glBegin(GL_QUADS);
-    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-
-    glNormal3f(0.0,0.0,-1.0);
-    glVertex3f(-s2,-s2,-s2);  // 1
-    glVertex3f(-s2, s2,-s2);  // 4
-    glVertex3f( s2, s2,-s2);  // 3
-    glVertex3f( s2,-s2,-s2);  // 2
-
-    glNormal3f(0.0,0.0,1.0);
-    glVertex3f(-s2,-s2, s2);  // 5
-    glVertex3f( s2,-s2, s2);  // 6
-    glVertex3f( s2, s2, s2);  // 7
-    glVertex3f(-s2, s2, s2);  // 8
-
-    glNormal3f(0.0,-1.0,0.0);
-    glVertex3f(-s2,-s2,-s2);  // 1
-    glVertex3f( s2,-s2,-s2);  // 2
-    glVertex3f( s2,-s2, s2);  // 6
-    glVertex3f(-s2,-s2, s2);  // 5
-
-    glNormal3f(0.0,1.0,0.0);
-    glVertex3f( s2, s2,-s2);  // 3
-    glVertex3f(-s2, s2,-s2);  // 4
-    glVertex3f(-s2, s2, s2);  // 8
-    glVertex3f( s2, s2, s2);  // 7
-
-    glNormal3f(-1.0,0.0,0.0);
-    glVertex3f(-s2,-s2,-s2);  // 1
-    glVertex3f(-s2,-s2, s2);  // 5
-    glVertex3f(-s2, s2, s2);  // 8
-    glVertex3f(-s2, s2,-s2);  // 4
-
-    glNormal3f(1.0,0.0,0.0);
-    glVertex3f( s2,-s2,-s2);  // 2
-    glVertex3f( s2, s2,-s2);  // 3
-    glVertex3f( s2, s2, s2);  // 7
-    glVertex3f( s2,-s2, s2);  // 6
-    glEnd();
-  }
-  else{
-    glBegin(GL_LINES);
-    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-
-    glVertex3f(-s2,-s2,-s2);
-    glVertex3f(-s2,-s2, s2);
-    glVertex3f( s2,-s2,-s2);
-    glVertex3f( s2,-s2, s2);
-    glVertex3f(-s2, s2,-s2);
-    glVertex3f(-s2, s2, s2);
-    glVertex3f( s2, s2,-s2);
-    glVertex3f( s2, s2, s2);
-
-    glVertex3f(-s2,-s2,-s2);
-    glVertex3f(-s2, s2,-s2);
-    glVertex3f( s2,-s2,-s2);
-    glVertex3f( s2, s2,-s2);
-    glVertex3f(-s2,-s2, s2);
-    glVertex3f(-s2, s2, s2);
-    glVertex3f( s2,-s2, s2);
-    glVertex3f( s2, s2, s2);
-
-    glVertex3f(-s2,-s2,-s2);
-    glVertex3f( s2,-s2,-s2);
-    glVertex3f(-s2,-s2, s2);
-    glVertex3f( s2,-s2, s2);
-    glVertex3f(-s2, s2,-s2);
-    glVertex3f( s2, s2,-s2);
-    glVertex3f(-s2, s2, s2);
-    glVertex3f( s2, s2, s2);
-    glEnd();
-  }
-
-}
-
-/* ----------------------- DrawCubeCOutline ----------------------------- */
-
-void DrawCubeCOutline(float size, unsigned char *rgbcolor){
-  float s1,s2;
-
-  s2 = size/2.0;
-  s1 = -size/2.0;
-
-    glBegin(GL_LINES);
-    if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-    glVertex3f(s1,s1,s1);
-    glVertex3f(s1,s1,s2);
-    glVertex3f(s1,s2,s1);
-    glVertex3f(s1,s2,s2);
-    glVertex3f(s2,s1,s1);
-    glVertex3f(s2,s1,s2);
-    glVertex3f(s2,s2,s1);
-    glVertex3f(s2,s2,s2);
-
-    glVertex3f(s1,s1,s1);
-    glVertex3f(s1,s2,s1);
-    glVertex3f(s1,s1,s2);
-    glVertex3f(s1,s2,s2);
-    glVertex3f(s2,s1,s1);
-    glVertex3f(s2,s2,s1);
-    glVertex3f(s2,s1,s2);
-    glVertex3f(s2,s2,s2);
-
-    glVertex3f(s1,s1,s1);
-    glVertex3f(s2,s1,s1);
-    glVertex3f(s1,s1,s2);
-    glVertex3f(s2,s1,s2);
-    glVertex3f(s1,s2,s1);
-    glVertex3f(s2,s2,s1);
-    glVertex3f(s1,s2,s2);
-    glVertex3f(s2,s2,s2);
-    glEnd();
-}
-
-/* ----------------------- DrawBoxOutline ----------------------------- */
-
-void DrawBoxOutline(float x1, float x2, float y1, float y2, float z1, float z2, float *rgbcolor){
-
-  glBegin(GL_LINES);
-  if(rgbcolor!=NULL)glColor3fv(rgbcolor);
-
-  glVertex3f(x1,y1,z1);
-  glVertex3f(x1,y1,z2);
-  glVertex3f(x2,y1,z1);
-  glVertex3f(x2,y1,z2);
-  glVertex3f(x2,y2,z1);
-  glVertex3f(x2,y2,z2);
-  glVertex3f(x1,y2,z1);
-  glVertex3f(x1,y2,z2);
-
-  glVertex3f(x1,y1,z1);
-  glVertex3f(x1,y2,z1);
-  glVertex3f(x2,y1,z1);
-  glVertex3f(x2,y2,z1);
-  glVertex3f(x2,y1,z2);
-  glVertex3f(x2,y2,z2);
-  glVertex3f(x1,y1,z2);
-  glVertex3f(x1,y2,z2);
-
-  glVertex3f(x1,y1,z1);
-  glVertex3f(x2,y1,z1);
-  glVertex3f(x1,y2,z1);
-  glVertex3f(x2,y2,z1);
-  glVertex3f(x1,y2,z2);
-  glVertex3f(x2,y2,z2);
-  glVertex3f(x1,y1,z2);
-  glVertex3f(x2,y1,z2);
-  glEnd();
+  DrawCuboid(NULL, verts, rgbcolor, object_outlines);
 }
 
 /* ----------------------- DrawTriBlock ----------------------------- */
