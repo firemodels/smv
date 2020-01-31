@@ -8,15 +8,10 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
 :: call ..\..\scripts\test_libs ..\..\LIBS
 
-set OPT=
-if  "x%HAVE_MSVS%" == "x" goto endif2
-  set OPT=-DHAVE_MSVS
-:endif2
-
 Title Building smokezip for 64 bit Windows
 
 erase *.obj *.mod *.exe
-make SHELL="%ComSpec%" OPT="%OPT%" -f ..\Makefile intel_win_64
+make SHELL="%ComSpec%" -f ..\Makefile intel_win_64
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1
