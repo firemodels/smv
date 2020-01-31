@@ -8,10 +8,9 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
 :: call ..\..\scripts\test_libs ..\..\LIBS
 
-
 set OPT=
-if  "x%VS140COMNTOOLS%" == "x" goto endif2
-  set OPT=-DHAVE_SNPRINTF -DHAVE_STRUCT_TIMESPEC
+if  "x%HAVE_MSVS%" == "x" goto endif2
+  set OPT=-DHAVE_MSVS
 :endif2
 
 Title Building smokezip for 64 bit Windows

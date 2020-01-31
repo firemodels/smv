@@ -16,25 +16,26 @@
 #ifdef WIN32
 #undef pp_append
 
-#ifdef VS2015
-#ifndef pp_MSVS
-#define pp_MSVS
-#endif
+//*** needed in visual studio to prevent compiler warning/errors
+
+#ifdef HAVE_MSVS
+
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE
 #endif
 
-#ifdef VS2019
-#ifndef pp_MSVS
-#define pp_MSVS
-#endif
-#endif
-
-#ifdef pp_MSVS                      // needed in visual studio to prevent compiler warning/errors
-#define _CRT_SECURE_NO_DEPRECATE   // set to eliminate compiler warnings
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#ifndef HAVE_SNPRINTF
 #define HAVE_SNPRINTF
+#endif
+
 #ifndef HAVE_STRUCT_TIMESPEC
 #define HAVE_STRUCT_TIMESPEC
 #endif
+
 #endif
 
 #include "pragmas.h"

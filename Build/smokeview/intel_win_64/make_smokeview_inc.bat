@@ -13,8 +13,8 @@ if "%1" NEQ "-t" goto endif
 :endif
 
 set OPT=
-if  "x%VS140COMNTOOLS%" == "x" goto endif2
-  set OPT=-DHAVE_SNPRINTF -DHAVE_STRUCT_TIMESPEC
+if  "x%HAVE_MSVS%" == "x" goto endif2
+  set OPT=-DHAVE_MSVS
 :endif2
 
 erase *.exe
