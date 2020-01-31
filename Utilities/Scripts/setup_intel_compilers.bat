@@ -31,9 +31,18 @@ IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
     call "%ICPP_COMPILER%\bin\iclvars" intel64
   )
 
-  IF DEFINED VS140COMNTOOLS set HAVE_MSVS=1
-  IF DEFINED VS150COMNTOOLS set HAVE_MSVS=1
-  IF DEFINED VS160COMNTOOLS set HAVE_MSVS=1
-  IF DEFINED VS170COMNTOOLS set HAVE_MSVS=1
+  IF NOT DEFINED I_MPI_ROOT (
+    echo "*** Error: Intel MPI environment variable, I_MPI_ROOT, not defined."
+    echo "    Intel MPI development environment probably not installed."
+    exit /b
+  )
+
+  echo Setting up MPI environment
+  set "I_MPI_ROOT=%I_MPI_ROOT_SAVE%"
+  set I_MPI_RELEASE_ROOT=%I_MPI_ROOT%\intel64\lib
+  set   I_MPI_DEBUG_ROOT=%I_MPI_ROOT%\intel64\lib
+  IF DEFINED IFORT_COMPILER19 set I_MPI_RELEASE_ROOT=%I_MPI_ROOT%\intel64\lib\release
+  IF DEFINED IFORT_COMPILER19 set I_MPI_DEBUG_ROOT=%I_MPI_ROOT%\intel64\lib\debug
+  call "%I_MPI_ROOT%\intel64\bin\mpivars" release
 
 :envexist
