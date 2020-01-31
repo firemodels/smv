@@ -9,7 +9,6 @@ set release=
 set SMV_PROFILEFLAG=
 set SMV_PROFILESTRING=
 set setglut=
-set smv_mpi=false
 set stopscript=0
 
 :: parse command line arguments
@@ -58,10 +57,6 @@ goto eof
  if /I "%1" EQU "-inc" (
    set valid=1
    set inc=inc
- )
- if /I "%1" EQU "-mpi" (
-   set valid=1
-   set smv_mpi=true
  )
  if /I "%1" EQU "-profile" (
    set valid=1

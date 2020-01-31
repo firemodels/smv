@@ -26,11 +26,23 @@ IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
   IF DEFINED ICPP_COMPILER18 set ICPP_COMPILER=%ICPP_COMPILER18%
   IF DEFINED ICPP_COMPILER19 set ICPP_COMPILER=%ICPP_COMPILER19%
 
-  IF NOT DEFINED ICPP_COMPILER (
-    echo "*** Error: Intel ICPP_COMPILER environment variable not defined."
-  )
   IF DEFINED ICPP_COMPILER (
     echo Setting up C/C++ compiler environment
     call "%ICPP_COMPILER%\bin\iclvars" intel64
   )
+
+  IF NOT DEFINED I_MPI_ROOT (
+    echo "*** Error: Intel MPI environment variable, I_MPI_ROOT, not defined."
+    echo "    Intel MPI development environment probably not installed."
+    exit /b
+  )
+
+  echo Setting up MPI environment
+  set "I_MPI_ROOT=%I_MPI_ROOT_SAVE%"
+  set I_MPI_RELEASE_ROOT=%I_MPI_ROOT%\intel64\lib
+  set   I_MPI_DEBUG_ROOT=%I_MPI_ROOT%\intel64\lib
+  IF DEFINED IFORT_COMPILER19 set I_MPI_RELEASE_ROOT=%I_MPI_ROOT%\intel64\lib\release
+  IF DEFINED IFORT_COMPILER19 set I_MPI_DEBUG_ROOT=%I_MPI_ROOT%\intel64\lib\debug
+  call "%I_MPI_ROOT%\intel64\bin\mpivars" release
+
 :envexist
