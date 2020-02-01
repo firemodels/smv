@@ -3600,20 +3600,20 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
   NewMemory((void **)&slice_mask0,sd->nslicei*sd->nslicej*sd->nslicek);
   n=-1;
-  for(k=0;k<sd->nslicek;k++){
+  for(i=0;i<sd->nslicei;i++){
     for(j=0;j<sd->nslicej;j++){
       char  *ib_node, *ib_cell;
 
-      ib_node = iblank_node +  IJKNODE(sd->is1,   sd->js1+j,   sd->ks1+k);
-      ib_cell = iblank_cell +  IJKCELL(sd->is1-1, sd->js1+j-1, sd->ks1+k-1);
-      for(i=0;i<sd->nslicei;i++){
+      ib_node = iblank_node +  IJKNODE(sd->is1+i,   sd->js1+j,   sd->ks1);
+      ib_cell = iblank_cell +  IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1-1);
+      for(k=0;k<sd->nslicek;k++){
         n++;
         slice_mask0[n]=0;
         if(sd->slice_filetype==SLICE_CELL_CENTER&&((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
         if(show_slice_in_obst == ONLY_IN_GAS){
           if(sd->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL){
 //            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
-            if(ib_node[i]==SOLID)continue;
+            if(ib_node[k]==SOLID)continue;
           }
           if(sd->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL){
 //            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
@@ -3633,9 +3633,9 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
     n0 = -1;
 
-    for(k=0;k<sd->nslicek;k++){
+    for(i=0;i<sd->nslicei;i++){
       for(j=0;j<sd->nslicej;j++){
-        for(i=0;i<sd->nslicei;i++){
+        for(k=0;k<sd->nslicek;k++){
           n++;
           n0++;
           // 0 blocked
@@ -3676,7 +3676,7 @@ void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, 
     abs_diff = ABS(*pmax-*pmin);
     denom = MAX(ABS(*pmax), ABS(*pmin));
     if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
-    dp = abs_diff/NBUCKETS;
+    dp = abs_diff/(float)NBUCKETS;
     nsmall=0;
     nbig = NBUCKETS;
     if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0){
@@ -3689,15 +3689,10 @@ void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, 
     }
     for(n = 0; n<ndata; n++){
       level = 0;
-      if(dp!=0.0f){
+      if(pdata[n]>*pmin&&dp!=0.0f){
         level = (int)((pdata[n]-*pmin)/dp);
       }
-      if(level<0){
-        level = 0;
-      }
-      if(level>NBUCKETS-1){
-        level = NBUCKETS-1;
-      }
+      level = MIN(level,NBUCKETS-1);
       buckets[level]++;
     }
     alpha05 = (int)(.01f*ndata);
