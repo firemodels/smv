@@ -9,7 +9,7 @@ if %COMPILER% == gcc set target=libpthreads.a
 if %COMPILER% == gcc set CFLAGS=
 
 set OPT=
-if  "x%VS140COMNTOOLS%" == "x" goto endif2
+if  NOT "x%COMPILER%" == "xicl" goto endif2
   set OPT=-DHAVE_STRUCT_TIMESPEC
 :endif2
 
