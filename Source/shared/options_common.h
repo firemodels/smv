@@ -22,7 +22,7 @@
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
 
-#ifdef HAVE_MSVS
+#ifdef pp_INTEL
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
