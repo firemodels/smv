@@ -1709,6 +1709,9 @@ void UpdateRGBColors(int colorbar_index){
   UpdateChopColors();
   InitCadColors();
   UpdateTexturebar();
+#ifdef pp_SHIFT_COLORBARS
+  UpdateColorbars(1);
+#endif
 }
 
 /* ------------------ UpdateChopColors ------------------------ */

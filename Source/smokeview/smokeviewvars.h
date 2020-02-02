@@ -33,6 +33,10 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_SHIFT_COLORBAR
+SVEXTERN float SVDECL(colorbar_shift, 1.0);
+#endif
+
 #ifdef pp_FILE_SIZES
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
@@ -915,6 +919,10 @@ SVEXTERN int SVDECL(update_fire_colorbar_index,0);
 SVEXTERN int SVDECL(fire_colorbar_index_ini,0);
 SVEXTERN float SVDECL(*rgb2_ini,NULL);
 SVEXTERN float rgb_full[MAXRGB][4];
+#ifdef pp_SHIFT_COLORBAR
+SVEXTERN float rgb_full_orig[MAXRGB][4];
+SVEXTERN float SVDECL(*rgb_slice_orig,NULL);
+#endif
 SVEXTERN float rgb_full2[MAXRGB][4];
 SVEXTERN float rgb_terrain2[4 * MAXRGB];
 SVEXTERN float rgb_slice[4 * MAXRGB];

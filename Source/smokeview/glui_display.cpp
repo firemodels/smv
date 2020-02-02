@@ -32,6 +32,10 @@ GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
+#ifdef pp_SHIFT_COLORBAR
+GLUI_Spinner *SPINNER_colorbar_shift = NULL;
+#endif
+
 GLUI_Spinner *SPINNER_ncolorlabel_decimals =NULL;
 GLUI_Spinner *SPINNER_ntick_decimals=NULL;
 GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
@@ -244,6 +248,9 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_shownorth 31
 #define LABELS_tick_inside 32
 #define LABELS_tick_outside 33
+#ifdef pp_SHIFT_COLORBAR
+#define LABELS_colorbar_shift 36
+#endif
 
 #define SPLIT_COLORBAR 1
 
@@ -766,6 +773,10 @@ extern "C" void GluiLabelsSetup(int main_window){
     GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
+#ifdef pp_SHIFT_COLORBAR
+  SPINNER_colorbar_shift = glui_labels->add_spinner_to_panel(PANEL_cb11, _("shift"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, LabelsCB);
+  SPINNER_colorbar_shift->set_float_limits(0.1, 10.0);
+#endif
   CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Smooth colorbar labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
   CHECKBOX_use_lighting = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
 
@@ -1165,6 +1176,11 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
+#ifdef pp_SHIFT_COLORBAR
+  case LABELS_colorbar_shift:
+    UpdateColorbars(0);
+    break;
+#endif
   case LABELS_vcolorbar:
     if(visColorbarVertical==1){
       visColorbarHorizontal=0;
