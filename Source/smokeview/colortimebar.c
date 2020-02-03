@@ -2740,16 +2740,28 @@ void DrawVerticalColorbarRegLabels(void){
       char slicelabel[256], slicecolorlabel[256];
       char *slicecolorlabel_ptr = NULL;
       float vert_position;
+      int shifted_colorbar_index;
+#ifdef pp_SHIFT_COLORBARS
+      float val_min, val_max;
 
+      val_min = sb->levels256[0];
+      val_max = sb->levels256[255];
+#endif
       tttval = sb->levels256[valindex];
+      shifted_colorbar_index = global_colorbar_index;
+#ifdef pp_SHIFT_COLORBARS
+      if(ABS(colorbar_shift-1.0)>0.0001){
+        shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, 1.0/colorbar_shift);
+      }
+#endif
       SliceNum2String(slicelabel, tttval, ncolorlabel_decimals);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
         ScaleFloat2String(tttval, slicecolorlabel, slicefactor);
         slicecolorlabel_ptr = slicecolorlabel;
       }
-      vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      vert_position = MIX2(shifted_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
+      iposition = MIX2(shifted_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, slicecolorlabel_ptr);
     }
     if(fed_slice == 1){
@@ -2770,6 +2782,27 @@ void DrawVerticalColorbarRegLabels(void){
       }
     }
     else{
+#ifdef pp_SHIFT_COLORBARS
+      float valmin, valmax;
+
+
+      if(sliceflag==1){
+        valmin = tttmin;
+      }
+      else{
+        valmin = sb->colorvalues[1];
+      }
+      valmin = ScaleFloat2Float(valmin, slicefactor);
+
+      if(sliceflag==1){
+        valmax = tttmax;
+      }
+      else{
+        valmax = sb->colorvalues[nrgb-1];
+      }
+      valmax = ScaleFloat2Float(valmax, slicefactor);
+#endif
+
       for(i = 0; i < nrgb - 1; i++){
         float vert_position, val;
         char slicecolorlabel[256], *slicecolorlabel_ptr = NULL;
@@ -2783,6 +2816,11 @@ void DrawVerticalColorbarRegLabels(void){
           val = sb->colorvalues[i+1];
         }
         val = ScaleFloat2Float(val, slicefactor);
+#ifdef pp_SHIFT_COLORBARS
+        if(ABS(colorbar_shift-1.0)>0.0001){
+          val = SHIFT_VAL(val,valmin,valmax,colorbar_shift);
+        }
+#endif
         SliceNum2String(slicecolorlabel, val, ncolorlabel_decimals);
         slicecolorlabel_ptr = slicecolorlabel;
         OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);

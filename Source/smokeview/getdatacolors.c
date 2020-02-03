@@ -1614,6 +1614,12 @@ void UpdateRGBColors(int colorbar_index){
     if(valindex<0)valindex=0;
     if(valindex>255)valindex=255;
     cci = colorbar_index;
+#ifdef pp_SHIFT_COLORBARS
+    if(ABS(colorbar_shift-1.0)>0.0001){
+      cci = SHIFT_VAL(cci, 0, 255, 1.0/colorbar_shift);
+    }
+#endif
+
     if(setbw==1){
       highlight_color=highlight_red;
     }
@@ -1709,9 +1715,6 @@ void UpdateRGBColors(int colorbar_index){
   UpdateChopColors();
   InitCadColors();
   UpdateTexturebar();
-#ifdef pp_SHIFT_COLORBARS
-  UpdateColorbars(1);
-#endif
 }
 
 /* ------------------ UpdateChopColors ------------------------ */
@@ -1950,6 +1953,9 @@ void UpdateChopColors(void){
     break;
   }
   UpdateTexturebar();
+#ifdef pp_SHIFT_COLORBARS
+  ShiftColorbars();
+#endif
 }
 
 /* ------------------ GetRGB ------------------------ */

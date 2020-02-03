@@ -2055,56 +2055,28 @@ void UpdateDisplay(void){
   }
 }
 
-/* ------------------ UpdateColorbars ------------------------ */
+/* ------------------ ShiftColorbars ------------------------ */
 
-#ifdef pp_SHIFT_COLORBAR
-void UpdateColorbars(int option){
+#ifdef pp_SHIFT_COLORBARS
+void ShiftColorbars(void){
   int i;
 
-  if(rgb_slice_orig==NULL||option==1){
-    if(rgb_slice_orig==NULL)NewMemory((void **)&rgb_slice_orig, 4*MAXRGB*sizeof(float));
-    for(i=0;i<4*MAXRGB;i++){
-      rgb_slice_orig[i] = rgb_slice[i];
-    }
-    for(i=0;i<MAXRGB;i++){
-      rgb_full_orig[i][0] = rgb_full[i][0];
-      rgb_full_orig[i][1] = rgb_full[i][1];
-      rgb_full_orig[i][2] = rgb_full[i][2];
-      rgb_full_orig[i][3] = rgb_full[i][3];
-    }
-  }
+#define BASE_EPS 0.0001
+
+  if(ABS(colorbar_shift-1.0)<BASE_EPS)return;
   for(i=0;i<MAXRGB;i++){
     float base, factor;
     float *color1, *color2, color_index, *color_new;
     int color1_index, color2_index;
 
     base = (float)i/(float)(MAXRGB-1);
-    color_index = (float)(MAXRGB-1)*pow(base,1.0/colorbar_shift);
+    color_index = SHIFT_VAL(i, 0, MAXRGB-1, 1.0/colorbar_shift);
     color1_index = CLAMP((int)color_index,0,MAXRGB-2);
     factor = color_index - color1_index;
 
-    color1 = rgb_slice_orig+4*(int)color1_index;
-    color2 = color1 + 4;
+    color1 = rgb_full[color1_index];
+    color2 = rgb_full[color1_index+1];
     color_new = rgb_slice + 4*i;
-
-    color_new[0] = (1.0-factor)*color1[0] + factor*color2[0];
-    color_new[1] = (1.0-factor)*color1[1] + factor*color2[1];
-    color_new[2] = (1.0-factor)*color1[2] + factor*color2[2];
-    color_new[3] = (1.0-factor)*color1[3] + factor*color2[3];
-  }
-  for(i=0;i<MAXRGB;i++){
-    float base, factor;
-    float *color1, *color2, color_index, *color_new;
-    int color1_index, color2_index;
-
-    base = (float)i/(float)(MAXRGB-1);
-    color_index = (float)(MAXRGB-1)*pow(base,1.0/colorbar_shift);
-    color1_index = CLAMP((int)color_index,0,MAXRGB-2);
-    factor = color_index - color1_index;
-
-    color1 = rgb_full_orig[color1_index];
-    color2 = rgb_full_orig[color1_index+1];
-    color_new = rgb_full[i];
 
     color_new[0] = (1.0-factor)*color1[0] + factor*color2[0];
     color_new[1] = (1.0-factor)*color1[1] + factor*color2[1];
