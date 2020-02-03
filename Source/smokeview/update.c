@@ -2054,3 +2054,34 @@ void UpdateDisplay(void){
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
   }
 }
+
+/* ------------------ ShiftColorbars ------------------------ */
+
+#ifdef pp_SHIFT_COLORBARS
+void ShiftColorbars(void){
+  int i;
+
+#define BASE_EPS 0.0001
+
+  if(ABS(colorbar_shift-1.0)<BASE_EPS)return;
+  for(i=0;i<MAXRGB;i++){
+    float factor;
+    float *color1, *color2, color_index, *color_new;
+    int color1_index;
+
+    color_index = SHIFT_VAL(i, 0, MAXRGB-1, 1.0/colorbar_shift);
+    color1_index = CLAMP((int)color_index,0,MAXRGB-2);
+    factor = color_index - color1_index;
+
+    color1 = rgb_full[color1_index];
+    color2 = rgb_full[color1_index+1];
+    color_new = rgb_slice + 4*i;
+
+    color_new[0] = (1.0-factor)*color1[0] + factor*color2[0];
+    color_new[1] = (1.0-factor)*color1[1] + factor*color2[1];
+    color_new[2] = (1.0-factor)*color1[2] + factor*color2[2];
+    color_new[3] = (1.0-factor)*color1[3] + factor*color2[3];
+  }
+  CheckMemory;
+}
+#endif

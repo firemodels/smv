@@ -9806,9 +9806,14 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
+#ifdef pp_SHIFT_COLORBARS
+      sscanf(buffer, " %i %i %f", &research_mode, &ncolorlabel_decimals, &colorbar_shift);
+      colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
+#else
       sscanf(buffer, " %i %i", &research_mode, &ncolorlabel_decimals);
+#endif
       if(research_mode==1&&research_mode_override==0)research_mode=0;
-      ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, 1, 3);
+      ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       update_research_mode=1;
       continue;
@@ -11115,8 +11120,8 @@ int ReadIni2(char *inifile, int localfile){
 
       CheckMemory;
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i", &nrgb_ini, &usetexturebar, &colorbar_select_index, &colorband);
-      colorband = CLAMP(colorband, 1, 10);
+      sscanf(buffer, "%i %i %i %i", &nrgb_ini, &usetexturebar, &colorbar_select_index, &colorbar_selection_width);
+      colorbar_selection_width = CLAMP(colorbar_selection_width, COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
       FREEMEMORY(rgb_ini);
       if(NewMemory((void **)&rgb_ini, 4 * nrgb_ini*sizeof(float)) == 0)return 2;
       rgb_ini_copy = rgb_ini;
@@ -13495,7 +13500,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "BOUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", boundcolor[0], boundcolor[1], boundcolor[2]);
   fprintf(fileout, "COLORBAR\n");
-  fprintf(fileout," %i %i %i %i\n",nrgb,usetexturebar,colorbar_select_index,colorband);
+  fprintf(fileout," %i %i %i %i\n",nrgb,usetexturebar,colorbar_select_index, colorbar_selection_width);
   for(i=0;i<nrgb;i++){
     fprintf(fileout," %f %f %f\n",rgb[i][0],rgb[i][1],rgb[i][2]);
   }
@@ -13705,7 +13710,11 @@ void WriteIni(int flag,char *filename){
     research_mode = 0;
     update_research_mode = 1;
   }
+#ifdef pp_SHIFT_COLORBARS
+  fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
+#else
   fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
+#endif
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

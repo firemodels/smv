@@ -3599,25 +3599,21 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   ndata = sd->nslicetotal;
 
   NewMemory((void **)&slice_mask0,sd->nslicei*sd->nslicej*sd->nslicek);
+  for(n=0;n<sd->nslicei*sd->nslicej*sd->nslicek;n++){
+    slice_mask0[n]=0;
+  }
   n=-1;
   for(i=0;i<sd->nslicei;i++){
     for(j=0;j<sd->nslicej;j++){
-      char  *ib_node, *ib_cell;
-
-      ib_node = iblank_node +  IJKNODE(sd->is1+i,   sd->js1+j,   sd->ks1);
-      ib_cell = iblank_cell +  IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1-1);
       for(k=0;k<sd->nslicek;k++){
         n++;
-        slice_mask0[n]=0;
         if(sd->slice_filetype==SLICE_CELL_CENTER&&((k==0&&sd->nslicek!=1)||(j==0&&sd->nslicej!=1)||(i==0&&sd->nslicei!=1)))continue;
         if(show_slice_in_obst == ONLY_IN_GAS){
           if(sd->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL){
-//            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
-            if(ib_node[k]==SOLID)continue;
+            if(iblank_node[IJKNODE(sd->is1+i, sd->js1+j, sd->ks1+k)]==SOLID)continue;
           }
           if(sd->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL){
-//            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
-            if(ib_cell[i]==EMBED_YES)continue;
+            if(iblank_cell[IJKCELL(sd->is1+i-1, sd->js1+j-1, sd->ks1+k-1)]==EMBED_YES)continue;
           }
         }
         slice_mask0[n]=1;
@@ -3858,7 +3854,6 @@ int GetSliceZlibRLEData(char *file, int compression_type,
     if(compression_type==COMPRESSED_RLE)FSEEK(stream, 4, SEEK_CUR);
     fread(&ttime, 4, 1, stream);
     if(compression_type==COMPRESSED_RLE)FSEEK(stream, 4, SEEK_CUR);
-    
     if(compression_type==COMPRESSED_RLE){
       FSEEK(stream, 4, SEEK_CUR);
       FSEEK(stream, 4, SEEK_CUR); // original
@@ -3868,8 +3863,6 @@ int GetSliceZlibRLEData(char *file, int compression_type,
     else{
       fread(&nncomp, 4, 1, stream);
     }
-
-    
     if((count++%sliceskip != 0) || (set_tmin == 1 && ttime<tmin_local) || (set_tmax == 1 && ttime>tmax_local)){
       if(compression_type==COMPRESSED_RLE)FSEEK(stream, 4, SEEK_CUR);
       FSEEK(stream, nncomp, SEEK_CUR);

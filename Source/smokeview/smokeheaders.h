@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_SHIFT_COLORBARS
+EXTERNCPP void ShiftColorbars(void);
+#endif
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
