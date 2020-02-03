@@ -1682,6 +1682,9 @@ void Keyboard(unsigned char key, int flag){
         else{
           contour_type++;
           if(contour_type>2)contour_type=0;
+          if(contour_type==LINE_CONTOURS)printf("line coloring\n");
+          if(contour_type==STEPPED_CONTOURS)printf("stepped coloring\n");
+          if(contour_type==SHADED_CONTOURS)printf("continuous coloring\n");
           UpdatePlot3dDisplay();
           UpdateRGBColors(COLORBAR_INDEX_NONE);
         }

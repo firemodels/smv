@@ -2069,7 +2069,7 @@ void ShiftColorbars(void){
     float *color1, *color2, color_index, *color_new;
     int color1_index;
 
-    color_index = SHIFT_VAL(i, 0, MAXRGB-1, 1.0/colorbar_shift);
+    color_index = SHIFT_VAL(i, 0, MAXRGB-1, colorbar_shift);
     color1_index = CLAMP((int)color_index,0,MAXRGB-2);
     factor = color_index - color1_index;
 

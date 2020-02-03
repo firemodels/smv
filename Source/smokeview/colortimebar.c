@@ -2746,7 +2746,7 @@ void DrawVerticalColorbarRegLabels(void){
       shifted_colorbar_index = global_colorbar_index;
 #ifdef pp_SHIFT_COLORBARS
       if(ABS(colorbar_shift-1.0)>0.0001){
-        shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, 1.0/colorbar_shift);
+        shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, colorbar_shift);
       }
 #endif
       SliceNum2String(slicelabel, tttval, ncolorlabel_decimals);
@@ -2813,7 +2813,7 @@ void DrawVerticalColorbarRegLabels(void){
         val = ScaleFloat2Float(val, slicefactor);
 #ifdef pp_SHIFT_COLORBARS
         if(ABS(colorbar_shift-1.0)>0.0001){
-          val = SHIFT_VAL(val,valmin,valmax,colorbar_shift);
+          val = SHIFT_VAL(val,valmin,valmax,1.0/colorbar_shift);
         }
 #endif
         SliceNum2String(slicecolorlabel, val, ncolorlabel_decimals);
