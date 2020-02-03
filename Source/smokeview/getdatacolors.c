@@ -1626,8 +1626,8 @@ void UpdateRGBColors(int colorbar_index){
     else{
       highlight_color=highlight_black;
     }
-    cbmin = cci-colorband;
-    cbmax = cci+colorband;
+    cbmin = cci-colorbar_selection_width;
+    cbmax = cci+colorbar_selection_width;
     if(cbmin<0){
       cbmax = cbmax - cbmin;
       cbmin = 0;

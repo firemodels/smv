@@ -11,7 +11,7 @@ GLUI *glui_labels=NULL;
 
 GLUI_EditText *EDIT_LB_label_string=NULL;
 
-GLUI_Spinner *SPINNER_colorband=NULL;
+GLUI_Spinner *SPINNER_colorbar_selection_width=NULL;
 GLUI_Spinner *SPINNER_labels_transparency_data=NULL;
 #ifdef pp_BETA
 GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
@@ -153,6 +153,7 @@ GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 
+GLUI_Panel *PANEL_coloring=NULL;
 GLUI_Panel *PANEL_light=NULL;
 GLUI_Panel *PANEL_position0=NULL;
 GLUI_Panel *PANEL_position1 = NULL;
@@ -168,7 +169,7 @@ GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme=NULL,*PANEL_cb8=NULL,*PANEL_cb7=NULL;
 GLUI_Panel *PANEL_extreme_min=NULL, *PANEL_extreme_max=NULL;
 GLUI_Panel *PANEL_cb11=NULL;
-GLUI_Panel *PANEL_contours=NULL;
+GLUI_Panel *PANEL_colorbar_properties=NULL;
 GLUI_Panel *PANEL_gen1=NULL, *PANEL_gen2=NULL, *PANEL_gen3=NULL;
 GLUI_Panel *PANEL_LB_panel1=NULL, *PANEL_LB_panel2=NULL, *PANEL_LB_panel3=NULL;
 GLUI_Panel *PANEL_LB_panel4=NULL, *PANEL_LB_panel5=NULL, *PANEL_LB_panel6=NULL;
@@ -749,36 +750,39 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   PANEL_cb11=glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);
 
-  PANEL_contours = glui_labels->add_panel_to_panel(PANEL_cb11,_("Colorbar type:"));
-  RADIO2_plot3d_display=glui_labels->add_radiogroup_to_panel(PANEL_contours,&contour_type,UPDATEPLOT,Plot3DBoundCB);
+  PANEL_colorbar_properties = glui_labels->add_panel_to_panel(PANEL_cb11,_("Colorbar properties"));
+  RADIO2_plot3d_display=glui_labels->add_radiogroup_to_panel(PANEL_colorbar_properties,&contour_type,UPDATEPLOT,Plot3DBoundCB);
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Continuous"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Stepped"));
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Line"));
-  CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("flip"), &colorbar_flip, FLIP, LabelsCB);
-  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_contours, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
+  CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("flip"), &colorbar_flip, FLIP, LabelsCB);
+  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
+#ifdef pp_SHIFT_COLORBARS
+  SPINNER_colorbar_shift = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("shift:"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, LabelsCB);
+  SPINNER_colorbar_shift->set_float_limits(COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
+#endif
 
-  SPINNER_colorband=glui_labels->add_spinner_to_panel(PANEL_cb11,_("Selection width:"),GLUI_SPINNER_INT,&colorband,COLORBAND,SliceBoundCB);
-  SPINNER_colorband->set_int_limits(1,10);
+  glui_labels->add_separator_to_panel(PANEL_colorbar_properties);
 
-  SPINNER_ncolorlabel_decimals = glui_labels->add_spinner_to_panel(PANEL_cb11, _("max decimals"), GLUI_SPINNER_INT, &ncolorlabel_decimals);
-  SPINNER_ncolorlabel_decimals->set_int_limits(1, 3, GLUI_LIMIT_CLAMP);
+
+  SPINNER_colorbar_selection_width =glui_labels->add_spinner_to_panel(PANEL_colorbar_properties,_("Selection width:"),GLUI_SPINNER_INT,&colorbar_selection_width,COLORBAND,SliceBoundCB);
+  SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN,COLORBAR_SELECTION_WIDTH_MAX);
+  SPINNER_ncolorlabel_decimals = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("max decimals:"), GLUI_SPINNER_INT, &ncolorlabel_decimals);
+  SPINNER_ncolorlabel_decimals->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Smooth labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
 
   glui_labels->add_column_to_panel(PANEL_cb11,false);
 
-  CHECKBOX_labels_shade=glui_labels->add_checkbox_to_panel(PANEL_cb11,_("Black/White (geometry)"),&setbw,LABELS_shade,LabelsCB);
-  CHECKBOX_labels_shadedata=glui_labels->add_checkbox_to_panel(PANEL_cb11,_("Black/White (data)"),&setbwdata,LABELS_shadedata,LabelsCB);
-  CHECKBOX_transparentflag = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Transparent (data)"),
+  PANEL_coloring = glui_labels->add_panel_to_panel(PANEL_cb11,_("Coloring"));
+  CHECKBOX_labels_shade=glui_labels->add_checkbox_to_panel(PANEL_coloring,_("Black/White (geometry)"),&setbw,LABELS_shade,LabelsCB);
+  CHECKBOX_labels_shadedata=glui_labels->add_checkbox_to_panel(PANEL_coloring,_("Black/White (data)"),&setbwdata,LABELS_shadedata,LabelsCB);
+  CHECKBOX_transparentflag = glui_labels->add_checkbox_to_panel(PANEL_coloring, _("Transparent (data)"),
     &use_transparency_data, DATA_transparent, SliceBoundCB);
-  SPINNER_labels_transparency_data = glui_labels->add_spinner_to_panel(PANEL_cb11, _("level"),
+  SPINNER_labels_transparency_data = glui_labels->add_spinner_to_panel(PANEL_coloring, _("level"),
     GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
-#ifdef pp_SHIFT_COLORBARS
-  SPINNER_colorbar_shift = glui_labels->add_spinner_to_panel(PANEL_cb11, _("shift"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, LabelsCB);
-  SPINNER_colorbar_shift->set_float_limits(0.1, 10.0);
-#endif
-  CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Smooth colorbar labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
-  CHECKBOX_use_lighting = glui_labels->add_checkbox_to_panel(PANEL_cb11, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
+  CHECKBOX_use_lighting = glui_labels->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
 
 
   PANEL_extreme = glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);

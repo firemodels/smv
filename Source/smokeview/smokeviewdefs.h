@@ -7,6 +7,17 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifdef pp_SHIFT_COLORBARS
+#define COLORBAR_SHIFT_MIN          0.1
+#define COLORBAR_SHIFT_MAX         10.0
+#endif
+
+#define COLORBAR_NDECIMALS_MIN        1
+#define COLORBAR_NDECIMALS_MAX        3
+
+#define COLORBAR_SELECTION_WIDTH_MIN  1
+#define COLORBAR_SELECTION_WIDTH_MAX 10
+
 #define MESH_INT  0
 #define MESH_EXT  1
 #define MESH_BOTH 2

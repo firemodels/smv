@@ -1595,7 +1595,7 @@ SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
 //  SVEXTERN float eyzeyeorig_OLD[3];
 //#endif
 SVEXTERN int adjustalphaflag;
-SVEXTERN int SVDECL(colorband,5);
+SVEXTERN int SVDECL(colorbar_selection_width,5);
 SVEXTERN int SVDECL(have_extreme_mindata,0), SVDECL(have_extreme_maxdata,0);
 SVEXTERN int SVDECL(show_extreme_mindata,0), SVDECL(show_extreme_maxdata,0);
 SVEXTERN int SVDECL(show_extreme_mindata_save,0), SVDECL(show_extreme_maxdata_save,0);
