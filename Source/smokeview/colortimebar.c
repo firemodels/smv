@@ -2741,12 +2741,7 @@ void DrawVerticalColorbarRegLabels(void){
       char *slicecolorlabel_ptr = NULL;
       float vert_position;
       int shifted_colorbar_index;
-#ifdef pp_SHIFT_COLORBARS
-      float val_min, val_max;
-
-      val_min = sb->levels256[0];
-      val_max = sb->levels256[255];
-#endif
+      
       tttval = sb->levels256[valindex];
       shifted_colorbar_index = global_colorbar_index;
 #ifdef pp_SHIFT_COLORBARS

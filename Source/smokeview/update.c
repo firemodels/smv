@@ -2065,11 +2065,10 @@ void ShiftColorbars(void){
 
   if(ABS(colorbar_shift-1.0)<BASE_EPS)return;
   for(i=0;i<MAXRGB;i++){
-    float base, factor;
+    float factor;
     float *color1, *color2, color_index, *color_new;
     int color1_index;
 
-    base = (float)i/(float)(MAXRGB-1);
     color_index = SHIFT_VAL(i, 0, MAXRGB-1, 1.0/colorbar_shift);
     color1_index = CLAMP((int)color_index,0,MAXRGB-2);
     factor = color_index - color1_index;
