@@ -1616,7 +1616,7 @@ void UpdateRGBColors(int colorbar_index){
     cci = colorbar_index;
 #ifdef pp_SHIFT_COLORBARS
     if(ABS(colorbar_shift-1.0)>0.0001){
-      cci = SHIFT_VAL(cci, 0, 255, 1.0/colorbar_shift);
+      cci = SHIFT_VAL(cci, 0, 255, colorbar_shift);
     }
 #endif
 

@@ -1682,6 +1682,9 @@ void Keyboard(unsigned char key, int flag){
         else{
           contour_type++;
           if(contour_type>2)contour_type=0;
+          if(contour_type==LINE_CONTOURS)printf("line coloring\n");
+          if(contour_type==STEPPED_CONTOURS)printf("stepped coloring\n");
+          if(contour_type==SHADED_CONTOURS)printf("continuous coloring\n");
           UpdatePlot3dDisplay();
           UpdateRGBColors(COLORBAR_INDEX_NONE);
         }
@@ -1898,16 +1901,9 @@ void Keyboard(unsigned char key, int flag){
       if(visTimebar==0)PRINTF("Time bar hidden\n");
       if(visTimebar==1)PRINTF("Time bar visible\n");
       break;
-#ifdef _DEBUG
     case 'l':
-      if(nsmoke3dinfo>0){
-        smokecullflag=1-smokecullflag;
-        PRINTF("smokecullflag=%i\n",smokecullflag);
-        UpdateSmoke3dFlags();
-        return;
-      }
+      LoadUnloadMenu(RELOADALL);
       break;
-#endif
     case 'L':
       UnloadSliceMenu(UNLOAD_LAST);
       break;

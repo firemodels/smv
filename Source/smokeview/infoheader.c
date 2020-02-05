@@ -48,9 +48,10 @@ int clearTitleLines(titledata *titleinfo_ptr) {
 }
 
  /* ------------------------ initialiseInfoHeader --------------------------- */
+ 
 int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
-                         char *fds_githash_string, char *chidfilebase_string) {
+                         char *fds_githash_string, char *chidfilebase_string, char *fds_title_arg) {
   char line[MAX_TITLE_LINE_LENGTH];
 
   strncpy(titleinfo_ptr->titleline, release_title_string, MAX_TITLE_LINE_LENGTH);
@@ -61,43 +62,54 @@ int initialiseInfoHeader(titledata *titleinfo_ptr,
   if(fds_githash!=NULL){
     snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS build: %s",fds_githash_string);
     strncpy(titleinfo_ptr->fdsbuildline, line, MAX_TITLE_LINE_LENGTH);
-  } else{
+  }
+  else{
     titleinfo_ptr->fdsbuildline[0] = '\0';
   }
 
   snprintf(line,MAX_TITLE_LINE_LENGTH,"CHID: %s",chidfilebase_string);
   strncpy(titleinfo_ptr->chidline, line, MAX_TITLE_LINE_LENGTH);
 
+  strcpy(titleinfo_ptr->fdstitleline, "");
+  if(fds_title_arg!=NULL)strcpy(titleinfo_ptr->fdstitleline, fds_title_arg);
+
   titleinfo_ptr->nlines = 0;
 
   return 0;
 }
 
+ /* ------------------------ renderInfoHeader --------------------------- */
+ 
 int renderInfoHeader(titledata *titleinfo_ptr) {
   float left, textdown;
+
   left=0;
   textdown=VP_title.down;
 //  int textbox_bottom = textdown+titleinfo_ptr->bottom_margin;
   int textbox_top = textdown+VP_title.height-titleinfo_ptr->top_margin;
   int pen_pos = textbox_top - titleinfo_ptr->text_height;
 
-  // first display hardcoded lines
-  if(visTitle==1&&showonly_buildinfo==0){
+  if(vis_title_smv_version==1){
     OutputText(left, pen_pos, titleinfo_ptr->titleline);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;
   }
-  if(gversion==1){
+  if(vis_title_gversion==1){
     OutputText(left, pen_pos, titleinfo_ptr->smvbuildline);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;
   }
-  if(gversion==1&&(strlen(titleinfo_ptr->fdsbuildline)>0)){
+  if(vis_title_gversion==1&&(strlen(titleinfo_ptr->fdsbuildline)>0)){
     OutputText(left, pen_pos, titleinfo_ptr->fdsbuildline);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;
   }
-  if(visCHID==1){
+  if(vis_title_fds==1){
+    OutputText(left, pen_pos, titleinfo_ptr->fdstitleline);
+    pen_pos -= titleinfo_ptr->text_height;
+    pen_pos -= titleinfo_ptr->line_space;
+  }
+  if(vis_title_CHID==1){
     OutputText(left, pen_pos, titleinfo_ptr->chidline);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;

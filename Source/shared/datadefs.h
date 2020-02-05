@@ -28,7 +28,7 @@
 
 #ifdef pp_SHIFT_COLORBARS
 #define REL_VAL(val, valmin, valmax) ((float)((val)-(valmin))/(float)((valmax)-(valmin)))
-#define SHIFT_VAL(val, valmin, valmax, shift_val) ((valmin) + ((valmax)-(valmin))*pow(REL_VAL((val),(valmin),(valmax)),1.0/(shift_val)))
+#define SHIFT_VAL(val, valmin, valmax, shift_val) ((valmin) + ((valmax)-(valmin))*pow(REL_VAL((val),(valmin),(valmax)),(shift_val)))
 #endif
 
 #define NORMALIZE_X(x) (((x)-xbar0)/xyzmaxdiff)

@@ -741,12 +741,6 @@ void LabelMenu(int value){
   case MENU_LABEL_timebar:
     visTimebar=1-visTimebar;
     break;
-  case MENU_LABEL_title:
-    visTitle=1-visTitle;
-    break;
-  case MENU_LABEL_chid:
-    visCHID=1-visCHID;
-    break;
   case MENU_LABEL_framerate:
     visFramerate = 1 - visFramerate;
     break;
@@ -755,7 +749,10 @@ void LabelMenu(int value){
     visColorbarVertical=1;
     visColorbarHorizontal=0;
     visTimebar=1;
-    visTitle=1;
+    vis_title_smv_version = 1;
+    vis_title_fds = 1;
+    vis_title_CHID = 1;
+    vis_title_gversion =1;
     visFramerate=1;
 #ifdef pp_memstatus
     visAvailmemory=1;
@@ -772,14 +769,16 @@ void LabelMenu(int value){
     show_firecutoff=1;
     visFramelabel=1;
     if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
-    gversion=1;
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
     visColorbarVertical=0;
     visColorbarHorizontal=0;
     visTimebar=0;
-    visTitle=0;
+    vis_title_smv_version = 0;
+    vis_title_fds = 0;
+    vis_title_CHID = 0;
+    vis_title_gversion =0;
     visFramerate=0;
     visaxislabels=0;
     visLabels=0;
@@ -792,7 +791,6 @@ void LabelMenu(int value){
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
-    gversion=0;
 #ifdef pp_memstatus
     visAvailmemory=0;
 #endif
@@ -854,9 +852,6 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_userticks:
      visUSERticks = 1 - visUSERticks;
-     break;
-   case MENU_LABEL_gversion:
-     gversion=1-gversion;
      break;
    default:
      ASSERT(FFALSE);
@@ -3741,7 +3736,8 @@ void LoadParticleEvacMenu(int value, int option){
 
         // unload particle files
 
-        if(value!=PARTFILE_RELOADALL){
+
+        if(value!=PARTFILE_RELOADALL&&value!=EVACFILE_RELOADALL){
           UnloadAllPartFiles();
         }
 
@@ -5856,22 +5852,40 @@ void RotateTypeMenu(int value){
 /* ------------------ TitleMenu ------------------------ */
 
 void TitleMenu(int value){
+  if(value == MENU_DUMMY)return;
+  GLUTPOSTREDISPLAY;
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   switch(value){
-  case 0:
-    visTitle = 1 - visTitle;
+  case MENU_TITLE_title_smv_version:
+    vis_title_smv_version =1-vis_title_smv_version;
     break;
-  case 3:
-    visTitle=1;
+  case MENU_TITLE_chid:
+    vis_title_CHID=1-vis_title_CHID;
     break;
-  case 4:
-    visTitle=0;
+  case MENU_TITLE_title_fds:
+    vis_title_fds=1-vis_title_fds;
+    break;
+  case MENU_TITLE_gversion:
+    vis_title_gversion =1-vis_title_gversion;
+    break;
+  case MENU_TITLE_show_all:
+    vis_title_smv_version = 1;
+    vis_title_CHID        = 1;
+    vis_title_fds         = 1;
+    vis_title_gversion    = 1;
+    break;
+  case MENU_TITLE_hide_all:
+    vis_title_smv_version = 0;
+    vis_title_CHID        = 0;
+    vis_title_fds         = 0;
+    vis_title_gversion    = 0;
     break;
   default:
     ASSERT(FFALSE);
     break;
   }
+  SetLabelControls();
 }
 
 /* ------------------ ShowObjectsMenu ------------------------ */
@@ -6187,7 +6201,7 @@ void InitMenus(int unload){
 
 
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
-static int labelmenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
+static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
@@ -7301,6 +7315,21 @@ updatemenu=0;
   glutAddMenuEntry(_("Show all"), GEOM_ShowAll);
   glutAddMenuEntry(_("Hide all"), GEOM_HideAll);
 
+  CREATEMENU(titlemenu, TitleMenu);
+  if(vis_title_smv_version == 1)glutAddMenuEntry(_("*Smokeview version, build data"), MENU_TITLE_title_smv_version);
+  if(vis_title_smv_version == 0)glutAddMenuEntry(_("Smokeview version, build date"), MENU_TITLE_title_smv_version);
+  if(vis_title_gversion== 1)glutAddMenuEntry(_("*FDS, Smokeview version"), MENU_TITLE_gversion);
+  if(vis_title_gversion== 0)glutAddMenuEntry(_("FDS, Smokeview version"), MENU_TITLE_gversion);
+  if(fds_title!=NULL){
+    if(vis_title_fds == 1)glutAddMenuEntry(_("*Input file title"), MENU_TITLE_title_fds);
+    if(vis_title_fds == 0)glutAddMenuEntry(_("Input file title"), MENU_TITLE_title_fds);
+  }
+  if(vis_title_CHID == 1)glutAddMenuEntry(_("*CHID"), MENU_TITLE_chid);
+  if(vis_title_CHID == 0)glutAddMenuEntry(_("CHID"), MENU_TITLE_chid);
+  glutAddMenuEntry("-", MENU_DUMMY);
+  glutAddMenuEntry(_("Show All"), MENU_TITLE_show_all);
+  glutAddMenuEntry(_("Hide All"), MENU_TITLE_hide_all);
+
 /* --------------------------------label menu -------------------------- */
 
   CREATEMENU(labelmenu, LabelMenu);
@@ -7310,8 +7339,8 @@ updatemenu=0;
   if(visColorbarHorizontal == 0)glutAddMenuEntry(_("Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
-  if(visTitle == 1)glutAddMenuEntry(_("*Title"), MENU_LABEL_title);
-  if(visTitle == 0)glutAddMenuEntry(_("Title"), MENU_LABEL_title);
+  GLUTADDSUBMENU(_("Titles"),titlemenu);
+
   glutAddMenuEntry("-", MENU_DUMMY);
 
   if(visaxislabels == 1)glutAddMenuEntry(_("*Axis"), MENU_LABEL_axis);
@@ -7368,10 +7397,6 @@ updatemenu=0;
   if(visTimelabel == 0)glutAddMenuEntry(_("Time"), MENU_LABEL_timelabel);
   if(visUSERticks == 1)glutAddMenuEntry(_("*User settable ticks"), MENU_LABEL_userticks);
   if(visUSERticks == 0)glutAddMenuEntry(_("User settable ticks"), MENU_LABEL_userticks);
-  if(gversion == 1)glutAddMenuEntry(_("*Version info"), MENU_LABEL_gversion);
-  if(gversion == 0)glutAddMenuEntry(_("Version info"), MENU_LABEL_gversion);
-  if(visCHID == 1)glutAddMenuEntry(_("*CHID"), MENU_LABEL_chid);
-  if(visCHID == 0)glutAddMenuEntry(_("CHID"), MENU_LABEL_chid);
 
   glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Show all"), MENU_LABEL_ShowAll);

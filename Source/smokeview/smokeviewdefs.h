@@ -137,9 +137,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define PARTFILE_MAP  0
 #define PARTFILE_REMAP 1
 
-#define PARTFILE_LOADALL -11
+#define PARTFILE_LOADALL   -11
 #define PARTFILE_RELOADALL -12
-#define EVACFILE_LOADALL -11
+#define EVACFILE_LOADALL   -11
+#define EVACFILE_RELOADALL -12
 
 #define FIRST_TIME 1
 #define NOT_FIRST_TIME 2
@@ -848,39 +849,43 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DRAW_OPAQUE 0
 #define DRAW_TRANSPARENT 1
 
-#define VOL_READALL -1
-#define VOL_UNLOAD -2
+#define VOL_READALL  -1
+#define VOL_UNLOAD   -2
 #define VOL_READNONE -3
 
-#define MENU_LABEL_colorbar_vertical 0
-#define MENU_LABEL_colorbar_horizontal 24
-#define MENU_LABEL_timebar 1
-#define MENU_LABEL_title 2
-#define MENU_LABEL_framerate 3
-#define MENU_LABEL_axis 6
-#define MENU_LABEL_textlabels 7
-#define MENU_LABEL_timelabel 8
-#define MENU_LABEL_meshlabel 10
-#define MENU_LABEL_memload 11
-#define MENU_LABEL_memusage 19
-#define MENU_LABEL_fdsticks 12
-#define MENU_LABEL_hmslabel 13
-#define MENU_LABEL_grid 14
-#define MENU_LABEL_sliceaverage 15
-#define MENU_LABEL_firecutoff 17
-#define MENU_LABEL_userticks 18
-#define MENU_LABEL_gversion 20
-#define MENU_LABEL_ShowAll 4
-#define MENU_LABEL_HideAll 5
-#define MENU_LABEL_framelabel 9
-#define MENU_LABEL_hrr 16
-#define MENU_LABEL_northangle 21
-#define MENU_LABEL_chid 22
-#define MENU_LABEL_SETTINGS 23
+#define MENU_LABEL_colorbar_vertical    0
+#define MENU_LABEL_colorbar_horizontal  1
+#define MENU_LABEL_timebar              2
+#define MENU_LABEL_framerate            3
+#define MENU_LABEL_axis                 4
+#define MENU_LABEL_textlabels           5
+#define MENU_LABEL_timelabel            6
+#define MENU_LABEL_meshlabel            7
+#define MENU_LABEL_memload              8
+#define MENU_LABEL_memusage             9
+#define MENU_LABEL_fdsticks            10
+#define MENU_LABEL_hmslabel            11
+#define MENU_LABEL_grid                12
+#define MENU_LABEL_sliceaverage        13
+#define MENU_LABEL_firecutoff          14
+#define MENU_LABEL_userticks           15
+#define MENU_LABEL_ShowAll             16
+#define MENU_LABEL_HideAll             17
+#define MENU_LABEL_framelabel          18
+#define MENU_LABEL_hrr                 19
+#define MENU_LABEL_northangle          20
+#define MENU_LABEL_SETTINGS            21
+
+#define MENU_TITLE_title_smv_version    0
+#define MENU_TITLE_title_fds            1
+#define MENU_TITLE_chid                 2
+#define MENU_TITLE_gversion             3
+#define MENU_TITLE_show_all             4
+#define MENU_TITLE_hide_all             5
 
 #define MENU_TRAINER_smoke 1
-#define MENU_TRAINER_temp 2
-#define MENU_TRAINER_oxy 3
+#define MENU_TRAINER_temp  2
+#define MENU_TRAINER_oxy   3
 
 #define ON 1
 #define OFF 0

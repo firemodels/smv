@@ -114,7 +114,6 @@ GLUI_Checkbox *CHECKBOX_visColorbarHorizontal = NULL;
 GLUI_Checkbox *CHECKBOX_labels_timebar=NULL;
 GLUI_Checkbox *CHECKBOX_labels_ticks=NULL;
 GLUI_Checkbox *CHECKBOX_labels_title=NULL;
-GLUI_Checkbox *CHECKBOX_labels_showonly_buildinfo = NULL;
 GLUI_Checkbox *CHECKBOX_labels_chid=NULL;
 GLUI_Checkbox *CHECKBOX_labels_axis=NULL;
 GLUI_Checkbox *CHECKBOX_labels_hms=NULL;
@@ -141,6 +140,7 @@ GLUI_Checkbox *CHECKBOX_labels_transparent_override=NULL;
 GLUI_Checkbox *CHECKBOX_shownorth = NULL;
 GLUI_Checkbox *CHECKBOX_ticks_inside = NULL;
 GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
+GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
@@ -153,6 +153,7 @@ GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 
+GLUI_Panel *PANEL_titles=NULL;
 GLUI_Panel *PANEL_coloring=NULL;
 GLUI_Panel *PANEL_light=NULL;
 GLUI_Panel *PANEL_position0=NULL;
@@ -634,6 +635,8 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, LabelsCB);
   CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);
+  CHECKBOX_labels_timelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time label"), &visTimelabel, LABELS_label, LabelsCB);
+  CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time bar"), &visTimebar, LABELS_label, LabelsCB);
   CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame label"), &visFramelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
@@ -649,13 +652,13 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_labels = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Text labels"), &visLabels, LABELS_label, LabelsCB);
   CHECKBOX_labels_ticks = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Ticks (FDS)"), &visFDSticks, LABELS_label, LabelsCB);
   CHECKBOX_visUSERticks2 = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Ticks (User)"), &visUSERticks, LABELS_usertick2, LabelsCB);
-  CHECKBOX_labels_timelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time label"), &visTimelabel, LABELS_label, LabelsCB);
-  CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time bar"), &visTimebar, LABELS_label, LabelsCB);
-  CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Title"), &visTitle, LABELS_label, LabelsCB);
-  CHECKBOX_labels_showonly_buildinfo = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Show only build info"), &showonly_buildinfo, LABELS_label, LabelsCB);
-  CHECKBOX_labels_chid = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("CHID"), &visCHID, LABELS_label, LabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Toggle dialogs"), &toggle_dialogs);
-  CHECKBOX_labels_version = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Version info"), &gversion, LABELS_version, LabelsCB);
+
+  PANEL_titles=glui_labels->add_panel_to_panel(PANEL_gen1,"Titles");
+  CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_titles,     _("Smokeview version, build date"), &vis_title_smv_version, LABELS_label,   LabelsCB);
+  CHECKBOX_labels_version = glui_labels->add_checkbox_to_panel(PANEL_titles,   _("FDS, Smokeview version"),        &vis_title_gversion,    LABELS_version, LabelsCB);
+  CHECKBOX_labels_fds_title = glui_labels->add_checkbox_to_panel(PANEL_titles, _("Input file title"),              &vis_title_fds,         LABELS_label,   LabelsCB);
+  CHECKBOX_labels_chid = glui_labels->add_checkbox_to_panel(PANEL_titles,      _("CHID"),                          &vis_title_CHID,        LABELS_label,   LabelsCB);
 
   if(ntickinfo>0){
     CHECKBOX_labels_ticks->enable();
@@ -1334,9 +1337,9 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
   if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(visHRRlabel);
   if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
-  if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(visTitle);
-  if(CHECKBOX_labels_showonly_buildinfo!=NULL)CHECKBOX_labels_showonly_buildinfo->set_int_val(showonly_buildinfo);
-  if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(visCHID);
+  if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(vis_title_smv_version);
+  if(CHECKBOX_labels_fds_title!=NULL)CHECKBOX_labels_fds_title->set_int_val(vis_title_fds);
+  if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(vis_title_CHID);
   if(CHECKBOX_visColorbarVertical!=NULL)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
   if(CHECKBOX_labels_timebar!=NULL)CHECKBOX_labels_timebar->set_int_val(visTimebar);
   if(CHECKBOX_labels_timelabel!=NULL)CHECKBOX_labels_timelabel->set_int_val(visTimelabel);
@@ -1356,7 +1359,7 @@ extern "C" void LabelsCB(int var){
   if(RADIO_fontsize != NULL)RADIO_fontsize->set_int_val(fontindex);
   if(CHECKBOX_labels_hms!=NULL)CHECKBOX_labels_hms->set_int_val(vishmsTimelabel);
   if(CHECKBOX_labels_gridloc!=NULL)CHECKBOX_labels_gridloc->set_int_val(visgridloc);
-  if(CHECKBOX_labels_version!=NULL)CHECKBOX_labels_version->set_int_val(gversion);
+  if(CHECKBOX_labels_version!=NULL)CHECKBOX_labels_version->set_int_val(vis_title_gversion);
   if(CHECKBOX_labels_meshlabel!=NULL)CHECKBOX_labels_meshlabel->set_int_val(visMeshlabel);
   if(CHECKBOX_visUSERticks2!=NULL)CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
 }

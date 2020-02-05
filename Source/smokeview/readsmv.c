@@ -3853,6 +3853,8 @@ int ReadSMV(char *file, char *file2){
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
 
+  FREEMEMORY(fds_title);
+
   FREEMEMORY(geomdiaginfo);
   ngeomdiaginfo = 0;
 
@@ -4235,6 +4237,18 @@ int ReadSMV(char *file, char *file2){
     */
 
 
+    if(Match(buffer, "TITLE")==1){
+      char *fds_title_local, len_title;
+
+      FGETS(buffer, 255, stream);
+      fds_title_local = TrimFrontBack(buffer);
+      if(fds_title_local==NULL)continue;
+      len_title = strlen(fds_title_local);
+      if(len_title==0)continue;
+      NewMemory((void **)&fds_title, len_title+1);
+      strcpy(fds_title, fds_title_local);
+      continue;
+    }
     if(Match(buffer, "SOLID_HT3D")==1){
       FGETS(buffer, 255, stream);
       sscanf(buffer, "%i", &solid_ht3d);
@@ -10009,8 +10023,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GVERSION") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &gversion);
-      ONEORZERO(gversion);
+      sscanf(buffer, "%i", &vis_title_gversion);
+      ONEORZERO(vis_title_gversion);
     }
     if(Match(buffer, "GVECDOWN") == 1){
       fgets(buffer, 255, stream);
@@ -11412,13 +11426,15 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "SHOWTITLE") == 1){
+      int dummy_val;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &visTitle,&showonly_buildinfo);
+      sscanf(buffer, "%i %i %i", &vis_title_smv_version,&dummy_val,&vis_title_fds);
       continue;
     }
     if(Match(buffer, "SHOWCHID") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visCHID);
+      sscanf(buffer, "%i ", &vis_title_CHID);
       continue;
     }
     if(Match(buffer, "SHOWTRANSPARENT") == 1){
@@ -13806,7 +13822,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
   fprintf(fileout, "GVERSION\n");
-  fprintf(fileout, " %i\n", gversion);
+  fprintf(fileout, " %i\n", vis_title_gversion);
   fprintf(fileout, "GVECDOWN\n");
   fprintf(fileout, " %i\n", gvec_down);
   fprintf(fileout, "HISTOGRAM\n");
@@ -13864,6 +13880,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", viscadopaque);
   fprintf(fileout, "SHOWCEILING\n");
   fprintf(fileout, " %i\n", visCeiling);
+  fprintf(fileout, "SHOWCHID\n");
+  fprintf(fileout, " %i\n", vis_title_CHID);
   fprintf(fileout, "SHOWCOLORBARS\n");
   fprintf(fileout, " %i %i\n", visColorbarVertical,visColorbarHorizontal);
   fprintf(fileout, "SHOWCVENTS\n");
@@ -13904,6 +13922,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", visOpenVents, visOpenVentsAsOutline);
   fprintf(fileout, "SHOWOTHERVENTS\n");
   fprintf(fileout, " %i\n", visOtherVents);
+  fprintf(fileout, "SHOWROOMS\n");
+  fprintf(fileout, " %i\n", visCompartments);
   fprintf(fileout, "SHOWSENSORS\n");
   fprintf(fileout, " %i %i\n", visSensor, visSensorNorm);
   fprintf(fileout, "SHOWSLICEINOBST\n");
@@ -13927,23 +13947,19 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTIMELABEL\n");
   fprintf(fileout, " %i\n", visTimelabel);
   fprintf(fileout, "SHOWTITLE\n");
-  fprintf(fileout, " %i %i\n", visTitle, showonly_buildinfo);
-  fprintf(fileout, "SHOWCHID\n");
-  fprintf(fileout, " %i\n", visCHID);
+  fprintf(fileout, " %i %i %i\n", vis_title_smv_version, 0, vis_title_fds);
   fprintf(fileout, "SHOWTRACERSALWAYS\n");
   fprintf(fileout, " %i\n", show_tracers_always);
-  fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
+  fprintf(fileout, "SHOWTRIANGLES\n");
+  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");
   fprintf(fileout, " %i\n", show_transparent_vents);
   fprintf(fileout, "SHOWTRIANGLECOUNT\n");
   fprintf(fileout, " %i\n", show_triangle_count);
   fprintf(fileout, "SHOWVENTFLOW\n");
   fprintf(fileout, " %i %i %i %i %i\n", visVentHFlow, visventslab, visventprofile, visVentVFlow, visVentMFlow);
-  fprintf(fileout, "SHOWROOMS\n");
-  fprintf(fileout, " %i\n", visCompartments);
   fprintf(fileout, "SHOWTARGETS\n");
   fprintf(fileout, " %i \n", vis_target_data);
   fprintf(fileout, "SHOWVENTS\n");

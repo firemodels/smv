@@ -15,8 +15,17 @@ IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
     echo "*** Error: Intel IFORT_COMPILER environment variable not defined."
   )
   IF DEFINED IFORT_COMPILER (
-    echo Setting up Fortran compiler environment
-    call "%IFORT_COMPILER%\bin\ifortvars" intel64
+    if exist "%IFORT_COMPILER%\bin\ifortvars.bat" (
+      echo Setting up Fortran compiler environment
+      call "%IFORT_COMPILER%\bin\ifortvars" intel64
+    )
+    if not exist "%IFORT_COMPILER%\bin\ifortvars.bat" (
+      echo.
+      echo ***warning: compiler setup script,
+      echo    "%IFORT_COMPILER%\bin\ifortvars.bat",
+      echo    does not exist
+      echo.
+    )
   )
 
   IF DEFINED ICPP_COMPILER14 set ICPP_COMPILER=%ICPP_COMPILER14%
@@ -27,8 +36,17 @@ IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
   IF DEFINED ICPP_COMPILER19 set ICPP_COMPILER=%ICPP_COMPILER19%
 
   IF DEFINED ICPP_COMPILER (
-    echo Setting up C/C++ compiler environment
-    call "%ICPP_COMPILER%\bin\iclvars" intel64
+    if exist "%ICPP_COMPILER%\bin\iclvars.bat" (
+      echo Setting up C/C++ compiler environment
+      call "%ICPP_COMPILER%\bin\iclvars" intel64
+    )
+    if not exist "%ICPP_COMPILER%\bin\iclvars.bat" (
+      echo.
+      echo ***warning compiler setup script,
+      echo    "%ICPP_COMPILER%\bin\iclvars.bat",
+      echo    does not exist
+      echo.
+    )
   )
 
   IF NOT DEFINED I_MPI_ROOT (

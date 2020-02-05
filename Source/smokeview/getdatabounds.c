@@ -288,7 +288,7 @@ void MergeAllPartBounds(void){
         propi = part5propinfo+i;
         valmin = propi->global_min;
         valmax = propi->global_max;
-        fprintf(stream, "%f %f\n", valmin, valmax);
+        fprintf(stream, "%g %g\n", valmin, valmax);
       }
       fclose(stream);
     }

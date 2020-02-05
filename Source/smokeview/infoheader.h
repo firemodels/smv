@@ -13,6 +13,7 @@ typedef struct {
   // special allowance for hardcoded entries, it is necessary for these
   // to be separate as they need to be controlled differently
   char titleline[MAX_TITLE_LINE_LENGTH];
+  char fdstitleline[MAX_TITLE_LINE_LENGTH];
   char smvbuildline[MAX_TITLE_LINE_LENGTH];
   char fdsbuildline[MAX_TITLE_LINE_LENGTH];
   char chidline[MAX_TITLE_LINE_LENGTH];
@@ -22,7 +23,7 @@ EXTERNCPP int addTitleLine(titledata *titleinfo_ptr, const char *string);
 EXTERNCPP int clearTitleLines(titledata *titleinfo_ptr);
 EXTERNCPP int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
-                         char *fds_githash_string, char *chidfilebase_string);
+                         char *fds_githash_string, char *chidfilebase_string, char *fds_title_arg);
 EXTERNCPP int renderInfoHeader(titledata *titleinfo);
 
 SVEXTERN titledata titleinfo;
