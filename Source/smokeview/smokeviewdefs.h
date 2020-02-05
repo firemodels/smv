@@ -137,9 +137,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define PARTFILE_MAP  0
 #define PARTFILE_REMAP 1
 
-#define PARTFILE_LOADALL -11
+#define PARTFILE_LOADALL   -11
 #define PARTFILE_RELOADALL -12
-#define EVACFILE_LOADALL -11
+#define EVACFILE_LOADALL   -11
+#define EVACFILE_RELOADALL -12
 
 #define FIRST_TIME 1
 #define NOT_FIRST_TIME 2

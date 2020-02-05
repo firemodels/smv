@@ -3736,7 +3736,8 @@ void LoadParticleEvacMenu(int value, int option){
 
         // unload particle files
 
-        if(value!=PARTFILE_RELOADALL){
+
+        if(value!=PARTFILE_RELOADALL&&value!=EVACFILE_RELOADALL){
           UnloadAllPartFiles();
         }
 

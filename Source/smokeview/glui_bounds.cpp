@@ -3282,7 +3282,7 @@ void PartBoundCB(int var){
      if(EDIT_part_min!=NULL&&setpartmin==SET_MIN)PartBoundCB(SETVALMIN);
      if(EDIT_part_max!=NULL&&setpartmax==SET_MAX)PartBoundCB(SETVALMAX);
      LoadParticleMenu(PARTFILE_RELOADALL);
-     LoadEvacMenu(EVACFILE_LOADALL);
+     LoadEvacMenu(EVACFILE_RELOADALL);
      UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }
