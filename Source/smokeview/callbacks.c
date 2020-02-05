@@ -1901,16 +1901,9 @@ void Keyboard(unsigned char key, int flag){
       if(visTimebar==0)PRINTF("Time bar hidden\n");
       if(visTimebar==1)PRINTF("Time bar visible\n");
       break;
-#ifdef _DEBUG
     case 'l':
-      if(nsmoke3dinfo>0){
-        smokecullflag=1-smokecullflag;
-        PRINTF("smokecullflag=%i\n",smokecullflag);
-        UpdateSmoke3dFlags();
-        return;
-      }
+      LoadUnloadMenu(RELOADALL);
       break;
-#endif
     case 'L':
       UnloadSliceMenu(UNLOAD_LAST);
       break;
