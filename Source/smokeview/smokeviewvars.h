@@ -33,6 +33,12 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN char SVDECL(*fds_title, NULL);
+SVEXTERN int SVDECL(vis_title_gversion,0);
+SVEXTERN int SVDECL(vis_title_smv_version, 1);
+SVEXTERN int SVDECL(vis_title_fds, 0);
+SVEXTERN int SVDECL(vis_title_CHID,0);
+
 #ifdef pp_SHIFT_COLORBARS
 SVEXTERN float SVDECL(colorbar_shift, 1.0);
 #endif
@@ -518,7 +524,6 @@ SVEXTERN int SVDECL(show_all_units,1);
 SVEXTERN int SVDECL(show_all_units,0);
 #endif
 SVEXTERN int SVDECL(circle_outline,0);
-SVEXTERN int SVDECL(gversion,0);
 SVEXTERN unsigned char SVDECL(*patchmin_unit,NULL),SVDECL(*patchmax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*slicemin_unit,NULL),SVDECL(*slicemax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*plot3dmin_unit,NULL),SVDECL(*plot3dmax_unit,NULL);
@@ -1200,8 +1205,7 @@ SVEXTERN int SVDECL(visColorbarVertical,1), SVDECL(visColorbarVertical_save,1);
 SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbarHorizontal_val;
 
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
-SVEXTERN int SVDECL(visTitle, 1), SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0), SVDECL(showonly_buildinfo, 0);
-SVEXTERN int SVDECL(visCHID,0);
+SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(visHRRlabel,0);
 #ifdef pp_memstatus

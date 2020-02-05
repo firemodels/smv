@@ -204,43 +204,42 @@ void GetViewportInfo(void){
   // set the correct dimensions for the view point based on the list of strings
   // we want to print and the spacing information
   // only do this if title is set
-  if(visTitle==1){
-    // add the margins
-    VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
-    // count the lines first, then add space after
-    int nlinestotal = 0;
-    // first add the space for the hard coded lines if necessary
-    if(visTitle==1){
-      nlinestotal++;
-    }
-    if(gversion==1){
-      nlinestotal++;
-    }
-    if(gversion==1&&(strlen(titleinfo.fdsbuildline)>0)){
-      nlinestotal++;
-    }
-    if(visCHID==1){
-      nlinestotal++;
-    }
-    nlinestotal += titleinfo.nlines;
-    if(nlinestotal==0){
-      // if there is no information to be displayed, set everything to zero
-      VP_title.width = 0;
-      VP_title.height = 0;
-      VP_title.doit = 0;
-    } else{
-      // add the space for each line
-      // one fewer spacings are needed as they only go between each line
-      VP_title.height += nlinestotal*titleinfo.text_height +
-                         (nlinestotal-1)*titleinfo.line_space;
-      VP_title.doit = 1;
-      VP_title.width = screenWidth-VP_vcolorbar.width-2*titlesafe_offset;
-    }
 
-  } else{
+
+  // add the margins
+  VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
+  // count the lines first, then add space after
+  int nlinestotal = 0;
+  // first add the space for the hard coded lines if necessary
+  if(vis_title_smv_version==1){
+    nlinestotal++;
+  }
+  if(vis_title_gversion==1){
+    nlinestotal++;
+  }
+  if(vis_title_gversion==1&&(strlen(titleinfo.fdsbuildline)>0)){
+    nlinestotal++;
+  }
+  if(vis_title_CHID==1){
+    nlinestotal++;
+  }
+  if(vis_title_fds==1){
+    nlinestotal++;
+  }
+  nlinestotal += titleinfo.nlines;
+  if(nlinestotal==0){
+    // if there is no information to be displayed, set everything to zero
     VP_title.width = 0;
     VP_title.height = 0;
     VP_title.doit = 0;
+  }
+  else{
+    // add the space for each line
+    // one fewer spacings are needed as they only go between each line
+    VP_title.height += nlinestotal*titleinfo.text_height +
+                       (nlinestotal-1)*titleinfo.line_space;
+    VP_title.doit = 1;
+    VP_title.width = screenWidth-VP_vcolorbar.width-2*titlesafe_offset;
   }
 
   VP_title.text_height = text_height;

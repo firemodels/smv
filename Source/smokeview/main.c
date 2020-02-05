@@ -580,7 +580,7 @@ void ParseCommandline(int argc, char **argv){
       use_iblank = 1;
     }
     else if(strncmp(argv[i], "-gversion", 9) == 0){
-      gversion = 1;
+      vis_title_gversion = 1;
     }
     else if(
       strncmp(argv[i], "-volrender", 10) != 0 && (strncmp(argv[i], "-version", 8) == 0 || strncmp(argv[i], "-v", 2) == 0)

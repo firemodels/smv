@@ -286,8 +286,7 @@ int SetupCase(int argc, char **argv){
     ShowGluiAlert();
   }
   // initialize info header
-  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
-                       chidfilebase);
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
   return 0;
 }
 
