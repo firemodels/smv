@@ -1418,6 +1418,134 @@ void ScriptCB(int var){
   }
 }
 
+/* ------------------ SliceBoundMenu ------------------------ */
+#ifdef pp_NEWBOUND_DIALOG
+void SliceBoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
+  GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
+  GLUI_RadioGroup **RADIO_con_setmin, GLUI_RadioGroup **RADIO_con_setmax,
+  GLUI_RadioButton **RADIO_CON_setmin_percentile, GLUI_RadioButton **RADIO_CON_setmax_percentile,
+  GLUI_Checkbox **CHECKBOX_con_setchopmin, GLUI_Checkbox **CHECKBOX_con_setchopmax,
+  GLUI_EditText **EDIT_con_chopmin, GLUI_EditText **EDIT_con_chopmax,
+  GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
+  GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
+  GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_reload,
+  GLUI_Panel **PANEL_bound,
+
+  int *setminval, int *setmaxval,
+  float *minval, float *maxval,
+  int *setchopminval, int *setchopmaxval,
+  float *chopminval, float *chopmaxval,
+  int updatebounds,
+  int truncatebounds,
+  GLUI_Update_CB FILE_CB,
+
+  GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
+
+  GLUI_RadioButton *percentile_min, *percentile_max;
+  GLUI_Panel *PANEL_a, *PANEL_b, *PANEL_c;
+  GLUI_Rollout *PANEL_e = NULL, *PANEL_g = NULL;
+  GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
+
+  PANEL_g = glui_bounds->add_rollout_to_panel(PANEL_panel, _("Bound data"), false, 0, PROC_CB);
+  if(PANEL_bound!=NULL)*PANEL_bound = PANEL_g;
+  INSERT_ROLLOUT(PANEL_g, glui_bounds);
+  if(bound_rollout!=NULL){
+    *bound_rollout = PANEL_g;
+    ADDPROCINFO(procinfo, *nprocinfo, PANEL_g, 0, glui_bounds);
+  }
+
+  PANEL_a = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+
+  *EDIT_con_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, minval, VALMIN, FILE_CB);
+  if(*setminval==0){
+    (*EDIT_con_min)->disable();
+  }
+  glui_bounds->add_column_to_panel(PANEL_a, false);
+
+  if(STATIC_con_min_unit!=NULL){
+    *STATIC_con_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
+    glui_bounds->add_column_to_panel(PANEL_a, false);
+    (*STATIC_con_min_unit)->set_w(10);
+  }
+
+  *RADIO_con_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_a, setminval, SETVALMIN, FILE_CB);
+  percentile_min = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("percentile min"));
+  if(RADIO_CON_setmin_percentile!=NULL)*RADIO_CON_setmin_percentile = percentile_min;
+  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("set min"));
+  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("global min"));
+
+  PANEL_b = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+
+  *EDIT_con_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, maxval, VALMAX, FILE_CB);
+  if(*setminval==0){
+    (*EDIT_con_max)->disable();
+  }
+  glui_bounds->add_column_to_panel(PANEL_b, false);
+
+  if(STATIC_con_max_unit!=NULL){
+    *STATIC_con_max_unit = glui_bounds->add_statictext_to_panel(PANEL_b, "yy");
+    glui_bounds->add_column_to_panel(PANEL_b, false);
+    (*STATIC_con_max_unit)->set_w(10);
+  }
+
+  *RADIO_con_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_b, setmaxval, SETVALMAX, FILE_CB);
+  percentile_max = glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("percentile max"));
+  if(RADIO_CON_setmax_percentile!=NULL)*RADIO_CON_setmax_percentile = percentile_max;
+  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("set max"));
+  glui_bounds->add_radiobutton_to_group(*RADIO_con_setmax, _("global max"));
+
+  PANEL_c = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+
+  if(updatebounds==UPDATE_BOUNDS){
+    glui_bounds->add_button_to_panel(PANEL_c, _("Update"), FILEUPDATE, FILE_CB);
+  }
+  else if(updatebounds==RELOAD_BOUNDS){
+    glui_bounds->add_button_to_panel(PANEL_c, button_title, FILERELOAD, FILE_CB);
+  }
+  else{
+    BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_c, _("Update using cached data"), FILEUPDATEDATA, FILE_CB);
+    BUTTON_reloadbound = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILERELOAD, FILE_CB);
+  }
+
+  if(EDIT_con_chopmin!=NULL&&EDIT_con_chopmax!=NULL&&CHECKBOX_con_setchopmin!=NULL&&CHECKBOX_con_setchopmax!=NULL){
+    PANEL_e = glui_bounds->add_rollout_to_panel(PANEL_panel, _("Truncate data"), false, 1, PROC_CB);
+    INSERT_ROLLOUT(PANEL_e, glui_bounds);
+    if(chop_rollout!=NULL){
+      *chop_rollout = PANEL_e;
+      ADDPROCINFO(procinfo, *nprocinfo, PANEL_e, 1, glui_bounds);
+    }
+
+    PANEL_f = glui_bounds->add_panel_to_panel(PANEL_e, "", GLUI_PANEL_NONE);
+
+    *EDIT_con_chopmin = glui_bounds->add_edittext_to_panel(PANEL_f, "", GLUI_EDITTEXT_FLOAT, chopminval, CHOPVALMIN, FILE_CB);
+    glui_bounds->add_column_to_panel(PANEL_f, false);
+
+    if(STATIC_con_cmin_unit!=NULL){
+      *STATIC_con_cmin_unit = glui_bounds->add_statictext_to_panel(PANEL_f, "xx");
+      (*STATIC_con_cmin_unit)->set_w(10);
+      glui_bounds->add_column_to_panel(PANEL_f, false);
+    }
+    *CHECKBOX_con_setchopmin = glui_bounds->add_checkbox_to_panel(PANEL_f, _("Below"), setchopminval, SETCHOPMINVAL, FILE_CB);
+
+    PANEL_h = glui_bounds->add_panel_to_panel(PANEL_e, "", GLUI_PANEL_NONE);
+
+    *EDIT_con_chopmax = glui_bounds->add_edittext_to_panel(PANEL_h, "", GLUI_EDITTEXT_FLOAT, chopmaxval, CHOPVALMAX, FILE_CB);
+    glui_bounds->add_column_to_panel(PANEL_h, false);
+
+    if(STATIC_con_cmax_unit!=NULL){
+      *STATIC_con_cmax_unit = glui_bounds->add_statictext_to_panel(PANEL_h, "xx");
+      glui_bounds->add_column_to_panel(PANEL_h, false);
+      (*STATIC_con_cmax_unit)->set_w(10);
+    }
+    *CHECKBOX_con_setchopmax = glui_bounds->add_checkbox_to_panel(PANEL_h, _("Above"), setchopmaxval, SETCHOPMAXVAL, FILE_CB);
+
+    if(truncatebounds==TRUNCATE_BOUNDS){
+      glui_bounds->add_button_to_panel(PANEL_e, _("Update"), CHOPUPDATE, FILE_CB);
+    }
+  }
+}
+#endif
+
 /* ------------------ BoundMenu ------------------------ */
 
 void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
@@ -2235,6 +2363,23 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
 
+#ifdef pp_NEWBOUND_DIALOG
+    SliceBoundMenu(&ROLLOUT_slice_bound, &ROLLOUT_slice_chop, ROLLOUT_slice, "Reload Slice File(s)",
+      &EDIT_slice_min, &EDIT_slice_max, &RADIO_slice_setmin, &RADIO_slice_setmax, NULL, NULL,
+      &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
+      &EDIT_slice_chopmin, &EDIT_slice_chopmax,
+      &STATIC_slice_min_unit, &STATIC_slice_max_unit,
+      &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
+      NULL, NULL,
+      &PANEL_slice_bound,
+      &setslicemin, &setslicemax, &slicemin, &slicemax,
+      &setslicechopmin, &setslicechopmax,
+      &slicechopmin, &slicechopmax,
+      UPDATE_BOUNDS, DONT_TRUNCATE_BOUNDS,
+      SliceBoundCB,
+      SliceRolloutCB, sliceprocinfo, &nsliceprocinfo
+    );
+#else
     BoundMenu(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
       &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
@@ -2249,7 +2394,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       UPDATE_BOUNDS,DONT_TRUNCATE_BOUNDS,
       SliceBoundCB,
       SliceRolloutCB, sliceprocinfo, &nsliceprocinfo
-  );
+    );
+#endif
 
     ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slice_histogram, glui_bounds);
