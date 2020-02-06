@@ -1066,8 +1066,10 @@ SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
+#ifndef pp_NEWBOUND_DIALOG
 SVEXTERN int SVDECL(setslicemin,GLOBAL_MIN), SVDECL(setslicemax,GLOBAL_MAX);
 SVEXTERN int SVDECL(setslicemin_save,GLOBAL_MIN), SVDECL(setslicemax_save,GLOBAL_MAX);
+#endif
 SVEXTERN int SVDECL(setpatchmin_save, PERCENTILE_MIN), SVDECL(setpatchmax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setpartmin_save, PERCENTILE_MIN), SVDECL(setpartmax_save, PERCENTILE_MAX);
 

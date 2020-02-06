@@ -3546,8 +3546,10 @@ void SetSliceBounds(int slicetype){
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
     slicemin=slicebounds[slicetype].valmin;
     slicemax=slicebounds[slicetype].valmax;
+#ifndef pp_NEWBOUND_DIALOG
     setslicemin=slicebounds[slicetype].setvalmin;
     setslicemax=slicebounds[slicetype].setvalmax;
+#endif
     slicechopmin=slicebounds[slicetype].chopmin;
     slicechopmax=slicebounds[slicetype].chopmax;
     setslicechopmin=slicebounds[slicetype].setchopmin;
@@ -3658,6 +3660,15 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   FREEMEMORY(slice_mask0);
 }
 
+/* ------------------ AdjustBoundsNoSet ------------------------ */
+#ifdef pp_NEWBOUND_DIALOG
+void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax){
+  if(axislabels_smooth==1){
+    SmoothLabel(pmin, pmax, nrgb);
+  }
+}
+#endif
+
 /* ------------------ AdjustBounds ------------------------ */
 
 void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax){
@@ -3733,7 +3744,11 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     pdata = sd->qslicedata;
     ndata = sd->nslicetotal;
   }
+#ifdef pp_NEWBOUND_DIALOG
+  AdjustBoundsNoSet(pdata, ndata, pmin, pmax);
+#else
   AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
+#endif
 }
 
   /* ------------------ AverageSliceData ------------------------ */

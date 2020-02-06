@@ -75,6 +75,9 @@ EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
+#ifdef pp_NEWBOUND_DIALOG
+EXTERNCPP void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax);
+#endif
 EXTERNCPP void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);

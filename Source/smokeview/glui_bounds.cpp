@@ -1430,7 +1430,7 @@ void SliceBoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, G
   GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
   GLUI_Panel **PANEL_bound,
 
-  int *setminval, int *setmaxval, float *minval, float *maxval, int *setchopminval, int *setchopmaxval, float *chopminval, float *chopmaxval,
+  float *minval, float *maxval, int *setchopminval, int *setchopmaxval, float *chopminval, float *chopmaxval,
   GLUI_Update_CB FILE_CB, GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
 
   GLUI_RadioButton *percentile_min, *percentile_max;
@@ -2334,7 +2334,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_slice_min_unit, &STATIC_slice_max_unit,
       &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
       &PANEL_slice_bound,
-      &setslicemin, &setslicemax, &slicemin, &slicemax,
+      &slicemin, &slicemax,
       &setslicechopmin, &setslicechopmax,
       &slicechopmin, &slicechopmax,
       SliceBoundCB, SliceRolloutCB, sliceprocinfo, &nsliceprocinfo
@@ -3401,20 +3401,31 @@ void PartBoundCB(int var){
 
 /* ------------------ UpdateZoneTempBounds ------------------------ */
 
+#ifdef pp_NEWBOUND_DIALOG
+void UpdateZoneTempBounds(float valmin, float valmax){
+#else
 void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
+#endif
   int slice_index;
 
   if(nzoneinfo>0&&RADIO_slice!=NULL){
     slice_index = RADIO_slice->get_int_val();
     if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+#ifdef pp_NEWBOUND_DIALOG
+      setzonemin = SET_MIN;
+      setzonemax = SET_MAX;
+#else
       setzonemin = setvalmin;
       setzonemax = setvalmax;
+#endif
       zonemin = valmin;
       zonemax = valmax;
       if(EDIT_zone_min!=NULL)EDIT_zone_min->set_float_val(valmin);
       if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(valmax);
+#ifndef pp_NEWBOUND_DIALOG
       if(RADIO_zone_setmin!=NULL)RADIO_zone_setmin->set_int_val(setvalmin);
       if(RADIO_zone_setmax!=NULL)RADIO_zone_setmax->set_int_val(setvalmax);
+#endif
       SliceBoundCB(FILEUPDATE);
     }
   }
@@ -3455,6 +3466,22 @@ void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float val
 
 /* ------------------ SetSliceMin ------------------------ */
 
+#ifdef pp_NEWBOUND_DIALOG
+void SetSliceMin(float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
+  if(slicebounds==NULL)return;
+  slicebounds[list_slice_index].valmin = slicemin_local;
+  slicebounds[list_slice_index].setchopmin = setslicechopmin_local;
+  slicebounds[list_slice_index].chopmin = slicechopmin_local;
+}
+/* ------------------ SetSliceMax ------------------------ */
+
+void SetSliceMax(float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
+  if(slicebounds==NULL)return;
+  slicebounds[list_slice_index].valmax = slicemax_local;
+  slicebounds[list_slice_index].setchopmax = setslicechopmax_local;
+  slicebounds[list_slice_index].chopmax = slicechopmax_local;
+}
+#else
 void SetSliceMin(int setslicemin_local, float slicemin_local, int setslicechopmin_local, float slicechopmin_local){
   if(slicebounds == NULL)return;
   slicebounds[list_slice_index].setvalmin = setslicemin_local;
@@ -3462,16 +3489,16 @@ void SetSliceMin(int setslicemin_local, float slicemin_local, int setslicechopmi
   slicebounds[list_slice_index].setchopmin = setslicechopmin_local;
   slicebounds[list_slice_index].chopmin = slicechopmin_local;
 }
-
 /* ------------------ SetSliceMax ------------------------ */
 
 void SetSliceMax(int setslicemax_local, float slicemax_local, int setslicechopmax_local, float slicechopmax_local){
-  if(slicebounds == NULL)return;
+  if(slicebounds==NULL)return;
   slicebounds[list_slice_index].setvalmax = setslicemax_local;
   slicebounds[list_slice_index].valmax = slicemax_local;
   slicebounds[list_slice_index].setchopmax = setslicechopmax_local;
   slicebounds[list_slice_index].chopmax = slicechopmax_local;
 }
+#endif
 
 /* ------------------ SliceBoundCB ------------------------ */
 
@@ -3603,14 +3630,22 @@ extern "C" void SliceBoundCB(int var){
         // slice files
 
         if(nsliceloaded > 0){
+#ifndef pp_NEWBOUND_DIALOG
           setslicemin_save = setslicemin;
+#endif
           slicemin_save = slicemin;
+#ifndef pp_NEWBOUND_DIALOG
           setslicemin = GLOBAL_MIN;
+#endif
           SliceBoundCB(SETVALMIN);
 
+#ifndef pp_NEWBOUND_DIALOG
           setslicemax_save = setslicemax;
+#endif
           slicemax_save = slicemax;
+#ifndef pp_NEWBOUND_DIALOG
           setslicemax = GLOBAL_MAX;
+#endif
           SliceBoundCB(SETVALMAX);
         }
 
@@ -3802,7 +3837,11 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMin(slicemin,setslicechopmin,slicechopmin);
+#else
+    SetSliceMin(setslicemin, slicemin, setslicechopmin, slicechopmin);
+#endif
     switch(setslicechopmin){
       case DISABLE:
         EDIT_slice_chopmin->disable();
@@ -3817,7 +3856,11 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
-    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMax(slicemax,setslicechopmax,slicechopmax);
+#else
+    SetSliceMax(setslicemax, slicemax, setslicechopmax, slicechopmax);
+#endif
     switch(setslicechopmax){
       case DISABLE:
       EDIT_slice_chopmax->disable();
@@ -3832,15 +3875,24 @@ extern "C" void SliceBoundCB(int var){
     break;
   case CHOPVALMIN:
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMin(slicemin,setslicechopmin,slicechopmin);
+#else
+    SetSliceMin(setslicemin, slicemin, setslicechopmin, slicechopmin);
+#endif
     UpdateChopColors();
     break;
   case CHOPVALMAX:
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMax(slicemax, setslicechopmax, slicechopmax);
+#else
     SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+#endif
     UpdateChopColors();
     break;
   case SETVALMIN:
+#ifndef pp_NEWBOUND_DIALOG
     switch(setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
@@ -3855,13 +3907,18 @@ extern "C" void SliceBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
-#ifndef pp_NEWBOUND_DIALOG
     if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(setslicemin);
 #endif
-    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMin(slicemin,setslicechopmin,slicechopmin);
+    UpdateZoneTempBounds(slicemin, slicemax);
+#else
+    SetSliceMin(setslicemin, slicemin, setslicechopmin, slicechopmin);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
+#endif
     break;
   case SETVALMAX:
+#ifndef pp_NEWBOUND_DIALOG
     switch(setslicemax){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:
@@ -3876,31 +3933,53 @@ extern "C" void SliceBoundCB(int var){
         ASSERT(FFALSE);
         break;
     }
-#ifndef pp_NEWBOUND_DIALOG
     if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(setslicemax);
 #endif
-    SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMax(slicemax,setslicechopmax,slicechopmax);
+    UpdateZoneTempBounds(slicemin, slicemax);
+#else
+    SetSliceMax(setslicemax, slicemax, setslicechopmax, slicechopmax);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
+#endif
     break;
   case VALMIN:
+#ifdef pp_NEWBOUND_DIALOG
+    if(is_fed_colorbar==1&&ABS(slicemin)>0.001){
+#else
     if(is_fed_colorbar==1&&setslicemin==1&&ABS(slicemin)>0.001){
+#endif
       printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       slicemin = 0.0;
     }
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(slicemin);
-    SetSliceMin(setslicemin,slicemin,setslicechopmin,slicechopmin);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMin(slicemin,setslicechopmin,slicechopmin);
+    UpdateZoneTempBounds(slicemin, slicemax);
+#else
+    SetSliceMin(setslicemin, slicemin, setslicechopmin, slicechopmin);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
+#endif
     break;
   case VALMAX:
+#ifdef pp_NEWBOUND_DIALOG
+    if(is_fed_colorbar==1&&ABS(slicemax-3.0)>0.001){
+#else
     if(is_fed_colorbar==1&&setslicemax==1&&ABS(slicemax-3.0)>0.001){
+#endif
       printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       slicemax = 3.0;
     }
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(slicemax);
+#ifdef pp_NEWBOUND_DIALOG
+    SetSliceMax(slicemax, setslicechopmax, slicechopmax);
+    UpdateZoneTempBounds(slicemin, slicemax);
+#else
     SetSliceMax(setslicemax,slicemax,setslicechopmax,slicechopmax);
     UpdateZoneTempBounds(setslicemin, slicemin, setslicemax, slicemax);
+#endif
     break;
   case FILETYPEINDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){
@@ -3964,6 +4043,7 @@ extern "C" void SliceBoundCB(int var){
         if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
       }
     }
+#ifndef pp_NEWBOUND_DIALOG
     switch(setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
@@ -3988,6 +4068,7 @@ extern "C" void SliceBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
+#endif
     break;
   case FILEUPDATE:
     slice_fileupdate++;
