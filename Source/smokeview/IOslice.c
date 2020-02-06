@@ -4704,7 +4704,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     UpdateTimes();
     CheckMemory;
 
-    if(flag!=RESETBOUNDS)update_research_mode=1;
+    //*** comment out following line to prevent crash when loading a slice when particles are loaded
+    //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         UpdateSliceBounds();
