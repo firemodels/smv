@@ -2197,6 +2197,7 @@ void UpdateBoundInfo(void){
       sbi->line_contour_min=0.0;
       sbi->line_contour_max=1.0;
       sbi->line_contour_num=1;
+      sbi->label = &(slicei->label);
       nslicebounds++;
       for(n=0;n<i;n++){
         slicedata *slicen;
@@ -2247,6 +2248,9 @@ void UpdateBoundInfo(void){
     }
   }
   UpdateChar();
+#ifdef pp_NEWBOUND_DIALOG
+  GetGlobalSliceBounds();
+#endif
 }
 
 /* ------------------ UpdateEndianInfo ------------------------ */

@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_NEWBOUND_DIALOG
+void GetGlobalSliceBounds(void);
+#endif
 #ifdef pp_SHIFT_COLORBARS
 EXTERNCPP void ShiftColorbars(void);
 #endif

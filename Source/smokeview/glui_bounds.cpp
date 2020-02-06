@@ -3433,11 +3433,19 @@ void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valm
 
 /* ------------------ UpdateSliceTempBounds ------------------------ */
 
+#ifdef pp_NEWBOUND_DIALOG
+void UpdateSliceTempBounds(float valmin, float valmax){
+#else
 void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
+#endif
   int temp_index;
 
   if(slicebounds_temp==NULL||RADIO_slice==NULL)return;
   temp_index = slicebounds_temp-slicebounds;
+#ifdef pp_NEWBOUND_DIALOG
+    slicebounds_temp->valmin = valmin;
+    slicebounds_temp->valmax = valmax;
+#else
   if(setvalmin==SET_MIN){
     slicebounds_temp->valmin = valmin;
   }
@@ -3452,6 +3460,7 @@ void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float val
   }
   slicebounds_temp->setvalmin = setvalmin;
   slicebounds_temp->setvalmax = setvalmax;
+#endif
 
   if(RADIO_slice==NULL)return;
   RADIO_slice->set_int_val(temp_index);
@@ -3570,7 +3579,11 @@ extern "C" void SliceBoundCB(int var){
       if(have_zoneuw==1)GetZoneColors(zoneuw, nzonetotal, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
       if(have_zonecl==1)GetZoneColors(zonecl, nzonetotal, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
       if(have_target_data==1)GetZoneColors(zonetargets, nzonetotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+#ifdef pp_NEWBOUND_DIALOG
+      UpdateSliceTempBounds(zonemin, zonemax);
+#else
       UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
+#endif
       zoneusermin=zonemin;
       zoneusermax=zonemax;
       break;
@@ -3599,7 +3612,11 @@ extern "C" void SliceBoundCB(int var){
       }
       GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+#ifdef pp_NEWBOUND_DIALOG
+      UpdateSliceTempBounds(zonemin, zonemax);
+#else
       UpdateSliceTempBounds(setzonemin, zonemin, setzonemax, zonemax);
+#endif
       break;
     case COLORBAR_LIST2:
       if(selectedcolorbar_index2 == bw_colorbar_index){
