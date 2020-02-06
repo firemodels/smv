@@ -1433,7 +1433,6 @@ void SliceBoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, G
   float *minval, float *maxval, int *setchopminval, int *setchopmaxval, float *chopminval, float *chopmaxval,
   GLUI_Update_CB FILE_CB, GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
 
-  GLUI_RadioButton *percentile_min, *percentile_max;
   GLUI_Panel *PANEL_a, *PANEL_b, *PANEL_c;
   GLUI_Rollout *PANEL_e = NULL, *PANEL_g = NULL;
   GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
