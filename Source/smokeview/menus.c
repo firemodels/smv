@@ -4780,7 +4780,7 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
       slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
-    if(slicei->skipdup== 0 && slicei->loaded == 0){
+    if(slicei->skipdup== 0){
       float load_sizei;
 
       load_sizei=LoadSlicei(set_slicecolor,mslicei->islices[i]);
@@ -4902,7 +4902,7 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        if(slicei->skipdup== 0 && slicei->loaded == 0){
+        if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];
           break;
         }
