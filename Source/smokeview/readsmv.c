@@ -2146,8 +2146,8 @@ void UpdateBoundInfo(void){
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].setvalmin=0;
       isobounds[niso_bounds].setvalmax=0;
-      isobounds[niso_bounds].valmin=1.0;
-      isobounds[niso_bounds].valmax=0.0;
+      isobounds[niso_bounds].dlg_valmin=1.0;
+      isobounds[niso_bounds].dlg_valmax=0.0;
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;
@@ -2188,8 +2188,8 @@ void UpdateBoundInfo(void){
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
       sbi->setvalmin=0;
       sbi->setvalmax=0;
-      sbi->valmin=1.0;
-      sbi->valmax=0.0;
+      sbi->dlg_valmin=1.0;
+      sbi->dlg_valmax=0.0;
       sbi->chopmax=0.0;
       sbi->chopmin=1.0;
       sbi->setchopmax=0;
@@ -2210,6 +2210,14 @@ void UpdateBoundInfo(void){
         }
       }
     }
+#ifdef pp_NEWBOUND_DIALOG
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      slicei->bounds = GetBoundsInfo(slicei->label.shortlabel);
+    }
+#endif
   }
 
   canshow_threshold=0;
@@ -8528,6 +8536,9 @@ typedef struct {
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
+#ifdef pp_NEWBOUND_DIALOG
+      sd->bounds = NULL;
+#endif
 #ifdef pp_FILE_SIZES
       sd->file_size = 0;
 #endif
@@ -10861,8 +10872,8 @@ int ReadIni2(char *inifile, int localfile){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
             slicebounds[i].setvalmin = setvalmin;
             slicebounds[i].setvalmax = setvalmax;
-            slicebounds[i].valmin = valmin;
-            slicebounds[i].valmax = valmax;
+            slicebounds[i].dlg_valmin = valmin;
+            slicebounds[i].dlg_valmax = valmax;
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
               slicebounds[i].line_contour_max = slice_line_contour_max;
@@ -10876,8 +10887,8 @@ int ReadIni2(char *inifile, int localfile){
         for(i = 0; i<nslicebounds; i++){
           slicebounds[i].setvalmin = setvalmin;
           slicebounds[i].setvalmax = setvalmax;
-          slicebounds[i].valmin = valmin;
-          slicebounds[i].valmax = valmax;
+          slicebounds[i].dlg_valmin = valmin;
+          slicebounds[i].dlg_valmax = valmax;
           slicebounds[i].line_contour_min = slice_line_contour_min;
           slicebounds[i].line_contour_max = slice_line_contour_max;
           slicebounds[i].line_contour_num = slice_line_contour_num;
@@ -10924,8 +10935,8 @@ int ReadIni2(char *inifile, int localfile){
           if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
           isobounds[i].setvalmin = setvalmin;
           isobounds[i].setvalmax = setvalmax;
-          isobounds[i].valmin = valmin;
-          isobounds[i].valmax = valmax;
+          isobounds[i].dlg_valmin = valmin;
+          isobounds[i].dlg_valmax = valmax;
           break;
         }
       }
@@ -10933,8 +10944,8 @@ int ReadIni2(char *inifile, int localfile){
         for(i = 0; i<niso_bounds; i++){
           isobounds[i].setvalmin = setvalmin;
           isobounds[i].setvalmax = setvalmax;
-          isobounds[i].valmin = valmin;
-          isobounds[i].valmax = valmax;
+          isobounds[i].dlg_valmin = valmin;
+          isobounds[i].dlg_valmax = valmax;
         }
       }
       continue;
@@ -13409,8 +13420,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < niso_bounds; i++){
       fprintf(fileout, "V_ISO\n");
       fprintf(fileout, " %i %f %i %f %s\n",
-        isobounds[i].setvalmin, isobounds[i].valmin,
-        isobounds[i].setvalmax, isobounds[i].valmax,
+        isobounds[i].setvalmin, isobounds[i].dlg_valmin,
+        isobounds[i].setvalmax, isobounds[i].dlg_valmax,
         isobounds[i].label->shortlabel
         );
     }
@@ -13443,8 +13454,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
-        slicebounds[i].setvalmin, slicebounds[i].valmin,
-        slicebounds[i].setvalmax, slicebounds[i].valmax,
+        slicebounds[i].setvalmin, slicebounds[i].dlg_valmin,
+        slicebounds[i].setvalmax, slicebounds[i].dlg_valmax,
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );

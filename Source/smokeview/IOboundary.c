@@ -2652,12 +2652,11 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
     UpdateAllSliceColors(slicefile_labelindex, errorcode);
     list_slice_index = slicefile_labelindex;
-    SetSliceBounds(slicefile_labelindex);
+    SliceBounds2Glui(slicefile_labelindex);
 
     scale = sb->scale;
     GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
-      slicemin, slicemax,
-      nrgb_full, nrgb,
+      glui_slicemin, glui_slicemax, nrgb_full, nrgb,
       sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
       &slicei->extreme_min, &slicei->extreme_max
     );

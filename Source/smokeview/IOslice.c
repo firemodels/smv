@@ -1595,17 +1595,17 @@ void UpdateSliceHist(void){
       float val12_min, val12_max, dval;
       float val256_min, val256_max;
 
-      dval = sb->valmax - sb->valmin;
+      dval = sb->dlg_valmax - sb->dlg_valmin;
 
       hist256i = hists256_slice + i;
       hist12i = hists12_slice + i;
 
-      val256_min = sb->valmin - dval / (float)(histogram_nbuckets - 2);
-      val256_max = sb->valmax + dval / (float)(histogram_nbuckets - 2);
+      val256_min = sb->dlg_valmin - dval / (float)(histogram_nbuckets - 2);
+      val256_max = sb->dlg_valmax + dval / (float)(histogram_nbuckets - 2);
       InitHistogram(hist256i, histogram_nbuckets, &val256_min, &val256_max);
 
-      val12_min = sb->valmin - dval / 10.0;
-      val12_max = sb->valmax + dval / 10.0;
+      val12_min = sb->dlg_valmin - dval / 10.0;
+      val12_max = sb->dlg_valmax + dval / 10.0;
       InitHistogram(hist12i, 12, &val12_min, &val12_max);
     }
     for(i = 0; i < nslice_loaded; i++){
@@ -1699,7 +1699,7 @@ void UpdateSliceBounds(void){
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
         slicebounds[i].setvalmin=SET_MIN;
-        slicebounds[i].valmin=0.0;
+        slicebounds[i].dlg_valmin=0.0;
       }
       if(slicebounds[i].setvalmin!=SET_MIN){
         if(minflag==0){
@@ -1726,7 +1726,7 @@ void UpdateSliceBounds(void){
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
         slicebounds[i].setvalmax=SET_MAX;
-        slicebounds[i].valmax=3.0;
+        slicebounds[i].dlg_valmax=3.0;
       }
       if(slicebounds[i].setvalmax!=SET_MAX){
         if(maxflag==0){
@@ -1745,10 +1745,10 @@ void UpdateSliceBounds(void){
         if(slicej->valmax_data>valmax_data)valmax_data=slicej->valmax_data;
       }
     }
-    if(minflag==1)slicebounds[i].valmin=valmin;
-    if(maxflag==1)slicebounds[i].valmax=valmax;
-    if(minflag2==1)slicebounds[i].valmin_data=valmin_data;
-    if(maxflag2==1)slicebounds[i].valmax_data=valmax_data;
+    if(minflag==1)slicebounds[i].dlg_valmin=valmin;
+    if(maxflag==1)slicebounds[i].dlg_valmax=valmax;
+    if(minflag2==1)slicebounds[i].data_valmin=valmin_data;
+    if(maxflag2==1)slicebounds[i].data_valmax=valmax_data;
   }
 }
 
@@ -1786,18 +1786,18 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
   setvalmin=slicebounds[slicetype].setvalmin;
   setvalmax=slicebounds[slicetype].setvalmax;
   if(setvalmin==1){
-    valmin=slicebounds[slicetype].valmin;
+    valmin=slicebounds[slicetype].dlg_valmin;
   }
   else{
-    valmin=slicebounds[slicetype].valmin_data;
-    slicebounds[slicetype].valmin=valmin;
+    valmin=slicebounds[slicetype].data_valmin;
+    slicebounds[slicetype].dlg_valmin=valmin;
   }
   if(setvalmax==1){
-    valmax=slicebounds[slicetype].valmax;
+    valmax=slicebounds[slicetype].dlg_valmax;
   }
   else{
-    valmax=slicebounds[slicetype].valmax_data;
-    slicebounds[slicetype].valmax=valmax;
+    valmax=slicebounds[slicetype].data_valmax;
+    slicebounds[slicetype].dlg_valmax=valmax;
   }
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
@@ -1807,7 +1807,7 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
     }
     if(*errorcode!=0)return;
   }
-  SetSliceBounds(slicetype);
+  SliceBounds2Glui(slicetype);
   UpdateGlui();
 }
 
@@ -1861,18 +1861,18 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
   setvalmin=slicebounds[slicetype].setvalmin;
   setvalmax=slicebounds[slicetype].setvalmax;
   if(setvalmin==1){
-    valmin=slicebounds[slicetype].valmin;
+    valmin=slicebounds[slicetype].dlg_valmin;
   }
   else{
-    valmin=slicebounds[slicetype].valmin_data;
-    slicebounds[slicetype].valmin=valmin;
+    valmin=slicebounds[slicetype].data_valmin;
+    slicebounds[slicetype].dlg_valmin=valmin;
   }
   if(setvalmax==1){
-    valmax=slicebounds[slicetype].valmax;
+    valmax=slicebounds[slicetype].dlg_valmax;
   }
   else{
-    valmax=slicebounds[slicetype].valmax_data;
-    slicebounds[slicetype].valmax=valmax;
+    valmax=slicebounds[slicetype].data_valmax;
+    slicebounds[slicetype].dlg_valmax=valmax;
   }
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
@@ -1881,7 +1881,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     SetSliceColors(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
-  SetSliceBounds(slicetype);
+  SliceBounds2Glui(slicetype);
   UpdateGlui();
 }
 
@@ -3537,25 +3537,25 @@ void UpdateSliceBoundLabels(){
   }
 }
 
-/* ------------------ SetSliceBounds ------------------------ */
+/* ------------------ SliceBounds2Glui ------------------------ */
 
-void SetSliceBounds(int slicetype){
+void SliceBounds2Glui(int slicetype){
   if(slicetype>=0&&slicetype<nslicebounds){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
-    slicemin=slicebounds[slicetype].valmin;
-    slicemax=slicebounds[slicetype].valmax;
+    glui_slicemin=slicebounds[slicetype].dlg_valmin;
+    glui_slicemax=slicebounds[slicetype].dlg_valmax;
 #ifndef pp_NEWBOUND_DIALOG
-    setslicemin=slicebounds[slicetype].setvalmin;
-    setslicemax=slicebounds[slicetype].setvalmax;
+    glui_setslicemin=slicebounds[slicetype].setvalmin;
+    glui_setslicemax=slicebounds[slicetype].setvalmax;
 #endif
-    slicechopmin=slicebounds[slicetype].chopmin;
-    slicechopmax=slicebounds[slicetype].chopmax;
-    setslicechopmin=slicebounds[slicetype].setchopmin;
-    setslicechopmax=slicebounds[slicetype].setchopmax;
-    slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
-    slicemax_unit = slicemin_unit;
+    glui_slicechopmin=slicebounds[slicetype].chopmin;
+    glui_slicechopmax=slicebounds[slicetype].chopmax;
+    glui_setslicechopmin=slicebounds[slicetype].setchopmin;
+    glui_setslicechopmax=slicebounds[slicetype].setchopmax;
+    glui_slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
+    glui_slicemax_unit = glui_slicemin_unit;
 
     memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
     UpdateGluiSliceUnits();
@@ -3587,6 +3587,12 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     return;
   }
+#ifdef pp_NEWBOUND_DIALOG
+  if(use_slice_glui_bounds==1&&sd->bounds!=NULL){
+    *pmin = sd->bounds->dlg_valmin;
+    *pmax = sd->bounds->dlg_valmax;
+  }
+#endif
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -3747,7 +3753,7 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
 #ifdef pp_NEWBOUND_DIALOG
   AdjustBoundsNoSet(pdata, ndata, pmin, pmax);
 #else
-  AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
+  AdjustBounds(glui_setslicemin, glui_setslicemax, pdata, ndata, pmin, pmax);
 #endif
 }
 
@@ -4434,7 +4440,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         if(sd->compression_type == UNCOMPRESSED){
           UpdateSliceBounds();
           list_slice_index = slicefile_labelindex;
-          SetSliceBounds(slicefile_labelindex);
+          SliceBounds2Glui(slicefile_labelindex);
           UpdateAllSliceColors(slicefile_labelindex, errorcode);
         }
         else{
@@ -4726,14 +4732,14 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         UpdateSliceBounds();
         UpdateAllSliceColors(slicefile_labelindex, errorcode);
         list_slice_index = slicefile_labelindex;
-        SetSliceBounds(slicefile_labelindex);
+        SliceBounds2Glui(slicefile_labelindex);
       }
       else{
         boundsdata *sb;
 
         sb = slicebounds + slicefile_labelindex;
-        sb->valmin_data = qmin;
-        sb->valmax_data = qmax;
+        sb->data_valmin = qmin;
+        sb->data_valmax = qmax;
 
         UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         MakeColorLabels(sb->colorlabels, sb->colorvalues, qmin, qmax, nrgb);

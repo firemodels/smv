@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+boundsdata *GetBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG
 void GetGlobalSliceBounds(void);
 #endif
@@ -724,7 +725,7 @@ EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP void AntiAliasSurface(int flag);
-EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
+EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);

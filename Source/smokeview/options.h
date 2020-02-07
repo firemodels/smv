@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-//#define pp_NEWBOUND_DIALOG   // redo bound dialog
+#define pp_NEWBOUND_DIALOG   // redo bound dialog
 #define pp_SHIFT_COLORBARS    // use power law to shift colorbar colors
 #define pp_FILE_SIZES        // add option to output slice files sizes to be loaded
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded

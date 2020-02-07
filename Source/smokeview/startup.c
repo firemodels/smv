@@ -1484,7 +1484,6 @@ void InitVars(void){
   settargetmin=0, settargetmax=0;
   setpartchopmin=0, setpartchopmax=0;
   partchopmin=1.0,  partchopmax=0.;
-  slicechopmin=0, slicechopmax=0;
 
   temp_threshold=400.0;
   vis_onlythreshold=0, vis_threshold=0;

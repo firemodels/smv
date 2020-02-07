@@ -33,6 +33,7 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN int SVDECL(use_slice_glui_bounds, 0);
 SVEXTERN char SVDECL(*fds_title, NULL);
 SVEXTERN int SVDECL(vis_title_gversion,0);
 SVEXTERN int SVDECL(vis_title_smv_version, 1);
@@ -525,7 +526,7 @@ SVEXTERN int SVDECL(show_all_units,0);
 #endif
 SVEXTERN int SVDECL(circle_outline,0);
 SVEXTERN unsigned char SVDECL(*patchmin_unit,NULL),SVDECL(*patchmax_unit,NULL);
-SVEXTERN unsigned char SVDECL(*slicemin_unit,NULL),SVDECL(*slicemax_unit,NULL);
+SVEXTERN unsigned char SVDECL(*glui_slicemin_unit,NULL),SVDECL(*glui_slicemax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*plot3dmin_unit,NULL),SVDECL(*plot3dmax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*partmin_unit,NULL),SVDECL(*partmax_unit,NULL);
 SVEXTERN char degC[3], degF[3];
@@ -1067,8 +1068,8 @@ SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
 #ifndef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(setslicemin,GLOBAL_MIN), SVDECL(setslicemax,GLOBAL_MAX);
-SVEXTERN int SVDECL(setslicemin_save,GLOBAL_MIN), SVDECL(setslicemax_save,GLOBAL_MAX);
+SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN), SVDECL(glui_setslicemax,GLOBAL_MAX);
+SVEXTERN int SVDECL(glui_setslicemin_save,GLOBAL_MIN), SVDECL(glui_setslicemax_save,GLOBAL_MAX);
 #endif
 SVEXTERN int SVDECL(setpatchmin_save, PERCENTILE_MIN), SVDECL(setpatchmax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setpartmin_save, PERCENTILE_MIN), SVDECL(setpartmax_save, PERCENTILE_MAX);
@@ -1081,10 +1082,10 @@ SVEXTERN int setpatchmin, setpatchmax, SVDECL(setzonemin,GLOBAL_MIN), SVDECL(set
 SVEXTERN int SVDECL(loadpatchbysteps,UNCOMPRESSED );
 SVEXTERN int settargetmin, settargetmax;
 SVEXTERN int setpartchopmin, setpartchopmax;
-SVEXTERN int SVDECL(setslicechopmin,0), SVDECL(setslicechopmax,0);
 SVEXTERN int SVDECL(setpatchchopmin,0), SVDECL(setpatchchopmax,0);
 SVEXTERN float partchopmin,  partchopmax;
-SVEXTERN float slicechopmin, slicechopmax;
+SVEXTERN int SVDECL(glui_setslicechopmin, 0), SVDECL(glui_setslicechopmax, 0);
+SVEXTERN float SVDECL(glui_slicechopmin,1.0), SVDECL(glui_slicechopmax,0.0);
 SVEXTERN float SVDECL(patchchopmin,1.0), SVDECL(patchchopmax,0.0);
 SVEXTERN int setisomin, setisomax;
 SVEXTERN float isomin, isomax;
@@ -1099,8 +1100,8 @@ SVEXTERN float tmax_p, tmax_b, tmax_s, tmax_z, tmax_i;
 SVEXTERN float SVDECL(patchmin,1.0),SVDECL(patchmax,0.0);
 SVEXTERN float SVDECL(targetmin, 1.0), SVDECL(targetmax, 0.0);
 SVEXTERN float SVDECL(partmin,1.0), SVDECL(partmax,0.0);
-SVEXTERN float SVDECL(slicemin,1.0), SVDECL(slicemax,0.0);
-SVEXTERN float SVDECL(slicemin_save, 1.0), SVDECL(slicemax_save, 0.0);
+SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
+SVEXTERN float SVDECL(glui_slicemin_save, 1.0), SVDECL(glui_slicemax_save, 0.0);
 SVEXTERN float SVDECL(patchmin_save, 1.0), SVDECL(patchmax_save, 0.0);
 SVEXTERN float SVDECL(partmin_save, 1.0), SVDECL(partmax_save, 0.0);
 

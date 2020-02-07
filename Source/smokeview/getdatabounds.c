@@ -9,30 +9,24 @@
 #ifdef pp_NEWBOUND_DIALOG
 void GetSliceFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
-  int count;
+  char buffer[255];
+  float t, vmin, vmax;
 
   stream = fopen(file, "r");
-  if(stream==NULL){
+  if(stream==NULL||fgets(buffer, 255, stream)==NULL){
     *valmin = 1.0;
     *valmax = 0.0;
+    if(stream!=NULL)fclose(stream);
     return;
   }
-  count = 0;
-  for(count=0;;count++){
-    char buffer[255];
-    float t, vmin, vmax;
-
+  sscanf(buffer, " %f %f %f", &t, &vmin, &vmax);
+  *valmin = vmin;
+  *valmax = vmax;
+  for(;;){
     if(fgets(buffer, 255, stream)==NULL)break;
     sscanf(buffer, " %f %f %f", &t, &vmin, &vmax);
-    if(count==0){
-      *valmin = vmin;
-      *valmax = vmax;
-    }
-    else{
-      *valmin = MIN(*valmin, vmin);
-      *valmax = MAX(*valmax, vmax);
-    }
-    count++;
+    *valmin = MIN(*valmin, vmin);
+    *valmax = MAX(*valmax, vmax);
   }
   fclose(stream);
 }
@@ -83,12 +77,12 @@ void GetGlobalSliceBounds(void){
       boundi->global_valmax = MAX(boundi->global_valmax, valmax);
     }
   }
-  printf("slice data bounds\n");
   for(i = 0; i<nslicebounds; i++){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
-    printf("%s: %f %f\n", boundi->shortlabel, boundi->global_valmin, boundi->global_valmax);
+    boundi->dlg_valmin = boundi->global_valmin;
+    boundi->dlg_valmax = boundi->global_valmax;
   }
 
 }
