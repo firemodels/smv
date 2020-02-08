@@ -3588,7 +3588,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     return;
   }
 #ifdef pp_NEWBOUND_DIALOG
-  if(use_slice_glui_bounds==1&&sd->bounds!=NULL){
+  if(use_slice_glui_bounds==1&&sd->bounds!=NULL&&sd->bounds->dlg_valmin<sd->bounds->dlg_valmax){
     *pmin = sd->bounds->dlg_valmin;
     *pmax = sd->bounds->dlg_valmax;
     return;
