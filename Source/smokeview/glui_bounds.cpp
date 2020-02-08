@@ -1457,6 +1457,7 @@ void SliceBoundMenu(void){
   PANEL_c = glui_bounds->add_panel_to_panel(ROLLOUT_slice_bound, "", GLUI_PANEL_NONE);
 
   glui_bounds->add_button_to_panel(PANEL_c, _("Global bounds"), GLOBAL_BOUNDS, SliceBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_c, _("Global bounds (loaded"), GLOBAL_BOUNDS_LOADED, SliceBoundCB);
   BUTTON_slice_percentile = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile bounds"), PERCENTILE_BOUNDS, SliceBoundCB);
   BUTTON_slice_percentile->disable();
   glui_bounds->add_button_to_panel(PANEL_c, _("Update"), FILEUPDATE, SliceBoundCB);
@@ -3493,6 +3494,34 @@ extern "C" void SliceBoundCB(int var){
     slicebounds[list_slice_index].dlg_valmax = slicebounds[list_slice_index].global_valmax;
     EDIT_slice_min->set_float_val(slicebounds[list_slice_index].dlg_valmin);
     EDIT_slice_max->set_float_val(slicebounds[list_slice_index].dlg_valmax);
+    return;
+  }
+  if(var==GLOBAL_BOUNDS_LOADED){
+    float slice_min, slice_max;
+
+    slice_min = 1.0;
+    slice_max = 0.0;
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(slicei->loaded==0||strcmp(slicei->label.shortlabel, slicebounds[list_slice_index].shortlabel)!=0)continue;
+      if(slicei->file_min>slicei->file_max)continue;
+      if(slice_min>slice_max){
+        slice_min = slicei->file_min;
+        slice_max = slicei->file_max;
+      }
+      else{
+        slice_min = MIN(slice_min, slicei->file_min);
+        slice_max = MAX(slice_max, slicei->file_max);
+      }
+    }
+    if(slice_min<=slice_max){
+      slicebounds[list_slice_index].dlg_valmin = slice_min;
+      slicebounds[list_slice_index].dlg_valmax = slice_max;
+      EDIT_slice_min->set_float_val(slice_min);
+      EDIT_slice_max->set_float_val(slice_max);
+    }
     return;
   }
   if(var==PERCENTILE_BOUNDS){
