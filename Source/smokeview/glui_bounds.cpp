@@ -87,6 +87,10 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
+#ifndef pp_NEWBOUND_DIALOG
+GLUI_Panel *PANEL_slice_bound = NULL;
+#endif
+
 GLUI_Panel *PANEL_partread = NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Panel *PANEL_sliceread = NULL;
