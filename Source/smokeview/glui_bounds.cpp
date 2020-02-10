@@ -87,7 +87,10 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 
+#ifndef pp_NEWBOUND_DIALOG
 GLUI_Panel *PANEL_slice_bound = NULL;
+#endif
+
 GLUI_Panel *PANEL_partread = NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Panel *PANEL_sliceread = NULL;
@@ -271,6 +274,10 @@ GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
+#ifdef pp_NEWBOUND_DIALOG
+GLUI_StaticText *STATIC_slice_min = NULL;
+GLUI_StaticText *STATIC_slice_max = NULL;
+#endif
 GLUI_StaticText *STATIC_slice_min_unit=NULL;
 GLUI_StaticText *STATIC_slice_max_unit=NULL;
 GLUI_StaticText *STATIC_part_min_unit=NULL;
@@ -1425,88 +1432,62 @@ void ScriptCB(int var){
 
 /* ------------------ SliceBoundMenu ------------------------ */
 #ifdef pp_NEWBOUND_DIALOG
-void SliceBoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
-  GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
-  GLUI_Checkbox **CHECKBOX_con_setchopmin, GLUI_Checkbox **CHECKBOX_con_setchopmax,
-  GLUI_EditText **EDIT_con_chopmin, GLUI_EditText **EDIT_con_chopmax,
-  GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
-  GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
-  GLUI_Panel **PANEL_bound
-){
+void SliceBoundMenu(void){
 
-  GLUI_Panel *PANEL_a, *PANEL_b, *PANEL_c;
-  GLUI_Rollout *PANEL_e = NULL, *PANEL_g = NULL;
-  GLUI_Panel *PANEL_f = NULL, *PANEL_h = NULL;
+  GLUI_Panel *PANEL_a=NULL, *PANEL_b=NULL, *PANEL_c=NULL, *PANEL_d = NULL, *PANEL_e = NULL;
 
-  PANEL_g = glui_bounds->add_rollout_to_panel(PANEL_panel, _("Bound data"), false, 0, SliceRolloutCB);
-  if(PANEL_bound!=NULL)*PANEL_bound = PANEL_g;
-  INSERT_ROLLOUT(PANEL_g, glui_bounds);
-  if(bound_rollout!=NULL){
-    *bound_rollout = PANEL_g;
-    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, PANEL_g, 0, glui_bounds);
-  }
+  ROLLOUT_slice_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Bound data"), false, 0, SliceRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_slice_bound, glui_bounds);
+  ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_bound, 0, glui_bounds);
 
-  PANEL_a = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  PANEL_a = glui_bounds->add_panel_to_panel(ROLLOUT_slice_bound, "", GLUI_PANEL_NONE);
 
-  *EDIT_con_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, &glui_slicemin, VALMIN, SliceBoundCB);
+  EDIT_slice_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, &glui_slicemin, VALMIN, SliceBoundCB);
+  EDIT_slice_max = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, &glui_slicemax, VALMAX, SliceBoundCB);
   glui_bounds->add_column_to_panel(PANEL_a, false);
 
-  if(STATIC_con_min_unit!=NULL){
-    *STATIC_con_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
-    glui_bounds->add_column_to_panel(PANEL_a, false);
-    (*STATIC_con_min_unit)->set_w(10);
-  }
+  STATIC_slice_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
+  STATIC_slice_max_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "yy");
+  STATIC_slice_min_unit->set_w(10);
+  STATIC_slice_max_unit->set_w(10);
+  glui_bounds->add_column_to_panel(PANEL_a, false);
 
-  PANEL_b = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  STATIC_slice_min = glui_bounds->add_statictext_to_panel(PANEL_a, "min");
+  STATIC_slice_max = glui_bounds->add_statictext_to_panel(PANEL_a, "max");
+  STATIC_slice_min->set_w(4);
+  STATIC_slice_max->set_w(4);
 
-  *EDIT_con_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, &glui_slicemax, VALMAX, SliceBoundCB);
-  glui_bounds->add_column_to_panel(PANEL_b, false);
-
-  if(STATIC_con_max_unit!=NULL){
-    *STATIC_con_max_unit = glui_bounds->add_statictext_to_panel(PANEL_b, "yy");
-    glui_bounds->add_column_to_panel(PANEL_b, false);
-    (*STATIC_con_max_unit)->set_w(10);
-  }
-
-  PANEL_c = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  PANEL_c = glui_bounds->add_panel_to_panel(ROLLOUT_slice_bound, "", GLUI_PANEL_NONE);
 
   glui_bounds->add_button_to_panel(PANEL_c, _("Global bounds"), GLOBAL_BOUNDS, SliceBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_c, _("Global bounds (loaded"), GLOBAL_BOUNDS_LOADED, SliceBoundCB);
   BUTTON_slice_percentile = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile bounds"), PERCENTILE_BOUNDS, SliceBoundCB);
   BUTTON_slice_percentile->disable();
   glui_bounds->add_button_to_panel(PANEL_c, _("Update"), FILEUPDATE, SliceBoundCB);
 
-  if(EDIT_con_chopmin!=NULL&&EDIT_con_chopmax!=NULL&&CHECKBOX_con_setchopmin!=NULL&&CHECKBOX_con_setchopmax!=NULL){
-    PANEL_e = glui_bounds->add_rollout_to_panel(PANEL_panel, _("Truncate data"), false, 1, SliceRolloutCB);
-    INSERT_ROLLOUT(PANEL_e, glui_bounds);
-    if(chop_rollout!=NULL){
-      *chop_rollout = PANEL_e;
-      ADDPROCINFO(sliceprocinfo, nsliceprocinfo, PANEL_e, 1, glui_bounds);
-    }
+  ROLLOUT_slice_chop = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Truncate data"), false, 1, SliceRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_slice_chop, glui_bounds);
+  ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_chop, 1, glui_bounds);
 
-    PANEL_f = glui_bounds->add_panel_to_panel(PANEL_e, "", GLUI_PANEL_NONE);
+  PANEL_d = glui_bounds->add_panel_to_panel(ROLLOUT_slice_chop, "", GLUI_PANEL_NONE);
 
-    *EDIT_con_chopmin = glui_bounds->add_edittext_to_panel(PANEL_f, "", GLUI_EDITTEXT_FLOAT, &glui_slicechopmin, CHOPVALMIN, SliceBoundCB);
-    glui_bounds->add_column_to_panel(PANEL_f, false);
+  EDIT_slice_chopmin = glui_bounds->add_edittext_to_panel(PANEL_d, "", GLUI_EDITTEXT_FLOAT, &glui_slicechopmin, CHOPVALMIN, SliceBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_d, false);
 
-    if(STATIC_con_cmin_unit!=NULL){
-      *STATIC_con_cmin_unit = glui_bounds->add_statictext_to_panel(PANEL_f, "xx");
-      (*STATIC_con_cmin_unit)->set_w(10);
-      glui_bounds->add_column_to_panel(PANEL_f, false);
-    }
-    *CHECKBOX_con_setchopmin = glui_bounds->add_checkbox_to_panel(PANEL_f, _("Below"), &glui_setslicechopmin, SETCHOPMINVAL, SliceBoundCB);
+  STATIC_slice_cmin_unit = glui_bounds->add_statictext_to_panel(PANEL_d, "xx");
+  STATIC_slice_cmin_unit->set_w(10);
+  glui_bounds->add_column_to_panel(PANEL_d, false);
+  CHECKBOX_slice_setchopmin = glui_bounds->add_checkbox_to_panel(PANEL_d, _("Below"), &glui_setslicechopmin, SETCHOPMINVAL, SliceBoundCB);
 
-    PANEL_h = glui_bounds->add_panel_to_panel(PANEL_e, "", GLUI_PANEL_NONE);
+  PANEL_e = glui_bounds->add_panel_to_panel(ROLLOUT_slice_chop, "", GLUI_PANEL_NONE);
 
-    *EDIT_con_chopmax = glui_bounds->add_edittext_to_panel(PANEL_h, "", GLUI_EDITTEXT_FLOAT, &glui_slicechopmax, CHOPVALMAX, SliceBoundCB);
-    glui_bounds->add_column_to_panel(PANEL_h, false);
+  EDIT_slice_chopmax = glui_bounds->add_edittext_to_panel(PANEL_e, "", GLUI_EDITTEXT_FLOAT, &glui_slicechopmax, CHOPVALMAX, SliceBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_e, false);
 
-    if(STATIC_con_cmax_unit!=NULL){
-      *STATIC_con_cmax_unit = glui_bounds->add_statictext_to_panel(PANEL_h, "xx");
-      glui_bounds->add_column_to_panel(PANEL_h, false);
-      (*STATIC_con_cmax_unit)->set_w(10);
-    }
-    *CHECKBOX_con_setchopmax = glui_bounds->add_checkbox_to_panel(PANEL_h, _("Above"), &glui_setslicechopmax, SETCHOPMAXVAL, SliceBoundCB);
-  }
+  STATIC_slice_cmax_unit = glui_bounds->add_statictext_to_panel(PANEL_e, "xx");
+  glui_bounds->add_column_to_panel(PANEL_e, false);
+  STATIC_slice_cmax_unit->set_w(10);
+  CHECKBOX_slice_setchopmax = glui_bounds->add_checkbox_to_panel(PANEL_e, _("Above"), &glui_setslicechopmax, SETCHOPMAXVAL, SliceBoundCB);
 }
 #endif
 
@@ -2330,14 +2311,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     glui_slicemin = slicebounds[list_slice_index].dlg_valmin;
     glui_slicemax = slicebounds[list_slice_index].dlg_valmax;
-    SliceBoundMenu(&ROLLOUT_slice_bound, &ROLLOUT_slice_chop, ROLLOUT_slice, "Reload Slice File(s)",
-      &EDIT_slice_min, &EDIT_slice_max,
-      &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
-      &EDIT_slice_chopmin, &EDIT_slice_chopmax,
-      &STATIC_slice_min_unit, &STATIC_slice_max_unit,
-      &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
-      &PANEL_slice_bound
-    );
+    SliceBoundMenu();
 #else
     BoundMenu(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
       &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
@@ -3508,6 +3482,29 @@ void SetSliceMax(int setslicemax_local, float slicemax_local, int setslicechopma
 }
 #endif
 
+#ifdef pp_NEWBOUND_DIALOG
+/* ------------------ UpdateSliceBoundLabels ------------------------ */
+
+void UpdateSliceBoundLabels(int option){
+  switch(option){
+  case VALMIN:
+    STATIC_slice_min->set_text("user min");
+    break;
+  case VALMAX:
+    STATIC_slice_max->set_text("user max");
+    break;
+  case GLOBAL_BOUNDS:
+    STATIC_slice_min->set_text("global min");
+    STATIC_slice_max->set_text("global max");
+    break;
+  case GLOBAL_BOUNDS_LOADED:
+    STATIC_slice_min->set_text("global min(loaded files)");
+    STATIC_slice_max->set_text("global max(loaded files)");
+    break;
+  }
+}
+#endif
+
 /* ------------------ SliceBoundCB ------------------------ */
 
 extern "C" void SliceBoundCB(int var){
@@ -3523,6 +3520,36 @@ extern "C" void SliceBoundCB(int var){
     slicebounds[list_slice_index].dlg_valmax = slicebounds[list_slice_index].global_valmax;
     EDIT_slice_min->set_float_val(slicebounds[list_slice_index].dlg_valmin);
     EDIT_slice_max->set_float_val(slicebounds[list_slice_index].dlg_valmax);
+    UpdateSliceBoundLabels(GLOBAL_BOUNDS);
+    return;
+  }
+  if(var==GLOBAL_BOUNDS_LOADED){
+    float slice_min, slice_max;
+
+    slice_min = 1.0;
+    slice_max = 0.0;
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(slicei->loaded==0||strcmp(slicei->label.shortlabel, slicebounds[list_slice_index].shortlabel)!=0)continue;
+      if(slicei->file_min>slicei->file_max)continue;
+      if(slice_min>slice_max){
+        slice_min = slicei->file_min;
+        slice_max = slicei->file_max;
+      }
+      else{
+        slice_min = MIN(slice_min, slicei->file_min);
+        slice_max = MAX(slice_max, slicei->file_max);
+      }
+    }
+    if(slice_min<=slice_max){
+      slicebounds[list_slice_index].dlg_valmin = slice_min;
+      slicebounds[list_slice_index].dlg_valmax = slice_max;
+      EDIT_slice_min->set_float_val(slice_min);
+      EDIT_slice_max->set_float_val(slice_max);
+    }
+    UpdateSliceBoundLabels(GLOBAL_BOUNDS_LOADED);
     return;
   }
   if(var==PERCENTILE_BOUNDS){
@@ -3974,6 +4001,7 @@ extern "C" void SliceBoundCB(int var){
 #ifdef pp_NEWBOUND_DIALOG
     Glui2SliceBounds();
     UpdateZoneTempBounds(glui_slicemin, glui_slicemax);
+    UpdateSliceBoundLabels(VALMIN);
 #else
     SetSliceMin(glui_setslicemin, glui_slicemin, glui_setslicechopmin, glui_slicechopmin);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
@@ -3993,6 +4021,7 @@ extern "C" void SliceBoundCB(int var){
 #ifdef pp_NEWBOUND_DIALOG
     Glui2SliceBounds();
     UpdateZoneTempBounds(glui_slicemin, glui_slicemax);
+    UpdateSliceBoundLabels(VALMAX);
 #else
     SetSliceMax(glui_setslicemax,glui_slicemax,glui_setslicechopmax,glui_slicechopmax);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
@@ -4054,10 +4083,10 @@ extern "C" void SliceBoundCB(int var){
       slice_index = RADIO_slice->get_int_val();
       if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
         BoundRolloutCB(ZONE_ROLLOUT);
-        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->disable();
+        if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->disable();
       }
       else{
-        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
+        if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->enable();
       }
     }
 #ifndef pp_NEWBOUND_DIALOG
@@ -4173,10 +4202,10 @@ extern "C" void UpdateSliceListIndex(int sfn){
     if(nzoneinfo>0){
       if(strcmp(slicebounds[i].shortlabel, "TEMP")==0){
         BoundRolloutCB(ZONE_ROLLOUT);
-        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->disable();
+        if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->disable();
       }
       else{
-        if(PANEL_slice_bound!=NULL)PANEL_slice_bound->enable();
+        if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->enable();
       }
     }
   }

@@ -8531,6 +8531,10 @@ typedef struct {
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
       sd->globalmin = -sd->globalmax;
+#ifdef pp_NEWBOUND_DIALOG
+      sd->file_min = 1.0;
+      sd->file_max = 0.0;
+#endif
       sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;

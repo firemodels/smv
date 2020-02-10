@@ -1230,6 +1230,9 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+#ifdef pp_NEWBOUND_DIALOG
+  float file_min, file_max;
+#endif
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;

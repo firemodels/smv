@@ -3588,9 +3588,10 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     return;
   }
 #ifdef pp_NEWBOUND_DIALOG
-  if(use_slice_glui_bounds==1&&sd->bounds!=NULL){
+  if(use_slice_glui_bounds==1&&sd->bounds!=NULL&&sd->bounds->dlg_valmin<sd->bounds->dlg_valmax){
     *pmin = sd->bounds->dlg_valmin;
     *pmax = sd->bounds->dlg_valmax;
+    return;
   }
 #endif
   meshi = meshinfo + sd->blocknumber;
@@ -4843,6 +4844,17 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   GLUTPOSTREDISPLAY;
   return return_filesize;
 }
+
+#ifdef pp_NEWBOUND_DIALOG
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
+  FILE_SIZE file_size;
+
+  use_slice_glui_bounds = 1;
+  file_size = ReadSlice(file, ifile, flag, set_slicecolor, errorcode);
+  use_slice_glui_bounds = 0;
+  return file_size;
+}
+#endif
 
 #ifdef pp_SLICETHREAD
 /* ------------------ FinalizeSliceLoad ------------------------ */
