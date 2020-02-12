@@ -4762,9 +4762,14 @@ void LoadMultiVSliceMenu(int value){
 
 /* ------------------ LoadAllMSlices ------------------------ */
 
+#ifdef pp_FILE_SIZES
+FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
+#else
 void LoadAllMSlices(int last_slice, multislicedata *mslicei){
+#endif
   int i;
-  float load_time, load_size = 0.0;
+  float load_time;
+  FILE_SIZE file_size = 0;
   int file_count=0;
 
   START_TIMER(load_time);
@@ -4780,16 +4785,16 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
       slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
-    if(slicei->skipdup== 0 && slicei->loaded == 0){
-      float load_sizei;
-
-      load_sizei=LoadSlicei(set_slicecolor,mslicei->islices[i]);
-      load_size += load_sizei;
+    if(slicei->skipdup== 0){
+      file_size+=LoadSlicei(set_slicecolor,mslicei->islices[i]);
       file_count++;
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count,load_size,load_time);
+  PRINT_LOADTIMES(file_count,(float)file_size,load_time);
+#ifdef pp_FILE_SIZES
+  return file_size;
+#endif
 }
 
 #ifdef pp_SLICETHREAD
@@ -4902,7 +4907,7 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        if(slicei->skipdup== 0 && slicei->loaded == 0){
+        if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];
           break;
         }
@@ -4912,19 +4917,15 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        if(slicei->skipdup== 1 && slicei->loaded == 1)UnloadSliceMenu(mslicei->islices[i]);
-#ifdef pp_FILE_SIZES
-        if(compute_slice_file_sizes==1){
-          slicei->file_size = GetFileSizeSMV(slicei->reg_file);
-          total_size += slicei->file_size;
+        if(slicei->skipdup== 1 && slicei->loaded == 1){
+          UnloadSliceMenu(mslicei->islices[i]);
         }
-        else{
-          LoadAllMSlices(last_slice, mslicei);
-        }
-#else
-        LoadAllMSlices(last_slice, mslicei);
-#endif
       }
+#ifdef pp_FILE_SIZES
+      total_size = LoadAllMSlices(last_slice, mslicei);
+#else
+      LoadAllMSlices(last_slice, mslicei);
+#endif
 #ifdef pp_FILE_SIZES
       if(compute_slice_file_sizes==1){
         PRINTF(" size of slice files to be loaded=");
