@@ -2724,7 +2724,6 @@ void HandlePLOT3DKeys(int  key){
     }
     break;
   default:
-    ASSERT(FFALSE);
     break;
   }
   if(iplot_state!=0)UpdatePlotSlice(iplot_state);
