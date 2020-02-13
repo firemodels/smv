@@ -508,15 +508,17 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SURFACE_TEMPMIN  -100000.
 #define SURFACE_TEMPMAX   100000.
 
-#define PERCENTILE_MIN 0
-#define SET_MIN 1
-#define GLOBAL_MIN 2
-#define CHOP_MIN 3
+#define PERCENTILE_MIN    0
+#define SET_MIN           1
+#define GLOBAL_MIN        2
+#define GLOBAL_MIN_LOADED 3
+#define CHOP_MIN          3
 
-#define PERCENTILE_MAX 0
-#define SET_MAX 1
-#define GLOBAL_MAX 2
-#define CHOP_MAX 3
+#define PERCENTILE_MAX    0
+#define SET_MAX           1
+#define GLOBAL_MAX        2
+#define GLOBAL_MAX_LOADED 3
+#define CHOP_MAX          3
 
 #define SHADED_CONTOURS 0
 #define STEPPED_CONTOURS 1

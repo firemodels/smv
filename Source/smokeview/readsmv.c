@@ -2144,8 +2144,8 @@ void UpdateBoundInfo(void){
       isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
-      isobounds[niso_bounds].setvalmin=0;
-      isobounds[niso_bounds].setvalmax=0;
+      isobounds[niso_bounds].dlg_setvalmin=0;
+      isobounds[niso_bounds].dlg_setvalmax=0;
       isobounds[niso_bounds].dlg_valmin=1.0;
       isobounds[niso_bounds].dlg_valmax=0.0;
       isobounds[niso_bounds].setchopmax=0;
@@ -2186,8 +2186,8 @@ void UpdateBoundInfo(void){
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
-      sbi->setvalmin=0;
-      sbi->setvalmax=0;
+      sbi->dlg_setvalmin=0;
+      sbi->dlg_setvalmax=0;
       sbi->dlg_valmin=1.0;
       sbi->dlg_valmax=0.0;
       sbi->chopmax=0.0;
@@ -10874,8 +10874,8 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            slicebounds[i].setvalmin = setvalmin;
-            slicebounds[i].setvalmax = setvalmax;
+            slicebounds[i].dlg_setvalmin = setvalmin;
+            slicebounds[i].dlg_setvalmax = setvalmax;
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
             if(level_val!=NULL){
@@ -10889,8 +10889,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<nslicebounds; i++){
-          slicebounds[i].setvalmin = setvalmin;
-          slicebounds[i].setvalmax = setvalmax;
+          slicebounds[i].dlg_setvalmin = setvalmin;
+          slicebounds[i].dlg_setvalmax = setvalmax;
           slicebounds[i].dlg_valmin = valmin;
           slicebounds[i].dlg_valmax = valmax;
           slicebounds[i].line_contour_min = slice_line_contour_min;
@@ -10937,8 +10937,8 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "") != 0){
         for(i = 0; i<niso_bounds; i++){
           if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
-          isobounds[i].setvalmin = setvalmin;
-          isobounds[i].setvalmax = setvalmax;
+          isobounds[i].dlg_setvalmin = setvalmin;
+          isobounds[i].dlg_setvalmax = setvalmax;
           isobounds[i].dlg_valmin = valmin;
           isobounds[i].dlg_valmax = valmax;
           break;
@@ -10946,8 +10946,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<niso_bounds; i++){
-          isobounds[i].setvalmin = setvalmin;
-          isobounds[i].setvalmax = setvalmax;
+          isobounds[i].dlg_setvalmin = setvalmin;
+          isobounds[i].dlg_setvalmax = setvalmax;
           isobounds[i].dlg_valmin = valmin;
           isobounds[i].dlg_valmax = valmax;
         }
@@ -13424,8 +13424,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < niso_bounds; i++){
       fprintf(fileout, "V_ISO\n");
       fprintf(fileout, " %i %f %i %f %s\n",
-        isobounds[i].setvalmin, isobounds[i].dlg_valmin,
-        isobounds[i].setvalmax, isobounds[i].dlg_valmax,
+        isobounds[i].dlg_setvalmin, isobounds[i].dlg_valmin,
+        isobounds[i].dlg_setvalmax, isobounds[i].dlg_valmax,
         isobounds[i].label->shortlabel
         );
     }
@@ -13458,8 +13458,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
-        slicebounds[i].setvalmin, slicebounds[i].dlg_valmin,
-        slicebounds[i].setvalmax, slicebounds[i].dlg_valmax,
+        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
+        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );

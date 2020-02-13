@@ -1311,7 +1311,7 @@ typedef struct _multivslicedata {
 
 typedef struct _boundsdata {
   char *shortlabel;
-  int setvalmin, setvalmax;
+  int dlg_setvalmin, dlg_setvalmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;

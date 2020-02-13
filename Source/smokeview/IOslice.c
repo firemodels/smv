@@ -1698,10 +1698,10 @@ void UpdateSliceBounds(void){
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
-        slicebounds[i].setvalmin=SET_MIN;
+        slicebounds[i].dlg_setvalmin=SET_MIN;
         slicebounds[i].dlg_valmin=0.0;
       }
-      if(slicebounds[i].setvalmin!=SET_MIN){
+      if(slicebounds[i].dlg_setvalmin!=SET_MIN){
         if(minflag==0){
           valmin=slicej->valmin;
           minflag=1;
@@ -1725,10 +1725,10 @@ void UpdateSliceBounds(void){
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
-        slicebounds[i].setvalmax=SET_MAX;
+        slicebounds[i].dlg_setvalmax=SET_MAX;
         slicebounds[i].dlg_valmax=3.0;
       }
-      if(slicebounds[i].setvalmax!=SET_MAX){
+      if(slicebounds[i].dlg_setvalmax!=SET_MAX){
         if(maxflag==0){
           valmax=sliceinfo[j].valmax;
           maxflag=1;
@@ -1783,8 +1783,8 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 
   *errorcode=0;
 
-  setvalmin=slicebounds[slicetype].setvalmin;
-  setvalmax=slicebounds[slicetype].setvalmax;
+  setvalmin=slicebounds[slicetype].dlg_setvalmin;
+  setvalmax=slicebounds[slicetype].dlg_setvalmax;
   if(setvalmin==1){
     valmin=slicebounds[slicetype].dlg_valmin;
   }
@@ -1858,8 +1858,8 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 
   *errorcode=0;
 
-  setvalmin=slicebounds[slicetype].setvalmin;
-  setvalmax=slicebounds[slicetype].setvalmax;
+  setvalmin=slicebounds[slicetype].dlg_setvalmin;
+  setvalmax=slicebounds[slicetype].dlg_setvalmax;
   if(setvalmin==1){
     valmin=slicebounds[slicetype].dlg_valmin;
   }
@@ -3547,8 +3547,8 @@ void SliceBounds2Glui(int slicetype){
     glui_slicemin=slicebounds[slicetype].dlg_valmin;
     glui_slicemax=slicebounds[slicetype].dlg_valmax;
 #ifndef pp_NEWBOUND_DIALOG
-    glui_setslicemin=slicebounds[slicetype].setvalmin;
-    glui_setslicemax=slicebounds[slicetype].setvalmax;
+    glui_setslicemin=slicebounds[slicetype].dlg_setvalmin;
+    glui_setslicemax=slicebounds[slicetype].dlg_setvalmax;
 #endif
     glui_slicechopmin=slicebounds[slicetype].chopmin;
     glui_slicechopmax=slicebounds[slicetype].chopmax;
