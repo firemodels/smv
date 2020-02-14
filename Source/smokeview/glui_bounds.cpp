@@ -49,8 +49,11 @@ GLUI_Button *BUTTON_PLOT3D = NULL;
 GLUI_Button *BUTTON_3DSMOKE = NULL;
 GLUI_Button *BUTTON_BOUNDARY = NULL;
 GLUI_Button *BUTTON_ISO = NULL;
+#ifdef pp_NEWBOUND_DIALOG
 GLUI_Button *BUTTON_slice_global_bounds = NULL;
 GLUI_Button *BUTTON_slice_global_bounds_loaded = NULL;
+GLUI_Button *BUTTON_slice_percentile_bounds = NULL;
+#endif
 
 GLUI_Listbox *LIST_colortable = NULL;
 GLUI_Listbox *LIST_iso_colorbar = NULL;
@@ -267,6 +270,9 @@ GLUI_RadioGroup *RADIO_part_setmin=NULL, *RADIO_part_setmax=NULL;
 GLUI_RadioGroup *RADIO_memcheck=NULL;
 #endif
 GLUI_RadioGroup *RADIO_p3_setmin=NULL, *RADIO_p3_setmax=NULL;
+#ifdef pp_NEWBOUND_DIALOG
+GLUI_RadioGroup *RADIO_slicebound_showset=NULL;
+#endif
 
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
@@ -1435,9 +1441,9 @@ void ScriptCB(int var){
 
 /* ------------------ SliceBoundMenu ------------------------ */
 #ifdef pp_NEWBOUND_DIALOG
-void SliceBoundMenu(void){
+void GenerateSliceBoundDialog(void){
 
-  GLUI_Panel *PANEL_a=NULL, *PANEL_b=NULL, *PANEL_d = NULL, *PANEL_e = NULL;
+  GLUI_Panel *PANEL_a=NULL, *PANEL_b=NULL, *PANEL_c, *PANEL_d = NULL, *PANEL_e = NULL;
 
   ROLLOUT_slice_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Bound data"), false, 0, SliceRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_slice_bound, glui_bounds);
@@ -1465,8 +1471,16 @@ void SliceBoundMenu(void){
   STATIC_slice_max = glui_bounds->add_statictext_to_panel(PANEL_b, "max");
   STATIC_slice_max->set_w(4);
 
-  BUTTON_slice_global_bounds = glui_bounds->add_button_to_panel(ROLLOUT_slice_bound, _("Global bounds (all files)"), GLOBAL_BOUNDS, SliceBoundCB);;
-  BUTTON_slice_global_bounds_loaded = glui_bounds->add_button_to_panel(ROLLOUT_slice_bound, _("Global bounds (loaded files)"), GLOBAL_BOUNDS_LOADED, SliceBoundCB);;
+  PANEL_c = glui_bounds->add_panel_to_panel(ROLLOUT_slice_bound, "Set/Show Bounds");
+
+  RADIO_slicebound_showset = glui_bounds->add_radiogroup_to_panel(PANEL_c, &glui_slice_setshow);
+  glui_bounds->add_radiobutton_to_group(RADIO_slicebound_showset,"set");
+  glui_bounds->add_radiobutton_to_group(RADIO_slicebound_showset,"show");
+
+  BUTTON_slice_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile (loaded files)"), PERCENTILE_BOUNDS_LOADED, SliceBoundCB);;
+  BUTTON_slice_global_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Global (all files)"), GLOBAL_BOUNDS, SliceBoundCB);;
+  BUTTON_slice_global_bounds_loaded = glui_bounds->add_button_to_panel(PANEL_c, _("Global (loaded files)"), GLOBAL_BOUNDS_LOADED, SliceBoundCB);;
+
 
   glui_bounds->add_button_to_panel(ROLLOUT_slice_bound, _("Update"), FILEUPDATE, SliceBoundCB);
 
@@ -1498,7 +1512,7 @@ void SliceBoundMenu(void){
 
 /* ------------------ BoundMenu ------------------------ */
 
-void BoundMenu(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
+void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
   GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
   GLUI_RadioGroup **RADIO_con_setmin, GLUI_RadioGroup **RADIO_con_setmax,
   GLUI_RadioButton **RADIO_CON_setmin_percentile, GLUI_RadioButton **RADIO_CON_setmax_percentile,
@@ -1890,7 +1904,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
 
-    BoundMenu(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
+    GenerateBoundDialogs(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
       &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
@@ -2140,7 +2154,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       strcat(boundmenulabel, label);
       strcat(boundmenulabel, " File");
       if(npartinfo > 1)strcat(boundmenulabel, "s");
-      BoundMenu(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
+      GenerateBoundDialogs(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
         &RADIO_part_setmin_percentile,&RADIO_part_setmax_percentile,
         &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
@@ -2216,7 +2230,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
-    BoundMenu(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
+    GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
       &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &EDIT_p3_chopmin, &EDIT_p3_chopmax,
@@ -2318,9 +2332,9 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     glui_slicemin = slicebounds[list_slice_index].dlg_valmin;
     glui_slicemax = slicebounds[list_slice_index].dlg_valmax;
-    SliceBoundMenu();
+    GenerateSliceBoundDialog();
 #else
-    BoundMenu(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
+    GenerateBoundDialogs(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice File(s)",
       &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
@@ -3503,6 +3517,21 @@ extern "C" void SliceBoundCB(int var){
 
   updatemenu=1;
 #ifdef pp_NEWBOUND_DIALOG
+  if(var==PERCENTILE_BOUNDS_LOADED){
+    float per_min, per_max;
+
+    SliceBoundCB(GLOBAL_BOUNDS);
+    GetSlicePerBounds(slicebounds[list_slice_index].label->shortlabel, glui_slicemin, glui_slicemax, &per_min, &per_max);
+    if(per_min<=per_max){
+      slicebounds[list_slice_index].percentile_valmin = per_min;
+      slicebounds[list_slice_index].percentile_valmax = per_max;
+      slicebounds[list_slice_index].dlg_valmin = per_min;
+      slicebounds[list_slice_index].dlg_valmax = per_max;
+      EDIT_slice_min->set_float_val(per_min);
+      EDIT_slice_max->set_float_val(per_max);
+    }
+    return;
+  }
   if(var==GLOBAL_BOUNDS_MIN){
     slicebounds[list_slice_index].dlg_valmin = slicebounds[list_slice_index].global_valmin;
     EDIT_slice_min->set_float_val(slicebounds[list_slice_index].dlg_valmin);
@@ -3540,7 +3569,7 @@ extern "C" void SliceBoundCB(int var){
         slice_max = MAX(slice_max, slicei->file_max);
       }
     }
-    if(slice_loaded==0)printf("no slices of type %s are loaded - minimum  bound not updated\n",slicebounds[list_slice_index].shortlabel);
+    if(slice_loaded==0)printf("no slices of type %s are loaded - minimum  slice bound not updated\n",slicebounds[list_slice_index].shortlabel);
     if(slice_min<=slice_max){
       slicebounds[list_slice_index].dlg_valmin = slice_min;
       EDIT_slice_min->set_float_val(slice_min);
@@ -3579,9 +3608,6 @@ extern "C" void SliceBoundCB(int var){
   if(var==GLOBAL_BOUNDS_LOADED){
     SliceBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
     SliceBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
-    return;
-  }
-  if(var==PERCENTILE_BOUNDS){
     return;
   }
 #endif

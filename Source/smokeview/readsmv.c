@@ -2148,6 +2148,10 @@ void UpdateBoundInfo(void){
       isobounds[niso_bounds].dlg_setvalmax=0;
       isobounds[niso_bounds].dlg_valmin=1.0;
       isobounds[niso_bounds].dlg_valmax=0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      isobounds[niso_bounds].percentile_valmin = 1.0;
+      isobounds[niso_bounds].percentile_valmax = 0.0;
+#endif
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;
@@ -2190,6 +2194,10 @@ void UpdateBoundInfo(void){
       sbi->dlg_setvalmax=0;
       sbi->dlg_valmin=1.0;
       sbi->dlg_valmax=0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->percentile_valmin = 1.0;
+      sbi->percentile_valmax = 0.0;
+#endif
       sbi->chopmax=0.0;
       sbi->chopmin=1.0;
       sbi->setchopmax=0;

@@ -1414,6 +1414,77 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
+#ifdef pp_NEWBOUND_DIALOG
+/* ------------------ GetSlicePerBounds ------------------------ */
+
+void GetSlicePerBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
+  int i, ntotal, *buckets;
+  float factor, p01, p99;
+  int i01, i99, sum;
+  int have_min, have_max;
+
+  *per_min = 1.0;
+  *per_max = 0.0;
+  if(global_min>global_max)return;
+  if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0)return;
+  for(i=0;i<NBUCKETS;i++){
+    buckets[i] = 0;
+  }
+  factor = (float)NBUCKETS/(global_max-global_min);
+
+  ntotal = 0;
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    int nn;
+
+    slicei = sliceinfo+i;
+    if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
+    if(slicei->compression_type!=UNCOMPRESSED)continue;
+
+    for(nn = 0; nn<slicei->nslicei*slicei->nslicej*slicei->nslicek; nn++){
+      float val;
+      int ival;
+
+      val = slicei->qslicedata[nn];
+      ival = (int)(factor*(val-global_min)+0.5);
+      ival = CLAMP(ival, 0, NBUCKETS-1);
+      buckets[ival]++;
+      ntotal++;
+    }
+  }
+  if(ntotal==0){
+    FREEMEMORY(buckets);
+    return;
+  }
+
+  i01 = ntotal/100;
+  sum = 0;
+  have_min = 0;
+  for(i = 0; i<NBUCKETS; i++){
+    if(sum>i01){
+      *per_min = global_min+(float)i*(global_max-global_min)/(float)NBUCKETS;
+      have_min = 1;
+      break;
+    }
+    sum += buckets[i];
+  }
+  if(have_min = 0)*per_min = global_max;
+
+  sum = 0;
+  have_max = 0;
+  for(i = NBUCKETS-1; i>=0; i--){
+    if(sum>i01){
+      *per_max = global_min+(float)i*(global_max-global_min)/(float)NBUCKETS;
+      have_max = 1;
+      break;
+    }
+    sum += buckets[i];
+  }
+  if(have_max = 0)*per_max = global_min;
+  FREEMEMORY(buckets);
+}
+#endif
+
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd){
