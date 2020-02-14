@@ -1401,8 +1401,6 @@ void InitVars(void){
   rgb_terrain[9][2]=0.5;
   rgb_terrain[9][3]=1.0;
 
-  percentile_level=0.01;
-
   strcpy(script_inifile_suffix,"");
   strcpy(script_renderdir,"");
   strcpy(script_renderfilesuffix,"");

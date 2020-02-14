@@ -66,10 +66,8 @@ void GetGlobalSliceBounds(void){
     if(slicei->is_fed==1)continue;
     GetSliceFileBounds(slicei->bound_file, &valmin, &valmax);
     if(valmin>valmax)continue;
-#ifdef pp_NEWBOUND_DIALOG
     slicei->file_min = valmin;
     slicei->file_max = valmax;
-#endif
     boundi = GetBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->global_valmin>boundi->global_valmax){

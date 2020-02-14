@@ -271,7 +271,7 @@ GLUI_RadioGroup *RADIO_memcheck=NULL;
 #endif
 GLUI_RadioGroup *RADIO_p3_setmin=NULL, *RADIO_p3_setmax=NULL;
 #ifdef pp_NEWBOUND_DIALOG
-GLUI_RadioGroup *RADIO_slicebound_showset=NULL;
+GLUI_RadioGroup *RADIO_slice_loaded_only = NULL;
 #endif
 
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
@@ -1473,14 +1473,13 @@ void GenerateSliceBoundDialog(void){
 
   PANEL_c = glui_bounds->add_panel_to_panel(ROLLOUT_slice_bound, "Set/Show Bounds");
 
-  RADIO_slicebound_showset = glui_bounds->add_radiogroup_to_panel(PANEL_c, &glui_slice_setshow);
-  glui_bounds->add_radiobutton_to_group(RADIO_slicebound_showset,"set");
-  glui_bounds->add_radiobutton_to_group(RADIO_slicebound_showset,"show");
+  BUTTON_slice_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile"), PERCENTILE_BOUNDS_LOADED, SliceBoundCB);
+  BUTTON_slice_global_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Global"), GLOBAL_BOUNDS, SliceBoundCB);
 
-  BUTTON_slice_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile (loaded files)"), PERCENTILE_BOUNDS_LOADED, SliceBoundCB);;
-  BUTTON_slice_global_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Global (all files)"), GLOBAL_BOUNDS, SliceBoundCB);;
-  BUTTON_slice_global_bounds_loaded = glui_bounds->add_button_to_panel(PANEL_c, _("Global (loaded files)"), GLOBAL_BOUNDS_LOADED, SliceBoundCB);;
-
+  RADIO_slice_loaded_only = glui_bounds->add_radiogroup_to_panel(PANEL_c,  &slice_loaded_only, SLICE_LOADED_ONLY, SliceBoundCB);
+  glui_bounds->add_radiobutton_to_group(RADIO_slice_loaded_only, "all");
+  glui_bounds->add_radiobutton_to_group(RADIO_slice_loaded_only, "loaded");
+  SliceBoundCB(SLICE_LOADED_ONLY);
 
   glui_bounds->add_button_to_panel(ROLLOUT_slice_bound, _("Update"), FILEUPDATE, SliceBoundCB);
 
@@ -3517,11 +3516,20 @@ extern "C" void SliceBoundCB(int var){
 
   updatemenu=1;
 #ifdef pp_NEWBOUND_DIALOG
+  if(var==SLICE_LOADED_ONLY){
+    if(slice_loaded_only==1){
+      BUTTON_slice_percentile_bounds->enable();
+    }
+    else{
+      BUTTON_slice_percentile_bounds->disable();
+    }
+    return;
+  }
   if(var==PERCENTILE_BOUNDS_LOADED){
     float per_min, per_max;
 
     SliceBoundCB(GLOBAL_BOUNDS);
-    GetSlicePerBounds(slicebounds[list_slice_index].label->shortlabel, glui_slicemin, glui_slicemax, &per_min, &per_max);
+    GetSlicePercentileBounds(slicebounds[list_slice_index].label->shortlabel, glui_slicemin, glui_slicemax, &per_min, &per_max);
     if(per_min<=per_max){
       slicebounds[list_slice_index].percentile_valmin = per_min;
       slicebounds[list_slice_index].percentile_valmax = per_max;
@@ -3543,36 +3551,39 @@ extern "C" void SliceBoundCB(int var){
     return;
   }
   if(var==GLOBAL_BOUNDS){
-    SliceBoundCB(GLOBAL_BOUNDS_MIN);
-    SliceBoundCB(GLOBAL_BOUNDS_MAX);
-    return;
-  }
-  if(var==GLOBAL_BOUNDS_MIN_LOADED){
-    float slice_min, slice_max;
-    int slice_loaded=0;
-
-    slice_min = 1.0;
-    slice_max = 0.0;
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      if(slicei->loaded==0||strcmp(slicei->label.shortlabel, slicebounds[list_slice_index].shortlabel)!=0)continue;
-      slice_loaded = 1;
-      if(slicei->file_min>slicei->file_max)continue;
-      if(slice_min>slice_max){
-        slice_min = slicei->file_min;
-        slice_max = slicei->file_max;
-      }
-      else{
-        slice_min = MIN(slice_min, slicei->file_min);
-        slice_max = MAX(slice_max, slicei->file_max);
-      }
+    if(slice_loaded_only==0){
+      SliceBoundCB(GLOBAL_BOUNDS_MIN);
+      SliceBoundCB(GLOBAL_BOUNDS_MAX);
     }
-    if(slice_loaded==0)printf("no slices of type %s are loaded - minimum  slice bound not updated\n",slicebounds[list_slice_index].shortlabel);
-    if(slice_min<=slice_max){
-      slicebounds[list_slice_index].dlg_valmin = slice_min;
-      EDIT_slice_min->set_float_val(slice_min);
+    else{
+      float slice_min, slice_max;
+      int slice_loaded=0;
+
+      slice_min = 1.0;
+      slice_max = 0.0;
+      for(i = 0; i<nsliceinfo; i++){
+        slicedata *slicei;
+
+        slicei = sliceinfo+i;
+        if(slicei->loaded==0||strcmp(slicei->label.shortlabel, slicebounds[list_slice_index].shortlabel)!=0)continue;
+        slice_loaded = 1;
+        if(slicei->file_min>slicei->file_max)continue;
+        if(slice_min>slice_max){
+          slice_min = slicei->file_min;
+          slice_max = slicei->file_max;
+        }
+        else{
+          slice_min = MIN(slice_min, slicei->file_min);
+          slice_max = MAX(slice_max, slicei->file_max);
+        }
+      }
+      if(slice_loaded==0)printf("no slices of type %s are loaded - minimum  slice bound not updated\n",slicebounds[list_slice_index].shortlabel);
+      if(slice_min<=slice_max){
+        slicebounds[list_slice_index].dlg_valmin = slice_min;
+        EDIT_slice_min->set_float_val(slice_min);
+        slicebounds[list_slice_index].dlg_valmax = slice_max;
+        EDIT_slice_max->set_float_val(slice_max);
+      }
     }
     return;
   }
@@ -3726,7 +3737,6 @@ extern "C" void SliceBoundCB(int var){
         break;
       }
       if(research_mode==1){
-        axislabels_smooth_save=axislabels_smooth;
         axislabels_smooth=0;
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
@@ -3804,7 +3814,6 @@ extern "C" void SliceBoundCB(int var){
         PRINTF("research mode on\n");
       }
       else{
-        axislabels_smooth=axislabels_smooth_save;
         visColorbarVertical=visColorbarVertical_save;
 
         // slice files

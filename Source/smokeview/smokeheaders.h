@@ -6,7 +6,7 @@
 #endif
 
 #ifdef pp_NEWBOUND_DIALOG
-EXTERNCPP void GetSlicePerBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
+EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 #endif
 boundsdata *GetBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG

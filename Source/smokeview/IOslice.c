@@ -1415,9 +1415,9 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 }
 
 #ifdef pp_NEWBOUND_DIALOG
-/* ------------------ GetSlicePerBounds ------------------------ */
+/* ------------------ GetSlicePercentileBounds ------------------------ */
 
-void GetSlicePerBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
+void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
   int i, ntotal, *buckets;
   float factor, p01, p99;
   int i01, i99, sum;
@@ -1457,7 +1457,7 @@ void GetSlicePerBounds(char *slicetype, float global_min, float global_max, floa
     return;
   }
 
-  i01 = ntotal/100;
+  i01 =   (int)(percentile_level*(float)ntotal);
   sum = 0;
   have_min = 0;
   for(i = 0; i<NBUCKETS; i++){
