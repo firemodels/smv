@@ -1418,7 +1418,8 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 /* ------------------ GetSlicePercentileBounds ------------------------ */
 
 void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
-  int i, ntotal, *buckets;
+  int iii, ntotal, *buckets;
+  int ii;
   float factor, p01, p99;
   int i01, i99, sum;
   int have_min, have_max;
@@ -1427,29 +1428,77 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
   *per_max = 0.0;
   if(global_min>global_max)return;
   if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0)return;
-  for(i=0;i<NBUCKETS;i++){
-    buckets[i] = 0;
+  for(iii=0;iii<NBUCKETS;iii++){
+    buckets[iii] = 0;
   }
   factor = (float)NBUCKETS/(global_max-global_min);
 
   ntotal = 0;
-  for(i = 0; i<nsliceinfo; i++){
+  for(iii = 0; iii<nsliceinfo; iii++){
     slicedata *slicei;
     int nn;
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+    char *iblank_node, *iblank_cell;
+    int ibar, jbar, nx, ny, nxy;
+    int itime;
 
-    slicei = sliceinfo+i;
+    slicei = sliceinfo+iii;
     if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
     if(slicei->compression_type!=UNCOMPRESSED)continue;
 
-    for(nn = 0; nn<slicei->nslicei*slicei->nslicej*slicei->nslicek; nn++){
-      float val;
-      int ival;
+    meshi = meshinfo+slicei->blocknumber;
+    iblank_node = meshi->c_iblank_node;
+    iblank_cell = meshi->c_iblank_cell;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
 
-      val = slicei->qslicedata[nn];
-      ival = (int)(factor*(val-global_min)+0.5);
-      ival = CLAMP(ival, 0, NBUCKETS-1);
-      buckets[ival]++;
-      ntotal++;
+    ibar = meshi->ibar;
+    jbar = meshi->jbar;
+    nx = ibar+1;
+    ny = jbar+1;
+    nxy = nx*ny;
+
+
+    nn = -1;
+    for(itime = 0; itime<slicei->ntimes; itime++){
+      for(ii = 0; ii<slicei->nslicei; ii++){
+        int j;
+        int i1, i1p1;
+
+        i1 = MIN(slicei->is1+ii, slicei->is2-2);
+        i1p1 = i1+1;
+
+        for(j = 0; j<slicei->nslicej; j++){
+          int k;
+          int j1, j1p1;
+
+          j1 = MIN(slicei->js1+j, slicei->js2-2);
+          j1p1 = j1+1;
+
+          for(k = 0; k<slicei->nslicek; k++){
+            int k1, k1p1;
+            float val;
+            int ival;
+
+            k1 = MIN(slicei->ks1+k, slicei->ks2-2);
+            k1p1 = k1+1;
+
+            nn++;
+            if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
+            if(show_slice_in_obst==ONLY_IN_GAS){
+              if(slicei->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL&&iblank_node[IJKNODE(slicei->is1+ii, slicei->js1+j, slicei->ks1+k)]==SOLID)continue;
+              if(slicei->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL&&iblank_cell[IJKCELL(slicei->is1+ii-1, slicei->js1+j-1, slicei->ks1+k-1)]==EMBED_YES)continue;
+            }
+            val = slicei->qslicedata[nn];
+            ival = (int)(factor*(val-global_min)+0.5);
+            ival = CLAMP(ival, 0, NBUCKETS-1);
+            buckets[ival]++;
+            ntotal++;
+          }
+        }
+      }
     }
   }
   if(ntotal==0){
@@ -1460,25 +1509,25 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
   i01 =   (int)(percentile_level*(float)ntotal);
   sum = 0;
   have_min = 0;
-  for(i = 0; i<NBUCKETS; i++){
+  for(iii = 0; iii<NBUCKETS; iii++){
     if(sum>i01){
-      *per_min = global_min+(float)i*(global_max-global_min)/(float)NBUCKETS;
+      *per_min = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
       have_min = 1;
       break;
     }
-    sum += buckets[i];
+    sum += buckets[iii];
   }
   if(have_min = 0)*per_min = global_max;
 
   sum = 0;
   have_max = 0;
-  for(i = NBUCKETS-1; i>=0; i--){
+  for(iii = NBUCKETS-1; iii>=0; iii--){
     if(sum>i01){
-      *per_max = global_min+(float)i*(global_max-global_min)/(float)NBUCKETS;
+      *per_max = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
       have_max = 1;
       break;
     }
-    sum += buckets[i];
+    sum += buckets[iii];
   }
   if(have_max = 0)*per_max = global_min;
   FREEMEMORY(buckets);
