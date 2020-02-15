@@ -1423,6 +1423,8 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
   float factor, p01, p99;
   int i01, i99, sum;
   int have_min, have_max;
+  int some_compressed = 0;
+  int some_loaded = 0;
 
   *per_min = 1.0;
   *per_max = 0.0;
@@ -1445,7 +1447,11 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
 
     slicei = sliceinfo+iii;
     if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
-    if(slicei->compression_type!=UNCOMPRESSED)continue;
+    if(slicei->compression_type!=UNCOMPRESSED){
+      some_compressed = 1;
+      continue;
+    }
+    some_loaded = 1;
 
     meshi = meshinfo+slicei->blocknumber;
     iblank_node = meshi->c_iblank_node;
@@ -1502,6 +1508,12 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     }
   }
   if(ntotal==0){
+    if(some_loaded==0&&some_compressed==1){
+      printf("***warning: percentile bounds not computed - all loaded slice files are compressed\n");
+    }
+    if(some_loaded==1){
+      printf("***warning: percentile bounds not computed - no data in files\n");
+    }
     FREEMEMORY(buckets);
     return;
   }
