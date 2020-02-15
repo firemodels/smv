@@ -4385,6 +4385,7 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"TERRAIN") == 1){
+      FGETS(buffer, 255, stream);
       nterraininfo++;
       continue;
     }
@@ -5390,19 +5391,20 @@ int ReadSMV(char *file, char *file2){
   */
 
     if(Match(buffer,"TERRAIN") == 1){
-//      terraindata *terri;
-      float xmin, xmax, ymin, ymax;
-      int nx, ny;
-
-      manual_terrain=1;
-
-  //    terri = terraininfo + nterraininfo;
-
+      terraindata *terraini;
+      int len_buffer;
+      char *file, *buffer_ptr;
+      
       FGETS(buffer,255,stream);
-      sscanf(buffer,"%f %f %i %f %f %i",&xmin, &xmax, &nx, &ymin, &ymax, &ny);
-      // must implement new form for defining terrain surfaces
-      //initterrain(stream, NULL, terri, xmin, xmax, nx, ymin, ymax, ny);
+      buffer_ptr = TrimFrontBack(buffer);
+      len_buffer = strlen(buffer_ptr);
+      NewMemory((void **)&file, len_buffer+1);
+      strcpy(file, buffer_ptr);
 
+      terraini = terraininfo + nterraininfo;
+      terraini->file = file;
+      meshinfo[nterraininfo].terrain = terraini;
+      
       nterraininfo++;
       continue;
     }
