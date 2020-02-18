@@ -5393,7 +5393,7 @@ int ReadSMV(char *file, char *file2){
       terraindata *terraini;
       int len_buffer;
       char *file, *buffer_ptr;
-      
+
       FGETS(buffer,255,stream);
       buffer_ptr = TrimFrontBack(buffer);
       len_buffer = strlen(buffer_ptr);
@@ -5963,9 +5963,7 @@ int ReadSMV(char *file, char *file2){
         smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
-#ifdef pp_FILE_SIZES
         smoke3di->file_size = 0;
-#endif
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         for(ii = 0;ii < MAXSMOKETYPES;ii++){
@@ -8551,9 +8549,7 @@ typedef struct {
 #ifdef pp_NEWBOUND_DIALOG
       sd->bounds = NULL;
 #endif
-#ifdef pp_FILE_SIZES
       sd->file_size = 0;
-#endif
       sd->slice_filetype=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
       if(slicegeom==1){

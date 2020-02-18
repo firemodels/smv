@@ -48,10 +48,8 @@ SVEXTERN int SVDECL(vis_title_CHID,0);
 
 SVEXTERN float SVDECL(colorbar_shift, 1.0);
 
-#ifdef pp_FILE_SIZES
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
-#endif
 
 SVEXTERN int SVDECL(update_fileload, 1);
 

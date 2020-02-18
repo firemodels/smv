@@ -50,9 +50,7 @@ float     slice_load_time;
 #define MENU_SLICECOLORDEFER -5
 #define MENU_NEWSLICEMENUS   -7
 
-#ifdef pp_FILE_SIZES
 #define MENU_SLICE_FILE_SIZES -9
-#endif
 
 #define MENU_OPTION_TRAINERMENU 2
 
@@ -4207,9 +4205,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
   int need_soot, need_hrrpuv, need_temp, need_co2;
-#ifdef pp_FILE_SIZES
   FILE_SIZE total_size;
-#endif
 
   need_soot   = type&SOOT_2;
   need_hrrpuv = type&HRRPUV_2;
@@ -4228,9 +4224,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     break;
     }
   }
-#ifdef pp_FILE_SIZES
   total_size = 0;
-#endif
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -4243,7 +4237,6 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
-#ifdef pp_FILE_SIZES
       if(compute_smoke3d_file_sizes==1){
         smoke3di->file_size = GetFileSizeSMV(smoke3di->reg_file);
         total_size += smoke3di->file_size;
@@ -4251,12 +4244,8 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       else{
         load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       }
-#else
-      load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-#endif
     }
   }
-#ifdef pp_FILE_SIZES
   if(compute_smoke3d_file_sizes==1){
     PRINTF(" size of 3D smoke files to be loaded=");
     if(total_size>1000000000){
@@ -4271,7 +4260,6 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
     PRINTF("   (assuming a gigabit network connection)\n");
   }
-#endif
   *count = file_count;
   return load_size;
 }
@@ -4284,19 +4272,17 @@ void LoadSmoke3DMenu(int value){
   float load_time, load_size;
 
 #ifdef pp_SMOKE_FAST
-#define MENU_SMOKE_SOOT_HRRPUV -5
-#define MENU_SMOKE3D_LOAD_TEST -3
+#define MENU_SMOKE_SOOT_HRRPUV     -5
+#define MENU_SMOKE3D_LOAD_TEST     -3
 #define MENU_SMOKE_SOOT_HRRPUV_CO2 -6
-#define MENU_SMOKE_SOOT_TEMP -7
-#define MENU_SMOKE_SOOT_TEMP_CO2 -8
+#define MENU_SMOKE_SOOT_TEMP       -7
+#define MENU_SMOKE_SOOT_TEMP_CO2   -8
 #endif
-#define MENU_DUMMY_SMOKE -9
-#define MENU_SMOKE_SETTINGS       -4
-#ifdef pp_FILE_SIZES
-#define MENU_SMOKE_FILE_SIZES     -10
-#endif
-#define MENU_SMOKE3D_IBLANK -2
 
+#define MENU_DUMMY_SMOKE           -9
+#define MENU_SMOKE_SETTINGS        -4
+#define MENU_SMOKE_FILE_SIZES     -10
+#define MENU_SMOKE3D_IBLANK        -2
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -4372,12 +4358,10 @@ void LoadSmoke3DMenu(int value){
     }
   }
 #endif
-#ifdef pp_FILE_SIZES
     else if(value ==MENU_SMOKE_FILE_SIZES){
       compute_smoke3d_file_sizes = 1-compute_smoke3d_file_sizes;
       updatemenu = 1;
     }
-#endif
 
 #ifdef pp_SMOKE_FAST
   else if(value == MENU_SMOKE3D_LOAD_TEST){
@@ -4407,13 +4391,9 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
-#ifdef pp_FILE_SIZES
   if(compute_smoke3d_file_sizes==0){
     PRINT_LOADTIMES(file_count, load_size, load_time);
   }
-#else
-  PRINT_LOADTIMES(file_count,load_size,load_time);
-#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -4776,11 +4756,7 @@ void LoadMultiVSliceMenu(int value){
 
 /* ------------------ LoadAllMSlices ------------------------ */
 
-#ifdef pp_FILE_SIZES
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
-#else
-void LoadAllMSlices(int last_slice, multislicedata *mslicei){
-#endif
   int i;
   float load_time;
   FILE_SIZE file_size = 0;
@@ -4806,9 +4782,7 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
   }
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
-#ifdef pp_FILE_SIZES
   return file_size;
-#endif
 }
 
 #ifdef pp_SLICETHREAD
@@ -4909,9 +4883,7 @@ void LoadMultiSliceMenu(int value){
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
-#ifdef pp_FILE_SIZES
       FILE_SIZE total_size=0;
-#endif
 
 #ifdef pp_SLICETHREAD
       last_slice = SetupSlice(value);
@@ -4935,12 +4907,7 @@ void LoadMultiSliceMenu(int value){
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
-#ifdef pp_FILE_SIZES
       total_size = LoadAllMSlices(last_slice, mslicei);
-#else
-      LoadAllMSlices(last_slice, mslicei);
-#endif
-#ifdef pp_FILE_SIZES
       if(compute_slice_file_sizes==1){
         PRINTF(" size of slice files to be loaded=");
         if(total_size>1000000000){
@@ -4955,7 +4922,6 @@ void LoadMultiSliceMenu(int value){
         PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
         PRINTF("   (assuming a gigabit network connection)\n");
       }
-#endif
     }
     script_multislice=0;
   }
@@ -5065,12 +5031,10 @@ void LoadMultiSliceMenu(int value){
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
         break;
-#ifdef pp_FILE_SIZES
       case MENU_SLICE_FILE_SIZES:
         compute_slice_file_sizes = 1-compute_slice_file_sizes;
         updatemenu = 1;
         break;
-#endif
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
         break;
@@ -10280,14 +10244,12 @@ updatemenu=0;
     }
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
-#ifdef pp_FILE_SIZES
     if(compute_slice_file_sizes==1){
       glutAddMenuEntry(_("  *compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
     }
     else{
       glutAddMenuEntry(_("  compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
     }
-#endif
     if(use_set_slicecolor==1){
       glutAddMenuEntry(_("  *defer slice coloring"), MENU_SLICECOLORDEFER);
     }
@@ -10539,14 +10501,12 @@ updatemenu=0;
           glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
         }
         glutAddMenuEntry("-", MENU_DUMMY3);
-#ifdef pp_FILE_SIZES
         if(compute_smoke3d_file_sizes==1){
           glutAddMenuEntry(_("*compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
         }
         else{
           glutAddMenuEntry(_("compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
         }
-#endif
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);

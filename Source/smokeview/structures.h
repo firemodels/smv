@@ -1273,9 +1273,7 @@ typedef struct _slicedata {
 #ifdef pp_NEWBOUND_DIALOG
   struct _boundsdata *bounds;
 #endif
-#ifdef pp_FILE_SIZES
   FILE_SIZE file_size;
-#endif
 #ifdef pp_SLICETHREAD
   int skipload, loadstatus, boundstatus;
 #endif
@@ -1395,9 +1393,7 @@ typedef struct _smoke3ddata {
   unsigned char *smokeview_tmp;
   unsigned char *smoke_comp_all;
   unsigned char *frame_all_zeros;
-#ifdef pp_FILE_SIZES
   FILE_SIZE file_size;
-#endif
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
   int dir;
