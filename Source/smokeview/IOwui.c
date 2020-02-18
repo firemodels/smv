@@ -258,13 +258,12 @@ void ComputeTerrainNormalsManual(void){
     terraindata *terri;
     float *znode;
     int j;
-    int ibarp1, jbarp1;
+    int ibarp1;
 
     meshi = meshinfo + imesh;
     terri = meshi->terrain;
     znode = terri->znode;
     ibarp1 = meshi->ibar+1;
-    jbarp1-meshi->jbar+1;
 
     for(j=0;j<=terri->ny;j++){
       int i;
@@ -983,8 +982,7 @@ int GetTerrainData(char *file, terraindata *terri){
   float zmin;
   int ibp1, jbp1, ijbar[2];
   float *xplt, *yplt, *z_terrain;
-  int returncode;
-  int j;
+  int returncode=1;
 
 #ifdef _DEBUG
   printf("reading terrain data mesh: %i\n",(int)(terri-terraininfo));
@@ -1018,9 +1016,9 @@ int GetTerrainData(char *file, terraindata *terri){
     z_terrain = terri->znode;
   }
   FORTWUIREAD(z_terrain, ibp1*jbp1);
-
+  if(returncode!=0)returncode=0;
   fclose(WUIFILE);
-  return 0;
+  return returncode;
 }
 
 /* ------------------ GetTerrainSize ------------------------ */
