@@ -13,9 +13,7 @@ boundsdata *GetBoundsInfo(char *shortlabel);
 void GetGlobalSliceBounds(void);
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
 #endif
-#ifdef pp_SHIFT_COLORBARS
 EXTERNCPP void ShiftColorbars(void);
-#endif
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);

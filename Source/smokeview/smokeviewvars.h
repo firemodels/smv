@@ -46,9 +46,7 @@ SVEXTERN int SVDECL(vis_title_smv_version, 1);
 SVEXTERN int SVDECL(vis_title_fds, 0);
 SVEXTERN int SVDECL(vis_title_CHID,0);
 
-#ifdef pp_SHIFT_COLORBARS
 SVEXTERN float SVDECL(colorbar_shift, 1.0);
-#endif
 
 #ifdef pp_FILE_SIZES
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);

@@ -2057,7 +2057,6 @@ void UpdateDisplay(void){
 
 /* ------------------ ShiftColorbars ------------------------ */
 
-#ifdef pp_SHIFT_COLORBARS
 void ShiftColorbars(void){
   int i;
 
@@ -2084,4 +2083,3 @@ void ShiftColorbars(void){
   }
   CheckMemory;
 }
-#endif

@@ -9847,12 +9847,8 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
-#ifdef pp_SHIFT_COLORBARS
       sscanf(buffer, " %i %i %f", &research_mode, &ncolorlabel_decimals, &colorbar_shift);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
-#else
-      sscanf(buffer, " %i %i", &research_mode, &ncolorlabel_decimals);
-#endif
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
@@ -13753,11 +13749,7 @@ void WriteIni(int flag,char *filename){
     research_mode = 0;
     update_research_mode = 1;
   }
-#ifdef pp_SHIFT_COLORBARS
   fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
-#else
-  fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
-#endif
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
