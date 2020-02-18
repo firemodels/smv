@@ -271,6 +271,7 @@ void ComputeTerrainNormalsManual(void){
       float dy1, dy2;
 
       dy1 = 0.0;
+      dy2 = 0.0;
       if(j!=0)dy1 = (terri->y[j]-terri->y[j-1]);
       if(j!=terri->ny)dy2 = (terri->y[j+1]-terri->y[j]);
 
@@ -282,6 +283,7 @@ void ComputeTerrainNormalsManual(void){
         float dzdx1, dzdx2, dzdy1, dzdy2;
 
         dx1 = 0.0;
+        dx2 = 0.0;
         if(i!=0)dx1 = (terri->x[i]-terri->x[i-1]);
         if(i!=terri->nx)dx2 = (terri->x[i+1]-terri->x[i]);
 
@@ -293,10 +295,12 @@ void ComputeTerrainNormalsManual(void){
 
         //znormal = terri->znormal + 3*ijnode2(i,j);
         dzdx1 = 0.0;
+        dzdx2 = 0.0;
         if(i!=0)dzdx1 = (znode[j*ibarp1+i]-znode[j*ibarp1+i-1])/dx1;
         if(i!=terri->nx)dzdx2 = (znode[j*ibarp1+i+1]-znode[j*ibarp1+i])/dx2;
 
         dzdy1 = 0.0;
+        dzdy2 = 0.0;
         if(j!=0)dzdy1 = (znode[(j)*ibarp1+i]-znode[(j-1)*ibarp1+i])/dy1;
         if(j!=terri->ny)dzdy2 = (znode[(j+1)*ibarp1+i]-znode[j*ibarp1+i])/dy2;
 
