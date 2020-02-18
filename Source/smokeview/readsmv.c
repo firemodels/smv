@@ -2084,7 +2084,7 @@ void InitTextures(void){
 #endif
 #endif
 
-  if(autoterrain==1&&use_graphics==1){
+  if(auto_terrain==1&&use_graphics==1){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
@@ -4385,6 +4385,7 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"TERRAIN") == 1){
+      manual_terrain = 1;
       FGETS(buffer, 255, stream);
       nterraininfo++;
       continue;
@@ -4401,7 +4402,7 @@ int ReadSMV(char *file, char *file2){
 
       NewMemory((void **)&terrain_texture,sizeof(texturedata));
       tt = terrain_texture;
-      autoterrain=1;
+      auto_terrain=1;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&visTerrainType);
       visTerrainType=CLAMP(visTerrainType,0,4);
@@ -5227,7 +5228,7 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++ OBST ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OBST") == 1&&autoterrain==1){
+    if(Match(buffer,"OBST") == 1&&auto_terrain==1){
       int nobsts=0;
       meshdata *meshi;
       unsigned char *is_block_terrain;
@@ -5259,8 +5260,6 @@ int ReadSMV(char *file, char *file2){
         else{
           is_block_terrain[nn]=0;
         }
-        // temporary work around for terrain display of slice files
-       // if(autoterrain==1)is_block_terrain[nn]=1;
       }
       continue;
     }
@@ -5404,7 +5403,6 @@ int ReadSMV(char *file, char *file2){
       terraini = terraininfo + nterraininfo;
       terraini->file = file;
       meshinfo[nterraininfo].terrain = terraini;
-      
       nterraininfo++;
       continue;
     }
@@ -7482,7 +7480,7 @@ typedef struct {
       n_blocks_normal=n_blocks;
       if(n_blocks==0)continue;
 
-      if(autoterrain==1){
+      if(auto_terrain==1||manual_terrain==1){
         is_block_terrain=meshi->is_block_terrain;
         n_blocks_normal=0;
         for(iblock=0;iblock<n_blocks;iblock++){
@@ -7501,7 +7499,7 @@ typedef struct {
         int s_num[6];
         blockagedata *bc;
 
-        if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
+        if((auto_terrain==1||manual_terrain==1)&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
           FGETS(buffer,255,stream);
           continue;
         }
@@ -7586,7 +7584,7 @@ typedef struct {
         int *ijk;
         int colorindex, blocktype;
 
-        if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
+        if((auto_terrain==1||manual_terrain==1)&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
           FGETS(buffer,255,stream);
           continue;
         }
@@ -9233,7 +9231,7 @@ typedef struct {
 
   START_TIMER(pass5_time);
 
-  if(autoterrain==1){
+  if(auto_terrain==1&&manual_terrain==0){
     float zbarmin;
 
     zbarmin=meshinfo->xyz_bar0[ZZZ];
@@ -9278,12 +9276,12 @@ typedef struct {
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
 #endif
-  if(do_pass4==1||autoterrain==1){
+  if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
     PRINTF("%s","  pass 5\n");
   }
 
-  while((autoterrain==1||do_pass4==1)){
+  while(((auto_terrain==1&&manual_terrain==0)||do_pass4==1)){
     if(FEOF(stream)!=0){
       BREAK;
     }
@@ -9364,7 +9362,7 @@ typedef struct {
     ++++++++++++++++++++++ OBST +++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     */
-    if(Match(buffer, "OBST")==1&&autoterrain==1){
+    if(Match(buffer, "OBST")==1&&auto_terrain==1&&manual_terrain==0){
       meshdata *meshi;
       int nxcell;
       int n_blocks;
@@ -9616,7 +9614,7 @@ typedef struct {
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
-  if(autoterrain==1){
+  if(auto_terrain==1&&manual_terrain==0){
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       float *zcell;

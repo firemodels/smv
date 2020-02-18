@@ -7301,7 +7301,7 @@ updatemenu=0;
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Objects"),showobjectsmenu);
   }
-  if(nterraininfo>0){
+  if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"),terrain_showmenu);
   }
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
@@ -11347,7 +11347,7 @@ updatemenu=0;
       // terrain
 
       if(manual_terrain==1&&nterraininfo>0){
-        GLUTADDSUBMENU(_("Terrain"),loadterrainmenu);
+ //       GLUTADDSUBMENU(_("Terrain"),loadterrainmenu);
       }
 
       // slice

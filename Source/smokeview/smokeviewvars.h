@@ -33,6 +33,8 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN int GetTerrainData(char *file, terraindata *terri);
+
 #ifdef pp_NEWBOUND_DIALOG
 SVEXTERN int SVDECL(slice_loaded_only, 0), SVDECL(slice_loaded,0), SVDECL(update_slice_loaded,0);
 #endif
@@ -1224,7 +1226,7 @@ SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
 SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
 SVEXTERN int SVDECL(showall_slices,1);
-SVEXTERN int SVDECL(autoterrain,0),SVDECL(manual_terrain,0);
+SVEXTERN int SVDECL(auto_terrain,0),SVDECL(manual_terrain,0);
 SVEXTERN float zterrain_max, zterrain_min;
 SVEXTERN char SVDECL(*fds_version, NULL), SVDECL(*fds_githash, NULL);
 SVEXTERN char smv_githash[256], smv_gitdate[256];
